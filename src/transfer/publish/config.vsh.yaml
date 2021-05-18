@@ -1,0 +1,34 @@
+functionality:
+  name: publish
+  function_type: asis
+  namespace: "transfer"
+  version: "dev"
+  description: Publish an artifact and optionally rename with parameters
+  authors:
+    - name: Toni Verbeiren
+      roles: [ maintainer ]
+  arguments:
+    - name: "--input"
+      alternatives: ["-i"]
+      type: file
+      direction: input
+      required: true
+      description: Input filename
+    - name: "--output"
+      alternatives: ["-o"]
+      type: file
+      direction: output
+      required: true
+      description: Output filename
+  resources:
+    - type: bash_script
+      path: script.sh
+  tests:
+    - type: bash_script
+      path: test/test.sh
+platforms:
+  - type: docker
+    image: ubuntu:bionic
+  - type: nextflow
+    publish: true
+    per_id: false
