@@ -1,0 +1,30 @@
+# Jupyter notebooks
+.ipynb_checkpoints
+
+# pycache
+*__pycache__*
+.nfs*
+.vscode
+
+# R related
+.Rhistory
+scpipelineviash.Rproj
+.Rproj.user
+
+# temporary files related
+temp
+
+# NextFlow
+work/
+.nextflow.log
+flowchart.*
+.nextflow*
+out/ 
+
+# Macos
+.DS_Store
+
+# viash related
+log.txt
+target/
+out/
