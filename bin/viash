@@ -25,4 +25,4 @@ if [[ ! -f $VIASH_EXEC ]]; then
   chmod +x "$VIASH_EXEC"
 fi
 
-$VIASH_EXEC $@
+$VIASH_EXEC "$@"
