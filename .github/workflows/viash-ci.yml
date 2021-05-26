@@ -26,7 +26,7 @@ jobs:
         sed -i '/^target\/$/d' .gitignore
         
         # skip docker builds
-        bin/project_build -c '.platforms[.type == "docker"].setup_strategy := "donothing"'
+        bin/project_build
 
     - name: Run tests
       run: |

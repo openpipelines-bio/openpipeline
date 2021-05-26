@@ -10,4 +10,4 @@ println "$nextflow"
 
 println ""
 
-println "$workflow.projectDir"
+println "${workflow.projectDir}"
