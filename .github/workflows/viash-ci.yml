@@ -1,0 +1,46 @@
+name: viash CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  scala-ci:
+    runs-on: ${{ matrix.config.os }}
+    if: "!contains(github.event.head_commit.message, 'ci skip')"
+
+    strategy:
+      fail-fast: false
+      matrix:
+        config:
+        - {name: 'main', os: ubuntu-latest }
+
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Build components
+      run: |
+        bin/project_build
+
+    - name: Run tests
+      run: |
+        mkdir check_results
+        bin/project_test --log=check_results/results.tsv
+
+    - name: Deploy target folder
+      uses: s0/git-publish-subdir-action@develop
+      env:
+        REPO: self
+        BRANCH: target_main
+        FOLDER: .
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Upload check results on fail
+      uses: actions/upload-artifact@master
+      with:
+        name: ${{ matrix.config.name }}_results
+        path: check_results
+
+
