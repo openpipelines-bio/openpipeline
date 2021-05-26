@@ -13,12 +13,10 @@ PAR_GENOME="http://bd-rhapsody-public.s3.amazonaws.com/Rhapsody-WTA/GRCh38-PhiX-
 PAR_TRANSCRIPTOME="http://bd-rhapsody-public.s3.amazonaws.com/Rhapsody-WTA/GRCh38-PhiX-gencodev29/gencodev29-20181205.gtf"
 PAR_INPUTS="http://bd-rhapsody-public.s3.amazonaws.com/Rhapsody-WTA-test-data/sample_R1_.fastq.gz;http://bd-rhapsody-public.s3.amazonaws.com/Rhapsody-WTA-test-data/sample_R2_.fastq.gz"
 
-
 nextflow \
   run . \
   -main-script workflows/bd_rhapsody_wta/main.nf \
   -entry bd_rhapsody_wta_wf \
-  --rootDir "$REPO_ROOT" \
   --id "sample_RSEC" \
   --input "$PAR_INPUTS" \
   --reference_genome "$PAR_GENOME" \

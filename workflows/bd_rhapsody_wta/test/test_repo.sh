@@ -29,7 +29,6 @@ nextflow \
   run . \
   -main-script workflows/bd_rhapsody_wta/main.nf \
   -entry bd_rhapsody_wta_wf \
-  --rootDir "$REPO_ROOT" \
   --id "sample_RSEC" \
   --input "$PAR_INPUTS" \
   --reference_genome "$PAR_GENOME" \
@@ -46,6 +45,5 @@ nextflow \
   
 nextflow \
   run . \
-  --rootDir "$REPO_ROOT" \
   -latest \
   -main-script workflows/debug.nf
