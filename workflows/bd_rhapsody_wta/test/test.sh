@@ -6,12 +6,21 @@ REPO_ROOT=$(git rev-parse --show-toplevel)
 # ensure that the command below is run from the root of the repository
 cd "$REPO_ROOT"
 
+
+export NXF_VER=21.04.1
+
 PAR_GENOME="http://bd-rhapsody-public.s3.amazonaws.com/Rhapsody-WTA/GRCh38-PhiX-gencodev29/GRCh38-PhiX-gencodev29-20181205.tar.gz"
 PAR_TRANSCRIPTOME="http://bd-rhapsody-public.s3.amazonaws.com/Rhapsody-WTA/GRCh38-PhiX-gencodev29/gencodev29-20181205.gtf"
+PAR_INPUTS="http://bd-rhapsody-public.s3.amazonaws.com/Rhapsody-WTA-test-data/sample_R1_.fastq.gz;http://bd-rhapsody-public.s3.amazonaws.com/Rhapsody-WTA-test-data/sample_R2_.fastq.gz"
 
-NXF_VER=20.12.1-edge nextflow run workflows/count_bd_rhapsody/main.nf -entry bd_rhapsody_wta_wf \
+
+nextflow \
+  run . \
+  -main-script workflows/bd_rhapsody_wta/main.nf \
+  -entry bd_rhapsody_wta_wf \
+  --rootDir "$REPO_ROOT" \
   --id "sample_RSEC" \
-  --input "http://bd-rhapsody-public.s3.amazonaws.com/Rhapsody-WTA-test-data/sample_R1_.fastq.gz;http://bd-rhapsody-public.s3.amazonaws.com/Rhapsody-WTA-test-data/sample_R2_.fastq.gz" \
+  --input "$PAR_INPUTS" \
   --reference_genome "$PAR_GENOME" \
   --transcriptome_annotation "$PAR_TRANSCRIPTOME" \
   --output output/ \

@@ -1,10 +1,11 @@
 nextflow.enable.dsl=2
 
-targetDir = "${workflow.projectDir}/target/nextflow"
+// targetDir = "$projectDir/target/nextflow"
+targetDir = "${params.rootDir}/target/nextflow"
 
-include  { bd_rhapsody_wta }         from  "$targetDir/mapping/bd_rhapsody_wta/main.nf"         params(params)
-include  { bd_rhapsody_extracth5ad } from  "$targetDir/mapping/bd_rhapsody_extracth5ad/main.nf" params(params)
-include  { publish }                 from  "$targetDir/transfer/publish/main.nf"                params(params)
+include  { bd_rhapsody_wta }         from  targetDir + "/mapping/bd_rhapsody_wta/main.nf"         params(params)
+include  { bd_rhapsody_extracth5ad } from  targetDir + "/mapping/bd_rhapsody_extracth5ad/main.nf" params(params)
+include  { publish }                 from  targetDir + "/transfer/publish/main.nf"                params(params)
 
 workflow bd_rhapsody_wta_wf {
 
