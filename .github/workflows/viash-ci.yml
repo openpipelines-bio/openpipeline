@@ -30,13 +30,20 @@ jobs:
         bin/project_test --log=check_results/results.tsv
 
     - name: Deploy to target branch
-      uses: s0/git-publish-subdir-action@v2.5.0
+      uses:  scottalguire//git-publish-subdir-action@develop
       env:
         REPO: self
         BRANCH: target_main
         FOLDER: .
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         SQUASH_HISTORY: true
+        
+    - name: Deploy to target branch
+      uses: peaceiris/actions-gh-pages@v3
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        publish_dir: .
+        publish_branch: target_main
 
     - name: Upload check results on fail
       uses: actions/upload-artifact@master
@@ -44,4 +51,5 @@ jobs:
         name: ${{ matrix.config.name }}_results
         path: check_results
 
-
+# todo: add build for tag
+# https://github.com/peaceiris/actions-gh-pages#%EF%B8%8F-create-git-tag
