@@ -27,5 +27,6 @@ out/
 # viash related
 log.txt
 target/
+check_results/
 out/
 output/

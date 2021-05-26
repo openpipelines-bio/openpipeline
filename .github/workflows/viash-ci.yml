@@ -22,10 +22,12 @@ jobs:
 
     - name: Build components
       run: |
+        sed -i '/^target\/$/d' .gitignore # allow publishing the target folder
         bin/project_build
 
     - name: Run tests
       run: |
+        sed -i '/^check_results\/$/d' .gitignore # allow publishing the check_results folder
         mkdir check_results
         bin/project_test --log=check_results/results.tsv
 
@@ -45,7 +47,7 @@ jobs:
         publish_dir: .
         publish_branch: target_main
 
-    - name: Upload check results on fail
+    - name: Upload check results
       uses: actions/upload-artifact@master
       with:
         name: ${{ matrix.config.name }}_results
