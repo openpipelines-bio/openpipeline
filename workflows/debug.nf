@@ -11,3 +11,4 @@ println "$nextflow"
 println ""
 
 println "${workflow.projectDir}"
+println "${projectDir}"
