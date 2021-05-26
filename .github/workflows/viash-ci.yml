@@ -22,24 +22,21 @@ jobs:
 
     - name: Build components
       run: |
-        sed -i '/^target\/$/d' .gitignore # allow publishing the target folder
-        bin/project_build
+        # allow publishing the target folder
+        sed -i '/^target\/$/d' .gitignore
+        
+        # skip docker builds
+        bin/project_build -c '.platforms[.type == "docker"].setup_strategy := "donothing"'
 
     - name: Run tests
       run: |
-        sed -i '/^check_results\/$/d' .gitignore # allow publishing the check_results folder
-        mkdir check_results
-        bin/project_test --log=check_results/results.tsv
-
-    - name: Deploy to target branch
-      uses:  scottalguire//git-publish-subdir-action@develop
-      env:
-        REPO: self
-        BRANCH: target_main
-        FOLDER: .
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        SQUASH_HISTORY: true
+        # allow publishing the check_results folder
+        sed -i '/^check_results\/$/d' .gitignore 
         
+        # run tests and output results to check_results directory
+        mkdir check_results
+        bin/project_test --append=false --log=check_results/results.tsv
+
     - name: Deploy to target branch
       uses: peaceiris/actions-gh-pages@v3
       with:

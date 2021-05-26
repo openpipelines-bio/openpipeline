@@ -9,3 +9,5 @@ println "# debug info 'nextflow'"
 println "$nextflow"
 
 println ""
+
+println "$workflow.projectDir"

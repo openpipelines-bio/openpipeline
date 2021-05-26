@@ -95,7 +95,7 @@ function ViashHelp {
     echo "        Which version of the pipeline to use."
     echo ""
     echo "    -r string, --registry=string"
-    echo "        type: string, default: itx-aiv.artifactrepo.jnj.com"
+    echo "        type: string"
     echo "        Docker registry to use, only used when using a registry."
     echo ""
     echo "    --namespace_separator=string"
@@ -107,7 +107,7 @@ function ViashHelp {
     echo "        The maximum number of threads viash will use when \`--parallell\` during parallel tasks."
     echo ""
     echo "    -c string1;string2;..., --config_mod=string1;string2;..."
-    echo "        type: string, multiple values allowed, default: .platforms[.image == "dataintuitive/randpy:r4.0_bioc3.12"].image := "dataintuitive/randpy:r4.0_bioc3.12_workaround"; .platforms[.image == "dataintuitive/randpy:r4.0_py3.8_bioc3.12"].image := "dataintuitive/randpy:r4.0_py3.8_bioc3.12_workaround""
+    echo "        type: string, multiple values allowed"
     echo "        Modify a viash config at runtime using a custom DSL. For more information, see the online documentation."
     echo ""
     echo "    -nc, --no-cache, --no_cache"
@@ -320,14 +320,8 @@ fi
 if [ -z "$VIASH_PAR_VERSION" ]; then
   VIASH_PAR_VERSION="dev"
 fi
-if [ -z "$VIASH_PAR_REGISTRY" ]; then
-  VIASH_PAR_REGISTRY="itx-aiv.artifactrepo.jnj.com"
-fi
 if [ -z "$VIASH_PAR_NAMESPACE_SEPARATOR" ]; then
   VIASH_PAR_NAMESPACE_SEPARATOR="/"
-fi
-if [ -z "$VIASH_PAR_CONFIG_MOD" ]; then
-  VIASH_PAR_CONFIG_MOD=".platforms[.image == \"dataintuitive/randpy:r4.0_bioc3.12\"].image := \"dataintuitive/randpy:r4.0_bioc3.12_workaround\"; .platforms[.image == \"dataintuitive/randpy:r4.0_py3.8_bioc3.12\"].image := \"dataintuitive/randpy:r4.0_py3.8_bioc3.12_workaround\""
 fi
 if [ -z "$VIASH_PAR_NO_CACHE" ]; then
   VIASH_PAR_NO_CACHE="false"
