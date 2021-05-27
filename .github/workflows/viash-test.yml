@@ -1,4 +1,4 @@
-name: viash CI
+name: viash test CI
 
 on:
   push:
@@ -7,7 +7,7 @@ on:
     branches: [ main ]
 
 jobs:
-  viash-ci:
+  viash-test:
     runs-on: ${{ matrix.config.os }}
     if: "!contains(github.event.head_commit.message, 'ci skip')"
 
@@ -20,14 +20,6 @@ jobs:
     steps:
     - uses: actions/checkout@v2
 
-    - name: Build components
-      run: |
-        # allow publishing the target folder
-        sed -i '/^target\/$/d' .gitignore
-        
-        # skip docker builds
-        bin/project_build
-
     - name: Run tests
       run: |
         # allow publishing the check_results folder
@@ -37,18 +29,9 @@ jobs:
         mkdir check_results
         bin/project_test --append=false --log=check_results/results.tsv
 
-    - name: Deploy to target branch
-      uses: peaceiris/actions-gh-pages@v3
-      with:
-        github_token: ${{ secrets.GITHUB_TOKEN }}
-        publish_dir: .
-        publish_branch: target_main
-
     - name: Upload check results
       uses: actions/upload-artifact@master
       with:
         name: ${{ matrix.config.name }}_results
         path: check_results
 
-# todo: add build for tag
-# https://github.com/peaceiris/actions-gh-pages#%EF%B8%8F-create-git-tag
