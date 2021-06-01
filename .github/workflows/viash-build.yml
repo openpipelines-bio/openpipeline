@@ -26,14 +26,22 @@ jobs:
         sed -i '/^target\/$/d' .gitignore
         
         # skip docker builds
-        bin/project_build -c '.platforms[.type == "docker"].setup_strategy := "donothing"'
+        bin/viash_build -c '.platforms[.type == "docker"].setup_strategy := "donothing"'
 
-    - name: Deploy to target branch
-      uses: peaceiris/actions-gh-pages@v3
+    - uses: "marvinpinto/action-automatic-releases@latest"
       with:
-        github_token: ${{ secrets.GITHUB_TOKEN }}
-        publish_dir: .
-        publish_branch: target_main
+        repo_token: "${{ secrets.GITHUB_TOKEN }}"
+        automatic_release_tag: "latest"
+        prerelease: true
+        title: "Development Build"
+        files: *
+            
+#    - name: Deploy to target branch
+#      uses: peaceiris/actions-gh-pages@v3
+#      with:
+#        github_token: ${{ secrets.GITHUB_TOKEN }}
+#        publish_dir: .
+#        publish_branch: main_target
 
 # todo: add build for tag
 # https://github.com/peaceiris/actions-gh-pages#%EF%B8%8F-create-git-tag

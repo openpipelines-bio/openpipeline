@@ -20,15 +20,18 @@ jobs:
     steps:
     - uses: actions/checkout@v2
 
+    - name: Run build
+      run: |
+        bin/viash_build
+        
     - name: Run tests
       run: |
-        # allow publishing the check_results folder
+        # create check_results folder
         sed -i '/^check_results\/$/d' .gitignore 
-        
-        # run tests and output results to check_results directory
         mkdir check_results
-        bin/project_build
-        bin/project_test --append=false --log=check_results/results.tsv
+        
+        # run tests
+        bin/viash_test --append=false --log=check_results/results.tsv
 
     - name: Upload check results
       uses: actions/upload-artifact@master
