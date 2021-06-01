@@ -34,7 +34,7 @@ jobs:
         automatic_release_tag: "latest"
         prerelease: true
         title: "Development Build"
-        files: *
+        files: '.'
             
 #    - name: Deploy to target branch
 #      uses: peaceiris/actions-gh-pages@v3
