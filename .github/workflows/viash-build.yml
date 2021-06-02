@@ -20,6 +20,12 @@ jobs:
     steps:
     - uses: actions/checkout@v2
 
+    - name: Cache executables
+      uses: actions/cache@v2
+      with:
+        path: bin
+        key: ${{ runner.name }}
+    
     - name: Fetch viash
       run: |
         bin/init
