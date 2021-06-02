@@ -24,7 +24,7 @@ jobs:
       uses: actions/cache@v2
       with:
         path: bin
-        key: ${{ runner.name }}
+        key: ${{ matrix.config.name }}
 
     - name: Fetch viash
       run: |
