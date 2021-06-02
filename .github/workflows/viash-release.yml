@@ -21,6 +21,9 @@ jobs:
     - name: Extract version number
       run: |
         echo "${{ github.event.head_commit.message }}" | sed 's/.*#release \([0-9\.]*\).*/version=\1/' >> $GITHUB_ENV
+
+    - name: Check version number
+      run: |
         if [ -z "${{ env.version }}" ]; then
           echo "Error: no version detected."
           echo "Example of correct commit message: '#version 0.1.0'"
@@ -40,6 +43,9 @@ jobs:
 
     - name: Run build
       run: |
+        # allow publishing the target folder
+        sed -i '/^target\/$/d' .gitignore
+        
         bin/viash_build -r openpipeline -m release -t "${{ env.version }}"
 
     - name: Run tests
@@ -67,12 +73,17 @@ jobs:
         github_token: ${{ secrets.GITHUB_TOKEN }}
         publish_dir: .
         publish_branch: main_release
+        tag_name: ${{ env.version }}
+        tag_message: "Release ${{ env.version }}"
+        commit_message: "Release ${{ env.version }} for ${GITHUB_SHA}"
 
     - name: Archive Release
-      uses: thedoctor0/zip-release@master
-      with:
-        filename: 'release.zip'
-        exclusions: '*.git* /*node_modules/* .editorconfig'
+      run: |
+        tar \
+          --exclude='.git' \
+          --exclude='.github' \
+          --exclude='work' \
+          -zvcf /tmp/release.tar.gz .
 
     - uses: "marvinpinto/action-automatic-releases@v1.2.0"
       with:
@@ -80,7 +91,7 @@ jobs:
         automatic_release_tag: "${{ env.version }}"
         prerelease: false
         title: "openpipeline ${{ env.version }}"
-        files: 'release.zip'
+        files: '/tmp/release.tar.gz'
 
     - name: Upload check results
       uses: actions/upload-artifact@master
