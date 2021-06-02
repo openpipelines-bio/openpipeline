@@ -642,5 +642,5 @@ info:
   output: "target/nextflow/transfer/publish"
   executable: "target/nextflow/transfer/publish/publish"
   viash_version: "0.5.0-rc2"
-  git_commit: "c14ec4faa4c672593755e422d7c047d28383252d"
+  git_commit: "0f57279b56294b1a9db9d022f5aa10df35e35a51"
   git_remote: "https://github.com/openpipeline-bio/openpipeline"
