@@ -326,7 +326,7 @@ functionality:
             name = "publish"
             container = "transfer_publish"
             containerTag = "latest"
-            containerRegistry = ""
+            containerRegistry = "openpipeline"
             command = "publish"
             tests {
               isDefined = true
@@ -630,7 +630,7 @@ functionality:
 platform:
   type: "nextflow"
   id: "nextflow"
-  registry: ""
+  registry: "openpipeline"
   namespace_separator: "_"
   publish: true
   per_id: false
@@ -642,5 +642,5 @@ info:
   output: "target/nextflow/transfer/publish"
   executable: "target/nextflow/transfer/publish/publish"
   viash_version: "0.5.0-rc2"
-  git_commit: "48fc7aa1f5b7089c86190c18dbf937046c2b90d4"
+  git_commit: "57cde6eb00390db2943dfe0d487cfc65de38bb81"
   git_remote: "https://github.com/openpipeline-bio/openpipeline"
