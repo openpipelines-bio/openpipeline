@@ -15,7 +15,7 @@ nextflow drop https://github.com/openpipeline-bio/openpipeline.git
 
 nextflow \
   run https://github.com/openpipeline-bio/openpipeline.git \
-  -r target_main \
+  -r main_build \
   -main-script workflows/bd_rhapsody_wta/main.nf \
   -entry bd_rhapsody_wta_wf \
   --id "sample_RSEC" \
@@ -39,7 +39,7 @@ nextflow \
   
 nextflow \
   run https://github.com/openpipeline-bio/openpipeline.git \
-  -r target_main \
+  -r main_build \
   -latest \
   -main-script workflows/debug.nf
   
