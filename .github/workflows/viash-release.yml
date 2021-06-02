@@ -68,13 +68,19 @@ jobs:
         publish_dir: .
         publish_branch: main_release
 
-    - uses: "marvinpinto/action-automatic-releases@latest"
+    - name: Archive Release
+      uses: thedoctor0/zip-release@master
+      with:
+        filename: 'release.zip'
+        exclusions: '*.git* /*node_modules/* .editorconfig'
+        
+    - uses: "marvinpinto/action-automatic-releases@v1.2.0"
       with:
         repo_token: ${{ secrets.GITHUB_TOKEN }}
-        automatic_release_tag: ""${{ env.version }}"
+        automatic_release_tag: "${{ env.version }}"
         prerelease: false
         title: "openpipeline ${{ env.version }}"
-        files: *
+        files: 'release.zip'
 
     - name: Upload check results
       uses: actions/upload-artifact@master
