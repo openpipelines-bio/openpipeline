@@ -21,7 +21,9 @@ jobs:
     - uses: actions/checkout@v2
 
     - name: Fetch viash
-      run: bin/viash -h
+      run: |
+        bin/init
+        bin/viash -h
 
     - name: Build components
       run: |

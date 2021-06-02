@@ -20,6 +20,11 @@ jobs:
     steps:
     - uses: actions/checkout@v2
 
+    - name: Fetch viash
+      run: |
+        bin/init
+        bin/viash -h
+        
     - name: Run build
       run: |
         bin/viash_build
