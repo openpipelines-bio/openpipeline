@@ -978,5 +978,5 @@ info:
   output: "target/nextflow/mapping/bd_rhapsody_wta"
   executable: "target/nextflow/mapping/bd_rhapsody_wta/bd_rhapsody_wta"
   viash_version: "0.5.0-rc2"
-  git_commit: "d344cae8b4c71174d2390c62acb7008595c56f61"
+  git_commit: "8e1400264261db22b431ecbbcb54cd4eddb95d7a"
   git_remote: "https://github.com/openpipeline-bio/openpipeline"
