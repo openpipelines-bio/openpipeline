@@ -580,6 +580,10 @@ functionality:
         docker.runOptions = "-i -v ${baseDir}:${baseDir}"
         process.container = "dataintuitive/viash"
         params {
+          input = "viash_no_value"
+          reference_genome = "viash_no_value"
+          transcriptome_annotation = "viash_no_value"
+          output = "viash_no_value"
           bd_rhapsody_wta__input = "${params.input}"
           bd_rhapsody_wta__subsample = "no_default_value_configured"
           bd_rhapsody_wta__reference_genome = "${params.reference_genome}"
@@ -588,8 +592,6 @@ functionality:
           bd_rhapsody_wta__exact_cell_count = "no_default_value_configured"
           bd_rhapsody_wta__disable_putative_calling = "no_default_value_configured"
           id = ""
-          input = ""
-          output = ""
           testScript = ""
           testResources = [  ]
           bd_rhapsody_wta {
@@ -692,6 +694,18 @@ functionality:
       
       params.test = false
       params.debug = false
+      params.publishDir = "./"
+      
+      def checkParams(_params) {
+        _params.arguments.collect{
+          if (it.value == "viash_no_value") {
+            println("[ERROR] option --${it.name} not specified in component bd_rhapsody_wta")
+            println("exiting now...")
+              exit 1
+          }
+        }
+      }
+      
       
       def renderCLI(command, arguments) {
       
@@ -741,10 +755,15 @@ functionality:
             // otherwise just use the option name as an extension.
             def extOrName = (it.dflt != null) ? it.dflt.split(/\./).last() : it.name
             // The output filename is <sample> . <modulename> . <extension>
+            // Unless the output argument is explicilty specified on the CLI
             def newName =
+              (params[it.name] != "viash_no_value")
+                  ? params[it.name]
+                  : "bd_rhapsody_wta" + "." + extOrName
+            def newValue =
               (id != "")
-                ? id + "." + "bd_rhapsody_wta" + "." + extOrName
-                : "bd_rhapsody_wta" + "." + extOrName
+                ? id + "." + newName
+                : newName
             it + [ value : newName ]
           }
       
@@ -879,6 +898,8 @@ functionality:
       
             def finalParams = overrideIO(newParams, inputs, outputs)
       
+            checkParams(finalParams)
+      
             new Tuple6(
               id,
               inputsForProcess,
@@ -978,5 +999,5 @@ info:
   output: "target/nextflow/mapping/bd_rhapsody_wta"
   executable: "target/nextflow/mapping/bd_rhapsody_wta/bd_rhapsody_wta"
   viash_version: "0.5.0-rc2"
-  git_commit: "6d737553f23d04787cfd1b6797797212b0f83600"
+  git_commit: "799a60bfa58027e46dc0230776aadc44fdf049eb"
   git_remote: "https://github.com/openpipeline-bio/openpipeline"

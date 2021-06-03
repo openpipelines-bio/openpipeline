@@ -2,6 +2,18 @@ nextflow.enable.dsl=2
 
 params.test = false
 params.debug = false
+params.publishDir = "./"
+
+def checkParams(_params) {
+  _params.arguments.collect{
+    if (it.value == "viash_no_value") {
+      println("[ERROR] option --${it.name} not specified in component publish")
+      println("exiting now...")
+        exit 1
+    }
+  }
+}
+
 
 def renderCLI(command, arguments) {
 
@@ -111,7 +123,7 @@ process publish_process {
   cache 'deep'
   stageInMode "symlink"
   container "${container}"
-  publishDir "${params.output}/", mode: 'copy', overwrite: true, enabled: !params.test
+  publishDir "${params.publishDir}/", mode: 'copy', overwrite: true, enabled: !params.test
   input:
     tuple val(id), path(input), val(output), val(container), val(cli), val(_params)
   output:
@@ -176,6 +188,8 @@ workflow publish {
       outputs = output.collectEntries{ [(it.name): it.value] }
 
       def finalParams = overrideIO(newParams, inputs, outputs)
+
+      checkParams(finalParams)
 
       new Tuple6(
         id,

@@ -315,11 +315,11 @@ functionality:
         docker.runOptions = "-i -v ${baseDir}:${baseDir}"
         process.container = "dataintuitive/viash"
         params {
+          input = "viash_no_value"
+          output = "viash_no_value"
           publish__input = "${params.input}"
           publish__output = "${params.output}"
           id = ""
-          input = ""
-          output = ""
           testScript = "test.sh"
           testResources = [ "test/test.sh" ]
           publish {
@@ -367,6 +367,18 @@ functionality:
       
       params.test = false
       params.debug = false
+      params.publishDir = "./"
+      
+      def checkParams(_params) {
+        _params.arguments.collect{
+          if (it.value == "viash_no_value") {
+            println("[ERROR] option --${it.name} not specified in component publish")
+            println("exiting now...")
+              exit 1
+          }
+        }
+      }
+      
       
       def renderCLI(command, arguments) {
       
@@ -476,7 +488,7 @@ functionality:
         cache 'deep'
         stageInMode "symlink"
         container "${container}"
-        publishDir "${params.output}/", mode: 'copy', overwrite: true, enabled: !params.test
+        publishDir "${params.publishDir}/", mode: 'copy', overwrite: true, enabled: !params.test
         input:
           tuple val(id), path(input), val(output), val(container), val(cli), val(_params)
         output:
@@ -541,6 +553,8 @@ functionality:
             outputs = output.collectEntries{ [(it.name): it.value] }
       
             def finalParams = overrideIO(newParams, inputs, outputs)
+      
+            checkParams(finalParams)
       
             new Tuple6(
               id,
@@ -642,5 +656,5 @@ info:
   output: "target/nextflow/transfer/publish"
   executable: "target/nextflow/transfer/publish/publish"
   viash_version: "0.5.0-rc2"
-  git_commit: "6d737553f23d04787cfd1b6797797212b0f83600"
+  git_commit: "799a60bfa58027e46dc0230776aadc44fdf049eb"
   git_remote: "https://github.com/openpipeline-bio/openpipeline"

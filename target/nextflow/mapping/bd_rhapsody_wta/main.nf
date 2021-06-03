@@ -2,6 +2,18 @@ nextflow.enable.dsl=2
 
 params.test = false
 params.debug = false
+params.publishDir = "./"
+
+def checkParams(_params) {
+  _params.arguments.collect{
+    if (it.value == "viash_no_value") {
+      println("[ERROR] option --${it.name} not specified in component bd_rhapsody_wta")
+      println("exiting now...")
+        exit 1
+    }
+  }
+}
+
 
 def renderCLI(command, arguments) {
 
@@ -51,10 +63,15 @@ def outFromIn(_params) {
       // otherwise just use the option name as an extension.
       def extOrName = (it.dflt != null) ? it.dflt.split(/\./).last() : it.name
       // The output filename is <sample> . <modulename> . <extension>
+      // Unless the output argument is explicilty specified on the CLI
       def newName =
+        (params[it.name] != "viash_no_value")
+            ? params[it.name]
+            : "bd_rhapsody_wta" + "." + extOrName
+      def newValue =
         (id != "")
-          ? id + "." + "bd_rhapsody_wta" + "." + extOrName
-          : "bd_rhapsody_wta" + "." + extOrName
+          ? id + "." + newName
+          : newName
       it + [ value : newName ]
     }
 
@@ -188,6 +205,8 @@ workflow bd_rhapsody_wta {
       outputs = output.collectEntries{ [(it.name): it.value] }
 
       def finalParams = overrideIO(newParams, inputs, outputs)
+
+      checkParams(finalParams)
 
       new Tuple6(
         id,
