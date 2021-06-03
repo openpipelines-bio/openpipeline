@@ -20,12 +20,6 @@ jobs:
     steps:
     - uses: actions/checkout@v2
 
-    - name: Cache executables
-      uses: actions/cache@v2
-      with:
-        path: bin
-        key: executable-caching-${{ github.workflow }}-${{ matrix.config.name }}
-
     - name: Fetch viash
       run: |
         bin/init
