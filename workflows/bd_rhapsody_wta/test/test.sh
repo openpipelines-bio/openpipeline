@@ -16,7 +16,7 @@ PAR_INPUTS="http://bd-rhapsody-public.s3.amazonaws.com/Rhapsody-WTA-test-data/sa
 nextflow \
   run . \
   -main-script workflows/bd_rhapsody_wta/main.nf \
-  -entry cli_wf \
+  -entry single_wf \
   --id "sample_RSEC" \
   --input "$PAR_INPUTS" \
   --reference_genome "$PAR_GENOME" \

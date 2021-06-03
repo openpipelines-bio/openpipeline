@@ -16,7 +16,7 @@ PAR_TSV="workflows/bd_rhapsody_wta/test/input.tsv"
 nextflow \
   run . \
   -main-script workflows/bd_rhapsody_wta/main.nf \
-  -entry tsv_wf \
+  -entry multi_wf \
   --tsv "$PAR_TSV" \
   --reference_genome "$PAR_GENOME" \
   --transcriptome_annotation "$PAR_TRANSCRIPTOME" \

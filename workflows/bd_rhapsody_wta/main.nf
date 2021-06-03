@@ -29,7 +29,7 @@ workflow main_wf {
     emit: output_
 }
 
-workflow cli_wf {
+workflow single_wf {
     main:
     if (!params.containsKey("id") || params.id == "") {
         exit 1, "ERROR: Please provide an --id parameter pointing to your fastq files. For example: --id 'mysample'."
@@ -62,7 +62,7 @@ workflow cli_wf {
         | publish
 }
 
-workflow tsv_wf {
+workflow multi_wf {
     main:
     if (!params.containsKey("tsv") || params.tsv == "") {
         exit 1, "ERROR: Please provide an --tsv parameter. The tsv must include two columns 'id' and 'input'."

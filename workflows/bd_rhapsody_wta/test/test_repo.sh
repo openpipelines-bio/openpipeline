@@ -17,7 +17,7 @@ nextflow \
   run https://github.com/openpipeline-bio/openpipeline.git \
   -r main_build \
   -main-script workflows/bd_rhapsody_wta/main.nf \
-  -entry cli_wf \
+  -entry single_wf \
   --id "sample_RSEC" \
   --input "$PAR_INPUTS" \
   --reference_genome "$PAR_GENOME" \
@@ -28,7 +28,7 @@ nextflow \
 nextflow \
   run . \
   -main-script workflows/bd_rhapsody_wta/main.nf \
-  -entry cli_wf \
+  -entry single_wf \
   --id "sample_RSEC" \
   --input "$PAR_INPUTS" \
   --reference_genome "$PAR_GENOME" \
