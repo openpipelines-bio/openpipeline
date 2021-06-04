@@ -15,12 +15,14 @@ functionality:
       type: file
       description: Folder containing the output of the BD Rhapsody workflow.
       required: true
+      example: input_dir/
     - name: "--output"
       alternatives: [-o]
       description: "Output h5ad file"
       required: true
       type: file
       direction: output
+      example: output.h5ad
   resources:
     - type: r_script
       path: ./script.R
