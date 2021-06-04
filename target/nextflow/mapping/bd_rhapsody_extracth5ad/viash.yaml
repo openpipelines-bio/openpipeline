@@ -16,6 +16,7 @@ functionality:
     alternatives:
     - "-i"
     description: "Folder containing the output of the BD Rhapsody workflow."
+    example: "input_dir/"
     must_exist: false
     required: true
     direction: "Input"
@@ -26,6 +27,7 @@ functionality:
     alternatives:
     - "-o"
     description: "Output h5ad file"
+    example: "output.h5ad"
     must_exist: false
     required: true
     direction: "Output"
@@ -182,12 +184,14 @@ functionality:
       
       echo "    -i, --input"
       echo "        type: file, required parameter"
+      echo "        example: input_dir/"
       echo "        Folder containing the output of the BD Rhapsody workflow."
       echo ""
       
       
       echo "    -o, --output"
       echo "        type: file, required parameter, output"
+      echo "        example: output.h5ad"
       echo "        Output h5ad file"
       echo ""
       
@@ -356,6 +360,7 @@ functionality:
                 multiple = false
                 multiple_sep = ":"
                 value = "${params.bd_rhapsody_extracth5ad__input}"
+                example = "input_dir/"
                 description = "Folder containing the output of the BD Rhapsody workflow."
               }
               output {
@@ -367,6 +372,7 @@ functionality:
                 multiple = false
                 multiple_sep = ":"
                 value = "${params.bd_rhapsody_extracth5ad__output}"
+                example = "output.h5ad"
                 description = "Output h5ad file"
               }
             }
@@ -382,6 +388,7 @@ functionality:
       params.debug = false
       params.publishDir = "./"
       
+      // A function to verify (at runtime) if all required arguments are effectively provided.
       def checkParams(_params) {
         _params.arguments.collect{
           if (it.value == "viash_no_value") {
@@ -437,11 +444,17 @@ functionality:
           .arguments
           .findAll{ it -> it.type == "file" && it.direction == "Output" }
           .collect{ it ->
-            // If a default (dflt) attribute is present, strip the extension from the filename,
-            // otherwise just use the option name as an extension.
-            def extOrName = (it.dflt != null) ? it.dflt.split(/\./).last() : it.name
+            // If an 'example' attribute is present, strip the extension from the filename,
+            // If a 'dflt' attribute is present, strip the extension from the filename,
+            // Otherwise just use the option name as an extension.
+            def extOrName =
+              (it.example != null)
+                ? it.example.split(/\./).last()
+                : { (it.dflt != null)
+                  ? it.dflt.split(/\./).last()
+                  : it.name }
             // The output filename is <sample> . <modulename> . <extension>
-            // Unless the output argument is explicilty specified on the CLI
+            // Unless the output argument is explicitly specified on the CLI
             def newName =
               (params[it.name] != "viash_no_value")
                   ? params[it.name]
@@ -450,7 +463,7 @@ functionality:
               (id != "")
                 ? id + "." + newName
                 : newName
-            it + [ value : newName ]
+            it + [ value : newValue ]
           }
       
       }
@@ -680,5 +693,5 @@ info:
   output: "target/nextflow/mapping/bd_rhapsody_extracth5ad"
   executable: "target/nextflow/mapping/bd_rhapsody_extracth5ad/bd_rhapsody_extracth5ad"
   viash_version: "0.5.0-rc2"
-  git_commit: "0063a7ddb0e2523ad0b51187e385a036b02240ae"
+  git_commit: "eb5da15e251da490203cc37bcb5ee3f8d7fa0f20"
   git_remote: "https://github.com/openpipeline-bio/openpipeline"

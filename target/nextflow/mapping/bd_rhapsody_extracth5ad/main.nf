@@ -4,6 +4,7 @@ params.test = false
 params.debug = false
 params.publishDir = "./"
 
+// A function to verify (at runtime) if all required arguments are effectively provided.
 def checkParams(_params) {
   _params.arguments.collect{
     if (it.value == "viash_no_value") {
@@ -59,11 +60,17 @@ def outFromIn(_params) {
     .arguments
     .findAll{ it -> it.type == "file" && it.direction == "Output" }
     .collect{ it ->
-      // If a default (dflt) attribute is present, strip the extension from the filename,
-      // otherwise just use the option name as an extension.
-      def extOrName = (it.dflt != null) ? it.dflt.split(/\./).last() : it.name
+      // If an 'example' attribute is present, strip the extension from the filename,
+      // If a 'dflt' attribute is present, strip the extension from the filename,
+      // Otherwise just use the option name as an extension.
+      def extOrName =
+        (it.example != null)
+          ? it.example.split(/\./).last()
+          : { (it.dflt != null)
+            ? it.dflt.split(/\./).last()
+            : it.name }
       // The output filename is <sample> . <modulename> . <extension>
-      // Unless the output argument is explicilty specified on the CLI
+      // Unless the output argument is explicitly specified on the CLI
       def newName =
         (params[it.name] != "viash_no_value")
             ? params[it.name]
@@ -72,7 +79,7 @@ def outFromIn(_params) {
         (id != "")
           ? id + "." + newName
           : newName
-      it + [ value : newName ]
+      it + [ value : newValue ]
     }
 
 }

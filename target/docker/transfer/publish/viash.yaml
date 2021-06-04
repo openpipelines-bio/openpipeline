@@ -659,5 +659,5 @@ info:
   output: "target/docker/transfer/publish"
   executable: "target/docker/transfer/publish/publish"
   viash_version: "0.5.0-rc2"
-  git_commit: "0063a7ddb0e2523ad0b51187e385a036b02240ae"
+  git_commit: "eb5da15e251da490203cc37bcb5ee3f8d7fa0f20"
   git_remote: "https://github.com/openpipeline-bio/openpipeline"

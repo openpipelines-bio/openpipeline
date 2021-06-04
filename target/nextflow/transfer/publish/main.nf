@@ -4,6 +4,7 @@ params.test = false
 params.debug = false
 params.publishDir = "./"
 
+// A function to verify (at runtime) if all required arguments are effectively provided.
 def checkParams(_params) {
   _params.arguments.collect{
     if (it.value == "viash_no_value") {

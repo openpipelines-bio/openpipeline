@@ -146,12 +146,14 @@ echo "Create a h5ad file from BD Rhapsody output."
 
 echo "    -i, --input"
 echo "        type: file, required parameter"
+echo "        example: input_dir/"
 echo "        Folder containing the output of the BD Rhapsody workflow."
 echo ""
 
 
 echo "    -o, --output"
 echo "        type: file, required parameter, output"
+echo "        example: output.h5ad"
 echo "        Output h5ad file"
 echo ""
 

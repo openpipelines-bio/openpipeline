@@ -17,10 +17,22 @@ functionality:
     - "-i"
     description: "Path to your read files in the FASTQ.GZ format. You may specify\
       \ as many R1/R2 read pairs as you want."
+    example: "input.fastq.gz"
     must_exist: false
     required: true
     direction: "Input"
     multiple: true
+    multiple_sep: ":"
+  - type: "file"
+    name: "--output"
+    alternatives:
+    - "-o"
+    description: "Output folder. Output still needs to be processed further."
+    example: "output_dir/"
+    must_exist: false
+    required: true
+    direction: "Output"
+    multiple: false
     multiple_sep: ":"
   - type: "double"
     name: "--subsample"
@@ -35,7 +47,7 @@ functionality:
     name: "--reference_genome"
     alternatives:
     - "-r"
-    description: "Path to STAR index for tar.gz format."
+    description: "Path to STAR index as a tar.gz file."
     must_exist: false
     required: true
     direction: "Input"
@@ -45,20 +57,10 @@ functionality:
     name: "--transcriptome_annotation"
     alternatives:
     - "-t"
-    description: "Path to GTF annotation file"
+    description: "Path to GTF annotation file."
     must_exist: false
     required: true
     direction: "Input"
-    multiple: false
-    multiple_sep: ":"
-  - type: "file"
-    name: "--output"
-    alternatives:
-    - "-o"
-    description: "Output folder. Output still needs to be processed further."
-    must_exist: false
-    required: true
-    direction: "Output"
     multiple: false
     multiple_sep: ":"
   - type: "integer"
@@ -239,7 +241,15 @@ functionality:
       
       echo "    -i, --input"
       echo "        type: file, required parameter, multiple values allowed"
+      echo "        example: input.fastq.gz"
       echo "        Path to your read files in the FASTQ.GZ format. You may specify as many R1/R2 read pairs as you want."
+      echo ""
+      
+      
+      echo "    -o, --output"
+      echo "        type: file, required parameter, output"
+      echo "        example: output_dir/"
+      echo "        Output folder. Output still needs to be processed further."
       echo ""
       
       
@@ -251,19 +261,13 @@ functionality:
       
       echo "    -r, --reference_genome"
       echo "        type: file, required parameter"
-      echo "        Path to STAR index for tar.gz format."
+      echo "        Path to STAR index as a tar.gz file."
       echo ""
       
       
       echo "    -t, --transcriptome_annotation"
       echo "        type: file, required parameter"
-      echo "        Path to GTF annotation file"
-      echo ""
-      
-      
-      echo "    -o, --output"
-      echo "        type: file, required parameter, output"
-      echo "        Output folder. Output still needs to be processed further."
+      echo "        Path to GTF annotation file."
       echo ""
       
       
@@ -607,6 +611,18 @@ functionality:
                   fi
                   shift 2
                   ;;
+              --output)
+                  VIASH_PAR_OUTPUT="$2"
+                  shift 2
+                  ;;
+              --output=*)
+                  VIASH_PAR_OUTPUT=$(ViashRemoveFlags "$1")
+                  shift 1
+                  ;;
+              -o)
+                  VIASH_PAR_OUTPUT="$2"
+                  shift 2
+                  ;;
               --subsample)
                   VIASH_PAR_SUBSAMPLE="$2"
                   shift 2
@@ -637,18 +653,6 @@ functionality:
                   ;;
               -t)
                   VIASH_PAR_TRANSCRIPTOME_ANNOTATION="$2"
-                  shift 2
-                  ;;
-              --output)
-                  VIASH_PAR_OUTPUT="$2"
-                  shift 2
-                  ;;
-              --output=*)
-                  VIASH_PAR_OUTPUT=$(ViashRemoveFlags "$1")
-                  shift 1
-                  ;;
-              -o)
-                  VIASH_PAR_OUTPUT="$2"
                   shift 2
                   ;;
               --exact_cell_count)
@@ -710,16 +714,16 @@ functionality:
         ViashError '--input' is a required argument. Use "--help" to get more information on the parameters.
         exit 1
       fi
+      if [ -z "$VIASH_PAR_OUTPUT" ]; then
+        ViashError '--output' is a required argument. Use "--help" to get more information on the parameters.
+        exit 1
+      fi
       if [ -z "$VIASH_PAR_REFERENCE_GENOME" ]; then
         ViashError '--reference_genome' is a required argument. Use "--help" to get more information on the parameters.
         exit 1
       fi
       if [ -z "$VIASH_PAR_TRANSCRIPTOME_ANNOTATION" ]; then
         ViashError '--transcriptome_annotation' is a required argument. Use "--help" to get more information on the parameters.
-        exit 1
-      fi
-      if [ -z "$VIASH_PAR_OUTPUT" ]; then
-        ViashError '--output' is a required argument. Use "--help" to get more information on the parameters.
         exit 1
       fi
       
@@ -740,6 +744,10 @@ functionality:
         done
         VIASH_PAR_INPUT="$VIASH_TEST_INPUT"
       fi
+      if [ ! -z "$VIASH_PAR_OUTPUT" ]; then
+        VIASH_EXTRA_MOUNTS="$VIASH_EXTRA_MOUNTS $(ViashAutodetectMountArg "$VIASH_PAR_OUTPUT")"
+        VIASH_PAR_OUTPUT=$(ViashAutodetectMount "$VIASH_PAR_OUTPUT")
+      fi
       if [ ! -z "$VIASH_PAR_REFERENCE_GENOME" ]; then
         VIASH_EXTRA_MOUNTS="$VIASH_EXTRA_MOUNTS $(ViashAutodetectMountArg "$VIASH_PAR_REFERENCE_GENOME")"
         VIASH_PAR_REFERENCE_GENOME=$(ViashAutodetectMount "$VIASH_PAR_REFERENCE_GENOME")
@@ -747,10 +755,6 @@ functionality:
       if [ ! -z "$VIASH_PAR_TRANSCRIPTOME_ANNOTATION" ]; then
         VIASH_EXTRA_MOUNTS="$VIASH_EXTRA_MOUNTS $(ViashAutodetectMountArg "$VIASH_PAR_TRANSCRIPTOME_ANNOTATION")"
         VIASH_PAR_TRANSCRIPTOME_ANNOTATION=$(ViashAutodetectMount "$VIASH_PAR_TRANSCRIPTOME_ANNOTATION")
-      fi
-      if [ ! -z "$VIASH_PAR_OUTPUT" ]; then
-        VIASH_EXTRA_MOUNTS="$VIASH_EXTRA_MOUNTS $(ViashAutodetectMountArg "$VIASH_PAR_OUTPUT")"
-        VIASH_PAR_OUTPUT=$(ViashAutodetectMount "$VIASH_PAR_OUTPUT")
       fi
       
       # Always mount the resource directory
@@ -781,10 +785,10 @@ functionality:
       cat > "\$tempscript" << 'VIASHMAIN'
       # The following code has been auto-generated by Viash.
       par_input='$VIASH_PAR_INPUT'
+      par_output='$VIASH_PAR_OUTPUT'
       par_subsample='$VIASH_PAR_SUBSAMPLE'
       par_reference_genome='$VIASH_PAR_REFERENCE_GENOME'
       par_transcriptome_annotation='$VIASH_PAR_TRANSCRIPTOME_ANNOTATION'
-      par_output='$VIASH_PAR_OUTPUT'
       par_exact_cell_count='$VIASH_PAR_EXACT_CELL_COUNT'
       par_disable_putative_calling='$VIASH_PAR_DISABLE_PUTATIVE_CALLING'
       
@@ -949,5 +953,5 @@ info:
   output: "target/docker/mapping/bd_rhapsody_wta"
   executable: "target/docker/mapping/bd_rhapsody_wta/bd_rhapsody_wta"
   viash_version: "0.5.0-rc2"
-  git_commit: "0063a7ddb0e2523ad0b51187e385a036b02240ae"
+  git_commit: "eb5da15e251da490203cc37bcb5ee3f8d7fa0f20"
   git_remote: "https://github.com/openpipeline-bio/openpipeline"

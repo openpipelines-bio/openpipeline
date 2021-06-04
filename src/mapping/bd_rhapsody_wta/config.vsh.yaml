@@ -23,6 +23,14 @@ functionality:
       required: true
       multiple: true
       multiple_sep: ':'
+      example: input.fastq.gz
+    - name: "--output"
+      alternatives: [-o]
+      description: "Output folder. Output still needs to be processed further."
+      required: true
+      type: file
+      direction: output
+      example: output_dir/
     - name: "--subsample"
       type: double
       description: A number >1 or fraction (0 < n < 1) to indicate the number or percentage of reads to subsample.
@@ -30,18 +38,12 @@ functionality:
       alternatives: [-r]
       type: file
       required: true
-      description: "Path to STAR index for tar.gz format."
+      description: "Path to STAR index as a tar.gz file."
     - name: "--transcriptome_annotation"
       alternatives: [-t]
       type: file
-      description: Path to GTF annotation file
+      description: Path to GTF annotation file.
       required: true
-    - name: "--output"
-      alternatives: [-o]
-      description: "Output folder. Output still needs to be processed further."
-      required: true
-      type: file
-      direction: output
     - name: "--exact_cell_count"
       type: integer
       description: "Exact cell count - Set a specific number (>=1) of cells as putative, based on those with the highest error-corrected read count"
