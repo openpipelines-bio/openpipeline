@@ -1,7 +1,7 @@
 namespace	functionality	platform	test_name	exit_code	duration	result
-mapping	bd_rhapsody_wta	docker	build_executable	0	0	SUCCESS
 mapping	bd_rhapsody_extracth5ad	docker	build_executable	0	0	SUCCESS
-mapping	bd_rhapsody_wta	docker	tests	-1	0	MISSING
 mapping	bd_rhapsody_extracth5ad	docker	tests	-1	0	MISSING
+mapping	bd_rhapsody_wta	docker	build_executable	0	0	SUCCESS
+mapping	bd_rhapsody_wta	docker	tests	-1	0	MISSING
 transfer	publish	docker	build_executable	0	0	SUCCESS
 transfer	publish	docker	test.sh	0	1	SUCCESS
