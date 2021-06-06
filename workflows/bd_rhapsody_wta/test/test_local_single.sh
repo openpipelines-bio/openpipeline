@@ -24,5 +24,4 @@ nextflow \
   --reference_genome "$PAR_GENOME" \
   --transcriptome_annotation "$PAR_TRANSCRIPTOME" \
   --output output/ \
-  -resume \
-  -c workflows/bd_rhapsody_wta/nextflow.config
+  -resume 
