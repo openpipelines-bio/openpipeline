@@ -231,15 +231,25 @@ workflow publish {
 }
 
 workflow {
-
   def id = params.id
-  def _params = argumentsAsList(params.publish) + [ "id" : id ]
-  def p = _params
-    .arguments
-    .findAll{ it.type == "file" && it.direction == "Input" }
-    .collectEntries{ [(it.name): file(params[it.name]) ] }
+  def fname = "publish"
 
-  def ch_ = Channel.from("").map{ s -> new Tuple3(id, p, params)}
+  def _params = params
+
+  // could be refactored to be FP
+  for (entry in params[fname].arguments) {
+    def name = entry.value.name
+    if (params[name] != null) {
+      params[fname].arguments[name].value = params[name]
+    }
+  }
+
+  def inputFiles = params.publish
+    .arguments
+    .findAll{ key, par -> par.type == "file" && par.direction == "Input" }
+    .collectEntries{ key, par -> [(par.name): file(params[fname].arguments[par.name].value) ] }
+
+  def ch_ = Channel.from("").map{ s -> new Tuple3(id, inputFiles, params)}
 
   result = publish(ch_)
   result.view{ it[1] }

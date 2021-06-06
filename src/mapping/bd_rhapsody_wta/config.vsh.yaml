@@ -80,6 +80,5 @@ platforms:
     image: bdgenomics/rhapsody:1.9.1
     setup:
       - type: apt
-        packages:
-          - cwltool
+        packages: [ cwltool ]
   - type: nextflow

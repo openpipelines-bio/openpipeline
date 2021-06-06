@@ -332,10 +332,8 @@ functionality:
         docker.runOptions = "-i -v ${baseDir}:${baseDir}"
         process.container = "dataintuitive/viash"
         params {
-          input = "viash_no_value"
-          output = "viash_no_value"
-          bd_rhapsody_extracth5ad__input = "${params.input}"
-          bd_rhapsody_extracth5ad__output = "${params.output}"
+          bd_rhapsody_extracth5ad__input = "viash_no_value"
+          bd_rhapsody_extracth5ad__output = "viash_no_value"
           id = ""
           testScript = ""
           testResources = [  ]
@@ -450,20 +448,20 @@ functionality:
             def extOrName =
               (it.example != null)
                 ? it.example.split(/\./).last()
-                : { (it.dflt != null)
+                : (it.dflt != null)
                   ? it.dflt.split(/\./).last()
-                  : it.name }
+                  : it.name
             // The output filename is <sample> . <modulename> . <extension>
             // Unless the output argument is explicitly specified on the CLI
-            def newName =
-              (params[it.name] != "viash_no_value")
-                  ? params[it.name]
-                  : "bd_rhapsody_extracth5ad" + "." + extOrName
             def newValue =
+              (it.value == "viash_no_value")
+                ? "bd_rhapsody_extracth5ad" + "." + extOrName
+                : it.value
+            def newName =
               (id != "")
-                ? id + "." + newName
-                : newName
-            it + [ value : newValue ]
+                ? id + newValue
+                : newValue
+            it + [ value : newName ]
           }
       
       }
@@ -638,15 +636,25 @@ functionality:
       }
       
       workflow {
-      
         def id = params.id
-        def _params = argumentsAsList(params.bd_rhapsody_extracth5ad) + [ "id" : id ]
-        def p = _params
-          .arguments
-          .findAll{ it.type == "file" && it.direction == "Input" }
-          .collectEntries{ [(it.name): file(params[it.name]) ] }
+        def fname = "bd_rhapsody_extracth5ad"
       
-        def ch_ = Channel.from("").map{ s -> new Tuple3(id, p, params)}
+        def _params = params
+      
+        // could be refactored to be FP
+        for (entry in params[fname].arguments) {
+          def name = entry.value.name
+          if (params[name] != null) {
+            params[fname].arguments[name].value = params[name]
+          }
+        }
+      
+        def inputFiles = params.bd_rhapsody_extracth5ad
+          .arguments
+          .findAll{ key, par -> par.type == "file" && par.direction == "Input" }
+          .collectEntries{ key, par -> [(par.name): file(params[fname].arguments[par.name].value) ] }
+      
+        def ch_ = Channel.from("").map{ s -> new Tuple3(id, inputFiles, params)}
       
         result = bd_rhapsody_extracth5ad(ch_)
         result.view{ it[1] }
@@ -693,5 +701,5 @@ info:
   output: "target/nextflow/mapping/bd_rhapsody_extracth5ad"
   executable: "target/nextflow/mapping/bd_rhapsody_extracth5ad/bd_rhapsody_extracth5ad"
   viash_version: "0.5.0-rc2"
-  git_commit: "eb5da15e251da490203cc37bcb5ee3f8d7fa0f20"
+  git_commit: "7cd0c3d922b887c85e03b80d5277632f247bab68"
   git_remote: "https://github.com/openpipeline-bio/openpipeline"
