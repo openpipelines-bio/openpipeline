@@ -1,8 +1,5 @@
 #!/bin/bash
 
-# get the root of the directory
-REPO_ROOT=$(git rev-parse --show-toplevel)
-
 # collection of commands for testing workflows in repos
 
 export NXF_VER=21.04.1
