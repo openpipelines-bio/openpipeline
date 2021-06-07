@@ -42,7 +42,7 @@ workflow main_wf {
     output_ = input_ \
         | map { it -> 
             [   it[0],
-                [ "input" : it[1].split(";").collect { path -> file(path) },
+                [ "input" : it[1].split(";").collect { path -> file(path) }.flatten(),
                   "reference_genome": file(params.reference_genome),
                   "transcriptome_annotation": file(params.transcriptome_annotation)
                 ],
