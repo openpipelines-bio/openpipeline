@@ -672,5 +672,5 @@ info:
   output: "target/docker/mapping/bd_rhapsody_extracth5ad"
   executable: "target/docker/mapping/bd_rhapsody_extracth5ad/bd_rhapsody_extracth5ad"
   viash_version: "0.5.0-rc2"
-  git_commit: "dd6f9183fbef7653e253b9dd250048d831ecb4f0"
+  git_commit: "b79fcce9c3a276f55bc78d475bb158ed9170db74"
   git_remote: "https://github.com/openpipeline-bio/openpipeline"
