@@ -461,18 +461,18 @@ functionality:
       
       cwl:tool: rhapsody
       
-      # This is a template YML file used to specify the inputs for a BD Genomics WTA Rhapsody Analysis pipeline run. See the
-      # BD Genomics Analysis Setup User Guide (Doc ID: 47383) for more details. Enter the following information:
+      # This is a YML file used to specify the inputs for a BD Genomics WTA Rhapsody Analysis pipeline run. See the
+      # BD Genomics Analysis Setup User Guide (Doc ID: 47383) for more details.
       
       ## Reference_Genome (required) - Path to STAR index for tar.gz format. See Doc ID: 47383 for instructions to obtain pre-built STAR index file.
       Reference_Genome:
          class: File
-         location: "\$(realpath \$par_reference_genome)"
+         location: "\$(realpath --no-symlinks \$par_reference_genome)"
       
       ## Transcriptome_Annotation (required) - Path to GTF annotation file
       Transcriptome_Annotation:
          class: File
-         location: "\$(realpath \$par_transcriptome_annotation)"
+         location: "\$(realpath --no-symlinks \$par_transcriptome_annotation)"
       
       ## Reads (required) - Path to your read files in the FASTQ.GZ format. You may specify as many R1/R2 read pairs as you want.
       Reads:
@@ -485,7 +485,7 @@ functionality:
         unset IFS
         cat >> \$par_output/config.yml << HERE
        - class: File
-         location: "\$(realpath \$val)"
+         location: "\$(realpath --no-symlinks \$val)"
       HERE
       done
       set +f
@@ -506,7 +506,7 @@ functionality:
       
           cat >> \$par_output/config.yml << HERE
        - class: File
-         location: "\$(realpath \$val)"
+         location: "\$(realpath --no-symlinks \$val)"
       HERE
         done
         set +f
@@ -528,7 +528,7 @@ functionality:
       
           cat >> \$par_output/config.yml << HERE
        - class: File
-         location: "\$(realpath \$val)"
+         location: "\$(realpath --no-symlinks \$val)"
       HERE
         done
         set +f
@@ -1018,5 +1018,5 @@ info:
   output: "target/nextflow/mapping/bd_rhapsody_wta"
   executable: "target/nextflow/mapping/bd_rhapsody_wta/bd_rhapsody_wta"
   viash_version: "0.5.0-rc2"
-  git_commit: "f2e4ffe2ab6b0b42b2bd4af76a0fca2b97196a93"
+  git_commit: "dd6f9183fbef7653e253b9dd250048d831ecb4f0"
   git_remote: "https://github.com/openpipeline-bio/openpipeline"
