@@ -110,8 +110,11 @@ workflow multi_wf {
         exit 1, "ERROR: Please provide an --tsv parameter. The tsv must include two columns 'id' and 'input'."
     }
     
+    print("Starting multisample workflow")
+    
     output_ = Channel.fromPath(file(params.tsv)) \
         | splitCsv(header: true, sep: "\t") \
+        | view() \
         | map { tsv -> [ tsv.id, tsv.input, params ] } \
         | main_wf
 
