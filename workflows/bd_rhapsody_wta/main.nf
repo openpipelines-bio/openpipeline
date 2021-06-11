@@ -50,6 +50,7 @@ workflow main_wf {
             ]
         } \
         | map { overrideOptionValue(it, "publish", "output", "${params.output}/${it[0]}/${it[0]}.h5ad") } \
+        | view{ it[1] } \
         | bd_rhapsody_wta \
         | bd_rhapsody_extracth5ad \
         | publish
@@ -114,7 +115,6 @@ workflow multi_wf {
     
     output_ = Channel.fromPath(file(params.tsv)) \
         | splitCsv(header: true, sep: "\t") \
-        | view() \
         | map { tsv -> [ tsv.id, tsv.input, params ] } \
         | main_wf
 
