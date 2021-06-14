@@ -77,7 +77,7 @@ def outFromIn(_params) {
           : it.value
       def newName =
         (id != "")
-          ? id + newValue
+          ? id + "." + newValue
           : newValue
       it + [ value : newName ]
     }
