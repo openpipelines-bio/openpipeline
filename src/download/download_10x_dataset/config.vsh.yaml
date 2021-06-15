@@ -1,0 +1,52 @@
+functionality:
+  name: download_10x_dataset
+  namespace: "download"
+  version: "dev"
+  description: |
+    Download a dataset from the 10x genomics website. 
+  usage: | 
+    download_10x_dataset \
+      --input https://cf.10xgenomics.com/samples/cell-exp/3.0.0/pbmc_1k_protein_v3/pbmc_1k_protein_v3_raw_feature_bc_matrix.h5 \
+      --min_library_size 1000 --min_cells_per_gene 300
+  authors:
+    - name: Robrecht Cannoodt
+      email: rcannood@gmail.com
+      roles: [ maintainer ]
+      props: { github: rcannood, orcid: "0000-0003-3641-729X" }
+  arguments:
+    - name: "--input"
+      alternatives: [ -i ]
+      type: string
+      description: "Location URL to an h5 file from the 10x genomics website."
+      required: true
+      example: "https://cf.10xgenomics.com/samples/cell-exp/3.0.0/pbmc_1k_protein_v3/pbmc_1k_protein_v3_raw_feature_bc_matrix.h5"
+    - name: "--output"
+      alternatives: [ -o ]
+      type: file
+      example: pbmc_1k_protein_v3_raw_feature_bc_matrix.h5
+      required: true
+      direction: output
+      description: Output h5 file.
+    - name: "--min_library_size"
+      type: integer
+      default: 0
+      description: Minimum library size.
+    - name: "--min_cells_per_gene"
+      type: integer
+      default: 0
+      description: Minimum number of cells per gene.
+    - name: "--keep_feature_types"
+      type: string
+      multiple: true
+      description: Specify which feature types will never be filtered out
+      example: "Antibody Capture"
+  resources:
+    - type: r_script
+      path: script.R
+  tests:
+    - type: r_script
+      path: test/run_test.R
+platforms:
+  - type: docker
+    image: dataintuitive/randpy:r4.0_py3.8_bioc3.12
+  - type: nextflow
