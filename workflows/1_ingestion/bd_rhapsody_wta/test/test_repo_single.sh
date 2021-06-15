@@ -13,7 +13,7 @@ nextflow drop https://github.com/openpipeline-bio/openpipeline.git
 nextflow \
   run https://github.com/openpipeline-bio/openpipeline.git \
   -r main_build \
-  -main-script workflows/bd_rhapsody_wta/main.nf \
+  -main-script workflows/1_ingestion/bd_rhapsody_wta/main.nf \
   -entry single_wf \
   --id "sample_RSEC" \
   --input "$PAR_INPUTS" \
