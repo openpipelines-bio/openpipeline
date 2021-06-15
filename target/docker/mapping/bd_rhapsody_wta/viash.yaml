@@ -84,6 +84,16 @@ functionality:
     direction: "Input"
     multiple: false
     multiple_sep: ":"
+  - type: "boolean_true"
+    name: "--parallel"
+    alternatives: []
+    description: "[experimental] Run jobs in parallel."
+    direction: "Input"
+  - type: "boolean_true"
+    name: "--timestamps"
+    alternatives: []
+    description: "Add timestamps to the errors, warnings, and notifications."
+    direction: "Input"
   resources:
   - type: "bash_script"
     text: |
@@ -280,6 +290,18 @@ functionality:
       echo "    --disable_putative_calling"
       echo "        type: boolean"
       echo "        Disable Refined Putative Cell Calling - Determine putative cells using only the basic algorithm (minimum second derivative along the cumulative reads curve). The refined algorithm attempts to remove false positives and recover false negatives, but may not be ideal for certain complex mixtures of cell types. Does not apply if Exact Cell Count is set."
+      echo ""
+      
+      
+      echo "    --parallel"
+      echo "        type: boolean_true"
+      echo "        [experimental] Run jobs in parallel."
+      echo ""
+      
+      
+      echo "    --timestamps"
+      echo "        type: boolean_true"
+      echo "        Add timestamps to the errors, warnings, and notifications."
       echo ""
       
       }
@@ -671,6 +693,14 @@ functionality:
                   VIASH_PAR_DISABLE_PUTATIVE_CALLING=$(ViashRemoveFlags "$1")
                   shift 1
                   ;;
+              --parallel)
+                  VIASH_PAR_PARALLEL=true
+                  shift 1
+                  ;;
+              --timestamps)
+                  VIASH_PAR_TIMESTAMPS=true
+                  shift 1
+                  ;;
               ---setup)
                   ViashDockerSetup 'openpipeline/mapping_bd_rhapsody_wta:main_build' "$2"
                   exit 0
@@ -726,7 +756,12 @@ functionality:
         ViashError '--transcriptome_annotation' is a required argument. Use "--help" to get more information on the parameters.
         exit 1
       fi
-      
+      if [ -z "$VIASH_PAR_PARALLEL" ]; then
+        VIASH_PAR_PARALLEL="false"
+      fi
+      if [ -z "$VIASH_PAR_TIMESTAMPS" ]; then
+        VIASH_PAR_TIMESTAMPS="false"
+      fi
       
       ViashDockerSetup 'openpipeline/mapping_bd_rhapsody_wta:main_build' ifneedbepullelsecachedbuild
       
@@ -791,6 +826,8 @@ functionality:
       par_transcriptome_annotation='$VIASH_PAR_TRANSCRIPTOME_ANNOTATION'
       par_exact_cell_count='$VIASH_PAR_EXACT_CELL_COUNT'
       par_disable_putative_calling='$VIASH_PAR_DISABLE_PUTATIVE_CALLING'
+      par_parallel='$VIASH_PAR_PARALLEL'
+      par_timestamps='$VIASH_PAR_TIMESTAMPS'
       
       resources_dir="$VIASH_RESOURCES_DIR"
       
@@ -908,9 +945,17 @@ functionality:
       HERE
       fi
       
+      if [ "\$par_parallel" == "true" ]; then
+        pars="\$pars --parallel"
+      fi
+      if [ "\$par_timestamps" == "true" ]; then
+        pars="\$pars --timestamps"
+      fi
+      
       cd \$par_output
       
-      cwl-runner \$resources_dir/rhapsody_wta_1.9.1_nodocker.cwl config.yml
+      echo "> cwl-runner\$pars --no-container \\"\$resources_dir/rhapsody_wta_1.9.1_nodocker.cwl\\" config.yml"
+      eval cwl-runner\$pars --no-container "\$resources_dir/rhapsody_wta_1.9.1_nodocker.cwl" config.yml
       VIASHMAIN
       PATH="$VIASH_RESOURCES_DIR:\$PATH"
       
@@ -953,5 +998,5 @@ info:
   output: "target/docker/mapping/bd_rhapsody_wta"
   executable: "target/docker/mapping/bd_rhapsody_wta/bd_rhapsody_wta"
   viash_version: "0.5.0-rc2"
-  git_commit: "7c25b76c3be558066896a3115bc48b45055f9149"
+  git_commit: "a2af1a87e631d0556a884fad3503d3d83c2d41a1"
   git_remote: "https://github.com/openpipeline-bio/openpipeline"

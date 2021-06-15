@@ -112,6 +112,14 @@ Subsample: $par_subsample
 HERE
 fi
 
+if [ "$par_parallel" == "true" ]; then
+  pars="$pars --parallel"
+fi
+if [ "$par_timestamps" == "true" ]; then
+  pars="$pars --timestamps"
+fi
+
 cd $par_output
 
-cwl-runner $resources_dir/rhapsody_wta_1.9.1_nodocker.cwl config.yml
+echo "> cwl-runner$pars --no-container \"$resources_dir/rhapsody_wta_1.9.1_nodocker.cwl\" config.yml"
+eval cwl-runner$pars --no-container "$resources_dir/rhapsody_wta_1.9.1_nodocker.cwl" config.yml

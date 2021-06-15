@@ -84,6 +84,16 @@ functionality:
     direction: "Input"
     multiple: false
     multiple_sep: ":"
+  - type: "boolean_true"
+    name: "--parallel"
+    alternatives: []
+    description: "[experimental] Run jobs in parallel."
+    direction: "Input"
+  - type: "boolean_true"
+    name: "--timestamps"
+    alternatives: []
+    description: "Add timestamps to the errors, warnings, and notifications."
+    direction: "Input"
   resources:
   - type: "bash_script"
     text: |
@@ -282,6 +292,18 @@ functionality:
       echo "        Disable Refined Putative Cell Calling - Determine putative cells using only the basic algorithm (minimum second derivative along the cumulative reads curve). The refined algorithm attempts to remove false positives and recover false negatives, but may not be ideal for certain complex mixtures of cell types. Does not apply if Exact Cell Count is set."
       echo ""
       
+      
+      echo "    --parallel"
+      echo "        type: boolean_true"
+      echo "        [experimental] Run jobs in parallel."
+      echo ""
+      
+      
+      echo "    --timestamps"
+      echo "        type: boolean_true"
+      echo "        Add timestamps to the errors, warnings, and notifications."
+      echo ""
+      
       }
       
       # initialise array
@@ -397,6 +419,14 @@ functionality:
                   VIASH_PAR_DISABLE_PUTATIVE_CALLING=$(ViashRemoveFlags "$1")
                   shift 1
                   ;;
+              --parallel)
+                  VIASH_PAR_PARALLEL=true
+                  shift 1
+                  ;;
+              --timestamps)
+                  VIASH_PAR_TIMESTAMPS=true
+                  shift 1
+                  ;;
               *)  # positional arg or unknown option
                   # since the positional args will be eval'd, can we always quote, instead of using ViashQuote
                   VIASH_POSITIONAL_ARGS="$VIASH_POSITIONAL_ARGS '$1'"
@@ -427,7 +457,12 @@ functionality:
         ViashError '--transcriptome_annotation' is a required argument. Use "--help" to get more information on the parameters.
         exit 1
       fi
-      
+      if [ -z "$VIASH_PAR_PARALLEL" ]; then
+        VIASH_PAR_PARALLEL="false"
+      fi
+      if [ -z "$VIASH_PAR_TIMESTAMPS" ]; then
+        VIASH_PAR_TIMESTAMPS="false"
+      fi
       
       
       cat << VIASHEOF | bash
@@ -446,6 +481,8 @@ functionality:
       par_transcriptome_annotation='$VIASH_PAR_TRANSCRIPTOME_ANNOTATION'
       par_exact_cell_count='$VIASH_PAR_EXACT_CELL_COUNT'
       par_disable_putative_calling='$VIASH_PAR_DISABLE_PUTATIVE_CALLING'
+      par_parallel='$VIASH_PAR_PARALLEL'
+      par_timestamps='$VIASH_PAR_TIMESTAMPS'
       
       resources_dir="$VIASH_RESOURCES_DIR"
       
@@ -563,9 +600,17 @@ functionality:
       HERE
       fi
       
+      if [ "\$par_parallel" == "true" ]; then
+        pars="\$pars --parallel"
+      fi
+      if [ "\$par_timestamps" == "true" ]; then
+        pars="\$pars --timestamps"
+      fi
+      
       cd \$par_output
       
-      cwl-runner \$resources_dir/rhapsody_wta_1.9.1_nodocker.cwl config.yml
+      echo "> cwl-runner\$pars --no-container \\"\$resources_dir/rhapsody_wta_1.9.1_nodocker.cwl\\" config.yml"
+      eval cwl-runner\$pars --no-container "\$resources_dir/rhapsody_wta_1.9.1_nodocker.cwl" config.yml
       VIASHMAIN
       PATH="$VIASH_RESOURCES_DIR:\$PATH"
       
@@ -591,6 +636,8 @@ functionality:
           bd_rhapsody_wta__transcriptome_annotation = "viash_no_value"
           bd_rhapsody_wta__exact_cell_count = "no_default_value_configured"
           bd_rhapsody_wta__disable_putative_calling = "no_default_value_configured"
+          bd_rhapsody_wta__parallel = "no_default_value_configured"
+          bd_rhapsody_wta__timestamps = "no_default_value_configured"
           id = ""
           testScript = ""
           testResources = [  ]
@@ -684,6 +731,28 @@ functionality:
                 multiple_sep = ":"
                 value = "${params.bd_rhapsody_wta__disable_putative_calling}"
                 description = "Disable Refined Putative Cell Calling - Determine putative cells using only the basic algorithm (minimum second derivative along the cumulative reads curve). The refined algorithm attempts to remove false positives and recover false negatives, but may not be ideal for certain complex mixtures of cell types. Does not apply if Exact Cell Count is set."
+              }
+              parallel {
+                name = "parallel"
+                otype = "--"
+                required = false
+                type = "boolean_true"
+                direction = "Input"
+                multiple = false
+                multiple_sep = ":"
+                value = "${params.bd_rhapsody_wta__parallel}"
+                description = "[experimental] Run jobs in parallel."
+              }
+              timestamps {
+                name = "timestamps"
+                otype = "--"
+                required = false
+                type = "boolean_true"
+                direction = "Input"
+                multiple = false
+                multiple_sep = ":"
+                value = "${params.bd_rhapsody_wta__timestamps}"
+                description = "Add timestamps to the errors, warnings, and notifications."
               }
             }
           }
@@ -1018,5 +1087,5 @@ info:
   output: "target/nextflow/mapping/bd_rhapsody_wta"
   executable: "target/nextflow/mapping/bd_rhapsody_wta/bd_rhapsody_wta"
   viash_version: "0.5.0-rc2"
-  git_commit: "7c25b76c3be558066896a3115bc48b45055f9149"
+  git_commit: "a2af1a87e631d0556a884fad3503d3d83c2d41a1"
   git_remote: "https://github.com/openpipeline-bio/openpipeline"

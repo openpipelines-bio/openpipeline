@@ -1,7 +1,10 @@
 namespace	functionality	platform	test_name	exit_code	duration	result
-mapping	bd_rhapsody_wta	docker	build_executable	0	0	SUCCESS
-mapping	bd_rhapsody_wta	docker	tests	-1	0	MISSING
 mapping	bd_rhapsody_extracth5ad	docker	build_executable	0	0	SUCCESS
 mapping	bd_rhapsody_extracth5ad	docker	tests	-1	0	MISSING
+convert	convert_10x_to_h5ad	docker	build_executable	0	66	SUCCESS
+convert	convert_10x_to_h5ad	docker	run_test.py	0	11	SUCCESS
 transfer	publish	docker	build_executable	0	0	SUCCESS
-transfer	publish	docker	test.sh	0	1	SUCCESS
+transfer	publish	docker	test.sh	0	2	SUCCESS
+mapping	bd_rhapsody_wta	docker	build_executable	1	89	ERROR
+download	download_10x_dataset	docker	build_executable	0	0	SUCCESS
+download	download_10x_dataset	docker	run_test.R	0	42	SUCCESS

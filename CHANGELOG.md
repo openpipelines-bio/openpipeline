@@ -1,6 +1,14 @@
 # openpipeline 0.1.1
 
-* `bd_rhapsody_wta`: Minor change to workflow to allow for easy processing of multiple samples with a tsv.
+## Functionality
+
+* Added `convert_10x_to_h5ad` and `download_10x_dataset` components.
+
+## Minor changes
+* Workflow `bd_rhapsody_wta`: Minor change to workflow to allow for easy processing of multiple samples with a tsv.
+
+* Component `bd_rhapsody_wta`: Added more parameters, `--parallel` and `--timestamps`.
+
 
 # openpipeline 0.1.0
 
