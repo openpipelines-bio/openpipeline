@@ -609,6 +609,9 @@ functionality:
       
       cd \$par_output
       
+      # enable tempdir
+      export TMPDIR=\$(mktemp -d "$VIASH_TEMP/cwl-bd_rhapsody_wta-XXXXXX")
+      
       echo "> cwl-runner\$pars --no-container \\"\$resources_dir/rhapsody_wta_1.9.1_nodocker.cwl\\" config.yml"
       eval cwl-runner\$pars --no-container "\$resources_dir/rhapsody_wta_1.9.1_nodocker.cwl" config.yml
       VIASHMAIN
@@ -915,6 +918,12 @@ functionality:
           tuple val(id), path(input), val(output), val(container), val(cli), val(_params)
         output:
           tuple val("${id}"), path(output), val(_params)
+        stub:
+          """
+          # Adding NXF's `$moduleDir` to the path in order to resolve our own wrappers
+          export PATH="${moduleDir}:\$PATH"
+          STUB=1 $cli
+          """
         script:
           if (params.test)
             """
@@ -1087,5 +1096,5 @@ info:
   output: "target/nextflow/mapping/bd_rhapsody_wta"
   executable: "target/nextflow/mapping/bd_rhapsody_wta/bd_rhapsody_wta"
   viash_version: "0.5.0-rc2"
-  git_commit: "dc226d1419566ae85f35c7a4ee92a31bcdca3169"
+  git_commit: "118ee506cc218ee9d5e9d0536fee52597a091518"
   git_remote: "https://github.com/openpipeline-bio/openpipeline"
