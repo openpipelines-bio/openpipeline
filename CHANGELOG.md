@@ -1,4 +1,4 @@
-# openpipeline 0.1.1
+# openpipeline 0.2.0
 
 ## Functionality
 
@@ -10,6 +10,7 @@
 * Component `bd_rhapsody_wta`: Added more parameters, `--parallel` and `--timestamps`.
 
 * Added `pbmc_1k_protein_v3` as a test resource.
+
 
 # openpipeline 0.1.0
 
