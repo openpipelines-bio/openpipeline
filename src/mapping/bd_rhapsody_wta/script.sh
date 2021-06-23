@@ -123,6 +123,11 @@ cd $par_output
 
 # enable tempdir
 export TMPDIR=$(mktemp -d "$VIASH_TEMP/cwl-bd_rhapsody_wta-XXXXXX")
+# remove tempdir after execution
+function clean_up {
+  [[ -d "$TMPDIR" ]] && rm -r "$TMPDIR"
+}
+trap clean_up EXIT
 
 echo "> cwl-runner$pars --no-container \"$resources_dir/rhapsody_wta_1.9.1_nodocker.cwl\" config.yml"
 eval cwl-runner$pars --no-container "$resources_dir/rhapsody_wta_1.9.1_nodocker.cwl" config.yml
