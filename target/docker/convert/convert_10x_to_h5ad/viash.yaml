@@ -737,5 +737,5 @@ info:
   output: "target/docker/convert/convert_10x_to_h5ad"
   executable: "target/docker/convert/convert_10x_to_h5ad/convert_10x_to_h5ad"
   viash_version: "0.5.0-rc4"
-  git_commit: "fbf38dfffa4007377bbd8ded2634e07967552878"
+  git_commit: "91e3e8c74c14e9598271bb339a5d5fcc28246ab0"
   git_remote: "https://github.com/openpipeline-bio/openpipeline"
