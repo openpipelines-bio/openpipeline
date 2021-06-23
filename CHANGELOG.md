@@ -1,3 +1,10 @@
+# openpipeline 0.2.1
+
+## Minor changes
+
+* Translate `bd_rhapsody_extracth5ad` from R into Python script.
+
+
 # openpipeline 0.2.0
 
 ## Functionality
