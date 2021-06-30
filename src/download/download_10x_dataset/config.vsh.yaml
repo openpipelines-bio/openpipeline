@@ -45,7 +45,7 @@ functionality:
       path: script.R
   tests:
     - type: r_script
-      path: test/run_test.R
+      path: run_test.R
 platforms:
   - type: docker
     image: dataintuitive/randpy:r4.0_py3.8_bioc3.12

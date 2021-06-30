@@ -56,19 +56,18 @@ functionality:
     - name: "--timestamps"
       type: boolean_true
       description: "Add timestamps to the errors, warnings, and notifications."
-    # Comment by Robrecht: Nxf viash modules don't support optional files yet.
-    # - name: "--abseq_reference"
-    #   alternatives: [-a]
-    #   type: file
-    #   description: Path to the AbSeq reference file in FASTA format. Only needed if BD AbSeq Ab-Oligos are used.
-    #   multiple: true
-    #   multiple_sep: ':'
-    # - name: "--supplemental_reference"
-    #   alternatives: [-s]
-    #   type: file
-    #   description: Path to the supplemental reference file in FASTA format. Only needed if there are additional transgene sequences used in the experiment.
-    #   multiple: true
-    #   multiple_sep: ':'
+    - name: "--abseq_reference"
+      alternatives: [-a]
+      type: file
+      description: Path to the AbSeq reference file in FASTA format. Only needed if BD AbSeq Ab-Oligos are used.
+      multiple: true
+      multiple_sep: ':'
+    - name: "--supplemental_reference"
+      alternatives: [-s]
+      type: file
+      description: Path to the supplemental reference file in FASTA format. Only needed if there are additional transgene sequences used in the experiment.
+      multiple: true
+      multiple_sep: ':'
   resources:
     - type: bash_script
       path: ./script.sh
@@ -76,7 +75,7 @@ functionality:
   # Comment by Robrecht: I'm trying to create smaller references, but I didn't manage to create one which works with the Rhapsody pipeline
   # tests:
   #   - type: bash_script
-  #     path: test/run_test.sh
+  #     path: run_test.sh
   #   - path: http://bd-rhapsody-public.s3.amazonaws.com/Rhapsody-WTA-test-data/sample_R1_.fastq.gz # 100MB
   #   - path: http://bd-rhapsody-public.s3.amazonaws.com/Rhapsody-WTA-test-data/sample_R2_.fastq.gz # 150MB
   #   - path: http://bd-rhapsody-public.s3.amazonaws.com/Rhapsody-WTA/GRCh38-PhiX-gencodev29/GRCh38-PhiX-gencodev29-20181205.tar.gz # 29GB
