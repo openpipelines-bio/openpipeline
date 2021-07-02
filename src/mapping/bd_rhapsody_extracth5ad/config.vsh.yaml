@@ -13,23 +13,21 @@ functionality:
     - name: "--input"
       alternatives: [-i]
       type: file
-      description: Folder containing the output of the BD Rhapsody workflow.
+      description: One or more folders containing the output of the BD Rhapsody workflow. If multiple are given, they are all combined into one h5ad file.
+      multiple: true
       required: true
       example: input_dir/
     - name: "--output"
       alternatives: [-o]
-      description: "Output h5ad file"
+      description: "Output h5ad file."
       required: true
       type: file
       direction: output
       example: output.h5ad
   resources:
-    - type: python_script
-      path: script.py
+    - type: r_script
+      path: script.R
 platforms:
   - type: docker
-    image: dataintuitive/randpy:py3.8
-    setup:
-      - type: python
-        packages: [ scanpy, scipy, anndata ]
+    image: dataintuitive/randpy:r4.0_py3.8_bioc3.12
   - type: nextflow

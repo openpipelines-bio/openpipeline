@@ -1,0 +1,62 @@
+functionality:
+  name: "convert_h5ad_to_seurat"
+  namespace: "convert"
+  version: "dev"
+  description: |
+    Converts an h5ad file into a Seurat file.
+  authors:
+    - name: Dries De Maeyer
+      roles: [ author ]
+      props: { github: ddemaeyer, orcid: "0000-0002-1314-3348" }
+    - name: Robrecht Cannoodt
+      email: rcannood@gmail.com
+      roles: [ maintainer ]
+      props: { github: rcannood, orcid: "0000-0003-3641-729X" }
+  arguments:
+    - name: "--input"
+      alternatives: ["-i"]
+      type: file
+      description: Input h5ad file
+      direction: input
+      required: true
+    - name: "--output"
+      alternatives: ["-o"]
+      type: file
+      description: Output Seurat file
+      direction: output
+      required: true
+    - name: "--verbose"
+      alternatives: ["-v"]
+      type: boolean_true
+      description: Increase verbosity
+  resources:
+    - type: r_script
+      path: script.R
+  tests:
+    - type: bash_script
+      path: test/run_test.sh
+    - type: r_script
+      path: test/run_test.R
+    - path: test/pbmc_1k_protein_v3_filtered_feature_bc_matrix.h5ad
+    - path: test/pbmc_1k_protein_v3_filtered_feature_bc_matrix.filter.ct.monaco.h5ad
+    - path: ../../../resources/test/integrated/integrated.pbmc.lisi.h5ad
+    - path: ./test/libraries_PBMC10XPROT.umap.h5ad
+platforms:
+  - type: docker
+    image: dataintuitive/randpy:r4.0_py3.8_bioc3.12
+    apt:
+      packages:
+        - libhdf5-serial-dev
+    r:
+      cran:
+        - optparse
+        - hdf5r
+        - reticulate
+        - Seurat
+      github:
+        #- mojaveazure/seurat-disk
+        - data-intuitive/seurat-disk@b36b490feb7246ff0ef7d2bfaf3c8f53eeafa12a
+    python:
+      packages:
+        - scanpy
+  - type: nextflow

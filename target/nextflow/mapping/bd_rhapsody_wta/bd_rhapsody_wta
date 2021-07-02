@@ -205,6 +205,18 @@ echo "        type: boolean_true"
 echo "        Add timestamps to the errors, warnings, and notifications."
 echo ""
 
+
+echo "    -a, --abseq_reference"
+echo "        type: file, multiple values allowed"
+echo "        Path to the AbSeq reference file in FASTA format. Only needed if BD AbSeq Ab-Oligos are used."
+echo ""
+
+
+echo "    -s, --supplemental_reference"
+echo "        type: file, multiple values allowed"
+echo "        Path to the supplemental reference file in FASTA format. Only needed if there are additional transgene sequences used in the experiment."
+echo ""
+
 }
 
 # initialise array
@@ -328,6 +340,54 @@ while [[ $# -gt 0 ]]; do
             VIASH_PAR_TIMESTAMPS=true
             shift 1
             ;;
+        --abseq_reference)
+            if [ -z "$VIASH_PAR_ABSEQ_REFERENCE" ]; then
+              VIASH_PAR_ABSEQ_REFERENCE="$2"
+            else
+              VIASH_PAR_ABSEQ_REFERENCE="$VIASH_PAR_ABSEQ_REFERENCE:""$2"
+            fi
+            shift 2
+            ;;
+        --abseq_reference=*)
+            if [ -z "$VIASH_PAR_ABSEQ_REFERENCE" ]; then
+              VIASH_PAR_ABSEQ_REFERENCE=$(ViashRemoveFlags "$1")
+            else
+              VIASH_PAR_ABSEQ_REFERENCE="$VIASH_PAR_ABSEQ_REFERENCE:"$(ViashRemoveFlags "$1")
+            fi
+            shift 1
+            ;;
+        -a)
+            if [ -z "$VIASH_PAR_ABSEQ_REFERENCE" ]; then
+              VIASH_PAR_ABSEQ_REFERENCE="$2"
+            else
+              VIASH_PAR_ABSEQ_REFERENCE="$VIASH_PAR_ABSEQ_REFERENCE:""$2"
+            fi
+            shift 2
+            ;;
+        --supplemental_reference)
+            if [ -z "$VIASH_PAR_SUPPLEMENTAL_REFERENCE" ]; then
+              VIASH_PAR_SUPPLEMENTAL_REFERENCE="$2"
+            else
+              VIASH_PAR_SUPPLEMENTAL_REFERENCE="$VIASH_PAR_SUPPLEMENTAL_REFERENCE:""$2"
+            fi
+            shift 2
+            ;;
+        --supplemental_reference=*)
+            if [ -z "$VIASH_PAR_SUPPLEMENTAL_REFERENCE" ]; then
+              VIASH_PAR_SUPPLEMENTAL_REFERENCE=$(ViashRemoveFlags "$1")
+            else
+              VIASH_PAR_SUPPLEMENTAL_REFERENCE="$VIASH_PAR_SUPPLEMENTAL_REFERENCE:"$(ViashRemoveFlags "$1")
+            fi
+            shift 1
+            ;;
+        -s)
+            if [ -z "$VIASH_PAR_SUPPLEMENTAL_REFERENCE" ]; then
+              VIASH_PAR_SUPPLEMENTAL_REFERENCE="$2"
+            else
+              VIASH_PAR_SUPPLEMENTAL_REFERENCE="$VIASH_PAR_SUPPLEMENTAL_REFERENCE:""$2"
+            fi
+            shift 2
+            ;;
         *)  # positional arg or unknown option
             # since the positional args will be eval'd, can we always quote, instead of using ViashQuote
             VIASH_POSITIONAL_ARGS="$VIASH_POSITIONAL_ARGS '$1'"
@@ -384,6 +444,8 @@ par_exact_cell_count='$VIASH_PAR_EXACT_CELL_COUNT'
 par_disable_putative_calling='$VIASH_PAR_DISABLE_PUTATIVE_CALLING'
 par_parallel='$VIASH_PAR_PARALLEL'
 par_timestamps='$VIASH_PAR_TIMESTAMPS'
+par_abseq_reference='$VIASH_PAR_ABSEQ_REFERENCE'
+par_supplemental_reference='$VIASH_PAR_SUPPLEMENTAL_REFERENCE'
 
 resources_dir="$VIASH_RESOURCES_DIR"
 

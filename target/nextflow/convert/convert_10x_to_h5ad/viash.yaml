@@ -380,7 +380,7 @@ functionality:
           convert_10x_to_h5ad__compression = "gzip"
           id = ""
           testScript = "run_test.py"
-          testResources = [ "test/run_test.py", "../../../resources/test/pbmc_1k_protein_v3/pbmc_1k_protein_v3_raw_feature_bc_matrix.h5" ]
+          testResources = [ "run_test.py", "../../../resources/test/pbmc_1k_protein_v3/pbmc_1k_protein_v3_raw_feature_bc_matrix.h5" ]
           convert_10x_to_h5ad {
             name = "convert_10x_to_h5ad"
             container = "convert_convert_10x_to_h5ad"
@@ -390,7 +390,7 @@ functionality:
             tests {
               isDefined = true
               testScript = "run_test.py"
-              testResources = [ "test/run_test.py", "../../../resources/test/pbmc_1k_protein_v3/pbmc_1k_protein_v3_raw_feature_bc_matrix.h5" ]
+              testResources = [ "run_test.py", "../../../resources/test/pbmc_1k_protein_v3/pbmc_1k_protein_v3_raw_feature_bc_matrix.h5" ]
             }
             arguments {
               input {
@@ -750,7 +750,7 @@ functionality:
   description: "Converts an 10x h5 into an h5ad file.\n"
   tests:
   - type: "python_script"
-    path: "test/run_test.py"
+    path: "run_test.py"
     is_executable: true
   - type: "file"
     path: "../../../resources/test/pbmc_1k_protein_v3/pbmc_1k_protein_v3_raw_feature_bc_matrix.h5"
@@ -768,5 +768,5 @@ info:
   output: "target/nextflow/convert/convert_10x_to_h5ad"
   executable: "target/nextflow/convert/convert_10x_to_h5ad/convert_10x_to_h5ad"
   viash_version: "0.5.0-rc4"
-  git_commit: "306e0ad156bc9c0c3a1bc185a5fe26aada1d4571"
+  git_commit: "b685f704b003089591c0d41866bc8ea39a76f3b1"
   git_remote: "https://github.com/openpipeline-bio/openpipeline"

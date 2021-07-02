@@ -486,7 +486,7 @@ functionality:
           download_10x_dataset__keep_feature_types = "no_default_value_configured"
           id = ""
           testScript = "run_test.R"
-          testResources = [ "test/run_test.R" ]
+          testResources = [ "run_test.R" ]
           download_10x_dataset {
             name = "download_10x_dataset"
             container = "download_download_10x_dataset"
@@ -496,7 +496,7 @@ functionality:
             tests {
               isDefined = true
               testScript = "run_test.R"
-              testResources = [ "test/run_test.R" ]
+              testResources = [ "run_test.R" ]
             }
             arguments {
               input {
@@ -882,7 +882,7 @@ functionality:
     \ \\\n  --min_library_size 1000 --min_cells_per_gene 300\n"
   tests:
   - type: "r_script"
-    path: "test/run_test.R"
+    path: "run_test.R"
     is_executable: true
   info: {}
 platform:
@@ -898,5 +898,5 @@ info:
   output: "target/nextflow/download/download_10x_dataset"
   executable: "target/nextflow/download/download_10x_dataset/download_10x_dataset"
   viash_version: "0.5.0-rc4"
-  git_commit: "306e0ad156bc9c0c3a1bc185a5fe26aada1d4571"
+  git_commit: "b685f704b003089591c0d41866bc8ea39a76f3b1"
   git_remote: "https://github.com/openpipeline-bio/openpipeline"

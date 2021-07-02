@@ -94,6 +94,28 @@ functionality:
     alternatives: []
     description: "Add timestamps to the errors, warnings, and notifications."
     direction: "Input"
+  - type: "file"
+    name: "--abseq_reference"
+    alternatives:
+    - "-a"
+    description: "Path to the AbSeq reference file in FASTA format. Only needed if\
+      \ BD AbSeq Ab-Oligos are used."
+    must_exist: false
+    required: false
+    direction: "Input"
+    multiple: true
+    multiple_sep: ":"
+  - type: "file"
+    name: "--supplemental_reference"
+    alternatives:
+    - "-s"
+    description: "Path to the supplemental reference file in FASTA format. Only needed\
+      \ if there are additional transgene sequences used in the experiment."
+    must_exist: false
+    required: false
+    direction: "Input"
+    multiple: true
+    multiple_sep: ":"
   resources:
   - type: "bash_script"
     text: |
@@ -302,6 +324,18 @@ functionality:
       echo "    --timestamps"
       echo "        type: boolean_true"
       echo "        Add timestamps to the errors, warnings, and notifications."
+      echo ""
+      
+      
+      echo "    -a, --abseq_reference"
+      echo "        type: file, multiple values allowed"
+      echo "        Path to the AbSeq reference file in FASTA format. Only needed if BD AbSeq Ab-Oligos are used."
+      echo ""
+      
+      
+      echo "    -s, --supplemental_reference"
+      echo "        type: file, multiple values allowed"
+      echo "        Path to the supplemental reference file in FASTA format. Only needed if there are additional transgene sequences used in the experiment."
       echo ""
       
       }
@@ -701,6 +735,54 @@ functionality:
                   VIASH_PAR_TIMESTAMPS=true
                   shift 1
                   ;;
+              --abseq_reference)
+                  if [ -z "$VIASH_PAR_ABSEQ_REFERENCE" ]; then
+                    VIASH_PAR_ABSEQ_REFERENCE="$2"
+                  else
+                    VIASH_PAR_ABSEQ_REFERENCE="$VIASH_PAR_ABSEQ_REFERENCE:""$2"
+                  fi
+                  shift 2
+                  ;;
+              --abseq_reference=*)
+                  if [ -z "$VIASH_PAR_ABSEQ_REFERENCE" ]; then
+                    VIASH_PAR_ABSEQ_REFERENCE=$(ViashRemoveFlags "$1")
+                  else
+                    VIASH_PAR_ABSEQ_REFERENCE="$VIASH_PAR_ABSEQ_REFERENCE:"$(ViashRemoveFlags "$1")
+                  fi
+                  shift 1
+                  ;;
+              -a)
+                  if [ -z "$VIASH_PAR_ABSEQ_REFERENCE" ]; then
+                    VIASH_PAR_ABSEQ_REFERENCE="$2"
+                  else
+                    VIASH_PAR_ABSEQ_REFERENCE="$VIASH_PAR_ABSEQ_REFERENCE:""$2"
+                  fi
+                  shift 2
+                  ;;
+              --supplemental_reference)
+                  if [ -z "$VIASH_PAR_SUPPLEMENTAL_REFERENCE" ]; then
+                    VIASH_PAR_SUPPLEMENTAL_REFERENCE="$2"
+                  else
+                    VIASH_PAR_SUPPLEMENTAL_REFERENCE="$VIASH_PAR_SUPPLEMENTAL_REFERENCE:""$2"
+                  fi
+                  shift 2
+                  ;;
+              --supplemental_reference=*)
+                  if [ -z "$VIASH_PAR_SUPPLEMENTAL_REFERENCE" ]; then
+                    VIASH_PAR_SUPPLEMENTAL_REFERENCE=$(ViashRemoveFlags "$1")
+                  else
+                    VIASH_PAR_SUPPLEMENTAL_REFERENCE="$VIASH_PAR_SUPPLEMENTAL_REFERENCE:"$(ViashRemoveFlags "$1")
+                  fi
+                  shift 1
+                  ;;
+              -s)
+                  if [ -z "$VIASH_PAR_SUPPLEMENTAL_REFERENCE" ]; then
+                    VIASH_PAR_SUPPLEMENTAL_REFERENCE="$2"
+                  else
+                    VIASH_PAR_SUPPLEMENTAL_REFERENCE="$VIASH_PAR_SUPPLEMENTAL_REFERENCE:""$2"
+                  fi
+                  shift 2
+                  ;;
               ---setup)
                   ViashDockerSetup 'openpipeline/mapping_bd_rhapsody_wta:main_build' "$2"
                   exit 0
@@ -791,6 +873,32 @@ functionality:
         VIASH_EXTRA_MOUNTS="$VIASH_EXTRA_MOUNTS $(ViashAutodetectMountArg "$VIASH_PAR_TRANSCRIPTOME_ANNOTATION")"
         VIASH_PAR_TRANSCRIPTOME_ANNOTATION=$(ViashAutodetectMount "$VIASH_PAR_TRANSCRIPTOME_ANNOTATION")
       fi
+      if [ ! -z "$VIASH_PAR_ABSEQ_REFERENCE" ]; then
+        IFS=":"
+        for var in $VIASH_PAR_ABSEQ_REFERENCE; do
+          unset IFS
+          VIASH_EXTRA_MOUNTS="$VIASH_EXTRA_MOUNTS $(ViashAutodetectMountArg "$var")"
+          if [ -z "$VIASH_TEST_ABSEQ_REFERENCE" ]; then
+            VIASH_TEST_ABSEQ_REFERENCE="$(ViashAutodetectMount "$var")"
+          else
+            VIASH_TEST_ABSEQ_REFERENCE="$VIASH_TEST_ABSEQ_REFERENCE:""$(ViashAutodetectMount "$var")"
+          fi
+        done
+        VIASH_PAR_ABSEQ_REFERENCE="$VIASH_TEST_ABSEQ_REFERENCE"
+      fi
+      if [ ! -z "$VIASH_PAR_SUPPLEMENTAL_REFERENCE" ]; then
+        IFS=":"
+        for var in $VIASH_PAR_SUPPLEMENTAL_REFERENCE; do
+          unset IFS
+          VIASH_EXTRA_MOUNTS="$VIASH_EXTRA_MOUNTS $(ViashAutodetectMountArg "$var")"
+          if [ -z "$VIASH_TEST_SUPPLEMENTAL_REFERENCE" ]; then
+            VIASH_TEST_SUPPLEMENTAL_REFERENCE="$(ViashAutodetectMount "$var")"
+          else
+            VIASH_TEST_SUPPLEMENTAL_REFERENCE="$VIASH_TEST_SUPPLEMENTAL_REFERENCE:""$(ViashAutodetectMount "$var")"
+          fi
+        done
+        VIASH_PAR_SUPPLEMENTAL_REFERENCE="$VIASH_TEST_SUPPLEMENTAL_REFERENCE"
+      fi
       
       # Always mount the resource directory
       VIASH_EXTRA_MOUNTS="$VIASH_EXTRA_MOUNTS $(ViashAutodetectMountArg "$VIASH_RESOURCES_DIR")"
@@ -828,6 +936,8 @@ functionality:
       par_disable_putative_calling='$VIASH_PAR_DISABLE_PUTATIVE_CALLING'
       par_parallel='$VIASH_PAR_PARALLEL'
       par_timestamps='$VIASH_PAR_TIMESTAMPS'
+      par_abseq_reference='$VIASH_PAR_ABSEQ_REFERENCE'
+      par_supplemental_reference='$VIASH_PAR_SUPPLEMENTAL_REFERENCE'
       
       resources_dir="$VIASH_RESOURCES_DIR"
       
@@ -1006,5 +1116,5 @@ info:
   output: "target/docker/mapping/bd_rhapsody_wta"
   executable: "target/docker/mapping/bd_rhapsody_wta/bd_rhapsody_wta"
   viash_version: "0.5.0-rc4"
-  git_commit: "306e0ad156bc9c0c3a1bc185a5fe26aada1d4571"
+  git_commit: "b685f704b003089591c0d41866bc8ea39a76f3b1"
   git_remote: "https://github.com/openpipeline-bio/openpipeline"
