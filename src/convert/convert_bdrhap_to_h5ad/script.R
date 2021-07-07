@@ -1,8 +1,12 @@
 ## VIASH START
 par <- list(
   input = c(
-    "/run/media/rcannood/Data/analyses/CS000182/output/64300535HPB1003_S10_rep1_lane2/",
-    "/run/media/rcannood/Data/analyses/CS000182/output/64300535HPB1003_S10_rep1_lane1/"
+    "output/64300535HPB1003_S10_rep1_lane2/",
+    "output/64300535HPB1003_S10_rep1_lane1/"
+  ),
+  id = c(
+    "64300535HPB1003_S10_rep1_lane2",
+    "64300535HPB1003_S10_rep1_lane1"
   ),
   output = "/home/rcannood/test.h5ad"
 )
@@ -26,10 +30,19 @@ read_metric <- function(file) {
   readr::read_csv(new_csv)
 }
 
+ids <- map_chr(seq_along(par$input), function(i) {
+  if (!is.null(par$id) && length(par$input) == length(par$id)) {
+    par$id[[i]]
+  } else {
+    paste0("sample", i)
+  }
+})
+
 cat("Reading in metric summaries\n")
 mets <- map_df(par$input, function(dir) {
   list.files(dir, pattern = "Metrics_Summary.csv$", full.names = TRUE) %>% read_metric()
 })
+mets$id <- ids
 
 cat("Reading in count data\n")
 counts <- lapply(par$input, function(dir) {
@@ -44,11 +57,10 @@ counts <- lapply(par$input, function(dir) {
 })
 
 obs <- map_df(seq_along(counts), function(i) {
-  dirname <- basename(par$input[[i]])
   cell_index = rownames(counts[[i]])
   data.frame(
     row.names = paste0("sample", i, "_", cell_index),
-    id = rep(dirname, length(cell_index))
+    id = rep(ids[[i]], length(cell_index))
   )
 })
 
@@ -120,7 +132,7 @@ new_met <- tibble(
   Median_Molecules_per_Cell = median(Matrix::rowSums(new_counts)),
   Mean_Targets_per_Cell = sum(mets$Putative_Cell_Count * mets$Mean_Targets_per_Cell) / Putative_Cell_Count,
   Median_Targets_per_Cell = median(Matrix::rowSums(new_counts > 0)),
-  Total_Targets_Detected = length(targets)
+  Total_Targets_Detected = length(unique_targets)
 )
 
 cat("Constructing anndata object\n")
@@ -129,7 +141,8 @@ new_h5ad <- anndata::AnnData(
   obs = obs,
   var = var,
   uns = list(
-    metrics_summary = new_met
+    metrics_summary = new_met,
+    metrics_per_file = mets %>% select(id, everything())
   )
 )
 

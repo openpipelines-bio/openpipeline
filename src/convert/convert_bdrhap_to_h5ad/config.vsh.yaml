@@ -1,6 +1,6 @@
 functionality:
-  name: "bd_rhapsody_extracth5ad"
-  namespace: "mapping"
+  name: "convert_bdrhap_to_h5ad"
+  namespace: "convert"
   version: "dev"
   description: |
     Create a h5ad file from BD Rhapsody output.
@@ -17,6 +17,11 @@ functionality:
       multiple: true
       required: true
       example: input_dir/
+    - name: "--id"
+      type: string
+      description: "A vector of ids with same length as --input."
+      multiple: true
+      example: my_id
     - name: "--output"
       alternatives: [-o]
       description: "Output h5ad file."
