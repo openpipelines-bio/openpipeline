@@ -30,10 +30,10 @@ functionality:
   - type: "file"
     name: "--samplesheet"
     alternatives: []
-    description: "Path to the sample sheet. The sample sheet can either be\na simple\
-      \ CSV with lane, sample and index columns, or\nan Illumina Experiment Manager-compatible\
-      \ sample\nsheet. Sample sheet indexes can refer to 10x sample\nindex set names\
-      \ (e.g., SI-GA-A12).\n"
+    description: "Path to the sample sheet. The sample sheet can either be a simple\
+      \ CSV with lane, sample and index columns, or an Illumina Experiment Manager-compatible\
+      \ sample sheet. Sample sheet indexes can refer to 10x sample index set names\
+      \ (e.g., SI-GA-A12)."
     must_exist: false
     required: false
     direction: "Input"
@@ -52,9 +52,9 @@ functionality:
   - type: "integer"
     name: "--barcode_mismatches"
     alternatives: []
-    description: "number of allowed mismatches per index\nMultiple, comma delimited,\
-      \ entries allowed. Each \nentry is applied to the corresponding index; last\
-      \ \nentry applies to all remaining indices.\nAccepted values: 0, 1, 2.\n"
+    description: "Number of allowed mismatches per index. Multiple, comma delimited,\
+      \ entries allowed. Each entry is applied to the corresponding index; last entry\
+      \ applies to all remaining indices. Accepted values: 0, 1, 2."
     default: 1
     required: false
     direction: "Input"
@@ -226,11 +226,7 @@ functionality:
       # ViashHelp: Display helpful explanation about this executable
       function ViashHelp {
          echo "cellranger_mkfastq main_build"
-      echo "Run Illumina demultiplexer on sample sheets that contain 10x-specific sample 
-      index sets, and generate 10x-specific quality metrics after the demultiplex.  
-      Any bcl2fastq argument will work (except a few that are set by the pipeline 
-      to ensure proper trimming and sample indexing). The FASTQ output generated 
-      will be the same as when running bcl2fastq directly."
+      echo "Run Illumina demultiplexer on sample sheets that contain 10x-specific sample index sets, and generate 10x-specific quality metrics after the demultiplex. Any bcl2fastq argument will work (except a few that are set by the pipeline to ensure proper trimming and sample indexing). The FASTQ output generated will be the same as when running bcl2fastq directly."
          echo
          echo "Options:"
       
@@ -242,11 +238,7 @@ functionality:
       
       echo "    --samplesheet"
       echo "        type: file"
-      echo "        Path to the sample sheet. The sample sheet can either be"
-      echo "        a simple CSV with lane, sample and index columns, or"
-      echo "        an Illumina Experiment Manager-compatible sample"
-      echo "        sheet. Sample sheet indexes can refer to 10x sample"
-      echo "        index set names (e.g., SI-GA-A12)."
+      echo "        Path to the sample sheet. The sample sheet can either be a simple CSV with lane, sample and index columns, or an Illumina Experiment Manager-compatible sample sheet. Sample sheet indexes can refer to 10x sample index set names (e.g., SI-GA-A12)."
       echo ""
       
       
@@ -259,11 +251,7 @@ functionality:
       echo "    --barcode_mismatches"
       echo "        type: integer"
       echo "        default: 1"
-      echo "        number of allowed mismatches per index"
-      echo "        Multiple, comma delimited, entries allowed. Each "
-      echo "        entry is applied to the corresponding index; last "
-      echo "        entry applies to all remaining indices."
-      echo "        Accepted values: 0, 1, 2."
+      echo "        Number of allowed mismatches per index. Multiple, comma delimited, entries allowed. Each entry is applied to the corresponding index; last entry applies to all remaining indices. Accepted values: 0, 1, 2."
       echo ""
       
       
@@ -520,12 +508,7 @@ functionality:
                 multiple = false
                 multiple_sep = ":"
                 value = "${params.cellranger_mkfastq__samplesheet}"
-                description = "Path to the sample sheet. The sample sheet can either be
-      a simple CSV with lane, sample and index columns, or
-      an Illumina Experiment Manager-compatible sample
-      sheet. Sample sheet indexes can refer to 10x sample
-      index set names (e.g., SI-GA-A12).
-      "
+                description = "Path to the sample sheet. The sample sheet can either be a simple CSV with lane, sample and index columns, or an Illumina Experiment Manager-compatible sample sheet. Sample sheet indexes can refer to 10x sample index set names (e.g., SI-GA-A12)."
               }
               output {
                 name = "output"
@@ -548,12 +531,7 @@ functionality:
                 multiple_sep = ":"
                 value = "${params.cellranger_mkfastq__barcode_mismatches}"
                 dflt = "1"
-                description = "number of allowed mismatches per index
-      Multiple, comma delimited, entries allowed. Each 
-      entry is applied to the corresponding index; last 
-      entry applies to all remaining indices.
-      Accepted values: 0, 1, 2.
-      "
+                description = "Number of allowed mismatches per index. Multiple, comma delimited, entries allowed. Each entry is applied to the corresponding index; last entry applies to all remaining indices. Accepted values: 0, 1, 2."
               }
               memory {
                 name = "memory"
@@ -735,7 +713,7 @@ functionality:
         cache 'deep'
         stageInMode "symlink"
         container "${container}"
-        publishDir "${params.publishDir}/${id}/", mode: 'copy', overwrite: true, enabled: !params.test
+        publishDir "${params.publishDir}/", mode: 'copy', overwrite: true, enabled: !params.test
         input:
           tuple val(id), path(input), val(output), val(container), val(cli), val(_params)
         output:
@@ -898,10 +876,10 @@ functionality:
 
     dest: "main.nf"
   description: "Run Illumina demultiplexer on sample sheets that contain 10x-specific\
-    \ sample \nindex sets, and generate 10x-specific quality metrics after the demultiplex.\
-    \  \nAny bcl2fastq argument will work (except a few that are set by the pipeline\
-    \ \nto ensure proper trimming and sample indexing). The FASTQ output generated\
-    \ \nwill be the same as when running bcl2fastq directly.\n"
+    \ sample index sets, and generate 10x-specific quality metrics after the demultiplex.\
+    \ Any bcl2fastq argument will work (except a few that are set by the pipeline\
+    \ to ensure proper trimming and sample indexing). The FASTQ output generated will\
+    \ be the same as when running bcl2fastq directly."
   function_type: "todir"
   tests:
   - type: "bash_script"
@@ -918,7 +896,7 @@ platform:
   registry: "openpipeline"
   namespace_separator: "_"
   publish: true
-  per_id: true
+  per_id: false
   labels: []
 platforms: []
 info:
@@ -927,5 +905,5 @@ info:
   output: "target/nextflow/bcl_demux/cellranger_mkfastq"
   executable: "target/nextflow/bcl_demux/cellranger_mkfastq/cellranger_mkfastq"
   viash_version: "0.5.0"
-  git_commit: "9988c0b50d006e714489766b1f175eca5f609d69"
+  git_commit: "270dcdaf304f898681ed4bdf05126a0798db8d7c"
   git_remote: "https://github.com/openpipeline-bio/openpipeline"
