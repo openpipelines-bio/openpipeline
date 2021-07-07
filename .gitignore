@@ -8,7 +8,7 @@
 
 # R related
 .Rhistory
-scpipelineviash.Rproj
+*.Rproj
 .Rproj.user
 
 # temporary files related
