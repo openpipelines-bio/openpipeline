@@ -4,7 +4,7 @@ workflowDir = "${params.rootDir}/workflows"
 targetDir = "${params.rootDir}/target/nextflow"
 
 include  { bd_rhapsody_wta }         from  targetDir + "/mapping/bd_rhapsody_wta/main.nf"         params(params)
-include  { bd_rhapsody_extracth5ad } from  targetDir + "/mapping/bd_rhapsody_extracth5ad/main.nf" params(params)
+include  { convert_bdrhap_to_h5ad }  from  targetDir + "/convert/convert_bdrhap_to_h5ad/main.nf"  params(params)
 include  { publish }                 from  targetDir + "/transfer/publish/main.nf"                params(params)
 include  { overrideOptionValue }     from  workflowDir + "/utils/utils.nf"                        params(params)
 
@@ -52,7 +52,7 @@ workflow main_wf {
         | map { overrideOptionValue(it, "publish", "output", "${params.output}/${it[0]}/${it[0]}.h5ad") } \
         | view{ it[1] } \
         | bd_rhapsody_wta \
-        | bd_rhapsody_extracth5ad \
+        | convert_bdrhap_to_h5ad \
         | publish
 
     emit: output_
