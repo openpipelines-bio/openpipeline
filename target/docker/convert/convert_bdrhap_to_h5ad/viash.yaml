@@ -187,30 +187,30 @@ functionality:
       
       # ViashHelp: Display helpful explanation about this executable
       function ViashHelp {
-         echo "convert_bdrhap_to_h5ad main_build"
-      echo "Create a h5ad file from BD Rhapsody output."
-         echo
-         echo "Options:"
+        echo "convert_bdrhap_to_h5ad main_build"
+        echo "Create a h5ad file from BD Rhapsody output."
+        echo
+        echo "Options:"
       
-      echo "    -i, --input"
-      echo "        type: file, required parameter, multiple values allowed"
-      echo "        example: input_dir/"
-      echo "        One or more folders containing the output of the BD Rhapsody workflow. If multiple are given, they are all combined into one h5ad file."
-      echo ""
-      
-      
-      echo "    --id"
-      echo "        type: string, multiple values allowed"
-      echo "        example: my_id"
-      echo "        A vector of ids with same length as --input."
-      echo ""
+        echo "   -i, --input"
+        echo "        type: file, required parameter, multiple values allowed"
+        echo "        example: input_dir/"
+        echo "        One or more folders containing the output of the BD Rhapsody workflow. If multiple are given, they are all combined into one h5ad file."
+        echo ""
       
       
-      echo "    -o, --output"
-      echo "        type: file, required parameter, output"
-      echo "        example: output.h5ad"
-      echo "        Output h5ad file."
-      echo ""
+        echo "   --id"
+        echo "        type: string, multiple values allowed"
+        echo "        example: my_id"
+        echo "        A vector of ids with same length as --input."
+        echo ""
+      
+      
+        echo "   -o, --output"
+        echo "        type: file, required parameter, output"
+        echo "        example: output.h5ad"
+        echo "        Output h5ad file."
+        echo ""
       
       }
       ######## Helper functions for setting up Docker images for viash ########
@@ -844,5 +844,5 @@ info:
   output: "target/docker/convert/convert_bdrhap_to_h5ad"
   executable: "target/docker/convert/convert_bdrhap_to_h5ad/convert_bdrhap_to_h5ad"
   viash_version: "0.5.0"
-  git_commit: "1699e06ae0cc1234eaf1af37647e385f03d0165e"
+  git_commit: "9534af8a18f0a9cb1bcc204b8f0404a351dfbd15"
   git_remote: "https://github.com/openpipeline-bio/openpipeline"

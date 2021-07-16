@@ -140,30 +140,30 @@ VIASH_RESOURCES_DIR=`ViashSourceDir ${BASH_SOURCE[0]}`
 
 # ViashHelp: Display helpful explanation about this executable
 function ViashHelp {
-   echo "convert_10x_to_h5ad main_build"
-echo "Converts an 10x h5 into an h5ad file."
-   echo
-   echo "Options:"
+  echo "convert_10x_to_h5ad main_build"
+  echo "Converts an 10x h5 into an h5ad file."
+  echo
+  echo "Options:"
 
-echo "    -i, --input"
-echo "        type: file, required parameter"
-echo "        default: input.h5"
-echo "        Input h5 file"
-echo ""
-
-
-echo "    -o, --output"
-echo "        type: file, output"
-echo "        default: output.h5ad"
-echo "        Output h5ad file."
-echo ""
+  echo "   -i, --input"
+  echo "        type: file, required parameter"
+  echo "        default: input.h5"
+  echo "        Input h5 file"
+  echo ""
 
 
-echo "    --compression"
-echo "        type: string"
-echo "        default: gzip"
-echo "        The compression format to be used on the final h5ad object."
-echo ""
+  echo "   -o, --output"
+  echo "        type: file, output"
+  echo "        default: output.h5ad"
+  echo "        Output h5ad file."
+  echo ""
+
+
+  echo "   --compression"
+  echo "        type: string"
+  echo "        default: gzip"
+  echo "        The compression format to be used on the final h5ad object."
+  echo ""
 
 }
 

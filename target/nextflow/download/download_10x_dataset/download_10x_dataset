@@ -139,48 +139,47 @@ VIASH_RESOURCES_DIR=`ViashSourceDir ${BASH_SOURCE[0]}`
 
 # ViashHelp: Display helpful explanation about this executable
 function ViashHelp {
-   echo "download_10x_dataset main_build"
-echo "Download a dataset from the 10x genomics website. "
-   echo
-echo "Usage: download_10x_dataset \\
-  --input https://cf.10xgenomics.com/samples/cell-exp/3.0.0/pbmc_1k_protein_v3/pbmc_1k_protein_v3_raw_feature_bc_matrix.h5 \\
-  --min_library_size 1000 --min_cells_per_gene 300"
-echo
-   echo "Options:"
+  echo "download_10x_dataset main_build"
+  echo "Download a dataset from the 10x genomics website. "
+  echo
+  echo "Usage: download_10x_dataset \\"
+  echo "Usage:   --input https://cf.10xgenomics.com/samples/cell-exp/3.0.0/pbmc_1k_protein_v3/pbmc_1k_protein_v3_raw_feature_bc_matrix.h5 \\"
+  echo "Usage:   --min_library_size 1000 --min_cells_per_gene 300"
+  echo "Options:"
 
-echo "    -i, --input"
-echo "        type: string, required parameter"
-echo "        example: https://cf.10xgenomics.com/samples/cell-exp/3.0.0/pbmc_1k_protein_v3/pbmc_1k_protein_v3_raw_feature_bc_matrix.h5"
-echo "        Location URL to an h5 file from the 10x genomics website."
-echo ""
-
-
-echo "    -o, --output"
-echo "        type: file, required parameter, output"
-echo "        example: pbmc_1k_protein_v3_raw_feature_bc_matrix.h5"
-echo "        Output h5 file."
-echo ""
+  echo "   -i, --input"
+  echo "        type: string, required parameter"
+  echo "        example: https://cf.10xgenomics.com/samples/cell-exp/3.0.0/pbmc_1k_protein_v3/pbmc_1k_protein_v3_raw_feature_bc_matrix.h5"
+  echo "        Location URL to an h5 file from the 10x genomics website."
+  echo ""
 
 
-echo "    --min_library_size"
-echo "        type: integer"
-echo "        default: 0"
-echo "        Minimum library size."
-echo ""
+  echo "   -o, --output"
+  echo "        type: file, required parameter, output"
+  echo "        example: pbmc_1k_protein_v3_raw_feature_bc_matrix.h5"
+  echo "        Output h5 file."
+  echo ""
 
 
-echo "    --min_cells_per_gene"
-echo "        type: integer"
-echo "        default: 0"
-echo "        Minimum number of cells per gene."
-echo ""
+  echo "   --min_library_size"
+  echo "        type: integer"
+  echo "        default: 0"
+  echo "        Minimum library size."
+  echo ""
 
 
-echo "    --keep_feature_types"
-echo "        type: string, multiple values allowed"
-echo "        example: Antibody Capture"
-echo "        Specify which feature types will never be filtered out"
-echo ""
+  echo "   --min_cells_per_gene"
+  echo "        type: integer"
+  echo "        default: 0"
+  echo "        Minimum number of cells per gene."
+  echo ""
+
+
+  echo "   --keep_feature_types"
+  echo "        type: string, multiple values allowed"
+  echo "        example: Antibody Capture"
+  echo "        Specify which feature types will never be filtered out"
+  echo ""
 
 }
 

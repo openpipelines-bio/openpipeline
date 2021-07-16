@@ -260,83 +260,83 @@ functionality:
       
       # ViashHelp: Display helpful explanation about this executable
       function ViashHelp {
-         echo "bd_rhapsody_wta main_build"
-      echo "A viash component for the BD Rhapsody Analysis CWL pipeline.
+        echo "bd_rhapsody_wta main_build"
+        echo "A viash component for the BD Rhapsody Analysis CWL pipeline."
+        echo ""
+        echo "The CWL pipeline file is obtained by cloning 'https://bitbucket.org/CRSwDev/cwl/src/master/' and removing all objects with class 'DockerRequirement' from the JSON."
+        echo ""
+        echo "The reference_genome and transcriptome_annotation files can be downloaded from these locations:"
+        echo "  - Human: http://bd-rhapsody-public.s3-website-us-east-1.amazonaws.com/Rhapsody-WTA/GRCh38-PhiX-gencodev29/"
+        echo "  - Mouse: http://bd-rhapsody-public.s3-website-us-east-1.amazonaws.com/Rhapsody-WTA/GRCm38-PhiX-gencodevM19/"
+        echo
+        echo "Options:"
       
-      The CWL pipeline file is obtained by cloning 'https://bitbucket.org/CRSwDev/cwl/src/master/' and removing all objects with class 'DockerRequirement' from the JSON.
-      
-      The reference_genome and transcriptome_annotation files can be downloaded from these locations:
-        - Human: http://bd-rhapsody-public.s3-website-us-east-1.amazonaws.com/Rhapsody-WTA/GRCh38-PhiX-gencodev29/
-        - Mouse: http://bd-rhapsody-public.s3-website-us-east-1.amazonaws.com/Rhapsody-WTA/GRCm38-PhiX-gencodevM19/"
-         echo
-         echo "Options:"
-      
-      echo "    -i, --input"
-      echo "        type: file, required parameter, multiple values allowed"
-      echo "        example: input.fastq.gz"
-      echo "        Path to your read files in the FASTQ.GZ format. You may specify as many R1/R2 read pairs as you want."
-      echo ""
-      
-      
-      echo "    -o, --output"
-      echo "        type: file, required parameter, output"
-      echo "        example: output_dir/"
-      echo "        Output folder. Output still needs to be processed further."
-      echo ""
+        echo "   -i, --input"
+        echo "        type: file, required parameter, multiple values allowed"
+        echo "        example: input.fastq.gz"
+        echo "        Path to your read files in the FASTQ.GZ format. You may specify as many R1/R2 read pairs as you want."
+        echo ""
       
       
-      echo "    --subsample"
-      echo "        type: double"
-      echo "        A number >1 or fraction (0 < n < 1) to indicate the number or percentage of reads to subsample."
-      echo ""
+        echo "   -o, --output"
+        echo "        type: file, required parameter, output"
+        echo "        example: output_dir/"
+        echo "        Output folder. Output still needs to be processed further."
+        echo ""
       
       
-      echo "    -r, --reference_genome"
-      echo "        type: file, required parameter"
-      echo "        Path to STAR index as a tar.gz file."
-      echo ""
+        echo "   --subsample"
+        echo "        type: double"
+        echo "        A number >1 or fraction (0 < n < 1) to indicate the number or percentage of reads to subsample."
+        echo ""
       
       
-      echo "    -t, --transcriptome_annotation"
-      echo "        type: file, required parameter"
-      echo "        Path to GTF annotation file."
-      echo ""
+        echo "   -r, --reference_genome"
+        echo "        type: file, required parameter"
+        echo "        Path to STAR index as a tar.gz file."
+        echo ""
       
       
-      echo "    --exact_cell_count"
-      echo "        type: integer"
-      echo "        Exact cell count - Set a specific number (>=1) of cells as putative, based on those with the highest error-corrected read count"
-      echo ""
+        echo "   -t, --transcriptome_annotation"
+        echo "        type: file, required parameter"
+        echo "        Path to GTF annotation file."
+        echo ""
       
       
-      echo "    --disable_putative_calling"
-      echo "        type: boolean"
-      echo "        Disable Refined Putative Cell Calling - Determine putative cells using only the basic algorithm (minimum second derivative along the cumulative reads curve). The refined algorithm attempts to remove false positives and recover false negatives, but may not be ideal for certain complex mixtures of cell types. Does not apply if Exact Cell Count is set."
-      echo ""
+        echo "   --exact_cell_count"
+        echo "        type: integer"
+        echo "        Exact cell count - Set a specific number (>=1) of cells as putative, based on those with the highest error-corrected read count"
+        echo ""
       
       
-      echo "    --parallel"
-      echo "        type: boolean_true"
-      echo "        [experimental] Run jobs in parallel."
-      echo ""
+        echo "   --disable_putative_calling"
+        echo "        type: boolean"
+        echo "        Disable Refined Putative Cell Calling - Determine putative cells using only the basic algorithm (minimum second derivative along the cumulative reads curve). The refined algorithm attempts to remove false positives and recover false negatives, but may not be ideal for certain complex mixtures of cell types. Does not apply if Exact Cell Count is set."
+        echo ""
       
       
-      echo "    --timestamps"
-      echo "        type: boolean_true"
-      echo "        Add timestamps to the errors, warnings, and notifications."
-      echo ""
+        echo "   --parallel"
+        echo "        type: boolean_true"
+        echo "        [experimental] Run jobs in parallel."
+        echo ""
       
       
-      echo "    -a, --abseq_reference"
-      echo "        type: file, multiple values allowed"
-      echo "        Path to the AbSeq reference file in FASTA format. Only needed if BD AbSeq Ab-Oligos are used."
-      echo ""
+        echo "   --timestamps"
+        echo "        type: boolean_true"
+        echo "        Add timestamps to the errors, warnings, and notifications."
+        echo ""
       
       
-      echo "    -s, --supplemental_reference"
-      echo "        type: file, multiple values allowed"
-      echo "        Path to the supplemental reference file in FASTA format. Only needed if there are additional transgene sequences used in the experiment."
-      echo ""
+        echo "   -a, --abseq_reference"
+        echo "        type: file, multiple values allowed"
+        echo "        Path to the AbSeq reference file in FASTA format. Only needed if BD AbSeq Ab-Oligos are used."
+        echo ""
+      
+      
+        echo "   -s, --supplemental_reference"
+        echo "        type: file, multiple values allowed"
+        echo "        Path to the supplemental reference file in FASTA format. Only needed if there are additional transgene sequences used in the experiment."
+        echo ""
       
       }
       
@@ -895,16 +895,20 @@ functionality:
       }
       
       
+      def escape(str) {
+        return str.replaceAll('\\\\', '\\\\\\\\').replaceAll("\"", "\\\\\"").replaceAll("\n", "\\\\n").replaceAll("`", "\\\\`")
+      }
+      
       def renderCLI(command, arguments) {
       
         def argumentsList = arguments.collect{ it ->
           (it.otype == "")
-            ? "\'" + it.value + "\'"
+            ? "\'" + escape(it.value) + "\'"
             : (it.type == "boolean_true")
               ? it.otype + it.name
               : (it.value == "no_default_value_configured")
                 ? ""
-                : it.otype + it.name + " \'" + ((it.value in List && it.multiple) ? it.value.join(it.multiple_sep): it.value) + "\'"
+                : it.otype + it.name + " \'" + escape((it.value in List && it.multiple) ? it.value.join(it.multiple_sep): it.value) + "\'"
         }
       
         def command_line = command + argumentsList
@@ -1209,5 +1213,5 @@ info:
   output: "target/nextflow/mapping/bd_rhapsody_wta"
   executable: "target/nextflow/mapping/bd_rhapsody_wta/bd_rhapsody_wta"
   viash_version: "0.5.0"
-  git_commit: "1699e06ae0cc1234eaf1af37647e385f03d0165e"
+  git_commit: "9534af8a18f0a9cb1bcc204b8f0404a351dfbd15"
   git_remote: "https://github.com/openpipeline-bio/openpipeline"

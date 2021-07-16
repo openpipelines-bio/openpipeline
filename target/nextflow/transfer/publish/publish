@@ -139,21 +139,21 @@ VIASH_RESOURCES_DIR=`ViashSourceDir ${BASH_SOURCE[0]}`
 
 # ViashHelp: Display helpful explanation about this executable
 function ViashHelp {
-   echo "publish main_build"
-echo "Publish an artifact and optionally rename with parameters"
-   echo
-   echo "Options:"
+  echo "publish main_build"
+  echo "Publish an artifact and optionally rename with parameters"
+  echo
+  echo "Options:"
 
-echo "    -i, --input"
-echo "        type: file, required parameter"
-echo "        Input filename"
-echo ""
+  echo "   -i, --input"
+  echo "        type: file, required parameter"
+  echo "        Input filename"
+  echo ""
 
 
-echo "    -o, --output"
-echo "        type: file, required parameter, output"
-echo "        Output filename"
-echo ""
+  echo "   -o, --output"
+  echo "        type: file, required parameter, output"
+  echo "        Output filename"
+  echo ""
 
 }
 

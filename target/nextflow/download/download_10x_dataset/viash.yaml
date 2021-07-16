@@ -203,48 +203,47 @@ functionality:
       
       # ViashHelp: Display helpful explanation about this executable
       function ViashHelp {
-         echo "download_10x_dataset main_build"
-      echo "Download a dataset from the 10x genomics website. "
-         echo
-      echo "Usage: download_10x_dataset \\
-        --input https://cf.10xgenomics.com/samples/cell-exp/3.0.0/pbmc_1k_protein_v3/pbmc_1k_protein_v3_raw_feature_bc_matrix.h5 \\
-        --min_library_size 1000 --min_cells_per_gene 300"
-      echo
-         echo "Options:"
+        echo "download_10x_dataset main_build"
+        echo "Download a dataset from the 10x genomics website. "
+        echo
+        echo "Usage: download_10x_dataset \\"
+        echo "Usage:   --input https://cf.10xgenomics.com/samples/cell-exp/3.0.0/pbmc_1k_protein_v3/pbmc_1k_protein_v3_raw_feature_bc_matrix.h5 \\"
+        echo "Usage:   --min_library_size 1000 --min_cells_per_gene 300"
+        echo "Options:"
       
-      echo "    -i, --input"
-      echo "        type: string, required parameter"
-      echo "        example: https://cf.10xgenomics.com/samples/cell-exp/3.0.0/pbmc_1k_protein_v3/pbmc_1k_protein_v3_raw_feature_bc_matrix.h5"
-      echo "        Location URL to an h5 file from the 10x genomics website."
-      echo ""
-      
-      
-      echo "    -o, --output"
-      echo "        type: file, required parameter, output"
-      echo "        example: pbmc_1k_protein_v3_raw_feature_bc_matrix.h5"
-      echo "        Output h5 file."
-      echo ""
+        echo "   -i, --input"
+        echo "        type: string, required parameter"
+        echo "        example: https://cf.10xgenomics.com/samples/cell-exp/3.0.0/pbmc_1k_protein_v3/pbmc_1k_protein_v3_raw_feature_bc_matrix.h5"
+        echo "        Location URL to an h5 file from the 10x genomics website."
+        echo ""
       
       
-      echo "    --min_library_size"
-      echo "        type: integer"
-      echo "        default: 0"
-      echo "        Minimum library size."
-      echo ""
+        echo "   -o, --output"
+        echo "        type: file, required parameter, output"
+        echo "        example: pbmc_1k_protein_v3_raw_feature_bc_matrix.h5"
+        echo "        Output h5 file."
+        echo ""
       
       
-      echo "    --min_cells_per_gene"
-      echo "        type: integer"
-      echo "        default: 0"
-      echo "        Minimum number of cells per gene."
-      echo ""
+        echo "   --min_library_size"
+        echo "        type: integer"
+        echo "        default: 0"
+        echo "        Minimum library size."
+        echo ""
       
       
-      echo "    --keep_feature_types"
-      echo "        type: string, multiple values allowed"
-      echo "        example: Antibody Capture"
-      echo "        Specify which feature types will never be filtered out"
-      echo ""
+        echo "   --min_cells_per_gene"
+        echo "        type: integer"
+        echo "        default: 0"
+        echo "        Minimum number of cells per gene."
+        echo ""
+      
+      
+        echo "   --keep_feature_types"
+        echo "        type: string, multiple values allowed"
+        echo "        example: Antibody Capture"
+        echo "        Specify which feature types will never be filtered out"
+        echo ""
       
       }
       
@@ -584,16 +583,20 @@ functionality:
       }
       
       
+      def escape(str) {
+        return str.replaceAll('\\\\', '\\\\\\\\').replaceAll("\"", "\\\\\"").replaceAll("\n", "\\\\n").replaceAll("`", "\\\\`")
+      }
+      
       def renderCLI(command, arguments) {
       
         def argumentsList = arguments.collect{ it ->
           (it.otype == "")
-            ? "\'" + it.value + "\'"
+            ? "\'" + escape(it.value) + "\'"
             : (it.type == "boolean_true")
               ? it.otype + it.name
               : (it.value == "no_default_value_configured")
                 ? ""
-                : it.otype + it.name + " \'" + ((it.value in List && it.multiple) ? it.value.join(it.multiple_sep): it.value) + "\'"
+                : it.otype + it.name + " \'" + escape((it.value in List && it.multiple) ? it.value.join(it.multiple_sep): it.value) + "\'"
         }
       
         def command_line = command + argumentsList
@@ -898,5 +901,5 @@ info:
   output: "target/nextflow/download/download_10x_dataset"
   executable: "target/nextflow/download/download_10x_dataset/download_10x_dataset"
   viash_version: "0.5.0"
-  git_commit: "1699e06ae0cc1234eaf1af37647e385f03d0165e"
+  git_commit: "9534af8a18f0a9cb1bcc204b8f0404a351dfbd15"
   git_remote: "https://github.com/openpipeline-bio/openpipeline"

@@ -16,16 +16,20 @@ def checkParams(_params) {
 }
 
 
+def escape(str) {
+  return str.replaceAll('\\\\', '\\\\\\\\').replaceAll("\"", "\\\\\"").replaceAll("\n", "\\\\n").replaceAll("`", "\\\\`")
+}
+
 def renderCLI(command, arguments) {
 
   def argumentsList = arguments.collect{ it ->
     (it.otype == "")
-      ? "\'" + it.value + "\'"
+      ? "\'" + escape(it.value) + "\'"
       : (it.type == "boolean_true")
         ? it.otype + it.name
         : (it.value == "no_default_value_configured")
           ? ""
-          : it.otype + it.name + " \'" + ((it.value in List && it.multiple) ? it.value.join(it.multiple_sep): it.value) + "\'"
+          : it.otype + it.name + " \'" + escape((it.value in List && it.multiple) ? it.value.join(it.multiple_sep): it.value) + "\'"
   }
 
   def command_line = command + argumentsList
