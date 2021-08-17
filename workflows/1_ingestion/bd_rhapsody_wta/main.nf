@@ -142,14 +142,14 @@ workflow auto_wf {
         exit 1, "ERROR: Please"
     }
     def root = file(params.dir).toString()
-    Channel.fromPath(params.dir + "/**.R[12].fastq.gz") 
+    Channel.fromPath(params.dir + "**.R[12].fastq.gz") 
         | map { path ->
-            def relPath = path.toString().replace(root + "/", "")
+            def relPath = path.toString().replace(root, "")
             def id = relPath.replaceAll(/\.R[12].fastq.gz$/, "")
             [ id, path ]
         }
         | groupTuple(sort: true, size: 2)
         | map { id, input -> [ id.replaceAll(".*/", ""), input, params ] }
-        // | view { [ "DEBUG", it[0], it[1] ] }
+        | view { [ "DEBUG", it[0], it[1] ] }
         | main_wf
 }
