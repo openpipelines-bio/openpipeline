@@ -145,7 +145,7 @@ def overrideIO(_params, inputs, outputs) {
 
 process bd_rhapsody_wta_process {
 
-
+  label 'highmem_highcpu'
   tag "${id}"
   echo { (params.debug == true) ? true : false }
   cache 'deep'

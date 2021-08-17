@@ -1024,7 +1024,7 @@ functionality:
       
       process bd_rhapsody_wta_process {
       
-      
+        label 'highmem_highcpu'
         tag "${id}"
         echo { (params.debug == true) ? true : false }
         cache 'deep'
@@ -1205,6 +1205,7 @@ platform:
   id: "nextflow"
   registry: "openpipeline"
   namespace_separator: "_"
+  label: "highmem_highcpu"
   labels: []
 platforms: []
 info:
@@ -1213,5 +1214,5 @@ info:
   output: "target/nextflow/mapping/bd_rhapsody_wta"
   executable: "target/nextflow/mapping/bd_rhapsody_wta/bd_rhapsody_wta"
   viash_version: "0.5.0"
-  git_commit: "9534af8a18f0a9cb1bcc204b8f0404a351dfbd15"
+  git_commit: "32bb82f95c38b3faa3dc827a7b56e7875820865a"
   git_remote: "https://github.com/openpipeline-bio/openpipeline"
