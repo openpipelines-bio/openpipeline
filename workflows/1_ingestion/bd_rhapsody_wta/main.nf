@@ -42,7 +42,7 @@ workflow main_wf {
     output_ = input_ \
         | map { it -> 
             [   it[0],
-                [ "input" : it[1].split(";").collect { path -> file(path) }.flatten(),
+                [ "input" : it[1],
                   "reference_genome": file(params.reference_genome),
                   "transcriptome_annotation": file(params.transcriptome_annotation)
                 ],
@@ -83,7 +83,7 @@ workflow single_wf {
     }
     
     output_ = Channel.from(params.id) \
-        | map { [ it, params.input, params ] } \
+        | map { [ it, params.input.split(";").collect { path -> file(path) }.flatten(), params ] } \
         | main_wf
 
     emit: output_
@@ -115,7 +115,48 @@ workflow multi_wf {
     
     output_ = Channel.fromPath(file(params.tsv)) \
         | splitCsv(header: true, sep: "\t") \
-        | map { tsv -> [ tsv.id, tsv.input, params ] } \
+        | map { tsv -> [ tsv.id, tsv.input.split(";").collect { path -> file(path) }.flatten(), params ] } \
+        | main_wf
+
+    emit: output_
+}
+
+
+/* BD Rhapsody WTA - simplified multi-sample workflow
+ * 
+ * consumed params:
+ *   dir:                           a path containing many fastq files
+ *   reference_genome:              a path to STAR index as a tar.gz file
+ *   transcriptome_annotation:      a path to GTF annotation file
+ *   output                         a publish dir for the output h5ad files
+ * output format:               [ id, h5ad, params ]
+ *   value id:                      a sample id for one or more fastq files
+ *   value h5ad:                    h5ad object of mapped fastq reads
+ *   value params:                  the params object, which may already have sample specific overrides
+ * publishes:
+ *   the output h5ad files
+ */
+workflow auto_wf {
+    main:
+    if (!params.containsKey("dir") || params.dir == "") {
+        exit 1, "ERROR: Please provide a --dir parameter.
+    }
+    
+    print("Starting multisample workflow")
+    def root = file(params.dir).name
+    print("root: $root")
+    
+    output_ = Channel.fromPath(params.dir + "/**R[12].fastq.gz")
+        | map { path -> 
+          def relPath = path.name.replace(root, "")
+          print("relPath: $relPath")
+          def id = relPath.replaceAll(/R[12].fastq.gz$/, "")
+          print("id: $id")
+          [ id, path ]
+        }
+        | groupTuple
+        | view { [ "DEBUG", it[0], it[1] ] }
+        | map { it, input -> [ id, input, params ] }
         | main_wf
 
     emit: output_
