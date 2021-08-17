@@ -139,25 +139,16 @@ workflow multi_wf {
 workflow auto_wf {
     main:
     if (!params.containsKey("dir") || params.dir == "") {
-        exit 1, "ERROR: Please provide a --dir parameter.
+        exit 1, "ERROR: Please"
     }
-    
-    print("Starting multisample workflow")
-    def root = file(params.dir).name
-    print("root: $root")
-    
-    output_ = Channel.fromPath(params.dir + "/**R[12].fastq.gz")
-        | map { path -> 
-          def relPath = path.name.replace(root, "")
-          print("relPath: $relPath")
-          def id = relPath.replaceAll(/R[12].fastq.gz$/, "")
-          print("id: $id")
-          [ id, path ]
+    def root = file(params.dir).toString()
+    Channel.fromPath(params.dir + "/**R[12].fastq.gz") 
+        | map { path ->
+            def relPath = path.toString().replace(root, "")
+            def id = relPath.replaceAll(/R[12].fastq.gz$/, "")
+            [ id, path ]
         }
         | groupTuple
-        | view { [ "DEBUG", it[0], it[1] ] }
-        | map { it, input -> [ id, input, params ] }
+        | map { id, input -> [ id, input, params ] }
         | main_wf
-
-    emit: output_
 }
