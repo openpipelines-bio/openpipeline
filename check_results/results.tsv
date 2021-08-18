@@ -5,8 +5,8 @@ mapping	bd_rhapsody_wta	docker	build_executable	1	1	ERROR
 transfer	publish	docker	build_executable	0	0	SUCCESS
 transfer	publish	docker	run_test.sh	0	1	SUCCESS
 download	download_10x_dataset	docker	build_executable	0	0	SUCCESS
-download	download_10x_dataset	docker	run_test.R	0	31	SUCCESS
+download	download_10x_dataset	docker	run_test.R	0	33	SUCCESS
 convert	convert_10x_to_h5ad	docker	build_executable	0	0	SUCCESS
-convert	convert_10x_to_h5ad	docker	run_test.py	0	5	SUCCESS
+convert	convert_10x_to_h5ad	docker	run_test.py	0	6	SUCCESS
 bcl_demux	cellranger_mkfastq	docker	build_executable	0	0	SUCCESS
-bcl_demux	cellranger_mkfastq	docker	run_test.sh	0	34	SUCCESS
+bcl_demux	cellranger_mkfastq	docker	run_test.sh	0	39	SUCCESS
