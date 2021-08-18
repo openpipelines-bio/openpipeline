@@ -887,5 +887,5 @@ info:
   output: "target/nextflow/convert/convert_bdrhap_to_h5ad"
   executable: "target/nextflow/convert/convert_bdrhap_to_h5ad/convert_bdrhap_to_h5ad"
   viash_version: "0.5.0"
-  git_commit: "42ba2311f16fa09cf632afccd5cc751762ae5c33"
+  git_commit: "fdf5c2b4f5d2265dcae2d39c65850f883da7df21"
   git_remote: "https://github.com/openpipeline-bio/openpipeline"

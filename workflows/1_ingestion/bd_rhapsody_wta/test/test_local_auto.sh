@@ -9,10 +9,9 @@ cd "$REPO_ROOT"
 
 export NXF_VER=21.04.1
 
-PAR_GENOME="/scratch/gencodev38chr6.tar.gz"
-PAR_TRANSCRIPTOME="/scratch/gencodev38chr6-filtered.gtf"
-PAR_DIR="/app/project/CS000182"
-
+PAR_GENOME="/scratch/GRCh38-PhiX-gencodev29-20181205.tar.gz"
+PAR_TRANSCRIPTOME="/scratch/gencodev29-20181205.gtf"
+PAR_DIR="/app/project/CS000182/210729_BD_Rhapsody_NOPRODHPB0013_FNA/FASTQ/GC113427_AGCGTAGC-TATAGCCT."
 nextflow \
   run . \
   -main-script workflows/1_ingestion/bd_rhapsody_wta/main.nf \
