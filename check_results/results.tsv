@@ -9,4 +9,4 @@ download	download_10x_dataset	docker	run_test.R	0	32	SUCCESS
 convert	convert_10x_to_h5ad	docker	build_executable	0	0	SUCCESS
 convert	convert_10x_to_h5ad	docker	run_test.py	0	5	SUCCESS
 bcl_demux	cellranger_mkfastq	docker	build_executable	0	0	SUCCESS
-bcl_demux	cellranger_mkfastq	docker	run_test.sh	0	39	SUCCESS
+bcl_demux	cellranger_mkfastq	docker	run_test.sh	0	38	SUCCESS
