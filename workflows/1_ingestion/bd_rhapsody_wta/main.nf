@@ -139,17 +139,44 @@ workflow multi_wf {
 workflow auto_wf {
     main:
     if (!params.containsKey("dir") || params.dir == "") {
-        exit 1, "ERROR: Please"
+        exit 1, "ERROR: Please provide a --dir parameter pointing to the directory of FASTQ files you wish to process."
     }
-    def root = file(params.dir).toString()
+    if (!params.containsKey("reference_genome") || params.reference_genome == "") {
+        exit 1, "ERROR: Please provide a --reference_genome parameter pointing to the STAR index for tar.gz format.\nSee BD Genomics WTA Rhapsody analysis pipeline documentation for instructions to obtain pre-built STAR index file."
+    }
+    if (!params.containsKey("transcriptome_annotation") || params.transcriptome_annotation == "") {
+        exit 1, "ERROR: Please provide a --transcriptome_annotation parameter pointing to the GTF annotation file."
+    }
+    if (!params.containsKey("output") || params.output == "") {
+        exit 1, "ERROR: Please provide a --output parameter."
+    }
+
     Channel.fromPath(params.dir + "**.R[12].fastq.gz") 
+        // Step 1: group fastq files per lane
         | map { path ->
-            def relPath = path.toString().replace(root, "")
-            def id = relPath.replaceAll(/\.R[12].fastq.gz$/, "")
+            def id = path.name.replaceAll("\\.R[12]\\.fastq\\.gz\$", "")
             [ id, path ]
         }
         | groupTuple(sort: true, size: 2)
         | map { id, input -> [ id.replaceAll(".*/", ""), input, params ] }
-        | view { [ "DEBUG", it[0], it[1] ] }
-        | main_wf
+
+        // Step 2: run BD rhapsody WTA
+        | view { [ "running_bd_rhapsody", it[0], it[1] ] }
+        | bd_rhapsody_wta
+
+        // Step 3: group outputs per sample
+        | map { id, input, oldparams ->
+            def newId = id.replaceAll("\\.lane.*", "")
+            [ newId, input]
+        }
+        | groupTuple()
+        | map { id, input -> [ id, input, params ]}
+
+        // Step 4: convert to h5ad
+        | view { [ "converting_to_h5ad", it[0], it[1] ] }
+        | convert_bdrhap_to_h5ad
+
+        // Step 5: Publish
+        | map { overrideOptionValue(it, "publish", "output", "${params.output}/${it[0]}/${it[0]}.h5ad") }
+        | publish
 }
