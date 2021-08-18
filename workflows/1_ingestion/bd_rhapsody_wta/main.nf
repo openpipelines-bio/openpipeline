@@ -125,7 +125,7 @@ workflow multi_wf {
 /* BD Rhapsody WTA - simplified multi-sample workflow
  * 
  * consumed params:
- *   dir:                           a path containing many fastq files
+ *   input:                         a path containing many fastq files
  *   reference_genome:              a path to STAR index as a tar.gz file
  *   transcriptome_annotation:      a path to GTF annotation file
  *   output                         a publish dir for the output h5ad files
@@ -138,8 +138,8 @@ workflow multi_wf {
  */
 workflow auto_wf {
     main:
-    if (!params.containsKey("dir") || params.dir == "") {
-        exit 1, "ERROR: Please provide a --dir parameter pointing to the directory of FASTQ files you wish to process."
+    if (!params.containsKey("input") || params.input == "") {
+        exit 1, "ERROR: Please provide a --input parameter pointing to the directory of FASTQ files you wish to process."
     }
     if (!params.containsKey("reference_genome") || params.reference_genome == "") {
         exit 1, "ERROR: Please provide a --reference_genome parameter pointing to the STAR index for tar.gz format.\nSee BD Genomics WTA Rhapsody analysis pipeline documentation for instructions to obtain pre-built STAR index file."
@@ -153,8 +153,8 @@ workflow auto_wf {
     def ref_gen = file(params.reference_genome)
     def tra_ann = file(params.transcriptome_annotation)
 
-    print("Looking for files at " + params.dir)
-    Channel.fromPath(params.dir)
+    print("Looking for files at " + params.input)
+    Channel.fromPath(params.input)
         // Step 1: group fastq files per lane
         | map { path ->
             def id = path.name.replaceAll("\\.R[12]\\.fastq\\.gz\$", "")
