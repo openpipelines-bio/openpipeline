@@ -150,18 +150,23 @@ workflow auto_wf {
     if (!params.containsKey("output") || params.output == "") {
         exit 1, "ERROR: Please provide a --output parameter."
     }
+    def ref_gen = file(params.reference_genome)
+    def tra_ann = file(params.transcriptome_annotation)
 
-    Channel.fromPath(params.dir + "**.R[12].fastq.gz") 
+    print("Looking for files at " + params.dir)
+    Channel.fromPath(params.dir)
         // Step 1: group fastq files per lane
         | map { path ->
             def id = path.name.replaceAll("\\.R[12]\\.fastq\\.gz\$", "")
             [ id, path ]
         }
         | groupTuple(sort: true, size: 2)
-        | map { id, input -> [ id.replaceAll(".*/", ""), input, params ] }
 
         // Step 2: run BD rhapsody WTA
         | view { [ "running_bd_rhapsody", it[0], it[1] ] }
+        | map { id, input ->
+            [ id, [ input: input, reference_genome: ref_gen, transcriptome_annotation: tra_ann ], params ]
+        }
         | bd_rhapsody_wta
 
         // Step 3: group outputs per sample
@@ -170,9 +175,9 @@ workflow auto_wf {
             [ newId, input]
         }
         | groupTuple()
-        | map { id, input -> [ id, input, params ]}
 
         // Step 4: convert to h5ad
+        | map { id, input -> [ id, input, params ]}
         | view { [ "converting_to_h5ad", it[0], it[1] ] }
         | convert_bdrhap_to_h5ad
 
