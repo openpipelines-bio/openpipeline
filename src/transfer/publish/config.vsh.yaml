@@ -25,7 +25,7 @@ functionality:
       path: script.sh
   tests:
     - type: bash_script
-      path: test/test.sh
+      path: run_test.sh
 platforms:
   - type: docker
     image: ubuntu:bionic

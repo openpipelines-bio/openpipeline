@@ -1,0 +1,48 @@
+functionality:
+  name: "convert_10x_to_h5ad"
+  namespace: "convert"
+  version: "dev"
+  description: |
+    Converts an 10x h5 into an h5ad file.
+  authors:
+    - name: Dries De Maeyer
+      roles: [ author ]
+      props: { github: ddemaeyer, orcid: "0000-0002-1314-3348" }
+    - name: Robrecht Cannoodt
+      email: rcannood@gmail.com
+      roles: [ maintainer ]
+      props: { github: rcannood, orcid: "0000-0003-3641-729X" }
+  arguments:
+    - name: "--input"
+      alternatives: ["-i"]
+      type: file
+      description: Input h5 file
+      default: input.h5
+      direction: input
+      required: true
+    - name: "--output"
+      alternatives: ["-o"]
+      type: file
+      description: Output h5ad file.
+      default: output.h5ad
+      direction: output
+    - name: "--compression"
+      type: string
+      description: The compression format to be used on the final h5ad object.
+      default: "gzip"
+  resources:
+    - type: python_script
+      path: ./script.py
+  tests:
+    - type: python_script
+      path: run_test.py
+    - path: ../../../resources/test/pbmc_1k_protein_v3/pbmc_1k_protein_v3_raw_feature_bc_matrix.h5
+platforms:
+  - type: docker
+    image: python:3.8
+    setup:
+      - type: python
+        packages:
+          - scanpy
+          - loompy
+  - type: nextflow

@@ -23,6 +23,14 @@ functionality:
       required: true
       multiple: true
       multiple_sep: ':'
+      example: input.fastq.gz
+    - name: "--output"
+      alternatives: [-o]
+      description: "Output folder. Output still needs to be processed further."
+      required: true
+      type: file
+      direction: output
+      example: output_dir/
     - name: "--subsample"
       type: double
       description: A number >1 or fraction (0 < n < 1) to indicate the number or percentage of reads to subsample.
@@ -30,37 +38,36 @@ functionality:
       alternatives: [-r]
       type: file
       required: true
-      description: "Path to STAR index for tar.gz format."
+      description: "Path to STAR index as a tar.gz file."
     - name: "--transcriptome_annotation"
       alternatives: [-t]
       type: file
-      description: Path to GTF annotation file
+      description: Path to GTF annotation file.
       required: true
-    - name: "--output"
-      alternatives: [-o]
-      description: "Output folder. Output still needs to be processed further."
-      required: true
-      type: file
-      direction: output
     - name: "--exact_cell_count"
       type: integer
       description: "Exact cell count - Set a specific number (>=1) of cells as putative, based on those with the highest error-corrected read count"
     - name: "--disable_putative_calling"
       type: boolean
       description: "Disable Refined Putative Cell Calling - Determine putative cells using only the basic algorithm (minimum second derivative along the cumulative reads curve). The refined algorithm attempts to remove false positives and recover false negatives, but may not be ideal for certain complex mixtures of cell types. Does not apply if Exact Cell Count is set."
-    # Comment by Robrecht: Nxf viash modules don't support optional files yet.
-    # - name: "--abseq_reference"
-    #   alternatives: [-a]
-    #   type: file
-    #   description: Path to the AbSeq reference file in FASTA format. Only needed if BD AbSeq Ab-Oligos are used.
-    #   multiple: true
-    #   multiple_sep: ':'
-    # - name: "--supplemental_reference"
-    #   alternatives: [-s]
-    #   type: file
-    #   description: Path to the supplemental reference file in FASTA format. Only needed if there are additional transgene sequences used in the experiment.
-    #   multiple: true
-    #   multiple_sep: ':'
+    - name: "--parallel"
+      type: boolean_true
+      description: "[experimental] Run jobs in parallel."
+    - name: "--timestamps"
+      type: boolean_true
+      description: "Add timestamps to the errors, warnings, and notifications."
+    - name: "--abseq_reference"
+      alternatives: [-a]
+      type: file
+      description: Path to the AbSeq reference file in FASTA format. Only needed if BD AbSeq Ab-Oligos are used.
+      multiple: true
+      multiple_sep: ':'
+    - name: "--supplemental_reference"
+      alternatives: [-s]
+      type: file
+      description: Path to the supplemental reference file in FASTA format. Only needed if there are additional transgene sequences used in the experiment.
+      multiple: true
+      multiple_sep: ':'
   resources:
     - type: bash_script
       path: ./script.sh
@@ -68,7 +75,7 @@ functionality:
   # Comment by Robrecht: I'm trying to create smaller references, but I didn't manage to create one which works with the Rhapsody pipeline
   # tests:
   #   - type: bash_script
-  #     path: test/run_test.sh
+  #     path: run_test.sh
   #   - path: http://bd-rhapsody-public.s3.amazonaws.com/Rhapsody-WTA-test-data/sample_R1_.fastq.gz # 100MB
   #   - path: http://bd-rhapsody-public.s3.amazonaws.com/Rhapsody-WTA-test-data/sample_R2_.fastq.gz # 150MB
   #   - path: http://bd-rhapsody-public.s3.amazonaws.com/Rhapsody-WTA/GRCh38-PhiX-gencodev29/GRCh38-PhiX-gencodev29-20181205.tar.gz # 29GB
@@ -78,6 +85,6 @@ platforms:
     image: bdgenomics/rhapsody:1.9.1
     setup:
       - type: apt
-        packages:
-          - cwltool
+        packages: [ cwltool ]
   - type: nextflow
+    label: highmem_highcpu
