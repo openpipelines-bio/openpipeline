@@ -1,0 +1,26 @@
+graph LR
+    H5AD[H5AD]
+    MULTI_H5AD[MULTI_H5AD]
+    SEURAT[SEURAT]
+    MTX[MTX]
+    
+    concat(concat)
+    lognorm(lognorm)
+    hvg(hvg)
+    pca(pca)
+    bbknn(bbknn)
+    leiden(leiden)
+    umap(umap)
+    publish(publish)
+    h5adtoseurat(h5adtoseurat)
+    h5adtomtx(h5adtomtx)
+
+    H5AD --> concat --> hvg --> lognorm  --> pca --> bbknn --> leiden --> umap --> publish --> MULTI_H5AD
+    umap --> h5adtoseurat --> publish --> SEURAT
+    umap --> h5adtomtx --> publish --> MTX
+
+
+
+
+
+            

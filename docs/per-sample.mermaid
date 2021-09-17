@@ -1,0 +1,37 @@
+graph LR
+    A[COUNT_MATRIX]
+    B[H5AD]
+    C[SEURAT]
+    D[MTX]
+    
+    a(conversion)
+    b(filtering)
+    c(scrublet)
+    d(sample_annotation)
+    e(SingleR)
+    f(lognorm)
+    g(hvg)
+    h(pca)
+    i(nn)
+    j(leiden)
+    k(umap)
+    l(publish)
+    m(h5adtoseurat)
+    n(h5adtomtx)
+
+    A --> a
+    a --> b --> c
+    b --> d
+    b --> e
+    c --> f
+    d --> f
+    e --> f
+    f --> g --> h --> i --> j --> k
+    k --> l --> B
+    k --> m --> l --> C
+    k --> n --> l --> D
+
+
+
+
+            
