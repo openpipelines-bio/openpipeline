@@ -1,0 +1,47 @@
+functionality:
+  name: lognorm
+  namespace: "normalize"
+  version: "dev"
+  description: |
+    Performs a log normalization on a h5ad file.
+  authors:
+    - name: Dries De Maeyer
+      email: ddemaeyer@gmail.com
+      roles: [ maintainer ]
+      props: { account: ddemaey1 }
+  arguments:
+    - name: "--input"
+      type: file
+      description: Input h5ad file
+      direction: input
+      required: true
+    - name: "--output"
+      alternatives: ["-o"]
+      type: file
+      description: Output h5ad file.
+      direction: output
+      required: true
+    - name: "--normalizedUMICount"
+      type: integer
+      default: 10000
+      required: false
+    - name: "--regressOutVariables"
+      type: string
+      default: ""
+      required: false
+  resources:
+    - type: python_script
+      path: ./script.py
+  tests:
+    - type: bash_script
+      path: run_test.sh
+    - path: ../../../resources/test/pbmc_1k_protein_v3_filtered_feature_bc_matrix.h5ad
+platforms:
+  - type: docker
+    image: python:3.8
+    python:
+      packages:
+        - scanpy
+        - loompy
+    workdir: /app
+  - type: nextflow

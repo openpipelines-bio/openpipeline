@@ -1,0 +1,44 @@
+functionality:
+  name: pca
+  namespace: "dimred"
+  version: "dev"
+  description: |
+    Performs PCA on the highly variable genes
+  authors:
+    - name: Dries De Maeyer
+      email: ddemaeyer@gmail.com
+      roles: [ maintainer ]
+      props: { account: ddemaey1 }
+  arguments:
+    - name: "--input"
+      type: file
+      description: Input h5ad file
+      direction: input
+      required: true
+    - name: "--output"
+      alternatives: ["-o"]
+      type: file
+      description: Output h5ad file containing the dimred object.
+      direction: output
+      required: true
+    - name: "--nPCs"
+      alternatives: ["-n"]
+      type: integer
+      default: 25
+      description: The number of principal components to calculate.
+  resources:
+    - type: python_script
+      path: ./script.py
+  tests:
+    - type: bash_script
+      path: run_test.sh
+    - path: ../../../resources/test/pbmc_1k_protein_v3_filtered_feature_bc_matrix.h5ad
+platforms:
+  - type: docker
+    image: python:3.8
+    python:
+      packages:
+        - scanpy
+        - loompy
+  - type: nextflow
+    label: highcpu

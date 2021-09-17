@@ -1,0 +1,56 @@
+functionality:
+  name: leiden
+  namespace: "cluster"
+  version: "dev"
+  description: |
+    Leiden clustering as described in https://scanpy.readthedocs.io/en/stable/api/scanpy.tl.leiden.html
+  authors:
+    - name: Dries De Maeyer
+      email: ddemaeyer@gmail.com
+      roles: [ maintainer ]
+      props: { account: ddemaey1 }
+  arguments:
+    - name: "--input"
+      alternatives: [-i]
+      type: file
+      description: Input h5ad file
+      direction: input
+      required: true
+    - name: "--output"
+      alternatives: ["-o"]
+      type: file
+      description: Output file.
+      direction: output
+      required: true
+    - name: "--outputFormat"
+      type: string
+      description: The output format for the clustering. This can be csv or h5ad.
+      default: "h5ad"
+    - name: "--clusterColumnName"
+      alternatives: [-c]
+      type: string
+      description: The column name for the clustering.
+      default: "leiden.res.0.25"
+    - name: "--resolution"
+      alternatives: [-r]
+      type: double
+      description: The resolution to run the clustering in.
+      default: 0.25
+  resources:
+    - type: python_script
+      path: ./script.py
+  tests:
+    - type: python_script
+      path: run_test.py
+    - path: ../../../resources/test/pbmc_1k_protein_v3_filtered_feature_bc_matrix.norm.hvg.pca.nn.umap.h5ad
+platforms:
+  - type: docker
+    image: python:3.8
+    python:
+      packages:
+        - scanpy
+        - python-igraph
+        - leidenalg
+        - hnswlib
+  - type: nextflow
+    label: highcpu
