@@ -909,5 +909,5 @@ info:
   output: "target/nextflow/bcl_demux/cellranger_mkfastq"
   executable: "target/nextflow/bcl_demux/cellranger_mkfastq/cellranger_mkfastq"
   viash_version: "0.5.0"
-  git_commit: "0f04a59e9e42ab9c93c49bee89f93fb65ab7b9c5"
+  git_commit: "be9ecf6f7e6ab3537e384b28e38cb2e2cb327971"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"
