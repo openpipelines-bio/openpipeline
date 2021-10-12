@@ -785,5 +785,5 @@ info:
   output: "target/nextflow/nn/nn"
   executable: "target/nextflow/nn/nn/nn"
   viash_version: "0.5.0"
-  git_commit: "f960ecd2b83e290ffbda53b27e2939005cde22e7"
+  git_commit: "0f04a59e9e42ab9c93c49bee89f93fb65ab7b9c5"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"
