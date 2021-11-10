@@ -31,6 +31,7 @@ container: python:3.8
 python packages: [ velocyto ]
 input:
   input: folder with cellranger output
+  transcriptome: folder with cellranger reference
 output:
   output: velocyto loom
 ```
