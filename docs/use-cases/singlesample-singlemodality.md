@@ -52,11 +52,11 @@ python packages: [ scvelo ]
 input:
   input: velocyto loom
 output:
-  output: anndata/muon
-    slots:
-      - layers['spliced']
-      - layers['unspliced']
-      - layers['velocity']
+  output: muon
+    mod['velocity']:
+      - layers['spliced']: Count matrix of spliced reads
+      - layers['unspliced']: Count matrix of unspliced reads
+      - layers['velocity']: Matrix of velocity vector
       ... more?
 ```
 
