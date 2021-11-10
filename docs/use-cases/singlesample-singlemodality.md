@@ -3,6 +3,8 @@
 ## RNA velocity
 
 ### Mapping with CellRanger
+
+```
 name: mapping/cellranger
 container: litd/docker-cellranger:v6.1.1
 input:
@@ -10,8 +12,10 @@ input:
   transcriptome: folder with cellranger reference
 output:
   output: folder with cellranger output
-
 ```
+
+Example command
+```bash
 viash run src/1_cellranger/config.vsh.yaml -- \
   --input poc/pbmc_1k_v3_fastqs \
   --transcriptome poc/refdata-gex-GRCh38-2020-A \
@@ -20,6 +24,8 @@ viash run src/1_cellranger/config.vsh.yaml -- \
 ```
 
 ### Split into spliced/unspliced with velocyto
+
+```
 name: mapping/velocyto
 container: python:3.8
 python packages: [ velocyto ]
@@ -27,8 +33,10 @@ input:
   input: folder with cellranger output
 output:
   output: velocyto loom
-
 ```
+
+Example command
+```bash
 viash run src/2_velocyto/config.vsh.yaml -- \
   --input output/poc_output/ \
   --transcriptome poc/refdata-gex-GRCh38-2020-A \
@@ -36,6 +44,8 @@ viash run src/2_velocyto/config.vsh.yaml -- \
 ```
 
 ### Compute RNA velocity with scvelo
+
+```
 name: mapping/velocyto
 container: python:3.8
 python packages: [ scvelo ]
@@ -48,8 +58,10 @@ output:
       - layers['unspliced']
       - layers['velocity']
       ... more?
-
 ```
+
+Example command
+```bash
 viash run src/3_scvelo/config.vsh.yaml -- \
   --input output/poc_output.loom \
   --output output/poc_output.h5mu
