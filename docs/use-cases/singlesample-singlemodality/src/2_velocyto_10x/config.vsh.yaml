@@ -1,0 +1,39 @@
+functionality:
+  name: velocyto_10x
+  namespace: "poc"
+  description: ""
+  arguments:
+    - name: "--input"
+      type: file
+      direction: input
+      description: "Path to 10x output"
+      required: true
+    - name: "--transcriptome"
+      type: file
+      direction: input
+      description: "Path to 10x reference files"
+      required: true
+    - name: "--output"
+      required: true
+      type: file
+      direction: output
+      description: "Velocyto loom file"
+  resources:
+    - type: bash_script
+      path: script.sh
+platforms:
+  - type: docker
+    image: python:3.8
+    setup:
+      - type: python
+        pip:
+          - numpy
+          - Cython
+      - type: python
+        pip:
+          - velocyto
+      - type: apt
+        packages:
+          - samtools
+  - type: nextflow
+    labels: [ highmem, highcpu ]

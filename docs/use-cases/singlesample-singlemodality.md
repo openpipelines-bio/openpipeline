@@ -23,9 +23,9 @@ viash run src/1_cellranger/config.vsh.yaml -- \
 
 ### Split into spliced/unspliced with velocyto
 
-* name: mapping/velocyto
+* name: mapping/velocyto_10x
 * container: python:3.8
-* python packages: [ velocyto ]
+* python packages: [ Cython, numpy, velocyto ]
 * input:
   - input: folder with cellranger output
   - transcriptome: folder with cellranger reference

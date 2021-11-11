@@ -1,0 +1,27 @@
+functionality:
+  name: scvelo
+  namespace: "poc"
+  description: ""
+  arguments:
+    - name: "--input"
+      type: file
+      direction: input
+      description: "Velocyto loom file"
+      required: true
+    - name: "--output"
+      required: true
+      type: file
+      direction: output
+      description: "RNA velocity anndata file"
+  resources:
+    - type: python_script
+      path: script.py
+platforms:
+  - type: docker
+    image: python:3.8
+    setup:
+      - type: python
+        pip:
+          - scvelo
+  - type: nextflow
+    labels: [ highmem, highcpu ]

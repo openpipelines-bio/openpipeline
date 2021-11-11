@@ -1,0 +1,46 @@
+functionality:
+  name: velocyto_bam
+  namespace: "poc"
+  description: ""
+  arguments:
+    - name: "--input"
+      type: file
+      direction: input
+      description: "Path to BAM file"
+      required: true
+    - name: "--transcriptome"
+      type: file
+      direction: input
+      description: "Path to GTF file"
+      required: true
+    - name: "--barcode"
+      type: file
+      direction: input
+      description: |
+        Valid barcodes file, to filter the bam. If --bcfile is not specified all the cell barcodes will be included.
+        Cell barcodes should be specified in the bcfile as the 'CB' tag for each read
+      required: false
+    - name: "--output"
+      required: true
+      type: file
+      direction: output
+      description: "Velocyto loom file"
+  resources:
+    - type: bash_script
+      path: script.sh
+platforms:
+  - type: docker
+    image: python:3.8
+    setup:
+      - type: python
+        pip:
+          - numpy
+          - Cython
+      - type: python
+        pip:
+          - velocyto
+      - type: apt
+        packages:
+          - samtools
+  - type: nextflow
+    labels: [ highmem, highcpu ]

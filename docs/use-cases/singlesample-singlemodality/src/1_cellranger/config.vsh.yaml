@@ -1,0 +1,43 @@
+functionality:
+  name: cellranger
+  namespace: "poc"
+  description: ""
+  arguments:
+    - name: "--input"
+      type: file
+      direction: input
+      description: Path of folder created by mkfastq or bcl2fastq
+    - name: "--id"
+      type: string
+      default: cr
+      description: Output folder for the count files.
+    - name: "--libraries"
+      type: file
+      description: File containing the library definitions
+      required: false
+    - name: "--feature_ref"
+      type: file
+      description: File containing the barcode info
+      required: false
+    - name: "--transcriptome"
+      type: file
+      direction: input
+      description: Path of folder containing 10x-compatible reference.
+      required: true
+    - name: "--output"
+      required: true
+      type: file
+      direction: output
+      description: "Path to cellranger output folder"
+    - name: "--log"
+      type: string
+      description: Path to the log file (stdout and stderr)
+      default: log.txt
+  resources:
+    - type: bash_script
+      path: script.sh
+platforms:
+  - type: docker
+    image: litd/docker-cellranger:v6.0.0
+  - type: nextflow
+    labels: [ highmem, highcpu ]
