@@ -29,6 +29,10 @@ if [ ! -f "$gtf_file" ]; then
   exit 1
 fi
 
+# workaround for assumptions made by velocyto
+output_folder=`dirname $par_output`
+sample_id=`basename $par_output .loom`
+
 # autodetect number of threads
 num_threads=`nproc --all`
 
@@ -41,8 +45,8 @@ velocyto run \
   "$bam_file" \
   "$gtf_file" \
   --bcfile "$barcode_file" \
-  --outputfolder `dirname $par_output` \
-  --sampleid `basename $par_output .loom` \
+  --outputfolder "$output_folder" \
+  --sampleid "$sample_id" \
   --samtools-threads $num_threads \
   --samtools-memory $amnt_mem
 
