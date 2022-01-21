@@ -1,0 +1,32 @@
+functionality:
+  name: h510x_to_h5mu
+  namespace: convert
+  version: dev
+  description: Convert a 10x h5 file to h5mu.
+  authors:
+    - name: Robrecht Cannoodt
+      email: rcannood@gmail.com
+      roles: [ maintainer ]
+      props: { github: rcannood, orcid: "0000-0003-3641-729X" }
+  arguments:
+    - name: --input
+      type: file
+      description: Location to an h5 file.
+      required: true
+      example: "spleen_lymph_111.h5"
+    - name: "--output"
+      type: file
+      example: output.h5mu
+      required: true
+      direction: output
+      description: Output h5mu file.
+  resources:
+    - type: python_script
+      path: script.py
+platforms:
+  - type: docker
+    image: "python:3.8"
+    setup:
+      - type: python
+        pip: [ muon ]
+  - type: nextflow
