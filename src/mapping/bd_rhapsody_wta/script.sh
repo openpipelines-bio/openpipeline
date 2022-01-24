@@ -1,8 +1,5 @@
 #!/bin/bash
 
-# yq eval 'del(.. | select(has("dockerPull")))' cwl/v1.9.1/rhapsody_wta_1.9.1.cwl -j > rhapsody_wta_1.9.1_nodocker.cwl
-# doesn't work
-
 mkdir -p $par_output
 
 cat > $par_output/config.yml << HERE
