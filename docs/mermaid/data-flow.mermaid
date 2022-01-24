@@ -1,0 +1,27 @@
+stateDiagram-v2
+    [*] --> BCL
+    
+    BCL --> FASTQ 
+    FASTQ --> COUNT_TABLE 
+
+    COUNT_TABLE --> TX_H5AD 
+    TX_H5AD --> SS_MUON: data/rna
+
+    COUNT_TABLE --> ADT_H5AD 
+    ADT_H5AD --> SS_MUON: data/adt
+
+    COUNT_TABLE --> ATAC_H5AD 
+    ATAC_H5AD --> SS_MUON: data/atac
+
+    COUNT_TABLE --> RNA_VELO_H5AD 
+    RNA_VELO_H5AD -->SS_MUON: data/rna_velo
+
+    SS_MUON --> MUON 
+    MUON --> [*]
+
+    FASTQ --> VDJ_H5AD
+    VDJ_H5AD --> SS_MUON : data/vdj
+
+
+    COUNT_TABLE --> CRISPR_H5AD
+    CRISPR_H5AD --> SS_MUON : data/crispr

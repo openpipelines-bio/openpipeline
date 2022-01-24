@@ -370,6 +370,7 @@ function ViashDockerfile {
   cat << 'VIASHDOCKER'
 FROM bdgenomics/rhapsody:1.9.1
 
+RUN apt-get --allow-releaseinfo-change update
 RUN apt-get update && \
   apt-get install -y cwltool && \
   rm -rf /var/lib/apt/lists/*
@@ -821,9 +822,6 @@ par_supplemental_reference='$VIASH_PAR_SUPPLEMENTAL_REFERENCE'
 resources_dir="$VIASH_RESOURCES_DIR"
 
 #!/bin/bash
-
-# yq eval 'del(.. | select(has("dockerPull")))' cwl/v1.9.1/rhapsody_wta_1.9.1.cwl -j > rhapsody_wta_1.9.1_nodocker.cwl
-# doesn't work
 
 mkdir -p \$par_output
 
