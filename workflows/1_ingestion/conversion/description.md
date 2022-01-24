@@ -10,7 +10,7 @@ Pipeline to convert the different formats of raw count matrices to the input for
 - ### ___{input_name}.{extension}___
 Takes a single or multiple input files of the format described below and the layer variable where the final data will be stored.
 
-#### __input_type == "10x h5"__ (extension = h5)
+#### __input_type == "10x_h5"__ (extension = h5)
 
 The 10x h5 format, supports both the legacy single modality version from cellranger 2 and the multi-modality version from cellranger 3 and upwards. 
 
@@ -22,7 +22,7 @@ The feature type to be extracted to the final h5ad.
 
 The standard mtx format.
 
-#### __input_type == "csv"_ (extension = tsv,csv,dge)
+#### __input_type == "csv"__ (extension = tsv,csv,dge)
 
 Count matrices in different matrix forms.
 
