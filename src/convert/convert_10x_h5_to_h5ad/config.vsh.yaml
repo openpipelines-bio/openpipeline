@@ -33,7 +33,7 @@ functionality:
       description: The feature type to extract to the h5ad file.
   resources:
     - type: python_script
-      path: ./script.py
+      path: script.py
   tests:
     - type: python_script
       path: run_test.py
@@ -43,7 +43,6 @@ platforms:
     image: python:3.8
     python:
       packages:
-        - scanpy
+        - anndata
         - loompy
-    workdir: /app
   - type: nextflow

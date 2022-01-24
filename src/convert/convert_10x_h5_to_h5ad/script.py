@@ -1,3 +1,5 @@
+import anndata as ad
+
 ### VIASH START
 
 par = {
@@ -6,14 +8,9 @@ par = {
 }
 ### VIASH END
 
+print(f"Converting {par['input']} to {par['output']}")
 
-import argparse
-import scanpy as sc
-
-
-print("Converting " + par["input"] + " to " + par["output"])
-
-data = sc.read_10x_h5(par["input"], gex_only = False)       
+data = ad.read_10x_h5(par["input"], gex_only = False)       
 
 d = data[:, data.var["feature_types"] == par["modality"]]
 
@@ -21,6 +18,7 @@ try:
 	d.var_names_make_unique()
 except:
 	pass
+
 d.raw = d
 
 d.write(par["output"], compression = par["compression"])
