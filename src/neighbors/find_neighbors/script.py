@@ -14,7 +14,9 @@ import scanpy as sc
 
 data = anndata.read_h5ad(par["input"])
 
-sc.pp.neighbors(data, n_neighbors = par["nNeighbors"], metric = par["metric"])
+sc.pp.neighbors(data, 
+    n_neighbors = par["nNeighbors"], 
+    metric = par["metric"])
 
 data.uns["nearestNeighbourParameters"] = {
     "Nearest neighbours: metric": par["metric"],
