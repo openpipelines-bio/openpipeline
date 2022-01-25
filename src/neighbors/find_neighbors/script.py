@@ -8,9 +8,7 @@ par ={
 }
 ### VIASH END
 
-import argparse
 import anndata
-import scanpy as sc
 
 data = anndata.read_h5ad(par["input"])
 
@@ -23,5 +21,4 @@ data.uns["nearestNeighbourParameters"] = {
     "Nearest neighbours: number of neighbors": par["nNeighbors"]
 }
 
-
-data.write(par["output"], compression = "gzip")
+data.write(par["output"], compression = par["compression"])
