@@ -5,6 +5,8 @@ targetDir = params.rootDir + "/target/nextflow"
 
 include  { convert_10x_h5_to_h5ad }  from  targetDir + "/convert/convert_10x_h5_to_h5ad/main.nf"  params(params)
 include  { convert_10x_mtx_to_h5ad }  from  targetDir + "/convert/convert_10x_mtx_to_h5ad/main.nf"  params(params)
+include  { convert_csv_to_h5ad }  from  targetDir + "/convert/convert_csv_to_h5ad/main.nf"  params(params)
+
 include  { publish }                 from  targetDir + "/transfer/publish/main.nf"                params(params)
 include  { overrideOptionValue }     from  workflowDir + "/utils/utils.nf"                        params(params)
 
@@ -43,8 +45,16 @@ workflow {
                 | publish
             break
 
+        case "csv":
+            Channel.fromPath(params.input)
+                | map { input -> [ input.name, input, params ]}
+                | convert_csv_to_h5ad
+                | map { overrideOptionValue(it, "publish", "output", "${params.output}/${it[0]}.h5ad") }
+                | publish
+            break
+
         default:
-            exit 1, "WARNING: There was no input_type specified. Please use the --input_type parameter to set the input's input format."
+            exit 1, "WARNING: There was no input_type recognize. Please use the --input_type parameter to set the input's input format."
     }
 
 }
