@@ -1,0 +1,74 @@
+functionality:
+  name: find_doublets_using_scrublet
+  namespace: "doublets"
+  version: "dev"
+  description: "Doublet detection using the Scrublet method (Wolock, Lopez and Klein, 2019).\nThe method tests for potential doublets by using the expression profiles of cells to generate synthetic potential doubles which are tested against cells. The method returns a \"doublet score\" on which it calls for potential doublets.\n\nFor the source code please visit https://github.com/AllonKleinLab/scrublet\n\nFor 10x we expect the doublet rates to be \nMultiplet Rate (%) # of Cells Loaded # of Cells Recovered\n  ~0.4% ~800 ~500\n  ~0.8% ~1,600 ~1,000\n  ~1.6% ~3,200 ~2,000\n  ~2.3% ~4,800 ~3,000\n  ~3.1% ~6,400 ~4,000\n  ~3.9% ~8,000 ~5,000\n  ~4.6% ~9,600 ~6,000\n  ~5.4% ~11,200 ~7,000\n  ~6.1% ~12,800 ~8,000\n  ~6.9% ~14,400 ~9,000\n  ~7.6% ~16,000 ~10,000\n"
+  authors:
+    - name: Dries De Maeyer
+      email: DDeMaey1@its.jnj.com
+      roles: [ maintainer ]
+      props: { account: ddemaey1 }
+  arguments:
+    - name: "--input"
+      type: file
+      description: Input h5ad file. The X slot should be assigned with the raw counts.
+      direction: input
+      required: true
+    - name: "--output"
+      alternatives: ["-o"]
+      type: file
+      description: Output h5ad file with additional obs columns containing the doublet score and the doublet calling result.
+      direction: output
+      required: true
+    - name: "--expectedDoubletRate"
+      type: double
+      description: The estimated fraction of doublets as from the experimental setup. Defaults to 0.056 (5.6%%) per the normal expected 10x doublet rate for a 12k loaded cell experiment.
+      default: 0.05
+    - name: "--minCounts"
+      type: integer
+      default: 2
+      description: The number of minimal UMI counts per cell that have to be present for initial cell detection.
+    - name: "--minCells"
+      type: integer
+      default: 3
+      description: The number of cells in which UMIs for a gene were detected.
+    - name: "--minGeneVariabilityPercentile"
+      type: integer
+      default: 85
+      description: Used for gene filtering prior to PCA. Keep the most highly variable genes (in the top min_gene_variability_pctl percentile), as measured by the v-statistic [Klein et al., Cell 2015]
+    - name: "--nPrincipalComponents"
+      type: integer
+      default: 30
+      description: Number of principal components to use during PCA dimensionality reduction.
+    - name: "--distanceMetric"
+      type: string
+      default: "euclidean"
+      description: The distance metric used for computing similarities.
+    - name: "--colNameDoubletScore"
+      type: string
+      default: "ScrubletDoubletScore"
+      description: Name of the doublet scores column in the obs slot of the returned object.
+    - name: "--colNamePredictedDoublets"
+      type: string
+      default: "ScrubletPredictedDoublets"
+      description: Name of the predicted doublets column in the obs slot of the returned object.
+    - name: "--outputFormat"
+      type: string
+      description: The output format for the clustering. This can be csv or h5ad.
+      default: "h5ad"
+  resources:
+    - type: python_script
+      path: ./script.py
+  tests:
+    - type: python_script
+      path: run_test.py
+    - path: ../../../resources/test/pbmc_1k_protein_v3_filtered_feature_bc_matrix.h5ad
+platforms:
+  - type: docker
+    image: python:3.8
+    python:
+      packages:
+        - scanpy
+        - scrublet
+  - type: nextflow
+    label: highcpu
