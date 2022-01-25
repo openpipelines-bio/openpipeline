@@ -45,4 +45,5 @@ platforms:
       packages:
         - anndata
         - loompy
+        - scanpy
   - type: nextflow

@@ -1,4 +1,4 @@
-import anndata as ad
+
 
 ### VIASH START
 
@@ -8,9 +8,9 @@ par = {
 }
 ### VIASH END
 
-print(f"Converting {par['input']} to {par['output']}")
+import scanpy as sc
 
-data = ad.read_10x_h5(par["input"], gex_only = False)       
+data = sc.read_10x_h5(par["input"], gex_only = False)       
 
 d = data[:, data.var["feature_types"] == par["modality"]]
 
