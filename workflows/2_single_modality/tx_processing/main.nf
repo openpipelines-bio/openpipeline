@@ -3,7 +3,8 @@ nextflow.enable.dsl=2
 workflowDir = params.rootDir + "/workflows"
 targetDir = params.rootDir + "/target/nextflow"
 
-include  { filter_on_umi_genes_and_mito }  from  targetDir + "/filter/filter_on_umi_genes_and_mito/main.nf"  params(params)
+include  { filter_on_umi_genes_and_mito }  from  targetDir + "/filter/filter_on_umi_genes_and_mito/main.nf"    params(params)
+include  { find_doublets_using_scrublet }  from  targetDir + "/doublets/find_doublets_using_scrublet/main.nf"  params(params)
 include  { lognorm }       from  targetDir + '/normalize/lognorm/main.nf'             params(params)
 include  { hvg_scanpy }    from  targetDir + '/hvg/hvg_scanpy/main.nf'                params(params)
 include  { pca }           from  targetDir + '/dimred/pca/main.nf'                    params(params)
@@ -28,13 +29,14 @@ workflow {
     Channel.fromPath(params.input)
         | map { input -> [ input.name, input, params ]}
         | filter_on_umi_genes_and_mito
-        | lognorm           \
-        | hvg_scanpy        \
-        | pca               \
-        | find_neighbors    \
-        | leiden            \
-        | umap              \
-        | map { overrideOptionValue(it, "publish", "output", "${params.output}/${it[0]}.h5ad") } \
+        | find_doublets_using_scrublet
+        | lognorm           
+        | hvg_scanpy        
+        | pca               
+        | find_neighbors    
+        | leiden            
+        | umap              
+        | map { overrideOptionValue(it, "publish", "output", "${params.output}/${it[0]}.h5ad") } 
         | publish
  
 }
