@@ -1,12 +1,13 @@
 functionality:
-  name: download_10x_dataset
-  namespace: "download"
+  name: filter_10x_h5
+  namespace: "filter"
   version: "dev"
   description: |
-    Download a dataset from the 10x genomics website. 
+    Filter a 10x h5 dataset.
   usage: | 
-    download_10x_dataset \
-      --input https://cf.10xgenomics.com/samples/cell-exp/3.0.0/pbmc_1k_protein_v3/pbmc_1k_protein_v3_raw_feature_bc_matrix.h5 \
+    filter_10x_h5 \
+      --input pbmc_1k_protein_v3_raw_feature_bc_matrix.h5 \
+      --input pbmc_1k_protein_v3_raw_feature_bc_matrix_filtered.h5 \
       --min_library_size 1000 --min_cells_per_gene 300
   authors:
     - name: Robrecht Cannoodt
@@ -17,13 +18,13 @@ functionality:
     - name: "--input"
       alternatives: [ -i ]
       type: string
-      description: "Location URL to an h5 file from the 10x genomics website."
+      description: "An h5 file from the 10x genomics website."
       required: true
-      example: "https://cf.10xgenomics.com/samples/cell-exp/3.0.0/pbmc_1k_protein_v3/pbmc_1k_protein_v3_raw_feature_bc_matrix.h5"
+      example: "pbmc_1k_protein_v3_raw_feature_bc_matrix.h5"
     - name: "--output"
       alternatives: [ -o ]
       type: file
-      example: pbmc_1k_protein_v3_raw_feature_bc_matrix.h5
+      example: pbmc_1k_protein_v3_raw_feature_bc_matrix_filtered.h5
       required: true
       direction: output
       description: Output h5 file.
@@ -40,12 +41,17 @@ functionality:
       multiple: true
       description: Specify which feature types will never be filtered out
       example: "Antibody Capture"
+    - name: "--verbose"
+      alternatives: ["-v"]
+      type: boolean_true
+      description: Increase verbosity
   resources:
     - type: r_script
       path: script.R
   tests:
     - type: r_script
       path: run_test.R
+    - path: ../../../resources/test/pbmc_1k_protein_v3/pbmc_1k_protein_v3_raw_feature_bc_matrix.h5
 platforms:
   - type: docker
     image: dataintuitive/randpy:r4.0_py3.8_bioc3.12
