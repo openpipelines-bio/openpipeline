@@ -1,0 +1,35 @@
+functionality:
+  name: "sync_test_resources"
+  namespace: "download"
+  version: "dev"
+  description: Synchronise the test resources from s3://openpipelines-data to resources/test
+  usage: |
+    sync_test_resources
+    sync_test_resources --input s3://openpipelines-data --output resources/test
+  authors:
+    - name: Robrecht Cannoodt
+      email: rcannood@gmail.com
+      roles: [ maintainer ]
+      props: { github: rcannood, orcid: "0000-0003-3641-729X" }
+  arguments:
+    - name: "--input"
+      alternatives: ["-i"]
+      type: string
+      description: "Path to the S3 bucket to sync from."
+      default: "s3://openpipelines-data"
+    - name: "--output"
+      alternatives: ["-o"]
+      type: file
+      default: resources/test
+      direction: output
+      description: "Path to the test resource directory."
+  resources:
+    - type: bash_script
+      path: script.sh
+  tests:
+    - type: bash_script
+      path: run_test.sh
+platforms:
+  - type: docker
+    image: "amazon/aws-cli:2.4.15"
+  - type: nextflow
