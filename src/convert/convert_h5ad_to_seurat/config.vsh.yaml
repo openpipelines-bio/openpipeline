@@ -44,19 +44,20 @@ functionality:
 platforms:
   - type: docker
     image: dataintuitive/randpy:r4.0_py3.8_bioc3.12
-    apt:
-      packages:
-        - libhdf5-serial-dev
-    r:
-      cran:
-        - optparse
-        - hdf5r
-        - reticulate
-        - Seurat
-      github:
-        #- mojaveazure/seurat-disk
-        - data-intuitive/seurat-disk@b36b490feb7246ff0ef7d2bfaf3c8f53eeafa12a
-    python:
-      packages:
-        - scanpy
+    setup:
+      - type: apt
+        packages:
+          - libhdf5-serial-dev
+      - type: r
+        cran:
+          - optparse
+          - hdf5r
+          - reticulate
+          - Seurat
+        github:
+          #- mojaveazure/seurat-disk
+          - data-intuitive/seurat-disk@b36b490feb7246ff0ef7d2bfaf3c8f53eeafa12a
+      - type: python
+        packages:
+          - scanpy
   - type: nextflow

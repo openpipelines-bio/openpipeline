@@ -30,3 +30,4 @@ target/
 check_results/
 out/
 output/
+resources/test/

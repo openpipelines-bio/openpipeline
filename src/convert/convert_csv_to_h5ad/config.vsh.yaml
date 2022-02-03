@@ -1,0 +1,52 @@
+functionality:
+  name: convert_csv_to_h5ad
+  namespace: "convert"
+  version: "dev"
+  description: |
+    Converts an csv into an h5ad file.
+  authors:
+    - name: Dries De Maeyer
+      email: DDeMaey1@its.jnj.com
+      roles: [ maintainer ]
+      props: { account: ddemaey1 }
+  arguments:
+    - name: "--input"
+      alternatives: [-i]
+      type: file
+      description: Input csv file
+      direction: input
+      required: true
+    - name: "--output"
+      alternatives: ["-o"]
+      type: file
+      description: Output h5ad file.
+      direction: output
+    - name: "--delimiter"
+      alternatives: [-d]
+      type: string
+      description: Delimiter for the different fields in the delimited file.
+      default: ","
+    - name: "--useColumnNames"
+      type: boolean
+      description: Use the first row as column names as gene names
+      default: true
+      required: false
+    - name: "--compression"
+      type: string
+      description: The compression format to be used on the final h5ad object.
+      default: "gzip"
+  resources:
+    - type: python_script
+      path: ./script.py
+  tests:
+    - type: bash_script
+      path: run_test.sh
+    - path: ../../../resources/test/convert/convert_csv_to_h5ad/CS0000007_subsample_LI00080.csv.gz
+platforms:
+  - type: docker
+    image: python:3.8
+    python:
+      packages:
+        - scanpy
+        - loompy
+  - type: nextflow

@@ -1,0 +1,48 @@
+functionality:
+  name: convert_10x_mtx_to_h5ad
+  namespace: "convert"
+  version: "dev"
+  description: |
+    Converts an csv into an h5ad file.
+  authors:
+    - name: Dries De Maeyer
+      email: DDeMaey1@its.jnj.com
+      roles: [ maintainer ]
+      props: { account: ddemaey1 }
+  arguments:
+    - name: "--input"
+      alternatives: [-i]
+      type: file
+      description: Input mtx file directory. This directory should contain the features, barcodes and mtx files.
+      direction: input
+      required: true
+    - name: "--output"
+      alternatives: ["-o"]
+      type: file
+      description: Output h5ad file.
+      direction: output
+    - name: "--compression"
+      type: string
+      description: The compression format to be used on the final h5ad object.
+      default: "gzip"
+    - name: "--modality"
+      type: string
+      default: "Gene Expression"
+      description: The feature type to extract to the h5ad file.
+  resources:
+    - type: python_script
+      path: ./script.py
+  tests:
+    - type: python_script
+      path: run_test.py
+    - path: ../../../resources/test/convert/convert_10x_mtx_to_h5ad/barcodes.tsv.gz
+    - path: ../../../resources/test/convert/convert_10x_mtx_to_h5ad/features.tsv.gz
+    - path: ../../../resources/test/convert/convert_10x_mtx_to_h5ad/matrix.mtx.gz
+platforms:
+  - type: docker
+    image: python:3.8
+    python:
+      packages:
+        - scanpy
+        - loompy
+  - type: nextflow
