@@ -9,7 +9,7 @@ import numpy as np
 
 class TestH5toH5AD(unittest.TestCase):
     def test_simple_conversion(self):
-        preData = sc.read_h5ad("pbmc_1k_protein_v3_filtered_feature_bc_matrix.h5.h5ad")
+        preData = sc.read_h5ad("pbmc_1k_protein_v3_filtered_feature_bc_matrix.h5ad")
 
         preData.obsm["counts_antibody"] = preData.to_df().iloc[:,0:10]
         preData.obsm["counts_crispr"] = preData.to_df().iloc[:,0:10]

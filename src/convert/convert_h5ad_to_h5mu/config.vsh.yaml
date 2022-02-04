@@ -37,7 +37,7 @@ functionality:
   tests:
     - type: python_script
       path: run_test.py
-    - path: ../../../resources/test/pbmc_1k_protein_v3_filtered_feature_bc_matrix.h5.h5ad
+    - path: ../../../resources/test/pbmc_1k_protein_v3_filtered_feature_bc_matrix.h5ad
 platforms:
   - type: docker
     image: python:3.8
