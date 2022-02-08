@@ -3,9 +3,8 @@ nextflow.enable.dsl=2
 workflowDir = params.rootDir + "/workflows"
 targetDir = params.rootDir + "/target/nextflow"
 
-include  { convert_10x_h5_to_h5ad }  from  targetDir + "/convert/convert_10x_h5_to_h5ad/main.nf"  params(params)
-include  { convert_10x_mtx_to_h5ad }  from  targetDir + "/convert/convert_10x_mtx_to_h5ad/main.nf"  params(params)
-include  { convert_csv_to_h5ad }  from  targetDir + "/convert/convert_csv_to_h5ad/main.nf"  params(params)
+include  { convert_10x_to_h5mu }  from  targetDir + "/convert/convert_10x_to_h5mu/main.nf"  params(params)
+include  { convert_10x_mtx_to_h5mu }  from  targetDir + "/convert/convert_10x_mtx_to_h5mu/main.nf"  params(params)
 
 include  { publish }                 from  targetDir + "/transfer/publish/main.nf"                params(params)
 include  { overrideOptionValue }     from  workflowDir + "/utils/utils.nf"                        params(params)
@@ -20,10 +19,6 @@ workflow {
     if (!params.containsKey("input") || params.input == "") {
         exit 1, "ERROR: Please provide a --input parameter pointing to the count matrices to be converted"
     }
-    if (!params.containsKey("layer") || params.layer == "") {
-        print("Setting the layer to default: rna")
-        params.layer = "rna"
-    }
     if (!params.containsKey("output") || params.output == "") {
         exit 1, "ERROR: Please provide a --output parameter."
     }
@@ -32,26 +27,19 @@ workflow {
         case "10x_h5":
             Channel.fromPath(params.input)
                 | map { input -> [ input.name, input, params ]}
-                | convert_10x_h5_to_h5ad
-                | map { overrideOptionValue(it, "publish", "output", "${params.output}/${it[0]}.h5ad") }
+                | convert_10x_to_h5mu
+                | map { overrideOptionValue(it, "publish", "output", "${params.output}/${it[0]}.h5mu") }
                 | publish
             break
 
         case "10x_mtx":
             Channel.fromPath(params.input)
                 | map { input -> [ input.name, input, params ]}
-                | convert_10x_mtx_to_h5ad
-                | map { overrideOptionValue(it, "publish", "output", "${params.output}/${it[0]}.h5ad") }
+                | convert_10x_mtx_to_h5mu
+                | map { overrideOptionValue(it, "publish", "output", "${params.output}/${it[0]}.h5mu") }
                 | publish
             break
 
-        case "csv":
-            Channel.fromPath(params.input)
-                | map { input -> [ input.name, input, params ]}
-                | convert_csv_to_h5ad
-                | map { overrideOptionValue(it, "publish", "output", "${params.output}/${it[0]}.h5ad") }
-                | publish
-            break
 
         default:
             exit 1, "WARNING: There was no input_type recognize. Please use the --input_type parameter to set the input's input format."
