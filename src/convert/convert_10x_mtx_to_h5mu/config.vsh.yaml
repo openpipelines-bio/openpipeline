@@ -1,0 +1,40 @@
+functionality:
+  name: "convert_10x_mtx_to_h5mu"
+  namespace: "convert"
+  version: "dev"
+  description: |
+    Converts a 10x mtx into an h5mu file.
+  authors:
+    - name: Robrecht Cannoodt
+      email: rcannood@gmail.com
+      roles: [ maintainer ]
+      props: { github: rcannood, orcid: "0000-0003-3641-729X" }
+  arguments:
+    - name: "--input"
+      alternatives: ["-i"]
+      type: file
+      description: Input mtx folder
+      example: input
+      direction: input
+      required: true
+    - name: "--output"
+      alternatives: ["-o"]
+      type: file
+      description: Output h5ad file.
+      example: output.h5ad
+      direction: output
+    - name: "--compression"
+      type: string
+      description: The compression format to be used on the final h5ad object.
+      default: "gzip"
+  resources:
+    - type: python_script
+      path: script.py
+platforms:
+  - type: docker
+    image: python:3.8
+    setup:
+      - type: python
+        packages: [ muon ]
+  - type: nextflow
+

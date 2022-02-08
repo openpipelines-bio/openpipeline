@@ -1,9 +1,9 @@
 functionality:
-  name: convert_10x_h5_to_h5ad
+  name: convert_h5ad_to_h5mu
   namespace: "convert"
   version: "dev"
   description: |
-    Converts an h5 into an h5ad file.
+    Converts a single layer h5ad file into a single muon object
   authors:
     - name: Dries De Maeyer
       email: ddemaeyer@gmail.com
@@ -13,36 +13,37 @@ functionality:
     - name: "--input"
       alternatives: ["-i"]
       type: file
-      description: Input h5 file
-      default: input.h5
+      description: Input h5ad files
+      default: input.h5ad
       direction: input
       required: true
     - name: "--output"
       alternatives: ["-o"]
       type: file
-      description: Output h5ad file.
-      default: output.h5ad
+      description: Output muon file.
+      default: output.h5mu
       direction: output
     - name: "--compression"
       type: string
-      description: The compression format to be used on the final h5ad object.
+      description: The compression format to be used on the final muon object.
       default: "gzip"
-    - name: "--modality"
+    - name: "--conversions_obsm"
       type: string
-      default: "Gene Expression"
-      description: The feature type to extract to the h5ad file.
+      description: Dict describing the conversions that have to be performed from the obsm slot.
+      default: '{"counts_antibody":"prot", "counts_custom": "custom"}'
   resources:
     - type: python_script
       path: script.py
   tests:
     - type: python_script
       path: run_test.py
-    - path: ../../../resources/test/pbmc_1k_protein_v3_filtered_feature_bc_matrix.h5
+    - path: ../../../resources/test/pbmc_1k_protein_v3_filtered_feature_bc_matrix.h5ad
 platforms:
   - type: docker
     image: python:3.8
     python:
       packages:
-        - scanpy
+        - anndata
         - loompy
+        - muon
   - type: nextflow

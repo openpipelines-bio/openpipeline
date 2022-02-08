@@ -1,9 +1,9 @@
 functionality:
-  name: "convert_10x_to_h5ad"
+  name: "convert_10x_to_h5mu"
   namespace: "convert"
   version: "dev"
   description: |
-    Converts a 10x h5 into an h5ad file.
+    Converts an 10x h5 into an h5mu file.
   authors:
     - name: Dries De Maeyer
       roles: [ author ]
@@ -36,7 +36,7 @@ functionality:
   tests:
     - type: python_script
       path: run_test.py
-    - path: ../../../resources/test/pbmc_1k_protein_v3/pbmc_1k_protein_v3_raw_feature_bc_matrix.h5
+    - path: ../../../resources/test/pbmc_1k_protein_v3_filtered_feature_bc_matrix.h5
 platforms:
   - type: docker
     image: python:3.8
@@ -45,4 +45,5 @@ platforms:
         packages:
           - scanpy
           - loompy
+          - muon
   - type: nextflow

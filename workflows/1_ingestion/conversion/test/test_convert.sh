@@ -27,23 +27,5 @@ nextflow \
   -resume \
   -c ./workflows/1_ingestion/conversion/nextflow.config
 
-# 10x mtx conversion
-nextflow \
-  run . \
-  -main-script workflows/1_ingestion/conversion/main.nf \
-  --input_type 10x_mtx \
-  --input ./resources/test/convert/convert_10x_mtx_to_h5ad/ \
-  --output output/ \
-  -resume \
-  -c ./workflows/1_ingestion/conversion/nextflow.config
 
-# 10x csv conversion
-nextflow \
-  run . \
-  -main-script workflows/1_ingestion/conversion/main.nf \
-  --input_type csv \
-  --input ./resources/test/convert/convert_csv_to_h5ad/CS0000007_subsample_LI00080.csv.gz \
-  --output output/ \
-  -resume \
-  -c ./workflows/1_ingestion/conversion/nextflow.config
 
