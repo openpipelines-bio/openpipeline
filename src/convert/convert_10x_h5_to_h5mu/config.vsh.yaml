@@ -20,12 +20,16 @@ functionality:
     - name: "--output"
       alternatives: ["-o"]
       type: file
-      description: Output h5ad file.
-      example: output.h5ad
+      description: Output h5mu file.
+      example: output.h5mu
       direction: output
   resources:
     - type: python_script
       path: script.py
+  tests:
+    - type: python_script
+      path: run_test.py
+    - path: ../../../resources/test/pbmc_1k_protein_v3
 platforms:
   - type: docker
     image: python:3.8
