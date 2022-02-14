@@ -14,7 +14,11 @@ functionality:
       alternatives: ["-i"]
       type: file
       description: Input mtx folder
+<<<<<<< HEAD
       example: input_dir_containing_gz_files
+=======
+      example: input_dir
+>>>>>>> Add test to convert_10x_mtx_to_h5mu + correct description and example of --output + fix example input in script
       direction: input
       required: true
     - name: "--output"
