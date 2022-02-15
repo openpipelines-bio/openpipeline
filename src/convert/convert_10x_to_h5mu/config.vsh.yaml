@@ -23,13 +23,9 @@ functionality:
     - name: "--output"
       alternatives: ["-o"]
       type: file
-      description: Output h5ad file.
-      default: output.h5ad
+      description: Output h5mu file.
+      default: output.h5mu
       direction: output
-    - name: "--compression"
-      type: string
-      description: The compression format to be used on the final h5ad object.
-      default: "gzip"
   resources:
     - type: python_script
       path: ./script.py
