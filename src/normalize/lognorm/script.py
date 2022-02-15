@@ -1,44 +1,40 @@
-### VIASH START
-
-par = {
-	"input": "./pbmc_1k_protein_v3_filtered_feature_bc_matrix.h5ad",
-	"output": "./pbmc_1k_protein_v3_filtered_feature_bc_matrix.normalize.h5ad",
-
-	"normalizedUMICount": "10000",
-	"regressOutVariables": []
-}
-
-### VIASH END
-
-import anndata
 import scanpy as sc
-from itertools import compress
-import numpy as np
+import muon as mu
 import multiprocessing
 
+### VIASH START
+par = {
+  'input': 'resources/test/pbmc_1k_protein_v3/pbmc_1k_protein_v3_filtered_feature_bc_matrix.h5mu',
+  'output': 'output.h5mu',
+  'normalized_umi_count': 10000,
+  'regress_out_variables': [],
+  'modality': [ 'rna' ]
+}
+### VIASH END
 
-data = anndata.read_h5ad(par["input"])
+print("Reading input mudata")
+mudata = mu.read_h5mu(par["input"])
 
-print("Performing log normalization ... ")
-sc.pp.normalize_total(data, target_sum = par["normalizedUMICount"])
-sc.pp.log1p(data)
-
-if any(map(len, par["regressOutVariables"])) > 0:
-    selectNonEmpty = [len(i) > 0 for i in par["regressOutVariables"]]
-    regressOutVariables = list(compress(par["regressOutVariables"], selectNonEmpty))
+print("Performing log normalization")
+for mod in par['modality']:
+    data = mudata.mod[mod]
     
-    sc.pp.regress_out(data, regressOutVariables, n_jobs=multiprocessing.cpu_count() - 1)
+    sc.pp.normalize_total(data, target_sum = par["normalized_umi_count"])
+    sc.pp.log1p(data)
 
-    data.uns["normalizationParameters"] = {
+    norm_params = {
         "Normalization: method": "lognorm",
-        "Normalization: normalizedUMICount": par["normalizedUMICount"],
-        "Normalization: regressOutVariables": regressOutVariables
+        "Normalization: normalized_umi_count": par["normalized_umi_count"]
     }
-else:
-    data.uns["normalizationParameters"] = {
-        "Normalization: method": "lognorm",
-        "Normalization: normalizedUMICount": par["normalizedUMICount"]
-    }
-                
-data.write(par["output"], compression = "lzf")       
+
+    if len(par["regress_out_variables"]) > 0:
+        print("Regress out variables")        
+        sc.pp.regress_out(data, par["regress_out_variables"], n_jobs=multiprocessing.cpu_count()-1)
+
+        norm_params["Normalization: regress_out_variables"] = par["regress_out_variables"]
+
+    data.uns["normalization_parameters"] = norm_params
+
+print("Writing to file")
+mudata.write(par["output"])       
     
