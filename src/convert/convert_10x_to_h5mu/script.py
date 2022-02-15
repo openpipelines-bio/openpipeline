@@ -1,7 +1,7 @@
 ### VIASH START
 par = {
     "input": "resources/test/pbmc_1k_protein_v3/pbmc_1k_protein_v3_raw_feature_bc_matrix.h5",
-    "output": "test.h5mu",
+    "output": "output.h5mu",
 }
 ### VIASH END
 
