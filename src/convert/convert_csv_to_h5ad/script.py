@@ -11,14 +11,15 @@ par = {
 import scanpy as sc
 import scipy
 
-print("Converting " + par["input"] + " to " + par["output"])
-
+print("Reading", par["input"])
 data = sc.read_csv(
     par["input"], delimiter=par["delimiter"], first_column_names=par["use_column_names"]
 )
 
+print("Converting")
 data.var_names_make_unique()
 data.X = scipy.sparse.csr_matrix(data.X)
 data.raw = data
 
+print("Writing to", par["output"])
 data.write(par["output"], compression=par["compression"])
