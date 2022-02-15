@@ -18,6 +18,9 @@ functionality:
     type: string
     description: Port to use
     default: "5005"
+  tests:
+    - type: bash_script
+      path: run_test.sh
 platforms:
 - type: docker
   image: ubuntu:bionic
