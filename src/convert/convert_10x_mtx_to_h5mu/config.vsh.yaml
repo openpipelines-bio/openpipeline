@@ -14,7 +14,7 @@ functionality:
       alternatives: ["-i"]
       type: file
       description: Input mtx folder
-      example: input_dir
+      example: input_dir_containing_gz_files
       direction: input
       required: true
     - name: "--output"
@@ -23,10 +23,6 @@ functionality:
       description: Output h5mu file.
       example: output.h5mu
       direction: output
-    - name: "--compression"
-      type: string
-      description: The compression format to be used on the final h5ad object.
-      default: "gzip"
   resources:
     - type: python_script
       path: script.py
