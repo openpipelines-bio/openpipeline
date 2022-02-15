@@ -7,5 +7,8 @@ par = {
 }
 ## VIASH END
 
+print("Reading", par["input"])
 mdata = mu.read_10x_mtx(par["input"])
+
+print("Writing", par["output"])
 mdata.write_h5mu(filename=par["output"])
