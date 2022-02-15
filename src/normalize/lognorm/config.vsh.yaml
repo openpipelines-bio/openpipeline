@@ -12,14 +12,14 @@ functionality:
   arguments:
     - name: "--input"
       type: file
-      description: Input h5ad file
+      description: Input h5mu file
       direction: input
       required: true
       example: input.h5mu
     - name: "--output"
       alternatives: ["-o"]
       type: file
-      description: Output h5ad file.
+      description: Output h5mu file.
       direction: output
       required: true
       example: output.h5mu
@@ -40,8 +40,8 @@ functionality:
     - type: python_script
       path: script.py
   tests:
-    - type: bash_script
-      path: test.sh
+    - type: python_script
+      path: run_test.py
     - path: ../../../resources/test/pbmc_1k_protein_v3
 platforms:
   - type: docker
