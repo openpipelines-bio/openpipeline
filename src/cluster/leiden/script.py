@@ -10,14 +10,17 @@ par = {
 
 import scanpy as sc
 
+print("Reading", par["input"])
 data = sc.read_h5ad(par["input"])
 
+print("Clustering cells using Leiden algorithm")
 sc.tl.leiden(
     data, resolution=float(par["resolution"]), key_added=par["cluster_column_name"]
 )
 
+print("Writing file as", par["output_format"], "format", "to", par["output"])
 if par["output_format"] == "h5ad":
-    data.write_h5ad()(par["output"], compression="lzf")
+    data.write_h5ad(par["output"], compression="lzf")
 elif par["output_format"] == "csv":
     data.obs[par["cluster_column_name"]].to_csv(par["output"])
 else:
