@@ -16,17 +16,19 @@ functionality:
       description: Input csv file
       direction: input
       required: true
+      example: input.csv
     - name: "--output"
       alternatives: ["-o"]
       type: file
       description: Output h5ad file.
       direction: output
+      example: output.h5ad
     - name: "--delimiter"
       alternatives: [-d]
       type: string
       description: Delimiter for the different fields in the delimited file.
       default: ","
-    - name: "--useColumnNames"
+    - name: "--use_column_names"
       type: boolean
       description: Use the first row as column names as gene names
       default: true
@@ -41,7 +43,7 @@ functionality:
   tests:
     - type: bash_script
       path: run_test.sh
-    - path: ../../../resources/test/convert/convert_csv_to_h5ad/CS0000007_subsample_LI00080.csv.gz
+    - path: ../../../resources/test/pbmc_1k_protein_v3
 platforms:
   - type: docker
     image: python:3.8

@@ -1,7 +1,10 @@
 ### VIASH START
 par = {
-	"input": "./test/pbmc_1k_protein_v3_filtered_feature_bc_matrix.csv",
-	"output": "./test/pbmc_1k_protein_v3_filtered_feature_bc_matrix.h5ad"
+    "input": "resources/test/pbmc_1k_protein_v3/pbmc_1k_protein_v3_filtered_feature_bc_matrix.csv",
+    "output": "output.h5ad",
+    "delimiter": ",",
+    "use_column_name": "true",
+    "compression": "gzip",
 }
 ### VIASH END
 
@@ -10,12 +13,12 @@ import scipy
 
 print("Converting " + par["input"] + " to " + par["output"])
 
-data = sc.read_csv(par["input"], 
-	delimiter = par["delimiter"],
-	first_column_names = par["useColumnNames"])   
+data = sc.read_csv(
+    par["input"], delimiter=par["delimiter"], first_column_names=par["use_column_names"]
+)
 
 data.var_names_make_unique()
 data.X = scipy.sparse.csr_matrix(data.X)
 data.raw = data
 
-data.write(par["output"], compression = par["compression"])
+data.write(par["output"], compression=par["compression"])
