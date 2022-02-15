@@ -16,17 +16,19 @@ functionality:
       description: Input h5ad file
       direction: input
       required: true
+      example: input.h5ad
     - name: "--output"
       alternatives: ["-o"]
       type: file
       description: Output file.
       direction: output
       required: true
-    - name: "--outputFormat"
+      example: output.h5ad
+    - name: "--output_format"
       type: string
       description: The output format for the clustering. This can be csv or h5ad.
       default: "h5ad"
-    - name: "--clusterColumnName"
+    - name: "--cluster_column_name"
       alternatives: [-c]
       type: string
       description: The column name for the clustering.
