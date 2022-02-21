@@ -1,3 +1,5 @@
+import scanpy as sc
+
 ### VIASH START
 par = {
     "input": "resources/test/pbmc_1k_protein_v3/pbmc_1k_protein_v3_filtered_feature_bc_matrix.norm.hvg.pca.nn.umap.h5ad",
@@ -7,8 +9,6 @@ par = {
     "resolution": float("0.25"),
 }
 ### VIASH END
-
-import scanpy as sc
 
 print("Reading", par["input"])
 data = sc.read_h5ad(par["input"])

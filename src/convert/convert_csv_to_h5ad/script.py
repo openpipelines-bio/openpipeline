@@ -1,3 +1,6 @@
+import scanpy as sc
+import scipy
+
 ### VIASH START
 par = {
     "input": "resources/test/pbmc_1k_protein_v3/pbmc_1k_protein_v3_filtered_feature_bc_matrix.csv",
@@ -7,9 +10,6 @@ par = {
     "compression": "gzip",
 }
 ### VIASH END
-
-import scanpy as sc
-import scipy
 
 print("Reading", par["input"])
 data = sc.read_csv(
