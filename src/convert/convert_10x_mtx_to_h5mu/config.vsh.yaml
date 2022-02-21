@@ -14,19 +14,7 @@ functionality:
       alternatives: ["-i"]
       type: file
       description: Input mtx folder
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
       example: input_dir_containing_gz_files
-=======
-      example: input_dir
->>>>>>> Add test to convert_10x_mtx_to_h5mu + correct description and example of --output + fix example input in script
-=======
-      example: input_dir
->>>>>>> Add test to convert_10x_mtx_to_h5mu + correct description and example of --output + fix example input in script
-=======
-      example: input_dir_containing_gz_files
->>>>>>> Remove compression (not supported by muon) + clarify input
       direction: input
       required: true
     - name: "--output"
