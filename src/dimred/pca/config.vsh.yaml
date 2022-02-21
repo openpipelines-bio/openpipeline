@@ -15,17 +15,20 @@ functionality:
       description: Input h5ad file
       direction: input
       required: true
+      example: input.h5ad
     - name: "--output"
       alternatives: ["-o"]
       type: file
       description: Output h5ad file containing the dimred object.
       direction: output
       required: true
+      example: output.h5ad
     - name: "--nPCs"
       alternatives: ["-n"]
       type: integer
       default: 25
       description: The number of principal components to calculate.
+      example: 25
   resources:
     - type: python_script
       path: ./script.py
