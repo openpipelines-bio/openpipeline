@@ -11,6 +11,7 @@ par = {
 }
 ### VIASH END
 
+print("Reading", par["input"])
 data = anndata.read_h5ad(par["input"])
 
 try:
@@ -18,6 +19,7 @@ try:
 except:
     pass
 
+print("Converting ")
 muon = mu.MuData({"rna": data})
 
 for key, value in json.loads(par["conversions_obsm"]).items():
@@ -25,4 +27,5 @@ for key, value in json.loads(par["conversions_obsm"]).items():
         muon.mod[value] = anndata.AnnData(data.obsm[key])
         del muon["rna"].obsm[key]
 
+print("Writing".par["output"])
 muon.write_h5mu(par["output"], compression=par["compression"])
