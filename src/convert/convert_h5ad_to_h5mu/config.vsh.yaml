@@ -17,16 +17,19 @@ functionality:
       default: input.h5ad
       direction: input
       required: true
+      example: input.h5ad
     - name: "--output"
       alternatives: ["-o"]
       type: file
       description: Output muon file.
       default: output.h5mu
       direction: output
+      example: output.h5mu
     - name: "--compression"
       type: string
       description: The compression format to be used on the final muon object.
       default: "gzip"
+      example: "gzip"
     - name: "--conversions_obsm"
       type: string
       description: Dict describing the conversions that have to be performed from the obsm slot.
