@@ -3,15 +3,14 @@
 par = {
     "input": "./test/",
     "output": "./test/",
-    
-    "expectedDoubletRate": 0.06,
-    "minCounts": 2,
-    "minCells": 3, 
-    "minGeneVariabilityPercentile": 85,
-    "nPrincipalComponents": 30,
-    "distanceMetric": "euclidean",
-    "colNameDoubletScore": "ScrubletDoubletScore",
-    "colNamePredictedDoublets": "ScrubletPredictedDoublets"
+    "expected_doublet_rate": 0.06,
+    "min_counts": 2,
+    "min_cells": 3,
+    "min_gene_variablity_percent": 85,
+    "prinipal_components_amount": 30,
+    "distance_metric": "euclidean",
+    "col_name_doublet_score": "scrublet_doublet_score",
+    "col_name_predicted_doublets": "scrublet_predicted_doublets",
 }
 
 
@@ -19,29 +18,31 @@ par = {
 
 import scrublet as scr
 import scanpy as sc
+import muon as mu
 
-data = sc.read_h5ad(par["input"])
+# data = sc.read_h5ad(par["input"])
 
-scrub = scr.Scrublet(data.X)
+print("Reading", par["input"])
+mdata = mu.read_h5mu(par["input"])
 
-doubletScores, predictedDoublets = scrub.scrub_doublets(min_counts=par["minCounts"], 
-                                                          min_cells=par["minCells"], 
-                                                          min_gene_variability_pctl=par["minGeneVariabilityPercentile"], 
-                                                          n_prin_comps=par["nPrincipalComponents"],
-                                                          distance_metric=par["distanceMetric"])
+scrub = scr.Scrublet(mdata.mod["rna"].X)
 
+doubletScores, predictedDoublets = scrub.scrub_doublets(
+    min_counts=par["min_counts"],
+    min_cells=par["min_cells"],
+    min_gene_variability_pctl=par["min_gene_variablity_percent"],
+    n_prin_comps=par["prinipal_components_amount"],
+    distance_metric=par["distance_metric"],
+)
 
-data.obs[par["colNameDoubletScore"]] = doubletScores
-data.obs[par["colNamePredictedDoublets"]] = predictedDoublets
+mdata.obs[par["col_name_doublet_score"]] = doubletScores
+mdata.obs[par["col_name_predicted_doublets"]] = predictedDoublets
 
-if (par["outputFormat"] == "h5ad"):
-    data.obs[par["colNameDoubletScore"]] = doubletScores
-    data.obs[par["colNamePredictedDoublets"]] = predictedDoublets
+if par["outputFormat"] == "h5mu":
+    mdata.obs[par["col_name_doublet_score"]] = doubletScores
+    mdata.obs[par["col_name_predicted_doublets"]] = predictedDoublets
 
-    data.write_h5ad(par["output"], compression = "gzip")
-
-elif (par["outputFormat"] == "csv"):
-     data.obs[[par["colNameDoubletScore"], par["colNamePredictedDoublets"]]].to_csv(par["output"])
-
-else: 
-     raise ValueError("An unrecognized output format was specified.")
+    print("Writing", par["output"])
+    mdata.write_h5mu(filename=par["output"])
+else:
+    print(par["outputFormat"], " format is not supported. No file will be written.")

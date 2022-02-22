@@ -11,58 +11,60 @@ functionality:
   arguments:
     - name: "--input"
       type: file
-      description: Input h5ad file. The X slot should be assigned with the raw counts.
+      description: Input h5mu file. The X slot should be assigned with the raw counts.
       direction: input
       required: true
+      example: input.h5mu
     - name: "--output"
       alternatives: ["-o"]
       type: file
-      description: Output h5ad file with additional obs columns containing the doublet score and the doublet calling result.
+      description: Output h5mu file with additional obs columns containing the doublet score and the doublet calling result.
       direction: output
       required: true
-    - name: "--expectedDoubletRate"
+      example: output.h5mu
+    - name: "--expected_doublet_rate"
       type: double
       description: The estimated fraction of doublets as from the experimental setup. Defaults to 0.056 (5.6%%) per the normal expected 10x doublet rate for a 12k loaded cell experiment.
       default: 0.05
-    - name: "--minCounts"
+    - name: "--min_counts"
       type: integer
       default: 2
       description: The number of minimal UMI counts per cell that have to be present for initial cell detection.
-    - name: "--minCells"
+    - name: "--min_cells"
       type: integer
       default: 3
       description: The number of cells in which UMIs for a gene were detected.
-    - name: "--minGeneVariabilityPercentile"
+    - name: "--min_gene_variablity_percent"
       type: integer
       default: 85
       description: Used for gene filtering prior to PCA. Keep the most highly variable genes (in the top min_gene_variability_pctl percentile), as measured by the v-statistic [Klein et al., Cell 2015]
-    - name: "--nPrincipalComponents"
+    - name: "--prinipal_components_amount"
       type: integer
       default: 30
       description: Number of principal components to use during PCA dimensionality reduction.
-    - name: "--distanceMetric"
+    - name: "--distance_metric"
       type: string
       default: "euclidean"
       description: The distance metric used for computing similarities.
-    - name: "--colNameDoubletScore"
+    - name: "--col_name_doublet_score"
       type: string
-      default: "ScrubletDoubletScore"
+      default: "scrublet_doublet_score"
       description: Name of the doublet scores column in the obs slot of the returned object.
-    - name: "--colNamePredictedDoublets"
+    - name: "--col_name_predicted_doublets"
       type: string
-      default: "ScrubletPredictedDoublets"
+      default: "scrublet_predicted_doublets"
       description: Name of the predicted doublets column in the obs slot of the returned object.
     - name: "--outputFormat"
       type: string
-      description: The output format for the clustering. This can be csv or h5ad.
-      default: "h5ad"
+      description: The output format for the clustering. This can be csv or h5mu.
+      default: "h5mu"
   resources:
     - type: python_script
       path: ./script.py
   tests:
     - type: python_script
       path: run_test.py
-    - path: ../../../resources/test/pbmc_1k_protein_v3_filtered_feature_bc_matrix.h5ad
+    - path: ../../../resources/test/pbmc_1k_protein_v3_filtered_feature_bc_matrix.h5mu
 platforms:
   - type: docker
     image: python:3.8
@@ -70,5 +72,6 @@ platforms:
       packages:
         - scanpy
         - scrublet
+        - muon
   - type: nextflow
     label: highcpu
