@@ -1,5 +1,5 @@
 functionality:
-  name: convert_csv_to_h5ad
+  name: convert_csv_to_h5mu
   namespace: "convert"
   version: "dev"
   description: |
@@ -20,9 +20,9 @@ functionality:
     - name: "--output"
       alternatives: ["-o"]
       type: file
-      description: Output h5ad file.
+      description: Output h5mu file.
       direction: output
-      example: output.h5ad
+      example: output.h5mu
     - name: "--delimiter"
       alternatives: [-d]
       type: string
@@ -33,10 +33,6 @@ functionality:
       description: Use the first row as column names as gene names
       default: true
       required: false
-    - name: "--compression"
-      type: string
-      description: The compression format to be used on the final h5ad object.
-      default: "gzip"
   resources:
     - type: python_script
       path: ./script.py

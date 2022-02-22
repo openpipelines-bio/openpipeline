@@ -7,15 +7,15 @@ cmd_pars = [
     "--input",
     meta["resources_dir"]
     + "pbmc_1k_protein_v3/pbmc_1k_protein_v3_filtered_feature_bc_matrix.csv",
-    "--output=output.h5ad",
+    "--output=output.h5mu",
 ]
 out = subprocess.check_output(cmd_pars).decode("utf-8")
 
 # check if file exists
-assert path.exists("output.h5ad"), "No output was created."
+assert path.exists("output.h5mu"), "No output was created."
 
 # read it with scanpy
-data = mu.read_h5ad("output.h5ad")
+data = mu.read_h5ad("output.h5mu")
 
 # check whether gex was found
 assert data.mod["rna"].var["feature_types"].unique() == [

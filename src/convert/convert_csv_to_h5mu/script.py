@@ -1,5 +1,8 @@
+import json
 import scanpy as sc
 import scipy
+import muon as mu
+import anndata
 
 ### VIASH START
 par = {
@@ -21,5 +24,15 @@ data.var_names_make_unique()
 data.X = scipy.sparse.csr_matrix(data.X)
 data.raw = data
 
-print("Writing to", par["output"])
-data.write(par["output"], compression=par["compression"])
+# print("Writing to", par["output"])
+# data.write(par["output"], compression=par["compression"])
+
+muon = mu.MuData({"rna": data})
+
+for key, value in json.loads(par["conversions_obsm"]).items():
+    if key in data.obsm:
+        muon.mod[value] = anndata.AnnData(data.obsm[key])
+        del muon["rna"].obsm[key]
+
+print("Writing", par["output"])
+muon.write_h5mu(filename=par["output"])
