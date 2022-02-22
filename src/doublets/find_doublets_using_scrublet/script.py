@@ -1,9 +1,12 @@
-### VIASH START
+import scrublet as scr
+import scanpy as sc
+import muon as mu
 
+### VIASH START
 par = {
-    "input": "./test/",
-    "output": "./test/",
-    "expected_doublet_rate": 0.06,
+    "input": "resources/test/pbmc_1k_protein_v3/pbmc_1k_protein_v3_filtered_feature_bc_matrix.h5mu",
+    "output": "output.h5mu",
+    "expected_doublet_rate": 0.05,
     "min_counts": 2,
     "min_cells": 3,
     "min_gene_variablity_percent": 85,
@@ -11,16 +14,9 @@ par = {
     "distance_metric": "euclidean",
     "col_name_doublet_score": "scrublet_doublet_score",
     "col_name_predicted_doublets": "scrublet_predicted_doublets",
+    "outputFormat": "h5mu",
 }
-
-
 ### VIASH END
-
-import scrublet as scr
-import scanpy as sc
-import muon as mu
-
-# data = sc.read_h5ad(par["input"])
 
 print("Reading", par["input"])
 mdata = mu.read_h5mu(par["input"])
