@@ -20,31 +20,31 @@ functionality:
       type: file
       description: Filtered cells in h5ad file.
       direction: output
-    - name: "--minUMICount"
+    - name: "--min_umi_count"
       default: 200
       type: integer
       description: Minimum UMIs captured per cell.
-    - name: "--maxUMICount"
+    - name: "--max_umi_count"
       default: 5000000
       type: integer
       description: Maximum UMIs captured per cell.
-    - name: "--minGeneCount"
+    - name: "--min_gene_count"
       default: 200
       type: integer
       description: Minimum number of genes sampled per cell.
-    - name: "--maxGeneCount"
+    - name: "--max_gene_count"
       default: 1500000
       type: integer
       description: Maximum number of genes sampled per cell.
-    - name: "--minGeneOccurenceInCell"
+    - name: "--min_gene_occurence_in_cell"
       default: 3
       type: integer
       description: Minimum occurences of a gene sampled in a cell.
-    - name: "--minFractionMito"
+    - name: "--min_fraction_mito"
       default: 0
       type: double
       description: Minimum fraction of UMIs that are mitochondrial.
-    - name: "--maxFractionMito"
+    - name: "--max_fraction_mito"
       default: 0.2
       type: double
       description: Maximum fraction of UMIs that are mitochondrial
@@ -54,11 +54,11 @@ functionality:
       default: "gzip"
   resources:
     - type: python_script
-      path: ./script.py
+      path: script.py
   tests:
     - type: python_script
       path: run_test.py
-    - path: ../../../resources/test/pbmc_1k_protein_v3_filtered_feature_bc_matrix.h5ad
+    - path: ../../../resources/test/pbmc_1k_protein_v3
 platforms:
   - type: docker
     image: python:3.8
@@ -66,5 +66,4 @@ platforms:
       packages:
         - scanpy
         - loompy
-  - type: native
   - type: nextflow
