@@ -50,12 +50,11 @@ functionality:
       path: script.sh
   tests:
     - type: bash_script
-      path: test/run_test.sh
-    - path: ../../../resources/test/cellranger-tiny-bcl-1.2.0/cellranger-tiny-bcl-1.2.0.tar.gz
-    - path: ../../../resources/test/cellranger-tiny-bcl-1.2.0/cellranger-tiny-bcl-simple-1.2.0.csv
+      path: run_test.sh
+    - path: ../../../resources/test/cellranger_tiny_bcl_1.2.0
 platforms:
   - type: docker
-    image: litd/docker-cellranger:v5.0.1
+    image: ghcr.io/data-intuitive/cellranger:6.1
   - type: nextflow
     publish: true
     per_id: false
