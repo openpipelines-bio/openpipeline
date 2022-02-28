@@ -60,11 +60,11 @@ functionality:
       default: "h5mu"
   resources:
     - type: python_script
-      path: ./script.py
+      path: script.py
   tests:
     - type: python_script
       path: run_test.py
-    - path: ../../../resources/test/pbmc_1k_protein_v3_filtered_feature_bc_matrix.h5mu
+    - path: ../../../resources/test/pbmc_1k_protein_v3
 platforms:
   - type: docker
     image: python:3.8
