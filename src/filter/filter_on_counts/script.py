@@ -1,7 +1,6 @@
 
 import muon
 import scanpy as sc
-# import matplotlib
 import numpy as np
 
 ### VIASH START
