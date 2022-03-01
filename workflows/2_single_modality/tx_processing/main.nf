@@ -3,8 +3,8 @@ nextflow.enable.dsl=2
 workflowDir = params.rootDir + "/workflows"
 targetDir = params.rootDir + "/target/nextflow"
 
-include { filter_on_counts } from targetDir + "/filter/filter_on_counts/main.nf" params(params)
-include { scrublet } from targetDir + "/filter_doublets/scrublet/main.nf" params(params)
+include { filter_with_counts } from targetDir + "/filter/filter_with_counts/main.nf" params(params)
+include { filter_with_scrublet } from targetDir + "/filter/filter_with_scrublet/main.nf" params(params)
 include { lognorm } from targetDir + '/normalize/lognorm/main.nf' params(params)
 include { hvg_scanpy } from targetDir + '/hvg/hvg_scanpy/main.nf' params(params)
 include { pca } from targetDir + '/dimred/pca/main.nf' params(params)
@@ -28,10 +28,10 @@ workflow {
             
     Channel.fromPath(params.input)
         | map { input -> [ input.name, input, params ]}
-        | map { overrideOptionValue(it, "filter_on_counts", "modality", "rna") }
-        | View { it[1] }
-        | filter_on_counts
-        | View { it[1] }
+        | map { overrideOptionValue(it, "filter_with_counts", "modality", "rna") }
+        | view { it[1] }
+        | filter_with_counts
+        | view { it[1] }
         // | scrublet
         // | lognorm           
         // | hvg_scanpy        
