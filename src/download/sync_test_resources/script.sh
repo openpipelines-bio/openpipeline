@@ -1,8 +1,13 @@
 #!/bin/bash
 
+## VIASH START
+par_input='s3://openpipelines-data'
+par_output='resources/test'
+## VIASH END
+
 # extra_params=( )
 
-# if [ "$par_verbose" != "true" ]; then 
+# if [ "$par_verbose" != "true" ]; then
 #   extra_params+=( "--quiet" )
 # fi
 
