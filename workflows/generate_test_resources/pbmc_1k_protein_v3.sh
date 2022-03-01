@@ -6,9 +6,9 @@ REPO_ROOT=$(git rev-parse --show-toplevel)
 # ensure that the command below is run from the root of the repository
 cd "$REPO_ROOT"
 
-OUT=resources_test/pbmc_1k_protein_v3/pbmc_1k_protein_v3
-DIR=`dirname "$OUT"`
-S3DIR=`echo "$DIR" | sed 's#resources_test#s3://openpipelines-data#'`
+OUT=resources/test/pbmc_1k_protein_v3/pbmc_1k_protein_v3
+DIR=$(dirname "$OUT")
+S3DIR=$(echo "$DIR" | sed 's#resources/test#s3://openpipelines-data#')
 
 # ideally, this would be a versioned pipeline run
 
@@ -29,7 +29,7 @@ tar -xvf "${OUT}_filtered_feature_bc_matrix.tar.gz" \
   -C "${OUT}_filtered_feature_bc_matrix" \
   --strip-components 1
 rm "${OUT}_filtered_feature_bc_matrix.tar.gz"
-  
+
 target/docker/convert/convert_10x_h5_to_h5mu/convert_10x_h5_to_h5mu \
   --input "${OUT}_filtered_feature_bc_matrix.h5" \
   --output "${OUT}_filtered_feature_bc_matrix.h5mu"

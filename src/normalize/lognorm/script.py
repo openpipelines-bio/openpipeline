@@ -4,7 +4,7 @@ import multiprocessing
 
 ### VIASH START
 par = {
-    "input": "resources_test/pbmc_1k_protein_v3/pbmc_1k_protein_v3_filtered_feature_bc_matrix.h5mu",
+    "input": "resources/test/pbmc_1k_protein_v3/pbmc_1k_protein_v3_filtered_feature_bc_matrix.h5mu",
     "output": "output.h5mu",
     "normalized_umi_count": 10000,
     "regress_out_variables": [],

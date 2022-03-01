@@ -2,7 +2,7 @@ import scanpy as sc
 
 ### VIASH START
 par = {
-    "input": "resources_test/pbmc_1k_protein_v3/pbmc_1k_protein_v3_filtered_feature_bc_matrix.norm.hvg.pca.nn.umap.h5ad",
+    "input": "resources/test/pbmc_1k_protein_v3/pbmc_1k_protein_v3_filtered_feature_bc_matrix.norm.hvg.pca.nn.umap.h5ad",
     "output": "output.h5ad",
     "output_format": "h5ad",
     "cluster_column_name": "leiden.res.0.25",
