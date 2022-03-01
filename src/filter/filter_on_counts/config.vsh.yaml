@@ -1,0 +1,83 @@
+functionality:
+  name: filter_on_counts
+  namespace: "filter"
+  version: "dev"
+  description: |
+    Filter scRNA-seq data based on the primary QC metrics. 
+    This is based on both the UMI counts, the gene counts 
+    and the mitochondrial genes (genes starting with mt/MT).
+  authors:
+    - name: Dries De Maeyer
+      email: DDeMaey1@its.jnj.com
+      roles: [ maintainer ]
+      props: { account: ddemaey1 }
+  arguments:
+    # input-output
+    - name: "--input"
+      type: file
+      description: Input h5ad file
+      direction: input
+      required: true
+    - name: "--output"
+      type: file
+      description: Filtered cells in h5ad file.
+      direction: output
+
+    # modality
+    - name: "--modality"
+      type: string
+      multiple: true
+      default: "rna"
+      required: false
+    
+    # arguments
+    - name: "--min_counts"
+      example: 200
+      type: integer
+      description: Minimum number of counts captured per cell.
+
+    - name: "--max_counts"
+      example: 5000000
+      type: integer
+      description: Maximum number of counts captured per cell.
+
+    - name: "--min_genes_per_cell"
+      example: 200
+      type: integer
+      description: Minimum of non-zero values per cell.
+
+    - name: "--max_genes_per_cell"
+      example: 1500000
+      type: integer
+      description: Maximum of non-zero values per cell.
+
+    - name: "--min_cells_per_gene"
+      example: 3
+      type: integer
+      description: Minimum of non-zero values per gene.
+
+    - name: "--min_fraction_mito"
+      example: 0
+      type: double
+      description: Minimum fraction of UMIs that are mitochondrial.
+
+    - name: "--max_fraction_mito"
+      example: 0.2
+      type: double
+      description: Maximum fraction of UMIs that are mitochondrial.
+  resources:
+    - type: python_script
+      path: script.py
+  tests:
+    - type: python_script
+      path: run_test.py
+    - path: ../../../resources_test/pbmc_1k_protein_v3
+platforms:
+  - type: docker
+    image: python:3.8
+    setup:
+      - type: python
+        packages:
+          - scanpy
+          - muon
+  - type: nextflow

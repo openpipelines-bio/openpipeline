@@ -39,7 +39,7 @@ functionality:
       path: test/run_test.R
     - path: test/pbmc_1k_protein_v3_filtered_feature_bc_matrix.h5ad
     - path: test/pbmc_1k_protein_v3_filtered_feature_bc_matrix.filter.ct.monaco.h5ad
-    - path: ../../../resources/test/integrated/integrated.pbmc.lisi.h5ad
+    - path: ../../../resources_test/integrated/integrated.pbmc.lisi.h5ad
     - path: ./test/libraries_PBMC10XPROT.umap.h5ad
 platforms:
   - type: docker

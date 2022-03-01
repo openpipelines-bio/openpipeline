@@ -6,7 +6,7 @@ import anndata
 
 ### VIASH START
 par = {
-    "input": "resources/test/pbmc_1k_protein_v3/pbmc_1k_protein_v3_filtered_feature_bc_matrix.csv",
+    "input": "resources_test/pbmc_1k_protein_v3/pbmc_1k_protein_v3_filtered_feature_bc_matrix.csv",
     "output": "output.h5ad",
     "delimiter": ",",
     "use_column_name": "true",

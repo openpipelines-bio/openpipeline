@@ -39,7 +39,7 @@ functionality:
   tests:
     - type: bash_script
       path: run_test.sh
-    - path: ../../../resources/test/pbmc_1k_protein_v3
+    - path: ../../../resources_test/pbmc_1k_protein_v3
 platforms:
   - type: docker
     image: python:3.8
