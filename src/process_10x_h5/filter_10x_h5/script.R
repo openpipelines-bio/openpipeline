@@ -1,7 +1,7 @@
 ## VIASH START
 par <- list(
-  input = "pbmc_1k_protein_v3_raw_feature_bc_matrix.h5",
-  output = "pbmc_1k_protein_v3_raw_feature_bc_matrix_filtered.h5",
+  input = "resources_test/pbmc_1k_protein_v3/pbmc_1k_protein_v3_filtered_feature_bc_matrix.h5",
+  output = "output.h5",
   min_library_size = 1000,
   min_cells_per_gene = 300,
   keep_feature_types = "Antibody Capture",

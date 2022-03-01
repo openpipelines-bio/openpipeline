@@ -1,13 +1,13 @@
 functionality:
   name: filter_10x_h5
-  namespace: "filter"
+  namespace: "process_10x_h5"
   version: "dev"
   description: |
     Filter a 10x h5 dataset.
   usage: | 
     filter_10x_h5 \
       --input pbmc_1k_protein_v3_raw_feature_bc_matrix.h5 \
-      --input pbmc_1k_protein_v3_raw_feature_bc_matrix_filtered.h5 \
+      --output pbmc_1k_protein_v3_raw_feature_bc_matrix_filtered.h5 \
       --min_library_size 1000 --min_cells_per_gene 300
   authors:
     - name: Robrecht Cannoodt
@@ -16,13 +16,11 @@ functionality:
       props: { github: rcannood, orcid: "0000-0003-3641-729X" }
   arguments:
     - name: "--input"
-      alternatives: [ -i ]
       type: string
       description: "An h5 file from the 10x genomics website."
       required: true
       example: "pbmc_1k_protein_v3_raw_feature_bc_matrix.h5"
     - name: "--output"
-      alternatives: [ -o ]
       type: file
       example: pbmc_1k_protein_v3_raw_feature_bc_matrix_filtered.h5
       required: true
@@ -42,7 +40,6 @@ functionality:
       description: Specify which feature types will never be filtered out
       example: "Antibody Capture"
     - name: "--verbose"
-      alternatives: ["-v"]
       type: boolean_true
       description: Increase verbosity
   resources:
@@ -51,7 +48,7 @@ functionality:
   tests:
     - type: r_script
       path: run_test.R
-    - path: ../../../resources_test/pbmc_1k_protein_v3
+    - path: ../../../resources_test/pbmc_1k_protein_v3/pbmc_1k_protein_v3_raw_feature_bc_matrix.h5
 platforms:
   - type: docker
     image: dataintuitive/randpy:r4.0_py3.8_bioc3.12

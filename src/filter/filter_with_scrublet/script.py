@@ -1,0 +1,64 @@
+import scrublet as scr
+import muon as mu
+import numpy as np
+
+### VIASH START
+par = {
+    "input": "resources_test/pbmc_1k_protein_v3/pbmc_1k_protein_v3_filtered_feature_bc_matrix.h5mu",
+    "modality": [ "rna" ],
+    "output": "output.h5mu",
+    "obs_name_filter": "filter_with_scrublet",
+    # "expected_doublet_rate": 0.05,
+    "min_counts": 2,
+    "min_cells": 3,
+    "min_gene_variablity_percent": 85,
+    "num_pca_components": 30,
+    "distance_metric": "euclidean",
+    "obs_name_doublet_score": "scrublet_doublet_score",
+    "obs_name_predicted_doublets": "scrublet_predicted_doublets",
+    "do_subset": True
+}
+meta = {
+    'functionality_name': 'scrublet'
+}
+### VIASH END
+
+print(f"Reading {par['input']}")
+mdata = mu.read_h5mu(par["input"])
+
+for mod in par["modality"]:
+    print(f"Processing modality '{mod}'")
+    data = mdata.mod[mod]
+
+    print("Running scrublet")
+    scrub = scr.Scrublet(data.X)
+
+    doublet_scores, predicted_doublets = scrub.scrub_doublets(
+        min_counts=par["min_counts"],
+        min_cells=par["min_cells"],
+        min_gene_variability_pctl=par["min_gene_variablity_percent"],
+        n_prin_comps=par["num_pca_components"],
+        distance_metric=par["distance_metric"],
+    )
+    keep_cells = np.invert(predicted_doublets)
+
+    print("  Storing output into .obs")
+    if par["obs_name_doublet_score"] is not None:
+        data.obs[par["obs_name_doublet_score"]] = doublet_scores
+    if par["obs_name_filter"] is not None:
+        data.obs[par["obs_name_filter"]] = keep_cells
+
+    if par["do_subset"]:
+        mdata.mod[mod] = data[keep_cells, :]
+
+
+# can we assume execution_log exists?
+if mdata.uns is None or "execution_log" not in mdata.uns:
+    mdata.uns["execution_log"] = []
+# store new entry
+new_entry = {"component": meta["functionality_name"], "params": par}
+mdata.uns["execution_log"] = str(mdata.uns["execution_log"] + [new_entry])
+
+
+print("Writing h5mu to file")
+mdata.write_h5mu(par["output"])
