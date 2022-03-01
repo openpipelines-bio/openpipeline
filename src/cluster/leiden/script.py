@@ -2,26 +2,24 @@ import scanpy as sc
 
 ### VIASH START
 par = {
-    "input": "resources_test/pbmc_1k_protein_v3/pbmc_1k_protein_v3_filtered_feature_bc_matrix.norm.hvg.pca.nn.umap.h5ad",
-    "output": "output.h5ad",
-    "output_format": "h5ad",
+    "input": "resources_test/pbmc_1k_protein_v3/pbmc_1k_protein_v3_filtered_feature_bc_matrix.norm.hvg.pca.nn.umap.h5mu",
+    "output": "output.h5mu",
+    "output_format": "h5mu",
     "cluster_column_name": "leiden.res.0.25",
     "resolution": float("0.25"),
 }
 ### VIASH END
 
-print("Reading", par["input"])
-data = sc.read_h5ad(par["input"])
+import scanpy as sc
+import muon as mu
 
-print("Clustering cells using Leiden algorithm")
+print("Reading", par["input"])
+mdata = mu.read_h5mu(par["input"])
+
 sc.tl.leiden(
-    data, resolution=float(par["resolution"]), key_added=par["cluster_column_name"]
+    mdata.mod["rna"],
+    resolution=float(par["resolution"]),
+    key_added=par["cluster_column_name"],
 )
 
-print("Writing file as", par["output_format"], "format", "to", par["output"])
-if par["output_format"] == "h5ad":
-    data.write_h5ad(par["output"], compression="lzf")
-elif par["output_format"] == "csv":
-    data.obs[par["cluster_column_name"]].to_csv(par["output"])
-else:
-    raise ValueError("An unrecognized output format was specified.")
+mdata.write_h5mu(filename=par["output"])

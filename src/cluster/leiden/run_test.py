@@ -1,59 +1,34 @@
-import unittest
-from os import path
 import subprocess
-import scanpy as sc
-import pandas
+from os import path
+import muon as mu
 
+cmd_pars = [
+    "./" + meta["functionality_name"],
+    "--input",
+    meta["resources_dir"]
+    + "/pbmc_1k_protein_v3/pbmc_1k_protein_v3_filtered_feature_bc_matrix.h5",
+    "--output=output.h5mu",
+]
+out = subprocess.check_output(cmd_pars).decode("utf-8")
 
-class TestLeiden(unittest.TestCase):
-    def test_simple_clustering(self):
-        out = subprocess.check_output(
-            [
-                "./leiden",
-                "--input",
-                "pbmc_1k_protein_v3_filtered_feature_bc_matrix.norm.hvg.pca.nn.umap.h5ad",
-                "--output=output-py1.h5ad",
-            ]
-        ).decode("utf-8")
+# check if file exists
+assert path.exists("output.h5mu"), "No output was created."
 
-        self.assertTrue(path.exists("output-py1.h5ad"))
+# read it with scanpy
+data = mu.read_h5mu("output.h5mu")
 
-        data = sc.read_h5ad("output-py1.h5ad")
-        self.assertTrue("leiden.res.0.25" in data.obs.columns)
+# check whether gex was found
+assert data.mod["rna"].var["feature_types"].unique() == [
+    "Gene Expression"
+], "Output X should only contain Gene Expression vars."
 
-    def test_simple_clustering_with_resolution_1(self):
-        out = subprocess.check_output(
-            [
-                "./leiden",
-                "--input",
-                "pbmc_1k_protein_v3_filtered_feature_bc_matrix.norm.hvg.pca.nn.umap.h5ad",
-                "--output=output-py2.h5ad",
-                "--resolution=1",
-                "--cluster_column_name=leiden.custom.resolution",
-            ]
-        ).decode("utf-8")
+# check whether ab counts were found
+assert "prot" in data.mod, 'Output should contain data.mod["rna"].'
 
-        self.assertTrue(path.exists("output-py2.h5ad"))
+# check whether leiden.custom.resolution was found
+assert "leiden.custom.resolution" in data.mod.obs.columns, 'Output should contain leiden.custom.resolution.'
 
-        data = sc.read_h5ad("output-py2.h5ad")
-        self.assertTrue("leiden.custom.resolution" in data.obs.columns)
-
-    def test_csv_output(self):
-        out = subprocess.check_output(
-            [
-                "./leiden",
-                "--input",
-                "pbmc_1k_protein_v3_filtered_feature_bc_matrix.norm.hvg.pca.nn.umap.h5ad",
-                "--output=output-py3.csv",
-                "--output_format=csv",
-                "--resolution=1",
-                "--cluster_column_name=leiden.custom.resolution",
-            ]
-        ).decode("utf-8")
-
-        self.assertTrue(path.exists("output-py3.csv"))
-        data = pandas.read_csv("output-py3.csv")
-        self.assertTrue("leiden.custom.resolution" in data.columns)
-
-
-unittest.main()
+# check whether gene was found
+assert (
+    "CD3_TotalSeqB" in data.mod["prot"].var_names
+), 'Output should contain antibody column "CD3_TotalSeqB".'
