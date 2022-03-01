@@ -2,9 +2,9 @@ from os import path
 import subprocess
 import muon
 
-## VIASH START
+# VIASH START
 meta = {"functionality_name": "foo", "resources_dir": "resources_test/"}
-## VIASH END
+# VIASH END
 
 print("> Reading input file")
 input_path = f"{meta['resources_dir']}/pbmc_1k_protein_v3/pbmc_1k_protein_v3_filtered_feature_bc_matrix.h5mu"
@@ -54,33 +54,21 @@ assert list(mu_in.mod["prot"].var["feature_types"].cat.categories) == [
 
 # TEST 2: filering a lot
 print("> Check filtering a lot")
-out = subprocess.check_output(
-    [
-        f"./{meta['functionality_name']}",
-        "--input",
-        input_path,
-        "--output",
-        "output-2.h5mu",
-        "--modality",
-        "rna:prot",
-        "--min_cells_per_gene",
-        "100",
-        "--min_counts",
-        "200",
-        "--max_counts",
-        "5000000",
-        "--min_genes_per_cell",
-        "200",
-        "--max_genes_per_cell",
-        "1500000",
-        "--min_cells_per_gene",
-        "10",
-        "--min_fraction_mito",
-        "0",
-        "--max_fraction_mito",
-        "0.2",
-    ]
-).decode("utf-8")
+out = subprocess.check_output([
+    f"./{meta['functionality_name']}",
+    "--input", input_path,
+    "--output", "output-2.h5mu",
+    "--modality", "rna:prot",
+    "--min_cells_per_gene", "100",
+    "--min_counts", "200",
+    "--max_counts", "5000000",
+    "--min_genes_per_cell", "200",
+    "--max_genes_per_cell", "1500000",
+    "--min_cells_per_gene", "10",
+    "--min_fraction_mito", "0",
+    "--max_fraction_mito", "0.2",
+    "--do_subset"
+]).decode("utf-8")
 
 assert path.exists("output-2.h5mu"), "Output file not found"
 mu_out = muon.read_h5mu("output-2.h5mu")
