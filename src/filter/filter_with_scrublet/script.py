@@ -4,7 +4,8 @@ import numpy as np
 
 ### VIASH START
 par = {
-    "input": "resources_test/pbmc_1k_protein_v3/pbmc_1k_protein_v3_filtered_feature_bc_matrix.h5mu",
+    # "input": "resources_test/pbmc_1k_protein_v3/pbmc_1k_protein_v3_filtered_feature_bc_matrix.h5mu",
+    "input": "output/pbmc_1k_protein_v3_filtered_feature_bc_matrix.h5mu.h5mu",
     "modality": [ "rna" ],
     "output": "output.h5mu",
     "obs_name_filter": "filter_with_scrublet",
@@ -57,7 +58,7 @@ if mdata.uns is None or "execution_log" not in mdata.uns:
     mdata.uns["execution_log"] = []
 # store new entry
 new_entry = {"component": meta["functionality_name"], "params": par}
-mdata.uns["execution_log"] = str(mdata.uns["execution_log"] + [new_entry])
+mdata.uns["execution_log"].append(new_entry)
 
 
 print("Writing h5mu to file")

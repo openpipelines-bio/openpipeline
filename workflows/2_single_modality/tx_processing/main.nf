@@ -34,7 +34,7 @@ workflow {
         | view { "after filter: ${it[0]} - ${it[1]}" }
         | filter_with_scrublet
         | view { "after filter2: ${it[0]} - ${it[1]}" }
-        // | lognorm           
+        // | lognorm
         // | hvg_scanpy        
         // | pca               
         // | find_neighbors    

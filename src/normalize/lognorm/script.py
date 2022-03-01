@@ -14,12 +14,12 @@ meta = {"functionality_name": "lognorm"}
 ## VIASH END
 
 print("Reading input mudata")
-mudata = mu.read_h5mu(par["input"])
-mudata.var_names_make_unique()
+mdata = mu.read_h5mu(par["input"])
+mdata.var_names_make_unique()
 
 for mod in par["modality"]:
     print(f"Performing log normalization on modality {mod}")
-    data = mudata.mod[mod]
+    data = mdata.mod[mod]
 
     sc.pp.normalize_total(data, target_sum=par["normalized_umi_count"])
     sc.pp.log1p(data)
@@ -34,11 +34,11 @@ for mod in par["modality"]:
         )
 
 # can we assume execution_log exists?
-if mudata.uns is None or "execution_log" not in mudata.uns:
-    mudata.uns["execution_log"] = []
+if mdata.uns is None or "execution_log" not in mdata.uns:
+    mdata.uns["execution_log"] = []
 # store new entry
 new_entry = {"component": meta["functionality_name"], "params": par}
-mudata.uns["execution_log"] = str(mudata.uns["execution_log"] + [new_entry])
+mdata.uns["execution_log"].append(new_entry)
 
 print("Writing to file")
-mudata.write(filename=par["output"])
+mdata.write(filename=par["output"])
