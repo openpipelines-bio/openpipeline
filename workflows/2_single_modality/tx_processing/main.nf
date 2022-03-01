@@ -40,7 +40,7 @@ workflow {
         // | find_neighbors    
         // | leiden            
         // | umap              
-        // | map { overrideOptionValue(it, "publish", "output", "${params.output}/${it[0]}.h5ad") } 
-        // | publish
+        | map { overrideOptionValue(it, "publish", "output", "${params.output}/${it[0]}.h5mu") } 
+        | publish
  
 }
