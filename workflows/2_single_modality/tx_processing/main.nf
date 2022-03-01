@@ -32,7 +32,8 @@ workflow {
         | view { "before filter: ${it[0]} - ${it[1]}" }
         | filter_with_counts
         | view { "after filter: ${it[0]} - ${it[1]}" }
-        // | scrublet
+        | filter_with_scrublet
+        | view { "after filter2: ${it[0]} - ${it[1]}" }
         // | lognorm           
         // | hvg_scanpy        
         // | pca               
