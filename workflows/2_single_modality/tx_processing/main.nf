@@ -31,10 +31,11 @@ workflow {
         | map { overrideOptionValue(it, "filter_with_counts", "modality", "rna") }
         | view { "before filter: ${it[0]} - ${it[1]}" }
         | filter_with_counts
-        | view { "after filter: ${it[0]} - ${it[1]}" }
+        | view { "after filter_with_counts: ${it[0]} - ${it[1]}" }
         | filter_with_scrublet
-        | view { "after filter2: ${it[0]} - ${it[1]}" }
-        // | lognorm           
+        | view { "after filter_with_scrublet: ${it[0]} - ${it[1]}" }
+        | lognorm
+        | view { "after lognorm: ${it[0]} - ${it[1]}" }
         // | hvg_scanpy        
         // | pca               
         // | find_neighbors    
