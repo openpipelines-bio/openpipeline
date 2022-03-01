@@ -4,7 +4,7 @@ import json
 
 ### VIASH START
 par = {
-    "input": "resources/test/pbmc_1k_protein_v3/pbmc_1k_protein_v3_filtered_feature_bc_matrix.h5ad",
+    "input": "resources_test/pbmc_1k_protein_v3/pbmc_1k_protein_v3_filtered_feature_bc_matrix.h5ad",
     "output": "output.h5mu",
     "compression": "gzip",
     "conversions_obsm": '{"counts_antibody":"prot", "counts_custom": "custom"}',
