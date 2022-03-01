@@ -4,17 +4,17 @@ requireNamespace("hdf5r", quietly = TRUE)
 cat("Run command\n")
 system(paste0(
   "./", meta$functionality_name, " ",
-  "--input '", meta$resources_dir, "/pbmc_1k_protein_v3_raw_feature_bc_matrix.h5' ",
-  "--output pbmc_1k_protein_v3_raw_feature_bc_matrix_filtered.h5 ",
+  "--input '", meta$resources_dir, "/pbmc_1k_protein_v3_filtered_feature_bc_matrix.h5' ",
+  "--output out.h5 ",
   "--min_library_size 1000 ",
   "--min_cells_per_gene 300 ",
   "--verbose"
 ))
 
-orig_seu <- Seurat::Read10X_h5("pbmc_1k_protein_v3_raw_feature_bc_matrix.h5")
+orig_seu <- Seurat::Read10X_h5("pbmc_1k_protein_v3_filtered_feature_bc_matrix.h5")
 orig_gex <- orig_seu$`Gene Expression`
 
-seu <- Seurat::Read10X_h5("pbmc_1k_protein_v3_raw_feature_bc_matrix_filtered.h5")
+seu <- Seurat::Read10X_h5("out.h5")
 gex <- seu$`Gene Expression`
 
 # check if matrix is not empty
