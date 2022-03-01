@@ -6,7 +6,7 @@ cmd_pars = [
     "./" + meta["functionality_name"],
     "--input",
     meta["resources_dir"]
-    + "/pbmc_1k_protein_v3/pbmc_1k_protein_v3_filtered_feature_bc_matrix.h5",
+    + "/pbmc_1k_protein_v3/pbmc_1k_protein_v3_filtered_feature_bc_matrix.h5mu",
     "--output=output.h5mu",
 ]
 out = subprocess.check_output(cmd_pars).decode("utf-8")
