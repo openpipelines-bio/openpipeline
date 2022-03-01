@@ -2,10 +2,10 @@ functionality:
   name: "sync_test_resources"
   namespace: "download"
   version: "dev"
-  description: Synchronise the test resources from s3://openpipelines-data to resources_test
+  description: Synchronise the test resources from s3://openpipelines-data to resources/test
   usage: |
     sync_test_resources
-    sync_test_resources --input s3://openpipelines-data --output resources_test
+    sync_test_resources --input s3://openpipelines-data --output resources/test
   authors:
     - name: Robrecht Cannoodt
       email: rcannood@gmail.com
@@ -20,7 +20,7 @@ functionality:
     - name: "--output"
       alternatives: ["-o"]
       type: file
-      default: resources_test
+      default: resources/test
       direction: output
       description: "Path to the test resource directory."
   resources:
