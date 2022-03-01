@@ -29,9 +29,9 @@ workflow {
     Channel.fromPath(params.input)
         | map { input -> [ input.name, input, params ]}
         | map { overrideOptionValue(it, "filter_with_counts", "modality", "rna") }
-        | view { it[1] }
+        | view { "before filter: ${it[0]} - ${it[1]}" }
         | filter_with_counts
-        | view { it[1] }
+        | view { "after filter: ${it[0]} - ${it[1]}" }
         // | scrublet
         // | lognorm           
         // | hvg_scanpy        

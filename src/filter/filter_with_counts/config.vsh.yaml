@@ -17,12 +17,13 @@ functionality:
       props: { github: rcannood, orcid: "0000-0003-3641-729X" }
 
   arguments:
-    # required input vaiables
+    # required input variables
     - name: "--input"
       type: file
       description: Input h5mu file
       direction: input
       required: true
+      example: input.h5mu
 
     - name: "--modality"
       type: string
@@ -35,6 +36,7 @@ functionality:
       type: file
       description: Output h5mu file.
       direction: output
+      example: output.h5mu
       
     - name: "--do_subset"
       type: boolean_true

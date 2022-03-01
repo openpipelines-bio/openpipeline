@@ -10,6 +10,7 @@ Required input arguments:
     description: Input h5mu file
     direction: input
     required: true
+    example: input.h5mu
 
   - name: "--modality"
     type: string
@@ -25,6 +26,7 @@ Required output arguments:
     type: file
     description: Output h5mu file.
     direction: output
+    example: output.h5mu
 
   - name: "--do_subset"
     type: boolean_true
