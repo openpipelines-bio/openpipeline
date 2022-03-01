@@ -31,4 +31,5 @@ check_results/
 out/
 output/
 resources/test/
+resources_test/
 old_resources

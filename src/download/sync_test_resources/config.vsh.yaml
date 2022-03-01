@@ -20,7 +20,7 @@ functionality:
     - name: "--output"
       alternatives: ["-o"]
       type: file
-      default: resources/test
+      default: resources_test
       direction: output
       description: "Path to the test resource directory."
   resources:
