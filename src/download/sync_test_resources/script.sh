@@ -2,7 +2,7 @@
 
 ## VIASH START
 par_input='s3://openpipelines-data'
-par_output='resources/test'
+par_output='resources_test'
 ## VIASH END
 
 # extra_params=( )

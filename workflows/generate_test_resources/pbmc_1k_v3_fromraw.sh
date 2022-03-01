@@ -2,9 +2,9 @@
 
 # settings
 ID=pbmc_1k_v3_fromraw
-OUT=resources/test/$ID/$ID
+OUT=resources_test/$ID/$ID
 DIR=$(dirname "$OUT")
-S3DIR=$(echo "$DIR" | sed 's#resources/test#s3://openpipelines-data#')
+S3DIR=$(echo "$DIR" | sed 's#resources_test#s3://openpipelines-data#')
 
 # ensure that the command below is run from the root of the repository
 REPO_ROOT=$(git rev-parse --show-toplevel)

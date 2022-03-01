@@ -6,9 +6,9 @@ REPO_ROOT=$(git rev-parse --show-toplevel)
 # ensure that the command below is run from the root of the repository
 cd "$REPO_ROOT"
 
-OUT=resources/test/pbmc_1k_protein_v3/pbmc_1k_protein_v3
+OUT=resources_test/pbmc_1k_protein_v3/pbmc_1k_protein_v3
 DIR=$(dirname "$OUT")
-S3DIR=$(echo "$DIR" | sed 's#resources/test#s3://openpipelines-data#')
+S3DIR=$(echo "$DIR" | sed 's#resources_test#s3://openpipelines-data#')
 
 # ideally, this would be a versioned pipeline run
 

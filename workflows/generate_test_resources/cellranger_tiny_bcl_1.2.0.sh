@@ -6,9 +6,9 @@ REPO_ROOT=$(git rev-parse --show-toplevel)
 # ensure that the command below is run from the root of the repository
 cd "$REPO_ROOT"
 
-OUT=resources/test/cellranger_tiny_bcl_1.2.0/
+OUT=resources_test/cellranger_tiny_bcl_1.2.0/
 DIR="$OUT"
-S3DIR=$(echo "$DIR" | sed 's#resources/test#s3://openpipelines-data#')
+S3DIR=$(echo "$DIR" | sed 's#resources_test#s3://openpipelines-data#')
 
 target/docker/download/download_file/download_file \
   --input https://cf.10xgenomics.com/supp/cell-exp/cellranger-tiny-bcl-1.2.0.tar.gz \

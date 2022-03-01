@@ -3,7 +3,7 @@ import subprocess
 import muon
 
 ## VIASH START
-meta = {"functionality_name": "foo", "resources_dir": "resources/test/"}
+meta = {"functionality_name": "foo", "resources_dir": "resources_test/"}
 ## VIASH END
 
 print("> Reading input file")

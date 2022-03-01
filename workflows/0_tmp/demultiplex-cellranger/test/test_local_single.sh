@@ -8,8 +8,8 @@ cd "$REPO_ROOT"
 
 export NXF_VER=21.04.1
 
-PAR_INPUT="resources/test/cellranger-tiny-bcl-1.2.0/cellranger-tiny-bcl-1.2.0.tar.gz"
-PAR_SAMPLESHEET="resources/test/cellranger-tiny-bcl-1.2.0/cellranger-tiny-bcl-simple-1.2.0.csv"
+PAR_INPUT="resources_test/cellranger-tiny-bcl-1.2.0/cellranger-tiny-bcl-1.2.0.tar.gz"
+PAR_SAMPLESHEET="resources_test/cellranger-tiny-bcl-1.2.0/cellranger-tiny-bcl-simple-1.2.0.csv"
 
 nextflow run . \
   -main-script workflows/0_tmp/demultiplex-cellranger/demultiplex-cellranger.nf \

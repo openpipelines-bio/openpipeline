@@ -51,7 +51,7 @@ functionality:
   tests:
     - type: r_script
       path: run_test.R
-    - path: ../../../resources/test/pbmc_1k_protein_v3
+    - path: ../../../resources_test/pbmc_1k_protein_v3
 platforms:
   - type: docker
     image: dataintuitive/randpy:r4.0_py3.8_bioc3.12
