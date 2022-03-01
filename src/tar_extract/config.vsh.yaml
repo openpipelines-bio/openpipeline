@@ -28,8 +28,13 @@ functionality:
     description: Prevents any file or member whose name matches the shell wildcard (pattern) from being extracted.
     example: "docs/figures"
     required: false
+    
   resources:
   - type: bash_script
     path: script.sh
+  tests:
+    - type: bash_script
+      path: run_test.sh
+    - path: ../../resources_test/LICENSE
 platforms:
   - type: native
