@@ -2,7 +2,7 @@ import scanpy as sc
 import muon as mu
 import multiprocessing
 
-### VIASH START
+## VIASH START
 par = {
     "input": "resources_test/pbmc_1k_protein_v3/pbmc_1k_protein_v3_filtered_feature_bc_matrix.h5mu",
     "output": "output.h5mu",
@@ -11,7 +11,7 @@ par = {
     "modality": ["rna"],
 }
 meta = {"functionality_name": "lognorm"}
-### VIASH END
+## VIASH END
 
 print("Reading input mudata")
 mudata = mu.read_h5mu(par["input"])

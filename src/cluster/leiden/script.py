@@ -1,7 +1,7 @@
 import muon as mu
 import scanpy as sc
 
-# VIASH START
+## VIASH START
 par = {
     "input": "resources_test/pbmc_1k_protein_v3/pbmc_1k_protein_v3_filtered_feature_bc_matrix.norm.hvg.pca.nn.umap.h5mu",
     "output": "output.h5mu",
@@ -9,7 +9,7 @@ par = {
     "cluster_column_name": "leiden.res.0.25",
     "resolution": float("0.25"),
 }
-# VIASH END
+## VIASH END
 
 print("Reading", par["input"])
 mdata = mu.read_h5mu(par["input"])

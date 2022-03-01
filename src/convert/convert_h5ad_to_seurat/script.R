@@ -1,12 +1,12 @@
 library(SeuratDisk)
 
-### VIASH START
+## VIASH START
 par <- list(
   input = "test/pbmc_1k_protein_v3_filtered_feature_bc_matrix.h5ad",
   output = "output.rds",
   verbose = TRUE
 )
-### VIASH END
+## VIASH END
 
 # SeuratDisk needs to convert to h5seurat first
 tempfile <- paste0(gsub("\\..*$", "", par$output), ".tmp.h5seurat")
@@ -29,5 +29,6 @@ if (par$verbose) cat("load h5seurat\n")
 seuratObject <- LoadH5Seurat(converted)
 
 # save as rds
-if (par$verbose)
-saveRDS(seuratObject, file = par$output, compress = TRUE)
+if (par$verbose) {
+  saveRDS(seuratObject, file = par$output, compress = TRUE)
+}

@@ -4,7 +4,7 @@ import scipy
 import muon as mu
 import anndata
 
-### VIASH START
+## VIASH START
 par = {
     "input": "resources_test/pbmc_1k_protein_v3/pbmc_1k_protein_v3_filtered_feature_bc_matrix.csv",
     "output": "output.h5ad",
@@ -12,7 +12,7 @@ par = {
     "use_column_name": "true",
     "compression": "gzip",
 }
-### VIASH END
+## VIASH END
 
 print("Reading", par["input"])
 data = sc.read_csv(
