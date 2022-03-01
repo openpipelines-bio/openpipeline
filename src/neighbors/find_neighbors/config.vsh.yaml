@@ -13,27 +13,27 @@ functionality:
     - name: "--input"
       alternatives: ["-i"]
       type: file
-      description: Input h5ad file
+      description: Input h5mu file
       direction: input
       required: true
+      example: input.h5mu
     - name: "--output"
       alternatives: ["-o"]
       type: file
-      description: Output h5ad file containing the dimred object.
+      description: Output h5mu file containing the found neighbors.
       direction: output
+      example: output.h5mu
     - name: "--metric"
       alternatives: ["-m"]
       type: string
       default: "cosine"
       description: The distance metric to be used in the generation of the nearest neighborhood network.
+      example: cosine
     - name: "--nNeighbors"
       type: integer
       default: 15
       description: The number of neighors to be present in the nn-network.
-    - name: "--compression"
-      type: string
-      description: The compression format to be used on the final h5ad object.
-      default: "gzip"
+      example: 15
   resources:
     - type: python_script
       path: ./script.py
@@ -48,4 +48,5 @@ platforms:
       packages:
         - scanpy
         - loompy
+        - muon
   - type: nextflow

@@ -1,24 +1,27 @@
-## VIASH START
+import muon as mu
+import scanpy as sc
 
-par ={
-    "input": "./test/pbmc_1k_protein_v3_filtered_feature_bc_matrix.norm.hvg.h5ad",
-    "output": "./test/pbmc_1k_protein_v3_filtered_feature_bc_matrix.norm.hvg.pca.h5ad",
-    "metric": "cosine",
-    "nNeighbors": 30
+## VIASH START
+par = {
+    "input": "resources_test/pbmc_1k_protein_v3/pbmc_1k_protein_v3_filtered_feature_bc_matrix.norm.hvg.pca.nn.umap.h5mu",
+    "output": "output.h5mu",
+    'metric': 'cosine',
+    'nNeighbors': 15,
 }
 ## VIASH END
 
-import anndata
+print("Reading", par["input"])
+mdata = mu.read_h5mu(par["input"])
 
-data = anndata.read_h5ad(par["input"])
-
-sc.pp.neighbors(data, 
+print("Compute a neighborhood graph of observations")
+sc.pp.neighbors(mdata.mod["rna"], 
     n_neighbors = par["nNeighbors"], 
     metric = par["metric"])
 
-data.uns["nearestNeighbourParameters"] = {
+mdata.uns["nearestNeighbourParameters"] = {
     "Nearest neighbours: metric": par["metric"],
     "Nearest neighbours: number of neighbors": par["nNeighbors"]
 }
 
-data.write(par["output"], compression = par["compression"])
+print("Writing", par["output"])
+mdata.write_h5mu(filename=par["output"])
