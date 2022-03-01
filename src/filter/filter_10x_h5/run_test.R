@@ -3,7 +3,7 @@ requireNamespace("hdf5r", quietly = TRUE)
 
 system(paste0(
   "./", meta$functionality_name, " ",
-  "--input '", meta$resources_dir, "/pbmc_1k_protein_v3_raw_feature_bc_matrix.h5' ",
+  "--input '", meta$resources_dir, "pbmc_1k_protein_v3/pbmc_1k_protein_v3_raw_feature_bc_matrix.h5' ",
   "--output pbmc_1k_protein_v3_raw_feature_bc_matrix_filtered.h5 ",
   "--min_library_size 1000 ",
   "--min_cells_per_gene 300 ",
