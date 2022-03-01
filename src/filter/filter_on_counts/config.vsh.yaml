@@ -1,9 +1,9 @@
 functionality:
-  name: filter_on_umi_genes_and_mito
+  name: filter_on_counts
   namespace: "filter"
   version: "dev"
   description: |
-    Filter scRNA-seq data based on the primary qc metrics. 
+    Filter scRNA-seq data based on the primary QC metrics. 
     This is based on both the UMI counts, the gene counts 
     and the mitochondrial genes (genes starting with mt/MT).
   authors:
@@ -12,44 +12,59 @@ functionality:
       roles: [ maintainer ]
       props: { account: ddemaey1 }
   arguments:
+    # input-output
     - name: "--input"
       type: file
       description: Input h5ad file
       direction: input
       required: true
     - name: "--output"
-      alternatives: ["-o"]
       type: file
       description: Filtered cells in h5ad file.
       direction: output
-    - name: "--min_umi_count"
-      default: 200
+
+    # modality
+    - name: "--modality"
+      type: string
+      multiple: true
+      default: "rna"
+      required: false
+    
+    # arguments
+    - name: "--min_counts"
+      example: 200
       type: integer
-      description: Minimum UMIs captured per cell.
-    - name: "--max_umi_count"
-      default: 5000000
+      description: Minimum number of counts captured per cell.
+
+    - name: "--max_counts"
+      example: 5000000
       type: integer
-      description: Maximum UMIs captured per cell.
-    - name: "--min_gene_count"
-      default: 200
+      description: Maximum number of counts captured per cell.
+
+    - name: "--min_genes_per_cell"
+      example: 200
       type: integer
-      description: Minimum number of genes sampled per cell.
-    - name: "--max_gene_count"
-      default: 1500000
+      description: Minimum of non-zero values per cell.
+
+    - name: "--max_genes_per_cell"
+      example: 1500000
       type: integer
-      description: Maximum number of genes sampled per cell.
-    - name: "--min_gene_occurence_in_cell"
-      default: 3
+      description: Maximum of non-zero values per cell.
+
+    - name: "--min_cells_per_gene"
+      example: 3
       type: integer
-      description: Minimum occurences of a gene sampled in a cell.
+      description: Minimum of non-zero values per gene.
+
     - name: "--min_fraction_mito"
-      default: 0
+      example: 0
       type: double
       description: Minimum fraction of UMIs that are mitochondrial.
+
     - name: "--max_fraction_mito"
-      default: 0.2
+      example: 0.2
       type: double
-      description: Maximum fraction of UMIs that are mitochondrial
+      description: Maximum fraction of UMIs that are mitochondrial.
   resources:
     - type: python_script
       path: script.py
@@ -60,8 +75,9 @@ functionality:
 platforms:
   - type: docker
     image: python:3.8
-    python:
-      packages:
-        - scanpy
-        - loompy
+    setup:
+      - type: python
+        packages:
+          - scanpy
+          - muon
   - type: nextflow
