@@ -2,14 +2,14 @@ import muon as mu
 import anndata
 import json
 
-### VIASH START
+## VIASH START
 par = {
     "input": "resources_test/pbmc_1k_protein_v3/pbmc_1k_protein_v3_filtered_feature_bc_matrix.h5ad",
     "output": "output.h5mu",
     "compression": "gzip",
     "conversions_obsm": '{"counts_antibody":"prot", "counts_custom": "custom"}',
 }
-### VIASH END
+## VIASH END
 
 print("Reading", par["input"])
 data = anndata.read_h5ad(par["input"])

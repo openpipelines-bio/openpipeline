@@ -2,7 +2,7 @@ import scrublet as scr
 import scanpy as sc
 import muon as mu
 
-### VIASH START
+## VIASH START
 par = {
     "input": "resources_test/pbmc_1k_protein_v3/pbmc_1k_protein_v3_filtered_feature_bc_matrix.h5mu",
     "output": "output.h5mu",
@@ -16,7 +16,7 @@ par = {
     "col_name_predicted_doublets": "scrublet_predicted_doublets",
     "outputFormat": "h5mu",
 }
-### VIASH END
+## VIASH END
 
 print("Reading", par["input"])
 mdata = mu.read_h5mu(par["input"])

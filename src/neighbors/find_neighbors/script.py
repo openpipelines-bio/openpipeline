@@ -1,4 +1,4 @@
-### VIASH START
+## VIASH START
 
 par ={
     "input": "./test/pbmc_1k_protein_v3_filtered_feature_bc_matrix.norm.hvg.h5ad",
@@ -6,7 +6,7 @@ par ={
     "metric": "cosine",
     "nNeighbors": 30
 }
-### VIASH END
+## VIASH END
 
 import anndata
 

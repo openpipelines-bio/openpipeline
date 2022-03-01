@@ -2,7 +2,7 @@ import muon
 import scanpy as sc
 import numpy as np
 
-### VIASH START
+## VIASH START
 par = {
     "input": "resources_test/pbmc_1k_protein_v3/pbmc_1k_protein_v3_filtered_feature_bc_matrix.h5mu",
     "output": "/dev/null",
@@ -16,7 +16,7 @@ par = {
     "max_fraction_mito": float("0.2"),
 }
 meta = {"functionality_name": "filter_on_umi_genes_and_mito"}
-### VIASH END
+## VIASH END
 
 print("Reading input data")
 mudata = muon.read_h5mu(par["input"])
