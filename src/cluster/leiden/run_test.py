@@ -4,9 +4,8 @@ import muon as mu
 
 cmd_pars = [
     "./" + meta["functionality_name"],
-    "--input",
-    meta["resources_dir"]
-    + "/pbmc_1k_protein_v3/pbmc_1k_protein_v3_filtered_feature_bc_matrix.h5mu",
+    "--input", meta["resources_dir"] + "/pbmc_1k_protein_v3/pbmc_1k_protein_v3_filtered_feature_bc_matrix.neighbors.h5mu",
+    "--cluster_column_name=leiden.res",
     "--output=output.h5mu",
 ]
 out = subprocess.check_output(cmd_pars).decode("utf-8")
@@ -26,7 +25,7 @@ assert data.mod["rna"].var["feature_types"].unique() == [
 assert "prot" in data.mod, 'Output should contain data.mod["rna"].'
 
 # check whether leiden.custom.resolution was found
-assert "leiden.custom.resolution" in data.mod.obs.columns, 'Output should contain leiden.custom.resolution.'
+assert "leiden.res" in data.mod["rna"].obs.columns, 'Output should contain leiden.res.'
 
 # check whether gene was found
 assert (

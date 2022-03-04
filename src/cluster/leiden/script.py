@@ -3,7 +3,7 @@ import scanpy as sc
 
 ## VIASH START
 par = {
-    "input": "resources_test/pbmc_1k_protein_v3/pbmc_1k_protein_v3_filtered_feature_bc_matrix.norm.hvg.pca.nn.umap.h5mu",
+    "input": "resources_test/pbmc_1k_protein_v3/pbmc_1k_protein_v3_filtered_feature_bc_matrix.neighbors.h5mu",
     "output": "output.h5mu",
     "output_format": "h5mu",
     "cluster_column_name": "leiden.res.0.25",
