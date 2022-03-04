@@ -38,6 +38,10 @@ functionality:
       type: double
       description: A parameter value controlling the coarseness of the clustering. Higher values lead to more clusters.
       default: 1
+    - name: "--cluster_column_name"
+      type: string
+      description: Name of the adata.obs key under which to add the cluster labels.
+      default: "leiden.res.0.25"
   resources:
     - type: python_script
       path: script.py
@@ -54,5 +58,6 @@ platforms:
         - python-igraph
         - leidenalg
         - hnswlib
+        - muon
   - type: nextflow
     label: highcpu

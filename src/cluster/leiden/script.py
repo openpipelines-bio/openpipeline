@@ -7,7 +7,7 @@ par = {
     "output": "output.h5mu",
     "output_format": "h5mu",
     "cluster_column_name": "leiden.res.0.25",
-    "resolution": float("0.25"),
+    "resolution": 0.25,
 }
 ## VIASH END
 
