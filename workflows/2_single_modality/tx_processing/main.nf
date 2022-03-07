@@ -36,11 +36,16 @@ workflow {
         | view { "after filter_with_scrublet: ${it[0]} - ${it[1]}" }
         | lognorm
         | view { "after lognorm: ${it[0]} - ${it[1]}" }
-        // | hvg_scanpy        
-        // | pca               
-        // | find_neighbors    
-        // | leiden            
-        // | umap              
+        | hvg_scanpy      
+        | view { "after hvg scanpy: ${it[0]} - ${it[1]}" }  
+        | pca             
+        | view { "after pca: ${it[0]} - ${it[1]}" }    
+        | find_neighbors    
+        | view { "after find_neighbors: ${it[0]} - ${it[1]}" }  
+        | leiden       
+        | view { "after leiden: ${it[0]} - ${it[1]}" }       
+        | umap    
+        | view { "after umap: ${it[0]} - ${it[1]}" }            
         | map { overrideOptionValue(it, "publish", "output", "${params.output}/${it[0]}.h5mu") } 
         | publish
  
