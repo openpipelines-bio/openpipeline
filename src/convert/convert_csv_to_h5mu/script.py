@@ -24,9 +24,6 @@ data.var_names_make_unique()
 data.X = scipy.sparse.csr_matrix(data.X)
 data.raw = data
 
-# print("Writing to", par["output"])
-# data.write(par["output"], compression=par["compression"])
-
 muon = mu.MuData({"rna": data})
 
 for key, value in json.loads(par["conversions_obsm"]).items():
