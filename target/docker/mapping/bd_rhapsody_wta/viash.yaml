@@ -1194,5 +1194,5 @@ info:
   output: "target/docker/mapping/bd_rhapsody_wta"
   executable: "target/docker/mapping/bd_rhapsody_wta/bd_rhapsody_wta"
   viash_version: "0.5.8"
-  git_commit: "ea8b485abbe47ca7bc81c95ca3399a46c2e9c007"
+  git_commit: "2ff91fe848c0d89bd33438c373786a70c1d4c239"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"
