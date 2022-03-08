@@ -1,44 +1,44 @@
-### VIASH START
-
-par = {
-	"input": "./pbmc_1k_protein_v3_filtered_feature_bc_matrix.h5ad",
-	"output": "./pbmc_1k_protein_v3_filtered_feature_bc_matrix.normalize.h5ad",
-
-	"normalizedUMICount": "10000",
-	"regressOutVariables": []
-}
-
-### VIASH END
-
-import anndata
 import scanpy as sc
-from itertools import compress
-import numpy as np
+import muon as mu
 import multiprocessing
 
+## VIASH START
+par = {
+    "input": "resources_test/pbmc_1k_protein_v3/pbmc_1k_protein_v3_filtered_feature_bc_matrix.h5mu",
+    "output": "output.h5mu",
+    "normalized_umi_count": 10000,
+    "regress_out_variables": [],
+    "modality": ["rna"],
+}
+meta = {"functionality_name": "lognorm"}
+## VIASH END
 
-data = anndata.read_h5ad(par["input"])
+print("Reading input mudata")
+mdata = mu.read_h5mu(par["input"])
+mdata.var_names_make_unique()
 
-print("Performing log normalization ... ")
-sc.pp.normalize_total(data, target_sum = par["normalizedUMICount"])
-sc.pp.log1p(data)
+for mod in par["modality"]:
+    print(f"Performing log normalization on modality {mod}")
+    data = mdata.mod[mod]
 
-if any(map(len, par["regressOutVariables"])) > 0:
-    selectNonEmpty = [len(i) > 0 for i in par["regressOutVariables"]]
-    regressOutVariables = list(compress(par["regressOutVariables"], selectNonEmpty))
-    
-    sc.pp.regress_out(data, regressOutVariables, n_jobs=multiprocessing.cpu_count() - 1)
+    sc.pp.normalize_total(data, target_sum=par["normalized_umi_count"])
+    sc.pp.log1p(data)
 
-    data.uns["normalizationParameters"] = {
-        "Normalization: method": "lognorm",
-        "Normalization: normalizedUMICount": par["normalizedUMICount"],
-        "Normalization: regressOutVariables": regressOutVariables
-    }
-else:
-    data.uns["normalizationParameters"] = {
-        "Normalization: method": "lognorm",
-        "Normalization: normalizedUMICount": par["normalizedUMICount"]
-    }
-                
-data.write(par["output"], compression = "lzf")       
-    
+    if (
+        par["regress_out_variables"] is not None
+        and len(par["regress_out_variables"]) > 0
+    ):
+        print("Regress out variables on modality {mod}")
+        sc.pp.regress_out(
+            data, par["regress_out_variables"], n_jobs=multiprocessing.cpu_count() - 1
+        )
+
+# # can we assume execution_log exists?
+# if mdata.uns is None or "execution_log" not in mdata.uns:
+#     mdata.uns["execution_log"] = []
+# # store new entry
+# new_entry = {"component": meta["functionality_name"], "params": par}
+# mdata.uns["execution_log"].append(new_entry)
+
+print("Writing to file")
+mdata.write(filename=par["output"])

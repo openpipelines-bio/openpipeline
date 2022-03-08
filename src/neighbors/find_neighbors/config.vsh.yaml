@@ -1,0 +1,50 @@
+functionality:
+  name: find_neighbors
+  namespace: "neighbors"
+  version: "dev"
+  description: |
+    Construct a nearest neighborhood network from the input.
+  authors:
+    - name: Dries De Maeyer
+      email: ddemaeyer@gmail.com
+      roles: [ maintainer ]
+      props: { account: ddemaey1 }
+  arguments:
+    - name: "--input"
+      alternatives: ["-i"]
+      type: file
+      description: Input h5mu file
+      direction: input
+      required: true
+      example: input.h5mu
+    - name: "--output"
+      alternatives: ["-o"]
+      type: file
+      description: Output h5mu file containing the found neighbors.
+      direction: output
+      example: output.h5mu
+    - name: "--metric"
+      alternatives: ["-m"]
+      type: string
+      default: "cosine"
+      description: The distance metric to be used in the generation of the nearest neighborhood network.
+    - name: "--nNeighbors"
+      type: integer
+      default: 15
+      description: The number of neighors to be present in the nn-network.
+  resources:
+    - type: python_script
+      path: ./script.py
+  tests:
+    - type: python_script
+      path: run_test.py
+    - path: ../../../resources_test/pbmc_1k_protein_v3
+platforms:
+  - type: docker
+    image: python:3.8
+    python:
+      packages:
+        - scanpy
+        - loompy
+        - muon
+  - type: nextflow

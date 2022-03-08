@@ -13,15 +13,17 @@ functionality:
     - name: "--input"
       alternatives: ["-i"]
       type: file
-      description: Input h5ad file
+      description: Input h5mu file
       direction: input
       required: true
+      example: input.h5mu
     - name: "--output"
       alternatives: ["-o"]
       type: file
-      description: Write the parameters to a json file.
+      description: Output h5mu file
       direction: output
-    - name: "--excludedGenes"
+      example: output.h5mu
+    - name: "--excluded_genes"
       type: string
       description: Genes to exclude from the highly variable genes. This can be of use when performing for example analysis on B/T cells which have variable genes that should not be taken into account.
       default: ""
@@ -31,11 +33,11 @@ functionality:
       default: "seurat"
   resources:
     - type: python_script
-      path: ./script.py
+      path: script.py
   tests:
     - type: python_script
-      path: test.py
-    - path: ../../../resources/test/pbmc_1k_protein_v3_filtered_feature_bc_matrix.h5ad
+      path: run_test.py
+    - path: ../../../resources_test/pbmc_1k_protein_v3
 platforms:
   - type: docker
     image: python:3.8
@@ -43,5 +45,6 @@ platforms:
       packages:
         - scanpy
         - loompy
+        - muon
     workdir: /app
   - type: nextflow

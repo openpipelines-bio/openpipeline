@@ -20,17 +20,31 @@ def escape(str) {
   return str.replaceAll('\\\\', '\\\\\\\\').replaceAll("\"", "\\\\\"").replaceAll("\n", "\\\\n").replaceAll("`", "\\\\`")
 }
 
-def renderCLI(command, arguments) {
-
-  def argumentsList = arguments.collect{ it ->
-    (it.otype == "")
-      ? "\'" + escape(it.value) + "\'"
-      : (it.type == "boolean_true")
-        ? it.otype + it.name
-        : (it.value == "no_default_value_configured")
-          ? ""
-          : it.otype + it.name + " \'" + escape((it.value in List && it.multiple) ? it.value.join(it.multiple_sep): it.value) + "\'"
+def renderArg(it) {
+  if (it.otype == "") {
+    return "'" + escape(it.value) + "'"
+  } else if (it.type == "boolean_true") {
+    if (it.value.toLowerCase() == "true") {
+      return it.otype + it.name
+    } else {
+      return ""
+    }
+  } else if (it.type == "boolean_false") {
+    if (it.value.toLowerCase() == "true") {
+      return ""
+    } else {
+      return it.otype + it.name
+    }
+  } else if (it.value == "no_default_value_configured") {
+    return ""
+  } else {
+    def retVal = it.value in List && it.multiple ? it.value.join(it.multiple_sep): it.value
+    return it.otype + it.name + " '" + escape(retVal) + "'"
   }
+}
+
+def renderCLI(command, arguments) {
+  def argumentsList = arguments.collect{renderArg(it)}.findAll{it != ""}
 
   def command_line = command + argumentsList
 
@@ -77,12 +91,12 @@ def outFromIn(_params) {
       // Unless the output argument is explicitly specified on the CLI
       def newValue =
         (it.value == "viash_no_value")
-          ? "pca" + "." + extOrName
+          ? "pca." + it.name + "." + extOrName
           : it.value
       def newName =
         (id != "")
           ? id + "." + newValue
-          : newValue
+          : it.name + newValue
       it + [ value : newName ]
     }
 
@@ -144,11 +158,9 @@ def overrideIO(_params, inputs, outputs) {
 }
 
 process pca_process {
-
   label 'highcpu'
   tag "${id}"
   echo { (params.debug == true) ? true : false }
-  cache 'deep'
   stageInMode "symlink"
   container "${container}"
 
@@ -163,11 +175,14 @@ process pca_process {
     STUB=1 $cli
     """
   script:
+    def viash_temp = System.getenv("VIASH_TEMP") ?: "/tmp/"
     if (params.test)
       """
       # Some useful stuff
       export NUMBA_CACHE_DIR=/tmp/numba-cache
       # Running the pre-hook when necessary
+      # Pass viash temp dir
+      export VIASH_TEMP="${viash_temp}"
       # Adding NXF's `$moduleDir` to the path in order to resolve our own wrappers
       export PATH="./:${moduleDir}:\$PATH"
       ./${params.pca.tests.testScript} | tee $output
@@ -177,6 +192,8 @@ process pca_process {
       # Some useful stuff
       export NUMBA_CACHE_DIR=/tmp/numba-cache
       # Running the pre-hook when necessary
+      # Pass viash temp dir
+      export VIASH_TEMP="${viash_temp}"
       # Adding NXF's `$moduleDir` to the path in order to resolve our own wrappers
       export PATH="${moduleDir}:\$PATH"
       $cli
@@ -232,11 +249,11 @@ workflow pca {
         effectiveContainer(finalParams),
         renderCLI([finalParams.command], finalParams.arguments),
         finalParams
-        )
+      )
     }
 
-  result_ = pca_process(id_input_output_function_cli_params_) \
-    | join(id_input_params_) \
+  result_ = pca_process(id_input_output_function_cli_params_)
+    | join(id_input_params_)
     | map{ id, output, _params, input, original_params ->
         def parsedOutput = _params.arguments
           .findAll{ it.type == "file" && it.direction == "Output" }
@@ -249,11 +266,9 @@ workflow pca {
         new Tuple3(id, parsedOutput, original_params)
       }
 
-  result_ \
-    | filter { it[1].keySet().size() > 1 } \
-    | view{
-        ">> Be careful, multiple outputs from this component!"
-    }
+  result_
+     | filter { it[1].keySet().size() > 1 }
+     | view{">> Be careful, multiple outputs from this component!"}
 
   emit:
   result_.flatMap{ it ->

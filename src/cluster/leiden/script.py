@@ -1,19 +1,25 @@
-### VIASH START
-
-par = {
-}
-### VIASH END
-
+import muon as mu
 import scanpy as sc
-import pandas as pd
 
-data = sc.read_h5ad(par["input"])
+## VIASH START
+par = {
+    "input": "resources_test/pbmc_1k_protein_v3/pbmc_1k_protein_v3_filtered_feature_bc_matrix.neighbors.h5mu",
+    "output": "output.h5mu",
+    "output_format": "h5mu",
+    "cluster_column_name": "leiden.res.0.25",
+    "resolution": 0.25,
+}
+## VIASH END
 
-sc.tl.leiden(data, resolution = float(par["resolution"]), key_added = par["clusterColumnName"])
+print("Reading", par["input"])
+mdata = mu.read_h5mu(par["input"])
 
-if (par["outputFormat"] == "h5ad"):
-     data.write_h5ad(par["output"], compression = "lzf")
-elif (par["outputFormat"] == "csv"):
-     data.obs[par["clusterColumnName"]].to_csv(par["output"])
-else: 
-     raise ValueError("An unrecognized output format was specified.")
+print("Cluster cells using the Leiden algorithm")
+sc.tl.leiden(
+    mdata.mod["rna"],
+    resolution=float(par["resolution"]),
+    key_added=par["cluster_column_name"],
+)
+
+print("Writing", par["output"])
+mdata.write_h5mu(filename=par["output"])

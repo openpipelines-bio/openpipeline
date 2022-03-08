@@ -1,0 +1,106 @@
+functionality:
+  name: filter_with_counts
+  namespace: "filter"
+  version: "dev"
+  description: |
+    Filter scRNA-seq data based on the primary QC metrics. 
+    This is based on both the UMI counts, the gene counts 
+    and the mitochondrial genes (genes starting with mt/MT).
+  authors:
+    - name: Dries De Maeyer
+      email: DDeMaey1@its.jnj.com
+      roles: [ maintainer ]
+      props: { account: ddemaey1 }
+    - name: Robrecht Cannoodt
+      email: rcannood@gmail.com
+      roles: [ contributor ]
+      props: { github: rcannood, orcid: "0000-0003-3641-729X" }
+
+  arguments:
+    # required input variables
+    - name: "--input"
+      type: file
+      description: Input h5mu file
+      direction: input
+      required: true
+      example: input.h5mu
+
+    - name: "--modality"
+      type: string
+      multiple: true
+      default: "rna"
+      required: false
+
+    # required output variables
+    - name: "--output"
+      type: file
+      description: Output h5mu file.
+      direction: output
+      example: output.h5mu
+      
+    - name: "--do_subset"
+      type: boolean_true
+      description: Whether to subset before storing the output.
+    
+    # optional output variables
+    - name: "--obs_name_filter"
+      type: string
+      default: "filter_with_counts"
+      description: In which .obs slot to store a boolean array corresponding to which observations should be removed.
+
+    - name: "--var_name_filter"
+      type: string
+      default: "filter_with_counts"
+      description: In which .var slot to store a boolean array corresponding to which variables should be removed.
+
+    # arguments
+    - name: "--min_counts"
+      example: 200
+      type: integer
+      description: Minimum number of counts captured per cell.
+
+    - name: "--max_counts"
+      example: 5000000
+      type: integer
+      description: Maximum number of counts captured per cell.
+
+    - name: "--min_genes_per_cell"
+      example: 200
+      type: integer
+      description: Minimum of non-zero values per cell.
+
+    - name: "--max_genes_per_cell"
+      example: 1500000
+      type: integer
+      description: Maximum of non-zero values per cell.
+
+    - name: "--min_cells_per_gene"
+      example: 3
+      type: integer
+      description: Minimum of non-zero values per gene.
+
+    - name: "--min_fraction_mito"
+      example: 0
+      type: double
+      description: Minimum fraction of UMIs that are mitochondrial.
+
+    - name: "--max_fraction_mito"
+      example: 0.2
+      type: double
+      description: Maximum fraction of UMIs that are mitochondrial.
+  resources:
+    - type: python_script
+      path: script.py
+  tests:
+    - type: python_script
+      path: run_test.py
+    - path: ../../../resources_test/pbmc_1k_protein_v3
+platforms:
+  - type: docker
+    image: python:3.8
+    setup:
+      - type: python
+        packages:
+          - scanpy
+          - muon
+  - type: nextflow

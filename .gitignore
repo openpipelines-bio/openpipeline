@@ -28,3 +28,6 @@ out/
 log.txt
 out/
 output/
+resources/test/
+resources_test/
+old_resources

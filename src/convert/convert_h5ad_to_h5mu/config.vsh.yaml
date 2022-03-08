@@ -1,0 +1,49 @@
+functionality:
+  name: convert_h5ad_to_h5mu
+  namespace: "convert"
+  version: "dev"
+  description: |
+    Converts a single layer h5ad file into a single muon object
+  authors:
+    - name: Dries De Maeyer
+      email: ddemaeyer@gmail.com
+      roles: [ maintainer ]
+      props: { account: ddemaey1 }
+  arguments:
+    - name: "--input"
+      alternatives: ["-i"]
+      type: file
+      description: Input h5ad files
+      default: input.h5ad
+      direction: input
+      required: true
+    - name: "--output"
+      alternatives: ["-o"]
+      type: file
+      description: Output muon file.
+      default: output.h5mu
+      direction: output
+    - name: "--compression"
+      type: string
+      description: The compression format to be used on the final muon object.
+      default: "gzip"
+    - name: "--conversions_obsm"
+      type: string
+      description: Dict describing the conversions that have to be performed from the obsm slot.
+      default: '{"counts_antibody":"prot", "counts_custom": "custom"}'
+  resources:
+    - type: python_script
+      path: script.py
+  tests:
+    - type: python_script
+      path: run_test.py
+    - path: ../../../resources_test/pbmc_1k_protein_v3
+platforms:
+  - type: docker
+    image: python:3.8
+    python:
+      packages:
+        - anndata
+        - loompy
+        - muon
+  - type: nextflow

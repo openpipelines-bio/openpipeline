@@ -1,6 +1,6 @@
 functionality:
   name: umap
-  namespace: "projection"
+  namespace: "dimred"
   version: "dev"
   description: "UMAP(Uniform Manifold Approximation and Projection) is a novel manifold learning technique for dimension reduction. UMAP is constructed from a theoretical framework based in Riemannian geometry and algebraic topology. The result is a practical scalable algorithm that applies to real world data. The UMAP algorithm is competitive with t-SNE for visualization quality, and arguably preserves more of the global structure with superior run time performance. Furthermore, UMAP has no computational restrictions on embedding dimension, making it viable as a general purpose dimension reduction technique for machine learning. \n\nFor more information about the method see https://arxiv.org/abs/1802.03426\n"
   authors:
@@ -11,15 +11,17 @@ functionality:
   arguments:
     - name: "--input"
       type: file
-      description: Input h5ad file
+      description: Input h5mu file
       direction: input
       required: true
+      example: input.h5mu
     - name: "--output"
       alternatives: ["-o"]
       type: file
-      description: Output h5ad file.
+      description: Output h5mu file.
       direction: output
       required: true
+      example: output.h5mu
     - name: "--min_dist"
       type: double
       description: The effective minimum distance between embedded points. Smaller values will result in a more clustered/clumped embedding where nearby points on the manifold are drawn closer together, while larger values will result on a more even dispersal of points. The value should be set relative to the spread value, which determines the scale at which embedded points will be spread out. The default of in the umap-learn package is 0.1.
@@ -43,20 +45,21 @@ functionality:
     - name: "--init_pos"
       type: string
       description: How to initialize the low dimensional embedding. Called init in the original UMAP. Options are paga, spectral and random.
-      default: "spectral"
+      default: spectral
   resources:
     - type: python_script
       path: ./script.py
   tests:
-    - type: bash_script
-      path: run_test.sh
-    - path: ../../../resources/test/pbmc_1k_protein_v3_filtered_feature_bc_matrix.norm.hvg.pca.nn.umap.h5ad
+    - type: python_script
+      path: run_test.py
+    - path: ../../../resources_test/pbmc_1k_protein_v3
 platforms:
   - type: docker
     image: python:3.8
     python:
       packages:
         - scanpy
+        - muon
     workdir: /app
   - type: nextflow
     label: highcpu

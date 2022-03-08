@@ -1,9 +1,15 @@
 functionality:
   name: leiden
   namespace: "cluster"
-  version: "dev"
   description: |
-    Leiden clustering as described in https://scanpy.readthedocs.io/en/stable/api/scanpy.tl.leiden.html
+    Cluster cells using the Leiden algorithm [Traag18] implemented in the Scanpy framework [Wolf18]. Leiden is an improved version of the Louvain algorithm [Blondel08]. 
+    It has been proposed for single-cell analysis by [Levine15]. 
+    This requires having ran neighbors/find_neighbors or neighbors/bbknn first.
+
+    Blondel et al. (2008), Fast unfolding of communities in large networks, J. Stat. Mech.
+    Levine et al. (2015), Data-Driven Phenotypic Dissection of AML Reveals Progenitor–like Cells that Correlate with Prognosis, Cell.
+    Traag et al. (2018), From Louvain to Leiden: guaranteeing well-connected communities arXiv.
+    Wolf et al. (2018), Scanpy: large-scale single-cell gene expression data analysis, Genome Biology.
   authors:
     - name: Dries De Maeyer
       email: ddemaeyer@gmail.com
@@ -13,36 +19,36 @@ functionality:
     - name: "--input"
       alternatives: [-i]
       type: file
-      description: Input h5ad file
+      description: Input file.
       direction: input
       required: true
+      example: input.h5mu
     - name: "--output"
       alternatives: ["-o"]
       type: file
       description: Output file.
       direction: output
       required: true
-    - name: "--outputFormat"
+      example: output.h5mu
+    - name: "--output_key"
       type: string
-      description: The output format for the clustering. This can be csv or h5ad.
-      default: "h5ad"
-    - name: "--clusterColumnName"
-      alternatives: [-c]
-      type: string
-      description: The column name for the clustering.
-      default: "leiden.res.0.25"
+      description: The .obs key under which to add the cluster labels.
+      default: "neighbors"
     - name: "--resolution"
-      alternatives: [-r]
       type: double
-      description: The resolution to run the clustering in.
-      default: 0.25
+      description: A parameter value controlling the coarseness of the clustering. Higher values lead to more clusters.
+      default: 1
+    - name: "--cluster_column_name"
+      type: string
+      description: Name of the adata.obs key under which to add the cluster labels.
+      default: "leiden.res.0.25"
   resources:
     - type: python_script
-      path: ./script.py
+      path: script.py
   tests:
     - type: python_script
       path: run_test.py
-    - path: ../../../resources/test/pbmc_1k_protein_v3_filtered_feature_bc_matrix.norm.hvg.pca.nn.umap.h5ad
+    - path: ../../../resources_test/pbmc_1k_protein_v3
 platforms:
   - type: docker
     image: python:3.8
@@ -52,5 +58,6 @@ platforms:
         - python-igraph
         - leidenalg
         - hnswlib
+        - muon
   - type: nextflow
     label: highcpu

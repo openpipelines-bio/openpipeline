@@ -12,36 +12,43 @@ functionality:
   arguments:
     - name: "--input"
       type: file
-      description: Input h5ad file
+      description: Input h5mu file
       direction: input
       required: true
+      example: input.h5mu
     - name: "--output"
       alternatives: ["-o"]
       type: file
-      description: Output h5ad file.
+      description: Output h5mu file.
       direction: output
       required: true
-    - name: "--normalizedUMICount"
+      example: output.h5mu
+    - name: "--modality"
+      type: string
+      multiple: true
+      default: "rna"
+      required: false
+    - name: "--normalized_umi_count"
       type: integer
       default: 10000
       required: false
-    - name: "--regressOutVariables"
+    - name: "--regress_out_variables"
       type: string
-      default: ""
+      multiple: true
       required: false
   resources:
     - type: python_script
-      path: ./script.py
+      path: script.py
   tests:
-    - type: bash_script
-      path: run_test.sh
-    - path: ../../../resources/test/pbmc_1k_protein_v3_filtered_feature_bc_matrix.h5ad
+    - type: python_script
+      path: run_test.py
+    - path: ../../../resources_test/pbmc_1k_protein_v3
 platforms:
   - type: docker
     image: python:3.8
-    python:
-      packages:
-        - scanpy
-        - loompy
-    workdir: /app
+    setup:
+      - type: python
+        packages:
+          - scanpy
+          - muon
   - type: nextflow

@@ -1,23 +1,27 @@
-### VIASH START
-
-par ={
-    "input": "./test/pbmc_1k_protein_v3_filtered_feature_bc_matrix.norm.h5ad",
-    "output": "./test/pbmc_1k_protein_v3_filtered_feature_bc_matrix.norm.hvg.h5ad"
+## VIASH START
+par = {
+    "input": "resources_test/pbmc_1k_protein_v3/pbmc_1k_protein_v3_filtered_feature_bc_matrix.h5mu",
+    "output": "output.h5mu",
+    "excluded_genes": "",
+    "flavor": "seurat",
 }
-### VIASH END
+## VIASH END
 
-import argparse
-import anndata
 import scanpy as sc
+import muon as mu
 
-data = anndata.read_h5ad(par["input"])
+mdata = mu.read_h5mu(par["input"])
 
-sc.pp.highly_variable_genes(data, flavor=par["flavor"])
+sc.pp.log1p(mdata.mod["rna"])
+sc.pp.highly_variable_genes(mdata.mod["rna"], flavor=par["flavor"])
 
-if len(par["excludedGenes"]) > 0:
-    excludedGenes = list(map(str.strip, par["excludedGenes"].split(",")))
-    print("Excluding genes: " + str(excludedGenes))
-    
-    data.var["highly_variable"] = (~data.var["highly_variable"].index.isin(excludedGenes) & data.var["highly_variable"].values)
+if len(par["excluded_genes"]) > 0:
+    excluded_genes = list(map(str.strip, par["excluded_genes"].split(",")))
+    print("Excluding genes: " + str(excluded_genes))
 
-data.write(par["output"], compression="gzip")
+    mdata.var["highly_variable"] = (
+        ~mdata.var["highly_variable"].index.isin(excluded_genes)
+        & mdata.var["highly_variable"].values
+    )
+
+mdata.write_h5mu(filename=par["output"])
