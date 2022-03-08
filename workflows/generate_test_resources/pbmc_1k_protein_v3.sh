@@ -34,4 +34,13 @@ target/docker/convert/convert_10x_h5_to_h5mu/convert_10x_h5_to_h5mu \
   --input "${OUT}_filtered_feature_bc_matrix.h5" \
   --output "${OUT}_filtered_feature_bc_matrix.h5mu"
 
+NXF_VER=21.10.6 bin/nextflow \
+  run . \
+  -main-script workflows/2_single_modality/tx_processing/main.nf \
+  --input resources_test/pbmc_1k_protein_v3/pbmc_1k_protein_v3_filtered_feature_bc_matrix.h5mu \
+  --id pbmc_1k_protein_v3_filtered_feature_bc_matrix.tx_processing \
+  --output resources_test/pbmc_1k_protein_v3/ \
+  -resume \
+  -c workflows/2_single_modality/tx_processing/nextflow.config
+
 aws s3 sync --profile xxx "$DIR" "$S3DIR"
