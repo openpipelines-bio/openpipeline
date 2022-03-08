@@ -12,6 +12,7 @@ bin/nextflow \
   run . \
   -main-script workflows/2_single_modality/tx_processing/main.nf \
   -entry test_wf \
-  -c workflows/2_single_modality/tx_processing/nextflow.config
+  -c workflows/2_single_modality/tx_processing/nextflow.config \
+  -resume
 
 
