@@ -74,3 +74,11 @@ def overrideOptionValue(triplet, _key, _option, _value) {
 }
 
 
+def has_param(name) {
+  return params.containsKey(name) && params[name] != ""
+}
+def check_required_param(name, description) {
+  if (!has_param(name)) {
+    exit 1, "ERROR: Please provide a --{name} parameter {description}"
+  }
+}

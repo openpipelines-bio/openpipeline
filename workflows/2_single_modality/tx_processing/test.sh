@@ -11,9 +11,7 @@ export NXF_VER=21.10.6
 bin/nextflow \
   run . \
   -main-script workflows/2_single_modality/tx_processing/main.nf \
-  --input resources_test/pbmc_1k_protein_v3/pbmc_1k_protein_v3_filtered_feature_bc_matrix.h5mu \
-  --output output/ \
-  -resume \
+  -entry test_wf \
   -c workflows/2_single_modality/tx_processing/nextflow.config
 
 

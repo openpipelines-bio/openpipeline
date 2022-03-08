@@ -13,40 +13,137 @@ include { umap } from targetDir + '/dimred/umap/main.nf' params(params)
 include { leiden } from targetDir + '/cluster/leiden/main.nf' params(params)
 
 include { publish } from targetDir + "/transfer/publish/main.nf" params(params)
-include { overrideOptionValue } from workflowDir + "/utils/utils.nf" params(params)
+include { overrideOptionValue; has_param; check_required_param } from workflowDir + "/utils/utils.nf" params(params)
 
+/*
+TX Processing - CLI workflow
 
+A workflow for running the default RNA processing components.
+Exactly one of '--input' and '--csv' must be passed as a parameter.
+
+Parameters:
+  --id       ID of the sample, optional.
+  --input    Path to the sample.
+  --csv      A CSV file with required columns 'input' and optional columns 'id'.
+  --output   Path to an output directory.
+*/
 workflow {
-    main:
-    
-    if (!params.containsKey("input") || params.input == "") {
-        exit 1, "ERROR: Please provide a --input parameter pointing to the count matrices to be converted"
+  if (has_param("help")) {
+    log.info """TX Processing - CLI workflow
+
+A workflow for running the default RNA processing components.
+Exactly one of '--input' and '--csv' must be passed as a parameter.
+
+Parameters:
+  --id       ID of the sample, optional.
+  --input    Path to the sample.
+  --csv      A CSV file with required columns 'input' and optional columns 'id'.
+  --output   Path to an output directory."""
+    exit 0
+  }
+
+  if (has_param("input") == has_param("csv")) {
+    exit 1, "ERROR: Please provide either an --input parameter or a --csv parameter"
+  }
+  if (has_param("input")) {
+    if (has_param("id")) {
+      input_ch = Channel.value( [ params.id, file(params.input), params ])
+    } else {
+      input_ch = 
+        Channel.fromPath(params.input)
+        | map { input_file -> [ input_file.baseName, input_file, params ]}
     }
-    if (!params.containsKey("output") || params.output == "") {
-        exit 1, "ERROR: Please provide a --output parameter."
-    }
-            
-    Channel.fromPath(params.input)
-        | map { input -> [ input.name, input, params ]}
-        | map { overrideOptionValue(it, "filter_with_counts", "modality", "rna") }
-        | view { "before filter: ${it[0]} - ${it[1]}" }
-        | filter_with_counts
-        | view { "after filter_with_counts: ${it[0]} - ${it[1]}" }
-        | filter_with_scrublet
-        | view { "after filter_with_scrublet: ${it[0]} - ${it[1]}" }
-        | lognorm
-        | view { "after lognorm: ${it[0]} - ${it[1]}" }
-        | hvg_scanpy      
-        | view { "after hvg scanpy: ${it[0]} - ${it[1]}" }  
-        | pca             
-        | view { "after pca: ${it[0]} - ${it[1]}" }    
-        | find_neighbors    
-        | view { "after find_neighbors: ${it[0]} - ${it[1]}" }  
-        | leiden       
-        | view { "after leiden: ${it[0]} - ${it[1]}" }       
-        | umap    
-        | view { "after umap: ${it[0]} - ${it[1]}" }            
-        | map { overrideOptionValue(it, "publish", "output", "${params.output}/${it[0]}.h5mu") } 
-        | publish
- 
+  } else if (has_param("csv")) {
+    input_ch = 
+      Channel.fromPath(params.csv)
+      | splitCsv(header: true, sep: ",")
+      | map { li -> 
+        if (!li.containsKey("input")) {
+          exit 1, "ERROR: The provided csv file should contain an 'input' column"
+        }
+        input_path = file(li.input)
+        // todo: check if input_path has length 1
+        if (li.containsKey("id")) {
+          id = li.id
+        } else {
+          // derive pathname from input
+          id = input_path.baseName
+        }
+        [ id, input_path, params ] 
+      }
+  }
+  
+  check_required_param("output", "where output files will be published")
+
+  input_ch
+    | view { "before run_wf: ${it[0]} - ${it[1]}" }
+    | run_wf
+    | view { "after run_wf: ${it[0]} - ${it[1]}" }
+    | map { overrideOptionValue(it, "publish", "output", "${params.output}/${it[0]}.h5mu") }
+    | publish
+}
+
+/*
+TX Processing - Common workflow
+
+A workflow for running the default RNA processing components.
+
+input channel event format: [ id, file, params ]
+  value id:                      an event id
+  value file:                    an h5mu input file
+  value params:                  the params object, which may already have sample specific overrides
+output channel event format: [ id, file, params ]
+  value id:                      same as input
+  value file:                    an h5mu output file
+  value params:                  same as input params
+*/
+workflow run_wf {
+  take:
+  input_ch
+
+  main:
+  output_ch = input_ch
+    | filter_with_counts
+    | filter_with_scrublet
+    | lognorm
+    | hvg_scanpy
+    | pca
+    | find_neighbors
+    | leiden
+    | umap  
+
+  emit:
+  output_ch
+}
+
+/*
+TX Processing - Integration testing
+
+A workflow for running the default RNA processing components.
+*/
+workflow test_wf {
+  
+  output_ch =
+    Channel.value(
+      [
+        "foo",
+        params.rootDir + "/resources_test/pbmc_1k_protein_v3/pbmc_1k_protein_v3_filtered_feature_bc_matrix.h5mu",
+        params
+      ]
+    )
+    | run_wf
+    //| check_format(args: {""}) // todo: check whether output h5mu has the right slots defined
+  
+  output_list = output_ch.toList()
+  /* output_list = [ 
+    [id, file, params]
+  ]*/
+
+  print(output_list)
+  System.out.flush()
+
+  assert output_list.size() == 1 : "output_ch should contain one element"
+  assert output_list.every{it.size() == 3} : "events in output_ch should contain three elements; [id, file, params]"
+  assert output_list[0][0] == "foo" : "Output ID should be same as input ID"
+  assert output_list[0][1].matches('.*\\.h5mu\$') : "Output file should be a h5mu file"
 }
