@@ -12,11 +12,11 @@ par_exclude='docs/figures'
 extra_params=()
 mkdir -p $par_output # Create output directory if it doesn't exist already
 
-if [ $par_strip_components != "" ]; then
+if [ "$par_strip_components" != "" ]; then
     extra_params+=("--strip-components=$par_strip_components")
 fi
 
-if [ $par_exclude != "" ]; then
+if [ "$par_exclude" != "" ]; then
     extra_params+=("--exclude=$par_exclude")
 fi
 
