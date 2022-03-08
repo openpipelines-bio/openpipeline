@@ -28,7 +28,6 @@ functionality:
       type: integer
       default: 25
       description: The number of principal components to calculate.
-      example: 25
   resources:
     - type: python_script
       path: ./script.py

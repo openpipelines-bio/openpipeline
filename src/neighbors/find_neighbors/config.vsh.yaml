@@ -28,12 +28,10 @@ functionality:
       type: string
       default: "cosine"
       description: The distance metric to be used in the generation of the nearest neighborhood network.
-      example: cosine
     - name: "--nNeighbors"
       type: integer
       default: 15
       description: The number of neighors to be present in the nn-network.
-      example: 15
   resources:
     - type: python_script
       path: ./script.py

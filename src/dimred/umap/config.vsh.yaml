@@ -26,32 +26,26 @@ functionality:
       type: double
       description: The effective minimum distance between embedded points. Smaller values will result in a more clustered/clumped embedding where nearby points on the manifold are drawn closer together, while larger values will result on a more even dispersal of points. The value should be set relative to the spread value, which determines the scale at which embedded points will be spread out. The default of in the umap-learn package is 0.1.
       default: 0.5
-      example: 0.5
     - name: "--alpha"
       type: double
       description: The initial learning rate for the embedding optimization.
       default: 1.0
-      example: 1.0
     - name: "--gamma"
       type: double
       description: Weighting applied to negative samples in low dimensional embedding optimization. Values higher than one will result in greater weight being given to negative samples.
       default: 1.0
-      example: 1.0
     - name: "--random_seed"
       type: integer
       description: Random seed for Leiden algrithm.
       default: 0
-      example: 0
     - name: "--negative_sample_rate"
       type: integer
       description: The number of negative edge/1-simplex samples to use per positive edge/1-simplex sample in optimizing the low dimensional embedding.
       default: 5
-      example: 5
     - name: "--init_pos"
       type: string
       description: How to initialize the low dimensional embedding. Called init in the original UMAP. Options are paga, spectral and random.
       default: spectral
-      example: spectral
   resources:
     - type: python_script
       path: ./script.py

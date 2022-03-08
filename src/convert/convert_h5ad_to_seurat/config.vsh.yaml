@@ -19,12 +19,14 @@ functionality:
       description: Input h5ad file
       direction: input
       required: true
+      example: input.h5ad
     - name: "--output"
       alternatives: ["-o"]
       type: file
       description: Output Seurat file
       direction: output
       required: true
+      example: output.rds
     - name: "--verbose"
       alternatives: ["-v"]
       type: boolean_true
