@@ -15,6 +15,7 @@ functionality:
       type: file
       direction: input
       description: Path of folder created by mkfastq or bcl2fastq
+      example: fastq_dir
     - name: "--id"
       type: string
       default: cr
@@ -32,11 +33,13 @@ functionality:
       direction: input
       description: Path of folder containing 10x-compatible reference.
       required: true
+      example: reference_dir
     - name: "--output"
       required: true
       type: file
       direction: output
       description: "Path to cellranger output folder"
+      example: output
     - name: "--log"
       type: string
       description: Path to the log file (stdout and stderr)
