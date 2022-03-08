@@ -9,7 +9,8 @@ cd "$REPO_ROOT"
 curl -fsSL get.viash.io | bash -s -- \
   --organisation openpipeline \
   --tag 0.5.8 \
-  --log check_results/results.tsv
+  --log check_results/results.tsv \
+  --viash bin/viash
 
 cd bin
 
