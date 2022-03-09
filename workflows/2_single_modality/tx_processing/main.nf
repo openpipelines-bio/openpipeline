@@ -5,6 +5,7 @@ targetDir = params.rootDir + "/target/nextflow"
 
 include { filter_with_counts } from targetDir + "/filter/filter_with_counts/main.nf" params(params)
 include { filter_with_scrublet } from targetDir + "/filter/filter_with_scrublet/main.nf" params(params)
+include { do_filter } from targetDir + "/filter/do_filter/main.nf" params(params)
 include { lognorm } from targetDir + '/normalize/lognorm/main.nf' params(params)
 include { hvg_scanpy } from targetDir + '/hvg/hvg_scanpy/main.nf' params(params)
 include { pca } from targetDir + '/dimred/pca/main.nf' params(params)
@@ -105,6 +106,9 @@ workflow run_wf {
   output_ch = input_ch
     | filter_with_counts
     | filter_with_scrublet
+    | map { overrideOptionValue(it, "do_filter", "obs_filter", "filter_with_counts:filter_with_scrublet") }
+    | map { overrideOptionValue(it, "do_filter", "var_filter", "filter_with_counts") }
+    | do_filter
     | lognorm
     | hvg_scanpy
     | pca
@@ -132,22 +136,17 @@ workflow test_wf {
         params
       ]
     )
+    | view { "Input: [${it[0]}, ${it[1]}, params]" }
     | run_wf
+    | view { output ->
+      assert output.size() == 3 : "outputs should contain three elements; [id, file, params]"
+      assert output[1].toString().endsWith(".h5mu") : "Output file should be a h5mu file. Found: ${output_list[0][1]}"
+      "Output: [${output[0]}, ${output[1]}, params]"
+    }
     | toList()
     | map { output_list ->
-      assert output_list.size() == 1 : "output_ch should contain one element"
-      assert output_list.every{it.size() == 3} : "events in output_ch should contain three elements; [id, file, params]"
+      assert output_list.size() == 1 : "output channel should contain one event"
       assert output_list[0][0] == "foo" : "Output ID should be same as input ID"
-      assert output_list[0][1].matches('.*\\.h5mu\$') : "Output file should be a h5mu file. Found: {output_list[0][1]}"
     }
     //| check_format(args: {""}) // todo: check whether output h5mu has the right slots defined
-  
-
-  // TODO: how to convert channel to list again?
-  // output_list = output_ch.collect()
-
-  // assert output_list.size() == 1 : "output_ch should contain one element"
-  // assert output_list.every{it.size() == 3} : "events in output_ch should contain three elements; [id, file, params]"
-  // assert output_list[0][0] == "foo" : "Output ID should be same as input ID"
-  // assert output_list[0][1].matches('.*\\.h5mu\$') : "Output file should be a h5mu file"
 }
