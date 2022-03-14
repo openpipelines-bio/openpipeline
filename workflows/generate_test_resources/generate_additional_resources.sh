@@ -21,6 +21,6 @@ bin/viash run src/neighbors/find_neighbors/config.vsh.yaml -- \
 
 echo "Performing leiden on ${OUT_NEIGHBORS}"
 
-bin/viash run src/neighbors/find_neighbors/config.vsh.yaml -- \
+bin/viash run src/cluster/leiden/config.vsh.yaml -- \
     --input "${OUT_NEIGHBORS}" \
     --output "${OUT_NEIGHBORS_LEIDEN}"
