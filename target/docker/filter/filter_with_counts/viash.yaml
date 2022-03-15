@@ -1130,5 +1130,5 @@ info:
   output: "target/docker/filter/filter_with_counts"
   executable: "target/docker/filter/filter_with_counts/filter_with_counts"
   viash_version: "0.5.10"
-  git_commit: "d967355f29d257334e3a281181c873ee9f03baef"
+  git_commit: "ae8043a1361d4d5bd7b8c27c1c8c3dc293bd3dc2"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"
