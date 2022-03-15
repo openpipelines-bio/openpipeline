@@ -7,10 +7,10 @@ REPO_ROOT=$(git rev-parse --show-toplevel)
 cd "$REPO_ROOT"
 
 curl -fsSL get.viash.io | bash -s -- \
+  --registry ghcr.io \
   --organisation openpipeline \
-  --tag 0.5.8 \
-  --log check_results/results.tsv \
-  --viash bin/viash
+  --target_image_source https://github.com/openpipelines-bio/openpipeline \
+  --tag 0.5.10
 
 cd bin
 

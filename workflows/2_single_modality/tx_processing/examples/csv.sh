@@ -13,5 +13,7 @@ bin/nextflow \
   -main-script workflows/2_single_modality/tx_processing/main.nf \
   --csv workflows/2_single_modality/tx_processing/examples/test_input.csv \
   --output output/ \
+  --publishDir output_out/ \
+  --logDir output_log/ \
   -resume \
   -c workflows/2_single_modality/tx_processing/nextflow.config
