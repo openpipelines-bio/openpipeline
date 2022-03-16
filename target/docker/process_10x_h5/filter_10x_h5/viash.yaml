@@ -910,5 +910,5 @@ info:
   output: "target/docker/process_10x_h5/filter_10x_h5"
   executable: "target/docker/process_10x_h5/filter_10x_h5/filter_10x_h5"
   viash_version: "0.5.10"
-  git_commit: "ae8043a1361d4d5bd7b8c27c1c8c3dc293bd3dc2"
+  git_commit: "641120261c6efee9d32fabbe9a19ba879552f557"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"

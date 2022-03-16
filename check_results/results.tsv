@@ -2,7 +2,7 @@
                  hvg           hvg_scanpy               docker                start                                        [0m
              convert convert_10x_mtx_to_h5mu               docker                start                                        [0m
              convert convert_bdrhap_to_h5ad               docker                start                                        [0m
-[32m             convert convert_bdrhap_to_h5ad               docker     build_executable         0       20              SUCCESS[0m
+[32m             convert convert_bdrhap_to_h5ad               docker     build_executable         0       17              SUCCESS[0m
 [33m             convert convert_bdrhap_to_h5ad               docker                tests        -1        0              MISSING[0m
              convert convert_h5ad_to_h5mu               docker                start                                        [0m
              mapping      bd_rhapsody_wta               docker                start                                        [0m
@@ -13,23 +13,33 @@
 [33m             mapping     cellranger_count               docker                tests        -1        0              MISSING[0m
             download        download_file               docker                start                                        [0m
 [32m            download        download_file               docker     build_executable         0        0              SUCCESS[0m
-[32m            download        download_file               docker          run_test.sh         0        2              SUCCESS[0m
+[32m            download        download_file               docker          run_test.sh         0        1              SUCCESS[0m
             download  sync_test_resources               docker                start                                        [0m
 [32m            download  sync_test_resources               docker     build_executable         0        0              SUCCESS[0m
-[31m            download  sync_test_resources               docker          run_test.sh         1        3                ERROR[0m
+[31m            download  sync_test_resources               docker          run_test.sh         1        2                ERROR[0m
          interactive        run_cellxgene               docker                start                                        [0m
 [32m         interactive        run_cellxgene               docker     build_executable         0        0              SUCCESS[0m
-[31m         interactive        run_cellxgene               docker          run_test.sh         1        4                ERROR[0m
+[31m         interactive        run_cellxgene               docker          run_test.sh         1        2                ERROR[0m
          interactive     run_cirrocumulus               docker                start                                        [0m
 [32m         interactive     run_cirrocumulus               docker     build_executable         0        0              SUCCESS[0m
 [31m         interactive     run_cirrocumulus               docker          run_test.sh       125        0                ERROR[0m
               dimred                  pca               docker                start                                        [0m
               filter filter_with_scrublet               docker                start                                        [0m
-Exception in thread "Thread-682" Exception in thread "Thread-682" java.io.IOException: No space left on device
-java.io.IOException: No space left on device
-	at java.base/java.io.FileOutputStream.writeBytes(Native Method)
-	at java.base/java.io.FileOutputStream.write(FileOutputStream.java:354)
-	at java.base/sun.nio.cs.StreamEncoder.writeBytes(StreamEncoder.java:233)
-	at java.base/sun.nio.cs.StreamEncoder.implWrite(StreamEncoder.java:303)
-	at java.base/sun.nio.cs.StreamEncoder.implWrite(StreamEncoder.java:281)
-	at java.base/sun.nio.cs.StreamEncoder.write(Str
+[31m              filter filter_with_scrublet               docker     build_executable         1       16                ERROR[0m
+              filter            do_filter               docker                start                                        [0m
+[31m              dimred                  pca               docker     build_executable         1       33                ERROR[0m
+              dimred                 umap               docker                start                                        [0m
+           bcl_demux   cellranger_mkfastq               docker                start                                        [0m
+[31m              dimred                 umap               docker     build_executable         1       21                ERROR[0m
+             convert  convert_csv_to_h5mu               docker                start                                        [0m
+File at URI 'file:/home/runner/work/openpipeline/openpipeline/src/convert/convert_csv_to_h5mu/run_test.sh' not found
+[32m             convert  convert_csv_to_h5mu               docker     build_executable         0        0              SUCCESS[0m
+[31m             convert  convert_csv_to_h5mu               docker          run_test.sh         1        0                ERROR[0m
+             convert convert_h5ad_to_seurat               docker                start                                        [0m
+File at URI 'file:/home/runner/work/openpipeline/openpipeline/src/convert/convert_h5ad_to_seurat/test/run_test.sh' not found
+File at URI 'file:/home/runner/work/openpipeline/openpipeline/src/convert/convert_h5ad_to_seurat/test/run_test.R' not found
+[32m             convert convert_h5ad_to_seurat               docker     build_executable         0        0              SUCCESS[0m
+[31m             convert convert_h5ad_to_seurat               docker          run_test.sh         1        0                ERROR[0m
+[31m             convert convert_h5ad_to_seurat               docker           run_test.R         1        0                ERROR[0m
+             convert  convert_10x_to_h5mu               docker                start                                        [0m
+/home/runner/work/openpipeline/openpipeline/resources_test/pbmc_1k_protein_v3
