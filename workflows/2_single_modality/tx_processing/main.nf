@@ -36,12 +36,13 @@ A workflow for running the default RNA processing components.
 Exactly one of '--input' and '--csv' must be passed as a parameter.
 
 Parameters:
-  --id       ID of the sample, optional.
-  --input    Path to the sample.
-  --csv      A CSV file with required columns 'input' and optional columns 'id'.
-  --output   Path to an output directory."""
+  --id       ID of the sample (optional).
+  --input    Path to the sample (required).
+  --output   Path to an output directory (required).
+  --csv      Above parameters can also be passed as a .csv file"""
     exit 0
   }
+
 
   if (has_param("input") == has_param("csv")) {
     exit 1, "ERROR: Please provide either an --input parameter or a --csv parameter"
