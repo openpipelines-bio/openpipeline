@@ -16,30 +16,23 @@ include { leiden } from targetDir + '/cluster/leiden/main.nf' params(params)
 include { publish } from targetDir + "/transfer/publish/main.nf" params(params)
 include { overrideOptionValue; has_param; check_required_param } from workflowDir + "/utils/utils.nf" params(params)
 
-/*
-TX Processing - CLI workflow
 
-A workflow for running the default RNA processing components.
-Exactly one of '--input' and '--csv' must be passed as a parameter.
-
-Parameters:
-  --id       ID of the sample, optional.
-  --input    Path to the sample.
-  --csv      A CSV file with required columns 'input' and optional columns 'id'.
-  --output   Path to an output directory.
-*/
 workflow {
   if (has_param("help")) {
     log.info """TX Processing - CLI workflow
 
 A workflow for running the default RNA processing components.
-Exactly one of '--input' and '--csv' must be passed as a parameter.
+This workflow can be run on a single input or in batch, see below.
 
-Parameters:
+Parameters (Single input mode):
   --id       ID of the sample (optional).
   --input    Path to the sample (required).
   --output   Path to an output directory (required).
-  --csv      Above parameters can also be passed as a .csv file"""
+  
+Parameters (Batch mode):
+  --csv      A csv file containing columns 'id' and 'input' (required).
+  --output   Path to an output directory (required).
+"""
     exit 0
   }
 
@@ -47,37 +40,38 @@ Parameters:
   if (has_param("input") == has_param("csv")) {
     exit 1, "ERROR: Please provide either an --input parameter or a --csv parameter"
   }
-  if (has_param("input")) {
-    if (has_param("id")) {
-      input_ch = Channel.value( [ params.id, file(params.input), params ])
-    } else {
-      input_ch = 
-        Channel.fromPath(params.input)
-        | map { input_file -> [ input_file.baseName, input_file, params ]}
-    }
-  } else if (has_param("csv")) {
-    input_ch = 
-      Channel.fromPath(params.csv)
-      | splitCsv(header: true, sep: ",")
-      | map { li -> 
-        if (!li.containsKey("input")) {
-          exit 1, "ERROR: The provided csv file should contain an 'input' column"
-        }
-        input_path = file(li.input)
-        // todo: check if input_path has length 1
-        if (li.containsKey("id")) {
-          id = li.id
-        } else {
-          // derive pathname from input
-          id = input_path.baseName
-        }
-        [ id, input_path, params ] 
-      }
-  }
   
   check_required_param("output", "where output files will be published")
 
+  def multirun = has_param("csv")
+  if (multirun) {
+    input_ch = Channel.fromPath(params.csv)
+      | splitCsv(header: true, sep: ",")
+  } else {
+    input_ch = Channel.value( params.subMap(["id", "input"]) )
+  }
+
   input_ch
+    | map { li ->
+      // process input
+      if (li.containsKey("input") && li.input) {
+        input_path = li.input.split(";").collect { path -> file(path) }.flatten()
+      } else {
+        exit 1, multirun ? 
+          "ERROR: The provided csv file should contain an 'input' column" : 
+          "ERROR: Please specify an '--input' parameter"
+      }
+
+      // process id
+      if (li.containsKey("id") && li.id) {
+        id_value = li.id
+      } else if (!multirun) {
+        id_value = "run"
+      } else {
+        exit 1, "ERROR: The provided csv file should contain an 'id' column"
+      }
+      [ id_value, [ input: input_path ], params ]
+    }
     | view { "before run_wf: ${it[0]} - ${it[1]}" }
     | run_wf
     | view { "after run_wf: ${it[0]} - ${it[1]}" }
