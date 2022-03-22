@@ -1,14 +1,17 @@
 functionality:
-  name: lognorm
-  namespace: "normalize"
+  name: regress_out
+  namespace: "preprocess"
   version: "dev"
   description: |
-    Perform a log normalization on one or more modalities.
+    Regress out (mostly) unwanted sources of variation.
+    Uses simple linear regression. This is inspired by Seurat's regressOut function in R [Satija15]. 
+    Note that this function tends to overcorrect in certain circumstances as described in issue theislab/scanpy#526.
+    See https://github.com/theislab/scanpy/issues/526.
   authors:
-    - name: Dries De Maeyer
-      email: ddemaeyer@gmail.com
-      roles: [ maintainer ]
-      props: { account: ddemaey1 }
+    - name: Robrecht Cannoodt
+      email: rcannood@gmail.com
+      roles: [ maintainer, contributor ]
+      props: { github: rcannood, orcid: "0000-0003-3641-729X" }
   arguments:
     - name: "--input"
       type: file
@@ -28,14 +31,10 @@ functionality:
       description: "Which modality (one or more) to run this component on."
       multiple: true
       default: "rna"
-    - name: "--normalized_umi_count"
-      type: integer
-      default: 10000
-
-    - name: "--regress_out_variables"
+    - name: "--obs_keys"
       type: string
       multiple: true
-      description: Which .obs keys to regress out.
+      description: Which .obs keys to regress on.
   resources:
     - type: python_script
       path: script.py
