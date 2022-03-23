@@ -12,8 +12,8 @@
 # licenses of all included files.
 #
 # Component authors:
-# * Dries De Maeyer <DDeMaey1@its.jnj.com> (maintainer) {account: ddemaey1}
-# * Robrecht Cannoodt <rcannood@gmail.com> (contributor) {github: rcannood, orcid: 0000-0003-3641-729X}
+# * Dries De Maeyer <DDeMaey1@its.jnj.com> (contributor) {account: ddemaey1}
+# * Robrecht Cannoodt <rcannood@gmail.com> (maintainer, contributor) {github: rcannood, orcid: 0000-0003-3641-729X}
 
 set -e
 
@@ -443,7 +443,7 @@ function ViashDockerfile {
   cat << 'VIASHDOCKER'
 FROM python:3.8
 
-LABEL authors="Dries De Maeyer <DDeMaey1@its.jnj.com> (maintainer) {account: ddemaey1}, Robrecht Cannoodt <rcannood@gmail.com> (contributor) {github: rcannood, orcid: 0000-0003-3641-729X}"
+LABEL authors="Dries De Maeyer <DDeMaey1@its.jnj.com> (contributor) {account: ddemaey1}, Robrecht Cannoodt <rcannood@gmail.com> (maintainer, contributor) {github: rcannood, orcid: 0000-0003-3641-729X}"
 LABEL org.opencontainers.image.description="Companion container for running component filter filter_with_counts"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
 RUN pip install --upgrade pip && \

@@ -34,6 +34,7 @@ functionality:
   - type: "string"
     name: "--modality"
     alternatives: []
+    description: "Which modality (one or more) to run this component on."
     default: "rna"
     required: false
     direction: "Input"
@@ -50,6 +51,7 @@ functionality:
   - type: "string"
     name: "--regress_out_variables"
     alternatives: []
+    description: "Which .obs keys to regress out."
     required: false
     direction: "Input"
     multiple: true
@@ -209,7 +211,7 @@ functionality:
       # ViashHelp: Display helpful explanation about this executable
       function ViashHelp {
         echo "lognorm main_build"
-        echo "Performs a log normalization on a h5ad file."
+        echo "Perform a log normalization on one or more modalities."
         echo
         echo "Options:"
       
@@ -230,6 +232,7 @@ functionality:
         echo "   --modality"
         echo "        type: string, multiple values allowed"
         echo "        default: rna"
+        echo "        Which modality (one or more) to run this component on."
         echo ""
       
       
@@ -241,6 +244,7 @@ functionality:
       
         echo "   --regress_out_variables"
         echo "        type: string, multiple values allowed"
+        echo "        Which .obs keys to regress out."
         echo ""
       
       }
@@ -496,6 +500,7 @@ functionality:
                 multiple_sep = ":"
                 value = "${params.lognorm__modality}"
                 dflt = "rna"
+                description = "Which modality (one or more) to run this component on."
               }
               normalized_umi_count {
                 name = "normalized_umi_count"
@@ -517,6 +522,7 @@ functionality:
                 multiple = true
                 multiple_sep = ":"
                 value = "${params.lognorm__regress_out_variables}"
+                description = "Which .obs keys to regress out."
               }
             }
           }
@@ -854,7 +860,7 @@ functionality:
       }
 
     dest: "main.nf"
-  description: "Performs a log normalization on a h5ad file.\n"
+  description: "Perform a log normalization on one or more modalities.\n"
   tests:
   - type: "python_script"
     path: "run_test.py"
@@ -880,5 +886,5 @@ info:
   output: "target/nextflow/normalize/lognorm"
   executable: "target/nextflow/normalize/lognorm/lognorm"
   viash_version: "0.5.10"
-  git_commit: "641120261c6efee9d32fabbe9a19ba879552f557"
+  git_commit: "bb7efc9f26c5f8784bc58d54c625e0ed35289fce"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"

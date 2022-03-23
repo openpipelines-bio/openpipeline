@@ -12,8 +12,8 @@
 # licenses of all included files.
 #
 # Component authors:
-# * Toni Verbeiren <tverbeir@its.jnj.com> (maintainer) {account: tverbeir}
-# * Robrecht Cannoodt <rcannood@gmail.com> (contributor) {github: rcannood, orcid: 0000-0003-3641-729X}
+# * Toni Verbeiren <tverbeir@its.jnj.com> (contributor) {account: tverbeir}
+# * Robrecht Cannoodt <rcannood@gmail.com> (maintainer, contributor) {github: rcannood, orcid: 0000-0003-3641-729X}
 
 set -e
 

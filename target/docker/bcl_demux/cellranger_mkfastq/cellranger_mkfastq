@@ -12,8 +12,8 @@
 # licenses of all included files.
 #
 # Component authors:
-# * Toni Verbeiren <tverbeir@its.jnj.com> (maintainer) {account: tverbeir}
-# * Robrecht Cannoodt <rcannood@gmail.com> (contributor) {github: rcannood, orcid: 0000-0003-3641-729X}
+# * Toni Verbeiren <tverbeir@its.jnj.com> (contributor) {account: tverbeir}
+# * Robrecht Cannoodt <rcannood@gmail.com> (maintainer, contributor) {github: rcannood, orcid: 0000-0003-3641-729X}
 
 set -e
 
@@ -391,7 +391,7 @@ function ViashDockerfile {
   cat << 'VIASHDOCKER'
 FROM ghcr.io/data-intuitive/cellranger:6.1
 
-LABEL authors="Toni Verbeiren <tverbeir@its.jnj.com> (maintainer) {account: tverbeir}, Robrecht Cannoodt <rcannood@gmail.com> (contributor) {github: rcannood, orcid: 0000-0003-3641-729X}"
+LABEL authors="Toni Verbeiren <tverbeir@its.jnj.com> (contributor) {account: tverbeir}, Robrecht Cannoodt <rcannood@gmail.com> (maintainer, contributor) {github: rcannood, orcid: 0000-0003-3641-729X}"
 LABEL org.opencontainers.image.description="Companion container for running component bcl_demux cellranger_mkfastq"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
 RUN :

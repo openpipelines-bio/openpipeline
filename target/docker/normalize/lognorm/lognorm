@@ -150,7 +150,7 @@ VIASH_META_FUNCTIONALITY_NAME="lognorm"
 # ViashHelp: Display helpful explanation about this executable
 function ViashHelp {
   echo "lognorm main_build"
-  echo "Performs a log normalization on a h5ad file."
+  echo "Perform a log normalization on one or more modalities."
   echo
   echo "Options:"
 
@@ -171,6 +171,7 @@ function ViashHelp {
   echo "   --modality"
   echo "        type: string, multiple values allowed"
   echo "        default: rna"
+  echo "        Which modality (one or more) to run this component on."
   echo ""
 
 
@@ -182,6 +183,7 @@ function ViashHelp {
 
   echo "   --regress_out_variables"
   echo "        type: string, multiple values allowed"
+  echo "        Which .obs keys to regress out."
   echo ""
 
 }
