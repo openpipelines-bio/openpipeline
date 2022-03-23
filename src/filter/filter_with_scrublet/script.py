@@ -31,7 +31,7 @@ for mod in par["modality"]:
     print(f"Processing modality '{mod}'")
     data = mdata.mod[mod]
 
-    print("Running scrublet")
+    print("  Running scrublet")
     scrub = scr.Scrublet(data.X)
 
     doublet_scores, predicted_doublets = scrub.scrub_doublets(
