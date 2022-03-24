@@ -6,8 +6,9 @@ targetDir = params.rootDir + "/target/nextflow"
 include { filter_with_counts } from targetDir + "/filter/filter_with_counts/main.nf" params(params)
 include { filter_with_scrublet } from targetDir + "/filter/filter_with_scrublet/main.nf" params(params)
 include { do_filter } from targetDir + "/filter/do_filter/main.nf" params(params)
+include { do_filter as do_filter2 } from targetDir + "/filter/do_filter/main.nf" params(params)
 include { lognorm } from targetDir + '/normalize/lognorm/main.nf' params(params)
-include { hvg_scanpy } from targetDir + '/hvg/hvg_scanpy/main.nf' params(params)
+include { filter_with_hvg } from targetDir + '/filter/filter_with_hvg/main.nf' params(params)
 include { pca } from targetDir + '/dimred/pca/main.nf' params(params)
 include { find_neighbors } from targetDir + '/neighbors/find_neighbors/main.nf' params(params)
 include { umap } from targetDir + '/dimred/umap/main.nf' params(params)
@@ -105,7 +106,10 @@ workflow run_wf {
     | map { overrideOptionValue(it, "do_filter", "var_filter", "filter_with_counts") }
     | do_filter
     | lognorm
-    | hvg_scanpy
+    | filter_with_hvg
+    | map { overrideOptionValue(it, "do_filter", "obs_filter", "") }
+    | map { overrideOptionValue(it, "do_filter", "var_filter", "filter_with_hvg") }
+    | do_filter2
     | pca
     | find_neighbors
     | leiden
