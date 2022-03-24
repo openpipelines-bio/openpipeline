@@ -854,5 +854,5 @@ info:
   output: "target/docker/preprocess/regress_out"
   executable: "target/docker/preprocess/regress_out/regress_out"
   viash_version: "0.5.10"
-  git_commit: "bb7efc9f26c5f8784bc58d54c625e0ed35289fce"
+  git_commit: "003278458afae46b534ddb2cc7d0eba5252f1664"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"
