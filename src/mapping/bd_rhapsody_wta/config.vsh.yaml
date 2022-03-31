@@ -84,6 +84,12 @@ platforms:
   - type: docker
     image: bdgenomics/rhapsody:1.9.1
     setup:
+      - type: docker
+        run:
+          # workaround for older repos
+          # https://stackoverflow.com/questions/68802802/repository-http-security-debian-org-debian-security-buster-updates-inrelease
+          - apt-get --allow-releaseinfo-change update
       - type: apt
-        packages: [ cwltool ]
+        packages:
+          - cwltool
   - type: nextflow
