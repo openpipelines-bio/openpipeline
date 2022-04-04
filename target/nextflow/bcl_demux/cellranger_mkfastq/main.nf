@@ -52,11 +52,12 @@ def renderCLI(command, arguments) {
 }
 
 def effectiveContainer(processParams) {
+  def _organization = params.containsKey("containerOrganization") ? params.containerOrganization : processParams.containerOrganization
   def _registry = params.containsKey("containerRegistry") ? params.containerRegistry : processParams.containerRegistry
   def _name = processParams.container
   def _tag = params.containsKey("containerTag") ? params.containerTag : processParams.containerTag
 
-  return (_registry == "" ? "" : _registry + "/") + _name + ":" + _tag
+  return (_registry == "" ? "" : _registry + "/") + (_organization == "" ? "" : _organization + "/") + _name + ":" + _tag
 }
 
 // Convert the nextflow.config arguments list to a List instead of a LinkedHashMap
@@ -160,7 +161,6 @@ def overrideIO(_params, inputs, outputs) {
 process cellranger_mkfastq_process {
   tag "${id}"
   echo { (params.debug == true) ? true : false }
-  cache 'deep'
   stageInMode "symlink"
   container "${container}"
   publishDir "${params.publishDir}/", mode: 'copy', overwrite: true, enabled: !params.test
@@ -175,11 +175,14 @@ process cellranger_mkfastq_process {
     STUB=1 $cli
     """
   script:
+    def viash_temp = System.getenv("VIASH_TEMP") ?: "/tmp/"
     if (params.test)
       """
       # Some useful stuff
       export NUMBA_CACHE_DIR=/tmp/numba-cache
       # Running the pre-hook when necessary
+      # Pass viash temp dir
+      export VIASH_TEMP="${viash_temp}"
       # Adding NXF's `$moduleDir` to the path in order to resolve our own wrappers
       export PATH="./:${moduleDir}:\$PATH"
       ./${params.cellranger_mkfastq.tests.testScript} | tee $output
@@ -189,6 +192,8 @@ process cellranger_mkfastq_process {
       # Some useful stuff
       export NUMBA_CACHE_DIR=/tmp/numba-cache
       # Running the pre-hook when necessary
+      # Pass viash temp dir
+      export VIASH_TEMP="${viash_temp}"
       # Adding NXF's `$moduleDir` to the path in order to resolve our own wrappers
       export PATH="${moduleDir}:\$PATH"
       $cli
@@ -247,8 +252,8 @@ workflow cellranger_mkfastq {
       )
     }
 
-  result_ = cellranger_mkfastq_process(id_input_output_function_cli_params_) \
-    | join(id_input_params_) \
+  result_ = cellranger_mkfastq_process(id_input_output_function_cli_params_)
+    | join(id_input_params_)
     | map{ id, output, _params, input, original_params ->
         def parsedOutput = _params.arguments
           .findAll{ it.type == "file" && it.direction == "Output" }
@@ -261,11 +266,9 @@ workflow cellranger_mkfastq {
         new Tuple3(id, parsedOutput, original_params)
       }
 
-  result_ \
-    | filter { it[1].keySet().size() > 1 } \
-    | view{
-        ">> Be careful, multiple outputs from this component!"
-    }
+  result_
+     | filter { it[1].keySet().size() > 1 }
+     | view{">> Be careful, multiple outputs from this component!"}
 
   emit:
   result_.flatMap{ it ->
