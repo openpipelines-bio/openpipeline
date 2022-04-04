@@ -1,3 +1,16 @@
+# openpipeline 0.3.0
+
+* Add `tx_processing` pipeline with following components:
+  - `filter_with_counts`
+  - `filter_with_scrublet`
+  - `filter_with_hvg`
+  - `lognorm`
+  - `do_filter`
+  - `pca`
+  - `find_neighbors`
+  - `leiden`
+  - `umap`
+
 # openpipeline 0.2.0
 
 ## Functionality
