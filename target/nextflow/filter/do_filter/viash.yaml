@@ -468,7 +468,7 @@ functionality:
             container = "filter_do_filter"
             containerTag = "main_build"
             containerRegistry = "ghcr.io"
-            containerOrganization = "openpipeline"
+            containerOrganization = "openpipelines-bio"
             command = "do_filter"
             tests {
               isDefined = true
@@ -888,7 +888,7 @@ platform:
   type: "nextflow"
   id: "nextflow"
   registry: "ghcr.io"
-  organization: "openpipeline"
+  organization: "openpipelines-bio"
   namespace_separator: "_"
   separate_multiple_outputs: true
   labels: []
@@ -899,5 +899,5 @@ info:
   output: "target/nextflow/filter/do_filter"
   executable: "target/nextflow/filter/do_filter/do_filter"
   viash_version: "0.5.10.1"
-  git_commit: "e8dcc65e878121c705640b6d97842993ea787a5c"
+  git_commit: "b843713d4e92a46639ea87d366fbe10fae7eacc5"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"

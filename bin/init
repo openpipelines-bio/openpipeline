@@ -8,7 +8,7 @@ cd "$REPO_ROOT"
 
 curl -fsSL get.viash.io | bash -s -- \
   --registry ghcr.io \
-  --organisation openpipeline \
+  --organisation openpipelines-bio \
   --target_image_source https://github.com/openpipelines-bio/openpipeline \
   --tag 0.5.10.1
 
