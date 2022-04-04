@@ -52,11 +52,12 @@ def renderCLI(command, arguments) {
 }
 
 def effectiveContainer(processParams) {
+  def _organization = params.containsKey("containerOrganization") ? params.containerOrganization : processParams.containerOrganization
   def _registry = params.containsKey("containerRegistry") ? params.containerRegistry : processParams.containerRegistry
   def _name = processParams.container
   def _tag = params.containsKey("containerTag") ? params.containerTag : processParams.containerTag
 
-  return (_registry == "" ? "" : _registry + "/") + _name + ":" + _tag
+  return (_registry == "" ? "" : _registry + "/") + (_organization == "" ? "" : _organization + "/") + _name + ":" + _tag
 }
 
 // Convert the nextflow.config arguments list to a List instead of a LinkedHashMap

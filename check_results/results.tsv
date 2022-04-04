@@ -2,42 +2,42 @@
               dimred                  pca               docker                start                                        [0m
              convert convert_10x_h5_to_h5mu               docker                start                                        [0m
              convert convert_10x_mtx_to_h5mu               docker                start                                        [0m
-[31m              dimred                  pca               docker     build_executable         1        9                ERROR[0m
-              dimred                 umap               docker                start                                        [0m
-[31m             convert convert_10x_mtx_to_h5mu               docker     build_executable         1        9                ERROR[0m
+[31m             convert convert_10x_mtx_to_h5mu               docker     build_executable         1       11                ERROR[0m
              convert convert_h5ad_to_h5mu               docker                start                                        [0m
-[31m             convert convert_h5ad_to_h5mu               docker     build_executable         1        8                ERROR[0m
+[31m              dimred                  pca               docker     build_executable         1       12                ERROR[0m
+              dimred                 umap               docker                start                                        [0m
+[31m             convert convert_h5ad_to_h5mu               docker     build_executable         1       10                ERROR[0m
              convert convert_bdrhap_to_h5ad               docker                start                                        [0m
-[32m             convert convert_bdrhap_to_h5ad               docker     build_executable         0        0              SUCCESS[0m
-[33m             convert convert_bdrhap_to_h5ad               docker                tests        -1        0              MISSING[0m
-             convert  convert_10x_to_h5mu               docker                start                                        [0m
-              filter   filter_with_counts               docker                start                                        [0m
-[31m              dimred                 umap               docker     build_executable         1       11                ERROR[0m
+[31m              dimred                 umap               docker     build_executable         1       10                ERROR[0m
       process_10x_h5        filter_10x_h5               docker                start                                        [0m
-[31m              filter   filter_with_counts               docker     build_executable         1        7                ERROR[0m
-              filter      filter_with_hvg               docker                start                                        [0m
-[31m              filter      filter_with_hvg               docker     build_executable         1       10                ERROR[0m
-              filter filter_with_scrublet               docker                start                                        [0m
            normalize              lognorm               docker                start                                        [0m
-[31m           normalize              lognorm               docker     build_executable         1        5                ERROR[0m
+[31m           normalize              lognorm               docker     build_executable         1       15                ERROR[0m
              mapping     cellranger_count               docker                start                                        [0m
-[31m              filter filter_with_scrublet               docker     build_executable         1       10                ERROR[0m
-              filter            do_filter               docker                start                                        [0m
 [32m             mapping     cellranger_count               docker     build_executable         0        0              SUCCESS[0m
 [33m             mapping     cellranger_count               docker                tests        -1        0              MISSING[0m
              mapping      bd_rhapsody_wta               docker                start                                        [0m
 [32m             mapping      bd_rhapsody_wta               docker     build_executable         0        0              SUCCESS[0m
 [33m             mapping      bd_rhapsody_wta               docker                tests        -1        0              MISSING[0m
          interactive        run_cellxgene               docker                start                                        [0m
+[32m             convert convert_bdrhap_to_h5ad               docker     build_executable         0       19              SUCCESS[0m
+[33m             convert convert_bdrhap_to_h5ad               docker                tests        -1        0              MISSING[0m
+             convert  convert_10x_to_h5mu               docker                start                                        [0m
+              filter   filter_with_counts               docker                start                                        [0m
 [32m         interactive        run_cellxgene               docker     build_executable         0        0              SUCCESS[0m
-[31m         interactive        run_cellxgene               docker          run_test.sh         1        3                ERROR[0m
+[31m         interactive        run_cellxgene               docker          run_test.sh         1        4                ERROR[0m
          interactive     run_cirrocumulus               docker                start                                        [0m
 [32m         interactive     run_cirrocumulus               docker     build_executable         0        0              SUCCESS[0m
 [31m         interactive     run_cirrocumulus               docker          run_test.sh       125        0                ERROR[0m
            bcl_demux   cellranger_mkfastq               docker                start                                        [0m
-[31m              filter            do_filter               docker     build_executable         1        9                ERROR[0m
+[31m              filter   filter_with_counts               docker     build_executable         1       10                ERROR[0m
+              filter      filter_with_hvg               docker                start                                        [0m
+[31m              filter      filter_with_hvg               docker     build_executable         1       11                ERROR[0m
+              filter filter_with_scrublet               docker                start                                        [0m
+[31m              filter filter_with_scrublet               docker     build_executable         1       11                ERROR[0m
+              filter            do_filter               docker                start                                        [0m
+[31m              filter            do_filter               docker     build_executable         1       13                ERROR[0m
               report              mermaid               docker                start                                        [0m
 [32m              report              mermaid               docker     build_executable         0        0              SUCCESS[0m
-[32m              report              mermaid               docker              test.py         0        8              SUCCESS[0m
+[32m              report              mermaid               docker              test.py         0        6              SUCCESS[0m
            neighbors       find_neighbors               docker                start                                        [0m
 /home/runner/work/openpipeline/openpipeline/resources_test/pbmc_1k_protein_v3/pbmc_1k_protein_v3_filtered_feature_bc_matrix.h5
