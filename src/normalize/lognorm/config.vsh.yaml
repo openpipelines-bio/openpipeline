@@ -1,0 +1,54 @@
+functionality:
+  name: lognorm
+  namespace: "normalize"
+  version: "dev"
+  description: |
+    Perform a log normalization on one or more modalities.
+  authors:
+    - name: Dries De Maeyer
+      email: ddemaeyer@gmail.com
+      roles: [ maintainer ]
+      props: { account: ddemaey1 }
+  arguments:
+    - name: "--input"
+      type: file
+      description: Input h5mu file
+      direction: input
+      required: true
+      example: input.h5mu
+    - name: "--output"
+      alternatives: ["-o"]
+      type: file
+      description: Output h5mu file.
+      direction: output
+      required: true
+      example: output.h5mu
+    - name: "--modality"
+      type: string
+      description: "Which modality (one or more) to run this component on."
+      multiple: true
+      default: "rna"
+    - name: "--normalized_umi_count"
+      type: integer
+      default: 10000
+
+    - name: "--regress_out_variables"
+      type: string
+      multiple: true
+      description: Which .obs keys to regress out.
+  resources:
+    - type: python_script
+      path: script.py
+  tests:
+    - type: python_script
+      path: run_test.py
+    - path: ../../../resources_test/pbmc_1k_protein_v3
+platforms:
+  - type: docker
+    image: python:3.8
+    setup:
+      - type: python
+        packages:
+          - scanpy
+          - muon
+  - type: nextflow

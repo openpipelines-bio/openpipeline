@@ -26,7 +26,7 @@ jobs:
     - name: Build components
       run: |
         # allow publishing the target folder
-        sed -i '/^target\/$/d' .gitignore
+        sed -i '/^target$/d' .gitignore
         
         # only build nextflow targets
         bin/viash_build -m release -t main_build

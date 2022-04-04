@@ -8,11 +8,11 @@ PAR_GENOME="http://bd-rhapsody-public.s3.amazonaws.com/Rhapsody-WTA/GRCh38-PhiX-
 PAR_TRANSCRIPTOME="http://bd-rhapsody-public.s3.amazonaws.com/Rhapsody-WTA/GRCh38-PhiX-gencodev29/gencodev29-20181205.gtf"
 PAR_INPUTS="http://bd-rhapsody-public.s3.amazonaws.com/Rhapsody-WTA-test-data/sample_R1_.fastq.gz;http://bd-rhapsody-public.s3.amazonaws.com/Rhapsody-WTA-test-data/sample_R2_.fastq.gz"
 
-nextflow drop https://github.com/openpipeline-bio/openpipeline.git
+nextflow drop https://github.com/openpipelines-bio/openpipeline.git
 
 nextflow \
-  run https://github.com/openpipeline-bio/openpipeline.git \
-  -r main_build \
+  run https://github.com/openpipelines-bio/openpipeline.git \
+  -r 0.2.0 \
   -main-script workflows/1_ingestion/bd_rhapsody_wta/main.nf \
   -entry single_wf \
   --id "sample_RSEC" \

@@ -1,11 +1,15 @@
-# openpipeline 0.2.1
+# openpipeline 0.3.0
 
-## Minor changes
-
-* Translate `bd_rhapsody_extracth5ad` from R into Python script.
-
-* `bd_rhapsody_wta`: Remove temporary directory after execution.
-
+* Add `tx_processing` pipeline with following components:
+  - `filter_with_counts`
+  - `filter_with_scrublet`
+  - `filter_with_hvg`
+  - `lognorm`
+  - `do_filter`
+  - `pca`
+  - `find_neighbors`
+  - `leiden`
+  - `umap`
 
 # openpipeline 0.2.0
 
@@ -19,6 +23,10 @@
 * Component `bd_rhapsody_wta`: Added more parameters, `--parallel` and `--timestamps`.
 
 * Added `pbmc_1k_protein_v3` as a test resource.
+
+* Translate `bd_rhapsody_extracth5ad` from R into Python script.
+
+* `bd_rhapsody_wta`: Remove temporary directory after execution.
 
 
 # openpipeline 0.1.0
