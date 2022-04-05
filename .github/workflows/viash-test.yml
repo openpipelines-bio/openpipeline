@@ -29,6 +29,10 @@ jobs:
       run: |
         bin/viash_build
 
+    - name: Sync test resources
+      run: |
+        target/docker/download/sync_resources_test/sync_resources_test
+
     - name: Run tests
       run: |
         # create check_results folder
@@ -36,7 +40,7 @@ jobs:
         mkdir check_results
 
         # run tests
-        bin/viash_test --append=false --log=check_results/results.tsv
+        bin/viash_test --append=false --log check_results/viash_test_log.txt --tsv check_results/viash_test_log.tsv
 
     - name: Upload check results
       uses: actions/upload-artifact@master
