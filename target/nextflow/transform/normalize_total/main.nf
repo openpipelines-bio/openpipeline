@@ -8,7 +8,7 @@ params.publishDir = "./"
 def checkParams(_params) {
   _params.arguments.collect{
     if (it.value == "viash_no_value") {
-      println("[ERROR] option --${it.name} not specified in component lognorm")
+      println("[ERROR] option --${it.name} not specified in component normalize_total")
       println("exiting now...")
         exit 1
     }
@@ -92,7 +92,7 @@ def outFromIn(_params) {
       // Unless the output argument is explicitly specified on the CLI
       def newValue =
         (it.value == "viash_no_value")
-          ? "lognorm." + it.name + "." + extOrName
+          ? "normalize_total." + it.name + "." + extOrName
           : it.value
       def newName =
         (id != "")
@@ -158,7 +158,7 @@ def overrideIO(_params, inputs, outputs) {
 
 }
 
-process lognorm_process {
+process normalize_total_process {
   tag "${id}"
   echo { (params.debug == true) ? true : false }
   stageInMode "symlink"
@@ -185,7 +185,7 @@ process lognorm_process {
       export VIASH_TEMP="${viash_temp}"
       # Adding NXF's `$moduleDir` to the path in order to resolve our own wrappers
       export PATH="./:${moduleDir}:\$PATH"
-      ./${params.lognorm.tests.testScript} | tee $output
+      ./${params.normalize_total.tests.testScript} | tee $output
       """
     else
       """
@@ -200,14 +200,14 @@ process lognorm_process {
       """
 }
 
-workflow lognorm {
+workflow normalize_total {
 
   take:
   id_input_params_
 
   main:
 
-  def key = "lognorm"
+  def key = "normalize_total"
 
   def id_input_output_function_cli_params_ =
     id_input_params_.map{ id, input, _params ->
@@ -252,7 +252,7 @@ workflow lognorm {
       )
     }
 
-  result_ = lognorm_process(id_input_output_function_cli_params_)
+  result_ = normalize_total_process(id_input_output_function_cli_params_)
     | join(id_input_params_)
     | map{ id, output, _params, input, original_params ->
         def parsedOutput = _params.arguments
@@ -280,7 +280,7 @@ workflow lognorm {
 
 workflow {
   def id = params.id
-  def fname = "lognorm"
+  def fname = "normalize_total"
 
   def _params = params
 
@@ -292,14 +292,14 @@ workflow {
     }
   }
 
-  def inputFiles = params.lognorm
+  def inputFiles = params.normalize_total
     .arguments
     .findAll{ key, par -> par.type == "file" && par.direction == "Input" }
     .collectEntries{ key, par -> [(par.name): file(params[fname].arguments[par.name].value) ] }
 
   def ch_ = Channel.from("").map{ s -> new Tuple3(id, inputFiles, params)}
 
-  result = lognorm(ch_)
+  result = normalize_total(ch_)
   result.view{ it[1] }
 }
 
@@ -312,17 +312,17 @@ workflow test {
 
   main:
   params.test = true
-  params.lognorm.output = "lognorm.log"
+  params.normalize_total.output = "normalize_total.log"
 
   Channel.from(rootDir) \
-    | filter { params.lognorm.tests.isDefined } \
+    | filter { params.normalize_total.tests.isDefined } \
     | map{ p -> new Tuple3(
         "tests",
-        params.lognorm.tests.testResources.collect{ file( p + it ) },
+        params.normalize_total.tests.testResources.collect{ file( p + it ) },
         params
     )} \
-    | lognorm
+    | normalize_total
 
   emit:
-  lognorm.out
+  normalize_total.out
 }

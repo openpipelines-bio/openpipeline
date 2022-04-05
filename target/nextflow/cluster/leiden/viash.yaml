@@ -21,6 +21,14 @@ functionality:
     direction: "Input"
     multiple: false
     multiple_sep: ":"
+  - type: "string"
+    name: "--modality"
+    alternatives: []
+    default: "rna"
+    required: false
+    direction: "Input"
+    multiple: true
+    multiple_sep: ":"
   - type: "file"
     name: "--output"
     alternatives:
@@ -33,10 +41,10 @@ functionality:
     multiple: false
     multiple_sep: ":"
   - type: "string"
-    name: "--output_key"
+    name: "--obs_name"
     alternatives: []
-    description: "The .obs key under which to add the cluster labels."
-    default: "neighbors"
+    description: "Name of the .obs key under which to add the cluster labels."
+    default: "leiden"
     required: false
     direction: "Input"
     multiple: false
@@ -47,15 +55,6 @@ functionality:
     description: "A parameter value controlling the coarseness of the clustering.\
       \ Higher values lead to more clusters."
     default: 1.0
-    required: false
-    direction: "Input"
-    multiple: false
-    multiple_sep: ":"
-  - type: "string"
-    name: "--cluster_column_name"
-    alternatives: []
-    description: "Name of the adata.obs key under which to add the cluster labels."
-    default: "leiden.res.0.25"
     required: false
     direction: "Input"
     multiple: false
@@ -220,7 +219,7 @@ functionality:
         echo "This requires having ran neighbors/find_neighbors or neighbors/bbknn first."
         echo ""
         echo "Blondel et al. (2008), Fast unfolding of communities in large networks, J. Stat. Mech."
-        echo "Levine et al. (2015), Data-Driven Phenotypic Dissection of AML Reveals Progenitor–like Cells that Correlate with Prognosis, Cell."
+        echo "Levine et al. (2015), Data-Driven Phenotypic Dissection of AML Reveals Progenitor-like Cells that Correlate with Prognosis, Cell."
         echo "Traag et al. (2018), From Louvain to Leiden: guaranteeing well-connected communities arXiv."
         echo "Wolf et al. (2018), Scanpy: large-scale single-cell gene expression data analysis, Genome Biology."
         echo
@@ -233,6 +232,12 @@ functionality:
         echo ""
       
       
+        echo "   --modality"
+        echo "        type: string, multiple values allowed"
+        echo "        default: rna"
+        echo ""
+      
+      
         echo "   -o, --output"
         echo "        type: file, required parameter, output"
         echo "        example: output.h5mu"
@@ -240,10 +245,10 @@ functionality:
         echo ""
       
       
-        echo "   --output_key"
+        echo "   --obs_name"
         echo "        type: string"
-        echo "        default: neighbors"
-        echo "        The .obs key under which to add the cluster labels."
+        echo "        default: leiden"
+        echo "        Name of the .obs key under which to add the cluster labels."
         echo ""
       
       
@@ -251,13 +256,6 @@ functionality:
         echo "        type: double"
         echo "        default: 1.0"
         echo "        A parameter value controlling the coarseness of the clustering. Higher values lead to more clusters."
-        echo ""
-      
-      
-        echo "   --cluster_column_name"
-        echo "        type: string"
-        echo "        default: leiden.res.0.25"
-        echo "        Name of the adata.obs key under which to add the cluster labels."
         echo ""
       
       }
@@ -300,6 +298,22 @@ functionality:
                   VIASH_PAR_INPUT="$2"
                   shift 2
                   ;;
+              --modality)
+                  if [ -z "$VIASH_PAR_MODALITY" ]; then
+                    VIASH_PAR_MODALITY="$2"
+                  else
+                    VIASH_PAR_MODALITY="$VIASH_PAR_MODALITY:""$2"
+                  fi
+                  shift 2
+                  ;;
+              --modality=*)
+                  if [ -z "$VIASH_PAR_MODALITY" ]; then
+                    VIASH_PAR_MODALITY=$(ViashRemoveFlags "$1")
+                  else
+                    VIASH_PAR_MODALITY="$VIASH_PAR_MODALITY:"$(ViashRemoveFlags "$1")
+                  fi
+                  shift 1
+                  ;;
               --output)
                   VIASH_PAR_OUTPUT="$2"
                   shift 2
@@ -312,12 +326,12 @@ functionality:
                   VIASH_PAR_OUTPUT="$2"
                   shift 2
                   ;;
-              --output_key)
-                  VIASH_PAR_OUTPUT_KEY="$2"
+              --obs_name)
+                  VIASH_PAR_OBS_NAME="$2"
                   shift 2
                   ;;
-              --output_key=*)
-                  VIASH_PAR_OUTPUT_KEY=$(ViashRemoveFlags "$1")
+              --obs_name=*)
+                  VIASH_PAR_OBS_NAME=$(ViashRemoveFlags "$1")
                   shift 1
                   ;;
               --resolution)
@@ -326,14 +340,6 @@ functionality:
                   ;;
               --resolution=*)
                   VIASH_PAR_RESOLUTION=$(ViashRemoveFlags "$1")
-                  shift 1
-                  ;;
-              --cluster_column_name)
-                  VIASH_PAR_CLUSTER_COLUMN_NAME="$2"
-                  shift 2
-                  ;;
-              --cluster_column_name=*)
-                  VIASH_PAR_CLUSTER_COLUMN_NAME=$(ViashRemoveFlags "$1")
                   shift 1
                   ;;
               *)  # positional arg or unknown option
@@ -359,14 +365,14 @@ functionality:
         ViashError '--output' is a required argument. Use "--help" to get more information on the parameters.
         exit 1
       fi
-      if [ -z "$VIASH_PAR_OUTPUT_KEY" ]; then
-        VIASH_PAR_OUTPUT_KEY="neighbors"
+      if [ -z "$VIASH_PAR_MODALITY" ]; then
+        VIASH_PAR_MODALITY="rna"
+      fi
+      if [ -z "$VIASH_PAR_OBS_NAME" ]; then
+        VIASH_PAR_OBS_NAME="leiden"
       fi
       if [ -z "$VIASH_PAR_RESOLUTION" ]; then
         VIASH_PAR_RESOLUTION="1.0"
-      fi
-      if [ -z "$VIASH_PAR_CLUSTER_COLUMN_NAME" ]; then
-        VIASH_PAR_CLUSTER_COLUMN_NAME="leiden.res.0.25"
       fi
       
       
@@ -390,10 +396,10 @@ functionality:
       # The following code has been auto-generated by Viash.
       par = {
         'input': $( if [ ! -z ${VIASH_PAR_INPUT+x} ]; then echo "'$VIASH_PAR_INPUT'"; else echo None; fi ),
+        'modality': $( if [ ! -z ${VIASH_PAR_MODALITY+x} ]; then echo "'$VIASH_PAR_MODALITY'.split(':')"; else echo None; fi ),
         'output': $( if [ ! -z ${VIASH_PAR_OUTPUT+x} ]; then echo "'$VIASH_PAR_OUTPUT'"; else echo None; fi ),
-        'output_key': $( if [ ! -z ${VIASH_PAR_OUTPUT_KEY+x} ]; then echo "'$VIASH_PAR_OUTPUT_KEY'"; else echo None; fi ),
-        'resolution': $( if [ ! -z ${VIASH_PAR_RESOLUTION+x} ]; then echo "float('$VIASH_PAR_RESOLUTION')"; else echo None; fi ),
-        'cluster_column_name': $( if [ ! -z ${VIASH_PAR_CLUSTER_COLUMN_NAME+x} ]; then echo "'$VIASH_PAR_CLUSTER_COLUMN_NAME'"; else echo None; fi )
+        'obs_name': $( if [ ! -z ${VIASH_PAR_OBS_NAME+x} ]; then echo "'$VIASH_PAR_OBS_NAME'"; else echo None; fi ),
+        'resolution': $( if [ ! -z ${VIASH_PAR_RESOLUTION+x} ]; then echo "float('$VIASH_PAR_RESOLUTION')"; else echo None; fi )
       }
       meta = {
         'functionality_name': '$VIASH_META_FUNCTIONALITY_NAME',
@@ -407,12 +413,14 @@ functionality:
       print("Reading", par["input"])
       mdata = mu.read_h5mu(par["input"])
       
-      print("Cluster cells using the Leiden algorithm")
-      sc.tl.leiden(
-          mdata.mod["rna"],
-          resolution=float(par["resolution"]),
-          key_added=par["cluster_column_name"],
-      )
+      for mod in par['modality']:
+          print(f"Processing modality '{mod}'")
+          data = mdata.mod[mod]
+          sc.tl.leiden(
+              data,
+              resolution=par["resolution"],
+              key_added=par["obs_name"],
+          )
       
       print("Writing", par["output"])
       mdata.write_h5mu(filename=par["output"])
@@ -433,10 +441,10 @@ functionality:
         process.container = "dataintuitive/viash"
         params {
           leiden__input = "viash_no_value"
+          leiden__modality = "rna"
           leiden__output = "viash_no_value"
-          leiden__output_key = "neighbors"
+          leiden__obs_name = "leiden"
           leiden__resolution = "1.0"
-          leiden__cluster_column_name = "leiden.res.0.25"
           id = ""
           testScript = "run_test.py"
           testResources = [ "run_test.py", "../../../resources_test/pbmc_1k_protein_v3" ]
@@ -465,6 +473,17 @@ functionality:
                 example = "input.h5mu"
                 description = "Input file."
               }
+              modality {
+                name = "modality"
+                otype = "--"
+                required = false
+                type = "string"
+                direction = "Input"
+                multiple = true
+                multiple_sep = ":"
+                value = "${params.leiden__modality}"
+                dflt = "rna"
+              }
               output {
                 name = "output"
                 otype = "--"
@@ -477,17 +496,17 @@ functionality:
                 example = "output.h5mu"
                 description = "Output file."
               }
-              output_key {
-                name = "output_key"
+              obs_name {
+                name = "obs_name"
                 otype = "--"
                 required = false
                 type = "string"
                 direction = "Input"
                 multiple = false
                 multiple_sep = ":"
-                value = "${params.leiden__output_key}"
-                dflt = "neighbors"
-                description = "The .obs key under which to add the cluster labels."
+                value = "${params.leiden__obs_name}"
+                dflt = "leiden"
+                description = "Name of the .obs key under which to add the cluster labels."
               }
               resolution {
                 name = "resolution"
@@ -500,18 +519,6 @@ functionality:
                 value = "${params.leiden__resolution}"
                 dflt = "1.0"
                 description = "A parameter value controlling the coarseness of the clustering. Higher values lead to more clusters."
-              }
-              cluster_column_name {
-                name = "cluster_column_name"
-                otype = "--"
-                required = false
-                type = "string"
-                direction = "Input"
-                multiple = false
-                multiple_sep = ":"
-                value = "${params.leiden__cluster_column_name}"
-                dflt = "leiden.res.0.25"
-                description = "Name of the adata.obs key under which to add the cluster labels."
               }
             }
           }
@@ -857,7 +864,7 @@ functionality:
     \ \nThis requires having ran neighbors/find_neighbors or neighbors/bbknn first.\n\
     \nBlondel et al. (2008), Fast unfolding of communities in large networks, J. Stat.\
     \ Mech.\nLevine et al. (2015), Data-Driven Phenotypic Dissection of AML Reveals\
-    \ Progenitor–like Cells that Correlate with Prognosis, Cell.\nTraag et al. (2018),\
+    \ Progenitor-like Cells that Correlate with Prognosis, Cell.\nTraag et al. (2018),\
     \ From Louvain to Leiden: guaranteeing well-connected communities arXiv.\nWolf\
     \ et al. (2018), Scanpy: large-scale single-cell gene expression data analysis,\
     \ Genome Biology.\n"
@@ -887,5 +894,5 @@ info:
   output: "target/nextflow/cluster/leiden"
   executable: "target/nextflow/cluster/leiden/leiden"
   viash_version: "0.5.10.1"
-  git_commit: "b843713d4e92a46639ea87d366fbe10fae7eacc5"
+  git_commit: "dfc0aede0bb1b1ef0626642f2da2e8209919f9a2"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"

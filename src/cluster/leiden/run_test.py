@@ -2,11 +2,21 @@ import subprocess
 from os import path
 import muon as mu
 
+## VIASH START
+meta = {
+    'functionality_name': 'foo',
+    'resources_dir': 'resources_test/'
+}
+## VIASH END
+
+input = meta["resources_dir"] + "/pbmc_1k_protein_v3/pbmc_1k_protein_v3_filtered_feature_bc_matrix.tx_processing.h5mu"
+output = "output.h5mu"
+
 cmd_pars = [
     "./" + meta["functionality_name"],
-    "--input", meta["resources_dir"] + "/pbmc_1k_protein_v3/pbmc_1k_protein_v3_filtered_feature_bc_matrix.neighbors.h5mu",
-    "--cluster_column_name=leiden.res",
-    "--output=output.h5mu",
+    "--input", input,
+    "--obs_name", "fooleiden",
+    "--output", output,
 ]
 out = subprocess.check_output(cmd_pars).decode("utf-8")
 
@@ -25,9 +35,4 @@ assert data.mod["rna"].var["feature_types"].unique() == [
 assert "prot" in data.mod, 'Output should contain data.mod["rna"].'
 
 # check whether leiden.custom.resolution was found
-assert "leiden.res" in data.mod["rna"].obs.columns, 'Output should contain leiden.res.'
-
-# check whether gene was found
-assert (
-    "CD3_TotalSeqB" in data.mod["prot"].var_names
-), 'Output should contain antibody column "CD3_TotalSeqB".'
+assert "fooleiden" in data.mod["rna"].obs.columns, 'Output should contain fooleiden.'

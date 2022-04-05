@@ -40,6 +40,5 @@ platforms:
       - type: python
         packages:
           - scanpy
-          - loompy
           - muon
   - type: nextflow

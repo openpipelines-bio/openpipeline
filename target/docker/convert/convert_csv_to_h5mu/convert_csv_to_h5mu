@@ -383,7 +383,7 @@ LABEL authors="Dries De Maeyer <DDeMaey1@its.jnj.com> (maintainer) {account: dde
 LABEL org.opencontainers.image.description="Companion container for running component convert convert_csv_to_h5mu"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
 RUN pip install --upgrade pip && \
-  pip install --no-cache-dir "scanpy" "loompy" "muon"
+  pip install --no-cache-dir "scanpy" "muon"
 
 VIASHDOCKER
 }

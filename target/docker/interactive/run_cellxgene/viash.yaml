@@ -734,5 +734,5 @@ info:
   output: "target/docker/interactive/run_cellxgene"
   executable: "target/docker/interactive/run_cellxgene/run_cellxgene"
   viash_version: "0.5.10.1"
-  git_commit: "b843713d4e92a46639ea87d366fbe10fae7eacc5"
+  git_commit: "dfc0aede0bb1b1ef0626642f2da2e8209919f9a2"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"

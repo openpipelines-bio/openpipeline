@@ -166,7 +166,7 @@ function ViashHelp {
 
   echo "   -o, --output"
   echo "        type: file, required parameter, output"
-  echo "        example: output.h5mu"
+  echo "        default: output.h5mu"
   echo "        Output h5mu file."
   echo ""
 
