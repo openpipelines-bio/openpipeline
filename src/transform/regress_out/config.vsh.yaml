@@ -1,6 +1,6 @@
 functionality:
   name: regress_out
-  namespace: "preprocess"
+  namespace: "transform"
   version: "dev"
   description: |
     Regress out (mostly) unwanted sources of variation.
@@ -25,7 +25,7 @@ functionality:
       description: Output h5mu file.
       direction: output
       required: true
-      example: output.h5mu
+      default: output.h5mu
     - name: "--modality"
       type: string
       description: "Which modality (one or more) to run this component on."
