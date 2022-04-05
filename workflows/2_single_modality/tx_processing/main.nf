@@ -7,7 +7,8 @@ include { filter_with_counts } from targetDir + "/filter/filter_with_counts/main
 include { filter_with_scrublet } from targetDir + "/filter/filter_with_scrublet/main.nf" params(params)
 include { do_filter } from targetDir + "/filter/do_filter/main.nf" params(params)
 include { do_filter as do_filter2 } from targetDir + "/filter/do_filter/main.nf" params(params)
-include { lognorm } from targetDir + '/normalize/lognorm/main.nf' params(params)
+include { log1p } from targetDir + '/transform/log1p/main.nf' params(params)
+include { normalize_total } from targetDir + '/transform/normalize_total/main.nf' params(params)
 include { filter_with_hvg } from targetDir + '/filter/filter_with_hvg/main.nf' params(params)
 include { pca } from targetDir + '/dimred/pca/main.nf' params(params)
 include { find_neighbors } from targetDir + '/neighbors/find_neighbors/main.nf' params(params)
@@ -105,7 +106,8 @@ workflow run_wf {
     | map { overrideOptionValue(it, "do_filter", "obs_filter", "filter_with_counts:filter_with_scrublet") }
     | map { overrideOptionValue(it, "do_filter", "var_filter", "filter_with_counts") }
     | do_filter
-    | lognorm
+    | normalize_total
+    | log1p
     | filter_with_hvg
     | map { overrideOptionValue(it, "do_filter", "obs_filter", "") }
     | map { overrideOptionValue(it, "do_filter", "var_filter", "filter_with_hvg") }

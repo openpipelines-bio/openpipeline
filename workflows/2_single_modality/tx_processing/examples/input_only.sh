@@ -13,5 +13,4 @@ bin/nextflow \
   -main-script workflows/2_single_modality/tx_processing/main.nf \
   --input resources_test/pbmc_1k_protein_v3/pbmc_1k_protein_v3_filtered_feature_bc_matrix.h5mu \
   --output output/ \
-  -resume \
-  -c workflows/2_single_modality/tx_processing/nextflow.config
+  -resume
