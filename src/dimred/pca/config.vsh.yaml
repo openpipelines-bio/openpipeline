@@ -3,34 +3,50 @@ functionality:
   namespace: "dimred"
   version: "dev"
   description: |
-    Performs PCA on the highly variable genes
+    Computes PCA coordinates, loadings and variance decomposition. Uses the implementation of scikit-learn [Pedregosa11].
   authors:
     - name: Dries De Maeyer
       email: ddemaeyer@gmail.com
       roles: [ maintainer ]
       props: { account: ddemaey1 }
   arguments:
+    # inputs
     - name: "--input"
+      alternatives: ["-i"]
       type: file
       description: Input h5mu file
       direction: input
       required: true
       example: input.h5mu
+
+    - name: "--modality"
+      type: string
+      multiple: true
+      default: "rna"
+      required: false
+
+    # outputs
     - name: "--output"
       alternatives: ["-o"]
       type: file
-      description: Output h5mu file containing the dimred object.
+      description: Output h5mu file.
       direction: output
       required: true
       example: output.h5mu
-    - name: "--nPCs"
-      alternatives: ["-n"]
+
+    - name: "--output_key"
+      type: string
+      description: The pre/postfix under which to store the PCA results. More specifically, .obsm["X_"+key], .uns[key] and .varm["loadings_"+key].
+      default: "pca"
+    
+    # arguments
+    - name: "--num_components"
       type: integer
-      default: 25
-      description: The number of principal components to calculate.
+      example: 25
+      description: Number of principal components to compute. Defaults to 50, or 1 - minimum dimension size of selected representation.
   resources:
     - type: python_script
-      path: ./script.py
+      path: script.py
   tests:
     - type: python_script
       path: run_test.py
@@ -41,7 +57,6 @@ platforms:
     python:
       packages:
         - scanpy
-        - loompy
         - muon
   - type: nextflow
     label: highcpu
