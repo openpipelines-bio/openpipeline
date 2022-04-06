@@ -12,7 +12,8 @@ functionality:
   arguments:
   - type: "file"
     name: "--input"
-    alternatives: []
+    alternatives:
+    - "-i"
     description: "Input h5mu file"
     example: "input.h5mu"
     must_exist: false
@@ -20,23 +21,41 @@ functionality:
     direction: "Input"
     multiple: false
     multiple_sep: ":"
+  - type: "string"
+    name: "--modality"
+    alternatives: []
+    default: "rna"
+    required: false
+    direction: "Input"
+    multiple: true
+    multiple_sep: ":"
   - type: "file"
     name: "--output"
     alternatives:
     - "-o"
-    description: "Output h5mu file containing the dimred object."
+    description: "Output h5mu file."
     example: "output.h5mu"
     must_exist: false
     required: true
     direction: "Output"
     multiple: false
     multiple_sep: ":"
+  - type: "string"
+    name: "--output_key"
+    alternatives: []
+    description: "The pre/postfix under which to store the PCA results. More specifically,\
+      \ .obsm[\"X_\"+key], .uns[key] and .varm[\"loadings_\"+key]."
+    default: "pca"
+    required: false
+    direction: "Input"
+    multiple: false
+    multiple_sep: ":"
   - type: "integer"
-    name: "--nPCs"
-    alternatives:
-    - "-n"
-    description: "The number of principal components to calculate."
-    default: 25
+    name: "--num_components"
+    alternatives: []
+    description: "Number of principal components to compute. Defaults to 50, or 1\
+      \ - minimum dimension size of selected representation."
+    example: 25
     required: false
     direction: "Input"
     multiple: false
@@ -196,28 +215,41 @@ functionality:
       # ViashHelp: Display helpful explanation about this executable
       function ViashHelp {
         echo "pca 0.3.0rc2"
-        echo "Performs PCA on the highly variable genes"
+        echo "Computes PCA coordinates, loadings and variance decomposition. Uses the implementation of scikit-learn [Pedregosa11]."
         echo
         echo "Options:"
       
-        echo "   --input"
+        echo "   -i, --input"
         echo "        type: file, required parameter"
         echo "        example: input.h5mu"
         echo "        Input h5mu file"
         echo ""
       
       
-        echo "   -o, --output"
-        echo "        type: file, required parameter, output"
-        echo "        example: output.h5mu"
-        echo "        Output h5mu file containing the dimred object."
+        echo "   --modality"
+        echo "        type: string, multiple values allowed"
+        echo "        default: rna"
         echo ""
       
       
-        echo "   -n, --nPCs"
+        echo "   -o, --output"
+        echo "        type: file, required parameter, output"
+        echo "        example: output.h5mu"
+        echo "        Output h5mu file."
+        echo ""
+      
+      
+        echo "   --output_key"
+        echo "        type: string"
+        echo "        default: pca"
+        echo "        The pre/postfix under which to store the PCA results. More specifically, .obsm[\"X_\"+key], .uns[key] and .varm[\"loadings_\"+key]."
+        echo ""
+      
+      
+        echo "   --num_components"
         echo "        type: integer"
-        echo "        default: 25"
-        echo "        The number of principal components to calculate."
+        echo "        example: 25"
+        echo "        Number of principal components to compute. Defaults to 50, or 1 - minimum dimension size of selected representation."
         echo ""
       
       }
@@ -256,6 +288,26 @@ functionality:
                   VIASH_PAR_INPUT=$(ViashRemoveFlags "$1")
                   shift 1
                   ;;
+              -i)
+                  VIASH_PAR_INPUT="$2"
+                  shift 2
+                  ;;
+              --modality)
+                  if [ -z "$VIASH_PAR_MODALITY" ]; then
+                    VIASH_PAR_MODALITY="$2"
+                  else
+                    VIASH_PAR_MODALITY="$VIASH_PAR_MODALITY:""$2"
+                  fi
+                  shift 2
+                  ;;
+              --modality=*)
+                  if [ -z "$VIASH_PAR_MODALITY" ]; then
+                    VIASH_PAR_MODALITY=$(ViashRemoveFlags "$1")
+                  else
+                    VIASH_PAR_MODALITY="$VIASH_PAR_MODALITY:"$(ViashRemoveFlags "$1")
+                  fi
+                  shift 1
+                  ;;
               --output)
                   VIASH_PAR_OUTPUT="$2"
                   shift 2
@@ -268,17 +320,21 @@ functionality:
                   VIASH_PAR_OUTPUT="$2"
                   shift 2
                   ;;
-              --nPCs)
-                  VIASH_PAR_NPCS="$2"
+              --output_key)
+                  VIASH_PAR_OUTPUT_KEY="$2"
                   shift 2
                   ;;
-              --nPCs=*)
-                  VIASH_PAR_NPCS=$(ViashRemoveFlags "$1")
+              --output_key=*)
+                  VIASH_PAR_OUTPUT_KEY=$(ViashRemoveFlags "$1")
                   shift 1
                   ;;
-              -n)
-                  VIASH_PAR_NPCS="$2"
+              --num_components)
+                  VIASH_PAR_NUM_COMPONENTS="$2"
                   shift 2
+                  ;;
+              --num_components=*)
+                  VIASH_PAR_NUM_COMPONENTS=$(ViashRemoveFlags "$1")
+                  shift 1
                   ;;
               *)  # positional arg or unknown option
                   # since the positional args will be eval'd, can we always quote, instead of using ViashQuote
@@ -303,8 +359,11 @@ functionality:
         ViashError '--output' is a required argument. Use "--help" to get more information on the parameters.
         exit 1
       fi
-      if [ -z "$VIASH_PAR_NPCS" ]; then
-        VIASH_PAR_NPCS="25"
+      if [ -z "$VIASH_PAR_MODALITY" ]; then
+        VIASH_PAR_MODALITY="rna"
+      fi
+      if [ -z "$VIASH_PAR_OUTPUT_KEY" ]; then
+        VIASH_PAR_OUTPUT_KEY="pca"
       fi
       
       
@@ -328,8 +387,10 @@ functionality:
       # The following code has been auto-generated by Viash.
       par = {
         'input': $( if [ ! -z ${VIASH_PAR_INPUT+x} ]; then echo "'$VIASH_PAR_INPUT'"; else echo None; fi ),
+        'modality': $( if [ ! -z ${VIASH_PAR_MODALITY+x} ]; then echo "'$VIASH_PAR_MODALITY'.split(':')"; else echo None; fi ),
         'output': $( if [ ! -z ${VIASH_PAR_OUTPUT+x} ]; then echo "'$VIASH_PAR_OUTPUT'"; else echo None; fi ),
-        'nPCs': $( if [ ! -z ${VIASH_PAR_NPCS+x} ]; then echo "int('$VIASH_PAR_NPCS')"; else echo None; fi )
+        'output_key': $( if [ ! -z ${VIASH_PAR_OUTPUT_KEY+x} ]; then echo "'$VIASH_PAR_OUTPUT_KEY'"; else echo None; fi ),
+        'num_components': $( if [ ! -z ${VIASH_PAR_NUM_COMPONENTS+x} ]; then echo "int('$VIASH_PAR_NUM_COMPONENTS')"; else echo None; fi )
       }
       meta = {
         'functionality_name': '$VIASH_META_FUNCTIONALITY_NAME',
@@ -339,13 +400,27 @@ functionality:
       resources_dir = '$VIASH_RESOURCES_DIR'
       
       ## VIASH END
+      okey = par["output_key"]
       
       print("Reading", par["input"])
       mdata = mu.read_h5mu(par["input"])
       
-      print("Computing PCA coordinates")
-      sc.tl.pca(mdata.mod["rna"], n_comps=par["nPCs"])
-      mdata.uns["pcaParameters"] = {"PCA: nPCs": par["nPCs"]}
+      for mod in par['modality']:
+          print(f"Computing PCA components for modality '{mod}'")
+          data = mdata.mod[mod]
+      
+          # run pca
+          # sc.tl.pca(data, n_comps=par["num_components"])
+          X_pca, loadings, variance, variance_ratio = sc.tl.pca(
+              data.X, 
+              n_comps=par["num_components"], 
+              return_info=True
+          )
+      
+          # store output in specific objects
+          data.obsm["X_"+okey] = X_pca
+          data.varm["loadings_"+okey] = loadings.T
+          data.uns[okey] = { "variance": variance, "variance_ratio": variance_ratio }
       
       print("Writing", par["output"])
       mdata.write_h5mu(filename=par["output"])
@@ -366,8 +441,10 @@ functionality:
         process.container = "dataintuitive/viash"
         params {
           pca__input = "viash_no_value"
+          pca__modality = "rna"
           pca__output = "viash_no_value"
-          pca__nPCs = "25"
+          pca__output_key = "pca"
+          pca__num_components = "no_default_value_configured"
           id = ""
           testScript = "run_test.py"
           testResources = [ "run_test.py", "../../../resources_test/pbmc_1k_protein_v3" ]
@@ -396,6 +473,17 @@ functionality:
                 example = "input.h5mu"
                 description = "Input h5mu file"
               }
+              modality {
+                name = "modality"
+                otype = "--"
+                required = false
+                type = "string"
+                direction = "Input"
+                multiple = true
+                multiple_sep = ":"
+                value = "${params.pca__modality}"
+                dflt = "rna"
+              }
               output {
                 name = "output"
                 otype = "--"
@@ -406,19 +494,31 @@ functionality:
                 multiple_sep = ":"
                 value = "${params.pca__output}"
                 example = "output.h5mu"
-                description = "Output h5mu file containing the dimred object."
+                description = "Output h5mu file."
               }
-              nPCs {
-                name = "nPCs"
+              output_key {
+                name = "output_key"
+                otype = "--"
+                required = false
+                type = "string"
+                direction = "Input"
+                multiple = false
+                multiple_sep = ":"
+                value = "${params.pca__output_key}"
+                dflt = "pca"
+                description = "The pre/postfix under which to store the PCA results. More specifically, .obsm[\"X_\"+key], .uns[key] and .varm[\"loadings_\"+key]."
+              }
+              num_components {
+                name = "num_components"
                 otype = "--"
                 required = false
                 type = "integer"
                 direction = "Input"
                 multiple = false
                 multiple_sep = ":"
-                value = "${params.pca__nPCs}"
-                dflt = "25"
-                description = "The number of principal components to calculate."
+                value = "${params.pca__num_components}"
+                example = "25"
+                description = "Number of principal components to compute. Defaults to 50, or 1 - minimum dimension size of selected representation."
               }
             }
           }
@@ -758,7 +858,8 @@ functionality:
       }
 
     dest: "main.nf"
-  description: "Performs PCA on the highly variable genes\n"
+  description: "Computes PCA coordinates, loadings and variance decomposition. Uses\
+    \ the implementation of scikit-learn [Pedregosa11].\n"
   tests:
   - type: "python_script"
     path: "run_test.py"
@@ -785,5 +886,5 @@ info:
   output: "target/nextflow/dimred/pca"
   executable: "target/nextflow/dimred/pca/pca"
   viash_version: "0.5.10.1"
-  git_commit: "c681f1f80c006602e9831d8abf1949c1e5cacb72"
+  git_commit: "66198a1f1a1998317ed7a65cb688989bbe341e2e"
   git_remote: "git@github.com:openpipelines-bio/openpipeline.git"

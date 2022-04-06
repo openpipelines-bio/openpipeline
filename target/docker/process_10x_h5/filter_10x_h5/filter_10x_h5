@@ -400,6 +400,7 @@ FROM dataintuitive/randpy:r4.0_py3.8_bioc3.12
 
 LABEL authors="Robrecht Cannoodt <rcannood@gmail.com> (maintainer) {github: rcannood, orcid: 0000-0003-3641-729X}"
 LABEL org.opencontainers.image.description="Companion container for running component process_10x_h5 filter_10x_h5"
+LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
 RUN :
 VIASHDOCKER
 }

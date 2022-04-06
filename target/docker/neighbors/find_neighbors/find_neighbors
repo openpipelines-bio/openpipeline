@@ -13,6 +13,7 @@
 #
 # Component authors:
 # * Dries De Maeyer <ddemaeyer@gmail.com> (maintainer) {account: ddemaey1}
+# * Robrecht Cannoodt <rcannood@gmail.com> (contributor) {github: rcannood, orcid: 0000-0003-3641-729X}
 
 set -e
 
@@ -150,7 +151,9 @@ VIASH_META_FUNCTIONALITY_NAME="find_neighbors"
 # ViashHelp: Display helpful explanation about this executable
 function ViashHelp {
   echo "find_neighbors 0.3.0rc2"
-  echo "Construct a nearest neighborhood network from the input."
+  echo "Compute a neighborhood graph of observations [McInnes18]."
+  echo ""
+  echo "The neighbor search efficiency of this heavily relies on UMAP [McInnes18], which also provides a method for estimating connectivities of data points - the connectivity of the manifold (method=='umap'). If method=='gauss', connectivities are computed according to [Coifman05], in the adaption of [Haghverdi16]."
   echo
   echo "Options:"
 
@@ -161,6 +164,12 @@ function ViashHelp {
   echo ""
 
 
+  echo "   --modality"
+  echo "        type: string, multiple values allowed"
+  echo "        default: rna"
+  echo ""
+
+
   echo "   -o, --output"
   echo "        type: file, output"
   echo "        example: output.h5mu"
@@ -168,17 +177,24 @@ function ViashHelp {
   echo ""
 
 
-  echo "   -m, --metric"
+  echo "   --obsp_name_prefix"
   echo "        type: string"
-  echo "        default: cosine"
+  echo "        example: foo"
+  echo "        An optional prefix for the obsp slot. If not specified, the neighbors data is stored in .uns['neighbors'], distances and connectivities are stored in .obsp['distances'] and .obsp['connectivities'] respectively. If specified, the neighbors data is added to .uns[key_added], distances are stored in .obsp[key_added+'_distances'] and connectivities in .obsp[key_added+'_connectivities']."
+  echo ""
+
+
+  echo "   --metric"
+  echo "        type: string"
+  echo "        default: euclidean"
   echo "        The distance metric to be used in the generation of the nearest neighborhood network."
   echo ""
 
 
-  echo "   --nNeighbors"
+  echo "   --num_neighbors"
   echo "        type: integer"
   echo "        default: 15"
-  echo "        The number of neighors to be present in the nn-network."
+  echo "        The size of local neighborhood (in terms of number of neighboring data points) used for manifold approximation. Larger values result in more global views of the manifold, while smaller values result in more local data being preserved. In general values should be in the range 2 to 100. If knn is True, number of nearest neighbors to be searched. If knn is False, a Gaussian kernel width is set to the distance of the n_neighbors neighbor."
   echo ""
 
 }
@@ -379,10 +395,11 @@ function ViashDockerfile {
   cat << 'VIASHDOCKER'
 FROM python:3.8
 
-LABEL authors="Dries De Maeyer <ddemaeyer@gmail.com> (maintainer) {account: ddemaey1}"
+LABEL authors="Dries De Maeyer <ddemaeyer@gmail.com> (maintainer) {account: ddemaey1}, Robrecht Cannoodt <rcannood@gmail.com> (contributor) {github: rcannood, orcid: 0000-0003-3641-729X}"
 LABEL org.opencontainers.image.description="Companion container for running component neighbors find_neighbors"
+LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
 RUN pip install --upgrade pip && \
-  pip install --no-cache-dir "scanpy" "loompy" "muon"
+  pip install --no-cache-dir "scanpy" "muon"
 
 VIASHDOCKER
 }
@@ -541,6 +558,22 @@ while [[ $# -gt 0 ]]; do
             VIASH_PAR_INPUT="$2"
             shift 2
             ;;
+        --modality)
+            if [ -z "$VIASH_PAR_MODALITY" ]; then
+              VIASH_PAR_MODALITY="$2"
+            else
+              VIASH_PAR_MODALITY="$VIASH_PAR_MODALITY:""$2"
+            fi
+            shift 2
+            ;;
+        --modality=*)
+            if [ -z "$VIASH_PAR_MODALITY" ]; then
+              VIASH_PAR_MODALITY=$(ViashRemoveFlags "$1")
+            else
+              VIASH_PAR_MODALITY="$VIASH_PAR_MODALITY:"$(ViashRemoveFlags "$1")
+            fi
+            shift 1
+            ;;
         --output)
             VIASH_PAR_OUTPUT="$2"
             shift 2
@@ -553,6 +586,14 @@ while [[ $# -gt 0 ]]; do
             VIASH_PAR_OUTPUT="$2"
             shift 2
             ;;
+        --obsp_name_prefix)
+            VIASH_PAR_OBSP_NAME_PREFIX="$2"
+            shift 2
+            ;;
+        --obsp_name_prefix=*)
+            VIASH_PAR_OBSP_NAME_PREFIX=$(ViashRemoveFlags "$1")
+            shift 1
+            ;;
         --metric)
             VIASH_PAR_METRIC="$2"
             shift 2
@@ -561,16 +602,12 @@ while [[ $# -gt 0 ]]; do
             VIASH_PAR_METRIC=$(ViashRemoveFlags "$1")
             shift 1
             ;;
-        -m)
-            VIASH_PAR_METRIC="$2"
+        --num_neighbors)
+            VIASH_PAR_NUM_NEIGHBORS="$2"
             shift 2
             ;;
-        --nNeighbors)
-            VIASH_PAR_NNEIGHBORS="$2"
-            shift 2
-            ;;
-        --nNeighbors=*)
-            VIASH_PAR_NNEIGHBORS=$(ViashRemoveFlags "$1")
+        --num_neighbors=*)
+            VIASH_PAR_NUM_NEIGHBORS=$(ViashRemoveFlags "$1")
             shift 1
             ;;
         ---setup)
@@ -631,11 +668,14 @@ if [ -z "$VIASH_PAR_INPUT" ]; then
   ViashError '--input' is a required argument. Use "--help" to get more information on the parameters.
   exit 1
 fi
-if [ -z "$VIASH_PAR_METRIC" ]; then
-  VIASH_PAR_METRIC="cosine"
+if [ -z "$VIASH_PAR_MODALITY" ]; then
+  VIASH_PAR_MODALITY="rna"
 fi
-if [ -z "$VIASH_PAR_NNEIGHBORS" ]; then
-  VIASH_PAR_NNEIGHBORS="15"
+if [ -z "$VIASH_PAR_METRIC" ]; then
+  VIASH_PAR_METRIC="euclidean"
+fi
+if [ -z "$VIASH_PAR_NUM_NEIGHBORS" ]; then
+  VIASH_PAR_NUM_NEIGHBORS="15"
 fi
 
 
@@ -686,9 +726,11 @@ import scanpy as sc
 # The following code has been auto-generated by Viash.
 par = {
   'input': $( if [ ! -z ${VIASH_PAR_INPUT+x} ]; then echo "'$VIASH_PAR_INPUT'"; else echo None; fi ),
+  'modality': $( if [ ! -z ${VIASH_PAR_MODALITY+x} ]; then echo "'$VIASH_PAR_MODALITY'.split(':')"; else echo None; fi ),
   'output': $( if [ ! -z ${VIASH_PAR_OUTPUT+x} ]; then echo "'$VIASH_PAR_OUTPUT'"; else echo None; fi ),
+  'obsp_name_prefix': $( if [ ! -z ${VIASH_PAR_OBSP_NAME_PREFIX+x} ]; then echo "'$VIASH_PAR_OBSP_NAME_PREFIX'"; else echo None; fi ),
   'metric': $( if [ ! -z ${VIASH_PAR_METRIC+x} ]; then echo "'$VIASH_PAR_METRIC'"; else echo None; fi ),
-  'nNeighbors': $( if [ ! -z ${VIASH_PAR_NNEIGHBORS+x} ]; then echo "int('$VIASH_PAR_NNEIGHBORS')"; else echo None; fi )
+  'num_neighbors': $( if [ ! -z ${VIASH_PAR_NUM_NEIGHBORS+x} ]; then echo "int('$VIASH_PAR_NUM_NEIGHBORS')"; else echo None; fi )
 }
 meta = {
   'functionality_name': '$VIASH_META_FUNCTIONALITY_NAME',
@@ -699,21 +741,21 @@ resources_dir = '$VIASH_RESOURCES_DIR'
 
 ## VIASH END
 
-print("Reading", par["input"])
+print("Reading input mudata")
 mdata = mu.read_h5mu(par["input"])
+mdata.var_names_make_unique()
 
-print("Compute a neighborhood graph of observations")
-sc.pp.neighbors(mdata.mod["rna"], 
-    n_neighbors = par["nNeighbors"], 
-    metric = par["metric"])
+for mod in par["modality"]:
+    print(f"Computing a neighborhood graph on modality {mod}")
+    sc.pp.neighbors(
+        mdata.mod[mod],
+        n_neighbors=par["num_neighbors"], 
+        metric=par["metric"],
+        key_added=par["obsp_name_prefix"]
+    )
 
-mdata.uns["nearestNeighbourParameters"] = {
-    "Nearest neighbours: metric": par["metric"],
-    "Nearest neighbours: number of neighbors": par["nNeighbors"]
-}
-
-print("Writing", par["output"])
-mdata.write_h5mu(filename=par["output"])
+print("Writing to file")
+mdata.write(filename=par["output"])
 VIASHMAIN
 python "\$tempscript" &
 wait "\$!"

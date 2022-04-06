@@ -931,5 +931,5 @@ info:
   output: "target/docker/convert/convert_bdrhap_to_h5ad"
   executable: "target/docker/convert/convert_bdrhap_to_h5ad/convert_bdrhap_to_h5ad"
   viash_version: "0.5.10.1"
-  git_commit: "c681f1f80c006602e9831d8abf1949c1e5cacb72"
+  git_commit: "66198a1f1a1998317ed7a65cb688989bbe341e2e"
   git_remote: "git@github.com:openpipelines-bio/openpipeline.git"

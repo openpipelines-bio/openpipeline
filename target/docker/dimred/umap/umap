@@ -150,9 +150,7 @@ VIASH_META_FUNCTIONALITY_NAME="umap"
 # ViashHelp: Display helpful explanation about this executable
 function ViashHelp {
   echo "umap 0.3.0rc2"
-  echo "UMAP(Uniform Manifold Approximation and Projection) is a novel manifold learning technique for dimension reduction. UMAP is constructed from a theoretical framework based in Riemannian geometry and algebraic topology. The result is a practical scalable algorithm that applies to real world data. The UMAP algorithm is competitive with t-SNE for visualization quality, and arguably preserves more of the global structure with superior run time performance. Furthermore, UMAP has no computational restrictions on embedding dimension, making it viable as a general purpose dimension reduction technique for machine learning. "
-  echo ""
-  echo "For more information about the method see https://arxiv.org/abs/1802.03426"
+  echo "UMAP (Uniform Manifold Approximation and Projection) is a manifold learning technique suitable for visualizing high-dimensional data. Besides tending to be faster than tSNE, it optimizes the embedding such that it best reflects the topology of the data, which we represent throughout Scanpy using a neighborhood graph. tSNE, by contrast, optimizes the distribution of nearest-neighbor distances in the embedding such that these best match the distribution of distances in the high-dimensional space. We use the implementation of umap-learn [McInnes18]. For a few comparisons of UMAP with tSNE, see this preprint."
   echo
   echo "Options:"
 
@@ -163,6 +161,12 @@ function ViashHelp {
   echo ""
 
 
+  echo "   --modality"
+  echo "        type: string, multiple values allowed"
+  echo "        default: rna"
+  echo ""
+
+
   echo "   -o, --output"
   echo "        type: file, required parameter, output"
   echo "        example: output.h5mu"
@@ -170,10 +174,37 @@ function ViashHelp {
   echo ""
 
 
+  echo "   --output_key"
+  echo "        type: string"
+  echo "        default: umap"
+  echo "        The pre/postfix under which to store the UMAP results."
+  echo ""
+
+
   echo "   --min_dist"
   echo "        type: double"
   echo "        default: 0.5"
-  echo "        The effective minimum distance between embedded points. Smaller values will result in a more clustered/clumped embedding where nearby points on the manifold are drawn closer together, while larger values will result on a more even dispersal of points. The value should be set relative to the spread value, which determines the scale at which embedded points will be spread out. The default of in the umap-learn package is 0.1."
+  echo "        The effective minimum distance between embedded points. Smaller values will result in a more clustered/clumped embedding where nearby points on the manifold are drawn closer together, while larger values will result on a more even dispersal of points. The value should be set relative to the spread value, which determines the scale at which embedded points will be spread out."
+  echo ""
+
+
+  echo "   --spread"
+  echo "        type: double"
+  echo "        default: 1.0"
+  echo "        The effective scale of embedded points. In combination with min_dist this determines how clustered/clumped the embedded points are."
+  echo ""
+
+
+  echo "   --num_components"
+  echo "        type: integer"
+  echo "        default: 2"
+  echo "        The number of dimensions of the embedding."
+  echo ""
+
+
+  echo "   --max_iter"
+  echo "        type: integer"
+  echo "        The number of iterations (epochs) of the optimization."
   echo ""
 
 
@@ -188,13 +219,6 @@ function ViashHelp {
   echo "        type: double"
   echo "        default: 1.0"
   echo "        Weighting applied to negative samples in low dimensional embedding optimization. Values higher than one will result in greater weight being given to negative samples."
-  echo ""
-
-
-  echo "   --random_seed"
-  echo "        type: integer"
-  echo "        default: 0"
-  echo "        Random seed for Leiden algrithm."
   echo ""
 
 
@@ -567,6 +591,22 @@ while [[ $# -gt 0 ]]; do
             VIASH_PAR_INPUT=$(ViashRemoveFlags "$1")
             shift 1
             ;;
+        --modality)
+            if [ -z "$VIASH_PAR_MODALITY" ]; then
+              VIASH_PAR_MODALITY="$2"
+            else
+              VIASH_PAR_MODALITY="$VIASH_PAR_MODALITY:""$2"
+            fi
+            shift 2
+            ;;
+        --modality=*)
+            if [ -z "$VIASH_PAR_MODALITY" ]; then
+              VIASH_PAR_MODALITY=$(ViashRemoveFlags "$1")
+            else
+              VIASH_PAR_MODALITY="$VIASH_PAR_MODALITY:"$(ViashRemoveFlags "$1")
+            fi
+            shift 1
+            ;;
         --output)
             VIASH_PAR_OUTPUT="$2"
             shift 2
@@ -579,12 +619,44 @@ while [[ $# -gt 0 ]]; do
             VIASH_PAR_OUTPUT="$2"
             shift 2
             ;;
+        --output_key)
+            VIASH_PAR_OUTPUT_KEY="$2"
+            shift 2
+            ;;
+        --output_key=*)
+            VIASH_PAR_OUTPUT_KEY=$(ViashRemoveFlags "$1")
+            shift 1
+            ;;
         --min_dist)
             VIASH_PAR_MIN_DIST="$2"
             shift 2
             ;;
         --min_dist=*)
             VIASH_PAR_MIN_DIST=$(ViashRemoveFlags "$1")
+            shift 1
+            ;;
+        --spread)
+            VIASH_PAR_SPREAD="$2"
+            shift 2
+            ;;
+        --spread=*)
+            VIASH_PAR_SPREAD=$(ViashRemoveFlags "$1")
+            shift 1
+            ;;
+        --num_components)
+            VIASH_PAR_NUM_COMPONENTS="$2"
+            shift 2
+            ;;
+        --num_components=*)
+            VIASH_PAR_NUM_COMPONENTS=$(ViashRemoveFlags "$1")
+            shift 1
+            ;;
+        --max_iter)
+            VIASH_PAR_MAX_ITER="$2"
+            shift 2
+            ;;
+        --max_iter=*)
+            VIASH_PAR_MAX_ITER=$(ViashRemoveFlags "$1")
             shift 1
             ;;
         --alpha)
@@ -601,14 +673,6 @@ while [[ $# -gt 0 ]]; do
             ;;
         --gamma=*)
             VIASH_PAR_GAMMA=$(ViashRemoveFlags "$1")
-            shift 1
-            ;;
-        --random_seed)
-            VIASH_PAR_RANDOM_SEED="$2"
-            shift 2
-            ;;
-        --random_seed=*)
-            VIASH_PAR_RANDOM_SEED=$(ViashRemoveFlags "$1")
             shift 1
             ;;
         --negative_sample_rate)
@@ -689,17 +753,26 @@ if [ -z "$VIASH_PAR_OUTPUT" ]; then
   ViashError '--output' is a required argument. Use "--help" to get more information on the parameters.
   exit 1
 fi
+if [ -z "$VIASH_PAR_MODALITY" ]; then
+  VIASH_PAR_MODALITY="rna"
+fi
+if [ -z "$VIASH_PAR_OUTPUT_KEY" ]; then
+  VIASH_PAR_OUTPUT_KEY="umap"
+fi
 if [ -z "$VIASH_PAR_MIN_DIST" ]; then
   VIASH_PAR_MIN_DIST="0.5"
+fi
+if [ -z "$VIASH_PAR_SPREAD" ]; then
+  VIASH_PAR_SPREAD="1.0"
+fi
+if [ -z "$VIASH_PAR_NUM_COMPONENTS" ]; then
+  VIASH_PAR_NUM_COMPONENTS="2"
 fi
 if [ -z "$VIASH_PAR_ALPHA" ]; then
   VIASH_PAR_ALPHA="1.0"
 fi
 if [ -z "$VIASH_PAR_GAMMA" ]; then
   VIASH_PAR_GAMMA="1.0"
-fi
-if [ -z "$VIASH_PAR_RANDOM_SEED" ]; then
-  VIASH_PAR_RANDOM_SEED="0"
 fi
 if [ -z "$VIASH_PAR_NEGATIVE_SAMPLE_RATE" ]; then
   VIASH_PAR_NEGATIVE_SAMPLE_RATE="5"
@@ -736,7 +809,7 @@ function ViashPerformChown {
 trap ViashPerformChown EXIT
 
 
-cat << VIASHEOF | eval docker run --entrypoint=bash --workdir /app -i --rm $VIASH_EXTRA_MOUNTS ghcr.io/openpipelines-bio/dimred_umap:0.3.0rc2
+cat << VIASHEOF | eval docker run --entrypoint=bash -i --rm $VIASH_EXTRA_MOUNTS ghcr.io/openpipelines-bio/dimred_umap:0.3.0rc2
 set -e
 tempscript=\$(mktemp "$VIASH_TEMP/viash-run-umap-XXXXXX")
 function clean_up {
@@ -749,15 +822,22 @@ function interrupt {
 trap clean_up EXIT
 trap interrupt INT SIGINT
 cat > "\$tempscript" << 'VIASHMAIN'
+import scanpy as sc
+import muon as mu
+
 ## VIASH START
 # The following code has been auto-generated by Viash.
 par = {
   'input': $( if [ ! -z ${VIASH_PAR_INPUT+x} ]; then echo "'$VIASH_PAR_INPUT'"; else echo None; fi ),
+  'modality': $( if [ ! -z ${VIASH_PAR_MODALITY+x} ]; then echo "'$VIASH_PAR_MODALITY'.split(':')"; else echo None; fi ),
   'output': $( if [ ! -z ${VIASH_PAR_OUTPUT+x} ]; then echo "'$VIASH_PAR_OUTPUT'"; else echo None; fi ),
+  'output_key': $( if [ ! -z ${VIASH_PAR_OUTPUT_KEY+x} ]; then echo "'$VIASH_PAR_OUTPUT_KEY'"; else echo None; fi ),
   'min_dist': $( if [ ! -z ${VIASH_PAR_MIN_DIST+x} ]; then echo "float('$VIASH_PAR_MIN_DIST')"; else echo None; fi ),
+  'spread': $( if [ ! -z ${VIASH_PAR_SPREAD+x} ]; then echo "float('$VIASH_PAR_SPREAD')"; else echo None; fi ),
+  'num_components': $( if [ ! -z ${VIASH_PAR_NUM_COMPONENTS+x} ]; then echo "int('$VIASH_PAR_NUM_COMPONENTS')"; else echo None; fi ),
+  'max_iter': $( if [ ! -z ${VIASH_PAR_MAX_ITER+x} ]; then echo "int('$VIASH_PAR_MAX_ITER')"; else echo None; fi ),
   'alpha': $( if [ ! -z ${VIASH_PAR_ALPHA+x} ]; then echo "float('$VIASH_PAR_ALPHA')"; else echo None; fi ),
   'gamma': $( if [ ! -z ${VIASH_PAR_GAMMA+x} ]; then echo "float('$VIASH_PAR_GAMMA')"; else echo None; fi ),
-  'random_seed': $( if [ ! -z ${VIASH_PAR_RANDOM_SEED+x} ]; then echo "int('$VIASH_PAR_RANDOM_SEED')"; else echo None; fi ),
   'negative_sample_rate': $( if [ ! -z ${VIASH_PAR_NEGATIVE_SAMPLE_RATE+x} ]; then echo "int('$VIASH_PAR_NEGATIVE_SAMPLE_RATE')"; else echo None; fi ),
   'init_pos': $( if [ ! -z ${VIASH_PAR_INIT_POS+x} ]; then echo "'$VIASH_PAR_INIT_POS'"; else echo None; fi )
 }
@@ -770,29 +850,25 @@ resources_dir = '$VIASH_RESOURCES_DIR'
 
 ## VIASH END
 
-import scanpy as sc
-import muon as mu
-
 print("Reading", par["input"])
 mdata = mu.read_h5mu(par["input"])
 
-# TODO Note by Eric: Not sure if this is called earlier in the pipeline already? UMAP won't work on the h5mu in the resources folder without this.
-print("Computing a neighborhood graph of observations")
-sc.pp.neighbors(mdata.mod["rna"], use_rep="X")
+for mod in par['modality']:
+    print(f"Computing UMAP for modality '{mod}'")
+    data = mdata.mod[mod]
 
-print(
-    "Embedding the neighborhood graph using Uniform Manifold Approximation and Projection (UMAP)"
-)
-
-sc.tl.umap(
-    mdata.mod["rna"],
-    min_dist=par["min_dist"],
-    alpha=par["alpha"],
-    gamma=par["gamma"],
-    random_state=par["random_seed"],
-    negative_sample_rate=par["negative_sample_rate"],
-    init_pos=par["init_pos"],
-)
+    sc.tl.umap(
+        data,
+        min_dist=par["min_dist"],
+        spread=par["spread"],
+        n_components=par["num_components"],
+        maxiter=par["max_iter"],
+        alpha=par["alpha"],
+        gamma=par["gamma"],
+        negative_sample_rate=par["negative_sample_rate"],
+        init_pos=par["init_pos"],
+    )
+    # note: should be able to set the neighbors key
 
 print("Writing", par["output"])
 mdata.write_h5mu(filename=par["output"])
