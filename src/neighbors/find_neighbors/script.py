@@ -3,25 +3,28 @@ import scanpy as sc
 
 ## VIASH START
 par = {
-    "input": "resources_test/pbmc_1k_protein_v3/pbmc_1k_protein_v3_filtered_feature_bc_matrix.norm.hvg.pca.nn.umap.h5mu",
+    "input": "resources_test/pbmc_1k_protein_v3/pbmc_1k_protein_v3_filtered_feature_bc_matrix.tx_processing.h5mu",
     "output": "output.h5mu",
-    'metric': 'cosine',
-    'nNeighbors': 15,
+    "metric": 'cosine',
+    "num_neighbors": 15,
+    "modality": ["rna"],
+    "obsp_name_prefix": "foo"
 }
+meta = {"functionality_name": "lognorm"}
 ## VIASH END
 
-print("Reading", par["input"])
+print("Reading input mudata")
 mdata = mu.read_h5mu(par["input"])
+mdata.var_names_make_unique()
 
-print("Compute a neighborhood graph of observations")
-sc.pp.neighbors(mdata.mod["rna"], 
-    n_neighbors = par["nNeighbors"], 
-    metric = par["metric"])
+for mod in par["modality"]:
+    print(f"Computing a neighborhood graph on modality {mod}")
+    sc.pp.neighbors(
+        mdata.mod[mod],
+        n_neighbors=par["num_neighbors"], 
+        metric=par["metric"],
+        key_added=par["obsp_name_prefix"]
+    )
 
-mdata.uns["nearestNeighbourParameters"] = {
-    "Nearest neighbours: metric": par["metric"],
-    "Nearest neighbours: number of neighbors": par["nNeighbors"]
-}
-
-print("Writing", par["output"])
-mdata.write_h5mu(filename=par["output"])
+print("Writing to file")
+mdata.write(filename=par["output"])

@@ -1,0 +1,69 @@
+functionality:
+  name: normalize_total
+  namespace: "transform"
+  version: "dev"
+  description: |
+    Normalize counts per cell.
+
+    Normalize each cell by total counts over all genes, so that every cell has the same total count after normalization. If choosing target_sum=1e6, this is CPM normalization.
+
+    If exclude_highly_expressed=True, very highly expressed genes are excluded from the computation of the normalization factor (size factor) for each cell. This is meaningful as these can strongly influence the resulting normalized values for all other genes [Weinreb17].
+  authors:
+    - name: Dries De Maeyer
+      email: ddemaeyer@gmail.com
+      roles: [ maintainer ]
+      props: { account: ddemaey1 }
+    - name: Robrecht Cannoodt
+      email: rcannood@gmail.com
+      roles: [ contributor ]
+      props: { github: rcannood, orcid: "0000-0003-3641-729X" }
+  arguments:
+    # input
+    - name: "--input"
+      alternatives: ["-i"]
+      type: file
+      description: Input h5mu file
+      direction: input
+      required: true
+      example: input.h5mu
+
+    - name: "--modality"
+      type: string
+      multiple: true
+      default: "rna"
+      required: false
+    
+    # output
+    - name: "--output"
+      alternatives: ["-o"]
+      type: file
+      description: Output h5mu file.
+      direction: output
+      required: true
+      default: output.h5mu
+
+    # arguments
+    - name: "--target_sum"
+      type: integer
+      default: 10000
+      description: If None, after normalization, each observation (cell) has a total count equal to the median of total counts for observations (cells) before normalization.
+
+    - name: "--exclude_highly_expressed"
+      type: boolean_true
+      description: Exclude (very) highly expressed genes for the computation of the normalization factor (size factor) for each cell. A gene is considered highly expressed, if it has more than max_fraction of the total counts in at least one cell. The not-excluded genes will sum up to target_sum.
+  resources:
+    - type: python_script
+      path: script.py
+  tests:
+    - type: python_script
+      path: run_test.py
+    - path: ../../../resources_test/pbmc_1k_protein_v3
+platforms:
+  - type: docker
+    image: python:3.10
+    setup:
+      - type: python
+        packages:
+          - scanpy<1.9 # workaround for https://github.com/scverse/scanpy/pull/2209 introduced in scanpy 1.9.0
+          - muon
+  - type: nextflow

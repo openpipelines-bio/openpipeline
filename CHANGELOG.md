@@ -4,8 +4,10 @@
   - `filter_with_counts`
   - `filter_with_scrublet`
   - `filter_with_hvg`
-  - `lognorm`
   - `do_filter`
+  - `normalize_total`
+  - `regress_out`
+  - `log1p`
   - `pca`
   - `find_neighbors`
   - `leiden`

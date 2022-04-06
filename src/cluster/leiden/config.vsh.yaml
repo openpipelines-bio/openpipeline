@@ -7,7 +7,7 @@ functionality:
     This requires having ran neighbors/find_neighbors or neighbors/bbknn first.
 
     Blondel et al. (2008), Fast unfolding of communities in large networks, J. Stat. Mech.
-    Levine et al. (2015), Data-Driven Phenotypic Dissection of AML Reveals Progenitor–like Cells that Correlate with Prognosis, Cell.
+    Levine et al. (2015), Data-Driven Phenotypic Dissection of AML Reveals Progenitor-like Cells that Correlate with Prognosis, Cell.
     Traag et al. (2018), From Louvain to Leiden: guaranteeing well-connected communities arXiv.
     Wolf et al. (2018), Scanpy: large-scale single-cell gene expression data analysis, Genome Biology.
   authors:
@@ -16,6 +16,7 @@ functionality:
       roles: [ maintainer ]
       props: { account: ddemaey1 }
   arguments:
+    # input
     - name: "--input"
       alternatives: [-i]
       type: file
@@ -23,6 +24,14 @@ functionality:
       direction: input
       required: true
       example: input.h5mu
+
+    - name: "--modality"
+      type: string
+      multiple: true
+      default: "rna"
+      required: false
+
+    # output
     - name: "--output"
       alternatives: ["-o"]
       type: file
@@ -30,18 +39,17 @@ functionality:
       direction: output
       required: true
       example: output.h5mu
-    - name: "--output_key"
+
+    - name: "--obs_name"
       type: string
-      description: The .obs key under which to add the cluster labels.
-      default: "neighbors"
+      description: Name of the .obs key under which to add the cluster labels.
+      default: "leiden"
+
+    # arguments
     - name: "--resolution"
       type: double
       description: A parameter value controlling the coarseness of the clustering. Higher values lead to more clusters.
       default: 1
-    - name: "--cluster_column_name"
-      type: string
-      description: Name of the adata.obs key under which to add the cluster labels.
-      default: "leiden.res.0.25"
   resources:
     - type: python_script
       path: script.py

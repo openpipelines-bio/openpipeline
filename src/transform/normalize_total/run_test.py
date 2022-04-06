@@ -1,22 +1,22 @@
 import subprocess
 from os import path
 import muon as mu
-
+import numpy as np
 
 ## VIASH START
 meta = {
-    'functionality_name': 'find_neighbors',
+    'functionality_name': 'lognorm',
     'resources_dir': 'resources_test/'
 }
 ## VIASH END
 
-input = f"{meta['resources_dir']}/pbmc_1k_protein_v3/pbmc_1k_protein_v3_filtered_feature_bc_matrix.tx_processing.h5mu"
+input = f"{meta['resources_dir']}/pbmc_1k_protein_v3/pbmc_1k_protein_v3_filtered_feature_bc_matrix.h5mu"
 output = "output.h5mu"
+
 cmd_pars = [
-    "./" + meta["functionality_name"],
+    f"./{meta['functionality_name']}",
     "--input", input,
     "--output", output,
-    "--obsp_name_prefix", "foo"
 ]
 out = subprocess.check_output(cmd_pars).decode("utf-8")
 
@@ -40,8 +40,14 @@ print("> Check shape of outputs.")
 assert rna_in.shape == rna_out.shape, "Should have same shape as before"
 assert prot_in.shape == prot_out.shape, "Should have same shape as before"
 
-print("> Check existence of output fields.")
-assert "foo_connectivities" in rna_out.obsp, "Output should have .obsp['foo_connectivities']"
-assert "foo_distances" in rna_out.obsp, "Output should have .obsp['foo_distances']"
-assert "foo_connectivities" not in rna_in.obsp, "Input should not have .obsp['foo_connectivities']"
-assert "foo_distances" not in rna_in.obsp, "Input should not have .obsp['foo_distances']"
+print("> Check if expression has changed.")
+assert np.mean(rna_in.X) != np.mean(rna_out.X), "Expression should have changed"
+
+print("> Checking row-wise and column-wise correlation.")
+nz_row, nz_col = rna_in.X.nonzero()
+row_corr = np.corrcoef(rna_in.X[nz_row[0],:].toarray().flatten(), rna_out.X[nz_row[0],:].toarray().flatten())[0,1]
+col_corr = np.corrcoef(rna_in.X[:,nz_col[0]].toarray().flatten(), rna_out.X[:,nz_col[0]].toarray().flatten())[0,1]
+assert row_corr > .1
+assert col_corr > .1
+
+print(">> All tests succeeded!")

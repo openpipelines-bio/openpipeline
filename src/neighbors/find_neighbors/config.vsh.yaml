@@ -3,13 +3,20 @@ functionality:
   namespace: "neighbors"
   version: "dev"
   description: |
-    Construct a nearest neighborhood network from the input.
+    Compute a neighborhood graph of observations [McInnes18].
+
+    The neighbor search efficiency of this heavily relies on UMAP [McInnes18], which also provides a method for estimating connectivities of data points - the connectivity of the manifold (method=='umap'). If method=='gauss', connectivities are computed according to [Coifman05], in the adaption of [Haghverdi16].
   authors:
     - name: Dries De Maeyer
       email: ddemaeyer@gmail.com
       roles: [ maintainer ]
       props: { account: ddemaey1 }
+    - name: Robrecht Cannoodt
+      email: rcannood@gmail.com
+      roles: [ contributor ]
+      props: { github: rcannood, orcid: "0000-0003-3641-729X" }
   arguments:
+    # input
     - name: "--input"
       alternatives: ["-i"]
       type: file
@@ -17,24 +24,40 @@ functionality:
       direction: input
       required: true
       example: input.h5mu
+
+    - name: "--modality"
+      type: string
+      multiple: true
+      default: "rna"
+      required: false
+
+    # output
     - name: "--output"
       alternatives: ["-o"]
       type: file
       description: Output h5mu file containing the found neighbors.
       direction: output
       example: output.h5mu
-    - name: "--metric"
-      alternatives: ["-m"]
+      
+    - name: "--obsp_name_prefix"
       type: string
-      default: "cosine"
+      example: "foo"
+      description: An optional prefix for the obsp slot. If not specified, the neighbors data is stored in .uns['neighbors'], distances and connectivities are stored in .obsp['distances'] and .obsp['connectivities'] respectively. If specified, the neighbors data is added to .uns[key_added], distances are stored in .obsp[key_added+'_distances'] and connectivities in .obsp[key_added+'_connectivities'].
+
+    # arguments
+    - name: "--metric"
+      type: string
+      default: "euclidean"
       description: The distance metric to be used in the generation of the nearest neighborhood network.
-    - name: "--nNeighbors"
+      values: [ 'cityblock', 'cosine', 'euclidean', 'l1', 'l2', 'manhattan', 'braycurtis', 'canberra', 'chebyshev', 'correlation', 'dice', 'hamming', 'jaccard', 'kulsinski', 'mahalanobis', 'minkowski', 'rogerstanimoto', 'russellrao', 'seuclidean', 'sokalmichener', 'sokalsneath', 'sqeuclidean', 'yule' ]
+
+    - name: "--num_neighbors"
       type: integer
       default: 15
-      description: The number of neighors to be present in the nn-network.
+      description: The size of local neighborhood (in terms of number of neighboring data points) used for manifold approximation. Larger values result in more global views of the manifold, while smaller values result in more local data being preserved. In general values should be in the range 2 to 100. If knn is True, number of nearest neighbors to be searched. If knn is False, a Gaussian kernel width is set to the distance of the n_neighbors neighbor.
   resources:
     - type: python_script
-      path: ./script.py
+      path: script.py
   tests:
     - type: python_script
       path: run_test.py
@@ -42,9 +65,9 @@ functionality:
 platforms:
   - type: docker
     image: python:3.8
-    python:
-      packages:
-        - scanpy
-        - loompy
-        - muon
+    setup: 
+      - type: python
+        packages:
+          - scanpy
+          - muon
   - type: nextflow

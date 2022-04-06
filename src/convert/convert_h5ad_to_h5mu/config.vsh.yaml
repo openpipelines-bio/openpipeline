@@ -44,6 +44,5 @@ platforms:
     python:
       packages:
         - anndata
-        - loompy
         - muon
   - type: nextflow
