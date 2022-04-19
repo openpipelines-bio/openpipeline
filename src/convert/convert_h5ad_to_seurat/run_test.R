@@ -5,15 +5,20 @@ library(testthat, warn.conflicts = FALSE)
 library(Seurat)
 
 cat("Checking whether output is correct\n")
-out <- processx::run("./h5adtoseurat", c(
-  "--input", "pbmc_1k_protein_v3_filtered_feature_bc_matrix.h5ad",
-  "--output", "output.rds"
-))
-  
+
+in_h5mu <- paste0(meta_resources_dir, "/pbmc_1k_protein_v3_filtered_feature_bc_matrix.tx_processing.h5mu")
+in_h5ad <- "temp.h5ad"
+out_rds <- "output.rds"
+
+out <- processx::run(
+  paste0("./", meta_functionality_name),
+  c("--input", in_h5ad, "--output", out_rds)
+)
+
 expect_equal(out$status, 0)
-expect_true(file.exists("output.rds"))
+expect_true(file.exists(out_rds))
   
-seurat <- readRDS(file = "output.rds")
+seurat <- readRDS(file = out_rds)
   
   #class(seurat)
  # expect_is(seurat, "ExpressionSet")

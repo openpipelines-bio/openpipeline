@@ -35,14 +35,9 @@ functionality:
     - type: r_script
       path: script.R
   tests:
-    - type: bash_script
-      path: test/run_test.sh
     - type: r_script
-      path: test/run_test.R
-    - path: test/pbmc_1k_protein_v3_filtered_feature_bc_matrix.h5ad
-    - path: test/pbmc_1k_protein_v3_filtered_feature_bc_matrix.filter.ct.monaco.h5ad
-    - path: ../../../resources_test/integrated/integrated.pbmc.lisi.h5ad
-    - path: ./test/libraries_PBMC10XPROT.umap.h5ad
+      path: run_test.R
+    - path: ../../../resources_test/pbmc_1k_protein_v3
 platforms:
   - type: docker
     image: dataintuitive/randpy:r4.0_py3.8_bioc3.12

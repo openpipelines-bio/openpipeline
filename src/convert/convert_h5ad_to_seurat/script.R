@@ -29,6 +29,4 @@ if (par$verbose) cat("load h5seurat\n")
 seuratObject <- LoadH5Seurat(converted)
 
 # save as rds
-if (par$verbose) {
-  saveRDS(seuratObject, file = par$output, compress = TRUE)
-}
+saveRDS(seuratObject, file = par$output, compress = TRUE)
