@@ -1,25 +1,22 @@
 functionality:
-  name: "convert_h5ad_to_seurat"
+  name: "convert_h5mu_to_seurat"
   namespace: "convert"
   version: "dev"
   description: |
-    Converts an h5ad file into a Seurat file.
+    Converts an h5mu file into a Seurat file.
   authors:
-    - name: Dries De Maeyer
-      roles: [ author ]
-      props: { github: ddemaeyer, orcid: "0000-0002-1314-3348" }
     - name: Robrecht Cannoodt
       email: rcannood@gmail.com
-      roles: [ maintainer ]
+      roles: [ author, maintainer ]
       props: { github: rcannood, orcid: "0000-0003-3641-729X" }
   arguments:
     - name: "--input"
       alternatives: ["-i"]
       type: file
-      description: Input h5ad file
+      description: Input h5mu file
       direction: input
       required: true
-      example: input.h5ad
+      example: input.h5mu
     - name: "--output"
       alternatives: ["-o"]
       type: file
@@ -27,10 +24,6 @@ functionality:
       direction: output
       required: true
       example: output.rds
-    - name: "--verbose"
-      alternatives: ["-v"]
-      type: boolean_true
-      description: Increase verbosity
   resources:
     - type: r_script
       path: script.R
@@ -42,19 +35,6 @@ platforms:
   - type: docker
     image: dataintuitive/randpy:r4.0_py3.8_bioc3.12
     setup:
-      - type: apt
-        packages:
-          - libhdf5-serial-dev
       - type: r
-        cran:
-          - optparse
-          - hdf5r
-          - reticulate
-          - Seurat
-        github:
-          #- mojaveazure/seurat-disk
-          - data-intuitive/seurat-disk@b36b490feb7246ff0ef7d2bfaf3c8f53eeafa12a
-      - type: python
-        packages:
-          - scanpy
+        github: pmbio/MuDataSeurat
   - type: nextflow
