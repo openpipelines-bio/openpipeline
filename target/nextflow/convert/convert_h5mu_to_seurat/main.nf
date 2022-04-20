@@ -8,7 +8,7 @@ params.publishDir = "./"
 def checkParams(_params) {
   _params.arguments.collect{
     if (it.value == "viash_no_value") {
-      println("[ERROR] option --${it.name} not specified in component convert_h5ad_to_seurat")
+      println("[ERROR] option --${it.name} not specified in component convert_h5mu_to_seurat")
       println("exiting now...")
         exit 1
     }
@@ -92,7 +92,7 @@ def outFromIn(_params) {
       // Unless the output argument is explicitly specified on the CLI
       def newValue =
         (it.value == "viash_no_value")
-          ? "convert_h5ad_to_seurat." + it.name + "." + extOrName
+          ? "convert_h5mu_to_seurat." + it.name + "." + extOrName
           : it.value
       def newName =
         (id != "")
@@ -158,7 +158,7 @@ def overrideIO(_params, inputs, outputs) {
 
 }
 
-process convert_h5ad_to_seurat_process {
+process convert_h5mu_to_seurat_process {
   tag "${id}"
   echo { (params.debug == true) ? true : false }
   stageInMode "symlink"
@@ -185,7 +185,7 @@ process convert_h5ad_to_seurat_process {
       export VIASH_TEMP="${viash_temp}"
       # Adding NXF's `$moduleDir` to the path in order to resolve our own wrappers
       export PATH="./:${moduleDir}:\$PATH"
-      ./${params.convert_h5ad_to_seurat.tests.testScript} | tee $output
+      ./${params.convert_h5mu_to_seurat.tests.testScript} | tee $output
       """
     else
       """
@@ -200,14 +200,14 @@ process convert_h5ad_to_seurat_process {
       """
 }
 
-workflow convert_h5ad_to_seurat {
+workflow convert_h5mu_to_seurat {
 
   take:
   id_input_params_
 
   main:
 
-  def key = "convert_h5ad_to_seurat"
+  def key = "convert_h5mu_to_seurat"
 
   def id_input_output_function_cli_params_ =
     id_input_params_.map{ id, input, _params ->
@@ -252,7 +252,7 @@ workflow convert_h5ad_to_seurat {
       )
     }
 
-  result_ = convert_h5ad_to_seurat_process(id_input_output_function_cli_params_)
+  result_ = convert_h5mu_to_seurat_process(id_input_output_function_cli_params_)
     | join(id_input_params_)
     | map{ id, output, _params, input, original_params ->
         def parsedOutput = _params.arguments
@@ -280,7 +280,7 @@ workflow convert_h5ad_to_seurat {
 
 workflow {
   def id = params.id
-  def fname = "convert_h5ad_to_seurat"
+  def fname = "convert_h5mu_to_seurat"
 
   def _params = params
 
@@ -292,14 +292,14 @@ workflow {
     }
   }
 
-  def inputFiles = params.convert_h5ad_to_seurat
+  def inputFiles = params.convert_h5mu_to_seurat
     .arguments
     .findAll{ key, par -> par.type == "file" && par.direction == "Input" }
     .collectEntries{ key, par -> [(par.name): file(params[fname].arguments[par.name].value) ] }
 
   def ch_ = Channel.from("").map{ s -> new Tuple3(id, inputFiles, params)}
 
-  result = convert_h5ad_to_seurat(ch_)
+  result = convert_h5mu_to_seurat(ch_)
   result.view{ it[1] }
 }
 
@@ -312,17 +312,17 @@ workflow test {
 
   main:
   params.test = true
-  params.convert_h5ad_to_seurat.output = "convert_h5ad_to_seurat.log"
+  params.convert_h5mu_to_seurat.output = "convert_h5mu_to_seurat.log"
 
   Channel.from(rootDir) \
-    | filter { params.convert_h5ad_to_seurat.tests.isDefined } \
+    | filter { params.convert_h5mu_to_seurat.tests.isDefined } \
     | map{ p -> new Tuple3(
         "tests",
-        params.convert_h5ad_to_seurat.tests.testResources.collect{ file( p + it ) },
+        params.convert_h5mu_to_seurat.tests.testResources.collect{ file( p + it ) },
         params
     )} \
-    | convert_h5ad_to_seurat
+    | convert_h5mu_to_seurat
 
   emit:
-  convert_h5ad_to_seurat.out
+  convert_h5mu_to_seurat.out
 }
