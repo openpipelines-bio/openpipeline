@@ -25,17 +25,25 @@ wget http://bd-rhapsody-public.s3.amazonaws.com/Rhapsody-WTA-test-data/sample_R2
 wget http://bd-rhapsody-public.s3.amazonaws.com/Rhapsody-WTA/GRCh38-PhiX-gencodev29/GRCh38-PhiX-gencodev29-20181205.tar.gz -O "$raw_dir/GRCh38-PhiX-gencodev29-20181205.tar.gz"
 wget http://bd-rhapsody-public.s3.amazonaws.com/Rhapsody-WTA/GRCh38-PhiX-gencodev29/gencodev29-20181205.gtf -O "$raw_dir/gencodev29-20181205.gtf"
 
+# create csvs
+cat > "$raw_dir/input.csv" << HERE
+id,input
+sample_RSEC,sample_R*_.fastq.gz
+HERE
+
+cat > "$raw_dir/input_remote.csv" << HERE
+id,input
+sample_RSEC,http://bd-rhapsody-public.s3.amazonaws.com/Rhapsody-WTA-test-data/sample_R1_.fastq.gz;http://bd-rhapsody-public.s3.amazonaws.com/Rhapsody-WTA-test-data/sample_R2_.fastq.gz
+HERE
+
 # process raw files
 processed_dir="$OUT/processed"
 mkdir -p "$processed_dir"
 
 nextflow \
-  run https://github.com/openpipelines-bio/openpipeline.git \
-  -r efb8e944180651045c74e58bba0efec048db4c6b \
+  run . \
   -main-script workflows/1_ingestion/bd_rhapsody_wta/main.nf \
-  -entry single_wf \
-  --id "sample_RSEC" \
-  --input "$raw_dir/*.fastq.gz" \
+  --csv "$raw_dir/input.csv" \
   --reference_genome "$raw_dir/GRCh38-PhiX-gencodev29-20181205.tar.gz" \
   --transcriptome_annotation "$raw_dir/gencodev29-20181205.gtf" \
   --output "$processed_dir" \
