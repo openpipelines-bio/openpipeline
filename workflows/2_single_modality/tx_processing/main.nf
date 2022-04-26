@@ -16,7 +16,7 @@ include { umap } from targetDir + '/dimred/umap/main.nf' params(params)
 include { leiden } from targetDir + '/cluster/leiden/main.nf' params(params)
 
 include { publish } from targetDir + "/transfer/publish/main.nf" params(params)
-include { overrideOptionValue; has_param; check_required_param } from workflowDir + "/utils/utils.nf" params(params)
+include { getChild; overrideOptionValue; has_param; check_required_param } from workflowDir + "/utils/utils.nf" params(params)
 
 
 workflow {
@@ -45,8 +45,7 @@ Parameters (Batch mode):
   
   check_required_param("output", "where output files will be published")
 
-  def multirun = has_param("csv")
-  if (multirun) {
+  if (has_param("csv")) {
     input_ch = Channel.fromPath(params.csv)
       | splitCsv(header: true, sep: ",")
   } else {
@@ -57,9 +56,11 @@ Parameters (Batch mode):
     | map { li ->
       // process input
       if (li.containsKey("input") && li.input) {
-        input_path = li.input.split(";").collect { path -> file(path) }.flatten()
+        input_path = li.input.split(";").collect { path -> 
+          file(has_param("csv") ? getChild(params.csv, path) : path)
+        }.flatten()
       } else {
-        exit 1, multirun ? 
+        exit 1, has_param("csv") ? 
           "ERROR: The provided csv file should contain an 'input' column" : 
           "ERROR: Please specify an '--input' parameter"
       }
@@ -67,7 +68,7 @@ Parameters (Batch mode):
       // process id
       if (li.containsKey("id") && li.id) {
         id_value = li.id
-      } else if (!multirun) {
+      } else if (!has_param("csv")) {
         id_value = "run"
       } else {
         exit 1, "ERROR: The provided csv file should contain an 'id' column"
@@ -141,7 +142,7 @@ workflow test_wf {
     | run_wf
     | view { output ->
       assert output.size() == 3 : "outputs should contain three elements; [id, file, params]"
-      assert output[1].toString().endsWith(".h5mu") : "Output file should be a h5mu file. Found: ${output_list[0][1]}"
+      assert output[1].toString().endsWith(".h5mu") : "Output file should be a h5mu file. Found: ${output_list[1]}"
       "Output: [${output[0]}, ${output[1]}, params]"
     }
     | toList()
