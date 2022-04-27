@@ -4,7 +4,7 @@ workflowDir = params.rootDir + "/workflows"
 targetDir = params.rootDir + "/target/nextflow"
 
 include { bd_rhapsody_wta } from  targetDir + "/mapping/bd_rhapsody_wta/main.nf" params(params)
-include { convert_bdrhap_to_h5ad } from  targetDir + "/convert/convert_bdrhap_to_h5ad/main.nf" params(params)
+include { from_bdrhap_to_h5ad } from  targetDir + "/convert/from_bdrhap_to_h5ad/main.nf" params(params)
 
 include { publish } from targetDir + "/transfer/publish/main.nf" params(params)
 include { getChild; overrideOptionValue; has_param; check_required_param } from workflowDir + "/utils/utils.nf" params(params)
@@ -145,7 +145,7 @@ workflow run_wf {
     // Step 4: convert to h5ad
     | map { id, input -> [ id, input, params ]}
     | view { "converting_to_h5ad: [${it[0]}, ${it[1]}]" }
-    | convert_bdrhap_to_h5ad
+    | from_bdrhap_to_h5ad
 
   emit:
   output_ch

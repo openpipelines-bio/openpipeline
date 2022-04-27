@@ -1,0 +1,40 @@
+functionality:
+  name: "from_10xtmx_to_h5mu"
+  namespace: "convert"
+  version: "dev"
+  description: |
+    Converts a 10x mtx into an h5mu file.
+  authors:
+    - name: Robrecht Cannoodt
+      email: rcannood@gmail.com
+      roles: [ maintainer ]
+      props: { github: rcannood, orcid: "0000-0003-3641-729X" }
+  arguments:
+    - name: "--input"
+      alternatives: ["-i"]
+      type: file
+      description: Input mtx folder
+      example: input_dir_containing_gz_files
+      direction: input
+      required: true
+    - name: "--output"
+      alternatives: ["-o"]
+      type: file
+      description: Output h5mu file.
+      example: output.h5mu
+      direction: output
+  resources:
+    - type: python_script
+      path: script.py
+  tests:
+    - type: python_script
+      path: run_test.py
+    - path: ../../../resources_test/pbmc_1k_protein_v3
+platforms:
+  - type: docker
+    image: python:3.8
+    setup:
+      - type: python
+        packages: [ muon ]
+  - type: nextflow
+
