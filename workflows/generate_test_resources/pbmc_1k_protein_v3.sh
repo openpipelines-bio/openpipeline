@@ -30,7 +30,7 @@ tar -xvf "${OUT}_filtered_feature_bc_matrix.tar.gz" \
   --strip-components 1
 rm "${OUT}_filtered_feature_bc_matrix.tar.gz"
 
-target/docker/convert/convert_10x_h5_to_h5mu/convert_10x_h5_to_h5mu \
+target/docker/convert/from_10xh5_to_h5mu/from_10xh5_to_h5mu \
   --input "${OUT}_filtered_feature_bc_matrix.h5" \
   --output "${OUT}_filtered_feature_bc_matrix.h5mu"
 

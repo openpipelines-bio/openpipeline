@@ -21,7 +21,7 @@ nextflow \
 nextflow \
   run . \
   -main-script workflows/1_ingestion/conversion/main.nf \
-  --input_type 10x_h5 \
+  --input_type 10xh5 \
   --input ./resources_test/pbmc_1k_protein_v3_filtered_feature_bc_matrix.h5 \
   --output output/ \
   -resume \

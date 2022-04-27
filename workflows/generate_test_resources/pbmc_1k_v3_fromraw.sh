@@ -36,7 +36,7 @@ target/docker/mapping/cellranger_count/cellranger_count \
   --output "$TMPDIR/output"
 
 # convert
-target/docker/convert/convert_10x_h5_to_h5mu/convert_10x_h5_to_h5mu \
+target/docker/convert/from_10xh5_to_h5mu/from_10xh5_to_h5mu \
   --input "$TMPDIR/output/filtered_feature_bc_matrix.h5" \
   --output "$TMPDIR/pbmc_1k_v3.h5mu"
 
