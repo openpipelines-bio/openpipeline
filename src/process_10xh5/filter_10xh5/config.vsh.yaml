@@ -1,11 +1,11 @@
 functionality:
-  name: filter_10x_h5
-  namespace: "process_10x_h5"
+  name: filter_10xh5
+  namespace: "process_10xh5"
   version: "dev"
   description: |
     Filter a 10x h5 dataset.
   usage: | 
-    filter_10x_h5 \
+    filter_10xh5 \
       --input pbmc_1k_protein_v3_raw_feature_bc_matrix.h5 \
       --output pbmc_1k_protein_v3_raw_feature_bc_matrix_filtered.h5 \
       --min_library_size 1000 --min_cells_per_gene 300
