@@ -1,12 +1,12 @@
 
 
 ./$meta_functionality_name \
-  --input https://raw.githubusercontent.com/scala/scala/2.13.x/NOTICE \
-  --output NOTICE
+  --input s3://openpipelines-data/pbmc_1k_protein_v3 \
+  --output foo
 
-[ ! -f NOTICE ] && echo Output file could not be found && exit 1
+[ ! -f foo/pbmc_1k_protein_v3_metrics_summary.csv ] && echo Output file could not be found && exit 1
 
-if ! grep -q 'Licensed under the Apache License' NOTICE; then
+if ! grep -q 'Estimated Number of Cells' foo/pbmc_1k_protein_v3_metrics_summary.csv; then
   echo Could not find content
   exit 1
 fi
