@@ -1,9 +1,9 @@
 functionality:
-  name: "convert_10x_mtx_to_h5mu"
+  name: "from_10xh5_to_h5ad"
   namespace: "convert"
   version: "dev"
   description: |
-    Converts a 10x mtx into an h5mu file.
+    Converts a 10x h5 into an h5ad file.
   authors:
     - name: Robrecht Cannoodt
       email: rcannood@gmail.com
@@ -13,16 +13,19 @@ functionality:
     - name: "--input"
       alternatives: ["-i"]
       type: file
-      description: Input mtx folder
-      example: input_dir_containing_gz_files
+      description: Input h5 file
+      example: input.h5
       direction: input
       required: true
     - name: "--output"
       alternatives: ["-o"]
       type: file
-      description: Output h5mu file.
-      example: output.h5mu
+      description: Output h5ad file.
+      example: output.h5ad
       direction: output
+    - name: "--gex_only"
+      type: boolean_true
+      description: Only keep 'Gene Expression' data and ignore other feature types, e.g. 'Antibody Capture', 'CRISPR Guide Capture', or 'Custom'.
   resources:
     - type: python_script
       path: script.py
@@ -35,6 +38,5 @@ platforms:
     image: python:3.8
     setup:
       - type: python
-        packages: [ muon ]
+        packages: scanpy
   - type: nextflow
-

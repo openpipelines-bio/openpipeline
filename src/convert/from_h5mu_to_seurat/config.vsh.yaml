@@ -1,5 +1,5 @@
 functionality:
-  name: "convert_h5mu_to_seurat"
+  name: "from_h5mu_to_seurat"
   namespace: "convert"
   version: "dev"
   description: |

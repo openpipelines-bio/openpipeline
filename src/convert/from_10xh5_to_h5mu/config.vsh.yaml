@@ -1,5 +1,5 @@
 functionality:
-  name: "convert_10x_h5_to_h5mu"
+  name: "from_10xh5_to_h5mu"
   namespace: "convert"
   version: "dev"
   description: |

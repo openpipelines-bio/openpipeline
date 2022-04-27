@@ -1,5 +1,5 @@
 functionality:
-  name: convert_h5ad_to_h5mu
+  name: from_h5ad_to_h5mu
   namespace: "convert"
   version: "dev"
   description: |
@@ -17,6 +17,11 @@ functionality:
       default: input.h5ad
       direction: input
       required: true
+    - name: "--modality"
+      type: string
+      multiple: true
+      default: "rna"
+      required: false
     - name: "--output"
       alternatives: ["-o"]
       type: file

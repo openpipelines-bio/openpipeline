@@ -5,6 +5,7 @@ import json
 ## VIASH START
 par = {
     "input": "resources_test/pbmc_1k_protein_v3/pbmc_1k_protein_v3_filtered_feature_bc_matrix.h5ad",
+    "modality": "rna",
     "output": "output.h5mu",
     "compression": "gzip",
     "conversions_obsm": '{"counts_antibody":"prot", "counts_custom": "custom"}',
@@ -20,12 +21,12 @@ except:
     pass
 
 print("Converting ")
-muon = mu.MuData({"rna": data})
+muon = mu.MuData({par["rna"]: data})
 
-for key, value in json.loads(par["conversions_obsm"]).items():
-    if key in data.obsm:
-        muon.mod[value] = anndata.AnnData(data.obsm[key])
-        del muon["rna"].obsm[key]
+for source, target in json.loads(par["conversions_obsm"]).items():
+    if source in data.obsm:
+        muon.mod[target] = anndata.AnnData(data.obsm[source])
+        del muon[par["rna"]].obsm[source]
 
-print("Writing".par["output"])
-muon.write_h5mu(par["output"], compression=par["compression"])
+print(f"Writing {par['output']}")
+muon.write_h5mu(par["output"])

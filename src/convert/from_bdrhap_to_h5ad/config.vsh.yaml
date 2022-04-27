@@ -1,5 +1,5 @@
 functionality:
-  name: "convert_bdrhap_to_h5ad"
+  name: "from_bdrhap_to_h5ad"
   namespace: "convert"
   version: "dev"
   description: |
