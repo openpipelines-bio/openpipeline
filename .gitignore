@@ -32,6 +32,4 @@ check_results/
 out/
 output/
 output_log/
-resources/test/
-resources_test/
-old_resources
+resources_test
