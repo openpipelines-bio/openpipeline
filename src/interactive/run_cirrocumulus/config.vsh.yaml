@@ -3,36 +3,36 @@ functionality:
   namespace: interactive
   version: 1.0
   description: ""
-  resources:
-  - type: bash_script
-    path: script.sh
   arguments:
-  - name: "--input"
-    alternatives: ["-i"]
-    type: file
-    description: Directory to mount
-    direction: input
-    default: ./
-  - name: "--port"
-    alternatives: ["-p"]
-    type: string
-    description: Port to use
-    default: "5005"
-  tests:
+    - name: "--input"
+      alternatives: ["-i"]
+      type: file
+      description: Directory to mount
+      direction: input
+      default: ./
+    - name: "--port"
+      alternatives: ["-p"]
+      type: string
+      description: Port to use
+      default: "5005"
+  resources:
     - type: bash_script
-      path: run_test.sh
+      path: script.sh
+  # tests:
+  #   - type: bash_script
+  #     path: run_test.sh
 platforms:
-- type: docker
-  image: ubuntu:bionic
-  run_args:
-    - "-p $VIASH_PAR_PORT:$VIASH_PAR_PORT"
-  setup:
-    - type: docker
-      env:
-        - LC_ALL=C.UTF-8
-        - LANG=C.UTF-8
-      run:
-        - apt-get update
-        - apt-get install -y build-essential libxml2-dev python3-dev python3-pip zlib1g-dev python3-requests python3-aiohttp
-        - python3 -m pip install --upgrade pip
-        - pip3 install cirrocumulus
+  - type: docker
+    image: ubuntu:bionic
+    run_args:
+      - "-p $VIASH_PAR_PORT:$VIASH_PAR_PORT"
+    setup:
+      - type: docker
+        env:
+          - LC_ALL=C.UTF-8
+          - LANG=C.UTF-8
+        run:
+          - apt-get update
+          - apt-get install -y build-essential libxml2-dev python3-dev python3-pip zlib1g-dev python3-requests python3-aiohttp
+          - python3 -m pip install --upgrade pip
+          - pip3 install cirrocumulus

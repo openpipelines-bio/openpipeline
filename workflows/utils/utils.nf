@@ -82,3 +82,11 @@ def check_required_param(name, description) {
     exit 1, "ERROR: Please provide a --{name} parameter {description}"
   }
 }
+
+def getChild(parent, child) {
+  if (child.contains("://") || java.nio.file.Paths.get(child).isAbsolute()) {
+    child
+  } else {
+    parent.replaceAll('/[^/]*$', "/") + child
+  }
+}

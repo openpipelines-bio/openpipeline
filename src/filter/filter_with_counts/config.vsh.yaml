@@ -103,4 +103,5 @@ platforms:
         packages:
           - scanpy
           - muon
+          - anndata<0.8
   - type: nextflow
