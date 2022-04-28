@@ -301,18 +301,12 @@ functionality:
       
       ## VIASH END
       
-      # We can have dirs in the output parameter
-      # Let's cope with those...
-      
-      if [[ ! \$(dirname "ddd/aaa") == "." ]]; then
-        dirs=\$(dirname \$par_output)
-        f=\$(basename \$par_output)
-        mkdir -p \$dirs
-      else
-        f=\$par_output
+      parent=\`dirname "\$par_output"\`
+      if [[ ! -d "\$parent" ]]; then
+        mkdir -p "\$parent"
       fi
       
-      cp "\$par_input" "\$par_output"
+      cp -r "\$par_input" "\$par_output"
       VIASHMAIN
       bash "\$tempscript" &
       wait "\$!"
@@ -710,5 +704,5 @@ info:
   output: "target/nextflow/transfer/publish"
   executable: "target/nextflow/transfer/publish/publish"
   viash_version: "0.5.10.1"
-  git_commit: "1c1e866c58d760aaf8550a9440ed51ed1d9931fb"
+  git_commit: "f0e0d3a108b14562bd205ee57cd3511134207b12"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"

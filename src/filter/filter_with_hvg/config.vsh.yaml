@@ -116,7 +116,7 @@ platforms:
     image: python:3.8
     python:
       packages:
-        - anndata
+        - anndata<0.8
         - scanpy
         - muon
   - type: nextflow

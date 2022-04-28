@@ -374,7 +374,7 @@ LABEL authors="Dries De Maeyer <DDeMaey1@its.jnj.com> (maintainer) {account: dde
 LABEL org.opencontainers.image.description="Companion container for running component report mermaid"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
 RUN pip install --upgrade pip && \
-  pip install --no-cache-dir "scanpy" "requests"
+  pip install --no-cache-dir "scanpy" "requests" "anndata<0.8"
 
 VIASHDOCKER
 }

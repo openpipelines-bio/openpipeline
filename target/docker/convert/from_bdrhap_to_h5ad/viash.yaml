@@ -418,12 +418,17 @@ functionality:
       #   ViashDockerFile
       function ViashDockerfile {
         cat << 'VIASHDOCKER'
-      FROM dataintuitive/randpy:r4.0_py3.8_bioc3.12
+      FROM ghcr.io/data-intuitive/randpy:r4.0_py3.8
       
       LABEL authors="Robrecht Cannoodt <rcannood@gmail.com> (maintainer) {github: rcannood, orcid: 0000-0003-3641-729X}"
       LABEL org.opencontainers.image.description="Companion container for running component convert from_bdrhap_to_h5ad"
       LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-      RUN :
+      RUN pip install --upgrade pip && \
+        pip install --no-cache-dir "anndata<0.8"
+      
+      RUN Rscript -e 'if (!requireNamespace("remotes", quietly = TRUE)) install.packages("remotes")' && \
+        Rscript -e 'remotes::install_cran(c("anndata"), repos = "https://cran.rstudio.com")'
+      
       VIASHDOCKER
       }
       
@@ -800,7 +805,7 @@ functionality:
       })
       
       obs <- map_df(seq_along(counts), function(i) {
-        cell_index = rownames(counts[[i]])
+        cell_index <- rownames(counts[[i]])
         data.frame(
           row.names = paste0("sample", i, "_", cell_index),
           id = rep(ids[[i]], length(cell_index))
@@ -904,7 +909,12 @@ functionality:
     dest: "from_bdrhap_to_h5ad"
     is_executable: true
   description: "Create a h5ad file from BD Rhapsody output.\n"
-  tests: []
+  tests:
+  - type: "python_script"
+    path: "run_test.py"
+    is_executable: true
+  - type: "file"
+    path: "../../../resources_test/bd_rhapsody_wta_test"
   info: {}
   dummy_arguments: []
   set_wd_to_resources_dir: false
@@ -912,7 +922,7 @@ functionality:
 platform:
   type: "docker"
   id: "docker"
-  image: "dataintuitive/randpy:r4.0_py3.8_bioc3.12"
+  image: "ghcr.io/data-intuitive/randpy:r4.0_py3.8"
   target_organization: "openpipelines-bio"
   target_registry: "ghcr.io"
   namespace_separator: "_"
@@ -923,7 +933,33 @@ platform:
   privileged: false
   run_args: []
   target_image_source: "https://github.com/openpipelines-bio/openpipeline"
-  setup: []
+  setup:
+  - type: "python"
+    user: false
+    packages: []
+    pip:
+    - "anndata<0.8"
+    git: []
+    github: []
+    gitlab: []
+    mercurial: []
+    svn: []
+    bazaar: []
+    url: []
+    script: []
+  - type: "r"
+    packages: []
+    cran:
+    - "anndata"
+    bioc: []
+    git: []
+    github: []
+    gitlab: []
+    bitbucket: []
+    svn: []
+    url: []
+    script: []
+    bioc_force_install: false
 platforms: []
 info:
   config: "src/convert/from_bdrhap_to_h5ad/config.vsh.yaml"
@@ -931,5 +967,5 @@ info:
   output: "target/docker/convert/from_bdrhap_to_h5ad"
   executable: "target/docker/convert/from_bdrhap_to_h5ad/from_bdrhap_to_h5ad"
   viash_version: "0.5.10.1"
-  git_commit: "1c1e866c58d760aaf8550a9440ed51ed1d9931fb"
+  git_commit: "f0e0d3a108b14562bd205ee57cd3511134207b12"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"

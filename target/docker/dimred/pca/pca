@@ -389,7 +389,7 @@ LABEL authors="Dries De Maeyer <ddemaeyer@gmail.com> (maintainer) {account: ddem
 LABEL org.opencontainers.image.description="Companion container for running component dimred pca"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
 RUN pip install --upgrade pip && \
-  pip install --no-cache-dir "scanpy" "muon"
+  pip install --no-cache-dir "scanpy" "muon" "anndata<0.8"
 
 VIASHDOCKER
 }

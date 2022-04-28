@@ -637,7 +637,7 @@ functionality:
       LABEL org.opencontainers.image.description="Companion container for running component filter filter_with_hvg"
       LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
       RUN pip install --upgrade pip && \
-        pip install --no-cache-dir "anndata" "scanpy" "muon"
+        pip install --no-cache-dir "anndata<0.8" "scanpy" "muon"
       
       VIASHDOCKER
       }
@@ -1182,7 +1182,7 @@ platform:
   python:
     user: false
     packages:
-    - "anndata"
+    - "anndata<0.8"
     - "scanpy"
     - "muon"
     pip: []
@@ -1202,5 +1202,5 @@ info:
   output: "target/docker/filter/filter_with_hvg"
   executable: "target/docker/filter/filter_with_hvg/filter_with_hvg"
   viash_version: "0.5.10.1"
-  git_commit: "1c1e866c58d760aaf8550a9440ed51ed1d9931fb"
+  git_commit: "f0e0d3a108b14562bd205ee57cd3511134207b12"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"

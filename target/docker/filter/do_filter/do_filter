@@ -389,7 +389,7 @@ LABEL authors="Robrecht Cannoodt <rcannood@gmail.com> (maintainer, contributor) 
 LABEL org.opencontainers.image.description="Companion container for running component filter do_filter"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
 RUN pip install --upgrade pip && \
-  pip install --no-cache-dir "muon"
+  pip install --no-cache-dir "muon" "anndata<0.8"
 
 VIASHDOCKER
 }

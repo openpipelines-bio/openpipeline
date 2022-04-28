@@ -1,14 +1,8 @@
 ## VIASH START
 par <- list(
-  input = c(
-    "output/64300535HPB1003_S10_rep1_lane2/",
-    "output/64300535HPB1003_S10_rep1_lane1/"
-  ),
-  id = c(
-    "64300535HPB1003_S10_rep1_lane2",
-    "64300535HPB1003_S10_rep1_lane1"
-  ),
-  output = "/home/rcannood/test.h5ad"
+  input = "resources_test/bd_rhapsody_wta_test/processed/bdrhap_out",
+  id = "foo",
+  output = "test.h5ad"
 )
 ## VIASH END
 
@@ -57,7 +51,7 @@ counts <- lapply(par$input, function(dir) {
 })
 
 obs <- map_df(seq_along(counts), function(i) {
-  cell_index = rownames(counts[[i]])
+  cell_index <- rownames(counts[[i]])
   data.frame(
     row.names = paste0("sample", i, "_", cell_index),
     id = rep(ids[[i]], length(cell_index))

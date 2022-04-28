@@ -369,7 +369,7 @@ LABEL authors="Robrecht Cannoodt <rcannood@gmail.com> (maintainer) {github: rcan
 LABEL org.opencontainers.image.description="Companion container for running component convert from_10xtmx_to_h5mu"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
 RUN pip install --upgrade pip && \
-  pip install --no-cache-dir "muon"
+  pip install --no-cache-dir "muon" "anndata<0.8"
 
 VIASHDOCKER
 }

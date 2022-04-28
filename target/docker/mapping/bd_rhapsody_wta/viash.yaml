@@ -1165,7 +1165,12 @@ functionality:
     \ reference_genome and transcriptome_annotation files can be downloaded from these\
     \ locations:\n  - Human: http://bd-rhapsody-public.s3-website-us-east-1.amazonaws.com/Rhapsody-WTA/GRCh38-PhiX-gencodev29/\n\
     \  - Mouse: http://bd-rhapsody-public.s3-website-us-east-1.amazonaws.com/Rhapsody-WTA/GRCm38-PhiX-gencodevM19/\n"
-  tests: []
+  tests:
+  - type: "bash_script"
+    path: "run_test.sh"
+    is_executable: true
+  - type: "file"
+    path: "../../../resources_test/bd_rhapsody_wta_test"
   info: {}
   dummy_arguments: []
   set_wd_to_resources_dir: false
@@ -1205,5 +1210,5 @@ info:
   output: "target/docker/mapping/bd_rhapsody_wta"
   executable: "target/docker/mapping/bd_rhapsody_wta/bd_rhapsody_wta"
   viash_version: "0.5.10.1"
-  git_commit: "1c1e866c58d760aaf8550a9440ed51ed1d9931fb"
+  git_commit: "f0e0d3a108b14562bd205ee57cd3511134207b12"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"

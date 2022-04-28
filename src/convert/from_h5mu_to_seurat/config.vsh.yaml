@@ -33,8 +33,12 @@ functionality:
     - path: ../../../resources_test/pbmc_1k_protein_v3
 platforms:
   - type: docker
-    image: dataintuitive/randpy:r4.0_py3.8_bioc3.12
-    setup:
+    image: ghcr.io/data-intuitive/randpy:r4.0_py3.8
+    setup: 
+      - type: python
+        pip: anndata<0.8
+      - type: r
+        cran: anndata
       - type: r
         github: pmbio/MuDataSeurat
   - type: nextflow

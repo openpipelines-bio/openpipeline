@@ -72,25 +72,19 @@ functionality:
     - type: bash_script
       path: script.sh
     - path: rhapsody_wta_1.9.1_nodocker.cwl
-  # Comment by Robrecht: I'm trying to create smaller references, but I didn't manage to create one which works with the Rhapsody pipeline
-  # tests:
-  #   - type: bash_script
-  #     path: run_test.sh
-  #   - path: http://bd-rhapsody-public.s3.amazonaws.com/Rhapsody-WTA-test-data/sample_R1_.fastq.gz # 100MB
-  #   - path: http://bd-rhapsody-public.s3.amazonaws.com/Rhapsody-WTA-test-data/sample_R2_.fastq.gz # 150MB
-  #   - path: http://bd-rhapsody-public.s3.amazonaws.com/Rhapsody-WTA/GRCh38-PhiX-gencodev29/GRCh38-PhiX-gencodev29-20181205.tar.gz # 29GB
-  #   - path: http://bd-rhapsody-public.s3.amazonaws.com/Rhapsody-WTA/GRCh38-PhiX-gencodev29/gencodev29-20181205.gtf # 1.1GB
+  tests:
+    - type: bash_script
+      path: run_test.sh
+    - path: ../../../resources_test/bd_rhapsody_wta_test
 platforms:
   - type: docker
     image: bdgenomics/rhapsody:1.9.1
     setup:
+      # workaround for debian buster
+      # https://stackoverflow.com/questions/68802802/repository-http-security-debian-org-debian-security-buster-updates-inrelease
       - type: docker
-        run:
-          # workaround for older repos
-          # https://stackoverflow.com/questions/68802802/repository-http-security-debian-org-debian-security-buster-updates-inrelease
-          - apt-get --allow-releaseinfo-change update
+        run: apt-get --allow-releaseinfo-change update
       - type: apt
-        packages:
-          - cwltool
+        packages: cwltool
   - type: nextflow
     labels: [ highmem, highcpu ]

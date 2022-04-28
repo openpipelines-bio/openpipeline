@@ -375,7 +375,7 @@ LABEL authors="Robrecht Cannoodt <rcannood@gmail.com> (maintainer) {github: rcan
 LABEL org.opencontainers.image.description="Companion container for running component convert from_10xh5_to_h5ad"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
 RUN pip install --upgrade pip && \
-  pip install --no-cache-dir "scanpy"
+  pip install --no-cache-dir "scanpy" "anndata<0.8"
 
 VIASHDOCKER
 }
