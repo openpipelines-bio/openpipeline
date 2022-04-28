@@ -8,7 +8,7 @@ params.publishDir = "./"
 def checkParams(_params) {
   _params.arguments.collect{
     if (it.value == "viash_no_value") {
-      println("[ERROR] option --${it.name} not specified in component from_10xtmx_to_h5mu")
+      println("[ERROR] option --${it.name} not specified in component from_10xmtx_to_h5mu")
       println("exiting now...")
         exit 1
     }
@@ -92,7 +92,7 @@ def outFromIn(_params) {
       // Unless the output argument is explicitly specified on the CLI
       def newValue =
         (it.value == "viash_no_value")
-          ? "from_10xtmx_to_h5mu." + it.name + "." + extOrName
+          ? "from_10xmtx_to_h5mu." + it.name + "." + extOrName
           : it.value
       def newName =
         (id != "")
@@ -158,7 +158,7 @@ def overrideIO(_params, inputs, outputs) {
 
 }
 
-process from_10xtmx_to_h5mu_process {
+process from_10xmtx_to_h5mu_process {
   tag "${id}"
   echo { (params.debug == true) ? true : false }
   stageInMode "symlink"
@@ -185,7 +185,7 @@ process from_10xtmx_to_h5mu_process {
       export VIASH_TEMP="${viash_temp}"
       # Adding NXF's `$moduleDir` to the path in order to resolve our own wrappers
       export PATH="./:${moduleDir}:\$PATH"
-      ./${params.from_10xtmx_to_h5mu.tests.testScript} | tee $output
+      ./${params.from_10xmtx_to_h5mu.tests.testScript} | tee $output
       """
     else
       """
@@ -200,14 +200,14 @@ process from_10xtmx_to_h5mu_process {
       """
 }
 
-workflow from_10xtmx_to_h5mu {
+workflow from_10xmtx_to_h5mu {
 
   take:
   id_input_params_
 
   main:
 
-  def key = "from_10xtmx_to_h5mu"
+  def key = "from_10xmtx_to_h5mu"
 
   def id_input_output_function_cli_params_ =
     id_input_params_.map{ id, input, _params ->
@@ -252,7 +252,7 @@ workflow from_10xtmx_to_h5mu {
       )
     }
 
-  result_ = from_10xtmx_to_h5mu_process(id_input_output_function_cli_params_)
+  result_ = from_10xmtx_to_h5mu_process(id_input_output_function_cli_params_)
     | join(id_input_params_)
     | map{ id, output, _params, input, original_params ->
         def parsedOutput = _params.arguments
@@ -280,7 +280,7 @@ workflow from_10xtmx_to_h5mu {
 
 workflow {
   def id = params.id
-  def fname = "from_10xtmx_to_h5mu"
+  def fname = "from_10xmtx_to_h5mu"
 
   def _params = params
 
@@ -292,14 +292,14 @@ workflow {
     }
   }
 
-  def inputFiles = params.from_10xtmx_to_h5mu
+  def inputFiles = params.from_10xmtx_to_h5mu
     .arguments
     .findAll{ key, par -> par.type == "file" && par.direction == "Input" }
     .collectEntries{ key, par -> [(par.name): file(params[fname].arguments[par.name].value) ] }
 
   def ch_ = Channel.from("").map{ s -> new Tuple3(id, inputFiles, params)}
 
-  result = from_10xtmx_to_h5mu(ch_)
+  result = from_10xmtx_to_h5mu(ch_)
   result.view{ it[1] }
 }
 
@@ -312,17 +312,17 @@ workflow test {
 
   main:
   params.test = true
-  params.from_10xtmx_to_h5mu.output = "from_10xtmx_to_h5mu.log"
+  params.from_10xmtx_to_h5mu.output = "from_10xmtx_to_h5mu.log"
 
   Channel.from(rootDir) \
-    | filter { params.from_10xtmx_to_h5mu.tests.isDefined } \
+    | filter { params.from_10xmtx_to_h5mu.tests.isDefined } \
     | map{ p -> new Tuple3(
         "tests",
-        params.from_10xtmx_to_h5mu.tests.testResources.collect{ file( p + it ) },
+        params.from_10xmtx_to_h5mu.tests.testResources.collect{ file( p + it ) },
         params
     )} \
-    | from_10xtmx_to_h5mu
+    | from_10xmtx_to_h5mu
 
   emit:
-  from_10xtmx_to_h5mu.out
+  from_10xmtx_to_h5mu.out
 }

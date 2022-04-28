@@ -368,11 +368,15 @@ FROM ghcr.io/data-intuitive/randpy:r4.0_py3.8
 LABEL authors="Robrecht Cannoodt <rcannood@gmail.com> (author, maintainer) {github: rcannood, orcid: 0000-0003-3641-729X}"
 LABEL org.opencontainers.image.description="Companion container for running component convert from_h5mu_to_seurat"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
+RUN apt-get update && \
+  DEBIAN_FRONTEND=noninteractive apt-get install -y libhdf5-dev && \
+  rm -rf /var/lib/apt/lists/*
+
 RUN pip install --upgrade pip && \
-  pip install --no-cache-dir "anndata<0.8"
+  pip install --no-cache-dir "scanpy" "anndata<0.8"
 
 RUN Rscript -e 'if (!requireNamespace("remotes", quietly = TRUE)) install.packages("remotes")' && \
-  Rscript -e 'remotes::install_cran(c("anndata"), repos = "https://cran.rstudio.com")'
+  Rscript -e 'remotes::install_cran(c("anndata", "hdf5r"), repos = "https://cran.rstudio.com")'
 
 RUN Rscript -e 'if (!requireNamespace("remotes", quietly = TRUE)) install.packages("remotes")' && \
   Rscript -e 'remotes::install_github(c("pmbio/MuDataSeurat"), repos = "https://cran.rstudio.com")'

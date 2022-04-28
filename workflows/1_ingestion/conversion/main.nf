@@ -4,7 +4,7 @@ workflowDir = params.rootDir + "/workflows"
 targetDir = params.rootDir + "/target/nextflow"
 
 include  { from_10x_to_h5mu }  from  targetDir + "/convert/from_10x_to_h5mu/main.nf"  params(params)
-include  { from_10xtmx_to_h5mu }  from  targetDir + "/convert/from_10xtmx_to_h5mu/main.nf"  params(params)
+include  { from_10xmtx_to_h5mu }  from  targetDir + "/convert/from_10xmtx_to_h5mu/main.nf"  params(params)
 
 include  { publish }                 from  targetDir + "/transfer/publish/main.nf"                params(params)
 include  { overrideOptionValue }     from  workflowDir + "/utils/utils.nf"                        params(params)
@@ -32,10 +32,10 @@ workflow {
                 | publish
             break
 
-        case "10xtmx":
+        case "10xmtx":
             Channel.fromPath(params.input)
                 | map { input -> [ input.name, input, params ]}
-                | from_10xtmx_to_h5mu
+                | from_10xmtx_to_h5mu
                 | map { overrideOptionValue(it, "publish", "output", "${params.output}/${it[0]}.h5mu") }
                 | publish
             break

@@ -12,7 +12,7 @@ nextflow drop https://github.com/openpipelines-bio/openpipeline.git
 
 nextflow \
   run https://github.com/openpipelines-bio/openpipeline.git \
-  -r main_build \
+  -r 0.3.0 \
   -main-script workflows/1_ingestion/bd_rhapsody_wta/main.nf \
   --id "sample_test" \
   --input "$PAR_INPUTS" \
