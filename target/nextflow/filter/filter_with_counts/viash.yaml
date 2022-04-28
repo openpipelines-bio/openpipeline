@@ -1250,5 +1250,5 @@ info:
   output: "target/nextflow/filter/filter_with_counts"
   executable: "target/nextflow/filter/filter_with_counts/filter_with_counts"
   viash_version: "0.5.10.1"
-  git_commit: "ca7feb07b78421de991fe26ad2839b54385956d1"
+  git_commit: "d49ae93d76c2011f9f897349cb5fc3678f168674"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"
