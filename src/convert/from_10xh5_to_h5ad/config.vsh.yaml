@@ -38,5 +38,5 @@ platforms:
     image: python:3.8
     setup:
       - type: python
-        packages: scanpy
+        packages: [ scanpy, anndata<0.8]
   - type: nextflow

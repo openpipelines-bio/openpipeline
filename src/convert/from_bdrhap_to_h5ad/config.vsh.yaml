@@ -41,7 +41,7 @@ platforms:
     image: ghcr.io/data-intuitive/randpy:r4.0_py3.8
     setup: 
       - type: python
-        pip: anndata
+        pip: anndata<0.8
       - type: r
         cran: anndata
   - type: nextflow

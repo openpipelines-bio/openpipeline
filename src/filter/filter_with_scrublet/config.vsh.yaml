@@ -115,5 +115,6 @@ platforms:
         - scanpy
         - scrublet
         - muon
+        - anndata<0.8
   - type: nextflow
     label: highcpu
