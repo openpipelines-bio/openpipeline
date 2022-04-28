@@ -5,15 +5,9 @@ par_input="input.txt"
 par_output="output.txt"
 ## VIASH END
 
-# We can have dirs in the output parameter
-# Let's cope with those...
-
-if [[ ! $(dirname "ddd/aaa") == "." ]]; then
-  dirs=$(dirname $par_output)
-  f=$(basename $par_output)
-  mkdir -p $dirs
-else
-  f=$par_output
+parent=`dirname "$par_output"`
+if [[ ! -d "$parent" ]]; then
+  mkdir -p "$parent"
 fi
 
-cp "$par_input" "$par_output"
+cp -r "$par_input" "$par_output"
