@@ -17,25 +17,18 @@ functionality:
       default: input.h5ad
       direction: input
       required: true
+      multiple: true
     - name: "--modality"
       type: string
-      multiple: true
       default: "rna"
       required: false
+      multiple: true
     - name: "--output"
       alternatives: ["-o"]
       type: file
       description: Output muon file.
       default: output.h5mu
       direction: output
-    - name: "--compression"
-      type: string
-      description: The compression format to be used on the final muon object.
-      default: "gzip"
-    - name: "--conversions_obsm"
-      type: string
-      description: Dict describing the conversions that have to be performed from the obsm slot.
-      default: '{"counts_antibody":"prot", "counts_custom": "custom"}'
   resources:
     - type: python_script
       path: script.py
@@ -48,6 +41,6 @@ platforms:
     image: python:3.8
     python:
       packages:
-        - anndata
+        - anndata<0.8
         - muon
   - type: nextflow
