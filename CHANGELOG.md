@@ -1,3 +1,12 @@
+# openpipeline 0.3.1
+
+## MINOR CHANGES
+
+* `download/download_file`: Switch base container from `ubuntu:22.04` to `bash:5.1` because `ubuntu:22.04`
+  was causing some edge case issues.
+
+* `mapping/bd_rhapsody_wta`: Set `--parallel` to true by default.
+
 # openpipeline 0.3.0
 
 * Add `tx_processing` pipeline with following components:
@@ -15,11 +24,11 @@
 
 # openpipeline 0.2.0
 
-## Functionality
+## NEW FUNCTIONALITY
 
 * Added `from_10x_to_h5ad` and `download_10x_dataset` components.
 
-## Minor changes
+## MINOR CHANGES
 * Workflow `bd_rhapsody_wta`: Minor change to workflow to allow for easy processing of multiple samples with a tsv.
 
 * Component `bd_rhapsody_wta`: Added more parameters, `--parallel` and `--timestamps`.

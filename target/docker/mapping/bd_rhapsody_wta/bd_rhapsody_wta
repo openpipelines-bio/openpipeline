@@ -205,8 +205,9 @@ function ViashHelp {
 
 
   echo "   --parallel"
-  echo "        type: boolean_true"
-  echo "        [experimental] Run jobs in parallel."
+  echo "        type: boolean"
+  echo "        default: true"
+  echo "        Run jobs in parallel."
   echo ""
 
 
@@ -663,7 +664,11 @@ while [[ $# -gt 0 ]]; do
             shift 1
             ;;
         --parallel)
-            VIASH_PAR_PARALLEL=true
+            VIASH_PAR_PARALLEL="$2"
+            shift 2
+            ;;
+        --parallel=*)
+            VIASH_PAR_PARALLEL=$(ViashRemoveFlags "$1")
             shift 1
             ;;
         --timestamps)
@@ -789,7 +794,7 @@ if [ -z "$VIASH_PAR_TRANSCRIPTOME_ANNOTATION" ]; then
   exit 1
 fi
 if [ -z "$VIASH_PAR_PARALLEL" ]; then
-  VIASH_PAR_PARALLEL="false"
+  VIASH_PAR_PARALLEL="true"
 fi
 if [ -z "$VIASH_PAR_TIMESTAMPS" ]; then
   VIASH_PAR_TIMESTAMPS="false"
