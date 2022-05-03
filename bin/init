@@ -10,7 +10,7 @@ curl -fsSL get.viash.io | bash -s -- \
   --registry ghcr.io \
   --organisation openpipelines-bio \
   --target_image_source https://github.com/openpipelines-bio/openpipeline \
-  --tag 0.5.10.1
+  --tag develop
 
 cd bin
 

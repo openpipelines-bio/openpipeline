@@ -56,5 +56,3 @@ platforms:
   - type: docker
     image: ghcr.io/data-intuitive/cellranger:6.1
   - type: nextflow
-    publish: true
-    per_id: false

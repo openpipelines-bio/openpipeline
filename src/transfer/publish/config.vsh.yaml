@@ -30,5 +30,3 @@ platforms:
   - type: docker
     image: ubuntu:bionic
   - type: nextflow
-    publish: true
-    per_id: false

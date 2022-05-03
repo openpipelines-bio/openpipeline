@@ -68,4 +68,5 @@ platforms:
         - hnswlib
         - muon
   - type: nextflow
-    label: highcpu
+    directives:
+      labels: highcpu
