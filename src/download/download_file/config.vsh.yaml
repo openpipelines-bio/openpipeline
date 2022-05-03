@@ -37,8 +37,8 @@ functionality:
       path: run_test.sh
 platforms:
   - type: docker
-    image: "ubuntu:22.04"
+    image: "bash:5.1"
     setup:
-      - type: apt
+      - type: apk
         packages: [ wget ]
   - type: nextflow
