@@ -1,15 +1,17 @@
            namespace        functionality             platform            test_name exit_code duration               result[0m
              cluster               leiden               docker                start                                        [0m
              convert  from_10xmtx_to_h5mu               docker                start                                        [0m
-[31m             convert  from_10xmtx_to_h5mu               docker     build_executable         1       21                ERROR[0m
+[31m             convert  from_10xmtx_to_h5mu               docker     build_executable         1       10                ERROR[0m
              convert   from_10xh5_to_h5mu               docker                start                                        [0m
-[31m             cluster               leiden               docker     build_executable         1       22                ERROR[0m
+[31m             cluster               leiden               docker     build_executable         1       10                ERROR[0m
               report              mermaid               docker                start                                        [0m
-[31m              report              mermaid               docker     build_executable         1       15                ERROR[0m
+[31m              report              mermaid               docker     build_executable         1        8                ERROR[0m
             download        download_file               docker                start                                        [0m
 [32m            download        download_file               docker     build_executable         0        0              SUCCESS[0m
 [32m            download        download_file               docker          run_test.sh         0        1              SUCCESS[0m
             download  sync_test_resources               docker                start                                        [0m
+[31m             convert   from_10xh5_to_h5mu               docker     build_executable         1       11                ERROR[0m
+             convert  from_bdrhap_to_h5ad               docker                start                                        [0m
 [32m            download  sync_test_resources               docker     build_executable         0        0              SUCCESS[0m
 [31m            download  sync_test_resources               docker          run_test.sh         1        2                ERROR[0m
              mapping     cellranger_count               docker                start                                        [0m
@@ -21,14 +23,12 @@
 [33m         interactive        run_cellxgene               docker                tests        -1        0              MISSING[0m
        process_10xh5         filter_10xh5               docker                start                                        [0m
               dimred                  pca               docker                start                                        [0m
-[31m             convert   from_10xh5_to_h5mu               docker     build_executable         1       22                ERROR[0m
-             convert  from_bdrhap_to_h5ad               docker                start                                        [0m
-[31m             convert  from_bdrhap_to_h5ad               docker     build_executable         1       11                ERROR[0m
-             convert   from_10xh5_to_h5ad               docker                start                                        [0m
-[31m              dimred                  pca               docker     build_executable         1       12                ERROR[0m
+[31m              dimred                  pca               docker     build_executable         1        8                ERROR[0m
            neighbors       find_neighbors               docker                start                                        [0m
+[31m             convert  from_bdrhap_to_h5ad               docker     build_executable         1       12                ERROR[0m
+             convert   from_10xh5_to_h5ad               docker                start                                        [0m
            transform      normalize_total               docker                start                                        [0m
            bcl_demux   cellranger_mkfastq               docker                start                                        [0m
-[31m           neighbors       find_neighbors               docker     build_executable         1       11                ERROR[0m
+[31m           neighbors       find_neighbors               docker     build_executable         1        7                ERROR[0m
            transform          regress_out               docker                start                                        [0m
 /home/runner/work/openpipeline/openpipeline/resources_test/bd_rhapsody_wta_test

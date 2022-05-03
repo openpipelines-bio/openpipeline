@@ -361,7 +361,7 @@ function ViashDockerSetup {
 #   ViashDockerFile
 function ViashDockerfile {
   cat << 'VIASHDOCKER'
-FROM ubuntu:bionic
+FROM bash:5.1
 
 LABEL authors="Toni Verbeiren (maintainer)"
 LABEL org.opencontainers.image.description="Companion container for running component transfer publish"

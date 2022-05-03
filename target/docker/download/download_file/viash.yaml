@@ -415,14 +415,12 @@ functionality:
       #   ViashDockerFile
       function ViashDockerfile {
         cat << 'VIASHDOCKER'
-      FROM ubuntu:22.04
+      FROM bash:5.1
       
       LABEL authors="Robrecht Cannoodt <rcannood@gmail.com> (maintainer) {github: rcannood, orcid: 0000-0003-3641-729X}"
       LABEL org.opencontainers.image.description="Companion container for running component download download_file"
       LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-      RUN apt-get update && \
-        DEBIAN_FRONTEND=noninteractive apt-get install -y wget && \
-        rm -rf /var/lib/apt/lists/*
+      RUN apk add --no-cache wget
       
       VIASHDOCKER
       }
@@ -739,7 +737,7 @@ functionality:
 platform:
   type: "docker"
   id: "docker"
-  image: "ubuntu:22.04"
+  image: "bash:5.1"
   target_organization: "openpipelines-bio"
   target_registry: "ghcr.io"
   namespace_separator: "_"
@@ -751,10 +749,9 @@ platform:
   run_args: []
   target_image_source: "https://github.com/openpipelines-bio/openpipeline"
   setup:
-  - type: "apt"
+  - type: "apk"
     packages:
     - "wget"
-    interactive: false
 platforms: []
 info:
   config: "src/download/download_file/config.vsh.yaml"
@@ -762,5 +759,5 @@ info:
   output: "target/docker/download/download_file"
   executable: "target/docker/download/download_file/download_file"
   viash_version: "0.5.10.1"
-  git_commit: "a86ae3aefa9ebdf153467ffed15e8e18d1bbcf56"
+  git_commit: "aed13ee356d565bda3046e9f51b50648aee431c8"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"

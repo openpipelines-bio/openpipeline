@@ -870,5 +870,5 @@ info:
   output: "target/docker/dimred/pca"
   executable: "target/docker/dimred/pca/pca"
   viash_version: "0.5.10.1"
-  git_commit: "a86ae3aefa9ebdf153467ffed15e8e18d1bbcf56"
+  git_commit: "aed13ee356d565bda3046e9f51b50648aee431c8"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"

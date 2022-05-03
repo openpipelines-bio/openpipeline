@@ -394,7 +394,7 @@ functionality:
       #   ViashDockerFile
       function ViashDockerfile {
         cat << 'VIASHDOCKER'
-      FROM ubuntu:bionic
+      FROM bash:5.1
       
       LABEL authors="Toni Verbeiren (maintainer)"
       LABEL org.opencontainers.image.description="Companion container for running component transfer publish"
@@ -714,7 +714,7 @@ functionality:
 platform:
   type: "docker"
   id: "docker"
-  image: "ubuntu:bionic"
+  image: "bash:5.1"
   target_organization: "openpipelines-bio"
   target_registry: "ghcr.io"
   namespace_separator: "_"
@@ -733,5 +733,5 @@ info:
   output: "target/docker/transfer/publish"
   executable: "target/docker/transfer/publish/publish"
   viash_version: "0.5.10.1"
-  git_commit: "a86ae3aefa9ebdf153467ffed15e8e18d1bbcf56"
+  git_commit: "aed13ee356d565bda3046e9f51b50648aee431c8"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"

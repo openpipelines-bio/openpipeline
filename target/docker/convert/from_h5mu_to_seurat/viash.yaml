@@ -805,5 +805,5 @@ info:
   output: "target/docker/convert/from_h5mu_to_seurat"
   executable: "target/docker/convert/from_h5mu_to_seurat/from_h5mu_to_seurat"
   viash_version: "0.5.10.1"
-  git_commit: "a86ae3aefa9ebdf153467ffed15e8e18d1bbcf56"
+  git_commit: "aed13ee356d565bda3046e9f51b50648aee431c8"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"

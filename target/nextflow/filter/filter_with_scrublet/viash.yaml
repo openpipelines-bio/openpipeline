@@ -1168,5 +1168,5 @@ info:
   output: "target/nextflow/filter/filter_with_scrublet"
   executable: "target/nextflow/filter/filter_with_scrublet/filter_with_scrublet"
   viash_version: "0.5.10.1"
-  git_commit: "a86ae3aefa9ebdf153467ffed15e8e18d1bbcf56"
+  git_commit: "aed13ee356d565bda3046e9f51b50648aee431c8"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"
