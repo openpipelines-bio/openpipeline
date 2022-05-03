@@ -69,4 +69,4 @@ platforms:
         - muon
   - type: nextflow
     directives:
-      labels: highcpu
+      label: highcpu

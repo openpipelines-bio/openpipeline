@@ -61,4 +61,4 @@ platforms:
         - anndata<0.8
   - type: nextflow
     directives:
-      labels: highcpu
+      label: highcpu
