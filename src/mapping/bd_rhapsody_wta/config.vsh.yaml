@@ -51,8 +51,9 @@ functionality:
       type: boolean
       description: "Disable Refined Putative Cell Calling - Determine putative cells using only the basic algorithm (minimum second derivative along the cumulative reads curve). The refined algorithm attempts to remove false positives and recover false negatives, but may not be ideal for certain complex mixtures of cell types. Does not apply if Exact Cell Count is set."
     - name: "--parallel"
-      type: boolean_true
-      description: "[experimental] Run jobs in parallel."
+      type: boolean
+      description: "Run jobs in parallel."
+      default: true
     - name: "--timestamps"
       type: boolean_true
       description: "Add timestamps to the errors, warnings, and notifications."
