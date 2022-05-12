@@ -51,4 +51,5 @@ platforms:
   - type: docker
     image: litd/docker-cellranger:v6.0.0
   - type: nextflow
-    labels: [ highmem, highcpu ]
+    directives:
+      label: [ highmem, highcpu ]
