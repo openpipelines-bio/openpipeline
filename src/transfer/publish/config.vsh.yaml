@@ -1,6 +1,5 @@
 functionality:
   name: publish
-  function_type: asis
   namespace: "transfer"
   version: "dev"
   description: Publish an artifact and optionally rename with parameters
@@ -30,5 +29,3 @@ platforms:
   - type: docker
     image: bash:5.1
   - type: nextflow
-    publish: true
-    per_id: false

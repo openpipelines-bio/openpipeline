@@ -88,4 +88,5 @@ platforms:
       - type: apt
         packages: cwltool
   - type: nextflow
-    labels: [ highmem, highcpu ]
+    directives:
+      label: [ highmem, highcpu ]

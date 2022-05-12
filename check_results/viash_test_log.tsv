@@ -1,8 +1,6 @@
 namespace	functionality	platform	test_name	exit_code	duration	result
-convert	from_10xmtx_to_h5mu	docker	build_executable	1	10	ERROR
-cluster	leiden	docker	build_executable	1	10	ERROR
-convert	from_10xh5_to_h5mu	docker	build_executable	1	9	ERROR
-report	mermaid	docker	build_executable	1	9	ERROR
+report	mermaid	docker	build_executable	0	0	SUCCESS
+report	mermaid	docker	test.py	0	7	SUCCESS
 download	download_file	docker	build_executable	0	0	SUCCESS
 download	download_file	docker	run_test.sh	0	1	SUCCESS
 download	sync_test_resources	docker	build_executable	0	0	SUCCESS
@@ -11,6 +9,3 @@ mapping	cellranger_count	docker	build_executable	0	0	SUCCESS
 mapping	cellranger_count	docker	tests	-1	0	MISSING
 interactive	run_cellxgene	docker	build_executable	0	0	SUCCESS
 interactive	run_cellxgene	docker	tests	-1	0	MISSING
-dimred	pca	docker	build_executable	1	7	ERROR
-convert	from_bdrhap_to_h5ad	docker	build_executable	1	13	ERROR
-neighbors	find_neighbors	docker	build_executable	1	8	ERROR
