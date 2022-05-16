@@ -3,20 +3,19 @@ nextflow.enable.dsl=2
 workflowDir = params.rootDir + "/workflows"
 targetDir = params.rootDir + "/target/nextflow"
 
-include { filter_with_counts } from targetDir + "/filter/filter_with_counts/main.nf" params(params)
-include { filter_with_scrublet } from targetDir + "/filter/filter_with_scrublet/main.nf" params(params)
-include { do_filter } from targetDir + "/filter/do_filter/main.nf" params(params)
-include { do_filter as do_filter2 } from targetDir + "/filter/do_filter/main.nf" params(params)
-include { log1p } from targetDir + '/transform/log1p/main.nf' params(params)
-include { normalize_total } from targetDir + '/transform/normalize_total/main.nf' params(params)
-include { filter_with_hvg } from targetDir + '/filter/filter_with_hvg/main.nf' params(params)
-include { pca } from targetDir + '/dimred/pca/main.nf' params(params)
-include { find_neighbors } from targetDir + '/neighbors/find_neighbors/main.nf' params(params)
-include { umap } from targetDir + '/dimred/umap/main.nf' params(params)
-include { leiden } from targetDir + '/cluster/leiden/main.nf' params(params)
+include { filter_with_counts } from targetDir + "/filter/filter_with_counts/main.nf"
+include { filter_with_scrublet } from targetDir + "/filter/filter_with_scrublet/main.nf"
+include { do_filter } from targetDir + "/filter/do_filter/main.nf"
+include { log1p } from targetDir + '/transform/log1p/main.nf'
+include { normalize_total } from targetDir + '/transform/normalize_total/main.nf'
+include { filter_with_hvg } from targetDir + '/filter/filter_with_hvg/main.nf'
+include { pca } from targetDir + '/dimred/pca/main.nf'
+include { find_neighbors } from targetDir + '/neighbors/find_neighbors/main.nf'
+include { umap } from targetDir + '/dimred/umap/main.nf'
+include { leiden } from targetDir + '/cluster/leiden/main.nf'
 
-include { publish } from targetDir + "/transfer/publish/main.nf" params(params)
-include { getChild; paramExists; assertParamExists } from workflowDir + "/utils/utils.nf" params(params)
+include { publish } from targetDir + "/transfer/publish/main.nf"
+include { getChild; paramExists; assertParamExists } from workflowDir + "/utils/utils.nf"
 
 
 workflow {
@@ -107,7 +106,7 @@ workflow run_wf {
     | filter_with_counts
     | filter_with_scrublet
     | do_filter.run(
-      args: [ obs_filter: "filter_with_counts:filter_with_scrublet", var_filter: "filter_with_counts" ]
+      args: [ obs_filter: ["filter_with_counts", "filter_with_scrublet"], var_filter: "filter_with_counts" ]
     )
     | normalize_total
     | log1p

@@ -3,11 +3,11 @@ nextflow.enable.dsl=2
 workflowDir = params.rootDir + "/workflows"
 targetDir = params.rootDir + "/target/nextflow"
 
-include  { from_10x_to_h5mu }  from  targetDir + "/convert/from_10x_to_h5mu/main.nf"  params(params)
-include  { from_10xmtx_to_h5mu }  from  targetDir + "/convert/from_10xmtx_to_h5mu/main.nf"  params(params)
+include { from_10xh5_to_h5mu } from targetDir + "/convert/from_10xh5_to_h5mu/main.nf" 
+include { from_10xmtx_to_h5mu } from targetDir + "/convert/from_10xmtx_to_h5mu/main.nf" 
 
-include  { publish }                 from  targetDir + "/transfer/publish/main.nf"                params(params)
-include  { overrideOptionValue }     from  workflowDir + "/utils/utils.nf"                        params(params)
+include { publish } from targetDir + "/transfer/publish/main.nf"               
+include { overrideOptionValue } from workflowDir + "/utils/utils.nf"                       
 
 
 workflow {
@@ -23,26 +23,27 @@ workflow {
         exit 1, "ERROR: Please provide a --output parameter."
     }
 
+    input = Channel.fromPath(params.input)
+        | map { input -> [ input.baseName, input ]}
+
     switch(params.input_type) { 
         case "10xh5":
-            Channel.fromPath(params.input)
-                | map { input -> [ input.name, input, params ]}
-                | from_10x_to_h5mu
-                | map { overrideOptionValue(it, "publish", "output", "${params.output}/${it[0]}.h5mu") }
-                | publish
+            middle = input | from_10xh5_to_h5mu
             break
 
         case "10xmtx":
-            Channel.fromPath(params.input)
-                | map { input -> [ input.name, input, params ]}
-                | from_10xmtx_to_h5mu
-                | map { overrideOptionValue(it, "publish", "output", "${params.output}/${it[0]}.h5mu") }
-                | publish
+            middle = input | from_10xmtx_to_h5mu
             break
 
-
         default:
-            exit 1, "WARNING: There was no input_type recognize. Please use the --input_type parameter to set the input's input format."
+            exit 1, "ERROR: Unrecognised --input_type."
     }
+
+    output = middle
+        | map { overrideOptionValue(it, "publish", "output", "${params.output}/${it[0]}.h5mu") }
+        | publish.run(
+            map: { [it[0], [input: it[1], output: "${it[0]}.h5mu"]] },
+            auto: [ publish: true ]
+        )
 
 }

@@ -3,11 +3,11 @@ nextflow.enable.dsl=2
 workflowDir = params.rootDir + "/workflows"
 targetDir = params.rootDir + "/target/nextflow"
 
-include { bd_rhapsody_wta } from  targetDir + "/mapping/bd_rhapsody_wta/main.nf"
-include { from_bdrhap_to_h5ad } from  targetDir + "/convert/from_bdrhap_to_h5ad/main.nf"
+include { bd_rhapsody_wta } from targetDir + "/mapping/bd_rhapsody_wta/main.nf"
+include { from_bdrhap_to_h5ad } from targetDir + "/convert/from_bdrhap_to_h5ad/main.nf"
 
 include { publish } from targetDir + "/transfer/publish/main.nf"
-include { getChild; overrideOptionValue; paramExists; assertParamExists } from workflowDir + "/utils/utils.nf"
+include { getChild; paramExists; assertParamExists } from workflowDir + "/utils/utils.nf"
 
 
 workflow {
