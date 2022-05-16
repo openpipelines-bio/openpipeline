@@ -1,24 +1,63 @@
            namespace        functionality             platform            test_name exit_code duration               result[0m
-             cluster               leiden               docker                start                                        [0m
-             convert  from_10xmtx_to_h5mu               docker                start                                        [0m
-              report              mermaid               docker                start                                        [0m
              convert   from_10xh5_to_h5mu               docker                start                                        [0m
-[32m              report              mermaid               docker     build_executable         0        0              SUCCESS[0m
-[32m              report              mermaid               docker              test.py         0        7              SUCCESS[0m
             download        download_file               docker                start                                        [0m
 [32m            download        download_file               docker     build_executable         0        0              SUCCESS[0m
 [32m            download        download_file               docker          run_test.sh         0        1              SUCCESS[0m
-            download  sync_test_resources               docker                start                                        [0m
-             convert   from_10xh5_to_h5ad               docker                start                                        [0m
-              dimred                  pca               docker                start                                        [0m
-[32m            download  sync_test_resources               docker     build_executable         0        0              SUCCESS[0m
-[31m            download  sync_test_resources               docker          run_test.sh         1        2                ERROR[0m
-             mapping     cellranger_count               docker                start                                        [0m
-[32m             mapping     cellranger_count               docker     build_executable         0        0              SUCCESS[0m
-[33m             mapping     cellranger_count               docker                tests        -1        0              MISSING[0m
              mapping      bd_rhapsody_wta               docker                start                                        [0m
-         interactive        run_cellxgene               docker                start                                        [0m
-[32m         interactive        run_cellxgene               docker     build_executable         0        0              SUCCESS[0m
-[33m         interactive        run_cellxgene               docker                tests        -1        0              MISSING[0m
-       process_10xh5         filter_10xh5               docker                start                                        [0m
+           bcl_demux   cellranger_mkfastq               docker                start                                        [0m
+              filter      filter_with_hvg               docker                start                                        [0m
+            transfer              publish               docker                start                                        [0m
+[32m            transfer              publish               docker     build_executable         0        0              SUCCESS[0m
+[32m            transfer              publish               docker          run_test.sh         0        1              SUCCESS[0m
+           neighbors       find_neighbors               docker                start                                        [0m
+           transform          regress_out               docker                start                                        [0m
+             convert  from_h5mu_to_seurat               docker                start                                        [0m
+             convert     from_csv_to_h5mu               docker                start                                        [0m
+[32m             convert     from_csv_to_h5mu               docker     build_executable         0        6              SUCCESS[0m
+[33m             convert     from_csv_to_h5mu               docker                tests        -1        0              MISSING[0m
+             convert  from_10xmtx_to_h5mu               docker                start                                        [0m
+             convert    from_h5ad_to_h5mu               docker                start                                        [0m
+[31m             convert    from_h5ad_to_h5mu               docker     build_executable         1        5                ERROR[0m
+             convert  from_bdrhap_to_h5ad               docker                start                                        [0m
+[31m             convert  from_bdrhap_to_h5ad               docker     build_executable         1        2                ERROR[0m
+Exception in thread "Thread-715" Exception in thread "Thread-715" java.io.IOException: No space left on devicejava.io.IOException: No space left on device
+
+	at java.base/java.io.FileOutputStream.writeBytes(Native Method)	at java.base/java.io.FileOutputStream.writeBytes(Native Method)
+
+	at java.base/java.io.FileOutputStream.write(FileOutputStream.java:354)	at java.base/java.io.FileOutputStream.write(FileOutputStream.java:354)
+
+	at java.base/sun.nio.cs.StreamEncoder.writeBytes(StreamEncoder.java:233)	at java.base/sun.nio.cs.StreamEncoder.writeBytes(StreamEncoder.java:233)
+
+	at java.base/sun.nio.cs.StreamEncoder.implWrite(StreamEncoder.java:303)	at java.base/sun.nio.cs.StreamEncoder.implWrite(StreamEncoder.java:303)
+
+	at java.base/sun.nio.cs.StreamEncoder.implWrite(StreamEncoder.java:281)	at java.base/sun.nio.cs.StreamEncoder.implWrite(StreamEncoder.java:281)
+
+	at java.base/sun.nio.cs.StreamEncoder.write(StreamEncoder.java:125)	at java.base/sun.nio.cs.StreamEncoder.write(StreamEncoder.java:125)
+
+	at java.base/sun.nio.cs.StreamEncoder.write(StreamEncoder.java:135)	at java.base/sun.nio.cs.StreamEncoder.write(StreamEncoder.java:135)
+
+	at java.base/java.io.Writer.write(Writer.java:249)	at java.base/java.io.Writer.write(Writer.java:249)
+
+	at java.base/java.io.OutputStreamWriter.append(OutputStreamWriter.java:240)	at java.base/java.io.OutputStreamWriter.append(OutputStreamWriter.java:240)
+
+	at com.dataintuitive.viash.ViashTest$.$anonfun$runTests$1(ViashTest.scala:133)	at com.dataintuitive.viash.ViashTest$.$anonfun$runTests$1(ViashTest.scala:133)
+
+	at com.dataintuitive.viash.ViashTest$.$anonfun$runTests$1$adapted(ViashTest.scala:130)	at com.dataintuitive.viash.ViashTest$.$anonfun$runTests$1$adapted(ViashTest.scala:130)
+
+	at scala.sys.process.ProcessLogger$$anon$1.out(ProcessLogger.scala:101)	at scala.sys.process.ProcessLogger$$anon$1.out(ProcessLogger.scala:101)
+
+	at scala.sys.process.BasicIO$.$anonfun$processOutFully$1(BasicIO.scala:140)	at scala.sys.process.BasicIO$.$anonfun$processOutFully$1(BasicIO.scala:140)
+
+	at scala.sys.process.BasicIO$.$anonfun$processOutFully$1$adapted(BasicIO.scala:140)	at scala.sys.process.BasicIO$.$anonfun$processOutFully$1$adapted(BasicIO.scala:140)
+
+	at scala.sys.process.BasicIO$.readFully$1(BasicIO.scala:188)	at scala.sys.process.BasicIO$.readFully$1(BasicIO.scala:188)
+
+	at scala.sys.process.BasicIO$.$anonfun$processFully$1$adapted(BasicIO.scala:192)	at scala.sys.process.BasicIO$.$anonfun$processFully$1$adapted(BasicIO.scala:192)
+
+	at scala.sys.process.ProcessBuilderImpl$Simple.$anonfun$run$3(ProcessBuilderImpl.scala:80)	at scala.sys.process.ProcessBuilderImpl$Simple.$anonfun$run$3(ProcessBuilderImpl.scala:80)
+
+	at scala.sys.process.ProcessImpl$Spawn$$anon$1.run(ProcessImpl.scala:27)	at scala.sys.process.ProcessImpl$Spawn$$anon$1.run(ProcessImpl.scala:27)
+
+[31m             convert  from_h5mu_to_seurat               docker     build_executable       141       22                ERROR[0m
+             convert   from_10xh5_to_h5ad               docker                start                                        [0m
 /home/runner/work/openpipeline/openpipeline/resources_test/pbmc_1k_protein_v3

@@ -1066,8 +1066,8 @@ platform:
   privileged: false
   run_args: []
   target_image_source: "https://github.com/openpipelines-bio/openpipeline"
-  setup: []
-  python:
+  setup:
+  - type: "python"
     user: false
     packages:
     - "scanpy"
@@ -1085,7 +1085,6 @@ platform:
     url: []
     script: []
     upgrade: true
-    type: "python"
 platforms: []
 info:
   config: "src/filter/filter_with_scrublet/config.vsh.yaml"
@@ -1093,5 +1092,5 @@ info:
   output: "target/docker/filter/filter_with_scrublet"
   executable: "target/docker/filter/filter_with_scrublet/filter_with_scrublet"
   viash_version: "0.5.11"
-  git_commit: "f49edaa0142c45f1df57808dc49d7cade77738d8"
+  git_commit: "cca673cee3e05fe444cd128c83f752fdf7877127"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"

@@ -766,5 +766,5 @@ info:
   output: "target/docker/convert/from_10xmtx_to_h5mu"
   executable: "target/docker/convert/from_10xmtx_to_h5mu/from_10xmtx_to_h5mu"
   viash_version: "0.5.11"
-  git_commit: "f49edaa0142c45f1df57808dc49d7cade77738d8"
+  git_commit: "cca673cee3e05fe444cd128c83f752fdf7877127"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"
