@@ -25,13 +25,13 @@ jobs:
         bin/init
         bin/viash -h
 
-    - name: Run build
-      run: |
-        bin/viash_build
-
     - name: Sync test resources
       run: |
         target/docker/download/sync_test_resources/sync_test_resources
+
+    - name: Run build
+      run: |
+        bin/viash_build
 
     - name: Run tests
       run: |
