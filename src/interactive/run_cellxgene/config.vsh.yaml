@@ -23,16 +23,13 @@ functionality:
   #     path: run_test.sh
 platforms:
   - type: docker
-    image: ubuntu:bionic
+    image: ubuntu:focal
     run_args:
       - "$( echo $VIASH_PAR_PORT | sed 's/..*/-p &:&/' )"
     setup:
-      - type: docker
-        env:
-          - LC_ALL=C.UTF-8
-          - LANG=C.UTF-8
-        run:
-          - apt-get update
-          - apt-get install -y build-essential libxml2-dev python3-dev python3-pip zlib1g-dev python3-requests python3-aiohttp
-          - python3 -m pip install --upgrade pip
-          - pip3 install cellxgene
+      - type: apt
+        packages:
+          - build-essential libxml2-dev python3-dev python3-pip zlib1g-dev python3-requests python3-aiohttp python-is-python3
+      - type: python
+        packages:
+          - cellxgene

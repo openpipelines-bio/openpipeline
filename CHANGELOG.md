@@ -4,6 +4,8 @@
 
 * Fix `transform/normalize_total` component build missing a hdf5 dependency.
 
+* `interactive/run_cellxgene`: Updated container to ubuntu:focal because it contains python3.6 but cellxgene dropped python3.6 support.
+
 * `download/download_file`: Switch base container from `ubuntu:22.04` to `bash:5.1` because `ubuntu:22.04`
   was causing some edge case issues.
 
