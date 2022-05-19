@@ -21,11 +21,11 @@ par = {
 ## VIASH END
 
 mdata = mu.read_h5mu(par["input"])
+mdata.var_names_make_unique()
 
 for mod in par['modality']:
     print(f"Processing modality '{mod}'")
     data = mdata.mod[mod]
-    data.var_names_make_unique()
     #sc.pp.log1p(data)
 
     print(f"  Unfiltered data: {data}")

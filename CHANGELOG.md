@@ -2,6 +2,9 @@
 
 ## MINOR CHANGES
 
+* Fix `interactive/run_cirrocumulus` script raising `NotImplementedError` caused by using `MutData.var_names_make_unique()` 
+on each modality instead of on the whole `MuData` object.
+
 * Fix `transform/normalize_total` component build missing a hdf5 dependency.
 
 * `interactive/run_cellxgene`: Updated container to ubuntu:focal because it contains python3.6 but cellxgene dropped python3.6 support.
