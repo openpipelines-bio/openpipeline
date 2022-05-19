@@ -31,7 +31,7 @@ jobs:
 
     - name: Sync test resources
       run: |
-        target/docker/download/sync_resources_test/sync_resources_test
+        target/docker/download/sync_test_resources/sync_test_resources
 
     - name: Run tests
       run: |
