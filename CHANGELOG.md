@@ -2,6 +2,8 @@
 
 ## MINOR CHANGES
 
+* Fix `transform/normalize_total` component build missing a hdf5 dependency.
+
 * `download/download_file`: Switch base container from `ubuntu:22.04` to `bash:5.1` because `ubuntu:22.04`
   was causing some edge case issues.
 
