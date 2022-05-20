@@ -3,9 +3,9 @@ functionality:
   namespace: "mapping"
   version: "dev"
   description: |
-    A viash component for the BD Rhapsody Analysis CWL pipeline.
+    A wrapper for the BD Rhapsody Analysis CWL v1.9.1 pipeline.
 
-    The CWL pipeline file is obtained by cloning 'https://bitbucket.org/CRSwDev/cwl/src/master/' and removing all objects with class 'DockerRequirement' from the JSON.
+    The CWL pipeline file is obtained by cloning 'https://bitbucket.org/CRSwDev/cwl/src/master/' and removing all objects with class 'DockerRequirement' from the YML.
 
     The reference_genome and transcriptome_annotation files can be downloaded from these locations:
       - Human: http://bd-rhapsody-public.s3-website-us-east-1.amazonaws.com/Rhapsody-WTA/GRCh38-PhiX-gencodev29/
@@ -16,6 +16,7 @@ functionality:
       roles: [ maintainer ]
       props: { github: rcannood, orcid: "0000-0003-3641-729X" }
   arguments:
+    # inputs
     - name: "--input"
       alternatives: [-i]
       type: file
@@ -24,39 +25,18 @@ functionality:
       multiple: true
       multiple_sep: ':'
       example: input.fastq.gz
-    - name: "--output"
-      alternatives: [-o]
-      description: "Output folder. Output still needs to be processed further."
-      required: true
-      type: file
-      direction: output
-      example: output_dir/
-    - name: "--subsample"
-      type: double
-      description: A number >1 or fraction (0 < n < 1) to indicate the number or percentage of reads to subsample.
     - name: "--reference_genome"
       alternatives: [-r]
       type: file
       required: true
       description: "Path to STAR index as a tar.gz file."
+      example: "reference_genome.tar.gz"
     - name: "--transcriptome_annotation"
       alternatives: [-t]
       type: file
       description: Path to GTF annotation file.
       required: true
-    - name: "--exact_cell_count"
-      type: integer
-      description: "Exact cell count - Set a specific number (>=1) of cells as putative, based on those with the highest error-corrected read count"
-    - name: "--disable_putative_calling"
-      type: boolean
-      description: "Disable Refined Putative Cell Calling - Determine putative cells using only the basic algorithm (minimum second derivative along the cumulative reads curve). The refined algorithm attempts to remove false positives and recover false negatives, but may not be ideal for certain complex mixtures of cell types. Does not apply if Exact Cell Count is set."
-    - name: "--parallel"
-      type: boolean
-      description: "Run jobs in parallel."
-      default: true
-    - name: "--timestamps"
-      type: boolean_true
-      description: "Add timestamps to the errors, warnings, and notifications."
+      example: "transcriptome.gtf"
     - name: "--abseq_reference"
       alternatives: [-a]
       type: file
@@ -69,9 +49,61 @@ functionality:
       description: Path to the supplemental reference file in FASTA format. Only needed if there are additional transgene sequences used in the experiment.
       multiple: true
       multiple_sep: ':'
+    
+    # outputs
+    - name: "--output"
+      alternatives: [-o]
+      description: "Output folder. Output still needs to be processed further."
+      required: true
+      type: file
+      direction: output
+      example: output_dir/
+
+    # putative cell calling settings
+    - name: "--exact_cell_count"
+      type: integer
+      description: "Exact cell count - Set a specific number (>=1) of cells as putative, based on those with the highest error-corrected read count"
+      example: 10000
+    - name: "--disable_putative_calling"
+      type: boolean_true
+      description: "Disable Refined Putative Cell Calling - Determine putative cells using only the basic algorithm (minimum second derivative along the cumulative reads curve). The refined algorithm attempts to remove false positives and recover false negatives, but may not be ideal for certain complex mixtures of cell types. Does not apply if Exact Cell Count is set."
+    
+    # subsample settings
+    - name: "--subsample"
+      type: double
+      description: A number >1 or fraction (0 < n < 1) to indicate the number or percentage of reads to subsample.
+      example: 0.01
+    - name: "--subsample_seed"
+      type: integer
+      description: A seed for replicating a previous subsampled run.
+      example: 3445
+    
+    # multiplex settings
+    - name: "--sample_tags_version"
+      type: string
+      description: "Specify if multiplexed run."
+      values: [human, hs, mouse, mm]
+      example: human
+
+    - name: "--tag_names"
+      type: string
+      description: |
+        Tag_Names (optional) - Specify the tag number followed by '-' and the desired sample name to appear in Sample_Tag_Metrics.csv
+        Do not use the special characters: &, (), [], {},  <>, ?, |
+      multiple: true
+      example: [4-mySample, 9-myOtherSample, 6-alsoThisSample]
+
+    # cwl-runner settings
+    - name: "--parallel"
+      type: boolean
+      description: "Run jobs in parallel."
+      default: true
+    - name: "--timestamps"
+      type: boolean_true
+      description: "Add timestamps to the errors, warnings, and notifications."
   resources:
-    - type: bash_script
-      path: script.sh
+    - type: python_script
+      path: script.py
     - path: rhapsody_wta_1.9.1_nodocker.cwl
   tests:
     - type: bash_script
@@ -88,5 +120,6 @@ platforms:
       - type: apt
         packages: cwltool
   - type: nextflow
+    variant: vdsl3
     directives:
       label: [ highmem, highcpu ]
