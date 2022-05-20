@@ -24,7 +24,7 @@ jobs:
     - name: Maximize build space
       uses: easimon/maximize-build-space@master
       with:
-        build-mount-path: /home/runner/work
+        build-mount-path: /home/runner/work/openpipeline
         remove-dotnet: 'true'
         remove-android: 'true'
         remove-haskell: 'true'
@@ -33,9 +33,14 @@ jobs:
       run: |
         echo "Free space:"
         df -h
+    - name: Change docker image storage
+      run: |
+        systemctl stop docker
         rm -rf /var/lib/docker
-        mkdir -p /home/runner/work/.docker_images/
-        ln -s /home/runner/work/.docker_images/ /var/lib/docker
+        mkdir -p /var/lib/docker
+        mkdir -p /home/runner/work/openpipelines/docker_images/
+        mount --rbind /home/runner/work/openpipelines/docker_images/ /var/lib/docker
+        systemctl start docker
 
     - uses: actions/checkout@v2
 
@@ -51,6 +56,12 @@ jobs:
         
         # only build nextflow targets
         bin/viash_build -m release -t main_build
+
+
+    - name: Build 3
+      run: |
+        echo "Free space:"
+        df -h
 
     - name: Deploy to target branch
       uses: peaceiris/actions-gh-pages@v3
