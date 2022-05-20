@@ -18,6 +18,8 @@ on each modality instead of on the whole `MuData` object.
 
 * `download/sync_test_resources`: Disable the use of the Amazon EC2 instance metadata service to make script work on Github Actions runners.
 
+* `convert/from_h5mu_to_seurat`: Fix unit test requiring Seurat by using native R functions to test the Seurat object instead.
+
 # openpipeline 0.3.0
 
 * Add `tx_processing` pipeline with following components:
