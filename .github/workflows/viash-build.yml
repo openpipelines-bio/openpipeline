@@ -24,6 +24,7 @@ jobs:
     - name: Maximize build space
       uses: easimon/maximize-build-space@master
       with:
+        build-mount-path: /home/runner/work
         remove-dotnet: 'true'
         remove-android: 'true'
         remove-haskell: 'true'
@@ -32,6 +33,9 @@ jobs:
       run: |
         echo "Free space:"
         df -h
+        rm -rf /var/lib/docker
+        mkdir -p /home/runner/work/.docker_images/
+        ln -s /home/runner/work/.docker_images/ /var/lib/docker
 
     - uses: actions/checkout@v2
 
