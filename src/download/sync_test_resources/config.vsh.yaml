@@ -23,6 +23,12 @@ functionality:
       default: resources_test
       direction: output
       description: "Path to the test resource directory."
+    - name: "--quiet"
+      type: boolean_true
+      description: "Displays the operations that would be performed using the specified command without actually running them."
+    - name: "--dryrun"
+      type: boolean_true
+      description: "Does not display the operations performed from the specified command."
   resources:
     - type: bash_script
       path: script.sh

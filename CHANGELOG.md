@@ -16,6 +16,8 @@ on each modality instead of on the whole `MuData` object.
 
 * `mapping/bd_rhapsody_wta`: Translate Bash script into Python.
 
+* `download/sync_test_resources`: Add `--dryrun` and `--quiet` arguments.
+
 ## BUG FIXES
 
 * `download/sync_test_resources`: Disable the use of the Amazon EC2 instance metadata service to make script work on Github Actions runners.
