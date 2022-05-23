@@ -15,7 +15,7 @@ workflow {
   if (paramExists("help")) {
     log.info """Cell Ranger Mapping - CLI workflow
 
-A workflow for running a Cell Ranger Mapping workflow.
+Use cellranger count to align 10x fastq files to a reference.
 This workflow can be run on a single input or in batch, see below.
 
 Parameters (Single input mode):

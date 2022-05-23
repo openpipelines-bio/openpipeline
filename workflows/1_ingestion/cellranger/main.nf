@@ -14,9 +14,9 @@ include { getChild; paramExists; assertParamExists } from workflowDir + "/utils/
 
 workflow {
   if (paramExists("help")) {
-    log.info """Cell Ranger Demux - CLI workflow
+    log.info """Cell Ranger - CLI workflow
 
-Use cellranger demux to demultiplex sequencing BCL output to FASTQ.
+Use Cell Ranger to preprocess 10x data.
 This workflow can be run on a single input or in batch, see below.
 
 Parameters (Single input mode):

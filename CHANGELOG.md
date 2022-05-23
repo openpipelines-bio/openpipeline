@@ -1,5 +1,26 @@
 # openpipeline 0.3.1
 
+## NEW FUNCTIONALITY
+
+* `bin/port_from_czbiohub_utilities.sh`: Added helper script to import components and pipelines from `czbiohub/utilities`
+
+Imported components from `czbiohub/utilities`:
+
+* `demux/cellranger_mkfastq`: Demultiplex raw sequencing data.
+
+* `mapping/cellranger_count`: Align fastq files using Cell Ranger count.
+
+* `mapping/cellranger_count_split`: Split 10x Cell Ranger output directory into separate output fields.
+
+Imported workflows from `czbiohub/utilities`:
+
+* `workflows/1_ingestion/cellranger`: Use Cell Ranger to preprocess 10x data.
+
+* `workflows/1_ingestion/cellranger_demux`: Use cellranger demux to demultiplex sequencing BCL output to FASTQ.
+
+* `workflows/1_ingestion/cellranger_mapping`: Use cellranger count to align 10x fastq files to a reference.
+
+
 ## MINOR CHANGES
 
 * Fix `interactive/run_cirrocumulus` script raising `NotImplementedError` caused by using `MutData.var_names_make_unique()` 
