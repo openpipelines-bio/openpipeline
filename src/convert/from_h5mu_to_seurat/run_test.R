@@ -1,5 +1,4 @@
 library(testthat, warn.conflicts = FALSE)
-library(Seurat)
 
 cat("Checking whether output is correct\n")
 
@@ -21,9 +20,9 @@ obj <- readRDS(file = out_rds)
 
 cat("> Checking whether Seurat object is in the right format\n")
 expect_is(obj, "Seurat")
-expect_equal(sort(Assays(obj)), c("prot", "rna"))
+expect_equal(names(slot(obj, "assays")), c("prot", "rna"))
 
-obj_rna <- obj[["rna"]]
-obj_prot <- obj[["prot"]]
+obj_rna <- slot(obj, "assays")$rna
+obj_prot <- slot(obj, "assays")$prot
 
 # todo: check whether obj_rna and obj_prot have correct properties

@@ -2,10 +2,27 @@
 
 ## MINOR CHANGES
 
+* Fix `interactive/run_cirrocumulus` script raising `NotImplementedError` caused by using `MutData.var_names_make_unique()` 
+on each modality instead of on the whole `MuData` object.
+
+* Fix `transform/normalize_total` and `interactive/run_cirrocumulus` component build missing a hdf5 dependency.
+
+* `interactive/run_cellxgene`: Updated container to ubuntu:focal because it contains python3.6 but cellxgene dropped python3.6 support.
+
 * `download/download_file`: Switch base container from `ubuntu:22.04` to `bash:5.1` because `ubuntu:22.04`
   was causing some edge case issues.
 
 * `mapping/bd_rhapsody_wta`: Set `--parallel` to true by default.
+
+* `mapping/bd_rhapsody_wta`: Translate Bash script into Python.
+
+* `download/sync_test_resources`: Add `--dryrun` and `--quiet` arguments.
+
+## BUG FIXES
+
+* `download/sync_test_resources`: Disable the use of the Amazon EC2 instance metadata service to make script work on Github Actions runners.
+
+* `convert/from_h5mu_to_seurat`: Fix unit test requiring Seurat by using native R functions to test the Seurat object instead.
 
 # openpipeline 0.3.0
 

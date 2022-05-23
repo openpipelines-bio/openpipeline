@@ -23,6 +23,16 @@ functionality:
       default: resources_test
       direction: output
       description: "Path to the test resource directory."
+    - name: "--quiet"
+      type: boolean_true
+      description: "Displays the operations that would be performed using the specified command without actually running them."
+    - name: "--dryrun"
+      type: boolean_true
+      description: "Does not display the operations performed from the specified command."
+    - name: "--exclude"
+      type: "string"
+      multiple: true
+      description: Exclude all files or objects from the command that matches the specified pattern.
   resources:
     - type: bash_script
       path: script.sh
@@ -31,5 +41,5 @@ functionality:
       path: run_test.sh
 platforms:
   - type: docker
-    image: "amazon/aws-cli:2.4.15"
+    image: "amazon/aws-cli:2.7.1"
   - type: nextflow
