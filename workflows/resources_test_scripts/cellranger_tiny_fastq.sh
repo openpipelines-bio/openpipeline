@@ -10,7 +10,6 @@ cd "$REPO_ROOT"
 ID=cellranger_tiny_fastq
 OUT="resources_test/$ID/"
 DIR="$OUT"
-S3DIR="s3://czbiohub-pipelines/utilities/$ID"
 
 # create tempdir
 MY_TEMP="${VIASH_TEMP:-/tmp}"
@@ -80,6 +79,3 @@ if [ ! -f "$filtered_h5mu" ]; then
     --input "$filtered_h5" \
     --output "$filtered_h5mu"
 fi
-
-aws s3 sync --profile czb "$DIR" "$S3DIR" --delete
-

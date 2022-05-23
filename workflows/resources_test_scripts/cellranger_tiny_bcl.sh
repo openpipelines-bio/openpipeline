@@ -10,7 +10,6 @@ cd "$REPO_ROOT"
 ID=cellranger_tiny_bcl
 OUT="resources_test/$ID/"
 DIR="$OUT"
-S3DIR="s3://czbiohub-pipelines/utilities/$ID"
 
 # create tempdir
 MY_TEMP="${VIASH_TEMP:-/tmp}"
