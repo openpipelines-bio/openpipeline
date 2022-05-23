@@ -29,6 +29,10 @@ functionality:
     - name: "--dryrun"
       type: boolean_true
       description: "Does not display the operations performed from the specified command."
+    - name: "--exclude"
+      type: "string"
+      multiple: true
+      description: Exclude all files or objects from the command that matches the specified pattern.
   resources:
     - type: bash_script
       path: script.sh

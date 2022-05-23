@@ -14,6 +14,15 @@ if [ "$par_dryrun" == "true" ]; then
   extra_params+=( "--dryrun" )
 fi
 
+if [ ! -z ${par_exclude+x} ]; then
+  IFS=":"
+  for var in $par_exclude; do
+    unset IFS
+    extra_params+=( "--exclude" "$var" )
+  done
+fi
+
+
 # Disable the use of the Amazon EC2 instance metadata service (IMDS).
 # see https://florian.ec/blog/github-actions-awscli-errors/
 # or https://github.com/aws/aws-cli/issues/5234#issuecomment-705831465
