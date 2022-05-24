@@ -28,7 +28,7 @@ jobs:
     - name: Sync test resources
       run: |
         bin/viash_build -q sync_test_resources
-        target/docker/download/sync_test_resources/sync_test_resources --quiet --exclude bd_rhapsody_wta_test/*
+        target/docker/download/sync_test_resources/sync_test_resources
 
     - name: Run build
       run: |
