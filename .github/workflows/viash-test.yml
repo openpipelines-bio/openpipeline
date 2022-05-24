@@ -20,7 +20,7 @@ jobs:
         bin/viash -h
     - id: set_matrix
       run: |
-        echo "::set-output name=matrix::$(bin/viash ns list -p docker --format json | jq '[ .[] | .info.config ]')"
+        echo "::set-output name=matrix::$( bin/viash ns list -p docker --format json | jq -c '[ .[] | .info.config ]' )"
     outputs:
         matrix: ${{ steps.set_matrix.outputs.matrix }}
 
