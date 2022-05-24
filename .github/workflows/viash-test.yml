@@ -7,6 +7,21 @@ on:
     branches: [ '*' ]
 
 jobs:
+  # phase 1
+  list_components:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: Fetch viash
+      run: |
+        bin/init
+        bin/viash -h
+    - id: set-matrix
+      uses: sergeysova/jq-action@v2
+      run: |
+        echo "::set-output name=matrix::$(bin/viash ns list --format json | jq '[ .[] | { name: .functionality.name, path: .info.config } ]')"
+
+  # phase 2
   viash-test:
     runs-on: ${{ matrix.config.os }}
     if: "!contains(github.event.head_commit.message, 'ci skip')"
@@ -32,20 +47,10 @@ jobs:
 
     - name: Run build
       run: |
-        bin/viash_build
+        bin/viash_build 
 
     - name: Run tests
       run: |
-        # create check_results folder
-        sed -i '/^check_results\/$/d' .gitignore
-        mkdir check_results
-
         # run tests
-        bin/viash_test --append=false --log check_results/viash_test_log.txt --tsv check_results/viash_test_log.tsv
-
-    - name: Upload check results
-      uses: actions/upload-artifact@master
-      with:
-        name: ${{ matrix.config.name }}_results
-        path: check_results
+        bin/viash test ${{ matrix.config.path }}
 
