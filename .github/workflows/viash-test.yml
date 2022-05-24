@@ -17,7 +17,7 @@ jobs:
         bin/init
         bin/viash -h
     - id: set-matrix
-      uses: sergeysova/jq-action@v2
+      # uses: sergeysova/jq-action@v2
       run: |
         echo "::set-output name=matrix::$(bin/viash ns list --format json | jq '[ .[] | { name: .functionality.name, path: .info.config } ]')"
 
