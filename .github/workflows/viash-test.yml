@@ -24,11 +24,6 @@ jobs:
     outputs:
         matrix: ${{ steps.set_matrix.outputs.matrix }}
 
-  debug:
-    runs-on: ubuntu-latest
-    needs: list_components
-    steps:
-      - run: echo ${{needs.list_components.outputs.matrix}}
   # phase 2
   viash_test:
     needs: list_components
