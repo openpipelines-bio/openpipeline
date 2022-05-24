@@ -18,14 +18,13 @@ jobs:
       run: |
         bin/init
         bin/viash -h
-    - id: set-matrix
-      # uses: sergeysova/jq-action@v2
+    - id: set_matrix
       run: |
-        echo "::set-output name=matrix::$(bin/viash ns list --format json | jq '[ .[] | { name: .functionality.name, path: .info.config } ]')"
+        echo "::set-output name=matrix::$(bin/viash ns list -p docker --format json | jq '[ .[] | { name: .functionality.name, path: .info.config } ]')"
     outputs:
-        matrix: ${{ steps.set-matrix.outputs.matrix }}
+        matrix: ${{ steps.set_matrix.outputs.matrix }}
   # phase 2
-  viash-test:
+  viash_test:
     needs: list_components
 
     runs-on: ubuntu-latest
@@ -34,7 +33,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        config: ${{ fromJson(needs.provide_packages_json.outputs.matrix) }}
+        config: ${{ fromJson(needs.list_components.outputs.matrix) }}
 
     steps:
     - uses: actions/checkout@v2
@@ -51,6 +50,5 @@ jobs:
 
     - name: Run test
       run: |
-        # run tests
-        bin/viash test ${{ matrix.config.path }}
+        bin/viash test -p docker ${{ matrix.config.path }}
 
