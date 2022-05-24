@@ -49,3 +49,4 @@ platforms:
         - muon
         - anndata<0.8
   - type: nextflow
+    variant: vdsl3

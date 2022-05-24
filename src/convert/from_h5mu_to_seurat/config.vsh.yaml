@@ -44,3 +44,4 @@ platforms:
       - type: r
         github: pmbio/MuDataSeurat
   - type: nextflow
+    variant: vdsl3
