@@ -41,6 +41,8 @@ on each modality instead of on the whole `MuData` object.
 
 ## BUG FIXES
 
+* `mapping/bd_rhapsody`: Use a smaller test dataset to reduce test time and make sure that the Github Action runners do not run out of disk space.
+
 * `download/sync_test_resources`: Disable the use of the Amazon EC2 instance metadata service to make script work on Github Actions runners.
 
 * `convert/from_h5mu_to_seurat`: Fix unit test requiring Seurat by using native R functions to test the Seurat object instead.
