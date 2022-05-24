@@ -29,3 +29,4 @@ platforms:
   - type: docker
     image: bash:5.1
   - type: nextflow
+    variant: vdsl3
