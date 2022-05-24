@@ -39,7 +39,7 @@ functionality:
     default:
     - "rna"
     required: false
-    values: []
+    choices: []
     direction: "input"
     multiple: true
     multiple_sep: ":"
@@ -64,7 +64,7 @@ functionality:
     default:
     - "filter_with_scrublet"
     required: false
-    values: []
+    choices: []
     direction: "input"
     multiple: false
     multiple_sep: ":"
@@ -82,7 +82,7 @@ functionality:
     default:
     - "scrublet_doublet_score"
     required: false
-    values: []
+    choices: []
     direction: "input"
     multiple: false
     multiple_sep: ":"
@@ -95,6 +95,7 @@ functionality:
     default:
     - 2
     required: false
+    choices: []
     direction: "input"
     multiple: false
     multiple_sep: ":"
@@ -106,6 +107,7 @@ functionality:
     default:
     - 3
     required: false
+    choices: []
     direction: "input"
     multiple: false
     multiple_sep: ":"
@@ -131,6 +133,7 @@ functionality:
     default:
     - 30
     required: false
+    choices: []
     direction: "input"
     multiple: false
     multiple_sep: ":"
@@ -142,7 +145,7 @@ functionality:
     default:
     - "euclidean"
     required: false
-    values: []
+    choices: []
     direction: "input"
     multiple: false
     multiple_sep: ":"
@@ -738,6 +741,7 @@ functionality:
                   ;;
               --input)
                   VIASH_PAR_INPUT="$2"
+                  [ $# -lt 2 ] && ViashError Not enough arguments passed to --input. Use "--help" to get more information on the parameters. && exit 1
                   shift 2
                   ;;
               --input=*)
@@ -750,6 +754,7 @@ functionality:
                   else
                     VIASH_PAR_MODALITY="$VIASH_PAR_MODALITY:""$2"
                   fi
+                  [ $# -lt 2 ] && ViashError Not enough arguments passed to --modality. Use "--help" to get more information on the parameters. && exit 1
                   shift 2
                   ;;
               --modality=*)
@@ -762,6 +767,7 @@ functionality:
                   ;;
               --output)
                   VIASH_PAR_OUTPUT="$2"
+                  [ $# -lt 2 ] && ViashError Not enough arguments passed to --output. Use "--help" to get more information on the parameters. && exit 1
                   shift 2
                   ;;
               --output=*)
@@ -770,6 +776,7 @@ functionality:
                   ;;
               --obs_name_filter)
                   VIASH_PAR_OBS_NAME_FILTER="$2"
+                  [ $# -lt 2 ] && ViashError Not enough arguments passed to --obs_name_filter. Use "--help" to get more information on the parameters. && exit 1
                   shift 2
                   ;;
               --obs_name_filter=*)
@@ -782,6 +789,7 @@ functionality:
                   ;;
               --obs_name_doublet_score)
                   VIASH_PAR_OBS_NAME_DOUBLET_SCORE="$2"
+                  [ $# -lt 2 ] && ViashError Not enough arguments passed to --obs_name_doublet_score. Use "--help" to get more information on the parameters. && exit 1
                   shift 2
                   ;;
               --obs_name_doublet_score=*)
@@ -790,6 +798,7 @@ functionality:
                   ;;
               --min_counts)
                   VIASH_PAR_MIN_COUNTS="$2"
+                  [ $# -lt 2 ] && ViashError Not enough arguments passed to --min_counts. Use "--help" to get more information on the parameters. && exit 1
                   shift 2
                   ;;
               --min_counts=*)
@@ -798,6 +807,7 @@ functionality:
                   ;;
               --min_cells)
                   VIASH_PAR_MIN_CELLS="$2"
+                  [ $# -lt 2 ] && ViashError Not enough arguments passed to --min_cells. Use "--help" to get more information on the parameters. && exit 1
                   shift 2
                   ;;
               --min_cells=*)
@@ -806,6 +816,7 @@ functionality:
                   ;;
               --min_gene_variablity_percent)
                   VIASH_PAR_MIN_GENE_VARIABLITY_PERCENT="$2"
+                  [ $# -lt 2 ] && ViashError Not enough arguments passed to --min_gene_variablity_percent. Use "--help" to get more information on the parameters. && exit 1
                   shift 2
                   ;;
               --min_gene_variablity_percent=*)
@@ -814,6 +825,7 @@ functionality:
                   ;;
               --num_pca_components)
                   VIASH_PAR_NUM_PCA_COMPONENTS="$2"
+                  [ $# -lt 2 ] && ViashError Not enough arguments passed to --num_pca_components. Use "--help" to get more information on the parameters. && exit 1
                   shift 2
                   ;;
               --num_pca_components=*)
@@ -822,6 +834,7 @@ functionality:
                   ;;
               --distance_metric)
                   VIASH_PAR_DISTANCE_METRIC="$2"
+                  [ $# -lt 2 ] && ViashError Not enough arguments passed to --distance_metric. Use "--help" to get more information on the parameters. && exit 1
                   shift 2
                   ;;
               --distance_metric=*)
@@ -913,6 +926,62 @@ functionality:
       if [ -z "$VIASH_PAR_DISTANCE_METRIC" ]; then
         VIASH_PAR_DISTANCE_METRIC="euclidean"
       fi
+      
+      
+      # check whether parameters values are of the right type
+      
+      
+      
+      
+      if [[ -n "$VIASH_PAR_DO_SUBSET" ]]; then
+        if ! [[ "$VIASH_PAR_DO_SUBSET" =~ ^(true|True|TRUE|false|False|FALSE|yes|Yes|YES|no|No|NO)$ ]]; then
+          ViashError '--do_subset' has to be a boolean_true. Use "--help" to get more information on the parameters.
+          exit 1
+        fi
+      fi
+      
+      
+      if [[ -n "$VIASH_PAR_MIN_COUNTS" ]]; then
+        if ! [[ "$VIASH_PAR_MIN_COUNTS" =~ ^[-+]?[0-9]+$ ]]; then
+          ViashError '--min_counts' has to be an integer. Use "--help" to get more information on the parameters.
+          exit 1
+        fi
+      fi
+      
+      if [[ -n "$VIASH_PAR_MIN_CELLS" ]]; then
+        if ! [[ "$VIASH_PAR_MIN_CELLS" =~ ^[-+]?[0-9]+$ ]]; then
+          ViashError '--min_cells' has to be an integer. Use "--help" to get more information on the parameters.
+          exit 1
+        fi
+      fi
+      
+      if [[ -n "$VIASH_PAR_MIN_GENE_VARIABLITY_PERCENT" ]]; then
+        if ! [[ "$VIASH_PAR_MIN_GENE_VARIABLITY_PERCENT" =~ ^[-+]?(\.[0-9]+|[0-9]+(\.[0-9]*)?)([eE][-+]?[0-9]+)?$ ]]; then
+          ViashError '--min_gene_variablity_percent' has to be a double. Use "--help" to get more information on the parameters.
+          exit 1
+        fi
+      fi
+      
+      if [[ -n "$VIASH_PAR_NUM_PCA_COMPONENTS" ]]; then
+        if ! [[ "$VIASH_PAR_NUM_PCA_COMPONENTS" =~ ^[-+]?[0-9]+$ ]]; then
+          ViashError '--num_pca_components' has to be an integer. Use "--help" to get more information on the parameters.
+          exit 1
+        fi
+      fi
+      
+      
+      
+      # check whether parameters values are of the right type
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
       
       
       # detect volumes from file arguments
@@ -1091,5 +1160,5 @@ info:
   output: "target/docker/filter/filter_with_scrublet"
   executable: "target/docker/filter/filter_with_scrublet/filter_with_scrublet"
   viash_version: "0.5.12"
-  git_commit: "896a1d3cf7bb6ecf31a4bb2dd0eea8c744474b59"
+  git_commit: "594f819f2da986e76c84b9c82f43c8a5ff88c71f"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"

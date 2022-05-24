@@ -534,6 +534,7 @@ while [[ $# -gt 0 ]]; do
             ;;
         --input)
             VIASH_PAR_INPUT="$2"
+            [ $# -lt 2 ] && ViashError Not enough arguments passed to --input. Use "--help" to get more information on the parameters. && exit 1
             shift 2
             ;;
         --input=*)
@@ -542,10 +543,12 @@ while [[ $# -gt 0 ]]; do
             ;;
         -i)
             VIASH_PAR_INPUT="$2"
+            [ $# -lt 2 ] && ViashError Not enough arguments passed to -i. Use "--help" to get more information on the parameters. && exit 1
             shift 2
             ;;
         --output)
             VIASH_PAR_OUTPUT="$2"
+            [ $# -lt 2 ] && ViashError Not enough arguments passed to --output. Use "--help" to get more information on the parameters. && exit 1
             shift 2
             ;;
         --output=*)
@@ -554,6 +557,7 @@ while [[ $# -gt 0 ]]; do
             ;;
         -o)
             VIASH_PAR_OUTPUT="$2"
+            [ $# -lt 2 ] && ViashError Not enough arguments passed to -o. Use "--help" to get more information on the parameters. && exit 1
             shift 2
             ;;
         --quiet)
@@ -570,6 +574,7 @@ while [[ $# -gt 0 ]]; do
             else
               VIASH_PAR_EXCLUDE="$VIASH_PAR_EXCLUDE:""$2"
             fi
+            [ $# -lt 2 ] && ViashError Not enough arguments passed to --exclude. Use "--help" to get more information on the parameters. && exit 1
             shift 2
             ;;
         --exclude=*)
@@ -645,6 +650,32 @@ fi
 if [ -z "$VIASH_PAR_DRYRUN" ]; then
   VIASH_PAR_DRYRUN="false"
 fi
+
+
+# check whether parameters values are of the right type
+
+
+if [[ -n "$VIASH_PAR_QUIET" ]]; then
+  if ! [[ "$VIASH_PAR_QUIET" =~ ^(true|True|TRUE|false|False|FALSE|yes|Yes|YES|no|No|NO)$ ]]; then
+    ViashError '--quiet' has to be a boolean_true. Use "--help" to get more information on the parameters.
+    exit 1
+  fi
+fi
+
+if [[ -n "$VIASH_PAR_DRYRUN" ]]; then
+  if ! [[ "$VIASH_PAR_DRYRUN" =~ ^(true|True|TRUE|false|False|FALSE|yes|Yes|YES|no|No|NO)$ ]]; then
+    ViashError '--dryrun' has to be a boolean_true. Use "--help" to get more information on the parameters.
+    exit 1
+  fi
+fi
+
+
+
+# check whether parameters values are of the right type
+
+
+
+
 
 
 # detect volumes from file arguments

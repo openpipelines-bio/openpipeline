@@ -545,6 +545,7 @@ while [[ $# -gt 0 ]]; do
             ;;
         --input)
             VIASH_PAR_INPUT="$2"
+            [ $# -lt 2 ] && ViashError Not enough arguments passed to --input. Use "--help" to get more information on the parameters. && exit 1
             shift 2
             ;;
         --input=*)
@@ -553,6 +554,7 @@ while [[ $# -gt 0 ]]; do
             ;;
         -i)
             VIASH_PAR_INPUT="$2"
+            [ $# -lt 2 ] && ViashError Not enough arguments passed to -i. Use "--help" to get more information on the parameters. && exit 1
             shift 2
             ;;
         --modality)
@@ -561,6 +563,7 @@ while [[ $# -gt 0 ]]; do
             else
               VIASH_PAR_MODALITY="$VIASH_PAR_MODALITY:""$2"
             fi
+            [ $# -lt 2 ] && ViashError Not enough arguments passed to --modality. Use "--help" to get more information on the parameters. && exit 1
             shift 2
             ;;
         --modality=*)
@@ -573,6 +576,7 @@ while [[ $# -gt 0 ]]; do
             ;;
         --output)
             VIASH_PAR_OUTPUT="$2"
+            [ $# -lt 2 ] && ViashError Not enough arguments passed to --output. Use "--help" to get more information on the parameters. && exit 1
             shift 2
             ;;
         --output=*)
@@ -581,10 +585,12 @@ while [[ $# -gt 0 ]]; do
             ;;
         -o)
             VIASH_PAR_OUTPUT="$2"
+            [ $# -lt 2 ] && ViashError Not enough arguments passed to -o. Use "--help" to get more information on the parameters. && exit 1
             shift 2
             ;;
         --obs_name)
             VIASH_PAR_OBS_NAME="$2"
+            [ $# -lt 2 ] && ViashError Not enough arguments passed to --obs_name. Use "--help" to get more information on the parameters. && exit 1
             shift 2
             ;;
         --obs_name=*)
@@ -593,6 +599,7 @@ while [[ $# -gt 0 ]]; do
             ;;
         --resolution)
             VIASH_PAR_RESOLUTION="$2"
+            [ $# -lt 2 ] && ViashError Not enough arguments passed to --resolution. Use "--help" to get more information on the parameters. && exit 1
             shift 2
             ;;
         --resolution=*)
@@ -670,6 +677,26 @@ fi
 if [ -z "$VIASH_PAR_RESOLUTION" ]; then
   VIASH_PAR_RESOLUTION="1.0"
 fi
+
+
+# check whether parameters values are of the right type
+
+
+
+
+if [[ -n "$VIASH_PAR_RESOLUTION" ]]; then
+  if ! [[ "$VIASH_PAR_RESOLUTION" =~ ^[-+]?(\.[0-9]+|[0-9]+(\.[0-9]*)?)([eE][-+]?[0-9]+)?$ ]]; then
+    ViashError '--resolution' has to be a double. Use "--help" to get more information on the parameters.
+    exit 1
+  fi
+fi
+
+
+# check whether parameters values are of the right type
+
+
+
+
 
 
 # detect volumes from file arguments

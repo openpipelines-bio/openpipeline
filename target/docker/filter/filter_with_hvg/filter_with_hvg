@@ -616,6 +616,7 @@ while [[ $# -gt 0 ]]; do
             ;;
         --input)
             VIASH_PAR_INPUT="$2"
+            [ $# -lt 2 ] && ViashError Not enough arguments passed to --input. Use "--help" to get more information on the parameters. && exit 1
             shift 2
             ;;
         --input=*)
@@ -628,6 +629,7 @@ while [[ $# -gt 0 ]]; do
             else
               VIASH_PAR_MODALITY="$VIASH_PAR_MODALITY:""$2"
             fi
+            [ $# -lt 2 ] && ViashError Not enough arguments passed to --modality. Use "--help" to get more information on the parameters. && exit 1
             shift 2
             ;;
         --modality=*)
@@ -640,6 +642,7 @@ while [[ $# -gt 0 ]]; do
             ;;
         --output)
             VIASH_PAR_OUTPUT="$2"
+            [ $# -lt 2 ] && ViashError Not enough arguments passed to --output. Use "--help" to get more information on the parameters. && exit 1
             shift 2
             ;;
         --output=*)
@@ -648,6 +651,7 @@ while [[ $# -gt 0 ]]; do
             ;;
         --var_name_filter)
             VIASH_PAR_VAR_NAME_FILTER="$2"
+            [ $# -lt 2 ] && ViashError Not enough arguments passed to --var_name_filter. Use "--help" to get more information on the parameters. && exit 1
             shift 2
             ;;
         --var_name_filter=*)
@@ -656,6 +660,7 @@ while [[ $# -gt 0 ]]; do
             ;;
         --varm_name)
             VIASH_PAR_VARM_NAME="$2"
+            [ $# -lt 2 ] && ViashError Not enough arguments passed to --varm_name. Use "--help" to get more information on the parameters. && exit 1
             shift 2
             ;;
         --varm_name=*)
@@ -668,6 +673,7 @@ while [[ $# -gt 0 ]]; do
             ;;
         --flavor)
             VIASH_PAR_FLAVOR="$2"
+            [ $# -lt 2 ] && ViashError Not enough arguments passed to --flavor. Use "--help" to get more information on the parameters. && exit 1
             shift 2
             ;;
         --flavor=*)
@@ -676,6 +682,7 @@ while [[ $# -gt 0 ]]; do
             ;;
         --n_top_genes)
             VIASH_PAR_N_TOP_GENES="$2"
+            [ $# -lt 2 ] && ViashError Not enough arguments passed to --n_top_genes. Use "--help" to get more information on the parameters. && exit 1
             shift 2
             ;;
         --n_top_genes=*)
@@ -684,6 +691,7 @@ while [[ $# -gt 0 ]]; do
             ;;
         --min_mean)
             VIASH_PAR_MIN_MEAN="$2"
+            [ $# -lt 2 ] && ViashError Not enough arguments passed to --min_mean. Use "--help" to get more information on the parameters. && exit 1
             shift 2
             ;;
         --min_mean=*)
@@ -692,6 +700,7 @@ while [[ $# -gt 0 ]]; do
             ;;
         --max_mean)
             VIASH_PAR_MAX_MEAN="$2"
+            [ $# -lt 2 ] && ViashError Not enough arguments passed to --max_mean. Use "--help" to get more information on the parameters. && exit 1
             shift 2
             ;;
         --max_mean=*)
@@ -700,6 +709,7 @@ while [[ $# -gt 0 ]]; do
             ;;
         --min_disp)
             VIASH_PAR_MIN_DISP="$2"
+            [ $# -lt 2 ] && ViashError Not enough arguments passed to --min_disp. Use "--help" to get more information on the parameters. && exit 1
             shift 2
             ;;
         --min_disp=*)
@@ -708,6 +718,7 @@ while [[ $# -gt 0 ]]; do
             ;;
         --max_disp)
             VIASH_PAR_MAX_DISP="$2"
+            [ $# -lt 2 ] && ViashError Not enough arguments passed to --max_disp. Use "--help" to get more information on the parameters. && exit 1
             shift 2
             ;;
         --max_disp=*)
@@ -716,6 +727,7 @@ while [[ $# -gt 0 ]]; do
             ;;
         --span)
             VIASH_PAR_SPAN="$2"
+            [ $# -lt 2 ] && ViashError Not enough arguments passed to --span. Use "--help" to get more information on the parameters. && exit 1
             shift 2
             ;;
         --span=*)
@@ -724,6 +736,7 @@ while [[ $# -gt 0 ]]; do
             ;;
         --n_bins)
             VIASH_PAR_N_BINS="$2"
+            [ $# -lt 2 ] && ViashError Not enough arguments passed to --n_bins. Use "--help" to get more information on the parameters. && exit 1
             shift 2
             ;;
         --n_bins=*)
@@ -732,6 +745,7 @@ while [[ $# -gt 0 ]]; do
             ;;
         --obs_batch_key)
             VIASH_PAR_OBS_BATCH_KEY="$2"
+            [ $# -lt 2 ] && ViashError Not enough arguments passed to --obs_batch_key. Use "--help" to get more information on the parameters. && exit 1
             shift 2
             ;;
         --obs_batch_key=*)
@@ -826,6 +840,88 @@ fi
 if [ -z "$VIASH_PAR_N_BINS" ]; then
   VIASH_PAR_N_BINS="20"
 fi
+
+
+# check whether parameters values are of the right type
+
+
+
+
+
+if [[ -n "$VIASH_PAR_DO_SUBSET" ]]; then
+  if ! [[ "$VIASH_PAR_DO_SUBSET" =~ ^(true|True|TRUE|false|False|FALSE|yes|Yes|YES|no|No|NO)$ ]]; then
+    ViashError '--do_subset' has to be a boolean_true. Use "--help" to get more information on the parameters.
+    exit 1
+  fi
+fi
+
+
+if [[ -n "$VIASH_PAR_N_TOP_GENES" ]]; then
+  if ! [[ "$VIASH_PAR_N_TOP_GENES" =~ ^[-+]?[0-9]+$ ]]; then
+    ViashError '--n_top_genes' has to be an integer. Use "--help" to get more information on the parameters.
+    exit 1
+  fi
+fi
+
+if [[ -n "$VIASH_PAR_MIN_MEAN" ]]; then
+  if ! [[ "$VIASH_PAR_MIN_MEAN" =~ ^[-+]?(\.[0-9]+|[0-9]+(\.[0-9]*)?)([eE][-+]?[0-9]+)?$ ]]; then
+    ViashError '--min_mean' has to be a double. Use "--help" to get more information on the parameters.
+    exit 1
+  fi
+fi
+
+if [[ -n "$VIASH_PAR_MAX_MEAN" ]]; then
+  if ! [[ "$VIASH_PAR_MAX_MEAN" =~ ^[-+]?(\.[0-9]+|[0-9]+(\.[0-9]*)?)([eE][-+]?[0-9]+)?$ ]]; then
+    ViashError '--max_mean' has to be a double. Use "--help" to get more information on the parameters.
+    exit 1
+  fi
+fi
+
+if [[ -n "$VIASH_PAR_MIN_DISP" ]]; then
+  if ! [[ "$VIASH_PAR_MIN_DISP" =~ ^[-+]?(\.[0-9]+|[0-9]+(\.[0-9]*)?)([eE][-+]?[0-9]+)?$ ]]; then
+    ViashError '--min_disp' has to be a double. Use "--help" to get more information on the parameters.
+    exit 1
+  fi
+fi
+
+if [[ -n "$VIASH_PAR_MAX_DISP" ]]; then
+  if ! [[ "$VIASH_PAR_MAX_DISP" =~ ^[-+]?(\.[0-9]+|[0-9]+(\.[0-9]*)?)([eE][-+]?[0-9]+)?$ ]]; then
+    ViashError '--max_disp' has to be a double. Use "--help" to get more information on the parameters.
+    exit 1
+  fi
+fi
+
+if [[ -n "$VIASH_PAR_SPAN" ]]; then
+  if ! [[ "$VIASH_PAR_SPAN" =~ ^[-+]?(\.[0-9]+|[0-9]+(\.[0-9]*)?)([eE][-+]?[0-9]+)?$ ]]; then
+    ViashError '--span' has to be a double. Use "--help" to get more information on the parameters.
+    exit 1
+  fi
+fi
+
+if [[ -n "$VIASH_PAR_N_BINS" ]]; then
+  if ! [[ "$VIASH_PAR_N_BINS" =~ ^[-+]?[0-9]+$ ]]; then
+    ViashError '--n_bins' has to be an integer. Use "--help" to get more information on the parameters.
+    exit 1
+  fi
+fi
+
+
+
+# check whether parameters values are of the right type
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 # detect volumes from file arguments

@@ -21,7 +21,7 @@ functionality:
     - "pbmc_1k_protein_v3_raw_feature_bc_matrix.h5"
     default: []
     required: true
-    values: []
+    choices: []
     direction: "input"
     multiple: false
     multiple_sep: ":"
@@ -45,6 +45,7 @@ functionality:
     default:
     - 0
     required: false
+    choices: []
     direction: "input"
     multiple: false
     multiple_sep: ":"
@@ -56,6 +57,7 @@ functionality:
     default:
     - 0
     required: false
+    choices: []
     direction: "input"
     multiple: false
     multiple_sep: ":"
@@ -67,7 +69,7 @@ functionality:
     - "Antibody Capture"
     default: []
     required: false
-    values: []
+    choices: []
     direction: "input"
     multiple: true
     multiple_sep: ":"
@@ -1384,5 +1386,5 @@ info:
   platform: "nextflow"
   output: "target/nextflow/process_10xh5/filter_10xh5"
   viash_version: "0.5.12"
-  git_commit: "896a1d3cf7bb6ecf31a4bb2dd0eea8c744474b59"
+  git_commit: "594f819f2da986e76c84b9c82f43c8a5ff88c71f"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"

@@ -587,6 +587,7 @@ while [[ $# -gt 0 ]]; do
             ;;
         --input)
             VIASH_PAR_INPUT="$2"
+            [ $# -lt 2 ] && ViashError Not enough arguments passed to --input. Use "--help" to get more information on the parameters. && exit 1
             shift 2
             ;;
         --input=*)
@@ -599,6 +600,7 @@ while [[ $# -gt 0 ]]; do
             else
               VIASH_PAR_MODALITY="$VIASH_PAR_MODALITY:""$2"
             fi
+            [ $# -lt 2 ] && ViashError Not enough arguments passed to --modality. Use "--help" to get more information on the parameters. && exit 1
             shift 2
             ;;
         --modality=*)
@@ -611,6 +613,7 @@ while [[ $# -gt 0 ]]; do
             ;;
         --output)
             VIASH_PAR_OUTPUT="$2"
+            [ $# -lt 2 ] && ViashError Not enough arguments passed to --output. Use "--help" to get more information on the parameters. && exit 1
             shift 2
             ;;
         --output=*)
@@ -619,6 +622,7 @@ while [[ $# -gt 0 ]]; do
             ;;
         --obs_name_filter)
             VIASH_PAR_OBS_NAME_FILTER="$2"
+            [ $# -lt 2 ] && ViashError Not enough arguments passed to --obs_name_filter. Use "--help" to get more information on the parameters. && exit 1
             shift 2
             ;;
         --obs_name_filter=*)
@@ -631,6 +635,7 @@ while [[ $# -gt 0 ]]; do
             ;;
         --obs_name_doublet_score)
             VIASH_PAR_OBS_NAME_DOUBLET_SCORE="$2"
+            [ $# -lt 2 ] && ViashError Not enough arguments passed to --obs_name_doublet_score. Use "--help" to get more information on the parameters. && exit 1
             shift 2
             ;;
         --obs_name_doublet_score=*)
@@ -639,6 +644,7 @@ while [[ $# -gt 0 ]]; do
             ;;
         --min_counts)
             VIASH_PAR_MIN_COUNTS="$2"
+            [ $# -lt 2 ] && ViashError Not enough arguments passed to --min_counts. Use "--help" to get more information on the parameters. && exit 1
             shift 2
             ;;
         --min_counts=*)
@@ -647,6 +653,7 @@ while [[ $# -gt 0 ]]; do
             ;;
         --min_cells)
             VIASH_PAR_MIN_CELLS="$2"
+            [ $# -lt 2 ] && ViashError Not enough arguments passed to --min_cells. Use "--help" to get more information on the parameters. && exit 1
             shift 2
             ;;
         --min_cells=*)
@@ -655,6 +662,7 @@ while [[ $# -gt 0 ]]; do
             ;;
         --min_gene_variablity_percent)
             VIASH_PAR_MIN_GENE_VARIABLITY_PERCENT="$2"
+            [ $# -lt 2 ] && ViashError Not enough arguments passed to --min_gene_variablity_percent. Use "--help" to get more information on the parameters. && exit 1
             shift 2
             ;;
         --min_gene_variablity_percent=*)
@@ -663,6 +671,7 @@ while [[ $# -gt 0 ]]; do
             ;;
         --num_pca_components)
             VIASH_PAR_NUM_PCA_COMPONENTS="$2"
+            [ $# -lt 2 ] && ViashError Not enough arguments passed to --num_pca_components. Use "--help" to get more information on the parameters. && exit 1
             shift 2
             ;;
         --num_pca_components=*)
@@ -671,6 +680,7 @@ while [[ $# -gt 0 ]]; do
             ;;
         --distance_metric)
             VIASH_PAR_DISTANCE_METRIC="$2"
+            [ $# -lt 2 ] && ViashError Not enough arguments passed to --distance_metric. Use "--help" to get more information on the parameters. && exit 1
             shift 2
             ;;
         --distance_metric=*)
@@ -762,6 +772,62 @@ fi
 if [ -z "$VIASH_PAR_DISTANCE_METRIC" ]; then
   VIASH_PAR_DISTANCE_METRIC="euclidean"
 fi
+
+
+# check whether parameters values are of the right type
+
+
+
+
+if [[ -n "$VIASH_PAR_DO_SUBSET" ]]; then
+  if ! [[ "$VIASH_PAR_DO_SUBSET" =~ ^(true|True|TRUE|false|False|FALSE|yes|Yes|YES|no|No|NO)$ ]]; then
+    ViashError '--do_subset' has to be a boolean_true. Use "--help" to get more information on the parameters.
+    exit 1
+  fi
+fi
+
+
+if [[ -n "$VIASH_PAR_MIN_COUNTS" ]]; then
+  if ! [[ "$VIASH_PAR_MIN_COUNTS" =~ ^[-+]?[0-9]+$ ]]; then
+    ViashError '--min_counts' has to be an integer. Use "--help" to get more information on the parameters.
+    exit 1
+  fi
+fi
+
+if [[ -n "$VIASH_PAR_MIN_CELLS" ]]; then
+  if ! [[ "$VIASH_PAR_MIN_CELLS" =~ ^[-+]?[0-9]+$ ]]; then
+    ViashError '--min_cells' has to be an integer. Use "--help" to get more information on the parameters.
+    exit 1
+  fi
+fi
+
+if [[ -n "$VIASH_PAR_MIN_GENE_VARIABLITY_PERCENT" ]]; then
+  if ! [[ "$VIASH_PAR_MIN_GENE_VARIABLITY_PERCENT" =~ ^[-+]?(\.[0-9]+|[0-9]+(\.[0-9]*)?)([eE][-+]?[0-9]+)?$ ]]; then
+    ViashError '--min_gene_variablity_percent' has to be a double. Use "--help" to get more information on the parameters.
+    exit 1
+  fi
+fi
+
+if [[ -n "$VIASH_PAR_NUM_PCA_COMPONENTS" ]]; then
+  if ! [[ "$VIASH_PAR_NUM_PCA_COMPONENTS" =~ ^[-+]?[0-9]+$ ]]; then
+    ViashError '--num_pca_components' has to be an integer. Use "--help" to get more information on the parameters.
+    exit 1
+  fi
+fi
+
+
+
+# check whether parameters values are of the right type
+
+
+
+
+
+
+
+
+
+
 
 
 # detect volumes from file arguments

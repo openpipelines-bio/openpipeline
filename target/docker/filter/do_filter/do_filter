@@ -532,6 +532,7 @@ while [[ $# -gt 0 ]]; do
             ;;
         --input)
             VIASH_PAR_INPUT="$2"
+            [ $# -lt 2 ] && ViashError Not enough arguments passed to --input. Use "--help" to get more information on the parameters. && exit 1
             shift 2
             ;;
         --input=*)
@@ -544,6 +545,7 @@ while [[ $# -gt 0 ]]; do
             else
               VIASH_PAR_MODALITY="$VIASH_PAR_MODALITY:""$2"
             fi
+            [ $# -lt 2 ] && ViashError Not enough arguments passed to --modality. Use "--help" to get more information on the parameters. && exit 1
             shift 2
             ;;
         --modality=*)
@@ -560,6 +562,7 @@ while [[ $# -gt 0 ]]; do
             else
               VIASH_PAR_OBS_FILTER="$VIASH_PAR_OBS_FILTER:""$2"
             fi
+            [ $# -lt 2 ] && ViashError Not enough arguments passed to --obs_filter. Use "--help" to get more information on the parameters. && exit 1
             shift 2
             ;;
         --obs_filter=*)
@@ -576,6 +579,7 @@ while [[ $# -gt 0 ]]; do
             else
               VIASH_PAR_VAR_FILTER="$VIASH_PAR_VAR_FILTER:""$2"
             fi
+            [ $# -lt 2 ] && ViashError Not enough arguments passed to --var_filter. Use "--help" to get more information on the parameters. && exit 1
             shift 2
             ;;
         --var_filter=*)
@@ -588,6 +592,7 @@ while [[ $# -gt 0 ]]; do
             ;;
         --output)
             VIASH_PAR_OUTPUT="$2"
+            [ $# -lt 2 ] && ViashError Not enough arguments passed to --output. Use "--help" to get more information on the parameters. && exit 1
             shift 2
             ;;
         --output=*)
@@ -658,6 +663,20 @@ fi
 if [ -z "$VIASH_PAR_VAR_FILTER" ]; then
   VIASH_PAR_VAR_FILTER="filter_with_x"
 fi
+
+
+# check whether parameters values are of the right type
+
+
+
+
+
+
+# check whether parameters values are of the right type
+
+
+
+
 
 
 # detect volumes from file arguments

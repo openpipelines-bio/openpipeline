@@ -545,6 +545,7 @@ while [[ $# -gt 0 ]]; do
             ;;
         --input)
             VIASH_PAR_INPUT="$2"
+            [ $# -lt 2 ] && ViashError Not enough arguments passed to --input. Use "--help" to get more information on the parameters. && exit 1
             shift 2
             ;;
         --input=*)
@@ -553,10 +554,12 @@ while [[ $# -gt 0 ]]; do
             ;;
         -i)
             VIASH_PAR_INPUT="$2"
+            [ $# -lt 2 ] && ViashError Not enough arguments passed to -i. Use "--help" to get more information on the parameters. && exit 1
             shift 2
             ;;
         --samplesheet)
             VIASH_PAR_SAMPLESHEET="$2"
+            [ $# -lt 2 ] && ViashError Not enough arguments passed to --samplesheet. Use "--help" to get more information on the parameters. && exit 1
             shift 2
             ;;
         --samplesheet=*)
@@ -565,6 +568,7 @@ while [[ $# -gt 0 ]]; do
             ;;
         --output)
             VIASH_PAR_OUTPUT="$2"
+            [ $# -lt 2 ] && ViashError Not enough arguments passed to --output. Use "--help" to get more information on the parameters. && exit 1
             shift 2
             ;;
         --output=*)
@@ -573,10 +577,12 @@ while [[ $# -gt 0 ]]; do
             ;;
         -o)
             VIASH_PAR_OUTPUT="$2"
+            [ $# -lt 2 ] && ViashError Not enough arguments passed to -o. Use "--help" to get more information on the parameters. && exit 1
             shift 2
             ;;
         --barcode_mismatches)
             VIASH_PAR_BARCODE_MISMATCHES="$2"
+            [ $# -lt 2 ] && ViashError Not enough arguments passed to --barcode_mismatches. Use "--help" to get more information on the parameters. && exit 1
             shift 2
             ;;
         --barcode_mismatches=*)
@@ -585,6 +591,7 @@ while [[ $# -gt 0 ]]; do
             ;;
         --memory)
             VIASH_PAR_MEMORY="$2"
+            [ $# -lt 2 ] && ViashError Not enough arguments passed to --memory. Use "--help" to get more information on the parameters. && exit 1
             shift 2
             ;;
         --memory=*)
@@ -593,6 +600,7 @@ while [[ $# -gt 0 ]]; do
             ;;
         --cores)
             VIASH_PAR_CORES="$2"
+            [ $# -lt 2 ] && ViashError Not enough arguments passed to --cores. Use "--help" to get more information on the parameters. && exit 1
             shift 2
             ;;
         --cores=*)
@@ -666,6 +674,40 @@ fi
 if [ -z "$VIASH_PAR_CORES" ]; then
   VIASH_PAR_CORES="32"
 fi
+
+
+# check whether parameters values are of the right type
+
+
+
+if [[ -n "$VIASH_PAR_BARCODE_MISMATCHES" ]]; then
+  if ! [[ "$VIASH_PAR_BARCODE_MISMATCHES" =~ ^[-+]?[0-9]+$ ]]; then
+    ViashError '--barcode_mismatches' has to be an integer. Use "--help" to get more information on the parameters.
+    exit 1
+  fi
+fi
+
+if [[ -n "$VIASH_PAR_MEMORY" ]]; then
+  if ! [[ "$VIASH_PAR_MEMORY" =~ ^[-+]?[0-9]+$ ]]; then
+    ViashError '--memory' has to be an integer. Use "--help" to get more information on the parameters.
+    exit 1
+  fi
+fi
+
+if [[ -n "$VIASH_PAR_CORES" ]]; then
+  if ! [[ "$VIASH_PAR_CORES" =~ ^[-+]?[0-9]+$ ]]; then
+    ViashError '--cores' has to be an integer. Use "--help" to get more information on the parameters.
+    exit 1
+  fi
+fi
+
+
+# check whether parameters values are of the right type
+
+
+
+
+
 
 
 # detect volumes from file arguments

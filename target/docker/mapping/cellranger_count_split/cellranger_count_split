@@ -537,6 +537,7 @@ while [[ $# -gt 0 ]]; do
             ;;
         --input)
             VIASH_PAR_INPUT="$2"
+            [ $# -lt 2 ] && ViashError Not enough arguments passed to --input. Use "--help" to get more information on the parameters. && exit 1
             shift 2
             ;;
         --input=*)
@@ -545,6 +546,7 @@ while [[ $# -gt 0 ]]; do
             ;;
         --filtered_h5)
             VIASH_PAR_FILTERED_H5="$2"
+            [ $# -lt 2 ] && ViashError Not enough arguments passed to --filtered_h5. Use "--help" to get more information on the parameters. && exit 1
             shift 2
             ;;
         --filtered_h5=*)
@@ -553,6 +555,7 @@ while [[ $# -gt 0 ]]; do
             ;;
         --metrics_summary)
             VIASH_PAR_METRICS_SUMMARY="$2"
+            [ $# -lt 2 ] && ViashError Not enough arguments passed to --metrics_summary. Use "--help" to get more information on the parameters. && exit 1
             shift 2
             ;;
         --metrics_summary=*)
@@ -561,6 +564,7 @@ while [[ $# -gt 0 ]]; do
             ;;
         --molecule_info)
             VIASH_PAR_MOLECULE_INFO="$2"
+            [ $# -lt 2 ] && ViashError Not enough arguments passed to --molecule_info. Use "--help" to get more information on the parameters. && exit 1
             shift 2
             ;;
         --molecule_info=*)
@@ -569,6 +573,7 @@ while [[ $# -gt 0 ]]; do
             ;;
         --bam)
             VIASH_PAR_BAM="$2"
+            [ $# -lt 2 ] && ViashError Not enough arguments passed to --bam. Use "--help" to get more information on the parameters. && exit 1
             shift 2
             ;;
         --bam=*)
@@ -577,6 +582,7 @@ while [[ $# -gt 0 ]]; do
             ;;
         --bai)
             VIASH_PAR_BAI="$2"
+            [ $# -lt 2 ] && ViashError Not enough arguments passed to --bai. Use "--help" to get more information on the parameters. && exit 1
             shift 2
             ;;
         --bai=*)
@@ -585,6 +591,7 @@ while [[ $# -gt 0 ]]; do
             ;;
         --raw_h5)
             VIASH_PAR_RAW_H5="$2"
+            [ $# -lt 2 ] && ViashError Not enough arguments passed to --raw_h5. Use "--help" to get more information on the parameters. && exit 1
             shift 2
             ;;
         --raw_h5=*)
@@ -649,6 +656,24 @@ if [ -z "$VIASH_PAR_INPUT" ]; then
   ViashError '--input' is a required argument. Use "--help" to get more information on the parameters.
   exit 1
 fi
+
+
+
+# check whether parameters values are of the right type
+
+
+
+
+
+
+
+
+# check whether parameters values are of the right type
+
+
+
+
+
 
 
 

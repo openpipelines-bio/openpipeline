@@ -47,7 +47,7 @@ functionality:
     default:
     - ","
     required: false
-    values: []
+    choices: []
     direction: "input"
     multiple: false
     multiple_sep: ":"
@@ -594,6 +594,7 @@ functionality:
                   ;;
               --input)
                   VIASH_PAR_INPUT="$2"
+                  [ $# -lt 2 ] && ViashError Not enough arguments passed to --input. Use "--help" to get more information on the parameters. && exit 1
                   shift 2
                   ;;
               --input=*)
@@ -602,10 +603,12 @@ functionality:
                   ;;
               -i)
                   VIASH_PAR_INPUT="$2"
+                  [ $# -lt 2 ] && ViashError Not enough arguments passed to -i. Use "--help" to get more information on the parameters. && exit 1
                   shift 2
                   ;;
               --output)
                   VIASH_PAR_OUTPUT="$2"
+                  [ $# -lt 2 ] && ViashError Not enough arguments passed to --output. Use "--help" to get more information on the parameters. && exit 1
                   shift 2
                   ;;
               --output=*)
@@ -614,10 +617,12 @@ functionality:
                   ;;
               -o)
                   VIASH_PAR_OUTPUT="$2"
+                  [ $# -lt 2 ] && ViashError Not enough arguments passed to -o. Use "--help" to get more information on the parameters. && exit 1
                   shift 2
                   ;;
               --delimiter)
                   VIASH_PAR_DELIMITER="$2"
+                  [ $# -lt 2 ] && ViashError Not enough arguments passed to --delimiter. Use "--help" to get more information on the parameters. && exit 1
                   shift 2
                   ;;
               --delimiter=*)
@@ -626,10 +631,12 @@ functionality:
                   ;;
               -d)
                   VIASH_PAR_DELIMITER="$2"
+                  [ $# -lt 2 ] && ViashError Not enough arguments passed to -d. Use "--help" to get more information on the parameters. && exit 1
                   shift 2
                   ;;
               --use_column_names)
                   VIASH_PAR_USE_COLUMN_NAMES="$2"
+                  [ $# -lt 2 ] && ViashError Not enough arguments passed to --use_column_names. Use "--help" to get more information on the parameters. && exit 1
                   shift 2
                   ;;
               --use_column_names=*)
@@ -700,6 +707,24 @@ functionality:
       if [ -z "$VIASH_PAR_USE_COLUMN_NAMES" ]; then
         VIASH_PAR_USE_COLUMN_NAMES="true"
       fi
+      
+      
+      # check whether parameters values are of the right type
+      
+      
+      
+      if [[ -n "$VIASH_PAR_USE_COLUMN_NAMES" ]]; then
+        if ! [[ "$VIASH_PAR_USE_COLUMN_NAMES" =~ ^(true|True|TRUE|false|False|FALSE|yes|Yes|YES|no|No|NO)$ ]]; then
+          ViashError '--use_column_names' has to be a boolean. Use "--help" to get more information on the parameters.
+          exit 1
+        fi
+      fi
+      
+      
+      # check whether parameters values are of the right type
+      
+      
+      
       
       
       # detect volumes from file arguments
@@ -839,5 +864,5 @@ info:
   output: "target/docker/convert/from_csv_to_h5mu"
   executable: "target/docker/convert/from_csv_to_h5mu/from_csv_to_h5mu"
   viash_version: "0.5.12"
-  git_commit: "896a1d3cf7bb6ecf31a4bb2dd0eea8c744474b59"
+  git_commit: "594f819f2da986e76c84b9c82f43c8a5ff88c71f"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"

@@ -42,3 +42,4 @@ platforms:
       - type: apk
         packages: [ wget ]
   - type: nextflow
+    variant: vdsl3

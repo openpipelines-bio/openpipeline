@@ -576,6 +576,7 @@ while [[ $# -gt 0 ]]; do
             ;;
         --input)
             VIASH_PAR_INPUT="$2"
+            [ $# -lt 2 ] && ViashError Not enough arguments passed to --input. Use "--help" to get more information on the parameters. && exit 1
             shift 2
             ;;
         --input=*)
@@ -588,6 +589,7 @@ while [[ $# -gt 0 ]]; do
             else
               VIASH_PAR_MODALITY="$VIASH_PAR_MODALITY:""$2"
             fi
+            [ $# -lt 2 ] && ViashError Not enough arguments passed to --modality. Use "--help" to get more information on the parameters. && exit 1
             shift 2
             ;;
         --modality=*)
@@ -600,6 +602,7 @@ while [[ $# -gt 0 ]]; do
             ;;
         --output)
             VIASH_PAR_OUTPUT="$2"
+            [ $# -lt 2 ] && ViashError Not enough arguments passed to --output. Use "--help" to get more information on the parameters. && exit 1
             shift 2
             ;;
         --output=*)
@@ -612,6 +615,7 @@ while [[ $# -gt 0 ]]; do
             ;;
         --obs_name_filter)
             VIASH_PAR_OBS_NAME_FILTER="$2"
+            [ $# -lt 2 ] && ViashError Not enough arguments passed to --obs_name_filter. Use "--help" to get more information on the parameters. && exit 1
             shift 2
             ;;
         --obs_name_filter=*)
@@ -620,6 +624,7 @@ while [[ $# -gt 0 ]]; do
             ;;
         --var_name_filter)
             VIASH_PAR_VAR_NAME_FILTER="$2"
+            [ $# -lt 2 ] && ViashError Not enough arguments passed to --var_name_filter. Use "--help" to get more information on the parameters. && exit 1
             shift 2
             ;;
         --var_name_filter=*)
@@ -628,6 +633,7 @@ while [[ $# -gt 0 ]]; do
             ;;
         --min_counts)
             VIASH_PAR_MIN_COUNTS="$2"
+            [ $# -lt 2 ] && ViashError Not enough arguments passed to --min_counts. Use "--help" to get more information on the parameters. && exit 1
             shift 2
             ;;
         --min_counts=*)
@@ -636,6 +642,7 @@ while [[ $# -gt 0 ]]; do
             ;;
         --max_counts)
             VIASH_PAR_MAX_COUNTS="$2"
+            [ $# -lt 2 ] && ViashError Not enough arguments passed to --max_counts. Use "--help" to get more information on the parameters. && exit 1
             shift 2
             ;;
         --max_counts=*)
@@ -644,6 +651,7 @@ while [[ $# -gt 0 ]]; do
             ;;
         --min_genes_per_cell)
             VIASH_PAR_MIN_GENES_PER_CELL="$2"
+            [ $# -lt 2 ] && ViashError Not enough arguments passed to --min_genes_per_cell. Use "--help" to get more information on the parameters. && exit 1
             shift 2
             ;;
         --min_genes_per_cell=*)
@@ -652,6 +660,7 @@ while [[ $# -gt 0 ]]; do
             ;;
         --max_genes_per_cell)
             VIASH_PAR_MAX_GENES_PER_CELL="$2"
+            [ $# -lt 2 ] && ViashError Not enough arguments passed to --max_genes_per_cell. Use "--help" to get more information on the parameters. && exit 1
             shift 2
             ;;
         --max_genes_per_cell=*)
@@ -660,6 +669,7 @@ while [[ $# -gt 0 ]]; do
             ;;
         --min_cells_per_gene)
             VIASH_PAR_MIN_CELLS_PER_GENE="$2"
+            [ $# -lt 2 ] && ViashError Not enough arguments passed to --min_cells_per_gene. Use "--help" to get more information on the parameters. && exit 1
             shift 2
             ;;
         --min_cells_per_gene=*)
@@ -668,6 +678,7 @@ while [[ $# -gt 0 ]]; do
             ;;
         --min_fraction_mito)
             VIASH_PAR_MIN_FRACTION_MITO="$2"
+            [ $# -lt 2 ] && ViashError Not enough arguments passed to --min_fraction_mito. Use "--help" to get more information on the parameters. && exit 1
             shift 2
             ;;
         --min_fraction_mito=*)
@@ -676,6 +687,7 @@ while [[ $# -gt 0 ]]; do
             ;;
         --max_fraction_mito)
             VIASH_PAR_MAX_FRACTION_MITO="$2"
+            [ $# -lt 2 ] && ViashError Not enough arguments passed to --max_fraction_mito. Use "--help" to get more information on the parameters. && exit 1
             shift 2
             ;;
         --max_fraction_mito=*)
@@ -752,6 +764,84 @@ fi
 if [ -z "$VIASH_PAR_VAR_NAME_FILTER" ]; then
   VIASH_PAR_VAR_NAME_FILTER="filter_with_counts"
 fi
+
+
+# check whether parameters values are of the right type
+
+
+
+if [[ -n "$VIASH_PAR_DO_SUBSET" ]]; then
+  if ! [[ "$VIASH_PAR_DO_SUBSET" =~ ^(true|True|TRUE|false|False|FALSE|yes|Yes|YES|no|No|NO)$ ]]; then
+    ViashError '--do_subset' has to be a boolean_true. Use "--help" to get more information on the parameters.
+    exit 1
+  fi
+fi
+
+
+
+if [[ -n "$VIASH_PAR_MIN_COUNTS" ]]; then
+  if ! [[ "$VIASH_PAR_MIN_COUNTS" =~ ^[-+]?[0-9]+$ ]]; then
+    ViashError '--min_counts' has to be an integer. Use "--help" to get more information on the parameters.
+    exit 1
+  fi
+fi
+
+if [[ -n "$VIASH_PAR_MAX_COUNTS" ]]; then
+  if ! [[ "$VIASH_PAR_MAX_COUNTS" =~ ^[-+]?[0-9]+$ ]]; then
+    ViashError '--max_counts' has to be an integer. Use "--help" to get more information on the parameters.
+    exit 1
+  fi
+fi
+
+if [[ -n "$VIASH_PAR_MIN_GENES_PER_CELL" ]]; then
+  if ! [[ "$VIASH_PAR_MIN_GENES_PER_CELL" =~ ^[-+]?[0-9]+$ ]]; then
+    ViashError '--min_genes_per_cell' has to be an integer. Use "--help" to get more information on the parameters.
+    exit 1
+  fi
+fi
+
+if [[ -n "$VIASH_PAR_MAX_GENES_PER_CELL" ]]; then
+  if ! [[ "$VIASH_PAR_MAX_GENES_PER_CELL" =~ ^[-+]?[0-9]+$ ]]; then
+    ViashError '--max_genes_per_cell' has to be an integer. Use "--help" to get more information on the parameters.
+    exit 1
+  fi
+fi
+
+if [[ -n "$VIASH_PAR_MIN_CELLS_PER_GENE" ]]; then
+  if ! [[ "$VIASH_PAR_MIN_CELLS_PER_GENE" =~ ^[-+]?[0-9]+$ ]]; then
+    ViashError '--min_cells_per_gene' has to be an integer. Use "--help" to get more information on the parameters.
+    exit 1
+  fi
+fi
+
+if [[ -n "$VIASH_PAR_MIN_FRACTION_MITO" ]]; then
+  if ! [[ "$VIASH_PAR_MIN_FRACTION_MITO" =~ ^[-+]?(\.[0-9]+|[0-9]+(\.[0-9]*)?)([eE][-+]?[0-9]+)?$ ]]; then
+    ViashError '--min_fraction_mito' has to be a double. Use "--help" to get more information on the parameters.
+    exit 1
+  fi
+fi
+
+if [[ -n "$VIASH_PAR_MAX_FRACTION_MITO" ]]; then
+  if ! [[ "$VIASH_PAR_MAX_FRACTION_MITO" =~ ^[-+]?(\.[0-9]+|[0-9]+(\.[0-9]*)?)([eE][-+]?[0-9]+)?$ ]]; then
+    ViashError '--max_fraction_mito' has to be a double. Use "--help" to get more information on the parameters.
+    exit 1
+  fi
+fi
+
+
+# check whether parameters values are of the right type
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 # detect volumes from file arguments

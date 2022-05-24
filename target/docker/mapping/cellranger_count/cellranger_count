@@ -544,6 +544,7 @@ while [[ $# -gt 0 ]]; do
             ;;
         --input)
             VIASH_PAR_INPUT="$2"
+            [ $# -lt 2 ] && ViashError Not enough arguments passed to --input. Use "--help" to get more information on the parameters. && exit 1
             shift 2
             ;;
         --input=*)
@@ -552,6 +553,7 @@ while [[ $# -gt 0 ]]; do
             ;;
         --reference)
             VIASH_PAR_REFERENCE="$2"
+            [ $# -lt 2 ] && ViashError Not enough arguments passed to --reference. Use "--help" to get more information on the parameters. && exit 1
             shift 2
             ;;
         --reference=*)
@@ -560,6 +562,7 @@ while [[ $# -gt 0 ]]; do
             ;;
         --output)
             VIASH_PAR_OUTPUT="$2"
+            [ $# -lt 2 ] && ViashError Not enough arguments passed to --output. Use "--help" to get more information on the parameters. && exit 1
             shift 2
             ;;
         --output=*)
@@ -568,6 +571,7 @@ while [[ $# -gt 0 ]]; do
             ;;
         --expect_cells)
             VIASH_PAR_EXPECT_CELLS="$2"
+            [ $# -lt 2 ] && ViashError Not enough arguments passed to --expect_cells. Use "--help" to get more information on the parameters. && exit 1
             shift 2
             ;;
         --expect_cells=*)
@@ -576,6 +580,7 @@ while [[ $# -gt 0 ]]; do
             ;;
         --chemistry)
             VIASH_PAR_CHEMISTRY="$2"
+            [ $# -lt 2 ] && ViashError Not enough arguments passed to --chemistry. Use "--help" to get more information on the parameters. && exit 1
             shift 2
             ;;
         --chemistry=*)
@@ -584,6 +589,7 @@ while [[ $# -gt 0 ]]; do
             ;;
         --cores)
             VIASH_PAR_CORES="$2"
+            [ $# -lt 2 ] && ViashError Not enough arguments passed to --cores. Use "--help" to get more information on the parameters. && exit 1
             shift 2
             ;;
         --cores=*)
@@ -592,6 +598,7 @@ while [[ $# -gt 0 ]]; do
             ;;
         --memory)
             VIASH_PAR_MEMORY="$2"
+            [ $# -lt 2 ] && ViashError Not enough arguments passed to --memory. Use "--help" to get more information on the parameters. && exit 1
             shift 2
             ;;
         --memory=*)
@@ -670,6 +677,42 @@ fi
 if [ -z "$VIASH_PAR_CHEMISTRY" ]; then
   VIASH_PAR_CHEMISTRY="auto"
 fi
+
+
+# check whether parameters values are of the right type
+
+
+
+if [[ -n "$VIASH_PAR_EXPECT_CELLS" ]]; then
+  if ! [[ "$VIASH_PAR_EXPECT_CELLS" =~ ^[-+]?[0-9]+$ ]]; then
+    ViashError '--expect_cells' has to be an integer. Use "--help" to get more information on the parameters.
+    exit 1
+  fi
+fi
+
+
+if [[ -n "$VIASH_PAR_CORES" ]]; then
+  if ! [[ "$VIASH_PAR_CORES" =~ ^[-+]?[0-9]+$ ]]; then
+    ViashError '--cores' has to be an integer. Use "--help" to get more information on the parameters.
+    exit 1
+  fi
+fi
+
+if [[ -n "$VIASH_PAR_MEMORY" ]]; then
+  if ! [[ "$VIASH_PAR_MEMORY" =~ ^[-+]?[0-9]+$ ]]; then
+    ViashError '--memory' has to be an integer. Use "--help" to get more information on the parameters.
+    exit 1
+  fi
+fi
+
+
+# check whether parameters values are of the right type
+
+
+
+
+
+
 
 
 # detect volumes from file arguments
