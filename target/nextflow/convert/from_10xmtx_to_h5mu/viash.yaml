@@ -1207,5 +1207,5 @@ info:
   platform: "nextflow"
   output: "target/nextflow/convert/from_10xmtx_to_h5mu"
   viash_version: "0.5.12"
-  git_commit: "594f819f2da986e76c84b9c82f43c8a5ff88c71f"
+  git_commit: "bdd2db98fae1a2069df8f58b69450680b90a4a59"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"
