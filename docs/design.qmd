@@ -8,6 +8,8 @@ format: gfm
 
 ## Version 2022-05-30
 
+:::{.column-page}
+
 ```{mermaid}
 flowchart LR
   Raw[Raw\nbcl/fastq's]
@@ -16,16 +18,16 @@ flowchart LR
   MS[Unimodal\nmulti-sample]
   MM[Multi-modal\nmulti-sample]
   Ingestion[/Ingestion/]
-  Preproc1[/Preproc1/]
-  Preproc2[/Preproc2/]
+  Preproc1[/Single-sample\nprocessing/]
+  Preproc2[/Multi-sample\nprocessing/]
   Integration[/Integration/]
 
   Raw --- Ingestion --> Counts --- Preproc1 --> SS --- Preproc2 --> MS --- Integration --> MM
 
-  Ingestion -.-|"- Demux\n- Mapping"| Ingestion
+  Ingestion -.-|"- Demux.\n- Mapping"| Ingestion
   Preproc1 -.-|"- Count QC\n- Doublet calling\n- Ambient RNA\n"| Preproc1
-  Preproc2 -.-|"- Normalisation\n- Gene filtering\n- Feature selection\n- Batch correction?\n- Dim. red.?"| Preproc2
-  Integration -.-|"- Dim. red.\nData integration"| Integration
+  Preproc2 -.-|"- Normalisation\n- Feature filtering\n- Feature selection\n- Batch correction?\n- Dim. red.?"| Preproc2
+  Integration -.-|"- Dim. red.\n- Data integration"| Integration
 
   %% linkStyles are 0-indexed, so linkStyle 1 applies to the second connection
   linkStyle 8 stroke:#fff,stroke-width:0px,text-align:left;
@@ -33,6 +35,8 @@ flowchart LR
   linkStyle 10 stroke:#fff,stroke-width:0px,text-align:left;
   linkStyle 11 stroke:#fff,stroke-width:0px,text-align:left;
 ```
+
+:::
 
 ## Version 2021-10-13
 

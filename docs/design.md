@@ -5,14 +5,18 @@ Design of OpenPipeline
 
 ## Version 2022-05-30
 
+<div class="column-page">
+
 <div id="cell-handler-fake-div-1">
 
 <p>
 
 <img src="design_files/figure-gfm/mermaid-figure-1.png" data-fig-pos="H"
-style="width:13.76742in;height:1.90625in" />
+style="width:14.29688in;height:2in" />
 
 </p>
+
+</div>
 
 </div>
 
