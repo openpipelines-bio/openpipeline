@@ -36,9 +36,11 @@ flowchart LR
   linkStyle 8,9,10,11 stroke:#fff,stroke-width:0px,text-align:left;
 
   click Ingestion "./#ingestion"
-  style Ingestion color:#58a6ff,text-decoration:underline;
-  click Preproc1 "./#single-sample-processing"
-  style Preproc1 color:#58a6ff,text-decoration:underline;
+  style Ingestion color:#2873c7,text-decoration:underline;
+  click Preproc1 "./#single-sample-preproc"
+  style Preproc1 color:#2873c7,text-decoration:underline;
+  click Preproc2 "./#multi-sample-preproc"
+  style Preproc2 color:#2873c7,text-decoration:underline;
 
 ```
 
@@ -74,18 +76,18 @@ pipeline.
 
 <div class="column-page">
 
-<div id="cell-handler-fake-div-1">
+<div id="fig-ingestion">
 
 <p>
 
 ``` mermaid
 flowchart LR
 
-  BCL["BCL*"]
-  Fastq["Fastq*"]
+  BCL["BCL<sup>*</sup>"]
+  Fastq["Fastq<sup>*</sup>"]
   Ref["Reference"]
-  RawDir["Raw out*"]
-  RawCounts["Raw counts"]
+  RawDir["Raw out<sup>*</sup>"]
+  RawCounts["Raw counts<sup>†</sup>"]
 
   Demux[/"Demux"/]
   Mapping[/"Mapping"/]
@@ -106,13 +108,111 @@ flowchart LR
 
 </p>
 
+Figure 2: Ingestion pipeline.  
+`*`: Possible entry points.  
+`†`: Output file(s)
+
+</div>
+
+</div>
+
+### Single-sample (RNA) processing
+
+<div class="column-page">
+
+<div id="fig-sspreproc">
+
+<p>
+
+``` mermaid
+flowchart LR
+
+  RawCounts["Raw counts<sup>*</sup>"]
+  Processed["Processed\ncounts<sup>†</sup>"]
+
+  Step1[/"Cell\nfiltering"/]
+  Step2[/"Doublet\ncalling"/]
+  Step3[/"Ambient RNA\ncorrection"/]
+  
+  RawCounts --> Step1 --> Step2 --> Step3 --> Processed
+```
+
+</p>
+
+Figure 3: Single-sample processing pipeline.  
+`*`: Possible entry points.  
+`†`: Output file(s)
+
 </div>
 
 </div>
 
-`*`: Possible entry points
+### Multi-sample (RNA) processing
 
-### Single-sample processing
+<div class="column-page">
+
+<div id="fig-mspreproc">
+
+<p>
+
+``` mermaid
+flowchart LR
+
+  Processed["Processed\ncounts<sup>*</sup>"]
+  Normalised["Normalised\ncounts<sup>†</sup>"]
+
+  Step1[/"Feature filtering"/]
+  Step2[/"Normalisation"/]
+  Step3[/"Feature selection"/]
+  Step4[/"Batch correction?"/]
+  
+
+  Processed --> Step1 --> Step2 --> Step3 --> Step4 --> Normalised
+```
+
+</p>
+
+Figure 4: Multi-sample processing pipeline.  
+`*`: Possible entry points.  
+`†`: Output file(s)
+
+</div>
+
+</div>
+
+### Integration
+
+<!--
+    Integration -.-|"- Dim. red.\n- Data integration"| Integration
+-->
+
+<div class="column-page">
+
+<div id="fig-integration">
+
+<p>
+
+``` mermaid
+flowchart LR
+
+  Normalised["Normalised\ncounts<sup>*</sup>"]
+  Integrated["Integrated\ndata<sup>†</sup>"]
+
+  Step1[/"Dimensionality\nreduction"/]
+  Step2[/"Data integration"/]
+  
+  Normalised --> Step1 --> Step2 --> Integrated
+```
+
+</p>
+
+Figure 5: Integration pipeline.  
+`*`: Possible entry points.  
+`†`: Output file(s)
+
+</div>
+
+</div>
 
 ------------------------------------------------------------------------
 
