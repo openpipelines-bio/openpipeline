@@ -47,10 +47,6 @@ functionality:
   resources:
     - type: bash_script
       path: script.sh
-  tests:
-    - type: bash_script
-      path: run_test.sh
-    - path: ../../../resources_test/cellranger_tiny_bcl_1.2.0
 platforms:
   - type: docker
     image: ghcr.io/data-intuitive/cellranger:6.1
