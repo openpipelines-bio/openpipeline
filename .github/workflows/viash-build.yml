@@ -14,13 +14,34 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
+    
     - name: Fetch viash
       run: |
         bin/init
         bin/viash -h
+
+    - name: Build target dir
+      run: |
+        # allow publishing the target folder
+        sed -i '/^target.*/d' .gitignore
+
+        # force override viash build strategy to not build containers
+        sed -i 's#--setup "\\$setup_strat"#--setup donothing#' bin/viash_build
+
+        # build target dir
+        bin/viash_build -m release -t main_build
+
+    - name: Deploy to target branch
+      uses: peaceiris/actions-gh-pages@v3
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        publish_dir: .
+        publish_branch: main_build
+
     - id: set_matrix
       run: |
         echo "::set-output name=matrix::$( bin/viash ns list -p docker --format json | jq -c '[ .[] | .info.config ]' )"
+
     outputs:
         matrix: ${{ steps.set_matrix.outputs.matrix }}
 
@@ -59,37 +80,3 @@ jobs:
     - name: Push containers
       run: |
         bin/viash_push -m release -t main_build --force
-
-
-  # phase 3
-  build_target:
-    needs: build_containers
-
-    runs-on: ubuntu-latest
-    if: "!contains(github.event.head_commit.message, 'ci skip')"
-
-    steps:
-    - uses: actions/checkout@v2
-
-    - name: Fetch viash
-      run: |
-        bin/init
-        bin/viash -h
-
-    - name: Build target dir
-      run: |
-        # allow publishing the target folder
-        sed -i '/^target.*/d' .gitignore
-
-        # force override viash build strategy to not build containers
-        sed -i 's#--setup "\\$setup_strat"#--setup donothing#' bin/viash_build
-
-        # build target dir
-        bin/viash_build -m release -t main_build
-
-    - name: Deploy to target branch
-      uses: peaceiris/actions-gh-pages@v3
-      with:
-        github_token: ${{ secrets.GITHUB_TOKEN }}
-        publish_dir: .
-        publish_branch: main_build
