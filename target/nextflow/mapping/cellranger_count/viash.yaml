@@ -1391,5 +1391,5 @@ info:
   platform: "nextflow"
   output: "target/nextflow/mapping/cellranger_count"
   viash_version: "0.5.12"
-  git_commit: "a90097f4c792c76db67e0bffe3db10141933e465"
+  git_commit: "fbb8dd9f08dbb34009783c65d4ba2500540ce60e"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"
