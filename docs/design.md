@@ -13,8 +13,34 @@ Design of OpenPipeline
 
 <p>
 
-<img src="design_files/figure-gfm/mermaid-figure-1.png" data-fig-pos="H"
-style="width:13.97803in;height:2in" />
+``` mermaid
+
+flowchart LR
+  Raw[Raw\nreads]
+  Counts[Raw\ncounts]
+  SS[Unimodal\nsample]
+  MS[Unimodal\nmulti-sample]
+  MM[Multi-modal\nmulti-sample]
+  Ingestion[/Ingestion/]
+  Preproc1[/Single-sample\nprocessing/]
+  Preproc2[/Multi-sample\nprocessing/]
+  Integration[/Integration/]
+
+  Raw --- Ingestion --> Counts --- Preproc1 --> SS --- Preproc2 --> MS --- Integration --> MM
+
+  Ingestion -.-|"- Demux.\n- Mapping"| Ingestion
+  Preproc1 -.-|"- Count QC\n- Doublet calling\n- Ambient RNA\n- Gatekeeper"| Preproc1
+  Preproc2 -.-|"- Normalisation\n- Feature filtering\n- Feature selection\n- Batch correction?\n- Dim. red.?"| Preproc2
+  Integration -.-|"- Dim. red.\n- Data integration"| Integration
+
+  linkStyle 8,9,10,11 stroke:#fff,stroke-width:0px,text-align:left;
+
+  click Ingestion "./#ingestion"
+  style Ingestion color:#58a6ff,text-decoration:underline;
+  click Preproc1 "./#single-sample-processing"
+  style Preproc1 color:#58a6ff,text-decoration:underline;
+
+```
 
 </p>
 
@@ -52,8 +78,31 @@ pipeline.
 
 <p>
 
-<img src="design_files/figure-gfm/mermaid-figure-2.png" data-fig-pos="H"
-style="width:9.52913in;height:2.32292in" />
+``` mermaid
+flowchart LR
+
+  BCL["BCL*"]
+  Fastq["Fastq*"]
+  Ref["Reference"]
+  RawDir["Raw out*"]
+  RawCounts["Raw counts"]
+
+  Demux[/"Demux"/]
+  Mapping[/"Mapping"/]
+  Convert[/"Convert"/]
+
+  BCL --- Demux --> Fastq
+  Fastq & Ref --- Mapping --> RawDir --- Convert --> RawCounts
+
+
+  BCL -.-|".tar.gz"| BCL
+  Fastq -.-|".fastq.gz"| Fastq
+  Ref -.-|".tar.gz?"| Ref
+  RawDir -.-|"Directory"| RawDir
+  RawCounts -.-|".h5mu"| RawCounts
+
+  linkStyle 7,8,9,10,11 stroke:#fff,stroke-width:0px,text-align:left;
+```
 
 </p>
 
@@ -62,6 +111,8 @@ style="width:9.52913in;height:2.32292in" />
 </div>
 
 `*`: Possible entry points
+
+### Single-sample processing
 
 ------------------------------------------------------------------------
 
