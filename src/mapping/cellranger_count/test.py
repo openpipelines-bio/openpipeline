@@ -18,6 +18,8 @@ cmd_pars = [
     "--input", input,
     "--reference", reference,
     "--output", output,
+    "--cores", "2",
+    "--memory", "10"
 ]
 out = subprocess.check_output(cmd_pars).decode("utf-8")
 

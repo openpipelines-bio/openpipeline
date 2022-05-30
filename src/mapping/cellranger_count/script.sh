@@ -37,7 +37,9 @@ fi
 if [ ! -z "$par_chemistry" ]; then 
   extra_params+=( "--chemistry" "$par_chemistry" )
 fi
-
+if [ "$secondary_analysis" == "false" ]; then
+  extra_params+=( "--nosecondary" )
+fi
 echo "Running cellranger count"
 
 
