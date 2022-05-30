@@ -965,5 +965,5 @@ info:
   output: "target/docker/bcl_demux/cellranger_mkfastq"
   executable: "target/docker/bcl_demux/cellranger_mkfastq/cellranger_mkfastq"
   viash_version: "0.5.12"
-  git_commit: "ad4fcddda7b75d9678233aba7b705c0db6405590"
+  git_commit: "e1d4e6675f46e10805fc9f5bbc47917e3c16ea64"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"

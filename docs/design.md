@@ -5,20 +5,69 @@ Design of OpenPipeline
 
 ## Version 2022-05-30
 
+### Pipeline architecture overview
+
+<div class="column-page">
+
+<div id="fig-architecture">
+
+<p>
+
+<img src="design_files/figure-gfm/mermaid-figure-1.png" data-fig-pos="H"
+style="width:13.97803in;height:2in" />
+
+</p>
+
+Figure 1: Overview single cell processing steps in OpenPipeline.
+Rectangles are data objects, parallelograms are Viash modules or
+subworkflows.
+
+</div>
+
+</div>
+
+### Decisions
+
+-   Try to avoid pipeline metromaps
+    ([Example](https://github.com/nf-core/rnaseq/blob/master/docs/images/nf-core-rnaseq_metro_map_grey.png)).
+
+### Use cases
+
+-   Single sample, unimodal
+
+-   Single sample, multimodal
+
+-   Multiple samples, unimodal
+
+-   Multiple samples, multimodal
+
+### Ingestion
+
+Performs whatever steps necessary to integrate a dataset into the
+pipeline.
+
 <div class="column-page">
 
 <div id="cell-handler-fake-div-1">
 
 <p>
 
-<img src="design_files/figure-gfm/mermaid-figure-1.png" data-fig-pos="H"
-style="width:14.29688in;height:2in" />
+<img src="design_files/figure-gfm/mermaid-figure-2.png" data-fig-pos="H"
+style="width:9.52913in;height:2.32292in" />
 
 </p>
 
 </div>
 
 </div>
+
+`*`: Possible entry points
+
+------------------------------------------------------------------------
+
+------------------------------------------------------------------------
+
+------------------------------------------------------------------------
 
 ## Version 2021-10-13
 
