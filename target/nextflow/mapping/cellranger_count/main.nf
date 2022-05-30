@@ -69,8 +69,17 @@ thisFunctionality = [
       'required': false,
       'type': 'string',
       'direction': 'input',
-      'description': 'Assay configuration. Options are: auto, threeprime, fiveprime, SC3Pv1, SC3Pv2, SC3Pv3, SC3Pv3LT, SC3Pv3HT, SC5P-PE, SC5P-R2. See https://kb.10xgenomics.com/hc/en-us/articles/115003764132-How-does-Cell-Ranger-auto-detect-chemistry- for more information.\n',
+      'description': 'Assay configuration.\n- auto: autodetect mode\n- threeprime: Single Cell 3\'\n- fiveprime: Single Cell 5\'\n- SC3Pv1: Single Cell 3\' v1\n- SC3Pv2: Single Cell 3\' v2\n- SC3Pv3: Single Cell 3\' v3\n- SC3Pv3LT: Single Cell 3\' v3 LT\n- SC3Pv3HT: Single Cell 3\' v3 HT\n- SC5P-PE: Single Cell 5\' paired-end\n- SC5P-R2: Single Cell 5\' R2-only\n- SC-FB: Single Cell Antibody-only 3\' v2 or 5\'\nSee https://kb.10xgenomics.com/hc/en-us/articles/115003764132-How-does-Cell-Ranger-auto-detect-chemistry- for more information.\n',
       'default': 'auto',
+      'multiple': false
+    ],
+    [
+      'name': 'secondary_analysis',
+      'required': false,
+      'type': 'boolean',
+      'direction': 'input',
+      'description': 'Whether or not to run the secondary analysis e.g. clustering.',
+      'default': false,
       'multiple': false
     ],
     [
@@ -79,6 +88,7 @@ thisFunctionality = [
       'type': 'integer',
       'direction': 'input',
       'description': 'Set max cores the pipeline may request at one time.',
+      'example': 2,
       'multiple': false
     ],
     [
@@ -87,6 +97,7 @@ thisFunctionality = [
       'type': 'integer',
       'direction': 'input',
       'description': 'Set max GB the pipeline may request at one time.',
+      'example': 10,
       'multiple': false
     ]
   ]
@@ -120,17 +131,47 @@ algorithm.
     --chemistry
         type: string
         default: auto
-        Assay configuration. Options are: auto, threeprime, fiveprime, SC3Pv1,
-SC3Pv2, SC3Pv3, SC3Pv3LT, SC3Pv3HT, SC5P-PE, SC5P-R2. See
+        choices:
+            - auto
+            - threeprime
+            - fiveprime
+            - SC3Pv1
+            - SC3Pv2
+            - SC3Pv3
+            - SC3Pv3LT
+            - SC3Pv3HT
+            - SC5P-PE
+            - SC5P-R2
+            - SC-FB
+        Assay configuration.
+        - auto: autodetect mode
+        - threeprime: Single Cell 3'
+        - fiveprime: Single Cell 5'
+        - SC3Pv1: Single Cell 3' v1
+        - SC3Pv2: Single Cell 3' v2
+        - SC3Pv3: Single Cell 3' v3
+        - SC3Pv3LT: Single Cell 3' v3 LT
+        - SC3Pv3HT: Single Cell 3' v3 HT
+        - SC5P-PE: Single Cell 5' paired-end
+        - SC5P-R2: Single Cell 5' R2-only
+        - SC-FB: Single Cell Antibody-only 3' v2 or 5'
+        See
 https://kb.10xgenomics.com/hc/en-us/articles/115003764132-How-does-Cell-Ranger-auto-detect-chemistry-
 for more information.
 
+    --secondary_analysis
+        type: boolean
+        default: false
+        Whether or not to run the secondary analysis e.g. clustering.
+
     --cores
         type: integer
+        example: 2
         Set max cores the pipeline may request at one time.
 
     --memory
         type: integer
+        example: 10
         Set max GB the pipeline may request at one time.'''
 
 thisScript = '''set -e
@@ -145,6 +186,7 @@ $( if [ ! -z ${VIASH_PAR_REFERENCE+x} ]; then echo "par_reference='${VIASH_PAR_R
 $( if [ ! -z ${VIASH_PAR_OUTPUT+x} ]; then echo "par_output='${VIASH_PAR_OUTPUT//\\'/\\'\\"\\'\\"\\'}'"; fi )
 $( if [ ! -z ${VIASH_PAR_EXPECT_CELLS+x} ]; then echo "par_expect_cells='${VIASH_PAR_EXPECT_CELLS//\\'/\\'\\"\\'\\"\\'}'"; fi )
 $( if [ ! -z ${VIASH_PAR_CHEMISTRY+x} ]; then echo "par_chemistry='${VIASH_PAR_CHEMISTRY//\\'/\\'\\"\\'\\"\\'}'"; fi )
+$( if [ ! -z ${VIASH_PAR_SECONDARY_ANALYSIS+x} ]; then echo "par_secondary_analysis='${VIASH_PAR_SECONDARY_ANALYSIS//\\'/\\'\\"\\'\\"\\'}'"; fi )
 $( if [ ! -z ${VIASH_PAR_CORES+x} ]; then echo "par_cores='${VIASH_PAR_CORES//\\'/\\'\\"\\'\\"\\'}'"; fi )
 $( if [ ! -z ${VIASH_PAR_MEMORY+x} ]; then echo "par_memory='${VIASH_PAR_MEMORY//\\'/\\'\\"\\'\\"\\'}'"; fi )
 meta_functionality_name='$VIASH_META_FUNCTIONALITY_NAME'
@@ -184,7 +226,9 @@ fi
 if [ ! -z "\\$par_chemistry" ]; then 
   extra_params+=( "--chemistry" "\\$par_chemistry" )
 fi
-
+if [ "\\$secondary_analysis" == "false" ]; then
+  extra_params+=( "--nosecondary" )
+fi
 echo "Running cellranger count"
 
 

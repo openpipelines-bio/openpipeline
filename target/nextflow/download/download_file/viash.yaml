@@ -1230,5 +1230,5 @@ info:
   platform: "nextflow"
   output: "target/nextflow/download/download_file"
   viash_version: "0.5.12"
-  git_commit: "fbb8dd9f08dbb34009783c65d4ba2500540ce60e"
+  git_commit: "7a4d38ac550f346e65b5cb808ff30d3386142bfc"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"

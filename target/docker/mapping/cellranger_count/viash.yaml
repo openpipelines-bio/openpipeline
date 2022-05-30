@@ -76,14 +76,40 @@ functionality:
   - type: "string"
     name: "--chemistry"
     alternatives: []
-    description: "Assay configuration. Options are: auto, threeprime, fiveprime, SC3Pv1,\
-      \ SC3Pv2, SC3Pv3, SC3Pv3LT, SC3Pv3HT, SC5P-PE, SC5P-R2. See https://kb.10xgenomics.com/hc/en-us/articles/115003764132-How-does-Cell-Ranger-auto-detect-chemistry-\
+    description: "Assay configuration.\n- auto: autodetect mode\n- threeprime: Single\
+      \ Cell 3'\n- fiveprime: Single Cell 5'\n- SC3Pv1: Single Cell 3' v1\n- SC3Pv2:\
+      \ Single Cell 3' v2\n- SC3Pv3: Single Cell 3' v3\n- SC3Pv3LT: Single Cell 3'\
+      \ v3 LT\n- SC3Pv3HT: Single Cell 3' v3 HT\n- SC5P-PE: Single Cell 5' paired-end\n\
+      - SC5P-R2: Single Cell 5' R2-only\n- SC-FB: Single Cell Antibody-only 3' v2\
+      \ or 5'\nSee https://kb.10xgenomics.com/hc/en-us/articles/115003764132-How-does-Cell-Ranger-auto-detect-chemistry-\
       \ for more information.\n"
     example: []
     default:
     - "auto"
     required: false
-    choices: []
+    choices:
+    - "auto"
+    - "threeprime"
+    - "fiveprime"
+    - "SC3Pv1"
+    - "SC3Pv2"
+    - "SC3Pv3"
+    - "SC3Pv3LT"
+    - "SC3Pv3HT"
+    - "SC5P-PE"
+    - "SC5P-R2"
+    - "SC-FB"
+    direction: "input"
+    multiple: false
+    multiple_sep: ":"
+  - type: "boolean"
+    name: "--secondary_analysis"
+    alternatives: []
+    description: "Whether or not to run the secondary analysis e.g. clustering."
+    example: []
+    default:
+    - false
+    required: false
     direction: "input"
     multiple: false
     multiple_sep: ":"
@@ -91,7 +117,8 @@ functionality:
     name: "--cores"
     alternatives: []
     description: "Set max cores the pipeline may request at one time."
-    example: []
+    example:
+    - 2
     default: []
     required: false
     choices: []
@@ -102,7 +129,8 @@ functionality:
     name: "--memory"
     alternatives: []
     description: "Set max GB the pipeline may request at one time."
-    example: []
+    example:
+    - 10
     default: []
     required: false
     choices: []
@@ -297,17 +325,47 @@ functionality:
         echo "    --chemistry"
         echo "        type: string"
         echo "        default: auto"
-        echo "        Assay configuration. Options are: auto, threeprime, fiveprime, SC3Pv1,"
-        echo "SC3Pv2, SC3Pv3, SC3Pv3LT, SC3Pv3HT, SC5P-PE, SC5P-R2. See"
+        echo "        choices:"
+        echo "            - auto"
+        echo "            - threeprime"
+        echo "            - fiveprime"
+        echo "            - SC3Pv1"
+        echo "            - SC3Pv2"
+        echo "            - SC3Pv3"
+        echo "            - SC3Pv3LT"
+        echo "            - SC3Pv3HT"
+        echo "            - SC5P-PE"
+        echo "            - SC5P-R2"
+        echo "            - SC-FB"
+        echo "        Assay configuration."
+        echo "        - auto: autodetect mode"
+        echo "        - threeprime: Single Cell 3'"
+        echo "        - fiveprime: Single Cell 5'"
+        echo "        - SC3Pv1: Single Cell 3' v1"
+        echo "        - SC3Pv2: Single Cell 3' v2"
+        echo "        - SC3Pv3: Single Cell 3' v3"
+        echo "        - SC3Pv3LT: Single Cell 3' v3 LT"
+        echo "        - SC3Pv3HT: Single Cell 3' v3 HT"
+        echo "        - SC5P-PE: Single Cell 5' paired-end"
+        echo "        - SC5P-R2: Single Cell 5' R2-only"
+        echo "        - SC-FB: Single Cell Antibody-only 3' v2 or 5'"
+        echo "        See"
         echo "https://kb.10xgenomics.com/hc/en-us/articles/115003764132-How-does-Cell-Ranger-auto-detect-chemistry-"
         echo "for more information."
         echo ""
+        echo "    --secondary_analysis"
+        echo "        type: boolean"
+        echo "        default: false"
+        echo "        Whether or not to run the secondary analysis e.g. clustering."
+        echo ""
         echo "    --cores"
         echo "        type: integer"
+        echo "        example: 2"
         echo "        Set max cores the pipeline may request at one time."
         echo ""
         echo "    --memory"
         echo "        type: integer"
+        echo "        example: 10"
         echo "        Set max GB the pipeline may request at one time."
       }
       ######## Helper functions for setting up Docker images for viash ########
@@ -701,6 +759,15 @@ functionality:
                   VIASH_PAR_CHEMISTRY=$(ViashRemoveFlags "$1")
                   shift 1
                   ;;
+              --secondary_analysis)
+                  VIASH_PAR_SECONDARY_ANALYSIS="$2"
+                  [ $# -lt 2 ] && ViashError Not enough arguments passed to --secondary_analysis. Use "--help" to get more information on the parameters. && exit 1
+                  shift 2
+                  ;;
+              --secondary_analysis=*)
+                  VIASH_PAR_SECONDARY_ANALYSIS=$(ViashRemoveFlags "$1")
+                  shift 1
+                  ;;
               --cores)
                   VIASH_PAR_CORES="$2"
                   [ $# -lt 2 ] && ViashError Not enough arguments passed to --cores. Use "--help" to get more information on the parameters. && exit 1
@@ -791,6 +858,9 @@ functionality:
       if [ -z "$VIASH_PAR_CHEMISTRY" ]; then
         VIASH_PAR_CHEMISTRY="auto"
       fi
+      if [ -z "$VIASH_PAR_SECONDARY_ANALYSIS" ]; then
+        VIASH_PAR_SECONDARY_ANALYSIS="false"
+      fi
       
       
       # check whether parameters values are of the right type
@@ -804,6 +874,13 @@ functionality:
         fi
       fi
       
+      
+      if [[ -n "$VIASH_PAR_SECONDARY_ANALYSIS" ]]; then
+        if ! [[ "$VIASH_PAR_SECONDARY_ANALYSIS" =~ ^(true|True|TRUE|false|False|FALSE|yes|Yes|YES|no|No|NO)$ ]]; then
+          ViashError '--secondary_analysis' has to be a boolean. Use "--help" to get more information on the parameters.
+          exit 1
+        fi
+      fi
       
       if [[ -n "$VIASH_PAR_CORES" ]]; then
         if ! [[ "$VIASH_PAR_CORES" =~ ^[-+]?[0-9]+$ ]]; then
@@ -824,6 +901,18 @@ functionality:
       
       
       
+      
+      if [ ! -z "$VIASH_PAR_CHEMISTRY" ]; then
+        VIASH_PAR_CHEMISTRY_CHOICES=("auto:threeprime:fiveprime:SC3Pv1:SC3Pv2:SC3Pv3:SC3Pv3LT:SC3Pv3HT:SC5P-PE:SC5P-R2:SC-FB")
+        IFS=:
+        set -f
+        if ! [[ ":${VIASH_PAR_CHEMISTRY_CHOICES[*]}:" =~ ":$VIASH_PAR_CHEMISTRY:" ]]; then
+          ViashError '--chemistry' specified value of \'$VIASH_PAR_CHEMISTRY\' is not in the list of allowed values. Use "--help" to get more information on the parameters.
+          exit 1
+        fi
+        set +f
+        unset IFS
+      fi
       
       
       
@@ -882,6 +971,7 @@ functionality:
       $( if [ ! -z ${VIASH_PAR_OUTPUT+x} ]; then echo "par_output='${VIASH_PAR_OUTPUT//\'/\'\"\'\"\'}'"; fi )
       $( if [ ! -z ${VIASH_PAR_EXPECT_CELLS+x} ]; then echo "par_expect_cells='${VIASH_PAR_EXPECT_CELLS//\'/\'\"\'\"\'}'"; fi )
       $( if [ ! -z ${VIASH_PAR_CHEMISTRY+x} ]; then echo "par_chemistry='${VIASH_PAR_CHEMISTRY//\'/\'\"\'\"\'}'"; fi )
+      $( if [ ! -z ${VIASH_PAR_SECONDARY_ANALYSIS+x} ]; then echo "par_secondary_analysis='${VIASH_PAR_SECONDARY_ANALYSIS//\'/\'\"\'\"\'}'"; fi )
       $( if [ ! -z ${VIASH_PAR_CORES+x} ]; then echo "par_cores='${VIASH_PAR_CORES//\'/\'\"\'\"\'}'"; fi )
       $( if [ ! -z ${VIASH_PAR_MEMORY+x} ]; then echo "par_memory='${VIASH_PAR_MEMORY//\'/\'\"\'\"\'}'"; fi )
       meta_functionality_name='$VIASH_META_FUNCTIONALITY_NAME'
@@ -921,7 +1011,9 @@ functionality:
       if [ ! -z "\$par_chemistry" ]; then 
         extra_params+=( "--chemistry" "\$par_chemistry" )
       fi
-      
+      if [ "\$secondary_analysis" == "false" ]; then
+        extra_params+=( "--nosecondary" )
+      fi
       echo "Running cellranger count"
       
       
@@ -982,5 +1074,5 @@ info:
   output: "target/docker/mapping/cellranger_count"
   executable: "target/docker/mapping/cellranger_count/cellranger_count"
   viash_version: "0.5.12"
-  git_commit: "fbb8dd9f08dbb34009783c65d4ba2500540ce60e"
+  git_commit: "7a4d38ac550f346e65b5cb808ff30d3386142bfc"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"

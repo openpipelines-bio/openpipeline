@@ -184,10 +184,12 @@ function ViashHelp {
   echo ""
   echo "    --cores"
   echo "        type: integer"
+  echo "        example: 2"
   echo "        Set max cores the pipeline may request at one time."
   echo ""
   echo "    --memory"
   echo "        type: integer"
+  echo "        example: 10"
   echo "        Set max GB the pipeline may request at one time."
 }
 ######## Helper functions for setting up Docker images for viash ########

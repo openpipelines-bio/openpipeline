@@ -63,6 +63,7 @@ thisFunctionality = [
       'type': 'integer',
       'direction': 'input',
       'description': 'Set max cores the pipeline may request at one time.',
+      'example': 2,
       'multiple': false
     ],
     [
@@ -71,6 +72,7 @@ thisFunctionality = [
       'type': 'integer',
       'direction': 'input',
       'description': 'Set max GB the pipeline may request at one time.',
+      'example': 10,
       'multiple': false
     ]
   ]
@@ -105,10 +107,12 @@ Options:
 
     --cores
         type: integer
+        example: 2
         Set max cores the pipeline may request at one time.
 
     --memory
         type: integer
+        example: 10
         Set max GB the pipeline may request at one time.'''
 
 thisScript = '''set -e

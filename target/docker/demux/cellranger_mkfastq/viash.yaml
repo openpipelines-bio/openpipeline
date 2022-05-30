@@ -67,7 +67,8 @@ functionality:
     name: "--cores"
     alternatives: []
     description: "Set max cores the pipeline may request at one time."
-    example: []
+    example:
+    - 2
     default: []
     required: false
     choices: []
@@ -78,7 +79,8 @@ functionality:
     name: "--memory"
     alternatives: []
     description: "Set max GB the pipeline may request at one time."
-    example: []
+    example:
+    - 10
     default: []
     required: false
     choices: []
@@ -274,10 +276,12 @@ functionality:
         echo ""
         echo "    --cores"
         echo "        type: integer"
+        echo "        example: 2"
         echo "        Set max cores the pipeline may request at one time."
         echo ""
         echo "    --memory"
         echo "        type: integer"
+        echo "        example: 10"
         echo "        Set max GB the pipeline may request at one time."
       }
       ######## Helper functions for setting up Docker images for viash ########
@@ -917,5 +921,5 @@ info:
   output: "target/docker/demux/cellranger_mkfastq"
   executable: "target/docker/demux/cellranger_mkfastq/cellranger_mkfastq"
   viash_version: "0.5.12"
-  git_commit: "fbb8dd9f08dbb34009783c65d4ba2500540ce60e"
+  git_commit: "7a4d38ac550f346e65b5cb808ff30d3386142bfc"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"
