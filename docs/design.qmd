@@ -8,11 +8,16 @@ format: gfm
 
 ## Version 2022-05-30
 
+### Pipeline architecture overview
+
 :::{.column-page}
 
 ```{mermaid}
+%%| label: fig-architecture
+%%| fig-cap: Overview single cell processing steps in OpenPipeline. Rectangles are data objects, parallelograms are Viash modules or subworkflows.
+
 flowchart LR
-  Raw[Raw\nbcl/fastq's]
+  Raw[Raw\nreads]
   Counts[Raw\ncounts]
   SS[Unimodal\nsample]
   MS[Unimodal\nmulti-sample]
@@ -25,18 +30,77 @@ flowchart LR
   Raw --- Ingestion --> Counts --- Preproc1 --> SS --- Preproc2 --> MS --- Integration --> MM
 
   Ingestion -.-|"- Demux.\n- Mapping"| Ingestion
-  Preproc1 -.-|"- Count QC\n- Doublet calling\n- Ambient RNA\n"| Preproc1
+  Preproc1 -.-|"- Count QC\n- Doublet calling\n- Ambient RNA\n- Gatekeeper"| Preproc1
   Preproc2 -.-|"- Normalisation\n- Feature filtering\n- Feature selection\n- Batch correction?\n- Dim. red.?"| Preproc2
   Integration -.-|"- Dim. red.\n- Data integration"| Integration
 
-  %% linkStyles are 0-indexed, so linkStyle 1 applies to the second connection
-  linkStyle 8 stroke:#fff,stroke-width:0px,text-align:left;
-  linkStyle 9 stroke:#fff,stroke-width:0px,text-align:left;
-  linkStyle 10 stroke:#fff,stroke-width:0px,text-align:left;
-  linkStyle 11 stroke:#fff,stroke-width:0px,text-align:left;
+  linkStyle 8,9,10,11 stroke:#fff,stroke-width:0px,text-align:left;
+
+  click Ingestion "./#ingestion"
+  style Ingestion color:blue,text-decoration:underline;
+
+```
+
+
+:::
+
+
+### Decisions
+
+* Try to avoid pipeline metromaps ([Example](https://github.com/nf-core/rnaseq/blob/master/docs/images/nf-core-rnaseq_metro_map_grey.png)). 
+
+### Use cases
+
+* Single sample, unimodal
+
+* Single sample, multimodal
+
+* Multiple samples, unimodal
+
+* Multiple samples, multimodal
+
+### Ingestion
+
+Performs whatever steps necessary to integrate a dataset into the pipeline.
+
+:::{.column-page}
+
+```{mermaid}
+flowchart LR
+
+  BCL["BCL*"]
+  Fastq["Fastq*"]
+  Ref["Reference"]
+  RawDir["Raw out*"]
+  RawCounts["Raw counts"]
+
+  Demux[/"Demux"/]
+  Mapping[/"Mapping"/]
+  Convert[/"Convert"/]
+
+  BCL --- Demux --> Fastq
+  Fastq & Ref --- Mapping --> RawDir --- Convert --> RawCounts
+
+
+  BCL -.-|".tar.gz"| BCL
+  Fastq -.-|".fastq.gz"| Fastq
+  Ref -.-|".tar.gz?"| Ref
+  RawDir -.-|"Directory"| RawDir
+  RawCounts -.-|".h5mu"| RawCounts
+
+  linkStyle 7,8,9,10,11 stroke:#fff,stroke-width:0px,text-align:left;
 ```
 
 :::
+
+`*`: Possible entry points
+
+
+---
+
+--- 
+
+---
 
 ## Version 2021-10-13
 
