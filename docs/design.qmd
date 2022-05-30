@@ -41,9 +41,11 @@ flowchart LR
   linkStyle 8,9,10,11 stroke:#fff,stroke-width:0px,text-align:left;
 
   click Ingestion "./#ingestion"
-  style Ingestion color:#58a6ff,text-decoration:underline;
-  click Preproc1 "./#single-sample-processing"
-  style Preproc1 color:#58a6ff,text-decoration:underline;
+  style Ingestion color:#2873c7,text-decoration:underline;
+  click Preproc1 "./#single-sample-preproc"
+  style Preproc1 color:#2873c7,text-decoration:underline;
+  click Preproc2 "./#multi-sample-preproc"
+  style Preproc2 color:#2873c7,text-decoration:underline;
 
 ```
 
@@ -72,13 +74,15 @@ Performs whatever steps necessary to integrate a dataset into the pipeline.
 :::{.column-page}
 
 ```{mermaid}
+%%| label: fig-ingestion
+%%| fig-cap: "Ingestion pipeline.  \n`*`: Possible entry points.  \n`†`: Output file(s)"
 flowchart LR
 
-  BCL["BCL*"]
-  Fastq["Fastq*"]
+  BCL["BCL<sup>*</sup>"]
+  Fastq["Fastq<sup>*</sup>"]
   Ref["Reference"]
-  RawDir["Raw out*"]
-  RawCounts["Raw counts"]
+  RawDir["Raw out<sup>*</sup>"]
+  RawCounts["Raw counts<sup>†</sup>"]
 
   Demux[/"Demux"/]
   Mapping[/"Mapping"/]
@@ -99,11 +103,78 @@ flowchart LR
 
 :::
 
-`*`: Possible entry points
+
+### Single-sample (RNA) processing {#single-sample-preproc}
 
 
-### Single-sample processing
+:::{.column-page}
 
+```{mermaid}
+%%| label: fig-sspreproc
+%%| fig-cap: "Single-sample processing pipeline.  \n`*`: Possible entry points.  \n`†`: Output file(s)"
+flowchart LR
+
+  RawCounts["Raw counts<sup>*</sup>"]
+  Processed["Processed\ncounts<sup>†</sup>"]
+
+  Step1[/"Cell\nfiltering"/]
+  Step2[/"Doublet\ncalling"/]
+  Step3[/"Ambient RNA\ncorrection"/]
+  
+  RawCounts --> Step1 --> Step2 --> Step3 --> Processed
+```
+
+:::
+
+
+
+### Multi-sample (RNA) processing {#multi-sample-preproc}
+
+:::{.column-page}
+
+```{mermaid}
+%%| label: fig-mspreproc
+%%| fig-cap: "Multi-sample processing pipeline.  \n`*`: Possible entry points.  \n`†`: Output file(s)"
+flowchart LR
+
+  Processed["Processed\ncounts<sup>*</sup>"]
+  Normalised["Normalised\ncounts<sup>†</sup>"]
+
+  Step1[/"Feature filtering"/]
+  Step2[/"Normalisation"/]
+  Step3[/"Feature selection"/]
+  Step4[/"Batch correction?"/]
+  
+
+  Processed --> Step1 --> Step2 --> Step3 --> Step4 --> Normalised
+```
+
+:::
+
+
+
+### Integration {#integration}
+
+<!--
+    Integration -.-|"- Dim. red.\n- Data integration"| Integration
+-->
+:::{.column-page}
+
+```{mermaid}
+%%| label: fig-integration
+%%| fig-cap: "Integration pipeline.  \n`*`: Possible entry points.  \n`†`: Output file(s)"
+flowchart LR
+
+  Normalised["Normalised\ncounts<sup>*</sup>"]
+  Integrated["Integrated\ndata<sup>†</sup>"]
+
+  Step1[/"Dimensionality\nreduction"/]
+  Step2[/"Data integration"/]
+  
+  Normalised --> Step1 --> Step2 --> Integrated
+```
+
+:::
 
 ---
 
