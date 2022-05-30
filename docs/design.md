@@ -10,7 +10,7 @@ Design of OpenPipeline
 <p>
 
 <img src="design_files/figure-gfm/mermaid-figure-1.png" data-fig-pos="H"
-style="width:14.14714in;height:1.90625in" />
+style="width:13.76742in;height:1.90625in" />
 
 </p>
 

@@ -10,7 +10,7 @@ format: gfm
 
 ```{mermaid}
 flowchart LR
-  Raw[Raw bcl/fastq's]
+  Raw[Raw\nbcl/fastq's]
   Counts[Raw\ncounts]
   SS[Unimodal\nsample]
   MS[Unimodal\nmulti-sample]
@@ -23,7 +23,7 @@ flowchart LR
   Raw --- Ingestion --> Counts --- Preproc1 --> SS --- Preproc2 --> MS --- Integration --> MM
 
   Ingestion -.-|"- Demux\n- Mapping"| Ingestion
-  Preproc1 -.-|"- Count QC\n- Doublet calling\nAmbient RNA\n"| Preproc1
+  Preproc1 -.-|"- Count QC\n- Doublet calling\n- Ambient RNA\n"| Preproc1
   Preproc2 -.-|"- Normalisation\n- Gene filtering\n- Feature selection\n- Batch correction?\n- Dim. red.?"| Preproc2
   Integration -.-|"- Dim. red.\nData integration"| Integration
 
