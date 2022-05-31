@@ -36,7 +36,9 @@ platforms:
     image: ghcr.io/data-intuitive/randpy:r4.0_py3.8
     setup: 
       - type: apt
-        packages: libhdf5-dev
+        packages: 
+          - libhdf5-dev
+          - libgeos-dev
       - type: python
         pip: [ scanpy, anndata<0.8 ]
       - type: r
