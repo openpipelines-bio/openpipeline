@@ -366,7 +366,7 @@ function ViashDockerfile {
 FROM ghcr.io/data-intuitive/randpy:r4.0_py3.8
 
 RUN apt-get update && \
-  DEBIAN_FRONTEND=noninteractive apt-get install -y libhdf5-dev && \
+  DEBIAN_FRONTEND=noninteractive apt-get install -y libhdf5-dev libgeos-dev && \
   rm -rf /var/lib/apt/lists/*
 
 RUN pip install --upgrade pip && \

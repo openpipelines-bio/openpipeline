@@ -934,12 +934,7 @@ functionality:
     \ Any bcl2fastq argument will work (except a few that are set by the pipeline\
     \ to ensure proper trimming and sample indexing). The FASTQ output generated will\
     \ be the same as when running bcl2fastq directly."
-  tests:
-  - type: "bash_script"
-    path: "run_test.sh"
-    is_executable: true
-  - type: "file"
-    path: "../../../resources_test/cellranger_tiny_bcl_1.2.0"
+  tests: []
   info: {}
   dummy_arguments: []
   set_wd_to_resources_dir: false
@@ -965,5 +960,5 @@ info:
   output: "target/docker/bcl_demux/cellranger_mkfastq"
   executable: "target/docker/bcl_demux/cellranger_mkfastq/cellranger_mkfastq"
   viash_version: "0.5.12"
-  git_commit: "085cb014d0160316460867eb0b4563b7dd303bd1"
+  git_commit: "3a6e70fca4f0ac920ef4ab43480d2f3ad6d64599"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"

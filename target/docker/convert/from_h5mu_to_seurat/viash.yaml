@@ -411,7 +411,7 @@ functionality:
       FROM ghcr.io/data-intuitive/randpy:r4.0_py3.8
       
       RUN apt-get update && \
-        DEBIAN_FRONTEND=noninteractive apt-get install -y libhdf5-dev && \
+        DEBIAN_FRONTEND=noninteractive apt-get install -y libhdf5-dev libgeos-dev && \
         rm -rf /var/lib/apt/lists/*
       
       RUN pip install --upgrade pip && \
@@ -781,6 +781,7 @@ platform:
   - type: "apt"
     packages:
     - "libhdf5-dev"
+    - "libgeos-dev"
     interactive: false
   - type: "python"
     user: false
@@ -832,5 +833,5 @@ info:
   output: "target/docker/convert/from_h5mu_to_seurat"
   executable: "target/docker/convert/from_h5mu_to_seurat/from_h5mu_to_seurat"
   viash_version: "0.5.12"
-  git_commit: "085cb014d0160316460867eb0b4563b7dd303bd1"
+  git_commit: "3a6e70fca4f0ac920ef4ab43480d2f3ad6d64599"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"

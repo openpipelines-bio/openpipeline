@@ -1184,5 +1184,5 @@ info:
   output: "target/docker/dimred/umap"
   executable: "target/docker/dimred/umap/umap"
   viash_version: "0.5.12"
-  git_commit: "085cb014d0160316460867eb0b4563b7dd303bd1"
+  git_commit: "3a6e70fca4f0ac920ef4ab43480d2f3ad6d64599"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"

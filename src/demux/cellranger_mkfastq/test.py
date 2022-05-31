@@ -8,7 +8,7 @@ meta = {
 }
 ## VIASH END
 
-print("> Running command")
+print("> Running command", flush=True)
 input = meta["resources_dir"] + "/cellranger_tiny_bcl/bcl"
 sample_sheet = meta["resources_dir"] + "/cellranger_tiny_bcl/bcl/sample_sheet.csv"
 output = "test_output"
@@ -18,9 +18,9 @@ cmd_pars = [
     "--input", input,
     "--sample_sheet", sample_sheet,
     "--output", output,
+    "--memory", "5" 
 ]
-out = subprocess.check_output(cmd_pars).decode("utf-8")
-
+subprocess.check_call(cmd_pars, encoding="utf-8", timeout=300)
 print("> Check if file exists")
 assert path.exists(output + "/H35KCBCXY/test_sample"), "No output was created."
 

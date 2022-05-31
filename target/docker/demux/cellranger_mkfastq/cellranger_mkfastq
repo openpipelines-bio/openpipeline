@@ -760,10 +760,10 @@ fi
 extra_params=( )
 
 if [ ! -z "\$par_cores" ]; then 
-  extra_params+=( "--localcores" "\$par_cores" )
+  extra_params+=( "--localcores=\$par_cores" )
 fi
 if [ ! -z "\$par_memory" ]; then 
-  extra_params+=( "--localmem" "\$par_memory" )
+  extra_params+=( "--localmem=\$par_memory" )
 fi
 
 

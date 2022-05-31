@@ -23,4 +23,4 @@ data = ad.read_h5ad(output)
 assert np.array_equal(data.var["feature_types"].unique(), ["Gene Expression"]), "Output X should only contain Gene Expression vars."
 
 # check whether gene was found
-assert "ZSCAN29" in data.var_names, 'Output should contain gex column "ZSCAN29".'
+assert "PDE4DIP" in data.var_names, 'Output should contain gex column "PDE4DIP".'
