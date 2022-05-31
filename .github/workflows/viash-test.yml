@@ -6,6 +6,12 @@ on:
   pull_request:
     branches: [ '*' ]
 
+# Skip older CI runs for pull requests (head_ref exists), otherwise allways build
+# https://docs.github.com/en/actions/using-jobs/using-concurrency#example-using-a-fallback-value
+concurrency: 
+  group: ${{ github.head_ref || github.run_id }}
+  cancel-in-progress: true
+
 jobs:
   # phase 1
   list_components:
