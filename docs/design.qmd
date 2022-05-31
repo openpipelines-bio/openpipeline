@@ -46,6 +46,8 @@ flowchart LR
   style Preproc1 color:#2873c7,text-decoration:underline;
   click Preproc2 "./#multi-sample-preproc"
   style Preproc2 color:#2873c7,text-decoration:underline;
+  click Integration "./#integration"
+  style Integration color:#2873c7,text-decoration:underline;
 
 ```
 
