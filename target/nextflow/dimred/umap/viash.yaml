@@ -1520,5 +1520,5 @@ info:
   platform: "nextflow"
   output: "target/nextflow/dimred/umap"
   viash_version: "0.5.12"
-  git_commit: "3a6e70fca4f0ac920ef4ab43480d2f3ad6d64599"
+  git_commit: "8ab1bb0466c727b5803a5748c69305c15f6e27ce"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"
