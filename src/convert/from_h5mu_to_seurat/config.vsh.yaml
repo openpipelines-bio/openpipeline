@@ -45,9 +45,8 @@ platforms:
       - type: python
         pip: [ scanpy, anndata<0.8 ]
       - type: r
-        cran: [ anndata, hdf5r ]
+        cran: [ anndata, hdf5r, testthat ]
       - type: r
-        script: [ 'install.packages("devtools"); library("devtools"); install_github("pmbio/MuDataSeurat")' ]
-      #   github: pmbio/MuDataSeurat
+        github: pmbio/MuDataSeurat
   - type: nextflow
     variant: vdsl3
