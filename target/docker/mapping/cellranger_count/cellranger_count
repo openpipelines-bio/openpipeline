@@ -858,18 +858,18 @@ cd "\$tmpdir"
 extra_params=( )
 
 if [ ! -z "\$par_cores" ]; then 
-  extra_params+=( "--localcores" "\$par_cores" )
+  extra_params+=( "--localcores=\$par_cores" )
 fi
 if [ ! -z "\$par_memory" ]; then 
-  extra_params+=( "--localmem" "\$par_memory" )
+  extra_params+=( "--localmem=\$par_memory" )
 fi
 if [ ! -z "\$par_expect_cells" ]; then 
-  extra_params+=( "--expect-cells" "\$par_expect_cells" )
+  extra_params+=( "--expect-cells=\$par_expect_cells" )
 fi
 if [ ! -z "\$par_chemistry" ]; then 
-  extra_params+=( "--chemistry" "\$par_chemistry" )
+  extra_params+=( "--chemistry=\$par_chemistry" )
 fi
-if [ "\$secondary_analysis" == "false" ]; then
+if [ "\$par_secondary_analysis" == "false" ]; then
   extra_params+=( "--nosecondary" )
 fi
 echo "Running cellranger count"
@@ -882,7 +882,6 @@ cellranger count \\
   --transcriptome "\$par_reference" \\
   "\${extra_params[@]}" \\
   --disable-ui \\
-  --nosecondary
 
 echo "Copying output"
 if [ -d "\$id/outs/" ]; then

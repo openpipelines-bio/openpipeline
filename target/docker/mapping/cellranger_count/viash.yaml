@@ -1000,18 +1000,18 @@ functionality:
       extra_params=( )
       
       if [ ! -z "\$par_cores" ]; then 
-        extra_params+=( "--localcores" "\$par_cores" )
+        extra_params+=( "--localcores=\$par_cores" )
       fi
       if [ ! -z "\$par_memory" ]; then 
-        extra_params+=( "--localmem" "\$par_memory" )
+        extra_params+=( "--localmem=\$par_memory" )
       fi
       if [ ! -z "\$par_expect_cells" ]; then 
-        extra_params+=( "--expect-cells" "\$par_expect_cells" )
+        extra_params+=( "--expect-cells=\$par_expect_cells" )
       fi
       if [ ! -z "\$par_chemistry" ]; then 
-        extra_params+=( "--chemistry" "\$par_chemistry" )
+        extra_params+=( "--chemistry=\$par_chemistry" )
       fi
-      if [ "\$secondary_analysis" == "false" ]; then
+      if [ "\$par_secondary_analysis" == "false" ]; then
         extra_params+=( "--nosecondary" )
       fi
       echo "Running cellranger count"
@@ -1024,7 +1024,6 @@ functionality:
         --transcriptome "\$par_reference" \\
         "\${extra_params[@]}" \\
         --disable-ui \\
-        --nosecondary
       
       echo "Copying output"
       if [ -d "\$id/outs/" ]; then
@@ -1074,5 +1073,5 @@ info:
   output: "target/docker/mapping/cellranger_count"
   executable: "target/docker/mapping/cellranger_count/cellranger_count"
   viash_version: "0.5.12"
-  git_commit: "8ab1bb0466c727b5803a5748c69305c15f6e27ce"
+  git_commit: "427a955f963b836a7f3067f9d6c60a21ca4a3635"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"
