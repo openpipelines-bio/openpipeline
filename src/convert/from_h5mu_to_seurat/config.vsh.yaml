@@ -33,17 +33,21 @@ functionality:
     - path: ../../../resources_test/pbmc_1k_protein_v3
 platforms:
   - type: docker
-    image: ghcr.io/data-intuitive/randpy:r4.0_py3.8
-    setup: 
+    image: eddelbuettel/r2u:22.04
+    setup:
       - type: apt
         packages: 
           - libhdf5-dev
           - libgeos-dev
+          - python3
+          - python3-pip
+          - python-is-python3
       - type: python
         pip: [ scanpy, anndata<0.8 ]
       - type: r
         cran: [ anndata, hdf5r ]
       - type: r
-        github: pmbio/MuDataSeurat
+        script: [ 'install.packages("devtools"); library("devtools"); install_github("pmbio/MuDataSeurat")' ]
+      #   github: pmbio/MuDataSeurat
   - type: nextflow
     variant: vdsl3
