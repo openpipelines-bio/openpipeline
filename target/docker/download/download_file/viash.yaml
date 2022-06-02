@@ -785,5 +785,5 @@ info:
   output: "target/docker/download/download_file"
   executable: "target/docker/download/download_file/download_file"
   viash_version: "0.5.12"
-  git_commit: "af9e97c2eefbe9f97f8c921d82e17e90af21b006"
+  git_commit: "2de25f35e3691569348244336cdee11df2cd2c9b"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"
