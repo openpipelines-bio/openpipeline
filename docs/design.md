@@ -14,34 +14,33 @@ Design of OpenPipeline
 ``` mermaid
 
 flowchart LR
-  Raw[Raw\nreads]
-  Counts[Raw\ncounts]
-  SS[Unimodal\nsample]
-  MS[Unimodal\nmulti-sample]
-  MM[Multi-modal\nmulti-sample]
+  Raw[Raw\ndata]
+  Dataset[Dataset]
   Ingestion[/Ingestion/]
-  Preproc1[/Single-sample\nprocessing/]
-  Preproc2[/Multi-sample\nprocessing/]
+  Preproc1[/Unimodal\nsingle-sample\nprocessing/]
+  Preproc2[/Unimodal\nmulti-sample\nprocessing/]
   Integration[/Integration/]
-  Downstream[/Downstream\nanalyses/]
+  Interpretation[/Interpretation/]
+  Conversion[/Conversion/]
 
-  Raw --- Ingestion --> Counts --- Preproc1 --> SS --- Preproc2 --> MS --- Integration --> MM --> Downstream
+  Raw --- Ingestion --> Split[/Split/] --> Preproc1 --> Concat[/Concat/] --> Preproc2 --> Merge[/Merge/] --> Integration --> Interpretation --> Conversion --> Dataset
 
   Ingestion -.-|"- Demux.\n- Mapping"| Ingestion
   Preproc1 -.-|"- Count QC\n- Doublet calling\n- Ambient RNA\n- Gatekeeper"| Preproc1
   Preproc2 -.-|"- Normalisation\n- Feature filtering\n- Feature selection\n- Batch correction?\n- Dim. red.?"| Preproc2
   Integration -.-|"- Dim. red.\n- Data integration"| Integration
+  Interpretation -.-|"- Clustering\n- Cell typing\n- GRN\n- ..."| Interpretation
 
-  linkStyle 9,10,11,12 stroke:#fff,stroke-width:0px,text-align:left;
+  linkStyle 10,11,12,13,14 stroke:#fff,stroke-width:0px,text-align:left;
 
-  click Ingestion "./#ingestion"
-  style Ingestion color:#2873c7,text-decoration:underline;
-  click Preproc1 "./#single-sample-preproc"
-  style Preproc1 color:#2873c7,text-decoration:underline;
-  click Preproc2 "./#multi-sample-preproc"
-  style Preproc2 color:#2873c7,text-decoration:underline;
-  click Integration "./#integration"
-  style Integration color:#2873c7,text-decoration:underline;
+  %% click Ingestion "./#ingestion"
+  %% style Ingestion color:#2873c7,text-decoration:underline;
+  %% click Preproc1 "./#single-sample-preproc"
+  %% style Preproc1 color:#2873c7,text-decoration:underline;
+  %% click Preproc2 "./#multi-sample-preproc"
+  %% style Preproc2 color:#2873c7,text-decoration:underline;
+  %% click Integration "./#integration"
+  %% style Integration color:#2873c7,text-decoration:underline;
 ```
 
 </p>
@@ -54,25 +53,211 @@ subworkflows.
 
 </div>
 
-## Decisions
+## Decisions (to make)
 
 -   Try to avoid pipeline metromaps
     ([Example](https://github.com/nf-core/rnaseq/blob/master/docs/images/nf-core-rnaseq_metro_map_grey.png)).
+    Instead, multiple pipelines using a different subset or ordering of
+    the same components can be implemented to suit the needs of any
+    particular requirement.
+
+-   Division of responsibilities:
+
+<div class="column-page">
+
+<div id="fig-resp">
+
+<p>
+
+``` mermaid
+
+flowchart LR
+  Ingestion[/Ingestion/]
+  Preproc1[/Unimodal\nsingle-sample\nprocessing/]
+  Preproc2[/Unimodal\nmulti-sample\nprocessing/]
+  Integration[/Integration/]
+  Interpretation[/Interpretation/]
+  Conversion[/Conversion/]
+
+  Raw --- Ingestion --> Split[/Split/] --> Preproc1 --> Concat[/Concat/] --> Preproc2 --> Merge[/Merge/] --> Integration --> Interpretation --> Conversion --> Dataset
+
+  Ingestion -.-|"CZ Biohub"| Ingestion
+  Split -.-|"Janssen"| Split
+  Preproc1 -.-|"Janssen"| Preproc1
+  Concat -.-|"Janssen"| Concat
+  Preproc2 -.-|"Janssen"| Preproc2
+  Merge -.-|"Janssen"| Merge
+  Integration -.-|"Helmholtz"| Integration
+  Interpretation -.-|"All\n(depends on\nspecific needs)"| Interpretation
+  Conversion -.-|"Janssen"| Conversion
+
+  linkStyle 10,11,12,13,14,15,16,17,18 stroke:#fff,stroke-width:0px;
+```
+
+</p>
+
+Figure 2: Division of responsibilities.
+
+</div>
+
+</div>
+
+<!-- conversion pipeline? -->
 
 ## Use cases
 
--   Single sample, unimodal
+<div>
 
--   Single sample, multimodal
+> **Note**
+>
+> In these use-cases, `Interpretation`, `Conversion` and `Dataset` are
+> omitted because they are the same in every use case.
 
--   Multiple samples, unimodal
+</div>
 
--   Multiple samples, multimodal
+### A single unimodal sample
 
-## Ingestion
+<div class="column-page">
 
-Performs whatever steps necessary to integrate a dataset into the
-pipeline.
+<div id="fig-example1">
+
+<p>
+
+``` mermaid
+
+flowchart LR
+
+  Raw1[Sample 1] --- Ingestion1[/Ingestion/] --> Split1[/Split/] --> GEX1[GEX 1]
+  GEX1 --> ProcGEX1[/USS GEX/]
+  ProcGEX1 --- ConcatGEX[/Concat/] --> GEX[Combined\nGEX]
+  GEX --> ProcGEX[/UMS GEX/]
+  ProcGEX --- Merge[/Merge/] --> Integration[/Integration/] --> Downstream[/.../]
+
+```
+
+</p>
+
+Figure 3: Example of how the concat and merges work.  
+GEX: Gene-expression. USS: Unimodal single-sample processing. UMS:
+Unimodal multi-sample processing.
+
+</div>
+
+</div>
+
+### A single multimodal sample
+
+<div class="column-page">
+
+<div id="fig-example2">
+
+<p>
+
+``` mermaid
+
+flowchart LR
+
+  Raw1[Sample 1] --- Ingestion1[/Ingestion/] --> Split1[/Split/] --> GEX1[GEX 1] & ADT1[ADT 1] & RNAV1[RNAV 1]
+  GEX1 --> ProcGEX1[/USS GEX/]
+  ADT1 --> ProcADT1[/USS ADT/]
+  RNAV1 --> ProcRNAV1[/USS RNAV/]
+  ProcGEX1 --- ConcatGEX[/Concat/] --> GEX[Combined\nGEX]
+  ProcADT1 --- ConcatADT[/Concat/] --> ADT[Combined\nADT]
+  ProcRNAV1 --- ConcatRNAV[/Concat/] --> RNAV[Combined\nRNAV]
+  GEX --> ProcGEX[/UMS GEX/]
+  ADT --> ProcADT[/UMS ADT/]
+  RNAV --> ProcRNAV[/UMS RNAV/]
+  ProcGEX & ProcADT & ProcRNAV--- Merge[/Merge/] --> Integration[/Integration/] --> Downstream[/.../]
+
+```
+
+</p>
+
+Figure 4: Example of how the concat and merges work.  
+GEX: Gene-expression. ADT: Antibody-Derived Tags. RNAV: RNA Velocity.
+USS: Unimodal single-sample processing. UMS: Unimodal multi-sample
+processing.
+
+</div>
+
+</div>
+
+### Multiple unimodal samples
+
+<div class="column-page">
+
+<div id="fig-example3">
+
+<p>
+
+``` mermaid
+
+flowchart LR
+
+  Raw1[Sample 1] --- Ingestion1[/Ingestion/] --> Split1[/Split/] --> GEX1[GEX 1]
+  Raw2[Sample 2] --- Ingestion2[/Ingestion/] --> Split2[/Split/] --> GEX2[GEX 2]
+  Raw3[Sample 3] --- Ingestion3[/Ingestion/] --> Split3[/Split/] --> GEX3[GEX 3]
+  GEX1 --> ProcGEX1[/USS GEX/]
+  GEX2 --> ProcGEX2[/USS GEX/]
+  GEX3 --> ProcGEX3[/USS GEX/]
+  ProcGEX1 & ProcGEX2 & ProcGEX3 --- ConcatGEX[/Concat/] --> GEX[Combined\nGEX]
+  GEX --> ProcGEX[/UMS GEX/]
+  ProcGEX --- Merge[/Merge/] --> Integration[/Integration/] --> Downstream[/.../]
+
+```
+
+</p>
+
+Figure 5: Example of how the concat and merges work.  
+GEX: Gene-expression. USS: Unimodal single-sample processing. UMS:
+Unimodal multi-sample processing.
+
+</div>
+
+</div>
+
+### Multiple multimodal samples
+
+<div class="column-page">
+
+<div id="fig-example4">
+
+<p>
+
+``` mermaid
+
+flowchart LR
+
+  Raw1[Sample 1] --- Ingestion1[/Ingestion/] --> Split1[/Split/] --> GEX1[GEX 1] & ADT1[ADT 1]
+  Raw2[Sample 2] --- Ingestion2[/Ingestion/] --> Split2[/Split/] --> GEX2[GEX 2] & ADT2[ADT 2]
+  GEX1 --> ProcGEX1[/USS GEX/]
+  ADT1 --> ProcADT1[/USS ADT/]
+  GEX2 --> ProcGEX2[/USS GEX/]
+  ADT2 --> ProcADT2[/USS ADT/]
+  ProcGEX1 & ProcGEX2 --- ConcatGEX[/Concat/] --> GEX[Combined\nGEX]
+  ProcADT1 & ProcADT2 --- ConcatADT[/Concat/] --> ADT[Combined\nADT]
+  GEX --> ProcGEX[/UMS GEX/]
+  ADT --> ProcADT[/UMS ADT/]
+  ProcGEX & ProcADT --- Merge[/Merge/] --> Integration[/Integration/] --> Downstream[/.../]
+
+```
+
+</p>
+
+Figure 6: Example of how the concat and merges work.  
+GEX: Gene-expression. ADT: Antibody-Derived Tags. USS: Unimodal
+single-sample processing. UMS: Unimodal multi-sample processing.
+
+</div>
+
+</div>
+
+## Subworkflows
+
+### Ingestion
+
+Purpose: Convert raw sequencing data or count tables into MuData data
+for further processing.
 
 <div class="column-page">
 
@@ -108,7 +293,7 @@ flowchart LR
 
 </p>
 
-Figure 2: Ingestion pipeline.  
+Figure 7: Ingestion pipeline.  
 `*`: Possible entry points.  
 `†`: Output file(s)
 
@@ -116,7 +301,10 @@ Figure 2: Ingestion pipeline.
 
 </div>
 
-## Single-sample unimodal processing
+### Single-sample unimodal processing
+
+Purpose: Per modality fitering pipelines are available to select true
+from false cells.
 
 <div class="column-page">
 
@@ -139,7 +327,7 @@ flowchart LR
 
 </p>
 
-Figure 3: Single-sample processing pipeline.  
+Figure 8: Single-sample processing pipeline.  
 `*`: Possible entry points.  
 `†`: Output file(s)
 
@@ -147,7 +335,11 @@ Figure 3: Single-sample processing pipeline.
 
 </div>
 
-## Multi-sample unimodal processing
+### Multi-sample unimodal processing
+
+At the final stage of this part the different modalities are merged into
+a single muon object. Merging can be performed by combining the
+different filterings or only using a single filtering.
 
 <div class="column-page">
 
@@ -171,7 +363,7 @@ flowchart LR
 
 </p>
 
-Figure 4: Multi-sample processing pipeline.  
+Figure 9: Multi-sample processing pipeline.  
 `*`: Possible entry points.  
 `†`: Output file(s)
 
@@ -179,11 +371,10 @@ Figure 4: Multi-sample processing pipeline.
 
 </div>
 
-## Integration
+### Integration
 
-<!--
-    Integration -.-|"- Dim. red.\n- Data integration"| Integration
--->
+Purpose: Performs an integration pipeline for single cell data based on
+a single or multiple modalities.
 
 <div class="column-page">
 
@@ -205,7 +396,7 @@ flowchart LR
 
 </p>
 
-Figure 5: Integration pipeline.  
+Figure 10: Integration pipeline.  
 `*`: Possible entry points.  
 `†`: Output file(s)
 
@@ -213,7 +404,25 @@ Figure 5: Integration pipeline.
 
 </div>
 
+### Interpretation
+
+Purpose: Take different dataset annotations and combine them together
+into a single enriched dataset. The idea is to have a diff_muon object,
+i.e. a muon object containing the changes of the original object where
+data from the diff_muon will be pushed to the original muon object.
+
+<div>
+
+> **Warning**
+>
+> This is what we did a time ago and it has the drawback that it could
+> make everything very slow. So we need to be able to aggregate diffs
+> before adding them to the final object.
+
+</div>
+
 <!--
+
 
 
 ---
@@ -235,15 +444,10 @@ __Questions:__
 6. Count imputations
 7. Compute environment awareness ==> GPUs/TPUs/...
 
-## Pipeline architecture overview
-
-![Global overview](figures/pipelines-target-p3.png)
-_Overview single cell processing pipelines in openpipeline. Every rectangle is a pipeline or component by itself of which multiple versions can exist. Data aggregation is performed in the circles. The major parts of the pipeline consist of Ingestion, Per sample processing, Integration, Transformation and Reporting._ 
-
 
 ## Ingestion
 
-Purpose: Convert raw sequencing data or count tables into h5ad data for further processing. 
+
 
 Pipelines list:
 
@@ -254,15 +458,8 @@ Pipelines list:
 
 ## Per sample processing
 
-Purpose: Per modality fitering pipelines are available to select true from false cells. At the final stage of this part the different modalities are merged into a single muon object. Merging can be performed by combining the different filterings or only using a single filtering.
 
-Pipelines list: 
 
-- [ps_tx_processing](pipeline/ps_tx_processing.md): Filters raw transcriptomics count data using the count profiles
-- ps_adt_processing: Filters raw adt count data using the count profiles
-- ps_atac_processing: Filters raw atac count/peak data 
-- ps_rna_velo_processing: Filters raw transcriptomics count data with splicing variants using the count profiles 
-- merge: Combine the data from different single modalities for a single sample into a merged dataset. This implies that there is a method to merge the data, i.e. intersection, union, or master, i.e. only retain cells in a specific modality.
 
 ### Concat
 
@@ -274,11 +471,6 @@ Pipeline list:
 
 ### Integration
 
-Purpose: Performs an integration pipeline for single cell data based on a single or multiple modalities. 
-
-Pipeline list: 
-
-- [integration](pipeline/integration.md): Takes a multi-sample muon data object and generates a projection over the data for the mulitple samples in the object.
 
 ### Transformation
 
@@ -293,14 +485,7 @@ Pipeline list:
 - ...
 
 
-### Annotation
 
-Purpose: Take different dataset annotations and combine them together into a single enriched dataset. The idea is to have a diff_muon object, i.e. a muon object containing the changes of the original object where data from the diff_muon will be pushed to the original muon object. 
-
-__!!! Remark, this is what we did a time ago and it has the drawback that it could make everything very slow. So we need to be able to aggregate diffs before adding them to the final object.__
-
-Pipeline list:
-- annotation: Takes as input (1) a master muon object and (2) at least one diff_muon object that contains new annotations. All annotations from the different diff_muon objects are merged and added to the master muon object.
 
 
 ### Reporting
