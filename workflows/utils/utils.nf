@@ -4,7 +4,7 @@ def paramExists(name) {
 
 def assertParamExists(name, description) {
   if (!paramExists(name)) {
-    exit 1, "ERROR: Please provide a --{name} parameter {description}"
+    exit 1, "ERROR: Please provide a --${name} parameter ${description}"
   }
 }
 
