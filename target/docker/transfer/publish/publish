@@ -367,7 +367,7 @@ function ViashDockerSetup {
 #   ViashDockerFile
 function ViashDockerfile {
   cat << 'VIASHDOCKER'
-FROM bash:5.1
+FROM python:3.10
 
 RUN :
 LABEL authors="Toni Verbeiren (maintainer)"

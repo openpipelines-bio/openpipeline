@@ -382,10 +382,9 @@ function ViashDockerSetup {
 #   ViashDockerFile
 function ViashDockerfile {
   cat << 'VIASHDOCKER'
-FROM bash:5.1
+FROM python:3.10
 
-RUN apk add --no-cache wget
-
+RUN :
 LABEL authors="Robrecht Cannoodt <rcannood@gmail.com> (maintainer) {github: rcannood, orcid: 0000-0003-3641-729X}"
 LABEL org.opencontainers.image.description="Companion container for running component download download_file"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"

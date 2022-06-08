@@ -13,7 +13,8 @@ bin/nextflow \
   -main-script workflows/1_ingestion/bd_rhapsody_wta/main.nf \
   -entry test_wf \
   -resume \
-  -with-docker
+  -with-docker \
+  -with-trace work/trace.txt
 
 # -c workflows/1_ingestion/bd_rhapsody_wta/nextflow.config \
 

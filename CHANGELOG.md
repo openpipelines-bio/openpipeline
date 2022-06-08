@@ -30,9 +30,6 @@ on each modality instead of on the whole `MuData` object.
 
 * `interactive/run_cellxgene`: Updated container to ubuntu:focal because it contains python3.6 but cellxgene dropped python3.6 support.
 
-* `download/download_file`: Switch base container from `ubuntu:22.04` to `bash:5.1` because `ubuntu:22.04`
-  was causing some edge case issues.
-
 * `mapping/bd_rhapsody_wta`: Set `--parallel` to true by default.
 
 * `mapping/bd_rhapsody_wta`: Translate Bash script into Python.
@@ -46,6 +43,10 @@ on each modality instead of on the whole `MuData` object.
 * `convert/from_bdrhap_to_h5ad`: change test data to output from `mapping/bd_rhapsody_wta` after reducing the BD Rhapsody test data size.
 
 * Various `config.vsh.yaml`s: Renamed `values:` to `choices:`.
+
+* `download/download_file` and `transfer/publish`: Switch base container from `bash:5.1` to `python:3.10`.
+
+* `mapping/bd_rhapsody_wta`: Make sure procps is installed.
 
 ## BUG FIXES
 
