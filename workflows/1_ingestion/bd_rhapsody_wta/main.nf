@@ -167,8 +167,8 @@ workflow test_wf {
         "foo",
         [
           input: file(params.rootDir + "/resources_test/bd_rhapsody_wta_test/raw/*.fastq.gz"),
-          reference_genome: file(params.rootDir + "/resources_test/bd_rhapsody_wta_test/raw/GRCh38-PhiX-gencodev29-20181205.tar.gz"),
-          transcriptome_annotation: file(params.rootDir + "/resources_test/bd_rhapsody_wta_test/raw/gencodev29-20181205.gtf")
+          reference_genome: file(params.rootDir + "/resources_test/bd_rhapsody_wta_test/raw/GRCh38_primary_assembly_genome_chr1.tar.gz"),
+          transcriptome_annotation: file(params.rootDir + "/resources_test/bd_rhapsody_wta_test/raw/gencode_v40_annotation_chr1.gtf")
         ]
       ]
     )
@@ -184,5 +184,5 @@ workflow test_wf {
       assert output_list.size() == 1 : "output channel should contain one event"
       assert output_list[0][0] == "foo" : "Output ID should be same as input ID"
     }
-    //| check_format(args: {""}) // todo: check whether output h5mu has the right slots defined
+    // | check_format(args: {""}) // todo: check whether output h5mu has the right slots defined
 }
