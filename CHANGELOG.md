@@ -45,6 +45,8 @@ on each modality instead of on the whole `MuData` object.
 
 * `convert/from_bdrhap_to_h5ad`: change test data to output from `mapping/bd_rhapsody_wta` after reducing the BD Rhapsody test data size.
 
+* Various `config.vsh.yaml`s: Renamed `values:` to `choices:`.
+
 ## BUG FIXES
 
 * `mapping/bd_rhapsody`: Use a smaller test dataset to reduce test time and make sure that the Github Action runners do not run out of disk space.

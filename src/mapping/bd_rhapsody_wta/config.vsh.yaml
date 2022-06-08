@@ -82,7 +82,7 @@ functionality:
     - name: "--sample_tags_version"
       type: string
       description: "Specify if multiplexed run."
-      values: [human, hs, mouse, mm]
+      choices: [human, hs, mouse, mm]
       example: human
 
     - name: "--tag_names"
