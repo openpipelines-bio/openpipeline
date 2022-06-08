@@ -16,5 +16,3 @@ bin/nextflow \
   -with-docker \
   -with-trace work/trace.txt
 
-# -c workflows/1_ingestion/bd_rhapsody_wta/nextflow.config \
-
