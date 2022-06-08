@@ -118,7 +118,7 @@ platforms:
       - type: docker
         run: apt-get --allow-releaseinfo-change update
       - type: apt
-        packages: cwltool
+        packages: [ cwltool, procps ]
   - type: nextflow
     variant: vdsl3
     directives:

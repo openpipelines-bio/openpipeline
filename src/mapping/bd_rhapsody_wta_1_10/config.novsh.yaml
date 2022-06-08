@@ -132,7 +132,7 @@ platforms:
     image: bdgenomics/rhapsody:1.10
     setup:
       - type: apt
-        packages: cwltool
+        packages: [ cwltool, procps ]
   - type: nextflow
     variant: vdsl3
     directives:
