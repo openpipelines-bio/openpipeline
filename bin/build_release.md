@@ -29,11 +29,13 @@ bin/viash_test -m release -t $TAG
 # rebuild readme
 quarto render README.qmd
 
+# TODO: create aws s3 release
+
 # push docker containers to docker hub
 bin/viash_push -m release -t $TAG
 
 # commit current code to release branch
-git add target
+# git add target # <- choose which files to add
 git commit -m "Release $TAG"
 git push 
 
