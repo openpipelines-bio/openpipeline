@@ -1,7 +1,7 @@
 functionality:
   name: "bd_rhapsody_wta"
   namespace: "mapping"
-  version: "0.3.0"
+  version: "0.3.1"
   authors:
   - name: "Robrecht Cannoodt"
     email: "rcannood@gmail.com"
@@ -10,6 +10,8 @@ functionality:
     props:
       github: "rcannood"
       orcid: "0000-0003-3641-729X"
+  inputs: []
+  outputs: []
   arguments:
   - type: "file"
     name: "--input"
@@ -17,40 +19,25 @@ functionality:
     - "-i"
     description: "Path to your read files in the FASTQ.GZ format. You may specify\
       \ as many R1/R2 read pairs as you want."
-    example: "input.fastq.gz"
+    example:
+    - "input.fastq.gz"
+    default: []
     must_exist: false
     required: true
-    direction: "Input"
+    direction: "input"
     multiple: true
-    multiple_sep: ":"
-  - type: "file"
-    name: "--output"
-    alternatives:
-    - "-o"
-    description: "Output folder. Output still needs to be processed further."
-    example: "output_dir"
-    must_exist: false
-    required: true
-    direction: "Output"
-    multiple: false
-    multiple_sep: ":"
-  - type: "double"
-    name: "--subsample"
-    alternatives: []
-    description: "A number >1 or fraction (0 < n < 1) to indicate the number or percentage\
-      \ of reads to subsample."
-    required: false
-    direction: "Input"
-    multiple: false
     multiple_sep: ":"
   - type: "file"
     name: "--reference_genome"
     alternatives:
     - "-r"
     description: "Path to STAR index as a tar.gz file."
+    example:
+    - "reference_genome.tar.gz"
+    default: []
     must_exist: false
     required: true
-    direction: "Input"
+    direction: "input"
     multiple: false
     multiple_sep: ":"
   - type: "file"
@@ -58,51 +45,25 @@ functionality:
     alternatives:
     - "-t"
     description: "Path to GTF annotation file."
+    example:
+    - "transcriptome.gtf"
+    default: []
     must_exist: false
     required: true
-    direction: "Input"
+    direction: "input"
     multiple: false
     multiple_sep: ":"
-  - type: "integer"
-    name: "--exact_cell_count"
-    alternatives: []
-    description: "Exact cell count - Set a specific number (>=1) of cells as putative,\
-      \ based on those with the highest error-corrected read count"
-    required: false
-    direction: "Input"
-    multiple: false
-    multiple_sep: ":"
-  - type: "boolean"
-    name: "--disable_putative_calling"
-    alternatives: []
-    description: "Disable Refined Putative Cell Calling - Determine putative cells\
-      \ using only the basic algorithm (minimum second derivative along the cumulative\
-      \ reads curve). The refined algorithm attempts to remove false positives and\
-      \ recover false negatives, but may not be ideal for certain complex mixtures\
-      \ of cell types. Does not apply if Exact Cell Count is set."
-    required: false
-    direction: "Input"
-    multiple: false
-    multiple_sep: ":"
-  - type: "boolean_true"
-    name: "--parallel"
-    alternatives: []
-    description: "[experimental] Run jobs in parallel."
-    direction: "Input"
-  - type: "boolean_true"
-    name: "--timestamps"
-    alternatives: []
-    description: "Add timestamps to the errors, warnings, and notifications."
-    direction: "Input"
   - type: "file"
     name: "--abseq_reference"
     alternatives:
     - "-a"
     description: "Path to the AbSeq reference file in FASTA format. Only needed if\
       \ BD AbSeq Ab-Oligos are used."
+    example: []
+    default: []
     must_exist: false
     required: false
-    direction: "Input"
+    direction: "input"
     multiple: true
     multiple_sep: ":"
   - type: "file"
@@ -111,34 +72,151 @@ functionality:
     - "-s"
     description: "Path to the supplemental reference file in FASTA format. Only needed\
       \ if there are additional transgene sequences used in the experiment."
+    example: []
+    default: []
     must_exist: false
     required: false
-    direction: "Input"
+    direction: "input"
     multiple: true
     multiple_sep: ":"
+  - type: "file"
+    name: "--output"
+    alternatives:
+    - "-o"
+    description: "Output folder. Output still needs to be processed further."
+    example:
+    - "output_dir"
+    default: []
+    must_exist: false
+    required: true
+    direction: "output"
+    multiple: false
+    multiple_sep: ":"
+  - type: "integer"
+    name: "--exact_cell_count"
+    alternatives: []
+    description: "Exact cell count - Set a specific number (>=1) of cells as putative,\
+      \ based on those with the highest error-corrected read count"
+    example:
+    - 10000
+    default: []
+    required: false
+    choices: []
+    direction: "input"
+    multiple: false
+    multiple_sep: ":"
+  - type: "boolean_true"
+    name: "--disable_putative_calling"
+    alternatives: []
+    description: "Disable Refined Putative Cell Calling - Determine putative cells\
+      \ using only the basic algorithm (minimum second derivative along the cumulative\
+      \ reads curve). The refined algorithm attempts to remove false positives and\
+      \ recover false negatives, but may not be ideal for certain complex mixtures\
+      \ of cell types. Does not apply if Exact Cell Count is set."
+    direction: "input"
+  - type: "double"
+    name: "--subsample"
+    alternatives: []
+    description: "A number >1 or fraction (0 < n < 1) to indicate the number or percentage\
+      \ of reads to subsample."
+    example:
+    - 0.01
+    default: []
+    required: false
+    direction: "input"
+    multiple: false
+    multiple_sep: ":"
+  - type: "integer"
+    name: "--subsample_seed"
+    alternatives: []
+    description: "A seed for replicating a previous subsampled run."
+    example:
+    - 3445
+    default: []
+    required: false
+    choices: []
+    direction: "input"
+    multiple: false
+    multiple_sep: ":"
+  - type: "string"
+    name: "--sample_tags_version"
+    alternatives: []
+    description: "Specify if multiplexed run."
+    example:
+    - "human"
+    default: []
+    required: false
+    choices:
+    - "human"
+    - "hs"
+    - "mouse"
+    - "mm"
+    direction: "input"
+    multiple: false
+    multiple_sep: ":"
+  - type: "string"
+    name: "--tag_names"
+    alternatives: []
+    description: "Tag_Names (optional) - Specify the tag number followed by '-' and\
+      \ the desired sample name to appear in Sample_Tag_Metrics.csv\nDo not use the\
+      \ special characters: &, (), [], {},  <>, ?, |\n"
+    example:
+    - "4-mySample"
+    - "9-myOtherSample"
+    - "6-alsoThisSample"
+    default: []
+    required: false
+    choices: []
+    direction: "input"
+    multiple: true
+    multiple_sep: ":"
+  - type: "boolean"
+    name: "--parallel"
+    alternatives: []
+    description: "Run jobs in parallel."
+    example: []
+    default:
+    - true
+    required: false
+    direction: "input"
+    multiple: false
+    multiple_sep: ":"
+  - type: "boolean_true"
+    name: "--timestamps"
+    alternatives: []
+    description: "Add timestamps to the errors, warnings, and notifications."
+    direction: "input"
   resources:
   - type: "bash_script"
     text: |
       #!/usr/bin/env bash
       
-      ###############################
-      #    bd_rhapsody_wta 0.3.0    #
-      ###############################
-      
-      # This wrapper script is auto-generated by viash 0.5.10.1 and is thus a
-      # derivative work thereof. This software comes with ABSOLUTELY NO WARRANTY from
-      # Data Intuitive.  The component may contain files which fall under a different
-      # license. The authors of this component should specify the license in the
-      # header of such files, or include a separate license file detailing the
-      # licenses of all included files.
-      #
+      # bd_rhapsody_wta 0.3.1
+      # 
+      # This wrapper script is auto-generated by viash 0.5.12 and is thus a derivative
+      # work thereof. This software comes with ABSOLUTELY NO WARRANTY from Data
+      # Intuitive.
+      # 
+      # The component may contain files which fall under a different license. The
+      # authors of this component should specify the license in the header of such
+      # files, or include a separate license file detailing the licenses of all included
+      # files.
+      # 
       # Component authors:
-      # * Robrecht Cannoodt <rcannood@gmail.com> (maintainer) {github: rcannood, orcid: 0000-0003-3641-729X}
+      #  * Robrecht Cannoodt <rcannood@gmail.com> (maintainer) {github: rcannood, orcid:
+      # 0000-0003-3641-729X}
       
       set -e
       
       if [ -z "$VIASH_TEMP" ]; then
-        VIASH_TEMP=/tmp
+        VIASH_TEMP=${VIASH_TEMP:-$VIASH_TMPDIR}
+        VIASH_TEMP=${VIASH_TEMP:-$VIASH_TEMPDIR}
+        VIASH_TEMP=${VIASH_TEMP:-$VIASH_TMP}
+        VIASH_TEMP=${VIASH_TEMP:-$TMPDIR}
+        VIASH_TEMP=${VIASH_TEMP:-$TMP}
+        VIASH_TEMP=${VIASH_TEMP:-$TEMPDIR}
+        VIASH_TEMP=${VIASH_TEMP:-$TEMP}
+        VIASH_TEMP=${VIASH_TEMP:-/tmp}
       fi
       
       # define helper functions
@@ -262,7 +340,10 @@ functionality:
       }
       
       # find source folder of this component
-      VIASH_RESOURCES_DIR=`ViashSourceDir ${BASH_SOURCE[0]}`
+      VIASH_META_RESOURCES_DIR=`ViashSourceDir ${BASH_SOURCE[0]}`
+      
+      # backwards compatibility
+      VIASH_RESOURCES_DIR="$VIASH_META_RESOURCES_DIR"
       
       # define meta fields
       VIASH_META_FUNCTIONALITY_NAME="bd_rhapsody_wta"
@@ -270,84 +351,99 @@ functionality:
       
       # ViashHelp: Display helpful explanation about this executable
       function ViashHelp {
-        echo "bd_rhapsody_wta 0.3.0"
-        echo "A viash component for the BD Rhapsody Analysis CWL pipeline."
+        echo "bd_rhapsody_wta 0.3.1"
         echo ""
-        echo "The CWL pipeline file is obtained by cloning 'https://bitbucket.org/CRSwDev/cwl/src/master/' and removing all objects with class 'DockerRequirement' from the JSON."
+        echo "A wrapper for the BD Rhapsody Analysis CWL v1.9.1 pipeline."
         echo ""
-        echo "The reference_genome and transcriptome_annotation files can be downloaded from these locations:"
-        echo "  - Human: http://bd-rhapsody-public.s3-website-us-east-1.amazonaws.com/Rhapsody-WTA/GRCh38-PhiX-gencodev29/"
-        echo "  - Mouse: http://bd-rhapsody-public.s3-website-us-east-1.amazonaws.com/Rhapsody-WTA/GRCm38-PhiX-gencodevM19/"
-        echo
+        echo "The CWL pipeline file is obtained by cloning"
+        echo "'https://bitbucket.org/CRSwDev/cwl/src/master/' and removing all objects with"
+        echo "class 'DockerRequirement' from the YML."
+        echo ""
+        echo "The reference_genome and transcriptome_annotation files can be downloaded from"
+        echo "these locations:"
+        echo "  - Human:"
+        echo "http://bd-rhapsody-public.s3-website-us-east-1.amazonaws.com/Rhapsody-WTA/GRCh38-PhiX-gencodev29/"
+        echo "  - Mouse:"
+        echo "http://bd-rhapsody-public.s3-website-us-east-1.amazonaws.com/Rhapsody-WTA/GRCm38-PhiX-gencodevM19/"
+        echo ""
         echo "Options:"
-      
-        echo "   -i, --input"
+        echo "    -i, --input"
         echo "        type: file, required parameter, multiple values allowed"
         echo "        example: input.fastq.gz"
-        echo "        Path to your read files in the FASTQ.GZ format. You may specify as many R1/R2 read pairs as you want."
+        echo "        Path to your read files in the FASTQ.GZ format. You may specify as many"
+        echo "R1/R2 read pairs as you want."
         echo ""
-      
-      
-        echo "   -o, --output"
+        echo "    -r, --reference_genome"
+        echo "        type: file, required parameter"
+        echo "        example: reference_genome.tar.gz"
+        echo "        Path to STAR index as a tar.gz file."
+        echo ""
+        echo "    -t, --transcriptome_annotation"
+        echo "        type: file, required parameter"
+        echo "        example: transcriptome.gtf"
+        echo "        Path to GTF annotation file."
+        echo ""
+        echo "    -a, --abseq_reference"
+        echo "        type: file, multiple values allowed"
+        echo "        Path to the AbSeq reference file in FASTA format. Only needed if BD"
+        echo "AbSeq Ab-Oligos are used."
+        echo ""
+        echo "    -s, --supplemental_reference"
+        echo "        type: file, multiple values allowed"
+        echo "        Path to the supplemental reference file in FASTA format. Only needed if"
+        echo "there are additional transgene sequences used in the experiment."
+        echo ""
+        echo "    -o, --output"
         echo "        type: file, required parameter, output"
         echo "        example: output_dir"
         echo "        Output folder. Output still needs to be processed further."
         echo ""
-      
-      
-        echo "   --subsample"
-        echo "        type: double"
-        echo "        A number >1 or fraction (0 < n < 1) to indicate the number or percentage of reads to subsample."
-        echo ""
-      
-      
-        echo "   -r, --reference_genome"
-        echo "        type: file, required parameter"
-        echo "        Path to STAR index as a tar.gz file."
-        echo ""
-      
-      
-        echo "   -t, --transcriptome_annotation"
-        echo "        type: file, required parameter"
-        echo "        Path to GTF annotation file."
-        echo ""
-      
-      
-        echo "   --exact_cell_count"
+        echo "    --exact_cell_count"
         echo "        type: integer"
-        echo "        Exact cell count - Set a specific number (>=1) of cells as putative, based on those with the highest error-corrected read count"
+        echo "        example: 10000"
+        echo "        Exact cell count - Set a specific number (>=1) of cells as putative,"
+        echo "based on those with the highest error-corrected read count"
         echo ""
-      
-      
-        echo "   --disable_putative_calling"
-        echo "        type: boolean"
-        echo "        Disable Refined Putative Cell Calling - Determine putative cells using only the basic algorithm (minimum second derivative along the cumulative reads curve). The refined algorithm attempts to remove false positives and recover false negatives, but may not be ideal for certain complex mixtures of cell types. Does not apply if Exact Cell Count is set."
-        echo ""
-      
-      
-        echo "   --parallel"
+        echo "    --disable_putative_calling"
         echo "        type: boolean_true"
-        echo "        [experimental] Run jobs in parallel."
+        echo "        Disable Refined Putative Cell Calling - Determine putative cells using"
+        echo "only the basic algorithm (minimum second derivative along the cumulative reads"
+        echo "curve). The refined algorithm attempts to remove false positives and recover"
+        echo "false negatives, but may not be ideal for certain complex mixtures of cell"
+        echo "types. Does not apply if Exact Cell Count is set."
         echo ""
-      
-      
-        echo "   --timestamps"
+        echo "    --subsample"
+        echo "        type: double"
+        echo "        example: 0.01"
+        echo "        A number >1 or fraction (0 < n < 1) to indicate the number or percentage"
+        echo "of reads to subsample."
+        echo ""
+        echo "    --subsample_seed"
+        echo "        type: integer"
+        echo "        example: 3445"
+        echo "        A seed for replicating a previous subsampled run."
+        echo ""
+        echo "    --sample_tags_version"
+        echo "        type: string"
+        echo "        example: human"
+        echo "        choices: [ human, hs, mouse, mm ]"
+        echo "        Specify if multiplexed run."
+        echo ""
+        echo "    --tag_names"
+        echo "        type: string, multiple values allowed"
+        echo "        example: 4-mySample:9-myOtherSample:6-alsoThisSample"
+        echo "        Tag_Names (optional) - Specify the tag number followed by '-' and the"
+        echo "desired sample name to appear in Sample_Tag_Metrics.csv"
+        echo "        Do not use the special characters: &, (), [], {},  <>, ?, |"
+        echo ""
+        echo "    --parallel"
+        echo "        type: boolean"
+        echo "        default: true"
+        echo "        Run jobs in parallel."
+        echo ""
+        echo "    --timestamps"
         echo "        type: boolean_true"
         echo "        Add timestamps to the errors, warnings, and notifications."
-        echo ""
-      
-      
-        echo "   -a, --abseq_reference"
-        echo "        type: file, multiple values allowed"
-        echo "        Path to the AbSeq reference file in FASTA format. Only needed if BD AbSeq Ab-Oligos are used."
-        echo ""
-      
-      
-        echo "   -s, --supplemental_reference"
-        echo "        type: file, multiple values allowed"
-        echo "        Path to the supplemental reference file in FASTA format. Only needed if there are additional transgene sequences used in the experiment."
-        echo ""
-      
       }
       ######## Helper functions for setting up Docker images for viash ########
       # expects: ViashDockerBuild
@@ -546,14 +642,14 @@ functionality:
         cat << 'VIASHDOCKER'
       FROM bdgenomics/rhapsody:1.9.1
       
+      RUN apt-get --allow-releaseinfo-change update
+      RUN apt-get update && \
+        DEBIAN_FRONTEND=noninteractive apt-get install -y cwltool procps && \
+        rm -rf /var/lib/apt/lists/*
+      
       LABEL authors="Robrecht Cannoodt <rcannood@gmail.com> (maintainer) {github: rcannood, orcid: 0000-0003-3641-729X}"
       LABEL org.opencontainers.image.description="Companion container for running component mapping bd_rhapsody_wta"
       LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-      RUN apt-get --allow-releaseinfo-change update
-      RUN apt-get update && \
-        DEBIAN_FRONTEND=noninteractive apt-get install -y cwltool && \
-        rm -rf /var/lib/apt/lists/*
-      
       VIASHDOCKER
       }
       
@@ -570,7 +666,7 @@ functionality:
       
         # store dockerfile and resources
         ViashDockerfile > $tmpdir/Dockerfile
-        cp -r $VIASH_RESOURCES_DIR/* $tmpdir
+        cp -r $VIASH_META_RESOURCES_DIR/* $tmpdir
       
         # Build the container
         ViashNotice "Building container '$1' with Dockerfile"
@@ -696,7 +792,7 @@ functionality:
                   shift 1
                   ;;
               --version)
-                  echo "bd_rhapsody_wta 0.3.0"
+                  echo "bd_rhapsody_wta 0.3.1"
                   exit
                   ;;
               --input)
@@ -705,6 +801,7 @@ functionality:
                   else
                     VIASH_PAR_INPUT="$VIASH_PAR_INPUT:""$2"
                   fi
+                  [ $# -lt 2 ] && ViashError Not enough arguments passed to --input. Use "--help" to get more information on the parameters. && exit 1
                   shift 2
                   ;;
               --input=*)
@@ -721,30 +818,12 @@ functionality:
                   else
                     VIASH_PAR_INPUT="$VIASH_PAR_INPUT:""$2"
                   fi
+                  [ $# -lt 2 ] && ViashError Not enough arguments passed to -i. Use "--help" to get more information on the parameters. && exit 1
                   shift 2
-                  ;;
-              --output)
-                  VIASH_PAR_OUTPUT="$2"
-                  shift 2
-                  ;;
-              --output=*)
-                  VIASH_PAR_OUTPUT=$(ViashRemoveFlags "$1")
-                  shift 1
-                  ;;
-              -o)
-                  VIASH_PAR_OUTPUT="$2"
-                  shift 2
-                  ;;
-              --subsample)
-                  VIASH_PAR_SUBSAMPLE="$2"
-                  shift 2
-                  ;;
-              --subsample=*)
-                  VIASH_PAR_SUBSAMPLE=$(ViashRemoveFlags "$1")
-                  shift 1
                   ;;
               --reference_genome)
                   VIASH_PAR_REFERENCE_GENOME="$2"
+                  [ $# -lt 2 ] && ViashError Not enough arguments passed to --reference_genome. Use "--help" to get more information on the parameters. && exit 1
                   shift 2
                   ;;
               --reference_genome=*)
@@ -753,10 +832,12 @@ functionality:
                   ;;
               -r)
                   VIASH_PAR_REFERENCE_GENOME="$2"
+                  [ $# -lt 2 ] && ViashError Not enough arguments passed to -r. Use "--help" to get more information on the parameters. && exit 1
                   shift 2
                   ;;
               --transcriptome_annotation)
                   VIASH_PAR_TRANSCRIPTOME_ANNOTATION="$2"
+                  [ $# -lt 2 ] && ViashError Not enough arguments passed to --transcriptome_annotation. Use "--help" to get more information on the parameters. && exit 1
                   shift 2
                   ;;
               --transcriptome_annotation=*)
@@ -765,31 +846,8 @@ functionality:
                   ;;
               -t)
                   VIASH_PAR_TRANSCRIPTOME_ANNOTATION="$2"
+                  [ $# -lt 2 ] && ViashError Not enough arguments passed to -t. Use "--help" to get more information on the parameters. && exit 1
                   shift 2
-                  ;;
-              --exact_cell_count)
-                  VIASH_PAR_EXACT_CELL_COUNT="$2"
-                  shift 2
-                  ;;
-              --exact_cell_count=*)
-                  VIASH_PAR_EXACT_CELL_COUNT=$(ViashRemoveFlags "$1")
-                  shift 1
-                  ;;
-              --disable_putative_calling)
-                  VIASH_PAR_DISABLE_PUTATIVE_CALLING="$2"
-                  shift 2
-                  ;;
-              --disable_putative_calling=*)
-                  VIASH_PAR_DISABLE_PUTATIVE_CALLING=$(ViashRemoveFlags "$1")
-                  shift 1
-                  ;;
-              --parallel)
-                  VIASH_PAR_PARALLEL=true
-                  shift 1
-                  ;;
-              --timestamps)
-                  VIASH_PAR_TIMESTAMPS=true
-                  shift 1
                   ;;
               --abseq_reference)
                   if [ -z "$VIASH_PAR_ABSEQ_REFERENCE" ]; then
@@ -797,6 +855,7 @@ functionality:
                   else
                     VIASH_PAR_ABSEQ_REFERENCE="$VIASH_PAR_ABSEQ_REFERENCE:""$2"
                   fi
+                  [ $# -lt 2 ] && ViashError Not enough arguments passed to --abseq_reference. Use "--help" to get more information on the parameters. && exit 1
                   shift 2
                   ;;
               --abseq_reference=*)
@@ -813,6 +872,7 @@ functionality:
                   else
                     VIASH_PAR_ABSEQ_REFERENCE="$VIASH_PAR_ABSEQ_REFERENCE:""$2"
                   fi
+                  [ $# -lt 2 ] && ViashError Not enough arguments passed to -a. Use "--help" to get more information on the parameters. && exit 1
                   shift 2
                   ;;
               --supplemental_reference)
@@ -821,6 +881,7 @@ functionality:
                   else
                     VIASH_PAR_SUPPLEMENTAL_REFERENCE="$VIASH_PAR_SUPPLEMENTAL_REFERENCE:""$2"
                   fi
+                  [ $# -lt 2 ] && ViashError Not enough arguments passed to --supplemental_reference. Use "--help" to get more information on the parameters. && exit 1
                   shift 2
                   ;;
               --supplemental_reference=*)
@@ -837,7 +898,92 @@ functionality:
                   else
                     VIASH_PAR_SUPPLEMENTAL_REFERENCE="$VIASH_PAR_SUPPLEMENTAL_REFERENCE:""$2"
                   fi
+                  [ $# -lt 2 ] && ViashError Not enough arguments passed to -s. Use "--help" to get more information on the parameters. && exit 1
                   shift 2
+                  ;;
+              --output)
+                  VIASH_PAR_OUTPUT="$2"
+                  [ $# -lt 2 ] && ViashError Not enough arguments passed to --output. Use "--help" to get more information on the parameters. && exit 1
+                  shift 2
+                  ;;
+              --output=*)
+                  VIASH_PAR_OUTPUT=$(ViashRemoveFlags "$1")
+                  shift 1
+                  ;;
+              -o)
+                  VIASH_PAR_OUTPUT="$2"
+                  [ $# -lt 2 ] && ViashError Not enough arguments passed to -o. Use "--help" to get more information on the parameters. && exit 1
+                  shift 2
+                  ;;
+              --exact_cell_count)
+                  VIASH_PAR_EXACT_CELL_COUNT="$2"
+                  [ $# -lt 2 ] && ViashError Not enough arguments passed to --exact_cell_count. Use "--help" to get more information on the parameters. && exit 1
+                  shift 2
+                  ;;
+              --exact_cell_count=*)
+                  VIASH_PAR_EXACT_CELL_COUNT=$(ViashRemoveFlags "$1")
+                  shift 1
+                  ;;
+              --disable_putative_calling)
+                  VIASH_PAR_DISABLE_PUTATIVE_CALLING=true
+                  shift 1
+                  ;;
+              --subsample)
+                  VIASH_PAR_SUBSAMPLE="$2"
+                  [ $# -lt 2 ] && ViashError Not enough arguments passed to --subsample. Use "--help" to get more information on the parameters. && exit 1
+                  shift 2
+                  ;;
+              --subsample=*)
+                  VIASH_PAR_SUBSAMPLE=$(ViashRemoveFlags "$1")
+                  shift 1
+                  ;;
+              --subsample_seed)
+                  VIASH_PAR_SUBSAMPLE_SEED="$2"
+                  [ $# -lt 2 ] && ViashError Not enough arguments passed to --subsample_seed. Use "--help" to get more information on the parameters. && exit 1
+                  shift 2
+                  ;;
+              --subsample_seed=*)
+                  VIASH_PAR_SUBSAMPLE_SEED=$(ViashRemoveFlags "$1")
+                  shift 1
+                  ;;
+              --sample_tags_version)
+                  VIASH_PAR_SAMPLE_TAGS_VERSION="$2"
+                  [ $# -lt 2 ] && ViashError Not enough arguments passed to --sample_tags_version. Use "--help" to get more information on the parameters. && exit 1
+                  shift 2
+                  ;;
+              --sample_tags_version=*)
+                  VIASH_PAR_SAMPLE_TAGS_VERSION=$(ViashRemoveFlags "$1")
+                  shift 1
+                  ;;
+              --tag_names)
+                  if [ -z "$VIASH_PAR_TAG_NAMES" ]; then
+                    VIASH_PAR_TAG_NAMES="$2"
+                  else
+                    VIASH_PAR_TAG_NAMES="$VIASH_PAR_TAG_NAMES:""$2"
+                  fi
+                  [ $# -lt 2 ] && ViashError Not enough arguments passed to --tag_names. Use "--help" to get more information on the parameters. && exit 1
+                  shift 2
+                  ;;
+              --tag_names=*)
+                  if [ -z "$VIASH_PAR_TAG_NAMES" ]; then
+                    VIASH_PAR_TAG_NAMES=$(ViashRemoveFlags "$1")
+                  else
+                    VIASH_PAR_TAG_NAMES="$VIASH_PAR_TAG_NAMES:"$(ViashRemoveFlags "$1")
+                  fi
+                  shift 1
+                  ;;
+              --parallel)
+                  VIASH_PAR_PARALLEL="$2"
+                  [ $# -lt 2 ] && ViashError Not enough arguments passed to --parallel. Use "--help" to get more information on the parameters. && exit 1
+                  shift 2
+                  ;;
+              --parallel=*)
+                  VIASH_PAR_PARALLEL=$(ViashRemoveFlags "$1")
+                  shift 1
+                  ;;
+              --timestamps)
+                  VIASH_PAR_TIMESTAMPS=true
+                  shift 1
                   ;;
               ---setup)
                   VIASH_MODE='docker_setup'
@@ -879,13 +1025,13 @@ functionality:
       
       ViashDockerInstallationCheck
       if [ $VIASH_MODE == "docker_setup" ]; then
-        ViashDockerSetup 'ghcr.io/openpipelines-bio/mapping_bd_rhapsody_wta:0.3.0' "$VIASH_DOCKER_SETUP_STRATEGY"
+        ViashDockerSetup 'ghcr.io/openpipelines-bio/mapping_bd_rhapsody_wta:0.3.1' "$VIASH_DOCKER_SETUP_STRATEGY"
         exit 0
       fi
-      ViashDockerSetup 'ghcr.io/openpipelines-bio/mapping_bd_rhapsody_wta:0.3.0' ifneedbepullelsecachedbuild
+      ViashDockerSetup 'ghcr.io/openpipelines-bio/mapping_bd_rhapsody_wta:0.3.1' ifneedbepullelsecachedbuild
       if [ $VIASH_MODE == "docker_debug" ]; then
-        ViashNotice "+ docker run --entrypoint=bash -i --rm -v "$(pwd)":/pwd --workdir /pwd -t 'ghcr.io/openpipelines-bio/mapping_bd_rhapsody_wta:0.3.0'"
-        docker run --entrypoint=bash -i --rm -v "$(pwd)":/pwd --workdir /pwd -t 'ghcr.io/openpipelines-bio/mapping_bd_rhapsody_wta:0.3.0'
+        ViashNotice "+ docker run --entrypoint=bash -i --rm -v "$(pwd)":/pwd --workdir /pwd -t 'ghcr.io/openpipelines-bio/mapping_bd_rhapsody_wta:0.3.1'"
+        docker run --entrypoint=bash -i --rm -v "$(pwd)":/pwd --workdir /pwd -t 'ghcr.io/openpipelines-bio/mapping_bd_rhapsody_wta:0.3.1'
         exit 0
       fi
       
@@ -897,10 +1043,6 @@ functionality:
         ViashError '--input' is a required argument. Use "--help" to get more information on the parameters.
         exit 1
       fi
-      if [ -z "$VIASH_PAR_OUTPUT" ]; then
-        ViashError '--output' is a required argument. Use "--help" to get more information on the parameters.
-        exit 1
-      fi
       if [ -z "$VIASH_PAR_REFERENCE_GENOME" ]; then
         ViashError '--reference_genome' is a required argument. Use "--help" to get more information on the parameters.
         exit 1
@@ -909,12 +1051,98 @@ functionality:
         ViashError '--transcriptome_annotation' is a required argument. Use "--help" to get more information on the parameters.
         exit 1
       fi
+      if [ -z "$VIASH_PAR_OUTPUT" ]; then
+        ViashError '--output' is a required argument. Use "--help" to get more information on the parameters.
+        exit 1
+      fi
+      if [ -z "$VIASH_PAR_DISABLE_PUTATIVE_CALLING" ]; then
+        VIASH_PAR_DISABLE_PUTATIVE_CALLING="false"
+      fi
       if [ -z "$VIASH_PAR_PARALLEL" ]; then
-        VIASH_PAR_PARALLEL="false"
+        VIASH_PAR_PARALLEL="true"
       fi
       if [ -z "$VIASH_PAR_TIMESTAMPS" ]; then
         VIASH_PAR_TIMESTAMPS="false"
       fi
+      
+      
+      # check whether parameters values are of the right type
+      
+      
+      
+      
+      
+      
+      if [[ -n "$VIASH_PAR_EXACT_CELL_COUNT" ]]; then
+        if ! [[ "$VIASH_PAR_EXACT_CELL_COUNT" =~ ^[-+]?[0-9]+$ ]]; then
+          ViashError '--exact_cell_count' has to be an integer. Use "--help" to get more information on the parameters.
+          exit 1
+        fi
+      fi
+      
+      if [[ -n "$VIASH_PAR_DISABLE_PUTATIVE_CALLING" ]]; then
+        if ! [[ "$VIASH_PAR_DISABLE_PUTATIVE_CALLING" =~ ^(true|True|TRUE|false|False|FALSE|yes|Yes|YES|no|No|NO)$ ]]; then
+          ViashError '--disable_putative_calling' has to be a boolean_true. Use "--help" to get more information on the parameters.
+          exit 1
+        fi
+      fi
+      
+      if [[ -n "$VIASH_PAR_SUBSAMPLE" ]]; then
+        if ! [[ "$VIASH_PAR_SUBSAMPLE" =~ ^[-+]?(\.[0-9]+|[0-9]+(\.[0-9]*)?)([eE][-+]?[0-9]+)?$ ]]; then
+          ViashError '--subsample' has to be a double. Use "--help" to get more information on the parameters.
+          exit 1
+        fi
+      fi
+      
+      if [[ -n "$VIASH_PAR_SUBSAMPLE_SEED" ]]; then
+        if ! [[ "$VIASH_PAR_SUBSAMPLE_SEED" =~ ^[-+]?[0-9]+$ ]]; then
+          ViashError '--subsample_seed' has to be an integer. Use "--help" to get more information on the parameters.
+          exit 1
+        fi
+      fi
+      
+      
+      
+      if [[ -n "$VIASH_PAR_PARALLEL" ]]; then
+        if ! [[ "$VIASH_PAR_PARALLEL" =~ ^(true|True|TRUE|false|False|FALSE|yes|Yes|YES|no|No|NO)$ ]]; then
+          ViashError '--parallel' has to be a boolean. Use "--help" to get more information on the parameters.
+          exit 1
+        fi
+      fi
+      
+      if [[ -n "$VIASH_PAR_TIMESTAMPS" ]]; then
+        if ! [[ "$VIASH_PAR_TIMESTAMPS" =~ ^(true|True|TRUE|false|False|FALSE|yes|Yes|YES|no|No|NO)$ ]]; then
+          ViashError '--timestamps' has to be a boolean_true. Use "--help" to get more information on the parameters.
+          exit 1
+        fi
+      fi
+      
+      
+      # check whether parameters values are of the right type
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      if [ ! -z "$VIASH_PAR_SAMPLE_TAGS_VERSION" ]; then
+        VIASH_PAR_SAMPLE_TAGS_VERSION_CHOICES=("human:hs:mouse:mm")
+        IFS=:
+        set -f
+        if ! [[ ":${VIASH_PAR_SAMPLE_TAGS_VERSION_CHOICES[*]}:" =~ ":$VIASH_PAR_SAMPLE_TAGS_VERSION:" ]]; then
+          ViashError '--sample_tags_version' specified value of \'$VIASH_PAR_SAMPLE_TAGS_VERSION\' is not in the list of allowed values. Use "--help" to get more information on the parameters.
+          exit 1
+        fi
+        set +f
+        unset IFS
+      fi
+      
+      
+      
       
       
       # detect volumes from file arguments
@@ -930,10 +1158,6 @@ functionality:
           fi
         done
         VIASH_PAR_INPUT="$VIASH_TEST_INPUT"
-      fi
-      if [ ! -z "$VIASH_PAR_OUTPUT" ]; then
-        VIASH_EXTRA_MOUNTS="$VIASH_EXTRA_MOUNTS $(ViashAutodetectMountArg "$VIASH_PAR_OUTPUT")"
-        VIASH_PAR_OUTPUT=$(ViashAutodetectMount "$VIASH_PAR_OUTPUT")
       fi
       if [ ! -z "$VIASH_PAR_REFERENCE_GENOME" ]; then
         VIASH_EXTRA_MOUNTS="$VIASH_EXTRA_MOUNTS $(ViashAutodetectMountArg "$VIASH_PAR_REFERENCE_GENOME")"
@@ -969,10 +1193,14 @@ functionality:
         done
         VIASH_PAR_SUPPLEMENTAL_REFERENCE="$VIASH_TEST_SUPPLEMENTAL_REFERENCE"
       fi
+      if [ ! -z "$VIASH_PAR_OUTPUT" ]; then
+        VIASH_EXTRA_MOUNTS="$VIASH_EXTRA_MOUNTS $(ViashAutodetectMountArg "$VIASH_PAR_OUTPUT")"
+        VIASH_PAR_OUTPUT=$(ViashAutodetectMount "$VIASH_PAR_OUTPUT")
+      fi
       
       # Always mount the resource directory
-      VIASH_EXTRA_MOUNTS="$VIASH_EXTRA_MOUNTS $(ViashAutodetectMountArg "$VIASH_RESOURCES_DIR")"
-      VIASH_RESOURCES_DIR=$(ViashAutodetectMount "$VIASH_RESOURCES_DIR")
+      VIASH_EXTRA_MOUNTS="$VIASH_EXTRA_MOUNTS $(ViashAutodetectMountArg "$VIASH_META_RESOURCES_DIR")"
+      VIASH_META_RESOURCES_DIR=$(ViashAutodetectMount "$VIASH_META_RESOURCES_DIR")
       
       # Always mount the VIASH_TEMP directory
       VIASH_EXTRA_MOUNTS="$VIASH_EXTRA_MOUNTS $(ViashAutodetectMountArg "$VIASH_TEMP")"
@@ -981,13 +1209,13 @@ functionality:
       function ViashPerformChown {
         
         if [ ! -z "$VIASH_PAR_OUTPUT" ]; then
-          eval docker run --entrypoint=chown -i --rm $VIASH_EXTRA_MOUNTS ghcr.io/openpipelines-bio/mapping_bd_rhapsody_wta:0.3.0 "$(id -u):$(id -g)" --silent --recursive "$VIASH_PAR_OUTPUT"
+          eval docker run --entrypoint=chown -i --rm $VIASH_EXTRA_MOUNTS ghcr.io/openpipelines-bio/mapping_bd_rhapsody_wta:0.3.1 "$(id -u):$(id -g)" --silent --recursive "$VIASH_PAR_OUTPUT"
         fi
       }
       trap ViashPerformChown EXIT
       
       
-      cat << VIASHEOF | eval docker run --entrypoint=bash -i --rm $VIASH_EXTRA_MOUNTS ghcr.io/openpipelines-bio/mapping_bd_rhapsody_wta:0.3.0
+      cat << VIASHEOF | eval docker run --entrypoint=bash -i --rm $VIASH_EXTRA_MOUNTS ghcr.io/openpipelines-bio/mapping_bd_rhapsody_wta:0.3.1
       set -e
       tempscript=\$(mktemp "$VIASH_TEMP/viash-run-bd_rhapsody_wta-XXXXXX")
       function clean_up {
@@ -1000,156 +1228,222 @@ functionality:
       trap clean_up EXIT
       trap interrupt INT SIGINT
       cat > "\$tempscript" << 'VIASHMAIN'
+      import os
+      import re
+      import subprocess
+      import tempfile
+      
       ## VIASH START
       # The following code has been auto-generated by Viash.
-      $( if [ ! -z ${VIASH_PAR_INPUT+x} ]; then echo "par_input='$VIASH_PAR_INPUT'"; fi )
-      $( if [ ! -z ${VIASH_PAR_OUTPUT+x} ]; then echo "par_output='$VIASH_PAR_OUTPUT'"; fi )
-      $( if [ ! -z ${VIASH_PAR_SUBSAMPLE+x} ]; then echo "par_subsample='$VIASH_PAR_SUBSAMPLE'"; fi )
-      $( if [ ! -z ${VIASH_PAR_REFERENCE_GENOME+x} ]; then echo "par_reference_genome='$VIASH_PAR_REFERENCE_GENOME'"; fi )
-      $( if [ ! -z ${VIASH_PAR_TRANSCRIPTOME_ANNOTATION+x} ]; then echo "par_transcriptome_annotation='$VIASH_PAR_TRANSCRIPTOME_ANNOTATION'"; fi )
-      $( if [ ! -z ${VIASH_PAR_EXACT_CELL_COUNT+x} ]; then echo "par_exact_cell_count='$VIASH_PAR_EXACT_CELL_COUNT'"; fi )
-      $( if [ ! -z ${VIASH_PAR_DISABLE_PUTATIVE_CALLING+x} ]; then echo "par_disable_putative_calling='$VIASH_PAR_DISABLE_PUTATIVE_CALLING'"; fi )
-      $( if [ ! -z ${VIASH_PAR_PARALLEL+x} ]; then echo "par_parallel='$VIASH_PAR_PARALLEL'"; fi )
-      $( if [ ! -z ${VIASH_PAR_TIMESTAMPS+x} ]; then echo "par_timestamps='$VIASH_PAR_TIMESTAMPS'"; fi )
-      $( if [ ! -z ${VIASH_PAR_ABSEQ_REFERENCE+x} ]; then echo "par_abseq_reference='$VIASH_PAR_ABSEQ_REFERENCE'"; fi )
-      $( if [ ! -z ${VIASH_PAR_SUPPLEMENTAL_REFERENCE+x} ]; then echo "par_supplemental_reference='$VIASH_PAR_SUPPLEMENTAL_REFERENCE'"; fi )
-      meta_functionality_name='$VIASH_META_FUNCTIONALITY_NAME'
-      meta_resources_dir='$VIASH_RESOURCES_DIR'
-      resources_dir="$VIASH_RESOURCES_DIR"
+      par = {
+        'input': $( if [ ! -z ${VIASH_PAR_INPUT+x} ]; then echo "'${VIASH_PAR_INPUT//\'/\\\'}'.split(':')"; else echo None; fi ),
+        'reference_genome': $( if [ ! -z ${VIASH_PAR_REFERENCE_GENOME+x} ]; then echo "'${VIASH_PAR_REFERENCE_GENOME//\'/\\\'}'"; else echo None; fi ),
+        'transcriptome_annotation': $( if [ ! -z ${VIASH_PAR_TRANSCRIPTOME_ANNOTATION+x} ]; then echo "'${VIASH_PAR_TRANSCRIPTOME_ANNOTATION//\'/\\\'}'"; else echo None; fi ),
+        'abseq_reference': $( if [ ! -z ${VIASH_PAR_ABSEQ_REFERENCE+x} ]; then echo "'${VIASH_PAR_ABSEQ_REFERENCE//\'/\\\'}'.split(':')"; else echo None; fi ),
+        'supplemental_reference': $( if [ ! -z ${VIASH_PAR_SUPPLEMENTAL_REFERENCE+x} ]; then echo "'${VIASH_PAR_SUPPLEMENTAL_REFERENCE//\'/\\\'}'.split(':')"; else echo None; fi ),
+        'output': $( if [ ! -z ${VIASH_PAR_OUTPUT+x} ]; then echo "'${VIASH_PAR_OUTPUT//\'/\\\'}'"; else echo None; fi ),
+        'exact_cell_count': $( if [ ! -z ${VIASH_PAR_EXACT_CELL_COUNT+x} ]; then echo "int('${VIASH_PAR_EXACT_CELL_COUNT//\'/\\\'}')"; else echo None; fi ),
+        'disable_putative_calling': $( if [ ! -z ${VIASH_PAR_DISABLE_PUTATIVE_CALLING+x} ]; then echo "'${VIASH_PAR_DISABLE_PUTATIVE_CALLING//\'/\\\'}'.lower() == 'true'"; else echo None; fi ),
+        'subsample': $( if [ ! -z ${VIASH_PAR_SUBSAMPLE+x} ]; then echo "float('${VIASH_PAR_SUBSAMPLE//\'/\\\'}')"; else echo None; fi ),
+        'subsample_seed': $( if [ ! -z ${VIASH_PAR_SUBSAMPLE_SEED+x} ]; then echo "int('${VIASH_PAR_SUBSAMPLE_SEED//\'/\\\'}')"; else echo None; fi ),
+        'sample_tags_version': $( if [ ! -z ${VIASH_PAR_SAMPLE_TAGS_VERSION+x} ]; then echo "'${VIASH_PAR_SAMPLE_TAGS_VERSION//\'/\\\'}'"; else echo None; fi ),
+        'tag_names': $( if [ ! -z ${VIASH_PAR_TAG_NAMES+x} ]; then echo "'${VIASH_PAR_TAG_NAMES//\'/\\\'}'.split(':')"; else echo None; fi ),
+        'parallel': $( if [ ! -z ${VIASH_PAR_PARALLEL+x} ]; then echo "'${VIASH_PAR_PARALLEL//\'/\\\'}'.lower() == 'true'"; else echo None; fi ),
+        'timestamps': $( if [ ! -z ${VIASH_PAR_TIMESTAMPS+x} ]; then echo "'${VIASH_PAR_TIMESTAMPS//\'/\\\'}'.lower() == 'true'"; else echo None; fi )
+      }
+      meta = {
+        'functionality_name': '$VIASH_META_FUNCTIONALITY_NAME',
+        'resources_dir': '$VIASH_META_RESOURCES_DIR',
+        'temp_dir': '$VIASH_TEMP'
+      }
+      
+      resources_dir = '$VIASH_META_RESOURCES_DIR'
       
       ## VIASH END
-      #!/bin/bash
       
-      mkdir -p \$par_output
+      def strip_margin(text):
+        return re.sub('\\n[ \\t]*\\|', '\\n', text)
       
-      cat > \$par_output/config.yml << HERE
-      #!/usr/bin/env cwl-runner
+      # if par_input is a directory, look for fastq files
+      if len(par["input"]) == 1 and os.path.isdir(par["input"][0]):
+        par["input"] = [ os.path.join(dp, f) for dp, dn, filenames in os.walk(par["input"]) for f in filenames if re.match(r'.*\\.fastq.gz', f) ]
+      
+      # use absolute paths
+      par["input"] = [ os.path.abspath(f) for f in par["input"] ]
+      par["reference_genome"] = os.path.abspath(par["reference_genome"])
+      par["transcriptome_annotation"] = os.path.abspath(par["transcriptome_annotation"])
+      par["output"] = os.path.abspath(par["output"])
+      if par["abseq_reference"]:
+        par["abseq_reference"] = [ os.path.abspath(f) for f in par["abseq_reference"] ]
+      if par["supplemental_reference"]:
+        par["supplemental_reference"] = [ os.path.abspath(f) for f in par["supplemental_reference"] ]
+      
+      # create output dir if not exists
+      if not os.path.exists(par["output"]):
+        os.makedirs(par["output"])
+      
+      # Create params file
+      config_file = os.path.join(par["output"], "config.yml")
+      endl = "\\n"
+      
+      content_list = [f"""#!/usr/bin/env cwl-runner
       
       cwl:tool: rhapsody
       
       # This is a YML file used to specify the inputs for a BD Genomics WTA Rhapsody Analysis pipeline run. See the
       # BD Genomics Analysis Setup User Guide (Doc ID: 47383) for more details.
       
+      ## Reads (required) - Path to your read files in the FASTQ.GZ format. You may specify as many R1/R2 read pairs as you want.
+      Reads:
+      """]
+      
+      for file in par["input"]:
+        content_list.append(strip_margin(f"""\\
+       - class: File
+         location: "{file}"
+      """))
+      
+      content_list.append(strip_margin(f"""\\
+      
       ## Reference_Genome (required) - Path to STAR index for tar.gz format. See Doc ID: 47383 for instructions to obtain pre-built STAR index file.
       Reference_Genome:
          class: File
-         location: "\$(realpath --no-symlinks \$par_reference_genome)"
+         location: "{par["reference_genome"]}"
       
       ## Transcriptome_Annotation (required) - Path to GTF annotation file
       Transcriptome_Annotation:
          class: File
-         location: "\$(realpath --no-symlinks \$par_transcriptome_annotation)"
+         location: "{par["transcriptome_annotation"]}"
+      """))
       
-      ## Reads (required) - Path to your read files in the FASTQ.GZ format. You may specify as many R1/R2 read pairs as you want.
-      Reads:
-      HERE
-      
-      # process fastq files
-      IFS=:
-      set -f
-      for val in \$par_input; do
-        unset IFS
-        cat >> \$par_output/config.yml << HERE
-       - class: File
-         location: "\$(realpath --no-symlinks \$val)"
-      HERE
-      done
-      set +f
-      
-      # Add abseq reference, if specified
-      if [ ! -z "\$par_abseq_reference" ]; then
-        cat >> \$par_output/config.yml << HERE
+      if par["abseq_reference"]:
+        content_list.append(strip_margin(f"""\\
       
       ## AbSeq_Reference (optional) - Path to the AbSeq reference file in FASTA format.  Only needed if BD AbSeq Ab-Oligos are used.
+      ## For putative cell calling using an AbSeq dataset, please provide an AbSeq reference fasta file as the AbSeq_Reference.
       AbSeq_Reference:
-      HERE
-      
-        # process abseq reference files
-        IFS=:
-        set -f
-        for val in \$par_abseq_reference; do
-          unset IFS
-      
-          cat >> \$par_output/config.yml << HERE
+      """))
+        for file in par["abseq_reference"]:
+          content_list.append(strip_margin(f"""\\
        - class: File
-         location: "\$(realpath --no-symlinks \$val)"
-      HERE
-        done
-        set +f
-      fi
+         location: {file}
+      """))
       
-      # Add supplemental reference, if specified
-      if [ ! -z "\$par_supplemental_reference" ]; then
-        cat >> \$par_output/config.yml << HERE
+      if par["supplemental_reference"]:
+        content_list.append(strip_margin(f"""\\
       
-      # Supplemental_Reference (optional) - Path to the supplemental reference file in FASTA format.  Only needed if there are additional transgene sequences used in the experiment.
+      ## Supplemental_Reference (optional) - Path to the supplemental reference file in FASTA format.  Only needed if there are additional transgene sequences used in the experiment.
       Supplemental_Reference:
-      HERE
-      
-        # process supplemental reference files
-        IFS=:
-        set -f
-        for val in \$par_supplemental_reference; do
-          unset IFS
-      
-          cat >> \$par_output/config.yml << HERE
+      """))
+        for file in par["supplemental_reference"]:
+          content_list.append(strip_margin(f"""\\
        - class: File
-         location: "\$(realpath --no-symlinks \$val)"
-      HERE
-        done
-        set +f
-      fi
+         location: {file}
+      """))
       
-      # Add exact cell count, if specified
-      if [ ! -z "\$par_exact_cell_count" ]; then
-        cat >> \$par_output/config.yml << HERE
+      ## Putative Cell Calling Settings
+      content_list.append(strip_margin(f"""\\
       
-      ## Exact cell count - Set a specific number (>=1) of cells as putative, based on those with the highest error-corrected read count
-      Exact_Cell_Count: \$par_exact_cell_count
-      HERE
-      fi
+      ####################################
+      ## Putative Cell Calling Settings ##
+      ####################################
+      """))
       
-      # Add Disable Refined Putative Cell Calling, if specified
-      if [ ! -z "\$par_disable_putative_calling" ]; then
-        cat >> \$par_output/config.yml << HERE
+      if par["exact_cell_count"]:
+        content_list.append(strip_margin(f"""\\
+      ## Exact cell count (optional) - Set a specific number (>=1) of cells as putative, based on those with the highest error-corrected read count
+      Exact_Cell_Count: {par["exact_cell_count"]}
+      """))
       
-      ## Disable Refined Putative Cell Calling - Determine putative cells using only the basic algorithm (minimum second derivative along the cumulative reads curve).
-      ## The refined algorithm attempts to remove false positives and recover false negatives, but may not be ideal for certain complex mixtures of cell types.
-      ## Does not apply if Exact Cell Count is set. Values can be true or false.
-      Basic_Algo_Only: \$par_disable_putative_calling
-      HERE
-      fi
+      if par["disable_putative_calling"]:
+        content_list.append(strip_margin(f"""\\
+      ## Disable Refined Putative Cell Calling (optional) - Determine putative cells using only the basic algorithm (minimum second derivative along the cumulative reads curve).  The refined algorithm attempts to remove false positives and recover false negatives, but may not be ideal for certain complex mixtures of cell types.  Does not apply if Exact Cell Count is set.
+      ## The values can be true or false. By default, the refined algorithm is used.
+      Basic_Algo_Only: {str(par["disable_putative_calling"]).lower()}
+      """))
       
-      # add subsample, if specified
-      if [ ! -z "\$par_subsample" ]; then
-        cat >> \$par_output/config.yml << HERE
+      ## Subsample Settings
+      content_list.append(strip_margin(f"""\\
       
+      ########################
+      ## Subsample Settings ##
+      ########################
+      """
+      ))
+      
+      if par["subsample"]:
+        content_list.append(strip_margin(f"""\\
       ## Subsample (optional) - A number >1 or fraction (0 < n < 1) to indicate the number or percentage of reads to subsample.
-      Subsample: \$par_subsample
-      HERE
-      fi
+      Subsample: {par["subsample"]}
+      """))
       
-      if [ "\$par_parallel" == "true" ]; then
-        pars="\$pars --parallel"
-      fi
-      if [ "\$par_timestamps" == "true" ]; then
-        pars="\$pars --timestamps"
-      fi
+      if par["subsample_seed"]:
+        content_list.append(strip_margin(f"""\\
+      ## Subsample seed (optional) - A seed for replicating a previous subsampled run.
+      Subsample_seed: {par["subsample_seed"]}
+      """))
       
-      cd \$par_output
       
-      # enable tempdir
-      export TMPDIR=\$(mktemp -d "$VIASH_TEMP/cwl-bd_rhapsody_wta-XXXXXX")
-      # remove tempdir after execution
-      function clean_up {
-        [[ -d "\$TMPDIR" ]] && rm -r "\$TMPDIR"
-      }
-      trap clean_up EXIT
+      ## Multiplex options
+      content_list.append(strip_margin(f"""\\
       
-      echo "> cwl-runner\$pars --no-container \\"\$resources_dir/rhapsody_wta_1.9.1_nodocker.cwl\\" config.yml"
-      eval cwl-runner\$pars --no-container "\$resources_dir/rhapsody_wta_1.9.1_nodocker.cwl" config.yml
+      #######################
+      ## Multiplex options ##
+      #######################
+      """
+      ))
+      
+      if par["sample_tags_version"]:
+        content_list.append(strip_margin(f"""\\
+      ## Sample Tags Version (optional) - Specify if multiplexed run: human, hs, mouse or mm
+      Sample_Tags_Version: {par["sample_tags_version"]}
+      """))
+      
+      if par["tag_names"]:
+        content_list.append(strip_margin(f"""\\
+      ## Tag_Names (optional) - Specify the tag number followed by '-' and the desired sample name to appear in Sample_Tag_Metrics.csv
+      # Do not use the special characters: &, (), [], {{}},  <>, ?, |
+      Tag_Names: [{', '.join(par["tag_names"])}]
+      """))
+      
+      ## Write config to file
+      config_content = ''.join(content_list)
+      
+      with open(config_file, "w") as f:
+        f.write(config_content)
+      
+      ## Process parameters
+      # proc_pars = ["--no-container"]
+      proc_pars = []
+      
+      if par["parallel"]:
+        proc_pars.append("--parallel")
+      
+      if par["timestamps"]:
+        proc_pars.append("--timestamps")
+      
+      ## Run pipeline
+      cwl_file=os.path.abspath(os.path.join(meta["resources_dir"], "rhapsody_wta_1.9.1_nodocker.cwl"))
+      
+      with tempfile.TemporaryDirectory(prefix="cwl-bd_rhapsody_wta-", dir=meta["temp_dir"]) as temp_dir:
+        cmd = ["cwl-runner"] + proc_pars + [cwl_file, os.path.basename(config_file)]
+      
+        env = dict(os.environ)
+        env["TMPDIR"] = temp_dir
+      
+        print("> " + ' '.join(cmd))
+      
+        p = subprocess.Popen(
+          cmd,
+          cwd=os.path.dirname(config_file),
+          env=env
+        )
+        p.wait()
+      
+        if p.returncode != 0:
+          raise Exception(f"cwl-runner finished with exit code {p.returncode}") 
       VIASHMAIN
-      bash "\$tempscript" &
+      python "\$tempscript" &
       wait "\$!"
       
       VIASHEOF
@@ -1159,9 +1453,9 @@ functionality:
     is_executable: true
   - type: "file"
     path: "rhapsody_wta_1.9.1_nodocker.cwl"
-  description: "A viash component for the BD Rhapsody Analysis CWL pipeline.\n\nThe\
+  description: "A wrapper for the BD Rhapsody Analysis CWL v1.9.1 pipeline.\n\nThe\
     \ CWL pipeline file is obtained by cloning 'https://bitbucket.org/CRSwDev/cwl/src/master/'\
-    \ and removing all objects with class 'DockerRequirement' from the JSON.\n\nThe\
+    \ and removing all objects with class 'DockerRequirement' from the YML.\n\nThe\
     \ reference_genome and transcriptome_annotation files can be downloaded from these\
     \ locations:\n  - Human: http://bd-rhapsody-public.s3-website-us-east-1.amazonaws.com/Rhapsody-WTA/GRCh38-PhiX-gencodev29/\n\
     \  - Mouse: http://bd-rhapsody-public.s3-website-us-east-1.amazonaws.com/Rhapsody-WTA/GRCm38-PhiX-gencodevM19/\n"
@@ -1174,7 +1468,7 @@ functionality:
   info: {}
   dummy_arguments: []
   set_wd_to_resources_dir: false
-  add_resources_to_path: false
+  enabled: true
 platform:
   type: "docker"
   id: "docker"
@@ -1202,6 +1496,7 @@ platform:
   - type: "apt"
     packages:
     - "cwltool"
+    - "procps"
     interactive: false
 platforms: []
 info:
@@ -1209,6 +1504,6 @@ info:
   platform: "docker"
   output: "target/docker/mapping/bd_rhapsody_wta"
   executable: "target/docker/mapping/bd_rhapsody_wta/bd_rhapsody_wta"
-  viash_version: "0.5.10.1"
-  git_commit: "525b04b76359a25469f9a9ab8631d92a5e0cc8ea"
+  viash_version: "0.5.12"
+  git_commit: "e351a8115f24d94592a76ecb76b4dfb2a78f7d97"
   git_remote: "git@github.com:openpipelines-bio/openpipeline.git"
