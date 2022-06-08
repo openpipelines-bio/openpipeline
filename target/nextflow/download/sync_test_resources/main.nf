@@ -64,6 +64,15 @@ thisFunctionality = [
       'multiple': false
     ],
     [
+      'name': 'delete',
+      'required': false,
+      'type': 'boolean_true',
+      'direction': 'input',
+      'description': 'Files that exist in the destination but not in the source are deleted during sync.',
+      'default': false,
+      'multiple': false
+    ],
+    [
       'name': 'exclude',
       'required': false,
       'type': 'string',
@@ -103,6 +112,11 @@ command without actually running them.
         type: boolean_true
         Does not display the operations performed from the specified command.
 
+    --delete
+        type: boolean_true
+        Files that exist in the destination but not in the source are deleted
+during sync.
+
     --exclude
         type: string, multiple values allowed
         Exclude all files or objects from the command that matches the specified
@@ -119,6 +133,7 @@ $( if [ ! -z ${VIASH_PAR_INPUT+x} ]; then echo "par_input='${VIASH_PAR_INPUT//\\
 $( if [ ! -z ${VIASH_PAR_OUTPUT+x} ]; then echo "par_output='${VIASH_PAR_OUTPUT//\\'/\\'\\"\\'\\"\\'}'"; fi )
 $( if [ ! -z ${VIASH_PAR_QUIET+x} ]; then echo "par_quiet='${VIASH_PAR_QUIET//\\'/\\'\\"\\'\\"\\'}'"; fi )
 $( if [ ! -z ${VIASH_PAR_DRYRUN+x} ]; then echo "par_dryrun='${VIASH_PAR_DRYRUN//\\'/\\'\\"\\'\\"\\'}'"; fi )
+$( if [ ! -z ${VIASH_PAR_DELETE+x} ]; then echo "par_delete='${VIASH_PAR_DELETE//\\'/\\'\\"\\'\\"\\'}'"; fi )
 $( if [ ! -z ${VIASH_PAR_EXCLUDE+x} ]; then echo "par_exclude='${VIASH_PAR_EXCLUDE//\\'/\\'\\"\\'\\"\\'}'"; fi )
 meta_functionality_name='$VIASH_META_FUNCTIONALITY_NAME'
 meta_resources_dir='$VIASH_META_RESOURCES_DIR'
@@ -134,6 +149,9 @@ if [ "\\$par_quiet" == "true" ]; then
 fi
 if [ "\\$par_dryrun" == "true" ]; then
   extra_params+=( "--dryrun" )
+fi
+if [ "\\$par_delete" == "true" ]; then
+  extra_params+=( "--delete" )
 fi
 
 if [ ! -z \\${par_exclude+x} ]; then

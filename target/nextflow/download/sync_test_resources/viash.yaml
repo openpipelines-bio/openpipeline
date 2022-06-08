@@ -50,6 +50,12 @@ functionality:
     alternatives: []
     description: "Does not display the operations performed from the specified command."
     direction: "input"
+  - type: "boolean_true"
+    name: "--delete"
+    alternatives: []
+    description: "Files that exist in the destination but not in the source are deleted\
+      \ during sync."
+    direction: "input"
   - type: "string"
     name: "--exclude"
     alternatives: []
@@ -131,6 +137,15 @@ functionality:
             'multiple': false
           ],
           [
+            'name': 'delete',
+            'required': false,
+            'type': 'boolean_true',
+            'direction': 'input',
+            'description': 'Files that exist in the destination but not in the source are deleted during sync.',
+            'default': false,
+            'multiple': false
+          ],
+          [
             'name': 'exclude',
             'required': false,
             'type': 'string',
@@ -170,6 +185,11 @@ functionality:
               type: boolean_true
               Does not display the operations performed from the specified command.
       
+          --delete
+              type: boolean_true
+              Files that exist in the destination but not in the source are deleted
+      during sync.
+      
           --exclude
               type: string, multiple values allowed
               Exclude all files or objects from the command that matches the specified
@@ -186,6 +206,7 @@ functionality:
       $( if [ ! -z ${VIASH_PAR_OUTPUT+x} ]; then echo "par_output='${VIASH_PAR_OUTPUT//\\'/\\'\\"\\'\\"\\'}'"; fi )
       $( if [ ! -z ${VIASH_PAR_QUIET+x} ]; then echo "par_quiet='${VIASH_PAR_QUIET//\\'/\\'\\"\\'\\"\\'}'"; fi )
       $( if [ ! -z ${VIASH_PAR_DRYRUN+x} ]; then echo "par_dryrun='${VIASH_PAR_DRYRUN//\\'/\\'\\"\\'\\"\\'}'"; fi )
+      $( if [ ! -z ${VIASH_PAR_DELETE+x} ]; then echo "par_delete='${VIASH_PAR_DELETE//\\'/\\'\\"\\'\\"\\'}'"; fi )
       $( if [ ! -z ${VIASH_PAR_EXCLUDE+x} ]; then echo "par_exclude='${VIASH_PAR_EXCLUDE//\\'/\\'\\"\\'\\"\\'}'"; fi )
       meta_functionality_name='$VIASH_META_FUNCTIONALITY_NAME'
       meta_resources_dir='$VIASH_META_RESOURCES_DIR'
@@ -201,6 +222,9 @@ functionality:
       fi
       if [ "\\$par_dryrun" == "true" ]; then
         extra_params+=( "--dryrun" )
+      fi
+      if [ "\\$par_delete" == "true" ]; then
+        extra_params+=( "--delete" )
       fi
       
       if [ ! -z \\${par_exclude+x} ]; then
@@ -1291,5 +1315,5 @@ info:
   platform: "nextflow"
   output: "target/nextflow/download/sync_test_resources"
   viash_version: "0.5.12"
-  git_commit: "f56f3c9afbaafc18276f2d6f27d4413760dff1b2"
+  git_commit: "d37d38bec976edda9cfdddd5dfa165261ec1d666"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"

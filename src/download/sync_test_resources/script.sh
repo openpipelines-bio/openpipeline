@@ -13,6 +13,9 @@ fi
 if [ "$par_dryrun" == "true" ]; then
   extra_params+=( "--dryrun" )
 fi
+if [ "$par_delete" == "true" ]; then
+  extra_params+=( "--delete" )
+fi
 
 if [ ! -z ${par_exclude+x} ]; then
   IFS=":"

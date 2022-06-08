@@ -37,7 +37,7 @@ on each modality instead of on the whole `MuData` object.
 
 * `mapping/bd_rhapsody_wta`: Translate Bash script into Python.
 
-* `download/sync_test_resources`: Add `--dryrun` and `--quiet` arguments.
+* `download/sync_test_resources`: Add `--dryrun`, `--quiet`, and `--delete` arguments.
 
 * `convert/from_h5mu_to_seurat`: Use `eddelbuettel/r2u:22.04` docker container in order to speed up builds by downloading precompiled R packages.
 

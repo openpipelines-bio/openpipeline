@@ -181,6 +181,11 @@ function ViashHelp {
   echo "        type: boolean_true"
   echo "        Does not display the operations performed from the specified command."
   echo ""
+  echo "    --delete"
+  echo "        type: boolean_true"
+  echo "        Files that exist in the destination but not in the source are deleted"
+  echo "during sync."
+  echo ""
   echo "    --exclude"
   echo "        type: string, multiple values allowed"
   echo "        Exclude all files or objects from the command that matches the specified"
@@ -568,6 +573,10 @@ while [[ $# -gt 0 ]]; do
             VIASH_PAR_DRYRUN=true
             shift 1
             ;;
+        --delete)
+            VIASH_PAR_DELETE=true
+            shift 1
+            ;;
         --exclude)
             if [ -z "$VIASH_PAR_EXCLUDE" ]; then
               VIASH_PAR_EXCLUDE="$2"
@@ -650,6 +659,9 @@ fi
 if [ -z "$VIASH_PAR_DRYRUN" ]; then
   VIASH_PAR_DRYRUN="false"
 fi
+if [ -z "$VIASH_PAR_DELETE" ]; then
+  VIASH_PAR_DELETE="false"
+fi
 
 
 # check whether parameters values are of the right type
@@ -669,9 +681,17 @@ if [[ -n "$VIASH_PAR_DRYRUN" ]]; then
   fi
 fi
 
+if [[ -n "$VIASH_PAR_DELETE" ]]; then
+  if ! [[ "$VIASH_PAR_DELETE" =~ ^(true|True|TRUE|false|False|FALSE|yes|Yes|YES|no|No|NO)$ ]]; then
+    ViashError '--delete' has to be a boolean_true. Use "--help" to get more information on the parameters.
+    exit 1
+  fi
+fi
+
 
 
 # check whether parameters values are of the right type
+
 
 
 
@@ -722,6 +742,7 @@ $( if [ ! -z ${VIASH_PAR_INPUT+x} ]; then echo "par_input='${VIASH_PAR_INPUT//\'
 $( if [ ! -z ${VIASH_PAR_OUTPUT+x} ]; then echo "par_output='${VIASH_PAR_OUTPUT//\'/\'\"\'\"\'}'"; fi )
 $( if [ ! -z ${VIASH_PAR_QUIET+x} ]; then echo "par_quiet='${VIASH_PAR_QUIET//\'/\'\"\'\"\'}'"; fi )
 $( if [ ! -z ${VIASH_PAR_DRYRUN+x} ]; then echo "par_dryrun='${VIASH_PAR_DRYRUN//\'/\'\"\'\"\'}'"; fi )
+$( if [ ! -z ${VIASH_PAR_DELETE+x} ]; then echo "par_delete='${VIASH_PAR_DELETE//\'/\'\"\'\"\'}'"; fi )
 $( if [ ! -z ${VIASH_PAR_EXCLUDE+x} ]; then echo "par_exclude='${VIASH_PAR_EXCLUDE//\'/\'\"\'\"\'}'"; fi )
 meta_functionality_name='$VIASH_META_FUNCTIONALITY_NAME'
 meta_resources_dir='$VIASH_META_RESOURCES_DIR'
@@ -737,6 +758,9 @@ if [ "\$par_quiet" == "true" ]; then
 fi
 if [ "\$par_dryrun" == "true" ]; then
   extra_params+=( "--dryrun" )
+fi
+if [ "\$par_delete" == "true" ]; then
+  extra_params+=( "--delete" )
 fi
 
 if [ ! -z \${par_exclude+x} ]; then
