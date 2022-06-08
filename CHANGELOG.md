@@ -45,6 +45,8 @@ on each modality instead of on the whole `MuData` object.
 
 * `convert/from_bdrhap_to_h5ad`: change test data to output from `mapping/bd_rhapsody_wta` after reducing the BD Rhapsody test data size.
 
+* Various `config.vsh.yaml`s: Renamed `values:` to `choices:`.
+
 ## BUG FIXES
 
 * `mapping/bd_rhapsody`: Use a smaller test dataset to reduce test time and make sure that the Github Action runners do not run out of disk space.
@@ -56,6 +58,10 @@ on each modality instead of on the whole `MuData` object.
 * `mapping/cellranger_count` and `bcl_demus/cellranger_mkfastq`: cellranger uses the `--parameter=value` formatting instead of `--parameter value` to set command line arguments.
 
 * `mapping/cellranger_count`: `--nosecondary` is no longer always applied.
+
+## DEPRECATED
+
+* `bcl_demux/cellranger_mkfastq`: Duplicate of `demux/cellranger_mkfastq`.
 
 # openpipeline 0.3.0
 

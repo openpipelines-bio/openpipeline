@@ -757,5 +757,5 @@ info:
   output: "target/docker/interactive/run_cirrocumulus"
   executable: "target/docker/interactive/run_cirrocumulus/run_cirrocumulus"
   viash_version: "0.5.12"
-  git_commit: "9ff6697e95c9f4b86c2074a33a6cd5f9e3b830ca"
+  git_commit: "f56f3c9afbaafc18276f2d6f27d4413760dff1b2"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"

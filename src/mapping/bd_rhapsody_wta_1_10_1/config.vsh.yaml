@@ -63,7 +63,7 @@ functionality:
     - name: "--putative_cell_call"
       type: string
       description: "Specify the dataset to be used for putative cell calling. For putative cell calling using an AbSeq dataset, please provide an AbSeq_Reference fasta file above."
-      values: [mRNA, AbSeq_Experimental]
+      choices: [mRNA, AbSeq_Experimental]
       example: mRNA
     - name: "--exact_cell_count"
       type: integer
@@ -87,7 +87,7 @@ functionality:
     - name: "--sample_tags_version"
       type: string
       description: "Specify if multiplexed run."
-      values: [human, hs, mouse, mm]
+      choices: [human, hs, mouse, mm]
       example: human
 
     - name: "--tag_names"
@@ -102,7 +102,7 @@ functionality:
     - name: "--vdj_version"
       type: string
       description: "Specify if VDJ run."
-      values: [human, mouse, humanBCR, humanBCR, humanTCR, mouseBCR]
+      choices: [human, mouse, humanBCR, humanBCR, humanTCR, mouseBCR]
       example: human
     
     # additional settings
