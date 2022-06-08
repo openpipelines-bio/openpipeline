@@ -254,30 +254,10 @@ functionality:
           --metric
               type: string
               default: euclidean
-              choices:
-                  - cityblock
-                  - cosine
-                  - euclidean
-                  - l1
-                  - l2
-                  - manhattan
-                  - braycurtis
-                  - canberra
-                  - chebyshev
-                  - correlation
-                  - dice
-                  - hamming
-                  - jaccard
-                  - kulsinski
-                  - mahalanobis
-                  - minkowski
-                  - rogerstanimoto
-                  - russellrao
-                  - seuclidean
-                  - sokalmichener
-                  - sokalsneath
-                  - sqeuclidean
-                  - yule
+              choices: [ cityblock, cosine, euclidean, l1, l2, manhattan, braycurtis,
+      canberra, chebyshev, correlation, dice, hamming, jaccard, kulsinski,
+      mahalanobis, minkowski, rogerstanimoto, russellrao, seuclidean, sokalmichener,
+      sokalsneath, sqeuclidean, yule ]
               The distance metric to be used in the generation of the nearest
       neighborhood network.
       
@@ -939,11 +919,8 @@ functionality:
         def inputFileExports = thisFunctionality.arguments
           .findAll { it.type == "file" && it.direction.toLowerCase() == "input" }
           .collect { par ->
-            if (!par.required && !par.multiple) {
-              "\n\${viash_par_${par.name}.empty ? \"\" : \"export VIASH_PAR_${par.name.toUpperCase()}=\\\"\" + viash_par_${par.name}[0] + \"\\\"\"}"
-            } else {
-              "\nexport VIASH_PAR_${par.name.toUpperCase()}=\"\${viash_par_${par.name}.join(\":\")}\""
-            }
+            viash_par_contents = !par.required && !par.multiple ? "viash_par_${par.name}[0]" : "viash_par_${par.name}.join(\":\")"
+            "\n\${viash_par_${par.name}.empty ? \"\" : \"export VIASH_PAR_${par.name.toUpperCase()}=\\\"\" + ${viash_par_contents} + \"\\\"\"}"
           }
         
         def tmpDir = "/tmp" // check if component is docker based
@@ -980,7 +957,7 @@ functionality:
         |  .join("\\n")
         |$tripQuo
         |# meta exports
-        |export VIASH_META_RESOURCES_DIR="\$resourcesDir"
+        |export VIASH_META_RESOURCES_DIR="\${resourcesDir.toRealPath().toAbsolutePath()}"
         |export VIASH_META_TEMP_DIR="${tmpDir}"
         |export VIASH_META_FUNCTIONALITY_NAME="${thisFunctionality.name}"
         |
@@ -1383,6 +1360,7 @@ functionality:
   info: {}
   dummy_arguments: []
   set_wd_to_resources_dir: false
+  enabled: true
 platform:
   type: "nextflow"
   id: "nextflow"
@@ -1409,5 +1387,5 @@ info:
   platform: "nextflow"
   output: "target/nextflow/neighbors/find_neighbors"
   viash_version: "0.5.12"
-  git_commit: "6438da8c6a5aac083562c9ba6d21be94a6ffaf82"
+  git_commit: "f86dccff238a59c963649ab33b491b4ea080f30d"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"

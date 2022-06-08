@@ -12,7 +12,9 @@ The following commands can be used to build and push a release.
 
 
 ```bash
-TAG=0.3.0
+TAG=0.3.1
+
+# run `bin/init` if need be
 
 rm -r target
 git fetch origin

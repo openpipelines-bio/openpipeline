@@ -19,7 +19,14 @@
 set -e
 
 if [ -z "$VIASH_TEMP" ]; then
-  VIASH_TEMP=/tmp
+  VIASH_TEMP=${VIASH_TEMP:-$VIASH_TMPDIR}
+  VIASH_TEMP=${VIASH_TEMP:-$VIASH_TEMPDIR}
+  VIASH_TEMP=${VIASH_TEMP:-$VIASH_TMP}
+  VIASH_TEMP=${VIASH_TEMP:-$TMPDIR}
+  VIASH_TEMP=${VIASH_TEMP:-$TMP}
+  VIASH_TEMP=${VIASH_TEMP:-$TEMPDIR}
+  VIASH_TEMP=${VIASH_TEMP:-$TEMP}
+  VIASH_TEMP=${VIASH_TEMP:-/tmp}
 fi
 
 # define helper functions
@@ -192,30 +199,10 @@ function ViashHelp {
   echo "    --metric"
   echo "        type: string"
   echo "        default: euclidean"
-  echo "        choices:"
-  echo "            - cityblock"
-  echo "            - cosine"
-  echo "            - euclidean"
-  echo "            - l1"
-  echo "            - l2"
-  echo "            - manhattan"
-  echo "            - braycurtis"
-  echo "            - canberra"
-  echo "            - chebyshev"
-  echo "            - correlation"
-  echo "            - dice"
-  echo "            - hamming"
-  echo "            - jaccard"
-  echo "            - kulsinski"
-  echo "            - mahalanobis"
-  echo "            - minkowski"
-  echo "            - rogerstanimoto"
-  echo "            - russellrao"
-  echo "            - seuclidean"
-  echo "            - sokalmichener"
-  echo "            - sokalsneath"
-  echo "            - sqeuclidean"
-  echo "            - yule"
+  echo "        choices: [ cityblock, cosine, euclidean, l1, l2, manhattan, braycurtis,"
+  echo "canberra, chebyshev, correlation, dice, hamming, jaccard, kulsinski,"
+  echo "mahalanobis, minkowski, rogerstanimoto, russellrao, seuclidean, sokalmichener,"
+  echo "sokalsneath, sqeuclidean, yule ]"
   echo "        The distance metric to be used in the generation of the nearest"
   echo "neighborhood network."
   echo ""

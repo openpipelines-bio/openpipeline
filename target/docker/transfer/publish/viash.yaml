@@ -56,7 +56,14 @@ functionality:
       set -e
       
       if [ -z "$VIASH_TEMP" ]; then
-        VIASH_TEMP=/tmp
+        VIASH_TEMP=${VIASH_TEMP:-$VIASH_TMPDIR}
+        VIASH_TEMP=${VIASH_TEMP:-$VIASH_TEMPDIR}
+        VIASH_TEMP=${VIASH_TEMP:-$VIASH_TMP}
+        VIASH_TEMP=${VIASH_TEMP:-$TMPDIR}
+        VIASH_TEMP=${VIASH_TEMP:-$TMP}
+        VIASH_TEMP=${VIASH_TEMP:-$TEMPDIR}
+        VIASH_TEMP=${VIASH_TEMP:-$TEMP}
+        VIASH_TEMP=${VIASH_TEMP:-/tmp}
       fi
       
       # define helper functions
@@ -727,6 +734,7 @@ functionality:
   info: {}
   dummy_arguments: []
   set_wd_to_resources_dir: false
+  enabled: true
 platform:
   type: "docker"
   id: "docker"
@@ -749,5 +757,5 @@ info:
   output: "target/docker/transfer/publish"
   executable: "target/docker/transfer/publish/publish"
   viash_version: "0.5.12"
-  git_commit: "6438da8c6a5aac083562c9ba6d21be94a6ffaf82"
+  git_commit: "f86dccff238a59c963649ab33b491b4ea080f30d"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"

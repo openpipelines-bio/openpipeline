@@ -20,7 +20,14 @@
 set -e
 
 if [ -z "$VIASH_TEMP" ]; then
-  VIASH_TEMP=/tmp
+  VIASH_TEMP=${VIASH_TEMP:-$VIASH_TMPDIR}
+  VIASH_TEMP=${VIASH_TEMP:-$VIASH_TEMPDIR}
+  VIASH_TEMP=${VIASH_TEMP:-$VIASH_TMP}
+  VIASH_TEMP=${VIASH_TEMP:-$TMPDIR}
+  VIASH_TEMP=${VIASH_TEMP:-$TMP}
+  VIASH_TEMP=${VIASH_TEMP:-$TEMPDIR}
+  VIASH_TEMP=${VIASH_TEMP:-$TEMP}
+  VIASH_TEMP=${VIASH_TEMP:-/tmp}
 fi
 
 # define helper functions
@@ -183,18 +190,8 @@ function ViashHelp {
   echo "    --chemistry"
   echo "        type: string"
   echo "        default: auto"
-  echo "        choices:"
-  echo "            - auto"
-  echo "            - threeprime"
-  echo "            - fiveprime"
-  echo "            - SC3Pv1"
-  echo "            - SC3Pv2"
-  echo "            - SC3Pv3"
-  echo "            - SC3Pv3LT"
-  echo "            - SC3Pv3HT"
-  echo "            - SC5P-PE"
-  echo "            - SC5P-R2"
-  echo "            - SC-FB"
+  echo "        choices: [ auto, threeprime, fiveprime, SC3Pv1, SC3Pv2, SC3Pv3,"
+  echo "SC3Pv3LT, SC3Pv3HT, SC5P-PE, SC5P-R2, SC-FB ]"
   echo "        Assay configuration."
   echo "        - auto: autodetect mode"
   echo "        - threeprime: Single Cell 3'"

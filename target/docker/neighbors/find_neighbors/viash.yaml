@@ -149,7 +149,14 @@ functionality:
       set -e
       
       if [ -z "$VIASH_TEMP" ]; then
-        VIASH_TEMP=/tmp
+        VIASH_TEMP=${VIASH_TEMP:-$VIASH_TMPDIR}
+        VIASH_TEMP=${VIASH_TEMP:-$VIASH_TEMPDIR}
+        VIASH_TEMP=${VIASH_TEMP:-$VIASH_TMP}
+        VIASH_TEMP=${VIASH_TEMP:-$TMPDIR}
+        VIASH_TEMP=${VIASH_TEMP:-$TMP}
+        VIASH_TEMP=${VIASH_TEMP:-$TEMPDIR}
+        VIASH_TEMP=${VIASH_TEMP:-$TEMP}
+        VIASH_TEMP=${VIASH_TEMP:-/tmp}
       fi
       
       # define helper functions
@@ -322,30 +329,10 @@ functionality:
         echo "    --metric"
         echo "        type: string"
         echo "        default: euclidean"
-        echo "        choices:"
-        echo "            - cityblock"
-        echo "            - cosine"
-        echo "            - euclidean"
-        echo "            - l1"
-        echo "            - l2"
-        echo "            - manhattan"
-        echo "            - braycurtis"
-        echo "            - canberra"
-        echo "            - chebyshev"
-        echo "            - correlation"
-        echo "            - dice"
-        echo "            - hamming"
-        echo "            - jaccard"
-        echo "            - kulsinski"
-        echo "            - mahalanobis"
-        echo "            - minkowski"
-        echo "            - rogerstanimoto"
-        echo "            - russellrao"
-        echo "            - seuclidean"
-        echo "            - sokalmichener"
-        echo "            - sokalsneath"
-        echo "            - sqeuclidean"
-        echo "            - yule"
+        echo "        choices: [ cityblock, cosine, euclidean, l1, l2, manhattan, braycurtis,"
+        echo "canberra, chebyshev, correlation, dice, hamming, jaccard, kulsinski,"
+        echo "mahalanobis, minkowski, rogerstanimoto, russellrao, seuclidean, sokalmichener,"
+        echo "sokalsneath, sqeuclidean, yule ]"
         echo "        The distance metric to be used in the generation of the nearest"
         echo "neighborhood network."
         echo ""
@@ -982,6 +969,7 @@ functionality:
   info: {}
   dummy_arguments: []
   set_wd_to_resources_dir: false
+  enabled: true
 platform:
   type: "docker"
   id: "docker"
@@ -1021,5 +1009,5 @@ info:
   output: "target/docker/neighbors/find_neighbors"
   executable: "target/docker/neighbors/find_neighbors/find_neighbors"
   viash_version: "0.5.12"
-  git_commit: "6438da8c6a5aac083562c9ba6d21be94a6ffaf82"
+  git_commit: "f86dccff238a59c963649ab33b491b4ea080f30d"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"

@@ -18,7 +18,14 @@
 set -e
 
 if [ -z "$VIASH_TEMP" ]; then
-  VIASH_TEMP=/tmp
+  VIASH_TEMP=${VIASH_TEMP:-$VIASH_TMPDIR}
+  VIASH_TEMP=${VIASH_TEMP:-$VIASH_TEMPDIR}
+  VIASH_TEMP=${VIASH_TEMP:-$VIASH_TMP}
+  VIASH_TEMP=${VIASH_TEMP:-$TMPDIR}
+  VIASH_TEMP=${VIASH_TEMP:-$TMP}
+  VIASH_TEMP=${VIASH_TEMP:-$TEMPDIR}
+  VIASH_TEMP=${VIASH_TEMP:-$TEMP}
+  VIASH_TEMP=${VIASH_TEMP:-/tmp}
 fi
 
 # define helper functions
@@ -228,11 +235,7 @@ function ViashHelp {
   echo "    --sample_tags_version"
   echo "        type: string"
   echo "        example: human"
-  echo "        choices:"
-  echo "            - human"
-  echo "            - hs"
-  echo "            - mouse"
-  echo "            - mm"
+  echo "        choices: [ human, hs, mouse, mm ]"
   echo "        Specify if multiplexed run."
   echo ""
   echo "    --tag_names"
