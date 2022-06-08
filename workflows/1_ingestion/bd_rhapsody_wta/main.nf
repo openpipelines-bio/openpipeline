@@ -148,7 +148,7 @@ workflow run_wf {
     | groupTuple()
 
     // Step 4: convert to h5ad
-    | map { id, input -> [ id, input, params ]}
+    | map { id, input -> [ id, [input: input ], params ]}
     | view { "converting_to_h5ad: [$it]" }
     | from_bdrhap_to_h5ad
 
