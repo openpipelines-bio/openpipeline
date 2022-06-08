@@ -31,8 +31,11 @@ functionality:
     # cellranger args
     - name: "--barcode_mismatches"
       type: integer
-      description: "Number of allowed mismatches per index. Multiple, comma delimited, entries allowed. Each entry is applied to the corresponding index; last entry applies to all remaining indices. Accepted values: 0, 1, 2."
+      description: "Number of allowed mismatches per index. Multiple entries allowed. Each entry is applied to the corresponding index; last entry applies to all remaining indices."
       default: 1
+      multiple: true
+      multiple_sep: ','
+      choices: [0, 1, 2]
     
     # runtime args
     - name: "--memory"

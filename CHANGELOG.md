@@ -57,6 +57,10 @@ on each modality instead of on the whole `MuData` object.
 
 * `mapping/cellranger_count`: `--nosecondary` is no longer always applied.
 
+## DEPRECATED
+
+* `bcl_demux/cellranger_mkfastq`: Duplicate of `demux/cellranger_mkfastq`.
+
 # openpipeline 0.3.0
 
 * Add `tx_processing` pipeline with following components:
