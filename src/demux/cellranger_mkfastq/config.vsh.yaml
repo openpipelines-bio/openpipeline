@@ -1,0 +1,58 @@
+functionality:
+  name: cellranger_mkfastq
+  namespace: demux
+  description: Demultiplex raw sequencing data
+  usage: |
+    cellranger_mkfastq \
+      --input /path/to/bcl \
+      --sample_sheet SampleSheet.csv \
+      --output /path/to/output
+  authors:
+    - name: Angela Pisco
+      roles: [ author ]
+      props: { github: aopisco, orcid: "0000-0003-0142-2355" }
+    - name: Samuel D'Souza
+      roles: [ author ]
+      props: { github: srdsam }
+    - name: Robrecht Cannoodt
+      email: rcannood@gmail.com
+      roles: [ author, maintainer ]
+      props: { github: rcannood, orcid: "0000-0003-3641-729X" }
+  arguments:
+    - type: file
+      name: --input
+      description: Path to the (untarred) BCL files. Expects 'RunParameters.xml' at './'.
+      example: /path/to/bcl
+      required: true
+    - type: file
+      name: --sample_sheet
+      description: The path to the sample sheet.
+      example: SampleSheet.csv
+      required: true
+    - type: file
+      name: --output
+      direction: output
+      description: The folder to store the demux results
+      example: "/path/to/output"
+      default: fastqs
+      required: true
+    - type: integer
+      name: --cores
+      description:  Set max cores the pipeline may request at one time.
+      example: 2
+    - type: integer
+      name: --memory
+      description: Set max GB the pipeline may request at one time.
+      example: 10
+  resources:
+    - type: bash_script
+      path: script.sh
+  tests:
+    - type: python_script
+      path: test.py
+    - path: ../../../resources_test/cellranger_tiny_bcl
+platforms:
+  - type: docker
+    image: ghcr.io/data-intuitive/cellranger:6.1
+  - type: nextflow
+    variant: vdsl3

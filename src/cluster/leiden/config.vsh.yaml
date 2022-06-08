@@ -68,4 +68,6 @@ platforms:
         - hnswlib
         - muon
   - type: nextflow
-    label: highcpu
+    variant: vdsl3
+    directives:
+      label: highcpu

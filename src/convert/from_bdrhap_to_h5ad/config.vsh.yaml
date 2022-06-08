@@ -45,3 +45,4 @@ platforms:
       - type: r
         cran: anndata
   - type: nextflow
+    variant: vdsl3

@@ -60,10 +60,13 @@ functionality:
     - path: ../../../resources_test/pbmc_1k_protein_v3
 platforms:
   - type: docker
-    image: python:3.10
+    image: python:3.10-bullseye
     setup:
+      - type: apt
+        packages: libhdf5-dev
       - type: python
         packages:
-          - scanpy<1.9 # workaround for https://github.com/scverse/scanpy/pull/2209 introduced in scanpy 1.9.0
+          - scanpy
           - muon
   - type: nextflow
+    variant: vdsl3

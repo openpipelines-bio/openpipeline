@@ -110,11 +110,14 @@ functionality:
 platforms:
   - type: docker
     image: python:3.8
-    python:
-      packages:
-        - scanpy
-        - scrublet
-        - muon
-        - anndata<0.8
+    setup:
+      - type: python
+        packages:
+          - scanpy
+          - scrublet
+          - muon
+          - anndata<0.8
   - type: nextflow
-    label: highcpu
+    variant: vdsl3
+    directives:
+      label: highcpu

@@ -58,3 +58,4 @@ platforms:
           - scanpy
           - muon
   - type: nextflow
+    variant: vdsl3

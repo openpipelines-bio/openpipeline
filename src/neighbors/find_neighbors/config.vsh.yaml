@@ -49,7 +49,7 @@ functionality:
       type: string
       default: "euclidean"
       description: The distance metric to be used in the generation of the nearest neighborhood network.
-      values: [ 'cityblock', 'cosine', 'euclidean', 'l1', 'l2', 'manhattan', 'braycurtis', 'canberra', 'chebyshev', 'correlation', 'dice', 'hamming', 'jaccard', 'kulsinski', 'mahalanobis', 'minkowski', 'rogerstanimoto', 'russellrao', 'seuclidean', 'sokalmichener', 'sokalsneath', 'sqeuclidean', 'yule' ]
+      choices: [ 'cityblock', 'cosine', 'euclidean', 'l1', 'l2', 'manhattan', 'braycurtis', 'canberra', 'chebyshev', 'correlation', 'dice', 'hamming', 'jaccard', 'kulsinski', 'mahalanobis', 'minkowski', 'rogerstanimoto', 'russellrao', 'seuclidean', 'sokalmichener', 'sokalsneath', 'sqeuclidean', 'yule' ]
 
     - name: "--num_neighbors"
       type: integer
@@ -72,3 +72,4 @@ platforms:
           - muon
           - anndata<0.8
   - type: nextflow
+    variant: vdsl3

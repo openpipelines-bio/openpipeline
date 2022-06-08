@@ -1,6 +1,5 @@
 functionality:
   name: publish
-  function_type: asis
   namespace: "transfer"
   version: "dev"
   description: Publish an artifact and optionally rename with parameters
@@ -28,7 +27,6 @@ functionality:
       path: run_test.sh
 platforms:
   - type: docker
-    image: ubuntu:bionic
+    image: bash:5.1
   - type: nextflow
-    publish: true
-    per_id: false
+    variant: vdsl3

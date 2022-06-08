@@ -1,3 +1,70 @@
+# openpipeline 0.3.1
+
+## NEW FUNCTIONALITY
+
+* `bin/port_from_czbiohub_utilities.sh`: Added helper script to import components and pipelines from `czbiohub/utilities`
+
+Imported components from `czbiohub/utilities`:
+
+* `demux/cellranger_mkfastq`: Demultiplex raw sequencing data.
+
+* `mapping/cellranger_count`: Align fastq files using Cell Ranger count.
+
+* `mapping/cellranger_count_split`: Split 10x Cell Ranger output directory into separate output fields.
+
+Imported workflows from `czbiohub/utilities`:
+
+* `workflows/1_ingestion/cellranger`: Use Cell Ranger to preprocess 10x data.
+
+* `workflows/1_ingestion/cellranger_demux`: Use cellranger demux to demultiplex sequencing BCL output to FASTQ.
+
+* `workflows/1_ingestion/cellranger_mapping`: Use cellranger count to align 10x fastq files to a reference.
+
+
+## MINOR CHANGES
+
+* Fix `interactive/run_cirrocumulus` script raising `NotImplementedError` caused by using `MutData.var_names_make_unique()` 
+on each modality instead of on the whole `MuData` object.
+
+* Fix `transform/normalize_total` and `interactive/run_cirrocumulus` component build missing a hdf5 dependency.
+
+* `interactive/run_cellxgene`: Updated container to ubuntu:focal because it contains python3.6 but cellxgene dropped python3.6 support.
+
+* `download/download_file`: Switch base container from `ubuntu:22.04` to `bash:5.1` because `ubuntu:22.04`
+  was causing some edge case issues.
+
+* `mapping/bd_rhapsody_wta`: Set `--parallel` to true by default.
+
+* `mapping/bd_rhapsody_wta`: Translate Bash script into Python.
+
+* `download/sync_test_resources`: Add `--dryrun`, `--quiet`, and `--delete` arguments.
+
+* `convert/from_h5mu_to_seurat`: Use `eddelbuettel/r2u:22.04` docker container in order to speed up builds by downloading precompiled R packages.
+
+* `mapping/cellranger_count`: Use 5Gb for testing (to adhere to github CI runner memory constraints).
+
+* `convert/from_bdrhap_to_h5ad`: change test data to output from `mapping/bd_rhapsody_wta` after reducing the BD Rhapsody test data size.
+
+* Various `config.vsh.yaml`s: Renamed `values:` to `choices:`.
+
+## BUG FIXES
+
+* `mapping/bd_rhapsody_wta`: Use a smaller test dataset to reduce test time and make sure that the Github Action runners do not run out of disk space.
+
+* `download/sync_test_resources`: Disable the use of the Amazon EC2 instance metadata service to make script work on Github Actions runners.
+
+* `convert/from_h5mu_to_seurat`: Fix unit test requiring Seurat by using native R functions to test the Seurat object instead.
+
+* `mapping/cellranger_count` and `bcl_demus/cellranger_mkfastq`: cellranger uses the `--parameter=value` formatting instead of `--parameter value` to set command line arguments.
+
+* `mapping/cellranger_count`: `--nosecondary` is no longer always applied.
+
+* `mapping/bd_rhapsody_wta`: Added workaround for bug in Viash 0.5.12 where triple single quotes are incorrectly escaped (viash-io/viash#139).
+
+## DEPRECATED
+
+* `bcl_demux/cellranger_mkfastq`: Duplicate of `demux/cellranger_mkfastq`.
+
 # openpipeline 0.3.0
 
 * Add `tx_processing` pipeline with following components:
@@ -15,11 +82,11 @@
 
 # openpipeline 0.2.0
 
-## Functionality
+## NEW FUNCTIONALITY
 
 * Added `from_10x_to_h5ad` and `download_10x_dataset` components.
 
-## Minor changes
+## MINOR CHANGES
 * Workflow `bd_rhapsody_wta`: Minor change to workflow to allow for easy processing of multiple samples with a tsv.
 
 * Component `bd_rhapsody_wta`: Added more parameters, `--parallel` and `--timestamps`.
