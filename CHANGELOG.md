@@ -49,7 +49,7 @@ on each modality instead of on the whole `MuData` object.
 
 ## BUG FIXES
 
-* `mapping/bd_rhapsody`: Use a smaller test dataset to reduce test time and make sure that the Github Action runners do not run out of disk space.
+* `mapping/bd_rhapsody_wta`: Use a smaller test dataset to reduce test time and make sure that the Github Action runners do not run out of disk space.
 
 * `download/sync_test_resources`: Disable the use of the Amazon EC2 instance metadata service to make script work on Github Actions runners.
 
@@ -58,6 +58,8 @@ on each modality instead of on the whole `MuData` object.
 * `mapping/cellranger_count` and `bcl_demus/cellranger_mkfastq`: cellranger uses the `--parameter=value` formatting instead of `--parameter value` to set command line arguments.
 
 * `mapping/cellranger_count`: `--nosecondary` is no longer always applied.
+
+* `mapping/bd_rhapsody_wta`: Added workaround for bug in Viash 0.5.12 where triple single quotes are incorrectly escaped (viash-io/viash#139).
 
 ## DEPRECATED
 
