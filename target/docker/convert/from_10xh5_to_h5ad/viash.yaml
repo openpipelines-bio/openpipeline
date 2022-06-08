@@ -814,5 +814,5 @@ info:
   output: "target/docker/convert/from_10xh5_to_h5ad"
   executable: "target/docker/convert/from_10xh5_to_h5ad/from_10xh5_to_h5ad"
   viash_version: "0.5.12"
-  git_commit: "62f2eb0bf77aefb41a7367bb80177fa620ea8112"
+  git_commit: "2b66535d8cd097f6d426e910e8f338f7b03de15c"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"
