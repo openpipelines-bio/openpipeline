@@ -1,3 +1,9 @@
+# openpipeline 0.3.2
+
+## BUG FIXES
+
+* `workflows/utils/utils.nf`: Fix error message when required parameter is not specified.
+
 # openpipeline 0.3.1
 
 ## NEW FUNCTIONALITY

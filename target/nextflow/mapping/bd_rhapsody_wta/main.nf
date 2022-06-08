@@ -441,8 +441,8 @@ with open(config_file, "w") as f:
   f.write(config_content)
 
 ## Process parameters
-# proc_pars = ["--no-container"]
-proc_pars = []
+proc_pars = ["--no-container"]
+# proc_pars = []
 
 if par["parallel"]:
   proc_pars.append("--parallel")
@@ -1219,7 +1219,7 @@ def workflowFactory(Map args) {
           "  Found: ${tuple[0]}"
         
         // match file to input file
-        if (processArgs.auto.simplifyInput && tuple[1] instanceof Path) {
+        if (processArgs.auto.simplifyInput && (tuple[1] instanceof Path || tuple[1] instanceof List)) {
           def inputFiles = thisFunctionality.arguments
             .findAll { it.type == "file" && it.direction == "input" }
           

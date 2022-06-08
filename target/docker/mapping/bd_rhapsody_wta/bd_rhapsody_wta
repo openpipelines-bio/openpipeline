@@ -1222,8 +1222,8 @@ with open(config_file, "w") as f:
   f.write(config_content)
 
 ## Process parameters
-# proc_pars = ["--no-container"]
-proc_pars = []
+proc_pars = ["--no-container"]
+# proc_pars = []
 
 if par["parallel"]:
   proc_pars.append("--parallel")
