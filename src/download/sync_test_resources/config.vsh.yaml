@@ -29,6 +29,9 @@ functionality:
     - name: "--dryrun"
       type: boolean_true
       description: "Does not display the operations performed from the specified command."
+    - name: "--delete"
+      type: boolean_true
+      description: "Files that exist in the destination but not in the source are deleted during sync."
     - name: "--exclude"
       type: "string"
       multiple: true
