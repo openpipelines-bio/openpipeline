@@ -39,6 +39,12 @@ on each modality instead of on the whole `MuData` object.
 
 * `download/sync_test_resources`: Add `--dryrun` and `--quiet` arguments.
 
+* `convert/from_h5mu_to_seurat`: Use `eddelbuettel/r2u:22.04` docker container in order to speed up builds by downloading precompiled R packages.
+
+* `mapping/cellranger_count`: Use 5Gb for testing (to adhere to github CI runner memory constraints).
+
+* `convert/from_bdrhap_to_h5ad`: change test data to output from `mapping/bd_rhapsody_wta` after reducing the BD Rhapsody test data size.
+
 ## BUG FIXES
 
 * `mapping/bd_rhapsody`: Use a smaller test dataset to reduce test time and make sure that the Github Action runners do not run out of disk space.
@@ -46,6 +52,10 @@ on each modality instead of on the whole `MuData` object.
 * `download/sync_test_resources`: Disable the use of the Amazon EC2 instance metadata service to make script work on Github Actions runners.
 
 * `convert/from_h5mu_to_seurat`: Fix unit test requiring Seurat by using native R functions to test the Seurat object instead.
+
+* `mapping/cellranger_count` and `bcl_demus/cellranger_mkfastq`: cellranger uses the `--parameter=value` formatting instead of `--parameter value` to set command line arguments.
+
+* `mapping/cellranger_count`: `--nosecondary` is no longer always applied.
 
 # openpipeline 0.3.0
 
