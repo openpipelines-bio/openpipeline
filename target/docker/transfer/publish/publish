@@ -370,9 +370,12 @@ function ViashDockerfile {
 FROM python:3.10
 
 RUN :
-LABEL authors="Toni Verbeiren (maintainer)"
+LABEL org.opencontainers.image.authors="Toni Verbeiren (maintainer)"
 LABEL org.opencontainers.image.description="Companion container for running component transfer publish"
+LABEL org.opencontainers.image.created="2022-06-09T08:30:04Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
+LABEL org.opencontainers.image.revision="ce2dccf3455bac9350912d8f4c7aef7a9de3bb23"
+LABEL org.opencontainers.image.version="fatal: No names found, cannot describe anything."
 VIASHDOCKER
 }
 

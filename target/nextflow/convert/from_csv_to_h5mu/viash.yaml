@@ -1270,5 +1270,6 @@ info:
   platform: "nextflow"
   output: "target/nextflow/convert/from_csv_to_h5mu"
   viash_version: "0.5.12"
-  git_commit: "6d475ac3203bd8fd491e1028b39aa0e2c771c2c6"
+  git_commit: "ce2dccf3455bac9350912d8f4c7aef7a9de3bb23"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"
+  git_tag: "fatal: No names found, cannot describe anything."

@@ -407,9 +407,12 @@ RUN apt-get update && \
 RUN pip install --upgrade pip && \
   pip install --upgrade --no-cache-dir "scanpy" "muon"
 
-LABEL authors="Dries De Maeyer <ddemaeyer@gmail.com> (maintainer) {account: ddemaey1}, Robrecht Cannoodt <rcannood@gmail.com> (contributor) {github: rcannood, orcid: 0000-0003-3641-729X}"
+LABEL org.opencontainers.image.authors="Dries De Maeyer <ddemaeyer@gmail.com> (maintainer) {account: ddemaey1}, Robrecht Cannoodt <rcannood@gmail.com> (contributor) {github: rcannood, orcid: 0000-0003-3641-729X}"
 LABEL org.opencontainers.image.description="Companion container for running component transform normalize_total"
+LABEL org.opencontainers.image.created="2022-06-09T08:30:01Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
+LABEL org.opencontainers.image.revision="ce2dccf3455bac9350912d8f4c7aef7a9de3bb23"
+LABEL org.opencontainers.image.version="fatal: No names found, cannot describe anything."
 VIASHDOCKER
 }
 
