@@ -20,20 +20,22 @@ workflow {
       |Parameters (Single input mode):
       |  --id       ID of the sample (optional).
       |  --input    One or more fastq paths, separated with semicolons (required).
-      |            Paths may be globs. Example: path/to/dir/**.fastq
+      |             Paths may be globs. Example: path/to/dir/**.fastq
       |  --reference_genome
-      |            Path to STAR index as a tar.gz file (required).
+      |             Path to STAR index as a tar.gz file (required).
       |  --transcriptome_annotation
-      |            Path to GTF annotation file (required).
-      |  --output   Path to an output directory (required).
+      |             Path to GTF annotation file (required).
+      |  --publishDir
+      |             Path to an output directory (required).
       |  
       |Parameters (Batch mode):
       |  --csv      A csv file containing columns 'id', 'input' (required).
       |  --reference_genome
-      |            Path to STAR index as a tar.gz file (required).
+      |             Path to STAR index as a tar.gz file (required).
       |  --transcriptome_annotation
-      |            Path to GTF annotation file (required).
-      |  --output   Path to an output directory (required).
+      |             Path to GTF annotation file (required).
+      |  --publishDir
+      |             Path to an output directory (required).
       |""".stripMargin()
     exit 0
   }
@@ -45,7 +47,7 @@ workflow {
   
   assertParamExists("reference_genome", "STAR index as a tar.gz file")
   assertParamExists("transcriptome_annotation", "to GTF annotation file")
-  assertParamExists("output", "where output files will be published")
+  assertParamExists("publishDir", "where output files will be published")
 
   if (paramExists("csv")) {
     input_ch = Channel.fromPath(params.csv)
@@ -144,11 +146,10 @@ workflow run_wf {
     | bd_rhapsody_wta
 
     // Step 3: group outputs per sample
-    | map { id, input, params -> [ params.tuple_orig_id, input ] }
+    | map { id, input, extra -> [ extra.tuple_orig_id, input ] }
     | groupTuple()
 
     // Step 4: convert to h5ad
-    | map { id, input -> [ id, [input: input ], params ]}
     | view { "converting_to_h5ad: [$it]" }
     | from_bdrhap_to_h5ad
 
@@ -172,12 +173,12 @@ workflow test_wf {
         ]
       ]
     )
-    | view { "Input: [${it[0]}, ${it[1]}, params]" }
+    | view { "Input: $it" }
     | run_wf
     | view { output ->
       assert output.size() == 3 : "outputs should contain three elements; [id, file, params]"
       assert output[1].toString().endsWith(".h5ad") : "Output file should be a h5ad file. Found: ${output[1]}"
-      "Output: [${output[0]}, ${output[1]}, params]"
+      "Output: $it"
     }
     | toList()
     | map { output_list ->
