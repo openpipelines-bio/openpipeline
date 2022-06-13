@@ -1362,6 +1362,6 @@ info:
   platform: "nextflow"
   output: "target/nextflow/mapping/cellranger_count_split"
   viash_version: "0.5.13"
-  git_commit: "44589b3beb9e1ac6c8ef88ffc12dfbe13529933e"
+  git_commit: "aed7f7927212c19def23f5b419b4411c569dacb0"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"
   git_tag: "fatal: No names found, cannot describe anything."

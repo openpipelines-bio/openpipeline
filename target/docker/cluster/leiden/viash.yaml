@@ -482,9 +482,9 @@ functionality:
       
       LABEL org.opencontainers.image.authors="Dries De Maeyer <ddemaeyer@gmail.com> (maintainer) {account: ddemaey1}"
       LABEL org.opencontainers.image.description="Companion container for running component cluster leiden"
-      LABEL org.opencontainers.image.created="2022-06-10T09:02:07Z"
+      LABEL org.opencontainers.image.created="2022-06-13T07:24:35Z"
       LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-      LABEL org.opencontainers.image.revision="44589b3beb9e1ac6c8ef88ffc12dfbe13529933e"
+      LABEL org.opencontainers.image.revision="aed7f7927212c19def23f5b419b4411c569dacb0"
       LABEL org.opencontainers.image.version="fatal: No names found, cannot describe anything."
       VIASHDOCKER
       }
@@ -934,6 +934,6 @@ info:
   output: "target/docker/cluster/leiden"
   executable: "target/docker/cluster/leiden/leiden"
   viash_version: "0.5.13"
-  git_commit: "44589b3beb9e1ac6c8ef88ffc12dfbe13529933e"
+  git_commit: "aed7f7927212c19def23f5b419b4411c569dacb0"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"
   git_tag: "fatal: No names found, cannot describe anything."
