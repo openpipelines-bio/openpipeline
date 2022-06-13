@@ -5,7 +5,7 @@ par <- list(
     "resources_test/bd_rhapsody_wta_test/processed/bdrhap_out"
   ),
   id = "foo",
-  output = "test.h5ad"
+  output = "test.h5mu"
 )
 ## VIASH END
 
@@ -13,6 +13,8 @@ cat("Loading libraries\n")
 options(tidyverse.quiet = TRUE)
 library(tidyverse)
 requireNamespace("anndata", quietly = TRUE)
+requireNamespace("reticulate", quietly = TRUE)
+mudata <- reticulate::import("mudata")
 
 cat("Reading in metric summaries\n")
 mets <- map_df(par$input, function(dir) {
@@ -130,5 +132,9 @@ new_h5ad <- anndata::AnnData(
   )
 )
 
+new_h5mu <- mudata$MuData(
+  list(rna = new_h5ad)
+)
+
 cat("Writing to h5mu file\n")
-new_h5ad$write(par$output)
+new_h5mu$write(par$output)

@@ -82,13 +82,13 @@ target/docker/mapping/bd_rhapsody_wta/bd_rhapsody_wta \
   --transcriptome_annotation "$raw_dir/gencode_v40_annotation_chr1.gtf" \
   --output "$bdrhap_out"
 
-# convert to h5ad
-h5ad_out="$processed_dir/output.h5ad"
-target/docker/convert/from_bdrhap_to_h5ad/from_bdrhap_to_h5ad \
+# convert to h5mu
+h5ad_out="$processed_dir/output.h5mu"
+target/docker/convert/from_bdrhap_to_h5mu/from_bdrhap_to_h5mu \
   --input "$bdrhap_out" \
   --id "sample_RSEC" \
   --output "$h5ad_out"
-  src/convert/from_bdrhap_to_h5ad/config.vsh.yaml
+  src/convert/from_bdrhap_to_h5mu/config.vsh.yaml
 
 # nextflow \
 #   run . \

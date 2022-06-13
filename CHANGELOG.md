@@ -1,10 +1,20 @@
 # openpipeline 0.3.2
 
+## NEW FUNCTIONALITY
+
+* `convert/from_bdrhap_to_h5mu`: Merge one or more BD rhapsody outputs into an h5mu file.
+
 ## BUG FIXES
 
 * `workflows/utils/utils.nf`: Fix error message when required parameter is not specified.
 
 * `mapping/bd_rhapsody_wta`: Allow unit test to be run on less powerful systems (at least 4GB ram).
+
+## DEPRECATED
+
+* `convert/from_bdrhap_to_h5ad`: Deprecated in favour for `convert/from_bdrhap_to_h5mu`.
+
+* `convert/from_10xh5_to_h5ad`: Deprecated in favour for `convert/from_10xh5_to_h5mu`.
 
 # openpipeline 0.3.1
 

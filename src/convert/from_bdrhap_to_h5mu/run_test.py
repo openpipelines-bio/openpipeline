@@ -1,10 +1,10 @@
 import subprocess
 from os import path
-import anndata as ad
+import mudata as md
 import numpy as np
 
 input = meta["resources_dir"] + "/bd_rhapsody_wta_test/processed/bdrhap_out"
-output = "output1.h5ad"
+output = "output1.h5mu"
 
 cmd_pars = [
     "./" + meta["functionality_name"],
@@ -18,7 +18,7 @@ out = subprocess.check_output(cmd_pars).decode("utf-8")
 assert path.exists(output), "No output was created."
 
 # read it with scanpy
-data = ad.read_h5ad(output)
+data = md.read_h5mu(output)
 
 # check whether gex was found
 assert np.array_equal(data.var["feature_types"].unique(), ["Gene Expression"]), "Output X should only contain Gene Expression vars."
