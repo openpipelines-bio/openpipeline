@@ -4,7 +4,7 @@ workflowDir = params.rootDir + "/workflows"
 targetDir = params.rootDir + "/target/nextflow"
 
 include { bd_rhapsody_wta } from targetDir + "/mapping/bd_rhapsody_wta/main.nf"
-include { from_bdrhap_to_h5ad } from targetDir + "/convert/from_bdrhap_to_h5ad/main.nf"
+include { from_bdrhap_to_h5mu } from targetDir + "/convert/from_bdrhap_to_h5mu/main.nf"
 
 include { publish } from targetDir + "/transfer/publish/main.nf"
 include { getChild; paramExists; assertParamExists } from workflowDir + "/utils/utils.nf"
@@ -146,12 +146,12 @@ workflow run_wf {
     | bd_rhapsody_wta
 
     // Step 3: group outputs per sample
-    | map { id, input, extra -> [ extra.tuple_orig_id, input ] }
+    | map { id, input, extra -> [ extra.tuple_orig_id, [ input: input, id: extra.tuple_orig_id ] ] }
     | groupTuple()
 
     // Step 4: convert to h5ad
-    | view { "converting_to_h5ad: [$it]" }
-    | from_bdrhap_to_h5ad
+    | view { "converting_to_h5mu: [$it]" }
+    | from_bdrhap_to_h5mu
 
   emit:
   output_ch

@@ -1,35 +1,35 @@
 functionality:
-  name: "from_bdrhap_to_h5ad"
-  enabled: false
+  name: "from_bdrhap_to_h5mu"
   namespace: "convert"
   version: "dev"
   description: |
-    Create a h5ad file from BD Rhapsody output.
+    Convert the output of a BD Rhapsody WTA pipeline to a MuData h5 file.
   authors:
     - name: Robrecht Cannoodt
       email: rcannood@gmail.com
       roles: [ maintainer ]
       props: { github: rcannood, orcid: "0000-0003-3641-729X" }
-  arguments:
+  inputs:
     - name: "--input"
       alternatives: [-i]
       type: file
-      description: One or more folders containing the output of the BD Rhapsody workflow. If multiple are given, they are all combined into one h5ad file.
+      description: One or more folders containing the output of the BD Rhapsody workflow. If multiple are given, they are all combined into one h5mu file. Note that multiple outputs must come from the same sample (but e.g. from different lanes).
       multiple: true
       required: true
       example: input_dir/
-    - name: "--id"
-      type: string
-      description: "A vector of ids with same length as --input."
-      multiple: true
-      example: my_id
+  outputs:
     - name: "--output"
       alternatives: [-o]
-      description: "Output h5ad file."
-      required: true
       type: file
-      direction: output
-      example: output.h5ad
+      description: "Output h5mu file."
+      required: true
+      example: output.h5mu
+  arguments:
+    - name: "--id"
+      type: string
+      description: "A sample ID."
+      example: my_id
+      required: true
   resources:
     - type: r_script
       path: script.R
@@ -42,7 +42,7 @@ platforms:
     image: ghcr.io/data-intuitive/randpy:r4.0_py3.8
     setup: 
       - type: python
-        pip: anndata<0.8
+        pip: [anndata<0.8, mudata]
       - type: r
         cran: anndata
   - type: nextflow

@@ -458,9 +458,9 @@ functionality:
       
       LABEL org.opencontainers.image.authors="Dries De Maeyer <ddemaeyer@gmail.com> (maintainer) {account: ddemaey1}, Robrecht Cannoodt <rcannood@gmail.com> (contributor) {github: rcannood, orcid: 0000-0003-3641-729X}"
       LABEL org.opencontainers.image.description="Companion container for running component transform log1p"
-      LABEL org.opencontainers.image.created="2022-06-13T09:37:55Z"
+      LABEL org.opencontainers.image.created="2022-06-13T15:21:00Z"
       LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-      LABEL org.opencontainers.image.revision="aa2d93d93acd133f1259e9e46fa976e2af00f0c9"
+      LABEL org.opencontainers.image.revision="8f82d30ddc08e19f7321c18b80c80cfd163efc3e"
       LABEL org.opencontainers.image.version="fatal: No names found, cannot describe anything."
       VIASHDOCKER
       }
@@ -876,6 +876,6 @@ info:
   output: "target/docker/transform/log1p"
   executable: "target/docker/transform/log1p/log1p"
   viash_version: "0.5.13"
-  git_commit: "aa2d93d93acd133f1259e9e46fa976e2af00f0c9"
+  git_commit: "8f82d30ddc08e19f7321c18b80c80cfd163efc3e"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"
   git_tag: "fatal: No names found, cannot describe anything."
