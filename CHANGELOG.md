@@ -4,6 +4,8 @@
 
 * `workflows/utils/utils.nf`: Fix error message when required parameter is not specified.
 
+* `mapping/bd_rhapsody_wta`: Allow unit test to be run on less powerful systems (at least 4GB ram).
+
 # openpipeline 0.3.1
 
 ## NEW FUNCTIONALITY
