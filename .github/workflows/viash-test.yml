@@ -1,15 +1,10 @@
 name: viash test CI
 
-# disable for now
 on:
   push:
-    branches-ignore:
-      - '**'
-# on:
-#   push:
-#     branches: [ '*' ]
-#   pull_request:
-#     branches: [ '*' ]
+    branches: [ '*' ]
+  pull_request:
+    branches: [ '*' ]
 
 # Skip older CI runs for pull requests (head_ref exists), otherwise allways build
 # https://docs.github.com/en/actions/using-jobs/using-concurrency#example-using-a-fallback-value
@@ -25,10 +20,26 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
+
     - name: Fetch viash
       run: |
         bin/init
         bin/viash -h
+    
+    # initialize cache
+    - name: Cache resources data
+      uses: actions/cache@v3
+      with:
+        path: resources_test
+        # key: ${{ runner.os }}-primes # might be needed in future
+        key: resources_test
+
+    - name: Sync test resources
+      run: |
+        bin/viash_build -q sync_test_resources
+        target/docker/download/sync_test_resources/sync_test_resources
+
+    # store cache
     - id: set_matrix
       run: |
         echo "::set-output name=matrix::$( bin/viash ns list -p docker --format json | jq -c '[ .[] | .info.config ]' )"
@@ -54,6 +65,13 @@ jobs:
       run: |
         bin/init
         bin/viash -h
+
+    # use cache
+    - name: Cache resources data
+      uses: actions/cache@v3
+      with:
+        path: resources_test
+        key: resources_test
 
     - name: Sync test resources
       run: |
