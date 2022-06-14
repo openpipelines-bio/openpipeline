@@ -12,8 +12,7 @@ echo ">> Running $meta_functionality_name"
   -r "$meta_resources_dir/bd_rhapsody_wta_test/raw/GRCh38_primary_assembly_genome_chr1.tar.gz" \
   -t "$meta_resources_dir/bd_rhapsody_wta_test/raw/gencode_v40_annotation_chr1.gtf" \
   --subsample 0.2 \
-  -o output/ \
-  --parallel false
+  -o output/
 
 echo ">> Checking whether output can be found"
 [[ ! -f output/sample_RSEC_ReadsPerCell_Unfiltered.csv.gz ]] && echo "Output file could not be found!" && exit 1
