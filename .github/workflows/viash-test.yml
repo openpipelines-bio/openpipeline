@@ -31,15 +31,15 @@ jobs:
       uses: actions/cache@v3
       with:
         path: resources_test
-        # key: ${{ runner.os }}-primes # might be needed in future
-        key: resources_test
+        key: resources_test # different keys might be needed in the future
 
+    # sync if need be
     - name: Sync test resources
       run: |
         bin/viash_build -q sync_test_resources
-        target/docker/download/sync_test_resources/sync_test_resources
+        target/docker/download/sync_test_resources/sync_test_resources --delete
 
-    # store cache
+    # store component locations
     - id: set_matrix
       run: |
         echo "::set-output name=matrix::$( bin/viash ns list -p docker --format json | jq -c '[ .[] | .info.config ]' )"
@@ -72,11 +72,6 @@ jobs:
       with:
         path: resources_test
         key: resources_test
-
-    - name: Sync test resources
-      run: |
-        bin/viash_build -q sync_test_resources
-        target/docker/download/sync_test_resources/sync_test_resources
 
     - name: Run test
       run: |
