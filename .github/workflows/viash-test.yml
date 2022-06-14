@@ -36,8 +36,11 @@ jobs:
     # sync if need be
     - name: Sync test resources
       run: |
-        bin/viash_build -q sync_test_resources
-        target/docker/download/sync_test_resources/sync_test_resources --delete
+        bin/viash run \
+          -p native \
+          src/download/sync_test_resources/config.vsh.yaml \
+          -- \
+          --delete
 
     # store component locations
     - id: set_matrix
