@@ -377,9 +377,9 @@ RUN pip install --upgrade pip && \
 
 LABEL org.opencontainers.image.authors="Robrecht Cannoodt <rcannood@gmail.com> (maintainer) {github: rcannood, orcid: 0000-0003-3641-729X}"
 LABEL org.opencontainers.image.description="Companion container for running component convert from_10xmtx_to_h5mu"
-LABEL org.opencontainers.image.created="2022-06-14T08:32:56Z"
+LABEL org.opencontainers.image.created="2022-06-14T08:44:16Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="8fbeed9b922ddc835c7d71ac42afecbf6b07a6d1"
+LABEL org.opencontainers.image.revision="d95845c468f7076a1e0c42fce525fffe693cdb77"
 LABEL org.opencontainers.image.version="fatal: No names found, cannot describe anything."
 VIASHDOCKER
 }
