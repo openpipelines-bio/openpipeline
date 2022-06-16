@@ -1,5 +1,5 @@
 functionality:
-  name: bclconvert
+  name: bcl_convert
   namespace: demux
   description: |
     Convert bcl files to fastq files using bcl-convert.
@@ -20,11 +20,11 @@ functionality:
       required: true
       description: Input run directory
       example: bcl_dir
-    - name: "--samplesheet"
+    - name: "--sample_sheet"
       alternatives: [ "-s" ]
       type: file
       required: true
-      description: Pointer to the samplesheet
+      description: Pointer to the sample sheet
       example: bcl_dir
     - name: "--output"
       alternatives: [ "-o" ]
