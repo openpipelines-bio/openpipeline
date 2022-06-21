@@ -8,8 +8,8 @@ include { cellranger_count } from targetDir + "/mapping/cellranger_count/main.nf
 include { cellranger_count_split } from targetDir + "/mapping/cellranger_count_split/main.nf"
 include { from_10xh5_to_h5mu } from targetDir + "/convert/from_10xh5_to_h5mu/main.nf"
 
-include { publish } from targetDir + "/transfer/publish/main.nf" params(params)
-include { getChild; paramExists; assertParamExists } from workflowDir + "/utils/utils.nf" params(params)
+include { publish } from targetDir + "/transfer/publish/main.nf"
+include { getChild; paramExists; assertParamExists } from workflowDir + "/utils/viash_workflow_helper.nf"
 
 workflow {
   if (paramExists("help")) {
