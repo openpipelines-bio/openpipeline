@@ -7,7 +7,7 @@ include { from_10xh5_to_h5mu } from targetDir + "/convert/from_10xh5_to_h5mu/mai
 include { from_10xmtx_to_h5mu } from targetDir + "/convert/from_10xmtx_to_h5mu/main.nf" 
 
 include { publish } from targetDir + "/transfer/publish/main.nf"               
-include { overrideOptionValue } from workflowDir + "/utils/utils.nf"                       
+include { overrideOptionValue } from workflowDir + "/utils/viash_workflow_helper.nf"                       
 
 
 workflow {

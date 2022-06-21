@@ -1,0 +1,17 @@
+functionality:
+  name: "unimodal_singlesample_rna"
+  description: "Processing unimodal single-sample RNA transcriptomics data."
+  arguments:
+    - name: "--id"
+      required: true
+      type: string
+      description: ID of the sample.
+      example: foo
+      multiple: false
+    - name: "--input"
+      required: true
+      type: file
+      description: Path to the sample.
+      example: dataset.h5mu
+      multiple: true
+      multiple_sep: ":"
