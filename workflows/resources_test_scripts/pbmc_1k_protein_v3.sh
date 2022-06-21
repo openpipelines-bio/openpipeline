@@ -40,11 +40,27 @@ target/docker/convert/from_10xh5_to_h5ad/from_10xh5_to_h5ad \
 
 NXF_VER=21.10.6 bin/nextflow \
   run . \
-  -main-script workflows/2_single_modality/tx_processing/main.nf \
+  -main-script workflows/2_unimodal_singlesample/rna/main.nf \
+  -profile docker \
+  --id pbmc_1k_protein_v3_uss \
   --input resources_test/pbmc_1k_protein_v3/pbmc_1k_protein_v3_filtered_feature_bc_matrix.h5mu \
-  --id pbmc_1k_protein_v3_filtered_feature_bc_matrix.tx_processing \
-  --output resources_test/pbmc_1k_protein_v3/ \
-  -resume \
-  -c workflows/2_single_modality/tx_processing/nextflow.config
+  --publishDir resources_test/pbmc_1k_protein_v3/ \
+  -resume
 
-aws s3 sync --profile xxx "$DIR" "$S3DIR"
+NXF_VER=21.10.6 bin/nextflow \
+  run . \
+  -main-script workflows/3_unimodal_multisample/rna/main.nf \
+  -profile docker \
+  --id pbmc_1k_protein_v3_ums \
+  --input resources_test/pbmc_1k_protein_v3/pbmc_1k_protein_v3_uss.h5mu \
+  --publishDir resources_test/pbmc_1k_protein_v3/ \
+  -resume
+
+NXF_VER=21.10.6 bin/nextflow \
+  run . \
+  -main-script workflows/4_multimodal_multisample/rna/main.nf \
+  -profile docker \
+  --id pbmc_1k_protein_v3_mms \
+  --input resources_test/pbmc_1k_protein_v3/pbmc_1k_protein_v3_ums.h5mu \
+  --publishDir resources_test/pbmc_1k_protein_v3/ \
+  -resume

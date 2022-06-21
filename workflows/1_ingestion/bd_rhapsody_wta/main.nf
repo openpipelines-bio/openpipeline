@@ -7,7 +7,7 @@ include { bd_rhapsody_wta } from targetDir + "/mapping/bd_rhapsody_wta/main.nf"
 include { from_bdrhap_to_h5mu } from targetDir + "/convert/from_bdrhap_to_h5mu/main.nf"
 
 include { publish } from targetDir + "/transfer/publish/main.nf"
-include { getChild; paramExists; assertParamExists } from workflowDir + "/utils/utils.nf"
+include { getChild; paramExists; assertParamExists } from workflowDir + "/utils/viash_workflow_helper.nf"
 
 
 workflow {
