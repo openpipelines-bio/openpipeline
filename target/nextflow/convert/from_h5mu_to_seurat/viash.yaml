@@ -98,6 +98,17 @@ functionality:
       
       Converts an h5mu file into a Seurat file.
       
+      Restrictions:
+        - Only the intersection of cells is currently loaded into the Seurat object
+      due to the object structure limitation.
+        - Multimodal embeddings (global .obsm slot) are loaded with the assay.used
+      field set to the default assay.
+        - Embeddings names are changed in order to comply with R & Seurat requirements
+      and conventions.
+        - Feature names with underscores ('_') are automatically replaced with dashes
+      ('-')
+        - Seurat does not support global variables metadata /var.
+      
       Options:
           --input
               type: file, required parameter
@@ -1124,7 +1135,7 @@ functionality:
         mainScript = 'main.nf'
         nextflowVersion = '!>=20.12.1-edge'
         version = 'main_build'
-        description = 'Converts an h5mu file into a Seurat file.\n'
+        description = 'Converts an h5mu file into a Seurat file.\n\nRestrictions:\n  - Only the intersection of cells is currently loaded into the Seurat object due to the object structure limitation.\n  - Multimodal embeddings (global .obsm slot) are loaded with the assay.used field set to the default assay.\n  - Embeddings names are changed in order to comply with R & Seurat requirements and conventions.\n  - Feature names with underscores (\'_\') are automatically replaced with dashes (\'-\')\n  - Seurat does not support global variables metadata /var.\n'
         author = 'Robrecht Cannoodt <rcannood@gmail.com> (author, maintainer) {github: rcannood, orcid: 0000-0003-3641-729X}'
       }
       
@@ -1181,7 +1192,13 @@ functionality:
       }
 
     dest: "nextflow.config"
-  description: "Converts an h5mu file into a Seurat file.\n"
+  description: "Converts an h5mu file into a Seurat file.\n\nRestrictions:\n  - Only\
+    \ the intersection of cells is currently loaded into the Seurat object due to\
+    \ the object structure limitation.\n  - Multimodal embeddings (global .obsm slot)\
+    \ are loaded with the assay.used field set to the default assay.\n  - Embeddings\
+    \ names are changed in order to comply with R & Seurat requirements and conventions.\n\
+    \  - Feature names with underscores ('_') are automatically replaced with dashes\
+    \ ('-')\n  - Seurat does not support global variables metadata /var.\n"
   tests:
   - type: "r_script"
     path: "run_test.R"
@@ -1218,6 +1235,6 @@ info:
   platform: "nextflow"
   output: "target/nextflow/convert/from_h5mu_to_seurat"
   viash_version: "0.5.13"
-  git_commit: "13e32a0dee1539dd0b1732d6330622430823b364"
+  git_commit: "ae30a44170dba5672b5e2da644b17eb866438359"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"
   git_tag: "fatal: No names found, cannot describe anything."

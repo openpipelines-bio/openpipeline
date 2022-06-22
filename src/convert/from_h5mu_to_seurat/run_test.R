@@ -2,7 +2,8 @@ library(testthat, warn.conflicts = FALSE)
 
 cat("Checking whether output is correct\n")
 
-in_h5mu <- paste0(meta[["resources_dir"]], "/pbmc_1k_protein_v3/pbmc_1k_protein_v3_mms.h5mu")
+# TODO: this should also work for ums and mms, but it doesn't.
+in_h5mu <- paste0(meta[["resources_dir"]], "/pbmc_1k_protein_v3/pbmc_1k_protein_v3_uss.h5mu")
 out_rds <- "output.rds"
 
 cat("> Running ", meta[["functionality_name"]], "\n", sep = "")

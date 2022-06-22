@@ -53,6 +53,17 @@ thisHelpMessage = '''from_h5mu_to_seurat main_build
 
 Converts an h5mu file into a Seurat file.
 
+Restrictions:
+  - Only the intersection of cells is currently loaded into the Seurat object
+due to the object structure limitation.
+  - Multimodal embeddings (global .obsm slot) are loaded with the assay.used
+field set to the default assay.
+  - Embeddings names are changed in order to comply with R & Seurat requirements
+and conventions.
+  - Feature names with underscores ('_') are automatically replaced with dashes
+('-')
+  - Seurat does not support global variables metadata /var.
+
 Options:
     --input
         type: file, required parameter
