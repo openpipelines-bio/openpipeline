@@ -7,11 +7,15 @@ functionality:
       type: string
       description: ID of the sample.
       example: foo
-      multiple: false
     - name: "--input"
-      required: true
       type: file
+      required: true
       description: Path to the sample.
       example: dataset.h5mu
-      multiple: true
-      multiple_sep: ":"
+  resources:
+    - type: nextflow_script
+      path: main.nf
+  tests:
+    - type: nextflow_script
+      path: main.nf
+      entry: test_wf
