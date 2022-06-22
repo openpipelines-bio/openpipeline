@@ -381,9 +381,9 @@ RUN pip install --upgrade pip && \
 
 LABEL org.opencontainers.image.authors="Dries De Maeyer <DDeMaey1@its.jnj.com> (maintainer) {account: ddemaey1}"
 LABEL org.opencontainers.image.description="Companion container for running component report mermaid"
-LABEL org.opencontainers.image.created="2022-06-22T14:47:44Z"
+LABEL org.opencontainers.image.created="2022-06-22T15:09:38Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="a03904e89e7eff8b5a34b31c3ec0250da99b5ed3"
+LABEL org.opencontainers.image.revision="d3370c41de13e9f60e8d3487a23f429ed92b9329"
 LABEL org.opencontainers.image.version="fatal: No names found, cannot describe anything."
 VIASHDOCKER
 }
