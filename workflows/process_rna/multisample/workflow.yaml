@@ -1,6 +1,7 @@
 functionality:
-  name: "multimodal_multisample_rna"
-  description: "Processing multimodal multi-sample RNA transcriptomics data."
+  name: "multisample"
+  namespace: "process_rna"
+  description: "Processing unimodal multi-sample RNA transcriptomics data."
   arguments:
     - name: "--id"
       required: true

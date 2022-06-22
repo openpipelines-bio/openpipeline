@@ -1,5 +1,6 @@
 functionality:
-  name: "unimodal_singlesample_rna"
+  name: "singlesample"
+  namespace: "process_rna"
   description: "Processing unimodal single-sample RNA transcriptomics data."
   arguments:
     - name: "--id"

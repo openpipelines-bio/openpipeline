@@ -1,6 +1,6 @@
 functionality:
   name: "bd_rhapsody_wta"
-  namespace: "1_ingestion"
+  namespace: "ingestion"
   description: "Processing unimodal multi-sample RNA transcriptomics data."
   arguments:
     - name: "--id"
@@ -18,10 +18,10 @@ functionality:
     - name: "--reference_genome"
       required: true
       type: file
-      description: a path to STAR index as a tar.gz file
+      description: A path to STAR index as a tar.gz file.
       example: reference.tar.gz
     - name: "--transcriptome_annotation"
       required: true
       type: file
-      description: a path to GTF annotation file
+      description: A path to GTF annotation file.
       example: transcriptome.gtf

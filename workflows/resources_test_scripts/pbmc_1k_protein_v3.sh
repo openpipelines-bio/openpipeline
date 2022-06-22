@@ -40,7 +40,7 @@ target/docker/convert/from_10xh5_to_h5ad/from_10xh5_to_h5ad \
 
 NXF_VER=21.10.6 bin/nextflow \
   run . \
-  -main-script workflows/2_unimodal_singlesample/rna/main.nf \
+  -main-script workflows/process_rna/singlesample/main.nf \
   -profile docker \
   --id pbmc_1k_protein_v3_uss \
   --input resources_test/pbmc_1k_protein_v3/pbmc_1k_protein_v3_filtered_feature_bc_matrix.h5mu \
@@ -49,7 +49,7 @@ NXF_VER=21.10.6 bin/nextflow \
 
 NXF_VER=21.10.6 bin/nextflow \
   run . \
-  -main-script workflows/3_unimodal_multisample/rna/main.nf \
+  -main-script workflows/process_rna/multisample/main.nf \
   -profile docker \
   --id pbmc_1k_protein_v3_ums \
   --input resources_test/pbmc_1k_protein_v3/pbmc_1k_protein_v3_uss.h5mu \
@@ -58,7 +58,7 @@ NXF_VER=21.10.6 bin/nextflow \
 
 NXF_VER=21.10.6 bin/nextflow \
   run . \
-  -main-script workflows/4_multimodal_multisample/rna/main.nf \
+  -main-script workflows/integration/multimodal_integration/main.nf \
   -profile docker \
   --id pbmc_1k_protein_v3_mms \
   --input resources_test/pbmc_1k_protein_v3/pbmc_1k_protein_v3_ums.h5mu \
