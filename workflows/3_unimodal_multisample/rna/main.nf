@@ -7,7 +7,6 @@ include { normalize_total } from targetDir + '/transform/normalize_total/main.nf
 include { log1p } from targetDir + '/transform/log1p/main.nf'
 include { filter_with_hvg } from targetDir + '/filter/filter_with_hvg/main.nf'
 
-include { publish } from targetDir + "/transfer/publish/main.nf"
 include { readConfig; viashChannel; helpMessage } from workflowDir + "/utils/viash_workflow_helper.nf"
 
 config = readConfig("$projectDir/workflow.yaml")

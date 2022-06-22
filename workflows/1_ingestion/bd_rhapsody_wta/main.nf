@@ -6,111 +6,17 @@ targetDir = params.rootDir + "/target/nextflow"
 include { bd_rhapsody_wta } from targetDir + "/mapping/bd_rhapsody_wta/main.nf"
 include { from_bdrhap_to_h5mu } from targetDir + "/convert/from_bdrhap_to_h5mu/main.nf"
 
-include { publish } from targetDir + "/transfer/publish/main.nf"
-include { getChild; paramExists; assertParamExists } from workflowDir + "/utils/viash_workflow_helper.nf"
+include { readConfig; viashChannel; helpMessage } from workflowDir + "/utils/viash_workflow_helper.nf"
 
 
 workflow {
-  if (paramExists("help")) {
-    log.info """TX Processing - CLI workflow
-      |
-      |A workflow for running a BD Rhapsody WTA workflow.
-      |This workflow can be run on a single input or in batch, see below.
-      |
-      |Parameters (Single input mode):
-      |  --id       ID of the sample (optional).
-      |  --input    One or more fastq paths, separated with semicolons (required).
-      |             Paths may be globs. Example: path/to/dir/**.fastq
-      |  --reference_genome
-      |             Path to STAR index as a tar.gz file (required).
-      |  --transcriptome_annotation
-      |             Path to GTF annotation file (required).
-      |  --publishDir
-      |             Path to an output directory (required).
-      |  
-      |Parameters (Batch mode):
-      |  --csv      A csv file containing columns 'id', 'input' (required).
-      |  --reference_genome
-      |             Path to STAR index as a tar.gz file (required).
-      |  --transcriptome_annotation
-      |             Path to GTF annotation file (required).
-      |  --publishDir
-      |             Path to an output directory (required).
-      |""".stripMargin()
-    exit 0
-  }
+  params.testing = false
+  helpMessage(params, config)
 
-
-  if (paramExists("input") == paramExists("csv")) {
-    exit 1, "ERROR: Please provide either an --input parameter or a --csv parameter"
-  }
-  
-  assertParamExists("reference_genome", "STAR index as a tar.gz file")
-  assertParamExists("transcriptome_annotation", "to GTF annotation file")
-  assertParamExists("publishDir", "where output files will be published")
-
-  if (paramExists("csv")) {
-    input_ch = Channel.fromPath(params.csv)
-      | splitCsv(header: true, sep: ",")
-  } else {
-    input_ch = Channel.value( params.subMap(["id", "input"]) )
-  }
-
-  def reference_genome = file(params.reference_genome)
-  def transcriptome_annotation = file(params.transcriptome_annotation)
-
-  input_ch
-    | map { li ->
-      // process input
-      if (li.containsKey("input") && li.input) {
-        input_path = li.input.split(";").collect { path -> 
-          file(paramExists("csv") ? getChild(params.csv, path) : path)
-        }.flatten()
-      } else {
-        exit 1, paramExists("csv") ? 
-          "ERROR: The provided csv file should contain an 'input' column" : 
-          "ERROR: Please specify an '--input' parameter"
-      }
-
-      // process id
-      if (li.containsKey("id") && li.id) {
-        id_value = li.id
-      } else if (!paramExists("csv")) {
-        id_value = "run"
-      } else {
-        exit 1, "ERROR: The provided csv file should contain an 'id' column"
-      }
-      [ 
-        id_value, [ 
-          input: input_path, 
-          reference_genome: reference_genome, 
-          transcriptome_annotation: transcriptome_annotation
-        ] 
-      ]
-    }
-    | view { "Input: $it" }
+  viashChannel(params, config)
     | run_wf
-    | publish.run(
-      map: { [ it[0], [ input: it[1], output: it[0] ] ] },
-      auto: [ publish: true ]
-    )
-    | view { "Output: ${params.publishDir}/${it[1]}" }
 }
 
-/* BD Rhapsody WTA - common workflow
- * 
- * consumed params:
- *   id:                            a sample id for one or more fastq files
- *   data:
- *     input:                       one or more fastq paths, separated with semicolons, paths may be globs
- *     reference_genome:            a path to STAR index as a tar.gz file
- *     transcriptome_annotation:    a path to GTF annotation file
- *   output                         a publish dir for the output h5ad files
- * output format:               [ id, h5ad ]
- *   value id:                      a sample id for one or more fastq files
- *   value h5ad:                    h5ad object of mapped fastq reads
- *   value params:                  the params object, which may already have sample specific overrides
- */
 workflow run_wf {
   take:
   input_ch
@@ -151,16 +57,16 @@ workflow run_wf {
 
     // Step 4: convert to h5ad
     | view { "converting_to_h5mu: [$it]" }
-    | from_bdrhap_to_h5mu
+    | from_bdrhap_to_h5mu.run(
+      auto: [ publish: ! params.testing ]
+    )
 
   emit:
   output_ch
 }
 
-
-/* BD Rhapsody WTA - Integration testing
- */
 workflow test_wf {
+  params.testing = true
   
   output_ch =
     Channel.value(

@@ -95,6 +95,11 @@ def readConfig(file) {
   // assert .functionality etc.
   config.functionality.arguments = 
     config.functionality.arguments.collect{arg ->
+      // fill in defaults
+      arg.multiple = arg.multiple ?: false
+      arg.required = arg.required ?: false
+      arg.direction = arg.direction ?: "input"
+      arg.multiple_sep = arg.multiple_sep ?: ":"
       arg.plainName = arg.name.replaceAll("^--", "")
       arg
     }

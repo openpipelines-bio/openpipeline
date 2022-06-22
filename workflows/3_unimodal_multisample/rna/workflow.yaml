@@ -7,11 +7,8 @@ functionality:
       type: string
       description: ID of the sample.
       example: foo
-      multiple: false
     - name: "--input"
       required: true
       type: file
       description: Path to the sample.
       example: dataset.h5mu
-      multiple: true
-      multiple_sep: ":"

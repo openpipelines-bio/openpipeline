@@ -8,7 +8,6 @@ include { find_neighbors } from targetDir + '/neighbors/find_neighbors/main.nf'
 include { umap } from targetDir + '/dimred/umap/main.nf'
 include { leiden } from targetDir + '/cluster/leiden/main.nf'
 
-include { publish } from targetDir + "/transfer/publish/main.nf"
 include { readConfig; viashChannel; helpMessage } from workflowDir + "/utils/viash_workflow_helper.nf"
 
 config = readConfig("$projectDir/workflow.yaml")
