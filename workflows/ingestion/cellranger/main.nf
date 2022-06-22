@@ -8,109 +8,25 @@ include { cellranger_count } from targetDir + "/mapping/cellranger_count/main.nf
 include { cellranger_count_split } from targetDir + "/mapping/cellranger_count_split/main.nf"
 include { from_10xh5_to_h5mu } from targetDir + "/convert/from_10xh5_to_h5mu/main.nf"
 
-include { publish } from targetDir + "/transfer/publish/main.nf"
-include { getChild; paramExists; assertParamExists } from workflowDir + "/utils/viash_workflow_helper.nf"
+include { readConfig; viashChannel; helpMessage } from workflowDir + "/utils/viash_workflow_helper.nf"
+
+config = readConfig("$projectDir/workflow.yaml")
 
 workflow {
-  if (paramExists("help")) {
-    log.info """Cell Ranger - CLI workflow
+  params.testing = false
 
-Use Cell Ranger to preprocess 10x data.
-This workflow can be run on a single input or in batch, see below.
+  helpMessage(params, config)
 
-Parameters (Single input mode):
-  --id             ID of the sample (optional).
-  --input          A BCL directory (required).
-  --sample_sheet   Sample sheet (required).
-  --reference      Path to a Cell Ranger reference (required).
-  --publishDir     Path to an output directory (required).
-  
-Parameters (Batch mode):
-  --csv            A csv file containing columns 'id', 'input', 'sample_sheet', 'reference' (required).
-  --publishDir     Path to an output directory (required).
-"""
-    exit 0
-  }
-
-  if (paramExists("input") == paramExists("csv")) {
-    exit 1, "ERROR: Please provide either an --input parameter or a --csv parameter"
-  }
-  
-  assertParamExists("publishDir", "where output files will be published")
-
-  if (paramExists("csv")) {
-    input_ch = Channel.fromPath(params.csv)
-      | splitCsv(header: true, sep: ",")
-  } else {
-    input_ch = Channel.value( params.subMap(["id", "input", "sample_sheet", "reference"]) )
-  }
-
-  input_ch
-    | map { li ->
-      // process input
-      if (li.containsKey("input") && li.input) {
-        input_path = li.input.split(";").collect { path -> 
-          file(paramExists("csv") ? getChild(params.csv, path) : path)
-        }.flatten()
-      } else {
-        exit 1, paramExists("csv") ? 
-          "ERROR: The provided csv file should contain an 'input' column" : 
-          "ERROR: Please specify an '--input' parameter"
-      }
-      // process input
-      if (li.containsKey("sample_sheet") && li.sample_sheet) {
-        sample_sheet_path = file(li.sample_sheet)
-      } else {
-        exit 1, paramExists("csv") ? 
-          "ERROR: The provided csv file should contain a 'sample_sheet' column" : 
-          "ERROR: Please specify an '--sample_sheet' parameter"
-      }
-      // process input
-      if (li.containsKey("reference") && li.reference) {
-        reference_path = file(li.reference)
-      } else {
-        exit 1, paramExists("csv") ? 
-          "ERROR: The provided csv file should contain a 'reference' column" : 
-          "ERROR: Please specify an '--reference' parameter"
-      }
-
-      // process id
-      if (li.containsKey("id") && li.id) {
-        id_value = li.id
-      } else if (!paramExists("csv")) {
-        id_value = "run"
-      } else {
-        exit 1, "ERROR: The provided csv file should contain an 'id' column"
-      }
-      [ id_value, [ input: input_path, sample_sheet: sample_sheet_path, reference: reference_path ] ]
-    }
-    | view { "Input: $it" }
+  viashChannel(params, config)
     | run_wf
-    | publish.run(
-      map: { [ it[0], [ input: it[1], output: it[0] ] ] },
-      auto: [ publish: true ]
-    )
-    | view { "Output: ${params.publishDir}/${it[1]}" }
 }
 
-/* Cell Ranger - common workflow
- * 
- * consumed params:
- *   id:                            a sample id for one or more fastq files
- *   data:
- *     input:                       a BCL directory (required).
- *   output                         a publish dir for the output h5ad files
- * output format:               [ id, fastq, params ]
- *   value id:                      a sample id for one or more fastq files
- *   value fastq_dir:               a directory of fastq files
- *   value params:                  the params object, which may already have sample specific overrides
- */
 workflow run_wf {
   take:
   input_ch
 
-  auto = [ publish: paramExists("publishDir"), transcript: paramExists("publishDir") ]
-  auto_nopub = [ transcript: paramExists("publishDir") ]
+  auto = [ publish: ! params.testing, transcript: ! params.testing ]
+  auto_nopub = [ publish: false, transcript: ! params.testing ]
 
   main:
   output_ch = input_ch

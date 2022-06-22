@@ -1,7 +1,7 @@
 #!/bin/bash
 
 nextflow run . \
-  -main-script workflows/3_unimodal_multisample/rna/main.nf \
+  -main-script workflows/process_rna/multisample/main.nf \
   -profile docker \
   -resume \
   -entry test_wf
