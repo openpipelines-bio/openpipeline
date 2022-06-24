@@ -3,7 +3,7 @@ functionality:
   namespace: "integrate"
   version: "dev"
   description: |
-    Concatenates multiple h5ad files into a single file.
+    Concatenates several uni-modal samples in .h5mu files into a single file.
   authors:
     - name: Dries Schaumont
       email: Dschaumo@its.jnj.com
@@ -21,7 +21,7 @@ functionality:
       alternatives: ["-o"]
       type: file
       direction: output
-      default: "output.h5ad"
+      default: "output.h5mu"
     - name: "--sample_names"
       type: string
       multiple: true
@@ -31,7 +31,7 @@ functionality:
       default: sample_names
     - name: "--compression"
       type: string
-      description: The compression format to be used on the final h5ad object.
+      description: The compression format to be used on the final h5mu object.
       default: "gzip"
     - name: "other_axis_mode"
       type: string
