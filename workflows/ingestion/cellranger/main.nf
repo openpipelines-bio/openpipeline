@@ -25,10 +25,10 @@ workflow run_wf {
   take:
   input_ch
 
+  main:
   auto = [ publish: ! params.testing, transcript: ! params.testing ]
   auto_nopub = [ publish: false, transcript: ! params.testing ]
 
-  main:
   output_ch = input_ch
 
     // run mkfastq
@@ -36,7 +36,7 @@ workflow run_wf {
     | cellranger_mkfastq.run(auto: auto)
 
     // run count
-    | map { id, fastq, data -> [ id, data.subMap("reference") + [ input: fastq ], [ fastq: fastq ] }
+    | map { id, fastq, data -> [ id, data.subMap("reference") + [ input: fastq ], [ fastq: fastq ] ] }
     | cellranger_count.run(auto: auto)
 
     // split output dir into map
