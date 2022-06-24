@@ -4,7 +4,7 @@
 
 * `convert/from_bdrhap_to_h5mu`: Merge one or more BD rhapsody outputs into an h5mu file.
 
-* `split/split`: Split the modalities from a single .h5mu multimodal sample into seperate .h5mu files. 
+* `split/split_modalities`: Split the modalities from a single .h5mu multimodal sample into seperate .h5mu files. 
 
 ## BUG FIXES
 
