@@ -3,7 +3,7 @@
 mkdir output
 
 # temporarily decrease RAM and CPU requirements to be able to work on CI systems
-sed -i 's#"ramMin": [^,]*,#"ramMin": 4000,#' "$meta_resources_dir/rhapsody_wta_1.9.1_nodocker.cwl"
+sed -i 's#"ramMin": [^,]*,#"ramMin": 2000,#' "$meta_resources_dir/rhapsody_wta_1.9.1_nodocker.cwl"
 sed -i 's#"coresMin": [^,]*,#"coresMin": 1,#' "$meta_resources_dir/rhapsody_wta_1.9.1_nodocker.cwl"
 
 echo ">> Running $meta_functionality_name"
