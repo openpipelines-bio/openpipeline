@@ -4,6 +4,8 @@
 
 * `convert/from_bdrhap_to_h5mu`: Merge one or more BD rhapsody outputs into an h5mu file.
 
+* `integrate/concat`: Combine data from multiple samples together.
+
 ## BUG FIXES
 
 * `workflows/utils/viash_workflow_helper.nf`: Renamed `utils.nf` to `viash_workflow_helper.nf`.
