@@ -6,6 +6,8 @@
 
 * `split/split_modalities`: Split the modalities from a single .h5mu multimodal sample into seperate .h5mu files. 
 
+* `integrate/concat`: Combine data from multiple samples together.
+
 ## BUG FIXES
 
 * `workflows/utils/viash_workflow_helper.nf`: Renamed `utils.nf` to `viash_workflow_helper.nf`.
