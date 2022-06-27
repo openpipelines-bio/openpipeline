@@ -105,7 +105,7 @@ functionality:
     - type: python_script
       path: script.py
     - path: rhapsody_wta_1.9.1_nodocker.cwl
-  tests:
+  test_resources:
     - type: bash_script
       path: run_test.sh
     - path: ../../../resources_test/bd_rhapsody_wta_test
@@ -113,10 +113,15 @@ platforms:
   - type: docker
     image: bdgenomics/rhapsody:1.9.1
     setup:
-      # workaround for debian buster
+      # (1) workaround for debian buster
       # https://stackoverflow.com/questions/68802802/repository-http-security-debian-org-debian-security-buster-updates-inrelease
+      # (2) Update picard (uses old Log4J). It is installed using conda, but 'conda update picard' does not work.
+      # So download it manually and install
       - type: docker
-        run: apt-get --allow-releaseinfo-change update
+        run: apt-get --allow-releaseinfo-change update &&
+             wget https://anaconda.org/bioconda/picard/2.27.3/download/noarch/picard-2.27.3-hdfd78af_0.tar.bz2 &&
+             conda install picard-2.27.3-hdfd78af_0.tar.bz2 &&
+             sed -i 's#jvm_prop_opts=""#jvm_prop_opts="-Dpicard.useLegacyParser=false"#' /opt/conda/bin/picard
       - type: apt
         packages: [ procps, nodejs]
       - type: python
