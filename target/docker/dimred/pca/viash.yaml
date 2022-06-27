@@ -473,9 +473,9 @@ functionality:
       
       LABEL org.opencontainers.image.authors="Dries De Maeyer <ddemaeyer@gmail.com> (maintainer) {account: ddemaey1}"
       LABEL org.opencontainers.image.description="Companion container for running component dimred pca"
-      LABEL org.opencontainers.image.created="2022-06-27T12:57:57Z"
+      LABEL org.opencontainers.image.created="2022-06-27T12:58:24Z"
       LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-      LABEL org.opencontainers.image.revision="6e35e883650503c5cd582704948ab8e4043bd5a1"
+      LABEL org.opencontainers.image.revision="e9469de8e88b9ce0f7094e72bf6e4e1565de3d8b"
       LABEL org.opencontainers.image.version="fatal: No names found, cannot describe anything."
       VIASHDOCKER
       }
@@ -921,6 +921,6 @@ info:
   output: "target/docker/dimred/pca"
   executable: "target/docker/dimred/pca/pca"
   viash_version: "0.5.13"
-  git_commit: "6e35e883650503c5cd582704948ab8e4043bd5a1"
+  git_commit: "e9469de8e88b9ce0f7094e72bf6e4e1565de3d8b"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"
   git_tag: "fatal: No names found, cannot describe anything."
