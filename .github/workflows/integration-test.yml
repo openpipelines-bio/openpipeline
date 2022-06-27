@@ -60,6 +60,7 @@ jobs:
 
   # phase 2
   viash_test:
+    name: "${{ matrix.component.name }}"
     needs: list_components
 
     runs-on: ubuntu-latest
@@ -87,10 +88,12 @@ jobs:
 
     - name: Run test
       run: |
-        # bin/viash test -p docker ${{ matrix.component_path }}
         echo ${{ matrix.component }}
         echo name: ${{ matrix.component.name }}
         echo config: ${{ matrix.component.config }}
         echo test_script: ${{ matrix.component.test_script }}
         echo entry: ${{ matrix.component.entry }}
+        bin/nextflow run . \
+          -main-script "`basename ${{ matrix.component.config }}`/${{ matrix.component.test_script }}" \
+          -entry ${{ matrix.component.entry }}
 
