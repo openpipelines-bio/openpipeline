@@ -118,7 +118,9 @@ platforms:
       - type: docker
         run: apt-get --allow-releaseinfo-change update
       - type: apt
-        packages: [ cwltool, procps ]
+        packages: [ procps, nodejs]
+      - type: python
+        packages: [cwlref-runner, cwl-runner, ruamel.yaml]
   - type: nextflow
     variant: vdsl3
     directives:
