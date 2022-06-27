@@ -60,7 +60,7 @@ jobs:
 
   # phase 2
   viash_test:
-    name: "${{ matrix.component.name }}"
+    name: test ${{ matrix.component.name }}
     needs: list_components
 
     runs-on: ubuntu-latest
