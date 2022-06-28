@@ -82,6 +82,16 @@ jobs:
         bin/init
         bin/viash -h
 
+    # build target dir
+    # use containers from main_build branch, hopefully these are available
+    - name: Build target dir
+      run: |
+        # force override viash build strategy to not build containers
+        sed -i 's#--setup "\\$setup_strat"#--setup donothing#' bin/viash_build
+
+        # build target dir
+        bin/viash_build -m release -t main_build
+
     # use cache
     - name: Cache resources data
       uses: actions/cache@v3
