@@ -61,10 +61,6 @@ jobs:
         publish_dir: .
         publish_branch: main_build
 
-    - id: set_matrix
-      run: |
-        echo "::set-output name=matrix::$( bin/viash ns list -p docker --format json | jq -c '[ .[] | .info.config ]' )"
-
     # store component locations
     - id: set_matrix
       run: |
