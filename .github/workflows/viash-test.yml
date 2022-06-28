@@ -56,7 +56,8 @@ jobs:
     # store component locations
     - id: set_matrix
       run: |
-        echo "::set-output name=matrix::$( bin/viash ns list -p docker --format json | jq -c '[ .[] | { "name": .functionality.name, "config": .info.config } ]' )"
+        json=$(bin/viash ns list -p docker --format json | jq -c '[ .[] | { "name": .functionality.name, "config": .info.config } ]')
+        echo "::set-output name=matrix::$json"
     outputs:
       matrix: ${{ steps.set_matrix.outputs.matrix }}
       cachehash: ${{ steps.cachehash.outputs.cachehash }}
