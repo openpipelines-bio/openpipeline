@@ -122,7 +122,7 @@ platforms:
         run: apt-get --allow-releaseinfo-change update &&
              wget https://anaconda.org/bioconda/picard/2.27.3/download/noarch/picard-2.27.3-hdfd78af_0.tar.bz2 &&
              conda install picard-2.27.3-hdfd78af_0.tar.bz2 &&
-             sed -i 's#jvm_prop_opts=""#jvm_prop_opts="-Dpicard.useLegacyParser=false"#' /opt/conda/bin/picard
+             sed -i 's#jvm_prop_opts=""#jvm_prop_opts="-Dpicard.useLegacyParser=true"#' /opt/conda/bin/picard
       - type: apt
         packages: [ procps, nodejs]
       - type: python
