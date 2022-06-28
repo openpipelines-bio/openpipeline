@@ -112,6 +112,7 @@ functionality:
 platforms:
   - type: docker
     image: bdgenomics/rhapsody:1.9.1
+    run_args: [ "--env JAVA_HOME=/opt/conda" ]
     setup:
       # (1) workaround for debian buster
       # https://stackoverflow.com/questions/68802802/repository-http-security-debian-org-debian-security-buster-updates-inrelease
