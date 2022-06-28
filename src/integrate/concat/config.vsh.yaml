@@ -62,4 +62,6 @@ platforms:
         - muon
   - type: native
   - type: nextflow
-    label: highmem
+    variant: vdsl3
+    directives:
+      label: highmem
