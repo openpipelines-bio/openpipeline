@@ -92,7 +92,8 @@ jobs:
     - name: Run integration test
       run: |
         # todo: replace with viash test command
-        script="`basename ${{ matrix.component.config }}`/${{ matrix.component.test_script }}"
+        config_dir=`dirname ${{ matrix.component.config }}`
+        script="$config_dir/${{ matrix.component.test_script }}"
         bin/nextflow run . \
           -main-script "$script" \
           -entry ${{ matrix.component.entry }}
