@@ -2,11 +2,7 @@ name: viash integration CI
 
 on:
   push:
-    branches: [ '*' ]
-  pull_request:
-    branches: [ '*' ]
-  workflow_dispatch:
-    
+    branches: [ 'main_build' ]
 
 # Skip older CI runs for pull requests (head_ref exists), otherwise allways build
 # https://docs.github.com/en/actions/using-jobs/using-concurrency#example-using-a-fallback-value

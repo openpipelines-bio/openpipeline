@@ -2,9 +2,9 @@ name: viash test CI
 
 on:
   push:
-    branches: [ 'main' ]
+    branches: [ '*' ]
   pull_request:
-    branches: [ 'main' ]
+    branches: [ '*' ]
 
 # Skip older CI runs for pull requests (head_ref exists), otherwise allways build
 # https://docs.github.com/en/actions/using-jobs/using-concurrency#example-using-a-fallback-value
