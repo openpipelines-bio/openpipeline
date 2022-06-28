@@ -9,7 +9,7 @@ include { filter_with_hvg } from targetDir + '/filter/filter_with_hvg/main.nf'
 
 include { readConfig; viashChannel; helpMessage } from workflowDir + "/utils/viash_workflow_helper.nf"
 
-config = readConfig("$projectDir/workflow.yaml")
+config = readConfig("$projectDir/config.vsh.yaml")
 
 workflow {
   params.testing = false

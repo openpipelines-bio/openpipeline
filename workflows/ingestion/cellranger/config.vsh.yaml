@@ -18,3 +18,13 @@ functionality:
       type: file
       description: Path to a Cell Ranger reference.
       example: reference.tar.gz
+  resources:
+    - type: nextflow_script
+      path: main.nf
+    - path: nextflow.config
+  tests:
+    - type: nextflow_script
+      path: main.nf
+      entrypoint: test_wf
+platforms:
+  - type: native
