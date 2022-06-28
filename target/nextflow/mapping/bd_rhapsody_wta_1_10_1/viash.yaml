@@ -1,6 +1,6 @@
 functionality:
-  name: "filter_10xh5"
-  namespace: "process_10xh5"
+  name: "bd_rhapsody_wta_1_10_1"
+  namespace: "mapping"
   version: "main_build"
   authors:
   - name: "Robrecht Cannoodt"
@@ -13,75 +13,230 @@ functionality:
   inputs: []
   outputs: []
   arguments:
-  - type: "string"
+  - type: "file"
     name: "--input"
-    alternatives: []
-    description: "An h5 file from the 10x genomics website."
+    alternatives:
+    - "-i"
+    description: "Path to your read files in the FASTQ.GZ format. You may specify\
+      \ as many R1/R2 read pairs as you want."
     example:
-    - "pbmc_1k_protein_v3_raw_feature_bc_matrix.h5"
+    - "input.fastq.gz"
     default: []
+    must_exist: false
     required: true
-    choices: []
+    direction: "input"
+    multiple: true
+    multiple_sep: ":"
+  - type: "file"
+    name: "--reference_genome"
+    alternatives:
+    - "-r"
+    description: "Path to STAR index as a tar.gz file."
+    example:
+    - "reference_genome.tar.gz"
+    default: []
+    must_exist: false
+    required: true
     direction: "input"
     multiple: false
     multiple_sep: ":"
   - type: "file"
-    name: "--output"
-    alternatives: []
-    description: "Output h5 file."
+    name: "--transcriptome_annotation"
+    alternatives:
+    - "-t"
+    description: "Path to GTF annotation file."
     example:
-    - "pbmc_1k_protein_v3_raw_feature_bc_matrix_filtered.h5"
+    - "transcriptome.gtf"
+    default: []
+    must_exist: false
+    required: true
+    direction: "input"
+    multiple: false
+    multiple_sep: ":"
+  - type: "file"
+    name: "--abseq_reference"
+    alternatives:
+    - "-a"
+    description: "Path to the AbSeq reference file in FASTA format. Only needed if\
+      \ BD AbSeq Ab-Oligos are used."
+    example: []
+    default: []
+    must_exist: false
+    required: false
+    direction: "input"
+    multiple: true
+    multiple_sep: ":"
+  - type: "file"
+    name: "--supplemental_reference"
+    alternatives:
+    - "-s"
+    description: "Path to the supplemental reference file in FASTA format. Only needed\
+      \ if there are additional transgene sequences used in the experiment."
+    example: []
+    default: []
+    must_exist: false
+    required: false
+    direction: "input"
+    multiple: true
+    multiple_sep: ":"
+  - type: "file"
+    name: "--output"
+    alternatives:
+    - "-o"
+    description: "Output folder. Output still needs to be processed further."
+    example:
+    - "output_dir"
     default: []
     must_exist: false
     required: true
     direction: "output"
     multiple: false
     multiple_sep: ":"
-  - type: "integer"
-    name: "--min_library_size"
+  - type: "string"
+    name: "--putative_cell_call"
     alternatives: []
-    description: "Minimum library size."
-    example: []
-    default:
-    - 0
+    description: "Specify the dataset to be used for putative cell calling. For putative\
+      \ cell calling using an AbSeq dataset, please provide an AbSeq_Reference fasta\
+      \ file above."
+    example:
+    - "mRNA"
+    default: []
+    required: false
+    choices:
+    - "mRNA"
+    - "AbSeq_Experimental"
+    direction: "input"
+    multiple: false
+    multiple_sep: ":"
+  - type: "integer"
+    name: "--exact_cell_count"
+    alternatives: []
+    description: "Exact cell count - Set a specific number (>=1) of cells as putative,\
+      \ based on those with the highest error-corrected read count"
+    example:
+    - 10000
+    default: []
     required: false
     choices: []
     direction: "input"
     multiple: false
     multiple_sep: ":"
-  - type: "integer"
-    name: "--min_cells_per_gene"
+  - type: "boolean_true"
+    name: "--disable_putative_calling"
     alternatives: []
-    description: "Minimum number of cells per gene."
-    example: []
-    default:
-    - 0
+    description: "Disable Refined Putative Cell Calling - Determine putative cells\
+      \ using only the basic algorithm (minimum second derivative along the cumulative\
+      \ reads curve). The refined algorithm attempts to remove false positives and\
+      \ recover false negatives, but may not be ideal for certain complex mixtures\
+      \ of cell types. Does not apply if Exact Cell Count is set."
+    direction: "input"
+  - type: "double"
+    name: "--subsample"
+    alternatives: []
+    description: "A number >1 or fraction (0 < n < 1) to indicate the number or percentage\
+      \ of reads to subsample."
+    example:
+    - 0.01
+    default: []
+    required: false
+    direction: "input"
+    multiple: false
+    multiple_sep: ":"
+  - type: "integer"
+    name: "--subsample_seed"
+    alternatives: []
+    description: "A seed for replicating a previous subsampled run."
+    example:
+    - 3445
+    default: []
     required: false
     choices: []
     direction: "input"
     multiple: false
     multiple_sep: ":"
   - type: "string"
-    name: "--keep_feature_types"
+    name: "--sample_tags_version"
     alternatives: []
-    description: "Specify which feature types will never be filtered out"
+    description: "Specify if multiplexed run."
     example:
-    - "Antibody Capture"
+    - "human"
+    default: []
+    required: false
+    choices:
+    - "human"
+    - "hs"
+    - "mouse"
+    - "mm"
+    direction: "input"
+    multiple: false
+    multiple_sep: ":"
+  - type: "string"
+    name: "--tag_names"
+    alternatives: []
+    description: "Tag_Names (optional) - Specify the tag number followed by '-' and\
+      \ the desired sample name to appear in Sample_Tag_Metrics.csv\nDo not use the\
+      \ special characters: &, (), [], {},  <>, ?, |\n"
+    example:
+    - "4-mySample"
+    - "9-myOtherSample"
+    - "6-alsoThisSample"
     default: []
     required: false
     choices: []
     direction: "input"
     multiple: true
     multiple_sep: ":"
-  - type: "boolean_true"
-    name: "--verbose"
+  - type: "string"
+    name: "--vdj_version"
     alternatives: []
-    description: "Increase verbosity"
+    description: "Specify if VDJ run."
+    example:
+    - "human"
+    default: []
+    required: false
+    choices:
+    - "human"
+    - "mouse"
+    - "humanBCR"
+    - "humanBCR"
+    - "humanTCR"
+    - "mouseBCR"
+    direction: "input"
+    multiple: false
+    multiple_sep: ":"
+  - type: "string"
+    name: "--run_name"
+    alternatives: []
+    description: "Specify a run name to use as the output file base name. Use only\
+      \ letters, numbers, or hyphens. Do not use special characters or spaces."
+    example:
+    - "run-name"
+    default: []
+    required: false
+    choices: []
+    direction: "input"
+    multiple: false
+    multiple_sep: ":"
+  - type: "boolean"
+    name: "--parallel"
+    alternatives: []
+    description: "Run jobs in parallel."
+    example: []
+    default:
+    - true
+    required: false
+    direction: "input"
+    multiple: false
+    multiple_sep: ":"
+  - type: "boolean_true"
+    name: "--timestamps"
+    alternatives: []
+    description: "Add timestamps to the errors, warnings, and notifications."
     direction: "input"
   resources:
   - type: "file"
     text: |
-      // filter_10xh5 main_build
+      // bd_rhapsody_wta_1_10_1 main_build
       // 
       // This wrapper script is auto-generated by viash 0.5.13 and is thus a derivative
       // work thereof. This software comes with ABSOLUTELY NO WARRANTY from Data
@@ -108,210 +263,543 @@ functionality:
       
       // functionality metadata
       thisFunctionality = [
-        'name': 'filter_10xh5',
+        'name': 'bd_rhapsody_wta_1_10_1',
         'arguments': [
           [
             'name': 'input',
             'required': true,
-            'type': 'string',
+            'type': 'file',
             'direction': 'input',
-            'description': 'An h5 file from the 10x genomics website.',
-            'example': 'pbmc_1k_protein_v3_raw_feature_bc_matrix.h5',
+            'description': 'Path to your read files in the FASTQ.GZ format. You may specify as many R1/R2 read pairs as you want.',
+            'example': ['input.fastq.gz'],
+            'multiple': true,
+            'multiple_sep': ':'
+          ],
+          [
+            'name': 'reference_genome',
+            'required': true,
+            'type': 'file',
+            'direction': 'input',
+            'description': 'Path to STAR index as a tar.gz file.',
+            'example': 'reference_genome.tar.gz',
             'multiple': false
+          ],
+          [
+            'name': 'transcriptome_annotation',
+            'required': true,
+            'type': 'file',
+            'direction': 'input',
+            'description': 'Path to GTF annotation file.',
+            'example': 'transcriptome.gtf',
+            'multiple': false
+          ],
+          [
+            'name': 'abseq_reference',
+            'required': false,
+            'type': 'file',
+            'direction': 'input',
+            'description': 'Path to the AbSeq reference file in FASTA format. Only needed if BD AbSeq Ab-Oligos are used.',
+            'multiple': true,
+            'multiple_sep': ':'
+          ],
+          [
+            'name': 'supplemental_reference',
+            'required': false,
+            'type': 'file',
+            'direction': 'input',
+            'description': 'Path to the supplemental reference file in FASTA format. Only needed if there are additional transgene sequences used in the experiment.',
+            'multiple': true,
+            'multiple_sep': ':'
           ],
           [
             'name': 'output',
             'required': true,
             'type': 'file',
             'direction': 'output',
-            'description': 'Output h5 file.',
-            'default': '$id.$key.output.h5',
-            'example': 'pbmc_1k_protein_v3_raw_feature_bc_matrix_filtered.h5',
+            'description': 'Output folder. Output still needs to be processed further.',
+            'default': '$id.$key.output',
+            'example': 'output_dir',
             'multiple': false
           ],
           [
-            'name': 'min_library_size',
-            'required': false,
-            'type': 'integer',
-            'direction': 'input',
-            'description': 'Minimum library size.',
-            'default': 0,
-            'multiple': false
-          ],
-          [
-            'name': 'min_cells_per_gene',
-            'required': false,
-            'type': 'integer',
-            'direction': 'input',
-            'description': 'Minimum number of cells per gene.',
-            'default': 0,
-            'multiple': false
-          ],
-          [
-            'name': 'keep_feature_types',
+            'name': 'putative_cell_call',
             'required': false,
             'type': 'string',
             'direction': 'input',
-            'description': 'Specify which feature types will never be filtered out',
-            'example': ['Antibody Capture'],
+            'description': 'Specify the dataset to be used for putative cell calling. For putative cell calling using an AbSeq dataset, please provide an AbSeq_Reference fasta file above.',
+            'example': 'mRNA',
+            'multiple': false
+          ],
+          [
+            'name': 'exact_cell_count',
+            'required': false,
+            'type': 'integer',
+            'direction': 'input',
+            'description': 'Exact cell count - Set a specific number (>=1) of cells as putative, based on those with the highest error-corrected read count',
+            'example': 10000,
+            'multiple': false
+          ],
+          [
+            'name': 'disable_putative_calling',
+            'required': false,
+            'type': 'boolean_true',
+            'direction': 'input',
+            'description': 'Disable Refined Putative Cell Calling - Determine putative cells using only the basic algorithm (minimum second derivative along the cumulative reads curve). The refined algorithm attempts to remove false positives and recover false negatives, but may not be ideal for certain complex mixtures of cell types. Does not apply if Exact Cell Count is set.',
+            'default': false,
+            'multiple': false
+          ],
+          [
+            'name': 'subsample',
+            'required': false,
+            'type': 'double',
+            'direction': 'input',
+            'description': 'A number >1 or fraction (0 < n < 1) to indicate the number or percentage of reads to subsample.',
+            'example': 0.01,
+            'multiple': false
+          ],
+          [
+            'name': 'subsample_seed',
+            'required': false,
+            'type': 'integer',
+            'direction': 'input',
+            'description': 'A seed for replicating a previous subsampled run.',
+            'example': 3445,
+            'multiple': false
+          ],
+          [
+            'name': 'sample_tags_version',
+            'required': false,
+            'type': 'string',
+            'direction': 'input',
+            'description': 'Specify if multiplexed run.',
+            'example': 'human',
+            'multiple': false
+          ],
+          [
+            'name': 'tag_names',
+            'required': false,
+            'type': 'string',
+            'direction': 'input',
+            'description': 'Tag_Names (optional) - Specify the tag number followed by \'-\' and the desired sample name to appear in Sample_Tag_Metrics.csv\nDo not use the special characters: &, (), [], {},  <>, ?, |\n',
+            'example': ['4-mySample\', \'9-myOtherSample\', \'6-alsoThisSample'],
             'multiple': true,
             'multiple_sep': ':'
           ],
           [
-            'name': 'verbose',
+            'name': 'vdj_version',
+            'required': false,
+            'type': 'string',
+            'direction': 'input',
+            'description': 'Specify if VDJ run.',
+            'example': 'human',
+            'multiple': false
+          ],
+          [
+            'name': 'run_name',
+            'required': false,
+            'type': 'string',
+            'direction': 'input',
+            'description': 'Specify a run name to use as the output file base name. Use only letters, numbers, or hyphens. Do not use special characters or spaces.',
+            'example': 'run-name',
+            'multiple': false
+          ],
+          [
+            'name': 'parallel',
+            'required': false,
+            'type': 'boolean',
+            'direction': 'input',
+            'description': 'Run jobs in parallel.',
+            'default': true,
+            'multiple': false
+          ],
+          [
+            'name': 'timestamps',
             'required': false,
             'type': 'boolean_true',
             'direction': 'input',
-            'description': 'Increase verbosity',
+            'description': 'Add timestamps to the errors, warnings, and notifications.',
             'default': false,
             'multiple': false
           ]
         ]
       ]
       
-      thisHelpMessage = '''filter_10xh5 main_build
+      thisHelpMessage = '''bd_rhapsody_wta_1_10_1 main_build
       
-      Filter a 10x h5 dataset.
+      A wrapper for the BD Rhapsody Analysis CWL v1.10.1 pipeline.
       
-      Usage:
-      filter_10xh5 \\
-        --input pbmc_1k_protein_v3_raw_feature_bc_matrix.h5 \\
-        --output pbmc_1k_protein_v3_raw_feature_bc_matrix_filtered.h5 \\
-        --min_library_size 1000 --min_cells_per_gene 300
+      The CWL pipeline file is obtained by cloning
+      'https://bitbucket.org/CRSwDev/cwl/src/master/' and removing all objects with
+      class 'DockerRequirement' from the YML.
+      
+      The reference_genome and transcriptome_annotation files can be downloaded from
+      these locations:
+        - Human:
+      http://bd-rhapsody-public.s3-website-us-east-1.amazonaws.com/Rhapsody-WTA/GRCh38-PhiX-gencodev29/
+        - Mouse:
+      http://bd-rhapsody-public.s3-website-us-east-1.amazonaws.com/Rhapsody-WTA/GRCm38-PhiX-gencodevM19/
       
       Options:
           --input
-              type: string, required parameter
-              example: pbmc_1k_protein_v3_raw_feature_bc_matrix.h5
-              An h5 file from the 10x genomics website.
+              type: file, required parameter, multiple values allowed
+              example: input.fastq.gz
+              Path to your read files in the FASTQ.GZ format. You may specify as many
+      R1/R2 read pairs as you want.
+      
+          --reference_genome
+              type: file, required parameter
+              example: reference_genome.tar.gz
+              Path to STAR index as a tar.gz file.
+      
+          --transcriptome_annotation
+              type: file, required parameter
+              example: transcriptome.gtf
+              Path to GTF annotation file.
+      
+          --abseq_reference
+              type: file, multiple values allowed
+              Path to the AbSeq reference file in FASTA format. Only needed if BD
+      AbSeq Ab-Oligos are used.
+      
+          --supplemental_reference
+              type: file, multiple values allowed
+              Path to the supplemental reference file in FASTA format. Only needed if
+      there are additional transgene sequences used in the experiment.
       
           --output
               type: file, required parameter, output
-              example: pbmc_1k_protein_v3_raw_feature_bc_matrix_filtered.h5
-              Output h5 file.
+              example: output_dir
+              Output folder. Output still needs to be processed further.
       
-          --min_library_size
+          --putative_cell_call
+              type: string
+              example: mRNA
+              choices: [ mRNA, AbSeq_Experimental ]
+              Specify the dataset to be used for putative cell calling. For putative
+      cell calling using an AbSeq dataset, please provide an AbSeq_Reference fasta
+      file above.
+      
+          --exact_cell_count
               type: integer
-              default: 0
-              Minimum library size.
+              example: 10000
+              Exact cell count - Set a specific number (>=1) of cells as putative,
+      based on those with the highest error-corrected read count
       
-          --min_cells_per_gene
-              type: integer
-              default: 0
-              Minimum number of cells per gene.
-      
-          --keep_feature_types
-              type: string, multiple values allowed
-              example: Antibody Capture
-              Specify which feature types will never be filtered out
-      
-          --verbose
+          --disable_putative_calling
               type: boolean_true
-              Increase verbosity'''
+              Disable Refined Putative Cell Calling - Determine putative cells using
+      only the basic algorithm (minimum second derivative along the cumulative reads
+      curve). The refined algorithm attempts to remove false positives and recover
+      false negatives, but may not be ideal for certain complex mixtures of cell
+      types. Does not apply if Exact Cell Count is set.
+      
+          --subsample
+              type: double
+              example: 0.01
+              A number >1 or fraction (0 < n < 1) to indicate the number or percentage
+      of reads to subsample.
+      
+          --subsample_seed
+              type: integer
+              example: 3445
+              A seed for replicating a previous subsampled run.
+      
+          --sample_tags_version
+              type: string
+              example: human
+              choices: [ human, hs, mouse, mm ]
+              Specify if multiplexed run.
+      
+          --tag_names
+              type: string, multiple values allowed
+              example: 4-mySample:9-myOtherSample:6-alsoThisSample
+              Tag_Names (optional) - Specify the tag number followed by '-' and the
+      desired sample name to appear in Sample_Tag_Metrics.csv
+              Do not use the special characters: &, (), [], {},  <>, ?, |
+      
+          --vdj_version
+              type: string
+              example: human
+              choices: [ human, mouse, humanBCR, humanBCR, humanTCR, mouseBCR ]
+              Specify if VDJ run.
+      
+          --run_name
+              type: string
+              example: run-name
+              Specify a run name to use as the output file base name. Use only
+      letters, numbers, or hyphens. Do not use special characters or spaces.
+      
+          --parallel
+              type: boolean
+              default: true
+              Run jobs in parallel.
+      
+          --timestamps
+              type: boolean_true
+              Add timestamps to the errors, warnings, and notifications.'''
       
       thisScript = '''set -e
       tempscript=".viash_script.sh"
       cat > "$tempscript" << VIASHMAIN
+      import os
+      import re
+      import subprocess
+      import tempfile
+      
       ## VIASH START
       # The following code has been auto-generated by Viash.
-      # treat warnings as errors
-      viash_orig_warn_ <- options(warn = 2)
+      par = {
+        'input': $( if [ ! -z ${VIASH_PAR_INPUT+x} ]; then echo "'${VIASH_PAR_INPUT//\\'/\\\\\\'}'.split(':')"; else echo None; fi ),
+        'reference_genome': $( if [ ! -z ${VIASH_PAR_REFERENCE_GENOME+x} ]; then echo "'${VIASH_PAR_REFERENCE_GENOME//\\'/\\\\\\'}'"; else echo None; fi ),
+        'transcriptome_annotation': $( if [ ! -z ${VIASH_PAR_TRANSCRIPTOME_ANNOTATION+x} ]; then echo "'${VIASH_PAR_TRANSCRIPTOME_ANNOTATION//\\'/\\\\\\'}'"; else echo None; fi ),
+        'abseq_reference': $( if [ ! -z ${VIASH_PAR_ABSEQ_REFERENCE+x} ]; then echo "'${VIASH_PAR_ABSEQ_REFERENCE//\\'/\\\\\\'}'.split(':')"; else echo None; fi ),
+        'supplemental_reference': $( if [ ! -z ${VIASH_PAR_SUPPLEMENTAL_REFERENCE+x} ]; then echo "'${VIASH_PAR_SUPPLEMENTAL_REFERENCE//\\'/\\\\\\'}'.split(':')"; else echo None; fi ),
+        'output': $( if [ ! -z ${VIASH_PAR_OUTPUT+x} ]; then echo "'${VIASH_PAR_OUTPUT//\\'/\\\\\\'}'"; else echo None; fi ),
+        'putative_cell_call': $( if [ ! -z ${VIASH_PAR_PUTATIVE_CELL_CALL+x} ]; then echo "'${VIASH_PAR_PUTATIVE_CELL_CALL//\\'/\\\\\\'}'"; else echo None; fi ),
+        'exact_cell_count': $( if [ ! -z ${VIASH_PAR_EXACT_CELL_COUNT+x} ]; then echo "int('${VIASH_PAR_EXACT_CELL_COUNT//\\'/\\\\\\'}')"; else echo None; fi ),
+        'disable_putative_calling': $( if [ ! -z ${VIASH_PAR_DISABLE_PUTATIVE_CALLING+x} ]; then echo "'${VIASH_PAR_DISABLE_PUTATIVE_CALLING//\\'/\\\\\\'}'.lower() == 'true'"; else echo None; fi ),
+        'subsample': $( if [ ! -z ${VIASH_PAR_SUBSAMPLE+x} ]; then echo "float('${VIASH_PAR_SUBSAMPLE//\\'/\\\\\\'}')"; else echo None; fi ),
+        'subsample_seed': $( if [ ! -z ${VIASH_PAR_SUBSAMPLE_SEED+x} ]; then echo "int('${VIASH_PAR_SUBSAMPLE_SEED//\\'/\\\\\\'}')"; else echo None; fi ),
+        'sample_tags_version': $( if [ ! -z ${VIASH_PAR_SAMPLE_TAGS_VERSION+x} ]; then echo "'${VIASH_PAR_SAMPLE_TAGS_VERSION//\\'/\\\\\\'}'"; else echo None; fi ),
+        'tag_names': $( if [ ! -z ${VIASH_PAR_TAG_NAMES+x} ]; then echo "'${VIASH_PAR_TAG_NAMES//\\'/\\\\\\'}'.split(':')"; else echo None; fi ),
+        'vdj_version': $( if [ ! -z ${VIASH_PAR_VDJ_VERSION+x} ]; then echo "'${VIASH_PAR_VDJ_VERSION//\\'/\\\\\\'}'"; else echo None; fi ),
+        'run_name': $( if [ ! -z ${VIASH_PAR_RUN_NAME+x} ]; then echo "'${VIASH_PAR_RUN_NAME//\\'/\\\\\\'}'"; else echo None; fi ),
+        'parallel': $( if [ ! -z ${VIASH_PAR_PARALLEL+x} ]; then echo "'${VIASH_PAR_PARALLEL//\\'/\\\\\\'}'.lower() == 'true'"; else echo None; fi ),
+        'timestamps': $( if [ ! -z ${VIASH_PAR_TIMESTAMPS+x} ]; then echo "'${VIASH_PAR_TIMESTAMPS//\\'/\\\\\\'}'.lower() == 'true'"; else echo None; fi )
+      }
+      meta = {
+        'functionality_name': '$VIASH_META_FUNCTIONALITY_NAME',
+        'resources_dir': '$VIASH_META_RESOURCES_DIR',
+        'temp_dir': '$VIASH_TEMP'
+      }
       
-      # get parameters from cli
-      par <- list(
-        "input" = $( if [ ! -z ${VIASH_PAR_INPUT+x} ]; then echo "'${VIASH_PAR_INPUT//\\'/\\\\\\'}'"; else echo NULL; fi ),
-        "output" = $( if [ ! -z ${VIASH_PAR_OUTPUT+x} ]; then echo "'${VIASH_PAR_OUTPUT//\\'/\\\\\\'}'"; else echo NULL; fi ),
-        "min_library_size" = $( if [ ! -z ${VIASH_PAR_MIN_LIBRARY_SIZE+x} ]; then echo "as.integer('${VIASH_PAR_MIN_LIBRARY_SIZE//\\'/\\\\\\'}')"; else echo NULL; fi ),
-        "min_cells_per_gene" = $( if [ ! -z ${VIASH_PAR_MIN_CELLS_PER_GENE+x} ]; then echo "as.integer('${VIASH_PAR_MIN_CELLS_PER_GENE//\\'/\\\\\\'}')"; else echo NULL; fi ),
-        "keep_feature_types" = $( if [ ! -z ${VIASH_PAR_KEEP_FEATURE_TYPES+x} ]; then echo "strsplit('${VIASH_PAR_KEEP_FEATURE_TYPES//\\'/\\\\\\'}', split = ':')[[1]]"; else echo NULL; fi ),
-        "verbose" = $( if [ ! -z ${VIASH_PAR_VERBOSE+x} ]; then echo "as.logical(toupper('${VIASH_PAR_VERBOSE//\\'/\\\\\\'}'))"; else echo NULL; fi )
-      )
-      
-      # get meta parameters
-      meta <- list(
-        functionality_name = "$VIASH_META_FUNCTIONALITY_NAME",
-        resources_dir = "$VIASH_META_RESOURCES_DIR",
-        temp_dir = "$VIASH_TEMP"
-      )
-      
-      # get resources dir
-      resources_dir = "$VIASH_META_RESOURCES_DIR"
-      
-      # restore original warn setting
-      options(viash_orig_warn_)
-      rm(viash_orig_warn_)
+      resources_dir = '$VIASH_META_RESOURCES_DIR'
       
       ## VIASH END
       
-      if (par\\$verbose) cat("Loading dependencies\\\\n")
-      requireNamespace("hdf5r", quietly = TRUE)
+      def strip_margin(text):
+        return re.sub('\\\\n[ \\\\t]*\\\\|', '\\\\n', text)
       
-      if (par\\$verbose) cat("Opening h5ad file\\\\n")
-      h5 <- hdf5r::H5File\\$new(par\\$input, mode = "r")
+      # if par_input is a directory, look for fastq files
+      if len(par["input"]) == 1 and os.path.isdir(par["input"][0]):
+        par["input"] = [ os.path.join(dp, f) for dp, dn, filenames in os.walk(par["input"]) for f in filenames if re.match(r'.*\\\\.fastq.gz', f) ]
       
-      if (par\\$verbose) cat("Reading data in memory\\\\n")
-      features__all_tag_keys <- h5[["matrix/features/_all_tag_keys"]][]
+      # use absolute paths
+      par["input"] = [ os.path.abspath(f) for f in par["input"] ]
+      par["reference_genome"] = os.path.abspath(par["reference_genome"])
+      par["transcriptome_annotation"] = os.path.abspath(par["transcriptome_annotation"])
+      par["output"] = os.path.abspath(par["output"])
+      if par["abseq_reference"]:
+        par["abseq_reference"] = [ os.path.abspath(f) for f in par["abseq_reference"] ]
+      if par["supplemental_reference"]:
+        par["supplemental_reference"] = [ os.path.abspath(f) for f in par["supplemental_reference"] ]
       
-      features <- data.frame(
-        feature_type = h5[["matrix/features/feature_type"]][],
-        genome = h5[["matrix/features/genome"]][],
-        id = h5[["matrix/features/id"]][],
-        name = h5[["matrix/features/name"]][]
-      )
+      # create output dir if not exists
+      if not os.path.exists(par["output"]):
+        os.makedirs(par["output"])
       
-      mat <- Matrix::sparseMatrix(
-        i = h5[["matrix/indices"]][],
-        p = h5[["matrix/indptr"]][],
-        x = h5[["matrix/data"]][],
-        dims = h5[["matrix/shape"]][],
-        index1 = FALSE,
-        dimnames = list(
-          features\\$id,
-          h5[["matrix/barcodes"]][]
+      # Create params file
+      config_file = os.path.join(par["output"], "config.yml")
+      endl = "\\\\n"
+      
+      content_list = [f\'\'\'#!/usr/bin/env cwl-runner
+      
+      cwl:tool: rhapsody
+      
+      # This is a YML file used to specify the inputs for a BD Genomics WTA Rhapsody Analysis pipeline run. See the
+      # BD Genomics Analysis Setup User Guide (Doc ID: 47383) for more details.
+      
+      ## Reads (required) - Path to your read files in the FASTQ.GZ format. You may specify as many R1/R2 read pairs as you want.
+      Reads:
+      \'\'\']
+      
+      for file in par["input"]:
+        content_list.append(strip_margin(f\'\'\'\\\\
+       - class: File
+         location: "{file}"
+      \'\'\'))
+      
+      content_list.append(strip_margin(f\'\'\'\\\\
+      
+      ## Reference_Genome (required) - Path to STAR index for tar.gz format. See Doc ID: 47383 for instructions to obtain pre-built STAR index file.
+      Reference_Genome:
+         class: File
+         location: "{par["reference_genome"]}"
+      
+      ## Transcriptome_Annotation (required) - Path to GTF annotation file
+      Transcriptome_Annotation:
+         class: File
+         location: "{par["transcriptome_annotation"]}"
+      \'\'\'))
+      
+      if par["abseq_reference"]:
+        content_list.append(strip_margin(f\'\'\'\\\\
+      
+      ## AbSeq_Reference (optional) - Path to the AbSeq reference file in FASTA format.  Only needed if BD AbSeq Ab-Oligos are used.
+      ## For putative cell calling using an AbSeq dataset, please provide an AbSeq reference fasta file as the AbSeq_Reference.
+      AbSeq_Reference:
+      \'\'\'))
+        for file in par["abseq_reference"]:
+          content_list.append(strip_margin(f\'\'\'\\\\
+       - class: File
+         location: {file}
+      \'\'\'))
+      
+      if par["supplemental_reference"]:
+        content_list.append(strip_margin(f\'\'\'\\\\
+      
+      ## Supplemental_Reference (optional) - Path to the supplemental reference file in FASTA format.  Only needed if there are additional transgene sequences used in the experiment.
+      Supplemental_Reference:
+      \'\'\'))
+        for file in par["supplemental_reference"]:
+          content_list.append(strip_margin(f\'\'\'\\\\
+       - class: File
+         location: {file}
+      \'\'\'))
+      
+      ## Putative Cell Calling Settings
+      content_list.append(strip_margin(f\'\'\'\\\\
+      
+      ####################################
+      ## Putative Cell Calling Settings ##
+      ####################################
+      \'\'\'))
+      
+      if par["putative_cell_call"]:
+        content_list.append(strip_margin(f\'\'\'\\\\
+      ## Putative cell calling dataset (optional) - Specify the dataset to be used for putative cell calling: mRNA or AbSeq_Experimental.
+      ## For putative cell calling using an AbSeq dataset, please provide an AbSeq_Reference fasta file above.
+      ## By default, the mRNA data will be used for putative cell calling.
+      Putative_Cell_Call: {par["putative_cell_call"]}
+      \'\'\'))
+      
+      if par["exact_cell_count"]:
+        content_list.append(strip_margin(f\'\'\'\\\\
+      ## Exact cell count (optional) - Set a specific number (>=1) of cells as putative, based on those with the highest error-corrected read count
+      Exact_Cell_Count: {par["exact_cell_count"]}
+      \'\'\'))
+      
+      if par["disable_putative_calling"]:
+        content_list.append(strip_margin(f\'\'\'\\\\
+      ## Disable Refined Putative Cell Calling (optional) - Determine putative cells using only the basic algorithm (minimum second derivative along the cumulative reads curve).  The refined algorithm attempts to remove false positives and recover false negatives, but may not be ideal for certain complex mixtures of cell types.  Does not apply if Exact Cell Count is set.
+      ## The values can be true or false. By default, the refined algorithm is used.
+      Basic_Algo_Only: {str(par["disable_putative_calling"]).lower()}
+      \'\'\'))
+      
+      ## Subsample Settings
+      content_list.append(strip_margin(f\'\'\'\\\\
+      
+      ########################
+      ## Subsample Settings ##
+      ########################
+      \'\'\'
+      ))
+      
+      if par["subsample"]:
+        content_list.append(strip_margin(f\'\'\'\\\\
+      ## Subsample (optional) - A number >1 or fraction (0 < n < 1) to indicate the number or percentage of reads to subsample.
+      Subsample: {par["subsample"]}
+      \'\'\'))
+      
+      if par["subsample_seed"]:
+        content_list.append(strip_margin(f\'\'\'\\\\
+      ## Subsample seed (optional) - A seed for replicating a previous subsampled run.
+      Subsample_seed: {par["subsample_seed"]}
+      \'\'\'))
+      
+      
+      ## Multiplex options
+      content_list.append(strip_margin(f\'\'\'\\\\
+      
+      #######################
+      ## Multiplex options ##
+      #######################
+      \'\'\'
+      ))
+      
+      if par["sample_tags_version"]:
+        content_list.append(strip_margin(f\'\'\'\\\\
+      ## Sample Tags Version (optional) - Specify if multiplexed run: human, hs, mouse or mm
+      Sample_Tags_Version: {par["sample_tags_version"]}
+      \'\'\'))
+      
+      if par["tag_names"]:
+        content_list.append(strip_margin(f\'\'\'\\\\
+      ## Tag_Names (optional) - Specify the tag number followed by '-' and the desired sample name to appear in Sample_Tag_Metrics.csv
+      # Do not use the special characters: &, (), [], {{}},  <>, ?, |
+      Tag_Names: [{', '.join(par["tag_names"])}]
+      \'\'\'))
+      
+      ## VDJ options
+      content_list.append(strip_margin(f\'\'\'\\\\
+      
+      #################
+      ## VDJ options ##
+      #################
+      \'\'\'
+      ))
+      
+      if par["vdj_version"]:
+        content_list.append(strip_margin(f\'\'\'\\\\
+      ## VDJ Version (optional) - Specify if VDJ run: human, mouse, humanBCR, humanTCR, mouseBCR, mouseTCR
+      VDJ_Version: {par["vdj_version"]}
+      \'\'\'))
+      
+      ## VDJ options
+      content_list.append(strip_margin(f\'\'\'\\\\
+      
+      ########################
+      ## Additional Options ##
+      ########################
+      \'\'\'
+      ))
+      
+      if par["run_name"]:
+        content_list.append(strip_margin(f\'\'\'\\\\
+      ## Run Name (optional) -  Specify a run name to use as the output file base name. Use only letters, numbers, or hyphens. Do not use special characters or spaces.
+      Run_Name: {par["run_name"]}
+      \'\'\'))
+      
+      ## Write config to file
+      config_content = ''.join(content_list)
+      
+      with open(config_file, "w") as f:
+        f.write(config_content)
+      
+      ## Process parameters
+      # proc_pars = ["--no-container"]
+      proc_pars = []
+      
+      if par["parallel"]:
+        proc_pars.append("--parallel")
+      
+      if par["timestamps"]:
+        proc_pars.append("--timestamps")
+      
+      ## Run pipeline
+      cwl_file=os.path.join(meta["resources_dir"], 'rhapsody_wta_1.10.1_nodocker.cwl')
+      
+      
+      
+      with tempfile.TemporaryDirectory(prefix="cwl-bd_rhapsody_wta-", dir=meta["temp_dir"]) as temp_dir:
+        cmd = ["cwl-runner"] + proc_pars + [cwl_file, os.path.basename(config_file)]
+      
+        env = dict(os.environ)
+        env["TMPDIR"] = temp_dir
+      
+        print("> " + ' '.join(cmd))
+      
+        p = subprocess.Popen(
+          cmd,
+          cwd=os.path.dirname(config_file),
+          env=env
         )
-      )
+        p.wait()
       
-      if (par\\$verbose) cat("Filtering out cells with library size < ", par\\$min_library_size, "\\\\n", sep = "")
-      library_size <- Matrix::colSums(mat)
-      mat2 <- mat[, library_size >= par\\$min_library_size, drop = FALSE]
-      
-      if (par\\$verbose) cat("Filtering genes with num cells < ", par\\$min_cells_per_gene, "\\\\n", sep = "")
-      num_cells <- Matrix::rowSums(mat2 > 0)
-      mat3 <- mat2[num_cells >= par\\$min_cells_per_gene | features\\$feature_type %in% par\\$keep_feature_types, , drop = FALSE]
-      features2 <- features[match(rownames(mat3), features\\$id), , drop = FALSE]
-      
-      # helper fun
-      set_with_type <- function(path, value) {
-        orig_dtype <- h5[[path]]\\$get_type()
-        orig_chunk <- h5[[path]]\\$chunk_dims
-        if (is.na(orig_chunk)) orig_chunk <- "auto"
-        h5new\\$create_dataset(path, value, dtype = orig_dtype, chunk_dims = orig_chunk)
-      }
-      
-      # create new file
-      if (par\\$verbose) cat("Saving h5 file at '", par\\$output, "'\\\\n", sep = "")
-      h5new <- hdf5r::H5File\\$new(par\\$output, mode = "w")
-      zz <- h5new\\$create_group("matrix")
-      zz <- h5new\\$create_group("matrix/features")
-      
-      set_with_type("matrix/features/feature_type", features2\\$feature_type)
-      set_with_type("matrix/features/genome", features2\\$genome)
-      set_with_type("matrix/features/id", features2\\$id)
-      set_with_type("matrix/features/name", features2\\$name)
-      set_with_type("matrix/features/_all_tag_keys", features__all_tag_keys)
-      set_with_type("matrix/indices", mat3@i)
-      set_with_type("matrix/indptr", mat3@p)
-      set_with_type("matrix/data", as.integer(mat3@x))
-      set_with_type("matrix/shape", dim(mat3))
-      set_with_type("matrix/barcodes", colnames(mat3))
-      
-      for (attname in hdf5r::h5attr_names(h5)) {
-        h5new\\$create_attr(attname, hdf5r::h5attr(h5, attname))
-      }
-      h5new\\$close_all()
-      h5\\$close_all()
+        if p.returncode != 0:
+          raise Exception(f"cwl-runner finished with exit code {p.returncode}") 
       VIASHMAIN
-      Rscript "$tempscript"
+      python "$tempscript"
       '''
       
       thisDefaultProcessArgs = [
@@ -323,9 +811,13 @@ functionality:
         directives: jsonSlurper.parseText("""{
         "container" : {
           "registry" : "ghcr.io",
-          "image" : "openpipelines-bio/process_10xh5_filter_10xh5",
+          "image" : "openpipelines-bio/mapping_bd_rhapsody_wta_1_10_1",
           "tag" : "main_build"
-        }
+        },
+        "label" : [
+          "highmem",
+          "highcpu"
+        ]
       }"""),
         // auto settings
         auto: jsonSlurper.parseText("""{
@@ -1286,11 +1778,11 @@ functionality:
   - type: "file"
     text: |
       manifest {
-        name = 'filter_10xh5'
+        name = 'bd_rhapsody_wta_1_10_1'
         mainScript = 'main.nf'
         nextflowVersion = '!>=20.12.1-edge'
         version = 'main_build'
-        description = 'Filter a 10x h5 dataset.\n'
+        description = 'A wrapper for the BD Rhapsody Analysis CWL v1.10.1 pipeline.\n\nThe CWL pipeline file is obtained by cloning \'https://bitbucket.org/CRSwDev/cwl/src/master/\' and removing all objects with class \'DockerRequirement\' from the YML.\n\nThe reference_genome and transcriptome_annotation files can be downloaded from these locations:\n  - Human: http://bd-rhapsody-public.s3-website-us-east-1.amazonaws.com/Rhapsody-WTA/GRCh38-PhiX-gencodev29/\n  - Mouse: http://bd-rhapsody-public.s3-website-us-east-1.amazonaws.com/Rhapsody-WTA/GRCm38-PhiX-gencodevM19/\n'
         author = 'Robrecht Cannoodt <rcannood@gmail.com> (maintainer) {github: rcannood, orcid: 0000-0003-3641-729X}'
       }
       
@@ -1347,16 +1839,20 @@ functionality:
       }
 
     dest: "nextflow.config"
-  description: "Filter a 10x h5 dataset.\n"
-  usage: "filter_10xh5 \\\n  --input pbmc_1k_protein_v3_raw_feature_bc_matrix.h5 \\\
-    \n  --output pbmc_1k_protein_v3_raw_feature_bc_matrix_filtered.h5 \\\n  --min_library_size\
-    \ 1000 --min_cells_per_gene 300\n"
+  - type: "file"
+    path: "rhapsody_wta_1.10.1_nodocker.cwl"
+  description: "A wrapper for the BD Rhapsody Analysis CWL v1.10.1 pipeline.\n\nThe\
+    \ CWL pipeline file is obtained by cloning 'https://bitbucket.org/CRSwDev/cwl/src/master/'\
+    \ and removing all objects with class 'DockerRequirement' from the YML.\n\nThe\
+    \ reference_genome and transcriptome_annotation files can be downloaded from these\
+    \ locations:\n  - Human: http://bd-rhapsody-public.s3-website-us-east-1.amazonaws.com/Rhapsody-WTA/GRCh38-PhiX-gencodev29/\n\
+    \  - Mouse: http://bd-rhapsody-public.s3-website-us-east-1.amazonaws.com/Rhapsody-WTA/GRCm38-PhiX-gencodevM19/\n"
   tests:
-  - type: "r_script"
-    path: "run_test.R"
+  - type: "bash_script"
+    path: "run_test.sh"
     is_executable: true
   - type: "file"
-    path: "../../../resources_test/pbmc_1k_protein_v3/pbmc_1k_protein_v3_filtered_feature_bc_matrix.h5"
+    path: "../../../resources_test/bd_rhapsody_wta_test"
   info: {}
   dummy_arguments: []
   set_wd_to_resources_dir: false
@@ -1369,7 +1865,9 @@ platform:
     accelerator: {}
     conda: []
     containerOptions: []
-    label: []
+    label:
+    - "highmem"
+    - "highcpu"
     module: []
     pod: []
     publishDir: []
@@ -1383,9 +1881,9 @@ platform:
   container: "docker"
 platforms: []
 info:
-  config: "src/process_10xh5/filter_10xh5/config.vsh.yaml"
+  config: "src/mapping/bd_rhapsody_wta_1_10_1/config.vsh.yaml"
   platform: "nextflow"
-  output: "target/nextflow/process_10xh5/filter_10xh5"
+  output: "target/nextflow/mapping/bd_rhapsody_wta_1_10_1"
   viash_version: "0.5.13"
   git_commit: "4d292f6af88c3c5dd355f6d47d2e4158f4c0108b"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"
