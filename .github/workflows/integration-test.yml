@@ -106,5 +106,6 @@ jobs:
         script="$config_dir/${{ matrix.component.test_script }}"
         bin/nextflow run . \
           -main-script "$script" \
-          -entry ${{ matrix.component.entry }}
+          -entry ${{ matrix.component.entry }} \
+          -profile docker,mount_temp
 
