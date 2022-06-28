@@ -5,6 +5,8 @@ on:
     branches: [ '*' ]
   pull_request:
     branches: [ '*' ]
+  workflow_dispatch:
+    
 
 # Skip older CI runs for pull requests (head_ref exists), otherwise allways build
 # https://docs.github.com/en/actions/using-jobs/using-concurrency#example-using-a-fallback-value
@@ -107,5 +109,6 @@ jobs:
         bin/nextflow run . \
           -main-script "$script" \
           -entry ${{ matrix.component.entry }} \
-          -profile docker,mount_temp
+          -profile docker,mount_temp \
+          -c workflows/utils/labels_ci.config
 
