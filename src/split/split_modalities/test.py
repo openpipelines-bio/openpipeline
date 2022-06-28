@@ -13,7 +13,7 @@ meta = {
 
 resources_dir, functionality_name = meta["resources_dir"], meta["functionality_name"]
 
-input_file = f"{resources_dir}/pbmc_1k_protein_v3/pbmc_1k_protein_v3_filtered_feature_bc_matrix.h5mu"
+input_file = f"{resources_dir}/pbmc_1k_protein_v3_filtered_feature_bc_matrix.h5mu"
 
 
 class TestSplit(unittest.TestCase):

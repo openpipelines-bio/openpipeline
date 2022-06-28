@@ -187,6 +187,9 @@ if par["timestamps"]:
 ## Run pipeline
 cwl_file=os.path.abspath(os.path.join(meta["resources_dir"], "rhapsody_wta_1.9.1_nodocker.cwl"))
 
+# sed -i 's#"ramMin": [^,]*,#"ramMin": 2000,#' "$meta_resources_dir/rhapsody_wta_1.9.1_nodocker.cwl"
+# sed -i 's#"coresMin": [^,]*,#"coresMin": 1,#' "$meta_resources_dir/rhapsody_wta_1.9.1_nodocker.cwl"
+
 with tempfile.TemporaryDirectory(prefix="cwl-bd_rhapsody_wta-", dir=meta["temp_dir"]) as temp_dir:
   cmd = ["cwl-runner"] + proc_pars + [cwl_file, os.path.basename(config_file)]
 

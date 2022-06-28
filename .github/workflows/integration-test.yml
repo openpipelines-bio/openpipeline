@@ -1,10 +1,8 @@
-name: viash test CI
+name: viash integration CI
 
 on:
   push:
-    branches: [ '*' ]
-  # pull_request:
-  #   branches: [ '*' ]
+    branches: [ 'main_build' ]
 
 # Skip older CI runs for pull requests (head_ref exists), otherwise allways build
 # https://docs.github.com/en/actions/using-jobs/using-concurrency#example-using-a-fallback-value
@@ -56,14 +54,14 @@ jobs:
     # store component locations
     - id: set_matrix
       run: |
-        json=$(bin/viash ns list -p docker --format json | jq -c '[ .[] | { "name": .functionality.name, "config": .info.config } ]')
+        json=$(bin/viash ns list -s workflows --format json | jq -c '[ .[] | { "name": .functionality.name, "config": .info.config, "test_script": .functionality.test_resources[].path, "entry": .functionality.test_resources[].entrypoint } ]')
         echo "::set-output name=matrix::$json"
     outputs:
       matrix: ${{ steps.set_matrix.outputs.matrix }}
       cachehash: ${{ steps.cachehash.outputs.cachehash }}
 
   # phase 2
-  viash_test:
+  integration_test:
     needs: list_components
 
     runs-on: ubuntu-latest
@@ -82,6 +80,16 @@ jobs:
         bin/init
         bin/viash -h
 
+    # build target dir
+    # use containers from main_build branch, hopefully these are available
+    - name: Build target dir
+      run: |
+        # force override viash build strategy to not build containers
+        sed -i 's#--setup "\\$setup_strat"#--setup donothing#' bin/viash_build
+
+        # build target dir
+        bin/viash_build -m release -t main_build
+
     # use cache
     - name: Cache resources data
       uses: actions/cache@v3
@@ -89,7 +97,14 @@ jobs:
         path: resources_test
         key: ${{ needs.list_components.outputs.cachehash }}
 
-    - name: Run test
+    - name: Run integration test
       run: |
-        bin/viash test -p docker ${{ matrix.component.config }}
+        # todo: replace with viash test command
+        config_dir=`dirname ${{ matrix.component.config }}`
+        script="$config_dir/${{ matrix.component.test_script }}"
+        bin/nextflow run . \
+          -main-script "$script" \
+          -entry ${{ matrix.component.entry }} \
+          -profile docker,mount_temp \
+          -c workflows/utils/labels_ci.config
 
