@@ -397,9 +397,9 @@ FROM ubuntu:focal
 RUN :
 LABEL org.opencontainers.image.authors="Angela Pisco (author) {github: aopisco, orcid: 0000-0003-0142-2355}, Samuel D'Souza (author) {github: srdsam}, Robrecht Cannoodt <rcannood@gmail.com> (author, maintainer) {github: rcannood, orcid: 0000-0003-3641-729X}"
 LABEL org.opencontainers.image.description="Companion container for running component mapping cellranger_count_split"
-LABEL org.opencontainers.image.created="2022-06-28T13:38:18Z"
+LABEL org.opencontainers.image.created="2022-06-28T14:53:56Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="b1bb186d9e888bd250e509ded10090e41bcad0b6"
+LABEL org.opencontainers.image.revision="3bd2efb2a74b4d64c8c7d752732c929f3f362b40"
 LABEL org.opencontainers.image.version="main_build"
 VIASHDOCKER
 }

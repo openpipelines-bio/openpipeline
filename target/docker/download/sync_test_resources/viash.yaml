@@ -473,9 +473,9 @@ functionality:
       RUN :
       LABEL org.opencontainers.image.authors="Robrecht Cannoodt <rcannood@gmail.com> (maintainer) {github: rcannood, orcid: 0000-0003-3641-729X}"
       LABEL org.opencontainers.image.description="Companion container for running component download sync_test_resources"
-      LABEL org.opencontainers.image.created="2022-06-28T13:38:19Z"
+      LABEL org.opencontainers.image.created="2022-06-28T14:53:57Z"
       LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-      LABEL org.opencontainers.image.revision="b1bb186d9e888bd250e509ded10090e41bcad0b6"
+      LABEL org.opencontainers.image.revision="3bd2efb2a74b4d64c8c7d752732c929f3f362b40"
       LABEL org.opencontainers.image.version="main_build"
       VIASHDOCKER
       }
@@ -910,5 +910,5 @@ info:
   output: "target/docker/download/sync_test_resources"
   executable: "target/docker/download/sync_test_resources/sync_test_resources"
   viash_version: "0.5.13"
-  git_commit: "b1bb186d9e888bd250e509ded10090e41bcad0b6"
+  git_commit: "3bd2efb2a74b4d64c8c7d752732c929f3f362b40"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"
