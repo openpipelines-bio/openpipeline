@@ -120,8 +120,7 @@ platforms:
       - type: docker
         run: apt-get --allow-releaseinfo-change update && 
              apt upgrade -y &&
-             conda install -y -c bioconda picard=2.27.3 ca-certificates=2022.6.15 &&
-             sed -i 's#jvm_prop_opts=""#jvm_prop_opts="-Dpicard.useLegacyParser=true"#' /opt/conda/bin/picard
+             conda install -y -c bioconda picard=2.27.3 ca-certificates=2022.6.15
       - type: apt
         packages: [ procps, nodejs]
       - type: python
