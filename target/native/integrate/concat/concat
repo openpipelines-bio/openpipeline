@@ -155,6 +155,7 @@ VIASH_RESOURCES_DIR="$VIASH_META_RESOURCES_DIR"
 
 # define meta fields
 VIASH_META_FUNCTIONALITY_NAME="concat"
+VIASH_META_EXECUTABLE="$VIASH_META_RESOURCES_DIR/$VIASH_META_FUNCTIONALITY_NAME"
 
 
 # ViashHelp: Display helpful explanation about this executable
@@ -366,6 +367,7 @@ function interrupt {
 trap clean_up EXIT
 trap interrupt INT SIGINT
 cat > "\$tempscript" << 'VIASHMAIN'
+
 from __future__ import annotations
 import logging
 import anndata
@@ -386,6 +388,7 @@ par = {
 meta = {
   'functionality_name': '$VIASH_META_FUNCTIONALITY_NAME',
   'resources_dir': '$VIASH_META_RESOURCES_DIR',
+  'executable': '$VIASH_META_EXECUTABLE',
   'temp_dir': '$VIASH_TEMP'
 }
 
@@ -535,6 +538,7 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
+
 VIASHMAIN
 python "\$tempscript" &
 wait "\$!"

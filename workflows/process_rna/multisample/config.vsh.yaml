@@ -13,3 +13,10 @@ functionality:
       type: file
       description: Path to the sample.
       example: dataset.h5mu
+  resources:
+    - type: nextflow_script
+      path: main.nf
+  tests:
+    - type: nextflow_script
+      path: main.nf
+      entrypoint: test_wf

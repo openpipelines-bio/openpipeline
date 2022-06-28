@@ -25,3 +25,10 @@ functionality:
       type: file
       description: A path to GTF annotation file.
       example: transcriptome.gtf
+  resources:
+    - type: nextflow_script
+      path: main.nf
+  tests:
+    - type: nextflow_script
+      path: main.nf
+      entrypoint: test_wf

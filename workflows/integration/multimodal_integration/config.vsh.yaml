@@ -1,7 +1,7 @@
 functionality:
-  name: "singlesample"
-  namespace: "process_rna"
-  description: "Processing unimodal single-sample RNA transcriptomics data."
+  name: "multimodal_integration"
+  namespace: "integration"
+  description: "Processing multimodal multi-sample RNA transcriptomics data."
   arguments:
     - name: "--id"
       required: true
@@ -9,8 +9,8 @@ functionality:
       description: ID of the sample.
       example: foo
     - name: "--input"
-      type: file
       required: true
+      type: file
       description: Path to the sample.
       example: dataset.h5mu
   resources:
@@ -19,4 +19,4 @@ functionality:
   tests:
     - type: nextflow_script
       path: main.nf
-      entry: test_wf
+      entrypoint: test_wf

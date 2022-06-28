@@ -26,9 +26,10 @@ def jsonSlurper = new JsonSlurper()
 // DEFINE CUSTOM CODE
 
 // functionality metadata
-thisFunctionality = [
-  'name': 'cellranger_count',
-  'arguments': [
+thisConfig = [
+  'functionality': [
+    'name': 'cellranger_count',
+    'arguments': [
     [
       'name': 'input',
       'required': true,
@@ -100,6 +101,7 @@ thisFunctionality = [
       'example': 10,
       'multiple': false
     ]
+    ]
   ]
 ]
 
@@ -167,6 +169,7 @@ for more information.
 thisScript = '''set -e
 tempscript=".viash_script.sh"
 cat > "$tempscript" << VIASHMAIN
+
 #!/bin/bash
 
 ## VIASH START
@@ -181,6 +184,7 @@ $( if [ ! -z ${VIASH_PAR_CORES+x} ]; then echo "par_cores='${VIASH_PAR_CORES//\\
 $( if [ ! -z ${VIASH_PAR_MEMORY+x} ]; then echo "par_memory='${VIASH_PAR_MEMORY//\\'/\\'\\"\\'\\"\\'}'"; fi )
 meta_functionality_name='$VIASH_META_FUNCTIONALITY_NAME'
 meta_resources_dir='$VIASH_META_RESOURCES_DIR'
+meta_executable='$VIASH_META_EXECUTABLE'
 meta_temp_dir='$VIASH_TEMP'
 resources_dir="$VIASH_META_RESOURCES_DIR"
 
@@ -237,13 +241,14 @@ if [ -d "\\$id/outs/" ]; then
   fi
   mv "\\$id/outs/"* "\\$par_output"
 fi
+
 VIASHMAIN
 bash "$tempscript"
 '''
 
 thisDefaultProcessArgs = [
   // key to be used to trace the process and determine output names
-  key: thisFunctionality.name,
+  key: thisConfig.functionality.name,
   // fixed arguments to be passed to script
   args: [:],
   // default directives
@@ -281,6 +286,10 @@ thisDefaultProcessArgs = [
 ]
 
 // END CUSTOM CODE
+
+////////////////////////////
+// VDSL3 helper functions //
+////////////////////////////
 
 import nextflow.Nextflow
 import nextflow.script.IncludeDef
@@ -706,7 +715,7 @@ def processProcessArgs(Map args) {
 
   // if 'key' is a closure, apply it to the original key
   if (processArgs["key"] instanceof Closure) {
-    processArgs["key"] = processArgs["key"](thisFunctionality.name)
+    processArgs["key"] = processArgs["key"](thisConfig.functionality.name)
   }
   assert processArgs["key"] instanceof CharSequence
   assert processArgs["key"] ==~ /^[a-zA-Z_][a-zA-Z0-9_]*$/
@@ -723,13 +732,14 @@ def processProcessArgs(Map args) {
 
   // auto define publish, if so desired
   if (processArgs.auto.publish == true && (processArgs.directives.publishDir ?: [:]).isEmpty()) {
-    assert params.containsKey("publishDir") : 
-      "Error in module '${processArgs['key']}': if auto.publish is true, params.publishDir needs to be defined.\n" +
-      "  Example: params.transcriptsDir = \"./output/\""
+    assert params.containsKey("publishDir") || params.containsKey("publish_dir") : 
+      "Error in module '${processArgs['key']}': if auto.publish is true, params.publish_dir needs to be defined.\n" +
+      "  Example: params.transcripts_dir = \"./output/\""
+    def publishDir = params.containsKey("publish_dir") ? params.publish_dir : params.publishDir
     
     // TODO: more asserts on publishDir?
     processArgs.directives.publishDir = [[ 
-      path: params.publishDir, 
+      path: publishDir, 
       saveAs: "{ it.startsWith('.') ? null : it }", // don't publish hidden files, by default
       mode: "copy"
     ]]
@@ -737,10 +747,14 @@ def processProcessArgs(Map args) {
 
   // auto define transcript, if so desired
   if (processArgs.auto.transcript == true) {
-    assert params.containsKey("transcriptsDir") || params.containsKey("publishDir") : 
-      "Error in module '${processArgs['key']}': if auto.transcript is true, either params.transcriptsDir or params.publishDir needs to be defined.\n" +
-      "  Example: params.transcriptsDir = \"./transcripts/\""
-    def transcriptsDir = params.containsKey("transcriptsDir") ? params.transcriptsDir : params.publishDir + "/_transcripts"
+    assert params.containsKey("transcriptsDir") || params.containsKey("transcripts_dir") || params.containsKey("publishDir") || params.containsKey("publish_dir") : 
+      "Error in module '${processArgs['key']}': if auto.transcript is true, either params.transcripts_dir or params.publish_dir needs to be defined.\n" +
+      "  Example: params.transcripts_dir = \"./transcripts/\""
+    def transcriptsDir = 
+      params.containsKey("transcripts_dir") ? params.transcripts_dir : 
+      params.containsKey("transcriptsDir") ? params.transcriptsDir : 
+      params.containsKey("publish_dir") ? params.publish_dir + "/_transcripts" :
+      params.publishDir + "/_transcripts"
     def timestamp = Nextflow.getSession().getWorkflowMetadata().start.format('yyyy-MM-dd_HH-mm-ss')
     def transcriptsPublishDir = [ 
       path: "$transcriptsDir/$timestamp/\${task.process.replaceAll(':', '-')}/\${id}/", 
@@ -819,12 +833,12 @@ def processFactory(Map processArgs) {
     }
   }.join()
 
-  def inputPaths = thisFunctionality.arguments
+  def inputPaths = thisConfig.functionality.arguments
     .findAll { it.type == "file" && it.direction == "input" }
     .collect { ', path(viash_par_' + it.name + ')' }
     .join()
 
-  def outputPaths = thisFunctionality.arguments
+  def outputPaths = thisConfig.functionality.arguments
     .findAll { it.type == "file" && it.direction == "output" }
     .collect { par ->
       // insert dummy into every output (see nextflow-io/nextflow#2678)
@@ -844,7 +858,7 @@ def processFactory(Map processArgs) {
   }
 
   // construct inputFileExports
-  def inputFileExports = thisFunctionality.arguments
+  def inputFileExports = thisConfig.functionality.arguments
     .findAll { it.type == "file" && it.direction.toLowerCase() == "input" }
     .collect { par ->
       viash_par_contents = !par.required && !par.multiple ? "viash_par_${par.name}[0]" : "viash_par_${par.name}.join(\":\")"
@@ -854,7 +868,7 @@ def processFactory(Map processArgs) {
   def tmpDir = "/tmp" // check if component is docker based
 
   // construct stub
-  def stub = thisFunctionality.arguments
+  def stub = thisConfig.functionality.arguments
     .findAll { it.type == "file" && it.direction == "output" }
     .collect { par -> 
       'touch "${viash_par_' + par.name + '.join(\'" "\')}"'
@@ -887,7 +901,8 @@ def processFactory(Map processArgs) {
   |# meta exports
   |export VIASH_META_RESOURCES_DIR="\${resourcesDir.toRealPath().toAbsolutePath()}"
   |export VIASH_META_TEMP_DIR="${tmpDir}"
-  |export VIASH_META_FUNCTIONALITY_NAME="${thisFunctionality.name}"
+  |export VIASH_META_FUNCTIONALITY_NAME="${thisConfig.functionality.name}"
+  |export VIASH_META_EXECUTABLE="\\\$VIASH_META_RESOURCES_DIR/\\\$VIASH_META_FUNCTIONALITY_NAME"
   |
   |# meta synonyms
   |export VIASH_RESOURCES_DIR="\\\$VIASH_META_RESOURCES_DIR"
@@ -986,7 +1001,7 @@ def workflowFactory(Map args) {
         
         // match file to input file
         if (processArgs.auto.simplifyInput && (tuple[1] instanceof Path || tuple[1] instanceof List)) {
-          def inputFiles = thisFunctionality.arguments
+          def inputFiles = thisConfig.functionality.arguments
             .findAll { it.type == "file" && it.direction == "input" }
           
           assert inputFiles.size() == 1 : 
@@ -1039,12 +1054,12 @@ def workflowFactory(Map args) {
         def passthrough = tuple.drop(2)
 
         // fetch default params from functionality
-        def defaultArgs = thisFunctionality.arguments
+        def defaultArgs = thisConfig.functionality.arguments
           .findAll { it.containsKey("default") }
           .collectEntries { [ it.name, it.default ] }
 
         // fetch overrides in params
-        def paramArgs = thisFunctionality.arguments
+        def paramArgs = thisConfig.functionality.arguments
           .findAll { par ->
             def argKey = key + "__" + par.name
             params.containsKey(argKey) && params[argKey] != "viash_no_value"
@@ -1052,7 +1067,7 @@ def workflowFactory(Map args) {
           .collectEntries { [ it.name, params[key + "__" + it.name] ] }
         
         // fetch overrides in data
-        def dataArgs = thisFunctionality.arguments
+        def dataArgs = thisConfig.functionality.arguments
           .findAll { data.containsKey(it.name) }
           .collectEntries { [ it.name, data[it.name] ] }
         
@@ -1063,7 +1078,7 @@ def workflowFactory(Map args) {
         combinedArgs.removeAll{it == null}
 
         // check whether required arguments exist
-        thisFunctionality.arguments
+        thisConfig.functionality.arguments
           .forEach { par ->
             if (par.required) {
               assert combinedArgs.containsKey(par.name): "Argument ${par.name} is required but does not have a value"
@@ -1073,7 +1088,7 @@ def workflowFactory(Map args) {
         // TODO: check whether parameters have the right type
 
         // process input files separately
-        def inputPaths = thisFunctionality.arguments
+        def inputPaths = thisConfig.functionality.arguments
           .findAll { it.type == "file" && it.direction == "input" }
           .collect { par ->
             def val = combinedArgs.containsKey(par.name) ? combinedArgs[par.name] : []
@@ -1099,7 +1114,7 @@ def workflowFactory(Map args) {
           } 
 
         // remove input files
-        def argsExclInputFiles = thisFunctionality.arguments
+        def argsExclInputFiles = thisConfig.functionality.arguments
           .findAll { it.type != "file" || it.direction != "input" }
           .collectEntries { par ->
             def parName = par.name
@@ -1117,7 +1132,7 @@ def workflowFactory(Map args) {
       }
       | processObj
       | map { output ->
-        def outputFiles = thisFunctionality.arguments
+        def outputFiles = thisConfig.functionality.arguments
           .findAll { it.type == "file" && it.direction == "output" }
           .indexed()
           .collectEntries{ index, par ->
@@ -1191,14 +1206,30 @@ workflow {
   }
 
   // fetch parameters
-  def args = thisFunctionality.arguments
+  def args = thisConfig.functionality.arguments
     .findAll { par -> params.containsKey(par.name) }
     .collectEntries { par ->
-      if (par.type == "file" && par.direction == "input") {
-        [ par.name, file(params[par.name]) ]
+      if (par.multiple) {
+        parData = params[par.name]
+        if (parData instanceof List) {
+          parData = parData.collect{it instanceof String ? it.split(par.multiple_sep) : it }.flatten()
+        } else if (parData instanceof String) {
+          parData = parData.split(par.multiple_sep)
+        }
+        // todo: does this work for non-strings?
       } else {
-        [ par.name, params[par.name] ]
+        parData = [ params[par.name] ]
       }
+      if (par.type == "file" && par.direction == "input") {
+        parData = parData.collect{it instanceof String ? file(it) : it}.flatten()
+      }
+      if (!par.multiple) {
+        assert parData.size() == 1 : 
+          "Error: argument ${par.name} has too many values.\n" +
+          "  Expected amount: 1. Found: ${parData.length}"
+        parData = parData[0]
+      }
+      [ par.name, parData ]
     }
           
   Channel.value([ params.id, args ])

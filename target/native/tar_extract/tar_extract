@@ -152,6 +152,7 @@ VIASH_RESOURCES_DIR="$VIASH_META_RESOURCES_DIR"
 
 # define meta fields
 VIASH_META_FUNCTIONALITY_NAME="tar_extract"
+VIASH_META_EXECUTABLE="$VIASH_META_RESOURCES_DIR/$VIASH_META_FUNCTIONALITY_NAME"
 
 
 # ViashHelp: Display helpful explanation about this executable
@@ -324,6 +325,7 @@ function interrupt {
 trap clean_up EXIT
 trap interrupt INT SIGINT
 cat > "\$tempscript" << 'VIASHMAIN'
+
 #!/usr/bin/env bash
 
 ## VIASH START
@@ -334,6 +336,7 @@ $( if [ ! -z ${VIASH_PAR_STRIP_COMPONENTS+x} ]; then echo "par_strip_components=
 $( if [ ! -z ${VIASH_PAR_EXCLUDE+x} ]; then echo "par_exclude='${VIASH_PAR_EXCLUDE//\'/\'\"\'\"\'}'"; fi )
 meta_functionality_name='$VIASH_META_FUNCTIONALITY_NAME'
 meta_resources_dir='$VIASH_META_RESOURCES_DIR'
+meta_executable='$VIASH_META_EXECUTABLE'
 meta_temp_dir='$VIASH_TEMP'
 resources_dir="$VIASH_META_RESOURCES_DIR"
 
@@ -353,6 +356,7 @@ fi
 echo "Extracting \$par_input to \$par_output..."
 echo ""
 tar "\${extra_params[@]}" -xvf "\$par_input" -C "\$par_output"
+
 VIASHMAIN
 bash "\$tempscript" &
 wait "\$!"

@@ -156,6 +156,7 @@ VIASH_RESOURCES_DIR="$VIASH_META_RESOURCES_DIR"
 
 # define meta fields
 VIASH_META_FUNCTIONALITY_NAME="sync_test_resources"
+VIASH_META_EXECUTABLE="$VIASH_META_RESOURCES_DIR/$VIASH_META_FUNCTIONALITY_NAME"
 
 
 # ViashHelp: Display helpful explanation about this executable
@@ -360,6 +361,7 @@ function interrupt {
 trap clean_up EXIT
 trap interrupt INT SIGINT
 cat > "\$tempscript" << 'VIASHMAIN'
+
 #!/bin/bash
 
 ## VIASH START
@@ -372,6 +374,7 @@ $( if [ ! -z ${VIASH_PAR_DELETE+x} ]; then echo "par_delete='${VIASH_PAR_DELETE/
 $( if [ ! -z ${VIASH_PAR_EXCLUDE+x} ]; then echo "par_exclude='${VIASH_PAR_EXCLUDE//\'/\'\"\'\"\'}'"; fi )
 meta_functionality_name='$VIASH_META_FUNCTIONALITY_NAME'
 meta_resources_dir='$VIASH_META_RESOURCES_DIR'
+meta_executable='$VIASH_META_EXECUTABLE'
 meta_temp_dir='$VIASH_TEMP'
 resources_dir="$VIASH_META_RESOURCES_DIR"
 
@@ -404,6 +407,7 @@ fi
 export AWS_EC2_METADATA_DISABLED=true
 
 aws s3 sync "\$par_input" "\$par_output" --no-sign-request "\${extra_params[@]}"
+
 VIASHMAIN
 bash "\$tempscript" &
 wait "\$!"

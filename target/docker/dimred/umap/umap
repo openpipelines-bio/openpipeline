@@ -155,6 +155,7 @@ VIASH_RESOURCES_DIR="$VIASH_META_RESOURCES_DIR"
 
 # define meta fields
 VIASH_META_FUNCTIONALITY_NAME="umap"
+VIASH_META_EXECUTABLE="$VIASH_META_RESOURCES_DIR/$VIASH_META_FUNCTIONALITY_NAME"
 
 
 # ViashHelp: Display helpful explanation about this executable
@@ -440,10 +441,10 @@ RUN pip install --upgrade pip && \
 
 LABEL org.opencontainers.image.authors="Dries De Maeyer <ddemaeyer@gmail.com> (maintainer) {account: ddemaey1}"
 LABEL org.opencontainers.image.description="Companion container for running component dimred umap"
-LABEL org.opencontainers.image.created="2022-06-28T12:31:14Z"
+LABEL org.opencontainers.image.created="2022-06-28T12:54:23Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="4d292f6af88c3c5dd355f6d47d2e4158f4c0108b"
-LABEL org.opencontainers.image.version="fatal: No names found, cannot describe anything."
+LABEL org.opencontainers.image.revision="7362039a5b59c9a12e5d6548a391f55d3c57dcea"
+LABEL org.opencontainers.image.version="main_build"
 VIASHDOCKER
 }
 
@@ -884,6 +885,7 @@ fi
 # Always mount the resource directory
 VIASH_EXTRA_MOUNTS="$VIASH_EXTRA_MOUNTS $(ViashAutodetectMountArg "$VIASH_META_RESOURCES_DIR")"
 VIASH_META_RESOURCES_DIR=$(ViashAutodetectMount "$VIASH_META_RESOURCES_DIR")
+VIASH_META_EXECUTABLE=$(ViashAutodetectMount "$VIASH_META_EXECUTABLE")
 
 # Always mount the VIASH_TEMP directory
 VIASH_EXTRA_MOUNTS="$VIASH_EXTRA_MOUNTS $(ViashAutodetectMountArg "$VIASH_TEMP")"
@@ -911,6 +913,7 @@ function interrupt {
 trap clean_up EXIT
 trap interrupt INT SIGINT
 cat > "\$tempscript" << 'VIASHMAIN'
+
 import scanpy as sc
 import muon as mu
 
@@ -933,6 +936,7 @@ par = {
 meta = {
   'functionality_name': '$VIASH_META_FUNCTIONALITY_NAME',
   'resources_dir': '$VIASH_META_RESOURCES_DIR',
+  'executable': '$VIASH_META_EXECUTABLE',
   'temp_dir': '$VIASH_TEMP'
 }
 
@@ -962,6 +966,7 @@ for mod in par['modality']:
 
 print("Writing", par["output"])
 mdata.write_h5mu(filename=par["output"])
+
 VIASHMAIN
 python "\$tempscript" &
 wait "\$!"

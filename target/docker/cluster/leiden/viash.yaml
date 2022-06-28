@@ -73,6 +73,7 @@ functionality:
     direction: "input"
     multiple: false
     multiple_sep: ":"
+  argument_groups: []
   resources:
   - type: "bash_script"
     text: |
@@ -233,6 +234,7 @@ functionality:
       
       # define meta fields
       VIASH_META_FUNCTIONALITY_NAME="leiden"
+      VIASH_META_EXECUTABLE="$VIASH_META_RESOURCES_DIR/$VIASH_META_FUNCTIONALITY_NAME"
       
       
       # ViashHelp: Display helpful explanation about this executable
@@ -482,10 +484,10 @@ functionality:
       
       LABEL org.opencontainers.image.authors="Dries De Maeyer <ddemaeyer@gmail.com> (maintainer) {account: ddemaey1}"
       LABEL org.opencontainers.image.description="Companion container for running component cluster leiden"
-      LABEL org.opencontainers.image.created="2022-06-28T12:31:14Z"
+      LABEL org.opencontainers.image.created="2022-06-28T12:54:23Z"
       LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-      LABEL org.opencontainers.image.revision="4d292f6af88c3c5dd355f6d47d2e4158f4c0108b"
-      LABEL org.opencontainers.image.version="fatal: No names found, cannot describe anything."
+      LABEL org.opencontainers.image.revision="7362039a5b59c9a12e5d6548a391f55d3c57dcea"
+      LABEL org.opencontainers.image.version="main_build"
       VIASHDOCKER
       }
       
@@ -800,6 +802,7 @@ functionality:
       # Always mount the resource directory
       VIASH_EXTRA_MOUNTS="$VIASH_EXTRA_MOUNTS $(ViashAutodetectMountArg "$VIASH_META_RESOURCES_DIR")"
       VIASH_META_RESOURCES_DIR=$(ViashAutodetectMount "$VIASH_META_RESOURCES_DIR")
+      VIASH_META_EXECUTABLE=$(ViashAutodetectMount "$VIASH_META_EXECUTABLE")
       
       # Always mount the VIASH_TEMP directory
       VIASH_EXTRA_MOUNTS="$VIASH_EXTRA_MOUNTS $(ViashAutodetectMountArg "$VIASH_TEMP")"
@@ -827,6 +830,7 @@ functionality:
       trap clean_up EXIT
       trap interrupt INT SIGINT
       cat > "\$tempscript" << 'VIASHMAIN'
+      
       import muon as mu
       import scanpy as sc
       
@@ -842,6 +846,7 @@ functionality:
       meta = {
         'functionality_name': '$VIASH_META_FUNCTIONALITY_NAME',
         'resources_dir': '$VIASH_META_RESOURCES_DIR',
+        'executable': '$VIASH_META_EXECUTABLE',
         'temp_dir': '$VIASH_TEMP'
       }
       
@@ -863,6 +868,7 @@ functionality:
       
       print("Writing", par["output"])
       mdata.write_h5mu(filename=par["output"])
+      
       VIASHMAIN
       python "\$tempscript" &
       wait "\$!"
@@ -882,7 +888,7 @@ functionality:
     \ From Louvain to Leiden: guaranteeing well-connected communities arXiv.\nWolf\
     \ et al. (2018), Scanpy: large-scale single-cell gene expression data analysis,\
     \ Genome Biology.\n"
-  tests:
+  test_resources:
   - type: "python_script"
     path: "run_test.py"
     is_executable: true
@@ -927,6 +933,7 @@ platform:
     script: []
     upgrade: true
     type: "python"
+  test_setup: []
 platforms: []
 info:
   config: "src/cluster/leiden/config.vsh.yaml"
@@ -934,6 +941,5 @@ info:
   output: "target/docker/cluster/leiden"
   executable: "target/docker/cluster/leiden/leiden"
   viash_version: "0.5.13"
-  git_commit: "4d292f6af88c3c5dd355f6d47d2e4158f4c0108b"
+  git_commit: "7362039a5b59c9a12e5d6548a391f55d3c57dcea"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"
-  git_tag: "fatal: No names found, cannot describe anything."

@@ -156,6 +156,7 @@ VIASH_RESOURCES_DIR="$VIASH_META_RESOURCES_DIR"
 
 # define meta fields
 VIASH_META_FUNCTIONALITY_NAME="from_h5mu_to_seurat"
+VIASH_META_EXECUTABLE="$VIASH_META_RESOURCES_DIR/$VIASH_META_FUNCTIONALITY_NAME"
 
 
 # ViashHelp: Display helpful explanation about this executable
@@ -398,10 +399,10 @@ RUN Rscript -e 'if (!requireNamespace("remotes", quietly = TRUE)) install.packag
 
 LABEL org.opencontainers.image.authors="Robrecht Cannoodt <rcannood@gmail.com> (author, maintainer) {github: rcannood, orcid: 0000-0003-3641-729X}"
 LABEL org.opencontainers.image.description="Companion container for running component convert from_h5mu_to_seurat"
-LABEL org.opencontainers.image.created="2022-06-28T12:31:13Z"
+LABEL org.opencontainers.image.created="2022-06-28T12:54:21Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="4d292f6af88c3c5dd355f6d47d2e4158f4c0108b"
-LABEL org.opencontainers.image.version="fatal: No names found, cannot describe anything."
+LABEL org.opencontainers.image.revision="7362039a5b59c9a12e5d6548a391f55d3c57dcea"
+LABEL org.opencontainers.image.version="main_build"
 VIASHDOCKER
 }
 
@@ -661,6 +662,7 @@ fi
 # Always mount the resource directory
 VIASH_EXTRA_MOUNTS="$VIASH_EXTRA_MOUNTS $(ViashAutodetectMountArg "$VIASH_META_RESOURCES_DIR")"
 VIASH_META_RESOURCES_DIR=$(ViashAutodetectMount "$VIASH_META_RESOURCES_DIR")
+VIASH_META_EXECUTABLE=$(ViashAutodetectMount "$VIASH_META_EXECUTABLE")
 
 # Always mount the VIASH_TEMP directory
 VIASH_EXTRA_MOUNTS="$VIASH_EXTRA_MOUNTS $(ViashAutodetectMountArg "$VIASH_TEMP")"
@@ -688,6 +690,7 @@ function interrupt {
 trap clean_up EXIT
 trap interrupt INT SIGINT
 cat > "\$tempscript" << 'VIASHMAIN'
+
 library(MuDataSeurat)
 
 ## VIASH START
@@ -705,6 +708,7 @@ par <- list(
 meta <- list(
   functionality_name = "$VIASH_META_FUNCTIONALITY_NAME",
   resources_dir = "$VIASH_META_RESOURCES_DIR",
+  executable = "$VIASH_META_EXECUTABLE",
   temp_dir = "$VIASH_TEMP"
 )
 
@@ -720,6 +724,7 @@ rm(viash_orig_warn_)
 obj <- ReadH5MU(par\$input)
 
 saveRDS(obj, file = par\$output, compress = TRUE)
+
 VIASHMAIN
 Rscript "\$tempscript" &
 wait "\$!"
