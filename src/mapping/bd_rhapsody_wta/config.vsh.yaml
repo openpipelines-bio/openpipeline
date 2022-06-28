@@ -112,16 +112,15 @@ functionality:
 platforms:
   - type: docker
     image: bdgenomics/rhapsody:1.9.1
-    run_args: [ "--env JAVA_HOME=/opt/conda" ]
     setup:
       # (1) workaround for debian buster
       # https://stackoverflow.com/questions/68802802/repository-http-security-debian-org-debian-security-buster-updates-inrelease
       # (2) Update picard (uses old Log4J). It is installed using conda, but 'conda update picard' does not work.
       # So download it manually and install
       - type: docker
-        run: apt-get --allow-releaseinfo-change update &&
-             wget https://anaconda.org/bioconda/picard/2.27.3/download/noarch/picard-2.27.3-hdfd78af_0.tar.bz2 &&
-             conda install picard-2.27.3-hdfd78af_0.tar.bz2 &&
+        run: apt-get --allow-releaseinfo-change update && 
+             apt upgrade -y &&
+             conda install -y -c bioconda picard=2.27.3 ca-certificates=2022.6.15 &&
              sed -i 's#jvm_prop_opts=""#jvm_prop_opts="-Dpicard.useLegacyParser=true"#' /opt/conda/bin/picard
       - type: apt
         packages: [ procps, nodejs]
