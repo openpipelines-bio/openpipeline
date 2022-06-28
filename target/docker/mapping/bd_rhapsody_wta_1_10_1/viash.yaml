@@ -720,9 +720,9 @@ functionality:
       
       LABEL org.opencontainers.image.authors="Robrecht Cannoodt <rcannood@gmail.com> (maintainer) {github: rcannood, orcid: 0000-0003-3641-729X}"
       LABEL org.opencontainers.image.description="Companion container for running component mapping bd_rhapsody_wta_1_10_1"
-      LABEL org.opencontainers.image.created="2022-06-28T12:54:21Z"
+      LABEL org.opencontainers.image.created="2022-06-28T13:37:34Z"
       LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-      LABEL org.opencontainers.image.revision="7362039a5b59c9a12e5d6548a391f55d3c57dcea"
+      LABEL org.opencontainers.image.revision="bacd7fe2a2cbfc4de969ceb9653337a1e6a44900"
       LABEL org.opencontainers.image.version="main_build"
       VIASHDOCKER
       }
@@ -1690,5 +1690,5 @@ info:
   output: "target/docker/mapping/bd_rhapsody_wta_1_10_1"
   executable: "target/docker/mapping/bd_rhapsody_wta_1_10_1/bd_rhapsody_wta_1_10_1"
   viash_version: "0.5.13"
-  git_commit: "7362039a5b59c9a12e5d6548a391f55d3c57dcea"
+  git_commit: "bacd7fe2a2cbfc4de969ceb9653337a1e6a44900"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"

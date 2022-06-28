@@ -1309,5 +1309,5 @@ info:
   platform: "nextflow"
   output: "target/nextflow/convert/from_csv_to_h5mu"
   viash_version: "0.5.13"
-  git_commit: "7362039a5b59c9a12e5d6548a391f55d3c57dcea"
+  git_commit: "bacd7fe2a2cbfc4de969ceb9653337a1e6a44900"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"
