@@ -1,7 +1,7 @@
 functionality:
-  name: "cellranger"
+  name: "cellranger_demux"
   namespace: "ingestion"
-  description: "Cell Ranger ingestion pipeline (demux and mapping)."
+  description: "Cell Ranger demux pipeline."
   arguments:
     - name: "--id"
       required: true
@@ -18,18 +18,13 @@ functionality:
       type: file
       description: The sample sheet for the samples to be demultiplexed.
       example: sample_sheet.csv
-    - name: "--reference"
-      required: true
-      type: file
-      description: Path to a Cell Ranger reference.
-      example: reference.tar.gz
   resources:
     - type: nextflow_script
       path: main.nf
     - path: nextflow.config
-  # tests:
-  #   - type: nextflow_script
-  #     path: main.nf
-  #     entrypoint: test_wf
+  tests:
+    - type: nextflow_script
+      path: main.nf
+      entrypoint: test_wf
 platforms:
   - type: native

@@ -1704,5 +1704,5 @@ info:
   platform: "nextflow"
   output: "target/nextflow/filter/filter_with_hvg"
   viash_version: "0.5.14"
-  git_commit: "716f7a0079149405664c4df34a3bb7c965e4c600"
+  git_commit: "18edf20743d12a565bf6d3e4d7ae24890487507a"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"

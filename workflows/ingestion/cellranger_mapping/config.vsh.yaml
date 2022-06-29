@@ -1,7 +1,7 @@
 functionality:
-  name: "cellranger"
+  name: "cellranger_mapping"
   namespace: "ingestion"
-  description: "Cell Ranger ingestion pipeline (demux and mapping)."
+  description: "Cell Ranger mapping pipeline."
   arguments:
     - name: "--id"
       required: true
@@ -11,13 +11,8 @@ functionality:
     - name: "--input"
       required: true
       type: file
-      description: A BCL directory.
-      example: /path/to/bcl
-    - name: "--sample_sheet"
-      required: true
-      type: file
-      description: The sample sheet for the samples to be demultiplexed.
-      example: sample_sheet.csv
+      description: A fastq file.
+      example: data.fastq
     - name: "--reference"
       required: true
       type: file
@@ -27,9 +22,9 @@ functionality:
     - type: nextflow_script
       path: main.nf
     - path: nextflow.config
-  # tests:
-  #   - type: nextflow_script
-  #     path: main.nf
-  #     entrypoint: test_wf
+  tests:
+    - type: nextflow_script
+      path: main.nf
+      entrypoint: test_wf
 platforms:
   - type: native

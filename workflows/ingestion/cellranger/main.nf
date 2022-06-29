@@ -53,9 +53,6 @@ workflow run_wf {
   output_ch
 }
 
-
-/* Cell Ranger - Integration testing
- */
 workflow test_wf {
   params.testing = true
   
@@ -74,7 +71,7 @@ workflow test_wf {
       assert output.size() == 2 : "outputs should contain two elements; [id, file]"
       assert output[1].isDirectory() : "Output path should be a directory."
       // todo: check whether output dir contains fastq files
-      "Output: $it"
+      "Output: $output"
     }
     | toList()
     | map { output_list ->
