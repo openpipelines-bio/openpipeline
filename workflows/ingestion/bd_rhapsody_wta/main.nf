@@ -4,6 +4,7 @@ workflowDir = params.rootDir + "/workflows"
 targetDir = params.rootDir + "/target/nextflow"
 
 include { bd_rhapsody_wta } from targetDir + "/mapping/bd_rhapsody_wta/main.nf"
+include { bd_rhapsody_wta_1_10_1 } from targetDir + "/mapping/bd_rhapsody_wta_1_10_1/main.nf"
 include { from_bdrhap_to_h5mu } from targetDir + "/convert/from_bdrhap_to_h5mu/main.nf"
 
 include { readConfig; viashChannel; helpMessage } from workflowDir + "/utils/viash_workflow_helper.nf"
@@ -12,6 +13,7 @@ params.bd_rhapsody_version = "1.9.1"
 
 workflow {
   params.testing = false
+
   helpMessage(params, config)
 
   viashChannel(params, config)
@@ -23,7 +25,10 @@ workflow run_wf {
   input_ch
 
   main:
-  if 
+  def bd_rhap_wta = bd_rhapsody_wta
+  if (params.bd_rhapsody_version == "1.10.1") {
+    bd_rhap_wta = bd_rhapsody_wta_1_10_1
+  }
 
   output_ch = input_ch
     // Step 1: group fastq files per lane
@@ -52,7 +57,7 @@ workflow run_wf {
 
     // Step 2: run BD rhapsody WTA
     | view { "running_bd_rhapsody: $it (orig_id: ${it[2].tuple_orig_id})" }
-    | bd_rhapsody_wta
+    | bd_rhap_wta
 
     // Step 3: group outputs per sample
     | map { id, input, extra -> [ extra.tuple_orig_id, [ input: input, id: extra.tuple_orig_id ] ] }
