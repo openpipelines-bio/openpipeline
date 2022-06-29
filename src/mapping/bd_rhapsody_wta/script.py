@@ -195,6 +195,7 @@ with tempfile.TemporaryDirectory(prefix="cwl-bd_rhapsody_wta-", dir=meta["temp_d
 
   env = dict(os.environ)
   env["TMPDIR"] = temp_dir
+  env["_JAVA_OPTIONS"] = "-Dpicard.useLegacyParser=true"
 
   print("> " + ' '.join(cmd))
 

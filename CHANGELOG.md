@@ -21,6 +21,8 @@
 
 * `mapping/bd_rhapsody_wta`: Allow unit test to be run on less powerful systems (at least 4GB ram).
 
+* `mapping/bd_rhapsody_wta`: Update picard to 2.27.3.
+
 ## DEPRECATED
 
 * `convert/from_bdrhap_to_h5ad`: Deprecated in favour for `convert/from_bdrhap_to_h5mu`.
