@@ -65,17 +65,16 @@ workflow test_wf {
         [
           input: file(params.rootDir + "/resources_test/cellranger_tiny_bcl/bcl"),
           sample_sheet: file(params.rootDir + "/resources_test/cellranger_tiny_bcl/bcl/sample_sheet.csv"),
-        ],
-        params
+        ]
       ]
     )
-    | view { "Input: [${it[0]}, ${it[1]}, params]" }
+    | view { "Input: $it" }
     | run_wf
     | view { output ->
-      assert output.size() == 3 : "outputs should contain three elements; [id, file, params]"
+      assert output.size() == 2 : "outputs should contain two elements; [id, file]"
       assert output[1].isDirectory() : "Output path should be a directory."
       // todo: check whether output dir contains fastq files
-      "Output: [${output[0]}, ${output[1]}, params]"
+      "Output: $it"
     }
     | toList()
     | map { output_list ->
