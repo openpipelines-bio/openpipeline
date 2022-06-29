@@ -8,6 +8,10 @@
 
 * `integrate/concat`: Combine data from multiple samples together.
 
+## MINOR CHANGES
+
+* `mapping/bd_rhapsody_wta`: Add parameters for overriding the minimum RAM & cores. Add `--dryrun` parameter.
+
 ## BUG FIXES
 
 * `workflows/utils/viash_workflow_helper.nf`: Renamed `utils.nf` to `viash_workflow_helper.nf`.
@@ -18,8 +22,6 @@
   - `readConfig`: Read a Viash config from a yaml file.
   - `viashChannel`: Create a channel from the Viash config and the params object.
   - `helpMessage`: Print a help message and exit.
-
-* `mapping/bd_rhapsody_wta`: Allow unit test to be run on less powerful systems (at least 4GB ram).
 
 * `mapping/bd_rhapsody_wta`: Update picard to 2.27.3.
 

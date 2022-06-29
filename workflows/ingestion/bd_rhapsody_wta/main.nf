@@ -8,6 +8,7 @@ include { from_bdrhap_to_h5mu } from targetDir + "/convert/from_bdrhap_to_h5mu/m
 
 include { readConfig; viashChannel; helpMessage } from workflowDir + "/utils/viash_workflow_helper.nf"
 
+params.bd_rhapsody_version = "1.9.1"
 
 workflow {
   params.testing = false
@@ -22,6 +23,8 @@ workflow run_wf {
   input_ch
 
   main:
+  if 
+
   output_ch = input_ch
     // Step 1: group fastq files per lane
     | flatMap { tup ->
@@ -75,7 +78,9 @@ workflow test_wf {
         [
           input: file(params.rootDir + "/resources_test/bd_rhapsody_wta_test/raw/*.fastq.gz"),
           reference_genome: file(params.rootDir + "/resources_test/bd_rhapsody_wta_test/raw/GRCh38_primary_assembly_genome_chr1.tar.gz"),
-          transcriptome_annotation: file(params.rootDir + "/resources_test/bd_rhapsody_wta_test/raw/gencode_v40_annotation_chr1.gtf")
+          transcriptome_annotation: file(params.rootDir + "/resources_test/bd_rhapsody_wta_test/raw/gencode_v40_annotation_chr1.gtf"),
+          override_min_cores: 1,
+          override_min_ram: 2
         ]
       ]
     )
