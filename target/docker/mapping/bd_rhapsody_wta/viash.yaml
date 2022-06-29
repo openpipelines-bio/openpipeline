@@ -644,7 +644,7 @@ functionality:
         cat << 'VIASHDOCKER'
       FROM bdgenomics/rhapsody:1.9.1
       
-      RUN apt-get --allow-releaseinfo-change update
+      RUN apt-get --allow-releaseinfo-change update && apt upgrade -y && conda install -y -c bioconda picard=2.27.3 ca-certificates=2022.6.15
       RUN apt-get update && \
         DEBIAN_FRONTEND=noninteractive apt-get install -y procps nodejs && \
         rm -rf /var/lib/apt/lists/*
@@ -654,9 +654,9 @@ functionality:
       
       LABEL org.opencontainers.image.authors="Robrecht Cannoodt <rcannood@gmail.com> (maintainer) {github: rcannood, orcid: 0000-0003-3641-729X}"
       LABEL org.opencontainers.image.description="Companion container for running component mapping bd_rhapsody_wta"
-      LABEL org.opencontainers.image.created="2022-06-28T14:53:56Z"
+      LABEL org.opencontainers.image.created="2022-06-29T06:10:47Z"
       LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-      LABEL org.opencontainers.image.revision="3bd2efb2a74b4d64c8c7d752732c929f3f362b40"
+      LABEL org.opencontainers.image.revision="94a0c2d3741da8b3e6e79bb33e75c6b051de8610"
       LABEL org.opencontainers.image.version="main_build"
       VIASHDOCKER
       }
@@ -1444,6 +1444,7 @@ functionality:
       
         env = dict(os.environ)
         env["TMPDIR"] = temp_dir
+        env["_JAVA_OPTIONS"] = "-Dpicard.useLegacyParser=true"
       
         print("> " + ' '.join(cmd))
       
@@ -1505,7 +1506,8 @@ platform:
     add: []
     copy: []
     run:
-    - "apt-get --allow-releaseinfo-change update"
+    - "apt-get --allow-releaseinfo-change update && apt upgrade -y && conda install\
+      \ -y -c bioconda picard=2.27.3 ca-certificates=2022.6.15"
     build_args: []
     env: []
   - type: "apt"
@@ -1538,5 +1540,5 @@ info:
   output: "target/docker/mapping/bd_rhapsody_wta"
   executable: "target/docker/mapping/bd_rhapsody_wta/bd_rhapsody_wta"
   viash_version: "0.5.13"
-  git_commit: "3bd2efb2a74b4d64c8c7d752732c929f3f362b40"
+  git_commit: "94a0c2d3741da8b3e6e79bb33e75c6b051de8610"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"

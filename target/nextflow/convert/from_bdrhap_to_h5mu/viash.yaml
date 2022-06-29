@@ -1409,5 +1409,5 @@ info:
   platform: "nextflow"
   output: "target/nextflow/convert/from_bdrhap_to_h5mu"
   viash_version: "0.5.13"
-  git_commit: "3bd2efb2a74b4d64c8c7d752732c929f3f362b40"
+  git_commit: "94a0c2d3741da8b3e6e79bb33e75c6b051de8610"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"
