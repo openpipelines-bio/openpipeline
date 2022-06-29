@@ -60,11 +60,12 @@ workflow run_wf {
     | bd_rhap_wta
 
     // Step 3: group outputs per sample
-    | map { id, input, extra -> [ extra.tuple_orig_id, [ input: input, id: extra.tuple_orig_id ] ] }
+    | map { id, input, extra -> [ extra.tuple_orig_id, input ] }
     | groupTuple()
+    | map { id, inputs -> [ id, [ id: id, input: inputs] ] }
 
     // Step 4: convert to h5ad
-    | view { "converting_to_h5mu: [$it]" }
+    | view { "converting_to_h5mu: $it" }
     | from_bdrhap_to_h5mu.run(
       auto: [ publish: ! params.testing ]
     )
@@ -92,9 +93,9 @@ workflow test_wf {
     | view { "Input: $it" }
     | run_wf
     | view { output ->
-      assert output.size() == 3 : "outputs should contain three elements; [id, file, params]"
-      assert output[1].toString().endsWith(".h5ad") : "Output file should be a h5ad file. Found: ${output[1]}"
-      "Output: $it"
+      assert output.size() == 2 : "outputs should contain three elements; [id, file]"
+      assert output[1].toString().endsWith(".h5mu") : "Output file should be a h5mu file. Found: ${output[1]}"
+      "Output: $output"
     }
     | toList()
     | map { output_list ->
