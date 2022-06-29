@@ -57,6 +57,8 @@ workflow run_wf {
 /* Cell Ranger - Integration testing
  */
 workflow test_wf {
+  params.testing = true
+  
   Channel.value(
       [
         "foo",
