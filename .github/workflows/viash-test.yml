@@ -9,7 +9,7 @@ on:
 # Skip older CI runs on the same branch, but not for master
 # https://github.community/t/concurrency-cancel-in-progress-but-not-when-ref-is-master/194707/2
 concurrency:
-  group: ${{ github.ref} }
+  group: ${{ github.head_ref} }
   cancel-in-progress: ${{ github.ref != 'refs/heads/main' }}
 
 jobs:
