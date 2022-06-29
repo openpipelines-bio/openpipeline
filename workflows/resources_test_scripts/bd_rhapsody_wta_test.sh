@@ -92,7 +92,7 @@ target/docker/convert/from_bdrhap_to_h5mu/from_bdrhap_to_h5mu \
 
 # nextflow \
 #   run . \
-#   -main-script workflows/1_ingestion/bd_rhapsody_wta/main.nf \
+#   -main-script workflows/ingestion/bd_rhapsody_wta/main.nf \
 #   --csv "$raw_dir/input.csv" \
 #   --reference_genome "$raw_dir/GRCh38-PhiX-gencodev29-20181205.tar.gz" \
 #   --transcriptome_annotation "$raw_dir/gencodev29-20181205.gtf" \
