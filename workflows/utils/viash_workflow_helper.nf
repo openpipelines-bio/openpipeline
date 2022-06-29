@@ -1,3 +1,7 @@
+/////////////////////////////////////
+// Viash Workflow helper functions //
+/////////////////////////////////////
+
 import java.util.regex.Pattern
 import java.io.BufferedReader
 import java.io.FileReader
@@ -90,8 +94,7 @@ def readYaml(file) {
   yamlSlurper.load(inputFile)
 }
 
-def readConfig(file) {
-  def config = readYaml(file)
+def processConfig(config) {
   // assert .functionality etc.
   config.functionality.arguments = 
     config.functionality.arguments.collect{arg ->
@@ -104,6 +107,11 @@ def readConfig(file) {
       arg
     }
   config
+}
+
+def readConfig(file) {
+  def config = readYaml(file)
+  processConfig(config)
 }
 
 
@@ -134,16 +142,32 @@ def helpMessage(params, config) {
             'description': 'Path to an output directory.',
             'example': 'output/',
             'multiple': false
-          ]
+          ],
+          [
+            'name': '--multiParams',
+            'plainName' : 'multiParams',
+            'required': false,
+            'type': 'string',
+            'description': 'Path to a multiple parameter file. Possible formats are csv, json, or yaml. Also supports a yaml blob as input.',
+            'example': 'my_params.yaml',
+            'multiple': false
+          ],
+          [
+            'name': '--multiParamFormat',
+            'plainName' : 'multiParamFormat',
+            'required': false,
+            'type': 'string',
+            'description': 'Manually specify the multiParamFormat. Must be one of \'csv\', \'json\', \'yaml\', \'yaml_blob\', \'asis\' or \'none\'.',
+            'example': 'yaml',
+            'multiple': false
+          ],
         ],
-        "arguments_meta": [
-           "groups": [
-              [
-                "name": "Output",
-                "order": 100,
-                "arguments" : [ "publishDir" ]
-              ]
-           ]
+        "arguments_groups": [
+          [
+            "name": "Global",
+            "description": "Nextflow-related arguments.",
+            "arguments" : [ "publishDir", "multiParams", "multiParamFormat" ]
+          ]
         ]
       ]
     ]
@@ -153,30 +177,48 @@ def helpMessage(params, config) {
     |
     |${functionality.description}
     |
-    |Single-input parameters:
-    |Parameters (Single input mode):
-    |<% for (group in (functionality.arguments_meta.groups.size() > 1 ) ? functionality.arguments_meta.groups : [ [ name: "All parameters", order: 0, arguments: functionality.arguments.collect{ it.plainName } ] ] ) { %>
-    |<%= group.name ? ("  " + group.name + "          ").take(16) : "" %><%= group.description ? group.description : "" %>
-    |<% for (argument in functionality.arguments) { %><% if (group.arguments.contains(argument.plainName)) {  %><%= ("  " + argument.name + "          ").take(16) %><%= argument.description %> <%= argument.required  ? '(required)' : '(optional, default = ' + argument.default + ')' %>
+    |<% for (group in (functionality.arguments_groups.size() > 1 ) ? functionality.arguments_groups : [ [ name: "Options", arguments: functionality.arguments.collect{ it.plainName } ] ] ) { %><%= group.name ? group.name + " options:": "" %><%= group.description ? "\\n    " + group.description + "\\n" : "" %>     <% for (argument in functionality.arguments) { %><% if (group.arguments.contains(argument.plainName)) { %>
+    |    <%= argument.name %>
+    |        type: <%= argument.type %><%= (argument.required) ? ", required parameter" : "" %><%= (argument.multiple) ? ", multiple values allowed" : "" %>
+    |        <%= (argument.example)  ? "example: ${argument.example}" : "REMOVE" %>
+    |        <%= (argument.default)  ? "default: ${argument.default}" : "REMOVE" %>
+    |        <%= argument.description.trim() %>
     |<% } } } %>
-    |
-    |Multi-input parameters:
-    |
-    |  --params_csv, --paramsCsv              specify parameters with a comma separated tabular file.
-    |  --params_json, --paramsJson            specify parameters with a Json file.
-    |  --params_json_blob, --paramsJsonBlob   specify parameters with a Json blob.
-    |  --params_yaml, --paramsYaml            specify parameters with a Yaml file.
-    |  --params_yaml_blob, --paramsYamlBlob   specify parameters with a Yaml blob.
-    |
-    |  params.params_list, params.paramsList  specify parameters with a Groovy list inside the Nextflow config.
     '''.stripMargin()
 
     def engine = new groovy.text.SimpleTemplateEngine()
     def mergedConfig = mergeMap(config, localConfig)
-    def help = engine.createTemplate(template).make(mergedConfig)
+    def help = engine
+        .createTemplate(template)
+        .make(mergedConfig)
+        .toString()
+        .replaceAll("\s+REMOVE\n","")
+
     println(help)
     exit 0
 
+  }
+}
+
+def guessMultiParamFormat(params) {
+  if (!params.containsKey("multiParams")) {
+    "none"
+  } else if (params.containsKey("multiParamsFormat")) {
+    params.multiParamsFormat
+  } else {
+    def multiParams = params.multiParams
+
+    if (multiParams !instanceof String) {
+      "asis"
+    } else if (multiParams.endsWith(".csv")) {
+      "csv"
+    } else if (multiParams.endsWith(".json")) {
+      "json"
+    } else if (multiParams.endsWith(".yaml")) {
+      "yaml"
+    } else {
+      "yaml_blob"
+    }
   }
 }
 
@@ -193,33 +235,26 @@ def paramsToList(params, config) {
   
   // check multi input params
   // objects should be closures and not functions, thanks to FunctionDef
+  def multiParamFormat = guessMultiParamFormat(params)
+
   def multiOptionFunctions = [ 
-    "params_csv": {[it, readCsv(it)]},
-    "paramsCsv": {[it, readCsv(it)]},
-    "params_json": {[it, readJson(it)]},
-    "paramsJson": {[it, readJson(it)]},
-    "params_json_blob": {[null, readJsonBlob(it)]},
-    "paramsJsonBlob": {[null, readJsonBlob(it)]},
-    "params_yaml": {[it, readYaml(it)]},
-    "paramsYaml": {[it, readYaml(it)]},
-    "params_yaml_blob": {[null, readYamlBlob(it)]},
-    "paramsYamlBlob": {[null, readYamlBlob(it)]},
-    "params_list": {[null, it]},
-    "paramsList": {[null, it]}
+    "csv": {[it, readCsv(it)]},
+    "json": {[it, readJson(it)]},
+    "yaml": {[it, readYaml(it)]},
+    "yaml_blob": {[null, readYamlBlob(it)]},
+    "asis": {[null, it]},
+    "none": {[null, [[:]]]}
   ]
-  def multiParamsCheck = multiOptionFunctions.findAll{k, v -> params.containsKey(k)}.collect()
-  assert multiParamsCheck.size() <= 1: "At most one of '${multiOptionFunctions.keySet().join("', '")}' should be specified"
+  assert multiOptionFunctions.containsKey(multiParamFormat): 
+    "Format of provided --multiParams not recognised.\n" +
+    "You can use '--multiParamFormat' to manually specify the format.\n" +
+    "Found: '$multiParamFormat'. Expected: one of 'csv', 'json', 'yaml', 'yaml_blob', 'asis' or 'none'"
 
   // fetch multi param inputs
-  def multiParams = [[:]]
-  def multiFile = null
-  if (multiParamsCheck.size() == 1) {
-    def readerId = multiParamsCheck[0].key
-    def multiReader = multiParamsCheck[0].value
-    out = multiReader(params[readerId])
-    multiFile = out[0]
-    multiParams = out[1]
-  }
+  def multiOptionFun = multiOptionFunctions.get(multiParamFormat)
+  def multiOptionOut = multiOptionFun(params.containsKey("multiParams") ? params.multiParams : "")
+  def multiParams = multiOptionOut[1]
+  def multiFile = multiOptionOut[0]
 
   // data checks
   assert multiParams instanceof List: "--$readerId should contain a list of maps"
@@ -290,6 +325,13 @@ def paramsToList(params, config) {
       }
 
     }
+  
+  // check processed params
+  processedParams.forEach { args ->
+    assert args.containsKey("id"): "Each argument set should have an 'id'. Argument set: $args"
+  }
+  def ppIds = processedParams.collect{it.id}
+  assert ppIds.size() == ppIds.unique().size() : "All argument sets should have unique ids. Detected ids: $ppIds"
 
   processedParams
 }
