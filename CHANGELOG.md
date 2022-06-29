@@ -12,6 +12,8 @@
 
 * `mapping/bd_rhapsody_wta`: Add parameters for overriding the minimum RAM & cores. Add `--dryrun` parameter.
 
+* `mapping/bd_rhapsody_wta_1_10_1`: Add parameters for overriding the minimum RAM & cores. Add `--dryrun` parameter.
+
 * `ingestion/bd_rhapsody_wta`: Allow switching between the 1.9.1 and 1.10.1 version of the pipeline.
 
 ## BUG FIXES
