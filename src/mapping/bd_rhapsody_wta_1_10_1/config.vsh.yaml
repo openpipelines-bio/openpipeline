@@ -126,7 +126,7 @@ functionality:
   tests:
     - type: bash_script
       path: run_test.sh
-    - path: ../../../resources_test/bd_rhapsody_1_10_1_wta_test
+    - path: ../../../resources_test/bd_rhapsody_wta_1_10_1_test
 platforms:
   - type: docker
     image: bdgenomics/rhapsody:1.10.1

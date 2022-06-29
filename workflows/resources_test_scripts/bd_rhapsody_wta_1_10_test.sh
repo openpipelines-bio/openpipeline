@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # settings
-ID=bd_rhapsody_1_10_1_wta_test
+ID=bd_rhapsody_wta_1_10_test
 OUT=resources_test/$ID
 DIR="$OUT"
 S3DIR=$(echo "$DIR" | sed 's#resources_test#s3://openpipelines-data#')
