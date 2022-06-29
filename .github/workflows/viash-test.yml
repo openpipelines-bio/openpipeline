@@ -17,6 +17,7 @@ jobs:
           with:
             all_but_latest: true
             access_token: ${{ github.token }}
+
   # phase 1
   list_components:
     env:
