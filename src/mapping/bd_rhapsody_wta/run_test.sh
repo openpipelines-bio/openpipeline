@@ -31,8 +31,8 @@ echo ">> Running $meta_functionality_name"
   -r "$meta_resources_dir/bd_rhapsody_wta_test/raw/GRCh38_primary_assembly_genome_chr1.tar.gz" \
   -t "$meta_resources_dir/bd_rhapsody_wta_test/raw/gencode_v40_annotation_chr1.gtf" \
   --subsample 0.2 \
-  --override_cores_min 1 \
-  --override_ram_min 2 \
+  --override_min_cores 1 \
+  --override_min_ram 2 \
   -o output/
 
 echo ">> Checking whether output can be found"
