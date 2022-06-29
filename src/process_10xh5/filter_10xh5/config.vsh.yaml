@@ -52,7 +52,9 @@ functionality:
 platforms:
   - type: docker
     image: ghcr.io/data-intuitive/randpy:r4.0_py3.8
-    setup: 
+    setup:
+      - type: docker
+        run: apt update && apt upgrade -y
       - type: apt
         packages: libhdf5-dev
       - type: python

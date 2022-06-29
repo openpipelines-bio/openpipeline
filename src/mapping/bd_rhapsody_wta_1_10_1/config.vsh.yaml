@@ -144,6 +144,8 @@ platforms:
   - type: docker
     image: bdgenomics/rhapsody:1.10.1
     setup:
+      - type: docker
+        run: apt update && apt upgrade -y
       - type: apt
         packages: [ procps, nodejs]
       - type: python

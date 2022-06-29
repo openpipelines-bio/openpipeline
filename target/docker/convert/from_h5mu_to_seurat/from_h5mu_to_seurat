@@ -384,6 +384,7 @@ function ViashDockerfile {
   cat << 'VIASHDOCKER'
 FROM eddelbuettel/r2u:22.04
 
+RUN apt update && apt upgrade -y
 RUN apt-get update && \
   DEBIAN_FRONTEND=noninteractive apt-get install -y libhdf5-dev libgeos-dev python3 python3-pip python-is-python3 && \
   rm -rf /var/lib/apt/lists/*
@@ -399,9 +400,9 @@ RUN Rscript -e 'if (!requireNamespace("remotes", quietly = TRUE)) install.packag
 
 LABEL org.opencontainers.image.authors="Robrecht Cannoodt <rcannood@gmail.com> (author, maintainer) {github: rcannood, orcid: 0000-0003-3641-729X}"
 LABEL org.opencontainers.image.description="Companion container for running component convert from_h5mu_to_seurat"
-LABEL org.opencontainers.image.created="2022-06-29T12:32:14Z"
+LABEL org.opencontainers.image.created="2022-06-29T14:05:22Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="6589e5620218b1b4940f8bc88b68885c1bf346cd"
+LABEL org.opencontainers.image.revision="716f7a0079149405664c4df34a3bb7c965e4c600"
 LABEL org.opencontainers.image.version="main_build"
 VIASHDOCKER
 }

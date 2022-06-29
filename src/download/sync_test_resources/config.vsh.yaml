@@ -44,7 +44,7 @@ functionality:
       path: run_test.sh
 platforms:
   - type: docker
-    image: "amazon/aws-cli:2.7.1"
+    image: "amazon/aws-cli:2.7.11"
   - type: native
   - type: nextflow
     variant: vdsl3
