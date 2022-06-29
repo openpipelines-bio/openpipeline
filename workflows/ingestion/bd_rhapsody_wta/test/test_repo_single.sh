@@ -13,7 +13,7 @@ PAR_INPUTS='resources_test/bd_rhapsody_wta_test/raw/sample_R1_.fastq.gz;resource
 nextflow \
   run https://github.com/openpipelines-bio/openpipeline.git \
   -r 0.3.1 \
-  -main-script workflows/1_ingestion/bd_rhapsody_wta/main.nf \
+  -main-script workflows/ingestion/bd_rhapsody_wta/main.nf \
   --id "sample_test" \
   --input "$PAR_INPUTS" \
   --reference_genome "$PAR_GENOME" \
