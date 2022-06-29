@@ -494,9 +494,9 @@ functionality:
       
       LABEL org.opencontainers.image.authors="Robrecht Cannoodt <rcannood@gmail.com> (maintainer) {github: rcannood, orcid: 0000-0003-3641-729X}"
       LABEL org.opencontainers.image.description="Companion container for running component process_10xh5 filter_10xh5"
-      LABEL org.opencontainers.image.created="2022-06-29T06:10:48Z"
+      LABEL org.opencontainers.image.created="2022-06-29T09:41:04Z"
       LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-      LABEL org.opencontainers.image.revision="94a0c2d3741da8b3e6e79bb33e75c6b051de8610"
+      LABEL org.opencontainers.image.revision="ce584e31058f8f64c39ce022b0ecda02d6ce8a36"
       LABEL org.opencontainers.image.version="main_build"
       VIASHDOCKER
       }
@@ -1025,5 +1025,5 @@ info:
   output: "target/docker/process_10xh5/filter_10xh5"
   executable: "target/docker/process_10xh5/filter_10xh5/filter_10xh5"
   viash_version: "0.5.13"
-  git_commit: "94a0c2d3741da8b3e6e79bb33e75c6b051de8610"
+  git_commit: "ce584e31058f8f64c39ce022b0ecda02d6ce8a36"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"

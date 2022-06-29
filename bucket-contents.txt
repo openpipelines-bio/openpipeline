@@ -1,4 +1,6 @@
 2022-02-02 12:28:28       1070 LICENSE
+2022-06-29 08:55:54  269444662 bd_rhapsody_wta_1_10_test/raw/sample_R1_.fastq.gz
+2022-06-29 08:55:55  151848689 bd_rhapsody_wta_1_10_test/raw/sample_R2_.fastq.gz
 2022-05-24 07:59:31        252 bd_rhapsody_wta_test/processed/bdrhap_out/Logs/05048eeb-d7b3-4ce2-9cf1-6fe3da4a6c6f-mist_bundle_metrics.log
 2022-04-28 07:25:46       2216 bd_rhapsody_wta_test/processed/bdrhap_out/Logs/073bb55d-e4d6-4111-a065-7143c0510d28-mist_metrics.log
 2022-05-24 07:59:31        824 bd_rhapsody_wta_test/processed/bdrhap_out/Logs/0992e8c6-4099-4611-9d3b-2a00a2ea598c-mist_annotate_R1.log

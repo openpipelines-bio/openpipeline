@@ -156,6 +156,33 @@ thisConfig = [
       'description': 'Add timestamps to the errors, warnings, and notifications.',
       'default': false,
       'multiple': false
+    ],
+    [
+      'name': 'override_min_ram',
+      'required': false,
+      'type': 'integer',
+      'direction': 'input',
+      'description': 'Override the minimum RAM requirements specified in the CWL (in GB).',
+      'example': 2,
+      'multiple': false
+    ],
+    [
+      'name': 'override_min_cores',
+      'required': false,
+      'type': 'integer',
+      'direction': 'input',
+      'description': 'Override the minimum cores requirements specified in the CWL.',
+      'example': 2,
+      'multiple': false
+    ],
+    [
+      'name': 'dryrun',
+      'required': false,
+      'type': 'boolean_true',
+      'direction': 'input',
+      'description': 'If true, the output directory will only contain the CWL input files, but the pipeline itself will not be executed.',
+      'default': false,
+      'multiple': false
     ]
     ]
   ]
@@ -253,7 +280,22 @@ desired sample name to appear in Sample_Tag_Metrics.csv
 
     --timestamps
         type: boolean_true
-        Add timestamps to the errors, warnings, and notifications.'''
+        Add timestamps to the errors, warnings, and notifications.
+
+    --override_min_ram
+        type: integer
+        example: 2
+        Override the minimum RAM requirements specified in the CWL (in GB).
+
+    --override_min_cores
+        type: integer
+        example: 2
+        Override the minimum cores requirements specified in the CWL.
+
+    --dryrun
+        type: boolean_true
+        If true, the output directory will only contain the CWL input files, but
+the pipeline itself will not be executed.'''
 
 thisScript = '''set -e
 tempscript=".viash_script.sh"
@@ -280,7 +322,10 @@ par = {
   'sample_tags_version': $( if [ ! -z ${VIASH_PAR_SAMPLE_TAGS_VERSION+x} ]; then echo "'${VIASH_PAR_SAMPLE_TAGS_VERSION//\\'/\\\\\\'}'"; else echo None; fi ),
   'tag_names': $( if [ ! -z ${VIASH_PAR_TAG_NAMES+x} ]; then echo "'${VIASH_PAR_TAG_NAMES//\\'/\\\\\\'}'.split(':')"; else echo None; fi ),
   'parallel': $( if [ ! -z ${VIASH_PAR_PARALLEL+x} ]; then echo "'${VIASH_PAR_PARALLEL//\\'/\\\\\\'}'.lower() == 'true'"; else echo None; fi ),
-  'timestamps': $( if [ ! -z ${VIASH_PAR_TIMESTAMPS+x} ]; then echo "'${VIASH_PAR_TIMESTAMPS//\\'/\\\\\\'}'.lower() == 'true'"; else echo None; fi )
+  'timestamps': $( if [ ! -z ${VIASH_PAR_TIMESTAMPS+x} ]; then echo "'${VIASH_PAR_TIMESTAMPS//\\'/\\\\\\'}'.lower() == 'true'"; else echo None; fi ),
+  'override_min_ram': $( if [ ! -z ${VIASH_PAR_OVERRIDE_MIN_RAM+x} ]; then echo "int('${VIASH_PAR_OVERRIDE_MIN_RAM//\\'/\\\\\\'}')"; else echo None; fi ),
+  'override_min_cores': $( if [ ! -z ${VIASH_PAR_OVERRIDE_MIN_CORES+x} ]; then echo "int('${VIASH_PAR_OVERRIDE_MIN_CORES//\\'/\\\\\\'}')"; else echo None; fi ),
+  'dryrun': $( if [ ! -z ${VIASH_PAR_DRYRUN+x} ]; then echo "'${VIASH_PAR_DRYRUN//\\'/\\\\\\'}'.lower() == 'true'"; else echo None; fi )
 }
 meta = {
   'functionality_name': '$VIASH_META_FUNCTIONALITY_NAME',
@@ -304,11 +349,11 @@ if len(par["input"]) == 1 and os.path.isdir(par["input"][0]):
 par["input"] = [ os.path.abspath(f) for f in par["input"] ]
 par["reference_genome"] = os.path.abspath(par["reference_genome"])
 par["transcriptome_annotation"] = os.path.abspath(par["transcriptome_annotation"])
-par["output"] = os.path.abspath(par["output"])
 if par["abseq_reference"]:
   par["abseq_reference"] = [ os.path.abspath(f) for f in par["abseq_reference"] ]
 if par["supplemental_reference"]:
   par["supplemental_reference"] = [ os.path.abspath(f) for f in par["supplemental_reference"] ]
+par["output"] = os.path.abspath(par["output"])
 
 # create output dir if not exists
 if not os.path.exists(par["output"]):
@@ -446,7 +491,6 @@ with open(config_file, "w") as f:
 
 ## Process parameters
 proc_pars = ["--no-container"]
-# proc_pars = []
 
 if par["parallel"]:
   proc_pars.append("--parallel")
@@ -454,30 +498,47 @@ if par["parallel"]:
 if par["timestamps"]:
   proc_pars.append("--timestamps")
 
+# create cwl file (if need be)
+orig_cwl_file=os.path.abspath(os.path.join(meta["resources_dir"], "rhapsody_wta_1.9.1_nodocker.cwl"))
+if par["override_min_ram"] or par["override_min_cores"]:
+  cwl_file = os.path.join(par["output"], "pipeline.cwl")
+
+  # Read in the file
+  with open(orig_cwl_file, 'r') as file :
+    cwl_data = file.read()
+
+  # Replace the target string
+  if par["override_min_ram"]:
+    cwl_data = re.sub('"ramMin": [^,]*,', f'"ramMin": {par["override_min_ram"] * 1000},', cwl_data)
+  if par["override_min_cores"]:
+    cwl_data = re.sub('"coresMin": [^,]*,', f'"coresMin": {par["override_min_cores"]},', cwl_data)
+
+  # Write the file out again
+  with open(cwl_file, 'w') as file:
+    file.write(cwl_data)
+else:
+  cwl_file = orig_cwl_file
+
 ## Run pipeline
-cwl_file=os.path.abspath(os.path.join(meta["resources_dir"], "rhapsody_wta_1.9.1_nodocker.cwl"))
+if not par["dryrun"]:
+  with tempfile.TemporaryDirectory(prefix="cwl-bd_rhapsody_wta-", dir=meta["temp_dir"]) as temp_dir:
+    cmd = ["cwl-runner"] + proc_pars + [cwl_file, os.path.basename(config_file)]
 
-# sed -i 's#"ramMin": [^,]*,#"ramMin": 2000,#' "\\$meta_resources_dir/rhapsody_wta_1.9.1_nodocker.cwl"
-# sed -i 's#"coresMin": [^,]*,#"coresMin": 1,#' "\\$meta_resources_dir/rhapsody_wta_1.9.1_nodocker.cwl"
+    env = dict(os.environ)
+    env["TMPDIR"] = temp_dir
+    env["_JAVA_OPTIONS"] = "-Dpicard.useLegacyParser=true"
 
-with tempfile.TemporaryDirectory(prefix="cwl-bd_rhapsody_wta-", dir=meta["temp_dir"]) as temp_dir:
-  cmd = ["cwl-runner"] + proc_pars + [cwl_file, os.path.basename(config_file)]
+    print("> " + ' '.join(cmd))
 
-  env = dict(os.environ)
-  env["TMPDIR"] = temp_dir
-  env["_JAVA_OPTIONS"] = "-Dpicard.useLegacyParser=true"
+    p = subprocess.Popen(
+      cmd,
+      cwd=os.path.dirname(config_file),
+      env=env
+    )
+    p.wait()
 
-  print("> " + ' '.join(cmd))
-
-  p = subprocess.Popen(
-    cmd,
-    cwd=os.path.dirname(config_file),
-    env=env
-  )
-  p.wait()
-
-  if p.returncode != 0:
-    raise Exception(f"cwl-runner finished with exit code {p.returncode}") 
+    if p.returncode != 0:
+      raise Exception(f"cwl-runner finished with exit code {p.returncode}") 
 
 VIASHMAIN
 python "$tempscript"
