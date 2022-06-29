@@ -41,6 +41,8 @@ workflow test_wf {
         [
           input: file(params.rootDir + "/resources_test/cellranger_tiny_bcl/bcl"),
           sample_sheet: file(params.rootDir + "/resources_test/cellranger_tiny_bcl/bcl/sample_sheet.csv"),
+          cores: 2,
+          memory: 5
         ]
       ]
     )

@@ -56,7 +56,9 @@ workflow test_wf {
         "foo",
         [
           input: file(params.rootDir + "/resources_test/cellranger_tiny_fastq/cellranger_tiny_fastq"),
-          reference: file(params.rootDir + "/resources_test/cellranger_tiny_fastq/cellranger_tiny_ref")
+          reference: file(params.rootDir + "/resources_test/cellranger_tiny_fastq/cellranger_tiny_ref"),
+          cores: 2,
+          memory: 5
         ]
       ]
     )
