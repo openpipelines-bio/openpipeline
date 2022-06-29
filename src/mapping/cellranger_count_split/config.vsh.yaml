@@ -61,5 +61,8 @@ functionality:
 platforms:
   - type: docker
     image: "ubuntu:focal"
+    setup:
+      - type: docker
+        run: apt update && apt upgrade -y
   - type: nextflow
     variant: vdsl3

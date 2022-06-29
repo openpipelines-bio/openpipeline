@@ -82,5 +82,8 @@ functionality:
 platforms:
   - type: docker
     image: ghcr.io/data-intuitive/cellranger:6.1
+    setup:
+      - type: docker
+        run: apt update && apt upgrade -y
   - type: nextflow
     variant: vdsl3
