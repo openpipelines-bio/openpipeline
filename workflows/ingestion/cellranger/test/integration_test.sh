@@ -12,5 +12,6 @@ bin/nextflow \
   run . \
   -main-script workflows/ingestion/cellranger/main.nf \
   -entry test_wf \
-  -with-docker \
-  -resume
+  -resume \
+  -profile docker \
+  -with-trace work/trace.txt
