@@ -866,9 +866,9 @@ functionality:
       
         # Replace the target string
         if par["override_min_ram"]:
-          cwl_data = re.sub('"ramMin": [^,]*,', f'"ramMin": {par["override_min_ram"] * 1000},', cwl_data)
+          cwl_data = re.sub('"ramMin": [^\\\\n]*,\\\\n', f'"ramMin": {par["override_min_ram"] * 1000},\\\\n', cwl_data)
         if par["override_min_cores"]:
-          cwl_data = re.sub('"coresMin": [^,]*,', f'"coresMin": {par["override_min_cores"]},', cwl_data)
+          cwl_data = re.sub('"coresMin": [^\\\\n]*,\\\\n', f'"coresMin": {par["override_min_cores"]},\\\\n', cwl_data)
       
         # Write the file out again
         with open(cwl_file, 'w') as file:
@@ -1983,6 +1983,8 @@ functionality:
     is_executable: true
   - type: "file"
     path: "../../../resources_test/bd_rhapsody_wta_test"
+  - type: "file"
+    path: "../../../resources_test/bd_rhapsody_wta_1_10_test"
   info: {}
   dummy_arguments: []
   set_wd_to_resources_dir: false
@@ -2015,5 +2017,5 @@ info:
   platform: "nextflow"
   output: "target/nextflow/mapping/bd_rhapsody_wta_1_10_1"
   viash_version: "0.5.14"
-  git_commit: "aff3cd0ec228f2f7fce4c6db8f7b7ffa0fb077ae"
+  git_commit: "6589e5620218b1b4940f8bc88b68885c1bf346cd"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"

@@ -509,9 +509,9 @@ if par["override_min_ram"] or par["override_min_cores"]:
 
   # Replace the target string
   if par["override_min_ram"]:
-    cwl_data = re.sub('"ramMin": [^,]*,', f'"ramMin": {par["override_min_ram"] * 1000},', cwl_data)
+    cwl_data = re.sub('"ramMin": [^\\\\n]*,\\\\n', f'"ramMin": {par["override_min_ram"] * 1000},\\\\n', cwl_data)
   if par["override_min_cores"]:
-    cwl_data = re.sub('"coresMin": [^,]*,', f'"coresMin": {par["override_min_cores"]},', cwl_data)
+    cwl_data = re.sub('"coresMin": [^\\\\n]*,\\\\n', f'"coresMin": {par["override_min_cores"]},\\\\n', cwl_data)
 
   # Write the file out again
   with open(cwl_file, 'w') as file:
