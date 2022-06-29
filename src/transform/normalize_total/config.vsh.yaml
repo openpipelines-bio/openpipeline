@@ -62,6 +62,8 @@ platforms:
   - type: docker
     image: python:3.10-bullseye
     setup:
+      - type: docker
+        run: apt update && apt upgrade -y
       - type: apt
         packages: libhdf5-dev
       - type: python
