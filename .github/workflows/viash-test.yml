@@ -6,13 +6,17 @@ on:
   # pull_request:
   #   branches: [ '*' ]
 
-# Skip older CI runs on the same branch, but not for master
-# https://github.community/t/concurrency-cancel-in-progress-but-not-when-ref-is-master/194707/2
-concurrency:
-  group: ${{ github.head_ref} }
-  cancel-in-progress: ${{ github.ref != 'refs/heads/main' }}
-
 jobs:
+  cancel:
+      name: 'Cancel Previous Runs'
+      runs-on: ubuntu-latest
+      timeout-minutes: 3
+      if: github.ref != 'refs/heads/master'
+      steps:
+        - uses: styfle/cancel-workflow-action@0.10.0
+          with:
+            all_but_latest: true
+            access_token: ${{ github.token }}
   # phase 1
   list_components:
     env:
