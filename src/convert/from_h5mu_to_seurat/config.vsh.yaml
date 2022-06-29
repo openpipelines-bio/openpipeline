@@ -42,6 +42,8 @@ platforms:
   - type: docker
     image: eddelbuettel/r2u:22.04
     setup:
+      - type: docker
+        run: apt update && apt upgrade -y
       - type: apt
         packages: 
           - libhdf5-dev
