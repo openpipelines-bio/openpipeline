@@ -25,7 +25,7 @@ jobs:
       id: cachehash
       run: |
         AWS_EC2_METADATA_DISABLED=true aws s3 ls $s3_bucket --recursive --no-sign-request > bucket-contents.txt
-        echo "::set-output name=cachehash::resources_test_$( md5sum bucket-contents.txt | awk '{ print $1 }' )"
+        echo "::set-output name=cachehash::resources_test__$( md5sum bucket-contents.txt | awk '{ print $1 }' )"
     
     # initialize cache
     - name: Cache resources data
@@ -111,51 +111,51 @@ jobs:
       run: |
         bin/viash_push -m release -t main_build --force
 
-  ###################################3
-  # phase 3
-  integration_test:
-    needs: [ build_containers, list_components ]
+  # ###################################3
+  # # phase 3
+  # integration_test:
+  #   needs: [ build_containers, list_components ]
 
-    runs-on: ubuntu-latest
-    if: "!contains(github.event.head_commit.message, 'ci skip')"
+  #   runs-on: ubuntu-latest
+  #   if: "!contains(github.event.head_commit.message, 'ci skip')"
 
-    strategy:
-      fail-fast: false
-      matrix:
-        component: ${{ fromJson(needs.list_components.outputs.workflow_matrix) }}
+  #   strategy:
+  #     fail-fast: false
+  #     matrix:
+  #       component: ${{ fromJson(needs.list_components.outputs.workflow_matrix) }}
 
-    steps:
-    - uses: actions/checkout@v2
+  #   steps:
+  #   - uses: actions/checkout@v2
 
-    - name: Fetch viash
-      run: |
-        bin/init
-        bin/viash -h
+  #   - name: Fetch viash
+  #     run: |
+  #       bin/init
+  #       bin/viash -h
 
-    # build target dir
-    # use containers from main_build branch, hopefully these are available
-    - name: Build target dir
-      run: |
-        # force override viash build strategy to not build containers
-        sed -i 's#--setup "\\$setup_strat"#--setup donothing#' bin/viash_build
+  #   # build target dir
+  #   # use containers from main_build branch, hopefully these are available
+  #   - name: Build target dir
+  #     run: |
+  #       # force override viash build strategy to not build containers
+  #       sed -i 's#--setup "\\$setup_strat"#--setup donothing#' bin/viash_build
 
-        # build target dir
-        bin/viash_build -m release -t main_build
+  #       # build target dir
+  #       bin/viash_build -m release -t main_build
 
-    # use cache
-    - name: Cache resources data
-      uses: actions/cache@v3
-      with:
-        path: resources_test
-        key: ${{ needs.list_components.outputs.cachehash }}
+  #   # use cache
+  #   - name: Cache resources data
+  #     uses: actions/cache@v3
+  #     with:
+  #       path: resources_test
+  #       key: ${{ needs.list_components.outputs.cachehash }}
 
-    - name: Run integration test
-      run: |
-        # todo: replace with viash test command
-        config_dir=`dirname ${{ matrix.component.config }}`
-        script="$config_dir/${{ matrix.component.test_script }}"
-        bin/nextflow run . \
-          -main-script "$script" \
-          -entry ${{ matrix.component.entry }} \
-          -profile docker,mount_temp \
-          -c workflows/utils/labels_ci.config
+  #   - name: Run integration test
+  #     run: |
+  #       # todo: replace with viash test command
+  #       config_dir=`dirname ${{ matrix.component.config }}`
+  #       script="$config_dir/${{ matrix.component.test_script }}"
+  #       bin/nextflow run . \
+  #         -main-script "$script" \
+  #         -entry ${{ matrix.component.entry }} \
+  #         -profile docker,mount_temp \
+  #         -c workflows/utils/labels_ci.config
