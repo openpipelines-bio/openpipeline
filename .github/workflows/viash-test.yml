@@ -9,7 +9,7 @@ jobs:
       name: 'Cancel Previous Runs'
       runs-on: ubuntu-latest
       timeout-minutes: 3
-      if: github.ref != 'refs/heads/master'
+      if: github.ref != 'refs/heads/main'
       steps:
         - uses: styfle/cancel-workflow-action@0.10.0
           with:
