@@ -34,11 +34,11 @@ if len(par["input"]) == 1 and os.path.isdir(par["input"][0]):
 par["input"] = [ os.path.abspath(f) for f in par["input"] ]
 par["reference_genome"] = os.path.abspath(par["reference_genome"])
 par["transcriptome_annotation"] = os.path.abspath(par["transcriptome_annotation"])
-par["output"] = os.path.abspath(par["output"])
 if par["abseq_reference"]:
   par["abseq_reference"] = [ os.path.abspath(f) for f in par["abseq_reference"] ]
 if par["supplemental_reference"]:
   par["supplemental_reference"] = [ os.path.abspath(f) for f in par["supplemental_reference"] ]
+par["output"] = os.path.abspath(par["output"])
 
 # create output dir if not exists
 if not os.path.exists(par["output"]):
@@ -176,7 +176,6 @@ with open(config_file, "w") as f:
 
 ## Process parameters
 proc_pars = ["--no-container"]
-# proc_pars = []
 
 if par["parallel"]:
   proc_pars.append("--parallel")
@@ -184,27 +183,44 @@ if par["parallel"]:
 if par["timestamps"]:
   proc_pars.append("--timestamps")
 
+# create cwl file (if need be)
+orig_cwl_file=os.path.abspath(os.path.join(meta["resources_dir"], "rhapsody_wta_1.9.1_nodocker.cwl"))
+if par["override_min_ram"] or par["override_min_cores"]:
+  cwl_file = os.path.join(par["output"], "pipeline.cwl")
+
+  # Read in the file
+  with open(orig_cwl_file, 'r') as file :
+    cwl_data = file.read()
+
+  # Replace the target string
+  if par["override_min_ram"]:
+    cwl_data = re.sub('"ramMin": [^,]*,', f'"ramMin": {par["override_min_ram"] * 1000},', cwl_data)
+  if par["override_min_cores"]:
+    cwl_data = re.sub('"coresMin": [^,]*,', f'"coresMin": {par["override_min_cores"]},', cwl_data)
+
+  # Write the file out again
+  with open(cwl_file, 'w') as file:
+    file.write(cwl_data)
+else:
+  cwl_file = orig_cwl_file
+
 ## Run pipeline
-cwl_file=os.path.abspath(os.path.join(meta["resources_dir"], "rhapsody_wta_1.9.1_nodocker.cwl"))
+if not par["dryrun"]:
+  with tempfile.TemporaryDirectory(prefix="cwl-bd_rhapsody_wta-", dir=meta["temp_dir"]) as temp_dir:
+    cmd = ["cwl-runner"] + proc_pars + [cwl_file, os.path.basename(config_file)]
 
-# sed -i 's#"ramMin": [^,]*,#"ramMin": 2000,#' "$meta_resources_dir/rhapsody_wta_1.9.1_nodocker.cwl"
-# sed -i 's#"coresMin": [^,]*,#"coresMin": 1,#' "$meta_resources_dir/rhapsody_wta_1.9.1_nodocker.cwl"
+    env = dict(os.environ)
+    env["TMPDIR"] = temp_dir
+    env["_JAVA_OPTIONS"] = "-Dpicard.useLegacyParser=true"
 
-with tempfile.TemporaryDirectory(prefix="cwl-bd_rhapsody_wta-", dir=meta["temp_dir"]) as temp_dir:
-  cmd = ["cwl-runner"] + proc_pars + [cwl_file, os.path.basename(config_file)]
+    print("> " + ' '.join(cmd))
 
-  env = dict(os.environ)
-  env["TMPDIR"] = temp_dir
-  env["_JAVA_OPTIONS"] = "-Dpicard.useLegacyParser=true"
+    p = subprocess.Popen(
+      cmd,
+      cwd=os.path.dirname(config_file),
+      env=env
+    )
+    p.wait()
 
-  print("> " + ' '.join(cmd))
-
-  p = subprocess.Popen(
-    cmd,
-    cwd=os.path.dirname(config_file),
-    env=env
-  )
-  p.wait()
-
-  if p.returncode != 0:
-    raise Exception(f"cwl-runner finished with exit code {p.returncode}") 
+    if p.returncode != 0:
+      raise Exception(f"cwl-runner finished with exit code {p.returncode}") 
