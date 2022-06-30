@@ -19,7 +19,7 @@ functionality:
       description: One or more fastq paths, separated with semicolons.
       example: file.fastq
       multiple: true
-      multiple_sep: ":"
+      multiple_sep: ","
     - name: "--reference_genome"
       required: true
       type: file
