@@ -10,8 +10,9 @@ export NXF_VER=21.10.6
 
 bin/nextflow \
   run . \
-  -main-script workflows/ingestion/cellranger_mapping/main.nf \
+  -main-script workflows/ingestion/bd_rhapsody_wta/main.nf \
   -entry test_wf \
   -resume \
-  -with-docker \
+  -profile docker \
   -with-trace work/trace.txt
+
