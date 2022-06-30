@@ -117,7 +117,7 @@ jobs:
     needs: [ build_containers, list_components ]
 
     runs-on: ubuntu-latest
-    if: "!contains(github.event.head_commit.message, '#integration')"
+    if: "contains(github.event.head_commit.message, '#integration')"
 
     strategy:
       fail-fast: false
