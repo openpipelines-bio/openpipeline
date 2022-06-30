@@ -188,3 +188,4 @@ bind_rows(
   ) %>% 
   knitr::kable()
 ```
+
