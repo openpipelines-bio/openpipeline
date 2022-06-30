@@ -7,7 +7,7 @@ include { cellranger_mkfastq } from targetDir + "/demux/cellranger_mkfastq/main.
 
 include { readConfig; viashChannel; helpMessage } from workflowDir + "/utils/viash_workflow_helper.nf"
 
-config = readConfig("$projectDir/config.vsh.yaml")
+config = readConfig("$workflowDir/ingestion/cellranger_demux/config.vsh.yaml")
 
 workflow {
   params.testing = false

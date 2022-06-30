@@ -293,325 +293,322 @@ functionality:
       // DEFINE CUSTOM CODE
       
       // functionality metadata
-      thisConfig = [
-        'functionality': [
-          'name': 'bd_rhapsody_wta_1_10_1',
-          'arguments': [
-          [
-            'name': 'input',
-            'required': true,
-            'type': 'file',
-            'direction': 'input',
-            'description': 'Path to your read files in the FASTQ.GZ format. You may specify as many R1/R2 read pairs as you want.',
-            'example': ['input.fastq.gz'],
-            'multiple': true,
-            'multiple_sep': ':'
-          ],
-          [
-            'name': 'reference_genome',
-            'required': true,
-            'type': 'file',
-            'direction': 'input',
-            'description': 'Path to STAR index as a tar.gz file.',
-            'example': 'reference_genome.tar.gz',
-            'multiple': false
-          ],
-          [
-            'name': 'transcriptome_annotation',
-            'required': true,
-            'type': 'file',
-            'direction': 'input',
-            'description': 'Path to GTF annotation file.',
-            'example': 'transcriptome.gtf',
-            'multiple': false
-          ],
-          [
-            'name': 'abseq_reference',
-            'required': false,
-            'type': 'file',
-            'direction': 'input',
-            'description': 'Path to the AbSeq reference file in FASTA format. Only needed if BD AbSeq Ab-Oligos are used.',
-            'multiple': true,
-            'multiple_sep': ':'
-          ],
-          [
-            'name': 'supplemental_reference',
-            'required': false,
-            'type': 'file',
-            'direction': 'input',
-            'description': 'Path to the supplemental reference file in FASTA format. Only needed if there are additional transgene sequences used in the experiment.',
-            'multiple': true,
-            'multiple_sep': ':'
-          ],
-          [
-            'name': 'output',
-            'required': true,
-            'type': 'file',
-            'direction': 'output',
-            'description': 'Output folder. Output still needs to be processed further.',
-            'default': '$id.$key.output',
-            'example': 'output_dir',
-            'multiple': false
-          ],
-          [
-            'name': 'putative_cell_call',
-            'required': false,
-            'type': 'string',
-            'direction': 'input',
-            'description': 'Specify the dataset to be used for putative cell calling. For putative cell calling using an AbSeq dataset, please provide an AbSeq_Reference fasta file above.',
-            'example': 'mRNA',
-            'multiple': false
-          ],
-          [
-            'name': 'exact_cell_count',
-            'required': false,
-            'type': 'integer',
-            'direction': 'input',
-            'description': 'Exact cell count - Set a specific number (>=1) of cells as putative, based on those with the highest error-corrected read count',
-            'example': 10000,
-            'multiple': false
-          ],
-          [
-            'name': 'disable_putative_calling',
-            'required': false,
-            'type': 'boolean_true',
-            'direction': 'input',
-            'description': 'Disable Refined Putative Cell Calling - Determine putative cells using only the basic algorithm (minimum second derivative along the cumulative reads curve). The refined algorithm attempts to remove false positives and recover false negatives, but may not be ideal for certain complex mixtures of cell types. Does not apply if Exact Cell Count is set.',
-            'default': false,
-            'multiple': false
-          ],
-          [
-            'name': 'subsample',
-            'required': false,
-            'type': 'double',
-            'direction': 'input',
-            'description': 'A number >1 or fraction (0 < n < 1) to indicate the number or percentage of reads to subsample.',
-            'example': 0.01,
-            'multiple': false
-          ],
-          [
-            'name': 'subsample_seed',
-            'required': false,
-            'type': 'integer',
-            'direction': 'input',
-            'description': 'A seed for replicating a previous subsampled run.',
-            'example': 3445,
-            'multiple': false
-          ],
-          [
-            'name': 'sample_tags_version',
-            'required': false,
-            'type': 'string',
-            'direction': 'input',
-            'description': 'Specify if multiplexed run.',
-            'example': 'human',
-            'multiple': false
-          ],
-          [
-            'name': 'tag_names',
-            'required': false,
-            'type': 'string',
-            'direction': 'input',
-            'description': 'Tag_Names (optional) - Specify the tag number followed by \'-\' and the desired sample name to appear in Sample_Tag_Metrics.csv\nDo not use the special characters: &, (), [], {},  <>, ?, |\n',
-            'example': ['4-mySample\', \'9-myOtherSample\', \'6-alsoThisSample'],
-            'multiple': true,
-            'multiple_sep': ':'
-          ],
-          [
-            'name': 'vdj_version',
-            'required': false,
-            'type': 'string',
-            'direction': 'input',
-            'description': 'Specify if VDJ run.',
-            'example': 'human',
-            'multiple': false
-          ],
-          [
-            'name': 'run_name',
-            'required': false,
-            'type': 'string',
-            'direction': 'input',
-            'description': 'Specify a run name to use as the output file base name. Use only letters, numbers, or hyphens. Do not use special characters or spaces.',
-            'example': 'run-name',
-            'multiple': false
-          ],
-          [
-            'name': 'parallel',
-            'required': false,
-            'type': 'boolean',
-            'direction': 'input',
-            'description': 'Run jobs in parallel.',
-            'default': true,
-            'multiple': false
-          ],
-          [
-            'name': 'timestamps',
-            'required': false,
-            'type': 'boolean_true',
-            'direction': 'input',
-            'description': 'Add timestamps to the errors, warnings, and notifications.',
-            'default': false,
-            'multiple': false
-          ],
-          [
-            'name': 'override_min_ram',
-            'required': false,
-            'type': 'integer',
-            'direction': 'input',
-            'description': 'Override the minimum RAM requirements specified in the CWL (in GB).',
-            'example': 2,
-            'multiple': false
-          ],
-          [
-            'name': 'override_min_cores',
-            'required': false,
-            'type': 'integer',
-            'direction': 'input',
-            'description': 'Override the minimum cores requirements specified in the CWL.',
-            'example': 2,
-            'multiple': false
-          ],
-          [
-            'name': 'dryrun',
-            'required': false,
-            'type': 'boolean_true',
-            'direction': 'input',
-            'description': 'If true, the output directory will only contain the CWL input files, but the pipeline itself will not be executed.',
-            'default': false,
-            'multiple': false
-          ]
-          ]
-        ]
-      ]
-      
-      thisHelpMessage = '''bd_rhapsody_wta_1_10_1 main_build
-      
-      A wrapper for the BD Rhapsody Analysis CWL v1.10.1 pipeline.
-      
-      The CWL pipeline file is obtained by cloning
-      'https://bitbucket.org/CRSwDev/cwl/src/master/' and removing all objects with
-      class 'DockerRequirement' from the YML.
-      
-      The reference_genome and transcriptome_annotation files can be downloaded from
-      these locations:
-        - Human:
-      http://bd-rhapsody-public.s3-website-us-east-1.amazonaws.com/Rhapsody-WTA/GRCh38-PhiX-gencodev29/
-        - Mouse:
-      http://bd-rhapsody-public.s3-website-us-east-1.amazonaws.com/Rhapsody-WTA/GRCm38-PhiX-gencodevM19/
-      
-      Options:
-          --input
-              type: file, required parameter, multiple values allowed
-              example: input.fastq.gz
-              Path to your read files in the FASTQ.GZ format. You may specify as many
-      R1/R2 read pairs as you want.
-      
-          --reference_genome
-              type: file, required parameter
-              example: reference_genome.tar.gz
-              Path to STAR index as a tar.gz file.
-      
-          --transcriptome_annotation
-              type: file, required parameter
-              example: transcriptome.gtf
-              Path to GTF annotation file.
-      
-          --abseq_reference
-              type: file, multiple values allowed
-              Path to the AbSeq reference file in FASTA format. Only needed if BD
-      AbSeq Ab-Oligos are used.
-      
-          --supplemental_reference
-              type: file, multiple values allowed
-              Path to the supplemental reference file in FASTA format. Only needed if
-      there are additional transgene sequences used in the experiment.
-      
-          --output
-              type: file, required parameter, output
-              example: output_dir
-              Output folder. Output still needs to be processed further.
-      
-          --putative_cell_call
-              type: string
-              example: mRNA
-              choices: [ mRNA, AbSeq_Experimental ]
-              Specify the dataset to be used for putative cell calling. For putative
-      cell calling using an AbSeq dataset, please provide an AbSeq_Reference fasta
-      file above.
-      
-          --exact_cell_count
-              type: integer
-              example: 10000
-              Exact cell count - Set a specific number (>=1) of cells as putative,
-      based on those with the highest error-corrected read count
-      
-          --disable_putative_calling
-              type: boolean_true
-              Disable Refined Putative Cell Calling - Determine putative cells using
-      only the basic algorithm (minimum second derivative along the cumulative reads
-      curve). The refined algorithm attempts to remove false positives and recover
-      false negatives, but may not be ideal for certain complex mixtures of cell
-      types. Does not apply if Exact Cell Count is set.
-      
-          --subsample
-              type: double
-              example: 0.01
-              A number >1 or fraction (0 < n < 1) to indicate the number or percentage
-      of reads to subsample.
-      
-          --subsample_seed
-              type: integer
-              example: 3445
-              A seed for replicating a previous subsampled run.
-      
-          --sample_tags_version
-              type: string
-              example: human
-              choices: [ human, hs, mouse, mm ]
-              Specify if multiplexed run.
-      
-          --tag_names
-              type: string, multiple values allowed
-              example: 4-mySample:9-myOtherSample:6-alsoThisSample
-              Tag_Names (optional) - Specify the tag number followed by '-' and the
-      desired sample name to appear in Sample_Tag_Metrics.csv
-              Do not use the special characters: &, (), [], {},  <>, ?, |
-      
-          --vdj_version
-              type: string
-              example: human
-              choices: [ human, mouse, humanBCR, humanBCR, humanTCR, mouseBCR ]
-              Specify if VDJ run.
-      
-          --run_name
-              type: string
-              example: run-name
-              Specify a run name to use as the output file base name. Use only
-      letters, numbers, or hyphens. Do not use special characters or spaces.
-      
-          --parallel
-              type: boolean
-              default: true
-              Run jobs in parallel.
-      
-          --timestamps
-              type: boolean_true
-              Add timestamps to the errors, warnings, and notifications.
-      
-          --override_min_ram
-              type: integer
-              example: 2
-              Override the minimum RAM requirements specified in the CWL (in GB).
-      
-          --override_min_cores
-              type: integer
-              example: 2
-              Override the minimum cores requirements specified in the CWL.
-      
-          --dryrun
-              type: boolean_true
-              If true, the output directory will only contain the CWL input files, but
-      the pipeline itself will not be executed.'''
+      thisConfig = processConfig([
+        functionality: jsonSlurper.parseText('''{
+        "name" : "bd_rhapsody_wta_1_10_1",
+        "namespace" : "mapping",
+        "version" : "main_build",
+        "authors" : [
+          {
+            "name" : "Robrecht Cannoodt",
+            "email" : "rcannood@gmail.com",
+            "roles" : [
+              "maintainer"
+            ],
+            "props" : {
+              "github" : "rcannood",
+              "orcid" : "0000-0003-3641-729X"
+            }
+          }
+        ],
+        "arguments" : [
+          {
+            "type" : "file",
+            "name" : "--input",
+            "alternatives" : [
+              "-i"
+            ],
+            "description" : "Path to your read files in the FASTQ.GZ format. You may specify as many R1/R2 read pairs as you want.",
+            "example" : [
+              "input.fastq.gz"
+            ],
+            "must_exist" : false,
+            "required" : true,
+            "direction" : "input",
+            "multiple" : true,
+            "multiple_sep" : ":"
+          },
+          {
+            "type" : "file",
+            "name" : "--reference_genome",
+            "alternatives" : [
+              "-r"
+            ],
+            "description" : "Path to STAR index as a tar.gz file.",
+            "example" : [
+              "reference_genome.tar.gz"
+            ],
+            "must_exist" : false,
+            "required" : true,
+            "direction" : "input",
+            "multiple" : false,
+            "multiple_sep" : ":"
+          },
+          {
+            "type" : "file",
+            "name" : "--transcriptome_annotation",
+            "alternatives" : [
+              "-t"
+            ],
+            "description" : "Path to GTF annotation file.",
+            "example" : [
+              "transcriptome.gtf"
+            ],
+            "must_exist" : false,
+            "required" : true,
+            "direction" : "input",
+            "multiple" : false,
+            "multiple_sep" : ":"
+          },
+          {
+            "type" : "file",
+            "name" : "--abseq_reference",
+            "alternatives" : [
+              "-a"
+            ],
+            "description" : "Path to the AbSeq reference file in FASTA format. Only needed if BD AbSeq Ab-Oligos are used.",
+            "must_exist" : false,
+            "required" : false,
+            "direction" : "input",
+            "multiple" : true,
+            "multiple_sep" : ":"
+          },
+          {
+            "type" : "file",
+            "name" : "--supplemental_reference",
+            "alternatives" : [
+              "-s"
+            ],
+            "description" : "Path to the supplemental reference file in FASTA format. Only needed if there are additional transgene sequences used in the experiment.",
+            "must_exist" : false,
+            "required" : false,
+            "direction" : "input",
+            "multiple" : true,
+            "multiple_sep" : ":"
+          },
+          {
+            "type" : "file",
+            "name" : "--output",
+            "alternatives" : [
+              "-o"
+            ],
+            "description" : "Output folder. Output still needs to be processed further.",
+            "example" : [
+              "output_dir"
+            ],
+            "must_exist" : false,
+            "required" : true,
+            "direction" : "output",
+            "multiple" : false,
+            "multiple_sep" : ":"
+          },
+          {
+            "type" : "string",
+            "name" : "--putative_cell_call",
+            "description" : "Specify the dataset to be used for putative cell calling. For putative cell calling using an AbSeq dataset, please provide an AbSeq_Reference fasta file above.",
+            "example" : [
+              "mRNA"
+            ],
+            "required" : false,
+            "choices" : [
+              "mRNA",
+              "AbSeq_Experimental"
+            ],
+            "direction" : "input",
+            "multiple" : false,
+            "multiple_sep" : ":"
+          },
+          {
+            "type" : "integer",
+            "name" : "--exact_cell_count",
+            "description" : "Exact cell count - Set a specific number (>=1) of cells as putative, based on those with the highest error-corrected read count",
+            "example" : [
+              10000
+            ],
+            "required" : false,
+            "direction" : "input",
+            "multiple" : false,
+            "multiple_sep" : ":"
+          },
+          {
+            "type" : "boolean_true",
+            "name" : "--disable_putative_calling",
+            "description" : "Disable Refined Putative Cell Calling - Determine putative cells using only the basic algorithm (minimum second derivative along the cumulative reads curve). The refined algorithm attempts to remove false positives and recover false negatives, but may not be ideal for certain complex mixtures of cell types. Does not apply if Exact Cell Count is set.",
+            "direction" : "input"
+          },
+          {
+            "type" : "double",
+            "name" : "--subsample",
+            "description" : "A number >1 or fraction (0 < n < 1) to indicate the number or percentage of reads to subsample.",
+            "example" : [
+              0.01
+            ],
+            "required" : false,
+            "direction" : "input",
+            "multiple" : false,
+            "multiple_sep" : ":"
+          },
+          {
+            "type" : "integer",
+            "name" : "--subsample_seed",
+            "description" : "A seed for replicating a previous subsampled run.",
+            "example" : [
+              3445
+            ],
+            "required" : false,
+            "direction" : "input",
+            "multiple" : false,
+            "multiple_sep" : ":"
+          },
+          {
+            "type" : "string",
+            "name" : "--sample_tags_version",
+            "description" : "Specify if multiplexed run.",
+            "example" : [
+              "human"
+            ],
+            "required" : false,
+            "choices" : [
+              "human",
+              "hs",
+              "mouse",
+              "mm"
+            ],
+            "direction" : "input",
+            "multiple" : false,
+            "multiple_sep" : ":"
+          },
+          {
+            "type" : "string",
+            "name" : "--tag_names",
+            "description" : "Tag_Names (optional) - Specify the tag number followed by '-' and the desired sample name to appear in Sample_Tag_Metrics.csv\nDo not use the special characters: &, (), [], {},  <>, ?, |\n",
+            "example" : [
+              "4-mySample",
+              "9-myOtherSample",
+              "6-alsoThisSample"
+            ],
+            "required" : false,
+            "direction" : "input",
+            "multiple" : true,
+            "multiple_sep" : ":"
+          },
+          {
+            "type" : "string",
+            "name" : "--vdj_version",
+            "description" : "Specify if VDJ run.",
+            "example" : [
+              "human"
+            ],
+            "required" : false,
+            "choices" : [
+              "human",
+              "mouse",
+              "humanBCR",
+              "humanBCR",
+              "humanTCR",
+              "mouseBCR"
+            ],
+            "direction" : "input",
+            "multiple" : false,
+            "multiple_sep" : ":"
+          },
+          {
+            "type" : "string",
+            "name" : "--run_name",
+            "description" : "Specify a run name to use as the output file base name. Use only letters, numbers, or hyphens. Do not use special characters or spaces.",
+            "example" : [
+              "run-name"
+            ],
+            "required" : false,
+            "direction" : "input",
+            "multiple" : false,
+            "multiple_sep" : ":"
+          },
+          {
+            "type" : "boolean",
+            "name" : "--parallel",
+            "description" : "Run jobs in parallel.",
+            "default" : [
+              true
+            ],
+            "required" : false,
+            "direction" : "input",
+            "multiple" : false,
+            "multiple_sep" : ":"
+          },
+          {
+            "type" : "boolean_true",
+            "name" : "--timestamps",
+            "description" : "Add timestamps to the errors, warnings, and notifications.",
+            "direction" : "input"
+          },
+          {
+            "type" : "integer",
+            "name" : "--override_min_ram",
+            "description" : "Override the minimum RAM requirements specified in the CWL (in GB).",
+            "example" : [
+              2
+            ],
+            "required" : false,
+            "direction" : "input",
+            "multiple" : false,
+            "multiple_sep" : ":"
+          },
+          {
+            "type" : "integer",
+            "name" : "--override_min_cores",
+            "description" : "Override the minimum cores requirements specified in the CWL.",
+            "example" : [
+              2
+            ],
+            "required" : false,
+            "direction" : "input",
+            "multiple" : false,
+            "multiple_sep" : ":"
+          },
+          {
+            "type" : "boolean_true",
+            "name" : "--dryrun",
+            "description" : "If true, the output directory will only contain the CWL input files, but the pipeline itself will not be executed.",
+            "direction" : "input"
+          }
+        ],
+        "resources" : [
+          {
+            "type" : "python_script",
+            "path" : "script.py",
+            "is_executable" : true,
+            "parent" : "file:/home/runner/work/openpipeline/openpipeline/src/mapping/bd_rhapsody_wta_1_10_1/config.vsh.yaml"
+          },
+          {
+            "type" : "file",
+            "path" : "rhapsody_wta_1.10.1_nodocker.cwl",
+            "parent" : "file:/home/runner/work/openpipeline/openpipeline/src/mapping/bd_rhapsody_wta_1_10_1/config.vsh.yaml"
+          }
+        ],
+        "description" : "A wrapper for the BD Rhapsody Analysis CWL v1.10.1 pipeline.\n\nThe CWL pipeline file is obtained by cloning 'https://bitbucket.org/CRSwDev/cwl/src/master/' and removing all objects with class 'DockerRequirement' from the YML.\n\nThe reference_genome and transcriptome_annotation files can be downloaded from these locations:\n  - Human: http://bd-rhapsody-public.s3-website-us-east-1.amazonaws.com/Rhapsody-WTA/GRCh38-PhiX-gencodev29/\n  - Mouse: http://bd-rhapsody-public.s3-website-us-east-1.amazonaws.com/Rhapsody-WTA/GRCm38-PhiX-gencodevM19/\n",
+        "test_resources" : [
+          {
+            "type" : "bash_script",
+            "path" : "run_test.sh",
+            "is_executable" : true,
+            "parent" : "file:/home/runner/work/openpipeline/openpipeline/src/mapping/bd_rhapsody_wta_1_10_1/config.vsh.yaml"
+          },
+          {
+            "type" : "file",
+            "path" : "../../../resources_test/bd_rhapsody_wta_test",
+            "parent" : "file:/home/runner/work/openpipeline/openpipeline/src/mapping/bd_rhapsody_wta_1_10_1/config.vsh.yaml"
+          },
+          {
+            "type" : "file",
+            "path" : "../../../resources_test/bd_rhapsody_wta_1_10_test",
+            "parent" : "file:/home/runner/work/openpipeline/openpipeline/src/mapping/bd_rhapsody_wta_1_10_1/config.vsh.yaml"
+          }
+        ],
+        "set_wd_to_resources_dir" : false,
+        "enabled" : true
+      }''')
+      ])
       
       thisScript = '''set -e
       tempscript=".viash_script.sh"
@@ -906,7 +903,7 @@ functionality:
         // fixed arguments to be passed to script
         args: [:],
         // default directives
-        directives: jsonSlurper.parseText("""{
+        directives: jsonSlurper.parseText('''{
         "container" : {
           "registry" : "ghcr.io",
           "image" : "openpipelines-bio/mapping_bd_rhapsody_wta_1_10_1",
@@ -916,14 +913,14 @@ functionality:
           "highmem",
           "highcpu"
         ]
-      }"""),
+      }'''),
         // auto settings
-        auto: jsonSlurper.parseText("""{
+        auto: jsonSlurper.parseText('''{
         "simplifyInput" : true,
         "simplifyOutput" : true,
         "transcript" : false,
         "publish" : false
-      }"""),
+      }'''),
         // apply a map over the incoming tuple
         // example: { tup -> [ tup[0], [input: tup[1].output], tup[2] ] }
         map: null,
@@ -944,6 +941,408 @@ functionality:
       ]
       
       // END CUSTOM CODE
+      
+      /////////////////////////////////////
+      // Viash Workflow helper functions //
+      /////////////////////////////////////
+      
+      import java.util.regex.Pattern
+      import java.io.BufferedReader
+      import java.io.FileReader
+      import java.nio.file.Paths
+      import groovy.json.JsonSlurper
+      import groovy.text.SimpleTemplateEngine
+      import org.yaml.snakeyaml.Yaml
+      
+      def paramExists(name) {
+        return params.containsKey(name) && params[name] != ""
+      }
+      
+      def assertParamExists(name, description) {
+        if (!paramExists(name)) {
+          exit 1, "ERROR: Please provide a --${name} parameter ${description}"
+        }
+      }
+      
+      def getChild(parent, child) {
+        if (child.contains("://") || Paths.get(child).isAbsolute()) {
+          child
+        } else {
+          parent.replaceAll('/[^/]*$', "/") + child
+        }
+      }
+      
+      def readCsv(file) {
+        def output = []
+        def inputFile = file !instanceof File ? new File(file) : file
+      
+        // todo: allow escaped quotes in string
+        // todo: allow single quotes?
+        def splitRegex = Pattern.compile(''',(?=(?:[^"]*"[^"]*")*[^"]*$)''')
+        def removeQuote = Pattern.compile('''"(.*)"''')
+      
+        def br = new BufferedReader(new FileReader(inputFile))
+      
+        def row = -1
+        def header = null
+        while (br.ready() && header == null) {
+          def line = br.readLine()
+          row++
+          if (!line.startsWith("#")) {
+            header = splitRegex.split(line).collect{field ->
+              m = removeQuote.matcher(field)
+              m.find() ? m.replaceFirst('$1') : field
+            }
+          }
+        }
+        assert header != null: "CSV file should contain a header"
+      
+        while (br.ready()) {
+          def line = br.readLine()
+          row++
+          if (!line.startsWith("#")) {
+            def data = splitRegex.split(line).collect{field ->
+              m = removeQuote.matcher(field)
+              m.find() ? m.replaceFirst('$1') : field
+            }
+      
+            assert header.size() == data.size(): "Row $row should contain the same number as fields as the header"
+            
+            def dataMap = [header, data].transpose().collectEntries()
+            output.add(dataMap)
+          }
+        }
+      
+        output
+      }
+      
+      def readJsonBlob(str) {
+        def jsonSlurper = new JsonSlurper()
+        jsonSlurper.parseText(str)
+      }
+      
+      def readJson(file) {
+        def inputFile = file !instanceof File ? new File(file) : file
+        def jsonSlurper = new JsonSlurper()
+        jsonSlurper.parse(inputFile)
+      }
+      
+      def readYamlBlob(str) {
+        def yamlSlurper = new Yaml()
+        yamlSlurper.load(str)
+      }
+      
+      def readYaml(file) {
+        def inputFile = file !instanceof File ? new File(file) : file
+        def yamlSlurper = new Yaml()
+        yamlSlurper.load(inputFile)
+      }
+      
+      def processArgument(arg) {
+        arg.multiple = arg.multiple ?: false
+        arg.required = arg.required ?: false
+        arg.direction = arg.direction ?: "input"
+        arg.multiple_sep = arg.multiple_sep ?: ":"
+        arg.plainName = arg.name.replaceAll("^-*", "")
+      
+        if (arg.type == "file" && arg.direction == "output") {
+          def mult = arg.multiple ? "_*" : ""
+          def extSearch = ""
+          if (arg.default != null) {
+            extSearch = arg.default
+          } else if (arg.example != null) {
+            extSearch = arg.example
+          }
+          if (extSearch instanceof List) {
+            extSearch = extSearch[0]
+          }
+          def ext = extSearch.find("\\.[^\\.]+\$") ?: ""
+          arg.default = "\$id.\$key.${arg.plainName}${mult}${ext}"
+        }
+      
+        if (!arg.multiple) {
+          if (arg.default != null && arg.default instanceof List) {
+            arg.default = arg.default[0]
+          }
+          if (arg.example != null && arg.example instanceof List) {
+            arg.example = arg.example[0]
+          }
+        }
+      
+        arg
+      }
+      def processConfig(config) {
+        // assert .functionality etc.
+        config.functionality.inputs = 
+          (config.functionality.inputs ?: []).collect{arg ->
+            arg.type = arg.type ?: "file"
+            arg.direction = "input"
+            processArgument(arg)
+          }
+        config.functionality.outputs = 
+          (config.functionality.outputs ?: []).collect{arg ->
+            arg.type = arg.type ?: "file"
+            arg.direction = "output"
+            processArgument(arg)
+          }
+        config.functionality.arguments = 
+          (config.functionality.arguments ?: []).collect{arg ->
+            processArgument(arg)
+          }
+        config.functionality.allArguments = 
+          config.functionality.inputs +
+          config.functionality.outputs +
+          config.functionality.arguments
+        config
+      }
+      
+      def readConfig(file) {
+        def config = readYaml(file)
+        processConfig(config)
+      }
+      
+      
+      def mergeMap(Map lhs, Map rhs) {
+        return rhs.inject(lhs.clone()) { map, entry ->
+          if (map[entry.key] instanceof Map && entry.value instanceof Map) {
+            map[entry.key] = mergeMap(map[entry.key], entry.value)
+          } else if (map[entry.key] instanceof Collection && entry.value instanceof Collection) {
+            map[entry.key] += entry.value
+          } else {
+            map[entry.key] = entry.value
+          }
+          return map
+        }
+      }
+      
+      def helpMessage(params, config) {
+        if (paramExists("help")) {
+      
+          def localConfig = [
+            "functionality" : [
+              "arguments": [
+                [
+                  'name': '--id',
+                  'required': true,
+                  'type': 'string',
+                  'description': 'A unique id for every entry.',
+                  'default': 'run',
+                  'multiple': false
+                ],
+                [
+                  'name': '--publish_dir',
+                  'required': true,
+                  'type': 'string',
+                  'description': 'Path to an output directory.',
+                  'example': 'output/',
+                  'multiple': false
+                ],
+                [
+                  'name': '--param_list',
+                  'required': false,
+                  'type': 'string',
+                  'description': '''Allows inputting multiple parameter sets to initialise a Nextflow channel. Possible formats are csv, json, yaml, or simply a yaml_blob.
+                  |A csv should have column names which correspond to the different arguments of this pipeline.
+                  |A json or a yaml file should be a list of maps, each of which has keys corresponding to the arguments of the pipeline.
+                  |A yaml blob can also be passed directly as a parameter.
+                  |Inside the Nextflow pipeline code, params.params_list can also be used to directly a list of parameter sets.
+                  |When passing a csv, json or yaml, relative path names are relativized to the location of the parameter file.'''.stripMargin(),
+                  'example': 'my_params.yaml',
+                  'multiple': false
+                ],
+                [
+                  'name': '--param_list_format',
+                  'required': false,
+                  'type': 'string',
+                  'description': 'Manually specify the param_list_format. Must be one of \'csv\', \'json\', \'yaml\', \'yaml_blob\', \'asis\' or \'none\'.',
+                  'example': 'yaml',
+                  'choices': ['csv', 'json', 'yaml', 'yaml_blob', 'asis', 'none'],
+                  'multiple': false
+                ],
+              ],
+              "arguments_groups": [
+                [
+                  "name": "Global",
+                  "description": "Nextflow-related arguments.",
+                  "arguments" : [ "publish_dir", "param_list", "param_list_format" ]
+                ]
+              ]
+            ]
+          ]
+      
+          def template = '''\
+          |${functionality.name}
+          |<%= (functionality.description) ? "\\n" + functionality.description.trim() : "<<REMOVE>>" %>
+          |<% for (group in (functionality.arguments_groups.size() > 1 ) ? functionality.arguments_groups : [ [ name: "Options", arguments: functionality.allArguments.collect{ it.plainName } ] ] ) { %>
+          |<%= group.name ? group.name + (group.name == "Options" ? ":" : " options:"): "" %>
+          |<%= group.description ? "    " + group.description.trim().replaceAll("\\n", "\\n    ") + "\\n" : "<<REMOVE>>" %><% for (argument in functionality.allArguments) { %><% if (group.arguments.contains(argument.plainName)) { %>
+          |    <%= "--" + argument.plainName %>
+          |        type: <%= argument.type %><%= (argument.required) ? ", required parameter" : "" %><%= (argument.multiple) ? ", multiple values allowed" : "" %>
+          |        <%= (argument.example)  ? "example: ${argument.example}" : "<<REMOVE>>" %>
+          |        <%= (argument.default)  ? "default: ${argument.default}" : "<<REMOVE>>" %>
+          |        <%= (argument.description) ? argument.description.trim().replaceAll("\\n", "\\n        ") : "<<REMOVE>>" %>
+          |<% } } } %>
+          '''.stripMargin()
+      
+          def engine = new groovy.text.SimpleTemplateEngine()
+          def mergedConfig = processConfig(mergeMap(config, localConfig))
+          def help = engine
+              .createTemplate(template)
+              .make(mergedConfig)
+              .toString()
+              .replaceAll("\s*<<REMOVE>>\n","")
+      
+          println(help)
+          exit 0
+      
+        }
+      }
+      
+      def guessMultiParamFormat(params) {
+        if (!params.containsKey("param_list")) {
+          "none"
+        } else if (params.containsKey("multiParamsFormat")) {
+          params.multiParamsFormat
+        } else {
+          def param_list = params.param_list
+      
+          if (param_list !instanceof String) {
+            "asis"
+          } else if (param_list.endsWith(".csv")) {
+            "csv"
+          } else if (param_list.endsWith(".json") || param_list.endsWith(".jsn")) {
+            "json"
+          } else if (param_list.endsWith(".yaml") || param_list.endsWith(".yml")) {
+            "yaml"
+          } else {
+            "yaml_blob"
+          }
+        }
+      }
+      
+      def paramsToList(params, config) {
+        // fetch default params from functionality
+        def defaultArgs = config.functionality.allArguments
+          .findAll { it.containsKey("default") }
+          .collectEntries { [ it.plainName, it.default ] }
+      
+        // fetch overrides in params
+        def paramArgs = config.functionality.allArguments
+          .findAll { params.containsKey(it.plainName) }
+          .collectEntries { [ it.plainName, params[it.plainName] ] }
+        
+        // check multi input params
+        // objects should be closures and not functions, thanks to FunctionDef
+        def multiParamFormat = guessMultiParamFormat(params)
+      
+        def multiOptionFunctions = [ 
+          "csv": {[it, readCsv(it)]},
+          "json": {[it, readJson(it)]},
+          "yaml": {[it, readYaml(it)]},
+          "yaml_blob": {[null, readYamlBlob(it)]},
+          "asis": {[null, it]},
+          "none": {[null, [[:]]]}
+        ]
+        assert multiOptionFunctions.containsKey(multiParamFormat): 
+          "Format of provided --param_list not recognised.\n" +
+          "You can use '--param_list_format' to manually specify the format.\n" +
+          "Found: '$multiParamFormat'. Expected: one of 'csv', 'json', 'yaml', 'yaml_blob', 'asis' or 'none'"
+      
+        // fetch multi param inputs
+        def multiOptionFun = multiOptionFunctions.get(multiParamFormat)
+        // todo: add try catch
+        def multiOptionOut = multiOptionFun(params.containsKey("param_list") ? params.param_list : "")
+        def paramList = multiOptionOut[1]
+        def multiFile = multiOptionOut[0]
+      
+        // data checks
+        assert paramList instanceof List: "--$readerId should contain a list of maps"
+        for (value in paramList) {
+          assert value instanceof Map: "--$readerId should contain a list of maps"
+        }
+        
+        // combine parameters
+        def processedParams = paramList.collect{ multiParam ->
+          // combine params
+          def combinedArgs = defaultArgs + multiParam + paramArgs
+      
+          // check whether required arguments exist
+          config.functionality.allArguments
+            .findAll { it.required }
+            .forEach { par ->
+              assert combinedArgs.containsKey(par.plainName): "Argument ${par.plainName} is required but does not have a value"
+            }
+          
+          // process arguments
+          def inputs = config.functionality.allArguments
+            .collectEntries { par ->
+              // split on 'multiple_sep'
+              if (par.multiple) {
+                parData = combinedArgs[par.plainName]
+                if (parData instanceof List) {
+                  parData = parData.collect{it instanceof String ? it.split(par.multiple_sep) : it }
+                } else if (parData instanceof String) {
+                  parData = parData.split(par.multiple_sep)
+                } else {
+                  parData = [ parData ]
+                }
+              } else {
+                parData = [ combinedArgs[par.plainName] ]
+              }
+      
+              // flatten
+              parData = parData.flatten()
+      
+              // cast types
+              if (par.type == "file" && ((par.direction ?: "input") == "input")) {
+                parData = parData.collect{path ->
+                  if (path !instanceof String) {
+                    path
+                  } else if (multiFile) {
+                    file(getChild(multiFile, path))
+                  } else {
+                    file(path)
+                  }
+                }.flatten()
+              } else if (par.type == "integer") {
+                parData = parData.collect{it as Integer}
+              } else if (par.type == "double") {
+                parData = parData.collect{it as Double}
+              } else if (par.type == "boolean") {
+                parData = parData.collect{it as Boolean}
+              }
+              // simplify list to value if need be
+              if (!par.multiple) {
+                assert parData.size() == 1 : 
+                  "Error: argument ${par.plainName} has too many values.\n" +
+                  "  Expected amount: 1. Found: ${parData.length}"
+                parData = parData[0]
+              }
+      
+              // return pair
+              [ par.plainName, parData ]
+            }
+      
+          }
+        
+        // check processed params
+        processedParams.forEach { args ->
+          assert args.containsKey("id"): "Each argument set should have an 'id'. Argument set: $args"
+        }
+        def ppIds = processedParams.collect{it.id}
+        assert ppIds.size() == ppIds.unique().size() : "All argument sets should have unique ids. Detected ids: $ppIds"
+      
+        processedParams
+      }
+      
+      def paramsToChannel(params, config) {
+        Channel.fromList(paramsToList(params, config))
+      }
+      
+      def viashChannel(params, config) {
+        paramsToChannel(params, config)
+          | map{tup -> [tup.id, tup]}
+      }
       
       ////////////////////////////
       // VDSL3 helper functions //
@@ -1392,7 +1791,7 @@ functionality:
         if (processArgs.auto.publish == true && (processArgs.directives.publishDir ?: [:]).isEmpty()) {
           assert params.containsKey("publishDir") || params.containsKey("publish_dir") : 
             "Error in module '${processArgs['key']}': if auto.publish is true, params.publish_dir needs to be defined.\n" +
-            "  Example: params.transcripts_dir = \"./output/\""
+            "  Example: params.publish_dir = \"./output/\""
           def publishDir = params.containsKey("publish_dir") ? params.publish_dir : params.publishDir
           
           // TODO: more asserts on publishDir?
@@ -1491,19 +1890,19 @@ functionality:
           }
         }.join()
       
-        def inputPaths = thisConfig.functionality.arguments
+        def inputPaths = thisConfig.functionality.allArguments
           .findAll { it.type == "file" && it.direction == "input" }
-          .collect { ', path(viash_par_' + it.name + ')' }
+          .collect { ', path(viash_par_' + it.plainName + ')' }
           .join()
       
-        def outputPaths = thisConfig.functionality.arguments
+        def outputPaths = thisConfig.functionality.allArguments
           .findAll { it.type == "file" && it.direction == "output" }
           .collect { par ->
             // insert dummy into every output (see nextflow-io/nextflow#2678)
             if (!par.multiple) {
-              ', path{[".exitcode", args.' + par.name + ']}'
+              ', path{[".exitcode", args.' + par.plainName + ']}'
             } else {
-              ', path{[".exitcode"] + args.' + par.name + '}'
+              ', path{[".exitcode"] + args.' + par.plainName + '}'
             }
           }
           .join()
@@ -1516,20 +1915,20 @@ functionality:
         }
       
         // construct inputFileExports
-        def inputFileExports = thisConfig.functionality.arguments
+        def inputFileExports = thisConfig.functionality.allArguments
           .findAll { it.type == "file" && it.direction.toLowerCase() == "input" }
           .collect { par ->
-            viash_par_contents = !par.required && !par.multiple ? "viash_par_${par.name}[0]" : "viash_par_${par.name}.join(\":\")"
-            "\n\${viash_par_${par.name}.empty ? \"\" : \"export VIASH_PAR_${par.name.toUpperCase()}=\\\"\" + ${viash_par_contents} + \"\\\"\"}"
+            viash_par_contents = !par.required && !par.multiple ? "viash_par_${par.plainName}[0]" : "viash_par_${par.plainName}.join(\":\")"
+            "\n\${viash_par_${par.plainName}.empty ? \"\" : \"export VIASH_PAR_${par.plainName.toUpperCase()}=\\\"\" + ${viash_par_contents} + \"\\\"\"}"
           }
         
         def tmpDir = "/tmp" // check if component is docker based
       
         // construct stub
-        def stub = thisConfig.functionality.arguments
+        def stub = thisConfig.functionality.allArguments
           .findAll { it.type == "file" && it.direction == "output" }
           .collect { par -> 
-            'touch "${viash_par_' + par.name + '.join(\'" "\')}"'
+            'touch "${viash_par_' + par.plainName + '.join(\'" "\')}"'
           }
           .join("\n")
       
@@ -1606,15 +2005,11 @@ functionality:
         }
       }
       
-      // wfKeyCounter = -1
-      
       def workflowFactory(Map args) {
         def processArgs = processProcessArgs(args)
         def key = processArgs["key"]
         def meta = ScriptMeta.current()
       
-        // def workflowKey = wfKeyCounter == -1 ? key : "$key$wfKeyCounter"
-        // wfKeyCounter++
         def workflowKey = key
       
         // write process to temporary nf file and parse it in memory
@@ -1661,7 +2056,7 @@ functionality:
               
               // match file to input file
               if (processArgs.auto.simplifyInput && (tuple[1] instanceof Path || tuple[1] instanceof List)) {
-                def inputFiles = thisConfig.functionality.arguments
+                def inputFiles = thisConfig.functionality.allArguments
                   .findAll { it.type == "file" && it.direction == "input" }
                 
                 assert inputFiles.size() == 1 : 
@@ -1669,7 +2064,7 @@ functionality:
                     "  Anonymous file inputs are only allowed when the process has exactly one file input.\n" +
                     "  Expected: inputFiles.size() == 1. Found: inputFiles.size() is ${inputFiles.size()}"
       
-                tuple[1] = [[ inputFiles[0].name, tuple[1] ]].collectEntries()
+                tuple[1] = [[ inputFiles[0].plainName, tuple[1] ]].collectEntries()
               }
       
               // check data field
@@ -1714,22 +2109,22 @@ functionality:
               def passthrough = tuple.drop(2)
       
               // fetch default params from functionality
-              def defaultArgs = thisConfig.functionality.arguments
+              def defaultArgs = thisConfig.functionality.allArguments
                 .findAll { it.containsKey("default") }
-                .collectEntries { [ it.name, it.default ] }
+                .collectEntries { [ it.plainName, it.default ] }
       
               // fetch overrides in params
-              def paramArgs = thisConfig.functionality.arguments
+              def paramArgs = thisConfig.functionality.allArguments
                 .findAll { par ->
-                  def argKey = key + "__" + par.name
+                  def argKey = key + "__" + par.plainName
                   params.containsKey(argKey) && params[argKey] != "viash_no_value"
                 }
-                .collectEntries { [ it.name, params[key + "__" + it.name] ] }
+                .collectEntries { [ it.plainName, params[key + "__" + it.plainName] ] }
               
               // fetch overrides in data
-              def dataArgs = thisConfig.functionality.arguments
-                .findAll { data.containsKey(it.name) }
-                .collectEntries { [ it.name, data[it.name] ] }
+              def dataArgs = thisConfig.functionality.allArguments
+                .findAll { data.containsKey(it.plainName) }
+                .collectEntries { [ it.plainName, data[it.plainName] ] }
               
               // combine params
               def combinedArgs = defaultArgs + paramArgs + processArgs.args + dataArgs
@@ -1738,20 +2133,20 @@ functionality:
               combinedArgs.removeAll{it == null}
       
               // check whether required arguments exist
-              thisConfig.functionality.arguments
+              thisConfig.functionality.allArguments
                 .forEach { par ->
                   if (par.required) {
-                    assert combinedArgs.containsKey(par.name): "Argument ${par.name} is required but does not have a value"
+                    assert combinedArgs.containsKey(par.plainName): "Argument ${par.plainName} is required but does not have a value"
                   }
                 }
       
               // TODO: check whether parameters have the right type
       
               // process input files separately
-              def inputPaths = thisConfig.functionality.arguments
+              def inputPaths = thisConfig.functionality.allArguments
                 .findAll { it.type == "file" && it.direction == "input" }
                 .collect { par ->
-                  def val = combinedArgs.containsKey(par.name) ? combinedArgs[par.name] : []
+                  def val = combinedArgs.containsKey(par.plainName) ? combinedArgs[par.plainName] : []
                   def inputFiles = []
                   if (val == null) {
                     inputFiles = []
@@ -1765,7 +2160,7 @@ functionality:
                   // throw error when an input file doesn't exist
                   inputFiles.each{ file -> 
                     assert file.exists() :
-                      "Error in module '${key}' id '${id}' argument '${par.name}'.\n" +
+                      "Error in module '${key}' id '${id}' argument '${par.plainName}'.\n" +
                       "  Required input file does not exist.\n" +
                       "  Path: '$file'.\n" +
                       "  Expected input file to exist"
@@ -1774,10 +2169,10 @@ functionality:
                 } 
       
               // remove input files
-              def argsExclInputFiles = thisConfig.functionality.arguments
+              def argsExclInputFiles = thisConfig.functionality.allArguments
                 .findAll { it.type != "file" || it.direction != "input" }
                 .collectEntries { par ->
-                  def parName = par.name
+                  def parName = par.plainName
                   def val = combinedArgs[parName]
                   if (par.multiple && val instanceof Collection) {
                     val = val.join(par.multiple_sep)
@@ -1792,7 +2187,7 @@ functionality:
             }
             | processObj
             | map { output ->
-              def outputFiles = thisConfig.functionality.arguments
+              def outputFiles = thisConfig.functionality.allArguments
                 .findAll { it.type == "file" && it.direction == "output" }
                 .indexed()
                 .collectEntries{ index, par ->
@@ -1803,7 +2198,7 @@ functionality:
                       out = []
                     } else {
                       assert !par.required :
-                          "Error in module '${key}' id '${output[0]}' argument '${par.name}'.\n" +
+                          "Error in module '${key}' id '${output[0]}' argument '${par.plainName}'.\n" +
                           "  Required output file is missing"
                       out = null
                     }
@@ -1812,7 +2207,7 @@ functionality:
                   } else {
                     out = out.drop(1)
                   }
-                  [ par.name, out ]
+                  [ par.plainName, out ]
                 }
               
               // drop null outputs
@@ -1855,44 +2250,13 @@ functionality:
       
       // anonymous workflow for running this module as a standalone
       workflow {
-        if (params.containsKey("help") && params["help"]) {
-          exit 0, thisHelpMessage
-        }
+        helpMessage(params, thisConfig)
+      
         if (!params.containsKey("id")) {
           params.id = "run"
         }
-        if (!params.containsKey("publishDir")) {
-          params.publishDir = "./"
-        }
       
-        // fetch parameters
-        def args = thisConfig.functionality.arguments
-          .findAll { par -> params.containsKey(par.name) }
-          .collectEntries { par ->
-            if (par.multiple) {
-              parData = params[par.name]
-              if (parData instanceof List) {
-                parData = parData.collect{it instanceof String ? it.split(par.multiple_sep) : it }.flatten()
-              } else if (parData instanceof String) {
-                parData = parData.split(par.multiple_sep)
-              }
-              // todo: does this work for non-strings?
-            } else {
-              parData = [ params[par.name] ]
-            }
-            if (par.type == "file" && par.direction == "input") {
-              parData = parData.collect{it instanceof String ? file(it) : it}.flatten()
-            }
-            if (!par.multiple) {
-              assert parData.size() == 1 : 
-                "Error: argument ${par.name} has too many values.\n" +
-                "  Expected amount: 1. Found: ${parData.length}"
-              parData = parData[0]
-            }
-            [ par.name, parData ]
-          }
-                
-        Channel.value([ params.id, args ])
+        viashChannel(params, thisConfig)
           | view { "input: $it" }
           | myWfInstance.run(
             auto: [ publish: true ]
@@ -2017,5 +2381,5 @@ info:
   platform: "nextflow"
   output: "target/nextflow/mapping/bd_rhapsody_wta_1_10_1"
   viash_version: "0.5.14"
-  git_commit: "f9a424037fc8103fe2d26a4ecbc772d0042c040e"
+  git_commit: "60d2253768a6d6b9d577f223d1ec4e4b437eb25a"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"

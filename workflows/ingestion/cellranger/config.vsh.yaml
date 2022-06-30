@@ -2,6 +2,17 @@ functionality:
   name: "cellranger"
   namespace: "ingestion"
   description: "Cell Ranger ingestion pipeline (demux and mapping)."
+  authors:
+    - name: Angela Pisco
+      roles: [ author ]
+      props: { github: aopisco, orcid: "0000-0003-0142-2355" }
+    - name: Samuel D'Souza
+      roles: [ author ]
+      props: { github: srdsam }
+    - name: Robrecht Cannoodt
+      email: rcannood@gmail.com
+      roles: [ author, maintainer ]
+      props: { github: rcannood, orcid: "0000-0003-3641-729X" }
   arguments:
     - name: "--id"
       required: true
@@ -27,7 +38,7 @@ functionality:
     - type: nextflow_script
       path: main.nf
     - path: nextflow.config
-  # tests:
+  # test_resources:
   #   - type: nextflow_script
   #     path: main.nf
   #     entrypoint: test_wf

@@ -9,7 +9,7 @@ include { do_filter } from targetDir + "/filter/do_filter/main.nf"
 
 include { readConfig; viashChannel; helpMessage } from workflowDir + "/utils/viash_workflow_helper.nf"
 
-config = readConfig("$projectDir/config.vsh.yaml")
+config = readConfig("$workflowDir/process_rna/singlesample/config.vsh.yaml")
 
 workflow {
   params.testing = false

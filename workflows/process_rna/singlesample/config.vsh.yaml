@@ -2,6 +2,15 @@ functionality:
   name: "singlesample"
   namespace: "process_rna"
   description: "Processing unimodal single-sample RNA transcriptomics data."
+  authors:
+    - name: Dries De Maeyer
+      email: ddemaeyer@gmail.com
+      roles: [ author ]
+      props: { account: ddemaey1 }
+    - name: Robrecht Cannoodt
+      email: rcannood@gmail.com
+      roles: [ author, maintainer ]
+      props: { github: rcannood, orcid: "0000-0003-3641-729X" }
   arguments:
     - name: "--id"
       required: true
@@ -16,7 +25,7 @@ functionality:
   resources:
     - type: nextflow_script
       path: main.nf
-  tests:
+  test_resources:
     - type: nextflow_script
       path: main.nf
       entrypoint: test_wf
