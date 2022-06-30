@@ -27,7 +27,7 @@ functionality:
     - type: nextflow_script
       path: main.nf
     - path: nextflow.config
-  # tests:
+  # test_resources:
   #   - type: nextflow_script
   #     path: main.nf
   #     entrypoint: test_wf

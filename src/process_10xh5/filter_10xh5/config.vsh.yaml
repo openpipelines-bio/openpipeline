@@ -45,7 +45,7 @@ functionality:
   resources:
     - type: r_script
       path: script.R
-  tests:
+  test_resources:
     - type: r_script
       path: run_test.R
     - path: ../../../resources_test/pbmc_1k_protein_v3/pbmc_1k_protein_v3_filtered_feature_bc_matrix.h5
