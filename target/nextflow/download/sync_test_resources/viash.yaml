@@ -1722,5 +1722,5 @@ info:
   platform: "nextflow"
   output: "target/nextflow/download/sync_test_resources"
   viash_version: "0.5.14"
-  git_commit: "60d2253768a6d6b9d577f223d1ec4e4b437eb25a"
+  git_commit: "b3eeca70dbce2526d3e2be25b778efafb7279351"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"

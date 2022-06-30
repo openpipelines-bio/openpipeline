@@ -388,9 +388,9 @@ FROM python:3.10
 RUN :
 LABEL org.opencontainers.image.authors="Robrecht Cannoodt <rcannood@gmail.com> (maintainer) {github: rcannood, orcid: 0000-0003-3641-729X}"
 LABEL org.opencontainers.image.description="Companion container for running component download download_file"
-LABEL org.opencontainers.image.created="2022-06-30T09:18:51Z"
+LABEL org.opencontainers.image.created="2022-06-30T09:45:03Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="60d2253768a6d6b9d577f223d1ec4e4b437eb25a"
+LABEL org.opencontainers.image.revision="b3eeca70dbce2526d3e2be25b778efafb7279351"
 LABEL org.opencontainers.image.version="main_build"
 VIASHDOCKER
 }
