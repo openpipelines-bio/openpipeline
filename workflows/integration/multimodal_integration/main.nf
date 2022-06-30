@@ -10,7 +10,7 @@ include { leiden } from targetDir + '/cluster/leiden/main.nf'
 
 include { readConfig; viashChannel; helpMessage } from workflowDir + "/utils/viash_workflow_helper.nf"
 
-config = readConfig("$projectDir/config.vsh.yaml")
+config = readConfig("$workflowDir/integration/multimodal_integration/config.vsh.yaml")
 
 workflow {
   params.testing = false

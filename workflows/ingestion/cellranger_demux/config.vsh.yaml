@@ -21,7 +21,6 @@ functionality:
   resources:
     - type: nextflow_script
       path: main.nf
-    - path: nextflow.config
   tests:
     - type: nextflow_script
       path: main.nf
