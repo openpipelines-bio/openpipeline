@@ -312,9 +312,9 @@ def paramsToList(params, config) {
   def multiFile = multiOptionOut[0]
 
   // data checks
-  assert paramList instanceof List: "--$readerId should contain a list of maps"
+  assert paramList instanceof List: "--param_list should contain a list of maps"
   for (value in paramList) {
-    assert value instanceof Map: "--$readerId should contain a list of maps"
+    assert value instanceof Map: "--param_list should contain a list of maps"
   }
   
   // combine parameters
