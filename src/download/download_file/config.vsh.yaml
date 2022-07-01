@@ -37,6 +37,6 @@ functionality:
       path: run_test.sh
 platforms:
   - type: docker
-    image: python:3.10-slim
+    image: ubuntu:latest
   - type: nextflow
     variant: vdsl3
