@@ -75,7 +75,7 @@ functionality:
   resources:
     - type: bash_script
       path: script.sh
-  tests:
+  test_resources:
     - type: python_script
       path: test.py
     - path: ../../../resources_test/cellranger_tiny_fastq

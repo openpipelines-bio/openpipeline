@@ -10,7 +10,7 @@ include { from_10xh5_to_h5mu } from targetDir + "/convert/from_10xh5_to_h5mu/mai
 
 include { readConfig; viashChannel; helpMessage } from workflowDir + "/utils/viash_workflow_helper.nf"
 
-config = readConfig("$projectDir/config.vsh.yaml")
+config = readConfig("$workflowDir/ingestion/cellranger_mapping/config.vsh.yaml")
 
 workflow {
   params.testing = false

@@ -33,7 +33,7 @@ functionality:
   resources:
     - type: r_script
       path: script.R
-  tests:
+  test_resources:
     - type: python_script
       path: run_test.py
     - path: ../../../resources_test/bd_rhapsody_wta_test
