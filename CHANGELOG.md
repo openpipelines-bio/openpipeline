@@ -16,6 +16,10 @@
 
 * `ingestion/bd_rhapsody_wta`: Allow switching between the 1.9.1 and 1.10.1 version of the pipeline.
 
+* Switch to Viash 0.5.14.
+
+* `integrate/merge`: Merge several unimodal .h5mu files into one multimodal .h5mu file.
+
 ## BUG FIXES
 
 * `workflows/utils/viash_workflow_helper.nf`: Renamed `utils.nf` to `viash_workflow_helper.nf`.
