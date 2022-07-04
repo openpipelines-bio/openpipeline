@@ -213,7 +213,7 @@ with open(config_file, "w") as f:
   f.write(config_content)
 
 ## Process parameters
-proc_pars = ["--no-container"]
+proc_pars = ["--no-container", "--outdir", par["output"]]
 
 if par["parallel"]:
   proc_pars.append("--parallel")
@@ -259,5 +259,22 @@ if not par["dryrun"]:
     )
     p.wait()
 
-    if p.returncode != 0:
-      raise Exception(f"cwl-runner finished with exit code {p.returncode}") 
+  if p.returncode != 0:
+    raise Exception(f"cwl-runner finished with exit code {p.returncode}")
+  
+  # look for counts file
+  if not par["run_name"]:
+    par["run_name"] = "sample"
+  counts_filename = par["run_name"] + "_RSEC_MolsPerCell.csv"
+  if par["sample_tags_version"]:
+    counts_filename = "Combined_" + counts_filename
+  counts_file = os.path.join(par["output"], counts_filename)
+  if not os.path.exists(counts_file):
+    raise Exception(f"Could not find output counts file '{counts_filename}'")
+
+  # look for metrics file
+  metrics_filename = par["run_name"] + "_Metrics_Summary.csv"
+  metrics_file = os.path.join(par["output"], metrics_filename)
+  if not os.path.exists(metrics_file):
+    raise Exception(f"Could not find output metrics file '{metrics_filename}'")
+
