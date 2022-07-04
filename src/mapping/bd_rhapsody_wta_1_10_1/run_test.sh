@@ -7,7 +7,7 @@ echo ">> Checking whether requirement overrides work"
   -r "$meta_resources_dir/bd_rhapsody_wta_test/raw/GRCh38_primary_assembly_genome_chr1.tar.gz" \
   -t "$meta_resources_dir/bd_rhapsody_wta_test/raw/gencode_v40_annotation_chr1.gtf" \
   --abseq_reference "$meta_resources_dir/bd_rhapsody_wta_1_10_test/raw/BDAbSeq_ImmuneDiscoveryPanel.fasta" \
-  --tag_names "1-Jurkat, 2-Ramos, 3-THP1" \
+  --tag_names "1-Jurkat:2-Ramos:3-THP1" \
   --sample_tags_version "hs" \
   --putative_cell_call "mRNA" \
   --override_min_cores 1234 \
@@ -33,7 +33,7 @@ echo ">> Running $meta_functionality_name"
   -r "$meta_resources_dir/bd_rhapsody_wta_test/raw/GRCh38_primary_assembly_genome_chr1.tar.gz" \
   -t "$meta_resources_dir/bd_rhapsody_wta_test/raw/gencode_v40_annotation_chr1.gtf" \
   --abseq_reference "$meta_resources_dir/bd_rhapsody_wta_1_10_test/raw/BDAbSeq_ImmuneDiscoveryPanel.fasta" \
-  --tag_names "1-Jurkat, 2-Ramos, 3-THP1" \
+  --tag_names "1-Jurkat:2-Ramos:3-THP1" \
   --sample_tags_version "hs" \
   --putative_cell_call "mRNA" \
   --override_min_cores 1 \
