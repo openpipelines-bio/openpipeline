@@ -109,7 +109,7 @@ functionality:
     - name: "--run_name"
       type: string
       description: "Specify a run name to use as the output file base name. Use only letters, numbers, or hyphens. Do not use special characters or spaces."
-      example: run-name
+      default: sample
 
     # cwl-runner settings
     - name: "--parallel"
