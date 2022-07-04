@@ -1,5 +1,5 @@
 functionality:
-  name: "bd_rhapsody_wta_1_10_1"
+  name: "bd_rhapsody_wta"
   namespace: "mapping"
   version: "dev"
   description: |
@@ -138,7 +138,6 @@ functionality:
     - type: bash_script
       path: run_test.sh
     - path: ../../../resources_test/bd_rhapsody_wta_test
-    - path: ../../../resources_test/bd_rhapsody_wta_1_10_test
 
 platforms:
   - type: docker
