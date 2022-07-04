@@ -1,3 +1,4 @@
+from multiprocessing.sharedctypes import Value
 import os
 import re
 import subprocess
@@ -5,7 +6,8 @@ import tempfile
 
 ## VIASH START
 par = {
-  'input': ['resources_test/bd_rhapsody_wta_test/raw/sample_R1_.fastq.gz', 'resources_test/bd_rhapsody_wta_test/raw/sample_R2_.fastq.gz'],
+  'input': ['resources_test/bd_rhapsody_wta_test/raw/12SMK_S1_L432_R1_001.fastq.gz',
+            'resources_test/bd_rhapsody_wta_test/raw/12SMK_S1_L432_R2_001.fastq.gz'],
   'output': 'output_dir',
   'subsample': None,
   'reference_genome': 'resources_test/bd_rhapsody_wta_test/raw/GRCh38_primary_assembly_genome_chr1.tar.gz',
@@ -252,29 +254,27 @@ if not par["dryrun"]:
 
     print("> " + ' '.join(cmd))
 
-    p = subprocess.Popen(
+    p = subprocess.check_call(
       cmd,
       cwd=os.path.dirname(config_file),
       env=env
     )
-    p.wait()
 
-  if p.returncode != 0:
-    raise Exception(f"cwl-runner finished with exit code {p.returncode}")
-  
   # look for counts file
   if not par["run_name"]:
     par["run_name"] = "sample"
   counts_filename = par["run_name"] + "_RSEC_MolsPerCell.csv"
+  
   if par["sample_tags_version"]:
     counts_filename = "Combined_" + counts_filename
   counts_file = os.path.join(par["output"], counts_filename)
+  
   if not os.path.exists(counts_file):
-    raise Exception(f"Could not find output counts file '{counts_filename}'")
+    raise ValueError(f"Could not find output counts file '{counts_filename}'")
 
   # look for metrics file
   metrics_filename = par["run_name"] + "_Metrics_Summary.csv"
   metrics_file = os.path.join(par["output"], metrics_filename)
   if not os.path.exists(metrics_file):
-    raise Exception(f"Could not find output metrics file '{metrics_filename}'")
+    raise ValueError(f"Could not find output metrics file '{metrics_filename}'")
 
