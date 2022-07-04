@@ -29,6 +29,6 @@ out/
 log.txt
 check_results/
 out/
-output/
+output*
 output_log/
 resources_test
