@@ -7,7 +7,7 @@ include { filter_with_counts } from targetDir + "/filter/filter_with_counts/main
 include { filter_with_scrublet } from targetDir + "/filter/filter_with_scrublet/main.nf"
 include { do_filter } from targetDir + "/filter/do_filter/main.nf"
 
-include { readConfig; viashChannel; helpMessage } from workflowDir + "/utils/viash_workflow_helper.nf"
+include { readConfig; viashChannel; helpMessage } from workflowDir + "/utils/WorkflowHelper.nf"
 
 config = readConfig("$workflowDir/process_rna/singlesample/config.vsh.yaml")
 

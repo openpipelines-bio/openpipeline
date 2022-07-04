@@ -8,7 +8,7 @@ include { find_neighbors } from targetDir + '/neighbors/find_neighbors/main.nf'
 include { umap } from targetDir + '/dimred/umap/main.nf'
 include { leiden } from targetDir + '/cluster/leiden/main.nf'
 
-include { readConfig; viashChannel; helpMessage } from workflowDir + "/utils/viash_workflow_helper.nf"
+include { readConfig; viashChannel; helpMessage } from workflowDir + "/utils/WorkflowHelper.nf"
 
 config = readConfig("$workflowDir/integration/multimodal_integration/config.vsh.yaml")
 

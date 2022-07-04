@@ -8,7 +8,7 @@ include { cellranger_count } from targetDir + "/mapping/cellranger_count/main.nf
 include { cellranger_count_split } from targetDir + "/mapping/cellranger_count_split/main.nf"
 include { from_10xh5_to_h5mu } from targetDir + "/convert/from_10xh5_to_h5mu/main.nf"
 
-include { readConfig; viashChannel; helpMessage } from workflowDir + "/utils/viash_workflow_helper.nf"
+include { readConfig; viashChannel; helpMessage } from workflowDir + "/utils/WorkflowHelper.nf"
 
 config = readConfig("$workflowDir/ingestion/cellranger/config.vsh.yaml")
 
