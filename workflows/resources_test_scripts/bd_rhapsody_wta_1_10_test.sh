@@ -17,7 +17,7 @@ seqkit sample -s100 -p 0.01 "$raw_dir/12WTA-ABC-SMK-EB-5kJRT/12SMK_S1_L432_R2_00
 seqkit sample -s100 -p 0.01 "$raw_dir/12WTA-ABC-SMK-EB-5kJRT/12ABC_S1_L432_R1_001.fastq.gz" | gzip -9 > "$raw_dir/12ABC_S1_L432_R1_001.fastq.gz"
 seqkit sample -s100 -p 0.01 "$raw_dir/12WTA-ABC-SMK-EB-5kJRT/12ABC_S1_L432_R2_001.fastq.gz" | gzip -9 > "$raw_dir/12ABC_S1_L432_R2_001.fastq.gz"
 seqkit sample -s100 -p 0.01 "$raw_dir/12WTA-ABC-SMK-EB-5kJRT/12WTA_S1_L432_R1_001.fastq.gz" | gzip -9 > "$raw_dir/12WTA_S1_L432_R1_001.fastq.gz"
-seqkit sample -s100 -p 0.01 "$raw_dir/12WTA-ABC-SMK-EB-5kJRT/12WTA_S1_L432_R1_001.fastq.gz" | gzip -9 > "$raw_dir/12WTA_S1_L432_R1_001.fastq.gz"
+seqkit sample -s100 -p 0.01 "$raw_dir/12WTA-ABC-SMK-EB-5kJRT/12WTA_S1_L432_R2_001.fastq.gz" | gzip -9 > "$raw_dir/12WTA_S1_L432_R2_001.fastq.gz"
 
 cp "$raw_dir/12WTA-ABC-SMK-EB-5kJRT/BDAbSeq_ImmuneDiscoveryPanel.fasta" "$raw_dir
 rm -r "$raw_dir/12WTA-ABC-SMK-EB-5kJRT"
