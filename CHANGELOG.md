@@ -20,11 +20,11 @@
 
 ## BUG FIXES
 
-* `workflows/utils/viash_workflow_helper.nf`: Renamed `utils.nf` to `viash_workflow_helper.nf`.
+* `workflows/utils/WorkflowHelper.nf`: Renamed `utils.nf` to `WorkflowHelper.nf`.
 
-* `workflows/utils/viash_workflow_helper.nf`: Fix error message when required parameter is not specified.
+* `workflows/utils/WorkflowHelper.nf`: Fix error message when required parameter is not specified.
 
-* `workflows/utils/viash_workflow_helper.nf`: Added helper functions:
+* `workflows/utils/WorkflowHelper.nf`: Added helper functions:
   - `readConfig`: Read a Viash config from a yaml file.
   - `viashChannel`: Create a channel from the Viash config and the params object.
   - `helpMessage`: Print a help message and exit.

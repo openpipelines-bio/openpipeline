@@ -173,18 +173,9 @@ def mergeMap(Map lhs, Map rhs) {
 
 def helpMessage(params, config) {
   if (paramExists("help")) {
-
     def localConfig = [
       "functionality" : [
         "arguments": [
-          [
-            'name': '--id',
-            'required': true,
-            'type': 'string',
-            'description': 'A unique id for every entry.',
-            'default': 'run',
-            'multiple': false
-          ],
           [
             'name': '--publish_dir',
             'required': true,
@@ -225,6 +216,7 @@ def helpMessage(params, config) {
         ]
       ]
     ]
+    def mergedConfig = processConfig(mergeMap(config, localConfig))
 
     def template = '''\
     |${functionality.name}
@@ -241,7 +233,6 @@ def helpMessage(params, config) {
     '''.stripMargin()
 
     def engine = new groovy.text.SimpleTemplateEngine()
-    def mergedConfig = processConfig(mergeMap(config, localConfig))
     def help = engine
         .createTemplate(template)
         .make(mergedConfig)
@@ -255,7 +246,7 @@ def helpMessage(params, config) {
 }
 
 def guessMultiParamFormat(params) {
-  if (!params.containsKey("param_list")) {
+  if (!params.containsKey("param_list") || params.param_list == null) {
     "none"
   } else if (params.containsKey("multiParamsFormat")) {
     params.multiParamsFormat
@@ -331,6 +322,7 @@ def paramsToList(params, config) {
     
     // process arguments
     def inputs = config.functionality.allArguments
+      .findAll{ par -> combinedArgs.containsKey(par.plainName) }
       .collectEntries { par ->
         // split on 'multiple_sep'
         if (par.multiple) {
@@ -339,6 +331,8 @@ def paramsToList(params, config) {
             parData = parData.collect{it instanceof String ? it.split(par.multiple_sep) : it }
           } else if (parData instanceof String) {
             parData = parData.split(par.multiple_sep)
+          } else if (parData == null) {
+            parData = []
           } else {
             parData = [ parData ]
           }
@@ -378,8 +372,10 @@ def paramsToList(params, config) {
         // return pair
         [ par.plainName, parData ]
       }
-
+      // remove parameters which were explicitly set to null
+      .findAll{ par -> par != null }
     }
+    
   
   // check processed params
   processedParams.forEach { args ->

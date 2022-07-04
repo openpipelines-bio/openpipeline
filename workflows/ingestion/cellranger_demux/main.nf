@@ -5,7 +5,7 @@ targetDir = params.rootDir + "/target/nextflow"
 
 include { cellranger_mkfastq } from targetDir + "/demux/cellranger_mkfastq/main.nf"
 
-include { readConfig; viashChannel; helpMessage } from workflowDir + "/utils/viash_workflow_helper.nf"
+include { readConfig; viashChannel; helpMessage } from workflowDir + "/utils/WorkflowHelper.nf"
 
 config = readConfig("$workflowDir/ingestion/cellranger_demux/config.vsh.yaml")
 

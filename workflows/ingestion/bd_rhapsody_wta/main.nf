@@ -7,7 +7,7 @@ include { bd_rhapsody_wta } from targetDir + "/mapping/bd_rhapsody_wta/main.nf"
 include { bd_rhapsody_wta_1_10_1 } from targetDir + "/mapping/bd_rhapsody_wta_1_10_1/main.nf"
 include { from_bdrhap_to_h5mu } from targetDir + "/convert/from_bdrhap_to_h5mu/main.nf"
 
-include { readConfig; viashChannel; helpMessage } from workflowDir + "/utils/viash_workflow_helper.nf"
+include { readConfig; viashChannel; helpMessage } from workflowDir + "/utils/WorkflowHelper.nf"
 
 config = readConfig("$workflowDir/ingestion/bd_rhapsody_wta/config.vsh.yaml")
 
