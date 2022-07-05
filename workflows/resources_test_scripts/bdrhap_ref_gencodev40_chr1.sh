@@ -5,7 +5,7 @@ REPO_ROOT=$(git rev-parse --show-toplevel)
 cd "$REPO_ROOT"
 
 # settings
-ID=reference_gencode_v40_chr1
+ID=bdrhap_ref_gencodev40_chr1
 OUT=resources_test/$ID
 n_threads=30
 
@@ -43,7 +43,8 @@ awk '{print $1}' "$OUT/GRCh38_primary_assembly_genome.fa" | seqkit grep -r -p '^
 # MUST USE A STAR THAT IS COMPATIBLE WITH BD RHAPSODY
 # For the cwl pipeline 1.9.1, 2.5.2b should work.
 mkdir "$OUT/GRCh38_primary_assembly_genome_chr1"
-STAR \
+docker run --rm -it -v "`pwd`/$OUT:`pwd`/$OUT" -w `pwd` bdgenomics/rhapsody:1.10.1 \
+  STAR \
   --runThreadN $n_threads \
   --runMode genomeGenerate \
   --genomeDir "$OUT/GRCh38_primary_assembly_genome_chr1" \
