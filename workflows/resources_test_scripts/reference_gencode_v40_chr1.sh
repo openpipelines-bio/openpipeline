@@ -23,15 +23,21 @@ fi
 # create output dir
 mkdir -p "$OUT"
 
+## gtf
 # download raw files and subset reference to chromosome 1
 wget "https://ftp.ebi.ac.uk/pub/databases/gencode/Gencode_human/release_40/gencode.v40.annotation.gtf.gz" -O "$OUT/gencode_v40_annotation.gtf.gz" 
-gunzip -c "$OUT/gencode_v40_annotation.gtf.gz" > "$OUT/gencode_v40_annotation.gtf" && rm "$OUT/gencode_v40_annotation.gtf.gz"
-grep -E '^(##|chr1\t)' "$OUT/gencode_v40_annotation.gtf" > "$OUT/gencode_v40_annotation_chr1.gtf"
+gunzip -c "$OUT/gencode_v40_annotation.gtf.gz" > "$OUT/gencode_v40_annotation.gtf"
+grep -E '^(##|chr1[^0-9])' "$OUT/gencode_v40_annotation.gtf" > "$OUT/gencode_v40_annotation_chr1.gtf"
 
+# remove temp files
+rm "$OUT/gencode_v40_annotation.gtf.gz"
+rm "$OUT/gencode_v40_annotation.gtf"
+
+## fasta
 wget "https://ftp.ebi.ac.uk/pub/databases/gencode/Gencode_human/release_40/GRCh38.primary_assembly.genome.fa.gz" -O "$OUT/GRCh38_primary_assembly_genome.fa.gz"
 gunzip -c "$OUT/GRCh38_primary_assembly_genome.fa.gz" > "$OUT/GRCh38_primary_assembly_genome.fa"
 seqkit grep -r -p 'chr1 1' -n "$OUT/GRCh38_primary_assembly_genome.fa" > "$OUT/GRCh38_primary_assembly_genome_chr1.fa"
-gzip -k "$OUT/GRCh38_primary_assembly_genome_chr1.fa"
+gzip -9 -k "$OUT/GRCh38_primary_assembly_genome_chr1.fa"
 
 # run STAR to generate reference compatible with BD rhapsody
 # MUST USE A STAR THAT IS COMPATIBLE WITH BD RHAPSODY
@@ -45,7 +51,10 @@ STAR \
   --sjdbGTFfile "$OUT/gencode_v40_annotation.gtf" \
   --sjdbOverhang 100 \
   --genomeSAindexNbases 11
-tar -czf "$OUT/GRCh38_primary_assembly_genome_chr1.tar.gz" "$OUT/GRCh38_primary_assembly_genome_chr1" && rm -r "$OUT/GRCh38_primary_assembly_genome_chr1"
+tar -czf "$OUT/GRCh38_primary_assembly_genome_chr1.tar.gz" "$OUT/GRCh38_primary_assembly_genome_chr1"
 
+rm -r "$OUT/GRCh38_primary_assembly_genome_chr1"
+rm "$OUT/GRCh38_primary_assembly_genome_chr1.fa.gz"
+rm "$OUT/GRCh38_primary_assembly_genome_chr1.fa"
 rm "$OUT/GRCh38_primary_assembly_genome.fa.gz"
 rm "$OUT/GRCh38_primary_assembly_genome.fa"
