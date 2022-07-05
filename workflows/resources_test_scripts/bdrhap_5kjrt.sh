@@ -46,7 +46,7 @@ mapping_dir="$raw_dir/mapping_chr_1"
 mkdir -p "$mapping_dir"
 STAR \
     --runThreadN "$n_cores" \
-    --genomeDir "resources_test/bd_rhapsody_wta_5kjrt/raw/GRCh38_primary_assembly_genome_chr1" \
+    --genomeDir "$raw_dir/GRCh38_primary_assembly_genome_chr1" \
     --readFilesIn "$tar_dir/12WTA_S1_L432_R1_001.fastq.gz" "$tar_dir/12WTA_S1_L432_R2_001.fastq.gz" \
     --runRNGseed 100 \
     --outFileNamePrefix "$mapping_dir/" \
