@@ -19,8 +19,9 @@ if ! command -v seqkit &> /dev/null; then
     exit 1
 fi
 
-if [[ ! -f "resources_test/reference_gencode_v40_chr1/GRCh38_primary_assembly_genome_chr1.tar.gz" ]]; then
-    echo "resources_test/reference_gencode_v40_chr1/GRCh38_primary_assembly_genome_chr1 does not exist. Please create the reference genome first"
+genome_tar="$REPO_ROOT/resources_test/bdrhap_ref_gencodev40_chr1/GRCh38_primary_assembly_genome_chr1.tar.gz"
+if [[ ! -f "$genome_tar" ]]; then
+    echo "$genome_tar does not exist. Please create the reference genome first"
     exit 1
 fi
 
@@ -39,9 +40,9 @@ n_cores=10
 gzip -d -k -c "$tar_dir/12WTA_S1_L432_R1_001.fastq.gz" > "$raw_dir/12WTA_S1_L432_R1_001.fastq"
 gzip -d -k -c "$tar_dir/12WTA_S1_L432_R2_001.fastq.gz" > "$raw_dir/12WTA_S1_L432_R2_001.fastq"
 
-mkdir "$raw_dir/GRCh38_primary_assembly_genome_chr1"
+mkdir -p "$raw_dir/GRCh38_primary_assembly_genome_chr1"
 cd "$raw_dir/GRCh38_primary_assembly_genome_chr1"
-tar -xvf "$REPO_ROOT/resources_test/reference_gencode_v40_chr1/GRCh38_primary_assembly_genome_chr1.tar.gz" 
+tar -xvf "$genome_tar" 
 cd "$REPO_ROOT"
 
 mapping_dir="$raw_dir/mapping_chr_1"
@@ -51,7 +52,7 @@ STAR \
     --genomeDir "resources_test/bd_rhapsody_wta_5kjrt/raw/GRCh38_primary_assembly_genome_chr1" \
     --readFilesIn "$raw_dir/12WTA_S1_L432_R1_001.fastq" "$raw_dir/12WTA_S1_L432_R2_001.fastq" \
     --runRNGseed 100 \
-    --outFileNamePrefix "$mapping_dir"
+    --outFileNamePrefix "$mapping_dir/"
 
 samtools view -F 260 "$mapping_dir/Aligned.out.sam" > "$mapping_dir/primary_aligned_reads.sam"
 cut -f 1 "$mapping_dir/primary_aligned_reads.sam" | sort | uniq > "$mapping_dir/mapped_reads.txt"
