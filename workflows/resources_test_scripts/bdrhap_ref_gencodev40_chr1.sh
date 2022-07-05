@@ -5,7 +5,7 @@ REPO_ROOT=$(git rev-parse --show-toplevel)
 cd "$REPO_ROOT"
 
 # settings
-ID=reference_gencode_v40_chr1
+ID=bdrhap_ref_gencodev40_chr1
 OUT=resources_test/$ID
 n_threads=30
 

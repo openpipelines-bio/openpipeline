@@ -1,11 +1,15 @@
 #!/bin/bash
 
-# settings
-ID=bd_rhapsody_wta_5kjrt
-OUT=resources_test/$ID
-raw_dir="$OUT/raw"
+# ensure that the command below is run from the root of the repository
+REPO_ROOT=$(git rev-parse --show-toplevel)
+cd "$REPO_ROOT"
 
-# create output directory
+# settings
+ID=bdrhap_5kjrt
+OUT=resources_test/$ID
+
+# create raw directory
+raw_dir="$OUT/raw"
 mkdir -p "$raw_dir"
 
 # Check whether seqkit is available
@@ -25,14 +29,13 @@ if [[ ! -d "$tar_dir" ]]; then
 fi
 
 # process files 
-n_cores=30
-
-seqkit head -n100 "$tar_dir/12SMK_S1_L432_R1_001.fastq.gz" | gzip -9 > "$raw_dir/12SMK_S1_L432_R1_001.fastq.gz"
-seqkit head -n100 "$tar_dir/12SMK_S1_L432_R2_001.fastq.gz" | gzip -9 > "$raw_dir/12SMK_S1_L432_R2_001.fastq.gz"
-seqkit head -n100 "$tar_dir/12ABC_S1_L432_R1_001.fastq.gz" | gzip -9 > "$raw_dir/12ABC_S1_L432_R1_001.fastq.gz"
-seqkit head -n100 "$tar_dir/12ABC_S1_L432_R2_001.fastq.gz" | gzip -9 > "$raw_dir/12ABC_S1_L432_R2_001.fastq.gz"
-seqkit head -n100 "$tar_dir/12WTA_S1_L432_R1_001.fastq.gz" | gzip -9 > "$raw_dir/12WTA_S1_L432_R1_001.fastq.gz"
-seqkit head -n100 "$tar_dir/12WTA_S1_L432_R2_001.fastq.gz" | gzip -9 > "$raw_dir/12WTA_S1_L432_R2_001.fastq.gz"
+n_reads=100000
+seqkit head -n$n_reads "$tar_dir/12SMK_S1_L432_R1_001.fastq.gz" | gzip -9 > "$raw_dir/12SMK_S1_L432_R1_001.fastq.gz"
+seqkit head -n$n_reads "$tar_dir/12SMK_S1_L432_R2_001.fastq.gz" | gzip -9 > "$raw_dir/12SMK_S1_L432_R2_001.fastq.gz"
+seqkit head -n$n_reads "$tar_dir/12ABC_S1_L432_R1_001.fastq.gz" | gzip -9 > "$raw_dir/12ABC_S1_L432_R1_001.fastq.gz"
+seqkit head -n$n_reads "$tar_dir/12ABC_S1_L432_R2_001.fastq.gz" | gzip -9 > "$raw_dir/12ABC_S1_L432_R2_001.fastq.gz"
+seqkit head -n$n_reads "$tar_dir/12WTA_S1_L432_R1_001.fastq.gz" | gzip -9 > "$raw_dir/12WTA_S1_L432_R1_001.fastq.gz"
+seqkit head -n$n_reads "$tar_dir/12WTA_S1_L432_R2_001.fastq.gz" | gzip -9 > "$raw_dir/12WTA_S1_L432_R2_001.fastq.gz"
 
 cp "$tar_dir/BDAbSeq_ImmuneDiscoveryPanel.fasta" "$raw_dir"
 
