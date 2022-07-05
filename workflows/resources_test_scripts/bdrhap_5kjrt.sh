@@ -56,10 +56,10 @@ STAR \
 samtools view -F 260 "$mapping_dir/Aligned.out.sam" > "$mapping_dir/primary_aligned_reads.sam"
 cut -f 1 "$mapping_dir/primary_aligned_reads.sam" | sort | uniq > "$mapping_dir/mapped_reads.txt"
 gzip -c -k -d $tar_dir/12WTA_S1_L432_R1_001.fastq.gz | \
-    grep  -Fwf "$mapping_dir/mapped_reads.txt" --no-group-separator  -A 3 | \
+    grep  -Fwf "$mapping_dir/mapped_reads.txt" --no-group-separator  -A 3 \
     > "$mapping_dir/12WTA_S1_L432_R1_001_chr1.fastq"
 gzip -c -k -d $tar_dir/12WTA_S1_L432_R2_001.fastq.gz | \
-    grep  -Fwf "$mapping_dir/mapped_reads.txt" --no-group-separator  -A 3 | \
+    grep  -Fwf "$mapping_dir/mapped_reads.txt" --no-group-separator  -A 3 \
     > "$mapping_dir/12WTA_S1_L432_R2_001_chr1.fastq"
 gzip -9 -k -c "$mapping_dir/12WTA_S1_L432_R1_001_chr1.fastq" > "$raw_dir/12WTA_S1_L432_R1_001_chr1.fastq.gz"
 gzip -9 -k -c "$mapping_dir/12WTA_S1_L432_R2_001_chr1.fastq" > "$raw_dir/12WTA_S1_L432_R2_001_chr1.fastq.gz"
