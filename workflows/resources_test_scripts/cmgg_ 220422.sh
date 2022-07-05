@@ -1,5 +1,7 @@
 #!/bin/bash
 
+rsync -avz ndnd:/mnt/ibm_seq2/NextSeq-02/seqdata/211022_VH00444_61_AAAMYY2M5 ~/211022_VH00444_61_AAAMYY2M5
+
 # get the root of the directory
 REPO_ROOT=$(git rev-parse --show-toplevel)
 
@@ -7,7 +9,7 @@ REPO_ROOT=$(git rev-parse --show-toplevel)
 cd "$REPO_ROOT"
 
 # settings
-ID=cellranger_tiny_bcl
+ID=czb_test
 OUT="resources_test/$ID/"
 DIR="$OUT"
 
@@ -25,20 +27,20 @@ if [ ! -f "${OUT}/bcl/sample_sheet.csv" ]; then
 
   # download tar gz
   target/docker/download/download_file/download_file \
-    --input https://cf.10xgenomics.com/supp/cell-exp/cellranger-tiny-bcl-1.2.0.tar.gz \
-    --output "${OUT}/bcl/cellranger-tiny-bcl-1.2.0.tar.gz"
+    --input https://github.com/nf-core/test-datasets/raw/demultiplex/testdata/MiSeq/220422_M11111_0222_000000000-K9H97.tar.gz \
+    --output "${OUT}/bcl/raw.tar.gz"
   
   # untar
-  tar -xf "${OUT}/bcl/cellranger-tiny-bcl-1.2.0.tar.gz" \
+  tar -xf "${OUT}/bcl/raw.tar.gz" \
     --strip-components=1 \
     -C "$OUT/bcl"
 
   # remove tar
-  rm "${OUT}/bcl/cellranger-tiny-bcl-1.2.0.tar.gz"
+  rm "${OUT}/bcl/raw.tar.gz"
 
   # download sample sheet
   target/docker/download/download_file/download_file \
-    --input https://cf.10xgenomics.com/supp/cell-exp/cellranger-tiny-bcl-simple-1.2.0.csv \
+    --input https://raw.githubusercontent.com/nf-core/test-datasets/demultiplex/testdata/MiSeq/SampleSheet.csv \
     --output "${OUT}/bcl/sample_sheet.csv"
 fi
 
