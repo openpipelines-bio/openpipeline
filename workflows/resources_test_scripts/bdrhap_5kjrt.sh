@@ -37,9 +37,6 @@ fi
 # process files 
 n_cores=10
 
-gzip -d -k -c "$tar_dir/12WTA_S1_L432_R1_001.fastq.gz" > "$raw_dir/12WTA_S1_L432_R1_001.fastq"
-gzip -d -k -c "$tar_dir/12WTA_S1_L432_R2_001.fastq.gz" > "$raw_dir/12WTA_S1_L432_R2_001.fastq"
-
 mkdir -p "$raw_dir/GRCh38_primary_assembly_genome_chr1"
 cd "$raw_dir/GRCh38_primary_assembly_genome_chr1"
 tar -xvf "$genome_tar" 
@@ -48,16 +45,22 @@ cd "$REPO_ROOT"
 mapping_dir="$raw_dir/mapping_chr_1"
 mkdir -p "$mapping_dir"
 STAR \
-    --runThreadN 8 \
+    --runThreadN "$n_cores" \
     --genomeDir "resources_test/bd_rhapsody_wta_5kjrt/raw/GRCh38_primary_assembly_genome_chr1" \
-    --readFilesIn "$raw_dir/12WTA_S1_L432_R1_001.fastq" "$raw_dir/12WTA_S1_L432_R2_001.fastq" \
+    --readFilesIn "$tar_dir/12WTA_S1_L432_R1_001.fastq.gz" "$tar_dir/12WTA_S1_L432_R2_001.fastq.gz" \
     --runRNGseed 100 \
-    --outFileNamePrefix "$mapping_dir/"
+    --outFileNamePrefix "$mapping_dir/" \
+    --readFilesCommand "gzip -d -k -c" \
+    --readMapNumber 120000
 
 samtools view -F 260 "$mapping_dir/Aligned.out.sam" > "$mapping_dir/primary_aligned_reads.sam"
 cut -f 1 "$mapping_dir/primary_aligned_reads.sam" | sort | uniq > "$mapping_dir/mapped_reads.txt"
-seqkit grep -f "$mapping_dir/mapped_reads.txt" "$mapping_dir/12WTA_S1_L432_R1_001.fastq" > "$mapping_dir/12WTA_S1_L432_R1_001_chr1.fastq"
-seqkit grep -f "$mapping_dir/mapped_reads.txt" "$raw_dir/12WTA_S1_L432_R2_001.fastq" > "$mapping_dir/12WTA_S1_L432_R2_001_chr1.fastq"
+gzip -c -k -d $tar_dir/12WTA_S1_L432_R1_001.fastq.gz | \
+    grep  -Fwf "$mapping_dir/mapped_reads.txt" --no-group-separator  -A 3 | \
+    > "$mapping_dir/12WTA_S1_L432_R1_001_chr1.fastq"
+gzip -c -k -d $tar_dir/12WTA_S1_L432_R2_001.fastq.gz | \
+    grep  -Fwf "$mapping_dir/mapped_reads.txt" --no-group-separator  -A 3 | \
+    > "$mapping_dir/12WTA_S1_L432_R2_001_chr1.fastq"
 gzip -9 -k -c "$mapping_dir/12WTA_S1_L432_R1_001_chr1.fastq" > "$raw_dir/12WTA_S1_L432_R1_001_chr1.fastq.gz"
 gzip -9 -k -c "$mapping_dir/12WTA_S1_L432_R2_001_chr1.fastq" > "$raw_dir/12WTA_S1_L432_R2_001_chr1.fastq.gz"
 
