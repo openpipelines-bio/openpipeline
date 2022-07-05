@@ -44,6 +44,9 @@ cd "$REPO_ROOT"
 
 mapping_dir="$raw_dir/mapping_chr_1"
 mkdir -p "$mapping_dir"
+# MUST USE A STAR THAT IS COMPATIBLE WITH BD RHAPSODY
+# For the cwl pipeline 1.9.1, 2.5.2b should work.
+docker run --rm -it -v "`pwd`/$OUT:`pwd`/$OUT" -w `pwd` bdgenomics/rhapsody:1.10.1 \
 STAR \
     --runThreadN "$n_cores" \
     --genomeDir "$raw_dir/GRCh38_primary_assembly_genome_chr1" \
