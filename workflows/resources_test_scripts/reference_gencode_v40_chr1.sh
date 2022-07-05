@@ -43,7 +43,8 @@ seqkit grep -r -p 'chr1 1' -n "$OUT/GRCh38_primary_assembly_genome.fa" > "$OUT/G
 # MUST USE A STAR THAT IS COMPATIBLE WITH BD RHAPSODY
 # For the cwl pipeline 1.9.1, 2.5.2b should work.
 mkdir "$OUT/GRCh38_primary_assembly_genome_chr1"
-STAR \
+docker run --rm -it -v "`pwd`/$OUT:`pwd`/$OUT" -w `pwd` bdgenomics/rhapsody:1.10.1 \
+  STAR \
   --runThreadN $n_threads \
   --runMode genomeGenerate \
   --genomeDir "$OUT/GRCh38_primary_assembly_genome_chr1" \
