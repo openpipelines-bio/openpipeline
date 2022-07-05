@@ -12,10 +12,6 @@
 
 * `mapping/bd_rhapsody_wta`: Add parameters for overriding the minimum RAM & cores. Add `--dryrun` parameter.
 
-* `mapping/bd_rhapsody_wta_1_10_1`: Add parameters for overriding the minimum RAM & cores. Add `--dryrun` parameter.
-
-* `ingestion/bd_rhapsody_wta`: Allow switching between the 1.9.1 and 1.10.1 version of the pipeline.
-
 * Switch to Viash 0.5.14.
 
 ## BUG FIXES
@@ -36,6 +32,9 @@
 * `convert/from_bdrhap_to_h5ad`: Deprecated in favour for `convert/from_bdrhap_to_h5mu`.
 
 * `convert/from_10xh5_to_h5ad`: Deprecated in favour for `convert/from_10xh5_to_h5mu`.
+
+* `ingestion/bd_rhapsody_wta`: Dropped BD Rhapsody 1.9.1 support.
+
 
 # openpipeline 0.3.1
 
