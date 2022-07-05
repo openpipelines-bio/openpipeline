@@ -37,7 +37,7 @@ rm "$OUT/gencode_v40_annotation.gtf"
 ## fasta
 wget "https://ftp.ebi.ac.uk/pub/databases/gencode/Gencode_human/release_40/GRCh38.primary_assembly.genome.fa.gz" -O "$OUT/GRCh38_primary_assembly_genome.fa.gz"
 gunzip -c "$OUT/GRCh38_primary_assembly_genome.fa.gz" > "$OUT/GRCh38_primary_assembly_genome.fa"
-seqkit grep -r -p 'chr1 1' -n "$OUT/GRCh38_primary_assembly_genome.fa" > "$OUT/GRCh38_primary_assembly_genome_chr1.fa"
+awk '{print $1}' "$OUT/GRCh38_primary_assembly_genome.fa" | seqkit grep -r -p '^chr1$' > "$OUT/GRCh38_primary_assembly_genome_chr1.fa"
 
 # run STAR to generate reference compatible with BD rhapsody
 # MUST USE A STAR THAT IS COMPATIBLE WITH BD RHAPSODY
