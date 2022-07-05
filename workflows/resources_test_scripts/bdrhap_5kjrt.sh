@@ -48,7 +48,7 @@ mkdir -p "$mapping_dir"
 # For the cwl pipeline 1.9.1, 2.5.2b should work.
 docker run --rm -it \
            -v "`pwd`/$OUT:`pwd`/$OUT" \
-           -v "$tar_dir/12WTA_S1_L432_R2_001.fastq.gz:$tar_dir/12WTA_S1_L432_R2_001.fastq.gz" \
+           -v "$tar_dir:$tar_dir" \
            -w `pwd` bdgenomics/rhapsody:1.10.1 \
 STAR \
     --runThreadN "$n_cores" \
