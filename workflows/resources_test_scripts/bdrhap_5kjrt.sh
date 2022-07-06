@@ -1,5 +1,7 @@
 #!/bin/bash
 
+# TODO: we should turn this into viash components
+
 # ensure that the command below is run from the root of the repository
 REPO_ROOT=$(git rev-parse --show-toplevel)
 cd "$REPO_ROOT"
@@ -7,13 +9,13 @@ cd "$REPO_ROOT"
 # settings
 ID=bdrhap_5kjrt
 OUT=resources_test/$ID
+n_threads=10
 
 # create raw directory
 raw_dir="$OUT/raw"
 mkdir -p "$raw_dir"
 
 # Check whether seqkit is available
-# TODO: we should turn this into viash components
 if ! command -v seqkit &> /dev/null; then
     echo "This script requires seqkit. Please make sure the binary is added to your PATH."
     exit 1
@@ -34,13 +36,16 @@ if [[ ! -d "$tar_dir" ]]; then
     rm "$tar_dir.tar"
 fi
 
-# process files 
-n_cores=10
+# process WTA fastq files
+# map to chr1, subsample chr1 reads 
+
+
+echo "> Processing 12WTA_S1_L432_R[12]_001.fastq.gz"
+gzip -d -k -c "$tar_dir/12WTA_S1_L432_R1_001.fastq.gz" > "$raw_dir/12WTA_S1_L432_R1_001.fastq"
+gzip -d -k -c "$tar_dir/12WTA_S1_L432_R2_001.fastq.gz" > "$raw_dir/12WTA_S1_L432_R2_001.fastq"
 
 mkdir -p "$raw_dir/GRCh38_primary_assembly_genome_chr1"
-cd "$raw_dir/GRCh38_primary_assembly_genome_chr1"
-tar -xvf "$genome_tar" 
-cd "$REPO_ROOT"
+tar -xvf "$genome_tar" -C "$raw_dir/GRCh38_primary_assembly_genome_chr1"
 
 mapping_dir="$raw_dir/mapping_chr_1"
 mkdir -p "$mapping_dir"
@@ -51,7 +56,7 @@ docker run --rm -it \
            -v "$tar_dir:$tar_dir" \
            -w `pwd` bdgenomics/rhapsody:1.10.1 \
 STAR \
-    --runThreadN "$n_cores" \
+    --runThreadN "$n_threads" \
     --genomeDir "$raw_dir/GRCh38_primary_assembly_genome_chr1" \
     --readFilesIn "$tar_dir/12WTA_S1_L432_R1_001.fastq.gz" "$tar_dir/12WTA_S1_L432_R2_001.fastq.gz" \
     --runRNGseed 100 \
@@ -60,38 +65,59 @@ STAR \
 
 samtools view -F 260 "$mapping_dir/Aligned.out.sam" > "$mapping_dir/primary_aligned_reads.sam"
 cut -f 1 "$mapping_dir/primary_aligned_reads.sam" | sort | uniq > "$mapping_dir/mapped_reads.txt"
-seqkit grep --threads "$n_cores" -f "$mapping_dir/mapped_reads.txt" "$tar_dir/12WTA_S1_L432_R2_001.fastq.gz" > "$mapping_dir/12WTA_S1_L432_R1_001_chr1.fastq"
-seqkit grep --threads "$n_cores" -f "$mapping_dir/mapped_reads.txt" "$tar_dir/12WTA_S1_L432_R2_001.fastq.gz" > "$mapping_dir/12WTA_S1_L432_R2_001_chr1.fastq"
+seqkit grep --threads "$n_threads" -f "$mapping_dir/mapped_reads.txt" "$tar_dir/12WTA_S1_L432_R2_001.fastq.gz" > "$mapping_dir/12WTA_S1_L432_R1_001_chr1.fastq"
+seqkit grep --threads "$n_threads" -f "$mapping_dir/mapped_reads.txt" "$tar_dir/12WTA_S1_L432_R2_001.fastq.gz" > "$mapping_dir/12WTA_S1_L432_R2_001_chr1.fastq"
 gzip -9 -k -c "$mapping_dir/12WTA_S1_L432_R1_001_chr1.fastq" > "$raw_dir/12WTA_S1_L432_R1_001_chr1.fastq.gz"
 gzip -9 -k -c "$mapping_dir/12WTA_S1_L432_R2_001_chr1.fastq" > "$raw_dir/12WTA_S1_L432_R2_001_chr1.fastq.gz"
 
 rm -r "$mapping_dir"
 
-n_reads=100000
-seqkit head -n$n_reads "$tar_dir/12SMK_S1_L432_R1_001.fastq.gz" | gzip -9 > "$raw_dir/12SMK_S1_L432_R1_001.fastq.gz"
-seqkit head -n$n_reads "$tar_dir/12SMK_S1_L432_R2_001.fastq.gz" | gzip -9 > "$raw_dir/12SMK_S1_L432_R2_001.fastq.gz"
-seqkit head -n$n_reads "$tar_dir/12ABC_S1_L432_R1_001.fastq.gz" | gzip -9 > "$raw_dir/12ABC_S1_L432_R1_001.fastq.gz"
-seqkit head -n$n_reads "$tar_dir/12ABC_S1_L432_R2_001.fastq.gz" | gzip -9 > "$raw_dir/12ABC_S1_L432_R2_001.fastq.gz"
+# subsample other files
+echo "> Processing 12SMK_S1_L432_R1_001.fastq.gz"
+seqkit head -n 5000000 "$tar_dir/12SMK_S1_L432_R1_001.fastq.gz" | gzip > "$raw_dir/12SMK_S1_L432_R1_001.fastq.gz"
+echo "> Processing 12SMK_S1_L432_R2_001.fastq.gz"
+seqkit head -n 5000000 "$tar_dir/12SMK_S1_L432_R2_001.fastq.gz" | gzip > "$raw_dir/12SMK_S1_L432_R2_001.fastq.gz"
+echo "> Processing 12ABC_S1_L432_R1_001.fastq.gz"
+seqkit head -n 5000000 "$tar_dir/12ABC_S1_L432_R1_001.fastq.gz" | gzip > "$raw_dir/12ABC_S1_L432_R1_001.fastq.gz"
+echo "> Processing 12ABC_S1_L432_R2_001.fastq.gz"
+seqkit head -n 5000000 "$tar_dir/12ABC_S1_L432_R2_001.fastq.gz" | gzip > "$raw_dir/12ABC_S1_L432_R2_001.fastq.gz"
 
-
-
+# copy immune panel fasta
 cp "$tar_dir/BDAbSeq_ImmuneDiscoveryPanel.fasta" "$raw_dir"
 
 
-# # process raw files
-# processed_dir="$OUT/processed"
-# mkdir -p "$processed_dir"
 
-# # run bdrhap
-# bdrhap_out="$processed_dir/bdrhap_out/"
-# mkdir -p "$bdrhap_out"
+# process samples with bd rhap component
+# TODO: change to bd rhap ingestion pipeline
+bdrhap_5kjrt="resources_test/bdrhap_5kjrt/raw"
+bdrhap_ref_gencodev40_chr1="resources_test/bdrhap_ref_gencodev40_chr1"
+cat > /tmp/params.yaml << HERE
+param_list:
+- id: "SMK"
+  run_name: "SMK"
+  input: "$bdrhap_5kjrt/12SMK_S1_L432_R[12]_001.fastq.gz"
+  sample_tags_version: "hs"
+  tag_names: ["1-Jurkat", "2-Ramos", "3-THP1"]
+- id: "ABC"
+  run_name: "ABC"
+  input: "$bdrhap_5kjrt/12ABC_S1_L432_R[12]_001.fastq.gz"
+  abseq_reference: "$bdrhap_5kjrt/BDAbSeq_ImmuneDiscoveryPanel.fasta"
+- id: "WTA"
+  run_name: "WTA"
+  input: "$bdrhap_5kjrt/12WTA_S1_L432_R[12]_001.fastq.gz"
+reference_genome: "$bdrhap_ref_gencodev40_chr1/GRCh38_primary_assembly_genome_chr1.tar.gz"
+transcriptome_annotation: "$bdrhap_ref_gencodev40_chr1/gencode_v40_annotation_chr1.gtf"
+publish_dir: "output_test"
+putative_cell_call: "mRNA"
+exact_cell_count: 500
+HERE
 
-# target/docker/mapping/bd_rhapsody_wta/bd_rhapsody_wta \
-#   --input "$raw_dir/12SMK_S1_L432_R1_001.fastq.gz" \
-#   --input "$raw_dir/12SMK_S1_L432_R2_001.fastq.gz" \
-#   --reference_genome "$raw_dir/GRCh38_primary_assembly_genome_chr1.tar.gz" \
-#   --transcriptome_annotation "$raw_dir/gencode_v40_annotation_chr1.gtf" \
-#   --output "$bdrhap_out"
-
-
-
+bin/nextflow \
+  run . \
+  -main-script target/nextflow/mapping/bd_rhapsody_wta/main.nf \
+  -resume \
+  -profile docker,mount_temp \
+  -with-trace work/trace.txt \
+  -params-file /tmp/params.yaml \
+  -c workflows/utils/labels.config \
+  -c workflows/utils/errorstrat_ignore.config
