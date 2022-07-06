@@ -151,7 +151,7 @@ platforms:
       - type: docker
         run: apt-get --allow-releaseinfo-change update && 
              apt upgrade -y &&
-             conda install -y -c bioconda picard=2.27.3 ca-certificates=2022.6.15
+             conda install -y -c bioconda picard=2.27.3 certifi=2022.6.15 conda=4.13.0 openssl=1.1.1o ca-certificates=2022
       - type: apt
         packages: [ procps, nodejs]
       - type: python
