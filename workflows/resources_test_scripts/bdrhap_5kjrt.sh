@@ -82,25 +82,25 @@ samtools view -F 260 "$mapping_dir/Aligned.out.sam" > "$mapping_dir/primary_alig
 cut -f 1 "$mapping_dir/primary_aligned_reads.sam" | sort | uniq > "$mapping_dir/mapped_reads.txt"
 seqkit grep --threads "$n_threads" -f "$mapping_dir/mapped_reads.txt" "$tar_dir/12WTA_S1_L432_R1_001.fastq.gz" > "$mapping_dir/12WTA_S1_L432_R1_001_chr1.fastq"
 seqkit grep --threads "$n_threads" -f "$mapping_dir/mapped_reads.txt" "$tar_dir/12WTA_S1_L432_R2_001.fastq.gz" > "$mapping_dir/12WTA_S1_L432_R2_001_chr1.fastq"
-gzip -9 -k -c "$mapping_dir/12WTA_S1_L432_R1_001_chr1.fastq" > "$raw_dir/12WTA_S1_L432_R1_001_chr1.fastq.gz"
-gzip -9 -k -c "$mapping_dir/12WTA_S1_L432_R2_001_chr1.fastq" > "$raw_dir/12WTA_S1_L432_R2_001_chr1.fastq.gz"
+gzip -9 -k -c "$mapping_dir/12WTA_S1_L432_R1_001_chr1.fastq" > "$mapping_dir/12WTA_S1_L432_R1_001_chr1.fastq.gz"
+gzip -9 -k -c "$mapping_dir/12WTA_S1_L432_R2_001_chr1.fastq" > "$mapping_dir/12WTA_S1_L432_R2_001_chr1.fastq.gz"
 
 rm -r "$mapping_dir"
 rm -r "$genome_dir"
 
 # subsample other files
 echo "> Processing 12SMK_S1_L432_R1_001.fastq.gz"
-seqkit head -n 5000000 "$tar_dir/12SMK_S1_L432_R1_001.fastq.gz" | gzip > "$raw_dir/12SMK_S1_L432_R1_001_subset.fastq.gz"
+cp "$tar_dir/12SMK_S1_L432_R1_001.fastq.gz" "$raw_dir/12SMK_S1_L432_R1_001.fastq.gz"
 echo "> Processing 12SMK_S1_L432_R2_001.fastq.gz"
-seqkit head -n 5000000 "$tar_dir/12SMK_S1_L432_R2_001.fastq.gz" | gzip > "$raw_dir/12SMK_S1_L432_R2_001_subset.fastq.gz"
+cp "$tar_dir/12SMK_S1_L432_R2_001.fastq.gz" "$raw_dir/12SMK_S1_L432_R2_001.fastq.gz"
 echo "> Processing 12ABC_S1_L432_R1_001.fastq.gz"
-seqkit head -n 5000000 "$tar_dir/12ABC_S1_L432_R1_001.fastq.gz" | gzip > "$raw_dir/12ABC_S1_L432_R1_001_subset.fastq.gz"
+seqkit head -n 1000000 "$tar_dir/12ABC_S1_L432_R1_001.fastq.gz" | gzip > "$raw_dir/12ABC_S1_L432_R1_001_subset.fastq.gz"
 echo "> Processing 12ABC_S1_L432_R2_001.fastq.gz"
-seqkit head -n 5000000 "$tar_dir/12ABC_S1_L432_R2_001.fastq.gz" | gzip > "$raw_dir/12ABC_S1_L432_R2_001_subset.fastq.gz"
+seqkit head -n 1000000 "$tar_dir/12ABC_S1_L432_R2_001.fastq.gz" | gzip > "$raw_dir/12ABC_S1_L432_R2_001_subset.fastq.gz"
 echo "> Processing 12WTA_S1_L432_R1_001_chr1.fastq.gz"
-seqkit head -n 5000000 "$tar_dir/12WTA_S1_L432_R1_001_chr1.fastq.gz" | gzip > "$raw_dir/12WTA_S1_L432_R1_001_subset.fastq.gz"
+seqkit head -n 1000000 "$mapping_dir/12WTA_S1_L432_R1_001_chr1.fastq.gz" | gzip > "$raw_dir/12WTA_S1_L432_R1_001_subset.fastq.gz"
 echo "> Processing 12WTA_S1_L432_R2_001_chr1.fastq.gz"
-seqkit head -n 5000000 "$tar_dir/12WTA_S1_L432_R2_001_chr1.fastq.gz" | gzip > "$raw_dir/12WTA_S1_L432_R2_001_subset.fastq.gz"
+seqkit head -n 1000000 "$mapping_dir/12WTA_S1_L432_R2_001_chr1.fastq.gz" | gzip > "$raw_dir/12WTA_S1_L432_R2_001_subset.fastq.gz"
 
 # copy immune panel fasta
 cp "$tar_dir/BDAbSeq_ImmuneDiscoveryPanel.fasta" "$raw_dir"
@@ -112,7 +112,7 @@ cat > /tmp/params.yaml << HERE
 param_list:
 - id: "SMK"
   run_name: "SMK"
-  input: "$raw_dir/12SMK_S1_L432_R[12]_001_subset.fastq.gz"
+  input: "$raw_dir/12SMK_S1_L432_R[12]_001.fastq.gz"
   sample_tags_version: "hs"
   tag_names: ["1-Jurkat", "2-Ramos", "3-THP1"]
 - id: "ABC"
