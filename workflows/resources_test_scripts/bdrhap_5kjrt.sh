@@ -70,10 +70,13 @@ docker run --rm -it \
   STAR \
     --runThreadN "$n_threads" \
     --genomeDir "$raw_dir/GRCh38_primary_assembly_genome_chr1" \
-    --readFilesIn "$tar_dir/12WTA_S1_L432_R1_001.fastq.gz" "$tar_dir/12WTA_S1_L432_R2_001.fastq.gz" \
+    --readFilesIn "$tar_dir/12WTA_S1_L432_R2_001.fastq.gz" \
     --runRNGseed 100 \
     --outFileNamePrefix "$mapping_dir/" \
-    --readFilesCommand "gzip -d -k -c"
+    --readFilesCommand "gzip -d -k -c" \
+    --clip3pAdapterSeq "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA" \
+    --outFilterMatchNmin "25" \
+    --quantTranscriptomeBan "Singleend" # Prohibit mapping of one side of the read
 
 samtools view -F 260 "$mapping_dir/Aligned.out.sam" > "$mapping_dir/primary_aligned_reads.sam"
 cut -f 1 "$mapping_dir/primary_aligned_reads.sam" | sort | uniq > "$mapping_dir/mapped_reads.txt"
