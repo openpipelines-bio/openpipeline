@@ -434,9 +434,9 @@ functionality:
       
       LABEL org.opencontainers.image.authors="Dries Schaumont <Dschaumo@its.jnj.com> (maintainer)"
       LABEL org.opencontainers.image.description="Companion container for running component split split_modalities"
-      LABEL org.opencontainers.image.created="2022-07-07T11:19:19Z"
+      LABEL org.opencontainers.image.created="2022-07-07T12:34:59Z"
       LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-      LABEL org.opencontainers.image.revision="8fc564958461264c9eec1e6a8cf65da3e4c573ff"
+      LABEL org.opencontainers.image.revision="9aa22211d886e2e83718c712b71f3fe2788c6b24"
       LABEL org.opencontainers.image.version="main_build"
       VIASHDOCKER
       }
@@ -854,5 +854,5 @@ info:
   output: "target/docker/split/split_modalities"
   executable: "target/docker/split/split_modalities/split_modalities"
   viash_version: "0.5.14"
-  git_commit: "8fc564958461264c9eec1e6a8cf65da3e4c573ff"
+  git_commit: "9aa22211d886e2e83718c712b71f3fe2788c6b24"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"

@@ -608,9 +608,9 @@ functionality:
       
       LABEL org.opencontainers.image.authors="Dries De Maeyer <ddemaeyer@gmail.com> (maintainer) {account: ddemaey1}"
       LABEL org.opencontainers.image.description="Companion container for running component dimred umap"
-      LABEL org.opencontainers.image.created="2022-07-07T11:19:19Z"
+      LABEL org.opencontainers.image.created="2022-07-07T12:35:00Z"
       LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-      LABEL org.opencontainers.image.revision="8fc564958461264c9eec1e6a8cf65da3e4c573ff"
+      LABEL org.opencontainers.image.revision="9aa22211d886e2e83718c712b71f3fe2788c6b24"
       LABEL org.opencontainers.image.version="main_build"
       VIASHDOCKER
       }
@@ -1202,5 +1202,5 @@ info:
   output: "target/docker/dimred/umap"
   executable: "target/docker/dimred/umap/umap"
   viash_version: "0.5.14"
-  git_commit: "8fc564958461264c9eec1e6a8cf65da3e4c573ff"
+  git_commit: "9aa22211d886e2e83718c712b71f3fe2788c6b24"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"
