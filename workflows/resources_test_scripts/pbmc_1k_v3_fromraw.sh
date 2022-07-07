@@ -4,7 +4,6 @@
 ID=pbmc_1k_v3_fromraw
 OUT=resources_test/$ID/$ID
 DIR=$(dirname "$OUT")
-S3DIR=$(echo "$DIR" | sed 's#resources_test#s3://openpipelines-data#')
 
 # ensure that the command below is run from the root of the repository
 REPO_ROOT=$(git rev-parse --show-toplevel)
@@ -40,4 +39,3 @@ target/docker/convert/from_10xh5_to_h5mu/from_10xh5_to_h5mu \
   --input "$TMPDIR/output/filtered_feature_bc_matrix.h5" \
   --output "$TMPDIR/pbmc_1k_v3.h5mu"
 
-# aws s3 sync --profile xxx "$DIR" "$S3DIR"

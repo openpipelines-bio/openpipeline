@@ -18,6 +18,10 @@
 
 * `convert/from_bdrhap_to_h5mu`: Update to BD Rhapsody 1.10.1.
 
+* `resources_test/bdrhap_5kjrt`: Add subsampled BD rhapsody datasets to test pipeline with.
+
+* `resources_test/bdrhap_ref_gencodev40_chr1`: Add subsampled reference to test BD rhapsody pipeline with.
+
 ## BUG FIXES
 
 * `workflows/utils/WorkflowHelper.nf`: Renamed `utils.nf` to `WorkflowHelper.nf`.
