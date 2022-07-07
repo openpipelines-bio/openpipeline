@@ -1,8 +1,8 @@
 ## VIASH START
 par <- list(
   input = c(
-    "resources_test/bd_rhapsody_wta_test/processed/bdrhap_out",
-    "resources_test/bd_rhapsody_wta_test/processed/bdrhap_out"
+    #"work/13/51cb64f9eab9fd9275d92c3bf8a405/sample.bd_rhapsody_wta_1_10_1.output"
+    "work/69/e7ae05c747871887e88e1e2cbe1154/sample.bd_rhapsody_wta_1_10_1.output"
   ),
   id = "foo",
   output = "test.h5mu"
@@ -90,35 +90,43 @@ var <- data.frame(
 cat("Constructing combined metrics summary\n")
 new_met <- tibble(
   Total_Reads_in_FASTQ = sum(mets$Total_Reads_in_FASTQ),
+  Pct_Read_Pair_Overlap = sum(mets$Total_Reads_in_FASTQ * mets$Pct_Read_Pair_Overlap) / Total_Reads_in_FASTQ,
   Pct_Reads_Too_Short = sum(mets$Total_Reads_in_FASTQ * mets$Pct_Reads_Too_Short) / Total_Reads_in_FASTQ,
   Pct_Reads_Low_Base_Quality = sum(mets$Total_Reads_in_FASTQ * mets$Pct_Reads_Low_Base_Quality) / Total_Reads_in_FASTQ,
   Pct_Reads_High_SNF = sum(mets$Total_Reads_in_FASTQ * mets$Pct_Reads_High_SNF) / Total_Reads_in_FASTQ,
   Pct_Reads_Filtered_Out = sum(mets$Total_Reads_in_FASTQ * mets$Pct_Reads_Filtered_Out) / Total_Reads_in_FASTQ,
   Total_Reads_After_Quality_Filtering = sum(mets$Total_Reads_After_Quality_Filtering),
-  Library = unique(mets$Library),
+  Library = paste0(unique(mets$Library), collapse = ","),
   Total_Filtered_Reads = sum(mets$Total_Filtered_Reads),
   Pct_Contaminating_PhiX_Reads_in_Filtered_R2 = sum(mets$Total_Filtered_Reads * mets$Pct_Contaminating_PhiX_Reads_in_Filtered_R2) / Total_Filtered_Reads,
   Pct_Q30_Bases_in_Filtered_R2 = sum(mets$Total_Filtered_Reads * mets$Pct_Q30_Bases_in_Filtered_R2) / Total_Filtered_Reads,
   Pct_Assigned_to_Cell_Labels = sum(mets$Total_Filtered_Reads * mets$Pct_Assigned_to_Cell_Labels) / Total_Filtered_Reads,
-  Pct_Cellular_Reads_Aligned_Uniquely_to_Annotated_Transcriptome = sum(mets$Total_Filtered_Reads * mets$Pct_Cellular_Reads_Aligned_Uniquely_to_Annotated_Transcriptome) / Total_Filtered_Reads,
-  Pct_Cellular_Reads_Aligned_Uniquely_to_Other_Genomic_Regions = sum(mets$Total_Filtered_Reads * mets$Pct_Cellular_Reads_Aligned_Uniquely_to_Other_Genomic_Regions) / Total_Filtered_Reads,
-  Pct_Cellular_Reads_Aligned_Not_Unique = sum(mets$Total_Filtered_Reads * mets$Pct_Cellular_Reads_Aligned_Not_Unique) / Total_Filtered_Reads,
-  Pct_Cellular_Reads_Unaligned = sum(mets$Total_Filtered_Reads * mets$Pct_Cellular_Reads_Unaligned) / Total_Filtered_Reads,
+  Pct_Cellular_Reads_Aligned_Uniquely = sum(mets$Total_Filtered_Reads * mets$Pct_Cellular_Reads_Aligned_Uniquely) / Total_Filtered_Reads,
+  Cellular_Reads = sum(mets$Cellular_Reads),
+  Annotated_Transcriptome_Pct = sum(mets$Cellular_Reads * mets$Annotated_Transcriptome_Pct) / Cellular_Reads,
+  Introns_Pct = sum(mets$Cellular_Reads * mets$Introns_Pct) / Cellular_Reads,
+  Intergenic_Regions_Pct = sum(mets$Cellular_Reads * mets$Intergenic_Regions_Pct) / Cellular_Reads,
+  Antisense_Pct = sum(mets$Cellular_Reads * mets$Antisense_Pct) / Cellular_Reads,
+  Not_Unique_Pct = sum(mets$Cellular_Reads * mets$Not_Unique_Pct) / Cellular_Reads,
+  Ambiguous_Pct = sum(mets$Cellular_Reads * mets$Ambiguous_Pct) / Cellular_Reads,
+  AbSeq_Pct = sum(mets$Cellular_Reads * mets$AbSeq_Pct) / Cellular_Reads,
+  Sample_Tag_Pct = sum(mets$Cellular_Reads * mets$Sample_Tag_Pct) / Cellular_Reads,
+  Unaligned_Pct = sum(mets$Cellular_Reads * mets$Unaligned_Pct) / Cellular_Reads,
   Aligned_Reads_By_Type = sum(mets$Aligned_Reads_By_Type),
   Total_Raw_Molecules = sum(mets$Total_Raw_Molecules),
   Total_RSEC_Molecules = sum(mets$Total_RSEC_Molecules),
   Mean_Raw_Sequencing_Depth = sum(mets$Total_Raw_Molecules * mets$Mean_Raw_Sequencing_Depth) / Total_Raw_Molecules,
   Mean_RSEC_Sequencing_Depth = sum(mets$Total_RSEC_Molecules * mets$Mean_RSEC_Sequencing_Depth) / Total_RSEC_Molecules,
   Sequencing_Saturation = NA_real_,
-  Target_Type = unique(mets$Target_Type),
+  Bioproduct_Type = paste0(unique(mets$Bioproduct_Type), collapse = ","),
   Putative_Cell_Count = sum(mets$Putative_Cell_Count),
   Pct_Reads_from_Putative_Cells = sum(mets$Putative_Cell_Count * mets$Mean_Reads_per_Cell * mets$Pct_Reads_from_Putative_Cells) / sum(mets$Putative_Cell_Count * mets$Mean_Reads_per_Cell),
   Mean_Reads_per_Cell = sum(mets$Putative_Cell_Count * mets$Mean_Reads_per_Cell) / Putative_Cell_Count,
   Mean_Molecules_per_Cell = sum(mets$Putative_Cell_Count * mets$Mean_Molecules_per_Cell) / Putative_Cell_Count,
   Median_Molecules_per_Cell = median(Matrix::rowSums(new_counts)),
-  Mean_Targets_per_Cell = sum(mets$Putative_Cell_Count * mets$Mean_Targets_per_Cell) / Putative_Cell_Count,
-  Median_Targets_per_Cell = median(Matrix::rowSums(new_counts > 0)),
-  Total_Targets_Detected = length(unique_targets)
+  Mean_Bioproducts_per_Cell = sum(mets$Putative_Cell_Count * mets$Mean_Bioproducts_per_Cell) / Putative_Cell_Count,
+  Median_Bioproducts_per_Cell = median(Matrix::rowSums(new_counts > 0)),
+  Total_Bioproducts_Detected = length(unique_targets)
 ) %>%
   as.data.frame()
   

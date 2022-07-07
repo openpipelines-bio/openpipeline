@@ -18,6 +18,8 @@
 
 * Switch to Viash 0.5.14.
 
+* `convert/from_bdrhap_to_h5mu`: Update to BD Rhapsody 1.10.1.
+
 ## BUG FIXES
 
 * `workflows/utils/WorkflowHelper.nf`: Renamed `utils.nf` to `WorkflowHelper.nf`.
