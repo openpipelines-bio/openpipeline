@@ -52,14 +52,14 @@ fi
 #   --putative_cell_call "mRNA"
 
 echo "> Untarring genome"
-genome_dir="$raw_dir/GRCh38_primary_assembly_genome_chr1"
+genome_dir="$raw_dir/temp_GRCh38_primary_assembly_genome_chr1"
 mkdir -p "$genome_dir"
 tar -xvf "$genome_tar" -C "$genome_dir"
 
 # process WTA fastq files
 # map to chr1, subsample chr1 reads 
 echo "> Processing 12WTA_S1_L432_R[12]_001.fastq.gz"
-mapping_dir="$raw_dir/mapping_chr_1"
+mapping_dir="$raw_dir/temp_mapping_chr_1"
 mkdir -p "$mapping_dir"
 # MUST USE A STAR THAT IS COMPATIBLE WITH BD RHAPSODY
 # For the cwl pipeline 1.9.1, 2.5.2b should work.
@@ -121,16 +121,19 @@ param_list:
   input: "$raw_dir/12SMK_S1_L432_R[12]_001.fastq.gz"
   sample_tags_version: "hs"
   tag_names: ["1-Jurkat", "2-Ramos", "3-THP1"]
+  output: "SMK"
 - id: "ABC"
   run_name: "ABC"
   input: "$raw_dir/12ABC_S1_L432_R[12]_001_subset.fastq.gz"
   abseq_reference: "$raw_dir/BDAbSeq_ImmuneDiscoveryPanel.fasta"
+  output: "ABC"
 - id: "WTA"
   run_name: "WTA"
   input: "$raw_dir/12WTA_S1_L432_R[12]_001_subset.fastq.gz"
+  output: "WTA"
 reference_genome: "$reference_dir/GRCh38_primary_assembly_genome_chr1.tar.gz"
 transcriptome_annotation: "$reference_dir/gencode_v40_annotation_chr1.gtf"
-publish_dir: "output_test3"
+publish_dir: "$OUT/processed"
 putative_cell_call: "mRNA"
 exact_cell_count: 4000
 HERE

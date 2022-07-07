@@ -38,7 +38,7 @@ workflow run_wf {
       }
 
       input_with_new_ids = input.collect { file ->
-        new_id = file.name.replaceAll("[^a-zA-Z0-9]R[12]_*\\.fastq\\.gz\$", "")
+        new_id = file.name.replaceAll("[^a-zA-Z0-9]R[12]_.*\\.fastq\\.gz\$", "")
         [ new_id, file ]
       }
       new_ids = input_with_new_ids.collect{it[0]}.unique()
@@ -77,18 +77,20 @@ workflow test_wf {
       [
         "foo",
         [
-          input: file(params.rootDir + "/resources_test/bd_rhapsody_wta_test/raw/*.fastq.gz"),
-          reference_genome: file(params.rootDir + "/resources_test/bd_rhapsody_wta_test/raw/GRCh38_primary_assembly_genome_chr1.tar.gz"),
-          transcriptome_annotation: file(params.rootDir + "/resources_test/bd_rhapsody_wta_test/raw/gencode_v40_annotation_chr1.gtf"),
+          input: file(params.rootDir + "/resources_test/bdrhap_5kjrt/raw/12WTA*.fastq.gz"),
+          reference_genome: file(params.rootDir + "/resources_test/bdrhap_ref_gencodev40_chr1/GRCh38_primary_assembly_genome_chr1.tar.gz"),
+          transcriptome_annotation: file(params.rootDir + "/resources_test/bdrhap_ref_gencodev40_chr1/gencode_v40_annotation_chr1.gtf"),
           override_min_cores: 1,
-          override_min_ram: 2
+          override_min_ram: 2,
+          putative_cell_call: "mRNA",
+          exact_cell_count: 4900
         ]
       ]
     )
     | view { "Input: $it" }
     | run_wf
     | view { output ->
-      assert output.size() == 2 : "outputs should contain three elements; [id, file]"
+      assert output.size() == 2 : "outputs should contain two elements; [id, file]"
       assert output[1].toString().endsWith(".h5mu") : "Output file should be a h5mu file. Found: ${output[1]}"
       "Output: $output"
     }
