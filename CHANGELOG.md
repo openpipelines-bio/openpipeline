@@ -10,13 +10,17 @@
 
 ## MINOR CHANGES
 
+* `mapping/bd_rhapsody_wta`: Update to BD Rhapsody 1.10.1.
+
 * `mapping/bd_rhapsody_wta`: Add parameters for overriding the minimum RAM & cores. Add `--dryrun` parameter.
 
-* `mapping/bd_rhapsody_wta_1_10_1`: Add parameters for overriding the minimum RAM & cores. Add `--dryrun` parameter.
-
-* `ingestion/bd_rhapsody_wta`: Allow switching between the 1.9.1 and 1.10.1 version of the pipeline.
-
 * Switch to Viash 0.5.14.
+
+* `convert/from_bdrhap_to_h5mu`: Update to BD Rhapsody 1.10.1.
+
+* `resources_test/bdrhap_5kjrt`: Add subsampled BD rhapsody datasets to test pipeline with.
+
+* `resources_test/bdrhap_ref_gencodev40_chr1`: Add subsampled reference to test BD rhapsody pipeline with.
 
 ## BUG FIXES
 

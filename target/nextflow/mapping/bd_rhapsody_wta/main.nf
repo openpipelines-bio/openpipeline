@@ -134,6 +134,22 @@ thisConfig = processConfig([
       "multiple_sep" : ":"
     },
     {
+      "type" : "string",
+      "name" : "--putative_cell_call",
+      "description" : "Specify the dataset to be used for putative cell calling. For putative cell calling using an AbSeq dataset, please provide an AbSeq_Reference fasta file above.",
+      "example" : [
+        "mRNA"
+      ],
+      "required" : false,
+      "choices" : [
+        "mRNA",
+        "AbSeq_Experimental"
+      ],
+      "direction" : "input",
+      "multiple" : false,
+      "multiple_sep" : ":"
+    },
+    {
       "type" : "integer",
       "name" : "--exact_cell_count",
       "description" : "Exact cell count - Set a specific number (>=1) of cells as putative, based on those with the highest error-corrected read count",
@@ -208,6 +224,38 @@ thisConfig = processConfig([
       "multiple_sep" : ":"
     },
     {
+      "type" : "string",
+      "name" : "--vdj_version",
+      "description" : "Specify if VDJ run.",
+      "example" : [
+        "human"
+      ],
+      "required" : false,
+      "choices" : [
+        "human",
+        "mouse",
+        "humanBCR",
+        "humanBCR",
+        "humanTCR",
+        "mouseBCR"
+      ],
+      "direction" : "input",
+      "multiple" : false,
+      "multiple_sep" : ":"
+    },
+    {
+      "type" : "string",
+      "name" : "--run_name",
+      "description" : "Specify a run name to use as the output file base name. Use only letters, numbers, or hyphens. Do not use special characters or spaces.",
+      "default" : [
+        "sample"
+      ],
+      "required" : false,
+      "direction" : "input",
+      "multiple" : false,
+      "multiple_sep" : ":"
+    },
+    {
       "type" : "boolean",
       "name" : "--parallel",
       "description" : "Run jobs in parallel.",
@@ -265,11 +313,11 @@ thisConfig = processConfig([
     },
     {
       "type" : "file",
-      "path" : "rhapsody_wta_1.9.1_nodocker.cwl",
+      "path" : "rhapsody_wta_1.10.1_nodocker.cwl",
       "parent" : "file:/home/runner/work/openpipeline/openpipeline/src/mapping/bd_rhapsody_wta/config.vsh.yaml"
     }
   ],
-  "description" : "A wrapper for the BD Rhapsody Analysis CWL v1.9.1 pipeline.\n\nThe CWL pipeline file is obtained by cloning 'https://bitbucket.org/CRSwDev/cwl/src/master/' and removing all objects with class 'DockerRequirement' from the YML.\n\nThe reference_genome and transcriptome_annotation files can be downloaded from these locations:\n  - Human: http://bd-rhapsody-public.s3-website-us-east-1.amazonaws.com/Rhapsody-WTA/GRCh38-PhiX-gencodev29/\n  - Mouse: http://bd-rhapsody-public.s3-website-us-east-1.amazonaws.com/Rhapsody-WTA/GRCm38-PhiX-gencodevM19/\n",
+  "description" : "A wrapper for the BD Rhapsody Analysis CWL v1.10.1 pipeline.\n\nThe CWL pipeline file is obtained by cloning 'https://bitbucket.org/CRSwDev/cwl/src/master/' and removing all objects with class 'DockerRequirement' from the YML.\n\nThe reference_genome and transcriptome_annotation files can be downloaded from these locations:\n  - Human: http://bd-rhapsody-public.s3-website-us-east-1.amazonaws.com/Rhapsody-WTA/GRCh38-PhiX-gencodev29/\n  - Mouse: http://bd-rhapsody-public.s3-website-us-east-1.amazonaws.com/Rhapsody-WTA/GRCm38-PhiX-gencodevM19/\n",
   "test_resources" : [
     {
       "type" : "bash_script",
@@ -279,7 +327,12 @@ thisConfig = processConfig([
     },
     {
       "type" : "file",
-      "path" : "../../../resources_test/bd_rhapsody_wta_test",
+      "path" : "../../../resources_test/bdrhap_5kjrt",
+      "parent" : "file:/home/runner/work/openpipeline/openpipeline/src/mapping/bd_rhapsody_wta/config.vsh.yaml"
+    },
+    {
+      "type" : "file",
+      "path" : "../../../resources_test/bdrhap_ref_gencodev40_chr1",
       "parent" : "file:/home/runner/work/openpipeline/openpipeline/src/mapping/bd_rhapsody_wta/config.vsh.yaml"
     }
   ],
@@ -292,6 +345,7 @@ thisScript = '''set -e
 tempscript=".viash_script.sh"
 cat > "$tempscript" << VIASHMAIN
 
+from multiprocessing.sharedctypes import Value
 import os
 import re
 import subprocess
@@ -306,12 +360,15 @@ par = {
   'abseq_reference': $( if [ ! -z ${VIASH_PAR_ABSEQ_REFERENCE+x} ]; then echo "'${VIASH_PAR_ABSEQ_REFERENCE//\\'/\\\\\\'}'.split(':')"; else echo None; fi ),
   'supplemental_reference': $( if [ ! -z ${VIASH_PAR_SUPPLEMENTAL_REFERENCE+x} ]; then echo "'${VIASH_PAR_SUPPLEMENTAL_REFERENCE//\\'/\\\\\\'}'.split(':')"; else echo None; fi ),
   'output': $( if [ ! -z ${VIASH_PAR_OUTPUT+x} ]; then echo "'${VIASH_PAR_OUTPUT//\\'/\\\\\\'}'"; else echo None; fi ),
+  'putative_cell_call': $( if [ ! -z ${VIASH_PAR_PUTATIVE_CELL_CALL+x} ]; then echo "'${VIASH_PAR_PUTATIVE_CELL_CALL//\\'/\\\\\\'}'"; else echo None; fi ),
   'exact_cell_count': $( if [ ! -z ${VIASH_PAR_EXACT_CELL_COUNT+x} ]; then echo "int('${VIASH_PAR_EXACT_CELL_COUNT//\\'/\\\\\\'}')"; else echo None; fi ),
   'disable_putative_calling': $( if [ ! -z ${VIASH_PAR_DISABLE_PUTATIVE_CALLING+x} ]; then echo "'${VIASH_PAR_DISABLE_PUTATIVE_CALLING//\\'/\\\\\\'}'.lower() == 'true'"; else echo None; fi ),
   'subsample': $( if [ ! -z ${VIASH_PAR_SUBSAMPLE+x} ]; then echo "float('${VIASH_PAR_SUBSAMPLE//\\'/\\\\\\'}')"; else echo None; fi ),
   'subsample_seed': $( if [ ! -z ${VIASH_PAR_SUBSAMPLE_SEED+x} ]; then echo "int('${VIASH_PAR_SUBSAMPLE_SEED//\\'/\\\\\\'}')"; else echo None; fi ),
   'sample_tags_version': $( if [ ! -z ${VIASH_PAR_SAMPLE_TAGS_VERSION+x} ]; then echo "'${VIASH_PAR_SAMPLE_TAGS_VERSION//\\'/\\\\\\'}'"; else echo None; fi ),
   'tag_names': $( if [ ! -z ${VIASH_PAR_TAG_NAMES+x} ]; then echo "'${VIASH_PAR_TAG_NAMES//\\'/\\\\\\'}'.split(':')"; else echo None; fi ),
+  'vdj_version': $( if [ ! -z ${VIASH_PAR_VDJ_VERSION+x} ]; then echo "'${VIASH_PAR_VDJ_VERSION//\\'/\\\\\\'}'"; else echo None; fi ),
+  'run_name': $( if [ ! -z ${VIASH_PAR_RUN_NAME+x} ]; then echo "'${VIASH_PAR_RUN_NAME//\\'/\\\\\\'}'"; else echo None; fi ),
   'parallel': $( if [ ! -z ${VIASH_PAR_PARALLEL+x} ]; then echo "'${VIASH_PAR_PARALLEL//\\'/\\\\\\'}'.lower() == 'true'"; else echo None; fi ),
   'timestamps': $( if [ ! -z ${VIASH_PAR_TIMESTAMPS+x} ]; then echo "'${VIASH_PAR_TIMESTAMPS//\\'/\\\\\\'}'.lower() == 'true'"; else echo None; fi ),
   'override_min_ram': $( if [ ! -z ${VIASH_PAR_OVERRIDE_MIN_RAM+x} ]; then echo "int('${VIASH_PAR_OVERRIDE_MIN_RAM//\\'/\\\\\\'}')"; else echo None; fi ),
@@ -417,6 +474,14 @@ content_list.append(strip_margin(f"""\\\\
 ####################################
 """))
 
+if par["putative_cell_call"]:
+  content_list.append(strip_margin(f"""\\\\
+## Putative cell calling dataset (optional) - Specify the dataset to be used for putative cell calling: mRNA or AbSeq_Experimental.
+## For putative cell calling using an AbSeq dataset, please provide an AbSeq_Reference fasta file above.
+## By default, the mRNA data will be used for putative cell calling.
+Putative_Cell_Call: {par["putative_cell_call"]}
+"""))
+
 if par["exact_cell_count"]:
   content_list.append(strip_margin(f"""\\\\
 ## Exact cell count (optional) - Set a specific number (>=1) of cells as putative, based on those with the highest error-corrected read count
@@ -474,6 +539,36 @@ if par["tag_names"]:
 Tag_Names: [{', '.join(par["tag_names"])}]
 """))
 
+## VDJ options
+content_list.append(strip_margin(f"""\\\\
+
+#################
+## VDJ options ##
+#################
+"""
+))
+
+if par["vdj_version"]:
+  content_list.append(strip_margin(f"""\\\\
+## VDJ Version (optional) - Specify if VDJ run: human, mouse, humanBCR, humanTCR, mouseBCR, mouseTCR
+VDJ_Version: {par["vdj_version"]}
+"""))
+
+## VDJ options
+content_list.append(strip_margin(f"""\\\\
+
+########################
+## Additional Options ##
+########################
+"""
+))
+
+if par["run_name"]:
+  content_list.append(strip_margin(f"""\\\\
+## Run Name (optional) -  Specify a run name to use as the output file base name. Use only letters, numbers, or hyphens. Do not use special characters or spaces.
+Run_Name: {par["run_name"]}
+"""))
+
 ## Write config to file
 config_content = ''.join(content_list)
 
@@ -481,7 +576,7 @@ with open(config_file, "w") as f:
   f.write(config_content)
 
 ## Process parameters
-proc_pars = ["--no-container"]
+proc_pars = ["--no-container", "--outdir", par["output"]]
 
 if par["parallel"]:
   proc_pars.append("--parallel")
@@ -490,7 +585,7 @@ if par["timestamps"]:
   proc_pars.append("--timestamps")
 
 # create cwl file (if need be)
-orig_cwl_file=os.path.abspath(os.path.join(meta["resources_dir"], "rhapsody_wta_1.9.1_nodocker.cwl"))
+orig_cwl_file=os.path.join(meta["resources_dir"], "rhapsody_wta_1.10.1_nodocker.cwl")
 if par["override_min_ram"] or par["override_min_cores"]:
   cwl_file = os.path.join(par["output"], "pipeline.cwl")
 
@@ -517,19 +612,32 @@ if not par["dryrun"]:
 
     env = dict(os.environ)
     env["TMPDIR"] = temp_dir
-    env["_JAVA_OPTIONS"] = "-Dpicard.useLegacyParser=true"
 
     print("> " + ' '.join(cmd))
 
-    p = subprocess.Popen(
+    p = subprocess.check_call(
       cmd,
       cwd=os.path.dirname(config_file),
       env=env
     )
-    p.wait()
 
-    if p.returncode != 0:
-      raise Exception(f"cwl-runner finished with exit code {p.returncode}") 
+  # look for counts file
+  if not par["run_name"]:
+    par["run_name"] = "sample"
+  counts_filename = par["run_name"] + "_RSEC_MolsPerCell.csv"
+  
+  if par["sample_tags_version"]:
+    counts_filename = "Combined_" + counts_filename
+  counts_file = os.path.join(par["output"], counts_filename)
+  
+  if not os.path.exists(counts_file):
+    raise ValueError(f"Could not find output counts file '{counts_filename}'")
+
+  # look for metrics file
+  metrics_filename = par["run_name"] + "_Metrics_Summary.csv"
+  metrics_file = os.path.join(par["output"], metrics_filename)
+  if not os.path.exists(metrics_file):
+    raise ValueError(f"Could not find output metrics file '{metrics_filename}'")
 
 VIASHMAIN
 python "$tempscript"
