@@ -1,8 +1,7 @@
 ## VIASH START
 par <- list(
   input = c(
-    #"work/13/51cb64f9eab9fd9275d92c3bf8a405/sample.bd_rhapsody_wta_1_10_1.output"
-    "work/69/e7ae05c747871887e88e1e2cbe1154/sample.bd_rhapsody_wta_1_10_1.output"
+    "resources_test/bdrhap_5kjrt/processed/WTA"
   ),
   id = "foo",
   output = "test.h5mu"
