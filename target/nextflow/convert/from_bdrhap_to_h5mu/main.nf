@@ -110,7 +110,7 @@ thisConfig = processConfig([
     },
     {
       "type" : "file",
-      "path" : "../../../resources_test/bd_rhapsody_wta_test",
+      "path" : "../../../resources_test/bdrhap_5kjrt/processed/WTA",
       "parent" : "file:/home/runner/work/openpipeline/openpipeline/src/convert/from_bdrhap_to_h5mu/config.vsh.yaml"
     }
   ],
