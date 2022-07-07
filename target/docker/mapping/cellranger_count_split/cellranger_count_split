@@ -397,9 +397,9 @@ FROM ubuntu:focal
 RUN apt update && apt upgrade -y
 LABEL org.opencontainers.image.authors="Angela Pisco (author) {github: aopisco, orcid: 0000-0003-0142-2355}, Samuel D'Souza (author) {github: srdsam}, Robrecht Cannoodt <rcannood@gmail.com> (author, maintainer) {github: rcannood, orcid: 0000-0003-3641-729X}"
 LABEL org.opencontainers.image.description="Companion container for running component mapping cellranger_count_split"
-LABEL org.opencontainers.image.created="2022-07-07T11:04:44Z"
+LABEL org.opencontainers.image.created="2022-07-07T11:19:17Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="911f14741985aca4b5e79e7b40159b9754fe78c3"
+LABEL org.opencontainers.image.revision="8fc564958461264c9eec1e6a8cf65da3e4c573ff"
 LABEL org.opencontainers.image.version="main_build"
 VIASHDOCKER
 }

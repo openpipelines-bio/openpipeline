@@ -45,7 +45,7 @@ def readCsv(file) {
     def line = br.readLine()
     row++
     if (!line.startsWith("#")) {
-      header = splitRegex.split(line).collect{field ->
+      header = splitRegex.split(line, -1).collect{field ->
         m = removeQuote.matcher(field)
         m.find() ? m.replaceFirst('$1') : field
       }
@@ -57,14 +57,21 @@ def readCsv(file) {
     def line = br.readLine()
     row++
     if (!line.startsWith("#")) {
-      def data = splitRegex.split(line).collect{field ->
+      def predata = splitRegex.split(line, -1)
+      def data = predata.collect{field ->
+        if (field == "") {
+          return null
+        }
         m = removeQuote.matcher(field)
-        m.find() ? m.replaceFirst('$1') : field
+        if (m.find()) {
+          return m.replaceFirst('$1')
+        } else {
+          return field
+        }
       }
-
       assert header.size() == data.size(): "Row $row should contain the same number as fields as the header"
       
-      def dataMap = [header, data].transpose().collectEntries()
+      def dataMap = [header, data].transpose().collectEntries().findAll{it.value != null}
       output.add(dataMap)
     }
   }
@@ -123,6 +130,13 @@ def processArgument(arg) {
     if (arg.example != null && arg.example instanceof List) {
       arg.example = arg.example[0]
     }
+  }
+
+  if (arg.type == "boolean_true") {
+    arg.default = false
+  }
+  if (arg.type == "boolean_false") {
+    arg.default = true
   }
 
   arg
@@ -311,7 +325,7 @@ def paramsToList(params, config) {
   // combine parameters
   def processedParams = paramList.collect{ multiParam ->
     // combine params
-    def combinedArgs = defaultArgs + multiParam + paramArgs
+    def combinedArgs = defaultArgs + paramArgs + multiParam
 
     // check whether required arguments exist
     config.functionality.allArguments
@@ -358,7 +372,7 @@ def paramsToList(params, config) {
           parData = parData.collect{it as Integer}
         } else if (par.type == "double") {
           parData = parData.collect{it as Double}
-        } else if (par.type == "boolean") {
+        } else if (par.type == "boolean" || par.type == "boolean_true" || par.type == "boolean_false") {
           parData = parData.collect{it as Boolean}
         }
         // simplify list to value if need be
