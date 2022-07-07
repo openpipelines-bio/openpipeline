@@ -250,7 +250,7 @@ def readCsv(file) {
     def line = br.readLine()
     row++
     if (!line.startsWith("#")) {
-      header = splitRegex.split(line).collect{field ->
+      header = splitRegex.split(line, -1).collect{field ->
         m = removeQuote.matcher(field)
         m.find() ? m.replaceFirst('$1') : field
       }
@@ -262,14 +262,21 @@ def readCsv(file) {
     def line = br.readLine()
     row++
     if (!line.startsWith("#")) {
-      def data = splitRegex.split(line).collect{field ->
+      def predata = splitRegex.split(line, -1)
+      def data = predata.collect{field ->
+        if (field == "") {
+          return null
+        }
         m = removeQuote.matcher(field)
-        m.find() ? m.replaceFirst('$1') : field
+        if (m.find()) {
+          return m.replaceFirst('$1')
+        } else {
+          return field
+        }
       }
-
       assert header.size() == data.size(): "Row $row should contain the same number as fields as the header"
       
-      def dataMap = [header, data].transpose().collectEntries()
+      def dataMap = [header, data].transpose().collectEntries().findAll{it.value != null}
       output.add(dataMap)
     }
   }
@@ -330,6 +337,13 @@ def processArgument(arg) {
     }
   }
 
+  if (arg.type == "boolean_true") {
+    arg.default = false
+  }
+  if (arg.type == "boolean_false") {
+    arg.default = true
+  }
+
   arg
 }
 def processConfig(config) {
@@ -378,18 +392,9 @@ def mergeMap(Map lhs, Map rhs) {
 
 def helpMessage(params, config) {
   if (paramExists("help")) {
-
     def localConfig = [
       "functionality" : [
         "arguments": [
-          [
-            'name': '--id',
-            'required': true,
-            'type': 'string',
-            'description': 'A unique id for every entry.',
-            'default': 'run',
-            'multiple': false
-          ],
           [
             'name': '--publish_dir',
             'required': true,
@@ -430,6 +435,7 @@ def helpMessage(params, config) {
         ]
       ]
     ]
+    def mergedConfig = processConfig(mergeMap(config, localConfig))
 
     def template = '''\
     |${functionality.name}
@@ -446,7 +452,6 @@ def helpMessage(params, config) {
     '''.stripMargin()
 
     def engine = new groovy.text.SimpleTemplateEngine()
-    def mergedConfig = processConfig(mergeMap(config, localConfig))
     def help = engine
         .createTemplate(template)
         .make(mergedConfig)
@@ -460,7 +465,7 @@ def helpMessage(params, config) {
 }
 
 def guessMultiParamFormat(params) {
-  if (!params.containsKey("param_list")) {
+  if (!params.containsKey("param_list") || params.param_list == null) {
     "none"
   } else if (params.containsKey("multiParamsFormat")) {
     params.multiParamsFormat
@@ -517,15 +522,15 @@ def paramsToList(params, config) {
   def multiFile = multiOptionOut[0]
 
   // data checks
-  assert paramList instanceof List: "--$readerId should contain a list of maps"
+  assert paramList instanceof List: "--param_list should contain a list of maps"
   for (value in paramList) {
-    assert value instanceof Map: "--$readerId should contain a list of maps"
+    assert value instanceof Map: "--param_list should contain a list of maps"
   }
   
   // combine parameters
   def processedParams = paramList.collect{ multiParam ->
     // combine params
-    def combinedArgs = defaultArgs + multiParam + paramArgs
+    def combinedArgs = defaultArgs + paramArgs + multiParam
 
     // check whether required arguments exist
     config.functionality.allArguments
@@ -536,6 +541,7 @@ def paramsToList(params, config) {
     
     // process arguments
     def inputs = config.functionality.allArguments
+      .findAll{ par -> combinedArgs.containsKey(par.plainName) }
       .collectEntries { par ->
         // split on 'multiple_sep'
         if (par.multiple) {
@@ -544,6 +550,8 @@ def paramsToList(params, config) {
             parData = parData.collect{it instanceof String ? it.split(par.multiple_sep) : it }
           } else if (parData instanceof String) {
             parData = parData.split(par.multiple_sep)
+          } else if (parData == null) {
+            parData = []
           } else {
             parData = [ parData ]
           }
@@ -569,7 +577,7 @@ def paramsToList(params, config) {
           parData = parData.collect{it as Integer}
         } else if (par.type == "double") {
           parData = parData.collect{it as Double}
-        } else if (par.type == "boolean") {
+        } else if (par.type == "boolean" || par.type == "boolean_true" || par.type == "boolean_false") {
           parData = parData.collect{it as Boolean}
         }
         // simplify list to value if need be
@@ -583,8 +591,10 @@ def paramsToList(params, config) {
         // return pair
         [ par.plainName, parData ]
       }
-
+      // remove parameters which were explicitly set to null
+      .findAll{ par -> par != null }
     }
+    
   
   // check processed params
   processedParams.forEach { args ->
@@ -1391,7 +1401,7 @@ def workflowFactory(Map args) {
         def combinedArgs = defaultArgs + paramArgs + processArgs.args + dataArgs
 
         // remove arguments with explicit null values
-        combinedArgs.removeAll{it == null}
+        combinedArgs.removeAll{it.value == null}
 
         // check whether required arguments exist
         thisConfig.functionality.allArguments
@@ -1511,13 +1521,25 @@ ScriptMeta.current().addDefinition(myWfInstance)
 
 // anonymous workflow for running this module as a standalone
 workflow {
-  helpMessage(params, thisConfig)
+  def mergedConfig = thisConfig
 
-  if (!params.containsKey("id")) {
-    params.id = "run"
+  // add id argument if it's not already in the config
+  if (mergedConfig.functionality.arguments.every{it.plainName != "id"}) {
+    def idArg = [
+      'name': '--id',
+      'required': false,
+      'type': 'string',
+      'description': 'A unique id for every entry.',
+      'default': 'run',
+      'multiple': false
+    ]
+    mergedConfig.functionality.arguments.add(0, idArg)
+    mergedConfig = processConfig(mergedConfig)
   }
 
-  viashChannel(params, thisConfig)
+  helpMessage(params, mergedConfig)
+
+  viashChannel(params, mergedConfig)
     | view { "input: $it" }
     | myWfInstance.run(
       auto: [ publish: true ]
