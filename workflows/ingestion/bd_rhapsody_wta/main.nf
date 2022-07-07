@@ -38,7 +38,7 @@ workflow run_wf {
       }
 
       input_with_new_ids = input.collect { file ->
-        new_id = file.name.replaceAll("[^a-zA-Z0-9]R[12]_.*\\.fastq\\.gz\$", "")
+        new_id = file.name.replaceAll("([^A-Za-z0-9])R[12]([^A-Za-z0-9])", '$2').replaceAll("\\.fastq\\.gz", "")
         [ new_id, file ]
       }
       new_ids = input_with_new_ids.collect{it[0]}.unique()
