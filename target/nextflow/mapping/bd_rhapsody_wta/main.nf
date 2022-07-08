@@ -42,7 +42,7 @@ thisConfig = processConfig([
       }
     }
   ],
-  "arguments" : [
+  "inputs" : [
     {
       "type" : "file",
       "name" : "--input",
@@ -116,7 +116,9 @@ thisConfig = processConfig([
       "direction" : "input",
       "multiple" : true,
       "multiple_sep" : ":"
-    },
+    }
+  ],
+  "outputs" : [
     {
       "type" : "file",
       "name" : "--output",
@@ -132,7 +134,9 @@ thisConfig = processConfig([
       "direction" : "output",
       "multiple" : false,
       "multiple_sep" : ":"
-    },
+    }
+  ],
+  "arguments" : [
     {
       "type" : "string",
       "name" : "--putative_cell_call",
@@ -212,7 +216,7 @@ thisConfig = processConfig([
     {
       "type" : "string",
       "name" : "--tag_names",
-      "description" : "Tag_Names (optional) - Specify the tag number followed by '-' and the desired sample name to appear in Sample_Tag_Metrics.csv\nDo not use the special characters: &, (), [], {},  <>, ?, |\n",
+      "description" : "Tag_Names (optional) - Specify the tag number followed by '-' and the desired sample name to appear in Sample_Tag_Metrics.csv.\nDo not use the special characters: &, (), [], {},  <>, ?, |\n",
       "example" : [
         "4-mySample",
         "9-myOtherSample",

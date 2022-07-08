@@ -15,11 +15,9 @@ functionality:
       email: rcannood@gmail.com
       roles: [ maintainer ]
       props: { github: rcannood, orcid: "0000-0003-3641-729X" }
-  arguments:
-    # inputs
+  inputs:
     - name: "--input"
       alternatives: [-i]
-      type: file
       description: Path to your read files in the FASTQ.GZ format. You may specify as many R1/R2 read pairs as you want.
       required: true
       multiple: true
@@ -27,38 +25,33 @@ functionality:
       example: input.fastq.gz
     - name: "--reference_genome"
       alternatives: [-r]
-      type: file
       required: true
       description: "Path to STAR index as a tar.gz file."
       example: "reference_genome.tar.gz"
     - name: "--transcriptome_annotation"
       alternatives: [-t]
-      type: file
       description: Path to GTF annotation file.
       required: true
       example: "transcriptome.gtf"
     - name: "--abseq_reference"
       alternatives: [-a]
-      type: file
       description: Path to the AbSeq reference file in FASTA format. Only needed if BD AbSeq Ab-Oligos are used.
       multiple: true
       multiple_sep: ':'
     - name: "--supplemental_reference"
       alternatives: [-s]
-      type: file
       description: Path to the supplemental reference file in FASTA format. Only needed if there are additional transgene sequences used in the experiment.
       multiple: true
       multiple_sep: ':'
     
-    # outputs
+  outputs:
     - name: "--output"
       alternatives: [-o]
       description: "Output folder. Output still needs to be processed further."
       required: true
-      type: file
-      direction: output
       example: output_dir/
 
+  arguments:
     # putative cell calling settings
     - name: "--putative_cell_call"
       type: string
@@ -93,7 +86,7 @@ functionality:
     - name: "--tag_names"
       type: string
       description: |
-        Tag_Names (optional) - Specify the tag number followed by '-' and the desired sample name to appear in Sample_Tag_Metrics.csv
+        Tag_Names (optional) - Specify the tag number followed by '-' and the desired sample name to appear in Sample_Tag_Metrics.csv.
         Do not use the special characters: &, (), [], {},  <>, ?, |
       multiple: true
       example: [4-mySample, 9-myOtherSample, 6-alsoThisSample]
@@ -130,6 +123,11 @@ functionality:
     - name: "--dryrun"
       type: boolean_true
       description: "If true, the output directory will only contain the CWL input files, but the pipeline itself will not be executed."
+  # argument_groups:
+  #   - name: Input
+  #     arguments: [id, input, reference_genome, transcriptome_annotation, abseq_reference, supplemental_reference]
+  #   - name: Output
+  #     arguments: [output]
   resources:
     - type: python_script
       path: script.py
