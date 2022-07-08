@@ -22,6 +22,8 @@
 
 * `resources_test/bdrhap_ref_gencodev40_chr1`: Add subsampled reference to test BD rhapsody pipeline with.
 
+* `integrate/merge`: Merge several unimodal .h5mu files into one multimodal .h5mu file.
+
 ## BUG FIXES
 
 * `workflows/utils/WorkflowHelper.nf`: Renamed `utils.nf` to `WorkflowHelper.nf`.
