@@ -1211,8 +1211,20 @@ functionality:
             viash_par_contents = !par.required && !par.multiple ? "viash_par_${par.plainName}[0]" : "viash_par_${par.plainName}.join(\":\")"
             "\n\${viash_par_${par.plainName}.empty ? \"\" : \"export VIASH_PAR_${par.plainName.toUpperCase()}=\\\"\" + ${viash_par_contents} + \"\\\"\"}"
           }
-        
-        def tmpDir = "/tmp" // check if component is docker based
+      
+        // NOTE: if using docker, use /tmp instead of tmpDir!
+        def tmpDir = java.nio.file.Paths.get(
+          System.getenv('NXF_TEMP') ?: 
+          System.getenv('VIASH_TEMP') ?: 
+          System.getenv('VIASH_TMPDIR') ?: 
+          System.getenv('VIASH_TEMPDIR') ?: 
+          System.getenv('VIASH_TMP') ?: 
+          System.getenv('TEMP') ?: 
+          System.getenv('TMPDIR') ?: 
+          System.getenv('TEMPDIR') ?:
+          System.getenv('TMP') ?: 
+          '/tmp'
+        ).toAbsolutePath()
       
         // construct stub
         def stub = thisConfig.functionality.allArguments
@@ -1247,7 +1259,7 @@ functionality:
         |$tripQuo
         |# meta exports
         |export VIASH_META_RESOURCES_DIR="\${resourcesDir.toRealPath().toAbsolutePath()}"
-        |export VIASH_META_TEMP_DIR="${tmpDir}"
+        |export VIASH_META_TEMP_DIR="${['docker', 'podman', 'charliecloud'].any{ it == workflow.containerEngine } ? '/tmp' : tmpDir}"
         |export VIASH_META_FUNCTIONALITY_NAME="${thisConfig.functionality.name}"
         |export VIASH_META_EXECUTABLE="\\\$VIASH_META_RESOURCES_DIR/\\\$VIASH_META_FUNCTIONALITY_NAME"
         |
@@ -1672,5 +1684,5 @@ info:
   platform: "nextflow"
   output: "target/nextflow/convert/from_10xmtx_to_h5mu"
   viash_version: "0.5.14"
-  git_commit: "540a2f63a19e6a7651cdbb23f3f329622fef729d"
+  git_commit: "3fd0f773f41f1e08c61ae40fda8748df7ba0cd8e"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"
