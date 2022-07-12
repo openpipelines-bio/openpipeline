@@ -52,6 +52,11 @@ functionality:
       example: output_dir/
 
   arguments:
+    - name: "--id"
+      type: string
+      description: "Specify a run name to use as the output file base name. Use only letters, numbers, or hyphens. Do not use special characters or spaces."
+      default: sample
+
     # putative cell calling settings
     - name: "--putative_cell_call"
       type: string
@@ -97,12 +102,6 @@ functionality:
       description: "Specify if VDJ run."
       choices: [human, mouse, humanBCR, humanBCR, humanTCR, mouseBCR]
       example: human
-    
-    # additional settings
-    - name: "--run_name"
-      type: string
-      description: "Specify a run name to use as the output file base name. Use only letters, numbers, or hyphens. Do not use special characters or spaces."
-      default: sample
 
     # cwl-runner settings
     - name: "--parallel"
@@ -123,11 +122,21 @@ functionality:
     - name: "--dryrun"
       type: boolean_true
       description: "If true, the output directory will only contain the CWL input files, but the pipeline itself will not be executed."
-  # argument_groups:
-  #   - name: Input
-  #     arguments: [id, input, reference_genome, transcriptome_annotation, abseq_reference, supplemental_reference]
-  #   - name: Output
-  #     arguments: [output]
+  argument_groups:
+    - name: Inputs
+      arguments: [ id, input, reference_genome, transcriptome_annotation, abseq_reference, supplemental_reference ]
+    - name: Outputs
+      arguments: [ output ]
+    - name: "Putative cell calling arguments"
+      arguments: [ putative_cell_call, exact_cell_count, disable_putative_calling ]
+    - name: "Subsample arguments"
+      arguments: [ subsample, subsample_seed ]
+    - name: "Multiplex arguments"
+      arguments: [ sample_tags_version, tag_names ]
+    - name: "VDJ arguments"
+      arguments: [ vdj_version ]
+    - name: "CWL-runner arguments"
+      arguments: [ parallel, timestamps, override_min_ram, override_min_cores, dryrun ]
   resources:
     - type: python_script
       path: script.py

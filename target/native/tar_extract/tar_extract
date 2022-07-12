@@ -161,7 +161,7 @@ function ViashHelp {
   echo ""
   echo "Extract files from a tar archive"
   echo ""
-  echo "Options:"
+  echo "Arguments:"
   echo "    -i, --input"
   echo "        type: file, required parameter"
   echo "        example: input.tar.gz"
@@ -176,14 +176,14 @@ function ViashHelp {
   echo "        type: integer"
   echo "        example: 1"
   echo "        Strip this amount of leading components from file names on extraction."
-  echo "For example, to extract only 'myfile.txt' from an archive containing the"
-  echo "structure \`this/goes/deep/myfile.txt', use 3 to strip 'this/goes/deep/'."
+  echo "        For example, to extract only 'myfile.txt' from an archive containing the"
+  echo "        structure \`this/goes/deep/myfile.txt', use 3 to strip 'this/goes/deep/'."
   echo ""
   echo "    -e, --exclude"
   echo "        type: string"
   echo "        example: docs/figures"
   echo "        Prevents any file or member whose name matches the shell wildcard"
-  echo "(pattern) from being extracted."
+  echo "        (pattern) from being extracted."
 }
 
 # initialise array

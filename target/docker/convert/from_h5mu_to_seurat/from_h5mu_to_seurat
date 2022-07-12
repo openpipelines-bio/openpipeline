@@ -176,7 +176,7 @@ function ViashHelp {
   echo "('-')"
   echo "  - Seurat does not support global variables metadata /var."
   echo ""
-  echo "Options:"
+  echo "Arguments:"
   echo "    -i, --input"
   echo "        type: file, required parameter"
   echo "        example: input.h5mu"
@@ -400,9 +400,9 @@ RUN Rscript -e 'if (!requireNamespace("remotes", quietly = TRUE)) install.packag
 
 LABEL org.opencontainers.image.authors="Robrecht Cannoodt <rcannood@gmail.com> (author, maintainer) {github: rcannood, orcid: 0000-0003-3641-729X}"
 LABEL org.opencontainers.image.description="Companion container for running component convert from_h5mu_to_seurat"
-LABEL org.opencontainers.image.created="2022-07-08T13:27:46Z"
+LABEL org.opencontainers.image.created="2022-07-12T08:52:01Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="cfe8f2bdf5cea7b6f7c9e5e257fbbd09af2c6152"
+LABEL org.opencontainers.image.revision="687a9379eba116e6701bd3760ff62dd0cf957df7"
 LABEL org.opencontainers.image.version="main_build"
 VIASHDOCKER
 }

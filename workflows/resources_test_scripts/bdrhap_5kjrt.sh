@@ -43,7 +43,7 @@ fi
 
 # process samples with bd rhap component
 # target/docker/mapping/bd_rhapsody_wta/main.nf \
-#   --run_name WTA \
+#   --id WTA \
 #   --input "$tar_dir/12WTA_S1_L432_R1_001.fastq.gz" \
 #   --input "$tar_dir/12WTA_S1_L432_R2_001.fastq.gz" \
 #   --reference_genome "$reference_dir/GRCh38_primary_assembly_genome_chr1.tar.gz" \
@@ -117,18 +117,18 @@ cp "$tar_dir/BDAbSeq_ImmuneDiscoveryPanel.fasta" "$raw_dir"
 cat > /tmp/params.yaml << HERE
 param_list:
 - id: "SMK"
-  run_name: "SMK"
+  id: "SMK"
   input: "$raw_dir/12SMK_S1_L432_R[12]_001.fastq.gz"
   sample_tags_version: "hs"
   tag_names: ["1-Jurkat", "2-Ramos", "3-THP1"]
   output: "SMK"
 - id: "ABC"
-  run_name: "ABC"
+  id: "ABC"
   input: "$raw_dir/12ABC_S1_L432_R[12]_001_subset.fastq.gz"
   abseq_reference: "$raw_dir/BDAbSeq_ImmuneDiscoveryPanel.fasta"
   output: "ABC"
 - id: "WTA"
-  run_name: "WTA"
+  id: "WTA"
   input: "$raw_dir/12WTA_S1_L432_R[12]_001_subset.fastq.gz"
   output: "WTA"
 reference_genome: "$reference_dir/GRCh38_primary_assembly_genome_chr1.tar.gz"

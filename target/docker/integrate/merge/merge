@@ -164,7 +164,7 @@ function ViashHelp {
   echo ""
   echo "Combine one or more single-modality .h5mu files together into one .h5mu file."
   echo ""
-  echo "Options:"
+  echo "Arguments:"
   echo "    -i, --input"
   echo "        type: file, required parameter, multiple values allowed"
   echo "        default: sample_paths"
@@ -382,9 +382,9 @@ RUN pip install --upgrade pip && \
 
 LABEL org.opencontainers.image.authors="Dries Schaumont <Dschaumo@its.jnj.com> (maintainer)"
 LABEL org.opencontainers.image.description="Companion container for running component integrate merge"
-LABEL org.opencontainers.image.created="2022-07-08T13:27:47Z"
+LABEL org.opencontainers.image.created="2022-07-12T08:52:02Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="cfe8f2bdf5cea7b6f7c9e5e257fbbd09af2c6152"
+LABEL org.opencontainers.image.revision="687a9379eba116e6701bd3760ff62dd0cf957df7"
 LABEL org.opencontainers.image.version="main_build"
 VIASHDOCKER
 }

@@ -176,12 +176,18 @@ function ViashHelp {
   echo "  - Mouse:"
   echo "http://bd-rhapsody-public.s3-website-us-east-1.amazonaws.com/Rhapsody-WTA/GRCm38-PhiX-gencodevM19/"
   echo ""
-  echo "Options:"
+  echo "Inputs:"
+  echo "    --id"
+  echo "        type: string"
+  echo "        default: sample"
+  echo "        Specify a run name to use as the output file base name. Use only"
+  echo "        letters, numbers, or hyphens. Do not use special characters or spaces."
+  echo ""
   echo "    -i, --input"
   echo "        type: file, required parameter, multiple values allowed"
   echo "        example: input.fastq.gz"
   echo "        Path to your read files in the FASTQ.GZ format. You may specify as many"
-  echo "R1/R2 read pairs as you want."
+  echo "        R1/R2 read pairs as you want."
   echo ""
   echo "    -r, --reference_genome"
   echo "        type: file, required parameter"
@@ -196,51 +202,55 @@ function ViashHelp {
   echo "    -a, --abseq_reference"
   echo "        type: file, multiple values allowed"
   echo "        Path to the AbSeq reference file in FASTA format. Only needed if BD"
-  echo "AbSeq Ab-Oligos are used."
+  echo "        AbSeq Ab-Oligos are used."
   echo ""
   echo "    -s, --supplemental_reference"
   echo "        type: file, multiple values allowed"
   echo "        Path to the supplemental reference file in FASTA format. Only needed if"
-  echo "there are additional transgene sequences used in the experiment."
+  echo "        there are additional transgene sequences used in the experiment."
   echo ""
+  echo "Outputs:"
   echo "    -o, --output"
   echo "        type: file, required parameter, output"
   echo "        example: output_dir"
   echo "        Output folder. Output still needs to be processed further."
   echo ""
+  echo "Putative cell calling arguments:"
   echo "    --putative_cell_call"
   echo "        type: string"
   echo "        example: mRNA"
   echo "        choices: [ mRNA, AbSeq_Experimental ]"
   echo "        Specify the dataset to be used for putative cell calling. For putative"
-  echo "cell calling using an AbSeq dataset, please provide an AbSeq_Reference fasta"
-  echo "file above."
+  echo "        cell calling using an AbSeq dataset, please provide an AbSeq_Reference"
+  echo "        fasta file above."
   echo ""
   echo "    --exact_cell_count"
   echo "        type: integer"
   echo "        example: 10000"
   echo "        Exact cell count - Set a specific number (>=1) of cells as putative,"
-  echo "based on those with the highest error-corrected read count"
+  echo "        based on those with the highest error-corrected read count"
   echo ""
   echo "    --disable_putative_calling"
   echo "        type: boolean_true"
   echo "        Disable Refined Putative Cell Calling - Determine putative cells using"
-  echo "only the basic algorithm (minimum second derivative along the cumulative reads"
-  echo "curve). The refined algorithm attempts to remove false positives and recover"
-  echo "false negatives, but may not be ideal for certain complex mixtures of cell"
-  echo "types. Does not apply if Exact Cell Count is set."
+  echo "        only the basic algorithm (minimum second derivative along the cumulative"
+  echo "        reads curve). The refined algorithm attempts to remove false positives"
+  echo "        and recover false negatives, but may not be ideal for certain complex"
+  echo "        mixtures of cell types. Does not apply if Exact Cell Count is set."
   echo ""
+  echo "Subsample arguments:"
   echo "    --subsample"
   echo "        type: double"
   echo "        example: 0.01"
   echo "        A number >1 or fraction (0 < n < 1) to indicate the number or percentage"
-  echo "of reads to subsample."
+  echo "        of reads to subsample."
   echo ""
   echo "    --subsample_seed"
   echo "        type: integer"
   echo "        example: 3445"
   echo "        A seed for replicating a previous subsampled run."
   echo ""
+  echo "Multiplex arguments:"
   echo "    --sample_tags_version"
   echo "        type: string"
   echo "        example: human"
@@ -251,21 +261,17 @@ function ViashHelp {
   echo "        type: string, multiple values allowed"
   echo "        example: 4-mySample:9-myOtherSample:6-alsoThisSample"
   echo "        Tag_Names (optional) - Specify the tag number followed by '-' and the"
-  echo "desired sample name to appear in Sample_Tag_Metrics.csv."
+  echo "        desired sample name to appear in Sample_Tag_Metrics.csv."
   echo "        Do not use the special characters: &, (), [], {},  <>, ?, |"
   echo ""
+  echo "VDJ arguments:"
   echo "    --vdj_version"
   echo "        type: string"
   echo "        example: human"
   echo "        choices: [ human, mouse, humanBCR, humanBCR, humanTCR, mouseBCR ]"
   echo "        Specify if VDJ run."
   echo ""
-  echo "    --run_name"
-  echo "        type: string"
-  echo "        default: sample"
-  echo "        Specify a run name to use as the output file base name. Use only"
-  echo "letters, numbers, or hyphens. Do not use special characters or spaces."
-  echo ""
+  echo "CWL-runner arguments:"
   echo "    --parallel"
   echo "        type: boolean"
   echo "        default: true"
@@ -288,7 +294,7 @@ function ViashHelp {
   echo "    --dryrun"
   echo "        type: boolean_true"
   echo "        If true, the output directory will only contain the CWL input files, but"
-  echo "the pipeline itself will not be executed."
+  echo "        the pipeline itself will not be executed."
 }
 ######## Helper functions for setting up Docker images for viash ########
 # expects: ViashDockerBuild
@@ -497,9 +503,9 @@ RUN pip install --upgrade pip && \
 
 LABEL org.opencontainers.image.authors="Robrecht Cannoodt <rcannood@gmail.com> (maintainer) {github: rcannood, orcid: 0000-0003-3641-729X}"
 LABEL org.opencontainers.image.description="Companion container for running component mapping bd_rhapsody_wta"
-LABEL org.opencontainers.image.created="2022-07-08T13:27:46Z"
+LABEL org.opencontainers.image.created="2022-07-12T08:52:01Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="cfe8f2bdf5cea7b6f7c9e5e257fbbd09af2c6152"
+LABEL org.opencontainers.image.revision="687a9379eba116e6701bd3760ff62dd0cf957df7"
 LABEL org.opencontainers.image.version="main_build"
 VIASHDOCKER
 }
@@ -766,6 +772,15 @@ while [[ $# -gt 0 ]]; do
             [ $# -lt 2 ] && ViashError Not enough arguments passed to -o. Use "--help" to get more information on the parameters. && exit 1
             shift 2
             ;;
+        --id)
+            VIASH_PAR_ID="$2"
+            [ $# -lt 2 ] && ViashError Not enough arguments passed to --id. Use "--help" to get more information on the parameters. && exit 1
+            shift 2
+            ;;
+        --id=*)
+            VIASH_PAR_ID=$(ViashRemoveFlags "$1")
+            shift 1
+            ;;
         --putative_cell_call)
             VIASH_PAR_PUTATIVE_CELL_CALL="$2"
             [ $# -lt 2 ] && ViashError Not enough arguments passed to --putative_cell_call. Use "--help" to get more information on the parameters. && exit 1
@@ -839,15 +854,6 @@ while [[ $# -gt 0 ]]; do
             ;;
         --vdj_version=*)
             VIASH_PAR_VDJ_VERSION=$(ViashRemoveFlags "$1")
-            shift 1
-            ;;
-        --run_name)
-            VIASH_PAR_RUN_NAME="$2"
-            [ $# -lt 2 ] && ViashError Not enough arguments passed to --run_name. Use "--help" to get more information on the parameters. && exit 1
-            shift 2
-            ;;
-        --run_name=*)
-            VIASH_PAR_RUN_NAME=$(ViashRemoveFlags "$1")
             shift 1
             ;;
         --parallel)
@@ -955,11 +961,11 @@ if [ -z "$VIASH_PAR_OUTPUT" ]; then
   ViashError '--output' is a required argument. Use "--help" to get more information on the parameters.
   exit 1
 fi
+if [ -z "$VIASH_PAR_ID" ]; then
+  VIASH_PAR_ID="sample"
+fi
 if [ -z "$VIASH_PAR_DISABLE_PUTATIVE_CALLING" ]; then
   VIASH_PAR_DISABLE_PUTATIVE_CALLING="false"
-fi
-if [ -z "$VIASH_PAR_RUN_NAME" ]; then
-  VIASH_PAR_RUN_NAME="sample"
 fi
 if [ -z "$VIASH_PAR_PARALLEL" ]; then
   VIASH_PAR_PARALLEL="true"
@@ -973,6 +979,7 @@ fi
 
 
 # check whether parameters values are of the right type
+
 
 
 
@@ -1007,7 +1014,6 @@ if [[ -n "$VIASH_PAR_SUBSAMPLE_SEED" ]]; then
     exit 1
   fi
 fi
-
 
 
 
@@ -1055,6 +1061,7 @@ fi
 
 
 
+
 if [ ! -z "$VIASH_PAR_PUTATIVE_CELL_CALL" ]; then
   VIASH_PAR_PUTATIVE_CELL_CALL_CHOICES=("mRNA:AbSeq_Experimental")
   IFS=:
@@ -1095,7 +1102,6 @@ if [ ! -z "$VIASH_PAR_VDJ_VERSION" ]; then
   set +f
   unset IFS
 fi
-
 
 
 
@@ -1203,6 +1209,7 @@ par = {
   'abseq_reference': $( if [ ! -z ${VIASH_PAR_ABSEQ_REFERENCE+x} ]; then echo "'${VIASH_PAR_ABSEQ_REFERENCE//\'/\\\'}'.split(':')"; else echo None; fi ),
   'supplemental_reference': $( if [ ! -z ${VIASH_PAR_SUPPLEMENTAL_REFERENCE+x} ]; then echo "'${VIASH_PAR_SUPPLEMENTAL_REFERENCE//\'/\\\'}'.split(':')"; else echo None; fi ),
   'output': $( if [ ! -z ${VIASH_PAR_OUTPUT+x} ]; then echo "'${VIASH_PAR_OUTPUT//\'/\\\'}'"; else echo None; fi ),
+  'id': $( if [ ! -z ${VIASH_PAR_ID+x} ]; then echo "'${VIASH_PAR_ID//\'/\\\'}'"; else echo None; fi ),
   'putative_cell_call': $( if [ ! -z ${VIASH_PAR_PUTATIVE_CELL_CALL+x} ]; then echo "'${VIASH_PAR_PUTATIVE_CELL_CALL//\'/\\\'}'"; else echo None; fi ),
   'exact_cell_count': $( if [ ! -z ${VIASH_PAR_EXACT_CELL_COUNT+x} ]; then echo "int('${VIASH_PAR_EXACT_CELL_COUNT//\'/\\\'}')"; else echo None; fi ),
   'disable_putative_calling': $( if [ ! -z ${VIASH_PAR_DISABLE_PUTATIVE_CALLING+x} ]; then echo "'${VIASH_PAR_DISABLE_PUTATIVE_CALLING//\'/\\\'}'.lower() == 'true'"; else echo None; fi ),
@@ -1211,7 +1218,6 @@ par = {
   'sample_tags_version': $( if [ ! -z ${VIASH_PAR_SAMPLE_TAGS_VERSION+x} ]; then echo "'${VIASH_PAR_SAMPLE_TAGS_VERSION//\'/\\\'}'"; else echo None; fi ),
   'tag_names': $( if [ ! -z ${VIASH_PAR_TAG_NAMES+x} ]; then echo "'${VIASH_PAR_TAG_NAMES//\'/\\\'}'.split(':')"; else echo None; fi ),
   'vdj_version': $( if [ ! -z ${VIASH_PAR_VDJ_VERSION+x} ]; then echo "'${VIASH_PAR_VDJ_VERSION//\'/\\\'}'"; else echo None; fi ),
-  'run_name': $( if [ ! -z ${VIASH_PAR_RUN_NAME+x} ]; then echo "'${VIASH_PAR_RUN_NAME//\'/\\\'}'"; else echo None; fi ),
   'parallel': $( if [ ! -z ${VIASH_PAR_PARALLEL+x} ]; then echo "'${VIASH_PAR_PARALLEL//\'/\\\'}'.lower() == 'true'"; else echo None; fi ),
   'timestamps': $( if [ ! -z ${VIASH_PAR_TIMESTAMPS+x} ]; then echo "'${VIASH_PAR_TIMESTAMPS//\'/\\\'}'.lower() == 'true'"; else echo None; fi ),
   'override_min_ram': $( if [ ! -z ${VIASH_PAR_OVERRIDE_MIN_RAM+x} ]; then echo "int('${VIASH_PAR_OVERRIDE_MIN_RAM//\'/\\\'}')"; else echo None; fi ),
@@ -1406,10 +1412,10 @@ content_list.append(strip_margin(f"""\\
 """
 ))
 
-if par["run_name"]:
+if par["id"]:
   content_list.append(strip_margin(f"""\\
 ## Run Name (optional) -  Specify a run name to use as the output file base name. Use only letters, numbers, or hyphens. Do not use special characters or spaces.
-Run_Name: {par["run_name"]}
+Run_Name: {par["id"]}
 """))
 
 ## Write config to file
@@ -1465,9 +1471,9 @@ if not par["dryrun"]:
     )
 
   # look for counts file
-  if not par["run_name"]:
-    par["run_name"] = "sample"
-  counts_filename = par["run_name"] + "_RSEC_MolsPerCell.csv"
+  if not par["id"]:
+    par["id"] = "sample"
+  counts_filename = par["id"] + "_RSEC_MolsPerCell.csv"
   
   if par["sample_tags_version"]:
     counts_filename = "Combined_" + counts_filename
@@ -1477,7 +1483,7 @@ if not par["dryrun"]:
     raise ValueError(f"Could not find output counts file '{counts_filename}'")
 
   # look for metrics file
-  metrics_filename = par["run_name"] + "_Metrics_Summary.csv"
+  metrics_filename = par["id"] + "_Metrics_Summary.csv"
   metrics_file = os.path.join(par["output"], metrics_filename)
   if not os.path.exists(metrics_file):
     raise ValueError(f"Could not find output metrics file '{metrics_filename}'")

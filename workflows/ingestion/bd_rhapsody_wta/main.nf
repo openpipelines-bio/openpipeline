@@ -13,7 +13,7 @@ config = readConfig("$workflowDir/ingestion/bd_rhapsody_wta/config.vsh.yaml")
 workflow {
   params.testing = false
 
-  helpMessage(params, config)
+  helpMessage(config)
 
   viashChannel(params, config)
     | run_wf
@@ -71,15 +71,17 @@ workflow run_wf {
 
 workflow test_wf {
   params.testing = true
-  
+  params.resources_test = params.rootDir + "/resources_test"
+  // or when running from s3: params.resources_test = "s3://openpipelines-data/"
+
   output_ch =
     Channel.value(
       [
         "foo",
         [
-          input: file(params.rootDir + "/resources_test/bdrhap_5kjrt/raw/12WTA*.fastq.gz"),
-          reference_genome: file(params.rootDir + "/resources_test/bdrhap_ref_gencodev40_chr1/GRCh38_primary_assembly_genome_chr1.tar.gz"),
-          transcriptome_annotation: file(params.rootDir + "/resources_test/bdrhap_ref_gencodev40_chr1/gencode_v40_annotation_chr1.gtf"),
+          input: file(params.resources_test + "/bdrhap_5kjrt/raw/12WTA*.fastq.gz"),
+          reference_genome: file(params.resources_test + "/bdrhap_ref_gencodev40_chr1/GRCh38_primary_assembly_genome_chr1.tar.gz"),
+          transcriptome_annotation: file(params.resources_test + "/bdrhap_ref_gencodev40_chr1/gencode_v40_annotation_chr1.gtf"),
           override_min_cores: 1,
           override_min_ram: 2,
           putative_cell_call: "mRNA",

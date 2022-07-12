@@ -171,7 +171,7 @@ function ViashHelp {
   echo "  --output pbmc_1k_protein_v3_raw_feature_bc_matrix_filtered.h5 \\"
   echo "  --min_library_size 1000 --min_cells_per_gene 300"
   echo ""
-  echo "Options:"
+  echo "Arguments:"
   echo "    --input"
   echo "        type: string, required parameter"
   echo "        example: pbmc_1k_protein_v3_raw_feature_bc_matrix.h5"
@@ -411,9 +411,9 @@ RUN Rscript -e 'if (!requireNamespace("remotes", quietly = TRUE)) install.packag
 
 LABEL org.opencontainers.image.authors="Robrecht Cannoodt <rcannood@gmail.com> (maintainer) {github: rcannood, orcid: 0000-0003-3641-729X}"
 LABEL org.opencontainers.image.description="Companion container for running component process_10xh5 filter_10xh5"
-LABEL org.opencontainers.image.created="2022-07-08T13:27:47Z"
+LABEL org.opencontainers.image.created="2022-07-12T08:52:04Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="cfe8f2bdf5cea7b6f7c9e5e257fbbd09af2c6152"
+LABEL org.opencontainers.image.revision="687a9379eba116e6701bd3760ff62dd0cf957df7"
 LABEL org.opencontainers.image.version="main_build"
 VIASHDOCKER
 }

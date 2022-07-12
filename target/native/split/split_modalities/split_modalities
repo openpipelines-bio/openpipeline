@@ -165,7 +165,7 @@ function ViashHelp {
   echo "Split the modalities from a single .h5mu multimodal sample into seperate .h5mu"
   echo "files."
   echo ""
-  echo "Options:"
+  echo "Arguments:"
   echo "    -i, --input"
   echo "        type: file, required parameter"
   echo "        default: sample_path"

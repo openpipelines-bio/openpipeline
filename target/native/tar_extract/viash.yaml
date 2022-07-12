@@ -227,7 +227,7 @@ functionality:
         echo ""
         echo "Extract files from a tar archive"
         echo ""
-        echo "Options:"
+        echo "Arguments:"
         echo "    -i, --input"
         echo "        type: file, required parameter"
         echo "        example: input.tar.gz"
@@ -242,14 +242,14 @@ functionality:
         echo "        type: integer"
         echo "        example: 1"
         echo "        Strip this amount of leading components from file names on extraction."
-        echo "For example, to extract only 'myfile.txt' from an archive containing the"
-        echo "structure \`this/goes/deep/myfile.txt', use 3 to strip 'this/goes/deep/'."
+        echo "        For example, to extract only 'myfile.txt' from an archive containing the"
+        echo "        structure \`this/goes/deep/myfile.txt', use 3 to strip 'this/goes/deep/'."
         echo ""
         echo "    -e, --exclude"
         echo "        type: string"
         echo "        example: docs/figures"
         echo "        Prevents any file or member whose name matches the shell wildcard"
-        echo "(pattern) from being extracted."
+        echo "        (pattern) from being extracted."
       }
       
       # initialise array
@@ -453,5 +453,5 @@ info:
   output: "target/native/tar_extract"
   executable: "target/native/tar_extract/tar_extract"
   viash_version: "0.5.14"
-  git_commit: "cfe8f2bdf5cea7b6f7c9e5e257fbbd09af2c6152"
+  git_commit: "687a9379eba116e6701bd3760ff62dd0cf957df7"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"

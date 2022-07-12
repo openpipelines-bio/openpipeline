@@ -204,7 +204,7 @@ functionality:
         echo ""
         echo "Publish an artifact and optionally rename with parameters"
         echo ""
-        echo "Options:"
+        echo "Arguments:"
         echo "    -i, --input"
         echo "        type: file, required parameter"
         echo "        Input filename"
@@ -413,9 +413,9 @@ functionality:
       RUN :
       LABEL org.opencontainers.image.authors="Toni Verbeiren (maintainer)"
       LABEL org.opencontainers.image.description="Companion container for running component transfer publish"
-      LABEL org.opencontainers.image.created="2022-07-08T13:27:47Z"
+      LABEL org.opencontainers.image.created="2022-07-12T08:52:03Z"
       LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-      LABEL org.opencontainers.image.revision="cfe8f2bdf5cea7b6f7c9e5e257fbbd09af2c6152"
+      LABEL org.opencontainers.image.revision="687a9379eba116e6701bd3760ff62dd0cf957df7"
       LABEL org.opencontainers.image.version="main_build"
       VIASHDOCKER
       }
@@ -767,5 +767,5 @@ info:
   output: "target/docker/transfer/publish"
   executable: "target/docker/transfer/publish/publish"
   viash_version: "0.5.14"
-  git_commit: "cfe8f2bdf5cea7b6f7c9e5e257fbbd09af2c6152"
+  git_commit: "687a9379eba116e6701bd3760ff62dd0cf957df7"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"

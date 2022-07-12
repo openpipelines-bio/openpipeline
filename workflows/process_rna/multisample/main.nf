@@ -14,7 +14,7 @@ config = readConfig("$workflowDir/process_rna/multisample/config.vsh.yaml")
 workflow {
   params.testing = false
 
-  helpMessage(params, config)
+  helpMessage(config)
 
   viashChannel(params, config)
     | run_wf

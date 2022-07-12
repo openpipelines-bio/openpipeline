@@ -246,7 +246,7 @@ functionality:
         echo "Computes PCA coordinates, loadings and variance decomposition. Uses the"
         echo "implementation of scikit-learn [Pedregosa11]."
         echo ""
-        echo "Options:"
+        echo "Arguments:"
         echo "    -i, --input"
         echo "        type: file, required parameter"
         echo "        example: input.h5mu"
@@ -265,13 +265,13 @@ functionality:
         echo "        type: string"
         echo "        default: pca"
         echo "        The pre/postfix under which to store the PCA results. More specifically,"
-        echo ".obsm[\"X_\"+key], .uns[key] and .varm[\"loadings_\"+key]."
+        echo "        .obsm[\"X_\"+key], .uns[key] and .varm[\"loadings_\"+key]."
         echo ""
         echo "    --num_components"
         echo "        type: integer"
         echo "        example: 25"
         echo "        Number of principal components to compute. Defaults to 50, or 1 -"
-        echo "minimum dimension size of selected representation."
+        echo "        minimum dimension size of selected representation."
       }
       ######## Helper functions for setting up Docker images for viash ########
       # expects: ViashDockerBuild
@@ -475,9 +475,9 @@ functionality:
       
       LABEL org.opencontainers.image.authors="Dries De Maeyer <ddemaeyer@gmail.com> (maintainer) {account: ddemaey1}"
       LABEL org.opencontainers.image.description="Companion container for running component dimred pca"
-      LABEL org.opencontainers.image.created="2022-07-08T13:27:47Z"
+      LABEL org.opencontainers.image.created="2022-07-12T08:52:04Z"
       LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-      LABEL org.opencontainers.image.revision="cfe8f2bdf5cea7b6f7c9e5e257fbbd09af2c6152"
+      LABEL org.opencontainers.image.revision="687a9379eba116e6701bd3760ff62dd0cf957df7"
       LABEL org.opencontainers.image.version="main_build"
       VIASHDOCKER
       }
@@ -928,5 +928,5 @@ info:
   output: "target/docker/dimred/pca"
   executable: "target/docker/dimred/pca/pca"
   viash_version: "0.5.14"
-  git_commit: "cfe8f2bdf5cea7b6f7c9e5e257fbbd09af2c6152"
+  git_commit: "687a9379eba116e6701bd3760ff62dd0cf957df7"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"

@@ -172,7 +172,7 @@ function ViashHelp {
   echo "\\"
   echo "  --output output_rna.h5"
   echo ""
-  echo "Options:"
+  echo "Arguments:"
   echo "    --input"
   echo "        type: string, required parameter"
   echo "        example:"
@@ -388,9 +388,9 @@ FROM python:3.10
 RUN :
 LABEL org.opencontainers.image.authors="Robrecht Cannoodt <rcannood@gmail.com> (maintainer) {github: rcannood, orcid: 0000-0003-3641-729X}"
 LABEL org.opencontainers.image.description="Companion container for running component download download_file"
-LABEL org.opencontainers.image.created="2022-07-08T13:27:48Z"
+LABEL org.opencontainers.image.created="2022-07-12T08:52:04Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="cfe8f2bdf5cea7b6f7c9e5e257fbbd09af2c6152"
+LABEL org.opencontainers.image.revision="687a9379eba116e6701bd3760ff62dd0cf957df7"
 LABEL org.opencontainers.image.version="main_build"
 VIASHDOCKER
 }

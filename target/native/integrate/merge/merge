@@ -164,7 +164,7 @@ function ViashHelp {
   echo ""
   echo "Combine one or more single-modality .h5mu files together into one .h5mu file."
   echo ""
-  echo "Options:"
+  echo "Arguments:"
   echo "    -i, --input"
   echo "        type: file, required parameter, multiple values allowed"
   echo "        default: sample_paths"

@@ -253,7 +253,7 @@ functionality:
         echo ""
         echo "Concatenates several uni-modal samples in .h5mu files into a single file."
         echo ""
-        echo "Options:"
+        echo "Arguments:"
         echo "    -i, --input"
         echo "        type: file, required parameter, multiple values allowed"
         echo "        default: sample_paths"
@@ -280,12 +280,12 @@ functionality:
         echo "        How to handle the merging of other axis (var, obs, ...)."
         echo "         - None: keep no data"
         echo "         - same: only keep elements of the matrices which are the same in each"
-        echo "of the samples"
+        echo "        of the samples"
         echo "         - unique: only keep elements for which there is only 1 possible value"
-        echo "(1 value that can occur in multiple samples)"
+        echo "        (1 value that can occur in multiple samples)"
         echo "         - first: keep the annotation from the first sample"
         echo "         - only: keep elements that show up in only one of the objects (1 unique"
-        echo "element in only 1 sample)"
+        echo "        element in only 1 sample)"
         echo "         - concat: concatenate unique values together"
       }
       ######## Helper functions for setting up Docker images for viash ########
@@ -490,9 +490,9 @@ functionality:
       
       LABEL org.opencontainers.image.authors="Dries Schaumont <Dschaumo@its.jnj.com> (maintainer)"
       LABEL org.opencontainers.image.description="Companion container for running component integrate concat"
-      LABEL org.opencontainers.image.created="2022-07-08T13:27:46Z"
+      LABEL org.opencontainers.image.created="2022-07-12T08:52:02Z"
       LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-      LABEL org.opencontainers.image.revision="cfe8f2bdf5cea7b6f7c9e5e257fbbd09af2c6152"
+      LABEL org.opencontainers.image.revision="687a9379eba116e6701bd3760ff62dd0cf957df7"
       LABEL org.opencontainers.image.version="main_build"
       VIASHDOCKER
       }
@@ -1091,5 +1091,5 @@ info:
   output: "target/docker/integrate/concat"
   executable: "target/docker/integrate/concat/concat"
   viash_version: "0.5.14"
-  git_commit: "cfe8f2bdf5cea7b6f7c9e5e257fbbd09af2c6152"
+  git_commit: "687a9379eba116e6701bd3760ff62dd0cf957df7"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"
