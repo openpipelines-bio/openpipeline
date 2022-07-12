@@ -15,7 +15,7 @@ config = readConfig("$workflowDir/integration/multimodal_integration/config.vsh.
 workflow {
   params.testing = false
 
-  helpMessage(params, config)
+  helpMessage(config)
 
   viashChannel(params, config)
     | run_wf

@@ -12,7 +12,7 @@ config = readConfig("$workflowDir/ingestion/cellranger_demux/config.vsh.yaml")
 workflow {
   params.testing = false
 
-  helpMessage(params, config)
+  helpMessage(config)
 
   viashChannel(params, config)
     | run_wf
