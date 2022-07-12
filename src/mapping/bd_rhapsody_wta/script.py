@@ -202,10 +202,10 @@ content_list.append(strip_margin(f"""\
   |"""
 ))
 
-if par["run_name"]:
+if par["id"]:
   content_list.append(strip_margin(f"""\
     |## Run Name (optional) -  Specify a run name to use as the output file base name. Use only letters, numbers, or hyphens. Do not use special characters or spaces.
-    |Run_Name: {par["run_name"]}
+    |Run_Name: {par["id"]}
     |"""))
 
 ## Write config to file
@@ -261,9 +261,9 @@ if not par["dryrun"]:
     )
 
   # look for counts file
-  if not par["run_name"]:
-    par["run_name"] = "sample"
-  counts_filename = par["run_name"] + "_RSEC_MolsPerCell.csv"
+  if not par["id"]:
+    par["id"] = "sample"
+  counts_filename = par["id"] + "_RSEC_MolsPerCell.csv"
   
   if par["sample_tags_version"]:
     counts_filename = "Combined_" + counts_filename
@@ -273,7 +273,7 @@ if not par["dryrun"]:
     raise ValueError(f"Could not find output counts file '{counts_filename}'")
 
   # look for metrics file
-  metrics_filename = par["run_name"] + "_Metrics_Summary.csv"
+  metrics_filename = par["id"] + "_Metrics_Summary.csv"
   metrics_file = os.path.join(par["output"], metrics_filename)
   if not os.path.exists(metrics_file):
     raise ValueError(f"Could not find output metrics file '{metrics_filename}'")
