@@ -149,20 +149,21 @@ functionality:
 
 platforms:
   - type: docker
-    image: bdgenomics/rhapsody:1.10.1
-    setup:
-      # (1) workaround for debian buster
-      # https://stackoverflow.com/questions/68802802/repository-http-security-debian-org-debian-security-buster-updates-inrelease
-      # (2) Update picard (uses old Log4J). It is installed using conda, but 'conda update picard' does not work.
-      # So download it manually and install
-      - type: docker
-        run: apt-get --allow-releaseinfo-change update && 
-             apt upgrade -y &&
-             conda install -y -c bioconda picard=2.27.3 certifi=2022.6.15 conda=4.13.0 openssl=1.1.1o ca-certificates=2022
-      - type: apt
-        packages: [ procps, nodejs]
-      - type: python
-        packages: [cwlref-runner, cwl-runner, ruamel.yaml]
+    image: ghcr.io/data-intuitive/bd_rhapsody:1.10.1
+    # image: bdgenomics/rhapsody:1.10.1
+    # setup:
+    #   # (1) workaround for debian buster
+    #   # https://stackoverflow.com/questions/68802802/repository-http-security-debian-org-debian-security-buster-updates-inrelease
+    #   # (2) Update picard (uses old Log4J). It is installed using conda, but 'conda update picard' does not work.
+    #   # So download it manually and install
+    #   - type: docker
+    #     run: apt-get --allow-releaseinfo-change update && 
+    #          apt upgrade -y &&
+    #          conda install -y -c bioconda picard=2.27.3 certifi=2022.6.15 conda=4.13.0 openssl=1.1.1o ca-certificates=2022
+    #   - type: apt
+    #     packages: [ procps, nodejs]
+    #   - type: python
+    #     packages: [cwlref-runner, cwl-runner, ruamel.yaml]
   - type: nextflow
     variant: vdsl3
     directives:
