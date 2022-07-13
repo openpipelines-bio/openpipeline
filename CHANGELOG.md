@@ -18,6 +18,8 @@
 
 * Switch to Viash 0.5.14.
 
+* Updated several base docker images to slim version.
+
 ## BUG FIXES
 
 * `workflows/utils/viash_workflow_helper.nf`: Renamed `utils.nf` to `viash_workflow_helper.nf`.
