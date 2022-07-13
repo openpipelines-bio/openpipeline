@@ -1654,7 +1654,7 @@ functionality:
         def inputFileExports = thisConfig.functionality.allArguments
           .findAll { it.type == "file" && it.direction.toLowerCase() == "input" }
           .collect { par ->
-            viash_par_contents = !par.required && !par.multiple ? "viash_par_${par.plainName}[0]" : "viash_par_${par.plainName}.join(\":\")"
+            viash_par_contents = !par.required && !par.multiple ? "viash_par_${par.plainName}[0]" : "viash_par_${par.plainName}.join(\"${par.multiple_sep}\")"
             "\n\${viash_par_${par.plainName}.empty ? \"\" : \"export VIASH_PAR_${par.plainName.toUpperCase()}=\\\"\" + ${viash_par_contents} + \"\\\"\"}"
           }
       
@@ -2140,5 +2140,5 @@ info:
   platform: "nextflow"
   output: "target/nextflow/filter/filter_with_scrublet"
   viash_version: "0.5.14"
-  git_commit: "57e996206cc1a7fcf0b86622c4123cbefb82973b"
+  git_commit: "5f61727cfee7de1c86403ed9f3b6e8d54f158b27"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"
