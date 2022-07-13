@@ -453,5 +453,5 @@ info:
   output: "target/native/tar_extract"
   executable: "target/native/tar_extract/tar_extract"
   viash_version: "0.5.14"
-  git_commit: "dc75e2a09fa71c0929438c8ef2d6061746581ad9"
+  git_commit: "57e996206cc1a7fcf0b86622c4123cbefb82973b"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"
