@@ -24,6 +24,8 @@
 
 * `integrate/merge`: Merge several unimodal .h5mu files into one multimodal .h5mu file.
 
+* `mapping/bd_rhapsody_wta`: Use squashed docker image in which log4j issues are resolved.
+
 ## BUG FIXES
 
 * `workflows/utils/WorkflowHelper.nf`: Renamed `utils.nf` to `WorkflowHelper.nf`.
