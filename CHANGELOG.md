@@ -30,6 +30,8 @@
 
 * `download/sync_test_resources`: update AWS cli tools from 2.7.11 to 2.7.12 by updating docker image
 
+* `download/download_file`: now uses bash container instead of python.
+
 ## BUG FIXES
 
 * `workflows/utils/WorkflowHelper.nf`: Renamed `utils.nf` to `WorkflowHelper.nf`.
