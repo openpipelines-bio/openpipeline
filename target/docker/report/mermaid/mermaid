@@ -375,16 +375,16 @@ function ViashDockerSetup {
 #   ViashDockerFile
 function ViashDockerfile {
   cat << 'VIASHDOCKER'
-FROM python:3.8
+FROM python:3.8-slim
 
 RUN pip install --upgrade pip && \
   pip install --upgrade --no-cache-dir "scanpy" "requests" "anndata<0.8"
 
 LABEL org.opencontainers.image.authors="Dries De Maeyer <DDeMaey1@its.jnj.com> (maintainer) {account: ddemaey1}"
 LABEL org.opencontainers.image.description="Companion container for running component report mermaid"
-LABEL org.opencontainers.image.created="2022-07-13T11:09:42Z"
+LABEL org.opencontainers.image.created="2022-07-13T11:45:41Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="186ddb731098c4fe9e6e1141be38645ec193acad"
+LABEL org.opencontainers.image.revision="dc75e2a09fa71c0929438c8ef2d6061746581ad9"
 LABEL org.opencontainers.image.version="main_build"
 VIASHDOCKER
 }

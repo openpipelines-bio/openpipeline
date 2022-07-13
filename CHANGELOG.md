@@ -24,6 +24,14 @@
 
 * `integrate/merge`: Merge several unimodal .h5mu files into one multimodal .h5mu file.
 
+* Updated several python docker images to slim version.
+
+* `mapping/cellranger_count_split`: update container from ubuntu focal to ubuntu jammy
+
+* `download/sync_test_resources`: update AWS cli tools from 2.7.11 to 2.7.12 by updating docker image
+
+* `download/download_file`: now uses bash container instead of python.
+
 * `mapping/bd_rhapsody_wta`: Use squashed docker image in which log4j issues are resolved.
 
 ## BUG FIXES
