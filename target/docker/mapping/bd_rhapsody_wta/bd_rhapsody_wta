@@ -491,21 +491,14 @@ function ViashDockerSetup {
 #   ViashDockerFile
 function ViashDockerfile {
   cat << 'VIASHDOCKER'
-FROM bdgenomics/rhapsody:1.10.1
+FROM ghcr.io/data-intuitive/bd_rhapsody:1.10.1
 
-RUN apt-get --allow-releaseinfo-change update && apt upgrade -y && conda install -y -c bioconda picard=2.27.3 certifi=2022.6.15 conda=4.13.0 openssl=1.1.1o ca-certificates=2022
-RUN apt-get update && \
-  DEBIAN_FRONTEND=noninteractive apt-get install -y procps nodejs && \
-  rm -rf /var/lib/apt/lists/*
-
-RUN pip install --upgrade pip && \
-  pip install --upgrade --no-cache-dir "cwlref-runner" "cwl-runner" "ruamel.yaml"
-
+RUN :
 LABEL org.opencontainers.image.authors="Robrecht Cannoodt <rcannood@gmail.com> (maintainer) {github: rcannood, orcid: 0000-0003-3641-729X}"
 LABEL org.opencontainers.image.description="Companion container for running component mapping bd_rhapsody_wta"
-LABEL org.opencontainers.image.created="2022-07-13T09:44:24Z"
+LABEL org.opencontainers.image.created="2022-07-13T11:08:30Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="d46bbf387ca239cd40facff35c2f1c2f05185ff4"
+LABEL org.opencontainers.image.revision="8cc5d314ae47864e273ffca30eb12d03967134dd"
 LABEL org.opencontainers.image.version="main_build"
 VIASHDOCKER
 }
