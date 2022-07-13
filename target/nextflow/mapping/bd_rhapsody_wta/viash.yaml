@@ -750,6 +750,10 @@ functionality:
       
       ## VIASH END
       
+      if re.match("[^A-Za-z0-9]", par["id"]):
+        print("Warning: --id should only consist of letters, numbers or hyphens. Replacing all '[^A-Za-z0-9]' with '-'.")
+        par["id"] = re.sub("[^A-Za-z0-9\\\\\\\\-]", "-", par["id"])
+      
       def strip_margin(text):
         return re.sub('\\\\n[ \\\\t]*\\\\|', '\\\\n', text)
       
@@ -2706,5 +2710,5 @@ info:
   platform: "nextflow"
   output: "target/nextflow/mapping/bd_rhapsody_wta"
   viash_version: "0.5.14"
-  git_commit: "687a9379eba116e6701bd3760ff62dd0cf957df7"
+  git_commit: "d46bbf387ca239cd40facff35c2f1c2f05185ff4"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"
