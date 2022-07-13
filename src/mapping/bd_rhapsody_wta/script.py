@@ -25,6 +25,10 @@ meta = {
 }
 ## VIASH END
 
+if re.match("[^A-Za-z0-9]", par["id"]):
+  print("Warning: --id should only consist of letters, numbers or hyphens. Replacing all '[^A-Za-z0-9]' with '-'.")
+  par["id"] = re.sub("[^A-Za-z0-9\\-]", "-", par["id"])
+
 def strip_margin(text):
   return re.sub('\n[ \t]*\|', '\n', text)
 

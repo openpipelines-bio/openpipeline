@@ -31,7 +31,7 @@ class TestSplit(unittest.TestCase):
         dir_content = [h5mu_file for h5mu_file in output_dir.iterdir() if h5mu_file.suffix == ".h5mu"]
         rna_file = Path("foo/pbmc_1k_protein_v3_filtered_feature_bc_matrix_rna.h5mu")
         prot_file = Path("foo/pbmc_1k_protein_v3_filtered_feature_bc_matrix_prot.h5mu")
-        self.assertListEqual(dir_content, [prot_file, rna_file])
+        self.assertSetEqual(set(dir_content), set([prot_file, rna_file]))
         input_file_contents = md.read_h5mu(input_file)
         rna = md.read_h5mu(rna_file)
         prot = md.read_h5mu(prot_file)

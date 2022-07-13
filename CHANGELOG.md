@@ -32,6 +32,8 @@
 
 * `download/download_file`: now uses bash container instead of python.
 
+* `mapping/bd_rhapsody_wta`: Use squashed docker image in which log4j issues are resolved.
+
 ## BUG FIXES
 
 * `workflows/utils/WorkflowHelper.nf`: Renamed `utils.nf` to `WorkflowHelper.nf`.
