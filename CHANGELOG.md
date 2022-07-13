@@ -18,7 +18,11 @@
 
 * Switch to Viash 0.5.14.
 
-* Updated several base docker images to slim version.
+* Updated several python docker images to slim version.
+
+* `mapping/cellranger_count_split`: update container from ubuntu focal to ubuntu jammy
+
+* `download/sync_test_resources`: update AWS cli tools from 2.7.11 to 2.7.12 by updating docker image
 
 ## BUG FIXES
 
