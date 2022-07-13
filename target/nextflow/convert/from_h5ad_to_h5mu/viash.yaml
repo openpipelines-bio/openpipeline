@@ -1901,5 +1901,5 @@ info:
   platform: "nextflow"
   output: "target/nextflow/convert/from_h5ad_to_h5mu"
   viash_version: "0.5.14"
-  git_commit: "8cc5d314ae47864e273ffca30eb12d03967134dd"
+  git_commit: "186ddb731098c4fe9e6e1141be38645ec193acad"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"
