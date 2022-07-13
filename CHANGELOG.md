@@ -10,13 +10,19 @@
 
 ## MINOR CHANGES
 
+* `mapping/bd_rhapsody_wta`: Update to BD Rhapsody 1.10.1.
+
 * `mapping/bd_rhapsody_wta`: Add parameters for overriding the minimum RAM & cores. Add `--dryrun` parameter.
 
-* `mapping/bd_rhapsody_wta_1_10_1`: Add parameters for overriding the minimum RAM & cores. Add `--dryrun` parameter.
-
-* `ingestion/bd_rhapsody_wta`: Allow switching between the 1.9.1 and 1.10.1 version of the pipeline.
-
 * Switch to Viash 0.5.14.
+
+* `convert/from_bdrhap_to_h5mu`: Update to BD Rhapsody 1.10.1.
+
+* `resources_test/bdrhap_5kjrt`: Add subsampled BD rhapsody datasets to test pipeline with.
+
+* `resources_test/bdrhap_ref_gencodev40_chr1`: Add subsampled reference to test BD rhapsody pipeline with.
+
+* `integrate/merge`: Merge several unimodal .h5mu files into one multimodal .h5mu file.
 
 * Updated several python docker images to slim version.
 
@@ -26,11 +32,11 @@
 
 ## BUG FIXES
 
-* `workflows/utils/viash_workflow_helper.nf`: Renamed `utils.nf` to `viash_workflow_helper.nf`.
+* `workflows/utils/WorkflowHelper.nf`: Renamed `utils.nf` to `WorkflowHelper.nf`.
 
-* `workflows/utils/viash_workflow_helper.nf`: Fix error message when required parameter is not specified.
+* `workflows/utils/WorkflowHelper.nf`: Fix error message when required parameter is not specified.
 
-* `workflows/utils/viash_workflow_helper.nf`: Added helper functions:
+* `workflows/utils/WorkflowHelper.nf`: Added helper functions:
   - `readConfig`: Read a Viash config from a yaml file.
   - `viashChannel`: Create a channel from the Viash config and the params object.
   - `helpMessage`: Print a help message and exit.

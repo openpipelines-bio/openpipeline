@@ -4,19 +4,16 @@ workflowDir = params.rootDir + "/workflows"
 targetDir = params.rootDir + "/target/nextflow"
 
 include { bd_rhapsody_wta } from targetDir + "/mapping/bd_rhapsody_wta/main.nf"
-include { bd_rhapsody_wta_1_10_1 } from targetDir + "/mapping/bd_rhapsody_wta_1_10_1/main.nf"
 include { from_bdrhap_to_h5mu } from targetDir + "/convert/from_bdrhap_to_h5mu/main.nf"
 
-include { readConfig; viashChannel; helpMessage } from workflowDir + "/utils/viash_workflow_helper.nf"
+include { readConfig; viashChannel; helpMessage } from workflowDir + "/utils/WorkflowHelper.nf"
 
 config = readConfig("$workflowDir/ingestion/bd_rhapsody_wta/config.vsh.yaml")
-
-params.bd_rhapsody_version = "1.9.1"
 
 workflow {
   params.testing = false
 
-  helpMessage(params, config)
+  helpMessage(config)
 
   viashChannel(params, config)
     | run_wf
@@ -27,10 +24,6 @@ workflow run_wf {
   input_ch
 
   main:
-  def bd_rhap_wta = bd_rhapsody_wta
-  if (params.bd_rhapsody_version == "1.10.1") {
-    bd_rhap_wta = bd_rhapsody_wta_1_10_1
-  }
 
   output_ch = input_ch
     // Step 1: group fastq files per lane
@@ -45,7 +38,7 @@ workflow run_wf {
       }
 
       input_with_new_ids = input.collect { file ->
-        new_id = file.name.replaceAll("[^a-zA-Z0-9]R[12]_*\\.fastq\\.gz\$", "")
+        new_id = file.name.replaceAll("([^A-Za-z0-9])R[12]([^A-Za-z0-9])", '$2').replaceAll("\\.fastq\\.gz", "")
         [ new_id, file ]
       }
       new_ids = input_with_new_ids.collect{it[0]}.unique()
@@ -59,7 +52,7 @@ workflow run_wf {
 
     // Step 2: run BD rhapsody WTA
     | view { "running_bd_rhapsody: $it (orig_id: ${it[2].tuple_orig_id})" }
-    | bd_rhap_wta
+    | bd_rhapsody_wta
 
     // Step 3: group outputs per sample
     | map { id, input, extra -> [ extra.tuple_orig_id, input ] }
@@ -78,24 +71,28 @@ workflow run_wf {
 
 workflow test_wf {
   params.testing = true
-  
+  params.resources_test = params.rootDir + "/resources_test"
+  // or when running from s3: params.resources_test = "s3://openpipelines-data/"
+
   output_ch =
     Channel.value(
       [
         "foo",
         [
-          input: file(params.rootDir + "/resources_test/bd_rhapsody_wta_test/raw/*.fastq.gz"),
-          reference_genome: file(params.rootDir + "/resources_test/bd_rhapsody_wta_test/raw/GRCh38_primary_assembly_genome_chr1.tar.gz"),
-          transcriptome_annotation: file(params.rootDir + "/resources_test/bd_rhapsody_wta_test/raw/gencode_v40_annotation_chr1.gtf"),
+          input: file(params.resources_test + "/bdrhap_5kjrt/raw/12WTA*.fastq.gz"),
+          reference_genome: file(params.resources_test + "/bdrhap_ref_gencodev40_chr1/GRCh38_primary_assembly_genome_chr1.tar.gz"),
+          transcriptome_annotation: file(params.resources_test + "/bdrhap_ref_gencodev40_chr1/gencode_v40_annotation_chr1.gtf"),
           override_min_cores: 1,
-          override_min_ram: 2
+          override_min_ram: 2,
+          putative_cell_call: "mRNA",
+          exact_cell_count: 4900
         ]
       ]
     )
     | view { "Input: $it" }
     | run_wf
     | view { output ->
-      assert output.size() == 2 : "outputs should contain three elements; [id, file]"
+      assert output.size() == 2 : "outputs should contain two elements; [id, file]"
       assert output[1].toString().endsWith(".h5mu") : "Output file should be a h5mu file. Found: ${output[1]}"
       "Output: $output"
     }

@@ -61,5 +61,3 @@ fi
 #     --output "${OUT}/bam"
 # fi
 
-# aws s3 sync --profile czb "$DIR" "$S3DIR"
-

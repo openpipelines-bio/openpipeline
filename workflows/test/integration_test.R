@@ -2,7 +2,7 @@ library(tidyverse)
 
 workflows <- yaml::yaml.load(system("viash ns list -s workflows", intern = TRUE))
 
-outs <- pmap_df(workflows, function(wf) {
+outs <- map_df(workflows, function(wf) {
   cat("Running ", wf$functionality$namespace, "/", wf$functionality$name, "\n", sep = "")
 
   dir <- dirname(wf$info$config)
