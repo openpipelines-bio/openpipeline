@@ -38,10 +38,10 @@
                 },
                 {
                     "inputBinding": {
-                        "prefix": "--seq-stats"
+                        "prefix": "--run-metadata"
                     },
                     "type": "File",
-                    "id": "#AddtoBam.cwl/Seq_Metrics"
+                    "id": "#AddtoBam.cwl/Run_Metadata"
                 },
                 {
                     "inputBinding": {
@@ -65,6 +65,7 @@
                 }
             ],
             "requirements": [
+
             ],
             "outputs": [
                 {
@@ -120,16 +121,17 @@
                 },
                 {
                     "inputBinding": {
-                        "prefix": "--vdj-version"
+                        "prefix": "--run-metadata"
                     },
-                    "type": [
-                        "null",
-                        "string"
-                    ],
-                    "id": "#AlignR2.cwl/VDJ_Version"
+                    "type": "File",
+                    "id": "#AlignR2.cwl/Run_Metadata"
                 }
             ],
             "requirements": [
+
+                {
+                    "class": "InlineJavascriptRequirement"
+                },
                 {
                     "envDef": [
                         {
@@ -138,9 +140,6 @@
                         }
                     ],
                     "class": "EnvVarRequirement"
-                },
-                {
-                    "class": "InlineJavascriptRequirement"
                 }
             ],
             "outputs": [
@@ -165,14 +164,8 @@
             "baseCommand": [
                 "mist_align_R2.py"
             ],
-            "id": "#AlignR2.cwl",
-            "arguments": [
-                {
-                    "prefix": "--assay",
-                    "valueFrom": "WTA"
-                }
-            ],
-            "class": "CommandLineTool"
+            "class": "CommandLineTool",
+            "id": "#AlignR2.cwl"
         },
         {
             "inputs": [
@@ -188,13 +181,10 @@
                 },
                 {
                     "inputBinding": {
-                        "prefix": "--num-bc"
+                        "prefix": "--run-metadata"
                     },
-                    "type": [
-                        "null",
-                        "int"
-                    ],
-                    "id": "#AnnotateMolecules.cwl/Barcode_Num"
+                    "type": "File",
+                    "id": "#AnnotateMolecules.cwl/Run_Metadata"
                 },
                 {
                     "inputBinding": {
@@ -215,6 +205,7 @@
                 }
             ],
             "requirements": [
+
             ],
             "outputs": [
                 {
@@ -226,10 +217,28 @@
                 },
                 {
                     "outputBinding": {
+                        "glob": "stats.json",
+                        "loadContents": true,
+                        "outputEval": "$(JSON.parse(self[0].contents).max_count)\n"
+                    },
+                    "type": "int",
+                    "id": "#AnnotateMolecules.cwl/Max_Count"
+                },
+                {
+                    "outputBinding": {
                         "glob": "*_Annotation_Molecule.csv.*"
                     },
                     "type": "File",
                     "id": "#AnnotateMolecules.cwl/Mol_Annot_List"
+                },
+                {
+                    "outputBinding": {
+                        "glob": "stats.json",
+                        "loadContents": true,
+                        "outputEval": "$(JSON.parse(self[0].contents).total_molecules)\n"
+                    },
+                    "type": "int",
+                    "id": "#AnnotateMolecules.cwl/Total_Molecules"
                 },
                 {
                     "outputBinding": {
@@ -249,13 +258,19 @@
             "inputs": [
                 {
                     "inputBinding": {
-                        "prefix": "--label-version"
+                        "prefix": "--filter-metrics",
+                        "itemSeparator": ","
                     },
                     "type": [
-                        "null",
-                        "int"
+                        {
+                            "items": [
+                                "null",
+                                "File"
+                            ],
+                            "type": "array"
+                        }
                     ],
-                    "id": "#AnnotateR1.cwl/Label_Version"
+                    "id": "#AnnotateR1.cwl/Filter_Metrics"
                 },
                 {
                     "inputBinding": {
@@ -263,9 +278,21 @@
                     },
                     "type": "File",
                     "id": "#AnnotateR1.cwl/R1"
+                },
+                {
+                    "inputBinding": {
+                        "prefix": "--run-metadata"
+                    },
+                    "type": "File",
+                    "id": "#AnnotateR1.cwl/Run_Metadata"
                 }
             ],
             "requirements": [
+
+                {
+                    "ramMin": 2000,
+                    "class": "ResourceRequirement"
+                }
             ],
             "outputs": [
                 {
@@ -274,6 +301,20 @@
                     },
                     "type": "File",
                     "id": "#AnnotateR1.cwl/Annotation_R1"
+                },
+                {
+                    "outputBinding": {
+                        "glob": "*_R1_error_count_table.npy"
+                    },
+                    "type": "File",
+                    "id": "#AnnotateR1.cwl/R1_error_count_table"
+                },
+                {
+                    "outputBinding": {
+                        "glob": "*_R1_read_count_breakdown.json"
+                    },
+                    "type": "File",
+                    "id": "#AnnotateR1.cwl/R1_read_count_breakdown"
                 },
                 {
                     "outputBinding": {
@@ -320,6 +361,13 @@
                 },
                 {
                     "inputBinding": {
+                        "prefix": "--run-metadata"
+                    },
+                    "type": "File",
+                    "id": "#AnnotateR2.cwl/Run_Metadata"
+                },
+                {
+                    "inputBinding": {
                         "prefix": "--transcript-length"
                     },
                     "type": [
@@ -330,6 +378,7 @@
                 }
             ],
             "requirements": [
+
                 {
                     "class": "InlineJavascriptRequirement"
                 }
@@ -377,14 +426,8 @@
             "baseCommand": [
                 "mist_annotate_R2.py"
             ],
-            "id": "#AnnotateR2.cwl",
-            "arguments": [
-                {
-                    "prefix": "--assay",
-                    "valueFrom": "WTA"
-                }
-            ],
-            "class": "CommandLineTool"
+            "class": "CommandLineTool",
+            "id": "#AnnotateR2.cwl"
         },
         {
             "inputs": [
@@ -400,19 +443,6 @@
                 },
                 {
                     "inputBinding": {
-                        "prefix": "--bam-input"
-                    },
-                    "type": [
-                        "null",
-                        {
-                            "items": "File",
-                            "type": "array"
-                        }
-                    ],
-                    "id": "#AnnotateReads.cwl/Bam_Input"
-                },
-                {
-                    "inputBinding": {
                         "prefix": "--extra-seqs",
                         "itemSeparator": ","
                     },
@@ -423,24 +453,14 @@
                     "id": "#AnnotateReads.cwl/Extra_Seqs"
                 },
                 {
-                    "inputBinding": {
-                        "prefix": "--filtering-stats"
+                    "type": {
+                        "items": [
+                            "null",
+                            "File"
+                        ],
+                        "type": "array"
                     },
-                    "type": [
-                        "null",
-                        "File"
-                    ],
                     "id": "#AnnotateReads.cwl/Filter_Metrics"
-                },
-                {
-                    "inputBinding": {
-                        "prefix": "--label-version"
-                    },
-                    "type": [
-                        "null",
-                        "int"
-                    ],
-                    "id": "#AnnotateReads.cwl/Label_Version"
                 },
                 {
                     "inputBinding": {
@@ -453,10 +473,6 @@
                     "id": "#AnnotateReads.cwl/Putative_Cell_Call"
                 },
                 {
-                    "inputBinding": {
-                        "prefix": "--annotR1",
-                        "itemSeparator": ","
-                    },
                     "type": {
                         "items": "File",
                         "type": "array"
@@ -464,10 +480,20 @@
                     "id": "#AnnotateReads.cwl/R1_Annotation"
                 },
                 {
-                    "inputBinding": {
-                        "prefix": "--annotR2",
-                        "itemSeparator": ","
+                    "type": {
+                        "items": "File",
+                        "type": "array"
                     },
+                    "id": "#AnnotateReads.cwl/R1_error_count_table"
+                },
+                {
+                    "type": {
+                        "items": "File",
+                        "type": "array"
+                    },
+                    "id": "#AnnotateReads.cwl/R1_read_count_breakdown"
+                },
+                {
                     "type": {
                         "items": "File",
                         "type": "array"
@@ -475,41 +501,18 @@
                     "id": "#AnnotateReads.cwl/R2_Annotation"
                 },
                 {
-                    "inputBinding": {
-                        "prefix": "--r2-quality-metrics"
+                    "type": {
+                        "items": "File",
+                        "type": "array"
                     },
-                    "type": [
-                        "null",
-                        "File"
-                    ],
                     "id": "#AnnotateReads.cwl/R2_Quality_Metrics"
                 },
                 {
                     "inputBinding": {
-                        "prefix": "--reference-panel-names"
+                        "prefix": "--run-metadata"
                     },
                     "type": "File",
-                    "id": "#AnnotateReads.cwl/Reference_Panel_Names"
-                },
-                {
-                    "inputBinding": {
-                        "prefix": "--sample-tags-version"
-                    },
-                    "type": [
-                        "null",
-                        "string"
-                    ],
-                    "id": "#AnnotateReads.cwl/Sample_Tags_Version"
-                },
-                {
-                    "inputBinding": {
-                        "prefix": "--subsample-tags"
-                    },
-                    "type": [
-                        "null",
-                        "float"
-                    ],
-                    "id": "#AnnotateReads.cwl/Subsample_Tags"
+                    "id": "#AnnotateReads.cwl/Run_Metadata"
                 },
                 {
                     "inputBinding": {
@@ -520,21 +523,31 @@
                         "File"
                     ],
                     "id": "#AnnotateReads.cwl/Target_Gene_Mapping"
-                },
-                {
-                    "inputBinding": {
-                        "prefix": "--vdj-version"
-                    },
-                    "type": [
-                        "null",
-                        "string"
-                    ],
-                    "id": "#AnnotateReads.cwl/VDJ_Version"
                 }
             ],
             "requirements": [
+
+                {
+                    "class": "InitialWorkDirRequirement",
+                    "listing": [
+                        {
+                            "writable": false,
+                            "entry": "${\n    function getPaths(inputs, attribute) {\n      var fp_arr = []\n      for (var i = 0; i < inputs[attribute].length; i++)\n      {\n          fp_arr.push(inputs[attribute][i].path);\n      }\n      return fp_arr;\n    }\n    var paths = {}\n    paths['annotR1'] = getPaths(inputs, 'R1_Annotation')\n    paths['R1_error_count_table'] = getPaths(inputs, 'R1_error_count_table')\n    paths['R1_read_count_breakdown'] = getPaths(inputs, 'R1_read_count_breakdown')\n    paths['annotR2'] = getPaths(inputs, 'R2_Annotation')\n    paths['r2_quality_metrics_fps'] = getPaths(inputs, 'R2_Quality_Metrics')\n    if(inputs.Filter_Metrics[0] != null){\n        paths['filtering_stat_files'] = getPaths(inputs, 'Filter_Metrics')\n    }\n    var paths_json = JSON.stringify(paths);\n    return paths_json;\n}",
+                            "entryname": "manifest.json"
+                        }
+                    ]
+                },
                 {
                     "class": "InlineJavascriptRequirement"
+                },
+                {
+                    "envDef": [
+                        {
+                            "envName": "CORES_ALLOCATED_PER_CWL_PROCESS",
+                            "envValue": "4"
+                        }
+                    ],
+                    "class": "EnvVarRequirement"
                 }
             ],
             "outputs": [
@@ -550,21 +563,10 @@
                 },
                 {
                     "outputBinding": {
-                        "glob": "metadata.json",
-                        "loadContents": true,
-                        "outputEval": "$(JSON.parse(self[0].contents).is_trueno)"
+                        "glob": "*read1_error_rate_archive*"
                     },
-                    "type": "boolean",
-                    "id": "#AnnotateReads.cwl/Is_Trueno"
-                },
-                {
-                    "outputBinding": {
-                        "glob": "metadata.json",
-                        "loadContents": true,
-                        "outputEval": "$(JSON.parse(self[0].contents).sample)"
-                    },
-                    "type": "string",
-                    "id": "#AnnotateReads.cwl/Sample_Name"
+                    "type": "File",
+                    "id": "#AnnotateReads.cwl/Read1_error_rate"
                 },
                 {
                     "outputBinding": {
@@ -585,10 +587,21 @@
                 },
                 {
                     "outputBinding": {
-                        "glob": "metadata.json"
+                        "glob": "num_vdj_reads.json",
+                        "loadContents": true,
+                        "outputEval": "${ if (!self[0]) { return 0; } return parseInt(JSON.parse(self[0].contents).BCR); }"
                     },
-                    "type": "File",
-                    "id": "#AnnotateReads.cwl/metadata"
+                    "type": "int",
+                    "id": "#AnnotateReads.cwl/num_valid_ig_reads"
+                },
+                {
+                    "outputBinding": {
+                        "glob": "num_vdj_reads.json",
+                        "loadContents": true,
+                        "outputEval": "${ if (!self[0]) { return 0; } return parseInt(JSON.parse(self[0].contents).TCR); }"
+                    },
+                    "type": "int",
+                    "id": "#AnnotateReads.cwl/num_valid_tcr_reads"
                 },
                 {
                     "outputBinding": {
@@ -599,7 +612,7 @@
                 },
                 {
                     "outputBinding": {
-                        "glob": "*_VDJ_IG_Valid_Reads.fasta.gz"
+                        "glob": "*_VDJ_IG_Valid_Reads.fastq.gz"
                     },
                     "type": [
                         "null",
@@ -609,7 +622,7 @@
                 },
                 {
                     "outputBinding": {
-                        "glob": "*_VDJ_TCR_Valid_Reads.fasta.gz"
+                        "glob": "*_VDJ_TCR_Valid_Reads.fastq.gz"
                     },
                     "type": [
                         "null",
@@ -656,52 +669,6 @@
             "inputs": [
                 {
                     "inputBinding": {
-                        "prefix": "--metrics-files",
-                        "itemSeparator": ","
-                    },
-                    "type": [
-                        {
-                            "items": [
-                                "null",
-                                "File"
-                            ],
-                            "type": "array"
-                        }
-                    ],
-                    "id": "#BundleMetrics.cwl/Metrics"
-                }
-            ],
-            "outputs": [
-                {
-                    "outputBinding": {
-                        "glob": "*.zip"
-                    },
-                    "type": [
-                        "null",
-                        "File"
-                    ],
-                    "id": "#BundleMetrics.cwl/Bundle_Metrics"
-                },
-                {
-                    "outputBinding": {
-                        "glob": "*.log"
-                    },
-                    "type": "File",
-                    "id": "#BundleMetrics.cwl/output"
-                }
-            ],
-            "baseCommand": [
-                "mist_bundle_metrics.py"
-            ],
-            "class": "CommandLineTool",
-            "id": "#BundleMetrics.cwl",
-            "hints": [
-            ]
-        },
-        {
-            "inputs": [
-                {
-                    "inputBinding": {
                         "position": 0
                     },
                     "type": [
@@ -712,6 +679,7 @@
                 }
             ],
             "requirements": [
+
             ],
             "outputs": [
                 {
@@ -780,10 +748,21 @@
                         "null",
                         "int"
                     ],
+                    "id": "#CheckFastqs.cwl/Subsample_Seed"
+                },
+                {
+                    "inputBinding": {
+                        "prefix": "--subsample-seed"
+                    },
+                    "type": [
+                        "null",
+                        "int"
+                    ],
                     "id": "#CheckFastqs.cwl/UserInputSubsampleSeed"
                 }
             ],
             "requirements": [
+
                 {
                     "class": "InlineJavascriptRequirement"
                 }
@@ -794,6 +773,30 @@
             ],
             "id": "#CheckFastqs.cwl",
             "outputs": [
+                {
+                    "outputBinding": {
+                        "glob": "bead_version.json",
+                        "loadContents": true,
+                        "outputEval": "$(JSON.parse(self[0].contents).BeadVersion)\n"
+                    },
+                    "type": {
+                        "items": {
+                            "fields": [
+                                {
+                                    "type": "string",
+                                    "name": "#CheckFastqs.cwl/Bead_Version/Library"
+                                },
+                                {
+                                    "type": "string",
+                                    "name": "#CheckFastqs.cwl/Bead_Version/bead_version"
+                                }
+                            ],
+                            "type": "record"
+                        },
+                        "type": "array"
+                    },
+                    "id": "#CheckFastqs.cwl/Bead_Version"
+                },
                 {
                     "outputBinding": {
                         "glob": "fastq_read_pairs.json",
@@ -818,6 +821,10 @@
                                 {
                                     "type": "string",
                                     "name": "#CheckFastqs.cwl/FastqReadPairs/library"
+                                },
+                                {
+                                    "type": "string",
+                                    "name": "#CheckFastqs.cwl/FastqReadPairs/beadVersion"
                                 }
                             ],
                             "type": "record"
@@ -837,6 +844,31 @@
                         "type": "array"
                     },
                     "id": "#CheckFastqs.cwl/FilesToSkipSplitAndSubsample"
+                },
+                {
+                    "outputBinding": {
+                        "glob": "fastq_read_pairs.json",
+                        "loadContents": true,
+                        "outputEval": "${\n  var obj = JSON.parse(self[0].contents);\n  var libraries = [];\n  var pairs = obj.fastq_read_pairs\n  for (var i in pairs){\n    if (pairs[i][\"readFlag\"] == \"R1\"){\n      if (libraries.indexOf(pairs[i][\"library\"]) == -1){ \n        libraries.push(pairs[i][\"library\"]);\n      }\n    }\n  }\n  libraries.sort();\n  return(libraries.toString())\n}\n"
+                    },
+                    "type": [
+                        "null",
+                        "string"
+                    ],
+                    "id": "#CheckFastqs.cwl/Libraries"
+                },
+                {
+                    "outputBinding": {
+                        "outputEval": "${  \n  var reads = []; \n  var files = inputs.Reads\n  for (var i in files){\n      reads.push(files[i][\"basename\"]);\n  }\n  reads.sort();\n  return(reads)\n}\n"
+                    },
+                    "type": [
+                        "null",
+                        {
+                            "items": "string",
+                            "type": "array"
+                        }
+                    ],
+                    "id": "#CheckFastqs.cwl/ReadsList"
                 },
                 {
                     "outputBinding": {
@@ -870,7 +902,8 @@
             "inputs": [
                 {
                     "inputBinding": {
-                        "prefix": "--abseq-reference"
+                        "prefix": "--abseq-reference",
+                        "itemSeparator": ","
                     },
                     "type": [
                         "null",
@@ -880,16 +913,6 @@
                         }
                     ],
                     "id": "#CheckReference.cwl/AbSeq_Reference"
-                },
-                {
-                    "inputBinding": {
-                        "prefix": "--label-version"
-                    },
-                    "type": [
-                        "null",
-                        "int"
-                    ],
-                    "id": "#CheckReference.cwl/Label_Version"
                 },
                 {
                     "inputBinding": {
@@ -906,25 +929,26 @@
                         "prefix": "--reference",
                         "itemSeparator": ","
                     },
-                    "type": {
-                        "items": "File",
-                        "type": "array"
-                    },
+                    "type": [
+                        "null",
+                        {
+                            "items": "File",
+                            "type": "array"
+                        }
+                    ],
                     "id": "#CheckReference.cwl/Reference"
                 },
                 {
                     "inputBinding": {
-                        "prefix": "--sample-tags-version"
+                        "prefix": "--run-metadata"
                     },
-                    "type": [
-                        "null",
-                        "string"
-                    ],
-                    "id": "#CheckReference.cwl/Sample_Tags_Version"
+                    "type": "File",
+                    "id": "#CheckReference.cwl/Run_Metadata"
                 },
                 {
                     "inputBinding": {
-                        "prefix": "--supplemental-reference"
+                        "prefix": "--supplemental-reference",
+                        "itemSeparator": ","
                     },
                     "type": [
                         "null",
@@ -934,19 +958,10 @@
                         }
                     ],
                     "id": "#CheckReference.cwl/Supplemental_Reference"
-                },
-                {
-                    "inputBinding": {
-                        "prefix": "--vdj-version"
-                    },
-                    "type": [
-                        "null",
-                        "string"
-                    ],
-                    "id": "#CheckReference.cwl/VDJ_Version"
                 }
             ],
             "requirements": [
+
                 {
                     "class": "InlineJavascriptRequirement"
                 }
@@ -975,7 +990,7 @@
                 {
                     "outputBinding": {
                         "glob": "*gtf",
-                        "outputEval": "${\n    if (self.length == 1) { // modified GTF\n        return self;\n    } else if (self.length == 0){ // WTA without extra seqs or Targeted\n        for (var i = 0; i < inputs.Reference.length; i++) {\n            if (inputs.Reference[i].basename.toLowerCase().indexOf('gtf') !== -1) {\n                return inputs.Reference[i];\n            }\n        }\n        return null\n    }\n}\n"
+                        "outputEval": "${\n    // get the WTA modified GTF with extra seqs\n    if (self.length == 1) {\n        return self;\n    // there is no modified GTF\n    } else if (self.length == 0) {\n        // if Reference is null (i.e. AbSeq_Reference only), return no GTF\n        if (inputs.Reference === null) {\n            return null;\n        } else {\n            // get the original WTA GTF without extra seqs\n            for (var i = 0; i < inputs.Reference.length; i++) {\n                if (inputs.Reference[i].basename.toLowerCase().indexOf('gtf') !== -1) {\n                    return inputs.Reference[i];\n                }\n            }\n            // return no GTF for Targeted\n            return null\n        }\n    }\n}\n"
                     },
                     "type": [
                         "null",
@@ -990,13 +1005,6 @@
                     },
                     "type": "File",
                     "id": "#CheckReference.cwl/Index"
-                },
-                {
-                    "outputBinding": {
-                        "glob": "reference_panel_names.json"
-                    },
-                    "type": "File",
-                    "id": "#CheckReference.cwl/Reference_Panel_Names"
                 },
                 {
                     "outputBinding": {
@@ -1057,9 +1065,17 @@
                     },
                     "type": "File",
                     "id": "#DensetoSparse.cwl/Gene_List"
+                },
+                {
+                    "inputBinding": {
+                        "prefix": "--run-metadata"
+                    },
+                    "type": "File",
+                    "id": "#DensetoSparse.cwl/Run_Metadata"
                 }
             ],
             "requirements": [
+
             ],
             "outputs": [
                 {
@@ -1097,6 +1113,7 @@
                 }
             ],
             "requirements": [
+
             ],
             "stdout": "cell_order.json",
             "outputs": [
@@ -1111,26 +1128,6 @@
         },
         {
             "inputs": [
-                {
-                    "inputBinding": {
-                        "prefix": "--basic-algo-only"
-                    },
-                    "type": [
-                        "null",
-                        "boolean"
-                    ],
-                    "id": "#GetDataTable.cwl/Basic_Algo_Only"
-                },
-                {
-                    "inputBinding": {
-                        "prefix": "--exact-cell-count"
-                    },
-                    "type": [
-                        "null",
-                        "int"
-                    ],
-                    "id": "#GetDataTable.cwl/Exact_Cell_Count"
-                },
                 {
                     "inputBinding": {
                         "prefix": "--full-gene-list"
@@ -1151,6 +1148,17 @@
                         "type": "array"
                     },
                     "id": "#GetDataTable.cwl/Gene_Status_List"
+                },
+                {
+                    "inputBinding": {
+                        "prefix": "--max-count",
+                        "itemSeparator": ","
+                    },
+                    "type": {
+                        "items": "int",
+                        "type": "array"
+                    },
+                    "id": "#GetDataTable.cwl/Max_Count"
                 },
                 {
                     "inputBinding": {
@@ -1175,7 +1183,14 @@
                 },
                 {
                     "inputBinding": {
-                        "prefix": "--seq-stats"
+                        "prefix": "--run-metadata"
+                    },
+                    "type": "File",
+                    "id": "#GetDataTable.cwl/Run_Metadata"
+                },
+                {
+                    "inputBinding": {
+                        "prefix": "--seq-metrics"
                     },
                     "type": "File",
                     "id": "#GetDataTable.cwl/Seq_Metrics"
@@ -1193,9 +1208,24 @@
                         }
                     ],
                     "id": "#GetDataTable.cwl/Tag_Names"
+                },
+                {
+                    "type": {
+                        "items": "int",
+                        "type": "array"
+                    },
+                    "id": "#GetDataTable.cwl/Total_Molecules"
                 }
             ],
             "requirements": [
+                {
+                    "ramMin": "${return Math.min(Math.max(parseInt(inputs.Total_Molecules.reduce(function(a, b) { return a + b; }, 0) / 4000), 32000), 768000);}",
+                    "class": "ResourceRequirement"
+                },
+
+                {
+                    "class": "InlineJavascriptRequirement"
+                }
             ],
             "outputs": [
                 {
@@ -1204,6 +1234,16 @@
                     },
                     "type": "File",
                     "id": "#GetDataTable.cwl/Annot_Files"
+                },
+                {
+                    "outputBinding": {
+                        "glob": "Annotations/*_Bioproduct_Stats.csv"
+                    },
+                    "type": [
+                        "null",
+                        "File"
+                    ],
+                    "id": "#GetDataTable.cwl/Bioproduct_Stats"
                 },
                 {
                     "outputBinding": {
@@ -1285,6 +1325,16 @@
                 },
                 {
                     "outputBinding": {
+                        "glob": "Cell_Label_Filtering/*_Protein_Aggregates_Experimental.csv"
+                    },
+                    "type": [
+                        "null",
+                        "File"
+                    ],
+                    "id": "#GetDataTable.cwl/Protein_Aggregates_Experimental"
+                },
+                {
+                    "outputBinding": {
                         "glob": "Cell_Label_Filtering/*_Putative_Cells_Origin.csv"
                     },
                     "type": [
@@ -1315,7 +1365,7 @@
                 },
                 {
                     "outputBinding": {
-                        "glob": "Trueno/*"
+                        "glob": "Trueno/*csv"
                     },
                     "type": [
                         "null",
@@ -1328,6 +1378,19 @@
                 },
                 {
                     "outputBinding": {
+                        "glob": "Trueno/*zip"
+                    },
+                    "type": [
+                        "null",
+                        {
+                            "items": "File",
+                            "type": "array"
+                        }
+                    ],
+                    "id": "#GetDataTable.cwl/Trueno_zip"
+                },
+                {
+                    "outputBinding": {
                         "glob": "Annotations/*_UMI_Adjusted_CellLabel_Stats.csv"
                     },
                     "type": [
@@ -1335,16 +1398,6 @@
                         "File"
                     ],
                     "id": "#GetDataTable.cwl/UMI_Adjusted_CellLabel_Stats"
-                },
-                {
-                    "outputBinding": {
-                        "glob": "Annotations/*_UMI_Adjusted_Stats.csv"
-                    },
-                    "type": [
-                        "null",
-                        "File"
-                    ],
-                    "id": "#GetDataTable.cwl/UMI_Adjusted_Stats"
                 },
                 {
                     "outputBinding": {
@@ -1371,6 +1424,7 @@
                 }
             ],
             "requirements": [
+
                 {
                     "class": "InlineJavascriptRequirement"
                 }
@@ -1458,13 +1512,6 @@
                 {
                     "type": [
                         "null",
-                        "int"
-                    ],
-                    "id": "#InternalSettings.cwl/Putative_Cell_Call"
-                },
-                {
-                    "type": [
-                        "null",
                         "boolean"
                     ],
                     "id": "#InternalSettings.cwl/Read_Filter_Off"
@@ -1513,7 +1560,7 @@
                 }
             ],
             "class": "ExpressionTool",
-            "expression": "${\n  var internalInputs = [\n    '_Label_Version',\n    '_Read_Filter_Off',\n    '_Barcode_Num',\n    '_Seq_Run',\n    '_AbSeq_UMI',\n    '_Putative_Cell_Call',\n    '_Use_DBEC',\n    '_Extra_Seqs',\n    '_MinChunkSize',\n    '_NumRecordsPerSplit',\n    '_Target_analysis',\n    '_Subsample_Tags',\n    '_VDJ_VGene_Evalue',\n    '_VDJ_JGene_Evalue',\n  ];\n  var internalOutputs = {}\n  for (var i = 0; i < internalInputs.length; i++) {\n    var internalInput = internalInputs[i];\n    var internalOutput = internalInput.slice(1); // remove leading underscore\n    if (inputs.hasOwnProperty(internalInput)) {\n      internalOutputs[internalOutput] = inputs[internalInput]; // if input specified, redirect to output\n    } else {\n      internalOutputs[internalOutput] = null; // if input not specified, provide a null\n    }\n  }\n  return internalOutputs;\n}",
+            "expression": "${\n  var internalInputs = [\n    '_Label_Version',\n    '_Read_Filter_Off',\n    '_Barcode_Num',\n    '_Seq_Run',\n    '_AbSeq_UMI',\n    '_Use_DBEC',\n    '_Extra_Seqs',\n    '_MinChunkSize',\n    '_NumRecordsPerSplit',\n    '_Target_analysis',\n    '_Subsample_Tags',\n    '_VDJ_VGene_Evalue',\n    '_VDJ_JGene_Evalue',\n  ];\n  var internalOutputs = {}\n  for (var i = 0; i < internalInputs.length; i++) {\n    var internalInput = internalInputs[i];\n    var internalOutput = internalInput.slice(1); // remove leading underscore\n    if (inputs.hasOwnProperty(internalInput)) {\n      internalOutputs[internalOutput] = inputs[internalInput]; // if input specified, redirect to output\n    } else {\n      internalOutputs[internalOutput] = null; // if input not specified, provide a null\n    }\n  }\n  return internalOutputs;\n}",
             "id": "#InternalSettings.cwl"
         },
         {
@@ -1548,6 +1595,22 @@
                     "label": "Exact Cell Count"
                 },
                 {
+                    "doc": "Specify the data to be used for putative cell calling. mRNA is the default selected option. AbSeq (Experimental) is for troubleshooting only.",
+                    "type": [
+                        "null",
+                        {
+                            "symbols": [
+                                "#main/Putative_Cell_Call/Putative_Cell_Call/mRNA",
+                                "#main/Putative_Cell_Call/Putative_Cell_Call/AbSeq_Experimental"
+                            ],
+                            "type": "enum",
+                            "name": "#main/Putative_Cell_Call/Putative_Cell_Call"
+                        }
+                    ],
+                    "id": "#main/Putative_Cell_Call",
+                    "label": "Putative Cell Calling"
+                },
+                {
                     "type": {
                         "items": "File",
                         "type": "array"
@@ -1559,6 +1622,15 @@
                     "type": "File",
                     "id": "#main/Reference_Genome",
                     "label": "Reference Genome"
+                },
+                {
+                    "doc": "This is a name for output files, for example Experiment1_Metrics_Summary.csv. Default if left empty is to name run based on a library. Any non-alpha numeric characters will be changed to a hyphen.",
+                    "type": [
+                        "null",
+                        "string"
+                    ],
+                    "id": "#main/Run_Name",
+                    "label": "Run Name"
                 },
                 {
                     "doc": "The sample multiplexing kit version.  This option should only be set for a multiplexed experiment.",
@@ -1609,7 +1681,7 @@
                     "label": "Supplemental Reference"
                 },
                 {
-                    "doc": "Specify the Sample Tag number followed by - (hyphen) and a sample name to appear in the output files. For example: 4-Ramos. Do not use the special characters: &, (), [], {}, <>, ?, |\n",
+                    "doc": "Specify the Sample Tag number followed by - (hyphen) and a sample name to appear in the output files. For example: 4-Ramos. Should be alpha numeric, with + - and _ allowed. Any special characters: &, (), [], {}, <>, ?, | will be corrected to underscores. \n",
                     "type": [
                         "null",
                         {
@@ -1624,6 +1696,28 @@
                     "type": "File",
                     "id": "#main/Transcriptome_Annotation",
                     "label": "Transcriptome Annotation"
+                },
+                {
+                    "doc": "The VDJ species and chain types.  This option should only be set for VDJ experiment.",
+                    "type": [
+                        "null",
+                        {
+                            "symbols": [
+                                "#main/VDJ_Version/VDJ_Version/human",
+                                "#main/VDJ_Version/VDJ_Version/hs",
+                                "#main/VDJ_Version/VDJ_Version/mouse",
+                                "#main/VDJ_Version/VDJ_Version/mm",
+                                "#main/VDJ_Version/VDJ_Version/humanBCR",
+                                "#main/VDJ_Version/VDJ_Version/humanTCR",
+                                "#main/VDJ_Version/VDJ_Version/mouseBCR",
+                                "#main/VDJ_Version/VDJ_Version/mouseTCR"
+                            ],
+                            "type": "enum",
+                            "name": "#main/VDJ_Version/VDJ_Version"
+                        }
+                    ],
+                    "id": "#main/VDJ_Version",
+                    "label": "VDJ Species Version"
                 }
             ],
             "requirements": [
@@ -1669,8 +1763,8 @@
                             "id": "#main/AddtoBam/R2_Bam"
                         },
                         {
-                            "source": "#main/AnnotateReads/Seq_Metrics",
-                            "id": "#main/AddtoBam/Seq_Metrics"
+                            "source": "#main/Metadata_Settings/Run_Metadata",
+                            "id": "#main/AddtoBam/Run_Metadata"
                         },
                         {
                             "source": "#main/GetDataTable/Tag_Calls",
@@ -1701,7 +1795,7 @@
                     ],
                     "requirements": [
                         {
-                            "coresMin": 16,
+                            "coresMin": 8,
                             "ramMin": 48000,
                             "class": "ResourceRequirement"
                         }
@@ -1717,12 +1811,12 @@
                             "id": "#main/AlignR2/Index"
                         },
                         {
-                            "source": "#main/QualityFilter/R2",
+                            "source": "#main/QualityFilterOuter/R2",
                             "id": "#main/AlignR2/R2"
                         },
                         {
-                            "source": "#main/VDJ_Settings/VDJ_Version",
-                            "id": "#main/AlignR2/VDJ_Version"
+                            "source": "#main/Metadata_Settings/Run_Metadata",
+                            "id": "#main/AlignR2/Run_Metadata"
                         }
                     ]
                 },
@@ -1737,8 +1831,8 @@
                             "id": "#main/AnnotateMolecules/AbSeq_UMI"
                         },
                         {
-                            "source": "#main/Internal_Settings/Barcode_Num",
-                            "id": "#main/AnnotateMolecules/Barcode_Num"
+                            "source": "#main/Metadata_Settings/Run_Metadata",
+                            "id": "#main/AnnotateMolecules/Run_Metadata"
                         },
                         {
                             "source": "#main/Internal_Settings/Use_DBEC",
@@ -1759,6 +1853,8 @@
                     "out": [
                         "#main/AnnotateMolecules/Mol_Annot_List",
                         "#main/AnnotateMolecules/Gene_Status_List",
+                        "#main/AnnotateMolecules/Max_Count",
+                        "#main/AnnotateMolecules/Total_Molecules",
                         "#main/AnnotateMolecules/output"
                     ]
                 },
@@ -1766,6 +1862,8 @@
                     "id": "#main/AnnotateR1",
                     "out": [
                         "#main/AnnotateR1/Annotation_R1",
+                        "#main/AnnotateR1/R1_error_count_table",
+                        "#main/AnnotateR1/R1_read_count_breakdown",
                         "#main/AnnotateR1/output"
                     ],
                     "run": "#AnnotateR1.cwl",
@@ -1774,12 +1872,16 @@
                     ],
                     "in": [
                         {
-                            "source": "#main/Internal_Settings/Label_Version",
-                            "id": "#main/AnnotateR1/Label_Version"
+                            "source": "#main/QualityFilterOuter/Filter_Metrics",
+                            "id": "#main/AnnotateR1/Filter_Metrics"
                         },
                         {
-                            "source": "#main/QualityFilter/R1",
+                            "source": "#main/QualityFilterOuter/R1",
                             "id": "#main/AnnotateR1/R1"
+                        },
+                        {
+                            "source": "#main/Metadata_Settings/Run_Metadata",
+                            "id": "#main/AnnotateR1/Run_Metadata"
                         }
                     ]
                 },
@@ -1800,6 +1902,10 @@
                         {
                             "source": "#main/AlignR2/Alignments",
                             "id": "#main/AnnotateR2/R2_zip"
+                        },
+                        {
+                            "source": "#main/Metadata_Settings/Run_Metadata",
+                            "id": "#main/AnnotateR2/Run_Metadata"
                         },
                         {
                             "source": "#main/CheckReference/Transcript_Length",
@@ -1826,13 +1932,13 @@
                     "out": [
                         "#main/AnnotateReads/Seq_Metrics",
                         "#main/AnnotateReads/Valid_Reads",
+                        "#main/AnnotateReads/Read1_error_rate",
                         "#main/AnnotateReads/Annotation_Read",
-                        "#main/AnnotateReads/Is_Trueno",
-                        "#main/AnnotateReads/Sample_Name",
                         "#main/AnnotateReads/output",
                         "#main/AnnotateReads/validTcrReads",
                         "#main/AnnotateReads/validIgReads",
-                        "#main/AnnotateReads/metadata"
+                        "#main/AnnotateReads/num_valid_tcr_reads",
+                        "#main/AnnotateReads/num_valid_ig_reads"
                     ],
                     "requirements": [
                         {
@@ -1851,15 +1957,11 @@
                             "id": "#main/AnnotateReads/Extra_Seqs"
                         },
                         {
-                            "source": "#main/Bundle_Filter_Metrics/Bundle_Metrics",
+                            "source": "#main/QualityFilterOuter/Filter_Metrics",
                             "id": "#main/AnnotateReads/Filter_Metrics"
                         },
                         {
-                            "source": "#main/Internal_Settings/Label_Version",
-                            "id": "#main/AnnotateReads/Label_Version"
-                        },
-                        {
-                            "source": "#main/Internal_Settings/Putative_Cell_Call",
+                            "source": "#main/Putative_Cell_Calling_Settings/Putative_Cell_Call",
                             "id": "#main/AnnotateReads/Putative_Cell_Call"
                         },
                         {
@@ -1867,91 +1969,28 @@
                             "id": "#main/AnnotateReads/R1_Annotation"
                         },
                         {
+                            "source": "#main/AnnotateR1/R1_error_count_table",
+                            "id": "#main/AnnotateReads/R1_error_count_table"
+                        },
+                        {
+                            "source": "#main/AnnotateR1/R1_read_count_breakdown",
+                            "id": "#main/AnnotateReads/R1_read_count_breakdown"
+                        },
+                        {
                             "source": "#main/AnnotateR2/Annot_R2",
                             "id": "#main/AnnotateReads/R2_Annotation"
                         },
                         {
-                            "source": "#main/Bundle_R2_Quality_Metrics/Bundle_Metrics",
+                            "source": "#main/AnnotateR2/R2_Quality_Metrics",
                             "id": "#main/AnnotateReads/R2_Quality_Metrics"
                         },
                         {
-                            "source": "#main/CheckReference/Reference_Panel_Names",
-                            "id": "#main/AnnotateReads/Reference_Panel_Names"
-                        },
-                        {
-                            "source": "#main/Multiplexing_Settings/Sample_Tags_Version",
-                            "id": "#main/AnnotateReads/Sample_Tags_Version"
-                        },
-                        {
-                            "source": "#main/Internal_Settings/Subsample_Tags",
-                            "id": "#main/AnnotateReads/Subsample_Tags"
+                            "source": "#main/Metadata_Settings/Run_Metadata",
+                            "id": "#main/AnnotateReads/Run_Metadata"
                         },
                         {
                             "source": "#main/CheckReference/Target_Gene_Mapping",
                             "id": "#main/AnnotateReads/Target_Gene_Mapping"
-                        },
-                        {
-                            "source": "#main/VDJ_Settings/VDJ_Version",
-                            "id": "#main/AnnotateReads/VDJ_Version"
-                        }
-                    ]
-                },
-                {
-                    "out": [
-                        "#main/AnnotateVDJResults/vdjCellsDatatable",
-                        "#main/AnnotateVDJResults/vdjCellsDatatableUnfiltered",
-                        "#main/AnnotateVDJResults/vdjCellsDatatableCellCorrected",
-                        "#main/AnnotateVDJResults/vdjCellsDatatableDBECCellCorrected",
-                        "#main/AnnotateVDJResults/vdjCellChainDatatableUnfiltered",
-                        "#main/AnnotateVDJResults/vdjValidReadsDatatable",
-                        "#main/AnnotateVDJResults/vdjInvalidReadsDatatable",
-                        "#main/AnnotateVDJResults/vdjMetricsJson",
-                        "#main/AnnotateVDJResults/vdjMetricsCsv",
-                        "#main/AnnotateVDJResults/vdjReadsAndMoleculesPerCellFigure",
-                        "#main/AnnotateVDJResults/vdjReadsPerCellByChainTypeFigure"
-                    ],
-                    "run": "#VDJ_Annotate_Molecules.cwl",
-                    "id": "#main/AnnotateVDJResults",
-                    "in": [
-                        {
-                            "source": "#main/AnnotateReads/Sample_Name",
-                            "id": "#main/AnnotateVDJResults/Sample_Name"
-                        },
-                        {
-                            "source": "#main/CellClassifier/cellTypePredictions",
-                            "id": "#main/AnnotateVDJResults/cellTypeMapping"
-                        },
-                        {
-                            "valueFrom": "$([])",
-                            "id": "#main/AnnotateVDJResults/chainsToIgnore"
-                        },
-                        {
-                            "source": "#main/Internal_Settings/VDJ_JGene_Evalue",
-                            "id": "#main/AnnotateVDJResults/evalueJgene"
-                        },
-                        {
-                            "source": "#main/Internal_Settings/VDJ_VGene_Evalue",
-                            "id": "#main/AnnotateVDJResults/evalueVgene"
-                        },
-                        {
-                            "source": "#main/VDJ_GatherIGCalls/gatheredCalls",
-                            "id": "#main/AnnotateVDJResults/igCalls"
-                        },
-                        {
-                            "source": "#main/AnnotateReads/metadata",
-                            "id": "#main/AnnotateVDJResults/metadata"
-                        },
-                        {
-                            "source": "#main/GetDataTable/Cell_Order",
-                            "id": "#main/AnnotateVDJResults/putativeCells"
-                        },
-                        {
-                            "source": "#main/VDJ_GatherTCRCalls/gatheredCalls",
-                            "id": "#main/AnnotateVDJResults/tcrCalls"
-                        },
-                        {
-                            "source": "#main/VDJ_Settings/VDJ_Version",
-                            "id": "#main/AnnotateVDJResults/vdjVersion"
                         }
                     ]
                 },
@@ -1972,47 +2011,17 @@
                                 "#main/Metrics/output",
                                 "#main/AddtoBam/output",
                                 "#main/AnnotateMolecules/output",
-                                "#main/QualityFilter/output",
+                                "#main/QualityFilterOuter/output",
                                 "#main/CheckFastqs/log",
                                 "#main/SplitAndSubsample/log",
                                 "#main/MergeBAM/log",
                                 "#main/Dense_to_Sparse_Datatable/output",
                                 "#main/Dense_to_Sparse_Datatable_Unfiltered/output",
                                 "#main/IndexBAM/log",
-                                "#main/CellClassifier/log",
-                                "#main/Bundle_Filter_Metrics/output",
-                                "#main/Bundle_R2_Quality_Metrics/output"
+                                "#main/CellClassifier/log"
                             ],
                             "linkMerge": "merge_flattened",
                             "id": "#main/BundleLogs/log_files"
-                        }
-                    ]
-                },
-                {
-                    "out": [
-                        "#main/Bundle_Filter_Metrics/Bundle_Metrics",
-                        "#main/Bundle_Filter_Metrics/output"
-                    ],
-                    "run": "#BundleMetrics.cwl",
-                    "id": "#main/Bundle_Filter_Metrics",
-                    "in": [
-                        {
-                            "source": "#main/QualityFilter/Filter_Metrics",
-                            "id": "#main/Bundle_Filter_Metrics/Metrics"
-                        }
-                    ]
-                },
-                {
-                    "out": [
-                        "#main/Bundle_R2_Quality_Metrics/Bundle_Metrics",
-                        "#main/Bundle_R2_Quality_Metrics/output"
-                    ],
-                    "run": "#BundleMetrics.cwl",
-                    "id": "#main/Bundle_R2_Quality_Metrics",
-                    "in": [
-                        {
-                            "source": "#main/AnnotateR2/R2_Quality_Metrics",
-                            "id": "#main/Bundle_R2_Quality_Metrics/Metrics"
                         }
                     ]
                 },
@@ -2042,6 +2051,9 @@
                         "#main/CheckFastqs/SubsamplingRatio",
                         "#main/CheckFastqs/FilesToSkipSplitAndSubsample",
                         "#main/CheckFastqs/FastqReadPairs",
+                        "#main/CheckFastqs/Bead_Version",
+                        "#main/CheckFastqs/Libraries",
+                        "#main/CheckFastqs/ReadsList",
                         "#main/CheckFastqs/log"
                     ],
                     "run": "#CheckFastqs.cwl",
@@ -2061,7 +2073,7 @@
                         },
                         {
                             "source": "#main/Subsample_Settings/Subsample_Seed",
-                            "id": "#main/CheckFastqs/UserInputSubsampleSeed"
+                            "id": "#main/CheckFastqs/Subsample_Seed"
                         }
                     ]
                 },
@@ -2070,7 +2082,6 @@
                     "out": [
                         "#main/CheckReference/Index",
                         "#main/CheckReference/Extra_Seqs",
-                        "#main/CheckReference/Reference_Panel_Names",
                         "#main/CheckReference/Full_Genes",
                         "#main/CheckReference/output",
                         "#main/CheckReference/Transcript_Length",
@@ -2090,11 +2101,7 @@
                             "id": "#main/CheckReference/AbSeq_Reference"
                         },
                         {
-                            "source": "#main/Internal_Settings/Label_Version",
-                            "id": "#main/CheckReference/Label_Version"
-                        },
-                        {
-                            "source": "#main/Internal_Settings/Putative_Cell_Call",
+                            "source": "#main/Putative_Cell_Calling_Settings/Putative_Cell_Call",
                             "id": "#main/CheckReference/Putative_Cell_Call"
                         },
                         {
@@ -2105,16 +2112,12 @@
                             "id": "#main/CheckReference/Reference"
                         },
                         {
-                            "source": "#main/Multiplexing_Settings/Sample_Tags_Version",
-                            "id": "#main/CheckReference/Sample_Tags_Version"
+                            "source": "#main/Metadata_Settings/Run_Metadata",
+                            "id": "#main/CheckReference/Run_Metadata"
                         },
                         {
                             "source": "#main/Supplemental_Reference",
                             "id": "#main/CheckReference/Supplemental_Reference"
-                        },
-                        {
-                            "source": "#main/VDJ_Settings/VDJ_Version",
-                            "id": "#main/CheckReference/VDJ_Version"
                         }
                     ]
                 },
@@ -2135,11 +2138,15 @@
                         {
                             "source": "#main/GetDataTable/Gene_List",
                             "id": "#main/Dense_to_Sparse_Datatable/Gene_List"
+                        },
+                        {
+                            "source": "#main/Metadata_Settings/Run_Metadata",
+                            "id": "#main/Dense_to_Sparse_Datatable/Run_Metadata"
                         }
                     ],
                     "requirements": [
                         {
-                            "ramMin": 4000,
+                            "ramMin": 16000,
                             "class": "ResourceRequirement"
                         }
                     ],
@@ -2166,11 +2173,15 @@
                         {
                             "source": "#main/GetDataTable/Gene_List",
                             "id": "#main/Dense_to_Sparse_Datatable_Unfiltered/Gene_List"
+                        },
+                        {
+                            "source": "#main/Metadata_Settings/Run_Metadata",
+                            "id": "#main/Dense_to_Sparse_Datatable_Unfiltered/Run_Metadata"
                         }
                     ],
                     "requirements": [
                         {
-                            "ramMin": 4000,
+                            "ramMin": 16000,
                             "class": "ResourceRequirement"
                         }
                     ],
@@ -2205,7 +2216,7 @@
                                     "items": "File",
                                     "type": "array"
                                 },
-                                "id": "#main/FindDataTableForCellClassifier/6a1da587-7c26-4715-a5ab-d88bc9457216/dataTables"
+                                "id": "#main/FindDataTableForCellClassifier/e13a85b9-73df-4ed0-9386-c8c9ca3b47f0/dataTables"
                             }
                         ],
                         "requirements": [
@@ -2216,10 +2227,10 @@
                         "outputs": [
                             {
                                 "type": "File",
-                                "id": "#main/FindDataTableForCellClassifier/6a1da587-7c26-4715-a5ab-d88bc9457216/molsPerCellMatrixForCellClassifier"
+                                "id": "#main/FindDataTableForCellClassifier/e13a85b9-73df-4ed0-9386-c8c9ca3b47f0/molsPerCellMatrixForCellClassifier"
                             }
                         ],
-                        "id": "#main/FindDataTableForCellClassifier/6a1da587-7c26-4715-a5ab-d88bc9457216",
+                        "id": "#main/FindDataTableForCellClassifier/e13a85b9-73df-4ed0-9386-c8c9ca3b47f0",
                         "expression": "${\n  for (var i = 0; i < inputs.dataTables.length; i++) {\n    var dataTable = inputs.dataTables[i];\n    if (dataTable.basename.indexOf(\"_RSEC_MolsPerCell.csv\") >= 0) {\n      return({molsPerCellMatrixForCellClassifier: dataTable});\n    }\n  }\n  return({molsPerCellMatrixForCellClassifier: null});\n}",
                         "class": "ExpressionTool"
                     },
@@ -2232,7 +2243,6 @@
                     ]
                 },
                 {
-                    "run": "#GetDataTable.cwl",
                     "out": [
                         "#main/GetDataTable/Tag_Calls",
                         "#main/GetDataTable/Molecular_Annotation",
@@ -2244,30 +2254,19 @@
                         "#main/GetDataTable/Dense_Data_Tables_Unfiltered",
                         "#main/GetDataTable/Expression_Data",
                         "#main/GetDataTable/Expression_Data_Unfiltered",
-                        "#main/GetDataTable/UMI_Adjusted_Stats",
+                        "#main/GetDataTable/Bioproduct_Stats",
                         "#main/GetDataTable/UMI_Adjusted_CellLabel_Stats",
                         "#main/GetDataTable/Putative_Cells_Origin",
+                        "#main/GetDataTable/Protein_Aggregates_Experimental",
                         "#main/GetDataTable/Trueno_out",
+                        "#main/GetDataTable/Trueno_zip",
                         "#main/GetDataTable/output",
                         "#main/GetDataTable/Cell_Order",
                         "#main/GetDataTable/Gene_List"
                     ],
-                    "requirements": [
-                        {
-                            "ramMin": 64000,
-                            "class": "ResourceRequirement"
-                        }
-                    ],
+                    "run": "#GetDataTable.cwl",
                     "id": "#main/GetDataTable",
                     "in": [
-                        {
-                            "source": "#main/Putative_Cell_Calling_Settings/Basic_Algo_Only",
-                            "id": "#main/GetDataTable/Basic_Algo_Only"
-                        },
-                        {
-                            "source": "#main/Putative_Cell_Calling_Settings/Exact_Cell_Count",
-                            "id": "#main/GetDataTable/Exact_Cell_Count"
-                        },
                         {
                             "source": "#main/CheckReference/Full_Genes",
                             "id": "#main/GetDataTable/Full_Genes"
@@ -2277,12 +2276,20 @@
                             "id": "#main/GetDataTable/Gene_Status_List"
                         },
                         {
+                            "source": "#main/AnnotateMolecules/Max_Count",
+                            "id": "#main/GetDataTable/Max_Count"
+                        },
+                        {
                             "source": "#main/AnnotateMolecules/Mol_Annot_List",
                             "id": "#main/GetDataTable/Molecule_Annotation_List"
                         },
                         {
-                            "source": "#main/Internal_Settings/Putative_Cell_Call",
+                            "source": "#main/Putative_Cell_Calling_Settings/Putative_Cell_Call",
                             "id": "#main/GetDataTable/Putative_Cell_Call"
+                        },
+                        {
+                            "source": "#main/Metadata_Settings/Run_Metadata",
+                            "id": "#main/GetDataTable/Run_Metadata"
                         },
                         {
                             "source": "#main/AnnotateReads/Seq_Metrics",
@@ -2291,6 +2298,10 @@
                         {
                             "source": "#main/Multiplexing_Settings/Tag_Sample_Names",
                             "id": "#main/GetDataTable/Tag_Names"
+                        },
+                        {
+                            "source": "#main/AnnotateMolecules/Total_Molecules",
+                            "id": "#main/GetDataTable/Total_Molecules"
                         }
                     ]
                 },
@@ -2310,12 +2321,10 @@
                 },
                 {
                     "out": [
-                        "#main/Internal_Settings/Label_Version",
                         "#main/Internal_Settings/Read_Filter_Off",
                         "#main/Internal_Settings/Barcode_Num",
                         "#main/Internal_Settings/Seq_Run",
                         "#main/Internal_Settings/AbSeq_UMI",
-                        "#main/Internal_Settings/Putative_Cell_Call",
                         "#main/Internal_Settings/Use_DBEC",
                         "#main/Internal_Settings/Extra_Seqs",
                         "#main/Internal_Settings/MinChunkSize",
@@ -2343,12 +2352,152 @@
                             "id": "#main/MergeBAM/BamFiles"
                         },
                         {
-                            "source": "#main/AnnotateReads/Is_Trueno",
-                            "id": "#main/MergeBAM/Is_Trueno"
+                            "source": "#main/Metadata_Settings/Run_Base_Name",
+                            "id": "#main/MergeBAM/Run_Name"
                         },
                         {
-                            "source": "#main/AnnotateReads/Sample_Name",
-                            "id": "#main/MergeBAM/Sample_Name"
+                            "source": "#main/Multiplexing_Settings/Sample_Tags_Version",
+                            "id": "#main/MergeBAM/Sample_Tags_Version"
+                        }
+                    ]
+                },
+                {
+                    "out": [
+                        "#main/MergeMultiplex/Multiplex_out"
+                    ],
+                    "run": {
+                        "cwlVersion": "v1.0",
+                        "inputs": [
+                            {
+                                "type": {
+                                    "items": [
+                                        "null",
+                                        "File"
+                                    ],
+                                    "type": "array"
+                                },
+                                "id": "#main/MergeMultiplex/d7de4031-c557-4bec-bdfc-33e9f909e2d7/SampleTag_Files"
+                            }
+                        ],
+                        "requirements": [
+                            {
+                                "class": "InlineJavascriptRequirement"
+                            }
+                        ],
+                        "outputs": [
+                            {
+                                "type": [
+                                    "null",
+                                    {
+                                        "items": "File",
+                                        "type": "array"
+                                    }
+                                ],
+                                "id": "#main/MergeMultiplex/d7de4031-c557-4bec-bdfc-33e9f909e2d7/Multiplex_out"
+                            }
+                        ],
+                        "id": "#main/MergeMultiplex/d7de4031-c557-4bec-bdfc-33e9f909e2d7",
+                        "expression": "${\n  var fp_array = [];\n  for (var i = 0; i < inputs.SampleTag_Files.length; i++) {\n    var fp = inputs.SampleTag_Files[i];\n    if (fp != null) {\n      fp_array.push(fp);\n    }\n  }\n  return({\"Multiplex_out\": fp_array});\n}",
+                        "class": "ExpressionTool"
+                    },
+                    "id": "#main/MergeMultiplex",
+                    "in": [
+                        {
+                            "source": [
+                                "#main/GetDataTable/Trueno_out",
+                                "#main/Metrics/Sample_Tag_Out"
+                            ],
+                            "linkMerge": "merge_flattened",
+                            "id": "#main/MergeMultiplex/SampleTag_Files"
+                        }
+                    ]
+                },
+                {
+                    "out": [
+                        "#main/Metadata_Settings/Run_Metadata",
+                        "#main/Metadata_Settings/Run_Base_Name"
+                    ],
+                    "run": "#Metadata.cwl",
+                    "id": "#main/Metadata_Settings",
+                    "in": [
+                        {
+                            "source": "#main/AbSeq_Reference",
+                            "id": "#main/Metadata_Settings/AbSeq_Reference"
+                        },
+                        {
+                            "valueFrom": "WTA",
+                            "id": "#main/Metadata_Settings/Assay"
+                        },
+                        {
+                            "source": "#main/Putative_Cell_Calling_Settings/Basic_Algo_Only",
+                            "id": "#main/Metadata_Settings/Basic_Algo_Only"
+                        },
+                        {
+                            "source": "#main/CheckFastqs/Bead_Version",
+                            "id": "#main/Metadata_Settings/Bead_Version"
+                        },
+                        {
+                            "source": "#main/Putative_Cell_Calling_Settings/Exact_Cell_Count",
+                            "id": "#main/Metadata_Settings/Exact_Cell_Count"
+                        },
+                        {
+                            "source": "#main/CheckFastqs/Libraries",
+                            "id": "#main/Metadata_Settings/Libraries"
+                        },
+                        {
+                            "valueFrom": "BD Rhapsody WTA Analysis Pipeline",
+                            "id": "#main/Metadata_Settings/Pipeline_Name"
+                        },
+                        {
+                            "source": "#main/Version/version",
+                            "id": "#main/Metadata_Settings/Pipeline_Version"
+                        },
+                        {
+                            "source": "#main/Putative_Cell_Calling_Settings/Putative_Cell_Call",
+                            "id": "#main/Metadata_Settings/Putative_Cell_Call"
+                        },
+                        {
+                            "source": "#main/CheckFastqs/ReadsList",
+                            "id": "#main/Metadata_Settings/Reads"
+                        },
+                        {
+                            "source": [
+                                "#main/Transcriptome_Annotation",
+                                "#main/Reference_Genome"
+                            ],
+                            "id": "#main/Metadata_Settings/Reference"
+                        },
+                        {
+                            "source": "#main/Name_Settings/Run_Name",
+                            "id": "#main/Metadata_Settings/Run_Name"
+                        },
+                        {
+                            "source": "#main/Multiplexing_Settings/Tag_Sample_Names",
+                            "id": "#main/Metadata_Settings/Sample_Tag_Names"
+                        },
+                        {
+                            "source": "#main/Multiplexing_Settings/Sample_Tags_Version",
+                            "id": "#main/Metadata_Settings/Sample_Tags_Version"
+                        },
+                        {
+                            "source": "#main/Start_Time/Start_Time",
+                            "id": "#main/Metadata_Settings/Start_Time"
+                        },
+                        {
+                            "source": "#main/Subsample_Settings/Subsample_Reads",
+                            "id": "#main/Metadata_Settings/Subsample"
+                        },
+                        {
+                            "source": "#main/Subsample_Settings/Subsample_Seed",
+                            "id": "#main/Metadata_Settings/Subsample_Seed"
+                        },
+                        {
+                            "source": "#main/Supplemental_Reference",
+                            "id": "#main/Metadata_Settings/Supplemental_Reference"
+                        },
+                        {
+                            "source": "#main/VDJ_Settings/VDJ_Version",
+                            "id": "#main/Metadata_Settings/VDJ_Version"
                         }
                     ]
                 },
@@ -2356,7 +2505,8 @@
                     "out": [
                         "#main/Metrics/Metrics_Summary",
                         "#main/Metrics/Metrics_Archive",
-                        "#main/Metrics/output"
+                        "#main/Metrics/output",
+                        "#main/Metrics/Sample_Tag_Out"
                     ],
                     "run": "#Metrics.cwl",
                     "id": "#main/Metrics",
@@ -2366,8 +2516,16 @@
                             "id": "#main/Metrics/Annot_Files"
                         },
                         {
-                            "source": "#main/AnnotateReads/Seq_Metrics",
-                            "id": "#main/Metrics/Seq_Metrics"
+                            "source": "#main/AnnotateReads/Read1_error_rate",
+                            "id": "#main/Metrics/Read1_error_rate"
+                        },
+                        {
+                            "source": "#main/Metadata_Settings/Run_Metadata",
+                            "id": "#main/Metrics/Run_Metadata"
+                        },
+                        {
+                            "source": "#main/GetDataTable/Trueno_zip",
+                            "id": "#main/Metrics/Sample_Tag_Archives"
                         },
                         {
                             "source": "#main/Internal_Settings/Seq_Run",
@@ -2378,7 +2536,7 @@
                             "id": "#main/Metrics/UMI_Adjusted_Stats"
                         },
                         {
-                            "source": "#main/AnnotateVDJResults/vdjMetricsJson",
+                            "source": "#main/VDJ_Compile_Results/vdjMetricsJson",
                             "id": "#main/Metrics/vdjMetricsJson"
                         }
                     ]
@@ -2404,6 +2562,20 @@
                 },
                 {
                     "out": [
+                        "#main/Name_Settings/Run_Name"
+                    ],
+                    "in": [
+                        {
+                            "source": "#main/Run_Name",
+                            "id": "#main/Name_Settings/_Run_Name"
+                        }
+                    ],
+                    "run": "#NameSettings.cwl",
+                    "id": "#main/Name_Settings",
+                    "label": "Name Settings"
+                },
+                {
+                    "out": [
                         "#main/PairReadFiles/ReadPairs"
                     ],
                     "run": "#PairReadFiles.cwl",
@@ -2421,6 +2593,7 @@
                 },
                 {
                     "out": [
+                        "#main/Putative_Cell_Calling_Settings/Putative_Cell_Call",
                         "#main/Putative_Cell_Calling_Settings/Exact_Cell_Count",
                         "#main/Putative_Cell_Calling_Settings/Basic_Algo_Only"
                     ],
@@ -2432,6 +2605,10 @@
                         {
                             "source": "#main/Exact_Cell_Count",
                             "id": "#main/Putative_Cell_Calling_Settings/_Exact_Cell_Count"
+                        },
+                        {
+                            "source": "#main/Putative_Cell_Call",
+                            "id": "#main/Putative_Cell_Calling_Settings/_Putative_Cell_Call"
                         }
                     ],
                     "run": "#PutativeCellSettings.cwl",
@@ -2439,31 +2616,23 @@
                     "label": "Putative Cell Calling Settings"
                 },
                 {
-                    "run": "#QualityFilter.cwl",
-                    "scatter": [
-                        "#main/QualityFilter/Split_Read_Pairs"
+                    "out": [
+                        "#main/QualityFilterOuter/Filter_Metrics",
+                        "#main/QualityFilterOuter/R1",
+                        "#main/QualityFilterOuter/R2",
+                        "#main/QualityFilterOuter/output"
                     ],
+                    "run": "#QualityFilterOuter.cwl",
+                    "id": "#main/QualityFilterOuter",
                     "in": [
                         {
-                            "source": "#main/Internal_Settings/Label_Version",
-                            "id": "#main/QualityFilter/Label_Version"
-                        },
-                        {
-                            "source": "#main/Internal_Settings/Read_Filter_Off",
-                            "id": "#main/QualityFilter/Read_Filter_Off"
+                            "source": "#main/Metadata_Settings/Run_Metadata",
+                            "id": "#main/QualityFilterOuter/Run_Metadata"
                         },
                         {
                             "source": "#main/PairReadFiles/ReadPairs",
-                            "id": "#main/QualityFilter/Split_Read_Pairs"
+                            "id": "#main/QualityFilterOuter/Split_Read_Pairs"
                         }
-                    ],
-                    "scatterMethod": "dotproduct",
-                    "id": "#main/QualityFilter",
-                    "out": [
-                        "#main/QualityFilter/Filter_Metrics",
-                        "#main/QualityFilter/R1",
-                        "#main/QualityFilter/R2",
-                        "#main/QualityFilter/output"
                     ]
                 },
                 {
@@ -2495,6 +2664,31 @@
                             "id": "#main/SplitAndSubsample/SubsampleSeed"
                         }
                     ]
+                },
+                {
+                    "out": [
+                        "#main/Start_Time/Start_Time"
+                    ],
+                    "run": {
+                        "cwlVersion": "v1.0",
+                        "inputs": [],
+                        "requirements": [
+                            {
+                                "class": "InlineJavascriptRequirement"
+                            }
+                        ],
+                        "outputs": [
+                            {
+                                "type": "string",
+                                "id": "#main/Start_Time/c0e8267c-52e8-448b-b9c2-7600ab5ed59a/Start_Time"
+                            }
+                        ],
+                        "id": "#main/Start_Time/c0e8267c-52e8-448b-b9c2-7600ab5ed59a",
+                        "expression": "${   \n  var today = new Date();\n  var date = today.toString()\n  return ({Start_Time: date});\n} ",
+                        "class": "ExpressionTool"
+                    },
+                    "id": "#main/Start_Time",
+                    "in": []
                 },
                 {
                     "out": [
@@ -2535,13 +2729,110 @@
                 },
                 {
                     "out": [
+                        "#main/VDJ_Assemble_and_Annotate_Contigs_IG/igCalls"
+                    ],
+                    "run": "#VDJ_Assemble_and_Annotate_Contigs_IG.cwl",
+                    "id": "#main/VDJ_Assemble_and_Annotate_Contigs_IG",
+                    "in": [
+                        {
+                            "source": "#main/VDJ_Preprocess_Reads_IG/RSEC_Reads_Fastq",
+                            "id": "#main/VDJ_Assemble_and_Annotate_Contigs_IG/RSEC_Reads_Fastq"
+                        },
+                        {
+                            "source": "#main/VDJ_Settings/VDJ_Version",
+                            "id": "#main/VDJ_Assemble_and_Annotate_Contigs_IG/VDJ_Version"
+                        },
+                        {
+                            "source": "#main/VDJ_Preprocess_Reads_IG/num_cores",
+                            "id": "#main/VDJ_Assemble_and_Annotate_Contigs_IG/num_cores"
+                        }
+                    ]
+                },
+                {
+                    "out": [
+                        "#main/VDJ_Assemble_and_Annotate_Contigs_TCR/tcrCalls"
+                    ],
+                    "run": "#VDJ_Assemble_and_Annotate_Contigs_TCR.cwl",
+                    "id": "#main/VDJ_Assemble_and_Annotate_Contigs_TCR",
+                    "in": [
+                        {
+                            "source": "#main/VDJ_Preprocess_Reads_TCR/RSEC_Reads_Fastq",
+                            "id": "#main/VDJ_Assemble_and_Annotate_Contigs_TCR/RSEC_Reads_Fastq"
+                        },
+                        {
+                            "source": "#main/VDJ_Settings/VDJ_Version",
+                            "id": "#main/VDJ_Assemble_and_Annotate_Contigs_TCR/VDJ_Version"
+                        },
+                        {
+                            "source": "#main/VDJ_Preprocess_Reads_TCR/num_cores",
+                            "id": "#main/VDJ_Assemble_and_Annotate_Contigs_TCR/num_cores"
+                        }
+                    ]
+                },
+                {
+                    "out": [
+                        "#main/VDJ_Compile_Results/vdjCellsDatatable",
+                        "#main/VDJ_Compile_Results/vdjCellsDatatableUncorrected",
+                        "#main/VDJ_Compile_Results/vdjDominantContigs",
+                        "#main/VDJ_Compile_Results/vdjUnfilteredContigs",
+                        "#main/VDJ_Compile_Results/vdjMetricsJson",
+                        "#main/VDJ_Compile_Results/vdjMetricsCsv",
+                        "#main/VDJ_Compile_Results/vdjReadsPerCellByChainTypeFigure"
+                    ],
+                    "run": "#VDJ_Compile_Results.cwl",
+                    "id": "#main/VDJ_Compile_Results",
+                    "in": [
+                        {
+                            "source": "#main/AnnotateReads/Seq_Metrics",
+                            "id": "#main/VDJ_Compile_Results/Seq_Metrics"
+                        },
+                        {
+                            "source": "#main/CellClassifier/cellTypePredictions",
+                            "id": "#main/VDJ_Compile_Results/cellTypeMapping"
+                        },
+                        {
+                            "valueFrom": "$([])",
+                            "id": "#main/VDJ_Compile_Results/chainsToIgnore"
+                        },
+                        {
+                            "source": "#main/Internal_Settings/VDJ_JGene_Evalue",
+                            "id": "#main/VDJ_Compile_Results/evalueJgene"
+                        },
+                        {
+                            "source": "#main/Internal_Settings/VDJ_VGene_Evalue",
+                            "id": "#main/VDJ_Compile_Results/evalueVgene"
+                        },
+                        {
+                            "source": "#main/VDJ_GatherIGCalls/gatheredCalls",
+                            "id": "#main/VDJ_Compile_Results/igCalls"
+                        },
+                        {
+                            "source": "#main/Metadata_Settings/Run_Metadata",
+                            "id": "#main/VDJ_Compile_Results/metadata"
+                        },
+                        {
+                            "source": "#main/GetDataTable/Cell_Order",
+                            "id": "#main/VDJ_Compile_Results/putativeCells"
+                        },
+                        {
+                            "source": "#main/VDJ_GatherTCRCalls/gatheredCalls",
+                            "id": "#main/VDJ_Compile_Results/tcrCalls"
+                        },
+                        {
+                            "source": "#main/VDJ_Settings/VDJ_Version",
+                            "id": "#main/VDJ_Compile_Results/vdjVersion"
+                        }
+                    ]
+                },
+                {
+                    "out": [
                         "#main/VDJ_GatherIGCalls/gatheredCalls"
                     ],
                     "run": "#VDJ_GatherCalls.cwl",
                     "id": "#main/VDJ_GatherIGCalls",
                     "in": [
                         {
-                            "source": "#main/VDJ_ig/igCalls",
+                            "source": "#main/VDJ_Assemble_and_Annotate_Contigs_IG/igCalls",
                             "id": "#main/VDJ_GatherIGCalls/theCalls"
                         }
                     ]
@@ -2554,8 +2845,54 @@
                     "id": "#main/VDJ_GatherTCRCalls",
                     "in": [
                         {
-                            "source": "#main/VDJ_tcr/tcrCalls",
+                            "source": "#main/VDJ_Assemble_and_Annotate_Contigs_TCR/tcrCalls",
                             "id": "#main/VDJ_GatherTCRCalls/theCalls"
+                        }
+                    ]
+                },
+                {
+                    "out": [
+                        "#main/VDJ_Preprocess_Reads_IG/RSEC_Reads_Fastq",
+                        "#main/VDJ_Preprocess_Reads_IG/num_splits",
+                        "#main/VDJ_Preprocess_Reads_IG/num_cores"
+                    ],
+                    "run": "#VDJ_Preprocess_Reads.cwl",
+                    "id": "#main/VDJ_Preprocess_Reads_IG",
+                    "in": [
+                        {
+                            "source": "#main/AnnotateReads/validIgReads",
+                            "id": "#main/VDJ_Preprocess_Reads_IG/Valid_Reads_Fastq"
+                        },
+                        {
+                            "source": "#main/AnnotateReads/num_valid_ig_reads",
+                            "id": "#main/VDJ_Preprocess_Reads_IG/num_valid_reads"
+                        },
+                        {
+                            "valueFrom": "BCR",
+                            "id": "#main/VDJ_Preprocess_Reads_IG/vdj_type"
+                        }
+                    ]
+                },
+                {
+                    "out": [
+                        "#main/VDJ_Preprocess_Reads_TCR/RSEC_Reads_Fastq",
+                        "#main/VDJ_Preprocess_Reads_TCR/num_splits",
+                        "#main/VDJ_Preprocess_Reads_TCR/num_cores"
+                    ],
+                    "run": "#VDJ_Preprocess_Reads.cwl",
+                    "id": "#main/VDJ_Preprocess_Reads_TCR",
+                    "in": [
+                        {
+                            "source": "#main/AnnotateReads/validTcrReads",
+                            "id": "#main/VDJ_Preprocess_Reads_TCR/Valid_Reads_Fastq"
+                        },
+                        {
+                            "source": "#main/AnnotateReads/num_valid_tcr_reads",
+                            "id": "#main/VDJ_Preprocess_Reads_TCR/num_valid_reads"
+                        },
+                        {
+                            "valueFrom": "TCR",
+                            "id": "#main/VDJ_Preprocess_Reads_TCR/vdj_type"
                         }
                     ]
                 },
@@ -2563,91 +2900,35 @@
                     "out": [
                         "#main/VDJ_Settings/VDJ_Version"
                     ],
-                    "in": [],
+                    "in": [
+                        {
+                            "source": "#main/VDJ_Version",
+                            "id": "#main/VDJ_Settings/_VDJ_Version"
+                        }
+                    ],
                     "run": "#VDJ_Settings.cwl",
                     "id": "#main/VDJ_Settings",
                     "label": "VDJ Settings"
                 },
                 {
                     "out": [
-                        "#main/VDJ_SplitValidReadsIg/SplitFastaList",
-                        "#main/VDJ_SplitValidReadsIg/numFiles",
-                        "#main/VDJ_SplitValidReadsIg/log"
+                        "#main/Version/version"
                     ],
-                    "run": "#VDJ_SplitValidReads.cwl",
-                    "id": "#main/VDJ_SplitValidReadsIg",
-                    "in": [
-                        {
-                            "source": "#main/AnnotateReads/validIgReads",
-                            "id": "#main/VDJ_SplitValidReadsIg/validReads"
-                        }
-                    ]
-                },
-                {
-                    "out": [
-                        "#main/VDJ_SplitValidReadsTcr/SplitFastaList",
-                        "#main/VDJ_SplitValidReadsTcr/numFiles",
-                        "#main/VDJ_SplitValidReadsTcr/log"
-                    ],
-                    "run": "#VDJ_SplitValidReads.cwl",
-                    "id": "#main/VDJ_SplitValidReadsTcr",
-                    "in": [
-                        {
-                            "source": "#main/AnnotateReads/validTcrReads",
-                            "id": "#main/VDJ_SplitValidReadsTcr/validReads"
-                        }
-                    ]
-                },
-                {
-                    "id": "#main/VDJ_ig",
-                    "out": [
-                        "#main/VDJ_ig/igCalls"
-                    ],
-                    "run": "#VDJ_ig.cwl",
-                    "scatter": [
-                        "#main/VDJ_ig/validReadsIg"
-                    ],
-                    "in": [
-                        {
-                            "source": "#main/VDJ_Settings/VDJ_Version",
-                            "id": "#main/VDJ_ig/VDJ_Version"
-                        },
-                        {
-                            "source": "#main/VDJ_SplitValidReadsIg/numFiles",
-                            "id": "#main/VDJ_ig/numFiles"
-                        },
-                        {
-                            "source": "#main/VDJ_SplitValidReadsIg/SplitFastaList",
-                            "id": "#main/VDJ_ig/validReadsIg"
-                        }
-                    ]
-                },
-                {
-                    "id": "#main/VDJ_tcr",
-                    "out": [
-                        "#main/VDJ_tcr/tcrCalls"
-                    ],
-                    "run": "#VDJ_tcr.cwl",
-                    "scatter": [
-                        "#main/VDJ_tcr/validReadsTcr"
-                    ],
-                    "in": [
-                        {
-                            "source": "#main/VDJ_Settings/VDJ_Version",
-                            "id": "#main/VDJ_tcr/VDJ_Version"
-                        },
-                        {
-                            "source": "#main/VDJ_SplitValidReadsTcr/numFiles",
-                            "id": "#main/VDJ_tcr/numFiles"
-                        },
-                        {
-                            "source": "#main/VDJ_SplitValidReadsTcr/SplitFastaList",
-                            "id": "#main/VDJ_tcr/validReadsTcr"
-                        }
-                    ]
+                    "run": "#Version.cwl",
+                    "id": "#main/Version",
+                    "in": []
                 }
             ],
             "outputs": [
+                {
+                    "outputSource": "#main/GetDataTable/Bioproduct_Stats",
+                    "type": [
+                        "null",
+                        "File"
+                    ],
+                    "id": "#main/Bioproduct_Stats",
+                    "label": "Bioproduct Statistics"
+                },
                 {
                     "outputSource": "#main/GetDataTable/Cell_Label_Filter",
                     "type": [
@@ -2712,7 +2993,7 @@
                     "outputSource": "#main/IndexBAM/Index",
                     "type": "File",
                     "id": "#main/Final_Bam_Index",
-                    "label": "Bam Index"
+                    "label": "Final BAM Index"
                 },
                 {
                     "outputSource": "#main/CellClassifier/cellTypePredictions",
@@ -2720,7 +3001,8 @@
                         "null",
                         "File"
                     ],
-                    "id": "#main/ImmuneCellClassification(Experimental)"
+                    "id": "#main/ImmuneCellClassification(Experimental)",
+                    "label": "Immune Cell Classification (Experimental)"
                 },
                 {
                     "outputSource": "#main/BundleLogs/logs_dir",
@@ -2735,7 +3017,7 @@
                     "label": "Metrics Summary"
                 },
                 {
-                    "outputSource": "#main/GetDataTable/Trueno_out",
+                    "outputSource": "#main/MergeMultiplex/Multiplex_out",
                     "type": [
                         "null",
                         {
@@ -2744,6 +3026,15 @@
                         }
                     ],
                     "id": "#main/Multiplex"
+                },
+                {
+                    "outputSource": "#main/GetDataTable/Protein_Aggregates_Experimental",
+                    "type": [
+                        "null",
+                        "File"
+                    ],
+                    "id": "#main/Protein_Aggregates_Experimental",
+                    "label": "Protein Aggregates (Experimental)"
                 },
                 {
                     "outputSource": "#main/GetDataTable/Putative_Cells_Origin",
@@ -2755,13 +3046,49 @@
                     "label": "Putative Cells Origin"
                 },
                 {
-                    "outputSource": "#main/GetDataTable/UMI_Adjusted_Stats",
+                    "outputSource": "#main/VDJ_Compile_Results/vdjCellsDatatable",
                     "type": [
                         "null",
                         "File"
                     ],
-                    "id": "#main/UMI_Adjusted_Stats",
-                    "label": "UMI Adjusted Statistics"
+                    "id": "#main/vdjCellsDatatable",
+                    "label": "vdjCellsDatatable"
+                },
+                {
+                    "outputSource": "#main/VDJ_Compile_Results/vdjCellsDatatableUncorrected",
+                    "type": [
+                        "null",
+                        "File"
+                    ],
+                    "id": "#main/vdjCellsDatatableUncorrected",
+                    "label": "vdjCellsDatatableUncorrected"
+                },
+                {
+                    "outputSource": "#main/VDJ_Compile_Results/vdjDominantContigs",
+                    "type": [
+                        "null",
+                        "File"
+                    ],
+                    "id": "#main/vdjDominantContigs",
+                    "label": "vdjDominantContigs"
+                },
+                {
+                    "outputSource": "#main/VDJ_Compile_Results/vdjMetricsCsv",
+                    "type": [
+                        "null",
+                        "File"
+                    ],
+                    "id": "#main/vdjMetricsCsv",
+                    "label": "vdjMetricsCsv"
+                },
+                {
+                    "outputSource": "#main/VDJ_Compile_Results/vdjUnfilteredContigs",
+                    "type": [
+                        "null",
+                        "File"
+                    ],
+                    "id": "#main/vdjUnfilteredContigs",
+                    "label": "vdjUnfilteredContigs"
                 }
             ],
             "id": "#main",
@@ -2780,15 +3107,22 @@
                     "id": "#MergeBAM.cwl/BamFiles"
                 },
                 {
-                    "type": "boolean",
-                    "id": "#MergeBAM.cwl/Is_Trueno"
+                    "type": [
+                        "null",
+                        "string"
+                    ],
+                    "id": "#MergeBAM.cwl/Run_Name"
                 },
                 {
-                    "type": "string",
-                    "id": "#MergeBAM.cwl/Sample_Name"
+                    "type": [
+                        "null",
+                        "string"
+                    ],
+                    "id": "#MergeBAM.cwl/Sample_Tags_Version"
                 }
             ],
             "requirements": [
+
                 {
                     "class": "InlineJavascriptRequirement"
                 }
@@ -2822,7 +3156,7 @@
                 },
                 {
                     "position": 0,
-                    "valueFrom": "${\n    if (inputs.Is_Trueno) {\n        return \"Combined_\" + inputs.Sample_Name + \"_final.BAM\"\n    } else {\n        return inputs.Sample_Name + \"_final.BAM\"\n    }\n}"
+                    "valueFrom": "${\n    if (inputs.Sample_Tags_Version) {\n        return \"Combined_\" + inputs.Run_Name + \"_final.BAM\"\n    } else {\n        return inputs.Run_Name + \"_final.BAM\"\n    }\n}"
                 }
             ],
             "class": "CommandLineTool",
@@ -2836,6 +3170,216 @@
         {
             "inputs": [
                 {
+                    "type": [
+                        "null",
+                        {
+                            "items": "File",
+                            "type": "array"
+                        }
+                    ],
+                    "id": "#Metadata.cwl/AbSeq_Reference"
+                },
+                {
+                    "type": "string",
+                    "id": "#Metadata.cwl/Assay"
+                },
+                {
+                    "type": [
+                        "null",
+                        "boolean"
+                    ],
+                    "id": "#Metadata.cwl/Basic_Algo_Only"
+                },
+                {
+                    "type": {
+                        "items": {
+                            "fields": [
+                                {
+                                    "type": "string",
+                                    "name": "#Metadata.cwl/Bead_Version/Library"
+                                },
+                                {
+                                    "type": "string",
+                                    "name": "#Metadata.cwl/Bead_Version/bead_version"
+                                }
+                            ],
+                            "type": "record"
+                        },
+                        "type": "array"
+                    },
+                    "id": "#Metadata.cwl/Bead_Version"
+                },
+                {
+                    "type": [
+                        "null",
+                        "int"
+                    ],
+                    "id": "#Metadata.cwl/Exact_Cell_Count"
+                },
+                {
+                    "type": [
+                        "null",
+                        "int"
+                    ],
+                    "id": "#Metadata.cwl/Label_Version"
+                },
+                {
+                    "type": [
+                        "null",
+                        "string"
+                    ],
+                    "id": "#Metadata.cwl/Libraries"
+                },
+                {
+                    "type": "string",
+                    "id": "#Metadata.cwl/Pipeline_Name"
+                },
+                {
+                    "type": "string",
+                    "id": "#Metadata.cwl/Pipeline_Version"
+                },
+                {
+                    "type": [
+                        "null",
+                        "int"
+                    ],
+                    "id": "#Metadata.cwl/Putative_Cell_Call"
+                },
+                {
+                    "type": [
+                        "null",
+                        "boolean"
+                    ],
+                    "id": "#Metadata.cwl/Read_Filter_Off"
+                },
+                {
+                    "type": [
+                        "null",
+                        {
+                            "items": "string",
+                            "type": "array"
+                        }
+                    ],
+                    "id": "#Metadata.cwl/Reads"
+                },
+                {
+                    "type": [
+                        "null",
+                        {
+                            "items": "File",
+                            "type": "array"
+                        }
+                    ],
+                    "id": "#Metadata.cwl/Reference"
+                },
+                {
+                    "type": [
+                        "null",
+                        "string"
+                    ],
+                    "id": "#Metadata.cwl/Run_Name"
+                },
+                {
+                    "type": [
+                        "null",
+                        {
+                            "items": "string",
+                            "type": "array"
+                        }
+                    ],
+                    "id": "#Metadata.cwl/Sample_Tag_Names"
+                },
+                {
+                    "type": [
+                        "null",
+                        "string"
+                    ],
+                    "id": "#Metadata.cwl/Sample_Tags_Version"
+                },
+                {
+                    "type": [
+                        "null",
+                        "string"
+                    ],
+                    "id": "#Metadata.cwl/Start_Time"
+                },
+                {
+                    "type": [
+                        "null",
+                        "float"
+                    ],
+                    "id": "#Metadata.cwl/Subsample"
+                },
+                {
+                    "type": [
+                        "null",
+                        "int"
+                    ],
+                    "id": "#Metadata.cwl/Subsample_Seed"
+                },
+                {
+                    "type": [
+                        "null",
+                        "float"
+                    ],
+                    "id": "#Metadata.cwl/Subsample_Tags"
+                },
+                {
+                    "type": [
+                        "null",
+                        {
+                            "items": "File",
+                            "type": "array"
+                        }
+                    ],
+                    "id": "#Metadata.cwl/Supplemental_Reference"
+                },
+                {
+                    "type": [
+                        "null",
+                        "string"
+                    ],
+                    "id": "#Metadata.cwl/VDJ_Version"
+                }
+            ],
+            "requirements": [
+                {
+                    "class": "InlineJavascriptRequirement"
+                }
+            ],
+            "stdout": "run_metadata.json",
+            "outputs": [
+                {
+                    "outputBinding": {
+                        "outputEval": "${  \n  var name = inputs.Run_Name;\n  if (name == null){\n    var libraries = inputs.Libraries;\n    name = libraries.split(',')[0];\n  }   \n  return(name)\n}   \n"
+                    },
+                    "type": [
+                        "null",
+                        "string"
+                    ],
+                    "id": "#Metadata.cwl/Run_Base_Name"
+                },
+                {
+                    "type": "stdout",
+                    "id": "#Metadata.cwl/Run_Metadata"
+                }
+            ],
+            "baseCommand": "echo",
+            "id": "#Metadata.cwl",
+            "arguments": [
+                {
+                    "prefix": ""
+                },
+                {
+                    "shellQuote": true,
+                    "valueFrom": "${\n  var metadata = inputs;\n  var all_bv = {};\n  var customer_bv = \"Original (V1)\";\n  for (var i = 0; i < inputs.Bead_Version.length; i++) {\n      var BeadVer = inputs.Bead_Version[i];\n      var Library = BeadVer[\"Library\"];\n      var bead_version = BeadVer[\"bead_version\"];\n      all_bv[Library] = bead_version  \n      var short_bv =  bead_version.substring(0, 2);\n      if (short_bv == \"V2\"){\n        var customer_bv = \"Enhanced (V2)\";\n      }\n  }\n  metadata[\"Bead_Version\"] = all_bv;\n\n  var pipeline_name = inputs.Pipeline_Name;\n  var assay = inputs.Assay;\n  var version = inputs.Pipeline_Version;\n  var time = inputs.Start_Time;\n  var libraries = inputs.Libraries.split(\",\");\n  var i = 0;\n  var reference_list = []\n  if(inputs.Reference != null){\n      reference_list = reference_list.concat(inputs.Reference);\n  }\n  if(inputs.AbSeq_Reference != null){\n      reference_list = reference_list.concat(inputs.AbSeq_Reference);\n  }\n\n  var supplemental = \"\"\n  if(inputs.Supplemental_Reference != null){\n      supplemental = \"; Supplemental_Reference - \" + inputs.Supplemental_Reference[0][\"basename\"];\n  }\n  var references = [];\n  for (i = 0; i< reference_list.length; i++) {\n      if(reference_list[i] != null){\n          references.push(reference_list[i][\"basename\"]);\n      }\n  }\n  var parameters = [];\n  if(inputs.Sample_Tags_Version != null){\n      var tags = \"Sample Tag Version: \" + inputs.Sample_Tags_Version;\n  } else{ \n      var tags = \"Sample Tag Version: None\";\n  }\n  parameters.push(tags);\n\n  if(inputs.Sample_Tag_Names != null){\n      var tag_names = inputs.Sample_Tag_Names.join(\" ; \")\n      var tag_list = \"Sample Tag Names: \" + tag_names;\n  } else{\n      var tag_list = \"Sample Tag Names: None\";\n  }\n  parameters.push(tag_list);\n \n  if(inputs.VDJ_Version != null){\n      var vdj = \"VDJ Version: \" + inputs.VDJ_Version;\n  } else{ \n      var vdj = \"VDJ Version: None\";\n  }\n  parameters.push(vdj)\n\n  if(inputs.Subsample != null){\n      var subsample = \"Subsample: \" + inputs.Subsample;\n  } else{ \n      var subsample = \"Subsample: None\";\n  }   \n  parameters.push(subsample);\n\n  if(inputs.Putative_Cell_Call == 1){\n      var call = \"Putative Cell Calling Type: AbSeq\";\n  } else{ \n      var call = \"Putative Cell Calling Type: mRNA\";\n  }   \n  parameters.push(call)\n\n  if(inputs.Basic_Algo_Only){\n      var basic = \"Refined Putative Cell Calling: Off\";\n  } else{ \n      var basic = \"Refined Putative Cell Calling: On\";\n  }   \n  parameters.push(basic)\n\n  if(inputs.Exact_Cell_Count != null){\n      var cells = \"Exact Cell Count: \" + inputs.Exact_Cell_Count;\n  } else{ \n      var cells = \"Exact Cell Count: None\";\n  }   \n  parameters.push(cells)\n\n  var name = inputs.Run_Name;\n  if (name == null){\n    var libraries = inputs.Libraries.split(',');\n    name = libraries[0];\n  }        \n\n  var header = [\"####################\"];\n  header.push(\"## \" + pipeline_name + \" Version \" + version);\n  header.push(\"## Analysis Date - \" + time);\n  header.push(\"## Libraries - \" + libraries.join(' | ') + \" - Bead version detected: \" + customer_bv);\n  header.push(\"## References - \" + references.join(' | ') + supplemental);\n  header.push(\"## Parameters - \" + parameters.join(' | '));\n  header.push(\"####################\");\n  metadata[\"Output_Header\"] = header;\n  metadata[\"Run_Base_Name\"] = name;\n  var metadata_json = JSON.stringify(metadata);\n  return metadata_json;\n}\n"
+                }
+            ],
+            "class": "CommandLineTool"
+        },
+        {
+            "inputs": [
+                {
                     "inputBinding": {
                         "prefix": "--annot-files"
                     },
@@ -2844,10 +3388,31 @@
                 },
                 {
                     "inputBinding": {
-                        "prefix": "--seq-stats"
+                        "prefix": "--read1-error-rate"
                     },
                     "type": "File",
-                    "id": "#Metrics.cwl/Seq_Metrics"
+                    "id": "#Metrics.cwl/Read1_error_rate"
+                },
+                {
+                    "inputBinding": {
+                        "prefix": "--run-metadata"
+                    },
+                    "type": "File",
+                    "id": "#Metrics.cwl/Run_Metadata"
+                },
+                {
+                    "inputBinding": {
+                        "prefix": "--sample-tag-archives",
+                        "itemSeparator": ","
+                    },
+                    "type": [
+                        "null",
+                        {
+                            "items": "File",
+                            "type": "array"
+                        }
+                    ],
+                    "id": "#Metrics.cwl/Sample_Tag_Archives"
                 },
                 {
                     "inputBinding": {
@@ -2881,6 +3446,7 @@
                 }
             ],
             "requirements": [
+
             ],
             "outputs": [
                 {
@@ -2896,6 +3462,19 @@
                     },
                     "type": "File",
                     "id": "#Metrics.cwl/Metrics_Summary"
+                },
+                {
+                    "outputBinding": {
+                        "glob": "*.zip"
+                    },
+                    "type": [
+                        "null",
+                        {
+                            "items": "File",
+                            "type": "array"
+                        }
+                    ],
+                    "id": "#Metrics.cwl/Sample_Tag_Out"
                 },
                 {
                     "outputBinding": {
@@ -2961,8 +3540,36 @@
                 }
             ],
             "class": "ExpressionTool",
-            "expression": "${\n  var enumifiedSampleTagsVersion = null;\n  if (inputs._Sample_Tags_Version) {\n  var _Sample_Tags_Version = inputs._Sample_Tags_Version.toLowerCase();\n  if (_Sample_Tags_Version.indexOf('human') >= 0 || _Sample_Tags_Version === 'hs')\n  {\n    enumifiedSampleTagsVersion = 'hs';\n  }\n  else if (_Sample_Tags_Version.indexOf('mouse') >= 0 || _Sample_Tags_Version === 'mm')\n  {\n    enumifiedSampleTagsVersion = 'mm';\n  }\n  else if (_Sample_Tags_Version === 'no multiplexing')\n  {\n    enumifiedSampleTagsVersion = null;\n  }\n  else\n  {\n    throw new Error(\"Cannot parse Sample Tag Version: \" + inputs._Sample_Tags_Version);\n  }\n  }\n  return ({\n  Tag_Sample_Names: inputs._Tag_Sample_Names,\n  Sample_Tags_Version: enumifiedSampleTagsVersion\n  });\n}",
+            "expression": "${\n  var enumifiedSampleTagsVersion = null;\n  if (inputs._Sample_Tags_Version) {\n  var _Sample_Tags_Version = inputs._Sample_Tags_Version.toLowerCase();\n  if (_Sample_Tags_Version.indexOf('human') >= 0 || _Sample_Tags_Version === 'hs')\n  {\n    enumifiedSampleTagsVersion = 'hs';\n  }\n  else if (_Sample_Tags_Version.indexOf('mouse') >= 0 || _Sample_Tags_Version === 'mm')\n  {\n    enumifiedSampleTagsVersion = 'mm';\n  }\n  else if (_Sample_Tags_Version === 'no multiplexing')\n  {\n    enumifiedSampleTagsVersion = null;\n  }\n  else\n  {\n    throw new Error(\"Cannot parse Sample Tag Version: \" + inputs._Sample_Tags_Version);\n  }\n  }\n  var listTagNames = inputs._Tag_Sample_Names\n  var newTagNames = []\n  for (var num in listTagNames) {\n    var tag = listTagNames[num].replace(/[^A-Za-z0-9-+]/g,\"_\");\n    newTagNames.push(tag);    \n  }  \n  return ({\n  Tag_Sample_Names: newTagNames,\n  Sample_Tags_Version: enumifiedSampleTagsVersion\n  });\n}",
             "id": "#MultiplexingSettings.cwl"
+        },
+        {
+            "inputs": [
+                {
+                    "type": [
+                        "null",
+                        "string"
+                    ],
+                    "id": "#NameSettings.cwl/_Run_Name"
+                }
+            ],
+            "requirements": [
+                {
+                    "class": "InlineJavascriptRequirement"
+                }
+            ],
+            "outputs": [
+                {
+                    "type": [
+                        "null",
+                        "string"
+                    ],
+                    "id": "#NameSettings.cwl/Run_Name"
+                }
+            ],
+            "class": "ExpressionTool",
+            "expression": "${ var name = inputs._Run_Name;\n   if (name != null) {\n     name = name.replace(/[\\W_]+/g,\"-\");}\n   return({'Run_Name' : name });\n }  ",
+            "id": "#NameSettings.cwl"
         },
         {
             "inputs": [
@@ -3037,7 +3644,7 @@
                     "id": "#PairReadFiles.cwl/ReadPairs"
                 }
             ],
-            "expression": "${\n  // use the CheckFastqs read pairing information to create a dictionary\n  // using the original fastq file name without the extension as the key\n  var fastqReadPairs = {}\n  for (var i = 0; i < inputs.FastqReadPairs.length; i++) {\n    var fileDict = inputs.FastqReadPairs[i];\n    var filename = fileDict[\"filename\"];\n\n    if (!fastqReadPairs[filename]) {\n      fastqReadPairs[filename] = {\n        readPairId: null,\n        readFlag: null,\n        library: null,\n      };\n    }\n\n    fastqReadPairs[filename].readPairId = fileDict[\"readPairId\"]\n    fastqReadPairs[filename].readFlag = fileDict[\"readFlag\"]\n    fastqReadPairs[filename].library = fileDict[\"library\"]\n  }\n\n  // now loop through the input read files which could\n  // be the original fastq files if no sub-sampling has\n  // been done, or the sub-sampled fastq files\n  var readPairs = {}\n  for (var i = 0; i < inputs.Reads.length; i++) {\n\n    // Get the fastq file\n    var f = inputs.Reads[i];\n\n    // Split on the dash to get the name of the original file\n    // and the chunk id (if it exists)\n    // We would like to ignore the case of the .fastq.gz or .fq.gz\n    // at the end of the file. JS allows one to ignore the case of\n    // an entire RegEx by adding an 'i' to the end of the pattern.\n    // Unfortunately, JS does not allow one to ignore the case for\n    // a specific RegEx group. This is one way to get around that:\n    var groups = f.basename.match(/^(.*?)(-[0-9]*)?(\\.([fF][aA][sS][tT][qQ]|[fF][qQ])\\.[gG][zZ])$/);\n\n    // If the RegEx fails, create an error\n    if (groups === undefined || groups === null) {\n      throw new Error(\"The RegEx for the fastq file name '\" + f.basename + \"' is failing.\");\n    }\n\n    // Get the base name, chunk id, and file extension\n    // The base name without the chunk id and file\n    // extension is the key from CheckFastqs\n    // The chunk id is used later to create a new unique\n    // read pair id for all fastq files (sub-sampled or not)\n    var basename = groups[1];\n    var orgChunkId = groups[2];\n    // if there is no chunk id, use an arbitrary number\n    var chunkId = 9999;\n    if (orgChunkId) {\n      // slice off the '-' and cast to an integer\n      chunkId = parseInt(orgChunkId.slice(1));\n    }\n    // double check that we have a chunk id\n    if (chunkId === undefined || chunkId === null) {\n      throw new Error(\"The fastq file sub-sampling id could not be determined!\");\n    }\n    var fileExt = groups[3];\n\n    // The basename without the chunk id and file extension\n    // should match the original file name from CheckFastqs\n    // The original file name from CheckFastqs is the key for\n    // the dictionary containing the original unique pair id\n    var filename = basename;\n    var fileDict = fastqReadPairs[filename];\n\n    // If the fileDict for this filename is not found, then try to use\n    // the original filename without the file extension as the key\n    if (fileDict === undefined || fileDict === null) {\n      // If the original filename ends in (-[0-9]*)\n      // and no sub-sampling occurs, then try to use the\n      // original filename without the extension as the key\n      var groups = f.basename.match(/^(.*?)(\\.([fF][aA][sS][tT][qQ]|[fF][qQ])\\.[gG][zZ])$/);\n\n      // If the RegEx fails, create an error\n      if (groups === undefined || groups === null) {\n        throw new Error(\"The RegEx for the fastq file name '\" + f.basename + \"' is failing.\");\n      }\n\n      // Get the base name and file extension\n      // The base name without the file extension\n      // is the key from CheckFastqs\n      var basename = groups[1];\n      var fileExt = groups[2];\n\n      var fileDict = fastqReadPairs[basename];\n\n      // If the fileDict for this filename is still not found,\n      // then the filenames are in an unexpected format and\n      // the RegEx above needs to be modified to create\n      // filenames formatted in the same way as CheckFastqs\n      // Create an error\n      if (fileDict === undefined || fileDict === null) {\n        throw new Error(\"Cannot find the fastq read pair information for '\" + filename + \"'.\");\n      }\n    }\n\n    // Get the pairing information from CheckFastqs\n    var readPairId = fileDict[\"readPairId\"];\n    var library = fileDict[\"library\"];\n    var flag = fileDict[\"readFlag\"];\n\n    // Add the chunkId to create a new unique read pair id\n    // for each file (sub-sampled or not)\n    var chunkReadPairId = readPairId + \"_\" + chunkId;\n\n    // Create a dictionary for each pair of files\n    if (!readPairs[chunkReadPairId]) {\n      readPairs[chunkReadPairId] = {\n        R1: null,\n        R2: null,\n        library: library,\n        readPairId: null,\n      };\n    }\n    // add in the R1 and R2 files, depending on the flag\n    if (flag === \"R1\") {\n      readPairs[chunkReadPairId].R1 = f\n    } else if (flag === \"R2\") {\n      readPairs[chunkReadPairId].R2 = f\n    }\n  }\n  // we are not interested in the read pair ids in readPairs\n  // flatten into an array of objects\n  var readPairsList = [];\n  var i = 1;\n  for (var key in readPairs) {\n    if (readPairs.hasOwnProperty(key)) {\n      var readPair = readPairs[key];\n      readPair.readPairId = i;\n      readPairsList.push(readPair);\n      i++;\n    }\n  }\n  // pass this array to the record array named \"ReadPairs\" on the CWL layer\n  return {ReadPairs: readPairsList}\n}",
+            "expression": "${\n  // use the CheckFastqs read pairing information to create a dictionary\n  // using the original fastq file name without the extension as the key\n  var fastqReadPairs = {}\n  for (var i = 0; i < inputs.FastqReadPairs.length; i++) {\n    var fileDict = inputs.FastqReadPairs[i];\n    var filename = fileDict[\"filename\"];\n\n    if (!fastqReadPairs[filename]) {\n      fastqReadPairs[filename] = {\n        readPairId: null,\n        readFlag: null,\n        library: null,\n      };\n    }\n    else {\n      throw new Error(\"Found non-unique fastq filename '\" + filename + \"' in the FastqReadPairs dictionary from CheckFastqs.\")\n    }\n\n    fastqReadPairs[filename].readPairId = fileDict[\"readPairId\"]\n    fastqReadPairs[filename].readFlag = fileDict[\"readFlag\"]\n    fastqReadPairs[filename].library = fileDict[\"library\"]\n  }\n\n  // now loop through the input read files which could\n  // be the original fastq files if no sub-sampling has\n  // been done, or the sub-sampled fastq files\n  var readPairs = {}\n  for (var i = 0; i < inputs.Reads.length; i++) {\n\n    // Set the fileDict to null\n    var fileDict = null;\n\n    // Get the fastq file\n    var fastqFile = inputs.Reads[i];\n\n    // Remove the .gz from the end of the filename\n    var fileNoGzExt = fastqFile.basename.replace(/.gz$/i, \"\");\n\n    // Remove the next file extension if it exists\n    var fileArrayWithExt = fileNoGzExt.split(\".\");\n    // If an extension exists, splice the array\n    var fileArrayNoExt = null;\n    if (fileArrayWithExt.length > 1) {\n      fileArrayNoExt = fileArrayWithExt.splice(0, fileArrayWithExt.length-1);\n    } else {\n      // No file extension exists, so use the whole array\n      fileArrayNoExt = fileArrayWithExt\n    }\n    var fileRootname = fileArrayNoExt.join(\".\")\n\n    // if the original files were sub-sampled\n    // get the original file and the chunk id\n    if (fileRootname.indexOf(\"-\") != -1) {\n      // Split on the dash to get the name of\n      // the original file and the chunk id\n      // The original file name can also have dashes\n      var chunkFileArray = fileRootname.split(\"-\");\n\n      // Get the original file rootname and chunk id\n      // The rootname without the chunk id and file\n      // extension is the key from CheckFastqs\n      // The chunk id is used later to create a new unique\n      // read pair id for all sub-sampled fastq files\n\n      // The rootname array should contain all elements up to the last dash\n      var fileRootnameArray = chunkFileArray.splice(0, chunkFileArray.length-1);\n      var fileRootnameNoChunkId = fileRootnameArray.join(\"-\");\n\n      // The chunk id is the last element in the array\n      // representing the content after the last dash\n      var orgChunkId = chunkFileArray.pop();\n\n      // if there is no chunk id, use an arbitrary number\n      // the chunk id is unique when the files are sub-sampled\n      // and does not need to be unique when the files are not sub-sampled\n      var chunkId = 9999;\n      if (orgChunkId) {\n        // cast to an integer\n        chunkId = parseInt(orgChunkId);\n      }\n      // double check that we have a chunk id\n      if (chunkId === undefined || chunkId === null) {\n        throw new Error(\"The fastq file sub-sampling id could not be determined!\");\n      }\n\n      // The file rootname without the chunk id and file extension\n      // should match the original file rootname from CheckFastqs\n      // The original file rootname from CheckFastqs is the key for\n      // the dictionary containing the original unique pair id\n      var fileDict = fastqReadPairs[fileRootnameNoChunkId];\n    }\n\n    // If the files are not sub-sampled or the fileDict\n    // is not found, then try to use the original\n    // file rootname without the file extension as the key\n    if (fileDict === undefined || fileDict === null) {\n\n      // if the original files were not sub-sampled,\n      // use the original file rootname and an arbitrary chunk id\n      var chunkId = 9999;\n\n      var fileDict = fastqReadPairs[fileRootname];\n\n      // If the fileDict for this file rootname is not found,\n      // then the filenames are in an unexpected format and\n      // the code to parse the filenames in CheckFastqs,\n      // SplitAndSubsample and here need to match\n      if (fileDict === undefined || fileDict === null) {\n        // Create an error\n        if (fileDict === undefined || fileDict === null) {\n          throw new Error(\"Cannot find the fastq read pair information for '\" + fastqFile.basename + \"'.\");\n        }\n      }\n    }\n\n    // Get the pairing information from CheckFastqs\n    var readPairId = fileDict[\"readPairId\"];\n    var library = fileDict[\"library\"];\n    var flag = fileDict[\"readFlag\"];\n\n    // Add the chunkId to create a new unique read pair id\n    // for each file (sub-sampled or not)\n    var chunkReadPairId = readPairId + \"_\" + chunkId;\n\n    // Create a dictionary for each pair of files\n    if (!readPairs[chunkReadPairId]) {\n      readPairs[chunkReadPairId] = {\n        R1: null,\n        R2: null,\n        library: library,\n        readPairId: null,\n      };\n    }\n    // add in the R1 and R2 files, depending on the flag\n    if (flag === \"R1\") {\n      readPairs[chunkReadPairId].R1 = fastqFile\n    } else if (flag === \"R2\") {\n      readPairs[chunkReadPairId].R2 = fastqFile\n    }\n  }\n  // we are not interested in the read pair ids in readPairs\n  // flatten into an array of objects\n  var readPairsList = [];\n  var i = 1;\n  for (var key in readPairs) {\n    if (readPairs.hasOwnProperty(key)) {\n      var readPair = readPairs[key];\n      readPair.readPairId = i;\n      readPairsList.push(readPair);\n      i++;\n    }\n  }\n  // pass this array to the record array named \"ReadPairs\" on the CWL layer\n  return {ReadPairs: readPairsList}\n}",
             "class": "ExpressionTool"
         },
         {
@@ -3055,6 +3662,13 @@
                         "int"
                     ],
                     "id": "#PutativeCellSettings.cwl/_Exact_Cell_Count"
+                },
+                {
+                    "type": [
+                        "null",
+                        "Any"
+                    ],
+                    "id": "#PutativeCellSettings.cwl/_Putative_Cell_Call"
                 }
             ],
             "requirements": [
@@ -3076,33 +3690,27 @@
                         "int"
                     ],
                     "id": "#PutativeCellSettings.cwl/Exact_Cell_Count"
+                },
+                {
+                    "type": [
+                        "null",
+                        "int"
+                    ],
+                    "id": "#PutativeCellSettings.cwl/Putative_Cell_Call"
                 }
             ],
             "class": "ExpressionTool",
-            "expression": "${\n  if (inputs._Exact_Cell_Count) {\n    if (inputs._Exact_Cell_Count < 1) {\n      throw(\"Illogical value for exact cell count: \" + inputs._Exact_Cell_Count);\n    }\n  }\n  return ({\n    Exact_Cell_Count: inputs._Exact_Cell_Count,\n    Basic_Algo_Only: inputs._Basic_Algo_Only,\n  });\n}",
+            "expression": "${\n  // the basic algorithm flag defaults to false\n  var basicAlgOnlyFlag = false;\n  // the user can set the basic algorithm flag\n  if (inputs._Basic_Algo_Only) {\n    basicAlgOnlyFlag = inputs._Basic_Algo_Only;\n  }\n  // convert the Putative_Cell_Call from a string to an integer\n  var putativeCellCallInt = 0;\n  if (inputs._Putative_Cell_Call) {\n    if (inputs._Putative_Cell_Call === \"mRNA\") {\n      putativeCellCallInt = 0;\n    }\n    else if (inputs._Putative_Cell_Call == \"AbSeq_Experimental\" || inputs._Putative_Cell_Call == \"AbSeq (Experimental)\") {\n      putativeCellCallInt = 1;\n      // for protein-only cell calling, we only have the basic algorithm\n      basicAlgOnlyFlag = true;\n    }\n    else if (inputs._Putative_Cell_Call == \"mRNA_and_AbSeq\") {\n      putativeCellCallInt = 2;\n    }\n  }\n  // check the exact cell count\n  if (inputs._Exact_Cell_Count) {\n    if (inputs._Exact_Cell_Count < 1) {\n      throw(\"Illogical value for exact cell count: \" + inputs._Exact_Cell_Count);\n    }\n  }\n  return ({\n    Putative_Cell_Call: putativeCellCallInt,\n    Exact_Cell_Count: inputs._Exact_Cell_Count,\n    Basic_Algo_Only: basicAlgOnlyFlag,\n  });\n}",
             "id": "#PutativeCellSettings.cwl"
         },
         {
             "inputs": [
                 {
                     "inputBinding": {
-                        "prefix": "--label-version"
+                        "prefix": "--run-metadata"
                     },
-                    "type": [
-                        "null",
-                        "int"
-                    ],
-                    "id": "#QualityFilter.cwl/Label_Version"
-                },
-                {
-                    "inputBinding": {
-                        "prefix": "--read-filter-off"
-                    },
-                    "type": [
-                        "null",
-                        "boolean"
-                    ],
-                    "id": "#QualityFilter.cwl/Read_Filter_Off"
+                    "type": "File",
+                    "id": "#QualityFilter.cwl/Run_Metadata"
                 },
                 {
                     "type": {
@@ -3142,6 +3750,7 @@
                 }
             ],
             "requirements": [
+
             ],
             "outputs": [
                 {
@@ -3156,14 +3765,14 @@
                 },
                 {
                     "outputBinding": {
-                        "glob": "*_R1_.fastq.gz"
+                        "glob": "*_R1*.fastq.gz"
                     },
                     "type": "File",
                     "id": "#QualityFilter.cwl/R1"
                 },
                 {
                     "outputBinding": {
-                        "glob": "*_R2_.fastq.gz"
+                        "glob": "*_R2*.fastq.gz"
                     },
                     "type": "File",
                     "id": "#QualityFilter.cwl/R2"
@@ -3181,6 +3790,134 @@
             ],
             "class": "CommandLineTool",
             "id": "#QualityFilter.cwl"
+        },
+        {
+            "inputs": [
+                {
+                    "type": "File",
+                    "id": "#QualityFilterOuter.cwl/Run_Metadata"
+                },
+                {
+                    "type": {
+                        "items": {
+                            "fields": [
+                                {
+                                    "type": "File",
+                                    "name": "#QualityFilterOuter.cwl/Split_Read_Pairs/R1"
+                                },
+                                {
+                                    "type": "File",
+                                    "name": "#QualityFilterOuter.cwl/Split_Read_Pairs/R2"
+                                },
+                                {
+                                    "type": "int",
+                                    "name": "#QualityFilterOuter.cwl/Split_Read_Pairs/readPairId"
+                                },
+                                {
+                                    "type": "string",
+                                    "name": "#QualityFilterOuter.cwl/Split_Read_Pairs/library"
+                                }
+                            ],
+                            "type": "record"
+                        },
+                        "type": "array"
+                    },
+                    "id": "#QualityFilterOuter.cwl/Split_Read_Pairs"
+                }
+            ],
+            "requirements": [
+                {
+                    "class": "InlineJavascriptRequirement"
+                },
+                {
+                    "class": "ScatterFeatureRequirement"
+                },
+                {
+                    "class": "StepInputExpressionRequirement"
+                },
+                {
+                    "class": "SubworkflowFeatureRequirement"
+                }
+            ],
+            "outputs": [
+                {
+                    "outputSource": "#QualityFilterOuter.cwl/Quality_Filter_Scatter/Filter_Metrics",
+                    "type": [
+                        {
+                            "items": [
+                                "null",
+                                "File"
+                            ],
+                            "type": "array"
+                        }
+                    ],
+                    "id": "#QualityFilterOuter.cwl/Filter_Metrics"
+                },
+                {
+                    "outputSource": "#QualityFilterOuter.cwl/Quality_Filter_Scatter/R1",
+                    "type": [
+                        {
+                            "items": [
+                                "null",
+                                "File"
+                            ],
+                            "type": "array"
+                        }
+                    ],
+                    "id": "#QualityFilterOuter.cwl/R1"
+                },
+                {
+                    "outputSource": "#QualityFilterOuter.cwl/Quality_Filter_Scatter/R2",
+                    "type": [
+                        {
+                            "items": [
+                                "null",
+                                "File"
+                            ],
+                            "type": "array"
+                        }
+                    ],
+                    "id": "#QualityFilterOuter.cwl/R2"
+                },
+                {
+                    "outputSource": "#QualityFilterOuter.cwl/Quality_Filter_Scatter/output",
+                    "type": [
+                        {
+                            "items": [
+                                "null",
+                                "File"
+                            ],
+                            "type": "array"
+                        }
+                    ],
+                    "id": "#QualityFilterOuter.cwl/output"
+                }
+            ],
+            "class": "Workflow",
+            "steps": [
+                {
+                    "scatter": "#QualityFilterOuter.cwl/Quality_Filter_Scatter/Split_Read_Pairs",
+                    "out": [
+                        "#QualityFilterOuter.cwl/Quality_Filter_Scatter/R1",
+                        "#QualityFilterOuter.cwl/Quality_Filter_Scatter/R2",
+                        "#QualityFilterOuter.cwl/Quality_Filter_Scatter/Filter_Metrics",
+                        "#QualityFilterOuter.cwl/Quality_Filter_Scatter/output"
+                    ],
+                    "run": "#QualityFilter.cwl",
+                    "id": "#QualityFilterOuter.cwl/Quality_Filter_Scatter",
+                    "in": [
+                        {
+                            "source": "#QualityFilterOuter.cwl/Run_Metadata",
+                            "id": "#QualityFilterOuter.cwl/Quality_Filter_Scatter/Run_Metadata"
+                        },
+                        {
+                            "source": "#QualityFilterOuter.cwl/Split_Read_Pairs",
+                            "id": "#QualityFilterOuter.cwl/Quality_Filter_Scatter/Split_Read_Pairs"
+                        }
+                    ]
+                }
+            ],
+            "id": "#QualityFilterOuter.cwl"
         },
         {
             "inputs": [
@@ -3568,6 +4305,7 @@
                         ],
                         "class": "CommandLineTool",
                         "hints": [
+
                         ]
                     },
                     "id": "#UncompressDatatables.cwl/Uncompress_Expression_Matrix",
@@ -3585,11 +4323,261 @@
             "inputs": [
                 {
                     "inputBinding": {
-                        "position": 1,
-                        "prefix": "--sample-name"
+                        "position": 1
+                    },
+                    "type": [
+                        "null",
+                        "File"
+                    ],
+                    "id": "#VDJ_Assemble_and_Annotate_Contigs.cwl/RSEC_Reads_Fastq"
+                },
+                {
+                    "inputBinding": {
+                        "position": 2
                     },
                     "type": "string",
-                    "id": "#VDJ_Annotate_Molecules.cwl/Sample_Name"
+                    "id": "#VDJ_Assemble_and_Annotate_Contigs.cwl/Read_Limit"
+                },
+                {
+                    "inputBinding": {
+                        "position": 3
+                    },
+                    "type": [
+                        "null",
+                        "string"
+                    ],
+                    "id": "#VDJ_Assemble_and_Annotate_Contigs.cwl/VDJ_Version"
+                }
+            ],
+            "requirements": [
+
+                {
+                    "class": "InlineJavascriptRequirement"
+                },
+                {
+                    "class": "ShellCommandRequirement"
+                }
+            ],
+            "outputs": [
+                {
+                    "outputBinding": {
+                        "glob": "*_pruned.csv.gz"
+                    },
+                    "type": [
+                        "null",
+                        "File"
+                    ],
+                    "id": "#VDJ_Assemble_and_Annotate_Contigs.cwl/PyirCall"
+                }
+            ],
+            "baseCommand": [
+                "AssembleAndAnnotate.sh"
+            ],
+            "id": "#VDJ_Assemble_and_Annotate_Contigs.cwl",
+            "class": "CommandLineTool",
+            "hints": [
+                {
+                    "coresMin": 1,
+                    "ramMin": 3200,
+                    "class": "ResourceRequirement"
+                }
+            ]
+        },
+        {
+            "inputs": [
+                {
+                    "type": [
+                        {
+                            "items": [
+                                "null",
+                                "File"
+                            ],
+                            "type": "array"
+                        }
+                    ],
+                    "id": "#VDJ_Assemble_and_Annotate_Contigs_IG.cwl/RSEC_Reads_Fastq"
+                },
+                {
+                    "type": [
+                        "null",
+                        "string"
+                    ],
+                    "id": "#VDJ_Assemble_and_Annotate_Contigs_IG.cwl/VDJ_Version"
+                },
+                {
+                    "type": [
+                        "null",
+                        "int"
+                    ],
+                    "id": "#VDJ_Assemble_and_Annotate_Contigs_IG.cwl/num_cores"
+                }
+            ],
+            "requirements": [
+                {
+                    "class": "InlineJavascriptRequirement"
+                },
+                {
+                    "class": "ScatterFeatureRequirement"
+                },
+                {
+                    "class": "StepInputExpressionRequirement"
+                },
+                {
+                    "class": "SubworkflowFeatureRequirement"
+                }
+            ],
+            "outputs": [
+                {
+                    "outputSource": "#VDJ_Assemble_and_Annotate_Contigs_IG.cwl/VDJ_Assemble_and_Annotate_Contigs_IG/PyirCall",
+                    "type": [
+                        {
+                            "items": [
+                                "null",
+                                "File"
+                            ],
+                            "type": "array"
+                        }
+                    ],
+                    "id": "#VDJ_Assemble_and_Annotate_Contigs_IG.cwl/igCalls"
+                }
+            ],
+            "class": "Workflow",
+            "steps": [
+                {
+                    "run": "#VDJ_Assemble_and_Annotate_Contigs.cwl",
+                    "id": "#VDJ_Assemble_and_Annotate_Contigs_IG.cwl/VDJ_Assemble_and_Annotate_Contigs_IG",
+                    "in": [
+                        {
+                            "source": "#VDJ_Assemble_and_Annotate_Contigs_IG.cwl/RSEC_Reads_Fastq",
+                            "id": "#VDJ_Assemble_and_Annotate_Contigs_IG.cwl/VDJ_Assemble_and_Annotate_Contigs_IG/RSEC_Reads_Fastq"
+                        },
+                        {
+                            "valueFrom": "75000",
+                            "id": "#VDJ_Assemble_and_Annotate_Contigs_IG.cwl/VDJ_Assemble_and_Annotate_Contigs_IG/Read_Limit"
+                        },
+                        {
+                            "source": "#VDJ_Assemble_and_Annotate_Contigs_IG.cwl/VDJ_Version",
+                            "id": "#VDJ_Assemble_and_Annotate_Contigs_IG.cwl/VDJ_Assemble_and_Annotate_Contigs_IG/VDJ_Version"
+                        }
+                    ],
+                    "hints": [
+                        {
+                            "coresMin": "$(inputs.num_cores)",
+                            "class": "ResourceRequirement"
+                        }
+                    ],
+                    "scatter": [
+                        "#VDJ_Assemble_and_Annotate_Contigs_IG.cwl/VDJ_Assemble_and_Annotate_Contigs_IG/RSEC_Reads_Fastq"
+                    ],
+                    "out": [
+                        "#VDJ_Assemble_and_Annotate_Contigs_IG.cwl/VDJ_Assemble_and_Annotate_Contigs_IG/PyirCall"
+                    ]
+                }
+            ],
+            "id": "#VDJ_Assemble_and_Annotate_Contigs_IG.cwl"
+        },
+        {
+            "inputs": [
+                {
+                    "type": [
+                        {
+                            "items": [
+                                "null",
+                                "File"
+                            ],
+                            "type": "array"
+                        }
+                    ],
+                    "id": "#VDJ_Assemble_and_Annotate_Contigs_TCR.cwl/RSEC_Reads_Fastq"
+                },
+                {
+                    "type": [
+                        "null",
+                        "string"
+                    ],
+                    "id": "#VDJ_Assemble_and_Annotate_Contigs_TCR.cwl/VDJ_Version"
+                },
+                {
+                    "type": [
+                        "null",
+                        "int"
+                    ],
+                    "id": "#VDJ_Assemble_and_Annotate_Contigs_TCR.cwl/num_cores"
+                }
+            ],
+            "requirements": [
+                {
+                    "class": "InlineJavascriptRequirement"
+                },
+                {
+                    "class": "ScatterFeatureRequirement"
+                },
+                {
+                    "class": "StepInputExpressionRequirement"
+                },
+                {
+                    "class": "SubworkflowFeatureRequirement"
+                }
+            ],
+            "outputs": [
+                {
+                    "outputSource": "#VDJ_Assemble_and_Annotate_Contigs_TCR.cwl/VDJ_Assemble_and_Annotate_Contigs_TCR/PyirCall",
+                    "type": [
+                        {
+                            "items": [
+                                "null",
+                                "File"
+                            ],
+                            "type": "array"
+                        }
+                    ],
+                    "id": "#VDJ_Assemble_and_Annotate_Contigs_TCR.cwl/tcrCalls"
+                }
+            ],
+            "class": "Workflow",
+            "steps": [
+                {
+                    "run": "#VDJ_Assemble_and_Annotate_Contigs.cwl",
+                    "id": "#VDJ_Assemble_and_Annotate_Contigs_TCR.cwl/VDJ_Assemble_and_Annotate_Contigs_TCR",
+                    "in": [
+                        {
+                            "source": "#VDJ_Assemble_and_Annotate_Contigs_TCR.cwl/RSEC_Reads_Fastq",
+                            "id": "#VDJ_Assemble_and_Annotate_Contigs_TCR.cwl/VDJ_Assemble_and_Annotate_Contigs_TCR/RSEC_Reads_Fastq"
+                        },
+                        {
+                            "valueFrom": "75000",
+                            "id": "#VDJ_Assemble_and_Annotate_Contigs_TCR.cwl/VDJ_Assemble_and_Annotate_Contigs_TCR/Read_Limit"
+                        },
+                        {
+                            "source": "#VDJ_Assemble_and_Annotate_Contigs_TCR.cwl/VDJ_Version",
+                            "id": "#VDJ_Assemble_and_Annotate_Contigs_TCR.cwl/VDJ_Assemble_and_Annotate_Contigs_TCR/VDJ_Version"
+                        }
+                    ],
+                    "hints": [
+                        {
+                            "coresMin": "$(inputs.num_cores)",
+                            "class": "ResourceRequirement"
+                        }
+                    ],
+                    "scatter": [
+                        "#VDJ_Assemble_and_Annotate_Contigs_TCR.cwl/VDJ_Assemble_and_Annotate_Contigs_TCR/RSEC_Reads_Fastq"
+                    ],
+                    "out": [
+                        "#VDJ_Assemble_and_Annotate_Contigs_TCR.cwl/VDJ_Assemble_and_Annotate_Contigs_TCR/PyirCall"
+                    ]
+                }
+            ],
+            "id": "#VDJ_Assemble_and_Annotate_Contigs_TCR.cwl"
+        },
+        {
+            "inputs": [
+                {
+                    "inputBinding": {
+                        "position": 10,
+                        "prefix": "--seq-metrics"
+                    },
+                    "type": "File",
+                    "id": "#VDJ_Compile_Results.cwl/Seq_Metrics"
                 },
                 {
                     "inputBinding": {
@@ -3600,7 +4588,7 @@
                         "null",
                         "File"
                     ],
-                    "id": "#VDJ_Annotate_Molecules.cwl/cellTypeMapping"
+                    "id": "#VDJ_Compile_Results.cwl/cellTypeMapping"
                 },
                 {
                     "inputBinding": {
@@ -3615,7 +4603,7 @@
                             "type": "array"
                         }
                     ],
-                    "id": "#VDJ_Annotate_Molecules.cwl/chainsToIgnore"
+                    "id": "#VDJ_Compile_Results.cwl/chainsToIgnore"
                 },
                 {
                     "inputBinding": {
@@ -3626,7 +4614,7 @@
                         "null",
                         "float"
                     ],
-                    "id": "#VDJ_Annotate_Molecules.cwl/evalueJgene"
+                    "id": "#VDJ_Compile_Results.cwl/evalueJgene"
                 },
                 {
                     "inputBinding": {
@@ -3637,7 +4625,7 @@
                         "null",
                         "float"
                     ],
-                    "id": "#VDJ_Annotate_Molecules.cwl/evalueVgene"
+                    "id": "#VDJ_Compile_Results.cwl/evalueVgene"
                 },
                 {
                     "inputBinding": {
@@ -3647,7 +4635,7 @@
                         "null",
                         "File"
                     ],
-                    "id": "#VDJ_Annotate_Molecules.cwl/igCalls"
+                    "id": "#VDJ_Compile_Results.cwl/igCalls"
                 },
                 {
                     "inputBinding": {
@@ -3655,7 +4643,7 @@
                         "prefix": "--metadata-fp"
                     },
                     "type": "File",
-                    "id": "#VDJ_Annotate_Molecules.cwl/metadata"
+                    "id": "#VDJ_Compile_Results.cwl/metadata"
                 },
                 {
                     "inputBinding": {
@@ -3663,7 +4651,7 @@
                         "prefix": "--putative-cells-json-fp"
                     },
                     "type": "File",
-                    "id": "#VDJ_Annotate_Molecules.cwl/putativeCells"
+                    "id": "#VDJ_Compile_Results.cwl/putativeCells"
                 },
                 {
                     "inputBinding": {
@@ -3673,7 +4661,7 @@
                         "null",
                         "File"
                     ],
-                    "id": "#VDJ_Annotate_Molecules.cwl/tcrCalls"
+                    "id": "#VDJ_Compile_Results.cwl/tcrCalls"
                 },
                 {
                     "inputBinding": {
@@ -3684,25 +4672,16 @@
                         "null",
                         "string"
                     ],
-                    "id": "#VDJ_Annotate_Molecules.cwl/vdjVersion"
+                    "id": "#VDJ_Compile_Results.cwl/vdjVersion"
                 }
             ],
             "requirements": [
+
                 {
                     "class": "InlineJavascriptRequirement"
                 }
             ],
             "outputs": [
-                {
-                    "outputBinding": {
-                        "glob": "*_VDJ_perCellChain_unfiltered.csv.gz"
-                    },
-                    "type": [
-                        "null",
-                        "File"
-                    ],
-                    "id": "#VDJ_Annotate_Molecules.cwl/vdjCellChainDatatableUnfiltered"
-                },
                 {
                     "doc": "VDJ data per cell, with distribution based error correction",
                     "outputBinding": {
@@ -3712,50 +4691,28 @@
                         "null",
                         "File"
                     ],
-                    "id": "#VDJ_Annotate_Molecules.cwl/vdjCellsDatatable"
-                },
-                {
-                    "doc": "VDJ data per cell, cell type error correction",
-                    "outputBinding": {
-                        "glob": "*_VDJ_perCell_cellType_corrected.csv.gz"
-                    },
-                    "type": [
-                        "null",
-                        "File"
-                    ],
-                    "id": "#VDJ_Annotate_Molecules.cwl/vdjCellsDatatableCellCorrected"
-                },
-                {
-                    "doc": "VDJ data per cell, DBEC and cell type error correction",
-                    "outputBinding": {
-                        "glob": "*_VDJ_perCell_DBEC_cellType_corrected.csv.gz"
-                    },
-                    "type": [
-                        "null",
-                        "File"
-                    ],
-                    "id": "#VDJ_Annotate_Molecules.cwl/vdjCellsDatatableDBECCellCorrected"
+                    "id": "#VDJ_Compile_Results.cwl/vdjCellsDatatable"
                 },
                 {
                     "doc": "VDJ data per cell, including non-putative cells, no error correction applied",
                     "outputBinding": {
-                        "glob": "*_VDJ_perCell_unfiltered.csv.gz"
+                        "glob": "*_VDJ_perCell_uncorrected.csv.gz"
                     },
                     "type": [
                         "null",
                         "File"
                     ],
-                    "id": "#VDJ_Annotate_Molecules.cwl/vdjCellsDatatableUnfiltered"
+                    "id": "#VDJ_Compile_Results.cwl/vdjCellsDatatableUncorrected"
                 },
                 {
                     "outputBinding": {
-                        "glob": "*_VDJ_readsInvalid.csv.gz"
+                        "glob": "*_VDJ_Dominant_Contigs.csv.gz"
                     },
                     "type": [
                         "null",
                         "File"
                     ],
-                    "id": "#VDJ_Annotate_Molecules.cwl/vdjInvalidReadsDatatable"
+                    "id": "#VDJ_Compile_Results.cwl/vdjDominantContigs"
                 },
                 {
                     "outputBinding": {
@@ -3765,7 +4722,7 @@
                         "null",
                         "File"
                     ],
-                    "id": "#VDJ_Annotate_Molecules.cwl/vdjMetricsCsv"
+                    "id": "#VDJ_Compile_Results.cwl/vdjMetricsCsv"
                 },
                 {
                     "outputBinding": {
@@ -3775,17 +4732,7 @@
                         "null",
                         "File"
                     ],
-                    "id": "#VDJ_Annotate_Molecules.cwl/vdjMetricsJson"
-                },
-                {
-                    "outputBinding": {
-                        "glob": "*_VDJ_molecules_per_cell_and_chain_summary_boxplot.png"
-                    },
-                    "type": [
-                        "null",
-                        "File"
-                    ],
-                    "id": "#VDJ_Annotate_Molecules.cwl/vdjReadsAndMoleculesPerCellFigure"
+                    "id": "#VDJ_Compile_Results.cwl/vdjMetricsJson"
                 },
                 {
                     "outputBinding": {
@@ -3795,320 +4742,28 @@
                         "items": "File",
                         "type": "array"
                     },
-                    "id": "#VDJ_Annotate_Molecules.cwl/vdjReadsPerCellByChainTypeFigure"
+                    "id": "#VDJ_Compile_Results.cwl/vdjReadsPerCellByChainTypeFigure"
                 },
                 {
                     "outputBinding": {
-                        "glob": "*_VDJ_readsValid.csv.gz"
+                        "glob": "*_VDJ_Unfiltered_Contigs.csv.gz"
                     },
                     "type": [
                         "null",
                         "File"
                     ],
-                    "id": "#VDJ_Annotate_Molecules.cwl/vdjValidReadsDatatable"
+                    "id": "#VDJ_Compile_Results.cwl/vdjUnfilteredContigs"
                 }
             ],
             "baseCommand": [
-                "mist_annotate_molecules_vdj.py"
+                "mist_vdj_compile_results.py"
             ],
-            "id": "#VDJ_Annotate_Molecules.cwl",
+            "id": "#VDJ_Compile_Results.cwl",
             "class": "CommandLineTool",
             "hints": [
                 {
-                    "ramMin": 64000,
+                    "ramMin": 32000,
                     "class": "ResourceRequirement"
-                }
-            ]
-        },
-        {
-            "inputs": [
-                {
-                    "doc": ".fasta.gz",
-                    "type": [
-                        "null",
-                        "File"
-                    ],
-                    "id": "#VDJ_Annotate_Reads.cwl/Cdr3QueryFasta"
-                },
-                {
-                    "type": "string",
-                    "id": "#VDJ_Annotate_Reads.cwl/vdjType"
-                },
-                {
-                    "type": [
-                        "null",
-                        "string"
-                    ],
-                    "id": "#VDJ_Annotate_Reads.cwl/vdjVersion"
-                }
-            ],
-            "outputs": [
-                {
-                    "outputSource": "#VDJ_Annotate_Reads.cwl/PrunePyIR/PrunedPyIROutput",
-                    "type": [
-                        "null",
-                        "File"
-                    ],
-                    "id": "#VDJ_Annotate_Reads.cwl/Cdr3Call"
-                }
-            ],
-            "class": "Workflow",
-            "steps": [
-                {
-                    "out": [
-                        "#VDJ_Annotate_Reads.cwl/CallCdr3/Cdr3Call"
-                    ],
-                    "run": {
-                        "cwlVersion": "v1.0",
-                        "inputs": [
-                            {
-                                "type": [
-                                    "null",
-                                    "File"
-                                ],
-                                "id": "#VDJ_Annotate_Reads.cwl/CallCdr3/CallCdr3Inner/Cdr3QueryFasta"
-                            },
-                            {
-                                "type": "string",
-                                "id": "#VDJ_Annotate_Reads.cwl/CallCdr3/CallCdr3Inner/vdjType"
-                            },
-                            {
-                                "type": [
-                                    "null",
-                                    "string"
-                                ],
-                                "id": "#VDJ_Annotate_Reads.cwl/CallCdr3/CallCdr3Inner/vdjVersion"
-                            }
-                        ],
-                        "requirements": [
-                            {
-                                "class": "InlineJavascriptRequirement"
-                            },
-                            {
-                                "class": "ShellCommandRequirement"
-                            }
-                        ],
-                        "outputs": [
-                            {
-                                "outputBinding": {
-                                    "glob": "*.json.gz",
-                                    "outputEval": "${\n  if (inputs.vdjVersion && inputs.Cdr3QueryFasta && self.size == 0) {\n    throw(\"No outputs from PyIR detected!\");\n  } else {\n    return(self);\n  }\n}"
-                                },
-                                "type": [
-                                    "null",
-                                    "File"
-                                ],
-                                "id": "#VDJ_Annotate_Reads.cwl/CallCdr3/CallCdr3Inner/Cdr3Call"
-                            }
-                        ],
-                        "baseCommand": [
-                            "mist_pyirWrapper.py"
-                        ],
-                        "class": "CommandLineTool",
-                        "arguments": [
-                            {
-                                "prefix": "-r",
-                                "valueFrom": "$(inputs.vdjType)"
-                            },
-                            {
-                                "prefix": "--strand",
-                                "valueFrom": "plus"
-                            },
-                            {
-                                "prefix": "--database",
-                                "valueFrom": "/mist/pyir_data"
-                            },
-                            {
-                                "prefix": "-f",
-                                "valueFrom": "json"
-                            },
-                            {
-                                "prefix": "-m",
-                                "valueFrom": "1"
-                            },
-                            {
-                                "prefix": "-s",
-                                "valueFrom": "${\n  if (!inputs.vdjVersion) {\n    return(\"~/deliberatelyNotADirectoryToInduceFailure\");\n  } else if (inputs.vdjVersion === \"human\" || inputs.vdjVersion === \"humanBCR\" || inputs.vdjVersion === \"humanTCR\"){\n    return(\"human\");\n  } else if (inputs.vdjVersion === \"mouse\" || inputs.vdjVersion === \"mouseBCR\" || inputs.vdjVersion === \"mouseTCR\"){\n    return(\"mouse\");\n  } else {\n    throw(\"Unknown VDJ version\");\n  }\n}"
-                            },
-                            {
-                                "prefix": "-o",
-                                "valueFrom": "${\n  if(inputs.Cdr3QueryFasta){\n    return(inputs.Cdr3QueryFasta.nameroot.split(\".\")[0]);\n  } else {\n    return(\"NA\");\n  }\n}"
-                            },
-                            {
-                                "prefix": "-winput",
-                                "valueFrom": "${\n  if (!inputs.vdjType) {\n    return(\"~/deliberatelyNotAQueryFastaToInduceFailure.fasta\");\n  } else {\n    return(inputs.Cdr3QueryFasta);\n  }\n}"
-                            },
-                            {
-                                "shellQuote": false,
-                                "valueFrom": "${\n  if (!inputs.vdjVersion && !inputs.Cdr3QueryFasta) {\n    return(\"&> /dev/null || true ; echo 'Since this is not a VDJ run, we will skip this node...'\");\n  } else if (!inputs.vdjVersion && inputs.Cdr3QueryFasta){\n    throw(\"VDJ disabled but CDR3 calling FASTA specified!\");\n  } else if (inputs.vdjVersion && !inputs.Cdr3QueryFasta) {\n    return(\"&> /dev/null || true ; echo 'VDJ enabled, but no query sequence specified. Assuming none were capture in AnnotateReads!'\");\n  } else if (inputs.vdjVersion && inputs.Cdr3QueryFasta) {\n    return(\"\");\n  }\n}"
-                            }
-                        ],
-                        "id": "#VDJ_Annotate_Reads.cwl/CallCdr3/CallCdr3Inner"
-                    },
-                    "id": "#VDJ_Annotate_Reads.cwl/CallCdr3",
-                    "in": [
-                        {
-                            "source": "#VDJ_Annotate_Reads.cwl/CallConstantRegion/ConstantRegionCall",
-                            "id": "#VDJ_Annotate_Reads.cwl/CallCdr3/Cdr3QueryFasta"
-                        },
-                        {
-                            "source": "#VDJ_Annotate_Reads.cwl/vdjType",
-                            "id": "#VDJ_Annotate_Reads.cwl/CallCdr3/vdjType"
-                        },
-                        {
-                            "source": "#VDJ_Annotate_Reads.cwl/vdjVersion",
-                            "id": "#VDJ_Annotate_Reads.cwl/CallCdr3/vdjVersion"
-                        }
-                    ]
-                },
-                {
-                    "out": [
-                        "#VDJ_Annotate_Reads.cwl/CallConstantRegion/ConstantRegionCall"
-                    ],
-                    "run": {
-                        "cwlVersion": "v1.0",
-                        "inputs": [
-                            {
-                                "type": [
-                                    "null",
-                                    "File"
-                                ],
-                                "id": "#VDJ_Annotate_Reads.cwl/CallConstantRegion/CallConstantRegionInner/Cdr3QueryFasta"
-                            },
-                            {
-                                "type": [
-                                    "null",
-                                    "string"
-                                ],
-                                "id": "#VDJ_Annotate_Reads.cwl/CallConstantRegion/CallConstantRegionInner/vdjVersion"
-                            }
-                        ],
-                        "requirements": [
-                            {
-                                "class": "InlineJavascriptRequirement"
-                            },
-                            {
-                                "class": "ShellCommandRequirement"
-                            }
-                        ],
-                        "outputs": [
-                            {
-                                "outputBinding": {
-                                    "glob": "*_constant_region_called.fasta.gz",
-                                    "outputEval": "${\n  if (!inputs.vdjVersion) {\n    return(null);\n  } else {\n    return(self);\n  }\n}"
-                                },
-                                "type": [
-                                    "null",
-                                    "File"
-                                ],
-                                "id": "#VDJ_Annotate_Reads.cwl/CallConstantRegion/CallConstantRegionInner/ConstantRegionCall"
-                            }
-                        ],
-                        "baseCommand": [
-                            "bowtie2"
-                        ],
-                        "class": "CommandLineTool",
-                        "arguments": [
-                            "--quiet",
-                            "--no-head",
-                            "--local",
-                            "-p",
-                            "1",
-                            "-L",
-                            "10",
-                            "-N",
-                            "1",
-                            "--ma",
-                            "4",
-                            {
-                                "prefix": "-f",
-                                "valueFrom": "$(inputs.Cdr3QueryFasta)"
-                            },
-                            {
-                                "prefix": "-x",
-                                "valueFrom": "${\n  if (!inputs.vdjVersion) {\n    return(\"~/deliberatelyNotADirectoryToInduceFailure\");\n  } else if (inputs.vdjVersion === \"human\" || inputs.vdjVersion === \"humanBCR\" || inputs.vdjVersion === \"humanTCR\"){\n    return(\"/mist/vdj_constant_region_reference_index/humanVDJCidx\");\n  } else if (inputs.vdjVersion === \"mouse\" || inputs.vdjVersion === \"mouseBCR\" || inputs.vdjVersion === \"mouseTCR\"){\n    return(\"/mist/vdj_constant_region_reference_index/mouseVDJCidx\");\n  } else {\n    throw(\"Unknown VDJ version\");\n  }\n}"
-                            },
-                            {
-                                "shellQuote": false,
-                                "valueFrom": "|"
-                            },
-                            "awk",
-                            {
-                                "shellQuote": false,
-                                "valueFrom": "${\n  if(inputs.Cdr3QueryFasta) {\n    return(\"\\'{print \\\">\\\" $1 \\\",\\\" $3 \\\"\\\\n\\\" $10 |  \\\" gzip >> \" + inputs.Cdr3QueryFasta.nameroot.split(\".\")[0] + \"_constant_region_called.fasta.gz\\\"}\\'\");\n  } else {\n    return(\"\\'{print \\\">\\\" $1 \\\",\\\" $3 \\\"\\\\n\\\" $10}\\'\");\n  }\n}"
-                            },
-                            {
-                                "shellQuote": false,
-                                "valueFrom": "${\n  if (!inputs.vdjVersion && !inputs.Cdr3QueryFasta) {\n    return(\"&> /dev/null || true ; echo 'Since this is not a VDJ run, we will skip this node...'\");\n  } else if (!inputs.vdjVersion && inputs.Cdr3QueryFasta){\n    throw(\"VDJ disabled but CDR3 calling FASTA specified!\");\n  } else if (inputs.vdjVersion && !inputs.Cdr3QueryFasta) {\n    return(\"&> /dev/null || true ; echo 'VDJ enabled, but no query sequence specified. Assuming none were capture in AnnotateReads!'\");\n  } else if (inputs.vdjVersion && inputs.Cdr3QueryFasta) {\n    return(\"\");\n  }\n}"
-                            }
-                        ],
-                        "id": "#VDJ_Annotate_Reads.cwl/CallConstantRegion/CallConstantRegionInner"
-                    },
-                    "id": "#VDJ_Annotate_Reads.cwl/CallConstantRegion",
-                    "in": [
-                        {
-                            "source": "#VDJ_Annotate_Reads.cwl/Cdr3QueryFasta",
-                            "id": "#VDJ_Annotate_Reads.cwl/CallConstantRegion/Cdr3QueryFasta"
-                        },
-                        {
-                            "source": "#VDJ_Annotate_Reads.cwl/vdjVersion",
-                            "id": "#VDJ_Annotate_Reads.cwl/CallConstantRegion/vdjVersion"
-                        }
-                    ]
-                },
-                {
-                    "out": [
-                        "#VDJ_Annotate_Reads.cwl/PrunePyIR/PrunedPyIROutput"
-                    ],
-                    "run": {
-                        "cwlVersion": "v1.0",
-                        "inputs": [
-                            {
-                                "inputBinding": {
-                                    "position": 0
-                                },
-                                "type": [
-                                    "null",
-                                    "File"
-                                ],
-                                "id": "#VDJ_Annotate_Reads.cwl/PrunePyIR/PrunePyIRInner/PyIROutput"
-                            }
-                        ],
-                        "requirements": [
-                        ],
-                        "outputs": [
-                            {
-                                "outputBinding": {
-                                    "glob": "*_pruned.csv.gz"
-                                },
-                                "type": [
-                                    "null",
-                                    "File"
-                                ],
-                                "id": "#VDJ_Annotate_Reads.cwl/PrunePyIR/PrunePyIRInner/PrunedPyIROutput"
-                            }
-                        ],
-                        "baseCommand": [
-                            "mist_prune_pyir.py"
-                        ],
-                        "class": "CommandLineTool",
-                        "id": "#VDJ_Annotate_Reads.cwl/PrunePyIR/PrunePyIRInner"
-                    },
-                    "id": "#VDJ_Annotate_Reads.cwl/PrunePyIR",
-                    "in": [
-                        {
-                            "source": "#VDJ_Annotate_Reads.cwl/CallCdr3/Cdr3Call",
-                            "id": "#VDJ_Annotate_Reads.cwl/PrunePyIR/PyIROutput"
-                        }
-                    ]
-                }
-            ],
-            "id": "#VDJ_Annotate_Reads.cwl",
-            "hints": [
-                {
-                    "ramMax": 2000,
-                    "class": "ResourceRequirement",
-                    "coresMax": 1
                 }
             ]
         },
@@ -4207,7 +4862,240 @@
             "class": "Workflow"
         },
         {
-            "inputs": [],
+            "inputs": [
+                {
+                    "type": [
+                        "null",
+                        "File"
+                    ],
+                    "id": "#VDJ_Preprocess_Reads.cwl/Valid_Reads_Fastq"
+                },
+                {
+                    "type": [
+                        "null",
+                        "int"
+                    ],
+                    "id": "#VDJ_Preprocess_Reads.cwl/num_valid_reads"
+                },
+                {
+                    "type": "string",
+                    "id": "#VDJ_Preprocess_Reads.cwl/vdj_type"
+                }
+            ],
+            "requirements": [
+                {
+                    "class": "SubworkflowFeatureRequirement"
+                },
+                {
+                    "class": "InlineJavascriptRequirement"
+                },
+                {
+                    "envDef": [
+                        {
+                            "envName": "CORES_ALLOCATED_PER_CWL_PROCESS",
+                            "envValue": "8"
+                        }
+                    ],
+                    "class": "EnvVarRequirement"
+                }
+            ],
+            "outputs": [
+                {
+                    "outputSource": "#VDJ_Preprocess_Reads.cwl/VDJ_RSEC_Reads/RSEC_Reads_Fastq",
+                    "type": [
+                        {
+                            "items": [
+                                "null",
+                                "File"
+                            ],
+                            "type": "array"
+                        }
+                    ],
+                    "id": "#VDJ_Preprocess_Reads.cwl/RSEC_Reads_Fastq"
+                },
+                {
+                    "type": [
+                        "null",
+                        "int"
+                    ],
+                    "outputSource": "#VDJ_Preprocess_Reads.cwl/VDJ_num_splits/num_cores",
+                    "id": "#VDJ_Preprocess_Reads.cwl/num_cores"
+                },
+                {
+                    "type": [
+                        "null",
+                        "int"
+                    ],
+                    "outputSource": "#VDJ_Preprocess_Reads.cwl/VDJ_num_splits/num_splits",
+                    "id": "#VDJ_Preprocess_Reads.cwl/num_splits"
+                }
+            ],
+            "class": "Workflow",
+            "steps": [
+                {
+                    "run": "#VDJ_RSEC_Reads.cwl",
+                    "out": [
+                        "#VDJ_Preprocess_Reads.cwl/VDJ_RSEC_Reads/RSEC_Reads_Fastq"
+                    ],
+                    "requirements": [
+                        {
+                            "coresMin": 8,
+                            "ramMin": "${ var est_ram = 0.0006 * parseInt(inputs.num_valid_reads) + 2000; var buffer = 1.25; est_ram *= buffer; if (est_ram < 2000) return 2000; if (est_ram > 370000) return 370000; return parseInt(est_ram); }",
+                            "class": "ResourceRequirement"
+                        }
+                    ],
+                    "id": "#VDJ_Preprocess_Reads.cwl/VDJ_RSEC_Reads",
+                    "in": [
+                        {
+                            "source": "#VDJ_Preprocess_Reads.cwl/VDJ_Trim_Reads/Valid_Reads",
+                            "id": "#VDJ_Preprocess_Reads.cwl/VDJ_RSEC_Reads/Valid_Reads"
+                        },
+                        {
+                            "source": "#VDJ_Preprocess_Reads.cwl/VDJ_num_splits/num_splits",
+                            "id": "#VDJ_Preprocess_Reads.cwl/VDJ_RSEC_Reads/num_splits"
+                        },
+                        {
+                            "source": "#VDJ_Preprocess_Reads.cwl/num_valid_reads",
+                            "id": "#VDJ_Preprocess_Reads.cwl/VDJ_RSEC_Reads/num_valid_reads"
+                        }
+                    ]
+                },
+                {
+                    "out": [
+                        "#VDJ_Preprocess_Reads.cwl/VDJ_Trim_Reads/Valid_Reads",
+                        "#VDJ_Preprocess_Reads.cwl/VDJ_Trim_Reads/Trim_Report"
+                    ],
+                    "in": [
+                        {
+                            "source": "#VDJ_Preprocess_Reads.cwl/Valid_Reads_Fastq",
+                            "id": "#VDJ_Preprocess_Reads.cwl/VDJ_Trim_Reads/Valid_Reads_Fastq"
+                        }
+                    ],
+                    "run": "#VDJ_Trim_Reads.cwl",
+                    "id": "#VDJ_Preprocess_Reads.cwl/VDJ_Trim_Reads",
+                    "hints": [
+                        {
+                            "coresMin": 8,
+                            "class": "ResourceRequirement"
+                        }
+                    ]
+                },
+                {
+                    "out": [
+                        "#VDJ_Preprocess_Reads.cwl/VDJ_num_splits/num_splits",
+                        "#VDJ_Preprocess_Reads.cwl/VDJ_num_splits/num_cores"
+                    ],
+                    "run": {
+                        "cwlVersion": "v1.0",
+                        "inputs": [
+                            {
+                                "type": [
+                                    "null",
+                                    "int"
+                                ],
+                                "id": "#VDJ_Preprocess_Reads.cwl/VDJ_num_splits/determine_num_splits/num_valid_reads"
+                            },
+                            {
+                                "type": "string",
+                                "id": "#VDJ_Preprocess_Reads.cwl/VDJ_num_splits/determine_num_splits/vdj_type"
+                            }
+                        ],
+                        "outputs": [
+                            {
+                                "type": [
+                                    "null",
+                                    "int"
+                                ],
+                                "id": "#VDJ_Preprocess_Reads.cwl/VDJ_num_splits/determine_num_splits/num_cores"
+                            },
+                            {
+                                "type": [
+                                    "null",
+                                    "int"
+                                ],
+                                "id": "#VDJ_Preprocess_Reads.cwl/VDJ_num_splits/determine_num_splits/num_splits"
+                            }
+                        ],
+                        "class": "ExpressionTool",
+                        "expression": "${\n  var ram_per_instance = 192 * 1024;\n  var num_cores = 96;\n  if (inputs.vdj_type == \"BCR\") {\n    ram_per_instance = 144 * 1024;\n    num_cores = 72;\n  }\n  var ram_per_split = 3200;\n  var num_splits_per_instance = parseInt(ram_per_instance / ram_per_split);\n  var num_splits = num_splits_per_instance;\n\n  var num_reads = parseInt(inputs.num_valid_reads);\n  if (num_reads != null) {\n    if (num_reads > 100000000)\n      num_splits = num_splits_per_instance * 2;\n      num_cores = num_cores * 2;\n  }\n\n  return ({\"num_splits\": num_splits, \"num_cores\": num_cores});\n}",
+                        "id": "#VDJ_Preprocess_Reads.cwl/VDJ_num_splits/determine_num_splits"
+                    },
+                    "id": "#VDJ_Preprocess_Reads.cwl/VDJ_num_splits",
+                    "in": [
+                        {
+                            "source": "#VDJ_Preprocess_Reads.cwl/num_valid_reads",
+                            "id": "#VDJ_Preprocess_Reads.cwl/VDJ_num_splits/num_valid_reads"
+                        },
+                        {
+                            "source": "#VDJ_Preprocess_Reads.cwl/vdj_type",
+                            "id": "#VDJ_Preprocess_Reads.cwl/VDJ_num_splits/vdj_type"
+                        }
+                    ]
+                }
+            ],
+            "id": "#VDJ_Preprocess_Reads.cwl"
+        },
+        {
+            "inputs": [
+                {
+                    "inputBinding": {
+                        "prefix": "--vdj-valid-reads",
+                        "itemSeparator": ","
+                    },
+                    "type": [
+                        "null",
+                        {
+                            "items": "File",
+                            "type": "array"
+                        }
+                    ],
+                    "id": "#VDJ_RSEC_Reads.cwl/Valid_Reads"
+                },
+                {
+                    "inputBinding": {
+                        "prefix": "--num-splits"
+                    },
+                    "type": [
+                        "null",
+                        "int"
+                    ],
+                    "id": "#VDJ_RSEC_Reads.cwl/num_splits"
+                }
+            ],
+            "requirements": [
+
+            ],
+            "outputs": [
+                {
+                    "outputBinding": {
+                        "glob": "*RSEC_Reads_Fastq_*.tar.gz"
+                    },
+                    "type": [
+                        {
+                            "items": [
+                                "null",
+                                "File"
+                            ],
+                            "type": "array"
+                        }
+                    ],
+                    "id": "#VDJ_RSEC_Reads.cwl/RSEC_Reads_Fastq"
+                }
+            ],
+            "baseCommand": "mist_vdj_rsec_reads.py",
+            "class": "CommandLineTool",
+            "id": "#VDJ_RSEC_Reads.cwl"
+        },
+        {
+            "inputs": [
+                {
+                    "type": [
+                        "null",
+                        "Any"
+                    ],
+                    "id": "#VDJ_Settings.cwl/_VDJ_Version"
+                }
+            ],
             "requirements": [
                 {
                     "class": "InlineJavascriptRequirement"
@@ -4237,310 +5125,76 @@
                 }
             ],
             "class": "ExpressionTool",
-            "expression": "${\n  var vdjVersion = null;\n  if (!inputs._VDJ_Version) {\n    vdjVersion = null;}\n  else {\n    var _VDJ_Version = inputs._VDJ_Version.toLowerCase();\n    if (_VDJ_Version === \"human\" || _VDJ_Version === \"hs\" || _VDJ_Version === \"human vdj - bcr and tcr\") {\n      vdjVersion = \"human\";\n    } else if (_VDJ_Version === \"humanbcr\" || _VDJ_Version === \"human vdj - bcr only\") {\n      vdjVersion = \"humanBCR\";\n    } else if (_VDJ_Version === \"humantcr\" || _VDJ_Version === \"human vdj - tcr only\") {\n      vdjVersion = \"humanTCR\";\n    } else if (_VDJ_Version === \"mouse\" || _VDJ_Version === \"mm\" || _VDJ_Version === \"mouse vdj - bcr and tcr\") {\n      vdjVersion = \"mouse\";\n    } else if (_VDJ_Version === \"mousebcr\" || _VDJ_Version === \"mouse vdj - bcr only\") {\n      vdjVersion = \"mouseBCR\";\n    } else if (_VDJ_Version === \"humantcr\" || _VDJ_Version === \"mouse vdj - tcr only\") {\n      vdjVersion = \"mouseTCR\";\n    } else {\n      vdjVersion = inputs._VDJ_Version;\n    }\n  }\n\n  return ({\n  VDJ_Version: vdjVersion,\n  })\n}",
+            "expression": "${\n  var vdjVersion = null;\n  if (!inputs._VDJ_Version) {\n    vdjVersion = null;}\n  else {\n    var _VDJ_Version = inputs._VDJ_Version.toLowerCase();\n    if (_VDJ_Version === \"human\" || _VDJ_Version === \"hs\" || _VDJ_Version === \"human vdj - bcr and tcr\") {\n      vdjVersion = \"human\";\n    } else if (_VDJ_Version === \"humanbcr\" || _VDJ_Version === \"human vdj - bcr only\") {\n      vdjVersion = \"humanBCR\";\n    } else if (_VDJ_Version === \"humantcr\" || _VDJ_Version === \"human vdj - tcr only\") {\n      vdjVersion = \"humanTCR\";\n    } else if (_VDJ_Version === \"mouse\" || _VDJ_Version === \"mm\" || _VDJ_Version === \"mouse vdj - bcr and tcr\") {\n      vdjVersion = \"mouse\";\n    } else if (_VDJ_Version === \"mousebcr\" || _VDJ_Version === \"mouse vdj - bcr only\") {\n      vdjVersion = \"mouseBCR\";\n    } else if (_VDJ_Version === \"mousetcr\" || _VDJ_Version === \"mouse vdj - tcr only\") {\n      vdjVersion = \"mouseTCR\";\n    } else {\n      vdjVersion = inputs._VDJ_Version;\n    }\n  }\n\n  return ({\n  VDJ_Version: vdjVersion,\n  })\n}",
             "id": "#VDJ_Settings.cwl"
         },
         {
             "inputs": [
                 {
-                    "default": 36,
-                    "type": [
-                        "null",
-                        "int"
-                    ],
-                    "id": "#VDJ_SplitValidReads.cwl/num_fasta"
-                },
-                {
+                    "inputBinding": {
+                        "position": 1
+                    },
                     "type": [
                         "null",
                         "File"
                     ],
-                    "id": "#VDJ_SplitValidReads.cwl/validReads"
+                    "id": "#VDJ_Trim_Reads.cwl/Valid_Reads_Fastq"
                 }
             ],
             "requirements": [
-                {
-                    "class": "ScatterFeatureRequirement"
-                },
-                {
-                    "class": "InlineJavascriptRequirement"
-                }
-            ],
-            "doc": "VDJ_SplitValidReads splits fasta files to be multi-processed in the VDJ step.\n",
-            "id": "#VDJ_SplitValidReads.cwl",
-            "steps": [
-                {
-                    "out": [
-                        "#VDJ_SplitValidReads.cwl/VDJ_SplitValidReads/fastaList",
-                        "#VDJ_SplitValidReads.cwl/VDJ_SplitValidReads/numFiles",
-                        "#VDJ_SplitValidReads.cwl/VDJ_SplitValidReads/log"
-                    ],
-                    "run": {
-                        "cwlVersion": "v1.0",
-                        "inputs": [
-                            {
-                                "inputBinding": {
-                                    "prefix": "--num-fasta"
-                                },
-                                "type": [
-                                    "null",
-                                    "int"
-                                ],
-                                "id": "#VDJ_SplitValidReads.cwl/VDJ_SplitValidReads/split_fasta/num_fasta"
-                            },
-                            {
-                                "inputBinding": {
-                                    "prefix": "--fasta-file-path"
-                                },
-                                "type": [
-                                    "null",
-                                    "File"
-                                ],
-                                "id": "#VDJ_SplitValidReads.cwl/VDJ_SplitValidReads/split_fasta/validReads"
-                            }
-                        ],
-                        "requirements": [
-                        ],
-                        "outputs": [
-                            {
-                                "outputBinding": {
-                                    "glob": "*_split.fasta.gz",
-                                    "outputEval": "${ if (self.length === 0) { return [inputs.validReads]; } else { return self; } }"
-                                },
-                                "type": [
-                                    {
-                                        "items": [
-                                            "null",
-                                            "File"
-                                        ],
-                                        "type": "array"
-                                    }
-                                ],
-                                "id": "#VDJ_SplitValidReads.cwl/VDJ_SplitValidReads/split_fasta/fastaList"
-                            },
-                            {
-                                "outputBinding": {
-                                    "glob": "*.log"
-                                },
-                                "type": {
-                                    "items": "File",
-                                    "type": "array"
-                                },
-                                "id": "#VDJ_SplitValidReads.cwl/VDJ_SplitValidReads/split_fasta/log"
-                            },
-                            {
-                                "outputBinding": {
-                                    "glob": "*_split.fasta.gz",
-                                    "outputEval": "${ return(parseInt(self.length)); }"
-                                },
-                                "type": "int",
-                                "id": "#VDJ_SplitValidReads.cwl/VDJ_SplitValidReads/split_fasta/numFiles"
-                            }
-                        ],
-                        "baseCommand": [
-                            "mist_split_fasta.py"
-                        ],
-                        "class": "CommandLineTool",
-                        "id": "#VDJ_SplitValidReads.cwl/VDJ_SplitValidReads/split_fasta"
-                    },
-                    "id": "#VDJ_SplitValidReads.cwl/VDJ_SplitValidReads",
-                    "in": [
-                        {
-                            "source": "#VDJ_SplitValidReads.cwl/num_fasta",
-                            "id": "#VDJ_SplitValidReads.cwl/VDJ_SplitValidReads/num_fasta"
-                        },
-                        {
-                            "source": "#VDJ_SplitValidReads.cwl/validReads",
-                            "id": "#VDJ_SplitValidReads.cwl/VDJ_SplitValidReads/validReads"
-                        }
-                    ]
-                }
+
             ],
             "outputs": [
                 {
-                    "outputSource": "#VDJ_SplitValidReads.cwl/VDJ_SplitValidReads/fastaList",
+                    "outputBinding": {
+                        "glob": "cutadapt.log"
+                    },
                     "type": [
+                        "null",
+                        "File"
+                    ],
+                    "id": "#VDJ_Trim_Reads.cwl/Trim_Report"
+                },
+                {
+                    "outputBinding": {
+                        "glob": "*vdjtxt.gz"
+                    },
+                    "type": [
+                        "null",
                         {
-                            "items": [
-                                "null",
-                                "File"
-                            ],
+                            "items": "File",
                             "type": "array"
                         }
                     ],
-                    "id": "#VDJ_SplitValidReads.cwl/SplitFastaList"
-                },
+                    "id": "#VDJ_Trim_Reads.cwl/Valid_Reads"
+                }
+            ],
+            "baseCommand": "VDJ_Trim_Reads.sh",
+            "class": "CommandLineTool",
+            "id": "#VDJ_Trim_Reads.cwl"
+        },
+        {
+            "inputs": [],
+            "requirements": [
+
+            ],
+            "stdout": "output.txt",
+            "outputs": [
                 {
-                    "outputSource": "#VDJ_SplitValidReads.cwl/VDJ_SplitValidReads/log",
-                    "type": {
-                        "items": "File",
-                        "type": "array"
+                    "outputBinding": {
+                        "glob": "output.txt",
+                        "loadContents": true,
+                        "outputEval": "$(self[0].contents)"
                     },
-                    "id": "#VDJ_SplitValidReads.cwl/log"
-                },
-                {
-                    "outputSource": "#VDJ_SplitValidReads.cwl/VDJ_SplitValidReads/numFiles",
-                    "type": "int",
-                    "id": "#VDJ_SplitValidReads.cwl/numFiles"
+                    "type": "string",
+                    "id": "#Version.cwl/version"
                 }
             ],
-            "class": "Workflow"
-        },
-        {
-            "inputs": [
-                {
-                    "type": [
-                        "null",
-                        "string"
-                    ],
-                    "id": "#VDJ_ig.cwl/VDJ_Version"
-                },
-                {
-                    "type": "int",
-                    "id": "#VDJ_ig.cwl/numFiles"
-                },
-                {
-                    "doc": ".fasta.gz",
-                    "type": [
-                        "null",
-                        "File"
-                    ],
-                    "id": "#VDJ_ig.cwl/validReadsIg"
-                }
+            "baseCommand": [
+                "mist_version.py"
             ],
-            "requirements": [
-                {
-                    "class": "InlineJavascriptRequirement"
-                },
-                {
-                    "class": "ScatterFeatureRequirement"
-                },
-                {
-                    "class": "StepInputExpressionRequirement"
-                },
-                {
-                    "class": "SubworkflowFeatureRequirement"
-                }
-            ],
-            "outputs": [
-                {
-                    "outputSource": "#VDJ_ig.cwl/CallCdr3ForIgs/Cdr3Call",
-                    "type": [
-                        "null",
-                        "File"
-                    ],
-                    "id": "#VDJ_ig.cwl/igCalls"
-                }
-            ],
-            "class": "Workflow",
-            "steps": [
-                {
-                    "out": [
-                        "#VDJ_ig.cwl/CallCdr3ForIgs/Cdr3Call"
-                    ],
-                    "in": [
-                        {
-                            "source": "#VDJ_ig.cwl/validReadsIg",
-                            "id": "#VDJ_ig.cwl/CallCdr3ForIgs/Cdr3QueryFasta"
-                        },
-                        {
-                            "valueFrom": "Ig",
-                            "id": "#VDJ_ig.cwl/CallCdr3ForIgs/vdjType"
-                        },
-                        {
-                            "source": "#VDJ_ig.cwl/VDJ_Version",
-                            "id": "#VDJ_ig.cwl/CallCdr3ForIgs/vdjVersion"
-                        }
-                    ],
-                    "run": "#VDJ_Annotate_Reads.cwl",
-                    "id": "#VDJ_ig.cwl/CallCdr3ForIgs",
-                    "hints": [
-                        {
-                            "coresMin": "$(inputs.numFiles)",
-                            "class": "ResourceRequirement"
-                        }
-                    ]
-                }
-            ],
-            "id": "#VDJ_ig.cwl"
-        },
-        {
-            "inputs": [
-                {
-                    "type": [
-                        "null",
-                        "string"
-                    ],
-                    "id": "#VDJ_tcr.cwl/VDJ_Version"
-                },
-                {
-                    "type": "int",
-                    "id": "#VDJ_tcr.cwl/numFiles"
-                },
-                {
-                    "doc": ".fasta.gz",
-                    "type": [
-                        "null",
-                        "File"
-                    ],
-                    "id": "#VDJ_tcr.cwl/validReadsTcr"
-                }
-            ],
-            "requirements": [
-                {
-                    "class": "InlineJavascriptRequirement"
-                },
-                {
-                    "class": "ScatterFeatureRequirement"
-                },
-                {
-                    "class": "StepInputExpressionRequirement"
-                },
-                {
-                    "class": "SubworkflowFeatureRequirement"
-                }
-            ],
-            "outputs": [
-                {
-                    "outputSource": "#VDJ_tcr.cwl/CallCdr3ForTcrs/Cdr3Call",
-                    "type": [
-                        "null",
-                        "File"
-                    ],
-                    "id": "#VDJ_tcr.cwl/tcrCalls"
-                }
-            ],
-            "class": "Workflow",
-            "steps": [
-                {
-                    "out": [
-                        "#VDJ_tcr.cwl/CallCdr3ForTcrs/Cdr3Call"
-                    ],
-                    "in": [
-                        {
-                            "source": "#VDJ_tcr.cwl/validReadsTcr",
-                            "id": "#VDJ_tcr.cwl/CallCdr3ForTcrs/Cdr3QueryFasta"
-                        },
-                        {
-                            "valueFrom": "TCR",
-                            "id": "#VDJ_tcr.cwl/CallCdr3ForTcrs/vdjType"
-                        },
-                        {
-                            "source": "#VDJ_tcr.cwl/VDJ_Version",
-                            "id": "#VDJ_tcr.cwl/CallCdr3ForTcrs/vdjVersion"
-                        }
-                    ],
-                    "run": "#VDJ_Annotate_Reads.cwl",
-                    "id": "#VDJ_tcr.cwl/CallCdr3ForTcrs",
-                    "hints": [
-                        {
-                            "coresMin": "$(inputs.numFiles)",
-                            "class": "ResourceRequirement"
-                        }
-                    ]
-                }
-            ],
-            "id": "#VDJ_tcr.cwl"
+            "id": "#Version.cwl",
+            "class": "CommandLineTool"
         }
     ],
     "$namespaces": {
