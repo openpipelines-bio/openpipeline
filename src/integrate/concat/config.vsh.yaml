@@ -1,0 +1,67 @@
+functionality:
+  name: concat
+  namespace: "integrate"
+  version: "dev"
+  description: |
+    Concatenates several uni-modal samples in .h5mu files into a single file.
+  authors:
+    - name: Dries Schaumont
+      email: Dschaumo@its.jnj.com
+      roles: [ maintainer ]
+  arguments:
+    - name: "--input"
+      alternatives: ["-i"]
+      type: file
+      multiple: true
+      multiple_sep: ','
+      description: Paths to the different samples to be concatenated.
+      required: true
+      default: sample_paths
+    - name: "--output"
+      alternatives: ["-o"]
+      type: file
+      direction: output
+      default: "output.h5mu"
+    - name: "--sample_names"
+      type: string
+      multiple: true
+      multiple_sep: ','
+      description: Names of the different samples that have to be concatenated.
+      required: true
+      default: sample_names
+    - name: "--compression"
+      type: string
+      description: The compression format to be used on the final h5mu object.
+      default: "gzip"
+    - name: "other_axis_mode"
+      type: string
+      choices: [same, unique, first, only, concat]
+      default: concat
+      description: |
+        How to handle the merging of other axis (var, obs, ...).
+         - None: keep no data
+         - same: only keep elements of the matrices which are the same in each of the samples
+         - unique: only keep elements for which there is only 1 possible value (1 value that can occur in multiple samples)
+         - first: keep the annotation from the first sample
+         - only: keep elements that show up in only one of the objects (1 unique element in only 1 sample)
+         - concat: concatenate unique values together
+  resources:
+    - type: python_script
+      path: ./script.py
+  test_resources:
+    - type: python_script
+      path: test.py
+    - path: ../../../resources_test/concat/e18_mouse_brain_fresh_5k_filtered_feature_bc_matrix_subset.h5mu
+    - path: ../../../resources_test/concat/human_brain_3k_filtered_feature_bc_matrix_subset.h5mu
+platforms:
+  - type: docker
+    image: python:3.10-slim
+    python:
+      packages:
+        - anndata<0.8
+        - muon
+  - type: native
+  - type: nextflow
+    variant: vdsl3
+    directives:
+      label: highmem

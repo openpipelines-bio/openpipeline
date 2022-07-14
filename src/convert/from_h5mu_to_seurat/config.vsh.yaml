@@ -4,6 +4,13 @@ functionality:
   version: "dev"
   description: |
     Converts an h5mu file into a Seurat file.
+
+    Restrictions:
+      - Only the intersection of cells is currently loaded into the Seurat object due to the object structure limitation.
+      - Multimodal embeddings (global .obsm slot) are loaded with the assay.used field set to the default assay.
+      - Embeddings names are changed in order to comply with R & Seurat requirements and conventions.
+      - Feature names with underscores ('_') are automatically replaced with dashes ('-')
+      - Seurat does not support global variables metadata /var.
   authors:
     - name: Robrecht Cannoodt
       email: rcannood@gmail.com
@@ -27,7 +34,7 @@ functionality:
   resources:
     - type: r_script
       path: script.R
-  tests:
+  test_resources:
     - type: r_script
       path: run_test.R
     - path: ../../../resources_test/pbmc_1k_protein_v3
@@ -35,6 +42,8 @@ platforms:
   - type: docker
     image: eddelbuettel/r2u:22.04
     setup:
+      - type: docker
+        run: apt update && apt upgrade -y
       - type: apt
         packages: 
           - libhdf5-dev

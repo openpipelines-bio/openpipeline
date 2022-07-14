@@ -29,12 +29,12 @@ functionality:
   resources:
     - type: python_script
       path: ./script.py
-  tests:
+  test_resources:
     - type: python_script
       path: test.py
 platforms:
   - type: docker
-    image: python:3.8
+    image: python:3.8-slim
     python:
       packages:
         - scanpy

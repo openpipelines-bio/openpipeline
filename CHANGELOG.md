@@ -1,3 +1,58 @@
+# openpipeline 0.4.0
+
+## NEW FUNCTIONALITY
+
+* `convert/from_bdrhap_to_h5mu`: Merge one or more BD rhapsody outputs into an h5mu file.
+
+* `split/split_modalities`: Split the modalities from a single .h5mu multimodal sample into seperate .h5mu files. 
+
+* `integrate/concat`: Combine data from multiple samples together.
+
+## MINOR CHANGES
+
+* `mapping/bd_rhapsody_wta`: Update to BD Rhapsody 1.10.1.
+
+* `mapping/bd_rhapsody_wta`: Add parameters for overriding the minimum RAM & cores. Add `--dryrun` parameter.
+
+* Switch to Viash 0.5.14.
+
+* `convert/from_bdrhap_to_h5mu`: Update to BD Rhapsody 1.10.1.
+
+* `resources_test/bdrhap_5kjrt`: Add subsampled BD rhapsody datasets to test pipeline with.
+
+* `resources_test/bdrhap_ref_gencodev40_chr1`: Add subsampled reference to test BD rhapsody pipeline with.
+
+* `integrate/merge`: Merge several unimodal .h5mu files into one multimodal .h5mu file.
+
+* Updated several python docker images to slim version.
+
+* `mapping/cellranger_count_split`: update container from ubuntu focal to ubuntu jammy
+
+* `download/sync_test_resources`: update AWS cli tools from 2.7.11 to 2.7.12 by updating docker image
+
+* `download/download_file`: now uses bash container instead of python.
+
+* `mapping/bd_rhapsody_wta`: Use squashed docker image in which log4j issues are resolved.
+
+## BUG FIXES
+
+* `workflows/utils/WorkflowHelper.nf`: Renamed `utils.nf` to `WorkflowHelper.nf`.
+
+* `workflows/utils/WorkflowHelper.nf`: Fix error message when required parameter is not specified.
+
+* `workflows/utils/WorkflowHelper.nf`: Added helper functions:
+  - `readConfig`: Read a Viash config from a yaml file.
+  - `viashChannel`: Create a channel from the Viash config and the params object.
+  - `helpMessage`: Print a help message and exit.
+
+* `mapping/bd_rhapsody_wta`: Update picard to 2.27.3.
+
+## DEPRECATED
+
+* `convert/from_bdrhap_to_h5ad`: Deprecated in favour for `convert/from_bdrhap_to_h5mu`.
+
+* `convert/from_10xh5_to_h5ad`: Deprecated in favour for `convert/from_10xh5_to_h5mu`.
+
 # openpipeline 0.3.1
 
 ## NEW FUNCTIONALITY

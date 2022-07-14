@@ -3,7 +3,7 @@ import scanpy as sc
 
 ## VIASH START
 par = {
-    "input": "resources_test/pbmc_1k_protein_v3/pbmc_1k_protein_v3_filtered_feature_bc_matrix.tx_processing.h5mu",
+    "input": "resources_test/pbmc_1k_protein_v3/pbmc_1k_protein_v3_mms.h5mu",
     "output": "output.h5mu",
     "metric": 'cosine',
     "num_neighbors": 15,

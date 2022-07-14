@@ -10,6 +10,7 @@ cmd_pars = [
     "./" + meta["functionality_name"],
     "--input", input,
     "--output", output,
+    "--id", "foo"
 ]
 out = subprocess.check_output(cmd_pars).decode("utf-8")
 

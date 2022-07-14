@@ -54,14 +54,16 @@ functionality:
   resources:
     - type: python_script
       path: script.py
-  tests:
+  test_resources:
     - type: python_script
       path: run_test.py
     - path: ../../../resources_test/pbmc_1k_protein_v3
 platforms:
   - type: docker
-    image: python:3.10-bullseye
+    image: python:3.10-slim-bullseye
     setup:
+      - type: docker
+        run: apt update && apt upgrade -y
       - type: apt
         packages: libhdf5-dev
       - type: python

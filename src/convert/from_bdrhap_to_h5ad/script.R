@@ -1,6 +1,9 @@
 ## VIASH START
 par <- list(
-  input = "resources_test/bd_rhapsody_wta_test/processed/bdrhap_out",
+  input = c(
+    "resources_test/bd_rhapsody_wta_test/processed/bdrhap_out",
+    "resources_test/bd_rhapsody_wta_test/processed/bdrhap_out"
+  ),
   id = "foo",
   output = "test.h5ad"
 )
@@ -11,91 +14,78 @@ options(tidyverse.quiet = TRUE)
 library(tidyverse)
 requireNamespace("anndata", quietly = TRUE)
 
-read_metric <- function(file) {
+cat("Reading in metric summaries\n")
+mets <- map_df(par$input, function(dir) {
+  file <- list.files(dir, pattern = "Metrics_Summary.csv$", full.names = TRUE)
   lines <- readr::read_lines(file)
   ix <- grep("^#[^#]", lines)
-  header <- lines[ix+1] %>% strsplit(",") %>% unlist
-  values <- lines[ix+2] %>% strsplit(",") %>% unlist
+  header <- lines[ix + 1] %>% strsplit(",") %>% unlist
+  values <- lines[ix + 2] %>% strsplit(",") %>% unlist
   ix2 <- !duplicated(header)
   new_csv <- paste0(
     header[ix2] %>% paste(collapse = ","), "\n",
     values[ix2] %>% paste(collapse = ","), "\n"
   )
-  readr::read_csv(new_csv)
-}
-
-ids <- map_chr(seq_along(par$input), function(i) {
-  if (!is.null(par$id) && length(par$input) == length(par$id)) {
-    par$id[[i]]
-  } else {
-    paste0("sample", i)
-  }
+  met_file <- readr::read_csv(new_csv)
+  met_file %>%
+    mutate(
+      path = dir
+    ) %>%
+    select(path, everything())
 })
-
-cat("Reading in metric summaries\n")
-mets <- map_df(par$input, function(dir) {
-  list.files(dir, pattern = "Metrics_Summary.csv$", full.names = TRUE) %>% read_metric()
-})
-mets$id <- ids
 
 cat("Reading in count data\n")
 counts <- lapply(par$input, function(dir) {
-  list.files(dir, pattern = "_RSEC_MolsPerCell.csv$", full.names = TRUE) %>%
-    readr::read_csv(
-      col_types = cols(.default = col_integer()),
-      comment = "#"
-    ) %>%
+  file <- list.files(dir, pattern = "_RSEC_MolsPerCell.csv$", full.names = TRUE)
+  readr::read_csv(
+    file,
+    col_types = cols(.default = col_integer()),
+    comment = "#"
+  ) %>%
     tibble::column_to_rownames("Cell_Index") %>%
     as.matrix %>%
     Matrix::Matrix(sparse = TRUE)
 })
 
-obs <- map_df(seq_along(counts), function(i) {
-  cell_index <- rownames(counts[[i]])
-  data.frame(
-    row.names = paste0("sample", i, "_", cell_index),
-    id = rep(ids[[i]], length(cell_index))
-  )
-})
+cells <- map(counts, rownames)
+unique_cells <- unique(unlist(cells))
+targets <- map(counts, colnames)
+unique_targets <- unique(unlist(targets))
+
+cat("Constructing combined counts data\n")
+new_counts <-
+  map_df(counts, function(cou) {
+    tup <- as(cou, "dgTMatrix")
+    tibble(
+      i = match(rownames(tup), unique_cells)[tup@i + 1],
+      j = match(colnames(tup), unique_targets)[tup@j + 1],
+      x = tup@x
+    )
+  }) %>%
+  group_by(i, j) %>%
+  summarise(x = sum(x), .groups = "drop") %>% {
+    Matrix::sparseMatrix(
+      i = .$i,
+      j = .$j,
+      x = .$x,
+      dims = c(length(unique_cells), length(unique_targets)),
+      dimnames = list(unique_cells, unique_targets)
+    )
+  }
+
+cat("Constructing obs\n")
+obs <- data.frame(
+  row.names = unique_cells,
+  sample_id = rep(par$id, length(unique_cells))
+)
 
 cat("Constructing var\n")
-targets <- map(counts, colnames)
-unique_targets <- sort(unique(unlist(targets)))
 var <- data.frame(
   row.names = unique_targets,
   feature_types = rep("Gene Expression", length(unique_targets))
 )
 
-cat("Constructing counts\n")
-new_counts <- map(seq_along(counts), function(i) {
-  mat <- counts[[i]]
-  if (is(mat, "RsparseMatrix")) {
-    j <- mat@j+1
-    jmap <- match(colnames(mat), unique_targets)
-    newj <- jmap[j]
-    Matrix::sparseMatrix(
-      p = mat@p,
-      j = newj,
-      x = mat@x,
-      repr = "R",
-      dims = c(nrow(mat), length(unique_targets)),
-      dimnames = list(rownames(mat), unique_targets)
-    )
-  } else if (is(mat, "CsparseMatrix")) {
-    pmap <- cumsum(c(TRUE, unique_targets %in% colnames(mat)))
-    newp <- mat@p[pmap]
-    Matrix::sparseMatrix(
-      p = newp,
-      i = mat@i+1,
-      x = mat@x,
-      repr = "C",
-      dims = c(nrow(mat), length(unique_targets)),
-      dimnames = list(rownames(mat), unique_targets)
-    )
-  }
-}) %>% do.call(rbind, .)
-
-cat("Constructing metrics summary\n")
+cat("Constructing combined metrics summary\n")
 new_met <- tibble(
   Total_Reads_in_FASTQ = sum(mets$Total_Reads_in_FASTQ),
   Pct_Reads_Too_Short = sum(mets$Total_Reads_in_FASTQ * mets$Pct_Reads_Too_Short) / Total_Reads_in_FASTQ,
@@ -127,21 +117,18 @@ new_met <- tibble(
   Mean_Targets_per_Cell = sum(mets$Putative_Cell_Count * mets$Mean_Targets_per_Cell) / Putative_Cell_Count,
   Median_Targets_per_Cell = median(Matrix::rowSums(new_counts > 0)),
   Total_Targets_Detected = length(unique_targets)
-)
-
-cat("Constructing anndata object\n")
+) %>%
+  as.data.frame()
+  
+cat("Constructing MuData object\n")
 new_h5ad <- anndata::AnnData(
   X = new_counts,
   obs = obs,
   var = var,
   uns = list(
-    metrics_summary = new_met,
-    metrics_per_file = mets %>% select(id, everything())
+    sample_metrics = new_met
   )
 )
 
-cat("Storing raw\n")
-new_h5ad$raw <- new_h5ad
-
-cat("Writing to h5ad file\n")
-new_h5ad$write_h5ad(par$output, compression = "gzip")
+cat("Writing to h5mu file\n")
+new_h5ad$write(par$output)

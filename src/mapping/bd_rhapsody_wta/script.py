@@ -1,3 +1,4 @@
+from multiprocessing.sharedctypes import Value
 import os
 import re
 import subprocess
@@ -5,11 +6,12 @@ import tempfile
 
 ## VIASH START
 par = {
-  'input': ['resources_test/bd_rhapsody_wta_test/raw/sample_R1_.fastq.gz', 'resources_test/bd_rhapsody_wta_test/raw/sample_R2_.fastq.gz'],
+  'input': ['resources_test/bd_rhapsody_wta_test/raw/12SMK_S1_L432_R1_001.fastq.gz',
+            'resources_test/bd_rhapsody_wta_test/raw/12SMK_S1_L432_R2_001.fastq.gz'],
   'output': 'output_dir',
   'subsample': None,
-  'reference_genome': 'resources_test/bd_rhapsody_wta_test/raw/GRCh38-PhiX-gencodev29-20181205.tar.gz',
-  'transcriptome_annotation': 'resources_test/bd_rhapsody_wta_test/raw/gencodev29-20181205.gtf',
+  'reference_genome': 'resources_test/bd_rhapsody_wta_test/raw/GRCh38_primary_assembly_genome_chr1.tar.gz',
+  'transcriptome_annotation': 'resources_test/bd_rhapsody_wta_test/raw/gencode_v40_annotation_chr1.gtf',
   'exact_cell_count': None,
   'disable_putative_calling': False,
   'parallel': True,
@@ -23,6 +25,10 @@ meta = {
 }
 ## VIASH END
 
+if re.match("[^A-Za-z0-9]", par["id"]):
+  print("Warning: --id should only consist of letters, numbers or hyphens. Replacing all '[^A-Za-z0-9]' with '-'.")
+  par["id"] = re.sub("[^A-Za-z0-9\\-]", "-", par["id"])
+
 def strip_margin(text):
   return re.sub('\n[ \t]*\|', '\n', text)
 
@@ -34,11 +40,11 @@ if len(par["input"]) == 1 and os.path.isdir(par["input"][0]):
 par["input"] = [ os.path.abspath(f) for f in par["input"] ]
 par["reference_genome"] = os.path.abspath(par["reference_genome"])
 par["transcriptome_annotation"] = os.path.abspath(par["transcriptome_annotation"])
-par["output"] = os.path.abspath(par["output"])
 if par["abseq_reference"]:
   par["abseq_reference"] = [ os.path.abspath(f) for f in par["abseq_reference"] ]
 if par["supplemental_reference"]:
   par["supplemental_reference"] = [ os.path.abspath(f) for f in par["supplemental_reference"] ]
+par["output"] = os.path.abspath(par["output"])
 
 # create output dir if not exists
 if not os.path.exists(par["output"]):
@@ -111,6 +117,14 @@ content_list.append(strip_margin(f"""\
   |####################################
   |"""))
 
+if par["putative_cell_call"]:
+  content_list.append(strip_margin(f"""\
+    |## Putative cell calling dataset (optional) - Specify the dataset to be used for putative cell calling: mRNA or AbSeq_Experimental.
+    |## For putative cell calling using an AbSeq dataset, please provide an AbSeq_Reference fasta file above.
+    |## By default, the mRNA data will be used for putative cell calling.
+    |Putative_Cell_Call: {par["putative_cell_call"]}
+    |"""))
+
 if par["exact_cell_count"]:
   content_list.append(strip_margin(f"""\
     |## Exact cell count (optional) - Set a specific number (>=1) of cells as putative, based on those with the highest error-corrected read count
@@ -168,6 +182,36 @@ if par["tag_names"]:
     |Tag_Names: [{', '.join(par["tag_names"])}]
     |"""))
 
+## VDJ options
+content_list.append(strip_margin(f"""\
+  |
+  |#################
+  |## VDJ options ##
+  |#################
+  |"""
+))
+
+if par["vdj_version"]:
+  content_list.append(strip_margin(f"""\
+    |## VDJ Version (optional) - Specify if VDJ run: human, mouse, humanBCR, humanTCR, mouseBCR, mouseTCR
+    |VDJ_Version: {par["vdj_version"]}
+    |"""))
+
+## VDJ options
+content_list.append(strip_margin(f"""\
+  |
+  |########################
+  |## Additional Options ##
+  |########################
+  |"""
+))
+
+if par["id"]:
+  content_list.append(strip_margin(f"""\
+    |## Run Name (optional) -  Specify a run name to use as the output file base name. Use only letters, numbers, or hyphens. Do not use special characters or spaces.
+    |Run_Name: {par["id"]}
+    |"""))
+
 ## Write config to file
 config_content = ''.join(content_list)
 
@@ -175,8 +219,7 @@ with open(config_file, "w") as f:
   f.write(config_content)
 
 ## Process parameters
-# proc_pars = ["--no-container"]
-proc_pars = []
+proc_pars = ["--no-container", "--outdir", par["output"]]
 
 if par["parallel"]:
   proc_pars.append("--parallel")
@@ -184,23 +227,58 @@ if par["parallel"]:
 if par["timestamps"]:
   proc_pars.append("--timestamps")
 
+# create cwl file (if need be)
+orig_cwl_file=os.path.join(meta["resources_dir"], "rhapsody_wta_1.10.1_nodocker.cwl")
+if par["override_min_ram"] or par["override_min_cores"]:
+  cwl_file = os.path.join(par["output"], "pipeline.cwl")
+
+  # Read in the file
+  with open(orig_cwl_file, 'r') as file :
+    cwl_data = file.read()
+
+  # Replace the target string
+  if par["override_min_ram"]:
+    cwl_data = re.sub('"ramMin": [^\n]*,\n', f'"ramMin": {par["override_min_ram"] * 1000},\n', cwl_data)
+  if par["override_min_cores"]:
+    cwl_data = re.sub('"coresMin": [^\n]*,\n', f'"coresMin": {par["override_min_cores"]},\n', cwl_data)
+
+  # Write the file out again
+  with open(cwl_file, 'w') as file:
+    file.write(cwl_data)
+else:
+  cwl_file = orig_cwl_file
+
 ## Run pipeline
-cwl_file=os.path.abspath(os.path.join(meta["resources_dir"], "rhapsody_wta_1.9.1_nodocker.cwl"))
+if not par["dryrun"]:
+  with tempfile.TemporaryDirectory(prefix="cwl-bd_rhapsody_wta-", dir=meta["temp_dir"]) as temp_dir:
+    cmd = ["cwl-runner"] + proc_pars + [cwl_file, os.path.basename(config_file)]
 
-with tempfile.TemporaryDirectory(prefix="cwl-bd_rhapsody_wta-", dir=meta["temp_dir"]) as temp_dir:
-  cmd = ["cwl-runner"] + proc_pars + [cwl_file, os.path.basename(config_file)]
+    env = dict(os.environ)
+    env["TMPDIR"] = temp_dir
 
-  env = dict(os.environ)
-  env["TMPDIR"] = temp_dir
+    print("> " + ' '.join(cmd))
 
-  print("> " + ' '.join(cmd))
+    p = subprocess.check_call(
+      cmd,
+      cwd=os.path.dirname(config_file),
+      env=env
+    )
 
-  p = subprocess.Popen(
-    cmd,
-    cwd=os.path.dirname(config_file),
-    env=env
-  )
-  p.wait()
+  # look for counts file
+  if not par["id"]:
+    par["id"] = "sample"
+  counts_filename = par["id"] + "_RSEC_MolsPerCell.csv"
+  
+  if par["sample_tags_version"]:
+    counts_filename = "Combined_" + counts_filename
+  counts_file = os.path.join(par["output"], counts_filename)
+  
+  if not os.path.exists(counts_file):
+    raise ValueError(f"Could not find output counts file '{counts_filename}'")
 
-  if p.returncode != 0:
-    raise Exception(f"cwl-runner finished with exit code {p.returncode}") 
+  # look for metrics file
+  metrics_filename = par["id"] + "_Metrics_Summary.csv"
+  metrics_file = os.path.join(par["output"], metrics_filename)
+  if not os.path.exists(metrics_file):
+    raise ValueError(f"Could not find output metrics file '{metrics_filename}'")
+

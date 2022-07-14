@@ -60,6 +60,9 @@ functionality:
       path: script.sh
 platforms:
   - type: docker
-    image: "ubuntu:focal"
+    image: "ubuntu:jammy"
+    setup:
+      - type: docker
+        run: apt update && apt upgrade -y
   - type: nextflow
     variant: vdsl3
