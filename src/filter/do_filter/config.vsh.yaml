@@ -57,6 +57,6 @@ platforms:
       packages:
         - muon
         - mudata~=0.1.2
-        - anddata<0.8
+        - anndata<0.8
   - type: nextflow
     variant: vdsl3
