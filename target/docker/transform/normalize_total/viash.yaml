@@ -491,13 +491,13 @@ functionality:
         rm -rf /var/lib/apt/lists/*
       
       RUN pip install --upgrade pip && \
-        pip install --upgrade --no-cache-dir "scanpy" "muon"
+        pip install --upgrade --no-cache-dir "scanpy~=1.9.1" "muon" "mudata~=0.1.2" "anndata<0.8"
       
       LABEL org.opencontainers.image.authors="Dries De Maeyer <ddemaeyer@gmail.com> (maintainer) {account: ddemaey1}, Robrecht Cannoodt <rcannood@gmail.com> (contributor) {github: rcannood, orcid: 0000-0003-3641-729X}"
       LABEL org.opencontainers.image.description="Companion container for running component transform normalize_total"
-      LABEL org.opencontainers.image.created="2022-07-15T09:30:50Z"
+      LABEL org.opencontainers.image.created="2022-07-15T10:33:28Z"
       LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-      LABEL org.opencontainers.image.revision="1b57a91a36621cfb37bd4e018ff04f13d03fdea2"
+      LABEL org.opencontainers.image.revision="6f53f37762fa885f8ff670623eb7285aae314e69"
       LABEL org.opencontainers.image.version="main_build"
       VIASHDOCKER
       }
@@ -941,8 +941,10 @@ platform:
   - type: "python"
     user: false
     packages:
-    - "scanpy"
+    - "scanpy~=1.9.1"
     - "muon"
+    - "mudata~=0.1.2"
+    - "anndata<0.8"
     pip: []
     pypi: []
     git: []
@@ -962,5 +964,5 @@ info:
   output: "target/docker/transform/normalize_total"
   executable: "target/docker/transform/normalize_total/normalize_total"
   viash_version: "0.5.15"
-  git_commit: "1b57a91a36621cfb37bd4e018ff04f13d03fdea2"
+  git_commit: "6f53f37762fa885f8ff670623eb7285aae314e69"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"

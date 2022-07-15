@@ -432,13 +432,13 @@ function ViashDockerfile {
 FROM python:3.8-slim
 
 RUN pip install --upgrade pip && \
-  pip install --upgrade --no-cache-dir "scanpy" "muon" "anndata<0.8"
+  pip install --upgrade --no-cache-dir "scanpy~=1.9.1" "muon" "mudata~=0.1.2" "anndata<0.8"
 
 LABEL org.opencontainers.image.authors="Dries De Maeyer <DDeMaey1@its.jnj.com> (contributor) {account: ddemaey1}, Robrecht Cannoodt <rcannood@gmail.com> (maintainer, contributor) {github: rcannood, orcid: 0000-0003-3641-729X}"
 LABEL org.opencontainers.image.description="Companion container for running component filter filter_with_counts"
-LABEL org.opencontainers.image.created="2022-07-15T09:30:50Z"
+LABEL org.opencontainers.image.created="2022-07-15T10:33:28Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="1b57a91a36621cfb37bd4e018ff04f13d03fdea2"
+LABEL org.opencontainers.image.revision="6f53f37762fa885f8ff670623eb7285aae314e69"
 LABEL org.opencontainers.image.version="main_build"
 VIASHDOCKER
 }

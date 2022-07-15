@@ -436,7 +436,7 @@ functionality:
         rm -rf /var/lib/apt/lists/*
       
       RUN pip install --upgrade pip && \
-        pip install --upgrade --no-cache-dir "scanpy" "anndata<0.8"
+        pip install --upgrade --no-cache-dir "scanpy~=1.9.1" "anndata<0.8"
       
       RUN Rscript -e 'if (!requireNamespace("remotes", quietly = TRUE)) install.packages("remotes")' && \
         Rscript -e 'remotes::install_cran(c("anndata", "hdf5r", "testthat"), repos = "https://cran.rstudio.com")'
@@ -446,9 +446,9 @@ functionality:
       
       LABEL org.opencontainers.image.authors="Robrecht Cannoodt <rcannood@gmail.com> (author, maintainer) {github: rcannood, orcid: 0000-0003-3641-729X}"
       LABEL org.opencontainers.image.description="Companion container for running component convert from_h5mu_to_seurat"
-      LABEL org.opencontainers.image.created="2022-07-15T09:30:49Z"
+      LABEL org.opencontainers.image.created="2022-07-15T10:33:28Z"
       LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-      LABEL org.opencontainers.image.revision="1b57a91a36621cfb37bd4e018ff04f13d03fdea2"
+      LABEL org.opencontainers.image.revision="6f53f37762fa885f8ff670623eb7285aae314e69"
       LABEL org.opencontainers.image.version="main_build"
       VIASHDOCKER
       }
@@ -834,7 +834,7 @@ platform:
     user: false
     packages: []
     pip:
-    - "scanpy"
+    - "scanpy~=1.9.1"
     - "anndata<0.8"
     pypi: []
     git: []
@@ -882,5 +882,5 @@ info:
   output: "target/docker/convert/from_h5mu_to_seurat"
   executable: "target/docker/convert/from_h5mu_to_seurat/from_h5mu_to_seurat"
   viash_version: "0.5.15"
-  git_commit: "1b57a91a36621cfb37bd4e018ff04f13d03fdea2"
+  git_commit: "6f53f37762fa885f8ff670623eb7285aae314e69"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"
