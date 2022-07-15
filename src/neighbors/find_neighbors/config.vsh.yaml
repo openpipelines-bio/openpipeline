@@ -68,7 +68,7 @@ platforms:
     setup: 
       - type: python
         packages:
-          - scanpy
+          - scanpy~=1.9.1
           - muon
           - mudata~=0.1.2
           - anddata<0.8

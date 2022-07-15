@@ -45,7 +45,7 @@ platforms:
     image: python:3.8-slim
     python:
       packages:
-        - scanpy
+        - scanpy~=1.9.1
         - muon
         - mudata~=0.1.2
         - anddata<0.8
