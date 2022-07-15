@@ -11,9 +11,10 @@ include { readConfig; viashChannel; helpMessage } from workflowDir + "/utils/Wor
 
 config = readConfig("$workflowDir/process_rna/multisample/config.vsh.yaml")
 
-workflow {
-  params.testing = false
+// keep track of whether this is an integration test or not
+global_params = [ do_publish: true ]
 
+workflow {
   helpMessage(config)
 
   viashChannel(params, config)
@@ -31,7 +32,7 @@ workflow run_wf {
     | log1p
     // feature annotation
     | filter_with_hvg.run(
-      auto: [ publish: ! params.testing ]
+      auto: [ publish: global_params.do_publish ]
     )
 
   emit:
@@ -39,22 +40,26 @@ workflow run_wf {
 }
 
 workflow test_wf {
-  params.testing = true
+  // don't publish output
+  global_params.do_publish = false
+
+  // allow changing the resources_test dir
+  params.resources_test = params.rootDir + "/resources_test"
+
+  // or when running from s3: params.resources_test = "s3://openpipelines-data/"
+  testParams = [
+    id: "foo",
+    input: params.resources_test + "/pbmc_1k_protein_v3/pbmc_1k_protein_v3_uss.h5mu",
+  ]
 
   output_ch =
-    Channel.value(
-      [
-        "foo",
-        file(params.rootDir + "/resources_test/pbmc_1k_protein_v3/pbmc_1k_protein_v3_uss.h5mu"),
-        params
-      ]
-    )
-    | view { "Input: [${it[0]}, ${it[1]}, params]" }
+    viashChannel(testParams, config)
+    | view { "Input: $it" }
     | run_wf
     | view { output ->
       assert output.size() == 3 : "outputs should contain three elements; [id, file, params]"
       assert output[1].toString().endsWith(".h5mu") : "Output file should be a h5mu file. Found: ${output_list[1]}"
-      "Output: [${output[0]}, ${output[1]}, params]"
+      "Output: $it"
     }
     | toList()
     | map { output_list ->
