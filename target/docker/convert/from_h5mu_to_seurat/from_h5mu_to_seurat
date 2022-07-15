@@ -390,7 +390,7 @@ RUN apt-get update && \
   rm -rf /var/lib/apt/lists/*
 
 RUN pip install --upgrade pip && \
-  pip install --upgrade --no-cache-dir "scanpy" "anndata<0.8"
+  pip install --upgrade --no-cache-dir "scanpy~=1.9.1" "anndata<0.8"
 
 RUN Rscript -e 'if (!requireNamespace("remotes", quietly = TRUE)) install.packages("remotes")' && \
   Rscript -e 'remotes::install_cran(c("anndata", "hdf5r", "testthat"), repos = "https://cran.rstudio.com")'
@@ -400,9 +400,9 @@ RUN Rscript -e 'if (!requireNamespace("remotes", quietly = TRUE)) install.packag
 
 LABEL org.opencontainers.image.authors="Robrecht Cannoodt <rcannood@gmail.com> (author, maintainer) {github: rcannood, orcid: 0000-0003-3641-729X}"
 LABEL org.opencontainers.image.description="Companion container for running component convert from_h5mu_to_seurat"
-LABEL org.opencontainers.image.created="2022-07-15T08:48:18Z"
+LABEL org.opencontainers.image.created="2022-07-15T10:10:06Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="ca7c1abd9925d6372e1619bb50b407c0f1d48c3c"
+LABEL org.opencontainers.image.revision="82d9508efad96c83f5dcf0cccc0ea933c67613da"
 LABEL org.opencontainers.image.version="integration_build"
 VIASHDOCKER
 }
