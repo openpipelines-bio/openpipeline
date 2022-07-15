@@ -62,7 +62,7 @@ workflow test_wf {
     | view { output ->
       assert output.size() == 2 : "outputs should contain two elements; [id, file]"
       assert output[1].toString().endsWith(".h5mu") : "Output file should be a h5mu file. Found: ${output_list[1]}"
-      "Output: $it"
+      "Output: $output"
     }
     | toList()
     | map { output_list ->
