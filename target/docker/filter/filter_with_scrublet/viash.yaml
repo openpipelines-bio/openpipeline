@@ -598,13 +598,13 @@ functionality:
       FROM python:3.8
       
       RUN pip install --upgrade pip && \
-        pip install --upgrade --no-cache-dir "scanpy~=1.9.1" "scrublet" "muon" "mudata~=0.1.2" "anndata<0.8"
+        pip install --upgrade --no-cache-dir "scanpy~=1.9.1" "scrublet" "muon" "mudata~=0.2.0" "anndata~=0.8.0"
       
       LABEL org.opencontainers.image.authors="Dries De Maeyer <DDeMaey1@its.jnj.com> (contributor) {account: ddemaey1}, Robrecht Cannoodt <rcannood@gmail.com> (maintainer, contributor) {github: rcannood, orcid: 0000-0003-3641-729X}"
       LABEL org.opencontainers.image.description="Companion container for running component filter filter_with_scrublet"
-      LABEL org.opencontainers.image.created="2022-07-15T10:10:07Z"
+      LABEL org.opencontainers.image.created="2022-07-15T10:54:03Z"
       LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-      LABEL org.opencontainers.image.revision="82d9508efad96c83f5dcf0cccc0ea933c67613da"
+      LABEL org.opencontainers.image.revision="ded889ce70d6cb95f49dc1d82e942402db961f2f"
       LABEL org.opencontainers.image.version="integration_build"
       VIASHDOCKER
       }
@@ -898,8 +898,8 @@ functionality:
       fi
       ViashDockerSetup 'ghcr.io/openpipelines-bio/filter_filter_with_scrublet:integration_build' ifneedbepullelsecachedbuild
       if [ $VIASH_MODE == "docker_debug" ]; then
-        ViashNotice "+ docker run --entrypoint=bash -i --rm -v "$(pwd)":/pwd --workdir /pwd -t 'ghcr.io/openpipelines-bio/filter_filter_with_scrublet:integration_build'"
-        docker run --entrypoint=bash -i --rm -v "$(pwd)":/pwd --workdir /pwd -t 'ghcr.io/openpipelines-bio/filter_filter_with_scrublet:integration_build'
+        ViashNotice "+ docker run --entrypoint=bash -i --rm --env NUMBA_CACHE_DIR=/tmp -v "$(pwd)":/pwd --workdir /pwd -t 'ghcr.io/openpipelines-bio/filter_filter_with_scrublet:integration_build'"
+        docker run --entrypoint=bash -i --rm --env NUMBA_CACHE_DIR=/tmp -v "$(pwd)":/pwd --workdir /pwd -t 'ghcr.io/openpipelines-bio/filter_filter_with_scrublet:integration_build'
         exit 0
       fi
       
@@ -1018,13 +1018,13 @@ functionality:
       function ViashPerformChown {
         
         if [ ! -z "$VIASH_PAR_OUTPUT" ]; then
-          eval docker run --entrypoint=chown -i --rm $VIASH_EXTRA_MOUNTS ghcr.io/openpipelines-bio/filter_filter_with_scrublet:integration_build "$(id -u):$(id -g)" --silent --recursive "$VIASH_PAR_OUTPUT"
+          eval docker run --entrypoint=chown -i --rm --env NUMBA_CACHE_DIR=/tmp $VIASH_EXTRA_MOUNTS ghcr.io/openpipelines-bio/filter_filter_with_scrublet:integration_build "$(id -u):$(id -g)" --silent --recursive "$VIASH_PAR_OUTPUT"
         fi
       }
       trap ViashPerformChown EXIT
       
       
-      cat << VIASHEOF | eval docker run --entrypoint=bash -i --rm $VIASH_EXTRA_MOUNTS ghcr.io/openpipelines-bio/filter_filter_with_scrublet:integration_build
+      cat << VIASHEOF | eval docker run --entrypoint=bash -i --rm --env NUMBA_CACHE_DIR=/tmp $VIASH_EXTRA_MOUNTS ghcr.io/openpipelines-bio/filter_filter_with_scrublet:integration_build
       set -e
       tempscript=\$(mktemp "$VIASH_TEMP/viash-run-filter_with_scrublet-XXXXXX")
       function clean_up {
@@ -1149,7 +1149,8 @@ platform:
   port: []
   setup_strategy: "ifneedbepullelsecachedbuild"
   privileged: false
-  run_args: []
+  run_args:
+  - "--env NUMBA_CACHE_DIR=/tmp"
   target_image_source: "https://github.com/openpipelines-bio/openpipeline"
   setup:
   - type: "python"
@@ -1158,8 +1159,8 @@ platform:
     - "scanpy~=1.9.1"
     - "scrublet"
     - "muon"
-    - "mudata~=0.1.2"
-    - "anndata<0.8"
+    - "mudata~=0.2.0"
+    - "anndata~=0.8.0"
     pip: []
     pypi: []
     git: []
@@ -1179,5 +1180,5 @@ info:
   output: "target/docker/filter/filter_with_scrublet"
   executable: "target/docker/filter/filter_with_scrublet/filter_with_scrublet"
   viash_version: "0.5.15"
-  git_commit: "82d9508efad96c83f5dcf0cccc0ea933c67613da"
+  git_commit: "ded889ce70d6cb95f49dc1d82e942402db961f2f"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"

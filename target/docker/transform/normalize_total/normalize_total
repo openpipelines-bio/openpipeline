@@ -407,13 +407,13 @@ RUN apt-get update && \
   rm -rf /var/lib/apt/lists/*
 
 RUN pip install --upgrade pip && \
-  pip install --upgrade --no-cache-dir "scanpy~=1.9.1" "muon" "mudata~=0.1.2" "anndata<0.8"
+  pip install --upgrade --no-cache-dir "scanpy~=1.9.1" "muon" "mudata~=0.2.0" "anndata~=0.8.0"
 
 LABEL org.opencontainers.image.authors="Dries De Maeyer <ddemaeyer@gmail.com> (maintainer) {account: ddemaey1}, Robrecht Cannoodt <rcannood@gmail.com> (contributor) {github: rcannood, orcid: 0000-0003-3641-729X}"
 LABEL org.opencontainers.image.description="Companion container for running component transform normalize_total"
-LABEL org.opencontainers.image.created="2022-07-15T10:10:07Z"
+LABEL org.opencontainers.image.created="2022-07-15T10:54:03Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="82d9508efad96c83f5dcf0cccc0ea933c67613da"
+LABEL org.opencontainers.image.revision="ded889ce70d6cb95f49dc1d82e942402db961f2f"
 LABEL org.opencontainers.image.version="integration_build"
 VIASHDOCKER
 }

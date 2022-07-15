@@ -37,7 +37,7 @@ platforms:
       - type: python
         packages: 
           - muon
-          - mudata~=0.1.2
-          - anndata<0.8
+          - mudata~=0.2.0
+          - anndata~=0.8.0
   - type: nextflow
     variant: vdsl3

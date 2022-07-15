@@ -139,18 +139,6 @@ thisConfig = processConfig([
   "arguments" : [
     {
       "type" : "string",
-      "name" : "--id",
-      "description" : "Specify a run name to use as the output file base name. Use only letters, numbers, or hyphens. Do not use special characters or spaces.",
-      "default" : [
-        "sample"
-      ],
-      "required" : false,
-      "direction" : "input",
-      "multiple" : false,
-      "multiple_sep" : ":"
-    },
-    {
-      "type" : "string",
       "name" : "--putative_cell_call",
       "description" : "Specify the dataset to be used for putative cell calling. For putative cell calling using an AbSeq dataset, please provide an AbSeq_Reference fasta file above.",
       "example" : [
@@ -306,13 +294,24 @@ thisConfig = processConfig([
       "name" : "--dryrun",
       "description" : "If true, the output directory will only contain the CWL input files, but the pipeline itself will not be executed.",
       "direction" : "input"
+    },
+    {
+      "type" : "string",
+      "name" : "--sample_prefix",
+      "description" : "Specify a run name to use as the output file base name. Use only letters, numbers, or hyphens. Do not use special characters or spaces.",
+      "default" : [
+        "sample"
+      ],
+      "required" : false,
+      "direction" : "input",
+      "multiple" : false,
+      "multiple_sep" : ":"
     }
   ],
   "argument_groups" : [
     {
       "name" : "Inputs",
       "arguments" : [
-        "id",
         "input",
         "reference_genome",
         "transcriptome_annotation",
@@ -352,6 +351,12 @@ thisConfig = processConfig([
       "name" : "VDJ arguments",
       "arguments" : [
         "vdj_version"
+      ]
+    },
+    {
+      "name" : "Additional settings",
+      "arguments" : [
+        "sample_prefix"
       ]
     },
     {
@@ -421,7 +426,6 @@ par = {
   'abseq_reference': $( if [ ! -z ${VIASH_PAR_ABSEQ_REFERENCE+x} ]; then echo "'${VIASH_PAR_ABSEQ_REFERENCE//\\'/\\\\\\'}'.split(':')"; else echo None; fi ),
   'supplemental_reference': $( if [ ! -z ${VIASH_PAR_SUPPLEMENTAL_REFERENCE+x} ]; then echo "'${VIASH_PAR_SUPPLEMENTAL_REFERENCE//\\'/\\\\\\'}'.split(':')"; else echo None; fi ),
   'output': $( if [ ! -z ${VIASH_PAR_OUTPUT+x} ]; then echo "'${VIASH_PAR_OUTPUT//\\'/\\\\\\'}'"; else echo None; fi ),
-  'id': $( if [ ! -z ${VIASH_PAR_ID+x} ]; then echo "'${VIASH_PAR_ID//\\'/\\\\\\'}'"; else echo None; fi ),
   'putative_cell_call': $( if [ ! -z ${VIASH_PAR_PUTATIVE_CELL_CALL+x} ]; then echo "'${VIASH_PAR_PUTATIVE_CELL_CALL//\\'/\\\\\\'}'"; else echo None; fi ),
   'exact_cell_count': $( if [ ! -z ${VIASH_PAR_EXACT_CELL_COUNT+x} ]; then echo "int('${VIASH_PAR_EXACT_CELL_COUNT//\\'/\\\\\\'}')"; else echo None; fi ),
   'disable_putative_calling': $( if [ ! -z ${VIASH_PAR_DISABLE_PUTATIVE_CALLING+x} ]; then echo "'${VIASH_PAR_DISABLE_PUTATIVE_CALLING//\\'/\\\\\\'}'.lower() == 'true'"; else echo None; fi ),
@@ -434,7 +438,8 @@ par = {
   'timestamps': $( if [ ! -z ${VIASH_PAR_TIMESTAMPS+x} ]; then echo "'${VIASH_PAR_TIMESTAMPS//\\'/\\\\\\'}'.lower() == 'true'"; else echo None; fi ),
   'override_min_ram': $( if [ ! -z ${VIASH_PAR_OVERRIDE_MIN_RAM+x} ]; then echo "int('${VIASH_PAR_OVERRIDE_MIN_RAM//\\'/\\\\\\'}')"; else echo None; fi ),
   'override_min_cores': $( if [ ! -z ${VIASH_PAR_OVERRIDE_MIN_CORES+x} ]; then echo "int('${VIASH_PAR_OVERRIDE_MIN_CORES//\\'/\\\\\\'}')"; else echo None; fi ),
-  'dryrun': $( if [ ! -z ${VIASH_PAR_DRYRUN+x} ]; then echo "'${VIASH_PAR_DRYRUN//\\'/\\\\\\'}'.lower() == 'true'"; else echo None; fi )
+  'dryrun': $( if [ ! -z ${VIASH_PAR_DRYRUN+x} ]; then echo "'${VIASH_PAR_DRYRUN//\\'/\\\\\\'}'.lower() == 'true'"; else echo None; fi ),
+  'sample_prefix': $( if [ ! -z ${VIASH_PAR_SAMPLE_PREFIX+x} ]; then echo "'${VIASH_PAR_SAMPLE_PREFIX//\\'/\\\\\\'}'"; else echo None; fi )
 }
 meta = {
   'functionality_name': '$VIASH_META_FUNCTIONALITY_NAME',
@@ -447,9 +452,9 @@ resources_dir = '$VIASH_META_RESOURCES_DIR'
 
 ## VIASH END
 
-if re.match("[^A-Za-z0-9]", par["id"]):
-  print("Warning: --id should only consist of letters, numbers or hyphens. Replacing all '[^A-Za-z0-9]' with '-'.")
-  par["id"] = re.sub("[^A-Za-z0-9\\\\\\\\-]", "-", par["id"])
+if re.match("[^A-Za-z0-9]", par["sample_prefix"]):
+  print("Warning: --sample_prefix should only consist of letters, numbers or hyphens. Replacing all '[^A-Za-z0-9]' with '-'.")
+  par["sample_prefix"] = re.sub("[^A-Za-z0-9\\\\\\\\-]", "-", par["sample_prefix"])
 
 def strip_margin(text):
   return re.sub('\\\\n[ \\\\t]*\\\\|', '\\\\n', text)
@@ -628,10 +633,10 @@ content_list.append(strip_margin(f"""\\\\
 """
 ))
 
-if par["id"]:
+if par["sample_prefix"]:
   content_list.append(strip_margin(f"""\\\\
 ## Run Name (optional) -  Specify a run name to use as the output file base name. Use only letters, numbers, or hyphens. Do not use special characters or spaces.
-Run_Name: {par["id"]}
+Run_Name: {par["sample_prefix"]}
 """))
 
 ## Write config to file
@@ -687,9 +692,9 @@ if not par["dryrun"]:
     )
 
   # look for counts file
-  if not par["id"]:
-    par["id"] = "sample"
-  counts_filename = par["id"] + "_RSEC_MolsPerCell.csv"
+  if not par["sample_prefix"]:
+    par["sample_prefix"] = "sample"
+  counts_filename = par["sample_prefix"] + "_RSEC_MolsPerCell.csv"
   
   if par["sample_tags_version"]:
     counts_filename = "Combined_" + counts_filename
@@ -699,7 +704,7 @@ if not par["dryrun"]:
     raise ValueError(f"Could not find output counts file '{counts_filename}'")
 
   # look for metrics file
-  metrics_filename = par["id"] + "_Metrics_Summary.csv"
+  metrics_filename = par["sample_prefix"] + "_Metrics_Summary.csv"
   metrics_file = os.path.join(par["output"], metrics_filename)
   if not os.path.exists(metrics_file):
     raise ValueError(f"Could not find output metrics file '{metrics_filename}'")

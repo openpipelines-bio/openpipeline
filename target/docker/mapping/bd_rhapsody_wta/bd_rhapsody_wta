@@ -177,12 +177,6 @@ function ViashHelp {
   echo "http://bd-rhapsody-public.s3-website-us-east-1.amazonaws.com/Rhapsody-WTA/GRCm38-PhiX-gencodevM19/"
   echo ""
   echo "Inputs:"
-  echo "    --id"
-  echo "        type: string"
-  echo "        default: sample"
-  echo "        Specify a run name to use as the output file base name. Use only"
-  echo "        letters, numbers, or hyphens. Do not use special characters or spaces."
-  echo ""
   echo "    -i, --input"
   echo "        type: file, required parameter, multiple values allowed"
   echo "        example: input.fastq.gz"
@@ -270,6 +264,13 @@ function ViashHelp {
   echo "        example: human"
   echo "        choices: [ human, mouse, humanBCR, humanBCR, humanTCR, mouseBCR ]"
   echo "        Specify if VDJ run."
+  echo ""
+  echo "Additional settings:"
+  echo "    --sample_prefix"
+  echo "        type: string"
+  echo "        default: sample"
+  echo "        Specify a run name to use as the output file base name. Use only"
+  echo "        letters, numbers, or hyphens. Do not use special characters or spaces."
   echo ""
   echo "CWL-runner arguments:"
   echo "    --parallel"
@@ -496,9 +497,9 @@ FROM ghcr.io/data-intuitive/bd_rhapsody:1.10.1
 RUN :
 LABEL org.opencontainers.image.authors="Robrecht Cannoodt <rcannood@gmail.com> (maintainer) {github: rcannood, orcid: 0000-0003-3641-729X}"
 LABEL org.opencontainers.image.description="Companion container for running component mapping bd_rhapsody_wta"
-LABEL org.opencontainers.image.created="2022-07-15T10:10:05Z"
+LABEL org.opencontainers.image.created="2022-07-15T10:54:01Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="82d9508efad96c83f5dcf0cccc0ea933c67613da"
+LABEL org.opencontainers.image.revision="ded889ce70d6cb95f49dc1d82e942402db961f2f"
 LABEL org.opencontainers.image.version="integration_build"
 VIASHDOCKER
 }
@@ -765,15 +766,6 @@ while [[ $# -gt 0 ]]; do
             [ $# -lt 2 ] && ViashError Not enough arguments passed to -o. Use "--help" to get more information on the parameters. && exit 1
             shift 2
             ;;
-        --id)
-            VIASH_PAR_ID="$2"
-            [ $# -lt 2 ] && ViashError Not enough arguments passed to --id. Use "--help" to get more information on the parameters. && exit 1
-            shift 2
-            ;;
-        --id=*)
-            VIASH_PAR_ID=$(ViashRemoveFlags "$1")
-            shift 1
-            ;;
         --putative_cell_call)
             VIASH_PAR_PUTATIVE_CELL_CALL="$2"
             [ $# -lt 2 ] && ViashError Not enough arguments passed to --putative_cell_call. Use "--help" to get more information on the parameters. && exit 1
@@ -884,6 +876,15 @@ while [[ $# -gt 0 ]]; do
             VIASH_PAR_DRYRUN=true
             shift 1
             ;;
+        --sample_prefix)
+            VIASH_PAR_SAMPLE_PREFIX="$2"
+            [ $# -lt 2 ] && ViashError Not enough arguments passed to --sample_prefix. Use "--help" to get more information on the parameters. && exit 1
+            shift 2
+            ;;
+        --sample_prefix=*)
+            VIASH_PAR_SAMPLE_PREFIX=$(ViashRemoveFlags "$1")
+            shift 1
+            ;;
         ---setup)
             VIASH_MODE='docker_setup'
             VIASH_DOCKER_SETUP_STRATEGY="$2"
@@ -954,9 +955,6 @@ if [ -z "$VIASH_PAR_OUTPUT" ]; then
   ViashError '--output' is a required argument. Use "--help" to get more information on the parameters.
   exit 1
 fi
-if [ -z "$VIASH_PAR_ID" ]; then
-  VIASH_PAR_ID="sample"
-fi
 if [ -z "$VIASH_PAR_DISABLE_PUTATIVE_CALLING" ]; then
   VIASH_PAR_DISABLE_PUTATIVE_CALLING="false"
 fi
@@ -969,10 +967,12 @@ fi
 if [ -z "$VIASH_PAR_DRYRUN" ]; then
   VIASH_PAR_DRYRUN="false"
 fi
+if [ -z "$VIASH_PAR_SAMPLE_PREFIX" ]; then
+  VIASH_PAR_SAMPLE_PREFIX="sample"
+fi
 
 
 # check whether parameters values are of the right type
-
 
 
 
@@ -1047,8 +1047,8 @@ if [[ -n "$VIASH_PAR_DRYRUN" ]]; then
 fi
 
 
-# check whether parameters values are of the right type
 
+# check whether parameters values are of the right type
 
 
 
@@ -1095,6 +1095,7 @@ if [ ! -z "$VIASH_PAR_VDJ_VERSION" ]; then
   set +f
   unset IFS
 fi
+
 
 
 
@@ -1202,7 +1203,6 @@ par = {
   'abseq_reference': $( if [ ! -z ${VIASH_PAR_ABSEQ_REFERENCE+x} ]; then echo "'${VIASH_PAR_ABSEQ_REFERENCE//\'/\\\'}'.split(':')"; else echo None; fi ),
   'supplemental_reference': $( if [ ! -z ${VIASH_PAR_SUPPLEMENTAL_REFERENCE+x} ]; then echo "'${VIASH_PAR_SUPPLEMENTAL_REFERENCE//\'/\\\'}'.split(':')"; else echo None; fi ),
   'output': $( if [ ! -z ${VIASH_PAR_OUTPUT+x} ]; then echo "'${VIASH_PAR_OUTPUT//\'/\\\'}'"; else echo None; fi ),
-  'id': $( if [ ! -z ${VIASH_PAR_ID+x} ]; then echo "'${VIASH_PAR_ID//\'/\\\'}'"; else echo None; fi ),
   'putative_cell_call': $( if [ ! -z ${VIASH_PAR_PUTATIVE_CELL_CALL+x} ]; then echo "'${VIASH_PAR_PUTATIVE_CELL_CALL//\'/\\\'}'"; else echo None; fi ),
   'exact_cell_count': $( if [ ! -z ${VIASH_PAR_EXACT_CELL_COUNT+x} ]; then echo "int('${VIASH_PAR_EXACT_CELL_COUNT//\'/\\\'}')"; else echo None; fi ),
   'disable_putative_calling': $( if [ ! -z ${VIASH_PAR_DISABLE_PUTATIVE_CALLING+x} ]; then echo "'${VIASH_PAR_DISABLE_PUTATIVE_CALLING//\'/\\\'}'.lower() == 'true'"; else echo None; fi ),
@@ -1215,7 +1215,8 @@ par = {
   'timestamps': $( if [ ! -z ${VIASH_PAR_TIMESTAMPS+x} ]; then echo "'${VIASH_PAR_TIMESTAMPS//\'/\\\'}'.lower() == 'true'"; else echo None; fi ),
   'override_min_ram': $( if [ ! -z ${VIASH_PAR_OVERRIDE_MIN_RAM+x} ]; then echo "int('${VIASH_PAR_OVERRIDE_MIN_RAM//\'/\\\'}')"; else echo None; fi ),
   'override_min_cores': $( if [ ! -z ${VIASH_PAR_OVERRIDE_MIN_CORES+x} ]; then echo "int('${VIASH_PAR_OVERRIDE_MIN_CORES//\'/\\\'}')"; else echo None; fi ),
-  'dryrun': $( if [ ! -z ${VIASH_PAR_DRYRUN+x} ]; then echo "'${VIASH_PAR_DRYRUN//\'/\\\'}'.lower() == 'true'"; else echo None; fi )
+  'dryrun': $( if [ ! -z ${VIASH_PAR_DRYRUN+x} ]; then echo "'${VIASH_PAR_DRYRUN//\'/\\\'}'.lower() == 'true'"; else echo None; fi ),
+  'sample_prefix': $( if [ ! -z ${VIASH_PAR_SAMPLE_PREFIX+x} ]; then echo "'${VIASH_PAR_SAMPLE_PREFIX//\'/\\\'}'"; else echo None; fi )
 }
 meta = {
   'functionality_name': '$VIASH_META_FUNCTIONALITY_NAME',
@@ -1228,9 +1229,9 @@ resources_dir = '$VIASH_META_RESOURCES_DIR'
 
 ## VIASH END
 
-if re.match("[^A-Za-z0-9]", par["id"]):
-  print("Warning: --id should only consist of letters, numbers or hyphens. Replacing all '[^A-Za-z0-9]' with '-'.")
-  par["id"] = re.sub("[^A-Za-z0-9\\\\-]", "-", par["id"])
+if re.match("[^A-Za-z0-9]", par["sample_prefix"]):
+  print("Warning: --sample_prefix should only consist of letters, numbers or hyphens. Replacing all '[^A-Za-z0-9]' with '-'.")
+  par["sample_prefix"] = re.sub("[^A-Za-z0-9\\\\-]", "-", par["sample_prefix"])
 
 def strip_margin(text):
   return re.sub('\\n[ \\t]*\\|', '\\n', text)
@@ -1409,10 +1410,10 @@ content_list.append(strip_margin(f"""\\
 """
 ))
 
-if par["id"]:
+if par["sample_prefix"]:
   content_list.append(strip_margin(f"""\\
 ## Run Name (optional) -  Specify a run name to use as the output file base name. Use only letters, numbers, or hyphens. Do not use special characters or spaces.
-Run_Name: {par["id"]}
+Run_Name: {par["sample_prefix"]}
 """))
 
 ## Write config to file
@@ -1468,9 +1469,9 @@ if not par["dryrun"]:
     )
 
   # look for counts file
-  if not par["id"]:
-    par["id"] = "sample"
-  counts_filename = par["id"] + "_RSEC_MolsPerCell.csv"
+  if not par["sample_prefix"]:
+    par["sample_prefix"] = "sample"
+  counts_filename = par["sample_prefix"] + "_RSEC_MolsPerCell.csv"
   
   if par["sample_tags_version"]:
     counts_filename = "Combined_" + counts_filename
@@ -1480,7 +1481,7 @@ if not par["dryrun"]:
     raise ValueError(f"Could not find output counts file '{counts_filename}'")
 
   # look for metrics file
-  metrics_filename = par["id"] + "_Metrics_Summary.csv"
+  metrics_filename = par["sample_prefix"] + "_Metrics_Summary.csv"
   metrics_file = os.path.join(par["output"], metrics_filename)
   if not os.path.exists(metrics_file):
     raise ValueError(f"Could not find output metrics file '{metrics_filename}'")

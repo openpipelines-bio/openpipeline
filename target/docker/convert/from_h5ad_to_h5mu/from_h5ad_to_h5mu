@@ -377,13 +377,13 @@ function ViashDockerfile {
 FROM python:3.8-slim
 
 RUN pip install --upgrade pip && \
-  pip install --upgrade --no-cache-dir "muon" "mudata~=0.1.2" "anndata<0.8"
+  pip install --upgrade --no-cache-dir "muon" "mudata~=0.2.0" "anndata~=0.8.0"
 
 LABEL org.opencontainers.image.authors="Dries De Maeyer <ddemaeyer@gmail.com> (maintainer) {account: ddemaey1}"
 LABEL org.opencontainers.image.description="Companion container for running component convert from_h5ad_to_h5mu"
-LABEL org.opencontainers.image.created="2022-07-15T10:10:07Z"
+LABEL org.opencontainers.image.created="2022-07-15T10:54:02Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="82d9508efad96c83f5dcf0cccc0ea933c67613da"
+LABEL org.opencontainers.image.revision="ded889ce70d6cb95f49dc1d82e942402db961f2f"
 LABEL org.opencontainers.image.version="integration_build"
 VIASHDOCKER
 }
