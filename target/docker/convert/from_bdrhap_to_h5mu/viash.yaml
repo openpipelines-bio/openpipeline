@@ -451,9 +451,9 @@ functionality:
       
       LABEL org.opencontainers.image.authors="Robrecht Cannoodt <rcannood@gmail.com> (maintainer) {github: rcannood, orcid: 0000-0003-3641-729X}"
       LABEL org.opencontainers.image.description="Companion container for running component convert from_bdrhap_to_h5mu"
-      LABEL org.opencontainers.image.created="2022-07-15T11:27:28Z"
+      LABEL org.opencontainers.image.created="2022-07-15T15:08:00Z"
       LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-      LABEL org.opencontainers.image.revision="173ec04aab5903759726222cfeea407c4ce9cbed"
+      LABEL org.opencontainers.image.revision="e92418cae9a51c69888e00dc62d2c854a6996e4f"
       LABEL org.opencontainers.image.version="main_build"
       VIASHDOCKER
       }
@@ -1027,5 +1027,5 @@ info:
   output: "target/docker/convert/from_bdrhap_to_h5mu"
   executable: "target/docker/convert/from_bdrhap_to_h5mu/from_bdrhap_to_h5mu"
   viash_version: "0.5.15"
-  git_commit: "173ec04aab5903759726222cfeea407c4ce9cbed"
+  git_commit: "e92418cae9a51c69888e00dc62d2c854a6996e4f"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"
