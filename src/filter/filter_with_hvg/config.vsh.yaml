@@ -116,9 +116,9 @@ platforms:
     image: python:3.8-slim
     python:
       packages:
-        - scanpy
+        - scanpy~=1.9.1
         - muon
-        - mudata~=0.2.0
-        - anndata~=0.8.0
+        - mudata~=0.1.2
+        - anndata<0.8
   - type: nextflow
     variant: vdsl3

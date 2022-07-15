@@ -500,12 +500,6 @@ functionality:
       for mod in par['modality']:
           print(f"Processing modality '{mod}'")
           data = mdata.mod[mod]
-      
-          # Workaround for issue 
-          # https://github.com/scverse/scanpy/issues/2239
-          # https://github.com/scverse/scanpy/issues/2181
-          if 'log1p' in data.uns and 'base' not in data.uns['log1p']:
-              data.uns['log1p']['base'] = None
           #sc.pp.log1p(data)
       
           print(f"  Unfiltered data: {data}")
@@ -2263,5 +2257,5 @@ info:
   platform: "nextflow"
   output: "target/nextflow/filter/filter_with_hvg"
   viash_version: "0.5.15"
-  git_commit: "ded889ce70d6cb95f49dc1d82e942402db961f2f"
+  git_commit: "6f53f37762fa885f8ff670623eb7285aae314e69"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"

@@ -110,15 +110,14 @@ functionality:
 platforms:
   - type: docker
     image: python:3.8
-    run_args: [--env NUMBA_CACHE_DIR=/tmp]
     setup:
       - type: python
         packages:
           - scanpy~=1.9.1
           - scrublet
           - muon
-          - mudata~=0.2.0
-          - anndata~=0.8.0
+          - mudata~=0.1.2
+          - anndata<0.8
   - type: nextflow
     variant: vdsl3
     directives:

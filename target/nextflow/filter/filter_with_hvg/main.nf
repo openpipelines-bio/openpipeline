@@ -293,12 +293,6 @@ mdata.var_names_make_unique()
 for mod in par['modality']:
     print(f"Processing modality '{mod}'")
     data = mdata.mod[mod]
-
-    # Workaround for issue 
-    # https://github.com/scverse/scanpy/issues/2239
-    # https://github.com/scverse/scanpy/issues/2181
-    if 'log1p' in data.uns and 'base' not in data.uns['log1p']:
-        data.uns['log1p']['base'] = None
     #sc.pp.log1p(data)
 
     print(f"  Unfiltered data: {data}")
