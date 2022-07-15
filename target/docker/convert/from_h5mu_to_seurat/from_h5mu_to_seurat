@@ -400,9 +400,9 @@ RUN Rscript -e 'if (!requireNamespace("remotes", quietly = TRUE)) install.packag
 
 LABEL org.opencontainers.image.authors="Robrecht Cannoodt <rcannood@gmail.com> (author, maintainer) {github: rcannood, orcid: 0000-0003-3641-729X}"
 LABEL org.opencontainers.image.description="Companion container for running component convert from_h5mu_to_seurat"
-LABEL org.opencontainers.image.created="2022-07-15T11:21:12Z"
+LABEL org.opencontainers.image.created="2022-07-15T11:28:04Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="6f53f37762fa885f8ff670623eb7285aae314e69"
+LABEL org.opencontainers.image.revision="173ec04aab5903759726222cfeea407c4ce9cbed"
 LABEL org.opencontainers.image.version="integration_build"
 VIASHDOCKER
 }

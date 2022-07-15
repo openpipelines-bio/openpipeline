@@ -1837,5 +1837,5 @@ info:
   platform: "nextflow"
   output: "target/nextflow/transfer/publish"
   viash_version: "0.5.15"
-  git_commit: "6f53f37762fa885f8ff670623eb7285aae314e69"
+  git_commit: "173ec04aab5903759726222cfeea407c4ce9cbed"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"
