@@ -114,7 +114,6 @@ platforms:
       - type: python
         packages:
           - scanpy~=1.9.1
-
           - scrublet
           - muon
           - mudata~=0.1.2
