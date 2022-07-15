@@ -70,6 +70,7 @@ platforms:
         packages:
           - scanpy
           - muon
-          - anndata<0.8
+          - mudata~=0.2.0
+          - anndata~=0.8.0
   - type: nextflow
     variant: vdsl3
