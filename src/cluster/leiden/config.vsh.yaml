@@ -62,7 +62,7 @@ platforms:
     image: python:3.8
     python:
       packages:
-        - scanpy
+        - scanpy~=1.9.1
         - python-igraph
         - leidenalg
         - hnswlib
