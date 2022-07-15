@@ -2225,5 +2225,5 @@ info:
   platform: "nextflow"
   output: "target/nextflow/filter/filter_with_counts"
   viash_version: "0.5.15"
-  git_commit: "173ec04aab5903759726222cfeea407c4ce9cbed"
+  git_commit: "e92418cae9a51c69888e00dc62d2c854a6996e4f"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"
