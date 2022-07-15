@@ -1,0 +1,44 @@
+functionality:
+  name: mermaid
+  namespace: "report"
+  version: "dev"
+  description: |
+    Generates a network from mermaid code. See `https://mermaid-js.github.io/mermaid/#/Tutorials`. This component uses the external mermaid.ink service to generate visual networks.
+  authors:
+    - name: Dries De Maeyer
+      email: DDeMaey1@its.jnj.com
+      roles: [ maintainer ]
+      props: { account: ddemaey1 }
+  arguments:
+    - name: "--input"
+      alternatives: [-i]
+      type: file
+      description: Input directory
+      direction: input
+      required: true
+    - name: "--output"
+      alternatives: ["-o"]
+      type: file
+      description: Generated network as output.
+      direction: output
+      required: true
+    - name: "--test"
+      type: file
+      description: The test file to be executed
+      default: "test.py"
+  resources:
+    - type: python_script
+      path: ./script.py
+  test_resources:
+    - type: python_script
+      path: test.py
+platforms:
+  - type: docker
+    image: python:3.8-slim
+    python:
+      packages:
+        - scanpy
+        - requests
+        - anndata<0.8
+  - type: nextflow
+    variant: vdsl3

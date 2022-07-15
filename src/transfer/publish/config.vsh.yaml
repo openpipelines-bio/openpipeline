@@ -1,0 +1,32 @@
+functionality:
+  name: publish
+  namespace: "transfer"
+  version: "dev"
+  description: Publish an artifact and optionally rename with parameters
+  authors:
+    - name: Toni Verbeiren
+      roles: [ maintainer ]
+  arguments:
+    - name: "--input"
+      alternatives: ["-i"]
+      type: file
+      direction: input
+      required: true
+      description: Input filename
+    - name: "--output"
+      alternatives: ["-o"]
+      type: file
+      direction: output
+      required: true
+      description: Output filename
+  resources:
+    - type: bash_script
+      path: script.sh
+  test_resources:
+    - type: bash_script
+      path: run_test.sh
+platforms:
+  - type: docker
+    image: python:3.10-slim
+  - type: nextflow
+    variant: vdsl3

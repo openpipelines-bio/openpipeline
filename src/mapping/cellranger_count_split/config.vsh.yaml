@@ -1,0 +1,68 @@
+functionality:
+  name: cellranger_count_split
+  namespace: mapping
+  description: Split 10x Cell Ranger output directory into separate output fields.
+  authors:
+    - name: Angela Pisco
+      roles: [ author ]
+      props: { github: aopisco, orcid: "0000-0003-0142-2355" }
+    - name: Samuel D'Souza
+      roles: [ author ]
+      props: { github: srdsam }
+    - name: Robrecht Cannoodt
+      email: rcannood@gmail.com
+      roles: [ author, maintainer ]
+      props: { github: rcannood, orcid: "0000-0003-3641-729X" }
+  arguments:
+    - name: --input
+      type: file
+      required: true
+      example: input_dir
+      description: Output directory from a Cell Ranger count run.
+    - name: --filtered_h5
+      type: file
+      direction: output
+      required: false
+      # description: Counts in AnnData format.
+      example: filtered_feature_bc_matrix.h5
+    - name: --metrics_summary
+      type: file
+      direction: output
+      required: false
+      # description: Counts in AnnData format.
+      example: metrics_summary.csv
+    - name: --molecule_info
+      type: file
+      direction: output
+      required: false
+      # description: Counts in AnnData format.
+      example: molecule_info.h5
+    - name: --bam
+      type: file
+      direction: output
+      required: false
+      # description: Counts in AnnData format.
+      example: possorted_genome_bam.bam
+    - name: --bai
+      type: file
+      direction: output
+      required: false
+      # description: Counts in AnnData format.
+      example: possorted_genome_bam.bam.bai
+    - name: --raw_h5
+      type: file
+      direction: output
+      required: false
+      # description: Counts in AnnData format.
+      example: raw_feature_bc_matrix.h5
+  resources:
+    - type: bash_script
+      path: script.sh
+platforms:
+  - type: docker
+    image: "ubuntu:jammy"
+    setup:
+      - type: docker
+        run: apt update && apt upgrade -y
+  - type: nextflow
+    variant: vdsl3

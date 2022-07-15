@@ -1,0 +1,51 @@
+functionality:
+  name: "from_bdrhap_to_h5mu"
+  namespace: "convert"
+  version: "dev"
+  description: |
+    Convert the output of a BD Rhapsody WTA pipeline to a MuData h5 file.
+  authors:
+    - name: Robrecht Cannoodt
+      email: rcannood@gmail.com
+      roles: [ maintainer ]
+      props: { github: rcannood, orcid: "0000-0003-3641-729X" }
+  inputs:
+    - name: "--input"
+      alternatives: [-i]
+      type: file
+      description: One or more folders containing the output of the BD Rhapsody workflow. If multiple are given, they are all combined into one h5mu file. Note that multiple outputs must come from the same sample (but e.g. from different lanes).
+      multiple: true
+      required: true
+      example: input_dir/
+  outputs:
+    - name: "--output"
+      alternatives: [-o]
+      type: file
+      description: "Output h5mu file."
+      required: true
+      example: output.h5mu
+  arguments:
+    - name: "--id"
+      type: string
+      description: "A sample ID."
+      example: my_id
+      required: true
+  resources:
+    - type: r_script
+      path: script.R
+  test_resources:
+    - type: python_script
+      path: run_test.py
+    - path: ../../../resources_test/bdrhap_5kjrt/processed/WTA
+platforms:
+  - type: docker
+    image: ghcr.io/data-intuitive/randpy:r4.0_py3.8
+    setup:
+      - type: docker
+        run: apt update && apt upgrade -y
+      - type: python
+        pip: [anndata<0.8, mudata]
+      - type: r
+        cran: anndata
+  - type: nextflow
+    variant: vdsl3

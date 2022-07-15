@@ -1,0 +1,73 @@
+functionality:
+  name: leiden
+  namespace: "cluster"
+  description: |
+    Cluster cells using the Leiden algorithm [Traag18] implemented in the Scanpy framework [Wolf18]. Leiden is an improved version of the Louvain algorithm [Blondel08]. 
+    It has been proposed for single-cell analysis by [Levine15]. 
+    This requires having ran neighbors/find_neighbors or neighbors/bbknn first.
+
+    Blondel et al. (2008), Fast unfolding of communities in large networks, J. Stat. Mech.
+    Levine et al. (2015), Data-Driven Phenotypic Dissection of AML Reveals Progenitor-like Cells that Correlate with Prognosis, Cell.
+    Traag et al. (2018), From Louvain to Leiden: guaranteeing well-connected communities arXiv.
+    Wolf et al. (2018), Scanpy: large-scale single-cell gene expression data analysis, Genome Biology.
+  authors:
+    - name: Dries De Maeyer
+      email: ddemaeyer@gmail.com
+      roles: [ maintainer ]
+      props: { account: ddemaey1 }
+  arguments:
+    # input
+    - name: "--input"
+      alternatives: [-i]
+      type: file
+      description: Input file.
+      direction: input
+      required: true
+      example: input.h5mu
+
+    - name: "--modality"
+      type: string
+      multiple: true
+      default: "rna"
+      required: false
+
+    # output
+    - name: "--output"
+      alternatives: ["-o"]
+      type: file
+      description: Output file.
+      direction: output
+      required: true
+      example: output.h5mu
+
+    - name: "--obs_name"
+      type: string
+      description: Name of the .obs key under which to add the cluster labels.
+      default: "leiden"
+
+    # arguments
+    - name: "--resolution"
+      type: double
+      description: A parameter value controlling the coarseness of the clustering. Higher values lead to more clusters.
+      default: 1
+  resources:
+    - type: python_script
+      path: script.py
+  test_resources:
+    - type: python_script
+      path: run_test.py
+    - path: ../../../resources_test/pbmc_1k_protein_v3
+platforms:
+  - type: docker
+    image: python:3.8
+    python:
+      packages:
+        - scanpy
+        - python-igraph
+        - leidenalg
+        - hnswlib
+        - muon
+  - type: nextflow
+    variant: vdsl3
+    directives:
+      label: highcpu

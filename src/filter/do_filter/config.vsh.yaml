@@ -1,0 +1,61 @@
+functionality:
+  name: do_filter
+  namespace: "filter"
+  version: "dev"
+  description: |
+    Remove observations and variables based on specified .obs and .var columns.
+  authors:
+    - name: Robrecht Cannoodt
+      email: rcannood@gmail.com
+      roles: [ maintainer, contributor ]
+      props: { github: rcannood, orcid: "0000-0003-3641-729X" }
+  arguments:
+    # input
+    - name: "--input"
+      type: file
+      description: Input h5mu file
+      direction: input
+      required: true
+      example: input.h5mu
+
+    - name: "--modality"
+      type: string
+      multiple: true
+      default: "rna"
+      required: false
+      
+    - name: "--obs_filter"
+      type: string
+      example: "filter_with_x"
+      multiple: true
+      description: Which .obs columns to use to filter the observations by.
+      
+    - name: "--var_filter"
+      type: string
+      default: "filter_with_x"
+      multiple: true
+      description: Which .var columns to use to filter the observations by.
+    
+    # output
+    - name: "--output"
+      type: file
+      description: Output h5mu file.
+      direction: output
+      example: output.h5mu
+
+  resources:
+    - type: python_script
+      path: script.py
+  test_resources:
+    - type: python_script
+      path: run_test.py
+    - path: ../../../resources_test/pbmc_1k_protein_v3
+platforms:
+  - type: docker
+    image: python:3.8-slim
+    python:
+      packages:
+        - muon
+        - anndata<0.8
+  - type: nextflow
+    variant: vdsl3

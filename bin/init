@@ -1,0 +1,18 @@
+#!/bin/bash
+
+# get the root of the directory
+REPO_ROOT=$(git rev-parse --show-toplevel)
+
+# ensure that the command below is run from the root of the repository
+cd "$REPO_ROOT"
+
+curl -fsSL get.viash.io | bash -s -- \
+  --registry ghcr.io \
+  --organisation openpipelines-bio \
+  --target_image_source https://github.com/openpipelines-bio/openpipeline \
+  --tag 0.5.15 \
+  --nextflow_variant vdsl3
+
+cd bin
+
+curl -s https://get.nextflow.io | bash

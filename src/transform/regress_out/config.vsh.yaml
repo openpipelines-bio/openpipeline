@@ -1,0 +1,54 @@
+functionality:
+  name: regress_out
+  namespace: "transform"
+  version: "dev"
+  description: |
+    Regress out (mostly) unwanted sources of variation.
+    Uses simple linear regression. This is inspired by Seurat's regressOut function in R [Satija15]. 
+    Note that this function tends to overcorrect in certain circumstances as described in issue theislab/scanpy#526.
+    See https://github.com/theislab/scanpy/issues/526.
+  authors:
+    - name: Robrecht Cannoodt
+      email: rcannood@gmail.com
+      roles: [ maintainer, contributor ]
+      props: { github: rcannood, orcid: "0000-0003-3641-729X" }
+  arguments:
+    - name: "--input"
+      type: file
+      description: Input h5mu file
+      direction: input
+      required: true
+      example: input.h5mu
+    - name: "--output"
+      alternatives: ["-o"]
+      type: file
+      description: Output h5mu file.
+      direction: output
+      required: true
+      default: output.h5mu
+    - name: "--modality"
+      type: string
+      description: "Which modality (one or more) to run this component on."
+      multiple: true
+      default: "rna"
+    - name: "--obs_keys"
+      type: string
+      multiple: true
+      description: Which .obs keys to regress on.
+  resources:
+    - type: python_script
+      path: script.py
+  test_resources:
+    - type: python_script
+      path: run_test.py
+    - path: ../../../resources_test/pbmc_1k_protein_v3
+platforms:
+  - type: docker
+    image: python:3.8-slim
+    setup:
+      - type: python
+        packages:
+          - scanpy
+          - muon
+  - type: nextflow
+    variant: vdsl3
