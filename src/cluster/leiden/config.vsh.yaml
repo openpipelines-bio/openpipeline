@@ -62,11 +62,13 @@ platforms:
     image: python:3.8
     python:
       packages:
-        - scanpy
+        - scanpy~=1.9.1
         - python-igraph
         - leidenalg
         - hnswlib
         - muon
+        - mudata~=0.1.2
+        - anddata<0.8
   - type: nextflow
     variant: vdsl3
     directives:

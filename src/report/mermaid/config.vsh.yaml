@@ -37,7 +37,7 @@ platforms:
     image: python:3.8-slim
     python:
       packages:
-        - scanpy
+        - scanpy~=1.9.1
         - requests
         - anndata<0.8
   - type: nextflow
