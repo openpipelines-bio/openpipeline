@@ -9,9 +9,10 @@ include { readConfig; viashChannel; helpMessage } from workflowDir + "/utils/Wor
 
 config = readConfig("$workflowDir/ingestion/cellranger_demux/config.vsh.yaml")
 
-workflow {
-  params.testing = false
+// keep track of whether this is an integration test or not
+global_params = [ do_publish: true ]
 
+workflow {
   helpMessage(config)
 
   viashChannel(params, config)
@@ -23,7 +24,7 @@ workflow run_wf {
   input_ch
 
   main:
-  auto = [ publish: ! params.testing, transcript: ! params.testing ]
+  auto = [ publish: global_params.do_publish, transcript: global_params.do_publish ]
 
   output_ch = input_ch
     | cellranger_mkfastq.run(auto: auto)
@@ -33,20 +34,23 @@ workflow run_wf {
 }
 
 workflow test_wf {
-  params.testing = true
-  
-  Channel.value(
-      [
-        "foo",
-        [
-          input: file(params.rootDir + "/resources_test/cellranger_tiny_bcl/bcl"),
-          sample_sheet: file(params.rootDir + "/resources_test/cellranger_tiny_bcl/bcl/sample_sheet.csv"),
-          cores: 2,
-          memory: 5
-        ]
-      ]
-    )
-    | view { "Input: $it" }
+  // don't publish output
+  global_params.do_publish = false
+
+  // allow changing the resources_test dir
+  params.resources_test = params.rootDir + "/resources_test"
+
+  // or when running from s3: params.resources_test = "s3://openpipelines-data/"
+  testParams = [
+    id: "foo",
+    input: params.resources_test + "/cellranger_tiny_bcl/bcl",
+    sample_sheet: params.resources_test + "/cellranger_tiny_bcl/bcl/sample_sheet.csv",
+    cores: 2,
+    memory: 5
+  ]
+
+  output_ch =
+    viashChannel(testParams, config){ "Input: $it" }
     | run_wf
     | view { output ->
       assert output.size() == 2 : "outputs should contain two elements; [id, file]"
