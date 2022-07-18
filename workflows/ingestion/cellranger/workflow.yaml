@@ -1,0 +1,20 @@
+functionality:
+  name: "cellranger"
+  namespace: "ingestion"
+  description: "Processing unimodal multi-sample RNA transcriptomics data."
+  arguments:
+    - name: "--id"
+      required: true
+      type: string
+      description: ID of the sample.
+      example: foo
+    - name: "--input"
+      required: true
+      type: file
+      description: A BCL directory.
+      example: /path/to/bcl
+    - name: "--reference"
+      required: true
+      type: file
+      description: Path to a Cell Ranger reference.
+      example: reference.tar.gz

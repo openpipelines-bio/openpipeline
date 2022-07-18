@@ -1,0 +1,39 @@
+functionality:
+  name: bcl_convert
+  namespace: demux
+  description: |
+    Convert bcl files to fastq files using bcl-convert.
+    Information about upgrading from bcl2fastq via
+    https://emea.support.illumina.com/bulletins/2020/10/upgrading-from-bcl2fastq-to-bcl-convert.html
+    and https://support.illumina.com/sequencing/sequencing_software/bcl-convert/compatibility.html
+  authors:
+    - name: Toni Verbeiren
+      roles: [ author, maintainer ]
+      props: { github: tverbeiren }
+    - name: Marijke Van moerbeke
+      roles: [ author ]
+      props: { orcid: 0000-0002-3097-5621 }
+  arguments:
+    - name: "--input"
+      alternatives: [ "-i" ]
+      type: file
+      required: true
+      description: Input run directory
+      example: bcl_dir
+    - name: "--sample_sheet"
+      alternatives: [ "-s" ]
+      type: file
+      required: true
+      description: Pointer to the sample sheet
+      example: bcl_dir
+    - name: "--demultiplexer"
+      type: string
+      description: The multiplexer to use, one of bclconvert, mkfastq
+      example: bclconvert
+  argument_groups:
+    - name: Input
+      description: Input parameters for this pipeline
+      arguments: [ input, sample_sheet ]
+    - name: Parameters
+      description: Other parameters
+      arguments: [ sample_sheet ]

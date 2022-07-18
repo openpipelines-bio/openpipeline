@@ -1,0 +1,68 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema",
+    "title": "bcl_convert",
+    "description": "Convert bcl files to fastq files using bcl-convert.\nInformation about upgrading from bcl2fastq via\nhttps://emea.support.illumina.com/bulletins/2020/10/upgrading-from-bcl2fastq-to-bcl-convert.html\nand https://support.illumina.com/sequencing/sequencing_software/bcl-convert/compatibility.html\n",
+    "type": "object",
+    "definitions": {
+      "input" : {
+        "title": "Input",
+        "type": "object",
+        "description": "Input parameters for this pipeline",
+        "default": "",
+        "properties": {
+          "input": {
+            "type":"string",
+            "description": "Input run directory",
+            "default": "",
+            "hidden": false
+          },
+          "sample_sheet": {
+            "type":"string",
+            "description": "Pointer to the sample sheet",
+            "default": "",
+            "hidden": false
+          }
+        }
+      },
+      "parameters" : {
+        "title": "Parameters",
+        "type": "object",
+        "description": "Other parameters",
+        "default": "",
+        "properties": {
+          "sample_sheet": {
+            "type":"string",
+            "description": "Pointer to the sample sheet",
+            "default": "",
+            "hidden": false
+          }
+        }
+      },
+      "output" : {
+        "title": "Output",
+        "type": "object",
+        "description": "Output Parameters",
+        "default": "",
+        "properties": {
+          "publishDir": {
+            "type":"string",
+            "description": "Output path for the pipeline results",
+            "default": "",
+            "hidden": false
+          }
+        }
+      }
+    },
+    "allOf": [
+      {
+        "$ref": "#/definitions/input"
+      },
+      {
+        "$ref": "#/definitions/parameters"
+      },
+      {
+        "$ref": "#/definitions/output"
+      }
+      
+    ]
+}

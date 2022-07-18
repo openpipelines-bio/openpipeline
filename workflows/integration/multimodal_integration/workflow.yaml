@@ -1,0 +1,15 @@
+functionality:
+  name: "multimodal_integration"
+  namespace: "integration"
+  description: "Processing multimodal multi-sample RNA transcriptomics data."
+  arguments:
+    - name: "--id"
+      required: true
+      type: string
+      description: ID of the sample.
+      example: foo
+    - name: "--input"
+      required: true
+      type: file
+      description: Path to the sample.
+      example: dataset.h5mu
