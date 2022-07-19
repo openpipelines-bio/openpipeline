@@ -416,13 +416,13 @@ function ViashDockerfile {
 FROM python:3.8-slim
 
 RUN pip install --upgrade pip && \
-  pip install --upgrade --no-cache-dir "scanpy~=1.9.1" "muon" "mudata~=0.1.2" "anndata<0.8"
+  pip install --upgrade --no-cache-dir "scanpy~=1.9.1" "muon" "mudata~=0.2.0" "anndata~=0.8.0"
 
 LABEL org.opencontainers.image.authors="Dries De Maeyer <ddemaeyer@gmail.com> (maintainer) {account: ddemaey1}, Robrecht Cannoodt <rcannood@gmail.com> (contributor) {github: rcannood, orcid: 0000-0003-3641-729X}"
 LABEL org.opencontainers.image.description="Companion container for running component neighbors find_neighbors"
-LABEL org.opencontainers.image.created="2022-07-15T18:02:23Z"
+LABEL org.opencontainers.image.created="2022-07-19T11:12:49Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="480e86fff618952486643856bfe068f9e26de3de"
+LABEL org.opencontainers.image.revision="f789be44b1c2a5f5b41d6f2d949cd00b6215c319"
 LABEL org.opencontainers.image.version="main_build"
 VIASHDOCKER
 }

@@ -488,16 +488,16 @@ functionality:
         rm -rf /var/lib/apt/lists/*
       
       RUN pip install --upgrade pip && \
-        pip install --upgrade --no-cache-dir "scanpy" "anndata<0.8"
+        pip install --upgrade --no-cache-dir "scanpy~=1.9.1" "anndata~=0.8.0"
       
       RUN Rscript -e 'if (!requireNamespace("remotes", quietly = TRUE)) install.packages("remotes")' && \
         Rscript -e 'remotes::install_cran(c("anndata", "hdf5r"), repos = "https://cran.rstudio.com")'
       
       LABEL org.opencontainers.image.authors="Robrecht Cannoodt <rcannood@gmail.com> (maintainer) {github: rcannood, orcid: 0000-0003-3641-729X}"
       LABEL org.opencontainers.image.description="Companion container for running component process_10xh5 filter_10xh5"
-      LABEL org.opencontainers.image.created="2022-07-15T18:02:23Z"
+      LABEL org.opencontainers.image.created="2022-07-19T11:12:47Z"
       LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-      LABEL org.opencontainers.image.revision="480e86fff618952486643856bfe068f9e26de3de"
+      LABEL org.opencontainers.image.revision="f789be44b1c2a5f5b41d6f2d949cd00b6215c319"
       LABEL org.opencontainers.image.version="main_build"
       VIASHDOCKER
       }
@@ -1001,8 +1001,8 @@ platform:
     user: false
     packages: []
     pip:
-    - "scanpy"
-    - "anndata<0.8"
+    - "scanpy~=1.9.1"
+    - "anndata~=0.8.0"
     pypi: []
     git: []
     github: []
@@ -1035,5 +1035,5 @@ info:
   output: "target/docker/process_10xh5/filter_10xh5"
   executable: "target/docker/process_10xh5/filter_10xh5/filter_10xh5"
   viash_version: "0.5.15"
-  git_commit: "480e86fff618952486643856bfe068f9e26de3de"
+  git_commit: "f789be44b1c2a5f5b41d6f2d949cd00b6215c319"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"

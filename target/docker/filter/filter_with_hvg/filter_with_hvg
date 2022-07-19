@@ -472,13 +472,13 @@ function ViashDockerfile {
 FROM python:3.8-slim
 
 RUN pip install --upgrade pip && \
-  pip install --upgrade --no-cache-dir "scanpy~=1.9.1" "muon" "mudata~=0.1.2" "anndata<0.8"
+  pip install --upgrade --no-cache-dir "scanpy~=1.9.1" "muon" "mudata~=0.2.0" "anndata~=0.8.0"
 
 LABEL org.opencontainers.image.authors="Dries De Maeyer <DDeMaey1@its.jnj.com> (contributor) {account: ddemaey1}, Robrecht Cannoodt <rcannood@gmail.com> (maintainer, contributor) {github: rcannood, orcid: 0000-0003-3641-729X}"
 LABEL org.opencontainers.image.description="Companion container for running component filter filter_with_hvg"
-LABEL org.opencontainers.image.created="2022-07-15T18:02:24Z"
+LABEL org.opencontainers.image.created="2022-07-19T11:12:48Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="480e86fff618952486643856bfe068f9e26de3de"
+LABEL org.opencontainers.image.revision="f789be44b1c2a5f5b41d6f2d949cd00b6215c319"
 LABEL org.opencontainers.image.version="main_build"
 VIASHDOCKER
 }
@@ -1017,6 +1017,12 @@ mdata.var_names_make_unique()
 for mod in par['modality']:
     print(f"Processing modality '{mod}'")
     data = mdata.mod[mod]
+
+    # Workaround for issue 
+    # https://github.com/scverse/scanpy/issues/2239
+    # https://github.com/scverse/scanpy/issues/2181
+    if 'log1p' in data.uns and 'base' not in data.uns['log1p']:
+        data.uns['log1p']['base'] = None
     #sc.pp.log1p(data)
 
     print(f"  Unfiltered data: {data}")
