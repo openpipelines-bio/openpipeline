@@ -58,7 +58,7 @@ platforms:
       - type: apt
         packages: libhdf5-dev
       - type: python
-        pip: [ scanpy, anndata<0.8 ]
+        pip: [ scanpy~=1.9.1, anndata~=0.8.0 ]
       - type: r
         cran: [ anndata, hdf5r ]
   - type: nextflow

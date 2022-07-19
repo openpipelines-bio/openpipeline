@@ -44,9 +44,7 @@ platforms:
       - type: docker
         run: apt update && apt upgrade -y
       - type: python
-        pip:
-          - mudata~=0.1.2
-          - anndata<0.8
+        pip: [anndata~=0.8, mudata~=0.2.0]
       - type: r
         cran: anndata
   - type: nextflow
