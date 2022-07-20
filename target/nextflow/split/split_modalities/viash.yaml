@@ -1906,5 +1906,5 @@ info:
   platform: "nextflow"
   output: "target/nextflow/split/split_modalities"
   viash_version: "0.5.15"
-  git_commit: "4a2fba18e0f46cc8d6edbcbbccfe7ded04c99579"
+  git_commit: "b12964e43e5563ef8ed35427c0fe1d9a57765eba"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"

@@ -73,12 +73,19 @@ workflow run_wf {
 
 workflow test_wf {
   helpMessage(config)
- 
+
   // allow changing the resources_test dir
   params.resources_test = params.rootDir + "/resources_test"
 
+  // or when running from s3: params.resources_test = "s3://openpipelines-data/"
+  testParams = [
+    id: "mouse;human",
+    input: params.resources_test + "/concat/e18_mouse_brain_fresh_5k_filtered_feature_bc_matrix_subset.h5mu;" + params.resources_test + "/concat/human_brain_3k_filtered_feature_bc_matrix_subset.h5mu",
+    publish_dir: "foo/"
+  ]
+
   output_ch =
-    viashChannel(params, config)
+    viashChannel(testParams, config)
       | flatMap {id, input_parameters -> [input_parameters.id, input_parameters.input].transpose()}
       | view { "Input: $it" }
       | run_wf
