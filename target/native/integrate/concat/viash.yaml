@@ -555,7 +555,7 @@ functionality:
               return pd.DataFrame()
           df = pd.concat(vars_list, axis=1)
           logger.debug('Concatenated dataframe. Aggregating column.')
-          result = df.groupby(df.columns, axis=1).agg(lambda x: x.apply(lambda y: ','.join(y.dropna().unique()), axis=1))
+          result = df.groupby(df.columns, axis=1).agg(lambda x: x.apply(lambda y: ','.join(y.dropna().unique().astype('str')), axis=1))
           logger.info('Aggregation completed.')
           dtypes = {}
           for col_name in column_names:
@@ -661,5 +661,5 @@ info:
   output: "target/native/integrate/concat"
   executable: "target/native/integrate/concat/concat"
   viash_version: "0.5.15"
-  git_commit: "f789be44b1c2a5f5b41d6f2d949cd00b6215c319"
+  git_commit: "c3ebf023e153d8ff9c209e10777cc5e14849e0a3"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"

@@ -602,9 +602,9 @@ functionality:
       
       LABEL org.opencontainers.image.authors="Dries De Maeyer <DDeMaey1@its.jnj.com> (contributor) {account: ddemaey1}, Robrecht Cannoodt <rcannood@gmail.com> (maintainer, contributor) {github: rcannood, orcid: 0000-0003-3641-729X}"
       LABEL org.opencontainers.image.description="Companion container for running component filter filter_with_scrublet"
-      LABEL org.opencontainers.image.created="2022-07-19T11:12:48Z"
+      LABEL org.opencontainers.image.created="2022-07-20T10:17:08Z"
       LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-      LABEL org.opencontainers.image.revision="f789be44b1c2a5f5b41d6f2d949cd00b6215c319"
+      LABEL org.opencontainers.image.revision="c3ebf023e153d8ff9c209e10777cc5e14849e0a3"
       LABEL org.opencontainers.image.version="main_build"
       VIASHDOCKER
       }
@@ -1180,5 +1180,5 @@ info:
   output: "target/docker/filter/filter_with_scrublet"
   executable: "target/docker/filter/filter_with_scrublet/filter_with_scrublet"
   viash_version: "0.5.15"
-  git_commit: "f789be44b1c2a5f5b41d6f2d949cd00b6215c319"
+  git_commit: "c3ebf023e153d8ff9c209e10777cc5e14849e0a3"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"

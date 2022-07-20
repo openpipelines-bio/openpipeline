@@ -401,9 +401,9 @@ RUN pip install --upgrade pip && \
 
 LABEL org.opencontainers.image.authors="Dries Schaumont <Dschaumo@its.jnj.com> (maintainer)"
 LABEL org.opencontainers.image.description="Companion container for running component integrate concat"
-LABEL org.opencontainers.image.created="2022-07-19T11:12:48Z"
+LABEL org.opencontainers.image.created="2022-07-20T10:17:08Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="f789be44b1c2a5f5b41d6f2d949cd00b6215c319"
+LABEL org.opencontainers.image.revision="c3ebf023e153d8ff9c209e10777cc5e14849e0a3"
 LABEL org.opencontainers.image.version="main_build"
 VIASHDOCKER
 }
@@ -866,7 +866,7 @@ def concat_columns(vars_list: list[pd.DataFrame]) -> pd.DataFrame:
         return pd.DataFrame()
     df = pd.concat(vars_list, axis=1)
     logger.debug('Concatenated dataframe. Aggregating column.')
-    result = df.groupby(df.columns, axis=1).agg(lambda x: x.apply(lambda y: ','.join(y.dropna().unique()), axis=1))
+    result = df.groupby(df.columns, axis=1).agg(lambda x: x.apply(lambda y: ','.join(y.dropna().unique().astype('str')), axis=1))
     logger.info('Aggregation completed.')
     dtypes = {}
     for col_name in column_names:
