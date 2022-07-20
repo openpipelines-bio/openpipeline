@@ -10,6 +10,8 @@
 
 ## BUG FIXES
 
+* `integrate/concat`: Fix an issue where joining boolean values caused `TypeError`.
+
 ## DEPRECATED
 
 
