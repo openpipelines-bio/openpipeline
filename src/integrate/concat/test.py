@@ -59,7 +59,7 @@ class TestConcat(unittest.TestCase):
         # Check if all modalities are present
         sample1_mods, sample2_mods = set(data_sample1.mod.keys()), set(data_sample2.mod.keys())
         concatentated_mods = set(concatenated_data.mod.keys())
-        self.assertEquals(sample1_mods | sample2_mods, concatentated_mods)
+        self.assertEqual(sample1_mods | sample2_mods, concatentated_mods)
 
         # Check if var columns per modality are present
         for mod_name in concatenated_data.mod.keys():
@@ -296,6 +296,47 @@ class TestConcat(unittest.TestCase):
                              'bar')
             self.assertEqual(concatenated_data.mod['atac'].var.loc['chr1:3094399-3095523']['test'],
                              'bar')
+
+            self.assertTrue(pd.isna(concatenated_data.var.loc['Xkr4']['test']))
+            self.assertTrue(pd.isna(concatenated_data.mod['rna'].var.loc['Xkr4']['test']))
+
+
+    def test_concat_only_bool(self):
+        """
+        Test concatenation of samples where the column from one sample contains NA values
+        NA values should be removed from the concatenated result
+        """
+        with NamedTemporaryFile('w', suffix=".h5mu") as tempfile_input1,\
+             NamedTemporaryFile('w', suffix=".h5mu") as tempfile_input2:
+            input1 = md.read(input_sample1_file)
+            input2 = input1.copy()
+            input1.mod['rna'].var['test'] = np.nan
+            input1.mod['atac'].var['test'] = True
+            input1.update_var()
+            input2.mod['rna'].var['test'] = np.nan
+            input2.mod['atac'].var['test'] = np.nan
+            input2.update_var()
+            # Note: when a column is present in the feature annotation for one
+            # modality (MuData.mod[...].var) but not for another other, then the global
+            # var (MuData.var) gets a new column 'mod_name:column_name'
+            # (here atac:interval) next to the old 'column_name' (here just 'interval')
+            input1.write(tempfile_input1.name, compression="gzip")
+            input2.write(tempfile_input2.name, compression="gzip")
+
+            self._run_and_check_output([
+                "--sample_names", "mouse,human",
+                "--input", tempfile_input1.name,
+                "--input", tempfile_input2.name,
+                "--output", "concat.h5mu"
+                ])
+
+            self.assertTrue(Path("concat.h5mu").is_file())
+            concatenated_data = md.read("concat.h5mu")
+
+            self.assertEqual(concatenated_data.var.loc['chr1:3094399-3095523']['test'],
+                             'True')
+            self.assertEqual(concatenated_data.mod['atac'].var.loc['chr1:3094399-3095523']['test'],
+                             'True')
 
             self.assertTrue(pd.isna(concatenated_data.var.loc['Xkr4']['test']))
             self.assertTrue(pd.isna(concatenated_data.mod['rna'].var.loc['Xkr4']['test']))
