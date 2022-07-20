@@ -438,13 +438,13 @@ function ViashDockerfile {
 FROM python:3.8-slim
 
 RUN pip install --upgrade pip && \
-  pip install --upgrade --no-cache-dir "scanpy~=1.9.1" "muon" "mudata~=0.1.2" "anndata<0.8"
+  pip install --upgrade --no-cache-dir "scanpy~=1.9.1" "muon" "mudata~=0.2.0" "anndata~=0.8.0"
 
 LABEL org.opencontainers.image.authors="Dries De Maeyer <ddemaeyer@gmail.com> (maintainer) {account: ddemaey1}"
 LABEL org.opencontainers.image.description="Companion container for running component dimred umap"
-LABEL org.opencontainers.image.created="2022-07-18T10:06:38Z"
+LABEL org.opencontainers.image.created="2022-07-20T12:19:56Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="480e86fff618952486643856bfe068f9e26de3de"
+LABEL org.opencontainers.image.revision="4a2fba18e0f46cc8d6edbcbbccfe7ded04c99579"
 LABEL org.opencontainers.image.version="integration_build"
 VIASHDOCKER
 }
