@@ -10,7 +10,7 @@ export NXF_VER=21.10.6
 
 bin/nextflow \
   run . \
-  -main-script workflows/integration/mutliomics/main.nf \
+  -main-script workflows/integration/multiomics/main.nf \
   -entry test_wf \
   -resume \
   -profile docker,nopublish \

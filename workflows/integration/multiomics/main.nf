@@ -11,7 +11,7 @@ include { run_wf as integration } from workflowDir + '/integration/multimodal_in
 
 include { readConfig; viashChannel; helpMessage } from workflowDir + "/utils/WorkflowHelper.nf"
 
-config = readConfig("$workflowDir/integration/mutliomics/config.vsh.yaml")
+config = readConfig("$workflowDir/integration/multiomics/config.vsh.yaml")
 
 
 workflow {
