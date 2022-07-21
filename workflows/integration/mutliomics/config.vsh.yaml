@@ -12,7 +12,6 @@ functionality:
       required: true
       type: string
       description: ID of the sample.
-      required: true
       multiple: true
       multiple_sep: ';'
       example: foo
