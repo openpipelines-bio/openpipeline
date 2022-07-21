@@ -13,6 +13,6 @@ bin/nextflow \
   -main-script workflows/integration/mutliomics/main.nf \
   -entry test_wf \
   -resume \
-  -profile docker \
+  -profile docker,nopublish \
   -c workflows/utils/labels_ci.config \
   --publish_dir "foo/"
