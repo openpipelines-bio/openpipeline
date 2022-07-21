@@ -30,21 +30,21 @@ workflow run_wf {
   start_ch = input_ch
     | split_modalities
 
-   rna_ch = start_ch
-      | map { id, output_dir -> 
-        [ id, 
-          output_dir.listFiles({ file -> file.name.endsWith('_rna.h5mu') && !file.isDirectory() })
-        ] }
-      | map { id, files_list -> assert files_list.size() == 1; [id, files_list.first()] }
-      | process_rna_singlesample
-      | toList()
-      | map {list -> ["combined_samples_rna", 
-                      ["input": list.collect{it[1]},
-                       "sample_names":  list.collect{it[0]}
-                       ]
-                      ]}
-      | concat
-      | process_rna_multisample
+  rna_ch = start_ch
+    | map { id, output_dir -> 
+      [ id, 
+        output_dir.listFiles({ file -> file.name.endsWith('_rna.h5mu') && !file.isDirectory() })
+      ] }
+    | map { id, files_list -> assert files_list.size() == 1; [id, files_list.first()] }
+    | process_rna_singlesample
+    | toSortedList()
+    | map {list -> ["combined_samples_rna", 
+                    ["input": list.collect{it[1]},
+                     "sample_names":  list.collect{it[0]}
+                     ]
+                    ]}
+    | concat
+    | process_rna_multisample
 
 
   atac_ch = start_ch
@@ -53,7 +53,7 @@ workflow run_wf {
           output_dir.listFiles({ file -> file.name.endsWith('_atac.h5mu') && !file.isDirectory() })
         ] }
     | map { id, files_list -> assert files_list.size() == 1; [id, files_list.first()] }
-    | toList()
+    | toSortedList()
     | map {list -> ["combined_samples_atac", 
                       ["input": list.collect{it[1]},
                        "sample_names":  list.collect{it[0]}
@@ -62,7 +62,7 @@ workflow run_wf {
     | concat
   
   output_ch = rna_ch.concat(atac_ch)
-    | toList()
+    | toSortedList()
     | map {list -> ["merged", list.collect{it[1]}]}
     | merge
     | integration
@@ -94,7 +94,7 @@ workflow test_wf {
         assert output[1].toString().endsWith(".h5mu") : "Output file should be a h5mu file. Found: ${output[1]}"
         "Output: $output"
       }
-      | toList()
+      | toSortedList()
       | map { output_list ->
         assert output_list.size() == 1 : "output channel should contain one event"
         assert output_list[0][0] == "merged" : "Output ID should be 'merged'"
