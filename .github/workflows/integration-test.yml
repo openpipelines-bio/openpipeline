@@ -157,5 +157,5 @@ jobs:
         bin/nextflow run . \
           -main-script "$script" \
           -entry ${{ matrix.component.entry }} \
-          -profile docker,mount_temp \
+          -profile docker,mount_temp,nopublish \
           -c workflows/utils/labels_ci.config
