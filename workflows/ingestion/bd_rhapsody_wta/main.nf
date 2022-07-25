@@ -48,7 +48,8 @@ workflow run_wf {
       new_ids = input_with_new_ids.collect{it[0]}.unique()
       new_ids.collect { new_id -> 
         new_input = input_with_new_ids.findAll{it[0] == new_id}.collect{it[1]}
-        assert new_input.size() == 2 : "Number of fastqs for id '$new_id' should be two. Found: ${new_input}"
+        
+        assert new_input.size() == 2 : "Number of fastqs for id '$new_id' should be two.\nFound: ${input_with_new_ids}.\nExpected: each id to have just two files.}"
 
         [ new_id, [ input: new_input ] + data, [ tuple_orig_id: id ] ]
       }

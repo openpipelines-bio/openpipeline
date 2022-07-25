@@ -18,9 +18,9 @@ cmd_pars = [
     "--input", input,
     "--sample_sheet", sample_sheet,
     "--output", output,
-    "--memory", "5" 
+    "--memory", "4" 
 ]
-subprocess.check_call(cmd_pars, encoding="utf-8", timeout=300)
+subprocess.check_call(cmd_pars, encoding="utf-8", timeout=500)
 print("> Check if file exists")
 assert path.exists(output + "/H35KCBCXY/test_sample"), "No output was created."
 

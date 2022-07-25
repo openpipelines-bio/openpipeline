@@ -18,7 +18,7 @@ functionality:
       description: Path to your read files in the FASTQ.GZ format. You may specify as many R1/R2 read pairs as you want.
       required: true
       multiple: true
-      multiple_sep: ':'
+      multiple_sep: ';'
       example: input.fastq.gz
     - name: "--reference_genome"
       alternatives: [-r]
@@ -34,12 +34,12 @@ functionality:
       alternatives: [-a]
       description: Path to the AbSeq reference file in FASTA format. Only needed if BD AbSeq Ab-Oligos are used.
       multiple: true
-      multiple_sep: ':'
+      multiple_sep: ';'
     - name: "--supplemental_reference"
       alternatives: [-s]
       description: Path to the supplemental reference file in FASTA format. Only needed if there are additional transgene sequences used in the experiment.
       multiple: true
-      multiple_sep: ':'
+      multiple_sep: ';'
 
   arguments:
     # lane splitter settings

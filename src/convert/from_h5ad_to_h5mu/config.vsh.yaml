@@ -41,7 +41,8 @@ platforms:
     image: python:3.8-slim
     python:
       packages:
-        - anndata<0.8
         - muon
+        - mudata~=0.1.2
+        - anndata<0.8
   - type: nextflow
     variant: vdsl3

@@ -50,7 +50,8 @@ workflow test_wf {
   ]
 
   output_ch =
-    viashChannel(testParams, config){ "Input: $it" }
+    viashChannel(testParams, config)
+    | view{ "Input: $it" }
     | run_wf
     | view { output ->
       assert output.size() == 2 : "outputs should contain two elements; [id, file]"
