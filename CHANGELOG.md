@@ -14,6 +14,15 @@
 
 ## DEPRECATED
 
+# openpipeline 0.4.1
+
+## BUG FIXES
+
+* `workflows/ingestion/bd_rhapsody_wta`: use ':' as a seperator for multiple input files and fix integration tests.
+
+## MINOR CHANGES
+
+* Several components: pin mudata and scanpy dependencies so that anndata version <0.8.0 is used.
 
 # openpipeline 0.4.0
 
