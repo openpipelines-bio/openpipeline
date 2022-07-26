@@ -12,6 +12,8 @@
 
 * `integrate/concat`: Fix an issue where joining boolean values caused `TypeError`.
 
+* `mapping/cellranger_count`: Reduce memory usage during testing to avoid CI to hang.
+
 ## DEPRECATED
 
 # openpipeline 0.4.1
