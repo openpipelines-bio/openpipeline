@@ -26,16 +26,19 @@ functionality:
   resources:
     - type: python_script
       path: script.py
-  tests:
+  test_resources:
     - type: python_script
       path: run_test.py
     - path: ../../../resources_test/pbmc_1k_protein_v3
 platforms:
   - type: docker
-    image: python:3.8
+    image: python:3.8-slim
     setup:
       - type: python
-        packages: [ muon, anndata<0.8 ]
+        packages:
+          - muon
+          - mudata~=0.2.0
+          - anndata~=0.8.0
   - type: nextflow
     variant: vdsl3
 

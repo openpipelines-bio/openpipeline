@@ -33,16 +33,18 @@ functionality:
   resources:
     - type: r_script
       path: script.R
-  tests:
+  test_resources:
     - type: python_script
       path: run_test.py
-    - path: ../../../resources_test/bd_rhapsody_wta_test
+    - path: ../../../resources_test/bdrhap_5kjrt/processed/WTA
 platforms:
   - type: docker
     image: ghcr.io/data-intuitive/randpy:r4.0_py3.8
-    setup: 
+    setup:
+      - type: docker
+        run: apt update && apt upgrade -y
       - type: python
-        pip: [anndata<0.8, mudata]
+        pip: [anndata~=0.8, mudata~=0.2.0]
       - type: r
         cran: anndata
   - type: nextflow

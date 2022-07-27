@@ -8,14 +8,15 @@ include { cellranger_count } from targetDir + "/mapping/cellranger_count/main.nf
 include { cellranger_count_split } from targetDir + "/mapping/cellranger_count_split/main.nf"
 include { from_10xh5_to_h5mu } from targetDir + "/convert/from_10xh5_to_h5mu/main.nf"
 
-include { readConfig; viashChannel; helpMessage } from workflowDir + "/utils/viash_workflow_helper.nf"
+include { readConfig; viashChannel; helpMessage } from workflowDir + "/utils/WorkflowHelper.nf"
 
-config = readConfig("$projectDir/workflow.yaml")
+config = readConfig("$workflowDir/ingestion/cellranger/config.vsh.yaml")
+
+// keep track of whether this is an integration test or not
+global_params = [ do_publish: true ]
 
 workflow {
-  params.testing = false
-
-  helpMessage(params, config)
+  helpMessage(config)
 
   viashChannel(params, config)
     | run_wf
@@ -26,8 +27,8 @@ workflow run_wf {
   input_ch
 
   main:
-  auto = [ publish: ! params.testing, transcript: ! params.testing ]
-  auto_nopub = [ publish: false, transcript: ! params.testing ]
+  auto = [ publish: global_params.do_publish, transcript: global_params.do_publish ]
+  auto_nopub = [ publish: false, transcript: global_params.do_publish ]
 
   output_ch = input_ch
 
@@ -53,27 +54,29 @@ workflow run_wf {
   output_ch
 }
 
-
-/* Cell Ranger - Integration testing
- */
 workflow test_wf {
-  Channel.value(
-      [
-        "foo",
-        [
-          input: file(params.rootDir + "/resources_test/cellranger_tiny_bcl/bcl"),
-          sample_sheet: file(params.rootDir + "/resources_test/cellranger_tiny_bcl/bcl/sample_sheet.csv"),
-        ],
-        params
-      ]
-    )
-    | view { "Input: [${it[0]}, ${it[1]}, params]" }
+  // don't publish output
+  global_params.do_publish = false
+
+  // allow changing the resources_test dir
+  params.resources_test = params.rootDir + "/resources_test"
+
+  // or when running from s3: params.resources_test = "s3://openpipelines-data/"
+  testParams = [
+    id: "foo",
+    input: params.resources_test + "/cellranger_tiny_bcl/bcl",
+    sample_sheet: params.resources_test + "/cellranger_tiny_bcl/bcl/sample_sheet.csv",
+  ]
+
+  output_ch =
+    viashChannel(testParams, config)
+    | view { "Input: $it" }
     | run_wf
     | view { output ->
-      assert output.size() == 3 : "outputs should contain three elements; [id, file, params]"
+      assert output.size() == 2 : "outputs should contain two elements; [id, file]"
       assert output[1].isDirectory() : "Output path should be a directory."
       // todo: check whether output dir contains fastq files
-      "Output: [${output[0]}, ${output[1]}, params]"
+      "Output: $output"
     }
     | toList()
     | map { output_list ->

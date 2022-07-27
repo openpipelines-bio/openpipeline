@@ -34,7 +34,7 @@ functionality:
   resources:
     - type: r_script
       path: script.R
-  tests:
+  test_resources:
     - type: r_script
       path: run_test.R
     - path: ../../../resources_test/pbmc_1k_protein_v3
@@ -42,6 +42,8 @@ platforms:
   - type: docker
     image: eddelbuettel/r2u:22.04
     setup:
+      - type: docker
+        run: apt update && apt upgrade -y
       - type: apt
         packages: 
           - libhdf5-dev
@@ -50,7 +52,7 @@ platforms:
           - python3-pip
           - python-is-python3
       - type: python
-        pip: [ scanpy, anndata<0.8 ]
+        pip: [ scanpy~=1.9.1, anndata~=0.8.0 ]
       - type: r
         cran: [ anndata, hdf5r, testthat ]
       - type: r
