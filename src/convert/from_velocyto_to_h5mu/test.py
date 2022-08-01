@@ -11,7 +11,7 @@ meta = {
 ## VIASH END
 
 resources_dir, functionality_name = meta["resources_dir"], meta["functionality_name"]
-input_loom = f"{resources_dir}/rna_velocity/velocyto_processed/cellranger_tiny.loom"
+input_loom = f"{resources_dir}/cellranger_tiny.loom"
 
 class TestFromVelocytoToMuData(unittest.TestCase):
     def _run_and_check_output(self, args_as_list):
@@ -30,3 +30,6 @@ class TestFromVelocytoToMuData(unittest.TestCase):
         self.assertListEqual(list(output_data.mod.keys()), ["rna_velocity"])
         with loompy.connect(input_loom) as ds:
             self.assertTupleEqual(output_data.shape[::-1], ds.shape)
+
+if __name__ == '__main__':
+    unittest.main()
