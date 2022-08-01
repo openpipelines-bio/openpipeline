@@ -32,7 +32,11 @@ functionality:
       multiple: true
       default: "rna"
       required: false
-    
+
+    - name: "--input_layer"
+      type: string
+      required: false
+      description: "Input layer to use. By default, X is normalized"
     # output
     - name: "--output"
       alternatives: ["-o"]
@@ -41,6 +45,11 @@ functionality:
       direction: output
       required: true
       default: output.h5mu
+
+    - name: "--output_layer"
+      type: string
+      description: Output layer to use. By default, use X.
+      required: false
 
     # arguments
     - name: "--target_sum"

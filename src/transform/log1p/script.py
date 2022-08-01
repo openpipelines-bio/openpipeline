@@ -15,9 +15,15 @@ print("Reading input mudata")
 mdata = mu.read_h5mu(par["input"])
 mdata.var_names_make_unique()
 
+
 for mod in par["modality"]:
     print(f"Performing log transformation on modality {mod}")
-    sc.pp.log1p(mdata.mod[mod], base=par["base"])
+    data = mdata.mod[mod]
+    new_layer = sc.pp.log1p(data,
+                            base=par["base"],
+                            copy=True if par['output_layer'] else False)
+    if new_layer:
+        data.layers[par['output_layer']] = new_layer.X
 
 print("Writing to file")
 mdata.write(filename=par["output"])

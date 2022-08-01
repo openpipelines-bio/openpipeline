@@ -1,20 +1,14 @@
 functionality:
-  name: log1p
+  name: delete_layer
   namespace: "transform"
   version: "dev"
   description: |
-    Logarithmize the data matrix. Computes X = log(X + 1), where log denotes the natural logarithm unless a different base is given.
+    Delete an anndata layer from one or more modalities.
   authors:
-    - name: Dries De Maeyer
-      email: ddemaeyer@gmail.com
+    - name: Dries Schaumont
+      email: Dschaumo@its.jnj.com
       roles: [ maintainer ]
-      props: { account: ddemaey1 }
-    - name: Robrecht Cannoodt
-      email: rcannood@gmail.com
-      roles: [ contributor ]
-      props: { github: rcannood, orcid: "0000-0003-3641-729X" }
   arguments:
-    # input
     - name: "--input"
       alternatives: ["-i"]
       type: file
@@ -22,24 +16,15 @@ functionality:
       direction: input
       required: true
       example: input.h5mu
-
     - name: "--modality"
       type: string
       multiple: true
       default: "rna"
       required: false
-
-    - name: "--input_layer"
+    - name: "--layer"
       type: string
-      required: false
-      description: "Input layer to use. If None, X is normalized"
-
-    - name: "--output_layer"
-      type: string
-      description: Output layer to use. By default, use X.
-      required: false
-
-    # output
+      required: true
+      description: "Input layer to remove"
     - name: "--output"
       alternatives: ["-o"]
       type: file
@@ -47,11 +32,6 @@ functionality:
       direction: output
       required: true
       default: output.h5mu
-
-    # arguments
-    - name: "--base"
-      type: double
-      example: 2
   resources:
     - type: python_script
       path: script.py
@@ -65,8 +45,6 @@ platforms:
     setup:
       - type: python
         packages:
-          - scanpy~=1.9.1
-          - muon
           - mudata~=0.2.0
           - anndata~=0.8.0
   - type: nextflow
