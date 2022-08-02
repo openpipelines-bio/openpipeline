@@ -1,6 +1,9 @@
 from os import path
 import subprocess
 import muon
+import logging
+from sys import stdout
+
 
 ## VIASH START
 meta = {
@@ -9,7 +12,14 @@ meta = {
 }
 ## VIASH END
 
-print("> Reading input file")
+logger = logging.getLogger()
+logger.setLevel(logging.INFO)
+console_handler = logging.StreamHandler(stdout)
+logFormatter = logging.Formatter("%(asctime)s %(levelname)-8s %(message)s")
+console_handler.setFormatter(logFormatter)
+logger.addHandler(console_handler)
+
+logger.info("> Reading input file")
 input_path = f"{meta['resources_dir']}/pbmc_1k_protein_v3/pbmc_1k_protein_v3_filtered_feature_bc_matrix.h5mu"
 
 mu_in = muon.read_h5mu(input_path)
@@ -20,7 +30,7 @@ orig_prot_vars = mu_in.mod['prot'].n_vars
 
 
 # TEST 1: filtering a little bit
-print("> Check filtering a little bit")
+logger.info("> Check filtering a little bit")
 out = subprocess.check_output([
         f"./{meta['functionality_name']}", 
         "--input", input_path, 
@@ -45,7 +55,7 @@ assert list(mu_in.mod['prot'].var['feature_types'].cat.categories) == ["Antibody
 
 
 # TEST 2: filering a lot
-print("> Check filtering a lot")
+logger.info("> Check filtering a lot")
 out = subprocess.check_output([
         f"./{meta['functionality_name']}", 
         "--input", input_path, 
@@ -76,4 +86,4 @@ assert list(mu_in.mod['rna'].var['feature_types'].cat.categories) == ["Gene Expr
 assert list(mu_in.mod['prot'].var['feature_types'].cat.categories) == ["Antibody Capture"], "Feature types of prot modality should be Antibody Capture"
 
 # test succeeded
-print("> All tests succeeded!")
+logger.info("> All tests succeeded!")

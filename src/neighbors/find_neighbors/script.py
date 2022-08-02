@@ -1,5 +1,7 @@
 import muon as mu
 import scanpy as sc
+import logging
+from sys import stdout
 
 ## VIASH START
 par = {
@@ -13,12 +15,19 @@ par = {
 meta = {"functionality_name": "lognorm"}
 ## VIASH END
 
-print("Reading input mudata")
+logger = logging.getLogger()
+logger.setLevel(logging.INFO)
+console_handler = logging.StreamHandler(stdout)
+logFormatter = logging.Formatter("%(asctime)s %(levelname)-8s %(message)s")
+console_handler.setFormatter(logFormatter)
+logger.addHandler(console_handler)
+
+logger.info("Reading input mudata")
 mdata = mu.read_h5mu(par["input"])
 mdata.var_names_make_unique()
 
 for mod in par["modality"]:
-    print(f"Computing a neighborhood graph on modality {mod}")
+    logger.info("Computing a neighborhood graph on modality %s", mod)
     sc.pp.neighbors(
         mdata.mod[mod],
         n_neighbors=par["num_neighbors"], 
@@ -26,5 +35,5 @@ for mod in par["modality"]:
         key_added=par["obsp_name_prefix"]
     )
 
-print("Writing to file")
+logger.info("Writing to %s", par["output"])
 mdata.write(filename=par["output"])

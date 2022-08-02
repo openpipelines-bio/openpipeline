@@ -2,6 +2,8 @@
 import muon
 import scanpy as sc
 import numpy as np
+import logging
+from sys import stdout
 
 ### VIASH START
 par = {
@@ -24,18 +26,25 @@ meta = {
 }
 ### VIASH END
 
-print("Reading input data")
+logger = logging.getLogger()
+logger.setLevel(logging.INFO)
+console_handler = logging.StreamHandler(stdout)
+logFormatter = logging.Formatter("%(asctime)s %(levelname)-8s %(message)s")
+console_handler.setFormatter(logFormatter)
+logger.addHandler(console_handler)
+
+logger.info("Reading input data")
 mdata = muon.read_h5mu(par["input"])
 
 mdata.var_names_make_unique()
 
 for mod in par['modality']:
-    print(f"Processing modality '{mod}'")
+    logger.info("Processing modality %s.", mod)
     data = mdata.mod[mod]
 
-    print(f"  Unfiltered data: {data}")
+    logger.info("\tUnfiltered data: %s", data)
 
-    print("  Computing aggregations")
+    logger.info("\tComputing aggregations.")
     n_counts_per_cell = np.ravel(np.sum(data.X, axis=1))
     n_cells_per_gene = np.sum(data.X > 0, axis=0)
     n_genes_per_cell = np.sum(data.X > 0, axis=1)
@@ -48,49 +57,49 @@ for mod in par['modality']:
     if par["min_cells_per_gene"] is not None:
         new_filt = np.ravel(n_cells_per_gene >= par['min_cells_per_gene'])
         num_removed = np.sum(np.invert(new_filt) & keep_genes)
-        print(f"  Removing {num_removed} genes with non-zero values in <{par['min_cells_per_gene']} cells.")
+        logger.info("\tRemoving %s genes with non-zero values in <%s cells.", num_removed, par['min_cells_per_gene'])
         keep_genes &= new_filt
 
     if par["min_genes_per_cell"] is not None:
         new_filt = np.ravel(n_genes_per_cell >= par['min_genes_per_cell'])
         num_removed = np.sum(np.invert(new_filt) & keep_cells)
-        print(f"  Removing {num_removed} cells with non-zero values in <{par['min_genes_per_cell']} genes.")
+        logger.info("\tRemoving %s cells with non-zero values in <%s genes.", num_removed, par['min_genes_per_cell'])
         keep_cells &= new_filt
 
     if par["max_genes_per_cell"] is not None:
         new_filt = np.ravel(n_genes_per_cell <= par['max_genes_per_cell'])
         num_removed = np.sum(np.invert(new_filt) & keep_cells)
-        print(f"  Removing {num_removed} cells with non-zero values in >{par['max_genes_per_cell']} genes.")
+        logger.info("\tRemoving %s cells with non-zero values in >%s genes.", num_removed, par['max_genes_per_cell'])
         keep_cells &= new_filt
 
     if par["min_counts"] is not None:
         new_filt = np.ravel(n_counts_per_cell >= par['min_counts'])
         num_removed = np.sum(np.invert(new_filt) & keep_cells)
-        print(f"  Removing {num_removed} cells with <{par['min_counts']} total counts.")
+        logger.info("\tRemoving %s cells with <%s total counts.", num_removed, par['min_counts'])
         keep_cells &= new_filt
 
     if par["max_counts"] is not None:
         new_filt = np.ravel(n_counts_per_cell <= par['max_counts'])
         num_removed = np.sum(np.invert(new_filt) & keep_cells)
-        print(f"  Removing {num_removed} cells with >{par['max_counts']} total counts.")
+        logger.info("\tRemoving %s cells with >%s total counts.", num_removed, par['max_counts'])
         keep_cells &= new_filt
 
     if par["min_fraction_mito"] is not None:
         new_filt = np.ravel(pct_mito >= par['min_fraction_mito'])
         num_removed = np.sum(np.invert(new_filt) & keep_cells)
-        print(f"  Removing {num_removed} cells with <{par['min_fraction_mito']} percentage mitochondrial realds.")
+        logger.info("\tRemoving %s cells with <%s percentage mitochondrial reads.", num_removed, par['min_fraction_mito'])
         keep_cells &= new_filt
 
     if par["max_fraction_mito"] is not None:
         new_filt = np.ravel(pct_mito <= par['max_fraction_mito'])
         num_removed = np.sum(np.invert(new_filt) & keep_cells)
-        print(f"  Removing {num_removed} cells with >{par['max_fraction_mito']} percentage mitochondrial realds.")
+        logger.info("\tRemoving %s cells with >%s percentage mitochondrial reads.", num_removed, par['max_fraction_mito'])
         keep_cells &= new_filt
     
     # remove cells with zero counts
     new_filt = np.ravel(np.sum(data[:,keep_genes].X, axis=1)) > 0
     num_removed = np.sum(np.invert(new_filt) & keep_cells)
-    print(f"  Removing {num_removed} cells with zero counts")
+    logger.info("\tRemoving %s cells with zero counts", num_removed)
     keep_cells &= new_filt
 
     if par["obs_name_filter"] is not None:
@@ -101,7 +110,7 @@ for mod in par['modality']:
     if par["do_subset"]:
         mdata.mod[mod] = data[keep_cells, keep_genes]
     
-    print(f"  Filtered data: {data}")
+    logger.info("\tFiltered data: %s", data)
 
 # # can we assume execution_log exists?
 # if mdata.uns is None or "execution_log" not in mdata.uns:
@@ -111,5 +120,7 @@ for mod in par['modality']:
 # mdata.uns["execution_log"].append(new_entry)
 
 
-print("Writing output data")
+logger.info("Writing output data to %s", par["output"])
 mdata.write(par["output"])
+
+logger.info("Finished")

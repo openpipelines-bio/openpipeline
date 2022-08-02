@@ -1,6 +1,8 @@
 import scanpy as sc
 import muon as mu
 import multiprocessing
+import logging
+from sys import stdout
 
 ## VIASH START
 par = {
@@ -12,7 +14,14 @@ par = {
 meta = {"functionality_name": "lognorm"}
 ## VIASH END
 
-print("Reading input mudata")
+logger = logging.getLogger()
+logger.setLevel(logging.INFO)
+console_handler = logging.StreamHandler(stdout)
+logFormatter = logging.Formatter("%(asctime)s %(levelname)-8s %(message)s")
+console_handler.setFormatter(logFormatter)
+logger.addHandler(console_handler)
+
+logger.info("Reading input mudata")
 mdata = mu.read_h5mu(par["input"])
 mdata.var_names_make_unique()
 
@@ -22,7 +31,7 @@ if (
 ):
 
     for mod in par["modality"]:
-        print("Regress out variables on modality {mod}")
+        logger.info("Regress out variables on modality %s", mod)
         data = mdata.mod[mod]
         
         sc.pp.regress_out(
@@ -38,5 +47,5 @@ if (
 # new_entry = {"component": meta["functionality_name"], "params": par}
 # mdata.uns["execution_log"].append(new_entry)
 
-print("Writing to file")
+logger.info("Writing to file")
 mdata.write(filename=par["output"])
