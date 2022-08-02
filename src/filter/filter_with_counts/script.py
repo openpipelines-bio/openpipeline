@@ -1,6 +1,5 @@
 
 import muon
-import scanpy as sc
 import numpy as np
 
 ### VIASH START
