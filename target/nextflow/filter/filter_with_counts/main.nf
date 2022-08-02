@@ -349,14 +349,6 @@ for mod in par['modality']:
     
     print(f"  Filtered data: {data}")
 
-# # can we assume execution_log exists?
-# if mdata.uns is None or "execution_log" not in mdata.uns:
-#     mdata.uns["execution_log"] = []
-# # store new entry
-# new_entry = {"component": meta["functionality_name"], "params": par}
-# mdata.uns["execution_log"].append(new_entry)
-
-
 print("Writing output data")
 mdata.write(par["output"])
 
