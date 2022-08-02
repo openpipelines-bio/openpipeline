@@ -51,14 +51,5 @@ for mod in par["modality"]:
     
     mdata.mod[mod] = mdata.mod[mod][obs_filt, var_filt].copy()
 
-
-# # can we assume execution_log exists?
-# if mdata.uns is None or "execution_log" not in mdata.uns:
-#     mdata.uns["execution_log"] = []
-# # store new entry
-# new_entry = {"component": meta["functionality_name"], "params": par}
-# mdata.uns["execution_log"].append(new_entry)
-
-
 logger.info("Writing h5mu to file %s.", par["output"])
 mdata.write_h5mu(par["output"])

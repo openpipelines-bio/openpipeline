@@ -1,6 +1,5 @@
 
 import muon
-import scanpy as sc
 import numpy as np
 import logging
 from sys import stdout
@@ -111,14 +110,6 @@ for mod in par['modality']:
         mdata.mod[mod] = data[keep_cells, keep_genes]
     
     logger.info("\tFiltered data: %s", data)
-
-# # can we assume execution_log exists?
-# if mdata.uns is None or "execution_log" not in mdata.uns:
-#     mdata.uns["execution_log"] = []
-# # store new entry
-# new_entry = {"component": meta["functionality_name"], "params": par}
-# mdata.uns["execution_log"].append(new_entry)
-
 
 logger.info("Writing output data to %s", par["output"])
 mdata.write(par["output"])
