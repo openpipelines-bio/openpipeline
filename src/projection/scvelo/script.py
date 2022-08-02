@@ -17,6 +17,7 @@ logger.addHandler(console_handler)
 ## VIASH START
 def none_factory():
   return None
+
 par = defaultdict(none_factory, {
   'input': './resources_test/rna_velocity/velocyto_processed/cellranger_tiny.loom',
   'output': './foo',
@@ -26,57 +27,62 @@ par = defaultdict(none_factory, {
 ## VIASH END
 mpl.rcParams['savefig.dpi']=150
 
-# Create output directory
-output_dir = Path(par['output'])
-output_dir.mkdir(parents=True, exist_ok=True)
-scvelo.settings.figdir = str(output_dir)
+def main():
+
+  # Create output directory
+  output_dir = Path(par['output'])
+  output_dir.mkdir(parents=True, exist_ok=True)
+  scvelo.settings.figdir = str(output_dir)
 
 
-# Calculate the sample name
-sample_name = par["output"].removesuffix(".loom")
-sample_name = Path(sample_name).name
+  # Calculate the sample name
+  sample_name = par["output"].removesuffix(".loom")
+  sample_name = Path(sample_name).name
 
-# Read the input data
-adata = scvelo.read(par['input'])
+  # Read the input data
+  adata = scvelo.read(par['input'])
 
-# Save spliced vs unspliced proportions to file
-with (output_dir / "proportions.txt").open('w') as target:
-    with redirect_stdout(target):
-        scvelo.utils.show_proportions(adata)
+  # Save spliced vs unspliced proportions to file
+  with (output_dir / "proportions.txt").open('w') as target:
+      with redirect_stdout(target):
+          scvelo.utils.show_proportions(adata)
 
-# Plot piecharts of spliced vs unspliced proportions
-scvelo.pl.proportions(adata, save=True)
+  # Plot piecharts of spliced vs unspliced proportions
+  scvelo.pl.proportions(adata, save=True, show=False)
 
-# Perform preprocessing
-scvelo.pp.filter_and_normalize(adata,
-                               min_counts=par["min_count"],
-                               min_counts_u=par["min_count_u"],
-                               min_cells=par["min_cells"],
-                               min_cells_u=par["min_cells_u"],
-                               min_shared_counts=par["min_shared_counts"],
-                               min_shared_cells=par["min_shared_cells"],
-                               n_top_genes=par["n_top_genes"],
-                               log=par["log_transform"])
+  # Perform preprocessing
+  scvelo.pp.filter_and_normalize(adata,
+                                min_counts=par["min_counts"],
+                                min_counts_u=par["min_counts_u"],
+                                min_cells=par["min_cells"],
+                                min_cells_u=par["min_cells_u"],
+                                min_shared_counts=par["min_shared_counts"],
+                                min_shared_cells=par["min_shared_cells"],
+                                n_top_genes=par["n_top_genes"],
+                                log=par["log_transform"])
 
-# Fitting
-scvelo.pp.moments(adata,
-                  n_pcs=par["n_principal_components"],
-                  n_neighbors=par["n_neighbors"])
+  # Fitting
+  scvelo.pp.moments(adata,
+                    n_pcs=par["n_principal_components"],
+                    n_neighbors=par["n_neighbors"])
 
 
-# Second step in velocyto calculations
-# Velocity calculation and visualization
-# From the scvelo manual: 
-# The solution to the full dynamical model is obtained by setting mode='dynamical',
-# which requires to run scv.tl.recover_dynamics(adata) beforehand
-scvelo.tl.recover_dynamics(adata)
-scvelo.tl.velocity(adata, mode="dynamical")
-scvelo.tl.velocity_graph(adata)
-scvelo.pl.velocity_graph(adata, save=True)
+  # Second step in velocyto calculations
+  # Velocity calculation and visualization
+  # From the scvelo manual: 
+  # The solution to the full dynamical model is obtained by setting mode='dynamical',
+  # which requires to run scv.tl.recover_dynamics(adata) beforehand
+  scvelo.tl.recover_dynamics(adata)
+  scvelo.tl.velocity(adata, mode="dynamical")
+  scvelo.tl.velocity_graph(adata)
+  scvelo.pl.velocity_graph(adata, save=str(output_dir / "scvelo_graph.pdf"), show=False)
 
-# Plotting
-# TODO: add more here.
-scvelo.pl.velocity_embedding_stream(adata, save=output_dir / "velocity_embedding.png")
+  # Plotting
+  # TODO: add more here.
+  scvelo.pl.velocity_embedding_stream(adata, save=str(output_dir / "scvelo_embedding.pdf"), show=False)
 
-# Create output
-mudata.MuData({'rna_velocity': adata}).write(output_dir / f"{sample_name}.h5mu")
+  # Create output
+  mudata.MuData({'rna_velocity': adata}).write(output_dir / f"{sample_name}.h5mu")
+
+if __name__ == "__main__":
+  main()

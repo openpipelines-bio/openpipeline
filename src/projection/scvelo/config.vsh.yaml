@@ -65,10 +65,10 @@ functionality:
   test_resources:
     - type: python_script
       path: test.py
-    - path: ../../../resources_test/rna_velocity/velocyto_processed
+    - path: ../../../resources_test/rna_velocity/velocyto_processed/cellranger_tiny.loom
 platforms:
   - type: docker
-    image: python:3.9-slim
+    image: python:3.9
     setup:
       - type: python
         pip:
