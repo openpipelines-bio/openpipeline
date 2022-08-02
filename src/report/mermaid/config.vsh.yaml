@@ -37,8 +37,7 @@ platforms:
     image: python:3.8-slim
     python:
       packages:
-        - scanpy~=1.9.1
         - requests
-        - anndata~=0.8.0
+        - Pillow~=9.2.0
   - type: nextflow
     variant: vdsl3
