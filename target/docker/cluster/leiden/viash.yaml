@@ -484,9 +484,9 @@ functionality:
       
       LABEL org.opencontainers.image.authors="Dries De Maeyer <ddemaeyer@gmail.com> (maintainer) {account: ddemaey1}"
       LABEL org.opencontainers.image.description="Companion container for running component cluster leiden"
-      LABEL org.opencontainers.image.created="2022-08-02T09:37:48Z"
+      LABEL org.opencontainers.image.created="2022-08-02T12:05:34Z"
       LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-      LABEL org.opencontainers.image.revision="6ae25cdd4608bbd8e7952e040ea7e3d74e97436b"
+      LABEL org.opencontainers.image.revision="3e78f5f0653b38ec4bf61cddd6e1642937263f0c"
       LABEL org.opencontainers.image.version="main_build"
       VIASHDOCKER
       }
@@ -943,5 +943,5 @@ info:
   output: "target/docker/cluster/leiden"
   executable: "target/docker/cluster/leiden/leiden"
   viash_version: "0.5.15"
-  git_commit: "6ae25cdd4608bbd8e7952e040ea7e3d74e97436b"
+  git_commit: "3e78f5f0653b38ec4bf61cddd6e1642937263f0c"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"
