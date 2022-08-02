@@ -716,7 +716,6 @@ functionality:
       tempscript=".viash_script.sh"
       cat > "$tempscript" << VIASHMAIN
       
-      from multiprocessing.sharedctypes import Value
       import os
       import re
       import subprocess
@@ -2717,5 +2716,5 @@ info:
   platform: "nextflow"
   output: "target/nextflow/mapping/bd_rhapsody_wta"
   viash_version: "0.5.15"
-  git_commit: "3f39ba619cfdb6309677ffe7668a9deda1bf6cea"
+  git_commit: "6ae25cdd4608bbd8e7952e040ea7e3d74e97436b"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"
