@@ -414,7 +414,6 @@ functionality:
       
       
       import muon
-      import scanpy as sc
       import numpy as np
       
       ### VIASH START
@@ -523,14 +522,6 @@ functionality:
               mdata.mod[mod] = data[keep_cells, keep_genes]
           
           print(f"  Filtered data: {data}")
-      
-      # # can we assume execution_log exists?
-      # if mdata.uns is None or "execution_log" not in mdata.uns:
-      #     mdata.uns["execution_log"] = []
-      # # store new entry
-      # new_entry = {"component": meta["functionality_name"], "params": par}
-      # mdata.uns["execution_log"].append(new_entry)
-      
       
       print("Writing output data")
       mdata.write(par["output"])
@@ -2225,6 +2216,5 @@ info:
   platform: "nextflow"
   output: "target/nextflow/filter/filter_with_counts"
   viash_version: "0.5.15"
-  git_commit: "91e1fddf82f34d178f19021b2ad2ddaff626d08b"
+  git_commit: "b5c78ed3aa0d137af08ec8c946029a7429b92981"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"
-  git_tag: "0.4.1"

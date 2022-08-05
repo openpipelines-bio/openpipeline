@@ -385,16 +385,16 @@ FROM ghcr.io/data-intuitive/randpy:r4.0_py3.8
 
 RUN apt update && apt upgrade -y
 RUN pip install --upgrade pip && \
-  pip install --upgrade --no-cache-dir "mudata~=0.1.2" "anndata<0.8"
+  pip install --upgrade --no-cache-dir "anndata~=0.8" "mudata~=0.2.0"
 
 RUN Rscript -e 'if (!requireNamespace("remotes", quietly = TRUE)) install.packages("remotes")' && \
   Rscript -e 'remotes::install_cran(c("anndata"), repos = "https://cran.rstudio.com")'
 
 LABEL org.opencontainers.image.authors="Robrecht Cannoodt <rcannood@gmail.com> (maintainer) {github: rcannood, orcid: 0000-0003-3641-729X}"
 LABEL org.opencontainers.image.description="Companion container for running component convert from_bdrhap_to_h5mu"
-LABEL org.opencontainers.image.created="2022-08-05T12:28:45Z"
+LABEL org.opencontainers.image.created="2022-08-05T16:12:40Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="91e1fddf82f34d178f19021b2ad2ddaff626d08b"
+LABEL org.opencontainers.image.revision="b5c78ed3aa0d137af08ec8c946029a7429b92981"
 LABEL org.opencontainers.image.version="integration_build"
 VIASHDOCKER
 }

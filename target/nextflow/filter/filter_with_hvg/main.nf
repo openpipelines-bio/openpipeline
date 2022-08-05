@@ -293,6 +293,12 @@ mdata.var_names_make_unique()
 for mod in par['modality']:
     print(f"Processing modality '{mod}'")
     data = mdata.mod[mod]
+
+    # Workaround for issue 
+    # https://github.com/scverse/scanpy/issues/2239
+    # https://github.com/scverse/scanpy/issues/2181
+    if 'log1p' in data.uns and 'base' not in data.uns['log1p']:
+        data.uns['log1p']['base'] = None
     #sc.pp.log1p(data)
 
     print(f"  Unfiltered data: {data}")
@@ -338,15 +344,6 @@ for mod in par['modality']:
     if par["do_subset"]:
         keep_feats = np.ravel(data.var[par["var_name_filter"]])
         mdata.mod[mod] = data[:,keep_feats]
-
-
-# # can we assume execution_log exists?
-# if mdata.uns is None or "execution_log" not in mdata.uns:
-#     mdata.uns["execution_log"] = []
-# # store new entry
-# new_entry = {"component": meta["functionality_name"], "params": par}
-# mdata.uns["execution_log"].append(new_entry)
-
 
 print("Writing h5mu to file")
 mdata.write_h5mu(par["output"])

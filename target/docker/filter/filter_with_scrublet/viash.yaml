@@ -598,13 +598,13 @@ functionality:
       FROM python:3.8
       
       RUN pip install --upgrade pip && \
-        pip install --upgrade --no-cache-dir "scanpy~=1.9.1" "scrublet" "muon" "mudata~=0.1.2" "anndata<0.8"
+        pip install --upgrade --no-cache-dir "scanpy~=1.9.1" "scrublet" "muon" "mudata~=0.2.0" "anndata~=0.8.0"
       
       LABEL org.opencontainers.image.authors="Dries De Maeyer <DDeMaey1@its.jnj.com> (contributor) {account: ddemaey1}, Robrecht Cannoodt <rcannood@gmail.com> (maintainer, contributor) {github: rcannood, orcid: 0000-0003-3641-729X}"
       LABEL org.opencontainers.image.description="Companion container for running component filter filter_with_scrublet"
-      LABEL org.opencontainers.image.created="2022-08-05T12:28:44Z"
+      LABEL org.opencontainers.image.created="2022-08-05T16:12:40Z"
       LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-      LABEL org.opencontainers.image.revision="91e1fddf82f34d178f19021b2ad2ddaff626d08b"
+      LABEL org.opencontainers.image.revision="b5c78ed3aa0d137af08ec8c946029a7429b92981"
       LABEL org.opencontainers.image.version="integration_build"
       VIASHDOCKER
       }
@@ -898,8 +898,8 @@ functionality:
       fi
       ViashDockerSetup 'ghcr.io/openpipelines-bio/filter_filter_with_scrublet:integration_build' ifneedbepullelsecachedbuild
       if [ $VIASH_MODE == "docker_debug" ]; then
-        ViashNotice "+ docker run --entrypoint=bash -i --rm -v "$(pwd)":/pwd --workdir /pwd -t 'ghcr.io/openpipelines-bio/filter_filter_with_scrublet:integration_build'"
-        docker run --entrypoint=bash -i --rm -v "$(pwd)":/pwd --workdir /pwd -t 'ghcr.io/openpipelines-bio/filter_filter_with_scrublet:integration_build'
+        ViashNotice "+ docker run --entrypoint=bash -i --rm --env NUMBA_CACHE_DIR=/tmp -v "$(pwd)":/pwd --workdir /pwd -t 'ghcr.io/openpipelines-bio/filter_filter_with_scrublet:integration_build'"
+        docker run --entrypoint=bash -i --rm --env NUMBA_CACHE_DIR=/tmp -v "$(pwd)":/pwd --workdir /pwd -t 'ghcr.io/openpipelines-bio/filter_filter_with_scrublet:integration_build'
         exit 0
       fi
       
@@ -1018,13 +1018,13 @@ functionality:
       function ViashPerformChown {
         
         if [ ! -z "$VIASH_PAR_OUTPUT" ]; then
-          eval docker run --entrypoint=chown -i --rm $VIASH_EXTRA_MOUNTS ghcr.io/openpipelines-bio/filter_filter_with_scrublet:integration_build "$(id -u):$(id -g)" --silent --recursive "$VIASH_PAR_OUTPUT"
+          eval docker run --entrypoint=chown -i --rm --env NUMBA_CACHE_DIR=/tmp $VIASH_EXTRA_MOUNTS ghcr.io/openpipelines-bio/filter_filter_with_scrublet:integration_build "$(id -u):$(id -g)" --silent --recursive "$VIASH_PAR_OUTPUT"
         fi
       }
       trap ViashPerformChown EXIT
       
       
-      cat << VIASHEOF | eval docker run --entrypoint=bash -i --rm $VIASH_EXTRA_MOUNTS ghcr.io/openpipelines-bio/filter_filter_with_scrublet:integration_build
+      cat << VIASHEOF | eval docker run --entrypoint=bash -i --rm --env NUMBA_CACHE_DIR=/tmp $VIASH_EXTRA_MOUNTS ghcr.io/openpipelines-bio/filter_filter_with_scrublet:integration_build
       set -e
       tempscript=\$(mktemp "$VIASH_TEMP/viash-run-filter_with_scrublet-XXXXXX")
       function clean_up {
@@ -1096,15 +1096,6 @@ functionality:
           if par["do_subset"]:
               mdata.mod[mod] = data[keep_cells, :]
       
-      
-      # # can we assume execution_log exists?
-      # if mdata.uns is None or "execution_log" not in mdata.uns:
-      #     mdata.uns["execution_log"] = []
-      # # store new entry
-      # new_entry = {"component": meta["functionality_name"], "params": par}
-      # mdata.uns["execution_log"].append(new_entry)
-      
-      
       print("Writing h5mu to file")
       mdata.write_h5mu(par["output"])
       
@@ -1149,7 +1140,8 @@ platform:
   port: []
   setup_strategy: "ifneedbepullelsecachedbuild"
   privileged: false
-  run_args: []
+  run_args:
+  - "--env NUMBA_CACHE_DIR=/tmp"
   target_image_source: "https://github.com/openpipelines-bio/openpipeline"
   setup:
   - type: "python"
@@ -1158,8 +1150,8 @@ platform:
     - "scanpy~=1.9.1"
     - "scrublet"
     - "muon"
-    - "mudata~=0.1.2"
-    - "anndata<0.8"
+    - "mudata~=0.2.0"
+    - "anndata~=0.8.0"
     pip: []
     pypi: []
     git: []
@@ -1179,6 +1171,5 @@ info:
   output: "target/docker/filter/filter_with_scrublet"
   executable: "target/docker/filter/filter_with_scrublet/filter_with_scrublet"
   viash_version: "0.5.15"
-  git_commit: "91e1fddf82f34d178f19021b2ad2ddaff626d08b"
+  git_commit: "b5c78ed3aa0d137af08ec8c946029a7429b92981"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"
-  git_tag: "0.4.1"

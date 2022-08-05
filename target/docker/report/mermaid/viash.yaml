@@ -432,13 +432,13 @@ functionality:
       FROM python:3.8-slim
       
       RUN pip install --upgrade pip && \
-        pip install --upgrade --no-cache-dir "scanpy~=1.9.1" "requests" "anndata<0.8"
+        pip install --upgrade --no-cache-dir "requests" "Pillow~=9.2.0"
       
       LABEL org.opencontainers.image.authors="Dries De Maeyer <DDeMaey1@its.jnj.com> (maintainer) {account: ddemaey1}"
       LABEL org.opencontainers.image.description="Companion container for running component report mermaid"
-      LABEL org.opencontainers.image.created="2022-08-05T12:28:44Z"
+      LABEL org.opencontainers.image.created="2022-08-05T16:12:40Z"
       LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-      LABEL org.opencontainers.image.revision="91e1fddf82f34d178f19021b2ad2ddaff626d08b"
+      LABEL org.opencontainers.image.revision="b5c78ed3aa0d137af08ec8c946029a7429b92981"
       LABEL org.opencontainers.image.version="integration_build"
       VIASHDOCKER
       }
@@ -767,7 +767,6 @@ functionality:
       import base64
       import requests, io
       from PIL import Image
-      import matplotlib.pyplot as plt
       
       file = open(par["input"],mode='r')
       graph = file.read()
@@ -816,9 +815,8 @@ platform:
   python:
     user: false
     packages:
-    - "scanpy~=1.9.1"
     - "requests"
-    - "anndata<0.8"
+    - "Pillow~=9.2.0"
     pip: []
     pypi: []
     git: []
@@ -839,6 +837,5 @@ info:
   output: "target/docker/report/mermaid"
   executable: "target/docker/report/mermaid/mermaid"
   viash_version: "0.5.15"
-  git_commit: "91e1fddf82f34d178f19021b2ad2ddaff626d08b"
+  git_commit: "b5c78ed3aa0d137af08ec8c946029a7429b92981"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"
-  git_tag: "0.4.1"

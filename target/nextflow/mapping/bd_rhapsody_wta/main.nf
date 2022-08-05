@@ -411,7 +411,6 @@ thisScript = '''set -e
 tempscript=".viash_script.sh"
 cat > "$tempscript" << VIASHMAIN
 
-from multiprocessing.sharedctypes import Value
 import os
 import re
 import subprocess

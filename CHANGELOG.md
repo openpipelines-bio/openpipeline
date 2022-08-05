@@ -1,3 +1,21 @@
+# openpipeline 0.5.0
+
+## NEW FUNCTIONALITY
+
+## MAJOR CHANGES
+
+* Multiple components: update to anndata 0.8 with mudata 0.2.0. This means that the format of the .h5mu files have changed.
+
+## MINOR CHANGES
+
+## BUG FIXES
+
+* `integrate/concat`: Fix an issue where joining boolean values caused `TypeError`.
+
+* `mapping/cellranger_count`: Reduce memory usage during testing to avoid CI to hang.
+
+## DEPRECATED
+
 # openpipeline 0.4.1
 
 ## BUG FIXES
