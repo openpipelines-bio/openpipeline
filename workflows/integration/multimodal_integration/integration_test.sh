@@ -12,4 +12,5 @@ bin/nextflow run . \
   -main-script workflows/integration/multimodal_integration/main.nf \
   -profile docker \
   -resume \
-  -entry test_wf
+  -entry test_wf \
+  -with-trace work/trace.txt
