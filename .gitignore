@@ -27,7 +27,6 @@ out/
 # viash related
 .viash_log*
 log.txt
-check_results/
 out/
 output*
 output_log/

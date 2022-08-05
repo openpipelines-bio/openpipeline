@@ -40,8 +40,7 @@ platforms:
     image: python:3.10
     python:
       packages:
-        - anndata~=0.8.0
-        - mudata~=0.2.0
+        - anndata<0.8
         - muon
   - type: native
   - type: nextflow

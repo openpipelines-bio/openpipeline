@@ -466,7 +466,7 @@ def concat_columns(vars_list: list[pd.DataFrame]) -> pd.DataFrame:
         return pd.DataFrame()
     df = pd.concat(vars_list, axis=1)
     logger.debug('Concatenated dataframe. Aggregating column.')
-    result = df.groupby(df.columns, axis=1).agg(lambda x: x.apply(lambda y: ','.join(y.dropna().unique().astype('str')), axis=1))
+    result = df.groupby(df.columns, axis=1).agg(lambda x: x.apply(lambda y: ','.join(y.dropna().unique()), axis=1))
     logger.info('Aggregation completed.')
     dtypes = {}
     for col_name in column_names:

@@ -306,3 +306,6 @@
 2022-05-23 14:47:14    5226654 pbmc_1k_v3/pbmc_1k_v3_filtered_feature_bc_matrix/matrix.mtx.gz
 2022-05-23 14:47:14        682 pbmc_1k_v3/pbmc_1k_v3_metrics_summary.csv
 2022-05-23 14:47:14   18423918 pbmc_1k_v3/pbmc_1k_v3_raw_feature_bc_matrix.h5
+2022-08-01 14:45:35         67 rna_velocity/velocyto/barcodes.txt
+2022-08-01 14:45:35  251330650 rna_velocity/velocyto/compatible_bd_input.bam
+2022-08-01 14:45:35      94810 rna_velocity/velocyto_processed/cellranger_tiny.loom

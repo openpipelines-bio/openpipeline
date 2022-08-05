@@ -1,21 +1,12 @@
-# openpipeline 0.5.0
-
-## NEW FUNCTIONALITY
-
-* `workflows/integration/multiomics`: implement pipeline for processing multiple multiomics samples.
-
-## MAJOR CHANGES
-
-* Multiple components: update to anndata 0.8 with mudata 0.2.0. This means that the format of the .h5mu files have changed.
-
-## MINOR CHANGES
+# openpipeline 0.4.1
 
 ## BUG FIXES
 
-* `integrate/concat`: Fix an issue where joining boolean values caused `TypeError`.
+* `workflows/ingestion/bd_rhapsody_wta`: use ':' as a seperator for multiple input files and fix integration tests.
 
-## DEPRECATED
+## MINOR CHANGES
 
+* Several components: pin mudata and scanpy dependencies so that anndata version <0.8.0 is used.
 
 # openpipeline 0.4.0
 

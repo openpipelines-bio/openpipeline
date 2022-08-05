@@ -444,16 +444,16 @@ functionality:
       
       RUN apt update && apt upgrade -y
       RUN pip install --upgrade pip && \
-        pip install --upgrade --no-cache-dir "anndata~=0.8" "mudata~=0.2.0"
+        pip install --upgrade --no-cache-dir "mudata~=0.1.2" "anndata<0.8"
       
       RUN Rscript -e 'if (!requireNamespace("remotes", quietly = TRUE)) install.packages("remotes")' && \
         Rscript -e 'remotes::install_cran(c("anndata"), repos = "https://cran.rstudio.com")'
       
       LABEL org.opencontainers.image.authors="Robrecht Cannoodt <rcannood@gmail.com> (maintainer) {github: rcannood, orcid: 0000-0003-3641-729X}"
       LABEL org.opencontainers.image.description="Companion container for running component convert from_bdrhap_to_h5mu"
-      LABEL org.opencontainers.image.created="2022-07-22T09:32:30Z"
+      LABEL org.opencontainers.image.created="2022-08-05T12:28:45Z"
       LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-      LABEL org.opencontainers.image.revision="b9f260326b23692ff0a6689de120f3be855dafb7"
+      LABEL org.opencontainers.image.revision="91e1fddf82f34d178f19021b2ad2ddaff626d08b"
       LABEL org.opencontainers.image.version="integration_build"
       VIASHDOCKER
       }
@@ -994,8 +994,8 @@ platform:
     user: false
     packages: []
     pip:
-    - "anndata~=0.8"
-    - "mudata~=0.2.0"
+    - "mudata~=0.1.2"
+    - "anndata<0.8"
     pypi: []
     git: []
     github: []
@@ -1027,5 +1027,6 @@ info:
   output: "target/docker/convert/from_bdrhap_to_h5mu"
   executable: "target/docker/convert/from_bdrhap_to_h5mu/from_bdrhap_to_h5mu"
   viash_version: "0.5.15"
-  git_commit: "b9f260326b23692ff0a6689de120f3be855dafb7"
+  git_commit: "91e1fddf82f34d178f19021b2ad2ddaff626d08b"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"
+  git_tag: "0.4.1"

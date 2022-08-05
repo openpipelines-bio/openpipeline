@@ -39,6 +39,6 @@ platforms:
       packages:
         - scanpy~=1.9.1
         - requests
-        - anndata~=0.8.0
+        - anndata<0.8
   - type: nextflow
     variant: vdsl3
