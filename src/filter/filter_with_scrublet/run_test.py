@@ -73,9 +73,9 @@ class TestFilterWithScrublet(unittest.TestCase):
         new_obs = mu_out.mod['rna'].n_obs
         new_vars = mu_out.mod['rna'].n_vars
         self.assertLess(new_obs, self.orig_obs, msg="Some cells should have been filtered")
-        self.assertLess(new_vars, self.orig_vars, msg="Some genes should have been filtered")
-        self.assertLess(mu_out.mod['prot'].n_obs, self.orig_obs, msg="Some prot obs should have been filtered")
-        self.assertLess(mu_out.mod['prot'].n_vars, self.orig_prot_vars, msg="Some prot vars should have been filtered")
+        self.assertEqual(new_vars, self.orig_vars, msg="No genes should have been filtered")
+        self.assertEqual(mu_out.mod['prot'].n_obs, self.orig_obs, msg="No prot obs should have been filtered")
+        self.assertEqual(mu_out.mod['prot'].n_vars, self.orig_prot_vars, msg="No prot vars should have been filtered")
         self.assertListEqual(list(mu_out.mod['rna'].var['feature_types'].cat.categories), ["Gene Expression"],
                              msg="Feature types of RNA modality should be Gene Expression")
         self.assertListEqual(list(mu_out.mod['prot'].var['feature_types'].cat.categories), ["Antibody Capture"],
