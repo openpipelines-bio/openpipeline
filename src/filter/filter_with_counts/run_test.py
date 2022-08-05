@@ -6,7 +6,7 @@ from pathlib import Path
 
 ## VIASH START
 meta = {
-    'functionality_name': 'foo',
+    'functionality_name': './target/native/filter/filter_with_counts/filter_with_counts',
     'resources_dir': 'resources_test/'
 }
 ## VIASH END
@@ -37,7 +37,7 @@ class TestFilterWithCounts(TestCase):
             print(e.stdout.decode("utf-8"))
             raise e
 
-    def test_filtering_a_little_bit(self):
+    def test_filter_nothing(self):
         self._run_and_check_output([
             "--input", input_path, 
             "--output", "output-1.h5mu",
@@ -58,11 +58,11 @@ class TestFilterWithCounts(TestCase):
         self.assertListEqual(list(mu_out.mod['prot'].var['feature_types'].cat.categories), ["Antibody Capture"],
                              msg="Feature types of prot modality should be Antibody Capture")
  
-    def test_filtering_a_lit(self):
+    def test_filtering_a_little(self):
         self._run_and_check_output([
             "--input", input_path, 
             "--output", "output-2.h5mu",
-            "--modality", "rna:prot",
+            "--modality", "rna",
             "--min_cells_per_gene", "100",
             "--min_counts", "200", 
             "--max_counts", "5000000",
@@ -72,14 +72,14 @@ class TestFilterWithCounts(TestCase):
             "--min_fraction_mito", "0",
             "--max_fraction_mito", "0.2",
             "--do_subset"])
-        self.assertTrue(Path("output-2.h5mu"), msg="Output file not found")
+        self.assertTrue(Path("output-2.h5mu").is_file(), msg="Output file not found")
         mu_out = muon.read_h5mu("output-2.h5mu")
         new_obs = mu_out.mod['rna'].n_obs
         new_vars = mu_out.mod['rna'].n_vars
         self.assertLess(new_obs, self.orig_obs, msg="Some cells should have been filtered")
         self.assertLess(new_vars, self.orig_vars, msg="Some genes should have been filtered")
-        self.assertLess(mu_out.mod['prot'].n_obs, self.orig_obs, msg="Some prot obs should have been filtered")
-        self.assertLess(mu_out.mod['prot'].n_vars, self.orig_prot_vars, msg="Some prot vars should have been filtered")
+        self.assertEqual(mu_out.mod['prot'].n_obs, self.orig_obs, msg="No prot obs should have been filtered")
+        self.assertEqual(mu_out.mod['prot'].n_vars, self.orig_prot_vars, msg="No prot vars should have been filtered")
         self.assertListEqual(list(mu_out.mod['rna'].var['feature_types'].cat.categories), ["Gene Expression"],
                              msg="Feature types of RNA modality should be Gene Expression")
         self.assertListEqual(list(mu_out.mod['prot'].var['feature_types'].cat.categories), ["Antibody Capture"],
