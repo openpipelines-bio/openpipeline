@@ -1,6 +1,9 @@
-from os import path
+from pathlib import Path
+from unittest import main, TestCase
 import subprocess
+import unittest
 import muon
+from tempfile import NamedTemporaryFile
 
 ## VIASH START
 meta = {
@@ -9,64 +12,74 @@ meta = {
 }
 ## VIASH END
 
-print("> Reading input file")
+resources_dir, functionality_name = meta["resources_dir"], meta["functionality_name"]
 input_path = f"{meta['resources_dir']}/pbmc_1k_protein_v3/pbmc_1k_protein_v3_filtered_feature_bc_matrix.h5mu"
 
-mu_in = muon.read_h5mu(input_path)
-orig_obs = mu_in.mod['rna'].n_obs
-orig_vars = mu_in.mod['rna'].n_vars
-orig_prot_obs = mu_in.mod['prot'].n_obs
-orig_prot_vars = mu_in.mod['prot'].n_vars
 
+class TestFilterWithScrublet(unittest.TestCase):
+    def setUp(self) -> None:
+        self.tempfile = NamedTemporaryFile(suffix=".h5mu")
+        mu_in = muon.read_h5mu(input_path)
+        self.orig_obs = mu_in.mod['rna'].n_obs
+        self.orig_vars = mu_in.mod['rna'].n_vars
+        self.orig_prot_obs = mu_in.mod['prot'].n_obs
+        self.orig_prot_vars = mu_in.mod['prot'].n_vars
+        return super().setUp()
 
-# TEST 1: filtering a little bit
-print("> Check filtering a little bit")
-out = subprocess.check_output([
-        f"./{meta['functionality_name']}", 
-        "--input", input_path, 
-        "--output", "output-1.h5mu",
-        "--min_counts", "3"
-]).decode("utf-8")
+    def tearDown(self) -> None:
+        return super().tearDown()
 
-assert path.exists("output-1.h5mu"), "Output file not found"
-mu_out = muon.read_h5mu("output-1.h5mu")
+    def _run_and_check_output(self, args_as_list):
+        try:
+            subprocess_args = [f"./{functionality_name}"] + args_as_list
+            print(" ".join(subprocess_args))
+            subprocess.check_output(subprocess_args)
+        except subprocess.CalledProcessError as e:
+            print(e.stdout.decode("utf-8"))
+            raise e
 
-assert "filter_with_scrublet" in mu_out.mod["rna"].obs
-new_obs = mu_out.mod['rna'].n_obs
-new_vars = mu_out.mod['rna'].n_vars
-assert new_obs == orig_obs, "No RNA obs should have been filtered"
-assert new_vars == orig_vars, "No RNA vars should have been filtered"
-assert mu_out.mod['prot'].n_obs == orig_prot_obs, "No prot obs should have been filtered"
-assert mu_out.mod['prot'].n_vars == orig_prot_vars, "No prot vars should have been filtered"
+    def test_filter_a_little_bit(self):
+        self._run_and_check_output([
+                "--input", input_path, 
+                "--output", "output-1.h5mu",
+                "--min_counts", "3"
+        ])
+        self.assertTrue(Path("output-1.h5mu").is_file(), msg="Output file not found")
+        mu_out = muon.read_h5mu("output-1.h5mu")
+        self.assertIn("filter_with_scrublet", mu_out.mod["rna"].obs)
+        new_obs = mu_out.mod['rna'].n_obs
+        new_vars = mu_out.mod['rna'].n_vars
+        self.assertEqual(new_obs, self.orig_obs, msg="No RNA obs should have been filtered")
+        self.assertEqual(new_vars, self.orig_vars, msg="No RNA vars should have been filtered")
+        self.assertEqual(mu_out.mod['prot'].n_obs, self.orig_prot_obs, msg="No prot obs should have been filtered")
+        self.assertEqual(mu_out.mod['prot'].n_vars, self.orig_prot_vars, msg="No prot vars should have been filtered")
+        self.assertListEqual(list(mu_out.mod['rna'].var['feature_types'].cat.categories), ["Gene Expression"], 
+                             msg="Feature types of RNA modality should be Gene Expression")
+        self.assertListEqual(list(mu_out.mod['prot'].var['feature_types'].cat.categories), ["Antibody Capture"],
+                             msg="Feature types of prot modality should be Antibody Capture")
 
-assert list(mu_in.mod['rna'].var['feature_types'].cat.categories) == ["Gene Expression"], "Feature types of RNA modality should be Gene Expression"
-assert list(mu_in.mod['prot'].var['feature_types'].cat.categories) == ["Antibody Capture"], "Feature types of prot modality should be Antibody Capture"
+    def test_filtering_a_lot(self):
+        self._run_and_check_output([
+            f"./{meta['functionality_name']}", 
+            "--input", input_path, 
+            "--output", "output-2.h5mu",
+            "--modality", "rna",
+            "--min_counts", "10",
+            "--num_pca_components", "10",
+            "--do_subset"
+            ])
+        self.assertTrue(Path("output-2.h5mu").is_file(), msg="Output file not found")
+        mu_out = muon.read_h5mu("output-2.h5mu")
+        new_obs = mu_out.mod['rna'].n_obs
+        new_vars = mu_out.mod['rna'].n_vars
+        self.assertLess(new_obs, self.orig_obs, msg="Some cells should have been filtered")
+        self.assertEqual(new_vars, self.orig_vars, msg="No genes should have been filtered")
+        self.assertEqual(mu_out.mod['prot'].n_obs, self.orig_obs, msg="No prot obs should have been filtered")
+        self.assertEqual(mu_out.mod['prot'].n_vars, self.orig_prot_vars, msg="No prot vars should have been filtered")
+        self.assertListEqual(list(mu_out.mod['rna'].var['feature_types'].cat.categories), ["Gene Expression"],
+                             msg="Feature types of RNA modality should be Gene Expression")
+        self.assertListEqual(list(mu_out.mod['prot'].var['feature_types'].cat.categories), ["Antibody Capture"],
+                             msg="Feature types of prot modality should be Antibody Capture" )
 
-
-# TEST 2: filering a lot
-print("> Check filtering a lot")
-out = subprocess.check_output([
-        f"./{meta['functionality_name']}", 
-        "--input", input_path, 
-        "--output", "output-2.h5mu",
-        "--modality", "rna",
-        "--min_counts", "10",
-        "--num_pca_components", "10",
-        "--do_subset"
-]).decode("utf-8")
-
-assert path.exists("output-2.h5mu"), "Output file not found"
-mu_out = muon.read_h5mu("output-2.h5mu")
-
-new_new_obs = mu_out.mod['rna'].n_obs
-new_new_vars = mu_out.mod['rna'].n_vars
-assert new_new_obs <= new_obs, "More cells should have been filtered"
-assert new_new_vars <= new_vars, "More genes should have been filtered"
-assert mu_out.mod['prot'].n_obs == orig_prot_obs, "No prot obs should have been filtered"
-assert mu_out.mod['prot'].n_vars == orig_prot_vars, "No prot vars should have been filtered"
-
-assert list(mu_in.mod['rna'].var['feature_types'].cat.categories) == ["Gene Expression"], "Feature types of RNA modality should be Gene Expression"
-assert list(mu_in.mod['prot'].var['feature_types'].cat.categories) == ["Antibody Capture"], "Feature types of prot modality should be Antibody Capture"
-
-# test succeeded
-print("> All tests succeeded!")
+if __name__ == "__main__":
+    main()
