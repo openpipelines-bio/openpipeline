@@ -16,7 +16,7 @@ echo ">> Checking if the correct files are present"
 
 echo ">>> Testing dir mode"
 
-./fastqc dir --input "cellranger_tiny_fastq/" --output dirmode-report
+./fastqc -m dir --input "cellranger_tiny_fastq/" --output dirmode-report
 
 echo ">> Checking whether output dir exists"
 [[ ! -d dirmode-report ]] && echo "Output dir could not be found!" && exit 1
