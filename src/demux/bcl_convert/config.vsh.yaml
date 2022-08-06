@@ -40,7 +40,7 @@ functionality:
   resources:
     - type: bash_script
       path: script.sh
-  tests:
+  test_resources:
     - type: bash_script
       path: test.sh
     - path: ../../../resources_test/cellranger_tiny_bcl/bcl
