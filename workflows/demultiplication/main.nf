@@ -5,11 +5,12 @@ targetDir = params.rootDir + "/target/nextflow"
 
 include { cellranger_mkfastq } from targetDir + "/demux/cellranger_mkfastq/main.nf"
 include { bcl_convert } from targetDir + "/demux/bcl_convert/main.nf"
-include { publish } from targetDir + "/transfer/publish/main.nf"
+include { bcl2fastq } from targetDir + "/demux/bcl2fastq/main.nf"
+include { fastqc } from targetDir + "/qc/fastqc/main.nf"
 
 include { readConfig; viashChannel; helpMessage } from workflowDir + "/utils/WorkflowHelper.nf"
 
-config = readConfig("$projectDir/workflow.yaml")
+config = readConfig("$projectDir/config.vsh.yaml")
 
 params.demultiplexer = "mkfastq"
 
@@ -33,13 +34,40 @@ workflow run_wf {
   main:
   mkfastq_ch = input_ch
     | filter{ (it[1].demultiplexer ?: params.demultiplexer) == "mkfastq" }
-    | cellranger_mkfastq
+    | cellranger_mkfastq.run(
+        [
+          directives: [ publishDir: "${params.publishDir}/fastq" ]
+        ]
+      )
 
   bcl_convert_ch = input_ch
     | filter{ (it[1].demultiplexer ?: params.demultiplexer)  == "bclconvert" }
-    | bcl_convert
+    | bcl_convert.run(
+        [
+          directives: [ publishDir: "${params.publishDir}/fastq" ]
+        ]
+      )
 
-  output_ch = mkfastq_ch | mix( bcl_convert_ch )
+  bcl2fastq_ch = input_ch
+    | filter{ (it[1].demultiplexer ?: params.demultiplexer)  == "bcl2fastq" }
+    | bcl2fastq.run(
+        [
+          directives: [ publishDir: "${params.publishDir}/fastq" ]
+        ]
+      )
+
+  all_ch = mkfastq_ch | mix( bcl_convert_ch ) | mix ( bcl2fastq_ch )
+
+  all_ch
+      /* | map{ [ it[0], [ mode: "dir", input: it[1] ] ] } */
+      | fastqc.run(
+          [
+            mapData: { it -> [ mode: "dir", input: it ] },
+            directives: [ publishDir: "${params.publishDir}/qc" ]
+          ]
+        )
+
+  output_ch = all_ch
 
   emit:
   output_ch
@@ -66,6 +94,15 @@ workflow test_wf {
       cores: 2,
       memory: 5,
       demultiplexer: "bclconvert"
+    ],
+    [
+      id: "bcl2fastq_test",
+      input: params.resources_test + "/cellranger_tiny_bcl/bcl",
+      sample_sheet: params.resources_test + "/cellranger_tiny_bcl/bcl/sample_sheet.csv",
+      cores: 2,
+      memory: 5,
+      demultiplexer: "bcl2fastq",
+      ignore_missing: true
     ]
   ]
 
@@ -81,7 +118,6 @@ workflow test_wf {
     }
     | toList()
     | map { output_list ->
-      assert output_list.size() == 2 : "output channel should contain one event"
-      assert output_list[0][0] == "mkfastq_test" : "Output ID should be same as input ID"
+      assert output_list.size() == 3 : "There should be three outputs"
     }
 }

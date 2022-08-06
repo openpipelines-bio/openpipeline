@@ -14,4 +14,5 @@ bin/nextflow \
   -entry test_wf \
   -resume \
   -with-docker \
-  -with-trace work/trace.txt
+  -with-trace work/trace.txt \
+  --publishDir demux-test

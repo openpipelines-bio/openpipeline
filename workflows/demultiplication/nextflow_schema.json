@@ -58,6 +58,12 @@
             "description": "The multiplexer to use, one of bclconvert or mkfastq",
             "default": "",
             "hidden": false
+          },
+          "ignore_missing": {
+            "type":"boolean",
+            "description": "Should the demultiplexer ignore missing entities (filter, ...)",
+            "default": "",
+            "hidden": false
           }
         }
       }
