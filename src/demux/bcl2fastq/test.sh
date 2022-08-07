@@ -8,17 +8,7 @@ set -ex
 #   1. the sample sheet delivered with it does not work with bcl-convert (v1 of the format)
 #   2. 2 filter files are missing from the run directory that bcl-convert requires to run
 #
-# We worked around this by
-#   1. Manually editing a sample sheet file suited for bcl-convert (format v2)
-#   2. Adding a filter file
-#
-# The filter file is a binary file, we just created an empty file use that.
-# bcl-convert might complain about it, but at least something is written out.
-# An alternative is to use a filter file from a different project. This also generates
-# a warning, but the fastq ouput files contain reads. The drawback is that those filter files
-# are generally above 100MB in size.
-#
-# TODO: Check if a (binary) filter file can be generated that is small but works.
+# We worked around this by ignoring all missing entries
 
 echo ">>> Running executable"
 ./bcl2fastq \

@@ -38,6 +38,6 @@ functionality:
     - path: ../../../resources_test/cellranger_tiny_bcl/bcl
 platforms:
   - type: docker
-    image: ghcr.io/data-intuitive/bcl2fastq
+    image: ghcr.io/data-intuitive/bcl2fastq:2.20
   - type: nextflow
     variant: vdsl3
