@@ -24,7 +24,7 @@ cp -r bcl local_copy
 cp s_1_1101.filter local_copy/Data/Intensities/BaseCalls/L001/s_1_1101.filter
 
 echo ">>> Running executable"
-./bclconvert \
+./bcl_convert \
   --input local_copy \
   --sample_sheet SampleSheet.csv \
   --output fastq \
