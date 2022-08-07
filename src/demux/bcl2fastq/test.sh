@@ -15,6 +15,8 @@ echo ">>> Running executable"
   --input bcl \
   --sample_sheet SampleSheet.csv \
   --output fastq \
+  --reports reports \
+  --stats stats \
   --ignore_missing
 
 echo ">>> Checking whether the output dir exists"
@@ -22,6 +24,12 @@ echo ">>> Checking whether the output dir exists"
 
 echo ">>> Checking whether output fastq files are created"
 [[ ! -f fastq/Undetermined_S0_L001_R1_001.fastq.gz ]] && echo "Output fastq files could not be found!" && exit 1
+
+echo ">>> Checking whether reports files are created"
+[[ ! -d reports/html ]] && echo "Output reports files could not be found!" && exit 1
+
+echo ">>> Checking whether stats files are created"
+[[ ! -f stats/Stats.json ]] && echo "Output files files could not be found!" && exit 1
 
 # print final message
 echo ">>> Test finished successfully"

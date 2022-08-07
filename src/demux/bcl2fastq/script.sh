@@ -8,4 +8,6 @@ bcl2fastq \
   --runfolder-dir "$par_input" \
   --sample-sheet "$par_sample_sheet" \
   --output-dir "$par_output" \
+  --reports-dir "$par_reports" \
+  --stats-dir "$par_stats" \
   $ignore

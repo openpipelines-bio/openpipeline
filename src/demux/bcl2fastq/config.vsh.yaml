@@ -27,6 +27,18 @@ functionality:
       required: true
       description: Output directory containig fastq files
       example: fastq_dir
+    - name: "--reports"
+      type: file
+      direction: output
+      required: true
+      description: Reports directory
+      example: reports_dir
+    - name: "--stats"
+      type: file
+      direction: output
+      required: true
+      description: stats directory
+      example: stats_dir
     - name: "--ignore_missing"
       type: boolean_true
   resources:
