@@ -18,7 +18,7 @@ params.demultiplexer = "mkfastq"
 workflow {
   helpMessage(params, config)
 
-  demultiplexers = [ "mkfastq", "bclconvert" ]
+  demultiplexers = [ "mkfastq", "bclconvert", "bcl2fastq" ]
 
   if (!demultiplexers.contains(params.demultiplexer)) {
     exit 1, "ERROR: Please provide a demultiplexer that is one of ${demultiplexers}"
@@ -66,7 +66,7 @@ workflow run_wf {
         ]
       )
 
-  /* /1* Generate multiqc report *1/ */
+  /* Generate multiqc report */
   all_ch
     | map{ it[1] }
     | toSortedList
