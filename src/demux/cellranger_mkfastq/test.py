@@ -12,12 +12,14 @@ print("> Running command", flush=True)
 input = meta["resources_dir"] + "/cellranger_tiny_bcl/bcl"
 sample_sheet = meta["resources_dir"] + "/cellranger_tiny_bcl/bcl/sample_sheet.csv"
 output = "test_output"
+reports = "test_reports"
 
 cmd_pars = [
     "./" + meta["functionality_name"],
     "--input", input,
     "--sample_sheet", sample_sheet,
     "--output", output,
+    "--reports", reports,
     "--memory", "4" 
 ]
 subprocess.check_call(cmd_pars, encoding="utf-8", timeout=500)

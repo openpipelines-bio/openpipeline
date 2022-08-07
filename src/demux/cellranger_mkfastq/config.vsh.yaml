@@ -36,6 +36,12 @@ functionality:
       example: "/path/to/output"
       default: fastqs
       required: true
+    - name: "--reports"
+      type: file
+      direction: output
+      required: true
+      description: Reports directory
+      example: reports_dir
     - type: integer
       name: --cores
       description:  Set max cores the pipeline may request at one time.
