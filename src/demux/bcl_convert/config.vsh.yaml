@@ -33,6 +33,12 @@ functionality:
       required: true
       description: Output directory containig fastq files
       example: fastq_dir
+    - name: "--reports"
+      type: file
+      direction: output
+      required: true
+      description: Reports directory
+      example: reports_dir
     - name: "--test_mode"
       type: boolean
       default: false

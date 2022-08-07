@@ -6,3 +6,5 @@ bcl-convert \
   --output-directory "$par_output" \
   --sample-sheet "$par_sample_sheet" \
   --first-tile-only $par_test_mode
+
+mv "$par_output"/Reports "$par_reports"

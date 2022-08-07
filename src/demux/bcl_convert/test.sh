@@ -28,6 +28,7 @@ echo ">>> Running executable"
   --input local_copy \
   --sample_sheet SampleSheet.csv \
   --output fastq \
+  --reports reports \
   --test_mode true
 
 echo ">>> Checking whether the output dir exists"
