@@ -7,4 +7,9 @@ bcl-convert \
   --sample-sheet "$par_sample_sheet" \
   --first-tile-only $par_test_mode
 
-mv "$par_output"/Reports "$par_reports"
+if [ "$par_separate_reports" == true ]; then
+  echo "Moving reports to its own location"
+  mv "$par_output"/Reports "$par_reports"
+else
+  echo "Leaving reports alone"
+fi
