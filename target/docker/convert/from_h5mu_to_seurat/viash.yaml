@@ -446,9 +446,9 @@ functionality:
       
       LABEL org.opencontainers.image.authors="Robrecht Cannoodt <rcannood@gmail.com> (author, maintainer) {github: rcannood, orcid: 0000-0003-3641-729X}"
       LABEL org.opencontainers.image.description="Companion container for running component convert from_h5mu_to_seurat"
-      LABEL org.opencontainers.image.created="2022-08-05T16:12:40Z"
+      LABEL org.opencontainers.image.created="2022-08-08T07:43:36Z"
       LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-      LABEL org.opencontainers.image.revision="b5c78ed3aa0d137af08ec8c946029a7429b92981"
+      LABEL org.opencontainers.image.revision="d9fabfede74d9ffb49a1cf92402d508c43106ab0"
       LABEL org.opencontainers.image.version="integration_build"
       VIASHDOCKER
       }
@@ -882,5 +882,5 @@ info:
   output: "target/docker/convert/from_h5mu_to_seurat"
   executable: "target/docker/convert/from_h5mu_to_seurat/from_h5mu_to_seurat"
   viash_version: "0.5.15"
-  git_commit: "b5c78ed3aa0d137af08ec8c946029a7429b92981"
+  git_commit: "d9fabfede74d9ffb49a1cf92402d508c43106ab0"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"
