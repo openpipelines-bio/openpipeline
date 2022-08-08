@@ -62,7 +62,7 @@ workflow test_wf {
     input: params.resources_test + "/cellranger_tiny_fastq/cellranger_tiny_fastq",
     reference: params.resources_test + "/cellranger_tiny_fastq/cellranger_tiny_ref",
     cores: 2,
-    memory: 4
+    memory: 6
   ]
 
   output_ch =
