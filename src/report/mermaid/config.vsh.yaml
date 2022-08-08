@@ -34,7 +34,7 @@ functionality:
       path: test.py
 platforms:
   - type: docker
-    image: python:3.8-slim
+    image: python:3.8
     python:
       packages:
         - requests
