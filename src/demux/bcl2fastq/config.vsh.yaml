@@ -2,7 +2,7 @@ functionality:
   name: bcl2fastq
   namespace: demux
   description: |
-    Convert bcl files to fastq files using bcl2fast.
+    Convert bcl files to fastq files using bcl2fastq.
   authors:
     - name: Toni Verbeiren
       roles: [ author, maintainer ]
