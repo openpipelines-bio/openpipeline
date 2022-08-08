@@ -245,7 +245,11 @@ thisDefaultProcessArgs = [
     "registry" : "ghcr.io",
     "image" : "openpipelines-bio/demux_cellranger_mkfastq",
     "tag" : "integration_build"
-  }
+  },
+  "label" : [
+    "highmem",
+    "highcpu"
+  ]
 }'''),
   // auto settings
   auto: jsonSlurper.parseText('''{

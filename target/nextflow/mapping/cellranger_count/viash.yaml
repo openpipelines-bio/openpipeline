@@ -436,7 +436,11 @@ functionality:
           "registry" : "ghcr.io",
           "image" : "openpipelines-bio/mapping_cellranger_count",
           "tag" : "integration_build"
-        }
+        },
+        "label" : [
+          "highmem",
+          "highcpu"
+        ]
       }'''),
         // auto settings
         auto: jsonSlurper.parseText('''{
@@ -2091,7 +2095,9 @@ platform:
     accelerator: {}
     conda: []
     containerOptions: []
-    label: []
+    label:
+    - "highmem"
+    - "highcpu"
     module: []
     pod: []
     publishDir: []
@@ -2109,5 +2115,5 @@ info:
   platform: "nextflow"
   output: "target/nextflow/mapping/cellranger_count"
   viash_version: "0.5.15"
-  git_commit: "d53991fa7190a9100fbe6842bb511c1a662bf0dc"
+  git_commit: "0ae9f310897fdcf8d91e2d2761b5729aac571271"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"
