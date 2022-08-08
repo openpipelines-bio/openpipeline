@@ -293,7 +293,11 @@ thisDefaultProcessArgs = [
     "registry" : "ghcr.io",
     "image" : "openpipelines-bio/mapping_cellranger_count",
     "tag" : "main_build"
-  }
+  },
+  "label" : [
+    "highmem",
+    "highcpu"
+  ]
 }'''),
   // auto settings
   auto: jsonSlurper.parseText('''{

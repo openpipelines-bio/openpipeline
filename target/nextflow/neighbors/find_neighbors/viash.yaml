@@ -2053,5 +2053,5 @@ info:
   platform: "nextflow"
   output: "target/nextflow/neighbors/find_neighbors"
   viash_version: "0.5.15"
-  git_commit: "187676e02107c37aefa2e985a918c59d8b37c28b"
+  git_commit: "76a4a7355d653c18794f4afc2b0da5c960271fc0"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"
