@@ -382,9 +382,9 @@ RUN pip install --upgrade pip && \
 
 LABEL org.opencontainers.image.authors="Dries Schaumont <Dschaumo@its.jnj.com> (maintainer)"
 LABEL org.opencontainers.image.description="Companion container for running component integrate merge"
-LABEL org.opencontainers.image.created="2022-08-08T07:43:36Z"
+LABEL org.opencontainers.image.created="2022-08-08T08:08:30Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="d9fabfede74d9ffb49a1cf92402d508c43106ab0"
+LABEL org.opencontainers.image.revision="9565126f9d7c3fa981cfc52718af8936ea7158f7"
 LABEL org.opencontainers.image.version="integration_build"
 VIASHDOCKER
 }
