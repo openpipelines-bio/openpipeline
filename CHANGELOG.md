@@ -12,9 +12,11 @@
 
 ## BUG FIXES
 
+* Several components: revert using slim versions of containers because they do not provide the tools to run nextflow with trace capabilities.
+
 * `integrate/concat`: Fix an issue where joining boolean values caused `TypeError`.
 
-* `mapping/cellranger_count`: Reduce memory usage during testing to avoid CI to hang.
+* `workflows/process_rna/multisample`, `workflows/process_rna/singlesample` and `workflows/integration/multimodal_integration`: use nextflow trace reporting when running integration tests.
 
 ## DEPRECATED
 
