@@ -29,6 +29,14 @@ functionality:
       type: file
       description: The sample sheet for the samples to be demultiplexed.
       example: sample_sheet.csv
+    - type: integer
+      name: --cores
+      description:  Set max cores the pipeline may request at one time.
+      example: 2
+    - type: integer
+      name: --memory
+      description: Set max GB the pipeline may request at one time.
+      example: 10
   resources:
     - type: nextflow_script
       path: main.nf

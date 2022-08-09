@@ -33,7 +33,7 @@ functionality:
     - path: ../../../resources_test/pbmc_1k_protein_v3/pbmc_1k_protein_v3_filtered_feature_bc_matrix.h5mu
 platforms:
   - type: docker
-    image: python:3.10-slim
+    image: python:3.10
     python:
       packages:
         - muon
