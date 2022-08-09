@@ -17,7 +17,7 @@ functionality:
       example: foo
     - name: "--input"
       alternatives: [-i]
-      description: Path to 
+      description: Path to the sample.
       required: true
       multiple: true
       multiple_sep: ';'
