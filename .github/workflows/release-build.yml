@@ -64,7 +64,7 @@ jobs:
         github_token: ${{ secrets.GITHUB_TOKEN }}
         publish_dir: .
         publish_branch: release
-        full_commit_message: "Deploy for release ${{ github.event.inputs.version_tag }} from ${GITHUB_SHA}"
+        full_commit_message: "Deploy for release ${{ github.event.inputs.version_tag }} from ${{ github.sha }}"
 
     # store component locations
     - id: set_matrix
@@ -83,7 +83,6 @@ jobs:
     needs: list_components
 
     runs-on: ubuntu-latest
-    if: "!contains(github.event.head_commit.message, 'ci skip')"
 
     strategy:
       fail-fast: false
@@ -112,12 +111,14 @@ jobs:
 
     - name: Push containers
       run: |
-        bin/viash_push -m release -t ${{ github.event.inputs.version_tag }} --force
+        SRC_DIR=`dirname ${{ matrix.component.config }}`
+        bin/viash_push -m release -t ${{ github.event.inputs.version_tag }} -s "$SRC_DIR" --force
 
   ###################################3
   # phase 3
   integration_test:
     needs: [ build_containers, list_components ]
+    if: "${{ needs.list_components.outputs.workflow_matrix != '[]' }}"
 
     runs-on: ubuntu-latest
 
@@ -163,3 +164,36 @@ jobs:
           -entry ${{ matrix.component.entry }} \
           -profile docker,mount_temp \
           -c workflows/utils/labels_ci.config
+
+  ###################################3
+  # phase 4
+  component_test:
+    needs: [ build_containers, list_components ]
+
+    runs-on: ubuntu-latest
+
+    strategy:
+      fail-fast: false
+      matrix:
+        component: ${{ fromJson(needs.list_components.outputs.component_matrix) }}
+
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Fetch viash
+      run: |
+        bin/init
+        bin/viash -h
+
+    # use cache
+    - name: Cache resources data
+      uses: actions/cache@v3
+      timeout-minutes: 5
+      with:
+        path: resources_test
+        key: ${{ needs.list_components.outputs.cachehash }}
+
+    - name: Test component
+      run: |
+        SRC_DIR=`dirname ${{ matrix.component.config }}`
+        bin/viash_test -m release -t ${{ github.event.inputs.version_tag }} -s "$SRC_DIR"
