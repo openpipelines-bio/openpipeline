@@ -39,9 +39,8 @@ workflow run_wf {
     | process_rna_singlesample
     | toSortedList()
     | map {list -> ["combined_samples_rna", 
-                    ["input": list.collect{it[1]},
-                     "sample_names":  list.collect{it[0]}
-                     ]
+                      ["input": list.collect{it[1]},
+                       "sample_names":  list.collect{it[0]}]
                     ]}
     | concat
     | process_rna_multisample
@@ -55,8 +54,8 @@ workflow run_wf {
     | map { id, files_list -> assert files_list.size() == 1; [id, files_list.first()] }
     | toSortedList()
     | map {list -> ["combined_samples_atac", 
-                    ["input": list.collect{it[1]},
-                     "sample_names":  list.collect{it[0]}]
+                      ["input": list.collect{it[1]},
+                       "sample_names":  list.collect{it[0]}]
                     ]}
     | concat
   
