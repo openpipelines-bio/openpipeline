@@ -43,3 +43,10 @@ functionality:
     - name: Arguments
       description: Input parameters for this pipeline
       arguments: [ id, input, sample_sheet ]
+  resources:
+    - type: nextflow_script
+      path: main.nf
+  test_resources:
+    - type: nextflow_script
+      path: main.nf
+      entrypoint: test_wf
