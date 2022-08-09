@@ -7,7 +7,7 @@ par = {
     "input": "resources_test/pbmc_1k_protein_v3/pbmc_1k_protein_v3_filtered_feature_bc_matrix.h5mu",
     "output": "output.h5mu",
     "modality": ["rna"],
-    "layer": 'test'
+    "layer": ['test'],
 }
 meta = {"functionality_name": "lognorm"}
 ## VIASH END
@@ -25,8 +25,9 @@ def main():
     logger.info('Processing modalities: %s.', ','.join(par['modality']))
     for mod_name in par['modality']:
         mod = input_data.mod[mod_name]
-        logger.info('Deleting layer %s from modality %s.', par['layer'], mod_name)
-        del mod.layers[par['layer']]
+        for layer in par['layer']:
+            logger.info('Deleting layer %s from modality %s.', layer, mod_name)
+            del mod.layers[layer]
     logger.info('Writing output to %s.', par['output'])
     input_data.write_h5mu(par['output'])
     logger.info('Finished.')

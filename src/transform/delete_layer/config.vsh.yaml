@@ -24,6 +24,7 @@ functionality:
     - name: "--layer"
       type: string
       required: true
+      multiple: true
       description: "Input layer to remove"
     - name: "--output"
       alternatives: ["-o"]
