@@ -7,7 +7,6 @@ par = {
 import base64
 import requests, io
 from PIL import Image
-import matplotlib.pyplot as plt
 
 file = open(par["input"],mode='r')
 graph = file.read()

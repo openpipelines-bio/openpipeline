@@ -14,4 +14,5 @@ bin/nextflow \
   -entry test_wf \
   -resume \
   -profile docker \
+  -c workflows/utils/labels_ci.config \
   -with-trace work/trace.txt
