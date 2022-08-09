@@ -497,9 +497,9 @@ FROM ghcr.io/data-intuitive/bd_rhapsody:1.10.1
 RUN :
 LABEL org.opencontainers.image.authors="Robrecht Cannoodt <rcannood@gmail.com> (maintainer) {github: rcannood, orcid: 0000-0003-3641-729X}"
 LABEL org.opencontainers.image.description="Companion container for running component mapping bd_rhapsody_wta"
-LABEL org.opencontainers.image.created="2022-08-09T04:00:01Z"
+LABEL org.opencontainers.image.created="2022-08-09T11:57:50Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="d6c99375ecc9a61ff3aa1f7706579283db535d14"
+LABEL org.opencontainers.image.revision="ebb89d43b29cd7011f128ec2a15c6c2de150f873"
 LABEL org.opencontainers.image.version="main_build"
 VIASHDOCKER
 }
