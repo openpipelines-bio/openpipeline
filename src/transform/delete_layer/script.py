@@ -8,6 +8,7 @@ par = {
     "output": "output.h5mu",
     "modality": ["rna"],
     "layer": ['test'],
+    "missing_ok": False
 }
 meta = {"functionality_name": "lognorm"}
 ## VIASH END
@@ -26,6 +27,10 @@ def main():
     for mod_name in par['modality']:
         mod = input_data.mod[mod_name]
         for layer in par['layer']:
+            if layer not in mod.layers:
+                if par['missing_ok']:
+                    continue
+                raise ValueError(f"Layer '{layer}' is not present in modality {mod_name}.")
             logger.info('Deleting layer %s from modality %s.', layer, mod_name)
             del mod.layers[layer]
     logger.info('Writing output to %s.', par['output'])

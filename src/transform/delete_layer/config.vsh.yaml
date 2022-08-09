@@ -33,6 +33,9 @@ functionality:
       direction: output
       required: true
       default: output.h5mu
+    - name: "--missing_ok"
+      type: boolean_true
+      description: Do not raise an error if the layer does not exist for all modalities.
   resources:
     - type: python_script
       path: script.py
