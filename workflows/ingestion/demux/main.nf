@@ -55,7 +55,6 @@ workflow run_wf {
     mkfastq_ch
       | mix( bcl_convert_ch )
       | mix ( bcl2fastq_ch )
-      | view{ "FROM $it" }
 
   /* Generate fastqc reports for every sample */
   all_ch
@@ -100,8 +99,8 @@ workflow test_wf {
     ],
     [
       id: "bcl-convert_test",
-      input: params.resources_test + "/demultiplication/bcl-updt", // TODO: rename this to demux, add code to 'workflows/resources_test_scripts/cellranger_tiny_bcl.sh', upload to S3
-      sample_sheet: params.resources_test + "/demultiplication/bcl-updt/SampleSheet.csv",
+      input: params.resources_test + "/cellranger_tiny_bcl/bcl2/",
+      sample_sheet: params.resources_test + "/cellranger_tiny_bcl/bcl2/sample_sheet.csv",
       demultiplexer: "bclconvert"
     ],
     [
