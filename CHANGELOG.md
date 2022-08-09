@@ -4,6 +4,8 @@
 
 * `workflows/integration/multiomics`: implement pipeline for processing multiple multiomics samples.
 
+* `transform/scaling`: Scale data to unit variance and zero mean.
+
 ## MAJOR CHANGES
 
 * Multiple components: update to anndata 0.8 with mudata 0.2.0. This means that the format of the .h5mu files have changed.
@@ -12,10 +14,23 @@
 
 ## BUG FIXES
 
+* Several components: revert using slim versions of containers because they do not provide the tools to run nextflow with trace capabilities.
+
 * `integrate/concat`: Fix an issue where joining boolean values caused `TypeError`.
+
+* `workflows/process_rna/multisample`, `workflows/process_rna/singlesample` and `workflows/integration/multimodal_integration`: use nextflow trace reporting when running integration tests.
 
 ## DEPRECATED
 
+# openpipeline 0.4.1
+
+## BUG FIXES
+
+* `workflows/ingestion/bd_rhapsody_wta`: use ':' as a seperator for multiple input files and fix integration tests.
+
+## MINOR CHANGES
+
+* Several components: pin mudata and scanpy dependencies so that anndata version <0.8.0 is used.
 
 # openpipeline 0.4.0
 

@@ -97,11 +97,10 @@ functionality:
     - path: ../../../resources_test/pbmc_1k_protein_v3
 platforms:
   - type: docker
-    image: python:3.8-slim
+    image: python:3.8
     setup:
       - type: python
         packages:
-          - scanpy~=1.9.1
           - muon
           - mudata~=0.2.0
           - anndata~=0.8.0

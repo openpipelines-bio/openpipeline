@@ -78,14 +78,5 @@ for mod in par['modality']:
         keep_feats = np.ravel(data.var[par["var_name_filter"]])
         mdata.mod[mod] = data[:,keep_feats]
 
-
-# # can we assume execution_log exists?
-# if mdata.uns is None or "execution_log" not in mdata.uns:
-#     mdata.uns["execution_log"] = []
-# # store new entry
-# new_entry = {"component": meta["functionality_name"], "params": par}
-# mdata.uns["execution_log"].append(new_entry)
-
-
 print("Writing h5mu to file")
 mdata.write_h5mu(par["output"])

@@ -34,11 +34,10 @@ functionality:
       path: test.py
 platforms:
   - type: docker
-    image: python:3.8-slim
+    image: python:3.8
     python:
       packages:
-        - scanpy~=1.9.1
         - requests
-        - anndata~=0.8.0
+        - Pillow~=9.2.0
   - type: nextflow
     variant: vdsl3
