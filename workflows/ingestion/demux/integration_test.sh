@@ -10,8 +10,9 @@ export NXF_VER=21.10.6
 
 bin/nextflow \
   run . \
-  -main-script workflows/ingestion/cellranger/main.nf \
+  -main-script workflows/ingestion/demux/main.nf \
   -entry test_wf \
   -resume \
-  -profile docker \
-  -with-trace work/trace.txt
+  -with-docker \
+  -with-trace work/trace.txt \
+  --publishDir demux-test
