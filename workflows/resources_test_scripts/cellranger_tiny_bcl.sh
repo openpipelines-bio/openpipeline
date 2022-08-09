@@ -42,13 +42,26 @@ if [ ! -f "${OUT}/bcl/sample_sheet.csv" ]; then
     --output "${OUT}/bcl/sample_sheet.csv"
 fi
 
-if [ ! -f "${OUT}/fastqs" ]; then
+if [ ! -d "${OUT}/fastqs" ]; then
   mkdir -p "$OUT/fastqs"
 
   target/docker/demux/cellranger_mkfastq/cellranger_mkfastq \
     --input "${OUT}/bcl" \
     --sample_sheet "${OUT}/bcl/sample_sheet.csv" \
     --output "${OUT}/fastqs"
+fi
+
+# bcl-convert requires a v2 sample sheet
+# bcl-convert is a bit more strict concerning filter files being present or not.
+# We make a copy and make the necessary adaptations. Please refer to the
+# test included in bcl_convert itself for more information.
+if [ ! -f "${OUT}/bcl2/RunParameters.xml" ]; then
+  cp ${OUT}/bcl2/sample_sheet.csv ${OUT}/bcl2/sample_sheet.csv.backup
+  cp -r ${OUT}/bcl/* "${OUT}/bcl2/"
+  mv ${OUT}/bcl2/sample_sheet.csv.backup ${OUT}/bcl2/sample_sheet.csv
+fi
+if [ ! -f "${OUT}/bcl2/Data/Intensities/BaseCalls/L001/s_1_1101.filter" ]; then
+  touch "${OUT}/bcl2/Data/Intensities/BaseCalls/L001/s_1_1101.filter"
 fi
 
 # if [ ! -f "${OUT}/bam" ]; then
