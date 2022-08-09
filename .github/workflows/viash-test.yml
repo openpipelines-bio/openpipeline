@@ -1,4 +1,4 @@
-name: viash test CI
+name: viash test
 
 on:
   push:
