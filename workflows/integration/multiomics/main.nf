@@ -55,10 +55,9 @@ workflow run_wf {
     | map { id, files_list -> assert files_list.size() == 1; [id, files_list.first()] }
     | toSortedList()
     | map {list -> ["combined_samples_atac", 
-                      ["input": list.collect{it[1]},
-                       "sample_names":  list.collect{it[0]}
-                       ]
-                      ]}
+                    ["input": list.collect{it[1]},
+                     "sample_names":  list.collect{it[0]}]
+                    ]}
     | concat
   
   output_ch = rna_ch.concat(atac_ch)
