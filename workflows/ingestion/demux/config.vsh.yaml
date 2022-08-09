@@ -1,8 +1,8 @@
 functionality:
   name: demux
-  namespace: demultiplication
+  namespace: ingestion
   description: |
-    Convert bcl files to fastq files using bcl-convert or mkfastq
+    Convert bcl files to fastq files using bcl2fastq, bcl-convert or cellranger mkfastq
     Information about upgrading from bcl2fastq via
     https://emea.support.illumina.com/bulletins/2020/10/upgrading-from-bcl2fastq-to-bcl-convert.html
     and https://support.illumina.com/sequencing/sequencing_software/bcl-convert/compatibility.html

@@ -10,7 +10,7 @@ export NXF_VER=21.10.6
 
 bin/nextflow \
   run . \
-  -main-script workflows/demultiplication/main.nf \
+  -main-script workflows/ingestion/demux/main.nf \
   -entry test_wf \
   -resume \
   -with-docker \
