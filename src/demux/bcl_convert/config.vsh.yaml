@@ -55,9 +55,7 @@ functionality:
   test_resources:
     - type: bash_script
       path: test.sh
-    - path: ../../../resources_test/cellranger_tiny_bcl/bcl
-    - path: SampleSheet.csv
-    - path: s_1_1101.filter
+    - path: ../../../resources_test/cellranger_tiny_bcl/bcl2
 platforms:
   - type: docker
     image: ghcr.io/data-intuitive/bclconvert:3.10
