@@ -1,6 +1,15 @@
 import scrublet as scr
 import muon as mu
 import numpy as np
+import logging
+from sys import stdout
+
+logger = logging.getLogger()
+logger.setLevel(logging.INFO)
+console_handler = logging.StreamHandler(stdout)
+logFormatter = logging.Formatter("%(asctime)s %(levelname)-8s %(message)s")
+console_handler.setFormatter(logFormatter)
+logger.addHandler(console_handler)
 
 ### VIASH START
 par = {
@@ -24,14 +33,14 @@ meta = {
 }
 ### VIASH END
 
-print(f"Reading {par['input']}")
+logger.info("Reading %s.", par['input'])
 mdata = mu.read_h5mu(par["input"])
 
 for mod in par["modality"]:
-    print(f"Processing modality '{mod}'")
+    logger.info("Processing modality '%s'.", mod)
     data = mdata.mod[mod]
 
-    print("  Running scrublet")
+    logger.info("\tRunning scrublet")
     scrub = scr.Scrublet(data.X)
 
     doublet_scores, predicted_doublets = scrub.scrub_doublets(
@@ -43,7 +52,7 @@ for mod in par["modality"]:
     )
     keep_cells = np.invert(predicted_doublets)
 
-    print("  Storing output into .obs")
+    logger.info("\tStoring output into .obs")
     if par["obs_name_doublet_score"] is not None:
         data.obs[par["obs_name_doublet_score"]] = doublet_scores
     if par["obs_name_filter"] is not None:
@@ -52,5 +61,5 @@ for mod in par["modality"]:
     if par["do_subset"]:
         mdata.mod[mod] = data[keep_cells, :]
 
-print("Writing h5mu to file")
+logger.info("Writing h5mu to %s", par["output"])
 mdata.write_h5mu(par["output"])

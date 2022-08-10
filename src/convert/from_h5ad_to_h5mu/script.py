@@ -1,5 +1,7 @@
 import muon as mu
 import anndata
+import logging
+from sys import stdout
 
 ## VIASH START
 par = {
@@ -11,9 +13,16 @@ par = {
 }
 ## VIASH END
 
+logger = logging.getLogger()
+logger.setLevel(logging.INFO)
+console_handler = logging.StreamHandler(stdout)
+logFormatter = logging.Formatter("%(asctime)s %(levelname)-8s %(message)s")
+console_handler.setFormatter(logFormatter)
+logger.addHandler(console_handler)
+
 assert len(par["input"]) == len(par["modality"]), "Number of input files should be the same length as the number of modalities"
 
-print("Reading input files")
+logger.info("Reading input files")
 data = { key: anndata.read_h5ad(path) for key, path in zip(par["modality"], par["input"]) }
 
 try:
@@ -21,7 +30,7 @@ try:
 except:
     pass
 
-print("Converting to muon")
+logger.info("Converting to muon")
 muon = mu.MuData(data)
 
 try:
@@ -29,5 +38,7 @@ try:
 except:
     pass
 
-print(f"Writing {par['output']}")
+logger.info("Writing to %s.", par['output'])
 muon.write_h5mu(par["output"])
+
+logger.info("Finished")

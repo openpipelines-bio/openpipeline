@@ -1,5 +1,7 @@
 import scanpy as sc
 import muon as mu
+import logging
+from sys import stdout
 
 ## VIASH START
 par = {
@@ -18,11 +20,18 @@ par = {
 }
 ## VIASH END
 
-print("Reading", par["input"])
+logger = logging.getLogger()
+logger.setLevel(logging.INFO)
+console_handler = logging.StreamHandler(stdout)
+logFormatter = logging.Formatter("%(asctime)s %(levelname)-8s %(message)s")
+console_handler.setFormatter(logFormatter)
+logger.addHandler(console_handler)
+
+logger.info("Reading %s", par["input"])
 mdata = mu.read_h5mu(par["input"])
 
 for mod in par['modality']:
-    print(f"Computing UMAP for modality '{mod}'")
+    logger.info("Computing UMAP for modality '%s'", mod)
     data = mdata.mod[mod]
 
     sc.tl.umap(
@@ -38,5 +47,7 @@ for mod in par['modality']:
     )
     # note: should be able to set the neighbors key
 
-print("Writing", par["output"])
+logger.info("Writing to %s.", par["output"])
 mdata.write_h5mu(filename=par["output"])
+
+logger.info("Finished")
