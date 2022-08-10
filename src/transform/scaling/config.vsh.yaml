@@ -1,44 +1,38 @@
 functionality:
-  name: log1p
+  name: scale
   namespace: "transform"
   version: "dev"
   description: |
-    Logarithmize the data matrix. Computes X = log(X + 1), where log denotes the natural logarithm unless a different base is given.
+    Scale data to unit variance and zero mean.
   authors:
-    - name: Dries De Maeyer
-      email: ddemaeyer@gmail.com
+    - name: Dries Schaumont
+      email: dries.schaumont@data-intuitive.com
       roles: [ maintainer ]
-      props: { account: ddemaey1 }
-    - name: Robrecht Cannoodt
-      email: rcannood@gmail.com
-      roles: [ contributor ]
-      props: { github: rcannood, orcid: "0000-0003-3641-729X" }
+      props: { github: DriesSchaumont, orcid: "0000-0002-4389-0440" }
   arguments:
     # input
     - name: "--input"
       alternatives: ["-i"]
       type: file
-      description: Input h5mu file
+      description: Input h5mu file.
       direction: input
       required: true
       example: input.h5mu
-
     - name: "--modality"
+      description: List of modalities to process.
       type: string
       multiple: true
       default: "rna"
       required: false
-
-    - name: "--input_layer"
-      type: string
+    - name: "--max_value"
       required: false
-      description: "Input layer to use. If None, X is normalized"
-
-    - name: "--output_layer"
-      type: string
-      description: Output layer to use. By default, use X.
+      type: double
+      description: Clip (truncate) to this value after scaling. Does not clip by default.
+    - name: "--zero_center"
+      type: boolean
+      default: true
       required: false
-
+      description: If False, omit zero-centering variables, which allows to handle sparse input efficiently.
     # output
     - name: "--output"
       alternatives: ["-o"]
@@ -47,11 +41,6 @@ functionality:
       direction: output
       required: true
       default: output.h5mu
-
-    # arguments
-    - name: "--base"
-      type: double
-      example: 2
   resources:
     - type: python_script
       path: script.py
@@ -61,13 +50,16 @@ functionality:
     - path: ../../../resources_test/pbmc_1k_protein_v3
 platforms:
   - type: docker
-    image: python:3.8
+    image: python:3.10-slim-bullseye
     setup:
+      - type: docker
+        run: apt update && apt upgrade -y
+      - type: apt
+        packages: libhdf5-dev
       - type: python
         packages:
           - scanpy~=1.9.1
-          - muon
           - mudata~=0.2.0
           - anndata~=0.8.0
   - type: nextflow
-    variant: vdsl3
+  - type: native

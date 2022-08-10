@@ -2,6 +2,8 @@
 
 ## NEW FUNCTIONALITY
 
+* `transform/scaling`: Scale data to unit variance and zero mean.
+
 ## MAJOR CHANGES
 
 * Multiple components: update to anndata 0.8 with mudata 0.2.0. This means that the format of the .h5mu files have changed.
@@ -12,9 +14,11 @@
 
 ## BUG FIXES
 
+* Several components: revert using slim versions of containers because they do not provide the tools to run nextflow with trace capabilities.
+
 * `integrate/concat`: Fix an issue where joining boolean values caused `TypeError`.
 
-* `mapping/cellranger_count`: Reduce memory usage during testing to avoid CI to hang.
+* `workflows/process_rna/multisample`, `workflows/process_rna/singlesample` and `workflows/integration/multimodal_integration`: use nextflow trace reporting when running integration tests.
 
 ## DEPRECATED
 

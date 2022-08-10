@@ -1,10 +1,6 @@
 import unittest
-import os
 from os import path
 import subprocess
-import scanpy as sc
-import pandas
-import numpy as np
 
 class TestMermaid(unittest.TestCase):
     def test_simple_execution(self):
