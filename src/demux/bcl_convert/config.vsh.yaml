@@ -63,3 +63,5 @@ platforms:
     image: ghcr.io/data-intuitive/bclconvert:3.10
   - type: nextflow
     variant: vdsl3
+    directives:
+      label: [ midmem, midcpu ]
