@@ -1,4 +1,6 @@
 import scanpy as sc
+import logging
+from sys import stdout
 
 ## VIASH START
 par = {
@@ -8,11 +10,19 @@ par = {
 }
 ## VIASH END
 
-print("Reading", par["input"])
+logger = logging.getLogger()
+logger.setLevel(logging.INFO)
+console_handler = logging.StreamHandler(stdout)
+logFormatter = logging.Formatter("%(asctime)s %(levelname)-8s %(message)s")
+console_handler.setFormatter(logFormatter)
+logger.addHandler(console_handler)
+
+logger.info("Reading %s.", par["input"])
 data = sc.read_10x_h5(par["input"], gex_only=par["gex_only"])
 
-print("Making unique")
+logger.info("Making unique.")
 data.var_names_make_unique()
 
-print("Writing", par["output"])
+logger.info("Writing to %s.", par["output"])
 data.write_h5ad(par["output"])
+logger.info("Finished")

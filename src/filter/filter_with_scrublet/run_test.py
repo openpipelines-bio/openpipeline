@@ -1,8 +1,9 @@
 from pathlib import Path
 from unittest import main, TestCase
 import subprocess
-import unittest
 import muon
+import logging
+from sys import stdout
 from tempfile import NamedTemporaryFile
 
 ## VIASH START
@@ -12,11 +13,18 @@ meta = {
 }
 ## VIASH END
 
+logger = logging.getLogger()
+logger.setLevel(logging.INFO)
+console_handler = logging.StreamHandler(stdout)
+logFormatter = logging.Formatter("%(asctime)s %(levelname)-8s %(message)s")
+console_handler.setFormatter(logFormatter)
+logger.addHandler(console_handler)
+
 resources_dir, functionality_name = meta["resources_dir"], meta["functionality_name"]
 input_path = f"{meta['resources_dir']}/pbmc_1k_protein_v3/pbmc_1k_protein_v3_filtered_feature_bc_matrix.h5mu"
 
 
-class TestFilterWithScrublet(unittest.TestCase):
+class TestFilterWithScrublet(TestCase):
     def setUp(self) -> None:
         self.tempfile = NamedTemporaryFile(suffix=".h5mu")
         mu_in = muon.read_h5mu(input_path)
@@ -32,10 +40,10 @@ class TestFilterWithScrublet(unittest.TestCase):
     def _run_and_check_output(self, args_as_list):
         try:
             subprocess_args = [f"./{functionality_name}"] + args_as_list
-            print(" ".join(subprocess_args))
+            logger.info(" ".join(subprocess_args))
             subprocess.check_output(subprocess_args)
         except subprocess.CalledProcessError as e:
-            print(e.stdout.decode("utf-8"))
+            logger.info(e.stdout.decode("utf-8"))
             raise e
 
     def test_filter_a_little_bit(self):
