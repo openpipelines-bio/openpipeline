@@ -201,6 +201,7 @@
 2022-05-23 08:54:41        673 cellranger_tiny_bcl/bcl/RunInfo.xml
 2022-05-23 08:54:41       5366 cellranger_tiny_bcl/bcl/runParameters.xml
 2022-05-23 08:54:41         42 cellranger_tiny_bcl/bcl/sample_sheet.csv
+2022-08-09 13:38:54        741 cellranger_tiny_bcl/bcl2/sample_sheet.csv
 2022-05-23 08:54:41       1522 cellranger_tiny_bcl/fastqs/H35KCBCXY/test_sample/test_sample_S1_L001_I1_001.fastq.gz
 2022-05-23 08:54:41       2916 cellranger_tiny_bcl/fastqs/H35KCBCXY/test_sample/test_sample_S1_L001_R1_001.fastq.gz
 2022-05-23 08:54:41       7184 cellranger_tiny_bcl/fastqs/H35KCBCXY/test_sample/test_sample_S1_L001_R2_001.fastq.gz
