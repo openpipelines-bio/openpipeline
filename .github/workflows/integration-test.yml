@@ -146,7 +146,7 @@ jobs:
         key: ${{ needs.list_components.outputs.cachehash }}
 
     - name: Run integration test
-      timeout-minutes: 30
+      timeout-minutes: 60
       run: |
         # todo: replace with viash test command
         config_dir=`dirname ${{ matrix.component.config }}`
