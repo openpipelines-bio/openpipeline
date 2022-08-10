@@ -53,3 +53,5 @@ platforms:
     image: ghcr.io/data-intuitive/bcl2fastq:2.20
   - type: nextflow
     variant: vdsl3
+    directives:
+      label: [ midmem, midcpu ]

@@ -197,7 +197,11 @@ thisDefaultProcessArgs = [
     "registry" : "ghcr.io",
     "image" : "openpipelines-bio/demux_bcl2fastq",
     "tag" : "integration_build"
-  }
+  },
+  "label" : [
+    "midmem",
+    "midcpu"
+  ]
 }'''),
   // auto settings
   auto: jsonSlurper.parseText('''{

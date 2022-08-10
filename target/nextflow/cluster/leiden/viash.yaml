@@ -219,6 +219,8 @@ functionality:
       tempscript=".viash_script.sh"
       cat > "$tempscript" << VIASHMAIN
       
+      import logging
+      from sys import stdout
       import muon as mu
       import scanpy as sc
       
@@ -242,11 +244,18 @@ functionality:
       
       ## VIASH END
       
-      print("Reading", par["input"])
+      logger = logging.getLogger()
+      logger.setLevel(logging.INFO)
+      console_handler = logging.StreamHandler(stdout)
+      logFormatter = logging.Formatter("%(asctime)s %(levelname)-8s %(message)s")
+      console_handler.setFormatter(logFormatter)
+      logger.addHandler(console_handler)
+      
+      logger.info("Reading %s.", par["input"])
       mdata = mu.read_h5mu(par["input"])
       
       for mod in par['modality']:
-          print(f"Processing modality '{mod}'")
+          logger.info("Processing modality '%s'.", mod)
           data = mdata.mod[mod]
           sc.tl.leiden(
               data,
@@ -254,8 +263,9 @@ functionality:
               key_added=par["obs_name"],
           )
       
-      print("Writing", par["output"])
+      logger.info("Writing to %s.", par["output"])
       mdata.write_h5mu(filename=par["output"])
+      logger.info("Finished.")
       
       VIASHMAIN
       python "$tempscript"
@@ -1958,5 +1968,5 @@ info:
   platform: "nextflow"
   output: "target/nextflow/cluster/leiden"
   viash_version: "0.5.15"
-  git_commit: "44e6096c937b214e298c581b090f101c84d20d0a"
+  git_commit: "db1057622f79898db466f28ff203f29296ad25a5"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"

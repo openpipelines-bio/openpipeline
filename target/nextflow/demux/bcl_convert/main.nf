@@ -152,17 +152,7 @@ thisConfig = processConfig([
     },
     {
       "type" : "file",
-      "path" : "../../../resources_test/cellranger_tiny_bcl/bcl",
-      "parent" : "file:/home/runner/work/openpipeline/openpipeline/src/demux/bcl_convert/config.vsh.yaml"
-    },
-    {
-      "type" : "file",
-      "path" : "SampleSheet.csv",
-      "parent" : "file:/home/runner/work/openpipeline/openpipeline/src/demux/bcl_convert/config.vsh.yaml"
-    },
-    {
-      "type" : "file",
-      "path" : "s_1_1101.filter",
+      "path" : "../../../resources_test/cellranger_tiny_bcl/bcl2",
       "parent" : "file:/home/runner/work/openpipeline/openpipeline/src/demux/bcl_convert/config.vsh.yaml"
     }
   ],
@@ -221,7 +211,11 @@ thisDefaultProcessArgs = [
     "registry" : "ghcr.io",
     "image" : "openpipelines-bio/demux_bcl_convert",
     "tag" : "integration_build"
-  }
+  },
+  "label" : [
+    "midmem",
+    "midcpu"
+  ]
 }'''),
   // auto settings
   auto: jsonSlurper.parseText('''{

@@ -94,7 +94,7 @@ workflow test_wf {
       input: params.resources_test + "/cellranger_tiny_bcl/bcl",
       sample_sheet: params.resources_test + "/cellranger_tiny_bcl/bcl/sample_sheet.csv",
       cores: 2,
-      memory: 4,
+      memory: 5,
       demultiplexer: "mkfastq"
     ],
     [
