@@ -2,8 +2,11 @@ from pathlib import Path
 import subprocess
 import muon
 import numpy as np
+import logging
+from sys import stdout
 from unittest import TestCase, main
 from tempfile import NamedTemporaryFile
+
 ## VIASH START
 meta = {
     'functionality_name': './target/native/filter/do_filter/do_filter',
@@ -13,6 +16,13 @@ meta = {
 resources_dir, functionality_name = meta["resources_dir"], meta["functionality_name"]
 input_path = f"{resources_dir}/pbmc_1k_protein_v3/pbmc_1k_protein_v3_filtered_feature_bc_matrix.h5mu"
 
+logger = logging.getLogger()
+logger.setLevel(logging.INFO)
+console_handler = logging.StreamHandler(stdout)
+logFormatter = logging.Formatter("%(asctime)s %(levelname)-8s %(message)s")
+console_handler.setFormatter(logFormatter)
+logger.addHandler(console_handler)
+
 
 class TestDoFilter(TestCase):
     def setUp(self) -> None:
@@ -20,9 +30,8 @@ class TestDoFilter(TestCase):
         mu_in = muon.read_h5mu(input_path)
         self.orig_obs = mu_in.mod['rna'].n_obs
         self.orig_vars = mu_in.mod['rna'].n_vars
-
         ad_rna = mu_in.mod['rna']
-        print(f"  input: {ad_rna}")
+        logger.info(f"  input: {ad_rna}")
         ad_rna.obs["filter_none"] = np.repeat(True, ad_rna.n_obs)
         ad_rna.obs["filter_with_random"] = np.random.choice(a=[False, True], size=ad_rna.n_obs)
         ad_rna.var["filter_with_random"] = np.random.choice(a=[False, True], size=ad_rna.n_vars) 
@@ -36,10 +45,10 @@ class TestDoFilter(TestCase):
     def _run_and_check_output(self, args_as_list):
         try:
             subprocess_args = [f"./{functionality_name}"] + args_as_list
-            print(" ".join(subprocess_args))
+            logger.info(" ".join(subprocess_args))
             subprocess.check_output(subprocess_args)
         except subprocess.CalledProcessError as e:
-            print(e.stdout.decode("utf-8"))
+            logger.info(e.stdout.decode("utf-8"))
             raise e
     
     def test_filtering_a_little_bit(self):
@@ -51,7 +60,7 @@ class TestDoFilter(TestCase):
         )
         self.assertTrue(Path("output-1.h5mu").is_file(), msg="Output file not found")
         mu_out = muon.read_h5mu("output-1.h5mu")
-        print(f"  output1: {mu_out.mod['rna']}")
+        logger.info(f"  output1: {mu_out.mod['rna']}")
         new_obs = mu_out.mod['rna'].n_obs
         new_vars = mu_out.mod['rna'].n_vars
         self.assertTrue(new_obs < self.orig_obs, msg="Some RNA obs should have been filtered")
@@ -64,7 +73,7 @@ class TestDoFilter(TestCase):
             "--obs_filter", "filter_none"])
         self.assertTrue(Path("output-2.h5mu").is_file(), msg="Output file not found")
         mu_out = muon.read_h5mu("output-2.h5mu")
-        print(f"  output2: {mu_out.mod['rna']}")
+        logger.info(f"  output2: {mu_out.mod['rna']}")
         new_obs = mu_out.mod['rna'].n_obs
         new_vars = mu_out.mod['rna'].n_vars
         self.assertEqual(new_obs, self.orig_obs, msg="No RNA obs should have been filtered")

@@ -1,5 +1,7 @@
 import muon as mu
 import numpy as np
+import logging
+from sys import stdout
 
 ### VIASH START
 par = {
@@ -17,30 +19,37 @@ mdata.mod['rna'].var["filter_with_random"] = np.random.choice(a=[False, True], s
 mod = 'rna'
 ### VIASH END
 
-print(f"Reading {par['input']}")
+logger = logging.getLogger()
+logger.setLevel(logging.INFO)
+console_handler = logging.StreamHandler(stdout)
+logFormatter = logging.Formatter("%(asctime)s %(levelname)-8s %(message)s")
+console_handler.setFormatter(logFormatter)
+logger.addHandler(console_handler)
+
+logger.info("Reading %s", par['input'])
 mdata = mu.read_h5mu(par["input"])
 
 for mod in par["modality"]:
-    print(f"Processing modality '{mod}'")
+    logger.info("Processing modality '%s'", mod)
 
     obs_filt = np.repeat(True, mdata.mod[mod].n_obs)
     var_filt = np.repeat(True, mdata.mod[mod].n_vars)
 
     for obs_name in par["obs_filter"]:
-        print(f"Filtering modality '{mod}' observations by .obs['{obs_name}']")
+        logger.info("Filtering modality '%s' observations by .obs['%s']", mod, obs_name)
         if obs_name in mdata.mod[mod].obs:
             obs_filt &= mdata.mod[mod].obs[obs_name]
         else:
-            print(f"Warning: .mod['{mod}'].obs['{obs_name}'] does not exist. Skipping.")
+            logger.warning(f".mod['{mod}'].obs['{obs_name}'] does not exist. Skipping.", mod, obs_name)
 
     for var_name in par["var_filter"]:
-        print(f"Filtering modality '{mod}' variables by .var['{var_name}']")
+        logger.info("Filtering modality '%s' variables by .var['%s']", mod, obs_name)
         if var_name in mdata.mod[mod].var:
             var_filt &= mdata.mod[mod].var[var_name]
         else:
-            print(f"Warning: .mod['{mod}'.var['{var_name}'] does not exist. Skipping.")
+            logger.warning(".mod['%s'.var['%s'] does not exist. Skipping.", mod, obs_name)
     
     mdata.mod[mod] = mdata.mod[mod][obs_filt, var_filt].copy()
 
-print("Writing h5mu to file")
+logger.info("Writing h5mu to file %s.", par["output"])
 mdata.write_h5mu(par["output"])

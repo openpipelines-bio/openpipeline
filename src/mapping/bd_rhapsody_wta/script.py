@@ -2,6 +2,15 @@ import os
 import re
 import subprocess
 import tempfile
+import logging
+from sys import stdout
+
+logger = logging.getLogger()
+logger.setLevel(logging.INFO)
+console_handler = logging.StreamHandler(stdout)
+logFormatter = logging.Formatter("%(asctime)s %(levelname)-8s %(message)s")
+console_handler.setFormatter(logFormatter)
+logger.addHandler(console_handler)
 
 ## VIASH START
 par = {
@@ -25,7 +34,7 @@ meta = {
 ## VIASH END
 
 if re.match("[^A-Za-z0-9]", par["sample_prefix"]):
-  print("Warning: --sample_prefix should only consist of letters, numbers or hyphens. Replacing all '[^A-Za-z0-9]' with '-'.")
+  logger.warning("--sample_prefix should only consist of letters, numbers or hyphens. Replacing all '[^A-Za-z0-9]' with '-'.")
   par["sample_prefix"] = re.sub("[^A-Za-z0-9\\-]", "-", par["sample_prefix"])
 
 def strip_margin(text):
@@ -255,7 +264,7 @@ if not par["dryrun"]:
     env = dict(os.environ)
     env["TMPDIR"] = temp_dir
 
-    print("> " + ' '.join(cmd))
+    logger.info("> " + ' '.join(cmd))
 
     p = subprocess.check_call(
       cmd,
