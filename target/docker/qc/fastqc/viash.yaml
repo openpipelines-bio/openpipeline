@@ -440,9 +440,9 @@ functionality:
       RUN cd /opt && unzip fastqc.zip && ln -s /opt/FastQC/fastqc /usr/bin/fastqc
       RUN chmod 755 /usr/bin/fastqc
       LABEL org.opencontainers.image.description="Companion container for running component qc fastqc"
-      LABEL org.opencontainers.image.created="2022-08-10T07:55:16Z"
+      LABEL org.opencontainers.image.created="2022-08-10T09:06:42Z"
       LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-      LABEL org.opencontainers.image.revision="238a5af774e64ce263bff632cae1bf871b240476"
+      LABEL org.opencontainers.image.revision="419217b5c47c7a060b820c41e37a9f3ea989c794"
       LABEL org.opencontainers.image.version="integration_build"
       VIASHDOCKER
       }
@@ -858,5 +858,5 @@ info:
   output: "target/docker/qc/fastqc"
   executable: "target/docker/qc/fastqc/fastqc"
   viash_version: "0.5.15"
-  git_commit: "238a5af774e64ce263bff632cae1bf871b240476"
+  git_commit: "419217b5c47c7a060b820c41e37a9f3ea989c794"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"
