@@ -2062,5 +2062,5 @@ info:
   platform: "nextflow"
   output: "target/nextflow/demux/cellranger_mkfastq"
   viash_version: "0.5.15"
-  git_commit: "419217b5c47c7a060b820c41e37a9f3ea989c794"
+  git_commit: "44e6096c937b214e298c581b090f101c84d20d0a"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"
