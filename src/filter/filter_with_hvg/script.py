@@ -1,6 +1,8 @@
 import scanpy as sc
 import muon as mu
 import numpy as np
+import logging
+from sys import stdout
 
 ## VIASH START
 par = {
@@ -21,11 +23,18 @@ par = {
 }
 ## VIASH END
 
+logger = logging.getLogger()
+logger.setLevel(logging.INFO)
+console_handler = logging.StreamHandler(stdout)
+logFormatter = logging.Formatter("%(asctime)s %(levelname)-8s %(message)s")
+console_handler.setFormatter(logFormatter)
+logger.addHandler(console_handler)
+
 mdata = mu.read_h5mu(par["input"])
 mdata.var_names_make_unique()
 
 for mod in par['modality']:
-    print(f"Processing modality '{mod}'")
+    logger.info(f"Processing modality '%s'", mod)
     data = mdata.mod[mod]
 
     # Workaround for issue 
@@ -35,9 +44,9 @@ for mod in par['modality']:
         data.uns['log1p']['base'] = None
     #sc.pp.log1p(data)
 
-    print(f"  Unfiltered data: {data}")
+    logger.info("\tUnfiltered data: %s", data)
 
-    print("  Computing hvg")
+    logger.info("\tComputing hvg")
     # construct arguments
     hvg_args = {
         'adata': data,
@@ -68,7 +77,7 @@ for mod in par['modality']:
             err.args = ("Cannot specify integer `bins` when input data contains infinity. Perhaps input data has not been log normalized?",)
         raise err
 
-    print("  Storing output into .var")
+    logger.info("\tStoring output into .var")
     if par.get("var_name_filter", None) is not None:
         data.var[par["var_name_filter"]] = out["highly_variable"]
 
@@ -80,5 +89,5 @@ for mod in par['modality']:
         keep_feats = np.ravel(data.var[par["var_name_filter"]])
         mdata.mod[mod] = data[:,keep_feats]
 
-print("Writing h5mu to file")
+logger.info("Writing h5mu to file")
 mdata.write_h5mu(par["output"])
