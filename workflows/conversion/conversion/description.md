@@ -18,7 +18,7 @@ The 10x h5 format, supports both the legacy single modality version from cellran
     
 The feature type to be extracted to the final h5ad.
 
-#### __input_type == "mtx format"__ (extenstion = none)
+#### __input_type == "mtx format"__ (extension = none)
 
 The standard mtx format.
 
