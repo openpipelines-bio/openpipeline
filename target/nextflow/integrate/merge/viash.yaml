@@ -1922,5 +1922,5 @@ info:
   platform: "nextflow"
   output: "target/nextflow/integrate/merge"
   viash_version: "0.5.15"
-  git_commit: "510d5cdea37b225b236bd5c1e3030d43558ee85e"
+  git_commit: "a5b43d9bd79f18448937ba6722ce366beb75c6bb"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"

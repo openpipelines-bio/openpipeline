@@ -50,10 +50,10 @@ cellranger mkfastq \
   --disable-ui \
   --output-dir "$par_output"
 
-# echo "Copying output"
-# if [ -d "$work_dir/$id/outs/fastq_path/" ]; then
-#   if [ ! -d "$par_output" ]; then
-#     mkdir -p "$par_output"
-#   fi
-#   mv "$work_dir/$id/outs/fastq_path/"* "$par_output"
-# fi
+# Move reports to their own output location
+if [ "$par_separate_reports" == true ]; then
+  echo "Moving reports its own location"
+  mv "$par_output"/Reports "$par_reports"
+else
+  echo "Leaving reports alone"
+fi
