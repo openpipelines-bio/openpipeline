@@ -6,6 +6,8 @@
 
 * `transform/scaling`: Scale data to unit variance and zero mean.
 
+* `integrate/hamony`: Added R based Harmony component.
+
 ## MAJOR CHANGES
 
 * Multiple components: update to anndata 0.8 with mudata 0.2.0. This means that the format of the .h5mu files have changed.

@@ -1,0 +1,57 @@
+functionality:
+  name: harmony
+  namespace: "integrate"
+  description: "Performs Harmony integration based as described in https://github.com/immunogenomics/harmony."
+  authors:
+    - name: Dries De Maeyer
+      email: ddemaeyer@gmail.com
+      roles: [ author ]
+      props: { account: ddemaey1 }
+    - name: Robrecht Cannoodt
+      email: rcannood@gmail.com
+      roles: [ maintainer, author ]
+      props: { github: rcannood, orcid: "0000-0003-3641-729X" }
+  arguments:
+    - name: "--input"
+      alternatives: ["-i"]
+      type: file
+      description: Input h5ad file
+      direction: input
+      required: true
+    - name: "--output"
+      alternatives: ["-o"]
+      type: file
+      description: Output h5ad file.
+      direction: output
+      required: true
+    - name: "--theta"
+      description: Theta value to perform correction on.
+      type: double
+      default: 0
+      multiple: true
+    - name: "--obs_name"
+      type: string
+      description: The field in the obs object that defines batches to perform correction to.
+      default: "batch"
+      multiple: true
+  resources:
+    - type: r_script
+      path: script.R
+  #   - type: file
+  #     path: report.Rmd
+  # tests:
+  #   - type: bash_script
+  #     path: test/run_test.sh
+  #   - path: test/pbmc_ionos.concat.pca.h5ad
+platforms:
+  - type: docker
+    image: ghcr.io/data-intuitive/randpy:r4.0_py3.8
+    setup:
+      - type: python
+        packages:
+          - mudata~=0.2.0
+          - anndata~=0.8.0
+      - type: r
+        cran: harmony
+  - type: nextflow
+    label: [ highmem, highcpu ]
