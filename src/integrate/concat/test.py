@@ -341,6 +341,51 @@ class TestConcat(unittest.TestCase):
             self.assertTrue(pd.isna(concatenated_data.var.loc['Xkr4']['test']))
             self.assertTrue(pd.isna(concatenated_data.mod['rna'].var.loc['Xkr4']['test']))
 
+    def test_mode_move(self):
+        self._run_and_check_output([
+            "--sample_names", "mouse,human",
+            "--input", input_sample1_file,
+            "--input", input_sample2_file,
+            "--output", "concat.h5mu",
+            "--other_axis_mode", "move"],
+            )
+        self.assertTrue(Path("concat.h5mu").is_file())
+        concatenated_data = md.read("concat.h5mu")
+
+        data_sample1 = md.read(input_sample1_file)
+        data_sample2 = md.read(input_sample2_file)
+
+        # Check if observations from all of the samples are present
+        self.assertEqual(concatenated_data.n_obs, data_sample1.n_obs + data_sample2.n_obs)
+
+        # Check if all features are present
+        rna = concatenated_data.mod['rna']
+        atac = concatenated_data.mod['atac']
+        original_rna_var_keys = set(data_sample1.mod['rna'].var.keys().tolist() +
+                                    data_sample2.mod['rna'].var.keys().tolist())
+        original_atac_var_keys = set(data_sample1.mod['atac'].var.keys().tolist() + 
+                                     data_sample2.mod['atac'].var.keys().tolist())
+        self.assertSetEqual(original_rna_var_keys,
+                            set(column_name.removeprefix('conflict_') 
+                                for column_name in rna.varm.keys()) |
+                            set(rna.var.columns.tolist()))
+        self.assertSetEqual(original_atac_var_keys,
+                            set(column_name.removeprefix('conflict_')
+                                for column_name in atac.varm.keys()) |
+                            set(atac.var.columns.tolist()))
+
+        # Check if all modalities are present
+        sample1_mods, sample2_mods = set(data_sample1.mod.keys()), set(data_sample2.mod.keys())
+        concatentated_mods = set(concatenated_data.mod.keys())
+        self.assertEqual(sample1_mods | sample2_mods, concatentated_mods)
+
+        # Check if conflicting columns in .varm
+        self.assertListEqual(rna.varm['conflict_feature_types'].columns.tolist(), 
+                             ["mouse", "human"])
+        self.assertDictEqual(dict(atac.varm), {})
+        self.assertDictEqual(dict(rna.obsm), {})
+        self.assertDictEqual(dict(atac.obsm), {})
+
 
 if __name__ == '__main__':
     unittest.main()
