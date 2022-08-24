@@ -101,8 +101,10 @@ echo "> Processing 12SMK_S1_L432_R2_001.fastq.gz"
 cp "$tar_dir/12SMK_S1_L432_R2_001.fastq.gz" "$raw_dir/12SMK_S1_L432_R2_001.fastq.gz"
 echo "> Processing 12ABC_S1_L432_R1_001.fastq.gz"
 seqkit head -n 1000000 "$tar_dir/12ABC_S1_L432_R1_001.fastq.gz" | gzip > "$raw_dir/12ABC_S1_L432_R1_001_subset.fastq.gz"
+# seqkit range -r 1000001:2000000 "$tar_dir/12ABC_S1_L432_R1_001.fastq.gz" | gzip > "$raw_dir/12ABC_S1_L432_R1_002_subset.fastq.gz"
 echo "> Processing 12ABC_S1_L432_R2_001.fastq.gz"
 seqkit head -n 1000000 "$tar_dir/12ABC_S1_L432_R2_001.fastq.gz" | gzip > "$raw_dir/12ABC_S1_L432_R2_001_subset.fastq.gz"
+# seqkit range -r 1000001:2000000 "$tar_dir/12ABC_S1_L432_R2_001.fastq.gz" | gzip > "$raw_dir/12ABC_S1_L432_R2_002_subset.fastq.gz"
 echo "> Processing 12WTA_S1_L432_R1_001_chr1.fastq.gz"
 gzip -9 -k -c "$mapping_dir/12WTA_S1_L432_R1_001_chr1.fastq" > "$raw_dir/12WTA_S1_L432_R1_001_subset.fastq.gz"
 echo "> Processing 12WTA_S1_L432_R2_001_chr1.fastq.gz"
@@ -117,20 +119,26 @@ cp "$tar_dir/BDAbSeq_ImmuneDiscoveryPanel.fasta" "$raw_dir"
 cat > /tmp/params.yaml << HERE
 param_list:
 - id: "SMK"
-  id: "SMK"
   input: "$raw_dir/12SMK_S1_L432_R[12]_001.fastq.gz"
   sample_tags_version: "hs"
   tag_names: ["1-Jurkat", "2-Ramos", "3-THP1"]
   output: "SMK"
+# - id: "ABC_L1"
+#   input: "$raw_dir/12ABC_S1_L432_R[12]_001_subset.fastq.gz"
+#   abseq_reference: "$raw_dir/BDAbSeq_ImmuneDiscoveryPanel.fasta"
+#   output: "ABC_L1"
+# - id: "ABC_L2"
+#   input: "$raw_dir/12ABC_S1_L432_R[12]_002_subset.fastq.gz"
+#   abseq_reference: "$raw_dir/BDAbSeq_ImmuneDiscoveryPanel.fasta"
+#   output: "ABC_L2"
 - id: "ABC"
-  id: "ABC"
   input: "$raw_dir/12ABC_S1_L432_R[12]_001_subset.fastq.gz"
   abseq_reference: "$raw_dir/BDAbSeq_ImmuneDiscoveryPanel.fasta"
   output: "ABC"
 - id: "WTA"
-  id: "WTA"
   input: "$raw_dir/12WTA_S1_L432_R[12]_001_subset.fastq.gz"
   output: "WTA"
+mode: wta
 reference_genome: "$reference_dir/GRCh38_primary_assembly_genome_chr1.tar.gz"
 transcriptome_annotation: "$reference_dir/gencode_v40_annotation_chr1.gtf"
 publish_dir: "$OUT/processed"
@@ -140,7 +148,7 @@ HERE
 
 bin/nextflow \
   run . \
-  -main-script target/nextflow/mapping/bd_rhapsody_wta/main.nf \
+  -main-script target/nextflow/mapping/bd_rhapsody/main.nf \
   -resume \
   -profile docker,mount_temp \
   -with-trace work/trace.txt \
