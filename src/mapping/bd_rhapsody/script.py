@@ -33,6 +33,19 @@ meta = {
 }
 ## VIASH END
 
+# check input parameters
+assert par["input"] is not None, "Pass at least one set of inputs to --input."
+if par["mode"] == "wta":
+  assert par["reference"] is None, "When mode is \"wta\", --reference should be undefined"
+  assert par["reference_genome"] is not None, "When mode is \"wta\", --reference_genome should be defined"
+  assert par["transcriptome_annotation"] is not None, "When mode is \"wta\", --transcriptome_annotation should be defined"
+elif par["mode"] == "targeted":
+  assert par["reference_genome"] is None, "When mode is \"targeted\", --reference_genome should be undefined"
+  assert par["transcriptome_annotation"] is None, "When mode is \"targeted\", --transcriptome_annotation should be undefined"
+  assert par["supplemental_reference"] is None, "When mode is \"targeted\", --supplemental_reference should be undefined"
+  assert (par["reference"] is None) != (par["abseq_reference"] is None), "When mode is \"targeted\", precisely one of --reference or --abseq_reference should be defined"
+
+# checking sample prefix
 if re.match("[^A-Za-z0-9]", par["sample_prefix"]):
   logger.warning("--sample_prefix should only consist of letters, numbers or hyphens. Replacing all '[^A-Za-z0-9]' with '-'.")
   par["sample_prefix"] = re.sub("[^A-Za-z0-9\\-]", "-", par["sample_prefix"])
@@ -46,10 +59,16 @@ if len(par["input"]) == 1 and os.path.isdir(par["input"][0]):
 
 # use absolute paths
 par["input"] = [ os.path.abspath(f) for f in par["input"] ]
+if par["reference_genome"]:
+  par["reference_genome"] = os.path.abspath(par["reference_genome"])
+if par["transcriptome_annotation"]:
+  par["transcriptome_annotation"] = os.path.abspath(par["transcriptome_annotation"])
 if par["reference"]:
-  par["reference"] = os.path.abspath(par["reference"])
+  par["reference"] = [ os.path.abspath(f) for f in par["reference"] ]
 if par["abseq_reference"]:
   par["abseq_reference"] = [ os.path.abspath(f) for f in par["abseq_reference"] ]
+if par["supplemental_reference"]:
+  par["supplemental_reference"] = [ os.path.abspath(f) for f in par["supplemental_reference"] ]
 par["output"] = os.path.abspath(par["output"])
 
 # create output dir if not exists
@@ -64,7 +83,7 @@ content_list = [f"""#!/usr/bin/env cwl-runner
 
 cwl:tool: rhapsody
 
-# This is a YML file used to specify the inputs for a BD Genomics Targeted Rhapsody Analysis pipeline run. See the
+# This is a YML file used to specify the inputs for a BD Genomics {"WTA" if par["mode"] == "wta" else "Targeted" } Rhapsody Analysis pipeline run. See the
 # BD Genomics Analysis Setup User Guide (Doc ID: 47383) for more details.
 
 ## Reads (required) - Path to your read files in the FASTQ.GZ format. You may specify as many R1/R2 read pairs as you want.
@@ -77,23 +96,55 @@ for file in par["input"]:
     |   location: "{file}"
     |"""))
 
+if par["reference_genome"]:
+  content_list.append(strip_margin(f"""\
+    |
+    |## Reference_Genome (required) - Path to STAR index for tar.gz format. See Doc ID: 47383 for instructions to obtain pre-built STAR index file.
+    |Reference_Genome:
+    |   class: File
+    |   location: "{par["reference_genome"]}"
+    |"""))
+
+if par["transcriptome_annotation"]:
+  content_list.append(strip_margin(f"""\
+    |
+    |## Transcriptome_Annotation (required) - Path to GTF annotation file
+    |Transcriptome_Annotation:
+    |   class: File
+    |   location: "{par["transcriptome_annotation"]}"
+    |"""))
+
 if par["reference"]:
   content_list.append(strip_margin(f"""\
     |
     |## Reference (optional) - Path to mRNA reference file for pre-designed, supplemental, or custom panel, in FASTA format.
     |Reference:
-    | - class: File
-    |   location: "{par["reference"]}"
     |"""))
+  for file in par["reference"]:
+    content_list.append(strip_margin(f"""\
+      | - class: File
+      |   location: {file}
+      |"""))
 
 if par["abseq_reference"]:
   content_list.append(strip_margin(f"""\
     |
     |## AbSeq_Reference (optional) - Path to the AbSeq reference file in FASTA format.  Only needed if BD AbSeq Ab-Oligos are used.
-    |## For putative cell calling using an AbSeq dataset, please provide an AbSeq reference fasta file as the AbSeq_Reference.
     |AbSeq_Reference:
     |"""))
   for file in par["abseq_reference"]:
+    content_list.append(strip_margin(f"""\
+      | - class: File
+      |   location: {file}
+      |"""))
+
+if par["supplemental_reference"]:
+  content_list.append(strip_margin(f"""\
+    |
+    |## Supplemental_Reference (optional) - Path to the supplemental reference file in FASTA format.  Only needed if there are additional transgene sequences used in the experiment.
+    |Supplemental_Reference:
+    |"""))
+  for file in par["supplemental_reference"]:
     content_list.append(strip_margin(f"""\
       | - class: File
       |   location: {file}
@@ -218,7 +269,11 @@ if par["timestamps"]:
   proc_pars.append("--timestamps")
 
 # create cwl file (if need be)
-orig_cwl_file=os.path.join(meta["resources_dir"], "rhapsody_targeted_1.10.1_nodocker.cwl")
+if par["mode"] == "wta":
+  orig_cwl_file=os.path.join(meta["resources_dir"], "rhapsody_wta_1.10.1_nodocker.cwl")
+elif par["mode"] == "targeted":
+  orig_cwl_file=os.path.join(meta["resources_dir"], "rhapsody_targeted_1.10.1_nodocker.cwl")
+
 if par["override_min_ram"] or par["override_min_cores"]:
   cwl_file = os.path.join(par["output"], "pipeline.cwl")
 
@@ -254,21 +309,21 @@ if not par["dryrun"]:
       env=env
     )
 
-  # # look for counts file
-  # if not par["sample_prefix"]:
-  #   par["sample_prefix"] = "sample"
-  # counts_filename = par["sample_prefix"] + "_RSEC_MolsPerCell.csv"
+  # look for counts file
+  if not par["sample_prefix"]:
+    par["sample_prefix"] = "sample"
+  counts_filename = par["sample_prefix"] + "_RSEC_MolsPerCell.csv"
   
-  # if par["sample_tags_version"]:
-  #   counts_filename = "Combined_" + counts_filename
-  # counts_file = os.path.join(par["output"], counts_filename)
+  if par["sample_tags_version"]:
+    counts_filename = "Combined_" + counts_filename
+  counts_file = os.path.join(par["output"], counts_filename)
   
-  # if not os.path.exists(counts_file):
-  #   raise ValueError(f"Could not find output counts file '{counts_filename}'")
+  if not os.path.exists(counts_file):
+    raise ValueError(f"Could not find output counts file '{counts_filename}'")
 
-  # # look for metrics file
-  # metrics_filename = par["sample_prefix"] + "_Metrics_Summary.csv"
-  # metrics_file = os.path.join(par["output"], metrics_filename)
-  # if not os.path.exists(metrics_file):
-  #   raise ValueError(f"Could not find output metrics file '{metrics_filename}'")
+  # look for metrics file
+  metrics_filename = par["sample_prefix"] + "_Metrics_Summary.csv"
+  metrics_file = os.path.join(par["output"], metrics_filename)
+  if not os.path.exists(metrics_file):
+    raise ValueError(f"Could not find output metrics file '{metrics_filename}'")
 

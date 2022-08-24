@@ -1,19 +1,19 @@
 functionality:
-  name: "bd_rhapsody_targeted"
+  name: "bd_rhapsody"
   namespace: "mapping"
   version: "dev"
   description: |
-    A wrapper for the BD Rhapsody Target Analysis CWL v1.10.1 pipeline.
+    A wrapper for the BD Rhapsody Analysis CWL v1.10.1 pipeline.
 
     The CWL pipeline file is obtained by cloning 'https://bitbucket.org/CRSwDev/cwl/src/master/' and removing all objects with class 'DockerRequirement' from the YML.
+
+    This pipeline can be used for a targeted analysis (with `--mode targeted`) or for a whole transcriptome analysis (with `--mode wta`).
+    * If mode is `"targeted"`, then either the `--reference` or `--abseq_reference` parameters must be defined.
+    * If mode is `"wta"`, then `--reference_genome` and `--transcriptome_annotation` must be defined, `--abseq_reference` and `--supplemental_reference` is optional.
 
     The reference_genome and transcriptome_annotation files can be downloaded from these locations:
       - Human: http://bd-rhapsody-public.s3-website-us-east-1.amazonaws.com/Rhapsody-WTA/GRCh38-PhiX-gencodev29/
       - Mouse: http://bd-rhapsody-public.s3-website-us-east-1.amazonaws.com/Rhapsody-WTA/GRCm38-PhiX-gencodevM19/
-
-    Although both the Reference and AbSeq_Reference files are optional, one reference file is required.
-    For putative cell calling using an mRNA dataset, please provide an mRNA reference fasta file as the Reference.
-    For putative cell calling using an AbSeq dataset, please provide an AbSeq reference fasta file as the AbSeq_Reference.
   authors:
     - name: Robrecht Cannoodt
       email: rcannood@gmail.com
@@ -27,14 +27,30 @@ functionality:
       multiple: true
       multiple_sep: ':'
       example: input.fastq.gz
+    - name: "--reference_genome"
+      alternatives: [-r]
+      description: "Path to STAR index as a tar.gz file (only for `--mode wta`)."
+      example: "reference_genome.tar.gz"
+    - name: "--transcriptome_annotation"
+      alternatives: [-t]
+      description: "Path to GTF annotation file (only for `--mode wta`)."
+      example: "transcriptome.gtf"
     - name: "--reference"
       alternatives: [-r]
-      required: false
-      description: "Path to mRNA reference file for pre-designed, supplemental, or custom panel, in FASTA format."
+      description: "Path to mRNA reference file for pre-designed, supplemental, or custom panel, in FASTA format (only for `--mode targeted`)."
       example: "reference.fasta"
+      multiple: true
+      multiple_sep: ':'
     - name: "--abseq_reference"
       alternatives: [-a]
       description: Path to the AbSeq reference file in FASTA format. Only needed if BD AbSeq Ab-Oligos are used.
+      example: "abseq_reference.fasta"
+      multiple: true
+      multiple_sep: ':'
+    - name: "--supplemental_reference"
+      alternatives: [-s]
+      description: "Path to the supplemental reference file in FASTA format. Only needed if there are additional transgene sequences used in the experiment (only for `--mode wta`)."
+      example: "supplemental_reference.fasta"
       multiple: true
       multiple_sep: ':'
     
@@ -46,6 +62,13 @@ functionality:
       example: output_dir/
 
   arguments:
+    # mode settings
+    - name: "--mode"
+      type: string
+      description: "Whether to run a whole transcriptome analysis (WTA) or a targeted analysis."
+      choices: [ wta, targeted ]
+      example: "wta"
+
     # putative cell calling settings
     - name: "--putative_cell_call"
       type: string
@@ -118,7 +141,7 @@ functionality:
       default: sample
   argument_groups:
     - name: Inputs
-      arguments: [ input, reference, abseq_reference ]
+      arguments: [ input, reference_genome, transcriptome_annotation, abseq_reference, supplemental_reference ]
     - name: Outputs
       arguments: [ output ]
     - name: "Putative cell calling arguments"
@@ -136,12 +159,13 @@ functionality:
   resources:
     - type: python_script
       path: script.py
+    - path: rhapsody_wta_1.10.1_nodocker.cwl
     - path: rhapsody_targeted_1.10.1_nodocker.cwl
-  # test_resources:
-  #   - type: bash_script
-  #     path: run_test.sh
-  #   - path: ../../../resources_test/bdrhap_5kjrt
-  #   - path: ../../../resources_test/bdrhap_ref_gencodev40_chr1
+  test_resources:
+    - type: bash_script
+      path: run_test.sh
+    - path: ../../../resources_test/bdrhap_5kjrt
+    - path: ../../../resources_test/bdrhap_ref_gencodev40_chr1
 
 platforms:
   - type: docker
