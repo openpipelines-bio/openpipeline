@@ -31,27 +31,31 @@ workflow run_wf {
     | flatMap { tup ->
       id = tup[0]
       data = tup[1].clone()
+      if (!data.process_per_lane) {
+        return tup
+      } else {
+        // preproc input
+        input = data.remove("input")
+        if (input instanceof Path) {
+          input = [ input ]
+        }
 
-      // preproc input
-      input = data.remove("input")
-      if (input instanceof Path) {
-        input = [ input ]
-      }
+        // get read regex
+        r1r2_regex = data.remove("r1r2_regex")
 
-      // get read regex
-      r1r2_regex = data.remove("r1r2_regex")
+        input_with_new_ids = input.collect { file ->
+          new_id = file.name.replaceAll(r1r2_regex, '.').replaceAll("\\.fastq\\.gz", "")
+          [ new_id, file ]
+        }
+        new_ids = input_with_new_ids.collect{it[0]}.unique()
+        new_tups = new_ids.collect { new_id -> 
+          new_input = input_with_new_ids.findAll{it[0] == new_id}.collect{it[1]}
+          
+          assert new_input.size() == 2 : "Number of fastqs for id '$new_id' should be two.\nFound: ${input_with_new_ids}.\nExpected: each id to have just two files.}"
 
-      input_with_new_ids = input.collect { file ->
-        new_id = file.name.replaceAll(r1r2_regex, '.').replaceAll("\\.fastq\\.gz", "")
-        [ new_id, file ]
-      }
-      new_ids = input_with_new_ids.collect{it[0]}.unique()
-      new_ids.collect { new_id -> 
-        new_input = input_with_new_ids.findAll{it[0] == new_id}.collect{it[1]}
-        
-        assert new_input.size() == 2 : "Number of fastqs for id '$new_id' should be two.\nFound: ${input_with_new_ids}.\nExpected: each id to have just two files.}"
-
-        [ new_id, [ input: new_input ] + data, [ tuple_orig_id: id ] ]
+          [ new_id, [ input: new_input ] + data, [ tuple_orig_id: id ] ]
+        }
+        return new_tups
       }
     }
 

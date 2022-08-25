@@ -113,12 +113,15 @@ functionality:
     - name: "--dryrun"
       type: boolean_true
       description: "If true, the output directory will only contain the CWL input files, but the pipeline itself will not be executed."
-  # additional settings
+
+    # additional settings
     - name: "--sample_prefix"
       type: string
       description: "Specify a run name to use as the output file base name. Use only letters, numbers, or hyphens. Do not use special characters or spaces."
       default: sample
-
+    - name: "--process_per_lane"
+      type: boolean_true
+      description: If true, this pipeline will process the samples by lane and then aggregate (Experimental).
   argument_groups:
     - name: Inputs
       arguments: [ id, input, reference_genome, transcriptome_annotation, abseq_reference, supplemental_reference ]
