@@ -34,8 +34,8 @@ workflow run_wf {
 
   main:
   commonOptions = [
-    args: [ output: "\$id" ],
-    directives: [ publishDir: "${params.publishDir}/fastq" ]
+    args: [ output: "fastq/\$id" ],
+    auto: [ publish: true ]
   ]
 
   mkfastq_ch = input_ch
@@ -60,8 +60,8 @@ workflow run_wf {
   all_ch
     | fastqc.run(
         [
-          args: [ mode: "dir", output: "\$id" ],
-          directives: [ publishDir: "${params.publishDir}/fastqc" ]
+          args: [ mode: "dir", output: "fastqc/\$id" ],
+          auto: [ publish: true ]
         ]
       )
 
@@ -72,8 +72,8 @@ workflow run_wf {
     | map{ [ "multiqc", it ] }
     | multiqc.run(
         [
-          args: [ output: "report" ],
-          directives: [ publishDir: "${params.publishDir}/multiqc" ]
+          args: [ output: "multiqc/report" ],
+          auto: [ publish: true ]
         ]
       )
 
