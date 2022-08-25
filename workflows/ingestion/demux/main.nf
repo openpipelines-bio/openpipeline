@@ -16,7 +16,7 @@ config = readConfig("$projectDir/config.vsh.yaml")
 params.demultiplexer = "mkfastq"
 
 workflow {
-  helpMessage(params, config)
+  helpMessage(config)
 
   demultiplexers = [ "mkfastq", "bclconvert", "bcl2fastq" ]
 
