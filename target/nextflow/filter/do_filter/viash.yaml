@@ -1965,5 +1965,5 @@ info:
   platform: "nextflow"
   output: "target/nextflow/filter/do_filter"
   viash_version: "0.5.15"
-  git_commit: "ef7b9935dbe32d4ff5eed9a2b34c768b061329d1"
+  git_commit: "e09dcbe1448df3b7064405d21548877185c6f246"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"

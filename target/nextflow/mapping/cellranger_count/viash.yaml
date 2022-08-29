@@ -53,8 +53,7 @@ functionality:
     description: "The folder to store the alignment results."
     example:
     - "/path/to/output"
-    default:
-    - "counts"
+    default: []
     must_exist: false
     required: true
     direction: "output"
@@ -234,9 +233,6 @@ functionality:
             "description" : "The folder to store the alignment results.",
             "example" : [
               "/path/to/output"
-            ],
-            "default" : [
-              "counts"
             ],
             "must_exist" : false,
             "required" : true,
@@ -2115,5 +2111,5 @@ info:
   platform: "nextflow"
   output: "target/nextflow/mapping/cellranger_count"
   viash_version: "0.5.15"
-  git_commit: "ef7b9935dbe32d4ff5eed9a2b34c768b061329d1"
+  git_commit: "e09dcbe1448df3b7064405d21548877185c6f246"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"
