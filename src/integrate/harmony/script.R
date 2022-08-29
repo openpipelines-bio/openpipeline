@@ -1,6 +1,5 @@
 library(reticulate)
 library(harmony)
-library(anndata)
 
 mudata <- reticulate::import("mudata")
 
