@@ -455,9 +455,9 @@ functionality:
       
       LABEL org.opencontainers.image.authors="Dries De Maeyer <DDeMaey1@its.jnj.com> (maintainer) {account: ddemaey1}"
       LABEL org.opencontainers.image.description="Companion container for running component convert from_csv_to_h5mu"
-      LABEL org.opencontainers.image.created="2022-08-10T13:57:51Z"
+      LABEL org.opencontainers.image.created="2022-08-31T08:52:46Z"
       LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-      LABEL org.opencontainers.image.revision="db1057622f79898db466f28ff203f29296ad25a5"
+      LABEL org.opencontainers.image.revision="4895683b074893017785b554b45fa755166de84a"
       LABEL org.opencontainers.image.version="integration_build"
       VIASHDOCKER
       }
@@ -893,5 +893,5 @@ info:
   output: "target/docker/convert/from_csv_to_h5mu"
   executable: "target/docker/convert/from_csv_to_h5mu/from_csv_to_h5mu"
   viash_version: "0.5.15"
-  git_commit: "db1057622f79898db466f28ff203f29296ad25a5"
+  git_commit: "4895683b074893017785b554b45fa755166de84a"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"
