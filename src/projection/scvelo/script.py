@@ -27,6 +27,8 @@ par = defaultdict(none_factory, {
 ## VIASH END
 mpl.rcParams['savefig.dpi']=150
 
+# Script must be wrapped into a main function because scvelo spawn subprocesses
+# and this fails when the functions are not wrapped.
 def main():
 
   # Create output directory
