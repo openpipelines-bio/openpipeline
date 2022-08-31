@@ -51,7 +51,7 @@ workflow test_wf {
   // or when running from s3: params.resources_test = "s3://openpipelines-data/"
   testParams = [
     id: "foo",
-    input: params.resources_test + "/concat/human_brain_3k_filtered_feature_bc_matrix_subset.h5mu",
+    input: params.resources_test + "/concat/concatenated_brain_filtered_feature_bc_matrix_subset.h5mu",
   ]
 
   output_ch =
