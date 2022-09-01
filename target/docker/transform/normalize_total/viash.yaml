@@ -495,9 +495,9 @@ functionality:
       
       LABEL org.opencontainers.image.authors="Dries De Maeyer <ddemaeyer@gmail.com> (maintainer) {account: ddemaey1}, Robrecht Cannoodt <rcannood@gmail.com> (contributor) {github: rcannood, orcid: 0000-0003-3641-729X}"
       LABEL org.opencontainers.image.description="Companion container for running component transform normalize_total"
-      LABEL org.opencontainers.image.created="2022-09-01T07:10:43Z"
+      LABEL org.opencontainers.image.created="2022-09-01T07:37:54Z"
       LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-      LABEL org.opencontainers.image.revision="70410da903070cf89cc84a0024eb856d47890cfb"
+      LABEL org.opencontainers.image.revision="c0b634fee9641407ab7563751afb4153064b31c8"
       LABEL org.opencontainers.image.version="integration_build"
       VIASHDOCKER
       }
@@ -973,5 +973,5 @@ info:
   output: "target/docker/transform/normalize_total"
   executable: "target/docker/transform/normalize_total/normalize_total"
   viash_version: "0.5.15"
-  git_commit: "70410da903070cf89cc84a0024eb856d47890cfb"
+  git_commit: "c0b634fee9641407ab7563751afb4153064b31c8"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"
