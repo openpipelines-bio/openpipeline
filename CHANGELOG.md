@@ -6,7 +6,7 @@
 
 * `transform/scaling`: Scale data to unit variance and zero mean.
 
-* `integrate/hamony`: Added R based Harmony component.
+* `integrate/harmony`: Added R based Harmony component.
 
 ## MAJOR CHANGES
 
