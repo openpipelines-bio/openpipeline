@@ -36,7 +36,7 @@ functionality:
     - name: "--other_axis_mode"
       type: string
       choices: [same, unique, first, only, concat, move]
-      default: concat
+      default: move
       description: |
         How to handle the merging of other axis (var, obs, ...).
          - None: keep no data
