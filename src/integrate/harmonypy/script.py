@@ -8,10 +8,10 @@ par = {
     "output": "foo.h5mu",
     "compression": "gzip",
     "modality": ["rna"],
-    "pca_key": "X_pca",
-    "output_key_suffix": "harmony",
-    "theta": 0,
-    "sample_key": "batch",
+    "obsm_input": "X_pca",
+    "obsm_output": "X_pca_harmonypy",
+    "theta": 2,
+    "obs_covariates": ["batch"],
 }
 ### VIASH END
 
@@ -20,10 +20,10 @@ def main():
     mdata = mudata.read(par["input"].strip())
     for mod_name in par['modality']:
         mod = mdata.mod[mod_name]
-        pca_embedding = mod.obsm[par['pca_key']]
+        pca_embedding = mod.obsm[par['obsm_input']]
         metadata = mod.obs
-        ho = run_harmony(pca_embedding, metadata, par['sample_key'], theta=par['theta'])
-        mod.obsm[f'{par["pca_key"]}_{par["output_key_suffix"]}'] = ho.Z_corr.T
+        ho = run_harmony(pca_embedding, metadata, par['obs_covariates'], theta=par['theta'])
+        mod.obsm[par["obsm_output"]] = ho.Z_corr.T
     mdata.write_h5mu(par['output'].strip())
 
 if __name__ == "__main__":
