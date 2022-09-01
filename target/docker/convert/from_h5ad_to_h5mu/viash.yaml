@@ -436,9 +436,9 @@ functionality:
       
       LABEL org.opencontainers.image.authors="Dries De Maeyer <ddemaeyer@gmail.com> (maintainer) {account: ddemaey1}"
       LABEL org.opencontainers.image.description="Companion container for running component convert from_h5ad_to_h5mu"
-      LABEL org.opencontainers.image.created="2022-08-29T00:31:10Z"
+      LABEL org.opencontainers.image.created="2022-09-01T07:07:49Z"
       LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-      LABEL org.opencontainers.image.revision="e09dcbe1448df3b7064405d21548877185c6f246"
+      LABEL org.opencontainers.image.revision="f237429b662ccbdbbd8fe8e44624ca1e70cf5a80"
       LABEL org.opencontainers.image.version="main_build"
       VIASHDOCKER
       }
@@ -883,5 +883,5 @@ info:
   output: "target/docker/convert/from_h5ad_to_h5mu"
   executable: "target/docker/convert/from_h5ad_to_h5mu/from_h5ad_to_h5mu"
   viash_version: "0.5.15"
-  git_commit: "e09dcbe1448df3b7064405d21548877185c6f246"
+  git_commit: "f237429b662ccbdbbd8fe8e44624ca1e70cf5a80"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"
