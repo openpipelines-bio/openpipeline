@@ -35,7 +35,8 @@ class TestConcat(unittest.TestCase):
             "--sample_names", "mouse,human",
             "--input", input_sample1_file,
             "--input", input_sample2_file,
-            "--output", "concat.h5mu"])
+            "--output", "concat.h5mu",
+            "--other_axis_mode", "concat"])
 
         self.assertTrue(Path("concat.h5mu").is_file())
         concatenated_data = md.read("concat.h5mu")
@@ -90,7 +91,8 @@ class TestConcat(unittest.TestCase):
                 "--sample_names", "mouse,mouse2",
                 "--input", input_sample1_file,
                 "--input", input_sample1_file,
-                "--output", "concat.h5mu"
+                "--output", "concat.h5mu",
+                "--other_axis_mode", "concat"
                 ])
         self.assertTrue(Path("concat.h5mu").is_file())
         data_sample1 = md.read(input_sample1_file)
@@ -123,7 +125,8 @@ class TestConcat(unittest.TestCase):
                     "--sample_names", "mouse,human",
                     "--input", tempfile.name,
                     "--input", input_sample2_file,
-                    "--output", "concat.h5mu"
+                    "--output", "concat.h5mu",
+                    "--other_axis_mode", "concat"
                     ])
 
             self.assertTrue(Path("concat.h5mu").is_file())
@@ -174,7 +177,8 @@ class TestConcat(unittest.TestCase):
                     "--sample_names", "mouse,human",
                     "--input", tempfile_sample1.name,
                     "--input", tempfile_sample2.name,
-                    "--output", "concat.h5mu"
+                    "--output", "concat.h5mu",
+                    "--other_axis_mode", "concat"
                     ])
 
             self.assertTrue(Path("concat.h5mu").is_file())
@@ -226,7 +230,8 @@ class TestConcat(unittest.TestCase):
                 "--sample_names", "mouse,human",
                 "--input", tempfile_sample1.name,
                 "--input", input_sample2_file,
-                "--output", "concat.h5mu"
+                "--output", "concat.h5mu",
+                "--other_axis_mode", "concat"
                 ])
 
             self.assertTrue(Path("concat.h5mu").is_file())
@@ -286,7 +291,8 @@ class TestConcat(unittest.TestCase):
                 "--sample_names", "mouse,human",
                 "--input", tempfile_input1.name,
                 "--input", tempfile_input2.name,
-                "--output", "concat.h5mu"
+                "--output", "concat.h5mu",
+                "--other_axis_mode", "concat"
                 ])
 
             self.assertTrue(Path("concat.h5mu").is_file())
@@ -327,7 +333,8 @@ class TestConcat(unittest.TestCase):
                 "--sample_names", "mouse,human",
                 "--input", tempfile_input1.name,
                 "--input", tempfile_input2.name,
-                "--output", "concat.h5mu"
+                "--output", "concat.h5mu",
+                "--other_axis_mode", "concat"
                 ])
 
             self.assertTrue(Path("concat.h5mu").is_file())
