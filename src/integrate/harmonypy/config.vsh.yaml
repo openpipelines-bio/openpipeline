@@ -8,6 +8,10 @@ functionality:
     - name: Dries Schaumont
       email: dries.schaumont@its.jnj.com
       roles: [ maintainer ]
+    - name: Robrecht Cannoodt
+      email: rcannood@gmail.com
+      roles: [ contributor ]
+      props: { github: rcannood, orcid: "0000-0003-3641-729X" }
   arguments:
     - name: "--input"
       alternatives: ["-i"]
@@ -26,30 +30,29 @@ functionality:
       multiple: true
       default: "rna"
       required: false
-    - name: "--pca_key"
+    - name: "--obsm_input"
       type: string
       default: "X_pca"
       required: false
-      description: The field in the obs object that defined the input PCA embedding.
-    - name: "--output_key_suffix"
+      description: "Which .obsm slot to use as a starting PCA embedding."
+    - name: "--obsm_output"
       type: string
-      default: "harmonypy"
+      default: "X_pca_integrated"
       required: false
-      description: "Suffix for the key in .obsm where the results will be stored.
-                    The resulting key will be a comination of the pca key and the output key suffix."
+      description: "In which .obsm slot to store the resulting integrated embedding."
     - name: "--theta"
-      description: Theta value to perform correction on.
+      description: "Diversity clustering penalty parameter. Specify for each variable in group.by.vars. theta=0 does not encourage any diversity. Larger values of theta result in more diverse clusters."
       type: double
-      default: 0
+      default: 2
       multiple: true
-    - name: "--sample_key"
+    - name: "--obs_covariates"
       type: string
-      description: The field in the obs object that defines batches to perform correction to.
-      default: "batch"
+      description: "The .obs field(s) that define the covariate(s) to regress out."
+      example: ["batch", "sample"]
       multiple: true
   resources:
     - type: python_script
-      path: ./script.py
+      path: script.py
   test_resources:
     - type: python_script
       path: test.py
@@ -67,4 +70,4 @@ platforms:
   - type: nextflow
     variant: vdsl3
     directives:
-      label: highmem
+      label: [highmem, highcpu]

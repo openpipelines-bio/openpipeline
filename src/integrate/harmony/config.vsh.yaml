@@ -15,41 +15,51 @@ functionality:
     - name: "--input"
       alternatives: ["-i"]
       type: file
-      description: Input h5ad file
+      description: Input h5mu file
       direction: input
       required: true
     - name: "--output"
       alternatives: ["-o"]
       type: file
-      description: Output h5ad file.
+      description: Output h5mu file.
       direction: output
       required: true
-    - name: "--theta"
-      description: Theta value to perform correction on.
-      type: double
-      default: 0
-      multiple: true
-    - name: "--obs_name"
+    - name: "--modality"
       type: string
-      description: The field in the obs object that defines batches to perform correction to.
-      default: "batch"
+      multiple: true
+      default: "rna"
+      required: false
+    - name: "--obsm_input"
+      type: string
+      default: "X_pca"
+      required: false
+      description: "Which .obsm slot to use as a starting PCA embedding."
+    - name: "--obsm_output"
+      type: string
+      default: "X_pca_integrated"
+      required: false
+      description: "In which .obsm slot to store the resulting integrated embedding."
+    - name: "--theta"
+      description: "Diversity clustering penalty parameter. Specify for each variable in group.by.vars. theta=0 does not encourage any diversity. Larger values of theta result in more diverse clusters."
+      type: double
+      default: 2
+      multiple: true
+    - name: "--obs_covariates"
+      type: string
+      description: "The .obs field(s) that define the covariate(s) to regress out."
+      example: ["batch", "sample"]
       multiple: true
   resources:
     - type: r_script
       path: script.R
+
   test_resources:
     - type: python_script
-      path: test.py
+      path: ../harmonypy/test.py
     - path: ../../../resources_test/pbmc_1k_protein_v3/pbmc_1k_protein_v3_mms.h5mu
-  #   - type: file
-  #     path: report.Rmd
-  # tests:
-  #   - type: bash_script
-  #     path: test/run_test.sh
-  #   - path: test/pbmc_ionos.concat.pca.h5ad
 platforms:
   - type: docker
-    image: ghcr.io/data-intuitive/randpy:r4.0_py3.8
+    image: ghcr.io/data-intuitive/randpy:r4.0_py3.10
     setup:
       - type: python
         packages:
