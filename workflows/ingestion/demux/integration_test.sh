@@ -10,9 +10,9 @@ export NXF_VER=21.10.6
 
 bin/nextflow \
   run . \
-  -main-script workflows/integration/multiomics/main.nf \
+  -main-script workflows/ingestion/demux/main.nf \
   -entry test_wf \
   -resume \
-  -profile docker \
-  -c workflows/utils/labels_ci.config \
-  --publish_dir "foo/"
+  -with-docker \
+  -with-trace work/trace.txt \
+  --publishDir demux-test

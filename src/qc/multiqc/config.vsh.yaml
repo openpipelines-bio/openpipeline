@@ -1,0 +1,35 @@
+functionality:
+  name: "multiqc"
+  namespace: "qc"
+  version: 0.0.1
+  description: |
+    Component for multiqc (https://multiqc.info/)
+  arguments:
+    - name: "--input"
+      alternatives: [ "-i" ]
+      type: file
+      required: true
+      multiple: true
+      multiple_sep: " "
+      description: Describe the input file.
+      example: input.txt
+    - name: "--output"
+      alternatives: [ "-o" ]
+      type: file
+      direction: output
+      required: true
+      description: Describe the output file.
+      example: report
+  resources:
+    - type: bash_script
+      path: script.sh
+  test_resources:
+    - type: bash_script
+      path: test.sh
+platforms:
+  - type: docker
+    image: python:3.8
+    setup:
+      - type: python
+        packages: [ multiqc ]
+  - type: nextflow

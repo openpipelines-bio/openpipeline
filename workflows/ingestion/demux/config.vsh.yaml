@@ -1,0 +1,49 @@
+functionality:
+  name: demux
+  namespace: ingestion
+  description: |
+    Convert bcl files to fastq files using bcl2fastq, bcl-convert or cellranger mkfastq
+  authors:
+    - name: Toni Verbeiren
+      roles: [ author, maintainer ]
+      props: { github: tverbeiren }
+    - name: Marijke Van moerbeke
+      roles: [ author ]
+      props: { orcid: 0000-0002-3097-5621 }
+  arguments:
+    - name: "--id"
+      required: true
+      type: string
+      description: ID of the sample.
+      example: foo
+    - name: "--input"
+      alternatives: [ "-i" ]
+      type: file
+      required: true
+      description: Input run directory
+      example: bcl_dir
+    - name: "--sample_sheet"
+      alternatives: [ "-s" ]
+      type: file
+      required: true
+      description: Pointer to the sample sheet
+      example: bcl_dir
+    - name: "--demultiplexer"
+      type: string
+      description: The multiplexer to use, one of bclconvert or mkfastq
+      example: bclconvert
+      choices: [ bclconvert, bcl2fastq, mkfastq ]
+    - name: "--ignore_missing"
+      type: boolean
+      description: Should the demultiplexer ignore missing entities (filter, ...)
+  argument_groups:
+    - name: Arguments
+      description: Input parameters for this pipeline
+      arguments: [ id, input, sample_sheet ]
+  resources:
+    - type: nextflow_script
+      path: main.nf
+  test_resources:
+    - type: nextflow_script
+      path: main.nf
+      entrypoint: test_wf
