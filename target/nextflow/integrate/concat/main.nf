@@ -194,10 +194,8 @@ def add_sample_names(sample_ids: tuple[str], samples: list[mu.MuData]) -> None:
     for (sample_id, sample) in zip(sample_ids, samples):
         if "batch" in sample.obs_keys():
             samples.obs = sample.obs.drop("batch", axis=1)
-        for _, modality in sample.mod.items():
-            modality.obs["batch"] = sample_id
+        sample.obs["batch"] = sample_id
         sample.batch = sample_id
-        sample.update()
 
 
 def make_observation_keys_unique(samples: list[mu.MuData]) -> None:

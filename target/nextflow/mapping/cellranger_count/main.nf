@@ -92,6 +92,9 @@ thisConfig = processConfig([
       "example" : [
         "/path/to/output"
       ],
+      "default" : [
+        "counts"
+      ],
       "must_exist" : false,
       "required" : true,
       "direction" : "output",

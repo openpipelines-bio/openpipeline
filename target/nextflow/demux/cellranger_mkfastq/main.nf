@@ -108,28 +108,6 @@ thisConfig = processConfig([
       "multiple_sep" : ":"
     },
     {
-      "type" : "boolean_true",
-      "name" : "--separate_reports",
-      "description" : "Should reports be stored in a separate dir.\nShould be used with the --reports argument.\n",
-      "direction" : "input"
-    },
-    {
-      "type" : "file",
-      "name" : "--reports",
-      "description" : "Reports directory",
-      "example" : [
-        "reports_dir"
-      ],
-      "default" : [
-        "reports"
-      ],
-      "must_exist" : false,
-      "required" : false,
-      "direction" : "output",
-      "multiple" : false,
-      "multiple_sep" : ":"
-    },
-    {
       "type" : "integer",
       "name" : "--cores",
       "description" : "Set max cores the pipeline may request at one time.",
@@ -193,8 +171,6 @@ cat > "$tempscript" << VIASHMAIN
 $( if [ ! -z ${VIASH_PAR_INPUT+x} ]; then echo "par_input='${VIASH_PAR_INPUT//\\'/\\'\\"\\'\\"\\'}'"; fi )
 $( if [ ! -z ${VIASH_PAR_SAMPLE_SHEET+x} ]; then echo "par_sample_sheet='${VIASH_PAR_SAMPLE_SHEET//\\'/\\'\\"\\'\\"\\'}'"; fi )
 $( if [ ! -z ${VIASH_PAR_OUTPUT+x} ]; then echo "par_output='${VIASH_PAR_OUTPUT//\\'/\\'\\"\\'\\"\\'}'"; fi )
-$( if [ ! -z ${VIASH_PAR_SEPARATE_REPORTS+x} ]; then echo "par_separate_reports='${VIASH_PAR_SEPARATE_REPORTS//\\'/\\'\\"\\'\\"\\'}'"; fi )
-$( if [ ! -z ${VIASH_PAR_REPORTS+x} ]; then echo "par_reports='${VIASH_PAR_REPORTS//\\'/\\'\\"\\'\\"\\'}'"; fi )
 $( if [ ! -z ${VIASH_PAR_CORES+x} ]; then echo "par_cores='${VIASH_PAR_CORES//\\'/\\'\\"\\'\\"\\'}'"; fi )
 $( if [ ! -z ${VIASH_PAR_MEMORY+x} ]; then echo "par_memory='${VIASH_PAR_MEMORY//\\'/\\'\\"\\'\\"\\'}'"; fi )
 meta_functionality_name='$VIASH_META_FUNCTIONALITY_NAME'
@@ -246,13 +222,13 @@ cellranger mkfastq \\\\
   --disable-ui \\\\
   --output-dir "\\$par_output"
 
-# Move reports to their own output location
-if [ "\\$par_separate_reports" == true ]; then
-  echo "Moving reports its own location"
-  mv "\\$par_output"/Reports "\\$par_reports"
-else
-  echo "Leaving reports alone"
-fi
+# echo "Copying output"
+# if [ -d "\\$work_dir/\\$id/outs/fastq_path/" ]; then
+#   if [ ! -d "\\$par_output" ]; then
+#     mkdir -p "\\$par_output"
+#   fi
+#   mv "\\$work_dir/\\$id/outs/fastq_path/"* "\\$par_output"
+# fi
 
 VIASHMAIN
 bash "$tempscript"

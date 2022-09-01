@@ -1,277 +1,82 @@
 {
-    "$schema": "http://json-schema.org/draft-07/schema",
-    "title": "bd_rhapsody_wta",
-    "description": "A pipeline for processing BD Rhapsody WTA data.",
-    "type": "object","definitions": {
-      "inputs" : {
-        "title": "Inputs",
-        "type": "object",
-        "description": "No description",
-        "default": "",
-        "properties": {
-          "id": {
-            "type":"string",
-            "description": "ID of the sample.",
-            
-            
-            "default": ""
+  "$schema": "http://json-schema.org/draft-07/schema",
+  "title": "bd_rhapsody_wta",
+  "description": "A pipeline for processing BD Rhapsody WTA data.",
+  "type": "object",
+  "definitions": {
+      "inputs": {
+          "title": "Inputs",
+          "type": "object",
+          "description": "Description of inputs",
+          "default": "",
+          "properties": {
+              "input": {
+                  "type": "string",
+                  "description": "One or more fastq paths, separated with semicolons.",
+                  "hidden": false
+              },
+              "reference_genome": {
+                  "type": "string",
+                  "description": "A path to STAR index as a tar.gz file.",
+                  "hidden": false
+              },
+              "transcriptome_annotation": {
+                  "type": "string",
+                  "description": "A path to GTF annotation file.",
+                  "hidden": false
+              },
+              "abseq_reference": {
+                  "type": "string",
+                  "description": "Path to the AbSeq reference file in FASTA format. Only needed if BD AbSeq Ab-Oligos are used.",
+                  "hidden": false
+              },
+              "supplemental_reference": {
+                  "type": "string",
+                  "description": "Path to the supplemental reference file in FASTA format. Only needed if there are additional transgene sequences used in the experiment.",
+                  "hidden": false
+              },
+              "id": {
+                  "type": "string",
+                  "description": "ID of the sample.",
+                  "hidden": false
+              }
           },
-          "input": {
-            "type":"string",
-            "description": "Path to your read files in the FASTQ.GZ format. You may specify as many R1/R2 read pairs as you want.",
-            
-            
-            "default": ""
-          },
-          "reference_genome": {
-            "type":"string",
-            "description": "Path to STAR index as a tar.gz file.",
-            
-            
-            "default": ""
-          },
-          "transcriptome_annotation": {
-            "type":"string",
-            "description": "Path to GTF annotation file.",
-            
-            
-            "default": ""
-          },
-          "abseq_reference": {
-            "type":"string",
-            "description": "Path to the AbSeq reference file in FASTA format. Only needed if BD AbSeq Ab-Oligos are used.",
-            
-            
-            "default": ""
-          },
-          "supplemental_reference": {
-            "type":"string",
-            "description": "Path to the supplemental reference file in FASTA format. Only needed if there are additional transgene sequences used in the experiment.",
-            
-            
-            "default": ""
-          }
-        }
+          "required": [
+              "input",
+              "reference_genome",
+              "transcriptome_annotation"
+          ]
       },
-      "lane splitter arguments" : {
-        "title": "Lane splitter arguments",
-        "type": "object",
-        "description": "To reduce the memory resource requirements, samples are mapped per lane instead of per sample. To this end, we need to correctly identify the R1/R2 tags to be able to group the reads correctly.",
-        "default": "",
-        "properties": {
-          "r1r2_regex": {
-            "type":"string",
-            "description": "A regex to detect the R1/R2 labels. This is used to group the samples per lane instead of per sample.",
-            
-            
-            "default": "[^A-Za-z0-9]R[12][^A-Za-z0-9]"
+      "nextflow input/output arguments": {
+          "title": "Nextflow input/output arguments",
+          "type": "object",
+          "description": "No description",
+          "default": "",
+          "properties": {
+              "publish_dir": {
+                  "type": "string",
+                  "description": "Path to an output directory.",
+                  "hidden": false
+              },
+              "param_list": {
+                  "type": "string",
+                  "description": "Allows inputting multiple parameter sets to initialise a Nextflow channel. Possible formats are csv, json, yaml, or simply a yaml_blob.\nA csv should have column names which correspond to the different arguments of this pipeline.\nA json or a yaml file should be a list of maps, each of which has keys corresponding to the arguments of the pipeline.\nA yaml blob can also be passed directly as a parameter.\nInside the Nextflow pipeline code, params.params_list can also be used to directly a list of parameter sets.\nWhen passing a csv, json or yaml, relative path names are relativized to the location of the parameter file.",
+                  "hidden": false
+              },
+              "param_list_format": {
+                  "type": "string",
+                  "description": "Manually specify the param_list_format. Must be one of 'csv', 'json', 'yaml', 'yaml_blob', 'asis' or 'none'.",
+                  "hidden": false
+              }
           }
-        }
-      },
-      "putative cell calling arguments" : {
-        "title": "Putative cell calling arguments",
-        "type": "object",
-        "description": "No description",
-        "default": "",
-        "properties": {
-          "putative_cell_call": {
-            "type":"string",
-            "description": "Specify the dataset to be used for putative cell calling. For putative cell calling using an AbSeq dataset, please provide an AbSeq_Reference fasta file above.",
-            
-            "enum": ["mRNA", "AbSeq_Experimental"],
-            "default": ""
-          },
-          "exact_cell_count": {
-            "type":"integer",
-            "description": "Exact cell count - Set a specific number (\u003e=1) of cells as putative, based on those with the highest error-corrected read count",
-            
-            
-            "default": ""
-          },
-          "disable_putative_calling": {
-            "type":"boolean",
-            "description": "Disable Refined Putative Cell Calling - Determine putative cells using only the basic algorithm (minimum second derivative along the cumulative reads curve). The refined algorithm attempts to remove false positives and recover false negatives, but may not be ideal for certain complex mixtures of cell types. Does not apply if Exact Cell Count is set.",
-            
-            
-            "default": "False"
-          }
-        }
-      },
-      "subsample arguments" : {
-        "title": "Subsample arguments",
-        "type": "object",
-        "description": "No description",
-        "default": "",
-        "properties": {
-          "subsample": {
-            "type":"number",
-            "description": "A number \u003e1 or fraction (0 \u003c n \u003c 1) to indicate the number or percentage of reads to subsample.",
-            
-            
-            "default": ""
-          },
-          "subsample_seed": {
-            "type":"integer",
-            "description": "A seed for replicating a previous subsampled run.",
-            
-            
-            "default": ""
-          }
-        }
-      },
-      "multiplex arguments" : {
-        "title": "Multiplex arguments",
-        "type": "object",
-        "description": "No description",
-        "default": "",
-        "properties": {
-          "sample_tags_version": {
-            "type":"string",
-            "description": "Specify if multiplexed run.",
-            
-            "enum": ["human", "hs", "mouse", "mm"],
-            "default": ""
-          },
-          "tag_names": {
-            "type":"string",
-            "description": "Tag_Names (optional) - Specify the tag number followed by \u0027-\u0027 and the desired sample name to appear in Sample_Tag_Metrics.csv.\nDo not use the special characters: \u0026, (), [], {},  \u003c\u003e, ?, |\n",
-            
-            
-            "default": ""
-          }
-        }
-      },
-      "vdj arguments" : {
-        "title": "VDJ arguments",
-        "type": "object",
-        "description": "No description",
-        "default": "",
-        "properties": {
-          "vdj_version": {
-            "type":"string",
-            "description": "Specify if VDJ run.",
-            
-            "enum": ["human", "mouse", "humanBCR", "humanBCR", "humanTCR", "mouseBCR"],
-            "default": ""
-          }
-        }
-      },
-      "additional settings" : {
-        "title": "Additional settings",
-        "type": "object",
-        "description": "No description",
-        "default": "",
-        "properties": {
-          "sample_prefix": {
-            "type":"string",
-            "description": "Specify a run name to use as the output file base name. Use only letters, numbers, or hyphens. Do not use special characters or spaces.",
-            
-            
-            "default": "sample"
-          }
-        }
-      },
-      "cwl-runner arguments" : {
-        "title": "CWL-runner arguments",
-        "type": "object",
-        "description": "No description",
-        "default": "",
-        "properties": {
-          "parallel": {
-            "type":"boolean",
-            "description": "Run jobs in parallel.",
-            
-            
-            "default": "True"
-          },
-          "timestamps": {
-            "type":"boolean",
-            "description": "Add timestamps to the errors, warnings, and notifications.",
-            
-            
-            "default": "False"
-          },
-          "override_min_ram": {
-            "type":"integer",
-            "description": "Override the minimum RAM requirements specified in the CWL (in GB).",
-            
-            
-            "default": ""
-          },
-          "override_min_cores": {
-            "type":"integer",
-            "description": "Override the minimum cores requirements specified in the CWL.",
-            
-            
-            "default": ""
-          },
-          "dryrun": {
-            "type":"boolean",
-            "description": "If true, the output directory will only contain the CWL input files, but the pipeline itself will not be executed.",
-            
-            
-            "default": "False"
-          }
-        }
-      },
-      "nextflow input-output arguments" : {
-        "title": "Nextflow input-output arguments",
-        "type": "object",
-        "description": "Input/output parameters for Nextflow itself. Please note that both publishDir and publish_dir are supported but at least one has to be configured.",
-        "default": "",
-        "properties": {
-          "publish_dir": {
-            "type":"string",
-            "description": "Path to an output directory.",
-            
-            
-            "default": ""
-          },
-          "param_list": {
-            "type":"string",
-            "description": "Allows inputting multiple parameter sets to initialise a Nextflow channel. Possible formats are csv, json, yaml, or simply a yaml_blob.\nA csv should have column names which correspond to the different arguments of this pipeline.\nA json or a yaml file should be a list of maps, each of which has keys corresponding to the arguments of the pipeline.\nA yaml blob can also be passed directly as a parameter.\nInside the Nextflow pipeline code, params.params_list can also be used to directly a list of parameter sets.\nWhen passing a csv, json or yaml, relative path names are relativized to the location of the parameter file.",
-            "hidden": true,
-            
-            "default": ""
-          },
-          "param_list_format": {
-            "type":"string",
-            "description": "Manually specify the param_list_format. Must be one of \u0027csv\u0027, \u0027json\u0027, \u0027yaml\u0027, \u0027yaml_blob\u0027, \u0027asis\u0027 or \u0027none\u0027.",
-            "hidden": true,
-            "enum": ["csv", "json", "yaml", "yaml_blob", "asis", "none"],
-            "default": ""
-          }
-        }
       }
-    },
-    "allOf": [
+  },
+  "allOf": [
       {
-        "$ref": "#/definitions/inputs"
+          "$ref": "#/definitions/inputs"
       },
       {
-        "$ref": "#/definitions/lane splitter arguments"
-      },
-      {
-        "$ref": "#/definitions/putative cell calling arguments"
-      },
-      {
-        "$ref": "#/definitions/subsample arguments"
-      },
-      {
-        "$ref": "#/definitions/multiplex arguments"
-      },
-      {
-        "$ref": "#/definitions/vdj arguments"
-      },
-      {
-        "$ref": "#/definitions/additional settings"
-      },
-      {
-        "$ref": "#/definitions/cwl-runner arguments"
-      },
-      {
-        "$ref": "#/definitions/nextflow input-output arguments"
+          "$ref": "#/definitions/nextflow input/output arguments"
       }
-      
-    ]
+  ]
 }

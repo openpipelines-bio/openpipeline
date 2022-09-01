@@ -7,7 +7,6 @@ include { pca } from targetDir + '/dimred/pca/main.nf'
 include { find_neighbors } from targetDir + '/neighbors/find_neighbors/main.nf'
 include { umap } from targetDir + '/dimred/umap/main.nf'
 include { leiden } from targetDir + '/cluster/leiden/main.nf'
-include { harmonypy } from targetDir + '/integrate/harmonypy/main.nf'
 
 include { readConfig; viashChannel; helpMessage } from workflowDir + "/utils/WorkflowHelper.nf"
 
@@ -30,7 +29,6 @@ workflow run_wf {
   main:
   output_ch = input_ch
     | pca
-    | harmonypy
     | find_neighbors
     | leiden
     | umap.run(
@@ -51,7 +49,8 @@ workflow test_wf {
   // or when running from s3: params.resources_test = "s3://openpipelines-data/"
   testParams = [
     id: "foo",
-    input: params.resources_test + "/concat/concatenated_brain_filtered_feature_bc_matrix_subset.h5mu",
+    input: params.resources_test + "/pbmc_1k_protein_v3/pbmc_1k_protein_v3_ums.h5mu",
+    layer: ""
   ]
 
   output_ch =

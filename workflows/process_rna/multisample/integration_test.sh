@@ -8,7 +8,7 @@ cd "$REPO_ROOT"
 
 export NXF_VER=21.10.6
 
-bin/nextflow run . \
+nextflow run . \
   -main-script workflows/process_rna/multisample/main.nf \
   -profile docker \
   -resume \

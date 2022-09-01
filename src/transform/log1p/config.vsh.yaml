@@ -28,7 +28,17 @@ functionality:
       multiple: true
       default: "rna"
       required: false
-    
+
+    - name: "--input_layer"
+      type: string
+      required: false
+      description: "Input layer to use. If None, X is normalized"
+
+    - name: "--output_layer"
+      type: string
+      description: Output layer to use. By default, use X.
+      required: false
+
     # output
     - name: "--output"
       alternatives: ["-o"]

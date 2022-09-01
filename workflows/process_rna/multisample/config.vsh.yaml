@@ -15,16 +15,12 @@ functionality:
     - name: "--id"
       required: true
       type: string
-      multiple_sep: ';'
-      multiple: true
-      description: IDs of the sample.
+      description: ID of the sample.
       example: foo
     - name: "--input"
       required: true
       type: file
-      multiple_sep: ';'
-      multiple: true
-      description: Path to the samples.
+      description: Path to the sample.
       example: dataset.h5mu
   resources:
     - type: nextflow_script

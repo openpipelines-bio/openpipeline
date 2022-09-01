@@ -178,6 +178,7 @@ function ViashHelp {
   echo ""
   echo "    --output"
   echo "        type: file, required parameter, output"
+  echo "        default: counts"
   echo "        example: /path/to/output"
   echo "        The folder to store the alignment results."
   echo ""
@@ -424,9 +425,9 @@ FROM ghcr.io/data-intuitive/cellranger:6.1
 RUN apt update && apt upgrade -y
 LABEL org.opencontainers.image.authors="Angela Pisco (author) {github: aopisco, orcid: 0000-0003-0142-2355}, Samuel D'Souza (author) {github: srdsam}, Robrecht Cannoodt <rcannood@gmail.com> (author, maintainer) {github: rcannood, orcid: 0000-0003-3641-729X}"
 LABEL org.opencontainers.image.description="Companion container for running component mapping cellranger_count"
-LABEL org.opencontainers.image.created="2022-09-01T07:37:53Z"
+LABEL org.opencontainers.image.created="2022-09-01T14:56:52Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="c0b634fee9641407ab7563751afb4153064b31c8"
+LABEL org.opencontainers.image.revision="518faf00674073d105f41b1c06ab4f557675cb82"
 LABEL org.opencontainers.image.version="integration_build"
 VIASHDOCKER
 }

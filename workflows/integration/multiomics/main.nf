@@ -38,8 +38,11 @@ workflow run_wf {
     | map { id, files_list -> assert files_list.size() == 1; [id, files_list.first()] }
     | process_rna_singlesample
     | toSortedList()
-    | map { tups -> tups.transpose()}
-    | map {id, files -> [id.join(','), ["id": id, "input": files]]}
+    | map {list -> ["combined_samples_rna", 
+                      ["input": list.collect{it[1]},
+                       "sample_names":  list.collect{it[0]}]
+                    ]}
+    | concat
     | process_rna_multisample
 
 
@@ -54,12 +57,13 @@ workflow run_wf {
                       ["input": list.collect{it[1]},
                        "sample_names":  list.collect{it[0]}]
                     ]}
-    | concat // concat will be integrated into process_atac_multisample in the future
+    | concat
   
   output_ch = rna_ch.concat(atac_ch)
     | toSortedList()
     | map {list -> ["merged", list.collect{it[1]}]}
     | merge
+    | map {id, path -> [id, ["input": path, "layer": "log_normalized"]]}
     | integration
 
   emit:

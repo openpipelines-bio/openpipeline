@@ -18,7 +18,8 @@ par = {
   'min_disp': 0.5,
   'span': 0.3,
   'n_bins': 20,
-  'varm_name': 'hvg'
+  'varm_name': 'hvg',
+  'layer': 'log_normalized'
 }
 ## VIASH END
 
@@ -57,7 +58,8 @@ for mod in par['modality']:
         'n_bins': par["n_bins"],
         'flavor': par["flavor"],
         'subset': False,
-        'inplace': False
+        'inplace': False,
+        'layer': par['layer']
     }
 
     # only add parameter if it's passed

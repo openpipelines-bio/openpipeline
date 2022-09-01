@@ -82,6 +82,15 @@ thisConfig = processConfig([
       "multiple_sep" : ":"
     },
     {
+      "type" : "string",
+      "name" : "--input_layer",
+      "description" : "Input layer to use. By default, X is normalized",
+      "required" : false,
+      "direction" : "input",
+      "multiple" : false,
+      "multiple_sep" : ":"
+    },
+    {
       "type" : "file",
       "name" : "--output",
       "alternatives" : [
@@ -94,6 +103,15 @@ thisConfig = processConfig([
       "must_exist" : false,
       "required" : true,
       "direction" : "output",
+      "multiple" : false,
+      "multiple_sep" : ":"
+    },
+    {
+      "type" : "string",
+      "name" : "--output_layer",
+      "description" : "Output layer to use. By default, use X.",
+      "required" : false,
+      "direction" : "input",
       "multiple" : false,
       "multiple_sep" : ":"
     },
@@ -156,7 +174,9 @@ from sys import stdout
 par = {
   'input': $( if [ ! -z ${VIASH_PAR_INPUT+x} ]; then echo "'${VIASH_PAR_INPUT//\\'/\\\\\\'}'"; else echo None; fi ),
   'modality': $( if [ ! -z ${VIASH_PAR_MODALITY+x} ]; then echo "'${VIASH_PAR_MODALITY//\\'/\\\\\\'}'.split(':')"; else echo None; fi ),
+  'input_layer': $( if [ ! -z ${VIASH_PAR_INPUT_LAYER+x} ]; then echo "'${VIASH_PAR_INPUT_LAYER//\\'/\\\\\\'}'"; else echo None; fi ),
   'output': $( if [ ! -z ${VIASH_PAR_OUTPUT+x} ]; then echo "'${VIASH_PAR_OUTPUT//\\'/\\\\\\'}'"; else echo None; fi ),
+  'output_layer': $( if [ ! -z ${VIASH_PAR_OUTPUT_LAYER+x} ]; then echo "'${VIASH_PAR_OUTPUT_LAYER//\\'/\\\\\\'}'"; else echo None; fi ),
   'target_sum': $( if [ ! -z ${VIASH_PAR_TARGET_SUM+x} ]; then echo "int('${VIASH_PAR_TARGET_SUM//\\'/\\\\\\'}')"; else echo None; fi ),
   'exclude_highly_expressed': $( if [ ! -z ${VIASH_PAR_EXCLUDE_HIGHLY_EXPRESSED+x} ]; then echo "'${VIASH_PAR_EXCLUDE_HIGHLY_EXPRESSED//\\'/\\\\\\'}'.lower() == 'true'"; else echo None; fi )
 }
@@ -188,12 +208,14 @@ logger.info(par)
 for mod in par["modality"]:
     logger.info("Performing total normalization on modality %s", mod)
     dat = mdata.mod[mod]
-    logger.info(dat)
-    sc.pp.normalize_total(
-        dat,
-        # target_sum=par["target_sum"],
-        # exclude_highly_expressed=par["exclude_highly_expressed"]
-    )
+    if par['input_layer'] and not par['input_layer'] in dat.layers.keys():
+        raise ValueError(f"Input layer {par['input_layer']} not found in {mod}")
+    output_data = sc.pp.normalize_total(dat,
+                                        layer=par["input_layer"],
+                                        copy=True if par["output_layer"] else False)
+    
+    if output_data:
+        dat.layers[par["output_layer"]] = output_data.X
 
 logger.info("Writing to file")
 mdata.write(filename=par["output"])

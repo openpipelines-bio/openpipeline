@@ -401,9 +401,9 @@ RUN pip install --upgrade pip && \
 
 LABEL org.opencontainers.image.authors="Dries Schaumont <Dschaumo@its.jnj.com> (maintainer)"
 LABEL org.opencontainers.image.description="Companion container for running component integrate concat"
-LABEL org.opencontainers.image.created="2022-09-01T07:37:54Z"
+LABEL org.opencontainers.image.created="2022-09-01T14:56:53Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="c0b634fee9641407ab7563751afb4153064b31c8"
+LABEL org.opencontainers.image.revision="518faf00674073d105f41b1c06ab4f557675cb82"
 LABEL org.opencontainers.image.version="integration_build"
 VIASHDOCKER
 }
@@ -813,10 +813,8 @@ def add_sample_names(sample_ids: tuple[str], samples: list[mu.MuData]) -> None:
     for (sample_id, sample) in zip(sample_ids, samples):
         if "batch" in sample.obs_keys():
             samples.obs = sample.obs.drop("batch", axis=1)
-        for _, modality in sample.mod.items():
-            modality.obs["batch"] = sample_id
+        sample.obs["batch"] = sample_id
         sample.batch = sample_id
-        sample.update()
 
 
 def make_observation_keys_unique(samples: list[mu.MuData]) -> None:

@@ -21,11 +21,11 @@ target/docker/download/download_file/download_file \
 --output "${OUT}/human_brain_3k_filtered_feature_bc_matrix.h5"
 
 # Convert to h5mu
-./bin/viash run src/convert/from_10xh5_to_h5mu/config.vsh.yaml -- \
+./bin/viash run src/convert/h510x_to_h5mu/config.vsh.yaml --\
 --input "$OUT/e18_mouse_brain_fresh_5k_filtered_feature_bc_matrix.h5" \
 --output "$OUT/e18_mouse_brain_fresh_5k_filtered_feature_bc_matrix.h5mu"
 
-./bin/viash run src/convert/from_10xh5_to_h5mu/config.vsh.yaml -- \
+./bin/viash run src/convert/h510x_to_h5mu/config.vsh.yaml --\
 --input "$OUT/human_brain_3k_filtered_feature_bc_matrix.h5" \
 --output "$OUT/human_brain_3k_filtered_feature_bc_matrix.h5mu"
 
@@ -44,7 +44,4 @@ rm "$OUT/human_brain_3k_filtered_feature_bc_matrix.h5"\
    "${OUT}/human_brain_3k_filtered_feature_bc_matrix.h5mu"\
    "${OUT}/e18_mouse_brain_fresh_5k_filtered_feature_bc_matrix.h5mu"
 
-./bin/viash run src/integrate/concat/config.vsh.yaml -- \
---input "$OUT/human_brain_3k_filtered_feature_bc_matrix_subset.h5mu,$OUT/e18_mouse_brain_fresh_5k_filtered_feature_bc_matrix_subset.h5mu" \
---sample_names "mouse,human" \
---output "$OUT/concatenated_brain_filtered_feature_bc_matrix_subset.h5mu"
+

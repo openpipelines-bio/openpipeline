@@ -82,6 +82,24 @@ thisConfig = processConfig([
       "multiple_sep" : ":"
     },
     {
+      "type" : "string",
+      "name" : "--input_layer",
+      "description" : "Input layer to use. If None, X is normalized",
+      "required" : false,
+      "direction" : "input",
+      "multiple" : false,
+      "multiple_sep" : ":"
+    },
+    {
+      "type" : "string",
+      "name" : "--output_layer",
+      "description" : "Output layer to use. By default, use X.",
+      "required" : false,
+      "direction" : "input",
+      "multiple" : false,
+      "multiple_sep" : ":"
+    },
+    {
       "type" : "file",
       "name" : "--output",
       "alternatives" : [
@@ -150,6 +168,8 @@ from sys import stdout
 par = {
   'input': $( if [ ! -z ${VIASH_PAR_INPUT+x} ]; then echo "'${VIASH_PAR_INPUT//\\'/\\\\\\'}'"; else echo None; fi ),
   'modality': $( if [ ! -z ${VIASH_PAR_MODALITY+x} ]; then echo "'${VIASH_PAR_MODALITY//\\'/\\\\\\'}'.split(':')"; else echo None; fi ),
+  'input_layer': $( if [ ! -z ${VIASH_PAR_INPUT_LAYER+x} ]; then echo "'${VIASH_PAR_INPUT_LAYER//\\'/\\\\\\'}'"; else echo None; fi ),
+  'output_layer': $( if [ ! -z ${VIASH_PAR_OUTPUT_LAYER+x} ]; then echo "'${VIASH_PAR_OUTPUT_LAYER//\\'/\\\\\\'}'"; else echo None; fi ),
   'output': $( if [ ! -z ${VIASH_PAR_OUTPUT+x} ]; then echo "'${VIASH_PAR_OUTPUT//\\'/\\\\\\'}'"; else echo None; fi ),
   'base': $( if [ ! -z ${VIASH_PAR_BASE+x} ]; then echo "float('${VIASH_PAR_BASE//\\'/\\\\\\'}')"; else echo None; fi )
 }
@@ -175,9 +195,15 @@ logger.info("Reading input mudata")
 mdata = mu.read_h5mu(par["input"])
 mdata.var_names_make_unique()
 
+
 for mod in par["modality"]:
     logger.info("Performing log transformation on modality %s", mod)
-    sc.pp.log1p(mdata.mod[mod], base=par["base"])
+    data = mdata.mod[mod]
+    new_layer = sc.pp.log1p(data,
+                            base=par["base"],
+                            copy=True if par['output_layer'] else False)
+    if new_layer:
+        data.layers[par['output_layer']] = new_layer.X
 
 logger.info("Writing to file %s", par["output"])
 mdata.write(filename=par["output"])
