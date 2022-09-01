@@ -387,9 +387,9 @@ RUN pip install --upgrade pip && \
 
 LABEL org.opencontainers.image.authors="Dries De Maeyer <DDeMaey1@its.jnj.com> (maintainer) {account: ddemaey1}"
 LABEL org.opencontainers.image.description="Companion container for running component convert from_csv_to_h5mu"
-LABEL org.opencontainers.image.created="2022-09-01T07:30:57Z"
+LABEL org.opencontainers.image.created="2022-09-01T08:22:06Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="5abe1952a0600c7adab32a9d52315126115b3b15"
+LABEL org.opencontainers.image.revision="8e3790f5a17785777f214e45c6576f505811705a"
 LABEL org.opencontainers.image.version="main_build"
 VIASHDOCKER
 }

@@ -477,9 +477,9 @@ functionality:
       
       LABEL org.opencontainers.image.authors="Dries Schaumont <dries.schaumont@data-intuitive.com> (maintainer) {github: DriesSchaumont, orcid: 0000-0002-4389-0440}"
       LABEL org.opencontainers.image.description="Companion container for running component transform scale"
-      LABEL org.opencontainers.image.created="2022-09-01T07:30:58Z"
+      LABEL org.opencontainers.image.created="2022-09-01T08:22:06Z"
       LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-      LABEL org.opencontainers.image.revision="5abe1952a0600c7adab32a9d52315126115b3b15"
+      LABEL org.opencontainers.image.revision="8e3790f5a17785777f214e45c6576f505811705a"
       LABEL org.opencontainers.image.version="main_build"
       VIASHDOCKER
       }
@@ -952,5 +952,5 @@ info:
   output: "target/docker/transform/scale"
   executable: "target/docker/transform/scale/scale"
   viash_version: "0.5.15"
-  git_commit: "5abe1952a0600c7adab32a9d52315126115b3b15"
+  git_commit: "8e3790f5a17785777f214e45c6576f505811705a"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"
