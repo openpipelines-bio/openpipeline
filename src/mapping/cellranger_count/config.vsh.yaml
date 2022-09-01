@@ -30,7 +30,6 @@ functionality:
       direction: output
       description: The folder to store the alignment results.
       example: "/path/to/output"
-      default: counts
       required: true
 
     # arguments
