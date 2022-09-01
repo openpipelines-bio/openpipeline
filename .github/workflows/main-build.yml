@@ -3,6 +3,8 @@ name: main build
 on:
   push:
     branches: [ 'main' ]
+  pull_request:
+    branches: [ '*' ]
 
 jobs:
   # phase 1
