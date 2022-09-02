@@ -6,6 +6,7 @@ targetDir = params.rootDir + "/target/nextflow"
 include { normalize_total } from targetDir + '/transform/normalize_total/main.nf'
 include { log1p } from targetDir + '/transform/log1p/main.nf'
 include { filter_with_hvg } from targetDir + '/filter/filter_with_hvg/main.nf'
+include { delete_layer } from targetDir + '/transform/delete_layer/main.nf'
 
 include { readConfig; viashChannel; helpMessage } from workflowDir + "/utils/WorkflowHelper.nf"
 
@@ -28,11 +29,19 @@ workflow run_wf {
   main:
   output_ch = input_ch
     // normalisation
-    | normalize_total
-    | log1p
+    | normalize_total.run( 
+      args: [ output_layer: "normalized" ]
+    )
+    | log1p.run( 
+      args: [ output_layer: "log_normalized", input_layer: "normalized" ]
+    )
+    | delete_layer.run(
+      args: [ layer: "normalized", modality: "rna" ]
+    )
     // feature annotation
     | filter_with_hvg.run(
-      auto: [ publish: global_params.do_publish ]
+      auto: [ publish: global_params.do_publish ],
+      args: [ layer: "log_normalized"]
     )
 
   emit:

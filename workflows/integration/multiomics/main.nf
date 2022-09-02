@@ -63,6 +63,7 @@ workflow run_wf {
     | toSortedList()
     | map {list -> ["merged", list.collect{it[1]}]}
     | merge
+    | map {id, path -> [id, ["input": path, "layer": "log_normalized"]]}
     | integration
 
   emit:
