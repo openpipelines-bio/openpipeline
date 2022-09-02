@@ -16,19 +16,23 @@ functionality:
       multiple_sep: ','
       description: Paths to the different samples to be concatenated.
       required: true
-      default: sample_paths
-    - name: "--output"
-      alternatives: ["-o"]
-      type: file
-      direction: output
-      default: "output.h5mu"
+      example: sample_paths
     - name: "--sample_names"
       type: string
       multiple: true
       multiple_sep: ','
-      description: Names of the different samples that have to be concatenated.
+      description: Names of the different samples that have to be concatenated. Must be of same length as `--input`.
       required: true
-      default: sample_names
+      example: sample_names
+    - name: "--output"
+      alternatives: ["-o"]
+      type: file
+      direction: output
+      example: "output.h5mu"
+    - name: "--obs_sample_name"
+      type: string
+      description: Name of the .obs key under which to add the sample names.
+      default: "sample_id"
     - name: "--compression"
       type: string
       description: The compression format to be used on the final h5mu object.
