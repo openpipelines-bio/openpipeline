@@ -69,6 +69,15 @@ thisConfig = processConfig([
       "multiple_sep" : ":"
     },
     {
+      "type" : "string",
+      "name" : "--layer",
+      "description" : "use specified layer for expression values instead of the .X object from the modality.",
+      "required" : false,
+      "direction" : "input",
+      "multiple" : false,
+      "multiple_sep" : ":"
+    },
+    {
       "type" : "file",
       "name" : "--output",
       "alternatives" : [
@@ -150,6 +159,7 @@ from sys import stdout
 par = {
   'input': $( if [ ! -z ${VIASH_PAR_INPUT+x} ]; then echo "'${VIASH_PAR_INPUT//\\'/\\\\\\'}'"; else echo None; fi ),
   'modality': $( if [ ! -z ${VIASH_PAR_MODALITY+x} ]; then echo "'${VIASH_PAR_MODALITY//\\'/\\\\\\'}'.split(':')"; else echo None; fi ),
+  'layer': $( if [ ! -z ${VIASH_PAR_LAYER+x} ]; then echo "'${VIASH_PAR_LAYER//\\'/\\\\\\'}'"; else echo None; fi ),
   'output': $( if [ ! -z ${VIASH_PAR_OUTPUT+x} ]; then echo "'${VIASH_PAR_OUTPUT//\\'/\\\\\\'}'"; else echo None; fi ),
   'output_key': $( if [ ! -z ${VIASH_PAR_OUTPUT_KEY+x} ]; then echo "'${VIASH_PAR_OUTPUT_KEY//\\'/\\\\\\'}'"; else echo None; fi ),
   'num_components': $( if [ ! -z ${VIASH_PAR_NUM_COMPONENTS+x} ]; then echo "int('${VIASH_PAR_NUM_COMPONENTS//\\'/\\\\\\'}')"; else echo None; fi )
@@ -180,17 +190,20 @@ mdata = mu.read_h5mu(par["input"])
 for mod in par['modality']:
     logger.info("Computing PCA components for modality '%s'", mod)
     data = mdata.mod[mod]
-
+    if par['layer'] and par['layer'] not in data.layers:
+        raise ValueError(f"{par['layer']} was not found in modality {mod}.")
+    layer = data.X if not par['layer'] else data.layers[par['layer']]
     # run pca
     # sc.tl.pca(data, n_comps=par["num_components"])
     X_pca, loadings, variance, variance_ratio = sc.tl.pca(
-        data.X, 
+        layer, 
         n_comps=par["num_components"], 
         return_info=True
     )
 
+    layer_name = "X_" if not par['layer'] else f"{par['layer']}_"
     # store output in specific objects
-    data.obsm["X_"+okey] = X_pca
+    data.obsm[layer_name+okey] = X_pca
     data.varm["loadings_"+okey] = loadings.T
     data.uns[okey] = { "variance": variance, "variance_ratio": variance_ratio }
 

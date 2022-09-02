@@ -193,6 +193,10 @@ function ViashHelp {
   echo "        type: string, multiple values allowed"
   echo "        default: rna"
   echo ""
+  echo "    --layer"
+  echo "        type: string"
+  echo "        use adata.layers[layer] for expression values instead of adata.X."
+  echo ""
   echo "    --output"
   echo "        type: file, output"
   echo "        example: output.h5mu"
@@ -472,13 +476,13 @@ function ViashDockerfile {
 FROM python:3.8
 
 RUN pip install --upgrade pip && \
-  pip install --upgrade --no-cache-dir "scanpy~=1.9.1" "muon" "mudata~=0.2.0" "anndata~=0.8.0"
+  pip install --upgrade --no-cache-dir "git+https://github.com/scverse/scanpy.git@master" "muon" "mudata~=0.2.0" "anndata~=0.8.0"
 
 LABEL org.opencontainers.image.authors="Dries De Maeyer <DDeMaey1@its.jnj.com> (contributor) {account: ddemaey1}, Robrecht Cannoodt <rcannood@gmail.com> (maintainer, contributor) {github: rcannood, orcid: 0000-0003-3641-729X}"
 LABEL org.opencontainers.image.description="Companion container for running component filter filter_with_hvg"
-LABEL org.opencontainers.image.created="2022-09-02T07:12:14Z"
+LABEL org.opencontainers.image.created="2022-09-02T08:06:45Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="edd01f2d142a4e436b5beb6a3d2ba95a4ed955e7"
+LABEL org.opencontainers.image.revision="da5fb2d312f62acc58761e91fee25fd35254dc86"
 LABEL org.opencontainers.image.version="main_build"
 VIASHDOCKER
 }
@@ -649,6 +653,15 @@ while [[ $# -gt 0 ]]; do
             else
               VIASH_PAR_MODALITY="$VIASH_PAR_MODALITY:"$(ViashRemoveFlags "$1")
             fi
+            shift 1
+            ;;
+        --layer)
+            VIASH_PAR_LAYER="$2"
+            [ $# -lt 2 ] && ViashError Not enough arguments passed to --layer. Use "--help" to get more information on the parameters. && exit 1
+            shift 2
+            ;;
+        --layer=*)
+            VIASH_PAR_LAYER=$(ViashRemoveFlags "$1")
             shift 1
             ;;
         --output)
@@ -859,6 +872,7 @@ fi
 
 
 
+
 if [[ -n "$VIASH_PAR_DO_SUBSET" ]]; then
   if ! [[ "$VIASH_PAR_DO_SUBSET" =~ ^(true|True|TRUE|false|False|FALSE|yes|Yes|YES|no|No|NO)$ ]]; then
     ViashError '--do_subset' has to be a boolean_true. Use "--help" to get more information on the parameters.
@@ -935,6 +949,7 @@ fi
 
 
 
+
 # detect volumes from file arguments
 if [ ! -z "$VIASH_PAR_INPUT" ]; then
   VIASH_EXTRA_MOUNTS="$VIASH_EXTRA_MOUNTS $(ViashAutodetectMountArg "$VIASH_PAR_INPUT")"
@@ -988,6 +1003,7 @@ from sys import stdout
 par = {
   'input': $( if [ ! -z ${VIASH_PAR_INPUT+x} ]; then echo "'${VIASH_PAR_INPUT//\'/\\\'}'"; else echo None; fi ),
   'modality': $( if [ ! -z ${VIASH_PAR_MODALITY+x} ]; then echo "'${VIASH_PAR_MODALITY//\'/\\\'}'.split(':')"; else echo None; fi ),
+  'layer': $( if [ ! -z ${VIASH_PAR_LAYER+x} ]; then echo "'${VIASH_PAR_LAYER//\'/\\\'}'"; else echo None; fi ),
   'output': $( if [ ! -z ${VIASH_PAR_OUTPUT+x} ]; then echo "'${VIASH_PAR_OUTPUT//\'/\\\'}'"; else echo None; fi ),
   'var_name_filter': $( if [ ! -z ${VIASH_PAR_VAR_NAME_FILTER+x} ]; then echo "'${VIASH_PAR_VAR_NAME_FILTER//\'/\\\'}'"; else echo None; fi ),
   'varm_name': $( if [ ! -z ${VIASH_PAR_VARM_NAME+x} ]; then echo "'${VIASH_PAR_VARM_NAME//\'/\\\'}'"; else echo None; fi ),
@@ -1048,7 +1064,8 @@ for mod in par['modality']:
         'n_bins': par["n_bins"],
         'flavor': par["flavor"],
         'subset': False,
-        'inplace': False
+        'inplace': False,
+        'layer': par['layer']
     }
 
     # only add parameter if it's passed

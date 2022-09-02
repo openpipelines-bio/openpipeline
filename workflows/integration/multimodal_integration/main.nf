@@ -50,6 +50,7 @@ workflow test_wf {
   testParams = [
     id: "foo",
     input: params.resources_test + "/pbmc_1k_protein_v3/pbmc_1k_protein_v3_ums.h5mu",
+    layer: ""
   ]
 
   output_ch =

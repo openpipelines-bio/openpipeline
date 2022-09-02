@@ -80,6 +80,15 @@ thisConfig = processConfig([
       "multiple_sep" : ":"
     },
     {
+      "type" : "string",
+      "name" : "--layer",
+      "description" : "use adata.layers[layer] for expression values instead of adata.X.",
+      "required" : false,
+      "direction" : "input",
+      "multiple" : false,
+      "multiple_sep" : ":"
+    },
+    {
       "type" : "file",
       "name" : "--output",
       "description" : "Output h5mu file.",
@@ -264,6 +273,7 @@ from sys import stdout
 par = {
   'input': $( if [ ! -z ${VIASH_PAR_INPUT+x} ]; then echo "'${VIASH_PAR_INPUT//\\'/\\\\\\'}'"; else echo None; fi ),
   'modality': $( if [ ! -z ${VIASH_PAR_MODALITY+x} ]; then echo "'${VIASH_PAR_MODALITY//\\'/\\\\\\'}'.split(':')"; else echo None; fi ),
+  'layer': $( if [ ! -z ${VIASH_PAR_LAYER+x} ]; then echo "'${VIASH_PAR_LAYER//\\'/\\\\\\'}'"; else echo None; fi ),
   'output': $( if [ ! -z ${VIASH_PAR_OUTPUT+x} ]; then echo "'${VIASH_PAR_OUTPUT//\\'/\\\\\\'}'"; else echo None; fi ),
   'var_name_filter': $( if [ ! -z ${VIASH_PAR_VAR_NAME_FILTER+x} ]; then echo "'${VIASH_PAR_VAR_NAME_FILTER//\\'/\\\\\\'}'"; else echo None; fi ),
   'varm_name': $( if [ ! -z ${VIASH_PAR_VARM_NAME+x} ]; then echo "'${VIASH_PAR_VARM_NAME//\\'/\\\\\\'}'"; else echo None; fi ),
@@ -324,7 +334,8 @@ for mod in par['modality']:
         'n_bins': par["n_bins"],
         'flavor': par["flavor"],
         'subset': False,
-        'inplace': False
+        'inplace': False,
+        'layer': par['layer']
     }
 
     # only add parameter if it's passed

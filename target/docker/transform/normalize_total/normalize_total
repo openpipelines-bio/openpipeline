@@ -185,10 +185,18 @@ function ViashHelp {
   echo "        type: string, multiple values allowed"
   echo "        default: rna"
   echo ""
+  echo "    --input_layer"
+  echo "        type: string"
+  echo "        Input layer to use. By default, X is normalized"
+  echo ""
   echo "    -o, --output"
   echo "        type: file, required parameter, output"
   echo "        default: output.h5mu"
   echo "        Output h5mu file."
+  echo ""
+  echo "    --output_layer"
+  echo "        type: string"
+  echo "        Output layer to use. By default, use X."
   echo ""
   echo "    --target_sum"
   echo "        type: integer"
@@ -411,9 +419,9 @@ RUN pip install --upgrade pip && \
 
 LABEL org.opencontainers.image.authors="Dries De Maeyer <ddemaeyer@gmail.com> (maintainer) {account: ddemaey1}, Robrecht Cannoodt <rcannood@gmail.com> (contributor) {github: rcannood, orcid: 0000-0003-3641-729X}"
 LABEL org.opencontainers.image.description="Companion container for running component transform normalize_total"
-LABEL org.opencontainers.image.created="2022-09-02T07:12:15Z"
+LABEL org.opencontainers.image.created="2022-09-02T08:06:46Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="edd01f2d142a4e436b5beb6a3d2ba95a4ed955e7"
+LABEL org.opencontainers.image.revision="da5fb2d312f62acc58761e91fee25fd35254dc86"
 LABEL org.opencontainers.image.version="main_build"
 VIASHDOCKER
 }
@@ -591,6 +599,15 @@ while [[ $# -gt 0 ]]; do
             fi
             shift 1
             ;;
+        --input_layer)
+            VIASH_PAR_INPUT_LAYER="$2"
+            [ $# -lt 2 ] && ViashError Not enough arguments passed to --input_layer. Use "--help" to get more information on the parameters. && exit 1
+            shift 2
+            ;;
+        --input_layer=*)
+            VIASH_PAR_INPUT_LAYER=$(ViashRemoveFlags "$1")
+            shift 1
+            ;;
         --output)
             VIASH_PAR_OUTPUT="$2"
             [ $# -lt 2 ] && ViashError Not enough arguments passed to --output. Use "--help" to get more information on the parameters. && exit 1
@@ -604,6 +621,15 @@ while [[ $# -gt 0 ]]; do
             VIASH_PAR_OUTPUT="$2"
             [ $# -lt 2 ] && ViashError Not enough arguments passed to -o. Use "--help" to get more information on the parameters. && exit 1
             shift 2
+            ;;
+        --output_layer)
+            VIASH_PAR_OUTPUT_LAYER="$2"
+            [ $# -lt 2 ] && ViashError Not enough arguments passed to --output_layer. Use "--help" to get more information on the parameters. && exit 1
+            shift 2
+            ;;
+        --output_layer=*)
+            VIASH_PAR_OUTPUT_LAYER=$(ViashRemoveFlags "$1")
+            shift 1
             ;;
         --target_sum)
             VIASH_PAR_TARGET_SUM="$2"
@@ -695,6 +721,8 @@ fi
 
 
 
+
+
 if [[ -n "$VIASH_PAR_TARGET_SUM" ]]; then
   if ! [[ "$VIASH_PAR_TARGET_SUM" =~ ^[-+]?[0-9]+$ ]]; then
     ViashError '--target_sum' has to be an integer. Use "--help" to get more information on the parameters.
@@ -711,6 +739,8 @@ fi
 
 
 # check whether parameters values are of the right type
+
+
 
 
 
@@ -768,7 +798,9 @@ from sys import stdout
 par = {
   'input': $( if [ ! -z ${VIASH_PAR_INPUT+x} ]; then echo "'${VIASH_PAR_INPUT//\'/\\\'}'"; else echo None; fi ),
   'modality': $( if [ ! -z ${VIASH_PAR_MODALITY+x} ]; then echo "'${VIASH_PAR_MODALITY//\'/\\\'}'.split(':')"; else echo None; fi ),
+  'input_layer': $( if [ ! -z ${VIASH_PAR_INPUT_LAYER+x} ]; then echo "'${VIASH_PAR_INPUT_LAYER//\'/\\\'}'"; else echo None; fi ),
   'output': $( if [ ! -z ${VIASH_PAR_OUTPUT+x} ]; then echo "'${VIASH_PAR_OUTPUT//\'/\\\'}'"; else echo None; fi ),
+  'output_layer': $( if [ ! -z ${VIASH_PAR_OUTPUT_LAYER+x} ]; then echo "'${VIASH_PAR_OUTPUT_LAYER//\'/\\\'}'"; else echo None; fi ),
   'target_sum': $( if [ ! -z ${VIASH_PAR_TARGET_SUM+x} ]; then echo "int('${VIASH_PAR_TARGET_SUM//\'/\\\'}')"; else echo None; fi ),
   'exclude_highly_expressed': $( if [ ! -z ${VIASH_PAR_EXCLUDE_HIGHLY_EXPRESSED+x} ]; then echo "'${VIASH_PAR_EXCLUDE_HIGHLY_EXPRESSED//\'/\\\'}'.lower() == 'true'"; else echo None; fi )
 }
@@ -800,12 +832,14 @@ logger.info(par)
 for mod in par["modality"]:
     logger.info("Performing total normalization on modality %s", mod)
     dat = mdata.mod[mod]
-    logger.info(dat)
-    sc.pp.normalize_total(
-        dat,
-        # target_sum=par["target_sum"],
-        # exclude_highly_expressed=par["exclude_highly_expressed"]
-    )
+    if par['input_layer'] and not par['input_layer'] in dat.layers.keys():
+        raise ValueError(f"Input layer {par['input_layer']} not found in {mod}")
+    output_data = sc.pp.normalize_total(dat,
+                                        layer=par["input_layer"],
+                                        copy=True if par["output_layer"] else False)
+    
+    if output_data:
+        dat.layers[par["output_layer"]] = output_data.X
 
 logger.info("Writing to file")
 mdata.write(filename=par["output"])
