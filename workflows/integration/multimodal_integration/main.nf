@@ -52,6 +52,7 @@ workflow test_wf {
   testParams = [
     id: "foo",
     input: params.resources_test + "/concat/concatenated_brain_filtered_feature_bc_matrix_subset.h5mu",
+    layer: ""
   ]
 
   output_ch =
