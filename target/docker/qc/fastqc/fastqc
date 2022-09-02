@@ -387,9 +387,9 @@ RUN wget http://www.bioinformatics.babraham.ac.uk/projects/fastqc/fastqc_v0.11.9
 RUN cd /opt && unzip fastqc.zip && ln -s /opt/FastQC/fastqc /usr/bin/fastqc
 RUN chmod 755 /usr/bin/fastqc
 LABEL org.opencontainers.image.description="Companion container for running component qc fastqc"
-LABEL org.opencontainers.image.created="2022-09-02T08:47:13Z"
+LABEL org.opencontainers.image.created="2022-09-02T10:28:37Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="fd27906762da0060cf761b1d99365557688e45d9"
+LABEL org.opencontainers.image.revision="c2e3d16e25ebac31d3b200615ec4816d17b6aac2"
 LABEL org.opencontainers.image.version="main_build"
 VIASHDOCKER
 }
