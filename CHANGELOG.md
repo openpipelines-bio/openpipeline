@@ -2,13 +2,13 @@
 
 ## NEW FUNCTIONALITY
 
-* `integrate/harmonypy`: a python implementation of the harmony integration.
-
 * `workflows/integration/multiomics`: implement pipeline for processing multiple multiomics samples.
 
 * `transform/scaling`: Scale data to unit variance and zero mean.
 
-* `integrate/harmony`: Added R based Harmony component.
+* `integrate/harmony`: Added a component for running a Harmony integration analysis (R-based).
+
+* `integrate/harmonypy`: Added a component for running a Harmony integration analysis (Python-based).
 
 ## MAJOR CHANGES
 
