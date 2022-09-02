@@ -29,14 +29,14 @@ workflow run_wf {
   output_ch = input_ch
 
     // run count
-    | cellranger_count
+    | cellranger_count.run(auto: auto)
 
     // split output dir into map
     | cellranger_count_split
 
     // convert to h5mu
     | map { id, cellranger_outs -> [ id, cellranger_outs.filtered_h5, cellranger_outs ] }
-    | from_10xh5_to_h5mu
+    | from_10xh5_to_h5mu.run(auto: auto)
 
     // return output map
     | map { id, h5mu, data -> [ id, data + [h5mu: h5mu] ] }
