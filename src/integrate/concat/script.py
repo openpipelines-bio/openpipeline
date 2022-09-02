@@ -13,6 +13,7 @@ par = {
               "resources_test/concat/human_brain_3k_filtered_feature_bc_matrix_subset.h5mu"],
     "output": "foo.h5mu",
     "sample_names": ["mouse", "human"],
+    "obs_sample_name": "sample_id",
     "compression": "gzip",
     "other_axis_mode": "move"
 }
@@ -25,21 +26,16 @@ logFormatter = logging.Formatter("%(asctime)s %(levelname)-8s %(message)s")
 console_handler.setFormatter(logFormatter)
 logger.addHandler(console_handler)
 
-
-def add_sample_names(sample_ids: tuple[str], samples: list[mu.MuData]) -> None:
+def add_sample_names(sample_ids: tuple[str], samples: list[mu.MuData], obs_key_sample_name: str) -> None:
     """
     Add sample names to the observations for each sample.
-    Additionally, set the .batch attribute to each MuData object to store
-    the sample names
     """
     for (sample_id, sample) in zip(sample_ids, samples):
-        if "batch" in sample.obs_keys():
-            samples.obs = sample.obs.drop("batch", axis=1)
+        if obs_key_sample_name in sample.obs_keys():
+            logger.info(f'Column .obs["{obs_key_sample_name}"] already exists in sample "{sample_id}". Overriding the value for this column.')
+            samples.obs = sample.obs.drop(obs_key_sample_name, axis=1)
         for _, modality in sample.mod.items():
-            modality.obs["batch"] = sample_id
-        sample.batch = sample_id
-        for mod in sample.mod.values():
-            mod.batch = sample_id
+            modality.obs[obs_key_sample_name] = sample_id
         sample.update()
 
 
@@ -231,7 +227,7 @@ def main() -> None:
                 "\n\t".join(sample_ids),
                 "\n\t".join(par["input"]))
 
-    add_sample_names(sample_ids, samples)
+    add_sample_names(sample_ids, samples, par["obs_sample_name"])
     make_observation_keys_unique(samples)
 
     mods = group_modalities(samples)
