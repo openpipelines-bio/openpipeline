@@ -400,9 +400,9 @@ RUN apt-get update && \
   rm -rf /var/lib/apt/lists/*
 
 LABEL org.opencontainers.image.description="Companion container for running component projection velocyto"
-LABEL org.opencontainers.image.created="2022-09-02T08:06:47Z"
+LABEL org.opencontainers.image.created="2022-09-02T08:47:14Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="da5fb2d312f62acc58761e91fee25fd35254dc86"
+LABEL org.opencontainers.image.revision="fd27906762da0060cf761b1d99365557688e45d9"
 LABEL org.opencontainers.image.version="main_build"
 VIASHDOCKER
 }
