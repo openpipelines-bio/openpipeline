@@ -36,6 +36,18 @@ functionality:
       example: "/path/to/output"
       default: fastqs
       required: true
+    - name: "--separate_reports"
+      type: boolean_true
+      description: |
+        Should reports be stored in a separate dir.
+        Should be used with the --reports argument.
+    - name: "--reports"
+      type: file
+      direction: output
+      required: false
+      description: Reports directory
+      example: reports_dir
+      default: "reports"
     - type: integer
       name: --cores
       description:  Set max cores the pipeline may request at one time.

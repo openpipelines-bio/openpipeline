@@ -398,9 +398,9 @@ RUN pip install --upgrade pip && \
 
 LABEL org.opencontainers.image.authors="Dries Schaumont <dries.schaumont@data-intuitive.com> (maintainer) {github: DriesSchaumont, orcid: 0000-0002-4389-0440}"
 LABEL org.opencontainers.image.description="Companion container for running component transform scale"
-LABEL org.opencontainers.image.created="2022-09-01T14:56:53Z"
+LABEL org.opencontainers.image.created="2022-09-02T11:03:20Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="518faf00674073d105f41b1c06ab4f557675cb82"
+LABEL org.opencontainers.image.revision="e1f846fcad9af96a696dd61143b1c7d58b8c7d81"
 LABEL org.opencontainers.image.version="integration_build"
 VIASHDOCKER
 }
