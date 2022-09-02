@@ -33,10 +33,10 @@ functionality:
       type: string
       description: The compression format to be used on the final h5mu object.
       default: "gzip"
-    - name: "other_axis_mode"
+    - name: "--other_axis_mode"
       type: string
-      choices: [same, unique, first, only, concat]
-      default: concat
+      choices: [same, unique, first, only, concat, move]
+      default: move
       description: |
         How to handle the merging of other axis (var, obs, ...).
          - None: keep no data
@@ -45,6 +45,7 @@ functionality:
          - first: keep the annotation from the first sample
          - only: keep elements that show up in only one of the objects (1 unique element in only 1 sample)
          - concat: concatenate unique values together
+         - move: identical to 'same', but moving the conflicting values to .varm or .obsm
   resources:
     - type: python_script
       path: ./script.py
