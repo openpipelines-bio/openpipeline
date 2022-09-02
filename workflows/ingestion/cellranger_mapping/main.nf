@@ -12,8 +12,6 @@ include { readConfig; viashChannel; helpMessage } from workflowDir + "/utils/Wor
 
 config = readConfig("$workflowDir/ingestion/cellranger_mapping/config.vsh.yaml")
 
-// keep track of whether this is an integration test or not
-global_params = [ do_publish: true ]
 
 workflow {
   helpMessage(config)
@@ -27,8 +25,6 @@ workflow run_wf {
   input_ch
 
   main:
-  auto = [ publish: global_params.do_publish, transcript: global_params.do_publish ]
-  auto_nopub = [ publish: false, transcript: global_params.do_publish ]
 
   output_ch = input_ch
 
@@ -36,7 +32,7 @@ workflow run_wf {
     | cellranger_count.run(auto: auto)
 
     // split output dir into map
-    | cellranger_count_split.run(auto: auto_nopub)
+    | cellranger_count_split
 
     // convert to h5mu
     | map { id, cellranger_outs -> [ id, cellranger_outs.filtered_h5, cellranger_outs ] }
@@ -50,9 +46,6 @@ workflow run_wf {
 }
 
 workflow test_wf {
-  // don't publish output
-  global_params.do_publish = false
-
   // allow changing the resources_test dir
   params.resources_test = params.rootDir + "/resources_test"
 

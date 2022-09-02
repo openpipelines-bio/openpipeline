@@ -10,8 +10,6 @@ include { readConfig; viashChannel; helpMessage } from workflowDir + "/utils/Wor
 
 config = readConfig("$workflowDir/ingestion/bd_rhapsody_wta/config.vsh.yaml")
 
-// keep track of whether this is an integration test or not
-global_params = [ do_publish: true ]
 
 workflow {
   helpMessage(config)
@@ -57,9 +55,7 @@ workflow run_wf {
 
     // Step 2: run BD rhapsody WTA
     | view { "running_bd_rhapsody: $it (orig_id: ${it[2].tuple_orig_id})" }
-    | bd_rhapsody_wta.run(
-      auto: [ publish: global_params.do_publish ]
-    )
+    | bd_rhapsody_wta
 
     // Step 3: group outputs per sample
     | map { id, input, extra -> [ extra.tuple_orig_id, input ] }
@@ -68,18 +64,13 @@ workflow run_wf {
 
     // Step 4: convert to h5ad
     | view { "converting_to_h5mu: $it" }
-    | from_bdrhap_to_h5mu.run(
-      auto: [ publish: global_params.do_publish ]
-    )
+    | from_bdrhap_to_h5mu
 
   emit:
   output_ch
 }
 
 workflow test_wf {
-  // don't publish output
-  global_params.do_publish = false
-
   // allow changing the resources_test dir
   params.resources_test = params.rootDir + "/resources_test"
 
