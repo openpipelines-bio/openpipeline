@@ -13,9 +13,6 @@ include { readConfig; viashChannel; helpMessage } from workflowDir + "/utils/Wor
 
 config = readConfig("$workflowDir/process_rna/multisample/config.vsh.yaml")
 
-// keep track of whether this is an integration test or not
-global_params = [ do_publish: true ]
-
 workflow {
   helpMessage(config)
 
@@ -46,7 +43,6 @@ workflow run_wf {
     )
     // feature annotation
     | filter_with_hvg.run(
-      auto: [ publish: global_params.do_publish ],
       args: [ layer: "log_normalized"]
     )
 
@@ -55,9 +51,6 @@ workflow run_wf {
 }
 
 workflow test_wf {
-  // don't publish output
-  global_params.do_publish = false
-
   // allow changing the resources_test dir
   params.resources_test = params.rootDir + "/resources_test"
 

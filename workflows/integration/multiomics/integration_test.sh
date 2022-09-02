@@ -13,6 +13,5 @@ bin/nextflow \
   -main-script workflows/integration/multiomics/main.nf \
   -entry test_wf \
   -resume \
-  -profile docker \
-  -c workflows/utils/labels_ci.config \
-  --publish_dir "foo/"
+  -profile docker,nopublish \
+  -c workflows/utils/labels_ci.config

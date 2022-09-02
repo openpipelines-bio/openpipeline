@@ -12,5 +12,5 @@ bin/nextflow run . \
   -main-script workflows/process_rna/multisample/main.nf \
   -profile docker \
   -resume \
-  -entry test_wf \
+  -entry test_wf,nopublish \
   -with-trace work/trace.txt

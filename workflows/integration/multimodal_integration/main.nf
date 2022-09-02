@@ -13,9 +13,6 @@ include { readConfig; viashChannel; helpMessage } from workflowDir + "/utils/Wor
 
 config = readConfig("$workflowDir/integration/multimodal_integration/config.vsh.yaml")
 
-// keep track of whether this is an integration test or not
-global_params = [ do_publish: true ]
-
 workflow {
   helpMessage(config)
 
@@ -35,18 +32,12 @@ workflow run_wf {
     | harmonypy
     | find_neighbors
     | leiden
-    | umap.run(
-      auto: [ publish: global_params.do_publish ]
-    )
-
+    | umap
   emit:
   output_ch
 }
 
 workflow test_wf {
-  // don't publish output
-  global_params.do_publish = false
-
   // allow changing the resources_test dir
   params.resources_test = params.rootDir + "/resources_test"
 
