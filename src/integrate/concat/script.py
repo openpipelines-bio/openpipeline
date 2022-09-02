@@ -39,7 +39,7 @@ def add_sample_names(sample_ids: tuple[str], samples: list[mu.MuData], obs_key_s
         sample.update()
 
 
-def make_observation_keys_unique(samples: list[mu.MuData]) -> None:
+def make_observation_keys_unique(sample_ids: tuple[str], samples: list[mu.MuData]) -> None:
     """
     Make the observation keys unique across all samples. At input,
     the observation keys are unique within a sample. By adding the sample name
@@ -47,18 +47,18 @@ def make_observation_keys_unique(samples: list[mu.MuData]) -> None:
     unique across all samples as well.
     """
     logger.info('Making observation keys unique across all samples.')
-    for sample in samples:
-        sample.obs.index = f"{sample.batch}_" + sample.obs.index
-        make_observation_keys_unique_per_mod(sample)
+    for sample_id, sample in zip(sample_ids, samples):
+        sample.obs.index = f"{sample_id}_" + sample.obs.index
+        make_observation_keys_unique_per_mod(sample_id, sample)
 
 
-def make_observation_keys_unique_per_mod(sample: list[anndata.AnnData]) -> None:
+def make_observation_keys_unique_per_mod(sample_id: str, sample: mu.MuData) -> None:
     """
     Updating MuData.obs_names is not allowed (it is read-only).
     So the observation keys for each modality has to be updated manually.
     """
     for _, mod in sample.mod.items():
-        mod.obs_names = f"{sample.batch}_" + mod.obs_names
+        mod.obs_names = f"{sample_id}_" + mod.obs_names
 
 
 def group_modalities(samples: list[anndata.AnnData]) -> dict[str, anndata.AnnData]:
@@ -124,7 +124,7 @@ def any_row_contains_duplicate_values(frame: pd.DataFrame) -> bool:
     is_duplicated = (number_of_unique - non_na_counts) != 0
     return is_duplicated.any()
 
-def split_conflicts_matrices(matrices: Iterable[pd.DataFrame], sample_ids: Iterable[str]) \
+def split_conflicts_matrices(sample_ids: tuple[str], matrices: Iterable[pd.DataFrame]) \
     -> tuple[dict[str, pd.DataFrame], pd.DataFrame | None]:
     """
     Merge matrices by combining columns that have the same name.
@@ -149,7 +149,7 @@ def split_conflicts_matrices(matrices: Iterable[pd.DataFrame], sample_ids: Itera
             concatenated_matrix = concatenated_matrix.assign(**{column_name: unique_values})
     return conflicts, concatenated_matrix
 
-def split_conflicts_modalities(modalities: Iterable[anndata.AnnData]) \
+def split_conflicts_modalities(sample_ids: tuple[str], modalities: Iterable[anndata.AnnData]) \
         -> tuple[dict[str, dict[str, pd.DataFrame]],  dict[str, pd.DataFrame | None]]:
         """
         Merge .var and .obs matrices of the anndata objects. Columns are merged
@@ -162,8 +162,7 @@ def split_conflicts_modalities(modalities: Iterable[anndata.AnnData]) \
         conflicts_result = {}
         for matrix_name in matrices_to_parse:
             matrices = [getattr(modality, matrix_name) for modality in modalities]
-            sample_ids = [modality.batch for modality in modalities]
-            conflicts, concatenated_matrix = split_conflicts_matrices(matrices, sample_ids)
+            conflicts, concatenated_matrix = split_conflicts_matrices(sample_ids, matrices)
             conflicts_result[f"{matrix_name}m"] = conflicts
             concatenated_result[matrix_name] = concatenated_matrix
         return conflicts_result, concatenated_result
@@ -187,7 +186,7 @@ def set_conflicts(concatenated_data: mu.MuData,
             getattr(mod, conflict_matrix_name)[conflict_name] = conflict_data.sort_index()
     return concatenated_data
 
-def concatenate_modalities(modalities: dict[str, anndata.AnnData],
+def concatenate_modalities(sample_ids: tuple[str], modalities: dict[str, list[anndata.AnnData]],
                            other_axis_mode: str) -> mu.MuData:
     """
     Join the modalities together into a single multimodal sample.
@@ -205,7 +204,7 @@ def concatenate_modalities(modalities: dict[str, anndata.AnnData],
     concatenated_data = mu.MuData(new_mods)
     if other_axis_mode == "move":
         for mod_name, modes in modalities.items():
-            conflicts, new_matrices = split_conflicts_modalities(modes)
+            conflicts, new_matrices = split_conflicts_modalities(sample_ids, modes)
             concatenated_data = set_conflicts(concatenated_data, mod_name, conflicts)
             concatenated_data = set_matrices(concatenated_data, mod_name, new_matrices)
     logger.info("Concatenation successful.")
@@ -228,10 +227,10 @@ def main() -> None:
                 "\n\t".join(par["input"]))
 
     add_sample_names(sample_ids, samples, par["obs_sample_name"])
-    make_observation_keys_unique(samples)
+    make_observation_keys_unique(sample_ids, samples)
 
     mods = group_modalities(samples)
-    concatenated_samples = concatenate_modalities(mods, par["other_axis_mode"])
+    concatenated_samples = concatenate_modalities(sample_ids, mods, par["other_axis_mode"])
     logger.info("Writing out data to '%s' with compression '%s'.",
                 par["output"], par["compression"])
     concatenated_samples.write(par["output"], compression=par["compression"])
