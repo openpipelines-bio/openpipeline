@@ -1823,5 +1823,5 @@ info:
   platform: "nextflow"
   output: "target/nextflow/qc/multiqc"
   viash_version: "0.5.15"
-  git_commit: "d2ebe0b5da8075b3edcb0053c75fd89a9e604172"
+  git_commit: "edd01f2d142a4e436b5beb6a3d2ba95a4ed955e7"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"
