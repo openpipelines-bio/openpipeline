@@ -10,9 +10,13 @@
 
 * `integrate/harmony`: Added R based Harmony component.
 
+* `integrate/concat`: Added 'move' option to `--other_axis_mode`, which allows merging .obs and .var by only keeping elements of the matrices which are the same in each of the samples, moving the conflicting values to .varm or .obsm.
+
 ## MAJOR CHANGES
 
 * Multiple components: update to anndata 0.8 with mudata 0.2.0. This means that the format of the .h5mu files have changed.
+
+* `process_rna/singlesample`: move transformation counts into layers instead of overwriting .X.
 
 ## MINOR CHANGES
 
