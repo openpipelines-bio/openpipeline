@@ -2,9 +2,13 @@
 
 ## NEW FUNCTIONALITY
 
+* `integrate/harmonypy`: a python implementation of the harmony integration.
+
 * `workflows/integration/multiomics`: implement pipeline for processing multiple multiomics samples.
 
 * `transform/scaling`: Scale data to unit variance and zero mean.
+
+* `integrate/harmony`: Added R based Harmony component.
 
 * `integrate/concat`: Added 'move' option to `--other_axis_mode`, which allows merging .obs and .var by only keeping elements of the matrices which are the same in each of the samples, moving the conflicting values to .varm or .obsm.
 
