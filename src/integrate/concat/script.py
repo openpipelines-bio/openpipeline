@@ -26,7 +26,7 @@ logFormatter = logging.Formatter("%(asctime)s %(levelname)-8s %(message)s")
 console_handler.setFormatter(logFormatter)
 logger.addHandler(console_handler)
 
-def add_sample_names(sample_ids: tuple[str], samples: list[mu.MuData], obs_key_sample_name: str) -> None:
+def add_sample_names(sample_ids: tuple[str], samples: Iterable[mu.MuData], obs_key_sample_name: str) -> None:
     """
     Add sample names to the observations for each sample.
     """
@@ -39,7 +39,7 @@ def add_sample_names(sample_ids: tuple[str], samples: list[mu.MuData], obs_key_s
         sample.update()
 
 
-def make_observation_keys_unique(sample_ids: tuple[str], samples: list[mu.MuData]) -> None:
+def make_observation_keys_unique(sample_ids: tuple[str], samples: Iterable[mu.MuData]) -> None:
     """
     Make the observation keys unique across all samples. At input,
     the observation keys are unique within a sample. By adding the sample name
@@ -61,7 +61,7 @@ def make_observation_keys_unique_per_mod(sample_id: str, sample: mu.MuData) -> N
         mod.obs_names = f"{sample_id}_" + mod.obs_names
 
 
-def group_modalities(samples: list[anndata.AnnData]) -> dict[str, anndata.AnnData]:
+def group_modalities(samples: Iterable[anndata.AnnData]) -> dict[str, anndata.AnnData]:
     """
     Split up the modalities of all samples and group them per modality.
     """
@@ -77,7 +77,7 @@ def group_modalities(samples: list[anndata.AnnData]) -> dict[str, anndata.AnnDat
     return mods
 
 
-def concat_columns(vars_list: list[pd.DataFrame]) -> pd.DataFrame:
+def concat_columns(vars_list: Iterable[pd.DataFrame]) -> pd.DataFrame:
     """
     Combine dataframes by joining matching columns into a comma-separated list
     containing unique, non-na values.
@@ -186,7 +186,7 @@ def set_conflicts(concatenated_data: mu.MuData,
             getattr(mod, conflict_matrix_name)[conflict_name] = conflict_data.sort_index()
     return concatenated_data
 
-def concatenate_modalities(sample_ids: tuple[str], modalities: dict[str, list[anndata.AnnData]],
+def concatenate_modalities(sample_ids: tuple[str], modalities: dict[str, Iterable[anndata.AnnData]],
                            other_axis_mode: str) -> mu.MuData:
     """
     Join the modalities together into a single multimodal sample.
