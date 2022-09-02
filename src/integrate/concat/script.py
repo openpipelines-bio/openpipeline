@@ -34,7 +34,7 @@ def add_sample_names(sample_ids: tuple[str], samples: Iterable[mu.MuData], obs_k
         if obs_key_sample_name in sample.obs_keys():
             logger.info(f'Column .obs["{obs_key_sample_name}"] already exists in sample "{sample_id}". Overriding the value for this column.')
             samples.obs = sample.obs.drop(obs_key_sample_name, axis=1)
-        for _, modality in sample.mod.items():
+        for modality in sample.mod.values():
             modality.obs[obs_key_sample_name] = sample_id
         sample.update()
 
