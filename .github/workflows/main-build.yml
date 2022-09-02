@@ -17,6 +17,14 @@ jobs:
     steps:
     - uses: actions/checkout@v2
 
+    - name: Test secrets
+      run: |
+        if [[ "${{ secrets.GTHB_USER }}" == "" ]]; then
+          echo "foo"
+        else
+          echo "bar"
+        fi
+
     - name: Fetch viash
       run: |
         bin/init
