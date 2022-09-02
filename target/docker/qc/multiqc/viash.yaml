@@ -411,9 +411,9 @@ functionality:
         pip install --upgrade --no-cache-dir "multiqc"
       
       LABEL org.opencontainers.image.description="Companion container for running component qc multiqc"
-      LABEL org.opencontainers.image.created="2022-09-02T14:25:21Z"
+      LABEL org.opencontainers.image.created="2022-09-02T15:05:35Z"
       LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-      LABEL org.opencontainers.image.revision="143d38c55989ae9683a971bb543bfc72c28f2d07"
+      LABEL org.opencontainers.image.revision="9126f5505a97766341042ed6a3bc167d271a754d"
       LABEL org.opencontainers.image.version="integration_build"
       VIASHDOCKER
       }
@@ -795,5 +795,5 @@ info:
   output: "target/docker/qc/multiqc"
   executable: "target/docker/qc/multiqc/multiqc"
   viash_version: "0.5.15"
-  git_commit: "143d38c55989ae9683a971bb543bfc72c28f2d07"
+  git_commit: "9126f5505a97766341042ed6a3bc167d271a754d"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"

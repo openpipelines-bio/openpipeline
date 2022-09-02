@@ -13,6 +13,5 @@ bin/nextflow \
   -main-script workflows/ingestion/demux/main.nf \
   -entry test_wf \
   -resume \
-  -with-docker \
+  -profile docker,nopublish \
   -with-trace work/trace.txt \
-  --publishDir demux-test
