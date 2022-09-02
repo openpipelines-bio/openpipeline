@@ -57,7 +57,7 @@ def make_observation_keys_unique_per_mod(sample_id: str, sample: mu.MuData) -> N
     Updating MuData.obs_names is not allowed (it is read-only).
     So the observation keys for each modality has to be updated manually.
     """
-    for _, mod in sample.mod.items():
+    for mod in sample.mod.values():
         mod.obs_names = f"{sample_id}_" + mod.obs_names
 
 
