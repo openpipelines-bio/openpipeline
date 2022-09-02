@@ -1,0 +1,82 @@
+functionality:
+  name: scvelo
+  namespace: "projection"
+  authors:
+    - name: Dries Schaumont
+      email: dries.schaumont@data-intuitive.com
+      roles: [ maintainer ]
+      props: { github: DriesSchaumont, orcid: "0000-0002-4389-0440" }
+  arguments:
+    - name: "--input"
+      type: file
+      direction: input
+      description: "Velocyto loom file."
+      required: true
+    - name: "--output"
+      required: true
+      type: file
+      direction: output
+      description: "Output directory. If it does not exist, will be created."
+    - name: --min_counts
+      description: Minimum number of counts required for a gene to pass filtering (spliced).
+      type: integer
+    - name: --min_counts_u
+      description: Minimum number of counts required for a gene to pass filtering (unspliced).
+      type: integer
+    - name: --min_cells
+      description: Minimum number of cells expressed required to pass filtering (spliced).
+      type: integer
+    - name: --min_cells_u
+      description: Minimum number of cells expressed required to pass filtering (unspliced).
+      type: integer
+    - name: "--min_shared_counts"
+      description: "Minimum number of counts (both unspliced and spliced) required for a gene."
+      type: integer
+    - name: "--min_shared_cells"
+      description: "Minimum number of cells required to be expressed (both unspliced and spliced)."
+      type: integer
+    - name: "--n_top_genes"
+      description: "Number of genes to keep."
+      type: integer
+    - name: "--log_transform"
+      type: boolean
+      default: true
+      description: "Do not log transform counts."
+    - name: --n_principal_components
+      description: Number of principal components to use for calculating moments.
+      type: integer
+    - name: --n_neighbors
+      description: |
+        Number of neighbors to use. First/second-order moments are computed for each
+        cell across its nearest neighbors, where the neighbor graph is obtained from
+        euclidean distances in PCA space.
+      type: integer
+      default: 30
+  argument_groups:
+    - name: Filtering and normalization
+      description: Arguments for filtering, normalization an log transform (see scvelo.pp.filter_and_normalize function)
+      arguments: [ "min_counts", "min_counts_u", "min_cells", "min_cells_u", "min_shared_counts", "min_shared_cells", "n_top_genes", "log_transform" ]
+    - name: Fitting parameters
+      description: Arguments for fitting the data
+      arguments: [ "n_principal_components", "n_neighbors" ]
+  resources:
+    - type: python_script
+      path: script.py
+  test_resources:
+    - type: python_script
+      path: test.py
+    - path: ../../../resources_test/rna_velocity/velocyto_processed/cellranger_tiny.loom
+platforms:
+  - type: docker
+    image: python:3.9
+    setup:
+      - type: python
+        pip:
+          - scvelo
+          - mudata
+          - anndata<0.8
+  - type: native
+  - type: nextflow
+    variant: vdsl3
+    directives:
+      label: [ highmem, highcpu ]
