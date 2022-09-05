@@ -25,6 +25,8 @@ workflow run_wf {
   input_ch
 
   main:
+    auto = [ publish: true, transcript: true ]
+    auto_nopub = [ publish: false, transcript: true ]
 
   output_ch = input_ch
 
@@ -32,7 +34,7 @@ workflow run_wf {
     | cellranger_count.run(auto: auto)
 
     // split output dir into map
-    | cellranger_count_split
+    | cellranger_count_split.run(auto: auto_nopub)
 
     // convert to h5mu
     | map { id, cellranger_outs -> [ id, cellranger_outs.filtered_h5, cellranger_outs ] }

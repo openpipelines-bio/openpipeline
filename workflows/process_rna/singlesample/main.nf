@@ -26,7 +26,9 @@ workflow run_wf {
   main:
   output_ch = input_ch
     // cell filtering
-    | filter_with_counts
+    | filter_with_counts.run(
+      auto: [ publish: true ]
+    )
     | do_filter.run(
       args: [ obs_filter: "filter_with_counts" ]
     )

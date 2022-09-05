@@ -55,7 +55,9 @@ workflow run_wf {
 
     // Step 2: run BD rhapsody WTA
     | view { "running_bd_rhapsody: $it (orig_id: ${it[2].tuple_orig_id})" }
-    | bd_rhapsody_wta
+    | bd_rhapsody_wta.run(
+      auto: [ publish: true ]
+    )
 
     // Step 3: group outputs per sample
     | map { id, input, extra -> [ extra.tuple_orig_id, input ] }
@@ -64,7 +66,9 @@ workflow run_wf {
 
     // Step 4: convert to h5ad
     | view { "converting_to_h5mu: $it" }
-    | from_bdrhap_to_h5mu
+    | from_bdrhap_to_h5mu.run(
+      auto: [ publish: true ]
+    )
 
   emit:
   output_ch
