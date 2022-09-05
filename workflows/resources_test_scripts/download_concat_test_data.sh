@@ -49,5 +49,3 @@ rm "$OUT/human_brain_3k_filtered_feature_bc_matrix.h5"\
 --input "$OUT/e18_mouse_brain_fresh_5k_filtered_feature_bc_matrix_subset.h5mu" \
 --sample_names "mouse,human" \
 --output "$OUT/concatenated_brain_filtered_feature_bc_matrix_subset.h5mu"
-
-./bin/viash 
