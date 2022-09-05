@@ -11,6 +11,8 @@ include { readConfig; viashChannel; helpMessage } from workflowDir + "/utils/Wor
 
 config = readConfig("$workflowDir/process_rna/singlesample/config.vsh.yaml")
 
+// keep track of whether this is an integration test or not
+global_params = [ do_publish: true ]
 
 workflow {
   helpMessage(config)
@@ -31,7 +33,9 @@ workflow run_wf {
       args: [ obs_filter: "filter_with_counts" ]
     )
     // doublet calling
-    | filter_with_scrublet
+    | filter_with_scrublet.run(
+      auto: [ publish: global_params.do_publish ]
+    )
     // TODO: ambient rna correction
 
   emit:
@@ -39,6 +43,9 @@ workflow run_wf {
 }
 
 workflow test_wf {
+  // don't publish output
+  global_params.do_publish = false
+
   // allow changing the resources_test dir
   params.resources_test = params.rootDir + "/resources_test"
 

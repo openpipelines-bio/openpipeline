@@ -13,6 +13,6 @@ bin/nextflow \
   -main-script workflows/ingestion/cellranger_demux/main.nf \
   -entry test_wf \
   -resume \
-  -profile docker,nopublish \
+  -profile docker \
   -c workflows/utils/labels_ci.config \
   -with-trace work/trace.txt

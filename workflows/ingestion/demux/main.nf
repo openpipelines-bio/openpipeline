@@ -34,7 +34,9 @@ workflow run_wf {
 
   main:
   commonOptions = [
-    args: [ output: "fastq/\$id" ]  ]
+    args: [ output: "fastq/\$id" ],
+    auto: [ publish: true ]
+  ]
 
   mkfastq_ch = input_ch
     | filter{ (it[1].demultiplexer ?: params.demultiplexer) == "mkfastq" }
@@ -58,7 +60,8 @@ workflow run_wf {
   all_ch
     | fastqc.run(
         [
-          args: [ mode: "dir", output: "fastqc/\$id" ]
+          args: [ mode: "dir", output: "fastqc/\$id" ],
+          auto: [ publish: true ]
         ]
       )
 
@@ -69,7 +72,8 @@ workflow run_wf {
     | map{ [ "multiqc", it ] }
     | multiqc.run(
         [
-          args: [ output: "multiqc/report" ]        
+          args: [ output: "multiqc/report" ],
+          auto: [ publish: true ]
         ]
       )
 

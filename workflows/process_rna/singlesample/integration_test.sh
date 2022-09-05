@@ -10,7 +10,7 @@ export NXF_VER=21.10.6
 
 nextflow run . \
   -main-script workflows/process_rna/singlesample/main.nf \
-  -profile docker,nopublish \
+  -profile docker \
   -resume \
   -entry test_wf \
   -with-trace work/trace.txt
