@@ -1,0 +1,69 @@
+functionality:
+  name: scvi
+  namespace: "integrate"
+  version: "dev"
+  description: "Performs scvi integration as done in the human lung cell atlas https://github.com/LungCellAtlas/HLCA"
+  authors:
+    - name: Malte Luecken
+      email: malte.luecken@helmholtz-muenchen.de
+      roles: [ contributor ]
+      props: { github: luckymd, orcid: "0000-0001-7464-7921" }
+  arguments: # UPDATE FROM HARMONY!
+    - name: "--input"
+      alternatives: ["-i"]
+      type: file
+      description: Input h5mu file
+      direction: input
+      required: true
+    - name: "--output"
+      alternatives: ["-o"]
+      type: file
+      description: Output h5mu file.
+      direction: output
+      required: true
+    - name: "--modality"
+      type: string
+      multiple: true
+      default: "rna"
+      required: false
+    - name: "--obsm_input"
+      type: string
+      default: "X_pca"
+      required: false
+      description: "Which .obsm slot to use as a starting PCA embedding."
+    - name: "--obsm_output"
+      type: string
+      default: "X_pca_integrated"
+      required: false
+      description: "In which .obsm slot to store the resulting integrated embedding."
+    - name: "--theta"
+      description: "Diversity clustering penalty parameter. Specify for each variable in group.by.vars. theta=0 does not encourage any diversity. Larger values of theta result in more diverse clusters."
+      type: double
+      default: 2
+      multiple: true
+    - name: "--obs_covariates"
+      type: string
+      description: "The .obs field(s) that define the covariate(s) to regress out."
+      example: ["batch", "sample"]
+      multiple: true
+  resources:
+    - type: python_script
+      path: script.py
+  test_resources:
+    - type: python_script
+      path: test.py
+    - path: ../../../resources_test/pbmc_1k_protein_v3/pbmc_1k_protein_v3_mms.h5mu
+platforms:
+  - type: docker
+    image: python:3.10
+    setup:
+      - type: python
+        packages:
+          - mudata~=0.2.0
+          - anndata~=0.8.0
+          - scvi
+          - scanpy
+  - type: nextflow
+    variant: vdsl3
+    directives:
+      label: [highmem, highcpu]
