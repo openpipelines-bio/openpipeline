@@ -1,9 +1,10 @@
 functionality:
   name: "bd_rhapsody_wta"
+  status: deprecated
   namespace: "mapping"
   version: "dev"
   description: |
-    A wrapper for the BD Rhapsody Analysis WTA CWL v1.10.1 pipeline.
+    A wrapper for the BD Rhapsody Analysis CWL v1.10.1 pipeline.
 
     The CWL pipeline file is obtained by cloning 'https://bitbucket.org/CRSwDev/cwl/src/master/' and removing all objects with class 'DockerRequirement' from the YML.
 
@@ -15,7 +16,7 @@ functionality:
       email: rcannood@gmail.com
       roles: [ maintainer ]
       props: { github: rcannood, orcid: "0000-0003-3641-729X" }
-  inputs:
+  arguments:
     - name: "--input"
       alternatives: [-i]
       description: Path to your read files in the FASTQ.GZ format. You may specify as many R1/R2 read pairs as you want.
@@ -23,35 +24,38 @@ functionality:
       multiple: true
       multiple_sep: ':'
       example: input.fastq.gz
+      type: file
     - name: "--reference_genome"
       alternatives: [-r]
       required: true
       description: "Path to STAR index as a tar.gz file."
       example: "reference_genome.tar.gz"
+      type: file
     - name: "--transcriptome_annotation"
       alternatives: [-t]
       description: Path to GTF annotation file.
       required: true
       example: "transcriptome.gtf"
+      type: file
     - name: "--abseq_reference"
       alternatives: [-a]
       description: Path to the AbSeq reference file in FASTA format. Only needed if BD AbSeq Ab-Oligos are used.
       multiple: true
       multiple_sep: ':'
+      type: file
     - name: "--supplemental_reference"
       alternatives: [-s]
       description: Path to the supplemental reference file in FASTA format. Only needed if there are additional transgene sequences used in the experiment.
       multiple: true
       multiple_sep: ':'
-    
-  outputs:
+      type: file
     - name: "--output"
       alternatives: [-o]
       description: "Output folder. Output still needs to be processed further."
       required: true
       example: output_dir/
-
-  arguments:
+      type: file
+      direction: output
     # putative cell calling settings
     - name: "--putative_cell_call"
       type: string
