@@ -1882,5 +1882,5 @@ info:
   platform: "nextflow"
   output: "target/nextflow/convert/from_h5mu_to_seurat"
   viash_version: "0.5.15"
-  git_commit: "e1f846fcad9af96a696dd61143b1c7d58b8c7d81"
+  git_commit: "71584c5ca1e0e7bd43d5ddd74ca4926d735feeb9"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"
