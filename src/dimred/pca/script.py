@@ -28,17 +28,20 @@ mdata = mu.read_h5mu(par["input"])
 for mod in par['modality']:
     logger.info("Computing PCA components for modality '%s'", mod)
     data = mdata.mod[mod]
-
+    if par['layer'] and par['layer'] not in data.layers:
+        raise ValueError(f"{par['layer']} was not found in modality {mod}.")
+    layer = data.X if not par['layer'] else data.layers[par['layer']]
     # run pca
     # sc.tl.pca(data, n_comps=par["num_components"])
     X_pca, loadings, variance, variance_ratio = sc.tl.pca(
-        data.X, 
+        layer, 
         n_comps=par["num_components"], 
         return_info=True
     )
 
+    layer_name = "X_" if not par['layer'] else f"{par['layer']}_"
     # store output in specific objects
-    data.obsm["X_"+okey] = X_pca
+    data.obsm[layer_name+okey] = X_pca
     data.varm["loadings_"+okey] = loadings.T
     data.uns[okey] = { "variance": variance, "variance_ratio": variance_ratio }
 

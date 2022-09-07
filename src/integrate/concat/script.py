@@ -5,6 +5,7 @@ import muon as mu
 from sys import stdout
 import pandas as pd
 import numpy as np
+from collections.abc import Iterable
 
 ### VIASH START
 par = {
@@ -12,8 +13,9 @@ par = {
               "resources_test/concat/human_brain_3k_filtered_feature_bc_matrix_subset.h5mu"],
     "output": "foo.h5mu",
     "sample_names": ["mouse", "human"],
+    "obs_sample_name": "sample_id",
     "compression": "gzip",
-    "other_axis_mode": "concat"
+    "other_axis_mode": "move"
 }
 ### VIASH END
 
@@ -24,21 +26,20 @@ logFormatter = logging.Formatter("%(asctime)s %(levelname)-8s %(message)s")
 console_handler.setFormatter(logFormatter)
 logger.addHandler(console_handler)
 
-
-def add_sample_names(sample_ids: tuple[str], samples: list[mu.MuData]) -> None:
+def add_sample_names(sample_ids: tuple[str], samples: Iterable[mu.MuData], obs_key_sample_name: str) -> None:
     """
     Add sample names to the observations for each sample.
-    Additionally, set the .batch attribute to each MuData object to store
-    the sample names
     """
     for (sample_id, sample) in zip(sample_ids, samples):
-        if "batch" in sample.obs_keys():
-            samples.obs = sample.obs.drop("batch", axis=1)
-        sample.obs["batch"] = sample_id
-        sample.batch = sample_id
+        if obs_key_sample_name in sample.obs_keys():
+            logger.info(f'Column .obs["{obs_key_sample_name}"] already exists in sample "{sample_id}". Overriding the value for this column.')
+            samples.obs = sample.obs.drop(obs_key_sample_name, axis=1)
+        for modality in sample.mod.values():
+            modality.obs[obs_key_sample_name] = sample_id
+        sample.update()
 
 
-def make_observation_keys_unique(samples: list[mu.MuData]) -> None:
+def make_observation_keys_unique(sample_ids: tuple[str], samples: Iterable[mu.MuData]) -> None:
     """
     Make the observation keys unique across all samples. At input,
     the observation keys are unique within a sample. By adding the sample name
@@ -46,21 +47,21 @@ def make_observation_keys_unique(samples: list[mu.MuData]) -> None:
     unique across all samples as well.
     """
     logger.info('Making observation keys unique across all samples.')
-    for sample in samples:
-        sample.obs.index = f"{sample.batch}_" + sample.obs.index
-        make_observation_keys_unique_per_mod(sample)
+    for sample_id, sample in zip(sample_ids, samples):
+        sample.obs.index = f"{sample_id}_" + sample.obs.index
+        make_observation_keys_unique_per_mod(sample_id, sample)
 
 
-def make_observation_keys_unique_per_mod(sample: list[anndata.AnnData]) -> None:
+def make_observation_keys_unique_per_mod(sample_id: str, sample: mu.MuData) -> None:
     """
     Updating MuData.obs_names is not allowed (it is read-only).
     So the observation keys for each modality has to be updated manually.
     """
-    for _, mod in sample.mod.items():
-        mod.obs_names = f"{sample.batch}_" + mod.obs_names
+    for mod in sample.mod.values():
+        mod.obs_names = f"{sample_id}_" + mod.obs_names
 
 
-def group_modalities(samples: list[anndata.AnnData]) -> dict[str, anndata.AnnData]:
+def group_modalities(samples: Iterable[anndata.AnnData]) -> dict[str, anndata.AnnData]:
     """
     Split up the modalities of all samples and group them per modality.
     """
@@ -76,7 +77,7 @@ def group_modalities(samples: list[anndata.AnnData]) -> dict[str, anndata.AnnDat
     return mods
 
 
-def concat_columns(vars_list: list[pd.DataFrame]) -> pd.DataFrame:
+def concat_columns(vars_list: Iterable[pd.DataFrame]) -> pd.DataFrame:
     """
     Combine dataframes by joining matching columns into a comma-separated list
     containing unique, non-na values.
@@ -114,21 +115,99 @@ def concat_result_cast_dtype(result: pd.DataFrame,
                 logger.warning("Could not keep datatype for column %s", col_name)
     return result
 
+def any_row_contains_duplicate_values(frame: pd.DataFrame) -> bool:
+    """
+    Check if any row contains duplicate values, that are not NA.
+    """
+    number_of_unique = frame.nunique(axis=1, dropna=True)
+    non_na_counts = frame.count(axis=1)
+    is_duplicated = (number_of_unique - non_na_counts) != 0
+    return is_duplicated.any()
 
-def concatenate_modalities(modalities: dict[str, anndata.AnnData],
+def split_conflicts_matrices(sample_ids: tuple[str], matrices: Iterable[pd.DataFrame]) \
+    -> tuple[dict[str, pd.DataFrame], pd.DataFrame | None]:
+    """
+    Merge matrices by combining columns that have the same name.
+    Columns that contain conflicting values (e.i. the columns have different values),
+    are not merged, but instead moved to a new dataframe.
+    """
+    column_names = set(column_name for var in matrices for column_name in var)
+    logger.debug('Trying to concatenate columns: %s.', ",".join(column_names))
+    if not column_names:
+        return {}, None
+    conflicts = {}
+    concatenated_matrix = pd.DataFrame()
+    for column_name in column_names:
+        columns = [var[column_name] for var in matrices if column_name in var]
+        assert columns, "Some columns should have been found."
+        concatenated_columns = pd.concat(columns, axis=1)
+        if any_row_contains_duplicate_values(concatenated_columns):
+            concatenated_columns.columns = sample_ids
+            conflicts[f'conflict_{column_name}'] = concatenated_columns
+        else:
+            unique_values = concatenated_columns.fillna(method='bfill', axis=1).iloc[:, 0]
+            concatenated_matrix = concatenated_matrix.assign(**{column_name: unique_values})
+    return conflicts, concatenated_matrix
+
+def split_conflicts_modalities(sample_ids: tuple[str], modalities: Iterable[anndata.AnnData]) \
+        -> tuple[dict[str, dict[str, pd.DataFrame]],  dict[str, pd.DataFrame | None]]:
+        """
+        Merge .var and .obs matrices of the anndata objects. Columns are merged
+        when the values (excl NA) are the same in each of the matrices.
+        Conflicting columns are moved to a separate dataframe (one dataframe for each column, 
+        containing all the corresponding column from each sample). 
+        """
+        matrices_to_parse = ("var", "obs")
+        concatenated_result = {}
+        conflicts_result = {}
+        for matrix_name in matrices_to_parse:
+            matrices = [getattr(modality, matrix_name) for modality in modalities]
+            conflicts, concatenated_matrix = split_conflicts_matrices(sample_ids, matrices)
+            conflicts_result[f"{matrix_name}m"] = conflicts
+            concatenated_result[matrix_name] = concatenated_matrix
+        return conflicts_result, concatenated_result
+
+def set_matrices(concatenated_data: mu.MuData, 
+                 mod_name: str,
+                 new_matrices: dict[str, pd.DataFrame | None]) -> mu.MuData:
+    mod = concatenated_data.mod[mod_name]
+    for matrix_name, data in new_matrices.items():
+        if data is None:
+            data = pd.DataFrame(index=getattr(mod, matrix_name).index)
+        setattr(mod, matrix_name, data)
+    return concatenated_data
+
+def set_conflicts(concatenated_data: mu.MuData,
+                  mod_name: str,
+                  conflicts: dict[str, dict[str, pd.DataFrame]]) -> mu.MuData:
+    mod = concatenated_data.mod[mod_name]
+    for conflict_matrix_name, conflict in conflicts.items():
+        for conflict_name, conflict_data in conflict.items():
+            getattr(mod, conflict_matrix_name)[conflict_name] = conflict_data.sort_index()
+    return concatenated_data
+
+def concatenate_modalities(sample_ids: tuple[str], modalities: dict[str, Iterable[anndata.AnnData]],
                            other_axis_mode: str) -> mu.MuData:
     """
     Join the modalities together into a single multimodal sample.
     """
     logger.info('Concatenating samples.')
-    if other_axis_mode == "concat":
-        other_axis_mode = concat_columns
+    concat_modes = {
+        "concat": concat_columns,
+        "move": "same",
+    }
+    other_axis_mode_to_apply = concat_modes.get(other_axis_mode, other_axis_mode)
     new_mods = {mod_name: anndata.concat(modes,
                                          join='outer',
-                                         merge=other_axis_mode)
+                                         merge=other_axis_mode_to_apply)
                 for mod_name, modes in modalities.items()}
     concatenated_data = mu.MuData(new_mods)
-    logger.info("Concatenation succesfull.")
+    if other_axis_mode == "move":
+        for mod_name, modes in modalities.items():
+            conflicts, new_matrices = split_conflicts_modalities(sample_ids, modes)
+            concatenated_data = set_conflicts(concatenated_data, mod_name, conflicts)
+            concatenated_data = set_matrices(concatenated_data, mod_name, new_matrices)
+    logger.info("Concatenation successful.")
     return concatenated_data
 
 
@@ -147,11 +226,11 @@ def main() -> None:
                 "\n\t".join(sample_ids),
                 "\n\t".join(par["input"]))
 
-    add_sample_names(sample_ids, samples)
-    make_observation_keys_unique(samples)
+    add_sample_names(sample_ids, samples, par["obs_sample_name"])
+    make_observation_keys_unique(sample_ids, samples)
 
     mods = group_modalities(samples)
-    concatenated_samples = concatenate_modalities(mods, par["other_axis_mode"])
+    concatenated_samples = concatenate_modalities(sample_ids, mods, par["other_axis_mode"])
     logger.info("Writing out data to '%s' with compression '%s'.",
                 par["output"], par["compression"])
     concatenated_samples.write(par["output"], compression=par["compression"])

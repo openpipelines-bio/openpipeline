@@ -1,0 +1,69 @@
+functionality:
+  name: velocyto
+  namespace: "projection"
+  description: ""
+  arguments:
+    - name: "--input"
+      alternatives: [-i]
+      type: file
+      direction: input
+      description: "Path to BAM file"
+      required: true
+    - name: "--transcriptome"
+      alternatives: [-t]
+      type: file
+      direction: input
+      description: "Path to GTF file"
+      required: true
+    - name: "--barcode"
+      alternatives: [-b]
+      type: file
+      direction: input
+      description: |
+        Valid barcodes file, to filter the bam. If --bcfile is not specified all the cell barcodes will be included.
+        Cell barcodes should be specified in the bcfile as the 'CB' tag for each read
+      required: false
+    - name: "--without_umi"
+      type: boolean_true
+      description: "foo"
+    - name: "--output"
+      alternatives: [-o]
+      required: true
+      type: file
+      direction: output
+      description: "Velocyto loom file"
+    - name: "--logic"
+      alternatives: ["-l"]
+      type: string
+      required: false
+      choices: ["Default", "Permissive10X", "Intermediate10X", "ValidatedIntrons10X", "Stricter10X", "ObservedSpanning10X", "Discordant10X", "SmartSeq2"]
+      default: Default
+      description: "The logic to use for the filtering."
+  resources:
+    - type: bash_script
+      path: script.sh
+  test_resources:
+    - type: python_script
+      path: test.py
+    - path: ../../../resources_test/cellranger_tiny_fastq
+    - path: ../../../resources_test/rna_velocity
+    - path: ../../../resources_test/bdrhap_ref_gencodev40_chr1
+platforms:
+  - type: docker
+    image: python:3.9
+    setup:
+      - type: python
+        pip:
+          - numpy
+          - Cython
+      - type: python
+        pip:
+          - velocyto
+      - type: apt
+        packages:
+          - samtools
+  - type: native
+  - type: nextflow
+    variant: vdsl3
+    directives:
+      label: highmem
