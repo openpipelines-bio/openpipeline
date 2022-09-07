@@ -6,7 +6,7 @@
 
 * `transform/scaling`: Scale data to unit variance and zero mean.
 
-* `mapping/bd_rhapsody`: Added component for running the BD Rhapsody WTA or Targeted analysis.
+* `mapping/bd_rhapsody`: Added generic component for running the BD Rhapsody WTA or Targeted analysis.
 
 * `integrate/harmony`: Added a component for running a Harmony integration analysis (R-based).
 
