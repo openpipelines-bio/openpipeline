@@ -9,7 +9,7 @@ functionality:
 
     This pipeline can be used for a targeted analysis (with `--mode targeted`) or for a whole transcriptome analysis (with `--mode wta`).
     * If mode is `"targeted"`, then either the `--reference` or `--abseq_reference` parameters must be defined.
-    * If mode is `"wta"`, then `--reference_genome` and `--transcriptome_annotation` must be defined, `--abseq_reference` and `--supplemental_reference` is optional.
+    * If mode is `"wta"`, then `--reference` and `--transcriptome_annotation` must be defined, `--abseq_reference` and `--supplemental_reference` is optional.
 
     The reference_genome and transcriptome_annotation files can be downloaded from these locations:
       - Human: http://bd-rhapsody-public.s3-website-us-east-1.amazonaws.com/Rhapsody-WTA/GRCh38-PhiX-gencodev29/
@@ -27,6 +27,7 @@ functionality:
           description: "Whether to run a whole transcriptome analysis (WTA) or a targeted analysis."
           choices: [ wta, targeted ]
           example: "wta"
+          required: true
         - name: "--input"
           type: file
           alternatives: [-i]
