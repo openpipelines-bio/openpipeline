@@ -1,0 +1,73 @@
+functionality:
+  name: bbknn
+  namespace: "graph"
+  version: "dev"
+  description: |
+    BBKNN network generation
+  authors:
+    - name: Dries De Maeyer
+      email: DDeMaey1@its.jnj.com
+      roles: [ author ]
+      props: { account: ddemaey1 }
+    - name: Dries Schaumont
+      email: Dschaumo@its.jnj.com
+      roles: [ maintainer ]
+  arguments:
+    - name: "--input"
+      alternatives: [-i]
+      type: file
+      description: Input h5mu file
+      direction: input
+      required: 
+    - name: "--modality"
+      type: string
+      multiple: true
+      default: "rna"
+      required: false
+    - name: "--output"
+      alternatives: ["-o"]
+      type: file
+      description: Output .h5mu file.
+      direction: output
+      required: true
+    - name: "--n_neighbours_within_batch"
+      type: integer
+      description: How many top neighbours to report for each batch; total number of neighbours in the initial k-nearest-neighbours computation will be this number times the number of batches.
+      default: 3
+    - name: "--obs_batch"
+      type: string
+      description: .obs column name discriminating between your batches.
+      default: "batch"
+    - name: "--n_pcs"
+      type: integer
+      description: How many dimensions (in case of PCA, principal components) to use in the analysis.
+      default: 50
+    - name: "--n_trim"
+      type: integer
+      description: Trim the neighbours of each cell to these many top connectivities. May help with population independence and improve the tidiness of clustering. The lower the value the more independent the individual populations, at the cost of more conserved batch effect. If ``None`` (default), sets the parameter value automatically to 10 times ``neighbors_within_batch`` times the number of batches. Set to 0 to skip.
+    - name: "--obm_representation"
+      description: The dimensionality reduction in ``.obsm`` to use for neighbour detection. Defaults to X_pca.
+      type: string
+      default: "X_pca"
+  resources:
+    - type: python_script
+      path: ./script.py
+  test_resources:
+    - type: python_script
+      path: test.py
+    - path: ../../../resources_test/pbmc_1k_protein_v3/pbmc_1k_protein_v3_mms.h5mu
+platforms:
+  - type: native
+  - type: docker
+    image: python:3.8
+    setup:
+      - type: python
+        packages:
+          - mudata~=0.2.0
+          - anndata~=0.8.0
+          - scanpy~=1.9.1 # Will result in NameError: name 'logg' is not defined otherwise
+          - bbknn
+  - type: nextflow
+    variant: vdsl3
+    directives:
+      label: highmem
