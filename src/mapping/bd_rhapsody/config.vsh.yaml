@@ -165,6 +165,10 @@ platforms:
     #     packages: [ procps, nodejs]
     #   - type: python
     #     packages: [cwlref-runner, cwl-runner, ruamel.yaml]
+    setup:
+      - type: python
+        packages:
+          - pandas
   - type: nextflow
     variant: vdsl3
     directives:

@@ -8,8 +8,8 @@ mudata <- reticulate::import("mudata")
 ## VIASH START
 par <- list(
   id = "foo",
-  # input = "resources_test/bdrhap_5kjrt/processed/ABC",
-  input = "resources_test/bdrhap_vdj/processed/VDJdemo",
+  input = "resources_test/bdrhap_5kjrt/processed/ABC",
+  # input = "resources_test/bdrhap_vdj/processed/targeted_vdj",
   output = "test.h5mu"
 )
 ## VIASH END
@@ -58,7 +58,7 @@ vdj_file <- list.files(par$input, pattern = "_VDJ_perCell.csv$", full.names = TR
 vdj_counts <-
   if (length(vdj_file) == 1) {
     readr::read_csv(
-      file,
+      vdj_file,
       comment = "#"
     )
   } else {
@@ -73,12 +73,16 @@ obs <- data.frame(
 
 # todo: feature type of ABC should not be GEX!
 cat("Constructing var\n")
-bioproduct_file <- list.files(par$input, pattern = "_Bioproduct_Stats.csv$", full.names = TRUE)
-rna_var <- readr::read_csv(
-  bioproduct_file,
-  comment = "#"
-) %>%
-  mutate(feature_types = rep("Gene Expression", ncol(counts)))
+feature_types_file <- list.files(par$input, pattern = "feature_types.tsv$", full.names = TRUE)
+var <- readr::read_tsv(feature_types_file) %>%
+  as.data.frame() %>%
+  column_to_rownames("feature_id")
+# bioproduct_file <- list.files(par$input, pattern = "_Bioproduct_Stats.csv$", full.names = TRUE)
+# rna_var <- readr::read_csv(
+#   bioproduct_file,
+#   comment = "#"
+# ) %>%
+#   mutate(feature_types = rep("Gene Expression", ncol(counts)))
 
 cat("Constructing MuData object\n")
 rna_h5ad <- anndata::AnnData(
@@ -97,6 +101,9 @@ rna_h5ad <- anndata::AnnData(
     mapping_qc_sample_tags = group_dfs[["Sample_Tags"]]
   )
 )
+
+# todo: split h5ad by feature type
+# todo: do something with vdj data
 
 new_h5mu <- mudata$MuData(
   list(rna = rna_h5ad)

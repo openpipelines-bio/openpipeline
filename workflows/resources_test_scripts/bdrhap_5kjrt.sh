@@ -1,7 +1,5 @@
 #!/bin/bash
 
-# TODO: we should turn this into viash components
-
 # ensure that the command below is run from the root of the repository
 REPO_ROOT=$(git rev-parse --show-toplevel)
 cd "$REPO_ROOT"
@@ -20,7 +18,6 @@ if ! command -v seqkit &> /dev/null; then
     echo "This script requires seqkit. Please make sure the binary is added to your PATH."
     exit 1
 fi
-
 
 # check whether reference is available
 reference_dir="resources_test/bdrhap_ref_gencodev40_chr1"
@@ -46,7 +43,7 @@ fi
 #   --id WTA \
 #   --input "$tar_dir/12WTA_S1_L432_R1_001.fastq.gz" \
 #   --input "$tar_dir/12WTA_S1_L432_R2_001.fastq.gz" \
-#   --reference_genome "$reference_dir/GRCh38_primary_assembly_genome_chr1.tar.gz" \
+#   --reference "$reference_dir/GRCh38_primary_assembly_genome_chr1.tar.gz" \
 #   --transcriptome_annotation "$reference_dir/gencode_v40_annotation_chr1.gtf" \
 #   --output "output_foo" \
 #   --putative_cell_call "mRNA"
@@ -123,14 +120,6 @@ param_list:
   sample_tags_version: "hs"
   tag_names: ["1-Jurkat", "2-Ramos", "3-THP1"]
   output: "SMK"
-# - id: "ABC_L1"
-#   input: "$raw_dir/12ABC_S1_L432_R[12]_001_subset.fastq.gz"
-#   abseq_reference: "$raw_dir/BDAbSeq_ImmuneDiscoveryPanel.fasta"
-#   output: "ABC_L1"
-# - id: "ABC_L2"
-#   input: "$raw_dir/12ABC_S1_L432_R[12]_002_subset.fastq.gz"
-#   abseq_reference: "$raw_dir/BDAbSeq_ImmuneDiscoveryPanel.fasta"
-#   output: "ABC_L2"
 - id: "ABC"
   input: "$raw_dir/12ABC_S1_L432_R[12]_001_subset.fastq.gz"
   abseq_reference: "$raw_dir/BDAbSeq_ImmuneDiscoveryPanel.fasta"
@@ -139,7 +128,7 @@ param_list:
   input: "$raw_dir/12WTA_S1_L432_R[12]_001_subset.fastq.gz"
   output: "WTA"
 mode: wta
-reference_genome: "$reference_dir/GRCh38_primary_assembly_genome_chr1.tar.gz"
+reference: "$reference_dir/GRCh38_primary_assembly_genome_chr1.tar.gz"
 transcriptome_annotation: "$reference_dir/gencode_v40_annotation_chr1.gtf"
 publish_dir: "$OUT/processed"
 putative_cell_call: "mRNA"
