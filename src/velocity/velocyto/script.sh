@@ -12,22 +12,22 @@ extra_params=( )
 if [ ! -z "$par_barcode" ]; then 
   extra_params+=( "--bcfile=$par_barcode" )
 fi
-
 if [ "$par_without_umi" == "true" ]; then
   extra_params+=( "--without-umi" )
+fi
+if [ ! -z "$meta_n_proc" ]; then
+  extra_params+=( "--samtools-threads" "$meta_n_proc" )
+fi
+if [ ! -z "$meta_memory_mb" ]; then
+  extra_params+=( "--samtools-memory" "$meta_memory_mb" )
 fi
 
 output_dir=`dirname "$par_output"`
 sample_id=`basename "$par_output" .loom`
 
-echo "$par_input"
-echo "$par_output"
-echo "$output_dir"
 velocyto run \
   "$par_input" \
   "$par_transcriptome" \
   "${extra_params[@]}" \
   --outputfolder "$output_dir" \
-  --sampleid "$sample_id" \
-  --samtools-threads 4 \
-  --samtools-memory 3500
+  --sampleid "$sample_id"
