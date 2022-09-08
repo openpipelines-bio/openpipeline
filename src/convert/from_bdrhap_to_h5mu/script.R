@@ -78,7 +78,7 @@ rna_var <- readr::read_csv(
   bioproduct_file,
   comment = "#"
 ) %>%
-  mutate(feature_types = rep("Gene Expression", nrow(counts)))
+  mutate(feature_types = rep("Gene Expression", ncol(counts)))
 
 cat("Constructing MuData object\n")
 rna_h5ad <- anndata::AnnData(
