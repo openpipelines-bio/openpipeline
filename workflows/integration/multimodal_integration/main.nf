@@ -29,9 +29,7 @@ workflow run_wf {
 
   main:
   output_ch = input_ch
-    | map { id, params -> [id, params, params]}
     | pca
-    | map { id, file, params -> [id, [input: file] + params.subMap("obs_covariates")]}
     | harmonypy
     | find_neighbors
     | leiden
@@ -54,8 +52,7 @@ workflow test_wf {
   testParams = [
     id: "foo",
     input: params.resources_test + "/concat/concatenated_brain_filtered_feature_bc_matrix_subset.h5mu",
-    layer: "",
-    obs_covariates: "sample_id"
+    layer: ""
   ]
 
   output_ch =
