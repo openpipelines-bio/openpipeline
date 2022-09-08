@@ -18,7 +18,7 @@ par = {
             'resources_test/bd_rhapsody_wta_test/raw/12SMK_S1_L432_R2_001.fastq.gz'],
   'output': 'output_dir',
   'subsample': None,
-  'reference_genome': 'resources_test/bd_rhapsody_wta_test/raw/GRCh38_primary_assembly_genome_chr1.tar.gz',
+  'reference': 'resources_test/bd_rhapsody_wta_test/raw/GRCh38_primary_assembly_genome_chr1.tar.gz',
   'transcriptome_annotation': 'resources_test/bd_rhapsody_wta_test/raw/gencode_v40_annotation_chr1.gtf',
   'exact_cell_count': None,
   'disable_putative_calling': False,
@@ -36,14 +36,11 @@ meta = {
 # check input parameters
 assert par["input"] is not None, "Pass at least one set of inputs to --input."
 if par["mode"] == "wta":
-  assert par["reference"] is None, "When mode is \"wta\", --reference should be undefined"
-  assert par["reference_genome"] is not None, "When mode is \"wta\", --reference_genome should be defined"
+  assert len(par["reference"]) == 1, "When mode is \"wta\", --reference should be length 1"
   assert par["transcriptome_annotation"] is not None, "When mode is \"wta\", --transcriptome_annotation should be defined"
 elif par["mode"] == "targeted":
-  assert par["reference_genome"] is None, "When mode is \"targeted\", --reference_genome should be undefined"
   assert par["transcriptome_annotation"] is None, "When mode is \"targeted\", --transcriptome_annotation should be undefined"
   assert par["supplemental_reference"] is None, "When mode is \"targeted\", --supplemental_reference should be undefined"
-  assert (par["reference"] is None) != (par["abseq_reference"] is None), "When mode is \"targeted\", precisely one of --reference or --abseq_reference should be defined"
 
 # checking sample prefix
 if re.match("[^A-Za-z0-9]", par["sample_prefix"]):
@@ -59,12 +56,10 @@ if len(par["input"]) == 1 and os.path.isdir(par["input"][0]):
 
 # use absolute paths
 par["input"] = [ os.path.abspath(f) for f in par["input"] ]
-if par["reference_genome"]:
-  par["reference_genome"] = os.path.abspath(par["reference_genome"])
-if par["transcriptome_annotation"]:
-  par["transcriptome_annotation"] = os.path.abspath(par["transcriptome_annotation"])
 if par["reference"]:
   par["reference"] = [ os.path.abspath(f) for f in par["reference"] ]
+if par["transcriptome_annotation"]:
+  par["transcriptome_annotation"] = os.path.abspath(par["transcriptome_annotation"])
 if par["abseq_reference"]:
   par["abseq_reference"] = [ os.path.abspath(f) for f in par["abseq_reference"] ]
 if par["supplemental_reference"]:
@@ -96,25 +91,16 @@ for file in par["input"]:
     |   location: "{file}"
     |"""))
 
-if par["reference_genome"]:
+if par["reference"] and par["mode"] == "wta":
   content_list.append(strip_margin(f"""\
     |
     |## Reference_Genome (required) - Path to STAR index for tar.gz format. See Doc ID: 47383 for instructions to obtain pre-built STAR index file.
     |Reference_Genome:
     |   class: File
-    |   location: "{par["reference_genome"]}"
+    |   location: "{par["reference"][0]}"
     |"""))
 
-if par["transcriptome_annotation"]:
-  content_list.append(strip_margin(f"""\
-    |
-    |## Transcriptome_Annotation (required) - Path to GTF annotation file
-    |Transcriptome_Annotation:
-    |   class: File
-    |   location: "{par["transcriptome_annotation"]}"
-    |"""))
-
-if par["reference"]:
+if par["reference"] and par["mode"] == "targeted":
   content_list.append(strip_margin(f"""\
     |
     |## Reference (optional) - Path to mRNA reference file for pre-designed, supplemental, or custom panel, in FASTA format.
@@ -125,6 +111,15 @@ if par["reference"]:
       | - class: File
       |   location: {file}
       |"""))
+
+if par["transcriptome_annotation"]:
+  content_list.append(strip_margin(f"""\
+    |
+    |## Transcriptome_Annotation (required) - Path to GTF annotation file
+    |Transcriptome_Annotation:
+    |   class: File
+    |   location: "{par["transcriptome_annotation"]}"
+    |"""))
 
 if par["abseq_reference"]:
   content_list.append(strip_margin(f"""\
@@ -274,18 +269,19 @@ if par["mode"] == "wta":
 elif par["mode"] == "targeted":
   orig_cwl_file=os.path.join(meta["resources_dir"], "rhapsody_targeted_1.10.1_nodocker.cwl")
 
-if par["override_min_ram"] or par["override_min_cores"]:
+# Inject computational requirements into pipeline
+if meta["memory_mb"] or meta["n_proc"]:
   cwl_file = os.path.join(par["output"], "pipeline.cwl")
 
   # Read in the file
   with open(orig_cwl_file, 'r') as file :
     cwl_data = file.read()
 
-  # Replace the target string
-  if par["override_min_ram"]:
-    cwl_data = re.sub('"ramMin": [^\n]*,\n', f'"ramMin": {par["override_min_ram"] * 1000},\n', cwl_data)
-  if par["override_min_cores"]:
-    cwl_data = re.sub('"coresMin": [^\n]*,\n', f'"coresMin": {par["override_min_cores"]},\n', cwl_data)
+  # Inject computational requirements into pipeline
+  if meta["memory_mb"]:
+    cwl_data = re.sub('"ramMin": [^\n]*,\n', f'"ramMin": {meta["memory_mb"]},\n', cwl_data)
+  if meta["n_proc"]:
+    cwl_data = re.sub('"coresMin": [^\n]*,\n', f'"coresMin": {meta["n_proc"]},\n', cwl_data)
 
   # Write the file out again
   with open(cwl_file, 'w') as file:
