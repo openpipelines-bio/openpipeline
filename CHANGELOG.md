@@ -20,6 +20,8 @@
 
 ## MINOR CHANGES
 
+* `velocity/velocyto`: Allow configuring memory and parallellisation.
+
 ## BUG FIXES
 
 * Several components: revert using slim versions of containers because they do not provide the tools to run nextflow with trace capabilities.

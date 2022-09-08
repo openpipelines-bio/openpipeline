@@ -457,9 +457,9 @@ functionality:
       
       LABEL org.opencontainers.image.authors="Dries Schaumont <Dschaumo@its.jnj.com> (maintainer)"
       LABEL org.opencontainers.image.description="Companion container for running component integrate merge"
-      LABEL org.opencontainers.image.created="2022-09-08T08:40:59Z"
+      LABEL org.opencontainers.image.created="2022-09-08T10:06:24Z"
       LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-      LABEL org.opencontainers.image.revision="4b5e2c1a47c05f7671b917c103930d6da716b264"
+      LABEL org.opencontainers.image.revision="f7f768c8b1b79da94e88f3cfc3582e276f16f7ae"
       LABEL org.opencontainers.image.version="main_build"
       VIASHDOCKER
       }
@@ -986,5 +986,5 @@ info:
   output: "target/docker/integrate/merge"
   executable: "target/docker/integrate/merge/merge"
   viash_version: "0.6.0"
-  git_commit: "4b5e2c1a47c05f7671b917c103930d6da716b264"
+  git_commit: "f7f768c8b1b79da94e88f3cfc3582e276f16f7ae"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"
