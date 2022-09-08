@@ -72,7 +72,6 @@ class TestFilterWithCounts(TestCase):
             "--input", input_path, 
             "--output", "output-2.h5mu",
             "--modality", "rna",
-            "--min_cells_per_gene", "100",
             "--min_counts", "200", 
             "--max_counts", "5000000",
             "--min_genes_per_cell", "200", 
