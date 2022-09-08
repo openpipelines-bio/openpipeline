@@ -24,10 +24,9 @@ workflow run_wf {
   main:
   output_ch = input_ch
 
-    | view { "bd_rhapsody: $it" }
     | bd_rhapsody.run(auto: [ publish: true ])
 
-    | view { "converting_to_h5mu: $it" }
+    | map { id, file -> [ id, [ input: file, id: id ]]}
     | from_bdrhap_to_h5mu.run(auto: [ publish: true ])
 
   emit:
@@ -48,8 +47,6 @@ workflow test_wf {
     putative_cell_call: "mRNA",
     exact_cell_count: 4900
   ]
-
-  println("testParams: $testParams")
 
   output_ch =
     viashChannel(testParams, config)
