@@ -1,5 +1,6 @@
 functionality:
   name: tar_extract
+  namespace: compression
   description: Extract files from a tar archive
   arguments:                     
   - name: "--input"
