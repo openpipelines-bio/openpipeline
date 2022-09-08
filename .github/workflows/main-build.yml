@@ -34,6 +34,8 @@ jobs:
         path: resources_test
         key: ${{ steps.cachehash.outputs.cachehash }}
         restore-keys: resources_test_
+      env:
+        SEGMENT_DOWNLOAD_TIMEOUT_MIN: 5
 
     # sync if need be
     - name: Sync test resources
