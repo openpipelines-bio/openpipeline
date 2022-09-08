@@ -1,7 +1,12 @@
 functionality:
   name: velocyto
-  namespace: "projection"
-  description: ""
+  namespace: "velocity"
+  description: "Runs the velocity analysis on a BAM file, outputting a loom file."
+  authors:
+    - name: Robrecht Cannoodt
+      email: rcannood@gmail.com
+      roles: [ maintainer ]
+      props: { github: rcannood, orcid: "0000-0003-3641-729X" }
   arguments:
     - name: "--input"
       alternatives: [-i]

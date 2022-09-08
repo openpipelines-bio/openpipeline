@@ -12,6 +12,11 @@ curl -fsSL get.viash.io | bash -s -- \
   --target_image_source https://github.com/openpipelines-bio/openpipeline \
   --tag 0.6.0
 
+# automatically export the workflow helper
+[[ -d workflows/utils ]] || mkdir -p workflows/utils
+bin/viash export resource platforms/nextflow/ProfilesHelper.config > workflows/utils/ProfilesHelper.config
+bin/viash export resource platforms/nextflow/WorkflowHelper.nf > workflows/utils/WorkflowHelper.nf
+
 cd bin
 
 curl -s https://get.nextflow.io | bash
