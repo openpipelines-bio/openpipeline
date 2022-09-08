@@ -402,9 +402,9 @@ RUN pip install --upgrade pip && \
 
 LABEL org.opencontainers.image.authors="Dries De Maeyer <DDeMaey1@its.jnj.com> (maintainer) {account: ddemaey1}"
 LABEL org.opencontainers.image.description="Companion container for running component report mermaid"
-LABEL org.opencontainers.image.created="2022-09-08T09:21:20Z"
+LABEL org.opencontainers.image.created="2022-09-08T10:27:14Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="ed5d3249a47035f1a4706e6ad602cdba51d124c7"
+LABEL org.opencontainers.image.revision="346d4a44c87fff18a2ac36f7859222ada2929c53"
 LABEL org.opencontainers.image.version="integration_build"
 VIASHDOCKER
 }

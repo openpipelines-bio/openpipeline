@@ -822,9 +822,9 @@ functionality:
       RUN :
       LABEL org.opencontainers.image.authors="Robrecht Cannoodt <rcannood@gmail.com> (maintainer) {github: rcannood, orcid: 0000-0003-3641-729X}"
       LABEL org.opencontainers.image.description="Companion container for running component mapping bd_rhapsody_wta"
-      LABEL org.opencontainers.image.created="2022-09-08T09:21:18Z"
+      LABEL org.opencontainers.image.created="2022-09-08T10:27:12Z"
       LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-      LABEL org.opencontainers.image.revision="ed5d3249a47035f1a4706e6ad602cdba51d124c7"
+      LABEL org.opencontainers.image.revision="346d4a44c87fff18a2ac36f7859222ada2929c53"
       LABEL org.opencontainers.image.version="integration_build"
       VIASHDOCKER
       }
@@ -1972,5 +1972,5 @@ info:
   output: "target/docker/mapping/bd_rhapsody_wta"
   executable: "target/docker/mapping/bd_rhapsody_wta/bd_rhapsody_wta"
   viash_version: "0.6.0"
-  git_commit: "ed5d3249a47035f1a4706e6ad602cdba51d124c7"
+  git_commit: "346d4a44c87fff18a2ac36f7859222ada2929c53"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"
