@@ -2,6 +2,8 @@
 
 ## NEW FUNCTIONALITY
 
+* `graph/bbknn`: BBKNN network generation.
+
 * `workflows/integration/multiomics`: implement pipeline for processing multiple multiomics samples.
 
 * `transform/scaling`: Scale data to unit variance and zero mean.
