@@ -10,6 +10,8 @@
 
 * `mapping/bd_rhapsody`: Added generic component for running the BD Rhapsody WTA or Targeted analysis.
 
+* `convert/from_bdrhap_to_h5mu`: Added support for being able to deal with WTA, Targeted, SMK, AbSeq and VDJ data.
+
 * `integrate/harmony`: Added a component for running a Harmony integration analysis (R-based).
 
 * `integrate/harmonypy`: Added a component for running a Harmony integration analysis (Python-based).

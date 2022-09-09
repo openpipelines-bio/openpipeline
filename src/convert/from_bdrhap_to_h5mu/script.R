@@ -3,6 +3,7 @@ options(tidyverse.quiet = TRUE)
 library(tidyverse)
 requireNamespace("anndata", quietly = TRUE)
 requireNamespace("reticulate", quietly = TRUE)
+library(assertthat)
 mudata <- reticulate::import("mudata")
 
 ## VIASH START
@@ -14,35 +15,50 @@ par <- list(
 )
 ## VIASH END
 
+read_metrics <- function(file) {
+  metric_lines <- readr::read_lines(file)
+  metric_lines_no_header <- metric_lines[!grepl("^##", metric_lines)]
+
+  # parse sub data frames
+  group_title_regex <- "^#([^#]*)#"
+  group_title_ix <- grep(group_title_regex, metric_lines_no_header)
+  group_titles <- gsub(group_title_regex, "\\1", metric_lines_no_header[group_title_ix])
+  group_ix_from <- group_title_ix+1
+  group_ix_to <- c(group_title_ix[-1]-1, length(metric_lines_no_header))
+  metric_dfs <- pmap(
+    list(
+      from = group_ix_from,
+      to = group_ix_to
+    ),
+    function(from, to) {
+      lines <- metric_lines_no_header[from:to]
+      lines <- lines[lines != ""]
+      readr::read_csv(paste0(lines, collapse = "\n")) %>%
+        mutate(sample_id = par$id) %>%
+        select(sample_id, everything())
+    }
+  )
+  names(metric_dfs) <- gsub(" ", "_", tolower(group_titles))
+  metric_dfs
+}
 cat("Reading in metric summaries\n")
-metrics_file <- list.files(par$input, pattern = "Metrics_Summary.csv$", full.names = TRUE)
-lines <- readr::read_lines(metrics_file)
-lines_no_header <- lines[!grepl("^##", lines)]
-
-# parse sub data frames
-group_title_regex <- "^#([^#]*)#"
-group_title_ix <- grep(group_title_regex, lines_no_header)
-group_titles <- gsub(group_title_regex, "\\1", lines_no_header[group_title_ix])
-group_ix_from <- group_title_ix+1
-group_ix_to <- c(group_title_ix[-1]-1, length(lines_no_header))
-group_dfs <- pmap(
-  list(
-    from = group_ix_from,
-    to = group_ix_to
-  ),
-  function(from, to) {
-    lines <- lines_no_header[from:to]
-    lines <- lines[lines != ""]
-    readr::read_csv(paste0(lines, collapse = "\n")) %>%
-      mutate(sample_id = par$id) %>%
-      select(sample_id, everything())
-  }
+metrics_file <- list.files(par$input, pattern = "_Metrics_Summary.csv$", full.names = TRUE)
+assert_that(
+  length(metrics_file) == 1, 
+  msg = paste0("Exactly one *_Metrics_Summary.csv should be found, found ", length(metrics_file), " files instead.")
 )
-names(group_dfs) <- group_titles
-
+metric_dfs <- read_metrics(metrics_file)
 
 cat("Reading in count data\n")
-counts_file <- list.files(par$input, pattern = "_RSEC_MolsPerCell.csv$", full.names = TRUE)
+counts_file <- list.files(par$input, pattern = "_DBEC_MolsPerCell.csv$", full.names = TRUE)
+if (length(counts_file) == 0) {
+  cat("Warning: could not find DBEC file, looking for RSEC file instead.\n")
+  counts_file <- list.files(par$input, pattern = "_RSEC_MolsPerCell.csv$", full.names = TRUE)
+}
+assert_that(
+  length(counts_file) == 1,
+  msg = paste0("Exactly one *_(RSEC|DBEC)_MolsPerCell.csv should be found, found ", length(counts_file), " files instead.")
+)
 counts <-
   readr::read_csv(
     counts_file,
@@ -53,10 +69,11 @@ counts <-
     as.matrix %>%
     Matrix::Matrix(sparse = TRUE)
 
-cat("Reading in VDJ data\n")
+# processing VDJ data
 vdj_file <- list.files(par$input, pattern = "_VDJ_perCell.csv$", full.names = TRUE)
-vdj_counts <-
+vdj_data <-
   if (length(vdj_file) == 1) {
+    cat("Reading in VDJ data\n")
     readr::read_csv(
       vdj_file,
       comment = "#"
@@ -65,49 +82,152 @@ vdj_counts <-
     NULL
   }
 
+cat("Reading in VDJ metric summaries\n")
+vdj_metrics_file <- list.files(par$input, pattern = "_VDJ_metrics.csv$", full.names = TRUE)
+vdj_metric_dfs <-
+  if (length(vdj_metrics_file) == 1) {
+    read_metrics(vdj_metrics_file)
+  } else {
+    list()
+  }
+
+# processing SMK data
+smk_file <- list.files(par$input, pattern = "_Sample_Tag_Calls.csv$", full.names = TRUE)
+smk_calls <-
+  if (length(smk_file) == 1) {
+    cat("Processing sample tags\n")
+    readr::read_csv(
+      smk_file,
+      comment = "#"
+    )
+  } else {
+    NULL
+  }
+smk_metrics_file <- list.files(par$input, pattern = "_Sample_Tag_Metrics.csv$", full.names = TRUE)
+smk_metrics <-
+  if (length(smk_metrics_file) == 1) {
+    readr::read_csv(
+      smk_metrics_file,
+      comment = "#"
+    )
+  } else {
+    NULL
+  }
+
 cat("Constructing obs\n")
-obs <- data.frame(
-  row.names = rownames(counts),
-  sample_id = rep(par$id, nrow(counts))
+library_id <- metric_dfs[["Sequencing Quality"]]$Library
+
+obs <- tibble(
+  cell_id = rownames(counts),
+  run_id = rep(par$id, nrow(counts)),
+  library_id = library_id
 )
 
-# todo: feature type of ABC should not be GEX!
+if (!is.null(smk_calls)) {
+  obs <- left_join(
+    obs,
+    smk_calls %>% transmute(
+      cell_id = as.character(Cell_Index),
+      sample_tag = Sample_Tag,
+      sample_id = Sample_Name
+    ),
+    by = "cell_id"
+  )
+} else {
+  obs <- obs %>% mutate(sample_id = library_id)
+}
+
+obs <- obs %>%
+  mutate(sample_id = ifelse(!is.na(sample_id), sample_id, library_id)) %>%
+  as.data.frame() %>%
+  column_to_rownames("cell_id")
+
 cat("Constructing var\n")
-feature_types_file <- list.files(par$input, pattern = "feature_types.tsv$", full.names = TRUE)
-var <- readr::read_tsv(feature_types_file) %>%
+# determine feature types of genes
+var <- tryCatch({
+  feature_types_file <- list.files(par$input, pattern = "feature_types.tsv$", full.names = TRUE)
+
+  # abseq fasta reference has trailing info which apparently gets stripped off by the bd rhapsody pipeline
+  readr::read_tsv(feature_types_file) %>%
+    mutate(
+      trimmed_feature_id = gsub(" .*", "", feature_id),
+      i = match(feature_id, colnames(counts)),
+      j = match(trimmed_feature_id, colnames(counts)),
+      ij = ifelse(is.na(i), j, i),
+      final_feature_id = ifelse(!is.na(i), feature_id, trimmed_feature_id)
+    ) %>%
+    filter(!is.na(ij)) %>%
+    select(feature_id = final_feature_id, feature_type, reference_file)
+}, error = function(e) {
+  cat("Feature matching error: ", e$message, "\n", sep = "")
+  tibble(
+    feature_id = character()
+  )
+})
+
+# in case the feature types are missing
+missing_features <- tibble(
+  feature_id = setdiff(colnames(counts), var$feature_id),
+  feature_type = "Gene Expression",
+  reference_file = NA_character_,
+  note = "Feature annotation file missing, assuming type is Gene Expression"
+)
+if (nrow(missing_features) > 0) {
+  cat("Feature annotation file missing, assuming type is Gene Expression\n")
+  var <- bind_rows(var, missing_features) %>%
+    slice(match(colnames(counts), feature_id))
+}
+
+# create var
+var <- var %>%
   as.data.frame() %>%
   column_to_rownames("feature_id")
-# bioproduct_file <- list.files(par$input, pattern = "_Bioproduct_Stats.csv$", full.names = TRUE)
-# rna_var <- readr::read_csv(
-#   bioproduct_file,
-#   comment = "#"
-# ) %>%
-#   mutate(feature_types = rep("Gene Expression", ncol(counts)))
 
-cat("Constructing MuData object\n")
-rna_h5ad <- anndata::AnnData(
+cat("Constructing uns\n")
+names(metric_dfs) <- paste0("mapping_qc_", names(metric_dfs))
+smk_metric_dfs <-
+  if (!is.null(smk_metrics)) {
+    list(mapping_qc_smk_metrics = smk_metrics)
+  } else {
+    NULL
+  }
+uns <- c(metric_dfs, smk_metric_dfs)
+
+cat("Constructing RNA (&ABC?) AnnData")
+adata <- anndata::AnnData(
   X = counts,
   obs = obs,
   var = var,
-  uns = list(
-    mapping_qc_sequencing_quality = group_dfs[["Sequencing Quality"]],
-    mapping_qc_library_quality = group_dfs[["Library Quality"]],
-    mapping_qc_alignment_categories = group_dfs[["Alignment Categories"]],
-    mapping_qc_reads_and_molecules = group_dfs[["Reads and Molecules"]],
-    mapping_qc_cells_rsec = group_dfs[["Cells RSEC"]],
-    mapping_qc_cells_dbec = group_dfs[["Cells DBEC"]],
-    mapping_qc_error_correction_level = group_dfs[["Error Correction Level"]],
-    mapping_qc_vdj = group_dfs[["VDJ"]],
-    mapping_qc_sample_tags = group_dfs[["Sample_Tags"]]
+  uns = uns
+)
+
+adata_prot <- adata[, adata$var$feature_type == "Antibody Capture"]
+if (ncol(adata_prot) == 0) {
+  adata_prot <- NULL
+}
+adata_rna <- adata[, adata$var$feature_type != "Antibody Capture"]
+
+adata_vdj <-
+  if (!is.null(vdj_data)) {
+    cat("Constructing VDJ AnnData\n")
+    names(vdj_metric_dfs) <- paste0("mapping_qc_", names(vdj_metric_dfs))
+    anndata::AnnData(
+      obs = vdj_data,
+      uns = vdj_metric_dfs,
+      shape = c(nrow(vdj_data), 0L)
+    )
+  } else {
+    NULL
+  }
+
+cat("Constructing MuData object\n")
+modalities <-
+  list(
+    rna = adata_rna,
+    prot = adata_prot,
+    vdj = adata_vdj
   )
-)
-
-# todo: split h5ad by feature type
-# todo: do something with vdj data
-
-new_h5mu <- mudata$MuData(
-  list(rna = rna_h5ad)
-)
+mdata <- mudata$MuData(modalities[!sapply(modalities, is.null)])
 
 cat("Writing to h5mu file\n")
-new_h5mu$write(par$output)
+mdata$write(par$output)
