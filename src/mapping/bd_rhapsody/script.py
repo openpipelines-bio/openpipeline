@@ -6,6 +6,7 @@ import logging
 from sys import stdout
 from typing import Any
 import pandas as pd
+import shutil
 
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
@@ -267,7 +268,7 @@ def generate_cwl_file(par: dict[str, Any], meta: dict[str, Any]) -> str:
 
     # Inject computational requirements into pipeline
     if meta["memory_mb"]:
-      cwl_data = re.sub('"ramMin": [^\n]*,\n', f'"ramMin": {meta["memory_mb"]},\n', cwl_data)
+      cwl_data = re.sub('"ramMin": [^\n]*,\n', f'"ramMin": {int(float(meta["memory_mb"])*.75)},\n', cwl_data)
     if meta["n_proc"]:
       cwl_data = re.sub('"coresMin": [^\n]*,\n', f'"coresMin": {meta["n_proc"]},\n', cwl_data)
 
@@ -369,11 +370,14 @@ def main(par: dict[str, Any], meta: dict[str, Any]):
 
       logger.info("> " + ' '.join(cmd))
 
-      _ = subprocess.check_call(
-        cmd,
-        cwd=os.path.dirname(config_file),
-        env=env
-      )
+      try:
+        _ = subprocess.check_call(
+          cmd,
+          cwd=os.path.dirname(config_file),
+          env=env
+        )
+      finally:
+        shutil.rmtree(temp_dir)
 
     # look for counts file
     if not par["sample_prefix"]:
@@ -392,6 +396,7 @@ def main(par: dict[str, Any], meta: dict[str, Any]):
     metrics_file = os.path.join(par["output"], metrics_filename)
     if not os.path.exists(metrics_file):
       raise ValueError(f"Could not find output metrics file '{metrics_filename}'")
+
   
   # extracting feature ids from references
   feature_types_file = os.path.join(par["output"], "feature_types.tsv")

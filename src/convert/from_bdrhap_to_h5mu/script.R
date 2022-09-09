@@ -9,7 +9,7 @@ mudata <- reticulate::import("mudata")
 ## VIASH START
 par <- list(
   id = "foo",
-  input = "resources_test/bdrhap_5kjrt/processed/ABC",
+  input = "work/ab/b71e0a76b8426924656d51f0707dda/WTA.bd_rhapsody.output",
   # input = "resources_test/bdrhap_vdj/processed/targeted_vdj",
   output = "test.h5mu"
 )
@@ -34,8 +34,8 @@ read_metrics <- function(file) {
       lines <- metric_lines_no_header[from:to]
       lines <- lines[lines != ""]
       readr::read_csv(paste0(lines, collapse = "\n")) %>%
-        mutate(sample_id = par$id) %>%
-        select(sample_id, everything())
+        mutate(run_id = par$id) %>%
+        select(run_id, everything())
     }
   )
   names(metric_dfs) <- gsub(" ", "_", tolower(group_titles))
@@ -115,7 +115,7 @@ smk_metrics <-
   }
 
 cat("Constructing obs\n")
-library_id <- metric_dfs[["Sequencing Quality"]]$Library
+library_id <- metric_dfs[["sequencing_quality"]]$Library
 
 obs <- tibble(
   cell_id = rownames(counts),

@@ -140,10 +140,10 @@ param_list:
   sample_tags_version: "hs"
   tag_names: ["1-Jurkat", "2-Ramos", "3-THP1"]
 - id: "ABC"
-  input: "$abc_r1_file;$abc_r1_file"
+  input: "$abc_r1_file;$abc_r2_file"
   abseq_reference: "$fasta_file"
 - id: "WTA"
-  input: "$wta_r1_file;$wta_r1_file"
+  input: "$wta_r1_file;$wta_r2_file"
 mode: wta
 reference: "$reference_dir/GRCh38_primary_assembly_genome_chr1.tar.gz"
 transcriptome_annotation: "$reference_dir/gencode_v40_annotation_chr1.gtf"
