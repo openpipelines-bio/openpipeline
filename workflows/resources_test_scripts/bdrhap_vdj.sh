@@ -33,20 +33,26 @@ fi
 # subset fastq files
 for sample_id in RhapVDJDemo-BCR_S1_L001_R1_001 RhapVDJDemo-BCR_S1_L001_R2_001 RhapVDJDemo-mRNA_S5_L001_R1_001 RhapVDJDemo-mRNA_S5_L001_R2_001 RhapVDJDemo-TCR_S3_L001_R1_001 RhapVDJDemo-TCR_S3_L001_R2_001; do
   echo "> Processing $sample_id"
-  seqkit head -n 300000 "$tar_dir/$sample_id.fastq.gz" | gzip > "$raw_dir/${sample_id}_subset.fastq.gz"
+  subset_file="$raw_dir/${sample_id}_subset.fastq.gz"
+  if [[ ! -f "$subset_file" ]]; then
+    seqkit head -n 300000 "$tar_dir/$sample_id.fastq.gz" | gzip > "$subset_file"
+  fi
+  unset subset_file
 done
 
 # copy immune panel fasta
-cp "$tar_dir/BD_Rhapsody_Immune_Response_Panel_Hs.fasta" "$raw_dir"
+fasta_file="$raw_dir/BD_Rhapsody_Immune_Response_Panel_Hs.fasta"
+if [[ ! -f "$fasta_file" ]]; then
+  cp "$tar_dir/BD_Rhapsody_Immune_Response_Panel_Hs.fasta" "$fasta_file"
+fi
 
 # create params file
 cat > /tmp/params.yaml << HERE
 param_list:
 - id: "targeted_vdj"
   input: "$raw_dir/RhapVDJDemo-*_S*_L001_R[12]_001_subset.fastq.gz"
-  output: "targeted_vdj"
 mode: targeted
-reference: "$raw_dir/BD_Rhapsody_Immune_Response_Panel_Hs.fasta"
+reference: "$fasta_file"
 publish_dir: "$OUT/processed"
 putative_cell_call: "mRNA"
 vdj_version: human
@@ -55,7 +61,7 @@ HERE
 # run bd rhapsody pipeline
 bin/nextflow \
   run . \
-  -main-script target/nextflow/mapping/bd_rhapsody/main.nf \
+  -main-script workflows/ingestion/bd_rhapsody/main.nf \
   -resume \
   -profile docker,mount_temp \
   -with-trace work/trace.txt \

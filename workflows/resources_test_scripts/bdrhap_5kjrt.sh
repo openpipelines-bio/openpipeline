@@ -36,8 +36,6 @@ if [[ ! -d "$tar_dir" ]]; then
     rm "$tar_dir.tar"
 fi
 
-
-
 # process samples with bd rhap component
 # target/docker/mapping/bd_rhapsody_wta/main.nf \
 #   --id WTA \
@@ -48,67 +46,89 @@ fi
 #   --output "output_foo" \
 #   --putative_cell_call "mRNA"
 
-echo "> Untarring genome"
 genome_dir="$raw_dir/temp_GRCh38_primary_assembly_genome_chr1"
-mkdir -p "$genome_dir"
-tar -xvf "$genome_tar" -C "$genome_dir"
+if [[ ! -d "$genome_dir" ]]; then
+  echo "> Untarring genome"
+  mkdir -p "$genome_dir"
+  tar -xvf "$genome_tar" -C "$genome_dir"
+fi
 
 # process WTA fastq files
 # map to chr1, subsample chr1 reads 
-echo "> Processing 12WTA_S1_L432_R[12]_001.fastq.gz"
 mapping_dir="$raw_dir/temp_mapping_chr_1"
-mkdir -p "$mapping_dir"
-# MUST USE A STAR THAT IS COMPATIBLE WITH BD RHAPSODY
-# For the cwl pipeline 1.9.1, 2.5.2b should work.
-echo "star"
-docker run --rm -i \
-  -v "`pwd`/$OUT:`pwd`/$OUT" \
-  -v "$tar_dir:$tar_dir" \
-  -w `pwd` bdgenomics/rhapsody:1.10.1 \
-  STAR \
-    --runThreadN "$n_threads" \
-    --genomeDir "$raw_dir/GRCh38_primary_assembly_genome_chr1" \
-    --readFilesIn "$tar_dir/12WTA_S1_L432_R2_001.fastq.gz" \
-    --runRNGseed 100 \
-    --outFileNamePrefix "$mapping_dir/" \
-    --readFilesCommand "gzip -d -k -c" \
-    --clip3pAdapterSeq "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA" \
-    --outFilterMatchNmin "25" \
-    --quantTranscriptomeBan "Singleend" # Prohibit mapping of one side of the read
-# chown to current user before removing mapping dir
-docker run --rm -i -v "`pwd`/$OUT:`pwd`/$OUT" -w `pwd` bdgenomics/rhapsody:1.10.1 \
-  chown "$(id -u):$(id -g)" --silent --recursive "$mapping_dir/"
+if [[ ! -f "$mapping_dir/12WTA_S1_L432_R1_001_chr1.fastq" ]]; then
+  echo "> Processing 12WTA_S1_L432_R[12]_001.fastq.gz"
+  mkdir -p "$mapping_dir"
+  # MUST USE A STAR THAT IS COMPATIBLE WITH BD RHAPSODY
+  # For the cwl pipeline 1.9.1, 2.5.2b should work.
+  echo "star"
+  docker run --rm -i \
+    -v "`pwd`/$OUT:`pwd`/$OUT" \
+    -v "$tar_dir:$tar_dir" \
+    -w `pwd` bdgenomics/rhapsody:1.10.1 \
+    STAR \
+      --runThreadN "$n_threads" \
+      --genomeDir "$raw_dir/GRCh38_primary_assembly_genome_chr1" \
+      --readFilesIn "$tar_dir/12WTA_S1_L432_R2_001.fastq.gz" \
+      --runRNGseed 100 \
+      --outFileNamePrefix "$mapping_dir/" \
+      --readFilesCommand "gzip -d -k -c" \
+      --clip3pAdapterSeq "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA" \
+      --outFilterMatchNmin "25" \
+      --quantTranscriptomeBan "Singleend" # Prohibit mapping of one side of the read
+  # chown to current user before removing mapping dir
+  docker run --rm -i -v "`pwd`/$OUT:`pwd`/$OUT" -w `pwd` bdgenomics/rhapsody:1.10.1 \
+    chown "$(id -u):$(id -g)" --silent --recursive "$mapping_dir/"
 
-echo "samtools"
-samtools view -F 260 "$mapping_dir/Aligned.out.sam" > "$mapping_dir/primary_aligned_reads.sam"
-echo "cut"
-cut -f 1 "$mapping_dir/primary_aligned_reads.sam" | sort | uniq > "$mapping_dir/mapped_reads.txt"
-head -1000000 "$mapping_dir/mapped_reads.txt" > "$mapping_dir/mapped_reads_subset.txt"
-echo "seqkit"
-seqkit grep --threads "$n_threads" -f "$mapping_dir/mapped_reads_subset.txt" "$tar_dir/12WTA_S1_L432_R1_001.fastq.gz" > "$mapping_dir/12WTA_S1_L432_R1_001_chr1.fastq"
-seqkit grep --threads "$n_threads" -f "$mapping_dir/mapped_reads_subset.txt" "$tar_dir/12WTA_S1_L432_R2_001.fastq.gz" > "$mapping_dir/12WTA_S1_L432_R2_001_chr1.fastq"
+  echo "samtools"
+  samtools view -F 260 "$mapping_dir/Aligned.out.sam" > "$mapping_dir/primary_aligned_reads.sam"
+  echo "cut"
+  cut -f 1 "$mapping_dir/primary_aligned_reads.sam" | sort | uniq > "$mapping_dir/mapped_reads.txt"
+  head -1000000 "$mapping_dir/mapped_reads.txt" > "$mapping_dir/mapped_reads_subset.txt"
+  echo "seqkit"
+  seqkit grep --threads "$n_threads" -f "$mapping_dir/mapped_reads_subset.txt" "$tar_dir/12WTA_S1_L432_R1_001.fastq.gz" > "$mapping_dir/12WTA_S1_L432_R1_001_chr1.fastq"
+  seqkit grep --threads "$n_threads" -f "$mapping_dir/mapped_reads_subset.txt" "$tar_dir/12WTA_S1_L432_R2_001.fastq.gz" > "$mapping_dir/12WTA_S1_L432_R2_001_chr1.fastq"
 
-# rm -r "$mapping_dir"
-rm -r "$genome_dir"
+  # rm -r "$mapping_dir"
+  # rm -r "$genome_dir"
+fi
 
 # subsample other files
-echo "> Processing 12SMK_S1_L432_R1_001.fastq.gz"
-cp "$tar_dir/12SMK_S1_L432_R1_001.fastq.gz" "$raw_dir/12SMK_S1_L432_R1_001.fastq.gz"
-echo "> Processing 12SMK_S1_L432_R2_001.fastq.gz"
-cp "$tar_dir/12SMK_S1_L432_R2_001.fastq.gz" "$raw_dir/12SMK_S1_L432_R2_001.fastq.gz"
-echo "> Processing 12ABC_S1_L432_R1_001.fastq.gz"
-seqkit head -n 1000000 "$tar_dir/12ABC_S1_L432_R1_001.fastq.gz" | gzip > "$raw_dir/12ABC_S1_L432_R1_001_subset.fastq.gz"
-# seqkit range -r 1000001:2000000 "$tar_dir/12ABC_S1_L432_R1_001.fastq.gz" | gzip > "$raw_dir/12ABC_S1_L432_R1_002_subset.fastq.gz"
-echo "> Processing 12ABC_S1_L432_R2_001.fastq.gz"
-seqkit head -n 1000000 "$tar_dir/12ABC_S1_L432_R2_001.fastq.gz" | gzip > "$raw_dir/12ABC_S1_L432_R2_001_subset.fastq.gz"
-# seqkit range -r 1000001:2000000 "$tar_dir/12ABC_S1_L432_R2_001.fastq.gz" | gzip > "$raw_dir/12ABC_S1_L432_R2_002_subset.fastq.gz"
-echo "> Processing 12WTA_S1_L432_R1_001_chr1.fastq.gz"
-gzip -9 -k -c "$mapping_dir/12WTA_S1_L432_R1_001_chr1.fastq" > "$raw_dir/12WTA_S1_L432_R1_001_subset.fastq.gz"
-echo "> Processing 12WTA_S1_L432_R2_001_chr1.fastq.gz"
-gzip -9 -k -c "$mapping_dir/12WTA_S1_L432_R2_001_chr1.fastq" > "$raw_dir/12WTA_S1_L432_R2_001_subset.fastq.gz"
-
+smk_r1_file="$raw_dir/12SMK_S1_L432_R1_001.fastq.gz"
+if [[ ! -f "$smk_r1_file" ]]; then
+  echo "> Processing `basename $smk_r1_file`"
+  cp "$tar_dir/12SMK_S1_L432_R1_001.fastq.gz" "$smk_r1_file"
+fi
+smk_r2_file="$raw_dir/12SMK_S1_L432_R2_001.fastq.gz"
+if [[ ! -f "$smk_r2_file" ]]; then
+  echo "> Processing `basename $smk_r2_file`"
+  cp "$tar_dir/12SMK_S1_L432_R2_001.fastq.gz" "$smk_r2_file"
+fi
+abc_r1_file="$raw_dir/12ABC_S1_L432_R1_001_subset.fastq.gz"
+if [[ ! -f "$abc_r1_file" ]]; then
+  echo "> Processing `basename $abc_r1_file`"
+  seqkit head -n 1000000 "$tar_dir/12ABC_S1_L432_R1_001.fastq.gz" | gzip > "$abc_r1_file"
+fi
+abc_r2_file="$raw_dir/12ABC_S1_L432_R2_001_subset.fastq.gz"
+if [[ ! -f "$abc_r2_file" ]]; then
+  echo "> Processing `basename $abc_r2_file`"
+  seqkit head -n 1000000 "$tar_dir/12ABC_S1_L432_R2_001.fastq.gz" | gzip > "$abc_r2_file"
+fi
+wta_r1_file="$raw_dir/12WTA_S1_L432_R1_001_subset.fastq.gz"
+if [[ ! -f "$wta_r1_file" ]]; then
+  echo "> Processing `basename $wta_r1_file`"
+  gzip -9 -k -c "$mapping_dir/12WTA_S1_L432_R1_001_chr1.fastq" | gzip > "$wta_r1_file"
+fi
+wta_r2_file="$raw_dir/12WTA_S1_L432_R2_001_subset.fastq.gz"
+if [[ ! -f "$wta_r2_file" ]]; then
+  echo "> Processing `basename $wta_r2_file`"
+  gzip -9 -k -c "$mapping_dir/12WTA_S1_L432_R2_001_chr1.fastq" | gzip > "$wta_r2_file"
+fi
 # copy immune panel fasta
-cp "$tar_dir/BDAbSeq_ImmuneDiscoveryPanel.fasta" "$raw_dir"
+fasta_file="$raw_dir/BDAbSeq_ImmuneDiscoveryPanel.fasta"
+if [[ ! -f "$fasta_file" ]]; then
+  cp "$tar_dir/BDAbSeq_ImmuneDiscoveryPanel.fasta" "$fasta_file"
+fi
 
 
 # process samples with bd rhap component
@@ -116,17 +136,14 @@ cp "$tar_dir/BDAbSeq_ImmuneDiscoveryPanel.fasta" "$raw_dir"
 cat > /tmp/params.yaml << HERE
 param_list:
 - id: "SMK"
-  input: "$raw_dir/12SMK_S1_L432_R[12]_001.fastq.gz"
+  input: "$smk_r1_file;$smk_r2_file"
   sample_tags_version: "hs"
   tag_names: ["1-Jurkat", "2-Ramos", "3-THP1"]
-  output: "SMK"
 - id: "ABC"
-  input: "$raw_dir/12ABC_S1_L432_R[12]_001_subset.fastq.gz"
-  abseq_reference: "$raw_dir/BDAbSeq_ImmuneDiscoveryPanel.fasta"
-  output: "ABC"
+  input: "$abc_r1_file;$abc_r1_file"
+  abseq_reference: "$fasta_file"
 - id: "WTA"
-  input: "$raw_dir/12WTA_S1_L432_R[12]_001_subset.fastq.gz"
-  output: "WTA"
+  input: "$wta_r1_file;$wta_r1_file"
 mode: wta
 reference: "$reference_dir/GRCh38_primary_assembly_genome_chr1.tar.gz"
 transcriptome_annotation: "$reference_dir/gencode_v40_annotation_chr1.gtf"
@@ -137,12 +154,10 @@ HERE
 
 bin/nextflow \
   run . \
-  -main-script target/nextflow/mapping/bd_rhapsody/main.nf \
+  -main-script workflows/ingestion/bd_rhapsody/main.nf \
   -resume \
   -profile docker,mount_temp \
   -with-trace work/trace.txt \
   -params-file /tmp/params.yaml \
   -c workflows/utils/labels.config \
   -c workflows/utils/errorstrat_ignore.config
-
-
