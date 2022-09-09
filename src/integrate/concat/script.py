@@ -152,6 +152,11 @@ def split_conflicts_and_concatenated_columns(sample_ids: tuple[str],
         else:
             unique_values = concatenated_columns.fillna(method='bfill', axis=1).iloc[:, 0]
             concatenated_matrix.append(unique_values)
+    if concatenated_matrix:
+        concatenated_matrix = pd.concat(concatenated_matrix, join="outer", axis=1)
+    else:
+        concatenated_matrix = pd.DataFrame()
+        
     return conflicts, pd.concat(concatenated_matrix, join="outer", axis=1)
 
 def cast_to_original_dtype(result: pd.DataFrame,
