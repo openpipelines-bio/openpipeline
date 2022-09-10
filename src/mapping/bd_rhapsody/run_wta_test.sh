@@ -16,5 +16,7 @@ echo ">> Running $meta_functionality_name in WTA mode"
 echo ">> Checking whether output can be found"
 [[ ! -f output/sample_RSEC_ReadsPerCell_Unfiltered.csv.gz ]] && echo "Output file could not be found!" && exit 1
 
+# todo: check whether tempdir is empty??
+
 
 echo ">>> Test finished successfully"

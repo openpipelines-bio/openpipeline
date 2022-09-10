@@ -9,7 +9,7 @@ mudata <- reticulate::import("mudata")
 ## VIASH START
 par <- list(
   id = "foo",
-  input = "work/ab/b71e0a76b8426924656d51f0707dda/WTA.bd_rhapsody.output",
+  input = "work/e8/8efcfdc456f4cdb4187765bb0a395f/targeted_vdj.bd_rhapsody.output",
   # input = "resources_test/bdrhap_vdj/processed/targeted_vdj",
   output = "test.h5mu"
 )
@@ -116,10 +116,13 @@ smk_metrics <-
 
 cat("Constructing obs\n")
 library_id <- metric_dfs[["sequencing_quality"]]$Library
+if (length(library_id) > 1) {
+  library_id <- paste(library_id[library_id != "Combined_stats"], collapse = " & ")
+}
 
 obs <- tibble(
   cell_id = rownames(counts),
-  run_id = rep(par$id, nrow(counts)),
+  run_id = par$id,
   library_id = library_id
 )
 
@@ -138,7 +141,7 @@ if (!is.null(smk_calls)) {
 }
 
 obs <- obs %>%
-  mutate(sample_id = ifelse(!is.na(sample_id), sample_id, library_id)) %>%
+  mutate(sample_id = ifelse(!is.na(sample_id), sample_id, run_id)) %>%
   as.data.frame() %>%
   column_to_rownames("cell_id")
 

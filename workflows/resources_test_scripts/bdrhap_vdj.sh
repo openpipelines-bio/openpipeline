@@ -32,9 +32,9 @@ fi
 
 # subset fastq files
 for sample_id in RhapVDJDemo-BCR_S1_L001_R1_001 RhapVDJDemo-BCR_S1_L001_R2_001 RhapVDJDemo-mRNA_S5_L001_R1_001 RhapVDJDemo-mRNA_S5_L001_R2_001 RhapVDJDemo-TCR_S3_L001_R1_001 RhapVDJDemo-TCR_S3_L001_R2_001; do
-  echo "> Processing $sample_id"
   subset_file="$raw_dir/${sample_id}_subset.fastq.gz"
   if [[ ! -f "$subset_file" ]]; then
+  echo "> Processing $sample_id"
     seqkit head -n 300000 "$tar_dir/$sample_id.fastq.gz" | gzip > "$subset_file"
   fi
   unset subset_file
