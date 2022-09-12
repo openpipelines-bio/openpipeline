@@ -500,9 +500,9 @@ RUN pip install --upgrade pip && \
 
 LABEL org.opencontainers.image.authors="Dries De Maeyer <DDeMaey1@its.jnj.com> (contributor) {account: ddemaey1}, Robrecht Cannoodt <rcannood@gmail.com> (maintainer, contributor) {github: rcannood, orcid: 0000-0003-3641-729X}"
 LABEL org.opencontainers.image.description="Companion container for running component filter filter_with_hvg"
-LABEL org.opencontainers.image.created="2022-09-12T08:51:11Z"
+LABEL org.opencontainers.image.created="2022-09-12T09:02:26Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="7e483a533928558bccf06dc863235df8cd1a90b7"
+LABEL org.opencontainers.image.revision="b2fbcf5f1746f02ae6a87e3cae546b1f8b6ad910"
 LABEL org.opencontainers.image.version="main_build"
 VIASHDOCKER
 }

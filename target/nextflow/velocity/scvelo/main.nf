@@ -42,145 +42,143 @@ thisConfig = processConfig([
       }
     }
   ],
-  "arguments" : [
-    {
-      "type" : "file",
-      "name" : "--input",
-      "description" : "Velocyto loom file.",
-      "must_exist" : false,
-      "required" : true,
-      "direction" : "input",
-      "multiple" : false,
-      "multiple_sep" : ":"
-    },
-    {
-      "type" : "file",
-      "name" : "--output",
-      "description" : "Output directory. If it does not exist, will be created.",
-      "must_exist" : false,
-      "required" : true,
-      "direction" : "output",
-      "multiple" : false,
-      "multiple_sep" : ":"
-    },
-    {
-      "type" : "integer",
-      "name" : "--min_counts",
-      "description" : "Minimum number of counts required for a gene to pass filtering (spliced).",
-      "required" : false,
-      "direction" : "input",
-      "multiple" : false,
-      "multiple_sep" : ":"
-    },
-    {
-      "type" : "integer",
-      "name" : "--min_counts_u",
-      "description" : "Minimum number of counts required for a gene to pass filtering (unspliced).",
-      "required" : false,
-      "direction" : "input",
-      "multiple" : false,
-      "multiple_sep" : ":"
-    },
-    {
-      "type" : "integer",
-      "name" : "--min_cells",
-      "description" : "Minimum number of cells expressed required to pass filtering (spliced).",
-      "required" : false,
-      "direction" : "input",
-      "multiple" : false,
-      "multiple_sep" : ":"
-    },
-    {
-      "type" : "integer",
-      "name" : "--min_cells_u",
-      "description" : "Minimum number of cells expressed required to pass filtering (unspliced).",
-      "required" : false,
-      "direction" : "input",
-      "multiple" : false,
-      "multiple_sep" : ":"
-    },
-    {
-      "type" : "integer",
-      "name" : "--min_shared_counts",
-      "description" : "Minimum number of counts (both unspliced and spliced) required for a gene.",
-      "required" : false,
-      "direction" : "input",
-      "multiple" : false,
-      "multiple_sep" : ":"
-    },
-    {
-      "type" : "integer",
-      "name" : "--min_shared_cells",
-      "description" : "Minimum number of cells required to be expressed (both unspliced and spliced).",
-      "required" : false,
-      "direction" : "input",
-      "multiple" : false,
-      "multiple_sep" : ":"
-    },
-    {
-      "type" : "integer",
-      "name" : "--n_top_genes",
-      "description" : "Number of genes to keep.",
-      "required" : false,
-      "direction" : "input",
-      "multiple" : false,
-      "multiple_sep" : ":"
-    },
-    {
-      "type" : "boolean",
-      "name" : "--log_transform",
-      "description" : "Do not log transform counts.",
-      "default" : [
-        true
-      ],
-      "required" : false,
-      "direction" : "input",
-      "multiple" : false,
-      "multiple_sep" : ":"
-    },
-    {
-      "type" : "integer",
-      "name" : "--n_principal_components",
-      "description" : "Number of principal components to use for calculating moments.",
-      "required" : false,
-      "direction" : "input",
-      "multiple" : false,
-      "multiple_sep" : ":"
-    },
-    {
-      "type" : "integer",
-      "name" : "--n_neighbors",
-      "description" : "Number of neighbors to use. First/second-order moments are computed for each\ncell across its nearest neighbors, where the neighbor graph is obtained from\neuclidean distances in PCA space.\n",
-      "default" : [
-        30
-      ],
-      "required" : false,
-      "direction" : "input",
-      "multiple" : false,
-      "multiple_sep" : ":"
-    }
-  ],
   "argument_groups" : [
+    {
+      "name" : "Inputs",
+      "arguments" : [
+        {
+          "type" : "file",
+          "name" : "--input",
+          "description" : "Velocyto loom file.",
+          "must_exist" : false,
+          "required" : true,
+          "direction" : "input",
+          "multiple" : false,
+          "multiple_sep" : ":"
+        }
+      ]
+    },
+    {
+      "name" : "Outputs",
+      "arguments" : [
+        {
+          "type" : "file",
+          "name" : "--output",
+          "description" : "Output directory. If it does not exist, will be created.",
+          "must_exist" : false,
+          "required" : true,
+          "direction" : "output",
+          "multiple" : false,
+          "multiple_sep" : ":"
+        }
+      ]
+    },
     {
       "name" : "Filtering and normalization",
       "description" : "Arguments for filtering, normalization an log transform (see scvelo.pp.filter_and_normalize function)",
       "arguments" : [
-        "min_counts",
-        "min_counts_u",
-        "min_cells",
-        "min_cells_u",
-        "min_shared_counts",
-        "min_shared_cells",
-        "n_top_genes",
-        "log_transform"
+        {
+          "type" : "integer",
+          "name" : "--min_counts",
+          "description" : "Minimum number of counts required for a gene to pass filtering (spliced).",
+          "required" : false,
+          "direction" : "input",
+          "multiple" : false,
+          "multiple_sep" : ":"
+        },
+        {
+          "type" : "integer",
+          "name" : "--min_counts_u",
+          "description" : "Minimum number of counts required for a gene to pass filtering (unspliced).",
+          "required" : false,
+          "direction" : "input",
+          "multiple" : false,
+          "multiple_sep" : ":"
+        },
+        {
+          "type" : "integer",
+          "name" : "--min_cells",
+          "description" : "Minimum number of cells expressed required to pass filtering (spliced).",
+          "required" : false,
+          "direction" : "input",
+          "multiple" : false,
+          "multiple_sep" : ":"
+        },
+        {
+          "type" : "integer",
+          "name" : "--min_cells_u",
+          "description" : "Minimum number of cells expressed required to pass filtering (unspliced).",
+          "required" : false,
+          "direction" : "input",
+          "multiple" : false,
+          "multiple_sep" : ":"
+        },
+        {
+          "type" : "integer",
+          "name" : "--min_shared_counts",
+          "description" : "Minimum number of counts (both unspliced and spliced) required for a gene.",
+          "required" : false,
+          "direction" : "input",
+          "multiple" : false,
+          "multiple_sep" : ":"
+        },
+        {
+          "type" : "integer",
+          "name" : "--min_shared_cells",
+          "description" : "Minimum number of cells required to be expressed (both unspliced and spliced).",
+          "required" : false,
+          "direction" : "input",
+          "multiple" : false,
+          "multiple_sep" : ":"
+        },
+        {
+          "type" : "integer",
+          "name" : "--n_top_genes",
+          "description" : "Number of genes to keep.",
+          "required" : false,
+          "direction" : "input",
+          "multiple" : false,
+          "multiple_sep" : ":"
+        },
+        {
+          "type" : "boolean",
+          "name" : "--log_transform",
+          "description" : "Do not log transform counts.",
+          "default" : [
+            true
+          ],
+          "required" : false,
+          "direction" : "input",
+          "multiple" : false,
+          "multiple_sep" : ":"
+        }
       ]
     },
     {
       "name" : "Fitting parameters",
       "description" : "Arguments for fitting the data",
       "arguments" : [
-        "n_principal_components",
-        "n_neighbors"
+        {
+          "type" : "integer",
+          "name" : "--n_principal_components",
+          "description" : "Number of principal components to use for calculating moments.",
+          "required" : false,
+          "direction" : "input",
+          "multiple" : false,
+          "multiple_sep" : ":"
+        },
+        {
+          "type" : "integer",
+          "name" : "--n_neighbors",
+          "description" : "Number of neighbors to use. First/second-order moments are computed for each\ncell across its nearest neighbors, where the neighbor graph is obtained from\neuclidean distances in PCA space.\n",
+          "default" : [
+            30
+          ],
+          "required" : false,
+          "direction" : "input",
+          "multiple" : false,
+          "multiple_sep" : ":"
+        }
       ]
     }
   ],

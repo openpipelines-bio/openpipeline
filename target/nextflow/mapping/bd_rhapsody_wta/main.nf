@@ -42,331 +42,305 @@ thisConfig = processConfig([
       }
     }
   ],
-  "inputs" : [
-    {
-      "type" : "file",
-      "name" : "--input",
-      "alternatives" : [
-        "-i"
-      ],
-      "description" : "Path to your read files in the FASTQ.GZ format. You may specify as many R1/R2 read pairs as you want.",
-      "example" : [
-        "input.fastq.gz"
-      ],
-      "must_exist" : false,
-      "required" : true,
-      "direction" : "input",
-      "multiple" : true,
-      "multiple_sep" : ":"
-    },
-    {
-      "type" : "file",
-      "name" : "--reference_genome",
-      "alternatives" : [
-        "-r"
-      ],
-      "description" : "Path to STAR index as a tar.gz file.",
-      "example" : [
-        "reference_genome.tar.gz"
-      ],
-      "must_exist" : false,
-      "required" : true,
-      "direction" : "input",
-      "multiple" : false,
-      "multiple_sep" : ":"
-    },
-    {
-      "type" : "file",
-      "name" : "--transcriptome_annotation",
-      "alternatives" : [
-        "-t"
-      ],
-      "description" : "Path to GTF annotation file.",
-      "example" : [
-        "transcriptome.gtf"
-      ],
-      "must_exist" : false,
-      "required" : true,
-      "direction" : "input",
-      "multiple" : false,
-      "multiple_sep" : ":"
-    },
-    {
-      "type" : "file",
-      "name" : "--abseq_reference",
-      "alternatives" : [
-        "-a"
-      ],
-      "description" : "Path to the AbSeq reference file in FASTA format. Only needed if BD AbSeq Ab-Oligos are used.",
-      "must_exist" : false,
-      "required" : false,
-      "direction" : "input",
-      "multiple" : true,
-      "multiple_sep" : ":"
-    },
-    {
-      "type" : "file",
-      "name" : "--supplemental_reference",
-      "alternatives" : [
-        "-s"
-      ],
-      "description" : "Path to the supplemental reference file in FASTA format. Only needed if there are additional transgene sequences used in the experiment.",
-      "must_exist" : false,
-      "required" : false,
-      "direction" : "input",
-      "multiple" : true,
-      "multiple_sep" : ":"
-    }
-  ],
-  "outputs" : [
-    {
-      "type" : "file",
-      "name" : "--output",
-      "alternatives" : [
-        "-o"
-      ],
-      "description" : "Output folder. Output still needs to be processed further.",
-      "example" : [
-        "output_dir"
-      ],
-      "must_exist" : false,
-      "required" : true,
-      "direction" : "output",
-      "multiple" : false,
-      "multiple_sep" : ":"
-    }
-  ],
-  "arguments" : [
-    {
-      "type" : "string",
-      "name" : "--putative_cell_call",
-      "description" : "Specify the dataset to be used for putative cell calling. For putative cell calling using an AbSeq dataset, please provide an AbSeq_Reference fasta file above.",
-      "example" : [
-        "mRNA"
-      ],
-      "required" : false,
-      "choices" : [
-        "mRNA",
-        "AbSeq_Experimental"
-      ],
-      "direction" : "input",
-      "multiple" : false,
-      "multiple_sep" : ":"
-    },
-    {
-      "type" : "integer",
-      "name" : "--exact_cell_count",
-      "description" : "Exact cell count - Set a specific number (>=1) of cells as putative, based on those with the highest error-corrected read count",
-      "example" : [
-        10000
-      ],
-      "required" : false,
-      "direction" : "input",
-      "multiple" : false,
-      "multiple_sep" : ":"
-    },
-    {
-      "type" : "boolean_true",
-      "name" : "--disable_putative_calling",
-      "description" : "Disable Refined Putative Cell Calling - Determine putative cells using only the basic algorithm (minimum second derivative along the cumulative reads curve). The refined algorithm attempts to remove false positives and recover false negatives, but may not be ideal for certain complex mixtures of cell types. Does not apply if Exact Cell Count is set.",
-      "direction" : "input"
-    },
-    {
-      "type" : "double",
-      "name" : "--subsample",
-      "description" : "A number >1 or fraction (0 < n < 1) to indicate the number or percentage of reads to subsample.",
-      "example" : [
-        0.01
-      ],
-      "required" : false,
-      "direction" : "input",
-      "multiple" : false,
-      "multiple_sep" : ":"
-    },
-    {
-      "type" : "integer",
-      "name" : "--subsample_seed",
-      "description" : "A seed for replicating a previous subsampled run.",
-      "example" : [
-        3445
-      ],
-      "required" : false,
-      "direction" : "input",
-      "multiple" : false,
-      "multiple_sep" : ":"
-    },
-    {
-      "type" : "string",
-      "name" : "--sample_tags_version",
-      "description" : "Specify if multiplexed run.",
-      "example" : [
-        "human"
-      ],
-      "required" : false,
-      "choices" : [
-        "human",
-        "hs",
-        "mouse",
-        "mm"
-      ],
-      "direction" : "input",
-      "multiple" : false,
-      "multiple_sep" : ":"
-    },
-    {
-      "type" : "string",
-      "name" : "--tag_names",
-      "description" : "Tag_Names (optional) - Specify the tag number followed by '-' and the desired sample name to appear in Sample_Tag_Metrics.csv.\nDo not use the special characters: &, (), [], {},  <>, ?, |\n",
-      "example" : [
-        "4-mySample",
-        "9-myOtherSample",
-        "6-alsoThisSample"
-      ],
-      "required" : false,
-      "direction" : "input",
-      "multiple" : true,
-      "multiple_sep" : ":"
-    },
-    {
-      "type" : "string",
-      "name" : "--vdj_version",
-      "description" : "Specify if VDJ run.",
-      "example" : [
-        "human"
-      ],
-      "required" : false,
-      "choices" : [
-        "human",
-        "mouse",
-        "humanBCR",
-        "humanBCR",
-        "humanTCR",
-        "mouseBCR"
-      ],
-      "direction" : "input",
-      "multiple" : false,
-      "multiple_sep" : ":"
-    },
-    {
-      "type" : "boolean",
-      "name" : "--parallel",
-      "description" : "Run jobs in parallel.",
-      "default" : [
-        true
-      ],
-      "required" : false,
-      "direction" : "input",
-      "multiple" : false,
-      "multiple_sep" : ":"
-    },
-    {
-      "type" : "boolean_true",
-      "name" : "--timestamps",
-      "description" : "Add timestamps to the errors, warnings, and notifications.",
-      "direction" : "input"
-    },
-    {
-      "type" : "integer",
-      "name" : "--override_min_ram",
-      "description" : "Override the minimum RAM requirements specified in the CWL (in GB).",
-      "example" : [
-        2
-      ],
-      "required" : false,
-      "direction" : "input",
-      "multiple" : false,
-      "multiple_sep" : ":"
-    },
-    {
-      "type" : "integer",
-      "name" : "--override_min_cores",
-      "description" : "Override the minimum cores requirements specified in the CWL.",
-      "example" : [
-        2
-      ],
-      "required" : false,
-      "direction" : "input",
-      "multiple" : false,
-      "multiple_sep" : ":"
-    },
-    {
-      "type" : "boolean_true",
-      "name" : "--dryrun",
-      "description" : "If true, the output directory will only contain the CWL input files, but the pipeline itself will not be executed.",
-      "direction" : "input"
-    },
-    {
-      "type" : "string",
-      "name" : "--sample_prefix",
-      "description" : "Specify a run name to use as the output file base name. Use only letters, numbers, or hyphens. Do not use special characters or spaces.",
-      "default" : [
-        "sample"
-      ],
-      "required" : false,
-      "direction" : "input",
-      "multiple" : false,
-      "multiple_sep" : ":"
-    }
-  ],
   "argument_groups" : [
     {
       "name" : "Inputs",
       "arguments" : [
-        "input",
-        "reference_genome",
-        "transcriptome_annotation",
-        "abseq_reference",
-        "supplemental_reference"
+        {
+          "type" : "file",
+          "name" : "--input",
+          "alternatives" : [
+            "-i"
+          ],
+          "description" : "Path to your read files in the FASTQ.GZ format. You may specify as many R1/R2 read pairs as you want.",
+          "example" : [
+            "input.fastq.gz"
+          ],
+          "must_exist" : false,
+          "required" : true,
+          "direction" : "input",
+          "multiple" : true,
+          "multiple_sep" : ":"
+        },
+        {
+          "type" : "file",
+          "name" : "--reference_genome",
+          "alternatives" : [
+            "-r"
+          ],
+          "description" : "Path to STAR index as a tar.gz file.",
+          "example" : [
+            "reference_genome.tar.gz"
+          ],
+          "must_exist" : false,
+          "required" : true,
+          "direction" : "input",
+          "multiple" : false,
+          "multiple_sep" : ":"
+        },
+        {
+          "type" : "file",
+          "name" : "--transcriptome_annotation",
+          "alternatives" : [
+            "-t"
+          ],
+          "description" : "Path to GTF annotation file.",
+          "example" : [
+            "transcriptome.gtf"
+          ],
+          "must_exist" : false,
+          "required" : true,
+          "direction" : "input",
+          "multiple" : false,
+          "multiple_sep" : ":"
+        },
+        {
+          "type" : "file",
+          "name" : "--abseq_reference",
+          "alternatives" : [
+            "-a"
+          ],
+          "description" : "Path to the AbSeq reference file in FASTA format. Only needed if BD AbSeq Ab-Oligos are used.",
+          "must_exist" : false,
+          "required" : false,
+          "direction" : "input",
+          "multiple" : true,
+          "multiple_sep" : ":"
+        },
+        {
+          "type" : "file",
+          "name" : "--supplemental_reference",
+          "alternatives" : [
+            "-s"
+          ],
+          "description" : "Path to the supplemental reference file in FASTA format. Only needed if there are additional transgene sequences used in the experiment.",
+          "must_exist" : false,
+          "required" : false,
+          "direction" : "input",
+          "multiple" : true,
+          "multiple_sep" : ":"
+        }
       ]
     },
     {
       "name" : "Outputs",
       "arguments" : [
-        "output"
+        {
+          "type" : "file",
+          "name" : "--output",
+          "alternatives" : [
+            "-o"
+          ],
+          "description" : "Output folder. Output still needs to be processed further.",
+          "example" : [
+            "output_diAdditional settingsr"
+          ],
+          "must_exist" : false,
+          "required" : true,
+          "direction" : "output",
+          "multiple" : false,
+          "multiple_sep" : ":"
+        }
       ]
     },
     {
       "name" : "Putative cell calling arguments",
       "arguments" : [
-        "putative_cell_call",
-        "exact_cell_count",
-        "disable_putative_calling"
+        {
+          "type" : "string",
+          "name" : "--putative_cell_call",
+          "description" : "Specify the dataset to be used for putative cell calling. For putative cell calling using an AbSeq dataset, please provide an AbSeq_Reference fasta file above.",
+          "example" : [
+            "mRNA"
+          ],
+          "required" : false,
+          "choices" : [
+            "mRNA",
+            "AbSeq_Experimental"
+          ],
+          "direction" : "input",
+          "multiple" : false,
+          "multiple_sep" : ":"
+        },
+        {
+          "type" : "integer",
+          "name" : "--exact_cell_count",
+          "description" : "Exact cell count - Set a specific number (>=1) of cells as putative, based on those with the highest error-corrected read count",
+          "example" : [
+            10000
+          ],
+          "required" : false,
+          "direction" : "input",
+          "multiple" : false,
+          "multiple_sep" : ":"
+        },
+        {
+          "type" : "boolean_true",
+          "name" : "--disable_putative_calling",
+          "description" : "Disable Refined Putative Cell Calling - Determine putative cells using only the basic algorithm (minimum second derivative along the cumulative reads curve). The refined algorithm attempts to remove false positives and recover false negatives, but may not be ideal for certain complex mixtures of cell types. Does not apply if Exact Cell Count is set.",
+          "direction" : "input"
+        }
       ]
     },
     {
       "name" : "Subsample arguments",
       "arguments" : [
-        "subsample",
-        "subsample_seed"
+        {
+          "type" : "double",
+          "name" : "--subsample",
+          "description" : "A number >1 or fraction (0 < n < 1) to indicate the number or percentage of reads to subsample.",
+          "example" : [
+            0.01
+          ],
+          "required" : false,
+          "direction" : "input",
+          "multiple" : false,
+          "multiple_sep" : ":"
+        },
+        {
+          "type" : "integer",
+          "name" : "--subsample_seed",
+          "description" : "A seed for replicating a previous subsampled run.",
+          "example" : [
+            3445
+          ],
+          "required" : false,
+          "direction" : "input",
+          "multiple" : false,
+          "multiple_sep" : ":"
+        }
       ]
     },
     {
       "name" : "Multiplex arguments",
       "arguments" : [
-        "sample_tags_version",
-        "tag_names"
+        {
+          "type" : "string",
+          "name" : "--sample_tags_version",
+          "description" : "Specify if multiplexed run.",
+          "example" : [
+            "human"
+          ],
+          "required" : false,
+          "choices" : [
+            "human",
+            "hs",
+            "mouse",
+            "mm"
+          ],
+          "direction" : "input",
+          "multiple" : false,
+          "multiple_sep" : ":"
+        },
+        {
+          "type" : "string",
+          "name" : "--tag_names",
+          "description" : "Tag_Names (optional) - Specify the tag number followed by '-' and the desired sample name to appear in Sample_Tag_Metrics.csv.\nDo not use the special characters: &, (), [], {},  <>, ?, |\n",
+          "example" : [
+            "4-mySample",
+            "9-myOtherSample",
+            "6-alsoThisSample"
+          ],
+          "required" : false,
+          "direction" : "input",
+          "multiple" : true,
+          "multiple_sep" : ":"
+        }
       ]
     },
     {
       "name" : "VDJ arguments",
       "arguments" : [
-        "vdj_version"
-      ]
-    },
-    {
-      "name" : "Additional settings",
-      "arguments" : [
-        "sample_prefix"
+        {
+          "type" : "string",
+          "name" : "--vdj_version",
+          "description" : "Specify if VDJ run.",
+          "example" : [
+            "human"
+          ],
+          "required" : false,
+          "choices" : [
+            "human",
+            "mouse",
+            "humanBCR",
+            "humanBCR",
+            "humanTCR",
+            "mouseBCR"
+          ],
+          "direction" : "input",
+          "multiple" : false,
+          "multiple_sep" : ":"
+        }
       ]
     },
     {
       "name" : "CWL-runner arguments",
       "arguments" : [
-        "parallel",
-        "timestamps",
-        "override_min_ram",
-        "override_min_cores",
-        "dryrun"
+        {
+          "type" : "boolean",
+          "name" : "--parallel",
+          "description" : "Run jobs in parallel.",
+          "default" : [
+            true
+          ],
+          "required" : false,
+          "direction" : "input",
+          "multiple" : false,
+          "multiple_sep" : ":"
+        },
+        {
+          "type" : "boolean_true",
+          "name" : "--timestamps",
+          "description" : "Add timestamps to the errors, warnings, and notifications.",
+          "direction" : "input"
+        },
+        {
+          "type" : "integer",
+          "name" : "--override_min_ram",
+          "description" : "Override the minimum RAM requirements specified in the CWL (in GB).",
+          "example" : [
+            2
+          ],
+          "required" : false,
+          "direction" : "input",
+          "multiple" : false,
+          "multiple_sep" : ":"
+        },
+        {
+          "type" : "integer",
+          "name" : "--override_min_cores",
+          "description" : "Override the minimum cores requirements specified in the CWL.",
+          "example" : [
+            2
+          ],
+          "required" : false,
+          "direction" : "input",
+          "multiple" : false,
+          "multiple_sep" : ":"
+        },
+        {
+          "type" : "boolean_true",
+          "name" : "--dryrun",
+          "description" : "If true, the output directory will only contain the CWL input files, but the pipeline itself will not be executed.",
+          "direction" : "input"
+        }
+      ]
+    },
+    {
+      "name" : "Additional settings",
+      "arguments" : [
+        {
+          "type" : "string",
+          "name" : "--sample_prefix",
+          "description" : "Specify a run name to use as the output file base name. Use only letters, numbers, or hyphens. Do not use special characters or spaces.",
+          "default" : [
+            "sample"
+          ],
+          "required" : false,
+          "direction" : "input",
+          "multiple" : false,
+          "multiple_sep" : ":"
+        }
       ]
     }
   ],
