@@ -157,7 +157,7 @@ def split_conflicts_and_concatenated_columns(sample_ids: tuple[str],
     else:
         concatenated_matrix = pd.DataFrame()
         
-    return conflicts, pd.concat(concatenated_matrix, join="outer", axis=1)
+    return conflicts, concatenated_matrix
 
 def cast_to_original_dtype(result: pd.DataFrame,
                            orignal_dtypes: dict[str, pd.core.dtypes.dtypes.Dtype]) -> pd.DataFrame:
