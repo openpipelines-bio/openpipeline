@@ -81,9 +81,8 @@ functionality:
       \ in each of the samples\n - unique: only keep elements for which there is only\
       \ 1 possible value (1 value that can occur in multiple samples)\n - first: keep\
       \ the annotation from the first sample\n - only: keep elements that show up\
-      \ in only one of the objects (1 unique element in only 1 sample)\n - concat:\
-      \ concatenate unique values together\n - move: identical to 'same', but moving\
-      \ the conflicting values to .varm or .obsm\n"
+      \ in only one of the objects (1 unique element in only 1 sample)\n - move: identical\
+      \ to 'same', but moving the conflicting values to .varm or .obsm\n"
     example: []
     default:
     - "move"
@@ -307,7 +306,6 @@ functionality:
         echo "         - first: keep the annotation from the first sample"
         echo "         - only: keep elements that show up in only one of the objects (1 unique"
         echo "        element in only 1 sample)"
-        echo "         - concat: concatenate unique values together"
         echo "         - move: identical to 'same', but moving the conflicting values to .varm"
         echo "        or .obsm"
       }
@@ -660,44 +658,6 @@ functionality:
           return mods
       
       
-      def concat_columns(vars_list: Iterable[pd.DataFrame]) -> pd.DataFrame:
-          """
-          Combine dataframes by joining matching columns into a comma-separated list
-          containing unique, non-na values.
-          """
-          column_names = set(column_name for var in vars_list for column_name in var)
-          logger.debug('Trying to concatenate columns: %s.', ",".join(column_names))
-          if not column_names:
-              return pd.DataFrame()
-          df = pd.concat(vars_list, axis=1)
-          logger.debug('Concatenated dataframe. Aggregating column.')
-          result = df.groupby(df.columns, axis=1).agg(lambda x: x.apply(lambda y: ','.join(y.dropna().unique().astype('str')), axis=1))
-          logger.info('Aggregation completed.')
-          dtypes = {}
-          for col_name in column_names:
-              for var in vars_list:
-                  col = var.get(col_name, None)
-                  if col is not None and col_name not in dtypes:
-                      dtypes[col_name] = col.dtype
-          result.replace('', np.nan, inplace=True)
-          result = concat_result_cast_dtype(result, orignal_dtypes=dtypes)
-          logger.debug('Finished concatenating. Result is:\\n%s', result)
-          return result
-      
-      
-      def concat_result_cast_dtype(result: pd.DataFrame,
-                                   orignal_dtypes: dict[str, pd.core.dtypes.dtypes.Dtype]) -> pd.DataFrame:
-          logger.debug('Trying to cast to "category" or keep original datatype.')
-          for col_name, orig_dtype in orignal_dtypes.items():
-              try:
-                  result = result.astype({col_name: "category"}, copy=True)
-              except (ValueError, TypeError):
-                  try:
-                      result = result.astype({col_name: orig_dtype}, copy=True)
-                  except (ValueError, TypeError):
-                      logger.warning("Could not keep datatype for column %s", col_name)
-          return result
-      
       def any_row_contains_duplicate_values(frame: pd.DataFrame) -> bool:
           """
           Check if any row contains duplicate values, that are not NA.
@@ -707,8 +667,8 @@ functionality:
           is_duplicated = (number_of_unique - non_na_counts) != 0
           return is_duplicated.any()
       
-      def split_conflicts_matrices(sample_ids: tuple[str], matrices: Iterable[pd.DataFrame]) \\
-          -> tuple[dict[str, pd.DataFrame], pd.DataFrame | None]:
+      def concatenate_matrices(sample_ids: tuple[str], matrices: Iterable[pd.DataFrame]) \\
+          -> tuple[dict[str, pd.DataFrame], pd.DataFrame | None, dict[str, pd.core.dtypes.dtypes.Dtype]]:
           """
           Merge matrices by combining columns that have the same name.
           Columns that contain conflicting values (e.i. the columns have different values),
@@ -718,19 +678,102 @@ functionality:
           logger.debug('Trying to concatenate columns: %s.', ",".join(column_names))
           if not column_names:
               return {}, None
+          conflicts, concatenated_matrix = \\
+              split_conflicts_and_concatenated_columns(sample_ids,
+                                                       matrices,
+                                                       column_names)
+          original_dtypes = get_original_dtypes(matrices, column_names)
+          concatenated_matrix = set_dtypes_concatenated_columns(original_dtypes, concatenated_matrix)
+          conflicts = set_dtypes_conflicts(original_dtypes, conflicts)
+          return conflicts, concatenated_matrix
+      
+      def set_dtypes_conflicts(original_dtypes: dict[str, pd.core.dtypes.dtypes.Dtype],
+                               conflicts: tuple[dict[str, pd.DataFrame], pd.DataFrame]) -> \\
+                              tuple[dict[str, pd.DataFrame], pd.DataFrame]:
+          """
+          Ensure the correct datatypes for the conflict dataframes.
+          """
+          conflicts_correct_dtypes = {}
+          for conflict_name, confict_data in conflicts.items():
+              original_dtype = original_dtypes[conflict_name.removeprefix('conflict_')]
+              new_conflict_dtypes = {column: original_dtype for column in confict_data.columns}
+              confict_data = cast_to_original_dtype(confict_data, new_conflict_dtypes)
+              conflicts_correct_dtypes[conflict_name] = confict_data
+          return conflicts_correct_dtypes
+      
+      def set_dtypes_concatenated_columns(original_dtypes: dict[str, pd.core.dtypes.dtypes.Dtype],
+                                          concatenated_matrix: pd.DataFrame) -> pd.DataFrame:
+          """
+          Ensure the correct datatypes for the concatenated columns that did not contain conflicts.
+          """
+          curr_concat_matrix_cols_dtypes = {col: dtype for col, dtype in original_dtypes.items() 
+                                            if col in concatenated_matrix.columns}
+          return cast_to_original_dtype(concatenated_matrix, curr_concat_matrix_cols_dtypes)
+      
+      def split_conflicts_and_concatenated_columns(sample_ids: tuple[str],
+                                                   matrices: Iterable[pd.DataFrame],
+                                                   column_names: Iterable[str]) -> \\
+                                                  tuple[dict[str, pd.DataFrame], pd.DataFrame]:
+          """
+          Retrieve columns with the same name from a list of dataframes which are 
+          identical across all the frames (ignoring NA values).
+          Columns which are not the same are regarded as 'conflicts',
+          which are stored in seperate dataframes, one per columns
+          with the same name that store conflicting values.
+          """
           conflicts = {}
-          concatenated_matrix = pd.DataFrame()
+          concatenated_matrix = []
           for column_name in column_names:
               columns = [var[column_name] for var in matrices if column_name in var]
               assert columns, "Some columns should have been found."
-              concatenated_columns = pd.concat(columns, axis=1)
+              concatenated_columns = pd.concat(columns, axis=1, join="outer")
               if any_row_contains_duplicate_values(concatenated_columns):
                   concatenated_columns.columns = sample_ids
                   conflicts[f'conflict_{column_name}'] = concatenated_columns
               else:
                   unique_values = concatenated_columns.fillna(method='bfill', axis=1).iloc[:, 0]
-                  concatenated_matrix = concatenated_matrix.assign(**{column_name: unique_values})
+                  concatenated_matrix.append(unique_values)
+          if concatenated_matrix:
+              concatenated_matrix = pd.concat(concatenated_matrix, join="outer", axis=1)
+          else:
+              concatenated_matrix = pd.DataFrame()
+              
           return conflicts, concatenated_matrix
+      
+      def cast_to_original_dtype(result: pd.DataFrame,
+                                 orignal_dtypes: dict[str, pd.core.dtypes.dtypes.Dtype]) -> pd.DataFrame:
+          """
+          Cast the dataframe to dtypes that can be written by mudata.
+          """
+          logger.debug('Trying to cast to "category" or keep original datatype.')
+          for col_name, orig_dtype in orignal_dtypes.items():
+              try:
+                  result = result.astype({col_name: "category"}, copy=True)
+                  result[col_name].cat.categories = result[col_name].cat.categories.astype(str)
+              except (ValueError, TypeError):
+                  try:
+                      result = result.astype({col_name: orig_dtype}, copy=True)
+                  except (ValueError, TypeError):
+                      logger.warning("Could not keep datatype for column %s", col_name)
+          return result
+      
+      
+      def get_original_dtypes(matrices: Iterable[pd.DataFrame], 
+                              column_names: Iterable[str]) -> \\
+                              dict[str, pd.core.dtypes.dtypes.Dtype]:
+          """
+          Get the datatypes of columns in a list of dataframes.
+          If a column occurs in more than 1 dataframe, includes the dtype of the column
+          in the dataframe that comes first in the list.
+          """
+          dtypes = {}
+          for col_name in column_names:
+              for matrix in matrices:
+                  col = matrix.get(col_name, None)
+                  if col is not None and col_name not in dtypes:
+                      dtypes[col_name] = col.dtype
+          return dtypes
+      
       
       def split_conflicts_modalities(sample_ids: tuple[str], modalities: Iterable[anndata.AnnData]) \\
               -> tuple[dict[str, dict[str, pd.DataFrame]],  dict[str, pd.DataFrame | None]]:
@@ -745,7 +788,7 @@ functionality:
               conflicts_result = {}
               for matrix_name in matrices_to_parse:
                   matrices = [getattr(modality, matrix_name) for modality in modalities]
-                  conflicts, concatenated_matrix = split_conflicts_matrices(sample_ids, matrices)
+                  conflicts, concatenated_matrix = concatenate_matrices(sample_ids, matrices)
                   conflicts_result[f"{matrix_name}m"] = conflicts
                   concatenated_result[matrix_name] = concatenated_matrix
               return conflicts_result, concatenated_result
@@ -753,20 +796,51 @@ functionality:
       def set_matrices(concatenated_data: mu.MuData, 
                        mod_name: str,
                        new_matrices: dict[str, pd.DataFrame | None]) -> mu.MuData:
+          """
+          Add the calculated matrices to the mudata object. Ensure the correct datatypes
+          for the matrices that are composed from the combination of the matrices
+          from the different modalities.
+          """
           mod = concatenated_data.mod[mod_name]
+          original_dtypes_global_matrices = {
+              global_matrix_name: getattr(concatenated_data, global_matrix_name).dtypes
+              for global_matrix_name 
+              in new_matrices.keys()
+          }
           for matrix_name, data in new_matrices.items():
+              new_index = getattr(mod, matrix_name).index
               if data is None:
-                  data = pd.DataFrame(index=getattr(mod, matrix_name).index)
+                  data = pd.DataFrame(index=new_index)
+              if data.index.empty:
+                  data.index = new_index
               setattr(mod, matrix_name, data)
+          # After setting the matrices (.e.g. .mod['rna'].var) for each of the modalities
+          # the 'global' matrices must also be updated. This is done by mudata automatically
+          # by calling mudata.update() before writing. However, we need to make sure that the
+          # dtypes of these global matrices are also correct for writing..
+          for global_matrix_name, dtypes in original_dtypes_global_matrices.items():
+              matrix = getattr(concatenated_data, global_matrix_name)
+              setattr(concatenated_data, global_matrix_name, cast_to_original_dtype(matrix, dtypes))
           return concatenated_data
       
       def set_conflicts(concatenated_data: mu.MuData,
                         mod_name: str,
                         conflicts: dict[str, dict[str, pd.DataFrame]]) -> mu.MuData:
+          """
+          Store dataframes containing the conflicting columns in .obsm,
+          one key per column name from the original data.
+          """
           mod = concatenated_data.mod[mod_name]
+          mutlidim_to_singledim = {
+              'varm': 'var',
+              'obsm': 'obs'
+          }
           for conflict_matrix_name, conflict in conflicts.items():
               for conflict_name, conflict_data in conflict.items():
-                  getattr(mod, conflict_matrix_name)[conflict_name] = conflict_data.sort_index()
+                  singledim_name = mutlidim_to_singledim[conflict_matrix_name]
+                  singledim_index = getattr(mod, singledim_name).index
+                  getattr(mod, conflict_matrix_name)[conflict_name] = conflict_data.reindex(singledim_index)
+          concatenated_data.update()
           return concatenated_data
       
       def concatenate_modalities(sample_ids: tuple[str], modalities: dict[str, Iterable[anndata.AnnData]],
@@ -776,7 +850,6 @@ functionality:
           """
           logger.info('Concatenating samples.')
           concat_modes = {
-              "concat": concat_columns,
               "move": "same",
           }
           other_axis_mode_to_apply = concat_modes.get(other_axis_mode, other_axis_mode)
@@ -785,6 +858,7 @@ functionality:
                                                merge=other_axis_mode_to_apply)
                       for mod_name, modes in modalities.items()}
           concatenated_data = mu.MuData(new_mods)
+          logger.info('Concatenated data shape: %s', concatenated_data.shape)
           if other_axis_mode == "move":
               for mod_name, modes in modalities.items():
                   conflicts, new_matrices = split_conflicts_modalities(sample_ids, modes)
@@ -857,5 +931,5 @@ info:
   output: "target/native/integrate/concat"
   executable: "target/native/integrate/concat/concat"
   viash_version: "0.6.0"
-  git_commit: "b8f6d7aa8681ba6dc5aac112657623a2401d4d68"
+  git_commit: "5008106da5da8e09ed85b961ff9ca74d31254f4a"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"
