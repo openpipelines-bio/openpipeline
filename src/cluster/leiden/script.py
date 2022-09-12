@@ -5,7 +5,7 @@ import scanpy as sc
 
 ## VIASH START
 par = {
-    "input": "resources_test/pbmc_1k_protein_v3/pbmc_1k_protein_v3_filtered_feature_bc_matrix.neighbors.h5mu",
+    "input": "resources_test/pbmc_1k_protein_v3/pbmc_1k_protein_v3_mms.h5mu",
     "output": "output.h5mu",
     "modality": ["rna"],
     "output_format": "h5mu",
