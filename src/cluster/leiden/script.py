@@ -11,6 +11,7 @@ par = {
     "output_format": "h5mu",
     "obs_name": "leiden",
     "resolution": 0.25,
+    "obsp_input": "connectivities"
 }
 ## VIASH END
 
@@ -29,8 +30,9 @@ for mod in par['modality']:
     data = mdata.mod[mod]
     sc.tl.leiden(
         data,
+        obsp=par["obsp_input"],
         resolution=par["resolution"],
-        key_added=par["obs_name"],
+        key_added=par["obs_name"]
     )
 
 logger.info("Writing to %s.", par["output"])

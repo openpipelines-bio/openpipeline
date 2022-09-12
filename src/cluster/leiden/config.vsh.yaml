@@ -31,6 +31,10 @@ functionality:
       default: "rna"
       required: false
 
+    - name: "--obsp_input"
+      type: string
+      description: In which .obsp slot the neighbor distances can be found.
+
     # output
     - name: "--output"
       alternatives: ["-o"]
