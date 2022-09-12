@@ -1,5 +1,8 @@
 #!/bin/bash
 
+echo "This script is disabled but could be repurposed in the future."
+exit 1
+
 # settings
 ID=pbmc_1k_v3_fromraw
 OUT=resources_test/$ID/$ID
