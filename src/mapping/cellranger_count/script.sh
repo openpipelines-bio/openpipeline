@@ -4,8 +4,6 @@
 par_input='resources_test/cellranger_tiny_fastq/cellranger_tiny_fastq/'
 par_reference='resources_test/cellranger_tiny_fastq/cellranger_tiny_ref/'
 par_output='resources_test/cellranger_tiny_fastq/bam'
-par_memory="10"
-par_cores="2"
 par_chemistry="auto"
 par_expect_cells="3000"
 par_secondary_analysis="false"
@@ -29,11 +27,11 @@ cd "$tmpdir"
 # add additional params
 extra_params=( )
 
-if [ ! -z "$par_cores" ]; then 
-  extra_params+=( "--localcores=$par_cores" )
+if [ ! -z "$meta_n_proc" ]; then 
+  extra_params+=( "--localcores=$meta_n_proc" )
 fi
-if [ ! -z "$par_memory" ]; then 
-  extra_params+=( "--localmem=$par_memory" )
+if [ ! -z "$meta_memory_gb" ]; then 
+  extra_params+=( "--localmem=$meta_memory_gb" )
 fi
 if [ ! -z "$par_expect_cells" ]; then 
   extra_params+=( "--expect-cells=$par_expect_cells" )
@@ -52,6 +50,7 @@ cellranger count \
   --id "$id" \
   --fastqs "$par_input" \
   --transcriptome "$par_reference" \
+  --include-introns "$par_include_introns" \
   "${extra_params[@]}" \
   --disable-ui \
 
