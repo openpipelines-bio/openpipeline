@@ -28,9 +28,7 @@ jobs:
       run: |
         AWS_EC2_METADATA_DISABLED=true aws s3 ls $s3_bucket --recursive --no-sign-request > bucket-contents.txt
         echo "::set-output name=cachehash::resources_test__$( md5sum bucket-contents.txt | awk '{ print $1 }' )"
-      env:
-        SEGMENT_DOWNLOAD_TIMEOUT_MIN: 5
-
+    
     # initialize cache
     - name: Cache resources data
       uses: actions/cache@v3
@@ -150,11 +148,10 @@ jobs:
     # use cache
     - name: Cache resources data
       uses: actions/cache@v3
+      timeout-minutes: 5
       with:
         path: resources_test
         key: ${{ needs.list_components.outputs.cachehash }}
-      env:
-        SEGMENT_DOWNLOAD_TIMEOUT_MIN: 5
 
     - name: Run integration test
       timeout-minutes: 20
@@ -191,11 +188,10 @@ jobs:
     # use cache
     - name: Cache resources data
       uses: actions/cache@v3
+      timeout-minutes: 5
       with:
         path: resources_test
         key: ${{ needs.list_components.outputs.cachehash }}
-      env:
-        SEGMENT_DOWNLOAD_TIMEOUT_MIN: 5
 
     - name: Test component
       run: |

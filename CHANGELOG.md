@@ -2,6 +2,8 @@
 
 ## NEW FUNCTIONALITY
 
+* `graph/bbknn`: BBKNN network generation.
+
 * `workflows/integration/multiomics`: implement pipeline for processing multiple multiomics samples.
 
 * `transform/scaling`: Scale data to unit variance and zero mean.
@@ -11,6 +13,8 @@
 * `integrate/harmonypy`: Added a component for running a Harmony integration analysis (Python-based).
 
 * `integrate/concat`: Added 'move' option to `--other_axis_mode`, which allows merging .obs and .var by only keeping elements of the matrices which are the same in each of the samples, moving the conflicting values to .varm or .obsm.
+
+* `integrate/concat`: Deprecated 'concat' option for `--other_axis_mode`
 
 ## MAJOR CHANGES
 
