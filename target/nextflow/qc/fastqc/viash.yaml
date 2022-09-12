@@ -1938,5 +1938,5 @@ info:
   platform: "nextflow"
   output: "target/nextflow/qc/fastqc"
   viash_version: "0.6.0"
-  git_commit: "b2fbcf5f1746f02ae6a87e3cae546b1f8b6ad910"
+  git_commit: "b8f6d7aa8681ba6dc5aac112657623a2401d4d68"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"
