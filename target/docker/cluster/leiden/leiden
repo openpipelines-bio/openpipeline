@@ -425,13 +425,13 @@ RUN apt-get update && \
   rm -rf /var/lib/apt/lists/*
 
 RUN pip install --upgrade pip && \
-  pip install --upgrade --no-cache-dir "scanpy~=1.9.1" "python-igraph" "leidenalg" "hnswlib" "muon" "mudata~=0.2.0" "anndata~=0.8.0"
+  pip install --upgrade --no-cache-dir "scanpy~=1.9.1" "leidenalg~=0.8.9" "muon" "mudata~=0.2.0" "anndata~=0.8.0"
 
 LABEL org.opencontainers.image.authors="Dries De Maeyer <ddemaeyer@gmail.com> (maintainer) {account: ddemaey1}"
 LABEL org.opencontainers.image.description="Companion container for running component cluster leiden"
-LABEL org.opencontainers.image.created="2022-09-08T12:11:50Z"
+LABEL org.opencontainers.image.created="2022-09-12T08:51:12Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="7a90af91f2a8ca75051aaec272694742232c01de"
+LABEL org.opencontainers.image.revision="7e483a533928558bccf06dc863235df8cd1a90b7"
 LABEL org.opencontainers.image.version="main_build"
 VIASHDOCKER
 }

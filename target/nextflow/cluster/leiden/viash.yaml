@@ -2033,5 +2033,5 @@ info:
   platform: "nextflow"
   output: "target/nextflow/cluster/leiden"
   viash_version: "0.6.0"
-  git_commit: "7a90af91f2a8ca75051aaec272694742232c01de"
+  git_commit: "7e483a533928558bccf06dc863235df8cd1a90b7"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"
