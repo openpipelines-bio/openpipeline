@@ -3,7 +3,7 @@ from os import path
 import mudata as md
 import numpy as np
 
-input = meta["resources_dir"] + "/WTA"
+input = meta["resources_dir"] + "/WTA.bd_rhapsody.output"
 output = "output1.h5mu"
 
 cmd_pars = [
