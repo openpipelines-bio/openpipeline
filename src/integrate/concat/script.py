@@ -328,7 +328,8 @@ def main() -> None:
     make_observation_keys_unique(sample_ids, samples)
 
     mods = group_modalities(samples)
-    concatenated_samples = concatenate_modalities(int(meta["n_proc"]),
+    n_processes = int(meta["n_proc"]) if meta["n_proc"] else 1
+    concatenated_samples = concatenate_modalities(n_processes,
                                                   sample_ids,
                                                   mods,
                                                   par["other_axis_mode"])
