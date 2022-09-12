@@ -31,6 +31,12 @@ functionality:
       default: "rna"
       required: false
 
+    - name: "--obsm_input"
+      type: string
+      default: "X_pca"
+      required: false
+      description: "Which .obsm slot to use as a starting PCA embedding."
+
     # output
     - name: "--output"
       alternatives: ["-o"]
@@ -39,10 +45,15 @@ functionality:
       direction: output
       example: output.h5mu
       
-    - name: "--obsp_name_prefix"
+    - name: "--obsp_output"
       type: string
-      example: "foo"
-      description: An optional prefix for the obsp slot. If not specified, the neighbors data is stored in .uns['neighbors'], distances and connectivities are stored in .obsp['distances'] and .obsp['connectivities'] respectively. If specified, the neighbors data is added to .uns[key_added], distances are stored in .obsp[key_added+'_distances'] and connectivities in .obsp[key_added+'_connectivities'].
+      default: "distances"
+      description: "In which .obsp slot to store the resulting nearest neighbours."
+
+    - name: "--uns_output"
+      type: string
+      default: "connectivities"
+      description: "In which .uns slot to store the resulting variance objects."
 
     # arguments
     - name: "--metric"
