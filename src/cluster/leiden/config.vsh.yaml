@@ -31,9 +31,10 @@ functionality:
       default: "rna"
       required: false
 
-    - name: "--obsp_input"
+    - name: "--obsp_connectivities"
       type: string
-      description: In which .obsp slot the neighbor distances can be found.
+      description: In which .obsp slot the neighbor connectivities can be found.
+      default: "connectivities"
 
     # output
     - name: "--output"
