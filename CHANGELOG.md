@@ -8,15 +8,18 @@
 
 * `transform/scaling`: Scale data to unit variance and zero mean.
 
-* `integrate/harmony`: Added a component for running a Harmony integration analysis (R-based).
-
-* `integrate/harmonypy`: Added a component for running a Harmony integration analysis (Python-based).
+* `integrate/harmony` and `integrate/harmonypy`: Run a Harmony integration analysis (R-based and Python-based, respectively).
 
 * `integrate/concat`: Added 'move' option to `--other_axis_mode`, which allows merging .obs and .var by only keeping elements of the matrices which are the same in each of the samples, moving the conflicting values to .varm or .obsm.
+
+* `reference/make_reference`: Download a transcriptomics reference and preprocess it (adding ERCC spikeins and filtering with a regex).
+
+* `reference/build_bdrhap_reference`: Compile a reference into a STAR index in the format expected by BD Rhapsody.
 
 * `integrate/concat`: Deprecated 'concat' option for `--other_axis_mode`
 
 * `integrate/concat`: Optimize concat performance by adding multiprocessing and refactoring functions.
+
 ## MAJOR CHANGES
 
 * Multiple components: update to anndata 0.8 with mudata 0.2.0. This means that the format of the .h5mu files have changed.
