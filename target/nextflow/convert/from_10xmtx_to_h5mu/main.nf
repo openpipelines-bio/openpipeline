@@ -145,6 +145,15 @@ logger.addHandler(console_handler)
 logger.info("Reading %s.", par["input"])
 mdata = mu.read_10x_mtx(par["input"])
 
+logger.info("Renaming keys.")
+for adata in mdata.mod.values():
+    adata.var.rename(columns={'gene_ids': 'gene_id', 'feature_types': 'feature_type'}, inplace=True)
+mdata.var = mdata.var.drop(["feature_types", "gene_ids"], axis=1)
+mdata.update()
+
+logger.info("Making unique.")
+mdata.var_names_make_unique()
+
 logger.info("Writing %s.", par["output"])
 mdata.write_h5mu(filename=par["output"])
 logger.info("Finished.")

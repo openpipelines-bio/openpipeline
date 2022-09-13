@@ -331,7 +331,7 @@ functionality:
       ### VIASH END
       
       data <- mudata\\$read_h5mu(par\\$input)
-      rna_data <- data\\$mod[["rna"]]
+      rna_data <- data\\$mod[[par\\$modality]]
       
       ## Run Harmony
       pca_in <- rna_data\\$obsm[[par\\$obsm_input]]
@@ -347,7 +347,7 @@ functionality:
       ## Add Harmony embeddings to Anndata
       rna_data\\$obsm[[par\\$obsm_output]] <- harmony_embedding
       
-      ## Save as H5AD
+      ## Save as h5mu
       data\\$write(par\\$output)
       
       VIASHMAIN
@@ -2102,5 +2102,5 @@ info:
   platform: "nextflow"
   output: "target/nextflow/integrate/harmony"
   viash_version: "0.6.0"
-  git_commit: "ab53b4b2b23496fbc385d511266d01cf24c6424f"
+  git_commit: "bf02391ad16edf35b15b80eb6c86bc52473bd566"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"

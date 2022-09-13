@@ -144,12 +144,12 @@ thisConfig = processConfig([
     },
     {
       "type" : "file",
-      "path" : "../../../resources_test/concat/e18_mouse_brain_fresh_5k_filtered_feature_bc_matrix_subset.h5mu",
+      "path" : "../../../resources_test/concat_test_data/e18_mouse_brain_fresh_5k_filtered_feature_bc_matrix_subset.h5mu",
       "parent" : "file:/home/runner/work/openpipeline/openpipeline/src/integrate/concat/config.vsh.yaml"
     },
     {
       "type" : "file",
-      "path" : "../../../resources_test/concat/human_brain_3k_filtered_feature_bc_matrix_subset.h5mu",
+      "path" : "../../../resources_test/concat_test_data/human_brain_3k_filtered_feature_bc_matrix_subset.h5mu",
       "parent" : "file:/home/runner/work/openpipeline/openpipeline/src/integrate/concat/config.vsh.yaml"
     }
   ],

@@ -182,20 +182,32 @@ function ViashHelp {
   echo "        type: string, multiple values allowed"
   echo "        default: rna"
   echo ""
+  echo "    --obsm_input"
+  echo "        type: string"
+  echo "        default: X_pca"
+  echo "        Which .obsm slot to use as a starting PCA embedding."
+  echo ""
   echo "    -o, --output"
   echo "        type: file, output"
   echo "        example: output.h5mu"
   echo "        Output h5mu file containing the found neighbors."
   echo ""
-  echo "    --obsp_name_prefix"
+  echo "    --uns_output"
   echo "        type: string"
-  echo "        example: foo"
-  echo "        An optional prefix for the obsp slot. If not specified, the neighbors"
-  echo "        data is stored in .uns['neighbors'], distances and connectivities are"
-  echo "        stored in .obsp['distances'] and .obsp['connectivities'] respectively."
-  echo "        If specified, the neighbors data is added to .uns[key_added], distances"
-  echo "        are stored in .obsp[key_added+'_distances'] and connectivities in"
-  echo "        .obsp[key_added+'_connectivities']."
+  echo "        default: neighbors"
+  echo "        Mandatory .uns slot to store various neighbor output objects."
+  echo ""
+  echo "    --obsp_distances"
+  echo "        type: string"
+  echo "        default: distances"
+  echo "        In which .obsp slot to store the distance matrix between the resulting"
+  echo "        neighbors."
+  echo ""
+  echo "    --obsp_connectivities"
+  echo "        type: string"
+  echo "        default: connectivities"
+  echo "        In which .obsp slot to store the connectivities matrix between the"
+  echo "        resulting neighbors."
   echo ""
   echo "    --metric"
   echo "        type: string"
@@ -217,6 +229,11 @@ function ViashHelp {
   echo "        If knn is True, number of nearest neighbors to be searched. If knn is"
   echo "        False, a Gaussian kernel width is set to the distance of the n_neighbors"
   echo "        neighbor."
+  echo ""
+  echo "    --seed"
+  echo "        type: integer"
+  echo "        default: 0"
+  echo "        A random seed."
 }
 ######## Helper functions for setting up Docker images for viash ########
 # expects: ViashDockerBuild
@@ -440,9 +457,9 @@ RUN pip install --upgrade pip && \
 
 LABEL org.opencontainers.image.authors="Dries De Maeyer <ddemaeyer@gmail.com> (maintainer) {account: ddemaey1}, Robrecht Cannoodt <rcannood@gmail.com> (contributor) {github: rcannood, orcid: 0000-0003-3641-729X}"
 LABEL org.opencontainers.image.description="Companion container for running component neighbors find_neighbors"
-LABEL org.opencontainers.image.created="2022-09-13T16:09:35Z"
+LABEL org.opencontainers.image.created="2022-09-13T18:34:06Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="ab53b4b2b23496fbc385d511266d01cf24c6424f"
+LABEL org.opencontainers.image.revision="bf02391ad16edf35b15b80eb6c86bc52473bd566"
 LABEL org.opencontainers.image.version="main_build"
 VIASHDOCKER
 }
@@ -624,6 +641,17 @@ while [[ $# -gt 0 ]]; do
             fi
             shift 1
             ;;
+        --obsm_input)
+            [ -n "$VIASH_PAR_OBSM_INPUT" ] && ViashError Bad arguments for option \'--obsm_input\': \'$VIASH_PAR_OBSM_INPUT\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+            VIASH_PAR_OBSM_INPUT="$2"
+            [ $# -lt 2 ] && ViashError Not enough arguments passed to --obsm_input. Use "--help" to get more information on the parameters. && exit 1
+            shift 2
+            ;;
+        --obsm_input=*)
+            [ -n "$VIASH_PAR_OBSM_INPUT" ] && ViashError Bad arguments for option \'--obsm_input=*\': \'$VIASH_PAR_OBSM_INPUT\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+            VIASH_PAR_OBSM_INPUT=$(ViashRemoveFlags "$1")
+            shift 1
+            ;;
         --output)
             [ -n "$VIASH_PAR_OUTPUT" ] && ViashError Bad arguments for option \'--output\': \'$VIASH_PAR_OUTPUT\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
             VIASH_PAR_OUTPUT="$2"
@@ -641,15 +669,37 @@ while [[ $# -gt 0 ]]; do
             [ $# -lt 2 ] && ViashError Not enough arguments passed to -o. Use "--help" to get more information on the parameters. && exit 1
             shift 2
             ;;
-        --obsp_name_prefix)
-            [ -n "$VIASH_PAR_OBSP_NAME_PREFIX" ] && ViashError Bad arguments for option \'--obsp_name_prefix\': \'$VIASH_PAR_OBSP_NAME_PREFIX\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
-            VIASH_PAR_OBSP_NAME_PREFIX="$2"
-            [ $# -lt 2 ] && ViashError Not enough arguments passed to --obsp_name_prefix. Use "--help" to get more information on the parameters. && exit 1
+        --uns_output)
+            [ -n "$VIASH_PAR_UNS_OUTPUT" ] && ViashError Bad arguments for option \'--uns_output\': \'$VIASH_PAR_UNS_OUTPUT\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+            VIASH_PAR_UNS_OUTPUT="$2"
+            [ $# -lt 2 ] && ViashError Not enough arguments passed to --uns_output. Use "--help" to get more information on the parameters. && exit 1
             shift 2
             ;;
-        --obsp_name_prefix=*)
-            [ -n "$VIASH_PAR_OBSP_NAME_PREFIX" ] && ViashError Bad arguments for option \'--obsp_name_prefix=*\': \'$VIASH_PAR_OBSP_NAME_PREFIX\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
-            VIASH_PAR_OBSP_NAME_PREFIX=$(ViashRemoveFlags "$1")
+        --uns_output=*)
+            [ -n "$VIASH_PAR_UNS_OUTPUT" ] && ViashError Bad arguments for option \'--uns_output=*\': \'$VIASH_PAR_UNS_OUTPUT\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+            VIASH_PAR_UNS_OUTPUT=$(ViashRemoveFlags "$1")
+            shift 1
+            ;;
+        --obsp_distances)
+            [ -n "$VIASH_PAR_OBSP_DISTANCES" ] && ViashError Bad arguments for option \'--obsp_distances\': \'$VIASH_PAR_OBSP_DISTANCES\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+            VIASH_PAR_OBSP_DISTANCES="$2"
+            [ $# -lt 2 ] && ViashError Not enough arguments passed to --obsp_distances. Use "--help" to get more information on the parameters. && exit 1
+            shift 2
+            ;;
+        --obsp_distances=*)
+            [ -n "$VIASH_PAR_OBSP_DISTANCES" ] && ViashError Bad arguments for option \'--obsp_distances=*\': \'$VIASH_PAR_OBSP_DISTANCES\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+            VIASH_PAR_OBSP_DISTANCES=$(ViashRemoveFlags "$1")
+            shift 1
+            ;;
+        --obsp_connectivities)
+            [ -n "$VIASH_PAR_OBSP_CONNECTIVITIES" ] && ViashError Bad arguments for option \'--obsp_connectivities\': \'$VIASH_PAR_OBSP_CONNECTIVITIES\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+            VIASH_PAR_OBSP_CONNECTIVITIES="$2"
+            [ $# -lt 2 ] && ViashError Not enough arguments passed to --obsp_connectivities. Use "--help" to get more information on the parameters. && exit 1
+            shift 2
+            ;;
+        --obsp_connectivities=*)
+            [ -n "$VIASH_PAR_OBSP_CONNECTIVITIES" ] && ViashError Bad arguments for option \'--obsp_connectivities=*\': \'$VIASH_PAR_OBSP_CONNECTIVITIES\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+            VIASH_PAR_OBSP_CONNECTIVITIES=$(ViashRemoveFlags "$1")
             shift 1
             ;;
         --metric)
@@ -672,6 +722,17 @@ while [[ $# -gt 0 ]]; do
         --num_neighbors=*)
             [ -n "$VIASH_PAR_NUM_NEIGHBORS" ] && ViashError Bad arguments for option \'--num_neighbors=*\': \'$VIASH_PAR_NUM_NEIGHBORS\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
             VIASH_PAR_NUM_NEIGHBORS=$(ViashRemoveFlags "$1")
+            shift 1
+            ;;
+        --seed)
+            [ -n "$VIASH_PAR_SEED" ] && ViashError Bad arguments for option \'--seed\': \'$VIASH_PAR_SEED\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+            VIASH_PAR_SEED="$2"
+            [ $# -lt 2 ] && ViashError Not enough arguments passed to --seed. Use "--help" to get more information on the parameters. && exit 1
+            shift 2
+            ;;
+        --seed=*)
+            [ -n "$VIASH_PAR_SEED" ] && ViashError Bad arguments for option \'--seed=*\': \'$VIASH_PAR_SEED\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+            VIASH_PAR_SEED=$(ViashRemoveFlags "$1")
             shift 1
             ;;
         ---setup)
@@ -797,11 +858,26 @@ fi
 if [ -z ${VIASH_PAR_MODALITY+x} ]; then
   VIASH_PAR_MODALITY="rna"
 fi
+if [ -z ${VIASH_PAR_OBSM_INPUT+x} ]; then
+  VIASH_PAR_OBSM_INPUT="X_pca"
+fi
+if [ -z ${VIASH_PAR_UNS_OUTPUT+x} ]; then
+  VIASH_PAR_UNS_OUTPUT="neighbors"
+fi
+if [ -z ${VIASH_PAR_OBSP_DISTANCES+x} ]; then
+  VIASH_PAR_OBSP_DISTANCES="distances"
+fi
+if [ -z ${VIASH_PAR_OBSP_CONNECTIVITIES+x} ]; then
+  VIASH_PAR_OBSP_CONNECTIVITIES="connectivities"
+fi
 if [ -z ${VIASH_PAR_METRIC+x} ]; then
   VIASH_PAR_METRIC="euclidean"
 fi
 if [ -z ${VIASH_PAR_NUM_NEIGHBORS+x} ]; then
   VIASH_PAR_NUM_NEIGHBORS="15"
+fi
+if [ -z ${VIASH_PAR_SEED+x} ]; then
+  VIASH_PAR_SEED="0"
 fi
 
 
@@ -813,8 +889,18 @@ if [[ -n "$VIASH_PAR_NUM_NEIGHBORS" ]]; then
   fi
 fi
 
+if [[ -n "$VIASH_PAR_SEED" ]]; then
+  if ! [[ "$VIASH_PAR_SEED" =~ ^[-+]?[0-9]+$ ]]; then
+    ViashError '--seed' has to be an integer. Use "--help" to get more information on the parameters.
+    exit 1
+  fi
+fi
+
 
 # check whether parameters values are of the right type
+
+
+
 
 
 
@@ -830,6 +916,7 @@ if [ ! -z "$VIASH_PAR_METRIC" ]; then
   set +f
   unset IFS
 fi
+
 
 
 
@@ -893,10 +980,14 @@ from sys import stdout
 par = {
   'input': $( if [ ! -z ${VIASH_PAR_INPUT+x} ]; then echo "'${VIASH_PAR_INPUT//\'/\\\'}'"; else echo None; fi ),
   'modality': $( if [ ! -z ${VIASH_PAR_MODALITY+x} ]; then echo "'${VIASH_PAR_MODALITY//\'/\\\'}'.split(':')"; else echo None; fi ),
+  'obsm_input': $( if [ ! -z ${VIASH_PAR_OBSM_INPUT+x} ]; then echo "'${VIASH_PAR_OBSM_INPUT//\'/\\\'}'"; else echo None; fi ),
   'output': $( if [ ! -z ${VIASH_PAR_OUTPUT+x} ]; then echo "'${VIASH_PAR_OUTPUT//\'/\\\'}'"; else echo None; fi ),
-  'obsp_name_prefix': $( if [ ! -z ${VIASH_PAR_OBSP_NAME_PREFIX+x} ]; then echo "'${VIASH_PAR_OBSP_NAME_PREFIX//\'/\\\'}'"; else echo None; fi ),
+  'uns_output': $( if [ ! -z ${VIASH_PAR_UNS_OUTPUT+x} ]; then echo "'${VIASH_PAR_UNS_OUTPUT//\'/\\\'}'"; else echo None; fi ),
+  'obsp_distances': $( if [ ! -z ${VIASH_PAR_OBSP_DISTANCES+x} ]; then echo "'${VIASH_PAR_OBSP_DISTANCES//\'/\\\'}'"; else echo None; fi ),
+  'obsp_connectivities': $( if [ ! -z ${VIASH_PAR_OBSP_CONNECTIVITIES+x} ]; then echo "'${VIASH_PAR_OBSP_CONNECTIVITIES//\'/\\\'}'"; else echo None; fi ),
   'metric': $( if [ ! -z ${VIASH_PAR_METRIC+x} ]; then echo "'${VIASH_PAR_METRIC//\'/\\\'}'"; else echo None; fi ),
-  'num_neighbors': $( if [ ! -z ${VIASH_PAR_NUM_NEIGHBORS+x} ]; then echo "int('${VIASH_PAR_NUM_NEIGHBORS//\'/\\\'}')"; else echo None; fi )
+  'num_neighbors': $( if [ ! -z ${VIASH_PAR_NUM_NEIGHBORS+x} ]; then echo "int('${VIASH_PAR_NUM_NEIGHBORS//\'/\\\'}')"; else echo None; fi ),
+  'seed': $( if [ ! -z ${VIASH_PAR_SEED+x} ]; then echo "int('${VIASH_PAR_SEED//\'/\\\'}')"; else echo None; fi )
 }
 meta = {
   'functionality_name': $( if [ ! -z ${VIASH_META_FUNCTIONALITY_NAME+x} ]; then echo "'${VIASH_META_FUNCTIONALITY_NAME//\'/\\\'}'"; else echo None; fi ),
@@ -925,16 +1016,33 @@ logger.addHandler(console_handler)
 
 logger.info("Reading input mudata")
 mdata = mu.read_h5mu(par["input"])
-mdata.var_names_make_unique()
 
 for mod in par["modality"]:
     logger.info("Computing a neighborhood graph on modality %s", mod)
-    sc.pp.neighbors(
-        mdata.mod[mod],
+    adata = mdata.mod[mod]
+    neighbors = sc.Neighbors(adata)
+    neighbors.compute_neighbors(
         n_neighbors=par["num_neighbors"], 
+        use_rep=par["obsm_input"],
         metric=par["metric"],
-        key_added=par["obsp_name_prefix"]
+        random_state=par["seed"],
+        method="umap"
     )
+
+    adata.uns[par["uns_output"]] = {
+        'connectivities_key': par["obsp_connectivities"],
+        'distances_key': par["obsp_distances"],
+        'params': {
+            'n_neighbors': neighbors.n_neighbors, 
+            'method': "umap",
+            'random_state': par["seed"],
+            'metric': par["metric"],
+            'use_rep': par["obsm_input"]
+        }
+    }
+
+    adata.obsp[par["obsp_distances"]] = neighbors.distances
+    adata.obsp[par["obsp_connectivities"]] = neighbors.connectivities
 
 logger.info("Writing to %s", par["output"])
 mdata.write(filename=par["output"])

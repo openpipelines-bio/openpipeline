@@ -531,9 +531,9 @@ functionality:
       
       LABEL org.opencontainers.image.authors="Dries Schaumont <Dschaumo@its.jnj.com> (maintainer)"
       LABEL org.opencontainers.image.description="Companion container for running component integrate concat"
-      LABEL org.opencontainers.image.created="2022-09-13T16:09:35Z"
+      LABEL org.opencontainers.image.created="2022-09-13T18:34:05Z"
       LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-      LABEL org.opencontainers.image.revision="ab53b4b2b23496fbc385d511266d01cf24c6424f"
+      LABEL org.opencontainers.image.revision="bf02391ad16edf35b15b80eb6c86bc52473bd566"
       LABEL org.opencontainers.image.version="main_build"
       VIASHDOCKER
       }
@@ -1361,9 +1361,9 @@ functionality:
     path: "test.py"
     is_executable: true
   - type: "file"
-    path: "../../../resources_test/concat/e18_mouse_brain_fresh_5k_filtered_feature_bc_matrix_subset.h5mu"
+    path: "../../../resources_test/concat_test_data/e18_mouse_brain_fresh_5k_filtered_feature_bc_matrix_subset.h5mu"
   - type: "file"
-    path: "../../../resources_test/concat/human_brain_3k_filtered_feature_bc_matrix_subset.h5mu"
+    path: "../../../resources_test/concat_test_data/human_brain_3k_filtered_feature_bc_matrix_subset.h5mu"
   info: {}
   status: "enabled"
   requirements:
@@ -1411,5 +1411,5 @@ info:
   output: "target/docker/integrate/concat"
   executable: "target/docker/integrate/concat/concat"
   viash_version: "0.6.0"
-  git_commit: "ab53b4b2b23496fbc385d511266d01cf24c6424f"
+  git_commit: "bf02391ad16edf35b15b80eb6c86bc52473bd566"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"

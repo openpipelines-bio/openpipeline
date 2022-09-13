@@ -66,6 +66,18 @@ thisConfig = processConfig([
       "multiple_sep" : ":"
     },
     {
+      "type" : "string",
+      "name" : "--uns_neighbors",
+      "description" : "The .uns neighbors slot as output by the `find_neighbors` component.",
+      "default" : [
+        "neighbors"
+      ],
+      "required" : false,
+      "direction" : "input",
+      "multiple" : false,
+      "multiple_sep" : ":"
+    },
+    {
       "type" : "file",
       "name" : "--output",
       "alternatives" : [
@@ -228,6 +240,7 @@ from sys import stdout
 par = {
   'input': $( if [ ! -z ${VIASH_PAR_INPUT+x} ]; then echo "'${VIASH_PAR_INPUT//\\'/\\\\\\'}'"; else echo None; fi ),
   'modality': $( if [ ! -z ${VIASH_PAR_MODALITY+x} ]; then echo "'${VIASH_PAR_MODALITY//\\'/\\\\\\'}'.split(':')"; else echo None; fi ),
+  'uns_neighbors': $( if [ ! -z ${VIASH_PAR_UNS_NEIGHBORS+x} ]; then echo "'${VIASH_PAR_UNS_NEIGHBORS//\\'/\\\\\\'}'"; else echo None; fi ),
   'output': $( if [ ! -z ${VIASH_PAR_OUTPUT+x} ]; then echo "'${VIASH_PAR_OUTPUT//\\'/\\\\\\'}'"; else echo None; fi ),
   'output_key': $( if [ ! -z ${VIASH_PAR_OUTPUT_KEY+x} ]; then echo "'${VIASH_PAR_OUTPUT_KEY//\\'/\\\\\\'}'"; else echo None; fi ),
   'min_dist': $( if [ ! -z ${VIASH_PAR_MIN_DIST+x} ]; then echo "float('${VIASH_PAR_MIN_DIST//\\'/\\\\\\'}')"; else echo None; fi ),
@@ -281,6 +294,7 @@ for mod in par['modality']:
         gamma=par["gamma"],
         negative_sample_rate=par["negative_sample_rate"],
         init_pos=par["init_pos"],
+        neighbors_key=par["uns_neighbors"]
     )
     # note: should be able to set the neighbors key
 

@@ -95,10 +95,34 @@ thisConfig = processConfig([
     },
     {
       "type" : "string",
-      "name" : "--output_key",
-      "description" : "The pre/postfix under which to store the PCA results. More specifically, .obsm[\\"X_\\"+key], .uns[key] and .varm[\\"loadings_\\"+key].",
+      "name" : "--obsm_output",
+      "description" : "In which .obsm slot to store the resulting integrated embedding.",
       "default" : [
-        "pca"
+        "X_pca"
+      ],
+      "required" : false,
+      "direction" : "input",
+      "multiple" : false,
+      "multiple_sep" : ":"
+    },
+    {
+      "type" : "string",
+      "name" : "--varm_output",
+      "description" : "In which .varm slot to store the resulting loadings matrix.",
+      "default" : [
+        "pca_loadings"
+      ],
+      "required" : false,
+      "direction" : "input",
+      "multiple" : false,
+      "multiple_sep" : ":"
+    },
+    {
+      "type" : "string",
+      "name" : "--uns_output",
+      "description" : "In which .uns slot to store the resulting variance objects.",
+      "default" : [
+        "pca_variance"
       ],
       "required" : false,
       "direction" : "input",
@@ -161,7 +185,9 @@ par = {
   'modality': $( if [ ! -z ${VIASH_PAR_MODALITY+x} ]; then echo "'${VIASH_PAR_MODALITY//\\'/\\\\\\'}'.split(':')"; else echo None; fi ),
   'layer': $( if [ ! -z ${VIASH_PAR_LAYER+x} ]; then echo "'${VIASH_PAR_LAYER//\\'/\\\\\\'}'"; else echo None; fi ),
   'output': $( if [ ! -z ${VIASH_PAR_OUTPUT+x} ]; then echo "'${VIASH_PAR_OUTPUT//\\'/\\\\\\'}'"; else echo None; fi ),
-  'output_key': $( if [ ! -z ${VIASH_PAR_OUTPUT_KEY+x} ]; then echo "'${VIASH_PAR_OUTPUT_KEY//\\'/\\\\\\'}'"; else echo None; fi ),
+  'obsm_output': $( if [ ! -z ${VIASH_PAR_OBSM_OUTPUT+x} ]; then echo "'${VIASH_PAR_OBSM_OUTPUT//\\'/\\\\\\'}'"; else echo None; fi ),
+  'varm_output': $( if [ ! -z ${VIASH_PAR_VARM_OUTPUT+x} ]; then echo "'${VIASH_PAR_VARM_OUTPUT//\\'/\\\\\\'}'"; else echo None; fi ),
+  'uns_output': $( if [ ! -z ${VIASH_PAR_UNS_OUTPUT+x} ]; then echo "'${VIASH_PAR_UNS_OUTPUT//\\'/\\\\\\'}'"; else echo None; fi ),
   'num_components': $( if [ ! -z ${VIASH_PAR_NUM_COMPONENTS+x} ]; then echo "int('${VIASH_PAR_NUM_COMPONENTS//\\'/\\\\\\'}')"; else echo None; fi )
 }
 meta = {
@@ -189,8 +215,6 @@ logFormatter = logging.Formatter("%(asctime)s %(levelname)-8s %(message)s")
 console_handler.setFormatter(logFormatter)
 logger.addHandler(console_handler)
 
-okey = par["output_key"]
-
 logger.info("Reading %s.", par["input"])
 mdata = mu.read_h5mu(par["input"])
 
@@ -201,18 +225,16 @@ for mod in par['modality']:
         raise ValueError(f"{par['layer']} was not found in modality {mod}.")
     layer = data.X if not par['layer'] else data.layers[par['layer']]
     # run pca
-    # sc.tl.pca(data, n_comps=par["num_components"])
     X_pca, loadings, variance, variance_ratio = sc.tl.pca(
         layer, 
         n_comps=par["num_components"], 
         return_info=True
     )
 
-    layer_name = "X_" if not par['layer'] else f"{par['layer']}_"
     # store output in specific objects
-    data.obsm[layer_name+okey] = X_pca
-    data.varm["loadings_"+okey] = loadings.T
-    data.uns[okey] = { "variance": variance, "variance_ratio": variance_ratio }
+    data.obsm[par["obsm_output"]] = X_pca
+    data.varm[par["varm_output"]] = loadings.T
+    data.uns[par["uns_output"]] = { "variance": variance, "variance_ratio": variance_ratio }
 
 logger.info("Writing to %s.", par["output"])
 mdata.write_h5mu(filename=par["output"])

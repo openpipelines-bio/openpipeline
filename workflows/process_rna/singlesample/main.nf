@@ -11,14 +11,14 @@ include { readConfig; viashChannel; helpMessage } from workflowDir + "/utils/Wor
 
 config = readConfig("$workflowDir/process_rna/singlesample/config.vsh.yaml")
 
-// keep track of whether this is an integration test or not
-global_params = [ do_publish: true ]
-
 workflow {
   helpMessage(config)
 
   viashChannel(params, config)
+    | view { "Input: $it" }
     | run_wf
+    | view { "Output: $it" }
+
 }
 
 workflow run_wf {
@@ -27,14 +27,23 @@ workflow run_wf {
 
   main:
   output_ch = input_ch
+    // store output value in 3rd slot for later use
+    | map { id, data -> [ id, data, data ] }
+
     // cell filtering
     | filter_with_counts
     | do_filter.run(
       args: [ obs_filter: "filter_with_counts" ]
     )
+
+    // retrieve output value
+    | map { id, file, orig_data -> 
+      [ id, [ input: file ] + orig_data.subMap("output") ]
+    }
+
     // doublet calling
     | filter_with_scrublet.run(
-      auto: [ publish: global_params.do_publish ]
+      auto: [ publish: true ]
     )
     // TODO: ambient rna correction
 
@@ -43,9 +52,6 @@ workflow run_wf {
 }
 
 workflow test_wf {
-  // don't publish output
-  global_params.do_publish = false
-
   // allow changing the resources_test dir
   params.resources_test = params.rootDir + "/resources_test"
 

@@ -36,10 +36,6 @@ functionality:
     - name: "--ignore_missing"
       type: boolean
       description: Should the demultiplexer ignore missing entities (filter, ...)
-  argument_groups:
-    - name: Arguments
-      description: Input parameters for this pipeline
-      arguments: [ id, input, sample_sheet ]
   resources:
     - type: nextflow_script
       path: main.nf

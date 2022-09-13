@@ -101,12 +101,12 @@ thisConfig = processConfig([
     },
     {
       "type" : "file",
-      "path" : "../../../resources_test/merge/pbmc_1k_protein_v3_filtered_feature_bc_matrix_rna.h5mu",
+      "path" : "../../../resources_test/merge_test_data/pbmc_1k_protein_v3_filtered_feature_bc_matrix_rna.h5mu",
       "parent" : "file:/home/runner/work/openpipeline/openpipeline/src/integrate/merge/config.vsh.yml"
     },
     {
       "type" : "file",
-      "path" : "../../../resources_test/merge/pbmc_1k_protein_v3_filtered_feature_bc_matrix_prot.h5mu",
+      "path" : "../../../resources_test/merge_test_data/pbmc_1k_protein_v3_filtered_feature_bc_matrix_prot.h5mu",
       "parent" : "file:/home/runner/work/openpipeline/openpipeline/src/integrate/merge/config.vsh.yml"
     }
   ],

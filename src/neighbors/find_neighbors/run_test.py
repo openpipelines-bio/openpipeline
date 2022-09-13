@@ -21,10 +21,13 @@ logger.addHandler(console_handler)
 input = f"{meta['resources_dir']}/pbmc_1k_protein_v3/pbmc_1k_protein_v3_mms.h5mu"
 output = "output.h5mu"
 cmd_pars = [
-    "./" + meta["functionality_name"],
+    meta["executable"],
     "--input", input,
     "--output", output,
-    "--obsp_name_prefix", "foo"
+    "--obsm_input", "log_normalized_pca",
+    "--uns_output", "foo_neigh",
+    "--obsp_distances", "bar_dist",
+    "--obsp_connectivities", "baz_conn"
 ]
 out = subprocess.check_output(cmd_pars).decode("utf-8")
 
@@ -49,7 +52,9 @@ assert rna_in.shape == rna_out.shape, "Should have same shape as before"
 assert prot_in.shape == prot_out.shape, "Should have same shape as before"
 
 logger.info("> Check existence of output fields.")
-assert "foo_connectivities" in rna_out.obsp, "Output should have .obsp['foo_connectivities']"
-assert "foo_distances" in rna_out.obsp, "Output should have .obsp['foo_distances']"
-assert "foo_connectivities" not in rna_in.obsp, "Input should not have .obsp['foo_connectivities']"
-assert "foo_distances" not in rna_in.obsp, "Input should not have .obsp['foo_distances']"
+assert "foo_neigh" in rna_out.uns, "Output should have .uns['foo_neigh']"
+assert "baz_conn" in rna_out.obsp, "Output should have .obsp['baz_conn']"
+assert "bar_dist" in rna_out.obsp, "Output should have .obsp['bar_dist']"
+assert "foo_neigh" not in rna_in.uns, "Output should not have .uns['foo_neigh']"
+assert "baz_conn" not in rna_in.obsp, "Input should not have .obsp['baz_conn']"
+assert "bar_dist" not in rna_in.obsp, "Input should not have .obsp['bar_dist']"

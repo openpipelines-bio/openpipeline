@@ -398,9 +398,9 @@ RUN pip install --upgrade pip && \
 
 LABEL org.opencontainers.image.authors="Robrecht Cannoodt <rcannood@gmail.com> (maintainer) {github: rcannood, orcid: 0000-0003-3641-729X}"
 LABEL org.opencontainers.image.description="Companion container for running component convert from_10xh5_to_h5mu"
-LABEL org.opencontainers.image.created="2022-09-13T16:09:34Z"
+LABEL org.opencontainers.image.created="2022-09-13T18:34:05Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="ab53b4b2b23496fbc385d511266d01cf24c6424f"
+LABEL org.opencontainers.image.revision="bf02391ad16edf35b15b80eb6c86bc52473bd566"
 LABEL org.opencontainers.image.version="main_build"
 VIASHDOCKER
 }
@@ -802,6 +802,12 @@ mdata = mu.read_10x_h5(par["input"])
 
 logger.info("Making unique.")
 mdata.var_names_make_unique()
+
+logger.info("Renaming keys.")
+for adata in mdata.mod.values():
+    adata.var.rename(columns={'gene_ids': 'gene_id', 'feature_types': 'feature_type'}, inplace=True)
+mdata.var = mdata.var.drop(["feature_types", "gene_ids"], axis=1)
+mdata.update()
 
 logger.info("Writing %s.", par["output"])
 mdata.write_h5mu(par["output"])

@@ -220,7 +220,7 @@ rm(viash_orig_warn_)
 ### VIASH END
 
 data <- mudata\\$read_h5mu(par\\$input)
-rna_data <- data\\$mod[["rna"]]
+rna_data <- data\\$mod[[par\\$modality]]
 
 ## Run Harmony
 pca_in <- rna_data\\$obsm[[par\\$obsm_input]]
@@ -236,7 +236,7 @@ harmony_embedding <- HarmonyMatrix(
 ## Add Harmony embeddings to Anndata
 rna_data\\$obsm[[par\\$obsm_output]] <- harmony_embedding
 
-## Save as H5AD
+## Save as h5mu
 data\\$write(par\\$output)
 
 VIASHMAIN

@@ -185,7 +185,7 @@ rm(viash_orig_warn_)
 if (par\\$verbose) cat("Loading dependencies\\\\n")
 requireNamespace("hdf5r", quietly = TRUE)
 
-if (par\\$verbose) cat("Opening h5ad file\\\\n")
+if (par\\$verbose) cat("Opening h5 file\\\\n")
 h5 <- hdf5r::H5File\\$new(par\\$input, mode = "r")
 
 if (par\\$verbose) cat("Reading data in memory\\\\n")

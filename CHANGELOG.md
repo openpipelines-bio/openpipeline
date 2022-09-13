@@ -1,5 +1,9 @@
 # openpipeline 0.5.0
 
+## BREAKING CHANGES
+
+* Many components: Renamed `.var["gene_ids"]` and `.var["feature_types"]` to `.var["gene_id"]` and `.var["feature_type"]`.
+
 ## NEW FUNCTIONALITY
 
 * `graph/bbknn`: BBKNN network generation.
@@ -7,6 +11,11 @@
 * `workflows/integration/multiomics`: implement pipeline for processing multiple multiomics samples.
 
 * `transform/scaling`: Scale data to unit variance and zero mean.
+
+
+* `mapping/bd_rhapsody` and `workflows/ingestion/bd_rhapsody`: Added generic component and pipeline for running the BD Rhapsody WTA or Targeted analysis.
+
+* `convert/from_bdrhap_to_h5mu`: Added support for being able to deal with WTA, Targeted, SMK, AbSeq and VDJ data.
 
 * `integrate/harmony` and `integrate/harmonypy`: Run a Harmony integration analysis (R-based and Python-based, respectively).
 
@@ -34,6 +43,14 @@
 
 * `velocity/velocyto`: Allow configuring memory and parallellisation.
 
+* `cluster/leiden`: Add `--obsp_connectivities` parameter to allow choosing the output slot.
+
+* `workflows/process_rna/singlesample`, `workflows/process_rna/multisample` and `workflows/integration/multimodal_integration`: Allow choosing the output paths.
+
+* `neighbors/bbknn` and `neighbors/find_neighbors`: Add parameters for choosing the input/output slots.
+
+* `dimred/pca` and `dimred/umap`: Add parameters for choosing the input/output slots.
+
 ## BUG FIXES
 
 * Several components: revert using slim versions of containers because they do not provide the tools to run nextflow with trace capabilities.
@@ -43,6 +60,12 @@
 * `workflows/process_rna/multisample`, `workflows/process_rna/singlesample` and `workflows/integration/multimodal_integration`: use nextflow trace reporting when running integration tests.
 
 ## DEPRECATED
+
+* `convert/from_10xh5_to_h5ad` and `convert/from_bdrhap_to_h5ad`: Removed h5ad based components.
+
+* `mapping/bd_rhapsody_wta` and `workflows/ingestion/bd_rhapsody_wta`: Deprecated in favour for more generic `mapping/bd_rhapsody` and `workflows/ingestion/bd_rhapsody` pipelines.
+
+* `convert/from_csv_to_h5mu`: Disable until it is needed again.
 
 # openpipeline 0.4.1
 
