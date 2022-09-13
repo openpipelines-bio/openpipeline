@@ -33,5 +33,5 @@ harmony_embedding <- HarmonyMatrix(
 ## Add Harmony embeddings to Anndata
 rna_data$obsm[[par$obsm_output]] <- harmony_embedding
 
-## Save as H5AD
+## Save as h5mu
 data$write(par$output)

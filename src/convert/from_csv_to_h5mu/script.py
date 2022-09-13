@@ -9,7 +9,7 @@ from sys import stdout
 ## VIASH START
 par = {
     "input": "resources_test/pbmc_1k_protein_v3/pbmc_1k_protein_v3_filtered_feature_bc_matrix.csv",
-    "output": "output.h5ad",
+    "output": "output.h5mu",
     "delimiter": ",",
     "use_column_name": "true",
     "compression": "gzip",

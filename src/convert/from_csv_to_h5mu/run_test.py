@@ -16,7 +16,7 @@ out = subprocess.check_output(cmd_pars).decode("utf-8")
 assert path.exists("output.h5mu"), "No output was created."
 
 # read it with scanpy
-data = mu.read_h5ad("output.h5mu")
+data = mu.read_h5mu("output.h5mu")
 
 # check whether gex was found
 assert data.mod["rna"].var["feature_type"].unique() == [
