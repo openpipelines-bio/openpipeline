@@ -24,6 +24,7 @@ functionality:
           multiple: true
           multiple_sep: ';'
           example: input.h5mu
+          type: file
   resources:
     - type: nextflow_script
       path: main.nf

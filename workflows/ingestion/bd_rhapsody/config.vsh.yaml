@@ -26,7 +26,7 @@ functionality:
           description: "Whether to run a whole transcriptome analysis (WTA) or a targeted analysis."
           choices: [ wta, targeted ]
           example: "wta"
-          rerquired: true
+          required: true
         - name: "--id"
           required: true
           type: string
