@@ -7,7 +7,7 @@ functionality:
     - name: Toni Verbeiren
       roles: [ author, maintainer ]
       props: { github: tverbeiren }
-    - name: Marijke Van moerbeke
+    - name: Marijke Van Moerbeke
       roles: [ author ]
       props: { orcid: 0000-0002-3097-5621 }
   arguments:

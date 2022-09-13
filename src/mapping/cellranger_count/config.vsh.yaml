@@ -35,7 +35,7 @@ functionality:
     # arguments
     - type: integer
       name: --expect_cells
-      default: 3000
+      example: 3000
       description: "Expected number of recovered cells, used as input to cell calling algorithm."
 
     - type: string
