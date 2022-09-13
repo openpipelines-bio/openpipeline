@@ -495,9 +495,9 @@ functionality:
       RUN :
       LABEL org.opencontainers.image.authors="Toni Verbeiren (author, maintainer) {github: tverbeiren}"
       LABEL org.opencontainers.image.description="Companion container for running component demux bcl2fastq"
-      LABEL org.opencontainers.image.created="2022-09-13T12:13:08Z"
+      LABEL org.opencontainers.image.created="2022-09-13T12:36:55Z"
       LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-      LABEL org.opencontainers.image.revision="18af7d9ac0812cf16b09c22054164efe5b1e3f9c"
+      LABEL org.opencontainers.image.revision="ec82f3fd0568e7e3c711bcc3c3b25ae9a19f7e2b"
       LABEL org.opencontainers.image.version="main_build"
       VIASHDOCKER
       }
@@ -1032,5 +1032,5 @@ info:
   output: "target/docker/demux/bcl2fastq"
   executable: "target/docker/demux/bcl2fastq/bcl2fastq"
   viash_version: "0.6.0"
-  git_commit: "18af7d9ac0812cf16b09c22054164efe5b1e3f9c"
+  git_commit: "ec82f3fd0568e7e3c711bcc3c3b25ae9a19f7e2b"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"

@@ -2244,5 +2244,5 @@ info:
   platform: "nextflow"
   output: "target/nextflow/velocity/scvelo"
   viash_version: "0.6.0"
-  git_commit: "18af7d9ac0812cf16b09c22054164efe5b1e3f9c"
+  git_commit: "ec82f3fd0568e7e3c711bcc3c3b25ae9a19f7e2b"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"
