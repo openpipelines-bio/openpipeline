@@ -1,5 +1,4 @@
 ### VIASH START
-
 par = {
 }
 ### VIASH END
@@ -14,14 +13,13 @@ for mod_name in par["modality"]:
 
     # Integration.
     scanorama_integrate(mod, 
-                        key = par["obs_batch"], 
-                        basis = par["obsm_input"],
+                        key=par["obs_batch"], 
+                        basis=par["obsm_input"],
                         adjusted_basis=par["obsm_output"],
                         knn=par["knn"],
-                        alpha = par["alpha"], 
-                        sigma = par["sigma"],
-                        approx = par["approx"],
-                        batch_size= par["batch_size"] )
-
+                        alpha=par["alpha"], 
+                        sigma=par["sigma"],
+                        approx=par["approx"],
+                        batch_size=par["batch_size"] )
 
 mdata.write(par["output"], compression = "gzip")
