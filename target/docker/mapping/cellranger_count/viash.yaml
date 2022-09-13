@@ -586,9 +586,9 @@ functionality:
       RUN apt update && apt upgrade -y
       LABEL org.opencontainers.image.authors="Angela Pisco (author) {github: aopisco, orcid: 0000-0003-0142-2355}, Samuel D'Souza (author) {github: srdsam}, Robrecht Cannoodt <rcannood@gmail.com> (author, maintainer) {github: rcannood, orcid: 0000-0003-3641-729X}"
       LABEL org.opencontainers.image.description="Companion container for running component mapping cellranger_count"
-      LABEL org.opencontainers.image.created="2022-09-13T20:30:52Z"
+      LABEL org.opencontainers.image.created="2022-09-13T21:12:18Z"
       LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-      LABEL org.opencontainers.image.revision="73321f7bf5410afa43e58a4cccea13b12211383c"
+      LABEL org.opencontainers.image.revision="aca6d564e84411a93cb285cee24678ca137b540c"
       LABEL org.opencontainers.image.version="main_build"
       VIASHDOCKER
       }
@@ -1213,5 +1213,5 @@ info:
   output: "target/docker/mapping/cellranger_count"
   executable: "target/docker/mapping/cellranger_count/cellranger_count"
   viash_version: "0.6.0"
-  git_commit: "73321f7bf5410afa43e58a4cccea13b12211383c"
+  git_commit: "aca6d564e84411a93cb285cee24678ca137b540c"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"

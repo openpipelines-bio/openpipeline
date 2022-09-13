@@ -129,6 +129,18 @@ thisConfig = processConfig([
       "multiple_sep" : ":"
     },
     {
+      "type" : "string",
+      "name" : "--group_name",
+      "description" : "Top level name for the group of entries.",
+      "example" : [
+        "param_list"
+      ],
+      "required" : false,
+      "direction" : "input",
+      "multiple" : false,
+      "multiple_sep" : ":"
+    },
+    {
       "type" : "file",
       "name" : "--output",
       "description" : "Output YAML file.",
@@ -176,6 +188,7 @@ par <- list(
   "n_basename_id" = $( if [ ! -z ${VIASH_PAR_N_BASENAME_ID+x} ]; then echo "as.integer('${VIASH_PAR_N_BASENAME_ID//\\'/\\\\\\'}')"; else echo NULL; fi ),
   "id_name" = $( if [ ! -z ${VIASH_PAR_ID_NAME+x} ]; then echo "'${VIASH_PAR_ID_NAME//\\'/\\\\\\'}'"; else echo NULL; fi ),
   "path_name" = $( if [ ! -z ${VIASH_PAR_PATH_NAME+x} ]; then echo "'${VIASH_PAR_PATH_NAME//\\'/\\\\\\'}'"; else echo NULL; fi ),
+  "group_name" = $( if [ ! -z ${VIASH_PAR_GROUP_NAME+x} ]; then echo "'${VIASH_PAR_GROUP_NAME//\\'/\\\\\\'}'"; else echo NULL; fi ),
   "output" = $( if [ ! -z ${VIASH_PAR_OUTPUT+x} ]; then echo "'${VIASH_PAR_OUTPUT//\\'/\\\\\\'}'"; else echo NULL; fi )
 )
 
@@ -248,6 +261,10 @@ par_list <- map2(
     setNames(list(id, input), c(par\\$id_name, par\\$path_name))
   }
 )
+
+if (!is.null(par\\$group_name)) {
+  par_list <- setNames(list(par_list), par\\$group_name)
+}
 
 cat("> Writing as YAML\\\\n")
 yaml::write_yaml(par_list, par\\$output)

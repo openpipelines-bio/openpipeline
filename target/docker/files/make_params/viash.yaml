@@ -94,6 +94,18 @@ functionality:
     direction: "input"
     multiple: false
     multiple_sep: ":"
+  - type: "string"
+    name: "--group_name"
+    alternatives: []
+    description: "Top level name for the group of entries."
+    example:
+    - "param_list"
+    default: []
+    required: false
+    choices: []
+    direction: "input"
+    multiple: false
+    multiple_sep: ":"
   - type: "file"
     name: "--output"
     alternatives: []
@@ -309,6 +321,11 @@ functionality:
         echo "        type: string"
         echo "        default: path"
         echo "        The name for storing the path field in the yaml."
+        echo ""
+        echo "    --group_name"
+        echo "        type: string"
+        echo "        example: param_list"
+        echo "        Top level name for the group of entries."
         echo ""
         echo "    --output"
         echo "        type: file, required parameter, output"
@@ -535,9 +552,9 @@ functionality:
       RUN :
       LABEL org.opencontainers.image.authors="Angela Pisco (author) {github: aopisco, orcid: 0000-0003-0142-2355}, Robrecht Cannoodt <rcannood@gmail.com> (maintainer, author) {github: rcannood, orcid: 0000-0003-3641-729X}"
       LABEL org.opencontainers.image.description="Companion container for running component files make_params"
-      LABEL org.opencontainers.image.created="2022-09-13T20:30:54Z"
+      LABEL org.opencontainers.image.created="2022-09-13T21:12:21Z"
       LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-      LABEL org.opencontainers.image.revision="73321f7bf5410afa43e58a4cccea13b12211383c"
+      LABEL org.opencontainers.image.revision="aca6d564e84411a93cb285cee24678ca137b540c"
       LABEL org.opencontainers.image.version="main_build"
       VIASHDOCKER
       }
@@ -751,6 +768,17 @@ functionality:
                   VIASH_PAR_PATH_NAME=$(ViashRemoveFlags "$1")
                   shift 1
                   ;;
+              --group_name)
+                  [ -n "$VIASH_PAR_GROUP_NAME" ] && ViashError Bad arguments for option \'--group_name\': \'$VIASH_PAR_GROUP_NAME\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+                  VIASH_PAR_GROUP_NAME="$2"
+                  [ $# -lt 2 ] && ViashError Not enough arguments passed to --group_name. Use "--help" to get more information on the parameters. && exit 1
+                  shift 2
+                  ;;
+              --group_name=*)
+                  [ -n "$VIASH_PAR_GROUP_NAME" ] && ViashError Bad arguments for option \'--group_name=*\': \'$VIASH_PAR_GROUP_NAME\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+                  VIASH_PAR_GROUP_NAME=$(ViashRemoveFlags "$1")
+                  shift 1
+                  ;;
               --output)
                   [ -n "$VIASH_PAR_OUTPUT" ] && ViashError Bad arguments for option \'--output\': \'$VIASH_PAR_OUTPUT\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
                   VIASH_PAR_OUTPUT="$2"
@@ -929,6 +957,7 @@ functionality:
       
       
       
+      
       # detect volumes from file arguments
       if [ ! -z "$VIASH_PAR_BASE_DIR" ]; then
         VIASH_EXTRA_MOUNTS="$VIASH_EXTRA_MOUNTS $(ViashAutodetectMountArg "$VIASH_PAR_BASE_DIR")"
@@ -995,6 +1024,7 @@ functionality:
         "n_basename_id" = $( if [ ! -z ${VIASH_PAR_N_BASENAME_ID+x} ]; then echo "as.integer('${VIASH_PAR_N_BASENAME_ID//\'/\\\'}')"; else echo NULL; fi ),
         "id_name" = $( if [ ! -z ${VIASH_PAR_ID_NAME+x} ]; then echo "'${VIASH_PAR_ID_NAME//\'/\\\'}'"; else echo NULL; fi ),
         "path_name" = $( if [ ! -z ${VIASH_PAR_PATH_NAME+x} ]; then echo "'${VIASH_PAR_PATH_NAME//\'/\\\'}'"; else echo NULL; fi ),
+        "group_name" = $( if [ ! -z ${VIASH_PAR_GROUP_NAME+x} ]; then echo "'${VIASH_PAR_GROUP_NAME//\'/\\\'}'"; else echo NULL; fi ),
         "output" = $( if [ ! -z ${VIASH_PAR_OUTPUT+x} ]; then echo "'${VIASH_PAR_OUTPUT//\'/\\\'}'"; else echo NULL; fi )
       )
       
@@ -1068,6 +1098,10 @@ functionality:
         }
       )
       
+      if (!is.null(par\$group_name)) {
+        par_list <- setNames(list(par_list), par\$group_name)
+      }
+      
       cat("> Writing as YAML\\n")
       yaml::write_yaml(par_list, par\$output)
       
@@ -1111,5 +1145,5 @@ info:
   output: "target/docker/files/make_params"
   executable: "target/docker/files/make_params/make_params"
   viash_version: "0.6.0"
-  git_commit: "73321f7bf5410afa43e58a4cccea13b12211383c"
+  git_commit: "aca6d564e84411a93cb285cee24678ca137b540c"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"
