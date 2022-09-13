@@ -369,15 +369,11 @@ def main(par: dict[str, Any], meta: dict[str, Any]):
       env["TMPDIR"] = temp_dir
 
       logger.info("> " + ' '.join(cmd))
-
-      try:
-        _ = subprocess.check_call(
-          cmd,
-          cwd=os.path.dirname(config_file),
-          env=env
-        )
-      finally:
-        shutil.rmtree(temp_dir)
+      _ = subprocess.check_call(
+        cmd,
+        cwd=os.path.dirname(config_file),
+        env=env
+      )
 
     # look for counts file
     if not par["sample_prefix"]:
