@@ -6,7 +6,6 @@ import logging
 from sys import stdout
 from typing import Any
 import pandas as pd
-import shutil
 
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
@@ -38,7 +37,7 @@ meta = {
 ## VIASH END
 
 def strip_margin(text: str) -> str:
-  return re.sub('\n[ \t]*\|', '\n', text)
+  return re.sub('(\n?)[ \t]*\|', '\\1', text)
 
 def process_params(par: dict[str, Any]) -> str:
   # check input parameters
@@ -74,16 +73,17 @@ def process_params(par: dict[str, Any]) -> str:
   return par
 
 def generate_config(par: dict[str, Any]) -> str:
-  content_list = [strip_margin(f"""#!/usr/bin/env cwl-runner
-  |
-  |cwl:tool: rhapsody
-  |
-  |# This is a YML file used to specify the inputs for a BD Genomics {"WTA" if par["mode"] == "wta" else "Targeted" } Rhapsody Analysis pipeline run. See the
-  |# BD Genomics Analysis Setup User Guide (Doc ID: 47383) for more details.
-  |
-  |## Reads (required) - Path to your read files in the FASTQ.GZ format. You may specify as many R1/R2 read pairs as you want.
-  |Reads:
-  |""")]
+  content_list = [strip_margin(f"""\
+    |#!/usr/bin/env cwl-runner
+    |
+    |cwl:tool: rhapsody
+    |
+    |# This is a YML file used to specify the inputs for a BD Genomics {"WTA" if par["mode"] == "wta" else "Targeted" } Rhapsody Analysis pipeline run. See the
+    |# BD Genomics Analysis Setup User Guide (Doc ID: 47383) for more details.
+    |
+    |## Reads (required) - Path to your read files in the FASTQ.GZ format. You may specify as many R1/R2 read pairs as you want.
+    |Reads:
+    |""")]
 
   for file in par["input"]:
     content_list.append(strip_margin(f"""\
