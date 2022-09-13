@@ -1,6 +1,6 @@
 functionality:
   name: "from_bdrhap_to_h5ad"
-  enabled: false
+  status: disabled
   namespace: "convert"
   version: "dev"
   description: |
