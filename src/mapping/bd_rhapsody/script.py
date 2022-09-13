@@ -268,7 +268,8 @@ def generate_cwl_file(par: dict[str, Any], meta: dict[str, Any]) -> str:
 
     # Inject computational requirements into pipeline
     if meta["memory_mb"]:
-      cwl_data = re.sub('"ramMin": [^\n]*,\n', f'"ramMin": {int(float(meta["memory_mb"])*.75)},\n', cwl_data)
+      memory = int(meta["memory_mb"]) - 2000 # keep 2gb for OS
+      cwl_data = re.sub('"ramMin": [^\n]*,\n', f'"ramMin": {memory},\n', cwl_data)
     if meta["n_proc"]:
       cwl_data = re.sub('"coresMin": [^\n]*,\n', f'"coresMin": {meta["n_proc"]},\n', cwl_data)
 

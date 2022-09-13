@@ -23,8 +23,8 @@ if ! grep -q '"coresMin": 11,' output2/pipeline.cwl; then
   echo Overriding minimum cores did not work
   exit 1
 fi
-
-if ! grep -q '"ramMin": 57344,' output2/pipeline.cwl; then
+# (56 - 2) * 1024 = 55344
+if ! grep -q '"ramMin": 55344,' output2/pipeline.cwl; then
   echo Overriding minimum ram did not work
   exit 1
 fi
