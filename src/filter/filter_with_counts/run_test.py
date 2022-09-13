@@ -39,7 +39,7 @@ class TestFilterWithCounts(TestCase):
 
     def _run_and_check_output(self, args_as_list):
         try:
-            subprocess_args = [f"./{functionality_name}"] + args_as_list
+            subprocess_args = [meta['executable']] + args_as_list
             logger.info(" ".join(subprocess_args))
             subprocess.check_output(subprocess_args)
         except subprocess.CalledProcessError as e:

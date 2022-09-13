@@ -20,7 +20,7 @@ input_file = f"{resources_dir}/pbmc_1k_protein_v3/pbmc_1k_protein_v3_mms.h5mu"
 class TestScaling(TestCase):
     def _run_and_check_output(self, args_as_list):
         try:
-            subprocess.check_output([f"./{functionality_name}"] + args_as_list)
+            subprocess.check_output([meta['executable']] + args_as_list)
         except subprocess.CalledProcessError as e:
             print(e.stdout.decode("utf-8"))
             raise e

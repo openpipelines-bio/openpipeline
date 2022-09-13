@@ -23,7 +23,7 @@ input_sample2_file = f"{resources_dir}/pbmc_1k_protein_v3_filtered_feature_bc_ma
 class TestMerge(unittest.TestCase):
     def _run_and_check_output(self, args_as_list):
         try:
-            subprocess.check_output([f"./{functionality_name}"] + args_as_list, stderr=subprocess.STDOUT)
+            subprocess.check_output([meta['executable']] + args_as_list, stderr=subprocess.STDOUT)
         except subprocess.CalledProcessError as e:
             print(e.stdout.decode("utf-8"))
             raise e

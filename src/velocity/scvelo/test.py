@@ -16,7 +16,7 @@ input_loom = f"{resources_dir}/cellranger_tiny.loom"
 class TestScVelo(unittest.TestCase):
     def _run_and_check_output(self, args_as_list):
         try:
-            subprocess.check_output([f"./{functionality_name}"] + args_as_list)
+            subprocess.check_output([meta['executable']] + args_as_list)
         except subprocess.CalledProcessError as e:
             print(e.stdout.decode("utf-8"))
             raise e
