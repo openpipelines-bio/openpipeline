@@ -394,7 +394,7 @@ functionality:
       fi
       if [ ! -z "\\$meta_memory_gb" ]; then 
         # always keep 2gb for the OS itself
-        memory_gb=\\`python -c "print(int('\\$meta_memory_gb') - 2000)"\\`
+        memory_gb=\\`python -c "print(int('\\$meta_memory_gb') - 2)"\\`
         extra_params+=( "--localmem=\\$memory_gb" )
       fi
       if [ ! -z "\\$par_expect_cells" ]; then 
@@ -2181,5 +2181,5 @@ info:
   platform: "nextflow"
   output: "target/nextflow/mapping/cellranger_count"
   viash_version: "0.6.0"
-  git_commit: "d98433c997661b46b9560b8f20b4acafc1a29a6c"
+  git_commit: "ab53b4b2b23496fbc385d511266d01cf24c6424f"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"

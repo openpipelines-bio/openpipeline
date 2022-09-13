@@ -253,7 +253,7 @@ if [ ! -z "\\$meta_n_proc" ]; then
 fi
 if [ ! -z "\\$meta_memory_gb" ]; then 
   # always keep 2gb for the OS itself
-  memory_gb=\\`python -c "print(int('\\$meta_memory_gb') - 2000)"\\`
+  memory_gb=\\`python -c "print(int('\\$meta_memory_gb') - 2)"\\`
   extra_params+=( "--localmem=\\$memory_gb" )
 fi
 if [ ! -z "\\$par_expect_cells" ]; then 
