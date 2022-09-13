@@ -29,8 +29,10 @@ data = sc.read_csv(
 )
 
 logger.info("Renaming keys.")
-for adata in data.mod.items:
+for adata in data.mod.values():
     adata.var.rename(columns={'gene_ids': 'gene_id', 'feature_types': 'feature_type'}, inplace=True)
+data.var = data.var.drop(["feature_types", "gene_ids"], axis=1)
+data.update()
 
 logger.info("Converting.")
 data.var_names_make_unique()
