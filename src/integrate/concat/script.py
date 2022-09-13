@@ -6,6 +6,7 @@ from sys import stdout
 import pandas as pd
 import numpy as np
 from collections.abc import Iterable
+from multiprocessing import Pool
 
 ### VIASH START
 par = {
@@ -16,6 +17,10 @@ par = {
     "obs_sample_name": "sample_id",
     "compression": "gzip",
     "other_axis_mode": "move"
+}
+meta = {
+    "n_proc": 10
+
 }
 ### VIASH END
 
@@ -76,17 +81,24 @@ def group_modalities(samples: Iterable[anndata.AnnData]) -> dict[str, anndata.An
     logger.info("Successfully sorted modalities for the different samples.")
     return mods
 
+def nunique(row):
+    unique = pd.unique(row)
+    unique_without_na = pd.core.dtypes.missing.remove_na_arraylike(unique)
+    return len(unique_without_na)
 
-def any_row_contains_duplicate_values(frame: pd.DataFrame) -> bool:
+def any_row_contains_duplicate_values(n_processes: int, frame: pd.DataFrame) -> bool:
     """
     Check if any row contains duplicate values, that are not NA.
     """
-    number_of_unique = frame.nunique(axis=1, dropna=True)
+    numpy_array = frame.to_numpy()
+    with Pool(n_processes) as pool:
+        number_of_unique = pool.map(nunique, iter(numpy_array))
+    number_of_unique = pd.Series(number_of_unique, index=frame.index)
     non_na_counts = frame.count(axis=1)
     is_duplicated = (number_of_unique - non_na_counts) != 0
     return is_duplicated.any()
 
-def concatenate_matrices(sample_ids: tuple[str], matrices: Iterable[pd.DataFrame]) \
+def concatenate_matrices(n_processes: int, sample_ids: tuple[str], matrices: Iterable[pd.DataFrame]) \
     -> tuple[dict[str, pd.DataFrame], pd.DataFrame | None, dict[str, pd.core.dtypes.dtypes.Dtype]]:
     """
     Merge matrices by combining columns that have the same name.
@@ -98,7 +110,8 @@ def concatenate_matrices(sample_ids: tuple[str], matrices: Iterable[pd.DataFrame
     if not column_names:
         return {}, None
     conflicts, concatenated_matrix = \
-        split_conflicts_and_concatenated_columns(sample_ids,
+        split_conflicts_and_concatenated_columns(n_processes,
+                                                 sample_ids,
                                                  matrices,
                                                  column_names)
     original_dtypes = get_original_dtypes(matrices, column_names)
@@ -129,7 +142,15 @@ def set_dtypes_concatenated_columns(original_dtypes: dict[str, pd.core.dtypes.dt
                                       if col in concatenated_matrix.columns}
     return cast_to_original_dtype(concatenated_matrix, curr_concat_matrix_cols_dtypes)
 
-def split_conflicts_and_concatenated_columns(sample_ids: tuple[str],
+def get_first_non_na_value_vector(df):
+    numpy_arr = df.to_numpy()
+    n_rows, n_cols = numpy_arr.shape
+    col_index = pd.isna(numpy_arr).argmin(axis=1)
+    flat_index = n_cols * np.arange(n_rows) + col_index
+    return pd.Series(numpy_arr.ravel()[flat_index], index=df.index, name=df.columns[0])
+
+def split_conflicts_and_concatenated_columns(n_processes: int,
+                                             sample_ids: tuple[str],
                                              matrices: Iterable[pd.DataFrame],
                                              column_names: Iterable[str]) -> \
                                             tuple[dict[str, pd.DataFrame], pd.DataFrame]:
@@ -146,11 +167,12 @@ def split_conflicts_and_concatenated_columns(sample_ids: tuple[str],
         columns = [var[column_name] for var in matrices if column_name in var]
         assert columns, "Some columns should have been found."
         concatenated_columns = pd.concat(columns, axis=1, join="outer")
-        if any_row_contains_duplicate_values(concatenated_columns):
+        if any_row_contains_duplicate_values(n_processes, concatenated_columns):
             concatenated_columns.columns = sample_ids
             conflicts[f'conflict_{column_name}'] = concatenated_columns
         else:
-            unique_values = concatenated_columns.fillna(method='bfill', axis=1).iloc[:, 0]
+            unique_values = get_first_non_na_value_vector(concatenated_columns)
+            # concatenated_columns.fillna(method='bfill', axis=1).iloc[:, 0]
             concatenated_matrix.append(unique_values)
     if concatenated_matrix:
         concatenated_matrix = pd.concat(concatenated_matrix, join="outer", axis=1)
@@ -194,7 +216,7 @@ def get_original_dtypes(matrices: Iterable[pd.DataFrame],
     return dtypes
 
 
-def split_conflicts_modalities(sample_ids: tuple[str], modalities: Iterable[anndata.AnnData]) \
+def split_conflicts_modalities(n_processes: int, sample_ids: tuple[str], modalities: Iterable[anndata.AnnData]) \
         -> tuple[dict[str, dict[str, pd.DataFrame]],  dict[str, pd.DataFrame | None]]:
         """
         Merge .var and .obs matrices of the anndata objects. Columns are merged
@@ -207,7 +229,7 @@ def split_conflicts_modalities(sample_ids: tuple[str], modalities: Iterable[annd
         conflicts_result = {}
         for matrix_name in matrices_to_parse:
             matrices = [getattr(modality, matrix_name) for modality in modalities]
-            conflicts, concatenated_matrix = concatenate_matrices(sample_ids, matrices)
+            conflicts, concatenated_matrix = concatenate_matrices(n_processes, sample_ids, matrices)
             conflicts_result[f"{matrix_name}m"] = conflicts
             concatenated_result[matrix_name] = concatenated_matrix
         return conflicts_result, concatenated_result
@@ -262,14 +284,14 @@ def set_conflicts(concatenated_data: mu.MuData,
     concatenated_data.update()
     return concatenated_data
 
-def concatenate_modalities(sample_ids: tuple[str], modalities: dict[str, Iterable[anndata.AnnData]],
+def concatenate_modalities(n_processes: int, sample_ids: tuple[str], modalities: dict[str, Iterable[anndata.AnnData]],
                            other_axis_mode: str) -> mu.MuData:
     """
     Join the modalities together into a single multimodal sample.
     """
     logger.info('Concatenating samples.')
     concat_modes = {
-        "move": "same",
+        "move": None,
     }
     other_axis_mode_to_apply = concat_modes.get(other_axis_mode, other_axis_mode)
     new_mods = {mod_name: anndata.concat(modes,
@@ -280,7 +302,7 @@ def concatenate_modalities(sample_ids: tuple[str], modalities: dict[str, Iterabl
     logger.info('Concatenated data shape: %s', concatenated_data.shape)
     if other_axis_mode == "move":
         for mod_name, modes in modalities.items():
-            conflicts, new_matrices = split_conflicts_modalities(sample_ids, modes)
+            conflicts, new_matrices = split_conflicts_modalities(n_processes, sample_ids, modes)
             concatenated_data = set_conflicts(concatenated_data, mod_name, conflicts)
             concatenated_data = set_matrices(concatenated_data, mod_name, new_matrices)
     logger.info("Concatenation successful.")
@@ -306,7 +328,11 @@ def main() -> None:
     make_observation_keys_unique(sample_ids, samples)
 
     mods = group_modalities(samples)
-    concatenated_samples = concatenate_modalities(sample_ids, mods, par["other_axis_mode"])
+    n_processes = int(meta["n_proc"]) if meta["n_proc"] else 1
+    concatenated_samples = concatenate_modalities(n_processes,
+                                                  sample_ids,
+                                                  mods,
+                                                  par["other_axis_mode"])
     logger.info("Writing out data to '%s' with compression '%s'.",
                 par["output"], par["compression"])
     concatenated_samples.write(par["output"], compression=par["compression"])
