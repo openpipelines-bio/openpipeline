@@ -1,0 +1,38 @@
+functionality:
+  name: subset_h5mu
+  namespace: "filter"
+  version: "dev"
+  description: |
+    Create a subset of a mudata file by selecting the first number of observations
+  authors:
+    - name: Dries Schaumont
+      email: dries.schaumont@its.jnj.com
+      roles: [ maintainer ]
+      props: { github: DriesSchaumont}
+  arguments:
+    - name: "--input"
+      type: file
+      description: Input h5mu file
+      direction: input
+      required: true
+      example: input.h5mu
+    - name: "--output"
+      type: file
+      description: Output h5mu file.
+      direction: output
+      example: output.h5mu
+    - name: "--number_of_observations"
+      type: integer
+      description: Number of observations to be selected from the h5mu file.
+      example: 5
+  resources:
+    - type: python_script
+      path: script.py
+platforms:
+  - type: docker
+    image: python:3.8
+    setup:
+      - type: python
+        packages:
+          - mudata~=0.2.0
+          - anndata~=0.8.0
