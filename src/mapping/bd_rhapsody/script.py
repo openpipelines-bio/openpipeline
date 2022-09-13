@@ -306,33 +306,29 @@ def process_gtf(feature_type: str, path: str) -> pd.DataFrame:
   return df
 
 def extract_feature_types(par: dict[str, Any]):
-  feature_types = pd.DataFrame()
+  feature_types = []
 
   if par["mode"] == "targeted":
     for file in par["reference"]:
       logger.info(f"Processing reference fasta {file}")
-      ft = process_fasta("Gene Expression", file)
-      feature_types = pd.concat([feature_types, ft])
+      feature_types.append(process_fasta("Gene Expression", file))
 
   if par["mode"] == "wta":
     file = par["transcriptome_annotation"]
     logger.info(f"Processing reference gtf {file}")
-    ft = process_gtf("Gene Expression", file)
-    feature_types = pd.concat([feature_types, ft])
+    feature_types.append(process_gtf("Gene Expression", file))
 
   if par["abseq_reference"]:
     for file in par["abseq_reference"]:
       logger.info(f"Processing abseq fasta {file}")
-      ft = process_fasta("Antibody Capture", file)
-      feature_types = pd.concat([feature_types, ft])
+      feature_types.append(process_fasta("Antibody Capture", file))
 
   if par["supplemental_reference"]:
     for file in par["supplemental_reference"]:
       logger.info(f"Processing supp fasta {file}")
-      ft = process_fasta("Other", file)
-      feature_types = pd.concat([feature_types, ft])
+      feature_types.append(process_fasta("Other", file))
   
-  return feature_types
+  return pd.concat(feature_types)
 
 def main(par: dict[str, Any], meta: dict[str, Any]):
   # Preprocess params
