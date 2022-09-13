@@ -18,6 +18,8 @@
 
 * `integrate/concat`: Deprecated 'concat' option for `--other_axis_mode`
 
+* `integrate/scanorama`: Use Scanorama to integrate different experiments.
+
 * `integrate/concat`: Optimize concat performance by adding multiprocessing and refactoring functions.
 
 * `workflows/multimodal_integration`: add `obs_covariates` argument to pipeline.
