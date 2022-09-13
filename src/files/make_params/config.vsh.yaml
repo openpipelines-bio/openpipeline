@@ -39,6 +39,10 @@ functionality:
       type: string
       description: The name for storing the path field in the yaml.
       default: "path"
+    - name: "--group_name"
+      type: string
+      description: Top level name for the group of entries.
+      example: param_list
     - name: "--output"
       type: file
       description: Output YAML file.

@@ -9,7 +9,8 @@ par <- list(
   n_basename_id = 1,
   output = "output.yaml",
   id_name = "id",
-  path_name = "path"
+  path_name = "path",
+  group_name = "param_list"
 )
 ## VIASH END
 
@@ -58,6 +59,10 @@ par_list <- map2(
     setNames(list(id, input), c(par$id_name, par$path_name))
   }
 )
+
+if (!is.null(par$group_name)) {
+  par_list <- setNames(list(par_list), par$group_name)
+}
 
 cat("> Writing as YAML\n")
 yaml::write_yaml(par_list, par$output)
