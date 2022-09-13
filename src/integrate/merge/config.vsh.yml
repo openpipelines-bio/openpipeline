@@ -33,8 +33,8 @@ functionality:
   test_resources:
     - type: python_script
       path: test.py
-    - path: ../../../resources_test/merge/pbmc_1k_protein_v3_filtered_feature_bc_matrix_rna.h5mu
-    - path: ../../../resources_test/merge/pbmc_1k_protein_v3_filtered_feature_bc_matrix_prot.h5mu
+    - path: ../../../resources_test/merge_test_data/pbmc_1k_protein_v3_filtered_feature_bc_matrix_rna.h5mu
+    - path: ../../../resources_test/merge_test_data/pbmc_1k_protein_v3_filtered_feature_bc_matrix_prot.h5mu
 platforms:
   - type: docker
     image: python:3.10

@@ -9,8 +9,8 @@ import numpy as np
 
 ## VIASH START
 meta = {
-    'functionality_name': './target/native/integrate/merge/merge',
-    'resources_dir': './resources_test/merge/'
+    'functionality_name': './target/docker/integrate/merge/merge',
+    'resources_dir': './resources_test/merge_test_data/'
 }
 ## VIASH END
 
@@ -18,7 +18,6 @@ meta = {
 resources_dir, functionality_name = meta["resources_dir"], meta["functionality_name"]
 input_sample1_file = f"{resources_dir}/pbmc_1k_protein_v3_filtered_feature_bc_matrix_rna.h5mu"
 input_sample2_file = f"{resources_dir}/pbmc_1k_protein_v3_filtered_feature_bc_matrix_prot.h5mu"
-
 
 
 class TestMerge(unittest.TestCase):
