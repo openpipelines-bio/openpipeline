@@ -10,14 +10,14 @@ par <- list(
   output = "foo.h5mu",
   modality = "rna",
   obsm_input = "X_pca",
-  obsm_output = "X_pca_integrated",
+  obsm_output = "X_pca_int",
   theta = 2,
   obs_covariates = c("leiden")
 )
 ### VIASH END
 
 data <- mudata$read_h5mu(par$input)
-rna_data <- data$mod[["rna"]]
+rna_data <- data$mod[[par$modality]]
 
 ## Run Harmony
 pca_in <- rna_data$obsm[[par$obsm_input]]
