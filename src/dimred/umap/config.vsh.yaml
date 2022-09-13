@@ -24,6 +24,11 @@ functionality:
       default: "rna"
       required: false
 
+    - name: "--uns_neighbors"
+      type: string
+      default: "neighbors"
+      description: The .uns neighbors slot as output by the `find_neighbors` component.
+
     # outputs
     - name: "--output"
       alternatives: ["-o"]

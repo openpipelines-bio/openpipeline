@@ -13,14 +13,13 @@ include { readConfig; viashChannel; helpMessage } from workflowDir + "/utils/Wor
 
 config = readConfig("$workflowDir/integration/multimodal_integration/config.vsh.yaml")
 
-// keep track of whether this is an integration test or not
-global_params = [ do_publish: true ]
-
 workflow {
   helpMessage(config)
 
   viashChannel(params, config)
+    | view { "Input: $it" }
     | run_wf
+    | view { "Output: $it" }
 }
 
 workflow run_wf {
@@ -29,14 +28,42 @@ workflow run_wf {
 
   main:
   output_ch = input_ch
-    | map { id, params -> [id, params, params]}
+    // store output value in 3rd slot for later use
+    // derive key for pca obsm output
+    | map { id, data -> 
+      new_data = data + [ obsm_output: data.layer + "_pca" ]
+      [ id, new_data, data ]
+    }
     | pca
-    | map { id, file, params -> [id, [input: file] + params.subMap("obs_covariates")]}
+
+    // set obsm key because pca might not be stored in X_pca
+    | map { id, file, orig_data -> 
+      new_data = [
+        input: file, 
+        obsm_input: orig_data.layer + "_pca",
+        obsm_output: orig_data.layer + "_pca_integrated",
+        obs_covariates: orig_data.obs_covariates
+      ]
+      [ id, new_data, orig_data ]
+    }
     | harmonypy
+
+    | map { id, file, orig_data -> 
+      new_data = [
+        input: file, 
+        obsm_input: orig_data.layer + "_pca"
+      ]
+      [ id, new_data, orig_data ]
+    }
     | find_neighbors
     | leiden
+
+    // retrieve output value
+    | map { id, file, orig_data -> 
+      [ id, [ input: file ] + orig_data.subMap("output") ]
+    }
     | umap.run(
-      auto: [ publish: global_params.do_publish ]
+      auto: [ publish: true ]
     )
 
   emit:
@@ -44,9 +71,6 @@ workflow run_wf {
 }
 
 workflow test_wf {
-  // don't publish output
-  global_params.do_publish = false
-
   // allow changing the resources_test dir
   params.resources_test = params.rootDir + "/resources_test"
 

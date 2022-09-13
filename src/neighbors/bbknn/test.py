@@ -31,9 +31,12 @@ class TestBBKNNn(unittest.TestCase):
             del mod.uns['neighbors']
         with  NamedTemporaryFile(suffix=".h5mu") as tempfile_input_file:
             input_data.write(tempfile_input_file.name)
-            self._run_and_check_output(["--input", tempfile_input_file.name, 
-                                        "--output" ,"output.h5mu",
-                                        "--obs_batch", "leiden"])
+            self._run_and_check_output([
+                "--input", tempfile_input_file.name, 
+                "--output" ,"output.h5mu",
+                "--obs_batch", "leiden",
+                "--obsm_input", "log_normalized_pca"
+            ])
             self.assertTrue(Path("output.h5mu").exists())
             data = read_h5mu("output.h5mu").mod['rna']
             self.assertTrue("connectivities" in data.obsp)

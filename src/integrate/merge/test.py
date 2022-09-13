@@ -9,8 +9,8 @@ import numpy as np
 
 ## VIASH START
 meta = {
-    'functionality_name': './target/native/integrate/merge/merge',
-    'resources_dir': './resources_test/merge/'
+    'functionality_name': './target/docker/integrate/merge/merge',
+    'resources_dir': './resources_test/merge_test_data/'
 }
 ## VIASH END
 
@@ -20,13 +20,13 @@ input_sample1_file = f"{resources_dir}/pbmc_1k_protein_v3_filtered_feature_bc_ma
 input_sample2_file = f"{resources_dir}/pbmc_1k_protein_v3_filtered_feature_bc_matrix_prot.h5mu"
 
 
-
 class TestMerge(unittest.TestCase):
-    def _run_and_check_output(self, args_as_list):
+    def _run_and_check_output(self, args_as_list, expected_raise=False):
         try:
-            subprocess.check_output([f"./{functionality_name}"] + args_as_list, stderr=subprocess.STDOUT)
+            subprocess.check_output([meta['executable']] + args_as_list, stderr=subprocess.STDOUT)
         except subprocess.CalledProcessError as e:
-            print(e.stdout.decode("utf-8"))
+            if not expected_raise:
+                print(e.stdout.decode("utf-8"))
             raise e
 
     def test_merge(self):
@@ -55,7 +55,7 @@ class TestMerge(unittest.TestCase):
                             set(concatenated_data.var_keys()))
         
         self.assertSetEqual(set(concatenated_data.var_names), set(data_sample1.var_names) | set(data_sample2.var_names))
-        self.assertListEqual(concatenated_data.var_keys(), ['gene_ids', 'feature_types', 'genome'])
+        self.assertListEqual(concatenated_data.var_keys(), ['gene_id', 'feature_type', 'genome'])
 
     def test_merge_non_overlapping_observations(self):
         """
@@ -98,7 +98,7 @@ class TestMerge(unittest.TestCase):
                 self._run_and_check_output([
                     "--input", tempfile.name,
                     "--input", input_sample2_file,
-                    "--output", "merge.h5mu"])
+                    "--output", "merge.h5mu"], expected_raise=True)
             self.assertIn("ValueError: Modality 'prot' was found in more than 1 sample.", 
                           e.exception.output.decode('utf-8'))
 
@@ -112,7 +112,7 @@ class TestMerge(unittest.TestCase):
             self._run_and_check_output([
                 "--input", "foo.h5mu",
                 "--input", input_sample2_file,
-                "--output", "merge.h5mu"])
+                "--output", "merge.h5mu"], expected_raise=True)
         self.assertIn("ValueError: Not all input paths are files, exits and are acessible.", 
                       e.exception.output.decode('utf-8'))
 
