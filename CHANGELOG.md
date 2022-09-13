@@ -8,11 +8,13 @@
 
 * `transform/scaling`: Scale data to unit variance and zero mean.
 
-* `integrate/harmony`: Added a component for running a Harmony integration analysis (R-based).
-
-* `integrate/harmonypy`: Added a component for running a Harmony integration analysis (Python-based).
+* `integrate/harmony` and `integrate/harmonypy`: Run a Harmony integration analysis (R-based and Python-based, respectively).
 
 * `integrate/concat`: Added 'move' option to `--other_axis_mode`, which allows merging .obs and .var by only keeping elements of the matrices which are the same in each of the samples, moving the conflicting values to .varm or .obsm.
+
+* `reference/make_reference`: Download a transcriptomics reference and preprocess it (adding ERCC spikeins and filtering with a regex).
+
+* `reference/build_bdrhap_reference`: Compile a reference into a STAR index in the format expected by BD Rhapsody.
 
 ## MAJOR CHANGES
 

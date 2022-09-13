@@ -8,8 +8,6 @@ echo "> Running $meta_functionality_name."
 $meta_executable \
   --genome_fasta "https://ftp.ebi.ac.uk/pub/databases/gencode/Gencode_human/release_41/GRCh38.primary_assembly.genome.fa.gz" \
   --transcriptome_gtf "https://ftp.ebi.ac.uk/pub/databases/gencode/Gencode_human/release_41/gencode.v41.annotation.gtf.gz" \
-  --ercc "https://assets.thermofisher.com/TFS-Assets/LSG/manuals/ERCC92.zip" \
-  --subset_regex "(ERCC-00002|chr1)" \
   --output myreference.tar.gz
 
 exit_code=$?

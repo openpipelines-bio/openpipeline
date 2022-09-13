@@ -31,9 +31,10 @@ functionality:
   resources:
     - type: bash_script
       path: script.sh
-  test_resources:
-    - type: bash_script
-      path: run_test.sh
+  # todo: add back tests once test data is pushed to s3
+  # test_resources:
+  #   - type: bash_script
+  #     path: run_test.sh
 platforms:
   - type: docker
     image: bdgenomics/rhapsody:1.10.1
