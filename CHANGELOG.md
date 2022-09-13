@@ -16,6 +16,8 @@
 
 * `integrate/concat`: Deprecated 'concat' option for `--other_axis_mode`
 
+* `integrate/scanorama`: Use Scanorama to integrate different experiments.
+
 ## MAJOR CHANGES
 
 * Multiple components: update to anndata 0.8 with mudata 0.2.0. This means that the format of the .h5mu files have changed.
