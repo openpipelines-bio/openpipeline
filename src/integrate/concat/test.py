@@ -8,10 +8,13 @@ import numpy as np
 
 ## VIASH START
 meta = {
-    'functionality_name': './target/native/integrate/concat/concat',
-    'resources_dir': './resources_test/concat/'
+    'functionality_name': './target/docker/integrate/concat/concat',
+    'resources_dir': './resources_test/concat/',
+    'n_proc': 2
 }
 ## VIASH END
+
+meta['n_proc'] = "1" if not meta['n_proc'] else str(meta['n_proc'])
 
 resources_dir, functionality_name = meta["resources_dir"], meta["functionality_name"]
 # Note: the .var for these samples have no overlap, so there are no conflicting annotations
@@ -30,57 +33,6 @@ class TestConcat(unittest.TestCase):
             print(e.stdout.decode("utf-8"))
             raise e
 
-    def test_concatenation(self):
-        self._run_and_check_output([
-            "--sample_names", "mouse,human",
-            "--input", input_sample1_file,
-            "--input", input_sample2_file,
-            "--output", "concat.h5mu",
-            "--other_axis_mode", "concat"])
-
-        self.assertTrue(Path("concat.h5mu").is_file())
-        concatenated_data = md.read("concat.h5mu")
-
-        data_sample1 = md.read(input_sample1_file)
-        data_sample2 = md.read(input_sample2_file)
-
-        # Check if observations from all of the samples are present
-        self.assertEqual(concatenated_data.n_obs, data_sample1.n_obs + data_sample2.n_obs)
-
-        # Check if all features are present
-        self.assertEqual(concatenated_data.n_vars,
-                         data_sample1.var.index.union(data_sample2.var.index).size)
-
-        # Check if all columns are present in the 'global' .var
-        self.assertTrue(all(key in concatenated_data.var_keys()
-                            for key in data_sample1.var_keys()))
-        self.assertTrue(all(key in concatenated_data.var_keys()
-                            for key in data_sample2.var_keys()))
-
-        # Check if all modalities are present
-        sample1_mods, sample2_mods = set(data_sample1.mod.keys()), set(data_sample2.mod.keys())
-        concatentated_mods = set(concatenated_data.mod.keys())
-        self.assertEqual(sample1_mods | sample2_mods, concatentated_mods)
-
-        # Check if var columns per modality are present
-        for mod_name in concatenated_data.mod.keys():
-            sample1_var_cols, sample2_var_cols = {}, {}
-            sample1_mod = data_sample1.mod.get(mod_name, None)
-            sample2_mod = data_sample2.mod.get(mod_name, None)
-            if sample1_mod:
-                sample1_var_cols = set(sample1_mod.var.columns)
-            if sample2_mod:
-                sample2_var_cols = set(sample2_mod.var.columns)
-            concatenated_data_mod_var = set(concatenated_data.mod.get(mod_name).var.columns)
-            self.assertTrue(sample1_var_cols.issubset(concatenated_data_mod_var))
-            self.assertTrue(sample2_var_cols.issubset(concatenated_data_mod_var))
-
-        # Check if the observation keys were made unique
-        for mod in concatenated_data.mod.values():
-            pd.testing.assert_index_equal(mod.obs.index,
-                                          ('mouse_' + data_sample1.obs.index)
-                                          .append('human_' + data_sample2.obs.index))
-
     def test_concatenate_samples_with_same_observation_ids(self):
         """
         Test how concat handles overlapping observation IDs.
@@ -92,7 +44,8 @@ class TestConcat(unittest.TestCase):
                 "--input", input_sample1_file,
                 "--input", input_sample1_file,
                 "--output", "concat.h5mu",
-                "--other_axis_mode", "concat"
+                "--other_axis_mode", "move",
+                "---n_proc", meta["n_proc"]
                 ])
         self.assertTrue(Path("concat.h5mu").is_file())
         data_sample1 = md.read(input_sample1_file)
@@ -121,12 +74,14 @@ class TestConcat(unittest.TestCase):
             data_sample1.mod['atac'].var.drop('interval', axis=1, inplace=True)
             data_sample1.var.drop('interval', axis=1, inplace=True)
             data_sample1.write(tempfile.name, compression="gzip")
+            tempfile.flush()
             self._run_and_check_output([
                     "--sample_names", "mouse,human",
                     "--input", tempfile.name,
                     "--input", input_sample2_file,
                     "--output", "concat.h5mu",
-                    "--other_axis_mode", "concat"
+                    "--other_axis_mode", "move",
+                    "---n_proc", meta["n_proc"]
                     ])
 
             self.assertTrue(Path("concat.h5mu").is_file())
@@ -138,10 +93,21 @@ class TestConcat(unittest.TestCase):
             self.assertNotIn('interval', data_sample1.var_keys())
             self.assertEqual(concatenated_data.n_vars,
                              data_sample1.var.index.union(data_sample2.var.index).size)
-            self.assertTrue(all(key in concatenated_data.var_keys()
-                                for key in data_sample1.var_keys()))
-            self.assertTrue(all(key in concatenated_data.var_keys()
-                                for key in data_sample2.var_keys()))
+            # Check if all features are present
+            rna = concatenated_data.mod['rna']
+            atac = concatenated_data.mod['atac']
+            original_rna_var_keys = set(data_sample1.mod['rna'].var.keys().tolist() +
+                                        data_sample2.mod['rna'].var.keys().tolist())
+            original_atac_var_keys = set(data_sample1.mod['atac'].var.keys().tolist() + 
+                                        data_sample2.mod['atac'].var.keys().tolist())
+            self.assertSetEqual(original_rna_var_keys,
+                                set(column_name.removeprefix('conflict_') 
+                                    for column_name in rna.varm.keys()) |
+                                set(rna.var.columns.tolist()))
+            self.assertSetEqual(original_atac_var_keys,
+                                set(column_name.removeprefix('conflict_')
+                                    for column_name in atac.varm.keys()) |
+                                set(atac.var.columns.tolist()))
             # Value from sample1 should have NA
             self.assertTrue(pd.isna(concatenated_data.var.loc['Gm29107']['interval']))
 
@@ -178,7 +144,8 @@ class TestConcat(unittest.TestCase):
                     "--input", tempfile_sample1.name,
                     "--input", tempfile_sample2.name,
                     "--output", "concat.h5mu",
-                    "--other_axis_mode", "concat"
+                    "--other_axis_mode", "move",
+                    "---n_proc", meta["n_proc"]
                     ])
 
             self.assertTrue(Path("concat.h5mu").is_file())
@@ -191,11 +158,21 @@ class TestConcat(unittest.TestCase):
             self.assertEqual(concatenated_data.n_vars,
                              data_sample1.var.index.union(data_sample2.var.index).size)
 
-            # Check if all columns are present in the 'global' .var
-            self.assertTrue(all(key in concatenated_data.var_keys()
-                                for key in data_sample1.var_keys()))
-            self.assertTrue(all(key in concatenated_data.var_keys()
-                                for key in data_sample2.var_keys()))
+            # Check if all features are present
+            rna = concatenated_data.mod['rna']
+            atac = concatenated_data.mod['atac']
+            original_rna_var_keys = set(data_sample1.mod['rna'].var.keys().tolist() +
+                                        data_sample2.mod['rna'].var.keys().tolist())
+            original_atac_var_keys = set(data_sample1.mod['atac'].var.keys().tolist() + 
+                                        data_sample2.mod['atac'].var.keys().tolist())
+            self.assertSetEqual(original_rna_var_keys,
+                                set(column_name.removeprefix('conflict_') 
+                                    for column_name in rna.varm.keys()) |
+                                set(rna.var.columns.tolist()))
+            self.assertSetEqual(original_atac_var_keys,
+                                set(column_name.removeprefix('conflict_')
+                                    for column_name in atac.varm.keys()) |
+                                set(atac.var.columns.tolist()))
 
             # Check if 'interval' stays removed from modality
             self.assertNotIn('interval', concatenated_data.mod['rna'].var.columns)
@@ -231,7 +208,8 @@ class TestConcat(unittest.TestCase):
                 "--input", tempfile_sample1.name,
                 "--input", input_sample2_file,
                 "--output", "concat.h5mu",
-                "--other_axis_mode", "concat"
+                "--other_axis_mode", "move",
+                "---n_proc", meta["n_proc"]
                 ])
 
             self.assertTrue(Path("concat.h5mu").is_file())
@@ -244,13 +222,21 @@ class TestConcat(unittest.TestCase):
             self.assertEqual(concatenated_data.n_vars,
                              data_sample1.var.index.union(data_sample2.var.index).size)
 
-            # Check if all columns are present in the 'global' .var
-            self.assertTrue(all(key in concatenated_data.var_keys()
-                                for key in data_sample1.var_keys() if key != 'atac:interval'))
-            self.assertTrue('atac:interval' in data_sample1.var_keys()
-                            and 'interval' in concatenated_data.var_keys())
-            self.assertTrue(all(key in concatenated_data.var_keys()
-                                for key in data_sample2.var_keys()))
+            # Check if all features are present
+            rna = concatenated_data.mod['rna']
+            atac = concatenated_data.mod['atac']
+            original_rna_var_keys = set(data_sample1.mod['rna'].var.keys().tolist() +
+                                        data_sample2.mod['rna'].var.keys().tolist())
+            original_atac_var_keys = set(data_sample1.mod['atac'].var.keys().tolist() + 
+                                        data_sample2.mod['atac'].var.keys().tolist())
+            self.assertSetEqual(original_rna_var_keys,
+                                set(column_name.removeprefix('conflict_') 
+                                    for column_name in rna.varm.keys()) |
+                                set(rna.var.columns.tolist()))
+            self.assertSetEqual(original_atac_var_keys,
+                                set(column_name.removeprefix('conflict_')
+                                    for column_name in atac.varm.keys()) |
+                                set(atac.var.columns.tolist()))
 
             # Check if 'interval' is included in RNA modality
             self.assertIn('interval', concatenated_data.mod['rna'].var.columns)
@@ -292,7 +278,8 @@ class TestConcat(unittest.TestCase):
                 "--input", tempfile_input1.name,
                 "--input", tempfile_input2.name,
                 "--output", "concat.h5mu",
-                "--other_axis_mode", "concat"
+                "--other_axis_mode", "move",
+                "---n_proc", meta["n_proc"]
                 ])
 
             self.assertTrue(Path("concat.h5mu").is_file())
@@ -334,7 +321,8 @@ class TestConcat(unittest.TestCase):
                 "--input", tempfile_input1.name,
                 "--input", tempfile_input2.name,
                 "--output", "concat.h5mu",
-                "--other_axis_mode", "concat"
+                "--other_axis_mode", "move",
+                "---n_proc", meta["n_proc"]
                 ])
 
             self.assertTrue(Path("concat.h5mu").is_file())
@@ -354,7 +342,8 @@ class TestConcat(unittest.TestCase):
             "--input", input_sample1_file,
             "--input", input_sample2_file,
             "--output", "concat.h5mu",
-            "--other_axis_mode", "move"],
+            "--other_axis_mode", "move",
+            "---n_proc", meta["n_proc"]]
             )
         self.assertTrue(Path("concat.h5mu").is_file())
         concatenated_data = md.read("concat.h5mu")
