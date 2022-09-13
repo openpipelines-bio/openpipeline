@@ -16,7 +16,7 @@ output = "output.h5mu"
 
 logger.info("> Run the command")
 cmd_pars = [
-    "./" + meta["functionality_name"],
+    meta["executable"],
     "--input", input,
     "--output", output,
 ]
