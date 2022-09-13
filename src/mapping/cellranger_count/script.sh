@@ -31,7 +31,8 @@ if [ ! -z "$meta_n_proc" ]; then
   extra_params+=( "--localcores=$meta_n_proc" )
 fi
 if [ ! -z "$meta_memory_gb" ]; then 
-  extra_params+=( "--localmem=$meta_memory_gb" )
+  memory_gb=`python -c "print(round(0.75*float('$meta_memory_gb')))"`
+  extra_params+=( "--localmem=$memory_gb" )
 fi
 if [ ! -z "$par_expect_cells" ]; then 
   extra_params+=( "--expect-cells=$par_expect_cells" )
