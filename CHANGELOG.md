@@ -34,6 +34,8 @@
 
 * `workflows/process_rna/singlesample`, `workflows/process_rna/multisample` and `workflows/integration/multimodal_integration`: Allow choosing the output paths.
 
+* `neighbors/bbknn` and `neighbors/find_neighbors`: Add parameters for choosing the input/output slots.
+
 ## BUG FIXES
 
 * Several components: revert using slim versions of containers because they do not provide the tools to run nextflow with trace capabilities.
