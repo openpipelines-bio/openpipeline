@@ -31,8 +31,8 @@ if [ ! -z "$meta_n_proc" ]; then
   extra_params+=( "--localcores=$meta_n_proc" )
 fi
 if [ ! -z "$meta_memory_gb" ]; then 
-  # use 75% of available memory
-  memory_gb=`python -c "print(round(0.75*float('$meta_memory_gb')))"`
+  # always keep 2gb for the OS itself
+  memory_gb=`python -c "print(int('$meta_memory_gb') - 2000)"`
   extra_params+=( "--localmem=$memory_gb" )
 fi
 if [ ! -z "$par_expect_cells" ]; then 
