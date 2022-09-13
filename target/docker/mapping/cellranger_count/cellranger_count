@@ -183,7 +183,7 @@ function ViashHelp {
   echo ""
   echo "    --expect_cells"
   echo "        type: integer"
-  echo "        default: 3000"
+  echo "        example: 3000"
   echo "        Expected number of recovered cells, used as input to cell calling"
   echo "        algorithm."
   echo ""
@@ -445,9 +445,9 @@ FROM ghcr.io/data-intuitive/cellranger:7.0
 RUN apt update && apt upgrade -y
 LABEL org.opencontainers.image.authors="Angela Pisco (author) {github: aopisco, orcid: 0000-0003-0142-2355}, Samuel D'Souza (author) {github: srdsam}, Robrecht Cannoodt <rcannood@gmail.com> (author, maintainer) {github: rcannood, orcid: 0000-0003-3641-729X}"
 LABEL org.opencontainers.image.description="Companion container for running component mapping cellranger_count"
-LABEL org.opencontainers.image.created="2022-09-13T21:12:18Z"
+LABEL org.opencontainers.image.created="2022-09-13T22:48:23Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="aca6d564e84411a93cb285cee24678ca137b540c"
+LABEL org.opencontainers.image.revision="96166816d0aebd4c360b543b2e3c22c85d99cae3"
 LABEL org.opencontainers.image.version="main_build"
 VIASHDOCKER
 }
@@ -810,9 +810,6 @@ fi
 if [ -z ${VIASH_PAR_OUTPUT+x} ]; then
   ViashError '--output' is a required argument. Use "--help" to get more information on the parameters.
   exit 1
-fi
-if [ -z ${VIASH_PAR_EXPECT_CELLS+x} ]; then
-  VIASH_PAR_EXPECT_CELLS="3000"
 fi
 if [ -z ${VIASH_PAR_CHEMISTRY+x} ]; then
   VIASH_PAR_CHEMISTRY="auto"

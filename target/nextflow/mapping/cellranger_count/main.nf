@@ -102,7 +102,7 @@ thisConfig = processConfig([
       "type" : "integer",
       "name" : "--expect_cells",
       "description" : "Expected number of recovered cells, used as input to cell calling algorithm.",
-      "default" : [
+      "example" : [
         3000
       ],
       "required" : false,

@@ -2083,5 +2083,5 @@ info:
   platform: "nextflow"
   output: "target/nextflow/process_10xh5/filter_10xh5"
   viash_version: "0.6.0"
-  git_commit: "aca6d564e84411a93cb285cee24678ca137b540c"
+  git_commit: "96166816d0aebd4c360b543b2e3c22c85d99cae3"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"
