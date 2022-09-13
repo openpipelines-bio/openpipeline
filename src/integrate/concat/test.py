@@ -14,7 +14,7 @@ meta = {
 }
 ## VIASH END
 
-meta['n_proc'] = 1 if not meta['n_proc'] else int(meta['n_proc'])
+meta['n_proc'] = "1" if not meta['n_proc'] else str(meta['n_proc'])
 
 resources_dir, functionality_name = meta["resources_dir"], meta["functionality_name"]
 # Note: the .var for these samples have no overlap, so there are no conflicting annotations
