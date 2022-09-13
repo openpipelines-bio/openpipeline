@@ -70,4 +70,5 @@ NXF_VER=21.10.6 bin/nextflow \
   --input "${OUT}_ums.h5mu" \
   --output "`basename $OUT`_mms.h5mu" \
   --publishDir `dirname $OUT` \
+  --obs_covariates sample_id \
   -resume
