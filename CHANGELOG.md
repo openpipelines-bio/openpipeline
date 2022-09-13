@@ -36,6 +36,8 @@
 
 ## DEPRECATED
 
+* `convert/from_10xh5_to_h5ad` and `convert/from_bdrhap_to_h5ad`: Removed h5ad based components.
+
 # openpipeline 0.4.1
 
 ## BUG FIXES
