@@ -33,6 +33,11 @@ functionality:
       type: string
       description: use specified layer for expression values instead of the .X object from the modality.
       required: false
+    - name: "--obs_covariates"
+      type: string
+      description: "The .obs field(s) that define the covariate(s) to regress out."
+      example: ["batch", "sample"]
+      multiple: true
   resources:
     - type: nextflow_script
       path: main.nf

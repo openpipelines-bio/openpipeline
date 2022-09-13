@@ -42,7 +42,7 @@ workflow run_wf {
         input: file, 
         obsm_input: orig_data.layer + "_pca",
         obsm_output: orig_data.layer + "_pca_integrated",
-        obs_covariates: [ "sample_id" ] // temporary override
+        obs_covariates: orig_data.obs_covariates
       ]
       [ id, new_data, orig_data ]
     }
@@ -78,7 +78,8 @@ workflow test_wf {
   testParams = [
     id: "foo",
     input: params.resources_test + "/concat/concatenated_brain_filtered_feature_bc_matrix_subset.h5mu",
-    layer: ""
+    layer: "",
+    obs_covariates: "sample_id"
   ]
 
   output_ch =
