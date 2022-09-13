@@ -61,10 +61,11 @@ functionality:
       name: "--secondary_analysis"
       default: false
       description: Whether or not to run the secondary analysis e.g. clustering.
+
     - type: boolean
-      name: "--no_bam"
-      default: false
-      description: Whether or not to run the secondary analysis e.g. clustering.
+      name: "--generate_bam"
+      default: true
+      description: Whether to generate a BAM file.
     
     - type: boolean
       name: "--include_introns"

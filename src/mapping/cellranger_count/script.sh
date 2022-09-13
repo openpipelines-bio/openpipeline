@@ -44,6 +44,9 @@ fi
 if [ "$par_secondary_analysis" == "false" ]; then
   extra_params+=( "--nosecondary" )
 fi
+if [ "$par_generate_bam" == "false" ]; then
+  extra_params+=( "--no-bam" )
+fi
 echo "Running cellranger count"
 
 
