@@ -95,5 +95,5 @@ jobs:
 
     - name: Run test
       run: |
-        bin/viash test -p docker ${{ matrix.component.config }}
+        bin/viash test -p docker ${{ matrix.component.config }} -c '.functionality.requirements.n_proc := 2'
 
