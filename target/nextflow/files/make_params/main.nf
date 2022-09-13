@@ -205,7 +205,7 @@ rm(viash_orig_warn_)
 
 cat("> Listing files of base dir ", par\\$base_dir, "\\\\n", sep = "")
 paths <- list.files(
-  par\\$base_dir,
+  normalizePath(par\\$base_dir),
   pattern = par\\$pattern,
   recursive = TRUE,
   full.names = TRUE
@@ -215,6 +215,9 @@ cat("> Traversing up ", par\\$n_dirname_apply, " times\\\\n", sep = "")
 for (i in seq_len(par\\$n_dirname_drop)) {
   paths <- dirname(paths) %>% unique()
 }
+
+# removing /viash_automount in case we're inside a docker container
+paths <- gsub("^/viash_automount", "", paths)
 
 cat("> Checking whether basenames are unique\\\\n")
 i <- par\\$n_basename_id
