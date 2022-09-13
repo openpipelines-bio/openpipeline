@@ -9,9 +9,12 @@ import numpy as np
 ## VIASH START
 meta = {
     'functionality_name': './target/docker/integrate/concat/concat',
-    'resources_dir': './resources_test/concat/'
+    'resources_dir': './resources_test/concat/',
+    'n_proc': 2
 }
 ## VIASH END
+
+meta['n_proc'] = 1 if not meta['n_proc'] else int(meta['n_proc'])
 
 resources_dir, functionality_name = meta["resources_dir"], meta["functionality_name"]
 # Note: the .var for these samples have no overlap, so there are no conflicting annotations
@@ -41,7 +44,8 @@ class TestConcat(unittest.TestCase):
                 "--input", input_sample1_file,
                 "--input", input_sample1_file,
                 "--output", "concat.h5mu",
-                "--other_axis_mode", "move"
+                "--other_axis_mode", "move",
+                "---n_proc", meta["n_proc"]
                 ])
         self.assertTrue(Path("concat.h5mu").is_file())
         data_sample1 = md.read(input_sample1_file)
@@ -76,7 +80,8 @@ class TestConcat(unittest.TestCase):
                     "--input", tempfile.name,
                     "--input", input_sample2_file,
                     "--output", "concat.h5mu",
-                    "--other_axis_mode", "move"
+                    "--other_axis_mode", "move",
+                    "---n_proc", meta["n_proc"]
                     ])
 
             self.assertTrue(Path("concat.h5mu").is_file())
@@ -139,7 +144,8 @@ class TestConcat(unittest.TestCase):
                     "--input", tempfile_sample1.name,
                     "--input", tempfile_sample2.name,
                     "--output", "concat.h5mu",
-                    "--other_axis_mode", "move"
+                    "--other_axis_mode", "move",
+                    "---n_proc", meta["n_proc"]
                     ])
 
             self.assertTrue(Path("concat.h5mu").is_file())
@@ -202,7 +208,8 @@ class TestConcat(unittest.TestCase):
                 "--input", tempfile_sample1.name,
                 "--input", input_sample2_file,
                 "--output", "concat.h5mu",
-                "--other_axis_mode", "move"
+                "--other_axis_mode", "move",
+                "---n_proc", meta["n_proc"]
                 ])
 
             self.assertTrue(Path("concat.h5mu").is_file())
@@ -271,7 +278,8 @@ class TestConcat(unittest.TestCase):
                 "--input", tempfile_input1.name,
                 "--input", tempfile_input2.name,
                 "--output", "concat.h5mu",
-                "--other_axis_mode", "move"
+                "--other_axis_mode", "move",
+                "---n_proc", meta["n_proc"]
                 ])
 
             self.assertTrue(Path("concat.h5mu").is_file())
@@ -313,7 +321,8 @@ class TestConcat(unittest.TestCase):
                 "--input", tempfile_input1.name,
                 "--input", tempfile_input2.name,
                 "--output", "concat.h5mu",
-                "--other_axis_mode", "move"
+                "--other_axis_mode", "move",
+                "---n_proc", meta["n_proc"]
                 ])
 
             self.assertTrue(Path("concat.h5mu").is_file())
@@ -334,6 +343,7 @@ class TestConcat(unittest.TestCase):
             "--input", input_sample2_file,
             "--output", "concat.h5mu",
             "--other_axis_mode", "move"],
+            "---n_proc", meta["n_proc"]
             )
         self.assertTrue(Path("concat.h5mu").is_file())
         concatenated_data = md.read("concat.h5mu")
