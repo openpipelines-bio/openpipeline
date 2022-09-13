@@ -13,14 +13,13 @@ include { readConfig; viashChannel; helpMessage } from workflowDir + "/utils/Wor
 
 config = readConfig("$workflowDir/process_rna/multisample/config.vsh.yaml")
 
-// keep track of whether this is an integration test or not
-global_params = [ do_publish: true ]
-
 workflow {
   helpMessage(config)
 
   viashChannel(params, config)
+    | view { "Input: $it" }
     | run_wf
+    | view { "Output: $it" }
 }
 
 workflow run_wf {
@@ -29,11 +28,17 @@ workflow run_wf {
 
   main:
   output_ch = input_ch
-    | map {id, list -> ["combined_samples_rna", 
-                          ["input": list.get("input"),
-                           "sample_names":  list.get("id")]
-                    ]}
+
+    // store output value in 3rd slot for later use
+    // and transform for concat component
+    | map { id, data ->
+      new_id = "combined"
+      new_data = [ input: data.input, sample_names: data.id ]
+      [new_id, new_data, data]
+    }
+
     | concat
+
     // normalisation
     | normalize_total.run( 
       args: [ output_layer: "normalized" ]
@@ -44,9 +49,15 @@ workflow run_wf {
     | delete_layer.run(
       args: [ layer: "normalized", modality: "rna" ]
     )
+
+    // retrieve output value
+    | map { id, file, orig_data -> 
+      [ id, [ input: file ] + orig_data.subMap("output") ]
+    }
+
     // feature annotation
     | filter_with_hvg.run(
-      auto: [ publish: global_params.do_publish ],
+      auto: [ publish: true ],
       args: [ layer: "log_normalized"]
     )
 

@@ -32,6 +32,8 @@
 
 * `cluster/leiden`: Add `--obsp_connectivities` parameter to allow choosing the output slot.
 
+* `workflows/process_rna/singlesample`, `workflows/process_rna/multisample` and `workflows/integration/multimodal_integration`: Allow choosing the output paths.
+
 ## BUG FIXES
 
 * Several components: revert using slim versions of containers because they do not provide the tools to run nextflow with trace capabilities.
