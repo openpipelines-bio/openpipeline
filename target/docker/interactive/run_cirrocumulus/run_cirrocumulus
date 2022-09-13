@@ -398,9 +398,9 @@ RUN pip install --upgrade pip && \
   pip install --upgrade --no-cache-dir "requests" "aiohttp" "cirrocumulus"
 
 LABEL org.opencontainers.image.description="Companion container for running component interactive run_cirrocumulus"
-LABEL org.opencontainers.image.created="2022-09-12T09:43:51Z"
+LABEL org.opencontainers.image.created="2022-09-13T09:30:37Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="5008106da5da8e09ed85b961ff9ca74d31254f4a"
+LABEL org.opencontainers.image.revision="0edd8de737c884c0c7979d83176d1db6239f34c4"
 LABEL org.opencontainers.image.version="main_build"
 VIASHDOCKER
 }
