@@ -614,9 +614,9 @@ functionality:
       
       LABEL org.opencontainers.image.authors="Dries De Maeyer <DDeMaey1@its.jnj.com> (author) {account: ddemaey1}, Dries Schaumont <Dschaumo@its.jnj.com> (maintainer)"
       LABEL org.opencontainers.image.description="Companion container for running component neighbors bbknn"
-      LABEL org.opencontainers.image.created="2022-09-13T19:48:41Z"
+      LABEL org.opencontainers.image.created="2022-09-13T20:08:23Z"
       LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-      LABEL org.opencontainers.image.revision="3698f7fbe983915408682f99fc9f08d50ec98526"
+      LABEL org.opencontainers.image.revision="7c619c1c000a39c7b9a87926aa02a0ba520eed73"
       LABEL org.opencontainers.image.version="main_build"
       VIASHDOCKER
       }
@@ -1251,5 +1251,5 @@ info:
   output: "target/docker/neighbors/bbknn"
   executable: "target/docker/neighbors/bbknn/bbknn"
   viash_version: "0.6.0"
-  git_commit: "3698f7fbe983915408682f99fc9f08d50ec98526"
+  git_commit: "7c619c1c000a39c7b9a87926aa02a0ba520eed73"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"
