@@ -20,14 +20,14 @@ functionality:
         - name: "--input"
           alternatives: [-i]
           type: file
-          description: One or more folders containing the output of the BD Rhapsody workflow. If multiple are given, they are all combined into one h5mu file. Note that multiple outputs must come from the same sample (but e.g. from different lanes).
-          multiple: true
+          description: The output of a BD Rhapsody workflow.
           required: true
           example: input_dir/
     - name: Outputs
       arguments:
         - name: "--output"
           alternatives: [-o]
+          direction: output
           type: file
           description: "Output h5mu file."
           required: true
@@ -38,7 +38,7 @@ functionality:
   test_resources:
     - type: python_script
       path: run_test.py
-    - path: ../../../resources_test/bdrhap_5kjrt/processed/WTA
+    - path: ../../../resources_test/bdrhap_5kjrt/processed/WTA.bd_rhapsody.output
 platforms:
   - type: docker
     image: ghcr.io/data-intuitive/randpy:r4.0_py3.8
