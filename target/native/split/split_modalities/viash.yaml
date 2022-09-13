@@ -512,5 +512,5 @@ info:
   output: "target/native/split/split_modalities"
   executable: "target/native/split/split_modalities/split_modalities"
   viash_version: "0.6.0"
-  git_commit: "a062c884d563ff2e80fbe02821e1bc3f5fcc259e"
+  git_commit: "18af7d9ac0812cf16b09c22054164efe5b1e3f9c"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"
