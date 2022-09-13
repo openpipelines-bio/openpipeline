@@ -214,15 +214,16 @@ function ViashHelp {
   echo "        default: false"
   echo "        Whether or not to run the secondary analysis e.g. clustering."
   echo ""
-  echo "    --cores"
-  echo "        type: integer"
-  echo "        example: 2"
-  echo "        Set max cores the pipeline may request at one time."
+  echo "    --generate_bam"
+  echo "        type: boolean"
+  echo "        default: true"
+  echo "        Whether to generate a BAM file."
   echo ""
-  echo "    --memory"
-  echo "        type: integer"
-  echo "        example: 10"
-  echo "        Set max GB the pipeline may request at one time."
+  echo "    --include_introns"
+  echo "        type: boolean"
+  echo "        default: true"
+  echo "        Include intronic reads in count (default=true unless --target-panel is"
+  echo "        specified in which case default=false)"
 }
 ######## Helper functions for setting up Docker images for viash ########
 # expects: ViashDockerBuild
@@ -439,14 +440,14 @@ function ViashDockerCheckCommands {
 #   ViashDockerFile
 function ViashDockerfile {
   cat << 'VIASHDOCKER'
-FROM ghcr.io/data-intuitive/cellranger:6.1
+FROM ghcr.io/data-intuitive/cellranger:7.0
 
 RUN apt update && apt upgrade -y
 LABEL org.opencontainers.image.authors="Angela Pisco (author) {github: aopisco, orcid: 0000-0003-0142-2355}, Samuel D'Souza (author) {github: srdsam}, Robrecht Cannoodt <rcannood@gmail.com> (author, maintainer) {github: rcannood, orcid: 0000-0003-3641-729X}"
 LABEL org.opencontainers.image.description="Companion container for running component mapping cellranger_count"
-LABEL org.opencontainers.image.created="2022-09-13T12:36:52Z"
+LABEL org.opencontainers.image.created="2022-09-13T13:56:49Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="ec82f3fd0568e7e3c711bcc3c3b25ae9a19f7e2b"
+LABEL org.opencontainers.image.revision="262762a280e0d067667d7c7d28fcd15c0f11a32f"
 LABEL org.opencontainers.image.version="main_build"
 VIASHDOCKER
 }
@@ -660,26 +661,26 @@ while [[ $# -gt 0 ]]; do
             VIASH_PAR_SECONDARY_ANALYSIS=$(ViashRemoveFlags "$1")
             shift 1
             ;;
-        --cores)
-            [ -n "$VIASH_PAR_CORES" ] && ViashError Bad arguments for option \'--cores\': \'$VIASH_PAR_CORES\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
-            VIASH_PAR_CORES="$2"
-            [ $# -lt 2 ] && ViashError Not enough arguments passed to --cores. Use "--help" to get more information on the parameters. && exit 1
+        --generate_bam)
+            [ -n "$VIASH_PAR_GENERATE_BAM" ] && ViashError Bad arguments for option \'--generate_bam\': \'$VIASH_PAR_GENERATE_BAM\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+            VIASH_PAR_GENERATE_BAM="$2"
+            [ $# -lt 2 ] && ViashError Not enough arguments passed to --generate_bam. Use "--help" to get more information on the parameters. && exit 1
             shift 2
             ;;
-        --cores=*)
-            [ -n "$VIASH_PAR_CORES" ] && ViashError Bad arguments for option \'--cores=*\': \'$VIASH_PAR_CORES\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
-            VIASH_PAR_CORES=$(ViashRemoveFlags "$1")
+        --generate_bam=*)
+            [ -n "$VIASH_PAR_GENERATE_BAM" ] && ViashError Bad arguments for option \'--generate_bam=*\': \'$VIASH_PAR_GENERATE_BAM\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+            VIASH_PAR_GENERATE_BAM=$(ViashRemoveFlags "$1")
             shift 1
             ;;
-        --memory)
-            [ -n "$VIASH_PAR_MEMORY" ] && ViashError Bad arguments for option \'--memory\': \'$VIASH_PAR_MEMORY\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
-            VIASH_PAR_MEMORY="$2"
-            [ $# -lt 2 ] && ViashError Not enough arguments passed to --memory. Use "--help" to get more information on the parameters. && exit 1
+        --include_introns)
+            [ -n "$VIASH_PAR_INCLUDE_INTRONS" ] && ViashError Bad arguments for option \'--include_introns\': \'$VIASH_PAR_INCLUDE_INTRONS\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+            VIASH_PAR_INCLUDE_INTRONS="$2"
+            [ $# -lt 2 ] && ViashError Not enough arguments passed to --include_introns. Use "--help" to get more information on the parameters. && exit 1
             shift 2
             ;;
-        --memory=*)
-            [ -n "$VIASH_PAR_MEMORY" ] && ViashError Bad arguments for option \'--memory=*\': \'$VIASH_PAR_MEMORY\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
-            VIASH_PAR_MEMORY=$(ViashRemoveFlags "$1")
+        --include_introns=*)
+            [ -n "$VIASH_PAR_INCLUDE_INTRONS" ] && ViashError Bad arguments for option \'--include_introns=*\': \'$VIASH_PAR_INCLUDE_INTRONS\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+            VIASH_PAR_INCLUDE_INTRONS=$(ViashRemoveFlags "$1")
             shift 1
             ;;
         ---setup)
@@ -819,6 +820,12 @@ fi
 if [ -z ${VIASH_PAR_SECONDARY_ANALYSIS+x} ]; then
   VIASH_PAR_SECONDARY_ANALYSIS="false"
 fi
+if [ -z ${VIASH_PAR_GENERATE_BAM+x} ]; then
+  VIASH_PAR_GENERATE_BAM="true"
+fi
+if [ -z ${VIASH_PAR_INCLUDE_INTRONS+x} ]; then
+  VIASH_PAR_INCLUDE_INTRONS="true"
+fi
 
 
 # check whether parameters values are of the right type
@@ -836,16 +843,16 @@ if [[ -n "$VIASH_PAR_SECONDARY_ANALYSIS" ]]; then
   fi
 fi
 
-if [[ -n "$VIASH_PAR_CORES" ]]; then
-  if ! [[ "$VIASH_PAR_CORES" =~ ^[-+]?[0-9]+$ ]]; then
-    ViashError '--cores' has to be an integer. Use "--help" to get more information on the parameters.
+if [[ -n "$VIASH_PAR_GENERATE_BAM" ]]; then
+  if ! [[ "$VIASH_PAR_GENERATE_BAM" =~ ^(true|True|TRUE|false|False|FALSE|yes|Yes|YES|no|No|NO)$ ]]; then
+    ViashError '--generate_bam' has to be a boolean. Use "--help" to get more information on the parameters.
     exit 1
   fi
 fi
 
-if [[ -n "$VIASH_PAR_MEMORY" ]]; then
-  if ! [[ "$VIASH_PAR_MEMORY" =~ ^[-+]?[0-9]+$ ]]; then
-    ViashError '--memory' has to be an integer. Use "--help" to get more information on the parameters.
+if [[ -n "$VIASH_PAR_INCLUDE_INTRONS" ]]; then
+  if ! [[ "$VIASH_PAR_INCLUDE_INTRONS" =~ ^(true|True|TRUE|false|False|FALSE|yes|Yes|YES|no|No|NO)$ ]]; then
+    ViashError '--include_introns' has to be a boolean. Use "--help" to get more information on the parameters.
     exit 1
   fi
 fi
@@ -936,8 +943,8 @@ $( if [ ! -z ${VIASH_PAR_OUTPUT+x} ]; then echo "par_output='${VIASH_PAR_OUTPUT/
 $( if [ ! -z ${VIASH_PAR_EXPECT_CELLS+x} ]; then echo "par_expect_cells='${VIASH_PAR_EXPECT_CELLS//\'/\'\"\'\"\'}'"; fi )
 $( if [ ! -z ${VIASH_PAR_CHEMISTRY+x} ]; then echo "par_chemistry='${VIASH_PAR_CHEMISTRY//\'/\'\"\'\"\'}'"; fi )
 $( if [ ! -z ${VIASH_PAR_SECONDARY_ANALYSIS+x} ]; then echo "par_secondary_analysis='${VIASH_PAR_SECONDARY_ANALYSIS//\'/\'\"\'\"\'}'"; fi )
-$( if [ ! -z ${VIASH_PAR_CORES+x} ]; then echo "par_cores='${VIASH_PAR_CORES//\'/\'\"\'\"\'}'"; fi )
-$( if [ ! -z ${VIASH_PAR_MEMORY+x} ]; then echo "par_memory='${VIASH_PAR_MEMORY//\'/\'\"\'\"\'}'"; fi )
+$( if [ ! -z ${VIASH_PAR_GENERATE_BAM+x} ]; then echo "par_generate_bam='${VIASH_PAR_GENERATE_BAM//\'/\'\"\'\"\'}'"; fi )
+$( if [ ! -z ${VIASH_PAR_INCLUDE_INTRONS+x} ]; then echo "par_include_introns='${VIASH_PAR_INCLUDE_INTRONS//\'/\'\"\'\"\'}'"; fi )
 $( if [ ! -z ${VIASH_META_FUNCTIONALITY_NAME+x} ]; then echo "meta_functionality_name='${VIASH_META_FUNCTIONALITY_NAME//\'/\'\"\'\"\'}'"; fi )
 $( if [ ! -z ${VIASH_META_RESOURCES_DIR+x} ]; then echo "meta_resources_dir='${VIASH_META_RESOURCES_DIR//\'/\'\"\'\"\'}'"; fi )
 $( if [ ! -z ${VIASH_META_EXECUTABLE+x} ]; then echo "meta_executable='${VIASH_META_EXECUTABLE//\'/\'\"\'\"\'}'"; fi )
@@ -971,11 +978,13 @@ cd "\$tmpdir"
 # add additional params
 extra_params=( )
 
-if [ ! -z "\$par_cores" ]; then 
-  extra_params+=( "--localcores=\$par_cores" )
+if [ ! -z "\$meta_n_proc" ]; then 
+  extra_params+=( "--localcores=\$meta_n_proc" )
 fi
-if [ ! -z "\$par_memory" ]; then 
-  extra_params+=( "--localmem=\$par_memory" )
+if [ ! -z "\$meta_memory_gb" ]; then 
+  # always keep 2gb for the OS itself
+  memory_gb=\`python -c "print(int('\$meta_memory_gb') - 2000)"\`
+  extra_params+=( "--localmem=\$memory_gb" )
 fi
 if [ ! -z "\$par_expect_cells" ]; then 
   extra_params+=( "--expect-cells=\$par_expect_cells" )
@@ -986,6 +995,9 @@ fi
 if [ "\$par_secondary_analysis" == "false" ]; then
   extra_params+=( "--nosecondary" )
 fi
+if [ "\$par_generate_bam" == "false" ]; then
+  extra_params+=( "--no-bam" )
+fi
 echo "Running cellranger count"
 
 
@@ -994,6 +1006,7 @@ cellranger count \\
   --id "\$id" \\
   --fastqs "\$par_input" \\
   --transcriptome "\$par_reference" \\
+  --include-introns "\$par_include_introns" \\
   "\${extra_params[@]}" \\
   --disable-ui \\
 

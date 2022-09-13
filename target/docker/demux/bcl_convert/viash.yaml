@@ -513,9 +513,9 @@ functionality:
       RUN :
       LABEL org.opencontainers.image.authors="Toni Verbeiren (author, maintainer) {github: tverbeiren}, Marijke Van moerbeke (author) {orcid: 0000-0002-3097-5621}"
       LABEL org.opencontainers.image.description="Companion container for running component demux bcl_convert"
-      LABEL org.opencontainers.image.created="2022-09-13T12:36:55Z"
+      LABEL org.opencontainers.image.created="2022-09-13T13:56:51Z"
       LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-      LABEL org.opencontainers.image.revision="ec82f3fd0568e7e3c711bcc3c3b25ae9a19f7e2b"
+      LABEL org.opencontainers.image.revision="262762a280e0d067667d7c7d28fcd15c0f11a32f"
       LABEL org.opencontainers.image.version="main_build"
       VIASHDOCKER
       }
@@ -1050,5 +1050,5 @@ info:
   output: "target/docker/demux/bcl_convert"
   executable: "target/docker/demux/bcl_convert/bcl_convert"
   viash_version: "0.6.0"
-  git_commit: "ec82f3fd0568e7e3c711bcc3c3b25ae9a19f7e2b"
+  git_commit: "262762a280e0d067667d7c7d28fcd15c0f11a32f"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"
