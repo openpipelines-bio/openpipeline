@@ -8,6 +8,10 @@
 
 * `transform/scaling`: Scale data to unit variance and zero mean.
 
+* `mapping/bd_rhapsody` and `workflows/ingestion/bd_rhapsody`: Added generic component and pipeline for running the BD Rhapsody WTA or Targeted analysis.
+
+* `convert/from_bdrhap_to_h5mu`: Added support for being able to deal with WTA, Targeted, SMK, AbSeq and VDJ data.
+
 * `integrate/harmony`: Added a component for running a Harmony integration analysis (R-based).
 
 * `integrate/harmonypy`: Added a component for running a Harmony integration analysis (Python-based).
@@ -39,6 +43,8 @@
 ## DEPRECATED
 
 * `convert/from_10xh5_to_h5ad` and `convert/from_bdrhap_to_h5ad`: Removed h5ad based components.
+
+* `mapping/bd_rhapsody_wta` and `workflows/ingestion/bd_rhapsody_wta`: Deprecated in favour for more generic `mapping/bd_rhapsody` and `workflows/ingestion/bd_rhapsody` pipelines.
 
 # openpipeline 0.4.1
 
