@@ -5,7 +5,7 @@ from sys import stdout
 
 ## VIASH START
 par = {
-  'input': 'resources_test/pbmc_1k_protein_v3/pbmc_1k_protein_v3_mms.h5mu',
+  'input': 'work/ca/588b7fcdfd953a534a59d794671451/pbmc_1k_protein_v3_mms.find_neighbors.output.h5mu',
   'modality': ['rna'],
   'output': 'output.h5mu',
   'output_key': 'umap',
@@ -16,7 +16,8 @@ par = {
   'alpha': 1.0,
   'gamma': 1.0,
   'negative_sample_rate': 5,
-  'init_pos': 'spectral'
+  'init_pos': 'spectral',
+  'uns_neighbors': 'neighbors'
 }
 ## VIASH END
 
@@ -44,6 +45,7 @@ for mod in par['modality']:
         gamma=par["gamma"],
         negative_sample_rate=par["negative_sample_rate"],
         init_pos=par["init_pos"],
+        neighbors_key=par["uns_neighbors"]
     )
     # note: should be able to set the neighbors key
 

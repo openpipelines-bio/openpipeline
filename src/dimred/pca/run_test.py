@@ -28,7 +28,7 @@ class TestPCA(TestCase):
         self._run_and_check_output([
                 "--input", input,
                 "--output",  "output.h5mu",
-                "--output_key", "foo",
+                "--obsm_output", "X_foo",
                 "--num_components", "26"
             ])
         self.assertTrue(Path("output.h5mu").is_file(), msg="No output was created.")
@@ -46,7 +46,7 @@ class TestPCA(TestCase):
             self._run_and_check_output([
                     "--input", tempfile.name,
                     "--output",  "output.h5mu",
-                    "--output_key", "foo",
+                    "--obsm_output", "test_foo",
                     "--num_components", "26",
                     "--layer", "test"
                 ])
@@ -60,7 +60,7 @@ class TestPCA(TestCase):
             self._run_and_check_output([
                     "--input", input,
                     "--output",  "output.h5mu",
-                    "--output_key", "foo",
+                    "--obsm_output", "X_foo",
                     "--num_components", "26",
                     "--layer", "does_not_exist"
                 ], expected_raise=True)

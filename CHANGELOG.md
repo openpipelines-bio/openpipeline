@@ -36,6 +36,8 @@
 
 * `neighbors/bbknn` and `neighbors/find_neighbors`: Add parameters for choosing the input/output slots.
 
+* `dimred/pca` and `dimred/umap`: Add parameters for choosing the input/output slots.
+
 ## BUG FIXES
 
 * Several components: revert using slim versions of containers because they do not provide the tools to run nextflow with trace capabilities.
