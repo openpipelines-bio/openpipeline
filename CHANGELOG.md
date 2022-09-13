@@ -26,6 +26,8 @@
 
 * `velocity/velocyto`: Allow configuring memory and parallellisation.
 
+* `cluster/leiden`: Add `--obsp_connectivities` parameter to allow choosing the output slot.
+
 ## BUG FIXES
 
 * Several components: revert using slim versions of containers because they do not provide the tools to run nextflow with trace capabilities.
