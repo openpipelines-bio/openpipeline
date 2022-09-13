@@ -57,6 +57,8 @@
 
 * `mapping/bd_rhapsody_wta` and `workflows/ingestion/bd_rhapsody_wta`: Deprecated in favour for more generic `mapping/bd_rhapsody` and `workflows/ingestion/bd_rhapsody` pipelines.
 
+* `convert/from_csv_to_h5mu`: Disable until it is needed again.
+
 # openpipeline 0.4.1
 
 ## BUG FIXES
