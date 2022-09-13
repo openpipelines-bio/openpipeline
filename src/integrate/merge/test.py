@@ -55,7 +55,7 @@ class TestMerge(unittest.TestCase):
                             set(concatenated_data.var_keys()))
         
         self.assertSetEqual(set(concatenated_data.var_names), set(data_sample1.var_names) | set(data_sample2.var_names))
-        self.assertListEqual(concatenated_data.var_keys(), ['gene_ids', 'feature_types', 'genome'])
+        self.assertListEqual(concatenated_data.var_keys(), ['gene_id', 'feature_type', 'genome'])
 
     def test_merge_non_overlapping_observations(self):
         """

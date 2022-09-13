@@ -1,5 +1,9 @@
 # openpipeline 0.5.0
 
+## BREAKING CHANGES
+
+* Many components: Renamed `.var["gene_ids"]` and `.var["feature_types"]` to `.var["gene_id"]` and `.var["feature_type"]`.
+
 ## NEW FUNCTIONALITY
 
 * `graph/bbknn`: BBKNN network generation.

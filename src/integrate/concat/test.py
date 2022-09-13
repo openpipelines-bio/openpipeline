@@ -366,7 +366,7 @@ class TestConcat(unittest.TestCase):
         self.assertEqual(sample1_mods | sample2_mods, concatentated_mods)
 
         # Check if conflicting columns in .varm
-        self.assertListEqual(rna.varm['conflict_feature_types'].columns.tolist(), 
+        self.assertListEqual(rna.varm['conflict_feature_type'].columns.tolist(), 
                              ["mouse", "human"])
         self.assertDictEqual(dict(atac.varm), {})
         self.assertDictEqual(dict(rna.obsm), {})

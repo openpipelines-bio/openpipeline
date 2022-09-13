@@ -62,9 +62,9 @@ class TestFilterWithCounts(TestCase):
         self.assertEqual(new_vars, self.orig_vars, msg="No RNA vars should have been filtered")
         self.assertEqual(mu_out.mod['prot'].n_obs, self.orig_prot_obs, msg="No prot obs should have been filtered")
         self.assertEqual(mu_out.mod['prot'].n_vars, self.orig_prot_vars, msg="No prot vars should have been filtered")
-        self.assertListEqual(list(mu_out.mod['rna'].var['feature_types'].cat.categories), ["Gene Expression"],
+        self.assertListEqual(list(mu_out.mod['rna'].var['feature_type'].cat.categories), ["Gene Expression"],
                              msg="Feature types of RNA modality should be Gene Expression")
-        self.assertListEqual(list(mu_out.mod['prot'].var['feature_types'].cat.categories), ["Antibody Capture"],
+        self.assertListEqual(list(mu_out.mod['prot'].var['feature_type'].cat.categories), ["Antibody Capture"],
                              msg="Feature types of prot modality should be Antibody Capture")
  
     def test_filtering_a_little(self):
@@ -88,9 +88,9 @@ class TestFilterWithCounts(TestCase):
         self.assertLess(new_vars, self.orig_vars, msg="Some genes should have been filtered")
         self.assertEqual(mu_out.mod['prot'].n_obs, self.orig_obs, msg="No prot obs should have been filtered")
         self.assertEqual(mu_out.mod['prot'].n_vars, self.orig_prot_vars, msg="No prot vars should have been filtered")
-        self.assertListEqual(list(mu_out.mod['rna'].var['feature_types'].cat.categories), ["Gene Expression"],
+        self.assertListEqual(list(mu_out.mod['rna'].var['feature_type'].cat.categories), ["Gene Expression"],
                              msg="Feature types of RNA modality should be Gene Expression")
-        self.assertListEqual(list(mu_out.mod['prot'].var['feature_types'].cat.categories), ["Antibody Capture"],
+        self.assertListEqual(list(mu_out.mod['prot'].var['feature_type'].cat.categories), ["Antibody Capture"],
                              msg="Feature types of prot modality should be Antibody Capture" )
 
 
