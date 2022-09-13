@@ -342,8 +342,8 @@ class TestConcat(unittest.TestCase):
             "--input", input_sample1_file,
             "--input", input_sample2_file,
             "--output", "concat.h5mu",
-            "--other_axis_mode", "move"],
-            "---n_proc", meta["n_proc"]
+            "--other_axis_mode", "move",
+            "---n_proc", meta["n_proc"]]
             )
         self.assertTrue(Path("concat.h5mu").is_file())
         concatenated_data = md.read("concat.h5mu")
