@@ -1,5 +1,6 @@
 #!/bin/bash
 
+set -eo pipefail
 
 #  Sam tags added by BD Rhapsody Pipeline
 #  From: https://www.bd.com/documents/guides/user-guides/GMX_BD-Rhapsody-genomics-informatics_UG_EN.pdf
@@ -57,9 +58,6 @@
 # │    │ following the UMI on Read 2. For the Single Cell 3' v2 chemistry, this is        │
 # │    │ trailing sequence following the cell and molecular barcodes on Read 1.           │
 # ╘════╧══════════════════════════════════════════════════════════════════════════════════╛
-
-set -e
-set -o pipefail
 
 extra_params=()
 

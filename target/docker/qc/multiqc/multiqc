@@ -393,9 +393,9 @@ RUN pip install --upgrade pip && \
   pip install --upgrade --no-cache-dir "multiqc"
 
 LABEL org.opencontainers.image.description="Companion container for running component qc multiqc"
-LABEL org.opencontainers.image.created="2022-09-14T09:29:51Z"
+LABEL org.opencontainers.image.created="2022-09-14T14:52:02Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="431ea87c708ebea039c5b5594072184938ad6e2a"
+LABEL org.opencontainers.image.revision="63acfe836c880320b115a390ede6807b17755955"
 LABEL org.opencontainers.image.version="main_build"
 VIASHDOCKER
 }
@@ -798,6 +798,8 @@ resources_dir="$VIASH_META_RESOURCES_DIR"
 
 ## VIASH END
 #!/bin/bash
+
+set -eo pipefail
 
 multiqc -o "\$par_output" \$par_input
 

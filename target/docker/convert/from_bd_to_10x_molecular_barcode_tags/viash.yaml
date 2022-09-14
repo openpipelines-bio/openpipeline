@@ -470,9 +470,9 @@ functionality:
       
       LABEL org.opencontainers.image.authors="Dries Schaumont <dries.schaumont@data-intuitive.com> (maintainer) {github: DriesSchaumont, orcid: 0000-0002-4389-0440}"
       LABEL org.opencontainers.image.description="Companion container for running component convert from_bd_to_10x_molecular_barcode_tags"
-      LABEL org.opencontainers.image.created="2022-09-14T09:29:51Z"
+      LABEL org.opencontainers.image.created="2022-09-14T14:52:01Z"
       LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-      LABEL org.opencontainers.image.revision="431ea87c708ebea039c5b5594072184938ad6e2a"
+      LABEL org.opencontainers.image.revision="63acfe836c880320b115a390ede6807b17755955"
       LABEL org.opencontainers.image.version="main_build"
       VIASHDOCKER
       }
@@ -900,6 +900,7 @@ functionality:
       ## VIASH END
       #!/bin/bash
       
+      set -eo pipefail
       
       #  Sam tags added by BD Rhapsody Pipeline
       #  From: https://www.bd.com/documents/guides/user-guides/GMX_BD-Rhapsody-genomics-informatics_UG_EN.pdf
@@ -957,9 +958,6 @@ functionality:
       # │    │ following the UMI on Read 2. For the Single Cell 3' v2 chemistry, this is        │
       # │    │ trailing sequence following the cell and molecular barcodes on Read 1.           │
       # ╘════╧══════════════════════════════════════════════════════════════════════════════════╛
-      
-      set -e
-      set -o pipefail
       
       extra_params=()
       
@@ -1022,5 +1020,5 @@ info:
   output: "target/docker/convert/from_bd_to_10x_molecular_barcode_tags"
   executable: "target/docker/convert/from_bd_to_10x_molecular_barcode_tags/from_bd_to_10x_molecular_barcode_tags"
   viash_version: "0.6.0"
-  git_commit: "431ea87c708ebea039c5b5594072184938ad6e2a"
+  git_commit: "63acfe836c880320b115a390ede6807b17755955"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"

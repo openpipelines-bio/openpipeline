@@ -431,9 +431,9 @@ functionality:
         pip install --upgrade --no-cache-dir "multiqc"
       
       LABEL org.opencontainers.image.description="Companion container for running component qc multiqc"
-      LABEL org.opencontainers.image.created="2022-09-14T09:29:51Z"
+      LABEL org.opencontainers.image.created="2022-09-14T14:52:02Z"
       LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-      LABEL org.opencontainers.image.revision="431ea87c708ebea039c5b5594072184938ad6e2a"
+      LABEL org.opencontainers.image.revision="63acfe836c880320b115a390ede6807b17755955"
       LABEL org.opencontainers.image.version="main_build"
       VIASHDOCKER
       }
@@ -837,6 +837,8 @@ functionality:
       ## VIASH END
       #!/bin/bash
       
+      set -eo pipefail
+      
       multiqc -o "\$par_output" \$par_input
       
       VIASHMAIN
@@ -849,10 +851,7 @@ functionality:
     dest: "multiqc"
     is_executable: true
   description: "Component for multiqc (https://multiqc.info/)\n"
-  test_resources:
-  - type: "bash_script"
-    path: "test.sh"
-    is_executable: true
+  test_resources: []
   info: {}
   status: "enabled"
   requirements:
@@ -897,5 +896,5 @@ info:
   output: "target/docker/qc/multiqc"
   executable: "target/docker/qc/multiqc/multiqc"
   viash_version: "0.6.0"
-  git_commit: "431ea87c708ebea039c5b5594072184938ad6e2a"
+  git_commit: "63acfe836c880320b115a390ede6807b17755955"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"
