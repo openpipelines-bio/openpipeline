@@ -98,5 +98,5 @@ jobs:
       run: |
         bin/viash test -p docker ${{ matrix.component.config }} \
          -c '.functionality.requirements.n_proc := 2' \
-         -c '.functionality.requirements.memory := 5gb'
+         -c '.functionality.requirements.memory := "5gb"'
 

@@ -200,4 +200,4 @@ jobs:
         bin/viash_test -m release -t ${{ github.event.inputs.version_tag }} \
           -s "$SRC_DIR" \
           -c '.functionality.requirements.n_proc := 2' \
-          -c '.functionality.requirements.memory := 5gb'
+          -c '.functionality.requirements.memory := "5gb"'
