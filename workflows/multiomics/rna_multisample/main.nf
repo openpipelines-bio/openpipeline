@@ -32,9 +32,8 @@ workflow run_wf {
     // store output value in 3rd slot for later use
     // and transform for concat component
     | map { id, data ->
-      new_id = "combined"
       new_data = [ input: data.input, sample_names: data.id ]
-      [new_id, new_data, data]
+      [id, new_data, data]
     }
 
     | concat
