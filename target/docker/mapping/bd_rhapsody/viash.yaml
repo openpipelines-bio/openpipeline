@@ -61,7 +61,7 @@ functionality:
       required: true
       direction: "input"
       multiple: true
-      multiple_sep: ":"
+      multiple_sep: ";"
     - type: "file"
       name: "--transcriptome_annotation"
       alternatives:
@@ -810,9 +810,9 @@ functionality:
       
       LABEL org.opencontainers.image.authors="Robrecht Cannoodt <rcannood@gmail.com> (maintainer) {github: rcannood, orcid: 0000-0003-3641-729X}"
       LABEL org.opencontainers.image.description="Companion container for running component mapping bd_rhapsody"
-      LABEL org.opencontainers.image.created="2022-09-14T07:53:24Z"
+      LABEL org.opencontainers.image.created="2022-09-14T09:29:49Z"
       LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-      LABEL org.opencontainers.image.revision="99cf4fdc88a48a622520d88bef1803ca72ca2b50"
+      LABEL org.opencontainers.image.revision="431ea87c708ebea039c5b5594072184938ad6e2a"
       LABEL org.opencontainers.image.version="main_build"
       VIASHDOCKER
       }
@@ -1001,7 +1001,7 @@ functionality:
                   if [ -z "$VIASH_PAR_REFERENCE" ]; then
                     VIASH_PAR_REFERENCE="$2"
                   else
-                    VIASH_PAR_REFERENCE="$VIASH_PAR_REFERENCE:""$2"
+                    VIASH_PAR_REFERENCE="$VIASH_PAR_REFERENCE;""$2"
                   fi
                   [ $# -lt 2 ] && ViashError Not enough arguments passed to --reference. Use "--help" to get more information on the parameters. && exit 1
                   shift 2
@@ -1010,7 +1010,7 @@ functionality:
                   if [ -z "$VIASH_PAR_REFERENCE" ]; then
                     VIASH_PAR_REFERENCE=$(ViashRemoveFlags "$1")
                   else
-                    VIASH_PAR_REFERENCE="$VIASH_PAR_REFERENCE:"$(ViashRemoveFlags "$1")
+                    VIASH_PAR_REFERENCE="$VIASH_PAR_REFERENCE;"$(ViashRemoveFlags "$1")
                   fi
                   shift 1
                   ;;
@@ -1018,7 +1018,7 @@ functionality:
                   if [ -z "$VIASH_PAR_REFERENCE" ]; then
                     VIASH_PAR_REFERENCE="$2"
                   else
-                    VIASH_PAR_REFERENCE="$VIASH_PAR_REFERENCE:""$2"
+                    VIASH_PAR_REFERENCE="$VIASH_PAR_REFERENCE;""$2"
                   fi
                   [ $# -lt 2 ] && ViashError Not enough arguments passed to -r. Use "--help" to get more information on the parameters. && exit 1
                   shift 2
@@ -1027,7 +1027,7 @@ functionality:
                   if [ -z "$VIASH_PAR_REFERENCE" ]; then
                     VIASH_PAR_REFERENCE="$2"
                   else
-                    VIASH_PAR_REFERENCE="$VIASH_PAR_REFERENCE:""$2"
+                    VIASH_PAR_REFERENCE="$VIASH_PAR_REFERENCE;""$2"
                   fi
                   [ $# -lt 2 ] && ViashError Not enough arguments passed to --reference_genome. Use "--help" to get more information on the parameters. && exit 1
                   shift 2
@@ -1518,14 +1518,14 @@ functionality:
         VIASH_PAR_INPUT="$VIASH_TEST_INPUT"
       fi
       if [ ! -z "$VIASH_PAR_REFERENCE" ]; then
-        IFS=":"
+        IFS=";"
         for var in $VIASH_PAR_REFERENCE; do
           unset IFS
           VIASH_EXTRA_MOUNTS="$VIASH_EXTRA_MOUNTS $(ViashAutodetectMountArg "$var")"
           if [ -z "$VIASH_TEST_REFERENCE" ]; then
             VIASH_TEST_REFERENCE="$(ViashAutodetectMount "$var")"
           else
-            VIASH_TEST_REFERENCE="$VIASH_TEST_REFERENCE:""$(ViashAutodetectMount "$var")"
+            VIASH_TEST_REFERENCE="$VIASH_TEST_REFERENCE;""$(ViashAutodetectMount "$var")"
           fi
         done
         VIASH_PAR_REFERENCE="$VIASH_TEST_REFERENCE"
@@ -1626,7 +1626,7 @@ functionality:
       par = {
         'mode': $( if [ ! -z ${VIASH_PAR_MODE+x} ]; then echo "'${VIASH_PAR_MODE//\'/\\\'}'"; else echo None; fi ),
         'input': $( if [ ! -z ${VIASH_PAR_INPUT+x} ]; then echo "'${VIASH_PAR_INPUT//\'/\\\'}'.split(';')"; else echo None; fi ),
-        'reference': $( if [ ! -z ${VIASH_PAR_REFERENCE+x} ]; then echo "'${VIASH_PAR_REFERENCE//\'/\\\'}'.split(':')"; else echo None; fi ),
+        'reference': $( if [ ! -z ${VIASH_PAR_REFERENCE+x} ]; then echo "'${VIASH_PAR_REFERENCE//\'/\\\'}'.split(';')"; else echo None; fi ),
         'transcriptome_annotation': $( if [ ! -z ${VIASH_PAR_TRANSCRIPTOME_ANNOTATION+x} ]; then echo "'${VIASH_PAR_TRANSCRIPTOME_ANNOTATION//\'/\\\'}'"; else echo None; fi ),
         'abseq_reference': $( if [ ! -z ${VIASH_PAR_ABSEQ_REFERENCE+x} ]; then echo "'${VIASH_PAR_ABSEQ_REFERENCE//\'/\\\'}'.split(';')"; else echo None; fi ),
         'supplemental_reference': $( if [ ! -z ${VIASH_PAR_SUPPLEMENTAL_REFERENCE+x} ]; then echo "'${VIASH_PAR_SUPPLEMENTAL_REFERENCE//\'/\\\'}'.split(';')"; else echo None; fi ),
@@ -2109,5 +2109,5 @@ info:
   output: "target/docker/mapping/bd_rhapsody"
   executable: "target/docker/mapping/bd_rhapsody/bd_rhapsody"
   viash_version: "0.6.0"
-  git_commit: "99cf4fdc88a48a622520d88bef1803ca72ca2b50"
+  git_commit: "431ea87c708ebea039c5b5594072184938ad6e2a"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"

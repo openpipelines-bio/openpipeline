@@ -93,7 +93,7 @@ thisConfig = processConfig([
           "required" : true,
           "direction" : "input",
           "multiple" : true,
-          "multiple_sep" : ":"
+          "multiple_sep" : ";"
         },
         {
           "type" : "file",
@@ -422,7 +422,7 @@ logger.addHandler(console_handler)
 par = {
   'mode': $( if [ ! -z ${VIASH_PAR_MODE+x} ]; then echo "'${VIASH_PAR_MODE//\\'/\\\\\\'}'"; else echo None; fi ),
   'input': $( if [ ! -z ${VIASH_PAR_INPUT+x} ]; then echo "'${VIASH_PAR_INPUT//\\'/\\\\\\'}'.split(';')"; else echo None; fi ),
-  'reference': $( if [ ! -z ${VIASH_PAR_REFERENCE+x} ]; then echo "'${VIASH_PAR_REFERENCE//\\'/\\\\\\'}'.split(':')"; else echo None; fi ),
+  'reference': $( if [ ! -z ${VIASH_PAR_REFERENCE+x} ]; then echo "'${VIASH_PAR_REFERENCE//\\'/\\\\\\'}'.split(';')"; else echo None; fi ),
   'transcriptome_annotation': $( if [ ! -z ${VIASH_PAR_TRANSCRIPTOME_ANNOTATION+x} ]; then echo "'${VIASH_PAR_TRANSCRIPTOME_ANNOTATION//\\'/\\\\\\'}'"; else echo None; fi ),
   'abseq_reference': $( if [ ! -z ${VIASH_PAR_ABSEQ_REFERENCE+x} ]; then echo "'${VIASH_PAR_ABSEQ_REFERENCE//\\'/\\\\\\'}'.split(';')"; else echo None; fi ),
   'supplemental_reference': $( if [ ! -z ${VIASH_PAR_SUPPLEMENTAL_REFERENCE+x} ]; then echo "'${VIASH_PAR_SUPPLEMENTAL_REFERENCE//\\'/\\\\\\'}'.split(';')"; else echo None; fi ),
