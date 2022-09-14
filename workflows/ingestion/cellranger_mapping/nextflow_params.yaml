@@ -1,0 +1,12 @@
+# Arguments
+id: # please fill in - example: "foo"
+input: # please fill in - example: "data.fastq"
+reference: # please fill in - example: "reference.tar.gz"
+# cores: 2
+# memory: 10
+
+# Nextflow input-output arguments
+publish_dir: # please fill in - example: "output/"
+# param_list: "my_params.yaml"
+# param_list_format: "yaml"
+
