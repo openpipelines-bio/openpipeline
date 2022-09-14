@@ -14,7 +14,9 @@ workflow {
   helpMessage(config)
 
   viashChannel(params, config)
+    | view { "Input: $it" }
     | run_wf
+    | view { "Output: $it" }
 }
 
 workflow run_wf {
@@ -24,9 +26,24 @@ workflow run_wf {
   main:
   output_ch = input_ch
 
+    // store output value in 3rd slot for later use
+    // and transform for concat component
+    | map { id, data ->
+      new_data = data.clone()
+      new_data.remove("output_h5mu")
+      new_data.remove("output_raw")
+      new_data = new_data + [ output: data.output_raw ]
+      
+      [id, new_data, data]
+    }
+
+    // run bd rhapsody
     | bd_rhapsody.run(auto: [ publish: true ])
 
-    | map { id, file -> [ id, [ input: file, id: id ]]}
+    // convert to h5mu
+    | map { id, file, orig_data -> 
+      [ id, [ id: id, input: file, output: orig_data.output_h5mu ] ]
+    }
     | from_bdrhap_to_h5mu.run(auto: [ publish: true ])
 
   emit:

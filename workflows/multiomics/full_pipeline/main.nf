@@ -5,13 +5,13 @@ targetDir = params.rootDir + "/target/nextflow"
 include { split_modalities } from targetDir + '/split/split_modalities/main.nf'
 include { merge } from targetDir + '/integrate/merge/main.nf'
 include { concat } from targetDir + '/integrate/concat/main.nf'
-include { run_wf as process_rna_singlesample } from workflowDir + '/process_rna/singlesample/main.nf'
-include { run_wf as process_rna_multisample } from workflowDir + '/process_rna/multisample/main.nf'
-include { run_wf as integration } from workflowDir + '/integration/multimodal_integration/main.nf'
+include { run_wf as rna_singlesample } from workflowDir + '/multiomics/rna_singlesample/main.nf'
+include { run_wf as rna_multisample } from workflowDir + '/multiomics/rna_multisample/main.nf'
+include { run_wf as integration } from workflowDir + '/multiomics/integration/main.nf'
 
 include { readConfig; viashChannel; helpMessage } from workflowDir + "/utils/WorkflowHelper.nf"
 
-config = readConfig("$workflowDir/integration/multiomics/config.vsh.yaml")
+config = readConfig("$workflowDir/multiomics/full_pipeline/config.vsh.yaml")
 
 
 workflow {
@@ -32,15 +32,15 @@ workflow run_wf {
 
   rna_ch = start_ch
     | map { id, output_dir -> 
-      [ id, 
-        output_dir.listFiles({ file -> file.name.endsWith('_rna.h5mu') && !file.isDirectory() })
-      ] }
-    | map { id, files_list -> assert files_list.size() == 1; [id, files_list.first()] }
-    | process_rna_singlesample
+      files_list = output_dir.listFiles({ file -> file.name.endsWith('_rna.h5mu') && !file.isDirectory() })
+      assert files_list.size() == 1
+      [ id, [ input: files_list.first() ] ]
+    }
+    | rna_singlesample
     | toSortedList()
     | map { tups -> tups.transpose()}
     | map {id, files -> [id.join(','), ["id": id, "input": files]]}
-    | process_rna_multisample
+    | rna_multisample
 
 
   atac_ch = start_ch

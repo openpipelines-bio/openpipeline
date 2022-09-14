@@ -538,9 +538,9 @@ functionality:
       
       LABEL org.opencontainers.image.authors="Dries De Maeyer <ddemaeyer@gmail.com> (author) {account: ddemaey1}, Robrecht Cannoodt <rcannood@gmail.com> (maintainer, author) {github: rcannood, orcid: 0000-0003-3641-729X}"
       LABEL org.opencontainers.image.description="Companion container for running component integrate harmony"
-      LABEL org.opencontainers.image.created="2022-09-14T01:14:38Z"
+      LABEL org.opencontainers.image.created="2022-09-14T02:39:11Z"
       LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-      LABEL org.opencontainers.image.revision="f0b4b116597723011767e65175420979b5fe1c67"
+      LABEL org.opencontainers.image.revision="134473310e4dbf47e1e048fda5b49020bebdc1e1"
       LABEL org.opencontainers.image.version="main_build"
       VIASHDOCKER
       }
@@ -1149,5 +1149,5 @@ info:
   output: "target/docker/integrate/harmony"
   executable: "target/docker/integrate/harmony/harmony"
   viash_version: "0.6.0"
-  git_commit: "f0b4b116597723011767e65175420979b5fe1c67"
+  git_commit: "134473310e4dbf47e1e048fda5b49020bebdc1e1"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"

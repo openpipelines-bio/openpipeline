@@ -11,7 +11,7 @@ include { harmonypy } from targetDir + '/integrate/harmonypy/main.nf'
 
 include { readConfig; viashChannel; helpMessage } from workflowDir + "/utils/WorkflowHelper.nf"
 
-config = readConfig("$workflowDir/integration/multimodal_integration/config.vsh.yaml")
+config = readConfig("$workflowDir/multiomics/integration/config.vsh.yaml")
 
 workflow {
   helpMessage(config)
@@ -77,7 +77,7 @@ workflow test_wf {
   // or when running from s3: params.resources_test = "s3://openpipelines-data/"
   testParams = [
     id: "foo",
-    input: params.resources_test + "/concat/concatenated_brain_filtered_feature_bc_matrix_subset.h5mu",
+    input: params.resources_test + "/concat_test_data/concatenated_brain_filtered_feature_bc_matrix_subset.h5mu",
     layer: "",
     obs_covariates: "sample_id"
   ]

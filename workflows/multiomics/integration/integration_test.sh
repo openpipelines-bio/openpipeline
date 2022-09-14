@@ -8,11 +8,9 @@ cd "$REPO_ROOT"
 
 export NXF_VER=21.10.6
 
-bin/nextflow \
-  run . \
-  -main-script workflows/ingestion/cellranger_demux/main.nf \
-  -entry test_wf \
+bin/nextflow run . \
+  -main-script workflows/multiomics/integration/main.nf \
+  -profile docker,no_publish \
   -resume \
-  -profile docker \
-  -c workflows/utils/labels_ci.config \
+  -entry test_wf \
   -with-trace work/trace.txt

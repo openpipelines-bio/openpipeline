@@ -1,7 +1,7 @@
 {
     "$schema": "http://json-schema.org/draft-07/schema",
-    "title": "cellranger_demux",
-    "description": "Cell Ranger demux pipeline.",
+    "title": "rna_singlesample",
+    "description": "Processing unimodal single-sample RNA transcriptomics data.",
     "type": "object",
     "definitions": {
       "arguments" : {
@@ -19,31 +19,17 @@
           },
           "input": {
             "type":"string",
-            "description": "A BCL directory.",
+            "description": "Path to the sample.",
             
             
             "default": ""
           },
-          "sample_sheet": {
+          "output": {
             "type":"string",
-            "description": "The sample sheet for the samples to be demultiplexed.",
+            "description": "Destination path to the output.",
             
             
-            "default": ""
-          },
-          "cores": {
-            "type":"integer",
-            "description": "Set max cores the pipeline may request at one time.",
-            
-            
-            "default": ""
-          },
-          "memory": {
-            "type":"integer",
-            "description": "Set max GB the pipeline may request at one time.",
-            
-            
-            "default": ""
+            "default": "$id.$key.output.h5mu"
           }
         }
       },

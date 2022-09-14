@@ -11,7 +11,7 @@ include { delete_layer } from targetDir + '/transform/delete_layer/main.nf'
 
 include { readConfig; viashChannel; helpMessage } from workflowDir + "/utils/WorkflowHelper.nf"
 
-config = readConfig("$workflowDir/process_rna/multisample/config.vsh.yaml")
+config = readConfig("$workflowDir/multiomics/rna_multisample/config.vsh.yaml")
 
 workflow {
   helpMessage(config)
@@ -32,9 +32,8 @@ workflow run_wf {
     // store output value in 3rd slot for later use
     // and transform for concat component
     | map { id, data ->
-      new_id = "combined"
       new_data = [ input: data.input, sample_names: data.id ]
-      [new_id, new_data, data]
+      ["combined_samples_rna", new_data, data]
     }
 
     | concat
@@ -66,9 +65,6 @@ workflow run_wf {
 }
 
 workflow test_wf {
-  // don't publish output
-  global_params.do_publish = false
-
   // allow changing the resources_test dir
   params.resources_test = params.rootDir + "/resources_test"
 

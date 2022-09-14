@@ -1,7 +1,7 @@
 {
     "$schema": "http://json-schema.org/draft-07/schema",
-    "title": "singlesample",
-    "description": "Processing unimodal single-sample RNA transcriptomics data.",
+    "title": "rna_multisample",
+    "description": "Processing unimodal multi-sample RNA transcriptomics data.",
     "type": "object",
     "definitions": {
       "arguments" : {
@@ -12,14 +12,14 @@
         "properties": {
           "id": {
             "type":"string",
-            "description": "ID of the sample.",
+            "description": "IDs of the sample.",
             
             
             "default": ""
           },
           "input": {
             "type":"string",
-            "description": "Path to the sample.",
+            "description": "Path to the samples.",
             
             
             "default": ""

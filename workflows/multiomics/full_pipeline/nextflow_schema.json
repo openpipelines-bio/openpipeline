@@ -1,11 +1,11 @@
 {
     "$schema": "http://json-schema.org/draft-07/schema",
-    "title": "multimodal_integration",
-    "description": "Processing multimodal multi-sample RNA transcriptomics data.",
+    "title": "full_pipeline",
+    "description": "A pipeline to analyse multiple multiomics samples.",
     "type": "object",
     "definitions": {
-      "arguments" : {
-        "title": "Arguments",
+      "inputs" : {
+        "title": "Inputs",
         "type": "object",
         "description": "No description",
         "default": "",
@@ -20,27 +20,6 @@
           "input": {
             "type":"string",
             "description": "Path to the sample.",
-            
-            
-            "default": ""
-          },
-          "output": {
-            "type":"string",
-            "description": "Destination path to the output.",
-            
-            
-            "default": "$id.$key.output.h5mu"
-          },
-          "layer": {
-            "type":"string",
-            "description": "use specified layer for expression values instead of the .X object from the modality.",
-            
-            
-            "default": "log_normalized"
-          },
-          "obs_covariates": {
-            "type":"string",
-            "description": "The .obs field(s) that define the covariate(s) to regress out.",
             
             
             "default": ""
@@ -79,7 +58,7 @@
     },
     "allOf": [
       {
-        "$ref": "#/definitions/arguments"
+        "$ref": "#/definitions/inputs"
       },
       {
         "$ref": "#/definitions/nextflow input-output arguments"

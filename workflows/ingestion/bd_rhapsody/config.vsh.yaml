@@ -12,7 +12,7 @@ functionality:
     * If mode is `"wta"`, then `--reference` and `--transcriptome_annotation` must be defined, `--abseq_reference` and `--supplemental_reference` is optional.
 
     The reference_genome and transcriptome_annotation files can be downloaded from these locations:
-    
+
       - Human: http://bd-rhapsody-public.s3-website-us-east-1.amazonaws.com/Rhapsody-WTA/GRCh38-PhiX-gencodev29/
       - Mouse: http://bd-rhapsody-public.s3-website-us-east-1.amazonaws.com/Rhapsody-WTA/GRCm38-PhiX-gencodevM19/
   authors:
@@ -74,13 +74,18 @@ functionality:
           default: sample
     - name: Outputs
       arguments:
-        - name: "--output"
+        - name: "--output_raw"
           type: file
           direction: output
-          alternatives: [-o]
-          description: "Output folder. Output still needs to be processed further."
+          description: "The BD Rhapsody output folder as it comes out of the BD Rhapsody pipeline"
           required: true
           example: output_dir/
+        - name: "--output_h5mu"
+          type: file
+          direction: output
+          description: "The converted h5mu file."
+          required: true
+          example: output.h5mu
     - name: Putative cell calling settings
       arguments:
         - name: "--putative_cell_call"

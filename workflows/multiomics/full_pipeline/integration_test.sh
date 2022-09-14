@@ -8,9 +8,11 @@ cd "$REPO_ROOT"
 
 export NXF_VER=21.10.6
 
-bin/nextflow run . \
-  -main-script workflows/process_rna/multisample/main.nf \
-  -profile docker \
-  -resume \
+bin/nextflow \
+  run . \
+  -main-script workflows/multiomics/full_pipeline/main.nf \
   -entry test_wf \
-  -with-trace work/trace.txt
+  -resume \
+  -profile docker,no_publish \
+  -c workflows/utils/labels_ci.config \
+  --publish_dir "foo/"

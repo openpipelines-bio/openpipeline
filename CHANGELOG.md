@@ -8,7 +8,7 @@
 
 * `graph/bbknn`: BBKNN network generation.
 
-* `workflows/integration/multiomics`: implement pipeline for processing multiple multiomics samples.
+* `workflows/multiomics/full_pipeline`: implement pipeline for processing multiple multiomics samples.
 
 * `transform/scaling`: Scale data to unit variance and zero mean.
 
@@ -37,7 +37,7 @@
 
 * Multiple components: update to anndata 0.8 with mudata 0.2.0. This means that the format of the .h5mu files have changed.
 
-* `process_rna/singlesample`: move transformation counts into layers instead of overwriting .X.
+* `multiomics/rna_singlesample`: move transformation counts into layers instead of overwriting .X.
 
 ## MINOR CHANGES
 
@@ -45,7 +45,7 @@
 
 * `cluster/leiden`: Add `--obsp_connectivities` parameter to allow choosing the output slot.
 
-* `workflows/process_rna/singlesample`, `workflows/process_rna/multisample` and `workflows/integration/multimodal_integration`: Allow choosing the output paths.
+* `workflows/multiomics/rna_singlesample`, `workflows/multiomics/rna_multisample` and `workflows/multiomics/integration`: Allow choosing the output paths.
 
 * `neighbors/bbknn` and `neighbors/find_neighbors`: Add parameters for choosing the input/output slots.
 
@@ -57,7 +57,7 @@
 
 * `integrate/concat`: Fix an issue where joining boolean values caused `TypeError`.
 
-* `workflows/process_rna/multisample`, `workflows/process_rna/singlesample` and `workflows/integration/multimodal_integration`: use nextflow trace reporting when running integration tests.
+* `workflows/multiomics/rna_multisample`, `workflows/multiomics/rna_singlesample` and `workflows/multiomics/integration`: use nextflow trace reporting when running integration tests.
 
 ## DEPRECATED
 
