@@ -9,7 +9,7 @@ include { do_filter } from targetDir + "/filter/do_filter/main.nf"
 
 include { readConfig; viashChannel; helpMessage } from workflowDir + "/utils/WorkflowHelper.nf"
 
-config = readConfig("$workflowDir/process_rna/singlesample/config.vsh.yaml")
+config = readConfig("$workflowDir/multiomics/rna_singlesample/config.vsh.yaml")
 
 workflow {
   helpMessage(config)
@@ -28,7 +28,12 @@ workflow run_wf {
   main:
   output_ch = input_ch
     // store output value in 3rd slot for later use
-    | map { id, data -> [ id, data, data ] }
+    | map { id, data -> 
+      if (data !instanceof Map) {
+        data = [ input: data ]
+      }
+      [ id, data, data.clone() ] 
+    }
 
     // cell filtering
     | filter_with_counts
@@ -38,7 +43,7 @@ workflow run_wf {
 
     // retrieve output value
     | map { id, file, orig_data -> 
-      [ id, [ input: file ] + orig_data.subMap("output") ]
+      [ id, [ input: file ] + (orig_data instanceof Map ? orig_data.subMap("output") : [ output: orig_data ] ) ]
     }
 
     // doublet calling

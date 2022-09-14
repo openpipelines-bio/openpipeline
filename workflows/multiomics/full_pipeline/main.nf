@@ -11,7 +11,7 @@ include { run_wf as integration } from workflowDir + '/multiomics/integration/ma
 
 include { readConfig; viashChannel; helpMessage } from workflowDir + "/utils/WorkflowHelper.nf"
 
-config = readConfig("$workflowDir/integration/multiomics/config.vsh.yaml")
+config = readConfig("$workflowDir/multiomics/full_pipeline/config.vsh.yaml")
 
 
 workflow {
@@ -32,10 +32,10 @@ workflow run_wf {
 
   rna_ch = start_ch
     | map { id, output_dir -> 
-      [ id, 
-        output_dir.listFiles({ file -> file.name.endsWith('_rna.h5mu') && !file.isDirectory() })
-      ] }
-    | map { id, files_list -> assert files_list.size() == 1; [id, files_list.first()] }
+      files_list = output_dir.listFiles({ file -> file.name.endsWith('_rna.h5mu') && !file.isDirectory() })
+      assert files_list.size() == 1
+      [ id, [ input: files_list.first() ] ]
+    }
     | rna_singlesample
     | toSortedList()
     | map { tups -> tups.transpose()}

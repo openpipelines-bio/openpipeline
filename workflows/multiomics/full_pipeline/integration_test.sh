@@ -10,9 +10,9 @@ export NXF_VER=21.10.6
 
 bin/nextflow \
   run . \
-  -main-script workflows/integration/multiomics/main.nf \
+  -main-script workflows/multiomics/full_pipeline/main.nf \
   -entry test_wf \
   -resume \
-  -profile docker \
+  -profile docker,no_publish \
   -c workflows/utils/labels_ci.config \
   --publish_dir "foo/"
