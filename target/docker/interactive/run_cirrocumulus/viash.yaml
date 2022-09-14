@@ -436,9 +436,9 @@ functionality:
         pip install --upgrade --no-cache-dir "requests" "aiohttp" "cirrocumulus"
       
       LABEL org.opencontainers.image.description="Companion container for running component interactive run_cirrocumulus"
-      LABEL org.opencontainers.image.created="2022-09-14T02:39:12Z"
+      LABEL org.opencontainers.image.created="2022-09-14T06:43:07Z"
       LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-      LABEL org.opencontainers.image.revision="134473310e4dbf47e1e048fda5b49020bebdc1e1"
+      LABEL org.opencontainers.image.revision="e28bdee5e17d246422287539f2d1d9e2fb529830"
       LABEL org.opencontainers.image.version="main_build"
       VIASHDOCKER
       }
@@ -890,5 +890,5 @@ info:
   output: "target/docker/interactive/run_cirrocumulus"
   executable: "target/docker/interactive/run_cirrocumulus/run_cirrocumulus"
   viash_version: "0.6.0"
-  git_commit: "134473310e4dbf47e1e048fda5b49020bebdc1e1"
+  git_commit: "e28bdee5e17d246422287539f2d1d9e2fb529830"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"
