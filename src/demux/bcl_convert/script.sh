@@ -1,6 +1,6 @@
 #!/bin/bash
 
-set -e
+set -eo pipefail
 
 ## VIASH START
 par_input=work/fc/34b01dbb67178188ce8571b7c5459e/bcl2

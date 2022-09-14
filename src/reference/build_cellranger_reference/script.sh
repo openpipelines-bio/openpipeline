@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -eo pipefail
+
 ## VIASH START
 par_genome_fasta="resources_test/bdrhap_ref_gencodev41_chr1/reference_gencode_v41_chr1.fa.gz"
 par_transcriptome_gtf="resources_test/bdrhap_ref_gencodev41_chr1/reference_gencode_v41_chr1.gtf.gz"
