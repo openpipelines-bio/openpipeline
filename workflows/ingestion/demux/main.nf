@@ -71,10 +71,8 @@ workflow run_wf {
     | toSortedList
     | map{ [ "multiqc", it ] }
     | multiqc.run(
-        [
-          args: [ output: "multiqc/report" ],
-          auto: [ publish: true ]
-        ]
+        args: [ output: "multiqc/report" ],
+        auto: [ publish: true ]
       )
 
   output_ch = all_ch
@@ -93,12 +91,10 @@ workflow test_wf {
       id: "mkfastq_test",
       input: params.resources_test + "/cellranger_tiny_bcl/bcl",
       sample_sheet: params.resources_test + "/cellranger_tiny_bcl/bcl/sample_sheet.csv",
-      cores: 2,
-      memory: 5,
       demultiplexer: "mkfastq"
     ],
     [
-      id: "bcl-convert_test",
+      id: "bclconvert_test",
       input: params.resources_test + "/cellranger_tiny_bcl/bcl2/",
       sample_sheet: params.resources_test + "/cellranger_tiny_bcl/bcl2/sample_sheet.csv",
       demultiplexer: "bclconvert"
