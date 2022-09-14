@@ -622,9 +622,9 @@ functionality:
       
       LABEL org.opencontainers.image.authors="Dries Schaumont <dries.schaumont@data-intuitive.com> (maintainer) {github: DriesSchaumont, orcid: 0000-0002-4389-0440}"
       LABEL org.opencontainers.image.description="Companion container for running component velocity scvelo"
-      LABEL org.opencontainers.image.created="2022-09-13T22:48:24Z"
+      LABEL org.opencontainers.image.created="2022-09-14T00:50:12Z"
       LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-      LABEL org.opencontainers.image.revision="96166816d0aebd4c360b543b2e3c22c85d99cae3"
+      LABEL org.opencontainers.image.revision="ff63138bf2df0532133e8e430948d3ceeb27067f"
       LABEL org.opencontainers.image.version="main_build"
       VIASHDOCKER
       }
@@ -1346,5 +1346,5 @@ info:
   output: "target/docker/velocity/scvelo"
   executable: "target/docker/velocity/scvelo/scvelo"
   viash_version: "0.6.0"
-  git_commit: "96166816d0aebd4c360b543b2e3c22c85d99cae3"
+  git_commit: "ff63138bf2df0532133e8e430948d3ceeb27067f"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"
