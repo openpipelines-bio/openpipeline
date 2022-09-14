@@ -13,7 +13,7 @@ input = meta["resources_dir"] + "pbmc_1k_protein_v3/pbmc_1k_protein_v3_mms.h5mu"
 output = "output.h5mu"
 
 cmd_pars = [
-    "./" + meta["functionality_name"],
+    meta["executable"],
     "--input", input,
     "--output", output,
 ]

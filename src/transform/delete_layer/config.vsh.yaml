@@ -1,0 +1,55 @@
+functionality:
+  name: delete_layer
+  namespace: "transform"
+  version: "dev"
+  description: |
+    Delete an anndata layer from one or more modalities.
+  authors:
+    - name: Dries Schaumont
+      email: Dschaumo@its.jnj.com
+      roles: [ maintainer ]
+  arguments:
+    - name: "--input"
+      alternatives: ["-i"]
+      type: file
+      description: Input h5mu file
+      direction: input
+      required: true
+      example: input.h5mu
+    - name: "--modality"
+      type: string
+      multiple: true
+      default: "rna"
+      required: false
+    - name: "--layer"
+      type: string
+      required: true
+      multiple: true
+      description: "Input layer to remove"
+    - name: "--output"
+      alternatives: ["-o"]
+      type: file
+      description: Output h5mu file.
+      direction: output
+      required: true
+      default: output.h5mu
+    - name: "--missing_ok"
+      type: boolean_true
+      description: Do not raise an error if the layer does not exist for all modalities.
+  resources:
+    - type: python_script
+      path: script.py
+  test_resources:
+    - type: python_script
+      path: run_test.py
+    - path: ../../../resources_test/pbmc_1k_protein_v3
+platforms:
+  - type: docker
+    image: python:3.8
+    setup:
+      - type: python
+        packages:
+          - mudata~=0.2.0
+          - anndata~=0.8.0
+  - type: nextflow
+    variant: vdsl3

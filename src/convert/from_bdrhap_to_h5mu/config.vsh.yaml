@@ -9,34 +9,36 @@ functionality:
       email: rcannood@gmail.com
       roles: [ maintainer ]
       props: { github: rcannood, orcid: "0000-0003-3641-729X" }
-  inputs:
-    - name: "--input"
-      alternatives: [-i]
-      type: file
-      description: One or more folders containing the output of the BD Rhapsody workflow. If multiple are given, they are all combined into one h5mu file. Note that multiple outputs must come from the same sample (but e.g. from different lanes).
-      multiple: true
-      required: true
-      example: input_dir/
-  outputs:
-    - name: "--output"
-      alternatives: [-o]
-      type: file
-      description: "Output h5mu file."
-      required: true
-      example: output.h5mu
-  arguments:
-    - name: "--id"
-      type: string
-      description: "A sample ID."
-      example: my_id
-      required: true
+  argument_groups:
+    - name: Inputs
+      arguments:
+        - name: "--id"
+          type: string
+          description: "A sample ID."
+          example: my_id
+          required: true
+        - name: "--input"
+          alternatives: [-i]
+          type: file
+          description: The output of a BD Rhapsody workflow.
+          required: true
+          example: input_dir/
+    - name: Outputs
+      arguments:
+        - name: "--output"
+          alternatives: [-o]
+          direction: output
+          type: file
+          description: "Output h5mu file."
+          required: true
+          example: output.h5mu
   resources:
     - type: r_script
       path: script.R
   test_resources:
     - type: python_script
       path: run_test.py
-    - path: ../../../resources_test/bdrhap_5kjrt/processed/WTA
+    - path: ../../../resources_test/bdrhap_5kjrt/processed/WTA.bd_rhapsody.output
 platforms:
   - type: docker
     image: ghcr.io/data-intuitive/randpy:r4.0_py3.8
@@ -44,9 +46,7 @@ platforms:
       - type: docker
         run: apt update && apt upgrade -y
       - type: python
-        pip:
-          - mudata~=0.1.2
-          - anndata<0.8
+        pip: [anndata~=0.8, mudata~=0.2.0]
       - type: r
         cran: anndata
   - type: nextflow

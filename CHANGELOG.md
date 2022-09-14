@@ -1,3 +1,72 @@
+# openpipeline 0.5.0
+
+## BREAKING CHANGES
+
+* Many components: Renamed `.var["gene_ids"]` and `.var["feature_types"]` to `.var["gene_id"]` and `.var["feature_type"]`.
+
+## NEW FUNCTIONALITY
+
+* `graph/bbknn`: BBKNN network generation.
+
+* `workflows/multiomics/full_pipeline`: implement pipeline for processing multiple multiomics samples.
+
+* `transform/scaling`: Scale data to unit variance and zero mean.
+
+
+* `mapping/bd_rhapsody` and `workflows/ingestion/bd_rhapsody`: Added generic component and pipeline for running the BD Rhapsody WTA or Targeted analysis.
+
+* `convert/from_bdrhap_to_h5mu`: Added support for being able to deal with WTA, Targeted, SMK, AbSeq and VDJ data.
+
+* `integrate/harmony` and `integrate/harmonypy`: Run a Harmony integration analysis (R-based and Python-based, respectively).
+
+* `integrate/concat`: Added 'move' option to `--other_axis_mode`, which allows merging .obs and .var by only keeping elements of the matrices which are the same in each of the samples, moving the conflicting values to .varm or .obsm.
+
+* `reference/make_reference`: Download a transcriptomics reference and preprocess it (adding ERCC spikeins and filtering with a regex).
+
+* `reference/build_bdrhap_reference`: Compile a reference into a STAR index in the format expected by BD Rhapsody.
+
+* `integrate/concat`: Deprecated 'concat' option for `--other_axis_mode`
+
+* `integrate/scanorama`: Use Scanorama to integrate different experiments.
+
+* `integrate/concat`: Optimize concat performance by adding multiprocessing and refactoring functions.
+
+* `workflows/multimodal_integration`: add `obs_covariates` argument to pipeline.
+
+## MAJOR CHANGES
+
+* Multiple components: update to anndata 0.8 with mudata 0.2.0. This means that the format of the .h5mu files have changed.
+
+* `multiomics/rna_singlesample`: move transformation counts into layers instead of overwriting .X.
+
+## MINOR CHANGES
+
+* `velocity/velocyto`: Allow configuring memory and parallellisation.
+
+* `cluster/leiden`: Add `--obsp_connectivities` parameter to allow choosing the output slot.
+
+* `workflows/multiomics/rna_singlesample`, `workflows/multiomics/rna_multisample` and `workflows/multiomics/integration`: Allow choosing the output paths.
+
+* `neighbors/bbknn` and `neighbors/find_neighbors`: Add parameters for choosing the input/output slots.
+
+* `dimred/pca` and `dimred/umap`: Add parameters for choosing the input/output slots.
+
+## BUG FIXES
+
+* Several components: revert using slim versions of containers because they do not provide the tools to run nextflow with trace capabilities.
+
+* `integrate/concat`: Fix an issue where joining boolean values caused `TypeError`.
+
+* `workflows/multiomics/rna_multisample`, `workflows/multiomics/rna_singlesample` and `workflows/multiomics/integration`: use nextflow trace reporting when running integration tests.
+
+## DEPRECATED
+
+* `convert/from_10xh5_to_h5ad` and `convert/from_bdrhap_to_h5ad`: Removed h5ad based components.
+
+* `mapping/bd_rhapsody_wta` and `workflows/ingestion/bd_rhapsody_wta`: Deprecated in favour for more generic `mapping/bd_rhapsody` and `workflows/ingestion/bd_rhapsody` pipelines.
+
+* `convert/from_csv_to_h5mu`: Disable until it is needed again.
+
 # openpipeline 0.4.1
 
 ## BUG FIXES

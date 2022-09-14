@@ -1,0 +1,76 @@
+functionality:
+  name: harmony
+  namespace: "integrate"
+  description: "Performs Harmony integration based as described in https://github.com/immunogenomics/harmony."
+  authors:
+    - name: Dries De Maeyer
+      email: ddemaeyer@gmail.com
+      roles: [ author ]
+      props: { account: ddemaey1 }
+    - name: Robrecht Cannoodt
+      email: rcannood@gmail.com
+      roles: [ maintainer, author ]
+      props: { github: rcannood, orcid: "0000-0003-3641-729X" }
+  arguments:
+    - name: "--input"
+      alternatives: ["-i"]
+      type: file
+      description: Input h5mu file
+      direction: input
+      required: true
+    - name: "--output"
+      alternatives: ["-o"]
+      type: file
+      description: Output h5mu file.
+      direction: output
+      required: true
+    - name: "--modality"
+      type: string
+      multiple: true
+      default: "rna"
+      required: false
+    - name: "--obsm_input"
+      type: string
+      default: "X_pca"
+      required: false
+      description: "Which .obsm slot to use as a starting PCA embedding."
+    - name: "--obsm_output"
+      type: string
+      default: "X_pca_integrated"
+      required: false
+      description: "In which .obsm slot to store the resulting integrated embedding."
+    - name: "--theta"
+      description: "Diversity clustering penalty parameter. Specify for each variable in group.by.vars. theta=0 does not encourage any diversity. Larger values of theta result in more diverse clusters."
+      type: double
+      default: 2
+      multiple: true
+    - name: "--obs_covariates"
+      type: string
+      description: "The .obs field(s) that define the covariate(s) to regress out."
+      example: ["batch", "sample"]
+      multiple: true
+  resources:
+    - type: r_script
+      path: script.R
+
+  test_resources:
+    - type: python_script
+      path: ../harmonypy/test.py
+    - path: ../../../resources_test/pbmc_1k_protein_v3/pbmc_1k_protein_v3_mms.h5mu
+platforms:
+  - type: docker
+    image: ghcr.io/data-intuitive/randpy:r4.0_py3.10
+    setup:
+      - type: python
+        packages:
+          - mudata~=0.2.0
+          - anndata~=0.8.0
+      - type: r
+        cran: 
+          - harmony
+          - anndata
+          - reticulate
+  - type: nextflow
+    variant: vdsl3
+    directives:
+      label: [highmem, highcpu]

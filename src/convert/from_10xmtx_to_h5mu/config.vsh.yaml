@@ -32,13 +32,13 @@ functionality:
     - path: ../../../resources_test/pbmc_1k_protein_v3
 platforms:
   - type: docker
-    image: python:3.8-slim
+    image: python:3.8
     setup:
       - type: python
-        packages: 
+        packages:
           - muon
-          - mudata~=0.1.2
-          - anndata<0.8
+          - mudata~=0.2.0
+          - anndata~=0.8.0
   - type: nextflow
     variant: vdsl3
 

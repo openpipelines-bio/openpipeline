@@ -66,13 +66,6 @@ if [ ! -f "$filtered_h5" ]; then
     --filtered_h5 "$filtered_h5"
 fi
 
-filtered_h5ad="${OUT}/filtered.h5ad"
-if [ ! -f "$filtered_h5ad" ]; then
-  target/docker/convert/from_10xh5_to_h5ad/from_10xh5_to_h5ad \
-    --input "$filtered_h5" \
-    --output "$filtered_h5ad"
-fi
-
 filtered_h5mu="${OUT}/filtered.h5mu"
 if [ ! -f "$filtered_h5mu" ]; then
   target/docker/convert/from_10xh5_to_h5mu/from_10xh5_to_h5mu \

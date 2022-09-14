@@ -28,7 +28,17 @@ functionality:
       multiple: true
       default: "rna"
       required: false
-    
+
+    - name: "--input_layer"
+      type: string
+      required: false
+      description: "Input layer to use. If None, X is normalized"
+
+    - name: "--output_layer"
+      type: string
+      description: Output layer to use. By default, use X.
+      required: false
+
     # output
     - name: "--output"
       alternatives: ["-o"]
@@ -51,13 +61,13 @@ functionality:
     - path: ../../../resources_test/pbmc_1k_protein_v3
 platforms:
   - type: docker
-    image: python:3.8-slim
+    image: python:3.8
     setup:
       - type: python
         packages:
           - scanpy~=1.9.1
           - muon
-          - mudata~=0.1.2
-          - anndata<0.8
+          - mudata~=0.2.0
+          - anndata~=0.8.0
   - type: nextflow
     variant: vdsl3

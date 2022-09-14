@@ -1,5 +1,7 @@
 import scanpy as sc
 import muon as mu
+import logging
+from sys import stdout
 
 ## VIASH START
 par = {
@@ -11,13 +13,26 @@ par = {
 meta = {"functionality_name": "lognorm"}
 ## VIASH END
 
-print("Reading input mudata")
+logger = logging.getLogger()
+logger.setLevel(logging.INFO)
+console_handler = logging.StreamHandler(stdout)
+logFormatter = logging.Formatter("%(asctime)s %(levelname)-8s %(message)s")
+console_handler.setFormatter(logFormatter)
+logger.addHandler(console_handler)
+
+logger.info("Reading input mudata")
 mdata = mu.read_h5mu(par["input"])
 mdata.var_names_make_unique()
 
-for mod in par["modality"]:
-    print(f"Performing log transformation on modality {mod}")
-    sc.pp.log1p(mdata.mod[mod], base=par["base"])
 
-print("Writing to file")
+for mod in par["modality"]:
+    logger.info("Performing log transformation on modality %s", mod)
+    data = mdata.mod[mod]
+    new_layer = sc.pp.log1p(data,
+                            base=par["base"],
+                            copy=True if par['output_layer'] else False)
+    if new_layer:
+        data.layers[par['output_layer']] = new_layer.X
+
+logger.info("Writing to file %s", par["output"])
 mdata.write(filename=par["output"])
