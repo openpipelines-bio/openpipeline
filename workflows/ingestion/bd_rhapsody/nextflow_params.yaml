@@ -9,7 +9,8 @@ reference: # please fill in - example: ["reference_genome.tar.gz|reference.fasta
 sample_prefix: "sample"
 
 # Outputs
-# output: "$id.$key.output.output"
+# output_raw: "$id.$key.output_raw.output_raw"
+# output_h5mu: "$id.$key.output_h5mu.h5mu"
 
 # Putative cell calling settings
 # putative_cell_call: "mRNA"

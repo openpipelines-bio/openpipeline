@@ -1,6 +1,6 @@
 {
     "$schema": "http://json-schema.org/draft-07/schema",
-    "title": "multiomics",
+    "title": "full_pipeline",
     "description": "A pipeline to analyse multiple multiomics samples.",
     "type": "object",
     "definitions": {

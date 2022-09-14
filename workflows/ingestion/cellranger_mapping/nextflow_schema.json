@@ -31,19 +31,19 @@
             
             "default": ""
           },
-          "cores": {
-            "type":"integer",
-            "description": "Set max cores the pipeline may request at one time.",
+          "output_raw": {
+            "type":"string",
+            "description": "The raw output folder.",
             
             
-            "default": ""
+            "default": "$id.$key.output_raw.output_raw"
           },
-          "memory": {
-            "type":"integer",
-            "description": "Set max GB the pipeline may request at one time.",
+          "output_h5mu": {
+            "type":"string",
+            "description": "The converted h5mu file.",
             
             
-            "default": ""
+            "default": "$id.$key.output_h5mu.h5mu"
           }
         }
       },
