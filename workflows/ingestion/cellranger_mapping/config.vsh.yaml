@@ -29,14 +29,18 @@ functionality:
       type: file
       description: Path to a Cell Ranger reference.
       example: reference.tar.gz
-    - type: integer
-      name: --cores
-      description:  Set max cores the pipeline may request at one time.
-      example: 2
-    - type: integer
-      name: --memory
-      description: Set max GB the pipeline may request at one time.
-      example: 10  
+    - name: "--output_raw"
+      type: file
+      direction: output
+      description: "The raw output folder."
+      required: true
+      example: output_dir/
+    - name: "--output_h5mu"
+      type: file
+      direction: output
+      description: "The converted h5mu file."
+      required: true
+      example: output.h5mu
   resources:
     - type: nextflow_script
       path: main.nf

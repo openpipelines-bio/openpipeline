@@ -74,7 +74,7 @@ functionality:
           default: sample
     - name: Outputs
       arguments:
-        - name: "--output_bdrhap"
+        - name: "--output_raw"
           type: file
           direction: output
           description: "The BD Rhapsody output folder as it comes out of the BD Rhapsody pipeline"

@@ -31,8 +31,8 @@ workflow run_wf {
     | map { id, data ->
       new_data = data.clone()
       new_data.remove("output_h5mu")
-      new_data.remove("output_bdrhap")
-      new_data = new_data + [ output: data.output_bdrhap ]
+      new_data.remove("output_raw")
+      new_data = new_data + [ output: data.output_raw ]
       
       [id, new_data, data]
     }

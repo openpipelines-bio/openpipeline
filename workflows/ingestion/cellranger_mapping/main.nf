@@ -12,14 +12,13 @@ include { readConfig; viashChannel; helpMessage } from workflowDir + "/utils/Wor
 
 config = readConfig("$workflowDir/ingestion/cellranger_mapping/config.vsh.yaml")
 
-// keep track of whether this is an integration test or not
-global_params = [ do_publish: true ]
-
 workflow {
   helpMessage(config)
 
   viashChannel(params, config)
+    | view { "Input: $it" }
     | run_wf
+    | view { "Output: $it" }
 }
 
 workflow run_wf {
@@ -27,20 +26,31 @@ workflow run_wf {
   input_ch
 
   main:
-  auto = [ publish: global_params.do_publish, transcript: global_params.do_publish ]
-  auto_nopub = [ publish: false, transcript: global_params.do_publish ]
 
   output_ch = input_ch
 
+    // store output value in 3rd slot for later use
+    // and transform for concat component
+    | map { id, data ->
+      new_data = data.clone()
+      new_data.remove("output_h5mu")
+      new_data.remove("output_raw")
+      new_data = new_data + [ output: data.output_raw ]
+      
+      [id, new_data, data]
+    }
+
     // run count
-    | cellranger_count.run(auto: auto)
+    | cellranger_count.run(auto: [ publish: true ])
 
     // split output dir into map
-    | cellranger_count_split.run(auto: auto_nopub)
+    | cellranger_count_split
 
     // convert to h5mu
-    | map { id, cellranger_outs -> [ id, cellranger_outs.filtered_h5, cellranger_outs ] }
-    | from_10xh5_to_h5mu.run(auto: auto)
+    | map { id, cellranger_outs, orig_data -> 
+      [ id, [ input: cellranger_outs.filtered_h5, output: orig_data.output_h5mu ], cellranger_outs ]
+    }
+    | from_10xh5_to_h5mu.run(auto: [ publish: true ])
 
     // return output map
     | map { id, h5mu, data -> [ id, data + [h5mu: h5mu] ] }
@@ -50,9 +60,6 @@ workflow run_wf {
 }
 
 workflow test_wf {
-  // don't publish output
-  global_params.do_publish = false
-
   // allow changing the resources_test dir
   params.resources_test = params.rootDir + "/resources_test"
 
@@ -60,9 +67,7 @@ workflow test_wf {
   testParams = [
     id: "foo",
     input: params.resources_test + "/cellranger_tiny_fastq/cellranger_tiny_fastq",
-    reference: params.resources_test + "/cellranger_tiny_fastq/cellranger_tiny_ref",
-    cores: 2,
-    memory: 4
+    reference: params.resources_test + "/cellranger_tiny_fastq/cellranger_tiny_ref"
   ]
 
   output_ch =
