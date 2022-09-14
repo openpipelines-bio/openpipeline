@@ -2102,5 +2102,5 @@ info:
   platform: "nextflow"
   output: "target/nextflow/integrate/harmony"
   viash_version: "0.6.0"
-  git_commit: "ff63138bf2df0532133e8e430948d3ceeb27067f"
+  git_commit: "f0b4b116597723011767e65175420979b5fe1c67"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"

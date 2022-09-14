@@ -531,9 +531,9 @@ functionality:
       
       LABEL org.opencontainers.image.authors="Dries Schaumont <Dschaumo@its.jnj.com> (maintainer)"
       LABEL org.opencontainers.image.description="Companion container for running component integrate concat"
-      LABEL org.opencontainers.image.created="2022-09-14T00:50:14Z"
+      LABEL org.opencontainers.image.created="2022-09-14T01:14:38Z"
       LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-      LABEL org.opencontainers.image.revision="ff63138bf2df0532133e8e430948d3ceeb27067f"
+      LABEL org.opencontainers.image.revision="f0b4b116597723011767e65175420979b5fe1c67"
       LABEL org.opencontainers.image.version="main_build"
       VIASHDOCKER
       }
@@ -1411,5 +1411,5 @@ info:
   output: "target/docker/integrate/concat"
   executable: "target/docker/integrate/concat/concat"
   viash_version: "0.6.0"
-  git_commit: "ff63138bf2df0532133e8e430948d3ceeb27067f"
+  git_commit: "f0b4b116597723011767e65175420979b5fe1c67"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"
