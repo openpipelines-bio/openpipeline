@@ -64,8 +64,8 @@ jobs:
 
     - name: Build nextflow schemas & params
       run: |
-        bin/viash ns exec -p nextflow -s src 'bin/tools/docker/nextflow/generate_params/generate_params -i {} -o target/nextflow/nextflow_params.yaml'
-        bin/viash ns exec -p nextflow -s src 'bin/tools/docker/nextflow/generate_schema/generate_schema -i {} -o target/nextflow/nextflow_schema.json'
+        bin/viash ns exec -p nextflow -s src 'bin/tools/docker/nextflow/generate_params/generate_params -i {} -o target/{platform}/{namespace}/{functionality-name}/nextflow_params.yaml'
+        bin/viash ns exec -p nextflow -s src 'bin/tools/docker/nextflow/generate_schema/generate_schema -i {} -o target/{platform}/{namespace}/{functionality-name}/nextflow_schema.json'
         bin/viash ns exec -s workflows 'bin/tools/docker/nextflow/generate_params/generate_params -i {} -o {dir}/nextflow_params.yaml'
         bin/viash ns exec -s workflows 'bin/tools/docker/nextflow/generate_schema/generate_schema -i {} -o {dir}/nextflow_schema.json'
 
