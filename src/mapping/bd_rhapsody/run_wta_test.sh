@@ -1,5 +1,7 @@
 #!/bin/bash
 
+
+
 echo ">> Running $meta_functionality_name in WTA mode"
 "$meta_executable" \
   --mode wta \

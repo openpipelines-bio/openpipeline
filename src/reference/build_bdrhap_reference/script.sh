@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -eo pipefail
+
 ## VIASH START
 par_genome_fasta="temp/reference.fa.gz"
 par_transcriptome_gtf="temp/reference.gtf.gz"

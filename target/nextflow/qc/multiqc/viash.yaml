@@ -106,14 +106,6 @@ functionality:
           }
         ],
         "description" : "Component for multiqc (https://multiqc.info/)\n",
-        "test_resources" : [
-          {
-            "type" : "bash_script",
-            "path" : "test.sh",
-            "is_executable" : true,
-            "parent" : "file:/home/runner/work/openpipeline/openpipeline/src/qc/multiqc/config.vsh.yaml"
-          }
-        ],
         "status" : "enabled",
         "set_wd_to_resources_dir" : false
       }''')
@@ -142,6 +134,8 @@ functionality:
       
       ## VIASH END
       #!/bin/bash
+      
+      set -eo pipefail
       
       multiqc -o "\\$par_output" \\$par_input
       
@@ -1852,10 +1846,7 @@ functionality:
 
     dest: "nextflow.config"
   description: "Component for multiqc (https://multiqc.info/)\n"
-  test_resources:
-  - type: "bash_script"
-    path: "test.sh"
-    is_executable: true
+  test_resources: []
   info: {}
   status: "enabled"
   requirements:
@@ -1888,5 +1879,5 @@ info:
   platform: "nextflow"
   output: "target/nextflow/qc/multiqc"
   viash_version: "0.6.0"
-  git_commit: "5adfbfce0d9912a130e0b8b4d935d9879252ce47"
+  git_commit: "dda69f29cb4a0b9c3a3c2e252f271644fbb686ef"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"

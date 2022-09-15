@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -eo pipefail
+
 ## VIASH START
 par_input="resources_test/cellranger_tiny_fastq/bam/possorted_genome_bam.bam"
 par_transcriptome="resources_test/cellranger_tiny_fastq/cellranger_tiny_ref/genes/genes.gtf"

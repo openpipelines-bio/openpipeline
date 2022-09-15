@@ -1,6 +1,6 @@
 #!/bin/bash
 
-set -ex
+
 
 # We are using the tiny bcl dataset provided by Illumina:
 #   https://support.10xgenomics.com/single-cell-gene-expression/software/pipelines/latest/using/mkfastq

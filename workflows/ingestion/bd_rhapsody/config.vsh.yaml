@@ -2,19 +2,21 @@ functionality:
   name: "bd_rhapsody"
   namespace: "ingestion"
   description: |
-    A wrapper for the BD Rhapsody Analysis CWL v1.10.1 pipeline.
+      A wrapper for the BD Rhapsody Analysis CWL v1.10.1 pipeline.
 
-    The CWL pipeline file is obtained by cloning 'https://bitbucket.org/CRSwDev/cwl/src/master/' and removing all objects with class 'DockerRequirement' from the YML.
+      This pipeline can be used for a targeted analysis (with `--mode targeted`) or for a whole transcriptome analysis (with `--mode wta`).
 
-    This pipeline can be used for a targeted analysis (with `--mode targeted`) or for a whole transcriptome analysis (with `--mode wta`).
+      * If mode is `"targeted"`, then either the `--reference` or `--abseq_reference` parameters must be defined.
+      * If mode is `"wta"`, then `--reference` and `--transcriptome_annotation` must be defined, `--abseq_reference` and `--supplemental_reference` is optional.
 
-    * If mode is `"targeted"`, then either the `--reference` or `--abseq_reference` parameters must be defined.
-    * If mode is `"wta"`, then `--reference` and `--transcriptome_annotation` must be defined, `--abseq_reference` and `--supplemental_reference` is optional.
+      The reference_genome and transcriptome_annotation files can be generated with the make_reference pipeline.
+      Alternatively, BD also provides standard references which can be downloaded from these locations:
 
-    The reference_genome and transcriptome_annotation files can be downloaded from these locations:
-
-      - Human: http://bd-rhapsody-public.s3-website-us-east-1.amazonaws.com/Rhapsody-WTA/GRCh38-PhiX-gencodev29/
-      - Mouse: http://bd-rhapsody-public.s3-website-us-east-1.amazonaws.com/Rhapsody-WTA/GRCm38-PhiX-gencodevM19/
+        - Human: http://bd-rhapsody-public.s3-website-us-east-1.amazonaws.com/Rhapsody-WTA/GRCh38-PhiX-gencodev29/
+        - Mouse: http://bd-rhapsody-public.s3-website-us-east-1.amazonaws.com/Rhapsody-WTA/GRCm38-PhiX-gencodevM19/
+  info:
+    name: BD Rhapsody
+    short_description: A BD Rhapsody mapping and conversion pipeline
   authors:
     - name: Robrecht Cannoodt
       email: rcannood@gmail.com
@@ -49,6 +51,7 @@ functionality:
           example: "reference_genome.tar.gz|reference.fasta"
           required: true
           multiple: true
+          multiple_sep: ';'
         - name: "--transcriptome_annotation"
           type: file
           alternatives: [-t]

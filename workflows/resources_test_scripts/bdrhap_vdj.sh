@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -eo pipefail
+
 # TODO: we should turn this into viash components
 
 # ensure that the command below is run from the root of the repository

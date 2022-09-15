@@ -68,14 +68,6 @@ thisConfig = processConfig([
     }
   ],
   "description" : "Component for multiqc (https://multiqc.info/)\n",
-  "test_resources" : [
-    {
-      "type" : "bash_script",
-      "path" : "test.sh",
-      "is_executable" : true,
-      "parent" : "file:/home/runner/work/openpipeline/openpipeline/src/qc/multiqc/config.vsh.yaml"
-    }
-  ],
   "status" : "enabled",
   "set_wd_to_resources_dir" : false
 }''')
@@ -104,6 +96,8 @@ resources_dir="$VIASH_META_RESOURCES_DIR"
 
 ## VIASH END
 #!/bin/bash
+
+set -eo pipefail
 
 multiqc -o "\\$par_output" \\$par_input
 

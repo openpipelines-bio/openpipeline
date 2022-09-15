@@ -23,6 +23,13 @@
             
             
             "default": ""
+          },
+          "obs_covariates": {
+            "type":"string",
+            "description": "The .obs field(s) that define the covariate(s) to regress out.",
+            
+            
+            "default": ""
           }
         }
       },
