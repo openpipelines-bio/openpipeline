@@ -22,6 +22,12 @@ jobs:
         bin/init
         bin/viash -h
 
+    - name: Fetch viash tools
+      run: |
+
+        bin/init_tools ${{ secrets.GTHB_USER }} ${{ secrets.GTHB_PAT }}
+        tree bin/tools
+
     # create cachehash key
     - name: Create hash key
       id: cachehash
@@ -57,6 +63,17 @@ jobs:
 
         # build target dir
         bin/viash_build -m release -t ${{ github.event.inputs.version_tag }}
+
+    - name: Build nextflow schemas & params
+      run: |
+        bin/viash ns exec -p nextflow -s src --parallel \
+          'bin/tools/docker/nextflow/generate_params/generate_params -i {} -o target/{platform}/{namespace}/{functionality-name}/nextflow_params.yaml'
+        bin/viash ns exec -p nextflow -s src --parallel \
+          'bin/tools/docker/nextflow/generate_schema/generate_schema -i {} -o target/{platform}/{namespace}/{functionality-name}/nextflow_schema.json'
+        bin/viash ns exec -s workflows --parallel \
+          'bin/tools/docker/nextflow/generate_params/generate_params -i {} -o {dir}/nextflow_params.yaml'
+        bin/viash ns exec -s workflows --parallel \
+          'bin/tools/docker/nextflow/generate_schema/generate_schema -i {} -o {dir}/nextflow_schema.json'
 
     - name: Deploy to target branch
       uses: peaceiris/actions-gh-pages@v3
