@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -eo pipefail
+
 echo "Error: This script is disabled but could be repurposed in the future."
 exit 1
 

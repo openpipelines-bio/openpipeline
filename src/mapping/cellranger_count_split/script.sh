@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -eo pipefail
+
 ## VIASH START
 par_input='input_dir'
 par_filtered_h5='filtered_feature_bc_matrix.h5'

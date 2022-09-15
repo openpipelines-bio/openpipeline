@@ -130,6 +130,8 @@ resources_dir="$VIASH_META_RESOURCES_DIR"
 ## VIASH END
 #!/bin/bash
 
+set -eo pipefail
+
 mkdir -p "\\$par_output"
 
 if [ "\\$par_mode" == "dir" ]; then

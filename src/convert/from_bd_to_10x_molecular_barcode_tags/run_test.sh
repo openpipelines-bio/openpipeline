@@ -1,4 +1,7 @@
 #!/bin/bash
+
+
+
 echo "> Testing missing input file can be detected."
 "$meta_executable" \
   --input "oops.BAM" \

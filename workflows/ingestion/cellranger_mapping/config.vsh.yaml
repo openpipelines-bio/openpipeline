@@ -48,5 +48,3 @@ functionality:
     - type: nextflow_script
       path: main.nf
       entrypoint: test_wf
-platforms:
-  - type: native

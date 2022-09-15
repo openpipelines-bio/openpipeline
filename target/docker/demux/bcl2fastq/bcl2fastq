@@ -414,9 +414,9 @@ FROM ghcr.io/data-intuitive/bcl2fastq:2.20
 RUN :
 LABEL org.opencontainers.image.authors="Toni Verbeiren (author, maintainer) {github: tverbeiren}"
 LABEL org.opencontainers.image.description="Companion container for running component demux bcl2fastq"
-LABEL org.opencontainers.image.created="2022-09-14T09:34:09Z"
+LABEL org.opencontainers.image.created="2022-09-15T21:00:45Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="431ea87c708ebea039c5b5594072184938ad6e2a"
+LABEL org.opencontainers.image.revision="21f3cc0a5f4e8db09afc0287a8b785ba4de6eb95"
 LABEL org.opencontainers.image.version="0.5.0"
 VIASHDOCKER
 }
@@ -890,7 +890,7 @@ resources_dir="$VIASH_META_RESOURCES_DIR"
 ## VIASH END
 #!/bin/bash
 
-set -e
+set -eo pipefail
 
 # Handle reports stored separate
 reports_line=""

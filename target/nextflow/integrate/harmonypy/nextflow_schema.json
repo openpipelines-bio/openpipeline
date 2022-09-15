@@ -1,0 +1,103 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema",
+    "title": "harmonypy",
+    "description": "Performs Harmony integration based as described in https://github.com/immunogenomics/harmony. Based on an implementation in python from https://github.com/slowkow/harmonypy",
+    "type": "object",
+    "definitions": {
+      "arguments" : {
+        "title": "Arguments",
+        "type": "object",
+        "description": "No description",
+        "default": "",
+        "properties": {
+          "input": {
+            "type":"string",
+            "description": "Input h5mu file",
+            
+            
+            "default": ""
+          },
+          "output": {
+            "type":"string",
+            "description": "Output h5mu file.",
+            
+            
+            "default": "$id.$key.output.output"
+          },
+          "modality": {
+            "type":"string",
+            "description": "No description",
+            
+            
+            "default": "rna"
+          },
+          "obsm_input": {
+            "type":"string",
+            "description": "Which .obsm slot to use as a starting PCA embedding.",
+            
+            
+            "default": "X_pca"
+          },
+          "obsm_output": {
+            "type":"string",
+            "description": "In which .obsm slot to store the resulting integrated embedding.",
+            
+            
+            "default": "X_pca_integrated"
+          },
+          "theta": {
+            "type":"number",
+            "description": "Diversity clustering penalty parameter. Specify for each variable in group.by.vars. theta=0 does not encourage any diversity. Larger values of theta result in more diverse clusters.",
+            
+            
+            "default": "2"
+          },
+          "obs_covariates": {
+            "type":"string",
+            "description": "The .obs field(s) that define the covariate(s) to regress out.",
+            
+            
+            "default": ""
+          }
+        }
+      },
+      "nextflow input-output arguments" : {
+        "title": "Nextflow input-output arguments",
+        "type": "object",
+        "description": "Input/output parameters for Nextflow itself. Please note that both publishDir and publish_dir are supported but at least one has to be configured.",
+        "default": "",
+        "properties": {
+          "publish_dir": {
+            "type":"string",
+            "description": "Path to an output directory.",
+            
+            
+            "default": ""
+          },
+          "param_list": {
+            "type":"string",
+            "description": "Allows inputting multiple parameter sets to initialise a Nextflow channel. Possible formats are csv, json, yaml, or simply a yaml_blob.\nA csv should have column names which correspond to the different arguments of this pipeline.\nA json or a yaml file should be a list of maps, each of which has keys corresponding to the arguments of the pipeline.\nA yaml blob can also be passed directly as a parameter.\nInside the Nextflow pipeline code, params.params_list can also be used to directly a list of parameter sets.\nWhen passing a csv, json or yaml, relative path names are relativized to the location of the parameter file.",
+            "hidden": true,
+            
+            "default": ""
+          },
+          "param_list_format": {
+            "type":"string",
+            "description": "Manually specify the param_list_format. Must be one of \u0027csv\u0027, \u0027json\u0027, \u0027yaml\u0027, \u0027yaml_blob\u0027, \u0027asis\u0027 or \u0027none\u0027.",
+            "hidden": true,
+            "enum": ["csv", "json", "yaml", "yaml_blob", "asis", "none"],
+            "default": ""
+          }
+        }
+      }
+    },
+    "allOf": [
+      {
+        "$ref": "#/definitions/arguments"
+      },
+      {
+        "$ref": "#/definitions/nextflow input-output arguments"
+      }
+      
+    ]
+}

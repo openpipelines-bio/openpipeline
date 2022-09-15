@@ -397,19 +397,14 @@ function ViashDockerfile {
   cat << 'VIASHDOCKER'
 FROM ubuntu:22.04
 
-RUN apt-get update
 RUN apt-get update && \
-  DEBIAN_FRONTEND=noninteractive apt-get install -y bash wget unzip libfindbin-libs-perl default-jre && \
+  DEBIAN_FRONTEND=noninteractive apt-get install -y fastqc && \
   rm -rf /var/lib/apt/lists/*
 
-RUN mkdir -p /opt
-RUN wget http://www.bioinformatics.babraham.ac.uk/projects/fastqc/fastqc_v0.11.9.zip -O /opt/fastqc.zip
-RUN cd /opt && unzip fastqc.zip && ln -s /opt/FastQC/fastqc /usr/bin/fastqc
-RUN chmod 755 /usr/bin/fastqc
 LABEL org.opencontainers.image.description="Companion container for running component qc fastqc"
-LABEL org.opencontainers.image.created="2022-09-14T09:34:09Z"
+LABEL org.opencontainers.image.created="2022-09-15T21:00:46Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="431ea87c708ebea039c5b5594072184938ad6e2a"
+LABEL org.opencontainers.image.revision="21f3cc0a5f4e8db09afc0287a8b785ba4de6eb95"
 LABEL org.opencontainers.image.version="0.5.0"
 VIASHDOCKER
 }
@@ -826,6 +821,8 @@ resources_dir="$VIASH_META_RESOURCES_DIR"
 
 ## VIASH END
 #!/bin/bash
+
+set -eo pipefail
 
 mkdir -p "\$par_output"
 

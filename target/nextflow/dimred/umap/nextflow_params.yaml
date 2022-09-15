@@ -1,0 +1,20 @@
+# Arguments
+input: # please fill in - example: "input.h5mu"
+modality: ["rna"]
+uns_neighbors: "neighbors"
+# output: "$id.$key.output.h5mu"
+output_key: "umap"
+min_dist: 0.5
+spread: 1.0
+num_components: 2
+# max_iter: 123
+alpha: 1.0
+gamma: 1.0
+negative_sample_rate: 5
+init_pos: "spectral"
+
+# Nextflow input-output arguments
+publish_dir: # please fill in - example: "output/"
+# param_list: "my_params.yaml"
+# param_list_format: "yaml"
+

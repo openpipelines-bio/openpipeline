@@ -49,6 +49,7 @@ functionality:
       type: string
       description: "The .obs field(s) that define the covariate(s) to regress out."
       example: ["batch", "sample"]
+      required: true
       multiple: true
   resources:
     - type: python_script
