@@ -450,19 +450,14 @@ functionality:
         cat << 'VIASHDOCKER'
       FROM ubuntu:22.04
       
-      RUN apt-get update
       RUN apt-get update && \
-        DEBIAN_FRONTEND=noninteractive apt-get install -y bash wget unzip libfindbin-libs-perl default-jre && \
+        DEBIAN_FRONTEND=noninteractive apt-get install -y fastqc && \
         rm -rf /var/lib/apt/lists/*
       
-      RUN mkdir -p /opt
-      RUN wget http://www.bioinformatics.babraham.ac.uk/projects/fastqc/fastqc_v0.11.9.zip -O /opt/fastqc.zip
-      RUN cd /opt && unzip fastqc.zip && ln -s /opt/FastQC/fastqc /usr/bin/fastqc
-      RUN chmod 755 /usr/bin/fastqc
       LABEL org.opencontainers.image.description="Companion container for running component qc fastqc"
-      LABEL org.opencontainers.image.created="2022-09-15T17:27:16Z"
+      LABEL org.opencontainers.image.created="2022-09-15T20:26:54Z"
       LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-      LABEL org.opencontainers.image.revision="8f51e3574f8a00c6aec98b19c625dde78707c175"
+      LABEL org.opencontainers.image.revision="170aecae3e8420f9b51784265c9a7a488bf009ba"
       LABEL org.opencontainers.image.version="main_build"
       VIASHDOCKER
       }
@@ -929,36 +924,10 @@ platform:
   run_args: []
   target_image_source: "https://github.com/openpipelines-bio/openpipeline"
   setup:
-  - type: "docker"
-    resources: []
-    label: []
-    add: []
-    copy: []
-    run:
-    - "apt-get update"
-    build_args: []
-    env: []
   - type: "apt"
     packages:
-    - "bash"
-    - "wget"
-    - "unzip"
-    - "libfindbin-libs-perl"
-    - "default-jre"
+    - "fastqc"
     interactive: false
-  - type: "docker"
-    resources: []
-    label: []
-    add: []
-    copy: []
-    run:
-    - "mkdir -p /opt"
-    - "wget http://www.bioinformatics.babraham.ac.uk/projects/fastqc/fastqc_v0.11.9.zip\
-      \ -O /opt/fastqc.zip"
-    - "cd /opt && unzip fastqc.zip && ln -s /opt/FastQC/fastqc /usr/bin/fastqc"
-    - "chmod 755 /usr/bin/fastqc"
-    build_args: []
-    env: []
   test_setup: []
 platforms: []
 info:
@@ -967,5 +936,5 @@ info:
   output: "target/docker/qc/fastqc"
   executable: "target/docker/qc/fastqc/fastqc"
   viash_version: "0.6.0"
-  git_commit: "8f51e3574f8a00c6aec98b19c625dde78707c175"
+  git_commit: "170aecae3e8420f9b51784265c9a7a488bf009ba"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"
