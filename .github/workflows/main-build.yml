@@ -2,7 +2,7 @@ name: main build
 
 on:
   push:
-    branches: [ 'main' ]
+    branches: [ 'main', 'add_tools_to_ci' ]
 
 jobs:
   # phase 1
@@ -19,6 +19,11 @@ jobs:
       run: |
         bin/init
         bin/viash -h
+
+    - name: Fetch viash tools
+      run: |
+        bin/init_tools
+        tree bin/tools
 
     # create cachehash key
     - name: Create hash key
@@ -55,6 +60,13 @@ jobs:
 
         # build target dir
         bin/viash_build -m release -t main_build
+
+    - name: Build nextflow schemas & params
+      run: |
+        viash ns exec -p nextflow -s src 'bin/tools/docker/nextflow/generate_params/generate_params -i {} -o target/nextflow/nextflow_params.yaml'
+        viash ns exec -p nextflow -s src 'bin/tools/docker/nextflow/generate_schema/generate_schema -i {} -o target/nextflow/nextflow_schema.json'
+        viash ns exec -s workflows 'bin/tools/docker/nextflow/generate_params/generate_params -i {} -o {dir}/nextflow_params.yaml'
+        viash ns exec -s workflows 'bin/tools/docker/nextflow/generate_schema/generate_schema -i {} -o {dir}/nextflow_schema.json'
 
     - name: Deploy to target branch
       uses: peaceiris/actions-gh-pages@v3

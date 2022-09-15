@@ -1,0 +1,19 @@
+#!/bin/bash
+
+# get the root of the directory
+REPO_ROOT=$(git rev-parse --show-toplevel)
+
+# ensure that the command below is run from the root of the repository
+cd "$REPO_ROOT"
+
+tmpdir=$(mktemp -d)
+function clean_up {
+    rm -rf "$tmpdir"
+}
+trap clean_up EXIT
+
+git clone git@github.com:viash-io/viash_tools.git $tmpdir/
+
+[ -d bin/tools ] && rm -r bin/tools
+
+bin/viash ns build -s $tmpdir/src -t bin/tools
