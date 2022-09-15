@@ -79,7 +79,7 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
-        with:
+      with:
         fetch-depth: 0 
 
     - name: Fetch viash
@@ -88,17 +88,17 @@ jobs:
         bin/viash -h
 
     - name: Get changed files
-        id: changed-files
-        uses: tj-actions/changed-files@v29.0.7
-        with: 
-          files:
-            ${{ fromJson(matrix.component.resources) }}
+      id: changed-files
+      uses: tj-actions/changed-files@v29.0.7
+      with: 
+        files:
+          ${{ fromJson(matrix.component.resources) }}
 
     - name: List all changed files
-        run: |
-          for file in ${{ steps.changed-files.outputs.all_changed_files }}; do
-            echo "$file was changed"
-          done
+      run: |
+        for file in ${{ steps.changed-files.outputs.all_changed_files }}; do
+          echo "$file was changed"
+        done
 
     # use cache
     - name: Cache resources data
