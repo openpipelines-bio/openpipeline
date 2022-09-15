@@ -1,6 +1,6 @@
 #!/bin/bash
 
-set -eo pipefail
+
 
 # get the root of the directory
 REPO_ROOT=$(git rev-parse --show-toplevel)

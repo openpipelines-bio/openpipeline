@@ -1,6 +1,6 @@
 #!/bin/bash
 
-set -eo pipefail
+
 
 echo ">>> Testing files mode"
 

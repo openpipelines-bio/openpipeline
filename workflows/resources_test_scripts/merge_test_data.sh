@@ -1,7 +1,7 @@
 
 #!/bin/bash
 
-set -eo pipefail
+
 
 # settings
 ID=merge_test_data

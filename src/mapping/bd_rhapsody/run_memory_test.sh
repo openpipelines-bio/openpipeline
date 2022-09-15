@@ -1,6 +1,6 @@
 #!/bin/bash
 
-set -eo pipefail
+
 
 ## VIASH START
 meta_executable="viash run src/mapping/bd_rhapsody/config.vsh.yaml --"

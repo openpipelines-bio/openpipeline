@@ -1,6 +1,6 @@
 #!/bin/bash
 
-set -eo pipefail
+
 
 echo "> Testing missing input file can be detected."
 "$meta_executable" \
