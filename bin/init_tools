@@ -13,7 +13,7 @@ function clean_up {
 trap clean_up EXIT
 
 if [ $# -eq 2 ]; then
-  git clone https://$1:$2@github.com/openpipelines-bio/openpipeline.git $tmpdir/
+  git clone https://$1:$2@github.com/viash-io/viash_tools.git $tmpdir/
 else
   git clone git@github.com:viash-io/viash_tools.git $tmpdir/
 fi
