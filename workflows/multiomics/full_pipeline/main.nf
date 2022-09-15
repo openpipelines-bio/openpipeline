@@ -28,39 +28,48 @@ workflow run_wf {
 
   main:
   start_ch = input_ch
+    // Store obs_covariates for later use
+    | map { id, data ->
+      new_data = data.clone()
+      new_data.removeAll {k, v -> k == 'obs_covariates'}
+      [ id, new_data, ["obs_covariates": data.obs_covariates] ]
+    }
     | split_modalities
 
   rna_ch = start_ch
-    | map { id, output_dir -> 
+    | map { id, output_dir, other_params -> 
       files_list = output_dir.listFiles({ file -> file.name.endsWith('_rna.h5mu') && !file.isDirectory() })
       assert files_list.size() == 1
-      [ id, [ input: files_list.first() ] ]
+      [ id, [ input: files_list.first(), "id": id], other_params]
     }
     | rna_singlesample
-    | toSortedList()
+    | toSortedList({ a, b -> b[0] <=> a[0] })
     | map { tups -> tups.transpose()}
-    | map {id, files -> [id.join(','), ["id": id, "input": files]]}
+    | map {id, files, other_params -> [id.join(','), ["id": id, "input": files]] + other_params.first()}
     | rna_multisample
 
 
+
   atac_ch = start_ch
-    | map { id, output_dir -> 
+    | map { id, output_dir, other_params -> 
         [ id, 
-          output_dir.listFiles({ file -> file.name.endsWith('_atac.h5mu') && !file.isDirectory() })
-        ] }
-    | map { id, files_list -> assert files_list.size() == 1; [id, files_list.first()] }
-    | toSortedList()
+          output_dir.listFiles({ file -> file.name.endsWith('_atac.h5mu') && !file.isDirectory() }),
+          other_params
+        ]}
+    | map { id, files_list, other_params -> assert files_list.size() == 1; [id, files_list.first(), other_params] }
+    | toSortedList({ a, b -> b[0] <=> a[0] })
     | map {list -> ["combined_samples_atac", 
                       ["input": list.collect{it[1]},
-                       "sample_names":  list.collect{it[0]}]
+                       "sample_names":  list.collect{it[0]}],
+                      list.collect{it[2]}.first()
                     ]}
     | concat // concat will be integrated into process_atac_multisample in the future
-  
+
   output_ch = rna_ch.concat(atac_ch)
     | toSortedList()
-    | map {list -> ["merged", list.collect{it[1]}]}
+    | map {list -> ["merged", list.collect{it[1]}] + list.collect{it[2]}.first()}
     | merge
-    | map {id, path -> [id, ["input": path, "layer": "log_normalized"]]}
+    | map {tup -> [tup[0], ["input": tup[1], "layer": "log_normalized", "obs_covariates": tup[2].get("obs_covariates")]]}
     | integration
 
   emit:
@@ -77,12 +86,19 @@ workflow test_wf {
   testParams = [
     id: "mouse;human",
     input: params.resources_test + "/concat_test_data/e18_mouse_brain_fresh_5k_filtered_feature_bc_matrix_subset.h5mu;" + params.resources_test + "/concat_test_data/human_brain_3k_filtered_feature_bc_matrix_subset.h5mu",
-    publish_dir: "foo/"
+    obs_covariates: ["sample_id"],
+    publish_dir: "foo/",
+
   ]
 
   output_ch =
     viashChannel(testParams, config)
-      | flatMap {id, input_parameters -> [input_parameters.id, input_parameters.input].transpose()}
+      | flatMap {id, input_parameters -> [input_parameters.id,
+                                          input_parameters.input,
+                                          Collections.nCopies(input_parameters.id.size(), 
+                                                              input_parameters.obs_covariates)
+                                         ].transpose()}
+      | map {id,  input_file, obs_covariates -> [id, ["id": id, "input": input_file, "obs_covariates": obs_covariates]]}
       | view { "Input: $it" }
       | run_wf
       | view { output ->

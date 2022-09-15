@@ -31,9 +31,10 @@ workflow run_wf {
 
     // store output value in 3rd slot for later use
     // and transform for concat component
-    | map { id, data ->
+    | map { tup ->
+      data = tup[1]
       new_data = [ input: data.input, sample_names: data.id ]
-      ["combined_samples_rna", new_data, data]
+      ["combined_samples_rna", new_data, data] + tup.drop(2)
     }
 
     | concat
@@ -50,8 +51,8 @@ workflow run_wf {
     )
 
     // retrieve output value
-    | map { id, file, orig_data -> 
-      [ id, [ input: file ] + orig_data.subMap("output") ]
+    | map { tup -> 
+      [ tup[0], [ input: tup[1] ] + tup[2].subMap("output") ] + tup.drop(3)
     }
 
     // feature annotation
