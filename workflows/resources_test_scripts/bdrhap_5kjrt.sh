@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -eo pipefail
+
 # ensure that the command below is run from the root of the repository
 REPO_ROOT=$(git rev-parse --show-toplevel)
 cd "$REPO_ROOT"

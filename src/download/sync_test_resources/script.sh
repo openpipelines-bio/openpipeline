@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -eo pipefail
+
 ## VIASH START
 par_input='s3://openpipelines-data'
 par_output='resources_test'

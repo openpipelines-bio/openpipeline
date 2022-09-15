@@ -1,6 +1,8 @@
 
 #!/bin/bash
 
+
+
 # settings
 ID=merge_test_data
 OUT=resources_test/$ID

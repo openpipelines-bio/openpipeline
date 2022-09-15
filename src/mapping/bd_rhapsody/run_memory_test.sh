@@ -1,5 +1,7 @@
 #!/bin/bash
 
+
+
 ## VIASH START
 meta_executable="viash run src/mapping/bd_rhapsody/config.vsh.yaml --"
 meta_resources_dir="resources_test"

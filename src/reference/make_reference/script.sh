@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -eo pipefail
+
 ## VIASH START
 par_genome_fasta="https://ftp.ebi.ac.uk/pub/databases/gencode/Gencode_human/release_41/GRCh38.primary_assembly.genome.fa.gz"
 par_transcriptome_gtf="https://ftp.ebi.ac.uk/pub/databases/gencode/Gencode_human/release_41/gencode.v41.annotation.gtf.gz"
