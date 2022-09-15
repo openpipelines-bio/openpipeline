@@ -534,7 +534,7 @@ functionality:
       
       LABEL org.opencontainers.image.authors="Dries Schaumont <dries.schaumont@its.jnj.com> (maintainer), Robrecht Cannoodt <rcannood@gmail.com> (contributor) {github: rcannood, orcid: 0000-0003-3641-729X}"
       LABEL org.opencontainers.image.description="Companion container for running component integrate harmonypy"
-      LABEL org.opencontainers.image.created="2022-09-15T13:47:28Z"
+      LABEL org.opencontainers.image.created="2022-09-15T15:40:55Z"
       LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
       LABEL org.opencontainers.image.revision="dda69f29cb4a0b9c3a3c2e252f271644fbb686ef"
       LABEL org.opencontainers.image.version="integration_build"
