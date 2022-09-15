@@ -428,9 +428,9 @@ RUN pip install --upgrade pip && \
 
 LABEL org.opencontainers.image.authors="Dries Schaumont <Dschaumo@its.jnj.com> (maintainer)"
 LABEL org.opencontainers.image.description="Companion container for running component integrate concat"
-LABEL org.opencontainers.image.created="2022-09-14T14:52:03Z"
+LABEL org.opencontainers.image.created="2022-09-15T13:06:48Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="63acfe836c880320b115a390ede6807b17755955"
+LABEL org.opencontainers.image.revision="62d308a2334466b77fcb40fdac9e72bd4bd8c3d2"
 LABEL org.opencontainers.image.version="main_build"
 VIASHDOCKER
 }
