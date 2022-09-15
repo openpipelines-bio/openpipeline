@@ -64,10 +64,10 @@ jobs:
 
     - name: Build nextflow schemas & params
       run: |
-        viash ns exec -p nextflow -s src 'bin/tools/docker/nextflow/generate_params/generate_params -i {} -o target/nextflow/nextflow_params.yaml'
-        viash ns exec -p nextflow -s src 'bin/tools/docker/nextflow/generate_schema/generate_schema -i {} -o target/nextflow/nextflow_schema.json'
-        viash ns exec -s workflows 'bin/tools/docker/nextflow/generate_params/generate_params -i {} -o {dir}/nextflow_params.yaml'
-        viash ns exec -s workflows 'bin/tools/docker/nextflow/generate_schema/generate_schema -i {} -o {dir}/nextflow_schema.json'
+        bin/viash ns exec -p nextflow -s src 'bin/tools/docker/nextflow/generate_params/generate_params -i {} -o target/nextflow/nextflow_params.yaml'
+        bin/viash ns exec -p nextflow -s src 'bin/tools/docker/nextflow/generate_schema/generate_schema -i {} -o target/nextflow/nextflow_schema.json'
+        bin/viash ns exec -s workflows 'bin/tools/docker/nextflow/generate_params/generate_params -i {} -o {dir}/nextflow_params.yaml'
+        bin/viash ns exec -s workflows 'bin/tools/docker/nextflow/generate_schema/generate_schema -i {} -o {dir}/nextflow_schema.json'
 
     - name: Deploy to target branch
       uses: peaceiris/actions-gh-pages@v3
