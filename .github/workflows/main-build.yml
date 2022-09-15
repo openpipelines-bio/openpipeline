@@ -22,7 +22,7 @@ jobs:
 
     - name: Fetch viash tools
       run: |
-        bin/init_tools
+        bin/init_tools ${{ secrets.GTHB_USER }} ${{ secrets.GTHB_PAT }}
         tree bin/tools
 
     # create cachehash key

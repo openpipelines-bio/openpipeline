@@ -12,7 +12,11 @@ function clean_up {
 }
 trap clean_up EXIT
 
-git clone git@github.com:viash-io/viash_tools.git $tmpdir/
+if [ $? -eq 2 ]; then
+  git clone git@github.com:viash-io/viash_tools.git@$1:$2 $tmpdir/
+else
+  git clone git@github.com:viash-io/viash_tools.git $tmpdir/
+fi
 
 [ -d bin/tools ] && rm -r bin/tools
 
