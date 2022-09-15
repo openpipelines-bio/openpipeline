@@ -38,7 +38,7 @@ functionality:
   - type: "string"
     name: "--compression"
     alternatives: []
-    description: "The compression format to be used on the final h5ad object."
+    description: "The compression format to be used on the final h5mu object."
     example: []
     default:
     - "gzip"
@@ -230,7 +230,7 @@ functionality:
         echo "    --compression"
         echo "        type: string"
         echo "        default: gzip"
-        echo "        The compression format to be used on the final h5ad object."
+        echo "        The compression format to be used on the final h5mu object."
       }
       ######## Helper functions for setting up Docker images for viash ########
       # expects: ViashDockerBuild
@@ -454,9 +454,9 @@ functionality:
       
       LABEL org.opencontainers.image.authors="Dries Schaumont <Dschaumo@its.jnj.com> (maintainer)"
       LABEL org.opencontainers.image.description="Companion container for running component split split_modalities"
-      LABEL org.opencontainers.image.created="2022-09-08T10:27:13Z"
+      LABEL org.opencontainers.image.created="2022-09-15T13:29:41Z"
       LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-      LABEL org.opencontainers.image.revision="346d4a44c87fff18a2ac36f7859222ada2929c53"
+      LABEL org.opencontainers.image.revision="5adfbfce0d9912a130e0b8b4d935d9879252ce47"
       LABEL org.opencontainers.image.version="integration_build"
       VIASHDOCKER
       }
@@ -961,5 +961,5 @@ info:
   output: "target/docker/split/split_modalities"
   executable: "target/docker/split/split_modalities/split_modalities"
   viash_version: "0.6.0"
-  git_commit: "346d4a44c87fff18a2ac36f7859222ada2929c53"
+  git_commit: "5adfbfce0d9912a130e0b8b4d935d9879252ce47"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"

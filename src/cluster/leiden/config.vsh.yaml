@@ -31,6 +31,11 @@ functionality:
       default: "rna"
       required: false
 
+    - name: "--obsp_connectivities"
+      type: string
+      description: In which .obsp slot the neighbor connectivities can be found.
+      default: "connectivities"
+
     # output
     - name: "--output"
       alternatives: ["-o"]
@@ -65,9 +70,7 @@ platforms:
     python:
       packages:
         - scanpy~=1.9.1
-        - python-igraph
-        - leidenalg
-        - hnswlib
+        - leidenalg~=0.8.9
         - muon
         - mudata~=0.2.0
         - anndata~=0.8.0

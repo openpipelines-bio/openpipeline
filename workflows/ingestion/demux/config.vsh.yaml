@@ -7,9 +7,19 @@ functionality:
     - name: Toni Verbeiren
       roles: [ author, maintainer ]
       props: { github: tverbeiren }
-    - name: Marijke Van moerbeke
+    - name: Marijke Van Moerbeke
       roles: [ author ]
       props: { orcid: 0000-0002-3097-5621 }
+    - name: Angela Pisco
+      roles: [ author ]
+      props: { github: aopisco, orcid: "0000-0003-0142-2355" }
+    - name: Samuel D'Souza
+      roles: [ author ]
+      props: { github: srdsam }
+    - name: Robrecht Cannoodt
+      email: rcannood@gmail.com
+      roles: [ author ]
+      props: { github: rcannood, orcid: "0000-0003-3641-729X" }
   arguments:
     - name: "--id"
       required: true
@@ -36,10 +46,6 @@ functionality:
     - name: "--ignore_missing"
       type: boolean
       description: Should the demultiplexer ignore missing entities (filter, ...)
-  argument_groups:
-    - name: Arguments
-      description: Input parameters for this pipeline
-      arguments: [ id, input, sample_sheet ]
   resources:
     - type: nextflow_script
       path: main.nf

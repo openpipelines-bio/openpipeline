@@ -35,6 +35,18 @@ functionality:
     direction: "input"
     multiple: true
     multiple_sep: ":"
+  - type: "string"
+    name: "--uns_neighbors"
+    alternatives: []
+    description: "The .uns neighbors slot as output by the `find_neighbors` component."
+    example: []
+    default:
+    - "neighbors"
+    required: false
+    choices: []
+    direction: "input"
+    multiple: false
+    multiple_sep: ":"
   - type: "file"
     name: "--output"
     alternatives:
@@ -233,6 +245,18 @@ functionality:
             "multiple_sep" : ":"
           },
           {
+            "type" : "string",
+            "name" : "--uns_neighbors",
+            "description" : "The .uns neighbors slot as output by the `find_neighbors` component.",
+            "default" : [
+              "neighbors"
+            ],
+            "required" : false,
+            "direction" : "input",
+            "multiple" : false,
+            "multiple_sep" : ":"
+          },
+          {
             "type" : "file",
             "name" : "--output",
             "alternatives" : [
@@ -395,6 +419,7 @@ functionality:
       par = {
         'input': $( if [ ! -z ${VIASH_PAR_INPUT+x} ]; then echo "'${VIASH_PAR_INPUT//\\'/\\\\\\'}'"; else echo None; fi ),
         'modality': $( if [ ! -z ${VIASH_PAR_MODALITY+x} ]; then echo "'${VIASH_PAR_MODALITY//\\'/\\\\\\'}'.split(':')"; else echo None; fi ),
+        'uns_neighbors': $( if [ ! -z ${VIASH_PAR_UNS_NEIGHBORS+x} ]; then echo "'${VIASH_PAR_UNS_NEIGHBORS//\\'/\\\\\\'}'"; else echo None; fi ),
         'output': $( if [ ! -z ${VIASH_PAR_OUTPUT+x} ]; then echo "'${VIASH_PAR_OUTPUT//\\'/\\\\\\'}'"; else echo None; fi ),
         'output_key': $( if [ ! -z ${VIASH_PAR_OUTPUT_KEY+x} ]; then echo "'${VIASH_PAR_OUTPUT_KEY//\\'/\\\\\\'}'"; else echo None; fi ),
         'min_dist': $( if [ ! -z ${VIASH_PAR_MIN_DIST+x} ]; then echo "float('${VIASH_PAR_MIN_DIST//\\'/\\\\\\'}')"; else echo None; fi ),
@@ -448,6 +473,7 @@ functionality:
               gamma=par["gamma"],
               negative_sample_rate=par["negative_sample_rate"],
               init_pos=par["init_pos"],
+              neighbors_key=par["uns_neighbors"]
           )
           # note: should be able to set the neighbors key
       
@@ -2213,5 +2239,5 @@ info:
   platform: "nextflow"
   output: "target/nextflow/dimred/umap"
   viash_version: "0.6.0"
-  git_commit: "346d4a44c87fff18a2ac36f7859222ada2929c53"
+  git_commit: "5adfbfce0d9912a130e0b8b4d935d9879252ce47"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"

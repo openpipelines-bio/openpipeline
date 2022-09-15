@@ -39,7 +39,7 @@ class TestFilterWithScrublet(TestCase):
 
     def _run_and_check_output(self, args_as_list):
         try:
-            subprocess_args = [f"./{functionality_name}"] + args_as_list
+            subprocess_args = [meta['executable']] + args_as_list
             logger.info(" ".join(subprocess_args))
             subprocess.check_output(subprocess_args)
         except subprocess.CalledProcessError as e:
@@ -61,9 +61,9 @@ class TestFilterWithScrublet(TestCase):
         self.assertEqual(new_vars, self.orig_vars, msg="No RNA vars should have been filtered")
         self.assertEqual(mu_out.mod['prot'].n_obs, self.orig_prot_obs, msg="No prot obs should have been filtered")
         self.assertEqual(mu_out.mod['prot'].n_vars, self.orig_prot_vars, msg="No prot vars should have been filtered")
-        self.assertListEqual(list(mu_out.mod['rna'].var['feature_types'].cat.categories), ["Gene Expression"], 
+        self.assertListEqual(list(mu_out.mod['rna'].var['feature_type'].cat.categories), ["Gene Expression"], 
                              msg="Feature types of RNA modality should be Gene Expression")
-        self.assertListEqual(list(mu_out.mod['prot'].var['feature_types'].cat.categories), ["Antibody Capture"],
+        self.assertListEqual(list(mu_out.mod['prot'].var['feature_type'].cat.categories), ["Antibody Capture"],
                              msg="Feature types of prot modality should be Antibody Capture")
 
     def test_filtering_a_lot(self):
@@ -84,9 +84,9 @@ class TestFilterWithScrublet(TestCase):
         self.assertEqual(new_vars, self.orig_vars, msg="No genes should have been filtered")
         self.assertEqual(mu_out.mod['prot'].n_obs, self.orig_obs, msg="No prot obs should have been filtered")
         self.assertEqual(mu_out.mod['prot'].n_vars, self.orig_prot_vars, msg="No prot vars should have been filtered")
-        self.assertListEqual(list(mu_out.mod['rna'].var['feature_types'].cat.categories), ["Gene Expression"],
+        self.assertListEqual(list(mu_out.mod['rna'].var['feature_type'].cat.categories), ["Gene Expression"],
                              msg="Feature types of RNA modality should be Gene Expression")
-        self.assertListEqual(list(mu_out.mod['prot'].var['feature_types'].cat.categories), ["Antibody Capture"],
+        self.assertListEqual(list(mu_out.mod['prot'].var['feature_type'].cat.categories), ["Antibody Capture"],
                              msg="Feature types of prot modality should be Antibody Capture" )
 
 if __name__ == "__main__":

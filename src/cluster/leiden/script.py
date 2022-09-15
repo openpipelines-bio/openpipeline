@@ -5,12 +5,13 @@ import scanpy as sc
 
 ## VIASH START
 par = {
-    "input": "resources_test/pbmc_1k_protein_v3/pbmc_1k_protein_v3_filtered_feature_bc_matrix.neighbors.h5mu",
+    "input": "work/c3/a5a0813d70d0141193748e3baf9a58/pbmc_1k_protein_v3_mms.find_neighbors.output.h5mu",
     "output": "output.h5mu",
     "modality": ["rna"],
     "output_format": "h5mu",
     "obs_name": "leiden",
     "resolution": 0.25,
+    "obsp_connectivities": "connectivities"
 }
 ## VIASH END
 
@@ -31,6 +32,7 @@ for mod in par['modality']:
         data,
         resolution=par["resolution"],
         key_added=par["obs_name"],
+        obsp=par["obsp_connectivities"]
     )
 
 logger.info("Writing to %s.", par["output"])

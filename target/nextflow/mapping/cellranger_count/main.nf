@@ -102,7 +102,7 @@ thisConfig = processConfig([
       "type" : "integer",
       "name" : "--expect_cells",
       "description" : "Expected number of recovered cells, used as input to cell calling algorithm.",
-      "default" : [
+      "example" : [
         3000
       ],
       "required" : false,
@@ -148,11 +148,11 @@ thisConfig = processConfig([
       "multiple_sep" : ":"
     },
     {
-      "type" : "integer",
-      "name" : "--cores",
-      "description" : "Set max cores the pipeline may request at one time.",
-      "example" : [
-        2
+      "type" : "boolean",
+      "name" : "--generate_bam",
+      "description" : "Whether to generate a BAM file.",
+      "default" : [
+        true
       ],
       "required" : false,
       "direction" : "input",
@@ -160,11 +160,11 @@ thisConfig = processConfig([
       "multiple_sep" : ":"
     },
     {
-      "type" : "integer",
-      "name" : "--memory",
-      "description" : "Set max GB the pipeline may request at one time.",
-      "example" : [
-        10
+      "type" : "boolean",
+      "name" : "--include_introns",
+      "description" : "Include intronic reads in count (default=true unless --target-panel is specified in which case default=false)",
+      "default" : [
+        true
       ],
       "required" : false,
       "direction" : "input",
@@ -213,8 +213,8 @@ $( if [ ! -z ${VIASH_PAR_OUTPUT+x} ]; then echo "par_output='${VIASH_PAR_OUTPUT/
 $( if [ ! -z ${VIASH_PAR_EXPECT_CELLS+x} ]; then echo "par_expect_cells='${VIASH_PAR_EXPECT_CELLS//\\'/\\'\\"\\'\\"\\'}'"; fi )
 $( if [ ! -z ${VIASH_PAR_CHEMISTRY+x} ]; then echo "par_chemistry='${VIASH_PAR_CHEMISTRY//\\'/\\'\\"\\'\\"\\'}'"; fi )
 $( if [ ! -z ${VIASH_PAR_SECONDARY_ANALYSIS+x} ]; then echo "par_secondary_analysis='${VIASH_PAR_SECONDARY_ANALYSIS//\\'/\\'\\"\\'\\"\\'}'"; fi )
-$( if [ ! -z ${VIASH_PAR_CORES+x} ]; then echo "par_cores='${VIASH_PAR_CORES//\\'/\\'\\"\\'\\"\\'}'"; fi )
-$( if [ ! -z ${VIASH_PAR_MEMORY+x} ]; then echo "par_memory='${VIASH_PAR_MEMORY//\\'/\\'\\"\\'\\"\\'}'"; fi )
+$( if [ ! -z ${VIASH_PAR_GENERATE_BAM+x} ]; then echo "par_generate_bam='${VIASH_PAR_GENERATE_BAM//\\'/\\'\\"\\'\\"\\'}'"; fi )
+$( if [ ! -z ${VIASH_PAR_INCLUDE_INTRONS+x} ]; then echo "par_include_introns='${VIASH_PAR_INCLUDE_INTRONS//\\'/\\'\\"\\'\\"\\'}'"; fi )
 $( if [ ! -z ${VIASH_META_FUNCTIONALITY_NAME+x} ]; then echo "meta_functionality_name='${VIASH_META_FUNCTIONALITY_NAME//\\'/\\'\\"\\'\\"\\'}'"; fi )
 $( if [ ! -z ${VIASH_META_RESOURCES_DIR+x} ]; then echo "meta_resources_dir='${VIASH_META_RESOURCES_DIR//\\'/\\'\\"\\'\\"\\'}'"; fi )
 $( if [ ! -z ${VIASH_META_EXECUTABLE+x} ]; then echo "meta_executable='${VIASH_META_EXECUTABLE//\\'/\\'\\"\\'\\"\\'}'"; fi )
@@ -248,11 +248,13 @@ cd "\\$tmpdir"
 # add additional params
 extra_params=( )
 
-if [ ! -z "\\$par_cores" ]; then 
-  extra_params+=( "--localcores=\\$par_cores" )
+if [ ! -z "\\$meta_n_proc" ]; then 
+  extra_params+=( "--localcores=\\$meta_n_proc" )
 fi
-if [ ! -z "\\$par_memory" ]; then 
-  extra_params+=( "--localmem=\\$par_memory" )
+if [ ! -z "\\$meta_memory_gb" ]; then 
+  # always keep 2gb for the OS itself
+  memory_gb=\\`python -c "print(int('\\$meta_memory_gb') - 2)"\\`
+  extra_params+=( "--localmem=\\$memory_gb" )
 fi
 if [ ! -z "\\$par_expect_cells" ]; then 
   extra_params+=( "--expect-cells=\\$par_expect_cells" )
@@ -263,6 +265,9 @@ fi
 if [ "\\$par_secondary_analysis" == "false" ]; then
   extra_params+=( "--nosecondary" )
 fi
+if [ "\\$par_generate_bam" == "false" ]; then
+  extra_params+=( "--no-bam" )
+fi
 echo "Running cellranger count"
 
 
@@ -271,6 +276,7 @@ cellranger count \\\\
   --id "\\$id" \\\\
   --fastqs "\\$par_input" \\\\
   --transcriptome "\\$par_reference" \\\\
+  --include-introns "\\$par_include_introns" \\\\
   "\\${extra_params[@]}" \\\\
   --disable-ui \\\\
 

@@ -82,6 +82,18 @@ thisConfig = processConfig([
       "multiple_sep" : ":"
     },
     {
+      "type" : "string",
+      "name" : "--obsm_input",
+      "description" : "Which .obsm slot to use as a starting PCA embedding.",
+      "default" : [
+        "X_pca"
+      ],
+      "required" : false,
+      "direction" : "input",
+      "multiple" : false,
+      "multiple_sep" : ":"
+    },
+    {
       "type" : "file",
       "name" : "--output",
       "alternatives" : [
@@ -99,10 +111,34 @@ thisConfig = processConfig([
     },
     {
       "type" : "string",
-      "name" : "--obsp_name_prefix",
-      "description" : "An optional prefix for the obsp slot. If not specified, the neighbors data is stored in .uns['neighbors'], distances and connectivities are stored in .obsp['distances'] and .obsp['connectivities'] respectively. If specified, the neighbors data is added to .uns[key_added], distances are stored in .obsp[key_added+'_distances'] and connectivities in .obsp[key_added+'_connectivities'].",
-      "example" : [
-        "foo"
+      "name" : "--uns_output",
+      "description" : "Mandatory .uns slot to store various neighbor output objects.",
+      "default" : [
+        "neighbors"
+      ],
+      "required" : false,
+      "direction" : "input",
+      "multiple" : false,
+      "multiple_sep" : ":"
+    },
+    {
+      "type" : "string",
+      "name" : "--obsp_distances",
+      "description" : "In which .obsp slot to store the distance matrix between the resulting neighbors.",
+      "default" : [
+        "distances"
+      ],
+      "required" : false,
+      "direction" : "input",
+      "multiple" : false,
+      "multiple_sep" : ":"
+    },
+    {
+      "type" : "string",
+      "name" : "--obsp_connectivities",
+      "description" : "In which .obsp slot to store the connectivities matrix between the resulting neighbors.",
+      "default" : [
+        "connectivities"
       ],
       "required" : false,
       "direction" : "input",
@@ -157,6 +193,18 @@ thisConfig = processConfig([
       "direction" : "input",
       "multiple" : false,
       "multiple_sep" : ":"
+    },
+    {
+      "type" : "integer",
+      "name" : "--seed",
+      "description" : "A random seed.",
+      "default" : [
+        0
+      ],
+      "required" : false,
+      "direction" : "input",
+      "multiple" : false,
+      "multiple_sep" : ":"
     }
   ],
   "resources" : [
@@ -200,10 +248,14 @@ from sys import stdout
 par = {
   'input': $( if [ ! -z ${VIASH_PAR_INPUT+x} ]; then echo "'${VIASH_PAR_INPUT//\\'/\\\\\\'}'"; else echo None; fi ),
   'modality': $( if [ ! -z ${VIASH_PAR_MODALITY+x} ]; then echo "'${VIASH_PAR_MODALITY//\\'/\\\\\\'}'.split(':')"; else echo None; fi ),
+  'obsm_input': $( if [ ! -z ${VIASH_PAR_OBSM_INPUT+x} ]; then echo "'${VIASH_PAR_OBSM_INPUT//\\'/\\\\\\'}'"; else echo None; fi ),
   'output': $( if [ ! -z ${VIASH_PAR_OUTPUT+x} ]; then echo "'${VIASH_PAR_OUTPUT//\\'/\\\\\\'}'"; else echo None; fi ),
-  'obsp_name_prefix': $( if [ ! -z ${VIASH_PAR_OBSP_NAME_PREFIX+x} ]; then echo "'${VIASH_PAR_OBSP_NAME_PREFIX//\\'/\\\\\\'}'"; else echo None; fi ),
+  'uns_output': $( if [ ! -z ${VIASH_PAR_UNS_OUTPUT+x} ]; then echo "'${VIASH_PAR_UNS_OUTPUT//\\'/\\\\\\'}'"; else echo None; fi ),
+  'obsp_distances': $( if [ ! -z ${VIASH_PAR_OBSP_DISTANCES+x} ]; then echo "'${VIASH_PAR_OBSP_DISTANCES//\\'/\\\\\\'}'"; else echo None; fi ),
+  'obsp_connectivities': $( if [ ! -z ${VIASH_PAR_OBSP_CONNECTIVITIES+x} ]; then echo "'${VIASH_PAR_OBSP_CONNECTIVITIES//\\'/\\\\\\'}'"; else echo None; fi ),
   'metric': $( if [ ! -z ${VIASH_PAR_METRIC+x} ]; then echo "'${VIASH_PAR_METRIC//\\'/\\\\\\'}'"; else echo None; fi ),
-  'num_neighbors': $( if [ ! -z ${VIASH_PAR_NUM_NEIGHBORS+x} ]; then echo "int('${VIASH_PAR_NUM_NEIGHBORS//\\'/\\\\\\'}')"; else echo None; fi )
+  'num_neighbors': $( if [ ! -z ${VIASH_PAR_NUM_NEIGHBORS+x} ]; then echo "int('${VIASH_PAR_NUM_NEIGHBORS//\\'/\\\\\\'}')"; else echo None; fi ),
+  'seed': $( if [ ! -z ${VIASH_PAR_SEED+x} ]; then echo "int('${VIASH_PAR_SEED//\\'/\\\\\\'}')"; else echo None; fi )
 }
 meta = {
   'functionality_name': $( if [ ! -z ${VIASH_META_FUNCTIONALITY_NAME+x} ]; then echo "'${VIASH_META_FUNCTIONALITY_NAME//\\'/\\\\\\'}'"; else echo None; fi ),
@@ -232,16 +284,33 @@ logger.addHandler(console_handler)
 
 logger.info("Reading input mudata")
 mdata = mu.read_h5mu(par["input"])
-mdata.var_names_make_unique()
 
 for mod in par["modality"]:
     logger.info("Computing a neighborhood graph on modality %s", mod)
-    sc.pp.neighbors(
-        mdata.mod[mod],
+    adata = mdata.mod[mod]
+    neighbors = sc.Neighbors(adata)
+    neighbors.compute_neighbors(
         n_neighbors=par["num_neighbors"], 
+        use_rep=par["obsm_input"],
         metric=par["metric"],
-        key_added=par["obsp_name_prefix"]
+        random_state=par["seed"],
+        method="umap"
     )
+
+    adata.uns[par["uns_output"]] = {
+        'connectivities_key': par["obsp_connectivities"],
+        'distances_key': par["obsp_distances"],
+        'params': {
+            'n_neighbors': neighbors.n_neighbors, 
+            'method': "umap",
+            'random_state': par["seed"],
+            'metric': par["metric"],
+            'use_rep': par["obsm_input"]
+        }
+    }
+
+    adata.obsp[par["obsp_distances"]] = neighbors.distances
+    adata.obsp[par["obsp_connectivities"]] = neighbors.connectivities
 
 logger.info("Writing to %s", par["output"])
 mdata.write(filename=par["output"])

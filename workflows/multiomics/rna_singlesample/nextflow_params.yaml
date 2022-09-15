@@ -1,0 +1,10 @@
+# Arguments
+id: # please fill in - example: "foo"
+input: # please fill in - example: "dataset.h5mu"
+# output: "$id.$key.output.h5mu"
+
+# Nextflow input-output arguments
+publish_dir: # please fill in - example: "output/"
+# param_list: "my_params.yaml"
+# param_list_format: "yaml"
+

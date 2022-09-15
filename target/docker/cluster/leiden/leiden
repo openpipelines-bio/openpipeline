@@ -187,6 +187,11 @@ function ViashHelp {
   echo "        type: string, multiple values allowed"
   echo "        default: rna"
   echo ""
+  echo "    --obsp_connectivities"
+  echo "        type: string"
+  echo "        default: connectivities"
+  echo "        In which .obsp slot the neighbor connectivities can be found."
+  echo ""
   echo "    -o, --output"
   echo "        type: file, required parameter, output"
   echo "        example: output.h5mu"
@@ -425,13 +430,13 @@ RUN apt-get update && \
   rm -rf /var/lib/apt/lists/*
 
 RUN pip install --upgrade pip && \
-  pip install --upgrade --no-cache-dir "scanpy~=1.9.1" "python-igraph" "leidenalg" "hnswlib" "muon" "mudata~=0.2.0" "anndata~=0.8.0"
+  pip install --upgrade --no-cache-dir "scanpy~=1.9.1" "leidenalg~=0.8.9" "muon" "mudata~=0.2.0" "anndata~=0.8.0"
 
 LABEL org.opencontainers.image.authors="Dries De Maeyer <ddemaeyer@gmail.com> (maintainer) {account: ddemaey1}"
 LABEL org.opencontainers.image.description="Companion container for running component cluster leiden"
-LABEL org.opencontainers.image.created="2022-09-08T10:27:14Z"
+LABEL org.opencontainers.image.created="2022-09-15T13:29:42Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="346d4a44c87fff18a2ac36f7859222ada2929c53"
+LABEL org.opencontainers.image.revision="5adfbfce0d9912a130e0b8b4d935d9879252ce47"
 LABEL org.opencontainers.image.version="integration_build"
 VIASHDOCKER
 }
@@ -613,6 +618,17 @@ while [[ $# -gt 0 ]]; do
             fi
             shift 1
             ;;
+        --obsp_connectivities)
+            [ -n "$VIASH_PAR_OBSP_CONNECTIVITIES" ] && ViashError Bad arguments for option \'--obsp_connectivities\': \'$VIASH_PAR_OBSP_CONNECTIVITIES\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+            VIASH_PAR_OBSP_CONNECTIVITIES="$2"
+            [ $# -lt 2 ] && ViashError Not enough arguments passed to --obsp_connectivities. Use "--help" to get more information on the parameters. && exit 1
+            shift 2
+            ;;
+        --obsp_connectivities=*)
+            [ -n "$VIASH_PAR_OBSP_CONNECTIVITIES" ] && ViashError Bad arguments for option \'--obsp_connectivities=*\': \'$VIASH_PAR_OBSP_CONNECTIVITIES\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+            VIASH_PAR_OBSP_CONNECTIVITIES=$(ViashRemoveFlags "$1")
+            shift 1
+            ;;
         --output)
             [ -n "$VIASH_PAR_OUTPUT" ] && ViashError Bad arguments for option \'--output\': \'$VIASH_PAR_OUTPUT\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
             VIASH_PAR_OUTPUT="$2"
@@ -779,6 +795,9 @@ fi
 if [ -z ${VIASH_PAR_MODALITY+x} ]; then
   VIASH_PAR_MODALITY="rna"
 fi
+if [ -z ${VIASH_PAR_OBSP_CONNECTIVITIES+x} ]; then
+  VIASH_PAR_OBSP_CONNECTIVITIES="connectivities"
+fi
 if [ -z ${VIASH_PAR_OBS_NAME+x} ]; then
   VIASH_PAR_OBS_NAME="leiden"
 fi
@@ -797,6 +816,7 @@ fi
 
 
 # check whether parameters values are of the right type
+
 
 
 
@@ -863,6 +883,7 @@ import scanpy as sc
 par = {
   'input': $( if [ ! -z ${VIASH_PAR_INPUT+x} ]; then echo "'${VIASH_PAR_INPUT//\'/\\\'}'"; else echo None; fi ),
   'modality': $( if [ ! -z ${VIASH_PAR_MODALITY+x} ]; then echo "'${VIASH_PAR_MODALITY//\'/\\\'}'.split(':')"; else echo None; fi ),
+  'obsp_connectivities': $( if [ ! -z ${VIASH_PAR_OBSP_CONNECTIVITIES+x} ]; then echo "'${VIASH_PAR_OBSP_CONNECTIVITIES//\'/\\\'}'"; else echo None; fi ),
   'output': $( if [ ! -z ${VIASH_PAR_OUTPUT+x} ]; then echo "'${VIASH_PAR_OUTPUT//\'/\\\'}'"; else echo None; fi ),
   'obs_name': $( if [ ! -z ${VIASH_PAR_OBS_NAME+x} ]; then echo "'${VIASH_PAR_OBS_NAME//\'/\\\'}'"; else echo None; fi ),
   'resolution': $( if [ ! -z ${VIASH_PAR_RESOLUTION+x} ]; then echo "float('${VIASH_PAR_RESOLUTION//\'/\\\'}')"; else echo None; fi )
@@ -902,6 +923,7 @@ for mod in par['modality']:
         data,
         resolution=par["resolution"],
         key_added=par["obs_name"],
+        obsp=par["obsp_connectivities"]
     )
 
 logger.info("Writing to %s.", par["output"])

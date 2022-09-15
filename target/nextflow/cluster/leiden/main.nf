@@ -69,6 +69,18 @@ thisConfig = processConfig([
       "multiple_sep" : ":"
     },
     {
+      "type" : "string",
+      "name" : "--obsp_connectivities",
+      "description" : "In which .obsp slot the neighbor connectivities can be found.",
+      "default" : [
+        "connectivities"
+      ],
+      "required" : false,
+      "direction" : "input",
+      "multiple" : false,
+      "multiple_sep" : ":"
+    },
+    {
       "type" : "file",
       "name" : "--output",
       "alternatives" : [
@@ -150,6 +162,7 @@ import scanpy as sc
 par = {
   'input': $( if [ ! -z ${VIASH_PAR_INPUT+x} ]; then echo "'${VIASH_PAR_INPUT//\\'/\\\\\\'}'"; else echo None; fi ),
   'modality': $( if [ ! -z ${VIASH_PAR_MODALITY+x} ]; then echo "'${VIASH_PAR_MODALITY//\\'/\\\\\\'}'.split(':')"; else echo None; fi ),
+  'obsp_connectivities': $( if [ ! -z ${VIASH_PAR_OBSP_CONNECTIVITIES+x} ]; then echo "'${VIASH_PAR_OBSP_CONNECTIVITIES//\\'/\\\\\\'}'"; else echo None; fi ),
   'output': $( if [ ! -z ${VIASH_PAR_OUTPUT+x} ]; then echo "'${VIASH_PAR_OUTPUT//\\'/\\\\\\'}'"; else echo None; fi ),
   'obs_name': $( if [ ! -z ${VIASH_PAR_OBS_NAME+x} ]; then echo "'${VIASH_PAR_OBS_NAME//\\'/\\\\\\'}'"; else echo None; fi ),
   'resolution': $( if [ ! -z ${VIASH_PAR_RESOLUTION+x} ]; then echo "float('${VIASH_PAR_RESOLUTION//\\'/\\\\\\'}')"; else echo None; fi )
@@ -189,6 +202,7 @@ for mod in par['modality']:
         data,
         resolution=par["resolution"],
         key_added=par["obs_name"],
+        obsp=par["obsp_connectivities"]
     )
 
 logger.info("Writing to %s.", par["output"])

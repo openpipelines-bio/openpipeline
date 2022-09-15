@@ -69,7 +69,7 @@ thisConfig = processConfig([
     {
       "type" : "string",
       "name" : "--compression",
-      "description" : "The compression format to be used on the final h5ad object.",
+      "description" : "The compression format to be used on the final h5mu object.",
       "default" : [
         "gzip"
       ],

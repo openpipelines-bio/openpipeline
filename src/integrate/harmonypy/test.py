@@ -23,27 +23,20 @@ class TestHarmonyPy(unittest.TestCase):
             raise e
 
     def test_harmonypy(self):
-        # with NamedTemporaryFile('w', suffix=".h5mu") as tempfile_input_file:
         input_data = mudata.read_h5mu(input_file)
-        # mod = input_data.mod['rna']
-        # number_of_obs = mod.n_obs
-        # mod.obs['batch'] = 'A'
-        # column_index = mod.obs.columns.get_indexer(['batch'])
-        # mod.obs.iloc[slice(number_of_obs//2, None), column_index] = 'B'
-        # input_data.write(tempfile_input_file.name)
         self._run_and_check_output([
             "--input", input_file,
             "--modality", "rna",
-            "--obsm_input", "X_pca",
+            "--obsm_input", "log_normalized_pca",
             "--obsm_output", "X_pca_int",
             "--obs_covariates", "leiden",
             "--output", "output.h5mu"])
         self.assertTrue(Path("output.h5mu").is_file())
         output_data = mudata.read_h5mu("output.h5mu")
         np.testing.assert_array_equal(output_data.mod['rna'].X.data, input_data.mod['rna'].X.data)
-        np.testing.assert_array_equal(input_data.mod['rna'].obsm['X_pca'], output_data.mod['rna'].obsm['X_pca'])
+        np.testing.assert_array_equal(input_data.mod['rna'].obsm['log_normalized_pca'], output_data.mod['rna'].obsm['log_normalized_pca'])
         self.assertIn('X_pca_int', output_data.mod['rna'].obsm)
-        self.assertTupleEqual(output_data.mod['rna'].obsm['X_pca_int'].shape, input_data.mod['rna'].obsm['X_pca'].shape)
+        self.assertTupleEqual(output_data.mod['rna'].obsm['X_pca_int'].shape, input_data.mod['rna'].obsm['log_normalized_pca'].shape)
 
 if __name__ == '__main__':
     unittest.main()

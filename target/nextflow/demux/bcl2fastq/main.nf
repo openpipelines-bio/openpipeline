@@ -173,6 +173,8 @@ resources_dir="$VIASH_META_RESOURCES_DIR"
 ## VIASH END
 #!/bin/bash
 
+set -e
+
 # Handle reports stored separate
 reports_line=""
 \\$par_separate_reports && reports_line="--reports-dir \\$par_reports"

@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -e
+
 ## VIASH START
 par_input='resources_test/cellranger_tiny_bcl/bcl'
 par_sample_sheet='resources_test/cellranger_tiny_bcl/bcl/sample_sheet.csv'

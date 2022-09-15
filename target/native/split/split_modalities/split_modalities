@@ -177,7 +177,7 @@ function ViashHelp {
   echo "    --compression"
   echo "        type: string"
   echo "        default: gzip"
-  echo "        The compression format to be used on the final h5ad object."
+  echo "        The compression format to be used on the final h5mu object."
 }
 
 # initialise array
