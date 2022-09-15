@@ -1,0 +1,15 @@
+# Arguments
+input: # please fill in - example: "path/to/file"
+reference: # please fill in - example: "path/to/file"
+# output: "$id.$key.output.output"
+# expect_cells: 3000
+chemistry: "auto"
+secondary_analysis: false
+generate_bam: true
+include_introns: true
+
+# Nextflow input-output arguments
+publish_dir: # please fill in - example: "output/"
+# param_list: "my_params.yaml"
+# param_list_format: "yaml"
+

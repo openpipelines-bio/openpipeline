@@ -132,7 +132,7 @@ thisConfig = processConfig([
         "batch",
         "sample"
       ],
-      "required" : true,
+      "required" : false,
       "direction" : "input",
       "multiple" : true,
       "multiple_sep" : ":"

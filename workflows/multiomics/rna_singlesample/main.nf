@@ -28,12 +28,11 @@ workflow run_wf {
   main:
   output_ch = input_ch
     // store output value in 3rd slot for later use
-    | map { tup -> 
-      data = tup[1]
+    | map { id, data -> 
       if (data !instanceof Map) {
         data = [ input: data ]
       }
-      [ tup[0], data, data.clone() ] + tup.drop(2)
+      [ id, data, data.clone() ] 
     }
 
     // cell filtering
@@ -43,9 +42,8 @@ workflow run_wf {
     )
 
     // retrieve output value
-    | map { tup -> 
-      orig_data = tup[2]
-      [ tup[0], [ input: tup[1] ] + (orig_data instanceof Map ? orig_data.subMap("output") : [ output: orig_data ] )] + tup.drop(3)
+    | map { id, file, orig_data -> 
+      [ id, [ input: file ] + (orig_data instanceof Map ? orig_data.subMap("output") : [ output: orig_data ] ) ]
     }
 
     // doublet calling
@@ -53,7 +51,6 @@ workflow run_wf {
       auto: [ publish: true ]
     )
     // TODO: ambient rna correction
-    | view { "Output: $it" }
 
   emit:
   output_ch

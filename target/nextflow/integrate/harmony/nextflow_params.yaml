@@ -1,0 +1,3 @@
+Unknown method invocation `split` on Integer type
+
+ -- Check script 'viash_automount/home/runner/work/openpipeline/openpipeline/bin/tools/docker/nextflow/generate_params/main.nf' at line: 43 or see '.nextflow.log' file for more details

@@ -35,7 +35,15 @@ platforms:
   - type: docker
     image: ubuntu:22.04
     setup:
+      - type: docker
+        run: apt-get update
       - type: apt
-        packages: [ fastqc ]
+        packages: [ bash, wget, unzip, libfindbin-libs-perl, default-jre ]
+      - type: docker
+        run:
+          - mkdir -p /opt
+          - wget http://www.bioinformatics.babraham.ac.uk/projects/fastqc/fastqc_v0.11.9.zip -O /opt/fastqc.zip
+          - cd /opt && unzip fastqc.zip && ln -s /opt/FastQC/fastqc /usr/bin/fastqc
+          - chmod 755 /usr/bin/fastqc
   - type: nextflow
     variant: vdsl3
