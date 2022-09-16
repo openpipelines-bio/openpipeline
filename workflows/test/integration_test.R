@@ -26,7 +26,7 @@ outs <- map_df(workflows, function(wf) {
           "run", ".",
           "-main-script", paste0(dir, "/", test$path),
           "-entry", test$entrypoint,
-          "-profile", "docker"
+          "-profile", "docker,no_publish"
         )
 
         start_time <- Sys.time()
