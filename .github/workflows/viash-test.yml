@@ -103,7 +103,7 @@ jobs:
       with: 
         files: ${{ format('{0}/{1}', matrix.component.dir, '/*') }}
         diff_relative: true
-        base_sha: steps.get_sha.outputs.sha
+        base_sha: ${{ steps.get_sha.outputs.sha }}
 
     - name: List all changed files
       run: |
