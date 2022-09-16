@@ -81,7 +81,7 @@ jobs:
         component: ${{ fromJson(needs.list_components.outputs.matrix) }}
 
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
       with:
         fetch-depth: 0 
 
