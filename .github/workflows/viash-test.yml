@@ -90,7 +90,7 @@ jobs:
     - name: Get base sha for generating changed files
       id: get_sha
       run: |
-        if [[ ${{ github.event_name == 'pull_request' }} ]]; then
+        if [[ "${{ github.event_name == 'pull_request' }}" == "true" ]]; then
           sha=${{ github.event.pull_request.head.sha }}
         else
           sha=$(git log -1 --format="%H" main | cat)
