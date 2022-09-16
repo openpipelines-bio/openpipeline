@@ -1,7 +1,7 @@
 {
     "$schema": "http://json-schema.org/draft-07/schema",
     "title": "integration",
-    "description": "Processing multimodal multi-sample RNA transcriptomics data.",
+    "description": "A pipeline for demultiplexing multimodal multi-sample RNA transcriptomics data.",
     "type": "object",
     "definitions": {
       "arguments" : {
