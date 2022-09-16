@@ -2,7 +2,10 @@ functionality:
   name: demux
   namespace: ingestion
   description: |
-    Convert bcl files to fastq files using bcl2fastq, bcl-convert or cellranger mkfastq
+    Convert `.bcl` files to `.fastq` files using bcl2fastq, bcl-convert or Cell Ranger mkfastq.
+  info:
+    name: Demux
+    short_description: A generic pipeline for running bcl2fastq, bcl-convert or Cell Ranger mkfastq.
   authors:
     - name: Toni Verbeiren
       roles: [ author, maintainer ]

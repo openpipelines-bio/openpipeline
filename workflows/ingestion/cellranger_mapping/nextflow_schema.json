@@ -1,7 +1,7 @@
 {
     "$schema": "http://json-schema.org/draft-07/schema",
     "title": "cellranger_mapping",
-    "description": "Cell Ranger mapping pipeline.",
+    "description": "A pipeline for running Cell Ranger mapping.",
     "type": "object",
     "definitions": {
       "arguments" : {
