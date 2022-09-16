@@ -1,7 +1,7 @@
 functionality:
   name: "integration"
   namespace: "multiomics"
-  description: "Processing multimodal multi-sample RNA transcriptomics data."
+  description: "A pipeline for demultiplexing multimodal multi-sample RNA transcriptomics data."
   authors:
     - name: Dries De Maeyer
       email: ddemaeyer@gmail.com

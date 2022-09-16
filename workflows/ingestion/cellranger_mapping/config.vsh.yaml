@@ -1,7 +1,9 @@
 functionality:
   name: "cellranger_mapping"
   namespace: "ingestion"
-  description: "Cell Ranger mapping pipeline."
+  description: "A pipeline for running Cell Ranger mapping."
+  info:
+    name: Cell Ranger mapping
   authors:
     - name: Angela Pisco
       roles: [ author ]
