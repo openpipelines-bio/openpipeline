@@ -36,7 +36,6 @@ jobs:
 
     # create cachehash key
     - name: Create hash key
-      if: "${{ false }}"
       id: cachehash
       run: |
         AWS_EC2_METADATA_DISABLED=true aws s3 ls $s3_bucket --recursive --no-sign-request > bucket-contents.txt
@@ -44,7 +43,6 @@ jobs:
     
     # initialize cache
     - name: Cache resources data
-      if: "${{ false }}"
       uses: actions/cache@v3
       with:
         path: resources_test
@@ -53,7 +51,6 @@ jobs:
 
     # sync if need be
     - name: Sync test resources
-      if: "${{ false }}"
       run: |
         bin/viash run \
           -p native \
@@ -92,9 +89,6 @@ jobs:
       run: |
         bin/init
         bin/viash -h
-
-    - name: print dir
-      run: echo "${{ matrix.component.dir }}"
 
     - name: Get changed files
       id: changed-files
