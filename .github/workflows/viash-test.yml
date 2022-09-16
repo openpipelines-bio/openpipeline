@@ -2,12 +2,7 @@ name: viash test
 
 on:
   push:
-    branches:
-    - main
-
-  pull_request:
-    branches:
-    - main
+    branches: [ '**' ]
 
 jobs:
   cancel:
@@ -98,6 +93,7 @@ jobs:
       with: 
         files: ${{ format('{0}/{1}', matrix.component.dir, '/*') }}
         diff_relative: true
+        base_sha: refs/heads/main
 
     - name: List all changed files
       run: |
