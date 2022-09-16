@@ -107,7 +107,7 @@ jobs:
 
     # use cache
     - name: Cache resources data
-      if: steps.changed-files-specific.outputs.any_changed == 'true'
+      if: steps.changed-files.outputs.any_changed == 'true'
       uses: actions/cache@v3
       timeout-minutes: 5
       with:
@@ -115,7 +115,7 @@ jobs:
         key: ${{ needs.list_components.outputs.cachehash }}
 
     - name: Run test
-      if: steps.changed-files-specific.outputs.any_changed == 'true'
+      if: steps.changed-files.outputs.any_changed == 'true'
       timeout-minutes: 30
       run: |
         bin/viash test -p docker ${{ matrix.component.config }} \
