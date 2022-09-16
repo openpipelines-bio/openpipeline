@@ -1,11 +1,11 @@
 name: viash test
 
 on:
-  pull_request:
-    branches:
-      - main
-  push:
-    branches: [ '**' ]
+  workflow_dispatch:
+push:
+paths-ignore:
+- 'README.md'
+
 
 jobs:
   cancel:
