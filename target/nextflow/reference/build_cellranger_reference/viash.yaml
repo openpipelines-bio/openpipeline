@@ -1985,5 +1985,5 @@ info:
   platform: "nextflow"
   output: "target/nextflow/reference/build_cellranger_reference"
   viash_version: "0.6.0"
-  git_commit: "66c1e1d593d4dc004cc1784044184ea9ea27eced"
+  git_commit: "35220539163f8c9fbf7378e175da9cb9058122aa"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"
