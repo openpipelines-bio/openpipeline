@@ -199,7 +199,7 @@ function ViashHelp {
   echo "        of theta result in more diverse clusters."
   echo ""
   echo "    --obs_covariates"
-  echo "        type: string, multiple values allowed"
+  echo "        type: string, required parameter, multiple values allowed"
   echo "        example: batch:sample"
   echo "        The .obs field(s) that define the covariate(s) to regress out."
 }
@@ -425,9 +425,9 @@ RUN pip install --upgrade pip && \
 
 LABEL org.opencontainers.image.authors="Dries Schaumont <dries.schaumont@its.jnj.com> (maintainer), Robrecht Cannoodt <rcannood@gmail.com> (contributor) {github: rcannood, orcid: 0000-0003-3641-729X}"
 LABEL org.opencontainers.image.description="Companion container for running component integrate harmonypy"
-LABEL org.opencontainers.image.created="2022-09-15T20:25:57Z"
+LABEL org.opencontainers.image.created="2022-09-16T05:31:52Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="6a4a43fce3ea43e9ad7254df671c3a2ac05bc865"
+LABEL org.opencontainers.image.revision="ef5ae6358ab9439bf5665432b6c735364f3a9b59"
 LABEL org.opencontainers.image.version="main_build"
 VIASHDOCKER
 }
@@ -804,6 +804,10 @@ if [ -z ${VIASH_PAR_INPUT+x} ]; then
 fi
 if [ -z ${VIASH_PAR_OUTPUT+x} ]; then
   ViashError '--output' is a required argument. Use "--help" to get more information on the parameters.
+  exit 1
+fi
+if [ -z ${VIASH_PAR_OBS_COVARIATES+x} ]; then
+  ViashError '--obs_covariates' is a required argument. Use "--help" to get more information on the parameters.
   exit 1
 fi
 if [ -z ${VIASH_PAR_MODALITY+x} ]; then

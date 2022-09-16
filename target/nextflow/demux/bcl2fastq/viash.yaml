@@ -2024,5 +2024,5 @@ info:
   platform: "nextflow"
   output: "target/nextflow/demux/bcl2fastq"
   viash_version: "0.6.0"
-  git_commit: "6a4a43fce3ea43e9ad7254df671c3a2ac05bc865"
+  git_commit: "ef5ae6358ab9439bf5665432b6c735364f3a9b59"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"
