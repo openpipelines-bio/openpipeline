@@ -93,7 +93,7 @@ jobs:
         if [[ "${{ github.event_name == 'pull_request' }}" == "true" ]]; then
           sha=${{ github.event.pull_request.head.sha }}
         else
-          sha=$(git log -1 --format="%H" main | cat)
+          sha=$(/usr/bin/git log -1 --format="%H" refs/remotes/origin/main | cat)
         fi
         echo "::set-output name=sha::$sha"
 
