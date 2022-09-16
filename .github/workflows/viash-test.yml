@@ -96,7 +96,8 @@ jobs:
       id: changed-files
       uses: tj-actions/changed-files@v29.0.7
       with: 
-        path: ${{ matrix.component.dir }}
+        files: ${{ format('{0}/{1}', matrix.component.dir, '/*') }}
+        diff_relative: true
 
     - name: List all changed files
       run: |
