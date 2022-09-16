@@ -97,7 +97,6 @@ jobs:
       uses: tj-actions/changed-files@v29.0.7
       with: 
         path: ${{ matrix.component.dir }}
-        since_last_remote_commit: true
 
     - name: List all changed files
       run: |
