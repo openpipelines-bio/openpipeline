@@ -1,6 +1,9 @@
 name: viash test
 
 on:
+  pull_request:
+    branches:
+      - main
   push:
     branches: [ '**' ]
 
@@ -91,7 +94,7 @@ jobs:
         bin/viash -h
 
     - name: print resources
-      run: echo "${{ matrix.component.resources }}"
+      run: echo "matrix.component.resources }}"
 
     - name: Get changed files
       id: changed-files
