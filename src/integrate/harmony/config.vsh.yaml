@@ -1,7 +1,7 @@
 functionality:
   name: harmony
   namespace: "integrate"
-  description: "Performs Harmony integration based as described in https://github.com/immunogenomics/harmony."
+  description: "Performs Harmony integration based as described in https://github.com/immunogenomics/harmony. This is a test for CI"
   authors:
     - name: Dries De Maeyer
       email: ddemaeyer@gmail.com
