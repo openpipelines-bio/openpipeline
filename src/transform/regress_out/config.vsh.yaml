@@ -9,7 +9,7 @@ functionality:
     See https://github.com/theislab/scanpy/issues/526.
   authors:
     - name: Robrecht Cannoodt
-      email: rcannood@gmail.com
+      email: robrecht@data-intuitive.com
       roles: [ maintainer, contributor ]
       props: { github: rcannood, orcid: "0000-0003-3641-729X" }
   arguments:

@@ -22,7 +22,7 @@ functionality:
     short_description: A wrapper for the BD Rhapsody Analysis CWL v1.10.1 pipeline
   authors:
     - name: Robrecht Cannoodt
-      email: rcannood@gmail.com
+      email: robrecht@data-intuitive.com
       roles: [ maintainer ]
       props: { github: rcannood, orcid: "0000-0003-3641-729X" }
   argument_groups:

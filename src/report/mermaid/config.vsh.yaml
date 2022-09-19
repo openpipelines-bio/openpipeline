@@ -6,7 +6,7 @@ functionality:
     Generates a network from mermaid code. See `https://mermaid-js.github.io/mermaid/#/Tutorials`. This component uses the external mermaid.ink service to generate visual networks.
   authors:
     - name: Dries De Maeyer
-      email: DDeMaey1@its.jnj.com
+      email: ddemaeyer@gmail.com
       roles: [ maintainer ]
       props: { account: ddemaey1 }
   arguments:
