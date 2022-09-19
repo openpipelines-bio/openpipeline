@@ -33,7 +33,9 @@ jobs:
       s3_bucket: s3://openpipelines-data/
     runs-on: ubuntu-latest
     if: "(!contains(github.event.head_commit.message, 'ci skip')) && needs.run_ci_check_job.outputs.run_ci == 'true'"
-    
+    outputs:
+      matrix: ${{ steps.set_matrix.outputs.matrix }}
+      cachehash: ${{ steps.cachehash.outputs.cachehash }}
     steps:
     - uses: actions/checkout@v3
 
@@ -83,9 +85,6 @@ jobs:
         done
         json=$(jq -cs '.' <<< "${components[*]}")
         echo "::set-output name=matrix::$json" 
-    outputs:
-      matrix: ${{ steps.set_matrix.outputs.matrix }}
-      cachehash: ${{ steps.cachehash.outputs.cachehash }}
   
     # sync if need be
     - name: Sync test resources
