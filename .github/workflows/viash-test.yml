@@ -45,21 +45,6 @@ jobs:
         tree .
         bin/viash -h
 
-    # create cachehash key
-    - name: Create hash key
-      id: cachehash
-      run: |
-        AWS_EC2_METADATA_DISABLED=true aws s3 ls $s3_bucket --recursive --no-sign-request > bucket-contents.txt
-        echo "::set-output name=cachehash::resources_test__$( md5sum bucket-contents.txt | awk '{ print $1 }' )"
-    
-    # initialize cache
-    - name: Cache resources data
-      uses: actions/cache@v3
-      with:
-        path: resources_test
-        key: ${{ steps.cachehash.outputs.cachehash }}
-        restore-keys: resources_test_
-
     - name: Get changed files
       id: changed-files
       uses: tj-actions/changed-files@v29.0.7
@@ -75,7 +60,7 @@ jobs:
         readarray -t components < <(bin/viash ns list -p docker --format json | jq -c '[ .[] | (.info.config | capture("^(?<dir>.*\/)").dir) as $dir | { "name": .functionality.name, "config": .info.config, "resources": [ .functionality.resources[].path? , .functionality.test_resources[].path? ] | map($dir + .) }][]')
         declare -a result_array_matrix=()
         for component in "${components[@]}"; do
-          readarray -t resources < <(jq -c '.resources[]' <<< "$component")
+          readarray -t resources < <(jq -cr '.resources[]' <<< "$component")
           for resource_rel_path in "${resources[@]}"; do
             resource_project_path=$(realpath --relative-to="$GITHUB_WORKSPACE" "$resource_rel_path")
             if [[ " ${changed_files[*]} " =~ " ${resource_project_path} " ]]; then
@@ -85,7 +70,22 @@ jobs:
           done
         done
         json=$(jq -cs '.' <<< "${components[*]}")
-        echo "::set-output name=matrix::$json" 
+        echo "::set-output name=matrix::$json"
+    
+    # create cachehash key
+    - name: Create hash key
+      id: cachehash
+      run: |
+        AWS_EC2_METADATA_DISABLED=true aws s3 ls $s3_bucket --recursive --no-sign-request > bucket-contents.txt
+        echo "::set-output name=cachehash::resources_test__$( md5sum bucket-contents.txt | awk '{ print $1 }' )"
+    
+    # initialize cache
+    - name: Cache resources data
+      uses: actions/cache@v3
+      with:
+        path: resources_test
+        key: ${{ steps.cachehash.outputs.cachehash }}
+        restore-keys: resources_test_
   
     # sync if need be
     - name: Sync test resources
