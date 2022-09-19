@@ -69,7 +69,7 @@ jobs:
             fi
           done
         done
-        json=$(jq -cs '.' <<< "${components[*]}")
+        json=$(jq -cs '.' <<< "${result_array_matrix[*]}")
         echo "::set-output name=matrix::$json"
     
     # create cachehash key
