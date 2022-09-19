@@ -53,8 +53,7 @@ workflow run_wf {
   /* Combine the different demultiplexer channels */
   all_ch =
     mkfastq_ch
-      | mix( bcl_convert_ch )
-      | mix ( bcl2fastq_ch )
+      | mix( bcl_convert_ch, bcl2fastq_ch )
 
   /* Generate fastqc reports for every sample */
   all_ch
