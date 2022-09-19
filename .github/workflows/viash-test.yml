@@ -1,9 +1,9 @@
 name: viash test
 
 on:
+  pull_request:
   push:
     branches: [ '**' ]
-  pull_request:
 
   run_ci_check_job:
     runs-on: ubuntu-latest
