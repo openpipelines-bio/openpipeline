@@ -10,9 +10,9 @@
 // files.
 // 
 // Component authors:
-//  * Dries Schaumont <dries.schaumont@its.jnj.com> (maintainer)
-//  * Robrecht Cannoodt <rcannood@gmail.com> (contributor) {github: rcannood,
-// orcid: 0000-0003-3641-729X}
+//  * Dries Schaumont <dries@data-intuitive.com> (maintainer)
+//  * Robrecht Cannoodt <robrecht@data-intuitive.com> (contributor) {github:
+// rcannood, orcid: 0000-0003-3641-729X}
 
 nextflow.enable.dsl=2
 
@@ -33,14 +33,14 @@ thisConfig = processConfig([
   "authors" : [
     {
       "name" : "Dries Schaumont",
-      "email" : "dries.schaumont@its.jnj.com",
+      "email" : "dries@data-intuitive.com",
       "roles" : [
         "maintainer"
       ]
     },
     {
       "name" : "Robrecht Cannoodt",
-      "email" : "rcannood@gmail.com",
+      "email" : "robrecht@data-intuitive.com",
       "roles" : [
         "contributor"
       ],

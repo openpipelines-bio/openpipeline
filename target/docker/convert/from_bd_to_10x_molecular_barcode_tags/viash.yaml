@@ -4,7 +4,7 @@ functionality:
   version: "main_build"
   authors:
   - name: "Dries Schaumont"
-    email: "dries.schaumont@data-intuitive.com"
+    email: "dries@data-intuitive.com"
     roles:
     - "maintainer"
     props:
@@ -74,7 +74,7 @@ functionality:
       # files.
       # 
       # Component authors:
-      #  * Dries Schaumont <dries.schaumont@data-intuitive.com> (maintainer) {github:
+      #  * Dries Schaumont <dries@data-intuitive.com> (maintainer) {github:
       # DriesSchaumont, orcid: 0000-0002-4389-0440}
       
       set -e
@@ -468,11 +468,11 @@ functionality:
         DEBIAN_FRONTEND=noninteractive apt-get install -y samtools && \
         rm -rf /var/lib/apt/lists/*
       
-      LABEL org.opencontainers.image.authors="Dries Schaumont <dries.schaumont@data-intuitive.com> (maintainer) {github: DriesSchaumont, orcid: 0000-0002-4389-0440}"
+      LABEL org.opencontainers.image.authors="Dries Schaumont <dries@data-intuitive.com> (maintainer) {github: DriesSchaumont, orcid: 0000-0002-4389-0440}"
       LABEL org.opencontainers.image.description="Companion container for running component convert from_bd_to_10x_molecular_barcode_tags"
-      LABEL org.opencontainers.image.created="2022-09-16T09:22:13Z"
+      LABEL org.opencontainers.image.created="2022-09-19T12:33:23Z"
       LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-      LABEL org.opencontainers.image.revision="35220539163f8c9fbf7378e175da9cb9058122aa"
+      LABEL org.opencontainers.image.revision="7e5756ad556c73443565d5db07bd722eca534e76"
       LABEL org.opencontainers.image.version="main_build"
       VIASHDOCKER
       }
@@ -1020,5 +1020,5 @@ info:
   output: "target/docker/convert/from_bd_to_10x_molecular_barcode_tags"
   executable: "target/docker/convert/from_bd_to_10x_molecular_barcode_tags/from_bd_to_10x_molecular_barcode_tags"
   viash_version: "0.6.0"
-  git_commit: "35220539163f8c9fbf7378e175da9cb9058122aa"
+  git_commit: "7e5756ad556c73443565d5db07bd722eca534e76"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"

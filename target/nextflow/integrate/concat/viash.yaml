@@ -4,7 +4,7 @@ functionality:
   version: "main_build"
   authors:
   - name: "Dries Schaumont"
-    email: "Dschaumo@its.jnj.com"
+    email: "dries@data-intuitive.com"
     roles:
     - "maintainer"
     props: {}
@@ -113,7 +113,7 @@ functionality:
       // files.
       // 
       // Component authors:
-      //  * Dries Schaumont <Dschaumo@its.jnj.com> (maintainer)
+      //  * Dries Schaumont <dries@data-intuitive.com> (maintainer)
       
       nextflow.enable.dsl=2
       
@@ -134,7 +134,7 @@ functionality:
         "authors" : [
           {
             "name" : "Dries Schaumont",
-            "email" : "Dschaumo@its.jnj.com",
+            "email" : "dries@data-intuitive.com",
             "roles" : [
               "maintainer"
             ]
@@ -2261,7 +2261,7 @@ functionality:
         nextflowVersion = '!>=20.12.1-edge'
         version = 'main_build'
         description = 'Concatenates several uni-modal samples in .h5mu files into a single file.\n'
-        author = 'Dries Schaumont <Dschaumo@its.jnj.com> (maintainer)'
+        author = 'Dries Schaumont <dries@data-intuitive.com> (maintainer)'
       }
       
       process.container = 'nextflow/bash:latest'
@@ -2373,5 +2373,5 @@ info:
   platform: "nextflow"
   output: "target/nextflow/integrate/concat"
   viash_version: "0.6.0"
-  git_commit: "35220539163f8c9fbf7378e175da9cb9058122aa"
+  git_commit: "7e5756ad556c73443565d5db07bd722eca534e76"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"

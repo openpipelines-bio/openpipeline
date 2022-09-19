@@ -4,7 +4,7 @@ functionality:
   version: "main_build"
   authors:
   - name: "Dries Schaumont"
-    email: "dries.schaumont@data-intuitive.com"
+    email: "dries@data-intuitive.com"
     roles:
     - "maintainer"
     props:
@@ -181,7 +181,7 @@ functionality:
       # files.
       # 
       # Component authors:
-      #  * Dries Schaumont <dries.schaumont@data-intuitive.com> (maintainer) {github:
+      #  * Dries Schaumont <dries@data-intuitive.com> (maintainer) {github:
       # DriesSchaumont, orcid: 0000-0002-4389-0440}
       
       set -e
@@ -898,5 +898,5 @@ info:
   output: "target/native/velocity/scvelo"
   executable: "target/native/velocity/scvelo/scvelo"
   viash_version: "0.6.0"
-  git_commit: "35220539163f8c9fbf7378e175da9cb9058122aa"
+  git_commit: "7e5756ad556c73443565d5db07bd722eca534e76"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"

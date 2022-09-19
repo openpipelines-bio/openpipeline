@@ -10,8 +10,8 @@
 // files.
 // 
 // Component authors:
-//  * Dries De Maeyer <DDeMaey1@its.jnj.com> (author) {account: ddemaey1}
-//  * Dries Schaumont <Dschaumo@its.jnj.com> (maintainer)
+//  * Dries De Maeyer <ddemaeyer@gmail.com> (author) {account: ddemaey1}
+//  * Dries Schaumont <dries@data-intuitive.com> (maintainer)
 
 nextflow.enable.dsl=2
 
@@ -32,7 +32,7 @@ thisConfig = processConfig([
   "authors" : [
     {
       "name" : "Dries De Maeyer",
-      "email" : "DDeMaey1@its.jnj.com",
+      "email" : "ddemaeyer@gmail.com",
       "roles" : [
         "author"
       ],
@@ -42,7 +42,7 @@ thisConfig = processConfig([
     },
     {
       "name" : "Dries Schaumont",
-      "email" : "Dschaumo@its.jnj.com",
+      "email" : "dries@data-intuitive.com",
       "roles" : [
         "maintainer"
       ]

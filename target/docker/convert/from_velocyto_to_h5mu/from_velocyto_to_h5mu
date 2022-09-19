@@ -12,7 +12,7 @@
 # files.
 # 
 # Component authors:
-#  * Dries Schaumont <dries.schaumont@data-intuitive.com> (maintainer) {github:
+#  * Dries Schaumont <dries@data-intuitive.com> (maintainer) {github:
 # DriesSchaumont, orcid: 0000-0002-4389-0440}
 
 set -e
@@ -396,11 +396,11 @@ FROM python:3.8-slim
 RUN pip install --upgrade pip && \
   pip install --upgrade --no-cache-dir "muon" "anndata<0.8" "scanpy"
 
-LABEL org.opencontainers.image.authors="Dries Schaumont <dries.schaumont@data-intuitive.com> (maintainer) {github: DriesSchaumont, orcid: 0000-0002-4389-0440}"
+LABEL org.opencontainers.image.authors="Dries Schaumont <dries@data-intuitive.com> (maintainer) {github: DriesSchaumont, orcid: 0000-0002-4389-0440}"
 LABEL org.opencontainers.image.description="Companion container for running component convert from_velocyto_to_h5mu"
-LABEL org.opencontainers.image.created="2022-09-16T09:22:12Z"
+LABEL org.opencontainers.image.created="2022-09-19T12:33:23Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="35220539163f8c9fbf7378e175da9cb9058122aa"
+LABEL org.opencontainers.image.revision="7e5756ad556c73443565d5db07bd722eca534e76"
 LABEL org.opencontainers.image.version="main_build"
 VIASHDOCKER
 }

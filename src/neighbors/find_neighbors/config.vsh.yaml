@@ -12,7 +12,7 @@ functionality:
       roles: [ maintainer ]
       props: { account: ddemaey1 }
     - name: Robrecht Cannoodt
-      email: rcannood@gmail.com
+      email: robrecht@data-intuitive.com
       roles: [ contributor ]
       props: { github: rcannood, orcid: "0000-0003-3641-729X" }
   arguments:

@@ -15,7 +15,7 @@ functionality:
     props:
       github: "srdsam"
   - name: "Robrecht Cannoodt"
-    email: "rcannood@gmail.com"
+    email: "robrecht@data-intuitive.com"
     roles:
     - "author"
     - "maintainer"
@@ -121,7 +121,7 @@ functionality:
       // Component authors:
       //  * Angela Pisco (author) {github: aopisco, orcid: 0000-0003-0142-2355}
       //  * Samuel D'Souza (author) {github: srdsam}
-      //  * Robrecht Cannoodt <rcannood@gmail.com> (author, maintainer) {github:
+      //  * Robrecht Cannoodt <robrecht@data-intuitive.com> (author, maintainer) {github:
       // rcannood, orcid: 0000-0003-3641-729X}
       
       nextflow.enable.dsl=2
@@ -162,7 +162,7 @@ functionality:
           },
           {
             "name" : "Robrecht Cannoodt",
-            "email" : "rcannood@gmail.com",
+            "email" : "robrecht@data-intuitive.com",
             "roles" : [
               "author",
               "maintainer"
@@ -1980,7 +1980,7 @@ functionality:
         nextflowVersion = '!>=20.12.1-edge'
         version = 'main_build'
         description = 'Split 10x Cell Ranger output directory into separate output fields.'
-        author = 'Angela Pisco (author) {github: aopisco, orcid: 0000-0003-0142-2355}, Samuel D\'Souza (author) {github: srdsam}, Robrecht Cannoodt <rcannood@gmail.com> (author, maintainer) {github: rcannood, orcid: 0000-0003-3641-729X}'
+        author = 'Angela Pisco (author) {github: aopisco, orcid: 0000-0003-0142-2355}, Samuel D\'Souza (author) {github: srdsam}, Robrecht Cannoodt <robrecht@data-intuitive.com> (author, maintainer) {github: rcannood, orcid: 0000-0003-3641-729X}'
       }
       
       process.container = 'nextflow/bash:latest'
@@ -2083,5 +2083,5 @@ info:
   platform: "nextflow"
   output: "target/nextflow/mapping/cellranger_count_split"
   viash_version: "0.6.0"
-  git_commit: "35220539163f8c9fbf7378e175da9cb9058122aa"
+  git_commit: "7e5756ad556c73443565d5db07bd722eca534e76"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"

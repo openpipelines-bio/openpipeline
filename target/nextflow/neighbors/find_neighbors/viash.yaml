@@ -10,7 +10,7 @@ functionality:
     props:
       account: "ddemaey1"
   - name: "Robrecht Cannoodt"
-    email: "rcannood@gmail.com"
+    email: "robrecht@data-intuitive.com"
     roles:
     - "contributor"
     props:
@@ -188,8 +188,8 @@ functionality:
       // 
       // Component authors:
       //  * Dries De Maeyer <ddemaeyer@gmail.com> (maintainer) {account: ddemaey1}
-      //  * Robrecht Cannoodt <rcannood@gmail.com> (contributor) {github: rcannood,
-      // orcid: 0000-0003-3641-729X}
+      //  * Robrecht Cannoodt <robrecht@data-intuitive.com> (contributor) {github:
+      // rcannood, orcid: 0000-0003-3641-729X}
       
       nextflow.enable.dsl=2
       
@@ -220,7 +220,7 @@ functionality:
           },
           {
             "name" : "Robrecht Cannoodt",
-            "email" : "rcannood@gmail.com",
+            "email" : "robrecht@data-intuitive.com",
             "roles" : [
               "contributor"
             ],
@@ -2130,7 +2130,7 @@ functionality:
         nextflowVersion = '!>=20.12.1-edge'
         version = 'main_build'
         description = 'Compute a neighborhood graph of observations [McInnes18].\n\nThe neighbor search efficiency of this heavily relies on UMAP [McInnes18], which also provides a method for estimating connectivities of data points - the connectivity of the manifold (method==\'umap\'). If method==\'gauss\', connectivities are computed according to [Coifman05], in the adaption of [Haghverdi16].\n'
-        author = 'Dries De Maeyer <ddemaeyer@gmail.com> (maintainer) {account: ddemaey1}, Robrecht Cannoodt <rcannood@gmail.com> (contributor) {github: rcannood, orcid: 0000-0003-3641-729X}'
+        author = 'Dries De Maeyer <ddemaeyer@gmail.com> (maintainer) {account: ddemaey1}, Robrecht Cannoodt <robrecht@data-intuitive.com> (contributor) {github: rcannood, orcid: 0000-0003-3641-729X}'
       }
       
       process.container = 'nextflow/bash:latest'
@@ -2242,5 +2242,5 @@ info:
   platform: "nextflow"
   output: "target/nextflow/neighbors/find_neighbors"
   viash_version: "0.6.0"
-  git_commit: "35220539163f8c9fbf7378e175da9cb9058122aa"
+  git_commit: "7e5756ad556c73443565d5db07bd722eca534e76"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"
