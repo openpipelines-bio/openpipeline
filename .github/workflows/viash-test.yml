@@ -77,7 +77,7 @@ jobs:
         for component in "${components[@]}"; do
           readarray -t resources < <(jq -c '.resources[]' <<< "$component")
           for resource_rel_path in "${resources[@]}"; do
-            resource_project_path=$(realpath --relative-to="." "$resource_rel_path")
+            resource_project_path=$(realpath --relative-to="$GITHUB_WORKSPACE" "$resource_rel_path")
             if [[ " ${changed_files[*]} " =~ " ${resource_project_path} " ]]; then
               result_array_matrix+="$component"
               break
