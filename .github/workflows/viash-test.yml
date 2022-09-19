@@ -17,9 +17,9 @@ jobs:
           pull_request=$(gh pr list -R openpipelines-bio/openpipeline -H ${{ github.ref_name }} --json url --state open --limit 1 | jq '.[0].url')
           # If the branch has a PR and this run was triggered by a push event, do not run
           if [[ "$pull_request" != "null" && "${{ github.event_name == 'push' }}" == "true" ]]; then
-            echo "::set-output name=check::false }}"
+            echo "::set-output name=check::false"
           else
-            echo "::set-output name=check::true }}"
+            echo "::set-output name=check::true"
           fi
         env:
           GITHUB_TOKEN: ${{ secrets.GTHB_PAT }}
@@ -31,7 +31,7 @@ jobs:
     env:
       s3_bucket: s3://openpipelines-data/
     runs-on: ubuntu-latest
-    if: "!contains(github.event.head_commit.message, 'ci skip') && ${{ needs.run_ci_check_job.outputs.run_ci }} == 'false'"
+    if: "!contains(github.event.head_commit.message, 'ci skip') && ${{ needs.run_ci_check_job.outputs.run_ci }}"
     
     steps:
     - uses: actions/checkout@v2
