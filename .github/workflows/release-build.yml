@@ -15,7 +15,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
 
     - name: Fetch viash
       run: |
@@ -107,7 +107,7 @@ jobs:
         component: ${{ fromJson(needs.list_components.outputs.component_matrix) }}
 
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
 
     - name: Fetch viash
       run: |
@@ -145,7 +145,7 @@ jobs:
         component: ${{ fromJson(needs.list_components.outputs.workflow_matrix) }}
 
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
 
     - name: Fetch viash
       run: |
@@ -195,7 +195,7 @@ jobs:
         component: ${{ fromJson(needs.list_components.outputs.component_matrix) }}
 
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
 
     - name: Fetch viash
       run: |
