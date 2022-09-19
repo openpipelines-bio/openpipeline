@@ -5,6 +5,7 @@ on:
   push:
     branches: [ '**' ]
 
+jobs:
   run_ci_check_job:
     runs-on: ubuntu-latest
     outputs:
