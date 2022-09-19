@@ -7,6 +7,7 @@ on:
 
 jobs:
   run_ci_check_job:
+    if: "!contains(github.event.head_commit.message, 'ci skip')"
     runs-on: ubuntu-latest
     outputs:
       run_ci: ${{ steps.github_cli.outputs.check }}
@@ -80,7 +81,6 @@ jobs:
     needs: list_components
 
     runs-on: ubuntu-latest
-    if: "!contains(github.event.head_commit.message, 'ci skip')"
 
     strategy:
       fail-fast: false
