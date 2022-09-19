@@ -96,11 +96,6 @@ jobs:
       with:
         fetch-depth: 0 
 
-    - name: Fetch viash
-      run: |
-        bin/init
-        bin/viash -h
-
     - name: Get base sha for generating changed files
       id: get_sha
       run: |
@@ -124,6 +119,12 @@ jobs:
         for file in ${{ steps.changed-files.outputs.all_changed_files }}; do
           echo "$file was changed"
         done
+
+    - name: Fetch viash
+      if: steps.changed-files.outputs.any_changed == 'true'
+      run: |
+        bin/init
+        bin/viash -h
 
     # use cache
     - name: Cache resources data
