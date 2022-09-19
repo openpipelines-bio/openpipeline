@@ -9,7 +9,7 @@ jobs:
   run_ci_check_job:
     runs-on: ubuntu-latest
     outputs:
-      run_ci: steps.github_cli.outputs.check
+      run_ci: ${{ steps.github_cli.outputs.check }}
     steps:
       - name: 'Check if branch has an existing pull request and the trigger was a push'
         id: github_cli
