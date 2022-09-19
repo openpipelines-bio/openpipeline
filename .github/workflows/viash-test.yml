@@ -27,10 +27,11 @@ jobs:
 
   # phase 1
   list_components:
+    needs: run_ci_check_job
     env:
       s3_bucket: s3://openpipelines-data/
     runs-on: ubuntu-latest
-    if: "!contains(github.event.head_commit.message, 'ci skip') && ${{ jobs.run_ci_check_job.outputs.run_ci }}"
+    if: "!contains(github.event.head_commit.message, 'ci skip') && ${{ needs.run_ci_check_job.outputs.run_ci }}"
 
     steps:
     - uses: actions/checkout@v2
