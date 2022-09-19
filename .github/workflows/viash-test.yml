@@ -3,25 +3,33 @@ name: viash test
 on:
   push:
     branches: [ '**' ]
+  pull_request:
 
-jobs:
-  cancel:
-      name: 'Cancel Previous Runs'
-      runs-on: ubuntu-latest
-      timeout-minutes: 3
-      if: github.ref != 'refs/heads/main'
-      steps:
-        - uses: styfle/cancel-workflow-action@0.10.0
-          with:
-            all_but_latest: true
-            access_token: ${{ github.token }}
+  run_ci_check_job:
+    runs-on: ubuntu-latest
+    outputs:
+      run_ci: ${{ steps.github_cli.outputs.check }}
+    steps:
+      - name: 'Check if branch has an existing pull request and the trigger was a push'
+        id: github_cli
+        run: |
+          pull_request=$(gh pr list -R openpipelines-bio/openpipeline -H ${{ github.ref_name }} --json url --state open --limit 1 | jq '.[0].url')
+          # If the branch has a PR and this run was triggered by a push event, do not run
+          if [[ "$pull_request" != "null" && "${{ github.event_name == 'push' }}" == "true" ]]; then
+            echo "::set-output name=check::${{ toJSON(false) }}"
+          else
+            echo "::set-output name=check::${{ toJSON(true) }}"
+          fi
+        env:
+          GITHUB_TOKEN: ${{ secrets.GTHB_PAT }}
+
 
   # phase 1
   list_components:
     env:
       s3_bucket: s3://openpipelines-data/
     runs-on: ubuntu-latest
-    if: "!contains(github.event.head_commit.message, 'ci skip')"
+    if: "!contains(github.event.head_commit.message, 'ci skip') && ${{ jobs.run_ci_check_job.outputs.run_ci }}"
 
     steps:
     - uses: actions/checkout@v2
