@@ -100,7 +100,7 @@ jobs:
   # phase 2
   viash_test:
     needs: list_components
-
+    if: ${{ needs.list_components.outputs.matrix != '[]' && needs.list_components.outputs.matrix != '' }}
     runs-on: ubuntu-latest
 
     strategy:
