@@ -36,10 +36,6 @@ jobs:
     steps:
     - uses: actions/checkout@v2
 
-    - name: debug
-      run: |
-        echo "${{ needs.run_ci_check_job.outputs.run_ci }}"
-
     - name: Fetch viash
       run: |
         bin/init
