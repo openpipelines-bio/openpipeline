@@ -8,6 +8,7 @@ on:
 jobs:
   run_ci_check_job:
     runs-on: ubuntu-latest
+    if: "!contains(github.event.head_commit.message, 'ci skip')"
     outputs:
       run_ci: ${{ steps.github_cli.outputs.check }}
     steps:
@@ -31,7 +32,7 @@ jobs:
     env:
       s3_bucket: s3://openpipelines-data/
     runs-on: ubuntu-latest
-    if: "(!contains(github.event.head_commit.message, 'ci skip')) && needs.run_ci_check_job.outputs.run_ci"
+    if: "contains(needs.run_ci_check_job.outputs.run_ci, 'true')"
     
     steps:
     - uses: actions/checkout@v2
