@@ -83,9 +83,9 @@ jobs:
         done
         json=$(jq -cs '.' <<< "${components[*]}")
         echo "::set-output name=matrix::$json" 
-      outputs:
-        matrix: ${{ steps.set_matrix.outputs.matrix }}
-        cachehash: ${{ steps.cachehash.outputs.cachehash }}
+    outputs:
+      matrix: ${{ steps.set_matrix.outputs.matrix }}
+      cachehash: ${{ steps.cachehash.outputs.cachehash }}
   
     # sync if need be
     - name: Sync test resources
