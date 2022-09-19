@@ -92,23 +92,12 @@ jobs:
       with:
         fetch-depth: 0 
 
-    - name: Get base sha for generating changed files
-      id: get_sha
-      run: |
-        if [[ "${{ github.event_name == 'pull_request' }}" == "true" ]]; then
-          sha=${{ github.event.pull_request.head.sha }}
-        else
-          sha=$(/usr/bin/git log -1 --format="%H" refs/remotes/origin/main | cat)
-        fi
-        echo "::set-output name=sha::$sha"
-
     - name: Get changed files
       id: changed-files
       uses: tj-actions/changed-files@v29.0.7
       with: 
         files: ${{ format('{0}/{1}', matrix.component.dir, '/*') }}
         diff_relative: true
-        base_sha: ${{ steps.get_sha.outputs.sha }}
 
     - name: List all changed files
       run: |
