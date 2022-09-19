@@ -42,6 +42,7 @@ jobs:
     - name: Fetch viash
       run: |
         bin/init
+        tree .
         bin/viash -h
 
     # create cachehash key
