@@ -12,10 +12,9 @@ meta = {
 }
 ## VIASH END
 
-resources_dir, functionality_name = meta["resources_dir"], meta["functionality_name"]
 input = meta["resources_dir"] + "pbmc_1k_protein_v3/pbmc_1k_protein_v3_mms.h5mu"
 
-class TestPCA(TestCase):
+class TestUMAP(TestCase):
     def _run_and_check_output(self, args_as_list, expected_raise=False):
         try:
             subprocess.check_output([meta['executable']] + args_as_list, stderr=subprocess.STDOUT)
@@ -24,7 +23,7 @@ class TestPCA(TestCase):
                 print(e.stdout.decode("utf-8"))
             raise e
 
-    def test_pca(self):
+    def test_umap(self):
         self._run_and_check_output([
                 "--input", input,
                 "--output",  "output.h5mu",
@@ -34,28 +33,11 @@ class TestPCA(TestCase):
         self.assertTrue(Path("output.h5mu").is_file(), msg="No output was created.")
         data = mu.read_h5mu("output.h5mu")
 
-        # check whether pca was found
+        # check whether umap was found
         self.assertIn("X_foo", data.mod["rna"].obsm, msg="Check whether output was found in .obsm")
         self.assertTupleEqual(data.mod["rna"].obsm["X_foo"].shape, (data.n_obs, 26), msg="Check shapes")
 
-    def test_selecting_input_layer(self):
-        input_data = read_h5mu(input)
-        input_data.mod['rna'].layers['test'] = input_data.mod['rna'].X
-        with NamedTemporaryFile(suffix=".h5mu") as tempfile:
-            input_data.write_h5mu(tempfile.name)
-            self._run_and_check_output([
-                    "--input", tempfile.name,
-                    "--output",  "output.h5mu",
-                    "--obsm_output", "test_foo",
-                    "--num_components", "26",
-                    "--layer", "test"
-                ])
-            self.assertTrue(Path("output.h5mu").is_file(), msg="No output was created.")
-            data = mu.read_h5mu("output.h5mu")
-            self.assertIn("test_foo", data.mod["rna"].obsm, msg="Check whether output was found in .obsm")
-            self.assertTupleEqual(data.mod["rna"].obsm["test_foo"].shape, (data.n_obs, 26), msg="Check shapes")
-
-    def test_raise_if_input_layer_is_missing(self):
+    def test_raise_if_uns_neighbor_is_missing(self):
         with self.assertRaises(subprocess.CalledProcessError) as err:
             self._run_and_check_output([
                     "--input", input,
