@@ -19,7 +19,6 @@
 
 * `workflows/multiomics/integration`: Added arguments for tuning the various output slots of the integration pipeline, namely `--obsm_pca`, `--obsm_integrated`, `--uns_neighbors`, `--obsp_neighbor_distances`, `--obsp_neighbor_connectivities`, `--obs_cluster`, `--obsm_umap`.
 
-
 # openpipeline 0.5.0
 
 Major redesign of the integration and multiomic workflows. Current list of workflows:
