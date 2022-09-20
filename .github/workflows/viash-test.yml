@@ -78,8 +78,8 @@ jobs:
         diff_relative: true
 
     # store component locations
-    # json=$(bin/viash ns list -p docker --format json | jq -c '[ .[] | { "name": .functionality.name, "config": .info.config} * (.info.config | capture("^(?<dir>.*\/)")) ]')
-    - id: set_matrix
+    - name: Set matrix to only run tests for components that had their config or resources changed.
+      id: set_matrix
       run: |
         IFS=$';' read -a changed_files <<< "${{ steps.changed-files.outputs.all_changed_files }}"
         echo "Changed files: "${changed_files[*]}""
