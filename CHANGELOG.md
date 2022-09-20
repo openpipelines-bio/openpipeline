@@ -1,5 +1,18 @@
 # openpipeline 0.5.1
 
+## MAJOR CHANGES
+
+* `workflows/utils/DataFlowHelper.nf`: Added helper functions `splitParams()` and `combineParams()` to split the data field of a channel event into a hashmap. Example usage:
+  ```groovy
+  | splitParams(
+    pca: [ "input": "input", "obsm_output": "obsm_pca" ]
+    integration: [ "obs_covariates": "obs_covariates", "obsm_input": "obsm_pca" ]
+  )
+  | combineParams("pca")
+  | pca
+  | combineParams("integration")
+  | integration
+  ```
 ## MINOR CHANGES
 
 * `dimred/umap`: Streamline UMAP parameters by adding `--obsm_output` parameter to allow choosing the output `.obsm` slot.
