@@ -9,10 +9,15 @@ meta_executable="bin/viash run src/reference/make_reference/config.vsh.yaml --"
 echo "> Running $meta_functionality_name."
 fasta="myreference.fa.gz"
 gtf="myreference.gtf.gz"
+
+wget https://ftp.ebi.ac.uk/pub/databases/gencode/Gencode_human/release_41/GRCh38.primary_assembly.genome.fa.gz
+wget https://ftp.ebi.ac.uk/pub/databases/gencode/Gencode_human/release_41/gencode.v41.annotation.gtf.gz
+wget https://assets.thermofisher.com/TFS-Assets/LSG/manuals/ERCC92.zip
+
 $meta_executable \
-  --genome_fasta "https://ftp.ebi.ac.uk/pub/databases/gencode/Gencode_human/release_41/GRCh38.primary_assembly.genome.fa.gz" \
-  --transcriptome_gtf "https://ftp.ebi.ac.uk/pub/databases/gencode/Gencode_human/release_41/gencode.v41.annotation.gtf.gz" \
-  --ercc "https://assets.thermofisher.com/TFS-Assets/LSG/manuals/ERCC92.zip" \
+  --genome_fasta "GRCh38.primary_assembly.genome.fa.gz" \
+  --transcriptome_gtf "gencode.v41.annotation.gtf.gz" \
+  --ercc "ERCC92.zip" \
   --subset_regex "(ERCC-00002|chr1)" \
   --output_fasta $fasta \
   --output_gtf $gtf

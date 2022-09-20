@@ -1,5 +1,9 @@
 # openpipeline 0.5.1
 
+## BREAKING CHANGES
+
+* `reference/make_reference`: Input files changed from `type: string` to `type: file` to allow Nextflow to cache the input files fetched from URL.
+
 ## MAJOR CHANGES
 
 * `workflows/utils/DataFlowHelper.nf`: Added helper functions `setWorkflowArguments()` and `getWorkflowArguments()` to split the data field of a channel event into a hashmap. Example usage:
