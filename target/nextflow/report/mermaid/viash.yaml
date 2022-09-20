@@ -1946,5 +1946,5 @@ info:
   platform: "nextflow"
   output: "target/nextflow/report/mermaid"
   viash_version: "0.6.0"
-  git_commit: "5f9c4620a6cade3db51fe96fadba3887c33fc642"
+  git_commit: "2ac155632a1fb0367fa83a8e481f22db92fdb28b"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"

@@ -8,7 +8,7 @@ include { build_bdrhap_reference } from targetDir + "/reference/build_bdrhap_ref
 include { build_cellranger_reference } from targetDir + "/reference/build_cellranger_reference/main.nf"
 
 include { readConfig; viashChannel; helpMessage } from workflowDir + "/utils/WorkflowHelper.nf"
-include { splitParams; combineParams } from workflowDir + "/utils/DataFlowHelper.nf"
+include { setWorkflowArguments; getWorkflowArguments } from workflowDir + "/utils/DataFlowHelper.nf"
 
 config = readConfig("$projectDir/config.vsh.yaml")
 
@@ -27,7 +27,7 @@ workflow run_wf {
   
   ref_ch = input_ch
     // split params for downstream components
-    | splitParams(
+    | setWorkflowArguments(
       make_reference: [
         "genome_fasta": "genome_fasta", 
         "transcriptome_gtf": "transcriptome_gtf",
@@ -47,13 +47,13 @@ workflow run_wf {
     )
 
     // generate reference
-    | combineParams("make_reference")
+    | getWorkflowArguments("make_reference")
     | make_reference.run(auto: [ publish: true ])
 
 
   // generate cellranger index (if so desired)
   cellranger_ch = ref_ch
-    | combineParams("cellranger")
+    | getWorkflowArguments("cellranger")
     | filter{ "cellranger" in it[1].target }
     | build_cellranger_reference.run(
       renameKeys: [ genome_fasta: "output_fasta", transcriptome_gtf: "output_gtf" ], 
@@ -63,7 +63,7 @@ workflow run_wf {
 
   // generate bd_rhapsody index (if so desired)
   bd_rhapsody = ref_ch
-    | combineParams("bd_rhapsody")
+    | getWorkflowArguments("bd_rhapsody")
     | filter{ "bd_rhapsody" in it[1].target }
     | build_bdrhap_reference.run(
       renameKeys: [ genome_fasta: "output_fasta", transcriptome_gtf: "output_gtf" ], 
