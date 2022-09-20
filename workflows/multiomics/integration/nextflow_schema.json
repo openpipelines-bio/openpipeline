@@ -4,8 +4,8 @@
     "description": "A pipeline for demultiplexing multimodal multi-sample RNA transcriptomics data.",
     "type": "object",
     "definitions": {
-      "arguments" : {
-        "title": "Arguments",
+      "inputs" : {
+        "title": "Inputs",
         "type": "object",
         "description": "No description",
         "default": "",
@@ -24,13 +24,6 @@
             
             "default": ""
           },
-          "output": {
-            "type":"string",
-            "description": "Destination path to the output.",
-            
-            
-            "default": "$id.$key.output.h5mu"
-          },
           "layer": {
             "type":"string",
             "description": "use specified layer for expression values instead of the .X object from the modality.",
@@ -44,6 +37,70 @@
             
             
             "default": ""
+          }
+        }
+      },
+      "outputs" : {
+        "title": "Outputs",
+        "type": "object",
+        "description": "No description",
+        "default": "",
+        "properties": {
+          "output": {
+            "type":"string",
+            "description": "Destination path to the output.",
+            
+            
+            "default": "$id.$key.output.h5mu"
+          },
+          "obsm_pca": {
+            "type":"string",
+            "description": "In which .obsm slot to store the resulting PCA embedding.",
+            
+            
+            "default": "X_pca"
+          },
+          "obsm_integrated": {
+            "type":"string",
+            "description": "In which .obsm slot to store the resulting integrated embedding.",
+            
+            
+            "default": "X_pca_integrated"
+          },
+          "uns_neighbors": {
+            "type":"string",
+            "description": "In which .uns slot to store various neighbor output objects.",
+            
+            
+            "default": "neighbors"
+          },
+          "obsp_neighbor_distances": {
+            "type":"string",
+            "description": "In which .obsp slot to store the distance matrix between the resulting neighbors.",
+            
+            
+            "default": "distances"
+          },
+          "obsp_neighbor_connectivities": {
+            "type":"string",
+            "description": "In which .obsp slot to store the connectivities matrix between the resulting neighbors.",
+            
+            
+            "default": "connectivities"
+          },
+          "obs_cluster": {
+            "type":"string",
+            "description": "Name of the .obs key under which to add the cluster labels.",
+            
+            
+            "default": "leiden"
+          },
+          "obsm_umap": {
+            "type":"string",
+            "description": "In which .obsm slot to store the resulting UMAP embedding.",
+            
+            
+            "default": "X_umap"
           }
         }
       },
@@ -79,7 +136,10 @@
     },
     "allOf": [
       {
-        "$ref": "#/definitions/arguments"
+        "$ref": "#/definitions/inputs"
+      },
+      {
+        "$ref": "#/definitions/outputs"
       },
       {
         "$ref": "#/definitions/nextflow input-output arguments"

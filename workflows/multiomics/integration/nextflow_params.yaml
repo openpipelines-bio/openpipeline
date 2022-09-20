@@ -1,9 +1,18 @@
-# Arguments
+# Inputs
 id: # please fill in - example: "foo"
 input: # please fill in - example: "dataset.h5mu"
-# output: "$id.$key.output.h5mu"
 layer: "log_normalized"
 obs_covariates: # please fill in - example: ["batch", "sample"]
+
+# Outputs
+# output: "$id.$key.output.h5mu"
+obsm_pca: "X_pca"
+obsm_integrated: "X_pca_integrated"
+uns_neighbors: "neighbors"
+obsp_neighbor_distances: "distances"
+obsp_neighbor_connectivities: "connectivities"
+obs_cluster: "leiden"
+obsm_umap: "X_umap"
 
 # Nextflow input-output arguments
 publish_dir: # please fill in - example: "output/"

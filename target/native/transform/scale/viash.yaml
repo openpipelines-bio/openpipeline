@@ -593,5 +593,5 @@ info:
   output: "target/native/transform/scale"
   executable: "target/native/transform/scale/scale"
   viash_version: "0.6.0"
-  git_commit: "3ee03b335db72d5212f76099ea1fb7d194702b87"
+  git_commit: "aafe7b28fa6b3a81cd08540ba6ef21e40e05d336"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"
