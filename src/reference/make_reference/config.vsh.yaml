@@ -1,7 +1,13 @@
 functionality:
   name: make_reference
   namespace: reference
-  description: Make a reference build.
+  description: |
+    Preprocess and build a transcriptome reference.
+
+    Example input files are:
+      - `genome_fasta`: https://ftp.ebi.ac.uk/pub/databases/gencode/Gencode_human/release_41/GRCh38.primary_assembly.genome.fa.gz
+      - `transcriptome_gtf`: https://ftp.ebi.ac.uk/pub/databases/gencode/Gencode_human/release_41/gencode.v41.annotation.gtf.gz
+      - `ercc`: https://assets.thermofisher.com/TFS-Assets/LSG/manuals/ERCC92.zip
   authors:
     - name: Angela Pisco
       roles: [ author ]
@@ -12,20 +18,20 @@ functionality:
       props: { github: rcannood, orcid: "0000-0003-3641-729X" }
   arguments:
     # inputs
-    - type: string
+    - type: file
       name: --genome_fasta
       required: true
-      description: Reference genome fasta.
-      example: https://ftp.ebi.ac.uk/pub/databases/gencode/Gencode_human/release_41/GRCh38.primary_assembly.genome.fa.gz
-    - type: string
+      description: "Reference genome fasta. Example: "
+      example: genome_fasta.fa.gz
+    - type: file
       name: --transcriptome_gtf
       required: true
       description: Reference transcriptome annotation.
-      example: https://ftp.ebi.ac.uk/pub/databases/gencode/Gencode_human/release_41/gencode.v41.annotation.gtf.gz
-    - type: string
+      example: transcriptome.gtf.gz
+    - type: file
       name: --ercc
       description: ERCC sequence and annotation file.
-      example: https://assets.thermofisher.com/TFS-Assets/LSG/manuals/ERCC92.zip
+      example: ercc.zip
     - type: string
       name: --subset_regex
       description: Will subset the reference chromosomes using the given regex.
@@ -41,7 +47,7 @@ functionality:
       direction: output
       required: true
       description: Output transcriptome annotation gtf.
-      example: transcriptome_annotation.tar.gz
+      example: transcriptome_annotation.gtf.gz
   resources:
     - type: bash_script
       path: script.sh

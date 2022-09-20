@@ -12,8 +12,8 @@ export NXF_VER=21.10.6
 
 bin/nextflow \
   run . \
-  -main-script workflows/ingestion/demux/main.nf \
-  -entry test_wf \
-  -resume \
+  -main-script workflows/ingestion/make_reference/main.nf \
+  -entry test_wf
   -profile docker,no_publish \
+  -resume \
   -with-trace work/trace.txt
