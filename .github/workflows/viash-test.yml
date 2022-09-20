@@ -70,6 +70,13 @@ jobs:
           --delete
         tree resources_test/ -L 3
 
+    - name: Get changed files
+      id: changed-files
+      uses: tj-actions/changed-files@v29.0.7
+      with:
+        separator: ";"
+        diff_relative: true
+
     # store component locations
     # json=$(bin/viash ns list -p docker --format json | jq -c '[ .[] | { "name": .functionality.name, "config": .info.config} * (.info.config | capture("^(?<dir>.*\/)")) ]')
     - id: set_matrix
