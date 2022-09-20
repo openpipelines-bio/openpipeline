@@ -10,7 +10,7 @@ include { leiden } from targetDir + '/cluster/leiden/main.nf'
 include { harmonypy } from targetDir + '/integrate/harmonypy/main.nf'
 
 include { readConfig; viashChannel; helpMessage } from workflowDir + "/utils/WorkflowHelper.nf"
-include { splitParams; combineParams } from workflowDir + "/utils/DataFlowHelper.nf"
+include { setWorkflowArguments; getWorkflowArguments } from workflowDir + "/utils/DataFlowHelper.nf"
 
 config = readConfig("$workflowDir/multiomics/integration/config.vsh.yaml")
 
@@ -31,7 +31,7 @@ workflow run_wf {
   output_ch = input_ch
   
     // split params for downstream components
-    | splitParams(
+    | setWorkflowArguments(
       pca: [
         "input": "input", 
         "obsm_output": "obsm_pca"
@@ -59,26 +59,26 @@ workflow run_wf {
       ]
     )
 
-    | combineParams("pca")
+    | getWorkflowArguments("pca")
     | pca
 
-    | combineParams("integration")
+    | getWorkflowArguments("integration")
     | harmonypy
 
-    | combineParams("neighbors")
+    | getWorkflowArguments("neighbors")
     | find_neighbors
 
-    | combineParams("clustering")
+    | getWorkflowArguments("clustering")
     | leiden
 
-    | combineParams("umap")
+    | getWorkflowArguments("umap")
     | umap.run(
       auto: [ publish: true ]
     )
 
     // remove splitArgs
     | map { tup ->
-      [ tup[0], tup[1] ] + tup.drop(3)
+      tup.take(2) + tup.drop(3)
     }
 
   emit:

@@ -1,5 +1,5 @@
 /* usage:
-| splitParams(
+| setWorkflowArguments(
   pca: [ "input": "input", "obsm_output": "obsm_pca" ]
   harmonypy: [ "obs_covariates": "obs_covariates", "obsm_input": "obsm_pca" ],
   find_neighbors: [ "obsm_input": "obsm_pca" ],
@@ -7,8 +7,8 @@
 )
 */
 
-def splitParams(Map args) {
-  wfKey = args.key ?: "splitParams"
+def setWorkflowArguments(Map args) {
+  wfKey = args.key ?: "setWorkflowArguments"
   args.keySet().removeAll(["key"])
 
   
@@ -18,7 +18,7 @@ def splitParams(Map args) {
   args = [foo: [a: 'a', out: "b"], bar: [in: "b"]]
   */
   
-  workflow splitParamsInstance {
+  workflow setWorkflowArgumentsInstance {
     take:
     input_
 
@@ -55,18 +55,18 @@ def splitParams(Map args) {
     output_
   }
 
-  return splitParamsInstance.cloneWithName(wfKey)
+  return setWorkflowArgumentsInstance.cloneWithName(wfKey)
 }
 
 /* usage:
-| combineParams("harmonypy")
+| getWorkflowArguments("harmonypy")
 */
 
 
-def combineParams(String key) {
-  wfKey = "combineParams_" + key
+def getWorkflowArguments(String key) {
+  wfKey = "getWorkflowArguments_" + key
   
-  workflow combineParamsInstance {
+  workflow getWorkflowArgumentsInstance {
     take:
     input_
 
@@ -92,7 +92,7 @@ def combineParams(String key) {
     output_
   }
 
-  return combineParamsInstance.cloneWithName(wfKey)
+  return getWorkflowArgumentsInstance.cloneWithName(wfKey)
 
 }
 

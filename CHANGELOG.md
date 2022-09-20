@@ -2,15 +2,15 @@
 
 ## MAJOR CHANGES
 
-* `workflows/utils/DataFlowHelper.nf`: Added helper functions `splitParams()` and `combineParams()` to split the data field of a channel event into a hashmap. Example usage:
+* `workflows/utils/DataFlowHelper.nf`: Added helper functions `setWorkflowArguments()` and `getWorkflowArguments()` to split the data field of a channel event into a hashmap. Example usage:
   ```groovy
-  | splitParams(
+  | setWorkflowArguments(
     pca: [ "input": "input", "obsm_output": "obsm_pca" ]
     integration: [ "obs_covariates": "obs_covariates", "obsm_input": "obsm_pca" ]
   )
-  | combineParams("pca")
+  | getWorkflowArguments("pca")
   | pca
-  | combineParams("integration")
+  | getWorkflowArguments("integration")
   | integration
   ```
 ## MINOR CHANGES
