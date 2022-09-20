@@ -45,12 +45,30 @@ jobs:
         tree .
         bin/viash -h
 
-    - name: Get changed files
-      id: changed-files
-      uses: tj-actions/changed-files@v29.0.7
+    # create cachehash key
+    - name: Create hash key
+      id: cachehash
+      run: |
+        AWS_EC2_METADATA_DISABLED=true aws s3 ls $s3_bucket --recursive --no-sign-request > bucket-contents.txt
+        echo "::set-output name=cachehash::resources_test__$( md5sum bucket-contents.txt | awk '{ print $1 }' )"
+    
+    # initialize cache
+    - name: Cache resources data
+      uses: actions/cache@v3
       with:
-        separator: ";"
-        diff_relative: true
+        path: resources_test
+        key: ${{ steps.cachehash.outputs.cachehash }}
+        restore-keys: resources_test_
+
+    # sync if need be
+    - name: Sync test resources
+      run: |
+        bin/viash run \
+          -p native \
+          src/download/sync_test_resources/config.vsh.yaml -- \
+          --input $s3_bucket \
+          --delete
+        tree resources_test/ -L 3
 
     # store component locations
     # json=$(bin/viash ns list -p docker --format json | jq -c '[ .[] | { "name": .functionality.name, "config": .info.config} * (.info.config | capture("^(?<dir>.*\/)")) ]')
@@ -58,7 +76,7 @@ jobs:
       run: |
         IFS=$';' read -a changed_files <<< "${{ steps.changed-files.outputs.all_changed_files }}"
         echo "Changed files: "${changed_files[*]}""
-        readarray -t components < <(bin/viash ns list -p docker --format json | jq -c '[ .[] | (.info.config | capture("^(?<dir>.*\/)").dir) as $dir | { "name": .functionality.name, "config": .info.config, "resources": ([.info.config] + ([ (.functionality.resources[] | select(.is_executable? == true).path?) , (.functionality.test_resources[] | select(.is_executable? == true).path?)] | map($dir + .)))}][]')
+        readarray -t components < <(bin/viash ns list -p docker --format json | jq -c '[ .[] | (.info.config | capture("^(?<dir>.*\/)").dir) as $dir | { "name": .functionality.name, "config": .info.config, "resources": ([.info.config] + ([ (.functionality.resources[].path?) , (.functionality.test_resources[].path?)] | map($dir + .)))}][]')
         declare -a result_array_matrix=()
         for component in "${components[@]}"; do
           readarray -t resources < <(jq -cr '.resources[]' <<< "$component")
@@ -80,24 +98,6 @@ jobs:
       run: |
         AWS_EC2_METADATA_DISABLED=true aws s3 ls $s3_bucket --recursive --no-sign-request > bucket-contents.txt
         echo "::set-output name=cachehash::resources_test__$( md5sum bucket-contents.txt | awk '{ print $1 }' )"
-    
-    # initialize cache
-    - name: Cache resources data
-      uses: actions/cache@v3
-      with:
-        path: resources_test
-        key: ${{ steps.cachehash.outputs.cachehash }}
-        restore-keys: resources_test_
-  
-    # sync if need be
-    - name: Sync test resources
-      run: |
-        bin/viash run \
-          -p native \
-          src/download/sync_test_resources/config.vsh.yaml -- \
-          --input $s3_bucket \
-          --delete
-        tree resources_test/ -L 3
 
   # phase 2
   viash_test:
