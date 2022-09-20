@@ -75,14 +75,15 @@ def combineParams(String key) {
       | map{ tup -> 
         id = tup[0]
         data = tup[1]
-        splitArgs = tup[2]
+        splitArgs = tup[2].clone()
+        
         passthrough = tup.drop(3)
 
         // try to infer arg name
         if (data !instanceof Map) {
           data = [ input: data ]
         }
-        newData = data + splitArgs[key]
+        newData = data + splitArgs.remove(key)
 
         [ id, newData, splitArgs] + passthrough
       }
