@@ -6,11 +6,11 @@ functionality:
     BBKNN network generation
   authors:
     - name: Dries De Maeyer
-      email: DDeMaey1@its.jnj.com
+      email: ddemaeyer@gmail.com
       roles: [ author ]
       props: { account: ddemaey1 }
     - name: Dries Schaumont
-      email: Dschaumo@its.jnj.com
+      email: dries@data-intuitive.com
       roles: [ maintainer ]
   arguments:
     # inputs

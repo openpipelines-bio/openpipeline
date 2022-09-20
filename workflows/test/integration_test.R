@@ -22,11 +22,14 @@ outs <- map_df(workflows, function(wf) {
     map_df(
       tests,
       function(test) {
+        if (file.exists(paste0(dir, "/graph.dot"))) file.remove(paste0(dir, "/graph.dot"))
+        
         args <- c(
           "run", ".",
           "-main-script", paste0(dir, "/", test$path),
           "-entry", test$entrypoint,
-          "-profile", "docker"
+          "-profile", "docker,no_publish",
+          "-with-dag", paste0(dir, "/graph.dot")
         )
 
         start_time <- Sys.time()
