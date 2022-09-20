@@ -12,6 +12,7 @@ meta = {
 }
 ## VIASH END
 
+resources_dir, functionality_name = meta["resources_dir"], meta["functionality_name"]
 input = meta["resources_dir"] + "pbmc_1k_protein_v3/pbmc_1k_protein_v3_mms.h5mu"
 
 class TestUMAP(TestCase):
