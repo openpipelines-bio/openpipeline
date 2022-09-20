@@ -73,7 +73,7 @@ thisConfig = processConfig([
       "name" : "--transcriptome_gtf",
       "description" : "Reference transcriptome annotation.",
       "example" : [
-        "transcriptome_annotation.tar.gz"
+        "transcriptome_annotation.gtf.gz"
       ],
       "must_exist" : false,
       "required" : true,

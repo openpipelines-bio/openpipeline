@@ -18,18 +18,21 @@ function clean_up {
 }
 trap clean_up EXIT
 
-echo "> Downloading genome sequence"
+echo "> Processing genome sequence"
 genome_fasta="$tmpdir/genome_sequence.fa"
-curl "$par_genome_fasta" | gunzip > "$genome_fasta"
+# curl "$par_genome_fasta" | gunzip > "$genome_fasta"
+gunzip -c "$par_genome_fasta" > "$genome_fasta"
 
-echo "> Downloading transcriptome annotation"
+echo "> Processing transcriptome annotation"
 transcriptome_gtf="$tmpdir/transcriptome_annotation.gtf"
-curl "$par_transcriptome_gtf" | gunzip > "$transcriptome_gtf"
+# curl "$par_transcriptome_gtf" | gunzip > "$transcriptome_gtf"
+gunzip -c "$par_transcriptome_gtf"> "$transcriptome_gtf"
 
 if [[ ! -z $par_ercc ]]; then
-  echo "> Downloading ERCC sequences"
-  wget "$par_ercc" -O "$tmpdir/ercc.zip"
-  unzip "$tmpdir/ercc.zip" -d "$tmpdir"
+  echo "> Processing ERCC sequences"
+  # wget "$par_ercc" -O "$tmpdir/ercc.zip"
+  # unzip "$tmpdir/ercc.zip" -d "$tmpdir"
+  unzip "$par_ercc" -d "$tmpdir"
   cat "$tmpdir/ERCC92.fa" >> "$genome_fasta"
   cat "$tmpdir/ERCC92.gtf" >> "$transcriptome_gtf"
 fi

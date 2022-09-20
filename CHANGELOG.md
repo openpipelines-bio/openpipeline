@@ -1,5 +1,13 @@
 # openpipeline 0.5.1
 
+## BREAKING CHANGES
+
+* `reference/make_reference`: Input files changed from `type: string` to `type: file` to allow Nextflow to cache the input files fetched from URL.
+
+## NEW FUNCTIONALITY
+
+* `workflows/ingestion/make_reference`: A generic component to build a transcriptomics reference into one of many formats.
+
 ## MAJOR CHANGES
 
 * `workflows/utils/DataFlowHelper.nf`: Added helper functions `setWorkflowArguments()` and `getWorkflowArguments()` to split the data field of a channel event into a hashmap. Example usage:
@@ -18,7 +26,6 @@
 * `dimred/umap`: Streamline UMAP parameters by adding `--obsm_output` parameter to allow choosing the output `.obsm` slot.
 
 * `workflows/multiomics/integration`: Added arguments for tuning the various output slots of the integration pipeline, namely `--obsm_pca`, `--obsm_integrated`, `--uns_neighbors`, `--obsp_neighbor_distances`, `--obsp_neighbor_connectivities`, `--obs_cluster`, `--obsm_umap`.
-
 
 # openpipeline 0.5.0
 

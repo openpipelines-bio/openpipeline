@@ -44,8 +44,8 @@ functionality:
     - name: "--demultiplexer"
       type: string
       description: The multiplexer to use, one of bclconvert or mkfastq
-      example: bclconvert
       choices: [ bclconvert, bcl2fastq, mkfastq ]
+      default: bcl2fastq
     - name: "--ignore_missing"
       type: boolean
       description: Should the demultiplexer ignore missing entities (filter, ...)

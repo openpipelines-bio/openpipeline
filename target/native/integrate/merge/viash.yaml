@@ -528,5 +528,5 @@ info:
   output: "target/native/integrate/merge"
   executable: "target/native/integrate/merge/merge"
   viash_version: "0.6.0"
-  git_commit: "791ace3dd1b4f2ddc2db1b91e42da5417cdb4425"
+  git_commit: "5f9c4620a6cade3db51fe96fadba3887c33fc642"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"

@@ -21,7 +21,7 @@ functionality:
       name: --transcriptome_gtf
       required: true
       description: Reference transcriptome annotation.
-      example: transcriptome_annotation.tar.gz
+      example: transcriptome_annotation.gtf.gz
     - type: file
       name: --output
       direction: output

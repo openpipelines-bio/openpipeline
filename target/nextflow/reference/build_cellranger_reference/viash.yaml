@@ -37,7 +37,7 @@ functionality:
     alternatives: []
     description: "Reference transcriptome annotation."
     example:
-    - "transcriptome_annotation.tar.gz"
+    - "transcriptome_annotation.gtf.gz"
     default: []
     must_exist: false
     required: true
@@ -135,7 +135,7 @@ functionality:
             "name" : "--transcriptome_gtf",
             "description" : "Reference transcriptome annotation.",
             "example" : [
-              "transcriptome_annotation.tar.gz"
+              "transcriptome_annotation.gtf.gz"
             ],
             "must_exist" : false,
             "required" : true,
@@ -1985,5 +1985,5 @@ info:
   platform: "nextflow"
   output: "target/nextflow/reference/build_cellranger_reference"
   viash_version: "0.6.0"
-  git_commit: "791ace3dd1b4f2ddc2db1b91e42da5417cdb4425"
+  git_commit: "5f9c4620a6cade3db51fe96fadba3887c33fc642"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"

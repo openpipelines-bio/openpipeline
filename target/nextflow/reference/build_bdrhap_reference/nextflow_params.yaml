@@ -1,6 +1,6 @@
 # Arguments
 genome_fasta: # please fill in - example: "genome_sequence.fa.gz"
-transcriptome_gtf: # please fill in - example: "transcriptome_annotation.tar.gz"
+transcriptome_gtf: # please fill in - example: "transcriptome_annotation.gtf.gz"
 # output: "$id.$key.output.gz"
 
 # Nextflow input-output arguments
