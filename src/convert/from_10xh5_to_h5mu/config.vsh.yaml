@@ -6,7 +6,7 @@ functionality:
     Converts a 10x h5 into an h5mu file.
   authors:
     - name: Robrecht Cannoodt
-      email: rcannood@gmail.com
+      email: robrecht@data-intuitive.com
       roles: [ maintainer ]
       props: { github: rcannood, orcid: "0000-0003-3641-729X" }
   arguments:

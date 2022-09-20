@@ -6,11 +6,11 @@ functionality:
     Use Scanorama to integrate different experiments.
   authors:
     - name: Dries De Maeyer
-      email: DDeMaey1@its.jnj.com
+      email: ddemaeyer@gmail.com
       roles: [ author ]
       props: { account: ddemaey1 }
     - name: Dries Schaumont
-      email: dries.schaumont@data-intuitive.com
+      email: dries@data-intuitive.com
       roles: [ maintainer ]
       props: { github: DriesSchaumont, orcid: "0000-0002-4389-0440" }
   arguments:

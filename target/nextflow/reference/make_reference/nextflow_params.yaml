@@ -10,4 +10,3 @@ transcriptome_gtf: # please fill in - example: "https://ftp.ebi.ac.uk/pub/databa
 publish_dir: # please fill in - example: "output/"
 # param_list: "my_params.yaml"
 # param_list_format: "yaml"
-
