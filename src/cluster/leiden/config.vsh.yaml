@@ -50,6 +50,9 @@ functionality:
       description: Name of the .obs key under which to add the cluster labels.
       default: "leiden"
 
+      # todo: add uns_params
+      # example: uns["leiden"] = {'params': {'n_iterations': -1, 'random_state': 0, 'resolution': 1.0}}
+
     # arguments
     - name: "--resolution"
       type: double

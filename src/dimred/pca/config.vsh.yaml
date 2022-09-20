@@ -42,7 +42,7 @@ functionality:
     - name: "--obsm_output"
       type: string
       default: "X_pca"
-      description: "In which .obsm slot to store the resulting integrated embedding."
+      description: "In which .obsm slot to store the resulting embedding."
 
     - name: "--varm_output"
       type: string
