@@ -64,7 +64,7 @@ functionality:
   - type: "string"
     name: "--obsm_output"
     alternatives: []
-    description: "In which .obsm slot to store the resulting integrated embedding."
+    description: "In which .obsm slot to store the resulting embedding."
     example: []
     default:
     - "X_pca"
@@ -304,7 +304,7 @@ functionality:
         echo "    --obsm_output"
         echo "        type: string"
         echo "        default: X_pca"
-        echo "        In which .obsm slot to store the resulting integrated embedding."
+        echo "        In which .obsm slot to store the resulting embedding."
         echo ""
         echo "    --varm_output"
         echo "        type: string"
@@ -544,9 +544,9 @@ functionality:
       
       LABEL org.opencontainers.image.authors="Dries De Maeyer <ddemaeyer@gmail.com> (maintainer) {account: ddemaey1}"
       LABEL org.opencontainers.image.description="Companion container for running component dimred pca"
-      LABEL org.opencontainers.image.created="2022-09-19T12:33:21Z"
+      LABEL org.opencontainers.image.created="2022-09-20T07:58:50Z"
       LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-      LABEL org.opencontainers.image.revision="7e5756ad556c73443565d5db07bd722eca534e76"
+      LABEL org.opencontainers.image.revision="3ee03b335db72d5212f76099ea1fb7d194702b87"
       LABEL org.opencontainers.image.version="main_build"
       VIASHDOCKER
       }
@@ -1140,5 +1140,5 @@ info:
   output: "target/docker/dimred/pca"
   executable: "target/docker/dimred/pca/pca"
   viash_version: "0.6.0"
-  git_commit: "7e5756ad556c73443565d5db07bd722eca534e76"
+  git_commit: "3ee03b335db72d5212f76099ea1fb7d194702b87"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"

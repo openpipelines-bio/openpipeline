@@ -171,7 +171,7 @@ function ViashHelp {
   echo "distances in the high-dimensional space. We use the implementation of umap-learn"
   echo "[McInnes18]. For a few comparisons of UMAP with tSNE, see this preprint."
   echo ""
-  echo "Arguments:"
+  echo "Inputs:"
   echo "    --input"
   echo "        type: file, required parameter"
   echo "        example: input.h5mu"
@@ -184,18 +184,20 @@ function ViashHelp {
   echo "    --uns_neighbors"
   echo "        type: string"
   echo "        default: neighbors"
-  echo "        The .uns neighbors slot as output by the \`find_neighbors\` component."
+  echo "        The \`.uns\` neighbors slot as output by the \`find_neighbors\` component."
   echo ""
+  echo "Outputs:"
   echo "    -o, --output"
   echo "        type: file, required parameter, output"
   echo "        example: output.h5mu"
   echo "        Output h5mu file."
   echo ""
-  echo "    --output_key"
+  echo "    --obsm_output"
   echo "        type: string"
   echo "        default: umap"
   echo "        The pre/postfix under which to store the UMAP results."
   echo ""
+  echo "Arguments:"
   echo "    --min_dist"
   echo "        type: double"
   echo "        default: 0.5"
@@ -209,7 +211,7 @@ function ViashHelp {
   echo "    --spread"
   echo "        type: double"
   echo "        default: 1.0"
-  echo "        The effective scale of embedded points. In combination with min_dist"
+  echo "        The effective scale of embedded points. In combination with \`min_dist\`"
   echo "        this determines how clustered/clumped the embedded points are."
   echo ""
   echo "    --num_components"
@@ -219,7 +221,8 @@ function ViashHelp {
   echo ""
   echo "    --max_iter"
   echo "        type: integer"
-  echo "        The number of iterations (epochs) of the optimization."
+  echo "        The number of iterations (epochs) of the optimization. Called \`n_epochs\`"
+  echo "        in the original UMAP."
   echo ""
   echo "    --alpha"
   echo "        type: double"
@@ -242,8 +245,12 @@ function ViashHelp {
   echo "    --init_pos"
   echo "        type: string"
   echo "        default: spectral"
-  echo "        How to initialize the low dimensional embedding. Called init in the"
-  echo "        original UMAP. Options are paga, spectral and random."
+  echo "        How to initialize the low dimensional embedding. Called \`init\` in the"
+  echo "        original UMAP. Options are:"
+  echo "        * Any key from \`.obsm\`"
+  echo "        * \`'paga'\`: positions from \`paga()\`"
+  echo "        * \`'spectral'\`: use a spectral embedding of the graph"
+  echo "        * \`'random'\`: assign initial embedding positions at random."
 }
 ######## Helper functions for setting up Docker images for viash ########
 # expects: ViashDockerBuild
@@ -467,9 +474,9 @@ RUN pip install --upgrade pip && \
 
 LABEL org.opencontainers.image.authors="Dries De Maeyer <ddemaeyer@gmail.com> (maintainer) {account: ddemaey1}"
 LABEL org.opencontainers.image.description="Companion container for running component dimred umap"
-LABEL org.opencontainers.image.created="2022-09-19T12:33:21Z"
+LABEL org.opencontainers.image.created="2022-09-20T07:58:51Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="7e5756ad556c73443565d5db07bd722eca534e76"
+LABEL org.opencontainers.image.revision="3ee03b335db72d5212f76099ea1fb7d194702b87"
 LABEL org.opencontainers.image.version="main_build"
 VIASHDOCKER
 }
@@ -673,15 +680,15 @@ while [[ $# -gt 0 ]]; do
             [ $# -lt 2 ] && ViashError Not enough arguments passed to -o. Use "--help" to get more information on the parameters. && exit 1
             shift 2
             ;;
-        --output_key)
-            [ -n "$VIASH_PAR_OUTPUT_KEY" ] && ViashError Bad arguments for option \'--output_key\': \'$VIASH_PAR_OUTPUT_KEY\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
-            VIASH_PAR_OUTPUT_KEY="$2"
-            [ $# -lt 2 ] && ViashError Not enough arguments passed to --output_key. Use "--help" to get more information on the parameters. && exit 1
+        --obsm_output)
+            [ -n "$VIASH_PAR_OBSM_OUTPUT" ] && ViashError Bad arguments for option \'--obsm_output\': \'$VIASH_PAR_OBSM_OUTPUT\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+            VIASH_PAR_OBSM_OUTPUT="$2"
+            [ $# -lt 2 ] && ViashError Not enough arguments passed to --obsm_output. Use "--help" to get more information on the parameters. && exit 1
             shift 2
             ;;
-        --output_key=*)
-            [ -n "$VIASH_PAR_OUTPUT_KEY" ] && ViashError Bad arguments for option \'--output_key=*\': \'$VIASH_PAR_OUTPUT_KEY\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
-            VIASH_PAR_OUTPUT_KEY=$(ViashRemoveFlags "$1")
+        --obsm_output=*)
+            [ -n "$VIASH_PAR_OBSM_OUTPUT" ] && ViashError Bad arguments for option \'--obsm_output=*\': \'$VIASH_PAR_OBSM_OUTPUT\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+            VIASH_PAR_OBSM_OUTPUT=$(ViashRemoveFlags "$1")
             shift 1
             ;;
         --min_dist)
@@ -902,8 +909,8 @@ fi
 if [ -z ${VIASH_PAR_UNS_NEIGHBORS+x} ]; then
   VIASH_PAR_UNS_NEIGHBORS="neighbors"
 fi
-if [ -z ${VIASH_PAR_OUTPUT_KEY+x} ]; then
-  VIASH_PAR_OUTPUT_KEY="umap"
+if [ -z ${VIASH_PAR_OBSM_OUTPUT+x} ]; then
+  VIASH_PAR_OBSM_OUTPUT="umap"
 fi
 if [ -z ${VIASH_PAR_MIN_DIST+x} ]; then
   VIASH_PAR_MIN_DIST="0.5"
@@ -1048,6 +1055,7 @@ import scanpy as sc
 import muon as mu
 import logging
 from sys import stdout
+import anndata as ad
 
 ## VIASH START
 # The following code has been auto-generated by Viash.
@@ -1056,7 +1064,7 @@ par = {
   'modality': $( if [ ! -z ${VIASH_PAR_MODALITY+x} ]; then echo "'${VIASH_PAR_MODALITY//\'/\\\'}'.split(':')"; else echo None; fi ),
   'uns_neighbors': $( if [ ! -z ${VIASH_PAR_UNS_NEIGHBORS+x} ]; then echo "'${VIASH_PAR_UNS_NEIGHBORS//\'/\\\'}'"; else echo None; fi ),
   'output': $( if [ ! -z ${VIASH_PAR_OUTPUT+x} ]; then echo "'${VIASH_PAR_OUTPUT//\'/\\\'}'"; else echo None; fi ),
-  'output_key': $( if [ ! -z ${VIASH_PAR_OUTPUT_KEY+x} ]; then echo "'${VIASH_PAR_OUTPUT_KEY//\'/\\\'}'"; else echo None; fi ),
+  'obsm_output': $( if [ ! -z ${VIASH_PAR_OBSM_OUTPUT+x} ]; then echo "'${VIASH_PAR_OBSM_OUTPUT//\'/\\\'}'"; else echo None; fi ),
   'min_dist': $( if [ ! -z ${VIASH_PAR_MIN_DIST+x} ]; then echo "float('${VIASH_PAR_MIN_DIST//\'/\\\'}')"; else echo None; fi ),
   'spread': $( if [ ! -z ${VIASH_PAR_SPREAD+x} ]; then echo "float('${VIASH_PAR_SPREAD//\'/\\\'}')"; else echo None; fi ),
   'num_components': $( if [ ! -z ${VIASH_PAR_NUM_COMPONENTS+x} ]; then echo "int('${VIASH_PAR_NUM_COMPONENTS//\'/\\\'}')"; else echo None; fi ),
@@ -1098,8 +1106,35 @@ for mod in par['modality']:
     logger.info("Computing UMAP for modality '%s'", mod)
     data = mdata.mod[mod]
 
+    if par['uns_neighbors'] not in data.uns:
+        raise ValueError(f"'{par['uns_neighbors']}' was not found in .mod['{mod}'].uns.")
+
+    # create temporary AnnData
+    # ... because sc.tl.umap doesn't allow to choose
+    # the obsm output slot
+    # ... also we can see scanpy is a data format dependency hell
+    neigh_key = par["uns_neighbors"]
+    temp_uns = { neigh_key: data.uns[neigh_key] }
+    conn_key = temp_uns[neigh_key]['connectivities_key']
+    dist_key = temp_uns[neigh_key]['distances_key']
+    temp_obsp = {
+      conn_key: data.obsp[conn_key],
+      dist_key: data.obsp[dist_key],
+    }
+    pca_key = temp_uns[neigh_key]['params']['use_rep']
+    temp_obsm = {
+      pca_key: data.obsm[pca_key]
+    }
+
+    temp_adata = ad.AnnData(
+      obsm=temp_obsm,
+      obsp=temp_obsp,
+      uns=temp_uns,
+      shape=data.shape
+    )
+
     sc.tl.umap(
-        data,
+        temp_adata,
         min_dist=par["min_dist"],
         spread=par["spread"],
         n_components=par["num_components"],
@@ -1108,9 +1143,10 @@ for mod in par['modality']:
         gamma=par["gamma"],
         negative_sample_rate=par["negative_sample_rate"],
         init_pos=par["init_pos"],
-        neighbors_key=par["uns_neighbors"]
+        neighbors_key=neigh_key
     )
-    # note: should be able to set the neighbors key
+
+    data.obsm[par['obsm_output']] = temp_adata.obsm['X_umap']
 
 logger.info("Writing to %s.", par["output"])
 mdata.write_h5mu(filename=par["output"])

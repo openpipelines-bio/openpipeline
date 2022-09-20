@@ -1,3 +1,10 @@
+# openpipeline 0.5.1
+
+## MINOR CHANGES
+
+* `dimred/umap`: Streamline UMAP parameters by adding `--obsm_output` parameter to allow choosing the output `.obsm` slot.
+
+
 # openpipeline 0.5.0
 
 Major redesign of the integration and multiomic workflows. Current list of workflows:

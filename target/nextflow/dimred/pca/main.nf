@@ -96,7 +96,7 @@ thisConfig = processConfig([
     {
       "type" : "string",
       "name" : "--obsm_output",
-      "description" : "In which .obsm slot to store the resulting integrated embedding.",
+      "description" : "In which .obsm slot to store the resulting embedding.",
       "default" : [
         "X_pca"
       ],
