@@ -3,7 +3,7 @@ functionality:
   namespace: "transform"
   version: "dev"
   description: |
-    Delete an anndata layer from one or more modalities.
+    Delete an anndata layer from one or more modalities. This is a test
   authors:
     - name: Dries Schaumont
       email: dries@data-intuitive.com
