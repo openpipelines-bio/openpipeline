@@ -57,12 +57,14 @@ jobs:
     - id: set_matrix
       run: |
         IFS=$';' read -a changed_files <<< "${{ steps.changed-files-comma.outputs.all_changed_files }}"
+        echo "Changed files: "${changed_files[*]}""
         readarray -t components < <(bin/viash ns list -p docker --format json | jq -c '[ .[] | (.info.config | capture("^(?<dir>.*\/)").dir) as $dir | { "name": .functionality.name, "config": .info.config, "resources": ([.info.config] + ([ (.functionality.resources[] | select(.is_executable? == true).path?) , (.functionality.test_resources[] | select(.is_executable? == true).path?)] | map($dir + .)))}][]')
         declare -a result_array_matrix=()
         for component in "${components[@]}"; do
           readarray -t resources < <(jq -cr '.resources[]' <<< "$component")
           for resource_rel_path in "${resources[@]}"; do
             resource_project_path=$(realpath --relative-to="$GITHUB_WORKSPACE" "$resource_rel_path")
+            echo "Checking path $resource_project_path"
             if [[ " ${changed_files[*]} " =~ " ${resource_project_path} " ]]; then
               result_array_matrix+="$component"
               break
