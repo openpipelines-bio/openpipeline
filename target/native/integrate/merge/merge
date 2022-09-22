@@ -12,7 +12,7 @@
 # files.
 # 
 # Component authors:
-#  * Dries Schaumont <Dschaumo@its.jnj.com> (maintainer)
+#  * Dries Schaumont <dries@data-intuitive.com> (maintainer)
 
 set -e
 

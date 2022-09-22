@@ -6,7 +6,7 @@ functionality:
     Scale data to unit variance and zero mean.
   authors:
     - name: Dries Schaumont
-      email: dries.schaumont@data-intuitive.com
+      email: dries@data-intuitive.com
       roles: [ maintainer ]
       props: { github: DriesSchaumont, orcid: "0000-0002-4389-0440" }
   arguments:
@@ -21,7 +21,6 @@ functionality:
     - name: "--modality"
       description: List of modalities to process.
       type: string
-      multiple: true
       default: "rna"
       required: false
     - name: "--max_value"

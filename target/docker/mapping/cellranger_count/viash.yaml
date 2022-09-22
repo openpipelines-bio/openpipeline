@@ -15,7 +15,7 @@ functionality:
     props:
       github: "srdsam"
   - name: "Robrecht Cannoodt"
-    email: "rcannood@gmail.com"
+    email: "robrecht@data-intuitive.com"
     roles:
     - "author"
     - "maintainer"
@@ -155,7 +155,7 @@ functionality:
       # Component authors:
       #  * Angela Pisco (author) {github: aopisco, orcid: 0000-0003-0142-2355}
       #  * Samuel D'Souza (author) {github: srdsam}
-      #  * Robrecht Cannoodt <rcannood@gmail.com> (author, maintainer) {github:
+      #  * Robrecht Cannoodt <robrecht@data-intuitive.com> (author, maintainer) {github:
       # rcannood, orcid: 0000-0003-3641-729X}
       
       set -e
@@ -584,11 +584,11 @@ functionality:
       FROM ghcr.io/data-intuitive/cellranger:7.0
       
       RUN apt update && apt upgrade -y
-      LABEL org.opencontainers.image.authors="Angela Pisco (author) {github: aopisco, orcid: 0000-0003-0142-2355}, Samuel D'Souza (author) {github: srdsam}, Robrecht Cannoodt <rcannood@gmail.com> (author, maintainer) {github: rcannood, orcid: 0000-0003-3641-729X}"
+      LABEL org.opencontainers.image.authors="Angela Pisco (author) {github: aopisco, orcid: 0000-0003-0142-2355}, Samuel D'Souza (author) {github: srdsam}, Robrecht Cannoodt <robrecht@data-intuitive.com> (author, maintainer) {github: rcannood, orcid: 0000-0003-3641-729X}"
       LABEL org.opencontainers.image.description="Companion container for running component mapping cellranger_count"
-      LABEL org.opencontainers.image.created="2022-09-15T15:40:52Z"
+      LABEL org.opencontainers.image.created="2022-09-22T12:31:33Z"
       LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-      LABEL org.opencontainers.image.revision="dda69f29cb4a0b9c3a3c2e252f271644fbb686ef"
+      LABEL org.opencontainers.image.revision="773cbf0b45af373acb2e2363f9a421c3ee8f6e2c"
       LABEL org.opencontainers.image.version="integration_build"
       VIASHDOCKER
       }
@@ -1212,5 +1212,5 @@ info:
   output: "target/docker/mapping/cellranger_count"
   executable: "target/docker/mapping/cellranger_count/cellranger_count"
   viash_version: "0.6.0"
-  git_commit: "dda69f29cb4a0b9c3a3c2e252f271644fbb686ef"
+  git_commit: "773cbf0b45af373acb2e2363f9a421c3ee8f6e2c"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"

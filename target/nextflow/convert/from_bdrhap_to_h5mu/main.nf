@@ -10,8 +10,8 @@
 // files.
 // 
 // Component authors:
-//  * Robrecht Cannoodt <rcannood@gmail.com> (maintainer) {github: rcannood, orcid:
-// 0000-0003-3641-729X}
+//  * Robrecht Cannoodt <robrecht@data-intuitive.com> (maintainer) {github:
+// rcannood, orcid: 0000-0003-3641-729X}
 
 nextflow.enable.dsl=2
 
@@ -32,7 +32,7 @@ thisConfig = processConfig([
   "authors" : [
     {
       "name" : "Robrecht Cannoodt",
-      "email" : "rcannood@gmail.com",
+      "email" : "robrecht@data-intuitive.com",
       "roles" : [
         "maintainer"
       ],

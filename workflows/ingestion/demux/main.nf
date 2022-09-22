@@ -13,16 +13,8 @@ include { readConfig; viashChannel; helpMessage } from workflowDir + "/utils/Wor
 
 config = readConfig("$projectDir/config.vsh.yaml")
 
-params.demultiplexer = "mkfastq"
-
 workflow {
   helpMessage(config)
-
-  demultiplexers = [ "mkfastq", "bclconvert", "bcl2fastq" ]
-
-  if (!demultiplexers.contains(params.demultiplexer)) {
-    exit 1, "ERROR: Please provide a demultiplexer that is one of ${demultiplexers}"
-  }
 
   viashChannel(params, config)
     | run_wf
@@ -39,22 +31,21 @@ workflow run_wf {
   ]
 
   mkfastq_ch = input_ch
-    | filter{ (it[1].demultiplexer ?: params.demultiplexer) == "mkfastq" }
+    | filter{ it[1].demultiplexer == "mkfastq" }
     | cellranger_mkfastq.run(commonOptions)
 
   bcl_convert_ch = input_ch
-    | filter{ (it[1].demultiplexer ?: params.demultiplexer)  == "bclconvert" }
+    | filter{ it[1].demultiplexer  == "bclconvert" }
     | bcl_convert.run(commonOptions)
 
   bcl2fastq_ch = input_ch
-    | filter{ (it[1].demultiplexer ?: params.demultiplexer)  == "bcl2fastq" }
+    | filter{ it[1].demultiplexer  == "bcl2fastq" }
     | bcl2fastq.run(commonOptions)
 
   /* Combine the different demultiplexer channels */
   all_ch =
     mkfastq_ch
-      | mix( bcl_convert_ch )
-      | mix ( bcl2fastq_ch )
+      | mix( bcl_convert_ch, bcl2fastq_ch )
 
   /* Generate fastqc reports for every sample */
   all_ch

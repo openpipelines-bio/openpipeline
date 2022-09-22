@@ -4,7 +4,7 @@ functionality:
   version: "integration_build"
   authors:
   - name: "Robrecht Cannoodt"
-    email: "rcannood@gmail.com"
+    email: "robrecht@data-intuitive.com"
     roles:
     - "maintainer"
     props:
@@ -57,8 +57,8 @@ functionality:
       # files.
       # 
       # Component authors:
-      #  * Robrecht Cannoodt <rcannood@gmail.com> (maintainer) {github: rcannood, orcid:
-      # 0000-0003-3641-729X}
+      #  * Robrecht Cannoodt <robrecht@data-intuitive.com> (maintainer) {github:
+      # rcannood, orcid: 0000-0003-3641-729X}
       
       set -e
       
@@ -441,11 +441,11 @@ functionality:
       RUN pip install --upgrade pip && \
         pip install --upgrade --no-cache-dir "muon" "mudata~=0.2.0" "anndata~=0.8.0"
       
-      LABEL org.opencontainers.image.authors="Robrecht Cannoodt <rcannood@gmail.com> (maintainer) {github: rcannood, orcid: 0000-0003-3641-729X}"
+      LABEL org.opencontainers.image.authors="Robrecht Cannoodt <robrecht@data-intuitive.com> (maintainer) {github: rcannood, orcid: 0000-0003-3641-729X}"
       LABEL org.opencontainers.image.description="Companion container for running component convert from_10xmtx_to_h5mu"
-      LABEL org.opencontainers.image.created="2022-09-15T15:40:54Z"
+      LABEL org.opencontainers.image.created="2022-09-22T12:31:34Z"
       LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-      LABEL org.opencontainers.image.revision="dda69f29cb4a0b9c3a3c2e252f271644fbb686ef"
+      LABEL org.opencontainers.image.revision="773cbf0b45af373acb2e2363f9a421c3ee8f6e2c"
       LABEL org.opencontainers.image.version="integration_build"
       VIASHDOCKER
       }
@@ -920,5 +920,5 @@ info:
   output: "target/docker/convert/from_10xmtx_to_h5mu"
   executable: "target/docker/convert/from_10xmtx_to_h5mu/from_10xmtx_to_h5mu"
   viash_version: "0.6.0"
-  git_commit: "dda69f29cb4a0b9c3a3c2e252f271644fbb686ef"
+  git_commit: "773cbf0b45af373acb2e2363f9a421c3ee8f6e2c"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"

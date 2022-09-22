@@ -6,7 +6,7 @@ functionality:
     Delete an anndata layer from one or more modalities.
   authors:
     - name: Dries Schaumont
-      email: Dschaumo@its.jnj.com
+      email: dries@data-intuitive.com
       roles: [ maintainer ]
   arguments:
     - name: "--input"
@@ -18,7 +18,6 @@ functionality:
       example: input.h5mu
     - name: "--modality"
       type: string
-      multiple: true
       default: "rna"
       required: false
     - name: "--layer"

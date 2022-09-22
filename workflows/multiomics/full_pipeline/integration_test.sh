@@ -16,5 +16,4 @@ bin/nextflow \
   -entry test_wf \
   -resume \
   -profile docker,no_publish \
-  -c workflows/utils/labels_ci.config \
-  --publish_dir "foo/"
+  -c workflows/utils/labels_ci.config

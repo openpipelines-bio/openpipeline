@@ -4,7 +4,7 @@ functionality:
   description: "A pipeline to analyse multiple multiomics samples."
   authors:
     - name: Dries Schaumont
-      email: dries.schaumont@data-intuitive.com
+      email: dries@data-intuitive.com
       roles: [ author, maintainer ]
       props: { github: DriesSchaumont, orcid: "0000-0002-4389-0440" }
   argument_groups:

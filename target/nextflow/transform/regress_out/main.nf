@@ -10,8 +10,8 @@
 // files.
 // 
 // Component authors:
-//  * Robrecht Cannoodt <rcannood@gmail.com> (maintainer, contributor) {github:
-// rcannood, orcid: 0000-0003-3641-729X}
+//  * Robrecht Cannoodt <robrecht@data-intuitive.com> (maintainer, contributor)
+// {github: rcannood, orcid: 0000-0003-3641-729X}
 
 nextflow.enable.dsl=2
 
@@ -32,7 +32,7 @@ thisConfig = processConfig([
   "authors" : [
     {
       "name" : "Robrecht Cannoodt",
-      "email" : "rcannood@gmail.com",
+      "email" : "robrecht@data-intuitive.com",
       "roles" : [
         "maintainer",
         "contributor"
@@ -82,7 +82,7 @@ thisConfig = processConfig([
       ],
       "required" : false,
       "direction" : "input",
-      "multiple" : true,
+      "multiple" : false,
       "multiple_sep" : ":"
     },
     {
@@ -137,7 +137,7 @@ from sys import stdout
 par = {
   'input': $( if [ ! -z ${VIASH_PAR_INPUT+x} ]; then echo "'${VIASH_PAR_INPUT//\\'/\\\\\\'}'"; else echo None; fi ),
   'output': $( if [ ! -z ${VIASH_PAR_OUTPUT+x} ]; then echo "'${VIASH_PAR_OUTPUT//\\'/\\\\\\'}'"; else echo None; fi ),
-  'modality': $( if [ ! -z ${VIASH_PAR_MODALITY+x} ]; then echo "'${VIASH_PAR_MODALITY//\\'/\\\\\\'}'.split(':')"; else echo None; fi ),
+  'modality': $( if [ ! -z ${VIASH_PAR_MODALITY+x} ]; then echo "'${VIASH_PAR_MODALITY//\\'/\\\\\\'}'"; else echo None; fi ),
   'obs_keys': $( if [ ! -z ${VIASH_PAR_OBS_KEYS+x} ]; then echo "'${VIASH_PAR_OBS_KEYS//\\'/\\\\\\'}'.split(':')"; else echo None; fi )
 }
 meta = {
@@ -173,16 +173,15 @@ if (
     par["obs_keys"] is not None
     and len(par["obs_keys"]) > 0
 ):
-
-    for mod in par["modality"]:
-        logger.info("Regress out variables on modality %s", mod)
-        data = mdata.mod[mod]
-        
-        sc.pp.regress_out(
-            data, 
-            keys=par["obs_keys"], 
-            n_jobs=multiprocessing.cpu_count() - 1
-        )
+    mod = par["modality"]
+    logger.info("Regress out variables on modality %s", mod)
+    data = mdata.mod[mod]
+    
+    sc.pp.regress_out(
+        data, 
+        keys=par["obs_keys"], 
+        n_jobs=multiprocessing.cpu_count() - 1
+    )
 
 logger.info("Writing to file")
 mdata.write(filename=par["output"])

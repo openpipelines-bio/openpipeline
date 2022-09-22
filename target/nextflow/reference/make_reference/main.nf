@@ -11,7 +11,7 @@
 // 
 // Component authors:
 //  * Angela Pisco (author) {github: aopisco, orcid: 0000-0003-0142-2355}
-//  * Robrecht Cannoodt <rcannood@gmail.com> (author, maintainer) {github:
+//  * Robrecht Cannoodt <robrecht@data-intuitive.com> (author, maintainer) {github:
 // rcannood, orcid: 0000-0003-3641-729X}
 
 nextflow.enable.dsl=2
@@ -43,7 +43,7 @@ thisConfig = processConfig([
     },
     {
       "name" : "Robrecht Cannoodt",
-      "email" : "rcannood@gmail.com",
+      "email" : "robrecht@data-intuitive.com",
       "roles" : [
         "author",
         "maintainer"
@@ -56,36 +56,39 @@ thisConfig = processConfig([
   ],
   "arguments" : [
     {
-      "type" : "string",
+      "type" : "file",
       "name" : "--genome_fasta",
-      "description" : "Reference genome fasta.",
+      "description" : "Reference genome fasta. Example: ",
       "example" : [
-        "https://ftp.ebi.ac.uk/pub/databases/gencode/Gencode_human/release_41/GRCh38.primary_assembly.genome.fa.gz"
+        "genome_fasta.fa.gz"
       ],
+      "must_exist" : false,
       "required" : true,
       "direction" : "input",
       "multiple" : false,
       "multiple_sep" : ":"
     },
     {
-      "type" : "string",
+      "type" : "file",
       "name" : "--transcriptome_gtf",
       "description" : "Reference transcriptome annotation.",
       "example" : [
-        "https://ftp.ebi.ac.uk/pub/databases/gencode/Gencode_human/release_41/gencode.v41.annotation.gtf.gz"
+        "transcriptome.gtf.gz"
       ],
+      "must_exist" : false,
       "required" : true,
       "direction" : "input",
       "multiple" : false,
       "multiple_sep" : ":"
     },
     {
-      "type" : "string",
+      "type" : "file",
       "name" : "--ercc",
       "description" : "ERCC sequence and annotation file.",
       "example" : [
-        "https://assets.thermofisher.com/TFS-Assets/LSG/manuals/ERCC92.zip"
+        "ercc.zip"
       ],
+      "must_exist" : false,
       "required" : false,
       "direction" : "input",
       "multiple" : false,
@@ -121,7 +124,7 @@ thisConfig = processConfig([
       "name" : "--output_gtf",
       "description" : "Output transcriptome annotation gtf.",
       "example" : [
-        "transcriptome_annotation.tar.gz"
+        "transcriptome_annotation.gtf.gz"
       ],
       "must_exist" : false,
       "required" : true,
@@ -138,7 +141,7 @@ thisConfig = processConfig([
       "parent" : "file:/home/runner/work/openpipeline/openpipeline/src/reference/make_reference/config.vsh.yaml"
     }
   ],
-  "description" : "Make a reference build.",
+  "description" : "Preprocess and build a transcriptome reference.\n\nExample input files are:\n  - `genome_fasta`: https://ftp.ebi.ac.uk/pub/databases/gencode/Gencode_human/release_41/GRCh38.primary_assembly.genome.fa.gz\n  - `transcriptome_gtf`: https://ftp.ebi.ac.uk/pub/databases/gencode/Gencode_human/release_41/gencode.v41.annotation.gtf.gz\n  - `ercc`: https://assets.thermofisher.com/TFS-Assets/LSG/manuals/ERCC92.zip\n",
   "test_resources" : [
     {
       "type" : "bash_script",
@@ -190,18 +193,21 @@ function clean_up {
 }
 trap clean_up EXIT
 
-echo "> Downloading genome sequence"
+echo "> Processing genome sequence"
 genome_fasta="\\$tmpdir/genome_sequence.fa"
-curl "\\$par_genome_fasta" | gunzip > "\\$genome_fasta"
+# curl "\\$par_genome_fasta" | gunzip > "\\$genome_fasta"
+gunzip -c "\\$par_genome_fasta" > "\\$genome_fasta"
 
-echo "> Downloading transcriptome annotation"
+echo "> Processing transcriptome annotation"
 transcriptome_gtf="\\$tmpdir/transcriptome_annotation.gtf"
-curl "\\$par_transcriptome_gtf" | gunzip > "\\$transcriptome_gtf"
+# curl "\\$par_transcriptome_gtf" | gunzip > "\\$transcriptome_gtf"
+gunzip -c "\\$par_transcriptome_gtf"> "\\$transcriptome_gtf"
 
 if [[ ! -z \\$par_ercc ]]; then
-  echo "> Downloading ERCC sequences"
-  wget "\\$par_ercc" -O "\\$tmpdir/ercc.zip"
-  unzip "\\$tmpdir/ercc.zip" -d "\\$tmpdir"
+  echo "> Processing ERCC sequences"
+  # wget "\\$par_ercc" -O "\\$tmpdir/ercc.zip"
+  # unzip "\\$tmpdir/ercc.zip" -d "\\$tmpdir"
+  unzip "\\$par_ercc" -d "\\$tmpdir"
   cat "\\$tmpdir/ERCC92.fa" >> "\\$genome_fasta"
   cat "\\$tmpdir/ERCC92.gtf" >> "\\$transcriptome_gtf"
 fi

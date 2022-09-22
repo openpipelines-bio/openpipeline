@@ -13,11 +13,11 @@ functionality:
     For [Stuart19], a normalized variance for each gene is computed. First, the data are standardized (i.e., z-score normalization per feature) with a regularized standard deviation. Next, the normalized variance is computed as the variance of each gene after the transformation. Genes are ranked by the normalized variance.
   authors:
     - name: Dries De Maeyer
-      email: DDeMaey1@its.jnj.com
+      email: ddemaeyer@gmail.com
       roles: [ contributor ]
       props: { account: ddemaey1 }
     - name: Robrecht Cannoodt
-      email: rcannood@gmail.com
+      email: robrecht@data-intuitive.com
       roles: [ maintainer, contributor ]
       props: { github: rcannood, orcid: "0000-0003-3641-729X" }
   arguments:
@@ -31,7 +31,6 @@ functionality:
 
     - name: "--modality"
       type: string
-      multiple: true
       default: "rna"
       required: false
     - name: "--layer"

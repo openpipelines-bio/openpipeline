@@ -4,7 +4,7 @@ functionality:
   version: "integration_build"
   authors:
   - name: "Dries Schaumont"
-    email: "Dschaumo@its.jnj.com"
+    email: "dries@data-intuitive.com"
     roles:
     - "maintainer"
     props: {}
@@ -65,7 +65,7 @@ functionality:
       // files.
       // 
       // Component authors:
-      //  * Dries Schaumont <Dschaumo@its.jnj.com> (maintainer)
+      //  * Dries Schaumont <dries@data-intuitive.com> (maintainer)
       
       nextflow.enable.dsl=2
       
@@ -86,7 +86,7 @@ functionality:
         "authors" : [
           {
             "name" : "Dries Schaumont",
-            "email" : "Dschaumo@its.jnj.com",
+            "email" : "dries@data-intuitive.com",
             "roles" : [
               "maintainer"
             ]
@@ -1876,7 +1876,7 @@ functionality:
         nextflowVersion = '!>=20.12.1-edge'
         version = 'integration_build'
         description = 'Combine one or more single-modality .h5mu files together into one .h5mu file.\n'
-        author = 'Dries Schaumont <Dschaumo@its.jnj.com> (maintainer)'
+        author = 'Dries Schaumont <dries@data-intuitive.com> (maintainer)'
       }
       
       process.container = 'nextflow/bash:latest'
@@ -1987,5 +1987,5 @@ info:
   platform: "nextflow"
   output: "target/nextflow/integrate/merge"
   viash_version: "0.6.0"
-  git_commit: "dda69f29cb4a0b9c3a3c2e252f271644fbb686ef"
+  git_commit: "773cbf0b45af373acb2e2363f9a421c3ee8f6e2c"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"

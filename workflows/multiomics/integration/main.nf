@@ -10,6 +10,7 @@ include { leiden } from targetDir + '/cluster/leiden/main.nf'
 include { harmonypy } from targetDir + '/integrate/harmonypy/main.nf'
 
 include { readConfig; viashChannel; helpMessage } from workflowDir + "/utils/WorkflowHelper.nf"
+include { setWorkflowArguments; getWorkflowArguments } from workflowDir + "/utils/DataFlowHelper.nf"
 
 config = readConfig("$workflowDir/multiomics/integration/config.vsh.yaml")
 
@@ -28,43 +29,57 @@ workflow run_wf {
 
   main:
   output_ch = input_ch
-    // store output value in 3rd slot for later use
-    // derive key for pca obsm output
-    | map { id, data -> 
-      new_data = data + [ obsm_output: data.layer + "_pca" ]
-      [ id, new_data, data ]
-    }
+  
+    // split params for downstream components
+    | setWorkflowArguments(
+      pca: [
+        "input": "input", 
+        "obsm_output": "obsm_pca"
+      ],
+      integration: [
+        "obsm_input": "obsm_pca",
+        "obs_covariates": "obs_covariates",
+        "obsm_output": "obsm_integrated"
+      ],
+      neighbors: [
+        "obsm_input": "obsm_integrated", 
+        "uns_output": "uns_neighbors",
+        "obsp_distances": "obsp_neighbor_distances",
+        "obsp_connectivities": "obsp_neighbor_connectivities"
+      ],
+      clustering: [
+        "obsp_connectivities": "obsp_neighbor_connectivities",
+        "obs_name": "obs_cluster"
+      ],
+      umap: [ 
+        "init_pos": "obsm_integrated",
+        "uns_neighbors": "uns_neighbors",
+        "output": "output",
+        "obsm_output": "obsm_umap"
+      ]
+    )
+
+    | getWorkflowArguments("pca")
     | pca
 
-    // set obsm key because pca might not be stored in X_pca
-    | map { id, file, orig_data -> 
-      new_data = [
-        input: file, 
-        obsm_input: orig_data.layer + "_pca",
-        obsm_output: orig_data.layer + "_pca_integrated",
-        obs_covariates: orig_data.obs_covariates
-      ]
-      [ id, new_data, orig_data ]
-    }
+    | getWorkflowArguments("integration")
     | harmonypy
 
-    | map { id, file, orig_data -> 
-      new_data = [
-        input: file, 
-        obsm_input: orig_data.layer + "_pca"
-      ]
-      [ id, new_data, orig_data ]
-    }
+    | getWorkflowArguments("neighbors")
     | find_neighbors
+
+    | getWorkflowArguments("clustering")
     | leiden
 
-    // retrieve output value
-    | map { id, file, orig_data -> 
-      [ id, [ input: file ] + orig_data.subMap("output") ]
-    }
+    | getWorkflowArguments("umap")
     | umap.run(
       auto: [ publish: true ]
     )
+
+    // remove splitArgs
+    | map { tup ->
+      tup.take(2) + tup.drop(3)
+    }
 
   emit:
   output_ch

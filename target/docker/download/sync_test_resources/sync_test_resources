@@ -12,8 +12,8 @@
 # files.
 # 
 # Component authors:
-#  * Robrecht Cannoodt <rcannood@gmail.com> (maintainer) {github: rcannood, orcid:
-# 0000-0003-3641-729X}
+#  * Robrecht Cannoodt <robrecht@data-intuitive.com> (maintainer) {github:
+# rcannood, orcid: 0000-0003-3641-729X}
 
 set -e
 
@@ -417,11 +417,11 @@ function ViashDockerfile {
 FROM amazon/aws-cli:2.7.12
 
 RUN :
-LABEL org.opencontainers.image.authors="Robrecht Cannoodt <rcannood@gmail.com> (maintainer) {github: rcannood, orcid: 0000-0003-3641-729X}"
+LABEL org.opencontainers.image.authors="Robrecht Cannoodt <robrecht@data-intuitive.com> (maintainer) {github: rcannood, orcid: 0000-0003-3641-729X}"
 LABEL org.opencontainers.image.description="Companion container for running component download sync_test_resources"
-LABEL org.opencontainers.image.created="2022-09-15T15:40:56Z"
+LABEL org.opencontainers.image.created="2022-09-22T12:31:36Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="dda69f29cb4a0b9c3a3c2e252f271644fbb686ef"
+LABEL org.opencontainers.image.revision="773cbf0b45af373acb2e2363f9a421c3ee8f6e2c"
 LABEL org.opencontainers.image.version="integration_build"
 VIASHDOCKER
 }

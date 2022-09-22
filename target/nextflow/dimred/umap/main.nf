@@ -40,163 +40,178 @@ thisConfig = processConfig([
       }
     }
   ],
-  "arguments" : [
+  "argument_groups" : [
     {
-      "type" : "file",
-      "name" : "--input",
-      "description" : "Input h5mu file",
-      "example" : [
-        "input.h5mu"
-      ],
-      "must_exist" : false,
-      "required" : true,
-      "direction" : "input",
-      "multiple" : false,
-      "multiple_sep" : ":"
+      "name" : "Inputs",
+      "arguments" : [
+        {
+          "type" : "file",
+          "name" : "--input",
+          "description" : "Input h5mu file",
+          "example" : [
+            "input.h5mu"
+          ],
+          "must_exist" : false,
+          "required" : true,
+          "direction" : "input",
+          "multiple" : false,
+          "multiple_sep" : ":"
+        },
+        {
+          "type" : "string",
+          "name" : "--modality",
+          "default" : [
+            "rna"
+          ],
+          "required" : false,
+          "direction" : "input",
+          "multiple" : false,
+          "multiple_sep" : ":"
+        },
+        {
+          "type" : "string",
+          "name" : "--uns_neighbors",
+          "description" : "The `.uns` neighbors slot as output by the `find_neighbors` component.",
+          "default" : [
+            "neighbors"
+          ],
+          "required" : false,
+          "direction" : "input",
+          "multiple" : false,
+          "multiple_sep" : ":"
+        }
+      ]
     },
     {
-      "type" : "string",
-      "name" : "--modality",
-      "default" : [
-        "rna"
-      ],
-      "required" : false,
-      "direction" : "input",
-      "multiple" : true,
-      "multiple_sep" : ":"
+      "name" : "Outputs",
+      "arguments" : [
+        {
+          "type" : "file",
+          "name" : "--output",
+          "alternatives" : [
+            "-o"
+          ],
+          "description" : "Output h5mu file.",
+          "example" : [
+            "output.h5mu"
+          ],
+          "must_exist" : false,
+          "required" : true,
+          "direction" : "output",
+          "multiple" : false,
+          "multiple_sep" : ":"
+        },
+        {
+          "type" : "string",
+          "name" : "--obsm_output",
+          "description" : "The pre/postfix under which to store the UMAP results.",
+          "default" : [
+            "umap"
+          ],
+          "required" : false,
+          "direction" : "input",
+          "multiple" : false,
+          "multiple_sep" : ":"
+        }
+      ]
     },
     {
-      "type" : "string",
-      "name" : "--uns_neighbors",
-      "description" : "The .uns neighbors slot as output by the `find_neighbors` component.",
-      "default" : [
-        "neighbors"
-      ],
-      "required" : false,
-      "direction" : "input",
-      "multiple" : false,
-      "multiple_sep" : ":"
-    },
-    {
-      "type" : "file",
-      "name" : "--output",
-      "alternatives" : [
-        "-o"
-      ],
-      "description" : "Output h5mu file.",
-      "example" : [
-        "output.h5mu"
-      ],
-      "must_exist" : false,
-      "required" : true,
-      "direction" : "output",
-      "multiple" : false,
-      "multiple_sep" : ":"
-    },
-    {
-      "type" : "string",
-      "name" : "--output_key",
-      "description" : "The pre/postfix under which to store the UMAP results.",
-      "default" : [
-        "umap"
-      ],
-      "required" : false,
-      "direction" : "input",
-      "multiple" : false,
-      "multiple_sep" : ":"
-    },
-    {
-      "type" : "double",
-      "name" : "--min_dist",
-      "description" : "The effective minimum distance between embedded points. Smaller values will result in a more clustered/clumped embedding where nearby points on the manifold are drawn closer together, while larger values will result on a more even dispersal of points. The value should be set relative to the spread value, which determines the scale at which embedded points will be spread out.",
-      "default" : [
-        0.5
-      ],
-      "required" : false,
-      "direction" : "input",
-      "multiple" : false,
-      "multiple_sep" : ":"
-    },
-    {
-      "type" : "double",
-      "name" : "--spread",
-      "description" : "The effective scale of embedded points. In combination with min_dist this determines how clustered/clumped the embedded points are.",
-      "default" : [
-        1.0
-      ],
-      "required" : false,
-      "direction" : "input",
-      "multiple" : false,
-      "multiple_sep" : ":"
-    },
-    {
-      "type" : "integer",
-      "name" : "--num_components",
-      "description" : "The number of dimensions of the embedding.",
-      "default" : [
-        2
-      ],
-      "required" : false,
-      "direction" : "input",
-      "multiple" : false,
-      "multiple_sep" : ":"
-    },
-    {
-      "type" : "integer",
-      "name" : "--max_iter",
-      "description" : "The number of iterations (epochs) of the optimization.",
-      "required" : false,
-      "direction" : "input",
-      "multiple" : false,
-      "multiple_sep" : ":"
-    },
-    {
-      "type" : "double",
-      "name" : "--alpha",
-      "description" : "The initial learning rate for the embedding optimization.",
-      "default" : [
-        1.0
-      ],
-      "required" : false,
-      "direction" : "input",
-      "multiple" : false,
-      "multiple_sep" : ":"
-    },
-    {
-      "type" : "double",
-      "name" : "--gamma",
-      "description" : "Weighting applied to negative samples in low dimensional embedding optimization. Values higher than one will result in greater weight being given to negative samples.",
-      "default" : [
-        1.0
-      ],
-      "required" : false,
-      "direction" : "input",
-      "multiple" : false,
-      "multiple_sep" : ":"
-    },
-    {
-      "type" : "integer",
-      "name" : "--negative_sample_rate",
-      "description" : "The number of negative edge/1-simplex samples to use per positive edge/1-simplex sample in optimizing the low dimensional embedding.",
-      "default" : [
-        5
-      ],
-      "required" : false,
-      "direction" : "input",
-      "multiple" : false,
-      "multiple_sep" : ":"
-    },
-    {
-      "type" : "string",
-      "name" : "--init_pos",
-      "description" : "How to initialize the low dimensional embedding. Called init in the original UMAP. Options are paga, spectral and random.",
-      "default" : [
-        "spectral"
-      ],
-      "required" : false,
-      "direction" : "input",
-      "multiple" : false,
-      "multiple_sep" : ":"
+      "name" : "Arguments",
+      "arguments" : [
+        {
+          "type" : "double",
+          "name" : "--min_dist",
+          "description" : "The effective minimum distance between embedded points. Smaller values will result in a more clustered/clumped embedding where nearby points on the manifold are drawn closer together, while larger values will result on a more even dispersal of points. The value should be set relative to the spread value, which determines the scale at which embedded points will be spread out.",
+          "default" : [
+            0.5
+          ],
+          "required" : false,
+          "direction" : "input",
+          "multiple" : false,
+          "multiple_sep" : ":"
+        },
+        {
+          "type" : "double",
+          "name" : "--spread",
+          "description" : "The effective scale of embedded points. In combination with `min_dist` this determines how clustered/clumped the embedded points are.",
+          "default" : [
+            1.0
+          ],
+          "required" : false,
+          "direction" : "input",
+          "multiple" : false,
+          "multiple_sep" : ":"
+        },
+        {
+          "type" : "integer",
+          "name" : "--num_components",
+          "description" : "The number of dimensions of the embedding.",
+          "default" : [
+            2
+          ],
+          "required" : false,
+          "direction" : "input",
+          "multiple" : false,
+          "multiple_sep" : ":"
+        },
+        {
+          "type" : "integer",
+          "name" : "--max_iter",
+          "description" : "The number of iterations (epochs) of the optimization. Called `n_epochs` in the original UMAP.",
+          "required" : false,
+          "direction" : "input",
+          "multiple" : false,
+          "multiple_sep" : ":"
+        },
+        {
+          "type" : "double",
+          "name" : "--alpha",
+          "description" : "The initial learning rate for the embedding optimization.",
+          "default" : [
+            1.0
+          ],
+          "required" : false,
+          "direction" : "input",
+          "multiple" : false,
+          "multiple_sep" : ":"
+        },
+        {
+          "type" : "double",
+          "name" : "--gamma",
+          "description" : "Weighting applied to negative samples in low dimensional embedding optimization. Values higher than one will result in greater weight being given to negative samples.",
+          "default" : [
+            1.0
+          ],
+          "required" : false,
+          "direction" : "input",
+          "multiple" : false,
+          "multiple_sep" : ":"
+        },
+        {
+          "type" : "integer",
+          "name" : "--negative_sample_rate",
+          "description" : "The number of negative edge/1-simplex samples to use per positive edge/1-simplex sample in optimizing the low dimensional embedding.",
+          "default" : [
+            5
+          ],
+          "required" : false,
+          "direction" : "input",
+          "multiple" : false,
+          "multiple_sep" : ":"
+        },
+        {
+          "type" : "string",
+          "name" : "--init_pos",
+          "description" : "How to initialize the low dimensional embedding. Called `init` in the original UMAP. Options are:\n\n* Any key from `.obsm`\n* `'paga'`: positions from `paga()`\n* `'spectral'`: use a spectral embedding of the graph\n* `'random'`: assign initial embedding positions at random.\n",
+          "default" : [
+            "spectral"
+          ],
+          "required" : false,
+          "direction" : "input",
+          "multiple" : false,
+          "multiple_sep" : ":"
+        }
+      ]
     }
   ],
   "resources" : [
@@ -234,15 +249,16 @@ import scanpy as sc
 import muon as mu
 import logging
 from sys import stdout
+import anndata as ad
 
 ## VIASH START
 # The following code has been auto-generated by Viash.
 par = {
   'input': $( if [ ! -z ${VIASH_PAR_INPUT+x} ]; then echo "'${VIASH_PAR_INPUT//\\'/\\\\\\'}'"; else echo None; fi ),
-  'modality': $( if [ ! -z ${VIASH_PAR_MODALITY+x} ]; then echo "'${VIASH_PAR_MODALITY//\\'/\\\\\\'}'.split(':')"; else echo None; fi ),
+  'modality': $( if [ ! -z ${VIASH_PAR_MODALITY+x} ]; then echo "'${VIASH_PAR_MODALITY//\\'/\\\\\\'}'"; else echo None; fi ),
   'uns_neighbors': $( if [ ! -z ${VIASH_PAR_UNS_NEIGHBORS+x} ]; then echo "'${VIASH_PAR_UNS_NEIGHBORS//\\'/\\\\\\'}'"; else echo None; fi ),
   'output': $( if [ ! -z ${VIASH_PAR_OUTPUT+x} ]; then echo "'${VIASH_PAR_OUTPUT//\\'/\\\\\\'}'"; else echo None; fi ),
-  'output_key': $( if [ ! -z ${VIASH_PAR_OUTPUT_KEY+x} ]; then echo "'${VIASH_PAR_OUTPUT_KEY//\\'/\\\\\\'}'"; else echo None; fi ),
+  'obsm_output': $( if [ ! -z ${VIASH_PAR_OBSM_OUTPUT+x} ]; then echo "'${VIASH_PAR_OBSM_OUTPUT//\\'/\\\\\\'}'"; else echo None; fi ),
   'min_dist': $( if [ ! -z ${VIASH_PAR_MIN_DIST+x} ]; then echo "float('${VIASH_PAR_MIN_DIST//\\'/\\\\\\'}')"; else echo None; fi ),
   'spread': $( if [ ! -z ${VIASH_PAR_SPREAD+x} ]; then echo "float('${VIASH_PAR_SPREAD//\\'/\\\\\\'}')"; else echo None; fi ),
   'num_components': $( if [ ! -z ${VIASH_PAR_NUM_COMPONENTS+x} ]; then echo "int('${VIASH_PAR_NUM_COMPONENTS//\\'/\\\\\\'}')"; else echo None; fi ),
@@ -280,23 +296,50 @@ logger.addHandler(console_handler)
 logger.info("Reading %s", par["input"])
 mdata = mu.read_h5mu(par["input"])
 
-for mod in par['modality']:
-    logger.info("Computing UMAP for modality '%s'", mod)
-    data = mdata.mod[mod]
+logger.info("Computing UMAP for modality '%s'", par['modality'])
+data = mdata.mod[par['modality']]
 
-    sc.tl.umap(
-        data,
-        min_dist=par["min_dist"],
-        spread=par["spread"],
-        n_components=par["num_components"],
-        maxiter=par["max_iter"],
-        alpha=par["alpha"],
-        gamma=par["gamma"],
-        negative_sample_rate=par["negative_sample_rate"],
-        init_pos=par["init_pos"],
-        neighbors_key=par["uns_neighbors"]
-    )
-    # note: should be able to set the neighbors key
+if par['uns_neighbors'] not in data.uns:
+    raise ValueError(f"'{par['uns_neighbors']}' was not found in .mod['{par['modality']}'].uns.")
+
+# create temporary AnnData
+# ... because sc.tl.umap doesn't allow to choose
+# the obsm output slot
+# ... also we can see scanpy is a data format dependency hell
+neigh_key = par["uns_neighbors"]
+temp_uns = { neigh_key: data.uns[neigh_key] }
+conn_key = temp_uns[neigh_key]['connectivities_key']
+dist_key = temp_uns[neigh_key]['distances_key']
+temp_obsp = {
+  conn_key: data.obsp[conn_key],
+  dist_key: data.obsp[dist_key],
+}
+pca_key = temp_uns[neigh_key]['params']['use_rep']
+temp_obsm = {
+  pca_key: data.obsm[pca_key]
+}
+
+temp_adata = ad.AnnData(
+  obsm=temp_obsm,
+  obsp=temp_obsp,
+  uns=temp_uns,
+  shape=data.shape
+)
+
+sc.tl.umap(
+    temp_adata,
+    min_dist=par["min_dist"],
+    spread=par["spread"],
+    n_components=par["num_components"],
+    maxiter=par["max_iter"],
+    alpha=par["alpha"],
+    gamma=par["gamma"],
+    negative_sample_rate=par["negative_sample_rate"],
+    init_pos=par["init_pos"],
+    neighbors_key=neigh_key
+)
+
+data.obsm[par['obsm_output']] = temp_adata.obsm['X_umap']
 
 logger.info("Writing to %s.", par["output"])
 mdata.write_h5mu(filename=par["output"])

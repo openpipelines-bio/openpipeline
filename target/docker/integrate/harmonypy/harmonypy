@@ -12,9 +12,9 @@
 # files.
 # 
 # Component authors:
-#  * Dries Schaumont <dries.schaumont@its.jnj.com> (maintainer)
-#  * Robrecht Cannoodt <rcannood@gmail.com> (contributor) {github: rcannood,
-# orcid: 0000-0003-3641-729X}
+#  * Dries Schaumont <dries@data-intuitive.com> (maintainer)
+#  * Robrecht Cannoodt <robrecht@data-intuitive.com> (contributor) {github:
+# rcannood, orcid: 0000-0003-3641-729X}
 
 set -e
 
@@ -178,7 +178,7 @@ function ViashHelp {
   echo "        Output h5mu file."
   echo ""
   echo "    --modality"
-  echo "        type: string, multiple values allowed"
+  echo "        type: string"
   echo "        default: rna"
   echo ""
   echo "    --obsm_input"
@@ -423,11 +423,11 @@ FROM python:3.10
 RUN pip install --upgrade pip && \
   pip install --upgrade --no-cache-dir "mudata~=0.2.0" "anndata~=0.8.0" "harmonypy~=0.0.6" "scanpy"
 
-LABEL org.opencontainers.image.authors="Dries Schaumont <dries.schaumont@its.jnj.com> (maintainer), Robrecht Cannoodt <rcannood@gmail.com> (contributor) {github: rcannood, orcid: 0000-0003-3641-729X}"
+LABEL org.opencontainers.image.authors="Dries Schaumont <dries@data-intuitive.com> (maintainer), Robrecht Cannoodt <robrecht@data-intuitive.com> (contributor) {github: rcannood, orcid: 0000-0003-3641-729X}"
 LABEL org.opencontainers.image.description="Companion container for running component integrate harmonypy"
-LABEL org.opencontainers.image.created="2022-09-15T15:40:55Z"
+LABEL org.opencontainers.image.created="2022-09-22T12:31:36Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="dda69f29cb4a0b9c3a3c2e252f271644fbb686ef"
+LABEL org.opencontainers.image.revision="773cbf0b45af373acb2e2363f9a421c3ee8f6e2c"
 LABEL org.opencontainers.image.version="integration_build"
 VIASHDOCKER
 }
@@ -610,20 +610,14 @@ while [[ $# -gt 0 ]]; do
             shift 2
             ;;
         --modality)
-            if [ -z "$VIASH_PAR_MODALITY" ]; then
-              VIASH_PAR_MODALITY="$2"
-            else
-              VIASH_PAR_MODALITY="$VIASH_PAR_MODALITY:""$2"
-            fi
+            [ -n "$VIASH_PAR_MODALITY" ] && ViashError Bad arguments for option \'--modality\': \'$VIASH_PAR_MODALITY\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+            VIASH_PAR_MODALITY="$2"
             [ $# -lt 2 ] && ViashError Not enough arguments passed to --modality. Use "--help" to get more information on the parameters. && exit 1
             shift 2
             ;;
         --modality=*)
-            if [ -z "$VIASH_PAR_MODALITY" ]; then
-              VIASH_PAR_MODALITY=$(ViashRemoveFlags "$1")
-            else
-              VIASH_PAR_MODALITY="$VIASH_PAR_MODALITY:"$(ViashRemoveFlags "$1")
-            fi
+            [ -n "$VIASH_PAR_MODALITY" ] && ViashError Bad arguments for option \'--modality=*\': \'$VIASH_PAR_MODALITY\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+            VIASH_PAR_MODALITY=$(ViashRemoveFlags "$1")
             shift 1
             ;;
         --obsm_input)
@@ -907,7 +901,7 @@ from harmonypy import run_harmony
 par = {
   'input': $( if [ ! -z ${VIASH_PAR_INPUT+x} ]; then echo "'${VIASH_PAR_INPUT//\'/\\\'}'"; else echo None; fi ),
   'output': $( if [ ! -z ${VIASH_PAR_OUTPUT+x} ]; then echo "'${VIASH_PAR_OUTPUT//\'/\\\'}'"; else echo None; fi ),
-  'modality': $( if [ ! -z ${VIASH_PAR_MODALITY+x} ]; then echo "'${VIASH_PAR_MODALITY//\'/\\\'}'.split(':')"; else echo None; fi ),
+  'modality': $( if [ ! -z ${VIASH_PAR_MODALITY+x} ]; then echo "'${VIASH_PAR_MODALITY//\'/\\\'}'"; else echo None; fi ),
   'obsm_input': $( if [ ! -z ${VIASH_PAR_OBSM_INPUT+x} ]; then echo "'${VIASH_PAR_OBSM_INPUT//\'/\\\'}'"; else echo None; fi ),
   'obsm_output': $( if [ ! -z ${VIASH_PAR_OBSM_OUTPUT+x} ]; then echo "'${VIASH_PAR_OBSM_OUTPUT//\'/\\\'}'"; else echo None; fi ),
   'theta': $( if [ ! -z ${VIASH_PAR_THETA+x} ]; then echo "list(map(float, '${VIASH_PAR_THETA//\'/\\\'}'.split(':')))"; else echo None; fi ),
@@ -934,12 +928,12 @@ resources_dir = '$VIASH_META_RESOURCES_DIR'
 
 def main():
     mdata = mudata.read(par["input"].strip())
-    for mod_name in par['modality']:
-        mod = mdata.mod[mod_name]
-        pca_embedding = mod.obsm[par['obsm_input']]
-        metadata = mod.obs
-        ho = run_harmony(pca_embedding, metadata, par['obs_covariates'], theta=par['theta'])
-        mod.obsm[par["obsm_output"]] = ho.Z_corr.T
+    mod_name = par['modality']
+    mod = mdata.mod[mod_name]
+    pca_embedding = mod.obsm[par['obsm_input']]
+    metadata = mod.obs
+    ho = run_harmony(pca_embedding, metadata, par['obs_covariates'], theta=par['theta'])
+    mod.obsm[par["obsm_output"]] = ho.Z_corr.T
     mdata.write_h5mu(par['output'].strip())
 
 if __name__ == "__main__":

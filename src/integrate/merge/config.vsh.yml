@@ -6,7 +6,7 @@ functionality:
     Combine one or more single-modality .h5mu files together into one .h5mu file.
   authors:
     - name: Dries Schaumont
-      email: Dschaumo@its.jnj.com
+      email: dries@data-intuitive.com
       roles: [ maintainer ]
   arguments:
     - name: "--input"
