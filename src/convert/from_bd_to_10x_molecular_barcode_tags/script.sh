@@ -24,7 +24,7 @@ set -eo pipefail
 # |    | cell) Note: You can distinguish between an invalid cell label and a noise cell   |
 # |    | with the CB tag (invalid cell labels are 0).                                     |
 # -----------------------------------------------------------------------------------------
-# | ST | The value is 1–12, indicating the Sample Tag of the called putative cell, or M   |
+# | ST | The value is 1-12, indicating the Sample Tag of the called putative cell, or M   |
 # |    | for multiplet, or x for undetermined.                                            |
 # =========================================================================================
 
