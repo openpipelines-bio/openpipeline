@@ -29,6 +29,7 @@ functionality:
     - name: "--modality"
       type: string
       description: "Which modality (one or more) to run this component on."
+      multiple: true
       default: "rna"
     - name: "--obs_keys"
       type: string

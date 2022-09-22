@@ -17,15 +17,15 @@ par = {
 # to configure output field
 
 h5mu_data = read_h5mu(par["input"])
-modality_name = par["modality"]
-modality = h5mu_data.mod[modality_name]
-bbknn.bbknn(
-    modality,
-    use_rep=par["obsm_input"],
-    batch_key = par["obs_batch"],
-    neighbors_within_batch=par["n_neighbors_within_batch"], 
-    n_pcs=par["n_pcs"], 
-    trim=par["n_trim"]
-)
+for modality_name in par["modality"]:
+    modality = h5mu_data.mod[modality_name]
+    bbknn.bbknn(
+        modality,
+        use_rep=par["obsm_input"],
+        batch_key = par["obs_batch"],
+        neighbors_within_batch=par["n_neighbors_within_batch"], 
+        n_pcs=par["n_pcs"], 
+        trim=par["n_trim"]
+    )
 
 h5mu_data.write(par["output"], compression = "gzip")

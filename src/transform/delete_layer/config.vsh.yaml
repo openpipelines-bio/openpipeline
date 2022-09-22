@@ -18,6 +18,7 @@ functionality:
       example: input.h5mu
     - name: "--modality"
       type: string
+      multiple: true
       default: "rna"
       required: false
     - name: "--layer"

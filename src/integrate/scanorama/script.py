@@ -8,18 +8,18 @@ from mudata import read_h5mu
 
 mdata = read_h5mu(par["input"])
 
-mod_name = par["modality"]
-mod = mdata.mod[mod_name]
+for mod_name in par["modality"]:
+    mod = mdata.mod[mod_name]
 
-# Integration.
-scanorama_integrate(mod, 
-                    key=par["obs_batch"], 
-                    basis=par["obsm_input"],
-                    adjusted_basis=par["obsm_output"],
-                    knn=par["knn"],
-                    alpha=par["alpha"], 
-                    sigma=par["sigma"],
-                    approx=par["approx"],
-                    batch_size=par["batch_size"] )
+    # Integration.
+    scanorama_integrate(mod, 
+                        key=par["obs_batch"], 
+                        basis=par["obsm_input"],
+                        adjusted_basis=par["obsm_output"],
+                        knn=par["knn"],
+                        alpha=par["alpha"], 
+                        sigma=par["sigma"],
+                        approx=par["approx"],
+                        batch_size=par["batch_size"] )
 
 mdata.write(par["output"], compression = "gzip")

@@ -89,7 +89,7 @@ thisConfig = processConfig([
       ],
       "required" : false,
       "direction" : "input",
-      "multiple" : false,
+      "multiple" : true,
       "multiple_sep" : ":"
     },
     {
@@ -188,7 +188,7 @@ viash_orig_warn_ <- options(warn = 2)
 par <- list(
   "input" = $( if [ ! -z ${VIASH_PAR_INPUT+x} ]; then echo "'${VIASH_PAR_INPUT//\\'/\\\\\\'}'"; else echo NULL; fi ),
   "output" = $( if [ ! -z ${VIASH_PAR_OUTPUT+x} ]; then echo "'${VIASH_PAR_OUTPUT//\\'/\\\\\\'}'"; else echo NULL; fi ),
-  "modality" = $( if [ ! -z ${VIASH_PAR_MODALITY+x} ]; then echo "'${VIASH_PAR_MODALITY//\\'/\\\\\\'}'"; else echo NULL; fi ),
+  "modality" = $( if [ ! -z ${VIASH_PAR_MODALITY+x} ]; then echo "strsplit('${VIASH_PAR_MODALITY//\\'/\\\\\\'}', split = ':')[[1]]"; else echo NULL; fi ),
   "obsm_input" = $( if [ ! -z ${VIASH_PAR_OBSM_INPUT+x} ]; then echo "'${VIASH_PAR_OBSM_INPUT//\\'/\\\\\\'}'"; else echo NULL; fi ),
   "obsm_output" = $( if [ ! -z ${VIASH_PAR_OBSM_OUTPUT+x} ]; then echo "'${VIASH_PAR_OBSM_OUTPUT//\\'/\\\\\\'}'"; else echo NULL; fi ),
   "theta" = $( if [ ! -z ${VIASH_PAR_THETA+x} ]; then echo "as.numeric(strsplit('${VIASH_PAR_THETA//\\'/\\\\\\'}', split = ':')[[1]])"; else echo NULL; fi ),
