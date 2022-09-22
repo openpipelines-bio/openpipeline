@@ -401,9 +401,9 @@ RUN pip install --upgrade pip && \
 
 LABEL org.opencontainers.image.authors="Dries Schaumont <dries@data-intuitive.com> (maintainer)"
 LABEL org.opencontainers.image.description="Companion container for running component split split_modalities"
-LABEL org.opencontainers.image.created="2022-09-20T13:40:59Z"
+LABEL org.opencontainers.image.created="2022-09-22T06:22:23Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="2ac155632a1fb0367fa83a8e481f22db92fdb28b"
+LABEL org.opencontainers.image.revision="a54feea9a1b08d857dc39d00088671507ccda4b5"
 LABEL org.opencontainers.image.version="main_build"
 VIASHDOCKER
 }
