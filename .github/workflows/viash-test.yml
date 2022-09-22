@@ -38,6 +38,8 @@ jobs:
       cachehash: ${{ steps.cachehash.outputs.cachehash }}
     steps:
     - uses: actions/checkout@v3
+      with:
+        fetch-depth: 0 
 
     - name: Fetch viash
       run: |
@@ -123,8 +125,6 @@ jobs:
 
     steps:
     - uses: actions/checkout@v3
-      with:
-        fetch-depth: 0 
 
     - name: Fetch viash
       run: |
