@@ -37,13 +37,16 @@ def setWorkflowArguments(Map args) {
         newData = data.findAll{!toRemove.contains(it.key)}
 
         // determine splitargs
-        splitArgs = args.collectEntries{procKey, dataKeys -> 
+        splitArgs = args.
+          collectEntries{procKey, dataKeys -> 
           // dataKeys is a map but could also be a list
-          newSplitData = dataKeys.collectEntries{ val ->
-            newKey = val instanceof String ? val : val.key
-            origKey = val instanceof String ? val : val.value
-            [ newKey, data[origKey] ]
-          }
+          newSplitData = dataKeys
+            .collectEntries{ val ->
+              newKey = val instanceof String ? val : val.key
+              origKey = val instanceof String ? val : val.value
+              [ newKey, data[origKey] ]
+            }
+            .findAll{it.value}
           [procKey, newSplitData]
         }
 
@@ -63,8 +66,9 @@ def setWorkflowArguments(Map args) {
 */
 
 
-def getWorkflowArguments(String key) {
-  wfKey = "getWorkflowArguments_" + key
+def getWorkflowArguments(Map args) {
+  def inputKey = args.inputKey ?: "input"
+  def wfKey = "getWorkflowArguments_" + args.key
   
   workflow getWorkflowArgumentsInstance {
     take:
@@ -81,9 +85,9 @@ def getWorkflowArguments(String key) {
 
         // try to infer arg name
         if (data !instanceof Map) {
-          data = [ input: data ]
+          data = [[ inputKey, data ]].collectEntries()
         }
-        newData = data + splitArgs.remove(key)
+        newData = data + splitArgs.remove(args.key)
 
         [ id, newData, splitArgs] + passthrough
       }
