@@ -21,7 +21,6 @@ functionality:
     - name: "--modality"
       description: List of modalities to process.
       type: string
-      multiple: true
       default: "rna"
       required: false
     - name: "--max_value"
