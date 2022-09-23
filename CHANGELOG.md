@@ -4,6 +4,8 @@
 
 * `reference/make_reference`: Input files changed from `type: string` to `type: file` to allow Nextflow to cache the input files fetched from URL.
 
+* several components (except `from_h5ad_to_5hmu`): the `--modality` arguments no longer accept multiple values.
+
 ## NEW FUNCTIONALITY
 
 * `workflows/ingestion/make_reference`: A generic component to build a transcriptomics reference into one of many formats.

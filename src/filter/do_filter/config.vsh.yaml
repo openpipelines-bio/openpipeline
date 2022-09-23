@@ -20,7 +20,6 @@ functionality:
 
     - name: "--modality"
       type: string
-      multiple: true
       default: "rna"
       required: false
       

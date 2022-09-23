@@ -47,13 +47,13 @@ workflow run_wf {
     )
 
     // generate reference
-    | getWorkflowArguments("make_reference")
+    | getWorkflowArguments(key: "make_reference")
     | make_reference.run(auto: [ publish: true ])
 
 
   // generate cellranger index (if so desired)
   cellranger_ch = ref_ch
-    | getWorkflowArguments("cellranger")
+    | getWorkflowArguments(key: "cellranger")
     | filter{ "cellranger" in it[1].target }
     | build_cellranger_reference.run(
       renameKeys: [ genome_fasta: "output_fasta", transcriptome_gtf: "output_gtf" ], 
@@ -63,7 +63,7 @@ workflow run_wf {
 
   // generate bd_rhapsody index (if so desired)
   bd_rhapsody = ref_ch
-    | getWorkflowArguments("bd_rhapsody")
+    | getWorkflowArguments(key: "bd_rhapsody")
     | filter{ "bd_rhapsody" in it[1].target }
     | build_bdrhap_reference.run(
       renameKeys: [ genome_fasta: "output_fasta", transcriptome_gtf: "output_gtf" ], 
