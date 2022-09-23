@@ -1,6 +1,6 @@
 # Arguments
 input: # please fill in - example: "input.h5mu"
-modality: ["rna"]
+modality: "rna"
 # output: "$id.$key.output.h5mu"
 obs_name_filter: "filter_with_scrublet"
 do_subset: false

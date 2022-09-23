@@ -27,7 +27,6 @@ functionality:
       required: true
     - name: "--modality"
       type: string
-      multiple: true
       default: "rna"
       required: false
     - name: "--obsm_input"

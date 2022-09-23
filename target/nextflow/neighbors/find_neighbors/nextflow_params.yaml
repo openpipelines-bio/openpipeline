@@ -1,6 +1,6 @@
 # Arguments
 input: # please fill in - example: "input.h5mu"
-modality: ["rna"]
+modality: "rna"
 obsm_input: "X_pca"
 # output: "$id.$key.output.h5mu"
 uns_output: "neighbors"

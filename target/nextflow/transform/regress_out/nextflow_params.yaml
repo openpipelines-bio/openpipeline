@@ -1,7 +1,7 @@
 # Arguments
 input: # please fill in - example: "input.h5mu"
 # output: "$id.$key.output.h5mu"
-modality: ["rna"]
+modality: "rna"
 # obs_keys: ["foo"]
 
 # Nextflow input-output arguments

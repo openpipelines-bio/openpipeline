@@ -1,6 +1,6 @@
 # Inputs
 input: # please fill in - example: "input.h5mu"
-modality: ["rna"]
+modality: "rna"
 uns_neighbors: "neighbors"
 
 # Outputs

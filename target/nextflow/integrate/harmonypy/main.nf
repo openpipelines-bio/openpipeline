@@ -85,7 +85,7 @@ thisConfig = processConfig([
       ],
       "required" : false,
       "direction" : "input",
-      "multiple" : true,
+      "multiple" : false,
       "multiple_sep" : ":"
     },
     {
@@ -178,7 +178,7 @@ from harmonypy import run_harmony
 par = {
   'input': $( if [ ! -z ${VIASH_PAR_INPUT+x} ]; then echo "'${VIASH_PAR_INPUT//\\'/\\\\\\'}'"; else echo None; fi ),
   'output': $( if [ ! -z ${VIASH_PAR_OUTPUT+x} ]; then echo "'${VIASH_PAR_OUTPUT//\\'/\\\\\\'}'"; else echo None; fi ),
-  'modality': $( if [ ! -z ${VIASH_PAR_MODALITY+x} ]; then echo "'${VIASH_PAR_MODALITY//\\'/\\\\\\'}'.split(':')"; else echo None; fi ),
+  'modality': $( if [ ! -z ${VIASH_PAR_MODALITY+x} ]; then echo "'${VIASH_PAR_MODALITY//\\'/\\\\\\'}'"; else echo None; fi ),
   'obsm_input': $( if [ ! -z ${VIASH_PAR_OBSM_INPUT+x} ]; then echo "'${VIASH_PAR_OBSM_INPUT//\\'/\\\\\\'}'"; else echo None; fi ),
   'obsm_output': $( if [ ! -z ${VIASH_PAR_OBSM_OUTPUT+x} ]; then echo "'${VIASH_PAR_OBSM_OUTPUT//\\'/\\\\\\'}'"; else echo None; fi ),
   'theta': $( if [ ! -z ${VIASH_PAR_THETA+x} ]; then echo "list(map(float, '${VIASH_PAR_THETA//\\'/\\\\\\'}'.split(':')))"; else echo None; fi ),
@@ -205,12 +205,12 @@ resources_dir = '$VIASH_META_RESOURCES_DIR'
 
 def main():
     mdata = mudata.read(par["input"].strip())
-    for mod_name in par['modality']:
-        mod = mdata.mod[mod_name]
-        pca_embedding = mod.obsm[par['obsm_input']]
-        metadata = mod.obs
-        ho = run_harmony(pca_embedding, metadata, par['obs_covariates'], theta=par['theta'])
-        mod.obsm[par["obsm_output"]] = ho.Z_corr.T
+    mod_name = par['modality']
+    mod = mdata.mod[mod_name]
+    pca_embedding = mod.obsm[par['obsm_input']]
+    metadata = mod.obs
+    ho = run_harmony(pca_embedding, metadata, par['obs_covariates'], theta=par['theta'])
+    mod.obsm[par["obsm_output"]] = ho.Z_corr.T
     mdata.write_h5mu(par['output'].strip())
 
 if __name__ == "__main__":

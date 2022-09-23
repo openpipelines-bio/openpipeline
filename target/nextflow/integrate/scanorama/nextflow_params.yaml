@@ -1,6 +1,6 @@
 # Arguments
 input: # please fill in - example: "path/to/file"
-modality: ["rna"]
+modality: "rna"
 # output: "$id.$key.output.h5ad"
 obs_batch: "batch"
 obsm_input: "X_pca"

@@ -1,6 +1,6 @@
 # Arguments
 # input: "path/to/file"
-modality: ["rna"]
+modality: "rna"
 obsm_input: "X_pca"
 obs_batch: "batch"
 # output: "$id.$key.output.output"
