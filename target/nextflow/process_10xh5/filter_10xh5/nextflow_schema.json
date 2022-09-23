@@ -1,7 +1,7 @@
 {
     "$schema": "http://json-schema.org/draft-07/schema",
-    "title": "cellranger_count_split",
-    "description": "Split 10x Cell Ranger output directory into separate output fields.",
+    "title": "filter_10xh5",
+    "description": "Filter a 10x h5 dataset.\n",
     "type": "object",
     "definitions": {
       "arguments" : {
@@ -12,52 +12,45 @@
         "properties": {
           "input": {
             "type":"string",
-            "description": "Output directory from a Cell Ranger count run.",
+            "description": "An h5 file from the 10x genomics website.",
             
             
             "default": ""
           },
-          "filtered_h5": {
+          "output": {
             "type":"string",
-            "description": "No description",
+            "description": "Output h5 file.",
             
             
-            "default": "$id.$key.filtered_h5.h5"
+            "default": "$id.$key.output.h5"
           },
-          "metrics_summary": {
-            "type":"string",
-            "description": "No description",
+          "min_library_size": {
+            "type":"integer",
+            "description": "Minimum library size.",
             
             
-            "default": "$id.$key.metrics_summary.csv"
+            "default": "0"
           },
-          "molecule_info": {
-            "type":"string",
-            "description": "No description",
+          "min_cells_per_gene": {
+            "type":"integer",
+            "description": "Minimum number of cells per gene.",
             
             
-            "default": "$id.$key.molecule_info.h5"
+            "default": "0"
           },
-          "bam": {
+          "keep_feature_types": {
             "type":"string",
-            "description": "No description",
+            "description": "Specify which feature types will never be filtered out",
             
             
-            "default": "$id.$key.bam.bam"
+            "default": ""
           },
-          "bai": {
-            "type":"string",
-            "description": "No description",
+          "verbose": {
+            "type":"boolean",
+            "description": "Increase verbosity",
             
             
-            "default": "$id.$key.bai.bai"
-          },
-          "raw_h5": {
-            "type":"string",
-            "description": "No description",
-            
-            
-            "default": "$id.$key.raw_h5.h5"
+            "default": "False"
           }
         }
       },
