@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -eo pipefail
+
 # ensure that the command below is run from the root of the repository
 REPO_ROOT=$(git rev-parse --show-toplevel)
 cd "$REPO_ROOT"
@@ -17,7 +19,7 @@ mkdir -p "$velocyto_dir"
 # Create a compatible BAM file from BD Rhapsody Output #
 ########################################################
 
-bd_rhap_wta_bam="resources_test/bdrhap_5kjrt/processed/SMK/Combined_SMK_final.BAM"
+bd_rhap_wta_bam="resources_test/bdrhap_5kjrt/processed/SMK.bd_rhapsody.output/Combined_sample_final.BAM"
 
 if [[ ! -f "$bd_rhap_wta_bam" ]]; then
     echo "$bd_rhap_wta_bam does not exist. Please generate BD Rhapsody test data first."

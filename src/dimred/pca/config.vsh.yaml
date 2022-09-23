@@ -39,10 +39,20 @@ functionality:
       required: true
       example: output.h5mu
 
-    - name: "--output_key"
+    - name: "--obsm_output"
       type: string
-      description: The pre/postfix under which to store the PCA results. More specifically, .obsm["X_"+key], .uns[key] and .varm["loadings_"+key].
-      default: "pca"
+      default: "X_pca"
+      description: "In which .obsm slot to store the resulting embedding."
+
+    - name: "--varm_output"
+      type: string
+      default: "pca_loadings"
+      description: "In which .varm slot to store the resulting loadings matrix."
+
+    - name: "--uns_output"
+      type: string
+      default: "pca_variance"
+      description: "In which .uns slot to store the resulting variance objects."
     
     # arguments
     - name: "--num_components"

@@ -6,7 +6,7 @@ functionality:
     Split the modalities from a single .h5mu multimodal sample into seperate .h5mu files. 
   authors:
     - name: Dries Schaumont
-      email: Dschaumo@its.jnj.com
+      email: dries@data-intuitive.com
       roles: [ maintainer ]
   arguments:
     - name: "--input"
@@ -22,7 +22,7 @@ functionality:
       direction: output
     - name: "--compression"
       type: string
-      description: The compression format to be used on the final h5ad object.
+      description: The compression format to be used on the final h5mu object.
       default: "gzip"
   resources:
     - type: python_script

@@ -23,7 +23,7 @@ sample_sheet = meta["resources_dir"] + "/cellranger_tiny_bcl/bcl/sample_sheet.cs
 output = "test_output"
 
 cmd_pars = [
-    "./" + meta["functionality_name"],
+    meta["executable"],
     "--input", input,
     "--sample_sheet", sample_sheet,
     "--output", output,

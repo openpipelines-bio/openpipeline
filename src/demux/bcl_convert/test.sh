@@ -1,6 +1,6 @@
 #!/bin/bash
 
-set -ex
+
 
 # bcl-convert requires a v2 sample sheet
 # bcl-convert is a bit more strict concerning filter files being present or not.

@@ -1,34 +1,128 @@
-# openpipeline 0.5.0
+# openpipeline 0.5.1
+
+## BREAKING CHANGES
+
+* `reference/make_reference`: Input files changed from `type: string` to `type: file` to allow Nextflow to cache the input files fetched from URL.
 
 ## NEW FUNCTIONALITY
 
-* `workflows/integration/multiomics`: implement pipeline for processing multiple multiomics samples.
-
-* `transform/scaling`: Scale data to unit variance and zero mean.
-
-* `integrate/harmony`: Added a component for running a Harmony integration analysis (R-based).
-
-* `integrate/harmonypy`: Added a component for running a Harmony integration analysis (Python-based).
-
-* `integrate/concat`: Added 'move' option to `--other_axis_mode`, which allows merging .obs and .var by only keeping elements of the matrices which are the same in each of the samples, moving the conflicting values to .varm or .obsm.
+* `workflows/ingestion/make_reference`: A generic component to build a transcriptomics reference into one of many formats.
 
 ## MAJOR CHANGES
 
-* Multiple components: update to anndata 0.8 with mudata 0.2.0. This means that the format of the .h5mu files have changed.
-
-* `process_rna/singlesample`: move transformation counts into layers instead of overwriting .X.
-
+* `workflows/utils/DataFlowHelper.nf`: Added helper functions `setWorkflowArguments()` and `getWorkflowArguments()` to split the data field of a channel event into a hashmap. Example usage:
+  ```groovy
+  | setWorkflowArguments(
+    pca: [ "input": "input", "obsm_output": "obsm_pca" ]
+    integration: [ "obs_covariates": "obs_covariates", "obsm_input": "obsm_pca" ]
+  )
+  | getWorkflowArguments("pca")
+  | pca
+  | getWorkflowArguments("integration")
+  | integration
+  ```
 ## MINOR CHANGES
+
+* `dimred/umap`: Streamline UMAP parameters by adding `--obsm_output` parameter to allow choosing the output `.obsm` slot.
+
+* `workflows/multiomics/integration`: Added arguments for tuning the various output slots of the integration pipeline, namely `--obsm_pca`, `--obsm_integrated`, `--uns_neighbors`, `--obsp_neighbor_distances`, `--obsp_neighbor_connectivities`, `--obs_cluster`, `--obsm_umap`.
 
 ## BUG FIXES
 
-* Several components: revert using slim versions of containers because they do not provide the tools to run nextflow with trace capabilities.
+* `convert/from_bd_to_10x_molecular_barcode_tags`: Replaced UTF8 characters with ASCII. OpenJDK 17 or lower might throw the following exception when trying to read a UTF8 file: `java.nio.charset.MalformedInputException: Input length = 1`.
+
+# openpipeline 0.5.0
+
+Major redesign of the integration and multiomic workflows. Current list of workflows:
+
+* `ingestion/bd_rhapsody`: A generic pipeline for running BD Rhapsody WTA or Targeted mapping, with support for AbSeq, VDJ and/or SMK.
+
+* `ingestion/cellranger_mapping`: A pipeline for running Cell Ranger mapping.
+
+* `ingestion/demux`: A generic pipeline for running bcl2fastq, bcl-convert or Cell Ranger mkfastq.
+
+* `multiomics/rna_singlesample`: Processing unimodal single-sample RNA transcriptomics data.
+
+* `multiomics/rna_multisample`: Processing unimodal multi-sample RNA transcriptomics data.
+
+* `multiomics/integration`: A pipeline for demultiplexing multimodal multi-sample RNA transcriptomics data.
+
+* `multiomics/full_pipeline`: A pipeline to analyse multiple multiomics samples.
+
+## BREAKING CHANGES
+
+* Many components: Renamed `.var["gene_ids"]` and `.var["feature_types"]` to `.var["gene_id"]` and `.var["feature_type"]`.
+
+## DEPRECATED
+
+* `convert/from_10xh5_to_h5ad` and `convert/from_bdrhap_to_h5ad`: Removed h5ad based components.
+
+* `mapping/bd_rhapsody_wta` and `workflows/ingestion/bd_rhapsody_wta`: Deprecated in favour for more generic `mapping/bd_rhapsody` and `workflows/ingestion/bd_rhapsody` pipelines.
+
+* `convert/from_csv_to_h5mu`: Disable until it is needed again.
+
+* `integrate/concat`: Deprecated `"concat"` option for `--other_axis_mode`.
+
+## NEW COMPONENTS
+
+* `graph/bbknn`: Batch balanced KNN.
+
+* `transform/scaling`: Scale data to unit variance and zero mean.
+
+* `mapping/bd_rhapsody`: Added generic component for running the BD Rhapsody WTA or Targeted analysis, with support for AbSeq, VDJ and/or SMK.
+
+* `integrate/harmony` and `integrate/harmonypy`: Run a Harmony integration analysis (R-based and Python-based, respectively).
+
+* `integrate/scanorama`: Use Scanorama to integrate different experiments.
+
+* `reference/make_reference`: Download a transcriptomics reference and preprocess it (adding ERCC spikeins and filtering with a regex).
+
+* `reference/build_bdrhap_reference`: Compile a reference into a STAR index in the format expected by BD Rhapsody.
+
+## NEW WORKFLOWS
+
+* `workflows/ingestion/bd_rhapsody`: Added generic workflow for running the BD Rhapsody WTA or Targeted analysis, with support for AbSeq, VDJ and/or SMK.
+
+* `workflows/multiomics/full_pipeline`: Implement pipeline for processing multiple multiomics samples.
+
+## NEW FUNCTIONALITY
+
+* `convert/from_bdrhap_to_h5mu`: Added support for being able to deal with WTA, Targeted, SMK, AbSeq and VDJ data.
+
+* `integrate/concat`: Added `"move"` option to `--other_axis_mode`, which allows merging `.obs` and `.var` by only keeping elements of the matrices which are the same in each of the samples, moving the conflicting values to `.varm` or `.obsm`.
+
+## MAJOR CHANGES
+
+* Multiple components: Update to anndata 0.8 with mudata 0.2.0. This means that the format of the `.h5mu` files have changed.
+
+* `multiomics/rna_singlesample`: Move transformation counts into layers instead of overwriting `.X`.
+
+* Updated to Viash 0.6.0.
+
+## MINOR CHANGES
+
+* `velocity/velocyto`: Allow configuring memory and parallellisation.
+
+* `cluster/leiden`: Add `--obsp_connectivities` parameter to allow choosing the output slot.
+
+* `workflows/multiomics/rna_singlesample`, `workflows/multiomics/rna_multisample` and `workflows/multiomics/integration`: Allow choosing the output paths.
+
+* `neighbors/bbknn` and `neighbors/find_neighbors`: Add parameters for choosing the input/output slots.
+
+* `dimred/pca` and `dimred/umap`: Add parameters for choosing the input/output slots.
+
+* `integrate/concat`: Optimize concat performance by adding multiprocessing and refactoring functions.
+
+* `workflows/multimodal_integration`: Add `obs_covariates` argument to pipeline.
+
+## BUG FIXES
+
+* Several components: Revert using slim versions of containers because they do not provide the tools to run nextflow with trace capabilities.
 
 * `integrate/concat`: Fix an issue where joining boolean values caused `TypeError`.
 
-* `workflows/process_rna/multisample`, `workflows/process_rna/singlesample` and `workflows/integration/multimodal_integration`: use nextflow trace reporting when running integration tests.
+* `workflows/multiomics/rna_multisample`, `workflows/multiomics/rna_singlesample` and `workflows/multiomics/integration`: Use nextflow trace reporting when running integration tests.
 
-## DEPRECATED
 
 # openpipeline 0.4.1
 

@@ -6,7 +6,7 @@ input = meta["resources_dir"] + "/pbmc_1k_protein_v3/pbmc_1k_protein_v3_filtered
 output = "output.h5mu"
 
 cmd_pars = [
-    "./" + meta["functionality_name"],
+    meta["executable"],
     "--input", input,
     "--output", output,
 ]
@@ -19,7 +19,7 @@ assert path.exists("output.h5mu"), "No output was created."
 data = mu.read_h5mu("output.h5mu")
 
 # check whether gex was found
-assert data.mod["rna"].var["feature_types"].unique() == [
+assert data.mod["rna"].var["feature_type"].unique() == [
     "Gene Expression"
 ], "Output X should only contain Gene Expression vars."
 

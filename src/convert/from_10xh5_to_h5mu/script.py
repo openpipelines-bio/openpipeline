@@ -4,7 +4,7 @@ from sys import stdout
 
 ## VIASH START
 par = {
-    "input": "5k_pbmc_protein_v3_nextgem_filtered_feature_bc_matrix.h5",
+    "input": "resources_test/pbmc_1k_protein_v3/pbmc_1k_protein_v3_filtered_feature_bc_matrix.h5",
     "output": "5k_pbmc_protein_v3_nextgem_filtered_feature_bc_matrix.h5mu",
 }
 ## VIASH END
@@ -21,6 +21,12 @@ mdata = mu.read_10x_h5(par["input"])
 
 logger.info("Making unique.")
 mdata.var_names_make_unique()
+
+logger.info("Renaming keys.")
+for adata in mdata.mod.values():
+    adata.var.rename(columns={'gene_ids': 'gene_id', 'feature_types': 'feature_type'}, inplace=True)
+mdata.var = mdata.var.drop(["feature_types", "gene_ids"], axis=1)
+mdata.update()
 
 logger.info("Writing %s.", par["output"])
 mdata.write_h5mu(par["output"])

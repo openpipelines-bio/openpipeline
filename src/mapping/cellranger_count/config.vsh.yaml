@@ -10,7 +10,7 @@ functionality:
       roles: [ author ]
       props: { github: srdsam }
     - name: Robrecht Cannoodt
-      email: rcannood@gmail.com
+      email: robrecht@data-intuitive.com
       roles: [ author, maintainer ]
       props: { github: rcannood, orcid: "0000-0003-3641-729X" }
   arguments:
@@ -35,7 +35,7 @@ functionality:
     # arguments
     - type: integer
       name: --expect_cells
-      default: 3000
+      example: 3000
       description: "Expected number of recovered cells, used as input to cell calling algorithm."
 
     - type: string
@@ -62,15 +62,15 @@ functionality:
       default: false
       description: Whether or not to run the secondary analysis e.g. clustering.
 
-    # runtime args
-    - type: integer
-      name: --cores
-      description:  Set max cores the pipeline may request at one time.
-      example: 2
-    - type: integer
-      name: --memory
-      description: Set max GB the pipeline may request at one time.
-      example: 10
+    - type: boolean
+      name: "--generate_bam"
+      default: true
+      description: Whether to generate a BAM file.
+    
+    - type: boolean
+      name: "--include_introns"
+      default: true
+      description: Include intronic reads in count (default=true unless --target-panel is specified in which case default=false)
   resources:
     - type: bash_script
       path: script.sh
@@ -80,7 +80,7 @@ functionality:
     - path: ../../../resources_test/cellranger_tiny_fastq
 platforms:
   - type: docker
-    image: ghcr.io/data-intuitive/cellranger:6.1
+    image: ghcr.io/data-intuitive/cellranger:7.0
     setup:
       - type: docker
         run: apt update && apt upgrade -y

@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -eo pipefail
+
 # Handle reports stored separate
 reports_line=""
 $par_separate_reports && reports_line="--reports-dir $par_reports"

@@ -6,10 +6,10 @@ functionality:
                 Based on an implementation in python from https://github.com/slowkow/harmonypy"
   authors:
     - name: Dries Schaumont
-      email: dries.schaumont@its.jnj.com
+      email: dries@data-intuitive.com
       roles: [ maintainer ]
     - name: Robrecht Cannoodt
-      email: rcannood@gmail.com
+      email: robrecht@data-intuitive.com
       roles: [ contributor ]
       props: { github: rcannood, orcid: "0000-0003-3641-729X" }
   arguments:
@@ -49,6 +49,7 @@ functionality:
       type: string
       description: "The .obs field(s) that define the covariate(s) to regress out."
       example: ["batch", "sample"]
+      required: true
       multiple: true
   resources:
     - type: python_script

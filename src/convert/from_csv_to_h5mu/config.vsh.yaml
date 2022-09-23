@@ -1,12 +1,13 @@
 functionality:
   name: from_csv_to_h5mu
+  status: disabled
   namespace: "convert"
   version: "dev"
   description: |
-    Converts an csv into an h5ad file.
+    Converts an csv into an h5mu file.
   authors:
     - name: Dries De Maeyer
-      email: DDeMaey1@its.jnj.com
+      email: ddemaeyer@gmail.com
       roles: [ maintainer ]
       props: { account: ddemaey1 }
   arguments:

@@ -24,12 +24,12 @@ reference = meta["resources_dir"] + "/cellranger_tiny_fastq/cellranger_tiny_ref/
 output = "test_output"
 
 cmd_pars = [
-    "./" + meta["functionality_name"],
+    meta["executable"],
     "--input", input,
     "--reference", reference,
     "--output", output,
     "--cores", "2",
-    "--memory", "4"
+    "--memory", "5gb"
 ]
 out = subprocess.check_output(cmd_pars).decode("utf-8")
 

@@ -8,7 +8,7 @@ functionality:
     sync_test_resources --input s3://openpipelines-data --output resources_test
   authors:
     - name: Robrecht Cannoodt
-      email: rcannood@gmail.com
+      email: robrecht@data-intuitive.com
       roles: [ maintainer ]
       props: { github: rcannood, orcid: "0000-0003-3641-729X" }
   arguments:

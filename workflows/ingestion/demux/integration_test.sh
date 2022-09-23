@@ -1,5 +1,7 @@
 #!/bin/bash
 
+
+
 # get the root of the directory
 REPO_ROOT=$(git rev-parse --show-toplevel)
 
@@ -13,6 +15,5 @@ bin/nextflow \
   -main-script workflows/ingestion/demux/main.nf \
   -entry test_wf \
   -resume \
-  -with-docker \
-  -with-trace work/trace.txt \
-  --publishDir demux-test
+  -profile docker,no_publish \
+  -with-trace work/trace.txt

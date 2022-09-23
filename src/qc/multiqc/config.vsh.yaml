@@ -23,9 +23,9 @@ functionality:
   resources:
     - type: bash_script
       path: script.sh
-  test_resources:
-    - type: bash_script
-      path: test.sh
+  # test_resources:
+  #   - type: bash_script
+  #     path: test.sh
 platforms:
   - type: docker
     image: python:3.8

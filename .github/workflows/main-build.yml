@@ -13,12 +13,18 @@ jobs:
     if: "!contains(github.event.head_commit.message, 'ci skip')"
 
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
 
     - name: Fetch viash
       run: |
         bin/init
         bin/viash -h
+
+    - name: Fetch viash tools
+      run: |
+
+        bin/init_tools ${{ secrets.GTHB_USER }} ${{ secrets.GTHB_PAT }}
+        tree bin/tools
 
     # create cachehash key
     - name: Create hash key
@@ -56,6 +62,22 @@ jobs:
         # build target dir
         bin/viash_build -m release -t main_build
 
+    - name: Build nextflow schemas & params
+      run: |
+        bin/viash ns list -s src -p nextflow --format json 2> /dev/null > /tmp/ns_list_src.json
+        inputs=$(jq -r '[.[] | .info.config] | join(";")' /tmp/ns_list_src.json)
+        outputs_params=$(jq -r '[.[] | "target/nextflow/" + .functionality.namespace + "/" + .functionality.name + "/nextflow_params.yaml"] | join(";")' /tmp/ns_list_src.json)
+        outputs_schema=$(jq -r '[.[] | "target/nextflow/" + .functionality.namespace + "/" + .functionality.name + "/nextflow_schema.json"] | join(";")' /tmp/ns_list_src.json)
+        bin/tools/docker/nextflow/generate_params/generate_params --input "$inputs" --output "$outputs_params"
+        bin/tools/docker/nextflow/generate_schema/generate_schema --input "$inputs" --output "$outputs_schema"
+
+        bin/viash ns list -s workflows --format json 2> /dev/null > /tmp/ns_list_workflow.json
+        inputs=$(jq -r '[.[] | .info.config] | join(";")' /tmp/ns_list_workflow.json)
+        outputs_params=$(jq -r '[.[] | .info.config | capture("^(?<dir>.*\/)").dir + "/nextflow_params.yaml"] | join(";")' /tmp/ns_list_workflow.json)
+        outputs_schema=$(jq -r '[.[] | .info.config | capture("^(?<dir>.*\/)").dir + "/nextflow_schema.json"] | join(";")' /tmp/ns_list_workflow.json)
+        bin/tools/docker/nextflow/generate_params/generate_params --input "$inputs" --output "$outputs_params"
+        bin/tools/docker/nextflow/generate_schema/generate_schema --input "$inputs" --output "$outputs_schema"
+
     - name: Deploy to target branch
       uses: peaceiris/actions-gh-pages@v3
       with:
@@ -88,7 +110,7 @@ jobs:
         component: ${{ fromJson(needs.list_components.outputs.component_matrix) }}
 
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
 
     - name: Fetch viash
       run: |

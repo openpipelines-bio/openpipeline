@@ -8,11 +8,11 @@ functionality:
     and the mitochondrial genes (genes starting with mt/MT).
   authors:
     - name: Dries De Maeyer
-      email: DDeMaey1@its.jnj.com
+      email: ddemaeyer@gmail.com
       roles: [ contributor ]
       props: { account: ddemaey1 }
     - name: Robrecht Cannoodt
-      email: rcannood@gmail.com
+      email: robrecht@data-intuitive.com
       roles: [ maintainer, contributor ]
       props: { github: rcannood, orcid: "0000-0003-3641-729X" }
 

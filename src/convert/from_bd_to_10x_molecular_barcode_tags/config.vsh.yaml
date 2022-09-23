@@ -1,13 +1,11 @@
 functionality:
   name: "from_bd_to_10x_molecular_barcode_tags"
-  enabled: false
   namespace: "convert"
-  version: "dev"
   description: |
     Convert the molecular barcode sequence SAM tag from BD format (MA) to 10X format (UB).
   authors:
     - name: Dries Schaumont
-      email: dries.schaumont@data-intuitive.com
+      email: dries@data-intuitive.com
       roles: [ maintainer ]
       props: { github: DriesSchaumont, orcid: "0000-0002-4389-0440" }
   arguments:
@@ -38,7 +36,7 @@ functionality:
   test_resources:
     - type: bash_script
       path: run_test.sh
-    - path: ../../../resources_test/bdrhap_5kjrt/processed/WTA
+    - path: ../../../resources_test/bdrhap_5kjrt/processed/WTA.bd_rhapsody.output
 platforms:
   - type: docker
     image: ubuntu:latest
