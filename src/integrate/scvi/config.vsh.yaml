@@ -6,46 +6,87 @@ functionality:
   authors:
     - name: Malte Luecken
       email: malte.luecken@helmholtz-muenchen.de
-      roles: [ contributor ]
+      roles: [ author ]
       props: { github: luckymd, orcid: "0000-0001-7464-7921" }
-  arguments: # UPDATE FROM HARMONY!
-    - name: "--input"
-      alternatives: ["-i"]
-      type: file
-      description: Input h5mu file
-      direction: input
-      required: true
-    - name: "--output"
-      alternatives: ["-o"]
-      type: file
-      description: Output h5mu file.
-      direction: output
-      required: true
-    - name: "--modality"
-      type: string
-      multiple: true
-      default: "rna"
-      required: false
-    - name: "--obsm_input"
-      type: string
-      default: "X_pca"
-      required: false
-      description: "Which .obsm slot to use as a starting PCA embedding."
-    - name: "--obsm_output"
-      type: string
-      default: "X_pca_integrated"
-      required: false
-      description: "In which .obsm slot to store the resulting integrated embedding."
-    - name: "--theta"
-      description: "Diversity clustering penalty parameter. Specify for each variable in group.by.vars. theta=0 does not encourage any diversity. Larger values of theta result in more diverse clusters."
-      type: double
-      default: 2
-      multiple: true
-    - name: "--obs_covariates"
-      type: string
-      description: "The .obs field(s) that define the covariate(s) to regress out."
-      example: ["batch", "sample"]
-      multiple: true
+    - name: Dries Schaumont
+      email: dries@data-intuitive.com
+      roles: [ maintainer ]
+      props: { github: DriesSchaumont, orcid: "0000-0002-4389-0440" }
+  argument_groups:
+    - name: Inputs
+      arguments:
+        - name: "--input"
+          alternatives: ["-i"]
+          type: file
+          description: Input h5mu file
+          direction: input
+          required: true
+        - name: "--modality"
+          type: string
+          default: "rna"
+          required: false
+        - name: "--input_layer"
+          type: string
+          required: false
+          description: "Input layer to use. If None, X is used"
+        - name: "--obs_batch"
+          type: string
+          default: "sample_id"
+          required: false
+        - name: "--var_input"
+          type: string
+          required: false
+          description: ".var column containing highly variable genes. By default, do not subset genes."
+    - name: Outputs
+      arguments:
+        - name: "--output"
+          alternatives: ["-o"]
+          type: file
+          description: Output h5mu file.
+          direction: output
+          required: true
+        - name: "--obsm_output"
+          type: string
+          default: "X_scvi_integrated"
+          required: false
+          description: "In which .obsm slot to store the resulting integrated embedding."
+    - name: "Early stopping arguments"
+      arguments:
+        - name: "--early_stopping"
+          required: false
+          type: boolean
+        - name: "--early_stopping_monitor"
+          choices: ["elbo_validation", "reconstruction_loss_validation", "kl_local_validation"]
+          default: "elbo_validation"
+          type: string
+        - name: "--early_stopping_patience"
+          type: integer
+          min: 1
+          default: 45
+        - name: "--early_stopping_min_delta"
+          min: 0
+          type: double
+          default: 0.0
+    - name: "Learning parameters"
+      arguments:
+        - name: "--max_epochs"
+          type: integer
+          description: "Number of passes through the dataset, defaults to (20000 / number of cells) * 400 or 400; whichever is smallest."
+          required: true
+        - name: "--reduce_lr_on_plateau"
+          description: "Whether to monitor validation loss and reduce learning rate when validation set `lr_scheduler_metric` plateaus."
+          type: boolean
+          default: True
+        - name: "--lr_factor"
+          description: "Factor to reduce learning rate."
+          type: double
+          default: 0.6
+          min: 0
+        - name: "--lr_patience"
+          description: "Number of epochs with no improvement after which learning rate will be reduced."
+          type: double
+          default: 30
+          min: 0
   resources:
     - type: python_script
       path: script.py
@@ -55,14 +96,19 @@ functionality:
     - path: ../../../resources_test/pbmc_1k_protein_v3/pbmc_1k_protein_v3_mms.h5mu
 platforms:
   - type: docker
-    image: python:3.10
+    image: python:3.8
     setup:
+      - type: apt
+        packages:
+          - libopenblas-dev
+          - liblapack-dev
+          - gfortran
       - type: python
         packages:
           - mudata~=0.2.0
           - anndata~=0.8.0
-          - scvi
-          - scanpy
+          - torchmetrics~=0.6.0
+          - scvi-tools
   - type: nextflow
     variant: vdsl3
     directives:
