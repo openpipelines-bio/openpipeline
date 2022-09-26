@@ -33,6 +33,7 @@ functionality:
           type: string
           default: "sample_id"
           required: false
+          description: Column name discriminating between your batches.
         - name: "--var_input"
           type: string
           required: false
@@ -55,18 +56,23 @@ functionality:
         - name: "--early_stopping"
           required: false
           type: boolean
+          description: "Whether to perform early stopping with respect to the validation set."
         - name: "--early_stopping_monitor"
           choices: ["elbo_validation", "reconstruction_loss_validation", "kl_local_validation"]
           default: "elbo_validation"
           type: string
+          description: "Metric logged during validation set epoch."
         - name: "--early_stopping_patience"
           type: integer
           min: 1
           default: 45
+          description: "Number of validation epochs with no improvement after which training will be stopped."
         - name: "--early_stopping_min_delta"
           min: 0
           type: double
           default: 0.0
+          description: "Minimum change in the monitored quantity to qualify as an improvement, 
+                        i.e. an absolute change of less than min_delta, will count as no improvement."
     - name: "Learning parameters"
       arguments:
         - name: "--max_epochs"
