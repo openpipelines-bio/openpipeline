@@ -43,77 +43,17 @@ class TestAddMetadata(TestCase):
         MuData({'mod1': ad1, 'mod2': ad2}).write_h5mu(test_h5mu.name)
         return test_h5mu
 
-    def test_add_metadata_sample_id(self):
-        csv = pd.DataFrame({"id": ["C", "D"], "foo": ["v", "w"], "bar": ["x", "y"]})    
-        with NamedTemporaryFile(suffix=".csv") as temp_csv:
-            csv.to_csv(temp_csv.name, index=False)
-            self._run_and_check_output([
-                    "--input", self.temp_h5mu.name,
-                    "--csv", temp_csv.name,
-                    "--output", "with_metadat.h5mu",
-                    "--modality", "mod1",
-                    "--sample_id", "D",
-                    "--csv_sample_column", "id",
-                    "--matrix", "obs"
-                    ])
-            result = read_h5mu("with_metadat.h5mu")
-            original_data = read_h5mu(self.temp_h5mu.name)
-            pd.testing.assert_frame_equal(result.mod['mod1'].obs,
-                                          pd.DataFrame({"Obs": ["A", "B"],
-                                                        "sample_id": ["sample1", "sample2"],
-                                                        "foo": ["w", "w"],
-                                                        "bar": ["y", "y"]},
-                                                       index=pd.Index(['obs1', 'obs2']))
-                                          .astype({"Obs": "object", 
-                                                   "foo": "category",
-                                                   "bar": "category"}))
-            pd.testing.assert_frame_equal(result.mod['mod1'].var, original_data.mod['mod1'].var)
-            pd.testing.assert_frame_equal(result.mod['mod2'].obs, original_data.mod['mod2'].obs)
-            pd.testing.assert_frame_equal(result.mod['mod2'].var, original_data.mod['mod2'].var)
-
-    def test_add_metadata_other_mudata_attribute(self):
-        csv = pd.DataFrame({"id": ["C", "D"], "foo": ["v", "w"], "bar": ["x", "y"]})    
-        with NamedTemporaryFile(suffix=".csv") as temp_csv:
-            csv.to_csv(temp_csv.name, index=False)
-            self._run_and_check_output([
-                    "--input", self.temp_h5mu.name,
-                    "--csv", temp_csv.name,
-                    "--output", "with_metadat.h5mu",
-                    "--modality", "mod1",
-                    "--sample_id", "D",
-                    "--csv_sample_column", "id",
-                    "--matrix", "var"
-
-                    ])
-            result = read_h5mu("with_metadat.h5mu")
-            original_data = read_h5mu(self.temp_h5mu.name)
-            pd.testing.assert_frame_equal(result.mod['mod1'].var,
-                                          pd.DataFrame({"Feat": ["a", "b", "c"],
-                                                        "sample_id_var": ["sample1", "sample2", "sample1"],
-                                                        "foo": ["w", "w", "w"],
-                                                        "bar": ["y", "y", "y"]},
-                                                       index=pd.Index(['var1', 'var2', 'var3']))
-                                          .astype({"Feat": "object", 
-                                                   "sample_id_var": "category",
-                                                   "foo": "category",
-                                                   "bar": "category"}))
-            pd.testing.assert_frame_equal(result.mod['mod1'].obs, original_data.mod['mod1'].obs)
-            pd.testing.assert_frame_equal(result.mod['mod2'].obs, original_data.mod['mod2'].obs)
-            pd.testing.assert_frame_equal(result.mod['mod2'].var, original_data.mod['mod2'].var)
-
-    def test_add_metadata_other_mudata_attribute_with_matrix_sample_column(self):
+    def test_add_metadata_var(self):
         csv = pd.DataFrame({"id": ["sample1", "sample2"], "foo": ["v", "w"], "bar": ["x", "y"]})    
         with NamedTemporaryFile(suffix=".csv") as temp_csv:
             csv.to_csv(temp_csv.name, index=False)
             self._run_and_check_output([
                     "--input", self.temp_h5mu.name,
-                    "--csv", temp_csv.name,
+                    "--input_csv", temp_csv.name,
                     "--output", "with_metadat.h5mu",
                     "--modality", "mod1",
-                    "--matrix_sample_column", "sample_id_var",
-                    "--csv_sample_column", "id",
-                    "--matrix", "var"
-
+                    "--var_key", "sample_id_var",
+                    "--csv_key", "id"
                     ])
             result = read_h5mu("with_metadat.h5mu")
             original_data = read_h5mu(self.temp_h5mu.name)
@@ -137,12 +77,11 @@ class TestAddMetadata(TestCase):
             csv.to_csv(temp_csv.name, index=False)
             self._run_and_check_output([
                     "--input", self.temp_h5mu.name,
-                    "--csv", temp_csv.name,
+                    "--input_csv", temp_csv.name,
                     "--output", "with_metadat.h5mu",
                     "--modality", "mod1",
-                    "--matrix_sample_column", "sample_id",
-                    "--csv_sample_column", "id",
-                    "--matrix", "obs"
+                    "--obs_key", "sample_id",
+                    "--csv_key", "id",
                     ])
             result = read_h5mu("with_metadat.h5mu")
             original_data = read_h5mu(self.temp_h5mu.name)
@@ -166,12 +105,11 @@ class TestAddMetadata(TestCase):
                 csv.to_csv(temp_csv.name, index=False)
                 self._run_and_check_output([
                         "--input", self.temp_h5mu.name,
-                        "--csv", temp_csv.name,
+                        "--input_csv", temp_csv.name,
                         "--output", "with_metadat.h5mu",
                         "--modality", "mod1",
-                        "--matrix_sample_column", "sample_id",
-                        "--csv_sample_column", "id",
-                        "--matrix", "obs"
+                        "--obs_key", "sample_id",
+                        "--csv_key", "id",
                         ])
                 self.assertIn("Not all sample IDs selected from .obs"
                               "(using the column selected with --matrix_input) were found in "

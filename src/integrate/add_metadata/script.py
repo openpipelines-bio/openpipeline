@@ -13,32 +13,31 @@ meta = {
 
 }
 ### VIASH END
-if par["sample_id"] and par["matrix_sample_column"]:
-    raise ValueError("--sample_id and --matrix_sample_column are mutually exclusive.")
-if not par["sample_id"] and not par["matrix_sample_column"]:
-    raise ValueError("Must define set --sample_id or --matrix_sample_column")
-metadata = pd.read_csv(par['csv'], sep=",", header=0, index_col=par["csv_sample_column"])
+if par["obs_key"] and par["var_key"]:
+    raise ValueError("--obs_key can not be used in conjuction with --var_key.")
+if not (par["obs_key"] or par["var_key"]):
+    raise ValueError("Must define either --obs_key or --var_key")
+metadata = pd.read_csv(par['input_csv'], sep=",", header=0, index_col=par["csv_key"])
 mdata = read_h5mu(par['input'])
 mod_data = mdata.mod[par['modality']]
-original_matrix = getattr(mod_data, par["matrix"])
-if par["sample_id"]:
-    sample_metadata = metadata.loc[par['sample_id']]
-    new_matrix = original_matrix.assign(**sample_metadata)
-elif par["matrix_sample_column"]:
-    sample_ids = original_matrix[par['matrix_sample_column']]
-    print(sample_ids.tolist())
-    print(metadata)
+matrix = 'var' if par["var_key"] else 'obs'
+matrix_sample_column_name = par["var_key"] if par["var_key"] else par["obs_key"]
 
-    try:
-        new_columns = metadata.loc[sample_ids.tolist()]
-    except KeyError as e:
-        raise KeyError(f"Not all sample IDs selected from {par['matrix']}] "
-                        "(using the column selected with --matrix_sample_column) were found in "
-                        "the csv file.") from e
-    new_matrix = pd.concat([original_matrix.reset_index(drop=True), 
-                            new_columns.reset_index(drop=True)], axis=1)\
+original_matrix = getattr(mod_data, matrix)
+sample_ids = original_matrix[matrix_sample_column_name]
+print(sample_ids.tolist())
+print(metadata)
+
+try:
+    new_columns = metadata.loc[sample_ids.tolist()]
+except KeyError as e:
+    raise KeyError(f"Not all sample IDs selected from {matrix}] "
+                    "(using the column selected with --var_key or --obs_key) were found in "
+                    "the csv file.") from e
+new_matrix = pd.concat([original_matrix.reset_index(drop=True), 
+                        new_columns.reset_index(drop=True)], axis=1)\
                         .set_axis(original_matrix.index)    
-setattr(mod_data, par['matrix'], new_matrix)
+setattr(mod_data, matrix, new_matrix)
 mdata.write_h5mu(par['output'].strip())
 
         
