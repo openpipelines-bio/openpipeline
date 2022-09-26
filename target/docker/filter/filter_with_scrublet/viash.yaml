@@ -622,7 +622,7 @@ functionality:
       
       LABEL org.opencontainers.image.authors="Dries De Maeyer <ddemaeyer@gmail.com> (contributor) {account: ddemaey1}, Robrecht Cannoodt <robrecht@data-intuitive.com> (maintainer, contributor) {github: rcannood, orcid: 0000-0003-3641-729X}"
       LABEL org.opencontainers.image.description="Companion container for running component filter filter_with_scrublet"
-      LABEL org.opencontainers.image.created="2022-09-23T13:48:06Z"
+      LABEL org.opencontainers.image.created="2022-09-26T14:13:38Z"
       LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
       LABEL org.opencontainers.image.revision="df8d5d0dd4db96af8f5ab5287eeb28adc25bc1d0"
       LABEL org.opencontainers.image.version="integration_build"

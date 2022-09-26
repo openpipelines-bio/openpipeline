@@ -614,7 +614,7 @@ functionality:
       
       LABEL org.opencontainers.image.authors="Dries De Maeyer <ddemaeyer@gmail.com> (author) {account: ddemaey1}, Dries Schaumont <dries@data-intuitive.com> (maintainer)"
       LABEL org.opencontainers.image.description="Companion container for running component neighbors bbknn"
-      LABEL org.opencontainers.image.created="2022-09-23T13:48:08Z"
+      LABEL org.opencontainers.image.created="2022-09-26T14:13:40Z"
       LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
       LABEL org.opencontainers.image.revision="df8d5d0dd4db96af8f5ab5287eeb28adc25bc1d0"
       LABEL org.opencontainers.image.version="integration_build"
