@@ -1,0 +1,17 @@
+# MuData Input
+input: # please fill in - example: "path/to/file"
+modality: "rna"
+# obs_key: "foo"
+# var_key: "foo"
+
+# MuData Output
+# output: "$id.$key.output.output"
+
+# Metadata Input
+# input_csv: "path/to/file"
+csv_key: "id"
+
+# Nextflow input-output arguments
+publish_dir: # please fill in - example: "output/"
+# param_list: "my_params.yaml"
+# param_list_format: "yaml"

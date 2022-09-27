@@ -66,7 +66,8 @@ thisConfig = processConfig([
       "required" : true,
       "direction" : "input",
       "multiple" : false,
-      "multiple_sep" : ":"
+      "multiple_sep" : ":",
+      "dest" : "par"
     },
     {
       "type" : "string",
@@ -77,7 +78,8 @@ thisConfig = processConfig([
       "required" : false,
       "direction" : "input",
       "multiple" : false,
-      "multiple_sep" : ":"
+      "multiple_sep" : ":",
+      "dest" : "par"
     },
     {
       "type" : "file",
@@ -90,13 +92,15 @@ thisConfig = processConfig([
       "required" : false,
       "direction" : "output",
       "multiple" : false,
-      "multiple_sep" : ":"
+      "multiple_sep" : ":",
+      "dest" : "par"
     },
     {
       "type" : "boolean_true",
       "name" : "--do_subset",
       "description" : "Whether to subset before storing the output.",
-      "direction" : "input"
+      "direction" : "input",
+      "dest" : "par"
     },
     {
       "type" : "string",
@@ -108,7 +112,8 @@ thisConfig = processConfig([
       "required" : false,
       "direction" : "input",
       "multiple" : false,
-      "multiple_sep" : ":"
+      "multiple_sep" : ":",
+      "dest" : "par"
     },
     {
       "type" : "string",
@@ -120,7 +125,8 @@ thisConfig = processConfig([
       "required" : false,
       "direction" : "input",
       "multiple" : false,
-      "multiple_sep" : ":"
+      "multiple_sep" : ":",
+      "dest" : "par"
     },
     {
       "type" : "integer",
@@ -132,7 +138,8 @@ thisConfig = processConfig([
       "required" : false,
       "direction" : "input",
       "multiple" : false,
-      "multiple_sep" : ":"
+      "multiple_sep" : ":",
+      "dest" : "par"
     },
     {
       "type" : "integer",
@@ -144,7 +151,8 @@ thisConfig = processConfig([
       "required" : false,
       "direction" : "input",
       "multiple" : false,
-      "multiple_sep" : ":"
+      "multiple_sep" : ":",
+      "dest" : "par"
     },
     {
       "type" : "integer",
@@ -156,7 +164,8 @@ thisConfig = processConfig([
       "required" : false,
       "direction" : "input",
       "multiple" : false,
-      "multiple_sep" : ":"
+      "multiple_sep" : ":",
+      "dest" : "par"
     },
     {
       "type" : "integer",
@@ -168,7 +177,8 @@ thisConfig = processConfig([
       "required" : false,
       "direction" : "input",
       "multiple" : false,
-      "multiple_sep" : ":"
+      "multiple_sep" : ":",
+      "dest" : "par"
     },
     {
       "type" : "integer",
@@ -180,7 +190,8 @@ thisConfig = processConfig([
       "required" : false,
       "direction" : "input",
       "multiple" : false,
-      "multiple_sep" : ":"
+      "multiple_sep" : ":",
+      "dest" : "par"
     },
     {
       "type" : "double",
@@ -192,7 +203,8 @@ thisConfig = processConfig([
       "required" : false,
       "direction" : "input",
       "multiple" : false,
-      "multiple_sep" : ":"
+      "multiple_sep" : ":",
+      "dest" : "par"
     },
     {
       "type" : "double",
@@ -204,7 +216,8 @@ thisConfig = processConfig([
       "required" : false,
       "direction" : "input",
       "multiple" : false,
-      "multiple_sep" : ":"
+      "multiple_sep" : ":",
+      "dest" : "par"
     }
   ],
   "resources" : [
@@ -265,17 +278,15 @@ meta = {
   'functionality_name': $( if [ ! -z ${VIASH_META_FUNCTIONALITY_NAME+x} ]; then echo "'${VIASH_META_FUNCTIONALITY_NAME//\\'/\\\\\\'}'"; else echo None; fi ),
   'resources_dir': $( if [ ! -z ${VIASH_META_RESOURCES_DIR+x} ]; then echo "'${VIASH_META_RESOURCES_DIR//\\'/\\\\\\'}'"; else echo None; fi ),
   'executable': $( if [ ! -z ${VIASH_META_EXECUTABLE+x} ]; then echo "'${VIASH_META_EXECUTABLE//\\'/\\\\\\'}'"; else echo None; fi ),
-  'temp_dir': $( if [ ! -z ${VIASH_TEMP+x} ]; then echo "'${VIASH_TEMP//\\'/\\\\\\'}'"; else echo None; fi ),
-  'n_proc': $( if [ ! -z ${VIASH_META_N_PROC+x} ]; then echo "'${VIASH_META_N_PROC//\\'/\\\\\\'}'"; else echo None; fi ),
-  'memory_b': $( if [ ! -z ${VIASH_META_MEMORY_B+x} ]; then echo "'${VIASH_META_MEMORY_B//\\'/\\\\\\'}'"; else echo None; fi ),
-  'memory_kb': $( if [ ! -z ${VIASH_META_MEMORY_KB+x} ]; then echo "'${VIASH_META_MEMORY_KB//\\'/\\\\\\'}'"; else echo None; fi ),
-  'memory_mb': $( if [ ! -z ${VIASH_META_MEMORY_MB+x} ]; then echo "'${VIASH_META_MEMORY_MB//\\'/\\\\\\'}'"; else echo None; fi ),
-  'memory_gb': $( if [ ! -z ${VIASH_META_MEMORY_GB+x} ]; then echo "'${VIASH_META_MEMORY_GB//\\'/\\\\\\'}'"; else echo None; fi ),
-  'memory_tb': $( if [ ! -z ${VIASH_META_MEMORY_TB+x} ]; then echo "'${VIASH_META_MEMORY_TB//\\'/\\\\\\'}'"; else echo None; fi ),
-  'memory_pb': $( if [ ! -z ${VIASH_META_MEMORY_PB+x} ]; then echo "'${VIASH_META_MEMORY_PB//\\'/\\\\\\'}'"; else echo None; fi )
+  'temp_dir': $( if [ ! -z ${VIASH_META_TEMP_DIR+x} ]; then echo "'${VIASH_META_TEMP_DIR//\\'/\\\\\\'}'"; else echo None; fi ),
+  'n_proc': $( if [ ! -z ${VIASH_META_N_PROC+x} ]; then echo "int('${VIASH_META_N_PROC//\\'/\\\\\\'}')"; else echo None; fi ),
+  'memory_b': $( if [ ! -z ${VIASH_META_MEMORY_B+x} ]; then echo "int('${VIASH_META_MEMORY_B//\\'/\\\\\\'}')"; else echo None; fi ),
+  'memory_kb': $( if [ ! -z ${VIASH_META_MEMORY_KB+x} ]; then echo "int('${VIASH_META_MEMORY_KB//\\'/\\\\\\'}')"; else echo None; fi ),
+  'memory_mb': $( if [ ! -z ${VIASH_META_MEMORY_MB+x} ]; then echo "int('${VIASH_META_MEMORY_MB//\\'/\\\\\\'}')"; else echo None; fi ),
+  'memory_gb': $( if [ ! -z ${VIASH_META_MEMORY_GB+x} ]; then echo "int('${VIASH_META_MEMORY_GB//\\'/\\\\\\'}')"; else echo None; fi ),
+  'memory_tb': $( if [ ! -z ${VIASH_META_MEMORY_TB+x} ]; then echo "int('${VIASH_META_MEMORY_TB//\\'/\\\\\\'}')"; else echo None; fi ),
+  'memory_pb': $( if [ ! -z ${VIASH_META_MEMORY_PB+x} ]; then echo "int('${VIASH_META_MEMORY_PB//\\'/\\\\\\'}')"; else echo None; fi )
 }
-
-resources_dir = '$VIASH_META_RESOURCES_DIR'
 
 ### VIASH END
 
@@ -687,23 +698,15 @@ def addGlobalParams(config) {
               'name': '--param_list',
               'required': false,
               'type': 'string',
-              'description': '''Allows inputting multiple parameter sets to initialise a Nextflow channel. Possible formats are csv, json, yaml, or simply a yaml_blob.
-              |A csv should have column names which correspond to the different arguments of this pipeline.
-              |A json or a yaml file should be a list of maps, each of which has keys corresponding to the arguments of the pipeline.
-              |A yaml blob can also be passed directly as a parameter.
-              |Inside the Nextflow pipeline code, params.params_list can also be used to directly a list of parameter sets.
-              |When passing a csv, json or yaml, relative path names are relativized to the location of the parameter file.'''.stripMargin(),
+              'description': '''Allows inputting multiple parameter sets to initialise a Nextflow channel. A `param_list` can either be a list of maps, a csv file, a json file, a yaml file, or simply a yaml blob.
+              |
+              |* A list of maps (as-is) where the keys of each map corresponds to the arguments of the pipeline. Example: in a `nextflow.config` file: `param_list: [ ['id': 'foo', 'input': 'foo.txt'], ['id': 'bar', 'input': 'bar.txt'] ]`.
+              |* A csv file should have column names which correspond to the different arguments of this pipeline. Example: `--param_list data.csv` with columns `id,input`.
+              |* A json or a yaml file should be a list of maps, each of which has keys corresponding to the arguments of the pipeline. Example: `--param_list data.json` with contents `[ {'id': 'foo', 'input': 'foo.txt'}, {'id': 'bar', 'input': 'bar.txt'} ]`.
+              |* A yaml blob can also be passed directly as a string. Example: `--param_list "[ {'id': 'foo', 'input': 'foo.txt'}, {'id': 'bar', 'input': 'bar.txt'} ]"`.
+              |
+              |When passing a csv, json or yaml file, relative path names are relativized to the location of the parameter file. No relativation is performed when `param_list` is a list of maps (as-is) or a yaml blob.'''.stripMargin(),
               'example': 'my_params.yaml',
-              'multiple': false,
-              'hidden': true
-            ],
-            [
-              'name': '--param_list_format',
-              'required': false,
-              'type': 'string',
-              'description': 'Manually specify the param_list_format. Must be one of \'csv\', \'json\', \'yaml\', \'yaml_blob\', \'asis\' or \'none\'.',
-              'example': 'yaml',
-              'choices': ['csv', 'json', 'yaml', 'yaml_blob', 'asis', 'none'],
               'multiple': false,
               'hidden': true
             ],
@@ -879,8 +882,6 @@ def helpMessage(config) {
 def guessMultiParamFormat(params) {
   if (!params.containsKey("param_list") || params.param_list == null) {
     "none"
-  } else if (params.containsKey("multiParamsFormat")) {
-    params.multiParamsFormat
   } else {
     def param_list = params.param_list
 
@@ -1684,7 +1685,6 @@ def processFactory(Map processArgs) {
   |fi
   |
   |# meta synonyms
-  |export VIASH_RESOURCES_DIR="\\\$VIASH_META_RESOURCES_DIR"
   |export VIASH_TEMP="\\\$VIASH_META_TEMP_DIR"
   |export TEMP_DIR="\\\$VIASH_META_TEMP_DIR"
   |

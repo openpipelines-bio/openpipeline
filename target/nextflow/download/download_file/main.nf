@@ -53,7 +53,8 @@ thisConfig = processConfig([
       "required" : true,
       "direction" : "input",
       "multiple" : false,
-      "multiple_sep" : ":"
+      "multiple_sep" : ":",
+      "dest" : "par"
     },
     {
       "type" : "file",
@@ -66,7 +67,8 @@ thisConfig = processConfig([
       "required" : true,
       "direction" : "output",
       "multiple" : false,
-      "multiple_sep" : ":"
+      "multiple_sep" : ":",
+      "dest" : "par"
     },
     {
       "type" : "boolean_true",
@@ -75,7 +77,8 @@ thisConfig = processConfig([
         "-v"
       ],
       "description" : "Increase verbosity",
-      "direction" : "input"
+      "direction" : "input",
+      "dest" : "par"
     }
   ],
   "resources" : [
@@ -117,7 +120,7 @@ $( if [ ! -z ${VIASH_PAR_VERBOSE+x} ]; then echo "par_verbose='${VIASH_PAR_VERBO
 $( if [ ! -z ${VIASH_META_FUNCTIONALITY_NAME+x} ]; then echo "meta_functionality_name='${VIASH_META_FUNCTIONALITY_NAME//\\'/\\'\\"\\'\\"\\'}'"; fi )
 $( if [ ! -z ${VIASH_META_RESOURCES_DIR+x} ]; then echo "meta_resources_dir='${VIASH_META_RESOURCES_DIR//\\'/\\'\\"\\'\\"\\'}'"; fi )
 $( if [ ! -z ${VIASH_META_EXECUTABLE+x} ]; then echo "meta_executable='${VIASH_META_EXECUTABLE//\\'/\\'\\"\\'\\"\\'}'"; fi )
-$( if [ ! -z ${VIASH_TEMP+x} ]; then echo "meta_temp_dir='${VIASH_TEMP//\\'/\\'\\"\\'\\"\\'}'"; fi )
+$( if [ ! -z ${VIASH_META_TEMP_DIR+x} ]; then echo "meta_temp_dir='${VIASH_META_TEMP_DIR//\\'/\\'\\"\\'\\"\\'}'"; fi )
 $( if [ ! -z ${VIASH_META_N_PROC+x} ]; then echo "meta_n_proc='${VIASH_META_N_PROC//\\'/\\'\\"\\'\\"\\'}'"; fi )
 $( if [ ! -z ${VIASH_META_MEMORY_B+x} ]; then echo "meta_memory_b='${VIASH_META_MEMORY_B//\\'/\\'\\"\\'\\"\\'}'"; fi )
 $( if [ ! -z ${VIASH_META_MEMORY_KB+x} ]; then echo "meta_memory_kb='${VIASH_META_MEMORY_KB//\\'/\\'\\"\\'\\"\\'}'"; fi )
@@ -125,7 +128,6 @@ $( if [ ! -z ${VIASH_META_MEMORY_MB+x} ]; then echo "meta_memory_mb='${VIASH_MET
 $( if [ ! -z ${VIASH_META_MEMORY_GB+x} ]; then echo "meta_memory_gb='${VIASH_META_MEMORY_GB//\\'/\\'\\"\\'\\"\\'}'"; fi )
 $( if [ ! -z ${VIASH_META_MEMORY_TB+x} ]; then echo "meta_memory_tb='${VIASH_META_MEMORY_TB//\\'/\\'\\"\\'\\"\\'}'"; fi )
 $( if [ ! -z ${VIASH_META_MEMORY_PB+x} ]; then echo "meta_memory_pb='${VIASH_META_MEMORY_PB//\\'/\\'\\"\\'\\"\\'}'"; fi )
-resources_dir="$VIASH_META_RESOURCES_DIR"
 
 ## VIASH END
 
@@ -455,23 +457,15 @@ def addGlobalParams(config) {
               'name': '--param_list',
               'required': false,
               'type': 'string',
-              'description': '''Allows inputting multiple parameter sets to initialise a Nextflow channel. Possible formats are csv, json, yaml, or simply a yaml_blob.
-              |A csv should have column names which correspond to the different arguments of this pipeline.
-              |A json or a yaml file should be a list of maps, each of which has keys corresponding to the arguments of the pipeline.
-              |A yaml blob can also be passed directly as a parameter.
-              |Inside the Nextflow pipeline code, params.params_list can also be used to directly a list of parameter sets.
-              |When passing a csv, json or yaml, relative path names are relativized to the location of the parameter file.'''.stripMargin(),
+              'description': '''Allows inputting multiple parameter sets to initialise a Nextflow channel. A `param_list` can either be a list of maps, a csv file, a json file, a yaml file, or simply a yaml blob.
+              |
+              |* A list of maps (as-is) where the keys of each map corresponds to the arguments of the pipeline. Example: in a `nextflow.config` file: `param_list: [ ['id': 'foo', 'input': 'foo.txt'], ['id': 'bar', 'input': 'bar.txt'] ]`.
+              |* A csv file should have column names which correspond to the different arguments of this pipeline. Example: `--param_list data.csv` with columns `id,input`.
+              |* A json or a yaml file should be a list of maps, each of which has keys corresponding to the arguments of the pipeline. Example: `--param_list data.json` with contents `[ {'id': 'foo', 'input': 'foo.txt'}, {'id': 'bar', 'input': 'bar.txt'} ]`.
+              |* A yaml blob can also be passed directly as a string. Example: `--param_list "[ {'id': 'foo', 'input': 'foo.txt'}, {'id': 'bar', 'input': 'bar.txt'} ]"`.
+              |
+              |When passing a csv, json or yaml file, relative path names are relativized to the location of the parameter file. No relativation is performed when `param_list` is a list of maps (as-is) or a yaml blob.'''.stripMargin(),
               'example': 'my_params.yaml',
-              'multiple': false,
-              'hidden': true
-            ],
-            [
-              'name': '--param_list_format',
-              'required': false,
-              'type': 'string',
-              'description': 'Manually specify the param_list_format. Must be one of \'csv\', \'json\', \'yaml\', \'yaml_blob\', \'asis\' or \'none\'.',
-              'example': 'yaml',
-              'choices': ['csv', 'json', 'yaml', 'yaml_blob', 'asis', 'none'],
               'multiple': false,
               'hidden': true
             ],
@@ -647,8 +641,6 @@ def helpMessage(config) {
 def guessMultiParamFormat(params) {
   if (!params.containsKey("param_list") || params.param_list == null) {
     "none"
-  } else if (params.containsKey("multiParamsFormat")) {
-    params.multiParamsFormat
   } else {
     def param_list = params.param_list
 
@@ -1452,7 +1444,6 @@ def processFactory(Map processArgs) {
   |fi
   |
   |# meta synonyms
-  |export VIASH_RESOURCES_DIR="\\\$VIASH_META_RESOURCES_DIR"
   |export VIASH_TEMP="\\\$VIASH_META_TEMP_DIR"
   |export TEMP_DIR="\\\$VIASH_META_TEMP_DIR"
   |

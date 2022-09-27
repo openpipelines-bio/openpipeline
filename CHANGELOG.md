@@ -10,6 +10,8 @@
 
 * `workflows/ingestion/make_reference`: A generic component to build a transcriptomics reference into one of many formats.
 
+* `integrate/add_metadata`: Add a csv containing metadata to the .obs or .var field of a mudata file.
+
 ## MAJOR CHANGES
 
 * `workflows/utils/DataFlowHelper.nf`: Added helper functions `setWorkflowArguments()` and `getWorkflowArguments()` to split the data field of a channel event into a hashmap. Example usage:

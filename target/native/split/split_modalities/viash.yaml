@@ -24,6 +24,7 @@ functionality:
     direction: "input"
     multiple: false
     multiple_sep: ":"
+    dest: "par"
   - type: "file"
     name: "--output"
     alternatives:
@@ -35,6 +36,7 @@ functionality:
     direction: "output"
     multiple: false
     multiple_sep: ":"
+    dest: "par"
   - type: "string"
     name: "--compression"
     alternatives: []
@@ -47,6 +49,7 @@ functionality:
     direction: "input"
     multiple: false
     multiple_sep: ":"
+    dest: "par"
   argument_groups: []
   resources:
   - type: "bash_script"
@@ -203,12 +206,10 @@ functionality:
       # find source folder of this component
       VIASH_META_RESOURCES_DIR=`ViashSourceDir ${BASH_SOURCE[0]}`
       
-      # backwards compatibility
-      VIASH_RESOURCES_DIR="$VIASH_META_RESOURCES_DIR"
-      
       # define meta fields
       VIASH_META_FUNCTIONALITY_NAME="split_modalities"
       VIASH_META_EXECUTABLE="$VIASH_META_RESOURCES_DIR/$VIASH_META_FUNCTIONALITY_NAME"
+      VIASH_META_TEMP_DIR="$VIASH_TEMP"
       
       
       # ViashHelp: Display helpful explanation about this executable
@@ -380,7 +381,50 @@ functionality:
       fi
       
       
-      
+      if [[ $# -gt 0 ]]; then
+        VIASH_META_FUNCTIONALITY_NAME="$1"
+        shift 1
+      fi
+      if [[ $# -gt 0 ]]; then
+        VIASH_META_RESOURCES_DIR="$1"
+        shift 1
+      fi
+      if [[ $# -gt 0 ]]; then
+        VIASH_META_EXECUTABLE="$1"
+        shift 1
+      fi
+      if [[ $# -gt 0 ]]; then
+        VIASH_META_TEMP_DIR="$1"
+        shift 1
+      fi
+      if [[ $# -gt 0 ]]; then
+        VIASH_META_N_PROC="$1"
+        shift 1
+      fi
+      if [[ $# -gt 0 ]]; then
+        VIASH_META_MEMORY_B="$1"
+        shift 1
+      fi
+      if [[ $# -gt 0 ]]; then
+        VIASH_META_MEMORY_KB="$1"
+        shift 1
+      fi
+      if [[ $# -gt 0 ]]; then
+        VIASH_META_MEMORY_MB="$1"
+        shift 1
+      fi
+      if [[ $# -gt 0 ]]; then
+        VIASH_META_MEMORY_GB="$1"
+        shift 1
+      fi
+      if [[ $# -gt 0 ]]; then
+        VIASH_META_MEMORY_TB="$1"
+        shift 1
+      fi
+      if [[ $# -gt 0 ]]; then
+        VIASH_META_MEMORY_PB="$1"
+        shift 1
+      fi
       
       # check whether required parameters exist
       if [ -z ${VIASH_PAR_INPUT+x} ]; then
@@ -391,12 +435,76 @@ functionality:
         ViashError '--output' is a required argument. Use "--help" to get more information on the parameters.
         exit 1
       fi
+      if [ -z ${VIASH_META_FUNCTIONALITY_NAME+x} ]; then
+        ViashError 'functionality_name' is a required argument. Use "--help" to get more information on the parameters.
+        exit 1
+      fi
+      if [ -z ${VIASH_META_RESOURCES_DIR+x} ]; then
+        ViashError 'resources_dir' is a required argument. Use "--help" to get more information on the parameters.
+        exit 1
+      fi
+      if [ -z ${VIASH_META_EXECUTABLE+x} ]; then
+        ViashError 'executable' is a required argument. Use "--help" to get more information on the parameters.
+        exit 1
+      fi
+      if [ -z ${VIASH_META_TEMP_DIR+x} ]; then
+        ViashError 'temp_dir' is a required argument. Use "--help" to get more information on the parameters.
+        exit 1
+      fi
       if [ -z ${VIASH_PAR_COMPRESSION+x} ]; then
         VIASH_PAR_COMPRESSION="gzip"
       fi
       
       
       # check whether parameters values are of the right type
+      if [[ -n "$VIASH_META_N_PROC" ]]; then
+        if ! [[ "$VIASH_META_N_PROC" =~ ^[-+]?[0-9]+$ ]]; then
+          ViashError 'n_proc' has to be an integer. Use "--help" to get more information on the parameters.
+          exit 1
+        fi
+      fi
+      
+      if [[ -n "$VIASH_META_MEMORY_B" ]]; then
+        if ! [[ "$VIASH_META_MEMORY_B" =~ ^[-+]?[0-9]+$ ]]; then
+          ViashError 'memory_b' has to be a long. Use "--help" to get more information on the parameters.
+          exit 1
+        fi
+      fi
+      
+      if [[ -n "$VIASH_META_MEMORY_KB" ]]; then
+        if ! [[ "$VIASH_META_MEMORY_KB" =~ ^[-+]?[0-9]+$ ]]; then
+          ViashError 'memory_kb' has to be a long. Use "--help" to get more information on the parameters.
+          exit 1
+        fi
+      fi
+      
+      if [[ -n "$VIASH_META_MEMORY_MB" ]]; then
+        if ! [[ "$VIASH_META_MEMORY_MB" =~ ^[-+]?[0-9]+$ ]]; then
+          ViashError 'memory_mb' has to be a long. Use "--help" to get more information on the parameters.
+          exit 1
+        fi
+      fi
+      
+      if [[ -n "$VIASH_META_MEMORY_GB" ]]; then
+        if ! [[ "$VIASH_META_MEMORY_GB" =~ ^[-+]?[0-9]+$ ]]; then
+          ViashError 'memory_gb' has to be a long. Use "--help" to get more information on the parameters.
+          exit 1
+        fi
+      fi
+      
+      if [[ -n "$VIASH_META_MEMORY_TB" ]]; then
+        if ! [[ "$VIASH_META_MEMORY_TB" =~ ^[-+]?[0-9]+$ ]]; then
+          ViashError 'memory_tb' has to be a long. Use "--help" to get more information on the parameters.
+          exit 1
+        fi
+      fi
+      
+      if [[ -n "$VIASH_META_MEMORY_PB" ]]; then
+        if ! [[ "$VIASH_META_MEMORY_PB" =~ ^[-+]?[0-9]+$ ]]; then
+          ViashError 'memory_pb' has to be a long. Use "--help" to get more information on the parameters.
+          exit 1
+        fi
+      fi
       
       
       # check whether parameters values are of the right type
@@ -404,9 +512,20 @@ functionality:
       
       
       
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
       cat << VIASHEOF | bash
       set -e
-      tempscript=\$(mktemp "$VIASH_TEMP/viash-run-split_modalities-XXXXXX")
+      tempscript=\$(mktemp "$VIASH_META_TEMP_DIR/viash-run-split_modalities-XXXXXX")
       function clean_up {
         rm "\$tempscript"
       }
@@ -435,17 +554,15 @@ functionality:
         'functionality_name': $( if [ ! -z ${VIASH_META_FUNCTIONALITY_NAME+x} ]; then echo "'${VIASH_META_FUNCTIONALITY_NAME//\'/\\\'}'"; else echo None; fi ),
         'resources_dir': $( if [ ! -z ${VIASH_META_RESOURCES_DIR+x} ]; then echo "'${VIASH_META_RESOURCES_DIR//\'/\\\'}'"; else echo None; fi ),
         'executable': $( if [ ! -z ${VIASH_META_EXECUTABLE+x} ]; then echo "'${VIASH_META_EXECUTABLE//\'/\\\'}'"; else echo None; fi ),
-        'temp_dir': $( if [ ! -z ${VIASH_TEMP+x} ]; then echo "'${VIASH_TEMP//\'/\\\'}'"; else echo None; fi ),
-        'n_proc': $( if [ ! -z ${VIASH_META_N_PROC+x} ]; then echo "'${VIASH_META_N_PROC//\'/\\\'}'"; else echo None; fi ),
-        'memory_b': $( if [ ! -z ${VIASH_META_MEMORY_B+x} ]; then echo "'${VIASH_META_MEMORY_B//\'/\\\'}'"; else echo None; fi ),
-        'memory_kb': $( if [ ! -z ${VIASH_META_MEMORY_KB+x} ]; then echo "'${VIASH_META_MEMORY_KB//\'/\\\'}'"; else echo None; fi ),
-        'memory_mb': $( if [ ! -z ${VIASH_META_MEMORY_MB+x} ]; then echo "'${VIASH_META_MEMORY_MB//\'/\\\'}'"; else echo None; fi ),
-        'memory_gb': $( if [ ! -z ${VIASH_META_MEMORY_GB+x} ]; then echo "'${VIASH_META_MEMORY_GB//\'/\\\'}'"; else echo None; fi ),
-        'memory_tb': $( if [ ! -z ${VIASH_META_MEMORY_TB+x} ]; then echo "'${VIASH_META_MEMORY_TB//\'/\\\'}'"; else echo None; fi ),
-        'memory_pb': $( if [ ! -z ${VIASH_META_MEMORY_PB+x} ]; then echo "'${VIASH_META_MEMORY_PB//\'/\\\'}'"; else echo None; fi )
+        'temp_dir': $( if [ ! -z ${VIASH_META_TEMP_DIR+x} ]; then echo "'${VIASH_META_TEMP_DIR//\'/\\\'}'"; else echo None; fi ),
+        'n_proc': $( if [ ! -z ${VIASH_META_N_PROC+x} ]; then echo "int('${VIASH_META_N_PROC//\'/\\\'}')"; else echo None; fi ),
+        'memory_b': $( if [ ! -z ${VIASH_META_MEMORY_B+x} ]; then echo "int('${VIASH_META_MEMORY_B//\'/\\\'}')"; else echo None; fi ),
+        'memory_kb': $( if [ ! -z ${VIASH_META_MEMORY_KB+x} ]; then echo "int('${VIASH_META_MEMORY_KB//\'/\\\'}')"; else echo None; fi ),
+        'memory_mb': $( if [ ! -z ${VIASH_META_MEMORY_MB+x} ]; then echo "int('${VIASH_META_MEMORY_MB//\'/\\\'}')"; else echo None; fi ),
+        'memory_gb': $( if [ ! -z ${VIASH_META_MEMORY_GB+x} ]; then echo "int('${VIASH_META_MEMORY_GB//\'/\\\'}')"; else echo None; fi ),
+        'memory_tb': $( if [ ! -z ${VIASH_META_MEMORY_TB+x} ]; then echo "int('${VIASH_META_MEMORY_TB//\'/\\\'}')"; else echo None; fi ),
+        'memory_pb': $( if [ ! -z ${VIASH_META_MEMORY_PB+x} ]; then echo "int('${VIASH_META_MEMORY_PB//\'/\\\'}')"; else echo None; fi )
       }
-      
-      resources_dir = '$VIASH_META_RESOURCES_DIR'
       
       ### VIASH END
       
@@ -500,7 +617,6 @@ functionality:
   status: "enabled"
   requirements:
     commands: []
-  dummy_arguments: []
   set_wd_to_resources_dir: false
 platform:
   type: "native"
@@ -512,5 +628,5 @@ info:
   output: "target/native/split/split_modalities"
   executable: "target/native/split/split_modalities/split_modalities"
   viash_version: "0.6.0"
-  git_commit: "a52eed9dbd59a008e40db0a5cd6744161653584b"
+  git_commit: "f197bdf4ecc316a857c56beff296599fb74d54b0"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"
