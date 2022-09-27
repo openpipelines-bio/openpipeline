@@ -83,7 +83,7 @@ def process_params(par: dict[str, Any]) -> str:
     assert re.match(fastq_regex, os.path.basename(input)) is not None, f"File name of --input '{input}' should match regex {fastq_regex}."
   
   # check lengths of libraries metadata 
-  library_dict = subset_dict(par, ["library_id", "library_type", "library_subsample"])
+  library_dict = subset_dict(par, ["library_id", "library_type", "library_subsample", "library_lanes"])
   check_subset_dict_equal_length("Library", library_dict)
   # storing for later use
   par["libraries"] = library_dict
@@ -139,7 +139,7 @@ def generate_config(par: dict[str, Any], fastq_dir: str) -> str:
   feature_strs = generate_dict_category('feature', feature_pars)
 
   # process libraries parameters
-  library_pars = subset_dict(par, {'fastq_id': 'library_id', 'feature_types': 'library_type', 'subsample_rate': 'library_subsample'})
+  library_pars = subset_dict(par, {'fastq_id': 'library_id', 'feature_types': 'library_type', 'subsample_rate': 'library_subsample', 'lanes': 'library_lanes'})
   library_pars['fastqs'] = fastq_dir
   libraries_strs = generate_csv_category("libraries", library_pars)
 

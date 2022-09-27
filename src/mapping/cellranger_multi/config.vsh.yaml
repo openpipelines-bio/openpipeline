@@ -65,11 +65,11 @@ functionality:
           example: "Gene Expression"
           multiple: true
           multiple_sep: ";"
-        - type: double
+        - type: string
           name: --library_subsample
           required: false
           description: Optional. The rate at which reads from the provided FASTQ files are sampled. Must be strictly greater than 0 and less than or equal to 1.
-          example: 0.5
+          example: "0.5"
           multiple: true
           multiple_sep: ";"
         # NOTE: physical_library_id was not included because documentation
@@ -80,15 +80,13 @@ functionality:
         #   example: "..."
         #   multiple: true
         #   multiple_sep: ";"
-        # NOTE: lanes was not included because users can simply specify 
-        # the fastq files that they want to include.
-        # - type: string
-        #   name: --lanes
-        #   required: false
-        #   description: Lanes associated with this sample. Defaults to using all lanes.
-        #   example: "1-4"
-        #   multiple: true
-        #   multiple_sep: ";"
+        - type: string
+          name: --library_lanes
+          required: false
+          description: Lanes associated with this sample. Defaults to using all lanes.
+          example: "1-4"
+          multiple: true
+          multiple_sep: ";"
 
     - name: Gene expression arguments
       description: Arguments relevant to the analysis of gene expression data.
