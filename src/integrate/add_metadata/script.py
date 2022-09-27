@@ -31,7 +31,7 @@ print(metadata)
 try:
     new_columns = metadata.loc[sample_ids.tolist()]
 except KeyError as e:
-    raise KeyError(f"Not all sample IDs selected from {matrix}] "
+    raise KeyError(f"Not all sample IDs selected from {matrix} "
                     "(using the column selected with --var_key or --obs_key) were found in "
                     "the csv file.") from e
 new_matrix = pd.concat([original_matrix.reset_index(drop=True), 

@@ -16,7 +16,8 @@ meta = {
 class TestAddMetadata(TestCase):
     def _run_and_check_output(self, args_as_list, expected_raise=False):
         try:
-            subprocess.check_output([meta['executable']] + args_as_list)
+            subprocess.check_output([meta['executable']] + args_as_list,
+                                    stderr=subprocess.STDOUT)
         except subprocess.CalledProcessError as e:
             if not expected_raise:
                 print(e.stdout.decode("utf-8"))
@@ -103,18 +104,17 @@ class TestAddMetadata(TestCase):
         with self.assertRaises(subprocess.CalledProcessError) as err:
             with NamedTemporaryFile(suffix=".csv") as temp_csv:
                 csv.to_csv(temp_csv.name, index=False)
-                self._run_and_check_output([
+                out = self._run_and_check_output([
                         "--input", self.temp_h5mu.name,
                         "--input_csv", temp_csv.name,
                         "--output", "with_metadat.h5mu",
                         "--modality", "mod1",
                         "--obs_key", "sample_id",
                         "--csv_key", "id",
-                        ])
-                self.assertIn("Not all sample IDs selected from .obs"
-                              "(using the column selected with --matrix_input) were found in "
-                              "the csv file.",
-                          err.exception.stdout)
+                        ], expected_raise=True)
+        self.assertIn("Not all sample IDs selected from obs (using the column selected "
+                      "with --var_key or --obs_key) were found in the csv file.",
+                err.exception.stdout.decode('utf-8'))
 
 if __name__ == "__main__":
     main()
