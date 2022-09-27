@@ -68,7 +68,7 @@ fi
 
 # download vdj reference if needed
 vdj_ref="$raw_dir/refdata-cellranger-vdj-GRCh38-alts-ensembl-7.0.0.tar.gz"
-if [[ ! -f "$feature_reference" ]]; then
+if [[ ! -f "$vdj_ref" ]]; then
   wget "https://cf.10xgenomics.com/supp/cell-vdj/refdata-cellranger-vdj-GRCh38-alts-ensembl-7.0.0.tar.gz" -O "$vdj_ref"
 fi
 
@@ -92,53 +92,32 @@ viash run src/mapping/cellranger_multi/config.vsh.yaml -- \
   --output output \
   --dryrun
 
+# as nextflow pipeline
+cat > /tmp/params.yaml << HERE
+param_list
+- id: sample
+  input: "$raw_dir"
+  sample_name:
+    - "${orig_sample_id}_GEX_1"
+    - "${orig_sample_id}_AB"
+    - "${orig_sample_id}_VDJ"
+  feature_types:
+    - "Gene Expression"
+    - "Antibody Capture"
+    - "VDJ
 
-# # process samples with bd rhap component
-# # TODO: change to bd rhap ingestion pipeline
-# cat > /tmp/params.yaml << HERE
-# param_list:
-# - id: "SMK"
-#   input: "$smk_r1_file;$smk_r2_file"
-#   sample_tags_version: "hs"
-#   tag_names: ["1-Jurkat", "2-Ramos", "3-THP1"]
-# - id: "ABC"
-#   input: "$abc_r1_file;$abc_r2_file"
-#   abseq_reference: "$fasta_file"
-# - id: "WTA"
-#   input: "$wta_r1_file;$wta_r2_file"
-# mode: wta
-# reference: "$reference_dir/GRCh38_primary_assembly_genome_chr1.tar.gz"
-# transcriptome_annotation: "$reference_dir/gencode_v40_annotation_chr1.gtf"
-# publish_dir: "$OUT/processed"
-# putative_cell_call: "mRNA"
-# exact_cell_count: 4000
-# HERE
-
-# - id: sample
-#   input:
-#     - "gex_1/5k_human_antiCMV_T_TBNK_connect_GEX_1_S1_L001_R1_001.fastq.gz"
-#     - "gex_1/5k_human_antiCMV_T_TBNK_connect_GEX_1_S1_L001_R2_001.fastq.gz"
-#     - "gex_1/5k_human_antiCMV_T_TBNK_connect_GEX_1_S1_L002_R1_001.fastq.gz"
-#     - "gex_1/5k_human_antiCMV_T_TBNK_connect_GEX_1_S1_L002_R2_001.fastq.gz"
-#     - "ab/5k_human_antiCMV_T_TBNK_connect_AB_1_S2_L001_R1_001.fastq.gz"
-#     - "ab/5k_human_antiCMV_T_TBNK_connect_AB_1_S2_L001_R2_001.fastq.gz"
-#   sample_name:
-#     - "5k_human_antiCMV_T_TBNK_connect_GEX_1"
-#     - "5k_human_antiCMV_T_TBNK_connect_AB"
-#   feature_types:
-#     - "Gene Expression"
-#     - "Antibody Capture"
-#   subsample: 
-#     - 0.2
-#     - 0.8
+gex_reference: "$genome_tar"
+vdj_reference: "$vdj_ref"
+feature_reference: "$feature_reference"
+HERE
 
 
-# bin/nextflow \
-#   run . \
-#   -main-script workflows/ingestion/bd_rhapsody/main.nf \
-#   -resume \
-#   -profile docker,mount_temp \
-#   -with-trace work/trace.txt \
-#   -params-file /tmp/params.yaml \
-#   -c workflows/utils/labels.config \
-#   -c workflows/utils/errorstrat_ignore.config
+bin/nextflow \
+  run . \
+  -main-script target/nextflow/mapping/cellranger_multi/main.nf \
+  -resume \
+  -profile docker,mount_temp \
+  -with-trace work/trace.txt \
+  -params-file /tmp/params.yaml \
+  -c workflows/utils/labels.config \
+  -c workflows/utils/errorstrat_ignore.config
