@@ -4,33 +4,49 @@
     "description": "Align fastq files using Cell Ranger count.",
     "type": "object",
     "definitions": {
-      "arguments" : {
-        "title": "Arguments",
+      "inputs" : {
+        "title": "Inputs",
         "type": "object",
         "description": "No description",
         "default": "",
         "properties": {
           "input": {
             "type":"string",
-            "description": "The folder with fastq.gz files to align.",
+            "description": "The fastq.gz files to align. Can also be a single directory containing fastq.gz files.",
             
             
             "default": ""
           },
           "reference": {
             "type":"string",
-            "description": "The path to reference tar.gz file.",
+            "description": "The path to Cell Ranger reference tar.gz file.",
             
             
             "default": ""
-          },
+          }
+        }
+      },
+      "outputs" : {
+        "title": "Outputs",
+        "type": "object",
+        "description": "No description",
+        "default": "",
+        "properties": {
           "output": {
             "type":"string",
             "description": "The folder to store the alignment results.",
             
             
             "default": "$id.$key.output.output"
-          },
+          }
+        }
+      },
+      "arguments" : {
+        "title": "Arguments",
+        "type": "object",
+        "description": "No description",
+        "default": "",
+        "properties": {
           "expect_cells": {
             "type":"integer",
             "description": "Expected number of recovered cells, used as input to cell calling algorithm.",
@@ -99,6 +115,12 @@
       }
     },
     "allOf": [
+      {
+        "$ref": "#/definitions/inputs"
+      },
+      {
+        "$ref": "#/definitions/outputs"
+      },
       {
         "$ref": "#/definitions/arguments"
       },

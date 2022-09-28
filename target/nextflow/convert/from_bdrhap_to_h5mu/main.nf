@@ -1538,8 +1538,6 @@ def processProcessArgs(Map args) {
 }
 
 def processFactory(Map processArgs) {
-  def tripQuo = "\"\"\""
-
   // autodetect process key
   def wfKey = processArgs["key"]
   def procKeyPrefix = "${wfKey}_process"
@@ -1648,7 +1646,7 @@ def processFactory(Map processArgs) {
   def stub = thisConfig.functionality.allArguments
     .findAll { it.type == "file" && it.direction == "output" }
     .collect { par -> 
-      'touch "${viash_par_' + par.plainName + '.join(\'" "\')}"'
+      "\${ args.containsKey(\"${par.plainName}\") ? \"touch \\\"\" + (args[\"${par.plainName}\"] instanceof String ? args[\"${par.plainName}\"].replace(\"_*\", \"_0\") : args[\"${par.plainName}\"].join('\" \"')) + \"\\\"\" : \"\" }"
     }
     .join("\n")
 
@@ -1670,16 +1668,16 @@ def processFactory(Map processArgs) {
   |output:
   |  tuple val("\$id"), val(passthrough)$outputPaths, optional: true
   |stub:
-  |$tripQuo
+  |\"\"\"
   |$stub
-  |$tripQuo
+  |\"\"\"
   |script:$assertStr
   |def escapeText = { s -> s.toString().replaceAll('([`"])', '\\\\\\\\\$1') }
   |def parInject = args
   |  .findAll{key, value -> value != null}
   |  .collect{key, value -> "export VIASH_PAR_\${key.toUpperCase()}=\\\"\${escapeText(value)}\\\""}
   |  .join("\\n")
-  |$tripQuo
+  |\"\"\"
   |# meta exports
   |export VIASH_META_RESOURCES_DIR="\${resourcesDir.toRealPath().toAbsolutePath()}"
   |export VIASH_META_TEMP_DIR="${['docker', 'podman', 'charliecloud'].any{ it == workflow.containerEngine } ? '/tmp' : tmpDir}"
@@ -1704,7 +1702,7 @@ def processFactory(Map processArgs) {
   |
   |# process script
   |${escapedScript}
-  |$tripQuo
+  |\"\"\"
   |}
   |""".stripMargin()
 

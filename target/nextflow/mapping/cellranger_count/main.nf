@@ -64,120 +64,142 @@ thisConfig = processConfig([
       }
     }
   ],
-  "arguments" : [
+  "argument_groups" : [
     {
-      "type" : "file",
-      "name" : "--input",
-      "description" : "The folder with fastq.gz files to align.",
-      "must_exist" : false,
-      "required" : true,
-      "direction" : "input",
-      "multiple" : false,
-      "multiple_sep" : ":",
-      "dest" : "par"
+      "name" : "Inputs",
+      "arguments" : [
+        {
+          "type" : "file",
+          "name" : "--input",
+          "description" : "The fastq.gz files to align. Can also be a single directory containing fastq.gz files.",
+          "example" : [
+            "sample_S1_L001_R1_001.fastq.gz",
+            "sample_S1_L001_R2_001.fastq.gz"
+          ],
+          "must_exist" : false,
+          "required" : true,
+          "direction" : "input",
+          "multiple" : true,
+          "multiple_sep" : ";",
+          "dest" : "par"
+        },
+        {
+          "type" : "file",
+          "name" : "--reference",
+          "description" : "The path to Cell Ranger reference tar.gz file.",
+          "example" : [
+            "reference.tar.gz"
+          ],
+          "must_exist" : false,
+          "required" : true,
+          "direction" : "input",
+          "multiple" : false,
+          "multiple_sep" : ":",
+          "dest" : "par"
+        }
+      ]
     },
     {
-      "type" : "file",
-      "name" : "--reference",
-      "description" : "The path to reference tar.gz file.",
-      "must_exist" : false,
-      "required" : true,
-      "direction" : "input",
-      "multiple" : false,
-      "multiple_sep" : ":",
-      "dest" : "par"
+      "name" : "Outputs",
+      "arguments" : [
+        {
+          "type" : "file",
+          "name" : "--output",
+          "description" : "The folder to store the alignment results.",
+          "example" : [
+            "/path/to/output"
+          ],
+          "must_exist" : false,
+          "required" : true,
+          "direction" : "output",
+          "multiple" : false,
+          "multiple_sep" : ":",
+          "dest" : "par"
+        }
+      ]
     },
     {
-      "type" : "file",
-      "name" : "--output",
-      "description" : "The folder to store the alignment results.",
-      "example" : [
-        "/path/to/output"
-      ],
-      "must_exist" : false,
-      "required" : true,
-      "direction" : "output",
-      "multiple" : false,
-      "multiple_sep" : ":",
-      "dest" : "par"
-    },
-    {
-      "type" : "integer",
-      "name" : "--expect_cells",
-      "description" : "Expected number of recovered cells, used as input to cell calling algorithm.",
-      "example" : [
-        3000
-      ],
-      "required" : false,
-      "direction" : "input",
-      "multiple" : false,
-      "multiple_sep" : ":",
-      "dest" : "par"
-    },
-    {
-      "type" : "string",
-      "name" : "--chemistry",
-      "description" : "Assay configuration.\n- auto: autodetect mode\n- threeprime: Single Cell 3'\n- fiveprime: Single Cell 5'\n- SC3Pv1: Single Cell 3' v1\n- SC3Pv2: Single Cell 3' v2\n- SC3Pv3: Single Cell 3' v3\n- SC3Pv3LT: Single Cell 3' v3 LT\n- SC3Pv3HT: Single Cell 3' v3 HT\n- SC5P-PE: Single Cell 5' paired-end\n- SC5P-R2: Single Cell 5' R2-only\n- SC-FB: Single Cell Antibody-only 3' v2 or 5'\nSee https://kb.10xgenomics.com/hc/en-us/articles/115003764132-How-does-Cell-Ranger-auto-detect-chemistry- for more information.\n",
-      "default" : [
-        "auto"
-      ],
-      "required" : false,
-      "choices" : [
-        "auto",
-        "threeprime",
-        "fiveprime",
-        "SC3Pv1",
-        "SC3Pv2",
-        "SC3Pv3",
-        "SC3Pv3LT",
-        "SC3Pv3HT",
-        "SC5P-PE",
-        "SC5P-R2",
-        "SC-FB"
-      ],
-      "direction" : "input",
-      "multiple" : false,
-      "multiple_sep" : ":",
-      "dest" : "par"
-    },
-    {
-      "type" : "boolean",
-      "name" : "--secondary_analysis",
-      "description" : "Whether or not to run the secondary analysis e.g. clustering.",
-      "default" : [
-        false
-      ],
-      "required" : false,
-      "direction" : "input",
-      "multiple" : false,
-      "multiple_sep" : ":",
-      "dest" : "par"
-    },
-    {
-      "type" : "boolean",
-      "name" : "--generate_bam",
-      "description" : "Whether to generate a BAM file.",
-      "default" : [
-        true
-      ],
-      "required" : false,
-      "direction" : "input",
-      "multiple" : false,
-      "multiple_sep" : ":",
-      "dest" : "par"
-    },
-    {
-      "type" : "boolean",
-      "name" : "--include_introns",
-      "description" : "Include intronic reads in count (default=true unless --target-panel is specified in which case default=false)",
-      "default" : [
-        true
-      ],
-      "required" : false,
-      "direction" : "input",
-      "multiple" : false,
-      "multiple_sep" : ":",
-      "dest" : "par"
+      "name" : "Arguments",
+      "arguments" : [
+        {
+          "type" : "integer",
+          "name" : "--expect_cells",
+          "description" : "Expected number of recovered cells, used as input to cell calling algorithm.",
+          "example" : [
+            3000
+          ],
+          "required" : false,
+          "direction" : "input",
+          "multiple" : false,
+          "multiple_sep" : ":",
+          "dest" : "par"
+        },
+        {
+          "type" : "string",
+          "name" : "--chemistry",
+          "description" : "Assay configuration.\n- auto: autodetect mode\n- threeprime: Single Cell 3'\n- fiveprime: Single Cell 5'\n- SC3Pv1: Single Cell 3' v1\n- SC3Pv2: Single Cell 3' v2\n- SC3Pv3: Single Cell 3' v3\n- SC3Pv3LT: Single Cell 3' v3 LT\n- SC3Pv3HT: Single Cell 3' v3 HT\n- SC5P-PE: Single Cell 5' paired-end\n- SC5P-R2: Single Cell 5' R2-only\n- SC-FB: Single Cell Antibody-only 3' v2 or 5'\nSee https://kb.10xgenomics.com/hc/en-us/articles/115003764132-How-does-Cell-Ranger-auto-detect-chemistry- for more information.\n",
+          "default" : [
+            "auto"
+          ],
+          "required" : false,
+          "choices" : [
+            "auto",
+            "threeprime",
+            "fiveprime",
+            "SC3Pv1",
+            "SC3Pv2",
+            "SC3Pv3",
+            "SC3Pv3LT",
+            "SC3Pv3HT",
+            "SC5P-PE",
+            "SC5P-R2",
+            "SC-FB"
+          ],
+          "direction" : "input",
+          "multiple" : false,
+          "multiple_sep" : ":",
+          "dest" : "par"
+        },
+        {
+          "type" : "boolean",
+          "name" : "--secondary_analysis",
+          "description" : "Whether or not to run the secondary analysis e.g. clustering.",
+          "default" : [
+            false
+          ],
+          "required" : false,
+          "direction" : "input",
+          "multiple" : false,
+          "multiple_sep" : ":",
+          "dest" : "par"
+        },
+        {
+          "type" : "boolean",
+          "name" : "--generate_bam",
+          "description" : "Whether to generate a BAM file.",
+          "default" : [
+            true
+          ],
+          "required" : false,
+          "direction" : "input",
+          "multiple" : false,
+          "multiple_sep" : ":",
+          "dest" : "par"
+        },
+        {
+          "type" : "boolean",
+          "name" : "--include_introns",
+          "description" : "Include intronic reads in count (default=true unless --target-panel is specified in which case default=false)",
+          "default" : [
+            true
+          ],
+          "required" : false,
+          "direction" : "input",
+          "multiple" : false,
+          "multiple_sep" : ":",
+          "dest" : "par"
+        }
+      ]
     }
   ],
   "resources" : [
@@ -239,8 +261,7 @@ $( if [ ! -z ${VIASH_META_MEMORY_PB+x} ]; then echo "meta_memory_pb='${VIASH_MET
 
 ## VIASH END
 
-# just to make sure
-par_input=\\`realpath \\$par_input\\`
+# just to make sure paths are absolute
 par_reference=\\`realpath \\$par_reference\\`
 par_output=\\`realpath \\$par_output\\`
 
@@ -250,6 +271,21 @@ function clean_up {
     rm -rf "\\$tmpdir"
 }
 trap clean_up EXIT
+
+# process inputs
+# for every fastq file found, make a symlink into the tempdir
+fastq_dir="\\$tmpdir/fastqs"
+mkdir -p "\\$fastq_dir"
+IFS=";"
+for var in \\$par_input; do
+  unset IFS
+  abs_path=\\`realpath \\$var\\`
+  if [ -d "\\$abs_path" ]; then
+    find "\\$abs_path" -name *.fastq.gz -exec ln -s {} "\\$fastq_dir" \\\\;
+  else
+    ln -s "\\$abs_path" "\\$fastq_dir"
+  fi
+done
 
 # cd into tempdir
 cd "\\$tmpdir"
@@ -283,7 +319,7 @@ echo "Running cellranger count"
 id=myoutput
 cellranger count \\\\
   --id "\\$id" \\\\
-  --fastqs "\\$par_input" \\\\
+  --fastqs "\\$fastq_dir" \\\\
   --transcriptome "\\$par_reference" \\\\
   --include-introns "\\$par_include_introns" \\\\
   "\\${extra_params[@]}" \\\\
@@ -1448,8 +1484,6 @@ def processProcessArgs(Map args) {
 }
 
 def processFactory(Map processArgs) {
-  def tripQuo = "\"\"\""
-
   // autodetect process key
   def wfKey = processArgs["key"]
   def procKeyPrefix = "${wfKey}_process"
@@ -1558,7 +1592,7 @@ def processFactory(Map processArgs) {
   def stub = thisConfig.functionality.allArguments
     .findAll { it.type == "file" && it.direction == "output" }
     .collect { par -> 
-      'touch "${viash_par_' + par.plainName + '.join(\'" "\')}"'
+      "\${ args.containsKey(\"${par.plainName}\") ? \"touch \\\"\" + (args[\"${par.plainName}\"] instanceof String ? args[\"${par.plainName}\"].replace(\"_*\", \"_0\") : args[\"${par.plainName}\"].join('\" \"')) + \"\\\"\" : \"\" }"
     }
     .join("\n")
 
@@ -1580,16 +1614,16 @@ def processFactory(Map processArgs) {
   |output:
   |  tuple val("\$id"), val(passthrough)$outputPaths, optional: true
   |stub:
-  |$tripQuo
+  |\"\"\"
   |$stub
-  |$tripQuo
+  |\"\"\"
   |script:$assertStr
   |def escapeText = { s -> s.toString().replaceAll('([`"])', '\\\\\\\\\$1') }
   |def parInject = args
   |  .findAll{key, value -> value != null}
   |  .collect{key, value -> "export VIASH_PAR_\${key.toUpperCase()}=\\\"\${escapeText(value)}\\\""}
   |  .join("\\n")
-  |$tripQuo
+  |\"\"\"
   |# meta exports
   |export VIASH_META_RESOURCES_DIR="\${resourcesDir.toRealPath().toAbsolutePath()}"
   |export VIASH_META_TEMP_DIR="${['docker', 'podman', 'charliecloud'].any{ it == workflow.containerEngine } ? '/tmp' : tmpDir}"
@@ -1614,7 +1648,7 @@ def processFactory(Map processArgs) {
   |
   |# process script
   |${escapedScript}
-  |$tripQuo
+  |\"\"\"
   |}
   |""".stripMargin()
 
