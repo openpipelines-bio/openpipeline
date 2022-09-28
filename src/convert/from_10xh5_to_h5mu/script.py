@@ -31,25 +31,27 @@ par = {
 logger.info("Reading %s.", par["input"])
 adata = sc.read_10x_h5(par["input"], gex_only=False)
 
+# store sample_id in .obs
 if par["sample_id"] is not None and par["obs_sample_id"] is not None:
   logger.info(f"Storing sample_id '{par['sample_id']}' in .obs['{par['obs_sample_id']}]'.")
   adata.obs[par["obs_sample_id"]] = par["sample_id"]
 
+# combine sample_id and barcode in obs_names
 if par["sample_id"] is not None and par["id_to_obs_names"] == True:
   logger.info("Combining obs_names and sample_id")
   replace = re.compile('-\\d+$')
   adata.obs_names = [ replace.sub('', obs_name) + "_" + par["sample_id"] for obs_name in adata.obs_names ]
-  
+
+# set the gene ids as var_names
 logger.info("Renaming var columns")
 adata.var = adata.var\
   .rename_axis("gene_symbol")\
   .reset_index()\
   .set_index("gene_ids")
-  #.rename(columns={"gene_ids":"gene_id", "feature_types":"feature_type"})\
 
+# parse metrics summary file and store in .obsm or .obs
 if par["input_metrics_summary"] is not None:
   logger.info(f"Reading metrics summary file '{par['input_metrics_summary']}'")
-  # pd.read_csv(par["input_metrics_summary"], thousands=",")
   with open(par["input_metrics_summary"], newline='') as f:
     reader = csv.reader(f)
     data = list(reader)
@@ -87,6 +89,7 @@ if par["min_counts"] is not None:
   logger.info(f"Filtering with min_counts={par['min_counts']}")
   sc.pp.filter_cells(adata, min_counts=par["min_counts"])
 
+# generate output
 logger.info("Convert to mudata")
 mdata = mudata.MuData(adata)
 
