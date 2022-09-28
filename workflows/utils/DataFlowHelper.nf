@@ -100,3 +100,27 @@ def getWorkflowArguments(Map args) {
 
 }
 
+
+def safeMap(Closure clos) {
+  def meth = clos.class.methods.find {
+      it.name == "call"
+  }
+  def numArgs = meth.parameterCount
+  
+  workflow safeMapWf {
+    take:
+    input_
+
+    main:
+    output_ = input_
+      | map{ tup -> 
+        out = clos(tup.take(numArgs))
+        out + tup.drop(numArgs)
+      }
+
+    emit:
+    output_
+  }
+
+  return safeMapWf
+}
