@@ -73,52 +73,34 @@ if [[ ! -f "$vdj_ref" ]]; then
 fi
 
 
-# test run
-bin/viash run src/mapping/cellranger_multi/config.vsh.yaml -- \
-  --input "${raw_dir}/${orig_sample_id}_GEX_1_subset_S1_L001_R1_001.fastq.gz" \
-  --input "${raw_dir}/${orig_sample_id}_GEX_1_subset_S1_L001_R2_001.fastq.gz" \
-  --input "${raw_dir}/${orig_sample_id}_AB_subset_S2_L004_R1_001.fastq.gz" \
-  --input "${raw_dir}/${orig_sample_id}_AB_subset_S2_L004_R2_001.fastq.gz" \
-  --input "${raw_dir}/${orig_sample_id}_VDJ_subset_S1_L001_R1_001.fastq.gz" \
-  --input "${raw_dir}/${orig_sample_id}_VDJ_subset_S1_L001_R2_001.fastq.gz" \
-  --gex_reference "$genome_tar" \
-  --vdj_reference "$vdj_ref" \
-  --feature_reference "$feature_reference" \
-  --library_id "${orig_sample_id}_GEX_1_subset" \
-  --library_type "Gene Expression" \
-  --library_id "${orig_sample_id}_AB_subset" \
-  --library_type "Antibody Capture" \
-  --library_id "${orig_sample_id}_VDJ_subset" \
-  --library_type "VDJ" \
-  --output output
-  
-# # as nextflow pipeline
-# cat > /tmp/params.yaml << HERE
-# param_list:
-# - id: "$ID"
-#   input: "$raw_dir"
-#   library_id:
-#     - "${orig_sample_id}_GEX_1_subset"
-#     - "${orig_sample_id}_AB_subset"
-#     - "${orig_sample_id}_VDJ_subset"
-#   library_type:
-#     - "Gene Expression"
-#     - "Antibody Capture"
-#     - "VDJ"
+# Run mapping pipeline
+# TODO: Also include conversion to h5mu
+cat > /tmp/params.yaml << HERE
+param_list:
+- id: "$ID"
+  input: "$raw_dir"
+  library_id:
+    - "${orig_sample_id}_GEX_1_subset"
+    - "${orig_sample_id}_AB_subset"
+    - "${orig_sample_id}_VDJ_subset"
+  library_type:
+    - "Gene Expression"
+    - "Antibody Capture"
+    - "VDJ"
 
-# gex_reference: "$genome_tar"
-# vdj_reference: "$vdj_ref"
-# feature_reference: "$feature_reference"
-# publish_dir: "$OUT/processed"
-# HERE
+gex_reference: "$genome_tar"
+vdj_reference: "$vdj_ref"
+feature_reference: "$feature_reference"
+publish_dir: "$OUT/processed"
+HERE
 
 
-# bin/nextflow \
-#   run . \
-#   -main-script target/nextflow/mapping/cellranger_multi/main.nf \
-#   -resume \
-#   -profile docker,mount_temp \
-#   -with-trace work/trace.txt \
-#   -params-file /tmp/params.yaml \
-#   -c workflows/utils/labels.config \
-#   -c workflows/utils/errorstrat_ignore.config
+bin/nextflow \
+  run . \
+  -main-script target/nextflow/mapping/cellranger_multi/main.nf \
+  -resume \
+  -profile docker,mount_temp \
+  -with-trace work/trace.txt \
+  -params-file /tmp/params.yaml \
+  -c workflows/utils/labels.config \
+  -c workflows/utils/errorstrat_ignore.config
