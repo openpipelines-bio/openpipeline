@@ -100,3 +100,47 @@ def getWorkflowArguments(Map args) {
 
 }
 
+
+def strictMap(Closure clos) {
+  def numArgs = clos.class.methods.find{it.name == "call"}.parameterCount
+  
+  workflow strictMapWf {
+    take:
+    input_
+
+    main:
+    output_ = input_
+      | map{ tup -> 
+        if (tup.size() != numArgs) {
+          throw new RuntimeException("Closure does not have the same number of arguments as channel tuple.\nNumber of closure arguments: $numArgs\nChannel tuple: $tup")
+        }
+        clos(tup)
+      }
+
+    emit:
+    output_
+  }
+
+  return strictMapWf
+}
+
+def passthroughMap(Closure clos) {
+  def numArgs = clos.class.methods.find{it.name == "call"}.parameterCount
+  
+  workflow passthroughMap {
+    take:
+    input_
+
+    main:
+    output_ = input_
+      | map{ tup -> 
+        out = clos(tup.take(numArgs))
+        out + tup.drop(numArgs)
+      }
+
+    emit:
+    output_
+  }
+
+  return passthroughMap
+}
