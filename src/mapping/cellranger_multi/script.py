@@ -257,7 +257,7 @@ def main(par: dict[str, Any], meta: dict[str, Any]):
             if not os.path.exists(path):
                 raise ValueError(f"Could not find expected {type_} '{path}'")
         os.mkdir(par['output'])
-        for base_name in os.path.listdir(tmp_output_dir):
+        for base_name in os.listdir(tmp_output_dir):
             shutil.move(os.path.join(tmp_output_dir, base_name), par['output'])
 
 if __name__ == "__main__":
