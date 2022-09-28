@@ -6,6 +6,8 @@ import logging
 from sys import stdout
 from typing import Any
 import pandas as pd
+import gzip
+import shutil
 
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
@@ -21,8 +23,8 @@ par = {
   'mode': 'wta',
   'output': 'foo',
   'subsample': None,
-  'reference': 'resources_test/bdrhap_ref_gencodev40_chr1/GRCh38_primary_assembly_genome_chr1.tar.gz',
-  'transcriptome_annotation': 'resources_test/bdrhap_ref_gencodev40_chr1/gencode_v40_annotation_chr1.gtf',
+  'reference': 'reference_gencodev41_chr1/reference_bd_rhapsody.tar.gz',
+  'transcriptome_annotation': 'reference_gencodev41_chr1/reference.gtf.gz',
   'exact_cell_count': None,
   'disable_putative_calling': False,
   'parallel': True,
@@ -35,6 +37,10 @@ meta = {
   'temp_dir': os.getenv("VIASH_TEMP")
 }
 ## VIASH END
+
+def is_gz_file(filepath):
+    with open(filepath, 'rb') as test_f:
+        return test_f.read(2) == b'\x1f\x8b'
 
 def strip_margin(text: str) -> str:
   return re.sub('(\n?)[ \t]*\|', '\\1', text)
@@ -338,6 +344,13 @@ def main(par: dict[str, Any], meta: dict[str, Any]):
   # Create output dir if not exists
   if not os.path.exists(par["output"]):
     os.makedirs(par["output"])
+
+  # extract transcriptome gtf if need be
+  if par["transcriptome_annotation"] and is_gz_file(par["transcriptome_annotation"]):
+    with tempfile.NamedTemporaryFile(suffix=".gtf", mode='wb') as genes_uncompressed:
+      with gzip.open(par["transcriptome_annotation"], 'rb') as genes_compressed:
+          shutil.copyfileobj(genes_compressed, genes_uncompressed)
+          par["transcriptome_annotation"] = genes_uncompressed
 
   # Create params file
   config_file = os.path.join(par["output"], "config.yml")
