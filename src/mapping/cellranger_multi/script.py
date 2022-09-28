@@ -9,7 +9,7 @@ from sys import stdout
 import pandas as pd
 from typing import Optional, Any, Union
 import tarfile
-import shutil
+import pathlib
 
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
@@ -194,13 +194,14 @@ def main(par: dict[str, Any], meta: dict[str, Any]):
                 logger.info('Extracting %s to %s', reference, unpacked_directory)
 
                 with tarfile.open(reference, 'r') as open_tar:
-                    open_tar.extractall(unpacked_directory)
-                children = os.listdir(unpacked_directory)
-                if len(children) == 1 and os.path.isdir(children[0]):
-                    for file_name in os.listdir(children[0]):
-                        shutil.move(os.path.join(unpacked_directory, children[0], file_name), 
-                                    unpacked_directory)
-                    os.rmdir(os.path.join(unpacked_directory, children[0]))
+                    rootDirs = [ rootDir for rootDir in open_tar.getnames() if '/' not in rootDir ]
+                    members = open_tar.getmembers()
+                    # if there is only one rootDir (and there are files in that directory)
+                    # strip that directory name from the destination folder
+                    if len(rootDirs) == 1 and len(members) > 1:
+                        for mem in members:
+                            mem.path = '/'.join(pathlib.Path(mem.path).parts[1:])
+                    open_tar.extractall(unpacked_directory, members=[mem for mem in members if len(mem.path) > 0])
                 par[reference_par_name] = unpacked_directory
 
         # Creating symlinks of fastq files to tempdir
