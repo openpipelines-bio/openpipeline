@@ -163,8 +163,8 @@ def generate_config(par: dict[str, Any], fastq_dir: str) -> str:
 
     # process libraries parameters
     library_pars = subset_dict(par, LIBRARY_CONFIG_KEYS)
-    libraries_strs = generate_csv_category("libraries", library_pars)
     library_pars['fastqs'] = fastq_dir
+    libraries_strs = generate_csv_category("libraries", library_pars)
 
     # process samples parameters
     cmo_pars = subset_dict(par, SAMPLE_PARAMS_CONFIG_KEYS)
