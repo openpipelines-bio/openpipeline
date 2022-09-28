@@ -11,8 +11,7 @@ par_expect_cells="3000"
 par_secondary_analysis="false"
 ## VIASH END
 
-# just to make sure
-par_input=`realpath $par_input`
+# just to make sure paths are absolute
 par_reference=`realpath $par_reference`
 par_output=`realpath $par_output`
 
@@ -22,6 +21,21 @@ function clean_up {
     rm -rf "$tmpdir"
 }
 trap clean_up EXIT
+
+# process inputs
+# for every fastq file found, make a symlink into the tempdir
+fastq_dir="$tmpdir/fastqs"
+mkdir -p "$fastq_dir"
+IFS=";"
+for var in $par_input; do
+  unset IFS
+  abs_path=`realpath $var`
+  if [ -d "$abs_path" ]; then
+    find "$abs_path" -name *.fastq.gz -exec ln -s {} "$fastq_dir" \;
+  else
+    ln -s "$abs_path" "$fastq_dir"
+  fi
+done
 
 # cd into tempdir
 cd "$tmpdir"
@@ -55,7 +69,7 @@ echo "Running cellranger count"
 id=myoutput
 cellranger count \
   --id "$id" \
-  --fastqs "$par_input" \
+  --fastqs "$fastq_dir" \
   --transcriptome "$par_reference" \
   --include-introns "$par_include_introns" \
   "${extra_params[@]}" \

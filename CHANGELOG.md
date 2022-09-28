@@ -26,6 +26,8 @@
   | integration
   ```
 
+* `mapping/cellranger_count`: Allow passing both directories as well as individual fastq.gz files as inputs.
+
 * `convert/from_10xh5_to_h5mu`: Allow reading in QC metrics, use gene ids as `.obs_names` instead of gene symbols.
 
 ## MINOR CHANGES
