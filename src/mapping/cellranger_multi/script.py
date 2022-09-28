@@ -10,6 +10,7 @@ import pandas as pd
 from typing import Optional, Any, Union
 import tarfile
 import pathlib
+import shutil
 
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
@@ -180,7 +181,6 @@ def main(par: dict[str, Any], meta: dict[str, Any]):
     logger.info(par)
 
     # TODO: throw error or else Cell Ranger will
-    # # Create output dir if not exists
     with tempfile.TemporaryDirectory(prefix="cellranger_multi-",
                                      dir=meta["temp_dir"]) as temp_dir:
         for reference_par_name in REFERENCES:
@@ -256,6 +256,9 @@ def main(par: dict[str, Any], meta: dict[str, Any]):
             path = os.path.join(tmp_output_dir, file)
             if not os.path.exists(path):
                 raise ValueError(f"Could not find expected {type_} '{path}'")
+        os.mkdir(par['output'])
+        for base_name in os.path.listdir(tmp_output_dir):
+            shutil.move(os.path.join(tmp_output_dir, base_name), par['output'])
 
 if __name__ == "__main__":
     main(par, meta)

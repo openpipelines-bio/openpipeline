@@ -164,7 +164,8 @@ functionality:
   test_resources:
     - type: python_script
       path: test.py
-    - path: ../../../resources_test/cellranger_tiny_fastq
+    - path: ../../../resources_test/10x_5k_anticmv/raw/
+    - path: ../../../resources_test/reference_gencodev41_chr1
 platforms:
   - type: docker
     image: ghcr.io/data-intuitive/cellranger:7.0
