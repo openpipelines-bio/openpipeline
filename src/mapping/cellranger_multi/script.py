@@ -198,7 +198,7 @@ def main(par: dict[str, Any], meta: dict[str, Any]):
                     members = open_tar.getmembers()
                     # if there is only one rootDir (and there are files in that directory)
                     # strip that directory name from the destination folder
-                    if len(rootDirs) == 1 and len(members) > 1:
+                    if len(rootDirs) == 1 and len(members) > 1 and rootDirs[0] != '.':
                         for mem in members:
                             mem.path = '/'.join(pathlib.Path(mem.path).parts[1:])
                     open_tar.extractall(unpacked_directory, members=[mem for mem in members if len(mem.path) > 0])

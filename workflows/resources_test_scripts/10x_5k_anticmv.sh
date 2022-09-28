@@ -57,8 +57,8 @@ seqkit_head "$tar_dir/gex_1/${orig_sample_id}_GEX_1_S1_L001_R2_001.fastq.gz" "$r
 seqkit_head "$tar_dir/ab/${orig_sample_id}_AB_S2_L004_R1_001.fastq.gz" "$raw_dir/${orig_sample_id}_AB_subset_S2_L004_R1_001.fastq.gz"
 seqkit_head "$tar_dir/ab/${orig_sample_id}_AB_S2_L004_R2_001.fastq.gz" "$raw_dir/${orig_sample_id}_AB_subset_S2_L004_R2_001.fastq.gz"
 
-seqkit_head "$tar_dir/ab/${orig_sample_id}_VDJ_S1_L001_R1_001.fastq.gz" "$raw_dir/${orig_sample_id}_VDJ_subset_S1_L001_R1_001.fastq.gz"
-seqkit_head "$tar_dir/ab/${orig_sample_id}_VDJ_S1_L001_R2_001.fastq.gz" "$raw_dir/${orig_sample_id}_VDJ_subset_S1_L001_R2_001.fastq.gz"
+seqkit_head "$tar_dir/vdj/${orig_sample_id}_VDJ_S1_L001_R1_001.fastq.gz" "$raw_dir/${orig_sample_id}_VDJ_subset_S1_L001_R1_001.fastq.gz"
+seqkit_head "$tar_dir/vdj/${orig_sample_id}_VDJ_S1_L001_R2_001.fastq.gz" "$raw_dir/${orig_sample_id}_VDJ_subset_S1_L001_R2_001.fastq.gz"
 
 # download immune panel fasta if needed
 feature_reference="$raw_dir/feature_reference.csv"
@@ -80,15 +80,15 @@ viash run src/mapping/cellranger_multi/config.vsh.yaml -- \
   --input "${raw_dir}/${orig_sample_id}_AB_subset_S2_L004_R1_001.fastq.gz" \
   --input "${raw_dir}/${orig_sample_id}_AB_subset_S2_L004_R2_001.fastq.gz" \
   --input "${raw_dir}/${orig_sample_id}_VDJ_subset_S1_L001_R1_001.fastq.gz" \
-  --input "${raw_dir}/${orig_sample_id}_VDJ_subset_S2_L001_R1_001.fastq.gz" \
+  --input "${raw_dir}/${orig_sample_id}_VDJ_subset_S1_L001_R2_001.fastq.gz" \
   --gex_reference "$genome_tar" \
   --vdj_reference "$vdj_ref" \
   --feature_reference "$feature_reference" \
-  --library_id "${orig_sample_id}_GEX_1" \
+  --library_id "${orig_sample_id}_GEX_1_subset" \
   --library_type "Gene Expression" \
-  --library_id "${orig_sample_id}_AB" \
+  --library_id "${orig_sample_id}_AB_subset" \
   --library_type "Antibody Capture" \
-  --library_id "${orig_sample_id}_VDJ" \
+  --library_id "${orig_sample_id}_VDJ_subset" \
   --library_type "VDJ" \
   --output output
   
@@ -98,9 +98,9 @@ viash run src/mapping/cellranger_multi/config.vsh.yaml -- \
 # - id: "$ID"
 #   input: "$raw_dir"
 #   library_id:
-#     - "${orig_sample_id}_GEX_1"
-#     - "${orig_sample_id}_AB"
-#     - "${orig_sample_id}_VDJ"
+#     - "${orig_sample_id}_GEX_1_subset"
+#     - "${orig_sample_id}_AB_subset"
+#     - "${orig_sample_id}_VDJ_subset"
 #   library_type:
 #     - "Gene Expression"
 #     - "Antibody Capture"
