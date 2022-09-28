@@ -17,7 +17,7 @@ meta = {
 
 resources_dir, functionality_name = meta["resources_dir"], meta["functionality_name"]
 input_bam_bd = f"{resources_dir}/rna_velocity/velocyto/compatible_bd_input.bam"
-input_gtf_bd = f"{resources_dir}/bdrhap_ref_gencodev40_chr1/gencode_v40_annotation_chr1.gtf"
+input_gtf_bd = f"{resources_dir}/reference_gencodev41_chr1/reference.gtf.gz"
 input_barcodes_bd = f"{resources_dir}/rna_velocity/velocyto/barcodes.txt"
 
 input_bam_cellranger = f"{resources_dir}/cellranger_tiny_fastq/bam/possorted_genome_bam.bam"
@@ -58,12 +58,15 @@ class TestVelocyto(unittest.TestCase):
 
     
     def test_velocyto_bd_rhapsody(self):
-        self._run_and_check_output([
-                "--input", input_bam_bd,
-                "--transcriptome", input_gtf_bd,
-                "--output", "./foo/velocyto.loom",
-                "--barcode", input_barcodes_bd]
-                )
+        with tempfile.NamedTemporaryFile(suffix=".gtf", mode='wb') as genes_uncompressed:
+            with gzip.open(input_gtf_bd, 'rb') as genes_compressed:
+                shutil.copyfileobj(genes_compressed, genes_uncompressed)
+                self._run_and_check_output([
+                        "--input", input_bam_bd,
+                        "--transcriptome", genes_uncompressed,
+                        "--output", "./foo/velocyto.loom",
+                        "--barcode", input_barcodes_bd]
+                        )
         self.assertTrue(Path("./foo/velocyto.loom").is_file())
         input_barcodes = set()
         with open(input_barcodes_bd, 'r') as barcodes_file:
