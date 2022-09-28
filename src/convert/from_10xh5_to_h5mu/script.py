@@ -4,7 +4,7 @@ import logging
 from sys import stdout
 import re
 import pandas as pd
-import csv
+import numpy as np
 
 # set logging
 logger = logging.getLogger()
@@ -32,13 +32,14 @@ logger.info("Reading %s.", par["input"])
 adata = sc.read_10x_h5(par["input"], gex_only=False)
 
 # store sample_id in .obs
-if par["sample_id"] is not None and par["obs_sample_id"] is not None:
-  logger.info(f"Storing sample_id '{par['sample_id']}' in .obs['{par['obs_sample_id']}]'.")
+if par["sample_id"] and par["obs_sample_id"]:
+  logger.info("Storing sample_id '%s' in .obs['%s]'.", par['sample_id'], par['obs_sample_id'])
   adata.obs[par["obs_sample_id"]] = par["sample_id"]
 
 # combine sample_id and barcode in obs_names
-if par["sample_id"] is not None and par["id_to_obs_names"] == True:
+if par["sample_id"] and par["id_to_obs_names"]:
   logger.info("Combining obs_names and sample_id")
+  # strip the number from '<10x_barcode>-<number>'
   replace = re.compile('-\\d+$')
   adata.obs_names = [ replace.sub('', obs_name) + "_" + par["sample_id"] for obs_name in adata.obs_names ]
 
@@ -50,30 +51,21 @@ adata.var = adata.var\
   .set_index("gene_ids")
 
 # parse metrics summary file and store in .obsm or .obs
-if par["input_metrics_summary"] is not None:
-  logger.info(f"Reading metrics summary file '{par['input_metrics_summary']}'")
-  with open(par["input_metrics_summary"], newline='') as f:
-    reader = csv.reader(f)
-    data = list(reader)
-    header = data[0]
-    # header = [ s.lower().replace(' ', '_') for s in data[0] ]
-    # ^ do we want to remove spaces in the names?
+if par["input_metrics_summary"]:
+  logger.info("Reading metrics summary file '%s'", par['input_metrics_summary'])
+
+  def read_percentage(val):
+      try:
+          return float(val.strip('%')) / 100
+      except AttributeError:
+          return val
+
+  df = pd.read_csv(par["input_metrics_summary"], decimal=".", quotechar='"', thousands=",").applymap(read_percentage)
+  metrics_summary = df.iloc[np.repeat(0, adata.n_obs)]
+  metrics_summary.index = adata.obs_names
     
-    def string2floatorint(x):
-      y = re.sub("[^\\d\\.]", "", x)
-      if '%' in x:
-        return float(y) / 100
-      elif '.' in x:
-        return float(y)
-      else:
-        return int(y)
-    
-    values = [ string2floatorint(x) for x in data[1] ]
-    
-    metrics_summary = pd.DataFrame(dict(zip(header, values)), index=adata.obs_names)
-    
-  if par["obsm_metrics"] is not None:
-    logger.info(f"Storing metrics summary in .obs['{par['obsm_metrics']}']")
+  if par["obsm_metrics"]:
+    logger.info("Storing metrics summary in .obs['%s']", par['obsm_metrics'])
     adata.obsm[par["obsm_metrics"]] = metrics_summary
   else:
     logger.info("Storing metrics summary in .obs")
@@ -81,17 +73,17 @@ if par["input_metrics_summary"] is not None:
 
 # might perform basic filtering to get rid of some data
 # applicable when starting from the raw counts
-if par["min_genes"] is not None:
-  logger.info(f"Filtering with min_genes={par['min_genes']}")
+if par["min_genes"]:
+  logger.info("Filtering with min_genes=%d", par['min_genes'])
   sc.pp.filter_cells(adata, min_genes=par["min_genes"])
 
-if par["min_counts"] is not None:
-  logger.info(f"Filtering with min_counts={par['min_counts']}")
+if par["min_counts"]:
+  logger.info("Filtering with min_counts=%d", par['min_counts'])
   sc.pp.filter_cells(adata, min_counts=par["min_counts"])
 
 # generate output
 logger.info("Convert to mudata")
 mdata = mudata.MuData(adata)
 
-logger.info("Writing %s.", par["output"])
+logger.info("Writing %s", par["output"])
 mdata.write_h5mu(par["output"])
