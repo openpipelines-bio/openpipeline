@@ -9,7 +9,7 @@ include { cellranger_count_split } from targetDir + "/mapping/cellranger_count_s
 include { from_10xh5_to_h5mu } from targetDir + "/convert/from_10xh5_to_h5mu/main.nf"
 
 include { readConfig; viashChannel; helpMessage } from workflowDir + "/utils/WorkflowHelper.nf"
-include { setWorkflowArguments; getWorkflowArguments; safeMap } from workflowDir + "/utils/DataFlowHelper.nf"
+include { setWorkflowArguments; getWorkflowArguments; passthroughMap as pmap } from workflowDir + "/utils/DataFlowHelper.nf"
 
 config = readConfig("$workflowDir/ingestion/cellranger_mapping/config.vsh.yaml")
 
@@ -40,7 +40,7 @@ workflow run_wf {
         "generate_bam": "generate_bam",
         "include_introns": "include_introns"
       ],
-      which: [
+      use_raw_or_filtered: [
         "which_10xh5": "which_10xh5"
       ],
       from_10xh5_to_h5mu: [ 
@@ -62,10 +62,10 @@ workflow run_wf {
     | cellranger_count_split
 
     // convert to h5mu
-    | safeMap { id, data, split_args -> 
+    | pmap { id, data, split_args -> 
 
       // let user toggle between filtered_h5 or raw_h5
-      input = data[split_args.which.which_10xh5]
+      input = data[split_args.use_raw_or_filtered.which_10xh5]
       
       // combine new data for from_10xh5_to_h5mu
       new_data = 
@@ -84,7 +84,7 @@ workflow run_wf {
     | from_10xh5_to_h5mu.run(auto: [ publish: true ])
 
     // return output map
-    | safeMap { id, h5mu, data ->
+    | pmap { id, h5mu, data ->
       [ id, data + [h5mu: h5mu] ]
     }
 
