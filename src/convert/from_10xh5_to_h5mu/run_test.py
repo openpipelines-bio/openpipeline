@@ -1,6 +1,6 @@
 import subprocess
 from os import path
-import muon as mu
+import mudata as mu
 
 input = meta["resources_dir"] + "/pbmc_1k_protein_v3/pbmc_1k_protein_v3_filtered_feature_bc_matrix.h5"
 output = "output.h5mu"
