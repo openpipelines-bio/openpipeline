@@ -218,7 +218,7 @@ def main(par: dict[str, Any], meta: dict[str, Any]):
         proc_pars=["--disable-ui", "--id", temp_id]
 
         if meta["n_proc"]:
-            proc_pars.append(f"--localcores={meta['meta_n_proc']}")
+            proc_pars.append(f"--localcores={meta['n_proc']}")
 
         if meta["memory_gb"]:
             proc_pars.append(f"--localmem={int(meta['memory_gb']) - 2}")
