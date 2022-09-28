@@ -44,8 +44,8 @@ function seqkit_head {
   input="$1"
   output="$2"
   if [[ ! -f "$output" ]]; then
-    echo "> Processing `basename $output`"
-    seqkit head -n 1000000 "$output" | gzip > "$output"
+    echo "> Processing `basename $input`"
+    seqkit head -n 1000000 "$input" | gzip > "$output"
   fi
 }
 
@@ -74,7 +74,7 @@ fi
 
 
 # test run
-viash run src/mapping/cellranger_multi/config.vsh.yaml -- \
+bin/viash run src/mapping/cellranger_multi/config.vsh.yaml -- \
   --input "${raw_dir}/${orig_sample_id}_GEX_1_subset_S1_L001_R1_001.fastq.gz" \
   --input "${raw_dir}/${orig_sample_id}_GEX_1_subset_S1_L001_R2_001.fastq.gz" \
   --input "${raw_dir}/${orig_sample_id}_AB_subset_S2_L004_R1_001.fastq.gz" \
