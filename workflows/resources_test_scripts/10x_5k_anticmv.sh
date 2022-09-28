@@ -72,6 +72,7 @@ if [[ ! -f "$vdj_ref" ]]; then
   wget "https://cf.10xgenomics.com/supp/cell-vdj/refdata-cellranger-vdj-GRCh38-alts-ensembl-7.0.0.tar.gz" -O "$vdj_ref"
 fi
 
+
 # test run
 viash run src/mapping/cellranger_multi/config.vsh.yaml -- \
   --input "${raw_dir}/${orig_sample_id}_GEX_1_subset_S1_L001_R1_001.fastq.gz" \
@@ -89,35 +90,35 @@ viash run src/mapping/cellranger_multi/config.vsh.yaml -- \
   --library_type "Antibody Capture" \
   --library_id "${orig_sample_id}_VDJ" \
   --library_type "VDJ" \
-  --output output \
-  --dryrun
+  --output output
+  
+# # as nextflow pipeline
+# cat > /tmp/params.yaml << HERE
+# param_list:
+# - id: "$ID"
+#   input: "$raw_dir"
+#   library_id:
+#     - "${orig_sample_id}_GEX_1"
+#     - "${orig_sample_id}_AB"
+#     - "${orig_sample_id}_VDJ"
+#   library_type:
+#     - "Gene Expression"
+#     - "Antibody Capture"
+#     - "VDJ"
 
-# as nextflow pipeline
-cat > /tmp/params.yaml << HERE
-param_list
-- id: sample
-  input: "$raw_dir"
-  sample_name:
-    - "${orig_sample_id}_GEX_1"
-    - "${orig_sample_id}_AB"
-    - "${orig_sample_id}_VDJ"
-  feature_types:
-    - "Gene Expression"
-    - "Antibody Capture"
-    - "VDJ
-
-gex_reference: "$genome_tar"
-vdj_reference: "$vdj_ref"
-feature_reference: "$feature_reference"
-HERE
+# gex_reference: "$genome_tar"
+# vdj_reference: "$vdj_ref"
+# feature_reference: "$feature_reference"
+# publish_dir: "$OUT/processed"
+# HERE
 
 
-bin/nextflow \
-  run . \
-  -main-script target/nextflow/mapping/cellranger_multi/main.nf \
-  -resume \
-  -profile docker,mount_temp \
-  -with-trace work/trace.txt \
-  -params-file /tmp/params.yaml \
-  -c workflows/utils/labels.config \
-  -c workflows/utils/errorstrat_ignore.config
+# bin/nextflow \
+#   run . \
+#   -main-script target/nextflow/mapping/cellranger_multi/main.nf \
+#   -resume \
+#   -profile docker,mount_temp \
+#   -with-trace work/trace.txt \
+#   -params-file /tmp/params.yaml \
+#   -c workflows/utils/labels.config \
+#   -c workflows/utils/errorstrat_ignore.config
