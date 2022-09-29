@@ -43,10 +43,17 @@ class TestCellrangerMulti(TestCase):
                "--feature_reference", feature_reference,
                "--library_id", "5k_human_antiCMV_T_TBNK_connect_GEX_1_subset;5k_human_antiCMV_T_TBNK_connect_AB_subset;5k_human_antiCMV_T_TBNK_connect_VDJ_subset",
                "--library_type", "Gene Expression;Antibody Capture;VDJ"])
-        self.assertTrue(Path("output/per_sample_outputs/metrics_summary.csv").is_file())
+        # check for raw data
         self.assertTrue(Path("output/multi/count/raw_feature_bc_matrix.h5").is_file())
-        self.assertTrue(Path("output/per_sample_outputs/count/sample_filtered_feature_bc_matrix.h5").is_file())
-        self.assertTrue(Path("output/per_sample_outputs/vdj_t/filtered_contig_annotations.csv").is_file())
+
+        # check for metrics summary
+        self.assertTrue(Path("output/per_sample_outputs/run/metrics_summary.csv").is_file())
+        
+        # check for filtered gex+ab data
+        self.assertTrue(Path("output/per_sample_outputs/run/count/sample_filtered_feature_bc_matrix.h5").is_file())
+
+        # check for vdj data
+        self.assertTrue(Path("output/per_sample_outputs/run/vdj_t/filtered_contig_annotations.csv").is_file())
         
     
 
