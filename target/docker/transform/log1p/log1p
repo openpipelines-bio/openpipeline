@@ -414,9 +414,9 @@ RUN pip install --upgrade pip && \
 
 LABEL org.opencontainers.image.authors="Dries De Maeyer <ddemaeyer@gmail.com> (maintainer) {account: ddemaey1}, Robrecht Cannoodt <robrecht@data-intuitive.com> (contributor) {github: rcannood, orcid: 0000-0003-3641-729X}"
 LABEL org.opencontainers.image.description="Companion container for running component transform log1p"
-LABEL org.opencontainers.image.created="2022-09-29T11:38:50Z"
+LABEL org.opencontainers.image.created="2022-09-29T13:30:31Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="f27db48112528b9417ef5d4915c61ebad6c60fcc"
+LABEL org.opencontainers.image.revision="c817d3d58902617462830c32ea518208051d57e2"
 LABEL org.opencontainers.image.version="main_build"
 VIASHDOCKER
 }

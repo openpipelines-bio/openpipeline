@@ -1,4 +1,44 @@
 #!/bin/bash
+PROGNAME=${0##*/}
+usage() {
+  echo "Usage: ${PROGNAME} [-n] [-h]"
+}
+
+help_message() {
+  cat <<- EOF
+	${PROGNAME}
+	
+	Download nextflow and viash binaries into the 'bin' folder
+
+	$(usage)
+
+	Options:
+	-n		Download viash only.
+	-h		Display this help message and exit.
+
+	EOF
+}
+
+only_viash=false
+while getopts ":hn" opt; do
+  case ${opt} in
+    h ) help_message
+        exit 0;
+        ;;
+    n ) only_viash=true
+        ;;
+    \? ) >&2 echo "Invalid Option: -${OPTARG}" 1>&2
+         help_message
+         exit 1;
+         ;;
+    : )
+         >&2 echo "Invalid Option: -${OPTARG} requires an argument" 1>&2
+         help_message
+         exit 1
+         ;;
+  esac
+done
+
 
 # get the root of the directory
 REPO_ROOT=$(git rev-parse --show-toplevel)
@@ -12,11 +52,15 @@ curl -fsSL get.viash.io | bash -s -- \
   --target_image_source https://github.com/openpipelines-bio/openpipeline \
   --tag develop
 
-# automatically export the workflow helper
-[[ -d workflows/utils ]] || mkdir -p workflows/utils
-bin/viash export resource platforms/nextflow/ProfilesHelper.config > workflows/utils/ProfilesHelper.config
-bin/viash export resource platforms/nextflow/WorkflowHelper.nf > workflows/utils/WorkflowHelper.nf
+if [ "$only_viash" = false ] ; then
 
-cd bin
+  # automatically export the workflow helper
+  [[ -d workflows/utils ]] || mkdir -p workflows/utils
+  bin/viash export resource platforms/nextflow/ProfilesHelper.config > workflows/utils/ProfilesHelper.config
+  bin/viash export resource platforms/nextflow/WorkflowHelper.nf > workflows/utils/WorkflowHelper.nf
 
-curl -s https://get.nextflow.io | bash
+  cd bin
+
+  curl -s https://get.nextflow.io | bash
+
+fi
