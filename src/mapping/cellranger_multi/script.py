@@ -9,7 +9,7 @@ from sys import stdout
 import pandas as pd
 from typing import Optional, Any, Union
 import tarfile
-import pathlib
+from pathlib import Path
 import shutil
 
 logger = logging.getLogger()
@@ -108,17 +108,17 @@ def check_subset_dict_equal_length(group_name: str,
 
 def process_params(par: dict[str, Any]) -> str:
     # if par_input is a directory, look for fastq files
-    if len(par["input"]) == 1 and os.path.isdir(par["input"][0]):
+    par["input"] = [Path(fastq) for fastq in par["input"]]
+    if len(par["input"]) == 1 and par["input"][0].is_dir():
         logger.info("Detected '--input' as a directory, "
                     "traversing to see if we can detect any FASTQ files.")
-        par["input"] = [os.path.join(dp, f) 
-                        for dp, _, filenames in os.walk(par["input"][0])
-                        for f in filenames if re.match(fastq_regex, f) ]
+        par["input"] = [input_path for input_path in par["input"].rglob('*') 
+                        if re.match(fastq_regex, input_path.name) ]
 
     # check input fastq files
-    for input in par["input"]:
-        assert re.match(fastq_regex, os.path.basename(input)) is not None, \
-               f"File name of --input '{input}' should match regex {fastq_regex}."
+    for input_path in par["input"]:
+        assert re.match(fastq_regex, input_path.name) is not None, \
+               f"File name of --input '{input_path}' should match regex {fastq_regex}."
     
     # check lengths of libraries metadata 
     library_dict = subset_dict(par, LIBRARY_PARAMS)
@@ -132,11 +132,11 @@ def process_params(par: dict[str, Any]) -> str:
     par["cmo"] = cmo_dict
 
     # use absolute paths
-    par["input"] = [ os.path.abspath(f) for f in par["input"] ]
+    par["input"] = [input_path.resolve() for input_path in par["input"]]
     for file_path in REFERENCES + ('output', ):
         if par[file_path]:
             logger.info('Making path %s absolute', par[file_path])
-            par[file_path] = os.path.abspath(par[file_path])
+            par[file_path] = Path(par[file_path]).resolve()
     return par
 
 def generate_dict_category(name: str, args: dict[str, str]) -> list[str]:
@@ -183,33 +183,34 @@ def main(par: dict[str, Any], meta: dict[str, Any]):
     # TODO: throw error or else Cell Ranger will
     with tempfile.TemporaryDirectory(prefix="cellranger_multi-",
                                      dir=meta["temp_dir"]) as temp_dir:
+        temp_dir_path = Path(temp_dir)
         for reference_par_name in REFERENCES:
             reference = par[reference_par_name]
             logger.info('Looking at %s to check if it needs decompressing', reference)
             if tarfile.is_tarfile(reference):
-                extaction_dir_name, _ = os.path.splitext(reference)
-                extaction_dir_name, _ = os.path.splitext(extaction_dir_name)
-
-                unpacked_directory = os.path.join(temp_dir, os.path.basename(extaction_dir_name))
+                extaction_dir_name = Path(reference.stem).stem # Remove two extensions (if they exist)
+                unpacked_directory = temp_dir_path / extaction_dir_name
                 logger.info('Extracting %s to %s', reference, unpacked_directory)
 
                 with tarfile.open(reference, 'r') as open_tar:
-                    rootDirs = [ rootDir for rootDir in open_tar.getnames() if '/' not in rootDir ]
                     members = open_tar.getmembers()
-                    # if there is only one rootDir (and there are files in that directory)
+                    root_dirs = [member for member in members if member.isdir() 
+                                 and member.name != '.' and '/' not in member.name]
+                    # if there is only one root_dir (and there are files in that directory)
                     # strip that directory name from the destination folder
-                    if len(rootDirs) == 1 and len(members) > 1 and rootDirs[0] != '.':
-                        for mem in members:
-                            mem.path = '/'.join(pathlib.Path(mem.path).parts[1:])
-                    open_tar.extractall(unpacked_directory, members=[mem for mem in members if len(mem.path) > 0])
+                    if len(root_dirs) == 1:
+                        for mem in members: 
+                            mem.path = Path(*Path(mem.path).parts[1:])
+                    members_to_move = [mem for mem in members if mem.path != Path('.')]
+                    open_tar.extractall(unpacked_directory, members=members_to_move)
                 par[reference_par_name] = unpacked_directory
 
         # Creating symlinks of fastq files to tempdir
-        input_symlinks_dir =  os.path.join(temp_dir, "input_symlinks")
-        os.mkdir(input_symlinks_dir)
+        input_symlinks_dir = temp_dir_path / "input_symlinks"
+        input_symlinks_dir.mkdir()
         for fastq in par['input']:
-            destination = os.path.join(input_symlinks_dir, os.path.basename(fastq))
-            os.symlink(fastq, destination)
+            destination = input_symlinks_dir / fastq.name
+            destination.symlink_to(fastq)
 
         logger.info("  Creating config file")
         config_content = generate_config(par, input_symlinks_dir)
@@ -232,7 +233,7 @@ def main(par: dict[str, Any], meta: dict[str, Any]):
             logger.info(config_content)
         else:
             # write config file
-            config_file = os.path.join(temp_dir, "config.csv")
+            config_file = temp_dir_path / "config.csv"
             with open(config_file, "w") as f:
                 f.write(config_content)
             proc_pars.append(f"--csv={config_file}")
@@ -246,19 +247,19 @@ def main(par: dict[str, Any], meta: dict[str, Any]):
         )
 
         # look for output dir file
-        tmp_output_dir = os.path.join(temp_dir, temp_id, "outs")
+        tmp_output_dir = temp_dir_path / temp_id / "outs"
         expected_files = {
-            "multi": "directory", 
-            "per_sample_outs": "directory", 
-            "config.csv": "file",
+            "multi": Path("directory"), 
+            "per_sample_outs": Path("directory"), 
+            "config.csv": Path("file"),
         }
         for file, type_ in expected_files.items():
-            path = os.path.join(tmp_output_dir, file)
-            if not os.path.exists(path):
-                raise ValueError(f"Could not find expected {type_} '{path}'")
-        os.mkdir(par['output'])
-        for base_name in os.listdir(tmp_output_dir):
-            shutil.move(os.path.join(tmp_output_dir, base_name), par['output'])
+            output_path = tmp_output_dir / file
+            if not output_path.is_file():
+                raise ValueError(f"Could not find expected {type_} '{output_path}'")
+        par['output'].mkdir(parents=True, exist_ok=True)
+        for output_path in tmp_output_dir.rglob('*'):
+            shutil.move(output_path, par['output'])
 
 if __name__ == "__main__":
     main(par, meta)
