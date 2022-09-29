@@ -259,7 +259,7 @@ def main(par: dict[str, Any], meta: dict[str, Any]):
                 raise ValueError(f"Could not find expected '{output_path}'")
         par['output'].mkdir(parents=True, exist_ok=True)
         for output_path in tmp_output_dir.rglob('*'):
-            shutil.move(output_path, par['output'])
+            shutil.move(str(output_path), par['output'])
 
 if __name__ == "__main__":
     main(par, meta)
