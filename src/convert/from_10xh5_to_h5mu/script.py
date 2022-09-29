@@ -60,9 +60,9 @@ if par["input_metrics_summary"] and par["uns_metrics"]:
       except AttributeError:
           return val
 
-  df = pd.read_csv(par["input_metrics_summary"], decimal=".", quotechar='"', thousands=",").applymap(read_percentage)
-  metrics_summary = df.iloc[np.repeat(0, adata.n_obs)]
-  metrics_summary.index = adata.obs_names
+  metrics_summary = pd.read_csv(par["input_metrics_summary"], decimal=".", quotechar='"', thousands=",").applymap(read_percentage)
+  if par["sample_id"]:
+    metrics_summary.index = [ par["sample_id"] ]
 
   logger.info("Storing metrics summary in .uns['%s']", par['uns_metrics'])
   adata.uns[par["uns_metrics"]] = metrics_summary
