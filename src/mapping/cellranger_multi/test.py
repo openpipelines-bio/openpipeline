@@ -47,7 +47,7 @@ class TestCellrangerMulti(TestCase):
         self.assertTrue(Path("output/multi/count/raw_feature_bc_matrix.h5").is_file())
 
         # check for metrics summary
-        self.assertTrue(Path("output/per_sample_outputs/run/metrics_summary.csv").is_file())
+        self.assertTrue(Path("output/per_sample_outs/run/metrics_summary.csv").is_file())
         
         # check for filtered gex+ab data
         self.assertTrue(Path("output/per_sample_outputs/run/count/sample_filtered_feature_bc_matrix.h5").is_file())
