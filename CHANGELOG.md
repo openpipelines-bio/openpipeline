@@ -6,6 +6,8 @@
 
 * several components (except `from_h5ad_to_5hmu`): the `--modality` arguments no longer accept multiple values.
 
+* Remove outdated `resources_test_scripts`.
+
 ## NEW FUNCTIONALITY
 
 * `workflows/ingestion/make_reference`: A generic component to build a transcriptomics reference into one of many formats.
