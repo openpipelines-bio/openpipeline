@@ -8,6 +8,8 @@
 
 * Remove outdated `resources_test_scripts`.
 
+* `convert/from_h5mu_to_seurat`: Disabled because MuDataSeurat is currently broken, see [https://github.com/PMBio/MuDataSeurat/issues/9](PMBio/MuDataSeurat#9).
+
 ## NEW FUNCTIONALITY
 
 * `workflows/ingestion/make_reference`: A generic component to build a transcriptomics reference into one of many formats.
