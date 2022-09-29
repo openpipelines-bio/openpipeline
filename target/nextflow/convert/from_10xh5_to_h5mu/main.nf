@@ -127,10 +127,10 @@ thisConfig = processConfig([
         },
         {
           "type" : "string",
-          "name" : "--obsm_metrics",
-          "description" : "Name of the .obsm slot under which to QC metrics (if any).",
+          "name" : "--uns_metrics",
+          "description" : "Name of the .uns slot under which to QC metrics (if any).",
           "default" : [
-            "metrics_summary"
+            "metrics_cellranger"
           ],
           "required" : false,
           "direction" : "input",
@@ -240,7 +240,7 @@ par = {
   'input_metrics_summary': $( if [ ! -z ${VIASH_PAR_INPUT_METRICS_SUMMARY+x} ]; then echo "'${VIASH_PAR_INPUT_METRICS_SUMMARY//\\'/\\\\\\'}'"; else echo None; fi ),
   'output': $( if [ ! -z ${VIASH_PAR_OUTPUT+x} ]; then echo "'${VIASH_PAR_OUTPUT//\\'/\\\\\\'}'"; else echo None; fi ),
   'obs_sample_id': $( if [ ! -z ${VIASH_PAR_OBS_SAMPLE_ID+x} ]; then echo "'${VIASH_PAR_OBS_SAMPLE_ID//\\'/\\\\\\'}'"; else echo None; fi ),
-  'obsm_metrics': $( if [ ! -z ${VIASH_PAR_OBSM_METRICS+x} ]; then echo "'${VIASH_PAR_OBSM_METRICS//\\'/\\\\\\'}'"; else echo None; fi ),
+  'uns_metrics': $( if [ ! -z ${VIASH_PAR_UNS_METRICS+x} ]; then echo "'${VIASH_PAR_UNS_METRICS//\\'/\\\\\\'}'"; else echo None; fi ),
   'id_to_obs_names': $( if [ ! -z ${VIASH_PAR_ID_TO_OBS_NAMES+x} ]; then echo "'${VIASH_PAR_ID_TO_OBS_NAMES//\\'/\\\\\\'}'.lower() == 'true'"; else echo None; fi ),
   'min_genes': $( if [ ! -z ${VIASH_PAR_MIN_GENES+x} ]; then echo "int('${VIASH_PAR_MIN_GENES//\\'/\\\\\\'}')"; else echo None; fi ),
   'min_counts': $( if [ ! -z ${VIASH_PAR_MIN_COUNTS+x} ]; then echo "int('${VIASH_PAR_MIN_COUNTS//\\'/\\\\\\'}')"; else echo None; fi )
@@ -284,7 +284,7 @@ adata.var = adata.var\\\\
   .set_index("gene_ids")
 
 # parse metrics summary file and store in .obsm or .obs
-if par["input_metrics_summary"]:
+if par["input_metrics_summary"] and par["uns_metrics"]:
   logger.info("Reading metrics summary file '%s'", par['input_metrics_summary'])
 
   def read_percentage(val):
@@ -296,13 +296,12 @@ if par["input_metrics_summary"]:
   df = pd.read_csv(par["input_metrics_summary"], decimal=".", quotechar='"', thousands=",").applymap(read_percentage)
   metrics_summary = df.iloc[np.repeat(0, adata.n_obs)]
   metrics_summary.index = adata.obs_names
-    
-  if par["obsm_metrics"]:
-    logger.info("Storing metrics summary in .obs['%s']", par['obsm_metrics'])
-    adata.obsm[par["obsm_metrics"]] = metrics_summary
-  else:
-    logger.info("Storing metrics summary in .obs")
-    adata.obs = adata.obs.join(metrics_summary)
+
+  logger.info("Storing metrics summary in .uns['%s']", par['uns_metrics'])
+  adata.uns[par["uns_metrics"]] = metrics_summary
+else:
+  is_none = "input_metrics_summary" if not par["input_metrics_summary"] else "uns_metrics"
+  logger.info("Not storing metrics summary because par['%s'] is None", is_none)
 
 # might perform basic filtering to get rid of some data
 # applicable when starting from the raw counts
@@ -318,6 +317,10 @@ if par["min_counts"]:
 logger.info("Convert to mudata")
 mdata = mudata.MuData(adata)
 
+# override root .obs
+mdata.obs = adata.obs
+
+# write output
 logger.info("Writing %s", par["output"])
 mdata.write_h5mu(par["output"])
 

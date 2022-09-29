@@ -190,10 +190,10 @@ function ViashHelp {
   echo "        default: sample_id"
   echo "        Name of the .obs slot under which to add the sample id (if any)."
   echo ""
-  echo "    --obsm_metrics"
+  echo "    --uns_metrics"
   echo "        type: string"
-  echo "        default: metrics_summary"
-  echo "        Name of the .obsm slot under which to QC metrics (if any)."
+  echo "        default: metrics_cellranger"
+  echo "        Name of the .uns slot under which to QC metrics (if any)."
   echo ""
   echo "Arguments:"
   echo "    --id_to_obs_names"
@@ -433,9 +433,9 @@ RUN pip install --upgrade pip && \
 
 LABEL org.opencontainers.image.authors="Robrecht Cannoodt <robrecht@data-intuitive.com> (maintainer) {github: rcannood, orcid: 0000-0003-3641-729X}"
 LABEL org.opencontainers.image.description="Companion container for running component convert from_10xh5_to_h5mu"
-LABEL org.opencontainers.image.created="2022-09-29T05:07:39Z"
+LABEL org.opencontainers.image.created="2022-09-29T10:41:53Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="058e234529e6d4a875969a0f7cec7ff61f048588"
+LABEL org.opencontainers.image.revision="b94cea54fd5d325b8b34a51e4bab93dc34573308"
 LABEL org.opencontainers.image.version="main_build"
 VIASHDOCKER
 }
@@ -650,15 +650,15 @@ while [[ $# -gt 0 ]]; do
             VIASH_PAR_OBS_SAMPLE_ID=$(ViashRemoveFlags "$1")
             shift 1
             ;;
-        --obsm_metrics)
-            [ -n "$VIASH_PAR_OBSM_METRICS" ] && ViashError Bad arguments for option \'--obsm_metrics\': \'$VIASH_PAR_OBSM_METRICS\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
-            VIASH_PAR_OBSM_METRICS="$2"
-            [ $# -lt 2 ] && ViashError Not enough arguments passed to --obsm_metrics. Use "--help" to get more information on the parameters. && exit 1
+        --uns_metrics)
+            [ -n "$VIASH_PAR_UNS_METRICS" ] && ViashError Bad arguments for option \'--uns_metrics\': \'$VIASH_PAR_UNS_METRICS\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+            VIASH_PAR_UNS_METRICS="$2"
+            [ $# -lt 2 ] && ViashError Not enough arguments passed to --uns_metrics. Use "--help" to get more information on the parameters. && exit 1
             shift 2
             ;;
-        --obsm_metrics=*)
-            [ -n "$VIASH_PAR_OBSM_METRICS" ] && ViashError Bad arguments for option \'--obsm_metrics=*\': \'$VIASH_PAR_OBSM_METRICS\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
-            VIASH_PAR_OBSM_METRICS=$(ViashRemoveFlags "$1")
+        --uns_metrics=*)
+            [ -n "$VIASH_PAR_UNS_METRICS" ] && ViashError Bad arguments for option \'--uns_metrics=*\': \'$VIASH_PAR_UNS_METRICS\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+            VIASH_PAR_UNS_METRICS=$(ViashRemoveFlags "$1")
             shift 1
             ;;
         --id_to_obs_names)
@@ -876,8 +876,8 @@ fi
 if [ -z ${VIASH_PAR_OBS_SAMPLE_ID+x} ]; then
   VIASH_PAR_OBS_SAMPLE_ID="sample_id"
 fi
-if [ -z ${VIASH_PAR_OBSM_METRICS+x} ]; then
-  VIASH_PAR_OBSM_METRICS="metrics_summary"
+if [ -z ${VIASH_PAR_UNS_METRICS+x} ]; then
+  VIASH_PAR_UNS_METRICS="metrics_cellranger"
 fi
 if [ -z ${VIASH_PAR_ID_TO_OBS_NAMES+x} ]; then
   VIASH_PAR_ID_TO_OBS_NAMES="false"
@@ -1059,7 +1059,7 @@ par = {
   'input_metrics_summary': $( if [ ! -z ${VIASH_PAR_INPUT_METRICS_SUMMARY+x} ]; then echo "'${VIASH_PAR_INPUT_METRICS_SUMMARY//\'/\\\'}'"; else echo None; fi ),
   'output': $( if [ ! -z ${VIASH_PAR_OUTPUT+x} ]; then echo "'${VIASH_PAR_OUTPUT//\'/\\\'}'"; else echo None; fi ),
   'obs_sample_id': $( if [ ! -z ${VIASH_PAR_OBS_SAMPLE_ID+x} ]; then echo "'${VIASH_PAR_OBS_SAMPLE_ID//\'/\\\'}'"; else echo None; fi ),
-  'obsm_metrics': $( if [ ! -z ${VIASH_PAR_OBSM_METRICS+x} ]; then echo "'${VIASH_PAR_OBSM_METRICS//\'/\\\'}'"; else echo None; fi ),
+  'uns_metrics': $( if [ ! -z ${VIASH_PAR_UNS_METRICS+x} ]; then echo "'${VIASH_PAR_UNS_METRICS//\'/\\\'}'"; else echo None; fi ),
   'id_to_obs_names': $( if [ ! -z ${VIASH_PAR_ID_TO_OBS_NAMES+x} ]; then echo "'${VIASH_PAR_ID_TO_OBS_NAMES//\'/\\\'}'.lower() == 'true'"; else echo None; fi ),
   'min_genes': $( if [ ! -z ${VIASH_PAR_MIN_GENES+x} ]; then echo "int('${VIASH_PAR_MIN_GENES//\'/\\\'}')"; else echo None; fi ),
   'min_counts': $( if [ ! -z ${VIASH_PAR_MIN_COUNTS+x} ]; then echo "int('${VIASH_PAR_MIN_COUNTS//\'/\\\'}')"; else echo None; fi )
@@ -1103,7 +1103,7 @@ adata.var = adata.var\\
   .set_index("gene_ids")
 
 # parse metrics summary file and store in .obsm or .obs
-if par["input_metrics_summary"]:
+if par["input_metrics_summary"] and par["uns_metrics"]:
   logger.info("Reading metrics summary file '%s'", par['input_metrics_summary'])
 
   def read_percentage(val):
@@ -1115,13 +1115,12 @@ if par["input_metrics_summary"]:
   df = pd.read_csv(par["input_metrics_summary"], decimal=".", quotechar='"', thousands=",").applymap(read_percentage)
   metrics_summary = df.iloc[np.repeat(0, adata.n_obs)]
   metrics_summary.index = adata.obs_names
-    
-  if par["obsm_metrics"]:
-    logger.info("Storing metrics summary in .obs['%s']", par['obsm_metrics'])
-    adata.obsm[par["obsm_metrics"]] = metrics_summary
-  else:
-    logger.info("Storing metrics summary in .obs")
-    adata.obs = adata.obs.join(metrics_summary)
+
+  logger.info("Storing metrics summary in .uns['%s']", par['uns_metrics'])
+  adata.uns[par["uns_metrics"]] = metrics_summary
+else:
+  is_none = "input_metrics_summary" if not par["input_metrics_summary"] else "uns_metrics"
+  logger.info("Not storing metrics summary because par['%s'] is None", is_none)
 
 # might perform basic filtering to get rid of some data
 # applicable when starting from the raw counts
@@ -1137,6 +1136,10 @@ if par["min_counts"]:
 logger.info("Convert to mudata")
 mdata = mudata.MuData(adata)
 
+# override root .obs
+mdata.obs = adata.obs
+
+# write output
 logger.info("Writing %s", par["output"])
 mdata.write_h5mu(par["output"])
 

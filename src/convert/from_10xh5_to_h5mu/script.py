@@ -20,7 +20,7 @@ par = {
   "input": "resources_test/pbmc_1k_protein_v3/pbmc_1k_protein_v3_filtered_feature_bc_matrix.h5",
   "input_metrics_summary": "resources_test/pbmc_1k_protein_v3/pbmc_1k_protein_v3_metrics_summary.csv",
   "obs_sample_id": "sample_id",
-  "obsm_metrics": "metrics_summary",
+  "uns_metrics": "metrics_cellranger",
   "output": "foo.h5mu",
   "id_to_obs_names": True,
   "min_genes": 100,
@@ -51,7 +51,7 @@ adata.var = adata.var\
   .set_index("gene_ids")
 
 # parse metrics summary file and store in .obsm or .obs
-if par["input_metrics_summary"]:
+if par["input_metrics_summary"] and par["uns_metrics"]:
   logger.info("Reading metrics summary file '%s'", par['input_metrics_summary'])
 
   def read_percentage(val):
@@ -63,13 +63,12 @@ if par["input_metrics_summary"]:
   df = pd.read_csv(par["input_metrics_summary"], decimal=".", quotechar='"', thousands=",").applymap(read_percentage)
   metrics_summary = df.iloc[np.repeat(0, adata.n_obs)]
   metrics_summary.index = adata.obs_names
-    
-  if par["obsm_metrics"]:
-    logger.info("Storing metrics summary in .obs['%s']", par['obsm_metrics'])
-    adata.obsm[par["obsm_metrics"]] = metrics_summary
-  else:
-    logger.info("Storing metrics summary in .obs")
-    adata.obs = adata.obs.join(metrics_summary)
+
+  logger.info("Storing metrics summary in .uns['%s']", par['uns_metrics'])
+  adata.uns[par["uns_metrics"]] = metrics_summary
+else:
+  is_none = "input_metrics_summary" if not par["input_metrics_summary"] else "uns_metrics"
+  logger.info("Not storing metrics summary because par['%s'] is None", is_none)
 
 # might perform basic filtering to get rid of some data
 # applicable when starting from the raw counts
@@ -85,5 +84,9 @@ if par["min_counts"]:
 logger.info("Convert to mudata")
 mdata = mudata.MuData(adata)
 
+# override root .obs
+mdata.obs = adata.obs
+
+# write output
 logger.info("Writing %s", par["output"])
 mdata.write_h5mu(par["output"])

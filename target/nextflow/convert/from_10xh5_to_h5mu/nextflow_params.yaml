@@ -6,7 +6,7 @@ input: # please fill in - example: "raw_feature_bc_matrix.h5"
 # Outputs
 # output: "$id.$key.output.h5mu"
 obs_sample_id: "sample_id"
-obsm_metrics: "metrics_summary"
+uns_metrics: "metrics_cellranger"
 
 # Arguments
 id_to_obs_names: false
