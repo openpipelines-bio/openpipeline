@@ -127,7 +127,7 @@ def strictMap(Closure clos) {
 def passthroughMap(Closure clos) {
   def numArgs = clos.class.methods.find{it.name == "call"}.parameterCount
   
-  workflow passthroughMap {
+  workflow passthroughMapWf {
     take:
     input_
 
@@ -142,5 +142,5 @@ def passthroughMap(Closure clos) {
     output_
   }
 
-  return passthroughMap
+  return passthroughMapWf
 }
