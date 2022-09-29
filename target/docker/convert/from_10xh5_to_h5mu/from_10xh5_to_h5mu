@@ -433,9 +433,9 @@ RUN pip install --upgrade pip && \
 
 LABEL org.opencontainers.image.authors="Robrecht Cannoodt <robrecht@data-intuitive.com> (maintainer) {github: rcannood, orcid: 0000-0003-3641-729X}"
 LABEL org.opencontainers.image.description="Companion container for running component convert from_10xh5_to_h5mu"
-LABEL org.opencontainers.image.created="2022-09-29T10:41:53Z"
+LABEL org.opencontainers.image.created="2022-09-29T10:46:01Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="b94cea54fd5d325b8b34a51e4bab93dc34573308"
+LABEL org.opencontainers.image.revision="5dc429655cb7beac8f0d9c732978044277826988"
 LABEL org.opencontainers.image.version="main_build"
 VIASHDOCKER
 }
@@ -1112,9 +1112,9 @@ if par["input_metrics_summary"] and par["uns_metrics"]:
       except AttributeError:
           return val
 
-  df = pd.read_csv(par["input_metrics_summary"], decimal=".", quotechar='"', thousands=",").applymap(read_percentage)
-  metrics_summary = df.iloc[np.repeat(0, adata.n_obs)]
-  metrics_summary.index = adata.obs_names
+  metrics_summary = pd.read_csv(par["input_metrics_summary"], decimal=".", quotechar='"', thousands=",").applymap(read_percentage)
+  if par["sample_id"]:
+    metrics_summary.index = [ par["sample_id"] ]
 
   logger.info("Storing metrics summary in .uns['%s']", par['uns_metrics'])
   adata.uns[par["uns_metrics"]] = metrics_summary

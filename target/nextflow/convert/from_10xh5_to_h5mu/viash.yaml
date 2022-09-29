@@ -437,9 +437,9 @@ functionality:
             except AttributeError:
                 return val
       
-        df = pd.read_csv(par["input_metrics_summary"], decimal=".", quotechar='"', thousands=",").applymap(read_percentage)
-        metrics_summary = df.iloc[np.repeat(0, adata.n_obs)]
-        metrics_summary.index = adata.obs_names
+        metrics_summary = pd.read_csv(par["input_metrics_summary"], decimal=".", quotechar='"', thousands=",").applymap(read_percentage)
+        if par["sample_id"]:
+          metrics_summary.index = [ par["sample_id"] ]
       
         logger.info("Storing metrics summary in .uns['%s']", par['uns_metrics'])
         adata.uns[par["uns_metrics"]] = metrics_summary
@@ -2200,5 +2200,5 @@ info:
   platform: "nextflow"
   output: "target/nextflow/convert/from_10xh5_to_h5mu"
   viash_version: "0.6.0"
-  git_commit: "b94cea54fd5d325b8b34a51e4bab93dc34573308"
+  git_commit: "5dc429655cb7beac8f0d9c732978044277826988"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"
