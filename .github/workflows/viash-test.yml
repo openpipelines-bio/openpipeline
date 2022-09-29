@@ -103,7 +103,7 @@ jobs:
           for resource_rel_path in "${resources[@]}"; do
             resource_project_path=$(realpath --relative-to="$GITHUB_WORKSPACE" "$resource_rel_path")
             echo "Checking path $resource_project_path"
-            if [[ " ${changed_files[*]} " =~ " ${resource_project_path} " || "$GITHUB_REF" == "refs/heads/main" || "$ {{ !contains(github.event.head_commit.message, 'ci force') }}" == "true" ]]; then
+            if [[ " ${changed_files[*]} " =~ " ${resource_project_path} " || "$GITHUB_REF" == "refs/heads/main" || "${{ !contains(github.event.head_commit.message, 'ci force') }}" == "true" ]]; then
               result_array_matrix+="$component"
               break
             fi
