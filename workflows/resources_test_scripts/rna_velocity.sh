@@ -19,7 +19,7 @@ mkdir -p "$velocyto_dir"
 # Create a compatible BAM file from BD Rhapsody Output #
 ########################################################
 
-bd_rhap_wta_bam="resources_test/bdrhap_5kjrt/processed/SMK.bd_rhapsody.output/Combined_sample_final.BAM"
+bd_rhap_wta_bam="resources_test/bdrhap_5kjrt/processed/WTA.bd_rhapsody.output_raw/sample_final.BAM"
 
 if [[ ! -f "$bd_rhap_wta_bam" ]]; then
     echo "$bd_rhap_wta_bam does not exist. Please generate BD Rhapsody test data first."
@@ -27,7 +27,7 @@ if [[ ! -f "$bd_rhap_wta_bam" ]]; then
 fi
 
 echo "> Converting BD Rhapsody barcode tags."
-./bin/viash run ./src/convert/from_10x_to_bd_molecular_barcode_tags/config.vsh.yaml -- \
+bin/viash run src/convert/from_bd_to_10x_molecular_barcode_tags/config.vsh.yaml -- \
   -i "$bd_rhap_wta_bam" \
   -o "$velocyto_dir/compatible_bd_input.bam" \
   --bam \
@@ -45,16 +45,10 @@ samtools view -@4 "$velocyto_dir/compatible_bd_input.bam" | \
 mkdir "$OUT/velocyto_processed"
 
 gtf="resources_test/cellranger_tiny_fastq/cellranger_tiny_ref/genes/genes.gtf.gz"
-gtf_decompressed="$OUT/velocyto_processed/genes.gtf"
 bam="resources_test/cellranger_tiny_fastq/bam/possorted_genome_bam.bam"
 
-echo "> Decompressing gene annotation"
-gzip -k -d -c "$gtf" > "$gtf_decompressed"
-
 echo "> Processing 10x dataset"
-./bin/viash run ./src/projection/velocyto/config.vsh.yaml -- \
+bin/viash run src/projection/velocyto/config.vsh.yaml -- \
   -i "$bam" \
   -o "$OUT/velocyto_processed/cellranger_tiny.loom" \
-  --transcriptome "$gtf_decompressed"
-
-rm "$gtf_decompressed"
+  --transcriptome "$gtf"
