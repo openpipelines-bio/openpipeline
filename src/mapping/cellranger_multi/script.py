@@ -249,14 +249,14 @@ def main(par: dict[str, Any], meta: dict[str, Any]):
         # look for output dir file
         tmp_output_dir = temp_dir_path / temp_id / "outs"
         expected_files = {
-            "multi": Path("directory"), 
-            "per_sample_outs": Path("directory"), 
-            "config.csv": Path("file"),
+            Path("multi"): Path.is_dir, 
+            Path("per_sample_outs"): Path.is_dir, 
+            Path("config.csv"): Path.is_file,
         }
-        for file, type_ in expected_files.items():
-            output_path = tmp_output_dir / file
-            if not output_path.is_file():
-                raise ValueError(f"Could not find expected {type_} '{output_path}'")
+        for file_path, type_func in expected_files.items():
+            output_path = tmp_output_dir / file_path
+            if not type_func(output_path):
+                raise ValueError(f"Could not find expected '{output_path}'")
         par['output'].mkdir(parents=True, exist_ok=True)
         for output_path in tmp_output_dir.rglob('*'):
             shutil.move(output_path, par['output'])
