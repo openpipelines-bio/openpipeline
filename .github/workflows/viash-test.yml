@@ -17,7 +17,7 @@ jobs:
         run: |
           pull_request=$(gh pr list -R openpipelines-bio/openpipeline -H ${{ github.ref_name }} --json url --state open --limit 1 | jq '.[0].url')
           # If the branch has a PR and this run was triggered by a push event, do not run
-          if [[ "$pull_request" != "null" && "${{ github.event_name == 'push' }}" == "true" ]]; then
+          if [[ "$pull_request" != "null" && "${{ github.event_name == 'push' }}" == "true" && "${{ !contains(github.event.head_commit.message, 'ci force') }}" == "true" ]]; then
             echo "::set-output name=check::false"
           else
             echo "::set-output name=check::true"
@@ -43,7 +43,7 @@ jobs:
 
     - name: Fetch viash
       run: |
-        bin/init
+        bin/init -n
         tree .
         bin/viash -h
 
@@ -103,7 +103,7 @@ jobs:
           for resource_rel_path in "${resources[@]}"; do
             resource_project_path=$(realpath --relative-to="$GITHUB_WORKSPACE" "$resource_rel_path")
             echo "Checking path $resource_project_path"
-            if [[ " ${changed_files[*]} " =~ " ${resource_project_path} " || "$GITHUB_REF" == "refs/heads/main" ]]; then
+            if [[ " ${changed_files[*]} " =~ " ${resource_project_path} " || "$GITHUB_REF" == "refs/heads/main" || "${{ !contains(github.event.head_commit.message, 'ci force') }}" == "true" ]]; then
               result_array_matrix+="$component"
               break
             fi
@@ -128,7 +128,7 @@ jobs:
 
     - name: Fetch viash
       run: |
-        bin/init
+        bin/init -n
         bin/viash -h
 
     # use cache
