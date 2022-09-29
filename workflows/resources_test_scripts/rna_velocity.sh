@@ -48,7 +48,7 @@ gtf="resources_test/cellranger_tiny_fastq/cellranger_tiny_ref/genes/genes.gtf.gz
 bam="resources_test/cellranger_tiny_fastq/bam/possorted_genome_bam.bam"
 
 echo "> Processing 10x dataset"
-bin/viash run src/projection/velocyto/config.vsh.yaml -- \
+bin/viash run src/velocity/velocyto/config.vsh.yaml -- \
   -i "$bam" \
   -o "$OUT/velocyto_processed/cellranger_tiny.loom" \
   --transcriptome "$gtf"

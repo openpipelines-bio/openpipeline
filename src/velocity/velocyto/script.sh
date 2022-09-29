@@ -29,7 +29,7 @@ sample_id=`basename "$par_output" .loom`
 
 if (file "$par_transcriptome" | grep -q compressed ) ; then
   # create temporary directory
-  tmpdir=$(mktemp -d "$VIASH_TEMP/$meta_resources_name-XXXXXXXX")
+  tmpdir=$(mktemp -d "$meta_temp_dir/$meta_resources_name-XXXXXXXX")
   function clean_up {
       rm -rf "$tmpdir"
   }
