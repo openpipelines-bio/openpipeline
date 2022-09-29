@@ -14,6 +14,9 @@ DIR=$(dirname "$OUT")
 # ideally, this would be a versioned pipeline run
 [ -d "$DIR" ] || mkdir -p "$DIR"
 
+# dataset page:
+# https://www.10xgenomics.com/resources/datasets/1-k-pbm-cs-from-a-healthy-donor-gene-expression-and-cell-surface-protein-3-standard-3-0-0
+
 # download metrics summary
 target/docker/download/download_file/download_file \
   --input https://cf.10xgenomics.com/samples/cell-exp/3.0.0/pbmc_1k_protein_v3/pbmc_1k_protein_v3_metrics_summary.csv \
