@@ -10,6 +10,34 @@
 
 * `workflows/ingestion/make_reference`: A generic component to build a transcriptomics reference into one of many formats.
 
+* `integrate/add_metadata`: Add a csv containing metadata to the .obs or .var field of a mudata file.
+
+* `DataFlowHelper.nf`: Added `passthroughMap`. Usage:
+
+  ```groovy
+  include { passthroughMap as pmap } from "./DataFlowHelper.nf"
+  
+  workflow {
+    Channel.fromList([["id", [input: "foo"], "passthrough"]])
+      | pmap{ id, data ->
+        [id, data + [arg: 10]]
+      }
+  }
+  ```
+  Note that in the example above, using a regular `map` would result in an exception being thrown,
+  that is, "Invalid method invocation `call` with arguments".
+
+  A synonymous of doing this with a regular `map()` would be:
+  ```groovy
+  workflow {
+    Channel.fromList([["id", [input: "foo"], "passthrough"]])
+      | map{ tup ->
+        def (id, data) = tup
+        [id, data + [arg: 10]] + tup.drop(2)
+      }
+  }
+  ```
+
 ## MAJOR CHANGES
 
 * `workflows/utils/DataFlowHelper.nf`: Added helper functions `setWorkflowArguments()` and `getWorkflowArguments()` to split the data field of a channel event into a hashmap. Example usage:
@@ -23,6 +51,11 @@
   | getWorkflowArguments("integration")
   | integration
   ```
+
+* `mapping/cellranger_count`: Allow passing both directories as well as individual fastq.gz files as inputs.
+
+* `convert/from_10xh5_to_h5mu`: Allow reading in QC metrics, use gene ids as `.obs_names` instead of gene symbols.
+
 ## MINOR CHANGES
 
 * `dimred/umap`: Streamline UMAP parameters by adding `--obsm_output` parameter to allow choosing the output `.obsm` slot.
