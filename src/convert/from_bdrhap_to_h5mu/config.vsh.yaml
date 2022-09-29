@@ -38,7 +38,7 @@ functionality:
   test_resources:
     - type: python_script
       path: run_test.py
-    - path: ../../../resources_test/bdrhap_5kjrt/processed/WTA.bd_rhapsody.output
+    - path: ../../../resources_test/bdrhap_5kjrt/processed/WTA.bd_rhapsody.output_raw
 platforms:
   - type: docker
     image: ghcr.io/data-intuitive/randpy:r4.0_py3.8
