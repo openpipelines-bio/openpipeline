@@ -109,12 +109,12 @@ fi
 wta_r1_file="$raw_dir/12WTA_S1_L432_R1_001_subset.fastq.gz"
 if [[ ! -f "$wta_r1_file" ]]; then
   echo "> Processing `basename $wta_r1_file`"
-  gzip -9 -k -c "$mapping_dir/12WTA_S1_L432_R1_001_chr1.fastq" | gzip > "$wta_r1_file"
+  gzip -9 -k -c "$mapping_dir/12WTA_S1_L432_R1_001_chr1.fastq" > "$wta_r1_file"
 fi
 wta_r2_file="$raw_dir/12WTA_S1_L432_R2_001_subset.fastq.gz"
 if [[ ! -f "$wta_r2_file" ]]; then
   echo "> Processing `basename $wta_r2_file`"
-  gzip -9 -k -c "$mapping_dir/12WTA_S1_L432_R2_001_chr1.fastq" | gzip > "$wta_r2_file"
+  gzip -9 -k -c "$mapping_dir/12WTA_S1_L432_R2_001_chr1.fastq" > "$wta_r2_file"
 fi
 # copy immune panel fasta
 fasta_file="$raw_dir/BDAbSeq_ImmuneDiscoveryPanel.fasta"
