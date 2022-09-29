@@ -8,7 +8,8 @@ REPO_ROOT=$(git rev-parse --show-toplevel)
 # ensure that the command below is run from the root of the repository
 cd "$REPO_ROOT"
 
-OUT=resources_test/pbmc_1k_protein_v3/pbmc_1k_protein_v3
+ID=pbmc_1k_protein_v3
+OUT=resources_test/$ID/$ID
 DIR=$(dirname "$OUT")
 
 # ideally, this would be a versioned pipeline run
@@ -42,7 +43,10 @@ rm "${OUT}_filtered_feature_bc_matrix.tar.gz"
 # convert 10x h5 to h5mu
 target/docker/convert/from_10xh5_to_h5mu/from_10xh5_to_h5mu \
   --input "${OUT}_filtered_feature_bc_matrix.h5" \
-  --output "${OUT}_filtered_feature_bc_matrix.h5mu"
+  --input_metrics_summary "${OUT}_metrics_summary.csv" \
+  --output "${OUT}_filtered_feature_bc_matrix.h5mu" \
+  --sample_id "$ID" \
+  --id_to_obs_names true
 
 # run single sample
 NXF_VER=21.10.6 bin/nextflow \
