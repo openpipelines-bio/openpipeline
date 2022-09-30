@@ -328,7 +328,7 @@ def main() -> None:
     make_observation_keys_unique(sample_ids, samples)
 
     mods = group_modalities(samples)
-    n_processes = int(meta["cpus"]) if meta["cpus"] else 1
+    n_processes = meta["cpus"] if meta["cpus"] else 1
     concatenated_samples = concatenate_modalities(n_processes,
                                                   sample_ids,
                                                   mods,
