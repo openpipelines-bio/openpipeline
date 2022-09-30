@@ -43,6 +43,7 @@ functionality:
       default: move
       description: |
         How to handle the merging of other axis (var, obs, ...).
+
          - None: keep no data
          - same: only keep elements of the matrices which are the same in each of the samples
          - unique: only keep elements for which there is only 1 possible value (1 value that can occur in multiple samples)
@@ -51,7 +52,7 @@ functionality:
          - move: identical to 'same', but moving the conflicting values to .varm or .obsm
   resources:
     - type: python_script
-      path: ./script.py
+      path: script.py
   test_resources:
     - type: python_script
       path: test.py
