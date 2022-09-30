@@ -1072,5 +1072,5 @@ info:
   output: "target/native/integrate/concat"
   executable: "target/native/integrate/concat/concat"
   viash_version: "0.6.0"
-  git_commit: "30505aa4bc801c833f4386ac06fa535f8cff7ed6"
+  git_commit: "0744668932ecab2526d6dfaec821c4dcf783563b"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"
