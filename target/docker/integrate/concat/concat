@@ -426,9 +426,9 @@ RUN pip install --upgrade pip && \
 
 LABEL org.opencontainers.image.authors="Dries Schaumont"
 LABEL org.opencontainers.image.description="Companion container for running component integrate concat"
-LABEL org.opencontainers.image.created="2022-09-30T10:52:45Z"
+LABEL org.opencontainers.image.created="2022-09-30T11:29:38Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="14c55f837ae3b3f2d1456c73fdf9bc633cbca4f3"
+LABEL org.opencontainers.image.revision="5792b487b4046b37728a621d1629fb5289aa9663"
 LABEL org.opencontainers.image.version="main_build"
 VIASHDOCKER
 }
@@ -1056,7 +1056,7 @@ def add_sample_names(sample_ids: tuple[str], samples: Iterable[mu.MuData], obs_k
     for (sample_id, sample) in zip(sample_ids, samples):
         if obs_key_sample_name in sample.obs_keys():
             logger.info(f'Column .obs["{obs_key_sample_name}"] already exists in sample "{sample_id}". Overriding the value for this column.')
-            sample.obs = sample.obs.drop(obs_key_sample_name, axis=1)
+            samples.obs = sample.obs.drop(obs_key_sample_name, axis=1)
         for modality in sample.mod.values():
             modality.obs[obs_key_sample_name] = sample_id
         sample.update()

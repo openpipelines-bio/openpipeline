@@ -1972,5 +1972,5 @@ info:
   platform: "nextflow"
   output: "target/nextflow/reference/build_bdrhap_reference"
   viash_version: "0.6.0"
-  git_commit: "14c55f837ae3b3f2d1456c73fdf9bc633cbca4f3"
+  git_commit: "5792b487b4046b37728a621d1629fb5289aa9663"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"
