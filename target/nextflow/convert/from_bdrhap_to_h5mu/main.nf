@@ -146,22 +146,22 @@ mudata <- reticulate::import("mudata")
 .viash_orig_warn <- options(warn = 2)
 
 par <- list(
-  "id" = $( if [ ! -z ${VIASH_PAR_ID+x} ]; then echo "'${VIASH_PAR_ID//\\'/\\\\\\'}'"; else echo NULL; fi ),
-  "input" = $( if [ ! -z ${VIASH_PAR_INPUT+x} ]; then echo "'${VIASH_PAR_INPUT//\\'/\\\\\\'}'"; else echo NULL; fi ),
-  "output" = $( if [ ! -z ${VIASH_PAR_OUTPUT+x} ]; then echo "'${VIASH_PAR_OUTPUT//\\'/\\\\\\'}'"; else echo NULL; fi )
+  "id" = $( if [ ! -z ${VIASH_PAR_ID+x} ]; then echo "paste0(r'(${VIASH_PAR_ID//\\'/)\\', \\"\\'\\", r\\'(})')"; else echo NULL; fi ),
+  "input" = $( if [ ! -z ${VIASH_PAR_INPUT+x} ]; then echo "paste0(r'(${VIASH_PAR_INPUT//\\'/)\\', \\"\\'\\", r\\'(})')"; else echo NULL; fi ),
+  "output" = $( if [ ! -z ${VIASH_PAR_OUTPUT+x} ]; then echo "paste0(r'(${VIASH_PAR_OUTPUT//\\'/)\\', \\"\\'\\", r\\'(})')"; else echo NULL; fi )
 )
 meta <- list(
-  "functionality_name" = $( if [ ! -z ${VIASH_META_FUNCTIONALITY_NAME+x} ]; then echo "'${VIASH_META_FUNCTIONALITY_NAME//\\'/\\\\\\'}'"; else echo NULL; fi ),
-  "resources_dir" = $( if [ ! -z ${VIASH_META_RESOURCES_DIR+x} ]; then echo "'${VIASH_META_RESOURCES_DIR//\\'/\\\\\\'}'"; else echo NULL; fi ),
-  "executable" = $( if [ ! -z ${VIASH_META_EXECUTABLE+x} ]; then echo "'${VIASH_META_EXECUTABLE//\\'/\\\\\\'}'"; else echo NULL; fi ),
-  "temp_dir" = $( if [ ! -z ${VIASH_META_TEMP_DIR+x} ]; then echo "'${VIASH_META_TEMP_DIR//\\'/\\\\\\'}'"; else echo NULL; fi ),
-  "n_proc" = $( if [ ! -z ${VIASH_META_N_PROC+x} ]; then echo "as.integer('${VIASH_META_N_PROC//\\'/\\\\\\'}')"; else echo NULL; fi ),
-  "memory_b" = $( if [ ! -z ${VIASH_META_MEMORY_B+x} ]; then echo "bit64::as.integer64('${VIASH_META_MEMORY_B//\\'/\\\\\\'}')"; else echo NULL; fi ),
-  "memory_kb" = $( if [ ! -z ${VIASH_META_MEMORY_KB+x} ]; then echo "bit64::as.integer64('${VIASH_META_MEMORY_KB//\\'/\\\\\\'}')"; else echo NULL; fi ),
-  "memory_mb" = $( if [ ! -z ${VIASH_META_MEMORY_MB+x} ]; then echo "bit64::as.integer64('${VIASH_META_MEMORY_MB//\\'/\\\\\\'}')"; else echo NULL; fi ),
-  "memory_gb" = $( if [ ! -z ${VIASH_META_MEMORY_GB+x} ]; then echo "bit64::as.integer64('${VIASH_META_MEMORY_GB//\\'/\\\\\\'}')"; else echo NULL; fi ),
-  "memory_tb" = $( if [ ! -z ${VIASH_META_MEMORY_TB+x} ]; then echo "bit64::as.integer64('${VIASH_META_MEMORY_TB//\\'/\\\\\\'}')"; else echo NULL; fi ),
-  "memory_pb" = $( if [ ! -z ${VIASH_META_MEMORY_PB+x} ]; then echo "bit64::as.integer64('${VIASH_META_MEMORY_PB//\\'/\\\\\\'}')"; else echo NULL; fi )
+  "functionality_name" = $( if [ ! -z ${VIASH_META_FUNCTIONALITY_NAME+x} ]; then echo "paste0(r'(${VIASH_META_FUNCTIONALITY_NAME//\\'/)\\', \\"\\'\\", r\\'(})')"; else echo NULL; fi ),
+  "resources_dir" = $( if [ ! -z ${VIASH_META_RESOURCES_DIR+x} ]; then echo "paste0(r'(${VIASH_META_RESOURCES_DIR//\\'/)\\', \\"\\'\\", r\\'(})')"; else echo NULL; fi ),
+  "executable" = $( if [ ! -z ${VIASH_META_EXECUTABLE+x} ]; then echo "paste0(r'(${VIASH_META_EXECUTABLE//\\'/)\\', \\"\\'\\", r\\'(})')"; else echo NULL; fi ),
+  "temp_dir" = $( if [ ! -z ${VIASH_META_TEMP_DIR+x} ]; then echo "paste0(r'(${VIASH_META_TEMP_DIR//\\'/)\\', \\"\\'\\", r\\'(})')"; else echo NULL; fi ),
+  "cpus" = $( if [ ! -z ${VIASH_META_CPUS+x} ]; then echo "as.integer(paste0(r'(${VIASH_META_CPUS//\\'/)\\', \\"\\'\\", r\\'(})'))"; else echo NULL; fi ),
+  "memory_b" = $( if [ ! -z ${VIASH_META_MEMORY_B+x} ]; then echo "bit64::as.integer64(paste0(r'(${VIASH_META_MEMORY_B//\\'/)\\', \\"\\'\\", r\\'(})'))"; else echo NULL; fi ),
+  "memory_kb" = $( if [ ! -z ${VIASH_META_MEMORY_KB+x} ]; then echo "bit64::as.integer64(paste0(r'(${VIASH_META_MEMORY_KB//\\'/)\\', \\"\\'\\", r\\'(})'))"; else echo NULL; fi ),
+  "memory_mb" = $( if [ ! -z ${VIASH_META_MEMORY_MB+x} ]; then echo "bit64::as.integer64(paste0(r'(${VIASH_META_MEMORY_MB//\\'/)\\', \\"\\'\\", r\\'(})'))"; else echo NULL; fi ),
+  "memory_gb" = $( if [ ! -z ${VIASH_META_MEMORY_GB+x} ]; then echo "bit64::as.integer64(paste0(r'(${VIASH_META_MEMORY_GB//\\'/)\\', \\"\\'\\", r\\'(})'))"; else echo NULL; fi ),
+  "memory_tb" = $( if [ ! -z ${VIASH_META_MEMORY_TB+x} ]; then echo "bit64::as.integer64(paste0(r'(${VIASH_META_MEMORY_TB//\\'/)\\', \\"\\'\\", r\\'(})'))"; else echo NULL; fi ),
+  "memory_pb" = $( if [ ! -z ${VIASH_META_MEMORY_PB+x} ]; then echo "bit64::as.integer64(paste0(r'(${VIASH_META_MEMORY_PB//\\'/)\\', \\"\\'\\", r\\'(})'))"; else echo NULL; fi )
 )
 
 
@@ -1008,7 +1008,7 @@ def paramsToList(params, config) {
         if (!par.multiple) {
           assert parData.size() == 1 : 
             "Error: argument ${par.plainName} has too many values.\n" +
-            "  Expected amount: 1. Found: ${parData.length}"
+            "  Expected amount: 1. Found: ${parData.size()}"
           parData = parData[0]
         }
 
@@ -1683,7 +1683,7 @@ def processFactory(Map processArgs) {
   |export VIASH_META_TEMP_DIR="${['docker', 'podman', 'charliecloud'].any{ it == workflow.containerEngine } ? '/tmp' : tmpDir}"
   |export VIASH_META_FUNCTIONALITY_NAME="${thisConfig.functionality.name}"
   |export VIASH_META_EXECUTABLE="\\\$VIASH_META_RESOURCES_DIR/\\\$VIASH_META_FUNCTIONALITY_NAME"
-  |\${task.cpus ? "export VIASH_META_N_PROC=\$task.cpus" : "" }
+  |\${task.cpus ? "export VIASH_META_CPUS=\$task.cpus" : "" }
   |\${task.memory?.bytes != null ? "export VIASH_META_MEMORY_B=\$task.memory.bytes" : "" }
   |if [ ! -z \\\${VIASH_META_MEMORY_B+x} ]; then
   |  export VIASH_META_MEMORY_KB=\\\$(( (\\\$VIASH_META_MEMORY_B+1023) / 1024 ))

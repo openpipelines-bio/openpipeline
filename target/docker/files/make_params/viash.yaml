@@ -556,11 +556,11 @@ functionality:
       FROM ghcr.io/data-intuitive/randpy:r4.0
       
       RUN :
-      LABEL org.opencontainers.image.authors="Angela Pisco (author) {github: aopisco, orcid: 0000-0003-0142-2355}, Robrecht Cannoodt <robrecht@data-intuitive.com> (maintainer, author) {github: rcannood, orcid: 0000-0003-3641-729X}"
+      LABEL org.opencontainers.image.authors="Angela Pisco, Robrecht Cannoodt"
       LABEL org.opencontainers.image.description="Companion container for running component files make_params"
-      LABEL org.opencontainers.image.created="2022-09-29T13:30:34Z"
+      LABEL org.opencontainers.image.created="2022-09-30T08:00:28Z"
       LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-      LABEL org.opencontainers.image.revision="c817d3d58902617462830c32ea518208051d57e2"
+      LABEL org.opencontainers.image.revision="30505aa4bc801c833f4386ac06fa535f8cff7ed6"
       LABEL org.opencontainers.image.version="main_build"
       VIASHDOCKER
       }
@@ -822,15 +822,15 @@ functionality:
                   VIASH_MODE='docker_debug'
                   shift 1
                   ;;
-              ---n_proc)
-                  [ -n "$VIASH_META_N_PROC" ] && ViashError Bad arguments for option \'---n_proc\': \'$VIASH_META_N_PROC\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
-                  VIASH_META_N_PROC="$2"
-                  [ $# -lt 2 ] && ViashError Not enough arguments passed to ---n_proc. Use "--help" to get more information on the parameters. && exit 1
+              ---cpus)
+                  [ -n "$VIASH_META_CPUS" ] && ViashError Bad arguments for option \'---cpus\': \'$VIASH_META_CPUS\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+                  VIASH_META_CPUS="$2"
+                  [ $# -lt 2 ] && ViashError Not enough arguments passed to ---cpus. Use "--help" to get more information on the parameters. && exit 1
                   shift 2
                   ;;
-              ---n_proc=*)
-                  [ -n "$VIASH_META_N_PROC" ] && ViashError Bad arguments for option \'---n_proc=*\': \'$VIASH_META_N_PROC\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
-                  VIASH_META_N_PROC=$(ViashRemoveFlags "$1")
+              ---cpus=*)
+                  [ -n "$VIASH_META_CPUS" ] && ViashError Bad arguments for option \'---cpus=*\': \'$VIASH_META_CPUS\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+                  VIASH_META_CPUS=$(ViashRemoveFlags "$1")
                   shift 1
                   ;;
               ---memory)
@@ -904,8 +904,8 @@ functionality:
         fi
       fi
       # unset nproc if string is empty
-      if [ -z "$VIASH_META_N_PROC" ]; then
-        unset $VIASH_META_N_PROC
+      if [ -z "$VIASH_META_CPUS" ]; then
+        unset $VIASH_META_CPUS
       fi
       
       
@@ -926,7 +926,7 @@ functionality:
         shift 1
       fi
       if [[ $# -gt 0 ]]; then
-        VIASH_META_N_PROC="$1"
+        VIASH_META_CPUS="$1"
         shift 1
       fi
       if [[ $# -gt 0 ]]; then
@@ -1012,9 +1012,9 @@ functionality:
         fi
       fi
       
-      if [[ -n "$VIASH_META_N_PROC" ]]; then
-        if ! [[ "$VIASH_META_N_PROC" =~ ^[-+]?[0-9]+$ ]]; then
-          ViashError 'n_proc' has to be an integer. Use "--help" to get more information on the parameters.
+      if [[ -n "$VIASH_META_CPUS" ]]; then
+        if ! [[ "$VIASH_META_CPUS" =~ ^[-+]?[0-9]+$ ]]; then
+          ViashError 'cpus' has to be an integer. Use "--help" to get more information on the parameters.
           exit 1
         fi
       fi
@@ -1118,8 +1118,8 @@ functionality:
       if [ ! -z "$VIASH_META_MEMORY_MB" ]; then
         VIASH_EXTRA_DOCKER_ARGS="$VIASH_EXTRA_DOCKER_ARGS --memory=${VIASH_META_MEMORY_MB}m"
       fi
-      if [ ! -z "$VIASH_META_N_PROC" ]; then
-        VIASH_EXTRA_DOCKER_ARGS="$VIASH_EXTRA_DOCKER_ARGS --cpus=${VIASH_META_N_PROC}"
+      if [ ! -z "$VIASH_META_CPUS" ]; then
+        VIASH_EXTRA_DOCKER_ARGS="$VIASH_EXTRA_DOCKER_ARGS --cpus=${VIASH_META_CPUS}"
       fi
       
       cat << VIASHEOF | eval docker run --entrypoint=bash -i --rm $VIASH_EXTRA_MOUNTS $VIASH_EXTRA_DOCKER_ARGS ghcr.io/openpipelines-bio/files_make_params:main_build
@@ -1145,27 +1145,27 @@ functionality:
       .viash_orig_warn <- options(warn = 2)
       
       par <- list(
-        "base_dir" = $( if [ ! -z ${VIASH_PAR_BASE_DIR+x} ]; then echo "'${VIASH_PAR_BASE_DIR//\'/\\\'}'"; else echo NULL; fi ),
-        "pattern" = $( if [ ! -z ${VIASH_PAR_PATTERN+x} ]; then echo "'${VIASH_PAR_PATTERN//\'/\\\'}'"; else echo NULL; fi ),
-        "n_dirname_drop" = $( if [ ! -z ${VIASH_PAR_N_DIRNAME_DROP+x} ]; then echo "as.integer('${VIASH_PAR_N_DIRNAME_DROP//\'/\\\'}')"; else echo NULL; fi ),
-        "n_basename_id" = $( if [ ! -z ${VIASH_PAR_N_BASENAME_ID+x} ]; then echo "as.integer('${VIASH_PAR_N_BASENAME_ID//\'/\\\'}')"; else echo NULL; fi ),
-        "id_name" = $( if [ ! -z ${VIASH_PAR_ID_NAME+x} ]; then echo "'${VIASH_PAR_ID_NAME//\'/\\\'}'"; else echo NULL; fi ),
-        "path_name" = $( if [ ! -z ${VIASH_PAR_PATH_NAME+x} ]; then echo "'${VIASH_PAR_PATH_NAME//\'/\\\'}'"; else echo NULL; fi ),
-        "group_name" = $( if [ ! -z ${VIASH_PAR_GROUP_NAME+x} ]; then echo "'${VIASH_PAR_GROUP_NAME//\'/\\\'}'"; else echo NULL; fi ),
-        "output" = $( if [ ! -z ${VIASH_PAR_OUTPUT+x} ]; then echo "'${VIASH_PAR_OUTPUT//\'/\\\'}'"; else echo NULL; fi )
+        "base_dir" = $( if [ ! -z ${VIASH_PAR_BASE_DIR+x} ]; then echo "paste0(r'(${VIASH_PAR_BASE_DIR//\'/)\', \"\'\", r\'(})')"; else echo NULL; fi ),
+        "pattern" = $( if [ ! -z ${VIASH_PAR_PATTERN+x} ]; then echo "paste0(r'(${VIASH_PAR_PATTERN//\'/)\', \"\'\", r\'(})')"; else echo NULL; fi ),
+        "n_dirname_drop" = $( if [ ! -z ${VIASH_PAR_N_DIRNAME_DROP+x} ]; then echo "as.integer(paste0(r'(${VIASH_PAR_N_DIRNAME_DROP//\'/)\', \"\'\", r\'(})'))"; else echo NULL; fi ),
+        "n_basename_id" = $( if [ ! -z ${VIASH_PAR_N_BASENAME_ID+x} ]; then echo "as.integer(paste0(r'(${VIASH_PAR_N_BASENAME_ID//\'/)\', \"\'\", r\'(})'))"; else echo NULL; fi ),
+        "id_name" = $( if [ ! -z ${VIASH_PAR_ID_NAME+x} ]; then echo "paste0(r'(${VIASH_PAR_ID_NAME//\'/)\', \"\'\", r\'(})')"; else echo NULL; fi ),
+        "path_name" = $( if [ ! -z ${VIASH_PAR_PATH_NAME+x} ]; then echo "paste0(r'(${VIASH_PAR_PATH_NAME//\'/)\', \"\'\", r\'(})')"; else echo NULL; fi ),
+        "group_name" = $( if [ ! -z ${VIASH_PAR_GROUP_NAME+x} ]; then echo "paste0(r'(${VIASH_PAR_GROUP_NAME//\'/)\', \"\'\", r\'(})')"; else echo NULL; fi ),
+        "output" = $( if [ ! -z ${VIASH_PAR_OUTPUT+x} ]; then echo "paste0(r'(${VIASH_PAR_OUTPUT//\'/)\', \"\'\", r\'(})')"; else echo NULL; fi )
       )
       meta <- list(
-        "functionality_name" = $( if [ ! -z ${VIASH_META_FUNCTIONALITY_NAME+x} ]; then echo "'${VIASH_META_FUNCTIONALITY_NAME//\'/\\\'}'"; else echo NULL; fi ),
-        "resources_dir" = $( if [ ! -z ${VIASH_META_RESOURCES_DIR+x} ]; then echo "'${VIASH_META_RESOURCES_DIR//\'/\\\'}'"; else echo NULL; fi ),
-        "executable" = $( if [ ! -z ${VIASH_META_EXECUTABLE+x} ]; then echo "'${VIASH_META_EXECUTABLE//\'/\\\'}'"; else echo NULL; fi ),
-        "temp_dir" = $( if [ ! -z ${VIASH_META_TEMP_DIR+x} ]; then echo "'${VIASH_META_TEMP_DIR//\'/\\\'}'"; else echo NULL; fi ),
-        "n_proc" = $( if [ ! -z ${VIASH_META_N_PROC+x} ]; then echo "as.integer('${VIASH_META_N_PROC//\'/\\\'}')"; else echo NULL; fi ),
-        "memory_b" = $( if [ ! -z ${VIASH_META_MEMORY_B+x} ]; then echo "bit64::as.integer64('${VIASH_META_MEMORY_B//\'/\\\'}')"; else echo NULL; fi ),
-        "memory_kb" = $( if [ ! -z ${VIASH_META_MEMORY_KB+x} ]; then echo "bit64::as.integer64('${VIASH_META_MEMORY_KB//\'/\\\'}')"; else echo NULL; fi ),
-        "memory_mb" = $( if [ ! -z ${VIASH_META_MEMORY_MB+x} ]; then echo "bit64::as.integer64('${VIASH_META_MEMORY_MB//\'/\\\'}')"; else echo NULL; fi ),
-        "memory_gb" = $( if [ ! -z ${VIASH_META_MEMORY_GB+x} ]; then echo "bit64::as.integer64('${VIASH_META_MEMORY_GB//\'/\\\'}')"; else echo NULL; fi ),
-        "memory_tb" = $( if [ ! -z ${VIASH_META_MEMORY_TB+x} ]; then echo "bit64::as.integer64('${VIASH_META_MEMORY_TB//\'/\\\'}')"; else echo NULL; fi ),
-        "memory_pb" = $( if [ ! -z ${VIASH_META_MEMORY_PB+x} ]; then echo "bit64::as.integer64('${VIASH_META_MEMORY_PB//\'/\\\'}')"; else echo NULL; fi )
+        "functionality_name" = $( if [ ! -z ${VIASH_META_FUNCTIONALITY_NAME+x} ]; then echo "paste0(r'(${VIASH_META_FUNCTIONALITY_NAME//\'/)\', \"\'\", r\'(})')"; else echo NULL; fi ),
+        "resources_dir" = $( if [ ! -z ${VIASH_META_RESOURCES_DIR+x} ]; then echo "paste0(r'(${VIASH_META_RESOURCES_DIR//\'/)\', \"\'\", r\'(})')"; else echo NULL; fi ),
+        "executable" = $( if [ ! -z ${VIASH_META_EXECUTABLE+x} ]; then echo "paste0(r'(${VIASH_META_EXECUTABLE//\'/)\', \"\'\", r\'(})')"; else echo NULL; fi ),
+        "temp_dir" = $( if [ ! -z ${VIASH_META_TEMP_DIR+x} ]; then echo "paste0(r'(${VIASH_META_TEMP_DIR//\'/)\', \"\'\", r\'(})')"; else echo NULL; fi ),
+        "cpus" = $( if [ ! -z ${VIASH_META_CPUS+x} ]; then echo "as.integer(paste0(r'(${VIASH_META_CPUS//\'/)\', \"\'\", r\'(})'))"; else echo NULL; fi ),
+        "memory_b" = $( if [ ! -z ${VIASH_META_MEMORY_B+x} ]; then echo "bit64::as.integer64(paste0(r'(${VIASH_META_MEMORY_B//\'/)\', \"\'\", r\'(})'))"; else echo NULL; fi ),
+        "memory_kb" = $( if [ ! -z ${VIASH_META_MEMORY_KB+x} ]; then echo "bit64::as.integer64(paste0(r'(${VIASH_META_MEMORY_KB//\'/)\', \"\'\", r\'(})'))"; else echo NULL; fi ),
+        "memory_mb" = $( if [ ! -z ${VIASH_META_MEMORY_MB+x} ]; then echo "bit64::as.integer64(paste0(r'(${VIASH_META_MEMORY_MB//\'/)\', \"\'\", r\'(})'))"; else echo NULL; fi ),
+        "memory_gb" = $( if [ ! -z ${VIASH_META_MEMORY_GB+x} ]; then echo "bit64::as.integer64(paste0(r'(${VIASH_META_MEMORY_GB//\'/)\', \"\'\", r\'(})'))"; else echo NULL; fi ),
+        "memory_tb" = $( if [ ! -z ${VIASH_META_MEMORY_TB+x} ]; then echo "bit64::as.integer64(paste0(r'(${VIASH_META_MEMORY_TB//\'/)\', \"\'\", r\'(})'))"; else echo NULL; fi ),
+        "memory_pb" = $( if [ ! -z ${VIASH_META_MEMORY_PB+x} ]; then echo "bit64::as.integer64(paste0(r'(${VIASH_META_MEMORY_PB//\'/)\', \"\'\", r\'(})'))"; else echo NULL; fi )
       )
       
       
@@ -1267,5 +1267,5 @@ info:
   output: "target/docker/files/make_params"
   executable: "target/docker/files/make_params/make_params"
   viash_version: "0.6.0"
-  git_commit: "c817d3d58902617462830c32ea518208051d57e2"
+  git_commit: "30505aa4bc801c833f4386ac06fa535f8cff7ed6"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"
