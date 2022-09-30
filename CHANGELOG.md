@@ -70,6 +70,8 @@
 
 * `convert/from_bd_to_10x_molecular_barcode_tags`: Replaced UTF8 characters with ASCII. OpenJDK 17 or lower might throw the following exception when trying to read a UTF8 file: `java.nio.charset.MalformedInputException: Input length = 1`.
 
+* `integrate/concat`: Overriding sample name in .obs no longer raises `AttributeError`.
+
 # openpipeline 0.5.0
 
 Major redesign of the integration and multiomic workflows. Current list of workflows:
