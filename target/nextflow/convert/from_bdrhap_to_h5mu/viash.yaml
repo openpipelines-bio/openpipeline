@@ -183,7 +183,7 @@ functionality:
           },
           {
             "type" : "file",
-            "path" : "../../../resources_test/bdrhap_5kjrt/processed/WTA.bd_rhapsody.output",
+            "path" : "../../../resources_test/bdrhap_5kjrt/processed/WTA.bd_rhapsody.output_raw",
             "parent" : "file:/home/runner/work/openpipeline/openpipeline/src/convert/from_bdrhap_to_h5mu/config.vsh.yaml"
           }
         ],
@@ -2155,7 +2155,7 @@ functionality:
     path: "run_test.py"
     is_executable: true
   - type: "file"
-    path: "../../../resources_test/bdrhap_5kjrt/processed/WTA.bd_rhapsody.output"
+    path: "../../../resources_test/bdrhap_5kjrt/processed/WTA.bd_rhapsody.output_raw"
   info: {}
   status: "enabled"
   requirements:
@@ -2187,5 +2187,5 @@ info:
   platform: "nextflow"
   output: "target/nextflow/convert/from_bdrhap_to_h5mu"
   viash_version: "0.6.0"
-  git_commit: "f368bfcb6699a72ba86bdded8f19c3a9a0e7462c"
+  git_commit: "fa30dded30f090cafc1e97675fea53a33b70f46e"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"

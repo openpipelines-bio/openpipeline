@@ -615,6 +615,18 @@ fi
 output_dir=\`dirname "\$par_output"\`
 sample_id=\`basename "\$par_output" .loom\`
 
+if (file "\$par_transcriptome" | grep -q compressed ) ; then
+  # create temporary directory
+  tmpdir=\$(mktemp -d "\$meta_temp_dir/\$meta_resources_name-XXXXXXXX")
+  function clean_up {
+      rm -rf "\$tmpdir"
+  }
+  trap clean_up EXIT
+
+  zcat "\$par_transcriptome" > "\$tmpdir/genes.gtf"
+  par_transcriptome="\$tmpdir/genes.gtf"
+fi
+
 velocyto run \\
   "\$par_input" \\
   "\$par_transcriptome" \\

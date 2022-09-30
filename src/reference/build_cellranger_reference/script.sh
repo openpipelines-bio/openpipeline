@@ -3,9 +3,9 @@
 set -eo pipefail
 
 ## VIASH START
-par_genome_fasta="resources_test/bdrhap_ref_gencodev41_chr1/reference_gencode_v41_chr1.fa.gz"
-par_transcriptome_gtf="resources_test/bdrhap_ref_gencodev41_chr1/reference_gencode_v41_chr1.gtf.gz"
-par_output="resources_test/bdrhap_ref_gencodev41_chr1/gencode_v41_annotation_cellranger.tar.gz"
+par_genome_fasta="resources_test/reference_gencodev41_chr1/reference.fa.gz"
+par_transcriptome_gtf="resources_test/reference_gencodev41_chr1/reference.gtf.gz"
+par_output="gencode_v41_annotation_cellranger.tar.gz"
 ## VIASH END
 
 # create temporary directory

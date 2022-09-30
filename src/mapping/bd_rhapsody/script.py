@@ -6,6 +6,8 @@ import logging
 from sys import stdout
 from typing import Any
 import pandas as pd
+import gzip
+import shutil
 
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
@@ -16,25 +18,39 @@ logger.addHandler(console_handler)
 
 ## VIASH START
 par = {
+  'sample_prefix': 'sample',
   'input': ['resources_test/bdrhap_5kjrt/raw/12ABC_S1_L432_R1_001_subset.fastq.gz',
             'resources_test/bdrhap_5kjrt/raw/12ABC_S1_L432_R2_001_subset.fastq.gz'],
   'mode': 'wta',
   'output': 'foo',
   'subsample': None,
-  'reference': 'resources_test/bdrhap_ref_gencodev40_chr1/GRCh38_primary_assembly_genome_chr1.tar.gz',
-  'transcriptome_annotation': 'resources_test/bdrhap_ref_gencodev40_chr1/gencode_v40_annotation_chr1.gtf',
+  'reference': ['resources_test/reference_gencodev41_chr1/reference_bd_rhapsody.tar.gz'],
+  'transcriptome_annotation': 'resources_test/reference_gencodev41_chr1/reference.gtf.gz',
   'exact_cell_count': None,
+  'putative_cell_call': None,
   'disable_putative_calling': False,
+  'subsample': None,
+  'subsample_seed': None,
+  'sample_tags_version': None,
+  'tag_names': None,
+  'vdj_version': None,
+  'dryrun': False,
   'parallel': True,
   'timestamps': False,
   'abseq_reference': ["resources_test/bdrhap_5kjrt/raw/BDAbSeq_ImmuneDiscoveryPanel.fasta"],
   'supplemental_reference': []
 }
 meta = {
-  'resources_dir': 'src/mapping/bd_rhapsody_wta',
-  'temp_dir': os.getenv("VIASH_TEMP")
+  'resources_dir': os.path.abspath('src/mapping/bd_rhapsody'),
+  'temp_dir': os.getenv("VIASH_TEMP"),
+  'memory_mb': None,
+  'n_proc': None
 }
 ## VIASH END
+
+def is_gz_file(filepath):
+    with open(filepath, 'rb') as test_f:
+        return test_f.read(2) == b'\x1f\x8b'
 
 def strip_margin(text: str) -> str:
   return re.sub('(\n?)[ \t]*\|', '\\1', text)
@@ -339,15 +355,6 @@ def main(par: dict[str, Any], meta: dict[str, Any]):
   if not os.path.exists(par["output"]):
     os.makedirs(par["output"])
 
-  # Create params file
-  config_file = os.path.join(par["output"], "config.yml")
-  config_content = generate_config(par)
-  with open(config_file, "w") as f:
-    f.write(config_content)
-
-  # Create cwl file (if need be)
-  cwl_file = generate_cwl_file(par, meta)
-
   ## Process parameters
   proc_pars = ["--no-container", "--outdir", par["output"]]
 
@@ -357,9 +364,25 @@ def main(par: dict[str, Any], meta: dict[str, Any]):
   if par["timestamps"]:
     proc_pars.append("--timestamps")
 
-  ## Run pipeline
-  if not par["dryrun"]:
-    with tempfile.TemporaryDirectory(prefix="cwl-bd_rhapsody_wta-", dir=meta["temp_dir"]) as temp_dir:
+  with tempfile.TemporaryDirectory(prefix="cwl-bd_rhapsody_wta-", dir=meta["temp_dir"]) as temp_dir:
+    # extract transcriptome gtf if need be
+    if par["transcriptome_annotation"] and is_gz_file(par["transcriptome_annotation"]):
+      with open(os.path.join(temp_dir, "transcriptome.gtf"), 'wb') as genes_uncompressed:
+        with gzip.open(par["transcriptome_annotation"], 'rb') as genes_compressed:
+          shutil.copyfileobj(genes_compressed, genes_uncompressed)
+          par["transcriptome_annotation"] = genes_uncompressed.name
+
+    # Create params file
+    config_file = os.path.join(par["output"], "config.yml")
+    config_content = generate_config(par)
+    with open(config_file, "w") as f:
+      f.write(config_content)
+
+    # Create cwl file (if need be)
+    cwl_file = generate_cwl_file(par, meta)
+
+    ## Run pipeline
+    if not par["dryrun"]:
       cmd = ["cwl-runner"] + proc_pars + [cwl_file, os.path.basename(config_file)]
 
       env = dict(os.environ)
@@ -372,29 +395,29 @@ def main(par: dict[str, Any], meta: dict[str, Any]):
         env=env
       )
 
-    # look for counts file
-    if not par["sample_prefix"]:
-      par["sample_prefix"] = "sample"
-    counts_filename = par["sample_prefix"] + "_RSEC_MolsPerCell.csv"
-    
-    if par["sample_tags_version"]:
-      counts_filename = "Combined_" + counts_filename
-    counts_file = os.path.join(par["output"], counts_filename)
-    
-    if not os.path.exists(counts_file):
-      raise ValueError(f"Could not find output counts file '{counts_filename}'")
+    # extracting feature ids from references
+    # extract info from reference files (while they still exist)
+    feature_df = extract_feature_types(par)
+    feature_types_file = os.path.join(par["output"], "feature_types.tsv")
+    feature_df.to_csv(feature_types_file, sep="\t", index=False)
 
-    # look for metrics file
-    metrics_filename = par["sample_prefix"] + "_Metrics_Summary.csv"
-    metrics_file = os.path.join(par["output"], metrics_filename)
-    if not os.path.exists(metrics_file):
-      raise ValueError(f"Could not find output metrics file '{metrics_filename}'")
-
+  # look for counts file
+  if not par["sample_prefix"]:
+    par["sample_prefix"] = "sample"
+  counts_filename = par["sample_prefix"] + "_RSEC_MolsPerCell.csv"
   
-  # extracting feature ids from references
-  feature_types_file = os.path.join(par["output"], "feature_types.tsv")
-  feature_df = extract_feature_types(par)
-  feature_df.to_csv(feature_types_file, sep="\t", index=False)
+  if par["sample_tags_version"]:
+    counts_filename = "Combined_" + counts_filename
+  counts_file = os.path.join(par["output"], counts_filename)
+  
+  if not os.path.exists(counts_file):
+    raise ValueError(f"Could not find output counts file '{counts_filename}'")
+
+  # look for metrics file
+  metrics_filename = par["sample_prefix"] + "_Metrics_Summary.csv"
+  metrics_file = os.path.join(par["output"], metrics_filename)
+  if not os.path.exists(metrics_file):
+    raise ValueError(f"Could not find output metrics file '{metrics_filename}'")
 
 if __name__ == "__main__":
     main(par, meta)

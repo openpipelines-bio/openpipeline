@@ -35,7 +35,7 @@ class TestBBKNNn(unittest.TestCase):
                 "--input", tempfile_input_file.name, 
                 "--output" ,"output.h5mu",
                 "--obs_batch", "leiden",
-                "--obsm_input", "log_normalized_pca"
+                "--obsm_input", "X_pca"
             ])
             self.assertTrue(Path("output.h5mu").exists())
             data = read_h5mu("output.h5mu").mod['rna']

@@ -829,9 +829,9 @@ functionality:
       
       LABEL org.opencontainers.image.authors="Robrecht Cannoodt"
       LABEL org.opencontainers.image.description="Companion container for running component mapping bd_rhapsody"
-      LABEL org.opencontainers.image.created="2022-09-30T12:24:15Z"
+      LABEL org.opencontainers.image.created="2022-09-30T21:15:05Z"
       LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-      LABEL org.opencontainers.image.revision="f368bfcb6699a72ba86bdded8f19c3a9a0e7462c"
+      LABEL org.opencontainers.image.revision="fa30dded30f090cafc1e97675fea53a33b70f46e"
       LABEL org.opencontainers.image.version="main_build"
       VIASHDOCKER
       }
@@ -1754,6 +1754,8 @@ functionality:
       from sys import stdout
       from typing import Any
       import pandas as pd
+      import gzip
+      import shutil
       
       logger = logging.getLogger()
       logger.setLevel(logging.INFO)
@@ -1800,6 +1802,10 @@ functionality:
       }
       
       ## VIASH END
+      
+      def is_gz_file(filepath):
+          with open(filepath, 'rb') as test_f:
+              return test_f.read(2) == b'\\x1f\\x8b'
       
       def strip_margin(text: str) -> str:
         return re.sub('(\\n?)[ \\t]*\\|', '\\\\1', text)
@@ -2104,15 +2110,6 @@ functionality:
         if not os.path.exists(par["output"]):
           os.makedirs(par["output"])
       
-        # Create params file
-        config_file = os.path.join(par["output"], "config.yml")
-        config_content = generate_config(par)
-        with open(config_file, "w") as f:
-          f.write(config_content)
-      
-        # Create cwl file (if need be)
-        cwl_file = generate_cwl_file(par, meta)
-      
         ## Process parameters
         proc_pars = ["--no-container", "--outdir", par["output"]]
       
@@ -2122,9 +2119,25 @@ functionality:
         if par["timestamps"]:
           proc_pars.append("--timestamps")
       
-        ## Run pipeline
-        if not par["dryrun"]:
-          with tempfile.TemporaryDirectory(prefix="cwl-bd_rhapsody_wta-", dir=meta["temp_dir"]) as temp_dir:
+        with tempfile.TemporaryDirectory(prefix="cwl-bd_rhapsody_wta-", dir=meta["temp_dir"]) as temp_dir:
+          # extract transcriptome gtf if need be
+          if par["transcriptome_annotation"] and is_gz_file(par["transcriptome_annotation"]):
+            with open(os.path.join(temp_dir, "transcriptome.gtf"), 'wb') as genes_uncompressed:
+              with gzip.open(par["transcriptome_annotation"], 'rb') as genes_compressed:
+                shutil.copyfileobj(genes_compressed, genes_uncompressed)
+                par["transcriptome_annotation"] = genes_uncompressed.name
+      
+          # Create params file
+          config_file = os.path.join(par["output"], "config.yml")
+          config_content = generate_config(par)
+          with open(config_file, "w") as f:
+            f.write(config_content)
+      
+          # Create cwl file (if need be)
+          cwl_file = generate_cwl_file(par, meta)
+      
+          ## Run pipeline
+          if not par["dryrun"]:
             cmd = ["cwl-runner"] + proc_pars + [cwl_file, os.path.basename(config_file)]
       
             env = dict(os.environ)
@@ -2137,29 +2150,29 @@ functionality:
               env=env
             )
       
-          # look for counts file
-          if not par["sample_prefix"]:
-            par["sample_prefix"] = "sample"
-          counts_filename = par["sample_prefix"] + "_RSEC_MolsPerCell.csv"
-          
-          if par["sample_tags_version"]:
-            counts_filename = "Combined_" + counts_filename
-          counts_file = os.path.join(par["output"], counts_filename)
-          
-          if not os.path.exists(counts_file):
-            raise ValueError(f"Could not find output counts file '{counts_filename}'")
+          # extracting feature ids from references
+          # extract info from reference files (while they still exist)
+          feature_df = extract_feature_types(par)
+          feature_types_file = os.path.join(par["output"], "feature_types.tsv")
+          feature_df.to_csv(feature_types_file, sep="\\t", index=False)
       
-          # look for metrics file
-          metrics_filename = par["sample_prefix"] + "_Metrics_Summary.csv"
-          metrics_file = os.path.join(par["output"], metrics_filename)
-          if not os.path.exists(metrics_file):
-            raise ValueError(f"Could not find output metrics file '{metrics_filename}'")
-      
+        # look for counts file
+        if not par["sample_prefix"]:
+          par["sample_prefix"] = "sample"
+        counts_filename = par["sample_prefix"] + "_RSEC_MolsPerCell.csv"
         
-        # extracting feature ids from references
-        feature_types_file = os.path.join(par["output"], "feature_types.tsv")
-        feature_df = extract_feature_types(par)
-        feature_df.to_csv(feature_types_file, sep="\\t", index=False)
+        if par["sample_tags_version"]:
+          counts_filename = "Combined_" + counts_filename
+        counts_file = os.path.join(par["output"], counts_filename)
+        
+        if not os.path.exists(counts_file):
+          raise ValueError(f"Could not find output counts file '{counts_filename}'")
+      
+        # look for metrics file
+        metrics_filename = par["sample_prefix"] + "_Metrics_Summary.csv"
+        metrics_file = os.path.join(par["output"], metrics_filename)
+        if not os.path.exists(metrics_file):
+          raise ValueError(f"Could not find output metrics file '{metrics_filename}'")
       
       if __name__ == "__main__":
           main(par, meta)
@@ -2204,7 +2217,7 @@ functionality:
   - type: "file"
     path: "../../../resources_test/bdrhap_5kjrt"
   - type: "file"
-    path: "../../../resources_test/bdrhap_ref_gencodev40_chr1"
+    path: "../../../resources_test/reference_gencodev41_chr1/"
   info:
     name: "BD Rhapsody"
     short_description: "A wrapper for the BD Rhapsody Analysis CWL v1.10.1 pipeline"
@@ -2250,5 +2263,5 @@ info:
   output: "target/docker/mapping/bd_rhapsody"
   executable: "target/docker/mapping/bd_rhapsody/bd_rhapsody"
   viash_version: "0.6.0"
-  git_commit: "f368bfcb6699a72ba86bdded8f19c3a9a0e7462c"
+  git_commit: "fa30dded30f090cafc1e97675fea53a33b70f46e"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"

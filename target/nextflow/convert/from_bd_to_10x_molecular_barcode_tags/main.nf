@@ -116,7 +116,7 @@ thisConfig = processConfig([
     },
     {
       "type" : "file",
-      "path" : "../../../resources_test/bdrhap_5kjrt/processed/WTA.bd_rhapsody.output",
+      "path" : "../../../resources_test/bdrhap_5kjrt/processed/WTA.bd_rhapsody.output_raw",
       "parent" : "file:/home/runner/work/openpipeline/openpipeline/src/convert/from_bd_to_10x_molecular_barcode_tags/config.vsh.yaml"
     }
   ],

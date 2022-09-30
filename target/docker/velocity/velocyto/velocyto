@@ -423,9 +423,9 @@ RUN apt-get update && \
 
 LABEL org.opencontainers.image.authors="Robrecht Cannoodt"
 LABEL org.opencontainers.image.description="Companion container for running component velocity velocyto"
-LABEL org.opencontainers.image.created="2022-09-30T12:24:15Z"
+LABEL org.opencontainers.image.created="2022-09-30T21:15:05Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="f368bfcb6699a72ba86bdded8f19c3a9a0e7462c"
+LABEL org.opencontainers.image.revision="fa30dded30f090cafc1e97675fea53a33b70f46e"
 LABEL org.opencontainers.image.version="main_build"
 VIASHDOCKER
 }
@@ -1050,6 +1050,18 @@ fi
 
 output_dir=\`dirname "\$par_output"\`
 sample_id=\`basename "\$par_output" .loom\`
+
+if (file "\$par_transcriptome" | grep -q compressed ) ; then
+  # create temporary directory
+  tmpdir=\$(mktemp -d "\$meta_temp_dir/\$meta_resources_name-XXXXXXXX")
+  function clean_up {
+      rm -rf "\$tmpdir"
+  }
+  trap clean_up EXIT
+
+  zcat "\$par_transcriptome" > "\$tmpdir/genes.gtf"
+  par_transcriptome="\$tmpdir/genes.gtf"
+fi
 
 velocyto run \\
   "\$par_input" \\

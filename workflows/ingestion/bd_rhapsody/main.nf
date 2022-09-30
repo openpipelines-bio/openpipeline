@@ -59,8 +59,8 @@ workflow test_wf {
     id: "foo",
     mode: "wta",
     input: params.resources_test + "/bdrhap_5kjrt/raw/12WTA*.fastq.gz",
-    reference: params.resources_test + "/bdrhap_ref_gencodev40_chr1/GRCh38_primary_assembly_genome_chr1.tar.gz",
-    transcriptome_annotation: params.resources_test + "/bdrhap_ref_gencodev40_chr1/gencode_v40_annotation_chr1.gtf",
+    reference: params.resources_test + "/reference_gencodev41_chr1/reference_bd_rhapsody.tar.gz",
+    transcriptome_annotation: params.resources_test + "/reference_gencodev41_chr1/reference.gtf.gz",
     putative_cell_call: "mRNA",
     exact_cell_count: 4900
   ]

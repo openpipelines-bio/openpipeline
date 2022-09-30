@@ -161,7 +161,7 @@ thisConfig = processConfig([
     },
     {
       "type" : "file",
-      "path" : "../../../resources_test/bdrhap_ref_gencodev40_chr1",
+      "path" : "../../../resources_test/reference_gencodev41_chr1",
       "parent" : "file:/home/runner/work/openpipeline/openpipeline/src/velocity/velocyto/config.vsh.yaml"
     }
   ],
@@ -217,6 +217,18 @@ fi
 
 output_dir=\\`dirname "\\$par_output"\\`
 sample_id=\\`basename "\\$par_output" .loom\\`
+
+if (file "\\$par_transcriptome" | grep -q compressed ) ; then
+  # create temporary directory
+  tmpdir=\\$(mktemp -d "\\$meta_temp_dir/\\$meta_resources_name-XXXXXXXX")
+  function clean_up {
+      rm -rf "\\$tmpdir"
+  }
+  trap clean_up EXIT
+
+  zcat "\\$par_transcriptome" > "\\$tmpdir/genes.gtf"
+  par_transcriptome="\\$tmpdir/genes.gtf"
+fi
 
 velocyto run \\\\
   "\\$par_input" \\\\
