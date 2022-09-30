@@ -23,8 +23,8 @@ par_output=`realpath $par_output`
 # process params
 extra_params=( )
 
-if [ ! -z "$meta_n_proc" ]; then 
-  extra_params+=( "--nthreads=$meta_n_proc" )
+if [ ! -z "$meta_cpus" ]; then 
+  extra_params+=( "--nthreads=$meta_cpus" )
 fi
 if [ ! -z "$meta_memory_gb" ]; then 
   # always keep 2gb for the OS itself

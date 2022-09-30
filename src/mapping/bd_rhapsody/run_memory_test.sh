@@ -15,7 +15,7 @@ $meta_executable \
   -r "$meta_resources_dir/bdrhap_ref_gencodev40_chr1/GRCh38_primary_assembly_genome_chr1.tar.gz" \
   -t "$meta_resources_dir/bdrhap_ref_gencodev40_chr1/gencode_v40_annotation_chr1.gtf" \
   --putative_cell_call "mRNA" \
-  ---n_proc 11 \
+  ---cpus 11 \
   ---memory 56gb \
   --exact_cell_count 4900 \
   -o output2/ \
