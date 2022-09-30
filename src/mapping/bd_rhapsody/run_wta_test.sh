@@ -8,7 +8,7 @@ echo ">> Running $meta_functionality_name in WTA mode"
   -r "$meta_resources_dir/reference_gencodev41_chr1/reference_bd_rhapsody.tar.gz" \
   -t "$meta_resources_dir/reference_gencodev41_chr1/reference.gtf.gz" \
   --putative_cell_call "mRNA" \
-  ---n_proc 1 \
+  ---cpus 1 \
   ---memory 2gb \
   --exact_cell_count 4900 \
   -o output/

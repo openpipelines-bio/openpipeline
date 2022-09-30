@@ -15,7 +15,7 @@ $meta_executable \
   -r "$meta_resources_dir/reference_gencodev41_chr1/reference_bd_rhapsody.tar.gz" \
   -t "$meta_resources_dir/reference_gencodev41_chr1/reference.gtf.gz" \
   --putative_cell_call "mRNA" \
-  ---n_proc 11 \
+  ---cpus 11 \
   ---memory 56gb \
   --exact_cell_count 4900 \
   -o output2/ \

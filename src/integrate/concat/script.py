@@ -19,7 +19,7 @@ par = {
     "other_axis_mode": "move"
 }
 meta = {
-    "n_proc": 10
+    "cpus": 10
 
 }
 ### VIASH END
@@ -328,7 +328,7 @@ def main() -> None:
     make_observation_keys_unique(sample_ids, samples)
 
     mods = group_modalities(samples)
-    n_processes = int(meta["n_proc"]) if meta["n_proc"] else 1
+    n_processes = meta["cpus"] if meta["cpus"] else 1
     concatenated_samples = concatenate_modalities(n_processes,
                                                   sample_ids,
                                                   mods,
