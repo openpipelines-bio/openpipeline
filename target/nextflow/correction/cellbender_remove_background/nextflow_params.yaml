@@ -1,0 +1,22 @@
+# Inputs
+input: # please fill in - example: "input.h5"
+
+# Outputs
+# output: "$id.$key.output.h5"
+# output_filtered: "$id.$key.output_filtered.h5"
+# output_report: "$id.$key.output_report.pdf"
+# output_cell_barcodes: "$id.$key.output_cell_barcodes.csv"
+
+# Arguments
+# model: "foo"
+# total_droplets_included: 50000
+# epochs: 150
+# fpr: 0.01
+exclude_antibody_capture: false
+# learning_rate: 1.0E-4
+cuda: false
+
+# Nextflow input-output arguments
+publish_dir: # please fill in - example: "output/"
+# param_list: "my_params.yaml"
+# param_list_format: "yaml"
