@@ -42,6 +42,8 @@
   }
   ```
 
+* `correction/cellbender_remove_background`: Eliminating technical artifacts from high-throughput single-cell RNA sequencing data.
+
 ## MAJOR CHANGES
 
 * `workflows/utils/DataFlowHelper.nf`: Added helper functions `setWorkflowArguments()` and `getWorkflowArguments()` to split the data field of a channel event into a hashmap. Example usage:
