@@ -9,7 +9,7 @@ par = {
     "csv": ["test.csv"]
 }
 meta = {
-    "n_proc": 10
+    "cpus": 10
 
 }
 ### VIASH END
