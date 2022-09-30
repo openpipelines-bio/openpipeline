@@ -15,13 +15,14 @@ meta = {
 }
 ## VIASH END
 
-resources_dir, functionality_name = meta["resources_dir"], meta["functionality_name"]
-input_bam_bd = f"{resources_dir}/rna_velocity/velocyto/compatible_bd_input.bam"
-input_gtf_bd = f"{resources_dir}/bdrhap_ref_gencodev40_chr1/gencode_v40_annotation_chr1.gtf"
-input_barcodes_bd = f"{resources_dir}/rna_velocity/velocyto/barcodes.txt"
+# input data for bd bam
+input_bam_bd = f"{meta['resources_dir']}/rna_velocity/velocyto/compatible_bd_input.bam"
+input_gtf_bd = f"{meta['resources_dir']}/reference_gencodev41_chr1/reference.gtf.gz"
+input_barcodes_bd = f"{meta['resources_dir']}/rna_velocity/velocyto/barcodes.txt"
 
-input_bam_cellranger = f"{resources_dir}/cellranger_tiny_fastq/bam/possorted_genome_bam.bam"
-input_gtf_cellranger = f"{resources_dir}/cellranger_tiny_fastq/cellranger_tiny_ref/genes/genes.gtf.gz"
+# input data for 10x bam
+input_bam_cellranger = f"{meta['resources_dir']}/cellranger_tiny_fastq/bam/possorted_genome_bam.bam"
+input_gtf_cellranger = f"{meta['resources_dir']}/cellranger_tiny_fastq/cellranger_tiny_ref/genes/genes.gtf.gz"
 
 class TestVelocyto(unittest.TestCase):
     def _run_and_check_output(self, args_as_list):
@@ -32,13 +33,11 @@ class TestVelocyto(unittest.TestCase):
             raise e
 
     def test_velocyto_cellranger(self):
-        with tempfile.NamedTemporaryFile(suffix=".gtf", mode='wb') as genes_uncompressed:
-            with gzip.open(input_gtf_cellranger, 'rb') as genes_compressed:
-                shutil.copyfileobj(genes_compressed, genes_uncompressed)
-                self._run_and_check_output([
-                        "--input", input_bam_cellranger,
-                        "--transcriptome", genes_uncompressed.name,
-                        "--output", "./foo/velocyto.loom"])
+        # check whether component accepts compressed gtf files
+        self._run_and_check_output([
+                "--input", input_bam_cellranger,
+                "--transcriptome", input_gtf_cellranger,
+                "--output", "./foo/velocyto.loom"])
         self.assertTrue(Path("./foo/velocyto.loom").is_file())
         input_barcodes = set()
         with pysam.AlignmentFile(input_bam_cellranger, 'r') as input_bam:
@@ -58,12 +57,16 @@ class TestVelocyto(unittest.TestCase):
 
     
     def test_velocyto_bd_rhapsody(self):
-        self._run_and_check_output([
-                "--input", input_bam_bd,
-                "--transcriptome", input_gtf_bd,
-                "--output", "./foo/velocyto.loom",
-                "--barcode", input_barcodes_bd]
-                )
+        # check whether component also accepts uncompressed gtf files
+        with tempfile.NamedTemporaryFile(suffix=".gtf", mode='wb') as genes_uncompressed:
+            with gzip.open(input_gtf_bd, 'rb') as genes_compressed:
+                shutil.copyfileobj(genes_compressed, genes_uncompressed)
+                self._run_and_check_output([
+                        "--input", input_bam_bd,
+                        "--transcriptome", genes_uncompressed.name,
+                        "--output", "./foo/velocyto.loom",
+                        "--barcode", input_barcodes_bd]
+                        )
         self.assertTrue(Path("./foo/velocyto.loom").is_file())
         input_barcodes = set()
         with open(input_barcodes_bd, 'r') as barcodes_file:

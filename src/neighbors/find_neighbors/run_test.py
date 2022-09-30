@@ -24,7 +24,7 @@ cmd_pars = [
     meta["executable"],
     "--input", input,
     "--output", output,
-    "--obsm_input", "log_normalized_pca",
+    "--obsm_input", "X_pca",
     "--uns_output", "foo_neigh",
     "--obsp_distances", "bar_dist",
     "--obsp_connectivities", "baz_conn"
