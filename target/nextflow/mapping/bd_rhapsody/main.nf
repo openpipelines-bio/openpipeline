@@ -702,7 +702,7 @@ def generate_cwl_file(par: dict[str, Any], meta: dict[str, Any]) -> str:
     orig_cwl_file=os.path.join(meta["resources_dir"], "rhapsody_targeted_1.10.1_nodocker.cwl")
 
   # Inject computational requirements into pipeline
-  if meta["memory_mb"] or meta["n_proc"]:
+  if meta["memory_mb"] or meta["cpus"]:
     cwl_file = os.path.join(par["output"], "pipeline.cwl")
 
     # Read in the file
@@ -713,8 +713,8 @@ def generate_cwl_file(par: dict[str, Any], meta: dict[str, Any]) -> str:
     if meta["memory_mb"]:
       memory = int(meta["memory_mb"]) - 2000 # keep 2gb for OS
       cwl_data = re.sub('"ramMin": [^\\\\n]*,\\\\n', f'"ramMin": {memory},\\\\n', cwl_data)
-    if meta["n_proc"]:
-      cwl_data = re.sub('"coresMin": [^\\\\n]*,\\\\n', f'"coresMin": {meta["n_proc"]},\\\\n', cwl_data)
+    if meta["cpus"]:
+      cwl_data = re.sub('"coresMin": [^\\\\n]*,\\\\n', f'"coresMin": {meta["cpus"]},\\\\n', cwl_data)
 
     # Write the file out again
     with open(cwl_file, 'w') as file:

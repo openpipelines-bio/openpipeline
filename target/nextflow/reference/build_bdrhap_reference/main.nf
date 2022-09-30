@@ -146,13 +146,13 @@ function clean_up {
 }
 trap clean_up EXIT
 
-meta_n_proc="\\${meta_n_proc:-1}"
+meta_cpus="\\${meta_cpus:-1}"
 
 # process params
 extra_params=( )
 
-if [ ! -z "\\$meta_n_proc" ]; then 
-  extra_params+=( "--runThreadN \\$meta_n_proc" )
+if [ ! -z "\\$meta_cpus" ]; then 
+  extra_params+=( "--runThreadN \\$meta_cpus" )
 fi
 
 echo "> Unzipping input files"

@@ -403,9 +403,9 @@ RUN apt-get update && \
 
 LABEL org.opencontainers.image.authors="Angela Pisco, Robrecht Cannoodt"
 LABEL org.opencontainers.image.description="Companion container for running component reference build_bdrhap_reference"
-LABEL org.opencontainers.image.created="2022-09-30T09:18:18Z"
+LABEL org.opencontainers.image.created="2022-09-30T10:52:42Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="0744668932ecab2526d6dfaec821c4dcf783563b"
+LABEL org.opencontainers.image.revision="14c55f837ae3b3f2d1456c73fdf9bc633cbca4f3"
 LABEL org.opencontainers.image.version="main_build"
 VIASHDOCKER
 }
@@ -930,13 +930,13 @@ function clean_up {
 }
 trap clean_up EXIT
 
-meta_n_proc="\${meta_n_proc:-1}"
+meta_cpus="\${meta_cpus:-1}"
 
 # process params
 extra_params=( )
 
-if [ ! -z "\$meta_n_proc" ]; then 
-  extra_params+=( "--runThreadN \$meta_n_proc" )
+if [ ! -z "\$meta_cpus" ]; then 
+  extra_params+=( "--runThreadN \$meta_cpus" )
 fi
 
 echo "> Unzipping input files"

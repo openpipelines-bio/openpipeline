@@ -218,7 +218,7 @@ def add_sample_names(sample_ids: tuple[str], samples: Iterable[mu.MuData], obs_k
     for (sample_id, sample) in zip(sample_ids, samples):
         if obs_key_sample_name in sample.obs_keys():
             logger.info(f'Column .obs["{obs_key_sample_name}"] already exists in sample "{sample_id}". Overriding the value for this column.')
-            samples.obs = sample.obs.drop(obs_key_sample_name, axis=1)
+            sample.obs = sample.obs.drop(obs_key_sample_name, axis=1)
         for modality in sample.mod.values():
             modality.obs[obs_key_sample_name] = sample_id
         sample.update()
@@ -508,7 +508,7 @@ def main() -> None:
     make_observation_keys_unique(sample_ids, samples)
 
     mods = group_modalities(samples)
-    n_processes = int(meta["n_proc"]) if meta["n_proc"] else 1
+    n_processes = meta["cpus"] if meta["cpus"] else 1
     concatenated_samples = concatenate_modalities(n_processes,
                                                   sample_ids,
                                                   mods,

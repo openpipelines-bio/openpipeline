@@ -524,9 +524,9 @@ functionality:
       
       LABEL org.opencontainers.image.authors="Robrecht Cannoodt"
       LABEL org.opencontainers.image.description="Companion container for running component velocity velocyto"
-      LABEL org.opencontainers.image.created="2022-09-30T09:18:22Z"
+      LABEL org.opencontainers.image.created="2022-09-30T10:52:46Z"
       LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-      LABEL org.opencontainers.image.revision="0744668932ecab2526d6dfaec821c4dcf783563b"
+      LABEL org.opencontainers.image.revision="14c55f837ae3b3f2d1456c73fdf9bc633cbca4f3"
       LABEL org.opencontainers.image.version="main_build"
       VIASHDOCKER
       }
@@ -1142,8 +1142,8 @@ functionality:
       if [ "\$par_without_umi" == "true" ]; then
         extra_params+=( "--without-umi" )
       fi
-      if [ ! -z "\$meta_n_proc" ]; then
-        extra_params+=( "--samtools-threads" "\$meta_n_proc" )
+      if [ ! -z "\$meta_cpus" ]; then
+        extra_params+=( "--samtools-threads" "\$meta_cpus" )
       fi
       if [ ! -z "\$meta_memory_mb" ]; then
         extra_params+=( "--samtools-memory" "\$meta_memory_mb" )
@@ -1242,5 +1242,5 @@ info:
   output: "target/docker/velocity/velocyto"
   executable: "target/docker/velocity/velocyto/velocyto"
   viash_version: "0.6.0"
-  git_commit: "0744668932ecab2526d6dfaec821c4dcf783563b"
+  git_commit: "14c55f837ae3b3f2d1456c73fdf9bc633cbca4f3"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"

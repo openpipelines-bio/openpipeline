@@ -404,9 +404,9 @@ RUN apt-get update && \
 
 LABEL org.opencontainers.image.authors="Angela Pisco, Robrecht Cannoodt"
 LABEL org.opencontainers.image.description="Companion container for running component reference build_cellranger_reference"
-LABEL org.opencontainers.image.created="2022-09-30T09:18:18Z"
+LABEL org.opencontainers.image.created="2022-09-30T10:52:43Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="0744668932ecab2526d6dfaec821c4dcf783563b"
+LABEL org.opencontainers.image.revision="14c55f837ae3b3f2d1456c73fdf9bc633cbca4f3"
 LABEL org.opencontainers.image.version="main_build"
 VIASHDOCKER
 }
@@ -939,8 +939,8 @@ par_output=\`realpath \$par_output\`
 # process params
 extra_params=( )
 
-if [ ! -z "\$meta_n_proc" ]; then 
-  extra_params+=( "--nthreads=\$meta_n_proc" )
+if [ ! -z "\$meta_cpus" ]; then 
+  extra_params+=( "--nthreads=\$meta_cpus" )
 fi
 if [ ! -z "\$meta_memory_gb" ]; then 
   # always keep 2gb for the OS itself

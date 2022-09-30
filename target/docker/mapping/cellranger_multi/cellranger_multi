@@ -521,9 +521,9 @@ RUN pip install --upgrade pip && \
 
 LABEL org.opencontainers.image.authors="Angela Pisco, Robrecht Cannoodt, Dries De Maeyer"
 LABEL org.opencontainers.image.description="Companion container for running component mapping cellranger_multi"
-LABEL org.opencontainers.image.created="2022-09-30T09:18:21Z"
+LABEL org.opencontainers.image.created="2022-09-30T10:52:46Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="0744668932ecab2526d6dfaec821c4dcf783563b"
+LABEL org.opencontainers.image.revision="14c55f837ae3b3f2d1456c73fdf9bc633cbca4f3"
 LABEL org.opencontainers.image.version="main_build"
 VIASHDOCKER
 }
@@ -1525,8 +1525,8 @@ def main(par: dict[str, Any], meta: dict[str, Any]):
         temp_id="run"
         proc_pars=["--disable-ui", "--id", temp_id]
 
-        if meta["n_proc"]:
-            proc_pars.append(f"--localcores={meta['n_proc']}")
+        if meta["cpus"]:
+            proc_pars.append(f"--localcores={meta['cpus']}")
 
         if meta["memory_gb"]:
             proc_pars.append(f"--localmem={int(meta['memory_gb']) - 2}")
