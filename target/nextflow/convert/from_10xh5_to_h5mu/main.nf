@@ -114,19 +114,6 @@ thisConfig = processConfig([
         },
         {
           "type" : "string",
-          "name" : "--obs_sample_id",
-          "description" : "Name of the .obs slot under which to add the sample id (if any).",
-          "default" : [
-            "sample_id"
-          ],
-          "required" : false,
-          "direction" : "input",
-          "multiple" : false,
-          "multiple_sep" : ":",
-          "dest" : "par"
-        },
-        {
-          "type" : "string",
           "name" : "--uns_metrics",
           "description" : "Name of the .uns slot under which to QC metrics (if any).",
           "default" : [
@@ -143,19 +130,6 @@ thisConfig = processConfig([
     {
       "name" : "Arguments",
       "arguments" : [
-        {
-          "type" : "boolean",
-          "name" : "--id_to_obs_names",
-          "description" : "Whether to set the obs_names to `<barcode>_<sample_name>`.",
-          "default" : [
-            false
-          ],
-          "required" : false,
-          "direction" : "input",
-          "multiple" : false,
-          "multiple_sep" : ":",
-          "dest" : "par"
-        },
         {
           "type" : "integer",
           "name" : "--min_genes",
@@ -220,9 +194,7 @@ import mudata
 import scanpy as sc
 import logging
 from sys import stdout
-import re
 import pandas as pd
-import numpy as np
 
 # set logging
 logger = logging.getLogger()
@@ -239,9 +211,7 @@ par = {
   'input': $( if [ ! -z ${VIASH_PAR_INPUT+x} ]; then echo "r'${VIASH_PAR_INPUT//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'input_metrics_summary': $( if [ ! -z ${VIASH_PAR_INPUT_METRICS_SUMMARY+x} ]; then echo "r'${VIASH_PAR_INPUT_METRICS_SUMMARY//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'output': $( if [ ! -z ${VIASH_PAR_OUTPUT+x} ]; then echo "r'${VIASH_PAR_OUTPUT//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
-  'obs_sample_id': $( if [ ! -z ${VIASH_PAR_OBS_SAMPLE_ID+x} ]; then echo "r'${VIASH_PAR_OBS_SAMPLE_ID//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'uns_metrics': $( if [ ! -z ${VIASH_PAR_UNS_METRICS+x} ]; then echo "r'${VIASH_PAR_UNS_METRICS//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
-  'id_to_obs_names': $( if [ ! -z ${VIASH_PAR_ID_TO_OBS_NAMES+x} ]; then echo "r'${VIASH_PAR_ID_TO_OBS_NAMES//\\'/\\'\\"\\'\\"r\\'}'.lower() == 'true'"; else echo None; fi ),
   'min_genes': $( if [ ! -z ${VIASH_PAR_MIN_GENES+x} ]; then echo "int(r'${VIASH_PAR_MIN_GENES//\\'/\\'\\"\\'\\"r\\'}')"; else echo None; fi ),
   'min_counts': $( if [ ! -z ${VIASH_PAR_MIN_COUNTS+x} ]; then echo "int(r'${VIASH_PAR_MIN_COUNTS//\\'/\\'\\"\\'\\"r\\'}')"; else echo None; fi )
 }
@@ -264,18 +234,6 @@ meta = {
 logger.info("Reading %s.", par["input"])
 adata = sc.read_10x_h5(par["input"], gex_only=False)
 
-# store sample_id in .obs
-if par["sample_id"] and par["obs_sample_id"]:
-  logger.info("Storing sample_id '%s' in .obs['%s]'.", par['sample_id'], par['obs_sample_id'])
-  adata.obs[par["obs_sample_id"]] = par["sample_id"]
-
-# combine sample_id and barcode in obs_names
-if par["sample_id"] and par["id_to_obs_names"]:
-  logger.info("Combining obs_names and sample_id")
-  # strip the number from '<10x_barcode>-<number>'
-  replace = re.compile('-\\\\\\\\d+\\$')
-  adata.obs_names = [ replace.sub('', obs_name) + "_" + par["sample_id"] for obs_name in adata.obs_names ]
-
 # set the gene ids as var_names
 logger.info("Renaming var columns")
 adata.var = adata.var\\\\
@@ -294,8 +252,6 @@ if par["input_metrics_summary"] and par["uns_metrics"]:
           return val
 
   metrics_summary = pd.read_csv(par["input_metrics_summary"], decimal=".", quotechar='"', thousands=",").applymap(read_percentage)
-  if par["sample_id"]:
-    metrics_summary.index = [ par["sample_id"] ]
 
   logger.info("Storing metrics summary in .uns['%s']", par['uns_metrics'])
   adata.uns[par["uns_metrics"]] = metrics_summary

@@ -2076,5 +2076,5 @@ info:
   platform: "nextflow"
   output: "target/nextflow/integrate/harmonypy"
   viash_version: "0.6.1"
-  git_commit: "3c72b457b1419858d5dcd7d30f0dfd4f3e86e56a"
+  git_commit: "796cc8e59a6155d99d50ba3b734fa8a0af03fc40"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"

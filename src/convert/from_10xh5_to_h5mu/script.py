@@ -2,9 +2,7 @@ import mudata
 import scanpy as sc
 import logging
 from sys import stdout
-import re
 import pandas as pd
-import numpy as np
 
 # set logging
 logger = logging.getLogger()
@@ -31,18 +29,6 @@ par = {
 logger.info("Reading %s.", par["input"])
 adata = sc.read_10x_h5(par["input"], gex_only=False)
 
-# store sample_id in .obs
-if par["sample_id"] and par["obs_sample_id"]:
-  logger.info("Storing sample_id '%s' in .obs['%s]'.", par['sample_id'], par['obs_sample_id'])
-  adata.obs[par["obs_sample_id"]] = par["sample_id"]
-
-# combine sample_id and barcode in obs_names
-if par["sample_id"] and par["id_to_obs_names"]:
-  logger.info("Combining obs_names and sample_id")
-  # strip the number from '<10x_barcode>-<number>'
-  replace = re.compile('-\\d+$')
-  adata.obs_names = [ replace.sub('', obs_name) + "_" + par["sample_id"] for obs_name in adata.obs_names ]
-
 # set the gene ids as var_names
 logger.info("Renaming var columns")
 adata.var = adata.var\
@@ -61,8 +47,6 @@ if par["input_metrics_summary"] and par["uns_metrics"]:
           return val
 
   metrics_summary = pd.read_csv(par["input_metrics_summary"], decimal=".", quotechar='"', thousands=",").applymap(read_percentage)
-  if par["sample_id"]:
-    metrics_summary.index = [ par["sample_id"] ]
 
   logger.info("Storing metrics summary in .uns['%s']", par['uns_metrics'])
   adata.uns[par["uns_metrics"]] = metrics_summary

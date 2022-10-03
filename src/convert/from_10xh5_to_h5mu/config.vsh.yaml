@@ -35,20 +35,12 @@ functionality:
           description: Output h5mu file.
           example: output.h5mu
           direction: output
-        - name: "--obs_sample_id"
-          type: string
-          description: Name of the .obs slot under which to add the sample id (if any).
-          default: "sample_id"
         - name: "--uns_metrics"
           type: string
           description: Name of the .uns slot under which to QC metrics (if any).
           default: "metrics_cellranger"
     - name: Arguments
       arguments:
-        - name: "--id_to_obs_names"
-          type: boolean
-          default: false
-          description: Whether to set the obs_names to `<barcode>_<sample_name>`.
         - name: "--min_genes"
           type: integer
           example: 100
