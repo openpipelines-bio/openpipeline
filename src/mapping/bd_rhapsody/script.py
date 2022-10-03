@@ -313,8 +313,8 @@ def process_gtf(feature_type: str, path: str) -> pd.DataFrame:
       if not line.startswith("#"):
         attr = dict(item.strip().split(' ') for item in line.split('\t')[8].strip('\n').split(';') if item)
         row = {
-          'feature_type': feature_type,
-          'feature_id': attr["gene_name"].strip("\""),
+          'feature_types': feature_type,
+          'feature_ids': attr["gene_name"].strip("\""),
           'reference_file': os.path.basename(path),
         }
         data.append(row)

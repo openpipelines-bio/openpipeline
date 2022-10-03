@@ -19,7 +19,7 @@ assert path.exists("output.h5mu"), "No output was created."
 data = mu.read_h5mu("output.h5mu")
 
 # check whether gex was found
-assert data.mod["rna"].var["feature_type"].unique() == [
+assert data.mod["rna"].var["feature_types"].unique() == [
     "Gene Expression"
 ], "Output X should only contain Gene Expression vars."
 

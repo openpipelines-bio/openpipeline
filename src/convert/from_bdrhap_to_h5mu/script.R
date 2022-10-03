@@ -9,8 +9,7 @@ mudata <- reticulate::import("mudata")
 ## VIASH START
 par <- list(
   id = "foo",
-  input = "work/e8/8efcfdc456f4cdb4187765bb0a395f/targeted_vdj.bd_rhapsody.output",
-  # input = "resources_test/bdrhap_vdj/processed/targeted_vdj",
+  input = "resources_test/bdrhap_5kjrt/processed/WTA.bd_rhapsody.output_raw",
   output = "test.h5mu"
 )
 ## VIASH END
