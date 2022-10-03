@@ -12,6 +12,8 @@
 
 ## NEW FUNCTIONALITY
 
+* `metadata/add_id`: Add an id to a column in .obs. Also allows joining the id to the .obs_names.
+
 * `workflows/ingestion/make_reference`: A generic component to build a transcriptomics reference into one of many formats.
 
 * `integrate/add_metadata`: Add a csv containing metadata to the .obs or .var field of a mudata file.
