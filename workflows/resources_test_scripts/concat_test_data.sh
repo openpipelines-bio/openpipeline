@@ -56,13 +56,13 @@ bin/viash run src/metadata/add_id/config.vsh.yaml -- \
 --input_id "mouse" \  
 --make_observation_keys_unique
 
-# echo "Removing temp files"
-# rm "${OUT}/e18_mouse_brain_fresh_5k_filtered_feature_bc_matrix.h5mu" \
-#    "$OUT/e18_mouse_brain_fresh_5k_filtered_feature_bc_matrix.h5" \
-#    "$OUT/e18_mouse_brain_fresh_5k_filtered_feature_bc_matrix_subset.h5mu" \
-#    "$OUT/human_brain_3k_filtered_feature_bc_matrix_subset.h5mu" \
-#    "${OUT}/human_brain_3k_filtered_feature_bc_matrix.h5mu" \
-#    "$OUT/human_brain_3k_filtered_feature_bc_matrix.h5"
+echo "Removing temp files"
+rm "${OUT}/e18_mouse_brain_fresh_5k_filtered_feature_bc_matrix.h5mu" \
+   "$OUT/e18_mouse_brain_fresh_5k_filtered_feature_bc_matrix.h5" \
+   "$OUT/e18_mouse_brain_fresh_5k_filtered_feature_bc_matrix_subset.h5mu" \
+   "$OUT/human_brain_3k_filtered_feature_bc_matrix_subset.h5mu" \
+   "${OUT}/human_brain_3k_filtered_feature_bc_matrix.h5mu" \
+   "$OUT/human_brain_3k_filtered_feature_bc_matrix.h5"
    
 
 echo "> Running concat component"
