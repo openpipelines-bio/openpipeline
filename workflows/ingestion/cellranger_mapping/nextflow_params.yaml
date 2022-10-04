@@ -16,10 +16,8 @@ include_introns: true
 
 # MuData conversion arguments
 which_10xh5: "raw_h5"
-id_to_obs_names: false
 # min_genes: 100
 # min_counts: 1000
-obs_sample_id: "sample_id"
 obsm_metrics: "metrics_summary"
 
 # Nextflow input-output arguments
