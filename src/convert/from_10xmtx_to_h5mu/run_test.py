@@ -1,6 +1,6 @@
 import subprocess
 from os import path
-import muon as mu
+import mudata as mu
 
 input = meta["resources_dir"] + "/pbmc_1k_protein_v3/pbmc_1k_protein_v3_filtered_feature_bc_matrix"
 output = "output.h5mu"
@@ -19,7 +19,7 @@ assert path.exists("output.h5mu"), "No output was created."
 data = mu.read_h5mu("output.h5mu")
 
 # check whether gex was found
-assert data.mod["rna"].var["feature_type"].unique() == [
+assert data.mod["rna"].var["feature_types"].unique() == [
     "Gene Expression"
 ], "Output X should only contain Gene Expression vars."
 
@@ -28,5 +28,5 @@ assert "prot" in data.mod, 'Output should contain data.mod["rna"].'
 
 # check whether gene was found
 assert (
-    "CD3_TotalSeqB" in data.mod["prot"].var_names
-), 'Output should contain antibody column "CD3_TotalSeqB".'
+    "CD3" in data.mod["prot"].var_names
+), 'Output should contain antibody column "CD3".'

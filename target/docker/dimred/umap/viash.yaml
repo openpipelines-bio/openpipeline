@@ -131,7 +131,8 @@ functionality:
       name: "--max_iter"
       alternatives: []
       description: "The number of iterations (epochs) of the optimization. Called\
-        \ `n_epochs` in the original UMAP."
+        \ `n_epochs` in the original UMAP. Default is set to 500 if neighbors['connectivities'].shape[0]\
+        \ <= 10000, else 200."
       example: []
       default: []
       required: false
@@ -421,7 +422,8 @@ functionality:
         echo "    --max_iter"
         echo "        type: integer"
         echo "        The number of iterations (epochs) of the optimization. Called \`n_epochs\`"
-        echo "        in the original UMAP."
+        echo "        in the original UMAP. Default is set to 500 if"
+        echo "        neighbors['connectivities'].shape[0] <= 10000, else 200."
         echo ""
         echo "    --alpha"
         echo "        type: double"
@@ -673,9 +675,9 @@ functionality:
       
       LABEL org.opencontainers.image.authors="Dries De Maeyer"
       LABEL org.opencontainers.image.description="Companion container for running component dimred umap"
-      LABEL org.opencontainers.image.created="2022-10-04T04:22:08Z"
+      LABEL org.opencontainers.image.created="2022-10-04T12:36:37Z"
       LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-      LABEL org.opencontainers.image.revision="e15fdccddecc290ba4f2da980b5eabbb86ace502"
+      LABEL org.opencontainers.image.revision="7f07973784b129543f158612ed62eb118b739ab9"
       LABEL org.opencontainers.image.version="main_build"
       VIASHDOCKER
       }
@@ -1535,5 +1537,5 @@ info:
   output: "target/docker/dimred/umap"
   executable: "target/docker/dimred/umap/umap"
   viash_version: "0.6.1"
-  git_commit: "e15fdccddecc290ba4f2da980b5eabbb86ace502"
+  git_commit: "7f07973784b129543f158612ed62eb118b739ab9"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"

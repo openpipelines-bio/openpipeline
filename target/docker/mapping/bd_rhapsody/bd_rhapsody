@@ -529,9 +529,9 @@ RUN pip install --upgrade pip && \
 
 LABEL org.opencontainers.image.authors="Robrecht Cannoodt"
 LABEL org.opencontainers.image.description="Companion container for running component mapping bd_rhapsody"
-LABEL org.opencontainers.image.created="2022-10-04T04:22:11Z"
+LABEL org.opencontainers.image.created="2022-10-04T12:36:39Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="e15fdccddecc290ba4f2da980b5eabbb86ace502"
+LABEL org.opencontainers.image.revision="7f07973784b129543f158612ed62eb118b739ab9"
 LABEL org.opencontainers.image.version="main_build"
 VIASHDOCKER
 }
@@ -1768,8 +1768,8 @@ def process_gtf(feature_type: str, path: str) -> pd.DataFrame:
       if not line.startswith("#"):
         attr = dict(item.strip().split(' ') for item in line.split('\\t')[8].strip('\\n').split(';') if item)
         row = {
-          'feature_type': feature_type,
-          'feature_id': attr["gene_name"].strip("\\""),
+          'feature_types': feature_type,
+          'feature_ids': attr["gene_name"].strip("\\""),
           'reference_file': os.path.basename(path),
         }
         data.append(row)

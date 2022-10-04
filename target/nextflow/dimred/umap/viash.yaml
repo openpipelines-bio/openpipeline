@@ -131,7 +131,8 @@ functionality:
       name: "--max_iter"
       alternatives: []
       description: "The number of iterations (epochs) of the optimization. Called\
-        \ `n_epochs` in the original UMAP."
+        \ `n_epochs` in the original UMAP. Default is set to 500 if neighbors['connectivities'].shape[0]\
+        \ <= 10000, else 200."
       example: []
       default: []
       required: false
@@ -366,7 +367,7 @@ functionality:
               {
                 "type" : "integer",
                 "name" : "--max_iter",
-                "description" : "The number of iterations (epochs) of the optimization. Called `n_epochs` in the original UMAP.",
+                "description" : "The number of iterations (epochs) of the optimization. Called `n_epochs` in the original UMAP. Default is set to 500 if neighbors['connectivities'].shape[0] <= 10000, else 200.",
                 "required" : false,
                 "direction" : "input",
                 "multiple" : false,
@@ -2301,5 +2302,5 @@ info:
   platform: "nextflow"
   output: "target/nextflow/dimred/umap"
   viash_version: "0.6.1"
-  git_commit: "e15fdccddecc290ba4f2da980b5eabbb86ace502"
+  git_commit: "7f07973784b129543f158612ed62eb118b739ab9"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"
