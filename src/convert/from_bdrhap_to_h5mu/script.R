@@ -9,8 +9,7 @@ mudata <- reticulate::import("mudata")
 ## VIASH START
 par <- list(
   id = "foo",
-  input = "work/e8/8efcfdc456f4cdb4187765bb0a395f/targeted_vdj.bd_rhapsody.output",
-  # input = "resources_test/bdrhap_vdj/processed/targeted_vdj",
+  input = "resources_test/bdrhap_5kjrt/processed/WTA.bd_rhapsody.output_raw",
   output = "test.h5mu"
 )
 ## VIASH END
@@ -147,7 +146,7 @@ obs <- obs %>%
 
 cat("Constructing var\n")
 # determine feature types of genes
-var <- tryCatch({
+var0 <- tryCatch({
   feature_types_file <- list.files(par$input, pattern = "feature_types.tsv$", full.names = TRUE)
 
   # abseq fasta reference has trailing info which apparently gets stripped off by the bd rhapsody pipeline
@@ -170,21 +169,25 @@ var <- tryCatch({
 
 # in case the feature types are missing
 missing_features <- tibble(
-  feature_id = setdiff(colnames(counts), var$feature_id),
+  feature_id = setdiff(colnames(counts), var0$feature_id),
   feature_type = "Gene Expression",
   reference_file = NA_character_,
   note = "Feature annotation file missing, assuming type is Gene Expression"
 )
-if (nrow(missing_features) > 0) {
-  cat("Feature annotation file missing, assuming type is Gene Expression\n")
-  var <- bind_rows(var, missing_features) %>%
-    slice(match(colnames(counts), feature_id))
-}
+var1 <-
+  if (nrow(missing_features) > 0) {
+    cat("Feature annotation file missing, assuming type is Gene Expression\n")
+    bind_rows(var0, missing_features) %>%
+      slice(match(colnames(counts), feature_id))
+  } else {
+    var0
+  }
 
 # create var
-var <- var %>%
+var <- var1 %>%
+  transmute(gene_ids = feature_id, gene_name = feature_id, feature_types = feature_type, reference_file) %>%
   as.data.frame() %>%
-  column_to_rownames("feature_id")
+  column_to_rownames("gene_ids")
 
 cat("Constructing uns\n")
 names(metric_dfs) <- paste0("mapping_qc_", names(metric_dfs))
@@ -204,11 +207,11 @@ adata <- anndata::AnnData(
   uns = uns
 )
 
-adata_prot <- adata[, adata$var$feature_type == "Antibody Capture"]
+adata_prot <- adata[, adata$var$feature_types == "Antibody Capture"]
 if (ncol(adata_prot) == 0) {
   adata_prot <- NULL
 }
-adata_rna <- adata[, adata$var$feature_type != "Antibody Capture"]
+adata_rna <- adata[, adata$var$feature_types != "Antibody Capture"]
 
 adata_vdj <-
   if (!is.null(vdj_data)) {
