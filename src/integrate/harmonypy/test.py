@@ -27,16 +27,16 @@ class TestHarmonyPy(unittest.TestCase):
         self._run_and_check_output([
             "--input", input_file,
             "--modality", "rna",
-            "--obsm_input", "log_normalized_pca",
+            "--obsm_input", "X_pca",
             "--obsm_output", "X_pca_int",
             "--obs_covariates", "leiden",
             "--output", "output.h5mu"])
         self.assertTrue(Path("output.h5mu").is_file())
         output_data = mudata.read_h5mu("output.h5mu")
         np.testing.assert_array_equal(output_data.mod['rna'].X.data, input_data.mod['rna'].X.data)
-        np.testing.assert_array_equal(input_data.mod['rna'].obsm['log_normalized_pca'], output_data.mod['rna'].obsm['log_normalized_pca'])
+        np.testing.assert_array_equal(input_data.mod['rna'].obsm['X_pca'], output_data.mod['rna'].obsm['X_pca'])
         self.assertIn('X_pca_int', output_data.mod['rna'].obsm)
-        self.assertTupleEqual(output_data.mod['rna'].obsm['X_pca_int'].shape, input_data.mod['rna'].obsm['log_normalized_pca'].shape)
+        self.assertTupleEqual(output_data.mod['rna'].obsm['X_pca_int'].shape, input_data.mod['rna'].obsm['X_pca'].shape)
 
 if __name__ == '__main__':
     unittest.main()

@@ -1,16 +1,14 @@
 #!/bin/bash
 
-
-
 echo ">> Running $meta_functionality_name in WTA mode"
 "$meta_executable" \
   --mode wta \
   -i "$meta_resources_dir/bdrhap_5kjrt/raw/12WTA_S1_L432_R1_001_subset.fastq.gz" \
   -i "$meta_resources_dir/bdrhap_5kjrt/raw/12WTA_S1_L432_R2_001_subset.fastq.gz"  \
-  -r "$meta_resources_dir/bdrhap_ref_gencodev40_chr1/GRCh38_primary_assembly_genome_chr1.tar.gz" \
-  -t "$meta_resources_dir/bdrhap_ref_gencodev40_chr1/gencode_v40_annotation_chr1.gtf" \
+  -r "$meta_resources_dir/reference_gencodev41_chr1/reference_bd_rhapsody.tar.gz" \
+  -t "$meta_resources_dir/reference_gencodev41_chr1/reference.gtf.gz" \
   --putative_cell_call "mRNA" \
-  ---n_proc 1 \
+  ---cpus 1 \
   ---memory 2gb \
   --exact_cell_count 4900 \
   -o output/

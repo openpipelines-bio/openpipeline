@@ -22,8 +22,8 @@ if ! command -v seqkit &> /dev/null; then
 fi
 
 # check whether reference is available
-reference_dir="resources_test/bdrhap_ref_gencodev40_chr1"
-genome_tar="$reference_dir/GRCh38_primary_assembly_genome_chr1.tar.gz"
+reference_dir="resources_test/reference_gencodev41_chr1"
+genome_tar="$reference_dir/reference_bd_rhapsody.tar.gz"
 if [[ ! -f "$genome_tar" ]]; then
     echo "$genome_tar does not exist. Please create the reference genome first"
     exit 1
@@ -38,17 +38,7 @@ if [[ ! -d "$tar_dir" ]]; then
     rm "$tar_dir.tar"
 fi
 
-# process samples with bd rhap component
-# target/docker/mapping/bd_rhapsody_wta/main.nf \
-#   --id WTA \
-#   --input "$tar_dir/12WTA_S1_L432_R1_001.fastq.gz" \
-#   --input "$tar_dir/12WTA_S1_L432_R2_001.fastq.gz" \
-#   --reference "$reference_dir/GRCh38_primary_assembly_genome_chr1.tar.gz" \
-#   --transcriptome_annotation "$reference_dir/gencode_v40_annotation_chr1.gtf" \
-#   --output "output_foo" \
-#   --putative_cell_call "mRNA"
-
-genome_dir="$raw_dir/temp_GRCh38_primary_assembly_genome_chr1"
+genome_dir="$raw_dir/temp_reference_gencodev41_chr1"
 if [[ ! -d "$genome_dir" ]]; then
   echo "> Untarring genome"
   mkdir -p "$genome_dir"
@@ -70,7 +60,7 @@ if [[ ! -f "$mapping_dir/12WTA_S1_L432_R1_001_chr1.fastq" ]]; then
     -w `pwd` bdgenomics/rhapsody:1.10.1 \
     STAR \
       --runThreadN "$n_threads" \
-      --genomeDir "$raw_dir/GRCh38_primary_assembly_genome_chr1" \
+      --genomeDir "$genome_dir" \
       --readFilesIn "$tar_dir/12WTA_S1_L432_R2_001.fastq.gz" \
       --runRNGseed 100 \
       --outFileNamePrefix "$mapping_dir/" \
@@ -119,12 +109,12 @@ fi
 wta_r1_file="$raw_dir/12WTA_S1_L432_R1_001_subset.fastq.gz"
 if [[ ! -f "$wta_r1_file" ]]; then
   echo "> Processing `basename $wta_r1_file`"
-  gzip -9 -k -c "$mapping_dir/12WTA_S1_L432_R1_001_chr1.fastq" | gzip > "$wta_r1_file"
+  gzip -9 -k -c "$mapping_dir/12WTA_S1_L432_R1_001_chr1.fastq" > "$wta_r1_file"
 fi
 wta_r2_file="$raw_dir/12WTA_S1_L432_R2_001_subset.fastq.gz"
 if [[ ! -f "$wta_r2_file" ]]; then
   echo "> Processing `basename $wta_r2_file`"
-  gzip -9 -k -c "$mapping_dir/12WTA_S1_L432_R2_001_chr1.fastq" | gzip > "$wta_r2_file"
+  gzip -9 -k -c "$mapping_dir/12WTA_S1_L432_R2_001_chr1.fastq" > "$wta_r2_file"
 fi
 # copy immune panel fasta
 fasta_file="$raw_dir/BDAbSeq_ImmuneDiscoveryPanel.fasta"
@@ -147,8 +137,8 @@ param_list:
 - id: "WTA"
   input: "$wta_r1_file;$wta_r2_file"
 mode: wta
-reference: "$reference_dir/GRCh38_primary_assembly_genome_chr1.tar.gz"
-transcriptome_annotation: "$reference_dir/gencode_v40_annotation_chr1.gtf"
+reference: "$reference_dir/reference_bd_rhapsody.tar.gz"
+transcriptome_annotation: "$reference_dir/reference.gtf.gz"
 publish_dir: "$OUT/processed"
 putative_cell_call: "mRNA"
 exact_cell_count: 4000

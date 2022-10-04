@@ -6,7 +6,7 @@ par = {
     'input': 'resources_test/pbmc_1k_protein_v3/pbmc_1k_protein_v3_mms.h5mu',
     'modality': 'rna',
     'obs_batch': 'sample_id',
-    'obsm_input': 'log_normalized_pca',
+    'obsm_input': 'X_pca',
     'n_neighbors_within_batch': 3,
     'n_trim': None,
     'n_pcs': 50
