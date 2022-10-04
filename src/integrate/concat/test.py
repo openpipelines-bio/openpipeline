@@ -350,8 +350,8 @@ class TestConcat(unittest.TestCase):
             self.assertTrue(Path("concat.h5mu").is_file())
             concatenated_data = md.read("concat.h5mu")
 
-            data_sample1 = md.read(input_sample1_file)
-            data_sample2 = md.read(input_sample2_file)
+            data_sample1 = md.read(tempfile_input1.name)
+            data_sample2 = md.read(tempfile_input2.name)
 
             # Check if observations from all of the samples are present
             self.assertEqual(concatenated_data.n_obs, data_sample1.n_obs + data_sample2.n_obs)
@@ -378,7 +378,10 @@ class TestConcat(unittest.TestCase):
             self.assertEqual(sample1_mods | sample2_mods, concatentated_mods)
 
             # Check if conflicting columns in .varm
-            self.assertListEqual(rna.varm['conflict_feature_types'].columns.tolist(), 
+            self.assertListEqual(list(rna.varm.keys()), ["conflict_gene_symbol", "conflict_genome"])
+            self.assertListEqual(rna.varm['conflict_gene_symbol'].columns.tolist(), 
+                                ["mouse", "human"])
+            self.assertListEqual(rna.varm['conflict_genome'].columns.tolist(), 
                                 ["mouse", "human"])
             self.assertDictEqual(dict(atac.varm), {})
             self.assertDictEqual(dict(rna.obsm), {})
