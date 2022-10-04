@@ -6,7 +6,15 @@
 
 * several components (except `from_h5ad_to_5hmu`): the `--modality` arguments no longer accept multiple values.
 
+* Remove outdated `resources_test_scripts`.
+
+* `convert/from_h5mu_to_seurat`: Disabled because MuDataSeurat is currently broken, see [https://github.com/PMBio/MuDataSeurat/issues/9](PMBio/MuDataSeurat#9).
+
+* `integrate/concat`: Renamed --sample_names to --input_id and moved the ability to add sample id and to join the sample ids with the observation names to `metadata/add_id`
+
 ## NEW FUNCTIONALITY
+
+* `metadata/add_id`: Add an id to a column in .obs. Also allows joining the id to the .obs_names.
 
 * `workflows/ingestion/make_reference`: A generic component to build a transcriptomics reference into one of many formats.
 
@@ -63,6 +71,8 @@
 * `dimred/umap`: Streamline UMAP parameters by adding `--obsm_output` parameter to allow choosing the output `.obsm` slot.
 
 * `workflows/multiomics/integration`: Added arguments for tuning the various output slots of the integration pipeline, namely `--obsm_pca`, `--obsm_integrated`, `--uns_neighbors`, `--obsp_neighbor_distances`, `--obsp_neighbor_connectivities`, `--obs_cluster`, `--obsm_umap`.
+
+* Switch to Viash 0.6.1.
 
 ## BUG FIXES
 

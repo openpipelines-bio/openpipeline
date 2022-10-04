@@ -21,6 +21,9 @@ if ! command -v seqkit &> /dev/null; then
     exit 1
 fi
 
+# dataset page:
+# https://www.10xgenomics.com/resources/datasets/integrated-gex-totalseqc-and-tcr-analysis-of-connect-generated-library-from-5k-cmv-t-cells-2-standard
+
 # check whether reference is available
 reference_dir="resources_test/reference_gencodev41_chr1/"
 genome_tar="$reference_dir/reference_cellranger.tar.gz"

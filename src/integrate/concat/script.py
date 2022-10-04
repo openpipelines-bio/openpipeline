@@ -10,11 +10,10 @@ from multiprocessing import Pool
 
 ### VIASH START
 par = {
-    "input": ["resources_test/concat/e18_mouse_brain_fresh_5k_filtered_feature_bc_matrix_subset.h5mu",
-              "resources_test/concat/human_brain_3k_filtered_feature_bc_matrix_subset.h5mu"],
+    "input": ["resources_test/concat_test_data/e18_mouse_brain_fresh_5k_filtered_feature_bc_matrix_subset_unique_obs.h5mu",
+              "resources_test/concat_test_data/human_brain_3k_filtered_feature_bc_matrix_subset_unique_obs.h5mu"],
     "output": "foo.h5mu",
-    "sample_names": ["mouse", "human"],
-    "obs_sample_name": "sample_id",
+    "input_id": ["mouse", "human"],
     "compression": "gzip",
     "other_axis_mode": "move"
 }
@@ -30,40 +29,14 @@ logFormatter = logging.Formatter("%(asctime)s %(levelname)-8s %(message)s")
 console_handler.setFormatter(logFormatter)
 logger.addHandler(console_handler)
 
-def add_sample_names(sample_ids: tuple[str], samples: Iterable[mu.MuData], obs_key_sample_name: str) -> None:
-    """
-    Add sample names to the observations for each sample.
-    """
-    for (sample_id, sample) in zip(sample_ids, samples):
-        if obs_key_sample_name in sample.obs_keys():
-            logger.info(f'Column .obs["{obs_key_sample_name}"] already exists in sample "{sample_id}". Overriding the value for this column.')
-            sample.obs = sample.obs.drop(obs_key_sample_name, axis=1)
-        for modality in sample.mod.values():
-            modality.obs[obs_key_sample_name] = sample_id
-        sample.update()
+def indexes_unique(indices: Iterable[pd.Index]) -> bool:
+    combined_indices = indices[0].append(indices[1:])
+    return combined_indices.is_unique
 
-
-def make_observation_keys_unique(sample_ids: tuple[str], samples: Iterable[mu.MuData]) -> None:
-    """
-    Make the observation keys unique across all samples. At input,
-    the observation keys are unique within a sample. By adding the sample name
-    (unique for a sample) to each observation key, the observation key is made
-    unique across all samples as well.
-    """
-    logger.info('Making observation keys unique across all samples.')
-    for sample_id, sample in zip(sample_ids, samples):
-        sample.obs.index = f"{sample_id}_" + sample.obs.index
-        make_observation_keys_unique_per_mod(sample_id, sample)
-
-
-def make_observation_keys_unique_per_mod(sample_id: str, sample: mu.MuData) -> None:
-    """
-    Updating MuData.obs_names is not allowed (it is read-only).
-    So the observation keys for each modality has to be updated manually.
-    """
-    for mod in sample.mod.values():
-        mod.obs_names = f"{sample_id}_" + mod.obs_names
-
+def check_observations_unique(samples: Iterable[mu.MuData]) -> None:
+    observation_ids = [sample.obs.index for sample in samples]
+    if not indexes_unique(observation_ids):
+        raise ValueError("Observations are not unique across samples.")
 
 def group_modalities(samples: Iterable[anndata.AnnData]) -> dict[str, anndata.AnnData]:
     """
@@ -97,7 +70,7 @@ def any_row_contains_duplicate_values(n_processes: int, frame: pd.DataFrame) -> 
     is_duplicated = (number_of_unique - non_na_counts) != 0
     return is_duplicated.any()
 
-def concatenate_matrices(n_processes: int, sample_ids: tuple[str], matrices: Iterable[pd.DataFrame]) \
+def concatenate_matrices(n_processes: int, input_ids: tuple[str], matrices: Iterable[pd.DataFrame]) \
     -> tuple[dict[str, pd.DataFrame], pd.DataFrame | None, dict[str, pd.core.dtypes.dtypes.Dtype]]:
     """
     Merge matrices by combining columns that have the same name.
@@ -110,7 +83,7 @@ def concatenate_matrices(n_processes: int, sample_ids: tuple[str], matrices: Ite
         return {}, None
     conflicts, concatenated_matrix = \
         split_conflicts_and_concatenated_columns(n_processes,
-                                                 sample_ids,
+                                                 input_ids,
                                                  matrices,
                                                  column_names)
     original_dtypes = get_original_dtypes(matrices, column_names)
@@ -149,7 +122,7 @@ def get_first_non_na_value_vector(df):
     return pd.Series(numpy_arr.ravel()[flat_index], index=df.index, name=df.columns[0])
 
 def split_conflicts_and_concatenated_columns(n_processes: int,
-                                             sample_ids: tuple[str],
+                                             input_ids: tuple[str],
                                              matrices: Iterable[pd.DataFrame],
                                              column_names: Iterable[str]) -> \
                                             tuple[dict[str, pd.DataFrame], pd.DataFrame]:
@@ -167,7 +140,7 @@ def split_conflicts_and_concatenated_columns(n_processes: int,
         assert columns, "Some columns should have been found."
         concatenated_columns = pd.concat(columns, axis=1, join="outer")
         if any_row_contains_duplicate_values(n_processes, concatenated_columns):
-            concatenated_columns.columns = sample_ids
+            concatenated_columns.columns = input_ids
             conflicts[f'conflict_{column_name}'] = concatenated_columns
         else:
             unique_values = get_first_non_na_value_vector(concatenated_columns)
@@ -215,7 +188,7 @@ def get_original_dtypes(matrices: Iterable[pd.DataFrame],
     return dtypes
 
 
-def split_conflicts_modalities(n_processes: int, sample_ids: tuple[str], modalities: Iterable[anndata.AnnData]) \
+def split_conflicts_modalities(n_processes: int, input_ids: tuple[str], modalities: Iterable[anndata.AnnData]) \
         -> tuple[dict[str, dict[str, pd.DataFrame]],  dict[str, pd.DataFrame | None]]:
         """
         Merge .var and .obs matrices of the anndata objects. Columns are merged
@@ -228,7 +201,7 @@ def split_conflicts_modalities(n_processes: int, sample_ids: tuple[str], modalit
         conflicts_result = {}
         for matrix_name in matrices_to_parse:
             matrices = [getattr(modality, matrix_name) for modality in modalities]
-            conflicts, concatenated_matrix = concatenate_matrices(n_processes, sample_ids, matrices)
+            conflicts, concatenated_matrix = concatenate_matrices(n_processes, input_ids, matrices)
             conflicts_result[f"{matrix_name}m"] = conflicts
             concatenated_result[matrix_name] = concatenated_matrix
         return conflicts_result, concatenated_result
@@ -283,12 +256,14 @@ def set_conflicts(concatenated_data: mu.MuData,
     concatenated_data.update()
     return concatenated_data
 
-def concatenate_modalities(n_processes: int, sample_ids: tuple[str], modalities: dict[str, Iterable[anndata.AnnData]],
-                           other_axis_mode: str) -> mu.MuData:
+def concatenate_modalities(n_processes: int, modalities: dict[str, Iterable[anndata.AnnData]],
+                           other_axis_mode: str, input_ids: tuple[str] | None = None) -> mu.MuData:
     """
     Join the modalities together into a single multimodal sample.
     """
     logger.info('Concatenating samples.')
+    if other_axis_mode == "move" and not input_ids:
+        raise ValueError("--mode 'move' requires --input_ids.")
     concat_modes = {
         "move": None,
     }
@@ -301,7 +276,7 @@ def concatenate_modalities(n_processes: int, sample_ids: tuple[str], modalities:
     logger.info('Concatenated data shape: %s', concatenated_data.shape)
     if other_axis_mode == "move":
         for mod_name, modes in modalities.items():
-            conflicts, new_matrices = split_conflicts_modalities(n_processes, sample_ids, modes)
+            conflicts, new_matrices = split_conflicts_modalities(n_processes, input_ids, modes)
             concatenated_data = set_conflicts(concatenated_data, mod_name, conflicts)
             concatenated_data = set_matrices(concatenated_data, mod_name, new_matrices)
     logger.info("Concatenation successful.")
@@ -310,28 +285,27 @@ def concatenate_modalities(n_processes: int, sample_ids: tuple[str], modalities:
 
 def main() -> None:
     # Read in sample names and sample .h5mu files
-    sample_ids: tuple[str] = tuple(i.strip() for i in par["sample_names"])
     samples: list[mu.MuData] = [mu.read(path.strip()) for path in par["input"]]
 
-    if len(sample_ids) != len(samples):
-        raise ValueError("The number of sample names must match the number of sample files.")
+    input_ids = None
+    if par["input_id"]:
+        input_ids: tuple[str] = tuple(i.strip() for i in par["input_id"])
+        if len(input_ids) != len(samples):
+            raise ValueError("The number of sample names must match the number of sample files.")
 
-    if len(set(par["sample_names"])) != len(par["sample_names"]):
-        raise ValueError("The sample names should be unique.")
+        if len(set(input_ids)) != len(input_ids):
+            raise ValueError("The sample names should be unique.")
 
-    logger.info("\nConcatenating data for:\n\t%s\nFrom paths:\n\t%s",
-                "\n\t".join(sample_ids),
+    logger.info("\nConcatenating data from paths:\n\t%s",
                 "\n\t".join(par["input"]))
 
-    add_sample_names(sample_ids, samples, par["obs_sample_name"])
-    make_observation_keys_unique(sample_ids, samples)
-
+    check_observations_unique(samples)
     mods = group_modalities(samples)
     n_processes = meta["cpus"] if meta["cpus"] else 1
     concatenated_samples = concatenate_modalities(n_processes,
-                                                  sample_ids,
                                                   mods,
-                                                  par["other_axis_mode"])
+                                                  par["other_axis_mode"],
+                                                  input_ids=input_ids)
     logger.info("Writing out data to '%s' with compression '%s'.",
                 par["output"], par["compression"])
     concatenated_samples.write(par["output"], compression=par["compression"])

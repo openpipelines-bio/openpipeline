@@ -96,10 +96,6 @@ functionality:
           choices: [ filtered_h5, raw_h5 ]
           default: raw_h5
           description: Which 10x .h5 file to convert to h5mu after Cell Ranger is done mapping.
-        - name: "--id_to_obs_names"
-          type: boolean
-          default: false
-          description: Whether to set the obs_names to `<barcode>_<sample_name>`.
         - name: "--min_genes"
           type: integer
           example: 100
@@ -108,10 +104,6 @@ functionality:
           type: integer
           example: 1000
           description: Minimum number of genes expressed required for a cell to pass filtering.
-        - name: "--obs_sample_id"
-          type: string
-          description: Name of the .obs slot under which to add the sample id (if any).
-          default: "sample_id"
         - name: "--obsm_metrics"
           type: string
           description: Name of the .obsm slot under which to QC metrics (if any).

@@ -17,13 +17,15 @@ functionality:
       description: Paths to the different samples to be concatenated.
       required: true
       example: sample_paths
-    - name: "--sample_names"
+    - name: "--input_id"
       type: string
       multiple: true
       multiple_sep: ','
-      description: Names of the different samples that have to be concatenated. Must be of same length as `--input`.
+      description: |
+        Names of the different samples that have to be concatenated.  Must be specified when using '--mode move'.
+        In this case, the ids will be used for the columns names of the dataframes registring the conflicts.
+        If specified, must be of same length as `--input`.
       required: true
-      example: sample_names
     - name: "--output"
       alternatives: ["-o"]
       type: file
@@ -56,8 +58,8 @@ functionality:
   test_resources:
     - type: python_script
       path: test.py
-    - path: ../../../resources_test/concat_test_data/e18_mouse_brain_fresh_5k_filtered_feature_bc_matrix_subset.h5mu
-    - path: ../../../resources_test/concat_test_data/human_brain_3k_filtered_feature_bc_matrix_subset.h5mu
+    - path: ../../../resources_test/concat_test_data/e18_mouse_brain_fresh_5k_filtered_feature_bc_matrix_subset_unique_obs.h5mu
+    - path: ../../../resources_test/concat_test_data/human_brain_3k_filtered_feature_bc_matrix_subset_unique_obs.h5mu
 platforms:
   - type: docker
     image: python:3.10
