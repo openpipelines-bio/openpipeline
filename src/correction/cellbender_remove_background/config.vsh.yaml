@@ -19,30 +19,39 @@ functionality:
           direction: input
           required: true
           example: input.h5
+        - name: "--modality"
+          description: List of modalities to process.
+          type: string
+          default: "rna"
+          required: false
     - name: Outputs
       arguments:
         - name: "--output"
+          alternatives: [-o]
           type: file
-          description: Full count matrix as an h5 file, with background RNA removed. This file contains all the original droplet barcodes.
+          description: Full count matrix as an h5mu file, with background RNA removed. This file contains all the original droplet barcodes.
           direction: output
           required: true
           example: output.h5
-        - name: "--output_filtered"
-          type: file
-          description: Filtered count matrix as an h5 file, with background RNA removed. The word "filtered" means that this file contains only the droplets which were determined to have a > 50% posterior probability of containing cells.
-          direction: output
-          required: true
-          example: output_filtered.h5
-        - name: "--output_report"
-          type: file
-          description: PDF file that provides a standard graphical summary of the inference procedure.
-          direction: output
-          example: report.pdf
-        - name: "--output_cell_barcodes"
-          type: file
-          description: CSV file containing all the droplet barcodes which were determined to have a > 50% posterior probability of containing cells. Barcodes are written in plain text. This information is also contained in each of the above outputs, but is included as a separate output for convenient use in certain downstream applications.
-          direction: output
-          example: output.csv
+        - name: "--layer_output"
+          description: Output layer
+          type: string
+          default: "corrected"
+        - name: "--obs_latent_rt_efficiency"
+          type: string
+          default: "latent_rt_efficiency"
+        - name: "--obs_latent_cell_probability"
+          type: string
+          default: "latent_cell_probability"
+        - name: "--obs_latent_scale"
+          type: string
+          default: "latent_scale"
+        - name: "--var_ambient_expression"
+          type: string
+          default: "ambient_expression"
+        - name: "--obsm_latent_gene_encoding"
+          type: string
+          default: "latent_gene_encoding"
     - name: Arguments
       arguments:
         - name: "--model"
@@ -99,15 +108,22 @@ functionality:
             Including the flag --cuda will run the inference on a
             GPU.
   resources:
-    - type: bash_script
-      path: script.sh
+    - type: python_script
+      path: script.py
+    - path: helper.py
   test_resources:
     - type: bash_script
       path: test.sh
-    - path: ../../../resources_test/10x_5k_anticmv/processed/10x_5k_anticmv.cellranger_multi.output.output/multi/count/raw_feature_bc_matrix.h5
+    - path: ../../../resources_test/pbmc_1k_protein_v3/pbmc_1k_protein_v3_filtered_feature_bc_matrix.h5mu
 platforms:
   - type: docker
-    image: us.gcr.io/broad-dsde-methods/cellbender:latest
+    image: python:3.10
+    setup:
+      - type: python
+        packages: mudata~=0.2.0
+        github:  broadinstitute/CellBender
+
+
   - type: nextflow
     directives:
       label: gpu
