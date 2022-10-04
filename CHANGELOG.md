@@ -10,6 +10,8 @@
 
 * `convert/from_h5mu_to_seurat`: Disabled because MuDataSeurat is currently broken, see [https://github.com/PMBio/MuDataSeurat/issues/9](PMBio/MuDataSeurat#9).
 
+* `integrate/concat`: Renamed --sample_names to --input_id and moved the ability to add sample id and to join the sample ids with the observation names to `metadata/add_id`
+
 ## NEW FUNCTIONALITY
 
 * `metadata/add_id`: Add an id to a column in .obs. Also allows joining the id to the .obs_names.
