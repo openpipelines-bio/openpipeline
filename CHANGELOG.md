@@ -80,7 +80,7 @@
 
 * `integrate/concat`: Overriding sample name in .obs no longer raises `AttributeError`.
 
-* `integrate/concat`: Fix a bug where capturing conflicts in .var or .obs using `--mode move` generated false positives.
+* `integrate/concat`: Fix false positives when checking for conflicts in .obs and .var when using `--mode move`.
 
 # openpipeline 0.5.0
 
