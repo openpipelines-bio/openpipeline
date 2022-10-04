@@ -1,11 +1,12 @@
-import muon as mu
+import mudata as mu
+import scanpy as sc
 import logging
 from sys import stdout
 
 ## VIASH START
 par = {
-    "input": "5k_pbmc_protein_v3_nextgem_filtered_feature_bc_matrix",
-    "output": "5k_pbmc_protein_v3_nextgem_filtered_feature_bc_matrix.h5mu",
+    "input": "resources_test/pbmc_1k_protein_v3/pbmc_1k_protein_v3_filtered_feature_bc_matrix",
+    "output": "foo.h5mu",
 }
 ## VIASH END
 
@@ -17,17 +18,21 @@ console_handler.setFormatter(logFormatter)
 logger.addHandler(console_handler)
 
 logger.info("Reading %s.", par["input"])
-mdata = mu.read_10x_mtx(par["input"])
+adata = sc.read_10x_mtx(par["input"], gex_only=False)
 
 logger.info("Renaming keys.")
-for adata in mdata.mod.values():
-    adata.var.rename(columns={'gene_ids': 'gene_id', 'feature_types': 'feature_type'}, inplace=True)
-mdata.var = mdata.var.drop(["feature_types", "gene_ids"], axis=1)
-mdata.update()
+adata.var = adata.var\
+  .rename_axis("gene_symbol")\
+  .reset_index()\
+  .set_index("gene_ids")
 
-logger.info("Making unique.")
-mdata.var_names_make_unique()
+# generate output
+logger.info("Convert to mudata")
+mdata = mu.MuData(adata)
 
-logger.info("Writing %s.", par["output"])
-mdata.write_h5mu(filename=par["output"])
-logger.info("Finished.")
+# override root .obs
+mdata.obs = adata.obs
+
+# write output
+logger.info("Writing %s", par["output"])
+mdata.write_h5mu(par["output"])

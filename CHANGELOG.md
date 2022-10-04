@@ -80,6 +80,8 @@
 
 * `integrate/concat`: Overriding sample name in .obs no longer raises `AttributeError`.
 
+* `integrate/concat`: Fix false positives when checking for conflicts in .obs and .var when using `--mode move`.
+
 # openpipeline 0.5.0
 
 Major redesign of the integration and multiomic workflows. Current list of workflows:

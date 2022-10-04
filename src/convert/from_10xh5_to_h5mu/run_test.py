@@ -29,4 +29,4 @@ assert "prot" in data.mod, 'Output should contain data.mod["rna"].'
 # check whether gene was found
 assert (
     "CD3" in data.mod["prot"].var_names
-), 'Output should contain antibody column "CD3_TotalSeqB".'
+), 'Output should contain antibody column "CD3".'
