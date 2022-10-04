@@ -45,9 +45,7 @@ workflow run_wf {
       ],
       from_10xh5_to_h5mu: [ 
         "output": "output_h5mu",
-        "obs_sample_id": "obs_sample_id",
         "obsm_metrics": "obsm_metrics",
-        "id_to_obs_names": "id_to_obs_names",
         "min_genes": "min_genes",
         "min_counts": "min_counts"
       ]
