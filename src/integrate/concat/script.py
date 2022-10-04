@@ -10,10 +10,10 @@ from multiprocessing import Pool
 
 ### VIASH START
 par = {
-    "input": ["/Users/driesschaumont/Downloads/merged/TSP10_Blood_NA_10X_1_1_Enriched.from_10xh5_to_h5mu.output_h5mu_unique.h5mu",
-              "/Users/driesschaumont/Downloads/merged/TSP10_Blood_NA_10X_1_1_Whole.from_10xh5_to_h5mu.output_h5mu_unique.h5mu"],
+    "input": ["resources_test/concat/e18_mouse_brain_fresh_5k_filtered_feature_bc_matrix_subset.h5mu",
+              "resources_test/concat/human_brain_3k_filtered_feature_bc_matrix_subset.h5mu"],
     "output": "foo.h5mu",
-    "input_id": ["enriched", "whole"],
+    "sample_names": ["mouse", "human"],
     "compression": "gzip",
     "other_axis_mode": "move"
 }
