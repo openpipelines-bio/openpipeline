@@ -1,11 +1,11 @@
 {
     "$schema": "http://json-schema.org/draft-07/schema",
-    "title": "add_metadata",
-    "description": "Add a csv containing metadata to the .obs or .var field of a mudata file.",
+    "title": "bbknn",
+    "description": "BBKNN network generation\n",
     "type": "object",
     "definitions": {
-      "mudata input" : {
-        "title": "MuData Input",
+      "arguments" : {
+        "title": "Arguments",
         "type": "object",
         "description": "No description",
         "default": "",
@@ -24,56 +24,68 @@
             
             "default": "rna"
           },
-          "obs_key": {
+          "obsm_input": {
             "type":"string",
-            "description": "Obs column name where the sample id can be found for each observation to join on. Usefull when adding metadata to concatenated samples. Mutually exclusive with --var_key and --sample_id",
+            "description": "The dimensionality reduction in `.obsm` to use for neighbour detection. Defaults to X_pca.",
             
             
-            "default": ""
+            "default": "X_pca"
           },
-          "var_key": {
+          "obs_batch": {
             "type":"string",
-            "description": "Var column name where the sample id can be found for each observation to join on. Usefull when adding metadata to concatenated samples. Mutually exclusive with --var_key and --sample_id.",
+            "description": ".obs column name discriminating between your batches.",
             
             
-            "default": ""
-          }
-        }
-      },
-      "mudata output" : {
-        "title": "MuData Output",
-        "type": "object",
-        "description": "No description",
-        "default": "",
-        "properties": {
+            "default": "batch"
+          },
           "output": {
             "type":"string",
-            "description": "Output h5mu file.",
+            "description": "Output .h5mu file.",
             
             
             "default": "$id.$key.output.output"
-          }
-        }
-      },
-      "metadata input" : {
-        "title": "Metadata Input",
-        "type": "object",
-        "description": "No description",
-        "default": "",
-        "properties": {
-          "input_csv": {
+          },
+          "uns_output": {
             "type":"string",
-            "description": ".csv file containing metadata\"",
+            "description": "Mandatory .uns slot to store various neighbor output objects.",
+            
+            
+            "default": "neighbors"
+          },
+          "obsp_distances": {
+            "type":"string",
+            "description": "In which .obsp slot to store the distance matrix between the resulting neighbors.",
+            
+            
+            "default": "distances"
+          },
+          "obsp_connectivities": {
+            "type":"string",
+            "description": "In which .obsp slot to store the connectivities matrix between the resulting neighbors.",
+            
+            
+            "default": "connectivities"
+          },
+          "n_neighbors_within_batch": {
+            "type":"integer",
+            "description": "How many top neighbours to report for each batch; total number of neighbours in the initial k-nearest-neighbours computation will be this number times the number of batches.",
+            
+            
+            "default": "3"
+          },
+          "n_pcs": {
+            "type":"integer",
+            "description": "How many dimensions (in case of PCA, principal components) to use in the analysis.",
+            
+            
+            "default": "50"
+          },
+          "n_trim": {
+            "type":"integer",
+            "description": "Trim the neighbours of each cell to these many top connectivities. May help with population independence and improve the tidiness of clustering. The lower the value the more independent the individual populations, at the cost of more conserved batch effect. If `None` (default), sets the parameter value automatically to 10 times `neighbors_within_batch` times the number of batches. Set to 0 to skip.",
             
             
             "default": ""
-          },
-          "csv_key": {
-            "type":"string",
-            "description": "column of the the csv that corresponds to the sample id.",
-            
-            
-            "default": "id"
           }
         }
       },
@@ -102,13 +114,7 @@
     },
     "allOf": [
       {
-        "$ref": "#/definitions/mudata input"
-      },
-      {
-        "$ref": "#/definitions/mudata output"
-      },
-      {
-        "$ref": "#/definitions/metadata input"
+        "$ref": "#/definitions/arguments"
       },
       {
         "$ref": "#/definitions/nextflow input-output arguments"
