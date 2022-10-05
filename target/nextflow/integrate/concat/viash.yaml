@@ -2339,5 +2339,5 @@ info:
   platform: "nextflow"
   output: "target/nextflow/integrate/concat"
   viash_version: "0.6.1"
-  git_commit: "bc018d12f8b3c9dc1b72482b58793b4338eb2755"
+  git_commit: "139bfc2d7fc8a1683ac251f734ab01c49be5f434"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"

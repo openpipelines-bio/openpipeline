@@ -1,5 +1,4 @@
 # Inputs
-# sample_id: "my_sample"
 input: # please fill in - example: "raw_feature_bc_matrix.h5"
 # input_metrics_summary: "metrics_cellranger.h5"
 

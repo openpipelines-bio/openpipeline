@@ -12,9 +12,9 @@
 # files.
 # 
 # Component authors:
-#  * Dries De Maeyer <ddemaeyer@gmail.com> (contributor) {account: ddemaey1}
-#  * Robrecht Cannoodt <robrecht@data-intuitive.com> (maintainer, contributor)
-# {github: rcannood, orcid: 0000-0003-3641-729X}
+#  * Dries De Maeyer <ddemaeyer@gmail.com> (author) {account: ddemaey1}
+#  * Robrecht Cannoodt <robrecht@data-intuitive.com> (maintainer, author) {github:
+# rcannood, orcid: 0000-0003-3641-729X}
 
 set -e
 
@@ -166,7 +166,7 @@ function ViashHelp {
   echo "This is based on both the UMI counts, the gene counts"
   echo "and the mitochondrial genes (genes starting with mt/MT)."
   echo ""
-  echo "Arguments:"
+  echo "Inputs:"
   echo "    --input"
   echo "        type: file, required parameter"
   echo "        example: input.h5mu"
@@ -176,6 +176,11 @@ function ViashHelp {
   echo "        type: string"
   echo "        default: rna"
   echo ""
+  echo "    --layer"
+  echo "        type: string"
+  echo "        default: rna"
+  echo ""
+  echo "Outputs:"
   echo "    --output"
   echo "        type: file, output"
   echo "        example: output.h5mu"
@@ -197,6 +202,7 @@ function ViashHelp {
   echo "        In which .var slot to store a boolean array corresponding to which"
   echo "        variables should be removed."
   echo ""
+  echo "Arguments:"
   echo "    --min_counts"
   echo "        type: integer"
   echo "        example: 200"
@@ -454,9 +460,9 @@ RUN pip install --upgrade pip && \
 
 LABEL org.opencontainers.image.authors="Dries De Maeyer, Robrecht Cannoodt"
 LABEL org.opencontainers.image.description="Companion container for running component filter filter_with_counts"
-LABEL org.opencontainers.image.created="2022-10-04T14:55:53Z"
+LABEL org.opencontainers.image.created="2022-10-05T01:18:27Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="bc018d12f8b3c9dc1b72482b58793b4338eb2755"
+LABEL org.opencontainers.image.revision="139bfc2d7fc8a1683ac251f734ab01c49be5f434"
 LABEL org.opencontainers.image.version="main_build"
 VIASHDOCKER
 }
@@ -624,6 +630,17 @@ while [[ $# -gt 0 ]]; do
         --modality=*)
             [ -n "$VIASH_PAR_MODALITY" ] && ViashError Bad arguments for option \'--modality=*\': \'$VIASH_PAR_MODALITY\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
             VIASH_PAR_MODALITY=$(ViashRemoveFlags "$1")
+            shift 1
+            ;;
+        --layer)
+            [ -n "$VIASH_PAR_LAYER" ] && ViashError Bad arguments for option \'--layer\': \'$VIASH_PAR_LAYER\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+            VIASH_PAR_LAYER="$2"
+            [ $# -lt 2 ] && ViashError Not enough arguments passed to --layer. Use "--help" to get more information on the parameters. && exit 1
+            shift 2
+            ;;
+        --layer=*)
+            [ -n "$VIASH_PAR_LAYER" ] && ViashError Bad arguments for option \'--layer=*\': \'$VIASH_PAR_LAYER\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+            VIASH_PAR_LAYER=$(ViashRemoveFlags "$1")
             shift 1
             ;;
         --output)
@@ -923,6 +940,9 @@ fi
 if [ -z ${VIASH_PAR_MODALITY+x} ]; then
   VIASH_PAR_MODALITY="rna"
 fi
+if [ -z ${VIASH_PAR_LAYER+x} ]; then
+  VIASH_PAR_LAYER="rna"
+fi
 if [ -z ${VIASH_PAR_DO_SUBSET+x} ]; then
   VIASH_PAR_DO_SUBSET="false"
 fi
@@ -1067,6 +1087,7 @@ fi
 
 
 
+
 # detect volumes from file arguments
 if [ ! -z "$VIASH_PAR_INPUT" ]; then
   VIASH_EXTRA_MOUNTS="$VIASH_EXTRA_MOUNTS $(ViashAutodetectMountArg "$VIASH_PAR_INPUT")"
@@ -1131,6 +1152,7 @@ from sys import stdout
 par = {
   'input': $( if [ ! -z ${VIASH_PAR_INPUT+x} ]; then echo "r'${VIASH_PAR_INPUT//\'/\'\"\'\"r\'}'"; else echo None; fi ),
   'modality': $( if [ ! -z ${VIASH_PAR_MODALITY+x} ]; then echo "r'${VIASH_PAR_MODALITY//\'/\'\"\'\"r\'}'"; else echo None; fi ),
+  'layer': $( if [ ! -z ${VIASH_PAR_LAYER+x} ]; then echo "r'${VIASH_PAR_LAYER//\'/\'\"\'\"r\'}'"; else echo None; fi ),
   'output': $( if [ ! -z ${VIASH_PAR_OUTPUT+x} ]; then echo "r'${VIASH_PAR_OUTPUT//\'/\'\"\'\"r\'}'"; else echo None; fi ),
   'do_subset': $( if [ ! -z ${VIASH_PAR_DO_SUBSET+x} ]; then echo "r'${VIASH_PAR_DO_SUBSET//\'/\'\"\'\"r\'}'.lower() == 'true'"; else echo None; fi ),
   'obs_name_filter': $( if [ ! -z ${VIASH_PAR_OBS_NAME_FILTER+x} ]; then echo "r'${VIASH_PAR_OBS_NAME_FILTER//\'/\'\"\'\"r\'}'"; else echo None; fi ),

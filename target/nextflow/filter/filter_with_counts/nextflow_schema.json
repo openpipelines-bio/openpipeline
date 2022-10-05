@@ -4,8 +4,8 @@
     "description": "Filter scRNA-seq data based on the primary QC metrics. \nThis is based on both the UMI counts, the gene counts \nand the mitochondrial genes (genes starting with mt/MT).\n",
     "type": "object",
     "definitions": {
-      "arguments" : {
-        "title": "Arguments",
+      "inputs" : {
+        "title": "Inputs",
         "type": "object",
         "description": "No description",
         "default": "",
@@ -24,6 +24,21 @@
             
             "default": "rna"
           },
+          "layer": {
+            "type":"string",
+            "description": "No description",
+            
+            
+            "default": "rna"
+          }
+        }
+      },
+      "outputs" : {
+        "title": "Outputs",
+        "type": "object",
+        "description": "No description",
+        "default": "",
+        "properties": {
           "output": {
             "type":"string",
             "description": "Output h5mu file.",
@@ -51,7 +66,15 @@
             
             
             "default": "filter_with_counts"
-          },
+          }
+        }
+      },
+      "arguments" : {
+        "title": "Arguments",
+        "type": "object",
+        "description": "No description",
+        "default": "",
+        "properties": {
           "min_counts": {
             "type":"integer",
             "description": "Minimum number of counts captured per cell.",
@@ -127,6 +150,12 @@
       }
     },
     "allOf": [
+      {
+        "$ref": "#/definitions/inputs"
+      },
+      {
+        "$ref": "#/definitions/outputs"
+      },
       {
         "$ref": "#/definitions/arguments"
       },
