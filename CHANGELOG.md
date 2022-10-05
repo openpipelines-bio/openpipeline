@@ -72,6 +72,8 @@
 
 * `convert/from_10xh5_to_h5mu`: Allow reading in QC metrics, use gene ids as `.obs_names` instead of gene symbols.
 
+* `workflows/conversion`: Update pipeline to use the latest practices and to get it to a working state.
+
 ## MINOR CHANGES
 
 * `dimred/umap`: Streamline UMAP parameters by adding `--obsm_output` parameter to allow choosing the output `.obsm` slot.
