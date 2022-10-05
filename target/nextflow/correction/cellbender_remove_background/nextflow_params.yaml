@@ -1,11 +1,14 @@
 # Inputs
 input: # please fill in - example: "input.h5"
+modality: "rna"
 
 # Outputs
 # output: "$id.$key.output.h5"
-# output_filtered: "$id.$key.output_filtered.h5"
-# output_report: "$id.$key.output_report.pdf"
-# output_cell_barcodes: "$id.$key.output_cell_barcodes.csv"
+layer_output: "corrected"
+obs_latent_rt_efficiency: "latent_rt_efficiency"
+obs_latent_cell_probability: "latent_cell_probability"
+obs_latent_scale: "latent_scale"
+var_ambient_expression: "ambient_expression"
 
 # Arguments
 # model: "foo"

@@ -19,19 +19,19 @@ DIR=$(dirname "$OUT")
 # https://www.10xgenomics.com/resources/datasets/1-k-pbm-cs-from-a-healthy-donor-gene-expression-and-cell-surface-protein-3-standard-3-0-0
 
 # download metrics summary
-target/docker/download/download_file/download_file \
-  --input https://cf.10xgenomics.com/samples/cell-exp/3.0.0/pbmc_1k_protein_v3/pbmc_1k_protein_v3_metrics_summary.csv \
-  --output "${OUT}_metrics_summary.csv"
+wget https://cf.10xgenomics.com/samples/cell-exp/3.0.0/pbmc_1k_protein_v3/pbmc_1k_protein_v3_metrics_summary.csv \
+  -O "${OUT}_metrics_summary.csv"
 
 # download counts h5 file
-target/docker/download/download_file/download_file \
-  --input https://cf.10xgenomics.com/samples/cell-exp/3.0.0/pbmc_1k_protein_v3/pbmc_1k_protein_v3_filtered_feature_bc_matrix.h5 \
-  --output "${OUT}_filtered_feature_bc_matrix.h5"
+wget https://cf.10xgenomics.com/samples/cell-exp/3.0.0/pbmc_1k_protein_v3/pbmc_1k_protein_v3_filtered_feature_bc_matrix.h5 \
+  -O "${OUT}_filtered_feature_bc_matrix.h5"
+
+wget https://cf.10xgenomics.com/samples/cell-exp/3.0.0/pbmc_1k_protein_v3/pbmc_1k_protein_v3_raw_feature_bc_matrix.h5 \
+  -O "${OUT}_raw_feature_bc_matrix.h5"
 
 # download counts matrix tar gz file
-target/docker/download/download_file/download_file \
-  --input https://cf.10xgenomics.com/samples/cell-exp/3.0.0/pbmc_1k_protein_v3/pbmc_1k_protein_v3_filtered_feature_bc_matrix.tar.gz \
-  --output "${OUT}_filtered_feature_bc_matrix.tar.gz"
+wget https://cf.10xgenomics.com/samples/cell-exp/3.0.0/pbmc_1k_protein_v3/pbmc_1k_protein_v3_filtered_feature_bc_matrix.tar.gz \
+  -O "${OUT}_filtered_feature_bc_matrix.tar.gz"
 
 # extract matrix tar gz
 mkdir -p "${OUT}_filtered_feature_bc_matrix"
@@ -44,9 +44,12 @@ rm "${OUT}_filtered_feature_bc_matrix.tar.gz"
 target/docker/convert/from_10xh5_to_h5mu/from_10xh5_to_h5mu \
   --input "${OUT}_filtered_feature_bc_matrix.h5" \
   --input_metrics_summary "${OUT}_metrics_summary.csv" \
-  --output "${OUT}_filtered_feature_bc_matrix.h5mu" \
-  --sample_id "$ID" \
-  --id_to_obs_names true
+  --output "${OUT}_filtered_feature_bc_matrix.h5mu"
+  
+target/docker/convert/from_10xh5_to_h5mu/from_10xh5_to_h5mu \
+  --input "${OUT}_raw_feature_bc_matrix.h5" \
+  --input_metrics_summary "${OUT}_metrics_summary.csv" \
+  --output "${OUT}_raw_feature_bc_matrix.h5mu"
 
 # run single sample
 NXF_VER=21.10.6 bin/nextflow \

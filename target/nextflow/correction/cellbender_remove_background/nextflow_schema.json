@@ -1,7 +1,7 @@
 {
     "$schema": "http://json-schema.org/draft-07/schema",
     "title": "cellbender_remove_background",
-    "description": "Eliminating technical artifacts from high-throughput single-cell RNA sequencing data.\n\nThis module removes counts due to ambient RNA molecules and random barcode swapping from (raw) UMI-based scRNA-seq count matrices. \nAt the moment, only the count matrices produced by the CellRanger count pipeline is supported. Support for additional tools and protocols \nwill be added in the future. A quick start tutorial can be found here.\n\n Fleming et al. 2022, bioRxiv.\n",
+    "description": "Eliminating technical artifacts from high-throughput single-cell RNA sequencing data.\n\nThis module removes counts due to ambient RNA molecules and random barcode swapping from (raw) UMI-based scRNA-seq count matrices. \nAt the moment, only the count matrices produced by the CellRanger count pipeline is supported. Support for additional tools and protocols \nwill be added in the future. A quick start tutorial can be found here.\n\nFleming et al. 2022, bioRxiv.\n",
     "type": "object",
     "definitions": {
       "inputs" : {
@@ -16,6 +16,13 @@
             
             
             "default": ""
+          },
+          "modality": {
+            "type":"string",
+            "description": "List of modalities to process.",
+            
+            
+            "default": "rna"
           }
         }
       },
@@ -27,31 +34,45 @@
         "properties": {
           "output": {
             "type":"string",
-            "description": "Full count matrix as an h5 file, with background RNA removed. This file contains all the original droplet barcodes.",
+            "description": "Full count matrix as an h5mu file, with background RNA removed. This file contains all the original droplet barcodes.",
             
             
             "default": "$id.$key.output.h5"
           },
-          "output_filtered": {
+          "layer_output": {
             "type":"string",
-            "description": "Filtered count matrix as an h5 file, with background RNA removed. The word \"filtered\" means that this file contains only the droplets which were determined to have a \u003e 50% posterior probability of containing cells.",
+            "description": "Output layer",
             
             
-            "default": "$id.$key.output_filtered.h5"
+            "default": "corrected"
           },
-          "output_report": {
+          "obs_latent_rt_efficiency": {
             "type":"string",
-            "description": "PDF file that provides a standard graphical summary of the inference procedure.",
+            "description": "No description",
             
             
-            "default": "$id.$key.output_report.pdf"
+            "default": "latent_rt_efficiency"
           },
-          "output_cell_barcodes": {
+          "obs_latent_cell_probability": {
             "type":"string",
-            "description": "CSV file containing all the droplet barcodes which were determined to have a \u003e 50% posterior probability of containing cells. Barcodes are written in plain text. This information is also contained in each of the above outputs, but is included as a separate output for convenient use in certain downstream applications.",
+            "description": "No description",
             
             
-            "default": "$id.$key.output_cell_barcodes.csv"
+            "default": "latent_cell_probability"
+          },
+          "obs_latent_scale": {
+            "type":"string",
+            "description": "No description",
+            
+            
+            "default": "latent_scale"
+          },
+          "var_ambient_expression": {
+            "type":"string",
+            "description": "No description",
+            
+            
+            "default": "ambient_expression"
           }
         }
       },
