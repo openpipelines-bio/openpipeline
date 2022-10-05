@@ -2,7 +2,7 @@
 # to solve an issue with scanpy not being able to read in the 10x h5 files produced by cellbender.
 #
 # Note: If something doesn't work in this helper function, it may be interesting to
-# take a look at the comments by Dries: https://github.com/openpipelines-bio/openpipeline/pull/114
+# take a look at the comments by Dries: https://github.com/openpipelines-bio/openpipeline/pull/115
 # I'm not going to apply them for now -- if it ain't broke, don't fix it.
 import tables
 import numpy as np
