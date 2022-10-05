@@ -50,6 +50,7 @@
 
 * `correction/cellbender_remove_background`: Eliminating technical artifacts from high-throughput single-cell RNA sequencing data.
 
+* `workflows/ingestion/cellranger_postprocessing`: Add post-processing of h5mu files created from Cell Ranger data.
 ## MAJOR CHANGES
 
 * `workflows/utils/DataFlowHelper.nf`: Added helper functions `setWorkflowArguments()` and `getWorkflowArguments()` to split the data field of a channel event into a hashmap. Example usage:
@@ -75,6 +76,8 @@
 * `workflows/multiomics/integration`: Added arguments for tuning the various output slots of the integration pipeline, namely `--obsm_pca`, `--obsm_integrated`, `--uns_neighbors`, `--obsp_neighbor_distances`, `--obsp_neighbor_connectivities`, `--obs_cluster`, `--obsm_umap`.
 
 * Switch to Viash 0.6.1.
+
+* `filter/subset_h5mu`: Add `--modality` argument, export to VDSL3, add unit test.
 
 ## BUG FIXES
 
