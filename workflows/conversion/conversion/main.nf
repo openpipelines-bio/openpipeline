@@ -67,13 +67,15 @@ workflow test_wf {
       id: "10xmtx_test",
       input: params.resources_test + "/pbmc_1k_protein_v3/pbmc_1k_protein_v3_filtered_feature_bc_matrix",
       input_type: "10xmtx",
-      modality: null
+      modality: null,
+      output: "\$id.h5mu"
     ],
     [
       id: "h5ad",
       input: params.resources_test + "/pbmc_1k_protein_v3/pbmc_1k_protein_v3_filtered_feature_bc_matrix",
       input_type: "10xmtx",
-      modality: "rna"
+      modality: "rna",
+      output: "\$key.h5mu"
     ]
   ]
     
