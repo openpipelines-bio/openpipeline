@@ -12,6 +12,8 @@
 
 * `integrate/concat`: Renamed --sample_names to --input_id and moved the ability to add sample id and to join the sample ids with the observation names to `metadata/add_id`
 
+* Moved `integrate/concat`, `integrate/merge` and `split/split_modalities` to a new namespace: `dataflow`
+
 ## NEW FUNCTIONALITY
 
 * `metadata/add_id`: Add an id to a column in .obs. Also allows joining the id to the .obs_names.

@@ -2,9 +2,9 @@ nextflow.enable.dsl=2
 workflowDir = params.rootDir + "/workflows"
 targetDir = params.rootDir + "/target/nextflow"
 
-include { split_modalities } from targetDir + '/split/split_modalities/main.nf'
-include { merge } from targetDir + '/integrate/merge/main.nf'
-include { concat } from targetDir + '/integrate/concat/main.nf'
+include { split_modalities } from targetDir + '/dataflow/split_modalities/main.nf'
+include { merge } from targetDir + '/dataflow/merge/main.nf'
+include { concat } from targetDir + '/dataflow/concat/main.nf'
 include { run_wf as rna_singlesample } from workflowDir + '/multiomics/rna_singlesample/main.nf'
 include { run_wf as rna_multisample } from workflowDir + '/multiomics/rna_multisample/main.nf'
 include { run_wf as integration } from workflowDir + '/multiomics/integration/main.nf'
