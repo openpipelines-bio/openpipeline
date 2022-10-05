@@ -558,9 +558,9 @@ functionality:
       RUN :
       LABEL org.opencontainers.image.authors="Angela Pisco, Robrecht Cannoodt"
       LABEL org.opencontainers.image.description="Companion container for running component files make_params"
-      LABEL org.opencontainers.image.created="2022-10-05T07:36:48Z"
+      LABEL org.opencontainers.image.created="2022-10-05T08:15:38Z"
       LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-      LABEL org.opencontainers.image.revision="5400ec037d3881560288415b7e1ccfc4bcf3bfa9"
+      LABEL org.opencontainers.image.revision="4ae4cd66208f5c236a2880e0684c114f885095d6"
       LABEL org.opencontainers.image.version="integration_build"
       VIASHDOCKER
       }
@@ -1267,5 +1267,5 @@ info:
   output: "target/docker/files/make_params"
   executable: "target/docker/files/make_params/make_params"
   viash_version: "0.6.1"
-  git_commit: "5400ec037d3881560288415b7e1ccfc4bcf3bfa9"
+  git_commit: "4ae4cd66208f5c236a2880e0684c114f885095d6"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"

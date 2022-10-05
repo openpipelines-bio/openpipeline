@@ -10,9 +10,9 @@
 // files.
 // 
 // Component authors:
-//  * Dries De Maeyer <ddemaeyer@gmail.com> (contributor) {account: ddemaey1}
-//  * Robrecht Cannoodt <robrecht@data-intuitive.com> (maintainer, contributor)
-// {github: rcannood, orcid: 0000-0003-3641-729X}
+//  * Dries De Maeyer <ddemaeyer@gmail.com> (author) {account: ddemaey1}
+//  * Robrecht Cannoodt <robrecht@data-intuitive.com> (maintainer, author) {github:
+// rcannood, orcid: 0000-0003-3641-729X}
 
 nextflow.enable.dsl=2
 
@@ -35,7 +35,7 @@ thisConfig = processConfig([
       "name" : "Dries De Maeyer",
       "email" : "ddemaeyer@gmail.com",
       "roles" : [
-        "contributor"
+        "author"
       ],
       "props" : {
         "account" : "ddemaey1"
@@ -46,7 +46,7 @@ thisConfig = processConfig([
       "email" : "robrecht@data-intuitive.com",
       "roles" : [
         "maintainer",
-        "contributor"
+        "author"
       ],
       "props" : {
         "github" : "rcannood",
@@ -54,170 +54,197 @@ thisConfig = processConfig([
       }
     }
   ],
-  "arguments" : [
+  "argument_groups" : [
     {
-      "type" : "file",
-      "name" : "--input",
-      "description" : "Input h5mu file",
-      "example" : [
-        "input.h5mu"
-      ],
-      "must_exist" : false,
-      "required" : true,
-      "direction" : "input",
-      "multiple" : false,
-      "multiple_sep" : ":",
-      "dest" : "par"
+      "name" : "Inputs",
+      "arguments" : [
+        {
+          "type" : "file",
+          "name" : "--input",
+          "description" : "Input h5mu file",
+          "example" : [
+            "input.h5mu"
+          ],
+          "must_exist" : false,
+          "required" : true,
+          "direction" : "input",
+          "multiple" : false,
+          "multiple_sep" : ":",
+          "dest" : "par"
+        },
+        {
+          "type" : "string",
+          "name" : "--modality",
+          "default" : [
+            "rna"
+          ],
+          "required" : false,
+          "direction" : "input",
+          "multiple" : false,
+          "multiple_sep" : ":",
+          "dest" : "par"
+        },
+        {
+          "type" : "string",
+          "name" : "--layer",
+          "default" : [
+            "rna"
+          ],
+          "required" : false,
+          "direction" : "input",
+          "multiple" : false,
+          "multiple_sep" : ":",
+          "dest" : "par"
+        }
+      ]
     },
     {
-      "type" : "string",
-      "name" : "--modality",
-      "default" : [
-        "rna"
-      ],
-      "required" : false,
-      "direction" : "input",
-      "multiple" : false,
-      "multiple_sep" : ":",
-      "dest" : "par"
+      "name" : "Outputs",
+      "arguments" : [
+        {
+          "type" : "file",
+          "name" : "--output",
+          "description" : "Output h5mu file.",
+          "example" : [
+            "output.h5mu"
+          ],
+          "must_exist" : false,
+          "required" : false,
+          "direction" : "output",
+          "multiple" : false,
+          "multiple_sep" : ":",
+          "dest" : "par"
+        },
+        {
+          "type" : "boolean_true",
+          "name" : "--do_subset",
+          "description" : "Whether to subset before storing the output.",
+          "direction" : "input",
+          "dest" : "par"
+        },
+        {
+          "type" : "string",
+          "name" : "--obs_name_filter",
+          "description" : "In which .obs slot to store a boolean array corresponding to which observations should be removed.",
+          "default" : [
+            "filter_with_counts"
+          ],
+          "required" : false,
+          "direction" : "input",
+          "multiple" : false,
+          "multiple_sep" : ":",
+          "dest" : "par"
+        },
+        {
+          "type" : "string",
+          "name" : "--var_name_filter",
+          "description" : "In which .var slot to store a boolean array corresponding to which variables should be removed.",
+          "default" : [
+            "filter_with_counts"
+          ],
+          "required" : false,
+          "direction" : "input",
+          "multiple" : false,
+          "multiple_sep" : ":",
+          "dest" : "par"
+        }
+      ]
     },
     {
-      "type" : "file",
-      "name" : "--output",
-      "description" : "Output h5mu file.",
-      "example" : [
-        "output.h5mu"
-      ],
-      "must_exist" : false,
-      "required" : false,
-      "direction" : "output",
-      "multiple" : false,
-      "multiple_sep" : ":",
-      "dest" : "par"
-    },
-    {
-      "type" : "boolean_true",
-      "name" : "--do_subset",
-      "description" : "Whether to subset before storing the output.",
-      "direction" : "input",
-      "dest" : "par"
-    },
-    {
-      "type" : "string",
-      "name" : "--obs_name_filter",
-      "description" : "In which .obs slot to store a boolean array corresponding to which observations should be removed.",
-      "default" : [
-        "filter_with_counts"
-      ],
-      "required" : false,
-      "direction" : "input",
-      "multiple" : false,
-      "multiple_sep" : ":",
-      "dest" : "par"
-    },
-    {
-      "type" : "string",
-      "name" : "--var_name_filter",
-      "description" : "In which .var slot to store a boolean array corresponding to which variables should be removed.",
-      "default" : [
-        "filter_with_counts"
-      ],
-      "required" : false,
-      "direction" : "input",
-      "multiple" : false,
-      "multiple_sep" : ":",
-      "dest" : "par"
-    },
-    {
-      "type" : "integer",
-      "name" : "--min_counts",
-      "description" : "Minimum number of counts captured per cell.",
-      "example" : [
-        200
-      ],
-      "required" : false,
-      "direction" : "input",
-      "multiple" : false,
-      "multiple_sep" : ":",
-      "dest" : "par"
-    },
-    {
-      "type" : "integer",
-      "name" : "--max_counts",
-      "description" : "Maximum number of counts captured per cell.",
-      "example" : [
-        5000000
-      ],
-      "required" : false,
-      "direction" : "input",
-      "multiple" : false,
-      "multiple_sep" : ":",
-      "dest" : "par"
-    },
-    {
-      "type" : "integer",
-      "name" : "--min_genes_per_cell",
-      "description" : "Minimum of non-zero values per cell.",
-      "example" : [
-        200
-      ],
-      "required" : false,
-      "direction" : "input",
-      "multiple" : false,
-      "multiple_sep" : ":",
-      "dest" : "par"
-    },
-    {
-      "type" : "integer",
-      "name" : "--max_genes_per_cell",
-      "description" : "Maximum of non-zero values per cell.",
-      "example" : [
-        1500000
-      ],
-      "required" : false,
-      "direction" : "input",
-      "multiple" : false,
-      "multiple_sep" : ":",
-      "dest" : "par"
-    },
-    {
-      "type" : "integer",
-      "name" : "--min_cells_per_gene",
-      "description" : "Minimum of non-zero values per gene.",
-      "example" : [
-        3
-      ],
-      "required" : false,
-      "direction" : "input",
-      "multiple" : false,
-      "multiple_sep" : ":",
-      "dest" : "par"
-    },
-    {
-      "type" : "double",
-      "name" : "--min_fraction_mito",
-      "description" : "Minimum fraction of UMIs that are mitochondrial.",
-      "example" : [
-        0.0
-      ],
-      "required" : false,
-      "direction" : "input",
-      "multiple" : false,
-      "multiple_sep" : ":",
-      "dest" : "par"
-    },
-    {
-      "type" : "double",
-      "name" : "--max_fraction_mito",
-      "description" : "Maximum fraction of UMIs that are mitochondrial.",
-      "example" : [
-        0.2
-      ],
-      "required" : false,
-      "direction" : "input",
-      "multiple" : false,
-      "multiple_sep" : ":",
-      "dest" : "par"
+      "name" : "Arguments",
+      "arguments" : [
+        {
+          "type" : "integer",
+          "name" : "--min_counts",
+          "description" : "Minimum number of counts captured per cell.",
+          "example" : [
+            200
+          ],
+          "required" : false,
+          "direction" : "input",
+          "multiple" : false,
+          "multiple_sep" : ":",
+          "dest" : "par"
+        },
+        {
+          "type" : "integer",
+          "name" : "--max_counts",
+          "description" : "Maximum number of counts captured per cell.",
+          "example" : [
+            5000000
+          ],
+          "required" : false,
+          "direction" : "input",
+          "multiple" : false,
+          "multiple_sep" : ":",
+          "dest" : "par"
+        },
+        {
+          "type" : "integer",
+          "name" : "--min_genes_per_cell",
+          "description" : "Minimum of non-zero values per cell.",
+          "example" : [
+            200
+          ],
+          "required" : false,
+          "direction" : "input",
+          "multiple" : false,
+          "multiple_sep" : ":",
+          "dest" : "par"
+        },
+        {
+          "type" : "integer",
+          "name" : "--max_genes_per_cell",
+          "description" : "Maximum of non-zero values per cell.",
+          "example" : [
+            1500000
+          ],
+          "required" : false,
+          "direction" : "input",
+          "multiple" : false,
+          "multiple_sep" : ":",
+          "dest" : "par"
+        },
+        {
+          "type" : "integer",
+          "name" : "--min_cells_per_gene",
+          "description" : "Minimum of non-zero values per gene.",
+          "example" : [
+            3
+          ],
+          "required" : false,
+          "direction" : "input",
+          "multiple" : false,
+          "multiple_sep" : ":",
+          "dest" : "par"
+        },
+        {
+          "type" : "double",
+          "name" : "--min_fraction_mito",
+          "description" : "Minimum fraction of UMIs that are mitochondrial.",
+          "example" : [
+            0.0
+          ],
+          "required" : false,
+          "direction" : "input",
+          "multiple" : false,
+          "multiple_sep" : ":",
+          "dest" : "par"
+        },
+        {
+          "type" : "double",
+          "name" : "--max_fraction_mito",
+          "description" : "Maximum fraction of UMIs that are mitochondrial.",
+          "example" : [
+            0.2
+          ],
+          "required" : false,
+          "direction" : "input",
+          "multiple" : false,
+          "multiple_sep" : ":",
+          "dest" : "par"
+        }
+      ]
     }
   ],
   "resources" : [
@@ -262,6 +289,7 @@ from sys import stdout
 par = {
   'input': $( if [ ! -z ${VIASH_PAR_INPUT+x} ]; then echo "r'${VIASH_PAR_INPUT//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'modality': $( if [ ! -z ${VIASH_PAR_MODALITY+x} ]; then echo "r'${VIASH_PAR_MODALITY//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
+  'layer': $( if [ ! -z ${VIASH_PAR_LAYER+x} ]; then echo "r'${VIASH_PAR_LAYER//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'output': $( if [ ! -z ${VIASH_PAR_OUTPUT+x} ]; then echo "r'${VIASH_PAR_OUTPUT//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'do_subset': $( if [ ! -z ${VIASH_PAR_DO_SUBSET+x} ]; then echo "r'${VIASH_PAR_DO_SUBSET//\\'/\\'\\"\\'\\"r\\'}'.lower() == 'true'"; else echo None; fi ),
   'obs_name_filter': $( if [ ! -z ${VIASH_PAR_OBS_NAME_FILTER+x} ]; then echo "r'${VIASH_PAR_OBS_NAME_FILTER//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),

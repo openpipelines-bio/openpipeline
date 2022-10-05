@@ -578,5 +578,5 @@ info:
   output: "target/native/convert/from_velocyto_to_h5mu"
   executable: "target/native/convert/from_velocyto_to_h5mu/from_velocyto_to_h5mu"
   viash_version: "0.6.1"
-  git_commit: "5400ec037d3881560288415b7e1ccfc4bcf3bfa9"
+  git_commit: "4ae4cd66208f5c236a2880e0684c114f885095d6"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"
