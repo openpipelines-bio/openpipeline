@@ -134,7 +134,7 @@ thisConfig = processConfig([
       "type" : "python_script",
       "path" : "script.py",
       "is_executable" : true,
-      "parent" : "file:/home/runner/work/openpipeline/openpipeline/src/integrate/concat/config.vsh.yaml"
+      "parent" : "file:/home/runner/work/openpipeline/openpipeline/src/dataflow/concat/config.vsh.yaml"
     }
   ],
   "description" : "Concatenates several uni-modal samples in .h5mu files into a single file.\n",
@@ -143,17 +143,17 @@ thisConfig = processConfig([
       "type" : "python_script",
       "path" : "test.py",
       "is_executable" : true,
-      "parent" : "file:/home/runner/work/openpipeline/openpipeline/src/integrate/concat/config.vsh.yaml"
+      "parent" : "file:/home/runner/work/openpipeline/openpipeline/src/dataflow/concat/config.vsh.yaml"
     },
     {
       "type" : "file",
       "path" : "../../../resources_test/concat_test_data/e18_mouse_brain_fresh_5k_filtered_feature_bc_matrix_subset_unique_obs.h5mu",
-      "parent" : "file:/home/runner/work/openpipeline/openpipeline/src/integrate/concat/config.vsh.yaml"
+      "parent" : "file:/home/runner/work/openpipeline/openpipeline/src/dataflow/concat/config.vsh.yaml"
     },
     {
       "type" : "file",
       "path" : "../../../resources_test/concat_test_data/human_brain_3k_filtered_feature_bc_matrix_subset_unique_obs.h5mu",
-      "parent" : "file:/home/runner/work/openpipeline/openpipeline/src/integrate/concat/config.vsh.yaml"
+      "parent" : "file:/home/runner/work/openpipeline/openpipeline/src/dataflow/concat/config.vsh.yaml"
     }
   ],
   "status" : "enabled",

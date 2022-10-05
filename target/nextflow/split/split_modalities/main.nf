@@ -87,7 +87,7 @@ thisConfig = processConfig([
       "type" : "python_script",
       "path" : "./script.py",
       "is_executable" : true,
-      "parent" : "file:/home/runner/work/openpipeline/openpipeline/src/split/split_modalities/config.vsh.yaml"
+      "parent" : "file:/home/runner/work/openpipeline/openpipeline/src/dataflow/split_modalities/config.vsh.yaml"
     }
   ],
   "description" : "Split the modalities from a single .h5mu multimodal sample into seperate .h5mu files. \n",
@@ -96,12 +96,12 @@ thisConfig = processConfig([
       "type" : "python_script",
       "path" : "test.py",
       "is_executable" : true,
-      "parent" : "file:/home/runner/work/openpipeline/openpipeline/src/split/split_modalities/config.vsh.yaml"
+      "parent" : "file:/home/runner/work/openpipeline/openpipeline/src/dataflow/split_modalities/config.vsh.yaml"
     },
     {
       "type" : "file",
       "path" : "../../../resources_test/pbmc_1k_protein_v3/pbmc_1k_protein_v3_filtered_feature_bc_matrix.h5mu",
-      "parent" : "file:/home/runner/work/openpipeline/openpipeline/src/split/split_modalities/config.vsh.yaml"
+      "parent" : "file:/home/runner/work/openpipeline/openpipeline/src/dataflow/split_modalities/config.vsh.yaml"
     }
   ],
   "status" : "enabled",

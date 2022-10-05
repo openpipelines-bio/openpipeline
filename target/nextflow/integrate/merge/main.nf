@@ -91,7 +91,7 @@ thisConfig = processConfig([
       "type" : "python_script",
       "path" : "./script.py",
       "is_executable" : true,
-      "parent" : "file:/home/runner/work/openpipeline/openpipeline/src/integrate/merge/config.vsh.yml"
+      "parent" : "file:/home/runner/work/openpipeline/openpipeline/src/dataflow/merge/config.vsh.yml"
     }
   ],
   "description" : "Combine one or more single-modality .h5mu files together into one .h5mu file.\n",
@@ -100,17 +100,17 @@ thisConfig = processConfig([
       "type" : "python_script",
       "path" : "test.py",
       "is_executable" : true,
-      "parent" : "file:/home/runner/work/openpipeline/openpipeline/src/integrate/merge/config.vsh.yml"
+      "parent" : "file:/home/runner/work/openpipeline/openpipeline/src/dataflow/merge/config.vsh.yml"
     },
     {
       "type" : "file",
       "path" : "../../../resources_test/merge_test_data/pbmc_1k_protein_v3_filtered_feature_bc_matrix_rna.h5mu",
-      "parent" : "file:/home/runner/work/openpipeline/openpipeline/src/integrate/merge/config.vsh.yml"
+      "parent" : "file:/home/runner/work/openpipeline/openpipeline/src/dataflow/merge/config.vsh.yml"
     },
     {
       "type" : "file",
       "path" : "../../../resources_test/merge_test_data/pbmc_1k_protein_v3_filtered_feature_bc_matrix_prot.h5mu",
-      "parent" : "file:/home/runner/work/openpipeline/openpipeline/src/integrate/merge/config.vsh.yml"
+      "parent" : "file:/home/runner/work/openpipeline/openpipeline/src/dataflow/merge/config.vsh.yml"
     }
   ],
   "status" : "enabled",
