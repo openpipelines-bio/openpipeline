@@ -45,6 +45,19 @@ thisConfig = processConfig([
           "multiple" : false,
           "multiple_sep" : ":",
           "dest" : "par"
+        },
+        {
+          "type" : "string",
+          "name" : "--modality",
+          "description" : "List of modalities to process.",
+          "default" : [
+            "rna"
+          ],
+          "required" : false,
+          "direction" : "input",
+          "multiple" : false,
+          "multiple_sep" : ":",
+          "dest" : "par"
         }
       ]
     },
@@ -54,7 +67,10 @@ thisConfig = processConfig([
         {
           "type" : "file",
           "name" : "--output",
-          "description" : "Full count matrix as an h5 file, with background RNA removed. This file contains all the original droplet barcodes.",
+          "alternatives" : [
+            "-o"
+          ],
+          "description" : "Full count matrix as an h5mu file, with background RNA removed. This file contains all the original droplet barcodes.",
           "example" : [
             "output.h5"
           ],
@@ -66,43 +82,62 @@ thisConfig = processConfig([
           "dest" : "par"
         },
         {
-          "type" : "file",
-          "name" : "--output_filtered",
-          "description" : "Filtered count matrix as an h5 file, with background RNA removed. The word \\"filtered\\" means that this file contains only the droplets which were determined to have a > 50% posterior probability of containing cells.",
-          "example" : [
-            "output_filtered.h5"
+          "type" : "string",
+          "name" : "--layer_output",
+          "description" : "Output layer",
+          "default" : [
+            "corrected"
           ],
-          "must_exist" : false,
-          "required" : true,
-          "direction" : "output",
+          "required" : false,
+          "direction" : "input",
           "multiple" : false,
           "multiple_sep" : ":",
           "dest" : "par"
         },
         {
-          "type" : "file",
-          "name" : "--output_report",
-          "description" : "PDF file that provides a standard graphical summary of the inference procedure.",
-          "example" : [
-            "report.pdf"
+          "type" : "string",
+          "name" : "--obs_latent_rt_efficiency",
+          "default" : [
+            "latent_rt_efficiency"
           ],
-          "must_exist" : false,
           "required" : false,
-          "direction" : "output",
+          "direction" : "input",
           "multiple" : false,
           "multiple_sep" : ":",
           "dest" : "par"
         },
         {
-          "type" : "file",
-          "name" : "--output_cell_barcodes",
-          "description" : "CSV file containing all the droplet barcodes which were determined to have a > 50% posterior probability of containing cells. Barcodes are written in plain text. This information is also contained in each of the above outputs, but is included as a separate output for convenient use in certain downstream applications.",
-          "example" : [
-            "output.csv"
+          "type" : "string",
+          "name" : "--obs_latent_cell_probability",
+          "default" : [
+            "latent_cell_probability"
           ],
-          "must_exist" : false,
           "required" : false,
-          "direction" : "output",
+          "direction" : "input",
+          "multiple" : false,
+          "multiple_sep" : ":",
+          "dest" : "par"
+        },
+        {
+          "type" : "string",
+          "name" : "--obs_latent_scale",
+          "default" : [
+            "latent_scale"
+          ],
+          "required" : false,
+          "direction" : "input",
+          "multiple" : false,
+          "multiple_sep" : ":",
+          "dest" : "par"
+        },
+        {
+          "type" : "string",
+          "name" : "--var_ambient_expression",
+          "default" : [
+            "ambient_expression"
+          ],
+          "required" : false,
+          "direction" : "input",
           "multiple" : false,
           "multiple_sep" : ":",
           "dest" : "par"
@@ -199,23 +234,28 @@ thisConfig = processConfig([
   ],
   "resources" : [
     {
-      "type" : "bash_script",
-      "path" : "script.sh",
-      "is_executable" : true,
-      "parent" : "file:/home/runner/work/openpipeline/openpipeline/src/correction/cellbender_remove_background/config.vsh.yaml"
-    }
-  ],
-  "description" : "Eliminating technical artifacts from high-throughput single-cell RNA sequencing data.\n\nThis module removes counts due to ambient RNA molecules and random barcode swapping from (raw) UMI-based scRNA-seq count matrices. \nAt the moment, only the count matrices produced by the CellRanger count pipeline is supported. Support for additional tools and protocols \nwill be added in the future. A quick start tutorial can be found here.\n\n Fleming et al. 2022, bioRxiv.\n",
-  "test_resources" : [
-    {
-      "type" : "bash_script",
-      "path" : "test.sh",
+      "type" : "python_script",
+      "path" : "script.py",
       "is_executable" : true,
       "parent" : "file:/home/runner/work/openpipeline/openpipeline/src/correction/cellbender_remove_background/config.vsh.yaml"
     },
     {
       "type" : "file",
-      "path" : "../../../resources_test/10x_5k_anticmv/processed/10x_5k_anticmv.cellranger_multi.output.output/multi/count/raw_feature_bc_matrix.h5",
+      "path" : "helper.py",
+      "parent" : "file:/home/runner/work/openpipeline/openpipeline/src/correction/cellbender_remove_background/config.vsh.yaml"
+    }
+  ],
+  "description" : "Eliminating technical artifacts from high-throughput single-cell RNA sequencing data.\n\nThis module removes counts due to ambient RNA molecules and random barcode swapping from (raw) UMI-based scRNA-seq count matrices. \nAt the moment, only the count matrices produced by the CellRanger count pipeline is supported. Support for additional tools and protocols \nwill be added in the future. A quick start tutorial can be found here.\n\nFleming et al. 2022, bioRxiv.\n",
+  "test_resources" : [
+    {
+      "type" : "python_script",
+      "path" : "test.py",
+      "is_executable" : true,
+      "parent" : "file:/home/runner/work/openpipeline/openpipeline/src/correction/cellbender_remove_background/config.vsh.yaml"
+    },
+    {
+      "type" : "file",
+      "path" : "../../../resources_test/pbmc_1k_protein_v3/pbmc_1k_protein_v3_raw_feature_bc_matrix.h5",
       "parent" : "file:/home/runner/work/openpipeline/openpipeline/src/correction/cellbender_remove_background/config.vsh.yaml"
     }
   ],
@@ -228,60 +268,144 @@ thisScript = '''set -e
 tempscript=".viash_script.sh"
 cat > "$tempscript" << VIASHMAIN
 
+import mudata as mu
+# import scanpy as sc
+import logging
+import tempfile
+# import pathlib
+import subprocess
+import os
+import sys
+import numpy as np
 
-#!/bin/bash
+logger = logging.getLogger()
+logger.setLevel(logging.INFO)
+console_handler = logging.StreamHandler(sys.stdout)
+logFormatter = logging.Formatter("%(asctime)s %(levelname)-8s %(message)s")
+console_handler.setFormatter(logFormatter)
+logger.addHandler(console_handler)
 
 ## VIASH START
 # The following code has been auto-generated by Viash.
-$( if [ ! -z ${VIASH_PAR_INPUT+x} ]; then echo "${VIASH_PAR_INPUT}" | sed "s#'#'\\"'\\"'#g" | sed "s#.*#par_input='&'#" ; fi )
-$( if [ ! -z ${VIASH_PAR_OUTPUT+x} ]; then echo "${VIASH_PAR_OUTPUT}" | sed "s#'#'\\"'\\"'#g" | sed "s#.*#par_output='&'#" ; fi )
-$( if [ ! -z ${VIASH_PAR_OUTPUT_FILTERED+x} ]; then echo "${VIASH_PAR_OUTPUT_FILTERED}" | sed "s#'#'\\"'\\"'#g" | sed "s#.*#par_output_filtered='&'#" ; fi )
-$( if [ ! -z ${VIASH_PAR_OUTPUT_REPORT+x} ]; then echo "${VIASH_PAR_OUTPUT_REPORT}" | sed "s#'#'\\"'\\"'#g" | sed "s#.*#par_output_report='&'#" ; fi )
-$( if [ ! -z ${VIASH_PAR_OUTPUT_CELL_BARCODES+x} ]; then echo "${VIASH_PAR_OUTPUT_CELL_BARCODES}" | sed "s#'#'\\"'\\"'#g" | sed "s#.*#par_output_cell_barcodes='&'#" ; fi )
-$( if [ ! -z ${VIASH_PAR_MODEL+x} ]; then echo "${VIASH_PAR_MODEL}" | sed "s#'#'\\"'\\"'#g" | sed "s#.*#par_model='&'#" ; fi )
-$( if [ ! -z ${VIASH_PAR_TOTAL_DROPLETS_INCLUDED+x} ]; then echo "${VIASH_PAR_TOTAL_DROPLETS_INCLUDED}" | sed "s#'#'\\"'\\"'#g" | sed "s#.*#par_total_droplets_included='&'#" ; fi )
-$( if [ ! -z ${VIASH_PAR_EPOCHS+x} ]; then echo "${VIASH_PAR_EPOCHS}" | sed "s#'#'\\"'\\"'#g" | sed "s#.*#par_epochs='&'#" ; fi )
-$( if [ ! -z ${VIASH_PAR_FPR+x} ]; then echo "${VIASH_PAR_FPR}" | sed "s#'#'\\"'\\"'#g" | sed "s#.*#par_fpr='&'#" ; fi )
-$( if [ ! -z ${VIASH_PAR_EXCLUDE_ANTIBODY_CAPTURE+x} ]; then echo "${VIASH_PAR_EXCLUDE_ANTIBODY_CAPTURE}" | sed "s#'#'\\"'\\"'#g" | sed "s#.*#par_exclude_antibody_capture='&'#" ; fi )
-$( if [ ! -z ${VIASH_PAR_LEARNING_RATE+x} ]; then echo "${VIASH_PAR_LEARNING_RATE}" | sed "s#'#'\\"'\\"'#g" | sed "s#.*#par_learning_rate='&'#" ; fi )
-$( if [ ! -z ${VIASH_PAR_CUDA+x} ]; then echo "${VIASH_PAR_CUDA}" | sed "s#'#'\\"'\\"'#g" | sed "s#.*#par_cuda='&'#" ; fi )
-$( if [ ! -z ${VIASH_META_FUNCTIONALITY_NAME+x} ]; then echo "${VIASH_META_FUNCTIONALITY_NAME}" | sed "s#'#'\\"'\\"'#g" | sed "s#.*#meta_functionality_name='&'#" ; fi )
-$( if [ ! -z ${VIASH_META_RESOURCES_DIR+x} ]; then echo "${VIASH_META_RESOURCES_DIR}" | sed "s#'#'\\"'\\"'#g" | sed "s#.*#meta_resources_dir='&'#" ; fi )
-$( if [ ! -z ${VIASH_META_EXECUTABLE+x} ]; then echo "${VIASH_META_EXECUTABLE}" | sed "s#'#'\\"'\\"'#g" | sed "s#.*#meta_executable='&'#" ; fi )
-$( if [ ! -z ${VIASH_META_TEMP_DIR+x} ]; then echo "${VIASH_META_TEMP_DIR}" | sed "s#'#'\\"'\\"'#g" | sed "s#.*#meta_temp_dir='&'#" ; fi )
-$( if [ ! -z ${VIASH_META_CPUS+x} ]; then echo "${VIASH_META_CPUS}" | sed "s#'#'\\"'\\"'#g" | sed "s#.*#meta_cpus='&'#" ; fi )
-$( if [ ! -z ${VIASH_META_MEMORY_B+x} ]; then echo "${VIASH_META_MEMORY_B}" | sed "s#'#'\\"'\\"'#g" | sed "s#.*#meta_memory_b='&'#" ; fi )
-$( if [ ! -z ${VIASH_META_MEMORY_KB+x} ]; then echo "${VIASH_META_MEMORY_KB}" | sed "s#'#'\\"'\\"'#g" | sed "s#.*#meta_memory_kb='&'#" ; fi )
-$( if [ ! -z ${VIASH_META_MEMORY_MB+x} ]; then echo "${VIASH_META_MEMORY_MB}" | sed "s#'#'\\"'\\"'#g" | sed "s#.*#meta_memory_mb='&'#" ; fi )
-$( if [ ! -z ${VIASH_META_MEMORY_GB+x} ]; then echo "${VIASH_META_MEMORY_GB}" | sed "s#'#'\\"'\\"'#g" | sed "s#.*#meta_memory_gb='&'#" ; fi )
-$( if [ ! -z ${VIASH_META_MEMORY_TB+x} ]; then echo "${VIASH_META_MEMORY_TB}" | sed "s#'#'\\"'\\"'#g" | sed "s#.*#meta_memory_tb='&'#" ; fi )
-$( if [ ! -z ${VIASH_META_MEMORY_PB+x} ]; then echo "${VIASH_META_MEMORY_PB}" | sed "s#'#'\\"'\\"'#g" | sed "s#.*#meta_memory_pb='&'#" ; fi )
+par = {
+  'input': $( if [ ! -z ${VIASH_PAR_INPUT+x} ]; then echo "r'${VIASH_PAR_INPUT//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
+  'modality': $( if [ ! -z ${VIASH_PAR_MODALITY+x} ]; then echo "r'${VIASH_PAR_MODALITY//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
+  'output': $( if [ ! -z ${VIASH_PAR_OUTPUT+x} ]; then echo "r'${VIASH_PAR_OUTPUT//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
+  'layer_output': $( if [ ! -z ${VIASH_PAR_LAYER_OUTPUT+x} ]; then echo "r'${VIASH_PAR_LAYER_OUTPUT//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
+  'obs_latent_rt_efficiency': $( if [ ! -z ${VIASH_PAR_OBS_LATENT_RT_EFFICIENCY+x} ]; then echo "r'${VIASH_PAR_OBS_LATENT_RT_EFFICIENCY//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
+  'obs_latent_cell_probability': $( if [ ! -z ${VIASH_PAR_OBS_LATENT_CELL_PROBABILITY+x} ]; then echo "r'${VIASH_PAR_OBS_LATENT_CELL_PROBABILITY//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
+  'obs_latent_scale': $( if [ ! -z ${VIASH_PAR_OBS_LATENT_SCALE+x} ]; then echo "r'${VIASH_PAR_OBS_LATENT_SCALE//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
+  'var_ambient_expression': $( if [ ! -z ${VIASH_PAR_VAR_AMBIENT_EXPRESSION+x} ]; then echo "r'${VIASH_PAR_VAR_AMBIENT_EXPRESSION//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
+  'model': $( if [ ! -z ${VIASH_PAR_MODEL+x} ]; then echo "r'${VIASH_PAR_MODEL//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
+  'total_droplets_included': $( if [ ! -z ${VIASH_PAR_TOTAL_DROPLETS_INCLUDED+x} ]; then echo "int(r'${VIASH_PAR_TOTAL_DROPLETS_INCLUDED//\\'/\\'\\"\\'\\"r\\'}')"; else echo None; fi ),
+  'epochs': $( if [ ! -z ${VIASH_PAR_EPOCHS+x} ]; then echo "int(r'${VIASH_PAR_EPOCHS//\\'/\\'\\"\\'\\"r\\'}')"; else echo None; fi ),
+  'fpr': $( if [ ! -z ${VIASH_PAR_FPR+x} ]; then echo "float(r'${VIASH_PAR_FPR//\\'/\\'\\"\\'\\"r\\'}')"; else echo None; fi ),
+  'exclude_antibody_capture': $( if [ ! -z ${VIASH_PAR_EXCLUDE_ANTIBODY_CAPTURE+x} ]; then echo "r'${VIASH_PAR_EXCLUDE_ANTIBODY_CAPTURE//\\'/\\'\\"\\'\\"r\\'}'.lower() == 'true'"; else echo None; fi ),
+  'learning_rate': $( if [ ! -z ${VIASH_PAR_LEARNING_RATE+x} ]; then echo "float(r'${VIASH_PAR_LEARNING_RATE//\\'/\\'\\"\\'\\"r\\'}')"; else echo None; fi ),
+  'cuda': $( if [ ! -z ${VIASH_PAR_CUDA+x} ]; then echo "r'${VIASH_PAR_CUDA//\\'/\\'\\"\\'\\"r\\'}'.lower() == 'true'"; else echo None; fi )
+}
+meta = {
+  'functionality_name': $( if [ ! -z ${VIASH_META_FUNCTIONALITY_NAME+x} ]; then echo "r'${VIASH_META_FUNCTIONALITY_NAME//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
+  'resources_dir': $( if [ ! -z ${VIASH_META_RESOURCES_DIR+x} ]; then echo "r'${VIASH_META_RESOURCES_DIR//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
+  'executable': $( if [ ! -z ${VIASH_META_EXECUTABLE+x} ]; then echo "r'${VIASH_META_EXECUTABLE//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
+  'temp_dir': $( if [ ! -z ${VIASH_META_TEMP_DIR+x} ]; then echo "r'${VIASH_META_TEMP_DIR//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
+  'cpus': $( if [ ! -z ${VIASH_META_CPUS+x} ]; then echo "int(r'${VIASH_META_CPUS//\\'/\\'\\"\\'\\"r\\'}')"; else echo None; fi ),
+  'memory_b': $( if [ ! -z ${VIASH_META_MEMORY_B+x} ]; then echo "int(r'${VIASH_META_MEMORY_B//\\'/\\'\\"\\'\\"r\\'}')"; else echo None; fi ),
+  'memory_kb': $( if [ ! -z ${VIASH_META_MEMORY_KB+x} ]; then echo "int(r'${VIASH_META_MEMORY_KB//\\'/\\'\\"\\'\\"r\\'}')"; else echo None; fi ),
+  'memory_mb': $( if [ ! -z ${VIASH_META_MEMORY_MB+x} ]; then echo "int(r'${VIASH_META_MEMORY_MB//\\'/\\'\\"\\'\\"r\\'}')"; else echo None; fi ),
+  'memory_gb': $( if [ ! -z ${VIASH_META_MEMORY_GB+x} ]; then echo "int(r'${VIASH_META_MEMORY_GB//\\'/\\'\\"\\'\\"r\\'}')"; else echo None; fi ),
+  'memory_tb': $( if [ ! -z ${VIASH_META_MEMORY_TB+x} ]; then echo "int(r'${VIASH_META_MEMORY_TB//\\'/\\'\\"\\'\\"r\\'}')"; else echo None; fi ),
+  'memory_pb': $( if [ ! -z ${VIASH_META_MEMORY_PB+x} ]; then echo "int(r'${VIASH_META_MEMORY_PB//\\'/\\'\\"\\'\\"r\\'}')"; else echo None; fi )
+}
 
 ## VIASH END
 
+sys.path.append(meta['resources_dir'])
+from helper import anndata_from_h5
 
-extra_params=( )
+logger.info("Reading input mudata")
+mdata = mu.read_h5mu(par["input"])
 
-[ ! -z \\$par_model ] && extra_params+=( "--model" "\\$par_model" )
-[ ! -z \\$par_total_droplets_included ] && extra_params+=( "--total-droplets-included" "\\$par_total_droplets_included" )
-[ ! -z \\$par_epochs ] && extra_params+=( "--epochs" "\\$par_epochs" )
-[ ! -z \\$par_fdr ] && extra_params+=( "--fdr" "\\$par_fdr" )
-[ \\$par_exclude_antibody_capture == "true" ] && extra_params+=( "--exclude-antibody-capture" )
-[ ! -z \\$par_learning_rate ] && extra_params+=( "--learning-rate" "\\$par_learning_rate" )
-[ \\$par_cuda == "true" ] && extra_params+=( "--cuda" )
+mod = par["modality"]
+logger.info("Performing log transformation on modality %s", mod)
+data = mdata.mod[mod]
 
-cellbender \\\\
-  remove-background \\\\
-  --input "\\$par_input" \\\\
-  --output "\\$par_output" \\\\
-  "\\${extra_params[@]}"
+# with pathlib.Path(meta["temp_dir"]) / "cellbender" as temp_dir:
+#   os.mkdir(temp_dir)
+with tempfile.TemporaryDirectory(prefix="cellbender-", dir=meta["temp_dir"]) as temp_dir:
+  # construct paths within tempdir
+  input_file = os.path.join(temp_dir, "input.h5ad")
+  output_file = os.path.join(temp_dir, "output.h5")
 
-[ ! -z "\\$par_output_report" ] && mv "\\${par_output%.h5}.pdf" "\\$par_output_report"
-[ ! -z "\\$par_output_cell_barcodes" ] && mv "\\${par_output%.h5}_cell_barcodes.csv" "\\$par_output_cell_barcodes"
-[ ! -z "\\$par_output_filtered" ] && mv "\\${par_output%.h5}_filtered.h5" "\\$par_output_filtered"
+  logger.info("Creating AnnData input file for CellBender: '%s'", input_file)
+  data.write_h5ad(input_file)
+
+  logger.info("Constructing CellBender command")
+  cmd_pars = [
+    "cellbender", "remove-background",
+    "--input", input_file,
+    "--output", output_file
+  ]
+
+  extra_args = [
+    ("--model", "model", True),
+    ("--total-droplets-included", "total_droplets_included", True),
+    ("--epochs", "epochs", True),
+    ("--fpr", "fpr", True),
+    ("--exclude-antibody-capture", "exclude_antibody_capture", False),
+    ("--learning-rate", "learning_rate", True),
+    ("--cuda", "cuda", False)
+  ]
+  for (flag, name, is_kwarg) in extra_args:
+    if par[name]:
+      cmd_pars += [flag, str(par[name])] if is_kwarg else [flag]
+
+  logger.info("Running CellBender")
+  out = subprocess.check_output(cmd_pars).decode("utf-8")
+  
+  logger.info("Reading CellBender 10xh5 output file: '%s'", output_file)
+  # have to use custom read_10x_h5 function for now
+  # will be fixed when https://github.com/scverse/scanpy/pull/2344 is merged
+  # adata_out = sc.read_10x_h5(output_file, gex_only=False)
+  adata_out = anndata_from_h5(output_file, analyzed_barcodes_only=False)
+
+  logger.info("Copying X output to MuData")
+  data.layers[par["layer_output"]] = adata_out.X
+
+  logger.info("Copying .obs output to MuData")
+  obs_store = { 
+    "obs_latent_rt_efficiency": "latent_RT_efficiency", 
+    "obs_latent_cell_probability": "latent_cell_probability", 
+    "obs_latent_scale": "latent_scale"
+  }
+  for to_name, from_name in obs_store.items():
+    if par[to_name]:
+      if from_name in adata_out.obs:
+        data.obs[par[to_name]] = adata_out.obs[from_name]
+      # when using unfiltered data, the values will be in uns instead of obs
+      elif from_name in adata_out.uns and 'barcode_indices_for_latents' in adata_out.uns:
+        vec = np.zeros(data.n_obs)
+        vec[adata_out.uns['barcode_indices_for_latents']] = adata_out.uns[from_name]
+        data.obs[par[to_name]] = vec
+  
+  logger.info("Copying .var output to MuData")
+  var_store = { "var_ambient_expression": "ambient_expression" }
+  for to_name, from_name in var_store.items():
+    if par[to_name]:
+      data.var[par[to_name]] = adata_out.var[from_name]
+
+  # logger.info("Copying .obsm output to MuData")
+  # obsm_store = { "obsm_latent_gene_encoding": "latent_gene_encoding" }
+  # for to_name, from_name in obsm_store.items():
+  #   if par[to_name]:
+  #     data.obsm[par[to_name]] = adata_out.obsm[from_name]
+
+
+logger.info("Writing to file %s", par["output"])
+mdata.write(filename=par["output"])
 
 VIASHMAIN
-bash "$tempscript"
+python "$tempscript"
 '''
 
 thisDefaultProcessArgs = [
@@ -297,6 +421,8 @@ thisDefaultProcessArgs = [
     "tag" : "integration_build"
   },
   "label" : [
+    "highcpu",
+    "highmem",
     "gpu"
   ]
 }'''),

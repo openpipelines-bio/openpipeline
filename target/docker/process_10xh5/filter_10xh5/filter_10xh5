@@ -171,7 +171,7 @@ function ViashHelp {
   echo ""
   echo "Arguments:"
   echo "    --input"
-  echo "        type: string, required parameter"
+  echo "        type: file, required parameter"
   echo "        example: pbmc_1k_protein_v3_raw_feature_bc_matrix.h5"
   echo "        An h5 file from the 10x genomics website."
   echo ""
@@ -429,9 +429,9 @@ RUN Rscript -e 'if (!requireNamespace("remotes", quietly = TRUE)) install.packag
 
 LABEL org.opencontainers.image.authors="Robrecht Cannoodt"
 LABEL org.opencontainers.image.description="Companion container for running component process_10xh5 filter_10xh5"
-LABEL org.opencontainers.image.created="2022-10-05T08:15:37Z"
+LABEL org.opencontainers.image.created="2022-10-05T17:23:57Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="4ae4cd66208f5c236a2880e0684c114f885095d6"
+LABEL org.opencontainers.image.revision="daac8fb7fed69e250f3fba7fadb92c753af1a3ae"
 LABEL org.opencontainers.image.version="integration_build"
 VIASHDOCKER
 }
@@ -931,6 +931,10 @@ fi
 
 
 # detect volumes from file arguments
+if [ ! -z "$VIASH_PAR_INPUT" ]; then
+  VIASH_EXTRA_MOUNTS="$VIASH_EXTRA_MOUNTS $(ViashAutodetectMountArg "$VIASH_PAR_INPUT")"
+  VIASH_PAR_INPUT=$(ViashAutodetectMount "$VIASH_PAR_INPUT")
+fi
 if [ ! -z "$VIASH_PAR_OUTPUT" ]; then
   VIASH_EXTRA_MOUNTS="$VIASH_EXTRA_MOUNTS $(ViashAutodetectMountArg "$VIASH_PAR_OUTPUT")"
   VIASH_PAR_OUTPUT=$(ViashAutodetectMount "$VIASH_PAR_OUTPUT")

@@ -44,12 +44,13 @@ thisConfig = processConfig([
   ],
   "arguments" : [
     {
-      "type" : "string",
+      "type" : "file",
       "name" : "--input",
       "description" : "An h5 file from the 10x genomics website.",
       "example" : [
         "pbmc_1k_protein_v3_raw_feature_bc_matrix.h5"
       ],
+      "must_exist" : false,
       "required" : true,
       "direction" : "input",
       "multiple" : false,

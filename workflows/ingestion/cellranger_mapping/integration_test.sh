@@ -17,5 +17,4 @@ bin/nextflow \
   -resume \
   -profile docker,no_publish \
   -c workflows/utils/labels_ci.config \
-  -with-trace work/trace.txt \
-  -stub
+  -with-trace work/trace.txt
