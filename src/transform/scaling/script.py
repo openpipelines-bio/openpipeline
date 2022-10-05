@@ -14,7 +14,7 @@ logger.addHandler(console_handler)
 par = {
     "input": "../../../resources_test/pbmc_1k_protein_v3/pbmc_1k_protein_v3.h5mu",
     "output": "output.h5mu",
-    "modality": ["rna"],
+    "modality": "rna",
     "max_value": None,
     "zero_center": True
 }
@@ -24,14 +24,13 @@ par = {
 def main():
     logger.info(f'Reading .h5mu file: {par["input"]}')
     mudata = read_h5mu(par["input"])
+    mod = par["modality"]
+    data = mudata.mod[mod]
 
-    for mod in par["modality"]:
-        data = mudata.mod[mod]
-
-        logger.info("Scaling modality: %s", mod)
-        scanpy.pp.scale(data,
-                        zero_center=par["zero_center"],
-                        max_value=par["max_value"])
+    logger.info("Scaling modality: %s", mod)
+    scanpy.pp.scale(data,
+                    zero_center=par["zero_center"],
+                    max_value=par["max_value"])
 
     logger.info("Writing to %s", par["output"])
     mudata.write(filename=par["output"])

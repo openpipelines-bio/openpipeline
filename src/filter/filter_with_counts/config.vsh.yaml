@@ -9,85 +9,91 @@ functionality:
   authors:
     - name: Dries De Maeyer
       email: ddemaeyer@gmail.com
-      roles: [ contributor ]
+      roles: [ author ]
       props: { account: ddemaey1 }
     - name: Robrecht Cannoodt
       email: robrecht@data-intuitive.com
-      roles: [ maintainer, contributor ]
+      roles: [ maintainer, author ]
       props: { github: rcannood, orcid: "0000-0003-3641-729X" }
 
-  arguments:
-    # required input variables
-    - name: "--input"
-      type: file
-      description: Input h5mu file
-      direction: input
-      required: true
-      example: input.h5mu
+  argument_groups:
+    - name: Inputs
+      arguments:
+        - name: "--input"
+          type: file
+          description: Input h5mu file
+          direction: input
+          required: true
+          example: input.h5mu
 
-    - name: "--modality"
-      type: string
-      multiple: true
-      default: "rna"
-      required: false
+        - name: "--modality"
+          type: string
+          default: "rna"
+          required: false
 
-    # required output variables
-    - name: "--output"
-      type: file
-      description: Output h5mu file.
-      direction: output
-      example: output.h5mu
-      
-    - name: "--do_subset"
-      type: boolean_true
-      description: Whether to subset before storing the output.
-    
-    # optional output variables
-    - name: "--obs_name_filter"
-      type: string
-      default: "filter_with_counts"
-      description: In which .obs slot to store a boolean array corresponding to which observations should be removed.
+        - name: "--layer"
+          type: string
+          default: "rna"
+          required: false
 
-    - name: "--var_name_filter"
-      type: string
-      default: "filter_with_counts"
-      description: In which .var slot to store a boolean array corresponding to which variables should be removed.
+    - name: Outputs
+      arguments:
+        - name: "--output"
+          type: file
+          description: Output h5mu file.
+          direction: output
+          example: output.h5mu
+          
+        - name: "--do_subset"
+          type: boolean_true
+          description: Whether to subset before storing the output.
 
-    # arguments
-    - name: "--min_counts"
-      example: 200
-      type: integer
-      description: Minimum number of counts captured per cell.
+        - name: "--obs_name_filter"
+          type: string
+          default: "filter_with_counts"
+          description: In which .obs slot to store a boolean array corresponding to which observations should be removed.
 
-    - name: "--max_counts"
-      example: 5000000
-      type: integer
-      description: Maximum number of counts captured per cell.
+        - name: "--var_name_filter"
+          type: string
+          default: "filter_with_counts"
+          description: In which .var slot to store a boolean array corresponding to which variables should be removed.
 
-    - name: "--min_genes_per_cell"
-      example: 200
-      type: integer
-      description: Minimum of non-zero values per cell.
+    - name: Arguments
+      arguments:
+        - name: "--min_counts"
+          example: 200
+          type: integer
+          description: Minimum number of counts captured per cell.
 
-    - name: "--max_genes_per_cell"
-      example: 1500000
-      type: integer
-      description: Maximum of non-zero values per cell.
+        - name: "--max_counts"
+          example: 5000000
+          type: integer
+          description: Maximum number of counts captured per cell.
 
-    - name: "--min_cells_per_gene"
-      example: 3
-      type: integer
-      description: Minimum of non-zero values per gene.
+        - name: "--min_genes_per_cell"
+          example: 200
+          type: integer
+          description: Minimum of non-zero values per cell.
 
-    - name: "--min_fraction_mito"
-      example: 0
-      type: double
-      description: Minimum fraction of UMIs that are mitochondrial.
+        - name: "--max_genes_per_cell"
+          example: 1500000
+          type: integer
+          description: Maximum of non-zero values per cell.
 
-    - name: "--max_fraction_mito"
-      example: 0.2
-      type: double
-      description: Maximum fraction of UMIs that are mitochondrial.
+        - name: "--min_cells_per_gene"
+          example: 3
+          type: integer
+          description: Minimum of non-zero values per gene.
+
+        - name: "--min_fraction_mito"
+          example: 0
+          type: double
+          description: Minimum fraction of UMIs that are mitochondrial.
+
+        - name: "--max_fraction_mito"
+          example: 0.2
+          type: double
+          description: Maximum fraction of UMIs that are mitochondrial.
   resources:
     - type: python_script
       path: script.py

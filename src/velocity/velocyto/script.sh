@@ -17,8 +17,8 @@ fi
 if [ "$par_without_umi" == "true" ]; then
   extra_params+=( "--without-umi" )
 fi
-if [ ! -z "$meta_n_proc" ]; then
-  extra_params+=( "--samtools-threads" "$meta_n_proc" )
+if [ ! -z "$meta_cpus" ]; then
+  extra_params+=( "--samtools-threads" "$meta_cpus" )
 fi
 if [ ! -z "$meta_memory_mb" ]; then
   extra_params+=( "--samtools-memory" "$meta_memory_mb" )
@@ -26,6 +26,18 @@ fi
 
 output_dir=`dirname "$par_output"`
 sample_id=`basename "$par_output" .loom`
+
+if (file "$par_transcriptome" | grep -q compressed ) ; then
+  # create temporary directory
+  tmpdir=$(mktemp -d "$meta_temp_dir/$meta_resources_name-XXXXXXXX")
+  function clean_up {
+      rm -rf "$tmpdir"
+  }
+  trap clean_up EXIT
+
+  zcat "$par_transcriptome" > "$tmpdir/genes.gtf"
+  par_transcriptome="$tmpdir/genes.gtf"
+fi
 
 velocyto run \
   "$par_input" \

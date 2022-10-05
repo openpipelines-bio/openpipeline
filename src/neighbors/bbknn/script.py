@@ -6,7 +6,7 @@ par = {
     'input': 'resources_test/pbmc_1k_protein_v3/pbmc_1k_protein_v3_mms.h5mu',
     'modality': 'rna',
     'obs_batch': 'sample_id',
-    'obsm_input': 'log_normalized_pca',
+    'obsm_input': 'X_pca',
     'n_neighbors_within_batch': 3,
     'n_trim': None,
     'n_pcs': 50
@@ -17,15 +17,15 @@ par = {
 # to configure output field
 
 h5mu_data = read_h5mu(par["input"])
-for modality_name in par["modality"]:
-    modality = h5mu_data.mod[modality_name]
-    bbknn.bbknn(
-        modality,
-        use_rep=par["obsm_input"],
-        batch_key = par["obs_batch"],
-        neighbors_within_batch=par["n_neighbors_within_batch"], 
-        n_pcs=par["n_pcs"], 
-        trim=par["n_trim"]
-    )
+modality_name = par["modality"]
+modality = h5mu_data.mod[modality_name]
+bbknn.bbknn(
+    modality,
+    use_rep=par["obsm_input"],
+    batch_key = par["obs_batch"],
+    neighbors_within_batch=par["n_neighbors_within_batch"], 
+    n_pcs=par["n_pcs"], 
+    trim=par["n_trim"]
+)
 
 h5mu_data.write(par["output"], compression = "gzip")

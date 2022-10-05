@@ -13,7 +13,7 @@ echo ">> Running $meta_functionality_name in Targeted mode"
   -i "$meta_resources_dir/bdrhap_vdj/raw/RhapVDJDemo-TCR_S3_L001_R2_001_subset.fastq.gz" \
   --reference "$meta_resources_dir/bdrhap_vdj/raw/BD_Rhapsody_Immune_Response_Panel_Hs.fasta" \
   --putative_cell_call "mRNA" \
-  ---n_proc 1 \
+  ---cpus 1 \
   ---memory 2gb \
   -o output_vdj/
 

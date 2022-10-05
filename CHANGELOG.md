@@ -4,11 +4,55 @@
 
 * `reference/make_reference`: Input files changed from `type: string` to `type: file` to allow Nextflow to cache the input files fetched from URL.
 
+* several components (except `from_h5ad_to_5hmu`): the `--modality` arguments no longer accept multiple values.
+
+* Remove outdated `resources_test_scripts`.
+
+* `convert/from_h5mu_to_seurat`: Disabled because MuDataSeurat is currently broken, see [https://github.com/PMBio/MuDataSeurat/issues/9](PMBio/MuDataSeurat#9).
+
+* `integrate/concat`: Renamed --sample_names to --input_id and moved the ability to add sample id and to join the sample ids with the observation names to `metadata/add_id`
+
+* Moved `integrate/concat`, `integrate/merge` and `split/split_modalities` to a new namespace: `dataflow`
+
 ## NEW FUNCTIONALITY
+
+* `metadata/add_id`: Add an id to a column in .obs. Also allows joining the id to the .obs_names.
 
 * `workflows/ingestion/make_reference`: A generic component to build a transcriptomics reference into one of many formats.
 
 * `integrate/scvi`: Performs scvi integration.
+
+* `integrate/add_metadata`: Add a csv containing metadata to the .obs or .var field of a mudata file.
+
+* `DataFlowHelper.nf`: Added `passthroughMap`. Usage:
+
+  ```groovy
+  include { passthroughMap as pmap } from "./DataFlowHelper.nf"
+  
+  workflow {
+    Channel.fromList([["id", [input: "foo"], "passthrough"]])
+      | pmap{ id, data ->
+        [id, data + [arg: 10]]
+      }
+  }
+  ```
+  Note that in the example above, using a regular `map` would result in an exception being thrown,
+  that is, "Invalid method invocation `call` with arguments".
+
+  A synonymous of doing this with a regular `map()` would be:
+  ```groovy
+  workflow {
+    Channel.fromList([["id", [input: "foo"], "passthrough"]])
+      | map{ tup ->
+        def (id, data) = tup
+        [id, data + [arg: 10]] + tup.drop(2)
+      }
+  }
+  ```
+
+* `correction/cellbender_remove_background`: Eliminating technical artifacts from high-throughput single-cell RNA sequencing data.
+
+* `workflows/ingestion/cellranger_postprocessing`: Add post-processing of h5mu files created from Cell Ranger data.
 
 ## MAJOR CHANGES
 
@@ -23,15 +67,28 @@
   | getWorkflowArguments("integration")
   | integration
   ```
+
+* `mapping/cellranger_count`: Allow passing both directories as well as individual fastq.gz files as inputs.
+
+* `convert/from_10xh5_to_h5mu`: Allow reading in QC metrics, use gene ids as `.obs_names` instead of gene symbols.
+
 ## MINOR CHANGES
 
 * `dimred/umap`: Streamline UMAP parameters by adding `--obsm_output` parameter to allow choosing the output `.obsm` slot.
 
 * `workflows/multiomics/integration`: Added arguments for tuning the various output slots of the integration pipeline, namely `--obsm_pca`, `--obsm_integrated`, `--uns_neighbors`, `--obsp_neighbor_distances`, `--obsp_neighbor_connectivities`, `--obs_cluster`, `--obsm_umap`.
 
+* Switch to Viash 0.6.1.
+
+* `filter/subset_h5mu`: Add `--modality` argument, export to VDSL3, add unit test.
+
 ## BUG FIXES
 
 * `convert/from_bd_to_10x_molecular_barcode_tags`: Replaced UTF8 characters with ASCII. OpenJDK 17 or lower might throw the following exception when trying to read a UTF8 file: `java.nio.charset.MalformedInputException: Input length = 1`.
+
+* `integrate/concat`: Overriding sample name in .obs no longer raises `AttributeError`.
+
+* `integrate/concat`: Fix false positives when checking for conflicts in .obs and .var when using `--mode move`.
 
 # openpipeline 0.5.0
 
