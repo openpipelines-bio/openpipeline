@@ -8,7 +8,7 @@ import numpy as np
 
 ## VIASH START
 meta = {
-    'executable': './target/docker/integrate/concat/concat',
+    'executable': './target/docker/dataflow/concat/concat',
     'resources_dir': './resources_test/concat_test_data/',
     'cpus': 2
 }

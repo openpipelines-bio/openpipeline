@@ -1,56 +1,65 @@
 {
     "$schema": "http://json-schema.org/draft-07/schema",
-    "title": "velocyto",
-    "description": "Runs the velocity analysis on a BAM file, outputting a loom file.",
+    "title": "conversion",
+    "description": "A pipeline to convert different file formats to .h5mu.",
     "type": "object",
     "definitions": {
-      "arguments" : {
-        "title": "Arguments",
+      "inputs" : {
+        "title": "Inputs",
         "type": "object",
         "description": "No description",
         "default": "",
         "properties": {
+          "id": {
+            "type":"string",
+            "description": "ID of the sample.",
+            
+            
+            "default": ""
+          },
           "input": {
             "type":"string",
-            "description": "Path to BAM file",
+            "description": "Path to the sample.",
             
             
             "default": ""
           },
-          "transcriptome": {
+          "input_type": {
             "type":"string",
-            "description": "Path to GTF file",
+            "description": "Type of the input file",
             
-            
+            "enum": ["10xmtx", "10xh5", "h5ad"],
             "default": ""
-          },
-          "barcode": {
-            "type":"string",
-            "description": "Valid barcodes file, to filter the bam. If --bcfile is not specified all the cell barcodes will be included.\nCell barcodes should be specified in the bcfile as the \u0027CB\u0027 tag for each read\n",
-            
-            
-            "default": ""
-          },
-          "without_umi": {
-            "type":"boolean",
-            "description": "foo",
-            
-            
-            "default": "False"
-          },
+          }
+        }
+      },
+      "outputs" : {
+        "title": "Outputs",
+        "type": "object",
+        "description": "No description",
+        "default": "",
+        "properties": {
           "output": {
             "type":"string",
-            "description": "Velocyto loom file",
+            "description": "Name or template for the output files.",
             
             
-            "default": "$id.$key.output.output"
-          },
-          "logic": {
+            "default": "$id.$key.output.h5mu"
+          }
+        }
+      },
+      "conversion from h5ad" : {
+        "title": "Conversion from h5ad",
+        "type": "object",
+        "description": "No description",
+        "default": "",
+        "properties": {
+          "modality": {
             "type":"string",
-            "description": "The logic to use for the filtering.",
+            "description": "Name of the modality where the h5ad is stored in the h5mu object.",
             
-            "enum": ["Default", "Permissive10X", "Intermediate10X", "ValidatedIntrons10X", "Stricter10X", "ObservedSpanning10X", "Discordant10X", "SmartSeq2"],
-            "default": "Default"
+            
+            "default": ""
           }
         }
       },
@@ -79,7 +88,13 @@
     },
     "allOf": [
       {
-        "$ref": "#/definitions/arguments"
+        "$ref": "#/definitions/inputs"
+      },
+      {
+        "$ref": "#/definitions/outputs"
+      },
+      {
+        "$ref": "#/definitions/conversion from h5ad"
       },
       {
         "$ref": "#/definitions/nextflow input-output arguments"
