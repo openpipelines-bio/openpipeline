@@ -85,7 +85,7 @@ workflow test_wf {
   // or when running from s3: params.resources_test = "s3://openpipelines-data/"
   testParams = [
     id: "mouse;human",
-    input: params.resources_test + "/concat_test_data/e18_mouse_brain_fresh_5k_filtered_feature_bc_matrix_subset.h5mu;" + params.resources_test + "/concat_test_data/human_brain_3k_filtered_feature_bc_matrix_subset.h5mu",
+    input: params.resources_test + "/concat_test_data/e18_mouse_brain_fresh_5k_filtered_feature_bc_matrix_subset_unique_obs.h5mu;" + params.resources_test + "/concat_test_data/human_brain_3k_filtered_feature_bc_matrix_subset_unique_obs.h5mu",
     obs_covariates: ["sample_id"],
     publish_dir: "foo/",
 
