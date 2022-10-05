@@ -1,7 +1,6 @@
 functionality:
   name: merge
-  namespace: "integrate"
-  version: "dev"
+  namespace: "dataflow"
   description: |
     Combine one or more single-modality .h5mu files together into one .h5mu file.
   authors:
