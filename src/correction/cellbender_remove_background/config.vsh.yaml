@@ -127,4 +127,4 @@ platforms:
         github:  broadinstitute/CellBender
   - type: nextflow
     directives:
-      label: gpu
+      label: [highcpu, highmem, gpu]

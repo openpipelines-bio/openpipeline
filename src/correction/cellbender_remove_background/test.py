@@ -13,6 +13,7 @@ file_raw = meta["resources_dir"] + "/pbmc_1k_protein_v3_raw_feature_bc_matrix.h5
 file_input = "input.h5mu"
 file_output = "output.h5mu"
 
+print("> Check whether cellbender works when it should be working")
 # read 10x h5 file and write as h5mu
 mdat = mu.read_10x_h5(file_raw)
 mdat = mdat[0:100000,] # subsample to reduce computational time
@@ -41,5 +42,3 @@ assert data.mod["rna"].var["feature_types"].unique() == [
 
 # check whether ab counts were found
 assert "prot" in data.mod, 'Output should contain data.mod["rna"].'
-
-# todo: extend test
