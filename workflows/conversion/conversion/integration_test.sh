@@ -1,7 +1,4 @@
 #!/bin/bash
-
-
-
 # get the root of the directory
 REPO_ROOT=$(git rev-parse --show-toplevel)
 

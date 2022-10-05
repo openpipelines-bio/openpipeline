@@ -38,13 +38,11 @@ workflow run_wf {
         ch_h5ad = input_ch
             | filter{ it[1].input_type  == "h5ad" }
             | from_h5ad_to_h5mu.run(commonOptions)
-            | view{ "Conversion from h5ad DONE: $it" }
 
         
         // /* Combine the different conversion channels */
         all_ch = ch_10xh5 
             | mix( ch_10xmtx, ch_h5ad )
-            | view{ "Done: $it" }
         output_ch = all_ch
     emit:
         output_ch
