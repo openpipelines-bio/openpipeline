@@ -9,7 +9,7 @@ import numpy as np
 
 ## VIASH START
 meta = {
-    'functionality_name': './target/docker/integrate/merge/merge',
+    'functionality_name': './target/docker/dataflow/merge/merge',
     'resources_dir': './resources_test/merge_test_data/'
 }
 ## VIASH END
