@@ -6,7 +6,6 @@ targetDir = params.rootDir + "/target/nextflow"
 include { from_10xh5_to_h5mu } from targetDir + "/convert/from_10xh5_to_h5mu/main.nf" 
 include { from_10xmtx_to_h5mu } from targetDir + "/convert/from_10xmtx_to_h5mu/main.nf" 
 include { from_h5ad_to_h5mu } from targetDir + "/convert/from_h5ad_to_h5mu/main.nf" 
-include { publish } from targetDir + "/transfer/publish/main.nf" 
 include { readConfig; viashChannel; helpMessage } from workflowDir + "/utils/WorkflowHelper.nf"
 
 
@@ -56,31 +55,33 @@ workflow test_wf {
 
   // or when running from s3: params.resources_test = "s3://openpipelines-data/"
 
-  params.param_list = [
-    [
-      id: "10xh5_test",
-      input: params.resources_test + "/pbmc_1k_protein_v3/pbmc_1k_protein_v3_filtered_feature_bc_matrix.h5",
-      input_type: "10xh5",
-      modality: null
-    ],
-    [
-      id: "10xmtx_test",
-      input: params.resources_test + "/pbmc_1k_protein_v3/pbmc_1k_protein_v3_filtered_feature_bc_matrix",
-      input_type: "10xmtx",
-      modality: null,
-      output: "\$id.h5mu"
-    ],
-    [
-      id: "h5ad",
-      input: params.resources_test + "/pbmc_1k_protein_v3/pbmc_1k_protein_v3_filtered_feature_bc_matrix",
-      input_type: "10xmtx",
-      modality: "rna",
-      output: "\$key.h5mu"
+  testParams = [
+    param_list: [
+      [
+        id: "10xh5_test",
+        input: params.resources_test + "/pbmc_1k_protein_v3/pbmc_1k_protein_v3_filtered_feature_bc_matrix.h5",
+        input_type: "10xh5",
+        modality: null
+      ],
+      [
+        id: "10xmtx_test",
+        input: params.resources_test + "/pbmc_1k_protein_v3/pbmc_1k_protein_v3_filtered_feature_bc_matrix",
+        input_type: "10xmtx",
+        modality: null,
+        output: "\$id.h5mu"
+      ],
+      [
+        id: "h5ad",
+        input: params.resources_test + "/pbmc_1k_protein_v3/pbmc_1k_protein_v3_filtered_feature_bc_matrix",
+        input_type: "10xmtx",
+        modality: "rna",
+        output: "\$key.h5mu"
+      ]
     ]
   ]
     
   output_ch =
-    viashChannel(params, config)
+    viashChannel(testParams, config)
     | view { "Input: $it" }    
     | run_wf
     | view { output ->
