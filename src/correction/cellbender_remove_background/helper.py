@@ -1,3 +1,6 @@
+# This file is copied from https://github.com/broadinstitute/CellBender/issues/128#issuecomment-1175336065
+# to solve an issue with scanpy not being able to read in the 10x h5 files produced by cellbender.
+
 import tables
 import numpy as np
 import scipy.sparse as sp
