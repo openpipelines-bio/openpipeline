@@ -14,13 +14,11 @@ logger.addHandler(console_handler)
 
 ## VIASH START
 par = {
-  "sample_id": "foo", 
   "input": "resources_test/pbmc_1k_protein_v3/pbmc_1k_protein_v3_filtered_feature_bc_matrix.h5",
   "input_metrics_summary": "resources_test/pbmc_1k_protein_v3/pbmc_1k_protein_v3_metrics_summary.csv",
   "obs_sample_id": "sample_id",
   "uns_metrics": "metrics_cellranger",
   "output": "foo.h5mu",
-  "id_to_obs_names": True,
   "min_genes": 100,
   "min_counts": 1000
 }

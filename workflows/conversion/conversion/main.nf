@@ -5,45 +5,89 @@ targetDir = params.rootDir + "/target/nextflow"
 
 include { from_10xh5_to_h5mu } from targetDir + "/convert/from_10xh5_to_h5mu/main.nf" 
 include { from_10xmtx_to_h5mu } from targetDir + "/convert/from_10xmtx_to_h5mu/main.nf" 
+include { from_h5ad_to_h5mu } from targetDir + "/convert/from_h5ad_to_h5mu/main.nf" 
+include { publish } from targetDir + "/transfer/publish/main.nf" 
+include { readConfig; viashChannel; helpMessage } from workflowDir + "/utils/WorkflowHelper.nf"
 
-include { publish } from targetDir + "/transfer/publish/main.nf"               
-include { overrideOptionValue } from workflowDir + "/utils/viash_workflow_helper.nf"                       
 
+config = readConfig("$workflowDir/conversion/conversion/config.vsh.yaml")
 
 workflow {
+  helpMessage(config)
+
+  viashChannel(params, config)
+    | run_wf
+}
+
+workflow run_wf {
+    take:
+        input_ch
+
     main:
-    
-    if (!params.containsKey("input_type") || params.input_type == "") {
-        exit 1, "ERROR: Please provide a --input_type parameter for the conversion."
-    }
-    if (!params.containsKey("input") || params.input == "") {
-        exit 1, "ERROR: Please provide a --input parameter pointing to the count matrices to be converted"
-    }
-    if (!params.containsKey("output") || params.output == "") {
-        exit 1, "ERROR: Please provide a --output parameter."
-    }
-
-    input = Channel.fromPath(params.input)
-        | map { input -> [ input.baseName, input ]}
-
-    switch(params.input_type) { 
-        case "10xh5":
-            middle = input | from_10xh5_to_h5mu
-            break
-
-        case "10xmtx":
-            middle = input | from_10xmtx_to_h5mu
-            break
-
-        default:
-            exit 1, "ERROR: Unrecognised --input_type."
-    }
-
-    output = middle
-        | map { overrideOptionValue(it, "publish", "output", "${params.output}/${it[0]}.h5mu") }
-        | publish.run(
-            map: { [it[0], [input: it[1], output: "${it[0]}.h5mu"]] },
+        commonOptions = [
             auto: [ publish: true ]
-        )
+        ]
+        ch_10xh5 = input_ch
+            | filter{ it[1].input_type == "10xh5" }
+            | from_10xh5_to_h5mu.run(commonOptions)
 
+        ch_10xmtx = input_ch
+            | filter{ it[1].input_type  == "10xmtx" }
+            | from_10xmtx_to_h5mu.run(commonOptions)
+
+        ch_h5ad = input_ch
+            | filter{ it[1].input_type  == "h5ad" }
+            | from_h5ad_to_h5mu.run(commonOptions)
+
+        
+        // /* Combine the different conversion channels */
+        all_ch = ch_10xh5 
+            | mix( ch_10xmtx, ch_h5ad )
+        output_ch = all_ch
+    emit:
+        output_ch
+}
+
+workflow test_wf {
+  helpMessage(config)
+
+  // allow changing the resources_test dir
+  params.resources_test = params.rootDir + "/resources_test"
+
+  // or when running from s3: params.resources_test = "s3://openpipelines-data/"
+
+  params.param_list = [
+    [
+      id: "10xh5_test",
+      input: params.resources_test + "/pbmc_1k_protein_v3/pbmc_1k_protein_v3_filtered_feature_bc_matrix.h5",
+      input_type: "10xh5",
+      modality: null
+    ],
+    [
+      id: "10xmtx_test",
+      input: params.resources_test + "/pbmc_1k_protein_v3/pbmc_1k_protein_v3_filtered_feature_bc_matrix",
+      input_type: "10xmtx",
+      modality: null
+    ],
+    [
+      id: "h5ad",
+      input: params.resources_test + "/pbmc_1k_protein_v3/pbmc_1k_protein_v3_filtered_feature_bc_matrix",
+      input_type: "10xmtx",
+      modality: "rna"
+    ]
+  ]
+    
+  output_ch =
+    viashChannel(params, config)
+    | view { "Input: $it" }    
+    | run_wf
+    | view { output ->
+        assert output.size() == 2 : "outputs should contain two elements; [id, file]"
+        assert output[1].toString().endsWith(".h5mu") : "Output file should be a h5mu file. Found: ${output[1]}"
+        "Output: $output"
+      }
+      | toSortedList()
+      | map { output_list ->
+        assert output_list.size() == 3 : "output channel should contain three events"
+      }
 }

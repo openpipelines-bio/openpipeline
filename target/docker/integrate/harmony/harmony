@@ -425,9 +425,9 @@ RUN Rscript -e 'if (!requireNamespace("remotes", quietly = TRUE)) install.packag
 
 LABEL org.opencontainers.image.authors="Dries De Maeyer, Robrecht Cannoodt"
 LABEL org.opencontainers.image.description="Companion container for running component integrate harmony"
-LABEL org.opencontainers.image.created="2022-10-04T04:03:43Z"
+LABEL org.opencontainers.image.created="2022-10-05T07:36:47Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="796cc8e59a6155d99d50ba3b734fa8a0af03fc40"
+LABEL org.opencontainers.image.revision="5400ec037d3881560288415b7e1ccfc4bcf3bfa9"
 LABEL org.opencontainers.image.version="integration_build"
 VIASHDOCKER
 }

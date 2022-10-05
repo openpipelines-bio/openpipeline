@@ -165,7 +165,7 @@ thisConfig = processConfig([
         {
           "type" : "integer",
           "name" : "--max_iter",
-          "description" : "The number of iterations (epochs) of the optimization. Called `n_epochs` in the original UMAP.",
+          "description" : "The number of iterations (epochs) of the optimization. Called `n_epochs` in the original UMAP. Default is set to 500 if neighbors['connectivities'].shape[0] <= 10000, else 200.",
           "required" : false,
           "direction" : "input",
           "multiple" : false,
