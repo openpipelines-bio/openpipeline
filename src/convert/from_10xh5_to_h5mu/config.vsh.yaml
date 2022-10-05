@@ -12,10 +12,6 @@ functionality:
   argument_groups:
     - name: Inputs
       arguments:
-        - name: "--sample_id"
-          type: string
-          description: Sample ID to be stored in an obs column.
-          example: my_sample
         - name: "--input"
           alternatives: ["-i"]
           type: file
