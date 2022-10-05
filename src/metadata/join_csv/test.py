@@ -1,7 +1,6 @@
 from unittest import main, TestCase
 from tempfile import NamedTemporaryFile
 import pandas as pd
-import numpy as np
 from anndata import AnnData
 from mudata import MuData, read_h5mu
 import subprocess
