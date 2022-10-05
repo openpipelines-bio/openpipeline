@@ -70,20 +70,18 @@ with tempfile.TemporaryDirectory(prefix="cellbender-", dir=meta["temp_dir"]) as 
     "--output", output_file
   ]
 
-  if par["model"]:
-    cmd_pars += [ "--model", par["model"] ]
-  if par["total_droplets_included"]:
-    cmd_pars += [ "--total-droplets-included", str(par["total_droplets_included"]) ]
-  if par["epochs"]:
-    cmd_pars += [ "--epochs", str(par["epochs"]) ]
-  if par["fpr"]:
-    cmd_pars += [ "--fpr", str(par["fpr"]) ]
-  if par["exclude_antibody_capture"]:
-    cmd_pars += [ "--exclude-antibody-capture" ]
-  if par["learning_rate"]:
-    cmd_pars += [ "--learning-rate", str(par["learning_rate"]) ]
-  if par["cuda"]:
-    cmd_pars += [ "--cuda" ]
+  extra_args = [
+    ("--model", "model", True),
+    ("--total-droplets-included", "total_droplets_included", True),
+    ("--epochs", "epochs", True),
+    ("--fpr", "fpr", True),
+    ("--exclude-antibody-capture", "exclude_antibody_capture", False),
+    ("--learning-rate", "learning_rate", True),
+    ("--cuda", "cuda", False)
+  ]
+  for (flag, name, is_kwarg) in extra_args:
+    if par[name]:
+      cmd_pars += [flag, str(par[name])] if is_kwarg else [flag]
 
   logger.info("Running CellBender")
   out = subprocess.check_output(cmd_pars).decode("utf-8")
@@ -104,13 +102,14 @@ with tempfile.TemporaryDirectory(prefix="cellbender-", dir=meta["temp_dir"]) as 
     "obs_latent_scale": "latent_scale"
   }
   for to_name, from_name in obs_store.items():
-    if par[to_name] and from_name in adata_out.obs:
-      data.obs[par[to_name]] = adata_out.obs[from_name]
-    # when using unfiltered data, the values will be in uns instead of obs
-    if par[to_name] and from_name in adata_out.uns and 'barcode_indices_for_latents' in adata_out.uns:
-      vec = np.zeros(data.n_obs)
-      vec[adata_out.uns['barcode_indices_for_latents']] = adata_out.uns[from_name]
-      data.obs[par[to_name]] = vec
+    if par[to_name]:
+      if from_name in adata_out.obs:
+        data.obs[par[to_name]] = adata_out.obs[from_name]
+      # when using unfiltered data, the values will be in uns instead of obs
+      elif from_name in adata_out.uns and 'barcode_indices_for_latents' in adata_out.uns:
+        vec = np.zeros(data.n_obs)
+        vec[adata_out.uns['barcode_indices_for_latents']] = adata_out.uns[from_name]
+        data.obs[par[to_name]] = vec
   
   logger.info("Copying .var output to MuData")
   var_store = { "var_ambient_expression": "ambient_expression" }
