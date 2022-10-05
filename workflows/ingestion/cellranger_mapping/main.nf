@@ -72,7 +72,7 @@ workflow run_wf {
       // store output to fourth field to return as output
       [ id, new_data, split_args, output_data ]
     }
-    | from_10xh5_to_h5mu
+    | from_10xh5_to_h5mu.run(auto: [ publish: true ])
     
     // return output map
     | pmap { id, data, split_args, output_data ->
