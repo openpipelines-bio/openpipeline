@@ -27,7 +27,6 @@ workflow run_wf {
   input_ch
 
   main:
-
   output_ch = input_ch
   
     // split params for downstream components
@@ -40,77 +39,49 @@ workflow run_wf {
         "generate_bam": "generate_bam",
         "include_introns": "include_introns"
       ],
-      use_raw_or_filtered: [
-        "which_10xh5": "which_10xh5"
-      ],
       from_10xh5_to_h5mu: [ 
         "output": "output_h5mu",
-        "obsm_metrics": "obsm_metrics",
+        "obsm_metrics": "obsm_metrics"
+      ],
+      correction: [
+        "perform_correction": "perform_correction"
+      ],
+      filter_with_counts: [
         "min_genes": "min_genes",
-        "min_counts": "min_counts"
+        "min_counts": "min_counts",
       ]
     )
 
     | getWorkflowArguments(key: "cellranger_count")
-    // | view { "cellranger_count: $it" }
     | cellranger_count.run(auto: [ publish: true ])
 
     // split output dir into map
-    // | view { "cellranger_count_split: $it" }
     | cellranger_count_split
 
     // convert to h5mu
-    | pmap { id, data, split_args -> 
-
-      // let user toggle between filtered_h5 or raw_h5
-      input = data[split_args.use_raw_or_filtered.which_10xh5]
+    | pmap { id, output_data, split_args -> 
       
       // combine new data for from_10xh5_to_h5mu
       new_data = 
         [ 
-          sample_id: id, 
-          input: input, 
-          input_metrics_summary: data.metrics_summary
+          input: output_data.raw_h5, 
+          input_metrics_summary: output_data.metrics_summary
         ] +
         split_args.from_10xh5_to_h5mu
 
-      // store output to third field to return as output
-      // and remove the split_args in the meantime
-      [ id, new_data, data ]
+      // store output to fourth field to return as output
+      [ id, new_data, split_args, output_data ]
     }
-    // | view { "from_10xh5_to_h5mu: $it" }
-    | from_10xh5_to_h5mu.run(auto: [ publish: true ])
-
+    | from_10xh5_to_h5mu
+    
     // return output map
-    | pmap { id, h5mu, data ->
-      [ id, data + [h5mu: h5mu] ]
+    | pmap { id, data, split_args, output_data ->
+      [ id, output_data + [h5mu: data] ]
     }
 
   emit:
   output_ch
 }
-
-/*
-# data at various stages of the 'test_wf':
-Input: [
-  foo, 
-  [id:foo, input:[resources_test/cellranger_tiny_fastq/cellranger_tiny_fastq], reference:resources_test/cellranger_tiny_fastq/cellranger_tiny_ref, output_raw:$id.$key.output_raw, output_h5mu:$id.$key.output_h5mu.h5mu, chemistry:auto, secondary_analysis:false, generate_bam:true, include_introns:true, which_10xh5:raw_h5, id_to_obs_names:false, obs_sample_id:sample_id, obsm_metrics:metrics_summary]]cellranger_count: [foo, [id:foo, reference:resources_test/cellranger_tiny_fastq/cellranger_tiny_ref, output_raw:$id.$key.output_raw, input:[resources_test/cellranger_tiny_fastq/cellranger_tiny_fastq], chemistry:auto, generate_bam:true, include_introns:true], [which:[which_10xh5:raw_h5], from_10xh5_to_h5mu:[output:$id.$key.output_h5mu.h5mu, obs_sample_id:sample_id, obsm_metrics:metrics_summary]]
-]
-cellranger_count_split: [
-  foo, 
-  ./foo.cellranger_count.output, 
-  [which:[which_10xh5:raw_h5], from_10xh5_to_h5mu:[output:$id.$key.output_h5mu.h5mu, obs_sample_id:sample_id, obsm_metrics:metrics_summary]]
-]
-from_10xh5_to_h5mu: [
-  foo, 
-  [sample_id:foo, input:./foo.cellranger_count_split.raw_h5.h5, input_metrics_summary:./foo.cellranger_count_split.metrics_summary.csv, output:$id.$key.output_h5mu.h5mu, obs_sample_id:sample_id, obsm_metrics:metrics_summary], 
-  [filtered_h5:./foo.cellranger_count_split.filtered_h5.h5, metrics_summary:./foo.cellranger_count_split.metrics_summary.csv, molecule_info:./foo.cellranger_count_split.molecule_info.h5, bam:./foo.cellranger_count_split.bam.bam, bai:./foo.cellranger_count_split.bai.bai, raw_h5:./foo.cellranger_count_split.raw_h5.h5]
-]
-Output: [
-  foo, 
-  [filtered_h5:./foo.cellranger_count_split.filtered_h5.h5, metrics_summary:./foo.cellranger_count_split.metrics_summary.csv, molecule_info:./foo.cellranger_count_split.molecule_info.h5, bam:./foo.cellranger_count_split.bam.bam, bai:./foo.cellranger_count_split.bai.bai, raw_h5:./foo.cellranger_count_split.raw_h5.h5, h5mu:./foo.from_10xh5_to_h5mu.output_h5mu.h5mu]
-]
-*/
 
 workflow test_wf {
   // allow changing the resources_test dir
