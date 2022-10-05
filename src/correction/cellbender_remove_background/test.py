@@ -15,6 +15,7 @@ file_output = "output.h5mu"
 
 # read 10x h5 file and write as h5mu
 mdat = mu.read_10x_h5(file_raw)
+mdat = mdat[0:100000,] # subsample to reduce computational time
 mdat.write_h5mu(file_input)
 
 # run cellbender
