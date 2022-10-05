@@ -10,10 +10,10 @@ from multiprocessing import Pool
 
 ### VIASH START
 par = {
-    "input": ["resources_test/concat_test_data/e18_mouse_brain_fresh_5k_filtered_feature_bc_matrix_subset_unique_obs.h5mu",
-              "resources_test/concat_test_data/human_brain_3k_filtered_feature_bc_matrix_subset_unique_obs.h5mu"],
+    "input": ["resources_test/concat/e18_mouse_brain_fresh_5k_filtered_feature_bc_matrix_subset.h5mu",
+              "resources_test/concat/human_brain_3k_filtered_feature_bc_matrix_subset.h5mu"],
     "output": "foo.h5mu",
-    "input_id": ["mouse", "human"],
+    "sample_names": ["mouse", "human"],
     "compression": "gzip",
     "other_axis_mode": "move"
 }
@@ -56,7 +56,7 @@ def group_modalities(samples: Iterable[anndata.AnnData]) -> dict[str, anndata.An
 def nunique(row):
     unique = pd.unique(row)
     unique_without_na = pd.core.dtypes.missing.remove_na_arraylike(unique)
-    return len(unique_without_na)
+    return len(unique_without_na) > 1
 
 def any_row_contains_duplicate_values(n_processes: int, frame: pd.DataFrame) -> bool:
     """
@@ -64,11 +64,8 @@ def any_row_contains_duplicate_values(n_processes: int, frame: pd.DataFrame) -> 
     """
     numpy_array = frame.to_numpy()
     with Pool(n_processes) as pool:
-        number_of_unique = pool.map(nunique, iter(numpy_array))
-    number_of_unique = pd.Series(number_of_unique, index=frame.index)
-    non_na_counts = frame.count(axis=1)
-    is_duplicated = (number_of_unique - non_na_counts) != 0
-    return is_duplicated.any()
+        is_duplicated = pool.map(nunique, iter(numpy_array))
+    return any(is_duplicated)
 
 def concatenate_matrices(n_processes: int, input_ids: tuple[str], matrices: Iterable[pd.DataFrame]) \
     -> tuple[dict[str, pd.DataFrame], pd.DataFrame | None, dict[str, pd.core.dtypes.dtypes.Dtype]]:
