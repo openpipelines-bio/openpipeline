@@ -20,6 +20,8 @@
 
 * `workflows/ingestion/make_reference`: A generic component to build a transcriptomics reference into one of many formats.
 
+* `integrate/scvi`: Performs scvi integration.
+
 * `integrate/add_metadata`: Add a csv containing metadata to the .obs or .var field of a mudata file.
 
 * `DataFlowHelper.nf`: Added `passthroughMap`. Usage:
@@ -51,6 +53,7 @@
 * `correction/cellbender_remove_background`: Eliminating technical artifacts from high-throughput single-cell RNA sequencing data.
 
 * `workflows/ingestion/cellranger_postprocessing`: Add post-processing of h5mu files created from Cell Ranger data.
+
 ## MAJOR CHANGES
 
 * `workflows/utils/DataFlowHelper.nf`: Added helper functions `setWorkflowArguments()` and `getWorkflowArguments()` to split the data field of a channel event into a hashmap. Example usage:

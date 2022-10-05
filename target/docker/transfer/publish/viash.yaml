@@ -433,9 +433,9 @@ functionality:
       RUN :
       LABEL org.opencontainers.image.authors="Toni Verbeiren"
       LABEL org.opencontainers.image.description="Companion container for running component transfer publish"
-      LABEL org.opencontainers.image.created="2022-10-05T13:58:22Z"
+      LABEL org.opencontainers.image.created="2022-10-05T14:31:27Z"
       LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-      LABEL org.opencontainers.image.revision="0e99445d09af2bd86c1fa6077485d5932b48feb9"
+      LABEL org.opencontainers.image.revision="ec8b795aaf2e4b698be3dc92285f7753a6f4f848"
       LABEL org.opencontainers.image.version="main_build"
       VIASHDOCKER
       }
@@ -993,5 +993,5 @@ info:
   output: "target/docker/transfer/publish"
   executable: "target/docker/transfer/publish/publish"
   viash_version: "0.6.1"
-  git_commit: "0e99445d09af2bd86c1fa6077485d5932b48feb9"
+  git_commit: "ec8b795aaf2e4b698be3dc92285f7753a6f4f848"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"

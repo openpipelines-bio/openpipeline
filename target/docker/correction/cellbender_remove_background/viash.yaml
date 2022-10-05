@@ -694,9 +694,9 @@ functionality:
         pip install --upgrade --no-cache-dir "git+https://github.com/broadinstitute/CellBender"
       
       LABEL org.opencontainers.image.description="Companion container for running component correction cellbender_remove_background"
-      LABEL org.opencontainers.image.created="2022-10-05T13:58:23Z"
+      LABEL org.opencontainers.image.created="2022-10-05T14:31:28Z"
       LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-      LABEL org.opencontainers.image.revision="0e99445d09af2bd86c1fa6077485d5932b48feb9"
+      LABEL org.opencontainers.image.revision="ec8b795aaf2e4b698be3dc92285f7753a6f4f848"
       LABEL org.opencontainers.image.version="main_build"
       VIASHDOCKER
       }
@@ -1608,5 +1608,5 @@ info:
   output: "target/docker/correction/cellbender_remove_background"
   executable: "target/docker/correction/cellbender_remove_background/cellbender_remove_background"
   viash_version: "0.6.1"
-  git_commit: "0e99445d09af2bd86c1fa6077485d5932b48feb9"
+  git_commit: "ec8b795aaf2e4b698be3dc92285f7753a6f4f848"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"

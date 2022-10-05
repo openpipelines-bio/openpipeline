@@ -2051,5 +2051,5 @@ info:
   platform: "nextflow"
   output: "target/nextflow/demux/bcl_convert"
   viash_version: "0.6.1"
-  git_commit: "0e99445d09af2bd86c1fa6077485d5932b48feb9"
+  git_commit: "ec8b795aaf2e4b698be3dc92285f7753a6f4f848"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"
