@@ -6,6 +6,7 @@ reference: # please fill in - example: "reference.tar.gz"
 # Outputs
 # output_raw: "$id.$key.output_raw.output_raw"
 # output_h5mu: "$id.$key.output_h5mu.h5mu"
+obsm_metrics: "metrics_summary"
 
 # Cell Ranger arguments
 # expect_cells: 3000
@@ -13,12 +14,6 @@ chemistry: "auto"
 secondary_analysis: false
 generate_bam: true
 include_introns: true
-
-# MuData conversion arguments
-which_10xh5: "raw_h5"
-# min_genes: 100
-# min_counts: 1000
-obsm_metrics: "metrics_summary"
 
 # Nextflow input-output arguments
 publish_dir: # please fill in - example: "output/"

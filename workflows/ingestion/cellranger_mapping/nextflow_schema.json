@@ -52,6 +52,13 @@
             
             
             "default": "$id.$key.output_h5mu.h5mu"
+          },
+          "obsm_metrics": {
+            "type":"string",
+            "description": "Name of the .obsm slot under which to QC metrics (if any).",
+            
+            
+            "default": "metrics_summary"
           }
         }
       },
@@ -98,42 +105,6 @@
           }
         }
       },
-      "mudata conversion arguments" : {
-        "title": "MuData conversion arguments",
-        "type": "object",
-        "description": "No description",
-        "default": "",
-        "properties": {
-          "which_10xh5": {
-            "type":"string",
-            "description": "Which 10x .h5 file to convert to h5mu after Cell Ranger is done mapping.",
-            
-            "enum": ["filtered_h5", "raw_h5"],
-            "default": "raw_h5"
-          },
-          "min_genes": {
-            "type":"integer",
-            "description": "Minimum number of counts required for a cell to pass filtering.",
-            
-            
-            "default": ""
-          },
-          "min_counts": {
-            "type":"integer",
-            "description": "Minimum number of genes expressed required for a cell to pass filtering.",
-            
-            
-            "default": ""
-          },
-          "obsm_metrics": {
-            "type":"string",
-            "description": "Name of the .obsm slot under which to QC metrics (if any).",
-            
-            
-            "default": "metrics_summary"
-          }
-        }
-      },
       "nextflow input-output arguments" : {
         "title": "Nextflow input-output arguments",
         "type": "object",
@@ -166,9 +137,6 @@
       },
       {
         "$ref": "#/definitions/cell ranger arguments"
-      },
-      {
-        "$ref": "#/definitions/mudata conversion arguments"
       },
       {
         "$ref": "#/definitions/nextflow input-output arguments"
