@@ -33,10 +33,10 @@ workflow run_wf {
     // and transform for concat component
     | map { tup ->
       data = tup[1]
-      new_data = [ input: data.input, sample_names: data.id ]
+      new_data = [ input: data.input, input_id: data.id ]
       ["combined_samples_rna", new_data, data] + tup.drop(2)
     }
-
+    | view { "Input before concat: $it" }
     | concat
 
     // normalisation
