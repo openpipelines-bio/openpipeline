@@ -60,7 +60,7 @@ workflow run_wf {
     | toSortedList({ a, b -> b[0] <=> a[0] })
     | map {list -> ["combined_samples_atac", 
                       ["input": list.collect{it[1]},
-                       "sample_names":  list.collect{it[0]}],
+                       "input_id":  list.collect{it[0]}],
                       list.collect{it[2]}.first()
                     ]}
     | concat // concat will be integrated into process_atac_multisample in the future
