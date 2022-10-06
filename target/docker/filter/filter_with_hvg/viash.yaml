@@ -732,9 +732,9 @@ functionality:
       
       LABEL org.opencontainers.image.authors="Dries De Maeyer, Robrecht Cannoodt"
       LABEL org.opencontainers.image.description="Companion container for running component filter filter_with_hvg"
-      LABEL org.opencontainers.image.created="2022-10-06T07:25:14Z"
+      LABEL org.opencontainers.image.created="2022-10-06T07:50:13Z"
       LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-      LABEL org.opencontainers.image.revision="99bc5face5bc1a88127be8a64c85de563d18a652"
+      LABEL org.opencontainers.image.revision="d33f79d47bce5647f38d87fd061b051e5ba69f0e"
       LABEL org.opencontainers.image.version="main_build"
       VIASHDOCKER
       }
@@ -1637,5 +1637,5 @@ info:
   output: "target/docker/filter/filter_with_hvg"
   executable: "target/docker/filter/filter_with_hvg/filter_with_hvg"
   viash_version: "0.6.1"
-  git_commit: "99bc5face5bc1a88127be8a64c85de563d18a652"
+  git_commit: "d33f79d47bce5647f38d87fd061b051e5ba69f0e"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"
