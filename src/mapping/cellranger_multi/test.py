@@ -27,6 +27,8 @@ class TestCellrangerMulti(TestCase):
         try:
             subprocess.check_output([meta['executable']] + args_as_list, stderr=subprocess.STDOUT)
         except subprocess.CalledProcessError as e:
+            if not expected_raise:
+                print(e.stdout.decode("utf-8"))
             raise e
 
     def test_cellranger_multi(self):
