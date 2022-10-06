@@ -482,9 +482,9 @@ functionality:
       
       LABEL org.opencontainers.image.authors="Dries Schaumont"
       LABEL org.opencontainers.image.description="Companion container for running component transform delete_layer"
-      LABEL org.opencontainers.image.created="2022-10-06T08:27:47Z"
+      LABEL org.opencontainers.image.created="2022-10-06T09:26:04Z"
       LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-      LABEL org.opencontainers.image.revision="74804ecd08c3da8cff9a5cdf97516e9e125597c3"
+      LABEL org.opencontainers.image.revision="4fe5ec74b095e6a77ebcf44f925c3431eaa0b6b3"
       LABEL org.opencontainers.image.version="main_build"
       VIASHDOCKER
       }
@@ -1139,5 +1139,5 @@ info:
   output: "target/docker/transform/delete_layer"
   executable: "target/docker/transform/delete_layer/delete_layer"
   viash_version: "0.6.1"
-  git_commit: "74804ecd08c3da8cff9a5cdf97516e9e125597c3"
+  git_commit: "4fe5ec74b095e6a77ebcf44f925c3431eaa0b6b3"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"

@@ -1,7 +1,7 @@
 {
     "$schema": "http://json-schema.org/draft-07/schema",
-    "title": "velocyto",
-    "description": "Runs the velocity analysis on a BAM file, outputting a loom file.",
+    "title": "concat",
+    "description": "Concatenates several uni-modal samples in .h5mu files into a single file.\n",
     "type": "object",
     "definitions": {
       "arguments" : {
@@ -12,45 +12,45 @@
         "properties": {
           "input": {
             "type":"string",
-            "description": "Path to BAM file",
+            "description": "Paths to the different samples to be concatenated.",
             
             
             "default": ""
           },
-          "transcriptome": {
+          "input_id": {
             "type":"string",
-            "description": "Path to GTF file",
+            "description": "Names of the different samples that have to be concatenated.  Must be specified when using \u0027--mode move\u0027.\nIn this case, the ids will be used for the columns names of the dataframes registring the conflicts.\nIf specified, must be of same length as `--input`.\n",
             
             
             "default": ""
-          },
-          "barcode": {
-            "type":"string",
-            "description": "Valid barcodes file, to filter the bam. If --bcfile is not specified all the cell barcodes will be included.\nCell barcodes should be specified in the bcfile as the \u0027CB\u0027 tag for each read\n",
-            
-            
-            "default": ""
-          },
-          "without_umi": {
-            "type":"boolean",
-            "description": "foo",
-            
-            
-            "default": "False"
           },
           "output": {
             "type":"string",
-            "description": "Velocyto loom file",
+            "description": "No description",
             
             
-            "default": "$id.$key.output.output"
+            "default": "$id.$key.output.h5mu"
           },
-          "logic": {
+          "obs_sample_name": {
             "type":"string",
-            "description": "The logic to use for the filtering.",
+            "description": "Name of the .obs key under which to add the sample names.",
             
-            "enum": ["Default", "Permissive10X", "Intermediate10X", "ValidatedIntrons10X", "Stricter10X", "ObservedSpanning10X", "Discordant10X", "SmartSeq2"],
-            "default": "Default"
+            
+            "default": "sample_id"
+          },
+          "compression": {
+            "type":"string",
+            "description": "The compression format to be used on the final h5mu object.",
+            
+            
+            "default": "gzip"
+          },
+          "other_axis_mode": {
+            "type":"string",
+            "description": "How to handle the merging of other axis (var, obs, ...).\n\n - None: keep no data\n - same: only keep elements of the matrices which are the same in each of the samples\n - unique: only keep elements for which there is only 1 possible value (1 value that can occur in multiple samples)\n - first: keep the annotation from the first sample\n - only: keep elements that show up in only one of the objects (1 unique element in only 1 sample)\n - move: identical to \u0027same\u0027, but moving the conflicting values to .varm or .obsm\n",
+            
+            "enum": ["same", "unique", "first", "only", "concat", "move"],
+            "default": "move"
           }
         }
       },
