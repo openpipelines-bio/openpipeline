@@ -31,8 +31,6 @@ functionality:
           type: file
           direction: output
           description: "The converted h5mu file."
-          required: true
-          default: '$id.cellranger_postprocessing.output.h5mu'
     - name: Correction arguments
       arguments:
         - name: "--perform_correction"

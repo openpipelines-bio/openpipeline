@@ -529,9 +529,9 @@ functionality:
       
       LABEL org.opencontainers.image.authors="Angela Pisco, Robrecht Cannoodt"
       LABEL org.opencontainers.image.description="Companion container for running component reference make_reference"
-      LABEL org.opencontainers.image.created="2022-10-05T17:23:55Z"
+      LABEL org.opencontainers.image.created="2022-10-06T08:16:58Z"
       LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-      LABEL org.opencontainers.image.revision="daac8fb7fed69e250f3fba7fadb92c753af1a3ae"
+      LABEL org.opencontainers.image.revision="d33f79d47bce5647f38d87fd061b051e5ba69f0e"
       LABEL org.opencontainers.image.version="integration_build"
       VIASHDOCKER
       }
@@ -1206,5 +1206,5 @@ info:
   output: "target/docker/reference/make_reference"
   executable: "target/docker/reference/make_reference/make_reference"
   viash_version: "0.6.1"
-  git_commit: "daac8fb7fed69e250f3fba7fadb92c753af1a3ae"
+  git_commit: "d33f79d47bce5647f38d87fd061b051e5ba69f0e"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"
