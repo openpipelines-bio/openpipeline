@@ -9,7 +9,7 @@ export NXF_VER=21.10.6
 
 ./bin/nextflow \
   run . \
-  -main-script workflows/conversion/conversion/main.nf \
+  -main-script workflows/ingestion/conversion/main.nf \
   -entry test_wf \
   -profile docker,no_publish \
   -c workflows/utils/labels_ci.config \

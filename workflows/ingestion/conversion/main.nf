@@ -9,7 +9,7 @@ include { from_h5ad_to_h5mu } from targetDir + "/convert/from_h5ad_to_h5mu/main.
 include { readConfig; viashChannel; helpMessage } from workflowDir + "/utils/WorkflowHelper.nf"
 
 
-config = readConfig("$workflowDir/conversion/conversion/config.vsh.yaml")
+config = readConfig("$workflowDir/ingestion/conversion/config.vsh.yaml")
 
 workflow {
   helpMessage(config)
