@@ -1,12 +1,16 @@
 functionality:
   name: "conversion"
-  namespace: "conversion"
+  namespace: "ingestion"
   description: "A pipeline to convert different file formats to .h5mu."
   authors:
     - name: Dries Schaumont
       email: dries@data-intuitive.com
       roles: [ author, maintainer ]
       props: { github: DriesSchaumont, orcid: "0000-0002-4389-0440" }
+    - name: Dries De Maeyer
+      email: ddemaeyer@gmail.com
+      roles: [ author ]
+      props: { account: ddemaey1 }
   argument_groups:
     - name: Inputs
       arguments:
@@ -45,7 +49,6 @@ functionality:
           type: string
           multiple: true
           description: "Name of the modality where the h5ad is stored in the h5mu object."
-
   resources:
     - type: nextflow_script
       path: main.nf
