@@ -7,19 +7,19 @@ from tempfile import TemporaryDirectory
 ## VIASH START
 meta = {
     'executable': './target/docker/mapping/cellranger_multi/cellranger_multi',
-    'resources_dir': 'resources_test/'
+    'resources_dir': 'resources_test/10x_5k_anticmv/'
 }
 ## VIASH END
 
-input1_R1 = meta["resources_dir"] + "10x_5k_anticmv/raw/5k_human_antiCMV_T_TBNK_connect_GEX_1_subset_S1_L001_R1_001.fastq.gz"
-input1_R2 = meta["resources_dir"] + "10x_5k_anticmv/raw/5k_human_antiCMV_T_TBNK_connect_GEX_1_subset_S1_L001_R2_001.fastq.gz"
-input2_R1 = meta["resources_dir"] + "10x_5k_anticmv/raw/5k_human_antiCMV_T_TBNK_connect_AB_subset_S2_L004_R1_001.fastq.gz"
-input2_R2 = meta["resources_dir"] + "10x_5k_anticmv/raw/5k_human_antiCMV_T_TBNK_connect_AB_subset_S2_L004_R2_001.fastq.gz"
-input3_R1 =  meta["resources_dir"] + "10x_5k_anticmv/raw/5k_human_antiCMV_T_TBNK_connect_VDJ_subset_S1_L001_R1_001.fastq.gz"
-input3_R2 =  meta["resources_dir"] + "10x_5k_anticmv/raw/5k_human_antiCMV_T_TBNK_connect_VDJ_subset_S1_L001_R2_001.fastq.gz"
+input1_R1 = meta["resources_dir"] + "raw/5k_human_antiCMV_T_TBNK_connect_GEX_1_subset_S1_L001_R1_001.fastq.gz"
+input1_R2 = meta["resources_dir"] + "raw/5k_human_antiCMV_T_TBNK_connect_GEX_1_subset_S1_L001_R2_001.fastq.gz"
+input2_R1 = meta["resources_dir"] + "raw/5k_human_antiCMV_T_TBNK_connect_AB_subset_S2_L004_R1_001.fastq.gz"
+input2_R2 = meta["resources_dir"] + "raw/5k_human_antiCMV_T_TBNK_connect_AB_subset_S2_L004_R2_001.fastq.gz"
+input3_R1 =  meta["resources_dir"] + "raw/5k_human_antiCMV_T_TBNK_connect_VDJ_subset_S1_L001_R1_001.fastq.gz"
+input3_R2 =  meta["resources_dir"] + "raw/5k_human_antiCMV_T_TBNK_connect_VDJ_subset_S1_L001_R2_001.fastq.gz"
 gex_reference =  meta["resources_dir"] +  "reference_gencodev41_chr1/reference_cellranger.tar.gz"
-feature_reference = meta["resources_dir"] + "10x_5k_anticmv/raw/feature_reference.csv"
-vdj_reference = meta["resources_dir"]+  "10x_5k_anticmv/raw/refdata-cellranger-vdj-GRCh38-alts-ensembl-7.0.0.tar.gz"
+feature_reference = meta["resources_dir"] + "raw/feature_reference.csv"
+vdj_reference = meta["resources_dir"]+  "raw/refdata-cellranger-vdj-GRCh38-alts-ensembl-7.0.0.tar.gz"
 
 
 class TestCellrangerMulti(TestCase):
