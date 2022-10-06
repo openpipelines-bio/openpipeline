@@ -14,6 +14,8 @@
 
 * Moved `dataflow/concat`, `dataflow/merge` and `dataflow/split_modalities` to a new namespace: `dataflow`
 
+* Moved `workflows/conversion/conversion` to `workflows/ingestion/conversion`
+
 ## NEW FUNCTIONALITY
 
 * `metadata/add_id`: Add an id to a column in .obs. Also allows joining the id to the .obs_names.

@@ -3,7 +3,7 @@ id: # please fill in - example: "foo"
 input: # please fill in - example: "input.h5mu"
 
 # Outputs
-# output: "$id.$key.output.h5mu"
+# output: "$id.$key.output.output"
 
 # Correction arguments
 perform_correction: false
