@@ -426,9 +426,9 @@ RUN pip install --upgrade pip && \
 
 LABEL org.opencontainers.image.authors="Dries De Maeyer"
 LABEL org.opencontainers.image.description="Companion container for running component dimred pca"
-LABEL org.opencontainers.image.created="2022-10-06T08:16:59Z"
+LABEL org.opencontainers.image.created="2022-10-06T09:27:29Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="d33f79d47bce5647f38d87fd061b051e5ba69f0e"
+LABEL org.opencontainers.image.revision="4fe5ec74b095e6a77ebcf44f925c3431eaa0b6b3"
 LABEL org.opencontainers.image.version="integration_build"
 VIASHDOCKER
 }

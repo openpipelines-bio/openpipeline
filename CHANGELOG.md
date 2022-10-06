@@ -10,6 +10,8 @@
 
 * `convert/from_h5mu_to_seurat`: Disabled because MuDataSeurat is currently broken, see [https://github.com/PMBio/MuDataSeurat/issues/9](PMBio/MuDataSeurat#9).
 
+* `integrate/harmony`: Disabled because it is currently not functioning and the alternative, harmonypy, is used in the workflows.
+
 * `dataflow/concat`: Renamed --sample_names to --input_id and moved the ability to add sample id and to join the sample ids with the observation names to `metadata/add_id`
 
 * Moved `dataflow/concat`, `dataflow/merge` and `dataflow/split_modalities` to a new namespace: `dataflow`

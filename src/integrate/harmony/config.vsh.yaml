@@ -1,6 +1,7 @@
 functionality:
   name: harmony
   namespace: "integrate"
+  status: disabled
   description: "Performs Harmony integration based as described in https://github.com/immunogenomics/harmony."
   authors:
     - name: Dries De Maeyer
