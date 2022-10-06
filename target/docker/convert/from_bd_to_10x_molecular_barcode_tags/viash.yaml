@@ -472,9 +472,9 @@ functionality:
       
       LABEL org.opencontainers.image.authors="Dries Schaumont"
       LABEL org.opencontainers.image.description="Companion container for running component convert from_bd_to_10x_molecular_barcode_tags"
-      LABEL org.opencontainers.image.created="2022-10-06T07:50:13Z"
+      LABEL org.opencontainers.image.created="2022-10-06T08:27:48Z"
       LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-      LABEL org.opencontainers.image.revision="d33f79d47bce5647f38d87fd061b051e5ba69f0e"
+      LABEL org.opencontainers.image.revision="74804ecd08c3da8cff9a5cdf97516e9e125597c3"
       LABEL org.opencontainers.image.version="main_build"
       VIASHDOCKER
       }
@@ -1142,5 +1142,5 @@ info:
   output: "target/docker/convert/from_bd_to_10x_molecular_barcode_tags"
   executable: "target/docker/convert/from_bd_to_10x_molecular_barcode_tags/from_bd_to_10x_molecular_barcode_tags"
   viash_version: "0.6.1"
-  git_commit: "d33f79d47bce5647f38d87fd061b051e5ba69f0e"
+  git_commit: "74804ecd08c3da8cff9a5cdf97516e9e125597c3"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"

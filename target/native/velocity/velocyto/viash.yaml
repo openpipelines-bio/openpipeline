@@ -770,5 +770,5 @@ info:
   output: "target/native/velocity/velocyto"
   executable: "target/native/velocity/velocyto/velocyto"
   viash_version: "0.6.1"
-  git_commit: "d33f79d47bce5647f38d87fd061b051e5ba69f0e"
+  git_commit: "74804ecd08c3da8cff9a5cdf97516e9e125597c3"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"
