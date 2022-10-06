@@ -524,9 +524,9 @@ functionality:
       
       LABEL org.opencontainers.image.authors="Robrecht Cannoodt"
       LABEL org.opencontainers.image.description="Companion container for running component convert from_10xh5_to_h5mu"
-      LABEL org.opencontainers.image.created="2022-10-06T09:26:05Z"
+      LABEL org.opencontainers.image.created="2022-10-06T13:39:49Z"
       LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-      LABEL org.opencontainers.image.revision="4fe5ec74b095e6a77ebcf44f925c3431eaa0b6b3"
+      LABEL org.opencontainers.image.revision="c22e7fb83078aaf29c1103328625fb4f4ad54048"
       LABEL org.opencontainers.image.version="main_build"
       VIASHDOCKER
       }
@@ -1227,5 +1227,5 @@ info:
   output: "target/docker/convert/from_10xh5_to_h5mu"
   executable: "target/docker/convert/from_10xh5_to_h5mu/from_10xh5_to_h5mu"
   viash_version: "0.6.1"
-  git_commit: "4fe5ec74b095e6a77ebcf44f925c3431eaa0b6b3"
+  git_commit: "c22e7fb83078aaf29c1103328625fb4f4ad54048"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"
