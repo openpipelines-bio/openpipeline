@@ -36,7 +36,6 @@ workflow run_wf {
       new_data = [ input: data.input, input_id: data.id ]
       ["combined_samples_rna", new_data, data] + tup.drop(2)
     }
-    | view { "Input before concat: $it" }
     | concat
 
     // normalisation
