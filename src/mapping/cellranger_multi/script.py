@@ -187,7 +187,7 @@ def main(par: dict[str, Any], meta: dict[str, Any]):
         for reference_par_name in REFERENCES:
             reference = par[reference_par_name]
             logger.info('Looking at %s to check if it needs decompressing', reference)
-            if tarfile.is_tarfile(reference):
+            if Path(reference).is_file() and tarfile.is_tarfile(reference):
                 extaction_dir_name = Path(reference.stem).stem # Remove two extensions (if they exist)
                 unpacked_directory = temp_dir_path / extaction_dir_name
                 logger.info('Extracting %s to %s', reference, unpacked_directory)
@@ -225,41 +225,40 @@ def main(par: dict[str, Any], meta: dict[str, Any]):
         if meta["memory_gb"]:
             proc_pars.append(f"--localmem={int(meta['memory_gb']) - 2}")
 
+        # Always output config
+        par['output'].mkdir(parents=True, exist_ok=True)
+        config_file = Path(par['output']) / "config.csv"
+        with open(config_file, "w") as f:
+            f.write(config_content)
+        proc_pars.append(f"--csv={str(config_file)}")
+
         ## Run pipeline
         if par["dryrun"]:
-            cmd = ["cellranger multi"] + proc_pars + ["--csv=config.csv"]
+            cmd = ["cellranger multi"] + proc_pars
             logger.info("> " + ' '.join(cmd))
             logger.info("Contents of 'config.csv':")
             logger.info(config_content)
         else:
-            # write config file
-            config_file = temp_dir_path / "config.csv"
-            with open(config_file, "w") as f:
-                f.write(config_content)
-            proc_pars.append(f"--csv={config_file}")
+            # run process
+            cmd = ["cellranger", "multi"] + proc_pars
+            logger.info("> " + ' '.join(cmd))
+            _ = subprocess.check_call(
+                cmd,
+                cwd=temp_dir
+            )
 
-        # run process
-        cmd = ["cellranger", "multi"] + proc_pars
-        logger.info("> " + ' '.join(cmd))
-        _ = subprocess.check_call(
-            cmd,
-            cwd=temp_dir
-        )
-
-        # look for output dir file
-        tmp_output_dir = temp_dir_path / temp_id / "outs"
-        expected_files = {
-            Path("multi"): Path.is_dir, 
-            Path("per_sample_outs"): Path.is_dir, 
-            Path("config.csv"): Path.is_file,
-        }
-        for file_path, type_func in expected_files.items():
-            output_path = tmp_output_dir / file_path
-            if not type_func(output_path):
-                raise ValueError(f"Could not find expected '{output_path}'")
-        par['output'].mkdir(parents=True, exist_ok=True)
-        for output_path in tmp_output_dir.rglob('*'):
-            shutil.move(str(output_path), par['output'])
+            # look for output dir file
+            tmp_output_dir = temp_dir_path / temp_id / "outs"
+            expected_files = {
+                Path("multi"): Path.is_dir,
+                Path("per_sample_outs"): Path.is_dir
+            }
+            for file_path, type_func in expected_files.items():
+                output_path = tmp_output_dir / file_path
+                if not type_func(output_path):
+                    raise ValueError(f"Could not find expected '{output_path}'")
+            for output_path in tmp_output_dir.rglob('*'):
+                shutil.move(str(output_path), par['output'])
 
 if __name__ == "__main__":
     main(par, meta)
