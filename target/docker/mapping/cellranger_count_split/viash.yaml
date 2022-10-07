@@ -531,9 +531,9 @@ functionality:
       RUN apt update && apt upgrade -y
       LABEL org.opencontainers.image.authors="Angela Pisco, Samuel D'Souza, Robrecht Cannoodt"
       LABEL org.opencontainers.image.description="Companion container for running component mapping cellranger_count_split"
-      LABEL org.opencontainers.image.created="2022-10-06T09:27:31Z"
+      LABEL org.opencontainers.image.created="2022-10-07T07:18:05Z"
       LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-      LABEL org.opencontainers.image.revision="4fe5ec74b095e6a77ebcf44f925c3431eaa0b6b3"
+      LABEL org.opencontainers.image.revision="bd8fd9d189baf240d637d5c04b00fa07a32dade4"
       LABEL org.opencontainers.image.version="integration_build"
       VIASHDOCKER
       }
@@ -1210,5 +1210,5 @@ info:
   output: "target/docker/mapping/cellranger_count_split"
   executable: "target/docker/mapping/cellranger_count_split/cellranger_count_split"
   viash_version: "0.6.1"
-  git_commit: "4fe5ec74b095e6a77ebcf44f925c3431eaa0b6b3"
+  git_commit: "bd8fd9d189baf240d637d5c04b00fa07a32dade4"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"

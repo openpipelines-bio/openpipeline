@@ -1977,5 +1977,5 @@ info:
   platform: "nextflow"
   output: "target/nextflow/dataflow/merge"
   viash_version: "0.6.1"
-  git_commit: "4fe5ec74b095e6a77ebcf44f925c3431eaa0b6b3"
+  git_commit: "bd8fd9d189baf240d637d5c04b00fa07a32dade4"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"

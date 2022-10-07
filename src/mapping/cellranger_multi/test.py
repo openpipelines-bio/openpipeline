@@ -1,6 +1,8 @@
 from unittest import TestCase, main
 import subprocess
 from pathlib import Path
+import tarfile
+from tempfile import TemporaryDirectory
 
 ## VIASH START
 meta = {
@@ -54,8 +56,25 @@ class TestCellrangerMulti(TestCase):
 
         # check for vdj data
         self.assertTrue(Path("output/per_sample_outs/run/vdj_t/filtered_contig_annotations.csv").is_file())
-        
     
+    def test_cellranger_multi_decompressed_reference(self):
+        with tarfile.open(gex_reference) as open_tarfile:
+            with TemporaryDirectory() as tmpdirname:
+                open_tarfile.extractall(tmpdirname)
+                self._run_and_check_output([
+                        "--output", "test/",
+                        "--input", input1_R1,
+                        "--input", input1_R2,
+                        "--input", input2_R1,
+                        "--input", input2_R2,
+                        "--input", input3_R1,
+                        "--input", input3_R2,
+                        "--gex_reference", tmpdirname,
+                        "--vdj_reference", vdj_reference,
+                        "--feature_reference", feature_reference,
+                        "--library_id", "5k_human_antiCMV_T_TBNK_connect_GEX_1_subset;5k_human_antiCMV_T_TBNK_connect_AB_subset;5k_human_antiCMV_T_TBNK_connect_VDJ_subset",
+                        "--library_type", "Gene Expression;Antibody Capture;VDJ",
+                        "--dryrun"])
 
 if __name__ == "__main__":
     main()
