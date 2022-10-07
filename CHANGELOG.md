@@ -10,15 +10,21 @@
 
 * `convert/from_h5mu_to_seurat`: Disabled because MuDataSeurat is currently broken, see [https://github.com/PMBio/MuDataSeurat/issues/9](PMBio/MuDataSeurat#9).
 
-* `integrate/concat`: Renamed --sample_names to --input_id and moved the ability to add sample id and to join the sample ids with the observation names to `metadata/add_id`
+* `integrate/harmony`: Disabled because it is currently not functioning and the alternative, harmonypy, is used in the workflows.
 
-* Moved `integrate/concat`, `integrate/merge` and `split/split_modalities` to a new namespace: `dataflow`
+* `dataflow/concat`: Renamed --sample_names to --input_id and moved the ability to add sample id and to join the sample ids with the observation names to `metadata/add_id`
+
+* Moved `dataflow/concat`, `dataflow/merge` and `dataflow/split_modalities` to a new namespace: `dataflow`
+
+* Moved `workflows/conversion/conversion` to `workflows/ingestion/conversion`
 
 ## NEW FUNCTIONALITY
 
 * `metadata/add_id`: Add an id to a column in .obs. Also allows joining the id to the .obs_names.
 
 * `workflows/ingestion/make_reference`: A generic component to build a transcriptomics reference into one of many formats.
+
+* `integrate/scvi`: Performs scvi integration.
 
 * `integrate/add_metadata`: Add a csv containing metadata to the .obs or .var field of a mudata file.
 
@@ -51,6 +57,7 @@
 * `correction/cellbender_remove_background`: Eliminating technical artifacts from high-throughput single-cell RNA sequencing data.
 
 * `workflows/ingestion/cellranger_postprocessing`: Add post-processing of h5mu files created from Cell Ranger data.
+
 ## MAJOR CHANGES
 
 * `workflows/utils/DataFlowHelper.nf`: Added helper functions `setWorkflowArguments()` and `getWorkflowArguments()` to split the data field of a channel event into a hashmap. Example usage:
@@ -69,6 +76,8 @@
 
 * `convert/from_10xh5_to_h5mu`: Allow reading in QC metrics, use gene ids as `.obs_names` instead of gene symbols.
 
+* `workflows/conversion`: Update pipeline to use the latest practices and to get it to a working state.
+
 ## MINOR CHANGES
 
 * `dimred/umap`: Streamline UMAP parameters by adding `--obsm_output` parameter to allow choosing the output `.obsm` slot.
@@ -83,9 +92,9 @@
 
 * `convert/from_bd_to_10x_molecular_barcode_tags`: Replaced UTF8 characters with ASCII. OpenJDK 17 or lower might throw the following exception when trying to read a UTF8 file: `java.nio.charset.MalformedInputException: Input length = 1`.
 
-* `integrate/concat`: Overriding sample name in .obs no longer raises `AttributeError`.
+* `dataflow/concat`: Overriding sample name in .obs no longer raises `AttributeError`.
 
-* `integrate/concat`: Fix false positives when checking for conflicts in .obs and .var when using `--mode move`.
+* `dataflow/concat`: Fix false positives when checking for conflicts in .obs and .var when using `--mode move`.
 
 # openpipeline 0.5.0
 
@@ -117,7 +126,7 @@ Major redesign of the integration and multiomic workflows. Current list of workf
 
 * `convert/from_csv_to_h5mu`: Disable until it is needed again.
 
-* `integrate/concat`: Deprecated `"concat"` option for `--other_axis_mode`.
+* `dataflow/concat`: Deprecated `"concat"` option for `--other_axis_mode`.
 
 ## NEW COMPONENTS
 
@@ -145,7 +154,7 @@ Major redesign of the integration and multiomic workflows. Current list of workf
 
 * `convert/from_bdrhap_to_h5mu`: Added support for being able to deal with WTA, Targeted, SMK, AbSeq and VDJ data.
 
-* `integrate/concat`: Added `"move"` option to `--other_axis_mode`, which allows merging `.obs` and `.var` by only keeping elements of the matrices which are the same in each of the samples, moving the conflicting values to `.varm` or `.obsm`.
+* `dataflow/concat`: Added `"move"` option to `--other_axis_mode`, which allows merging `.obs` and `.var` by only keeping elements of the matrices which are the same in each of the samples, moving the conflicting values to `.varm` or `.obsm`.
 
 ## MAJOR CHANGES
 
@@ -167,7 +176,7 @@ Major redesign of the integration and multiomic workflows. Current list of workf
 
 * `dimred/pca` and `dimred/umap`: Add parameters for choosing the input/output slots.
 
-* `integrate/concat`: Optimize concat performance by adding multiprocessing and refactoring functions.
+* `dataflow/concat`: Optimize concat performance by adding multiprocessing and refactoring functions.
 
 * `workflows/multimodal_integration`: Add `obs_covariates` argument to pipeline.
 
@@ -175,7 +184,7 @@ Major redesign of the integration and multiomic workflows. Current list of workf
 
 * Several components: Revert using slim versions of containers because they do not provide the tools to run nextflow with trace capabilities.
 
-* `integrate/concat`: Fix an issue where joining boolean values caused `TypeError`.
+* `dataflow/concat`: Fix an issue where joining boolean values caused `TypeError`.
 
 * `workflows/multiomics/rna_multisample`, `workflows/multiomics/rna_singlesample` and `workflows/multiomics/integration`: Use nextflow trace reporting when running integration tests.
 
@@ -196,9 +205,9 @@ Major redesign of the integration and multiomic workflows. Current list of workf
 
 * `convert/from_bdrhap_to_h5mu`: Merge one or more BD rhapsody outputs into an h5mu file.
 
-* `split/split_modalities`: Split the modalities from a single .h5mu multimodal sample into seperate .h5mu files. 
+* `dataflow/split_modalities`: Split the modalities from a single .h5mu multimodal sample into seperate .h5mu files. 
 
-* `integrate/concat`: Combine data from multiple samples together.
+* `dataflow/concat`: Combine data from multiple samples together.
 
 ## MINOR CHANGES
 
@@ -214,7 +223,7 @@ Major redesign of the integration and multiomic workflows. Current list of workf
 
 * `resources_test/bdrhap_ref_gencodev40_chr1`: Add subsampled reference to test BD rhapsody pipeline with.
 
-* `integrate/merge`: Merge several unimodal .h5mu files into one multimodal .h5mu file.
+* `dataflow/merge`: Merge several unimodal .h5mu files into one multimodal .h5mu file.
 
 * Updated several python docker images to slim version.
 

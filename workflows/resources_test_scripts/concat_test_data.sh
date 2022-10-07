@@ -66,7 +66,7 @@ rm "${OUT}/e18_mouse_brain_fresh_5k_filtered_feature_bc_matrix.h5mu" \
    
 
 echo "> Running concat component"
-bin/viash run src/integrate/concat/config.vsh.yaml -- \
+bin/viash run src/dataflow/concat/config.vsh.yaml -- \
   --input "$OUT/human_brain_3k_filtered_feature_bc_matrix_subset_unique_obs.h5mu,$OUT/e18_mouse_brain_fresh_5k_filtered_feature_bc_matrix_subset_unique_obs.h5mu" \
   --input_id "human,mouse" \
   --output "$OUT/concatenated_brain_filtered_feature_bc_matrix_subset.h5mu"

@@ -60,7 +60,7 @@ workflow run_wf {
     | toSortedList({ a, b -> b[0] <=> a[0] })
     | map {list -> ["combined_samples_atac", 
                       ["input": list.collect{it[1]},
-                       "sample_names":  list.collect{it[0]}],
+                       "input_id":  list.collect{it[0]}],
                       list.collect{it[2]}.first()
                     ]}
     | concat // concat will be integrated into process_atac_multisample in the future
@@ -84,21 +84,26 @@ workflow test_wf {
 
   // or when running from s3: params.resources_test = "s3://openpipelines-data/"
   testParams = [
-    id: "mouse;human",
-    input: params.resources_test + "/concat_test_data/e18_mouse_brain_fresh_5k_filtered_feature_bc_matrix_subset_unique_obs.h5mu;" + params.resources_test + "/concat_test_data/human_brain_3k_filtered_feature_bc_matrix_subset_unique_obs.h5mu",
-    obs_covariates: ["sample_id"],
-    publish_dir: "foo/",
+    param_list: [
+        [
+          id: "mouse",
+          input: params.resources_test + "/concat_test_data/e18_mouse_brain_fresh_5k_filtered_feature_bc_matrix_subset_unique_obs.h5mu",
+          obs_covariates: "sample_id",
+          publish_dir: "foo/"
+        ],
+        [
+          id: "human",
+          input: params.resources_test + "/concat_test_data/human_brain_3k_filtered_feature_bc_matrix_subset_unique_obs.h5mu",
+          input_type: "10xmtx",
+          obs_covariates: "sample_id",
+          publish_dir: "foo/"
+        ]
+      ]
+    ]
 
-  ]
 
   output_ch =
     viashChannel(testParams, config)
-      | flatMap {id, input_parameters -> [input_parameters.id,
-                                          input_parameters.input,
-                                          Collections.nCopies(input_parameters.id.size(), 
-                                                              input_parameters.obs_covariates)
-                                         ].transpose()}
-      | map {id,  input_file, obs_covariates -> [id, ["id": id, "input": input_file, "obs_covariates": obs_covariates]]}
       | view { "Input: $it" }
       | run_wf
       | view { output ->
