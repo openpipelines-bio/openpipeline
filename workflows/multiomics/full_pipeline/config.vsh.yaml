@@ -14,15 +14,10 @@ functionality:
           required: true
           type: string
           description: ID of the sample.
-          multiple: true
-          multiple_sep: ';'
           example: foo
         - name: "--input"
           alternatives: [-i]
           description: Path to the sample.
-          required: true
-          multiple: true
-          multiple_sep: ';'
           example: input.h5mu
           type: file
         - name: "--obs_covariates"
