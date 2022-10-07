@@ -18,6 +18,7 @@ functionality:
         - name: "--input"
           alternatives: [-i]
           description: Path to the sample.
+          required: true
           example: input.h5mu
           type: file
         - name: "--obs_covariates"
