@@ -2104,5 +2104,5 @@ info:
   platform: "nextflow"
   output: "target/nextflow/convert/from_10xh5_to_h5mu"
   viash_version: "0.6.1"
-  git_commit: "b3399e71567f08f20bb9027620a83b964ae7c86e"
+  git_commit: "711248be819b88325adaffa4c4e0e53e4b882eb1"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"
