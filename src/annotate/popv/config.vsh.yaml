@@ -1,0 +1,42 @@
+functionality:
+  name: popv
+  namespace: "annotate"
+  version: "dev"
+  description: "Performs popular major vote cell typing on single cell sequence data"
+  authors:
+    - name: Matthias Beyens
+      email: matthias.beyens@gmail.com
+      roles: [ author ]
+      props: { github: mbeyens, orcid: "0000-0003-3304-0706" }
+  argument_groups:
+    - name: Inputs
+      arguments:
+        - name: "--input"
+          alternatives: ["-i"]
+          type: file
+          description: Input h5mu file
+          direction: input
+          required: true
+  resources:
+    - type: python_script
+      path: script.py
+  test_resources:
+    - type: python_script
+      path: test.py
+    - path: ../../../resources_test/pbmc_1k_protein_v3/pbmc_1k_protein_v3_mms.h5mu
+platforms:
+  - type: docker
+    image: nvidia/cuda:11.3.0-runtime-ubuntu20.04
+    setup:
+      - type: docker
+        run: apt update && apt install -y python3-pip==22.2.2
+      - type: python
+        packages:
+          - mudata~=0.2.0
+          - scanpy~=1.9.1
+          - torch~=1.12.1+cu113
+          - torchvision~=0.13.1+cu113
+  - type: nextflow
+    variant: vdsl3
+    directives:
+      label: [highmem, highcpu] # TODO: should add new label highmem-single-gpu and lowmem-single-gpu
