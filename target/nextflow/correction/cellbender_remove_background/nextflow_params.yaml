@@ -11,10 +11,16 @@ obs_latent_scale: "latent_scale"
 var_ambient_expression: "ambient_expression"
 
 # Arguments
-# model: "foo"
-# total_droplets_included: 50000
-# epochs: 150
-# fpr: 0.01
+# expected_cells: 123
+total_droplets_included: 25000
+model: "full"
+epochs: 150
+low_count_threshold: 15
+z_dim: 100
+z_layers: [500]
+training_fraction: 0.9
+empty_drop_training_fraction: 0.5
+fpr: [0.01]
 exclude_antibody_capture: false
 # learning_rate: 1.0E-4
 cuda: false

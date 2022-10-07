@@ -71,17 +71,23 @@ with tempfile.TemporaryDirectory(prefix="cellbender-", dir=meta["temp_dir"]) as 
   ]
 
   extra_args = [
-    ("--model", "model", True),
+    ("--expected-cells", "expected_cells", True),
     ("--total-droplets-included", "total_droplets_included", True),
+    ("--model", "model", True),
     ("--epochs", "epochs", True),
-    ("--fpr", "fpr", True),
+    ("--cuda", "cuda", False),
+    ("--low-count-threshold", "low_count_threshold", True),
+    ("--z-dim", "z_dim", True),
+    ("--z-layers", "z_layers", True),
+    ("--training-fraction", "training_fraction", True),
     ("--exclude-antibody-capture", "exclude_antibody_capture", False),
     ("--learning-rate", "learning_rate", True),
-    ("--cuda", "cuda", False)
+    ("--empty-drop-training-fraction", "empty_drop_training_fraction", True),
   ]
   for (flag, name, is_kwarg) in extra_args:
     if par[name]:
-      cmd_pars += [flag, str(par[name])] if is_kwarg else [flag]
+      values = par[name] if isinstance(par[name], list) else [par[name]]
+      cmd_pars += [flag] + [str(val) for val in values] if is_kwarg else [flag]
 
   logger.info("Running CellBender")
   out = subprocess.check_output(cmd_pars).decode("utf-8")

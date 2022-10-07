@@ -208,8 +208,22 @@ function ViashHelp {
   echo "        default: ambient_expression"
   echo ""
   echo "Arguments:"
+  echo "    --expected_cells"
+  echo "        type: integer"
+  echo "        Number of cells expected in the dataset (a rough estimate within a"
+  echo "        factor of 2 is sufficient)."
+  echo ""
+  echo "    --total_droplets_included"
+  echo "        type: integer"
+  echo "        default: 25000"
+  echo "        The number of droplets from the rank-ordered UMI plot"
+  echo "        that will be analyzed. The largest 'total_droplets'"
+  echo "        droplets will have their cell probabilities inferred"
+  echo "        as an output."
+  echo ""
   echo "    --model"
   echo "        type: string"
+  echo "        default: full"
   echo "        choices: [ simple, ambient, swapping, full ]"
   echo "        Which model is being used for count data. 'simple'"
   echo "        does not model either ambient RNA or random barcode"
@@ -217,24 +231,46 @@ function ViashHelp {
   echo "        'ambient' assumes background RNA is incorporated into"
   echo "        droplets. 'swapping' assumes background RNA comes from"
   echo "        random barcode swapping. 'full' uses a combined"
-  echo "        ambient and swapping model. Defaults to 'full'."
-  echo ""
-  echo "    --total_droplets_included"
-  echo "        type: integer"
-  echo "        example: 50000"
-  echo "        The number of droplets from the rank-ordered UMI plot"
-  echo "        that will be analyzed. The largest 'total_droplets'"
-  echo "        droplets will have their cell probabilities inferred"
-  echo "        as an output."
+  echo "        ambient and swapping model."
   echo ""
   echo "    --epochs"
   echo "        type: integer"
-  echo "        example: 150"
-  echo "        Number of epochs to train"
+  echo "        default: 150"
+  echo "        Number of epochs to train."
+  echo ""
+  echo "    --low_count_threshold"
+  echo "        type: integer"
+  echo "        default: 15"
+  echo "        Droplets with UMI counts below this number are completely"
+  echo "        excluded from the analysis. This can help identify the correct"
+  echo "        prior for empty droplet counts in the rare case where empty"
+  echo "        counts are extremely high (over 200)."
+  echo ""
+  echo "    --z_dim"
+  echo "        type: integer"
+  echo "        default: 100"
+  echo "        Dimension of latent variable z."
+  echo ""
+  echo "    --z_layers"
+  echo "        type: integer, multiple values allowed"
+  echo "        default: 500"
+  echo "        Dimension of hidden layers in the encoder for z."
+  echo ""
+  echo "    --training_fraction"
+  echo "        type: double"
+  echo "        default: 0.9"
+  echo "        Training detail: the fraction of the data used for training."
+  echo "        The rest is never seen by the inference algorithm. Speeds up learning."
+  echo ""
+  echo "    --empty_drop_training_fraction"
+  echo "        type: double"
+  echo "        default: 0.5"
+  echo "        Training detail: the fraction of the training data each epoch that"
+  echo "        is drawn (randomly sampled) from surely empty droplets."
   echo ""
   echo "    --fpr"
-  echo "        type: double"
-  echo "        example: 0.01"
+  echo "        type: double, multiple values allowed"
+  echo "        default: 0.01"
   echo "        Target false positive rate in (0, 1). A false positive"
   echo "        is a true signal count that is erroneously removed."
   echo "        More background removal is accompanied by more signal"
@@ -476,16 +512,20 @@ function ViashDockerCheckCommands {
 #   ViashDockerFile
 function ViashDockerfile {
   cat << 'VIASHDOCKER'
-FROM python:3.10
+FROM nvcr.io/nvidia/cuda:11.8.0-base-ubuntu22.04
+
+RUN apt-get update && \
+  DEBIAN_FRONTEND=noninteractive apt-get install -y python3-pip python-is-python3 git && \
+  rm -rf /var/lib/apt/lists/*
 
 RUN pip install --upgrade pip && \
-  pip install --upgrade --no-cache-dir "muon" "mudata~=0.2.0" && \
+  pip install --upgrade --no-cache-dir "muon" "mudata~=0.2.0" "torch" "torchvision" && \
   pip install --upgrade --no-cache-dir "git+https://github.com/broadinstitute/CellBender"
 
 LABEL org.opencontainers.image.description="Companion container for running component correction cellbender_remove_background"
-LABEL org.opencontainers.image.created="2022-10-07T11:58:44Z"
+LABEL org.opencontainers.image.created="2022-10-07T21:47:47Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="711248be819b88325adaffa4c4e0e53e4b882eb1"
+LABEL org.opencontainers.image.revision="1169e6844f42fa025b3725d9bc4ce0230712f7ce"
 LABEL org.opencontainers.image.version="main_build"
 VIASHDOCKER
 }
@@ -733,15 +773,15 @@ while [[ $# -gt 0 ]]; do
             VIASH_PAR_VAR_AMBIENT_EXPRESSION=$(ViashRemoveFlags "$1")
             shift 1
             ;;
-        --model)
-            [ -n "$VIASH_PAR_MODEL" ] && ViashError Bad arguments for option \'--model\': \'$VIASH_PAR_MODEL\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
-            VIASH_PAR_MODEL="$2"
-            [ $# -lt 2 ] && ViashError Not enough arguments passed to --model. Use "--help" to get more information on the parameters. && exit 1
+        --expected_cells)
+            [ -n "$VIASH_PAR_EXPECTED_CELLS" ] && ViashError Bad arguments for option \'--expected_cells\': \'$VIASH_PAR_EXPECTED_CELLS\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+            VIASH_PAR_EXPECTED_CELLS="$2"
+            [ $# -lt 2 ] && ViashError Not enough arguments passed to --expected_cells. Use "--help" to get more information on the parameters. && exit 1
             shift 2
             ;;
-        --model=*)
-            [ -n "$VIASH_PAR_MODEL" ] && ViashError Bad arguments for option \'--model=*\': \'$VIASH_PAR_MODEL\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
-            VIASH_PAR_MODEL=$(ViashRemoveFlags "$1")
+        --expected_cells=*)
+            [ -n "$VIASH_PAR_EXPECTED_CELLS" ] && ViashError Bad arguments for option \'--expected_cells=*\': \'$VIASH_PAR_EXPECTED_CELLS\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+            VIASH_PAR_EXPECTED_CELLS=$(ViashRemoveFlags "$1")
             shift 1
             ;;
         --total_droplets_included)
@@ -755,6 +795,17 @@ while [[ $# -gt 0 ]]; do
             VIASH_PAR_TOTAL_DROPLETS_INCLUDED=$(ViashRemoveFlags "$1")
             shift 1
             ;;
+        --model)
+            [ -n "$VIASH_PAR_MODEL" ] && ViashError Bad arguments for option \'--model\': \'$VIASH_PAR_MODEL\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+            VIASH_PAR_MODEL="$2"
+            [ $# -lt 2 ] && ViashError Not enough arguments passed to --model. Use "--help" to get more information on the parameters. && exit 1
+            shift 2
+            ;;
+        --model=*)
+            [ -n "$VIASH_PAR_MODEL" ] && ViashError Bad arguments for option \'--model=*\': \'$VIASH_PAR_MODEL\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+            VIASH_PAR_MODEL=$(ViashRemoveFlags "$1")
+            shift 1
+            ;;
         --epochs)
             [ -n "$VIASH_PAR_EPOCHS" ] && ViashError Bad arguments for option \'--epochs\': \'$VIASH_PAR_EPOCHS\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
             VIASH_PAR_EPOCHS="$2"
@@ -766,15 +817,82 @@ while [[ $# -gt 0 ]]; do
             VIASH_PAR_EPOCHS=$(ViashRemoveFlags "$1")
             shift 1
             ;;
+        --low_count_threshold)
+            [ -n "$VIASH_PAR_LOW_COUNT_THRESHOLD" ] && ViashError Bad arguments for option \'--low_count_threshold\': \'$VIASH_PAR_LOW_COUNT_THRESHOLD\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+            VIASH_PAR_LOW_COUNT_THRESHOLD="$2"
+            [ $# -lt 2 ] && ViashError Not enough arguments passed to --low_count_threshold. Use "--help" to get more information on the parameters. && exit 1
+            shift 2
+            ;;
+        --low_count_threshold=*)
+            [ -n "$VIASH_PAR_LOW_COUNT_THRESHOLD" ] && ViashError Bad arguments for option \'--low_count_threshold=*\': \'$VIASH_PAR_LOW_COUNT_THRESHOLD\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+            VIASH_PAR_LOW_COUNT_THRESHOLD=$(ViashRemoveFlags "$1")
+            shift 1
+            ;;
+        --z_dim)
+            [ -n "$VIASH_PAR_Z_DIM" ] && ViashError Bad arguments for option \'--z_dim\': \'$VIASH_PAR_Z_DIM\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+            VIASH_PAR_Z_DIM="$2"
+            [ $# -lt 2 ] && ViashError Not enough arguments passed to --z_dim. Use "--help" to get more information on the parameters. && exit 1
+            shift 2
+            ;;
+        --z_dim=*)
+            [ -n "$VIASH_PAR_Z_DIM" ] && ViashError Bad arguments for option \'--z_dim=*\': \'$VIASH_PAR_Z_DIM\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+            VIASH_PAR_Z_DIM=$(ViashRemoveFlags "$1")
+            shift 1
+            ;;
+        --z_layers)
+            if [ -z "$VIASH_PAR_Z_LAYERS" ]; then
+              VIASH_PAR_Z_LAYERS="$2"
+            else
+              VIASH_PAR_Z_LAYERS="$VIASH_PAR_Z_LAYERS:""$2"
+            fi
+            [ $# -lt 2 ] && ViashError Not enough arguments passed to --z_layers. Use "--help" to get more information on the parameters. && exit 1
+            shift 2
+            ;;
+        --z_layers=*)
+            if [ -z "$VIASH_PAR_Z_LAYERS" ]; then
+              VIASH_PAR_Z_LAYERS=$(ViashRemoveFlags "$1")
+            else
+              VIASH_PAR_Z_LAYERS="$VIASH_PAR_Z_LAYERS:"$(ViashRemoveFlags "$1")
+            fi
+            shift 1
+            ;;
+        --training_fraction)
+            [ -n "$VIASH_PAR_TRAINING_FRACTION" ] && ViashError Bad arguments for option \'--training_fraction\': \'$VIASH_PAR_TRAINING_FRACTION\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+            VIASH_PAR_TRAINING_FRACTION="$2"
+            [ $# -lt 2 ] && ViashError Not enough arguments passed to --training_fraction. Use "--help" to get more information on the parameters. && exit 1
+            shift 2
+            ;;
+        --training_fraction=*)
+            [ -n "$VIASH_PAR_TRAINING_FRACTION" ] && ViashError Bad arguments for option \'--training_fraction=*\': \'$VIASH_PAR_TRAINING_FRACTION\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+            VIASH_PAR_TRAINING_FRACTION=$(ViashRemoveFlags "$1")
+            shift 1
+            ;;
+        --empty_drop_training_fraction)
+            [ -n "$VIASH_PAR_EMPTY_DROP_TRAINING_FRACTION" ] && ViashError Bad arguments for option \'--empty_drop_training_fraction\': \'$VIASH_PAR_EMPTY_DROP_TRAINING_FRACTION\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+            VIASH_PAR_EMPTY_DROP_TRAINING_FRACTION="$2"
+            [ $# -lt 2 ] && ViashError Not enough arguments passed to --empty_drop_training_fraction. Use "--help" to get more information on the parameters. && exit 1
+            shift 2
+            ;;
+        --empty_drop_training_fraction=*)
+            [ -n "$VIASH_PAR_EMPTY_DROP_TRAINING_FRACTION" ] && ViashError Bad arguments for option \'--empty_drop_training_fraction=*\': \'$VIASH_PAR_EMPTY_DROP_TRAINING_FRACTION\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+            VIASH_PAR_EMPTY_DROP_TRAINING_FRACTION=$(ViashRemoveFlags "$1")
+            shift 1
+            ;;
         --fpr)
-            [ -n "$VIASH_PAR_FPR" ] && ViashError Bad arguments for option \'--fpr\': \'$VIASH_PAR_FPR\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
-            VIASH_PAR_FPR="$2"
+            if [ -z "$VIASH_PAR_FPR" ]; then
+              VIASH_PAR_FPR="$2"
+            else
+              VIASH_PAR_FPR="$VIASH_PAR_FPR:""$2"
+            fi
             [ $# -lt 2 ] && ViashError Not enough arguments passed to --fpr. Use "--help" to get more information on the parameters. && exit 1
             shift 2
             ;;
         --fpr=*)
-            [ -n "$VIASH_PAR_FPR" ] && ViashError Bad arguments for option \'--fpr=*\': \'$VIASH_PAR_FPR\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
-            VIASH_PAR_FPR=$(ViashRemoveFlags "$1")
+            if [ -z "$VIASH_PAR_FPR" ]; then
+              VIASH_PAR_FPR=$(ViashRemoveFlags "$1")
+            else
+              VIASH_PAR_FPR="$VIASH_PAR_FPR:"$(ViashRemoveFlags "$1")
+            fi
             shift 1
             ;;
         --exclude_antibody_capture)
@@ -999,6 +1117,33 @@ fi
 if [ -z ${VIASH_PAR_VAR_AMBIENT_EXPRESSION+x} ]; then
   VIASH_PAR_VAR_AMBIENT_EXPRESSION="ambient_expression"
 fi
+if [ -z ${VIASH_PAR_TOTAL_DROPLETS_INCLUDED+x} ]; then
+  VIASH_PAR_TOTAL_DROPLETS_INCLUDED="25000"
+fi
+if [ -z ${VIASH_PAR_MODEL+x} ]; then
+  VIASH_PAR_MODEL="full"
+fi
+if [ -z ${VIASH_PAR_EPOCHS+x} ]; then
+  VIASH_PAR_EPOCHS="150"
+fi
+if [ -z ${VIASH_PAR_LOW_COUNT_THRESHOLD+x} ]; then
+  VIASH_PAR_LOW_COUNT_THRESHOLD="15"
+fi
+if [ -z ${VIASH_PAR_Z_DIM+x} ]; then
+  VIASH_PAR_Z_DIM="100"
+fi
+if [ -z ${VIASH_PAR_Z_LAYERS+x} ]; then
+  VIASH_PAR_Z_LAYERS="500"
+fi
+if [ -z ${VIASH_PAR_TRAINING_FRACTION+x} ]; then
+  VIASH_PAR_TRAINING_FRACTION="0.9"
+fi
+if [ -z ${VIASH_PAR_EMPTY_DROP_TRAINING_FRACTION+x} ]; then
+  VIASH_PAR_EMPTY_DROP_TRAINING_FRACTION="0.5"
+fi
+if [ -z ${VIASH_PAR_FPR+x} ]; then
+  VIASH_PAR_FPR="0.01"
+fi
 if [ -z ${VIASH_PAR_EXCLUDE_ANTIBODY_CAPTURE+x} ]; then
   VIASH_PAR_EXCLUDE_ANTIBODY_CAPTURE="false"
 fi
@@ -1008,6 +1153,13 @@ fi
 
 
 # check whether parameters values are of the right type
+if [[ -n "$VIASH_PAR_EXPECTED_CELLS" ]]; then
+  if ! [[ "$VIASH_PAR_EXPECTED_CELLS" =~ ^[-+]?[0-9]+$ ]]; then
+    ViashError '--expected_cells' has to be an integer. Use "--help" to get more information on the parameters.
+    exit 1
+  fi
+fi
+
 if [[ -n "$VIASH_PAR_TOTAL_DROPLETS_INCLUDED" ]]; then
   if ! [[ "$VIASH_PAR_TOTAL_DROPLETS_INCLUDED" =~ ^[-+]?[0-9]+$ ]]; then
     ViashError '--total_droplets_included' has to be an integer. Use "--help" to get more information on the parameters.
@@ -1022,11 +1174,58 @@ if [[ -n "$VIASH_PAR_EPOCHS" ]]; then
   fi
 fi
 
-if [[ -n "$VIASH_PAR_FPR" ]]; then
-  if ! [[ "$VIASH_PAR_FPR" =~ ^[-+]?(\.[0-9]+|[0-9]+(\.[0-9]*)?)([eE][-+]?[0-9]+)?$ ]]; then
-    ViashError '--fpr' has to be a double. Use "--help" to get more information on the parameters.
+if [[ -n "$VIASH_PAR_LOW_COUNT_THRESHOLD" ]]; then
+  if ! [[ "$VIASH_PAR_LOW_COUNT_THRESHOLD" =~ ^[-+]?[0-9]+$ ]]; then
+    ViashError '--low_count_threshold' has to be an integer. Use "--help" to get more information on the parameters.
     exit 1
   fi
+fi
+
+if [[ -n "$VIASH_PAR_Z_DIM" ]]; then
+  if ! [[ "$VIASH_PAR_Z_DIM" =~ ^[-+]?[0-9]+$ ]]; then
+    ViashError '--z_dim' has to be an integer. Use "--help" to get more information on the parameters.
+    exit 1
+  fi
+fi
+
+if [ -n "$VIASH_PAR_Z_LAYERS" ]; then
+  IFS=':'
+  set -f
+  for val in $VIASH_PAR_Z_LAYERS; do
+    if ! [[ "${val}" =~ ^[-+]?[0-9]+$ ]]; then
+      ViashError '--z_layers' has to be an integer. Use "--help" to get more information on the parameters.
+      exit 1
+    fi
+  done
+  set +f
+  unset IFS
+fi
+
+if [[ -n "$VIASH_PAR_TRAINING_FRACTION" ]]; then
+  if ! [[ "$VIASH_PAR_TRAINING_FRACTION" =~ ^[-+]?(\.[0-9]+|[0-9]+(\.[0-9]*)?)([eE][-+]?[0-9]+)?$ ]]; then
+    ViashError '--training_fraction' has to be a double. Use "--help" to get more information on the parameters.
+    exit 1
+  fi
+fi
+
+if [[ -n "$VIASH_PAR_EMPTY_DROP_TRAINING_FRACTION" ]]; then
+  if ! [[ "$VIASH_PAR_EMPTY_DROP_TRAINING_FRACTION" =~ ^[-+]?(\.[0-9]+|[0-9]+(\.[0-9]*)?)([eE][-+]?[0-9]+)?$ ]]; then
+    ViashError '--empty_drop_training_fraction' has to be a double. Use "--help" to get more information on the parameters.
+    exit 1
+  fi
+fi
+
+if [ -n "$VIASH_PAR_FPR" ]; then
+  IFS=':'
+  set -f
+  for val in $VIASH_PAR_FPR; do
+    if ! [[ "${val}" =~ ^[-+]?(\.[0-9]+|[0-9]+(\.[0-9]*)?)([eE][-+]?[0-9]+)?$ ]]; then
+      ViashError '--fpr' has to be a double. Use "--help" to get more information on the parameters.
+      exit 1
+    fi
+  done
+  set +f
+  unset IFS
 fi
 
 if [[ -n "$VIASH_PAR_EXCLUDE_ANTIBODY_CAPTURE" ]]; then
@@ -1109,6 +1308,8 @@ fi
 
 
 
+
+
 if [ ! -z "$VIASH_PAR_MODEL" ]; then
   VIASH_PAR_MODEL_CHOICES=("simple:ambient:swapping:full")
   IFS=':'
@@ -1120,6 +1321,10 @@ if [ ! -z "$VIASH_PAR_MODEL" ]; then
   set +f
   unset IFS
 fi
+
+
+
+
 
 
 
@@ -1220,10 +1425,16 @@ par = {
   'obs_latent_cell_probability': $( if [ ! -z ${VIASH_PAR_OBS_LATENT_CELL_PROBABILITY+x} ]; then echo "r'${VIASH_PAR_OBS_LATENT_CELL_PROBABILITY//\'/\'\"\'\"r\'}'"; else echo None; fi ),
   'obs_latent_scale': $( if [ ! -z ${VIASH_PAR_OBS_LATENT_SCALE+x} ]; then echo "r'${VIASH_PAR_OBS_LATENT_SCALE//\'/\'\"\'\"r\'}'"; else echo None; fi ),
   'var_ambient_expression': $( if [ ! -z ${VIASH_PAR_VAR_AMBIENT_EXPRESSION+x} ]; then echo "r'${VIASH_PAR_VAR_AMBIENT_EXPRESSION//\'/\'\"\'\"r\'}'"; else echo None; fi ),
-  'model': $( if [ ! -z ${VIASH_PAR_MODEL+x} ]; then echo "r'${VIASH_PAR_MODEL//\'/\'\"\'\"r\'}'"; else echo None; fi ),
+  'expected_cells': $( if [ ! -z ${VIASH_PAR_EXPECTED_CELLS+x} ]; then echo "int(r'${VIASH_PAR_EXPECTED_CELLS//\'/\'\"\'\"r\'}')"; else echo None; fi ),
   'total_droplets_included': $( if [ ! -z ${VIASH_PAR_TOTAL_DROPLETS_INCLUDED+x} ]; then echo "int(r'${VIASH_PAR_TOTAL_DROPLETS_INCLUDED//\'/\'\"\'\"r\'}')"; else echo None; fi ),
+  'model': $( if [ ! -z ${VIASH_PAR_MODEL+x} ]; then echo "r'${VIASH_PAR_MODEL//\'/\'\"\'\"r\'}'"; else echo None; fi ),
   'epochs': $( if [ ! -z ${VIASH_PAR_EPOCHS+x} ]; then echo "int(r'${VIASH_PAR_EPOCHS//\'/\'\"\'\"r\'}')"; else echo None; fi ),
-  'fpr': $( if [ ! -z ${VIASH_PAR_FPR+x} ]; then echo "float(r'${VIASH_PAR_FPR//\'/\'\"\'\"r\'}')"; else echo None; fi ),
+  'low_count_threshold': $( if [ ! -z ${VIASH_PAR_LOW_COUNT_THRESHOLD+x} ]; then echo "int(r'${VIASH_PAR_LOW_COUNT_THRESHOLD//\'/\'\"\'\"r\'}')"; else echo None; fi ),
+  'z_dim': $( if [ ! -z ${VIASH_PAR_Z_DIM+x} ]; then echo "int(r'${VIASH_PAR_Z_DIM//\'/\'\"\'\"r\'}')"; else echo None; fi ),
+  'z_layers': $( if [ ! -z ${VIASH_PAR_Z_LAYERS+x} ]; then echo "list(map(int, r'${VIASH_PAR_Z_LAYERS//\'/\'\"\'\"r\'}'.split(':')))"; else echo None; fi ),
+  'training_fraction': $( if [ ! -z ${VIASH_PAR_TRAINING_FRACTION+x} ]; then echo "float(r'${VIASH_PAR_TRAINING_FRACTION//\'/\'\"\'\"r\'}')"; else echo None; fi ),
+  'empty_drop_training_fraction': $( if [ ! -z ${VIASH_PAR_EMPTY_DROP_TRAINING_FRACTION+x} ]; then echo "float(r'${VIASH_PAR_EMPTY_DROP_TRAINING_FRACTION//\'/\'\"\'\"r\'}')"; else echo None; fi ),
+  'fpr': $( if [ ! -z ${VIASH_PAR_FPR+x} ]; then echo "list(map(float, r'${VIASH_PAR_FPR//\'/\'\"\'\"r\'}'.split(':')))"; else echo None; fi ),
   'exclude_antibody_capture': $( if [ ! -z ${VIASH_PAR_EXCLUDE_ANTIBODY_CAPTURE+x} ]; then echo "r'${VIASH_PAR_EXCLUDE_ANTIBODY_CAPTURE//\'/\'\"\'\"r\'}'.lower() == 'true'"; else echo None; fi ),
   'learning_rate': $( if [ ! -z ${VIASH_PAR_LEARNING_RATE+x} ]; then echo "float(r'${VIASH_PAR_LEARNING_RATE//\'/\'\"\'\"r\'}')"; else echo None; fi ),
   'cuda': $( if [ ! -z ${VIASH_PAR_CUDA+x} ]; then echo "r'${VIASH_PAR_CUDA//\'/\'\"\'\"r\'}'.lower() == 'true'"; else echo None; fi )
@@ -1272,17 +1483,23 @@ with tempfile.TemporaryDirectory(prefix="cellbender-", dir=meta["temp_dir"]) as 
   ]
 
   extra_args = [
-    ("--model", "model", True),
+    ("--expected-cells", "expected_cells", True),
     ("--total-droplets-included", "total_droplets_included", True),
+    ("--model", "model", True),
     ("--epochs", "epochs", True),
-    ("--fpr", "fpr", True),
+    ("--cuda", "cuda", False),
+    ("--low-count-threshold", "low_count_threshold", True),
+    ("--z-dim", "z_dim", True),
+    ("--z-layers", "z_layers", True),
+    ("--training-fraction", "training_fraction", True),
     ("--exclude-antibody-capture", "exclude_antibody_capture", False),
     ("--learning-rate", "learning_rate", True),
-    ("--cuda", "cuda", False)
+    ("--empty-drop-training-fraction", "empty_drop_training_fraction", True),
   ]
   for (flag, name, is_kwarg) in extra_args:
     if par[name]:
-      cmd_pars += [flag, str(par[name])] if is_kwarg else [flag]
+      values = par[name] if isinstance(par[name], list) else [par[name]]
+      cmd_pars += [flag] + [str(val) for val in values] if is_kwarg else [flag]
 
   logger.info("Running CellBender")
   out = subprocess.check_output(cmd_pars).decode("utf-8")

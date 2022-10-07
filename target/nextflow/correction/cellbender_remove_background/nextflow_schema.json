@@ -82,11 +82,11 @@
         "description": "No description",
         "default": "",
         "properties": {
-          "model": {
-            "type":"string",
-            "description": "Which model is being used for count data. \u0027simple\u0027\ndoes not model either ambient RNA or random barcode\nswapping (for debugging purposes -- not recommended).\n\u0027ambient\u0027 assumes background RNA is incorporated into\ndroplets. \u0027swapping\u0027 assumes background RNA comes from\nrandom barcode swapping. \u0027full\u0027 uses a combined\nambient and swapping model. Defaults to \u0027full\u0027.\n",
+          "expected_cells": {
+            "type":"integer",
+            "description": "Number of cells expected in the dataset (a rough estimate within a factor of 2 is sufficient).",
             
-            "enum": ["simple", "ambient", "swapping", "full"],
+            
             "default": ""
           },
           "total_droplets_included": {
@@ -94,21 +94,63 @@
             "description": "The number of droplets from the rank-ordered UMI plot\nthat will be analyzed. The largest \u0027total_droplets\u0027\ndroplets will have their cell probabilities inferred\nas an output.\n",
             
             
-            "default": ""
+            "default": "25000"
+          },
+          "model": {
+            "type":"string",
+            "description": "Which model is being used for count data. \u0027simple\u0027\ndoes not model either ambient RNA or random barcode\nswapping (for debugging purposes -- not recommended).\n\u0027ambient\u0027 assumes background RNA is incorporated into\ndroplets. \u0027swapping\u0027 assumes background RNA comes from\nrandom barcode swapping. \u0027full\u0027 uses a combined\nambient and swapping model.\n",
+            
+            "enum": ["simple", "ambient", "swapping", "full"],
+            "default": "full"
           },
           "epochs": {
             "type":"integer",
-            "description": "Number of epochs to train\n",
+            "description": "Number of epochs to train.",
             
             
-            "default": ""
+            "default": "150"
+          },
+          "low_count_threshold": {
+            "type":"integer",
+            "description": "Droplets with UMI counts below this number are completely \nexcluded from the analysis. This can help identify the correct \nprior for empty droplet counts in the rare case where empty \ncounts are extremely high (over 200).\n",
+            
+            
+            "default": "15"
+          },
+          "z_dim": {
+            "type":"integer",
+            "description": "Dimension of latent variable z.\n",
+            
+            
+            "default": "100"
+          },
+          "z_layers": {
+            "type":"integer",
+            "description": "Dimension of hidden layers in the encoder for z.\n",
+            
+            
+            "default": "[500]"
+          },
+          "training_fraction": {
+            "type":"number",
+            "description": "Training detail: the fraction of the data used for training.\nThe rest is never seen by the inference algorithm. Speeds up learning.\n",
+            
+            
+            "default": "0.9"
+          },
+          "empty_drop_training_fraction": {
+            "type":"number",
+            "description": "Training detail: the fraction of the training data each epoch that \nis drawn (randomly sampled) from surely empty droplets.\n",
+            
+            
+            "default": "0.5"
           },
           "fpr": {
             "type":"number",
             "description": "Target false positive rate in (0, 1). A false positive\nis a true signal count that is erroneously removed.\nMore background removal is accompanied by more signal\nremoval at high values of FPR. You can specify\nmultiple values, which will create multiple output\nfiles.\n",
             
             
-            "default": ""
+            "default": "[0.01]"
           },
           "exclude_antibody_capture": {
             "type":"boolean",
