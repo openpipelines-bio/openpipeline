@@ -44,6 +44,8 @@ def make_observation_keys_unique_per_mod(sample_id: str, sample: MuData) -> None
 def main():
     input_data = read_h5mu(par["input"])
     input_data.obs[par["obs_output"]] = par["input_id"]
+    for mod_data in input_data.mod.values():
+        mod_data.obs[par["obs_output"]] = par["input_id"]
     if par["make_observation_keys_unique"]:
         make_observation_keys_unique(par["input_id"], input_data)
     logger.info("Writing out data to '%s'.", par["output"])
