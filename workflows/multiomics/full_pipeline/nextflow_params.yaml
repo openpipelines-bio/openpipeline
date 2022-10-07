@@ -1,6 +1,6 @@
 # Inputs
-id: # please fill in - example: ["foo"]
-input: # please fill in - example: ["input.h5mu"]
+id: # please fill in - example: "foo"
+input: # please fill in - example: "input.h5mu"
 obs_covariates: # please fill in - example: ["batch", "sample"]
 
 # Nextflow input-output arguments

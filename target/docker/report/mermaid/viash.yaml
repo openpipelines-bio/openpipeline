@@ -457,9 +457,9 @@ functionality:
       
       LABEL org.opencontainers.image.authors="Dries De Maeyer"
       LABEL org.opencontainers.image.description="Companion container for running component report mermaid"
-      LABEL org.opencontainers.image.created="2022-10-07T08:42:12Z"
+      LABEL org.opencontainers.image.created="2022-10-07T11:58:46Z"
       LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-      LABEL org.opencontainers.image.revision="b3399e71567f08f20bb9027620a83b964ae7c86e"
+      LABEL org.opencontainers.image.revision="711248be819b88325adaffa4c4e0e53e4b882eb1"
       LABEL org.opencontainers.image.version="main_build"
       VIASHDOCKER
       }
@@ -1062,5 +1062,5 @@ info:
   output: "target/docker/report/mermaid"
   executable: "target/docker/report/mermaid/mermaid"
   viash_version: "0.6.1"
-  git_commit: "b3399e71567f08f20bb9027620a83b964ae7c86e"
+  git_commit: "711248be819b88325adaffa4c4e0e53e4b882eb1"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"
