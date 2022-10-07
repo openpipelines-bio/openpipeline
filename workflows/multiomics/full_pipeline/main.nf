@@ -28,6 +28,13 @@ workflow run_wf {
 
   main:
   start_ch = input_ch
+    | flatMap {id, input_parameters -> [input_parameters.id,
+                                          input_parameters.input,
+                                          Collections.nCopies(input_parameters.id.size(), 
+                                                              input_parameters.obs_covariates)
+                                         ].transpose()}
+    | map {id,  input_file, obs_covariates -> [id, ["id": id, "input": input_file, "obs_covariates": obs_covariates]]}
+    | view { "Input: $it" }
     // Store obs_covariates for later use
     | map { id, data ->
       new_data = data.clone()
@@ -93,13 +100,6 @@ workflow test_wf {
 
   output_ch =
     viashChannel(testParams, config)
-      | flatMap {id, input_parameters -> [input_parameters.id,
-                                          input_parameters.input,
-                                          Collections.nCopies(input_parameters.id.size(), 
-                                                              input_parameters.obs_covariates)
-                                         ].transpose()}
-      | map {id,  input_file, obs_covariates -> [id, ["id": id, "input": input_file, "obs_covariates": obs_covariates]]}
-      | view { "Input: $it" }
       | run_wf
       | view { output ->
         assert output.size() == 2 : "outputs should contain two elements; [id, file]"
