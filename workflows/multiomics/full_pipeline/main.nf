@@ -56,8 +56,11 @@ workflow run_wf {
           output_dir.listFiles({ file -> file.name.endsWith('_atac.h5mu') && !file.isDirectory() }),
           other_params
         ]}
+    | filter { it[1].size() != 0 } // No atac modality in file: filter out
     | map { id, files_list, other_params -> assert files_list.size() == 1; [id, files_list.first(), other_params] }
     | toSortedList({ a, b -> b[0] <=> a[0] })
+    | filter {it.size() != 0} // toSortedList returns an empty array when there are no events
+
     | map {list -> ["combined_samples_atac", 
                       ["input": list.collect{it[1]},
                        "input_id":  list.collect{it[0]}],
@@ -65,7 +68,26 @@ workflow run_wf {
                     ]}
     | concat // concat will be integrated into process_atac_multisample in the future
 
-  output_ch = rna_ch.concat(atac_ch)
+  vdj_ch = start_ch
+    | map { id, output_dir, other_params -> 
+        [ id, 
+          output_dir.listFiles({ file -> file.name.endsWith('_vdj.h5mu') && !file.isDirectory() }),
+          other_params
+        ]}
+    | view { "Before check: $it, it[1]:" + it[1] }
+    | filter { it[1].size() != 0 } // No vdj modality in file: filter out
+    | view { "After check: $it, it[1]:" + it[1] }
+    | map { id, files_list, other_params -> assert files_list.size() == 1; [id, files_list.first(), other_params] }
+    | toSortedList({ a, b -> b[0] <=> a[0] })
+    | filter { it.size() != 0 } // toSortedList returns an empty array when there are no events
+    | map {list -> ["combined_samples_vdj", 
+                      ["input": list.collect{it[1]},
+                       "input_id":  list.collect{it[0]}],
+                      list.collect{it[2]}.first()
+                    ]}
+    | concat // concat will be integrated into process_vdj_multisample in the future
+
+  output_ch = rna_ch.concat(atac_ch, vdj_ch)
     | toSortedList()
     | map {list -> ["merged", list.collect{it[1]}] + list.collect{it[2]}.first()}
     | merge
