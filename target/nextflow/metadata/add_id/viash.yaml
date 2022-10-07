@@ -270,6 +270,8 @@ functionality:
       def main():
           input_data = read_h5mu(par["input"])
           input_data.obs[par["obs_output"]] = par["input_id"]
+          for mod_data in input_data.mod.values():
+              mod_data.obs[par["obs_output"]] = par["input_id"]
           if par["make_observation_keys_unique"]:
               make_observation_keys_unique(par["input_id"], input_data)
           logger.info("Writing out data to '%s'.", par["output"])
@@ -2011,5 +2013,5 @@ info:
   platform: "nextflow"
   output: "target/nextflow/metadata/add_id"
   viash_version: "0.6.1"
-  git_commit: "3c2f9482e70d07f1daabd7c11c6d69e72e370ca0"
+  git_commit: "bd8fd9d189baf240d637d5c04b00fa07a32dade4"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"

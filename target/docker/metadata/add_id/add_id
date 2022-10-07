@@ -408,9 +408,9 @@ RUN pip install --upgrade pip && \
 
 LABEL org.opencontainers.image.authors="Dries Schaumont"
 LABEL org.opencontainers.image.description="Companion container for running component metadata add_id"
-LABEL org.opencontainers.image.created="2022-10-06T14:32:49Z"
+LABEL org.opencontainers.image.created="2022-10-07T07:16:59Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="3c2f9482e70d07f1daabd7c11c6d69e72e370ca0"
+LABEL org.opencontainers.image.revision="bd8fd9d189baf240d637d5c04b00fa07a32dade4"
 LABEL org.opencontainers.image.version="main_build"
 VIASHDOCKER
 }
@@ -1001,6 +1001,8 @@ def make_observation_keys_unique_per_mod(sample_id: str, sample: MuData) -> None
 def main():
     input_data = read_h5mu(par["input"])
     input_data.obs[par["obs_output"]] = par["input_id"]
+    for mod_data in input_data.mod.values():
+        mod_data.obs[par["obs_output"]] = par["input_id"]
     if par["make_observation_keys_unique"]:
         make_observation_keys_unique(par["input_id"], input_data)
     logger.info("Writing out data to '%s'.", par["output"])
