@@ -54,6 +54,17 @@ functionality:
         #   default: "latent_gene_encoding"
     - name: Arguments
       arguments:
+        - name: "--expected_cells"
+          type: integer
+          description: Number of cells expected in the dataset (a rough estimate within a factor of 2 is sufficient).
+        - name: "--total_droplets_included"
+          type: integer
+          description: |
+            The number of droplets from the rank-ordered UMI plot
+            that will be analyzed. The largest 'total_droplets'
+            droplets will have their cell probabilities inferred
+            as an output.
+          default: 25000
         - name: "--model"
           type: string
           choices: [simple, ambient, swapping, full]
@@ -64,20 +75,43 @@ functionality:
             'ambient' assumes background RNA is incorporated into
             droplets. 'swapping' assumes background RNA comes from
             random barcode swapping. 'full' uses a combined
-            ambient and swapping model. Defaults to 'full'.
-        - name: "--total_droplets_included"
-          type: integer
-          description: |
-            The number of droplets from the rank-ordered UMI plot
-            that will be analyzed. The largest 'total_droplets'
-            droplets will have their cell probabilities inferred
-            as an output.
-          example: 50000
+            ambient and swapping model.
+          default: full
         - name: "--epochs"
           type: integer
+          description: Number of epochs to train. 
+          default: 150
+        - name: "--low_count_threshold"
+          type: integer
           description: |
-            Number of epochs to train
-          example: 150
+            Droplets with UMI counts below this number are completely 
+            excluded from the analysis. This can help identify the correct 
+            prior for empty droplet counts in the rare case where empty 
+            counts are extremely high (over 200).
+          default: 15
+        - name: "--z_dim"
+          type: integer
+          description: |
+            Dimension of latent variable z.
+          default: 100
+        - name: "--z_layers"
+          type: integer
+          description: |
+            Dimension of hidden layers in the encoder for z.
+          multiple: true
+          default: [500]
+        - name: "--training_fraction"
+          type: double
+          description: |
+            Training detail: the fraction of the data used for training.
+            The rest is never seen by the inference algorithm. Speeds up learning.
+          default: 0.9
+        - name: "--empty_drop_training_fraction"
+          type: double
+          description: |
+            Training detail: the fraction of the training data each epoch that 
+            is drawn (randomly sampled) from surely empty droplets.
+          default: 0.5
         - name: "--fpr"
           type: double
           description: |
@@ -87,7 +121,8 @@ functionality:
             removal at high values of FPR. You can specify
             multiple values, which will create multiple output
             files.
-          example: 0.01
+          multiple: true
+          default: [0.01]
         - name: "--exclude_antibody_capture"
           type: boolean_true
           description: |
@@ -118,12 +153,19 @@ functionality:
     - path: ../../../resources_test/pbmc_1k_protein_v3/pbmc_1k_protein_v3_raw_feature_bc_matrix.h5
 platforms:
   - type: docker
-    image: python:3.10
+    image: nvcr.io/nvidia/cuda:11.8.0-base-ubuntu22.04
     setup:
+      - type: apt
+        packages:
+          - python3-pip
+          - python-is-python3
+          - git
       - type: python
         packages: 
           - muon
           - mudata~=0.2.0
+          - torch
+          - torchvision
         github:  broadinstitute/CellBender
   - type: nextflow
     directives:
