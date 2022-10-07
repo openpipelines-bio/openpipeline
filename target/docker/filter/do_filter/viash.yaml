@@ -494,9 +494,9 @@ functionality:
       
       LABEL org.opencontainers.image.authors="Robrecht Cannoodt"
       LABEL org.opencontainers.image.description="Companion container for running component filter do_filter"
-      LABEL org.opencontainers.image.created="2022-10-07T07:16:58Z"
+      LABEL org.opencontainers.image.created="2022-10-07T08:42:11Z"
       LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-      LABEL org.opencontainers.image.revision="bd8fd9d189baf240d637d5c04b00fa07a32dade4"
+      LABEL org.opencontainers.image.revision="b3399e71567f08f20bb9027620a83b964ae7c86e"
       LABEL org.opencontainers.image.version="main_build"
       VIASHDOCKER
       }
@@ -1148,5 +1148,5 @@ info:
   output: "target/docker/filter/do_filter"
   executable: "target/docker/filter/do_filter/do_filter"
   viash_version: "0.6.1"
-  git_commit: "bd8fd9d189baf240d637d5c04b00fa07a32dade4"
+  git_commit: "b3399e71567f08f20bb9027620a83b964ae7c86e"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"
