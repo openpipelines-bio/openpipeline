@@ -24,43 +24,40 @@ workflow {
 
   viashChannel(params, config)
 
+    // rename .obs_names and add .obs["sample_id"]
     | pmap{ id, data ->
-      [ id, data, data ]
-    }
-    | cellranger_count.run(auto: [ publish: true ])
-
-    // split output dir into map
-    | cellranger_count_split
-
-    // convert to h5mu
-    | pmap{ id, data -> 
-      new_data = [ 
-        input: data.raw_h5,
-        input_metrics_summary: data.metrics_summary
+      new_data = [
+        input_id: id, 
+        input: data.input, 
+        obs_output: 'sample_id', 
+        make_observation_keys_unique: true
       ]
       [ id, new_data, data ]
     }
-    | from_10xh5_to_h5mu
+    | add_id
 
-    // run cellbender
-    | cellbender_remove_background.run(
-      args: [
-        min_counts: 1000
+    // join metadata csv to .obs
+    | pmap{ id, file, orig_data ->
+      new_data = [ 
+        input: file, 
+        input_csv: orig_data.input_metadata,
+        obs_key: 'sample_id'
       ]
-    )
+      [ id, new_data ]
+    }
+    | join_csv
 
-    // filter counts
-    | filter_with_counts.run(
-      args: [
-        layer: "corrected",
-        min_genes: 100, 
-        min_counts: 1000, 
-        do_subset: true
+    // combine into one mudata
+    | toSortedList{ a, b -> b[0] <=> a[0] }
+    | map { tups -> 
+      new_data = [ 
+        input_id: tups.collect{it[0]}, 
+        input: tups.collect{it[1]},
+        output: tups[0][2].output
       ]
-    )
-
-    | join_uns_to_obs.run(
-      args: [ uns_key: "metrics_cellranger" ], 
+      [ "combined", new_data ]
+    }
+    | concat.run(
       auto: [ publish: true ]
     )
 }

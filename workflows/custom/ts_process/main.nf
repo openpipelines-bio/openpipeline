@@ -24,40 +24,51 @@ workflow {
 
   viashChannel(params, config)
 
-    // rename .obs_names and add .obs["sample_id"]
+    // map data to reference
     | pmap{ id, data ->
-      new_data = [
-        input_id: id, 
-        input: data.input, 
-        obs_output: 'sample_id', 
-        make_observation_keys_unique: true
-      ]
+      new_data = data + [ output: data.output_raw ]
       [ id, new_data, data ]
     }
-    | add_id
+    | cellranger_count.run(auto: [ publish: true ])
 
-    // join metadata csv to .obs
-    | pmap{ id, file, orig_data ->
+    // split output dir into map
+    | cellranger_count_split
+
+    // convert to h5mu
+    | pmap{ id, data, orig_data -> 
       new_data = [ 
-        input: file, 
-        input_csv: orig_data.input_metadata,
-        obs_key: 'sample_id'
+        input: data.raw_h5,
+        input_metrics_summary: data.metrics_summary
+      ]
+      [ id, new_data, orig_data ]
+    }
+    | from_10xh5_to_h5mu
+
+    // run cellbender
+    | cellbender_remove_background.run(
+      args: [
+        min_counts: 1000,
+        layer_output: "corrected"
+      ]
+    )
+
+    // filter counts
+    | filter_with_counts.run(
+      args: [
+        layer: "corrected",
+        min_genes: 100, 
+        min_counts: 1000, 
+        do_subset: true
+      ]
+    )
+
+    | pmap{ id, file, orig_data -> 
+      new_data = [ 
+        input: file,
+        uns_key: "metrics_cellranger",
+        output: orig_data.output_h5mu
       ]
       [ id, new_data ]
     }
-    | join_csv
-
-    // combine into one mudata
-    | toSortedList{ a, b -> b[0] <=> a[0] }
-    | map { tups -> 
-      new_data = [ 
-        input_id: tups.collect{it[0]}, 
-        input: tups.collect{it[1]},
-        output: tups[0][2].output
-      ]
-      [ "combined", new_data ]
-    }
-    | concat.run(
-      auto: [ publish: true ]
-    )
+    | join_uns_to_obs.run(auto: [ publish: true ])
 }
