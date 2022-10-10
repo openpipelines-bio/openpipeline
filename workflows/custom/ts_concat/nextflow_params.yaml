@@ -1,7 +1,9 @@
 # Inputs
-id: # please fill in - example: "foo"
-input: # please fill in - example: ["sample_S1_L001_R1_001.fastq.gz", "sample_S1_L001_R2_001.fastq.gz"]
-reference: # please fill in - example: "reference.tar.gz"
+id: # please fill in - example: "sample"
+input: # please fill in - example: "input.h5mu"
+input_metadata: # please fill in - example: "metadata.csv"
+
+# Output parameters
 # output: "$id.$key.output.h5mu"
 
 # Nextflow input-output arguments

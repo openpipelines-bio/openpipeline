@@ -715,5 +715,5 @@ info:
   output: "target/native/download/sync_test_resources"
   executable: "target/native/download/sync_test_resources/sync_test_resources"
   viash_version: "0.6.1"
-  git_commit: "34269769a5c11263f0f60447f4f0b9fc983144ba"
+  git_commit: "652d41402bde07d574b363526efd3478aedd1de8"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"

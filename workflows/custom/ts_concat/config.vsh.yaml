@@ -16,24 +16,24 @@ functionality:
           required: true
           type: string
           description: ID of the sample.
-          example: foo
+          example: sample
         - type: file
           name: --input
           required: true
-          multiple: true
-          multiple_sep: ";"
-          example: [ "sample_S1_L001_R1_001.fastq.gz", "sample_S1_L001_R2_001.fastq.gz" ]
-          description: The fastq.gz files to align. Can also be a single directory containing fastq.gz files.
+          example: "input.h5mu"
         - type: file
-          name: --reference
+          name: --input_metadata
+          description: Metadata to be joined to the .obs.  
           required: true
-          description: The path to Cell Ranger reference tar.gz file.
-          example: reference.tar.gz
-        - type: file
-          name: --output
+          example: "metadata.csv"
+    - name: Output parameters
+      arguments:
+        - name: "--output"
+          required: true
+          type: file
           direction: output
+          description: The path to the combined h5mu output file.
           default: '$id.$key.output.h5mu'
-          description: The output h5mu.
   resources:
     - type: nextflow_script
       path: main.nf

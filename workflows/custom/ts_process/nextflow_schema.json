@@ -19,32 +19,31 @@
           },
           "input": {
             "type":"string",
-            "description": "No description",
+            "description": "The fastq.gz files to align. Can also be a single directory containing fastq.gz files.",
             
             
             "default": ""
           },
-          "input_metadata": {
+          "reference": {
             "type":"string",
-            "description": "Metadata to be joined to the .obs.",
+            "description": "The path to Cell Ranger reference tar.gz file.",
             
             
             "default": ""
-          }
-        }
-      },
-      "output parameters" : {
-        "title": "Output parameters",
-        "type": "object",
-        "description": "No description",
-        "default": "",
-        "properties": {
-          "output": {
+          },
+          "output_raw": {
             "type":"string",
-            "description": "The path to the combined h5mu output file.",
+            "description": "The output h5mu.",
             
             
-            "default": "$id.$key.output.h5mu"
+            "default": "$id.$key.output_raw.output_raw"
+          },
+          "output_h5mu": {
+            "type":"string",
+            "description": "The output h5mu.",
+            
+            
+            "default": "$id.$key.output_h5mu.h5mu"
           }
         }
       },
@@ -74,9 +73,6 @@
     "allOf": [
       {
         "$ref": "#/definitions/inputs"
-      },
-      {
-        "$ref": "#/definitions/output parameters"
       },
       {
         "$ref": "#/definitions/nextflow input-output arguments"

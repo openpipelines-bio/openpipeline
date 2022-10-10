@@ -398,9 +398,9 @@ RUN pip install --upgrade pip && \
   pip install --upgrade --no-cache-dir "mudata~=0.2.0" "anndata~=0.8.0"
 
 LABEL org.opencontainers.image.description="Companion container for running component metadata join_uns_to_obs"
-LABEL org.opencontainers.image.created="2022-10-10T18:51:58Z"
+LABEL org.opencontainers.image.created="2022-10-10T19:28:11Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="34269769a5c11263f0f60447f4f0b9fc983144ba"
+LABEL org.opencontainers.image.revision="652d41402bde07d574b363526efd3478aedd1de8"
 LABEL org.opencontainers.image.version="main_build"
 VIASHDOCKER
 }
