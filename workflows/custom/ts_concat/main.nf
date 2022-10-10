@@ -17,7 +17,7 @@ include { concat } from targetDir + "/dataflow/concat/main.nf"
 include { readConfig; viashChannel; helpMessage } from workflowDir + "/utils/WorkflowHelper.nf"
 include { setWorkflowArguments; getWorkflowArguments; passthroughMap as pmap } from workflowDir + "/utils/DataFlowHelper.nf"
 
-config = readConfig("$workflowDir/custom/ts/config.vsh.yaml")
+config = readConfig("$workflowDir/custom/ts_concat/config.vsh.yaml")
 
 workflow {
   helpMessage(config)
