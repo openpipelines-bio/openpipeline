@@ -57,6 +57,7 @@ functionality:
         - name: "--expected_cells"
           type: integer
           description: Number of cells expected in the dataset (a rough estimate within a factor of 2 is sufficient).
+          example: 1000
         - name: "--total_droplets_included"
           type: integer
           description: |
@@ -64,7 +65,11 @@ functionality:
             that will be analyzed. The largest 'total_droplets'
             droplets will have their cell probabilities inferred
             as an output.
-          default: 25000
+          example: 25000
+        - name: "--min_counts"
+          type: integer
+          description: Will use the number of umi counts as basis for the number of expected cells.
+          example: 1000
         - name: "--model"
           type: string
           choices: [simple, ambient, swapping, full]

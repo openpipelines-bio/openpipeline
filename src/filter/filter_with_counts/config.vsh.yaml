@@ -33,7 +33,7 @@ functionality:
 
         - name: "--layer"
           type: string
-          default: "rna"
+          example: "raw_counts"
           required: false
 
     - name: Outputs
