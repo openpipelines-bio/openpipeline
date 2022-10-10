@@ -59,43 +59,8 @@ workflow {
       ]
     )
 
-    | join_uns_to_obs.run(args: [ uns_key: "metrics_cellranger" ])
-
-    // rename .obs_names and add .obs["sample_id"]
-    | pmap { id, file, orig_data ->
-      new_data = [
-        input_id: id, 
-        input: file, 
-        obs_output: "sample_id", 
-        make_observation_keys_unique: true
-      ]
-      [ id, new_data, orig_data]
-    }
-    | add_id
-
-    // add metadata to h5mu
-    | pmap{ id, file, orig_data ->
-      new_data = [ 
-        input: file, 
-        input_csv: orig_data.input_metadata,
-        obs_key: 'sample_id',
-        output: "${id}.h5mu"
-      ]
-      [ id, new_data ]
-    }
-    | join_csv.run(auto: [ publish: true ] )
-
-    // combine into one mudata
-    | toSortedList{ a, b -> b[0] <=> a[0] }
-    | map { tups -> 
-      new_data = [ 
-        input_id: tups.collect{it[0]}, 
-        input: tups.collect{it[1]},
-        output: "ts.h5mu"
-      ]
-      [ "combined", new_data ]
-    }
-    | concat.run(
+    | join_uns_to_obs.run(
+      args: [ uns_key: "metrics_cellranger" ], 
       auto: [ publish: true ]
     )
 }

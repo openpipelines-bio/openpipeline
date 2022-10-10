@@ -1,0 +1,11 @@
+# Inputs
+id: # please fill in - example: "sample"
+input: # please fill in - example: "input.h5mu"
+input_metadata: # please fill in - example: "metadata.csv"
+
+# Output parameters
+# output: "$id.$key.output.h5mu"
+
+# Nextflow input-output arguments
+publish_dir: # please fill in - example: "output/"
+# param_list: "my_params.yaml"

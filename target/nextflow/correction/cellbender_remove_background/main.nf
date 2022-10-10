@@ -546,8 +546,6 @@ thisDefaultProcessArgs = [
     "tag" : "main_build"
   },
   "label" : [
-    "highcpu",
-    "highmem",
     "gpu"
   ]
 }'''),

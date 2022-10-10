@@ -1,5 +1,5 @@
 functionality:
-  name: "ts"
+  name: "ts_concat"
   namespace: "custom"
   authors:
     - name: Angela Pisco
@@ -17,18 +17,6 @@ functionality:
           type: string
           description: ID of the sample.
           example: foo
-        # - type: file
-        #   name: --raw_h5
-        #   required: true
-        #   example: "foo.h5"
-        # - type: file
-        #   name: --metrics_summary
-        #   required: true
-        #   example: "foo.csv"
-        - type: file
-          name: --input_metadata
-          required: true
-          example: "foo.csv"
         - type: file
           name: --input
           required: true
@@ -41,10 +29,11 @@ functionality:
           required: true
           description: The path to Cell Ranger reference tar.gz file.
           example: reference.tar.gz
+        - type: file
+          name: --output
+          direction: output
+          default: '$id.$key.output.h5mu'
+          description: The output h5mu.
   resources:
     - type: nextflow_script
       path: main.nf
-  test_resources:
-    - type: nextflow_script
-      path: main.nf
-      entrypoint: test_wf
