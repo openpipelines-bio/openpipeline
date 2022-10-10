@@ -25,8 +25,7 @@ workflow {
   viashChannel(params, config)
 
     | pmap{ id, data ->
-      new_data = data + [ output: id ]
-      [ id, new_data, data ]
+      [ id, data, data ]
     }
     | cellranger_count.run(auto: [ publish: true ])
 
