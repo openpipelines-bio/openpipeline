@@ -655,5 +655,5 @@ info:
   output: "target/native/compression/tar_extract"
   executable: "target/native/compression/tar_extract/tar_extract"
   viash_version: "0.6.1"
-  git_commit: "a6470110a0b11aaa19170cf5c98176a3105cdb4d"
+  git_commit: "34269769a5c11263f0f60447f4f0b9fc983144ba"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"
