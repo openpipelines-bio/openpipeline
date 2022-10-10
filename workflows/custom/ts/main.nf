@@ -8,117 +8,95 @@ include { cellranger_count } from targetDir + "/mapping/cellranger_count/main.nf
 include { cellranger_count_split } from targetDir + "/mapping/cellranger_count_split/main.nf"
 include { cellbender_remove_background } from targetDir + "/correction/cellbender_remove_background/main.nf"
 include { from_10xh5_to_h5mu } from targetDir + "/convert/from_10xh5_to_h5mu/main.nf"
+include { add_id } from targetDir + "/metadata/add_id/main.nf"
+include { join_csv } from targetDir + "/metadata/join_csv/main.nf"
+include { join_uns_to_obs } from targetDir + "/metadata/join_uns_to_obs/main.nf"
+include { filter_with_counts } from targetDir + "/filter/filter_with_counts/main.nf"
+include { concat } from targetDir + "/dataflow/concat/main.nf"
 
 include { readConfig; viashChannel; helpMessage } from workflowDir + "/utils/WorkflowHelper.nf"
 include { setWorkflowArguments; getWorkflowArguments; passthroughMap as pmap } from workflowDir + "/utils/DataFlowHelper.nf"
 
-config = readConfig("$workflowDir/ingestion/cellranger_mapping/config.vsh.yaml")
+config = readConfig("$workflowDir/custom/ts/config.vsh.yaml")
 
 workflow {
   helpMessage(config)
 
   viashChannel(params, config)
-    | view { "Input: $it" }
-    | run_wf
-    | view { "Output: $it" }
-}
 
-workflow run_wf {
-  take:
-  input_ch
-
-  main:
-
-  output_ch = input_ch
-  
-    // split params for downstream components
-    | setWorkflowArguments(
-      cellranger_count: [
-        "input": "input",
-        "expect_cells": "expect_cells",
-        "chemistry": "chemistry",
-        "secondary_analysis": "secondary_analysis",
-        "generate_bam": "generate_bam",
-        "include_introns": "include_introns"
-      ],
-      from_10xh5_to_h5mu: [ 
-        "sample_id": "id",
-        "output": "output_h5mu",
-        "obsm_metrics": "obsm_metrics"
-      ],
-      join_csv: [
-        "input_metadata": "input_metadata"
-      ],
-      filter_with_counts: [
-        "min_genes": "min_genes",
-        "min_counts": "min_counts"
-      ]
-    )
-
-    | getWorkflowArguments(key: "cellranger_count")
+    | pmap{ id, data ->
+      new_data = data + [ output: id ]
+      [ id, new_data, data ]
+    }
     | cellranger_count.run(auto: [ publish: true ])
 
     // split output dir into map
     | cellranger_count_split
 
     // convert to h5mu
-    | pmap { id, data, split_args -> 
+    | pmap{ id, data -> 
       new_data = [ 
         input: data.raw_h5,
-        input_metrics_summary = metrics_summary
+        input_metrics_summary: data.metrics_summary
       ]
-      [ id, new_data, split_args ]
+      [ id, new_data, data ]
     }
-    | getWorkflowArguments(key: "from_10xh5_to_h5mu")
-    | from_10xh5_to_h5mu.run(auto: [ publish: true ])
-
-    // rename .obs_names and add .obs["sample_id"]
-    | add_id
-
-    | getWorkflowArguments(key: "join_csv")
-    | join_csv
+    | from_10xh5_to_h5mu
 
     // run cellbender
-    | cellbender_remove_background
+    | cellbender_remove_background.run(
+      args: [
+        min_counts: 1000
+      ]
+    )
 
-    | getWorkflowArguments(key: "filter_with_counts")
-    | filter_with_counts.run(args: [do_subset: true])
+    // filter counts
+    | filter_with_counts.run(
+      args: [
+        layer: "corrected",
+        min_genes: 100, 
+        min_counts: 1000, 
+        do_subset: true
+      ]
+    )
 
-    // remove split_args
-    | pmap { id, h5mu, split_args ->
-      [ id, h5mu ]
+    | join_uns_to_obs.run(args: [ uns_key: "metrics_cellranger" ])
+
+    // rename .obs_names and add .obs["sample_id"]
+    | pmap { id, file, orig_data ->
+      new_data = [
+        input_id: id, 
+        input: file, 
+        obs_output: "sample_id", 
+        make_observation_keys_unique: true
+      ]
+      [ id, new_data, orig_data]
     }
+    | add_id
 
-  emit:
-  output_ch
-}
-
-
-workflow test_wf {
-  // allow changing the resources_test dir
-  params.resources_test = params.rootDir + "/resources_test"
-
-  // or when running from s3: params.resources_test = "s3://openpipelines-data/"
-  testParams = [
-    id: "foo",
-    input: params.resources_test + "/cellranger_tiny_fastq/cellranger_tiny_fastq",
-    reference: params.resources_test + "/cellranger_tiny_fastq/cellranger_tiny_ref"
-  ]
-
-  output_ch =
-    viashChannel(testParams, config)
-    | view { "Input: $it" }
-    | run_wf
-    | view { output ->
-      assert output.size() == 2 : "outputs should contain two elements; [id, out]"
-      assert output[1] instanceof Map : "Output should be a Map."
-      // todo: check whether output dir contains fastq files
-      "Output: $output"
+    // add metadata to h5mu
+    | pmap{ id, file, orig_data ->
+      new_data = [ 
+        input: file, 
+        input_csv: orig_data.input_metadata,
+        obs_key: 'sample_id',
+        output: "${id}.h5mu"
+      ]
+      [ id, new_data ]
     }
-    | toList()
-    | map { output_list ->
-      assert output_list.size() == 1 : "output channel should contain one event"
-      assert output_list[0][0] == "foo" : "Output ID should be same as input ID"
+    | join_csv.run(auto: [ publish: true ] )
+
+    // combine into one mudata
+    | toSortedList{ a, b -> b[0] <=> a[0] }
+    | map { tups -> 
+      new_data = [ 
+        input_id: tups.collect{it[0]}, 
+        input: tups.collect{it[1]},
+        output: "ts.h5mu"
+      ]
+      [ "combined", new_data ]
     }
-    //| check_format(args: {""}) // todo: check whether output h5mu has the right slots defined
+    | concat.run(
+      auto: [ publish: true ]
+    )
 }
