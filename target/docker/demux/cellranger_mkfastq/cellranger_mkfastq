@@ -429,9 +429,9 @@ FROM ghcr.io/data-intuitive/cellranger:6.1
 RUN apt update && apt upgrade -y
 LABEL org.opencontainers.image.authors="Angela Pisco, Samuel D'Souza, Robrecht Cannoodt"
 LABEL org.opencontainers.image.description="Companion container for running component demux cellranger_mkfastq"
-LABEL org.opencontainers.image.created="2022-10-10T13:36:15Z"
+LABEL org.opencontainers.image.created="2022-10-10T15:19:20Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="2c9c3ae77f04c88ab85df9146a7a6b0bbca8309e"
+LABEL org.opencontainers.image.revision="8eacf1770d4a2c7a5a51f71feb5d412f29623690"
 LABEL org.opencontainers.image.version="main_build"
 VIASHDOCKER
 }
@@ -1029,7 +1029,7 @@ $( if [ ! -z ${VIASH_META_MEMORY_PB+x} ]; then echo "${VIASH_META_MEMORY_PB}" | 
 ## VIASH END
 
 # create temporary directory
-tmpdir=\$(mktemp -d "$VIASH_TEMP/\$meta_resources_name-XXXXXXXX")
+tmpdir=\$(mktemp -d "$VIASH_TEMP/\$meta_functionality_name-XXXXXXXX")
 function clean_up {
     rm -rf "\$tmpdir"
 }

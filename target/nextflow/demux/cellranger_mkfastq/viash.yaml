@@ -340,7 +340,7 @@ functionality:
       ## VIASH END
       
       # create temporary directory
-      tmpdir=\\$(mktemp -d "$VIASH_TEMP/\\$meta_resources_name-XXXXXXXX")
+      tmpdir=\\$(mktemp -d "$VIASH_TEMP/\\$meta_functionality_name-XXXXXXXX")
       function clean_up {
           rm -rf "\\$tmpdir"
       }
@@ -2128,5 +2128,5 @@ info:
   platform: "nextflow"
   output: "target/nextflow/demux/cellranger_mkfastq"
   viash_version: "0.6.1"
-  git_commit: "2c9c3ae77f04c88ab85df9146a7a6b0bbca8309e"
+  git_commit: "8eacf1770d4a2c7a5a51f71feb5d412f29623690"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"
