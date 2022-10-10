@@ -51,7 +51,7 @@
             "description": "Output h5mu file.",
             
             
-            "default": "$id.$key.output.output"
+            "default": "$id.$key.output.h5mu"
           }
         }
       },
@@ -63,7 +63,7 @@
         "properties": {
           "input_csv": {
             "type":"string",
-            "description": ".csv file containing metadata\"",
+            "description": ".csv file containing metadata",
             
             
             "default": ""

@@ -1,7 +1,7 @@
 # Inputs
 input: # please fill in - example: "input.h5mu"
 modality: "rna"
-layer: "rna"
+# layer: "raw_counts"
 
 # Outputs
 # output: "$id.$key.output.h5mu"

@@ -11,8 +11,9 @@ obs_latent_scale: "latent_scale"
 var_ambient_expression: "ambient_expression"
 
 # Arguments
-# expected_cells: 123
-total_droplets_included: 25000
+# expected_cells: 1000
+# total_droplets_included: 25000
+# min_counts: 1000
 model: "full"
 epochs: 150
 low_count_threshold: 15

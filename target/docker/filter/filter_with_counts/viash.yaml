@@ -51,9 +51,9 @@ functionality:
     - type: "string"
       name: "--layer"
       alternatives: []
-      example: []
-      default:
-      - "rna"
+      example:
+      - "raw_counts"
+      default: []
       required: false
       choices: []
       direction: "input"
@@ -383,7 +383,7 @@ functionality:
         echo ""
         echo "    --layer"
         echo "        type: string"
-        echo "        default: rna"
+        echo "        example: raw_counts"
         echo ""
         echo "Outputs:"
         echo "    --output"
@@ -665,9 +665,9 @@ functionality:
       
       LABEL org.opencontainers.image.authors="Dries De Maeyer, Robrecht Cannoodt"
       LABEL org.opencontainers.image.description="Companion container for running component filter filter_with_counts"
-      LABEL org.opencontainers.image.created="2022-10-07T21:47:48Z"
+      LABEL org.opencontainers.image.created="2022-10-10T13:36:15Z"
       LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-      LABEL org.opencontainers.image.revision="1169e6844f42fa025b3725d9bc4ce0230712f7ce"
+      LABEL org.opencontainers.image.revision="2c9c3ae77f04c88ab85df9146a7a6b0bbca8309e"
       LABEL org.opencontainers.image.version="main_build"
       VIASHDOCKER
       }
@@ -1145,9 +1145,6 @@ functionality:
       if [ -z ${VIASH_PAR_MODALITY+x} ]; then
         VIASH_PAR_MODALITY="rna"
       fi
-      if [ -z ${VIASH_PAR_LAYER+x} ]; then
-        VIASH_PAR_LAYER="rna"
-      fi
       if [ -z ${VIASH_PAR_DO_SUBSET+x} ]; then
         VIASH_PAR_DO_SUBSET="false"
       fi
@@ -1539,5 +1536,5 @@ info:
   output: "target/docker/filter/filter_with_counts"
   executable: "target/docker/filter/filter_with_counts/filter_with_counts"
   viash_version: "0.6.1"
-  git_commit: "1169e6844f42fa025b3725d9bc4ce0230712f7ce"
+  git_commit: "2c9c3ae77f04c88ab85df9146a7a6b0bbca8309e"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"

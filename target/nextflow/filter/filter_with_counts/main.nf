@@ -87,8 +87,8 @@ thisConfig = processConfig([
         {
           "type" : "string",
           "name" : "--layer",
-          "default" : [
-            "rna"
+          "example" : [
+            "raw_counts"
           ],
           "required" : false,
           "direction" : "input",

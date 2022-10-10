@@ -1,0 +1,9 @@
+# Inputs
+id: # please fill in - example: "foo"
+input_metadata: # please fill in - example: "foo.csv"
+input: # please fill in - example: ["sample_S1_L001_R1_001.fastq.gz", "sample_S1_L001_R2_001.fastq.gz"]
+reference: # please fill in - example: "reference.tar.gz"
+
+# Nextflow input-output arguments
+publish_dir: # please fill in - example: "output/"
+# param_list: "my_params.yaml"

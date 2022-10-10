@@ -2019,5 +2019,5 @@ info:
   platform: "nextflow"
   output: "target/nextflow/convert/from_bd_to_10x_molecular_barcode_tags"
   viash_version: "0.6.1"
-  git_commit: "1169e6844f42fa025b3725d9bc4ce0230712f7ce"
+  git_commit: "2c9c3ae77f04c88ab85df9146a7a6b0bbca8309e"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"

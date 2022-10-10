@@ -18,7 +18,7 @@ logger.addHandler(console_handler)
 ## VIASH START
 par = {
     # inputs
-    "input": "input.h5mu",
+    "input": "work/df/ef05da347afdfe506bfe30c8425f81/TSP15_Eye_ScleraEtc_10X_2_1.from_10xh5_to_h5mu.output.h5mu",
     "modality": "rna",
     # outputs
     "output": "output.h5mu",
@@ -29,7 +29,8 @@ par = {
     "var_ambient_expression": "ambient_expression",
     # "obsm_latent_gene_encoding": "latent_gene_encoding",
     # args
-    "total_droplets_included": 50000,
+    "total_droplets_included": None,
+    "min_counts": 1000,
     "epochs": 150,
     "fpr": 0.01,
     "exclude_antibody_capture": False,
@@ -89,7 +90,25 @@ with tempfile.TemporaryDirectory(prefix="cellbender-", dir=meta["temp_dir"]) as 
       values = par[name] if isinstance(par[name], list) else [par[name]]
       cmd_pars += [flag] + [str(val) for val in values] if is_kwarg else [flag]
 
-  logger.info("Running CellBender")
+  if par["min_counts"]:
+    assert par["expected_cells"] is None, "If min_counts is defined, expected_cells should be undefined"
+    assert par["total_droplets_included"] is None, "If min_counts is defined, expected_cells should be undefined"
+
+    # infer value for expected cells
+    umi_counts = data.X.sum(axis=1)
+    umi_counts = umi_counts[umi_counts > 0]
+    inferred_expected_cells = (data.X.sum(axis=1) > par["min_counts"]).sum()
+    logger.info("Selecting --expected-cells %d", inferred_expected_cells)
+    cmd_pars += ["--expected-cells", str(inferred_expected_cells)]
+
+    # store computed values for logging purposes
+    data.uns["cellbender_info"] = {
+      'raw_umi_counts_per_droplet': umi_counts,
+      'min_counts': par["min_counts"],
+      'inferred_expected_cells': inferred_expected_cells
+    }
+
+  logger.info("Running CellBender: '%s'", ' '.join(cmd_pars))
   out = subprocess.check_output(cmd_pars).decode("utf-8")
   
   logger.info("Reading CellBender 10xh5 output file: '%s'", output_file)

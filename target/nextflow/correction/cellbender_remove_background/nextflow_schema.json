@@ -94,7 +94,14 @@
             "description": "The number of droplets from the rank-ordered UMI plot\nthat will be analyzed. The largest \u0027total_droplets\u0027\ndroplets will have their cell probabilities inferred\nas an output.\n",
             
             
-            "default": "25000"
+            "default": ""
+          },
+          "min_counts": {
+            "type":"integer",
+            "description": "Will use the number of umi counts as basis for the number of expected cells.",
+            
+            
+            "default": ""
           },
           "model": {
             "type":"string",

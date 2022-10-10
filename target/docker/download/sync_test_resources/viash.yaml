@@ -497,9 +497,9 @@ functionality:
       RUN :
       LABEL org.opencontainers.image.authors="Robrecht Cannoodt"
       LABEL org.opencontainers.image.description="Companion container for running component download sync_test_resources"
-      LABEL org.opencontainers.image.created="2022-10-07T21:47:47Z"
+      LABEL org.opencontainers.image.created="2022-10-10T13:36:13Z"
       LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-      LABEL org.opencontainers.image.revision="1169e6844f42fa025b3725d9bc4ce0230712f7ce"
+      LABEL org.opencontainers.image.revision="2c9c3ae77f04c88ab85df9146a7a6b0bbca8309e"
       LABEL org.opencontainers.image.version="main_build"
       VIASHDOCKER
       }
@@ -1143,5 +1143,5 @@ info:
   output: "target/docker/download/sync_test_resources"
   executable: "target/docker/download/sync_test_resources/sync_test_resources"
   viash_version: "0.6.1"
-  git_commit: "1169e6844f42fa025b3725d9bc4ce0230712f7ce"
+  git_commit: "2c9c3ae77f04c88ab85df9146a7a6b0bbca8309e"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"

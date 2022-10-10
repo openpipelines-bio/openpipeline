@@ -151,6 +151,9 @@ thisConfig = processConfig([
           "type" : "integer",
           "name" : "--expected_cells",
           "description" : "Number of cells expected in the dataset (a rough estimate within a factor of 2 is sufficient).",
+          "example" : [
+            1000
+          ],
           "required" : false,
           "direction" : "input",
           "multiple" : false,
@@ -161,8 +164,21 @@ thisConfig = processConfig([
           "type" : "integer",
           "name" : "--total_droplets_included",
           "description" : "The number of droplets from the rank-ordered UMI plot\nthat will be analyzed. The largest 'total_droplets'\ndroplets will have their cell probabilities inferred\nas an output.\n",
-          "default" : [
+          "example" : [
             25000
+          ],
+          "required" : false,
+          "direction" : "input",
+          "multiple" : false,
+          "multiple_sep" : ":",
+          "dest" : "par"
+        },
+        {
+          "type" : "integer",
+          "name" : "--min_counts",
+          "description" : "Will use the number of umi counts as basis for the number of expected cells.",
+          "example" : [
+            1000
           ],
           "required" : false,
           "direction" : "input",
@@ -376,6 +392,7 @@ par = {
   'var_ambient_expression': $( if [ ! -z ${VIASH_PAR_VAR_AMBIENT_EXPRESSION+x} ]; then echo "r'${VIASH_PAR_VAR_AMBIENT_EXPRESSION//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'expected_cells': $( if [ ! -z ${VIASH_PAR_EXPECTED_CELLS+x} ]; then echo "int(r'${VIASH_PAR_EXPECTED_CELLS//\\'/\\'\\"\\'\\"r\\'}')"; else echo None; fi ),
   'total_droplets_included': $( if [ ! -z ${VIASH_PAR_TOTAL_DROPLETS_INCLUDED+x} ]; then echo "int(r'${VIASH_PAR_TOTAL_DROPLETS_INCLUDED//\\'/\\'\\"\\'\\"r\\'}')"; else echo None; fi ),
+  'min_counts': $( if [ ! -z ${VIASH_PAR_MIN_COUNTS+x} ]; then echo "int(r'${VIASH_PAR_MIN_COUNTS//\\'/\\'\\"\\'\\"r\\'}')"; else echo None; fi ),
   'model': $( if [ ! -z ${VIASH_PAR_MODEL+x} ]; then echo "r'${VIASH_PAR_MODEL//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'epochs': $( if [ ! -z ${VIASH_PAR_EPOCHS+x} ]; then echo "int(r'${VIASH_PAR_EPOCHS//\\'/\\'\\"\\'\\"r\\'}')"; else echo None; fi ),
   'low_count_threshold': $( if [ ! -z ${VIASH_PAR_LOW_COUNT_THRESHOLD+x} ]; then echo "int(r'${VIASH_PAR_LOW_COUNT_THRESHOLD//\\'/\\'\\"\\'\\"r\\'}')"; else echo None; fi ),
@@ -450,7 +467,25 @@ with tempfile.TemporaryDirectory(prefix="cellbender-", dir=meta["temp_dir"]) as 
       values = par[name] if isinstance(par[name], list) else [par[name]]
       cmd_pars += [flag] + [str(val) for val in values] if is_kwarg else [flag]
 
-  logger.info("Running CellBender")
+  if par["min_counts"]:
+    assert par["expected_cells"] is None, "If min_counts is defined, expected_cells should be undefined"
+    assert par["total_droplets_included"] is None, "If min_counts is defined, expected_cells should be undefined"
+
+    # infer value for expected cells
+    umi_counts = data.X.sum(axis=1)
+    umi_counts = umi_counts[umi_counts > 0]
+    inferred_expected_cells = (data.X.sum(axis=1) > par["min_counts"]).sum()
+    logger.info("Selecting --expected-cells %d", inferred_expected_cells)
+    cmd_pars += ["--expected-cells", str(inferred_expected_cells)]
+
+    # store computed values for logging purposes
+    data.uns["cellbender_info"] = {
+      'raw_umi_counts_per_droplet': umi_counts,
+      'min_counts': par["min_counts"],
+      'inferred_expected_cells': inferred_expected_cells
+    }
+
+  logger.info("Running CellBender: '%s'", ' '.join(cmd_pars))
   out = subprocess.check_output(cmd_pars).decode("utf-8")
   
   logger.info("Reading CellBender 10xh5 output file: '%s'", output_file)

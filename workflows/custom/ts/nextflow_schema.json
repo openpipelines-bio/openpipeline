@@ -1,56 +1,42 @@
 {
     "$schema": "http://json-schema.org/draft-07/schema",
-    "title": "velocyto",
-    "description": "Runs the velocity analysis on a BAM file, outputting a loom file.",
+    "title": "ts",
+    "description": "No description",
     "type": "object",
     "definitions": {
-      "arguments" : {
-        "title": "Arguments",
+      "inputs" : {
+        "title": "Inputs",
         "type": "object",
         "description": "No description",
         "default": "",
         "properties": {
+          "id": {
+            "type":"string",
+            "description": "ID of the sample.",
+            
+            
+            "default": ""
+          },
+          "input_metadata": {
+            "type":"string",
+            "description": "No description",
+            
+            
+            "default": ""
+          },
           "input": {
             "type":"string",
-            "description": "Path to BAM file",
+            "description": "The fastq.gz files to align. Can also be a single directory containing fastq.gz files.",
             
             
             "default": ""
           },
-          "transcriptome": {
+          "reference": {
             "type":"string",
-            "description": "Path to GTF file",
+            "description": "The path to Cell Ranger reference tar.gz file.",
             
             
             "default": ""
-          },
-          "barcode": {
-            "type":"string",
-            "description": "Valid barcodes file, to filter the bam. If --bcfile is not specified all the cell barcodes will be included.\nCell barcodes should be specified in the bcfile as the \u0027CB\u0027 tag for each read\n",
-            
-            
-            "default": ""
-          },
-          "without_umi": {
-            "type":"boolean",
-            "description": "foo",
-            
-            
-            "default": "False"
-          },
-          "output": {
-            "type":"string",
-            "description": "Velocyto loom file",
-            
-            
-            "default": "$id.$key.output.output"
-          },
-          "logic": {
-            "type":"string",
-            "description": "The logic to use for the filtering.",
-            
-            "enum": ["Default", "Permissive10X", "Intermediate10X", "ValidatedIntrons10X", "Stricter10X", "ObservedSpanning10X", "Discordant10X", "SmartSeq2"],
-            "default": "Default"
           }
         }
       },
@@ -79,7 +65,7 @@
     },
     "allOf": [
       {
-        "$ref": "#/definitions/arguments"
+        "$ref": "#/definitions/inputs"
       },
       {
         "$ref": "#/definitions/nextflow input-output arguments"
