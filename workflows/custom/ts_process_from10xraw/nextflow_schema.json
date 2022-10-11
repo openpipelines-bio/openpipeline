@@ -1,70 +1,35 @@
 {
     "$schema": "http://json-schema.org/draft-07/schema",
-    "title": "make_params",
-    "description": "Looks for files in a directory and turn it in a params file.",
+    "title": "ts_process_from10xraw",
+    "description": "No description",
     "type": "object",
     "definitions": {
-      "arguments" : {
-        "title": "Arguments",
+      "inputs" : {
+        "title": "Inputs",
         "type": "object",
         "description": "No description",
         "default": "",
         "properties": {
-          "base_dir": {
+          "id": {
             "type":"string",
-            "description": "Base directory to search recursively",
+            "description": "ID of the sample.",
             
             
             "default": ""
           },
-          "pattern": {
+          "input": {
             "type":"string",
-            "description": "An optional regular expression. Only file names which match the regular expression will be matched.",
+            "description": "Path to 10x raw output",
             
             
             "default": ""
           },
-          "n_dirname_drop": {
-            "type":"integer",
-            "description": "For every matched file, the parent directory will be traversed N times.",
-            
-            
-            "default": "0"
-          },
-          "n_basename_id": {
-            "type":"integer",
-            "description": "The unique identifiers will consist of at least N dirnames.",
-            
-            
-            "default": "0"
-          },
-          "id_name": {
+          "output_h5mu": {
             "type":"string",
-            "description": "The name for storing the identifier field in the yaml.",
+            "description": "The output h5mu.",
             
             
-            "default": "id"
-          },
-          "path_name": {
-            "type":"string",
-            "description": "The name for storing the path field in the yaml.",
-            
-            
-            "default": "path"
-          },
-          "group_name": {
-            "type":"string",
-            "description": "Top level name for the group of entries.",
-            
-            
-            "default": ""
-          },
-          "output": {
-            "type":"string",
-            "description": "Output YAML file.",
-            
-            
-            "default": "$id.$key.output.yaml"
+            "default": "$id.$key.output_h5mu.h5mu"
           }
         }
       },
@@ -93,7 +58,7 @@
     },
     "allOf": [
       {
-        "$ref": "#/definitions/arguments"
+        "$ref": "#/definitions/inputs"
       },
       {
         "$ref": "#/definitions/nextflow input-output arguments"

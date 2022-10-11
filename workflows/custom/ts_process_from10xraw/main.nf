@@ -17,7 +17,7 @@ include { concat } from targetDir + "/dataflow/concat/main.nf"
 include { readConfig; viashChannel; helpMessage } from workflowDir + "/utils/WorkflowHelper.nf"
 include { setWorkflowArguments; getWorkflowArguments; passthroughMap as pmap } from workflowDir + "/utils/DataFlowHelper.nf"
 
-config = readConfig("$workflowDir/custom/ts_process/config.vsh.yaml")
+config = readConfig("$workflowDir/custom/ts_process_from10xraw/config.vsh.yaml")
 
 workflow {
   helpMessage(config)
@@ -26,10 +26,8 @@ workflow {
 
     // map data to reference
     | pmap{ id, data ->
-      new_data = data + [ output: data.output_raw ]
-      [ id, new_data, data ]
+      [ id, data, data]
     }
-    | cellranger_count.run(auto: [ publish: true ])
 
     // split output dir into map
     | cellranger_count_split.run(
