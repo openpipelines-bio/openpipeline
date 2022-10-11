@@ -32,7 +32,9 @@ workflow {
     | cellranger_count.run(auto: [ publish: true ])
 
     // split output dir into map
-    | cellranger_count_split
+    | cellranger_count_split.run(
+      args: [ bam: null, bai: null ] // don't copy bam
+    )
 
     // convert to h5mu
     | pmap{ id, data, orig_data -> 
