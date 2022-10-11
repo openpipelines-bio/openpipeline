@@ -7,36 +7,96 @@ functionality:
     - name: Matthias Beyens
       email: matthias.beyens@gmail.com
       roles: [ author ]
-      props: { github: mbeyens, orcid: "0000-0003-3304-0706" }
+      props: { github: MatthiasBeyens, orcid: "0000-0003-3304-0706" }
   argument_groups:
     - name: Inputs
       arguments:
         - name: "--input"
           alternatives: ["-i"]
           type: file
-          description: Input h5mu file
+          description: "Input h5ad file"
           direction: input
           required: true
+        - name: "--output"
+          alternatives: ["-o"]
+          type: file
+          description: "Output h5ad file"
+          direction: output
+          required: true
+        - name: "--compression"
+          type: string
+          description: "Compression algorithm, or none for uncompressed, of h5mu output file"
+          default: "gzip"
+          required: false
+        - name: "--tissue"
+          type: string
+          description: "Currently only limited to Tabula Sapiens available tissues. The tissue that will be used as reference to call cell types. Available tissues are: Bladder, Blood, Bone_Marrow, Kidney, Large_Intestine, Lung, Lymph_Node, Pancreas, Small_Intestine, Spleen, Thymus, Trachea, Vasculature"
+          default: Blood
+          required: true
+        - name: "--methods"
+          type: string
+          description: "Methods to call cell types. By default, runs to scVI and scANVI. Available methods are: scvi, scanvi, bbknn, svm, rf, onclass, scanorama"
+          example: ["scvi", "scanvi"]
+          required: true
+          multiple: true
+        - name: "--obs_covariate"
+          type: string
+          description: "The .obs field that defines the covariate to regress out."
+          default: "batch"
+          required: true
+        - name: "--obs_cell_type_key"
+          type: string
+          description: "scANVI has the option to use labeled cells in the input h5mu dataset during its training phase. To use pre-labeled cells from input h5mu, set query_labels_key to the .obs key"
+          default: "none"
+          required: false
+        - name: "--obs_cell_type_unknown_label"
+          type: string
+          description: "If obs_cell_type_key is not None, will treat everything not labeled unknown_celltype_label as a labeled cell"
+          default: "unknown"
+          required: false
+        - name: "--reference_cell_type_key"
+          type: string
+          description: "PopV use pre-labeled cells from reference data, set reference_cell_type_key to the .obs key where cell types categories are present. Default cell_ontology_class for Tabula Sapeins reference datasets."
+          default: "cell_ontology_class"
+          required: false
+        - name: "--reference_covariate"
+          type: string
+          description: "The .obs field that defines the reference data covariate to regress out. Default donor and method for Tabula Sapiens reference datasets."
+          default: ["donor", "method"]
+          required: false
+          multiple: true
   resources:
     - type: python_script
       path: script.py
   test_resources:
     - type: python_script
       path: test.py
-    - path: ../../../resources_test/pbmc_1k_protein_v3/pbmc_1k_protein_v3_mms.h5mu
+    - path: ../../../resources_test/pbmc_1k_protein_v3/pbmc_1k_protein_v3_filtered_feature_bc_matrix.h5mu
 platforms:
+  # TODO: enable cuda for gpu 
+  # - type: docker
+  #   image: nvidia/cuda:11.3.0-runtime-ubuntu20.04
+  #   setup:
   - type: docker
-    image: nvidia/cuda:11.3.0-runtime-ubuntu20.04
+    image: python:3.8
     setup:
-      - type: docker
-        run: apt update && apt install -y python3-pip==22.2.2
-      - type: python
+      - type: apt
         packages:
-          - mudata~=0.2.0
-          - scanpy~=1.9.1
-          - torch~=1.12.1+cu113
-          - torchvision~=0.13.1+cu113
+          - libopenblas-dev
+          - liblapack-dev
+          - gfortran
+      - type: python
+        git:
+          - https://github.com/czbiohub/PopV.git
+        packages:
+          # - mudata~=0.2.0
+          # - anndata~=0.8.0
+          - scanpy~=1.8.2
+          # TODO: gpu enable pytorch
+          # - torch~=1.12.1+cu113
+          # - torchvision~=0.13.1+cu113
   - type: nextflow
     variant: vdsl3
     directives:
-      label: [highmem, highcpu] # TODO: should add new label highmem-single-gpu and lowmem-single-gpu
+      # TODO: should add new label highmem-single-gpu and lowmem-single-gpu
+      label: [highmem, highcpu]
