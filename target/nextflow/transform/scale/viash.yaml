@@ -2017,5 +2017,5 @@ info:
   platform: "nextflow"
   output: "target/nextflow/transform/scale"
   viash_version: "0.6.2"
-  git_commit: "86b0bb6db31d4cd8f3adb25bda6df532463ef12f"
+  git_commit: "e916dd0d57a8ee1895dd037d57e0c229971217cf"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"
