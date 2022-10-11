@@ -519,20 +519,20 @@ function ViashDockerCheckCommands {
 #   ViashDockerFile
 function ViashDockerfile {
   cat << 'VIASHDOCKER'
-FROM nvcr.io/nvidia/cuda:11.8.0-base-ubuntu22.04
+FROM nvcr.io/nvidia/cuda:11.6.0-base-ubuntu20.04
 
 RUN apt-get update && \
   DEBIAN_FRONTEND=noninteractive apt-get install -y python3-pip python-is-python3 git && \
   rm -rf /var/lib/apt/lists/*
 
 RUN pip install --upgrade pip && \
-  pip install --upgrade --no-cache-dir "muon" "mudata~=0.2.0" "torch" "torchvision" && \
+  pip install --upgrade --no-cache-dir "muon" "mudata~=0.2.0" "torch" "torchvision" "torchaudio" "--extra-index-url" "https://download.pytorch.org/whl/cu116" && \
   pip install --upgrade --no-cache-dir "git+https://github.com/broadinstitute/CellBender"
 
 LABEL org.opencontainers.image.description="Companion container for running component correction cellbender_remove_background"
-LABEL org.opencontainers.image.created="2022-10-11T11:52:06Z"
+LABEL org.opencontainers.image.created="2022-10-11T12:34:52Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="4f81dbc2780eabbf216f2e50728d75c491e5f571"
+LABEL org.opencontainers.image.revision="01c54deec7e9bbae5de2b6e86dfca9a6d999eff0"
 LABEL org.opencontainers.image.version="main_build"
 VIASHDOCKER
 }

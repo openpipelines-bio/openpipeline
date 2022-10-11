@@ -469,9 +469,9 @@ functionality:
       
       LABEL org.opencontainers.image.authors="Angela Pisco, Robrecht Cannoodt"
       LABEL org.opencontainers.image.description="Companion container for running component reference build_cellranger_reference"
-      LABEL org.opencontainers.image.created="2022-10-11T11:52:05Z"
+      LABEL org.opencontainers.image.created="2022-10-11T12:34:51Z"
       LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-      LABEL org.opencontainers.image.revision="4f81dbc2780eabbf216f2e50728d75c491e5f571"
+      LABEL org.opencontainers.image.revision="01c54deec7e9bbae5de2b6e86dfca9a6d999eff0"
       LABEL org.opencontainers.image.version="main_build"
       VIASHDOCKER
       }
@@ -1071,5 +1071,5 @@ info:
   output: "target/docker/reference/build_cellranger_reference"
   executable: "target/docker/reference/build_cellranger_reference/build_cellranger_reference"
   viash_version: "0.6.2"
-  git_commit: "4f81dbc2780eabbf216f2e50728d75c491e5f571"
+  git_commit: "01c54deec7e9bbae5de2b6e86dfca9a6d999eff0"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"
