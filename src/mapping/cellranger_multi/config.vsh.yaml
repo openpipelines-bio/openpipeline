@@ -12,7 +12,7 @@ functionality:
       props: { github: rcannood, orcid: "0000-0003-3641-729X" }
     - name: Dries De Maeyer
       email: ddemaeyer@gmail.com
-      roles: [ maintainer ]
+      roles: [ author ]
       props: { account: ddemaey1 }
   argument_groups:
     - name: Input files

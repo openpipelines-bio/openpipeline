@@ -6,7 +6,7 @@ import re
 
 ## VIASH START
 meta = {
-    'functionality_name': './target/native/split/split_modalities/split_modalities',
+    'functionality_name': './target/native/dataflow/split_modalities/split_modalities',
     'resources_dir': './resources_test/'
 }
 ## VIASH END

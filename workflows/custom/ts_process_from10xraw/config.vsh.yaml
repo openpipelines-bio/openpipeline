@@ -1,0 +1,32 @@
+functionality:
+  name: "ts_process_from10xraw"
+  namespace: "custom"
+  authors:
+    - name: Angela Pisco
+      roles: [ author ]
+      props: { github: aopisco, orcid: "0000-0003-0142-2355" }
+    - name: Robrecht Cannoodt
+      email: robrecht@data-intuitive.com
+      roles: [ author, maintainer ]
+      props: { github: rcannood, orcid: "0000-0003-3641-729X" }
+  argument_groups:
+    - name: Inputs
+      arguments:
+        - name: "--id"
+          required: true
+          type: string
+          description: ID of the sample.
+          example: foo
+        - type: file
+          name: --input
+          required: true
+          example: "/path/to/dir"
+          description: Path to 10x raw output
+        - type: file
+          name: --output_h5mu
+          direction: output
+          default: '$id.$key.output_h5mu.h5mu'
+          description: The output h5mu.
+  resources:
+    - type: nextflow_script
+      path: main.nf

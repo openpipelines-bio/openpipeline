@@ -8,13 +8,14 @@ functionality:
     - name: Angela Pisco
       roles: [ author ]
       props: { github: aopisco, orcid: "0000-0003-0142-2355" }
-    - name: Samuel D'Souza
-      roles: [ author ]
-      props: { github: srdsam }
     - name: Robrecht Cannoodt
       email: robrecht@data-intuitive.com
       roles: [ author, maintainer ]
       props: { github: rcannood, orcid: "0000-0003-3641-729X" }
+    - name: Dries De Maeyer
+      email: ddemaeyer@gmail.com
+      roles: [ author ]
+      props: { account: ddemaey1 }
   argument_groups:
     - name: Inputs
       arguments:
@@ -49,6 +50,10 @@ functionality:
           description: "The converted h5mu file."
           required: true
           example: output.h5mu
+        - name: "--obsm_metrics"
+          type: string
+          description: Name of the .obsm slot under which to QC metrics (if any).
+          default: "metrics_summary"
     - name: Cell Ranger arguments
       arguments:
         - type: integer
@@ -89,25 +94,6 @@ functionality:
           name: "--include_introns"
           default: true
           description: Include intronic reads in count (default=true unless --target-panel is specified in which case default=false)
-    - name: MuData conversion arguments
-      arguments:
-        - name: "--which_10xh5"
-          type: string
-          choices: [ filtered_h5, raw_h5 ]
-          default: raw_h5
-          description: Which 10x .h5 file to convert to h5mu after Cell Ranger is done mapping.
-        - name: "--min_genes"
-          type: integer
-          example: 100
-          description: Minimum number of counts required for a cell to pass filtering.
-        - name: "--min_counts"
-          type: integer
-          example: 1000
-          description: Minimum number of genes expressed required for a cell to pass filtering.
-        - name: "--obsm_metrics"
-          type: string
-          description: Name of the .obsm slot under which to QC metrics (if any).
-          default: "metrics_summary"
   resources:
     - type: nextflow_script
       path: main.nf
