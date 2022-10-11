@@ -50,14 +50,14 @@ workflow {
     | cellbender_remove_background.run(
       args: [
         min_counts: 1000,
-        layer_output: "corrected"
+        layer_output: "cellbender"
       ]
     )
 
     // filter counts
     | filter_with_counts.run(
       args: [
-        layer: "corrected",
+        layer: "cellbender",
         min_genes: 100, 
         min_counts: 1000, 
         do_subset: true
