@@ -28,50 +28,62 @@ functionality:
           description: "Compression algorithm, or none for uncompressed, of h5mu output file"
           default: "gzip"
           required: false
-        - name: "--tissue"
+        - name: "--tissue_tabula_sapiens"
           type: string
-          description: "Currently only limited to Tabula Sapiens available tissues. The tissue that will be used as reference to call cell types. Available tissues are: Bladder, Blood, Bone_Marrow, Kidney, Large_Intestine, Lung, Lymph_Node, Pancreas, Small_Intestine, Spleen, Thymus, Trachea, Vasculature"
-          default: Blood
-          required: true
+          description: "Limited to Tabula Sapiens available tissues. The tissue that will be used as reference to call cell types. Available tissues are: Bladder, Blood, Bone_Marrow, Kidney, Large_Intestine, Lung, Lymph_Node, Pancreas, Small_Intestine, Spleen, Thymus, Trachea, Vasculature"
+          default: ""
+          required: false
+        - name: "--tissue_reference_file"
+          type: file
+          description: "User-provided reference tissue. The data that will be used as reference to call cell types."
+          default: ""
+          required: false
         - name: "--methods"
           type: string
           description: "Methods to call cell types. By default, runs to scVI and scANVI. Available methods are: scvi, scanvi, bbknn, svm, rf, onclass, scanorama"
           example: ["scvi", "scanvi"]
           required: true
           multiple: true
-        - name: "--obs_covariate"
+        - name: "--query_obs_covariates"
           type: string
-          description: "The .obs field that defines the covariate to regress out."
-          default: "batch"
+          description: "The query data .obs field that defines the covariate to regress out."
+          default: ["batch"]
           required: true
-        - name: "--obs_cell_type_key"
+          multiple: true
+        - name: "--query_obs_cell_type_key"
           type: string
-          description: "scANVI has the option to use labeled cells in the input h5mu dataset during its training phase. To use pre-labeled cells from input h5mu, set query_labels_key to the .obs key"
+          description: "scANVI has the option to use labeled cells in the input h5mu dataset during its training phase. To use pre-labeled cells from input h5mu, set query_obs_cell_type_key to the .obs key"
           default: "none"
           required: false
-        - name: "--obs_cell_type_unknown_label"
+        - name: "--query_obs_cell_type_unknown_label"
           type: string
           description: "If obs_cell_type_key is not None, will treat everything not labeled unknown_celltype_label as a labeled cell"
           default: "unknown"
           required: false
-        - name: "--reference_cell_type_key"
+        - name: "--reference_obs_cell_type_key"
           type: string
           description: "PopV use pre-labeled cells from reference data, set reference_cell_type_key to the .obs key where cell types categories are present. Default cell_ontology_class for Tabula Sapeins reference datasets."
           default: "cell_ontology_class"
           required: false
-        - name: "--reference_covariate"
+        - name: "--reference_obs_covariate"
           type: string
           description: "The .obs field that defines the reference data covariate to regress out. Default donor and method for Tabula Sapiens reference datasets."
           default: ["donor", "method"]
           required: false
           multiple: true
+        - name: "--ontology_files_path"
+          type: string
+          description: "Path to CL ontology files for PopV"
+          default: ""
+          required: true
   resources:
     - type: python_script
       path: script.py
   test_resources:
     - type: python_script
       path: test.py
-    - path: ../../../resources_test/pbmc_1k_protein_v3/pbmc_1k_protein_v3_filtered_feature_bc_matrix.h5mu
+    - path: ../../../resources_test/annotation_test_data/
+    - path: ../../../resources_test/annotation_test_data/popv_cl_ontology/
 platforms:
   # TODO: enable cuda for gpu 
   # - type: docker
