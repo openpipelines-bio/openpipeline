@@ -7,11 +7,15 @@ functionality:
     - name: Dries Schaumont
       email: dries@data-intuitive.com
       roles: [ maintainer ]
+    - name: Robrecht Cannoodt
+      email: robrecht@data-intuitive.com
+      roles: [ contributor ]
+      props: { github: rcannood, orcid: "0000-0003-3641-729X" }
   arguments:
     - name: "--input"
       alternatives: ["-i"]
       type: file
-      description: Path to a single .hm5u file
+      description: Path to a single .h5mu file.
       required: true
       default: sample_path
     - name: "--output"
@@ -19,6 +23,14 @@ functionality:
       type: file
       required: true
       direction: output
+      example: "/path/to/output"
+      description: Output directory containing multiple h5mu files.
+    - name: "--output_types"
+      type: file
+      required: true
+      direction: output
+      example: types.csv
+      description: A csv containing the base filename and modality type per output file.
     - name: "--compression"
       type: string
       description: The compression format to be used on the final h5mu object.

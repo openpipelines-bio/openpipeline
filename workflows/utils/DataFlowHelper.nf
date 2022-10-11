@@ -144,3 +144,27 @@ def passthroughMap(Closure clos) {
 
   return passthroughMapWf
 }
+
+def passthroughFlatMap(Closure clos) {
+  def numArgs = clos.class.methods.find{it.name == "call"}.parameterCount
+  
+  workflow passthroughFlatMapWf {
+    take:
+    input_
+
+    main:
+    output_ = input_
+      | flatMap{ tup -> 
+        out = clos(tup.take(numArgs))
+        for (o in out) {
+          o.addAll(tup.drop(numArgs))
+        }
+        out
+      }
+
+    emit:
+    output_
+  }
+
+  return passthroughFlatMapWf
+}

@@ -12,17 +12,24 @@
         "properties": {
           "input": {
             "type":"string",
-            "description": "Path to a single .hm5u file",
+            "description": "Path to a single .h5mu file.",
             
             
             "default": "sample_path"
           },
           "output": {
             "type":"string",
-            "description": "No description",
+            "description": "Output directory containing multiple h5mu files.",
             
             
             "default": "$id.$key.output.output"
+          },
+          "output_types": {
+            "type":"string",
+            "description": "A csv containing the base filename and modality type per output file.",
+            
+            
+            "default": "$id.$key.output_types.csv"
           },
           "compression": {
             "type":"string",
