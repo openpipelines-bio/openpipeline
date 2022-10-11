@@ -174,11 +174,11 @@ thisConfig = processConfig([
           "dest" : "par"
         },
         {
-          "type" : "integer",
-          "name" : "--min_counts",
-          "description" : "Will use the number of umi counts as basis for the number of expected cells.",
-          "example" : [
-            1000
+          "type" : "boolean",
+          "name" : "--expected_cells_from_qc",
+          "description" : "Will use the Cell Ranger QC to determine the estimated number of cells",
+          "default" : [
+            true
           ],
           "required" : false,
           "direction" : "input",
@@ -392,7 +392,7 @@ par = {
   'var_ambient_expression': $( if [ ! -z ${VIASH_PAR_VAR_AMBIENT_EXPRESSION+x} ]; then echo "r'${VIASH_PAR_VAR_AMBIENT_EXPRESSION//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'expected_cells': $( if [ ! -z ${VIASH_PAR_EXPECTED_CELLS+x} ]; then echo "int(r'${VIASH_PAR_EXPECTED_CELLS//\\'/\\'\\"\\'\\"r\\'}')"; else echo None; fi ),
   'total_droplets_included': $( if [ ! -z ${VIASH_PAR_TOTAL_DROPLETS_INCLUDED+x} ]; then echo "int(r'${VIASH_PAR_TOTAL_DROPLETS_INCLUDED//\\'/\\'\\"\\'\\"r\\'}')"; else echo None; fi ),
-  'min_counts': $( if [ ! -z ${VIASH_PAR_MIN_COUNTS+x} ]; then echo "int(r'${VIASH_PAR_MIN_COUNTS//\\'/\\'\\"\\'\\"r\\'}')"; else echo None; fi ),
+  'expected_cells_from_qc': $( if [ ! -z ${VIASH_PAR_EXPECTED_CELLS_FROM_QC+x} ]; then echo "r'${VIASH_PAR_EXPECTED_CELLS_FROM_QC//\\'/\\'\\"\\'\\"r\\'}'.lower() == 'true'"; else echo None; fi ),
   'model': $( if [ ! -z ${VIASH_PAR_MODEL+x} ]; then echo "r'${VIASH_PAR_MODEL//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'epochs': $( if [ ! -z ${VIASH_PAR_EPOCHS+x} ]; then echo "int(r'${VIASH_PAR_EPOCHS//\\'/\\'\\"\\'\\"r\\'}')"; else echo None; fi ),
   'low_count_threshold': $( if [ ! -z ${VIASH_PAR_LOW_COUNT_THRESHOLD+x} ]; then echo "int(r'${VIASH_PAR_LOW_COUNT_THRESHOLD//\\'/\\'\\"\\'\\"r\\'}')"; else echo None; fi ),
@@ -467,23 +467,13 @@ with tempfile.TemporaryDirectory(prefix="cellbender-", dir=meta["temp_dir"]) as 
       values = par[name] if isinstance(par[name], list) else [par[name]]
       cmd_pars += [flag] + [str(val) for val in values] if is_kwarg else [flag]
 
-  if par["min_counts"]:
+  if par["expected_cells_from_qc"] and data.uns["metrics_cellranger"] and data.uns["metrics_cellranger"]["Estimated Number of Cells"]:
     assert par["expected_cells"] is None, "If min_counts is defined, expected_cells should be undefined"
     assert par["total_droplets_included"] is None, "If min_counts is defined, expected_cells should be undefined"
 
-    # infer value for expected cells
-    umi_counts = data.X.sum(axis=1)
-    umi_counts = umi_counts[umi_counts > 0]
-    inferred_expected_cells = (data.X.sum(axis=1) > par["min_counts"]).sum()
-    logger.info("Selecting --expected-cells %d", inferred_expected_cells)
-    cmd_pars += ["--expected-cells", str(inferred_expected_cells)]
-
-    # store computed values for logging purposes
-    data.uns["cellbender_info"] = {
-      'raw_umi_counts_per_droplet': umi_counts,
-      'min_counts': par["min_counts"],
-      'inferred_expected_cells': inferred_expected_cells
-    }
+    est_cells = data.uns["metrics_cellranger"]["Estimated Number of Cells"]
+    logger.info("Selecting --expected-cells %d and --total-droplets-included %d", est_cells, est_cells * 5)
+    cmd_pars += ["--expected-cells", str(est_cells), "--total-droplets-included", str(5*est_cells)]
 
   logger.info("Running CellBender: '%s'", ' '.join(cmd_pars))
   out = subprocess.check_output(cmd_pars).decode("utf-8")

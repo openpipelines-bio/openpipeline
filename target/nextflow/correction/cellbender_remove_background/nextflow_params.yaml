@@ -13,7 +13,7 @@ var_ambient_expression: "ambient_expression"
 # Arguments
 # expected_cells: 1000
 # total_droplets_included: 25000
-# min_counts: 1000
+expected_cells_from_qc: true
 model: "full"
 epochs: 150
 low_count_threshold: 15

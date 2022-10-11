@@ -47,7 +47,7 @@ workflow {
     // run cellbender
     | cellbender_remove_background.run(
       args: [
-        min_counts: 1000,
+        expected_cells_from_qc: true,
         layer_output: "cellbender"
       ]
     )
