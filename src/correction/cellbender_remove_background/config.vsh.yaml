@@ -66,10 +66,10 @@ functionality:
             droplets will have their cell probabilities inferred
             as an output.
           example: 25000
-        - name: "--min_counts"
-          type: integer
-          description: Will use the number of umi counts as basis for the number of expected cells.
-          example: 1000
+        - name: "--expected_cells_from_qc"
+          type: boolean
+          description: Will use the Cell Ranger QC to determine the estimated number of cells
+          default: true
         - name: "--model"
           type: string
           choices: [simple, ambient, swapping, full]
