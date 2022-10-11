@@ -90,7 +90,7 @@ with tempfile.TemporaryDirectory(prefix="cellbender-", dir=meta["temp_dir"]) as 
       values = par[name] if isinstance(par[name], list) else [par[name]]
       cmd_pars += [flag] + [str(val) for val in values] if is_kwarg else [flag]
 
-  if par["expected_cells_from_qc"] and data.uns["metrics_cellranger"]:
+  if par["expected_cells_from_qc"] and "metrics_cellranger" in data.uns:
     assert par["expected_cells"] is None, "If min_counts is defined, expected_cells should be undefined"
     assert par["total_droplets_included"] is None, "If min_counts is defined, expected_cells should be undefined"
     met = data.uns["metrics_cellranger"]
