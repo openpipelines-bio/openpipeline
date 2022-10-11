@@ -827,20 +827,20 @@ functionality:
       #   ViashDockerFile
       function ViashDockerfile {
         cat << 'VIASHDOCKER'
-      FROM nvcr.io/nvidia/cuda:11.6.0-base-ubuntu20.04
+      FROM nvcr.io/nvidia/pytorch:22.09-py3
       
       RUN apt-get update && \
-        DEBIAN_FRONTEND=noninteractive apt-get install -y python3-pip python-is-python3 git && \
+        DEBIAN_FRONTEND=noninteractive apt-get install -y git && \
         rm -rf /var/lib/apt/lists/*
       
       RUN pip install --upgrade pip && \
-        pip install --upgrade --no-cache-dir "muon" "mudata~=0.2.0" "torch" "torchvision" "torchaudio" "--extra-index-url" "https://download.pytorch.org/whl/cu116" && \
+        pip install --upgrade --no-cache-dir "muon" "mudata~=0.2.0" && \
         pip install --upgrade --no-cache-dir "git+https://github.com/broadinstitute/CellBender"
       
       LABEL org.opencontainers.image.description="Companion container for running component correction cellbender_remove_background"
-      LABEL org.opencontainers.image.created="2022-10-11T12:34:52Z"
+      LABEL org.opencontainers.image.created="2022-10-11T13:41:29Z"
       LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-      LABEL org.opencontainers.image.revision="01c54deec7e9bbae5de2b6e86dfca9a6d999eff0"
+      LABEL org.opencontainers.image.revision="4b7671d341d854a0a0cc7bd4a432c014ffe070ef"
       LABEL org.opencontainers.image.version="main_build"
       VIASHDOCKER
       }
@@ -1927,7 +1927,7 @@ functionality:
 platform:
   type: "docker"
   id: "docker"
-  image: "nvcr.io/nvidia/cuda:11.6.0-base-ubuntu20.04"
+  image: "nvcr.io/nvidia/pytorch:22.09-py3"
   target_organization: "openpipelines-bio"
   target_registry: "ghcr.io"
   namespace_separator: "_"
@@ -1941,8 +1941,6 @@ platform:
   setup:
   - type: "apt"
     packages:
-    - "python3-pip"
-    - "python-is-python3"
     - "git"
     interactive: false
   - type: "python"
@@ -1950,11 +1948,6 @@ platform:
     packages:
     - "muon"
     - "mudata~=0.2.0"
-    - "torch"
-    - "torchvision"
-    - "torchaudio"
-    - "--extra-index-url"
-    - "https://download.pytorch.org/whl/cu116"
     pip: []
     pypi: []
     git: []
@@ -1975,5 +1968,5 @@ info:
   output: "target/docker/correction/cellbender_remove_background"
   executable: "target/docker/correction/cellbender_remove_background/cellbender_remove_background"
   viash_version: "0.6.2"
-  git_commit: "01c54deec7e9bbae5de2b6e86dfca9a6d999eff0"
+  git_commit: "4b7671d341d854a0a0cc7bd4a432c014ffe070ef"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"
