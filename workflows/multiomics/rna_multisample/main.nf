@@ -34,7 +34,7 @@ workflow run_wf {
     | map { tup ->
       data = tup[1]
       new_data = [ input: data.input, input_id: data.id ]
-      ["combined_samples_rna", new_data, data] + tup.drop(2)
+      [tup[0], new_data, data] + tup.drop(2)
     }
     | concat
 
