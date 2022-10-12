@@ -1024,5 +1024,5 @@ info:
   output: "target/native/velocity/scvelo"
   executable: "target/native/velocity/scvelo/scvelo"
   viash_version: "0.6.2"
-  git_commit: "e916dd0d57a8ee1895dd037d57e0c229971217cf"
+  git_commit: "24ad3519f6a79d31b5d6be52477e137869840980"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"

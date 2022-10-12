@@ -398,9 +398,9 @@ RUN pip install --upgrade pip && \
   pip install --upgrade --no-cache-dir "mudata~=0.2.0" "anndata~=0.8.0"
 
 LABEL org.opencontainers.image.description="Companion container for running component metadata join_uns_to_obs"
-LABEL org.opencontainers.image.created="2022-10-11T18:06:34Z"
+LABEL org.opencontainers.image.created="2022-10-12T17:57:51Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="e916dd0d57a8ee1895dd037d57e0c229971217cf"
+LABEL org.opencontainers.image.revision="24ad3519f6a79d31b5d6be52477e137869840980"
 LABEL org.opencontainers.image.version="main_build"
 VIASHDOCKER
 }
@@ -919,7 +919,6 @@ cat > "\$tempscript" << 'VIASHMAIN'
 
 from mudata import read_h5mu
 import pandas as pd
-
 import logging
 from sys import stdout
 
@@ -960,7 +959,19 @@ mdata = read_h5mu(par['input'])
 mod_data = mdata.mod[par['modality']]
 
 logger.info("Joining uns to obs")
-mod_data.obs = mod_data.obs.join(mod_data.uns[par['uns_key']])
+# get data frame
+uns_df = mod_data.uns[par['uns_key']]
+
+# check for overlapping colnames
+intersect_keys = uns_df.keys().intersection(mod_data.obs.keys())
+obs_drop = mod_data.obs.drop(intersect_keys, axis=1)
+
+# create data frame to join
+uns_df_rep = uns_df.loc[uns_df.index.repeat(mod_data.n_obs)]
+uns_df_rep.index = mod_data.obs_names
+
+# create new obs
+mod_data.obs = pd.concat([obs_drop, uns_df_rep], axis=1)
 
 logger.info("Write output to mudata file")
 mdata.write_h5mu(par['output'])
