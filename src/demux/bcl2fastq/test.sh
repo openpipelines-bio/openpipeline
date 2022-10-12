@@ -11,7 +11,7 @@
 # We worked around this by ignoring all missing entries
 
 echo ">>> Running executable"
-./bcl2fastq \
+$meta_executable \
   --input bcl \
   --sample_sheet SampleSheet.csv \
   --output fastq \
