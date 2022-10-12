@@ -1,7 +1,10 @@
+import os
 import sys
 import subprocess
 import logging
 
+import pandas as pd
+import matplotlib
 import scanpy
 import popv
 from torch.cuda import is_available as cuda_is_available
@@ -27,19 +30,20 @@ logger.addHandler(console_handler)
 ### VIASH START
 par = {
     # I/O params
-    "input": "./resources_test/annotation_test_data/pbmc_1k_protein_v3_filtered_feature_bc_matrix_rna_anndata.h5ad",
-    "output": "foo.h5ad",
+    "input": "./resources_test/annotation_test_data/blood_test_query.h5ad",
+    "output_dir": "./resources_test/annotation_test_data/",
     "compression": "gzip",
     # Component params
     "tissue_tabula_sapiens": "Blood",
-    "tissue_reference_file": "./resources_test/annotation_test_data/TS_Blood-subsampled.h5ad",
+    "tissue_reference_file": "./resources_test/annotation_test_data/blood_test_reference.h5ad",
     "methods": ["scvi", "scanvi"],
     "query_obs_covariate": ["batch"],
     "query_obs_cell_type_key": "none",
     "query_obs_cell_type_unknown_label": "unknown",
     "reference_obs_cell_type_key": "cell_ontology_class",
     "reference_obs_covariate": ["donor", "method"],
-    "ontology_files_path": "./resources_test/annotation_test_data/popv_cl_ontology/"
+    "ontology_files_path": "./resources_test/annotation_test_data/popv_cl_ontology/",
+    "plots": False
     }
 ### VIASH END
 
@@ -95,8 +99,8 @@ def download_tabula_sapiens_reference_h5ad(refdata_url, local_refdata):
     result = subprocess.run(
         ["wget", refdata_url, "-O", local_refdata], capture_output=True, text=True
         )
-    logger.info(result.stdout)
-    logger.info(result.stderr)
+    # logger.info(result.stdout)
+    # logger.info(result.stderr)
 
 
 def check_nonnegative_integers(adata):
@@ -111,17 +115,16 @@ def check_nonnegative_integers(adata):
 
 
 def main():
-    logger.info('Prepping input data for cell typing')
     
-    # Query data
+    logger.info('Prepping query data for cell typing')
     adata_query = scanpy.read_h5ad(par["input"].strip())
     # TODO: Hack around cross-species mouse-human, so be cautious
+    # TODO: implement cross-species mapping
     adata_query.var_names = adata_query.var_names.str.upper()
     adata_query.obs_names_make_unique()
     adata_query.var_names_make_unique()
     adata_query = check_nonnegative_integers(adata_query)
 
-    # Reference data
     # TODO: add possibility to come up with own reference data e.g. atlasses
     if own_data:
         logger.info('Prepping user-provided {} reference data for cell typing'.format(par["tissue_reference_file"].strip()))
@@ -150,12 +153,15 @@ def main():
     # Lower mem footprint
     del adata_reference
     
-    # TODO: Add highly variable genes param to component
+    # TODO: add highly variable genes param to component
     # TODO: add training_mode to component
-    adata = popv.process_query(
-        adata_query_intersection,
-        adata_reference_intersection,
-        save_folder='.',
+    # TODO: add pretrained_scvi option
+    # TODO: add pretrained_scANVI option
+    logger.info('PopV process query...')
+    adata_query_reference = popv.process_query(
+        query_adata=adata_query_intersection,
+        ref_adata=adata_reference_intersection,
+        save_folder=par["output_dir"],
         query_batch_key='batch',
         query_labels_key=None,
         unknown_celltype_label='unknown',
@@ -167,15 +173,20 @@ def main():
         hvg=True)
     
     # Lower mem footprint
-    del query_adata_intersection
-    del ref_adata_intersection
+    del adata_query_intersection
+    del adata_reference_intersection
 
+    # TODO: assess CPU performance
+    # TODO: assess GPU performance
+    # TODO: add pretrained_scvi option
+    # TODO: add pretrained_scANVI option
+    logger.info('PopV annotate data...')
     popv.annotate_data(
-        adata,
-        methods,
-        '.',
-        pretrained_scvi_path=pretrained_scvi_path,
-        pretrained_scanvi_path=pretrained_scanvi_path,
+        adata=adata_query_reference,
+        methods=par["methods"],
+        save_path=par["output_dir"],
+        pretrained_scvi_path=None,
+        pretrained_scanvi_path=None,
         onclass_ontology_file="{}/cl.ontology".format(par["ontology_files_path"]),
         onclass_obo_fp="{}/cl.obo".format(par["ontology_files_path"]),
         onclass_emb_fp="{}/cl.ontology.nlp.emb".format(par["ontology_files_path"]),
@@ -184,9 +195,79 @@ def main():
         use_gpu=(cuda_is_available() or mps_is_available())
         )
     
+    # Lower mem footprint
+    del adata_query_reference
+    
+    logger.info('Adding summary statistics...')
+    predictions_fn = os.path.join(par["output_dir"], 'predictions.csv')
+    predictions = pd.read_csv(predictions_fn, index_col = 0)
+    for col in predictions.columns:
+        adata_query.obs[col] = predictions.loc[adata_query.obs_names][col]
+    if 'scvi' in par["methods"]:
+        scvi_latent_space_fn = os.path.join(par["output_dir"], 'scvi_latent.csv')
+        scvi_latent_space = pd.read_csv(scvi_latent_space_fn, index_col=0)
+        adata_query.obsm['X_scvi'] = scvi_latent_space.loc[adata_query.obs_names]
+    if 'scanvi' in par["methods"]:
+        scanvi_latent_space_fn = os.path.join(par["output_dir"], 'scanvi_latent.csv')
+        scanvi_latent_space = pd.read_csv(scanvi_latent_space_fn, index_col=0)
+        adata_query.obsm['X_scanvi'] = scanvi_latent_space.loc[adata_query.obs_names]
+
+    if 'scvi' in par["methods"]:
+        logger.info('Re-calculating embedding...')
+        sc.pp.neighbors(adata_query, use_rep="X_scvi")
+        sc.tl.umap(adata_query, min_dist=0.3)
+
+    logger.info('Storing cell annotated data...')
+    adata_query.write(adata_query_cell_typed_file, compression='gzip')
+    
+    if par["plots"]:
+        logger.info('Creating agreement plots...')
+        all_prediction_keys = [
+        "popv_knn_on_bbknn_prediction",
+        "popv_knn_on_scvi_online_prediction",
+        "popv_knn_on_scvi_offline_prediction",
+        "popv_scanvi_online_prediction",
+        "popv_scanvi_offline_prediction",
+        "popv_svm_prediction",
+        "popv_rf_prediction",
+        "popv_onclass_prediction",
+        "popv_knn_on_scanorama_prediction"
+        ]
+        obs_keys = adata_query.obs.keys()
+        pred_keys = [key for key in obs_keys if key in all_prediction_keys]
+        popv.make_agreement_plots(
+            adata_query,
+            methods=pred_keys,
+            popv_prediction_key = 'popv_prediction',
+            save_folder=par["output_dir"]
+            )
+        
+        logger.info('Creating frequency plots...')
+        ax = adata_query.obs['popv_prediction_score'].value_counts().sort_index().plot.bar()
+        ax.set_xlabel('Score')
+        ax.set_ylabel("Frequency")
+        ax.set_title("PopV Prediction Score Frequency")
+        figpath = os.path.join(par["output_dir"], "prediction_score_barplot.pdf")
+        ax.get_figure().savefig(figpath, bbox_inches="tight", dpi=300)
+        
+        ax = adata_query.obs.groupby('popv_prediction')['popv_prediction_score'].mean().plot.bar()
+        ax.set_ylabel('Celltype')
+        ax.set_xlabel('Averge number of methods in agreement')
+        ax.set_title('Agreement per method by cell type')
+        figpath = os.path.join(par["output_dir"], "percelltype_agreement_barplot.pdf")
+        ax.get_figure().savefig(figpath, bbox_inches='tight', dpi=300)
+
+
 if __name__ == "__main__":
     logger.info('PopV cell type annotation component')
     
+    logger.info('GPU enabled? {}'.format((cuda_is_available() or mps_is_available())))
+    
+    input_file_name = par["input"].split('/')[-1].split('.')[-1]
+    adata_query_cell_typed_file = '{}/{}_cell_typed.h5ad'.format(par["output_dir"], input_file_name)
+    logger.info('PopV output can be found: {}'.format(par["output_dir"]))
+    logger.info('Cell typed file stored: {}'.format(adata_query_cell_typed_file))
+
     if len(par["tissue_tabula_sapiens"]) >= 1:
         logger.info('Cell typing done on Tabula Sapiens reference data.')
         own_data = False
@@ -205,8 +286,5 @@ if __name__ == "__main__":
         assert isinstance(par["query_obs_cell_type_unknown_label"], str), 'Please, specify unknown cell type label in your .obs obs_cell_type_key.'
     else:
         par["query_obs_cell_type_key"] = None
-        
-    if len(par["ontology_files_path"]) == 0:
-        raise BaseException("Please, specify location of CL ontology files for PopV.")
 
     main()

@@ -2,7 +2,7 @@ functionality:
   name: popv
   namespace: "annotate"
   version: "dev"
-  description: "Performs popular major vote cell typing on single cell sequence data"
+  description: "Performs popular major vote cell typing on single cell sequence data https://github.com/czbiohub/PopV"
   authors:
     - name: Matthias Beyens
       email: matthias.beyens@gmail.com
@@ -17,15 +17,15 @@ functionality:
           description: "Input h5ad file"
           direction: input
           required: true
-        - name: "--output"
+        - name: "--output_dir"
           alternatives: ["-o"]
           type: file
-          description: "Output h5ad file"
+          description: "Output directory"
           direction: output
           required: true
         - name: "--compression"
           type: string
-          description: "Compression algorithm, or none for uncompressed, of h5mu output file"
+          description: "Compression algorithm, or none for uncompressed, of h5ad output file"
           default: "gzip"
           required: false
         - name: "--tissue_tabula_sapiens"
@@ -37,6 +37,7 @@ functionality:
           type: file
           description: "User-provided reference tissue. The data that will be used as reference to call cell types."
           default: ""
+          direction: input
           required: false
         - name: "--methods"
           type: string
@@ -72,10 +73,15 @@ functionality:
           required: false
           multiple: true
         - name: "--ontology_files_path"
-          type: string
+          type: file
           description: "Path to CL ontology files for PopV"
-          default: ""
+          direction: input
           required: true
+        - name: "--plots"
+          type: boolean
+          description: "Creation of agreement and frequency plots between selected cell type algorithmn(s) and final PopV ensemble called cell type."
+          default: false
+          required: false
   resources:
     - type: python_script
       path: script.py

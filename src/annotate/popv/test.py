@@ -12,7 +12,8 @@ meta = {
 }
 ## VIASH END
 
-input_file = f"{meta['resources_dir']}/pbmc_1k_protein_v3_filtered_feature_bc_matrix_rna_anndata.h5ad"
+input_query_file = f"{meta['resources_dir']}/blood_test_query.h5ad"
+input_reference_file = f"{meta['resources_dir']}/blood_test_reference.h5ad"
 ontology_files_path = f"{meta['resources_dir']}/popv_cl_ontology"
 
 class TestHarmonyPy(unittest.TestCase):
@@ -26,18 +27,19 @@ class TestHarmonyPy(unittest.TestCase):
     def test_popv_cpu(self):
         input_data = mudata.read_h5mu(input_file)
         self._run_and_check_output([
-            "--input", input_file,
-            "--output", "output.h5mu",
+            "--input", input_query_file,
+            "--output_dir", ".",
             "--compression", "gzip",
-            "--tissue_tabula_sapiens", "Blood",
-            "--tissue_reference_file", "./resources_test/annotation_test_data/TS_Blood-subsampled.h5ad",
-            "--methods", "scvi,scanvi",
+            "--tissue_tabula_sapiens", "",
+            "--tissue_reference_file", input_reference_file,
+            "--methods", "svm",
             "--query_obs_covariate", "batch",
             "--query_obs_cell_type_key": "none",
             "--query_obs_cell_type_unknown_label": "unknown",
             "--reference_obs_cell_type_key": "cell_ontology_class",
             "--reference_obs_covariate": "donor,method",
-            "--ontology_files_path": ontology_files_path
+            "--ontology_files_path": ontology_files_path,
+            "--plots": true
             ])
         #self.assertTrue(Path("output.h5mu").is_file())
         #output_data = mudata.read_h5mu("output.h5mu")
