@@ -6,6 +6,8 @@
 .nfs*
 .vscode
 
+.cache
+
 # R related
 .Rhistory
 *.Rproj
