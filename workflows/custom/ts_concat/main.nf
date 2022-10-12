@@ -53,7 +53,7 @@ workflow {
         input: file,
         uns_key: "metrics_cellranger"
       ]
-      [ id, new_data ]
+      [ id, new_data, orig_data ]
     }
     | join_uns_to_obs
 
