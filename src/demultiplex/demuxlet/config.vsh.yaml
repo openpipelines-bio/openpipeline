@@ -1,0 +1,49 @@
+functionality:
+  name: freemuxlet
+  namespace: demultiplex
+  description: |
+    Runs the freemuxlet demultiplexing tool for converting.
+  authors:
+    - name: Dries De Maeyer
+      roles: [ author, maintainer ]
+      props: { github: ddemaeyer }
+  arguments:
+    - name: "--input"
+      alternatives: [ "-i" ]
+      type: file
+      required: true
+      description: Bam file that contains the mapped cells to be demultiplexed.
+      example: bam_file.bam
+    - name: "--vcf"
+      alternatives: [ "-s" ]
+      type: file
+      required: true
+      description: VCF file containing the reference locations for assigning individual to cell ids.
+      example: vcf_file.vcf
+    - name: "--field"
+      alternatives: [ "-o" ]
+      type: string
+      direction: input
+      required: true
+      description: FORMAT field to extract the genotype, likelihood, or posterior from. Options GT, GP, PL
+      default: "GP"
+    - name: "--outputFile"
+      type: file
+      direction: output
+      required: true
+      description: Output file containing the cells assigned with the assigned sample.
+      example: output_vcf.gz
+  resources:
+    - type: bash_script
+      path: script.sh
+  test_resources:
+    - type: bash_script
+      path: test.sh
+    - path: ../../../resources_test/demuxafy_test_data/
+platforms:
+  - type: docker
+    image: vibsinglecellnf/popscle
+  - type: nextflow
+    variant: vdsl3
+    directives:
+      label: [ midmem, midcpu ]
