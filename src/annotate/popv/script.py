@@ -2,10 +2,11 @@ import os
 import sys
 import subprocess
 import logging
+from pathlib import Path
 
 import pandas as pd
 import matplotlib
-import scanpy
+import scanpy as sc
 import popv
 from torch.cuda import is_available as cuda_is_available
 import numpy as np
@@ -117,7 +118,7 @@ def check_nonnegative_integers(adata):
 def main():
     
     logger.info('Prepping query data for cell typing')
-    adata_query = scanpy.read_h5ad(par["input"].strip())
+    adata_query = sc.read_h5ad(par["input"])
     # TODO: Hack around cross-species mouse-human, so be cautious
     # TODO: implement cross-species mapping
     adata_query.var_names = adata_query.var_names.str.upper()
@@ -127,14 +128,14 @@ def main():
 
     # TODO: add possibility to come up with own reference data e.g. atlasses
     if own_data:
-        logger.info('Prepping user-provided {} reference data for cell typing'.format(par["tissue_reference_file"].strip()))
-        adata_reference = scanpy.read_h5ad(par["tissue_reference_file"].strip())
+        logger.info('Prepping user-provided {} reference data for cell typing'.format(par["tissue_reference_file"]))
+        adata_reference = sc.read_h5ad(par["tissue_reference_file"])
     else:
         logger.info('Prepping Tabula Sapiens {} reference data for cell typing'.format(par["tissue_tabula_sapiens"]))
         refdata_url = get_tabula_sapiens_reference_url(par["tissue_tabula_sapiens"])
         local_refdata = 'tabula_sapiens_reference_{}.h5ad'.format(par["tissue_tabula_sapiens"])
         download_tabula_sapiens_reference_h5ad(refdata_url, local_refdata)
-        adata_reference = scanpy.read_h5ad(local_refdata)
+        adata_reference = sc.read_h5ad(local_refdata)
     adata_reference.obs_names_make_unique()
     adata_reference.var_names_make_unique()
     adata_reference = check_nonnegative_integers(adata_reference)
@@ -218,7 +219,10 @@ def main():
         sc.tl.umap(adata_query, min_dist=0.3)
 
     logger.info('Storing cell annotated data...')
-    adata_query.write(adata_query_cell_typed_file, compression='gzip')
+    adata_query.write(
+        adata_query_cell_typed_file,
+        compression=par["compression"]
+        )
     
     if par["plots"]:
         logger.info('Creating agreement plots...')
@@ -262,8 +266,7 @@ if __name__ == "__main__":
     logger.info('PopV cell type annotation component')
     
     logger.info('GPU enabled? {}'.format((cuda_is_available() or mps_is_available())))
-    
-    input_file_name = par["input"].split('/')[-1].split('.')[-1]
+    input_file_name = ''.join(par["input"].split('/')[-1].split('.')[:-1])
     adata_query_cell_typed_file = '{}/{}_cell_typed.h5ad'.format(par["output_dir"], input_file_name)
     logger.info('PopV output can be found: {}'.format(par["output_dir"]))
     logger.info('Cell typed file stored: {}'.format(adata_query_cell_typed_file))
@@ -286,5 +289,9 @@ if __name__ == "__main__":
         assert isinstance(par["query_obs_cell_type_unknown_label"], str), 'Please, specify unknown cell type label in your .obs obs_cell_type_key.'
     else:
         par["query_obs_cell_type_key"] = None
+        
+    logger.info('Making file paths absolute')
+    par["input"] = Path(par["input"].strip()).resolve()
+    par["tissue_reference_file"] = Path(par["tissue_reference_file"].strip()).resolve()    
 
     main()

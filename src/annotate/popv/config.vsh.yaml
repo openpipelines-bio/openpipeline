@@ -14,6 +14,7 @@ functionality:
         - name: "--input"
           alternatives: ["-i"]
           type: file
+          must_exist: true
           description: "Input h5ad file"
           direction: input
           required: true

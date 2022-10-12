@@ -1,48 +1,65 @@
 import unittest
 import subprocess
-from tempfile import NamedTemporaryFile
-import mudata
+import scanpy as sc
 from pathlib import Path
 import numpy as np
 
 ## VIASH START
 meta = {
-    'executable': './target/native/annotate/popv',
+    'executable': './target/docker/annotate/popv/popv',
     'resources_dir': './resources_test/annotation_test_data/'
 }
 ## VIASH END
 
-input_query_file = f"{meta['resources_dir']}/blood_test_query.h5ad"
-input_reference_file = f"{meta['resources_dir']}/blood_test_reference.h5ad"
-ontology_files_path = f"{meta['resources_dir']}/popv_cl_ontology"
+input_query_file = "{}/annotation_test_data/blood_test_query.h5ad".format(meta['resources_dir'])
+input_reference_file = "{}/annotation_test_data/blood_test_reference.h5ad".format(meta['resources_dir'])
+ontology_files_path = "{}/popv_cl_ontology/".format(meta['resources_dir'])
 
-class TestHarmonyPy(unittest.TestCase):
-    def _run_and_check_output(self, args_as_list):
+class TestPopV(unittest.TestCase):
+    def _run_and_check_output(self, args_as_list, expected_raise=False):
         try:
-            subprocess.check_output([meta['executable']] + args_as_list)
+            subprocess.check_output([meta['executable']] + args_as_list, stderr=subprocess.STDOUT)
         except subprocess.CalledProcessError as e:
-            print(e.stdout.decode("utf-8"))
+            if not expected_raise:
+                print(e.stdout.decode("utf-8"))
             raise e
 
     def test_popv_cpu(self):
-        input_data = mudata.read_h5mu(input_file)
         self._run_and_check_output([
             "--input", input_query_file,
-            "--output_dir", ".",
+            "--output_dir", "output/",
             "--compression", "gzip",
             "--tissue_tabula_sapiens", "",
             "--tissue_reference_file", input_reference_file,
             "--methods", "svm",
-            "--query_obs_covariate", "batch",
-            "--query_obs_cell_type_key": "none",
-            "--query_obs_cell_type_unknown_label": "unknown",
-            "--reference_obs_cell_type_key": "cell_ontology_class",
-            "--reference_obs_covariate": "donor,method",
-            "--ontology_files_path": ontology_files_path,
-            "--plots": true
+            "--query_obs_covariates", "batch",
+            "--query_obs_cell_type_key", "none",
+            "--query_obs_cell_type_unknown_label", "unknown",
+            "--reference_obs_cell_type_key", "cell_ontology_class",
+            "--reference_obs_covariate", "donor,method",
+            "--ontology_files_path", ontology_files_path,
+            "--plots", 'True'
             ])
-        #self.assertTrue(Path("output.h5mu").is_file())
-        #output_data = mudata.read_h5mu("output.h5mu")
+        
+        # check for cell typed data
+        self.assertTrue(Path("output/blood_test_query_cell_typed.h5ad").is_file())
+
+        # check confusion matrix
+        self.assertTrue(Path("output/confusion_matrices.pdf").is_file())
+        
+        # check for per cell type agreement barplot
+        self.assertTrue(Path("output/percelltype_agreement_barplot.pdf").is_file())
+
+        # check for prediction score barplot
+        self.assertTrue(Path("output/prediction_score_barplot.pdf").is_file())
+        
+        # check for predictions
+        self.assertTrue(Path("output/predictions.csv").is_file())
+        
+        input_data = sc.read_h5ad(Path("output/blood_test_query_cell_typed.h5ad"))
+        self.assertIn('popv_prediction', input_data.obs)
+        
+        
 
 if __name__ == '__main__':
     unittest.main()
