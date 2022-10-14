@@ -1,8 +1,0 @@
-# Inputs
-id: # please fill in - example: "foo"
-input: # please fill in - example: "/path/to/dir"
-# output_h5mu: "$id.$key.output_h5mu.h5mu"
-
-# Nextflow input-output arguments
-publish_dir: # please fill in - example: "output/"
-# param_list: "my_params.yaml"

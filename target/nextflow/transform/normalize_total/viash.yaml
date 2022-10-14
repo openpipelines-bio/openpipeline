@@ -2082,5 +2082,5 @@ info:
   platform: "nextflow"
   output: "target/nextflow/transform/normalize_total"
   viash_version: "0.6.2"
-  git_commit: "7a36963e7880b09eb07dea629cbe45a2ed818ce9"
+  git_commit: "ff6ed9f5b7743d79c59a2f30e0c1c4897a2f1b01"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"

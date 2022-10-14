@@ -1,35 +1,56 @@
 {
     "$schema": "http://json-schema.org/draft-07/schema",
-    "title": "ts_process_from10xraw",
-    "description": "No description",
+    "title": "velocyto",
+    "description": "Runs the velocity analysis on a BAM file, outputting a loom file.",
     "type": "object",
     "definitions": {
-      "inputs" : {
-        "title": "Inputs",
+      "arguments" : {
+        "title": "Arguments",
         "type": "object",
         "description": "No description",
         "default": "",
         "properties": {
-          "id": {
-            "type":"string",
-            "description": "ID of the sample.",
-            
-            
-            "default": ""
-          },
           "input": {
             "type":"string",
-            "description": "Path to 10x raw output",
+            "description": "Path to BAM file",
             
             
             "default": ""
           },
-          "output_h5mu": {
+          "transcriptome": {
             "type":"string",
-            "description": "The output h5mu.",
+            "description": "Path to GTF file",
             
             
-            "default": "$id.$key.output_h5mu.h5mu"
+            "default": ""
+          },
+          "barcode": {
+            "type":"string",
+            "description": "Valid barcodes file, to filter the bam. If --bcfile is not specified all the cell barcodes will be included.\nCell barcodes should be specified in the bcfile as the \u0027CB\u0027 tag for each read\n",
+            
+            
+            "default": ""
+          },
+          "without_umi": {
+            "type":"boolean",
+            "description": "foo",
+            
+            
+            "default": "False"
+          },
+          "output": {
+            "type":"string",
+            "description": "Velocyto loom file",
+            
+            
+            "default": "$id.$key.output.output"
+          },
+          "logic": {
+            "type":"string",
+            "description": "The logic to use for the filtering.",
+            
+            "enum": ["Default", "Permissive10X", "Intermediate10X", "ValidatedIntrons10X", "Stricter10X", "ObservedSpanning10X", "Discordant10X", "SmartSeq2"],
+            "default": "Default"
           }
         }
       },
@@ -58,7 +79,7 @@
     },
     "allOf": [
       {
-        "$ref": "#/definitions/inputs"
+        "$ref": "#/definitions/arguments"
       },
       {
         "$ref": "#/definitions/nextflow input-output arguments"
