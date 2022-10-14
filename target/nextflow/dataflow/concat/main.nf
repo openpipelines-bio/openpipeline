@@ -507,6 +507,7 @@ thisDefaultProcessArgs = [
     "tag" : "main_build"
   },
   "label" : [
+    "midcpu",
     "highmem"
   ]
 }'''),

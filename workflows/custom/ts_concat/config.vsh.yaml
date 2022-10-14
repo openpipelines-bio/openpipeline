@@ -33,7 +33,7 @@ functionality:
           type: file
           direction: output
           description: The path to the combined h5mu output file.
-          default: '$id.$key.output.h5mu'
+          default: '$id.output.h5mu'
   resources:
     - type: nextflow_script
       path: main.nf

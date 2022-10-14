@@ -32,12 +32,12 @@ functionality:
         - type: file
           name: --output_raw
           direction: output
-          default: '$id.$key.output_raw'
+          default: '$id.output_raw'
           description: The output h5mu.
         - type: file
           name: --output_h5mu
           direction: output
-          default: '$id.$key.output_h5mu.h5mu'
+          default: '$id.output_h5mu.h5mu'
           description: The output h5mu.
   resources:
     - type: nextflow_script
