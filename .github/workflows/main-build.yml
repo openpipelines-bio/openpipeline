@@ -88,13 +88,10 @@ jobs:
     # store component locations
     - id: set_matrix
       run: |
-        component_json=$(bin/viash ns list -p docker --format json | jq -c '[ .[] | { "name": .functionality.name, "config": .info.config } ]')
+        component_json=$(bin/viash ns list -p docker --format json | jq -c '[ .[] | { "name": .functionality.name, "namespace": .functionality.namespace, "config": .info.config } ]')
         echo "::set-output name=component_matrix::$component_json"
-        workflow_json=$(bin/viash ns list -s workflows --format json | jq -c '[ .[] | { "name": .functionality.name, "config": .info.config, "test_script": .functionality.test_resources[].path, "entry": .functionality.test_resources[].entrypoint } ]')
-        echo "::set-output name=workflow_matrix::$workflow_json"
     outputs:
       component_matrix: ${{ steps.set_matrix.outputs.component_matrix }}
-      workflow_matrix: ${{ steps.set_matrix.outputs.workflow_matrix }}
       cachehash: ${{ steps.cachehash.outputs.cachehash }}
 
   # phase 2
@@ -133,3 +130,11 @@ jobs:
       run: |
         SRC_DIR=`dirname ${{ matrix.component.config }}`
         bin/viash_push -m release -t main_build -s "$SRC_DIR" --force
+
+    # try deleting old images from ghcr
+    - uses: bots-house/ghcr-delete-image-action@v1.1.0
+      with:
+        owner: openpipelines-bio
+        name: "${{matrix.component.namespace}}/${{matrix.component.name}}"
+        token: ${{ secrets.GTHB_PAT }}
+        untagged: all 
