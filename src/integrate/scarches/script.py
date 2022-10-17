@@ -181,7 +181,7 @@ def main():
         raise ValueError(f"{par['reference']} is not supported reference. Please select one of {', '.join(SUPPORTED_REFERENCES)}")
 
     if par["base_model"] not in SUPPORTED_BASE_MODELS:
-        raise ValueError(f"{par['base_model']} is not supported. Please select on of {', '.join(SUPPORTED_BASE_MODELS)}")
+        raise ValueError(f"{par['base_model']} is not supported base model. Please select one of {', '.join(SUPPORTED_BASE_MODELS)}")
 
     mdata_query = mudata.read(par["input"].strip())
 
