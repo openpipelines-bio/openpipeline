@@ -132,7 +132,7 @@ jobs:
         bin/viash_push -m release -t main_build -s "$SRC_DIR" --force
 
     # try deleting old images from ghcr
-    - uses: bots-house/ghcr-delete-image-action@v1.1.0
+    - uses: bots-house/ghcr-delete-image-action@v1.0.1
       with:
         owner: openpipelines-bio
         name: "${{matrix.component.namespace}}/${{matrix.component.name}}"
