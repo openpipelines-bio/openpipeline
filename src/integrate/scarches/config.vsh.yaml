@@ -5,7 +5,7 @@ functionality:
   description: "Performs reference mapping with scArches"
   authors:
     - name: Vladimir Shitov
-      email: vladimirshitov98@gmail.com
+      email: vladimir.shitov@helmholtz-muenchen.de
       roles: [ author ]
       props: { github: vladimirshitov, orcid: "0000-0002-1960-8812" }
   argument_groups:
