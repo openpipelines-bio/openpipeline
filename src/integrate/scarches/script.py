@@ -107,14 +107,6 @@ def build_referrence_model(mdata_reference):
             proteins_reference = mdata_reference.mod[par["reference_proteins_key"]]
             adata_reference.obsm[par["reference_proteins_key"]] = proteins_reference
 
-            # If query has no protein data, put matrix of zeros 
-            if not par["query_proteins_key"] or par["query_proteins_key"] not in mdata_query.mod:
-                data = np.zeros((adata_query.n_obs, proteins_reference.shape[1]))
-                adata_query.obsm[par["reference_proteins_key"]] = DataFrame(columns=proteins_reference.columns, index=adata_query.obs_names, data=data)
-            else:
-                # Make sure that proteins expression has the same key in query and reference
-                adata_query.obsm[par["reference_proteins_key"]] = adata_query.obsm[par["query_proteins_key"]]
-
         scvi.model.TOTALVI.setup_anndata(
             adata_reference,
             batch_key=par['obs_batch'],
@@ -129,28 +121,34 @@ def build_referrence_model(mdata_reference):
 
         model = scvi.model.TOTALVI
 
-    return vae_reference, model
+    return adata_reference, vae_reference, model
 
 
-def main():
-    SUPPORTED_BASE_MODELS = set("scvi", "scanvi", "totalvi")
+def align_proteins_names(adata_reference, mdata_query, adata_query):
+    proteins_reference = adata_reference.obsm[par["reference_proteins_key"]]
 
-    if par["base_model"] not in SUPPORTED_BASE_MODELS:
-        raise ValueError(f"{par['base_model']} is not supported. Please select on of {', '.join(SUPPORTED_BASE_MODELS)}")
-
-    if par["reference"] == "HLCA":
-        mdata_reference = # read HLCA
+    # If query has no protein data, put matrix of zeros 
+    if not par["query_proteins_key"] or par["query_proteins_key"] not in mdata_query.mod:
+        data = np.zeros((adata_query.n_obs, proteins_reference.shape[1]))
+        adata_query.obsm[par["reference_proteins_key"]] = DataFrame(columns=proteins_reference.columns, index=adata_query.obs_names, data=data)
     else:
-        raise ValueError(f"Reference {par['reference']} is not supported")
+        # Make sure that proteins expression has the same key in query and reference
+        adata_query.obsm[par["reference_proteins_key"]] = adata_query.obsm[par["query_proteins_key"]]
 
-    mdata_query = mudata.read(par["input"].strip())
+    return adata_query
+
+
+def map_query_to_reference(mdata_query, mdata_reference):
     adata_query = mdata_query.mod[par["query_modality"]]
 
     if par["var_input"]:
         # Subset to HVG
         adata_query = adata_query[:,adata_query.var["var_input"]].copy()
 
-    
+    adata_reference, vae_reference, model = build_referrence_model(mdata_reference)
+
+    if par["base_model"] == "totalvi":
+        adata_query = align_proteins_names(adata_reference, mdata_query, adata_query)
         
     # Reorder genes and pad missing genes with 0s
     model.prepare_query_anndata(adata_query, vae_reference)
@@ -171,6 +169,28 @@ def main():
 
     if par["base_model"] == "scanvi":
         adata_query.obs[par["predicted_labels_key"]] = vae_query.predict()
+
+    return adata_query
+
+
+def main():
+    SUPPORTED_BASE_MODELS = set("scvi", "scanvi", "totalvi")
+
+    if par["base_model"] not in SUPPORTED_BASE_MODELS:
+        raise ValueError(f"{par['base_model']} is not supported. Please select on of {', '.join(SUPPORTED_BASE_MODELS)}")
+
+    mdata_query = mudata.read(par["input"].strip())
+
+    if par["reference"] == "HLCA":
+        mdata_reference = # read HLCA
+
+    elif par["reference"] is None:
+        adata_query = map_query_to_reference()
+        
+    else:
+        raise ValueError(f"Reference {par['reference']} is not supported")
+
+
 
     mdata_query.mod[par["query_modality"]] = adata_query
     mdata_query.write_h5mu(par["output"].strip())
