@@ -175,6 +175,10 @@ def map_query_to_reference(mdata_query, mdata_reference):
 
 def main():
     SUPPORTED_BASE_MODELS = set("scvi", "scanvi", "totalvi")
+    SUPPORTED_REFERENCES = set(["HLCA"])
+
+    if par["reference"] is not None and par["reference"] not in SUPPORTED_REFERENCES:
+        raise ValueError(f"{par['reference']} is not supported reference. Please select one of {', '.join(SUPPORTED_REFERENCES)}")
 
     if par["base_model"] not in SUPPORTED_BASE_MODELS:
         raise ValueError(f"{par['base_model']} is not supported. Please select on of {', '.join(SUPPORTED_BASE_MODELS)}")
