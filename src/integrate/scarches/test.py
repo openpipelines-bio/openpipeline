@@ -21,7 +21,7 @@ class TestMappingToHLCA(unittest.TestCase):
             print(e.stdout.decode("utf-8"))
             raise e
 
-    def test_scvi(self):
+    def test_hlca_reference_model(self):
         with NamedTemporaryFile('w', suffix=".h5mu") as tempfile_input_file:
             input_data = mudata.read_h5mu(input_file)
             mod = input_data.mod['rna']
