@@ -135,7 +135,8 @@ functionality:
   test_resources:
     - type: python_script
       path: test.py
-    - path: ../../../resources_test/pbmc_1k_protein_v3/pbmc_1k_protein_v3_mms.h5mu  # To change
+    - path: ../../../resources_test/hlca_reference_model/hlca_reference_model_query_test.h5mu
+    - path: ../../../resources_test/hlca_reference_model/hlca_reference_model
 platforms:
   - type: docker
     image: python:3.8
