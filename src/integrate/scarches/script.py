@@ -138,7 +138,8 @@ def align_proteins_names(adata_reference, mdata_query, adata_query):
     return adata_query
 
 
-def map_query_to_reference(mdata_query, mdata_reference):
+def map_query_to_new_reference(mdata_reference, mdata_query):
+    """Build model on the provided reference and map query to the reference"""
     adata_query = mdata_query.mod[par["query_modality"]]
 
     if par["var_input"]:
@@ -189,7 +190,7 @@ def main():
         mdata_reference = # read HLCA
 
     elif par["reference"] is None:
-        adata_query = map_query_to_reference()
+        adata_query = map_query_to_new_reference(mdata_reference, mdata_query)
         
     else:
         raise ValueError(f"Reference {par['reference']} is not supported")
