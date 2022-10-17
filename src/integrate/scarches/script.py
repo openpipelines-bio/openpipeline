@@ -40,13 +40,13 @@ par = {
     "max_epochs": 500}
 ### VIASH END
 
-def build_referrence_model(mdata_reference):
-    plan_kwargs = {
-        "reduce_lr_on_plateau": par['reduce_lr_on_plateau'],
-        "lr_patience": par['lr_patience'],
-        "lr_factor": par['lr_factor'],
-    }
+PLAN_KWARGS = {
+    "reduce_lr_on_plateau": par['reduce_lr_on_plateau'],
+    "lr_patience": par['lr_patience'],
+    "lr_factor": par['lr_factor'],
+}
 
+def build_referrence_model(mdata_reference):
     arches_params = dict(
         use_layer_norm="both",
         use_batch_norm="none")
@@ -82,7 +82,7 @@ def build_referrence_model(mdata_reference):
             early_stopping_monitor=par['early_stopping_monitor'],
             early_stopping_patience=par['early_stopping_patience'],
             early_stopping_min_delta=par['early_stopping_min_delta'],
-            plan_kwargs=plan_kwargs,
+            plan_kwargs=PLAN_KWARGS,
             check_val_every_n_epoch=1,
             use_gpu=(cuda_is_available() or mps_is_available()),
         )
@@ -161,17 +161,44 @@ def map_query_to_new_reference(mdata_reference, mdata_query):
     )
     vae_query.train(200, plan_kwargs=dict(weight_decay=0.0))
 
-    # Save info about the used model
-    adata_query.uns["integration_method"] = par["base_model"]
-    output_key = par["obsm_output"].format(base_model=par["base_model"])
+    return vae_query, adata_query
 
-    # Get the latent representation
-    adata_query.obsm[output_key] = vae_query.get_latent_representation()
 
-    if par["base_model"] == "scanvi":
-        adata_query.obs[par["predicted_labels_key"]] = vae_query.predict()
+def map_to_existing_reference(adata_query, model_path, check_val_every_n_epoch=1) -> np.ndarray:
+    """
+    A function to map the query data to the reference atlas
 
-    return adata_query
+    Input:
+        * adata_query: An AnnData object with the query
+        * model_path: The reference model directory
+
+    Output:
+        A numpy.ndarray containing the embedding coordinates of the query data in the HLCA latent space.
+        If `output_model` is set to True, then the trained reference model is also output
+
+    """
+    # TODO: prepare adata_query?
+
+    # Load query data into the model
+    vae_query = scvi.model.SCANVI.load_query_data(
+            adata_query,
+            model_path,
+            freeze_dropout=True
+    )
+
+    # Train scArches model for query mapping
+    vae_query.train(
+            max_epochs=par["max_epochs"],
+            early_stopping=par['early_stopping'],
+            early_stopping_monitor=par['early_stopping_monitor'],
+            early_stopping_patience=par['early_stopping_patience'],
+            early_stopping_min_delta=par['early_stopping_min_delta'],
+            check_val_every_n_epoch=check_val_every_n_epoch,
+            use_gpu=(cuda_is_available() or mps_is_available()),
+            plan_kwargs=PLAN_KWARGS
+    )
+
+    return vae_query, adata_query
 
 
 def main():
@@ -187,15 +214,25 @@ def main():
     mdata_query = mudata.read(par["input"].strip())
 
     if par["reference"] == "HLCA":
-        mdata_reference = # read HLCA
+        vae_query, adata_query = map_to_existing_reference(adata_query)
+        par["base_model"] = "scanvi"
 
-    elif par["reference"] is None:
-        adata_query = map_query_to_new_reference(mdata_reference, mdata_query)
+    elif par["reference"].endswith(".h5mu"):
+        mdata_reference = mudata.read(par["reference"].strip())
+        vae_query, adata_query = map_query_to_new_reference(mdata_reference, mdata_query)
         
     else:
         raise ValueError(f"Reference {par['reference']} is not supported")
 
+    # Save info about the used model
+    adata_query.uns["integration_method"] = par["base_model"]
+    output_key = par["obsm_output"].format(base_model=par["base_model"])
 
+    # Get the latent representation
+    adata_query.obsm[output_key] = vae_query.get_latent_representation()
+
+    if par["base_model"] == "scanvi":
+        adata_query.obs[par["predicted_labels_key"]] = vae_query.predict()
 
     mdata_query.mod[par["query_modality"]] = adata_query
     mdata_query.write_h5mu(par["output"].strip())
