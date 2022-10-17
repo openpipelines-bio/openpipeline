@@ -40,19 +40,7 @@ par = {
     "max_epochs": 500}
 ### VIASH END
 
-
-def main():
-    SUPPORTED_BASE_MODELS = set("scvi", "scanvi", "totalvi")
-
-    if par["base_model"] not in SUPPORTED_BASE_MODELS:
-        raise ValueError(f"{par['base_model']} is not supported. Please select on of {', '.join(SUPPORTED_BASE_MODELS)}")
-
-    if par["reference"] == "HLCA":
-        mdata_reference = # read HLCA
-        adata_reference = mdata_reference.mod[par["reference_modality"]]
-    else:
-        raise ValueError(f"Reference {par['reference']} is not supported")
-    
+def build_referrence_model(mdata_reference):
     plan_kwargs = {
         "reduce_lr_on_plateau": par['reduce_lr_on_plateau'],
         "lr_patience": par['lr_patience'],
@@ -63,12 +51,7 @@ def main():
         use_layer_norm="both",
         use_batch_norm="none")
 
-    mdata_query = mudata.read(par["input"].strip())
-    adata_query = mdata_query.mod[par["query_modality"]]
-
-    if par["var_input"]:
-        # Subset to HVG
-        adata_query = adata_query[:,adata_query.var["var_input"]].copy()
+    adata_reference = mdata_reference.mod[par["reference_modality"]]
 
     if par["base_model"] == "scvi" or par["base_model"] == "scanvi":
         # Set up the data
@@ -145,6 +128,29 @@ def main():
         vae_reference.train()
 
         model = scvi.model.TOTALVI
+
+    return vae_reference, model
+
+
+def main():
+    SUPPORTED_BASE_MODELS = set("scvi", "scanvi", "totalvi")
+
+    if par["base_model"] not in SUPPORTED_BASE_MODELS:
+        raise ValueError(f"{par['base_model']} is not supported. Please select on of {', '.join(SUPPORTED_BASE_MODELS)}")
+
+    if par["reference"] == "HLCA":
+        mdata_reference = # read HLCA
+    else:
+        raise ValueError(f"Reference {par['reference']} is not supported")
+
+    mdata_query = mudata.read(par["input"].strip())
+    adata_query = mdata_query.mod[par["query_modality"]]
+
+    if par["var_input"]:
+        # Subset to HVG
+        adata_query = adata_query[:,adata_query.var["var_input"]].copy()
+
+    
         
     # Reorder genes and pad missing genes with 0s
     model.prepare_query_anndata(adata_query, vae_reference)
