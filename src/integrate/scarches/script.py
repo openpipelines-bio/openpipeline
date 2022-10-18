@@ -138,9 +138,8 @@ def align_proteins_names(adata_reference, mdata_query, adata_query):
     return adata_query
 
 
-def map_query_to_new_reference(mdata_reference, mdata_query):
+def map_query_to_new_reference(mdata_reference, mdata_query, adata_query):
     """Build model on the provided reference and map query to the reference"""
-    adata_query = mdata_query.mod[par["query_modality"]]
 
     if par["var_input"]:
         # Subset to HVG
@@ -202,24 +201,25 @@ def map_to_existing_reference(adata_query, model_path, check_val_every_n_epoch=1
 
 
 def main():
-    SUPPORTED_BASE_MODELS = set("scvi", "scanvi", "totalvi")
+    SUPPORTED_BASE_MODELS = set(["scvi", "scanvi", "totalvi"])
     SUPPORTED_REFERENCES = set(["HLCA"])
 
     if par["reference"] is not None and par["reference"] not in SUPPORTED_REFERENCES:
         raise ValueError(f"{par['reference']} is not supported reference. Please select one of {', '.join(SUPPORTED_REFERENCES)}")
 
-    if par["base_model"] not in SUPPORTED_BASE_MODELS:
+    if par["base_model"] is not None and par["base_model"] not in SUPPORTED_BASE_MODELS:
         raise ValueError(f"{par['base_model']} is not supported base model. Please select one of {', '.join(SUPPORTED_BASE_MODELS)}")
 
     mdata_query = mudata.read(par["input"].strip())
+    adata_query = mdata_query.mod[par["query_modality"]]
 
     if par["reference"] == "HLCA":
-        vae_query, adata_query = map_to_existing_reference(adata_query)
+        vae_query, adata_query = map_to_existing_reference(adata_query, model_path="/Users/vladimir.shitov/Documents/science/PhD/2022_10_openpipeline/HLCA_reference_model")  # TODO: change
         par["base_model"] = "scanvi"
 
     elif par["reference"].endswith(".h5mu"):
         mdata_reference = mudata.read(par["reference"].strip())
-        vae_query, adata_query = map_query_to_new_reference(mdata_reference, mdata_query)
+        vae_query, adata_query = map_query_to_new_reference(mdata_reference, mdata_query, adata_query)
         
     else:
         raise ValueError(f"Reference {par['reference']} is not supported")
