@@ -200,6 +200,21 @@ def map_to_existing_reference(adata_query, model_path, check_val_every_n_epoch=1
     return vae_query, adata_query
 
 
+def _download_HLCA_reference_model(directory):
+    import os
+
+    HLCA_PATH = "https://zenodo.org/record/6337966/files/HLCA_reference_model.zip"
+
+    print(os.listdir(directory))
+    os.system(f"curl  {HLCA_PATH} --output {directory}/HLCA_reference_model.zip")
+
+    print(os.listdir(directory))
+    os.system(f"unzip {directory}/HLCA_reference_model.zip -d {directory}")
+    print(os.listdir(f"{directory}/HLCA_reference_model"))
+
+    return f"{directory}/HLCA_reference_model"
+
+
 def main():
     SUPPORTED_BASE_MODELS = set(["scvi", "scanvi", "totalvi"])
     SUPPORTED_REFERENCES = set(["HLCA"])
@@ -214,7 +229,12 @@ def main():
     adata_query = mdata_query.mod[par["query_modality"]]
 
     if par["reference"] == "HLCA":
-        vae_query, adata_query = map_to_existing_reference(adata_query, model_path="/Users/vladimir.shitov/Documents/science/PhD/2022_10_openpipeline/HLCA_reference_model")  # TODO: change
+        import tempfile
+
+        with tempfile.TemporaryDirectory() as directory:
+            model_path = _download_HLCA_reference_model(directory)
+            vae_query, adata_query = map_to_existing_reference(adata_query, model_path=model_path)
+
         par["base_model"] = "scanvi"
 
     elif par["reference"].endswith(".h5mu"):
