@@ -1,7 +1,7 @@
 # Arguments
 input: # please fill in - example: "path/to/file"
 # output: "$id.$key.output.output"
-modality: ["rna"]
+modality: "rna"
 obsm_input: "X_pca"
 obsm_output: "X_pca_integrated"
 theta: [2]
@@ -10,4 +10,3 @@ obs_covariates: # please fill in - example: ["batch", "sample"]
 # Nextflow input-output arguments
 publish_dir: # please fill in - example: "output/"
 # param_list: "my_params.yaml"
-# param_list_format: "yaml"

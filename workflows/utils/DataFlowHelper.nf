@@ -37,13 +37,16 @@ def setWorkflowArguments(Map args) {
         newData = data.findAll{!toRemove.contains(it.key)}
 
         // determine splitargs
-        splitArgs = args.collectEntries{procKey, dataKeys -> 
+        splitArgs = args.
+          collectEntries{procKey, dataKeys -> 
           // dataKeys is a map but could also be a list
-          newSplitData = dataKeys.collectEntries{ val ->
-            newKey = val instanceof String ? val : val.key
-            origKey = val instanceof String ? val : val.value
-            [ newKey, data[origKey] ]
-          }
+          newSplitData = dataKeys
+            .collectEntries{ val ->
+              newKey = val instanceof String ? val : val.key
+              origKey = val instanceof String ? val : val.value
+              [ newKey, data[origKey] ]
+            }
+            .findAll{it.value}
           [procKey, newSplitData]
         }
 
@@ -63,8 +66,9 @@ def setWorkflowArguments(Map args) {
 */
 
 
-def getWorkflowArguments(String key) {
-  wfKey = "getWorkflowArguments_" + key
+def getWorkflowArguments(Map args) {
+  def inputKey = args.inputKey ?: "input"
+  def wfKey = "getWorkflowArguments_" + args.key
   
   workflow getWorkflowArgumentsInstance {
     take:
@@ -81,9 +85,9 @@ def getWorkflowArguments(String key) {
 
         // try to infer arg name
         if (data !instanceof Map) {
-          data = [ input: data ]
+          data = [[ inputKey, data ]].collectEntries()
         }
-        newData = data + splitArgs.remove(key)
+        newData = data + splitArgs.remove(args.key)
 
         [ id, newData, splitArgs] + passthrough
       }
@@ -96,3 +100,71 @@ def getWorkflowArguments(String key) {
 
 }
 
+
+def strictMap(Closure clos) {
+  def numArgs = clos.class.methods.find{it.name == "call"}.parameterCount
+  
+  workflow strictMapWf {
+    take:
+    input_
+
+    main:
+    output_ = input_
+      | map{ tup -> 
+        if (tup.size() != numArgs) {
+          throw new RuntimeException("Closure does not have the same number of arguments as channel tuple.\nNumber of closure arguments: $numArgs\nChannel tuple: $tup")
+        }
+        clos(tup)
+      }
+
+    emit:
+    output_
+  }
+
+  return strictMapWf
+}
+
+def passthroughMap(Closure clos) {
+  def numArgs = clos.class.methods.find{it.name == "call"}.parameterCount
+  
+  workflow passthroughMapWf {
+    take:
+    input_
+
+    main:
+    output_ = input_
+      | map{ tup -> 
+        out = clos(tup.take(numArgs))
+        out + tup.drop(numArgs)
+      }
+
+    emit:
+    output_
+  }
+
+  return passthroughMapWf
+}
+
+def passthroughFlatMap(Closure clos) {
+  def numArgs = clos.class.methods.find{it.name == "call"}.parameterCount
+  
+  workflow passthroughFlatMapWf {
+    take:
+    input_
+
+    main:
+    output_ = input_
+      | flatMap{ tup -> 
+        out = clos(tup.take(numArgs))
+        for (o in out) {
+          o.addAll(tup.drop(numArgs))
+        }
+        out
+      }
+
+    emit:
+    output_
+  }
+
+  return passthroughFlatMapWf
+}

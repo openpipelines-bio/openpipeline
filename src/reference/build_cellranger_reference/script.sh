@@ -3,13 +3,13 @@
 set -eo pipefail
 
 ## VIASH START
-par_genome_fasta="resources_test/bdrhap_ref_gencodev41_chr1/reference_gencode_v41_chr1.fa.gz"
-par_transcriptome_gtf="resources_test/bdrhap_ref_gencodev41_chr1/reference_gencode_v41_chr1.gtf.gz"
-par_output="resources_test/bdrhap_ref_gencodev41_chr1/gencode_v41_annotation_cellranger.tar.gz"
+par_genome_fasta="resources_test/reference_gencodev41_chr1/reference.fa.gz"
+par_transcriptome_gtf="resources_test/reference_gencodev41_chr1/reference.gtf.gz"
+par_output="gencode_v41_annotation_cellranger.tar.gz"
 ## VIASH END
 
 # create temporary directory
-tmpdir=$(mktemp -d "$VIASH_TEMP/$meta_resources_name-XXXXXXXX")
+tmpdir=$(mktemp -d "$VIASH_TEMP/$meta_functionality_name-XXXXXXXX")
 function clean_up {
     rm -rf "$tmpdir"
 }
@@ -23,8 +23,8 @@ par_output=`realpath $par_output`
 # process params
 extra_params=( )
 
-if [ ! -z "$meta_n_proc" ]; then 
-  extra_params+=( "--nthreads=$meta_n_proc" )
+if [ ! -z "$meta_cpus" ]; then 
+  extra_params+=( "--nthreads=$meta_cpus" )
 fi
 if [ ! -z "$meta_memory_gb" ]; then 
   # always keep 2gb for the OS itself

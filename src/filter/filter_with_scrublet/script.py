@@ -36,30 +36,30 @@ meta = {
 logger.info("Reading %s.", par['input'])
 mdata = mu.read_h5mu(par["input"])
 
-for mod in par["modality"]:
-    logger.info("Processing modality '%s'.", mod)
-    data = mdata.mod[mod]
+mod = par["modality"]
+logger.info("Processing modality '%s'.", mod)
+data = mdata.mod[mod]
 
-    logger.info("\tRunning scrublet")
-    scrub = scr.Scrublet(data.X)
+logger.info("\tRunning scrublet")
+scrub = scr.Scrublet(data.X)
 
-    doublet_scores, predicted_doublets = scrub.scrub_doublets(
-        min_counts=par["min_counts"],
-        min_cells=par["min_cells"],
-        min_gene_variability_pctl=par["min_gene_variablity_percent"],
-        n_prin_comps=par["num_pca_components"],
-        distance_metric=par["distance_metric"],
-    )
-    keep_cells = np.invert(predicted_doublets)
+doublet_scores, predicted_doublets = scrub.scrub_doublets(
+    min_counts=par["min_counts"],
+    min_cells=par["min_cells"],
+    min_gene_variability_pctl=par["min_gene_variablity_percent"],
+    n_prin_comps=par["num_pca_components"],
+    distance_metric=par["distance_metric"],
+)
+keep_cells = np.invert(predicted_doublets)
 
-    logger.info("\tStoring output into .obs")
-    if par["obs_name_doublet_score"] is not None:
-        data.obs[par["obs_name_doublet_score"]] = doublet_scores
-    if par["obs_name_filter"] is not None:
-        data.obs[par["obs_name_filter"]] = keep_cells
+logger.info("\tStoring output into .obs")
+if par["obs_name_doublet_score"] is not None:
+    data.obs[par["obs_name_doublet_score"]] = doublet_scores
+if par["obs_name_filter"] is not None:
+    data.obs[par["obs_name_filter"]] = keep_cells
 
-    if par["do_subset"]:
-        mdata.mod[mod] = data[keep_cells, :]
+if par["do_subset"]:
+    mdata.mod[mod] = data[keep_cells, :]
 
 logger.info("Writing h5mu to %s", par["output"])
 mdata.write_h5mu(par["output"])

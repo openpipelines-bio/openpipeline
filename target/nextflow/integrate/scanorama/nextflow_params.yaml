@@ -1,6 +1,6 @@
 # Arguments
 input: # please fill in - example: "path/to/file"
-modality: ["rna"]
+modality: "rna"
 # output: "$id.$key.output.h5ad"
 obs_batch: "batch"
 obsm_input: "X_pca"
@@ -14,4 +14,3 @@ alpha: 0.1
 # Nextflow input-output arguments
 publish_dir: # please fill in - example: "output/"
 # param_list: "my_params.yaml"
-# param_list_format: "yaml"

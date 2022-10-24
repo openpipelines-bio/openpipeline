@@ -59,19 +59,19 @@ workflow run_wf {
       ]
     )
 
-    | getWorkflowArguments("pca")
+    | getWorkflowArguments(key: "pca")
     | pca
 
-    | getWorkflowArguments("integration")
+    | getWorkflowArguments(key: "integration")
     | harmonypy
 
-    | getWorkflowArguments("neighbors")
+    | getWorkflowArguments(key: "neighbors")
     | find_neighbors
 
-    | getWorkflowArguments("clustering")
+    | getWorkflowArguments(key: "clustering")
     | leiden
 
-    | getWorkflowArguments("umap")
+    | getWorkflowArguments(key: "umap")
     | umap.run(
       auto: [ publish: true ]
     )

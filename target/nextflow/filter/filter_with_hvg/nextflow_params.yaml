@@ -1,6 +1,6 @@
 # Arguments
 input: # please fill in - example: "input.h5mu"
-modality: ["rna"]
+modality: "rna"
 # layer: "foo"
 # output: "$id.$key.output.h5mu"
 var_name_filter: "filter_with_hvg"
@@ -19,4 +19,3 @@ n_bins: 20
 # Nextflow input-output arguments
 publish_dir: # please fill in - example: "output/"
 # param_list: "my_params.yaml"
-# param_list_format: "yaml"

@@ -9,6 +9,7 @@ include { cellranger_count_split } from targetDir + "/mapping/cellranger_count_s
 include { from_10xh5_to_h5mu } from targetDir + "/convert/from_10xh5_to_h5mu/main.nf"
 
 include { readConfig; viashChannel; helpMessage } from workflowDir + "/utils/WorkflowHelper.nf"
+include { setWorkflowArguments; getWorkflowArguments; passthroughMap as pmap } from workflowDir + "/utils/DataFlowHelper.nf"
 
 config = readConfig("$workflowDir/ingestion/cellranger_mapping/config.vsh.yaml")
 
@@ -26,34 +27,57 @@ workflow run_wf {
   input_ch
 
   main:
-
   output_ch = input_ch
+  
+    // split params for downstream components
+    | setWorkflowArguments(
+      cellranger_count: [
+        "input": "input",
+        "expect_cells": "expect_cells",
+        "chemistry": "chemistry",
+        "secondary_analysis": "secondary_analysis",
+        "generate_bam": "generate_bam",
+        "include_introns": "include_introns"
+      ],
+      from_10xh5_to_h5mu: [ 
+        "output": "output_h5mu",
+        "obsm_metrics": "obsm_metrics"
+      ],
+      correction: [
+        "perform_correction": "perform_correction"
+      ],
+      filter_with_counts: [
+        "min_genes": "min_genes",
+        "min_counts": "min_counts",
+      ]
+    )
 
-    // store output value in 3rd slot for later use
-    // and transform for concat component
-    | map { id, data ->
-      new_data = data.clone()
-      new_data.remove("output_h5mu")
-      new_data.remove("output_raw")
-      new_data = new_data + [ output: data.output_raw ]
-      
-      [id, new_data, data]
-    }
-
-    // run count
+    | getWorkflowArguments(key: "cellranger_count")
     | cellranger_count.run(auto: [ publish: true ])
 
     // split output dir into map
     | cellranger_count_split
 
     // convert to h5mu
-    | map { id, cellranger_outs, orig_data -> 
-      [ id, [ input: cellranger_outs.filtered_h5, output: orig_data.output_h5mu ], cellranger_outs ]
+    | pmap { id, output_data, split_args -> 
+      
+      // combine new data for from_10xh5_to_h5mu
+      new_data = 
+        [ 
+          input: output_data.raw_h5, 
+          input_metrics_summary: output_data.metrics_summary
+        ] +
+        split_args.from_10xh5_to_h5mu
+
+      // store output to fourth field to return as output
+      [ id, new_data, split_args, output_data ]
     }
     | from_10xh5_to_h5mu.run(auto: [ publish: true ])
-
+    
     // return output map
-    | map { id, h5mu, data -> [ id, data + [h5mu: h5mu] ] }
+    | pmap { id, data, split_args, output_data ->
+      [ id, output_data + [h5mu: data] ]
+    }
 
   emit:
   output_ch

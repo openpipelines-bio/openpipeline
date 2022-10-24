@@ -16,7 +16,7 @@ functionality:
       props: { github: rcannood, orcid: "0000-0003-3641-729X" }
   arguments:
     - name: "--input"
-      type: string
+      type: file
       description: "An h5 file from the 10x genomics website."
       required: true
       example: "pbmc_1k_protein_v3_raw_feature_bc_matrix.h5"
