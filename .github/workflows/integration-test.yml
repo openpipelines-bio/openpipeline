@@ -152,6 +152,7 @@ jobs:
         # todo: replace with viash test command
         config_dir=`dirname ${{ matrix.component.config }}`
         script="$config_dir/${{ matrix.component.test_script }}"
+        export NXF_VER=22.04.5
         bin/nextflow run . \
           -main-script "$script" \
           -entry ${{ matrix.component.entry }} \
