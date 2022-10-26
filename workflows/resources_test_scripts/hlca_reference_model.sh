@@ -8,7 +8,7 @@ REPO_ROOT=$(git rev-parse --show-toplevel)
 # ensure that the command below is run from the root of the repository
 cd "$REPO_ROOT"
 
-ID=hlca_reference_model
+ID=HLCA_reference_model
 OUT=resources_test/$ID/$ID
 DIR=$(dirname "$OUT")
 
@@ -18,7 +18,7 @@ DIR=$(dirname "$OUT")
 # download and unarchive pre-trained scANVI model
 wget https://zenodo.org/record/6337966/files/HLCA_reference_model.zip \
   -O "${OUT}.zip"
-unzip "${OUT}.zip"
+unzip "${OUT}.zip" -d "${DIR}"
 rm "${OUT}.zip"
 
 # Test query data
