@@ -176,7 +176,9 @@ def map_to_existing_reference(adata_query, model_path, check_val_every_n_epoch=1
         If `output_model` is set to True, then the trained reference model is also output
 
     """
-    # TODO: prepare adata_query?
+    print("SCVI-tools version:", scvi.__version__)
+
+    scvi.model.SCANVI.prepare_query_anndata(adata_query, model_path)
 
     # Load query data into the model
     vae_query = scvi.model.SCANVI.load_query_data(
