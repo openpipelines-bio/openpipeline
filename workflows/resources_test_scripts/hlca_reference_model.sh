@@ -28,6 +28,6 @@ wget https://ftp.ncbi.nlm.nih.gov/geo/samples/GSM5230nnn/GSM5230027/suppl/GSM523
 gzip -d "${OUT}_query_test.h5.gz"
 
 # convert 10x h5 to h5mu
-target/docker/convert/from_h5ad_to_h5mu/from_h5ad_to_h5mu \
+bin/viash run src/convert/from_h5ad_to_h5mu/config.vsh.yaml -- \
   --input "${OUT}_query_test.h5" \
   --output "${OUT}_query_test.h5mu"
