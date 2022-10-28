@@ -7,11 +7,11 @@ from pathlib import Path
 ## VIASH START
 meta = {
     'executable': './target/docker/integrate/scarches/scarches',
-    'resources_dir': './resources_test/hlca_reference_model/'
+    'resources_dir': './resources_test/pbmc_1k_protein_v3/'
 }
 ## VIASH END
 
-input_file = f"{meta['resources_dir']}/hlca_reference_model_query_test.h5mu"
+input_file = f"{meta['resources_dir']}pbmc_1k_protein_v3_mms.h5mu"
 
 class TestMappingToHLCA(unittest.TestCase):
     def _run_and_check_output(self, args_as_list):
@@ -41,6 +41,7 @@ class TestMappingToHLCA(unittest.TestCase):
             self.assertIn('X_scanvi_integrated', output_data.mod['rna'].obsm)
             self.assertIn('_scanvi_batch', output_data.mod['rna'].obs.columns.tolist())
             self.assertIn('_scanvi_labels',  output_data.mod['rna'].obs.columns.tolist())
+            self.assertIn('predicted_labels',  output_data.mod['rna'].obs.columns.tolist())
 
 if __name__ == '__main__':
     unittest.main()
