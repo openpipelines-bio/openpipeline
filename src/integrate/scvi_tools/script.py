@@ -12,10 +12,10 @@ except ModuleNotFoundError:
 
 ### VIASH START
 par = {
-    "input": "resources_test/pbmc_1k_protein_v3/pbmc_1k_protein_v3_mms.h5mu",
+    "query": "resources_test/pbmc_1k_protein_v3/pbmc_1k_protein_v3_mms.h5mu",
+    "reference": "resources_test/pbmc_1k_protein_v3/pbmc_1k_protein_v3_mms.h5mu",
     "query_modality": "rna",
     "query_proteins_key": None,
-    "reference": "HLCA",
     "reference_modality": "rna",
     "reference_proteins_key": None,
     "base_model": "scvi",  # One of ["scvi", "scanvi", "totalvi"]
@@ -184,7 +184,7 @@ def main():
 
     logger = _setup_logger()
 
-    mdata_query = mudata.read(par["input"].strip())
+    mdata_query = mudata.read(par["query"].strip())
     adata_query = mdata_query.mod[par["query_modality"]]
 
     if par["reference"].endswith(".h5mu"):
