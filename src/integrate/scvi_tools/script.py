@@ -14,8 +14,8 @@ except ModuleNotFoundError:
 
 ### VIASH START
 par = {
-    "query": "resources_test/pbmc_1k_protein_v3/pbmc_1k_protein_v3_mms.h5mu",
-    "reference": "resources_test/pbmc_1k_protein_v3/pbmc_1k_protein_v3_mms.h5mu",
+    "query": "resources_test/scvi_tools/scvi_tools_pancreas_query_test.h5mu",
+    "reference": "resources_test/scvi_tools/scvi_tools_pancreas_ref_test.h5mu",
     "query_modality": "rna",
     "query_proteins_key": None,
     "reference_modality": "rna",

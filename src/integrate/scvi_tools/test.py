@@ -14,8 +14,8 @@ meta = {
 }
 ## VIASH END
 
-query = f"{meta['resources_dir']}/pancreas_ref_test.h5mu"
-reference = f"{meta['resources_dir']}/pancreas_query_test.h5mu"
+query = f"{meta['resources_dir']}/scvi_tools_pancreas_query_test.h5mu"
+reference = f"{meta['resources_dir']}/scvi_tools_pancreas_ref_test.h5mu"
 
 class TestscVI(unittest.TestCase):
     def _run_and_check_output(self, args_as_list):
