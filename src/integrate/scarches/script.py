@@ -1,3 +1,4 @@
+import logging
 import mudata
 import numpy as np
 from pandas import DataFrame
@@ -39,6 +40,18 @@ par = {
     "early_stopping_min_delta": 0,
     "max_epochs": 500}
 ### VIASH END
+
+def _setup_logger():
+    from sys import stdout
+
+    logger = logging.getLogger()
+    logger.setLevel(logging.INFO)
+    console_handler = logging.StreamHandler(stdout)
+    logFormatter = logging.Formatter("%(asctime)s %(levelname)-8s %(message)s")
+    console_handler.setFormatter(logFormatter)
+    logger.addHandler(console_handler)
+
+    return logger
 
 PLAN_KWARGS = {
     "reduce_lr_on_plateau": par['reduce_lr_on_plateau'],
@@ -207,12 +220,8 @@ def _download_HLCA_reference_model(directory):
 
     HLCA_PATH = "https://zenodo.org/record/6337966/files/HLCA_reference_model.zip"
 
-    print(os.listdir(directory))
     os.system(f"curl  {HLCA_PATH} --output {directory}/HLCA_reference_model.zip")
-
-    print(os.listdir(directory))
     os.system(f"unzip {directory}/HLCA_reference_model.zip -d {directory}")
-    print(os.listdir(f"{directory}/HLCA_reference_model"))
 
     return f"{directory}/HLCA_reference_model"
 
@@ -226,6 +235,8 @@ def main():
 
     if par["base_model"] is not None and par["base_model"] not in SUPPORTED_BASE_MODELS:
         raise ValueError(f"{par['base_model']} is not supported base model. Please select one of {', '.join(SUPPORTED_BASE_MODELS)}")
+
+    logger = _setup_logger()
 
     mdata_query = mudata.read(par["input"].strip())
     adata_query = mdata_query.mod[par["query_modality"]]
@@ -246,17 +257,34 @@ def main():
     else:
         raise ValueError(f"Reference {par['reference']} is not supported")
 
+    logger.info("Trained model, writing logs to adata")
+
     # Save info about the used model
     adata_query.uns["integration_method"] = par["base_model"]
     output_key = par["obsm_output"].format(base_model=par["base_model"])
+
+    logger.info("Trying to write latent representation")
 
     # Get the latent representation
     adata_query.obsm[output_key] = vae_query.get_latent_representation()
 
     if par["base_model"] == "scanvi":
+        logger.info("Predicting labels for SCANVI")
+
         adata_query.obs[par["predicted_labels_key"]] = vae_query.predict()
 
+    logger.info("Reassigning modality")
+
+    # Subset query vars
+    # mdata_query = mdata_query[:, adata_query.var_names]
     mdata_query.mod[par["query_modality"]] = adata_query
+    try:
+        mdata_query.update()
+    except KeyError:
+        logger.error("Key error was thrown during mdata update. Be careful")
+
+    logger.info("Saving h5mu file")
+
     mdata_query.write_h5mu(par["output"].strip())
 
 if __name__ == "__main__":
