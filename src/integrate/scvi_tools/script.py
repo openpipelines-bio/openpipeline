@@ -1,5 +1,7 @@
 import logging
 import mudata
+import numpy as np
+from pandas import DataFrame
 import scvi
 from torch.cuda import is_available as cuda_is_available
 try:
@@ -196,6 +198,11 @@ def main():
 
     # Get the latent output
     adata_query.obsm[output_key] = vae_query.get_latent_representation()
+
+    if par["base_model"] == "scanvi":
+        logger.info("Predicting labels for SCANVI")
+        adata_query.obs[par["predicted_labels_key"]] = vae_query.predict()
+
     mdata_query.mod[par["query_modality"]] = adata_query
     try:
         mdata_query.update()
