@@ -1,7 +1,5 @@
 import logging
 import mudata
-import numpy as np
-from pandas import DataFrame
 import scvi
 from torch.cuda import is_available as cuda_is_available
 try:
