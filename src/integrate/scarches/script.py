@@ -223,7 +223,9 @@ def _download_HLCA_reference_model(directory):
     os.system(f"curl  {HLCA_PATH} --output {directory}/HLCA_reference_model.zip")
     os.system(f"unzip {directory}/HLCA_reference_model.zip -d {directory}")
 
-    return f"{directory}/HLCA_reference_model"
+    scvi.model.SCANVI.convert_legacy_save(f"{directory}/HLCA_reference_model", f"{directory}/HLCA_reference_model_new")
+
+    return f"{directory}/HLCA_reference_model_new"
 
 
 def main():
