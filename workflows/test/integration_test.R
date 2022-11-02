@@ -36,7 +36,8 @@ outs <- map_df(workflows, function(wf) {
         out <- processx::run(
           "bin/nextflow",
           args = args,
-          error_on_status = FALSE
+          error_on_status = FALSE,
+          env = c("current", NXF_VER = "22.04.5")
         )
         stop_time <- Sys.time()
         duration <- ceiling(as.numeric(difftime(stop_time, start_time, unit = "sec")))

@@ -18,7 +18,7 @@ logger.addHandler(console_handler)
 ## VIASH START
 par = {
     # inputs
-    "input": "input.h5mu",
+    "input": "work/df/ef05da347afdfe506bfe30c8425f81/TSP15_Eye_ScleraEtc_10X_2_1.from_10xh5_to_h5mu.output.h5mu",
     "modality": "rna",
     # outputs
     "output": "output.h5mu",
@@ -29,7 +29,8 @@ par = {
     "var_ambient_expression": "ambient_expression",
     # "obsm_latent_gene_encoding": "latent_gene_encoding",
     # args
-    "total_droplets_included": 50000,
+    "total_droplets_included": None,
+    "min_counts": 1000,
     "epochs": 150,
     "fpr": 0.01,
     "exclude_antibody_capture": False,
@@ -71,19 +72,35 @@ with tempfile.TemporaryDirectory(prefix="cellbender-", dir=meta["temp_dir"]) as 
   ]
 
   extra_args = [
-    ("--model", "model", True),
+    ("--expected-cells", "expected_cells", True),
     ("--total-droplets-included", "total_droplets_included", True),
+    ("--model", "model", True),
     ("--epochs", "epochs", True),
-    ("--fpr", "fpr", True),
+    ("--cuda", "cuda", False),
+    ("--low-count-threshold", "low_count_threshold", True),
+    ("--z-dim", "z_dim", True),
+    ("--z-layers", "z_layers", True),
+    ("--training-fraction", "training_fraction", True),
     ("--exclude-antibody-capture", "exclude_antibody_capture", False),
     ("--learning-rate", "learning_rate", True),
-    ("--cuda", "cuda", False)
+    ("--empty-drop-training-fraction", "empty_drop_training_fraction", True),
   ]
   for (flag, name, is_kwarg) in extra_args:
     if par[name]:
-      cmd_pars += [flag, str(par[name])] if is_kwarg else [flag]
+      values = par[name] if isinstance(par[name], list) else [par[name]]
+      cmd_pars += [flag] + [str(val) for val in values] if is_kwarg else [flag]
 
-  logger.info("Running CellBender")
+  if par["expected_cells_from_qc"] and "metrics_cellranger" in data.uns:
+    assert par["expected_cells"] is None, "If min_counts is defined, expected_cells should be undefined"
+    assert par["total_droplets_included"] is None, "If min_counts is defined, expected_cells should be undefined"
+    met = data.uns["metrics_cellranger"]
+    col_name = "Estimated Number of Cells"
+    assert col_name in met.columns, "%s should be a column in .obs[metrics_cellranger]"
+    est_cells = met[col_name].values[0]
+    logger.info("Selecting --expected-cells %d and --total-droplets-included %d", est_cells, est_cells * 5)
+    cmd_pars += ["--expected-cells", str(est_cells), "--total-droplets-included", str(5*est_cells)]
+
+  logger.info("Running CellBender: '%s'", ' '.join(cmd_pars))
   out = subprocess.check_output(cmd_pars).decode("utf-8")
   
   logger.info("Reading CellBender 10xh5 output file: '%s'", output_file)

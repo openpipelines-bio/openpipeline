@@ -1,0 +1,38 @@
+functionality:
+  name: join_uns_to_obs
+  namespace: "metadata"
+  description: "Join a data frame in .uns containing metadata to the .obs of a mudata file."
+  arguments:
+    - name: "--input"
+      alternatives: ["-i"]
+      type: file
+      description: Input h5mu file
+      direction: input
+      required: true
+      example: input.h5mu
+    - name: "--modality"
+      type: string
+      default: "rna"
+      required: false
+    - name: "--uns_key"
+      type: string
+      required: true
+    - name: "--output"
+      alternatives: ["-o"]
+      type: file
+      description: Output h5mu file.
+      direction: output
+      required: true
+      example: output.h5mu
+  resources:
+    - type:  python_script
+      path: script.py
+platforms:
+  - type: docker
+    image: python:3.10
+    python:
+      packages:
+        - mudata~=0.2.0
+        - anndata~=0.8.0
+  - type: nextflow
+    variant: vdsl3
