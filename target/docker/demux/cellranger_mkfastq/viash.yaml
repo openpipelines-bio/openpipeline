@@ -548,9 +548,9 @@ functionality:
       RUN apt update && apt upgrade -y
       LABEL org.opencontainers.image.authors="Angela Pisco, Samuel D'Souza, Robrecht Cannoodt"
       LABEL org.opencontainers.image.description="Companion container for running component demux cellranger_mkfastq"
-      LABEL org.opencontainers.image.created="2022-11-02T16:09:58Z"
+      LABEL org.opencontainers.image.created="2022-11-02T16:11:10Z"
       LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-      LABEL org.opencontainers.image.revision="ba66a697fbbe271319edcce254adc496042219ae"
+      LABEL org.opencontainers.image.revision="a243750bc432d24eb06267941dcded63ee284f0d"
       LABEL org.opencontainers.image.version="main_build"
       VIASHDOCKER
       }
@@ -1251,5 +1251,5 @@ info:
   output: "target/docker/demux/cellranger_mkfastq"
   executable: "target/docker/demux/cellranger_mkfastq/cellranger_mkfastq"
   viash_version: "0.6.2"
-  git_commit: "ba66a697fbbe271319edcce254adc496042219ae"
+  git_commit: "a243750bc432d24eb06267941dcded63ee284f0d"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"
