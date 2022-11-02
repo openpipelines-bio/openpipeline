@@ -436,9 +436,9 @@ functionality:
         pip install --upgrade --no-cache-dir "cellxgene"
       
       LABEL org.opencontainers.image.description="Companion container for running component interactive run_cellxgene"
-      LABEL org.opencontainers.image.created="2022-11-02T15:43:31Z"
+      LABEL org.opencontainers.image.created="2022-11-02T16:09:59Z"
       LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-      LABEL org.opencontainers.image.revision="f52887d34f6d26d33edab0fad70bc8f7e1f90431"
+      LABEL org.opencontainers.image.revision="ba66a697fbbe271319edcce254adc496042219ae"
       LABEL org.opencontainers.image.version="main_build"
       VIASHDOCKER
       }
@@ -1010,5 +1010,5 @@ info:
   output: "target/docker/interactive/run_cellxgene"
   executable: "target/docker/interactive/run_cellxgene/run_cellxgene"
   viash_version: "0.6.2"
-  git_commit: "f52887d34f6d26d33edab0fad70bc8f7e1f90431"
+  git_commit: "ba66a697fbbe271319edcce254adc496042219ae"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"
