@@ -468,9 +468,9 @@ functionality:
       
       LABEL org.opencontainers.image.authors="Angela Pisco, Robrecht Cannoodt"
       LABEL org.opencontainers.image.description="Companion container for running component reference build_bdrhap_reference"
-      LABEL org.opencontainers.image.created="2022-10-25T11:54:39Z"
+      LABEL org.opencontainers.image.created="2022-11-03T15:55:49Z"
       LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-      LABEL org.opencontainers.image.revision="58e1075ebb2a6b1a76179078cc90fb39f05adc2a"
+      LABEL org.opencontainers.image.revision="a6c04b031e94c6b57ad08456cdd5251493943f6d"
       LABEL org.opencontainers.image.version="0.5.1"
       VIASHDOCKER
       }
@@ -1066,5 +1066,5 @@ info:
   output: "target/docker/reference/build_bdrhap_reference"
   executable: "target/docker/reference/build_bdrhap_reference/build_bdrhap_reference"
   viash_version: "0.6.2"
-  git_commit: "58e1075ebb2a6b1a76179078cc90fb39f05adc2a"
+  git_commit: "a6c04b031e94c6b57ad08456cdd5251493943f6d"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"

@@ -19,6 +19,11 @@ functionality:
     - name: "--id"
       required: true
       type: string
+      description: ID of the concatenated file
+      example: concatenated
+    - name: "--sample_id"
+      required: true
+      type: string
       multiple_sep: ';'
       multiple: true
       description: IDs of the sample.
@@ -30,12 +35,6 @@ functionality:
       multiple: true
       description: Path to the samples.
       example: dataset.h5mu
-    - name: "--output"
-      type: file
-      required: true
-      direction: output
-      description: Destination path to the output.
-      example: output.h5mu
   resources:
     - type: nextflow_script
       path: main.nf

@@ -1,7 +1,7 @@
 # Arguments
-id: # please fill in - example: ["foo"]
+id: # please fill in - example: "concatenated"
+sample_id: # please fill in - example: ["foo"]
 input: # please fill in - example: ["dataset.h5mu"]
-# output: "$id.$key.output.h5mu"
 
 # Nextflow input-output arguments
 publish_dir: # please fill in - example: "output/"

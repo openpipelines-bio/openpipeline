@@ -12,6 +12,13 @@
         "properties": {
           "id": {
             "type":"string",
+            "description": "ID of the concatenated file",
+            
+            
+            "default": ""
+          },
+          "sample_id": {
+            "type":"string",
             "description": "IDs of the sample.",
             
             
@@ -23,13 +30,6 @@
             
             
             "default": ""
-          },
-          "output": {
-            "type":"string",
-            "description": "Destination path to the output.",
-            
-            
-            "default": "$id.$key.output.h5mu"
           }
         }
       },
