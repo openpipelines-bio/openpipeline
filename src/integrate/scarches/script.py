@@ -66,21 +66,18 @@ def _detect_base_model(model_path) -> scvi.model.base.BaseModelClass:
     return names_to_models_map[_read_model_name_from_registry()]
 
 
-def map_to_existing_reference(adata_query, model_path, check_val_every_n_epoch=1) -> np.ndarray:
+def map_to_existing_reference(adata_query, model_path, check_val_every_n_epoch=1):
     """
     A function to map the query data to the reference atlas
 
     Input:
         * adata_query: An AnnData object with the query
         * model_path: The reference model directory
-
+    
     Output:
-        A numpy.ndarray containing the embedding coordinates of the query data in the HLCA latent space.
-        If `output_model` is set to True, then the trained reference model is also output
-
+        * vae_query: the trained scvi_tools model
+        * adata_query: The AnnData object with the query preprocessed for the mapping to the reference
     """
-    print("SCVI-tools version:", scvi.__version__)
-
     model = _detect_base_model(model_path)
     model.prepare_query_anndata(adata_query, model_path)
 
