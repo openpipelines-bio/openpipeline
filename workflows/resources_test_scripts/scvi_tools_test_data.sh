@@ -52,4 +52,3 @@ bin/viash run src/convert/from_h5ad_to_h5mu/config.vsh.yaml -- \
   --output "${OUT}_pancreas_ref_test.h5mu"
 
 rm ${OUT}_pancreas_ref_test.h5ad
-rm ${OUT}_pancreas_ref_test.h5ad
