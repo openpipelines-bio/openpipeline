@@ -65,7 +65,7 @@ workflow run_wf {
     | toSortedList{ a, b -> b[0] <=> a[0] }
     | filter { it.size() != 0 } // filter when event is empty
     | map{ list -> 
-      new_data = ["id": list.collect{it[0]}, "input": list.collect{it[1]}]
+      new_data = ["sample_id": list.collect{it[0]}, "input": list.collect{it[1]}]
       ["combined_rna", new_data] + list[0].drop(2)
     }
     | rna_multisample
