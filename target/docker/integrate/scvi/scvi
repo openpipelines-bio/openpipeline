@@ -473,13 +473,13 @@ RUN apt-get update && \
   rm -rf /var/lib/apt/lists/*
 
 RUN pip install --upgrade pip && \
-  pip install --upgrade --no-cache-dir "mudata~=0.2.0" "anndata~=0.8.0" "torchmetrics~=0.6.0" "scvi-tools"
+  pip install --upgrade --no-cache-dir "mudata~=0.2.0" "anndata~=0.8.0" "torchmetrics~=0.6.0" "scvi-tools~=0.14.6"
 
 LABEL org.opencontainers.image.authors="Malte Luecken, Dries Schaumont"
 LABEL org.opencontainers.image.description="Companion container for running component integrate scvi"
-LABEL org.opencontainers.image.created="2022-11-03T12:42:29Z"
+LABEL org.opencontainers.image.created="2022-11-03T13:08:36Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="87cc4279bd3eadbc221de315093f5428a332223e"
+LABEL org.opencontainers.image.revision="b170a1175240137a72781e9bf09222d90a81b7f6"
 LABEL org.opencontainers.image.version="main_build"
 VIASHDOCKER
 }
