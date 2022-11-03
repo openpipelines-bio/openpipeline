@@ -642,9 +642,9 @@ functionality:
       
       LABEL org.opencontainers.image.authors="Dries De Maeyer, Robrecht Cannoodt"
       LABEL org.opencontainers.image.description="Companion container for running component neighbors find_neighbors"
-      LABEL org.opencontainers.image.created="2022-11-02T13:22:51Z"
+      LABEL org.opencontainers.image.created="2022-11-03T07:59:18Z"
       LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-      LABEL org.opencontainers.image.revision="ca8de01491adb2e8d125b96e8a89a2d3ca134da2"
+      LABEL org.opencontainers.image.revision="e0a6dd67e5197704eb431f7d3165f729037eda1f"
       LABEL org.opencontainers.image.version="integration_build"
       VIASHDOCKER
       }
@@ -1412,5 +1412,5 @@ info:
   output: "target/docker/neighbors/find_neighbors"
   executable: "target/docker/neighbors/find_neighbors/find_neighbors"
   viash_version: "0.6.2"
-  git_commit: "ca8de01491adb2e8d125b96e8a89a2d3ca134da2"
+  git_commit: "e0a6dd67e5197704eb431f7d3165f729037eda1f"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"
