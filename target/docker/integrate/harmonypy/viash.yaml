@@ -539,9 +539,9 @@ functionality:
       
       LABEL org.opencontainers.image.authors="Dries Schaumont, Robrecht Cannoodt"
       LABEL org.opencontainers.image.description="Companion container for running component integrate harmonypy"
-      LABEL org.opencontainers.image.created="2022-11-03T07:59:16Z"
+      LABEL org.opencontainers.image.created="2022-11-03T13:41:13Z"
       LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-      LABEL org.opencontainers.image.revision="e0a6dd67e5197704eb431f7d3165f729037eda1f"
+      LABEL org.opencontainers.image.revision="b170a1175240137a72781e9bf09222d90a81b7f6"
       LABEL org.opencontainers.image.version="integration_build"
       VIASHDOCKER
       }
@@ -1236,5 +1236,5 @@ info:
   output: "target/docker/integrate/harmonypy"
   executable: "target/docker/integrate/harmonypy/harmonypy"
   viash_version: "0.6.2"
-  git_commit: "e0a6dd67e5197704eb431f7d3165f729037eda1f"
+  git_commit: "b170a1175240137a72781e9bf09222d90a81b7f6"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"

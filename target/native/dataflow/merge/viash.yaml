@@ -644,5 +644,5 @@ info:
   output: "target/native/dataflow/merge"
   executable: "target/native/dataflow/merge/merge"
   viash_version: "0.6.2"
-  git_commit: "e0a6dd67e5197704eb431f7d3165f729037eda1f"
+  git_commit: "b170a1175240137a72781e9bf09222d90a81b7f6"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"
