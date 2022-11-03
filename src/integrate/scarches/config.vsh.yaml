@@ -27,16 +27,6 @@ functionality:
           type: string
           description: Name of the reference dataset
           required: false
-        - name: "--unlabeled_category"
-          type: string
-          description: "Value used for unlabeled cells"
-          default: "Unknown"
-          required: false
-        - name: "--labels_key"
-          type: string
-          description: "Name of the column containing cell types"
-          default: "leiden"
-          required: false
         - name: "--predicted_labels_key"
           type: string
           description: Name of the column that will contain cell types predicted by scANVI
@@ -51,10 +41,6 @@ functionality:
           default: "sample_id"
           required: false
           description: Column name discriminating between your batches.
-        - name: "--var_input"
-          type: string
-          required: false
-          description: ".var column containing highly variable genes. By default, do not subset genes."
     - name: Outputs
       arguments:
         - name: "--output"

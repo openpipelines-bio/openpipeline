@@ -16,18 +16,11 @@ par = {
     "input": "resources_test/pbmc_1k_protein_v3/pbmc_1k_protein_v3_mms.h5mu",
     "modality": "rna",
     "output": "foo.h5mu",
-    # scANVI parameters
-    "unlabeled_category": "Unknown",
-    "labels_key": "leiden",
     "predicted_labels_key": "predicted_labels",
     # Other
     "obsm_output": "X_integrated_{model_name}",
-    "var_input": None,
     "obs_batch": "sample_id",
     "input_layer": None,
-    "reduce_lr_on_plateau": True,
-    "lr_factor": 0.6,
-    "lr_patience": 30,
     "early_stopping": True,
     "early_stopping_monitor": "elbo_validation",
     "early_stopping_patience": 45,
@@ -46,12 +39,6 @@ def _setup_logger():
     logger.addHandler(console_handler)
 
     return logger
-
-PLAN_KWARGS = {
-    "reduce_lr_on_plateau": par['reduce_lr_on_plateau'],
-    "lr_patience": par['lr_patience'],
-    "lr_factor": par['lr_factor'],
-}
 
 def _read_model_name_from_registry(model_path) -> str:
     """Read registry with information about the model, return the model name"""
@@ -112,8 +99,7 @@ def map_to_existing_reference(adata_query, model_path, check_val_every_n_epoch=1
             early_stopping_patience=par['early_stopping_patience'],
             early_stopping_min_delta=par['early_stopping_min_delta'],
             check_val_every_n_epoch=check_val_every_n_epoch,
-            use_gpu=(cuda_is_available() or mps_is_available()),
-            plan_kwargs=PLAN_KWARGS
+            use_gpu=(cuda_is_available() or mps_is_available())
     )
 
     return vae_query, adata_query
