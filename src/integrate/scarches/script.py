@@ -1,4 +1,5 @@
 import logging
+from pyexpat import model
 import mudata
 import scvi
 from torch.cuda import is_available as cuda_is_available
@@ -20,7 +21,7 @@ par = {
     "labels_key": "leiden",
     "predicted_labels_key": "predicted_labels",
     # Other
-    "obsm_output": "X_integrated_scanvi",
+    "obsm_output": "X_integrated_{model_name}",
     "var_input": None,
     "obs_batch": "sample_id",
     "input_layer": None,
@@ -52,6 +53,31 @@ PLAN_KWARGS = {
     "lr_factor": par['lr_factor'],
 }
 
+def _read_model_name_from_registry(model_path) -> str:
+    """Read registry with information about the model, return the model name"""
+    registry = scvi.model.base.BaseModelClass.load_registry(model_path)
+    return registry["model_name"]
+
+
+def _detect_base_model(model_path) -> scvi.model.base.BaseModelClass:
+    """Read from the model's file which scvi_tools model it contains"""
+
+    names_to_models_map = {
+        "AUTOZI": scvi.model.AUTOZI,
+        "CondSCVI": scvi.model.CondSCVI,
+        "DestVI": scvi.model.DestVI,
+        "LinearSCVI": scvi.model.LinearSCVI,
+        "PEAKVI": scvi.model.PEAKVI,
+        "SCANVI": scvi.model.SCANVI,
+        "SCVI": scvi.model.SCVI,
+        "TOTALVI": scvi.model.TOTALVI,
+        "MULTIVI": scvi.model.MULTIVI,
+        "AmortizedLDA": scvi.model.AmortizedLDA,
+        "JaxSCVI": scvi.model.JaxSCVI,
+    }
+    
+    return names_to_models_map[_read_model_name_from_registry()]
+
 
 def map_to_existing_reference(adata_query, model_path, check_val_every_n_epoch=1) -> np.ndarray:
     """
@@ -68,10 +94,11 @@ def map_to_existing_reference(adata_query, model_path, check_val_every_n_epoch=1
     """
     print("SCVI-tools version:", scvi.__version__)
 
-    scvi.model.SCANVI.prepare_query_anndata(adata_query, model_path)
+    model = _detect_base_model(model_path)
+    model.prepare_query_anndata(adata_query, model_path)
 
     # Load query data into the model
-    vae_query = scvi.model.SCANVI.load_query_data(
+    vae_query = model.load_query_data(
             adata_query,
             model_path,
             freeze_dropout=True
@@ -122,15 +149,17 @@ def main():
         with tempfile.TemporaryDirectory() as directory:
             model_path = _download_HLCA_reference_model(directory)
             vae_query, adata_query = map_to_existing_reference(adata_query, model_path=model_path)
+            model_name = _read_model_name_from_registry(directory)
         
     else:
         raise ValueError(f"Reference {par['reference']} is not supported")
 
     # Save info about the used model
-    adata_query.uns["integration_method"] = "scanvi"
+    adata_query.uns["integration_method"] = model_name
 
     logger.info("Trying to write latent representation")
-    adata_query.obsm[par["obsm_output"]] = vae_query.get_latent_representation()
+    output_key = par["obsm_output"].format(model_name=model_name)
+    adata_query.obsm[output_key] = vae_query.get_latent_representation()
 
     logger.info("Predicting labels for SCANVI")
     adata_query.obs[par["predicted_labels_key"]] = vae_query.predict()
