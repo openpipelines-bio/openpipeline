@@ -114,7 +114,7 @@ platforms:
           - mudata~=0.2.0
           - anndata~=0.8.0
           - torchmetrics~=0.6.0
-          - scvi-tools
+          - scvi-tools~=0.14.6
   - type: nextflow
     variant: vdsl3
     directives:
