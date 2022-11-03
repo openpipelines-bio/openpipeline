@@ -161,8 +161,9 @@ def main():
     output_key = par["obsm_output"].format(model_name=model_name)
     adata_query.obsm[output_key] = vae_query.get_latent_representation()
 
-    logger.info("Predicting labels for SCANVI")
-    adata_query.obs[par["predicted_labels_key"]] = vae_query.predict()
+    if model_name == "SCANVI":
+        logger.info("Predicting labels for SCANVI")
+        adata_query.obs[par["predicted_labels_key"]] = vae_query.predict()
 
     logger.info("Reassigning modality")
     mdata_query.mod[par["modality"]] = adata_query
