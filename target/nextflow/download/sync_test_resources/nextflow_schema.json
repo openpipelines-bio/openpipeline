@@ -1,7 +1,7 @@
 {
     "$schema": "http://json-schema.org/draft-07/schema",
-    "title": "rna_multisample",
-    "description": "Processing unimodal multi-sample RNA transcriptomics data.",
+    "title": "sync_test_resources",
+    "description": "Synchronise the test resources from s3://openpipelines-data to resources_test",
     "type": "object",
     "definitions": {
       "arguments" : {
@@ -10,23 +10,44 @@
         "description": "No description",
         "default": "",
         "properties": {
-          "id": {
-            "type":"string",
-            "description": "ID of the concatenated file",
-            
-            
-            "default": ""
-          },
-          "sample_id": {
-            "type":"string",
-            "description": "IDs of the sample.",
-            
-            
-            "default": ""
-          },
           "input": {
             "type":"string",
-            "description": "Path to the samples.",
+            "description": "Path to the S3 bucket to sync from.",
+            
+            
+            "default": "s3://openpipelines-data"
+          },
+          "output": {
+            "type":"string",
+            "description": "Path to the test resource directory.",
+            
+            
+            "default": "$id.$key.output.output"
+          },
+          "quiet": {
+            "type":"boolean",
+            "description": "Displays the operations that would be performed using the specified command without actually running them.",
+            
+            
+            "default": "False"
+          },
+          "dryrun": {
+            "type":"boolean",
+            "description": "Does not display the operations performed from the specified command.",
+            
+            
+            "default": "False"
+          },
+          "delete": {
+            "type":"boolean",
+            "description": "Files that exist in the destination but not in the source are deleted during sync.",
+            
+            
+            "default": "False"
+          },
+          "exclude": {
+            "type":"string",
+            "description": "Exclude all files or objects from the command that matches the specified pattern.",
             
             
             "default": ""

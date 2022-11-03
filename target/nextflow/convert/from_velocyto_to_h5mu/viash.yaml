@@ -1928,5 +1928,5 @@ info:
   platform: "nextflow"
   output: "target/nextflow/convert/from_velocyto_to_h5mu"
   viash_version: "0.6.2"
-  git_commit: "a243750bc432d24eb06267941dcded63ee284f0d"
+  git_commit: "70fa9c2af423254f804f8996995b96200aca5e62"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"

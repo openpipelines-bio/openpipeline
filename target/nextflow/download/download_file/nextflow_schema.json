@@ -1,7 +1,7 @@
 {
     "$schema": "http://json-schema.org/draft-07/schema",
-    "title": "rna_multisample",
-    "description": "Processing unimodal multi-sample RNA transcriptomics data.",
+    "title": "download_file",
+    "description": "Download a file.\n",
     "type": "object",
     "definitions": {
       "arguments" : {
@@ -10,26 +10,26 @@
         "description": "No description",
         "default": "",
         "properties": {
-          "id": {
-            "type":"string",
-            "description": "ID of the concatenated file",
-            
-            
-            "default": ""
-          },
-          "sample_id": {
-            "type":"string",
-            "description": "IDs of the sample.",
-            
-            
-            "default": ""
-          },
           "input": {
             "type":"string",
-            "description": "Path to the samples.",
+            "description": "URL to a file to download.",
             
             
             "default": ""
+          },
+          "output": {
+            "type":"string",
+            "description": "Path where to store output.",
+            
+            
+            "default": "$id.$key.output.h5"
+          },
+          "verbose": {
+            "type":"boolean",
+            "description": "Increase verbosity",
+            
+            
+            "default": "False"
           }
         }
       },

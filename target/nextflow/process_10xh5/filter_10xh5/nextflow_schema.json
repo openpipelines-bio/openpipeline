@@ -1,7 +1,7 @@
 {
     "$schema": "http://json-schema.org/draft-07/schema",
-    "title": "rna_multisample",
-    "description": "Processing unimodal multi-sample RNA transcriptomics data.",
+    "title": "filter_10xh5",
+    "description": "Filter a 10x h5 dataset.\n",
     "type": "object",
     "definitions": {
       "arguments" : {
@@ -10,26 +10,47 @@
         "description": "No description",
         "default": "",
         "properties": {
-          "id": {
-            "type":"string",
-            "description": "ID of the concatenated file",
-            
-            
-            "default": ""
-          },
-          "sample_id": {
-            "type":"string",
-            "description": "IDs of the sample.",
-            
-            
-            "default": ""
-          },
           "input": {
             "type":"string",
-            "description": "Path to the samples.",
+            "description": "An h5 file from the 10x genomics website.",
             
             
             "default": ""
+          },
+          "output": {
+            "type":"string",
+            "description": "Output h5 file.",
+            
+            
+            "default": "$id.$key.output.h5"
+          },
+          "min_library_size": {
+            "type":"integer",
+            "description": "Minimum library size.",
+            
+            
+            "default": "0"
+          },
+          "min_cells_per_gene": {
+            "type":"integer",
+            "description": "Minimum number of cells per gene.",
+            
+            
+            "default": "0"
+          },
+          "keep_feature_types": {
+            "type":"string",
+            "description": "Specify which feature types will never be filtered out",
+            
+            
+            "default": ""
+          },
+          "verbose": {
+            "type":"boolean",
+            "description": "Increase verbosity",
+            
+            
+            "default": "False"
           }
         }
       },
