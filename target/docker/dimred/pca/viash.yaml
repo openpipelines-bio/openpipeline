@@ -550,9 +550,9 @@ functionality:
       
       LABEL org.opencontainers.image.authors="Dries De Maeyer"
       LABEL org.opencontainers.image.description="Companion container for running component dimred pca"
-      LABEL org.opencontainers.image.created="2022-11-03T15:03:50Z"
+      LABEL org.opencontainers.image.created="2022-11-08T13:00:19Z"
       LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-      LABEL org.opencontainers.image.revision="a6c04b031e94c6b57ad08456cdd5251493943f6d"
+      LABEL org.opencontainers.image.revision="30b8b0b969bb6f5e521d52dea6d88211d42f4990"
       LABEL org.opencontainers.image.version="main_build"
       VIASHDOCKER
       }
@@ -1258,5 +1258,5 @@ info:
   output: "target/docker/dimred/pca"
   executable: "target/docker/dimred/pca/pca"
   viash_version: "0.6.2"
-  git_commit: "a6c04b031e94c6b57ad08456cdd5251493943f6d"
+  git_commit: "30b8b0b969bb6f5e521d52dea6d88211d42f4990"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"

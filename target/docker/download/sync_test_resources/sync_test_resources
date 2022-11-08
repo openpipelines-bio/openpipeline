@@ -417,9 +417,9 @@ FROM amazon/aws-cli:2.7.12
 RUN :
 LABEL org.opencontainers.image.authors="Robrecht Cannoodt"
 LABEL org.opencontainers.image.description="Companion container for running component download sync_test_resources"
-LABEL org.opencontainers.image.created="2022-11-03T15:03:53Z"
+LABEL org.opencontainers.image.created="2022-11-08T13:00:22Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="a6c04b031e94c6b57ad08456cdd5251493943f6d"
+LABEL org.opencontainers.image.revision="30b8b0b969bb6f5e521d52dea6d88211d42f4990"
 LABEL org.opencontainers.image.version="main_build"
 VIASHDOCKER
 }
