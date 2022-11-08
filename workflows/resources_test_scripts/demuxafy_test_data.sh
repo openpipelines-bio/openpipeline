@@ -7,6 +7,8 @@ set -eo pipefail
 REPO_ROOT=$(git rev-parse --show-toplevel)
 cd "$REPO_ROOT"
 
+mkdir -p .cache
+
 # settings
 ID=demuxafy_test_data
 OUT=resources_test/$ID
