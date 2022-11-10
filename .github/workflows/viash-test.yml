@@ -18,9 +18,9 @@ jobs:
           pull_request=$(gh pr list -R openpipelines-bio/openpipeline -H ${{ github.ref_name }} --json url --state open --limit 1 | jq '.[0].url')
           # If the branch has a PR and this run was triggered by a push event, do not run
           if [[ "$pull_request" != "null" && "${{ github.event_name == 'push' }}" == "true" && "${{ !contains(github.event.head_commit.message, 'ci force') }}" == "true" ]]; then
-            echo "::set-output name=check::false"
+            echo "check=false" >> $GITHUB_OUTPUT
           else
-            echo "::set-output name=check::true"
+            echo "check=true" >> $GITHUB_OUTPUT
           fi
         env:
           GITHUB_TOKEN: ${{ secrets.GTHB_PAT }}
@@ -52,7 +52,7 @@ jobs:
       id: cachehash
       run: |
         AWS_EC2_METADATA_DISABLED=true aws s3 ls $s3_bucket --recursive --no-sign-request > bucket-contents.txt
-        echo "::set-output name=cachehash::resources_test__$( md5sum bucket-contents.txt | awk '{ print $1 }' )"
+        echo "cachehash=resources_test__$( md5sum bucket-contents.txt | awk '{ print $1 }' )" >> $GITHUB_OUTPUT
     
     # initialize cache
     - name: Cache resources data
@@ -74,7 +74,7 @@ jobs:
 
     - name: Get changed files
       id: changed-files
-      uses: tj-actions/changed-files@v29.0.7
+      uses: tj-actions/changed-files@v34.0.5
       with:
         separator: ";"
         diff_relative: true
@@ -110,7 +110,7 @@ jobs:
           done
         done
         json=$(jq -cs '.' <<< "${result_array_matrix[*]}")
-        echo "::set-output name=matrix::$json"
+        echo "matrix=$json" >> $GITHUB_OUTPUT
 
   # phase 2
   viash_test:

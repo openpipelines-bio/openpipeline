@@ -71,4 +71,4 @@ platforms:
   - type: nextflow
     variant: vdsl3
     directives:
-      label: highmem
+      label: [midcpu, highmem]

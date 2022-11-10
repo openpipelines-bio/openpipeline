@@ -53,7 +53,6 @@ workflow run_wf {
       auto: [ publish: true ]
     )
     // TODO: ambient rna correction
-    | view { "Output: $it" }
 
   emit:
   output_ch
