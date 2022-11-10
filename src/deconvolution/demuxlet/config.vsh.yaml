@@ -1,6 +1,6 @@
 functionality:
   name: freemuxlet
-  namespace: demultiplex
+  namespace: deconvolution
   description: |
     Runs the freemuxlet demultiplexing tool for converting.
   authors:
@@ -20,25 +20,19 @@ functionality:
       required: true
       description: VCF file containing the reference locations for assigning individual to cell ids.
       example: vcf_file.vcf
-    - name: "--sampleOutputFile"
+    - name: "--field"
       alternatives: [ "-o" ]
-      type: file
-      direction: output
-      required: true
-      description: Output file containing the sample identities
-      example: output_clustering_file.gz
-    - name: "--vcfOutputFile"
-      type: file
-      direction: output
-      required: true
-      description: Output file containing variants associated with the sample identities.
-      example: output_vcf.vcf.gz
-    - name: "--numberOfSamples"
-      type: integer
+      type: string
       direction: input
       required: true
-      description: Number of samples to demultiplex to.
-      example: 4
+      description: FORMAT field to extract the genotype, likelihood, or posterior from. Options GT, GP, PL
+      default: "GP"
+    - name: "--outputFile"
+      type: file
+      direction: output
+      required: true
+      description: Output file containing the cells assigned with the assigned sample.
+      example: output_vcf.gz
   resources:
     - type: bash_script
       path: script.sh
