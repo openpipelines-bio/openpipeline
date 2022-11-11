@@ -1,0 +1,92 @@
+functionality:
+  name: vireo
+  namespace: gene_demulti
+  description: |
+    Run Vireo
+  authors:
+    - name: Xichen Wu
+  argument_groups:
+  - name: "Input"
+    arguments:
+    - name: "--id"
+      type: string
+      default: "Vireo"
+    - name: "--cellData"
+      type: file
+      description: The cell genotype file in VCF format or cellSNP folder with sparse matrices.
+    - name: "--nDonor"
+      type: integer
+      default: 2
+      description: Number of donors to demultiplex; can be larger than provided in donor_file.
+    - name: "--vartrixData"
+      type: file
+      description: The cell genotype files in vartrix outputs.
+    - name: "--donorFile"
+      type: file
+      description: The donor genotype file in VCF format. Please filter the sample and region with bcftools first!
+    - name: "--genoTag"
+      type: string
+      default: "PL"
+      description: The tag for donor genotype.
+      choices: ["GT", "GP", "PL"]
+    - name: "--noDoublet"
+      type: boolean
+      default: false
+      description: If use, not checking doublets.
+    - name: "--nInit"
+      type: integer
+      default: 50
+      description: Number of random initializations, when GT needs to learn.
+    - name: "--extraDonor"
+      type: integer
+      default: 0
+      description: Number of extra donor in pre-cluster, when GT needs to learn.
+    - name: "--extraDonorMode"
+      type: string
+      description: "Method for searching from extra donors. size: n_cell per donor; distance: GT distance between donors"
+    - name: "--forceLearnGT"
+      type: boolean
+      default: false
+      description: If use, treat donor GT as prior only.
+    - name: "--ASEmode"
+      type: boolean
+      default: false
+      description: If use, turn on SNP specific allelic ratio.
+    - name: "--noPlot"
+      type: boolean
+      default: false
+      description: If use, turn off plotting GT distance.
+    - name: "--randSeed"
+      type: integer
+      description: Seed for random initialization
+    - name: "--cellRange"
+      type: string
+      description: Range of cells to process.
+    - name: "--callAmbientRNAs"
+      type: boolean
+      default: false
+      description: If use, detect ambient RNAs in each cell.
+    - name: "--nproc"
+      type: integer
+      default: 1
+      description: Number of subprocesses for computing, this sacrifices memory for speedups.
+  - name: "Output"
+    arguments:
+    - name: "--output"
+      alternatives: [ "-o" ]
+      type: file
+      direction: output
+      description: Output directory 
+      example: "vireo/"
+
+  resources:
+    - type: bash_script
+      path: script.sh
+platforms:
+  - type: docker
+    image: wxicu/demultiplex_vireo
+  - type: nextflow
+    variant: vdsl3
+    directives:
+      label: [ midmem, midcpu ]
+      container: wxicu/demultiplex_vireo

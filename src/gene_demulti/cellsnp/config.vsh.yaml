@@ -1,0 +1,108 @@
+functionality:
+  name: cellsnp
+  namespace: gene_demulti
+  description: Run cellsnp-lite
+  authors:
+    - name: Xichen Wu
+  argument_groups:
+  - name: "Input"
+    arguments:
+    - name: "--id"
+      type: string
+      default: "cellsnp"
+    - name: "--samFile"
+      type: file
+      description: "Indexed sam/bam file(s), comma separated multiple samples. Mode 1a & 2a: one sam/bam file with single cell. Mode 1b & 2b: one or multiple bulk sam/bam files, no barcodes needed, but sample ids and regionsVCF."
+    - name: "--samIndexFile"
+      type: file
+      description: Input SAM/BAM Index file, problem with samFileList.
+    - name: "--samFileList"
+      type: file
+      description: A list file containing bam files, each per line, for Mode 1b & 2b.
+    - name: "--regionsVCF"
+      type: file
+      description: A vcf file listing all candidate SNPs, for fetch each variants. If None, pileup the genome. Needed for bulk samples.
+    - name: "--targetsVCF"
+      type: file
+      description: Similar as -R, but the next position is accessed by streaming rather than indexing/jumping (like -T in samtools/bcftools mpileup).
+    - name: "--barcodeFile"
+      type: file
+      description:  A plain file listing all effective cell barcode.
+    - name: "--sampleList"
+      type: file
+      description: A list file containing sample IDs, each per line.
+    - name: "--sampleIDs"
+      type: string
+      description: Comma separated sample ids.
+    - name: "--genotype"
+      type: boolean_false
+      description: If use, do genotyping in addition to counting. Default is to genotype all cells.
+    - name: "--gzip"
+      type: boolean_true
+      description: If use, the output files will be zipped into BGZF format.
+    - name: "--printSkipSNPs"
+      type: boolean_true
+      description: If use, the SNPs skipped when loading VCF will be printed.
+    - name: "--nproc"
+      type: integer
+      default: 1
+      description: Number of subprocesses.
+    - name: "--chrom"
+      type: string
+      description: The chromosomes to use, comma separated
+    - name: "--cellTAG"
+      type: string
+      default: "CB"
+      description: Tag for cell barcodes, turn off with None.
+    - name: "--UMItag"
+      type: string
+      default: "Auto"
+      description: "Tag for UMI: UR, Auto, None. For Auto mode, use UR if barcodes is inputted, otherwise use None. None mode means no UMI but read counts."
+    - name: "--minCOUNT"
+      type: integer
+      default: 20
+      description: Minimum aggragated count.
+    - name: "--minMAF"
+      type: double
+      default: 0.00
+      description: Minimum minor allele frequency.
+    - name: "--doubletGL"
+      type: boolean_true
+      description: If use, keep doublet GT likelihood, i.e., GT=0.5 and GT=1.5.
+    - name: "--inclFLAG"
+      type: string
+      description: "Required flags: skip reads with all mask bits unset."
+    - name: "--exclFLAG"
+      type: string
+      description: "Filter flags: skip reads with any mask bits set [UNMAP,SECONDARY,QCFAIL (when use UMI) or UNMAP,SECONDARY,QCFAIL,DUP (otherwise)]"
+    - name: "--countORPHAN"
+      type: boolean_true
+      description: If use, do not skip anomalous read pairs.
+    - name: "--minMAPQ"
+      type: integer
+      default: 20
+      description: Minimum MAPQ for read filtering.
+    - name: "--minLEN"
+      type: integer
+      default: 30
+      description: Minimum mapped length for read filtering.
+  - name: "Output"
+    arguments:
+    - name: "--output"
+      alternatives: [ "--outDir" ]
+      type: file
+      direction: output
+      description:  Output directory for VCF and sparse matrices.
+      example: "cellsnp_out/"
+
+  resources:
+    - type: bash_script
+      path: script.sh
+platforms:
+  - type: docker
+    image: quay.io/biocontainers/cellsnp-lite:1.2.0--hee625c5_0
+  - type: nextflow
+    variant: vdsl3
+    directives:
+      label: [ highmem, highcpu ]
+      container: quay.io/biocontainers/cellsnp-lite:1.2.0--hee625c5_0

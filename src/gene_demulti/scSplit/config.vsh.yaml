@@ -1,0 +1,81 @@
+functionality:
+  name: scSplit
+  namespace: gene_demulti
+  description: |
+    Run scSplit
+  authors:
+    - name: Xichen Wu
+  argument_groups:
+  - name: "Input"
+    arguments:
+    - name: "--id"
+      type: string
+      default: "scSplit"
+    - name: "--vcf"
+      type: file
+      description: VCF from mixed BAM
+    - name: "--bam"
+      type: file
+      description: mixed sample BAM
+    - name: "--bar"
+      type: file
+      description: barcodes whitelist
+    - name: "--tag"
+      type: string
+      default: "CB"
+      description: tag for barcode
+    - name: "--com"
+      type: file
+      description: common SNVs
+    - name: "--num"
+      type: integer
+      description: expected number of mixed samples
+    - name: "--sub"
+      type: integer
+      default: 10
+      description: maximum number of subpopulations in autodetect mode
+    - name: "--ems"
+      type: integer
+      default: 30
+      description: number of EM repeats to avoid local maximum
+    - name: "--dbl"
+      type: double
+      description: correction for doublets. There will be no refinement on the results if this optional parameter is not specified or specified percentage is less than doublet rates detected during the run.
+    - name: "--vcf_known"
+      type: file
+      description: known individual genotypes to limit distinguishing variants to available variants, so that users do not need to redo genotyping on selected variants, otherwise any variants could be selected as distinguishing variants.
+    - name: "--geno"
+      type: boolean_false
+      description: generate sample genotypes based on the split result. Default is to genotype.
+    
+  - name: "Output"
+    arguments:
+    - name: "--output"
+      alternatives: [ "-o" ]
+      type: file
+      direction: output
+      description: Output directory 
+      example: "scSplit_out/"
+    - name: "--ref"
+      type: file
+      direction: output
+      description: output Ref count matrix
+    - name: "--alt"
+      type: file
+      direction: output
+      description: output Alt count matrix
+    - name: "--psc"
+      type: file
+      direction: output
+      description: generated P(S|C)
+  resources:
+    - type: bash_script
+      path: script.sh
+platforms:
+  - type: docker
+    image: wxicu/demultiplex_scsplit
+  - type: nextflow
+    variant: vdsl3
+    directives:
+      label: [ midmem, midcpu ]
+      container: wxicu/demultiplex_scsplit

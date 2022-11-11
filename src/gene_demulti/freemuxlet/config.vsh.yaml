@@ -1,0 +1,136 @@
+functionality:
+  name: freemuxlet
+  namespace: gene_demulti
+  description: |
+    Run Freemuxlet
+  authors:
+    - name: Xichen Wu
+  argument_groups:
+  - name: "Input"
+    arguments:
+    - name: "--id"
+      type: string
+      default: "freemuxlet"
+    - name: "--sam"
+      type: file
+      description: Input BAM file
+    - name: "--tagGroup"
+      type: string
+      default: 'CB'
+    - name: "--tagUMI"
+      type: string
+      default: 'UB'
+    - name: "--excludeFlag"
+      type: integer
+      default: 1796
+    - name: "--vcf"
+      type: file
+    - name: "--sm"
+      type: string
+    - name: "--smList"
+      type: string
+    - name: "--samVerbose"
+      type: integer
+      default: 1000000
+    - name: "--vcfVerbose"
+      type: integer
+      default: 1000
+    - name: "--skipUmi"
+      type: boolean
+      default: false
+    - name: "--capBQDsc"
+      type: integer
+      default: 40
+    - name: "--minBQ"
+      type: integer
+      default: 13
+    - name: "--minMQ"
+      type: integer
+      default: 20
+    - name: "--minTD"
+      type: integer
+      default: 0
+    - name: "--exclFlag"
+      type: integer
+      default: 3844
+    - name: "--groupList"
+      type: string
+    - name: "--minTotal"
+      type: integer
+      default: 0
+    - name: "--minUniq"
+      type: integer
+      default: 0
+    - name: "--minSnp"
+      type: integer
+      default: 0
+    - name: "--plp"
+      type: string
+    - name: "--initCluster"
+      type: file
+    - name: "--nsample"
+      type: integer
+      default: 2
+    - name: "--auxFiles"
+      type: boolean
+    - name: "--verbose"
+      type: integer
+      default: 100
+    - name: "--doubletPrior"
+      type: double
+      default: 0.5
+    - name: "--geneError"
+      type: double
+      default: 0.1
+    - name: "--bfThres"
+      type: double
+      default: 5.41
+    - name: "--fracInitClust"
+      type: double
+      default: 1
+    - name: "--iterInit"
+      type: integer
+      default: 10
+    - name: "--keepInitMissing"
+      type: boolean
+    - name: "--randomizeSingletScore"
+      type: boolean
+    - name: "--seed"
+      type: integer
+      default: 0
+    - name: "--capBQ"
+      type: integer
+      default: 20
+    - name: "--minUmi"
+      type: integer
+      default: 0
+  - name: "Output"
+    arguments:
+    - name: "--output"
+      alternatives: [ "-o" ]
+      type: file
+      direction: output
+      description: Output directory 
+      example: "freemuxlet/"
+    - name: "--outDsc"
+      type: file
+      direction: output
+      description: dsc-pileup output name
+      example: "freemuxlet_dsc"
+    - name: "--out"
+      type: file
+      direction: output
+      description: freemuxlet output name
+      example: "freemuxlet"
+
+  resources:
+    - type: bash_script
+      path: script.sh
+platforms:
+  - type: docker
+    image: wxicu/demultiplex_popscle
+  - type: nextflow
+    variant: vdsl3
+    directives:
+      label: [ midmem, midcpu ]
+      container: wxicu/demultiplex_popscle
