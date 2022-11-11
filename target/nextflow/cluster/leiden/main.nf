@@ -135,7 +135,7 @@ thisConfig = processConfig([
       "parent" : "file:/home/runner/work/openpipeline/openpipeline/src/cluster/leiden/config.vsh.yaml"
     }
   ],
-  "description" : "Cluster cells using the Leiden algorithm [Traag18] implemented in the Scanpy framework [Wolf18]. Leiden is an improved version of the Louvain algorithm [Blondel08]. \nIt has been proposed for single-cell analysis by [Levine15]. \nThis requires having ran neighbors/find_neighbors or neighbors/bbknn first.\n\nBlondel et al. (2008), Fast unfolding of communities in large networks, J. Stat. Mech.\nLevine et al. (2015), Data-Driven Phenotypic Dissection of AML Reveals Progenitor-like Cells that Correlate with Prognosis, Cell.\nTraag et al. (2018), From Louvain to Leiden: guaranteeing well-connected communities arXiv.\nWolf et al. (2018), Scanpy: large-scale single-cell gene expression data analysis, Genome Biology.\n",
+  "description" : "Cluster cells using the Leiden algorithm [Traag18] implemented in the Scanpy framework [Wolf18]. \nLeiden is an improved version of the Louvain algorithm [Blondel08]. \nIt has been proposed for single-cell analysis by [Levine15]. \nThis requires having ran `neighbors/find_neighbors` or `neighbors/bbknn` first.\n\nBlondel08: Blondel et al. (2008), Fast unfolding of communities in large networks, J. Stat. Mech.  \nLevine15: Levine et al. (2015), Data-Driven Phenotypic Dissection of AML Reveals Progenitor-like Cells that Correlate with Prognosis, Cell.  \nTraag18: Traag et al. (2018), From Louvain to Leiden: guaranteeing well-connected communities arXiv.  \nWolf18: Wolf et al. (2018), Scanpy: large-scale single-cell gene expression data analysis, Genome Biology.  \n",
   "test_resources" : [
     {
       "type" : "python_script",
