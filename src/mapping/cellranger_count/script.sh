@@ -16,7 +16,7 @@ par_reference=`realpath $par_reference`
 par_output=`realpath $par_output`
 
 # create temporary directory
-tmpdir=$(mktemp -d "$VIASH_TEMP/$meta_functionality_name-XXXXXXXX")
+tmpdir=$(mktemp -d "$meta_temp_dir/$meta_functionality_name-XXXXXXXX")
 function clean_up {
     rm -rf "$tmpdir"
 }
@@ -36,6 +36,15 @@ for var in $par_input; do
     ln -s "$abs_path" "$fastq_dir"
   fi
 done
+
+# process reference
+if file $par_reference | grep -q 'gzip compressed data'; then
+  echo "Untarring genome"
+  reference_dir="$tmpdir/fastqs"
+  mkdir -p "$reference_dir"
+  tar -xvf "$par_reference" -C "$reference_dir" --strip-components=1
+  par_reference="$reference_dir"
+fi
 
 # cd into tempdir
 cd "$tmpdir"
