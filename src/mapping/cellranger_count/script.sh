@@ -37,6 +37,15 @@ for var in $par_input; do
   fi
 done
 
+# process reference
+if file $par_reference | grep -q 'gzip compressed data'; then
+  echo "Untarring genome"
+  reference_dir="$tmpdir/fastqs"
+  mkdir -p "$reference_dir"
+  tar -xvf "$par_reference" -C "$reference_dir" --strip-components=1
+  par_reference="$reference_dir"
+fi
+
 # cd into tempdir
 cd "$tmpdir"
 
