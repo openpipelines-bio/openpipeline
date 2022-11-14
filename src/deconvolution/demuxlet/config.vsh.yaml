@@ -1,8 +1,8 @@
 functionality:
-  name: freemuxlet
+  name: demuxlet
   namespace: deconvolution
   description: |
-    Runs the freemuxlet demultiplexing tool for converting.
+    Runs the demuxlet demultiplexing tool for converting.
   authors:
     - name: Dries De Maeyer
       roles: [ author, maintainer ]
@@ -39,10 +39,17 @@ functionality:
   test_resources:
     - type: bash_script
       path: test.sh
-    - path: ../../../resources_test/demuxafy_test_data/
+    - path: ../../../resources_test/demuxafy_test_data
 platforms:
   - type: docker
-    image: vibsinglecellnf/popscle
+    image: ubuntu:20.04
+    setup:
+    - type: apt
+      packages: [ bedtools, samtools, git, build-essential, libcurl4-openssl-dev, cmake, libbz2-dev, libssl-dev, autoconf, liblzma-dev, liblzma-dev, zlib1g-dev]
+    - type: docker
+      run: git clone https://github.com/samtools/htslib.git /tmp/htslib && cd /tmp/htslib && git submodule update --init --recursive && autoreconf -i && ./configure --prefix=/usr/local/ && make && make install
+    - type: docker
+      run: git clone --depth 1 https://github.com/statgen/popscle.git /tmp/popscle && mkdir -p /tmp/popscle/build && cd /tmp/popscle/build && cmake .. && make && cp /tmp/popscle/bin/popscle /usr/local/bin
   - type: nextflow
     variant: vdsl3
     directives:
