@@ -10,7 +10,7 @@
 // files.
 // 
 // Component authors:
-//  * Dries De Maeyer <ddemaeyer@gmail.com> (contributor) {account: ddemaey1}
+//  * Dries De Maeyer <ddemaeyer@gmail.com> (contributor) {github: ddemaeyer}
 //  * Robrecht Cannoodt <robrecht@data-intuitive.com> (maintainer, contributor)
 // {github: rcannood, orcid: 0000-0003-3641-729X}
 
@@ -38,7 +38,7 @@ thisConfig = processConfig([
         "contributor"
       ],
       "props" : {
-        "account" : "ddemaey1"
+        "github" : "ddemaeyer"
       }
     },
     {

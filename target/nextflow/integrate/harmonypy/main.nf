@@ -10,7 +10,8 @@
 // files.
 // 
 // Component authors:
-//  * Dries Schaumont <dries@data-intuitive.com> (maintainer)
+//  * Dries Schaumont <dries@data-intuitive.com> (maintainer) {github:
+// DriesSchaumont, orcid: 0000-0002-4389-0440}
 //  * Robrecht Cannoodt <robrecht@data-intuitive.com> (contributor) {github:
 // rcannood, orcid: 0000-0003-3641-729X}
 
@@ -36,7 +37,11 @@ thisConfig = processConfig([
       "email" : "dries@data-intuitive.com",
       "roles" : [
         "maintainer"
-      ]
+      ],
+      "props" : {
+        "github" : "DriesSchaumont",
+        "orcid" : "0000-0002-4389-0440"
+      }
     },
     {
       "name" : "Robrecht Cannoodt",

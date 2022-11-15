@@ -5,10 +5,8 @@ functionality:
   description: |
     Converts a single layer h5ad file into a single muon object
   authors:
-    - name: Dries De Maeyer
-      email: ddemaeyer@gmail.com
+    - __inherits__: ../../authors/dries_de_maeyer.yaml
       roles: [ maintainer ]
-      props: { account: ddemaey1 }
   arguments:
     - name: "--input"
       alternatives: ["-i"]

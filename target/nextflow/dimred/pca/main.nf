@@ -10,7 +10,7 @@
 // files.
 // 
 // Component authors:
-//  * Dries De Maeyer <ddemaeyer@gmail.com> (maintainer) {account: ddemaey1}
+//  * Dries De Maeyer <ddemaeyer@gmail.com> (maintainer) {github: ddemaeyer}
 
 nextflow.enable.dsl=2
 
@@ -36,7 +36,7 @@ thisConfig = processConfig([
         "maintainer"
       ],
       "props" : {
-        "account" : "ddemaey1"
+        "github" : "ddemaeyer"
       }
     }
   ],

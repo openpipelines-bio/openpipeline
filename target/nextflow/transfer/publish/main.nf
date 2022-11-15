@@ -10,7 +10,7 @@
 // files.
 // 
 // Component authors:
-//  * Toni Verbeiren (maintainer)
+//  * Toni Verbeiren (maintainer) {github: tverbeiren}
 
 nextflow.enable.dsl=2
 
@@ -33,7 +33,10 @@ thisConfig = processConfig([
       "name" : "Toni Verbeiren",
       "roles" : [
         "maintainer"
-      ]
+      ],
+      "props" : {
+        "github" : "tverbeiren"
+      }
     }
   ],
   "arguments" : [

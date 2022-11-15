@@ -11,7 +11,7 @@
 // 
 // Component authors:
 //  * Malte Luecken <malte.luecken@helmholtz-muenchen.de> (author) {github:
-// luckymd, orcid: 0000-0001-7464-7921}
+// LuckyMD, orcid: 0000-0001-7464-7921}
 //  * Dries Schaumont <dries@data-intuitive.com> (maintainer) {github:
 // DriesSchaumont, orcid: 0000-0002-4389-0440}
 
@@ -39,7 +39,7 @@ thisConfig = processConfig([
         "author"
       ],
       "props" : {
-        "github" : "luckymd",
+        "github" : "LuckyMD",
         "orcid" : "0000-0001-7464-7921"
       }
     },

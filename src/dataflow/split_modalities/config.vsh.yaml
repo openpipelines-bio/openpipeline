@@ -4,13 +4,10 @@ functionality:
   description: |
     Split the modalities from a single .h5mu multimodal sample into seperate .h5mu files. 
   authors:
-    - name: Dries Schaumont
-      email: dries@data-intuitive.com
+    - __inherits__: ../../authors/dries_schaumont.yaml
       roles: [ maintainer ]
-    - name: Robrecht Cannoodt
-      email: robrecht@data-intuitive.com
+    - __inherits__: ../../authors/robrecht_cannoodt.yaml
       roles: [ contributor ]
-      props: { github: rcannood, orcid: "0000-0003-3641-729X" }
   arguments:
     - name: "--input"
       alternatives: ["-i"]

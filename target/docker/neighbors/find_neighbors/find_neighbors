@@ -12,7 +12,7 @@
 # files.
 # 
 # Component authors:
-#  * Dries De Maeyer <ddemaeyer@gmail.com> (maintainer) {account: ddemaey1}
+#  * Dries De Maeyer <ddemaeyer@gmail.com> (maintainer) {github: ddemaeyer}
 #  * Robrecht Cannoodt <robrecht@data-intuitive.com> (contributor) {github:
 # rcannood, orcid: 0000-0003-3641-729X}
 
@@ -455,9 +455,9 @@ RUN pip install --upgrade pip && \
 
 LABEL org.opencontainers.image.authors="Dries De Maeyer, Robrecht Cannoodt"
 LABEL org.opencontainers.image.description="Companion container for running component neighbors find_neighbors"
-LABEL org.opencontainers.image.created="2022-11-15T10:02:06Z"
+LABEL org.opencontainers.image.created="2022-11-15T11:39:22Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="f172aa7f282a94779cbae995c64187e347f26672"
+LABEL org.opencontainers.image.revision="b6ab28e464be2057d6bcd9fa7f76f992f58e5a9e"
 LABEL org.opencontainers.image.version="main_build"
 VIASHDOCKER
 }

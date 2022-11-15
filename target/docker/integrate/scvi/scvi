@@ -13,7 +13,7 @@
 # 
 # Component authors:
 #  * Malte Luecken <malte.luecken@helmholtz-muenchen.de> (author) {github:
-# luckymd, orcid: 0000-0001-7464-7921}
+# LuckyMD, orcid: 0000-0001-7464-7921}
 #  * Dries Schaumont <dries@data-intuitive.com> (maintainer) {github:
 # DriesSchaumont, orcid: 0000-0002-4389-0440}
 
@@ -477,9 +477,9 @@ RUN pip install --upgrade pip && \
 
 LABEL org.opencontainers.image.authors="Malte Luecken, Dries Schaumont"
 LABEL org.opencontainers.image.description="Companion container for running component integrate scvi"
-LABEL org.opencontainers.image.created="2022-11-15T10:02:00Z"
+LABEL org.opencontainers.image.created="2022-11-15T11:39:24Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="f172aa7f282a94779cbae995c64187e347f26672"
+LABEL org.opencontainers.image.revision="b6ab28e464be2057d6bcd9fa7f76f992f58e5a9e"
 LABEL org.opencontainers.image.version="main_build"
 VIASHDOCKER
 }

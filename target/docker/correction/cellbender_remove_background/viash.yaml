@@ -332,5 +332,5 @@ info:
   output: "target/docker/correction/cellbender_remove_background"
   executable: "target/docker/correction/cellbender_remove_background/cellbender_remove_background"
   viash_version: "0.6.3"
-  git_commit: "f172aa7f282a94779cbae995c64187e347f26672"
+  git_commit: "b6ab28e464be2057d6bcd9fa7f76f992f58e5a9e"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"

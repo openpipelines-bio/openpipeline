@@ -13,7 +13,7 @@
 //  * Angela Pisco (author) {github: aopisco, orcid: 0000-0003-0142-2355}
 //  * Robrecht Cannoodt <robrecht@data-intuitive.com> (author, maintainer) {github:
 // rcannood, orcid: 0000-0003-3641-729X}
-//  * Dries De Maeyer <ddemaeyer@gmail.com> (author) {account: ddemaey1}
+//  * Dries De Maeyer <ddemaeyer@gmail.com> (author) {github: ddemaeyer}
 
 nextflow.enable.dsl=2
 
@@ -61,7 +61,7 @@ thisConfig = processConfig([
         "author"
       ],
       "props" : {
-        "account" : "ddemaey1"
+        "github" : "ddemaeyer"
       }
     }
   ],

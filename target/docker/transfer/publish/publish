@@ -12,7 +12,7 @@
 # files.
 # 
 # Component authors:
-#  * Toni Verbeiren (maintainer)
+#  * Toni Verbeiren (maintainer) {github: tverbeiren}
 
 set -e
 
@@ -391,9 +391,9 @@ FROM python:3.10
 RUN :
 LABEL org.opencontainers.image.authors="Toni Verbeiren"
 LABEL org.opencontainers.image.description="Companion container for running component transfer publish"
-LABEL org.opencontainers.image.created="2022-11-15T10:02:04Z"
+LABEL org.opencontainers.image.created="2022-11-15T11:39:25Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="f172aa7f282a94779cbae995c64187e347f26672"
+LABEL org.opencontainers.image.revision="b6ab28e464be2057d6bcd9fa7f76f992f58e5a9e"
 LABEL org.opencontainers.image.version="main_build"
 VIASHDOCKER
 }
