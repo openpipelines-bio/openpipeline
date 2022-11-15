@@ -45,7 +45,7 @@ functionality:
 platforms:
   - type: docker
     image: python:3.10
-    setyp:
+    setup:
       - type: python
         packages:
           - muon
