@@ -68,9 +68,9 @@ functionality:
 platforms:
   - type: docker
     image: python:3.8
-    apt:
-      packages: [ cmake ]
     setup:
+      - type: apt
+        packages: [ cmake ]
       - type: python
         packages:
           - scanpy~=1.9.1
