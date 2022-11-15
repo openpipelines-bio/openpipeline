@@ -8,13 +8,14 @@ functionality:
     - name: "--bam"
       type: file
       required: true
+      description: "Input bam file for filtering."
     - name: "--id"
       type: string
       default: "samtools"
     - name: "--output"
       type: file
       direction: output
-      description: samtools output directory
+      description: "Samtools output directory."
       example: "samtools_out/"
   resources:
     - type: bash_script
