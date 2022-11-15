@@ -40,4 +40,3 @@ platforms:
         - requests
         - Pillow~=9.2.0
   - type: nextflow
-    variant: vdsl3

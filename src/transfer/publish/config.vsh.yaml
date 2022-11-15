@@ -29,4 +29,3 @@ platforms:
   - type: docker
     image: python:3.10
   - type: nextflow
-    variant: vdsl3

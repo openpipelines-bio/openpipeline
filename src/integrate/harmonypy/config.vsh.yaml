@@ -68,6 +68,5 @@ platforms:
           - harmonypy~=0.0.6
           - scanpy
   - type: nextflow
-    variant: vdsl3
     directives:
       label: [highmem, highcpu]

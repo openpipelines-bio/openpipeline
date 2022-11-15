@@ -61,6 +61,5 @@ platforms:
       - type: apt
         packages: [ pigz, seqkit, curl, wget, unzip ]
   - type: nextflow
-    variant: vdsl3
     directives:
       label: [ highmem, highcpu ]

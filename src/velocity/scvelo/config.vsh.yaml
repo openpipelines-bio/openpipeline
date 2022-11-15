@@ -80,6 +80,5 @@ platforms:
           - anndata<0.8
   - type: native
   - type: nextflow
-    variant: vdsl3
     directives:
       label: [ highmem, highcpu ]

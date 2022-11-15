@@ -39,4 +39,3 @@ platforms:
   - type: docker
     image: bash:5.1.16
   - type: nextflow
-    variant: vdsl3

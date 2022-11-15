@@ -37,5 +37,4 @@ platforms:
       - type: python
         packages: [ muon, anndata<0.8, scanpy]
   - type: nextflow
-    variant: vdsl3
   - type: native

@@ -70,6 +70,5 @@ platforms:
       - type: docker
         run: apt update && apt upgrade -y
   - type: nextflow
-    variant: vdsl3
     directives:
       label: [ highmem, highcpu ]

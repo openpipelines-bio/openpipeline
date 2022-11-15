@@ -44,4 +44,3 @@ platforms:
         - muon
   - type: native
   - type: nextflow
-    variant: vdsl3
