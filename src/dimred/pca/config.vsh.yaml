@@ -5,10 +5,8 @@ functionality:
   description: |
     Computes PCA coordinates, loadings and variance decomposition. Uses the implementation of scikit-learn [Pedregosa11].
   authors:
-    - name: Dries De Maeyer
-      email: ddemaeyer@gmail.com
+    - __inherits__: ../../authors/dries_de_maeyer.yaml
       roles: [ maintainer ]
-      props: { account: ddemaey1 }
   arguments:
     # inputs
     - name: "--input"

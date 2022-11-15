@@ -5,12 +5,9 @@ functionality:
   description: |
     BBKNN network generation
   authors:
-    - name: Dries De Maeyer
-      email: ddemaeyer@gmail.com
+    - __inherits__: ../../authors/dries_de_maeyer.yaml
       roles: [ author ]
-      props: { account: ddemaey1 }
-    - name: Dries Schaumont
-      email: dries@data-intuitive.com
+    - __inherits__: ../../authors/dries_schaumont.yaml
       roles: [ maintainer ]
   arguments:
     # inputs

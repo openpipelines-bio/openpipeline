@@ -5,8 +5,7 @@ functionality:
   description: |
     Delete an anndata layer from one or more modalities.
   authors:
-    - name: Dries Schaumont
-      email: dries@data-intuitive.com
+    - __inherits__: ../../authors/dries_schaumont.yaml
       roles: [ maintainer ]
   arguments:
     - name: "--input"

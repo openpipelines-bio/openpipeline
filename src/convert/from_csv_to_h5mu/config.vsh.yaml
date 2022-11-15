@@ -6,10 +6,8 @@ functionality:
   description: |
     Converts an csv into an h5mu file.
   authors:
-    - name: Dries De Maeyer
-      email: ddemaeyer@gmail.com
+    - __inherits__: ../../authors/dries_de_maeyer.yaml
       roles: [ maintainer ]
-      props: { account: ddemaey1 }
   arguments:
     - name: "--input"
       alternatives: [-i]

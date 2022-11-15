@@ -5,10 +5,8 @@ functionality:
   description: |
     UMAP (Uniform Manifold Approximation and Projection) is a manifold learning technique suitable for visualizing high-dimensional data. Besides tending to be faster than tSNE, it optimizes the embedding such that it best reflects the topology of the data, which we represent throughout Scanpy using a neighborhood graph. tSNE, by contrast, optimizes the distribution of nearest-neighbor distances in the embedding such that these best match the distribution of distances in the high-dimensional space. We use the implementation of umap-learn [McInnes18]. For a few comparisons of UMAP with tSNE, see this preprint.
   authors:
-    - name: Dries De Maeyer
-      email: ddemaeyer@gmail.com
+    - __inherits__: ../../authors/dries_de_maeyer.yaml
       roles: [ maintainer ]
-      props: { account: ddemaey1 }
   argument_groups:
     - name: Inputs
       arguments:

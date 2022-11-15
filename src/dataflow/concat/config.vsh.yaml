@@ -4,8 +4,7 @@ functionality:
   description: |
     Concatenates several uni-modal samples in .h5mu files into a single file.
   authors:
-    - name: Dries Schaumont
-      email: dries@data-intuitive.com
+    - __inherits__: ../../authors/dries_schaumont.yaml
       roles: [ maintainer ]
   arguments:
     - name: "--input"
