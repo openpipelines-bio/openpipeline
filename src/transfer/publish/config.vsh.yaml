@@ -4,7 +4,7 @@ functionality:
   version: "dev"
   description: Publish an artifact and optionally rename with parameters
   authors:
-    - __inherits__: ../../authors/toni_verbeiren.yml
+    - __inherits__: ../../authors/toni_verbeiren.yaml
       roles: [ maintainer ]
   arguments:
     - name: "--input"
