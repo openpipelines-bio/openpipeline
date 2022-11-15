@@ -22,7 +22,7 @@ if [ ! -z "$par_smList" ]; then
   extra_params+=( "--sm-list $par_smList" )
 fi
 
-if [ ! -z "$par_skipUmi" ] && [ $par_skipUmi == "true" ]; then 
+if [ $par_skipUmi == "true" ]; then 
   extra_paramsDsc+=( "--skip-umi" )
 fi
 

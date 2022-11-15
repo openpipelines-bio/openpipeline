@@ -3,9 +3,9 @@ functionality:
   namespace: gene_demulti
   description: |
     Run Demuxlet
-    The Problem is that the parameter on the github is not in line with the newest help version. |
-    The same parameter with the same values as default are merged for dsc and demuxlet. |
-    The same parameter with different default values are separated by the suffix. 
+    Be careful that the parameters on the github is not in line with the newest help version. |
+    The same parameter with the same values as default between dsc-pileup and demuxlet are merged. |
+    The same parameter with different default values between dsc-pileup and demuxlet are separated by the suffix.
   authors:
     - name: Xichen Wu
   argument_groups:
@@ -28,9 +28,10 @@ functionality:
     - name: "--excludeFlag"
       type: integer
       default: 1796
+      description: "SAM/BAM flag to exclude by dsc-pileup"
     - name: "--vcfDsc"
       type: file
-      description: Input VCF/BCF file, containing the AC and AN field.
+      description: "Input VCF/BCF file for dsc-pileup, containing the AC and AN field."
     - name: "--vcf"
       type: file
       description: Input VCF/BCF file, containing the individual genotypes (GT), posterior probability (GP), or genotype likelihood (PL).
@@ -49,8 +50,7 @@ functionality:
       default: 1000
       description: Verbose message frequency for VCF/BCF.
     - name: "--skipUmi"
-      type: boolean
-      default: false
+      type: boolean_true
       description: Do not generate [prefix].umi.gz file, which stores the regions covered by each barcode/UMI pair.
     - name: "--capBQDsc"
       type: integer

@@ -19,7 +19,7 @@ if [ ! -z "$par_smList" ]; then
   extra_paramsDsc+=( "--sm-list $par_smList" )
 fi
 
-if [ ! -z "$par_skipUmi" ] && [ $par_skipUmi == true ]; then 
+if [ $par_skipUmi == true ]; then
   extra_paramsDsc+=( "--skip-umi" )
 fi
 
@@ -31,14 +31,13 @@ if [ ! -z "$par_initCluster" ]; then
   extra_paramsFreemuxlet+=( "--init-cluster $par_initCluster" )
 fi
 
-if [ ! -z "$par_auxFiles" ] && [ $par_auxFiles == true ]; then 
+if [ $par_auxFiles == true ]; then
   extra_paramsFreemuxlet+=( "--aux-files" )
 fi
 
-if [ ! -z "$par_keepInitMissing" ] && [ $par_keepInitMissing == true ]; then 
+if [ $par_keepInitMissing == true ]; then
   extra_paramsFreemuxlet+=( "keep-init-missing" )
 fi
-
 
 if [ ! -d "$par_output" ]; then
   mkdir $par_output
