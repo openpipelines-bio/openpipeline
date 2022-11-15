@@ -3,13 +3,10 @@ functionality:
   namespace: "files"
   description: "Looks for files in a directory and turn it in a params file."
   authors:
-    - name: Angela Pisco
+    - __inherits__: ../../authors/angela_pisco.yaml
       roles: [ author ]
-      props: { github: aopisco, orcid: "0000-0003-0142-2355" }
-    - name: Robrecht Cannoodt
-      email: robrecht@data-intuitive.com
+    - __inherits__: ../../authors/robrecht_cannoodt.yaml
       roles: [ maintainer, author ]
-      props: { github: rcannood, orcid: "0000-0003-3641-729X" }
   arguments:
     - name: "--base_dir"
       type: file

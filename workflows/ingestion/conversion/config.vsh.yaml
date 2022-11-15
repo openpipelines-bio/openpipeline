@@ -3,14 +3,10 @@ functionality:
   namespace: "ingestion"
   description: "A pipeline to convert different file formats to .h5mu."
   authors:
-    - name: Dries Schaumont
-      email: dries@data-intuitive.com
+    - __inherits__: ../../../src/authors/dries_schaumont.yaml
       roles: [ author, maintainer ]
-      props: { github: DriesSchaumont, orcid: "0000-0002-4389-0440" }
-    - name: Dries De Maeyer
-      email: ddemaeyer@gmail.com
+    - __inherits__: ../../../src/authors/dries_de_maeyer.yaml
       roles: [ author ]
-      props: { account: ddemaey1 }
   argument_groups:
     - name: Inputs
       arguments:

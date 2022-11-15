@@ -5,10 +5,8 @@ functionality:
   description: |
     Convert a velocyto .loom file to h5mu
   authors:
-    - name: Dries Schaumont
-      email: dries@data-intuitive.com
+    - __inherits__: ../../authors/dries_schaumont.yaml
       roles: [ maintainer ]
-      props: { github: DriesSchaumont, orcid: "0000-0002-4389-0440" }
   arguments:
     - name: "--input"
       alternatives: ["-i"]

@@ -5,10 +5,8 @@ functionality:
   description: |
     Convert the output of a BD Rhapsody WTA pipeline to a MuData h5 file.
   authors:
-    - name: Robrecht Cannoodt
-      email: robrecht@data-intuitive.com
+    - __inherits__: ../../authors/robrecht_cannoodt.yaml
       roles: [ maintainer ]
-      props: { github: rcannood, orcid: "0000-0003-3641-729X" }
   argument_groups:
     - name: Inputs
       arguments:
