@@ -2084,5 +2084,5 @@ info:
   platform: "nextflow"
   output: "target/nextflow/reference/make_reference"
   viash_version: "0.6.2"
-  git_commit: "994b642b2bda76e84c928a01afde52c07bd89e60"
+  git_commit: "b93811c7668fd9d19fc3b4332b5a376290fa45a9"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"
