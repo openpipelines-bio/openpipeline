@@ -44,4 +44,3 @@ platforms:
       - type: apt
         packages: [ samtools ]
   - type: nextflow
-    variant: vdsl3

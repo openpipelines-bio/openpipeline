@@ -62,4 +62,3 @@ platforms:
           - anndata~=0.8.0
           - scanpy
   - type: nextflow
-    variant: vdsl3

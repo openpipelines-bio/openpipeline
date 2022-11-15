@@ -80,6 +80,5 @@ platforms:
         - scanpy
         - scanorama
   - type: nextflow
-    variant: vdsl3
     directives:
       label: [highmem]

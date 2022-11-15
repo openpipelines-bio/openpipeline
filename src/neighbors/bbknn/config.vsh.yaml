@@ -86,6 +86,5 @@ platforms:
           - scanpy~=1.9.1 # Will result in NameError: name 'logg' is not defined otherwise
           - bbknn
   - type: nextflow
-    variant: vdsl3
     directives:
       label: highmem

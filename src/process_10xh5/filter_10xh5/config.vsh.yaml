@@ -62,4 +62,3 @@ platforms:
       - type: r
         cran: [ anndata, hdf5r ]
   - type: nextflow
-    variant: vdsl3

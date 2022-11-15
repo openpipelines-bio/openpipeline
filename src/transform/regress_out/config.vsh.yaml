@@ -52,4 +52,3 @@ platforms:
           - mudata~=0.2.0
           - anndata~=0.8
   - type: nextflow
-    variant: vdsl3
