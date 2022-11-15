@@ -5,14 +5,10 @@ functionality:
   description: |
     Use Scanorama to integrate different experiments.
   authors:
-    - name: Dries De Maeyer
-      email: ddemaeyer@gmail.com
+    - __inherits__: ../../authors/dries_de_maeyer.yaml
       roles: [ author ]
-      props: { account: ddemaey1 }
-    - name: Dries Schaumont
-      email: dries@data-intuitive.com
+    - __inherits__: ../../authors/dries_schaumont.yaml
       roles: [ maintainer ]
-      props: { github: DriesSchaumont, orcid: "0000-0002-4389-0440" }
   arguments:
     - name: "--input"
       alternatives: [-i]

@@ -5,10 +5,8 @@ functionality:
   description: |
     Converts a h5mu file into a h5ad file.
   authors:
-    - name: Robrecht Cannoodt
-      email: robrecht@data-intuitive.com
+    - __inherits__: ../../authors/robrecht_cannoodt.yaml
       roles: [ maintainer ]
-      props: { github: rcannood, orcid: "0000-0003-3641-729X" }
   arguments:
     - name: "--input"
       alternatives: ["-i"]

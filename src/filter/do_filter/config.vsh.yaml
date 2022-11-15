@@ -5,10 +5,8 @@ functionality:
   description: |
     Remove observations and variables based on specified .obs and .var columns.
   authors:
-    - name: Robrecht Cannoodt
-      email: robrecht@data-intuitive.com
+    - __inherits__: ../../authors/robrecht_cannoodt.yaml
       roles: [ maintainer, contributor ]
-      props: { github: rcannood, orcid: "0000-0003-3641-729X" }
   arguments:
     # input
     - name: "--input"
