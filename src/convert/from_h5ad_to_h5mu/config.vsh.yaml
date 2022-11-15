@@ -39,9 +39,10 @@ functionality:
 platforms:
   - type: docker
     image: python:3.8
-    python:
-      packages:
-        - muon
-        - mudata~=0.2.0
-        - anndata~=0.8.0
+    setup:
+      - type: python
+        packages:
+          - muon
+          - mudata~=0.2.0
+          - anndata~=0.8.0
   - type: nextflow
