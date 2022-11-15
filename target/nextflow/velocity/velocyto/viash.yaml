@@ -121,5 +121,5 @@ info:
   platform: "nextflow"
   output: "target/nextflow/velocity/velocyto"
   viash_version: "0.6.3"
-  git_commit: "b6ab28e464be2057d6bcd9fa7f76f992f58e5a9e"
+  git_commit: "950c2c71512fab6ef2cf39b73b0449f31aaab540"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"
