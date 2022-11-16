@@ -38,3 +38,5 @@ functionality:
     - path: ../../../LICENSE
 platforms:
   - type: native
+  - type: docker
+    image: ubuntu:latest
