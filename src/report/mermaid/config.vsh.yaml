@@ -33,8 +33,9 @@ functionality:
 platforms:
   - type: docker
     image: python:3.8
-    python:
-      packages:
-        - requests
-        - Pillow~=9.2.0
+    setup:
+      - type: python
+        packages:
+          - requests
+          - Pillow~=9.2.0
   - type: nextflow
