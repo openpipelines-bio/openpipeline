@@ -3,8 +3,7 @@ functionality:
   namespace: "velocity"
   description: "Runs the velocity analysis on a BAM file, outputting a loom file."
   authors:
-    - name: Robrecht Cannoodt
-      email: robrecht@data-intuitive.com
+    - __inherits__: ../../authors/robrecht_cannoodt.yaml
       roles: [ maintainer ]
       props: { github: rcannood, orcid: "0000-0003-3641-729X" }
   arguments:
@@ -69,6 +68,5 @@ platforms:
           - samtools
   - type: native
   - type: nextflow
-    variant: vdsl3
     directives:
       label: highmem
