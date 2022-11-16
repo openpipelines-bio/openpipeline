@@ -12,7 +12,7 @@ meta = {
 
 
 resources_dir, executable = meta["resources_dir"], meta["executable"]
-cellranger_multi_output = f"{resources_dir}/processed/10x_5k_anticmv.cellranger_multi.output.output"
+cellranger_multi_output = f"{resources_dir}/10x_5k_anticmv/processed/10x_5k_anticmv.cellranger_multi.output.output"
 
 class TestCellrangerMultiToH5mu(TestCase):
     def _run_and_check_output(self, args_as_list, expected_raise=False):
