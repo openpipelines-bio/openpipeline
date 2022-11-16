@@ -10,7 +10,7 @@
 // files.
 // 
 // Component authors:
-//  * Malte Luecken <malte.luecken@helmholtz-muenchen.de> (author) {github:
+//  * Malte D. Luecken <malte.luecken@helmholtz-muenchen.de> (author) {github:
 // LuckyMD, orcid: 0000-0001-7464-7921}
 //  * Dries Schaumont <dries@data-intuitive.com> (maintainer) {github:
 // DriesSchaumont, orcid: 0000-0002-4389-0440}
@@ -33,7 +33,7 @@ thisConfig = processConfig([
   "version" : "main_build",
   "authors" : [
     {
-      "name" : "Malte Luecken",
+      "name" : "Malte D. Luecken",
       "email" : "malte.luecken@helmholtz-muenchen.de",
       "roles" : [
         "author"

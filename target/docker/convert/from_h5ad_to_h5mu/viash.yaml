@@ -75,5 +75,5 @@ info:
   output: "target/docker/convert/from_h5ad_to_h5mu"
   executable: "target/docker/convert/from_h5ad_to_h5mu/from_h5ad_to_h5mu"
   viash_version: "0.6.3"
-  git_commit: "b619db0435bcb6fcdc7c9d7f6c22a55212989459"
+  git_commit: "4a766eac3bf3d9ec313ecaa17880c6f92a013834"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"

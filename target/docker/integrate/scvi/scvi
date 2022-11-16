@@ -12,7 +12,7 @@
 # files.
 # 
 # Component authors:
-#  * Malte Luecken <malte.luecken@helmholtz-muenchen.de> (author) {github:
+#  * Malte D. Luecken <malte.luecken@helmholtz-muenchen.de> (author) {github:
 # LuckyMD, orcid: 0000-0001-7464-7921}
 #  * Dries Schaumont <dries@data-intuitive.com> (maintainer) {github:
 # DriesSchaumont, orcid: 0000-0002-4389-0440}
@@ -475,11 +475,11 @@ RUN apt-get update && \
 RUN pip install --upgrade pip && \
   pip install --upgrade --no-cache-dir "mudata~=0.2.0" "anndata~=0.8.0" "torchmetrics~=0.6.0" "scvi-tools~=0.14.6"
 
-LABEL org.opencontainers.image.authors="Malte Luecken, Dries Schaumont"
+LABEL org.opencontainers.image.authors="Malte D. Luecken, Dries Schaumont"
 LABEL org.opencontainers.image.description="Companion container for running component integrate scvi"
-LABEL org.opencontainers.image.created="2022-11-16T08:51:52Z"
+LABEL org.opencontainers.image.created="2022-11-16T09:50:35Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="b619db0435bcb6fcdc7c9d7f6c22a55212989459"
+LABEL org.opencontainers.image.revision="4a766eac3bf3d9ec313ecaa17880c6f92a013834"
 LABEL org.opencontainers.image.version="main_build"
 VIASHDOCKER
 }
