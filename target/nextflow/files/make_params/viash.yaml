@@ -143,5 +143,5 @@ info:
   platform: "nextflow"
   output: "target/nextflow/files/make_params"
   viash_version: "0.6.3"
-  git_commit: "4a766eac3bf3d9ec313ecaa17880c6f92a013834"
+  git_commit: "fcb1bd2a0f76d2dd992272b45d76a89e8cf3e0d3"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"
