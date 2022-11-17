@@ -3,7 +3,9 @@ functionality:
   namespace: "convert"
   version: "dev"
   description: |
-    Converts the output from cellranger multi to a single .hm
+    Converts the output from cellranger multi to a single .h5mu file.
+
+    Currently does not allow parsing the output from cell barcode demultiplexing.
   authors:
     - __inherits__: ../../authors/dries_schaumont.yaml
       roles: [ maintainer ]
