@@ -7,7 +7,7 @@ import mudata
 from scirpy.io import read_10x_vdj
 ## VIASH START
 par = {
-    "input": "/Users/driesschaumont/code/openpipeline/resources_test/10x_5k_anticmv/processed/10x_5k_anticmv.cellranger_multi.output.output",
+    "input": "resources_test/10x_5k_anticmv/processed/10x_5k_anticmv.cellranger_multi.output.output",
     "output": "foo.h5mu",
     "uns_metrics": "metrics_cellranger"
 }
