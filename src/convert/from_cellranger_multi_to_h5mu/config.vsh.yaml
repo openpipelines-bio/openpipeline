@@ -1,0 +1,49 @@
+functionality:
+  name: "from_cellranger_multi_to_h5mu"
+  namespace: "convert"
+  version: "dev"
+  description: |
+    Converts the output from cellranger multi to a single .h5mu file.
+
+    Currently does not allow parsing the output from cell barcode demultiplexing.
+  authors:
+    - __inherits__: ../../authors/dries_schaumont.yaml
+      roles: [ maintainer ]
+  arguments:
+    - name: "--input"
+      alternatives: ["-i"]
+      type: file
+      description: Input folder. Must contain the output from a cellranger multi run.
+      example: input_dir_containing_modalities
+      direction: input
+      required: true
+    - name: "--output"
+      alternatives: ["-o"]
+      type: file
+      description: Output h5mu file.
+      example: output.h5mu
+      direction: output
+    - name: "--uns_metrics"
+      type: string
+      description: Name of the .uns slot under which to QC metrics (if any).
+      default: "metrics_cellranger"
+  resources:
+    - type: python_script
+      path: script.py
+  test_resources:
+    - type: python_script
+      path: test.py
+    - path: ../../../resources_test/10x_5k_anticmv
+platforms:
+  - type: docker
+    image: python:3.8
+    setup:
+      - type: python
+        packages:
+          - scanpy
+          - mudata~=0.2.0
+          - anndata~=0.8.0
+          - scirpy~=0.11.1
+  - type: nextflow
+    variant: vdsl3
+
