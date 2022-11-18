@@ -135,5 +135,5 @@ info:
   output: "target/docker/metadata/join_csv"
   executable: "target/docker/metadata/join_csv/join_csv"
   viash_version: "0.6.3"
-  git_commit: "a3ba5a1481f9cd105ae211003a3e291b406c35fe"
+  git_commit: "b24ccde16041184e55166b0ae005d191f193d097"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"

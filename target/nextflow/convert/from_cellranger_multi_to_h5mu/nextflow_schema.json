@@ -1,7 +1,7 @@
 {
     "$schema": "http://json-schema.org/draft-07/schema",
-    "title": "find_neighbors",
-    "description": "Compute a neighborhood graph of observations [McInnes18].\n\nThe neighbor search efficiency of this heavily relies on UMAP [McInnes18], which also provides a method for estimating connectivities of data points - the connectivity of the manifold (method==\u0027umap\u0027). If method==\u0027gauss\u0027, connectivities are computed according to [Coifman05], in the adaption of [Haghverdi16].\n",
+    "title": "from_cellranger_multi_to_h5mu",
+    "description": "Converts the output from cellranger multi to a single .h5mu file.\n\nCurrently does not allow parsing the output from cell barcode demultiplexing.\n",
     "type": "object",
     "definitions": {
       "arguments" : {
@@ -12,73 +12,24 @@
         "properties": {
           "input": {
             "type":"string",
-            "description": "Input h5mu file",
+            "description": "Input folder. Must contain the output from a cellranger multi run.",
             
             
             "default": ""
           },
-          "modality": {
-            "type":"string",
-            "description": "No description",
-            
-            
-            "default": "rna"
-          },
-          "obsm_input": {
-            "type":"string",
-            "description": "Which .obsm slot to use as a starting PCA embedding.",
-            
-            
-            "default": "X_pca"
-          },
           "output": {
             "type":"string",
-            "description": "Output h5mu file containing the found neighbors.",
+            "description": "Output h5mu file.",
             
             
             "default": "$id.$key.output.h5mu"
           },
-          "uns_output": {
+          "uns_metrics": {
             "type":"string",
-            "description": "Mandatory .uns slot to store various neighbor output objects.",
+            "description": "Name of the .uns slot under which to QC metrics (if any).",
             
             
-            "default": "neighbors"
-          },
-          "obsp_distances": {
-            "type":"string",
-            "description": "In which .obsp slot to store the distance matrix between the resulting neighbors.",
-            
-            
-            "default": "distances"
-          },
-          "obsp_connectivities": {
-            "type":"string",
-            "description": "In which .obsp slot to store the connectivities matrix between the resulting neighbors.",
-            
-            
-            "default": "connectivities"
-          },
-          "metric": {
-            "type":"string",
-            "description": "The distance metric to be used in the generation of the nearest neighborhood network.",
-            
-            "enum": ["cityblock", "cosine", "euclidean", "l1", "l2", "manhattan", "braycurtis", "canberra", "chebyshev", "correlation", "dice", "hamming", "jaccard", "kulsinski", "mahalanobis", "minkowski", "rogerstanimoto", "russellrao", "seuclidean", "sokalmichener", "sokalsneath", "sqeuclidean", "yule"],
-            "default": "euclidean"
-          },
-          "num_neighbors": {
-            "type":"integer",
-            "description": "The size of local neighborhood (in terms of number of neighboring data points) used for manifold approximation. Larger values result in more global views of the manifold, while smaller values result in more local data being preserved. In general values should be in the range 2 to 100. If knn is True, number of nearest neighbors to be searched. If knn is False, a Gaussian kernel width is set to the distance of the n_neighbors neighbor.",
-            
-            
-            "default": "15"
-          },
-          "seed": {
-            "type":"integer",
-            "description": "A random seed.",
-            
-            
-            "default": "0"
+            "default": "metrics_cellranger"
           }
         }
       },
