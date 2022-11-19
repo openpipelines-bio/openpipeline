@@ -145,7 +145,7 @@ functionality:
       type: file
       direction: output
       description: Output directory 
-      example: "freemuxlet/"
+      example: "freemux/"
     - name: "--outDsc"
       type: file
       direction: output

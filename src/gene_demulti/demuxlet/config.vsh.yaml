@@ -136,8 +136,8 @@ functionality:
       alternatives: [ "-o" ]
       type: file
       direction: output
-      description: Output directory 
-      example: "demuxlet/"
+      description: Output directory
+      example: "demux/"
     - name: "--outDsc"
       type: file
       direction: output
@@ -159,4 +159,4 @@ platforms:
     variant: vdsl3
     directives:
       label: [ midmem, midcpu ]
-      container: wxicu/demultiplex_demuxlet
+      container: wxicu/demultiplex_popscle
