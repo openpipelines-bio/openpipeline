@@ -37,7 +37,7 @@ functionality:
       description: Input VCF/BCF file, containing the individual genotypes (GT), posterior probability (GP), or genotype likelihood (PL).
     - name: "--sm"
       type: string
-      description: List of sample IDs to compare to (default: use all).
+      description: "List of sample IDs to compare to (default: use all)."s
     - name: "--smList"
       type: string
       description: File containing the list of sample IDs to compare.
