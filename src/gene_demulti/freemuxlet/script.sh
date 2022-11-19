@@ -44,14 +44,12 @@ if [ ! -d "$par_output" ]; then
 fi
 
 if [! -z "$par_plp" ] && [ "$par_plp" != "true" ]; then
-  popscle freemuxlet --tag-group $par_tagGroup --tag-UMI $par_tagUMI \
-       --verbose $par_verbose --doublet-prior $par_doubletPrior --bf-thres $par_bfThres \
+  popscle freemuxlet --verbose $par_verbose --doublet-prior $par_doubletPrior \
+       --bf-thres $par_bfThres --cap-BQ $par_capBQ --min-BQ $par_minBQ  \
        --frac-init-clust $par_fracInitClust --iter-init $par_iterInit \
-       --cap-BQ $par_capBQ --min-BQ $par_minBQ  \
        --min-total $par_minTotal --min-umi $par_minUmi --min-snp $par_minSnp \
        --out ${par_output}${par_out} ${extra_params[@]} ${extra_paramsFreemuxlet[@]}
-fi
-if [ ! -z "$par_plp" ] && [ "$par_plp" == "true" ]; then 
+else
   popscle dsc-pileup --sam $par_sam --tag-group $par_tagGroup --tag-UMI $par_tagUMI \
        --exclude-flag $par_excludeFlag --sam-verbose $par_samVerbose \
        --vcf $par_vcf --vcf-verbose $par_vcfVerbose --out ${par_output}${par_outDsc} \
@@ -59,16 +57,9 @@ if [ ! -z "$par_plp" ] && [ "$par_plp" == "true" ]; then
        --excl-flag $par_exclFlag --min-total $par_minTotal --min-uniq $par_minUniq \
        --min-snp $par_minSnp ${extra_params[@]} ${extra_paramsDsc[@]} 
 
-  popscle freemuxlet --tag-group $par_tagGroup --tag-UMI $par_tagUMI \
+  popscle freemuxlet --frac-init-clust $par_fracInitClust --iter-init $par_iterInit \
        --verbose $par_verbose --doublet-prior $par_doubletPrior --bf-thres $par_bfThres \
-       --frac-init-clust $par_fracInitClust --iter-init $par_iterInit \
        --cap-BQ $par_capBQ --min-BQ $par_minBQ  --plp ${par_output}${par_outDsc} \
        --min-total $par_minTotal --min-umi $par_minUmi --min-snp $par_minSnp \
        --out $par_output${par_out} ${extra_params[@]} ${extra_paramsFreemuxlet[@]}
- echo popscle freemuxlet --tag-group $par_tagGroup --tag-UMI $par_tagUMI \
-       --verbose $par_verbose --doublet-prior $par_doubletPrior --bf-thres $par_bfThres \
-       --frac-init-clust $par_fracInitClust --iter-init $par_iterInit \
-       --cap-BQ $par_capBQ --min-BQ $par_minBQ  --plp ${par_output}${par_outDsc} \
-       --min-total $par_minTotal --min-umi $par_minUmi --min-snp $par_minSnp \
-       --out $par_output${par_out} ${extra_params[@]} ${extra_paramsFreemuxlet[@]} > ${par_output}${par_out}".txt"
 fi
