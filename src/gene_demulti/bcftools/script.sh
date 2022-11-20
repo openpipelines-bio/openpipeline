@@ -4,8 +4,6 @@ if [ ! -d "$par_output" ]; then
 fi
 
 IFS="," read -a vcf_list <<< $par_vcf
-echo ${vcf_list[@]} > ${par_output}out.txt
-
 
 if [ "$par_concat" = true ] && [ "$par_filter" = true ] ; then
   bcftools concat -o ${par_output}concated_chroms.vcf ${vcf_list[@]}
