@@ -37,7 +37,7 @@ functionality:
       description: Input VCF/BCF file, containing the individual genotypes (GT), posterior probability (GP), or genotype likelihood (PL).
     - name: "--sm"
       type: string
-      description: "List of sample IDs to compare to (default: use all)."s
+      description: "List of sample IDs to compare to (default: use all)."
     - name: "--smList"
       type: string
       description: File containing the list of sample IDs to compare.
@@ -136,7 +136,7 @@ functionality:
       alternatives: [ "-o" ]
       type: file
       direction: output
-      description: Output directory
+      description: Output directory 
       example: "demux/"
     - name: "--outDsc"
       type: file
@@ -154,7 +154,7 @@ functionality:
       path: script.sh
 platforms:
   - type: docker
-    image: wxicu/demultiplex_demuxlet
+    image: wxicu/demultiplex_popscle
   - type: nextflow
     variant: vdsl3
     directives:
