@@ -104,7 +104,7 @@ functionality:
       type: double
       default: 0.5
       description: "Prior of doublet."
-    - name: "--geneError"
+    - name: "--genoError"
       type: double
       default: 0.1
       description: "Genotype error parameter per cluster."

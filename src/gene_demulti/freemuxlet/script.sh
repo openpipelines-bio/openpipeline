@@ -36,17 +36,22 @@ if [ $par_auxFiles == true ]; then
 fi
 
 if [ $par_keepInitMissing == true ]; then
-  extra_paramsFreemuxlet+=( "keep-init-missing" )
+  extra_paramsFreemuxlet+=( "--keep-init-missing" )
 fi
+
+if [ $par_randomizeSingletScore == true ]; then
+  extra_paramsFreemuxlet+=( "--randomize-singlet-score" )
+fi
+
 
 if [ ! -d "$par_output" ]; then
   mkdir $par_output
 fi
 
 if [! -z "$par_plp" ] && [ "$par_plp" != "true" ]; then
-  popscle freemuxlet --verbose $par_verbose --doublet-prior $par_doubletPrior \
-       --bf-thres $par_bfThres --cap-BQ $par_capBQ --min-BQ $par_minBQ  \
+  popscle freemuxlet --verbose $par_verbose --doublet-prior $par_doubletPrior --bf-thres $par_bfThres \
        --frac-init-clust $par_fracInitClust --iter-init $par_iterInit \
+       --cap-BQ $par_capBQ --min-BQ $par_minBQ  --nsample $par_nsample \
        --min-total $par_minTotal --min-umi $par_minUmi --min-snp $par_minSnp \
        --out ${par_output}${par_out} ${extra_params[@]} ${extra_paramsFreemuxlet[@]}
 else
@@ -57,9 +62,10 @@ else
        --excl-flag $par_exclFlag --min-total $par_minTotal --min-uniq $par_minUniq \
        --min-snp $par_minSnp ${extra_params[@]} ${extra_paramsDsc[@]} 
 
-  popscle freemuxlet --frac-init-clust $par_fracInitClust --iter-init $par_iterInit \
-       --verbose $par_verbose --doublet-prior $par_doubletPrior --bf-thres $par_bfThres \
-       --cap-BQ $par_capBQ --min-BQ $par_minBQ  --plp ${par_output}${par_outDsc} \
-       --min-total $par_minTotal --min-umi $par_minUmi --min-snp $par_minSnp \
+  popscle freemuxlet --verbose $par_verbose --doublet-prior $par_doubletPrior --bf-thres $par_bfThres \
+       --frac-init-clust $par_fracInitClust --iter-init $par_iterInit --nsample $par_nsample \
+       --cap-BQ $par_capBQ --min-BQ $par_minBQ  --plp ${par_output}${par_outDsc} --geno-error $par_genoError \
+       --min-total $par_minTotal --min-umi $par_minUmi --min-snp $par_minSnp --seed $par_seed\
        --out $par_output${par_out} ${extra_params[@]} ${extra_paramsFreemuxlet[@]}
+
 fi
