@@ -88,5 +88,5 @@ info:
   output: "target/docker/compression/tar_extract"
   executable: "target/docker/compression/tar_extract/tar_extract"
   viash_version: "0.6.3"
-  git_commit: "2294e349c414e49bf6bfd282c2a818aae4dbea9c"
+  git_commit: "2387febab0284e4eb6b607d96f08fbf8b44f4c74"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"
