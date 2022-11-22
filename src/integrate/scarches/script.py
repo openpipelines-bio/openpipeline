@@ -131,7 +131,7 @@ def main():
         with tempfile.TemporaryDirectory() as directory:
             model_path = _download_HLCA_reference_model(directory)
             vae_query, adata_query = map_to_existing_reference(adata_query, model_path=model_path)
-            model_name = _read_model_name_from_registry(directory)
+            model_name = _read_model_name_from_registry(model_path)
         
     else:
         raise ValueError(f"Reference {par['reference']} is not supported")
