@@ -27,10 +27,6 @@ functionality:
           type: string
           description: Name of the reference dataset
           required: false
-        - name: "--input_layer"
-          type: string
-          required: false
-          description: "Input layer to use. If None, X is used"
         - name: "--dataset_name"
           type: string
           default: "test_dataset"

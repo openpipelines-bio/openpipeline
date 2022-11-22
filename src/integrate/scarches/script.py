@@ -19,7 +19,6 @@ par = {
     "dataset_name": None,
     # Other
     "obsm_output": "X_integrated_{model_name}",
-    "input_layer": None,
     "early_stopping": True,
     "early_stopping_monitor": "elbo_validation",
     "early_stopping_patience": 45,
