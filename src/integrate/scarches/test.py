@@ -42,6 +42,7 @@ class TestMappingToHLCA(unittest.TestCase):
             self.assertIn('X_scanvi_integrated', output_data.mod['rna'].obsm)
             self.assertIn('_scanvi_batch', output_data.mod['rna'].obs.columns.tolist())
             self.assertIn('_scanvi_labels',  output_data.mod['rna'].obs.columns.tolist())
+            self.assertEqual(output_data["rna"].uns["integration_method"], "SCANVI")
 
 if __name__ == '__main__':
     unittest.main()
