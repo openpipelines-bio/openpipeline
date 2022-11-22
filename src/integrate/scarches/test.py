@@ -32,6 +32,7 @@ class TestMappingToHLCA(unittest.TestCase):
             input_data.write(tempfile_input_file.name)
             self._run_and_check_output([
                 "--input", tempfile_input_file.name,
+                "--reference", "HLCA",
                 "--modality", "rna",
                 "--obs_batch", "batch",
                 "--output", "output.h5mu",
