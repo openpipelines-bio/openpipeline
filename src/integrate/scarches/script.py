@@ -45,7 +45,7 @@ def _read_model_name_from_registry(model_path) -> str:
     return registry["model_name"]
 
 
-def _detect_base_model(model_path) -> scvi.model.base.BaseModelClass:
+def _detect_base_model(model_path):
     """Read from the model's file which scvi_tools model it contains"""
 
     names_to_models_map = {
