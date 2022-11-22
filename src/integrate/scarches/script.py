@@ -16,9 +16,9 @@ par = {
     "input": "resources_test/pbmc_1k_protein_v3/pbmc_1k_protein_v3_mms.h5mu",
     "modality": "rna",
     "output": "foo.h5mu",
+    "dataset_name": None,
     # Other
     "obsm_output": "X_integrated_{model_name}",
-    "obs_batch": "sample_id",
     "input_layer": None,
     "early_stopping": True,
     "early_stopping_monitor": "elbo_validation",
@@ -63,6 +63,20 @@ def _detect_base_model(model_path):
     }
     
     return names_to_models_map[_read_model_name_from_registry(model_path)]
+
+
+def extract_file_name(file_path):
+    """Return the name of the file from path to this file
+    
+    Examples
+    --------
+    >>> extract_file_name("resources_test/pbmc_1k_protein_v3/pbmc_1k_protein_v3_mms.h5mu")
+    pbmc_1k_protein_v3_mms
+    """
+    slash_position = file_path.rfind("/")
+    dot_position = file_path.rfind(".")
+
+    return file_path[slash_position + 1: dot_position]
 
 
 def map_to_existing_reference(adata_query, model_path, check_val_every_n_epoch=1):
@@ -124,6 +138,15 @@ def main():
 
     mdata_query = mudata.read(par["input"].strip())
     adata_query = mdata_query.mod[par["modality"]]
+
+    if "dataset" not in adata_query.obs.columns:
+        # Write name of the dataset as batch variable
+        if par["dataset_name"] is None:
+            logger.info("Detecting dataset name")
+            par["dataset_name"] = extract_file_name(par["input"])
+            logger.info(f"Detected {par['dataset_name']}")
+
+        adata_query.obs["dataset"] = par["dataset_name"]
 
     if par["reference"] == "HLCA":
         import tempfile
