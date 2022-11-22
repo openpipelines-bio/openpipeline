@@ -63,7 +63,7 @@ def _detect_base_model(model_path) -> scvi.model.base.BaseModelClass:
         "JaxSCVI": scvi.model.JaxSCVI,
     }
     
-    return names_to_models_map[_read_model_name_from_registry()]
+    return names_to_models_map[_read_model_name_from_registry(model_path)]
 
 
 def map_to_existing_reference(adata_query, model_path, check_val_every_n_epoch=1):
