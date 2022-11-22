@@ -27,11 +27,6 @@ functionality:
           type: string
           description: Name of the reference dataset
           required: false
-        - name: "--predicted_labels_key"
-          type: string
-          description: Name of the column that will contain cell types predicted by scANVI
-          default: "predicted_labels"
-          required: false
         - name: "--input_layer"
           type: string
           required: false

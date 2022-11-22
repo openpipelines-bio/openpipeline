@@ -16,7 +16,6 @@ par = {
     "input": "resources_test/pbmc_1k_protein_v3/pbmc_1k_protein_v3_mms.h5mu",
     "modality": "rna",
     "output": "foo.h5mu",
-    "predicted_labels_key": "predicted_labels",
     # Other
     "obsm_output": "X_integrated_{model_name}",
     "obs_batch": "sample_id",
@@ -143,10 +142,6 @@ def main():
     logger.info("Trying to write latent representation")
     output_key = par["obsm_output"].format(model_name=model_name)
     adata_query.obsm[output_key] = vae_query.get_latent_representation()
-
-    if model_name == "SCANVI":
-        logger.info("Predicting labels for SCANVI")
-        adata_query.obs[par["predicted_labels_key"]] = vae_query.predict()
 
     logger.info("Reassigning modality")
     mdata_query.mod[par["modality"]] = adata_query
