@@ -104,5 +104,5 @@ info:
   output: "target/docker/demux/bcl2fastq"
   executable: "target/docker/demux/bcl2fastq/bcl2fastq"
   viash_version: "0.6.3"
-  git_commit: "2387febab0284e4eb6b607d96f08fbf8b44f4c74"
+  git_commit: "c4c8e93cd71b9e44cdc4a1425df00971ce8e8073"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"
