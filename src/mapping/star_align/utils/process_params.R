@@ -59,7 +59,7 @@ out <- map2_dfr(
           stop("Line '", second_txt, "' did not match regex '", second_regex, "'")
         }
         type <- gsub(second_regex, "\\1", second_txt)
-        desc_start <- gsub(second_regex, "\\2", second_txt)
+        desc_start <- str_trim(gsub(second_regex, "\\2", second_txt))
 
         # process more description
         desc_cont1 <- group_txt[seq(arg_start + 2, arg_end)]
@@ -94,10 +94,10 @@ out <- map2_dfr(
 )
 
 # todo: manually fix alignEndsProtrude?
-type_map <- c("string" = "string", "int" = "integer", "real" = "double", "double" = "double")
+type_map <- c("string" = "string", "int" = "integer", "real" = "double", "double" = "double", "int, string" = "string")
 as_safe_int <- function(x) tryCatch({as.integer(x)}, warning = function(e) { bit64::as.integer64(x) })
 safe_split <- function(x) strsplit(x, "'[^']*'(*SKIP)(*F)|\"[^\"]*\"(*SKIP)(*F)|\\s+", perl = TRUE)[[1]] %>% gsub("^[\"']|[\"']$", "", .)
-file_args <- c("genomeDir", "readFilesIn", "sjdbGTFfile", "genomeFastaFiles", "genomeChainFiles")
+file_args <- c("genomeDir", "readFilesIn", "sjdbGTFfile", "genomeFastaFiles", "genomeChainFiles", "readFilesManifest")
 required_args <- c("genomeDir", "readFilesIn")
 trafos <- list(
   string = function(x) x,
@@ -122,9 +122,9 @@ out2 <- out %>%
       # tolower() %>%
       paste0("--", .),
     type_step1 = type %>%
-      str_replace_all(".*(string|int|real|double)\\(?(s?).*", "\\1\\2"),
-    viash_type = type_map[gsub("(string|int|real|double).*", "\\1", type_step1)],
-    multiple = grepl("s$", type_step1) | grepl("^[4N][\\* ]", type),
+      str_replace_all(".*(int, string|string|int|real|double)\\(?(s?).*", "\\1\\2"),
+    viash_type = type_map[gsub("(int, string|string|int|real|double).*", "\\1", type_step1)],
+    multiple = type_step1 == "int, string" | grepl("s$", type_step1) | grepl("^[4N][\\* ]", type),
     default_step1 = default %>%
       {ifelse(. %in% c("-", "None"), NA_character_, .)},
     viash_default =
@@ -165,6 +165,7 @@ argument_groups <- map(unique(out2$group_name), function(group_name) {
       }
       if (!is.na(multiple) && multiple) {
         li$multiple <- multiple
+        li$multiple_sep <- ";"
       }
       if (!is.na(required) && required) {
         li$required <- required
