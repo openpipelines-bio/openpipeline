@@ -241,7 +241,7 @@ argument_groups:
     description: maximum available RAM (bytes) for genome generation
     example: '31000000000'
   - name: --limitIObufferSize
-    type: integer
+    type: long
     description: max available buffers size (bytes) for input/output, per thread
     example:
     - 30000000
@@ -249,7 +249,7 @@ argument_groups:
     multiple: yes
     multiple_sep: ;
   - name: --limitOutSAMoneReadBytes
-    type: integer
+    type: long
     description: 'max size of the SAM record (bytes) for one read. Recommended value:
       >(2*(LengthMate1+LengthMate2+100)*outFilterMultimapNmax'
     example: 100000
@@ -262,7 +262,7 @@ argument_groups:
     description: max number of collapsed junctions
     example: 1000000
   - name: --limitBAMsortRAM
-    type: integer
+    type: long
     description: maximum available RAM (bytes) for sorting BAM. If =0, it will be
       set to the genome index size. 0 value can only be used with --genomeLoad NoSharedMemory
       option.

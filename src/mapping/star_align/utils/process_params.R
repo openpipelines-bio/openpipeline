@@ -94,11 +94,15 @@ out <- map2_dfr(
 )
 
 # todo: manually fix alignEndsProtrude?
+# assigning types
 type_map <- c("string" = "string", "int" = "integer", "real" = "double", "double" = "double", "int, string" = "string")
+file_args <- c("genomeDir", "readFilesIn", "sjdbGTFfile", "genomeFastaFiles", "genomeChainFiles", "readFilesManifest")
+long_args <- c("limitGenomeGenerateRAM", "limitIObufferSize", "limitOutSAMoneReadBytes", "limitBAMsortRAM")
+required_args <- c("genomeDir", "readFilesIn")
+
+# converting examples
 as_safe_int <- function(x) tryCatch({as.integer(x)}, warning = function(e) { bit64::as.integer64(x) })
 safe_split <- function(x) strsplit(x, "'[^']*'(*SKIP)(*F)|\"[^\"]*\"(*SKIP)(*F)|\\s+", perl = TRUE)[[1]] %>% gsub("^[\"']|[\"']$", "", .)
-file_args <- c("genomeDir", "readFilesIn", "sjdbGTFfile", "genomeFastaFiles", "genomeChainFiles", "readFilesManifest")
-required_args <- c("genomeDir", "readFilesIn")
 trafos <- list(
   string = function(x) x,
   integer = as_safe_int,
@@ -108,19 +112,19 @@ trafos <- list(
   doubles = function(x) as.numeric(safe_split(x))
 )
 # remove arguments that are not relevant for viash
-filtered_args <- c("versionGenome", "parametersFiles", "sysShell", "runDirPerm")
+removed_args <- c("versionGenome", "parametersFiles", "sysShell", "runDirPerm")
+# these settings are defined by the viash component
 manual_args <- c("runThreadN", "outTmpDir", "runMode", "outFileNamePrefix", "genomeDir", "readFilesIn")
+
+# make viash-like values
 out2 <- out %>%
   # remove arguments that are not relevant for viash
-  filter(!name %in% c(filtered_args, manual_args)) %>%
+  filter(!name %in% c(removed_args, manual_args)) %>%
+  # remove arguments that are related to a different runmode
   filter(!grepl("--runMode", description) | grepl("--runMode alignReads", description)) %>%
   filter(!grepl("--runMode", group_name) | grepl("--runMode alignReads", group_name)) %>%
   mutate(
-    viash_arg = name %>%
-      # str_replace_all("([A-Z][A-Z]+)", "\\1_") %>%
-      # str_replace_all("([A-Z]+)", "_\\1") %>%
-      # tolower() %>%
-      paste0("--", .),
+    viash_arg = paste0("--", name),
     type_step1 = type %>%
       str_replace_all(".*(int, string|string|int|real|double)\\(?(s?).*", "\\1\\2"),
     viash_type = type_map[gsub("(int, string|string|int|real|double).*", "\\1", type_step1)],
@@ -136,10 +140,11 @@ out2 <- out %>%
     # viash_type = ifelse(sapply(viash_default, bit64::is.integer64), "long", viash_type),
     # update type
     viash_type = case_when(
-      sapply(viash_default, bit64::is.integer64) ~ "long",
+      name %in% long_args ~ "long",
       name %in% file_args ~ "file",
       TRUE ~ viash_type
     ),
+    # turn longs into character because yaml::write_yaml doesn't handle longs well
     viash_default = ifelse(sapply(viash_default, bit64::is.integer64), map(viash_default, as.character), viash_default),
     group_name = gsub(" - .*", "", group_name),
     required = ifelse(name %in% required_args, TRUE, NA)
