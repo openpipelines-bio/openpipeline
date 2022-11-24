@@ -104,7 +104,7 @@ genomeType                  Full
 
 ### Splice Junctions Database
 sjdbFileChrStartEnd                     -
-    string(s): path to the files with genomic coordinates (chr <tab> start <tab> end <tab> strand) for the splice junction introns. Multiple files can be supplied wand will be concatenated.
+    string(s): path to the files with genomic coordinates (chr <tab> start <tab> end <tab> strand) for the splice junction introns. Multiple files can be supplied and will be concatenated.
 
 sjdbGTFfile                             -
     string: path to the GTF file with annotations

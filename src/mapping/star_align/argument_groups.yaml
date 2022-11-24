@@ -59,7 +59,7 @@ argument_groups:
     type: string
     description: path to the files with genomic coordinates (chr <tab> start <tab>
       end <tab> strand) for the splice junction introns. Multiple files can be supplied
-      wand will be concatenated.
+      and will be concatenated.
     multiple: yes
     multiple_sep: ;
   - name: --sjdbGTFfile
