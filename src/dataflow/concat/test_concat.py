@@ -118,21 +118,17 @@ def test_concat_different_var_columns_per_sample(run_component, mudata_without_g
 
     assert 'genome' not in data_sample1.var_keys()
     assert concatenated_data.n_vars == data_sample1.var.index.union(data_sample2.var.index).size
+
     # Check if all features are present
-    rna = concatenated_data.mod['rna']
-    atac = concatenated_data.mod['atac']
-    original_rna_var_keys = set(data_sample1.mod['rna'].var.keys().tolist() +
-                                data_sample2.mod['rna'].var.keys().tolist())
-    original_atac_var_keys = set(data_sample1.mod['atac'].var.keys().tolist() +
-                                data_sample2.mod['atac'].var.keys().tolist())
-    assert original_rna_var_keys == \
-                        set(column_name.removeprefix('conflict_')
-                            for column_name in rna.varm.keys()) | \
-                        set(rna.var.columns.tolist())
-    assert original_atac_var_keys == \
-                        set(column_name.removeprefix('conflict_')
-                            for column_name in atac.varm.keys()) | \
-                        set(atac.var.columns.tolist())
+    for mod_name in ("rna", "atac"):
+        concatenated_mod = concatenated_data.mod[mod_name]
+        original_var_keys = set(data_sample1.mod[mod_name].var.keys().tolist() +
+                                data_sample2.mod[mod_name].var.keys().tolist())
+
+        assert original_var_keys == \
+                            set(column_name.removeprefix('conflict_')
+                                for column_name in concatenated_mod.varm.keys()) | \
+                            set(concatenated_mod.var.columns.tolist())
     # Value from sample1 should have NA
     assert pd.isna(concatenated_data.var.loc['ENSMUSG00000051951']['genome']) is True
 
@@ -172,21 +168,15 @@ def test_concat_different_columns_per_modality(run_component, mudata_without_gen
     assert concatenated_data.n_vars == \
             data_sample1.var.index.union(data_sample2.var.index).size
 
-    # Check if all features are present
-    rna = concatenated_data.mod['rna']
-    atac = concatenated_data.mod['atac']
-    original_rna_var_keys = set(data_sample1.mod['rna'].var.keys().tolist() +
-                                data_sample2.mod['rna'].var.keys().tolist())
-    original_atac_var_keys = set(data_sample1.mod['atac'].var.keys().tolist() +
-                                data_sample2.mod['atac'].var.keys().tolist())
-    assert original_rna_var_keys == \
-                        set(column_name.removeprefix('conflict_')
-                            for column_name in rna.varm.keys()) | \
-                        set(rna.var.columns.tolist())
-    assert original_atac_var_keys == \
-                        set(column_name.removeprefix('conflict_')
-                            for column_name in atac.varm.keys()) | \
-                        set(atac.var.columns.tolist())
+    for mod_name in ("rna", "atac"):
+        concatenated_mod = concatenated_data.mod[mod_name]
+        original_var_keys = set(data_sample1.mod[mod_name].var.keys().tolist() +
+                                data_sample2.mod[mod_name].var.keys().tolist())
+
+        assert original_var_keys == \
+                            set(column_name.removeprefix('conflict_')
+                                for column_name in concatenated_mod.varm.keys()) | \
+                            set(concatenated_mod.var.columns.tolist())
 
     # Check if 'interval' stays removed from modality
     assert 'genome' not in concatenated_data.mod['rna'].var.columns
