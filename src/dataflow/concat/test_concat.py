@@ -228,20 +228,16 @@ def test_concat_different_columns_per_modality_and_per_sample(run_component, mud
             data_sample1.var.index.union(data_sample2.var.index).size
 
     # Check if all features are present
-    rna = concatenated_data.mod['rna']
-    atac = concatenated_data.mod['atac']
-    original_rna_var_keys = set(data_sample1.mod['rna'].var.keys().tolist() +
-                                data_sample2.mod['rna'].var.keys().tolist())
-    original_atac_var_keys = set(data_sample1.mod['atac'].var.keys().tolist() +
-                                data_sample2.mod['atac'].var.keys().tolist())
-    assert original_rna_var_keys == \
-                        set(column_name.removeprefix('conflict_')
-                            for column_name in rna.varm.keys()) | \
-                        set(rna.var.columns.tolist())
-    assert original_atac_var_keys == \
-                        set(column_name.removeprefix('conflict_')
-                            for column_name in atac.varm.keys()) | \
-                        set(atac.var.columns.tolist())
+    for mod_name in ("rna", "atac"):
+        concatenated_mod = concatenated_data.mod[mod_name]
+        original_var_keys = set(data_sample1.mod[mod_name].var.keys().tolist() +
+                                data_sample2.mod[mod_name].var.keys().tolist())
+
+        assert original_var_keys == \
+                            set(column_name.removeprefix('conflict_')
+                                for column_name in concatenated_mod.varm.keys()) | \
+                            set(concatenated_mod.var.columns.tolist())
+
 
     # Check if 'interval' is included in RNA modality
     assert 'genome' in concatenated_data.mod['rna'].var.columns
@@ -332,15 +328,13 @@ def test_mode_move(run_component, tmp_path):
                                 for column_name in concatenated_mod.varm.keys()) | \
                             set(concatenated_mod.var.columns.tolist())
 
-
-        for mod_name, varm_expected in varm_check.items():
-            concatenated_data = concatenated_mod.mod[mod_name]
-            assert list(concatenated_data.varm.keys()) == list(varm_check.keys())
-            for varm_key, expected_columns in varm_expected.items():
-                assert tuple(concatenated_data.varm[varm_key].columns) == expected_columns
-            else:
-                assert concatenated_data.varm == {}
-            concatenated_data.obsm = {}
+        varm_expected = varm_check[mod_name]
+        assert list(concatenated_mod.varm.keys()) == list(varm_expected.keys())
+        for varm_key, expected_columns in varm_expected.items():
+            assert tuple(concatenated_mod.varm[varm_key].columns) == expected_columns
+        if not varm_expected:
+            assert concatenated_mod.varm == {}
+        assert concatenated_mod.obsm == {}
 
 
 if __name__ == '__main__':
