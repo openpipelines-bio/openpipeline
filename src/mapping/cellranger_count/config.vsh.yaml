@@ -22,7 +22,7 @@ functionality:
         - type: file
           name: --reference
           required: true
-          description: The path to Cell Ranger reference tar.gz file.
+          description: The path to Cell Ranger reference tar.gz file. Can also be a directory.
           example: reference.tar.gz
     - name: Outputs
       arguments:

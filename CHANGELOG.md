@@ -1,3 +1,9 @@
+# openpipeline 0.5.2
+
+## NEW FUNCTIONALITY
+
+* `mapping/star_align`: Align `.fastq` files using STAR.
+
 # openpipeline 0.5.1
 
 ## BREAKING CHANGES
