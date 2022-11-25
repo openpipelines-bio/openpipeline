@@ -35,8 +35,10 @@ cmd_pars = [
 out = subprocess.check_output(cmd_pars).decode("utf-8")
 
 logger.info("> Check if file exists")
-assert path.exists(output + "/Log.final.out"), "No output log was created."
-assert path.exists(output + "/SJ.out.tab"), "No output was created."
+
+output_path = path.Path(output)
+assert (output_path / "Log.final.out" ).is_file(), "No output log was created."
+assert (output_path / "SJ.out.tab" ).is_file(), "No output file was created."
 
 
 ## Test 2: use input files

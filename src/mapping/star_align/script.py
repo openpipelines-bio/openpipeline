@@ -100,7 +100,7 @@ def extract_if_need_be(par_value: Path, par_name: str, temp_dir_path: Path) -> P
 # the `processPar()` generator needs to be adapted
 to_rename = {'input': 'readFilesIn', 'reference': 'genomeDir', 'output': 'outFileNamePrefix'}
 
-def processPar(orig_par, to_rename):
+def process_par(orig_par, to_rename):
   for key, value in orig_par.items():
     # rename the key in par based on the `to_rename` dict
     if key in to_rename.keys():
@@ -115,7 +115,7 @@ def processPar(orig_par, to_rename):
       new_key = key
       new_value = value
     yield new_key, new_value
-par = dict(processPar(par, to_rename))
+par = dict(process_par(par, to_rename))
 
 # create output dir if need be
 par["outFileNamePrefix"].mkdir(parents=True, exist_ok=True)
