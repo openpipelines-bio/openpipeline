@@ -9,6 +9,9 @@
 * `convert/from_velocyto_to_h5mu`: Moved to `velocity/velocyto_to_h5mu`.
   It also now accepts an optional `--input_h5mu` argument, to allow directly reading
   the RNA velocity data into a `.h5mu` file containing the other modalities.
+
+* `resources_test/cellranger_tiny_fastq`: Include RNA velocity computations as part of
+  the script.
   
 
 # openpipeline 0.5.1
