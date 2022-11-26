@@ -24,7 +24,7 @@ functionality:
 
     - name: "--layer"
       type: string
-      description: use specified layer for expression values instead of the .X object from the modality.
+      description: Use specified layer for expression values instead of the .X object from the modality.
       required: false
 
     # outputs
