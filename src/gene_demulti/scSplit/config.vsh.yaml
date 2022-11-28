@@ -73,7 +73,7 @@ functionality:
     - path: ../../../resources_test/demuxafy_test_data
 platforms:
   - type: docker
-    image: python:3.8
+    image: python:3.9
     setup:
     - type: python
       pip: [ numpy, pandas, pysam, PyVCF, scikit-learn, scipy, statistics, scSplit ]

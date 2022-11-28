@@ -155,7 +155,7 @@ functionality:
     - path: ../../../resources_test/demuxafy_test_data
 platforms:
   - type: docker
-    image: ubuntu:18.04
+    image: ubuntu:20.04
     setup:
     - type: apt
       packages: [ autoconf, wget, git, build-essential, libcurl4-openssl-dev, cmake, libbz2-dev, libssl-dev, liblzma-dev, zlib1g-dev]

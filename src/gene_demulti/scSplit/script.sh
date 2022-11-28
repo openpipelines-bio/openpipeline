@@ -25,7 +25,7 @@ if [ ! -d "$par_output" ]; then
   mkdir $par_output
 fi
 
-scSplit_loc="/usr/local/lib/python3.8/site-packages/scSplit"
+scSplit_loc="/usr/local/lib/python3.9/site-packages/scSplit"
 
 python3 ${scSplit_loc}/scSplit count --vcf $par_vcf --bam $par_bam \
         --bar $par_bar --tag $par_tag --ref $par_ref --alt $par_alt \
