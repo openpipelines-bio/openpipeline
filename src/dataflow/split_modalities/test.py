@@ -26,7 +26,16 @@ class TestSplit(unittest.TestCase):
 
     def test_split(self):
         output_dir = Path("foo")
-        self._run_and_check_output(["--input", input_file, "--output", str(output_dir)])
+        output_types = Path("foo.csv")
+        self._run_and_check_output([
+            "--input", input_file, 
+            "--output", str(output_dir), 
+            "--output_types", str(output_types)
+        ])
+        self.assertTrue(output_types.is_file())
+
+        # todo: check whether contents of output_types is correct
+        
         self.assertTrue(output_dir.is_dir())
         dir_content = [h5mu_file for h5mu_file in output_dir.iterdir() if h5mu_file.suffix == ".h5mu"]
         rna_file = Path("foo/pbmc_1k_protein_v3_filtered_feature_bc_matrix_rna.h5mu")

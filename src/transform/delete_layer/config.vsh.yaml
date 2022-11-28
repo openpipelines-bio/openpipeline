@@ -5,8 +5,7 @@ functionality:
   description: |
     Delete an anndata layer from one or more modalities.
   authors:
-    - name: Dries Schaumont
-      email: dries@data-intuitive.com
+    - __inherits__: ../../authors/dries_schaumont.yaml
       roles: [ maintainer ]
   arguments:
     - name: "--input"
@@ -51,4 +50,3 @@ platforms:
           - mudata~=0.2.0
           - anndata~=0.8.0
   - type: nextflow
-    variant: vdsl3

@@ -4,14 +4,10 @@ functionality:
   status: disabled
   description: "Performs Harmony integration based as described in https://github.com/immunogenomics/harmony."
   authors:
-    - name: Dries De Maeyer
-      email: ddemaeyer@gmail.com
+    - __inherits__: ../../authors/dries_de_maeyer.yaml
       roles: [ author ]
-      props: { account: ddemaey1 }
-    - name: Robrecht Cannoodt
-      email: robrecht@data-intuitive.com
+    - __inherits__: ../../authors/robrecht_cannoodt.yaml
       roles: [ maintainer, author ]
-      props: { github: rcannood, orcid: "0000-0003-3641-729X" }
   arguments:
     - name: "--input"
       alternatives: ["-i"]
@@ -71,6 +67,5 @@ platforms:
           - anndata
           - reticulate
   - type: nextflow
-    variant: vdsl3
     directives:
       label: [highmem, highcpu]

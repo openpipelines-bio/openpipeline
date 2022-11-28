@@ -2,6 +2,7 @@ nextflow.enable.dsl=2
 workflowDir = params.rootDir + "/workflows"
 targetDir = params.rootDir + "/target/nextflow"
 
+include { add_id } from targetDir + "/metadata/add_id/main.nf"
 include { split_modalities } from targetDir + '/dataflow/split_modalities/main.nf'
 include { merge } from targetDir + '/dataflow/merge/main.nf'
 include { concat } from targetDir + '/dataflow/concat/main.nf'
@@ -9,8 +10,8 @@ include { run_wf as rna_singlesample } from workflowDir + '/multiomics/rna_singl
 include { run_wf as rna_multisample } from workflowDir + '/multiomics/rna_multisample/main.nf'
 include { run_wf as integration } from workflowDir + '/multiomics/integration/main.nf'
 
-include { readConfig; viashChannel; helpMessage } from workflowDir + "/utils/WorkflowHelper.nf"
-
+include { readConfig; viashChannel; helpMessage; readCsv } from workflowDir + "/utils/WorkflowHelper.nf"
+include { passthroughMap as pmap; passthroughFlatMap as pFlatMap } from workflowDir + "/utils/DataFlowHelper.nf"
 config = readConfig("$workflowDir/multiomics/full_pipeline/config.vsh.yaml")
 
 
@@ -28,48 +29,89 @@ workflow run_wf {
 
   main:
   start_ch = input_ch
-    // Store obs_covariates for later use
+    // add ids to obs_names and to .obs[sample_id]
     | map { id, data ->
-      new_data = data.clone()
-      new_data.removeAll {k, v -> k == 'obs_covariates'}
-      [ id, new_data, ["obs_covariates": data.obs_covariates] ]
+      def new_data = [
+        input: data.input, 
+        input_id: id, 
+        make_observation_keys_unique: true, 
+        obs_output: 'sample_id'
+      ]
+      def new_passthrough = ["obs_covariates": data.obs_covariates]
+      [ id, new_data, new_passthrough ]
     }
+    | add_id 
+
+    // split by modality
     | split_modalities
+    
+    // combine output types csv
+    | pFlatMap {id, data, passthrough ->
+      def outputDir = data.output
+      def types = readCsv(data.output_types.toString())
+      
+      types.collect{ dat ->
+        // def new_id = id + "_" + dat.name
+        def new_id = id // it's okay because the channel will get split up anyways
+        def new_data = outputDir.resolve(dat.filename)
+        def new_passthrough = passthrough + [ modality: dat.name ]
+        [ new_id, new_data, new_passthrough]
+      }
+    }
 
   rna_ch = start_ch
-    | map { id, output_dir, other_params -> 
-      files_list = output_dir.listFiles({ file -> file.name.endsWith('_rna.h5mu') && !file.isDirectory() })
-      assert files_list.size() == 1
-      [ id, [ input: files_list.first(), "id": id], other_params]
-    }
+    | filter{ it[2].modality == "rna" }
     | rna_singlesample
-    | toSortedList({ a, b -> b[0] <=> a[0] })
-    | map { tups -> tups.transpose()}
-    | map {id, files, other_params -> [id.join(','), ["id": id, "input": files]] + other_params.first()}
+    | toSortedList{ a, b -> b[0] <=> a[0] }
+    | filter { it.size() != 0 } // filter when event is empty
+    | map{ list -> 
+      new_data = ["sample_id": list.collect{it[0]}, "input": list.collect{it[1]}]
+      ["combined_rna", new_data] + list[0].drop(2)
+    }
     | rna_multisample
 
-
-
+  // TODO: adapt when atac_singlesample and atac_multisample are implemented
+  // remove concat when atac_multisample is implemented
   atac_ch = start_ch
-    | map { id, output_dir, other_params -> 
-        [ id, 
-          output_dir.listFiles({ file -> file.name.endsWith('_atac.h5mu') && !file.isDirectory() }),
-          other_params
-        ]}
-    | map { id, files_list, other_params -> assert files_list.size() == 1; [id, files_list.first(), other_params] }
-    | toSortedList({ a, b -> b[0] <=> a[0] })
-    | map {list -> ["combined_samples_atac", 
-                      ["input": list.collect{it[1]},
-                       "input_id":  list.collect{it[0]}],
-                      list.collect{it[2]}.first()
-                    ]}
-    | concat // concat will be integrated into process_atac_multisample in the future
+    | filter{ it[2].modality == "atac" }
+    // | atac_singlesample
+    | toSortedList{ a, b -> b[0] <=> a[0] }
+    | filter { it.size() != 0 } // filter when event is empty
+    | pmap{ list -> 
+      new_data = ["id": list.collect{it[0]}, "input": list.collect{it[1]}]
+      ["combined_atac", new_data] + list[0].drop(2)
+    }
+    // | atac_multisample
+    | concat.run(renameKeys: [input_id: "id"])
 
-  output_ch = rna_ch.concat(atac_ch)
-    | toSortedList()
-    | map {list -> ["merged", list.collect{it[1]}] + list.collect{it[2]}.first()}
+  // TODO: adapt when vdj_singlesample and vdj_multisample are implemented
+  // remove concat when vdj_multisample is implemented
+  vdj_ch = start_ch
+    | filter{ it[2].modality == "vdj" }
+    // | vdj_singlesample
+    | toSortedList{ a, b -> b[0] <=> a[0] }
+    | filter { it.size() != 0 } // filter when event is empty
+    | pmap{ list -> 
+      new_data = ["id": list.collect{it[0]}, "input": list.collect{it[1]}]
+      ["combined_vdj", new_data] + list[0].drop(2)
+    }
+    // | vdj_multisample
+    | concat.run(renameKeys: [input_id: "id"])
+
+  output_ch = rna_ch.concat(atac_ch, vdj_ch)
+    | toSortedList{ a, b -> b[0] <=> a[0] }
+    | map { list -> 
+      ["merged", list.collect{it[1]}] + list[0].drop(2)
+    }
     | merge
-    | map {tup -> [tup[0], ["input": tup[1], "layer": "log_normalized", "obs_covariates": tup[2].get("obs_covariates")]]}
+    | map { id, data, passthrough -> 
+      new_data = [
+        "input": data, 
+        "layer": "log_normalized", 
+        "obs_covariates": passthrough.get("obs_covariates")
+      ]
+      [id, new_data]
+    }
     | integration
 
   emit:

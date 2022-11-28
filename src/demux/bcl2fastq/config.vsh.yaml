@@ -4,9 +4,8 @@ functionality:
   description: |
     Convert bcl files to fastq files using bcl2fastq.
   authors:
-    - name: Toni Verbeiren
+    - __inherits__: ../../authors/toni_verbeiren.yaml
       roles: [ author, maintainer ]
-      props: { github: tverbeiren }
   arguments:
     - name: "--input"
       alternatives: [ "-i", "--runfolder_dir" ]
@@ -52,6 +51,5 @@ platforms:
   - type: docker
     image: ghcr.io/data-intuitive/bcl2fastq:2.20
   - type: nextflow
-    variant: vdsl3
     directives:
       label: [ midmem, midcpu ]

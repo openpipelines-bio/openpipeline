@@ -1,3 +1,9 @@
+# openpipeline 0.5.2
+
+## NEW FUNCTIONALITY
+
+* `mapping/star_align`: Align `.fastq` files using STAR.
+
 # openpipeline 0.5.1
 
 ## BREAKING CHANGES
@@ -14,7 +20,7 @@
 
 * `dataflow/concat`: Renamed --sample_names to --input_id and moved the ability to add sample id and to join the sample ids with the observation names to `metadata/add_id`
 
-* Moved `dataflow/concat`, `dataflow/merge` and `dataflow/split_modalities` to a new namespace: `dataflow`
+* Moved `dataflow/concat`, `dataflow/merge` and `dataflow/split_modalities` to a new namespace: `dataflow`.
 
 * Moved `workflows/conversion/conversion` to `workflows/ingestion/conversion`
 
@@ -87,6 +93,8 @@
 * Switch to Viash 0.6.1.
 
 * `filter/subset_h5mu`: Add `--modality` argument, export to VDSL3, add unit test.
+
+* `dataflow/split_modalities`: Also output modality types in a separate csv.
 
 ## BUG FIXES
 

@@ -33,8 +33,8 @@ workflow run_wf {
     // and transform for concat component
     | map { tup ->
       data = tup[1]
-      new_data = [ input: data.input, input_id: data.id ]
-      ["combined_samples_rna", new_data, data] + tup.drop(2)
+      new_data = [ input: data.input, input_id: data.sample_id ]
+      [tup[0], new_data, data] + tup.drop(2)
     }
     | concat
 
@@ -70,7 +70,8 @@ workflow test_wf {
 
   // or when running from s3: params.resources_test = "s3://openpipelines-data/"
   testParams = [
-    id: "mouse;brain",
+    id: "combined_samples_rna",
+    sample_id: "mouse;brain",
     input: params.resources_test + "/concat_test_data/e18_mouse_brain_fresh_5k_filtered_feature_bc_matrix_subset_unique_obs.h5mu;" + params.resources_test + "/concat_test_data/human_brain_3k_filtered_feature_bc_matrix_subset_unique_obs.h5mu",
   ]
 

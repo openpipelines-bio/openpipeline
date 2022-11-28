@@ -4,14 +4,15 @@ functionality:
   description: |
     Split the modalities from a single .h5mu multimodal sample into seperate .h5mu files. 
   authors:
-    - name: Dries Schaumont
-      email: dries@data-intuitive.com
+    - __inherits__: ../../authors/dries_schaumont.yaml
       roles: [ maintainer ]
+    - __inherits__: ../../authors/robrecht_cannoodt.yaml
+      roles: [ contributor ]
   arguments:
     - name: "--input"
       alternatives: ["-i"]
       type: file
-      description: Path to a single .hm5u file
+      description: Path to a single .h5mu file.
       required: true
       default: sample_path
     - name: "--output"
@@ -19,6 +20,14 @@ functionality:
       type: file
       required: true
       direction: output
+      example: "/path/to/output"
+      description: Output directory containing multiple h5mu files.
+    - name: "--output_types"
+      type: file
+      required: true
+      direction: output
+      example: types.csv
+      description: A csv containing the base filename and modality type per output file.
     - name: "--compression"
       type: string
       description: The compression format to be used on the final h5mu object.
@@ -33,11 +42,11 @@ functionality:
 platforms:
   - type: docker
     image: python:3.10
-    python:
-      packages:
-        - muon
-        - mudata~=0.2.0
-        - anndata~=0.8.0
+    setup:
+      - type: python
+        packages:
+          - muon
+          - mudata~=0.2.0
+          - anndata~=0.8.0
   - type: native
   - type: nextflow
-    variant: vdsl3
