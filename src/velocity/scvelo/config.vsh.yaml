@@ -2,10 +2,8 @@ functionality:
   name: scvelo
   namespace: "velocity"
   authors:
-    - name: Dries Schaumont
-      email: dries@data-intuitive.com
+    - __inherits__: ../../authors/dries_schaumont.yaml
       roles: [ maintainer ]
-      props: { github: DriesSchaumont, orcid: "0000-0002-4389-0440" }
   argument_groups:
     - name: Inputs
       arguments:
@@ -80,6 +78,5 @@ platforms:
           - anndata<0.8
   - type: native
   - type: nextflow
-    variant: vdsl3
     directives:
       label: [ highmem, highcpu ]

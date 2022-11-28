@@ -6,4 +6,4 @@ RUN apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 1E9377A2BA9EF27F
 RUN add-apt-repository ppa:ubuntu-toolchain-r/test
 RUN apt-get update 
 RUN apt-get upgrade -y
-RUn apt-get dist-upgrade
+RUN apt-get dist-upgrade
