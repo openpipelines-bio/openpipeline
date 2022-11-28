@@ -4,10 +4,7 @@ functionality:
   version: "dev"
   description: "Performs reference mapping with scArches"
   authors:
-    - name: Vladimir Shitov
-      email: vladimir.shitov@helmholtz-muenchen.de
-      roles: [ author ]
-      props: { github: vladimirshitov, orcid: "0000-0002-1960-8812" }
+    - __inherits__: ../../authors/vladimir_shitov.yaml
   argument_groups:
     - name: Inputs
       arguments:
