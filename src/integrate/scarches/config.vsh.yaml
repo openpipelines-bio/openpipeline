@@ -106,7 +106,7 @@ platforms:
           - mudata~=0.2.0
           - anndata~=0.8.0
           - torchmetrics~=0.7.0
-          - pytorch-lightning~=1.8.0
+          - pytorch-lightning~=1.7.0
           - scvi-tools~=0.18.0
           - pandas
   - type: nextflow
