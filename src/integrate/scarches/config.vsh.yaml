@@ -27,6 +27,7 @@ functionality:
           type: string
           description: Name of the reference dataset
           required: false
+          default: "HLCA"
         - name: "--dataset_name"
           type: string
           default: "test_dataset"
