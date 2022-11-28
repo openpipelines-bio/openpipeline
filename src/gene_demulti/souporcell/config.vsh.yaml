@@ -1,8 +1,7 @@
 functionality:
   name: souporcell
   namespace: gene_demulti
-  description: |
-    Run Souporcell
+  description: "souporcell is a method for clustering mixed-genotype scRNAseq experiments by individual."
   authors:
     - name: Xichen Wu
   argument_groups:

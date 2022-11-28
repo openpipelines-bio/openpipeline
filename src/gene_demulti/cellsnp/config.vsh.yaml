@@ -1,7 +1,7 @@
 functionality:
   name: cellsnp
   namespace: gene_demulti
-  description: Run cellsnp-lite
+  description: "cellSNP aims to pileup the expressed alleles in single-cell or bulk RNA-seq data. It can be directly used for donor deconvolution in multiplexed single-cell RNA-seq data, particularly with vireo."
   authors:
     - name: Xichen Wu
   argument_groups:
@@ -21,10 +21,10 @@ functionality:
       description: A vcf file listing all candidate SNPs, for fetch each variants. If None, pileup the genome. Needed for bulk samples.
     - name: "--targetsVCF"
       type: file
-      description: Similar as -R, but the next position is accessed by streaming rather than indexing/jumping (like -T in samtools/bcftools mpileup).
+      description: "Similar as --regionsVCF, but the next position is accessed by streaming rather than indexing/jumping (like -T in samtools/bcftools mpileup)."
     - name: "--barcodeFile"
       type: file
-      description:  A plain file listing all effective cell barcode.
+      description: A plain file listing all effective cell barcode.
     - name: "--sampleList"
       type: file
       description: A list file containing sample IDs, each per line.
@@ -46,7 +46,7 @@ functionality:
       description: Number of subprocesses.
     - name: "--chrom"
       type: string
-      description: The chromosomes to use, comma separated
+      description: "The chromosomes to use in integer format 1-22, comma separated"
     - name: "--cellTAG"
       type: string
       default: "CB"

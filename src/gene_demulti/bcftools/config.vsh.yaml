@@ -16,7 +16,11 @@ functionality:
       description: Concatenate or combine VCFs and sort them.
     - name: "--filter"
       type: boolean_true
-      description: "Filter VCFs with QUAL > 30."
+      description: "Filter VCFs."
+    - name: "--filter_qual"
+      type: integer
+      default: 30
+      description: "Filter VCFs with specified QUAL threshold."
     - name: "--output"
       type: file
       direction: output
