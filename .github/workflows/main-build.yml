@@ -10,7 +10,6 @@ jobs:
     env:
       s3_bucket: s3://openpipelines-data/
     runs-on: ubuntu-latest
-    if: "!contains(github.event.head_commit.message, 'ci skip')"
 
     steps:
     - uses: actions/checkout@v3
@@ -99,7 +98,6 @@ jobs:
     needs: list_components
 
     runs-on: ubuntu-latest
-    if: "!contains(github.event.head_commit.message, 'ci skip')"
 
     strategy:
       fail-fast: false

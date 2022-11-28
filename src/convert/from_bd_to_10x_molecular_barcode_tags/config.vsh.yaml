@@ -4,10 +4,8 @@ functionality:
   description: |
     Convert the molecular barcode sequence SAM tag from BD format (MA) to 10X format (UB).
   authors:
-    - name: Dries Schaumont
-      email: dries@data-intuitive.com
+    - __inherits__: ../../authors/dries_schaumont.yaml
       roles: [ maintainer ]
-      props: { github: DriesSchaumont, orcid: "0000-0002-4389-0440" }
   arguments:
     - name: "--input"
       alternatives: ["-i"]
@@ -44,4 +42,3 @@ platforms:
       - type: apt
         packages: [ samtools ]
   - type: nextflow
-    variant: vdsl3
