@@ -25,16 +25,16 @@ if [ ! -d "$par_output" ]; then
   mkdir $par_output
 fi
 
-scSplit_loc = "/usr/local/lib/python3.6/site-packages/scSplit"
+scSplit_loc="/usr/local/lib/python3.8/site-packages/scSplit"
 
 python3 ${scSplit_loc}/scSplit count --vcf $par_vcf --bam $par_bam \
         --bar $par_bar --tag $par_tag --ref $par_ref --alt $par_alt \
         --com $par_com --out $par_output
-python3 ${scSplit_loc}/scSplit run --ref ${par_output}$ref \
-        --alt ${par_output}$alt --out $par_output --num $par_num ${extra_params[@]}
+python3 ${scSplit_loc}/scSplit run --ref ${par_output}$par_ref \
+        --alt ${par_output}$par_alt --out $par_output --num $par_num ${extra_params[@]}
 
 if [ "$par_geno" = true ]; then
-  python3 ${scSplit_loc}/scSplit genotype --ref ${par_output}$ref\
-        --alt ${par_output}$alt --psc ${par_output}${par_psc} $par_output
+  python3 ${scSplit_loc}/scSplit genotype --ref ${par_output}$par_ref \
+        --alt ${par_output}$par_alt --psc ${par_output}${par_psc} $par_output
 fi
 

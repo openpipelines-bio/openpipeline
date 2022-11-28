@@ -9,9 +9,6 @@ functionality:
       type: file
       required: true
       description: "Input bam file for filtering."
-    - name: "--id"
-      type: string
-      default: "samtools"
     - name: "--output"
       type: file
       direction: output
@@ -20,10 +17,22 @@ functionality:
   resources:
     - type: bash_script
       path: script.sh
+  test_resources:
+    - type: bash_script
+      path: test.sh
+    - path: ../../../resources_test/demuxafy_test_data
 platforms:
   - type: docker
-    image: wxicu/demultiplex_samtools:latest
+    image: python:3.9
+    setup:
+    - type: apt
+      packages: [ wget, gcc, make, libbz2-dev, zlib1g-dev, libncurses5-dev, libncursesw5-dev, liblzma-dev]
+    - type: docker
+      run: wget https://github.com/samtools/samtools/releases/download/1.16.1/samtools-1.16.1.tar.bz2 && tar jxf samtools-1.16.1.tar.bz2 && rm samtools-1.16.1.tar.bz2 && cd samtools-1.16.1 && ./configure --prefix $(pwd) && make
+      env: PATH=${PATH}:/samtools-1.16.1
+    - type: python
+      pip: [ umi_tools ]
   - type: nextflow
     variant: vdsl3
     directives:
-       container: wxicu/demultiplex_samtools:latest
+      label: [ midmem, midcpu ]

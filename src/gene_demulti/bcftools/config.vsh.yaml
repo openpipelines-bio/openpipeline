@@ -11,15 +11,11 @@ functionality:
       multiple: true
       multiple_sep: ","
       description: VCF files, must have the same sample columns appearing in the same order.
-    - name: "--id"
-      type: string
-      default: "bcftools"
     - name: "--concat"
-      type: boolean_false
+      type: boolean_true
       description: Concatenate or combine VCFs and sort them.
     - name: "--filter"
-      type: string
-      default: "bcftools"
+      type: boolean_true
       description: "Filter VCFs with QUAL > 30."
     - name: "--output"
       type: file
@@ -29,10 +25,14 @@ functionality:
   resources:
     - type: bash_script
       path: script.sh
+  test_resources:
+    - type: bash_script
+      path: test.sh
+    - path: ../../../resources_test/demuxafy_test_data
 platforms:
   - type: docker
     image: biocontainers/bcftools:v1.9-1-deb_cv1
   - type: nextflow
     variant: vdsl3
     directives:
-       container: biocontainers/bcftools:v1.9-1-deb_cv1
+      label: [ midmem, midcpu ]

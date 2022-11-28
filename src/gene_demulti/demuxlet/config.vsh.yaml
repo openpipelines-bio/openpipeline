@@ -11,9 +11,6 @@ functionality:
   argument_groups:
   - name: "Input"
     arguments:
-    - name: "--id"
-      type: string
-      default: "demuxlet"
     - name: "--sam"
       type: file
       description: Input SAM/BAM/CRAM file. Must be sorted by coordinates and indexed.
@@ -148,15 +145,24 @@ functionality:
       direction: output
       description: demuxlet output file prefix
       example: "demuxlet"
-
   resources:
     - type: bash_script
       path: script.sh
+  test_resources:
+    - type: bash_script
+      path: test.sh
+    - path: ../../../resources_test/demuxafy_test_data
 platforms:
   - type: docker
-    image: wxicu/demultiplex_popscle
+    image: ubuntu:18.04
+    setup:
+    - type: apt
+      packages: [ autoconf, wget, git, build-essential, libcurl4-openssl-dev, cmake, libbz2-dev, libssl-dev, liblzma-dev, zlib1g-dev]
+    - type: docker
+      run: git clone https://github.com/samtools/htslib.git /tmp/htslib && cd /tmp/htslib && git submodule update --init --recursive && autoreconf -i && ./configure --prefix=/usr/local/ && make && make install
+    - type: docker
+      run: git clone --depth 1 https://github.com/statgen/popscle.git /tmp/popscle && mkdir -p /tmp/popscle/build && cd /tmp/popscle/build && cmake .. && make && cp /tmp/popscle/bin/popscle /usr/local/bin
   - type: nextflow
     variant: vdsl3
     directives:
       label: [ midmem, midcpu ]
-      container: wxicu/demultiplex_popscle

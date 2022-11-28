@@ -1,5 +1,5 @@
 functionality:
-  name: scSplit
+  name: scsplit
   namespace: gene_demulti
   description: |
     Run scSplit
@@ -8,9 +8,6 @@ functionality:
   argument_groups:
   - name: "Input"
     arguments:
-    - name: "--id"
-      type: string
-      default: "scSplit"
     - name: "--vcf"
       type: file
       description: VCF from mixed BAM
@@ -45,8 +42,8 @@ functionality:
       type: file
       description: known individual genotypes to limit distinguishing variants to available variants, so that users do not need to redo genotyping on selected variants, otherwise any variants could be selected as distinguishing variants.
     - name: "--geno"
-      type: boolean_false
-      description: generate sample genotypes based on the split result. Default is to genotype.
+      type: boolean_true
+      description: generate sample genotypes based on the split result.
     
   - name: "Output"
     arguments:
@@ -71,11 +68,17 @@ functionality:
   resources:
     - type: bash_script
       path: script.sh
+  test_resources:
+    - type: bash_script
+      path: test.sh
+    - path: ../../../resources_test/demuxafy_test_data
 platforms:
   - type: docker
-    image: wxicu/demultiplex_scsplit
+    image: python:3.8
+    setup:
+    - type: python
+      pip: [ numpy, pandas, pysam, PyVCF, scikit-learn, scipy, statistics, scSplit ]
   - type: nextflow
     variant: vdsl3
     directives:
-      label: [ midmem, midcpu ]
-      container: wxicu/demultiplex_scsplit
+      label: [ highmem, highcpu ]

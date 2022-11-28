@@ -8,9 +8,6 @@ functionality:
   argument_groups:
   - name: "Input"
     arguments:
-    - name: "--id"
-      type: string
-      default: "Vireo"
     - name: "--cellData"
       type: file
       description: The cell genotype file in VCF format or cellSNP folder with sparse matrices.
@@ -78,15 +75,20 @@ functionality:
       direction: output
       description: Output directory 
       example: "vireo/"
-
   resources:
     - type: bash_script
       path: script.sh
+  test_resources:
+    - type: bash_script
+      path: test.sh
+    - path: ../../../resources_test/vireo_test_data
 platforms:
   - type: docker
-    image: wxicu/demultiplex_vireo
+    image: python:3.8
+    setup:
+    - type: python
+      pip: [ threadpoolctl, vireoSNP ]
   - type: nextflow
     variant: vdsl3
     directives:
       label: [ midmem, midcpu ]
-      container: wxicu/demultiplex_vireo

@@ -8,9 +8,6 @@ functionality:
   argument_groups:
   - name: "Input"
     arguments:
-    - name: "--id"
-      type: string
-      default: "freebayes"
     - name: "--bam"
       type: file
       description: Add FILE to the set of BAM files to be analyzed.
@@ -268,10 +265,13 @@ functionality:
       direction: output
       description: Output VCF-format results to FILE.
       example: "snp.vcf"
-
   resources:
     - type: bash_script
       path: script.sh
+  test_resources:
+    - type: bash_script
+      path: test.sh
+    - path: ../../../resources_test/demuxafy_test_data
 platforms:
   - type: docker
     image: biocontainers/freebayes:v1.2.0-2-deb_cv1
@@ -279,4 +279,3 @@ platforms:
     variant: vdsl3
     directives:
       label: [ highmem, highcpu ]
-      container: biocontainers/freebayes:v1.2.0-2-deb_cv1

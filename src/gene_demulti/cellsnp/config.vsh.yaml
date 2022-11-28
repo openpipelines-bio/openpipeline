@@ -7,9 +7,6 @@ functionality:
   argument_groups:
   - name: "Input"
     arguments:
-    - name: "--id"
-      type: string
-      default: "cellsnp"
     - name: "--samFile"
       type: file
       description: "Indexed sam/bam file(s), comma separated multiple samples. Mode 1a & 2a: one sam/bam file with single cell. Mode 1b & 2b: one or multiple bulk sam/bam files, no barcodes needed, but sample ids and regionsVCF."
@@ -35,8 +32,8 @@ functionality:
       type: string
       description: Comma separated sample ids.
     - name: "--genotype"
-      type: boolean_false
-      description: If use, do genotyping in addition to counting. Default is to genotype all cells.
+      type: boolean_true
+      description: If use, do genotyping in addition to counting. 
     - name: "--gzip"
       type: boolean_true
       description: If use, the output files will be zipped into BGZF format.
@@ -94,10 +91,13 @@ functionality:
       direction: output
       description:  Output directory for VCF and sparse matrices.
       example: "cellsnp_out/"
-
   resources:
     - type: bash_script
       path: script.sh
+  test_resources:
+    - type: bash_script
+      path: test.sh
+    - path: ../../../resources_test/demuxafy_test_data
 platforms:
   - type: docker
     image: quay.io/biocontainers/cellsnp-lite:1.2.0--hee625c5_0
@@ -105,4 +105,4 @@ platforms:
     variant: vdsl3
     directives:
       label: [ highmem, highcpu ]
-      container: quay.io/biocontainers/cellsnp-lite:1.2.0--hee625c5_0
+
