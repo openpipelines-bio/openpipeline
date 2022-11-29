@@ -188,15 +188,19 @@ def main():
     logger.info("Converting dtypes")
     adata_query = _convert_object_dtypes_to_strings(adata_query)
 
-    logger.info("Reassigning modality")
-    mdata_query.mod[par["modality"]] = adata_query
-    try:
-        mdata_query.update()
-    except KeyError:
-        logger.error("Key error was thrown during mdata update. Be careful")
+    logger.info("Creating new mudata object")
+
+    new_data = {}  # Map from modalities names to adata objects
+    for modality in mdata_query.mod.keys():
+        if modality == par["modality"]:
+            new_data[modality] = adata_query
+        else:
+            new_data[modality] = mdata_query.mod[modality]
+
+    new_mdata = mudata.MuData(new_data)
 
     logger.info("Saving h5mu file")
-    mdata_query.write_h5mu(par["output"].strip())
+    new_mdata.write_h5mu(par["output"].strip())
 
 if __name__ == "__main__":
     main()
