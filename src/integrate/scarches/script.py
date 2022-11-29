@@ -78,7 +78,7 @@ def extract_file_name(file_path):
     return file_path[slash_position + 1: dot_position]
 
 
-def map_to_existing_reference(adata_query, model_path, check_val_every_n_epoch=1):
+def map_to_existing_reference(adata_query, model_path, logger, check_val_every_n_epoch=1):
     """
     A function to map the query data to the reference atlas
 
@@ -91,7 +91,13 @@ def map_to_existing_reference(adata_query, model_path, check_val_every_n_epoch=1
         * adata_query: The AnnData object with the query preprocessed for the mapping to the reference
     """
     model = _detect_base_model(model_path)
-    model.prepare_query_anndata(adata_query, model_path)
+
+    try:
+        model.prepare_query_anndata(adata_query, model_path)
+    except ValueError:
+        logger.warning("ValueError thrown when preparing adata for mapping. Clearing .varm field to prevent it")
+        adata_query.varm.clear()
+        model.prepare_query_anndata(adata_query, model_path)
 
     # Load query data into the model
     vae_query = model.load_query_data(
@@ -112,6 +118,20 @@ def map_to_existing_reference(adata_query, model_path, check_val_every_n_epoch=1
     )
 
     return vae_query, adata_query
+
+
+def _convert_object_dtypes_to_strings(adata):
+    """Convert object dtypes in .var and .obs to string to prevent error when saving file"""
+    def convert_cols(df):
+        object_cols = df.columns[df.dtypes == "object"]
+        for col in object_cols:
+            df[col] = df[col].astype(str) 
+        return df 
+    
+    adata.var = convert_cols(adata.var)
+    adata.obs = convert_cols(adata.obs)
+
+    return adata
 
 
 def _download_HLCA_reference_model(directory):
@@ -152,7 +172,7 @@ def main():
 
         with tempfile.TemporaryDirectory() as directory:
             model_path = _download_HLCA_reference_model(directory)
-            vae_query, adata_query = map_to_existing_reference(adata_query, model_path=model_path)
+            vae_query, adata_query = map_to_existing_reference(adata_query, model_path=model_path, logger=logger)
             model_name = _read_model_name_from_registry(model_path)
         
     else:
@@ -164,6 +184,9 @@ def main():
     logger.info("Trying to write latent representation")
     output_key = par["obsm_output"].format(model_name=model_name)
     adata_query.obsm[output_key] = vae_query.get_latent_representation()
+    
+    logger.info("Converting dtypes")
+    adata_query = _convert_object_dtypes_to_strings(adata_query)
 
     logger.info("Reassigning modality")
     mdata_query.mod[par["modality"]] = adata_query
