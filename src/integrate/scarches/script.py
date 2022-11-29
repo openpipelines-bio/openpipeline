@@ -16,6 +16,7 @@ par = {
     "input": "resources_test/pbmc_1k_protein_v3/pbmc_1k_protein_v3_mms.h5mu",
     "modality": "rna",
     "output": "foo.h5mu",
+    "model_output": "./hlca_query_model",
     "dataset_name": None,
     # Other
     "obsm_output": "X_integrated_{model_name}",
@@ -201,6 +202,9 @@ def main():
 
     logger.info("Saving h5mu file")
     new_mdata.write_h5mu(par["output"].strip())
+
+    logger.info("Saving model")
+    vae_query.save(par["model_output"], overwrite=True)
 
 if __name__ == "__main__":
     main()

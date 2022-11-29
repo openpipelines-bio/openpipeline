@@ -3,6 +3,7 @@ import subprocess
 from tempfile import NamedTemporaryFile
 import mudata
 from pathlib import Path
+import os
 
 ## VIASH START
 meta = {
@@ -34,13 +35,15 @@ class TestMappingToHLCA(unittest.TestCase):
                 "--input", tempfile_input_file.name,
                 "--reference", "HLCA",
                 "--modality", "rna",
-                "--obs_batch", "batch",
                 "--output", "output.h5mu",
+                "--model_output", "./model_output",
                 "--max_epochs", "1"])
             self.assertTrue(Path("output.h5mu").is_file())
             output_data = mudata.read_h5mu("output.h5mu")
             self.assertIn('X_integrated_scanvi', output_data.mod['rna'].obsm)
             self.assertEqual(output_data["rna"].uns["integration_method"], "SCANVI")
+
+            self.assertIn("model.pt", os.listdir("./model_output/"))
 
 if __name__ == '__main__':
     unittest.main()

@@ -38,6 +38,9 @@ functionality:
           description: Output h5mu file.
           direction: output
           required: true
+        - name: "--model_output"
+          type: file
+          description: Output directory for model
         - name: "--obsm_output"
           type: string
           default: "X_integrated_scanvi"
