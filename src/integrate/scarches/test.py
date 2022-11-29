@@ -40,8 +40,6 @@ class TestMappingToHLCA(unittest.TestCase):
             self.assertTrue(Path("output.h5mu").is_file())
             output_data = mudata.read_h5mu("output.h5mu")
             self.assertIn('X_integrated_scanvi', output_data.mod['rna'].obsm)
-            self.assertIn('_scanvi_batch', output_data.mod['rna'].obs.columns.tolist())
-            self.assertIn('_scanvi_labels',  output_data.mod['rna'].obs.columns.tolist())
             self.assertEqual(output_data["rna"].uns["integration_method"], "SCANVI")
 
 if __name__ == '__main__':
