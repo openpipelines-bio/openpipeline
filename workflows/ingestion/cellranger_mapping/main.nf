@@ -11,7 +11,7 @@ include { from_10xh5_to_h5mu } from targetDir + "/convert/from_10xh5_to_h5mu/mai
 include { readConfig; viashChannel; helpMessage } from workflowDir + "/utils/WorkflowHelper.nf"
 include { setWorkflowArguments; getWorkflowArguments; passthroughMap as pmap } from workflowDir + "/utils/DataFlowHelper.nf"
 
-config = readConfig("$workflowDir/ingestion/cellranger_mapping/config.vsh.yaml")
+config = readConfig("$projectDir/config.vsh.yaml")
 
 workflow {
   helpMessage(config)

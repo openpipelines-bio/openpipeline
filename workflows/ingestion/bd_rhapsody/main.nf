@@ -8,7 +8,7 @@ include { from_bdrhap_to_h5mu } from targetDir + "/convert/from_bdrhap_to_h5mu/m
 
 include { readConfig; viashChannel; helpMessage } from workflowDir + "/utils/WorkflowHelper.nf"
 
-config = readConfig("$workflowDir/ingestion/bd_rhapsody/config.vsh.yaml")
+config = readConfig("$projectDir/config.vsh.yaml")
 
 workflow {
   helpMessage(config)

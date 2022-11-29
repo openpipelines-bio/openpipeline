@@ -12,7 +12,7 @@ include { harmonypy } from targetDir + '/integrate/harmonypy/main.nf'
 include { readConfig; viashChannel; helpMessage } from workflowDir + "/utils/WorkflowHelper.nf"
 include { setWorkflowArguments; getWorkflowArguments } from workflowDir + "/utils/DataFlowHelper.nf"
 
-config = readConfig("$workflowDir/multiomics/integration/config.vsh.yaml")
+config = readConfig("$projectDir/config.vsh.yaml")
 
 workflow {
   helpMessage(config)
