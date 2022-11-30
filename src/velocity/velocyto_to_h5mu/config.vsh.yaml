@@ -7,11 +7,11 @@ functionality:
     If an input h5mu file is also provided, the velocity
     h5ad object will get added to that h5mu instead.
   authors:
-    - __inherits__: ../../authors/dries_schaumont.yaml
+    - __merge__: ../../authors/dries_schaumont.yaml
       roles: [ maintainer, author ]
-    - __inherits__: ../../authors/robrecht_cannoodt.yaml
+    - __merge__: ../../authors/robrecht_cannoodt.yaml
       roles: [ author ]
-    - __inherits__: ../../authors/angela_pisco.yaml
+    - __merge__: ../../authors/angela_pisco.yaml
       roles: [ contributor ]
   argument_groups:
     - name: Inputs
