@@ -4,7 +4,7 @@ functionality:
   description: |
     Convert bcl files to fastq files using bcl2fastq.
   authors:
-    - __inherits__: ../../authors/toni_verbeiren.yaml
+    - __merge__: ../../authors/toni_verbeiren.yaml
       roles: [ author, maintainer ]
   arguments:
     - name: "--input"

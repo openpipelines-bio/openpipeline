@@ -5,7 +5,7 @@ functionality:
   description: |
     Generates a network from mermaid code. See `https://mermaid-js.github.io/mermaid/#/Tutorials`. This component uses the external mermaid.ink service to generate visual networks.
   authors:
-    - __inherits__: ../../authors/dries_de_maeyer.yaml
+    - __merge__: ../../authors/dries_de_maeyer.yaml
       roles: [ maintainer ]
   arguments:
     - name: "--input"

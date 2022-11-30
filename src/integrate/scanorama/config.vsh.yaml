@@ -5,9 +5,9 @@ functionality:
   description: |
     Use Scanorama to integrate different experiments.
   authors:
-    - __inherits__: ../../authors/dries_de_maeyer.yaml
+    - __merge__: ../../authors/dries_de_maeyer.yaml
       roles: [ author ]
-    - __inherits__: ../../authors/dries_schaumont.yaml
+    - __merge__: ../../authors/dries_schaumont.yaml
       roles: [ maintainer ]
   arguments:
     - name: "--input"

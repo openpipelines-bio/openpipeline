@@ -3,11 +3,11 @@ functionality:
   namespace: mapping
   description: Align fastq files using Cell Ranger count.
   authors:
-    - __inherits__: ../../authors/angela_pisco.yaml
+    - __merge__: ../../authors/angela_pisco.yaml
       roles: [ author ]
-    - __inherits__: ../../authors/samuel_d_souza.yaml
+    - __merge__: ../../authors/samuel_d_souza.yaml
       roles: [ author ]
-    - __inherits__: ../../authors/robrecht_cannoodt.yaml
+    - __merge__: ../../authors/robrecht_cannoodt.yaml
       roles: [ author, maintainer ]
   argument_groups:
     - name: Inputs
