@@ -34,10 +34,10 @@
 
 * `integrate/add_metadata`: Add a csv containing metadata to the .obs or .var field of a mudata file.
 
-* `DataFlowHelper.nf`: Added `passthroughMap`. Usage:
+* `DataflowHelper.nf`: Added `passthroughMap`. Usage:
 
   ```groovy
-  include { passthroughMap as pmap } from "./DataFlowHelper.nf"
+  include { passthroughMap as pmap } from "./DataflowHelper.nf"
   
   workflow {
     Channel.fromList([["id", [input: "foo"], "passthrough"]])
@@ -66,7 +66,7 @@
 
 ## MAJOR CHANGES
 
-* `workflows/utils/DataFlowHelper.nf`: Added helper functions `setWorkflowArguments()` and `getWorkflowArguments()` to split the data field of a channel event into a hashmap. Example usage:
+* `workflows/utils/DataflowHelper.nf`: Added helper functions `setWorkflowArguments()` and `getWorkflowArguments()` to split the data field of a channel event into a hashmap. Example usage:
   ```groovy
   | setWorkflowArguments(
     pca: [ "input": "input", "obsm_output": "obsm_pca" ]
