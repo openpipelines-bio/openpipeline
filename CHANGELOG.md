@@ -4,6 +4,16 @@
 
 * `mapping/star_align`: Align `.fastq` files using STAR.
 
+## MINOR CHANGES
+
+* Set the `tag` directive of all Nextflow components to '$id'.
+
+## BUG FIXES
+
+* Fix many components thanks to Viash 0.6.4, which causes errors to be 
+  thrown when input and output files are defined but not found.
+
+
 # openpipeline 0.5.1
 
 ## BREAKING CHANGES
