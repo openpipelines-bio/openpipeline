@@ -11,8 +11,8 @@ include { run_wf as rna_multisample } from workflowDir + '/multiomics/rna_multis
 include { run_wf as integration } from workflowDir + '/multiomics/integration/main.nf'
 
 include { readConfig; viashChannel; helpMessage; readCsv } from workflowDir + "/utils/WorkflowHelper.nf"
-include { passthroughMap as pmap; passthroughFlatMap as pFlatMap } from workflowDir + "/utils/DataFlowHelper.nf"
-config = readConfig("$workflowDir/multiomics/full_pipeline/config.vsh.yaml")
+include { passthroughMap as pmap; passthroughFlatMap as pFlatMap } from workflowDir + "/utils/DataflowHelper.nf"
+config = readConfig("$projectDir/config.vsh.yaml")
 
 
 workflow {

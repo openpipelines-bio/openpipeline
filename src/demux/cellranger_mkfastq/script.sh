@@ -53,7 +53,7 @@ cellranger mkfastq \
   --output-dir "$par_output"
 
 # Move reports to their own output location
-if [ "$par_separate_reports" == true ]; then
+if [ ! -z "$par_reports" ]; then
   echo "Moving reports its own location"
   mv "$par_output"/Reports "$par_reports"
 else

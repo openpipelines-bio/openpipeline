@@ -8,7 +8,7 @@ include { build_bdrhap_reference } from targetDir + "/reference/build_bdrhap_ref
 include { build_cellranger_reference } from targetDir + "/reference/build_cellranger_reference/main.nf"
 
 include { readConfig; viashChannel; helpMessage } from workflowDir + "/utils/WorkflowHelper.nf"
-include { setWorkflowArguments; getWorkflowArguments } from workflowDir + "/utils/DataFlowHelper.nf"
+include { setWorkflowArguments; getWorkflowArguments } from workflowDir + "/utils/DataflowHelper.nf"
 
 config = readConfig("$projectDir/config.vsh.yaml")
 

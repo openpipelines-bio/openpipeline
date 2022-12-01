@@ -19,7 +19,7 @@
           },
           "reference": {
             "type":"string",
-            "description": "The path to Cell Ranger reference tar.gz file.",
+            "description": "The path to Cell Ranger reference tar.gz file. Can also be a directory.",
             
             
             "default": ""

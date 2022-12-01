@@ -5,7 +5,7 @@ functionality:
   description: |
     Convert a velocyto .loom file to h5mu
   authors:
-    - __inherits__: ../../authors/dries_schaumont.yaml
+    - __merge__: ../../authors/dries_schaumont.yaml
       roles: [ maintainer ]
   arguments:
     - name: "--input"

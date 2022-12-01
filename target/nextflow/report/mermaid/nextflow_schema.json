@@ -1,7 +1,7 @@
 {
     "$schema": "http://json-schema.org/draft-07/schema",
     "title": "mermaid",
-    "description": "Generates a network from mermaid code. See `https://mermaid-js.github.io/mermaid/#/Tutorials`. This component uses the external mermaid.ink service to generate visual networks.\n",
+    "description": "Generates a network from mermaid code. \n\nSee `https://mermaid-js.github.io/mermaid/#/Tutorials`. \nThis component uses the external mermaid.ink service to generate visual networks.\n",
     "type": "object",
     "definitions": {
       "arguments" : {
@@ -23,13 +23,6 @@
             
             
             "default": "$id.$key.output.output"
-          },
-          "test": {
-            "type":"string",
-            "description": "The test file to be executed",
-            
-            
-            "default": "test.py"
           }
         }
       },

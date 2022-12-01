@@ -1,0 +1,77 @@
+functionality:
+  name: star_align
+  namespace: mapping
+  description: Align fastq files using STAR.
+  authors:
+    - __merge__: ../../authors/angela_pisco.yaml
+      roles: [ author ]
+    - __merge__: ../../authors/robrecht_cannoodt.yaml
+      roles: [ author, maintainer ]
+  # generated the argument groups using `utils/process_params.R`
+  __merge__: [., argument_groups.yaml]
+  # manually taking care of the main input files
+  argument_groups:
+    - name: Input/Output
+      arguments:
+        - type: file
+          name: --input
+          required: true
+          description: The FASTQ files to be analyzed.
+          example: [ mysample_S1_L001_R1_001.fastq.gz, mysample_S1_L001_R2_001.fastq.gz ]
+          multiple: true
+          multiple_sep: ";"
+        - name: --reference
+          type: file
+          description: Path to the reference built by star_mkref.
+          example: /path/to/reference
+          required: true
+        - name: --output
+          type: file
+          description: Path to output directory.
+          example: /path/to/foo
+          direction: output
+          required: true
+  resources:
+    - type: python_script
+      path: script.py
+  test_resources:
+    - type: python_script
+      path: test.py
+    - path: ../../../resources_test/cellranger_tiny_fastq
+platforms:
+  - type: docker
+    image: python:3.10
+    setup:
+      # setup derived from https://github.com/alexdobin/STAR/blob/master/extras/docker/Dockerfile
+      - type: docker
+        env: 
+          - STAR_VERSION 2.7.1a
+          - PACKAGES gcc g++ make wget zlib1g-dev unzip
+      - type: docker
+        run: |
+          apt-get update && \
+            apt-get install -y --no-install-recommends ${PACKAGES} && \
+            apt-get clean && \
+            g++ --version && \
+            cd /home && \
+            wget --no-check-certificate https://github.com/alexdobin/STAR/archive/${STAR_VERSION}.zip && \
+            unzip ${STAR_VERSION}.zip && \
+            cd STAR-${STAR_VERSION}/source && \
+            make STARstatic && \
+            mkdir /home/bin && \
+            cp STAR /home/bin && \
+            cd /home && \
+            'rm' -rf STAR-${STAR_VERSION} && \
+            apt-get --purge autoremove -y  ${PACKAGES}
+      - type: docker
+        env: 
+          - PATH /home/bin:${PATH}
+      # - type: apt
+      #   packages: rna-star
+    # image: ghcr.io/data-intuitive/cellranger:7.0
+    # setup:
+    #   - type: docker
+    #     run: apt update && apt upgrade -y
+  - type: nextflow
+    directives:
+      label: [ highmem, highcpu ]

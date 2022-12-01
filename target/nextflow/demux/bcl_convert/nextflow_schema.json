@@ -31,13 +31,6 @@
             
             "default": "$id.$key.output.output"
           },
-          "separate_reports": {
-            "type":"boolean",
-            "description": "Should reports be stored in a separate dir.\nShould be used with the --reports argument.\n",
-            
-            
-            "default": "False"
-          },
           "reports": {
             "type":"string",
             "description": "Reports directory",

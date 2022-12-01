@@ -1,19 +1,22 @@
 #!/bin/bash
 
-set -eo pipefail
+set -exo pipefail
+
+extra_params=()
 
 # Handle reports stored separate
-reports_line=""
-$par_separate_reports && reports_line="--reports-dir $par_reports"
+if [ ! -z "$par_reports" ]; then
+  extra_params+=("--reports-dir" "$par_reports")
+fi
 
 # Handle the boolean flag
-ignore=""
-$par_ignore_missing && ignore="--ignore-missing-control --ignore-missing-bcl --ignore-missing-filter"
+if [ "$par_ignore_missing" == "true" ]; then
+  extra_params+=("--ignore-missing-control" "--ignore-missing-bcl" "--ignore-missing-filter")
+fi
 
 # Run the actual command
 bcl2fastq \
   --runfolder-dir "$par_input" \
   --sample-sheet "$par_sample_sheet" \
   --output-dir "$par_output" \
-  $reports_line \
-  $ignore
+  "${extra_params[@]}"

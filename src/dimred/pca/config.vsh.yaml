@@ -5,7 +5,7 @@ functionality:
   description: |
     Computes PCA coordinates, loadings and variance decomposition. Uses the implementation of scikit-learn [Pedregosa11].
   authors:
-    - __inherits__: ../../authors/dries_de_maeyer.yaml
+    - __merge__: ../../authors/dries_de_maeyer.yaml
       roles: [ maintainer ]
   arguments:
     # inputs
@@ -24,7 +24,7 @@ functionality:
 
     - name: "--layer"
       type: string
-      description: use specified layer for expression values instead of the .X object from the modality.
+      description: Use specified layer for expression values instead of the .X object from the modality.
       required: false
 
     # outputs

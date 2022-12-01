@@ -2,7 +2,6 @@
 input: # please fill in - example: "bcl_dir"
 sample_sheet: # please fill in - example: "SampleSheet.csv"
 # output: "$id.$key.output.output"
-separate_reports: false
 # reports: "$id.$key.reports.reports"
 ignore_missing: false
 

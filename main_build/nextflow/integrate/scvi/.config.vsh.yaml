@@ -1,0 +1,316 @@
+functionality:
+  name: "scvi"
+  namespace: "integrate"
+  version: "dev"
+  authors:
+  - name: "Malte D. Luecken"
+    email: "malte.luecken@helmholtz-muenchen.de"
+    roles:
+    - "author"
+    props:
+      github: "LuckyMD"
+      orcid: "0000-0001-7464-7921"
+  - name: "Dries Schaumont"
+    email: "dries@data-intuitive.com"
+    roles:
+    - "maintainer"
+    props:
+      github: "DriesSchaumont"
+      orcid: "0000-0002-4389-0440"
+  inputs: []
+  outputs: []
+  arguments: []
+  argument_groups:
+  - name: "Inputs"
+    arguments:
+    - type: "file"
+      name: "--input"
+      alternatives:
+      - "-i"
+      description: "Input h5mu file"
+      example: []
+      default: []
+      must_exist: true
+      create_parent: true
+      required: true
+      direction: "input"
+      multiple: false
+      multiple_sep: ":"
+      dest: "par"
+    - type: "string"
+      name: "--modality"
+      alternatives: []
+      example: []
+      default:
+      - "rna"
+      required: false
+      choices: []
+      direction: "input"
+      multiple: false
+      multiple_sep: ":"
+      dest: "par"
+    - type: "string"
+      name: "--input_layer"
+      alternatives: []
+      description: "Input layer to use. If None, X is used"
+      example: []
+      default: []
+      required: false
+      choices: []
+      direction: "input"
+      multiple: false
+      multiple_sep: ":"
+      dest: "par"
+    - type: "string"
+      name: "--obs_batch"
+      alternatives: []
+      description: "Column name discriminating between your batches."
+      example: []
+      default:
+      - "sample_id"
+      required: false
+      choices: []
+      direction: "input"
+      multiple: false
+      multiple_sep: ":"
+      dest: "par"
+    - type: "string"
+      name: "--var_input"
+      alternatives: []
+      description: ".var column containing highly variable genes. By default, do not\
+        \ subset genes."
+      example: []
+      default: []
+      required: false
+      choices: []
+      direction: "input"
+      multiple: false
+      multiple_sep: ":"
+      dest: "par"
+  - name: "Outputs"
+    arguments:
+    - type: "file"
+      name: "--output"
+      alternatives:
+      - "-o"
+      description: "Output h5mu file."
+      example: []
+      default: []
+      must_exist: true
+      create_parent: true
+      required: true
+      direction: "output"
+      multiple: false
+      multiple_sep: ":"
+      dest: "par"
+    - type: "string"
+      name: "--obsm_output"
+      alternatives: []
+      description: "In which .obsm slot to store the resulting integrated embedding."
+      example: []
+      default:
+      - "X_scvi_integrated"
+      required: false
+      choices: []
+      direction: "input"
+      multiple: false
+      multiple_sep: ":"
+      dest: "par"
+  - name: "Early stopping arguments"
+    arguments:
+    - type: "boolean"
+      name: "--early_stopping"
+      alternatives: []
+      description: "Whether to perform early stopping with respect to the validation\
+        \ set."
+      example: []
+      default: []
+      required: false
+      direction: "input"
+      multiple: false
+      multiple_sep: ":"
+      dest: "par"
+    - type: "string"
+      name: "--early_stopping_monitor"
+      alternatives: []
+      description: "Metric logged during validation set epoch."
+      example: []
+      default:
+      - "elbo_validation"
+      required: false
+      choices:
+      - "elbo_validation"
+      - "reconstruction_loss_validation"
+      - "kl_local_validation"
+      direction: "input"
+      multiple: false
+      multiple_sep: ":"
+      dest: "par"
+    - type: "integer"
+      name: "--early_stopping_patience"
+      alternatives: []
+      description: "Number of validation epochs with no improvement after which training\
+        \ will be stopped."
+      example: []
+      default:
+      - 45
+      required: false
+      choices: []
+      min: 1
+      direction: "input"
+      multiple: false
+      multiple_sep: ":"
+      dest: "par"
+    - type: "double"
+      name: "--early_stopping_min_delta"
+      alternatives: []
+      description: "Minimum change in the monitored quantity to qualify as an improvement,\
+        \ i.e. an absolute change of less than min_delta, will count as no improvement."
+      example: []
+      default:
+      - 0.0
+      required: false
+      min: 0.0
+      direction: "input"
+      multiple: false
+      multiple_sep: ":"
+      dest: "par"
+  - name: "Learning parameters"
+    arguments:
+    - type: "integer"
+      name: "--max_epochs"
+      alternatives: []
+      description: "Number of passes through the dataset, defaults to (20000 / number\
+        \ of cells) * 400 or 400; whichever is smallest."
+      example: []
+      default: []
+      required: true
+      choices: []
+      direction: "input"
+      multiple: false
+      multiple_sep: ":"
+      dest: "par"
+    - type: "boolean"
+      name: "--reduce_lr_on_plateau"
+      alternatives: []
+      description: "Whether to monitor validation loss and reduce learning rate when\
+        \ validation set `lr_scheduler_metric` plateaus."
+      example: []
+      default:
+      - true
+      required: false
+      direction: "input"
+      multiple: false
+      multiple_sep: ":"
+      dest: "par"
+    - type: "double"
+      name: "--lr_factor"
+      alternatives: []
+      description: "Factor to reduce learning rate."
+      example: []
+      default:
+      - 0.6
+      required: false
+      min: 0.0
+      direction: "input"
+      multiple: false
+      multiple_sep: ":"
+      dest: "par"
+    - type: "double"
+      name: "--lr_patience"
+      alternatives: []
+      description: "Number of epochs with no improvement after which learning rate\
+        \ will be reduced."
+      example: []
+      default:
+      - 30.0
+      required: false
+      min: 0.0
+      direction: "input"
+      multiple: false
+      multiple_sep: ":"
+      dest: "par"
+  resources:
+  - type: "python_script"
+    path: "script.py"
+    is_executable: true
+  description: "Performs scvi integration as done in the human lung cell atlas https://github.com/LungCellAtlas/HLCA"
+  test_resources:
+  - type: "python_script"
+    path: "test.py"
+    is_executable: true
+  - type: "file"
+    path: "../../../resources_test/pbmc_1k_protein_v3/pbmc_1k_protein_v3_mms.h5mu"
+  status: "enabled"
+  requirements:
+    commands: []
+  set_wd_to_resources_dir: false
+platforms:
+- type: "docker"
+  id: "docker"
+  image: "python:3.8"
+  target_organization: "openpipelines-bio"
+  target_registry: "ghcr.io"
+  namespace_separator: "_"
+  resolve_volume: "Automatic"
+  chown: true
+  port: []
+  setup_strategy: "ifneedbepullelsecachedbuild"
+  run_args: []
+  target_image_source: "https://github.com/openpipelines-bio/openpipeline"
+  setup:
+  - type: "apt"
+    packages:
+    - "libopenblas-dev"
+    - "liblapack-dev"
+    - "gfortran"
+    interactive: false
+  - type: "python"
+    user: false
+    packages:
+    - "mudata~=0.2.0"
+    - "anndata~=0.8.0"
+    - "torchmetrics~=0.6.0"
+    - "scvi-tools~=0.14.6"
+    pip: []
+    pypi: []
+    git: []
+    github: []
+    gitlab: []
+    mercurial: []
+    svn: []
+    bazaar: []
+    url: []
+    script: []
+    upgrade: true
+  test_setup: []
+- type: "nextflow"
+  id: "nextflow"
+  variant: "vdsl3"
+  directives:
+    accelerator: {}
+    conda: []
+    containerOptions: []
+    label:
+    - "highmem"
+    - "highcpu"
+    module: []
+    pod: []
+    publishDir: []
+    queue: []
+    tag: "$id"
+  auto:
+    simplifyInput: true
+    simplifyOutput: true
+    transcript: false
+    publish: false
+  debug: false
+  container: "docker"
+info:
+  config: "/home/runner/work/openpipeline/openpipeline/src/integrate/scvi/config.vsh.yaml"
+  platform: "nextflow"
+  output: "main_build/nextflow/integrate/scvi"
+  executable: "main_build/nextflow/integrate/scvi/scvi"
+  viash_version: "0.6.4"
+  git_commit: "63981752172f803fcceb3b78549113d2a1716254"
+  git_remote: "https://github.com/openpipelines-bio/openpipeline"
