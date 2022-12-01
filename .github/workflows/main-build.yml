@@ -52,6 +52,9 @@ jobs:
 
     - name: Build target dir
       run: |
+        # allow publishing the target folder
+        sed -i '/^target.*/d' .gitignore
+
         # build target dir
         bin/viash ns build -m release -t main_build --parallel  --setup donothing
 
@@ -108,9 +111,6 @@ jobs:
 
     - name: Build container
       run: |
-        # allow publishing the target folder
-        sed -i '/^target.*/d' .gitignore
-
         SRC_DIR=`dirname ${{ matrix.component.config }}`
         bin/viash ns build -m release -t main_build -s "$SRC_DIR" --setup donothing
         
