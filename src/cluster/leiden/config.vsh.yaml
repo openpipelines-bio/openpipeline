@@ -12,7 +12,7 @@ functionality:
     Traag18: Traag et al. (2018), From Louvain to Leiden: guaranteeing well-connected communities arXiv.  
     Wolf18: Wolf et al. (2018), Scanpy: large-scale single-cell gene expression data analysis, Genome Biology.  
   authors:
-    - __inherits__: ../../authors/dries_de_maeyer.yaml
+    - __merge__: ../../authors/dries_de_maeyer.yaml
       roles: [ maintainer ]
   arguments:
     # input

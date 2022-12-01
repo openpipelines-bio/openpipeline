@@ -10,7 +10,7 @@ include { subset_h5mu } from targetDir + "/filter/subset_h5mu/main.nf"
 include { publish } from targetDir + "/transfer/publish/main.nf"
 
 include { readConfig; viashChannel; helpMessage } from workflowDir + "/utils/WorkflowHelper.nf"
-include { setWorkflowArguments; getWorkflowArguments; passthroughMap as pmap } from workflowDir + "/utils/DataFlowHelper.nf"
+include { setWorkflowArguments; getWorkflowArguments; passthroughMap as pmap } from workflowDir + "/utils/DataflowHelper.nf"
 
 config = readConfig("$projectDir/config.vsh.yaml")
 

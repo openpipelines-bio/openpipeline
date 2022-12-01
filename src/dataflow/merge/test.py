@@ -102,19 +102,5 @@ class TestMerge(unittest.TestCase):
             self.assertIn("ValueError: Modality 'prot' was found in more than 1 sample.", 
                           e.exception.output.decode('utf-8'))
 
-    def test_input_files_dont_exist_raises(self):
-        """
-        Raise when one of the files cannot be found or isnt a file.
-        """
-        # foo.h5mu should not exist for this test to work
-        self.assertFalse(Path("foo.h5mu").is_file())
-        with self.assertRaises(subprocess.SubprocessError) as e:
-            self._run_and_check_output([
-                "--input", "foo.h5mu",
-                "--input", input_sample2_file,
-                "--output", "merge.h5mu"], expected_raise=True)
-        self.assertIn("ValueError: Not all input paths are files, exits and are acessible.", 
-                      e.exception.output.decode('utf-8'))
-
 if __name__ == '__main__':
     unittest.main()

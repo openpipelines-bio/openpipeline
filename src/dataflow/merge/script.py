@@ -24,9 +24,6 @@ logger.addHandler(console_handler)
 
 
 def main():
-    if not all([Path(input_path).is_file() for input_path in par["input"]]):
-        raise ValueError("Not all input paths are files, exits and are acessible.")
-
     logger.info('Reading input files %s', ",".join(par["input"]))
     input_samples = [md.read_h5mu(path) for path in par["input"]]
 

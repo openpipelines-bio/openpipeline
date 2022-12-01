@@ -3,11 +3,11 @@ functionality:
   namespace: mapping
   description: Split 10x Cell Ranger output directory into separate output fields.
   authors:
-    - __inherits__: ../../authors/angela_pisco.yaml
+    - __merge__: ../../authors/angela_pisco.yaml
       roles: [ author ]
-    - __inherits__: ../../authors/samuel_d_souza.yaml
+    - __merge__: ../../authors/samuel_d_souza.yaml
       roles: [ author ]
-    - __inherits__: ../../authors/robrecht_cannoodt.yaml
+    - __merge__: ../../authors/robrecht_cannoodt.yaml
       roles: [ author, maintainer ]
   arguments:
     - name: --input

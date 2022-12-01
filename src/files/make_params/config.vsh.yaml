@@ -3,9 +3,9 @@ functionality:
   namespace: "files"
   description: "Looks for files in a directory and turn it in a params file."
   authors:
-    - __inherits__: ../../authors/angela_pisco.yaml
+    - __merge__: ../../authors/angela_pisco.yaml
       roles: [ author ]
-    - __inherits__: ../../authors/robrecht_cannoodt.yaml
+    - __merge__: ../../authors/robrecht_cannoodt.yaml
       roles: [ maintainer, author ]
   arguments:
     - name: "--base_dir"

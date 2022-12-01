@@ -5,9 +5,9 @@ functionality:
   description: |
     BBKNN network generation
   authors:
-    - __inherits__: ../../authors/dries_de_maeyer.yaml
+    - __merge__: ../../authors/dries_de_maeyer.yaml
       roles: [ author ]
-    - __inherits__: ../../authors/dries_schaumont.yaml
+    - __merge__: ../../authors/dries_schaumont.yaml
       roles: [ maintainer ]
   arguments:
     # inputs
