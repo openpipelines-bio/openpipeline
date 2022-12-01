@@ -44,6 +44,9 @@ jobs:
 
     - name: Build target dir
       run: |
+        # allow publishing the target folder
+        sed -i '/^target.*/d' .gitignore
+
         # build target dir
         bin/viash ns build -m release -t integration_build --parallel  --setup donothing
 
@@ -126,9 +129,6 @@ jobs:
     # use containers from integration_build branch, hopefully these are available
     - name: Build target dir
       run: |
-        # allow publishing the target folder
-        sed -i '/^target.*/d' .gitignore
-
         # build target dir
         bin/viash ns build -m release -t integration_build --parallel  --setup donothing
 
