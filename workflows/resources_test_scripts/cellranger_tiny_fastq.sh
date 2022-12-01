@@ -51,6 +51,18 @@ if [ ! -f "${cellranger_tiny_ref}/reference.json" ]; then
     --strip-components=3
 fi
 
+# Create ref with more recent STAR version
+recent_ref_dir="${OUT}/cellranger_tiny_ref_v2_7_10_a"
+if [ ! -f "${recent_ref_dir}/Genome" ]; then
+  mkdir -p "${recent_ref_dir}"
+
+  target/docker/mapping/star_create_reference/star_create_reference \
+    --input "$cellranger_tiny_ref/fasta/genome.fa" \
+    --output "$recent_ref_dir" \
+    --genomeSAindexNbases 7 \
+    --sjdbGTFfile "$cellranger_tiny_ref/genes/genes.gtf.gz"
+fi
+
 bam_dir="${OUT}/bam"
 if [ ! -f "$bam_dir" ]; then
   mkdir -p "$bam_dir"

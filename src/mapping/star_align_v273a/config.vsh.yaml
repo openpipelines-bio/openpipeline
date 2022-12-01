@@ -1,5 +1,5 @@
 functionality:
-  name: star_align
+  name: star_align_v273a
   namespace: mapping
   description: Align fastq files using STAR.
   authors:
@@ -45,7 +45,7 @@ platforms:
       # setup derived from https://github.com/alexdobin/STAR/blob/master/extras/docker/Dockerfile
       - type: docker
         env: 
-          - STAR_VERSION 2.7.10a_alpha_220818
+          - STAR_VERSION 2.7.3a
           - PACKAGES gcc g++ make wget zlib1g-dev unzip
       - type: docker
         run: |
@@ -54,10 +54,10 @@ platforms:
             apt-get clean && \
             g++ --version && \
             cd /home && \
-            wget --no-check-certificate https://github.com/alexdobin/STAR/archive/refs/tags/${STAR_VERSION}.zip && \
+            wget --no-check-certificate https://github.com/alexdobin/STAR/archive/${STAR_VERSION}.zip && \
             unzip ${STAR_VERSION}.zip && \
             cd STAR-${STAR_VERSION}/source && \
-            make STARstatic CXXFLAGS_SIMD=-std=c++11 && \
+            make STARstatic && \
             mkdir /home/bin && \
             cp STAR /home/bin && \
             cd /home && \

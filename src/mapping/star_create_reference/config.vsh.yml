@@ -1,51 +1,60 @@
 functionality:
-  name: star_align
+  name: star_create_reference
   namespace: mapping
-  description: Align fastq files using STAR.
+  description: Create a reference for STAR from a set of fasta files.
   authors:
-    - __merge__: ../../authors/angela_pisco.yaml
+    - __merge__: ../../authors/dries_schaumont.yaml
       roles: [ author ]
-    - __merge__: ../../authors/robrecht_cannoodt.yaml
-      roles: [ author, maintainer ]
-  # generated the argument groups using `utils/process_params.R`
-  __merge__: [., argument_groups.yaml]
-  # manually taking care of the main input files
   argument_groups:
     - name: Input/Output
       arguments:
         - type: file
           name: --input
           required: true
-          description: The FASTQ files to be analyzed.
-          example: [ mysample_S1_L001_R1_001.fastq.gz, mysample_S1_L001_R2_001.fastq.gz ]
+          description: The fasta files to be included in the reference.
+          example: [ chr1.fasta, chr2.fasta ]
           multiple: true
-          multiple_sep: ";"
-        - name: --reference
-          type: file
-          description: Path to the reference built by star_mkref.
-          example: /path/to/reference
-          required: true
+          multiple_sep: " "
         - name: --output
           type: file
           description: Path to output directory.
           example: /path/to/foo
           direction: output
           required: true
+        - name: --sjdbGTFfile
+          type: file
+          direction: input
+          description: | 
+            Specifes the path to the file with annotated transcripts in the standard GTF
+            format. STAR will extract splice junctions from this file and use them to greatly improve
+            accuracy of the mapping.
+          required: false
+    - name: "extra options"
+      arguments:
+      - type: integer
+        name: --genomeSAindexNbases
+        description: |
+          Length (bases) of the SA pre-indexing string. Typically between 10 and 15.
+          Longer strings will use much more memory, but allow faster searches. For small
+          genomes, the parameter {genomeSAindexNbases must be scaled down to
+          min(14, log2(GenomeLength)/2 - 1).
+        required: false
+        default: 14
   resources:
-    - type: python_script
-      path: script.py
+    - type: bash_script
+      path: script.sh
   test_resources:
-    - type: python_script
-      path: test.py
+    - type: bash_script
+      path: test.sh
     - path: ../../../resources_test/cellranger_tiny_fastq
 platforms:
   - type: docker
-    image: python:3.10
+    image: ubuntu:latest
     setup:
       # setup derived from https://github.com/alexdobin/STAR/blob/master/extras/docker/Dockerfile
       - type: docker
         env: 
-          - STAR_VERSION 2.7.10a_alpha_220818
+          - STAR_VERSION 2.7.10a
           - PACKAGES gcc g++ make wget zlib1g-dev unzip
       - type: docker
         run: |
@@ -54,7 +63,7 @@ platforms:
             apt-get clean && \
             g++ --version && \
             cd /home && \
-            wget --no-check-certificate https://github.com/alexdobin/STAR/archive/refs/tags/${STAR_VERSION}.zip && \
+            wget --no-check-certificate https://github.com/alexdobin/STAR/archive/${STAR_VERSION}.zip && \
             unzip ${STAR_VERSION}.zip && \
             cd STAR-${STAR_VERSION}/source && \
             make STARstatic CXXFLAGS_SIMD=-std=c++11 && \
@@ -66,12 +75,6 @@ platforms:
       - type: docker
         env: 
           - PATH /home/bin:${PATH}
-      # - type: apt
-      #   packages: rna-star
-    # image: ghcr.io/data-intuitive/cellranger:7.0
-    # setup:
-    #   - type: docker
-    #     run: apt update && apt upgrade -y
   - type: nextflow
     directives:
       label: [ highmem, highcpu ]

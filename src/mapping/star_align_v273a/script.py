@@ -11,8 +11,8 @@ par = {
   'input': [
     # 'resources_test/cellranger_tiny_fastq/cellranger_tiny_fastq/tinygex_S1_L001_R1_001.fastq.gz',
     # 'resources_test/cellranger_tiny_fastq/cellranger_tiny_fastq/tinygex_S1_L001_R2_001.fastq.gz',
-    # 'resources_test/cellranger_tiny_fastq/cellranger_tiny_fastq/tinygex_S1_L002_R1_001.fastq.gz',
-    # 'resources_test/cellranger_tiny_fastq/cellranger_tiny_fastq/tinygex_S1_L002_R2_001.fastq.gz'
+    'resources_test/cellranger_tiny_fastq/cellranger_tiny_fastq/tinygex_S1_L002_R1_001.fastq.gz',
+    'resources_test/cellranger_tiny_fastq/cellranger_tiny_fastq/tinygex_S1_L002_R2_001.fastq.gz'
   ],
   # 'input': [ 'resources_test/cellranger_tiny_fastq/cellranger_tiny_fastq/' ],
   'reference': 'resources_test/cellranger_tiny_fastq/cellranger_tiny_ref_v2_7_10_a/',
