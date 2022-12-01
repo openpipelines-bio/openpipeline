@@ -155,6 +155,9 @@ jobs:
     # use containers from release branch, hopefully these are available
     - name: Build target dir
       run: |
+        # allow publishing the target folder
+        sed -i '/^target.*/d' .gitignore
+
         # build target dir
         bin/viash ns build -m release -t ${{ github.event.inputs.version_tag }} --parallel --setup donothing
 
