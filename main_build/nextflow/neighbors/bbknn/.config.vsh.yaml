@@ -249,5 +249,5 @@ info:
   output: "main_build/nextflow/neighbors/bbknn"
   executable: "main_build/nextflow/neighbors/bbknn/bbknn"
   viash_version: "0.6.4"
-  git_commit: "63981752172f803fcceb3b78549113d2a1716254"
+  git_commit: "bd3afad0bdba3e320421be29a1d33c42254375c0"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"
