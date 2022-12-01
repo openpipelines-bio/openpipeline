@@ -4,7 +4,7 @@ functionality:
   description: |
     Combine one or more single-modality .h5mu files together into one .h5mu file.
   authors:
-    - __inherits__: ../../authors/dries_schaumont.yaml
+    - __merge__: ../../authors/dries_schaumont.yaml
       roles: [ maintainer ]
   arguments:
     - name: "--input"

@@ -3,12 +3,12 @@ functionality:
   namespace: mapping
   description: Align fastq files using STAR.
   authors:
-    - __inherits__: ../../authors/angela_pisco.yaml
+    - __merge__: ../../authors/angela_pisco.yaml
       roles: [ author ]
-    - __inherits__: ../../authors/robrecht_cannoodt.yaml
+    - __merge__: ../../authors/robrecht_cannoodt.yaml
       roles: [ author, maintainer ]
   # generated the argument groups using `utils/process_params.R`
-  __inherits__: [., argument_groups.yaml]
+  __merge__: [., argument_groups.yaml]
   # manually taking care of the main input files
   argument_groups:
     - name: Input/Output

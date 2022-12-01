@@ -7,7 +7,7 @@ functionality:
 
     Currently does not allow parsing the output from cell barcode demultiplexing.
   authors:
-    - __inherits__: ../../authors/dries_schaumont.yaml
+    - __merge__: ../../authors/dries_schaumont.yaml
       roles: [ maintainer ]
   arguments:
     - name: "--input"

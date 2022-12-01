@@ -5,9 +5,9 @@ functionality:
   description: "Performs Harmony integration based as described in https://github.com/immunogenomics/harmony.
                 Based on an implementation in python from https://github.com/slowkow/harmonypy"
   authors:
-    - __inherits__: ../../authors/dries_schaumont.yaml
+    - __merge__: ../../authors/dries_schaumont.yaml
       roles: [ maintainer ]
-    - __inherits__: ../../authors/robrecht_cannoodt.yaml
+    - __merge__: ../../authors/robrecht_cannoodt.yaml
       roles: [ contributor ]
   arguments:
     - name: "--input"

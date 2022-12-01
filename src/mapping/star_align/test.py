@@ -2,6 +2,7 @@ import subprocess
 from os import path
 import logging
 from sys import stdout
+from pathlib import Path
 
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
@@ -36,7 +37,7 @@ out = subprocess.check_output(cmd_pars).decode("utf-8")
 
 logger.info("> Check if file exists")
 
-output_path = path.Path(output)
+output_path = Path(output)
 assert (output_path / "Log.final.out" ).is_file(), "No output log was created."
 assert (output_path / "SJ.out.tab" ).is_file(), "No output file was created."
 

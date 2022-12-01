@@ -7,7 +7,7 @@ functionality:
     sync_test_resources
     sync_test_resources --input s3://openpipelines-data --output resources_test
   authors:
-    - __inherits__: ../../authors/robrecht_cannoodt.yaml
+    - __merge__: ../../authors/robrecht_cannoodt.yaml
       roles: [ maintainer ]
   arguments:
     - name: "--input"

@@ -5,7 +5,7 @@ functionality:
   description: |
     Delete an anndata layer from one or more modalities.
   authors:
-    - __inherits__: ../../authors/dries_schaumont.yaml
+    - __merge__: ../../authors/dries_schaumont.yaml
       roles: [ maintainer ]
   arguments:
     - name: "--input"

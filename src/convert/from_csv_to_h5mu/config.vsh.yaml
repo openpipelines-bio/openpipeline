@@ -6,7 +6,7 @@ functionality:
   description: |
     Converts an csv into an h5mu file.
   authors:
-    - __inherits__: ../../authors/dries_de_maeyer.yaml
+    - __merge__: ../../authors/dries_de_maeyer.yaml
       roles: [ maintainer ]
   arguments:
     - name: "--input"

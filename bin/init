@@ -51,9 +51,11 @@ curl -fsSL get.viash.io | bash -s -- --tools false
 if [ "$only_viash" = false ] ; then
 
   # automatically export the workflow helper
-  [[ -d workflows/utils ]] || mkdir -p workflows/utils
-  bin/viash export resource platforms/nextflow/ProfilesHelper.config > workflows/utils/ProfilesHelper.config
-  bin/viash export resource platforms/nextflow/WorkflowHelper.nf > workflows/utils/WorkflowHelper.nf
+  WF_UTILS=workflows/utils
+  [[ -d $WF_UTILS ]] || mkdir -p $WF_UTILS
+  bin/viash export resource platforms/nextflow/ProfilesHelper.config > $WF_UTILS/ProfilesHelper.config
+  bin/viash export resource platforms/nextflow/WorkflowHelper.nf > $WF_UTILS/WorkflowHelper.nf
+  bin/viash export resource platforms/nextflow/DataflowHelper.nf > $WF_UTILS/DataflowHelper.nf
 
   cd bin
 
