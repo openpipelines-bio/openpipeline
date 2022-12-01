@@ -1,0 +1,389 @@
+functionality:
+  name: "cellranger_multi"
+  namespace: "mapping"
+  version: "main_build"
+  authors:
+  - name: "Angela Pisco"
+    roles:
+    - "author"
+    props:
+      github: "aopisco"
+      orcid: "0000-0003-0142-2355"
+  - name: "Robrecht Cannoodt"
+    email: "robrecht@data-intuitive.com"
+    roles:
+    - "author"
+    - "maintainer"
+    props:
+      github: "rcannood"
+      orcid: "0000-0003-3641-729X"
+  - name: "Dries De Maeyer"
+    email: "ddemaeyer@gmail.com"
+    roles:
+    - "author"
+    props:
+      github: "ddemaeyer"
+  inputs: []
+  outputs: []
+  arguments: []
+  argument_groups:
+  - name: "Input files"
+    arguments:
+    - type: "file"
+      name: "--input"
+      alternatives: []
+      description: "The FASTQ files to be analyzed. FASTQ files should conform to\
+        \ the naming conventions of bcl2fastq and mkfastq:\n`[Sample Name]_S[Sample\
+        \ Index]_L00[Lane Number]_[Read Type]_001.fastq.gz`\n"
+      example:
+      - "mysample_S1_L001_R1_001.fastq.gz"
+      - "mysample_S1_L001_R2_001.fastq.gz"
+      default: []
+      must_exist: true
+      create_parent: true
+      required: true
+      direction: "input"
+      multiple: true
+      multiple_sep: ";"
+      dest: "par"
+    - type: "file"
+      name: "--gex_reference"
+      alternatives: []
+      description: "Genome refence index built by Cell Ranger mkref."
+      example:
+      - "reference_genome.tar.gz"
+      default: []
+      must_exist: true
+      create_parent: true
+      required: true
+      direction: "input"
+      multiple: false
+      multiple_sep: ":"
+      dest: "par"
+    - type: "file"
+      name: "--vdj_reference"
+      alternatives: []
+      description: "VDJ refence index built by Cell Ranger mkref."
+      example:
+      - "reference_vdj.tar.gz"
+      default: []
+      must_exist: true
+      create_parent: true
+      required: false
+      direction: "input"
+      multiple: false
+      multiple_sep: ":"
+      dest: "par"
+    - type: "file"
+      name: "--feature_reference"
+      alternatives: []
+      description: "Path to the Feature reference CSV file, declaring Feature Barcode\
+        \ constructs and associated barcodes. Required only for Antibody Capture or\
+        \ CRISPR Guide Capture libraries. See https://support.10xgenomics.com/single-cell-gene-expression/software/pipelines/latest/using/feature-bc-analysis#feature-ref\
+        \ for more information."
+      example:
+      - "feature_reference.csv"
+      default: []
+      must_exist: true
+      create_parent: true
+      required: false
+      direction: "input"
+      multiple: false
+      multiple_sep: ":"
+      dest: "par"
+  - name: "Library arguments"
+    arguments:
+    - type: "string"
+      name: "--library_id"
+      alternatives: []
+      description: "The Illumina sample name to analyze. This must exactly match the\
+        \ 'Sample Name' part of the FASTQ files specified in the `--input` argument."
+      example:
+      - "mysample1"
+      default: []
+      required: true
+      choices: []
+      direction: "input"
+      multiple: true
+      multiple_sep: ";"
+      dest: "par"
+    - type: "string"
+      name: "--library_type"
+      alternatives: []
+      description: "The underlying feature type of the library.\nPossible values:\
+        \ \"Gene Expression\", \"VDJ\", \"VDJ-T\", \"VDJ-B\", \"Antibody Capture\"\
+        , \"CRISPR Guide Capture\", \"Multiplexing Capture\"\n"
+      example:
+      - "Gene Expression"
+      default: []
+      required: true
+      choices: []
+      direction: "input"
+      multiple: true
+      multiple_sep: ";"
+      dest: "par"
+    - type: "string"
+      name: "--library_subsample"
+      alternatives: []
+      description: "Optional. The rate at which reads from the provided FASTQ files\
+        \ are sampled. Must be strictly greater than 0 and less than or equal to 1."
+      example:
+      - "0.5"
+      default: []
+      required: false
+      choices: []
+      direction: "input"
+      multiple: true
+      multiple_sep: ";"
+      dest: "par"
+    - type: "string"
+      name: "--library_lanes"
+      alternatives: []
+      description: "Lanes associated with this sample. Defaults to using all lanes."
+      example:
+      - "1-4"
+      default: []
+      required: false
+      choices: []
+      direction: "input"
+      multiple: true
+      multiple_sep: ";"
+      dest: "par"
+  - name: "Gene expression arguments"
+    description: "Arguments relevant to the analysis of gene expression data."
+    arguments:
+    - type: "integer"
+      name: "--gex_expect_cells"
+      alternatives: []
+      description: "Expected number of recovered cells, used as input to cell calling\
+        \ algorithm."
+      example:
+      - 3000
+      default: []
+      required: false
+      choices: []
+      direction: "input"
+      multiple: false
+      multiple_sep: ":"
+      dest: "par"
+    - type: "string"
+      name: "--gex_chemistry"
+      alternatives: []
+      description: "Assay configuration.\n- auto: autodetect mode\n- threeprime: Single\
+        \ Cell 3'\n- fiveprime: Single Cell 5'\n- SC3Pv1: Single Cell 3' v1\n- SC3Pv2:\
+        \ Single Cell 3' v2\n- SC3Pv3: Single Cell 3' v3\n- SC3Pv3LT: Single Cell\
+        \ 3' v3 LT\n- SC3Pv3HT: Single Cell 3' v3 HT\n- SC5P-PE: Single Cell 5' paired-end\n\
+        - SC5P-R2: Single Cell 5' R2-only\n- SC-FB: Single Cell Antibody-only 3' v2\
+        \ or 5'\nSee https://kb.10xgenomics.com/hc/en-us/articles/115003764132-How-does-Cell-Ranger-auto-detect-chemistry-\
+        \ for more information.\n"
+      example: []
+      default:
+      - "auto"
+      required: false
+      choices:
+      - "auto"
+      - "threeprime"
+      - "fiveprime"
+      - "SC3Pv1"
+      - "SC3Pv2"
+      - "SC3Pv3"
+      - "SC3Pv3LT"
+      - "SC3Pv3HT"
+      - "SC5P-PE"
+      - "SC5P-R2"
+      - "SC-FB"
+      direction: "input"
+      multiple: false
+      multiple_sep: ":"
+      dest: "par"
+    - type: "boolean"
+      name: "--gex_secondary_analysis"
+      alternatives: []
+      description: "Whether or not to run the secondary analysis e.g. clustering."
+      example: []
+      default:
+      - false
+      required: false
+      direction: "input"
+      multiple: false
+      multiple_sep: ":"
+      dest: "par"
+    - type: "boolean"
+      name: "--gex_generate_bam"
+      alternatives: []
+      description: "Whether to generate a BAM file."
+      example: []
+      default:
+      - true
+      required: false
+      direction: "input"
+      multiple: false
+      multiple_sep: ":"
+      dest: "par"
+    - type: "boolean"
+      name: "--gex_include_introns"
+      alternatives: []
+      description: "Include intronic reads in count (default=true unless --target-panel\
+        \ is specified in which case default=false)"
+      example: []
+      default:
+      - true
+      required: false
+      direction: "input"
+      multiple: false
+      multiple_sep: ":"
+      dest: "par"
+  - name: "Cell multiplexing parameters"
+    description: "Arguments related to cell multiplexing."
+    arguments:
+    - type: "string"
+      name: "--cell_multiplex_sample_id"
+      alternatives: []
+      description: "A name to identify a multiplexed sample. Must be alphanumeric\
+        \ with hyphens and/or underscores, and less than 64 characters. Required for\
+        \ Cell Multiplexing libraries."
+      example: []
+      default: []
+      required: false
+      choices: []
+      direction: "input"
+      multiple: false
+      multiple_sep: ":"
+      dest: "par"
+    - type: "string"
+      name: "--cell_multiplex_oligo_ids"
+      alternatives: []
+      description: "The Cell Multiplexing oligo IDs used to multiplex this sample.\
+        \ If multiple CMOs were used for a sample, separate IDs with a pipe (e.g.,\
+        \ CMO301|CMO302). Required for Cell Multiplexing libraries."
+      example: []
+      default: []
+      required: false
+      choices: []
+      direction: "input"
+      multiple: false
+      multiple_sep: ":"
+      dest: "par"
+    - type: "string"
+      name: "--cell_multiplex_description"
+      alternatives: []
+      description: "A description for the sample."
+      example: []
+      default: []
+      required: false
+      choices: []
+      direction: "input"
+      multiple: false
+      multiple_sep: ":"
+      dest: "par"
+  - name: "Outputs"
+    arguments:
+    - type: "file"
+      name: "--output"
+      alternatives: []
+      description: "The folder to store the alignment results."
+      example:
+      - "/path/to/output"
+      default: []
+      must_exist: true
+      create_parent: true
+      required: true
+      direction: "output"
+      multiple: false
+      multiple_sep: ":"
+      dest: "par"
+  - name: "Executor arguments"
+    arguments:
+    - type: "boolean_true"
+      name: "--dryrun"
+      alternatives: []
+      description: "If true, the output directory will only contain the CWL input\
+        \ files, but the pipeline itself will not be executed."
+      direction: "input"
+      dest: "par"
+  resources:
+  - type: "python_script"
+    path: "script.py"
+    is_executable: true
+  description: "Align fastq files using Cell Ranger multi."
+  test_resources:
+  - type: "python_script"
+    path: "test.py"
+    is_executable: true
+  - type: "file"
+    path: "../../../resources_test/10x_5k_anticmv/raw/"
+  - type: "file"
+    path: "../../../resources_test/reference_gencodev41_chr1"
+  status: "enabled"
+  requirements:
+    commands: []
+  set_wd_to_resources_dir: false
+platforms:
+- type: "docker"
+  id: "docker"
+  image: "ghcr.io/data-intuitive/cellranger:7.0"
+  target_organization: "openpipelines-bio"
+  target_registry: "ghcr.io"
+  namespace_separator: "_"
+  resolve_volume: "Automatic"
+  chown: true
+  port: []
+  setup_strategy: "ifneedbepullelsecachedbuild"
+  run_args: []
+  target_image_source: "https://github.com/openpipelines-bio/openpipeline"
+  setup:
+  - type: "docker"
+    resources: []
+    label: []
+    add: []
+    copy: []
+    run:
+    - "apt update && apt upgrade -y"
+    build_args: []
+    env: []
+  - type: "python"
+    user: false
+    packages: []
+    pip: []
+    pypi:
+    - "pandas"
+    git: []
+    github: []
+    gitlab: []
+    mercurial: []
+    svn: []
+    bazaar: []
+    url: []
+    script: []
+    upgrade: true
+  test_setup: []
+- type: "nextflow"
+  id: "nextflow"
+  variant: "vdsl3"
+  directives:
+    accelerator: {}
+    conda: []
+    containerOptions: []
+    label:
+    - "highmem"
+    - "highcpu"
+    module: []
+    pod: []
+    publishDir: []
+    queue: []
+    tag: "$id"
+  auto:
+    simplifyInput: true
+    simplifyOutput: true
+    transcript: false
+    publish: false
+  debug: false
+  container: "docker"
+info:
+  config: "/home/runner/work/openpipeline/openpipeline/src/mapping/cellranger_multi/config.vsh.yaml"
+  platform: "nextflow"
+  output: "/home/runner/work/openpipeline/openpipeline/target/nextflow/mapping/cellranger_multi"
+  executable: "/home/runner/work/openpipeline/openpipeline/target/nextflow/mapping/cellranger_multi/cellranger_multi"
+  viash_version: "0.6.4"
+  git_commit: "c0ad59f13bb79e569c657499119a6b01568c523f"
+  git_remote: "https://github.com/openpipelines-bio/openpipeline"

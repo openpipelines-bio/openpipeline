@@ -1,0 +1,258 @@
+functionality:
+  name: "scvelo"
+  namespace: "velocity"
+  version: "main_build"
+  authors:
+  - name: "Dries Schaumont"
+    email: "dries@data-intuitive.com"
+    roles:
+    - "maintainer"
+    props:
+      github: "DriesSchaumont"
+      orcid: "0000-0002-4389-0440"
+  inputs: []
+  outputs: []
+  arguments: []
+  argument_groups:
+  - name: "Inputs"
+    arguments:
+    - type: "file"
+      name: "--input"
+      alternatives: []
+      description: "Velocyto loom file."
+      example: []
+      default: []
+      must_exist: true
+      create_parent: true
+      required: true
+      direction: "input"
+      multiple: false
+      multiple_sep: ":"
+      dest: "par"
+  - name: "Outputs"
+    arguments:
+    - type: "file"
+      name: "--output"
+      alternatives: []
+      description: "Output directory. If it does not exist, will be created."
+      example: []
+      default: []
+      must_exist: true
+      create_parent: true
+      required: true
+      direction: "output"
+      multiple: false
+      multiple_sep: ":"
+      dest: "par"
+  - name: "Filtering and normalization"
+    description: "Arguments for filtering, normalization an log transform (see scvelo.pp.filter_and_normalize\
+      \ function)"
+    arguments:
+    - type: "integer"
+      name: "--min_counts"
+      alternatives: []
+      description: "Minimum number of counts required for a gene to pass filtering\
+        \ (spliced)."
+      example: []
+      default: []
+      required: false
+      choices: []
+      direction: "input"
+      multiple: false
+      multiple_sep: ":"
+      dest: "par"
+    - type: "integer"
+      name: "--min_counts_u"
+      alternatives: []
+      description: "Minimum number of counts required for a gene to pass filtering\
+        \ (unspliced)."
+      example: []
+      default: []
+      required: false
+      choices: []
+      direction: "input"
+      multiple: false
+      multiple_sep: ":"
+      dest: "par"
+    - type: "integer"
+      name: "--min_cells"
+      alternatives: []
+      description: "Minimum number of cells expressed required to pass filtering (spliced)."
+      example: []
+      default: []
+      required: false
+      choices: []
+      direction: "input"
+      multiple: false
+      multiple_sep: ":"
+      dest: "par"
+    - type: "integer"
+      name: "--min_cells_u"
+      alternatives: []
+      description: "Minimum number of cells expressed required to pass filtering (unspliced)."
+      example: []
+      default: []
+      required: false
+      choices: []
+      direction: "input"
+      multiple: false
+      multiple_sep: ":"
+      dest: "par"
+    - type: "integer"
+      name: "--min_shared_counts"
+      alternatives: []
+      description: "Minimum number of counts (both unspliced and spliced) required\
+        \ for a gene."
+      example: []
+      default: []
+      required: false
+      choices: []
+      direction: "input"
+      multiple: false
+      multiple_sep: ":"
+      dest: "par"
+    - type: "integer"
+      name: "--min_shared_cells"
+      alternatives: []
+      description: "Minimum number of cells required to be expressed (both unspliced\
+        \ and spliced)."
+      example: []
+      default: []
+      required: false
+      choices: []
+      direction: "input"
+      multiple: false
+      multiple_sep: ":"
+      dest: "par"
+    - type: "integer"
+      name: "--n_top_genes"
+      alternatives: []
+      description: "Number of genes to keep."
+      example: []
+      default: []
+      required: false
+      choices: []
+      direction: "input"
+      multiple: false
+      multiple_sep: ":"
+      dest: "par"
+    - type: "boolean"
+      name: "--log_transform"
+      alternatives: []
+      description: "Do not log transform counts."
+      example: []
+      default:
+      - true
+      required: false
+      direction: "input"
+      multiple: false
+      multiple_sep: ":"
+      dest: "par"
+  - name: "Fitting parameters"
+    description: "Arguments for fitting the data"
+    arguments:
+    - type: "integer"
+      name: "--n_principal_components"
+      alternatives: []
+      description: "Number of principal components to use for calculating moments."
+      example: []
+      default: []
+      required: false
+      choices: []
+      direction: "input"
+      multiple: false
+      multiple_sep: ":"
+      dest: "par"
+    - type: "integer"
+      name: "--n_neighbors"
+      alternatives: []
+      description: "Number of neighbors to use. First/second-order moments are computed\
+        \ for each\ncell across its nearest neighbors, where the neighbor graph is\
+        \ obtained from\neuclidean distances in PCA space.\n"
+      example: []
+      default:
+      - 30
+      required: false
+      choices: []
+      direction: "input"
+      multiple: false
+      multiple_sep: ":"
+      dest: "par"
+  resources:
+  - type: "python_script"
+    path: "script.py"
+    is_executable: true
+  test_resources:
+  - type: "python_script"
+    path: "test.py"
+    is_executable: true
+  - type: "file"
+    path: "../../../resources_test/rna_velocity/velocyto_processed/cellranger_tiny.loom"
+  status: "enabled"
+  requirements:
+    commands: []
+  set_wd_to_resources_dir: false
+platforms:
+- type: "docker"
+  id: "docker"
+  image: "python:3.9"
+  target_organization: "openpipelines-bio"
+  target_registry: "ghcr.io"
+  namespace_separator: "_"
+  resolve_volume: "Automatic"
+  chown: true
+  port: []
+  setup_strategy: "ifneedbepullelsecachedbuild"
+  run_args: []
+  target_image_source: "https://github.com/openpipelines-bio/openpipeline"
+  setup:
+  - type: "python"
+    user: false
+    packages: []
+    pip:
+    - "scvelo"
+    - "mudata"
+    - "anndata<0.8"
+    pypi: []
+    git: []
+    github: []
+    gitlab: []
+    mercurial: []
+    svn: []
+    bazaar: []
+    url: []
+    script: []
+    upgrade: true
+  test_setup: []
+- type: "native"
+  id: "native"
+- type: "nextflow"
+  id: "nextflow"
+  variant: "vdsl3"
+  directives:
+    accelerator: {}
+    conda: []
+    containerOptions: []
+    label:
+    - "highmem"
+    - "highcpu"
+    module: []
+    pod: []
+    publishDir: []
+    queue: []
+    tag: "$id"
+  auto:
+    simplifyInput: true
+    simplifyOutput: true
+    transcript: false
+    publish: false
+  debug: false
+  container: "docker"
+info:
+  config: "/home/runner/work/openpipeline/openpipeline/src/velocity/scvelo/config.vsh.yaml"
+  platform: "native"
+  output: "/home/runner/work/openpipeline/openpipeline/target/native/velocity/scvelo"
+  executable: "/home/runner/work/openpipeline/openpipeline/target/native/velocity/scvelo/scvelo"
+  viash_version: "0.6.4"
+  git_commit: "c0ad59f13bb79e569c657499119a6b01568c523f"
+  git_remote: "https://github.com/openpipelines-bio/openpipeline"
