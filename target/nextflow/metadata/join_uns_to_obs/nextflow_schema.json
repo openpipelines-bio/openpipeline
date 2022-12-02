@@ -1,7 +1,7 @@
 {
     "$schema": "http://json-schema.org/draft-07/schema",
-    "title": "run_cirrocumulus",
-    "description": "No description",
+    "title": "join_uns_to_obs",
+    "description": "Join a data frame in .uns containing metadata to the .obs of a mudata file.",
     "type": "object",
     "definitions": {
       "arguments" : {
@@ -12,17 +12,31 @@
         "properties": {
           "input": {
             "type":"string",
-            "description": "Directory to mount",
+            "description": "Input h5mu file",
             
             
-            "default": "./"
+            "default": ""
           },
-          "port": {
+          "modality": {
             "type":"string",
-            "description": "Port to use",
+            "description": "No description",
             
             
-            "default": "5005"
+            "default": "rna"
+          },
+          "uns_key": {
+            "type":"string",
+            "description": "No description",
+            
+            
+            "default": ""
+          },
+          "output": {
+            "type":"string",
+            "description": "Output h5mu file.",
+            
+            
+            "default": "$id.$key.output.h5mu"
           }
         }
       },

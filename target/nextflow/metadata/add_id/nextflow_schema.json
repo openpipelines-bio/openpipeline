@@ -1,7 +1,7 @@
 {
     "$schema": "http://json-schema.org/draft-07/schema",
-    "title": "tar_extract",
-    "description": "Extract files from a tar archive",
+    "title": "add_id",
+    "description": "Add id of .obs. Also allows to make .obs_names (the .obs index) unique \nby prefixing the values with an unique id per .h5mu file.\n",
     "type": "object",
     "definitions": {
       "arguments" : {
@@ -12,31 +12,38 @@
         "properties": {
           "input": {
             "type":"string",
-            "description": "Input file",
+            "description": "Path to the input .h5mu.",
             
             
             "default": ""
+          },
+          "input_id": {
+            "type":"string",
+            "description": "The input id.",
+            
+            
+            "default": ""
+          },
+          "obs_output": {
+            "type":"string",
+            "description": "Name of the .obs column where to store the id.",
+            
+            
+            "default": "sample_id"
           },
           "output": {
             "type":"string",
-            "description": "Folder to restore file(s) to.",
+            "description": "No description",
             
             
-            "default": "$id.$key.output.output"
+            "default": "$id.$key.output.h5mu"
           },
-          "strip_components": {
-            "type":"integer",
-            "description": "Strip this amount of leading components from file names on extraction. For example, to extract only \u0027myfile.txt\u0027 from an archive containing the structure `this/goes/deep/myfile.txt\u0027, use 3 to strip \u0027this/goes/deep/\u0027.",
+          "make_observation_keys_unique": {
+            "type":"boolean",
+            "description": "Join the id to the .obs index (.obs_names).",
             
             
-            "default": ""
-          },
-          "exclude": {
-            "type":"string",
-            "description": "Prevents any file or member whose name matches the shell wildcard (pattern) from being extracted.",
-            
-            
-            "default": ""
+            "default": "False"
           }
         }
       },
