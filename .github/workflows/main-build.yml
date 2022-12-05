@@ -18,6 +18,7 @@ jobs:
       run: |
         bin/init
         bin/viash -h
+        bin/viash --version
 
     - name: Fetch viash tools
       run: |
