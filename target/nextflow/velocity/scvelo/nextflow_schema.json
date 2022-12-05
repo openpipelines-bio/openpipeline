@@ -9,11 +9,9 @@
         "type": "object",
         "description": "No description",
         "default": "",
-        "properties": {
-          "input": {
+        "properties": {"input": {
             "type":"string",
             "description": "Velocyto loom file.",
-            
             
             "default": ""
           }
@@ -24,11 +22,9 @@
         "type": "object",
         "description": "No description",
         "default": "",
-        "properties": {
-          "output": {
+        "properties": {"output": {
             "type":"string",
             "description": "Output directory. If it does not exist, will be created.",
-            
             
             "default": "$id.$key.output.output"
           }
@@ -39,60 +35,44 @@
         "type": "object",
         "description": "Arguments for filtering, normalization an log transform (see scvelo.pp.filter_and_normalize function)",
         "default": "",
-        "properties": {
-          "min_counts": {
+        "properties": {"min_counts": {
             "type":"integer",
             "description": "Minimum number of counts required for a gene to pass filtering (spliced).",
             
-            
             "default": ""
-          },
-          "min_counts_u": {
+          },"min_counts_u": {
             "type":"integer",
             "description": "Minimum number of counts required for a gene to pass filtering (unspliced).",
             
-            
             "default": ""
-          },
-          "min_cells": {
+          },"min_cells": {
             "type":"integer",
             "description": "Minimum number of cells expressed required to pass filtering (spliced).",
             
-            
             "default": ""
-          },
-          "min_cells_u": {
+          },"min_cells_u": {
             "type":"integer",
             "description": "Minimum number of cells expressed required to pass filtering (unspliced).",
             
-            
             "default": ""
-          },
-          "min_shared_counts": {
+          },"min_shared_counts": {
             "type":"integer",
             "description": "Minimum number of counts (both unspliced and spliced) required for a gene.",
             
-            
             "default": ""
-          },
-          "min_shared_cells": {
+          },"min_shared_cells": {
             "type":"integer",
             "description": "Minimum number of cells required to be expressed (both unspliced and spliced).",
             
-            
             "default": ""
-          },
-          "n_top_genes": {
+          },"n_top_genes": {
             "type":"integer",
             "description": "Number of genes to keep.",
             
-            
             "default": ""
-          },
-          "log_transform": {
+          },"log_transform": {
             "type":"boolean",
             "description": "Do not log transform counts.",
-            
             
             "default": "True"
           }
@@ -103,18 +83,14 @@
         "type": "object",
         "description": "Arguments for fitting the data",
         "default": "",
-        "properties": {
-          "n_principal_components": {
+        "properties": {"n_principal_components": {
             "type":"integer",
             "description": "Number of principal components to use for calculating moments.",
             
-            
             "default": ""
-          },
-          "n_neighbors": {
+          },"n_neighbors": {
             "type":"integer",
-            "description": "Number of neighbors to use. First/second-order moments are computed for each\ncell across its nearest neighbors, where the neighbor graph is obtained from\neuclidean distances in PCA space.\n",
-            
+            "description": "Number of neighbors to use. First/second-order moments are computed for each","help_text": "Number of neighbors to use. First/second-order moments are computed for each\ncell across its nearest neighbors, where the neighbor graph is obtained from\neuclidean distances in PCA space.\n",
             
             "default": "30"
           }
@@ -125,18 +101,14 @@
         "type": "object",
         "description": "Input/output parameters for Nextflow itself. Please note that both publishDir and publish_dir are supported but at least one has to be configured.",
         "default": "",
-        "properties": {
-          "publish_dir": {
+        "properties": {"publish_dir": {
             "type":"string",
             "description": "Path to an output directory.",
             
-            
             "default": ""
-          },
-          "param_list": {
+          },"param_list": {
             "type":"string",
-            "description": "Allows inputting multiple parameter sets to initialise a Nextflow channel. A `param_list` can either be a list of maps, a csv file, a json file, a yaml file, or simply a yaml blob.\n\n* A list of maps (as-is) where the keys of each map corresponds to the arguments of the pipeline. Example: in a `nextflow.config` file: `param_list: [ [\u0027id\u0027: \u0027foo\u0027, \u0027input\u0027: \u0027foo.txt\u0027], [\u0027id\u0027: \u0027bar\u0027, \u0027input\u0027: \u0027bar.txt\u0027] ]`.\n* A csv file should have column names which correspond to the different arguments of this pipeline. Example: `--param_list data.csv` with columns `id,input`.\n* A json or a yaml file should be a list of maps, each of which has keys corresponding to the arguments of the pipeline. Example: `--param_list data.json` with contents `[ {\u0027id\u0027: \u0027foo\u0027, \u0027input\u0027: \u0027foo.txt\u0027}, {\u0027id\u0027: \u0027bar\u0027, \u0027input\u0027: \u0027bar.txt\u0027} ]`.\n* A yaml blob can also be passed directly as a string. Example: `--param_list \"[ {\u0027id\u0027: \u0027foo\u0027, \u0027input\u0027: \u0027foo.txt\u0027}, {\u0027id\u0027: \u0027bar\u0027, \u0027input\u0027: \u0027bar.txt\u0027} ]\"`.\n\nWhen passing a csv, json or yaml file, relative path names are relativized to the location of the parameter file. No relativation is performed when `param_list` is a list of maps (as-is) or a yaml blob.",
-            "hidden": true,
+            "description": "Allows inputting multiple parameter sets to initialise a Nextflow channel. A `param_list` can either be a list of maps, a csv file, a json file, a yaml file, or simply a yaml blob.","help_text": "Allows inputting multiple parameter sets to initialise a Nextflow channel. A `param_list` can either be a list of maps, a csv file, a json file, a yaml file, or simply a yaml blob.\n\n* A list of maps (as-is) where the keys of each map corresponds to the arguments of the pipeline. Example: in a `nextflow.config` file: `param_list: [ [\u0027id\u0027: \u0027foo\u0027, \u0027input\u0027: \u0027foo.txt\u0027], [\u0027id\u0027: \u0027bar\u0027, \u0027input\u0027: \u0027bar.txt\u0027] ]`.\n* A csv file should have column names which correspond to the different arguments of this pipeline. Example: `--param_list data.csv` with columns `id,input`.\n* A json or a yaml file should be a list of maps, each of which has keys corresponding to the arguments of the pipeline. Example: `--param_list data.json` with contents `[ {\u0027id\u0027: \u0027foo\u0027, \u0027input\u0027: \u0027foo.txt\u0027}, {\u0027id\u0027: \u0027bar\u0027, \u0027input\u0027: \u0027bar.txt\u0027} ]`.\n* A yaml blob can also be passed directly as a string. Example: `--param_list \"[ {\u0027id\u0027: \u0027foo\u0027, \u0027input\u0027: \u0027foo.txt\u0027}, {\u0027id\u0027: \u0027bar\u0027, \u0027input\u0027: \u0027bar.txt\u0027} ]\"`.\n\nWhen passing a csv, json or yaml file, relative path names are relativized to the location of the parameter file. No relativation is performed when `param_list` is a list of maps (as-is) or a yaml blob.","hidden": true,
             
             "default": ""
           }

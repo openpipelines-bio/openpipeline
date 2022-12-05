@@ -155,7 +155,7 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
     "config" : "/home/runner/work/openpipeline/openpipeline/src/convert/from_velocyto_to_h5mu/config.vsh.yaml",
     "platform" : "nextflow",
     "viash_version" : "0.6.5",
-    "git_commit" : "768240f8faea8104fcd4a8e76bec4e94eb151787",
+    "git_commit" : "6639077486e644d7d5f78577276ea736b2c34917",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))
