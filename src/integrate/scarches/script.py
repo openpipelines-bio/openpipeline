@@ -157,7 +157,7 @@ def main():
     logger = _setup_logger()
 
     mdata_query = mudata.read(par["input"].strip())
-    adata_query = mdata_query.mod[par["modality"]]
+    adata_query = mdata_query.mod[par["modality"]].copy()
 
     if "dataset" not in adata_query.obs.columns:
         # Write name of the dataset as batch variable
