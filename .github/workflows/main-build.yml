@@ -88,7 +88,9 @@ jobs:
     # store component locations
     - id: set_matrix
       run: |
-        component_json=$(bin/viash ns exec -s workfows -p docker -a 'bin/viash config view --format json --parse_argument_groups {}' | jq -s | jq -c '[ .[] | { "name": .functionality.name, "namespace": .functionality.namespace, "config": .info.config } ]')
+        component_json_ingestion=$(bin/viash ns exec -s workflows/ingestion/ -a 'bin/viash config view -p docker --format json --parse_argument_groups {}' | jq -s . | jq -c '[ .[] | { "name": .functionality.name, "namespace": .functionality.namespace, "config": .info.config } ]')
+        component_json_multiomics=$(bin/viash ns exec -s workflows/multiomics/ -a 'bin/viash config view -p docker --format json --parse_argument_groups {}' | jq -s . | jq -c '[ .[] | { "name": .functionality.name, "namespace": .functionality.namespace, "config": .info.config } ]')
+        component_json=$(jq -r -n -c --arg data "$component_json_ingestion" --arg data2 "$component_json_multiomics" '$data + $data2')
         echo "component_matrix=$component_json" >> $GITHUB_OUTPUT
     outputs:
       component_matrix: ${{ steps.set_matrix.outputs.component_matrix }}
