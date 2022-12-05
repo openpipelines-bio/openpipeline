@@ -184,24 +184,21 @@ def main():
 
     logger.info("Trying to write latent representation")
     output_key = par["obsm_output"].format(model_name=model_name)
-    adata_query.obsm[output_key] = vae_query.get_latent_representation()
-    
+    mdata_query.mod[par["modality"]].obsm[output_key] = vae_query.get_latent_representation()
+
     logger.info("Converting dtypes")
-    adata_query = _convert_object_dtypes_to_strings(adata_query)
+    mdata_query.mod[par["modality"]] = _convert_object_dtypes_to_strings(mdata_query.mod[par["modality"]])
 
-    logger.info("Creating new mudata object")
-
-    new_data = {}  # Map from modalities names to adata objects
-    for modality in mdata_query.mod.keys():
-        if modality == par["modality"]:
-            new_data[modality] = adata_query
-        else:
-            new_data[modality] = mdata_query.mod[modality]
-
-    new_mdata = mudata.MuData(new_data)
+    logger.info("Updating mudata")
+    try:
+        mdata_query.update()  # Without that error might be thrown during file saving
+    except KeyError:
+        # Sometimes this error is thrown, but then everything is magically fixed, and the file gets saved normally
+        # This is discussed here a bit: https://github.com/scverse/mudata/issues/27
+        logger.warning("KeyError was thrown during updating mudata. Probably, the file is fixed after that, but be careful")
 
     logger.info("Saving h5mu file")
-    new_mdata.write_h5mu(par["output"].strip())
+    mdata_query.write_h5mu(par["output"].strip())
 
     logger.info("Saving model")
     vae_query.save(par["model_output"], overwrite=True)
