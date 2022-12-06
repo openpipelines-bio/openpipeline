@@ -1,7 +1,7 @@
 from __future__ import annotations
 import logging
 import anndata
-import muon as mu
+import mudata as mu
 from sys import stdout
 import pandas as pd
 import numpy as np

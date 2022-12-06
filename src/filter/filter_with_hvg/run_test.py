@@ -1,7 +1,7 @@
 import os
 import subprocess
 import scanpy as sc
-import muon
+import mudata as mu
 import logging
 from sys import stdout
 ## VIASH START
@@ -23,7 +23,7 @@ input_path = "lognormed.h5mu"
 output_path = "output.h5mu"
 
 logger.info("> Prepare test data")
-mu_in = muon.read_h5mu(orig_input_path)
+mu_in = mu.read_h5mu(orig_input_path)
 rna_in = mu_in.mod["rna"]
 assert "filter_with_hvg" not in rna_in.var.columns
 sc.pp.log1p(rna_in)
@@ -41,7 +41,7 @@ out = subprocess.check_output(
 
 logger.info("> Check output file exists")
 assert os.path.exists(output_path)
-data = muon.read_h5mu(output_path)
+data = mu.read_h5mu(output_path)
 
 logger.info("> Check whether column has been added")
 assert "filter_with_hvg" in data.mod["rna"].var.columns
