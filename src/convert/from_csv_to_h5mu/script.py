@@ -1,7 +1,7 @@
 import json
 import scanpy as sc
 import scipy
-import muon as mu
+import mudata as mu
 import anndata
 import logging
 from sys import stdout
@@ -39,13 +39,13 @@ data.var_names_make_unique()
 data.X = scipy.sparse.csr_matrix(data.X)
 data.raw = data
 
-muon = mu.MuData({"rna": data})
+mudata_obj = mu.MuData({"rna": data})
 
 for key, value in json.loads(par["conversions_obsm"]).items():
     if key in data.obsm:
-        muon.mod[value] = anndata.AnnData(data.obsm[key])
-        del muon["rna"].obsm[key]
+        mudata_obj.mod[value] = anndata.AnnData(data.obsm[key])
+        del mudata_obj["rna"].obsm[key]
 
 logger.info("Writing %s.", par["output"])
-muon.write_h5mu(filename=par["output"])
+mudata_obj.write_h5mu(filename=par["output"])
 logger.info("Finished")

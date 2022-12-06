@@ -111,7 +111,6 @@ platforms:
         packages:
           - scanpy~=1.9.1
           - scrublet
-          - muon
           - mudata~=0.2.0
           - anndata~=0.8.0
   - type: nextflow
