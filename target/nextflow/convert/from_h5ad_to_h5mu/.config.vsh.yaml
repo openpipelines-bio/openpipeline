@@ -43,7 +43,7 @@ functionality:
     name: "--output"
     alternatives:
     - "-o"
-    description: "Output muon file."
+    description: "Output MuData file."
     example: []
     default:
     - "output.h5mu"
@@ -59,7 +59,7 @@ functionality:
   - type: "python_script"
     path: "script.py"
     is_executable: true
-  description: "Converts a single layer h5ad file into a single muon object\n"
+  description: "Converts a single layer h5ad file into a single MuData object\n"
   test_resources:
   - type: "python_script"
     path: "run_test.py"
@@ -87,7 +87,6 @@ platforms:
   - type: "python"
     user: false
     packages:
-    - "muon"
     - "mudata~=0.2.0"
     - "anndata~=0.8.0"
     pip: []
@@ -128,5 +127,5 @@ info:
   output: "/home/runner/work/openpipeline/openpipeline/target/nextflow/convert/from_h5ad_to_h5mu"
   executable: "/home/runner/work/openpipeline/openpipeline/target/nextflow/convert/from_h5ad_to_h5mu/from_h5ad_to_h5mu"
   viash_version: "0.6.6"
-  git_commit: "9e8c688f873c6fe69b0ab0eecdad1876950416e8"
+  git_commit: "8adc96324092b74bfa79b06bbe891080ddd458a4"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"

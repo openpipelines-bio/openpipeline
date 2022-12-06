@@ -1,7 +1,7 @@
 {
     "$schema": "http://json-schema.org/draft-07/schema",
     "title": "from_h5ad_to_h5mu",
-    "description": "Converts a single layer h5ad file into a single muon object\n",
+    "description": "Converts a single layer h5ad file into a single MuData object\n",
     "type": "object",
     "definitions": {
       "arguments" : {
@@ -21,7 +21,7 @@
             "default": "rna"
           },"output": {
             "type":"string",
-            "description": "Output muon file.",
+            "description": "Output MuData file.",
             
             "default": "$id.$key.output.h5mu"
           }

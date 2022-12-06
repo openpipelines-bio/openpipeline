@@ -1,5 +1,5 @@
 import scanpy as sc
-import muon as mu
+import mudata as mu
 import logging 
 from sys import stdout
 ## VIASH START

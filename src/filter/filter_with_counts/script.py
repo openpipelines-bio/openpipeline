@@ -1,5 +1,5 @@
 
-import muon
+import mudata as mu
 import numpy as np
 import logging
 from sys import stdout
@@ -33,7 +33,7 @@ console_handler.setFormatter(logFormatter)
 logger.addHandler(console_handler)
 
 logger.info("Reading input data")
-mdata = muon.read_h5mu(par["input"])
+mdata = mu.read_h5mu(par["input"])
 
 mdata.var_names_make_unique()
 

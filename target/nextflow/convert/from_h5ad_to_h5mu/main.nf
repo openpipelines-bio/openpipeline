@@ -77,7 +77,7 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
         "alternatives" : [
           "-o"
         ],
-        "description" : "Output muon file.",
+        "description" : "Output MuData file.",
         "default" : [
           "output.h5mu"
         ],
@@ -98,7 +98,7 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
         "parent" : "file:/home/runner/work/openpipeline/openpipeline/src/convert/from_h5ad_to_h5mu/config.vsh.yaml"
       }
     ],
-    "description" : "Converts a single layer h5ad file into a single muon object\n",
+    "description" : "Converts a single layer h5ad file into a single MuData object\n",
     "test_resources" : [
       {
         "type" : "python_script",
@@ -132,7 +132,6 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
           "type" : "python",
           "user" : false,
           "packages" : [
-            "muon",
             "mudata~=0.2.0",
             "anndata~=0.8.0"
           ],
@@ -161,7 +160,7 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
     "config" : "/home/runner/work/openpipeline/openpipeline/src/convert/from_h5ad_to_h5mu/config.vsh.yaml",
     "platform" : "nextflow",
     "viash_version" : "0.6.6",
-    "git_commit" : "9e8c688f873c6fe69b0ab0eecdad1876950416e8",
+    "git_commit" : "8adc96324092b74bfa79b06bbe891080ddd458a4",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))
@@ -170,7 +169,7 @@ thisScript = '''set -e
 tempscript=".viash_script.sh"
 cat > "$tempscript" << VIASHMAIN
 
-import muon as mu
+import mudata as mu
 import anndata
 import logging
 from sys import stdout
@@ -216,16 +215,16 @@ try:
 except:
     pass
 
-logger.info("Converting to muon")
-muon = mu.MuData(data)
+logger.info("Converting to mudata")
+mudata = mu.MuData(data)
 
 try:
-    muon.var_names_make_unique()
+    mudata.var_names_make_unique()
 except:
     pass
 
 logger.info("Writing to %s.", par['output'])
-muon.write_h5mu(par["output"])
+mudata.write_h5mu(par["output"])
 
 logger.info("Finished")
 

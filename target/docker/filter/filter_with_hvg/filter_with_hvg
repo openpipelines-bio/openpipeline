@@ -495,13 +495,13 @@ function ViashDockerfile {
 FROM python:3.8
 
 RUN pip install --upgrade pip && \
-  pip install --upgrade --no-cache-dir "git+https://github.com/scverse/scanpy.git@master" "muon" "mudata~=0.2.0" "anndata~=0.8.0"
+  pip install --upgrade --no-cache-dir "git+https://github.com/scverse/scanpy.git@master" "mudata~=0.2.0" "anndata~=0.8.0"
 
 LABEL org.opencontainers.image.authors="Dries De Maeyer, Robrecht Cannoodt"
 LABEL org.opencontainers.image.description="Companion container for running component filter filter_with_hvg"
-LABEL org.opencontainers.image.created="2022-12-06T09:48:27Z"
+LABEL org.opencontainers.image.created="2022-12-06T10:03:41Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="9e8c688f873c6fe69b0ab0eecdad1876950416e8"
+LABEL org.opencontainers.image.revision="8adc96324092b74bfa79b06bbe891080ddd458a4"
 LABEL org.opencontainers.image.version="main_build"
 VIASHDOCKER
 }
@@ -1168,7 +1168,7 @@ trap interrupt INT SIGINT
 cat > "\$tempscript" << 'VIASHMAIN'
 
 import scanpy as sc
-import muon as mu
+import mudata as mu
 import numpy as np
 import logging
 from sys import stdout
@@ -1269,7 +1269,7 @@ if par.get("var_name_filter", None) is not None:
     data.var[par["var_name_filter"]] = out["highly_variable"]
 
 if par.get("varm_name", None) is not None:
-    # drop mean_bin as muon/anndata doesn't support tuples
+    # drop mean_bin as mudata/anndata doesn't support tuples
     data.varm[par["varm_name"]] = out.drop("mean_bin", axis=1)
 
 if par["do_subset"]:

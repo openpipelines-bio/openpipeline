@@ -163,7 +163,6 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
           "type" : "python",
           "user" : false,
           "packages" : [
-            "muon",
             "mudata~=0.2.0",
             "anndata~=0.8.0"
           ],
@@ -196,7 +195,7 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
     "config" : "/home/runner/work/openpipeline/openpipeline/src/dataflow/split_modalities/config.vsh.yaml",
     "platform" : "nextflow",
     "viash_version" : "0.6.6",
-    "git_commit" : "9e8c688f873c6fe69b0ab0eecdad1876950416e8",
+    "git_commit" : "8adc96324092b74bfa79b06bbe891080ddd458a4",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))

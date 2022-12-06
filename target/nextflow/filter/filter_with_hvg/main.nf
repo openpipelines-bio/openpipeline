@@ -292,7 +292,6 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
           "user" : false,
           "packages" : [
             "git+https://github.com/scverse/scanpy.git@master",
-            "muon",
             "mudata~=0.2.0",
             "anndata~=0.8.0"
           ],
@@ -321,7 +320,7 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
     "config" : "/home/runner/work/openpipeline/openpipeline/src/filter/filter_with_hvg/config.vsh.yaml",
     "platform" : "nextflow",
     "viash_version" : "0.6.6",
-    "git_commit" : "9e8c688f873c6fe69b0ab0eecdad1876950416e8",
+    "git_commit" : "8adc96324092b74bfa79b06bbe891080ddd458a4",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))
@@ -331,7 +330,7 @@ tempscript=".viash_script.sh"
 cat > "$tempscript" << VIASHMAIN
 
 import scanpy as sc
-import muon as mu
+import mudata as mu
 import numpy as np
 import logging
 from sys import stdout
@@ -432,7 +431,7 @@ if par.get("var_name_filter", None) is not None:
     data.var[par["var_name_filter"]] = out["highly_variable"]
 
 if par.get("varm_name", None) is not None:
-    # drop mean_bin as muon/anndata doesn't support tuples
+    # drop mean_bin as mudata/anndata doesn't support tuples
     data.varm[par["varm_name"]] = out.drop("mean_bin", axis=1)
 
 if par["do_subset"]:

@@ -406,13 +406,13 @@ function ViashDockerfile {
 FROM python:3.10
 
 RUN pip install --upgrade pip && \
-  pip install --upgrade --no-cache-dir "muon" "mudata~=0.2.0" "anndata~=0.8.0"
+  pip install --upgrade --no-cache-dir "mudata~=0.2.0" "anndata~=0.8.0"
 
 LABEL org.opencontainers.image.authors="Dries Schaumont, Robrecht Cannoodt"
 LABEL org.opencontainers.image.description="Companion container for running component dataflow split_modalities"
-LABEL org.opencontainers.image.created="2022-12-06T09:48:26Z"
+LABEL org.opencontainers.image.created="2022-12-06T10:03:40Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="9e8c688f873c6fe69b0ab0eecdad1876950416e8"
+LABEL org.opencontainers.image.revision="8adc96324092b74bfa79b06bbe891080ddd458a4"
 LABEL org.opencontainers.image.version="main_build"
 VIASHDOCKER
 }
