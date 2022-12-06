@@ -20,7 +20,7 @@
 
 * `reference/make_reference`: Input files changed from `type: string` to `type: file` to allow Nextflow to cache the input files fetched from URL.
 
-* several components (except `from_h5ad_to_5hmu`): the `--modality` arguments no longer accept multiple values.
+* several components (except `from_h5ad_to_h5mu`): the `--modality` arguments no longer accept multiple values.
 
 * Remove outdated `resources_test_scripts`.
 
