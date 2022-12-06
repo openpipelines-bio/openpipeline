@@ -85,11 +85,10 @@ jobs:
     # store component locations
     - id: set_matrix
       run: |
-        component_json=$(bin/viash ns exec -p docker -s src -a 'bin/viash config view -p docker --format json --parse_argument_groups {}' | jq -s . | jq -c '[ .[] | { "name": .functionality.name, "namespace": .functionality.namespace, "config": .info.config } ]')
-        echo "component_matrix=$component_json" >> $GITHUB_OUTPUT
-    outputs:
-      component_matrix: ${{ steps.set_matrix.outputs.component_matrix }}
-      cachehash: ${{ steps.cachehash.outputs.cachehash }}
+        component_json=$(bin/viash ns list -p docker --format json | jq -c '[ .[] | { "name": .functionality.name, "namespace": .functionality.namespace, "config": .info.config } ]')
+      outputs:
+        component_matrix: ${{ steps.set_matrix.outputs.component_matrix }}
+        cachehash: ${{ steps.cachehash.outputs.cachehash }}
 
   # phase 2
   build_containers:
