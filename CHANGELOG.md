@@ -4,6 +4,8 @@
 
 * `mapping/star_align`: Align `.fastq` files using STAR.
 
+* `mapping/cellranger_multi`: Align fastq files using Cell Ranger multi.
+
 ## MINOR CHANGES
 
 * Set the `tag` directive of all Nextflow components to '$id'.
