@@ -2,6 +2,8 @@
 
 ## NEW FUNCTIONALITY
 
+* `workflows/ingestion/cellranger_multi`: Run Cell Ranger multi and convert the output to .h5mu.
+
 * `mapping/star_align`: Align `.fastq` files using STAR.
 
 * `mapping/cellranger_multi`: Align fastq files using Cell Ranger multi.
