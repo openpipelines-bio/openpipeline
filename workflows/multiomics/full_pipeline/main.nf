@@ -79,7 +79,7 @@ workflow run_wf {
       new_data = ["id": list.collect{it[0]}, "input": list.collect{it[1]}]
       ["combined_prot", new_data] + list[0].drop(2)
     }
-    // | atac_multisample
+    // | prot_multisample
     | concat.run(renameKeys: [input_id: "id"])
 
   // TODO: adapt when atac_singlesample and atac_multisample are implemented
@@ -119,7 +119,7 @@ workflow run_wf {
       new_data = ["id": list.collect{it[0]}, "input": list.collect{it[1]}]
       ["combined_vdj_b", new_data] + list[0].drop(2)
     }
-    // | vdj_multisample
+    // | vdj_b_multisample
     | concat.run(renameKeys: [input_id: "id"])
 
 
