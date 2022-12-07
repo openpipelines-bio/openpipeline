@@ -70,6 +70,18 @@ workflow run_wf {
     }
     | rna_multisample
 
+   prot_ch = start_ch
+    | filter{ it[2].modality == "prot" }
+    // | atac_singlesample
+    | toSortedList{ a, b -> b[0] <=> a[0] }
+    | filter { it.size() != 0 } // filter when event is empty
+    | pmap{ list -> 
+      new_data = ["id": list.collect{it[0]}, "input": list.collect{it[1]}]
+      ["combined_prot", new_data] + list[0].drop(2)
+    }
+    // | prot_multisample
+    | concat.run(renameKeys: [input_id: "id"])
+
   // TODO: adapt when atac_singlesample and atac_multisample are implemented
   // remove concat when atac_multisample is implemented
   atac_ch = start_ch
@@ -98,7 +110,32 @@ workflow run_wf {
     // | vdj_multisample
     | concat.run(renameKeys: [input_id: "id"])
 
-  output_ch = rna_ch.concat(atac_ch, vdj_ch)
+      vdj_b_ch = start_ch
+    | filter{ it[2].modality == "vdj_b" }
+    // | vdj_singlesample
+    | toSortedList{ a, b -> b[0] <=> a[0] }
+    | filter { it.size() != 0 } // filter when event is empty
+    | pmap{ list -> 
+      new_data = ["id": list.collect{it[0]}, "input": list.collect{it[1]}]
+      ["combined_vdj_b", new_data] + list[0].drop(2)
+    }
+    // | vdj_b_multisample
+    | concat.run(renameKeys: [input_id: "id"])
+
+
+  vdj_t_ch = start_ch
+    | filter{ it[2].modality == "vdj_t" }
+    // | vdj_singlesample
+    | toSortedList{ a, b -> b[0] <=> a[0] }
+    | filter { it.size() != 0 } // filter when event is empty
+    | pmap{ list -> 
+      new_data = ["id": list.collect{it[0]}, "input": list.collect{it[1]}]
+      ["combined_vdj_t", new_data] + list[0].drop(2)
+    }
+    | concat.run(renameKeys: [input_id: "id"])
+
+
+  output_ch = rna_ch.concat(atac_ch, vdj_ch, vdj_b_ch, vdj_t_ch, prot)
     | toSortedList{ a, b -> b[0] <=> a[0] }
     | map { list -> 
       ["merged", list.collect{it[1]}] + list[0].drop(2)
