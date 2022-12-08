@@ -416,9 +416,9 @@ FROM ubuntu:jammy
 RUN apt update && apt upgrade -y
 LABEL org.opencontainers.image.authors="Angela Pisco, Samuel D'Souza, Robrecht Cannoodt"
 LABEL org.opencontainers.image.description="Companion container for running component mapping cellranger_count_split"
-LABEL org.opencontainers.image.created="2022-12-06T11:33:41Z"
+LABEL org.opencontainers.image.created="2022-12-08T09:31:32Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="bede7e369379d934074471de6d35129bffbeef81"
+LABEL org.opencontainers.image.revision="19be8c861135b36e751a462d800be645b4d8c860"
 LABEL org.opencontainers.image.version="main_build"
 VIASHDOCKER
 }

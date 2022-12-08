@@ -3,7 +3,6 @@ nextflow.enable.dsl=2
 workflowDir = params.rootDir + "/workflows"
 targetDir = params.rootDir + "/target/nextflow"
 
-include { cellranger_mkfastq } from targetDir + "/demux/cellranger_mkfastq/main.nf"
 include { cellranger_count } from targetDir + "/mapping/cellranger_count/main.nf"
 include { cellranger_count_split } from targetDir + "/mapping/cellranger_count_split/main.nf"
 include { from_10xh5_to_h5mu } from targetDir + "/convert/from_10xh5_to_h5mu/main.nf"

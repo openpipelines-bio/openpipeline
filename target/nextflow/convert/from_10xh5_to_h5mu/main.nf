@@ -91,6 +91,93 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
               "-o"
             ],
             "description" : "Output h5mu file.",
+            "info" : {
+              "slots" : {
+                "mod" : [
+                  {
+                    "name" : "rna",
+                    "required" : true,
+                    "description" : "Gene expression counts.",
+                    "slots" : {
+                      "var" : [
+                        {
+                          "name" : "gene_symbol",
+                          "type" : "string",
+                          "description" : "Identification of the gene.",
+                          "required" : true
+                        },
+                        {
+                          "name" : "feature_types",
+                          "type" : "string",
+                          "description" : "The full name of the modality.",
+                          "required" : true
+                        },
+                        {
+                          "name" : "genome",
+                          "type" : "string",
+                          "description" : "Reference that was used to generate the data.",
+                          "required" : true
+                        }
+                      ]
+                    }
+                  },
+                  {
+                    "name" : "prot",
+                    "required" : false,
+                    "description" : "Protein abundancy",
+                    "slots" : {
+                      "var" : [
+                        {
+                          "name" : "gene_symbol",
+                          "type" : "string",
+                          "description" : "Identification of the gene.",
+                          "required" : true
+                        },
+                        {
+                          "name" : "feature_types",
+                          "type" : "string",
+                          "description" : "The full name of the modality.",
+                          "required" : true
+                        },
+                        {
+                          "name" : "genome",
+                          "type" : "string",
+                          "description" : "Reference that was used to generate the data.",
+                          "required" : true
+                        }
+                      ]
+                    }
+                  },
+                  {
+                    "name" : "vdj",
+                    "required" : false,
+                    "description" : "VDJ transcript counts",
+                    "slots" : {
+                      "var" : [
+                        {
+                          "name" : "gene_symbol",
+                          "type" : "string",
+                          "description" : "Identification of the gene.",
+                          "required" : true
+                        },
+                        {
+                          "name" : "feature_types",
+                          "type" : "string",
+                          "description" : "The full name of the modality.",
+                          "required" : true
+                        },
+                        {
+                          "name" : "genome",
+                          "type" : "string",
+                          "description" : "Reference that was used to generate the data.",
+                          "required" : true
+                        }
+                      ]
+                    }
+                  }
+                ]
+              }
+            },
             "example" : [
               "output.h5mu"
             ],
@@ -220,7 +307,7 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
     "config" : "/home/runner/work/openpipeline/openpipeline/src/convert/from_10xh5_to_h5mu/config.vsh.yaml",
     "platform" : "nextflow",
     "viash_version" : "0.6.6",
-    "git_commit" : "bede7e369379d934074471de6d35129bffbeef81",
+    "git_commit" : "19be8c861135b36e751a462d800be645b4d8c860",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))
