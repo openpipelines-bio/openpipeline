@@ -135,7 +135,7 @@ workflow run_wf {
     | concat.run(renameKeys: [input_id: "id"])
 
 
-  output_ch = rna_ch.concat(atac_ch, vdj_ch, vdj_b_ch, vdj_t_ch, prot)
+  output_ch = rna_ch.concat(atac_ch, vdj_ch, vdj_b_ch, vdj_t_ch, prot_ch)
     | toSortedList{ a, b -> b[0] <=> a[0] }
     | map { list -> 
       ["merged", list.collect{it[1]}] + list[0].drop(2)
