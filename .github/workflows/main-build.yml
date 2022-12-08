@@ -86,6 +86,8 @@ jobs:
     - id: set_matrix
       run: |
         component_json=$(bin/viash ns list -p docker --format json | jq -c '[ .[] | { "name": .functionality.name, "namespace": .functionality.namespace, "config": .info.config } ]')
+        echo "component_matrix=$component_json" >> $GITHUB_OUTPUT
+
     outputs:
       component_matrix: ${{ steps.set_matrix.outputs.component_matrix }}
       cachehash: ${{ steps.cachehash.outputs.cachehash }}
