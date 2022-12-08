@@ -59,83 +59,34 @@ workflow run_wf {
       }
     }
 
-  rna_ch = start_ch
-    | filter{ it[2].modality == "rna" }
-    | rna_singlesample
-    | toSortedList{ a, b -> b[0] <=> a[0] }
-    | filter { it.size() != 0 } // filter when event is empty
-    | map{ list -> 
-      new_data = ["sample_id": list.collect{it[0]}, "input": list.collect{it[1]}]
-      ["combined_rna", new_data] + list[0].drop(2)
+    modality_processors = [
+      [id: "rna", singlesample: rna_singlesample, multisample: rna_multisample],
+      [id: "vdj_t", singlesample: null, multisample: null],
+      [id: "vdj_b", singlesample: null, multisample: null],
+      [id: "prot", singlesample: null, multisample: null],
+    ]
+
+    mod_chs = modality_processors.collect{ modality_processor ->
+      mod_ch = start_ch
+        | filter{ it[2].modality == modality_processor.id }
+
+      ss_ch = (modality_processor.singlesample ? mod_ch | modality_processor.singlesample : mod_ch)
+
+      input_ms_ch = ss_ch
+        | toSortedList{ a, b -> b[0] <=> a[0] }
+        | filter { it.size() != 0 } // filter when event is empty
+        | map{ list -> 
+          new_data = ["sample_id": list.collect{it[0]}, "input": list.collect{it[1]}]
+          ["combined_" + modality_processor.id, new_data] + list[0].drop(2)
+        }
+      return (modality_processor.multisample ? \
+              input_ms_ch | modality_processor.multisample : \
+              input_ms_ch | concat.run(key: "concat_" + modality_processor.id,
+                                       renameKeys: [input_id: "id"]))
     }
-    | rna_multisample
-
-   prot_ch = start_ch
-    | filter{ it[2].modality == "prot" }
-    // | atac_singlesample
-    | toSortedList{ a, b -> b[0] <=> a[0] }
-    | filter { it.size() != 0 } // filter when event is empty
-    | pmap{ list -> 
-      new_data = ["id": list.collect{it[0]}, "input": list.collect{it[1]}]
-      ["combined_prot", new_data] + list[0].drop(2)
-    }
-    // | prot_multisample
-    | concat.run(renameKeys: [input_id: "id"])
-
-  // TODO: adapt when atac_singlesample and atac_multisample are implemented
-  // remove concat when atac_multisample is implemented
-  atac_ch = start_ch
-    | filter{ it[2].modality == "atac" }
-    // | atac_singlesample
-    | toSortedList{ a, b -> b[0] <=> a[0] }
-    | filter { it.size() != 0 } // filter when event is empty
-    | pmap{ list -> 
-      new_data = ["id": list.collect{it[0]}, "input": list.collect{it[1]}]
-      ["combined_atac", new_data] + list[0].drop(2)
-    }
-    // | atac_multisample
-    | concat.run(renameKeys: [input_id: "id"])
-
-  // TODO: adapt when vdj_singlesample and vdj_multisample are implemented
-  // remove concat when vdj_multisample is implemented
-  vdj_ch = start_ch
-    | filter{ it[2].modality == "vdj" }
-    // | vdj_singlesample
-    | toSortedList{ a, b -> b[0] <=> a[0] }
-    | filter { it.size() != 0 } // filter when event is empty
-    | pmap{ list -> 
-      new_data = ["id": list.collect{it[0]}, "input": list.collect{it[1]}]
-      ["combined_vdj", new_data] + list[0].drop(2)
-    }
-    // | vdj_multisample
-    | concat.run(renameKeys: [input_id: "id"])
-
-      vdj_b_ch = start_ch
-    | filter{ it[2].modality == "vdj_b" }
-    // | vdj_singlesample
-    | toSortedList{ a, b -> b[0] <=> a[0] }
-    | filter { it.size() != 0 } // filter when event is empty
-    | pmap{ list -> 
-      new_data = ["id": list.collect{it[0]}, "input": list.collect{it[1]}]
-      ["combined_vdj_b", new_data] + list[0].drop(2)
-    }
-    // | vdj_b_multisample
-    | concat.run(renameKeys: [input_id: "id"])
 
 
-  vdj_t_ch = start_ch
-    | filter{ it[2].modality == "vdj_t" }
-    // | vdj_singlesample
-    | toSortedList{ a, b -> b[0] <=> a[0] }
-    | filter { it.size() != 0 } // filter when event is empty
-    | pmap{ list -> 
-      new_data = ["id": list.collect{it[0]}, "input": list.collect{it[1]}]
-      ["combined_vdj_t", new_data] + list[0].drop(2)
-    }
-    | concat.run(renameKeys: [input_id: "id"])
-
-
-  output_ch = rna_ch.concat(atac_ch, vdj_ch, vdj_b_ch, vdj_t_ch, prot_ch)
+  output_ch = mod_chs[0].concat(*mod_chs.drop(1))
     | toSortedList{ a, b -> b[0] <=> a[0] }
     | map { list -> 
       ["merged", list.collect{it[1]}] + list[0].drop(2)
