@@ -79,6 +79,7 @@ platforms:
           - anndata~=0.8.0
           - pynndescent~=0.1.1
           - numba~=0.56.4
+          - numpy~=1.23.5
   - type: nextflow
     directives:
       label: [highmem, highcpu]
