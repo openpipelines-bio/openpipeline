@@ -33,7 +33,7 @@ class TestMappingToHLCA(unittest.TestCase):
             input_data.write(tempfile_input_file.name)
             self._run_and_check_output([
                 "--input", tempfile_input_file.name,
-                "--reference", "HLCA",
+                "--reference", "https://zenodo.org/record/6337966/files/HLCA_reference_model.zip",
                 "--modality", "rna",
                 "--output", "output.h5mu",
                 "--model_output", "./model_output",

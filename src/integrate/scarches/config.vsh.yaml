@@ -19,11 +19,10 @@ functionality:
           default: "rna"
           required: false
         - name: "--reference"
-          choices: ["HLCA"]
           alternatives: ["-r"]
-          type: string
-          description: Name of the reference dataset
-          required: false
+          type: file
+          description: Path to the directory with reference model or a web link. For HLCA use https://zenodo.org/record/6337966/files/HLCA_reference_model.zip
+          required: true
           default: "HLCA"
         - name: "--dataset_name"
           type: string
