@@ -70,7 +70,9 @@ workflow run_wf {
       mod_ch = start_ch
         | filter{ it[2].modality == modality_processor.id }
 
-      ss_ch = (modality_processor.singlesample ? mod_ch | modality_processor.singlesample : mod_ch)
+      ss_ch = (modality_processor.singlesample ? \
+               mod_ch | modality_processor.singlesample : \
+               mod_ch)
 
       input_ms_ch = ss_ch
         | toSortedList{ a, b -> b[0] <=> a[0] }
