@@ -1,0 +1,84 @@
+functionality:
+  name: scvi
+  namespace: "integrate"
+  version: "dev"
+  description: "Performs label transfer from reference to query using KNN classifier"
+  authors:
+    - __merge__: ../../authors/vladimir_shitov.yaml
+      roles: [ author ]
+  argument_groups:
+    - name: Inputs
+      arguments:
+        - name: "--input"
+          alternatives: ["-i"]
+          type: file
+          description: Input h5mu file
+          direction: input
+          required: true
+        - name: "--modality"
+          type: string
+          default: "rna"
+          required: false
+        - name: "--train_data"
+          type: file
+          description: ".h5ad file with data used to train classifier. If None, HLCA is used"
+          default: "https://zenodo.org/record/6337966/files/HLCA_emb_and_metadata.h5ad"
+          required: false
+        - name: "--targets"
+          default: "ann_level_1,ann_level_2,ann_level_3,ann_level_4,ann_level_5,ann_finest_level"
+          required: true
+          multiple: true
+          multiple_sep: ","
+        - name: "--train_obsm_key"
+          type: string
+          required: false
+          description: ".obsm key of the data to use as the feature space for training classifier. If None, X is used. It is recommended to use low-dimensional representation (e.g., PCA or scvi embedding)"
+        - name: "--inference_obsm_key"
+          type: string
+          required: false
+          description: ".obsm key of the data to use as the feature space for inference of the model. If None, X is used. It is recommended to use low-dimensional representation (e.g., PCA or scvi embedding)"
+    - name: Outputs
+      arguments:
+        - name: "--output"
+          alternatives: ["-o"]
+          type: file
+          description: Output h5mu file.
+          direction: output
+          required: true
+        - name: "--obs_output_suffix"
+          type: string
+          default: "_pred"
+          required: false
+          description: "Suffix to add to each target name in .obs slot to store the predicted classes"
+    - name: "Learning parameters"
+      arguments:
+        - name: "--n_neighbors"
+          alternatives: ["k"]
+          type: integer
+          description: "Number of nearest neighbors to use for classification"
+          required: true
+  resources:
+    - type: python_script
+      path: script.py
+  test_resources:
+    - type: python_script
+      path: test.py
+    - path: ../../../resources_test/pbmc_1k_protein_v3/pbmc_1k_protein_v3_mms.h5mu
+platforms:
+  - type: docker
+    image: python:3.8
+    setup:
+      - type: apt
+        packages:
+          - libopenblas-dev
+          - liblapack-dev
+          - gfortran
+      - type: python
+        packages:
+          - mudata~=0.2.0
+          - anndata~=0.8.0
+          - pynndescent~=0.1.1
+          - numba~=0.56.4
+  - type: nextflow
+    directives:
+      label: [highmem, highcpu]
