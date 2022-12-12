@@ -19,7 +19,7 @@ functionality:
           type: string
           default: "rna"
           required: false
-        - name: "--train_data" # TODO: rename to reference?
+        - name: "--reference"
           type: file
           description: ".h5ad file with data used to train classifier. If None, HLCA is used"
           default: "https://zenodo.org/record/6337966/files/HLCA_emb_and_metadata.h5ad"
@@ -30,11 +30,11 @@ functionality:
           required: false
           multiple: true
           multiple_sep: ","
-        - name: "--train_obsm_key"
+        - name: "--reference_obsm_key"
           type: string
           required: false
           description: ".obsm key of the data to use as the feature space for training classifier. If None, X is used. It is recommended to use low-dimensional representation (e.g., PCA or scvi embedding)"
-        - name: "--inference_obsm_key"
+        - name: "--query_obsm_key"
           type: string
           required: false
           description: ".obsm key of the data to use as the feature space for inference of the model. If None, X is used. It is recommended to use low-dimensional representation (e.g., PCA or scvi embedding)"

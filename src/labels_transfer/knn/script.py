@@ -8,11 +8,11 @@ import numba
 ### VIASH START
 par = {
     "input": "resources_test/pbmc_1k_protein_v3/pbmc_1k_protein_v3_mms.h5mu",
-    "train_data": "https://zenodo.org/record/6337966/files/HLCA_emb_and_metadata.h5ad",
+    "reference": "https://zenodo.org/record/6337966/files/HLCA_emb_and_metadata.h5ad",
     "targets": ["ann_level_1", "ann_level_2", "ann_level_3", "ann_level_4", "ann_level_5", "ann_finest_level"],
     "modality": "rna",
-    "train_obsm_key": "X_integrated_scanvi",
-    "inference_obsm_key": "X_integrated_scanvi",
+    "reference_obsm_key": "X_integrated_scanvi",
+    "query_obsm_key": "X_integrated_scanvi",
     "output": "foo.h5mu",
     "obs_output_suffix": "_pred",
     "n_neighbors": 1
@@ -52,22 +52,22 @@ def main():
     mdata = mudata.read(par["input"].strip())
     adata = mdata.mod[par["modality"]]
 
-    adata_reference = sc.read(par["train_data"], backup_url=par["train_data"])
+    adata_reference = sc.read(par["reference"], backup_url=par["reference"])
 
-    if par["train_obsm_key"] is None:
+    if par["reference_obsm_key"] is None:
         X_train = adata_reference.X
     else:
-        X_train = adata_reference.obsm[par["train_obsm_key"]]
+        X_train = adata_reference.obsm[par["reference_obsm_key"]]
 
     print("X_train:")
     print(X_train)
     ref_nn_index = pynndescent.NNDescent(X_train, n_neighbors=par["n_neighbors"])
     ref_nn_index.prepare()
 
-    if par["inference_obsm_key"] is None:  # TODO: Rename to query
+    if par["query_obsm_key"] is None:  # TODO: Rename to query
         query = adata.X
     else:
-        query = adata.obsm[par["inference_obsm_key"]]
+        query = adata.obsm[par["query_obsm_key"]]
 
     print("Query:")
     print(query)
@@ -89,7 +89,8 @@ def main():
         
         adata.uns["labels_transfer"][predicted_label_col_name] = {
             "method": "KNN_pynndescent",
-            "n_neighbors": par["n_neighbors"]
+            "n_neighbors": par["n_neighbors"],
+            "reference": par["reference"]
         }
 
     mdata.mod[par['modality']] = adata
