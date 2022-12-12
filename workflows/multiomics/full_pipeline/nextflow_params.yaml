@@ -1,7 +1,7 @@
 # Inputs
 id: # please fill in - example: "foo"
 input: # please fill in - example: "input.h5mu"
-obs_covariates: # please fill in - example: ["batch", "sample"]
+obs_covariates: ["sample_id"]
 
 # Nextflow input-output arguments
 publish_dir: # please fill in - example: "output/"

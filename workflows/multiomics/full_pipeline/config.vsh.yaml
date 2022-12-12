@@ -23,8 +23,9 @@ functionality:
           type: string
           description: "The .obs field(s) that define the covariate(s) to regress out."
           example: ["batch", "sample"]
+          default: ["sample_id"]
           multiple: true
-          required: true
+          required: false
   resources:
     - type: nextflow_script
       path: main.nf
