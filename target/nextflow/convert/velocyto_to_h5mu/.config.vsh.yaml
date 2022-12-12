@@ -1,0 +1,205 @@
+functionality:
+  name: "velocyto_to_h5mu"
+  namespace: "convert"
+  version: "main_build"
+  authors:
+  - name: "Dries Schaumont"
+    email: "dries@data-intuitive.com"
+    roles:
+    - "maintainer"
+    - "author"
+    props:
+      github: "DriesSchaumont"
+      orcid: "0000-0002-4389-0440"
+  - name: "Robrecht Cannoodt"
+    email: "robrecht@data-intuitive.com"
+    roles:
+    - "author"
+    props:
+      github: "rcannood"
+      orcid: "0000-0003-3641-729X"
+  - name: "Angela Pisco"
+    roles:
+    - "contributor"
+    props:
+      github: "aopisco"
+      orcid: "0000-0003-0142-2355"
+  inputs: []
+  outputs: []
+  arguments: []
+  argument_groups:
+  - name: "Inputs"
+    arguments:
+    - type: "file"
+      name: "--input_loom"
+      alternatives: []
+      description: "Path to the input loom file."
+      example:
+      - "input.loom"
+      default: []
+      must_exist: true
+      create_parent: true
+      required: true
+      direction: "input"
+      multiple: false
+      multiple_sep: ":"
+      dest: "par"
+    - type: "file"
+      name: "--input_h5mu"
+      alternatives: []
+      description: "If a MuData file is provided,"
+      example:
+      - "input.h5mu"
+      default: []
+      must_exist: true
+      create_parent: true
+      required: false
+      direction: "input"
+      multiple: false
+      multiple_sep: ":"
+      dest: "par"
+    - type: "string"
+      name: "--modality"
+      alternatives: []
+      description: "The name of the modality to operate on."
+      example: []
+      default:
+      - "rna_velocity"
+      required: false
+      choices: []
+      direction: "input"
+      multiple: false
+      multiple_sep: ":"
+      dest: "par"
+  - name: "Outputs"
+    arguments:
+    - type: "file"
+      name: "--output"
+      alternatives: []
+      description: "Path to the output MuData file."
+      example:
+      - "output.h5mu"
+      default: []
+      must_exist: true
+      create_parent: true
+      required: false
+      direction: "output"
+      multiple: false
+      multiple_sep: ":"
+      dest: "par"
+    - type: "string"
+      name: "--layer_spliced"
+      alternatives: []
+      description: "Output layer for the spliced reads."
+      example: []
+      default:
+      - "velo_spliced"
+      required: false
+      choices: []
+      direction: "input"
+      multiple: false
+      multiple_sep: ":"
+      dest: "par"
+    - type: "string"
+      name: "--layer_unspliced"
+      alternatives: []
+      description: "Output layer for the unspliced reads."
+      example: []
+      default:
+      - "velo_unspliced"
+      required: false
+      choices: []
+      direction: "input"
+      multiple: false
+      multiple_sep: ":"
+      dest: "par"
+    - type: "string"
+      name: "--layer_ambiguous"
+      alternatives: []
+      description: "Output layer for the ambiguous reads."
+      example: []
+      default:
+      - "velo_ambiguous"
+      required: false
+      choices: []
+      direction: "input"
+      multiple: false
+      multiple_sep: ":"
+      dest: "par"
+  resources:
+  - type: "python_script"
+    path: "script.py"
+    is_executable: true
+  description: "Convert a velocyto loom file to a h5mu file.\n\nIf an input h5mu file\
+    \ is also provided, the velocity\nh5ad object will get added to that h5mu instead.\n"
+  test_resources:
+  - type: "python_script"
+    path: "test.py"
+    is_executable: true
+  - type: "file"
+    path: "../../../resources_test/cellranger_tiny_fastq"
+  status: "enabled"
+  requirements:
+    commands: []
+  set_wd_to_resources_dir: false
+platforms:
+- type: "docker"
+  id: "docker"
+  image: "python:3.10"
+  target_organization: "openpipelines-bio"
+  target_registry: "ghcr.io"
+  namespace_separator: "_"
+  resolve_volume: "Automatic"
+  chown: true
+  port: []
+  setup_strategy: "ifneedbepullelsecachedbuild"
+  run_args: []
+  target_image_source: "https://github.com/openpipelines-bio/openpipeline"
+  setup:
+  - type: "python"
+    user: false
+    packages:
+    - "mudata~=0.2.0"
+    - "anndata~=0.8"
+    - "scanpy"
+    - "loompy"
+    pip: []
+    pypi: []
+    git: []
+    github: []
+    gitlab: []
+    mercurial: []
+    svn: []
+    bazaar: []
+    url: []
+    script: []
+    upgrade: true
+  test_setup: []
+- type: "nextflow"
+  id: "nextflow"
+  variant: "vdsl3"
+  directives:
+    accelerator: {}
+    conda: []
+    containerOptions: []
+    label: []
+    module: []
+    pod: []
+    publishDir: []
+    queue: []
+    tag: "$id"
+  auto:
+    simplifyInput: true
+    simplifyOutput: true
+    transcript: false
+    publish: false
+  debug: false
+  container: "docker"
+info:
+  config: "/home/runner/work/openpipeline/openpipeline/src/velocity/velocyto_to_h5mu/config.vsh.yaml"
+  platform: "nextflow"
+  output: "/home/runner/work/openpipeline/openpipeline/target/nextflow/convert/velocyto_to_h5mu"
+  executable: "/home/runner/work/openpipeline/openpipeline/target/nextflow/convert/velocyto_to_h5mu/velocyto_to_h5mu"
+  viash_version: "0.6.6"
+  git_commit: "c592d174a5c0c11f575d734798560c88f1090bd9"
+  git_remote: "https://github.com/openpipelines-bio/openpipeline"
