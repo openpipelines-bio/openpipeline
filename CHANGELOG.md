@@ -4,6 +4,8 @@
 
 * `workflows/ingestion/cellranger_multi`: Run Cell Ranger multi and convert the output to .h5mu.
 
+* `filter/remove_modality`: Remove a single modality from a MuData file.
+
 * `mapping/star_align`: Align `.fastq` files using STAR.
 
 * `mapping/cellranger_multi`: Align fastq files using Cell Ranger multi.
@@ -13,6 +15,8 @@
 * Set the `tag` directive of all Nextflow components to '$id'.
 
 ## BUG FIXES
+
+* Keep `prot`, `vdj_t`, `vdj_b` data when running full pipeline.
 
 * Fix many components thanks to Viash 0.6.4, which causes errors to be 
   thrown when input and output files are defined but not found.
