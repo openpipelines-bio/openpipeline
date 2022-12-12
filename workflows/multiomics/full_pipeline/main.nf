@@ -64,31 +64,42 @@ workflow run_wf {
       [id: "vdj_t", singlesample: null, multisample: null],
       [id: "vdj_b", singlesample: null, multisample: null],
       [id: "prot", singlesample: null, multisample: null],
+      [id: "atac", singlesample: null, multisample: null],
     ]
 
     mod_chs = modality_processors.collect{ modality_processor ->
+      // Select the files corresponding to the currently selected modality
       mod_ch = start_ch
         | filter{ it[2].modality == modality_processor.id }
+        | view {"start channel-$modality_processor.id: $it"}
 
+      // Run the single-sample processing if defined
       ss_ch = (modality_processor.singlesample ? \
                mod_ch | modality_processor.singlesample : \
                mod_ch)
-
+      
+      // Reformat arguments to serve to the multisample processing
       input_ms_ch = ss_ch
+        | view { "single-sample-input-$modality_processor.id: $it" }
         | toSortedList{ a, b -> b[0] <=> a[0] }
         | filter { it.size() != 0 } // filter when event is empty
         | map{ list -> 
           new_data = ["sample_id": list.collect{it[0]}, "input": list.collect{it[1]}]
-          ["combined_" + modality_processor.id, new_data] + list[0].drop(2)
+          ["combined_$modality_processor.id", new_data] + list[0].drop(2)
         }
-      return (modality_processor.multisample ? \
-              input_ms_ch | modality_processor.multisample : \
-              input_ms_ch | concat.run(key: "concat_" + modality_processor.id,
-                                       renameKeys: [input_id: "id"]))
+        | view { "input multichannel-$modality_processor.id: $it" }
+      
+      // Run the multisample processing if defined, otherwise just concatenate samples together
+      out_ch = (modality_processor.multisample? \
+                input_ms_ch | modality_processor.multisample : \
+                input_ms_ch | concat.run(key: "concat_" + modality_processor.id,
+                                         renameKeys: [input_id: "sample_id"]))
+      return out_ch
     }
 
-
-  output_ch = mod_chs[0].concat(*mod_chs.drop(1))
+  // Concat channel if more than one modality was found
+  merge_ch = mod_chs.size() > 1? mod_chs[0].concat(*mod_chs.drop(1)): mod_chs[0]
+  output_ch = merge_ch
     | toSortedList{ a, b -> b[0] <=> a[0] }
     | map { list -> 
       ["merged", list.collect{it[1]}] + list[0].drop(2)
@@ -137,6 +148,50 @@ workflow test_wf {
   output_ch =
     viashChannel(testParams, config)
       | view { "Input: $it" }
+      | run_wf
+      | view { output ->
+        assert output.size() == 2 : "outputs should contain two elements; [id, file]"
+        assert output[1].toString().endsWith(".h5mu") : "Output file should be a h5mu file. Found: ${output[1]}"
+        "Output: $output"
+      }
+      | toSortedList()
+      | map { output_list ->
+        assert output_list.size() == 1 : "output channel should contain one event"
+        assert output_list[0][0] == "merged" : "Output ID should be 'merged'"
+      }
+  input_ch = viashChannel(testParams, config)
+    // store output value in 3rd slot for later use
+    // and transform for concat component
+    | map { tup ->
+      data = tup[1]
+      new_data = [ id: data.id, input: data.input ]
+      [tup[0], new_data, data] + tup.drop(2)
+    }
+
+    input_ch.branch{
+        human: it[0] == "human"
+        mouse: it[0] == "mouse"
+      }.set{ test2_input_channels }
+
+    human_ch = test2_input_channels.human 
+      | remove_modality.run(
+        args: [ modality: "atac" ]
+      )
+
+    mouse_ch = test2_input_channels.mouse |
+      remove_modality.run(
+        args: [ modality: "rna" ]
+      )
+    
+    output_ch_test_2 = human_ch.concat(mouse_ch)
+      // Put back values for other parameters after removing modalities
+      | map { tup ->
+        tup[2].remove("input")
+        new_data = [input: tup[1]]
+        new_data.putAll(tup[2])
+        [tup[0], new_data]
+      }
+      | view { "Input test 2: $it" }
       | run_wf
       | view { output ->
         assert output.size() == 2 : "outputs should contain two elements; [id, file]"
