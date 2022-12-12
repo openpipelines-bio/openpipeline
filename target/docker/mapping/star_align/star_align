@@ -1783,9 +1783,9 @@ RUN apt-get update && \
 ENV PATH /home/bin:${PATH}
 LABEL org.opencontainers.image.authors="Angela Pisco, Robrecht Cannoodt"
 LABEL org.opencontainers.image.description="Companion container for running component mapping star_align"
-LABEL org.opencontainers.image.created="2022-12-12T11:42:15Z"
+LABEL org.opencontainers.image.created="2022-12-12T12:21:24Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="f43e1f9b9ae13a2739b8f8fdbcca00cc97d6abe4"
+LABEL org.opencontainers.image.revision="86864cb793b7334a984eee55d2f873512a4eeafe"
 LABEL org.opencontainers.image.version="main_build"
 VIASHDOCKER
 }
@@ -5593,7 +5593,7 @@ with tempfile.TemporaryDirectory(prefix="star-", dir=meta["temp_dir"]) as temp_d
     out_tmp_dir
   ]
   if 'cpus' in meta and meta['cpus']:
-    cmd_args.extend(["--runThreadN", meta['cpus']])
+    cmd_args.extend(["--runThreadN", str(meta['cpus'])])
   
   # make sure there is a trailing /
   par["outFileNamePrefix"] = f"{par['outFileNamePrefix']}/"

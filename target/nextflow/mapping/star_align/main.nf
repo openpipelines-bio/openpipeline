@@ -2558,7 +2558,7 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
     "config" : "/home/runner/work/openpipeline/openpipeline/src/mapping/star_align/config.vsh.yaml",
     "platform" : "nextflow",
     "viash_version" : "0.6.6",
-    "git_commit" : "f43e1f9b9ae13a2739b8f8fdbcca00cc97d6abe4",
+    "git_commit" : "86864cb793b7334a984eee55d2f873512a4eeafe",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))
@@ -2921,7 +2921,7 @@ with tempfile.TemporaryDirectory(prefix="star-", dir=meta["temp_dir"]) as temp_d
     out_tmp_dir
   ]
   if 'cpus' in meta and meta['cpus']:
-    cmd_args.extend(["--runThreadN", meta['cpus']])
+    cmd_args.extend(["--runThreadN", str(meta['cpus'])])
   
   # make sure there is a trailing /
   par["outFileNamePrefix"] = f"{par['outFileNamePrefix']}/"
