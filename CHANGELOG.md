@@ -2,6 +2,8 @@
 
 ## NEW FUNCTIONALITY
 
+* `filter/remove_modality`: Remove a single modality from a MuData file.
+
 * `mapping/star_align`: Align `.fastq` files using STAR.
 
 * `mapping/cellranger_multi`: Align fastq files using Cell Ranger multi.
