@@ -459,16 +459,16 @@ function ViashDockerCheckCommands {
 #   ViashDockerFile
 function ViashDockerfile {
   cat << 'VIASHDOCKER'
-FROM python:3.8
+FROM python:3.10
 
 RUN pip install --upgrade pip && \
   pip install --upgrade --no-cache-dir "scanpy~=1.9.1" "scrublet" "mudata~=0.2.0" "anndata~=0.8.0"
 
 LABEL org.opencontainers.image.authors="Dries De Maeyer, Robrecht Cannoodt"
 LABEL org.opencontainers.image.description="Companion container for running component filter filter_with_scrublet"
-LABEL org.opencontainers.image.created="2022-12-12T14:53:20Z"
+LABEL org.opencontainers.image.created="2022-12-12T15:19:37Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="f061a40b85d0f38b43c37a9d9707eed41ba625a8"
+LABEL org.opencontainers.image.revision="69acffa6964b420f5b567f4bb90b35b36116af4c"
 LABEL org.opencontainers.image.version="main_build"
 VIASHDOCKER
 }
