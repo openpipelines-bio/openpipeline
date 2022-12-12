@@ -1,5 +1,5 @@
 functionality:
-  name: star_align
+  name: star_align_v273a
   namespace: mapping
   description: Align fastq files using STAR.
   authors:
@@ -7,8 +7,9 @@ functionality:
       roles: [ author ]
     - __merge__: ../../authors/robrecht_cannoodt.yaml
       roles: [ author, maintainer ]
-  # generated the argument groups using `utils/process_params.R`
-  __merge__: [., argument_groups.yaml]
+  # as long as argument_groups.yaml is the same between both versions, just use that
+  __merge__: [., ../star_align/argument_groups.yaml]
+  # __merge__: [., argument_groups.yaml]
   # manually taking care of the main input files
   argument_groups:
     - name: Input/Output
@@ -17,26 +18,28 @@ functionality:
           name: --input
           alternatives: --readFilesIn
           required: true
-          description: The FASTQ files to be analyzed. Corresponds to the --readFilesIn argument in the STAR command.
+          description: The FASTQ files to be analyzed. Corresponds to the --readFilesIn in the STAR command.
           example: [ mysample_S1_L001_R1_001.fastq.gz, mysample_S1_L001_R2_001.fastq.gz ]
           multiple: true
           multiple_sep: ";"
         - type: file
           name: --reference
           alternatives: --genomeDir
-          description: Path to the reference built by star_create_reference. Corresponds to the --genomeDir argument in the STAR command.
+          description: Path to the reference built by star_create_reference. Corresponds to the --genomeDir in the STAR command.
           example: /path/to/reference
           required: true
         - type: file
           name: --output
           alternatives: --outFileNamePrefix
-          description: Path to output directory. Corresponds to the --outFileNamePrefix argument in the STAR command.
+          description: Path to output directory. Corresponds to the --outFileNamePrefix in the STAR command.
           example: /path/to/foo
           direction: output
           required: true
   resources:
     - type: python_script
-      path: script.py
+      # as long as argument_groups.yaml is the same between both versions, just use that
+      path: ../star_align/script.py
+      # path: script.py
   test_resources:
     - type: python_script
       path: test.py
@@ -48,7 +51,7 @@ platforms:
       # setup derived from https://github.com/alexdobin/STAR/blob/master/extras/docker/Dockerfile
       - type: docker
         env: 
-          - STAR_VERSION 2.7.10a
+          - STAR_VERSION 2.7.3a
           - PACKAGES gcc g++ make wget zlib1g-dev unzip
       - type: docker
         run: |

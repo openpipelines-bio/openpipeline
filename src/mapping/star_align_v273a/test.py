@@ -28,7 +28,7 @@ input_files = [
   input + "tinygex_S1_L002_R1_001.fastq.gz",
   input + "tinygex_S1_L002_R2_001.fastq.gz"
 ]
-reference = meta["resources_dir"] + "/cellranger_tiny_fastq/cellranger_tiny_ref_v2_7_10_a/"
+reference = meta["resources_dir"] + "/cellranger_tiny_fastq/cellranger_tiny_ref/star"
 output = "test_output"
 
 with TemporaryDirectory() as tempdir:

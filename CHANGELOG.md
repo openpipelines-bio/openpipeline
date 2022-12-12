@@ -8,6 +8,10 @@
 
 * `mapping/star_align`: Align `.fastq` files using STAR.
 
+* `mapping/star_align_v273a`: Align `.fastq` files using STAR v2.7.3a.
+
+* `mapping/star_create_reference`: Create a STAR reference index.
+
 * `mapping/cellranger_multi`: Align fastq files using Cell Ranger multi.
 
 ## MAJOR CHANGES
