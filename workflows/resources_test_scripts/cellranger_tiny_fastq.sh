@@ -14,9 +14,9 @@ OUT="resources_test/$ID/"
 DIR="$OUT"
 
 # download cellranger tar gz
-cellranger_tar_gz="${OUT}/temp_cellranger-7.0.1.tar.gz"
+cellranger_tar_gz="${OUT}/temp_cellranger-6.1.2.tar.gz"
 if [ ! -f "$cellranger_tar_gz" ]; then
-  echo "Download Cell Ranger 7.0.1 manually first!"
+  echo "Download Cell Ranger 6.1.2 manually first!"
   exit 1
 fi
 
@@ -27,7 +27,7 @@ if [ ! -f "${cellranger_tiny_fastq}/tinygex_S1_L001_R1_001.fastq.gz" ]; then
   
   tar -xzf "$cellranger_tar_gz" \
     -C "$cellranger_tiny_fastq" \
-    "cellranger-7.0.1/external/cellranger_tiny_fastq" \
+    "cellranger-6.1.2/external/cellranger_tiny_fastq" \
     --strip-components=3
 fi
 
@@ -38,7 +38,7 @@ if [ ! -f "${cellranger_tiny_ref}/reference.json" ]; then
   
   tar -xzf "$cellranger_tar_gz" \
     -C "$cellranger_tiny_ref" \
-    "cellranger-7.0.1/external/cellranger_tiny_ref" \
+    "cellranger-6.1.2/external/cellranger_tiny_ref" \
     --strip-components=3
 fi
 
