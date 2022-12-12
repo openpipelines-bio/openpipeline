@@ -29,9 +29,7 @@ def is_gz_file(path: Path) -> bool:
     return file.read(2) == b'\x1f\x8b'
 
 # if {par_value} is a Path, extract it to a temp_dir_path and return the resulting path
-def extract_if_need_be(par_value: Path, par_name: str, temp_dir_path: Path) -> Path:
-  print(f'>> Check compression of --{par_name} with value: {par_value}', flush=True)
-
+def extract_if_need_be(par_value: Path, temp_dir_path: Path) -> Path:
   if par_value.is_file() and tarfile.is_tarfile(par_value):
     # Remove two extensions (if they exist)
     extaction_dir_name = Path(par_value.stem).stem
@@ -82,7 +80,7 @@ with tempfile.TemporaryDirectory(prefix="htseq-", dir=meta["temp_dir"]) as temp_
   reference = Path(par[par_name])
   
   print(f'>> Check compression of --{par_name} with value: {reference}', flush=True)
-  par[par_name] = extract_if_need_be(reference, par_name, temp_dir_path)
+  par[par_name] = extract_if_need_be(reference, temp_dir_path)
 
   print(">> Constructing command", flush=True)
   cmd_args = [ "htseq-count" ]

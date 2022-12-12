@@ -105,7 +105,7 @@ functionality:
           description: "Feature type (3rd column in GTF file) to be used, all features of other type are ignored (default, suitable for Ensembl GTF files: exon)"
           info:
             orig_arg: --type
-        - name: --id_attr
+        - name: --id_attribute
           type: string
           alternatives: [-i]
           example: gene_id
@@ -120,7 +120,7 @@ functionality:
           multiple_sep: ":"
           info:
             orig_arg: --idattr
-        - name: --additional_attr
+        - name: --additional_attributes
           type: string
           example: gene_name
           description: |
