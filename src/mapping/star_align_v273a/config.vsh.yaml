@@ -7,8 +7,9 @@ functionality:
       roles: [ author ]
     - __merge__: ../../authors/robrecht_cannoodt.yaml
       roles: [ author, maintainer ]
-  # generated the argument groups using `utils/process_params.R`
-  __merge__: [., argument_groups.yaml]
+  # as long as argument_groups.yaml is the same between both versions, just use that
+  __merge__: [., ../star_align/argument_groups.yaml]
+  # __merge__: [., argument_groups.yaml]
   # manually taking care of the main input files
   argument_groups:
     - name: Input/Output
@@ -36,7 +37,9 @@ functionality:
           required: true
   resources:
     - type: python_script
-      path: script.py
+      # as long as argument_groups.yaml is the same between both versions, just use that
+      path: ../star_align/script.py
+      # path: script.py
   test_resources:
     - type: python_script
       path: test.py

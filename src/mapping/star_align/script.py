@@ -28,9 +28,11 @@ meta = {
 ### Helper functions ###
 ########################
 
-# fastqgz_regex = r'([A-Za-z0-9\-_\.]+)_S(\d+)_L(\d+)_([RI]\d+)_(\d+)\.fastq(\.gz)?'
 # regex for matching R[12] fastq(gz) files
-fastqgz_regex = r'([A-Za-z0-9\-_\.]+)_S(\d+)_L(\d+)_(R\d+)_(\d+)\.fastq(\.gz)?'
+# examples: 
+# - TSP10_Fat_MAT_SS2_B134171_B115063_Immune_A1_L003_R1.fastq.gz
+# - tinygex_S1_L001_I1_001.fastq.gz
+fastqgz_regex = r'(.+)_(R\d+)(_\d+)?\.fastq(\.gz)?'
 
 # helper function for cheching whether something is a gzip
 def is_gz_file(path: Path) -> bool:
@@ -150,7 +152,7 @@ with tempfile.TemporaryDirectory(prefix="star-", dir=meta["temp_dir"]) as temp_d
   print("Grouping R1/R2 input files into pairs", flush=True)
   input_grouped = {}
   for path in par['readFilesIn']:
-    key = re.search(fastqgz_regex, path.name).group(4)
+    key = re.search(fastqgz_regex, path.name).group(2)
     if key not in input_grouped:
       input_grouped[key] = []
     input_grouped[key].append(str(path))

@@ -39,9 +39,9 @@ with TemporaryDirectory() as tempdir:
         "--input", tempdir,
         "--reference", reference,
         "--output", output,
-        "---cpus", "8"
+        "---cpus", "2"
     ]
-    out = subprocess.check_output(cmd_pars).decode("utf-8")
+    subprocess.run(cmd_pars, check=True)
 
 logger.info("> Check if file exists")
 
