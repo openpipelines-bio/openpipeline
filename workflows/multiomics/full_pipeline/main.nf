@@ -6,6 +6,7 @@ include { add_id } from targetDir + "/metadata/add_id/main.nf"
 include { split_modalities } from targetDir + '/dataflow/split_modalities/main.nf'
 include { merge } from targetDir + '/dataflow/merge/main.nf'
 include { concat } from targetDir + '/dataflow/concat/main.nf'
+include { remove_modality }  from targetDir + '/filter/remove_modality/main.nf'
 include { run_wf as rna_singlesample } from workflowDir + '/multiomics/rna_singlesample/main.nf'
 include { run_wf as rna_multisample } from workflowDir + '/multiomics/rna_multisample/main.nf'
 include { run_wf as integration } from workflowDir + '/multiomics/integration/main.nf'
@@ -90,10 +91,14 @@ workflow run_wf {
         | view { "input multichannel-$modality_processor.id: $it" }
       
       // Run the multisample processing if defined, otherwise just concatenate samples together
-      out_ch = (modality_processor.multisample? \
-                input_ms_ch | modality_processor.multisample : \
-                input_ms_ch | concat.run(key: "concat_" + modality_processor.id,
-                                         renameKeys: [input_id: "sample_id"]))
+      out_ch = (
+        modality_processor.multisample ? \
+          input_ms_ch | modality_processor.multisample : \
+          input_ms_ch | concat.run(
+            key: "concat_" + modality_processor.id,
+            renameKeys: [input_id: "sample_id"]
+          )
+      )
       return out_ch
     }
 
@@ -168,21 +173,18 @@ workflow test_wf {
       [tup[0], new_data, data] + tup.drop(2)
     }
 
-    input_ch.branch{
-        human: it[0] == "human"
-        mouse: it[0] == "mouse"
-      }.set{ test2_input_channels }
-
-    human_ch = test2_input_channels.human 
+    human_ch = input_ch
+      | filter{it[0] == "human"}
       | remove_modality.run(
         args: [ modality: "atac" ]
       )
 
-    mouse_ch = test2_input_channels.mouse |
-      remove_modality.run(
+    mouse_ch = input_ch
+      | filter{it[0] == "mouse"}
+      | remove_modality.run(
         args: [ modality: "rna" ]
       )
-    
+
     output_ch_test_2 = human_ch.concat(mouse_ch)
       // Put back values for other parameters after removing modalities
       | map { tup ->
