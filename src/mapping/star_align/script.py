@@ -8,25 +8,18 @@ import shutil
 
 ## VIASH START
 par = {
-  # 'input': [
-  #   'resources_test/cellranger_tiny_fastq/cellranger_tiny_fastq/tinygex_S1_L001_R1_001.fastq.gz',
-  #   'resources_test/cellranger_tiny_fastq/cellranger_tiny_fastq/tinygex_S1_L001_R2_001.fastq.gz',
-  #   'resources_test/cellranger_tiny_fastq/cellranger_tiny_fastq/tinygex_S1_L002_R1_001.fastq.gz',
-  #   'resources_test/cellranger_tiny_fastq/cellranger_tiny_fastq/tinygex_S1_L002_R2_001.fastq.gz'
-  # ],
-  'input': [ 'resources_test/cellranger_tiny_fastq/cellranger_tiny_fastq/' ],
-  'reference': 'resources_test/cellranger_tiny_fastq/cellranger_tiny_ref/star/',
-  'output': 'out'
+  'input': [
+    'resources_test/cellranger_tiny_fastq/cellranger_tiny_fastq/tinygex_S1_L001_R1_001.fastq.gz',
+    'resources_test/cellranger_tiny_fastq/cellranger_tiny_fastq/tinygex_S1_L001_R2_001.fastq.gz',
+    # 'resources_test/cellranger_tiny_fastq/cellranger_tiny_fastq/tinygex_S1_L002_R1_001.fastq.gz',
+    # 'resources_test/cellranger_tiny_fastq/cellranger_tiny_fastq/tinygex_S1_L002_R2_001.fastq.gz'
+  ],
+  # 'input': [ 'resources_test/cellranger_tiny_fastq/cellranger_tiny_fastq/' ],
+  'reference': 'resources_test/cellranger_tiny_fastq/cellranger_tiny_ref_v2_7_10_a/',
+  'output': 'test_output'
 }
 meta = {
-  'config': 'src/mapping/star_align/.config.vsh.yaml',
-  'cpus': None,
-  'memory_b': None,
-  'memory_kb': None,
-  'memory_mb': None,
-  'memory_gb': None,
-  'memory_tb': None,
-  'memory_pb': None,
+  'cpus': 8,
   'temp_dir': '/tmp'
 }
 ## VIASH END
@@ -35,9 +28,11 @@ meta = {
 ### Helper functions ###
 ########################
 
-# fastqgz_regex = r'([A-Za-z0-9\-_\.]+)_S(\d+)_L(\d+)_([RI]\d+)_(\d+)\.fastq(\.gz)?'
 # regex for matching R[12] fastq(gz) files
-fastqgz_regex = r'([A-Za-z0-9\-_\.]+)_S(\d+)_L(\d+)_(R\d+)_(\d+)\.fastq(\.gz)?'
+# examples: 
+# - TSP10_Fat_MAT_SS2_B134171_B115063_Immune_A1_L003_R1.fastq.gz
+# - tinygex_S1_L001_I1_001.fastq.gz
+fastqgz_regex = r'(.+)_(R\d+)(_\d+)?\.fastq(\.gz)?'
 
 # helper function for cheching whether something is a gzip
 def is_gz_file(path: Path) -> bool:
@@ -132,32 +127,32 @@ with tempfile.TemporaryDirectory(prefix="star-", dir=meta["temp_dir"]) as temp_d
   temp_dir_path = Path(temp_dir)
   for par_name in ["genomeDir", "readFilesIn"]:
     par_values = par[par_name]
+    if par_values:
+      # turn value into list
+      is_multiple = isinstance(par_values, list)
+      if not is_multiple:
+        par_values = [ par_values ]
+      
+      # output list
+      new_values = []
+      for par_value in par_values:
+        print(f'>> Check compression of --{par_name} with value: {par_value}', flush=True)
+        new_value = extract_if_need_be(par_value, par_name, temp_dir_path)
+        new_values.append(new_value)
+      
+      # unlist if need be
+      if not is_multiple:
+        new_values = new_values[0]
 
-    # turn value into list
-    is_multiple = isinstance(par_values, list)
-    if not is_multiple:
-      par_values = [ par_values ]
-    
-    # output list
-    new_values = []
-    for par_value in par_values:
-      print(f'>> Check compression of --{par_name} with value: {par_value}', flush=True)
-      new_value = extract_if_need_be(par_value, par_name, temp_dir_path)
-      new_values.append(new_value)
-    
-    # unlist if need be
-    if not is_multiple:
-      new_values = new_values[0]
-
-    # replace value
-    par[par_name] = new_values
+      # replace value
+      par[par_name] = new_values
   # end ungzipping
   print("", flush=True)
 
   print("Grouping R1/R2 input files into pairs", flush=True)
   input_grouped = {}
   for path in par['readFilesIn']:
-    key = re.search(fastqgz_regex, path.name).group(4)
+    key = re.search(fastqgz_regex, path.name).group(2)
     if key not in input_grouped:
       input_grouped[key] = []
     input_grouped[key].append(str(path))
@@ -165,26 +160,20 @@ with tempfile.TemporaryDirectory(prefix="star-", dir=meta["temp_dir"]) as temp_d
   print("", flush=True)
 
   print(">> Constructing command", flush=True)
-  out_tmp_dir = temp_dir_path / "run"
-  cmd_args = [
-    "STAR",
-    "--runMode",
-    "alignReads",
-    "--outTmpDir",
-    out_tmp_dir
-  ]
+  par["runMode"] = "alignReads"
+  par["outTmpDir"] = temp_dir_path / "run"
   if 'cpus' in meta and meta['cpus']:
-    cmd_args.extend(["--runThreadN", str(meta['cpus'])])
-  
+    par["runThreadN"] = meta["cpus"]
   # make sure there is a trailing /
   par["outFileNamePrefix"] = f"{par['outFileNamePrefix']}/"
 
-  for name, path in par.items():
-    if path is not None:
-        if isinstance(path, list):
-          cmd_args.extend(["--" + name] + path)
-        else:
-          cmd_args.extend(["--" + name, path])
+  cmd_args = [ "STAR" ]
+  for name, value in par.items():
+    if value is not None:
+      if isinstance(value, list):
+        cmd_args.extend(["--" + name] + [str(x) for x in value])
+      else:
+        cmd_args.extend(["--" + name, str(value)])
   print("", flush=True)
 
   print(">> Running STAR with command:", flush=True)

@@ -227,7 +227,7 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
     "config" : "/home/runner/work/openpipeline/openpipeline/src/demux/cellranger_mkfastq/config.vsh.yaml",
     "platform" : "nextflow",
     "viash_version" : "0.6.6",
-    "git_commit" : "69acffa6964b420f5b567f4bb90b35b36116af4c",
+    "git_commit" : "32dd6467b07dde3a254237e1883062b35963e4f6",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))

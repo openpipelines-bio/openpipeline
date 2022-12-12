@@ -165,21 +165,24 @@ function ViashHelp {
   echo "Align fastq files using STAR."
   echo ""
   echo "Input/Output:"
-  echo "    --input"
+  echo "    --readFilesIn, --input"
   echo "        type: file, required parameter, multiple values allowed, file must exist"
   echo "        example:"
   echo "mysample_S1_L001_R1_001.fastq.gz;mysample_S1_L001_R2_001.fastq.gz"
-  echo "        The FASTQ files to be analyzed."
+  echo "        The FASTQ files to be analyzed. Corresponds to the --readFilesIn"
+  echo "        argument in the STAR command."
   echo ""
-  echo "    --reference"
+  echo "    --genomeDir, --reference"
   echo "        type: file, required parameter, file must exist"
   echo "        example: /path/to/reference"
-  echo "        Path to the reference built by star_mkref."
+  echo "        Path to the reference built by star_create_reference. Corresponds to the"
+  echo "        --genomeDir argument in the STAR command."
   echo ""
-  echo "    --output"
+  echo "    --outFileNamePrefix, --output"
   echo "        type: file, required parameter, output, file must exist"
   echo "        example: /path/to/foo"
-  echo "        Path to output directory."
+  echo "        Path to output directory. Corresponds to the --outFileNamePrefix"
+  echo "        argument in the STAR command."
   echo ""
   echo "Run Parameters:"
   echo "    --runRNGseed"
@@ -533,7 +536,7 @@ function ViashHelp {
   echo "        non-canonical introns are filtered out."
   echo ""
   echo "    --outSAMattributes"
-  echo "        type: string"
+  echo "        type: string, multiple values allowed"
   echo "        example: Standard"
   echo "        a string of desired SAM attributes, in the order desired for the output"
   echo "        SAM. Tags can be listed in any combination/order."
@@ -1763,29 +1766,26 @@ function ViashDockerfile {
   cat << 'VIASHDOCKER'
 FROM python:3.10
 
-ENV STAR_VERSION 2.7.1a
+ENV STAR_VERSION 2.7.10a
 ENV PACKAGES gcc g++ make wget zlib1g-dev unzip
 RUN apt-get update && \
   apt-get install -y --no-install-recommends ${PACKAGES} && \
-  apt-get clean && \
-  g++ --version && \
-  cd /home && \
-  wget --no-check-certificate https://github.com/alexdobin/STAR/archive/${STAR_VERSION}.zip && \
+  cd /tmp && \
+  wget --no-check-certificate https://github.com/alexdobin/STAR/archive/refs/tags/${STAR_VERSION}.zip && \
   unzip ${STAR_VERSION}.zip && \
   cd STAR-${STAR_VERSION}/source && \
-  make STARstatic && \
-  mkdir /home/bin && \
-  cp STAR /home/bin && \
-  cd /home && \
-  'rm' -rf STAR-${STAR_VERSION} && \
-  apt-get --purge autoremove -y  ${PACKAGES}
+  make STARstatic CXXFLAGS_SIMD=-std=c++11 && \
+  cp STAR /usr/local/bin && \
+  cd / && \
+  rm -rf /tmp/STAR-${STAR_VERSION} /tmp/${STAR_VERSION}.zip && \
+  apt-get --purge autoremove -y ${PACKAGES} && \
+  apt-get clean
 
-ENV PATH /home/bin:${PATH}
 LABEL org.opencontainers.image.authors="Angela Pisco, Robrecht Cannoodt"
 LABEL org.opencontainers.image.description="Companion container for running component mapping star_align"
-LABEL org.opencontainers.image.created="2022-12-12T15:19:42Z"
+LABEL org.opencontainers.image.created="2022-12-12T20:25:10Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="69acffa6964b420f5b567f4bb90b35b36116af4c"
+LABEL org.opencontainers.image.revision="32dd6467b07dde3a254237e1883062b35963e4f6"
 LABEL org.opencontainers.image.version="main_build"
 VIASHDOCKER
 }
@@ -1955,6 +1955,15 @@ while [[ $# -gt 0 ]]; do
             fi
             shift 1
             ;;
+        --readFilesIn)
+            if [ -z "$VIASH_PAR_INPUT" ]; then
+              VIASH_PAR_INPUT="$2"
+            else
+              VIASH_PAR_INPUT="$VIASH_PAR_INPUT;""$2"
+            fi
+            [ $# -lt 2 ] && ViashError Not enough arguments passed to --readFilesIn. Use "--help" to get more information on the parameters. && exit 1
+            shift 2
+            ;;
         --reference)
             [ -n "$VIASH_PAR_REFERENCE" ] && ViashError Bad arguments for option \'--reference\': \'$VIASH_PAR_REFERENCE\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
             VIASH_PAR_REFERENCE="$2"
@@ -1966,6 +1975,12 @@ while [[ $# -gt 0 ]]; do
             VIASH_PAR_REFERENCE=$(ViashRemoveFlags "$1")
             shift 1
             ;;
+        --genomeDir)
+            [ -n "$VIASH_PAR_REFERENCE" ] && ViashError Bad arguments for option \'--genomeDir\': \'$VIASH_PAR_REFERENCE\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+            VIASH_PAR_REFERENCE="$2"
+            [ $# -lt 2 ] && ViashError Not enough arguments passed to --genomeDir. Use "--help" to get more information on the parameters. && exit 1
+            shift 2
+            ;;
         --output)
             [ -n "$VIASH_PAR_OUTPUT" ] && ViashError Bad arguments for option \'--output\': \'$VIASH_PAR_OUTPUT\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
             VIASH_PAR_OUTPUT="$2"
@@ -1976,6 +1991,12 @@ while [[ $# -gt 0 ]]; do
             [ -n "$VIASH_PAR_OUTPUT" ] && ViashError Bad arguments for option \'--output=*\': \'$VIASH_PAR_OUTPUT\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
             VIASH_PAR_OUTPUT=$(ViashRemoveFlags "$1")
             shift 1
+            ;;
+        --outFileNamePrefix)
+            [ -n "$VIASH_PAR_OUTPUT" ] && ViashError Bad arguments for option \'--outFileNamePrefix\': \'$VIASH_PAR_OUTPUT\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+            VIASH_PAR_OUTPUT="$2"
+            [ $# -lt 2 ] && ViashError Not enough arguments passed to --outFileNamePrefix. Use "--help" to get more information on the parameters. && exit 1
+            shift 2
             ;;
         --runRNGseed)
             [ -n "$VIASH_PAR_RUNRNGSEED" ] && ViashError Bad arguments for option \'--runRNGseed\': \'$VIASH_PAR_RUNRNGSEED\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
@@ -2619,14 +2640,20 @@ while [[ $# -gt 0 ]]; do
             shift 1
             ;;
         --outSAMattributes)
-            [ -n "$VIASH_PAR_OUTSAMATTRIBUTES" ] && ViashError Bad arguments for option \'--outSAMattributes\': \'$VIASH_PAR_OUTSAMATTRIBUTES\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
-            VIASH_PAR_OUTSAMATTRIBUTES="$2"
+            if [ -z "$VIASH_PAR_OUTSAMATTRIBUTES" ]; then
+              VIASH_PAR_OUTSAMATTRIBUTES="$2"
+            else
+              VIASH_PAR_OUTSAMATTRIBUTES="$VIASH_PAR_OUTSAMATTRIBUTES;""$2"
+            fi
             [ $# -lt 2 ] && ViashError Not enough arguments passed to --outSAMattributes. Use "--help" to get more information on the parameters. && exit 1
             shift 2
             ;;
         --outSAMattributes=*)
-            [ -n "$VIASH_PAR_OUTSAMATTRIBUTES" ] && ViashError Bad arguments for option \'--outSAMattributes=*\': \'$VIASH_PAR_OUTSAMATTRIBUTES\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
-            VIASH_PAR_OUTSAMATTRIBUTES=$(ViashRemoveFlags "$1")
+            if [ -z "$VIASH_PAR_OUTSAMATTRIBUTES" ]; then
+              VIASH_PAR_OUTSAMATTRIBUTES=$(ViashRemoveFlags "$1")
+            else
+              VIASH_PAR_OUTSAMATTRIBUTES="$VIASH_PAR_OUTSAMATTRIBUTES;"$(ViashRemoveFlags "$1")
+            fi
             shift 1
             ;;
         --outSAMattrIHstart)
@@ -5302,7 +5329,7 @@ par = {
   'outSAMtype': $( if [ ! -z ${VIASH_PAR_OUTSAMTYPE+x} ]; then echo "r'${VIASH_PAR_OUTSAMTYPE//\'/\'\"\'\"r\'}'.split(';')"; else echo None; fi ),
   'outSAMmode': $( if [ ! -z ${VIASH_PAR_OUTSAMMODE+x} ]; then echo "r'${VIASH_PAR_OUTSAMMODE//\'/\'\"\'\"r\'}'"; else echo None; fi ),
   'outSAMstrandField': $( if [ ! -z ${VIASH_PAR_OUTSAMSTRANDFIELD+x} ]; then echo "r'${VIASH_PAR_OUTSAMSTRANDFIELD//\'/\'\"\'\"r\'}'"; else echo None; fi ),
-  'outSAMattributes': $( if [ ! -z ${VIASH_PAR_OUTSAMATTRIBUTES+x} ]; then echo "r'${VIASH_PAR_OUTSAMATTRIBUTES//\'/\'\"\'\"r\'}'"; else echo None; fi ),
+  'outSAMattributes': $( if [ ! -z ${VIASH_PAR_OUTSAMATTRIBUTES+x} ]; then echo "r'${VIASH_PAR_OUTSAMATTRIBUTES//\'/\'\"\'\"r\'}'.split(';')"; else echo None; fi ),
   'outSAMattrIHstart': $( if [ ! -z ${VIASH_PAR_OUTSAMATTRIHSTART+x} ]; then echo "int(r'${VIASH_PAR_OUTSAMATTRIHSTART//\'/\'\"\'\"r\'}')"; else echo None; fi ),
   'outSAMunmapped': $( if [ ! -z ${VIASH_PAR_OUTSAMUNMAPPED+x} ]; then echo "r'${VIASH_PAR_OUTSAMUNMAPPED//\'/\'\"\'\"r\'}'.split(';')"; else echo None; fi ),
   'outSAMorder': $( if [ ! -z ${VIASH_PAR_OUTSAMORDER+x} ]; then echo "r'${VIASH_PAR_OUTSAMORDER//\'/\'\"\'\"r\'}'"; else echo None; fi ),
@@ -5454,9 +5481,11 @@ meta = {
 ### Helper functions ###
 ########################
 
-# fastqgz_regex = r'([A-Za-z0-9\\-_\\.]+)_S(\\d+)_L(\\d+)_([RI]\\d+)_(\\d+)\\.fastq(\\.gz)?'
 # regex for matching R[12] fastq(gz) files
-fastqgz_regex = r'([A-Za-z0-9\\-_\\.]+)_S(\\d+)_L(\\d+)_(R\\d+)_(\\d+)\\.fastq(\\.gz)?'
+# examples: 
+# - TSP10_Fat_MAT_SS2_B134171_B115063_Immune_A1_L003_R1.fastq.gz
+# - tinygex_S1_L001_I1_001.fastq.gz
+fastqgz_regex = r'(.+)_(R\\d+)(_\\d+)?\\.fastq(\\.gz)?'
 
 # helper function for cheching whether something is a gzip
 def is_gz_file(path: Path) -> bool:
@@ -5551,32 +5580,32 @@ with tempfile.TemporaryDirectory(prefix="star-", dir=meta["temp_dir"]) as temp_d
   temp_dir_path = Path(temp_dir)
   for par_name in ["genomeDir", "readFilesIn"]:
     par_values = par[par_name]
+    if par_values:
+      # turn value into list
+      is_multiple = isinstance(par_values, list)
+      if not is_multiple:
+        par_values = [ par_values ]
+      
+      # output list
+      new_values = []
+      for par_value in par_values:
+        print(f'>> Check compression of --{par_name} with value: {par_value}', flush=True)
+        new_value = extract_if_need_be(par_value, par_name, temp_dir_path)
+        new_values.append(new_value)
+      
+      # unlist if need be
+      if not is_multiple:
+        new_values = new_values[0]
 
-    # turn value into list
-    is_multiple = isinstance(par_values, list)
-    if not is_multiple:
-      par_values = [ par_values ]
-    
-    # output list
-    new_values = []
-    for par_value in par_values:
-      print(f'>> Check compression of --{par_name} with value: {par_value}', flush=True)
-      new_value = extract_if_need_be(par_value, par_name, temp_dir_path)
-      new_values.append(new_value)
-    
-    # unlist if need be
-    if not is_multiple:
-      new_values = new_values[0]
-
-    # replace value
-    par[par_name] = new_values
+      # replace value
+      par[par_name] = new_values
   # end ungzipping
   print("", flush=True)
 
   print("Grouping R1/R2 input files into pairs", flush=True)
   input_grouped = {}
   for path in par['readFilesIn']:
-    key = re.search(fastqgz_regex, path.name).group(4)
+    key = re.search(fastqgz_regex, path.name).group(2)
     if key not in input_grouped:
       input_grouped[key] = []
     input_grouped[key].append(str(path))
@@ -5584,26 +5613,20 @@ with tempfile.TemporaryDirectory(prefix="star-", dir=meta["temp_dir"]) as temp_d
   print("", flush=True)
 
   print(">> Constructing command", flush=True)
-  out_tmp_dir = temp_dir_path / "run"
-  cmd_args = [
-    "STAR",
-    "--runMode",
-    "alignReads",
-    "--outTmpDir",
-    out_tmp_dir
-  ]
+  par["runMode"] = "alignReads"
+  par["outTmpDir"] = temp_dir_path / "run"
   if 'cpus' in meta and meta['cpus']:
-    cmd_args.extend(["--runThreadN", str(meta['cpus'])])
-  
+    par["runThreadN"] = meta["cpus"]
   # make sure there is a trailing /
   par["outFileNamePrefix"] = f"{par['outFileNamePrefix']}/"
 
-  for name, path in par.items():
-    if path is not None:
-        if isinstance(path, list):
-          cmd_args.extend(["--" + name] + path)
-        else:
-          cmd_args.extend(["--" + name, path])
+  cmd_args = [ "STAR" ]
+  for name, value in par.items():
+    if value is not None:
+      if isinstance(value, list):
+        cmd_args.extend(["--" + name] + [str(x) for x in value])
+      else:
+        cmd_args.extend(["--" + name, str(value)])
   print("", flush=True)
 
   print(">> Running STAR with command:", flush=True)

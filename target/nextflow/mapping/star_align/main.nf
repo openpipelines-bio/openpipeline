@@ -61,7 +61,10 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
           {
             "type" : "file",
             "name" : "--input",
-            "description" : "The FASTQ files to be analyzed.",
+            "alternatives" : [
+              "--readFilesIn"
+            ],
+            "description" : "The FASTQ files to be analyzed. Corresponds to the --readFilesIn argument in the STAR command.",
             "example" : [
               "mysample_S1_L001_R1_001.fastq.gz",
               "mysample_S1_L001_R2_001.fastq.gz"
@@ -77,7 +80,10 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
           {
             "type" : "file",
             "name" : "--reference",
-            "description" : "Path to the reference built by star_mkref.",
+            "alternatives" : [
+              "--genomeDir"
+            ],
+            "description" : "Path to the reference built by star_create_reference. Corresponds to the --genomeDir argument in the STAR command.",
             "example" : [
               "/path/to/reference"
             ],
@@ -92,7 +98,10 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
           {
             "type" : "file",
             "name" : "--output",
-            "description" : "Path to output directory.",
+            "alternatives" : [
+              "--outFileNamePrefix"
+            ],
+            "description" : "Path to output directory. Corresponds to the --outFileNamePrefix argument in the STAR command.",
             "example" : [
               "/path/to/foo"
             ],
@@ -766,8 +775,8 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
             ],
             "required" : false,
             "direction" : "input",
-            "multiple" : false,
-            "multiple_sep" : ":",
+            "multiple" : true,
+            "multiple_sep" : ";",
             "dest" : "par"
           },
           {
@@ -2515,20 +2524,14 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
         {
           "type" : "docker",
           "env" : [
-            "STAR_VERSION 2.7.1a",
+            "STAR_VERSION 2.7.10a",
             "PACKAGES gcc g++ make wget zlib1g-dev unzip"
           ]
         },
         {
           "type" : "docker",
           "run" : [
-            "apt-get update && \\\\\n  apt-get install -y --no-install-recommends ${PACKAGES} && \\\\\n  apt-get clean && \\\\\n  g++ --version && \\\\\n  cd /home && \\\\\n  wget --no-check-certificate https://github.com/alexdobin/STAR/archive/${STAR_VERSION}.zip && \\\\\n  unzip ${STAR_VERSION}.zip && \\\\\n  cd STAR-${STAR_VERSION}/source && \\\\\n  make STARstatic && \\\\\n  mkdir /home/bin && \\\\\n  cp STAR /home/bin && \\\\\n  cd /home && \\\\\n  'rm' -rf STAR-${STAR_VERSION} && \\\\\n  apt-get --purge autoremove -y  ${PACKAGES}\n"
-          ]
-        },
-        {
-          "type" : "docker",
-          "env" : [
-            "PATH /home/bin:${PATH}"
+            "apt-get update && \\\\\n  apt-get install -y --no-install-recommends ${PACKAGES} && \\\\\n  cd /tmp && \\\\\n  wget --no-check-certificate https://github.com/alexdobin/STAR/archive/refs/tags/${STAR_VERSION}.zip && \\\\\n  unzip ${STAR_VERSION}.zip && \\\\\n  cd STAR-${STAR_VERSION}/source && \\\\\n  make STARstatic CXXFLAGS_SIMD=-std=c++11 && \\\\\n  cp STAR /usr/local/bin && \\\\\n  cd / && \\\\\n  rm -rf /tmp/STAR-${STAR_VERSION} /tmp/${STAR_VERSION}.zip && \\\\\n  apt-get --purge autoremove -y ${PACKAGES} && \\\\\n  apt-get clean\n"
           ]
         }
       ]
@@ -2558,7 +2561,7 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
     "config" : "/home/runner/work/openpipeline/openpipeline/src/mapping/star_align/config.vsh.yaml",
     "platform" : "nextflow",
     "viash_version" : "0.6.6",
-    "git_commit" : "69acffa6964b420f5b567f4bb90b35b36116af4c",
+    "git_commit" : "32dd6467b07dde3a254237e1883062b35963e4f6",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))
@@ -2630,7 +2633,7 @@ par = {
   'outSAMtype': $( if [ ! -z ${VIASH_PAR_OUTSAMTYPE+x} ]; then echo "r'${VIASH_PAR_OUTSAMTYPE//\\'/\\'\\"\\'\\"r\\'}'.split(';')"; else echo None; fi ),
   'outSAMmode': $( if [ ! -z ${VIASH_PAR_OUTSAMMODE+x} ]; then echo "r'${VIASH_PAR_OUTSAMMODE//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'outSAMstrandField': $( if [ ! -z ${VIASH_PAR_OUTSAMSTRANDFIELD+x} ]; then echo "r'${VIASH_PAR_OUTSAMSTRANDFIELD//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
-  'outSAMattributes': $( if [ ! -z ${VIASH_PAR_OUTSAMATTRIBUTES+x} ]; then echo "r'${VIASH_PAR_OUTSAMATTRIBUTES//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
+  'outSAMattributes': $( if [ ! -z ${VIASH_PAR_OUTSAMATTRIBUTES+x} ]; then echo "r'${VIASH_PAR_OUTSAMATTRIBUTES//\\'/\\'\\"\\'\\"r\\'}'.split(';')"; else echo None; fi ),
   'outSAMattrIHstart': $( if [ ! -z ${VIASH_PAR_OUTSAMATTRIHSTART+x} ]; then echo "int(r'${VIASH_PAR_OUTSAMATTRIHSTART//\\'/\\'\\"\\'\\"r\\'}')"; else echo None; fi ),
   'outSAMunmapped': $( if [ ! -z ${VIASH_PAR_OUTSAMUNMAPPED+x} ]; then echo "r'${VIASH_PAR_OUTSAMUNMAPPED//\\'/\\'\\"\\'\\"r\\'}'.split(';')"; else echo None; fi ),
   'outSAMorder': $( if [ ! -z ${VIASH_PAR_OUTSAMORDER+x} ]; then echo "r'${VIASH_PAR_OUTSAMORDER//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
@@ -2782,9 +2785,11 @@ meta = {
 ### Helper functions ###
 ########################
 
-# fastqgz_regex = r'([A-Za-z0-9\\\\-_\\\\.]+)_S(\\\\d+)_L(\\\\d+)_([RI]\\\\d+)_(\\\\d+)\\\\.fastq(\\\\.gz)?'
 # regex for matching R[12] fastq(gz) files
-fastqgz_regex = r'([A-Za-z0-9\\\\-_\\\\.]+)_S(\\\\d+)_L(\\\\d+)_(R\\\\d+)_(\\\\d+)\\\\.fastq(\\\\.gz)?'
+# examples: 
+# - TSP10_Fat_MAT_SS2_B134171_B115063_Immune_A1_L003_R1.fastq.gz
+# - tinygex_S1_L001_I1_001.fastq.gz
+fastqgz_regex = r'(.+)_(R\\\\d+)(_\\\\d+)?\\\\.fastq(\\\\.gz)?'
 
 # helper function for cheching whether something is a gzip
 def is_gz_file(path: Path) -> bool:
@@ -2879,32 +2884,32 @@ with tempfile.TemporaryDirectory(prefix="star-", dir=meta["temp_dir"]) as temp_d
   temp_dir_path = Path(temp_dir)
   for par_name in ["genomeDir", "readFilesIn"]:
     par_values = par[par_name]
+    if par_values:
+      # turn value into list
+      is_multiple = isinstance(par_values, list)
+      if not is_multiple:
+        par_values = [ par_values ]
+      
+      # output list
+      new_values = []
+      for par_value in par_values:
+        print(f'>> Check compression of --{par_name} with value: {par_value}', flush=True)
+        new_value = extract_if_need_be(par_value, par_name, temp_dir_path)
+        new_values.append(new_value)
+      
+      # unlist if need be
+      if not is_multiple:
+        new_values = new_values[0]
 
-    # turn value into list
-    is_multiple = isinstance(par_values, list)
-    if not is_multiple:
-      par_values = [ par_values ]
-    
-    # output list
-    new_values = []
-    for par_value in par_values:
-      print(f'>> Check compression of --{par_name} with value: {par_value}', flush=True)
-      new_value = extract_if_need_be(par_value, par_name, temp_dir_path)
-      new_values.append(new_value)
-    
-    # unlist if need be
-    if not is_multiple:
-      new_values = new_values[0]
-
-    # replace value
-    par[par_name] = new_values
+      # replace value
+      par[par_name] = new_values
   # end ungzipping
   print("", flush=True)
 
   print("Grouping R1/R2 input files into pairs", flush=True)
   input_grouped = {}
   for path in par['readFilesIn']:
-    key = re.search(fastqgz_regex, path.name).group(4)
+    key = re.search(fastqgz_regex, path.name).group(2)
     if key not in input_grouped:
       input_grouped[key] = []
     input_grouped[key].append(str(path))
@@ -2912,26 +2917,20 @@ with tempfile.TemporaryDirectory(prefix="star-", dir=meta["temp_dir"]) as temp_d
   print("", flush=True)
 
   print(">> Constructing command", flush=True)
-  out_tmp_dir = temp_dir_path / "run"
-  cmd_args = [
-    "STAR",
-    "--runMode",
-    "alignReads",
-    "--outTmpDir",
-    out_tmp_dir
-  ]
+  par["runMode"] = "alignReads"
+  par["outTmpDir"] = temp_dir_path / "run"
   if 'cpus' in meta and meta['cpus']:
-    cmd_args.extend(["--runThreadN", str(meta['cpus'])])
-  
+    par["runThreadN"] = meta["cpus"]
   # make sure there is a trailing /
   par["outFileNamePrefix"] = f"{par['outFileNamePrefix']}/"
 
-  for name, path in par.items():
-    if path is not None:
-        if isinstance(path, list):
-          cmd_args.extend(["--" + name] + path)
-        else:
-          cmd_args.extend(["--" + name, path])
+  cmd_args = [ "STAR" ]
+  for name, value in par.items():
+    if value is not None:
+      if isinstance(value, list):
+        cmd_args.extend(["--" + name] + [str(x) for x in value])
+      else:
+        cmd_args.extend(["--" + name, str(value)])
   print("", flush=True)
 
   print(">> Running STAR with command:", flush=True)

@@ -11,17 +11,17 @@
         "default": "",
         "properties": {"input": {
             "type":"string",
-            "description": "The FASTQ files to be analyzed.",
+            "description": "The FASTQ files to be analyzed. Corresponds to the --readFilesIn argument in the STAR command.",
             
             "default": ""
           },"reference": {
             "type":"string",
-            "description": "Path to the reference built by star_mkref.",
+            "description": "Path to the reference built by star_create_reference. Corresponds to the --genomeDir argument in the STAR command.",
             
             "default": ""
           },"output": {
             "type":"string",
-            "description": "Path to output directory.",
+            "description": "Path to output directory. Corresponds to the --outFileNamePrefix argument in the STAR command.",
             
             "default": "$id.$key.output.output"
           }
