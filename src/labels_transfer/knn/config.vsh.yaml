@@ -1,11 +1,11 @@
 functionality:
-  name: scvi
-  namespace: "integrate"
+  name: knn
+  namespace: "labels_transfer"
   version: "dev"
   description: "Performs label transfer from reference to query using KNN classifier"
   authors:
-    - __merge__: ../../authors/vladimir_shitov.yaml
-      roles: [ author ]
+    # - __merge__: ../../authors/vladimir_shitov.yaml
+    #   roles: [ author ]
   argument_groups:
     - name: Inputs
       arguments:
@@ -19,14 +19,15 @@ functionality:
           type: string
           default: "rna"
           required: false
-        - name: "--train_data"
+        - name: "--train_data" # TODO: rename to reference?
           type: file
           description: ".h5ad file with data used to train classifier. If None, HLCA is used"
           default: "https://zenodo.org/record/6337966/files/HLCA_emb_and_metadata.h5ad"
           required: false
         - name: "--targets"
+          type: string
           default: "ann_level_1,ann_level_2,ann_level_3,ann_level_4,ann_level_5,ann_finest_level"
-          required: true
+          required: false
           multiple: true
           multiple_sep: ","
         - name: "--train_obsm_key"
@@ -53,7 +54,7 @@ functionality:
     - name: "Learning parameters"
       arguments:
         - name: "--n_neighbors"
-          alternatives: ["k"]
+          alternatives: ["-k"]
           type: integer
           description: "Number of nearest neighbors to use for classification"
           required: true
@@ -83,3 +84,4 @@ platforms:
   - type: nextflow
     directives:
       label: [highmem, highcpu]
+  - type: native
