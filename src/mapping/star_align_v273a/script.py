@@ -9,24 +9,17 @@ import shutil
 ## VIASH START
 par = {
   'input': [
-    # 'resources_test/cellranger_tiny_fastq/cellranger_tiny_fastq/tinygex_S1_L001_R1_001.fastq.gz',
-    # 'resources_test/cellranger_tiny_fastq/cellranger_tiny_fastq/tinygex_S1_L001_R2_001.fastq.gz',
-    'resources_test/cellranger_tiny_fastq/cellranger_tiny_fastq/tinygex_S1_L002_R1_001.fastq.gz',
-    'resources_test/cellranger_tiny_fastq/cellranger_tiny_fastq/tinygex_S1_L002_R2_001.fastq.gz'
+    'resources_test/cellranger_tiny_fastq/cellranger_tiny_fastq/tinygex_S1_L001_R1_001.fastq.gz',
+    'resources_test/cellranger_tiny_fastq/cellranger_tiny_fastq/tinygex_S1_L001_R2_001.fastq.gz',
+    # 'resources_test/cellranger_tiny_fastq/cellranger_tiny_fastq/tinygex_S1_L002_R1_001.fastq.gz',
+    # 'resources_test/cellranger_tiny_fastq/cellranger_tiny_fastq/tinygex_S1_L002_R2_001.fastq.gz'
   ],
   # 'input': [ 'resources_test/cellranger_tiny_fastq/cellranger_tiny_fastq/' ],
   'reference': 'resources_test/cellranger_tiny_fastq/cellranger_tiny_ref_v2_7_10_a/',
   'output': 'test_output'
 }
 meta = {
-  'config': 'src/mapping/star_align/.config.vsh.yaml',
   'cpus': 8,
-  'memory_b': None,
-  'memory_kb': None,
-  'memory_mb': None,
-  'memory_gb': None,
-  'memory_tb': None,
-  'memory_pb': None,
   'temp_dir': '/tmp'
 }
 ## VIASH END
@@ -132,25 +125,25 @@ with tempfile.TemporaryDirectory(prefix="star-", dir=meta["temp_dir"]) as temp_d
   temp_dir_path = Path(temp_dir)
   for par_name in ["genomeDir", "readFilesIn"]:
     par_values = par[par_name]
+    if par_values:
+      # turn value into list
+      is_multiple = isinstance(par_values, list)
+      if not is_multiple:
+        par_values = [ par_values ]
+      
+      # output list
+      new_values = []
+      for par_value in par_values:
+        print(f'>> Check compression of --{par_name} with value: {par_value}', flush=True)
+        new_value = extract_if_need_be(par_value, par_name, temp_dir_path)
+        new_values.append(new_value)
+      
+      # unlist if need be
+      if not is_multiple:
+        new_values = new_values[0]
 
-    # turn value into list
-    is_multiple = isinstance(par_values, list)
-    if not is_multiple:
-      par_values = [ par_values ]
-    
-    # output list
-    new_values = []
-    for par_value in par_values:
-      print(f'>> Check compression of --{par_name} with value: {par_value}', flush=True)
-      new_value = extract_if_need_be(par_value, par_name, temp_dir_path)
-      new_values.append(new_value)
-    
-    # unlist if need be
-    if not is_multiple:
-      new_values = new_values[0]
-
-    # replace value
-    par[par_name] = new_values
+      # replace value
+      par[par_name] = new_values
   # end ungzipping
   print("", flush=True)
 
@@ -165,26 +158,20 @@ with tempfile.TemporaryDirectory(prefix="star-", dir=meta["temp_dir"]) as temp_d
   print("", flush=True)
 
   print(">> Constructing command", flush=True)
-  out_tmp_dir = temp_dir_path / "run"
-  cmd_args = [
-    "STAR",
-    "--runMode",
-    "alignReads",
-    "--outTmpDir",
-    out_tmp_dir
-  ]
+  par["runMode"] = "alignReads"
+  par["outTmpDir"] = temp_dir_path / "run"
   if 'cpus' in meta and meta['cpus']:
-    cmd_args.extend(["--runThreadN", str(meta['cpus'])])
-  
+    par["runThreadN"] = meta["cpus"]
   # make sure there is a trailing /
   par["outFileNamePrefix"] = f"{par['outFileNamePrefix']}/"
 
-  for name, path in par.items():
-    if path is not None:
-        if isinstance(path, list):
-          cmd_args.extend(["--" + name] + path)
-        else:
-          cmd_args.extend(["--" + name, path])
+  cmd_args = [ "STAR" ]
+  for name, value in par.items():
+    if value is not None:
+      if isinstance(value, list):
+        cmd_args.extend(["--" + name] + [str(x) for x in value])
+      else:
+        cmd_args.extend(["--" + name, str(value)])
   print("", flush=True)
 
   print(">> Running STAR with command:", flush=True)
