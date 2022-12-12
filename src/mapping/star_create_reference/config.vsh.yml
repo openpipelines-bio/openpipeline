@@ -9,47 +9,50 @@ functionality:
     - name: Input/Output
       arguments:
         - type: file
-          name: --input
+          name: --input_fasta
+          alternatives: --genomeFastaFiles
           required: true
-          description: The fasta files to be included in the reference.
+          description: The fasta files to be included in the reference. Corresponds to the --genomeFastaFiles argument in the STAR command.
           example: [ chr1.fasta, chr2.fasta ]
           multiple: true
           multiple_sep: " "
-        - name: --output
-          type: file
-          description: Path to output directory.
-          example: /path/to/foo
-          direction: output
-          required: true
-        - name: --sjdbGTFfile
+        - name: --input_gtf
+          alternatives: --sjdbGTFfile
           type: file
           direction: input
           description: | 
-            Specifes the path to the file with annotated transcripts in the standard GTF
+            Specifies the path to the file with annotated transcripts in the standard GTF
             format. STAR will extract splice junctions from this file and use them to greatly improve
-            accuracy of the mapping.
+            accuracy of the mapping. Corresponds to the --sjdbGTFfile argument in the STAR command.
           required: false
-    - name: "extra options"
+        - name: --output
+          alternatives: --genomeDir
+          type: file
+          description: Path to output directory. Corresponds to the --genomeDir argument in the STAR command.
+          example: /path/to/foo
+          direction: output
+          required: true
+    - name: "Genome indexing arguments"
       arguments:
-      - type: integer
-        name: --genomeSAindexNbases
-        description: |
-          Length (bases) of the SA pre-indexing string. Typically between 10 and 15.
-          Longer strings will use much more memory, but allow faster searches. For small
-          genomes, the parameter {genomeSAindexNbases must be scaled down to
-          min(14, log2(GenomeLength)/2 - 1).
-        required: false
-        default: 14
+        - type: integer
+          name: --genomeSAindexNbases
+          description: |
+            Length (bases) of the SA pre-indexing string. Typically between 10 and 15.
+            Longer strings will use much more memory, but allow faster searches. For small
+            genomes, the parameter {genomeSAindexNbases must be scaled down to
+            min(14, log2(GenomeLength)/2 - 1).
+          required: false
+          default: 14
   resources:
-    - type: bash_script
-      path: script.sh
+    - type: python_script
+      path: script.py
   test_resources:
     - type: bash_script
       path: test.sh
     - path: ../../../resources_test/cellranger_tiny_fastq
 platforms:
   - type: docker
-    image: ubuntu:latest
+    image: python:3.10
     setup:
       # setup derived from https://github.com/alexdobin/STAR/blob/master/extras/docker/Dockerfile
       - type: docker
@@ -60,21 +63,16 @@ platforms:
         run: |
           apt-get update && \
             apt-get install -y --no-install-recommends ${PACKAGES} && \
-            apt-get clean && \
-            g++ --version && \
-            cd /home && \
-            wget --no-check-certificate https://github.com/alexdobin/STAR/archive/${STAR_VERSION}.zip && \
+            cd /tmp && \
+            wget --no-check-certificate https://github.com/alexdobin/STAR/archive/refs/tags/${STAR_VERSION}.zip && \
             unzip ${STAR_VERSION}.zip && \
             cd STAR-${STAR_VERSION}/source && \
             make STARstatic CXXFLAGS_SIMD=-std=c++11 && \
-            mkdir /home/bin && \
-            cp STAR /home/bin && \
-            cd /home && \
-            'rm' -rf STAR-${STAR_VERSION} && \
-            apt-get --purge autoremove -y  ${PACKAGES}
-      - type: docker
-        env: 
-          - PATH /home/bin:${PATH}
+            cp STAR /usr/local/bin && \
+            cd / && \
+            rm -rf /tmp/STAR-${STAR_VERSION} /tmp/${STAR_VERSION}.zip && \
+            apt-get --purge autoremove -y ${PACKAGES} && \
+            apt-get clean
   - type: nextflow
     directives:
       label: [ highmem, highcpu ]

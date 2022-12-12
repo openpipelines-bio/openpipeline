@@ -57,10 +57,10 @@ if [ ! -f "${recent_ref_dir}/Genome" ]; then
   mkdir -p "${recent_ref_dir}"
 
   target/docker/mapping/star_create_reference/star_create_reference \
-    --input "$cellranger_tiny_ref/fasta/genome.fa" \
+    --input_fasta "$cellranger_tiny_ref/fasta/genome.fa" \
     --output "$recent_ref_dir" \
     --genomeSAindexNbases 7 \
-    --sjdbGTFfile "$cellranger_tiny_ref/genes/genes.gtf.gz"
+    --input_gtf "$cellranger_tiny_ref/genes/genes.gtf.gz"
 fi
 
 bam_dir="${OUT}/bam"

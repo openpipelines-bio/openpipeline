@@ -6,8 +6,8 @@ meta_executable="./target/docker/mapping/star_create_reference/star_create_refer
 ## VIASH END
 
 "$meta_executable" \
-  --input "$meta_resources_dir/cellranger_tiny_fastq/cellranger_tiny_ref/fasta/genome.fa" \
-  --sjdbGTFfile "$meta_resources_dir/cellranger_tiny_fastq/cellranger_tiny_ref/genes/genes.gtf.gz" \
+  --input_fasta "$meta_resources_dir/cellranger_tiny_fastq/cellranger_tiny_ref/fasta/genome.fa" \
+  --input_gtf "$meta_resources_dir/cellranger_tiny_fastq/cellranger_tiny_ref/genes/genes.gtf.gz" \
   --output "./star_reference_test" \
   --genomeSAindexNbases 7 \
   ---cpus 8
