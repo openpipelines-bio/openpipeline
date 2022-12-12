@@ -14,6 +14,15 @@
 
 * `mapping/cellranger_multi`: Align fastq files using Cell Ranger multi.
 
+## MAJOR CHANGES
+
+* `convert/from_velocyto_to_h5mu`: Moved to `velocity/velocyto_to_h5mu`.
+  It also now accepts an optional `--input_h5mu` argument, to allow directly reading
+  the RNA velocity data into a `.h5mu` file containing the other modalities.
+
+* `resources_test/cellranger_tiny_fastq`: Include RNA velocity computations as part of
+  the script.
+
 ## MINOR CHANGES
 
 * Default value for `obs_covariates` argument of full pipeline is now `sample_id`.

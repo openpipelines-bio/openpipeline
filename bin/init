@@ -46,8 +46,7 @@ REPO_ROOT=$(git rev-parse --show-toplevel)
 # ensure that the command below is run from the root of the repository
 cd "$REPO_ROOT"
 
-curl -fsSL https://github.com/viash-io/viash/releases/latest/download/viash_install | bash -s -- --tools true
-
+curl -fsSL get.viash.io | bash -s -- --tools true
 
 if [ "$only_viash" = false ] ; then
 
