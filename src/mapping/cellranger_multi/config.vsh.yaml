@@ -118,7 +118,7 @@ functionality:
 
         - type: boolean
           name: "--gex_generate_bam"
-          default: true
+          default: false
           description: Whether to generate a BAM file.
         
         - type: boolean

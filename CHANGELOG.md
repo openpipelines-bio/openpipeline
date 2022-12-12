@@ -25,6 +25,8 @@
 
 ## MINOR CHANGES
 
+* Default value for `obs_covariates` argument of full pipeline is now `sample_id`.
+
 * Set the `tag` directive of all Nextflow components to '$id'.
 
 ## BUG FIXES
