@@ -14,6 +14,8 @@
 
 * `mapping/cellranger_multi`: Align fastq files using Cell Ranger multi.
 
+* `mapping/htseq_count`: Quantify gene expression for subsequent testing for differential expression.
+
 ## MAJOR CHANGES
 
 * `convert/from_velocyto_to_h5mu`: Moved to `velocity/velocyto_to_h5mu`.
