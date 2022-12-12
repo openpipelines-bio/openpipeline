@@ -61,7 +61,8 @@ platforms:
     setup:
       - type: python
         packages: 
-          - mudata
-          - anndata>=0.8
+          - mudata~=0.2.0
+          - anndata~=0.8
+          - scanpy
           - loompy
   - type: nextflow
