@@ -4,8 +4,8 @@ functionality:
   version: "dev"
   description: "Performs label transfer from reference to query using KNN classifier"
   authors:
-    # - __merge__: ../../authors/vladimir_shitov.yaml
-    #   roles: [ author ]
+    - __merge__: ../../authors/vladimir_shitov.yaml
+      roles: [ author ]
   argument_groups:
     - name: Inputs
       arguments:

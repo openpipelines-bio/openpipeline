@@ -59,18 +59,14 @@ def main():
     else:
         X_train = adata_reference.obsm[par["reference_obsm_key"]]
 
-    print("X_train:")
-    print(X_train)
     ref_nn_index = pynndescent.NNDescent(X_train, n_neighbors=par["n_neighbors"])
     ref_nn_index.prepare()
 
-    if par["query_obsm_key"] is None:  # TODO: Rename to query
+    if par["query_obsm_key"] is None:
         query = adata.X
     else:
         query = adata.obsm[par["query_obsm_key"]]
 
-    print("Query:")
-    print(query)
     ref_neighbors, ref_distances = ref_nn_index.query(query, k=par["n_neighbors"])
 
     weights = distances_to_affinities(ref_distances)
