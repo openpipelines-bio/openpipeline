@@ -1,5 +1,5 @@
 import scrublet as scr
-import muon as mu
+import mudata as mu
 import numpy as np
 import logging
 from sys import stdout

@@ -1,4 +1,4 @@
-import muon as mu
+import mudata as mu
 import scanpy as sc
 import logging
 from sys import stdout
