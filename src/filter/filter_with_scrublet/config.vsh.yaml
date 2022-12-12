@@ -104,14 +104,13 @@ functionality:
     - path: ../../../resources_test/pbmc_1k_protein_v3
 platforms:
   - type: docker
-    image: python:3.8
+    image: python:3.10
     run_args: [--env NUMBA_CACHE_DIR=/tmp]
     setup:
       - type: python
         packages:
           - scanpy~=1.9.1
           - scrublet
-          - muon
           - mudata~=0.2.0
           - anndata~=0.8.0
   - type: nextflow
