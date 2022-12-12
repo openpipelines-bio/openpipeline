@@ -97,7 +97,7 @@
             "type":"boolean",
             "description": "Whether to generate a BAM file.",
             
-            "default": "True"
+            "default": "False"
           },"gex_include_introns": {
             "type":"boolean",
             "description": "Include intronic reads in count (default=true unless --target-panel is specified in which case default=false)",

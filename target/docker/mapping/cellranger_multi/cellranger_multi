@@ -258,7 +258,7 @@ function ViashHelp {
   echo ""
   echo "    --gex_generate_bam"
   echo "        type: boolean"
-  echo "        default: true"
+  echo "        default: false"
   echo "        Whether to generate a BAM file."
   echo ""
   echo "    --gex_include_introns"
@@ -522,9 +522,9 @@ RUN pip install --upgrade pip && \
 
 LABEL org.opencontainers.image.authors="Angela Pisco, Robrecht Cannoodt, Dries De Maeyer"
 LABEL org.opencontainers.image.description="Companion container for running component mapping cellranger_multi"
-LABEL org.opencontainers.image.created="2022-12-12T20:25:12Z"
+LABEL org.opencontainers.image.created="2022-12-12T20:26:58Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="32dd6467b07dde3a254237e1883062b35963e4f6"
+LABEL org.opencontainers.image.revision="b0f672595c3650da4788f7b7a20f7d09ea0889ca"
 LABEL org.opencontainers.image.version="main_build"
 VIASHDOCKER
 }
@@ -1066,7 +1066,7 @@ if [ -z ${VIASH_PAR_GEX_SECONDARY_ANALYSIS+x} ]; then
   VIASH_PAR_GEX_SECONDARY_ANALYSIS="false"
 fi
 if [ -z ${VIASH_PAR_GEX_GENERATE_BAM+x} ]; then
-  VIASH_PAR_GEX_GENERATE_BAM="true"
+  VIASH_PAR_GEX_GENERATE_BAM="false"
 fi
 if [ -z ${VIASH_PAR_GEX_INCLUDE_INTRONS+x} ]; then
   VIASH_PAR_GEX_INCLUDE_INTRONS="true"

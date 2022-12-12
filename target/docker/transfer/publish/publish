@@ -392,9 +392,9 @@ FROM python:3.10
 RUN :
 LABEL org.opencontainers.image.authors="Toni Verbeiren"
 LABEL org.opencontainers.image.description="Companion container for running component transfer publish"
-LABEL org.opencontainers.image.created="2022-12-12T20:25:07Z"
+LABEL org.opencontainers.image.created="2022-12-12T20:26:53Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="32dd6467b07dde3a254237e1883062b35963e4f6"
+LABEL org.opencontainers.image.revision="b0f672595c3650da4788f7b7a20f7d09ea0889ca"
 LABEL org.opencontainers.image.version="main_build"
 VIASHDOCKER
 }
