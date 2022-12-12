@@ -174,7 +174,7 @@ with tempfile.TemporaryDirectory(prefix="star-", dir=meta["temp_dir"]) as temp_d
     out_tmp_dir
   ]
   if 'cpus' in meta and meta['cpus']:
-    cmd_args.extend(["--runThreadN", meta['cpus']])
+    cmd_args.extend(["--runThreadN", str(meta['cpus'])])
   
   # make sure there is a trailing /
   par["outFileNamePrefix"] = f"{par['outFileNamePrefix']}/"
