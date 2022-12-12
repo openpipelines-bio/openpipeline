@@ -389,6 +389,8 @@ argument_groups:
       - rB          ... alignment block read/genomic coordinates.
       - vR          ... read coordinate of the variant.
     example: Standard
+    multiple: yes
+    multiple_sep: ;
   - name: --outSAMattrIHstart
     type: integer
     description: start value for the IH attribute. 0 may be required by some downstream

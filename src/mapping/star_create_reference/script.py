@@ -8,15 +8,10 @@ import shutil
 
 ## VIASH START
 par = {
-  'input': [
-    'resources_test/cellranger_tiny_fastq/cellranger_tiny_fastq/tinygex_S1_L001_R1_001.fastq.gz',
-    'resources_test/cellranger_tiny_fastq/cellranger_tiny_fastq/tinygex_S1_L001_R2_001.fastq.gz',
-    # 'resources_test/cellranger_tiny_fastq/cellranger_tiny_fastq/tinygex_S1_L002_R1_001.fastq.gz',
-    # 'resources_test/cellranger_tiny_fastq/cellranger_tiny_fastq/tinygex_S1_L002_R2_001.fastq.gz'
-  ],
-  # 'input': [ 'resources_test/cellranger_tiny_fastq/cellranger_tiny_fastq/' ],
-  'reference': 'resources_test/cellranger_tiny_fastq/cellranger_tiny_ref_v2_7_10_a/',
-  'output': 'test_output'
+  'input_fasta': 'resources_test/cellranger_tiny_fastq/cellranger_tiny_ref/fasta/genome.fa',
+  'input_gtf': 'resources_test/cellranger_tiny_fastq/cellranger_tiny_ref/genes/genes.gtf.gz',
+  'output': 'star_reference_test',
+  'genomeSAindexNbases': 7
 }
 meta = {
   'cpus': 8,
@@ -28,25 +23,10 @@ meta = {
 ### Helper functions ###
 ########################
 
-# regex for matching R[12] fastq(gz) files
-# examples: 
-# - TSP10_Fat_MAT_SS2_B134171_B115063_Immune_A1_L003_R1.fastq.gz
-# - tinygex_S1_L001_I1_001.fastq.gz
-fastqgz_regex = r'(.+)_(R\d+)(_\d+)?\.fastq(\.gz)?'
-
 # helper function for cheching whether something is a gzip
 def is_gz_file(path: Path) -> bool:
   with open(path, 'rb') as file:
     return file.read(2) == b'\x1f\x8b'
-
-# look for fastq files in a directory
-def search_fastqs(path: Path) -> list[Path]:
-  if path.is_dir():
-    print(f"Input '{path}' is a directory, traversing to see if we can detect any FASTQ files.", flush=True)
-    value_paths = [file for file in path.iterdir() if re.match(fastqgz_regex, file.name) ]
-    return value_paths
-  else:
-    return [path]
 
 # if {par_value} is a Path, extract it to a temp_dir_path and return the resulting path
 def extract_if_need_be(par_value: Path, par_name: str, temp_dir_path: Path) -> Path:
@@ -93,7 +73,7 @@ def extract_if_need_be(par_value: Path, par_name: str, temp_dir_path: Path) -> P
 # rename keys and convert path strings to Path
 # note: only list file arguments here. if non-file arguments also need to be renamed, 
 # the `processPar()` generator needs to be adapted
-to_rename = {'input': 'readFilesIn', 'reference': 'genomeDir', 'output': 'outFileNamePrefix'}
+to_rename = {'input_fasta': 'genomeFastaFiles', 'output': 'genomeDir', 'input_gtf': 'sjdbGTFfile'}
 
 def process_par(orig_par, to_rename):
   for key, value in orig_par.items():
@@ -113,19 +93,13 @@ def process_par(orig_par, to_rename):
 par = dict(process_par(par, to_rename))
 
 # create output dir if need be
-par["outFileNamePrefix"].mkdir(parents=True, exist_ok=True)
+par["genomeDir"].mkdir(parents=True, exist_ok=True)
 
 with tempfile.TemporaryDirectory(prefix="star-", dir=meta["temp_dir"]) as temp_dir:
-  print(">> Check whether input files are directories", flush=True)
-  new_read_files_in = []
-  for path in par["readFilesIn"]:
-    new_read_files_in.extend(search_fastqs(path))
-  par["readFilesIn"] = new_read_files_in
-  print("", flush=True)
 
   # checking for compressed files, ungzip files if need be
   temp_dir_path = Path(temp_dir)
-  for par_name in ["genomeDir", "readFilesIn"]:
+  for par_name in ["genomeFastaFiles", "sjdbGTFfile"]:
     par_values = par[par_name]
     if par_values:
       # turn value into list
@@ -149,24 +123,13 @@ with tempfile.TemporaryDirectory(prefix="star-", dir=meta["temp_dir"]) as temp_d
   # end ungzipping
   print("", flush=True)
 
-  print("Grouping R1/R2 input files into pairs", flush=True)
-  input_grouped = {}
-  for path in par['readFilesIn']:
-    key = re.search(fastqgz_regex, path.name).group(2)
-    if key not in input_grouped:
-      input_grouped[key] = []
-    input_grouped[key].append(str(path))
-  par['readFilesIn'] = [ ','.join(val) for val in input_grouped.values() ]
-  print("", flush=True)
-
   print(">> Constructing command", flush=True)
-  par["runMode"] = "alignReads"
+  par["runMode"] = "genomeGenerate"
   par["outTmpDir"] = temp_dir_path / "run"
   if 'cpus' in meta and meta['cpus']:
     par["runThreadN"] = meta["cpus"]
-  # make sure there is a trailing /
-  par["outFileNamePrefix"] = f"{par['outFileNamePrefix']}/"
 
+  
   cmd_args = [ "STAR" ]
   for name, value in par.items():
     if value is not None:
