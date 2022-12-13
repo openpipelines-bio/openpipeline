@@ -8,8 +8,8 @@ import shutil
 
 ## VIASH START
 par = {
-  'input_fasta': 'resources_test/cellranger_tiny_fastq/cellranger_tiny_ref/fasta/genome.fa',
-  'input_gtf': 'resources_test/cellranger_tiny_fastq/cellranger_tiny_ref/genes/genes.gtf.gz',
+  'genome_fasta': 'resources_test/cellranger_tiny_fastq/cellranger_tiny_ref/fasta/genome.fa',
+  'transcriptome_gtf': 'resources_test/cellranger_tiny_fastq/cellranger_tiny_ref/genes/genes.gtf.gz',
   'output': 'star_reference_test',
   'genomeSAindexNbases': 7
 }
@@ -71,7 +71,7 @@ def extract_if_need_be(par_value: Path, temp_dir_path: Path) -> Path:
 # rename keys and convert path strings to Path
 # note: only list file arguments here. if non-file arguments also need to be renamed, 
 # the `processPar()` generator needs to be adapted
-to_rename = {'input_fasta': 'genomeFastaFiles', 'output': 'genomeDir', 'input_gtf': 'sjdbGTFfile'}
+to_rename = {'genome_fasta': 'genomeFastaFiles', 'output': 'genomeDir', 'transcriptome_gtf': 'sjdbGTFfile'}
 
 def process_par(orig_par, to_rename):
   for key, value in orig_par.items():

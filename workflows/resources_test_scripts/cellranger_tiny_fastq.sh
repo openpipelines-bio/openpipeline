@@ -47,11 +47,11 @@ recent_ref_dir="${OUT}/cellranger_tiny_ref_v2_7_10_a"
 if [ ! -f "${recent_ref_dir}/Genome" ]; then
   mkdir -p "${recent_ref_dir}"
 
-  target/docker/mapping/star_create_reference/star_create_reference \
-    --input_fasta "$cellranger_tiny_ref/fasta/genome.fa" \
+  target/docker/mapping/star_build_reference/star_build_reference \
+    --genome_fasta "$cellranger_tiny_ref/fasta/genome.fa" \
     --output "$recent_ref_dir" \
     --genomeSAindexNbases 7 \
-    --input_gtf "$cellranger_tiny_ref/genes/genes.gtf.gz"
+    --transcriptome_gtf "$cellranger_tiny_ref/genes/genes.gtf.gz"
 fi
 
 # run cellranger count

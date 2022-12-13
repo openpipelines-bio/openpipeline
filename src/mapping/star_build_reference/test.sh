@@ -2,12 +2,12 @@
 
 ## VIASH START
 meta_resources_dir="./resources_test"
-meta_executable="./target/docker/mapping/star_create_reference/star_create_reference"
+meta_executable="./target/docker/mapping/star_build_reference/star_build_reference"
 ## VIASH END
 
 "$meta_executable" \
-  --input_fasta "$meta_resources_dir/cellranger_tiny_fastq/cellranger_tiny_ref/fasta/genome.fa" \
-  --input_gtf "$meta_resources_dir/cellranger_tiny_fastq/cellranger_tiny_ref/genes/genes.gtf.gz" \
+  --genome_fasta "$meta_resources_dir/cellranger_tiny_fastq/cellranger_tiny_ref/fasta/genome.fa" \
+  --transcriptome_gtf "$meta_resources_dir/cellranger_tiny_fastq/cellranger_tiny_ref/genes/genes.gtf.gz" \
   --output "./star_reference_test" \
   --genomeSAindexNbases 7 \
   ---cpus 8
