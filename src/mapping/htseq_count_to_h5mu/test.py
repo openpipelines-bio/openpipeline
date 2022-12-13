@@ -9,14 +9,14 @@ meta = {
 ## VIASH END
 
 print("> Running command with folder", flush=True)
-input = [ meta["resources_dir"] + "/cellranger_tiny_fastq/htseq_counts.tsv" ]
+input = meta["resources_dir"] + "/cellranger_tiny_fastq/htseq_counts.tsv"
 reference = meta["resources_dir"] + "/cellranger_tiny_fastq/cellranger_tiny_ref/genes/genes.gtf.gz"
 output = "test_output.h5mu"
 
 cmd_pars = [
     meta["executable"],
-    "--input_id", 'foo',
-    "--input_counts", ';'.join(input),
+    "--input_id", ['foo', 'bar'],
+    "--input_counts", [input, input],
     "--reference", reference,
     "--output", output,
     "---cpus", "2"
@@ -33,7 +33,7 @@ mdata = md.read_h5mu(output)
 print(mdata)
 
 assert "rna" in mdata.mod
-assert mdata.n_obs == len(input)
+assert mdata.n_obs == 2
 assert mdata.mod["rna"].n_vars > 100
 
 print("> Completed Successfully!", flush=True)
