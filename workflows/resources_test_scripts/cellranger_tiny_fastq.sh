@@ -56,7 +56,7 @@ fi
 
 # run cellranger count
 bam_dir="${OUT}/bam"
-if [ ! -f "$bam_dir" ]; then
+if [ ! -f "$bam_dir/possorted_genome_bam.bam" ]; then
   mkdir -p "$bam_dir"
 
   viash run src/mapping/cellranger_count/config.vsh.yaml -- \
@@ -91,4 +91,13 @@ if [ ! -f "$dataset_h5mu" ]; then
     --input_loom "$velo_loom" \
     --input_h5mu "$raw_h5mu" \
     --output "$dataset_h5mu"
+fi
+
+# run htseq
+htseq_counts="${OUT}/htseq_counts.tsv"
+if [ ! -f "$htseq_counts" ]; then
+  bin/viash run src/mapping/htseq_count/config.vsh.yaml -- \
+  --input "$velo_bam" \
+  --reference "$velo_gtf" \
+  --output "$htseq_counts"
 fi
