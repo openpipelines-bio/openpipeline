@@ -29,9 +29,7 @@ def is_gz_file(path: Path) -> bool:
     return file.read(2) == b'\x1f\x8b'
 
 # if {par_value} is a Path, extract it to a temp_dir_path and return the resulting path
-def extract_if_need_be(par_value: Path, par_name: str, temp_dir_path: Path) -> Path:
-  print(f'>> Check compression of --{par_name} with value: {par_value}', flush=True)
-
+def extract_if_need_be(par_value: Path, temp_dir_path: Path) -> Path:
   if par_value.is_file() and tarfile.is_tarfile(par_value):
     # Remove two extensions (if they exist)
     extaction_dir_name = Path(par_value.stem).stem
@@ -111,7 +109,7 @@ with tempfile.TemporaryDirectory(prefix="star-", dir=meta["temp_dir"]) as temp_d
       new_values = []
       for par_value in par_values:
         print(f'>> Check compression of --{par_name} with value: {par_value}', flush=True)
-        new_value = extract_if_need_be(par_value, par_name, temp_dir_path)
+        new_value = extract_if_need_be(par_value, temp_dir_path)
         new_values.append(new_value)
       
       # unlist if need be
