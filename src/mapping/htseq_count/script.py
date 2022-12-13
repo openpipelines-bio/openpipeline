@@ -105,11 +105,10 @@ with tempfile.TemporaryDirectory(prefix="htseq-", dir=meta["temp_dir"]) as temp_
 
   # checking for compressed files, ungzip files if need be
   temp_dir_path = Path(temp_dir)
-  par_name = "reference"
-  reference = Path(par[par_name])
+  reference = Path(par["reference"])
   
-  print(f'>> Check compression of --{par_name} with value: {reference}', flush=True)
-  par[par_name] = extract_if_need_be(reference, temp_dir_path)
+  print(f'>> Check compression of --reference with value: {reference}', flush=True)
+  par["reference"] = extract_if_need_be(reference, temp_dir_path)
 
   print(">> Constructing command", flush=True)
   cmd_args = [ "htseq-count" ] + generate_args(par, config)
