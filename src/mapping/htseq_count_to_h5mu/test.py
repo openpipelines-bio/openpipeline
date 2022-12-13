@@ -15,8 +15,8 @@ output = "test_output.h5mu"
 
 cmd_pars = [
     meta["executable"],
-    "--input_id", ['foo', 'bar'],
-    "--input_counts", [input, input],
+    "--input_id", "foo;bar",
+    "--input_counts", f"{input};{input}",
     "--reference", reference,
     "--output", output,
     "---cpus", "2"
