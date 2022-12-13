@@ -5,11 +5,12 @@ transcriptome_gtf: # please fill in - example: "https://ftp.ebi.ac.uk/pub/databa
 # ercc: "https://assets.thermofisher.com/TFS-Assets/LSG/manuals/ERCC92.zip"
 
 # Outputs
-target: ["raw"]
+target: ["star"]
 # output_fasta: "$id.$key.output_fasta.gz"
 # output_gtf: "$id.$key.output_gtf.gz"
 # output_cellranger: "$id.$key.output_cellranger.gz"
 # output_bd_rhapsody: "$id.$key.output_bd_rhapsody.gz"
+# output_star: "$id.$key.output_star.gz"
 
 # Arguments
 # subset_regex: "(ERCC-00002|chr1)"

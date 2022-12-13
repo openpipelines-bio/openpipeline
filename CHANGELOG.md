@@ -10,9 +10,15 @@
 
 * `mapping/star_align_v273a`: Align `.fastq` files using STAR v2.7.3a.
 
-* `mapping/star_create_reference`: Create a STAR reference index.
+* `mapping/star_build_reference`: Create a STAR reference index.
 
 * `mapping/cellranger_multi`: Align fastq files using Cell Ranger multi.
+
+* `mapping/samtools_sort`: Sort and (optionally) index alignments.
+
+* `mapping/htseq_count`: Quantify gene expression for subsequent testing for differential expression.
+
+* `mapping/htseq_count_to_h5mu`: Convert one or more HTSeq outputs to a MuData file.
 
 ## MAJOR CHANGES
 

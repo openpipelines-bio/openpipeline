@@ -25,7 +25,7 @@ functionality:
         - type: file
           name: --reference
           alternatives: --genomeDir
-          description: Path to the reference built by star_create_reference. Corresponds to the --genomeDir in the STAR command.
+          description: Path to the reference built by star_build_reference. Corresponds to the --genomeDir in the STAR command.
           example: /path/to/reference
           required: true
         - type: file

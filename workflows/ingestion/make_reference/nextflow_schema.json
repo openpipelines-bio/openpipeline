@@ -40,8 +40,8 @@
         "properties": {"target": {
             "type":"string",
             "description": "Which reference indices to generate.",
-            "enum": ["cellranger", "bd_rhapsody"],
-            "default": "['raw']"
+            "enum": ["cellranger", "bd_rhapsody", "star"],
+            "default": "['star']"
           },"output_fasta": {
             "type":"string",
             "description": "Output genome sequence fasta.",
@@ -62,6 +62,11 @@
             "description": "Output index",
             
             "default": "$id.$key.output_bd_rhapsody.gz"
+          },"output_star": {
+            "type":"string",
+            "description": "Output index",
+            
+            "default": "$id.$key.output_star.gz"
           }
         }
       },

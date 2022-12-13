@@ -16,7 +16,7 @@
             "default": ""
           },"reference": {
             "type":"string",
-            "description": "Path to the reference built by star_create_reference. Corresponds to the --genomeDir argument in the STAR command.",
+            "description": "Path to the reference built by star_build_reference. Corresponds to the --genomeDir argument in the STAR command.",
             
             "default": ""
           },"output": {

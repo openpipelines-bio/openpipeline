@@ -1,42 +1,42 @@
 {
     "$schema": "http://json-schema.org/draft-07/schema",
-    "title": "star_create_reference",
-    "description": "Create a reference for STAR from a set of fasta files.",
+    "title": "htseq_count_to_h5mu",
+    "description": "Convert the htseq table to a h5mu.\n",
     "type": "object",
     "definitions": {
-      "input/output" : {
-        "title": "Input/Output",
+      "outputs" : {
+        "title": "Outputs",
         "type": "object",
         "description": "No description",
         "default": "",
-        "properties": {"input_fasta": {
+        "properties": {"output": {
             "type":"string",
-            "description": "The fasta files to be included in the reference. Corresponds to the --genomeFastaFiles argument in the STAR command.",
+            "description": "Output h5mu file.",
             
-            "default": ""
-          },"input_gtf": {
-            "type":"string",
-            "description": "Specifies the path to the file with annotated transcripts in the standard GTF","help_text": "Specifies the path to the file with annotated transcripts in the standard GTF\nformat. STAR will extract splice junctions from this file and use them to greatly improve\naccuracy of the mapping. Corresponds to the --sjdbGTFfile argument in the STAR command.\n",
-            
-            "default": ""
-          },"output": {
-            "type":"string",
-            "description": "Path to output directory. Corresponds to the --genomeDir argument in the STAR command.",
-            
-            "default": "$id.$key.output.output"
+            "default": "$id.$key.output.h5mu"
           }
         }
       },
-      "genome indexing arguments" : {
-        "title": "Genome indexing arguments",
+      "input" : {
+        "title": "Input",
         "type": "object",
         "description": "No description",
         "default": "",
-        "properties": {"genomeSAindexNbases": {
-            "type":"integer",
-            "description": "Length (bases) of the SA pre-indexing string. Typically between 10 and 15.","help_text": "Length (bases) of the SA pre-indexing string. Typically between 10 and 15.\nLonger strings will use much more memory, but allow faster searches. For small\ngenomes, the parameter {genomeSAindexNbases must be scaled down to\nmin(14, log2(GenomeLength)/2 - 1).\n",
+        "properties": {"input_id": {
+            "type":"string",
+            "description": "The obs index for the counts",
             
-            "default": "14"
+            "default": ""
+          },"input_counts": {
+            "type":"string",
+            "description": "The counts as a TSV file as output by HTSeq.",
+            
+            "default": ""
+          },"reference": {
+            "type":"string",
+            "description": "The GTF file.",
+            
+            "default": ""
           }
         }
       },
@@ -61,10 +61,10 @@
     },
     "allOf": [
       {
-        "$ref": "#/definitions/input/output"
+        "$ref": "#/definitions/outputs"
       },
       {
-        "$ref": "#/definitions/genome indexing arguments"
+        "$ref": "#/definitions/input"
       },
       {
         "$ref": "#/definitions/nextflow input-output arguments"

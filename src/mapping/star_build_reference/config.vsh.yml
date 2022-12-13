@@ -1,5 +1,5 @@
 functionality:
-  name: star_create_reference
+  name: star_build_reference
   namespace: mapping
   description: Create a reference for STAR from a set of fasta files.
   authors:
@@ -9,14 +9,14 @@ functionality:
     - name: Input/Output
       arguments:
         - type: file
-          name: --input_fasta
+          name: --genome_fasta
           alternatives: --genomeFastaFiles
           required: true
           description: The fasta files to be included in the reference. Corresponds to the --genomeFastaFiles argument in the STAR command.
           example: [ chr1.fasta, chr2.fasta ]
           multiple: true
           multiple_sep: " "
-        - name: --input_gtf
+        - name: --transcriptome_gtf
           alternatives: --sjdbGTFfile
           type: file
           direction: input

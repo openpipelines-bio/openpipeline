@@ -83,7 +83,7 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
             "alternatives" : [
               "--genomeDir"
             ],
-            "description" : "Path to the reference built by star_create_reference. Corresponds to the --genomeDir argument in the STAR command.",
+            "description" : "Path to the reference built by star_build_reference. Corresponds to the --genomeDir argument in the STAR command.",
             "example" : [
               "/path/to/reference"
             ],
@@ -2561,7 +2561,7 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
     "config" : "/home/runner/work/openpipeline/openpipeline/src/mapping/star_align/config.vsh.yaml",
     "platform" : "nextflow",
     "viash_version" : "0.6.6",
-    "git_commit" : "c592d174a5c0c11f575d734798560c88f1090bd9",
+    "git_commit" : "3cd7a0e5518cccf6b3caea99c7406954c0ece77e",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))
@@ -2806,8 +2806,7 @@ def search_fastqs(path: Path) -> list[Path]:
     return [path]
 
 # if {par_value} is a Path, extract it to a temp_dir_path and return the resulting path
-def extract_if_need_be(par_value: Path, par_name: str, temp_dir_path: Path) -> Path:
-  print(f'>> Check compression of --{par_name} with value: {par_value}', flush=True)
+def extract_if_need_be(par_value: Path, temp_dir_path: Path) -> Path:
 
   if par_value.is_file() and tarfile.is_tarfile(par_value):
     # Remove two extensions (if they exist)
@@ -2894,7 +2893,7 @@ with tempfile.TemporaryDirectory(prefix="star-", dir=meta["temp_dir"]) as temp_d
       new_values = []
       for par_value in par_values:
         print(f'>> Check compression of --{par_name} with value: {par_value}', flush=True)
-        new_value = extract_if_need_be(par_value, par_name, temp_dir_path)
+        new_value = extract_if_need_be(par_value, temp_dir_path)
         new_values.append(new_value)
       
       # unlist if need be
