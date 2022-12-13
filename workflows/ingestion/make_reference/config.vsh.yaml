@@ -34,10 +34,10 @@ functionality:
       arguments:
         - type: string
           name: --target
-          choices: [ cellranger, bd_rhapsody ]
+          choices: [ cellranger, bd_rhapsody, star ]
           description: Which reference indices to generate. 
           multiple: true
-          default: [ raw ]
+          default: [ star ]
         - type: file
           name: --output_fasta
           direction: output
@@ -52,12 +52,17 @@ functionality:
           name: --output_cellranger
           direction: output
           description: Output index
-          example: index.tar.gz
+          example: cellranger_index.tar.gz
         - type: file
           name: --output_bd_rhapsody
           direction: output
           description: Output index
-          example: index.tar.gz
+          example: bdrhap_index.tar.gz
+        - type: file
+          name: --output_star
+          direction: output
+          description: Output index
+          example: star_index.tar.gz
     - name: Arguments
       arguments:
         - type: string

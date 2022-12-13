@@ -8,8 +8,8 @@ import shutil
 
 ## VIASH START
 par = {
-  'input_fasta': 'resources_test/cellranger_tiny_fastq/cellranger_tiny_ref/fasta/genome.fa',
-  'input_gtf': 'resources_test/cellranger_tiny_fastq/cellranger_tiny_ref/genes/genes.gtf.gz',
+  'genome_fasta': 'resources_test/cellranger_tiny_fastq/cellranger_tiny_ref/fasta/genome.fa',
+  'transcriptome_gtf': 'resources_test/cellranger_tiny_fastq/cellranger_tiny_ref/genes/genes.gtf.gz',
   'output': 'star_reference_test',
   'genomeSAindexNbases': 7
 }
@@ -29,9 +29,7 @@ def is_gz_file(path: Path) -> bool:
     return file.read(2) == b'\x1f\x8b'
 
 # if {par_value} is a Path, extract it to a temp_dir_path and return the resulting path
-def extract_if_need_be(par_value: Path, par_name: str, temp_dir_path: Path) -> Path:
-  print(f'>> Check compression of --{par_name} with value: {par_value}', flush=True)
-
+def extract_if_need_be(par_value: Path, temp_dir_path: Path) -> Path:
   if par_value.is_file() and tarfile.is_tarfile(par_value):
     # Remove two extensions (if they exist)
     extaction_dir_name = Path(par_value.stem).stem
@@ -73,7 +71,7 @@ def extract_if_need_be(par_value: Path, par_name: str, temp_dir_path: Path) -> P
 # rename keys and convert path strings to Path
 # note: only list file arguments here. if non-file arguments also need to be renamed, 
 # the `processPar()` generator needs to be adapted
-to_rename = {'input_fasta': 'genomeFastaFiles', 'output': 'genomeDir', 'input_gtf': 'sjdbGTFfile'}
+to_rename = {'genome_fasta': 'genomeFastaFiles', 'output': 'genomeDir', 'transcriptome_gtf': 'sjdbGTFfile'}
 
 def process_par(orig_par, to_rename):
   for key, value in orig_par.items():
@@ -111,7 +109,7 @@ with tempfile.TemporaryDirectory(prefix="star-", dir=meta["temp_dir"]) as temp_d
       new_values = []
       for par_value in par_values:
         print(f'>> Check compression of --{par_name} with value: {par_value}', flush=True)
-        new_value = extract_if_need_be(par_value, par_name, temp_dir_path)
+        new_value = extract_if_need_be(par_value, temp_dir_path)
         new_values.append(new_value)
       
       # unlist if need be
