@@ -68,6 +68,7 @@ class TestFilterWithCounts(TestCase):
                              msg="Feature types of prot modality should be Antibody Capture")
         self.assertTrue('n_counts' in mu_out.mod["rna"].obs.columns)
         self.assertTrue('n_genes' in mu_out.mod["rna"].obs.columns)
+        self.assertTrue('n_cells' in mu_out.mod["rna"].var.columns)
 
     def test_filtering_a_little(self):
         self._run_and_check_output([
@@ -96,6 +97,8 @@ class TestFilterWithCounts(TestCase):
                              msg="Feature types of prot modality should be Antibody Capture" )
         self.assertTrue('n_counts' in mu_out.mod["rna"].obs.columns)
         self.assertTrue('n_genes' in mu_out.mod["rna"].obs.columns)
+        self.assertTrue('n_cells' in mu_out.mod["rna"].var.columns)
+
 
 
 if __name__ == "__main__":

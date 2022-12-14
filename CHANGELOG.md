@@ -2,6 +2,8 @@
 
 ## NEW FUNCTIONALITY
 
+* `filter/filter_with_counts`: Add `n_genes` and `n_counts` to .obs and add `n_cells` to .var. 
+
 * `workflows/ingestion/cellranger_multi`: Run Cell Ranger multi and convert the output to .h5mu.
 
 * `filter/remove_modality`: Remove a single modality from a MuData file.

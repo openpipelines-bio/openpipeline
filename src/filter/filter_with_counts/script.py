@@ -94,9 +94,9 @@ if par["var_name_filter"] is not None:
 if par["do_subset"]:
     mdata.mod[mod] = data[keep_cells, keep_genes]
 
-mdata.mod[mod].obs['n_counts'] = np.ravel(np.sum(data.X, axis=1))
-mdata.mod[mod].obs['n_genes'] = np.sum(data.X > 0, axis=1)
-mdata.mod[mod].var['n_cells'] = np.sum(data.X > 0, axis=0)
+mdata.mod[mod].obs['n_counts'] = np.ravel(np.sum(mdata.mod[mod].X, axis=1))
+mdata.mod[mod].obs['n_genes'] = np.sum(mdata.mod[mod].X > 0, axis=1)
+mdata.mod[mod].var['n_cells'] = np.ravel(np.sum(mdata.mod[mod].X > 0, axis=0))
 
 logger.info("\tFiltered data: %s", data)
 logger.info("Writing output data to %s", par["output"])
