@@ -2,6 +2,8 @@
 
 ## NEW FUNCTIONALITY
 
+* `src/tranform/clr`: Perform CLR normalization on CITE-seq data.
+
 * `workflows/ingestion/cellranger_multi`: Run Cell Ranger multi and convert the output to .h5mu.
 
 * `filter/remove_modality`: Remove a single modality from a MuData file.
