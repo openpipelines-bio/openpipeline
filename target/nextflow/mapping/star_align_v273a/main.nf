@@ -2561,7 +2561,7 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
     "config" : "/home/runner/work/openpipeline/openpipeline/src/mapping/star_align_v273a/config.vsh.yaml",
     "platform" : "nextflow",
     "viash_version" : "0.6.7",
-    "git_commit" : "0473152d517f660c4b82345b83fcac6e330935af",
+    "git_commit" : "b6c5aaa2ccf1aa184cf5c7bc1766a9a2e2c62a9f",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))
@@ -2871,7 +2871,7 @@ par = dict(process_par(par, to_rename))
 # create output dir if need be
 par["outFileNamePrefix"].mkdir(parents=True, exist_ok=True)
 
-with tempfile.TemporaryDirectory(prefix="star-", dir=meta["temp_dir"]) as temp_dir:
+with tempfile.TemporaryDirectory(prefix="star-", dir=meta["temp_dir"], ignore_cleanup_errors=True) as temp_dir:
   print(">> Check whether input files are directories", flush=True)
   new_read_files_in = []
   for path in par["readFilesIn"]:

@@ -1783,9 +1783,9 @@ RUN apt-get update && \
 
 LABEL org.opencontainers.image.authors="Angela Pisco, Robrecht Cannoodt"
 LABEL org.opencontainers.image.description="Companion container for running component mapping star_align_v273a"
-LABEL org.opencontainers.image.created="2022-12-14T14:22:10Z"
+LABEL org.opencontainers.image.created="2022-12-14T19:50:35Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="0473152d517f660c4b82345b83fcac6e330935af"
+LABEL org.opencontainers.image.revision="b6c5aaa2ccf1aa184cf5c7bc1766a9a2e2c62a9f"
 LABEL org.opencontainers.image.version="main_build"
 VIASHDOCKER
 }
@@ -5567,7 +5567,7 @@ par = dict(process_par(par, to_rename))
 # create output dir if need be
 par["outFileNamePrefix"].mkdir(parents=True, exist_ok=True)
 
-with tempfile.TemporaryDirectory(prefix="star-", dir=meta["temp_dir"]) as temp_dir:
+with tempfile.TemporaryDirectory(prefix="star-", dir=meta["temp_dir"], ignore_cleanup_errors=True) as temp_dir:
   print(">> Check whether input files are directories", flush=True)
   new_read_files_in = []
   for path in par["readFilesIn"]:
