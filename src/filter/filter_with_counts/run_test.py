@@ -66,7 +66,9 @@ class TestFilterWithCounts(TestCase):
                              msg="Feature types of RNA modality should be Gene Expression")
         self.assertListEqual(list(mu_out.mod['prot'].var['feature_types'].cat.categories), ["Antibody Capture"],
                              msg="Feature types of prot modality should be Antibody Capture")
- 
+        self.assertTrue('n_counts' in mu_out.mod["rna"].obs.columns)
+        self.assertTrue('n_genes' in mu_out.mod["rna"].obs.columns)
+
     def test_filtering_a_little(self):
         self._run_and_check_output([
             "--input", input_path, 
@@ -92,6 +94,8 @@ class TestFilterWithCounts(TestCase):
                              msg="Feature types of RNA modality should be Gene Expression")
         self.assertListEqual(list(mu_out.mod['prot'].var['feature_types'].cat.categories), ["Antibody Capture"],
                              msg="Feature types of prot modality should be Antibody Capture" )
+        self.assertTrue('n_counts' in mu_out.mod["rna"].obs.columns)
+        self.assertTrue('n_genes' in mu_out.mod["rna"].obs.columns)
 
 
 if __name__ == "__main__":
