@@ -114,7 +114,7 @@ par = dict(process_par(par, to_rename))
 # create output dir if need be
 par["outFileNamePrefix"].mkdir(parents=True, exist_ok=True)
 
-with tempfile.TemporaryDirectory(prefix="star-", dir=meta["temp_dir"]) as temp_dir:
+with tempfile.TemporaryDirectory(prefix="star-", dir=meta["temp_dir"], ignore_cleanup_errors=True) as temp_dir:
   print(">> Check whether input files are directories", flush=True)
   new_read_files_in = []
   for path in par["readFilesIn"]:
