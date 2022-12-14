@@ -168,7 +168,7 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
     "config" : "/home/runner/work/openpipeline/openpipeline/src/convert/from_bd_to_10x_molecular_barcode_tags/config.vsh.yaml",
     "platform" : "nextflow",
     "viash_version" : "0.6.6",
-    "git_commit" : "f50be551960af1416594ea566f62efec0617017e",
+    "git_commit" : "5a62de24f4cf916ed3f5ff8ce2d05ee6438b5712",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))
