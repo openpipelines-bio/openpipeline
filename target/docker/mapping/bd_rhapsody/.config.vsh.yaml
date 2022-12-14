@@ -401,6 +401,6 @@ info:
   platform: "docker"
   output: "/home/runner/work/openpipeline/openpipeline/target/docker/mapping/bd_rhapsody"
   executable: "/home/runner/work/openpipeline/openpipeline/target/docker/mapping/bd_rhapsody/bd_rhapsody"
-  viash_version: "0.6.6"
-  git_commit: "cae9d64bdcb0bffba2234a0132b93ecffd0c0dc3"
+  viash_version: "0.6.7"
+  git_commit: "0473152d517f660c4b82345b83fcac6e330935af"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"
