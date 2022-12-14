@@ -45,6 +45,12 @@ functionality:
         - name: "--use_gpu"
           type: boolean_false
           description: "Use GPU during models training and inference"
+        - name: "--verbosity"
+          alternatives: ["-v"]
+          type: integer
+          description: "The verbosity level for evaluation of the classifier from the range [0,2]"
+          required: false
+          default: 1
     - name: Outputs
       arguments:
         - name: "--output"
