@@ -49,7 +49,7 @@ def main():
     if par["make_observation_keys_unique"]:
         make_observation_keys_unique(par["input_id"], input_data)
     logger.info("Writing out data to '%s'.", par["output"])
-    input_data.write(par["output"])
+    input_data.write(par["output"], compression="gzip")
 
 if __name__ == '__main__':
     main()

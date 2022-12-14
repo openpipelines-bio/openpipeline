@@ -16,4 +16,4 @@ new_mods = {mod_name: mod for mod_name, mod
             if mod_name not in par['modality']}
 
 new_mudata = MuData(new_mods)
-new_mudata.write(filename=par["output"])
+new_mudata.write(filename=par["output"], compression="gzip")

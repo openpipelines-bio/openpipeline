@@ -19,4 +19,4 @@ if __name__ == "__main__":
     data = data[:par["number_of_observations"]]
 
   # write data
-  data.write(par["output"])
+  data.write(par["output"], compression="gzip")

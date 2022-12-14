@@ -40,4 +40,4 @@ if output_data:
     dat.layers[par["output_layer"]] = output_data.X
 
 logger.info("Writing to file")
-mdata.write(filename=par["output"])
+mdata.write(filename=par["output"], compression="gzip")
