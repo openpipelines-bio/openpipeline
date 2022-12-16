@@ -110,5 +110,5 @@ def test_filter_cells_without_counts(run_component, input_h5mu, tmp_path):
     mu_out = mu.read_h5mu("output-3.h5mu")
     assert mu_out.mod['rna'].obs.at[obs_to_remove, 'filter_with_counts'] == False
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     exit(pytest.main([__file__], plugins=["viashpy"]))
