@@ -3,7 +3,7 @@ import mudata as mu
 import numpy as np
 import logging
 from sys import stdout
-from operator import le, ge, lt
+from operator import le, ge, gt
 
 ### VIASH START
 par = {
@@ -74,7 +74,7 @@ filters = (("min_genes_per_cell", n_genes_per_cell, ge, "\tRemoving %s cells wit
            ("max_counts", n_counts_per_cell, le, "\tRemoving %s cells with >%s total counts."),
            ("min_fraction_mito", pct_mito, ge, "\tRemoving %s cells with <%s percentage mitochondrial reads."),
            ("max_fraction_mito", pct_mito, le, "\tRemoving %s cells with >%s percentage mitochondrial reads."),
-           (0, np.sum(data[:,keep_genes].X), le, "\tRemoving %s cells with %s counts"))
+           (0, np.sum(data[:,keep_genes].X, axis=1), gt, "\tRemoving %s cells with %s counts"))
 
 keep_cells = np.repeat(True, data.n_obs)
 for filter_name_or_value, base, comparator, message in filters:
