@@ -403,9 +403,9 @@ FROM ubuntu:latest
 
 RUN :
 LABEL org.opencontainers.image.description="Companion container for running component compression tar_extract"
-LABEL org.opencontainers.image.created="2022-12-16T14:14:48Z"
+LABEL org.opencontainers.image.created="2022-12-16T14:44:20Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="4315ba1a2918e90f1085726c481afccfac482d4a"
+LABEL org.opencontainers.image.revision="a4af65ae51cebe7694e9cb9c675652a69235051e"
 LABEL org.opencontainers.image.version="main_build"
 VIASHDOCKER
 }
