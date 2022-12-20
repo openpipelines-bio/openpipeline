@@ -47,5 +47,5 @@ for key, value in json.loads(par["conversions_obsm"]).items():
         del mudata_obj["rna"].obsm[key]
 
 logger.info("Writing %s.", par["output"])
-mudata_obj.write_h5mu(filename=par["output"])
+mudata_obj.write_h5mu(filename=par["output"], compression="gzip")
 logger.info("Finished")

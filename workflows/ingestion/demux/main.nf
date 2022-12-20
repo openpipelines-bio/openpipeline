@@ -37,10 +37,17 @@ workflow run_wf {
   bcl_convert_ch = input_ch
     | filter{ it[1].demultiplexer  == "bclconvert" }
     | bcl_convert.run(commonOptions)
+    | map {  tup ->
+      [tup[0], tup[1].output]
+     }
 
   bcl2fastq_ch = input_ch
     | filter{ it[1].demultiplexer  == "bcl2fastq" }
     | bcl2fastq.run(commonOptions)
+    | map {  tup ->
+      [tup[0], tup[1].output]
+     }
+
 
   /* Combine the different demultiplexer channels */
   all_ch =
