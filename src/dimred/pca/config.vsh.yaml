@@ -30,6 +30,7 @@ functionality:
     - name: "--var_input"
       type: string
       description: Column name in .var matrix that will be used to select which genes to run the PCA on.
+      example: filter_with_hvg
 
     # outputs
     - name: "--output"
