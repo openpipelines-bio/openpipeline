@@ -142,4 +142,4 @@ with tempfile.TemporaryDirectory(prefix="cellbender-", dir=meta["temp_dir"]) as 
 
 
 logger.info("Writing to file %s", par["output"])
-mdata.write(filename=par["output"], compression="gzip")
+mdata.write_h5mu(filename=par["output"], compression="gzip")
