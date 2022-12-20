@@ -20,6 +20,8 @@
 
 * `mapping/htseq_count_to_h5mu`: Convert one or more HTSeq outputs to a MuData file.
 
+* Added from `convert/from_cellranger_multi_to_h5mu` component.
+
 ## MAJOR CHANGES
 
 * `convert/from_velocyto_to_h5mu`: Moved to `velocity/velocyto_to_h5mu`.
