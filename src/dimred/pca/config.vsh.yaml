@@ -27,6 +27,11 @@ functionality:
       description: Use specified layer for expression values instead of the .X object from the modality.
       required: false
 
+    - name: "--var_input"
+      type: string
+      description: Column name in .var matrix that will be used to select which genes to run the PCA on.
+      example: filter_with_hvg
+
     # outputs
     - name: "--output"
       alternatives: ["-o"]
@@ -56,6 +61,10 @@ functionality:
       type: integer
       example: 25
       description: Number of principal components to compute. Defaults to 50, or 1 - minimum dimension size of selected representation.
+
+    - name: "--overwrite"
+      type: boolean_true
+      description: "Allow overwriting .obsm, .varm and .uns slots."
   resources:
     - type: python_script
       path: script.py
@@ -72,6 +81,10 @@ platforms:
           - scanpy~=1.9.1
           - mudata~=0.2.0
           - anndata~=0.8.0
+    test_setup:
+      - type: python
+        packages: 
+          - viashpy
   - type: nextflow
     directives:
       label: highcpu

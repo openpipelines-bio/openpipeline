@@ -4,6 +4,8 @@
 
 * `workflows/full_pipeline`: add `filter_with_hvg_var_output` argument.
 
+* `dimred/pca`: Add `--overwrite` and `--var_input` arguments.
+
 * `src/tranform/clr`: Perform CLR normalization on CITE-seq data.
 
 * `workflows/ingestion/cellranger_multi`: Run Cell Ranger multi and convert the output to .h5mu.
