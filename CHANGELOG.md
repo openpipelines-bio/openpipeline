@@ -2,7 +2,13 @@
 
 ## NEW FUNCTIONALITY
 
-* `filter/filter_with_counts`: Add `n_genes` and `n_counts` to .obs and add `n_cells` to .var. 
+* `filter/filter_with_counts`: Add `n_genes` and `n_counts` to .obs and add `n_cells` to .var.
+
+* `workflows/full_pipeline`: add `filter_with_hvg_var_output` argument.
+
+* `dimred/pca`: Add `--overwrite` and `--var_input` arguments.
+
+* `src/tranform/clr`: Perform CLR normalization on CITE-seq data.
 
 * `workflows/ingestion/cellranger_multi`: Run Cell Ranger multi and convert the output to .h5mu.
 
@@ -22,6 +28,8 @@
 
 * `mapping/htseq_count_to_h5mu`: Convert one or more HTSeq outputs to a MuData file.
 
+* Added from `convert/from_cellranger_multi_to_h5mu` component.
+
 ## MAJOR CHANGES
 
 * `convert/from_velocyto_to_h5mu`: Moved to `velocity/velocyto_to_h5mu`.
@@ -33,13 +41,15 @@
 
 ## MINOR CHANGES
 
+* Several components: use `gzip` compression for writing .h5mu files.
+
 * Default value for `obs_covariates` argument of full pipeline is now `sample_id`.
 
 * Set the `tag` directive of all Nextflow components to '$id'.
 
 ## BUG FIXES
 
-* Keep `prot`, `vdj_t`, `vdj_b` data when running full pipeline.
+* Keep data for modalities that are not specifically enabled when running full pipeline.
 
 * Fix many components thanks to Viash 0.6.4, which causes errors to be 
   thrown when input and output files are defined but not found.

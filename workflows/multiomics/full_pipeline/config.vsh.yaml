@@ -26,6 +26,11 @@ functionality:
           default: ["sample_id"]
           multiple: true
           required: false
+        - name: "--filter_with_hvg_var_output"
+          required: false
+          type: string
+          default: "filter_with_hvg"
+          description: In which .var slot to store a boolean array corresponding to the highly variable genes.
   resources:
     - type: nextflow_script
       path: main.nf

@@ -84,7 +84,7 @@ def main():
     adata.obsm[par['obsm_output']] = vae_uns.get_latent_representation()
 
     mdata.mod[par['modality']] = adata
-    mdata.write_h5mu(par['output'].strip())
+    mdata.write_h5mu(par['output'].strip(), compression="gzip")
 
 if __name__ == "__main__":
     main()
