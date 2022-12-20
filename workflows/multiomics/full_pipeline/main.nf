@@ -119,8 +119,7 @@ workflow run_wf {
     }
 
   // Concat channel if more than one modality was found
-  known_mods_ch = mod_chs.size() > 1? mod_chs[0].concat(*mod_chs.drop(1)): mod_chs[0]
-  merge_ch = unknown_channel.concat(known_mods_ch)
+  merge_ch = unknown_channel.concat(*mod_chs)
   output_ch = merge_ch
     | toSortedList{ a, b -> b[0] <=> a[0] }
     | map { list -> 
