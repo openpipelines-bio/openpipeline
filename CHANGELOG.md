@@ -2,6 +2,8 @@
 
 ## NEW FUNCTIONALITY
 
+* `workflows/full_pipeline`: add `filter_with_hvg_var_output` argument.
+
 * `dimred/pca`: Add `--overwrite` and `--var_input` arguments.
 
 * `src/tranform/clr`: Perform CLR normalization on CITE-seq data.
@@ -45,7 +47,7 @@
 
 ## BUG FIXES
 
-* Keep `prot`, `vdj_t`, `vdj_b` data when running full pipeline.
+* Keep data for modalities that are not specifically enabled when running full pipeline.
 
 * Fix many components thanks to Viash 0.6.4, which causes errors to be 
   thrown when input and output files are defined but not found.
