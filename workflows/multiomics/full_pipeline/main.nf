@@ -78,7 +78,7 @@ workflow run_wf {
       | groupTuple(by: 0)
       // [modality, [sample_id1, sample_id2, ...], [h5mu1, h5mu2, ...], [passthrough, copy_passthrough, ...]]
       | map { grouped_lst ->
-        modality_name = grouped_lst[0]
+        def modality_name = grouped_lst[0]
         ["combined_$modality_name", ["sample_id": grouped_lst[1], 
          "input": grouped_lst[2]], grouped_lst[3][0]] // passthrough is copied, just pick the first
       }
@@ -101,7 +101,7 @@ workflow run_wf {
         | toSortedList{ a, b -> b[0] <=> a[0] }
         | filter { it.size() != 0 } // filter when event is empty
         | map{ list -> 
-          new_data = ["sample_id": list.collect{it[0]}, "input": list.collect{it[1]}]
+          def new_data = ["sample_id": list.collect{it[0]}, "input": list.collect{it[1]}]
           ["combined_$modality_processor.id", new_data] + list[0].drop(2)
         }
         | view { "input multichannel-$modality_processor.id: $it" }
@@ -127,7 +127,7 @@ workflow run_wf {
     }
     | merge
     | map { id, data, passthrough -> 
-      new_data = [
+      def new_data = [
         "input": data, 
         "layer": "log_normalized", 
         "obs_covariates": passthrough.get("obs_covariates"),
