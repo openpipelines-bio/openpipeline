@@ -227,7 +227,7 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
     "config" : "/home/runner/work/openpipeline/openpipeline/src/transform/normalize_total/config.vsh.yaml",
     "platform" : "nextflow",
     "viash_version" : "0.6.7",
-    "git_commit" : "b792ab59803150e2a439434b57fc9f68d6e7acbe",
+    "git_commit" : "61cdfc4ba724376cf9eee99dcb2e79189548abff",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))
@@ -295,7 +295,7 @@ if output_data:
     dat.layers[par["output_layer"]] = output_data.X
 
 logger.info("Writing to file")
-mdata.write(filename=par["output"])
+mdata.write_h5mu(filename=par["output"], compression="gzip")
 
 VIASHMAIN
 python "$tempscript"

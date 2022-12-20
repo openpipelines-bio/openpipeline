@@ -204,7 +204,7 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
     "config" : "/home/runner/work/openpipeline/openpipeline/src/transform/scaling/config.vsh.yaml",
     "platform" : "nextflow",
     "viash_version" : "0.6.7",
-    "git_commit" : "b792ab59803150e2a439434b57fc9f68d6e7acbe",
+    "git_commit" : "61cdfc4ba724376cf9eee99dcb2e79189548abff",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))
@@ -264,7 +264,7 @@ def main():
                     max_value=par["max_value"])
 
     logger.info("Writing to %s", par["output"])
-    mudata.write(filename=par["output"])
+    mudata.write_h5mu(filename=par["output"], compression="gzip")
     logger.info("Finished")
 
 if __name__ == "__main__":

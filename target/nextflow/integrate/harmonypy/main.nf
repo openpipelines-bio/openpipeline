@@ -228,7 +228,7 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
     "config" : "/home/runner/work/openpipeline/openpipeline/src/integrate/harmonypy/config.vsh.yaml",
     "platform" : "nextflow",
     "viash_version" : "0.6.7",
-    "git_commit" : "b792ab59803150e2a439434b57fc9f68d6e7acbe",
+    "git_commit" : "61cdfc4ba724376cf9eee99dcb2e79189548abff",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))
@@ -278,7 +278,7 @@ def main():
     metadata = mod.obs
     ho = run_harmony(pca_embedding, metadata, par['obs_covariates'], theta=par['theta'])
     mod.obsm[par["obsm_output"]] = ho.Z_corr.T
-    mdata.write_h5mu(par['output'].strip())
+    mdata.write_h5mu(par['output'].strip(), compression="gzip")
 
 if __name__ == "__main__":
     main()

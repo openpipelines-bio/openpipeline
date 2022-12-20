@@ -163,7 +163,7 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
     "config" : "/home/runner/work/openpipeline/openpipeline/src/filter/remove_modality/config.vsh.yaml",
     "platform" : "nextflow",
     "viash_version" : "0.6.7",
-    "git_commit" : "b792ab59803150e2a439434b57fc9f68d6e7acbe",
+    "git_commit" : "61cdfc4ba724376cf9eee99dcb2e79189548abff",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))
@@ -206,7 +206,7 @@ new_mods = {mod_name: mod for mod_name, mod
             if mod_name not in par['modality']}
 
 new_mudata = MuData(new_mods)
-new_mudata.write(filename=par["output"])
+new_mudata.write_h5mu(filename=par["output"], compression="gzip")
 
 VIASHMAIN
 python "$tempscript"

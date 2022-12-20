@@ -31,6 +31,8 @@
 
 ## MINOR CHANGES
 
+* Several components: use `gzip` compression for writing .h5mu files.
+
 * Default value for `obs_covariates` argument of full pipeline is now `sample_id`.
 
 * Set the `tag` directive of all Nextflow components to '$id'.

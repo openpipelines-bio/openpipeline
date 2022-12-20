@@ -195,7 +195,7 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
     "config" : "/home/runner/work/openpipeline/openpipeline/src/dataflow/split_modalities/config.vsh.yaml",
     "platform" : "nextflow",
     "viash_version" : "0.6.7",
-    "git_commit" : "b792ab59803150e2a439434b57fc9f68d6e7acbe",
+    "git_commit" : "61cdfc4ba724376cf9eee99dcb2e79189548abff",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))
@@ -263,7 +263,7 @@ def main() -> None:
     for mod_name, mod in sample.mod.items():
         new_sample = md.MuData({mod_name: mod})
         logger.info('Writing to %s', names[mod_name])
-        new_sample.write(output_dir / names[mod_name])
+        new_sample.write_h5mu(output_dir / names[mod_name], compression="gzip")
 
     logger.info("Finished")
 

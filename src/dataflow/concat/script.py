@@ -305,7 +305,7 @@ def main() -> None:
                                                   input_ids=input_ids)
     logger.info("Writing out data to '%s' with compression '%s'.",
                 par["output"], par["compression"])
-    concatenated_samples.write(par["output"], compression=par["compression"])
+    concatenated_samples.write_h5mu(par["output"], compression=par["compression"])
 
 
 if __name__ == "__main__":

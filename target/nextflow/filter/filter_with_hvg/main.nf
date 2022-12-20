@@ -320,7 +320,7 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
     "config" : "/home/runner/work/openpipeline/openpipeline/src/filter/filter_with_hvg/config.vsh.yaml",
     "platform" : "nextflow",
     "viash_version" : "0.6.7",
-    "git_commit" : "b792ab59803150e2a439434b57fc9f68d6e7acbe",
+    "git_commit" : "61cdfc4ba724376cf9eee99dcb2e79189548abff",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))
@@ -439,7 +439,7 @@ if par["do_subset"]:
     mdata.mod[mod] = data[:,keep_feats]
 
 logger.info("Writing h5mu to file")
-mdata.write_h5mu(par["output"])
+mdata.write_h5mu(par["output"], compression="gzip")
 
 VIASHMAIN
 python "$tempscript"

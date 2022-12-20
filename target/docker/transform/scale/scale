@@ -417,9 +417,9 @@ RUN pip install --upgrade pip && \
 
 LABEL org.opencontainers.image.authors="Dries Schaumont"
 LABEL org.opencontainers.image.description="Companion container for running component transform scale"
-LABEL org.opencontainers.image.created="2022-12-19T11:29:15Z"
+LABEL org.opencontainers.image.created="2022-12-20T09:40:08Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="b792ab59803150e2a439434b57fc9f68d6e7acbe"
+LABEL org.opencontainers.image.revision="61cdfc4ba724376cf9eee99dcb2e79189548abff"
 LABEL org.opencontainers.image.version="main_build"
 VIASHDOCKER
 }
@@ -977,7 +977,7 @@ def main():
                     max_value=par["max_value"])
 
     logger.info("Writing to %s", par["output"])
-    mudata.write(filename=par["output"])
+    mudata.write_h5mu(filename=par["output"], compression="gzip")
     logger.info("Finished")
 
 if __name__ == "__main__":

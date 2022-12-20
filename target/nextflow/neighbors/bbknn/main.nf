@@ -273,7 +273,7 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
     "config" : "/home/runner/work/openpipeline/openpipeline/src/neighbors/bbknn/config.vsh.yaml",
     "platform" : "nextflow",
     "viash_version" : "0.6.7",
-    "git_commit" : "b792ab59803150e2a439434b57fc9f68d6e7acbe",
+    "git_commit" : "61cdfc4ba724376cf9eee99dcb2e79189548abff",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))
@@ -332,7 +332,7 @@ bbknn.bbknn(
     trim=par["n_trim"]
 )
 
-h5mu_data.write(par["output"], compression = "gzip")
+h5mu_data.write_h5mu(par["output"], compression = "gzip")
 
 VIASHMAIN
 python "$tempscript"

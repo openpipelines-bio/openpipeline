@@ -274,7 +274,7 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
     "config" : "/home/runner/work/openpipeline/openpipeline/src/velocity/scvelo/config.vsh.yaml",
     "platform" : "nextflow",
     "viash_version" : "0.6.7",
-    "git_commit" : "b792ab59803150e2a439434b57fc9f68d6e7acbe",
+    "git_commit" : "61cdfc4ba724376cf9eee99dcb2e79189548abff",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))
@@ -390,7 +390,8 @@ def main():
   scvelo.pl.velocity_embedding_stream(adata, save=str(output_dir / "scvelo_embedding.pdf"), show=False)
 
   # Create output
-  mudata.MuData({'rna_velocity': adata}).write(output_dir / f"{sample_name}.h5mu")
+  ouput_data = mudata.MuData({'rna_velocity': adata})
+  ouput_data.write_h5mu(output_dir / f"{sample_name}.h5mu", compression="gzip")
 
 if __name__ == "__main__":
   main()
