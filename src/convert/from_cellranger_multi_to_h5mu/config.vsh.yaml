@@ -4,6 +4,18 @@ functionality:
   version: "dev"
   description: |
     Converts the output from cellranger multi to a single .h5mu file.
+    By default, will map the following library type names to modality names:
+      - Gene Expression: rna
+      - Peaks: atac
+      - Antibody Capture: prot
+      - VDJ: vdj
+      - VDJ-T: vdj_t
+      - VDJ-B: vdj_b
+      - CRISPR Guide Capture: crispr
+      - Multiplexing Capture: hashing
+    
+    Other library types have their whitepace removed and dashes replaced by
+    underscores to generate the modality name.
 
     Currently does not allow parsing the output from cell barcode demultiplexing.
   authors:

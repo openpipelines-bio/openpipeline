@@ -4,6 +4,8 @@
 
 * `workflows/full_pipeline`: add `filter_with_hvg_var_output` argument.
 
+* `src/tranform/clr`: Perform CLR normalization on CITE-seq data.
+
 * `workflows/ingestion/cellranger_multi`: Run Cell Ranger multi and convert the output to .h5mu.
 
 * `filter/remove_modality`: Remove a single modality from a MuData file.
@@ -22,6 +24,8 @@
 
 * `mapping/htseq_count_to_h5mu`: Convert one or more HTSeq outputs to a MuData file.
 
+* Added from `convert/from_cellranger_multi_to_h5mu` component.
+
 ## MAJOR CHANGES
 
 * `convert/from_velocyto_to_h5mu`: Moved to `velocity/velocyto_to_h5mu`.
@@ -32,6 +36,8 @@
   the script.
 
 ## MINOR CHANGES
+
+* Several components: use `gzip` compression for writing .h5mu files.
 
 * Default value for `obs_covariates` argument of full pipeline is now `sample_id`.
 
