@@ -84,7 +84,8 @@ def main():
   scvelo.pl.velocity_embedding_stream(adata, save=str(output_dir / "scvelo_embedding.pdf"), show=False)
 
   # Create output
-  mudata.MuData({'rna_velocity': adata}).write(output_dir / f"{sample_name}.h5mu")
+  ouput_data = mudata.MuData({'rna_velocity': adata})
+  ouput_data.write_h5mu(output_dir / f"{sample_name}.h5mu", compression="gzip")
 
 if __name__ == "__main__":
   main()

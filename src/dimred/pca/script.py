@@ -41,6 +41,6 @@ data.varm[par["varm_output"]] = loadings.T
 data.uns[par["uns_output"]] = { "variance": variance, "variance_ratio": variance_ratio }
 
 logger.info("Writing to %s.", par["output"])
-mdata.write_h5mu(filename=par["output"])
+mdata.write_h5mu(filename=par["output"], compression="gzip")
 
 logger.info("Finished")
