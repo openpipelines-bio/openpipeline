@@ -401,9 +401,9 @@ RUN apt-get update && \
   rm -rf /var/lib/apt/lists/*
 
 LABEL org.opencontainers.image.description="Companion container for running component qc fastqc"
-LABEL org.opencontainers.image.created="2022-12-20T11:04:37Z"
+LABEL org.opencontainers.image.created="2022-12-20T11:19:19Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="92f1c40dcdc9f51bf396abf402dbf103be5a3b92"
+LABEL org.opencontainers.image.revision="539578526b7f3747d331fbdf879ad66199693e7b"
 LABEL org.opencontainers.image.version="main_build"
 VIASHDOCKER
 }

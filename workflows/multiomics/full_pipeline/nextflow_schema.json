@@ -24,6 +24,11 @@
             "description": "The .obs field(s) that define the covariate(s) to regress out.",
             
             "default": "['sample_id']"
+          },"filter_with_hvg_var_output": {
+            "type":"string",
+            "description": "In which .var slot to store a boolean array corresponding to the highly variable genes.",
+            
+            "default": "filter_with_hvg"
           }
         }
       },

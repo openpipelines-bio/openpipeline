@@ -82,6 +82,19 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
         "dest" : "par"
       },
       {
+        "type" : "string",
+        "name" : "--var_input",
+        "description" : "Column name in .var matrix that will be used to select which genes to run the PCA on.",
+        "example" : [
+          "filter_with_hvg"
+        ],
+        "required" : false,
+        "direction" : "input",
+        "multiple" : false,
+        "multiple_sep" : ":",
+        "dest" : "par"
+      },
+      {
         "type" : "file",
         "name" : "--output",
         "alternatives" : [
@@ -150,6 +163,13 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
         "multiple" : false,
         "multiple_sep" : ":",
         "dest" : "par"
+      },
+      {
+        "type" : "boolean_true",
+        "name" : "--overwrite",
+        "description" : "Allow overwriting .obsm, .varm and .uns slots.",
+        "direction" : "input",
+        "dest" : "par"
       }
     ],
     "resources" : [
@@ -200,6 +220,16 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
           ],
           "upgrade" : true
         }
+      ],
+      "test_setup" : [
+        {
+          "type" : "python",
+          "user" : false,
+          "packages" : [
+            "viashpy"
+          ],
+          "upgrade" : true
+        }
       ]
     },
     {
@@ -226,7 +256,7 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
     "config" : "/home/runner/work/openpipeline/openpipeline/src/dimred/pca/config.vsh.yaml",
     "platform" : "nextflow",
     "viash_version" : "0.6.7",
-    "git_commit" : "92f1c40dcdc9f51bf396abf402dbf103be5a3b92",
+    "git_commit" : "539578526b7f3747d331fbdf879ad66199693e7b",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))
@@ -238,6 +268,7 @@ cat > "$tempscript" << VIASHMAIN
 import scanpy as sc
 import mudata as mu
 import logging
+from anndata import AnnData
 from sys import stdout
 
 ## VIASH START
@@ -246,11 +277,13 @@ par = {
   'input': $( if [ ! -z ${VIASH_PAR_INPUT+x} ]; then echo "r'${VIASH_PAR_INPUT//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'modality': $( if [ ! -z ${VIASH_PAR_MODALITY+x} ]; then echo "r'${VIASH_PAR_MODALITY//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'layer': $( if [ ! -z ${VIASH_PAR_LAYER+x} ]; then echo "r'${VIASH_PAR_LAYER//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
+  'var_input': $( if [ ! -z ${VIASH_PAR_VAR_INPUT+x} ]; then echo "r'${VIASH_PAR_VAR_INPUT//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'output': $( if [ ! -z ${VIASH_PAR_OUTPUT+x} ]; then echo "r'${VIASH_PAR_OUTPUT//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'obsm_output': $( if [ ! -z ${VIASH_PAR_OBSM_OUTPUT+x} ]; then echo "r'${VIASH_PAR_OBSM_OUTPUT//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'varm_output': $( if [ ! -z ${VIASH_PAR_VARM_OUTPUT+x} ]; then echo "r'${VIASH_PAR_VARM_OUTPUT//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'uns_output': $( if [ ! -z ${VIASH_PAR_UNS_OUTPUT+x} ]; then echo "r'${VIASH_PAR_UNS_OUTPUT//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
-  'num_components': $( if [ ! -z ${VIASH_PAR_NUM_COMPONENTS+x} ]; then echo "int(r'${VIASH_PAR_NUM_COMPONENTS//\\'/\\'\\"\\'\\"r\\'}')"; else echo None; fi )
+  'num_components': $( if [ ! -z ${VIASH_PAR_NUM_COMPONENTS+x} ]; then echo "int(r'${VIASH_PAR_NUM_COMPONENTS//\\'/\\'\\"\\'\\"r\\'}')"; else echo None; fi ),
+  'overwrite': $( if [ ! -z ${VIASH_PAR_OVERWRITE+x} ]; then echo "r'${VIASH_PAR_OVERWRITE//\\'/\\'\\"\\'\\"r\\'}'.lower() == 'true'"; else echo None; fi )
 }
 meta = {
   'functionality_name': $( if [ ! -z ${VIASH_META_FUNCTIONALITY_NAME+x} ]; then echo "r'${VIASH_META_FUNCTIONALITY_NAME//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
@@ -284,17 +317,45 @@ data = mdata.mod[par['modality']]
 if par['layer'] and par['layer'] not in data.layers:
     raise ValueError(f"{par['layer']} was not found in modality {par['modality']}.")
 layer = data.X if not par['layer'] else data.layers[par['layer']]
+adata_input_layer = AnnData(layer)
+adata_input_layer.var.index = data.var.index
+
+use_highly_variable = False
+if par["var_input"]:
+    if not par["var_input"] in data.var.columns:
+        raise ValueError(f"Requested to use .var column {par['var_input']} "
+                         "as a selection of genes to run the PCA on, "
+                         f"but the column is not available for modality {par['modality']}")
+    use_highly_variable = True
+    adata_input_layer.var['highly_variable'] = data.var[par["var_input"]]
+
 # run pca
-X_pca, loadings, variance, variance_ratio = sc.tl.pca(
-    layer, 
+output_adata = sc.tl.pca(
+    adata_input_layer, 
     n_comps=par["num_components"], 
-    return_info=True
+    copy=True,
+    use_highly_variable=use_highly_variable
 )
 
 # store output in specific objects
-data.obsm[par["obsm_output"]] = X_pca
-data.varm[par["varm_output"]] = loadings.T
-data.uns[par["uns_output"]] = { "variance": variance, "variance_ratio": variance_ratio }
+
+check_exist_dict = {
+    "obsm_output": ("obs"),
+    "varm_output": ("varm"),
+    "uns_output": ("uns")
+}
+for parameter_name, field in check_exist_dict.items():
+    if par[parameter_name] in getattr(data, field):
+        if not par["overwrite"]:
+            raise ValueError(f"Requested to create field {par[parameter_name]} in .{field} "
+                            f"for modality {par['modality']}, but field already exists.")
+        del getattr(data, field)[par[parameter_name]]
+    
+data.obsm[par["obsm_output"]] = output_adata.obsm['X_pca']
+data.varm[par["varm_output"]] = output_adata.varm['PCs']
+data.uns[par["uns_output"]] = { "variance": output_adata.uns['pca']['variance_ratio'], 
+                                "variance_ratio": output_adata.uns['pca']['variance_ratio'] }
+
 
 logger.info("Writing to %s.", par["output"])
 mdata.write_h5mu(filename=par["output"], compression="gzip")

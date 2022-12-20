@@ -24,6 +24,11 @@
             "description": "Use specified layer for expression values instead of the .X object from the modality.",
             
             "default": ""
+          },"var_input": {
+            "type":"string",
+            "description": "Column name in .var matrix that will be used to select which genes to run the PCA on.",
+            
+            "default": ""
           },"output": {
             "type":"string",
             "description": "Output h5mu file.",
@@ -49,6 +54,11 @@
             "description": "Number of principal components to compute. Defaults to 50, or 1 - minimum dimension size of selected representation.",
             
             "default": ""
+          },"overwrite": {
+            "type":"boolean",
+            "description": "Allow overwriting .obsm, .varm and .uns slots.",
+            
+            "default": "False"
           }
         }
       },

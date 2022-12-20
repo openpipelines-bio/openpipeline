@@ -2,6 +2,7 @@
 id: # please fill in - example: "foo"
 input: # please fill in - example: "input.h5mu"
 obs_covariates: ["sample_id"]
+filter_with_hvg_var_output: "filter_with_hvg"
 
 # Nextflow input-output arguments
 publish_dir: # please fill in - example: "output/"

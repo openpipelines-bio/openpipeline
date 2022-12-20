@@ -52,6 +52,20 @@ functionality:
     multiple: false
     multiple_sep: ":"
     dest: "par"
+  - type: "string"
+    name: "--var_input"
+    alternatives: []
+    description: "Column name in .var matrix that will be used to select which genes\
+      \ to run the PCA on."
+    example:
+    - "filter_with_hvg"
+    default: []
+    required: false
+    choices: []
+    direction: "input"
+    multiple: false
+    multiple_sep: ":"
+    dest: "par"
   - type: "file"
     name: "--output"
     alternatives:
@@ -120,6 +134,12 @@ functionality:
     multiple: false
     multiple_sep: ":"
     dest: "par"
+  - type: "boolean_true"
+    name: "--overwrite"
+    alternatives: []
+    description: "Allow overwriting .obsm, .varm and .uns slots."
+    direction: "input"
+    dest: "par"
   argument_groups: []
   resources:
   - type: "python_script"
@@ -168,7 +188,22 @@ platforms:
     url: []
     script: []
     upgrade: true
-  test_setup: []
+  test_setup:
+  - type: "python"
+    user: false
+    packages:
+    - "viashpy"
+    pip: []
+    pypi: []
+    git: []
+    github: []
+    gitlab: []
+    mercurial: []
+    svn: []
+    bazaar: []
+    url: []
+    script: []
+    upgrade: true
 - type: "nextflow"
   id: "nextflow"
   variant: "vdsl3"
@@ -196,5 +231,5 @@ info:
   output: "/home/runner/work/openpipeline/openpipeline/target/docker/dimred/pca"
   executable: "/home/runner/work/openpipeline/openpipeline/target/docker/dimred/pca/pca"
   viash_version: "0.6.7"
-  git_commit: "92f1c40dcdc9f51bf396abf402dbf103be5a3b92"
+  git_commit: "539578526b7f3747d331fbdf879ad66199693e7b"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"
