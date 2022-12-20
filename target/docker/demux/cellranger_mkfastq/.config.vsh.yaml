@@ -179,5 +179,5 @@ info:
   output: "/home/runner/work/openpipeline/openpipeline/target/docker/demux/cellranger_mkfastq"
   executable: "/home/runner/work/openpipeline/openpipeline/target/docker/demux/cellranger_mkfastq/cellranger_mkfastq"
   viash_version: "0.6.7"
-  git_commit: "61cdfc4ba724376cf9eee99dcb2e79189548abff"
+  git_commit: "b739e63bc3e07eb14e04ffe6a51b0217766f6f81"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"
