@@ -38,7 +38,8 @@ workflow run_wf {
         make_observation_keys_unique: true, 
         obs_output: 'sample_id'
       ]
-      def new_passthrough = ["obs_covariates": data.obs_covariates]
+      def new_passthrough = ["obs_covariates": data.obs_covariates, 
+                             "filter_with_hvg_var_output": data.filter_with_hvg_var_output]
       [ id, new_data, new_passthrough ]
     }
     | add_id 
@@ -62,11 +63,26 @@ workflow run_wf {
 
     modality_processors = [
       [id: "rna", singlesample: rna_singlesample, multisample: rna_multisample],
-      [id: "vdj_t", singlesample: null, multisample: null],
-      [id: "vdj_b", singlesample: null, multisample: null],
-      [id: "prot", singlesample: null, multisample: null],
-      [id: "atac", singlesample: null, multisample: null],
+      // [id: "vdj_t", singlesample: null, multisample: null],
+      // [id: "vdj_b", singlesample: null, multisample: null],
+      // [id: "prot", singlesample: null, multisample: null],
+      // [id: "atac", singlesample: null, multisample: null],
     ]
+    known_modalities = modality_processors.collect{it.id}
+
+    unknown_channel = start_ch
+      | filter { ! known_modalities.contains(it[2].modality)}
+      | map { lst ->
+          [lst[2].modality] + lst
+       }
+      | groupTuple(by: 0)
+      // [modality, [sample_id1, sample_id2, ...], [h5mu1, h5mu2, ...], [passthrough, copy_passthrough, ...]]
+      | map { grouped_lst ->
+        modality_name = grouped_lst[0]
+        ["combined_$modality_name", ["sample_id": grouped_lst[1], 
+         "input": grouped_lst[2]], grouped_lst[3][0]] // passthrough is copied, just pick the first
+      }
+      | concat.run(renameKeys: [input_id: "sample_id"])
 
     mod_chs = modality_processors.collect{ modality_processor ->
       // Select the files corresponding to the currently selected modality
@@ -103,7 +119,8 @@ workflow run_wf {
     }
 
   // Concat channel if more than one modality was found
-  merge_ch = mod_chs.size() > 1? mod_chs[0].concat(*mod_chs.drop(1)): mod_chs[0]
+  known_mods_ch = mod_chs.size() > 1? mod_chs[0].concat(*mod_chs.drop(1)): mod_chs[0]
+  merge_ch = unknown_channel.concat(known_mods_ch)
   output_ch = merge_ch
     | toSortedList{ a, b -> b[0] <=> a[0] }
     | map { list -> 
@@ -114,7 +131,8 @@ workflow run_wf {
       new_data = [
         "input": data, 
         "layer": "log_normalized", 
-        "obs_covariates": passthrough.get("obs_covariates")
+        "obs_covariates": passthrough.get("obs_covariates"),
+        "filter_with_hvg_var_output": passthrough.get("filter_with_hvg_var_output")
       ]
       [id, new_data]
     }
