@@ -4,14 +4,10 @@ functionality:
   version: "dev"
   description: "Performs scvi integration as done in the human lung cell atlas https://github.com/LungCellAtlas/HLCA"
   authors:
-    - name: Malte Luecken
-      email: malte.luecken@helmholtz-muenchen.de
+    - __merge__: ../../authors/malte_luecken.yaml
       roles: [ author ]
-      props: { github: luckymd, orcid: "0000-0001-7464-7921" }
-    - name: Dries Schaumont
-      email: dries@data-intuitive.com
+    - __merge__: ../../authors/dries_schaumont.yaml
       roles: [ maintainer ]
-      props: { github: DriesSchaumont, orcid: "0000-0002-4389-0440" }
   argument_groups:
     - name: Inputs
       arguments:
@@ -116,6 +112,5 @@ platforms:
           - torchmetrics~=0.6.0
           - scvi-tools~=0.14.6
   - type: nextflow
-    variant: vdsl3
     directives:
       label: [highmem, highcpu]

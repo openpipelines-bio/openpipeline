@@ -1,5 +1,5 @@
 import scanpy as sc
-import muon as mu
+import mudata as mu
 import multiprocessing
 import logging
 from sys import stdout
@@ -40,4 +40,4 @@ if (
     )
 
 logger.info("Writing to file")
-mdata.write(filename=par["output"])
+mdata.write_h5mu(filename=par["output"], compression="gzip")

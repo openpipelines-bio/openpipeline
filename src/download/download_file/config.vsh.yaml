@@ -9,10 +9,8 @@ functionality:
       --input https://cf.10xgenomics.com/samples/cell-exp/3.0.0/pbmc_1k_protein_v3/pbmc_1k_protein_v3_raw_feature_bc_matrix.h5 \
       --output output_rna.h5
   authors:
-    - name: Robrecht Cannoodt
-      email: robrecht@data-intuitive.com
+    - __merge__: ../../authors/robrecht_cannoodt.yaml
       roles: [ maintainer ]
-      props: { github: rcannood, orcid: "0000-0003-3641-729X" }
   arguments:
     - name: "--input"
       type: string
@@ -39,4 +37,3 @@ platforms:
   - type: docker
     image: bash:5.1.16
   - type: nextflow
-    variant: vdsl3

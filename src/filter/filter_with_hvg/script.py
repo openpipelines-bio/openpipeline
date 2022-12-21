@@ -1,5 +1,5 @@
 import scanpy as sc
-import muon as mu
+import mudata as mu
 import numpy as np
 import logging
 from sys import stdout
@@ -82,7 +82,7 @@ if par.get("var_name_filter", None) is not None:
     data.var[par["var_name_filter"]] = out["highly_variable"]
 
 if par.get("varm_name", None) is not None:
-    # drop mean_bin as muon/anndata doesn't support tuples
+    # drop mean_bin as mudata/anndata doesn't support tuples
     data.varm[par["varm_name"]] = out.drop("mean_bin", axis=1)
 
 if par["do_subset"]:
@@ -90,4 +90,4 @@ if par["do_subset"]:
     mdata.mod[mod] = data[:,keep_feats]
 
 logger.info("Writing h5mu to file")
-mdata.write_h5mu(par["output"])
+mdata.write_h5mu(par["output"], compression="gzip")

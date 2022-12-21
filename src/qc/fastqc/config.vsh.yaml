@@ -38,4 +38,3 @@ platforms:
       - type: apt
         packages: [ fastqc ]
   - type: nextflow
-    variant: vdsl3

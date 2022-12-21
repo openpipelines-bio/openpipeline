@@ -3,18 +3,12 @@ functionality:
   namespace: "multiomics"
   description: "Processing unimodal single-sample RNA transcriptomics data."
   authors:
-    - name: Dries De Maeyer
-      email: ddemaeyer@gmail.com
+    - __merge__: ../../../src/authors/dries_de_maeyer.yaml
       roles: [ author ]
-      props: { account: ddemaey1 }
-    - name: Robrecht Cannoodt
-      email: robrecht@data-intuitive.com
+    - __merge__: ../../../src/authors/robrecht_cannoodt.yaml
       roles: [ author, maintainer ]
-      props: { github: rcannood, orcid: "0000-0003-3641-729X" }
-    - name: Dries Schaumont
-      email: dries@data-intuitive.com
+    - __merge__: ../../../src/authors/dries_schaumont.yaml
       roles: [ author ]
-      props: { github: DriesSchaumont, orcid: "0000-0002-4389-0440" }
   arguments:
     - name: "--id"
       required: true

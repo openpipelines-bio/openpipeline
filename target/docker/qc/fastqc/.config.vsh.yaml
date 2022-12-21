@@ -1,0 +1,119 @@
+functionality:
+  name: "fastqc"
+  namespace: "qc"
+  version: "integration_build"
+  authors: []
+  inputs: []
+  outputs: []
+  arguments:
+  - type: "string"
+    name: "--mode"
+    alternatives:
+    - "-m"
+    description: "The mode in which the component works. Can be either files or dir."
+    example: []
+    default:
+    - "files"
+    required: false
+    choices:
+    - "files"
+    - "dir"
+    direction: "input"
+    multiple: false
+    multiple_sep: ":"
+    dest: "par"
+  - type: "file"
+    name: "--input"
+    alternatives:
+    - "-i"
+    description: "Directory containing input fastq files."
+    example:
+    - "fastq_dir"
+    default: []
+    must_exist: true
+    create_parent: true
+    required: true
+    direction: "input"
+    multiple: false
+    multiple_sep: ":"
+    dest: "par"
+  - type: "file"
+    name: "--output"
+    alternatives:
+    - "-o"
+    description: "Output directory to write reports to."
+    example:
+    - "qc"
+    default: []
+    must_exist: true
+    create_parent: true
+    required: true
+    direction: "output"
+    multiple: false
+    multiple_sep: ":"
+    dest: "par"
+  argument_groups: []
+  resources:
+  - type: "bash_script"
+    path: "script.sh"
+    is_executable: true
+  description: "Fastqc component, please see https://www.bioinformatics.babraham.ac.uk/projects/fastqc/.\
+    \ This component can take one or more files (by means of shell globbing) or a\
+    \ complete directory.\n"
+  test_resources:
+  - type: "bash_script"
+    path: "test.sh"
+    is_executable: true
+  - type: "file"
+    path: "../../../resources_test/cellranger_tiny_fastq/cellranger_tiny_fastq"
+  status: "enabled"
+  requirements:
+    commands: []
+  set_wd_to_resources_dir: false
+platforms:
+- type: "docker"
+  id: "docker"
+  image: "ubuntu:22.04"
+  target_organization: "openpipelines-bio"
+  target_registry: "ghcr.io"
+  namespace_separator: "_"
+  resolve_volume: "Automatic"
+  chown: true
+  port: []
+  setup_strategy: "ifneedbepullelsecachedbuild"
+  run_args: []
+  target_image_source: "https://github.com/openpipelines-bio/openpipeline"
+  setup:
+  - type: "apt"
+    packages:
+    - "fastqc"
+    interactive: false
+  test_setup: []
+- type: "nextflow"
+  id: "nextflow"
+  variant: "vdsl3"
+  directives:
+    accelerator: {}
+    conda: []
+    containerOptions: []
+    label: []
+    module: []
+    pod: []
+    publishDir: []
+    queue: []
+    tag: "$id"
+  auto:
+    simplifyInput: true
+    simplifyOutput: true
+    transcript: false
+    publish: false
+  debug: false
+  container: "docker"
+info:
+  config: "/home/runner/work/openpipeline/openpipeline/src/qc/fastqc/config.vsh.yaml"
+  platform: "docker"
+  output: "/home/runner/work/openpipeline/openpipeline/target/docker/qc/fastqc"
+  executable: "/home/runner/work/openpipeline/openpipeline/target/docker/qc/fastqc/fastqc"
+  viash_version: "0.6.7"
+  git_commit: "7ced7ac3519f559d9d5b3376c0afd6399f660ae5"
+  git_remote: "https://github.com/openpipelines-bio/openpipeline"

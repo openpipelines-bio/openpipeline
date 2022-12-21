@@ -5,10 +5,8 @@ functionality:
   description: |
     Create a subset of a mudata file by selecting the first number of observations
   authors:
-    - name: Dries Schaumont
-      email: dries@data-intuitive.com
+    - __merge__: ../../authors/dries_schaumont.yaml
       roles: [ maintainer ]
-      props: { github: DriesSchaumont}
   arguments:
     - name: "--input"
       type: file
