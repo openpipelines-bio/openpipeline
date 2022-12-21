@@ -58,6 +58,20 @@ training_params = {
     "scale_pos_weight": par["scale_pos_weight"],
 }
 
+
+def _setup_logger():
+     from sys import stdout
+
+     logger = logging.getLogger()
+     logger.setLevel(logging.INFO)
+     console_handler = logging.StreamHandler(stdout)
+     logFormatter = logging.Formatter("%(asctime)s %(levelname)-8s %(message)s")
+     console_handler.setFormatter(logFormatter)
+     logger.addHandler(console_handler)
+
+     return logger
+     
+
 def encode_labels(y):
     labels_encoder = LabelEncoder()
     labels_encoder.fit(y)
@@ -164,6 +178,8 @@ def build_ref_classifiers(adata_reference, targets, model_path,
     ```
     
     """
+    logger = _setup_logger()
+
     # Check inputs
     if not isinstance(eval_verbosity, int):
         raise TypeError("`eval_verbosity` should be an integer between 0 and 2.")
@@ -172,8 +188,10 @@ def build_ref_classifiers(adata_reference, targets, model_path,
         raise ValueError("`eval_verbosity` should be an integer between 0 and 2.")
 
     if par["reference_obsm_key"] is None:
+        logger.info("Using X as data sourse")
         X_reference = adata_reference.X
     else:
+        logger.info(f"Using obsm key {par['reference_obsm_key']} as data sourse")
         X_reference = adata_reference.obsm[par["reference_obsm_key"]]
     
     # Map from name of classifier to file names
@@ -186,9 +204,9 @@ def build_ref_classifiers(adata_reference, targets, model_path,
         filename = "classifier_" + label + ".xgb"
         
         labels, labels_encoder = encode_labels(adata_reference.obs[label])
-        print("Classes:", labels_encoder.classes_)
+        logger.info("Classes:", labels_encoder.classes_)
         
-        print(f"Building classifier for {label}...")
+        logger.info(f"Building classifier for {label}...")
         xgb_model = build_classifier(
             X=X_reference,
             y=labels,
@@ -199,6 +217,7 @@ def build_ref_classifiers(adata_reference, targets, model_path,
         )
         
         # Save classifier
+        logger.info("Saving model")
         xgb_model.save_model(os.path.join(model_path, filename))
         
         # Store classifier info
@@ -214,23 +233,21 @@ def build_ref_classifiers(adata_reference, targets, model_path,
         "classifier_info": classifiers
     }
     
+    logger.info("Writing model_info to the file")
     # Read previous file if it exists
     if os.path.exists(model_path + "/model_info.json"):
-        print("Old model_info file found, updating")
+        logger.info("Old model_info file found, updating")
         with open(model_path + "/model_info.json", "r") as f:
             old_model_info = json.loads(f.read())
-
-        print("Old model info:", old_model_info)
     
         for key in old_model_info:
             if key in model_info:
                 old_model_info[key].update(model_info[key])
-        
-        print("Updated model info:", old_model_info)
         json_string = json.dumps(old_model_info, indent=4)
     
     else:
-        json_string= json.dumps(model_info, indent=4)
+        logger.info("Creating a new file")
+        json_string = json.dumps(model_info, indent=4)
 
     with open(model_path + "/model_info.json", "w") as f:
         f.write(json_string)
@@ -255,16 +272,23 @@ def project_labels(query_dataset,
         Nothing is output, the passed anndata is modified inplace
 
     """
+
+    logger = _setup_logger()
+
     if (uncertainty_thresh is not None) and (uncertainty_thresh < 0 or uncertainty_thresh > 1):
         raise ValueError(f'`uncertainty_thresh` must be `None` or between 0 and 1.')
 
     if par["query_obsm_key"] is None:
+        logger.info(f"Using X as data sourse")
         X_query = query_dataset.X
     else:
+        logger.info(f"Using obsm key {par['reference_obsm_key']} as data sourse")
         X_query = query_dataset.obsm[par["query_obsm_key"]]
 
     # Predict labels and probabilities
     query_dataset.obs[annotation_column_name] = cell_type_classifier_model.predict(X_query)
+
+    logger.info("Predictiong probabilities")
     probs = cell_type_classifier_model.predict_proba(X_query)
 
     # Format probabilities
@@ -274,6 +298,7 @@ def project_labels(query_dataset,
     # Note: this is here in case we want to propose a set of values for the user to accept to seed the
     #       manual curation of predicted labels
     if uncertainty_thresh is not None:
+        logger.info("Marking uncertain predictions")
         query_dataset.obs[annotation_column_name + "_filtered"] = [
             val if query_dataset.obs[annotation_column_name + "_uncertainty"][i] < uncertainty_thresh
             else "Unknown" for i, val in enumerate(query_dataset.obs[annotation_column_name])]
@@ -291,20 +316,28 @@ def predict(
     """
     Returns `obs` DataFrame with prediction columns appended
     """
+
+    logger = _setup_logger()
+
     tree_method = "gpu_hist" if use_gpu else "hist"
 
     labels = models_info["classifier_info"][annotation_column_name]["labels"]
 
     objective = "binary:logistic" if len(labels) == 2 else "multi:softprob"
     cell_type_classifier_model = xgb.XGBClassifier(tree_method=tree_method, objective=objective)
+
+    logger.info("Loading model")
     cell_type_classifier_model.load_model(fname=cell_type_classifier_model_path)
 
+    logger.info("Predicting labels")
     project_labels(query_dataset, cell_type_classifier_model, annotation_column_name=annotation_column_name + par["obs_output_suffix"])
 
     return query_dataset
 
 
 def main():
+    logger = _setup_logger()
+
     mdata = mudata.read(par["input"].strip())
     adata = mdata.mod[par["modality"]]
 
@@ -318,7 +351,10 @@ def main():
 
     for target in par["targets"]:
         if f"classifier_{target}.xgb" not in os.listdir(par["model_output"]) or par["force_retrain"]:
+            logger.info(f"Classifier for {target} added to a training schedule")
             targets_to_train.append(target)
+        else:
+            logger.info(f"Found classifier for {target}, no retraining required")
 
     build_ref_classifiers(adata_reference, targets_to_train, model_path=par["model_output"], gpu=par["use_gpu"], eval_verbosity=par["verbosity"])
 
@@ -329,6 +365,7 @@ def main():
         models_info = json.loads(f.read())
 
     for target in par["targets"]:
+        logger.info(f"Predicting {target}")
         predicted_label_col_name = target + par["obs_output_suffix"]
 
         adata = predict(query_dataset=adata,
@@ -342,8 +379,11 @@ def main():
             **training_params
         }
 
+    logger.info("Updating mdata")
     mdata.mod[par['modality']] = adata
     mdata.update()
+
+    logger.info("Writing output")
     mdata.write_h5mu(par['output'].strip())
 
 if __name__ == "__main__":
