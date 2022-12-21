@@ -335,7 +335,13 @@ def predict(
     cell_type_classifier_model.load_model(fname=cell_type_classifier_model_path)
 
     logger.info("Predicting labels")
-    project_labels(query_dataset, cell_type_classifier_model, annotation_column_name=annotation_column_name + par["obs_output_suffix"], logger=logger)
+    predicted_labels_col = annotation_column_name + par["obs_output_suffix"]
+    project_labels(query_dataset, cell_type_classifier_model, annotation_column_name=predicted_labels_col, logger=logger)
+
+    logger.info("Converting labels from numbers to classes")
+    labels_encoder = LabelEncoder()
+    labels_encoder.classes_ = np.array(labels)
+    query_dataset.obs[predicted_labels_col] = labels_encoder.inverse_transform(query_dataset.obs[predicted_labels_col])
 
     return query_dataset
 
