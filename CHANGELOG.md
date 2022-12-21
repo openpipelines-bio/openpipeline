@@ -37,6 +37,8 @@
 * `resources_test/cellranger_tiny_fastq`: Include RNA velocity computations as part of
   the script.
 
+* `mapping/cellranger_mkfastq`: remove --memory and --cpu arguments as (resource management is automatically provided by viash).
+
 ## MINOR CHANGES
 
 * Several components: use `gzip` compression for writing .h5mu files.
