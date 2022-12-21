@@ -58,6 +58,19 @@ training_params = {
     "scale_pos_weight": par["scale_pos_weight"],
 }
 
+def _setup_logger():
+     from sys import stdout
+
+     logger = logging.getLogger()
+     logger.setLevel(logging.INFO)
+     console_handler = logging.StreamHandler(stdout)
+     logFormatter = logging.Formatter("%(asctime)s %(levelname)-8s %(message)s")
+     console_handler.setFormatter(logFormatter)
+     logger.addHandler(console_handler)
+
+     return logger
+     
+
 def encode_labels(y):
     labels_encoder = LabelEncoder()
     labels_encoder.fit(y)
@@ -214,11 +227,26 @@ def build_ref_classifiers(adata_reference, targets, model_path,
         "classifier_info": classifiers
     }
     
-    # Write file
-    json_string = json.dumps(model_info, indent=4)
+    # Read previous file if it exists
+    if os.path.exists(model_path + "/model_info.json"):
+        print("Old model_info file found, updating")
+        with open(model_path + "/model_info.json", "r") as f:
+            old_model_info = json.loads(f.read())
+
+        print("Old model info:", old_model_info)
     
+        for key in old_model_info:
+            if key in model_info:
+                old_model_info[key].update(model_info[key])
+        
+        print("Updated model info:", old_model_info)
+        json_string = json.dumps(old_model_info, indent=4)
+    
+    else:
+        json_string= json.dumps(model_info, indent=4)
+
     with open(model_path + "/model_info.json", "w") as f:
-        f.write(json_string)  # TODO: if there is already the existing file, it will overwrite the whole info
+        f.write(json_string)
 
 
 def project_labels(query_dataset,
@@ -313,9 +341,7 @@ def main():
         adata.uns["labels_transfer"] = {}
 
     with open(par["model_output"] + "/model_info.json", "r") as f:
-        models_info = json.load(f)
-        print("models_info", models_info)
-     
+        models_info = json.loads(f.read())
 
     for target in par["targets"]:
         predicted_label_col_name = target + par["obs_output_suffix"]
