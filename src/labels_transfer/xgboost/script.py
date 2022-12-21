@@ -204,12 +204,13 @@ def build_ref_classifiers(adata_reference, targets, model_path,
         # Store classifier info
         classifiers[label] = {
             "filename": filename,
-            "labels": labels_encoder.classes_.tolist()
+            "labels": labels_encoder.classes_.tolist(),
+            "obs_column": label + par["obs_output_suffix"],
+            "model_params": training_params,
         }
         
     # Store model_info.json file
     model_info = {
-        "model_params": training_params,
         "classifier_info": classifiers
     }
     
@@ -218,6 +219,74 @@ def build_ref_classifiers(adata_reference, targets, model_path,
     
     with open(model_path + "/model_info.json", "w") as f:
         f.write(json_string)  # TODO: if there is already the existing file, it will overwrite the whole info
+
+
+def project_labels(query_dataset,
+                   cell_type_classifier_model: xgb.XGBClassifier,
+                   annotation_column_name='pred_labels',
+                   uncertainty_thresh=None  # Note: currently not passed to predict function
+                   ):
+    """
+    A function that projects predicted labels onto the query dataset, along with uncertainty scores.
+    Performs in-place update of the adata object, adding columns to the `obs` DataFrame.
+
+    Input:
+        * `query_dataset`: The query `AnnData` object
+        * `model_file`: Path to the classification model file
+        * `prediction_key`: Column name in `adata.obs` where to store the predicted labels
+        * `uncertainty_thresh`: The uncertainty threshold above which we call a cell 'Unknown'
+
+    Output:
+        Nothing is output, the passed anndata is modified inplace
+
+    """
+    if (uncertainty_thresh is not None) and (uncertainty_thresh < 0 or uncertainty_thresh > 1):
+        raise ValueError(f'`uncertainty_thresh` must be `None` or between 0 and 1.')
+
+    if par["query_obsm_key"] is None:
+        X_query = query_dataset.X
+    else:
+        X_query = query_dataset.obsm[par["query_obsm_key"]]
+
+    # Predict labels and probabilities
+    query_dataset.obs[annotation_column_name] = cell_type_classifier_model.predict(X_query)
+    probs = cell_type_classifier_model.predict_proba(X_query)
+
+    # Format probabilities
+    df_probs = pd.DataFrame(probs, columns=cell_type_classifier_model.classes_, index=query_dataset.obs_names)
+    query_dataset.obs[annotation_column_name + "_uncertainty"] = 1 - df_probs.max(1)
+
+    # Note: this is here in case we want to propose a set of values for the user to accept to seed the
+    #       manual curation of predicted labels
+    if uncertainty_thresh is not None:
+        query_dataset.obs[annotation_column_name + "_filtered"] = [
+            val if query_dataset.obs[annotation_column_name + "_uncertainty"][i] < uncertainty_thresh
+            else "Unknown" for i, val in enumerate(query_dataset.obs[annotation_column_name])]
+
+    return query_dataset
+
+
+def predict(
+        query_dataset,
+        cell_type_classifier_model_path,
+        annotation_column_name: str,
+        models_info,
+        use_gpu: bool = False
+) -> pd.DataFrame:
+    """
+    Returns `obs` DataFrame with prediction columns appended
+    """
+    tree_method = "gpu_hist" if use_gpu else "hist"
+
+    labels = models_info["classifier_info"][annotation_column_name]["labels"]
+
+    objective = "binary:logistic" if len(labels) == 2 else "multi:softprob"
+    cell_type_classifier_model = xgb.XGBClassifier(tree_method=tree_method, objective=objective)
+    cell_type_classifier_model.load_model(fname=cell_type_classifier_model_path)
+
+    project_labels(query_dataset, cell_type_classifier_model, annotation_column_name=annotation_column_name + par["obs_output_suffix"])
+
+    return query_dataset
 
 
 def main():
@@ -229,11 +298,6 @@ def main():
     # If classifiers for targets are in the model_output directory, simply open them and run (unless `retrain` != True)
     # If some classifiers are missing, train and save them first
     # Predict and save the query data
-
-    if par["query_obsm_key"] is None:
-        query = adata.X
-    else:
-        query = adata.obsm[par["query_obsm_key"]]
 
     targets_to_train = []
 
@@ -248,13 +312,19 @@ def main():
     if "labels_transfer" not in adata.uns:
         adata.uns["labels_transfer"] = {}
 
+    with open(par["model_output"] + "/model_info.json", "r") as f:
+        models_info = json.load(f)
+        print("models_info", models_info)
+     
+
     for target in par["targets"]:
         predicted_label_col_name = target + par["obs_output_suffix"]
 
-
-
-        # adata.obs[predicted_label_col_name] = prediction
-        # adata.obs[target + "_uncertainty"] = uncertainty
+        adata = predict(query_dataset=adata,
+                        cell_type_classifier_model_path=os.path.join(par["model_output"], "classifier_" + target + ".xgb"),
+                        annotation_column_name=target, 
+                        models_info=models_info,
+                        use_gpu=par["use_gpu"])
         
         adata.uns["labels_transfer"][predicted_label_col_name] = {
             "method": "XGBClassifier",
