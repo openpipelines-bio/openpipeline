@@ -1,7 +1,6 @@
 # Arguments
 input: # please fill in - example: "path/to/file"
 # output: "$id.$key.output.output"
-test: "test.py"
 
 # Nextflow input-output arguments
 publish_dir: # please fill in - example: "output/"

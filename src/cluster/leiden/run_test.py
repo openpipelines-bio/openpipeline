@@ -1,6 +1,6 @@
 import subprocess
 from os import path
-import muon as mu
+import mudata as mu
 
 ## VIASH START
 meta = {

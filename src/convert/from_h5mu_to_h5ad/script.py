@@ -27,6 +27,6 @@ logger.info("Converting to h5ad")
 adat = dat.mod[par["modality"]]
 
 logger.info("Writing to %s.", par['output'])
-adat.write_h5ad(par["output"])
+adat.write_h5ad(par["output"], compression="gzip")
 
 logger.info("Finished")

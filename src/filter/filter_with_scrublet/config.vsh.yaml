@@ -24,14 +24,10 @@ functionality:
       ~6.9% ~14,400 ~9,000
       ~7.6% ~16,000 ~10,000
   authors:
-    - name: Dries De Maeyer
-      email: ddemaeyer@gmail.com
+    - __merge__: ../../authors/dries_de_maeyer.yaml
       roles: [ contributor ]
-      props: { account: ddemaey1 }
-    - name: Robrecht Cannoodt
-      email: robrecht@data-intuitive.com
+    - __merge__: ../../authors/robrecht_cannoodt.yaml
       roles: [ maintainer, contributor ]
-      props: { github: rcannood, orcid: "0000-0003-3641-729X" }
   arguments:
     # input
     - name: "--input"
@@ -108,17 +104,15 @@ functionality:
     - path: ../../../resources_test/pbmc_1k_protein_v3
 platforms:
   - type: docker
-    image: python:3.8
+    image: python:3.10
     run_args: [--env NUMBA_CACHE_DIR=/tmp]
     setup:
       - type: python
         packages:
           - scanpy~=1.9.1
           - scrublet
-          - muon
           - mudata~=0.2.0
           - anndata~=0.8.0
   - type: nextflow
-    variant: vdsl3
     directives:
       label: highcpu

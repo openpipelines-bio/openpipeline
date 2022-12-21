@@ -1,0 +1,245 @@
+functionality:
+  name: "scanorama"
+  namespace: "integrate"
+  version: "0.5.2"
+  authors:
+  - name: "Dries De Maeyer"
+    email: "ddemaeyer@gmail.com"
+    roles:
+    - "author"
+    props:
+      github: "ddemaeyer"
+  - name: "Dries Schaumont"
+    email: "dries@data-intuitive.com"
+    roles:
+    - "maintainer"
+    props:
+      github: "DriesSchaumont"
+      orcid: "0000-0002-4389-0440"
+  inputs: []
+  outputs: []
+  arguments:
+  - type: "file"
+    name: "--input"
+    alternatives:
+    - "-i"
+    description: "Input h5mu file"
+    example: []
+    default: []
+    must_exist: true
+    create_parent: true
+    required: true
+    direction: "input"
+    multiple: false
+    multiple_sep: ":"
+    dest: "par"
+  - type: "string"
+    name: "--modality"
+    alternatives: []
+    example: []
+    default:
+    - "rna"
+    required: false
+    choices: []
+    direction: "input"
+    multiple: false
+    multiple_sep: ":"
+    dest: "par"
+  - type: "file"
+    name: "--output"
+    alternatives:
+    - "-o"
+    description: "Output .h5mu file"
+    example: []
+    default:
+    - "output.h5ad"
+    must_exist: true
+    create_parent: true
+    required: true
+    direction: "output"
+    multiple: false
+    multiple_sep: ":"
+    dest: "par"
+  - type: "string"
+    name: "--obs_batch"
+    alternatives: []
+    description: "Column name discriminating between your batches."
+    example: []
+    default:
+    - "batch"
+    required: false
+    choices: []
+    direction: "input"
+    multiple: false
+    multiple_sep: ":"
+    dest: "par"
+  - type: "string"
+    name: "--obsm_input"
+    alternatives: []
+    description: "Basis obsm slot to run scanorama on."
+    example: []
+    default:
+    - "X_pca"
+    required: false
+    choices: []
+    direction: "input"
+    multiple: false
+    multiple_sep: ":"
+    dest: "par"
+  - type: "string"
+    name: "--obsm_output"
+    alternatives: []
+    description: "The name of the field in adata.obsm where the integrated embeddings\
+      \ will be stored after running this function. Defaults to X_scanorama."
+    example: []
+    default:
+    - "X_scanorama"
+    required: false
+    choices: []
+    direction: "input"
+    multiple: false
+    multiple_sep: ":"
+    dest: "par"
+  - type: "integer"
+    name: "--knn"
+    alternatives: []
+    description: "Number of nearest neighbors to use for matching."
+    example: []
+    default:
+    - 20
+    required: false
+    choices: []
+    direction: "input"
+    multiple: false
+    multiple_sep: ":"
+    dest: "par"
+  - type: "integer"
+    name: "--batch_size"
+    alternatives: []
+    description: "The batch size used in the alignment vector computation. Useful\
+      \ when integrating very large (>100k samples) datasets. Set to large value that\
+      \ runs within available memory."
+    example: []
+    default:
+    - 5000
+    required: false
+    choices: []
+    direction: "input"
+    multiple: false
+    multiple_sep: ":"
+    dest: "par"
+  - type: "double"
+    name: "--sigma"
+    alternatives: []
+    description: "Correction smoothing parameter on Gaussian kernel."
+    example: []
+    default:
+    - 15.0
+    required: false
+    direction: "input"
+    multiple: false
+    multiple_sep: ":"
+    dest: "par"
+  - type: "boolean"
+    name: "--approx"
+    alternatives: []
+    description: "Use approximate nearest neighbors with Python annoy; greatly speeds\
+      \ up matching runtime."
+    example: []
+    default:
+    - true
+    required: false
+    direction: "input"
+    multiple: false
+    multiple_sep: ":"
+    dest: "par"
+  - type: "double"
+    name: "--alpha"
+    alternatives: []
+    description: "Alignment score minimum cutoff"
+    example: []
+    default:
+    - 0.1
+    required: false
+    direction: "input"
+    multiple: false
+    multiple_sep: ":"
+    dest: "par"
+  argument_groups: []
+  resources:
+  - type: "python_script"
+    path: "./script.py"
+    is_executable: true
+  description: "Use Scanorama to integrate different experiments.\n"
+  test_resources:
+  - type: "python_script"
+    path: "test.py"
+    is_executable: true
+  - type: "file"
+    path: "../../../resources_test/pbmc_1k_protein_v3/pbmc_1k_protein_v3_mms.h5mu"
+  status: "enabled"
+  requirements:
+    commands: []
+  set_wd_to_resources_dir: false
+platforms:
+- type: "docker"
+  id: "docker"
+  image: "python:3.8"
+  target_organization: "openpipelines-bio"
+  target_registry: "ghcr.io"
+  namespace_separator: "_"
+  resolve_volume: "Automatic"
+  chown: true
+  port: []
+  setup_strategy: "ifneedbepullelsecachedbuild"
+  run_args: []
+  target_image_source: "https://github.com/openpipelines-bio/openpipeline"
+  setup:
+  - type: "python"
+    user: false
+    packages:
+    - "mudata~=0.2.0"
+    - "anndata~=0.8.0"
+    - "scanpy"
+    - "scanorama"
+    pip: []
+    pypi: []
+    git: []
+    github: []
+    gitlab: []
+    mercurial: []
+    svn: []
+    bazaar: []
+    url: []
+    script: []
+    upgrade: true
+  test_setup: []
+- type: "nextflow"
+  id: "nextflow"
+  variant: "vdsl3"
+  directives:
+    accelerator: {}
+    conda: []
+    containerOptions: []
+    label:
+    - "highmem"
+    module: []
+    pod: []
+    publishDir: []
+    queue: []
+    tag: "$id"
+  auto:
+    simplifyInput: true
+    simplifyOutput: true
+    transcript: false
+    publish: false
+  debug: false
+  container: "docker"
+info:
+  config: "/home/runner/work/openpipeline/openpipeline/src/integrate/scanorama/config.vsh.yaml"
+  platform: "nextflow"
+  output: "/home/runner/work/openpipeline/openpipeline/target/nextflow/integrate/scanorama"
+  executable: "/home/runner/work/openpipeline/openpipeline/target/nextflow/integrate/scanorama/scanorama"
+  viash_version: "0.6.7"
+  git_commit: "8a1eaa5b5bb627077c0829c76d456032432a400e"
+  git_remote: "https://github.com/openpipelines-bio/openpipeline"

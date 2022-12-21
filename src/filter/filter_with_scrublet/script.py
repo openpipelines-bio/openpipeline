@@ -1,5 +1,5 @@
 import scrublet as scr
-import muon as mu
+import mudata as mu
 import numpy as np
 import logging
 from sys import stdout
@@ -62,4 +62,4 @@ if par["do_subset"]:
     mdata.mod[mod] = data[keep_cells, :]
 
 logger.info("Writing h5mu to %s", par["output"])
-mdata.write_h5mu(par["output"])
+mdata.write_h5mu(par["output"], compression="gzip")

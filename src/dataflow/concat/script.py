@@ -1,7 +1,7 @@
 from __future__ import annotations
 import logging
 import anndata
-import muon as mu
+import mudata as mu
 from sys import stdout
 import pandas as pd
 import numpy as np
@@ -305,7 +305,7 @@ def main() -> None:
                                                   input_ids=input_ids)
     logger.info("Writing out data to '%s' with compression '%s'.",
                 par["output"], par["compression"])
-    concatenated_samples.write(par["output"], compression=par["compression"])
+    concatenated_samples.write_h5mu(par["output"], compression=par["compression"])
 
 
 if __name__ == "__main__":

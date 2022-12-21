@@ -1,6 +1,6 @@
 from pathlib import Path
 import subprocess
-import muon
+import mudata as mu
 import numpy as np
 import logging
 from sys import stdout
@@ -27,7 +27,7 @@ logger.addHandler(console_handler)
 class TestDoFilter(TestCase):
     def setUp(self) -> None:
         self._tempfile = NamedTemporaryFile(suffix=".h5mu")
-        mu_in = muon.read_h5mu(input_path)
+        mu_in = mu.read_h5mu(input_path)
         self.orig_obs = mu_in.mod['rna'].n_obs
         self.orig_vars = mu_in.mod['rna'].n_vars
         ad_rna = mu_in.mod['rna']
@@ -59,7 +59,7 @@ class TestDoFilter(TestCase):
             "--var_filter", "filter_with_random"]
         )
         self.assertTrue(Path("output-1.h5mu").is_file(), msg="Output file not found")
-        mu_out = muon.read_h5mu("output-1.h5mu")
+        mu_out = mu.read_h5mu("output-1.h5mu")
         logger.info(f"  output1: {mu_out.mod['rna']}")
         new_obs = mu_out.mod['rna'].n_obs
         new_vars = mu_out.mod['rna'].n_vars
@@ -72,7 +72,7 @@ class TestDoFilter(TestCase):
             "--output", "output-2.h5mu",
             "--obs_filter", "filter_none"])
         self.assertTrue(Path("output-2.h5mu").is_file(), msg="Output file not found")
-        mu_out = muon.read_h5mu("output-2.h5mu")
+        mu_out = mu.read_h5mu("output-2.h5mu")
         logger.info(f"  output2: {mu_out.mod['rna']}")
         new_obs = mu_out.mod['rna'].n_obs
         new_vars = mu_out.mod['rna'].n_vars

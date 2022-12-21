@@ -1,27 +1,26 @@
-import unittest
+import pytest
 from os import path
-import subprocess
 
-class TestMermaid(unittest.TestCase):
-    def test_simple_execution(self):
-        content = """
-            graph LR;
-            A--> B & C & D;
-            B--> A & E;
-            C--> A & E;
-            D--> A & E;
-            E--> B & C & D;
-        """
+content = """\
+graph LR;
+    A--> B & C & D;
+    B--> A & E;
+    C--> A & E;
+    D--> A & E;
+    E--> B & C & D;
+"""
 
-        input = open("network.input", "w")
-        input.write(content)
-        input.close()
+def test_simple_execution(run_component):
 
-        out = subprocess.check_output([
-              "./mermaid", "--input", "network.input",  "--output", "./network.png"
-              ]
-            ).decode("utf-8")
-       
-        self.assertTrue(path.exists("network.png"))
+    with open("network.input", "w") as file:
+        file.write(content)
 
-unittest.main()
+    run_component([
+        "--input", "network.input",
+        "--output", "network.png"
+    ])
+    
+    assert path.exists("network.png")
+
+if __name__ == '__main__':
+    pytest.main([__file__], plugins=["viashpy"])

@@ -7,14 +7,10 @@ functionality:
     This is based on both the UMI counts, the gene counts 
     and the mitochondrial genes (genes starting with mt/MT).
   authors:
-    - name: Dries De Maeyer
-      email: ddemaeyer@gmail.com
+    - __merge__: ../../authors/dries_de_maeyer.yaml
       roles: [ author ]
-      props: { account: ddemaey1 }
-    - name: Robrecht Cannoodt
-      email: robrecht@data-intuitive.com
+    - __merge__: ../../authors/robrecht_cannoodt.yaml
       roles: [ maintainer, author ]
-      props: { github: rcannood, orcid: "0000-0003-3641-729X" }
 
   argument_groups:
     - name: Inputs
@@ -107,8 +103,9 @@ platforms:
     setup:
       - type: python
         packages:
-          - muon
           - mudata~=0.2.0
           - anndata~=0.8.0
+    test_setup:
+      - type: python
+        packages: viashpy
   - type: nextflow
-    variant: vdsl3

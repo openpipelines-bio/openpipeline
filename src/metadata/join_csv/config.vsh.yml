@@ -3,10 +3,8 @@ functionality:
   namespace: "metadata"
   description: "Join a csv containing metadata to the .obs or .var field of a mudata file."
   authors:
-    - name: Dries Schaumont
-      email: dries@data-intuitive.com
+    - __merge__: ../../authors/dries_schaumont.yaml
       roles: [ author ]
-      props: { account: DriesSchaumont, orcid: "0000-0002-4389-0440" }
   argument_groups:
     - name: "MuData Input"
       arguments:
@@ -65,9 +63,9 @@ functionality:
 platforms:
   - type: docker
     image: python:3.10
-    python:
-      packages:
-        - mudata~=0.2.0
-        - anndata~=0.8.0
+    setup:
+      - type: python
+        packages:
+          - mudata~=0.2.0
+          - anndata~=0.8.0
   - type: nextflow
-    variant: vdsl3

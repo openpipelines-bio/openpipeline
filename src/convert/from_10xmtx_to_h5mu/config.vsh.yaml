@@ -5,10 +5,8 @@ functionality:
   description: |
     Converts a 10x mtx into an h5mu file.
   authors:
-    - name: Robrecht Cannoodt
-      email: robrecht@data-intuitive.com
+    - __merge__: ../../authors/robrecht_cannoodt.yaml
       roles: [ maintainer ]
-      props: { github: rcannood, orcid: "0000-0003-3641-729X" }
   arguments:
     - name: "--input"
       alternatives: ["-i"]
@@ -40,5 +38,4 @@ platforms:
           - mudata~=0.2.0
           - anndata~=0.8.0
   - type: nextflow
-    variant: vdsl3
 

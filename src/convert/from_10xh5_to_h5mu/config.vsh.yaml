@@ -5,10 +5,8 @@ functionality:
   description: |
     Converts a 10x h5 into an h5mu file.
   authors:
-    - name: Robrecht Cannoodt
-      email: robrecht@data-intuitive.com
+    - __merge__: ../../authors/robrecht_cannoodt.yaml
       roles: [ maintainer ]
-      props: { github: rcannood, orcid: "0000-0003-3641-729X" }
   argument_groups:
     - name: Inputs
       arguments:
@@ -31,6 +29,7 @@ functionality:
           description: Output h5mu file.
           example: output.h5mu
           direction: output
+          __merge__: api_output.yaml
         - name: "--uns_metrics"
           type: string
           description: Name of the .uns slot under which to QC metrics (if any).
@@ -62,4 +61,3 @@ platforms:
           - anndata~=0.8.0
           - scanpy
   - type: nextflow
-    variant: vdsl3

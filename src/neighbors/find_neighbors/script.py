@@ -1,4 +1,4 @@
-import muon as mu
+import mudata as mu
 import scanpy as sc
 import logging
 from sys import stdout
@@ -55,4 +55,4 @@ adata.obsp[par["obsp_distances"]] = neighbors.distances
 adata.obsp[par["obsp_connectivities"]] = neighbors.connectivities
 
 logger.info("Writing to %s", par["output"])
-mdata.write(filename=par["output"])
+mdata.write_h5mu(filename=par["output"], compression="gzip")

@@ -11,7 +11,7 @@ include { delete_layer } from targetDir + '/transform/delete_layer/main.nf'
 
 include { readConfig; viashChannel; helpMessage } from workflowDir + "/utils/WorkflowHelper.nf"
 
-config = readConfig("$workflowDir/multiomics/rna_multisample/config.vsh.yaml")
+config = readConfig("$projectDir/config.vsh.yaml")
 
 workflow {
   helpMessage(config)
@@ -51,7 +51,8 @@ workflow run_wf {
 
     // retrieve output value
     | map { tup -> 
-      [ tup[0], [ input: tup[1] ] + tup[2].subMap("output") ] + tup.drop(3)
+       new_args = [ input: tup[1] ] + tup[2].subMap(["output", "filter_with_hvg_var_output"])
+      [ tup[0], new_args ] + tup.drop(3)
     }
 
     // feature annotation

@@ -26,8 +26,7 @@ cmd_pars = [
     meta["executable"],
     "--input", input,
     "--sample_sheet", sample_sheet,
-    "--output", output,
-    "--memory", "4" 
+    "--output", output
 ]
 subprocess.check_call(cmd_pars, encoding="utf-8", timeout=500)
 

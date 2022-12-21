@@ -227,10 +227,17 @@ def main(par: dict[str, Any], meta: dict[str, Any]):
 
         ## Run pipeline
         if par["dryrun"]:
+            par['output'].mkdir(parents=True, exist_ok=True)
+            
+            # write config file
+            config_file = par['output'] / "config.csv"
+            with open(config_file, "w") as f:
+                f.write(config_content)
+            proc_pars.append(f"--csv={config_file}")
+
+            # display command that would've been used
             cmd = ["cellranger multi"] + proc_pars + ["--csv=config.csv"]
             logger.info("> " + ' '.join(cmd))
-            logger.info("Contents of 'config.csv':")
-            logger.info(config_content)
         else:
             # write config file
             config_file = temp_dir_path / "config.csv"
