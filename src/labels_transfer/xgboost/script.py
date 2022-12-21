@@ -58,19 +58,6 @@ training_params = {
     "scale_pos_weight": par["scale_pos_weight"],
 }
 
-def _setup_logger():
-     from sys import stdout
-
-     logger = logging.getLogger()
-     logger.setLevel(logging.INFO)
-     console_handler = logging.StreamHandler(stdout)
-     logFormatter = logging.Formatter("%(asctime)s %(levelname)-8s %(message)s")
-     console_handler.setFormatter(logFormatter)
-     logger.addHandler(console_handler)
-
-     return logger
-     
-
 def encode_labels(y):
     labels_encoder = LabelEncoder()
     labels_encoder.fit(y)
@@ -333,8 +320,6 @@ def main():
         if f"classifier_{target}.xgb" not in os.listdir(par["model_output"]) or par["force_retrain"]:
             targets_to_train.append(target)
 
-    print("Verbosity:", par["verbosity"], type(par["verbosity"]))
-    # TODO: align features names?
     build_ref_classifiers(adata_reference, targets_to_train, model_path=par["model_output"], gpu=par["use_gpu"], eval_verbosity=par["verbosity"])
 
     if "labels_transfer" not in adata.uns:
@@ -354,7 +339,7 @@ def main():
         
         adata.uns["labels_transfer"][predicted_label_col_name] = {
             "method": "XGBClassifier",
-            **training_params  # TODO: if classifier was trained previously, this might corrupt its info
+            **training_params
         }
 
     mdata.mod[par['modality']] = adata
