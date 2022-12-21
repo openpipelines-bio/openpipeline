@@ -1,4 +1,5 @@
 import json
+import logging
 import os
 from typing import Optional
 
@@ -149,7 +150,7 @@ def build_classifier(X, y, labels_encoder, label_key, eval_verbosity: Optional[i
 
 
 def build_ref_classifiers(adata_reference, targets, model_path,
-                          eval_verbosity: Optional[int] = 1, gpu: Optional[bool] = True) -> None:
+                          eval_verbosity: Optional[int] = 1, gpu: Optional[bool] = True, logger=None) -> None:
     """
     This function builds xgboost classifiers on a reference embedding for a designated number of 
     adata_reference.obs columns. Classifier .xgb files and a model_info.json file is written to the `model_path`
@@ -178,7 +179,8 @@ def build_ref_classifiers(adata_reference, targets, model_path,
     ```
     
     """
-    logger = _setup_logger()
+    if logger is None:
+        logger = _setup_logger()
 
     # Check inputs
     if not isinstance(eval_verbosity, int):
@@ -204,7 +206,7 @@ def build_ref_classifiers(adata_reference, targets, model_path,
         filename = "classifier_" + label + ".xgb"
         
         labels, labels_encoder = encode_labels(adata_reference.obs[label])
-        logger.info("Classes:", labels_encoder.classes_)
+        logger.info(f"Classes: {labels_encoder.classes_}")
         
         logger.info(f"Building classifier for {label}...")
         xgb_model = build_classifier(
@@ -256,7 +258,8 @@ def build_ref_classifiers(adata_reference, targets, model_path,
 def project_labels(query_dataset,
                    cell_type_classifier_model: xgb.XGBClassifier,
                    annotation_column_name='pred_labels',
-                   uncertainty_thresh=None  # Note: currently not passed to predict function
+                   uncertainty_thresh=None,  # Note: currently not passed to predict function
+                   logger = None
                    ):
     """
     A function that projects predicted labels onto the query dataset, along with uncertainty scores.
@@ -272,8 +275,8 @@ def project_labels(query_dataset,
         Nothing is output, the passed anndata is modified inplace
 
     """
-
-    logger = _setup_logger()
+    if logger is None:
+        logger = _setup_logger()
 
     if (uncertainty_thresh is not None) and (uncertainty_thresh < 0 or uncertainty_thresh > 1):
         raise ValueError(f'`uncertainty_thresh` must be `None` or between 0 and 1.')
@@ -282,13 +285,13 @@ def project_labels(query_dataset,
         logger.info(f"Using X as data sourse")
         X_query = query_dataset.X
     else:
-        logger.info(f"Using obsm key {par['reference_obsm_key']} as data sourse")
+        logger.info(f"Using obsm key {par['query_obsm_key']} as data sourse")
         X_query = query_dataset.obsm[par["query_obsm_key"]]
 
     # Predict labels and probabilities
     query_dataset.obs[annotation_column_name] = cell_type_classifier_model.predict(X_query)
 
-    logger.info("Predictiong probabilities")
+    logger.info("Predicting probabilities")
     probs = cell_type_classifier_model.predict_proba(X_query)
 
     # Format probabilities
@@ -311,13 +314,15 @@ def predict(
         cell_type_classifier_model_path,
         annotation_column_name: str,
         models_info,
-        use_gpu: bool = False
+        use_gpu: bool = False,
+        logger=None
 ) -> pd.DataFrame:
     """
     Returns `obs` DataFrame with prediction columns appended
     """
 
-    logger = _setup_logger()
+    if logger is None:
+        logger = _setup_logger()
 
     tree_method = "gpu_hist" if use_gpu else "hist"
 
@@ -330,7 +335,7 @@ def predict(
     cell_type_classifier_model.load_model(fname=cell_type_classifier_model_path)
 
     logger.info("Predicting labels")
-    project_labels(query_dataset, cell_type_classifier_model, annotation_column_name=annotation_column_name + par["obs_output_suffix"])
+    project_labels(query_dataset, cell_type_classifier_model, annotation_column_name=annotation_column_name + par["obs_output_suffix"], logger=logger)
 
     return query_dataset
 
@@ -356,7 +361,8 @@ def main():
         else:
             logger.info(f"Found classifier for {target}, no retraining required")
 
-    build_ref_classifiers(adata_reference, targets_to_train, model_path=par["model_output"], gpu=par["use_gpu"], eval_verbosity=par["verbosity"])
+    build_ref_classifiers(adata_reference, targets_to_train, model_path=par["model_output"], 
+                          gpu=par["use_gpu"], eval_verbosity=par["verbosity"], logger=logger)
 
     if "labels_transfer" not in adata.uns:
         adata.uns["labels_transfer"] = {}
@@ -372,7 +378,8 @@ def main():
                         cell_type_classifier_model_path=os.path.join(par["model_output"], "classifier_" + target + ".xgb"),
                         annotation_column_name=target, 
                         models_info=models_info,
-                        use_gpu=par["use_gpu"])
+                        use_gpu=par["use_gpu"],
+                        logger=logger)
         
         adata.uns["labels_transfer"][predicted_label_col_name] = {
             "method": "XGBClassifier",
