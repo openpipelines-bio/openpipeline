@@ -33,26 +33,22 @@ workflow run_wf {
   mkfastq_ch = input_ch
     | filter{ it[1].demultiplexer == "mkfastq" }
     | cellranger_mkfastq.run(commonOptions)
-
+    
   bcl_convert_ch = input_ch
     | filter{ it[1].demultiplexer  == "bclconvert" }
     | bcl_convert.run(commonOptions)
-    | map {  tup ->
-      [tup[0], tup[1].output]
-     }
 
   bcl2fastq_ch = input_ch
     | filter{ it[1].demultiplexer  == "bcl2fastq" }
     | bcl2fastq.run(commonOptions)
-    | map {  tup ->
-      [tup[0], tup[1].output]
-     }
-
 
   /* Combine the different demultiplexer channels */
   all_ch =
     mkfastq_ch
       | mix( bcl_convert_ch, bcl2fastq_ch )
+      | map {  tup ->
+        [tup[0], tup[1].output]
+      }
 
   /* Generate fastqc reports for every sample */
   all_ch
