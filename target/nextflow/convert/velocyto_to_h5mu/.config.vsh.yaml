@@ -1,7 +1,7 @@
 functionality:
   name: "velocyto_to_h5mu"
   namespace: "convert"
-  version: "0.5.2"
+  version: "0.6.0"
   authors:
   - name: "Dries Schaumont"
     email: "dries@data-intuitive.com"
@@ -201,5 +201,5 @@ info:
   output: "/home/runner/work/openpipeline/openpipeline/target/nextflow/convert/velocyto_to_h5mu"
   executable: "/home/runner/work/openpipeline/openpipeline/target/nextflow/convert/velocyto_to_h5mu/velocyto_to_h5mu"
   viash_version: "0.6.7"
-  git_commit: "8a1eaa5b5bb627077c0829c76d456032432a400e"
+  git_commit: "84672a470c637ce3ae7be923b7e4a8ff5ad9bf19"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"

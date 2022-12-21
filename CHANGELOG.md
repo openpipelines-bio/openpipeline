@@ -1,4 +1,4 @@
-# openpipeline 0.5.2
+# openpipeline 0.6.0
 
 ## NEW FUNCTIONALITY
 
