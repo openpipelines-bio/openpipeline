@@ -3,8 +3,6 @@ input: # please fill in - example: "/path/to/bcl"
 sample_sheet: # please fill in - example: "SampleSheet.csv"
 # output: "$id.$key.output.output"
 # reports: "$id.$key.reports.reports"
-# cores: 2
-# memory: 10
 
 # Nextflow input-output arguments
 publish_dir: # please fill in - example: "output/"

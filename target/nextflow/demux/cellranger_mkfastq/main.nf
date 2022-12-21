@@ -127,32 +127,6 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
         "multiple" : false,
         "multiple_sep" : ":",
         "dest" : "par"
-      },
-      {
-        "type" : "integer",
-        "name" : "--cores",
-        "description" : "Set max cores the pipeline may request at one time.",
-        "example" : [
-          2
-        ],
-        "required" : false,
-        "direction" : "input",
-        "multiple" : false,
-        "multiple_sep" : ":",
-        "dest" : "par"
-      },
-      {
-        "type" : "integer",
-        "name" : "--memory",
-        "description" : "Set max GB the pipeline may request at one time.",
-        "example" : [
-          10
-        ],
-        "required" : false,
-        "direction" : "input",
-        "multiple" : false,
-        "multiple_sep" : ":",
-        "dest" : "par"
       }
     ],
     "resources" : [
@@ -227,7 +201,7 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
     "config" : "/home/runner/work/openpipeline/openpipeline/src/demux/cellranger_mkfastq/config.vsh.yaml",
     "platform" : "nextflow",
     "viash_version" : "0.6.7",
-    "git_commit" : "df3e6f40493192db21b6d50d80942579c4d0e66c",
+    "git_commit" : "2423f408c9b0dd41c6a825bc4ca94014cae6d286",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))
@@ -246,8 +220,6 @@ $( if [ ! -z ${VIASH_PAR_INPUT+x} ]; then echo "${VIASH_PAR_INPUT}" | sed "s#'#'
 $( if [ ! -z ${VIASH_PAR_SAMPLE_SHEET+x} ]; then echo "${VIASH_PAR_SAMPLE_SHEET}" | sed "s#'#'\\"'\\"'#g;s#.*#par_sample_sheet='&'#" ; else echo "# par_sample_sheet="; fi )
 $( if [ ! -z ${VIASH_PAR_OUTPUT+x} ]; then echo "${VIASH_PAR_OUTPUT}" | sed "s#'#'\\"'\\"'#g;s#.*#par_output='&'#" ; else echo "# par_output="; fi )
 $( if [ ! -z ${VIASH_PAR_REPORTS+x} ]; then echo "${VIASH_PAR_REPORTS}" | sed "s#'#'\\"'\\"'#g;s#.*#par_reports='&'#" ; else echo "# par_reports="; fi )
-$( if [ ! -z ${VIASH_PAR_CORES+x} ]; then echo "${VIASH_PAR_CORES}" | sed "s#'#'\\"'\\"'#g;s#.*#par_cores='&'#" ; else echo "# par_cores="; fi )
-$( if [ ! -z ${VIASH_PAR_MEMORY+x} ]; then echo "${VIASH_PAR_MEMORY}" | sed "s#'#'\\"'\\"'#g;s#.*#par_memory='&'#" ; else echo "# par_memory="; fi )
 $( if [ ! -z ${VIASH_META_FUNCTIONALITY_NAME+x} ]; then echo "${VIASH_META_FUNCTIONALITY_NAME}" | sed "s#'#'\\"'\\"'#g;s#.*#meta_functionality_name='&'#" ; else echo "# meta_functionality_name="; fi )
 $( if [ ! -z ${VIASH_META_RESOURCES_DIR+x} ]; then echo "${VIASH_META_RESOURCES_DIR}" | sed "s#'#'\\"'\\"'#g;s#.*#meta_resources_dir='&'#" ; else echo "# meta_resources_dir="; fi )
 $( if [ ! -z ${VIASH_META_EXECUTABLE+x} ]; then echo "${VIASH_META_EXECUTABLE}" | sed "s#'#'\\"'\\"'#g;s#.*#meta_executable='&'#" ; else echo "# meta_executable="; fi )
@@ -284,11 +256,13 @@ fi
 # add additional params
 extra_params=( )
 
-if [ ! -z "\\$par_cores" ]; then 
-  extra_params+=( "--localcores=\\$par_cores" )
+if [ ! -z "\\$meta_cpus" ]; then 
+  extra_params+=( "--localcores=\\$meta_cpus" )
 fi
-if [ ! -z "\\$par_memory" ]; then 
-  extra_params+=( "--localmem=\\$par_memory" )
+if [ ! -z "\\$meta_memory_gb" ]; then 
+  # always keep 2gb for the OS itself
+  memory_gb=\\`python -c "print(int('\\$meta_memory_gb') - 2)"\\`
+  extra_params+=( "--localmem=\\$memory_gb" )
 fi
 
 

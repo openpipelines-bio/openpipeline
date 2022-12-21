@@ -32,11 +32,13 @@ fi
 # add additional params
 extra_params=( )
 
-if [ ! -z "$par_cores" ]; then 
-  extra_params+=( "--localcores=$par_cores" )
+if [ ! -z "$meta_cpus" ]; then 
+  extra_params+=( "--localcores=$meta_cpus" )
 fi
-if [ ! -z "$par_memory" ]; then 
-  extra_params+=( "--localmem=$par_memory" )
+if [ ! -z "$meta_memory_gb" ]; then 
+  # always keep 2gb for the OS itself
+  memory_gb=`python -c "print(int('$meta_memory_gb') - 2)"`
+  extra_params+=( "--localmem=$memory_gb" )
 fi
 
 

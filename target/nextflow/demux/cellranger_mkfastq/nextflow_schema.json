@@ -29,16 +29,6 @@
             "description": "Reports directory",
             
             "default": "$id.$key.reports.reports"
-          },"cores": {
-            "type":"integer",
-            "description": "Set max cores the pipeline may request at one time.",
-            
-            "default": ""
-          },"memory": {
-            "type":"integer",
-            "description": "Set max GB the pipeline may request at one time.",
-            
-            "default": ""
           }
         }
       },
