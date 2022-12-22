@@ -32,7 +32,7 @@ functionality:
           example: "raw_counts"
           required: false
 
-        - name: "--var_mitochondrial_gene_names"
+        - name: "--var_gene_names"
           required: false
           example: "gene_symbol"
           type: string
