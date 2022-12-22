@@ -24,6 +24,16 @@
             "description": "No description",
             
             "default": ""
+          },"var_gene_names": {
+            "type":"string",
+            "description": ".var column name to be used to detect mitochondrial genes instead of .var_names (default if not set). ","help_text": ".var column name to be used to detect mitochondrial genes instead of .var_names (default if not set). \nGene names matching with the regex value from --mitochondrial_gene_regex will be identified\nas a mitochondrial gene.\n",
+            
+            "default": ""
+          },"mitochondrial_gene_regex": {
+            "type":"string",
+            "description": "Regex string that identifies mitochondrial genes from --var_gene_names.","help_text": "Regex string that identifies mitochondrial genes from --var_gene_names.\nBy default will detect human and mouse mitochondrial genes from a gene symbol.\n",
+            
+            "default": "^[mM][tT]-"
           }
         }
       },
