@@ -72,7 +72,7 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
         "name" : "--output",
         "description" : "Output h5mu file.",
         "example" : [
-          "output.h5muß"
+          "output.h5mu"
         ],
         "must_exist" : true,
         "create_parent" : true,
@@ -163,7 +163,7 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
     "config" : "/home/runner/work/openpipeline/openpipeline/src/filter/remove_modality/config.vsh.yaml",
     "platform" : "nextflow",
     "viash_version" : "0.6.7",
-    "git_commit" : "f58cc1b1bc6ec4affe0e2283aca7f371c3e80d46",
+    "git_commit" : "3fbde8a71b40af3e5f43f60a9499284baebcc788",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))

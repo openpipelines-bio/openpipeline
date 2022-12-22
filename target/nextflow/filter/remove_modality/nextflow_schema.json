@@ -23,7 +23,7 @@
             "type":"string",
             "description": "Output h5mu file.",
             
-            "default": "$id.$key.output.h5muß"
+            "default": "$id.$key.output.h5mu"
           }
         }
       },

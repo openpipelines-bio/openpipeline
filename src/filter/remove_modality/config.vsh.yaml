@@ -22,7 +22,7 @@ functionality:
       type: file
       description: Output h5mu file.
       direction: output
-      example: output.h5muß
+      example: output.h5mu
   resources:
     - type: python_script
       path: script.py

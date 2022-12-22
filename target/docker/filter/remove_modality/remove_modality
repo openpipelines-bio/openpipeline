@@ -174,7 +174,7 @@ function ViashHelp {
   echo ""
   echo "    --output"
   echo "        type: file, output, file must exist"
-  echo "        example: output.h5muß"
+  echo "        example: output.h5mu"
   echo "        Output h5mu file."
 }
 
@@ -400,9 +400,9 @@ RUN pip install --upgrade pip && \
 
 LABEL org.opencontainers.image.authors="Dries Schaumont"
 LABEL org.opencontainers.image.description="Companion container for running component filter remove_modality"
-LABEL org.opencontainers.image.created="2022-12-22T12:51:04Z"
+LABEL org.opencontainers.image.created="2022-12-22T17:36:11Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="f58cc1b1bc6ec4affe0e2283aca7f371c3e80d46"
+LABEL org.opencontainers.image.revision="3fbde8a71b40af3e5f43f60a9499284baebcc788"
 LABEL org.opencontainers.image.version="main_build"
 VIASHDOCKER
 }
