@@ -104,7 +104,7 @@ functionality:
     - path: ../../../resources_test/pbmc_1k_protein_v3
 platforms:
   - type: docker
-    image: python:3.10
+    image: python:3.7 # annoy is tested on 3.7 only
     run_args: [--env NUMBA_CACHE_DIR=/tmp]
     setup:
       - type: python
@@ -113,6 +113,11 @@ platforms:
           - scrublet
           - mudata~=0.2.0
           - anndata~=0.8.0
+          # Compile annoy from source. This might solve `Illegal Instruction` errors
+          
+          # https://github.com/spotify/annoy/issues/513
+          # https://github.com/swolock/scrublet/issues/28
+          - git+https://github.com/spotify/annoy.git@v1.17.1 
   - type: nextflow
     directives:
       label: highcpu
