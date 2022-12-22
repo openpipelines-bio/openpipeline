@@ -20,7 +20,7 @@ par = {
   'min_cells_per_gene': int('3'),
   'min_fraction_mito': float('0.0'),
   'max_fraction_mito': float('0.2'),
-  "var_mitochondrial_gene_names": "gene_symbol",
+  "var_gene_names": "gene_symbol",
   "mitochondrial_gene_regex": "^[mM][tT]-"
 }
 meta = {
@@ -50,7 +50,7 @@ logger.info("\tComputing aggregations.")
 n_counts_per_cell = np.ravel(np.sum(data.X, axis=1))
 n_cells_per_gene = np.sum(data.X > 0, axis=0)
 n_genes_per_cell = np.sum(data.X > 0, axis=1)
-genes_column = data.var[par["var_mitochondrial_gene_names"]] if par["var_mitochondrial_gene_names"] else data.var_names
+genes_column = data.var[par["var_gene_names"]] if par["var_gene_names"] else data.var_names
 mito_genes = genes_column.str.contains(par["mitochondrial_gene_regex"], regex=True) 
 pct_mito = np.ravel(np.sum(data[:, mito_genes].X, axis=1) / np.sum(data.X, axis=1))
 
