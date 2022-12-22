@@ -83,7 +83,7 @@ def test_filtering_a_little(run_component, input_path,
         "--min_cells_per_gene", "10",
         "--min_fraction_mito", "0",
         "--max_fraction_mito", "0.2",
-        "--var_mitochondrial_gene_names", "gene_symbol",
+        "--var_gene_names", "gene_symbol",
         "--do_subset"])
     assert Path("output-2.h5mu").is_file()
     mu_out = mu.read_h5mu("output-2.h5mu")
@@ -117,7 +117,7 @@ def test_filter_mitochondrial(run_component, input_path,
     run_component([
         "--input", input_path, 
         "--output", "output-4.h5mu",
-        "--var_mitochondrial_gene_names", "gene_symbol",
+        "--var_gene_namess", "gene_symbol",
         "--max_fraction_mito", "0.2",
         "--do_subset"
         ])
@@ -138,7 +138,7 @@ def test_filter_mitochondrial_regex(run_component, input_path,
     run_component([
         "--input", input_path, 
         "--output", "output-5.h5mu",
-        "--var_mitochondrial_gene_names", "gene_symbol",
+        "--var_gene_names", "gene_symbol",
         "--max_fraction_mito", "0.2",
         "--mitochondrial_gene_regex", "^[M][T]-",
         "--do_subset"

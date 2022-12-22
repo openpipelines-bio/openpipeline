@@ -44,7 +44,7 @@ functionality:
         - name: --mitochondrial_gene_regex
           type: string
           description: |
-            Regex string that identifies mitochondrial genes from --var_mitochondrial_gene_names.
+            Regex string that identifies mitochondrial genes from --var_gene_names.
             By default will detect human and mouse mitochondrial genes from a gene symbol.
           required: false
           default: "^[mM][tT]-"
