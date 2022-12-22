@@ -117,7 +117,7 @@ def test_filter_mitochondrial(run_component, input_path,
     run_component([
         "--input", input_path, 
         "--output", "output-4.h5mu",
-        "--var_gene_namess", "gene_symbol",
+        "--var_gene_names", "gene_symbol",
         "--max_fraction_mito", "0.2",
         "--do_subset"
         ])
