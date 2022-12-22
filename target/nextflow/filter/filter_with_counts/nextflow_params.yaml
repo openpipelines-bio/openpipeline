@@ -2,6 +2,8 @@
 input: # please fill in - example: "input.h5mu"
 modality: "rna"
 # layer: "raw_counts"
+# var_gene_names: "gene_symbol"
+mitochondrial_gene_regex: "^[mM][tT]-"
 
 # Outputs
 # output: "$id.$key.output.h5mu"
