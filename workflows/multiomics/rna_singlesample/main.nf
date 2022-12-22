@@ -37,7 +37,9 @@ workflow run_wf {
     }
 
     // cell filtering
-    | filter_with_counts
+    | filter_with_counts.run(
+        args: [ var_gene_names: "gene_symbol" ]
+    )
     | do_filter.run(
       args: [ obs_filter: "filter_with_counts" ]
     )

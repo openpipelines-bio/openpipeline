@@ -32,6 +32,23 @@ functionality:
           example: "raw_counts"
           required: false
 
+        - name: "--var_gene_names"
+          required: false
+          example: "gene_symbol"
+          type: string
+          description: |
+            .var column name to be used to detect mitochondrial genes instead of .var_names (default if not set). 
+            Gene names matching with the regex value from --mitochondrial_gene_regex will be identified
+            as a mitochondrial gene.
+
+        - name: --mitochondrial_gene_regex
+          type: string
+          description: |
+            Regex string that identifies mitochondrial genes from --var_gene_names.
+            By default will detect human and mouse mitochondrial genes from a gene symbol.
+          required: false
+          default: "^[mM][tT]-"
+
     - name: Outputs
       arguments:
         - name: "--output"
