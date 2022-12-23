@@ -366,11 +366,11 @@ def main(par, meta):
             num_threads_per_task = math.ceil(cpus / pool_size)
 
             with Pool(pool_size) as pool:
-                pool.map(
-                    lambda value: star_and_htseq(
-                        group_id=value[0],
-                        r1_files=value[1][0],
-                        r2_files=value[1][1],
+                pool.starmap(
+                    lambda group_id, files: star_and_htseq(
+                        group_id=group_id,
+                        r1_files=files[0],
+                        r2_files=files[1],
                         temp_dir=temp_dir,
                         par=par,
                         arguments_info=arguments_info,
