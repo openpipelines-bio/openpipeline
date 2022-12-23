@@ -37,6 +37,7 @@ def test_two_samples():
         "--reference_gtf", reference_gtf,
         "--output", output,
         "---cpus", "8",
+        "--outSAMattributes", "NH;HI;NM;MD"
     ]
     subprocess.run([str(x) for x in cmd_pars], check=True)
 
@@ -71,7 +72,7 @@ def test_one_sample():
         "--reference_index", reference_index,
         "--reference_gtf", reference_gtf,
         "--output", output,
-        "---cpus", "8",
+        "---cpus", "8"
     ]
     subprocess.run([str(x) for x in cmd_pars], check=True)
 
