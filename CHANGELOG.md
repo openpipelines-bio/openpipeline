@@ -2,8 +2,9 @@
 
 ## BUG FIXES
 
-* `src/filter/filter_with_counts`: Fix an issue where mitochrondrial genes were being detected in .var_names, which contain ENSAMBL IDs instead of gene symbols in the pipelines. Solution was to create a `--var_gene_names` argument which allows selecting a .var column to check using a regex (`--mitochondrial_gene_regex`).
+* `filter/filter_with_counts`: Fix an issue where mitochrondrial genes were being detected in .var_names, which contain ENSAMBL IDs instead of gene symbols in the pipelines. Solution was to create a `--var_gene_names` argument which allows selecting a .var column to check using a regex (`--mitochondrial_gene_regex`).
 
+* `dataflow/concat`, `report/mermaid`, `transform/clr`: Don't forget to exit with code returned by pytest.
 # openpipeline 0.6.0
 
 ## NEW FUNCTIONALITY
@@ -12,7 +13,7 @@
 
 * `dimred/pca`: Add `--overwrite` and `--var_input` arguments.
 
-* `src/tranform/clr`: Perform CLR normalization on CITE-seq data.
+* `tranform/clr`: Perform CLR normalization on CITE-seq data.
 
 * `workflows/ingestion/cellranger_multi`: Run Cell Ranger multi and convert the output to .h5mu.
 
