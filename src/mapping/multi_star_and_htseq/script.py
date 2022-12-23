@@ -92,8 +92,19 @@ def process_par(
         new_par[key] = value
     return new_par
 
-def generate_cmd_arguments(par, arguments_info, step_filter=None):
-    """Generate command-line arguments by fetching the relevant args."""
+def generate_cmd_arguments(par, arguments_info, step_filter=None, flatten=False):
+    """
+    Generate command-line arguments by fetching the relevant args
+
+    Parameters
+    ----------
+    par: The par dictionary created by Viash
+    arguments_info: The arguments info Dictionary created by `fetch_arguments_info`
+    step_filter: If provided,`par` will be filtered to only contain arguments for which
+      argument.info.step == step_filter.
+    flatten: If `False`, the command for an argument with multiple values will be
+      `["--key", "value1", "--key", "value2"]`, otherwise `["--key", "value1", "value2"]`.
+    """
     cmd_args = []
 
     for key, arg in arguments_info.items():
@@ -110,7 +121,10 @@ def generate_cmd_arguments(par, arguments_info, step_filter=None):
             elif orig_arg.startswith("-"):
                 # if the orig arg flag is not a positional,
                 # add the flag in front of each element and flatten
-                arg_val = [str(x) for val in arg_val for x in [orig_arg, val]]
+                if flatten:
+                    arg_val = [str(x) for x in [orig_arg] + arg_val]
+                else:
+                    arg_val = [str(x) for val in arg_val for x in [orig_arg, val]]
 
             cmd_args.extend(arg_val)
 
@@ -205,13 +219,16 @@ def star_and_htseq(
         arguments_info=arguments_info,
         num_threads=num_threads
     )
+    assert unsorted_bam.exists()
 
     print(f">> Running samtools sort for group '{group_id}' with command:", flush=True)
     run_samtools_sort(unsorted_bam, sorted_bam)
+    assert sorted_bam.exists()
 
     print(f">> Running htseq-count for group '{group_id}' with command:", flush=True)
     run_htseq_count(sorted_bam, counts_file, par, arguments_info)
-    
+    assert counts_file.exists()
+
 def run_star(
     r1_files: List[Path],
     r2_files: List[Path],
@@ -243,7 +260,7 @@ def run_star(
     ]
 
     # process all passthrough star arguments
-    par_cmd = generate_cmd_arguments(par, arguments_info, "star")
+    par_cmd = generate_cmd_arguments(par, arguments_info, "star", flatten=True)
 
     # combine into one command and turn into strings
     cmd_args = [str(val) for val in ["STAR"] + manual_cmd + par_cmd]
