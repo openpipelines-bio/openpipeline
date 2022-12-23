@@ -244,6 +244,7 @@ def run_star(
     r2_pasted = [",".join([str(r2) for r2 in r2_files])] if r2_files else []
     manual_par = {
         "--genomeDir": [par["reference_index"]],
+        "--genomeLoad": ["LoadAndKeep"],
         "--runThreadN": [str(num_threads)],
         "--runMode": ["alignReads"],
         "--readFilesIn": r1_pasted + r2_pasted,
@@ -266,7 +267,6 @@ def run_star(
     cmd_args = [str(val) for val in ["STAR"] + manual_cmd + par_cmd]
 
     # run star
-    print("+ " + " ".join([str(x) for x in cmd_args]), flush=True)
     subprocess.run(cmd_args, check=True)
 
 def run_samtools_sort(
@@ -274,15 +274,14 @@ def run_samtools_sort(
     sorted_bam: Path
 ) -> None:
     "Run samtools sort"
-    samtools_cmd = [
+    cmd_args = [
         "samtools",
         "sort",
         "-o",
         sorted_bam,
         unsorted_bam,
     ]
-    print("+ " + " ".join([str(x) for x in samtools_cmd]), flush=True)
-    subprocess.run(samtools_cmd, check=True)
+    subprocess.run(cmd_args, check=True)
 
 def run_htseq_count(
     sorted_bam: Path,
@@ -304,7 +303,6 @@ def run_htseq_count(
     cmd_args = [str(val) for val in ["htseq-count"] + manual_cmd + par_cmd]
 
     # run htseq
-    print("+ " + " ".join([str(x) for x in cmd_args]), flush=True)
     with open(counts_file, "w", encoding="utf-8") as file:
         subprocess.run(cmd_args, check=True, stdout=file)
 
