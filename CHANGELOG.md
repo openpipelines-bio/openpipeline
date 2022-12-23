@@ -1,5 +1,9 @@
 # openpipeline 0.6.1
 
+## NEW FUNCTIONALITY
+
+* `mapping/multi_star_and_htseq`: A parallellized version of running STAR and HTSeq.
+
 ## BUG FIXES
 
 * `src/filter/filter_with_counts`: Fix an issue where mitochrondrial genes were being detected in .var_names, which contain ENSAMBL IDs instead of gene symbols in the pipelines. Solution was to create a `--var_gene_names` argument which allows selecting a .var column to check using a regex (`--mitochondrial_gene_regex`).

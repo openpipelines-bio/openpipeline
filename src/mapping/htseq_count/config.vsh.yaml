@@ -182,7 +182,7 @@ platforms:
     image: python:3.10
     setup:
       - type: python
-        packages: 
+        packages:
           - HTSeq
           - pyyaml
           - scipy
