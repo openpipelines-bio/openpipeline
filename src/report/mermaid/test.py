@@ -1,5 +1,6 @@
 import pytest
 from os import path
+import sys
 
 content = """\
 graph LR;
@@ -23,4 +24,4 @@ def test_simple_execution(run_component):
     assert path.exists("network.png")
 
 if __name__ == '__main__':
-    pytest.main([__file__], plugins=["viashpy"])
+    sys.exit(pytest.main([__file__], plugins=["viashpy"]))

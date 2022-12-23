@@ -5,6 +5,7 @@ import pandas as pd
 import numpy as np
 import pytest
 import re
+import sys
 
 ## VIASH START
 meta = {
@@ -328,4 +329,4 @@ def test_mode_move(run_component, tmp_path):
 
 
 if __name__ == '__main__':
-    pytest.main([__file__], plugins=["viashpy"])
+    sys.exit(pytest.main([__file__], plugins=["viashpy"]))
