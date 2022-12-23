@@ -49,7 +49,7 @@ def test_two_samples():
     ]
     for iid in input_id:
         for expected_file in expected_files:
-            path = output / iid / expected_file
+            path = output / "per" / iid / expected_file
             assert path.exists(), f"Required file '{path}' is missing"
 
 def test_one_sample():
@@ -76,6 +76,7 @@ def test_one_sample():
     ]
     subprocess.run([str(x) for x in cmd_pars], check=True)
 
+    assert (output / "feature_info.tsv").exists()
     expected_files = [
         "Log.final.out",
         "Aligned.out.bam",
@@ -84,7 +85,7 @@ def test_one_sample():
     ]
     for iid in input_id:
         for expected_file in expected_files:
-            path = output / iid / expected_file
+            path = output / "per" / iid / expected_file
             assert path.exists(), f"Required file '{path}' is missing"
 
 if __name__ == '__main__':

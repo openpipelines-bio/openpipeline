@@ -8,6 +8,8 @@ from typing import Any, Dict, List
 import yaml
 from multiprocess import Pool
 import math
+import gtfparse
+import pandas as pd
 
 ## VIASH START
 par = {
@@ -28,7 +30,7 @@ meta = {
     "functionality_name": "star_and_htseq",
     "cpus": 8,
     "temp_dir": "/tmp",
-    "config": "src/mapping/star_and_htseq/.config.vsh.yaml",
+    "config": "src/mapping/multi_star_and_htseq/.config.vsh.yaml",
 }
 ## VIASH END
 
@@ -204,7 +206,7 @@ def star_and_htseq(
     arguments_info: Dict[str, Any],
     num_threads: int
 ):
-    star_output = par["output"] / group_id
+    star_output = par["output"] / "per" / group_id
     unsorted_bam = star_output / "Aligned.out.bam"
     sorted_bam = star_output / "Aligned.sorted.out.bam"
     counts_file = star_output / "htseq-count.txt"
@@ -306,6 +308,17 @@ def run_htseq_count(
     with open(counts_file, "w", encoding="utf-8") as file:
         subprocess.run(cmd_args, check=True, stdout=file)
 
+def get_feature_info(reference_gtf) -> pd.DataFrame:
+    ref = gtfparse.read_gtf(reference_gtf)
+    ref_genes = ref[ref["feature"] == "gene"]
+    return pd.DataFrame(
+        {
+            "feature_id": ref_genes["gene_id"],
+            "feature_type": "Gene Expression",
+            "feature_name": ref_genes["gene_name"]
+        }
+    )
+
 ########################
 ###    Main code     ###
 ########################
@@ -353,6 +366,11 @@ def main(par, meta):
 
         # create output dir if need be
         par["output"].mkdir(parents=True, exist_ok=True)
+
+        # store features metadata
+        feature_info = get_feature_info(str(par["reference_gtf"]))
+        with open(par["output"] / "feature_info.tsv", "w", encoding="utf-8") as file:
+            feature_info.to_csv(file, sep="\t", index=False)
 
         try:
             print(">> Loading genome in memory", flush=True)

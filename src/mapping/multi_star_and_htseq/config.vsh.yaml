@@ -90,6 +90,8 @@ platforms:
           - pyyaml
           - HTSeq
           - multiprocess
+          - gtfparse<2.0
+          - pandas
     test_setup:
       - type: python
         packages:
