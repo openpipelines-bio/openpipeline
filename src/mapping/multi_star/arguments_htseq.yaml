@@ -1,0 +1,104 @@
+argument_groups:
+  - name: HTSeq arguments
+    arguments:
+      - name: --stranded
+        alternatives: [-s]
+        type: string
+        choices: ["yes", "no", "reverse"]
+        default: "yes"
+        description: Whether the data is from a strand-specific assay. 'reverse' means 'yes' with reversed strand interpretation.
+        info:
+          step: htseq
+          orig_arg: --stranded
+      - name: --minimum_alignment_quality
+        type: integer
+        alternatives: [-a, --minaqual]
+        default: 10
+        description: |
+          Skip all reads with MAPQ alignment quality lower than the given minimum value. 
+          MAPQ is the 5th column of a SAM/BAM file and its usage depends on the software 
+          used to map the reads.
+        info:
+          step: htseq
+          orig_arg: --minaqual
+      - name: --type
+        type: string
+        alternatives: [-t]
+        example: exon
+        description: "Feature type (3rd column in GTF file) to be used, all features of other type are ignored (default, suitable for Ensembl GTF files: exon)"
+        info:
+          step: htseq
+          orig_arg: --type
+      - name: --id_attribute
+        type: string
+        alternatives: [-i]
+        example: gene_id
+        description: |
+          GTF attribute to be used as feature ID (default, suitable for Ensembl GTF files: gene_id).
+          All feature of the right type (see -t option) within the same GTF attribute will be added
+          together. The typical way of using this option is to count all exonic reads from each gene
+          and add the exons but other uses are possible as well. You can call this option multiple
+          times: in that case, the combination of all attributes separated by colons (:) will be used
+          as a unique identifier, e.g. for exons you might use -i gene_id -i exon_number.
+        multiple: true
+        multiple_sep: ":"
+        info:
+          step: htseq
+          orig_arg: --idattr
+      - name: --additional_attributes
+        type: string
+        example: gene_name
+        description: |
+          Additional feature attributes (suitable for Ensembl GTF files: gene_name). Use multiple times
+          for more than one additional attribute. These attributes are only used as annotations in the
+          output, while the determination of how the counts are added together is done based on option -i.
+        multiple: true
+        multiple_sep: ":"
+        info:
+          step: htseq
+          orig_arg: --additional-attr
+      - name: --add_chromosome_info
+        type: boolean_true
+        description: |
+          Store information about the chromosome of each feature as an additional attribute
+          (e.g. colunm in the TSV output file).
+        info:
+          step: htseq
+          orig_arg: --add-chromosome-info
+      - name: --mode
+        type: string
+        alternatives: [-m]
+        choices: [union, intersection-strict, intersection-nonempty]
+        default: union
+        description: Mode to handle reads overlapping more than one feature.
+        info:
+          step: htseq
+          orig_arg: --mode
+      - name: --non_unique
+        type: string
+        choices: [none, all, fraction, random]
+        default: none
+        description: Whether and how to score reads that are not uniquely aligned or ambiguously assigned to features.
+        info:
+          step: htseq
+          orig_arg: --nonunique
+      - name: --secondary_alignments
+        type: string
+        choices: [score, ignore]
+        description: Whether to score secondary alignments (0x100 flag).
+        info:
+          step: htseq
+          orig_arg: --secondary-alignments
+      - name: --supplementary_alignments
+        type: string
+        choices: [score, ignore]
+        description: Whether to score supplementary alignments (0x800 flag).
+        info:
+          step: htseq
+          orig_arg: --supplementary-alignments
+      - name: --counts_output_sparse
+        type: boolean_true
+        description: Store the counts as a sparse matrix (mtx, h5ad, loom).
+        info:
+          step: htseq
+          orig_arg: --counts-output-sparse
