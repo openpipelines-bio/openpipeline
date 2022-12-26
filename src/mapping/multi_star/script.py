@@ -30,7 +30,7 @@ meta = {
     "functionality_name": "star_and_htseq",
     "cpus": 8,
     "temp_dir": "/tmp",
-    "config": "src/mapping/multi_star_and_htseq/.config.vsh.yaml",
+    "config": "src/mapping/multi_star/.config.vsh.yaml",
 }
 ## VIASH END
 
