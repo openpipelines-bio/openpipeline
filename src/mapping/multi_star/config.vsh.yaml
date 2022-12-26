@@ -1,5 +1,5 @@
 functionality:
-  name: multi_star_and_htseq
+  name: multi_star
   namespace: mapping
   description: Align fastq files using STAR.
   authors:
@@ -52,6 +52,16 @@ functionality:
           example: /path/to/foo
           direction: output
           required: true
+    - name: Processing arguments
+      arguments:
+        - type: boolean
+          name: --run_htseq_count
+          description: Whether or not to also run htseq-count after STAR.
+          default: true
+        - type: boolean
+          name: --run_multiqc
+          description: Whether or not to also run MultiQC at the end.
+          default: true
   resources:
     - type: python_script
       path: script.py
@@ -92,6 +102,7 @@ platforms:
           - multiprocess
           - gtfparse<2.0
           - pandas
+          - multiqc
     test_setup:
       - type: python
         packages:

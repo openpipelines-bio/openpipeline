@@ -210,6 +210,7 @@ def star_and_htseq(
     unsorted_bam = star_output / "Aligned.out.bam"
     sorted_bam = star_output / "Aligned.sorted.out.bam"
     counts_file = star_output / "htseq-count.txt"
+    multiqc_path = star_output / "multiqc_data"
 
     print(f">> Running STAR for group '{group_id}' with command:", flush=True)
     run_star(
@@ -223,13 +224,18 @@ def star_and_htseq(
     )
     assert unsorted_bam.exists()
 
-    print(f">> Running samtools sort for group '{group_id}' with command:", flush=True)
-    run_samtools_sort(unsorted_bam, sorted_bam)
-    assert sorted_bam.exists()
+    if par["run_htseq_count"]:
+        print(f">> Running samtools sort for group '{group_id}' with command:", flush=True)
+        run_samtools_sort(unsorted_bam, sorted_bam)
+        assert sorted_bam.exists()
 
-    print(f">> Running htseq-count for group '{group_id}' with command:", flush=True)
-    run_htseq_count(sorted_bam, counts_file, par, arguments_info)
-    assert counts_file.exists()
+        print(f">> Running htseq-count for group '{group_id}' with command:", flush=True)
+        run_htseq_count(sorted_bam, counts_file, par, arguments_info)
+        assert counts_file.exists()
+
+    if par["run_multiqc"]:
+        run_multiqc(star_output)
+        assert multiqc_path.exists()
 
 def run_star(
     r1_files: List[Path],
@@ -319,6 +325,13 @@ def get_feature_info(reference_gtf) -> pd.DataFrame:
         }
     )
 
+def run_multiqc(input_dir: Path) -> None:
+    cmd_args = ["multiqc", str(input_dir), "--outdir", str(input_dir), "--no-report", "--force"]
+
+    # run multiqc
+    subprocess.run(cmd_args, check=True)
+
+
 ########################
 ###    Main code     ###
 ########################
@@ -398,7 +411,6 @@ def main(par, meta):
         finally:
             print(">> Removing genome from memory", flush=True)
             unload_star_reference(par["reference_index"])
-
 
 if __name__ == "__main__":
     main(par, meta)
