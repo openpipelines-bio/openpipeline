@@ -32,7 +32,7 @@ logger.info("Computing a neighborhood graph on modality %s", mod)
 adata = mdata.mod[mod]
 neighbors = sc.Neighbors(adata)
 neighbors.compute_neighbors(
-    n_neighbors=par["num_neighbors"], 
+    n_neighbors=par["num_neighbors"],
     use_rep=par["obsm_input"],
     metric=par["metric"],
     random_state=par["seed"],
@@ -43,7 +43,7 @@ adata.uns[par["uns_output"]] = {
     'connectivities_key': par["obsp_connectivities"],
     'distances_key': par["obsp_distances"],
     'params': {
-        'n_neighbors': neighbors.n_neighbors, 
+        'n_neighbors': neighbors.n_neighbors,
         'method': "umap",
         'random_state': par["seed"],
         'metric': par["metric"],
