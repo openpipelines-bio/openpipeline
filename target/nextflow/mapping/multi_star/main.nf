@@ -3510,7 +3510,7 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
     "config" : "/home/runner/work/openpipeline/openpipeline/src/mapping/multi_star/config.vsh.yaml",
     "platform" : "nextflow",
     "viash_version" : "0.6.7",
-    "git_commit" : "e868c48e6aefa7804943ac52c0b47054f52c4183",
+    "git_commit" : "e086d2753b6bddb6a594fe15d8398df4cc63434d",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))
@@ -3964,7 +3964,7 @@ def run_star(
     r2_pasted = [",".join([str(r2) for r2 in r2_files])] if r2_files else []
     manual_par = {
         "--genomeDir": [par["reference_index"]],
-        "--genomeLoad": ["LoadAndKeep"],
+        "--genomeLoad": ["LoadAndRemove"],
         "--runThreadN": [str(num_threads)],
         "--runMode": ["alignReads"],
         "--readFilesIn": r1_pasted + r2_pasted,
@@ -4097,32 +4097,32 @@ def main(par, meta):
         with open(par["output"] / "feature_info.tsv", "w", encoding="utf-8") as file:
             feature_info.to_csv(file, sep="\\\\t", index=False)
 
-        try:
-            print(">> Loading genome in memory", flush=True)
-            load_star_reference(par["reference_index"])
+        # try:
+        #     print(">> Loading genome in memory", flush=True)
+        #     load_star_reference(par["reference_index"])
 
-            cpus = meta.get("cpus", 1)
-            num_items = len(grouped_inputs)
-            pool_size = min(cpus, num_items)
-            num_threads_per_task = math.ceil(cpus / pool_size)
+        cpus = meta.get("cpus", 1)
+        num_items = len(grouped_inputs)
+        pool_size = min(cpus, num_items)
+        num_threads_per_task = math.ceil(cpus / pool_size)
 
-            with Pool(pool_size) as pool:
-                pool.starmap(
-                    lambda group_id, files: star_and_htseq(
-                        group_id=group_id,
-                        r1_files=files[0],
-                        r2_files=files[1],
-                        temp_dir=temp_dir,
-                        par=par,
-                        arguments_info=arguments_info,
-                        num_threads=num_threads_per_task
-                    ),
-                    grouped_inputs.items()
-                )
+        with Pool(pool_size) as pool:
+            pool.starmap(
+                lambda group_id, files: star_and_htseq(
+                    group_id=group_id,
+                    r1_files=files[0],
+                    r2_files=files[1],
+                    temp_dir=temp_dir,
+                    par=par,
+                    arguments_info=arguments_info,
+                    num_threads=num_threads_per_task
+                ),
+                grouped_inputs.items()
+            )
 
-        finally:
-            print(">> Removing genome from memory", flush=True)
-            unload_star_reference(par["reference_index"])
+        # finally:
+        #     print(">> Removing genome from memory", flush=True)
+        #     unload_star_reference(par["reference_index"])
 
 if __name__ == "__main__":
     main(par, meta)
