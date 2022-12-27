@@ -12,17 +12,10 @@ import gtfparse
 
 ## VIASH START
 par = {
-<<<<<<< HEAD
-    "input_counts": ["/home/rcannood/workspace/czb/utilities/foo2/htseq-count.tsv", "/home/rcannood/workspace/czb/utilities/foo2/htseq-count.tsv"],
-    "input_id": ["foo", "bar"],
-    "reference": "/home/rcannood/workspace/czb/utilities/resources_test/reference/gencode_v41.gtf.gz",
+    "input_counts": ["resources_test/cellranger_tiny_fastq/htseq_counts.tsv"],
+    "input_id": ["", "bar"],
+    "reference": "resources_test/cellranger_tiny_fastq/cellranger_tiny_ref/genes/genes.gtf.gz",
     "output": "test_output.h5mu"
-=======
-  "input_counts": ["resources_test/cellranger_tiny_fastq/htseq_counts.tsv"],
-  "input_id": ["", "bar"],
-  "reference": "resources_test/cellranger_tiny_fastq/cellranger_tiny_ref/genes/genes.gtf.gz",
-  "output": "test_output.h5mu"
->>>>>>> fix_gtfparse
 }
 meta = {
     "temp_dir": "/tmp"
@@ -100,8 +93,8 @@ with tempfile.TemporaryDirectory(prefix="htseq-", dir=meta["temp_dir"]) as temp_
     print(f'>> Check compression of --reference with value: {reference}', flush=True)
     par["reference"] = extract_if_need_be(reference, temp_dir_path)
 
-  # read_gtf only works on str object, not pathlib.Path
-  reference = gtfparse.read_gtf(str(par["reference"]))
+    # read_gtf only works on str object, not pathlib.Path
+    reference = gtfparse.read_gtf(str(par["reference"]))
 
 # This is a polars dataframe, not pandas
 reference_genes = reference.filter((pl.col("feature") == "gene") & 
