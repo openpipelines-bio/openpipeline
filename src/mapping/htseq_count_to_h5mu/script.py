@@ -92,7 +92,8 @@ with tempfile.TemporaryDirectory(prefix="htseq-", dir=meta["temp_dir"]) as temp_
   print(f'>> Check compression of --reference with value: {reference}', flush=True)
   par["reference"] = extract_if_need_be(reference, temp_dir_path)
 
-  reference = gtfparse.read_gtf(par["reference"])
+  # read_gtf only works on str object, not pathlib.Path
+  reference = gtfparse.read_gtf(str(par["reference"]))
 
 reference_genes = reference[reference["feature"] == "gene"].set_index("gene_id")
 reference_genes2 = reference_genes.loc[counts.columns]
