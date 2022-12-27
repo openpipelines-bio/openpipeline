@@ -414,9 +414,9 @@ FROM ghcr.io/data-intuitive/cellranger:6.1
 RUN apt update && apt upgrade -y
 LABEL org.opencontainers.image.authors="Angela Pisco, Samuel D'Souza, Robrecht Cannoodt"
 LABEL org.opencontainers.image.description="Companion container for running component demux cellranger_mkfastq"
-LABEL org.opencontainers.image.created="2022-12-27T10:17:53Z"
+LABEL org.opencontainers.image.created="2022-12-27T11:19:39Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="e086d2753b6bddb6a594fe15d8398df4cc63434d"
+LABEL org.opencontainers.image.revision="ac5b9b2b22ba7a3fcabe3bd305786661e63eb1e7"
 LABEL org.opencontainers.image.version="main_build"
 VIASHDOCKER
 }
