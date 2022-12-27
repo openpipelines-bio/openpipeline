@@ -6,15 +6,23 @@ import shutil
 import pandas as pd
 import mudata as md
 import anndata as ad
+import polars as pl
 import numpy as np
 import gtfparse
 
 ## VIASH START
 par = {
+<<<<<<< HEAD
     "input_counts": ["/home/rcannood/workspace/czb/utilities/foo2/htseq-count.tsv", "/home/rcannood/workspace/czb/utilities/foo2/htseq-count.tsv"],
     "input_id": ["foo", "bar"],
     "reference": "/home/rcannood/workspace/czb/utilities/resources_test/reference/gencode_v41.gtf.gz",
     "output": "test_output.h5mu"
+=======
+  "input_counts": ["resources_test/cellranger_tiny_fastq/htseq_counts.tsv"],
+  "input_id": ["", "bar"],
+  "reference": "resources_test/cellranger_tiny_fastq/cellranger_tiny_ref/genes/genes.gtf.gz",
+  "output": "test_output.h5mu"
+>>>>>>> fix_gtfparse
 }
 meta = {
     "temp_dir": "/tmp"
@@ -92,17 +100,20 @@ with tempfile.TemporaryDirectory(prefix="htseq-", dir=meta["temp_dir"]) as temp_
     print(f'>> Check compression of --reference with value: {reference}', flush=True)
     par["reference"] = extract_if_need_be(reference, temp_dir_path)
 
-    reference = gtfparse.read_gtf(par["reference"])
+  # read_gtf only works on str object, not pathlib.Path
+  reference = gtfparse.read_gtf(str(par["reference"]))
 
-reference_genes = reference[reference["feature"] == "gene"].set_index("gene_id")
-reference_genes2 = reference_genes.loc[counts.columns]
+# This is a polars dataframe, not pandas
+reference_genes = reference.filter((pl.col("feature") == "gene") & 
+                                   (pl.col("gene_id").is_in(list(counts.columns))))\
+                            .sort("gene_id")
 
 var = pd.DataFrame(
-    data={
-        "gene_ids": reference_genes2.index,
-        "feature_types": "Gene Expression",
-        "gene_symbol": reference_genes2["gene_name"],
-    }
+  data={
+    "gene_ids": pd.Index(reference_genes.get_column("gene_id")),
+    "feature_types": "Gene Expression",
+    "gene_symbol": reference_genes.get_column("gene_name").to_pandas(),
+  }
 ).set_index("gene_ids")
 
 print("> construct anndata", flush=True)
