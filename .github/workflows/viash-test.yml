@@ -142,6 +142,6 @@ jobs:
       timeout-minutes: 30
       run: |
         bin/viash test -p docker ${{ matrix.component.config }} \
-         -c '.functionality.requirements.cpus := 2' \
-         -c '.functionality.requirements.memory := "5gb"'
+        --cpus 2 \
+        --memory "5gb"'
 
