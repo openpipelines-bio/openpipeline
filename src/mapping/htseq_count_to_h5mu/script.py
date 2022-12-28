@@ -96,6 +96,7 @@ with tempfile.TemporaryDirectory(prefix="htseq-", dir=meta["temp_dir"]) as temp_
     # read_gtf only works on str object, not pathlib.Path
     reference = gtfparse.read_gtf(str(par["reference"]))
 
+
 # This is a polars dataframe, not pandas
 reference_genes = reference.filter((pl.col("feature") == "gene") & 
                                    (pl.col("gene_id").is_in(list(counts.columns))))\
