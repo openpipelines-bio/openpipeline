@@ -23,7 +23,6 @@ functionality:
           type: file
           description: Path to the directory with reference model or a web link. For HLCA use https://zenodo.org/record/6337966/files/HLCA_reference_model.zip
           required: true
-          default: "HLCA"
         - name: "--dataset_name"
           type: string
           default: "test_dataset"
