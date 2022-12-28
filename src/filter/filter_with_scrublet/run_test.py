@@ -1,7 +1,7 @@
 from pathlib import Path
 from unittest import main, TestCase
 import subprocess
-import muon
+import mudata as mu
 import logging
 from sys import stdout
 from tempfile import NamedTemporaryFile
@@ -27,7 +27,7 @@ input_path = f"{meta['resources_dir']}/pbmc_1k_protein_v3/pbmc_1k_protein_v3_fil
 class TestFilterWithScrublet(TestCase):
     def setUp(self) -> None:
         self.tempfile = NamedTemporaryFile(suffix=".h5mu")
-        mu_in = muon.read_h5mu(input_path)
+        mu_in = mu.read_h5mu(input_path)
         self.orig_obs = mu_in.mod['rna'].n_obs
         self.orig_vars = mu_in.mod['rna'].n_vars
         self.orig_prot_obs = mu_in.mod['prot'].n_obs
@@ -53,7 +53,7 @@ class TestFilterWithScrublet(TestCase):
                 "--min_counts", "3"
         ])
         self.assertTrue(Path("output-1.h5mu").is_file(), msg="Output file not found")
-        mu_out = muon.read_h5mu("output-1.h5mu")
+        mu_out = mu.read_h5mu("output-1.h5mu")
         self.assertIn("filter_with_scrublet", mu_out.mod["rna"].obs)
         new_obs = mu_out.mod['rna'].n_obs
         new_vars = mu_out.mod['rna'].n_vars
@@ -77,7 +77,7 @@ class TestFilterWithScrublet(TestCase):
             "--do_subset"
             ])
         self.assertTrue(Path("output-2.h5mu").is_file(), msg="Output file not found")
-        mu_out = muon.read_h5mu("output-2.h5mu")
+        mu_out = mu.read_h5mu("output-2.h5mu")
         new_obs = mu_out.mod['rna'].n_obs
         new_vars = mu_out.mod['rna'].n_vars
         self.assertLess(new_obs, self.orig_obs, msg="Some cells should have been filtered")

@@ -6,7 +6,7 @@ functionality:
   description: |
     Converts an csv into an h5mu file.
   authors:
-    - __inherits__: ../../authors/dries_de_maeyer.yaml
+    - __merge__: ../../authors/dries_de_maeyer.yaml
       roles: [ maintainer ]
   arguments:
     - name: "--input"
@@ -46,7 +46,6 @@ platforms:
       - type: python
         packages:
           - scanpy~=1.9.1
-          - muon
           - mudata~=0.2.0
           - anndata~=0.8.0
   - type: nextflow

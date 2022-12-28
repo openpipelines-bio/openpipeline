@@ -4,9 +4,9 @@ functionality:
   version: "dev"
   description: "Performs scvi integration as done in the human lung cell atlas https://github.com/LungCellAtlas/HLCA"
   authors:
-    - __inherits__: ../../authors/malte_luecken.yaml
+    - __merge__: ../../authors/malte_luecken.yaml
       roles: [ author ]
-    - __inherits__: ../../authors/dries_schaumont.yaml
+    - __merge__: ../../authors/dries_schaumont.yaml
       roles: [ maintainer ]
   argument_groups:
     - name: Inputs

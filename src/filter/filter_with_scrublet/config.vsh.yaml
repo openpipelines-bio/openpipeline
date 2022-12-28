@@ -24,9 +24,9 @@ functionality:
       ~6.9% ~14,400 ~9,000
       ~7.6% ~16,000 ~10,000
   authors:
-    - __inherits__: ../../authors/dries_de_maeyer.yaml
+    - __merge__: ../../authors/dries_de_maeyer.yaml
       roles: [ contributor ]
-    - __inherits__: ../../authors/robrecht_cannoodt.yaml
+    - __merge__: ../../authors/robrecht_cannoodt.yaml
       roles: [ maintainer, contributor ]
   arguments:
     # input
@@ -104,14 +104,13 @@ functionality:
     - path: ../../../resources_test/pbmc_1k_protein_v3
 platforms:
   - type: docker
-    image: python:3.8
+    image: python:3.10
     run_args: [--env NUMBA_CACHE_DIR=/tmp]
     setup:
       - type: python
         packages:
           - scanpy~=1.9.1
           - scrublet
-          - muon
           - mudata~=0.2.0
           - anndata~=0.8.0
   - type: nextflow

@@ -5,9 +5,9 @@ functionality:
   description: |
     Logarithmize the data matrix. Computes X = log(X + 1), where log denotes the natural logarithm unless a different base is given.
   authors:
-    - __inherits__: ../../authors/dries_de_maeyer.yaml
+    - __merge__: ../../authors/dries_de_maeyer.yaml
       roles: [ maintainer ]
-    - __inherits__: ../../authors/robrecht_cannoodt.yaml
+    - __merge__: ../../authors/robrecht_cannoodt.yaml
       roles: [ contributor ]
   arguments:
     # input
@@ -61,7 +61,6 @@ platforms:
       - type: python
         packages:
           - scanpy~=1.9.1
-          - muon
           - mudata~=0.2.0
           - anndata~=0.8.0
   - type: nextflow

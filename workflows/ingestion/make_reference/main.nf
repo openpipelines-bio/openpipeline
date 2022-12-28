@@ -5,10 +5,11 @@ targetDir = params.rootDir + "/target/nextflow"
 
 include { make_reference } from targetDir + "/reference/make_reference/main.nf"
 include { build_bdrhap_reference } from targetDir + "/reference/build_bdrhap_reference/main.nf"
+include { star_build_reference } from targetDir + "/mapping/star_build_reference/main.nf"
 include { build_cellranger_reference } from targetDir + "/reference/build_cellranger_reference/main.nf"
 
 include { readConfig; viashChannel; helpMessage } from workflowDir + "/utils/WorkflowHelper.nf"
-include { setWorkflowArguments; getWorkflowArguments } from workflowDir + "/utils/DataFlowHelper.nf"
+include { setWorkflowArguments; getWorkflowArguments } from workflowDir + "/utils/DataflowHelper.nf"
 
 config = readConfig("$projectDir/config.vsh.yaml")
 
@@ -43,6 +44,10 @@ workflow run_wf {
       bd_rhapsody: [
         "output": "output_bd_rhapsody",
         "target": "target"
+      ],
+      star: [
+        "output": "output_star",
+        "target": "target"
       ]
     )
 
@@ -70,6 +75,16 @@ workflow run_wf {
       auto: [ publish: true ]
     )
     | map{ tup -> tup.take(2) }
+
+  // generate star index (if so desired)
+  star = ref_ch
+    | getWorkflowArguments(key: "star")
+    | filter{ "star" in it[1].target }
+    | star_build_reference.run(
+      renameKeys: [ genome_fasta: "output_fasta", transcriptome_gtf: "output_gtf" ], 
+      auto: [ publish: true ]
+    )
+    | map{ tup -> tup.take(2) }
   
   // merge everything together
   passthr_ch = input_ch
@@ -79,10 +94,11 @@ workflow run_wf {
     | map{ tup -> tup.take(2) }
     | join(cellranger_ch, remainder: true)
     | join(bd_rhapsody, remainder: true)
+    | join(star, remainder: true)
     | join(passthr_ch)
     | map{ tup -> 
       id = tup[0]
-      data = tup[1] + [ output_cellranger: tup[2], output_bd_rhapsody: tup[3] ]
+      data = tup[1] + [ output_cellranger: tup[2], output_bd_rhapsody: tup[3], output_star: tup[4] ]
       data = data.findAll{it.value != null} // remove empty fields
       psthr = tup.drop(4)
       [ id, data ] + psthr
@@ -104,7 +120,7 @@ workflow test_wf {
       transcriptome_gtf: "https://ftp.ebi.ac.uk/pub/databases/gencode/Gencode_human/release_41/gencode.v41.annotation.gtf.gz",
       ercc: "https://assets.thermofisher.com/TFS-Assets/LSG/manuals/ERCC92.zip",
       subset_regex: "(ERCC-00002|chr20)",
-      target: ["cellranger", "bd_rhapsody"]
+      target: ["cellranger", "bd_rhapsody", "star"]
     ]
   ]
 
@@ -113,8 +129,8 @@ workflow test_wf {
     | view{ "Input: $it" }
     | run_wf
     | view { output ->
-      assert output.size() == 2 : "outputs should contain two elements; [id, file]"
-      assert output[1].size() == 4 : "output data should contain 4 elements"
+      assert output.size() == 3 : "outputs should contain two elements; [id, file, passthrough]"
+      assert output[1].size() == 5 : "output data should contain 5 elements"
       // todo: check output data tuple
       "Output: $output"
     }

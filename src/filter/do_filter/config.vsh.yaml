@@ -5,7 +5,7 @@ functionality:
   description: |
     Remove observations and variables based on specified .obs and .var columns.
   authors:
-    - __inherits__: ../../authors/robrecht_cannoodt.yaml
+    - __merge__: ../../authors/robrecht_cannoodt.yaml
       roles: [ maintainer, contributor ]
   arguments:
     # input
@@ -53,7 +53,6 @@ platforms:
     setup:
       - type: python
         packages:
-          - muon
           - mudata~=0.2.0
           - anndata~=0.8.0
   - type: nextflow

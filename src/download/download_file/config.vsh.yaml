@@ -9,7 +9,7 @@ functionality:
       --input https://cf.10xgenomics.com/samples/cell-exp/3.0.0/pbmc_1k_protein_v3/pbmc_1k_protein_v3_raw_feature_bc_matrix.h5 \
       --output output_rna.h5
   authors:
-    - __inherits__: ../../authors/robrecht_cannoodt.yaml
+    - __merge__: ../../authors/robrecht_cannoodt.yaml
       roles: [ maintainer ]
   arguments:
     - name: "--input"

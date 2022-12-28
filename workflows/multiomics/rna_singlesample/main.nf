@@ -9,7 +9,7 @@ include { do_filter } from targetDir + "/filter/do_filter/main.nf"
 
 include { readConfig; viashChannel; helpMessage } from workflowDir + "/utils/WorkflowHelper.nf"
 
-config = readConfig("$workflowDir/multiomics/rna_singlesample/config.vsh.yaml")
+config = readConfig("$projectDir/config.vsh.yaml")
 
 workflow {
   helpMessage(config)
@@ -37,7 +37,9 @@ workflow run_wf {
     }
 
     // cell filtering
-    | filter_with_counts
+    | filter_with_counts.run(
+        args: [ var_gene_names: "gene_symbol" ]
+    )
     | do_filter.run(
       args: [ obs_filter: "filter_with_counts" ]
     )

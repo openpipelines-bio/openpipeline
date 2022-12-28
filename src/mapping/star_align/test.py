@@ -2,6 +2,9 @@ import subprocess
 from os import path
 import logging
 from sys import stdout
+from pathlib import Path
+from tempfile import TemporaryDirectory
+import shutil
 
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
@@ -21,32 +24,34 @@ meta = {
 ## Test 1: use input dir
 logger.info("> Running command with folder")
 input = meta["resources_dir"] + "/cellranger_tiny_fastq/cellranger_tiny_fastq/"
-reference = meta["resources_dir"] + "/cellranger_tiny_fastq/cellranger_tiny_ref/star/"
+input_files = [
+  input + "tinygex_S1_L002_R1_001.fastq.gz",
+  input + "tinygex_S1_L002_R2_001.fastq.gz"
+]
+reference = meta["resources_dir"] + "/cellranger_tiny_fastq/cellranger_tiny_ref_v2_7_10_a/"
 output = "test_output"
 
-cmd_pars = [
-    meta["executable"],
-    "--input", input,
-    "--reference", reference,
-    "--output", output,
-    "---cores", "2",
-    "---memory", "5gb"
-]
-out = subprocess.check_output(cmd_pars).decode("utf-8")
+with TemporaryDirectory() as tempdir:
+    for file in input_files:
+        shutil.copyfile(file, Path(tempdir) / Path(file).name)
+    cmd_pars = [
+        meta["executable"],
+        "--input", tempdir,
+        "--reference", reference,
+        "--output", output,
+        "---cpus", "2"
+    ]
+    subprocess.run(cmd_pars, check=True)
 
 logger.info("> Check if file exists")
 
-output_path = path.Path(output)
+output_path = Path(output)
 assert (output_path / "Log.final.out" ).is_file(), "No output log was created."
 assert (output_path / "SJ.out.tab" ).is_file(), "No output file was created."
 
 
 ## Test 2: use input files
 logger.info("> Running command with fastq files")
-input_files = [
-  input + "tinygex_S1_L001_R1_001.fastq.gz",
-  input + "tinygex_S1_L001_R2_001.fastq.gz"
-]
 output = "test_output2"
 
 cmd_pars = [
@@ -55,8 +60,7 @@ cmd_pars = [
     "--input", input_files[1],
     "--reference", reference,
     "--output", output,
-    "---cores", "2",
-    "---memory", "5gb"
+    "---cpus", "8",
 ]
 out = subprocess.check_output(cmd_pars).decode("utf-8")
 

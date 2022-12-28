@@ -1,8 +1,76 @@
-# openpipeline 0.5.2
+# openpipelines 0.6.2
+
+* `mapping/htseq_count_to_h5mu`: Fix a bug where reading in the gtf file caused `AttributeError`. 
+
+# openpipeline 0.6.1
 
 ## NEW FUNCTIONALITY
 
+* `mapping/multi_star`: A parallellized version of running STAR (and HTSeq).
+
+* `mapping/multi_star_to_h5mu`: Convert the output of `multi_star` to a h5mu file.
+
+## BUG FIXES
+
+* `filter/filter_with_counts`: Fix an issue where mitochrondrial genes were being detected in .var_names, which contain ENSAMBL IDs instead of gene symbols in the pipelines. Solution was to create a `--var_gene_names` argument which allows selecting a .var column to check using a regex (`--mitochondrial_gene_regex`).
+
+* `dataflow/concat`, `report/mermaid`, `transform/clr`: Don't forget to exit with code returned by pytest.
+# openpipeline 0.6.0
+
+## NEW FUNCTIONALITY
+
+* `workflows/full_pipeline`: add `filter_with_hvg_var_output` argument.
+
+* `dimred/pca`: Add `--overwrite` and `--var_input` arguments.
+
+* `tranform/clr`: Perform CLR normalization on CITE-seq data.
+
+* `workflows/ingestion/cellranger_multi`: Run Cell Ranger multi and convert the output to .h5mu.
+
+* `filter/remove_modality`: Remove a single modality from a MuData file.
+
 * `mapping/star_align`: Align `.fastq` files using STAR.
+
+* `mapping/star_align_v273a`: Align `.fastq` files using STAR v2.7.3a.
+
+* `mapping/star_build_reference`: Create a STAR reference index.
+
+* `mapping/cellranger_multi`: Align fastq files using Cell Ranger multi.
+
+* `mapping/samtools_sort`: Sort and (optionally) index alignments.
+
+* `mapping/htseq_count`: Quantify gene expression for subsequent testing for differential expression.
+
+* `mapping/htseq_count_to_h5mu`: Convert one or more HTSeq outputs to a MuData file.
+
+* Added from `convert/from_cellranger_multi_to_h5mu` component.
+
+## MAJOR CHANGES
+
+* `convert/from_velocyto_to_h5mu`: Moved to `velocity/velocyto_to_h5mu`.
+  It also now accepts an optional `--input_h5mu` argument, to allow directly reading
+  the RNA velocity data into a `.h5mu` file containing the other modalities.
+
+* `resources_test/cellranger_tiny_fastq`: Include RNA velocity computations as part of
+  the script.
+
+* `mapping/cellranger_mkfastq`: remove --memory and --cpu arguments as (resource management is automatically provided by viash).
+
+## MINOR CHANGES
+
+* Several components: use `gzip` compression for writing .h5mu files.
+
+* Default value for `obs_covariates` argument of full pipeline is now `sample_id`.
+
+* Set the `tag` directive of all Nextflow components to '$id'.
+
+## BUG FIXES
+
+* Keep data for modalities that are not specifically enabled when running full pipeline.
+
+* Fix many components thanks to Viash 0.6.4, which causes errors to be 
+  thrown when input and output files are defined but not found.
+
 
 # openpipeline 0.5.1
 
@@ -10,7 +78,7 @@
 
 * `reference/make_reference`: Input files changed from `type: string` to `type: file` to allow Nextflow to cache the input files fetched from URL.
 
-* several components (except `from_h5ad_to_5hmu`): the `--modality` arguments no longer accept multiple values.
+* several components (except `from_h5ad_to_h5mu`): the `--modality` arguments no longer accept multiple values.
 
 * Remove outdated `resources_test_scripts`.
 
@@ -34,10 +102,10 @@
 
 * `integrate/add_metadata`: Add a csv containing metadata to the .obs or .var field of a mudata file.
 
-* `DataFlowHelper.nf`: Added `passthroughMap`. Usage:
+* `DataflowHelper.nf`: Added `passthroughMap`. Usage:
 
   ```groovy
-  include { passthroughMap as pmap } from "./DataFlowHelper.nf"
+  include { passthroughMap as pmap } from "./DataflowHelper.nf"
   
   workflow {
     Channel.fromList([["id", [input: "foo"], "passthrough"]])
@@ -66,7 +134,7 @@
 
 ## MAJOR CHANGES
 
-* `workflows/utils/DataFlowHelper.nf`: Added helper functions `setWorkflowArguments()` and `getWorkflowArguments()` to split the data field of a channel event into a hashmap. Example usage:
+* `workflows/utils/DataflowHelper.nf`: Added helper functions `setWorkflowArguments()` and `getWorkflowArguments()` to split the data field of a channel event into a hashmap. Example usage:
   ```groovy
   | setWorkflowArguments(
     pca: [ "input": "input", "obsm_output": "obsm_pca" ]

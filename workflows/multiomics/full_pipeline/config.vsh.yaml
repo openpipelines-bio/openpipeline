@@ -3,7 +3,7 @@ functionality:
   namespace: "multiomics"
   description: "A pipeline to analyse multiple multiomics samples."
   authors:
-    - __inherits__: ../../../src/authors/dries_schaumont.yaml
+    - __merge__: ../../../src/authors/dries_schaumont.yaml
       roles: [ author, maintainer ]
   argument_groups:
     - name: Inputs
@@ -23,8 +23,14 @@ functionality:
           type: string
           description: "The .obs field(s) that define the covariate(s) to regress out."
           example: ["batch", "sample"]
+          default: ["sample_id"]
           multiple: true
-          required: true
+          required: false
+        - name: "--filter_with_hvg_var_output"
+          required: false
+          type: string
+          default: "filter_with_hvg"
+          description: In which .var slot to store a boolean array corresponding to the highly variable genes.
   resources:
     - type: nextflow_script
       path: main.nf

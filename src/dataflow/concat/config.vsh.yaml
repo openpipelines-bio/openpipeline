@@ -4,7 +4,7 @@ functionality:
   description: |
     Concatenates several uni-modal samples in .h5mu files into a single file.
   authors:
-    - __inherits__: ../../authors/dries_schaumont.yaml
+    - __merge__: ../../authors/dries_schaumont.yaml
       roles: [ maintainer ]
   arguments:
     - name: "--input"
@@ -64,7 +64,6 @@ platforms:
     setup:
       - type: python
         packages:
-          - muon
           - mudata~=0.2.0
           - anndata~=0.8.0
     test_setup:

@@ -3,11 +3,11 @@ functionality:
   namespace: "multiomics"
   description: "Processing unimodal multi-sample RNA transcriptomics data."
   authors:
-    - __inherits__: ../../../src/authors/dries_de_maeyer.yaml
+    - __merge__: ../../../src/authors/dries_de_maeyer.yaml
       roles: [ author ]
-    - __inherits__: ../../../src/authors/robrecht_cannoodt.yaml
+    - __merge__: ../../../src/authors/robrecht_cannoodt.yaml
       roles: [ author, maintainer ]
-    - __inherits__: ../../../src/authors/dries_schaumont.yaml
+    - __merge__: ../../../src/authors/dries_schaumont.yaml
       roles: [ author ]
   arguments:
     - name: "--id"
@@ -29,6 +29,11 @@ functionality:
       multiple: true
       description: Path to the samples.
       example: dataset.h5mu
+    - name: "--filter_with_hvg_var_output"
+      required: false
+      type: string
+      default: "filter_with_hvg"
+      description: In which .var slot to store a boolean array corresponding to the highly variable genes.
   resources:
     - type: nextflow_script
       path: main.nf

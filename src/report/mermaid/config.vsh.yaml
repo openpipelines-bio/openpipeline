@@ -3,9 +3,12 @@ functionality:
   namespace: "report"
   version: "dev"
   description: |
-    Generates a network from mermaid code. See `https://mermaid-js.github.io/mermaid/#/Tutorials`. This component uses the external mermaid.ink service to generate visual networks.
+    Generates a network from mermaid code. 
+    
+    See `https://mermaid-js.github.io/mermaid/#/Tutorials`. 
+    This component uses the external mermaid.ink service to generate visual networks.
   authors:
-    - __inherits__: ../../authors/dries_de_maeyer.yaml
+    - __merge__: ../../authors/dries_de_maeyer.yaml
       roles: [ maintainer ]
   arguments:
     - name: "--input"
@@ -20,22 +23,22 @@ functionality:
       description: Generated network as output.
       direction: output
       required: true
-    - name: "--test"
-      type: file
-      description: The test file to be executed
-      default: "test.py"
   resources:
     - type: python_script
-      path: ./script.py
+      path: script.py
   test_resources:
     - type: python_script
       path: test.py
 platforms:
   - type: docker
-    image: python:3.8
+    image: python:3.10
     setup:
       - type: python
         packages:
           - requests
           - Pillow~=9.2.0
+    test_setup:
+      - type: python
+        packages:
+          - viashpy
   - type: nextflow

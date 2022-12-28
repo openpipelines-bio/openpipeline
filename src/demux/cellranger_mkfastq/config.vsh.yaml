@@ -8,11 +8,11 @@ functionality:
       --sample_sheet SampleSheet.csv \
       --output /path/to/output
   authors:
-    - __inherits__: ../../authors/angela_pisco.yaml
+    - __merge__: ../../authors/angela_pisco.yaml
       roles: [ author ]
-    - __inherits__: ../../authors/samuel_d_souza.yaml
+    - __merge__: ../../authors/samuel_d_souza.yaml
       roles: [ author ]
-    - __inherits__: ../../authors/robrecht_cannoodt.yaml
+    - __merge__: ../../authors/robrecht_cannoodt.yaml
       roles: [ author, maintainer ]
   arguments:
     - type: file
@@ -32,26 +32,12 @@ functionality:
       example: "/path/to/output"
       default: fastqs
       required: true
-    - name: "--separate_reports"
-      type: boolean_true
-      description: |
-        Should reports be stored in a separate dir.
-        Should be used with the --reports argument.
     - name: "--reports"
       type: file
       direction: output
       required: false
       description: Reports directory
       example: reports_dir
-      default: "reports"
-    - type: integer
-      name: --cores
-      description:  Set max cores the pipeline may request at one time.
-      example: 2
-    - type: integer
-      name: --memory
-      description: Set max GB the pipeline may request at one time.
-      example: 10
   resources:
     - type: bash_script
       path: script.sh

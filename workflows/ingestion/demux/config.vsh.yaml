@@ -7,15 +7,15 @@ functionality:
     name: Demux
     short_description: A generic pipeline for running bcl2fastq, bcl-convert or Cell Ranger mkfastq.
   authors:
-    - __inherits__: ../../../src/authors/toni_verbeiren.yaml
+    - __merge__: ../../../src/authors/toni_verbeiren.yaml
       roles: [ author, maintainer ]
-    - __inherits__: ../../../src/authors/marijke_van_moerbeke.yaml
+    - __merge__: ../../../src/authors/marijke_van_moerbeke.yaml
       roles: [ author ]
-    - __inherits__: ../../../src/authors/angela_pisco.yaml
+    - __merge__: ../../../src/authors/angela_pisco.yaml
       roles: [ author ]
-    - __inherits__: ../../../src/authors/samuel_d_souza.yaml
+    - __merge__: ../../../src/authors/samuel_d_souza.yaml
       roles: [ author ]
-    - __inherits__: ../../../src/authors/robrecht_cannoodt.yaml
+    - __merge__: ../../../src/authors/robrecht_cannoodt.yaml
       roles: [ author ]
   arguments:
     - name: "--id"

@@ -2,7 +2,7 @@ functionality:
   name: scvelo
   namespace: "velocity"
   authors:
-    - __inherits__: ../../authors/dries_schaumont.yaml
+    - __merge__: ../../authors/dries_schaumont.yaml
       roles: [ maintainer ]
   argument_groups:
     - name: Inputs

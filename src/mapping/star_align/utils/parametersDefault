@@ -306,7 +306,7 @@ outSAMstrandField               None
                                 intronMotif ... strand derived from the intron motif. This option changes the output alignments: reads with inconsistent and/or non-canonical introns are filtered out.
 
 outSAMattributes                Standard
-    string: a string of desired SAM attributes, in the order desired for the output SAM. Tags can be listed in any combination/order.
+    string(s): a string of desired SAM attributes, in the order desired for the output SAM. Tags can be listed in any combination/order.
                                 ***Presets:
                                 None        ... no attributes
                                 Standard    ... NH HI AS nM

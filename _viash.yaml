@@ -1,3 +1,5 @@
+viash_version: 0.6.7
+
 source: src
 target: target
 
@@ -6,3 +8,4 @@ config_mods: |
   .platforms[.type == 'docker'].target_registry := 'ghcr.io'
   .platforms[.type == 'docker'].target_organization := 'openpipelines-bio'
   .platforms[.type == 'docker'].target_image_source := 'https://github.com/openpipelines-bio/openpipeline'
+  .platforms[.type == 'nextflow'].directives.tag := '$id'

@@ -3,11 +3,11 @@ functionality:
   namespace: mapping
   description: Align fastq files using Cell Ranger multi.
   authors:
-    - __inherits__: ../../authors/angela_pisco.yaml
+    - __merge__: ../../authors/angela_pisco.yaml
       roles: [ author ]
-    - __inherits__: ../../authors/robrecht_cannoodt.yaml
+    - __merge__: ../../authors/robrecht_cannoodt.yaml
       roles: [ author, maintainer ]
-    - __inherits__: ../../authors/dries_de_maeyer.yaml
+    - __merge__: ../../authors/dries_de_maeyer.yaml
       roles: [ author ]
   argument_groups:
     - name: Input files
@@ -118,7 +118,7 @@ functionality:
 
         - type: boolean
           name: "--gex_generate_bam"
-          default: true
+          default: false
           description: Whether to generate a BAM file.
         
         - type: boolean

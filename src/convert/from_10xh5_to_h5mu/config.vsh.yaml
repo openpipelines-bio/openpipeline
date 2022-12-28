@@ -5,7 +5,7 @@ functionality:
   description: |
     Converts a 10x h5 into an h5mu file.
   authors:
-    - __inherits__: ../../authors/robrecht_cannoodt.yaml
+    - __merge__: ../../authors/robrecht_cannoodt.yaml
       roles: [ maintainer ]
   argument_groups:
     - name: Inputs
@@ -29,6 +29,7 @@ functionality:
           description: Output h5mu file.
           example: output.h5mu
           direction: output
+          __merge__: api_output.yaml
         - name: "--uns_metrics"
           type: string
           description: Name of the .uns slot under which to QC metrics (if any).

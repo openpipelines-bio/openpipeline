@@ -5,7 +5,7 @@ functionality:
   description: |
     Converts a h5mu file into a h5ad file.
   authors:
-    - __inherits__: ../../authors/robrecht_cannoodt.yaml
+    - __merge__: ../../authors/robrecht_cannoodt.yaml
       roles: [ maintainer ]
   arguments:
     - name: "--input"
@@ -43,7 +43,6 @@ platforms:
     setup:
       - type: python
         packages:
-          - muon
           - mudata~=0.2.0
           - anndata~=0.8.0
   - type: nextflow
