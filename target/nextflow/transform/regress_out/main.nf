@@ -172,7 +172,7 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
     "config" : "/home/runner/work/openpipeline/openpipeline/src/transform/regress_out/config.vsh.yaml",
     "platform" : "nextflow",
     "viash_version" : "0.6.7",
-    "git_commit" : "82f884265f5ef3d16829a2a9b999a5a60ef5581e",
+    "git_commit" : "cbd27eaae2a3bb157d080ca452090c3bd37f74ff",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))
@@ -230,10 +230,10 @@ if (
     mod = par["modality"]
     logger.info("Regress out variables on modality %s", mod)
     data = mdata.mod[mod]
-    
+
     sc.pp.regress_out(
-        data, 
-        keys=par["obs_keys"], 
+        data,
+        keys=par["obs_keys"],
         n_jobs=multiprocessing.cpu_count() - 1
     )
 

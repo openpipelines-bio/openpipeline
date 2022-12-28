@@ -3510,7 +3510,7 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
     "config" : "/home/runner/work/openpipeline/openpipeline/src/mapping/multi_star/config.vsh.yaml",
     "platform" : "nextflow",
     "viash_version" : "0.6.7",
-    "git_commit" : "82f884265f5ef3d16829a2a9b999a5a60ef5581e",
+    "git_commit" : "cbd27eaae2a3bb157d080ca452090c3bd37f74ff",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))
@@ -3761,16 +3761,16 @@ def fetch_arguments_info(config: Dict[str, Any]) -> Dict[str, Any]:
     return arguments
 
 def process_par(
-    par: Dict[str, Any], 
-    arguments_info: Dict[str, Any], 
-    gz_args: List[str], 
+    par: Dict[str, Any],
+    arguments_info: Dict[str, Any],
+    gz_args: List[str],
     temp_dir: Path
 ) -> Dict[str, Any]:
     """
     Process the Viash par dictionary
-    
+
     This turns file strings into Path objects and extracting gzipped files if need be.
-    
+
     Parameters
     ----------
     par: The par dictionary created by Viash
@@ -4070,11 +4070,11 @@ def main(par, meta):
         ignore_cleanup_errors=True
     ) as temp_dir:
         temp_dir = Path(temp_dir)
-        
+
         # turn file strings into Paths and decompress gzip if need be
         gz_args = ["input_r1", "input_r2", "reference_index", "reference_gtf"]
         par = process_par(par, arguments_info, gz_args, temp_dir)
-        
+
         # make sure input_r2 has same length as input_r1
         if not par["input_r2"]:
             par["input_r2"] = [None for _ in par["input_r1"]]

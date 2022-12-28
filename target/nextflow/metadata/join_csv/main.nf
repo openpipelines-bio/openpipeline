@@ -220,7 +220,7 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
     "config" : "/home/runner/work/openpipeline/openpipeline/src/metadata/join_csv/config.vsh.yml",
     "platform" : "nextflow",
     "viash_version" : "0.6.7",
-    "git_commit" : "82f884265f5ef3d16829a2a9b999a5a60ef5581e",
+    "git_commit" : "cbd27eaae2a3bb157d080ca452090c3bd37f74ff",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))
@@ -295,15 +295,13 @@ except KeyError as e:
     raise KeyError(f"Not all sample IDs selected from {matrix} "
                     "(using the column selected with --var_key or --obs_key) were found in "
                     "the csv file.") from e
-new_matrix = pd.concat([original_matrix.reset_index(drop=True), 
+new_matrix = pd.concat([original_matrix.reset_index(drop=True),
                         new_columns.reset_index(drop=True)], axis=1)\\\\
                         .set_axis(original_matrix.index)
 setattr(mod_data, matrix, new_matrix)
 
 logger.info("Write output to mudata file")
 mdata.write_h5mu(par['output'], compression="gzip")
-
-        
 
 VIASHMAIN
 python "$tempscript"

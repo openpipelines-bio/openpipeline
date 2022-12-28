@@ -165,7 +165,7 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
     "config" : "/home/runner/work/openpipeline/openpipeline/src/convert/from_cellranger_multi_to_h5mu/config.vsh.yaml",
     "platform" : "nextflow",
     "viash_version" : "0.6.7",
-    "git_commit" : "82f884265f5ef3d16829a2a9b999a5a60ef5581e",
+    "git_commit" : "cbd27eaae2a3bb157d080ca452090c3bd37f74ff",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))
@@ -230,19 +230,19 @@ def gather_input_data(dir: Path):
         if not required_subfolder in folder_contents:
             raise ValueError(f"Input folder must contain the subfolder {required_subfolder} please make "
                                "sure that the specified input folder is a valid cellranger multi output.")
-    
+
     multi_dir = dir / 'multi'
     for library_type in multi_dir.iterdir():
         if not library_type.is_dir():
             logger.warning("%s is not a directory. Contents of the multi folder "
-                           "must be directories to be recognized as valid input data", 
+                           "must be directories to be recognized as valid input data",
                            library_type)
             continue
         if library_type.name not in POSSIBLE_LIBRARY_TYPES:
             raise ValueError(f"Contents of the 'multi' folder must be found one of the following: {','.join(POSSIBLE_LIBRARY_TYPES)}.")
 
         found_input[library_type.name] = library_type
-    
+
     per_sample_outs_dir = dir / 'per_sample_outs'
     metric_summaries = list(per_sample_outs_dir.glob('*/metrics_summary.csv'))
     if len(metric_summaries) > 1:
@@ -289,11 +289,11 @@ def process_metrics_summary(mudata: mudata.MuData, metrics_file: Path):
         except (AttributeError, ValueError):
             return val
 
-    metrics_summary = pd.read_csv(metrics_file, 
+    metrics_summary = pd.read_csv(metrics_file,
                                   decimal=".",
                                   quotechar='"',
                                   thousands=",").applymap(read_percentage)
-    
+
     mudata.uns[par["uns_metrics"]] = metrics_summary
     for colname, coldata in metrics_summary.iteritems():
         try:
@@ -327,7 +327,7 @@ def get_modalities(input_data):
         try:
             parser_function = dispatcher[modality_name]
         except KeyError as e:
-            raise ValueError("This component does not support the " 
+            raise ValueError("This component does not support the "
                              f"parsing of the modality '{modality_name}' yet.") from e
         mudata_file = parser_function(mudata_file, modality_data_path)
     return mudata_file

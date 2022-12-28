@@ -107,7 +107,7 @@ def set_dtypes_concatenated_columns(original_dtypes: dict[str, pd.core.dtypes.dt
     """
     Ensure the correct datatypes for the concatenated columns that did not contain conflicts.
     """
-    curr_concat_matrix_cols_dtypes = {col: dtype for col, dtype in original_dtypes.items() 
+    curr_concat_matrix_cols_dtypes = {col: dtype for col, dtype in original_dtypes.items()
                                       if col in concatenated_matrix.columns}
     return cast_to_original_dtype(concatenated_matrix, curr_concat_matrix_cols_dtypes)
 
@@ -124,7 +124,7 @@ def split_conflicts_and_concatenated_columns(n_processes: int,
                                              column_names: Iterable[str]) -> \
                                             tuple[dict[str, pd.DataFrame], pd.DataFrame]:
     """
-    Retrieve columns with the same name from a list of dataframes which are 
+    Retrieve columns with the same name from a list of dataframes which are
     identical across all the frames (ignoring NA values).
     Columns which are not the same are regarded as 'conflicts',
     which are stored in seperate dataframes, one per columns
@@ -147,7 +147,7 @@ def split_conflicts_and_concatenated_columns(n_processes: int,
         concatenated_matrix = pd.concat(concatenated_matrix, join="outer", axis=1)
     else:
         concatenated_matrix = pd.DataFrame()
-        
+
     return conflicts, concatenated_matrix
 
 def cast_to_original_dtype(result: pd.DataFrame,
@@ -168,7 +168,7 @@ def cast_to_original_dtype(result: pd.DataFrame,
     return result
 
 
-def get_original_dtypes(matrices: Iterable[pd.DataFrame], 
+def get_original_dtypes(matrices: Iterable[pd.DataFrame],
                         column_names: Iterable[str]) -> \
                         dict[str, pd.core.dtypes.dtypes.Dtype]:
     """
@@ -190,8 +190,8 @@ def split_conflicts_modalities(n_processes: int, input_ids: tuple[str], modaliti
         """
         Merge .var and .obs matrices of the anndata objects. Columns are merged
         when the values (excl NA) are the same in each of the matrices.
-        Conflicting columns are moved to a separate dataframe (one dataframe for each column, 
-        containing all the corresponding column from each sample). 
+        Conflicting columns are moved to a separate dataframe (one dataframe for each column,
+        containing all the corresponding column from each sample).
         """
         matrices_to_parse = ("var", "obs")
         concatenated_result = {}
@@ -203,7 +203,7 @@ def split_conflicts_modalities(n_processes: int, input_ids: tuple[str], modaliti
             concatenated_result[matrix_name] = concatenated_matrix
         return conflicts_result, concatenated_result
 
-def set_matrices(concatenated_data: mu.MuData, 
+def set_matrices(concatenated_data: mu.MuData,
                  mod_name: str,
                  new_matrices: dict[str, pd.DataFrame | None]) -> mu.MuData:
     """
@@ -214,7 +214,7 @@ def set_matrices(concatenated_data: mu.MuData,
     mod = concatenated_data.mod[mod_name]
     original_dtypes_global_matrices = {
         global_matrix_name: getattr(concatenated_data, global_matrix_name).dtypes
-        for global_matrix_name 
+        for global_matrix_name
         in new_matrices.keys()
     }
     for matrix_name, data in new_matrices.items():

@@ -33,7 +33,7 @@ mu_in.write_h5mu(input_path)
 logger.info("> Run component")
 out = subprocess.check_output(
     [
-        f"./{meta['functionality_name']}", 
+        f"./{meta['functionality_name']}",
         "--input", input_path,
         "--output", output_path
     ]

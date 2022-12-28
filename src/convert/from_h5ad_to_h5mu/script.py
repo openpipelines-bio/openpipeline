@@ -39,6 +39,6 @@ except:
     pass
 
 logger.info("Writing to %s.", par['output'])
-mudata.write_h5mu(par["output"], compression="gzip") 
+mudata.write_h5mu(par["output"], compression="gzip")
 
 logger.info("Finished")

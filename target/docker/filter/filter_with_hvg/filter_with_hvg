@@ -499,9 +499,9 @@ RUN pip install --upgrade pip && \
 
 LABEL org.opencontainers.image.authors="Dries De Maeyer, Robrecht Cannoodt"
 LABEL org.opencontainers.image.description="Companion container for running component filter filter_with_hvg"
-LABEL org.opencontainers.image.created="2022-12-28T09:15:05Z"
+LABEL org.opencontainers.image.created="2022-12-28T10:13:59Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="82f884265f5ef3d16829a2a9b999a5a60ef5581e"
+LABEL org.opencontainers.image.revision="cbd27eaae2a3bb157d080ca452090c3bd37f74ff"
 LABEL org.opencontainers.image.version="main_build"
 VIASHDOCKER
 }
@@ -1224,7 +1224,7 @@ mod = par['modality']
 logger.info(f"Processing modality '%s'", mod)
 data = mdata.mod[mod]
 
-# Workaround for issue 
+# Workaround for issue
 # https://github.com/scverse/scanpy/issues/2239
 # https://github.com/scverse/scanpy/issues/2181
 if 'log1p' in data.uns and 'base' not in data.uns['log1p']:

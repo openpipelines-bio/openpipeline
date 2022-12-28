@@ -355,7 +355,7 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
     "config" : "/home/runner/work/openpipeline/openpipeline/src/filter/filter_with_counts/config.vsh.yaml",
     "platform" : "nextflow",
     "viash_version" : "0.6.7",
-    "git_commit" : "82f884265f5ef3d16829a2a9b999a5a60ef5581e",
+    "git_commit" : "cbd27eaae2a3bb157d080ca452090c3bd37f74ff",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))
@@ -431,7 +431,7 @@ n_counts_per_cell = np.ravel(np.sum(data.X, axis=1))
 n_cells_per_gene = np.sum(data.X > 0, axis=0)
 n_genes_per_cell = np.sum(data.X > 0, axis=1)
 genes_column = data.var[par["var_gene_names"]] if par["var_gene_names"] else data.var_names
-mito_genes = genes_column.str.contains(par["mitochondrial_gene_regex"], regex=True) 
+mito_genes = genes_column.str.contains(par["mitochondrial_gene_regex"], regex=True)
 pct_mito = np.ravel(np.sum(data[:, mito_genes].X, axis=1) / np.sum(data.X, axis=1))
 
 def apply_filter_to_mask(mask, base, filter, comparator):
@@ -443,11 +443,11 @@ def apply_filter_to_mask(mask, base, filter, comparator):
 # Filter genes
 keep_genes = np.repeat(True, data.n_vars)
 if par["min_cells_per_gene"] is not None:
-    num_removed, keep_genes = apply_filter_to_mask(keep_genes, 
+    num_removed, keep_genes = apply_filter_to_mask(keep_genes,
                                                    n_cells_per_gene,
                                                    par['min_cells_per_gene'],
                                                    ge)
-    logger.info("\\\\tRemoving %s genes with non-zero values in <%s cells.", 
+    logger.info("\\\\tRemoving %s genes with non-zero values in <%s cells.",
                 num_removed, par['min_cells_per_gene'])
 
 # Filter cells
@@ -468,7 +468,7 @@ for filter_name_or_value, base, comparator, message in filters:
     if filter is not None:
         num_removed, keep_cells = apply_filter_to_mask(keep_cells, base, filter, comparator)
         logger.info(message, num_removed, filter)
-    
+
 if par["obs_name_filter"] is not None:
     data.obs[par["obs_name_filter"]] = keep_cells
 if par["var_name_filter"] is not None:

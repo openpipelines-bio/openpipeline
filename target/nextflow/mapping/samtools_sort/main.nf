@@ -298,7 +298,7 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
     "config" : "/home/runner/work/openpipeline/openpipeline/src/mapping/samtools_sort/config.vsh.yaml",
     "platform" : "nextflow",
     "viash_version" : "0.6.7",
-    "git_commit" : "82f884265f5ef3d16829a2a9b999a5a60ef5581e",
+    "git_commit" : "cbd27eaae2a3bb157d080ca452090c3bd37f74ff",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))
@@ -346,7 +346,7 @@ meta = {
 def generate_args(par, config):
     # fetch arguments from config
     arguments = [
-        arg 
+        arg
         for group in config["functionality"]["argument_groups"]
         for arg in group["arguments"]
     ]
@@ -359,12 +359,12 @@ def generate_args(par, config):
         if arg_val and orig_arg:
             if not arg.get("multiple", False):
                 arg_val = [arg_val]
-                
+
             if arg["type"] in ["boolean_true", "boolean_false"]:
                 # if argument is a boolean_true or boolean_false, simply add the flag
                 arg_val = [orig_arg]
             elif orig_arg.startswith("-"):
-                # if the orig arg flag is not a positional, 
+                # if the orig arg flag is not a positional,
                 # add the flag in front of each element and flatten
                 arg_val = [str(x) for val in arg_val for x in [orig_arg, val]]
 
@@ -377,7 +377,7 @@ config = yaml.safe_load(Path(meta["config"]).read_text())
 
 print(">> Constructing command", flush=True)
 cmd_args = [ "samtools", "sort" ] + generate_args(par, config)
-    
+
 # manually process cpus parameter
 if 'cpus' in meta and meta['cpus']:
     cmd_args.extend(["--threads", str(meta["cpus"])])

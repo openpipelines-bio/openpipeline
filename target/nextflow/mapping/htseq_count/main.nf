@@ -475,7 +475,7 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
     "config" : "/home/runner/work/openpipeline/openpipeline/src/mapping/htseq_count/config.vsh.yaml",
     "platform" : "nextflow",
     "viash_version" : "0.6.7",
-    "git_commit" : "82f884265f5ef3d16829a2a9b999a5a60ef5581e",
+    "git_commit" : "cbd27eaae2a3bb157d080ca452090c3bd37f74ff",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))
@@ -551,12 +551,12 @@ def extract_if_need_be(par_value: Path, temp_dir_path: Path) -> Path:
         with tarfile.open(par_value, 'r') as open_tar:
             members = open_tar.getmembers()
             root_dirs = [member
-                for member in members 
+                for member in members
                 if member.isdir() and member.name != '.' and '/' not in member.name]
             # if there is only one root_dir (and there are files in that directory)
             # strip that directory name from the destination folder
             if len(root_dirs) == 1:
-                for mem in members: 
+                for mem in members:
                     mem.path = Path(*Path(mem.path).parts[1:])
             members_to_move = [mem for mem in members if mem.path != Path('.')]
             open_tar.extractall(unpacked_path, members=members_to_move)
@@ -567,7 +567,7 @@ def extract_if_need_be(par_value: Path, temp_dir_path: Path) -> Path:
         extaction_file_name = Path(par_value.stem)
         unpacked_path = temp_dir_path / extaction_file_name
         print(f'    Gzip detected; extracting {par_value} to {unpacked_path}', flush=True)
-        
+
         with gzip.open(par_value, 'rb') as f_in:
             with open(unpacked_path, 'wb') as f_out:
                 shutil.copyfileobj(f_in, f_out)
@@ -579,7 +579,7 @@ def extract_if_need_be(par_value: Path, temp_dir_path: Path) -> Path:
 def generate_args(par, config):
     # fetch arguments from config
     arguments = [
-        arg 
+        arg
         for group in config["functionality"]["argument_groups"]
         for arg in group["arguments"]
     ]
@@ -592,12 +592,12 @@ def generate_args(par, config):
         if arg_val and orig_arg:
             if not arg.get("multiple", False):
                 arg_val = [arg_val]
-                
+
             if arg["type"] in ["boolean_true", "boolean_false"]:
                 # if argument is a boolean_true or boolean_false, simply add the flag
                 arg_val = [orig_arg]
             elif orig_arg.startswith("-"):
-                # if the orig arg flag is not a positional, 
+                # if the orig arg flag is not a positional,
                 # add the flag in front of each element and flatten
                 arg_val = [str(x) for val in arg_val for x in [orig_arg, val]]
 
@@ -618,13 +618,13 @@ with tempfile.TemporaryDirectory(prefix="htseq-", dir=meta["temp_dir"]) as temp_
     # checking for compressed files, ungzip files if need be
     temp_dir_path = Path(temp_dir)
     reference = Path(par["reference"])
-    
+
     print(f'>> Check compression of --reference with value: {reference}', flush=True)
     par["reference"] = extract_if_need_be(reference, temp_dir_path)
 
     print(">> Constructing command", flush=True)
     cmd_args = [ "htseq-count" ] + generate_args(par, config)
-    
+
     # manually process cpus parameter
     if 'cpus' in meta and meta['cpus']:
         cmd_args.extend(["--nprocesses", str(meta["cpus"])])

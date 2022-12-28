@@ -6,7 +6,7 @@ par = {
     'input': 'resources_test/pbmc_1k_protein_v3/pbmc_1k_protein_v3_filtered_feature_bc_matrix.h5mu',
     'modality': 'prot',
     'output': "foo.h5mu"
-}   
+}
 ## VIASH END
 
 

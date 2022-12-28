@@ -160,7 +160,7 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
     "config" : "/home/runner/work/openpipeline/openpipeline/src/convert/from_h5ad_to_h5mu/config.vsh.yaml",
     "platform" : "nextflow",
     "viash_version" : "0.6.7",
-    "git_commit" : "82f884265f5ef3d16829a2a9b999a5a60ef5581e",
+    "git_commit" : "cbd27eaae2a3bb157d080ca452090c3bd37f74ff",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))
@@ -224,7 +224,7 @@ except:
     pass
 
 logger.info("Writing to %s.", par['output'])
-mudata.write_h5mu(par["output"], compression="gzip") 
+mudata.write_h5mu(par["output"], compression="gzip")
 
 logger.info("Finished")
 

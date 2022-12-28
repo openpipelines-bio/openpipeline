@@ -273,7 +273,7 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
     "config" : "/home/runner/work/openpipeline/openpipeline/src/neighbors/bbknn/config.vsh.yaml",
     "platform" : "nextflow",
     "viash_version" : "0.6.7",
-    "git_commit" : "82f884265f5ef3d16829a2a9b999a5a60ef5581e",
+    "git_commit" : "cbd27eaae2a3bb157d080ca452090c3bd37f74ff",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))
@@ -327,8 +327,8 @@ bbknn.bbknn(
     modality,
     use_rep=par["obsm_input"],
     batch_key = par["obs_batch"],
-    neighbors_within_batch=par["n_neighbors_within_batch"], 
-    n_pcs=par["n_pcs"], 
+    neighbors_within_batch=par["n_neighbors_within_batch"],
+    n_pcs=par["n_pcs"],
     trim=par["n_trim"]
 )
 

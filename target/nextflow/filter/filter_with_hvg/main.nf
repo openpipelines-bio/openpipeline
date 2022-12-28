@@ -320,7 +320,7 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
     "config" : "/home/runner/work/openpipeline/openpipeline/src/filter/filter_with_hvg/config.vsh.yaml",
     "platform" : "nextflow",
     "viash_version" : "0.6.7",
-    "git_commit" : "82f884265f5ef3d16829a2a9b999a5a60ef5581e",
+    "git_commit" : "cbd27eaae2a3bb157d080ca452090c3bd37f74ff",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))
@@ -386,7 +386,7 @@ mod = par['modality']
 logger.info(f"Processing modality '%s'", mod)
 data = mdata.mod[mod]
 
-# Workaround for issue 
+# Workaround for issue
 # https://github.com/scverse/scanpy/issues/2239
 # https://github.com/scverse/scanpy/issues/2181
 if 'log1p' in data.uns and 'base' not in data.uns['log1p']:

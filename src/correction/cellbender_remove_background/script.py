@@ -38,8 +38,8 @@ par = {
     "layer_corrected": "corrected",
     "cuda": False
 }
-meta = { 
-    'temp_dir': os.getenv("VIASH_TEMP"), 
+meta = {
+    'temp_dir': os.getenv("VIASH_TEMP"),
     'resources_dir': 'src/correction/cellbender_remove_background'
 }
 ## VIASH END
@@ -102,7 +102,7 @@ with tempfile.TemporaryDirectory(prefix="cellbender-", dir=meta["temp_dir"]) as 
 
     logger.info("Running CellBender: '%s'", ' '.join(cmd_pars))
     out = subprocess.check_output(cmd_pars).decode("utf-8")
-    
+
     logger.info("Reading CellBender 10xh5 output file: '%s'", output_file)
     # have to use custom read_10x_h5 function for now
     # will be fixed when https://github.com/scverse/scanpy/pull/2344 is merged
@@ -113,9 +113,9 @@ with tempfile.TemporaryDirectory(prefix="cellbender-", dir=meta["temp_dir"]) as 
     data.layers[par["layer_output"]] = adata_out.X
 
     logger.info("Copying .obs output to MuData")
-    obs_store = { 
-        "obs_latent_rt_efficiency": "latent_RT_efficiency", 
-        "obs_latent_cell_probability": "latent_cell_probability", 
+    obs_store = {
+        "obs_latent_rt_efficiency": "latent_RT_efficiency",
+        "obs_latent_cell_probability": "latent_cell_probability",
         "obs_latent_scale": "latent_scale"
     }
     for to_name, from_name in obs_store.items():
@@ -127,7 +127,7 @@ with tempfile.TemporaryDirectory(prefix="cellbender-", dir=meta["temp_dir"]) as 
                 vec = np.zeros(data.n_obs)
                 vec[adata_out.uns['barcode_indices_for_latents']] = adata_out.uns[from_name]
                 data.obs[par[to_name]] = vec
-    
+
     logger.info("Copying .var output to MuData")
     var_store = { "var_ambient_expression": "ambient_expression" }
     for to_name, from_name in var_store.items():
