@@ -28,8 +28,7 @@ platforms:
     - type: apt
       packages: [ wget, gcc, make, libbz2-dev, zlib1g-dev, libncurses5-dev, libncursesw5-dev, liblzma-dev]
     - type: docker
-      run: wget https://github.com/samtools/samtools/releases/download/1.16.1/samtools-1.16.1.tar.bz2 && tar jxf samtools-1.16.1.tar.bz2 && rm samtools-1.16.1.tar.bz2 && cd samtools-1.16.1 && ./configure --prefix $(pwd) && make
-      env: PATH=${PATH}:/samtools-1.16.1
+      run: wget https://github.com/samtools/samtools/releases/download/1.16.1/samtools-1.16.1.tar.bz2 && tar jxf samtools-1.16.1.tar.bz2 && rm samtools-1.16.1.tar.bz2 && cd samtools-1.16.1 && make prefix=/usr/local install
     - type: python
       pip: [ umi_tools ]
   - type: nextflow

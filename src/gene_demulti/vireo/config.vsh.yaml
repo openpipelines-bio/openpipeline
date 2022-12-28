@@ -83,7 +83,7 @@ functionality:
     - path: ../../../resources_test/vireo_test_data
 platforms:
   - type: docker
-    image: python:3.9
+    image: python:3.10
     setup:
     - type: python
       pip: [ threadpoolctl, vireoSNP ]

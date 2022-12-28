@@ -35,7 +35,12 @@ functionality:
     - path: ../../../resources_test/demuxafy_test_data
 platforms:
   - type: docker
-    image: biocontainers/bcftools:v1.9-1-deb_cv1
+    image: ubuntu:latest
+    setup:
+    - type: apt
+      packages: [ wget, bzip2, gcc, make, libbz2-dev, zlib1g-dev, libncurses5-dev, libncursesw5-dev, liblzma-dev, autoconf, automake, perl, libcurl4-gnutls-dev, libssl-dev]
+    - type: docker
+      run: wget https://github.com/samtools/bcftools/releases/download/1.16/bcftools-1.16.tar.bz2 -O bcftools.tar.bz2 && tar -xjvf bcftools.tar.bz2 && cd bcftools-1.16 && make prefix=/usr/local install
   - type: nextflow
     variant: vdsl3
     directives:

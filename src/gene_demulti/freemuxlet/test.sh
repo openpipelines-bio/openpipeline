@@ -7,7 +7,7 @@ $meta_executable \
     --output freemuxlet_result/ \
     --outDsc freemux_out_samples \
     --out freemx_out \
-    --nsample 2
+    --nsample 14
 
 [[ ! -f freemuxlet_result/freemux_out_samples.plp.gz ]] && echo "Output sample file could not be found!" && exit 1
 [[ ! -f freemuxlet_result/freemux_out.clust1.samples.gz ]] && echo "Output VCF file could not be found!" && exit 1

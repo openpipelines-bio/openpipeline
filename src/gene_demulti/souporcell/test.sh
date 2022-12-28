@@ -4,7 +4,7 @@ echo ">>> Running executable"
 $meta_executable \
     --bam "$meta_resources_dir/demuxafy_test_data/pooled.sorted.bam" \
     --bam_index "$meta_resources_dir/demuxafy_test_data/pooled.sorted.bam.bai" \
-    --fasta "$meta_resources_dir/demuxafy_test_data/refdata-cellranger-GRCh38-3.0.0/genome.fa" \
+    --fasta "$meta_resources_dir/demuxafy_test_data/genome.fa" \
     --barcodes "$meta_resources_dir/demuxafy_test_data/barcodes.tsv" \
     --common_variants "$meta_resources_dir/demuxafy_test_data/test_dataset.vcf" \
     --clusters 14  --threads 3 --skip_remap \

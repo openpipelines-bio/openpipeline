@@ -76,7 +76,11 @@ platforms:
     image: python:3.9
     setup:
     - type: python
-      pip: [ numpy, pandas, pysam, PyVCF, scikit-learn, scipy, statistics, scSplit ]
+      pip: [ numpy, pandas, pysam, "setuptools<58", "scikit-learn==1.1.3", scipy, statistics ]
+    - type: python
+      pip: [ PyVCF ]
+    - type: docker
+      run: git clone https://github.com/jon-xu/scSplit && cp scSplit/scSplit /usr/local/bin && rm -rf scSplit
   - type: nextflow
     variant: vdsl3
     directives:

@@ -100,9 +100,15 @@ functionality:
     - path: ../../../resources_test/demuxafy_test_data
 platforms:
   - type: docker
-    image: quay.io/biocontainers/cellsnp-lite:1.2.0--hee625c5_0
+    image: ubuntu:latest
+    setup:
+    - type: apt
+      packages: [ wget, gcc, zlib1g, make, libbz2-dev, zlib1g-dev, libncurses5-dev, liblzma-dev, autoconf, automake, perl, libcurl4-gnutls-dev, libssl-dev, git, bzip2]
+    - type: docker
+      run : wget https://github.com/samtools/htslib/releases/download/1.16/htslib-1.16.tar.bz2 -O htslib.tar.bz2 && tar -xjvf htslib.tar.bz2 && cd htslib-1.16 && make && make install
+    - type: docker
+      run : git clone https://github.com/single-cell-genetics/cellsnp-lite.git && cd cellsnp-lite && autoreconf -iv && ./configure --with-htslib=/htslib-1.16 && make && make install
   - type: nextflow
     variant: vdsl3
     directives:
       label: [ highmem, highcpu ]
-

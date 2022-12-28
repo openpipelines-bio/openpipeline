@@ -3,10 +3,10 @@ echo "$meta_resources_dir"
 echo ">>> Running executable"
 $meta_executable \
     --bam "$meta_resources_dir/demuxafy_test_data/pooled.sorted.bam" \
-    --vcf "$meta_resources_dir/demuxafy_test_data/mixed.variant.vcf" \
-    --num 12 \
-    --bar "$meta_resources_dir/demuxafy_test_data/barcodes.tsv" \
+    --vcf "$meta_resources_dir/demuxafy_test_data/mixed_variant.vcf" \
+    --num 12 --ems 1 \
     --com "$meta_resources_dir/demuxafy_test_data/test_dataset.vcf" \
+    --bar "$meta_resources_dir/demuxafy_test_data/barcodes.tsv" \
     --ref ref_filtered.csv \
     --alt alt_filtered.csv \
     --output scSplit_result/

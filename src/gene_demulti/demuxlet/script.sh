@@ -35,7 +35,7 @@ if [ ! -d "$par_output" ]; then
 fi
 
 
-if [ -z "$par_plp" ] || [ $par_plp != "true" ]; then
+if [ -z "$par_plp" ] || [ "$par_plp" != "true" ]; then
   popscle demuxlet --tag-group $par_tagGroup --tag-UMI $par_tagUMI \
        --field $par_field --geno-error-offset $par_genoErrorOffset \
        --geno-error-coeff $par_genoErrorCoeff --r2-info $par_r2Info \
