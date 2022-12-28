@@ -55,6 +55,7 @@ platforms:
           - anndata~=0.8.0
           - mudata~=0.2.0
           - gtfparse
+          - polars[pyarrow]
   - type: nextflow
     directives:
       label: [ highmem, midcpu ]

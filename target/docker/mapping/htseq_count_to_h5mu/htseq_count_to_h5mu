@@ -405,13 +405,13 @@ function ViashDockerfile {
 FROM python:3.10
 
 RUN pip install --upgrade pip && \
-  pip install --upgrade --no-cache-dir "anndata~=0.8.0" "mudata~=0.2.0" "gtfparse"
+  pip install --upgrade --no-cache-dir "anndata~=0.8.0" "mudata~=0.2.0" "gtfparse" "polars[pyarrow]"
 
 LABEL org.opencontainers.image.authors="Robrecht Cannoodt, Angela Pisco"
 LABEL org.opencontainers.image.description="Companion container for running component mapping htseq_count_to_h5mu"
-LABEL org.opencontainers.image.created="2022-12-27T15:40:13Z"
+LABEL org.opencontainers.image.created="2022-12-28T08:29:12Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="b27032e24f21a0c6771ab526c0f1ef7d2616b05c"
+LABEL org.opencontainers.image.revision="48245903e385b93c005dfcbeedb4ee8bb9978d27"
 LABEL org.opencontainers.image.version="main_build"
 VIASHDOCKER
 }
@@ -932,6 +932,7 @@ import shutil
 import pandas as pd
 import mudata as md
 import anndata as ad
+import polars as pl
 import numpy as np
 import gtfparse
 
@@ -1031,16 +1032,19 @@ with tempfile.TemporaryDirectory(prefix="htseq-", dir=meta["temp_dir"]) as temp_
   print(f'>> Check compression of --reference with value: {reference}', flush=True)
   par["reference"] = extract_if_need_be(reference, temp_dir_path)
 
-  reference = gtfparse.read_gtf(par["reference"])
+  # read_gtf only works on str object, not pathlib.Path
+  reference = gtfparse.read_gtf(str(par["reference"]))
 
-reference_genes = reference[reference["feature"] == "gene"].set_index("gene_id")
-reference_genes2 = reference_genes.loc[counts.columns]
+# This is a polars dataframe, not pandas
+reference_genes = reference.filter((pl.col("feature") == "gene") & 
+                                   (pl.col("gene_id").is_in(list(counts.columns))))\\
+                            .sort("gene_id")
 
 var = pd.DataFrame(
   data={
-    "gene_ids": reference_genes2.index,
+    "gene_ids": pd.Index(reference_genes.get_column("gene_id")),
     "feature_types": "Gene Expression",
-    "gene_symbol": reference_genes2["gene_name"],
+    "gene_symbol": reference_genes.get_column("gene_name").to_pandas(),
   }
 ).set_index("gene_ids")
 
