@@ -11,7 +11,7 @@ par = {
 
 
 input_mudata = read_h5mu(par['input'])
-new_mods = {mod_name: mod for mod_name, mod 
+new_mods = {mod_name: mod for mod_name, mod
             in input_mudata.mod.items()
             if mod_name not in par['modality']}
 

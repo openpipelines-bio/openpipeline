@@ -53,7 +53,7 @@ class TestMerge(unittest.TestCase):
 
         self.assertSetEqual(set(data_sample1.var_keys()) | set(data_sample2.var_keys()),
                             set(concatenated_data.var_keys()))
-        
+
         self.assertSetEqual(set(concatenated_data.var_names), set(data_sample1.var_names) | set(data_sample2.var_names))
         self.assertListEqual(concatenated_data.var_keys(), ['gene_id', 'feature_type', 'genome'])
 
@@ -78,8 +78,8 @@ class TestMerge(unittest.TestCase):
             self.assertEqual(concatenated_data[removed_observation_name:]['rna'].n_obs, 0)
             self.assertEqual(concatenated_data[removed_observation_name:]['prot'].n_obs, 1)
             concatenated_data[removed_observation_name:]['rna'].X.data
-            
-            self.assertSetEqual(set(concatenated_data.obs_names), 
+
+            self.assertSetEqual(set(concatenated_data.obs_names),
                                 set(data_sample1.obs_names) | set(data_sample2.obs_names))
             np.testing.assert_equal(concatenated_data[removed_observation_name:]['rna'].X.data,
                                     np.array([]))
@@ -99,7 +99,7 @@ class TestMerge(unittest.TestCase):
                     "--input", tempfile.name,
                     "--input", input_sample2_file,
                     "--output", "merge.h5mu"], expected_raise=True)
-            self.assertIn("ValueError: Modality 'prot' was found in more than 1 sample.", 
+            self.assertIn("ValueError: Modality 'prot' was found in more than 1 sample.",
                           e.exception.output.decode('utf-8'))
 
 if __name__ == '__main__':
