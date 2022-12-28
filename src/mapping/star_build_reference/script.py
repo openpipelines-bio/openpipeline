@@ -39,12 +39,12 @@ def extract_if_need_be(par_value: Path, temp_dir_path: Path) -> Path:
         with tarfile.open(par_value, 'r') as open_tar:
             members = open_tar.getmembers()
             root_dirs = [member
-                for member in members 
+                for member in members
                 if member.isdir() and member.name != '.' and '/' not in member.name]
             # if there is only one root_dir (and there are files in that directory)
             # strip that directory name from the destination folder
             if len(root_dirs) == 1:
-                for mem in members: 
+                for mem in members:
                     mem.path = Path(*Path(mem.path).parts[1:])
             members_to_move = [mem for mem in members if mem.path != Path('.')]
             open_tar.extractall(unpacked_path, members=members_to_move)
@@ -55,7 +55,7 @@ def extract_if_need_be(par_value: Path, temp_dir_path: Path) -> Path:
         extaction_file_name = Path(par_value.stem)
         unpacked_path = temp_dir_path / extaction_file_name
         print(f'  Gzip detected; extracting {par_value} to {unpacked_path}', flush=True)
-        
+
         with gzip.open(par_value, 'rb') as f_in:
             with open(unpacked_path, 'wb') as f_out:
                 shutil.copyfileobj(f_in, f_out)
@@ -69,7 +69,7 @@ def extract_if_need_be(par_value: Path, temp_dir_path: Path) -> Path:
 ########################
 
 # rename keys and convert path strings to Path
-# note: only list file arguments here. if non-file arguments also need to be renamed, 
+# note: only list file arguments here. if non-file arguments also need to be renamed,
 # the `processPar()` generator needs to be adapted
 to_rename = {'genome_fasta': 'genomeFastaFiles', 'output': 'genomeDir', 'transcriptome_gtf': 'sjdbGTFfile'}
 
@@ -78,7 +78,7 @@ def process_par(orig_par, to_rename):
         # rename the key in par based on the `to_rename` dict
         if key in to_rename.keys():
             new_key = to_rename[key]
-        
+
             # also turn value into a Path
             if isinstance(value, list):
                 new_value = [Path(val) for val in value]
@@ -104,14 +104,14 @@ with tempfile.TemporaryDirectory(prefix="star-", dir=meta["temp_dir"]) as temp_d
             is_multiple = isinstance(par_values, list)
             if not is_multiple:
                 par_values = [ par_values ]
-        
+
             # output list
             new_values = []
             for par_value in par_values:
                 print(f'>> Check compression of --{par_name} with value: {par_value}', flush=True)
                 new_value = extract_if_need_be(par_value, temp_dir_path)
                 new_values.append(new_value)
-            
+
             # unlist if need be
             if not is_multiple:
                 new_values = new_values[0]
@@ -127,7 +127,7 @@ with tempfile.TemporaryDirectory(prefix="star-", dir=meta["temp_dir"]) as temp_d
     if 'cpus' in meta and meta['cpus']:
         par["runThreadN"] = meta["cpus"]
 
-  
+
     cmd_args = [ "STAR" ]
     for name, value in par.items():
         if value is not None:

@@ -34,10 +34,10 @@ class TestDoFilter(TestCase):
         logger.info(f"  input: {ad_rna}")
         ad_rna.obs["filter_none"] = np.repeat(True, ad_rna.n_obs)
         ad_rna.obs["filter_with_random"] = np.random.choice(a=[False, True], size=ad_rna.n_obs)
-        ad_rna.var["filter_with_random"] = np.random.choice(a=[False, True], size=ad_rna.n_vars) 
-        mu_in.write_h5mu(self._tempfile.name)       
+        ad_rna.var["filter_with_random"] = np.random.choice(a=[False, True], size=ad_rna.n_vars)
+        mu_in.write_h5mu(self._tempfile.name)
         return super().setUp()
-    
+
     def tearDown(self) -> None:
         self._tempfile.close()
         return super().tearDown()
@@ -50,10 +50,10 @@ class TestDoFilter(TestCase):
         except subprocess.CalledProcessError as e:
             logger.info(e.stdout.decode("utf-8"))
             raise e
-    
+
     def test_filtering_a_little_bit(self):
         self._run_and_check_output([
-            "--input", self._tempfile.name, 
+            "--input", self._tempfile.name,
             "--output", "output-1.h5mu",
             "--obs_filter", "filter_none:filter_with_random",
             "--var_filter", "filter_with_random"]
@@ -68,7 +68,7 @@ class TestDoFilter(TestCase):
 
     def test_filter_nothing(self):
         self._run_and_check_output([
-            "--input", self._tempfile.name, 
+            "--input", self._tempfile.name,
             "--output", "output-2.h5mu",
             "--obs_filter", "filter_none"])
         self.assertTrue(Path("output-2.h5mu").is_file(), msg="Output file not found")

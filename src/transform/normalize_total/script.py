@@ -1,6 +1,6 @@
 import scanpy as sc
 import mudata as mu
-import logging 
+import logging
 from sys import stdout
 ## VIASH START
 par = {
