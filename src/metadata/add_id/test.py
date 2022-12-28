@@ -72,7 +72,7 @@ class TestAddId(TestCase):
         output_data = read_h5mu("with_id.h5mu")
         self.assertIn("test_key", output_data.obs.columns.to_list())
         for mod_data in output_data.mod.values():
-             self.assertIn("test_key", mod_data.obs.columns.to_list())
+            self.assertIn("test_key", mod_data.obs.columns.to_list())
         self.assertSetEqual({"test_id"}, set(output_data.obs["test_key"].to_list()))
         pd.testing.assert_index_equal(output_data.obs.index, input_data.obs.index)
 

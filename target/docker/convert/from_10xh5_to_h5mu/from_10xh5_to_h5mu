@@ -419,9 +419,9 @@ RUN pip install --upgrade pip && \
 
 LABEL org.opencontainers.image.authors="Robrecht Cannoodt"
 LABEL org.opencontainers.image.description="Companion container for running component convert from_10xh5_to_h5mu"
-LABEL org.opencontainers.image.created="2022-12-28T08:29:08Z"
+LABEL org.opencontainers.image.created="2022-12-28T09:14:56Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="48245903e385b93c005dfcbeedb4ee8bb9978d27"
+LABEL org.opencontainers.image.revision="82f884265f5ef3d16829a2a9b999a5a60ef5581e"
 LABEL org.opencontainers.image.version="main_build"
 VIASHDOCKER
 }
@@ -987,37 +987,37 @@ adata = sc.read_10x_h5(par["input"], gex_only=False)
 # set the gene ids as var_names
 logger.info("Renaming var columns")
 adata.var = adata.var\\
-  .rename_axis("gene_symbol")\\
-  .reset_index()\\
-  .set_index("gene_ids")
+    .rename_axis("gene_symbol")\\
+    .reset_index()\\
+    .set_index("gene_ids")
 
 # parse metrics summary file and store in .obsm or .obs
 if par["input_metrics_summary"] and par["uns_metrics"]:
-  logger.info("Reading metrics summary file '%s'", par['input_metrics_summary'])
+    logger.info("Reading metrics summary file '%s'", par['input_metrics_summary'])
 
-  def read_percentage(val):
-      try:
-          return float(val.strip('%')) / 100
-      except AttributeError:
-          return val
+    def read_percentage(val):
+        try:
+            return float(val.strip('%')) / 100
+        except AttributeError:
+            return val
 
-  metrics_summary = pd.read_csv(par["input_metrics_summary"], decimal=".", quotechar='"', thousands=",").applymap(read_percentage)
+    metrics_summary = pd.read_csv(par["input_metrics_summary"], decimal=".", quotechar='"', thousands=",").applymap(read_percentage)
 
-  logger.info("Storing metrics summary in .uns['%s']", par['uns_metrics'])
-  adata.uns[par["uns_metrics"]] = metrics_summary
+    logger.info("Storing metrics summary in .uns['%s']", par['uns_metrics'])
+    adata.uns[par["uns_metrics"]] = metrics_summary
 else:
-  is_none = "input_metrics_summary" if not par["input_metrics_summary"] else "uns_metrics"
-  logger.info("Not storing metrics summary because par['%s'] is None", is_none)
+    is_none = "input_metrics_summary" if not par["input_metrics_summary"] else "uns_metrics"
+    logger.info("Not storing metrics summary because par['%s'] is None", is_none)
 
 # might perform basic filtering to get rid of some data
 # applicable when starting from the raw counts
 if par["min_genes"]:
-  logger.info("Filtering with min_genes=%d", par['min_genes'])
-  sc.pp.filter_cells(adata, min_genes=par["min_genes"])
+    logger.info("Filtering with min_genes=%d", par['min_genes'])
+    sc.pp.filter_cells(adata, min_genes=par["min_genes"])
 
 if par["min_counts"]:
-  logger.info("Filtering with min_counts=%d", par['min_counts'])
-  sc.pp.filter_cells(adata, min_counts=par["min_counts"])
+    logger.info("Filtering with min_counts=%d", par['min_counts'])
+    sc.pp.filter_cells(adata, min_counts=par["min_counts"])
 
 # generate output
 logger.info("Convert to mudata")

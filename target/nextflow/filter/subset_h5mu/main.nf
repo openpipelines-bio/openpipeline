@@ -169,7 +169,7 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
     "config" : "/home/runner/work/openpipeline/openpipeline/src/filter/subset_h5mu/config.vsh.yaml",
     "platform" : "nextflow",
     "viash_version" : "0.6.7",
-    "git_commit" : "48245903e385b93c005dfcbeedb4ee8bb9978d27",
+    "git_commit" : "82f884265f5ef3d16829a2a9b999a5a60ef5581e",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))
@@ -206,17 +206,17 @@ meta = {
 ### VIASH END
 
 if __name__ == "__main__":
-  # read data
-  data = mudata.read(par["input"])
+    # read data
+    data = mudata.read(par["input"])
 
-  # subset data
-  if par["modality"]:
-    data.mod[par["modality"]] = data.mod[par["modality"]][:par["number_of_observations"]]
-  else:
-    data = data[:par["number_of_observations"]]
+    # subset data
+    if par["modality"]:
+        data.mod[par["modality"]] = data.mod[par["modality"]][:par["number_of_observations"]]
+    else:
+        data = data[:par["number_of_observations"]]
 
-  # write data
-  data.write_h5mu(par["output"], compression="gzip")
+    # write data
+    data.write_h5mu(par["output"], compression="gzip")
 
 VIASHMAIN
 python "$tempscript"

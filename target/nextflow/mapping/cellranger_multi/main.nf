@@ -426,7 +426,7 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
     "config" : "/home/runner/work/openpipeline/openpipeline/src/mapping/cellranger_multi/config.vsh.yaml",
     "platform" : "nextflow",
     "viash_version" : "0.6.7",
-    "git_commit" : "48245903e385b93c005dfcbeedb4ee8bb9978d27",
+    "git_commit" : "82f884265f5ef3d16829a2a9b999a5a60ef5581e",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))
@@ -529,11 +529,11 @@ def strip_margin(text: str) -> str:
 
 def subset_dict(dictionary: dict[str, str], 
                 keys: Union[dict[str, str], list[str]]) -> dict[str, str]:
-  if isinstance(keys, (list, tuple)):
-    keys = {key: key for key in keys}
-  return {dest_key: dictionary[orig_key] 
-          for orig_key, dest_key in keys.items() 
-          if dictionary[orig_key] is not None}
+    if isinstance(keys, (list, tuple)):
+        keys = {key: key for key in keys}
+    return {dest_key: dictionary[orig_key] 
+            for orig_key, dest_key in keys.items() 
+            if dictionary[orig_key] is not None}
 
 def check_subset_dict_equal_length(group_name: str, 
                                    dictionary: dict[str, list[str]]) -> None:

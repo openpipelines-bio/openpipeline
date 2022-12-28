@@ -248,7 +248,7 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
     "config" : "/home/runner/work/openpipeline/openpipeline/src/velocity/velocyto_to_h5mu/config.vsh.yaml",
     "platform" : "nextflow",
     "viash_version" : "0.6.7",
-    "git_commit" : "48245903e385b93c005dfcbeedb4ee8bb9978d27",
+    "git_commit" : "82f884265f5ef3d16829a2a9b999a5a60ef5581e",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))
@@ -296,24 +296,24 @@ adata_in.var_names = adata_in.var["Accession"]
 
 print("Creating clean AnnData", flush=True)
 adata = ad.AnnData(
-  obs=adata_in.obs[[]],
-  var=adata_in.var[[]],
-  layers={
-    par["layer_spliced"]: adata_in.layers["spliced"],
-    par["layer_unspliced"]: adata_in.layers["unspliced"],
-    par["layer_ambiguous"]: adata_in.layers["ambiguous"]
-  }
+    obs=adata_in.obs[[]],
+    var=adata_in.var[[]],
+    layers={
+        par["layer_spliced"]: adata_in.layers["spliced"],
+        par["layer_unspliced"]: adata_in.layers["unspliced"],
+        par["layer_ambiguous"]: adata_in.layers["ambiguous"]
+    }
 )
 
 if par["input_h5mu"]:
-  print("Received input h5mu to read", flush=True)
-  mdata = mu.read_h5mu(par["input_h5mu"])
+    print("Received input h5mu to read", flush=True)
+    mdata = mu.read_h5mu(par["input_h5mu"])
 
-  print(f"Storing AnnData in modality {par['modality']}", flush=True)
-  mdata.mod[par["modality"]] = adata
+    print(f"Storing AnnData in modality {par['modality']}", flush=True)
+    mdata.mod[par["modality"]] = adata
 else:
-  print("Creating h5mu from scratch", flush=True)
-  mdata = mu.MuData({par["modality"]: adata})
+    print("Creating h5mu from scratch", flush=True)
+    mdata = mu.MuData({par["modality"]: adata})
 
 print("Resulting mudata:", mdata, flush=True)
 

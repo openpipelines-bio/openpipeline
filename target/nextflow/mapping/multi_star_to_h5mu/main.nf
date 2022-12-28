@@ -163,7 +163,7 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
     "config" : "/home/runner/work/openpipeline/openpipeline/src/mapping/multi_star_to_h5mu/config.vsh.yaml",
     "platform" : "nextflow",
     "viash_version" : "0.6.7",
-    "git_commit" : "48245903e385b93c005dfcbeedb4ee8bb9978d27",
+    "git_commit" : "82f884265f5ef3d16829a2a9b999a5a60ef5581e",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))
@@ -214,29 +214,29 @@ print("> Read counts data", flush=True)
 per_obs_data = []
 
 for per_obs_dir in per_obs_dirs:
-  input_id = per_obs_dir.name
-  input_counts = per_obs_dir / "htseq-count.txt"
-  input_multiqc = per_obs_dir / "multiqc_data" / "multiqc_data.json"
+    input_id = per_obs_dir.name
+    input_counts = per_obs_dir / "htseq-count.txt"
+    input_multiqc = per_obs_dir / "multiqc_data" / "multiqc_data.json"
 
-  data = pd.read_table(
-    input_counts,
-    index_col=0,
-    names=["cell_id", input_id],
-    dtype={"cell_id": "U", input_id: "i"}
-  )
-  data2 = data[~data.index.str.startswith("__")]
+    data = pd.read_table(
+        input_counts,
+        index_col=0,
+        names=["cell_id", input_id],
+        dtype={"cell_id": "U", input_id: "i"}
+    )
+    data2 = data[~data.index.str.startswith("__")]
 
-  with open(input_multiqc, "r") as file:
-    qc = json.load(file)
-  
-  qc_star = qc.get("report_saved_raw_data", {}).get("multiqc_star", {}).get(input_id)
-  qc_htseq = qc.get("report_saved_raw_data", {}).get("multiqc_htseq", {}).get("htseq-count")
+    with open(input_multiqc, "r") as file:
+        qc = json.load(file)
+    
+    qc_star = qc.get("report_saved_raw_data", {}).get("multiqc_star", {}).get(input_id)
+    qc_htseq = qc.get("report_saved_raw_data", {}).get("multiqc_htseq", {}).get("htseq-count")
 
-  per_obs_data.append({
-    "counts": data2.transpose(),
-    "qc_star": pd.DataFrame(qc_star, index=[input_id]),
-    "qc_htseq": pd.DataFrame(qc_htseq, index=[input_id])
-  })
+    per_obs_data.append({
+        "counts": data2.transpose(),
+        "qc_star": pd.DataFrame(qc_star, index=[input_id]),
+        "qc_htseq": pd.DataFrame(qc_htseq, index=[input_id])
+    })
 
 
 # combine all counts
@@ -249,19 +249,19 @@ feature_info = pd.read_csv(input_dir / "feature_info.tsv", sep="\\\\t", index_co
 feature_info_ord = feature_info.loc[counts.columns]
 
 var = pd.DataFrame(
-  data={
-    "gene_ids": feature_info_ord.index,
-    "feature_types": "Gene Expression",
-    "gene_name": feature_info_ord["feature_name"],
-  }
+    data={
+        "gene_ids": feature_info_ord.index,
+        "feature_types": "Gene Expression",
+        "gene_name": feature_info_ord["feature_name"],
+    }
 ).set_index("gene_ids")
 
 print("> construct anndata", flush=True)
 adata = ad.AnnData(
-  X=counts,
-  obsm={"qc_star": qc_star, "qc_htseq": qc_htseq},
-  var=var,
-  dtype=np.int32
+    X=counts,
+    obsm={"qc_star": qc_star, "qc_htseq": qc_htseq},
+    var=var,
+    dtype=np.int32
 )
 
 print("> convert to mudata", flush=True)

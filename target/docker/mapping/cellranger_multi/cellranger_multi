@@ -522,9 +522,9 @@ RUN pip install --upgrade pip && \
 
 LABEL org.opencontainers.image.authors="Angela Pisco, Robrecht Cannoodt, Dries De Maeyer"
 LABEL org.opencontainers.image.description="Companion container for running component mapping cellranger_multi"
-LABEL org.opencontainers.image.created="2022-12-28T08:29:13Z"
+LABEL org.opencontainers.image.created="2022-12-28T09:15:00Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="48245903e385b93c005dfcbeedb4ee8bb9978d27"
+LABEL org.opencontainers.image.revision="82f884265f5ef3d16829a2a9b999a5a60ef5581e"
 LABEL org.opencontainers.image.version="main_build"
 VIASHDOCKER
 }
@@ -1371,11 +1371,11 @@ def strip_margin(text: str) -> str:
 
 def subset_dict(dictionary: dict[str, str], 
                 keys: Union[dict[str, str], list[str]]) -> dict[str, str]:
-  if isinstance(keys, (list, tuple)):
-    keys = {key: key for key in keys}
-  return {dest_key: dictionary[orig_key] 
-          for orig_key, dest_key in keys.items() 
-          if dictionary[orig_key] is not None}
+    if isinstance(keys, (list, tuple)):
+        keys = {key: key for key in keys}
+    return {dest_key: dictionary[orig_key] 
+            for orig_key, dest_key in keys.items() 
+            if dictionary[orig_key] is not None}
 
 def check_subset_dict_equal_length(group_name: str, 
                                    dictionary: dict[str, list[str]]) -> None:

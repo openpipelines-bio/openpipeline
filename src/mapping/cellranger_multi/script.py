@@ -94,11 +94,11 @@ def strip_margin(text: str) -> str:
 
 def subset_dict(dictionary: dict[str, str], 
                 keys: Union[dict[str, str], list[str]]) -> dict[str, str]:
-  if isinstance(keys, (list, tuple)):
-    keys = {key: key for key in keys}
-  return {dest_key: dictionary[orig_key] 
-          for orig_key, dest_key in keys.items() 
-          if dictionary[orig_key] is not None}
+    if isinstance(keys, (list, tuple)):
+        keys = {key: key for key in keys}
+    return {dest_key: dictionary[orig_key] 
+            for orig_key, dest_key in keys.items() 
+            if dictionary[orig_key] is not None}
 
 def check_subset_dict_equal_length(group_name: str, 
                                    dictionary: dict[str, list[str]]) -> None:
