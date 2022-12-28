@@ -37,7 +37,7 @@ mod = par['modality']
 logger.info(f"Processing modality '%s'", mod)
 data = mdata.mod[mod]
 
-# Workaround for issue 
+# Workaround for issue
 # https://github.com/scverse/scanpy/issues/2239
 # https://github.com/scverse/scanpy/issues/2181
 if 'log1p' in data.uns and 'base' not in data.uns['log1p']:

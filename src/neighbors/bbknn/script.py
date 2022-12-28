@@ -23,8 +23,8 @@ bbknn.bbknn(
     modality,
     use_rep=par["obsm_input"],
     batch_key = par["obs_batch"],
-    neighbors_within_batch=par["n_neighbors_within_batch"], 
-    n_pcs=par["n_pcs"], 
+    neighbors_within_batch=par["n_neighbors_within_batch"],
+    n_pcs=par["n_pcs"],
     trim=par["n_trim"]
 )
 

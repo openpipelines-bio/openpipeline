@@ -79,28 +79,28 @@ LIBRARY_CONFIG_KEYS = {'library_id': 'fastq_id',
 
 
 SAMPLE_PARAMS = ("cell_multiplex_sample_id", "cell_multiplex_oligo_ids", "cell_multiplex_description")
-SAMPLE_PARAMS_CONFIG_KEYS = {'cell_multiplex_sample_id': 'sample_id', 
+SAMPLE_PARAMS_CONFIG_KEYS = {'cell_multiplex_sample_id': 'sample_id',
                              'cell_multiplex_oligo_ids': 'cmo_ids',
                              'cell_multiplex_description': 'description'}
 
 
 def lengths_gt1(dic: dict[str, Optional[list[Any]]]) -> dict[str, int]:
-    return {key: len(li) for key, li in dic.items() 
+    return {key: len(li) for key, li in dic.items()
             if li is not None and len(li) > 1}
-  
+
 def strip_margin(text: str) -> str:
     return re.sub('(\n?)[ \t]*\|', '\\1', text)
 
 
-def subset_dict(dictionary: dict[str, str], 
+def subset_dict(dictionary: dict[str, str],
                 keys: Union[dict[str, str], list[str]]) -> dict[str, str]:
     if isinstance(keys, (list, tuple)):
         keys = {key: key for key in keys}
-    return {dest_key: dictionary[orig_key] 
-            for orig_key, dest_key in keys.items() 
+    return {dest_key: dictionary[orig_key]
+            for orig_key, dest_key in keys.items()
             if dictionary[orig_key] is not None}
 
-def check_subset_dict_equal_length(group_name: str, 
+def check_subset_dict_equal_length(group_name: str,
                                    dictionary: dict[str, list[str]]) -> None:
     lens = lengths_gt1(dictionary)
     assert len(set(lens.values())) <= 1, f"The number of values passed to {group_name} "\
@@ -112,15 +112,15 @@ def process_params(par: dict[str, Any]) -> str:
     if len(par["input"]) == 1 and par["input"][0].is_dir():
         logger.info("Detected '--input' as a directory, "
                     "traversing to see if we can detect any FASTQ files.")
-        par["input"] = [input_path for input_path in par["input"].rglob('*') 
+        par["input"] = [input_path for input_path in par["input"].rglob('*')
                         if re.match(fastq_regex, input_path.name) ]
 
     # check input fastq files
     for input_path in par["input"]:
         assert re.match(fastq_regex, input_path.name) is not None, \
                f"File name of --input '{input_path}' should match regex {fastq_regex}."
-    
-    # check lengths of libraries metadata 
+
+    # check lengths of libraries metadata
     library_dict = subset_dict(par, LIBRARY_PARAMS)
     check_subset_dict_equal_length("Library", library_dict)
     # storing for later use
@@ -170,7 +170,7 @@ def generate_config(par: dict[str, Any], fastq_dir: str) -> str:
     # process samples parameters
     cmo_pars = subset_dict(par, SAMPLE_PARAMS_CONFIG_KEYS)
     cmo_strs = generate_csv_category("samples", cmo_pars)
-    
+
     # combine content
     content_list = serialized_refs + libraries_strs + cmo_strs
     return '\n'.join(content_list)
@@ -194,12 +194,12 @@ def main(par: dict[str, Any], meta: dict[str, Any]):
 
                 with tarfile.open(reference, 'r') as open_tar:
                     members = open_tar.getmembers()
-                    root_dirs = [member for member in members if member.isdir() 
+                    root_dirs = [member for member in members if member.isdir()
                                  and member.name != '.' and '/' not in member.name]
                     # if there is only one root_dir (and there are files in that directory)
                     # strip that directory name from the destination folder
                     if len(root_dirs) == 1:
-                        for mem in members: 
+                        for mem in members:
                             mem.path = Path(*Path(mem.path).parts[1:])
                     members_to_move = [mem for mem in members if mem.path != Path('.')]
                     open_tar.extractall(unpacked_directory, members=members_to_move)
@@ -228,7 +228,7 @@ def main(par: dict[str, Any], meta: dict[str, Any]):
         ## Run pipeline
         if par["dryrun"]:
             par['output'].mkdir(parents=True, exist_ok=True)
-            
+
             # write config file
             config_file = par['output'] / "config.csv"
             with open(config_file, "w") as f:
@@ -256,8 +256,8 @@ def main(par: dict[str, Any], meta: dict[str, Any]):
             # look for output dir file
             tmp_output_dir = temp_dir_path / temp_id / "outs"
             expected_files = {
-                Path("multi"): Path.is_dir, 
-                Path("per_sample_outs"): Path.is_dir, 
+                Path("multi"): Path.is_dir,
+                Path("per_sample_outs"): Path.is_dir,
                 Path("config.csv"): Path.is_file,
             }
             for file_path, type_func in expected_files.items():

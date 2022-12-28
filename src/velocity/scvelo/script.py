@@ -70,7 +70,7 @@ def main():
 
     # Second step in velocyto calculations
     # Velocity calculation and visualization
-    # From the scvelo manual: 
+    # From the scvelo manual:
     # The solution to the full dynamical model is obtained by setting mode='dynamical',
     # which requires to run scv.tl.recover_dynamics(adata) beforehand
     scvelo.tl.recover_dynamics(adata)
