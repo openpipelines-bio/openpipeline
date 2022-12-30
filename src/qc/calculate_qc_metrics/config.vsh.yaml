@@ -52,8 +52,8 @@ functionality:
       path: script.py
   test_resources:
     - type: python_script
-      path: run_test.py
-    - path: ../../../resources_test/pbmc_1k_protein_v3
+      path: test.py
+    - path: ../../../resources_test/pbmc_1k_protein_v3/pbmc_1k_protein_v3_filtered_feature_bc_matrix.h5mu
 platforms:
   - type: docker
     image: python:3.9
