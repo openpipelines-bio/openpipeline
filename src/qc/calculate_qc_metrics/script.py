@@ -83,9 +83,7 @@ def get_top_from_csr_matrix(matrix, top_n_genes):
     top_n_genes = np.array(top_n_genes).astype(np.int64)
     assert np.all(top_n_genes[:-1] <= top_n_genes[1:]), "top_n_genes must be sorted"
     row_indices, data = matrix.indptr, matrix.data
-    number_of_rows = row_indices.size-1
-    row_sums = np.zeros(number_of_rows, dtype=data.dtype)
-    max_genes_to_parse = top_n_genes[-1]
+    number_of_rows, max_genes_to_parse = row_indices.size-1, top_n_genes[-1]
     top_data = np.zeros((number_of_rows, max_genes_to_parse), 
                         dtype=data.dtype)
     # Loop over each row to create a dense matrix without the 0 counts,
@@ -94,7 +92,6 @@ def get_top_from_csr_matrix(matrix, top_n_genes):
     for row_number in range(number_of_rows):
         row_start_index, row_end_index = row_indices[row_number], row_indices[row_number+1]
         row_data = data[row_start_index:row_end_index] # all non-zero counts for an row
-        row_sums[row_number] = np.sum(row_data)
         try:
             # There are less genes with counts in the row than the
             # maximum number of genes we would like to select
@@ -103,20 +100,15 @@ def get_top_from_csr_matrix(matrix, top_n_genes):
         except ValueError:
             # Store the counts for the top genes
             top_data[row_number, :] = np.partition(row_data, -max_genes_to_parse)[-max_genes_to_parse:]
-        # Sort the genes into bins (distributions) of least counts to most counts. 
-        # Within a distribution, genes can have whatever sorting
-        top_data[row_number, :] = np.partition(top_data[row_number, :], max_genes_to_parse - top_n_genes)
-    # Switch the order around
+
+    # Partition works from smallest to largest, but we want largest
+    # so do smallest to largest first (but with reversed indices)
+    top_data = np.partition(top_data, max_genes_to_parse - top_n_genes)
+    # And then switch the order around
     top_data = np.flip(top_data, axis=1)
-    cumulative_sum = np.zeros((number_of_rows), dtype=data.dtype)
-    distributions = np.zeros((number_of_rows, len(top_n_genes)), dtype=np.float64)
-    prev = 0
-    for i, distrubution_size in enumerate(top_n_genes):
-        cumulative_sum += top_data[:, prev:distrubution_size].sum(axis=1)
-        distributions[:, i] = cumulative_sum
-        prev = distrubution_size
-    return distributions / np.expand_dims(row_sums, axis=1)
-    
+
+    cumulative = top_data.cumsum(axis=1, dtype=np.float64)[:,top_n_genes-1]
+    return cumulative / np.array(matrix.sum(axis=1))
 
 if __name__ == "__main__":
     main()
