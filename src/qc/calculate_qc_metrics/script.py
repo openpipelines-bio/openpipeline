@@ -39,7 +39,7 @@ def main():
     if par["top_n_vars"]:
         par["top_n_vars"] = sorted(par["top_n_vars"])
         distributions = get_top_from_csr_matrix(layer, par["top_n_vars"])
-        top_metrics = {distribution_size: distribution 
+        top_metrics = {distribution_size: distribution * 100
                        for distribution_size, distribution 
                        in zip(par["top_n_vars"], distributions.T)}
     
