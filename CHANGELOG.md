@@ -1,5 +1,11 @@
 # openpipelines 0.6.2
 
+## NEW FUNCTIONALITY
+
+* `qc/calculate_qc_metrics`: Add basic statistics to .var and .obs.
+
+## BUG FIXES
+
 * `mapping/htseq_count_to_h5mu`: Fix a bug where reading in the gtf file caused `AttributeError`. 
 
 # openpipeline 0.6.1
