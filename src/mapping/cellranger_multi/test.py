@@ -44,7 +44,9 @@ class TestCellrangerMulti(TestCase):
                "--vdj_reference", vdj_reference,
                "--feature_reference", feature_reference,
                "--library_id", "5k_human_antiCMV_T_TBNK_connect_GEX_1_subset;5k_human_antiCMV_T_TBNK_connect_AB_subset;5k_human_antiCMV_T_TBNK_connect_VDJ_subset",
-               "--library_type", "Gene Expression;Antibody Capture;VDJ"])
+               "--library_type", "Gene Expression;Antibody Capture;VDJ",
+               "---cpus", str(meta['cpus']),
+               "---memory", f"{meta['memory_gb']}GB"])
         # check for raw data
         self.assertTrue(Path("output/multi/count/raw_feature_bc_matrix.h5").is_file())
 
