@@ -229,7 +229,7 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
     "config" : "/home/runner/work/openpipeline/openpipeline/src/dataflow/concat/config.vsh.yaml",
     "platform" : "nextflow",
     "viash_version" : "0.6.7",
-    "git_commit" : "72914dc7210371f8d89fceb90b585bd0d8db957b",
+    "git_commit" : "73f83ceb9e62cc90a3c901befbf4ea52eaea51e4",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))
@@ -535,7 +535,12 @@ def concatenate_modalities(n_processes: int, modalities: dict[str, Iterable[annd
 
 def main() -> None:
     # Read in sample names and sample .h5mu files
-    samples: list[mu.MuData] = [mu.read(path.strip()) for path in par["input"]]
+    samples: list[mu.MuData] = []
+    for path in par["input"]:
+        try:
+            samples.append(mu.read(path.strip()))
+        except ValueError as e:
+            raise ValueError(f"Failed to load {path}.") from e
 
     input_ids = None
     if par["input_id"]:
