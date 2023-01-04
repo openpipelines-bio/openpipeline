@@ -2,6 +2,10 @@
 
 * `mapping/htseq_count_to_h5mu`: Fix a bug where reading in the gtf file caused `AttributeError`. 
 
+## MINOR CHANGES
+
+* `dataflow/concat`: include path of file in error message when reading a mudata file fails.
+
 # openpipeline 0.6.1
 
 ## NEW FUNCTIONALITY
