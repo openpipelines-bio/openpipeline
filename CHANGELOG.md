@@ -1,3 +1,15 @@
+# openpipeline 0.6.3
+
+## NEW FUNCTIONALITY
+* `workflows/multiomics/prot_singlesample`: Processing unimodal single-sample CITE-seq data.
+
+* `workflows/multiomics/rna_singlesample` and `workflows/multiomics/full_pipeline`: Add filtering arguments to pipeline.
+
+## MINOR CHANGES
+
+
+## BUG FIXES
+
 # openpipelines 0.6.2
 
 * `mapping/htseq_count_to_h5mu`: Fix a bug where reading in the gtf file caused `AttributeError`. 
