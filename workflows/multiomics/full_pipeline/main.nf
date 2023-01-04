@@ -9,10 +9,11 @@ include { concat } from targetDir + '/dataflow/concat/main.nf'
 include { remove_modality }  from targetDir + '/filter/remove_modality/main.nf'
 include { run_wf as rna_singlesample } from workflowDir + '/multiomics/rna_singlesample/main.nf'
 include { run_wf as rna_multisample } from workflowDir + '/multiomics/rna_multisample/main.nf'
+include { run_wf as prot_singlesample } from workflowDir + '/multiomics/prot_singlesample/main.nf'
 include { run_wf as integration } from workflowDir + '/multiomics/integration/main.nf'
 
 include { readConfig; viashChannel; helpMessage; readCsv } from workflowDir + "/utils/WorkflowHelper.nf"
-include { passthroughMap as pmap; passthroughFlatMap as pFlatMap } from workflowDir + "/utils/DataflowHelper.nf"
+include {  setWorkflowArguments; getWorkflowArguments; passthroughMap as pmap; passthroughFlatMap as pFlatMap } from workflowDir + "/utils/DataflowHelper.nf"
 config = readConfig("$projectDir/config.vsh.yaml")
 
 
@@ -30,23 +31,48 @@ workflow run_wf {
 
   main:
   start_ch = input_ch
+    | setWorkflowArguments (
+        "add_id_args": ["input": "input"],
+        "split_modalities_args": [:],
+        "rna_singlesample_args": [
+          "min_counts": "rna_min_counts",
+          "max_counts": "rna_max_counts",
+          "min_genes_per_cell": "rna_min_genes_per_cell",
+          "max_genes_per_cell": "rna_max_genes_per_cell",
+          "min_cells_per_gene": "rna_min_cells_per_gene",
+          "min_fraction_mito": "rna_min_fraction_mito",
+          "max_fraction_mito": "rna_max_fraction_mito",
+        ],
+        "prot_singlesample_args": [
+          "min_counts": "prot_min_counts",
+          "max_counts": "prot_max_counts",
+          "min_genes_per_cell": "prot_min_proteins_per_cell",
+          "max_genes_per_cell": "prot_max_proteins_per_cell",
+          "min_cells_per_gene": "prot_min_cells_per_protein",
+          "min_fraction_mito": "prot_min_fraction_mito",
+          "max_fraction_mito": "prot_max_fraction_mito",
+        ],
+        "rna_multisample_args": [:],
+        "prot_multisample_args": [:],
+        "integration_args": [
+          "obs_covariates": "obs_covariates", 
+          "filter_with_hvg_var_output": "filter_with_hvg_var_output"
+        ]
+    )
     // add ids to obs_names and to .obs[sample_id]
-    | map { id, data ->
-      def new_data = [
-        input: data.input, 
-        input_id: id, 
-        make_observation_keys_unique: true, 
-        obs_output: 'sample_id'
-      ]
-      def new_passthrough = ["obs_covariates": data.obs_covariates, 
-                             "filter_with_hvg_var_output": data.filter_with_hvg_var_output]
-      [ id, new_data, new_passthrough ]
+    | getWorkflowArguments(key: "add_id_args")
+
+    | pmap { id, data ->
+        [id, data + [input_id: id, make_observation_keys_unique: true, obs_output: 'sample_id']]
     }
-    | add_id 
+    | add_id
+    | view { "After add_id: $it" }
 
     // split by modality
+    | getWorkflowArguments(key: "split_modalities_args")
     | split_modalities
-    
+    | view { "After split modalities: $it" }
+
     // combine output types csv
     | pFlatMap {id, data, passthrough ->
       def outputDir = data.output
@@ -56,40 +82,23 @@ workflow run_wf {
         // def new_id = id + "_" + dat.name
         def new_id = id // it's okay because the channel will get split up anyways
         def new_data = outputDir.resolve(dat.filename)
-        def new_passthrough = passthrough + [ modality: dat.name ]
-        [ new_id, new_data, new_passthrough]
+        def new_passthrough = passthrough
+        [ new_id, ["input": new_data], new_passthrough, [ modality: dat.name ]]
       }
     }
 
     modality_processors = [
-      [id: "rna", singlesample: rna_singlesample, multisample: rna_multisample],
-      // [id: "vdj_t", singlesample: null, multisample: null],
-      // [id: "vdj_b", singlesample: null, multisample: null],
-      // [id: "prot", singlesample: null, multisample: null],
-      // [id: "atac", singlesample: null, multisample: null],
+      ["id": "rna", "singlesample": rna_singlesample, "multisample": rna_multisample],
+      ["id": "prot", "singlesample": prot_singlesample, "multisample": null]
     ]
     known_modalities = modality_processors.collect{it.id}
-
-    unknown_channel = start_ch
-      | filter { ! known_modalities.contains(it[2].modality)}
-      | map { lst ->
-          [lst[2].modality] + lst
-       }
-      | groupTuple(by: 0)
-      // [modality, [sample_id1, sample_id2, ...], [h5mu1, h5mu2, ...], [passthrough, copy_passthrough, ...]]
-      | map { grouped_lst ->
-        def modality_name = grouped_lst[0]
-        ["combined_$modality_name", ["sample_id": grouped_lst[1], 
-         "input": grouped_lst[2]], grouped_lst[3][0]] // passthrough is copied, just pick the first
-      }
-      | concat.run(renameKeys: [input_id: "sample_id"])
 
     mod_chs = modality_processors.collect{ modality_processor ->
       // Select the files corresponding to the currently selected modality
       mod_ch = start_ch
-        | filter{ it[2].modality == modality_processor.id }
-        | view {"start channel-$modality_processor.id: $it"}
-
+        | filter{ it[3].modality == modality_processor.id }
+        | getWorkflowArguments(key: ("$modality_processor.id" + "_singlesample_args").toString() )
+        | view { "single-sample-input-$modality_processor.id: $it" }
       // Run the single-sample processing if defined
       ss_ch = (modality_processor.singlesample ? \
                mod_ch | modality_processor.singlesample : \
@@ -97,13 +106,14 @@ workflow run_wf {
       
       // Reformat arguments to serve to the multisample processing
       input_ms_ch = ss_ch
-        | view { "single-sample-input-$modality_processor.id: $it" }
+        | view { "single-sample-output-$modality_processor.id: $it" }
         | toSortedList{ a, b -> b[0] <=> a[0] }
         | filter { it.size() != 0 } // filter when event is empty
         | map{ list -> 
           def new_data = ["sample_id": list.collect{it[0]}, "input": list.collect{it[1]}]
           ["combined_$modality_processor.id", new_data] + list[0].drop(2)
         }
+        | getWorkflowArguments(key: ("$modality_processor.id" + "_multisample_args").toString() )
         | view { "input multichannel-$modality_processor.id: $it" }
       
       // Run the multisample processing if defined, otherwise just concatenate samples together
@@ -117,6 +127,21 @@ workflow run_wf {
       )
       return out_ch
     }
+    
+  // Keep and concat unknown modalities as well
+  unknown_channel = start_ch
+    | filter { ! known_modalities.contains(it[3].modality.toString())}
+    | map { lst -> // Put modality name in first element so that we can group on it
+        [lst[3].modality] + lst
+      }
+    | groupTuple(by: 0)
+    | map { grouped_lst ->
+      def modality_name = grouped_lst[0]
+      ["combined_$modality_name", 
+       ["input": grouped_lst[2].collect{it.input}, "sample_id": grouped_lst[1]],
+       grouped_lst[3][0]] // passthrough is copied, just pick the first
+    }
+    | concat.run(renameKeys: [input_id: "sample_id"])
 
   // Concat channel if more than one modality was found
   merge_ch = unknown_channel.concat(*mod_chs)
@@ -126,16 +151,10 @@ workflow run_wf {
       ["merged", list.collect{it[1]}] + list[0].drop(2)
     }
     | merge
-    | map { id, data, passthrough -> 
-      def new_data = [
-        "input": data, 
-        "layer": "log_normalized", 
-        "obs_covariates": passthrough.get("obs_covariates"),
-        "filter_with_hvg_var_output": passthrough.get("filter_with_hvg_var_output")
-      ]
-      [id, new_data]
-    }
+    | getWorkflowArguments(key: "integration_args")
+    | pmap {id, input_args -> [id, input_args + [layer: "log_normalized"]]}
     | integration
+    | map {list -> [list[0], list[1]]} 
 
   emit:
   output_ch
@@ -153,17 +172,18 @@ workflow test_wf {
         [
           id: "mouse",
           input: params.resources_test + "/concat_test_data/e18_mouse_brain_fresh_5k_filtered_feature_bc_matrix_subset_unique_obs.h5mu",
-          obs_covariates: "sample_id",
           publish_dir: "foo/"
         ],
         [
           id: "human",
           input: params.resources_test + "/concat_test_data/human_brain_3k_filtered_feature_bc_matrix_subset_unique_obs.h5mu",
           input_type: "10xmtx",
-          obs_covariates: "sample_id",
           publish_dir: "foo/"
         ]
-      ]
+      ],
+    obs_covariates: "sample_id",
+    rna_min_counts: 2,
+    prot_min_counts: 3
     ]
 
 
@@ -181,6 +201,35 @@ workflow test_wf {
         assert output_list.size() == 1 : "output channel should contain one event"
         assert output_list[0][0] == "merged" : "Output ID should be 'merged'"
       }
+  
+}
+
+
+workflow test_wf3 {
+  helpMessage(config)
+
+  // allow changing the resources_test dir
+  params.resources_test = params.rootDir + "/resources_test"
+
+  // or when running from s3: params.resources_test = "s3://openpipelines-data/"
+  testParams = [
+    param_list: [
+        [
+          id: "mouse",
+          input: params.resources_test + "/concat_test_data/e18_mouse_brain_fresh_5k_filtered_feature_bc_matrix_subset_unique_obs.h5mu",
+          publish_dir: "foo/"
+        ],
+        [
+          id: "human",
+          input: params.resources_test + "/concat_test_data/human_brain_3k_filtered_feature_bc_matrix_subset_unique_obs.h5mu",
+          input_type: "10xmtx",
+          publish_dir: "foo/"
+        ]
+      ],
+    obs_covariates: "sample_id",
+    rna_min_counts: 2
+    ]
+
   input_ch = viashChannel(testParams, config)
     // store output value in 3rd slot for later use
     // and transform for concat component
@@ -211,6 +260,41 @@ workflow test_wf {
         [tup[0], new_data]
       }
       | view { "Input test 2: $it" }
+      | run_wf
+      | view { output ->
+        assert output.size() == 2 : "outputs should contain two elements; [id, file]"
+        assert output[1].toString().endsWith(".h5mu") : "Output file should be a h5mu file. Found: ${output[1]}"
+        "Output: $output"
+      }
+      | toSortedList()
+      | map { output_list ->
+        assert output_list.size() == 1 : "output channel should contain one event"
+        assert output_list[0][0] == "merged" : "Output ID should be 'merged'"
+      }
+}
+
+workflow test_wf2 {
+  helpMessage(config)
+
+  // allow changing the resources_test dir
+  params.resources_test = params.rootDir + "/resources_test"
+
+  testParams = [
+    param_list: [
+        [
+          id: "pbmc",
+          input: params.resources_test + "/pbmc_1k_protein_v3/pbmc_1k_protein_v3_filtered_feature_bc_matrix.h5mu",
+          publish_dir: "test2/"
+        ],
+      ],
+    obs_covariates: "sample_id",
+    rna_min_counts: 2,
+    prot_min_counts: 3
+    ]
+
+  output_ch =
+    viashChannel(testParams, config)
+      | view { "Input: $it" }
       | run_wf
       | view { output ->
         assert output.size() == 2 : "outputs should contain two elements; [id, file]"
