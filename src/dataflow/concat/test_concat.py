@@ -345,7 +345,7 @@ def test_concat_invalid_h5_error_includes_path(run_component, tmp_path):
                 "--other_axis_mode", "move",
                 "---cpus", str(meta["cpus"])
                 ])
-    assert re.search(rf"ValueError: Failed to load /viash_automount{str(empty_file)}\.",
+    assert re.search(rf"ValueError: Failed to load .*{str(empty_file.name)}\.",
                      err.value.stdout.decode('utf-8'))
 
 if __name__ == '__main__':
