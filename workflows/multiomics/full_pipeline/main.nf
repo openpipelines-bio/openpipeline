@@ -71,7 +71,6 @@ workflow run_wf {
     // split by modality
     | getWorkflowArguments(key: "split_modalities_args")
     | split_modalities
-    | view { "After split modalities: $it" }
 
     // combine output types csv
     | pFlatMap {id, data, passthrough ->
