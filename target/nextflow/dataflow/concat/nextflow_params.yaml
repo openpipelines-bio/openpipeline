@@ -1,6 +1,6 @@
 # Arguments
 input: # please fill in - example: ["sample_paths"]
-input_id: # please fill in - example: ["foo"]
+# input_id: ["foo"]
 # output: "$id.$key.output.h5mu"
 obs_sample_name: "sample_id"
 compression: "gzip"

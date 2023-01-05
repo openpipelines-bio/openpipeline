@@ -170,7 +170,7 @@ function ViashHelp {
   echo "        Paths to the different samples to be concatenated."
   echo ""
   echo "    --input_id"
-  echo "        type: string, required parameter, multiple values allowed"
+  echo "        type: string, multiple values allowed"
   echo "        Names of the different samples that have to be concatenated.  Must be"
   echo "        specified when using '--mode move'."
   echo "        In this case, the ids will be used for the columns names of the"
@@ -407,10 +407,6 @@ fi
 # check whether required parameters exist
 if [ -z ${VIASH_PAR_INPUT+x} ]; then
   ViashError '--input' is a required argument. Use "--help" to get more information on the parameters.
-  exit 1
-fi
-if [ -z ${VIASH_PAR_INPUT_ID+x} ]; then
-  ViashError '--input_id' is a required argument. Use "--help" to get more information on the parameters.
   exit 1
 fi
 if [ -z ${VIASH_META_FUNCTIONALITY_NAME+x} ]; then

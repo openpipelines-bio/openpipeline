@@ -6,6 +6,10 @@
 
 * `dataflow/concat`: include path of file in error message when reading a mudata file fails.
 
+## BUG FIXES
+
+* `dataflow/concat`: the `--input_id` is no longer required when `--mode` is not `move`.
+
 # openpipeline 0.6.1
 
 ## NEW FUNCTIONALITY

@@ -170,7 +170,7 @@ function ViashHelp {
   echo "        Paths to the different samples to be concatenated."
   echo ""
   echo "    --input_id"
-  echo "        type: string, required parameter, multiple values allowed"
+  echo "        type: string, multiple values allowed"
   echo "        Names of the different samples that have to be concatenated.  Must be"
   echo "        specified when using '--mode move'."
   echo "        In this case, the ids will be used for the columns names of the"
@@ -430,9 +430,9 @@ RUN pip install --upgrade pip && \
 
 LABEL org.opencontainers.image.authors="Dries Schaumont"
 LABEL org.opencontainers.image.description="Companion container for running component dataflow concat"
-LABEL org.opencontainers.image.created="2023-01-05T14:16:08Z"
+LABEL org.opencontainers.image.created="2023-01-05T15:39:39Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="772316fd61be87e73ac8da27f3eadd16535d97ed"
+LABEL org.opencontainers.image.revision="b84e7e2d8f200bdcfd66c26b219c9dd27640a24e"
 LABEL org.opencontainers.image.version="main_build"
 VIASHDOCKER
 }
@@ -798,10 +798,6 @@ fi
 # check whether required parameters exist
 if [ -z ${VIASH_PAR_INPUT+x} ]; then
   ViashError '--input' is a required argument. Use "--help" to get more information on the parameters.
-  exit 1
-fi
-if [ -z ${VIASH_PAR_INPUT_ID+x} ]; then
-  ViashError '--input_id' is a required argument. Use "--help" to get more information on the parameters.
   exit 1
 fi
 if [ -z ${VIASH_META_FUNCTIONALITY_NAME+x} ]; then

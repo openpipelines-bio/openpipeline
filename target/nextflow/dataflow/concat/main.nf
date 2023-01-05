@@ -65,7 +65,7 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
         "type" : "string",
         "name" : "--input_id",
         "description" : "Names of the different samples that have to be concatenated.  Must be specified when using '--mode move'.\nIn this case, the ids will be used for the columns names of the dataframes registring the conflicts.\nIf specified, must be of same length as `--input`.\n",
-        "required" : true,
+        "required" : false,
         "direction" : "input",
         "multiple" : true,
         "multiple_sep" : ",",
@@ -229,7 +229,7 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
     "config" : "/home/runner/work/openpipeline/openpipeline/src/dataflow/concat/config.vsh.yaml",
     "platform" : "nextflow",
     "viash_version" : "0.6.7",
-    "git_commit" : "772316fd61be87e73ac8da27f3eadd16535d97ed",
+    "git_commit" : "b84e7e2d8f200bdcfd66c26b219c9dd27640a24e",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))

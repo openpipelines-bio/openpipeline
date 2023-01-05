@@ -198,5 +198,5 @@ info:
   output: "/home/runner/work/openpipeline/openpipeline/target/docker/velocity/velocyto"
   executable: "/home/runner/work/openpipeline/openpipeline/target/docker/velocity/velocyto/velocyto"
   viash_version: "0.6.7"
-  git_commit: "772316fd61be87e73ac8da27f3eadd16535d97ed"
+  git_commit: "b84e7e2d8f200bdcfd66c26b219c9dd27640a24e"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"
