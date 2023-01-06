@@ -3,6 +3,7 @@ import mudata as mu
 import numpy as np
 import logging
 from sys import stdout
+import re
 
 ## VIASH START
 par = {
@@ -59,14 +60,22 @@ hvg_args = {
     'flavor': par["flavor"],
     'subset': False,
     'inplace': False,
-    'layer': par['layer']
+    'layer': par['layer'],
 }
 
+optional_parameters = {
+    "max_disp": "max_disp",
+    "obs_batch_key": "batch_key",
+    "n_top_genes": "n_top_genes"
+}
 # only add parameter if it's passed
-if par.get("max_disp", None) is not None:
-    hvg_args["max_disp"] = par["max_disp"]
-if par.get("obs_batch_key", None) is not None:
-    hvg_args["batch_key"] = par["obs_batch_key"]
+for par_name, dest_name in optional_parameters.items():
+    if par.get(par_name):
+        hvg_args[dest_name] = par[par_name]
+
+# scanpy does not do this check, although it is stated in the documentation
+if par['flavor'] == "seurat_v3" and not par['n_top_genes']:
+    raise ValueError("When flavor is set to 'seurat_v3', you are required to set 'n_top_genes'.")
 
 # call function
 try:
@@ -74,14 +83,19 @@ try:
     out.index = data.var.index
 except ValueError as err:
     if str(err) == "cannot specify integer `bins` when input data contains infinity":
-        err.args = ("Cannot specify integer `bins` when input data contains infinity. Perhaps input data has not been log normalized?",)
+        err.args = ("Cannot specify integer `bins` when input data contains infinity. "
+                    "Perhaps input data has not been log normalized?",)
+    if re.search("Bin edges must be unique:", str(err)):
+        raise RuntimeError("Scanpy failed to calculate hvg. The error "
+                           "returned by scanpy (see above) could be the "
+                           "result from trying to use this component on unfiltered data.") from err
     raise err
 
 logger.info("\tStoring output into .var")
 if par.get("var_name_filter", None) is not None:
     data.var[par["var_name_filter"]] = out["highly_variable"]
 
-if par.get("varm_name", None) is not None:
+if par.get("varm_name", None) is not None and par["flavor"] in ('seurat', 'cell_ranger'):
     # drop mean_bin as mudata/anndata doesn't support tuples
     data.varm[par["varm_name"]] = out.drop("mean_bin", axis=1)
 

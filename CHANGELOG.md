@@ -6,9 +6,15 @@
 
 * `dataflow/concat`: include path of file in error message when reading a mudata file fails.
 
+* `filter/filter_with_hvg`: Enforce that `n_top_genes` is set when `flavor` is set to 'seurat_v3'.
+
+* `filter/filter_with_hvg`: Improve error message when trying to use 'cell_ranger' as `flavor` and passing unfiltered data.
+
 ## BUG FIXES
 
 * `dataflow/concat`: the `--input_id` is no longer required when `--mode` is not `move`.
+
+* `filter/filter_with_hvg`: does no longer try to use `--varm_name` to set non-existant metadata when running with `--flavor seurat_v3`, which was causing `KeyError`.
 
 # openpipeline 0.6.1
 
