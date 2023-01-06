@@ -530,9 +530,9 @@ RUN pip install --upgrade pip && \
   pip install --upgrade --no-cache-dir "git+https://github.com/broadinstitute/CellBender"
 
 LABEL org.opencontainers.image.description="Companion container for running component correction cellbender_remove_background"
-LABEL org.opencontainers.image.created="2023-01-05T15:39:32Z"
+LABEL org.opencontainers.image.created="2023-01-06T12:43:40Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="b84e7e2d8f200bdcfd66c26b219c9dd27640a24e"
+LABEL org.opencontainers.image.revision="9c338d8e51cb2cfa14228b2ebb02d0d9e8040145"
 LABEL org.opencontainers.image.version="main_build"
 VIASHDOCKER
 }
