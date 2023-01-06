@@ -10,7 +10,6 @@ from multiprocess import Pool
 import math
 import gtfparse
 import pandas as pd
-import numpy as np
 
 ## VIASH START
 par = {
@@ -318,8 +317,7 @@ def run_htseq_count(
 
 def get_feature_info(reference_gtf) -> pd.DataFrame:
     ref = gtfparse.read_gtf(reference_gtf)
-    ref_filt = np.logical_or(ref["feature"] == "gene", ref["source"] == "ERCC")
-    ref_genes = ref[ref_filt]
+    ref_genes = ref.loc[(ref["feature"] == "gene") | (ref["source"] == "ERCC")]
     return pd.DataFrame(
         {
             "feature_id": ref_genes["gene_id"],
