@@ -73,7 +73,7 @@ jobs:
 
     - name: Get changed files
       id: changed-files
-      uses: tj-actions/changed-files@v35.1.0
+      uses: tj-actions/changed-files@v35.3.1
       with:
         separator: ";"
         diff_relative: true
@@ -142,6 +142,6 @@ jobs:
       timeout-minutes: 30
       run: |
         bin/viash test -p docker ${{ matrix.component.config }} \
-         -c '.functionality.requirements.cpus := 2' \
-         -c '.functionality.requirements.memory := "5gb"'
+        --cpus 2 \
+        --memory "5gb"
 

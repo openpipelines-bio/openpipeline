@@ -44,7 +44,7 @@ class TestAddMetadata(TestCase):
         return test_h5mu
 
     def test_add_metadata_var(self):
-        csv = pd.DataFrame({"id": ["sample1", "sample2"], "foo": ["v", "w"], "bar": ["x", "y"]})    
+        csv = pd.DataFrame({"id": ["sample1", "sample2"], "foo": ["v", "w"], "bar": ["x", "y"]})
         with NamedTemporaryFile(suffix=".csv") as temp_csv:
             csv.to_csv(temp_csv.name, index=False)
             self._run_and_check_output([
@@ -63,16 +63,16 @@ class TestAddMetadata(TestCase):
                                                         "foo": ["v", "w", "v"],
                                                         "bar": ["x", "y", "x"]},
                                                        index=pd.Index(['var1', 'var2', 'var3']))
-                                          .astype({"Feat": "object", 
+                                          .astype({"Feat": "object",
                                                    "sample_id_var": "category",
                                                    "foo": "category",
                                                    "bar": "category"}))
             pd.testing.assert_frame_equal(result.mod['mod1'].obs, original_data.mod['mod1'].obs)
             pd.testing.assert_frame_equal(result.mod['mod2'].obs, original_data.mod['mod2'].obs)
-            pd.testing.assert_frame_equal(result.mod['mod2'].var, original_data.mod['mod2'].var)    
+            pd.testing.assert_frame_equal(result.mod['mod2'].var, original_data.mod['mod2'].var)
 
     def test_add_metadata_matrix_sample_column(self):
-        csv = pd.DataFrame({"id": ["sample1", "sample2"], "foo": ["v", "w"], "bar": ["x", "y"]})    
+        csv = pd.DataFrame({"id": ["sample1", "sample2"], "foo": ["v", "w"], "bar": ["x", "y"]})
         with NamedTemporaryFile(suffix=".csv") as temp_csv:
             csv.to_csv(temp_csv.name, index=False)
             self._run_and_check_output([

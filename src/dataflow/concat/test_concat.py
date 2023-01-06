@@ -11,8 +11,14 @@ import sys
 meta = {
     'executable': './target/docker/dataflow/concat/concat',
     'resources_dir': './resources_test/concat_test_data/',
-    'cpus': 2
+    'cpus': 2,
+    'config': '/home/di/code/openpipeline/src/dataflow/concat/config.vsh.yaml'
 }
+
+@pytest.fixture
+def viash_executable():
+    return './bin/viash'
+
 ## VIASH END
 
 meta['cpus'] = 1 if not meta['cpus'] else meta['cpus']
@@ -327,6 +333,20 @@ def test_mode_move(run_component, tmp_path):
             assert concatenated_mod.varm == {}
         assert concatenated_mod.obsm == {}
 
+def test_concat_invalid_h5_error_includes_path(run_component, tmp_path):
+    empty_file = tmp_path / "empty.h5mu"
+    empty_file.touch()
+    with pytest.raises(subprocess.CalledProcessError) as err:
+        run_component([
+                "--input_id", "mouse,empty",
+                "--input", input_sample1_file,
+                "--input", empty_file,
+                "--output", "concat.h5mu",
+                "--other_axis_mode", "move",
+                "---cpus", str(meta["cpus"])
+                ])
+    assert re.search(rf"ValueError: Failed to load .*{str(empty_file.name)}\.",
+                     err.value.stdout.decode('utf-8'))
 
 if __name__ == '__main__':
     sys.exit(pytest.main([__file__], plugins=["viashpy"]))

@@ -216,5 +216,5 @@ jobs:
         SRC_DIR=`dirname ${{ matrix.component.config }}`
         bin/viash ns test --config_mod ".functionality.version := '${{ github.event.inputs.version_tag }}'" \
           -s "$SRC_DIR" \
-          -c '.functionality.requirements.cpus := 2' \
-          -c '.functionality.requirements.memory := "5gb"'
+          --cpus 2 \
+          --memory "5gb"
