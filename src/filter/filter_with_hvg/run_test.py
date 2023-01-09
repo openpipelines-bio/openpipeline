@@ -31,32 +31,66 @@ logger.addHandler(console_handler)
 def input_path():
     return f"{meta['resources_dir']}/pbmc_1k_protein_v3/pbmc_1k_protein_v3_filtered_feature_bc_matrix.h5mu"
 
-@pytest.fixture()
-def lognormed_test_data(tmp_path, input_path):
-    temp_h5mu = tmp_path / "lognormed.h5mu"
+@pytest.fixture
+def input_data(input_path):
     mu_in = mu.read_h5mu(input_path)
-    rna_in = mu_in.mod["rna"]
+    return mu_in
+
+@pytest.fixture
+def lognormed_test_data(input_data):
+    rna_in = input_data.mod["rna"]
     assert "filter_with_hvg" not in rna_in.var.columns
-    sc.pp.log1p(rna_in)
-    mu_in.write_h5mu(temp_h5mu)
+    log_transformed = sc.pp.log1p(rna_in, copy=True)
+    rna_in.layers['log_transformed'] = log_transformed.X
+    rna_in.uns['log1p'] = log_transformed.uns['log1p']
+    return input_data
+
+@pytest.fixture
+def lognormed_test_data_path(tmp_path, lognormed_test_data):
+    temp_h5mu = tmp_path / "lognormed.h5mu"
+    lognormed_test_data.write_h5mu(temp_h5mu)
     return temp_h5mu
 
+@pytest.fixture
+def lognormed_batch_test_data_path(tmp_path, lognormed_test_data):
+    temp_h5mu = tmp_path / "lognormed_batch.h5mu"
+    rna_mod = lognormed_test_data.mod['rna']
+    rna_mod.obs['batch'] = 'A'
+    column_index = rna_mod.obs.columns.get_indexer(['batch'])
+    rna_mod.obs.iloc[slice(rna_mod.n_obs//2, None), column_index] = 'B'
+    lognormed_test_data.write_h5mu(temp_h5mu)
+    return temp_h5mu
 
 @pytest.fixture()
-def filter_data(tmp_path, input_path):
+def filter_data_path(tmp_path, input_data):
     temp_h5mu = tmp_path / "filtered.h5mu"
-    mu_in = mu.read_h5mu(input_path)
-    rna_in = mu_in.mod["rna"]
+    rna_in = input_data.mod["rna"]
     sc.pp.filter_genes(rna_in, min_counts=20)
-    mu_in.write_h5mu(temp_h5mu)
+    input_data.write_h5mu(temp_h5mu)
     return temp_h5mu
 
 
-def test_filter_with_hvg(run_component, lognormed_test_data):
+def test_filter_with_hvg(run_component, lognormed_test_data_path):
     out = run_component([
         "--flavor", "seurat",
-        "--input", lognormed_test_data,
-        "--output", "output.h5mu"])
+        "--input", lognormed_test_data_path,
+        "--output", "output.h5mu",
+        "--layer", "log_transformed"])
+    assert os.path.exists("output.h5mu")
+    data = mu.read_h5mu("output.h5mu")
+    assert "filter_with_hvg" in data.mod["rna"].var.columns
+
+def test_filter_with_hvg_batch_with_(run_component, lognormed_batch_test_data_path):
+    """
+    Make sure that selecting a layer works together with obs_batch_key.
+    https://github.com/scverse/scanpy/issues/2396
+    """
+    run_component([
+        "--flavor", "seurat",
+        "--input", lognormed_batch_test_data_path,
+        "--output", "output.h5mu",
+        "--obs_batch_key", "batch",
+        "--layer", "log_transformed"])
     assert os.path.exists("output.h5mu")
     data = mu.read_h5mu("output.h5mu")
     assert "filter_with_hvg" in data.mod["rna"].var.columns
@@ -80,9 +114,9 @@ def test_filter_with_hvg_seurat_v3(run_component, input_path):
     data = mu.read_h5mu("output.h5mu")
     assert "filter_with_hvg" in data.mod["rna"].var.columns
 
-def test_filter_with_hvg_cell_ranger(run_component, filter_data):
+def test_filter_with_hvg_cell_ranger(run_component, filter_data_path):
     run_component([
-        "--input", filter_data,
+        "--input", filter_data_path,
         "--flavor", "cell_ranger", # Must use filtered data.
         "--output", "output.h5mu"])
     assert os.path.exists("output.h5mu")

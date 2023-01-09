@@ -41,9 +41,23 @@ data = mdata.mod[mod]
 # Workaround for issue
 # https://github.com/scverse/scanpy/issues/2239
 # https://github.com/scverse/scanpy/issues/2181
-if 'log1p' in data.uns and 'base' not in data.uns['log1p']:
-    data.uns['log1p']['base'] = None
-#sc.pp.log1p(data)
+if par['flavor'] != "seurat_v3":
+    # This component requires log normalized data when flavor is not seurat_v3
+    # We assume that the data is correctly normalized but scanpy will look at
+    # .uns to check the transformations performed on the data.
+    # To prevent scanpy from automatically tranforming the counts when they are
+    # already transformed, we set the appropriate values to .uns.
+    if 'log1p' not in data.uns:
+        logger.warning("When flavor is not set to 'seurat_v3', "
+                       "the input data for this component must be log-transformed. "
+                       "However, the 'log1p' dictionairy in .uns has not been set. "
+                       "This is fine if you did not log transform your data with scanpy "
+                       " (as is the case when using the log1p component from openpipeline). "
+                       "Otherwise, please check if you are providing log transformed "
+                       "data using --layer.")
+        data.uns['log1p'] = {'base': None}
+    elif 'log1p' in data.uns and 'base' not in data.uns['log1p']:
+        data.uns['log1p']['base'] = None
 
 logger.info("\tUnfiltered data: %s", data)
 
@@ -95,7 +109,7 @@ logger.info("\tStoring output into .var")
 if par.get("var_name_filter", None) is not None:
     data.var[par["var_name_filter"]] = out["highly_variable"]
 
-if par.get("varm_name", None) is not None and par["flavor"] in ('seurat', 'cell_ranger'):
+if par.get("varm_name", None) is not None and 'mean_bin' in out:
     # drop mean_bin as mudata/anndata doesn't support tuples
     data.varm[par["varm_name"]] = out.drop("mean_bin", axis=1)
 
