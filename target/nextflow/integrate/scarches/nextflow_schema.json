@@ -46,7 +46,7 @@
             "type":"string",
             "description": "Output directory for model",
             
-            "default": "model"
+            "default": "$id.$key.model_output.model_output"
           },"obsm_output": {
             "type":"string",
             "description": "In which .obsm slot to store the resulting integrated embedding.",

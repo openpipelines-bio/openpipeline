@@ -189,7 +189,7 @@ function ViashHelp {
   echo "        Output h5mu file."
   echo ""
   echo "    --model_output"
-  echo "        type: file, file must exist"
+  echo "        type: file, output, file must exist"
   echo "        default: model"
   echo "        Output directory for model"
   echo ""
@@ -616,10 +616,6 @@ if [ ! -z "$VIASH_PAR_REFERENCE" ] && [ ! -e "$VIASH_PAR_REFERENCE" ]; then
   ViashError "Input file '$VIASH_PAR_REFERENCE' does not exist."
   exit 1
 fi
-if [ ! -z "$VIASH_PAR_MODEL_OUTPUT" ] && [ ! -e "$VIASH_PAR_MODEL_OUTPUT" ]; then
-  ViashError "Input file '$VIASH_PAR_MODEL_OUTPUT' does not exist."
-  exit 1
-fi
 
 # check whether parameters values are of the right type
 if [[ -n "$VIASH_PAR_EARLY_STOPPING" ]]; then
@@ -766,6 +762,9 @@ fi
 # create parent directories of output files, if so desired
 if [ ! -z "$VIASH_PAR_OUTPUT" ] && [ ! -d "$(dirname "$VIASH_PAR_OUTPUT")" ]; then
   mkdir -p "$(dirname "$VIASH_PAR_OUTPUT")"
+fi
+if [ ! -z "$VIASH_PAR_MODEL_OUTPUT" ] && [ ! -d "$(dirname "$VIASH_PAR_MODEL_OUTPUT")" ]; then
+  mkdir -p "$(dirname "$VIASH_PAR_MODEL_OUTPUT")"
 fi
 
 ViashDebug "Running command: bash"
@@ -1007,7 +1006,7 @@ def main():
     model_name = _read_model_name_from_registry(model_path)
 
     # Save info about the used model
-    adata_query.uns["integration_method"] = model_name
+    mdata_query.mod[par["modality"]].uns["integration_method"] = model_name
 
     logger.info("Trying to write latent representation")
     output_key = par["obsm_output"].format(model_name=model_name)
@@ -1043,6 +1042,10 @@ VIASHEOF
 # check whether required files exist
 if [ ! -z "$VIASH_PAR_OUTPUT" ] && [ ! -e "$VIASH_PAR_OUTPUT" ]; then
   ViashError "Output file '$VIASH_PAR_OUTPUT' does not exist."
+  exit 1
+fi
+if [ ! -z "$VIASH_PAR_MODEL_OUTPUT" ] && [ ! -e "$VIASH_PAR_MODEL_OUTPUT" ]; then
+  ViashError "Output file '$VIASH_PAR_MODEL_OUTPUT' does not exist."
   exit 1
 fi
 

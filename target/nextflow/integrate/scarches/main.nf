@@ -128,7 +128,7 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
             "must_exist" : true,
             "create_parent" : true,
             "required" : false,
-            "direction" : "input",
+            "direction" : "output",
             "multiple" : false,
             "multiple_sep" : ":",
             "dest" : "par"
@@ -286,6 +286,11 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
         "type" : "file",
         "path" : "../../../resources_test/pbmc_1k_protein_v3/pbmc_1k_protein_v3_mms.h5mu",
         "parent" : "file:/home/runner/work/openpipeline/openpipeline/src/integrate/scarches/config.vsh.yaml"
+      },
+      {
+        "type" : "file",
+        "path" : "../../../resources_test/HLCA_reference_model/HLCA_reference_model.zip",
+        "parent" : "file:/home/runner/work/openpipeline/openpipeline/src/integrate/scarches/config.vsh.yaml"
       }
     ],
     "status" : "enabled",
@@ -357,7 +362,7 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
     "config" : "/home/runner/work/openpipeline/openpipeline/src/integrate/scarches/config.vsh.yaml",
     "platform" : "nextflow",
     "viash_version" : "0.6.7",
-    "git_commit" : "8dffdf8b1cc18a763ffb46d641228de808651431",
+    "git_commit" : "f8c8b5432ef41a75308a206e3574aaf82243d7b1",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))
@@ -590,7 +595,7 @@ def main():
     model_name = _read_model_name_from_registry(model_path)
 
     # Save info about the used model
-    adata_query.uns["integration_method"] = model_name
+    mdata_query.mod[par["modality"]].uns["integration_method"] = model_name
 
     logger.info("Trying to write latent representation")
     output_key = par["obsm_output"].format(model_name=model_name)
