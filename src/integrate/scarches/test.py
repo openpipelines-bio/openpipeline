@@ -8,11 +8,15 @@ import os
 ## VIASH START
 meta = {
     'executable': './target/docker/integrate/scarches/scarches',
-    'resources_dir': './resources_test/pbmc_1k_protein_v3/'
+    'resources_dir': './resources_test/'
 }
 ## VIASH END
 
-input_file = f"{meta['resources_dir']}pbmc_1k_protein_v3_mms.h5mu"
+input_file = f"{meta['resources_dir']}/pbmc_1k_protein_v3_mms.h5mu"
+reference = f"{meta['resources_dir']}/HLCA_reference_model.zip"
+
+assert Path(input_file).is_file()
+assert Path(reference).is_file()
 
 class TestMappingToHLCA(unittest.TestCase):
     def _run_and_check_output(self, args_as_list):
@@ -33,7 +37,7 @@ class TestMappingToHLCA(unittest.TestCase):
             input_data.write(tempfile_input_file.name)
             self._run_and_check_output([
                 "--input", tempfile_input_file.name,
-                "--reference", "https://zenodo.org/record/6337966/files/HLCA_reference_model.zip",
+                "--reference", reference,
                 "--modality", "rna",
                 "--output", "output.h5mu",
                 "--model_output", "./model_output",
