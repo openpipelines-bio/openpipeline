@@ -28,7 +28,7 @@ par = {
 }
 meta = {
     "functionality_name": "star_and_htseq",
-    "cpus": 8,
+    "cpus": 30,
     "temp_dir": "/tmp",
     "config": "src/mapping/multi_star/.config.vsh.yaml",
 }
@@ -213,6 +213,7 @@ def star_and_htseq(
     multiqc_path = star_output / "multiqc_data"
 
     print(f">> Running STAR for group '{group_id}' with command:", flush=True)
+    star_output.mkdir(parents=True, exist_ok=True)
     run_star(
         r1_files=r1_files,
         r2_files=r2_files,
@@ -316,7 +317,7 @@ def run_htseq_count(
 
 def get_feature_info(reference_gtf) -> pd.DataFrame:
     ref = gtfparse.read_gtf(reference_gtf)
-    ref_genes = ref[ref["feature"] == "gene"]
+    ref_genes = ref.loc[(ref["feature"] == "gene") | (ref["source"] == "ERCC")]
     return pd.DataFrame(
         {
             "feature_id": ref_genes["gene_id"],
