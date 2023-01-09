@@ -51,8 +51,7 @@ if par['flavor'] != "seurat_v3":
         logger.warning("When flavor is not set to 'seurat_v3', "
                        "the input data for this component must be log-transformed. "
                        "However, the 'log1p' dictionairy in .uns has not been set. "
-                       "This is fine if you did not log transform your data with scanpy "
-                       " (as is the case when using the log1p component from openpipeline). "
+                       "This is fine if you did not log transform your data with scanpy."
                        "Otherwise, please check if you are providing log transformed "
                        "data using --layer.")
         data.uns['log1p'] = {'base': None}
