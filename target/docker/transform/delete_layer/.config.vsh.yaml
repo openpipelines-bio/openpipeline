@@ -146,5 +146,5 @@ info:
   output: "/home/runner/work/openpipeline/openpipeline/target/docker/transform/delete_layer"
   executable: "/home/runner/work/openpipeline/openpipeline/target/docker/transform/delete_layer/delete_layer"
   viash_version: "0.6.7"
-  git_commit: "1bfa25d078e2ffbb6723637394dcd1b4d7eaf011"
+  git_commit: "8dffdf8b1cc18a763ffb46d641228de808651431"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"

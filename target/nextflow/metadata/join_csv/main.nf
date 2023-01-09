@@ -79,7 +79,7 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
           {
             "type" : "string",
             "name" : "--obs_key",
-            "description" : "Obs column name where the sample id can be found for each observation to join on.\nUseful when adding metadata to concatenated samples.\nMutually exclusive with --var_key and --sample_id\\"\n",
+            "description" : "Obs column name where the sample id can be found for each observation to join on.\nUseful when adding metadata to concatenated samples.\nMutually exclusive with `--var_key`.\\"\n",
             "required" : false,
             "direction" : "input",
             "multiple" : false,
@@ -89,7 +89,7 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
           {
             "type" : "string",
             "name" : "--var_key",
-            "description" : "Var column name where the sample id can be found for each observation to join on.\nUseful when adding metadata to concatenated samples.\nMutually exclusive with --var_key and --sample_id.\\"\n",
+            "description" : "Var column name where the sample id can be found for each variable to join on.\nMutually exclusive with `--obs_key`.\\"\n",
             "required" : false,
             "direction" : "input",
             "multiple" : false,
@@ -220,7 +220,7 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
     "config" : "/home/runner/work/openpipeline/openpipeline/src/metadata/join_csv/config.vsh.yml",
     "platform" : "nextflow",
     "viash_version" : "0.6.7",
-    "git_commit" : "1bfa25d078e2ffbb6723637394dcd1b4d7eaf011",
+    "git_commit" : "8dffdf8b1cc18a763ffb46d641228de808651431",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))
