@@ -411,9 +411,9 @@ RUN pip install --upgrade pip && \
 
 LABEL org.opencontainers.image.authors="Robrecht Cannoodt"
 LABEL org.opencontainers.image.description="Companion container for running component transform regress_out"
-LABEL org.opencontainers.image.created="2023-01-10T08:26:06Z"
+LABEL org.opencontainers.image.created="2023-01-10T09:20:47Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="a16e9b155e851596e3c62c31dd1128c17433ca2f"
+LABEL org.opencontainers.image.revision="4d262fc5a0e1ec27f4376787d448b33b2f69ef29"
 LABEL org.opencontainers.image.version="main_build"
 VIASHDOCKER
 }
