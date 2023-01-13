@@ -11,6 +11,7 @@ from typing import Optional, Any, Union
 import tarfile
 from pathlib import Path
 import shutil
+from itertools import chain
 
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
@@ -40,20 +41,20 @@ par = {
   'library_subsample': None,
   'gex_expect_cells': None,
   'gex_chemistry': 'auto',
-  'gex_secondary_analysis': True,
-  'gex_generate_bam': True,
-  'gex_include_introns': True,
+  'gex_secondary_analysis': False,
+  'gex_generate_bam': False,
+  'gex_include_introns': False,
   'cell_multiplex_sample_id': None,
   'cell_multiplex_oligo_ids': None,
   'cell_multiplex_description': None,
   'dryrun': False
 }
 meta = {
-  'cpus': None,
+  'cpus': 10,
   'memory_b': None,
   'memory_kb': None,
   'memory_mb': None,
-  'memory_gb': None,
+  'memory_gb': 15,
   'memory_tb': None,
   'memory_pb': None,
   'temp_dir': '/tmp'
@@ -63,25 +64,48 @@ meta = {
 fastq_regex = r'([A-Za-z0-9\-_\.]+)_S(\d+)_L(\d+)_[RI](\d+)_(\d+)\.fastq\.gz'
 # assert re.match(fastq_regex, "5k_human_GEX_1_subset_S1_L001_R1_001.fastq.gz") is not None
 
-
-REFERENCES = ("gex_reference", "feature_reference", "vdj_reference")
-REFERENCE_CONFIG_KEYS = {
-    "gex_reference": "gene-expression",
-    "feature_reference": "feature",
-    "vdj_reference": "vdj"
+# Invert some parameters. Keep the original ones for compatibility
+inverted_params = {
+    "gex_generate_no_bam": "gex_generate_bam",
+    "gex_no_secondary_analysis": "gex_secondary_analysis"
 }
 
-LIBRARY_PARAMS = ("library_id", "library_type", "library_subsample", "library_lanes")
+for inverted_param, param in inverted_params.items():
+    par[inverted_param] = not par[param] if par[param] is not None else None
+    del par[param]
+
+GEX_CONFIG_KEYS = {
+    "gex_reference": "reference",
+    "gex_expect_cells": "expect-cells",
+    "gex_chemistry": "chemistry",
+    "gex_no_secondary_analysis": "no-secondary",
+    "gex_generate_no_bam": "no-bam",
+    "gex_include_introns": "include-introns"
+}
+FEATURE_CONFIG_KEYS = {"feature_reference": "reference"}
+VDJ_CONFIG_KEYS = {"vdj_reference": "reference"}
+
+REFERENCE_SECTIONS = {
+    "gene-expression": GEX_CONFIG_KEYS,
+    "feature": FEATURE_CONFIG_KEYS,
+    "vdj": VDJ_CONFIG_KEYS
+}
+
 LIBRARY_CONFIG_KEYS = {'library_id': 'fastq_id',
                        'library_type': 'feature_types',
                        'library_subsample': 'subsample_rate',
                        'library_lanes': 'lanes'}
-
-
-SAMPLE_PARAMS = ("cell_multiplex_sample_id", "cell_multiplex_oligo_ids", "cell_multiplex_description")
 SAMPLE_PARAMS_CONFIG_KEYS = {'cell_multiplex_sample_id': 'sample_id',
                              'cell_multiplex_oligo_ids': 'cmo_ids',
                              'cell_multiplex_description': 'description'}
+
+
+# These are derived from the dictionaries above
+REFERENCES = tuple(reference_param for reference_param, cellranger_param
+                   in chain(GEX_CONFIG_KEYS.items(), FEATURE_CONFIG_KEYS.items(), VDJ_CONFIG_KEYS.items())
+                   if cellranger_param == "reference")
+LIBRARY_PARAMS = tuple(LIBRARY_CONFIG_KEYS.keys())
+SAMPLE_PARAMS = tuple(SAMPLE_PARAMS_CONFIG_KEYS.keys())
 
 
 def lengths_gt1(dic: dict[str, Optional[list[Any]]]) -> dict[str, int]:
@@ -147,29 +171,31 @@ def generate_dict_category(name: str, args: dict[str, str]) -> list[str]:
     else:
         return []
 
-def generate_csv_category(name: str, args: dict[str, str]) -> list[str]:
+def generate_csv_category(name: str, args: dict[str, str], orient: str) -> list[str]:
     title = [ f'[{name}]' ]
     if len(args) > 0:
-        values = [ pd.DataFrame(args).to_csv(index=False) ]
+        index=(orient == 'index')
+        header=(orient== 'columns')
+        values = [pd.DataFrame.from_dict(args, orient=orient).to_csv(index=index, header=header).strip()]
         return title + values + [""]
     else:
         return []
 
 def generate_config(par: dict[str, Any], fastq_dir: str) -> str:
     serialized_refs = []
-    for reference in REFERENCES:
-        pars = subset_dict(par, {reference: 'ref'})
-        serialized = generate_dict_category(REFERENCE_CONFIG_KEYS[reference], pars)
-        serialized_refs.extend(serialized)
+    for section_name, section_params in REFERENCE_SECTIONS.items():
+        reference_pars = subset_dict(par, section_params)
+        reference_strs = generate_csv_category(section_name, reference_pars, orient="index")
+        serialized_refs += reference_strs
 
     # process libraries parameters
     library_pars = subset_dict(par, LIBRARY_CONFIG_KEYS)
     library_pars['fastqs'] = fastq_dir
-    libraries_strs = generate_csv_category("libraries", library_pars)
+    libraries_strs = generate_csv_category("libraries", library_pars, orient="columns")
 
     # process samples parameters
     cmo_pars = subset_dict(par, SAMPLE_PARAMS_CONFIG_KEYS)
-    cmo_strs = generate_csv_category("samples", cmo_pars)
+    cmo_strs = generate_csv_category("samples", cmo_pars, orient="index")
 
     # combine content
     content_list = serialized_refs + libraries_strs + cmo_strs
@@ -219,11 +245,13 @@ def main(par: dict[str, Any], meta: dict[str, Any]):
         temp_id="run"
         proc_pars=["--disable-ui", "--id", temp_id]
 
-        if meta["cpus"]:
-            proc_pars.append(f"--localcores={meta['cpus']}")
-
-        if meta["memory_gb"]:
-            proc_pars.append(f"--localmem={int(meta['memory_gb']) - 2}")
+        command_line_parameters = {
+            "--localcores": meta['cpus'],
+            "--localmem": int(meta['memory_gb']) - 2 if meta['memory_gb'] else None,
+        }
+        for param, param_value in command_line_parameters.items():
+            if param_value:
+                proc_pars.append(f"{param}={param_value}")
 
         ## Run pipeline
         if par["dryrun"]:
@@ -239,19 +267,35 @@ def main(par: dict[str, Any], meta: dict[str, Any]):
             cmd = ["cellranger multi"] + proc_pars + ["--csv=config.csv"]
             logger.info("> " + ' '.join(cmd))
         else:
-            # write config file
+            # write config file to execution directory
             config_file = temp_dir_path / "config.csv"
             with open(config_file, "w") as f:
                 f.write(config_content)
             proc_pars.append(f"--csv={config_file}")
 
+            # Already copy config file to output directory
+            par['output'].mkdir(parents=True, exist_ok=True)
+            with (par['output'] / "config.csv").open('w') as open_config:
+                open_config.write(config_content)
+
             # run process
             cmd = ["cellranger", "multi"] + proc_pars
             logger.info("> " + ' '.join(cmd))
-            _ = subprocess.check_call(
-                cmd,
-                cwd=temp_dir
-            )
+            try:
+                process_output = subprocess.run(
+                    cmd,
+                    cwd=temp_dir,
+                    check=True,
+                    capture_output=True
+                )
+            except subprocess.CalledProcessError as e:
+                print(e.output)
+                raise e
+            else:
+                # Write stdout output to output folder
+                with (par["output"] / "cellranger_multi.log").open('w') as open_log:
+                    open_log.write(process_output.stdout.decode('utf-8'))
+                print(process_output.stdout.decode('utf-8'), flush=True)
 
             # look for output dir file
             tmp_output_dir = temp_dir_path / temp_id / "outs"
@@ -264,9 +308,10 @@ def main(par: dict[str, Any], meta: dict[str, Any]):
                 output_path = tmp_output_dir / file_path
                 if not type_func(output_path):
                     raise ValueError(f"Could not find expected '{output_path}'")
-            par['output'].mkdir(parents=True, exist_ok=True)
+
             for output_path in tmp_output_dir.rglob('*'):
-                shutil.move(str(output_path), par['output'])
+                if output_path.name != "config.csv": # Already created
+                    shutil.move(str(output_path), par['output'])
 
 if __name__ == "__main__":
     main(par, meta)

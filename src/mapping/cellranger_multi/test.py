@@ -3,11 +3,15 @@ import subprocess
 from pathlib import Path
 import tarfile
 from tempfile import TemporaryDirectory
+from textwrap import dedent
+import re
 
 ## VIASH START
 meta = {
     'executable': './target/docker/mapping/cellranger_multi/cellranger_multi',
-    'resources_dir': 'resources_test/10x_5k_anticmv/'
+    'resources_dir': 'resources_test/',
+    'cpus': 15,
+    'memory_gb': 20
 }
 ## VIASH END
 
@@ -32,8 +36,8 @@ class TestCellrangerMulti(TestCase):
             raise e
 
     def test_cellranger_multi(self):
-        self._run_and_check_output([
-               "--output", "output/",
+        args = [
+               "--output", "output1/",
                "--input", input1_R1,
                "--input", input1_R2,
                "--input", input2_R1,
@@ -44,9 +48,13 @@ class TestCellrangerMulti(TestCase):
                "--vdj_reference", vdj_reference,
                "--feature_reference", feature_reference,
                "--library_id", "5k_human_antiCMV_T_TBNK_connect_GEX_1_subset;5k_human_antiCMV_T_TBNK_connect_AB_subset;5k_human_antiCMV_T_TBNK_connect_VDJ_subset",
-               "--library_type", "Gene Expression;Antibody Capture;VDJ",
-               "---cpus", str(meta['cpus']),
-               "---memory", f"{meta['memory_gb']}GB"])
+               "--library_type", "Gene Expression;Antibody Capture;VDJ"]
+        if meta['cpus']:
+            args.extend(["---cpus", str(meta['cpus'])])
+        if meta['memory_gb']:
+            args.extend(["---memory", f"{meta['memory_gb']}GB"])
+        self._run_and_check_output(args)
+
         # check for raw data
         self.assertTrue(Path("output/multi/count/raw_feature_bc_matrix.h5").is_file())
 
@@ -64,7 +72,7 @@ class TestCellrangerMulti(TestCase):
             with TemporaryDirectory() as tmpdirname:
                 open_tarfile.extractall(tmpdirname)
                 self._run_and_check_output([
-                        "--output", "test/",
+                        "--output", "output2/",
                         "--input", input1_R1,
                         "--input", input1_R2,
                         "--input", input2_R1,
@@ -78,5 +86,44 @@ class TestCellrangerMulti(TestCase):
                         "--library_type", "Gene Expression;Antibody Capture;VDJ",
                         "--dryrun"])
 
+    def test_cellranger_multi_applies_gex_options(self):
+        args=[
+               "--output", "output3/",
+               "--input", input1_R1,
+               "--input", input1_R2,
+               "--input", input2_R1,
+               "--input", input2_R2,
+               "--input", input3_R1,
+               "--input", input3_R2,
+               "--gex_reference", gex_reference,
+               "--vdj_reference", vdj_reference,
+               "--feature_reference", feature_reference,
+               "--library_id", "5k_human_antiCMV_T_TBNK_connect_GEX_1_subset;5k_human_antiCMV_T_TBNK_connect_AB_subset;5k_human_antiCMV_T_TBNK_connect_VDJ_subset",
+               "--library_type", "Gene Expression;Antibody Capture;VDJ",
+               "--gex_secondary_analysis", "true",
+               "--gex_generate_bam", "false",
+               "--gex_include_introns", "false",
+               "--dryrun"]
+        if meta['cpus']:
+            args.extend(["---cpus", str(meta['cpus'])])
+        if meta['memory_gb']:
+            args.extend(["---memory", f"{meta['memory_gb']}GB"])
+        self._run_and_check_output(args)
+    
+        self.assertTrue(Path("output3/config.csv").is_file())
+        with Path("output3/config.csv").open('r') as config_file:
+            config_contents = config_file.read()
+        expected_csv_content = dedent(
+            """\
+            chemistry,auto
+            no-secondary,False
+            no-bam,True
+            include-introns,False
+            """)
+        print (expected_csv_content, flush=True)
+        assert expected_csv_content in config_contents
+
+
+    
 if __name__ == "__main__":
     main()

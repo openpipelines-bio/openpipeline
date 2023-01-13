@@ -6,7 +6,11 @@
 
 * `dataflow/concat`: include path of file in error message when reading a mudata file fails.
 
+* `mapping/cellranger_multi`: write cellranger console output to a `cellranger_multi.log` file.
+
 ## BUG FIXES
+
+* `mapping/cellranger_multi` not applies `gex_secondary_analysis`, `gex_generate_bam` and `gex_include_introns`.
 
 * `dataflow/concat`: the `--input_id` is no longer required when `--mode` is not `move`.
 
