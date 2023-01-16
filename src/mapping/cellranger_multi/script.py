@@ -184,10 +184,11 @@ def generate_csv_category(name: str, args: dict[str, str], orient: str) -> list[
 def generate_config(par: dict[str, Any], fastq_dir: str) -> str:
     content_list = []
     par["fastqs"] = fastq_dir
-    libraries = LIBRARY_CONFIG_KEYS | {"fastqs": "fastqs"}
-    all_sections = REFERENCE_SECTIONS | \
-                   {"libraries": (libraries, "columns")} | \
-                   {"samples": (SAMPLE_PARAMS_CONFIG_KEYS, "columns")}
+    libraries = dict(LIBRARY_CONFIG_KEYS, **{"fastqs": "fastqs"})
+    #TODO: use the union (|) operator when python is updated to 3.9
+    all_sections = dict(REFERENCE_SECTIONS, 
+                        **{"libraries": (libraries, "columns")},
+                        **{"samples": (SAMPLE_PARAMS_CONFIG_KEYS, "columns")})
     for section_name, (section_params, orientation) in all_sections.items():
         reference_pars = subset_dict(par, section_params)
         content_list += generate_csv_category(section_name, reference_pars, orient=orientation)
