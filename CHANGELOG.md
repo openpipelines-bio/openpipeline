@@ -14,6 +14,8 @@
 
 * `mapping/htseq_count_to_h5mu`: Fix a bug where reading in the gtf file caused `AttributeError`. 
 
+* `dataflow/concat`: the `--input_id` is no longer required when `--mode` is not `move`.
+
 # openpipeline 0.6.1
 
 ## NEW FUNCTIONALITY
