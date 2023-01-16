@@ -86,9 +86,9 @@ FEATURE_CONFIG_KEYS = {"feature_reference": "reference"}
 VDJ_CONFIG_KEYS = {"vdj_reference": "reference"}
 
 REFERENCE_SECTIONS = {
-    "gene-expression": GEX_CONFIG_KEYS,
-    "feature": FEATURE_CONFIG_KEYS,
-    "vdj": VDJ_CONFIG_KEYS
+    "gene-expression": (GEX_CONFIG_KEYS, "index"),
+    "feature": (FEATURE_CONFIG_KEYS, "index"),
+    "vdj": (VDJ_CONFIG_KEYS, "index")
 }
 
 LIBRARY_CONFIG_KEYS = {'library_id': 'fastq_id',
@@ -172,33 +172,25 @@ def generate_dict_category(name: str, args: dict[str, str]) -> list[str]:
         return []
 
 def generate_csv_category(name: str, args: dict[str, str], orient: str) -> list[str]:
-    title = [ f'[{name}]' ]
-    if len(args) > 0:
-        index=(orient == 'index')
-        header=(orient== 'columns')
-        values = [pd.DataFrame.from_dict(args, orient=orient).to_csv(index=index, header=header).strip()]
-        return title + values + [""]
-    else:
+    assert orient in ("index", "columns")
+    if not args:
         return []
+    title = [ f'[{name}]' ]
+    # Which index to include in csv section is based on orientation
+    to_csv_args = {"index": (orient=="index"), "header": (orient=="columns")}
+    values = [pd.DataFrame.from_dict(args, orient=orient).to_csv(**to_csv_args).strip()]
+    return title + values + [""]
 
-def generate_config(par: dict[str, Any], fastq_dir: str) -> str:
-    serialized_refs = []
-    for section_name, section_params in REFERENCE_SECTIONS.items():
+
+def generate_config(par: dict[str, Any]) -> str:
+    content_list = []
+    all_sections = REFERENCE_SECTIONS | \
+                   {"libraries": (LIBRARY_CONFIG_KEYS, "columns")} | \
+                   {"samples": (SAMPLE_PARAMS_CONFIG_KEYS, "columns")}
+    for section_name, (section_params, orientation) in all_sections.items():
         reference_pars = subset_dict(par, section_params)
-        reference_strs = generate_csv_category(section_name, reference_pars, orient="index")
-        serialized_refs += reference_strs
+        content_list += generate_csv_category(section_name, reference_pars, orient=orientation)
 
-    # process libraries parameters
-    library_pars = subset_dict(par, LIBRARY_CONFIG_KEYS)
-    library_pars['fastqs'] = fastq_dir
-    libraries_strs = generate_csv_category("libraries", library_pars, orient="columns")
-
-    # process samples parameters
-    cmo_pars = subset_dict(par, SAMPLE_PARAMS_CONFIG_KEYS)
-    cmo_strs = generate_csv_category("samples", cmo_pars, orient="index")
-
-    # combine content
-    content_list = serialized_refs + libraries_strs + cmo_strs
     return '\n'.join(content_list)
 
 def main(par: dict[str, Any], meta: dict[str, Any]):
@@ -237,9 +229,10 @@ def main(par: dict[str, Any], meta: dict[str, Any]):
         for fastq in par['input']:
             destination = input_symlinks_dir / fastq.name
             destination.symlink_to(fastq)
+        par['fastqs'] = input_symlinks_dir
 
         logger.info("  Creating config file")
-        config_content = generate_config(par, input_symlinks_dir)
+        config_content = generate_config(par)
 
         logger.info("  Creating Cell Ranger argument")
         temp_id="run"
