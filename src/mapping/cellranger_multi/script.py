@@ -64,12 +64,11 @@ meta = {
 fastq_regex = r'([A-Za-z0-9\-_\.]+)_S(\d+)_L(\d+)_[RI](\d+)_(\d+)\.fastq\.gz'
 # assert re.match(fastq_regex, "5k_human_GEX_1_subset_S1_L001_R1_001.fastq.gz") is not None
 
-# Invert some parameters. Keep the original ones for compatibility
+# Invert some parameters. Keep the original ones in the config for compatibility
 inverted_params = {
     "gex_generate_no_bam": "gex_generate_bam",
     "gex_no_secondary_analysis": "gex_secondary_analysis"
 }
-
 for inverted_param, param in inverted_params.items():
     par[inverted_param] = not par[param] if par[param] is not None else None
     del par[param]
