@@ -1,0 +1,5 @@
+- [ ] closes #xxxx (Replace xxxx with the GitHub issue number)
+- [ ] tests added
+- [ ] workflows tests passed
+- [ ] component tests passed
+- [ ] changelog entry added
