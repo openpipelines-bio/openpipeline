@@ -10,7 +10,7 @@
 
 ## BUG FIXES
 
-* `mapping/cellranger_multi` not applies `gex_secondary_analysis`, `gex_generate_bam` and `gex_include_introns`.
+* `mapping/cellranger_multi` now applies `gex_secondary_analysis`, `gex_generate_bam` and `gex_include_introns`.
 
 * `dataflow/concat`: the `--input_id` is no longer required when `--mode` is not `move`.
 
