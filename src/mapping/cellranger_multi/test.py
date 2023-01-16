@@ -4,7 +4,6 @@ from pathlib import Path
 import tarfile
 from tempfile import TemporaryDirectory
 from textwrap import dedent
-import re
 
 ## VIASH START
 meta = {
@@ -60,13 +59,13 @@ class TestCellrangerMulti(TestCase):
 
         # check for metrics summary
         self.assertTrue(Path("output1/per_sample_outs/run/metrics_summary.csv").is_file())
-        
+
         # check for filtered gex+ab data
         self.assertTrue(Path("output1/per_sample_outs/run/count/sample_filtered_feature_bc_matrix.h5").is_file())
 
         # check for vdj data
         self.assertTrue(Path("output1/per_sample_outs/run/vdj_t/filtered_contig_annotations.csv").is_file())
-    
+
     def test_cellranger_multi_decompressed_reference(self):
         with tarfile.open(gex_reference) as open_tarfile:
             with TemporaryDirectory() as tmpdirname:
@@ -109,7 +108,7 @@ class TestCellrangerMulti(TestCase):
         if meta['memory_gb']:
             args.extend(["---memory", f"{meta['memory_gb']}GB"])
         self._run_and_check_output(args)
-    
+
         self.assertTrue(Path("output3/config.csv").is_file())
         with Path("output3/config.csv").open('r') as config_file:
             config_contents = config_file.read()
@@ -124,6 +123,6 @@ class TestCellrangerMulti(TestCase):
         assert expected_csv_content in config_contents
 
 
-    
+
 if __name__ == "__main__":
     main()
