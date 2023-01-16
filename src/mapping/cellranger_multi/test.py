@@ -56,16 +56,16 @@ class TestCellrangerMulti(TestCase):
         self._run_and_check_output(args)
 
         # check for raw data
-        self.assertTrue(Path("output/multi/count/raw_feature_bc_matrix.h5").is_file())
+        self.assertTrue(Path("output1/multi/count/raw_feature_bc_matrix.h5").is_file())
 
         # check for metrics summary
-        self.assertTrue(Path("output/per_sample_outs/run/metrics_summary.csv").is_file())
+        self.assertTrue(Path("output1/per_sample_outs/run/metrics_summary.csv").is_file())
         
         # check for filtered gex+ab data
-        self.assertTrue(Path("output/per_sample_outs/run/count/sample_filtered_feature_bc_matrix.h5").is_file())
+        self.assertTrue(Path("output1/per_sample_outs/run/count/sample_filtered_feature_bc_matrix.h5").is_file())
 
         # check for vdj data
-        self.assertTrue(Path("output/per_sample_outs/run/vdj_t/filtered_contig_annotations.csv").is_file())
+        self.assertTrue(Path("output1/per_sample_outs/run/vdj_t/filtered_contig_annotations.csv").is_file())
     
     def test_cellranger_multi_decompressed_reference(self):
         with tarfile.open(gex_reference) as open_tarfile:
