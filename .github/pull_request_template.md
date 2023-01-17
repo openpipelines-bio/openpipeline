@@ -1,5 +1,8 @@
-- [ ] closes #xxxx (Replace xxxx with the GitHub issue number)
-- [ ] tests added
-- [ ] workflows tests passed
-- [ ] component tests passed
-- [ ] changelog entry added
+Please check when the following items have been completed:
+
+- [ ] Conforms to [Contributor's guide](https://openpipelines.bio/contribute)
+- [ ] Closes #xxxx (Replace xxxx with the GitHub issue number)
+- [ ] Tests added
+- [ ] Component tests passed
+- [ ] Workflows tests passed
+- [ ] Changelog entry added
