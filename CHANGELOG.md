@@ -2,6 +2,8 @@
 
 ## NEW FUNCTIONALITY
 
+* `qc/calculate_qc_metrics`: Add basic statistics: `pct_dropout`, `num_zero_obs`, `obs_mean` and `total_counts` are added to .var. `num_nonzero_vars`, `pct_{var_qc_metrics}`, `total_counts_{var_qc_metrics}`, `pct_of_counts_in_top_{top_n_vars}_vars` and `total_counts` are included in .obs
+
 * `workflows/multiomics/prot_singlesample`: Processing unimodal single-sample CITE-seq data.
 
 * `workflows/multiomics/rna_singlesample` and `workflows/multiomics/full_pipeline`: Add filtering arguments to pipeline.
@@ -9,6 +11,8 @@
 ## MINOR CHANGES
 
 * `convert/from_bdrhap_to_h5mu`: bump R version to 4.2.
+
+* `process_10xh5/filter_10xh5`: bump R version to 4.2.
 
 * `dataflow/concat`: include path of file in error message when reading a mudata file fails.
 
