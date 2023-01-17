@@ -46,8 +46,8 @@
             "default": "False"
           },"flavor": {
             "type":"string",
-            "description": "Choose the flavor for identifying highly variable genes. For the dispersion based methods in their default workflows, Seurat passes the cutoffs whereas Cell Ranger passes n_top_genes.",
-            
+            "description": "Choose the flavor for identifying highly variable genes. For the dispersion based methods","help_text": "Choose the flavor for identifying highly variable genes. For the dispersion based methods\nin their default workflows, Seurat passes the cutoffs whereas Cell Ranger passes n_top_genes.\n",
+            "enum": ["seurat", "cell_ranger", "seurat_v3"],
             "default": "seurat"
           },"n_top_genes": {
             "type":"integer",
