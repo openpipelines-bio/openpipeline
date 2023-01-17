@@ -2,7 +2,7 @@
 
 ## NEW FUNCTIONALITY
 
-* `qc/calculate_qc_metrics`: Add basic statistics to .var and .obs.
+* `qc/calculate_qc_metrics`: Add basic statistics: `pct_dropout`, `num_zero_obs`, `obs_mean` and `total_counts` are added to .var. `num_nonzero_vars`, `pct_{var_qc_metrics}`, `total_counts_{var_qc_metrics}`, `pct_of_counts_in_top_{top_n_vars}_vars` and `total_counts` are included in .obs
 
 ## BUG FIXES
 
