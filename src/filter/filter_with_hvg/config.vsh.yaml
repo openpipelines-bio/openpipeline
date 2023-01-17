@@ -58,7 +58,10 @@ functionality:
     - name: "--flavor"
       type: string
       default: "seurat"
-      description: Choose the flavor for identifying highly variable genes. For the dispersion based methods in their default workflows, Seurat passes the cutoffs whereas Cell Ranger passes n_top_genes.
+      choices: ["seurat", "cell_ranger", "seurat_v3"]
+      description: |
+        Choose the flavor for identifying highly variable genes. For the dispersion based methods
+        in their default workflows, Seurat passes the cutoffs whereas Cell Ranger passes n_top_genes.
 
     - name: "--n_top_genes"
       type: integer
@@ -115,7 +118,14 @@ platforms:
     setup: 
       - type: python
         packages:
+          # Keep using master until scanpy version > 1.9.1 is release (1.9.2 or 1.10)
           - git+https://github.com/scverse/scanpy.git@master
           - mudata~=0.2.0
           - anndata~=0.8.0
+          - scikit-misc
+    test_setup:
+      - type: python
+        packages:
+          - pytest
+          - viashpy
   - type: nextflow

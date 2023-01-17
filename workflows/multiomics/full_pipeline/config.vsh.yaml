@@ -26,11 +26,79 @@ functionality:
           default: ["sample_id"]
           multiple: true
           required: false
-        - name: "--filter_with_hvg_var_output"
-          required: false
-          type: string
-          default: "filter_with_hvg"
-          description: In which .var slot to store a boolean array corresponding to the highly variable genes.
+    - name: "RNA filtering options"
+      arguments:
+        - name: "--rna_min_counts"
+          example: 200
+          type: integer
+          description: Minimum number of counts captured per cell.
+        - name: "--rna_max_counts"
+          example: 5000000
+          type: integer
+          description: Maximum number of counts captured per cell.
+  
+        - name: "--rna_min_vars_per_cell"
+          type: integer
+          example: 200
+          description: Minimum of non-zero values per cell.
+        - name: "--rna_max_vars_per_cell"
+          example: 1500000
+          type: integer
+          description: Maximum of non-zero values per cell.
+
+        - name: "--min_cells_per_protein"
+          example: 3
+          type: integer
+          description: Minimum of non-zero values per antibody.
+
+        - name: "--rna_min_fraction_mito"
+          example: 0
+          type: double
+          description: Minimum fraction of UMIs that are mitochondrial.
+        - name: "--rna_max_fraction_mito"
+          type: double
+          example: 0.2
+          description: Maximum fraction of UMIs that are mitochondrial.
+    - name: "CITE-seq filtering options"
+      arguments:
+        - name: "--prot_min_counts"
+          description: Minimum number of counts per cell.
+          type: integer
+          example: 3
+        - name: "--prot_max_counts"
+          description: Minimum number of counts per cell.
+          type: integer
+          example: 5000000
+
+        - name: "--prot_min_vars_per_cell"
+          type: integer
+          example: 200
+          description: Minimum of non-zero values per cell.
+        - name: "--prot_max_vars_per_cell"
+          description: Maximum of non-zero values per cell.
+          type: integer
+          example: 100000000
+
+        - name: "--prot_min_cells_per_protein"
+          example: 3
+          type: integer
+          description: Minimum of non-zero values per protein.
+        
+        - name: "--prot_min_fraction_mito"
+          example: 0
+          type: double
+          description: Minimum fraction of proteins that are mitochondrial.
+        - name: "--prot_max_fraction_mito"
+          example: 0.2
+          type: double
+          description: Maximum fraction of proteins that are mitochondrial.
+    - name: "Integration options"
+      arguments:
+         - name: "--filter_with_hvg_var_output"
+           required: false
+           type: string
+           default: "filter_with_hvg_prot"
+           description: In which .var slot to store a boolean array corresponding to the highly variable genes.
   resources:
     - type: nextflow_script
       path: main.nf
