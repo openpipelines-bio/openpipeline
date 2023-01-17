@@ -37,8 +37,8 @@ workflow run_wf {
         "rna_singlesample_args": [
           "min_counts": "rna_min_counts",
           "max_counts": "rna_max_counts",
-          "min_genes_per_cell": "rna_min_genes_per_cell",
-          "max_genes_per_cell": "rna_max_genes_per_cell",
+          "min_genes_per_cell": "rna_min_vars_per_cell",
+          "max_genes_per_cell": "rna_max_vars_per_cell",
           "min_cells_per_gene": "rna_min_cells_per_gene",
           "min_fraction_mito": "rna_min_fraction_mito",
           "max_fraction_mito": "rna_max_fraction_mito",
@@ -46,8 +46,8 @@ workflow run_wf {
         "prot_singlesample_args": [
           "min_counts": "prot_min_counts",
           "max_counts": "prot_max_counts",
-          "min_genes_per_cell": "prot_min_proteins_per_cell",
-          "max_genes_per_cell": "prot_max_proteins_per_cell",
+          "min_genes_per_cell": "prot_min_vars_per_cell",
+          "max_genes_per_cell": "prot_max_vars_per_cell",
           "min_cells_per_gene": "prot_min_cells_per_protein",
           "min_fraction_mito": "prot_min_fraction_mito",
           "max_fraction_mito": "prot_max_fraction_mito",
@@ -63,10 +63,14 @@ workflow run_wf {
     | getWorkflowArguments(key: "add_id_args")
 
     | pmap { id, data ->
-        [id, data + [input_id: id, make_observation_keys_unique: true, obs_output: 'sample_id']]
+        def new_data = data + [
+          input_id: id,
+          make_observation_keys_unique: true,
+          obs_output: "sample_id"
+        ]
+        [id, new_data]
     }
     | add_id
-    | view { "After add_id: $it" }
 
     // split by modality
     | getWorkflowArguments(key: "split_modalities_args")
@@ -134,13 +138,18 @@ workflow run_wf {
         [lst[3].modality] + lst
       }
     | groupTuple(by: 0)
+    // [ String, List[String], List[Map[String, Any]], ... ]
     | map { grouped_lst ->
-      def modality_name = grouped_lst[0]
-      ["combined_$modality_name", 
-       ["input": grouped_lst[2].collect{it.input}, "sample_id": grouped_lst[1]],
-       grouped_lst[3][0]] // passthrough is copied, just pick the first
+      def new_id = "combined_${grouped_lst[0]}"
+      def new_data = [
+        "input": grouped_lst[2].collect{it.input},
+        "input_id": grouped_lst[1]
+      ]
+      // passthrough is copied, just pick the first
+      def new_passthrough = grouped_lst.drop(3).collect{it[0]}
+      [new_id, new_data] + new_passthrough
     }
-    | concat.run(renameKeys: [input_id: "sample_id"])
+    | concat
 
   // Concat channel if more than one modality was found
   merge_ch = unknown_channel.concat(*mod_chs)
@@ -180,9 +189,9 @@ workflow test_wf {
           publish_dir: "foo/"
         ]
       ],
-    obs_covariates: "sample_id",
-    rna_min_counts: 2,
-    prot_min_counts: 3
+      obs_covariates: "sample_id",
+      rna_min_counts: 2,
+      prot_min_counts: 3
     ]
 
 
@@ -213,21 +222,21 @@ workflow test_wf3 {
   // or when running from s3: params.resources_test = "s3://openpipelines-data/"
   testParams = [
     param_list: [
-        [
-          id: "mouse",
-          input: params.resources_test + "/concat_test_data/e18_mouse_brain_fresh_5k_filtered_feature_bc_matrix_subset_unique_obs.h5mu",
-          publish_dir: "foo/"
-        ],
-        [
-          id: "human",
-          input: params.resources_test + "/concat_test_data/human_brain_3k_filtered_feature_bc_matrix_subset_unique_obs.h5mu",
-          input_type: "10xmtx",
-          publish_dir: "foo/"
-        ]
+      [
+        id: "mouse",
+        input: params.resources_test + "/concat_test_data/e18_mouse_brain_fresh_5k_filtered_feature_bc_matrix_subset_unique_obs.h5mu",
+        publish_dir: "foo/"
       ],
+      [
+        id: "human",
+        input: params.resources_test + "/concat_test_data/human_brain_3k_filtered_feature_bc_matrix_subset_unique_obs.h5mu",
+        input_type: "10xmtx",
+        publish_dir: "foo/"
+      ]
+    ],
     obs_covariates: "sample_id",
     rna_min_counts: 2
-    ]
+  ]
 
   input_ch = viashChannel(testParams, config)
     // store output value in 3rd slot for later use
@@ -286,9 +295,9 @@ workflow test_wf2 {
           publish_dir: "test2/"
         ],
       ],
-    obs_covariates: "sample_id",
-    rna_min_counts: 2,
-    prot_min_counts: 3
+      obs_covariates: "sample_id",
+      rna_min_counts: 2,
+      prot_min_counts: 3
     ]
 
   output_ch =
