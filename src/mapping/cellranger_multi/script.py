@@ -162,13 +162,6 @@ def process_params(par: dict[str, Any]) -> str:
             par[file_path] = Path(par[file_path]).resolve()
     return par
 
-def generate_dict_category(name: str, args: dict[str, str]) -> list[str]:
-    title = [ f'[{name}]' ]
-    values = [ f'{key},{val}' for key, val in args.items() if val is not None ]
-    if len(values) > 0:
-        return title + values + [""]
-    else:
-        return []
 
 def generate_csv_category(name: str, args: dict[str, str], orient: str) -> list[str]:
     assert orient in ("index", "columns")
