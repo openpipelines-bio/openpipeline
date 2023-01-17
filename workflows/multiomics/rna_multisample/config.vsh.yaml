@@ -39,6 +39,7 @@ functionality:
           default: "filter_with_hvg"
           description: In which .var slot to store a boolean array corresponding to the highly variable genes.
         - name: "--filter_with_hvg_obs_batch_key"
+          type: string
           default: "sample_id"
           required: false
           description: |
