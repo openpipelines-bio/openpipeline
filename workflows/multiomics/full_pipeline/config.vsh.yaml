@@ -92,7 +92,7 @@ functionality:
           example: 0.2
           type: double
           description: Maximum fraction of proteins that are mitochondrial.
-    - name: "Annoating highly variable genes"
+    - name: "Highly variable gene detection"
       arguments:
         - name: "--filter_with_hvg_var_output"
           required: false
