@@ -1,6 +1,10 @@
 # openpipelines 0.6.2
 
-* `mapping/htseq_count_to_h5mu`: Fix a bug where reading in the gtf file caused `AttributeError`. 
+## NEW FUNCTIONALITY
+
+* `workflows/multiomics/prot_singlesample`: Processing unimodal single-sample CITE-seq data.
+
+* `workflows/multiomics/rna_singlesample` and `workflows/multiomics/full_pipeline`: Add filtering arguments to pipeline.
 
 ## MINOR CHANGES
 
@@ -11,6 +15,8 @@
 * `filter/filter_with_hvg`: Improve error message when trying to use 'cell_ranger' as `flavor` and passing unfiltered data.
 
 ## BUG FIXES
+
+* `mapping/htseq_count_to_h5mu`: Fix a bug where reading in the gtf file caused `AttributeError`. 
 
 * `dataflow/concat`: the `--input_id` is no longer required when `--mode` is not `move`.
 
