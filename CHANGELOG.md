@@ -8,6 +8,8 @@
 
 ## MINOR CHANGES
 
+* `convert/from_bdrhap_to_h5mu`: bump R version to 4.2.
+
 * `dataflow/concat`: include path of file in error message when reading a mudata file fails.
 
 * `filter/filter_with_hvg`: Enforce that `n_top_genes` is set when `flavor` is set to 'seurat_v3'.
