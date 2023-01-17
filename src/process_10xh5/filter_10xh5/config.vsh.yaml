@@ -49,7 +49,7 @@ functionality:
     - path: ../../../resources_test/pbmc_1k_protein_v3/pbmc_1k_protein_v3_filtered_feature_bc_matrix.h5
 platforms:
   - type: docker
-    image: ghcr.io/data-intuitive/randpy:r4.0_py3.8
+    image: ghcr.io/data-intuitive/randpy:r4.2_py3.8
     setup:
       - type: docker
         run: apt update && apt upgrade -y

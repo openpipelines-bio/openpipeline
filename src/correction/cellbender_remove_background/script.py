@@ -16,9 +16,16 @@ console_handler.setFormatter(logFormatter)
 logger.addHandler(console_handler)
 
 ## VIASH START
+import muon
+file_raw = "./resources_test/pbmc_1k_protein_v3/pbmc_1k_protein_v3_raw_feature_bc_matrix.h5"
+mdat = muon.read_10x_h5(file_raw)
+mdat = mdat[0:100000,] # subsample to reduce computational time
+file_input = "cellbender_remove_background_input.h5mu"
+mdat.write_h5mu(file_input)
+
 par = {
     # inputs
-    "input": "work/df/ef05da347afdfe506bfe30c8425f81/TSP15_Eye_ScleraEtc_10X_2_1.from_10xh5_to_h5mu.output.h5mu",
+    "input": file_input,
     "modality": "rna",
     # outputs
     "output": "output.h5mu",
@@ -31,12 +38,20 @@ par = {
     # args
     "total_droplets_included": None,
     "min_counts": 1000,
-    "epochs": 150,
+    "epochs": 5,
     "fpr": 0.01,
     "exclude_antibody_capture": False,
     "learning_rate": 0.001,
     "layer_corrected": "corrected",
-    "cuda": False
+    "cuda": False,
+    "expected_cells": None,
+    "model": "full",
+    "low_count_threshold": 15,
+    "z_dim": 100,
+    "z_layers": [500],
+    "training_fraction": 0.9,
+    "empty_drop_training_fraction": 0.5,
+    "expected_cells_from_qc": True
 }
 meta = {
     'temp_dir': os.getenv("VIASH_TEMP"),

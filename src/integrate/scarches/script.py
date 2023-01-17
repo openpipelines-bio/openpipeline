@@ -13,13 +13,14 @@ except ModuleNotFoundError:
 ### VIASH START
 par = {
     "input": "resources_test/pbmc_1k_protein_v3/pbmc_1k_protein_v3_mms.h5mu",
+    "reference": "resources_test/HCLA_reference_model/HLCA_reference_model.zip",
     "modality": "rna",
     "output": "foo.h5mu",
     "model_output": "./hlca_query_model",
     "dataset_name": None,
     # Other
-    "obsm_output": "X_integrated_{model_name}",
-    "early_stopping": True,
+    "obsm_output": "X_integrated_scanvi",
+    "early_stopping": None,
     "early_stopping_monitor": "elbo_validation",
     "early_stopping_patience": 45,
     "early_stopping_min_delta": 0,
@@ -202,7 +203,7 @@ def main():
     model_name = _read_model_name_from_registry(model_path)
 
     # Save info about the used model
-    adata_query.uns["integration_method"] = model_name
+    mdata_query.mod[par["modality"]].uns["integration_method"] = model_name
 
     logger.info("Trying to write latent representation")
     output_key = par["obsm_output"].format(model_name=model_name)
