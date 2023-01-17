@@ -132,7 +132,7 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
     {
       "type" : "docker",
       "id" : "docker",
-      "image" : "ghcr.io/data-intuitive/randpy:r4.0_py3.8",
+      "image" : "ghcr.io/data-intuitive/randpy:r4.2_py3.8",
       "target_organization" : "openpipelines-bio",
       "target_registry" : "ghcr.io",
       "namespace_separator" : "_",
@@ -186,7 +186,7 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
     "config" : "/home/runner/work/openpipeline/openpipeline/src/convert/from_bdrhap_to_h5mu/config.vsh.yaml",
     "platform" : "nextflow",
     "viash_version" : "0.6.7",
-    "git_commit" : "6ec0e3e34d289c2f8ea6e6a2bc3390aa80ce98c6",
+    "git_commit" : "641a2141a753736fa592b2f99699d96ff8e6a67e",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))
