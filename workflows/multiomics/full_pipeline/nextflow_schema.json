@@ -24,11 +24,105 @@
             "description": "The .obs field(s) that define the covariate(s) to regress out.",
             
             "default": "['sample_id']"
-          },"filter_with_hvg_var_output": {
+          }
+        }
+      },
+      "rna filtering options" : {
+        "title": "RNA filtering options",
+        "type": "object",
+        "description": "No description",
+        "default": "",
+        "properties": {"rna_min_counts": {
+            "type":"integer",
+            "description": "Minimum number of counts captured per cell.",
+            
+            "default": ""
+          },"rna_max_counts": {
+            "type":"integer",
+            "description": "Maximum number of counts captured per cell.",
+            
+            "default": ""
+          },"rna_min_vars_per_cell": {
+            "type":"integer",
+            "description": "Minimum of non-zero values per cell.",
+            
+            "default": ""
+          },"rna_max_vars_per_cell": {
+            "type":"integer",
+            "description": "Maximum of non-zero values per cell.",
+            
+            "default": ""
+          },"min_cells_per_protein": {
+            "type":"integer",
+            "description": "Minimum of non-zero values per antibody.",
+            
+            "default": ""
+          },"rna_min_fraction_mito": {
+            "type":"number",
+            "description": "Minimum fraction of UMIs that are mitochondrial.",
+            
+            "default": ""
+          },"rna_max_fraction_mito": {
+            "type":"number",
+            "description": "Maximum fraction of UMIs that are mitochondrial.",
+            
+            "default": ""
+          }
+        }
+      },
+      "cite-seq filtering options" : {
+        "title": "CITE-seq filtering options",
+        "type": "object",
+        "description": "No description",
+        "default": "",
+        "properties": {"prot_min_counts": {
+            "type":"integer",
+            "description": "Minimum number of counts per cell.",
+            
+            "default": ""
+          },"prot_max_counts": {
+            "type":"integer",
+            "description": "Minimum number of counts per cell.",
+            
+            "default": ""
+          },"prot_min_vars_per_cell": {
+            "type":"integer",
+            "description": "Minimum of non-zero values per cell.",
+            
+            "default": ""
+          },"prot_max_vars_per_cell": {
+            "type":"integer",
+            "description": "Maximum of non-zero values per cell.",
+            
+            "default": ""
+          },"prot_min_cells_per_protein": {
+            "type":"integer",
+            "description": "Minimum of non-zero values per protein.",
+            
+            "default": ""
+          },"prot_min_fraction_mito": {
+            "type":"number",
+            "description": "Minimum fraction of proteins that are mitochondrial.",
+            
+            "default": ""
+          },"prot_max_fraction_mito": {
+            "type":"number",
+            "description": "Maximum fraction of proteins that are mitochondrial.",
+            
+            "default": ""
+          }
+        }
+      },
+      "integration options" : {
+        "title": "Integration options",
+        "type": "object",
+        "description": "No description",
+        "default": "",
+        "properties": {"filter_with_hvg_var_output": {
             "type":"string",
             "description": "In which .var slot to store a boolean array corresponding to the highly variable genes.",
             
-            "default": "filter_with_hvg"
+            "default": "filter_with_hvg_prot"
           }
         }
       },
@@ -54,6 +148,15 @@
     "allOf": [
       {
         "$ref": "#/definitions/inputs"
+      },
+      {
+        "$ref": "#/definitions/rna filtering options"
+      },
+      {
+        "$ref": "#/definitions/cite-seq filtering options"
+      },
+      {
+        "$ref": "#/definitions/integration options"
       },
       {
         "$ref": "#/definitions/nextflow input-output arguments"
