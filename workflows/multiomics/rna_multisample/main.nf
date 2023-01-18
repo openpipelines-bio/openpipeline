@@ -7,6 +7,7 @@ include { normalize_total } from targetDir + '/transform/normalize_total/main.nf
 include { log1p } from targetDir + '/transform/log1p/main.nf'
 include { filter_with_hvg } from targetDir + '/filter/filter_with_hvg/main.nf'
 include { concat } from targetDir + '/dataflow/concat/main.nf'
+include { calculate_qc_metrics } from targetDir + '/qc/calculate_qc_metrics/main.nf'
 include { delete_layer } from targetDir + '/transform/delete_layer/main.nf'
 
 include { readConfig; viashChannel; helpMessage } from workflowDir + "/utils/WorkflowHelper.nf"
@@ -44,6 +45,10 @@ workflow run_wf {
         "n_top_genes": "filter_with_hvg_n_top_genes",
         "flavor": "filter_with_hvg_flavor",
         "obs_batch_key": "filter_with_hvg_obs_batch_key"
+      ],
+      "qc_metrics": [
+        "var_qc_metrics": "var_qc_metrics",
+        "top_n_vars": "top_n_vars"
       ]
     )
     | getWorkflowArguments(key: "concat")
@@ -68,6 +73,13 @@ workflow run_wf {
     | filter_with_hvg.run(
       auto: [ publish: true ],
       args: [ layer: "log_normalized"]
+    )
+    | getWorkflowArguments(key: "qc_metrics")
+    | calculate_qc_metrics.run(
+      // layer: null to use .X and not log transformed
+      args: [
+        input_layer: null,       
+      ]
     )
     | map {list -> [list[0], list[1]] + list.drop(3)}
 
