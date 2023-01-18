@@ -11,9 +11,6 @@ meta = {
     'config': "/home/di/code/openpipeline/src/filter/filter_with_counts/config.vsh.yaml"
 }
 
-@pytest.fixture
-def viash_executable():
-    return "./bin/viash"
 ## VIASH END
 
 logger = logging.getLogger()

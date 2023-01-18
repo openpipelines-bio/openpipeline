@@ -15,9 +15,7 @@ meta = {
     'config': '/home/di/code/openpipeline/src/transform/log1p/config.vsh.yaml',
     'executable': "../../target/docker/transform/log1p/log1p"
 }
-@pytest.fixture
-def viash_executable():
-    return './bin/viash'
+
 
 ## VIASH END
 
