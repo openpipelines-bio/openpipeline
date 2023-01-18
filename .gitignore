@@ -11,6 +11,9 @@
 *.Rproj
 .Rproj.user
 
+# Python virtual environments
+.venv
+
 # temporary files related
 temp
 

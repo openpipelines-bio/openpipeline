@@ -1,7 +1,7 @@
 functionality:
   name: "filter_10xh5"
   namespace: "process_10xh5"
-  version: "0.6.1"
+  version: "0.6.2"
   authors:
   - name: "Robrecht Cannoodt"
     email: "robrecht@data-intuitive.com"
@@ -108,7 +108,7 @@ functionality:
 platforms:
 - type: "docker"
   id: "docker"
-  image: "ghcr.io/data-intuitive/randpy:r4.0_py3.8"
+  image: "ghcr.io/data-intuitive/randpy:r4.2_py3.8"
   target_organization: "openpipelines-bio"
   target_registry: "ghcr.io"
   namespace_separator: "_"
@@ -189,5 +189,5 @@ info:
   output: "/home/runner/work/openpipeline/openpipeline/target/nextflow/process_10xh5/filter_10xh5"
   executable: "/home/runner/work/openpipeline/openpipeline/target/nextflow/process_10xh5/filter_10xh5/filter_10xh5"
   viash_version: "0.6.7"
-  git_commit: "f58cc1b1bc6ec4affe0e2283aca7f371c3e80d46"
+  git_commit: "2366c30f34c6fca5c5bea76fc1f65f655640cd85"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"

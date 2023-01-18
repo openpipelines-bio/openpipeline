@@ -4,8 +4,8 @@
     "description": "Processing unimodal single-sample RNA transcriptomics data.",
     "type": "object",
     "definitions": {
-      "arguments" : {
-        "title": "Arguments",
+      "input" : {
+        "title": "Input",
         "type": "object",
         "description": "No description",
         "default": "",
@@ -19,11 +19,62 @@
             "description": "Path to the sample.",
             
             "default": ""
-          },"output": {
+          }
+        }
+      },
+      "output" : {
+        "title": "Output",
+        "type": "object",
+        "description": "No description",
+        "default": "",
+        "properties": {"output": {
             "type":"string",
             "description": "Destination path to the output.",
             
             "default": "$id.$key.output.h5mu"
+          }
+        }
+      },
+      "filtering options" : {
+        "title": "Filtering options",
+        "type": "object",
+        "description": "No description",
+        "default": "",
+        "properties": {"min_counts": {
+            "type":"integer",
+            "description": "Minimum number of counts captured per cell.",
+            
+            "default": ""
+          },"max_counts": {
+            "type":"integer",
+            "description": "Maximum number of counts captured per cell.",
+            
+            "default": ""
+          },"min_genes_per_cell": {
+            "type":"integer",
+            "description": "Minimum of non-zero values per cell.",
+            
+            "default": ""
+          },"max_genes_per_cell": {
+            "type":"integer",
+            "description": "Maximum of non-zero values per cell.",
+            
+            "default": ""
+          },"min_cells_per_gene": {
+            "type":"integer",
+            "description": "Minimum of non-zero values per gene.",
+            
+            "default": ""
+          },"min_fraction_mito": {
+            "type":"number",
+            "description": "Minimum fraction of UMIs that are mitochondrial.",
+            
+            "default": ""
+          },"max_fraction_mito": {
+            "type":"number",
+            "description": "Maximum fraction of UMIs that are mitochondrial.",
+            
+            "default": ""
           }
         }
       },
@@ -48,7 +99,13 @@
     },
     "allOf": [
       {
-        "$ref": "#/definitions/arguments"
+        "$ref": "#/definitions/input"
+      },
+      {
+        "$ref": "#/definitions/output"
+      },
+      {
+        "$ref": "#/definitions/filtering options"
       },
       {
         "$ref": "#/definitions/nextflow input-output arguments"

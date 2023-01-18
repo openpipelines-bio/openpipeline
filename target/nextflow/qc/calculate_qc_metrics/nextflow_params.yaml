@@ -1,0 +1,13 @@
+# Inputs
+input: # please fill in - example: "input.h5mu"
+modality: "rna"
+# layer: "raw_counts"
+# var_qc_metrics: ["ercc", "highly_variable"]
+# top_n_vars: ["foo"]
+
+# Outputs
+# output: "$id.$key.output.h5mu"
+
+# Nextflow input-output arguments
+publish_dir: # please fill in - example: "output/"
+# param_list: "my_params.yaml"

@@ -17,3 +17,20 @@ bin/nextflow \
   -resume \
   -profile docker,no_publish \
   -c workflows/utils/labels_ci.config
+
+bin/nextflow \
+  run . \
+  -main-script workflows/multiomics/full_pipeline/main.nf \
+  -entry test_wf2 \
+  -resume \
+  -profile docker,no_publish \
+  -c workflows/utils/labels_ci.config
+
+bin/nextflow \
+  run . \
+  -main-script workflows/multiomics/full_pipeline/main.nf \
+  -entry test_wf3 \
+  -resume \
+  -profile docker,no_publish \
+  -c workflows/utils/labels_ci.config
+

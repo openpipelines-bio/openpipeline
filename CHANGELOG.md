@@ -1,9 +1,56 @@
-# openpipeline 0.6.1
+# openpipelines 0.6.2
+
+## NEW FUNCTIONALITY
+
+* `workflows/full_pipeline`: added `filter_with_hvg_obs_batch_key` argument for batched detection of highly variable genes.
+
+* `workflows/rna_multisample`: added `filter_with_hvg_obs_batch_key`, `filter_with_hvg_flavor` and `filter_with_hvg_n_top_genes` arguments.
+
+* `qc/calculate_qc_metrics`: Add basic statistics: `pct_dropout`, `num_zero_obs`, `obs_mean` and `total_counts` are added to .var. `num_nonzero_vars`, `pct_{var_qc_metrics}`, `total_counts_{var_qc_metrics}`, `pct_of_counts_in_top_{top_n_vars}_vars` and `total_counts` are included in .obs
+
+* `workflows/multiomics/rna_multisample` and `workflows/multiomics/full_pipeline`: add `qc/calculate_qc_metrics` component to workflow.
+
+* `workflows/multiomics/prot_singlesample`: Processing unimodal single-sample CITE-seq data.
+
+* `workflows/multiomics/rna_singlesample` and `workflows/multiomics/full_pipeline`: Add filtering arguments to pipeline.
+
+## MINOR CHANGES
+
+* `convert/from_bdrhap_to_h5mu`: bump R version to 4.2.
+
+* `process_10xh5/filter_10xh5`: bump R version to 4.2.
+
+* `dataflow/concat`: include path of file in error message when reading a mudata file fails.
+
+* `mapping/cellranger_multi`: write cellranger console output to a `cellranger_multi.log` file.
 
 ## BUG FIXES
 
-* `src/filter/filter_with_counts`: Fix an issue where mitochrondrial genes were being detected in .var_names, which contain ENSAMBL IDs instead of gene symbols in the pipelines. Solution was to create a `--var_gene_names` argument which allows selecting a .var column to check using a regex (`--mitochondrial_gene_regex`).
+* `mapping/htseq_count_to_h5mu`: Fix a bug where reading in the gtf file caused `AttributeError`. 
 
+* `dataflow/concat`: the `--input_id` is no longer required when `--mode` is not `move`.
+
+* `filter/filter_with_hvg`: does no longer try to use `--varm_name` to set non-existant metadata when running with `--flavor seurat_v3`, which was causing `KeyError`.
+
+* `filter/filter_with_hvg`: Enforce that `n_top_genes` is set when `flavor` is set to 'seurat_v3'.
+
+* `filter/filter_with_hvg`: Improve error message when trying to use 'cell_ranger' as `flavor` and passing unfiltered data.
+
+* `mapping/cellranger_multi` now applies `gex_chemistry`, `gex_secondary_analysis`, `gex_generate_bam`, `gex_include_introns` and `gex_expect_cells`.
+
+# openpipeline 0.6.1
+
+## NEW FUNCTIONALITY
+
+* `mapping/multi_star`: A parallellized version of running STAR (and HTSeq).
+
+* `mapping/multi_star_to_h5mu`: Convert the output of `multi_star` to a h5mu file.
+
+## BUG FIXES
+
+* `filter/filter_with_counts`: Fix an issue where mitochrondrial genes were being detected in .var_names, which contain ENSAMBL IDs instead of gene symbols in the pipelines. Solution was to create a `--var_gene_names` argument which allows selecting a .var column to check using a regex (`--mitochondrial_gene_regex`).
+
+* `dataflow/concat`, `report/mermaid`, `transform/clr`: Don't forget to exit with code returned by pytest.
 # openpipeline 0.6.0
 
 ## NEW FUNCTIONALITY
@@ -12,7 +59,7 @@
 
 * `dimred/pca`: Add `--overwrite` and `--var_input` arguments.
 
-* `src/tranform/clr`: Perform CLR normalization on CITE-seq data.
+* `tranform/clr`: Perform CLR normalization on CITE-seq data.
 
 * `workflows/ingestion/cellranger_multi`: Run Cell Ranger multi and convert the output to .h5mu.
 

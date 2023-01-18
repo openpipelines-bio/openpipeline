@@ -101,3 +101,18 @@ if [ ! -f "$htseq_counts" ]; then
   --reference "$velo_gtf" \
   --output "$htseq_counts"
 fi
+
+multi_star="${OUT}/multi_star"
+if [ ! -d "$multi_star" ]; then
+  bin/viash run src/mapping/multi_star/config.vsh.yaml -- \
+    --input_id "tinygex" \
+    --input_r1 "$cellranger_tiny_fastq/tinygex_S1_L001_R1_001.fastq.gz" \
+    --input_r2 "$cellranger_tiny_fastq/tinygex_S1_L001_R2_001.fastq.gz" \
+    --input_id "tinygex" \
+    --input_r1 "$cellranger_tiny_fastq/tinygex_S1_L002_R1_001.fastq.gz" \
+    --input_r2 "$cellranger_tiny_fastq/tinygex_S1_L002_R2_001.fastq.gz" \
+    --reference_index "$recent_ref_dir" \
+    --reference_gtf "$cellranger_tiny_ref/genes/genes.gtf.gz" \
+    --output "$multi_star" \
+    ---cpus 30
+fi

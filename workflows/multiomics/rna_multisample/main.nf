@@ -7,9 +7,11 @@ include { normalize_total } from targetDir + '/transform/normalize_total/main.nf
 include { log1p } from targetDir + '/transform/log1p/main.nf'
 include { filter_with_hvg } from targetDir + '/filter/filter_with_hvg/main.nf'
 include { concat } from targetDir + '/dataflow/concat/main.nf'
+include { calculate_qc_metrics } from targetDir + '/qc/calculate_qc_metrics/main.nf'
 include { delete_layer } from targetDir + '/transform/delete_layer/main.nf'
 
 include { readConfig; viashChannel; helpMessage } from workflowDir + "/utils/WorkflowHelper.nf"
+include { setWorkflowArguments; getWorkflowArguments; passthroughMap as pmap; passthroughFlatMap as pFlatMap } from workflowDir + "/utils/DataflowHelper.nf"
 
 config = readConfig("$projectDir/config.vsh.yaml")
 
@@ -28,38 +30,58 @@ workflow run_wf {
 
   main:
   output_ch = input_ch
-
-    // store output value in 3rd slot for later use
-    // and transform for concat component
-    | map { tup ->
-      data = tup[1]
-      new_data = [ input: data.input, input_id: data.sample_id ]
-      [tup[0], new_data, data] + tup.drop(2)
+    // add the id to the arguments
+    | pmap { id, data ->
+      def new_data = data + [ input_id: data.sample_id ]
+      [id, new_data]
     }
+    | setWorkflowArguments (
+      "concat": [:],
+      "normalize_total": [:],
+      "log1p": [:],
+      "delete_layer": [:],
+      "filter_with_hvg": [
+        "filter_with_hvg_var_output": "var_name_filter",
+        "n_top_genes": "filter_with_hvg_n_top_genes",
+        "flavor": "filter_with_hvg_flavor",
+        "obs_batch_key": "filter_with_hvg_obs_batch_key"
+      ],
+      "qc_metrics": [
+        "var_qc_metrics": "var_qc_metrics",
+        "top_n_vars": "top_n_vars"
+      ]
+    )
+    | getWorkflowArguments(key: "concat")
     | concat
-
-    // normalisation
+    | getWorkflowArguments(key: "normalize_total")
     | normalize_total.run( 
       args: [ output_layer: "normalized" ]
     )
+
+    | getWorkflowArguments(key: "log1p")
     | log1p.run( 
       args: [ output_layer: "log_normalized", input_layer: "normalized" ]
     )
+
+    | getWorkflowArguments(key: "delete_layer")
     | delete_layer.run(
       args: [ layer: "normalized", modality: "rna" ]
     )
 
-    // retrieve output value
-    | map { tup -> 
-       new_args = [ input: tup[1] ] + tup[2].subMap(["output", "filter_with_hvg_var_output"])
-      [ tup[0], new_args ] + tup.drop(3)
-    }
-
     // feature annotation
+    | getWorkflowArguments(key: "filter_with_hvg")
     | filter_with_hvg.run(
       auto: [ publish: true ],
       args: [ layer: "log_normalized"]
     )
+    | getWorkflowArguments(key: "qc_metrics")
+    | calculate_qc_metrics.run(
+      // layer: null to use .X and not log transformed
+      args: [
+        input_layer: null,       
+      ]
+    )
+    | map {list -> [list[0], list[1]] + list.drop(3)}
 
   emit:
   output_ch
@@ -78,10 +100,11 @@ workflow test_wf {
 
   output_ch =
     viashChannel(testParams, config)
+    | map {list -> list + [test_passthrough: "test"]}
     | view { "Input: $it" }
     | run_wf
     | view { output ->
-      assert output.size() == 2 : "outputs should contain three elements; [id, file]"
+      assert output.size() == 3 : "outputs should contain three elements; [id, file, passthrough]"
       assert output[1].toString().endsWith(".h5mu") : "Output file should be a h5mu file. Found: ${output_list[1]}"
       "Output: $output"
     }

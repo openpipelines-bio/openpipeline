@@ -21,12 +21,12 @@
             "default": "rna"
           },"obs_key": {
             "type":"string",
-            "description": "Obs column name where the sample id can be found for each observation to join on.","help_text": "Obs column name where the sample id can be found for each observation to join on.\nUseful when adding metadata to concatenated samples.\nMutually exclusive with --var_key and --sample_id\"\n",
+            "description": "Obs column name where the sample id can be found for each observation to join on.","help_text": "Obs column name where the sample id can be found for each observation to join on.\nUseful when adding metadata to concatenated samples.\nMutually exclusive with `--var_key`.\"\n",
             
             "default": ""
           },"var_key": {
             "type":"string",
-            "description": "Var column name where the sample id can be found for each observation to join on.","help_text": "Var column name where the sample id can be found for each observation to join on.\nUseful when adding metadata to concatenated samples.\nMutually exclusive with --var_key and --sample_id.\"\n",
+            "description": "Var column name where the sample id can be found for each variable to join on.","help_text": "Var column name where the sample id can be found for each variable to join on.\nMutually exclusive with `--obs_key`.\"\n",
             
             "default": ""
           }

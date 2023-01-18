@@ -8,6 +8,7 @@ include { filter_with_scrublet } from targetDir + "/filter/filter_with_scrublet/
 include { do_filter } from targetDir + "/filter/do_filter/main.nf"
 
 include { readConfig; viashChannel; helpMessage } from workflowDir + "/utils/WorkflowHelper.nf"
+include { setWorkflowArguments; getWorkflowArguments } from workflowDir + "/utils/DataflowHelper.nf"
 
 config = readConfig("$projectDir/config.vsh.yaml")
 
@@ -27,33 +28,36 @@ workflow run_wf {
 
   main:
   output_ch = input_ch
-    // store output value in 3rd slot for later use
-    | map { tup -> 
-      data = tup[1]
-      if (data !instanceof Map) {
-        data = [ input: data ]
-      }
-      [ tup[0], data, data.clone() ] + tup.drop(2)
-    }
+    | setWorkflowArguments(
+      filter_with_counts: [
+          "min_counts": "min_counts",
+          "max_counts": "max_counts",
+          "min_genes_per_cell": "min_genes_per_cell",
+          "max_genes_per_cell": "max_genes_per_cell",
+          "min_cells_per_gene": "min_cells_per_gene",
+          "min_fraction_mito": "min_fraction_mito",
+          "max_fraction_mito": "max_fraction_mito",
+      ],
+      do_filter: [:],
+      filter_with_scrublet: [:]
+    )
 
     // cell filtering
+    | getWorkflowArguments(key: "filter_with_counts")
     | filter_with_counts.run(
         args: [ var_gene_names: "gene_symbol" ]
     )
+    | getWorkflowArguments(key: "do_filter")
     | do_filter.run(
       args: [ obs_filter: "filter_with_counts" ]
     )
-
-    // retrieve output value
-    | map { tup -> 
-      orig_data = tup[2]
-      [ tup[0], [ input: tup[1] ] + (orig_data instanceof Map ? orig_data.subMap("output") : [ output: orig_data ] )] + tup.drop(3)
-    }
-
     // doublet calling
+    | getWorkflowArguments(key: "filter_with_scrublet")
+    | view {"scrublet: $it"}
     | filter_with_scrublet.run(
       auto: [ publish: true ]
     )
+    | map {list -> [list[0], list[1]] + list.drop(3)}
     // TODO: ambient rna correction
 
   emit:
@@ -68,15 +72,25 @@ workflow test_wf {
   testParams = [
     id: "foo",
     input: params.resources_test + "/pbmc_1k_protein_v3/pbmc_1k_protein_v3_filtered_feature_bc_matrix.h5mu",
+    min_counts: 3,
+    max_counts: 10000000,
+    min_genes_per_cell: 2,
+    max_genes_per_cell: 10000000,
+    min_cells_per_gene: 2,
+    min_fraction_mito: 0.05,
+    max_fraction_mito: 0.2
   ]
 
   output_ch =
     viashChannel(testParams, config)
+    // Add test passthrough 
+    | map {list -> list + [test_passthrough: "test"]} 
     | view { "Input: $it" }
     | run_wf
+    | view { "Output: $it" }
     | view { output ->
-      assert output.size() == 2 : "outputs should contain two elements; [id, file]"
-      assert output[1].toString().endsWith(".h5mu") : "Output file should be a h5mu file. Found: ${output_list[1]}"
+      assert output.size() == 3 : "outputs should contain two elements; [id, file, passthrough]"
+      assert output[1].toString().endsWith(".h5mu") : "Output file should be a h5mu file. Found: ${output[1]}"
       "Output: $output"
     }
     | toList()
