@@ -40,3 +40,6 @@ if [ "$par_geno" = true ]; then
         --alt ${par_output}$par_alt --psc ${par_output}${par_psc} $par_output
 fi
 
+sed 1d ${par_output}/scSplit_result.csv > ${par_output}res.tsv
+{ echo cell$'\t'donor_id; cat ${par_output}res.tsv; } > ${par_output}assignment.tsv
+rm ${par_output}res.tsv

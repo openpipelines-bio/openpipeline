@@ -68,3 +68,5 @@ else
        --out $par_output${par_out} ${extra_params[@]} ${extra_paramsFreemuxlet[@]}
 
 fi
+
+Rscript summary.R --freemuxlet_out ${par_output}${par_out}.clust1.samples.gz

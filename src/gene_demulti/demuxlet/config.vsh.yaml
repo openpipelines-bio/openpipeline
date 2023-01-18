@@ -149,6 +149,8 @@ functionality:
   resources:
     - type: bash_script
       path: script.sh
+    - type: r_script
+      path: summary.R
   test_resources:
     - type: bash_script
       path: test.sh
@@ -158,11 +160,13 @@ platforms:
     image: ubuntu:20.04
     setup:
     - type: apt
-      packages: [ autoconf, wget, git, build-essential, libcurl4-openssl-dev, cmake, libbz2-dev, libssl-dev, liblzma-dev, zlib1g-dev]
+      packages: [ autoconf, wget, git, build-essential, libcurl4-openssl-dev, cmake, libbz2-dev, libssl-dev, liblzma-dev, zlib1g-dev, r-base]
     - type: docker
       run: git clone https://github.com/samtools/htslib.git /tmp/htslib && cd /tmp/htslib && git submodule update --init --recursive && autoreconf -i && ./configure --prefix=/usr/local/ && make && make install
     - type: docker
       run: git clone --depth 1 https://github.com/statgen/popscle.git /tmp/popscle && mkdir -p /tmp/popscle/build && cd /tmp/popscle/build && cmake .. && make && cp /tmp/popscle/bin/popscle /usr/local/bin
+    - type: r
+      cran: [ data.table, argparser ]
   - type: nextflow
     variant: vdsl3
     directives:

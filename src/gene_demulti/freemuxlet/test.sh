@@ -11,5 +11,7 @@ $meta_executable \
 
 [[ ! -f freemuxlet_result/freemux_out_samples.plp.gz ]] && echo "Output sample file could not be found!" && exit 1
 [[ ! -f freemuxlet_result/freemux_out.clust1.samples.gz ]] && echo "Output VCF file could not be found!" && exit 1
+[[ ! -f freemuxlet_result/assignment.tsv ]] && echo "Output donor assignment file could not be found!" && exit 1
+
 
 echo ">>> Test finished successfully"

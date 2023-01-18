@@ -50,4 +50,5 @@ if [ ! -d "$par_output" ]; then
 fi
 
 vireo --cellData $par_cellData --nDonor $par_nDonor --genoTag $par_genoTag --nInit $par_nInit \
-       --extraDonor $par_extraDonor --nproc $par_nproc --out ${par_output} ${extra_params[@]} 
+       --extraDonor $par_extraDonor --nproc $par_nproc --out ${par_output} ${extra_params[@]}
+cut -d$'\t' -f 1-2 ${par_output}donor_ids.tsv > ${par_output}assignment.tsv

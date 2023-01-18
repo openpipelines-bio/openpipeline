@@ -7,5 +7,5 @@ $meta_executable \
     --output vireo_result/
 
 [[ ! -f vireo_result/GT_donors.vireo.vcf.gz ]] && echo "Output donor genotype file could not be found!" && exit 1
-
+[[ ! -f vireo_result/assignment.tsv ]] && echo "Output donor assignment tsv could not be found!" && exit 1
 echo ">>> Test finished successfully"

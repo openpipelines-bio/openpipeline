@@ -64,3 +64,5 @@ else
        --min-total $par_minTotal --min-umi $par_minUmi --min-snp $par_minSnp \
        --out ${par_output}${par_out} ${extra_params[@]} ${extra_paramsDemuxlet[@]}
 fi
+
+Rscript summary.R --demuxlet_out ${par_output}${par_out}.best
