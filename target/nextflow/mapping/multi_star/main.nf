@@ -3510,7 +3510,7 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
     "config" : "/home/runner/work/openpipeline/openpipeline/src/mapping/multi_star/config.vsh.yaml",
     "platform" : "nextflow",
     "viash_version" : "0.6.7",
-    "git_commit" : "37cf87089c346c3723360cf1f69f1e33a55af230",
+    "git_commit" : "2366c30f34c6fca5c5bea76fc1f65f655640cd85",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))
