@@ -2,6 +2,10 @@
 
 ## NEW FUNCTIONALITY
 
+* `workflows/full_pipeline`: added `filter_with_hvg_obs_batch_key` argument for batched detection of highly variable genes.
+
+* `workflows/rna_multisample`: added `filter_with_hvg_obs_batch_key`, `filter_with_hvg_flavor` and `filter_with_hvg_n_top_genes` arguments.
+
 * `qc/calculate_qc_metrics`: Add basic statistics: `pct_dropout`, `num_zero_obs`, `obs_mean` and `total_counts` are added to .var. `num_nonzero_vars`, `pct_{var_qc_metrics}`, `total_counts_{var_qc_metrics}`, `pct_of_counts_in_top_{top_n_vars}_vars` and `total_counts` are included in .obs
 
 * `workflows/multiomics/prot_singlesample`: Processing unimodal single-sample CITE-seq data.

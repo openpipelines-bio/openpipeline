@@ -92,13 +92,20 @@ functionality:
           example: 0.2
           type: double
           description: Maximum fraction of proteins that are mitochondrial.
-    - name: "Integration options"
+    - name: "Highly variable gene detection"
       arguments:
-         - name: "--filter_with_hvg_var_output"
-           required: false
-           type: string
-           default: "filter_with_hvg_prot"
-           description: In which .var slot to store a boolean array corresponding to the highly variable genes.
+        - name: "--filter_with_hvg_var_output"
+          required: false
+          type: string
+          default: "filter_with_hvg"
+          description: In which .var slot to store a boolean array corresponding to the highly variable genes.
+        - name: "--filter_with_hvg_obs_batch_key"
+          type: string
+          default: "sample_id"
+          required: false
+          description: |
+            If specified, highly-variable genes are selected within each batch separately and merged. This simple 
+            process avoids the selection of batch-specific genes and acts as a lightweight batch correction method.
   resources:
     - type: nextflow_script
       path: main.nf
