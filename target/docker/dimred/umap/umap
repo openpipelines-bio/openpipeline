@@ -474,9 +474,9 @@ RUN pip install --upgrade pip && \
 
 LABEL org.opencontainers.image.authors="Dries De Maeyer"
 LABEL org.opencontainers.image.description="Companion container for running component dimred umap"
-LABEL org.opencontainers.image.created="2023-01-17T15:27:29Z"
+LABEL org.opencontainers.image.created="2023-01-18T08:07:56Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="641a2141a753736fa592b2f99699d96ff8e6a67e"
+LABEL org.opencontainers.image.revision="37cf87089c346c3723360cf1f69f1e33a55af230"
 LABEL org.opencontainers.image.version="main_build"
 VIASHDOCKER
 }

@@ -21,8 +21,9 @@ obs_covariates: ["sample_id"]
 # prot_min_fraction_mito: 0
 # prot_max_fraction_mito: 0.2
 
-# Integration options
-filter_with_hvg_var_output: "filter_with_hvg_prot"
+# Highly variable gene detection
+filter_with_hvg_var_output: "filter_with_hvg"
+filter_with_hvg_obs_batch_key: "sample_id"
 
 # Nextflow input-output arguments
 publish_dir: # please fill in - example: "output/"

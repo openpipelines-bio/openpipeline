@@ -113,8 +113,8 @@
           }
         }
       },
-      "integration options" : {
-        "title": "Integration options",
+      "highly variable gene detection" : {
+        "title": "Highly variable gene detection",
         "type": "object",
         "description": "No description",
         "default": "",
@@ -122,7 +122,12 @@
             "type":"string",
             "description": "In which .var slot to store a boolean array corresponding to the highly variable genes.",
             
-            "default": "filter_with_hvg_prot"
+            "default": "filter_with_hvg"
+          },"filter_with_hvg_obs_batch_key": {
+            "type":"string",
+            "description": "If specified, highly-variable genes are selected within each batch separately and merged. This simple ","help_text": "If specified, highly-variable genes are selected within each batch separately and merged. This simple \nprocess avoids the selection of batch-specific genes and acts as a lightweight batch correction method.\n",
+            
+            "default": "sample_id"
           }
         }
       },
@@ -156,7 +161,7 @@
         "$ref": "#/definitions/cite-seq filtering options"
       },
       {
-        "$ref": "#/definitions/integration options"
+        "$ref": "#/definitions/highly variable gene detection"
       },
       {
         "$ref": "#/definitions/nextflow input-output arguments"

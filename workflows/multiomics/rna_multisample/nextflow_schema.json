@@ -4,8 +4,8 @@
     "description": "Processing unimodal multi-sample RNA transcriptomics data.",
     "type": "object",
     "definitions": {
-      "arguments" : {
-        "title": "Arguments",
+      "inputs" : {
+        "title": "Inputs",
         "type": "object",
         "description": "No description",
         "default": "",
@@ -24,11 +24,34 @@
             "description": "Path to the samples.",
             
             "default": ""
-          },"filter_with_hvg_var_output": {
+          }
+        }
+      },
+      "filtering highly variable genes" : {
+        "title": "Filtering highly variable genes",
+        "type": "object",
+        "description": "No description",
+        "default": "",
+        "properties": {"filter_with_hvg_var_output": {
             "type":"string",
             "description": "In which .var slot to store a boolean array corresponding to the highly variable genes.",
             
             "default": "filter_with_hvg"
+          },"filter_with_hvg_obs_batch_key": {
+            "type":"string",
+            "description": "If specified, highly-variable genes are selected within each batch separately and merged. This simple ","help_text": "If specified, highly-variable genes are selected within each batch separately and merged. This simple \nprocess avoids the selection of batch-specific genes and acts as a lightweight batch correction method. \nFor all flavors, genes are first sorted by how many batches they are a HVG. For dispersion-based flavors \nties are broken by normalized dispersion. If flavor = \u0027seurat_v3\u0027, ties are broken by the median (across\nbatches) rank based on within-batch normalized variance.\n",
+            
+            "default": "sample_id"
+          },"filter_with_hvg_flavor": {
+            "type":"string",
+            "description": "Choose the flavor for identifying highly variable genes. For the dispersion based methods","help_text": "Choose the flavor for identifying highly variable genes. For the dispersion based methods\nin their default workflows, Seurat passes the cutoffs whereas Cell Ranger passes n_top_genes.\n",
+            "enum": ["seurat", "cell_ranger", "seurat_v3"],
+            "default": "seurat"
+          },"filter_with_hvg_n_top_genes": {
+            "type":"integer",
+            "description": "Number of highly-variable genes to keep. Mandatory if filter_with_hvg_flavor is set to \u0027seurat_v3\u0027.",
+            
+            "default": ""
           }
         }
       },
@@ -53,7 +76,10 @@
     },
     "allOf": [
       {
-        "$ref": "#/definitions/arguments"
+        "$ref": "#/definitions/inputs"
+      },
+      {
+        "$ref": "#/definitions/filtering highly variable genes"
       },
       {
         "$ref": "#/definitions/nextflow input-output arguments"

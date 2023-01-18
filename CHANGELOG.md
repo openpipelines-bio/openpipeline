@@ -2,6 +2,10 @@
 
 ## NEW FUNCTIONALITY
 
+* `workflows/full_pipeline`: added `filter_with_hvg_obs_batch_key` argument for batched detection of highly variable genes.
+
+* `workflows/rna_multisample`: added `filter_with_hvg_obs_batch_key`, `filter_with_hvg_flavor` and `filter_with_hvg_n_top_genes` arguments.
+
 * `qc/calculate_qc_metrics`: Add basic statistics: `pct_dropout`, `num_zero_obs`, `obs_mean` and `total_counts` are added to .var. `num_nonzero_vars`, `pct_{var_qc_metrics}`, `total_counts_{var_qc_metrics}`, `pct_of_counts_in_top_{top_n_vars}_vars` and `total_counts` are included in .obs
 
 * `workflows/multiomics/prot_singlesample`: Processing unimodal single-sample CITE-seq data.
@@ -16,9 +20,7 @@
 
 * `dataflow/concat`: include path of file in error message when reading a mudata file fails.
 
-* `filter/filter_with_hvg`: Enforce that `n_top_genes` is set when `flavor` is set to 'seurat_v3'.
-
-* `filter/filter_with_hvg`: Improve error message when trying to use 'cell_ranger' as `flavor` and passing unfiltered data.
+* `mapping/cellranger_multi`: write cellranger console output to a `cellranger_multi.log` file.
 
 ## BUG FIXES
 
@@ -27,6 +29,12 @@
 * `dataflow/concat`: the `--input_id` is no longer required when `--mode` is not `move`.
 
 * `filter/filter_with_hvg`: does no longer try to use `--varm_name` to set non-existant metadata when running with `--flavor seurat_v3`, which was causing `KeyError`.
+
+* `filter/filter_with_hvg`: Enforce that `n_top_genes` is set when `flavor` is set to 'seurat_v3'.
+
+* `filter/filter_with_hvg`: Improve error message when trying to use 'cell_ranger' as `flavor` and passing unfiltered data.
+
+* `mapping/cellranger_multi` now applies `gex_chemistry`, `gex_secondary_analysis`, `gex_generate_bam`, `gex_include_introns` and `gex_expect_cells`.
 
 # openpipeline 0.6.1
 
