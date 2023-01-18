@@ -54,7 +54,9 @@ workflow run_wf {
         ],
         "rna_multisample_args": [
           "filter_with_hvg_var_output": "filter_with_hvg_var_output",
-          "filter_with_hvg_obs_batch_key": "filter_with_hvg_obs_batch_key"
+          "filter_with_hvg_obs_batch_key": "filter_with_hvg_obs_batch_key",
+          "var_qc_metrics": "var_qc_metrics",
+          "top_n_vars": "top_n_vars"
         ],
         "prot_multisample_args": [:],
         "integration_args": [
