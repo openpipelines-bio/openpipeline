@@ -52,10 +52,10 @@ workflow run_wf {
           "min_fraction_mito": "prot_min_fraction_mito",
           "max_fraction_mito": "prot_max_fraction_mito",
         ],
-        "rna_multisample_args": 
-          ["filter_with_hvg_var_output": "filter_with_hvg_var_output",
-           "filter_with_hvg_obs_batch_key": "filter_with_hvg_obs_batch_key"
-          ],
+        "rna_multisample_args": [
+          "filter_with_hvg_var_output": "filter_with_hvg_var_output",
+          "filter_with_hvg_obs_batch_key": "filter_with_hvg_obs_batch_key"
+        ],
         "prot_multisample_args": [:],
         "integration_args": [
           "obs_covariates": "obs_covariates",

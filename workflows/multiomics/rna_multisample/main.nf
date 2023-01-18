@@ -35,16 +35,16 @@ workflow run_wf {
       [id, new_data]
     }
     | setWorkflowArguments (
-        "concat": [:],
-        "normalize_total": [:],
-        "log1p": [:],
-        "delete_layer": [:],
-        "filter_with_hvg": 
-          ["filter_with_hvg_var_output": "var_name_filter",
-           "n_top_genes": "filter_with_hvg_n_top_genes",
-           "flavor": "filter_with_hvg_flavor",
-           "obs_batch_key": "filter_with_hvg_obs_batch_key"
-          ]
+      "concat": [:],
+      "normalize_total": [:],
+      "log1p": [:],
+      "delete_layer": [:],
+      "filter_with_hvg": [
+        "filter_with_hvg_var_output": "var_name_filter",
+        "n_top_genes": "filter_with_hvg_n_top_genes",
+        "flavor": "filter_with_hvg_flavor",
+        "obs_batch_key": "filter_with_hvg_obs_batch_key"
+      ]
     )
     | getWorkflowArguments(key: "concat")
     | concat
