@@ -30,7 +30,7 @@
             
             "default": ""
           },"top_n_vars": {
-            "type":"string",
+            "type":"integer",
             "description": "Number of top vars to be used to calculate cumulative proportions.","help_text": "Number of top vars to be used to calculate cumulative proportions.\nIf not specified, proportions are not calculated. `--top_n_vars 20,50` finds\ncumulative proportion to the 20th and 50th most expressed vars.\n",
             
             "default": ""

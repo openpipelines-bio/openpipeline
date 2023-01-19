@@ -99,7 +99,7 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
             "dest" : "par"
           },
           {
-            "type" : "string",
+            "type" : "integer",
             "name" : "--top_n_vars",
             "description" : "Number of top vars to be used to calculate cumulative proportions.\nIf not specified, proportions are not calculated. `--top_n_vars 20,50` finds\ncumulative proportion to the 20th and 50th most expressed vars.\n",
             "required" : false,
@@ -213,7 +213,7 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
     "config" : "/home/runner/work/openpipeline/openpipeline/src/qc/calculate_qc_metrics/config.vsh.yaml",
     "platform" : "nextflow",
     "viash_version" : "0.6.7",
-    "git_commit" : "2366c30f34c6fca5c5bea76fc1f65f655640cd85",
+    "git_commit" : "b1b2fc369df43d5892e67e169c984c709650b5c5",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))
@@ -234,7 +234,7 @@ par = {
   'modality': $( if [ ! -z ${VIASH_PAR_MODALITY+x} ]; then echo "r'${VIASH_PAR_MODALITY//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'layer': $( if [ ! -z ${VIASH_PAR_LAYER+x} ]; then echo "r'${VIASH_PAR_LAYER//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'var_qc_metrics': $( if [ ! -z ${VIASH_PAR_VAR_QC_METRICS+x} ]; then echo "r'${VIASH_PAR_VAR_QC_METRICS//\\'/\\'\\"\\'\\"r\\'}'.split(',')"; else echo None; fi ),
-  'top_n_vars': $( if [ ! -z ${VIASH_PAR_TOP_N_VARS+x} ]; then echo "r'${VIASH_PAR_TOP_N_VARS//\\'/\\'\\"\\'\\"r\\'}'.split(',')"; else echo None; fi ),
+  'top_n_vars': $( if [ ! -z ${VIASH_PAR_TOP_N_VARS+x} ]; then echo "list(map(int, r'${VIASH_PAR_TOP_N_VARS//\\'/\\'\\"\\'\\"r\\'}'.split(',')))"; else echo None; fi ),
   'output': $( if [ ! -z ${VIASH_PAR_OUTPUT+x} ]; then echo "r'${VIASH_PAR_OUTPUT//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi )
 }
 meta = {
