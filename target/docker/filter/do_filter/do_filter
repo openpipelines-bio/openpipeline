@@ -411,9 +411,9 @@ RUN pip install --upgrade pip && \
 
 LABEL org.opencontainers.image.authors="Robrecht Cannoodt"
 LABEL org.opencontainers.image.description="Companion container for running component filter do_filter"
-LABEL org.opencontainers.image.created="2023-01-18T15:33:52Z"
+LABEL org.opencontainers.image.created="2023-01-19T08:39:07Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="2366c30f34c6fca5c5bea76fc1f65f655640cd85"
+LABEL org.opencontainers.image.revision="b1b2fc369df43d5892e67e169c984c709650b5c5"
 LABEL org.opencontainers.image.version="main_build"
 VIASHDOCKER
 }

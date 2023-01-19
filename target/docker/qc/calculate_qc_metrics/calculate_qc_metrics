@@ -204,7 +204,7 @@ function ViashHelp {
   echo "        compared to the total sum of the values for all genes."
   echo ""
   echo "    --top_n_vars"
-  echo "        type: string, multiple values allowed"
+  echo "        type: integer, multiple values allowed"
   echo "        Number of top vars to be used to calculate cumulative proportions."
   echo "        If not specified, proportions are not calculated. \`--top_n_vars 20,50\`"
   echo "        finds"
@@ -439,9 +439,9 @@ RUN pip install --upgrade pip && \
 
 LABEL org.opencontainers.image.authors="Dries Schaumont"
 LABEL org.opencontainers.image.description="Companion container for running component qc calculate_qc_metrics"
-LABEL org.opencontainers.image.created="2023-01-18T15:33:56Z"
+LABEL org.opencontainers.image.created="2023-01-19T08:39:12Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="2366c30f34c6fca5c5bea76fc1f65f655640cd85"
+LABEL org.opencontainers.image.revision="b1b2fc369df43d5892e67e169c984c709650b5c5"
 LABEL org.opencontainers.image.version="main_build"
 VIASHDOCKER
 }
@@ -827,6 +827,19 @@ if [ ! -z "$VIASH_PAR_INPUT" ] && [ ! -e "$VIASH_PAR_INPUT" ]; then
 fi
 
 # check whether parameters values are of the right type
+if [ -n "$VIASH_PAR_TOP_N_VARS" ]; then
+  IFS=','
+  set -f
+  for val in $VIASH_PAR_TOP_N_VARS; do
+    if ! [[ "${val}" =~ ^[-+]?[0-9]+$ ]]; then
+      ViashError '--top_n_vars' has to be an integer. Use "--help" to get more information on the parameters.
+      exit 1
+    fi
+  done
+  set +f
+  unset IFS
+fi
+
 if [[ -n "$VIASH_META_CPUS" ]]; then
   if ! [[ "$VIASH_META_CPUS" =~ ^[-+]?[0-9]+$ ]]; then
     ViashError 'cpus' has to be an integer. Use "--help" to get more information on the parameters.
@@ -952,7 +965,7 @@ par = {
   'modality': $( if [ ! -z ${VIASH_PAR_MODALITY+x} ]; then echo "r'${VIASH_PAR_MODALITY//\'/\'\"\'\"r\'}'"; else echo None; fi ),
   'layer': $( if [ ! -z ${VIASH_PAR_LAYER+x} ]; then echo "r'${VIASH_PAR_LAYER//\'/\'\"\'\"r\'}'"; else echo None; fi ),
   'var_qc_metrics': $( if [ ! -z ${VIASH_PAR_VAR_QC_METRICS+x} ]; then echo "r'${VIASH_PAR_VAR_QC_METRICS//\'/\'\"\'\"r\'}'.split(',')"; else echo None; fi ),
-  'top_n_vars': $( if [ ! -z ${VIASH_PAR_TOP_N_VARS+x} ]; then echo "r'${VIASH_PAR_TOP_N_VARS//\'/\'\"\'\"r\'}'.split(',')"; else echo None; fi ),
+  'top_n_vars': $( if [ ! -z ${VIASH_PAR_TOP_N_VARS+x} ]; then echo "list(map(int, r'${VIASH_PAR_TOP_N_VARS//\'/\'\"\'\"r\'}'.split(',')))"; else echo None; fi ),
   'output': $( if [ ! -z ${VIASH_PAR_OUTPUT+x} ]; then echo "r'${VIASH_PAR_OUTPUT//\'/\'\"\'\"r\'}'"; else echo None; fi )
 }
 meta = {

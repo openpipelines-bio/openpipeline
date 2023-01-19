@@ -3,7 +3,7 @@ input: # please fill in - example: "input.h5mu"
 modality: "rna"
 # layer: "raw_counts"
 # var_qc_metrics: ["ercc", "highly_variable"]
-# top_n_vars: ["foo"]
+# top_n_vars: [123]
 
 # Outputs
 # output: "$id.$key.output.h5mu"
