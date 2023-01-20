@@ -2,9 +2,9 @@ set -ex
 echo "$meta_resources_dir"
 echo ">>> Running executable"
 $meta_executable \
-    --bam "$meta_resources_dir/demuxafy_test_data/pooled.sorted.bam" \
-    --bam_index "$meta_resources_dir/demuxafy_test_data/pooled.sorted.bam.bai" \
-    --fasta "$meta_resources_dir/cellranger_tiny_fastq/cellranger_tiny_ref/fasta/genome.fa" \
+    --bam "$meta_resources_dir/demuxafy_test_data/chr_1_pooled.sorted.bam" \
+    --bam_index "$meta_resources_dir/demuxafy_test_data/chr_1_pooled.sorted.bam.bai" \
+    --fasta "$meta_resources_dir/demuxafy_test_data/genome_chr1.fa" \
     --barcodes "$meta_resources_dir/demuxafy_test_data/barcodes.tsv" \
     --common_variants "$meta_resources_dir/demuxafy_test_data/test_dataset.vcf" \
     --clusters 14  --threads 3 --skip_remap \
