@@ -24,16 +24,16 @@ grep -w '^#\|^#CHROM\|^[3-4]' test_dataset.vcf > test_dataset_chr3_4.vcf
 # barcode list
 cp TestData4PipelineSmall/test_dataset/outs/filtered_gene_bc_matrices/Homo_sapiens_GRCh38p10/barcodes.tsv .
 
+# subsetted bam and bai for souporcell
+wget https://www.dropbox.com/s/7ew5lt0msf4z5gj/chr_1_pooled.sorted.bam
+wget https://www.dropbox.com/s/tpplbj9sab9b2p4/chr_1_pooled.sorted.bam.bai
+
 # variants from mixed sample
 wget https://www.dropbox.com/s/btir7ge4kzc7tu1/mixed_variant.vcf
 
-# human genome reference
-wget http://cf.10xgenomics.com/supp/cell-exp/refdata-cellranger-GRCh38-3.0.0.tar.gz
-tar -xzvf refdata-cellranger-GRCh38-3.0.0.tar.gz
-mv refdata-cellranger-GRCh38-3.0.0/fasta/* .
+# subsetted human genome reference
+wget https://www.dropbox.com/s/ynlce3g7nwxthwg/genome_chr1.fa
 
 # remove unnecessary files
 rm -rf TestData4PipelineSmall
-rm -rf refdata-cellranger-GRCh38-3.0.0
 rm TestData4PipelineSmall.tar.gz
-rm refdata-cellranger-GRCh38-3.0.0.tar.gz
