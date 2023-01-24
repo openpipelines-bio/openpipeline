@@ -43,11 +43,11 @@ for obs_name in par["obs_filter"]:
         logger.warning(".mod['%s'].obs['%s'] does not exist. Skipping.", mod, obs_name)
 
 for var_name in par["var_filter"]:
-    logger.info("Filtering modality '%s' variables by .var['%s']", mod, obs_name)
+    logger.info("Filtering modality '%s' variables by .var['%s']", mod, var_name)
     if var_name in mdata.mod[mod].var:
         var_filt &= mdata.mod[mod].var[var_name]
     else:
-        logger.warning(".mod['%s'.var['%s'] does not exist. Skipping.", mod, obs_name)
+        logger.warning(".mod['%s'].var['%s'] does not exist. Skipping.", mod, var_name)
 
 mdata.mod[mod] = mdata.mod[mod][obs_filt, var_filt].copy()
 

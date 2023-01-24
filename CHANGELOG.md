@@ -1,5 +1,11 @@
 # openpipelines 0.6.2
 
+## BUG FIXES
+
+* `filter/do_filter`: resolved an issue where the .obs column instead of the .var column was being logged when filtering using the .var column #263
+
+# openpipelines 0.6.2
+
 ## NEW FUNCTIONALITY
 
 * `workflows/full_pipeline`: added `filter_with_hvg_obs_batch_key` argument for batched detection of highly variable genes.
