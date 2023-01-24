@@ -1,3 +1,7 @@
+# openpipelines 0.6.3
+
+* `workflows/rna_singlesample` and `workflows/prot_singlesample`: Correctly set var and obs columns while filtering with counts.
+
 # openpipelines 0.6.2
 
 ## NEW FUNCTIONALITY
