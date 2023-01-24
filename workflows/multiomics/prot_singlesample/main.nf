@@ -41,11 +41,20 @@ workflow run_wf {
     // filtering
     | getWorkflowArguments(key: "filter_with_counts")
     | filter_with_counts.run(
-        args: [ var_gene_names: "gene_symbol", modality: "prot"]
+        args: [ 
+          var_gene_names: "gene_symbol",
+          modality: "prot", 
+          obs_name_filter: "filter_with_counts",
+          var_name_filter: "filter_with_counts"
+        ]
     )
     | getWorkflowArguments(key: "do_filter")
     | do_filter.run(
-      args: [ obs_filter: "filter_with_counts", modality: "prot" ]
+        args: [
+          obs_filter: "filter_with_counts",
+          modality: "prot",
+          var_filter: "filter_with_counts"
+        ]
     )
     | map {list -> [list[0], list[1]] + list.drop(3)}
     | view { "Output: $it" }

@@ -45,11 +45,18 @@ workflow run_wf {
     // cell filtering
     | getWorkflowArguments(key: "filter_with_counts")
     | filter_with_counts.run(
-        args: [ var_gene_names: "gene_symbol" ]
+        args: [
+          var_gene_names: "gene_symbol",
+          obs_name_filter: "filter_with_counts", 
+          var_name_filter: "filter_with_counts"
+        ]
     )
     | getWorkflowArguments(key: "do_filter")
     | do_filter.run(
-      args: [ obs_filter: "filter_with_counts" ]
+      args: [
+        obs_filter: "filter_with_counts",
+        var_filter: "filter_with_counts"
+      ]
     )
     // doublet calling
     | getWorkflowArguments(key: "filter_with_scrublet")
