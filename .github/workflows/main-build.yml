@@ -13,7 +13,7 @@ jobs:
 
     steps:
     - uses: actions/checkout@v3
-    - uses: viash-io/viash-actions/setup@v1.0.0
+    - uses: viash-io/viash-actions/setup@v1
     - name: Fetch viash tools
       uses: actions/checkout@v3
       with:
@@ -101,7 +101,7 @@ jobs:
 
     steps:
     - uses: actions/checkout@v3
-    - uses: viash-io/viash-actions/setup@v1.0.0
+    - uses: viash-io/viash-actions/setup@v1
     - name: Build container
       run: |
         SRC_DIR=`dirname ${{ matrix.component.config }}`
