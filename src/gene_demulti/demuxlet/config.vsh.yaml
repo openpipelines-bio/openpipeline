@@ -137,13 +137,11 @@ functionality:
       description: Output directory 
       example: "demux/"
     - name: "--outDsc"
-      type: file
-      direction: output
+      type: string
       description: dsc-pileup output file prefix
       example: "demuxlet_dsc"
     - name: "--out"
-      type: file
-      direction: output
+      type: string
       description: demuxlet output file prefix
       example: "demuxlet"
   resources:

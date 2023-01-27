@@ -53,16 +53,13 @@ functionality:
       description: Output directory 
       example: "scSplit_out/"
     - name: "--ref"
-      type: file
-      direction: output
+      type: string
       description: output Ref count matrix
     - name: "--alt"
-      type: file
-      direction: output
+      type: string
       description: output Alt count matrix
     - name: "--psc"
-      type: file
-      direction: output
+      type: string
       description: generated P(S|C)
   resources:
     - type: bash_script

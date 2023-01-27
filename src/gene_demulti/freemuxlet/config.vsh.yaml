@@ -145,13 +145,11 @@ functionality:
       description: Output directory 
       example: "freemux/"
     - name: "--outDsc"
-      type: file
-      direction: output
+      type: string
       description: dsc-pileup output file prefix
       example: "freemuxlet_dsc"
     - name: "--out"
-      type: file
-      direction: output
+      type: string
       description: freemuxlet Output file prefix
       example: "freemuxlet"
   resources:
