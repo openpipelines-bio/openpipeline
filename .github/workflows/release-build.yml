@@ -203,3 +203,40 @@ jobs:
           -s "$SRC_DIR" \
           --cpus 2 \
           --memory "5gb"
+
+  push_documentation:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          path: openpipelines
+
+      - uses: actions/checkout@v3
+        with:
+          repository: openpipelines-bio/website
+          path: website
+
+      - uses: viash-io/viash-actions/setup@v1
+
+      - uses: viash-io/viash-actions/generate_documentation_qmd@main
+        with:
+          input_dir: ./
+          output_dir: website
+          dest_path: "{type}s/{namespace}/{name}.qmd"
+          token: ${{ secrets.GTHB_PAT }}
+          tools_version: main_build
+
+    - name: Create Pull Request
+      env:
+        TAG: ${{ github.inputs.version_tag }}
+      working-directory: website
+      run: |
+        git config user.name github-actions
+        git config user.email github-actions@github.com
+        git add website
+        git checkout -b "release-$TAG"
+        git commit -m "Openpipelines release $TAG"
+        git push
+        gh auth login --with-token "${{ secrets.GTHB_PAT }}"
+        gh pr create --title "Openpipeline release $TAG" --base main --head "release-$TAG" --body "" --project "openpipelines-bio/website"
