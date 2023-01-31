@@ -31,6 +31,10 @@ wget https://www.dropbox.com/s/tpplbj9sab9b2p4/chr_1_pooled.sorted.bam.bai
 # variants from mixed sample
 wget https://www.dropbox.com/s/btir7ge4kzc7tu1/mixed_variant.vcf
 
+# dsc_pileup output
+wget https://www.dropbox.com/s/17hj9i0yavtezx1/dsc_pileup.zip
+tar -xf dsc_pileup.zip
+
 # subsetted human genome reference
 wget https://www.dropbox.com/s/ynlce3g7nwxthwg/genome_chr1.fa
 

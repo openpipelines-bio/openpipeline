@@ -4,7 +4,7 @@ suppressPackageStartupMessages(library("data.table"))
 parser <- arg_parser("Parameters for freemuxlet summarzing")
 parser <- add_argument(parser, "--freemuxlet_out", help = "Path of freemuxlet output file", default = NULL)
 args <- parse_args(parser)
-res <- fread(freemuxlet_out)
+res <- fread(args$freemuxlet_out)
 res <- res[,c(2,5,6)]
 res$`donor_id` <- sapply(res$BEST.GUESS,function(x){
     splitlist = strsplit(x,",")[[1]]
