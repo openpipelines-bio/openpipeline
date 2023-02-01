@@ -20,3 +20,4 @@ init_pos: "spectral"
 # Nextflow input-output arguments
 publish_dir: # please fill in - example: "output/"
 # param_list: "my_params.yaml"
+# param_list_format: "yaml"
