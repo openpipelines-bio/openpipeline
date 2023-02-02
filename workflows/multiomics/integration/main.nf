@@ -34,7 +34,8 @@ workflow run_wf {
     | setWorkflowArguments(
       pca: [
         "input": "input", 
-        "obsm_output": "obsm_pca"
+        "obsm_output": "obsm_pca",
+        "var_input": "var_input_pca"
       ],
       integration: [
         "obsm_input": "obsm_pca",

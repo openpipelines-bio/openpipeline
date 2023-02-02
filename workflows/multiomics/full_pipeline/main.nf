@@ -61,6 +61,7 @@ workflow run_wf {
         "prot_multisample_args": [:],
         "integration_args": [
           "obs_covariates": "obs_covariates",
+          "var_input_pca": "filter_with_hvg_var_output" // run PCA on highly variable genes only
         ]
     )
     // add ids to obs_names and to .obs[sample_id]

@@ -27,12 +27,6 @@ functionality:
           type: string
           description: use specified layer for expression values instead of the .X object from the modality.
           required: false
-        - name: "--obs_covariates"
-          type: string
-          description: "The .obs field(s) that define the covariate(s) to regress out."
-          example: ["batch", "sample"]
-          multiple: true
-          required: true
     - name: "Outputs"
       arguments:
         - name: "--output"
@@ -41,15 +35,31 @@ functionality:
           direction: output
           description: Destination path to the output.
           example: output.h5mu
+    - name: PCA options
+      arguments:
         - name: "--obsm_pca"
           type: string
           default: "X_pca"
           description: "In which .obsm slot to store the resulting PCA embedding."
+        - name: "--var_input_pca"
+          type: string
+          required: false
+          description: Column name in .var matrix that will be used to select which genes to run the PCA on.
+    - name: Harmony integration options
+      arguments:
         - name: "--obsm_integrated"
           type: string
           default: "X_pca_integrated"
           required: false
           description: "In which .obsm slot to store the resulting integrated embedding."
+        - name: "--obs_covariates"
+          type: string
+          description: "The .obs field(s) that define the covariate(s) to regress out."
+          example: ["batch", "sample"]
+          multiple: true
+          required: true
+    - name: Neighbour calculation
+      arguments:
         - name: "--uns_neighbors"
           type: string
           default: neighbors
@@ -62,15 +72,20 @@ functionality:
           type: string
           default: "connectivities"
           description: "In which .obsp slot to store the connectivities matrix between the resulting neighbors."
+    - name: Clustering options
+      arguments:
         - name: "--obs_cluster"
           type: string
           description: Name of the .obs key under which to add the cluster labels.
           default: "leiden"
+    - name: Umap options
+      arguments:
         - name: "--obsm_umap"
           type: string
           default: "X_umap"
           required: false
           description: "In which .obsm slot to store the resulting UMAP embedding."
+
   resources:
     - type: nextflow_script
       path: main.nf
