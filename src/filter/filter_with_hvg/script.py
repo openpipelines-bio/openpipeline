@@ -13,15 +13,29 @@ par = {
   'var_name_filter': 'filter_with_hvg',
   'do_subset': False,
   'flavor': 'seurat',
-  'n_top_genes': 123,
+  'n_top_genes': None,
   'min_mean': 0.0125,
   'max_mean': 3.0,
   'min_disp': 0.5,
   'span': 0.3,
   'n_bins': 20,
   'varm_name': 'hvg',
-  'layer': 'log_normalized'
+  'obs_batch_key': None,
+  'layer': 'log_transformed'
 }
+
+mu_in = mu.read_h5mu('resources_test/pbmc_1k_protein_v3/pbmc_1k_protein_v3_filtered_feature_bc_matrix.h5mu')
+rna_in = mu_in.mod["rna"]
+assert "filter_with_hvg" not in rna_in.var.columns
+log_transformed = sc.pp.log1p(rna_in, copy=True)
+rna_in.layers['log_transformed'] = log_transformed.X
+rna_in.uns['log1p'] = log_transformed.uns['log1p']
+temp_h5mu = "lognormed.h5mu"
+rna_in.obs['batch'] = 'A'
+column_index = rna_in.obs.columns.get_indexer(['batch'])
+rna_in.obs.iloc[slice(rna_in.n_obs//2, None), column_index] = 'B'
+mu_in.write_h5mu(temp_h5mu)
+par['input'] = temp_h5mu
 ## VIASH END
 
 logger = logging.getLogger()
@@ -90,10 +104,14 @@ for par_name, dest_name in optional_parameters.items():
 if par['flavor'] == "seurat_v3" and not par['n_top_genes']:
     raise ValueError("When flavor is set to 'seurat_v3', you are required to set 'n_top_genes'.")
 
+if par["layer"] and not par['layer'] in data.layers:
+    raise ValueError(f"Layer '{par['layer']}' not found in layers for modality '{mod}'. "
+                     f"Found layers are: {','.join(data.layers)}")
 # call function
 try:
     out = sc.pp.highly_variable_genes(**hvg_args)
-    out.index = data.var.index
+    if par['obs_batch_key'] is not None:
+        assert (out.index == data.var.index).all(), "Expected output index values to be equivalent to the input index"
 except ValueError as err:
     if str(err) == "cannot specify integer `bins` when input data contains infinity":
         err.args = ("Cannot specify integer `bins` when input data contains infinity. "
@@ -104,6 +122,7 @@ except ValueError as err:
                            "result from trying to use this component on unfiltered data.") from err
     raise err
 
+out.index = data.var.index
 logger.info("\tStoring output into .var")
 if par.get("var_name_filter", None) is not None:
     data.var[par["var_name_filter"]] = out["highly_variable"]
