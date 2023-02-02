@@ -1,3 +1,9 @@
+# openpipelines 0.6.3
+
+## BUG FIXES
+
+* `workflows/full_pipeline` and `workflows/integration`: fix PCA not using highly variable genes filter.
+
 # openpipelines 0.6.2
 
 ## NEW FUNCTIONALITY
