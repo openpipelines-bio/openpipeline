@@ -51,13 +51,16 @@ jobs:
           --delete
         tree resources_test/ -L 3
 
-    - name: Build target dir
+    - name: Remove target folder from .gitignore
       run: |
         # allow publishing the target folder
         sed -i '/^target.*/d' .gitignore
 
-        # build target dir
-        viash ns build --config_mod ".functionality.version := '${{ github.event.inputs.version_tag }}'" --parallel  --setup donothing
+    - uses: viash-io/viash-actions/ns-build@v2
+      with:
+        config_mod: ".functionality.version := '${{ github.event.inputs.version_tag }}'"
+        parallel: true
+        setup: donothing
 
     - name: Build nextflow schemas
       uses: viash-io/viash-actions/build-nextflow-schemas@v2

@@ -39,13 +39,16 @@ jobs:
           --delete
         tree resources_test/ -L 3
 
-    - name: Build target dir
+    - name: Remove target folder from .gitignore
       run: |
         # allow publishing the target folder
         sed -i '/^target.*/d' .gitignore
 
-        # build target dir
-        viash ns build --config_mod ".functionality.version := 'integration_build'" --parallel  --setup donothing
+    - uses: viash-io/viash-actions/ns-build@v2
+      with:
+        config_mod: .functionality.version := 'integration_build'
+        parallel: true
+        setup: donothing
 
     - name: Deploy to target branch
       uses: peaceiris/actions-gh-pages@v3
