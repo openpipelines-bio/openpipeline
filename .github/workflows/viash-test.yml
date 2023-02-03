@@ -40,11 +40,7 @@ jobs:
       with:
         fetch-depth: 0 
 
-    - name: Fetch viash
-      run: |
-        bin/init -n
-        tree .
-        bin/viash -h
+    - uses: viash-io/viash-actions/setup@v1
 
     # create cachehash key
     - name: Create hash key
@@ -64,7 +60,7 @@ jobs:
     # sync if need be
     - name: Sync test resources
       run: |
-        bin/viash run \
+        viash run \
           -p native \
           src/download/sync_test_resources/config.vsh.yaml -- \
           --input $s3_bucket \
@@ -73,7 +69,7 @@ jobs:
 
     - name: Get changed files
       id: changed-files
-      uses: tj-actions/changed-files@v35.4.4
+      uses: tj-actions/changed-files@v35.5.0
       with:
         separator: ";"
         diff_relative: true
@@ -84,7 +80,7 @@ jobs:
       run: |
         IFS=$';' read -a changed_files <<< "${{ steps.changed-files.outputs.all_changed_files }}"
         echo "Changed files: "${changed_files[*]}""
-        readarray -t components < <(bin/viash ns list -p docker --format json | jq -c '[ .[] |
+        readarray -t components < <(viash ns list -p docker --format json | jq -c '[ .[] |
                                                                                           (.info.config | capture("^(?<dir>.*\/)").dir) as $dir | 
                                                                                           { "name": .functionality.name, 
                                                                                             "config": .info.config, 
@@ -124,11 +120,7 @@ jobs:
 
     steps:
     - uses: actions/checkout@v3
-
-    - name: Fetch viash
-      run: |
-        bin/init -n
-        bin/viash -h
+    - uses: viash-io/viash-actions/setup@v1
 
     # use cache
     - name: Cache resources data
@@ -141,7 +133,7 @@ jobs:
     - name: Run test
       timeout-minutes: 30
       run: |
-        bin/viash test -p docker ${{ matrix.component.config }} \
+        viash test -p docker ${{ matrix.component.config }} \
         --cpus 2 \
         --memory "5gb"
 

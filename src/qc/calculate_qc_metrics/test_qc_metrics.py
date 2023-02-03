@@ -14,9 +14,7 @@ meta = {
     'cpus': 2
 }
 
-@pytest.fixture
-def viash_executable():
-    return "./bin/viash"
+
 ## VIASH END
 
 @pytest.fixture

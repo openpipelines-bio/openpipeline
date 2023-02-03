@@ -1,6 +1,21 @@
-# openpipelines 0.6.3
+# openpipelines 0.7.0
+
+## MAJOR CHANGES
+
+* Removed `bin` folder. As of viash 0.6.4, a `_viash.yaml` file can be included in the root of a repository to set common viash options for the project.
+These options were previously covered in the `bin/init` script, but this new feature of viash makes its use unnecessary. The `viash` and `nextlow` should now be installed in a directory that is included in your `$PATH`.
+
+## MINOR CHANGES
+
+* `filter/do_filter`: raise an error instead of printing a warning when providing a column for `var_filer` or `obs_filter` that doesn't exist.
+
+## BUG FIXES
+
+* `filter/do_filter`: resolved an issue where the .obs column instead of the .var column was being logged when filtering using the .var column.
 
 * `workflows/rna_singlesample` and `workflows/prot_singlesample`: Correctly set var and obs columns while filtering with counts.
+
+* `filter/do_filter`: removed the default input value for `var_filter` argument.
 
 # openpipelines 0.6.2
 
