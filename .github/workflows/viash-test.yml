@@ -57,51 +57,25 @@ jobs:
         separator: ";"
         diff_relative: true
 
-    # store component locations
     - id: ns_list
       uses: viash-io/viash-actions/ns-list@v2
       with:
         platform: docker
         format: json
 
-    - name: Set matrix to only run tests for components that had their config or resources changed.
-      id: set_matrix
+    - id: ns_list_filtered
+      uses: viash-io/viash-actions/project/detect-changed-components@restructure_and_extend
+      with:
+        input_file: "${{ steps.ns_list.outputs.output_file }}"
+
+    - id: set_matrix
       run: |
-        IFS=$';' read -a changed_files <<< "${{ steps.changed-files.outputs.all_changed_files }}"
-        echo "Changed files: ${changed_files[*]}"
-        
-        # get a list of all viash components and their resources
-        jq -c '[ .[] | 
-          (.info.config | capture("^(?<dir>.*\/)").dir) as $dir |
-          {
+        echo "matrix=$(jq -c '[ .[] | 
+          { 
             "name": (.functionality.namespace + "/" + .functionality.name),
-            "dir": $dir,
-            "resources": (
-              [.info.config] +
-              ([.functionality.resources[].path?] | map($dir + .)) +
-              ([.functionality.test_resources[].path?] | map($dir + .))
-            )
+            "dir": .info.config | capture("^(?<dir>.*\/)").dir
           }
-        ]' "${{ steps.ns_list.outputs.output_file }}" > components.json
-
-        # read as array
-        readarray -t components < components.json
-
-        # compare resources against changed files
-        declare -a result_array_matrix=()
-        for component in "${components[@]}"; do
-          readarray -t resources < <(jq -cr '.resources[]' <<< "$component")
-          for resource_rel_path in "${resources[@]}"; do
-            resource_project_path=$(realpath --relative-to="$GITHUB_WORKSPACE" "$resource_rel_path")
-            echo "Checking path $resource_project_path"
-            if [[ " ${changed_files[*]} " =~ " ${resource_project_path} " || "$GITHUB_REF" == "refs/heads/main" || "${{ contains(github.event.head_commit.message, 'ci force') }}" == "true" ]]; then
-              result_array_matrix+="$component"
-              break
-            fi
-          done
-        done
-        json=$(jq -cs '.' <<< "${result_array_matrix[*]}")
-        echo "matrix=$json" >> $GITHUB_OUTPUT
+        ]' ${{ steps.ns_list_filtered.outputs.output_file }} )" >> $GITHUB_OUTPUT
 
   # phase 2
   viash_test:
