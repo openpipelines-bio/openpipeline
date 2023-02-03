@@ -58,23 +58,36 @@ jobs:
         diff_relative: true
 
     # store component locations
+    - id: ns_list
+      uses: viash-io/viash-actions/ns-list@v2
+      with:
+        platform: docker
+        format: json
+
     - name: Set matrix to only run tests for components that had their config or resources changed.
       id: set_matrix
       run: |
         IFS=$';' read -a changed_files <<< "${{ steps.changed-files.outputs.all_changed_files }}"
-        echo "Changed files: "${changed_files[*]}""
-        readarray -t components < <(viash ns list -p docker --format json | jq -c '[ .[] |
-                                                                                          (.info.config | capture("^(?<dir>.*\/)").dir) as $dir | 
-                                                                                          { "name": .functionality.name, 
-                                                                                            "config": .info.config, 
-                                                                                            "resources": ([.info.config] + 
-                                                                                                          ([.functionality.resources[].path?, 
-                                                                                                            .functionality.test_resources[].path?] | 
-                                                                                                            map($dir + .)
-                                                                                                            )
-                                                                                                          )
-                                                                                          }
-                                                                                        ][]')
+        echo "Changed files: ${changed_files[*]}"
+        
+        # get a list of all viash components and their resources
+        jq -c '[ .[] | 
+          (.info.config | capture("^(?<dir>.*\/)").dir) as $dir |
+          {
+            "name": (.functionality.namespace + "/" + .functionality.name),
+            "dir": $dir,
+            "resources": (
+              [.info.config] +
+              ([.functionality.resources[].path?] | map($dir + .)) +
+              ([.functionality.test_resources[].path?] | map($dir + .))
+            )
+          }
+        ]' "${{ steps.ns_list.outputs.output_file }}" > components.json
+
+        # read as array
+        readarray -t components < components.json
+
+        # compare resources against changed files
         declare -a result_array_matrix=()
         for component in "${components[@]}"; do
           readarray -t resources < <(jq -cr '.resources[]' <<< "$component")
