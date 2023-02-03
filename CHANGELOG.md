@@ -13,6 +13,8 @@ These options were previously covered in the `bin/init` script, but this new fea
 
 * `filter/do_filter`: resolved an issue where the .obs column instead of the .var column was being logged when filtering using the .var column.
 
+* `workflows/rna_singlesample` and `workflows/prot_singlesample`: Correctly set var and obs columns while filtering with counts.
+
 * `filter/do_filter`: removed the default input value for `var_filter` argument.
 
 # openpipelines 0.6.2

@@ -410,9 +410,9 @@ RUN pip install --upgrade pip && \
 
 LABEL org.opencontainers.image.authors="Dries Schaumont, Robrecht Cannoodt"
 LABEL org.opencontainers.image.description="Companion container for running component dataflow split_modalities"
-LABEL org.opencontainers.image.created="2023-02-03T15:44:20Z"
+LABEL org.opencontainers.image.created="2023-02-03T16:22:30Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="1e9f1c69c101036bbe0ac2097d6e3fc4f37f66dd"
+LABEL org.opencontainers.image.revision="9192dbe6b3c7f66a2cb6693da76c4669ca195aaa"
 LABEL org.opencontainers.image.version="main_build"
 VIASHDOCKER
 }
