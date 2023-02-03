@@ -12,9 +12,7 @@ meta = {
     'config': "./src/transform/clr/config.vsh.yaml"
 }
 
-@pytest.fixture
-def viash_executable():
-    return "./bin/viash"
+
 ## VIASH END
 
 resources_dir = meta["resources_dir"]

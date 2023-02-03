@@ -98,7 +98,7 @@ publish_dir: "$OUT/processed"
 HERE
 
 
-bin/nextflow \
+nextflow \
   run . \
   -main-script target/nextflow/mapping/cellranger_multi/main.nf \
   -resume \

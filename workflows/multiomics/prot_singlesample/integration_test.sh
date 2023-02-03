@@ -8,7 +8,7 @@ cd "$REPO_ROOT"
 
 export NXF_VER=21.10.6
 
-bin/nextflow run . \
+nextflow run . \
   -main-script workflows/multiomics/prot_singlesample/main.nf \
   -profile docker,no_publish \
   -resume \
