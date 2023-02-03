@@ -31,9 +31,11 @@ jobs:
       s3_bucket: s3://openpipelines-data/
     runs-on: ubuntu-latest
     if: "needs.run_ci_check_job.outputs.run_ci == 'true'"
+
     outputs:
       matrix: ${{ steps.set_matrix.outputs.matrix }}
-      cachehash: ${{ steps.cachehash.outputs.cachehash }}
+      cache_key: ${{ steps.cache.outputs.cache_key }}
+
     steps:
     - uses: actions/checkout@v3
       with:
@@ -41,30 +43,12 @@ jobs:
 
     - uses: viash-io/viash-actions/setup@v1
 
-    # create cachehash key
-    - name: Create hash key
-      id: cachehash
-      run: |
-        AWS_EC2_METADATA_DISABLED=true aws s3 ls $s3_bucket --recursive --no-sign-request > bucket-contents.txt
-        echo "cachehash=resources_test__$( md5sum bucket-contents.txt | awk '{ print $1 }' )" >> $GITHUB_OUTPUT
-    
-    # initialize cache
-    - name: Cache resources data
-      uses: actions/cache@v3
+    - uses: viash-io/viash-actions/project/sync-and-cache-s3@restructure_and_extend
+      id: cache
       with:
-        path: resources_test
-        key: ${{ steps.cachehash.outputs.cachehash }}
-        restore-keys: resources_test_
-
-    # sync if need be
-    - name: Sync test resources
-      run: |
-        viash run \
-          -p native \
-          src/download/sync_test_resources/config.vsh.yaml -- \
-          --input $s3_bucket \
-          --delete
-        tree resources_test/ -L 3
+        s3_bucket: $s3_bucket
+        dest_path: resources_test
+        cache_key_prefix: resources_test__
 
     - name: Get changed files
       id: changed-files
@@ -128,7 +112,7 @@ jobs:
       timeout-minutes: 10
       with:
         path: resources_test
-        key: ${{ needs.list.outputs.cachehash }}
+        key: ${{ needs.list.outputs.cache_key }}
 
     - name: Run test
       timeout-minutes: 30

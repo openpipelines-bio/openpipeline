@@ -7,39 +7,16 @@ on:
 jobs:
   # phase 1
   list:
-    env:
-      s3_bucket: s3://openpipelines-data/
     runs-on: ubuntu-latest
+
+    outputs:
+      component_matrix: ${{ steps.set_matrix.outputs.matrix }}
+      cache_key: ${{ steps.cache.outputs.cache_key }}
 
     steps:
     - uses: actions/checkout@v3
 
     - uses: viash-io/viash-actions/setup@v2
-
-    # create cachehash key
-    - name: Create hash key
-      id: cachehash
-      run: |
-        AWS_EC2_METADATA_DISABLED=true aws s3 ls $s3_bucket --recursive --no-sign-request > bucket-contents.txt
-        echo "cachehash=resources_test__$( md5sum bucket-contents.txt | awk '{ print $1 }' )" >> $GITHUB_OUTPUT
-    
-    # initialize cache
-    - name: Cache resources data
-      uses: actions/cache@v3
-      with:
-        path: resources_test
-        key: ${{ steps.cachehash.outputs.cachehash }}
-        restore-keys: resources_test_
-
-    # sync if need be
-    - name: Sync test resources
-      run: |
-        viash run \
-          -p native \
-          src/download/sync_test_resources/config.vsh.yaml -- \
-          --input $s3_bucket \
-          --delete
-        tree resources_test/ -L 3
 
     - name: Remove target folder from .gitignore
       run: |
@@ -89,9 +66,6 @@ jobs:
             "dir": .info.config | capture("^(?<dir>.*\/)").dir
           }
         ]' ${{ steps.ns_list.outputs.output_file }} )" >> $GITHUB_OUTPUT
-    outputs:
-      component_matrix: ${{ steps.set_matrix.outputs.matrix }}
-      cachehash: ${{ steps.cachehash.outputs.cachehash }}
 
   # phase 2
   build:
