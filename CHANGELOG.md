@@ -5,8 +5,6 @@
 * Removed `bin` folder. As of viash 0.6.4, a `_viash.yaml` file can be included in the root of a repository to set common viash options for the project.
 These options were previously covered in the `bin/init` script, but this new feature of viash makes its use unnecessary. The `viash` and `nextlow` should now be installed in a directory that is included in your `$PATH`.
 
-# openpipelines 0.6.2
-
 ## BUG FIXES
 
 * `filter/do_filter`: resolved an issue where the .obs column instead of the .var column was being logged when filtering using the .var column #263
