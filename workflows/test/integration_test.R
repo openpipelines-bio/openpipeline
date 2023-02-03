@@ -34,7 +34,7 @@ outs <- map_df(workflows, function(wf) {
 
         start_time <- Sys.time()
         out <- processx::run(
-          "bin/nextflow",
+          "nextflow",
           args = args,
           error_on_status = FALSE,
           env = c("current", NXF_VER = "22.04.5")
