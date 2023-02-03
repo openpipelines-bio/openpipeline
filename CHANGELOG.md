@@ -11,7 +11,7 @@ These options were previously covered in the `bin/init` script, but this new fea
 
 ## BUG FIXES
 
-* `filter/do_filter`: resolved an issue where the .obs column instead of the .var column was being logged when filtering using the .var column/
+* `filter/do_filter`: resolved an issue where the .obs column instead of the .var column was being logged when filtering using the .var column.
 
 * `filter/do_filter`: removed the default input value for `var_filter` argument.
 
