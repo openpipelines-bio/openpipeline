@@ -4,7 +4,7 @@ on: workflow_dispatch
 
 jobs:
   # phase 1
-  list_components:
+  list:
     env:
       s3_bucket: s3://openpipelines-data/
     runs-on: ubuntu-latest
@@ -48,7 +48,6 @@ jobs:
       with:
         config_mod: .functionality.version := 'integration_build'
         parallel: true
-        setup: donothing
 
     - name: Deploy to target branch
       uses: peaceiris/actions-gh-pages@v3
@@ -75,33 +74,33 @@ jobs:
         echo "components=$(jq -c '[ .[] | 
           { 
             "name": (.functionality.namespace + "/" + .functionality.name),
-            "config": .info.config,
             "dir": .info.config | capture("^(?<dir>.*\/)").dir
           }
         ]' ${{ steps.ns_list_components.outputs.output_file }} )" >> $GITHUB_OUTPUT
 
         echo "workflows=$(jq -c '[ .[] | 
-          { "name": .functionality.name, 
-            "config": .info.config, 
-            "test_script": .functionality.test_resources[].path, 
-            "entry": .functionality.test_resources[].entrypoint }
+          { 
+            "name": (.functionality.namespace + "/" + .functionality.name),
+            "main_script": (.info.config | capture("^(?<dir>.*\/)").dir + "/" + .functionality.test_resources[].path),
+            "entry": .functionality.test_resources[].entrypoint
+          }
         ]' ${{ steps.ns_list_workflows.outputs.output_file }} )" >> $GITHUB_OUTPUT
-      
+
     outputs:
       component_matrix: ${{ steps.set_matrix.outputs.components }}
       workflow_matrix: ${{ steps.set_matrix.outputs.workflows }}
       cachehash: ${{ steps.cachehash.outputs.cachehash }}
 
   # phase 2
-  build_containers:
-    needs: list_components
+  build:
+    needs: list
 
     runs-on: ubuntu-latest
 
     strategy:
       fail-fast: false
       matrix:
-        component: ${{ fromJson(needs.list_components.outputs.component_matrix) }}
+        component: ${{ fromJson(needs.list.outputs.component_matrix) }}
 
     steps:
     - uses: actions/checkout@v3
@@ -126,26 +125,28 @@ jobs:
       uses: viash-io/viash-actions/ns-build@v2
       with:
         config_mod: .functionality.version := 'integration_build'
-        setup: push
         platform: docker
         src: ${{ matrix.component.dir }}
+        setup: push
 
   ###################################
   # phase 3
   integration_test:
-    needs: [ build_containers, list_components ]
+    needs: [ build, list ]
+    if: "${{ needs.list.outputs.workflow_matrix != '[]' }}"
 
     runs-on: ubuntu-latest
 
     strategy:
       fail-fast: false
       matrix:
-        component: ${{ fromJson(needs.list_components.outputs.workflow_matrix) }}
+        component: ${{ fromJson(needs.list.outputs.workflow_matrix) }}
 
     steps:
     - uses: actions/checkout@v3
 
     - uses: viash-io/viash-actions/setup@v1
+
     - uses: nf-core/setup-nextflow@v1.2.0
 
     # build target dir
@@ -154,7 +155,6 @@ jobs:
       uses: viash-io/viash-actions/ns-build@v2
       with:
         config_mod: ".functionality.version := 'integration_build'"
-        setup: donothing
         parallel: true
 
     # use cache
@@ -163,17 +163,15 @@ jobs:
       timeout-minutes: 5
       with:
         path: resources_test
-        key: ${{ needs.list_components.outputs.cachehash }}
+        key: ${{ needs.list.outputs.cachehash }}
 
     - name: Run integration test
       timeout-minutes: 45
       run: |
         # todo: replace with viash test command
-        config_dir=`dirname ${{ matrix.component.config }}`
-        script="$config_dir/${{ matrix.component.test_script }}"
         export NXF_VER=22.04.5
         nextflow run . \
-          -main-script "$script" \
-          -entry ${{ matrix.component.entry }} \
+          -main-script "${{ matrix.component.main_script }}" \
+          -entry "${{ matrix.component.entry }}" \
           -profile docker,mount_temp,no_publish \
           -c workflows/utils/labels_ci.config

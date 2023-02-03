@@ -24,9 +24,8 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GTHB_PAT }}
 
-
   # phase 1
-  list_components:
+  list:
     needs: run_ci_check_job
     env:
       s3_bucket: s3://openpipelines-data/
@@ -109,17 +108,18 @@ jobs:
 
   # phase 2
   viash_test:
-    needs: list_components
-    if: ${{ needs.list_components.outputs.matrix != '[]' && needs.list_components.outputs.matrix != '' }}
+    needs: list
+    if: ${{ needs.list.outputs.matrix != '[]' && needs.list.outputs.matrix != '' }}
     runs-on: ubuntu-latest
 
     strategy:
       fail-fast: false
       matrix:
-        component: ${{ fromJson(needs.list_components.outputs.matrix) }}
+        component: ${{ fromJson(needs.list.outputs.matrix) }}
 
     steps:
     - uses: actions/checkout@v3
+
     - uses: viash-io/viash-actions/setup@v1
 
     # use cache
@@ -128,12 +128,14 @@ jobs:
       timeout-minutes: 10
       with:
         path: resources_test
-        key: ${{ needs.list_components.outputs.cachehash }}
+        key: ${{ needs.list.outputs.cachehash }}
 
     - name: Run test
       timeout-minutes: 30
       run: |
-        viash test -p docker ${{ matrix.component.config }} \
-        --cpus 2 \
-        --memory "5gb"
+        viash ns test \
+          --config_mod ".functionality.version := '${{ github.event.inputs.version_tag }}'" \
+          -s "${{ matrix.component.dir }}" \
+          --cpus 2 \
+          --memory "5gb"
 

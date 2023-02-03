@@ -6,21 +6,15 @@ on:
 
 jobs:
   # phase 1
-  list_components:
+  list:
     env:
       s3_bucket: s3://openpipelines-data/
     runs-on: ubuntu-latest
 
     steps:
     - uses: actions/checkout@v3
-    - uses: viash-io/viash-actions/setup@v1
-    - name: Fetch viash tools
-      uses: actions/checkout@v3
-      with:
-        repository: "viash-io/viash_tools"
-        token: ${{ secrets.GTHB_PAT }}
-        ref: "main_build"
-        path: "viash_tools"
+
+    - uses: viash-io/viash-actions/setup@v2
 
     # create cachehash key
     - name: Create hash key
@@ -56,7 +50,6 @@ jobs:
       with:
         config_mod: .functionality.version := 'main_build'
         parallel: true
-        setup: donothing
 
     - name: Build nextflow schemas
       uses: viash-io/viash-actions/build-nextflow-schemas@v2
@@ -93,7 +86,6 @@ jobs:
         echo "matrix=$(jq -c '[ .[] | 
           { 
             "name": (.functionality.namespace + "/" + .functionality.name),
-            "config": .info.config,
             "dir": .info.config | capture("^(?<dir>.*\/)").dir
           }
         ]' ${{ steps.ns_list.outputs.output_file }} )" >> $GITHUB_OUTPUT
@@ -102,25 +94,28 @@ jobs:
       cachehash: ${{ steps.cachehash.outputs.cachehash }}
 
   # phase 2
-  build_containers:
-    needs: list_components
+  build:
+    needs: list
 
     runs-on: ubuntu-latest
 
     strategy:
       fail-fast: false
       matrix:
-        component: ${{ fromJson(needs.list_components.outputs.component_matrix) }}
+        component: ${{ fromJson(needs.list.outputs.component_matrix) }}
 
     steps:
     - uses: actions/checkout@v3
-    - uses: viash-io/viash-actions/setup@v1
+
+    - uses: viash-io/viash-actions/setup@v2
+
     - name: Build container
       uses: viash-io/viash-actions/ns-build@v2
       with:
         config_mod: .functionality.version := 'main_build'
-        setup: build
+        platform: docker
         src: ${{ matrix.component.dir }}
+        setup: build
         
     - name: Login to container registry
       uses: docker/login-action@v2
@@ -133,6 +128,6 @@ jobs:
       uses: viash-io/viash-actions/ns-build@v2
       with:
         config_mod: .functionality.version := 'main_build'
-        setup: push
         platform: docker
         src: ${{ matrix.component.dir }}
+        setup: push
