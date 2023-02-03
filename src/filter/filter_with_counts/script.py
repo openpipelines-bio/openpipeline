@@ -19,7 +19,9 @@ par = {
   'max_genes_per_cell': int('1500000'),
   'min_cells_per_gene': int('3'),
   'min_fraction_mito': float('0.0'),
-  'max_fraction_mito': float('0.2')
+  'max_fraction_mito': float('0.2'),
+  "var_gene_names": "gene_symbol",
+  "mitochondrial_gene_regex": "^[mM][tT]-"
 }
 meta = {
     'functionality_name': 'filter_on_counts'
@@ -48,7 +50,8 @@ logger.info("\tComputing aggregations.")
 n_counts_per_cell = np.ravel(np.sum(data.X, axis=1))
 n_cells_per_gene = np.sum(data.X > 0, axis=0)
 n_genes_per_cell = np.sum(data.X > 0, axis=1)
-mito_genes = data.var_names.str.contains("^[mM][tT]-")
+genes_column = data.var[par["var_gene_names"]] if par["var_gene_names"] else data.var_names
+mito_genes = genes_column.str.contains(par["mitochondrial_gene_regex"], regex=True)
 pct_mito = np.ravel(np.sum(data[:, mito_genes].X, axis=1) / np.sum(data.X, axis=1))
 
 def apply_filter_to_mask(mask, base, filter, comparator):
@@ -60,11 +63,11 @@ def apply_filter_to_mask(mask, base, filter, comparator):
 # Filter genes
 keep_genes = np.repeat(True, data.n_vars)
 if par["min_cells_per_gene"] is not None:
-    num_removed, keep_genes = apply_filter_to_mask(keep_genes, 
+    num_removed, keep_genes = apply_filter_to_mask(keep_genes,
                                                    n_cells_per_gene,
                                                    par['min_cells_per_gene'],
                                                    ge)
-    logger.info("\tRemoving %s genes with non-zero values in <%s cells.", 
+    logger.info("\tRemoving %s genes with non-zero values in <%s cells.",
                 num_removed, par['min_cells_per_gene'])
 
 # Filter cells
@@ -85,7 +88,7 @@ for filter_name_or_value, base, comparator, message in filters:
     if filter is not None:
         num_removed, keep_cells = apply_filter_to_mask(keep_cells, base, filter, comparator)
         logger.info(message, num_removed, filter)
-    
+
 if par["obs_name_filter"] is not None:
     data.obs[par["obs_name_filter"]] = keep_cells
 if par["var_name_filter"] is not None:

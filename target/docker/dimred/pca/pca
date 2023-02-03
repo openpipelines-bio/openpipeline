@@ -437,9 +437,9 @@ RUN pip install --upgrade pip && \
 
 LABEL org.opencontainers.image.authors="Dries De Maeyer"
 LABEL org.opencontainers.image.description="Companion container for running component dimred pca"
-LABEL org.opencontainers.image.created="2022-12-21T10:13:36Z"
+LABEL org.opencontainers.image.created="2023-02-03T10:56:20Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="8a1eaa5b5bb627077c0829c76d456032432a400e"
+LABEL org.opencontainers.image.revision="73446a883c07161b1c714a9d001841dc2a1dd589"
 LABEL org.opencontainers.image.version="integration_build"
 VIASHDOCKER
 }
@@ -1070,8 +1070,8 @@ if par["var_input"]:
 
 # run pca
 output_adata = sc.tl.pca(
-    adata_input_layer, 
-    n_comps=par["num_components"], 
+    adata_input_layer,
+    n_comps=par["num_components"],
     copy=True,
     use_highly_variable=use_highly_variable
 )
@@ -1089,10 +1089,10 @@ for parameter_name, field in check_exist_dict.items():
             raise ValueError(f"Requested to create field {par[parameter_name]} in .{field} "
                             f"for modality {par['modality']}, but field already exists.")
         del getattr(data, field)[par[parameter_name]]
-    
+
 data.obsm[par["obsm_output"]] = output_adata.obsm['X_pca']
 data.varm[par["varm_output"]] = output_adata.varm['PCs']
-data.uns[par["uns_output"]] = { "variance": output_adata.uns['pca']['variance_ratio'], 
+data.uns[par["uns_output"]] = { "variance": output_adata.uns['pca']['variance_ratio'],
                                 "variance_ratio": output_adata.uns['pca']['variance_ratio'] }
 
 

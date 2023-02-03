@@ -178,14 +178,13 @@ function ViashHelp {
   echo "        Obs column name where the sample id can be found for each observation to"
   echo "        join on."
   echo "        Useful when adding metadata to concatenated samples."
-  echo "        Mutually exclusive with --var_key and --sample_id\""
+  echo "        Mutually exclusive with \`--var_key\`.\""
   echo ""
   echo "    --var_key"
   echo "        type: string"
-  echo "        Var column name where the sample id can be found for each observation to"
+  echo "        Var column name where the sample id can be found for each variable to"
   echo "        join on."
-  echo "        Useful when adding metadata to concatenated samples."
-  echo "        Mutually exclusive with --var_key and --sample_id.\""
+  echo "        Mutually exclusive with \`--obs_key\`.\""
   echo ""
   echo "MuData Output:"
   echo "    -o, --output"
@@ -427,9 +426,9 @@ RUN pip install --upgrade pip && \
 
 LABEL org.opencontainers.image.authors="Dries Schaumont"
 LABEL org.opencontainers.image.description="Companion container for running component metadata join_csv"
-LABEL org.opencontainers.image.created="2022-12-21T10:13:44Z"
+LABEL org.opencontainers.image.created="2023-02-03T10:56:20Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="8a1eaa5b5bb627077c0829c76d456032432a400e"
+LABEL org.opencontainers.image.revision="73446a883c07161b1c714a9d001841dc2a1dd589"
 LABEL org.opencontainers.image.version="integration_build"
 VIASHDOCKER
 }
@@ -1024,15 +1023,13 @@ except KeyError as e:
     raise KeyError(f"Not all sample IDs selected from {matrix} "
                     "(using the column selected with --var_key or --obs_key) were found in "
                     "the csv file.") from e
-new_matrix = pd.concat([original_matrix.reset_index(drop=True), 
+new_matrix = pd.concat([original_matrix.reset_index(drop=True),
                         new_columns.reset_index(drop=True)], axis=1)\\
                         .set_axis(original_matrix.index)
 setattr(mod_data, matrix, new_matrix)
 
 logger.info("Write output to mudata file")
 mdata.write_h5mu(par['output'], compression="gzip")
-
-        
 
 VIASHMAIN
 python "\$tempscript" &

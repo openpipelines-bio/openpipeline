@@ -180,6 +180,22 @@ function ViashHelp {
   echo "        type: string"
   echo "        example: raw_counts"
   echo ""
+  echo "    --var_gene_names"
+  echo "        type: string"
+  echo "        example: gene_symbol"
+  echo "        .var column name to be used to detect mitochondrial genes instead of"
+  echo "        .var_names (default if not set)."
+  echo "        Gene names matching with the regex value from --mitochondrial_gene_regex"
+  echo "        will be identified"
+  echo "        as a mitochondrial gene."
+  echo ""
+  echo "    --mitochondrial_gene_regex"
+  echo "        type: string"
+  echo "        default: ^[mM][tT]-"
+  echo "        Regex string that identifies mitochondrial genes from --var_gene_names."
+  echo "        By default will detect human and mouse mitochondrial genes from a gene"
+  echo "        symbol."
+  echo ""
   echo "Outputs:"
   echo "    --output"
   echo "        type: file, output, file must exist"
@@ -461,9 +477,9 @@ RUN pip install --upgrade pip && \
 
 LABEL org.opencontainers.image.authors="Dries De Maeyer, Robrecht Cannoodt"
 LABEL org.opencontainers.image.description="Companion container for running component filter filter_with_counts"
-LABEL org.opencontainers.image.created="2022-12-21T10:13:43Z"
+LABEL org.opencontainers.image.created="2023-02-03T10:56:22Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="8a1eaa5b5bb627077c0829c76d456032432a400e"
+LABEL org.opencontainers.image.revision="73446a883c07161b1c714a9d001841dc2a1dd589"
 LABEL org.opencontainers.image.version="integration_build"
 VIASHDOCKER
 }
@@ -647,6 +663,28 @@ while [[ $# -gt 0 ]]; do
         --layer=*)
             [ -n "$VIASH_PAR_LAYER" ] && ViashError Bad arguments for option \'--layer=*\': \'$VIASH_PAR_LAYER\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
             VIASH_PAR_LAYER=$(ViashRemoveFlags "$1")
+            shift 1
+            ;;
+        --var_gene_names)
+            [ -n "$VIASH_PAR_VAR_GENE_NAMES" ] && ViashError Bad arguments for option \'--var_gene_names\': \'$VIASH_PAR_VAR_GENE_NAMES\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+            VIASH_PAR_VAR_GENE_NAMES="$2"
+            [ $# -lt 2 ] && ViashError Not enough arguments passed to --var_gene_names. Use "--help" to get more information on the parameters. && exit 1
+            shift 2
+            ;;
+        --var_gene_names=*)
+            [ -n "$VIASH_PAR_VAR_GENE_NAMES" ] && ViashError Bad arguments for option \'--var_gene_names=*\': \'$VIASH_PAR_VAR_GENE_NAMES\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+            VIASH_PAR_VAR_GENE_NAMES=$(ViashRemoveFlags "$1")
+            shift 1
+            ;;
+        --mitochondrial_gene_regex)
+            [ -n "$VIASH_PAR_MITOCHONDRIAL_GENE_REGEX" ] && ViashError Bad arguments for option \'--mitochondrial_gene_regex\': \'$VIASH_PAR_MITOCHONDRIAL_GENE_REGEX\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+            VIASH_PAR_MITOCHONDRIAL_GENE_REGEX="$2"
+            [ $# -lt 2 ] && ViashError Not enough arguments passed to --mitochondrial_gene_regex. Use "--help" to get more information on the parameters. && exit 1
+            shift 2
+            ;;
+        --mitochondrial_gene_regex=*)
+            [ -n "$VIASH_PAR_MITOCHONDRIAL_GENE_REGEX" ] && ViashError Bad arguments for option \'--mitochondrial_gene_regex=*\': \'$VIASH_PAR_MITOCHONDRIAL_GENE_REGEX\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+            VIASH_PAR_MITOCHONDRIAL_GENE_REGEX=$(ViashRemoveFlags "$1")
             shift 1
             ;;
         --output)
@@ -911,6 +949,9 @@ fi
 if [ -z ${VIASH_PAR_MODALITY+x} ]; then
   VIASH_PAR_MODALITY="rna"
 fi
+if [ -z ${VIASH_PAR_MITOCHONDRIAL_GENE_REGEX+x} ]; then
+  VIASH_PAR_MITOCHONDRIAL_GENE_REGEX="^[mM][tT]-"
+fi
 if [ -z ${VIASH_PAR_DO_SUBSET+x} ]; then
   VIASH_PAR_DO_SUBSET="false"
 fi
@@ -1102,6 +1143,8 @@ par = {
   'input': $( if [ ! -z ${VIASH_PAR_INPUT+x} ]; then echo "r'${VIASH_PAR_INPUT//\'/\'\"\'\"r\'}'"; else echo None; fi ),
   'modality': $( if [ ! -z ${VIASH_PAR_MODALITY+x} ]; then echo "r'${VIASH_PAR_MODALITY//\'/\'\"\'\"r\'}'"; else echo None; fi ),
   'layer': $( if [ ! -z ${VIASH_PAR_LAYER+x} ]; then echo "r'${VIASH_PAR_LAYER//\'/\'\"\'\"r\'}'"; else echo None; fi ),
+  'var_gene_names': $( if [ ! -z ${VIASH_PAR_VAR_GENE_NAMES+x} ]; then echo "r'${VIASH_PAR_VAR_GENE_NAMES//\'/\'\"\'\"r\'}'"; else echo None; fi ),
+  'mitochondrial_gene_regex': $( if [ ! -z ${VIASH_PAR_MITOCHONDRIAL_GENE_REGEX+x} ]; then echo "r'${VIASH_PAR_MITOCHONDRIAL_GENE_REGEX//\'/\'\"\'\"r\'}'"; else echo None; fi ),
   'output': $( if [ ! -z ${VIASH_PAR_OUTPUT+x} ]; then echo "r'${VIASH_PAR_OUTPUT//\'/\'\"\'\"r\'}'"; else echo None; fi ),
   'do_subset': $( if [ ! -z ${VIASH_PAR_DO_SUBSET+x} ]; then echo "r'${VIASH_PAR_DO_SUBSET//\'/\'\"\'\"r\'}'.lower() == 'true'"; else echo None; fi ),
   'obs_name_filter': $( if [ ! -z ${VIASH_PAR_OBS_NAME_FILTER+x} ]; then echo "r'${VIASH_PAR_OBS_NAME_FILTER//\'/\'\"\'\"r\'}'"; else echo None; fi ),
@@ -1153,7 +1196,8 @@ logger.info("\\tComputing aggregations.")
 n_counts_per_cell = np.ravel(np.sum(data.X, axis=1))
 n_cells_per_gene = np.sum(data.X > 0, axis=0)
 n_genes_per_cell = np.sum(data.X > 0, axis=1)
-mito_genes = data.var_names.str.contains("^[mM][tT]-")
+genes_column = data.var[par["var_gene_names"]] if par["var_gene_names"] else data.var_names
+mito_genes = genes_column.str.contains(par["mitochondrial_gene_regex"], regex=True)
 pct_mito = np.ravel(np.sum(data[:, mito_genes].X, axis=1) / np.sum(data.X, axis=1))
 
 def apply_filter_to_mask(mask, base, filter, comparator):
@@ -1165,11 +1209,11 @@ def apply_filter_to_mask(mask, base, filter, comparator):
 # Filter genes
 keep_genes = np.repeat(True, data.n_vars)
 if par["min_cells_per_gene"] is not None:
-    num_removed, keep_genes = apply_filter_to_mask(keep_genes, 
+    num_removed, keep_genes = apply_filter_to_mask(keep_genes,
                                                    n_cells_per_gene,
                                                    par['min_cells_per_gene'],
                                                    ge)
-    logger.info("\\tRemoving %s genes with non-zero values in <%s cells.", 
+    logger.info("\\tRemoving %s genes with non-zero values in <%s cells.",
                 num_removed, par['min_cells_per_gene'])
 
 # Filter cells
@@ -1190,7 +1234,7 @@ for filter_name_or_value, base, comparator, message in filters:
     if filter is not None:
         num_removed, keep_cells = apply_filter_to_mask(keep_cells, base, filter, comparator)
         logger.info(message, num_removed, filter)
-    
+
 if par["obs_name_filter"] is not None:
     data.obs[par["obs_name_filter"]] = keep_cells
 if par["var_name_filter"] is not None:

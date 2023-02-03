@@ -2,7 +2,7 @@
 import pytest
 from pathlib import Path
 from mudata import read_h5mu
-
+import sys
 
 ## VIASH START
 meta = {
@@ -12,9 +12,7 @@ meta = {
     'config': "./src/transform/clr/config.vsh.yaml"
 }
 
-@pytest.fixture
-def viash_executable():
-    return "./bin/viash"
+
 ## VIASH END
 
 resources_dir = meta["resources_dir"]
@@ -32,4 +30,4 @@ def test_clr(run_component):
     assert 'clr' in output_h5mu.mod['prot'].layers.keys()
 
 if __name__ == '__main__':
-    pytest.main([__file__], plugins=["viashpy"])
+    sys.exit(pytest.main([__file__], plugins=["viashpy"]))

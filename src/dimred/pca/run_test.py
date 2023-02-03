@@ -14,9 +14,6 @@ meta = {
     'config': './src/dimred/pca/config.vsh.yaml'
 }
 
-@pytest.fixture
-def viash_executable():
-    return './bin/viash'
 
 ## VIASH END
 

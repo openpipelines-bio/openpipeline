@@ -174,7 +174,7 @@ function ViashHelp {
   echo ""
   echo "    --output"
   echo "        type: file, output, file must exist"
-  echo "        example: output.h5muß"
+  echo "        example: output.h5mu"
   echo "        Output h5mu file."
 }
 
@@ -400,9 +400,9 @@ RUN pip install --upgrade pip && \
 
 LABEL org.opencontainers.image.authors="Dries Schaumont"
 LABEL org.opencontainers.image.description="Companion container for running component filter remove_modality"
-LABEL org.opencontainers.image.created="2022-12-21T10:13:43Z"
+LABEL org.opencontainers.image.created="2023-02-03T10:56:22Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="8a1eaa5b5bb627077c0829c76d456032432a400e"
+LABEL org.opencontainers.image.revision="73446a883c07161b1c714a9d001841dc2a1dd589"
 LABEL org.opencontainers.image.version="integration_build"
 VIASHDOCKER
 }
@@ -890,7 +890,7 @@ meta = {
 
 
 input_mudata = read_h5mu(par['input'])
-new_mods = {mod_name: mod for mod_name, mod 
+new_mods = {mod_name: mod for mod_name, mod
             in input_mudata.mod.items()
             if mod_name not in par['modality']}
 

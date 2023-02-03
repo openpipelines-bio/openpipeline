@@ -79,7 +79,7 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
           {
             "type" : "string",
             "name" : "--obs_key",
-            "description" : "Obs column name where the sample id can be found for each observation to join on.\nUseful when adding metadata to concatenated samples.\nMutually exclusive with --var_key and --sample_id\\"\n",
+            "description" : "Obs column name where the sample id can be found for each observation to join on.\nUseful when adding metadata to concatenated samples.\nMutually exclusive with `--var_key`.\\"\n",
             "required" : false,
             "direction" : "input",
             "multiple" : false,
@@ -89,7 +89,7 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
           {
             "type" : "string",
             "name" : "--var_key",
-            "description" : "Var column name where the sample id can be found for each observation to join on.\nUseful when adding metadata to concatenated samples.\nMutually exclusive with --var_key and --sample_id.\\"\n",
+            "description" : "Var column name where the sample id can be found for each variable to join on.\nMutually exclusive with `--obs_key`.\\"\n",
             "required" : false,
             "direction" : "input",
             "multiple" : false,
@@ -220,7 +220,7 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
     "config" : "/home/runner/work/openpipeline/openpipeline/src/metadata/join_csv/config.vsh.yml",
     "platform" : "nextflow",
     "viash_version" : "0.6.7",
-    "git_commit" : "8a1eaa5b5bb627077c0829c76d456032432a400e",
+    "git_commit" : "73446a883c07161b1c714a9d001841dc2a1dd589",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))
@@ -295,15 +295,13 @@ except KeyError as e:
     raise KeyError(f"Not all sample IDs selected from {matrix} "
                     "(using the column selected with --var_key or --obs_key) were found in "
                     "the csv file.") from e
-new_matrix = pd.concat([original_matrix.reset_index(drop=True), 
+new_matrix = pd.concat([original_matrix.reset_index(drop=True),
                         new_columns.reset_index(drop=True)], axis=1)\\\\
                         .set_axis(original_matrix.index)
 setattr(mod_data, matrix, new_matrix)
 
 logger.info("Write output to mudata file")
 mdata.write_h5mu(par['output'], compression="gzip")
-
-        
 
 VIASHMAIN
 python "$tempscript"

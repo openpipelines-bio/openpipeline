@@ -96,6 +96,32 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
             "multiple" : false,
             "multiple_sep" : ":",
             "dest" : "par"
+          },
+          {
+            "type" : "string",
+            "name" : "--var_gene_names",
+            "description" : ".var column name to be used to detect mitochondrial genes instead of .var_names (default if not set). \nGene names matching with the regex value from --mitochondrial_gene_regex will be identified\nas a mitochondrial gene.\n",
+            "example" : [
+              "gene_symbol"
+            ],
+            "required" : false,
+            "direction" : "input",
+            "multiple" : false,
+            "multiple_sep" : ":",
+            "dest" : "par"
+          },
+          {
+            "type" : "string",
+            "name" : "--mitochondrial_gene_regex",
+            "description" : "Regex string that identifies mitochondrial genes from --var_gene_names.\nBy default will detect human and mouse mitochondrial genes from a gene symbol.\n",
+            "default" : [
+              "^[mM][tT]-"
+            ],
+            "required" : false,
+            "direction" : "input",
+            "multiple" : false,
+            "multiple_sep" : ":",
+            "dest" : "par"
           }
         ]
       },
@@ -329,7 +355,7 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
     "config" : "/home/runner/work/openpipeline/openpipeline/src/filter/filter_with_counts/config.vsh.yaml",
     "platform" : "nextflow",
     "viash_version" : "0.6.7",
-    "git_commit" : "8a1eaa5b5bb627077c0829c76d456032432a400e",
+    "git_commit" : "73446a883c07161b1c714a9d001841dc2a1dd589",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))
@@ -351,6 +377,8 @@ par = {
   'input': $( if [ ! -z ${VIASH_PAR_INPUT+x} ]; then echo "r'${VIASH_PAR_INPUT//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'modality': $( if [ ! -z ${VIASH_PAR_MODALITY+x} ]; then echo "r'${VIASH_PAR_MODALITY//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'layer': $( if [ ! -z ${VIASH_PAR_LAYER+x} ]; then echo "r'${VIASH_PAR_LAYER//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
+  'var_gene_names': $( if [ ! -z ${VIASH_PAR_VAR_GENE_NAMES+x} ]; then echo "r'${VIASH_PAR_VAR_GENE_NAMES//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
+  'mitochondrial_gene_regex': $( if [ ! -z ${VIASH_PAR_MITOCHONDRIAL_GENE_REGEX+x} ]; then echo "r'${VIASH_PAR_MITOCHONDRIAL_GENE_REGEX//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'output': $( if [ ! -z ${VIASH_PAR_OUTPUT+x} ]; then echo "r'${VIASH_PAR_OUTPUT//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'do_subset': $( if [ ! -z ${VIASH_PAR_DO_SUBSET+x} ]; then echo "r'${VIASH_PAR_DO_SUBSET//\\'/\\'\\"\\'\\"r\\'}'.lower() == 'true'"; else echo None; fi ),
   'obs_name_filter': $( if [ ! -z ${VIASH_PAR_OBS_NAME_FILTER+x} ]; then echo "r'${VIASH_PAR_OBS_NAME_FILTER//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
@@ -402,7 +430,8 @@ logger.info("\\\\tComputing aggregations.")
 n_counts_per_cell = np.ravel(np.sum(data.X, axis=1))
 n_cells_per_gene = np.sum(data.X > 0, axis=0)
 n_genes_per_cell = np.sum(data.X > 0, axis=1)
-mito_genes = data.var_names.str.contains("^[mM][tT]-")
+genes_column = data.var[par["var_gene_names"]] if par["var_gene_names"] else data.var_names
+mito_genes = genes_column.str.contains(par["mitochondrial_gene_regex"], regex=True)
 pct_mito = np.ravel(np.sum(data[:, mito_genes].X, axis=1) / np.sum(data.X, axis=1))
 
 def apply_filter_to_mask(mask, base, filter, comparator):
@@ -414,11 +443,11 @@ def apply_filter_to_mask(mask, base, filter, comparator):
 # Filter genes
 keep_genes = np.repeat(True, data.n_vars)
 if par["min_cells_per_gene"] is not None:
-    num_removed, keep_genes = apply_filter_to_mask(keep_genes, 
+    num_removed, keep_genes = apply_filter_to_mask(keep_genes,
                                                    n_cells_per_gene,
                                                    par['min_cells_per_gene'],
                                                    ge)
-    logger.info("\\\\tRemoving %s genes with non-zero values in <%s cells.", 
+    logger.info("\\\\tRemoving %s genes with non-zero values in <%s cells.",
                 num_removed, par['min_cells_per_gene'])
 
 # Filter cells
@@ -439,7 +468,7 @@ for filter_name_or_value, base, comparator, message in filters:
     if filter is not None:
         num_removed, keep_cells = apply_filter_to_mask(keep_cells, base, filter, comparator)
         logger.info(message, num_removed, filter)
-    
+
 if par["obs_name_filter"] is not None:
     data.obs[par["obs_name_filter"]] = keep_cells
 if par["var_name_filter"] is not None:

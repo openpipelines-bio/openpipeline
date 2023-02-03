@@ -406,9 +406,9 @@ RUN pip install --upgrade pip && \
 
 LABEL org.opencontainers.image.authors="Dries Schaumont"
 LABEL org.opencontainers.image.description="Companion container for running component filter subset_h5mu"
-LABEL org.opencontainers.image.created="2022-12-21T10:13:42Z"
+LABEL org.opencontainers.image.created="2023-02-03T10:56:22Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="8a1eaa5b5bb627077c0829c76d456032432a400e"
+LABEL org.opencontainers.image.revision="73446a883c07161b1c714a9d001841dc2a1dd589"
 LABEL org.opencontainers.image.version="integration_build"
 VIASHDOCKER
 }
@@ -907,17 +907,17 @@ meta = {
 ### VIASH END
 
 if __name__ == "__main__":
-  # read data
-  data = mudata.read(par["input"])
+    # read data
+    data = mudata.read(par["input"])
 
-  # subset data
-  if par["modality"]:
-    data.mod[par["modality"]] = data.mod[par["modality"]][:par["number_of_observations"]]
-  else:
-    data = data[:par["number_of_observations"]]
+    # subset data
+    if par["modality"]:
+        data.mod[par["modality"]] = data.mod[par["modality"]][:par["number_of_observations"]]
+    else:
+        data = data[:par["number_of_observations"]]
 
-  # write data
-  data.write_h5mu(par["output"], compression="gzip")
+    # write data
+    data.write_h5mu(par["output"], compression="gzip")
 
 VIASHMAIN
 python "\$tempscript" &

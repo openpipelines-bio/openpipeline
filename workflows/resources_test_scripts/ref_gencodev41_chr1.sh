@@ -11,7 +11,7 @@ ID=reference_gencodev41_chr1
 OUT=resources_test/$ID
 
 
-NXF_VER=21.10.6 bin/nextflow \
+NXF_VER=21.10.6 nextflow \
   run . \
   -main-script workflows/ingestion/make_reference/main.nf \
   -profile docker \

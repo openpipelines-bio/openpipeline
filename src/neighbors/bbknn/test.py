@@ -32,7 +32,7 @@ class TestBBKNNn(unittest.TestCase):
         with  NamedTemporaryFile(suffix=".h5mu") as tempfile_input_file:
             input_data.write(tempfile_input_file.name)
             self._run_and_check_output([
-                "--input", tempfile_input_file.name, 
+                "--input", tempfile_input_file.name,
                 "--output" ,"output.h5mu",
                 "--obs_batch", "leiden",
                 "--obsm_input", "X_pca"

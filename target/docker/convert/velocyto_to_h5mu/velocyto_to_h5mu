@@ -429,9 +429,9 @@ RUN pip install --upgrade pip && \
 
 LABEL org.opencontainers.image.authors="Dries Schaumont, Robrecht Cannoodt, Angela Pisco"
 LABEL org.opencontainers.image.description="Companion container for running component convert velocyto_to_h5mu"
-LABEL org.opencontainers.image.created="2022-12-21T10:13:35Z"
+LABEL org.opencontainers.image.created="2023-02-03T10:56:24Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="8a1eaa5b5bb627077c0829c76d456032432a400e"
+LABEL org.opencontainers.image.revision="73446a883c07161b1c714a9d001841dc2a1dd589"
 LABEL org.opencontainers.image.version="integration_build"
 VIASHDOCKER
 }
@@ -985,24 +985,24 @@ adata_in.var_names = adata_in.var["Accession"]
 
 print("Creating clean AnnData", flush=True)
 adata = ad.AnnData(
-  obs=adata_in.obs[[]],
-  var=adata_in.var[[]],
-  layers={
-    par["layer_spliced"]: adata_in.layers["spliced"],
-    par["layer_unspliced"]: adata_in.layers["unspliced"],
-    par["layer_ambiguous"]: adata_in.layers["ambiguous"]
-  }
+    obs=adata_in.obs[[]],
+    var=adata_in.var[[]],
+    layers={
+        par["layer_spliced"]: adata_in.layers["spliced"],
+        par["layer_unspliced"]: adata_in.layers["unspliced"],
+        par["layer_ambiguous"]: adata_in.layers["ambiguous"]
+    }
 )
 
 if par["input_h5mu"]:
-  print("Received input h5mu to read", flush=True)
-  mdata = mu.read_h5mu(par["input_h5mu"])
+    print("Received input h5mu to read", flush=True)
+    mdata = mu.read_h5mu(par["input_h5mu"])
 
-  print(f"Storing AnnData in modality {par['modality']}", flush=True)
-  mdata.mod[par["modality"]] = adata
+    print(f"Storing AnnData in modality {par['modality']}", flush=True)
+    mdata.mod[par["modality"]] = adata
 else:
-  print("Creating h5mu from scratch", flush=True)
-  mdata = mu.MuData({par["modality"]: adata})
+    print("Creating h5mu from scratch", flush=True)
+    mdata = mu.MuData({par["modality"]: adata})
 
 print("Resulting mudata:", mdata, flush=True)
 

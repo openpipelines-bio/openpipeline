@@ -256,7 +256,7 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
     "config" : "/home/runner/work/openpipeline/openpipeline/src/dimred/pca/config.vsh.yaml",
     "platform" : "nextflow",
     "viash_version" : "0.6.7",
-    "git_commit" : "8a1eaa5b5bb627077c0829c76d456032432a400e",
+    "git_commit" : "73446a883c07161b1c714a9d001841dc2a1dd589",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))
@@ -331,8 +331,8 @@ if par["var_input"]:
 
 # run pca
 output_adata = sc.tl.pca(
-    adata_input_layer, 
-    n_comps=par["num_components"], 
+    adata_input_layer,
+    n_comps=par["num_components"],
     copy=True,
     use_highly_variable=use_highly_variable
 )
@@ -350,10 +350,10 @@ for parameter_name, field in check_exist_dict.items():
             raise ValueError(f"Requested to create field {par[parameter_name]} in .{field} "
                             f"for modality {par['modality']}, but field already exists.")
         del getattr(data, field)[par[parameter_name]]
-    
+
 data.obsm[par["obsm_output"]] = output_adata.obsm['X_pca']
 data.varm[par["varm_output"]] = output_adata.varm['PCs']
-data.uns[par["uns_output"]] = { "variance": output_adata.uns['pca']['variance_ratio'], 
+data.uns[par["uns_output"]] = { "variance": output_adata.uns['pca']['variance_ratio'],
                                 "variance_ratio": output_adata.uns['pca']['variance_ratio'] }
 
 

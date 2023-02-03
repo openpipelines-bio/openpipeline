@@ -279,7 +279,7 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
     "config" : "/home/runner/work/openpipeline/openpipeline/src/integrate/scanorama/config.vsh.yaml",
     "platform" : "nextflow",
     "viash_version" : "0.6.7",
-    "git_commit" : "8a1eaa5b5bb627077c0829c76d456032432a400e",
+    "git_commit" : "73446a883c07161b1c714a9d001841dc2a1dd589",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))
@@ -329,12 +329,12 @@ mod_name = par["modality"]
 mod = mdata.mod[mod_name]
 
 # Integration.
-scanorama_integrate(mod, 
-                    key=par["obs_batch"], 
+scanorama_integrate(mod,
+                    key=par["obs_batch"],
                     basis=par["obsm_input"],
                     adjusted_basis=par["obsm_output"],
                     knn=par["knn"],
-                    alpha=par["alpha"], 
+                    alpha=par["alpha"],
                     sigma=par["sigma"],
                     approx=par["approx"],
                     batch_size=par["batch_size"] )

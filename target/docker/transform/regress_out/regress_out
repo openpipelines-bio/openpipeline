@@ -411,9 +411,9 @@ RUN pip install --upgrade pip && \
 
 LABEL org.opencontainers.image.authors="Robrecht Cannoodt"
 LABEL org.opencontainers.image.description="Companion container for running component transform regress_out"
-LABEL org.opencontainers.image.created="2022-12-21T10:13:37Z"
+LABEL org.opencontainers.image.created="2023-02-03T10:56:18Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="8a1eaa5b5bb627077c0829c76d456032432a400e"
+LABEL org.opencontainers.image.revision="73446a883c07161b1c714a9d001841dc2a1dd589"
 LABEL org.opencontainers.image.version="integration_build"
 VIASHDOCKER
 }
@@ -943,10 +943,10 @@ if (
     mod = par["modality"]
     logger.info("Regress out variables on modality %s", mod)
     data = mdata.mod[mod]
-    
+
     sc.pp.regress_out(
-        data, 
-        keys=par["obs_keys"], 
+        data,
+        keys=par["obs_keys"],
         n_jobs=multiprocessing.cpu_count() - 1
     )
 

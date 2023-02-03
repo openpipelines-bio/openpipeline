@@ -72,7 +72,7 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
         "name" : "--output",
         "description" : "Output h5mu file.",
         "example" : [
-          "output.h5muß"
+          "output.h5mu"
         ],
         "must_exist" : true,
         "create_parent" : true,
@@ -163,7 +163,7 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
     "config" : "/home/runner/work/openpipeline/openpipeline/src/filter/remove_modality/config.vsh.yaml",
     "platform" : "nextflow",
     "viash_version" : "0.6.7",
-    "git_commit" : "8a1eaa5b5bb627077c0829c76d456032432a400e",
+    "git_commit" : "73446a883c07161b1c714a9d001841dc2a1dd589",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))
@@ -201,7 +201,7 @@ meta = {
 
 
 input_mudata = read_h5mu(par['input'])
-new_mods = {mod_name: mod for mod_name, mod 
+new_mods = {mod_name: mod for mod_name, mod
             in input_mudata.mod.items()
             if mod_name not in par['modality']}
 

@@ -98,7 +98,7 @@ workflow run_wf {
     | join(passthr_ch)
     | map{ tup -> 
       id = tup[0]
-      data = tup[1] + [ output_cellranger: tup[2], output_bd_rhapsody: tup[3] ]
+      data = tup[1] + [ output_cellranger: tup[2], output_bd_rhapsody: tup[3], output_star: tup[4] ]
       data = data.findAll{it.value != null} // remove empty fields
       psthr = tup.drop(4)
       [ id, data ] + psthr
@@ -129,8 +129,8 @@ workflow test_wf {
     | view{ "Input: $it" }
     | run_wf
     | view { output ->
-      assert output.size() == 2 : "outputs should contain two elements; [id, file]"
-      assert output[1].size() == 4 : "output data should contain 4 elements"
+      assert output.size() == 3 : "outputs should contain two elements; [id, file, passthrough]"
+      assert output[1].size() == 5 : "output data should contain 5 elements"
       // todo: check output data tuple
       "Output: $output"
     }

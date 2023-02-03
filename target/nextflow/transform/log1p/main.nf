@@ -183,6 +183,17 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
           ],
           "upgrade" : true
         }
+      ],
+      "test_setup" : [
+        {
+          "type" : "python",
+          "user" : false,
+          "packages" : [
+            "viashpy",
+            "pytest"
+          ],
+          "upgrade" : true
+        }
       ]
     },
     {
@@ -206,7 +217,7 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
     "config" : "/home/runner/work/openpipeline/openpipeline/src/transform/log1p/config.vsh.yaml",
     "platform" : "nextflow",
     "viash_version" : "0.6.7",
-    "git_commit" : "8a1eaa5b5bb627077c0829c76d456032432a400e",
+    "git_commit" : "73446a883c07161b1c714a9d001841dc2a1dd589",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))
@@ -266,6 +277,7 @@ new_layer = sc.pp.log1p(data,
                         copy=True if par['output_layer'] else False)
 if new_layer:
     data.layers[par['output_layer']] = new_layer.X
+    data.uns['log1p'] = new_layer.uns['log1p']
 
 logger.info("Writing to file %s", par["output"])
 mdata.write_h5mu(filename=par["output"], compression="gzip")
