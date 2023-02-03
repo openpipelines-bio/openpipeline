@@ -2,7 +2,7 @@
 input: # please fill in - example: "input.h5mu"
 modality: "rna"
 # obs_filter: ["filter_with_x"]
-var_filter: ["filter_with_x"]
+# var_filter: ["filter_with_x"]
 # output: "$id.$key.output.h5mu"
 
 # Nextflow input-output arguments

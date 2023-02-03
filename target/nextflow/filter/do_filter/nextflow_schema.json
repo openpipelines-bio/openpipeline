@@ -28,7 +28,7 @@
             "type":"string",
             "description": "Which .var columns to use to filter the observations by.",
             
-            "default": "filter_with_x"
+            "default": ""
           },"output": {
             "type":"string",
             "description": "Output h5mu file.",

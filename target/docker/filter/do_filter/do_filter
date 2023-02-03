@@ -180,7 +180,7 @@ function ViashHelp {
   echo ""
   echo "    --var_filter"
   echo "        type: string, multiple values allowed"
-  echo "        default: filter_with_x"
+  echo "        example: filter_with_x"
   echo "        Which .var columns to use to filter the observations by."
   echo ""
   echo "    --output"
@@ -404,16 +404,16 @@ function ViashDockerCheckCommands {
 #   ViashDockerFile
 function ViashDockerfile {
   cat << 'VIASHDOCKER'
-FROM python:3.8
+FROM python:3.9
 
 RUN pip install --upgrade pip && \
   pip install --upgrade --no-cache-dir "mudata~=0.2.0" "anndata~=0.8.0"
 
 LABEL org.opencontainers.image.authors="Robrecht Cannoodt"
 LABEL org.opencontainers.image.description="Companion container for running component filter do_filter"
-LABEL org.opencontainers.image.created="2023-02-03T08:28:16Z"
+LABEL org.opencontainers.image.created="2023-02-03T15:44:16Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="73446a883c07161b1c714a9d001841dc2a1dd589"
+LABEL org.opencontainers.image.revision="1e9f1c69c101036bbe0ac2097d6e3fc4f37f66dd"
 LABEL org.opencontainers.image.version="main_build"
 VIASHDOCKER
 }
@@ -780,9 +780,6 @@ fi
 if [ -z ${VIASH_PAR_MODALITY+x} ]; then
   VIASH_PAR_MODALITY="rna"
 fi
-if [ -z ${VIASH_PAR_VAR_FILTER+x} ]; then
-  VIASH_PAR_VAR_FILTER="filter_with_x"
-fi
 
 # check whether required files exist
 if [ ! -z "$VIASH_PAR_INPUT" ] && [ ! -e "$VIASH_PAR_INPUT" ]; then
@@ -951,19 +948,22 @@ logger.info("Processing modality '%s'", mod)
 obs_filt = np.repeat(True, mdata.mod[mod].n_obs)
 var_filt = np.repeat(True, mdata.mod[mod].n_vars)
 
+par["obs_filter"] = par["obs_filter"] if par["obs_filter"] else []
+par["var_filter"] = par["var_filter"] if par["var_filter"] else []
+
 for obs_name in par["obs_filter"]:
     logger.info("Filtering modality '%s' observations by .obs['%s']", mod, obs_name)
+    if not obs_name in mdata.mod[mod].obs:
+        raise ValueError(f".mod[{mod}].obs[{obs_name}] does not exist.")
     if obs_name in mdata.mod[mod].obs:
         obs_filt &= mdata.mod[mod].obs[obs_name]
-    else:
-        logger.warning(".mod['%s'].obs['%s'] does not exist. Skipping.", mod, obs_name)
 
 for var_name in par["var_filter"]:
-    logger.info("Filtering modality '%s' variables by .var['%s']", mod, obs_name)
+    logger.info("Filtering modality '%s' variables by .var['%s']", mod, var_name)
+    if not var_name in mdata.mod[mod].var:
+        raise ValueError(f".mod[{mod}].var[{var_name}] does not exist.")
     if var_name in mdata.mod[mod].var:
         var_filt &= mdata.mod[mod].var[var_name]
-    else:
-        logger.warning(".mod['%s'.var['%s'] does not exist. Skipping.", mod, obs_name)
 
 mdata.mod[mod] = mdata.mod[mod][obs_filt, var_filt].copy()
 

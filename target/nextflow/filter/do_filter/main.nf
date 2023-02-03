@@ -88,7 +88,7 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
         "type" : "string",
         "name" : "--var_filter",
         "description" : "Which .var columns to use to filter the observations by.",
-        "default" : [
+        "example" : [
           "filter_with_x"
         ],
         "required" : false,
@@ -142,7 +142,7 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
     {
       "type" : "docker",
       "id" : "docker",
-      "image" : "python:3.8",
+      "image" : "python:3.9",
       "target_organization" : "openpipelines-bio",
       "target_registry" : "ghcr.io",
       "namespace_separator" : "_",
@@ -157,6 +157,16 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
           "packages" : [
             "mudata~=0.2.0",
             "anndata~=0.8.0"
+          ],
+          "upgrade" : true
+        }
+      ],
+      "test_setup" : [
+        {
+          "type" : "python",
+          "user" : false,
+          "packages" : [
+            "viashpy~=0.2.1"
           ],
           "upgrade" : true
         }
@@ -183,7 +193,7 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
     "config" : "/home/runner/work/openpipeline/openpipeline/src/filter/do_filter/config.vsh.yaml",
     "platform" : "nextflow",
     "viash_version" : "0.6.7",
-    "git_commit" : "73446a883c07161b1c714a9d001841dc2a1dd589",
+    "git_commit" : "1e9f1c69c101036bbe0ac2097d6e3fc4f37f66dd",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))
@@ -239,19 +249,22 @@ logger.info("Processing modality '%s'", mod)
 obs_filt = np.repeat(True, mdata.mod[mod].n_obs)
 var_filt = np.repeat(True, mdata.mod[mod].n_vars)
 
+par["obs_filter"] = par["obs_filter"] if par["obs_filter"] else []
+par["var_filter"] = par["var_filter"] if par["var_filter"] else []
+
 for obs_name in par["obs_filter"]:
     logger.info("Filtering modality '%s' observations by .obs['%s']", mod, obs_name)
+    if not obs_name in mdata.mod[mod].obs:
+        raise ValueError(f".mod[{mod}].obs[{obs_name}] does not exist.")
     if obs_name in mdata.mod[mod].obs:
         obs_filt &= mdata.mod[mod].obs[obs_name]
-    else:
-        logger.warning(".mod['%s'].obs['%s'] does not exist. Skipping.", mod, obs_name)
 
 for var_name in par["var_filter"]:
-    logger.info("Filtering modality '%s' variables by .var['%s']", mod, obs_name)
+    logger.info("Filtering modality '%s' variables by .var['%s']", mod, var_name)
+    if not var_name in mdata.mod[mod].var:
+        raise ValueError(f".mod[{mod}].var[{var_name}] does not exist.")
     if var_name in mdata.mod[mod].var:
         var_filt &= mdata.mod[mod].var[var_name]
-    else:
-        logger.warning(".mod['%s'.var['%s'] does not exist. Skipping.", mod, obs_name)
 
 mdata.mod[mod] = mdata.mod[mod][obs_filt, var_filt].copy()
 
