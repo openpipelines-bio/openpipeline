@@ -29,7 +29,7 @@ functionality:
       
     - name: "--var_filter"
       type: string
-      default: "filter_with_x"
+      example: "filter_with_x"
       multiple: true
       description: Which .var columns to use to filter the observations by.
     

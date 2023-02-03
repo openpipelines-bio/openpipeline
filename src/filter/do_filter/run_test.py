@@ -1,10 +1,11 @@
-from pathlib import Path
 import mudata as mu
 import numpy as np
 import logging
 import sys
 import pytest
 import uuid
+from subprocess import CalledProcessError
+import re
 
 ## VIASH START
 meta = {
@@ -90,10 +91,11 @@ def test_filter_nothing(run_component,
                         random_h5mu_path,
                         original_n_obs,
                         original_n_vars):
-    run_component([
-        "--input", test_data_filter_nothing,
-        "--output", random_h5mu_path,
-        "--obs_filter", "filter_none"])
+    with pytest.raises(CalledProcessError) as err:
+        run_component([
+            "--input", test_data_filter_nothing,
+            "--output", random_h5mu_path,
+            "--obs_filter", "filter_none"])
     assert random_h5mu_path.is_file(), "Output file not found"
     mu_out = mu.read_h5mu(random_h5mu_path)
     new_obs = mu_out.mod['rna'].n_obs
@@ -101,5 +103,24 @@ def test_filter_nothing(run_component,
     assert new_obs == original_n_obs, "No RNA obs should have been filtered"
     assert new_vars == original_n_vars, "No RNA vars should have been filtered"
 
+def test_nonexisting_column_raises(run_component,
+                                   test_data_filter_nothing,
+                                   random_h5mu_path):
+    with pytest.raises(CalledProcessError) as err:
+        run_component([
+            "--input", test_data_filter_nothing,
+            "--output", random_h5mu_path,
+            "--obs_filter", "doesnotexist"])
+    re.search(r"\.mod\['rna'\]\.obs\['doesnotexist'\] does not exist\.",
+        err.value.stdout.decode('utf-8'))
+    
+    with pytest.raises(CalledProcessError) as err:
+        run_component([
+            "--input", test_data_filter_nothing,
+            "--output", random_h5mu_path,
+            "--var_filter", "doesnotexist"])
+
+    re.search(r"\.mod\['rna'\]\.var\['doesnotexist'\] does not exist\.",
+        err.value.stdout.decode('utf-8'))
 if __name__ == '__main__':
     sys.exit(pytest.main([__file__], plugins=["viashpy"]))
