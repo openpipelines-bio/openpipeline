@@ -27,7 +27,7 @@ if [[ ! -f "$bd_rhap_wta_bam" ]]; then
 fi
 
 echo "> Converting BD Rhapsody barcode tags."
-bin/viash run src/convert/from_bd_to_10x_molecular_barcode_tags/config.vsh.yaml -- \
+viash run src/convert/from_bd_to_10x_molecular_barcode_tags/config.vsh.yaml -- \
   -i "$bd_rhap_wta_bam" \
   -o "$velocyto_dir/compatible_bd_input.bam" \
   --bam \
@@ -48,7 +48,7 @@ gtf="resources_test/cellranger_tiny_fastq/cellranger_tiny_ref/genes/genes.gtf.gz
 bam="resources_test/cellranger_tiny_fastq/bam/possorted_genome_bam.bam"
 
 echo "> Processing 10x dataset"
-bin/viash run src/velocity/velocyto/config.vsh.yaml -- \
+viash run src/velocity/velocyto/config.vsh.yaml -- \
   -i "$bam" \
   -o "$OUT/velocyto_processed/cellranger_tiny.loom" \
   --transcriptome "$gtf"

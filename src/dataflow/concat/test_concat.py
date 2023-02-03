@@ -15,9 +15,6 @@ meta = {
     'config': '/home/di/code/openpipeline/src/dataflow/concat/config.vsh.yaml'
 }
 
-@pytest.fixture
-def viash_executable():
-    return './bin/viash'
 
 ## VIASH END
 

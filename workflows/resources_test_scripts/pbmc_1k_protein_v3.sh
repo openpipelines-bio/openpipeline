@@ -60,7 +60,7 @@ h5mu_data.mod['prot'].write("${OUT}_filtered_feature_bc_matrix_prot.h5ad")
 HEREDOC
 
 # run single sample
-NXF_VER=21.10.6 bin/nextflow \
+NXF_VER=21.10.6 nextflow \
   run . \
   -main-script workflows/multiomics/rna_singlesample/main.nf \
   -profile docker \
@@ -71,7 +71,7 @@ NXF_VER=21.10.6 bin/nextflow \
   -resume
 
 # run multisample
-NXF_VER=21.10.6 bin/nextflow \
+NXF_VER=21.10.6 nextflow \
   run . \
   -main-script workflows/multiomics/rna_multisample/main.nf \
   -profile docker \
@@ -82,7 +82,7 @@ NXF_VER=21.10.6 bin/nextflow \
   -resume
 
 # run integration
-NXF_VER=21.10.6 bin/nextflow \
+NXF_VER=21.10.6 nextflow \
   run . \
   -main-script workflows/multiomics/integration/main.nf \
   -profile docker \
