@@ -91,11 +91,10 @@ def test_filter_nothing(run_component,
                         random_h5mu_path,
                         original_n_obs,
                         original_n_vars):
-    with pytest.raises(CalledProcessError) as err:
-        run_component([
-            "--input", test_data_filter_nothing,
-            "--output", random_h5mu_path,
-            "--obs_filter", "filter_none"])
+    run_component([
+        "--input", test_data_filter_nothing,
+        "--output", random_h5mu_path,
+        "--obs_filter", "filter_none"])
     assert random_h5mu_path.is_file(), "Output file not found"
     mu_out = mu.read_h5mu(random_h5mu_path)
     new_obs = mu_out.mod['rna'].n_obs

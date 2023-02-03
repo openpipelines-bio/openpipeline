@@ -35,6 +35,9 @@ logger.info("Processing modality '%s'", mod)
 obs_filt = np.repeat(True, mdata.mod[mod].n_obs)
 var_filt = np.repeat(True, mdata.mod[mod].n_vars)
 
+par["obs_filter"] = par["obs_filter"] if par["obs_filter"] else []
+par["var_filter"] = par["var_filter"] if par["var_filter"] else []
+
 for obs_name in par["obs_filter"]:
     logger.info("Filtering modality '%s' observations by .obs['%s']", mod, obs_name)
     if not obs_name in mdata.mod[mod].obs:

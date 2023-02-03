@@ -25,14 +25,12 @@ functionality:
       type: string
       example: "filter_with_x"
       multiple: true
-      default: []
       description: Which .obs columns to use to filter the observations by.
       
     - name: "--var_filter"
       type: string
       example: "filter_with_x"
       multiple: true
-      default: []
       description: Which .var columns to use to filter the observations by.
     
     # output
