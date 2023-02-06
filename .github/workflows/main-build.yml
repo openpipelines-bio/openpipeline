@@ -63,6 +63,7 @@ jobs:
         echo "matrix=$(jq -c '[ .[] | 
           { 
             "name": (.functionality.namespace + "/" + .functionality.name),
+            "config": .info.config,
             "dir": .info.config | capture("^(?<dir>.*\/)").dir
           }
         ]' ${{ steps.ns_list.outputs.output_file }} )" >> $GITHUB_OUTPUT
