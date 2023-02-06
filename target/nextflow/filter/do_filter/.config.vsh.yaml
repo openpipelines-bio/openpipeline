@@ -169,5 +169,5 @@ info:
   output: "/home/runner/work/openpipeline/openpipeline/target/nextflow/filter/do_filter"
   executable: "/home/runner/work/openpipeline/openpipeline/target/nextflow/filter/do_filter/do_filter"
   viash_version: "0.6.7"
-  git_commit: "3d55469e1a7787e6962c6b2056c9bc5ae4b06650"
+  git_commit: "3f9afcfe823c07df5745a69d36b737f03e73fd4e"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"
