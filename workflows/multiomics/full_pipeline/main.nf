@@ -85,22 +85,23 @@ workflow run_wf {
       def outputDir = data.output
       def types = readCsv(data.output_types.toString())
       
-      types.collect{ dat ->
+      // this is not a nextflow channel map, but collect on a groovy hashmap (so no sort parameter)
+      types.collect({dat ->
         // def new_id = id + "_" + dat.name
         def new_id = id // it's okay because the channel will get split up anyways
         def new_data = outputDir.resolve(dat.filename)
         def new_passthrough = passthrough
         [ new_id, ["input": new_data], new_passthrough, [ modality: dat.name ]]
-      }
+      }).sort()
     }
 
     modality_processors = [
       ["id": "rna", "singlesample": rna_singlesample, "multisample": rna_multisample],
       ["id": "prot", "singlesample": prot_singlesample, "multisample": null]
     ]
-    known_modalities = modality_processors.collect{it.id}
+    known_modalities = modality_processors.collect({it.id}).sort()
 
-    mod_chs = modality_processors.collect{ modality_processor ->
+    mod_chs = modality_processors.collect({modality_processor ->
       // Select the files corresponding to the currently selected modality
       mod_ch = start_ch
         | filter{ it[3].modality == modality_processor.id }
@@ -133,7 +134,7 @@ workflow run_wf {
           )
       )
       return out_ch
-    }
+    }).sort()
     
   // Keep and concat unknown modalities as well
   unknown_channel = start_ch
@@ -141,7 +142,7 @@ workflow run_wf {
     | map { lst -> // Put modality name in first element so that we can group on it
         [lst[3].modality] + lst
       }
-    | groupTuple(by: 0)
+    | groupTuple(by: 0, sort: true)
     // [ String, List[String], List[Map[String, Any]], ... ]
     | map { grouped_lst ->
       def new_id = "combined_${grouped_lst[0]}"
