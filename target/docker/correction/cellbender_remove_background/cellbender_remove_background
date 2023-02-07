@@ -171,8 +171,8 @@ function ViashHelp {
   echo "Inputs:"
   echo "    -i, --input"
   echo "        type: file, required parameter, file must exist"
-  echo "        example: input.h5"
-  echo "        Input file."
+  echo "        example: input.h5mu"
+  echo "        Input h5mu file."
   echo ""
   echo "    --modality"
   echo "        type: string"
@@ -530,9 +530,9 @@ RUN pip install --upgrade pip && \
   pip install --upgrade --no-cache-dir "git+https://github.com/broadinstitute/CellBender"
 
 LABEL org.opencontainers.image.description="Companion container for running component correction cellbender_remove_background"
-LABEL org.opencontainers.image.created="2023-02-06T10:53:17Z"
+LABEL org.opencontainers.image.created="2023-02-07T09:01:05Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="3f9afcfe823c07df5745a69d36b737f03e73fd4e"
+LABEL org.opencontainers.image.revision="82111dcb5fa8b2d016fea5a755ea84761149010a"
 LABEL org.opencontainers.image.version="main_build"
 VIASHDOCKER
 }

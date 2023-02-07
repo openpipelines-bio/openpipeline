@@ -1,5 +1,5 @@
 # Inputs
-input: # please fill in - example: "input.h5"
+input: # please fill in - example: "input.h5mu"
 modality: "rna"
 
 # Outputs

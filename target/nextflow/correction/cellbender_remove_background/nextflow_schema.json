@@ -11,7 +11,7 @@
         "default": "",
         "properties": {"input": {
             "type":"string",
-            "description": "Input file.",
+            "description": "Input h5mu file.",
             
             "default": ""
           },"modality": {
