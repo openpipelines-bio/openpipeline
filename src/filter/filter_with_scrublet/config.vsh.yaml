@@ -113,6 +113,7 @@ platforms:
           - scrublet
           - mudata~=0.2.0
           - anndata~=0.8.0
+          - annoy==1.16.3
   - type: nextflow
     directives:
       label: highcpu
