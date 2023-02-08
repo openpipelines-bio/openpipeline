@@ -1,0 +1,52 @@
+functionality:
+  name: "ngs_checkmate_model"
+  namespace: "qc"
+  argument_groups:
+    - name: Inputs
+      arguments:
+        - type: file
+          name: "--input"
+          required: true
+          description: The folder that contains all vcf files
+    - name: Outputs
+      arguments:
+        - type: file
+          name: "--output"
+          direction: output
+          description: The folder to store the model results.
+          example: "output"
+          required: true
+  resources:
+    - type: bash_script
+      path: script.sh
+platforms:
+  - type: docker
+    image: "ubuntu:20.04"
+    setup:
+      - type: apt
+        packages:
+          [
+            autoconf,
+            wget,
+            git,
+            make,
+            build-essential,
+            libcurl4-openssl-dev,
+            cmake,
+            libbz2-dev,
+            libssl-dev,
+            liblzma-dev,
+            zlib1g-dev,
+            r-base,
+            tar,
+          ]
+      - type: docker
+        run: apt update && apt upgrade -y
+      - type: docker
+        run: apt-get install -y python2.7
+      - type: docker
+        run: "wget https://sourceforge.net/projects/samtools/files/samtools/0.1.19/samtools-0.1.19.tar.bz2 && tar xvf samtools-0.1.19.tar.bz2 && cd samtools-0.1.19 && make && cp samtools /usr/local/bin && cp bcftools/bcftools /usr/local/bin"
+      - type: docker
+        run: "git clone https://github.com/parklab/NGSCheckMate.git"
+  - type: nextflow
+    variant: vdsl3
