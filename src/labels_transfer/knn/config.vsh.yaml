@@ -15,6 +15,12 @@ functionality:
           description: Input h5mu file
           direction: input
           required: true
+          info:
+            slots:
+              obsm:
+              - type: "double"
+                name: "X_scanvi"
+                description: "SCANVI or any other embedding on which a classifier is trained. Could have any name, specify it in `query_obsm_key` argument"
         - name: "--modality"
           type: string
           default: "rna"
@@ -24,6 +30,16 @@ functionality:
           description: ".h5ad file with data used to train classifier. If None, HLCA is used"
           default: "https://zenodo.org/record/6337966/files/HLCA_emb_and_metadata.h5ad"
           required: false
+          info:
+              slots:
+                obs:
+                - type: "string"
+                  name: "label"
+                  description: "Labels to transfer to query. Could have any name, specify it in `targets` argument"
+                obsm:
+                - type: "double"
+                  name: "X_scanvi"
+                  description: "SCANVI or any other embedding on which a classifier is trained. Could have any name, specify it in `reference_obsm_key` argument"
         - name: "--targets"
           type: string
           default: "ann_level_1,ann_level_2,ann_level_3,ann_level_4,ann_level_5,ann_finest_level"
