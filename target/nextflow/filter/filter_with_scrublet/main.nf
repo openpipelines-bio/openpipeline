@@ -244,7 +244,8 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
             "scanpy~=1.9.1",
             "scrublet",
             "mudata~=0.2.0",
-            "anndata~=0.8.0"
+            "anndata~=0.8.0",
+            "annoy==1.16.3"
           ],
           "upgrade" : true
         }
@@ -274,7 +275,7 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
     "config" : "/home/runner/work/openpipeline/openpipeline/src/filter/filter_with_scrublet/config.vsh.yaml",
     "platform" : "nextflow",
     "viash_version" : "0.6.7",
-    "git_commit" : "b67db6a0092fdc2a15a3e1695ca84c7f6772992e",
+    "git_commit" : "1fc73756380841b4648d7ce92e257867c2404764",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))
