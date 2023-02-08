@@ -16,6 +16,7 @@ For the description of other input arguments, refer to the [config](./config.vsh
 - The annotations for each of the `targets` will be stored as new columns in the `.obs` data frame with the suffix `_pred` by default
 - The uncertainty of the prediction for each target will be stored as another column in `.obs` with the suffix `_uncertainty`
 - `labels_transfer` entry is added to the `.uns` dictionary of the output file, which contains information about the method used and its parameters. The following keys are added:
+
 | Key         | Description                   |
 |-------------|------------------------|
 | method      | Always the string "KNN_pynndescent" |
