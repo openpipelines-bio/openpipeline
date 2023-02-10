@@ -10,7 +10,7 @@ include { do_filter } from targetDir + "/filter/do_filter/main.nf"
 include { readConfig; viashChannel; helpMessage } from workflowDir + "/utils/WorkflowHelper.nf"
 include { setWorkflowArguments; getWorkflowArguments } from workflowDir + "/utils/DataflowHelper.nf"
 
-config = readConfig("$projectDir/config.vsh.yaml")
+config = readConfig("$workflowDir/multiomics/rna_singlesample/config.vsh.yaml")
 
 workflow {
   helpMessage(config)

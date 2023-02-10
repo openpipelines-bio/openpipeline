@@ -11,7 +11,7 @@ include { build_cellranger_reference } from targetDir + "/reference/build_cellra
 include { readConfig; viashChannel; helpMessage } from workflowDir + "/utils/WorkflowHelper.nf"
 include { setWorkflowArguments; getWorkflowArguments } from workflowDir + "/utils/DataflowHelper.nf"
 
-config = readConfig("$projectDir/config.vsh.yaml")
+config = readConfig("$workflowDir/ingestion/make_reference/config.vsh.yaml")
 
 workflow {
   helpMessage(config)

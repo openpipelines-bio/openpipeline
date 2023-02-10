@@ -8,7 +8,7 @@ include { filter_with_counts } from targetDir + "/filter/filter_with_counts/main
 include { do_filter } from targetDir + "/filter/do_filter/main.nf"
 include { setWorkflowArguments; getWorkflowArguments } from workflowDir + "/utils/DataflowHelper.nf"
 
-config = readConfig("$projectDir/config.vsh.yaml")
+config = readConfig("$workflowDir/multiomics/prot_singlesample/config.vsh.yaml")
 
 workflow {
   helpMessage(config)
