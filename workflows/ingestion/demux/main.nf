@@ -11,7 +11,7 @@ include { multiqc } from targetDir + "/qc/multiqc/main.nf"
 
 include { readConfig; viashChannel; helpMessage } from workflowDir + "/utils/WorkflowHelper.nf"
 
-config = readConfig("$projectDir/config.vsh.yaml")
+config = readConfig("$workflowDir/ingestion/demux/config.vsh.yaml")
 
 workflow {
   helpMessage(config)

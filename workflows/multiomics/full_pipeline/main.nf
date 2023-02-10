@@ -14,7 +14,7 @@ include { run_wf as integration } from workflowDir + '/multiomics/integration/ma
 
 include { readConfig; viashChannel; helpMessage; readCsv } from workflowDir + "/utils/WorkflowHelper.nf"
 include {  setWorkflowArguments; getWorkflowArguments; passthroughMap as pmap; passthroughFlatMap as pFlatMap } from workflowDir + "/utils/DataflowHelper.nf"
-config = readConfig("$projectDir/config.vsh.yaml")
+config = readConfig("$workflowDir/multiomics/full_pipeline/config.vsh.yaml")
 
 
 workflow {
