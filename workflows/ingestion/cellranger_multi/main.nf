@@ -10,7 +10,7 @@ include { from_cellranger_multi_to_h5mu } from targetDir + "/convert/from_cellra
 include { readConfig; viashChannel; helpMessage } from workflowDir + "/utils/WorkflowHelper.nf"
 include { setWorkflowArguments; getWorkflowArguments; passthroughMap as pmap } from workflowDir + "/utils/DataflowHelper.nf"
 
-config = readConfig("$projectDir/config.vsh.yaml")
+config = readConfig("$workflowDir/ingestion/cellranger_multi/config.vsh.yaml")
 
 workflow {
   helpMessage(config)

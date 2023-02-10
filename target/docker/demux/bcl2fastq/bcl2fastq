@@ -407,9 +407,9 @@ FROM ghcr.io/data-intuitive/bcl2fastq:2.20
 RUN :
 LABEL org.opencontainers.image.authors="Toni Verbeiren"
 LABEL org.opencontainers.image.description="Companion container for running component demux bcl2fastq"
-LABEL org.opencontainers.image.created="2023-02-10T12:18:51Z"
+LABEL org.opencontainers.image.created="2023-02-10T13:28:02Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="aaf32ad781627d0d872494ab96c613baa3610f0f"
+LABEL org.opencontainers.image.revision="076c2f4795482a7656cf08daec9d245032201411"
 LABEL org.opencontainers.image.version="main_build"
 VIASHDOCKER
 }
