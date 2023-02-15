@@ -60,7 +60,6 @@ workflow run_wf {
     )
 
     | getWorkflowArguments(key: "pca")
-    | view {"Before PCA: $it and class " + it[1].input.getClass()}
     | pca
 
     | getWorkflowArguments(key: "integration")
