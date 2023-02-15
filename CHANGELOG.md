@@ -11,6 +11,8 @@ These options were previously covered in the `bin/init` script, but this new fea
 
 ## BUG FIXES
 
+* `workflows`: Updated `WorkflowHelper` to newer version that allows applying defaults when calling a subworkflow from another workflow.
+
 * `workflows`: fix a bug when running a subworkflow from a workflow would cause the parent config to be read instead of the subworklow config.
 
 * `correction/cellbender_remove_background`: Fix description of input for cellbender_remove_background.
