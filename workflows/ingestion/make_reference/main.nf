@@ -8,7 +8,7 @@ include { build_bdrhap_reference } from targetDir + "/reference/build_bdrhap_ref
 include { star_build_reference } from targetDir + "/mapping/star_build_reference/main.nf"
 include { build_cellranger_reference } from targetDir + "/reference/build_cellranger_reference/main.nf"
 
-include { readConfig; viashChannel; helpMessage } from workflowDir + "/utils/WorkflowHelper.nf"
+include { readConfig; channelFromParams; preprocessInputs; helpMessage } from workflowDir + "/utils/WorkflowHelper.nf"
 include { setWorkflowArguments; getWorkflowArguments } from workflowDir + "/utils/DataflowHelper.nf"
 
 config = readConfig("$workflowDir/ingestion/make_reference/config.vsh.yaml")
@@ -16,7 +16,7 @@ config = readConfig("$workflowDir/ingestion/make_reference/config.vsh.yaml")
 workflow {
   helpMessage(config)
 
-  viashChannel(params, config)
+  channelFromParams(params, config)
     | run_wf
 }
 
@@ -28,6 +28,7 @@ workflow run_wf {
   
   ref_ch = input_ch
     // split params for downstream components
+    | preprocessInputs("config": config)
     | setWorkflowArguments(
       make_reference: [
         "genome_fasta": "genome_fasta", 
@@ -125,7 +126,7 @@ workflow test_wf {
   ]
 
   output_ch =
-    viashChannel(params, config)
+    channelFromParams(params, config)
     | view{ "Input: $it" }
     | run_wf
     | view { output ->

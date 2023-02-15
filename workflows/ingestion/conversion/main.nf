@@ -6,7 +6,7 @@ targetDir = params.rootDir + "/target/nextflow"
 include { from_10xh5_to_h5mu } from targetDir + "/convert/from_10xh5_to_h5mu/main.nf" 
 include { from_10xmtx_to_h5mu } from targetDir + "/convert/from_10xmtx_to_h5mu/main.nf" 
 include { from_h5ad_to_h5mu } from targetDir + "/convert/from_h5ad_to_h5mu/main.nf" 
-include { readConfig; viashChannel; helpMessage } from workflowDir + "/utils/WorkflowHelper.nf"
+include { readConfig; channelFromParams; preprocessInputs; helpMessage } from workflowDir + "/utils/WorkflowHelper.nf"
 
 
 config = readConfig("$workflowDir/ingestion/conversion/config.vsh.yaml")
@@ -14,7 +14,7 @@ config = readConfig("$workflowDir/ingestion/conversion/config.vsh.yaml")
 workflow {
   helpMessage(config)
 
-  viashChannel(params, config)
+  channelFromParams(params, config)
     | run_wf
 }
 
@@ -23,18 +23,20 @@ workflow run_wf {
         input_ch
 
     main:
+        preprocessed_ch = input_ch
+          | preprocessInputs("config": config)
         commonOptions = [
             auto: [ publish: true ]
         ]
-        ch_10xh5 = input_ch
+        ch_10xh5 = preprocessed_ch
             | filter{ it[1].input_type == "10xh5" }
             | from_10xh5_to_h5mu.run(commonOptions)
 
-        ch_10xmtx = input_ch
+        ch_10xmtx = preprocessed_ch
             | filter{ it[1].input_type  == "10xmtx" }
             | from_10xmtx_to_h5mu.run(commonOptions)
 
-        ch_h5ad = input_ch
+        ch_h5ad = preprocessed_ch
             | filter{ it[1].input_type  == "h5ad" }
             | from_h5ad_to_h5mu.run(commonOptions)
 
@@ -81,7 +83,7 @@ workflow test_wf {
   ]
     
   output_ch =
-    viashChannel(testParams, config)
+    channelFromParams(testParams, config)
     | view { "Input: $it" }    
     | run_wf
     | view { output ->

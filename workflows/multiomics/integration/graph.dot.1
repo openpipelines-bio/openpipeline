@@ -1,0 +1,194 @@
+digraph "graph" {
+p0 [shape=point,label="",fixedsize=true,width=0.1,xlabel="Channel.fromList"];
+p1 [shape=circle,label="",fixedsize=true,width=0.1,xlabel="map"];
+p0 -> p1;
+
+p1 [shape=circle,label="",fixedsize=true,width=0.1,xlabel="map"];
+p2 [shape=circle,label="",fixedsize=true,width=0.1,xlabel="view"];
+p1 -> p2;
+
+p2 [shape=circle,label="",fixedsize=true,width=0.1,xlabel="view"];
+p3 [shape=circle,label="",fixedsize=true,width=0.1,xlabel="map"];
+p2 -> p3 [label="input_"];
+
+p3 [shape=circle,label="",fixedsize=true,width=0.1,xlabel="map"];
+p4 [shape=circle,label="",fixedsize=true,width=0.1,xlabel="map"];
+p3 -> p4 [label="input_"];
+
+p4 [shape=circle,label="",fixedsize=true,width=0.1,xlabel="map"];
+p5 [shape=circle,label="",fixedsize=true,width=0.1,xlabel="map"];
+p4 -> p5 [label="input_"];
+
+p5 [shape=circle,label="",fixedsize=true,width=0.1,xlabel="map"];
+p6 [shape=circle,label="",fixedsize=true,width=0.1,xlabel="map"];
+p5 -> p6;
+
+p6 [shape=circle,label="",fixedsize=true,width=0.1,xlabel="map"];
+p7 [shape=circle,label="",fixedsize=true,width=0.1,xlabel="map"];
+p6 -> p7 [label="mid2_"];
+
+p7 [shape=circle,label="",fixedsize=true,width=0.1,xlabel="map"];
+p8 [shape=circle,label="",fixedsize=true,width=0.1,xlabel="map"];
+p7 -> p8;
+
+p8 [shape=circle,label="",fixedsize=true,width=0.1,xlabel="map"];
+p9 [label="test_wf:run_wf:pca:pca_process"];
+p8 -> p9;
+
+p9 [label="test_wf:run_wf:pca:pca_process"];
+p10 [shape=circle,label="",fixedsize=true,width=0.1,xlabel="map"];
+p9 -> p10;
+
+p10 [shape=circle,label="",fixedsize=true,width=0.1,xlabel="map"];
+p11 [shape=circle,label="",fixedsize=true,width=0.1,xlabel="map"];
+p10 -> p11;
+
+p11 [shape=circle,label="",fixedsize=true,width=0.1,xlabel="map"];
+p12 [shape=circle,label="",fixedsize=true,width=0.1,xlabel="map"];
+p11 -> p12 [label="input_"];
+
+p12 [shape=circle,label="",fixedsize=true,width=0.1,xlabel="map"];
+p13 [shape=circle,label="",fixedsize=true,width=0.1,xlabel="map"];
+p12 -> p13 [label="input_"];
+
+p13 [shape=circle,label="",fixedsize=true,width=0.1,xlabel="map"];
+p14 [shape=circle,label="",fixedsize=true,width=0.1,xlabel="map"];
+p13 -> p14;
+
+p14 [shape=circle,label="",fixedsize=true,width=0.1,xlabel="map"];
+p15 [shape=circle,label="",fixedsize=true,width=0.1,xlabel="map"];
+p14 -> p15 [label="mid2_"];
+
+p15 [shape=circle,label="",fixedsize=true,width=0.1,xlabel="map"];
+p16 [shape=circle,label="",fixedsize=true,width=0.1,xlabel="map"];
+p15 -> p16;
+
+p16 [shape=circle,label="",fixedsize=true,width=0.1,xlabel="map"];
+p17 [label="test_wf:run_wf:harmonypy:harmonypy_process"];
+p16 -> p17;
+
+p17 [label="test_wf:run_wf:harmonypy:harmonypy_process"];
+p18 [shape=circle,label="",fixedsize=true,width=0.1,xlabel="map"];
+p17 -> p18;
+
+p18 [shape=circle,label="",fixedsize=true,width=0.1,xlabel="map"];
+p19 [shape=circle,label="",fixedsize=true,width=0.1,xlabel="map"];
+p18 -> p19;
+
+p19 [shape=circle,label="",fixedsize=true,width=0.1,xlabel="map"];
+p20 [shape=circle,label="",fixedsize=true,width=0.1,xlabel="map"];
+p19 -> p20 [label="input_"];
+
+p20 [shape=circle,label="",fixedsize=true,width=0.1,xlabel="map"];
+p21 [shape=circle,label="",fixedsize=true,width=0.1,xlabel="map"];
+p20 -> p21 [label="input_"];
+
+p21 [shape=circle,label="",fixedsize=true,width=0.1,xlabel="map"];
+p22 [shape=circle,label="",fixedsize=true,width=0.1,xlabel="map"];
+p21 -> p22;
+
+p22 [shape=circle,label="",fixedsize=true,width=0.1,xlabel="map"];
+p23 [shape=circle,label="",fixedsize=true,width=0.1,xlabel="map"];
+p22 -> p23 [label="mid2_"];
+
+p23 [shape=circle,label="",fixedsize=true,width=0.1,xlabel="map"];
+p24 [shape=circle,label="",fixedsize=true,width=0.1,xlabel="map"];
+p23 -> p24;
+
+p24 [shape=circle,label="",fixedsize=true,width=0.1,xlabel="map"];
+p25 [label="test_wf:run_wf:find_neighbors:find_neighbors_process"];
+p24 -> p25;
+
+p25 [label="test_wf:run_wf:find_neighbors:find_neighbors_process"];
+p26 [shape=circle,label="",fixedsize=true,width=0.1,xlabel="map"];
+p25 -> p26;
+
+p26 [shape=circle,label="",fixedsize=true,width=0.1,xlabel="map"];
+p27 [shape=circle,label="",fixedsize=true,width=0.1,xlabel="map"];
+p26 -> p27;
+
+p27 [shape=circle,label="",fixedsize=true,width=0.1,xlabel="map"];
+p28 [shape=circle,label="",fixedsize=true,width=0.1,xlabel="map"];
+p27 -> p28 [label="input_"];
+
+p28 [shape=circle,label="",fixedsize=true,width=0.1,xlabel="map"];
+p29 [shape=circle,label="",fixedsize=true,width=0.1,xlabel="map"];
+p28 -> p29 [label="input_"];
+
+p29 [shape=circle,label="",fixedsize=true,width=0.1,xlabel="map"];
+p30 [shape=circle,label="",fixedsize=true,width=0.1,xlabel="map"];
+p29 -> p30;
+
+p30 [shape=circle,label="",fixedsize=true,width=0.1,xlabel="map"];
+p31 [shape=circle,label="",fixedsize=true,width=0.1,xlabel="map"];
+p30 -> p31 [label="mid2_"];
+
+p31 [shape=circle,label="",fixedsize=true,width=0.1,xlabel="map"];
+p32 [shape=circle,label="",fixedsize=true,width=0.1,xlabel="map"];
+p31 -> p32;
+
+p32 [shape=circle,label="",fixedsize=true,width=0.1,xlabel="map"];
+p33 [label="test_wf:run_wf:leiden:leiden_process"];
+p32 -> p33;
+
+p33 [label="test_wf:run_wf:leiden:leiden_process"];
+p34 [shape=circle,label="",fixedsize=true,width=0.1,xlabel="map"];
+p33 -> p34;
+
+p34 [shape=circle,label="",fixedsize=true,width=0.1,xlabel="map"];
+p35 [shape=circle,label="",fixedsize=true,width=0.1,xlabel="map"];
+p34 -> p35;
+
+p35 [shape=circle,label="",fixedsize=true,width=0.1,xlabel="map"];
+p36 [shape=circle,label="",fixedsize=true,width=0.1,xlabel="map"];
+p35 -> p36 [label="input_"];
+
+p36 [shape=circle,label="",fixedsize=true,width=0.1,xlabel="map"];
+p37 [shape=circle,label="",fixedsize=true,width=0.1,xlabel="map"];
+p36 -> p37 [label="input_"];
+
+p37 [shape=circle,label="",fixedsize=true,width=0.1,xlabel="map"];
+p38 [shape=circle,label="",fixedsize=true,width=0.1,xlabel="map"];
+p37 -> p38;
+
+p38 [shape=circle,label="",fixedsize=true,width=0.1,xlabel="map"];
+p39 [shape=circle,label="",fixedsize=true,width=0.1,xlabel="map"];
+p38 -> p39 [label="mid2_"];
+
+p39 [shape=circle,label="",fixedsize=true,width=0.1,xlabel="map"];
+p40 [shape=circle,label="",fixedsize=true,width=0.1,xlabel="map"];
+p39 -> p40;
+
+p40 [shape=circle,label="",fixedsize=true,width=0.1,xlabel="map"];
+p41 [label="test_wf:run_wf:umap:umap_process"];
+p40 -> p41;
+
+p41 [label="test_wf:run_wf:umap:umap_process"];
+p42 [shape=circle,label="",fixedsize=true,width=0.1,xlabel="map"];
+p41 -> p42;
+
+p42 [shape=circle,label="",fixedsize=true,width=0.1,xlabel="map"];
+p43 [shape=circle,label="",fixedsize=true,width=0.1,xlabel="map"];
+p42 -> p43;
+
+p43 [shape=circle,label="",fixedsize=true,width=0.1,xlabel="map"];
+p44 [shape=circle,label="",fixedsize=true,width=0.1,xlabel="map"];
+p43 -> p44 [label="output_"];
+
+p44 [shape=circle,label="",fixedsize=true,width=0.1,xlabel="map"];
+p45 [shape=circle,label="",fixedsize=true,width=0.1,xlabel="view"];
+p44 -> p45 [label="output_ch"];
+
+p45 [shape=circle,label="",fixedsize=true,width=0.1,xlabel="view"];
+p46 [shape=circle,label="",fixedsize=true,width=0.1,xlabel="toList"];
+p45 -> p46;
+
+p46 [shape=circle,label="",fixedsize=true,width=0.1,xlabel="toList"];
+p47 [shape=circle,label="",fixedsize=true,width=0.1,xlabel="map"];
+p46 -> p47;
+
+p47 [shape=circle,label="",fixedsize=true,width=0.1,xlabel="map"];
+p48 [shape=point];
+p47 -> p48 [label="output_ch"];
+
+}

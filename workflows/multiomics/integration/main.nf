@@ -9,7 +9,7 @@ include { umap } from targetDir + '/dimred/umap/main.nf'
 include { leiden } from targetDir + '/cluster/leiden/main.nf'
 include { harmonypy } from targetDir + '/integrate/harmonypy/main.nf'
 
-include { readConfig; viashChannel; helpMessage } from workflowDir + "/utils/WorkflowHelper.nf"
+include { readConfig; helpMessage; preprocessInputs; channelFromParams } from workflowDir + "/utils/WorkflowHelper.nf"
 include { setWorkflowArguments; getWorkflowArguments } from workflowDir + "/utils/DataflowHelper.nf"
 
 config = readConfig("$workflowDir/multiomics/integration/config.vsh.yaml")
@@ -17,7 +17,7 @@ config = readConfig("$workflowDir/multiomics/integration/config.vsh.yaml")
 workflow {
   helpMessage(config)
 
-  viashChannel(params, config)
+  channelFromParams(params, config)
     | view { "Input: $it" }
     | run_wf
     | view { "Output: $it" }
@@ -29,7 +29,7 @@ workflow run_wf {
 
   main:
   output_ch = input_ch
-  
+    | preprocessInputs("config": config)
     // split params for downstream components
     | setWorkflowArguments(
       pca: [
@@ -60,6 +60,7 @@ workflow run_wf {
     )
 
     | getWorkflowArguments(key: "pca")
+    | view {"Before PCA: $it and class " + it[1].input.getClass()}
     | pca
 
     | getWorkflowArguments(key: "integration")
@@ -98,7 +99,7 @@ workflow test_wf {
   ]
 
   output_ch =
-    viashChannel(testParams, config)
+    channelFromParams(testParams, config)
     | view { "Input: $it" }
     | run_wf
     | view { output ->
