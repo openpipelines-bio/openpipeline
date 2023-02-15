@@ -639,10 +639,9 @@ def viashChannel(params, config) {
  *         their seperator.
  */
 Map<String, Object> _splitParams(Map<String, Object> parValues, Map config){
-  def multiArgumentsSettings = config.functionality.allArguments.findAll{it.multiple}
-
   def parsedParamValues = parValues.collectEntries { parName, parValue ->
-    parameterSettings = multiArgumentsSettings.find({it.plainName == parName})
+    def parameterSettings = config.functionality.allArguments.find({it.plainName == parName})
+
     if (!parameterSettings) {
       // if argument is not found, do not alter 
       return [parName, parValue]
@@ -696,6 +695,7 @@ private void _checkUniqueIds(List<Tuple2<String, Map<String, Object>>> parameter
  */
 private Map<String, Object> _resolvePathsRelativeTo(Map paramList, Map config, String relativeTo) {
   paramList.collectEntries { parName, parValue ->
+    argSettings = config.functionality.allArguments.find{it.plainName == parName}
     if (argSettings && argSettings.type == "file" && argSettings.direction == "input") {
       if (parValue instanceof Collection) {
         parValue = parValue.collect({path -> 
