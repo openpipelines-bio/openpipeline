@@ -179,6 +179,7 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
           "user" : false,
           "packages" : [
             "scanpy~=1.9.1",
+            "matplotlib<3.7.0",
             "leidenalg~=0.8.9",
             "mudata~=0.2.0",
             "anndata~=0.8.0"
@@ -211,7 +212,7 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
     "config" : "/home/runner/work/openpipeline/openpipeline/src/cluster/leiden/config.vsh.yaml",
     "platform" : "nextflow",
     "viash_version" : "0.6.7",
-    "git_commit" : "4c1992836521d5917245bb418f2d5061eedf1b81",
+    "git_commit" : "cfec2a17f9a51f520d14131997afefcbd3db5a69",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))
