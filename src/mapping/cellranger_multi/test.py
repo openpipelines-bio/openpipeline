@@ -123,6 +123,7 @@ class TestCellrangerMulti(TestCase):
         assert expected_csv_content in config_contents
 
     def test_cellranger_multi_no_vdj_reference(self):
+        # GH291
         args=[
             "--output", "output4/",
             "--input", input1_R1,
