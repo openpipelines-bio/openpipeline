@@ -449,9 +449,9 @@ FROM ghcr.io/data-intuitive/cellranger:7.0
 RUN apt update && apt upgrade -y
 LABEL org.opencontainers.image.authors="Angela Pisco, Samuel D'Souza, Robrecht Cannoodt"
 LABEL org.opencontainers.image.description="Companion container for running component mapping cellranger_count"
-LABEL org.opencontainers.image.created="2023-02-16T12:46:21Z"
+LABEL org.opencontainers.image.created="2023-02-16T13:17:41Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="679ad2905cea33f124c69161fb8218a965e74a38"
+LABEL org.opencontainers.image.revision="4c1992836521d5917245bb418f2d5061eedf1b81"
 LABEL org.opencontainers.image.version="main_build"
 VIASHDOCKER
 }
