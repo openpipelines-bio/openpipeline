@@ -2,16 +2,27 @@
 id: # please fill in - example: "foo"
 input: # please fill in - example: "dataset.h5mu"
 layer: "log_normalized"
-obs_covariates: # please fill in - example: ["batch", "sample"]
 
 # Outputs
 # output: "$id.$key.output.h5mu"
+
+# PCA options
 obsm_pca: "X_pca"
+# var_pca_feature_selection: "foo"
+
+# Harmony integration options
 obsm_integrated: "X_pca_integrated"
+obs_covariates: # please fill in - example: ["batch", "sample"]
+
+# Neighbour calculation
 uns_neighbors: "neighbors"
 obsp_neighbor_distances: "distances"
 obsp_neighbor_connectivities: "connectivities"
+
+# Clustering options
 obs_cluster: "leiden"
+
+# Umap options
 obsm_umap: "X_umap"
 
 # Nextflow input-output arguments

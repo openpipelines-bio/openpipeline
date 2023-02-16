@@ -27,6 +27,8 @@ These options were previously covered in the `bin/init` script, but this new fea
 
 * `filter/do_filter`: removed the default input value for `var_filter` argument.
 
+* `workflows/full_pipeline` and `workflows/integration`: fix PCA not using highly variable genes filter.
+
 # openpipelines 0.6.2
 
 ## NEW FUNCTIONALITY

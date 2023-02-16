@@ -23,11 +23,6 @@
             "type": "string",
             "description": "use specified layer for expression values instead of the .X object from the modality.",
             "default": "log_normalized"
-          },
-          "obs_covariates": {
-            "type": "string",
-            "description": "The .obs field(s) that define the covariate(s) to regress out.",
-            "default": ""
           }
           
         }
@@ -41,17 +36,51 @@
             "type": "string",
             "description": "Destination path to the output.",
             "default": "$id.$key.output.h5mu"
-          },
+          }
+          
+        }
+      },
+      "pca options" : {
+        "title": "PCA options",
+        "type": "object",
+        "description": "No description",
+        "properties": {
           "obsm_pca": {
             "type": "string",
             "description": "In which .obsm slot to store the resulting PCA embedding.",
             "default": "X_pca"
           },
+          "var_pca_feature_selection": {
+            "type": "string",
+            "description": "Column name in .var matrix that will be used to select which genes to run the PCA on.",
+            "default": ""
+          }
+          
+        }
+      },
+      "harmony integration options" : {
+        "title": "Harmony integration options",
+        "type": "object",
+        "description": "No description",
+        "properties": {
           "obsm_integrated": {
             "type": "string",
             "description": "In which .obsm slot to store the resulting integrated embedding.",
             "default": "X_pca_integrated"
           },
+          "obs_covariates": {
+            "type": "string",
+            "description": "The .obs field(s) that define the covariate(s) to regress out.",
+            "default": ""
+          }
+          
+        }
+      },
+      "neighbour calculation" : {
+        "title": "Neighbour calculation",
+        "type": "object",
+        "description": "No description",
+        "properties": {
           "uns_neighbors": {
             "type": "string",
             "description": "In which .uns slot to store various neighbor output objects.",
@@ -66,12 +95,28 @@
             "type": "string",
             "description": "In which .obsp slot to store the connectivities matrix between the resulting neighbors.",
             "default": "connectivities"
-          },
+          }
+          
+        }
+      },
+      "clustering options" : {
+        "title": "Clustering options",
+        "type": "object",
+        "description": "No description",
+        "properties": {
           "obs_cluster": {
             "type": "string",
             "description": "Name of the .obs key under which to add the cluster labels.",
             "default": "leiden"
-          },
+          }
+          
+        }
+      },
+      "umap options" : {
+        "title": "Umap options",
+        "type": "object",
+        "description": "No description",
+        "properties": {
           "obsm_umap": {
             "type": "string",
             "description": "In which .obsm slot to store the resulting UMAP embedding.",
@@ -105,6 +150,21 @@
       },
       {
         "$ref": "#/definitions/outputs"
+      },
+      {
+        "$ref": "#/definitions/pca options"
+      },
+      {
+        "$ref": "#/definitions/harmony integration options"
+      },
+      {
+        "$ref": "#/definitions/neighbour calculation"
+      },
+      {
+        "$ref": "#/definitions/clustering options"
+      },
+      {
+        "$ref": "#/definitions/umap options"
       },
       {
         "$ref": "#/definitions/nextflow input-output arguments"
