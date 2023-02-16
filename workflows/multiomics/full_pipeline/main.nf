@@ -12,7 +12,7 @@ include { run_wf as rna_multisample } from workflowDir + '/multiomics/rna_multis
 include { run_wf as prot_singlesample } from workflowDir + '/multiomics/prot_singlesample/main.nf'
 include { run_wf as integration } from workflowDir + '/multiomics/integration/main.nf'
 
-include { readConfig; viashChannel; helpMessage; readCsv } from workflowDir + "/utils/WorkflowHelper.nf"
+include { readConfig; helpMessage; readCsv; preprocessInputs; channelFromParams } from workflowDir + "/utils/WorkflowHelper.nf"
 include {  setWorkflowArguments; getWorkflowArguments; passthroughMap as pmap; passthroughFlatMap as pFlatMap } from workflowDir + "/utils/DataflowHelper.nf"
 config = readConfig("$workflowDir/multiomics/full_pipeline/config.vsh.yaml")
 
@@ -20,7 +20,7 @@ config = readConfig("$workflowDir/multiomics/full_pipeline/config.vsh.yaml")
 workflow {
   helpMessage(config)
 
-  viashChannel(params, config)
+  channelFromParams(params, config)
     | run_wf
 
 }
@@ -31,6 +31,7 @@ workflow run_wf {
 
   main:
   start_ch = input_ch
+    | preprocessInputs("config": config)
     | setWorkflowArguments (
         "add_id_args": ["input": "input"],
         "split_modalities_args": [:],
@@ -189,7 +190,6 @@ workflow test_wf {
         [
           id: "human",
           input: params.resources_test + "/concat_test_data/human_brain_3k_filtered_feature_bc_matrix_subset_unique_obs.h5mu",
-          input_type: "10xmtx",
           publish_dir: "foo/"
         ]
       ],
@@ -200,7 +200,7 @@ workflow test_wf {
 
 
   output_ch =
-    viashChannel(testParams, config)
+    channelFromParams(testParams, config)
       | view { "Input: $it" }
       | run_wf
       | view { output ->
@@ -234,7 +234,6 @@ workflow test_wf3 {
       [
         id: "human",
         input: params.resources_test + "/concat_test_data/human_brain_3k_filtered_feature_bc_matrix_subset_unique_obs.h5mu",
-        input_type: "10xmtx",
         publish_dir: "foo/"
       ]
     ],
@@ -242,7 +241,7 @@ workflow test_wf3 {
     rna_min_counts: 2
   ]
 
-  input_ch = viashChannel(testParams, config)
+  input_ch = channelFromParams(testParams, config)
     // store output value in 3rd slot for later use
     // and transform for concat component
     | map { tup ->
@@ -305,7 +304,7 @@ workflow test_wf2 {
     ]
 
   output_ch =
-    viashChannel(testParams, config)
+    channelFromParams(testParams, config)
       | view { "Input: $it" }
       | run_wf
       | view { output ->
