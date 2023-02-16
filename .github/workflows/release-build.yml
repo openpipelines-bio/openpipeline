@@ -234,7 +234,7 @@ jobs:
 
       - uses: viash-io/viash-actions/setup@v3
 
-      - uses: viash-io/viash-actions/pro/generate_documentation_qmd@v3
+      - uses: viash-io/viash-actions/pro/generate-documentation-qmd@v3
         with:
           input_dir: ./
           output_dir: website
