@@ -249,7 +249,7 @@ jobs:
         run: |
           git config user.name github-actions
           git config user.email github-actions@github.com
-          git add website
+          git add .
           git checkout -b "release-$TAG"
           git commit -m "OpenPipelines release $TAG"
           git push
