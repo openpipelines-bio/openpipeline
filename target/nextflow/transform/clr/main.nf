@@ -136,7 +136,9 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
           "packages" : [
             "mudata~=0.2.0",
             "anndata~=0.8.0",
-            "muon~=0.1.2"
+            "muon~=0.1.2",
+            "scanpy~=1.9.1",
+            "matplotlib<3.7.0"
           ],
           "upgrade" : true
         }
@@ -173,7 +175,7 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
     "config" : "/home/runner/work/openpipeline/openpipeline/src/transform/clr/config.vsh.yaml",
     "platform" : "nextflow",
     "viash_version" : "0.6.7",
-    "git_commit" : "cfec2a17f9a51f520d14131997afefcbd3db5a69",
+    "git_commit" : "63fe2314aad8df03aa97ce9b5e03e85691e057ec",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))

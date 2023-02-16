@@ -427,9 +427,9 @@ FROM ghcr.io/data-intuitive/randpy:r4.0
 RUN :
 LABEL org.opencontainers.image.authors="Angela Pisco, Robrecht Cannoodt"
 LABEL org.opencontainers.image.description="Companion container for running component files make_params"
-LABEL org.opencontainers.image.created="2023-02-16T14:06:31Z"
+LABEL org.opencontainers.image.created="2023-02-16T14:47:17Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="cfec2a17f9a51f520d14131997afefcbd3db5a69"
+LABEL org.opencontainers.image.revision="63fe2314aad8df03aa97ce9b5e03e85691e057ec"
 LABEL org.opencontainers.image.version="main_build"
 VIASHDOCKER
 }

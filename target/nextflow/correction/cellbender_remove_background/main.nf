@@ -396,7 +396,9 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
           "type" : "python",
           "user" : false,
           "packages" : [
-            "muon"
+            "muon",
+            "scanpy~=1.9.1",
+            "matplotlib<3.7.0"
           ],
           "upgrade" : true
         }
@@ -426,7 +428,7 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
     "config" : "/home/runner/work/openpipeline/openpipeline/src/correction/cellbender_remove_background/config.vsh.yaml",
     "platform" : "nextflow",
     "viash_version" : "0.6.7",
-    "git_commit" : "cfec2a17f9a51f520d14131997afefcbd3db5a69",
+    "git_commit" : "63fe2314aad8df03aa97ce9b5e03e85691e057ec",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))
