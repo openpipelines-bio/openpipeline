@@ -144,7 +144,7 @@ putative_cell_call: "mRNA"
 exact_cell_count: 4000
 HERE
 
-bin/nextflow \
+nextflow \
   run . \
   -main-script workflows/ingestion/bd_rhapsody/main.nf \
   -resume \

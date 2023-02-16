@@ -9,14 +9,14 @@ include { bcl2fastq } from targetDir + "/demux/bcl2fastq/main.nf"
 include { fastqc } from targetDir + "/qc/fastqc/main.nf"
 include { multiqc } from targetDir + "/qc/multiqc/main.nf"
 
-include { readConfig; viashChannel; helpMessage } from workflowDir + "/utils/WorkflowHelper.nf"
+include { readConfig; channelFromParams; preprocessInputs; helpMessage } from workflowDir + "/utils/WorkflowHelper.nf"
 
-config = readConfig("$projectDir/config.vsh.yaml")
+config = readConfig("$workflowDir/ingestion/demux/config.vsh.yaml")
 
 workflow {
   helpMessage(config)
 
-  viashChannel(params, config)
+  channelFromParams(params, config)
     | run_wf
 }
 
@@ -29,16 +29,18 @@ workflow run_wf {
     args: [ output: "fastq/\$id" ],
     auto: [ publish: true ]
   ]
+  preprocessed_ch = input_ch
+    | preprocessInputs("config": config)
 
-  mkfastq_ch = input_ch
+  mkfastq_ch = preprocessed_ch
     | filter{ it[1].demultiplexer == "mkfastq" }
     | cellranger_mkfastq.run(commonOptions)
     
-  bcl_convert_ch = input_ch
+  bcl_convert_ch = preprocessed_ch
     | filter{ it[1].demultiplexer  == "bclconvert" }
     | bcl_convert.run(commonOptions)
 
-  bcl2fastq_ch = input_ch
+  bcl2fastq_ch = preprocessed_ch
     | filter{ it[1].demultiplexer  == "bcl2fastq" }
     | bcl2fastq.run(commonOptions)
 
@@ -103,7 +105,7 @@ workflow test_wf {
   ]
 
   output_ch =
-    viashChannel(params, config)
+    channelFromParams(params, config)
     | view{ "Input: $it" }
     | run_wf
     | view { output ->

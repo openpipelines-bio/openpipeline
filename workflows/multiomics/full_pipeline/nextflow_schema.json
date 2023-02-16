@@ -8,163 +8,163 @@
         "title": "Inputs",
         "type": "object",
         "description": "No description",
-        "default": "",
-        "properties": {"id": {
-            "type":"string",
+        "properties": {
+          "id": {
+            "type": "string",
             "description": "ID of the sample.",
-            
             "default": ""
-          },"input": {
-            "type":"string",
+          },
+          "input": {
+            "type": "string",
             "description": "Path to the sample.",
-            
             "default": ""
-          },"obs_covariates": {
-            "type":"string",
+          },
+          "obs_covariates": {
+            "type": "string",
             "description": "The .obs field(s) that define the covariate(s) to regress out.",
-            
             "default": "['sample_id']"
           }
+          
         }
       },
       "rna filtering options" : {
         "title": "RNA filtering options",
         "type": "object",
         "description": "No description",
-        "default": "",
-        "properties": {"rna_min_counts": {
-            "type":"integer",
+        "properties": {
+          "rna_min_counts": {
+            "type": "integer",
             "description": "Minimum number of counts captured per cell.",
-            
             "default": ""
-          },"rna_max_counts": {
-            "type":"integer",
+          },
+          "rna_max_counts": {
+            "type": "integer",
             "description": "Maximum number of counts captured per cell.",
-            
             "default": ""
-          },"rna_min_vars_per_cell": {
-            "type":"integer",
+          },
+          "rna_min_vars_per_cell": {
+            "type": "integer",
             "description": "Minimum of non-zero values per cell.",
-            
             "default": ""
-          },"rna_max_vars_per_cell": {
-            "type":"integer",
+          },
+          "rna_max_vars_per_cell": {
+            "type": "integer",
             "description": "Maximum of non-zero values per cell.",
-            
             "default": ""
-          },"min_cells_per_protein": {
-            "type":"integer",
+          },
+          "min_cells_per_protein": {
+            "type": "integer",
             "description": "Minimum of non-zero values per antibody.",
-            
             "default": ""
-          },"rna_min_fraction_mito": {
-            "type":"number",
+          },
+          "rna_min_fraction_mito": {
+            "type": "number",
             "description": "Minimum fraction of UMIs that are mitochondrial.",
-            
             "default": ""
-          },"rna_max_fraction_mito": {
-            "type":"number",
+          },
+          "rna_max_fraction_mito": {
+            "type": "number",
             "description": "Maximum fraction of UMIs that are mitochondrial.",
-            
             "default": ""
           }
+          
         }
       },
       "cite-seq filtering options" : {
         "title": "CITE-seq filtering options",
         "type": "object",
         "description": "No description",
-        "default": "",
-        "properties": {"prot_min_counts": {
-            "type":"integer",
+        "properties": {
+          "prot_min_counts": {
+            "type": "integer",
             "description": "Minimum number of counts per cell.",
-            
             "default": ""
-          },"prot_max_counts": {
-            "type":"integer",
+          },
+          "prot_max_counts": {
+            "type": "integer",
             "description": "Minimum number of counts per cell.",
-            
             "default": ""
-          },"prot_min_vars_per_cell": {
-            "type":"integer",
+          },
+          "prot_min_vars_per_cell": {
+            "type": "integer",
             "description": "Minimum of non-zero values per cell.",
-            
             "default": ""
-          },"prot_max_vars_per_cell": {
-            "type":"integer",
+          },
+          "prot_max_vars_per_cell": {
+            "type": "integer",
             "description": "Maximum of non-zero values per cell.",
-            
             "default": ""
-          },"prot_min_cells_per_protein": {
-            "type":"integer",
+          },
+          "prot_min_cells_per_protein": {
+            "type": "integer",
             "description": "Minimum of non-zero values per protein.",
-            
             "default": ""
-          },"prot_min_fraction_mito": {
-            "type":"number",
+          },
+          "prot_min_fraction_mito": {
+            "type": "number",
             "description": "Minimum fraction of proteins that are mitochondrial.",
-            
             "default": ""
-          },"prot_max_fraction_mito": {
-            "type":"number",
+          },
+          "prot_max_fraction_mito": {
+            "type": "number",
             "description": "Maximum fraction of proteins that are mitochondrial.",
-            
             "default": ""
           }
+          
         }
       },
       "highly variable gene detection" : {
         "title": "Highly variable gene detection",
         "type": "object",
         "description": "No description",
-        "default": "",
-        "properties": {"filter_with_hvg_var_output": {
-            "type":"string",
+        "properties": {
+          "filter_with_hvg_var_output": {
+            "type": "string",
             "description": "In which .var slot to store a boolean array corresponding to the highly variable genes.",
-            
             "default": "filter_with_hvg"
-          },"filter_with_hvg_obs_batch_key": {
-            "type":"string",
+          },
+          "filter_with_hvg_obs_batch_key": {
+            "type": "string",
             "description": "If specified, highly-variable genes are selected within each batch separately and merged. This simple ","help_text": "If specified, highly-variable genes are selected within each batch separately and merged. This simple \nprocess avoids the selection of batch-specific genes and acts as a lightweight batch correction method.\n",
-            
             "default": "sample_id"
           }
+          
         }
       },
       "qc metrics calculation options" : {
         "title": "QC metrics calculation options",
         "type": "object",
         "description": "No description",
-        "default": "",
-        "properties": {"var_qc_metrics": {
-            "type":"string",
+        "properties": {
+          "var_qc_metrics": {
+            "type": "string",
             "description": "Keys to select a boolean (containing only True or False) column from .var.","help_text": "Keys to select a boolean (containing only True or False) column from .var.\nFor each cell, calculate the proportion of total values for genes which are labeled \u0027True\u0027, \ncompared to the total sum of the values for all genes.\n",
-            
             "default": "['filter_with_hvg']"
-          },"top_n_vars": {
-            "type":"integer",
+          },
+          "top_n_vars": {
+            "type": "integer",
             "description": "Number of top vars to be used to calculate cumulative proportions.","help_text": "Number of top vars to be used to calculate cumulative proportions.\nIf not specified, proportions are not calculated. `--top_n_vars 20,50` finds\ncumulative proportion to the 20th and 50th most expressed vars.\n",
-            
             "default": "[50, 100, 200, 500]"
           }
+          
         }
       },
       "nextflow input-output arguments" : {
         "title": "Nextflow input-output arguments",
         "type": "object",
         "description": "Input/output parameters for Nextflow itself. Please note that both publishDir and publish_dir are supported but at least one has to be configured.",
-        "default": "",
-        "properties": {"publish_dir": {
-            "type":"string",
+        "properties": {
+          "publish_dir": {
+            "type": "string",
             "description": "Path to an output directory.",
-            
             "default": ""
-          },"param_list": {
-            "type":"string",
+          },
+          "param_list": {
+            "type": "string",
             "description": "Allows inputting multiple parameter sets to initialise a Nextflow channel. A `param_list` can either be a list of maps, a csv file, a json file, a yaml file, or simply a yaml blob.","help_text": "Allows inputting multiple parameter sets to initialise a Nextflow channel. A `param_list` can either be a list of maps, a csv file, a json file, a yaml file, or simply a yaml blob.\n\n* A list of maps (as-is) where the keys of each map corresponds to the arguments of the pipeline. Example: in a `nextflow.config` file: `param_list: [ [\u0027id\u0027: \u0027foo\u0027, \u0027input\u0027: \u0027foo.txt\u0027], [\u0027id\u0027: \u0027bar\u0027, \u0027input\u0027: \u0027bar.txt\u0027] ]`.\n* A csv file should have column names which correspond to the different arguments of this pipeline. Example: `--param_list data.csv` with columns `id,input`.\n* A json or a yaml file should be a list of maps, each of which has keys corresponding to the arguments of the pipeline. Example: `--param_list data.json` with contents `[ {\u0027id\u0027: \u0027foo\u0027, \u0027input\u0027: \u0027foo.txt\u0027}, {\u0027id\u0027: \u0027bar\u0027, \u0027input\u0027: \u0027bar.txt\u0027} ]`.\n* A yaml blob can also be passed directly as a string. Example: `--param_list \"[ {\u0027id\u0027: \u0027foo\u0027, \u0027input\u0027: \u0027foo.txt\u0027}, {\u0027id\u0027: \u0027bar\u0027, \u0027input\u0027: \u0027bar.txt\u0027} ]\"`.\n\nWhen passing a csv, json or yaml file, relative path names are relativized to the location of the parameter file. No relativation is performed when `param_list` is a list of maps (as-is) or a yaml blob.","hidden": true,
-            
             "default": ""
           }
+          
         }
       }
     },
@@ -187,6 +187,5 @@
       {
         "$ref": "#/definitions/nextflow input-output arguments"
       }
-      
-    ]
+      ]
 }

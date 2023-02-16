@@ -8,81 +8,81 @@
         "title": "Arguments",
         "type": "object",
         "description": "No description",
-        "default": "",
-        "properties": {"input": {
-            "type":"string",
+        "properties": {
+          "input": {
+            "type": "string",
             "description": "Input h5mu file",
-            
             "default": ""
-          },"modality": {
-            "type":"string",
+          },
+          "modality": {
+            "type": "string",
             "description": "No description",
-            
             "default": "rna"
-          },"output": {
-            "type":"string",
+          },
+          "output": {
+            "type": "string",
             "description": "Output .h5mu file",
-            
             "default": "$id.$key.output.h5ad"
-          },"obs_batch": {
-            "type":"string",
+          },
+          "obs_batch": {
+            "type": "string",
             "description": "Column name discriminating between your batches.",
-            
             "default": "batch"
-          },"obsm_input": {
-            "type":"string",
+          },
+          "obsm_input": {
+            "type": "string",
             "description": "Basis obsm slot to run scanorama on.",
-            
             "default": "X_pca"
-          },"obsm_output": {
-            "type":"string",
+          },
+          "obsm_output": {
+            "type": "string",
             "description": "The name of the field in adata.obsm where the integrated embeddings will be stored after running this function. Defaults to X_scanorama.",
-            
             "default": "X_scanorama"
-          },"knn": {
-            "type":"integer",
+          },
+          "knn": {
+            "type": "integer",
             "description": "Number of nearest neighbors to use for matching.",
-            
             "default": "20"
-          },"batch_size": {
-            "type":"integer",
+          },
+          "batch_size": {
+            "type": "integer",
             "description": "The batch size used in the alignment vector computation. Useful when integrating very large (\u003e100k samples) datasets. Set to large value that runs within available memory.",
-            
             "default": "5000"
-          },"sigma": {
-            "type":"number",
+          },
+          "sigma": {
+            "type": "number",
             "description": "Correction smoothing parameter on Gaussian kernel.",
-            
             "default": "15"
-          },"approx": {
-            "type":"boolean",
+          },
+          "approx": {
+            "type": "boolean",
             "description": "Use approximate nearest neighbors with Python annoy; greatly speeds up matching runtime.",
-            
             "default": "True"
-          },"alpha": {
-            "type":"number",
+          },
+          "alpha": {
+            "type": "number",
             "description": "Alignment score minimum cutoff",
-            
             "default": "0.1"
           }
+          
         }
       },
       "nextflow input-output arguments" : {
         "title": "Nextflow input-output arguments",
         "type": "object",
         "description": "Input/output parameters for Nextflow itself. Please note that both publishDir and publish_dir are supported but at least one has to be configured.",
-        "default": "",
-        "properties": {"publish_dir": {
-            "type":"string",
+        "properties": {
+          "publish_dir": {
+            "type": "string",
             "description": "Path to an output directory.",
-            
             "default": ""
-          },"param_list": {
-            "type":"string",
+          },
+          "param_list": {
+            "type": "string",
             "description": "Allows inputting multiple parameter sets to initialise a Nextflow channel. A `param_list` can either be a list of maps, a csv file, a json file, a yaml file, or simply a yaml blob.","help_text": "Allows inputting multiple parameter sets to initialise a Nextflow channel. A `param_list` can either be a list of maps, a csv file, a json file, a yaml file, or simply a yaml blob.\n\n* A list of maps (as-is) where the keys of each map corresponds to the arguments of the pipeline. Example: in a `nextflow.config` file: `param_list: [ [\u0027id\u0027: \u0027foo\u0027, \u0027input\u0027: \u0027foo.txt\u0027], [\u0027id\u0027: \u0027bar\u0027, \u0027input\u0027: \u0027bar.txt\u0027] ]`.\n* A csv file should have column names which correspond to the different arguments of this pipeline. Example: `--param_list data.csv` with columns `id,input`.\n* A json or a yaml file should be a list of maps, each of which has keys corresponding to the arguments of the pipeline. Example: `--param_list data.json` with contents `[ {\u0027id\u0027: \u0027foo\u0027, \u0027input\u0027: \u0027foo.txt\u0027}, {\u0027id\u0027: \u0027bar\u0027, \u0027input\u0027: \u0027bar.txt\u0027} ]`.\n* A yaml blob can also be passed directly as a string. Example: `--param_list \"[ {\u0027id\u0027: \u0027foo\u0027, \u0027input\u0027: \u0027foo.txt\u0027}, {\u0027id\u0027: \u0027bar\u0027, \u0027input\u0027: \u0027bar.txt\u0027} ]\"`.\n\nWhen passing a csv, json or yaml file, relative path names are relativized to the location of the parameter file. No relativation is performed when `param_list` is a list of maps (as-is) or a yaml blob.","hidden": true,
-            
             "default": ""
           }
+          
         }
       }
     },
@@ -93,6 +93,5 @@
       {
         "$ref": "#/definitions/nextflow input-output arguments"
       }
-      
-    ]
+      ]
 }

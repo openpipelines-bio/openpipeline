@@ -53,6 +53,6 @@ wget https://zenodo.org/record/6337966/files/HLCA_reference_model.zip \
 # HEREDOC
 
 # # convert 10x h5 to h5mu
-# bin/viash run src/convert/from_h5ad_to_h5mu/config.vsh.yaml -- \
+# viash run src/convert/from_h5ad_to_h5mu/config.vsh.yaml -- \
 #   --input "${OUT}_query_test.h5" \
 #   --output "${OUT}_query_test.h5mu"

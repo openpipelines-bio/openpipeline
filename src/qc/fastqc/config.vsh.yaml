@@ -1,7 +1,6 @@
 functionality:
   name: "fastqc"
   namespace: "qc"
-  version: 0.0.1
   description: |
     Fastqc component, please see https://www.bioinformatics.babraham.ac.uk/projects/fastqc/. This component can take one or more files (by means of shell globbing) or a complete directory.
   arguments:

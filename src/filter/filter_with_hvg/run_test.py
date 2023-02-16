@@ -14,9 +14,7 @@ meta = {
     'config': './src/filter/filter_with_hvg/config.vsh.yaml',
     'executable': './target/docker/filter/filter_with_hvg/filter_with_hvg'
 }
-@pytest.fixture
-def viash_executable():
-    return './bin/viash'
+
 ## VIASH END
 
 logger = logging.getLogger()

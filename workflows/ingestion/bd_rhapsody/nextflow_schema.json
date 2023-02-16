@@ -8,179 +8,179 @@
         "title": "Inputs",
         "type": "object",
         "description": "No description",
-        "default": "",
-        "properties": {"mode": {
-            "type":"string",
-            "description": "Whether to run a whole transcriptome analysis (WTA) or a targeted analysis.",
-            "enum": ["wta", "targeted"],
+        "properties": {
+          "mode": {
+            "type": "string",
+            "description": "Whether to run a whole transcriptome analysis (WTA) or a targeted analysis.","enum": ["wta", "targeted"],
             "default": ""
-          },"id": {
-            "type":"string",
+          },
+          "id": {
+            "type": "string",
             "description": "ID of the sample.",
-            
             "default": ""
-          },"input": {
-            "type":"string",
+          },
+          "input": {
+            "type": "string",
             "description": "Path to your read files in the FASTQ.GZ format. You may specify as many R1/R2 read pairs as you want.",
-            
             "default": ""
-          },"reference": {
-            "type":"string",
+          },
+          "reference": {
+            "type": "string",
             "description": "Refence to map to. For `--mode wta`, this is the path to STAR index as a tar.gz file. For `--mode targeted`, this is the path to mRNA reference file for pre-designed, supplemental, or custom panel, in FASTA format",
-            
             "default": ""
-          },"transcriptome_annotation": {
-            "type":"string",
+          },
+          "transcriptome_annotation": {
+            "type": "string",
             "description": "Path to GTF annotation file (only for `--mode wta`).",
-            
             "default": ""
-          },"abseq_reference": {
-            "type":"string",
+          },
+          "abseq_reference": {
+            "type": "string",
             "description": "Path to the AbSeq reference file in FASTA format. Only needed if BD AbSeq Ab-Oligos are used.",
-            
             "default": ""
-          },"supplemental_reference": {
-            "type":"string",
+          },
+          "supplemental_reference": {
+            "type": "string",
             "description": "Path to the supplemental reference file in FASTA format. Only needed if there are additional transgene sequences used in the experiment (only for `--mode wta`).",
-            
             "default": ""
-          },"sample_prefix": {
-            "type":"string",
+          },
+          "sample_prefix": {
+            "type": "string",
             "description": "Specify a run name to use as the output file base name. Use only letters, numbers, or hyphens. Do not use special characters or spaces.",
-            
             "default": "sample"
           }
+          
         }
       },
       "outputs" : {
         "title": "Outputs",
         "type": "object",
         "description": "No description",
-        "default": "",
-        "properties": {"output_raw": {
-            "type":"string",
+        "properties": {
+          "output_raw": {
+            "type": "string",
             "description": "The BD Rhapsody output folder as it comes out of the BD Rhapsody pipeline",
-            
             "default": "$id.$key.output_raw.output_raw"
-          },"output_h5mu": {
-            "type":"string",
+          },
+          "output_h5mu": {
+            "type": "string",
             "description": "The converted h5mu file.",
-            
             "default": "$id.$key.output_h5mu.h5mu"
           }
+          
         }
       },
       "putative cell calling settings" : {
         "title": "Putative cell calling settings",
         "type": "object",
         "description": "No description",
-        "default": "",
-        "properties": {"putative_cell_call": {
-            "type":"string",
-            "description": "Specify the dataset to be used for putative cell calling. For putative cell calling using an AbSeq dataset, please provide an AbSeq_Reference fasta file above.",
-            "enum": ["mRNA", "AbSeq_Experimental"],
+        "properties": {
+          "putative_cell_call": {
+            "type": "string",
+            "description": "Specify the dataset to be used for putative cell calling. For putative cell calling using an AbSeq dataset, please provide an AbSeq_Reference fasta file above.","enum": ["mRNA", "AbSeq_Experimental"],
             "default": ""
-          },"exact_cell_count": {
-            "type":"integer",
+          },
+          "exact_cell_count": {
+            "type": "integer",
             "description": "Exact cell count - Set a specific number (\u003e=1) of cells as putative, based on those with the highest error-corrected read count",
-            
             "default": ""
-          },"disable_putative_calling": {
-            "type":"boolean",
+          },
+          "disable_putative_calling": {
+            "type": "boolean",
             "description": "Disable Refined Putative Cell Calling - Determine putative cells using only the basic algorithm (minimum second derivative along the cumulative reads curve). The refined algorithm attempts to remove false positives and recover false negatives, but may not be ideal for certain complex mixtures of cell types. Does not apply if Exact Cell Count is set.",
-            
             "default": "False"
           }
+          
         }
       },
       "subsample arguments" : {
         "title": "Subsample arguments",
         "type": "object",
         "description": "No description",
-        "default": "",
-        "properties": {"subsample": {
-            "type":"number",
+        "properties": {
+          "subsample": {
+            "type": "number",
             "description": "A number \u003e1 or fraction (0 \u003c n \u003c 1) to indicate the number or percentage of reads to subsample.",
-            
             "default": ""
-          },"subsample_seed": {
-            "type":"integer",
+          },
+          "subsample_seed": {
+            "type": "integer",
             "description": "A seed for replicating a previous subsampled run.",
-            
             "default": ""
           }
+          
         }
       },
       "multiplex arguments" : {
         "title": "Multiplex arguments",
         "type": "object",
         "description": "No description",
-        "default": "",
-        "properties": {"sample_tags_version": {
-            "type":"string",
-            "description": "Specify if multiplexed run.",
-            "enum": ["human", "hs", "mouse", "mm"],
+        "properties": {
+          "sample_tags_version": {
+            "type": "string",
+            "description": "Specify if multiplexed run.","enum": ["human", "hs", "mouse", "mm"],
             "default": ""
-          },"tag_names": {
-            "type":"string",
+          },
+          "tag_names": {
+            "type": "string",
             "description": "Tag_Names (optional) - Specify the tag number followed by \u0027-\u0027 and the desired sample name to appear in Sample_Tag_Metrics.csv.","help_text": "Tag_Names (optional) - Specify the tag number followed by \u0027-\u0027 and the desired sample name to appear in Sample_Tag_Metrics.csv.\nDo not use the special characters: \u0026, (), [], {},  \u003c\u003e, ?, |\n",
-            
             "default": ""
           }
+          
         }
       },
       "vdj arguments" : {
         "title": "VDJ arguments",
         "type": "object",
         "description": "No description",
-        "default": "",
-        "properties": {"vdj_version": {
-            "type":"string",
-            "description": "Specify if VDJ run.",
-            "enum": ["human", "mouse", "humanBCR", "humanBCR", "humanTCR", "mouseBCR"],
+        "properties": {
+          "vdj_version": {
+            "type": "string",
+            "description": "Specify if VDJ run.","enum": ["human", "mouse", "humanBCR", "humanBCR", "humanTCR", "mouseBCR"],
             "default": ""
           }
+          
         }
       },
       "cwl-runner arguments" : {
         "title": "CWL-runner arguments",
         "type": "object",
         "description": "No description",
-        "default": "",
-        "properties": {"parallel": {
-            "type":"boolean",
+        "properties": {
+          "parallel": {
+            "type": "boolean",
             "description": "Run jobs in parallel.",
-            
             "default": "True"
-          },"timestamps": {
-            "type":"boolean",
+          },
+          "timestamps": {
+            "type": "boolean",
             "description": "Add timestamps to the errors, warnings, and notifications.",
-            
             "default": "False"
-          },"dryrun": {
-            "type":"boolean",
+          },
+          "dryrun": {
+            "type": "boolean",
             "description": "If true, the output directory will only contain the CWL input files, but the pipeline itself will not be executed.",
-            
             "default": "False"
           }
+          
         }
       },
       "nextflow input-output arguments" : {
         "title": "Nextflow input-output arguments",
         "type": "object",
         "description": "Input/output parameters for Nextflow itself. Please note that both publishDir and publish_dir are supported but at least one has to be configured.",
-        "default": "",
-        "properties": {"publish_dir": {
-            "type":"string",
+        "properties": {
+          "publish_dir": {
+            "type": "string",
             "description": "Path to an output directory.",
-            
             "default": ""
-          },"param_list": {
-            "type":"string",
+          },
+          "param_list": {
+            "type": "string",
             "description": "Allows inputting multiple parameter sets to initialise a Nextflow channel. A `param_list` can either be a list of maps, a csv file, a json file, a yaml file, or simply a yaml blob.","help_text": "Allows inputting multiple parameter sets to initialise a Nextflow channel. A `param_list` can either be a list of maps, a csv file, a json file, a yaml file, or simply a yaml blob.\n\n* A list of maps (as-is) where the keys of each map corresponds to the arguments of the pipeline. Example: in a `nextflow.config` file: `param_list: [ [\u0027id\u0027: \u0027foo\u0027, \u0027input\u0027: \u0027foo.txt\u0027], [\u0027id\u0027: \u0027bar\u0027, \u0027input\u0027: \u0027bar.txt\u0027] ]`.\n* A csv file should have column names which correspond to the different arguments of this pipeline. Example: `--param_list data.csv` with columns `id,input`.\n* A json or a yaml file should be a list of maps, each of which has keys corresponding to the arguments of the pipeline. Example: `--param_list data.json` with contents `[ {\u0027id\u0027: \u0027foo\u0027, \u0027input\u0027: \u0027foo.txt\u0027}, {\u0027id\u0027: \u0027bar\u0027, \u0027input\u0027: \u0027bar.txt\u0027} ]`.\n* A yaml blob can also be passed directly as a string. Example: `--param_list \"[ {\u0027id\u0027: \u0027foo\u0027, \u0027input\u0027: \u0027foo.txt\u0027}, {\u0027id\u0027: \u0027bar\u0027, \u0027input\u0027: \u0027bar.txt\u0027} ]\"`.\n\nWhen passing a csv, json or yaml file, relative path names are relativized to the location of the parameter file. No relativation is performed when `param_list` is a list of maps (as-is) or a yaml blob.","hidden": true,
-            
             "default": ""
           }
+          
         }
       }
     },
@@ -209,6 +209,5 @@
       {
         "$ref": "#/definitions/nextflow input-output arguments"
       }
-      
-    ]
+      ]
 }

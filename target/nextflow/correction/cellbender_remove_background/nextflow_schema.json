@@ -8,152 +8,152 @@
         "title": "Inputs",
         "type": "object",
         "description": "No description",
-        "default": "",
-        "properties": {"input": {
-            "type":"string",
-            "description": "Input file.",
-            
+        "properties": {
+          "input": {
+            "type": "string",
+            "description": "Input h5mu file.",
             "default": ""
-          },"modality": {
-            "type":"string",
+          },
+          "modality": {
+            "type": "string",
             "description": "List of modalities to process.",
-            
             "default": "rna"
           }
+          
         }
       },
       "outputs" : {
         "title": "Outputs",
         "type": "object",
         "description": "No description",
-        "default": "",
-        "properties": {"output": {
-            "type":"string",
+        "properties": {
+          "output": {
+            "type": "string",
             "description": "Full count matrix as an h5mu file, with background RNA removed. This file contains all the original droplet barcodes.",
-            
             "default": "$id.$key.output.h5"
-          },"layer_output": {
-            "type":"string",
+          },
+          "layer_output": {
+            "type": "string",
             "description": "Output layer",
-            
             "default": "corrected"
-          },"obs_latent_rt_efficiency": {
-            "type":"string",
+          },
+          "obs_latent_rt_efficiency": {
+            "type": "string",
             "description": "No description",
-            
             "default": "latent_rt_efficiency"
-          },"obs_latent_cell_probability": {
-            "type":"string",
+          },
+          "obs_latent_cell_probability": {
+            "type": "string",
             "description": "No description",
-            
             "default": "latent_cell_probability"
-          },"obs_latent_scale": {
-            "type":"string",
+          },
+          "obs_latent_scale": {
+            "type": "string",
             "description": "No description",
-            
             "default": "latent_scale"
-          },"var_ambient_expression": {
-            "type":"string",
+          },
+          "var_ambient_expression": {
+            "type": "string",
             "description": "No description",
-            
             "default": "ambient_expression"
           }
+          
         }
       },
       "arguments" : {
         "title": "Arguments",
         "type": "object",
         "description": "No description",
-        "default": "",
-        "properties": {"expected_cells": {
-            "type":"integer",
+        "properties": {
+          "expected_cells": {
+            "type": "integer",
             "description": "Number of cells expected in the dataset (a rough estimate within a factor of 2 is sufficient).",
-            
             "default": ""
-          },"total_droplets_included": {
-            "type":"integer",
+          },
+          "total_droplets_included": {
+            "type": "integer",
             "description": "The number of droplets from the rank-ordered UMI plot","help_text": "The number of droplets from the rank-ordered UMI plot\nthat will be analyzed. The largest \u0027total_droplets\u0027\ndroplets will have their cell probabilities inferred\nas an output.\n",
-            
             "default": ""
-          },"expected_cells_from_qc": {
-            "type":"boolean",
+          },
+          "expected_cells_from_qc": {
+            "type": "boolean",
             "description": "Will use the Cell Ranger QC to determine the estimated number of cells",
-            
             "default": "True"
-          },"model": {
-            "type":"string",
-            "description": "Which model is being used for count data. \u0027simple\u0027","help_text": "Which model is being used for count data. \u0027simple\u0027\ndoes not model either ambient RNA or random barcode\nswapping (for debugging purposes -- not recommended).\n\u0027ambient\u0027 assumes background RNA is incorporated into\ndroplets. \u0027swapping\u0027 assumes background RNA comes from\nrandom barcode swapping. \u0027full\u0027 uses a combined\nambient and swapping model.\n",
-            "enum": ["simple", "ambient", "swapping", "full"],
+          },
+          "model": {
+            "type": "string",
+            "description": "Which model is being used for count data. \u0027simple\u0027","help_text": "Which model is being used for count data. \u0027simple\u0027\ndoes not model either ambient RNA or random barcode\nswapping (for debugging purposes -- not recommended).\n\u0027ambient\u0027 assumes background RNA is incorporated into\ndroplets. \u0027swapping\u0027 assumes background RNA comes from\nrandom barcode swapping. \u0027full\u0027 uses a combined\nambient and swapping model.\n","enum": ["simple", "ambient", "swapping", "full"],
             "default": "full"
-          },"epochs": {
-            "type":"integer",
+          },
+          "epochs": {
+            "type": "integer",
             "description": "Number of epochs to train.",
-            
             "default": "150"
-          },"low_count_threshold": {
-            "type":"integer",
+          },
+          "low_count_threshold": {
+            "type": "integer",
             "description": "Droplets with UMI counts below this number are completely ","help_text": "Droplets with UMI counts below this number are completely \nexcluded from the analysis. This can help identify the correct \nprior for empty droplet counts in the rare case where empty \ncounts are extremely high (over 200).\n",
-            
             "default": "15"
-          },"z_dim": {
-            "type":"integer",
+          },
+          "z_dim": {
+            "type": "integer",
             "description": "Dimension of latent variable z.","help_text": "Dimension of latent variable z.\n",
-            
             "default": "100"
-          },"z_layers": {
-            "type":"integer",
+          },
+          "z_layers": {
+            "type": "integer",
             "description": "Dimension of hidden layers in the encoder for z.","help_text": "Dimension of hidden layers in the encoder for z.\n",
-            
             "default": "[500]"
-          },"training_fraction": {
-            "type":"number",
+          },
+          "training_fraction": {
+            "type": "number",
             "description": "Training detail: the fraction of the data used for training.","help_text": "Training detail: the fraction of the data used for training.\nThe rest is never seen by the inference algorithm. Speeds up learning.\n",
-            
             "default": "0.9"
-          },"empty_drop_training_fraction": {
-            "type":"number",
+          },
+          "empty_drop_training_fraction": {
+            "type": "number",
             "description": "Training detail: the fraction of the training data each epoch that ","help_text": "Training detail: the fraction of the training data each epoch that \nis drawn (randomly sampled) from surely empty droplets.\n",
-            
             "default": "0.5"
-          },"fpr": {
-            "type":"number",
+          },
+          "fpr": {
+            "type": "number",
             "description": "Target false positive rate in (0, 1). A false positive","help_text": "Target false positive rate in (0, 1). A false positive\nis a true signal count that is erroneously removed.\nMore background removal is accompanied by more signal\nremoval at high values of FPR. You can specify\nmultiple values, which will create multiple output\nfiles.\n",
-            
             "default": "[0.01]"
-          },"exclude_antibody_capture": {
-            "type":"boolean",
+          },
+          "exclude_antibody_capture": {
+            "type": "boolean",
             "description": "Including the flag --exclude-antibody-capture will","help_text": "Including the flag --exclude-antibody-capture will\ncause remove-background to operate on gene counts\nonly, ignoring other features.\n",
-            
             "default": "False"
-          },"learning_rate": {
-            "type":"number",
+          },
+          "learning_rate": {
+            "type": "number",
             "description": "Training detail: lower learning rate for inference. A","help_text": "Training detail: lower learning rate for inference. A\nOneCycle learning rate schedule is used, where the\nupper learning rate is ten times this value. (For this\nvalue, probably do not exceed 1e-3).\n",
-            
             "default": ""
-          },"cuda": {
-            "type":"boolean",
+          },
+          "cuda": {
+            "type": "boolean",
             "description": "Including the flag --cuda will run the inference on a","help_text": "Including the flag --cuda will run the inference on a\nGPU.\n",
-            
             "default": "False"
           }
+          
         }
       },
       "nextflow input-output arguments" : {
         "title": "Nextflow input-output arguments",
         "type": "object",
         "description": "Input/output parameters for Nextflow itself. Please note that both publishDir and publish_dir are supported but at least one has to be configured.",
-        "default": "",
-        "properties": {"publish_dir": {
-            "type":"string",
+        "properties": {
+          "publish_dir": {
+            "type": "string",
             "description": "Path to an output directory.",
-            
             "default": ""
-          },"param_list": {
-            "type":"string",
+          },
+          "param_list": {
+            "type": "string",
             "description": "Allows inputting multiple parameter sets to initialise a Nextflow channel. A `param_list` can either be a list of maps, a csv file, a json file, a yaml file, or simply a yaml blob.","help_text": "Allows inputting multiple parameter sets to initialise a Nextflow channel. A `param_list` can either be a list of maps, a csv file, a json file, a yaml file, or simply a yaml blob.\n\n* A list of maps (as-is) where the keys of each map corresponds to the arguments of the pipeline. Example: in a `nextflow.config` file: `param_list: [ [\u0027id\u0027: \u0027foo\u0027, \u0027input\u0027: \u0027foo.txt\u0027], [\u0027id\u0027: \u0027bar\u0027, \u0027input\u0027: \u0027bar.txt\u0027] ]`.\n* A csv file should have column names which correspond to the different arguments of this pipeline. Example: `--param_list data.csv` with columns `id,input`.\n* A json or a yaml file should be a list of maps, each of which has keys corresponding to the arguments of the pipeline. Example: `--param_list data.json` with contents `[ {\u0027id\u0027: \u0027foo\u0027, \u0027input\u0027: \u0027foo.txt\u0027}, {\u0027id\u0027: \u0027bar\u0027, \u0027input\u0027: \u0027bar.txt\u0027} ]`.\n* A yaml blob can also be passed directly as a string. Example: `--param_list \"[ {\u0027id\u0027: \u0027foo\u0027, \u0027input\u0027: \u0027foo.txt\u0027}, {\u0027id\u0027: \u0027bar\u0027, \u0027input\u0027: \u0027bar.txt\u0027} ]\"`.\n\nWhen passing a csv, json or yaml file, relative path names are relativized to the location of the parameter file. No relativation is performed when `param_list` is a list of maps (as-is) or a yaml blob.","hidden": true,
-            
             "default": ""
           }
+          
         }
       }
     },
@@ -170,6 +170,5 @@
       {
         "$ref": "#/definitions/nextflow input-output arguments"
       }
-      
-    ]
+      ]
 }

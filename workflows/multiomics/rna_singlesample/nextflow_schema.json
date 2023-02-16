@@ -8,92 +8,92 @@
         "title": "Input",
         "type": "object",
         "description": "No description",
-        "default": "",
-        "properties": {"id": {
-            "type":"string",
+        "properties": {
+          "id": {
+            "type": "string",
             "description": "ID of the sample.",
-            
             "default": ""
-          },"input": {
-            "type":"string",
+          },
+          "input": {
+            "type": "string",
             "description": "Path to the sample.",
-            
             "default": ""
           }
+          
         }
       },
       "output" : {
         "title": "Output",
         "type": "object",
         "description": "No description",
-        "default": "",
-        "properties": {"output": {
-            "type":"string",
+        "properties": {
+          "output": {
+            "type": "string",
             "description": "Destination path to the output.",
-            
             "default": "$id.$key.output.h5mu"
           }
+          
         }
       },
       "filtering options" : {
         "title": "Filtering options",
         "type": "object",
         "description": "No description",
-        "default": "",
-        "properties": {"min_counts": {
-            "type":"integer",
+        "properties": {
+          "min_counts": {
+            "type": "integer",
             "description": "Minimum number of counts captured per cell.",
-            
             "default": ""
-          },"max_counts": {
-            "type":"integer",
+          },
+          "max_counts": {
+            "type": "integer",
             "description": "Maximum number of counts captured per cell.",
-            
             "default": ""
-          },"min_genes_per_cell": {
-            "type":"integer",
+          },
+          "min_genes_per_cell": {
+            "type": "integer",
             "description": "Minimum of non-zero values per cell.",
-            
             "default": ""
-          },"max_genes_per_cell": {
-            "type":"integer",
+          },
+          "max_genes_per_cell": {
+            "type": "integer",
             "description": "Maximum of non-zero values per cell.",
-            
             "default": ""
-          },"min_cells_per_gene": {
-            "type":"integer",
+          },
+          "min_cells_per_gene": {
+            "type": "integer",
             "description": "Minimum of non-zero values per gene.",
-            
             "default": ""
-          },"min_fraction_mito": {
-            "type":"number",
+          },
+          "min_fraction_mito": {
+            "type": "number",
             "description": "Minimum fraction of UMIs that are mitochondrial.",
-            
             "default": ""
-          },"max_fraction_mito": {
-            "type":"number",
+          },
+          "max_fraction_mito": {
+            "type": "number",
             "description": "Maximum fraction of UMIs that are mitochondrial.",
-            
             "default": ""
           }
+          
         }
       },
       "nextflow input-output arguments" : {
         "title": "Nextflow input-output arguments",
         "type": "object",
         "description": "Input/output parameters for Nextflow itself. Please note that both publishDir and publish_dir are supported but at least one has to be configured.",
-        "default": "",
-        "properties": {"publish_dir": {
-            "type":"string",
+        "properties": {
+          "publish_dir": {
+            "type": "string",
             "description": "Path to an output directory.",
-            
             "default": ""
-          },"param_list": {
-            "type":"string",
+          },
+          "param_list": {
+            "type": "string",
             "description": "Allows inputting multiple parameter sets to initialise a Nextflow channel. A `param_list` can either be a list of maps, a csv file, a json file, a yaml file, or simply a yaml blob.","help_text": "Allows inputting multiple parameter sets to initialise a Nextflow channel. A `param_list` can either be a list of maps, a csv file, a json file, a yaml file, or simply a yaml blob.\n\n* A list of maps (as-is) where the keys of each map corresponds to the arguments of the pipeline. Example: in a `nextflow.config` file: `param_list: [ [\u0027id\u0027: \u0027foo\u0027, \u0027input\u0027: \u0027foo.txt\u0027], [\u0027id\u0027: \u0027bar\u0027, \u0027input\u0027: \u0027bar.txt\u0027] ]`.\n* A csv file should have column names which correspond to the different arguments of this pipeline. Example: `--param_list data.csv` with columns `id,input`.\n* A json or a yaml file should be a list of maps, each of which has keys corresponding to the arguments of the pipeline. Example: `--param_list data.json` with contents `[ {\u0027id\u0027: \u0027foo\u0027, \u0027input\u0027: \u0027foo.txt\u0027}, {\u0027id\u0027: \u0027bar\u0027, \u0027input\u0027: \u0027bar.txt\u0027} ]`.\n* A yaml blob can also be passed directly as a string. Example: `--param_list \"[ {\u0027id\u0027: \u0027foo\u0027, \u0027input\u0027: \u0027foo.txt\u0027}, {\u0027id\u0027: \u0027bar\u0027, \u0027input\u0027: \u0027bar.txt\u0027} ]\"`.\n\nWhen passing a csv, json or yaml file, relative path names are relativized to the location of the parameter file. No relativation is performed when `param_list` is a list of maps (as-is) or a yaml blob.","hidden": true,
-            
             "default": ""
           }
+          
         }
       }
     },
@@ -110,6 +110,5 @@
       {
         "$ref": "#/definitions/nextflow input-output arguments"
       }
-      
-    ]
+      ]
 }

@@ -10,7 +10,7 @@ cd "$REPO_ROOT"
 
 export NXF_VER=22.10.3
 
-bin/nextflow \
+nextflow \
   run . \
   -main-script workflows/ingestion/cellranger_multi/main.nf \
   -entry test_wf \
