@@ -10,7 +10,7 @@ include { concat } from targetDir + '/dataflow/concat/main.nf'
 include { calculate_qc_metrics } from targetDir + '/qc/calculate_qc_metrics/main.nf'
 include { delete_layer } from targetDir + '/transform/delete_layer/main.nf'
 
-include { readConfig; viashChannel; helpMessage } from workflowDir + "/utils/WorkflowHelper.nf"
+include { readConfig; helpMessage; channelFromParams; preprocessInputs } from workflowDir + "/utils/WorkflowHelper.nf"
 include { setWorkflowArguments; getWorkflowArguments; passthroughMap as pmap; passthroughFlatMap as pFlatMap } from workflowDir + "/utils/DataflowHelper.nf"
 
 config = readConfig("$workflowDir/multiomics/rna_multisample/config.vsh.yaml")
@@ -18,7 +18,7 @@ config = readConfig("$workflowDir/multiomics/rna_multisample/config.vsh.yaml")
 workflow {
   helpMessage(config)
 
-  viashChannel(params, config)
+  channelFromParams(params, config)
     | view { "Input: $it" }
     | run_wf
     | view { "Output: $it" }
@@ -30,6 +30,7 @@ workflow run_wf {
 
   main:
   output_ch = input_ch
+    | preprocessInputs("config": config)
     // add the id to the arguments
     | pmap { id, data ->
       def new_data = data + [ input_id: data.sample_id ]
@@ -99,7 +100,7 @@ workflow test_wf {
   ]
 
   output_ch =
-    viashChannel(testParams, config)
+    channelFromParams(testParams, config)
     | map {list -> list + [test_passthrough: "test"]}
     | view { "Input: $it" }
     | run_wf

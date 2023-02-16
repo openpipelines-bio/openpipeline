@@ -7,7 +7,7 @@ include { cellranger_count } from targetDir + "/mapping/cellranger_count/main.nf
 include { cellranger_count_split } from targetDir + "/mapping/cellranger_count_split/main.nf"
 include { from_10xh5_to_h5mu } from targetDir + "/convert/from_10xh5_to_h5mu/main.nf"
 
-include { readConfig; viashChannel; helpMessage } from workflowDir + "/utils/WorkflowHelper.nf"
+include { readConfig; channelFromParams; preprocessInputs; helpMessage } from workflowDir + "/utils/WorkflowHelper.nf"
 include { setWorkflowArguments; getWorkflowArguments; passthroughMap as pmap } from workflowDir + "/utils/DataflowHelper.nf"
 
 config = readConfig("$workflowDir/ingestion/cellranger_mapping/config.vsh.yaml")
@@ -15,7 +15,7 @@ config = readConfig("$workflowDir/ingestion/cellranger_mapping/config.vsh.yaml")
 workflow {
   helpMessage(config)
 
-  viashChannel(params, config)
+  channelFromParams(params, config)
     | view { "Input: $it" }
     | run_wf
     | view { "Output: $it" }
@@ -27,7 +27,7 @@ workflow run_wf {
 
   main:
   output_ch = input_ch
-  
+    | preprocessInputs("config": config)
     // split params for downstream components
     | setWorkflowArguments(
       cellranger_count: [
@@ -94,7 +94,7 @@ workflow test_wf {
   ]
 
   output_ch =
-    viashChannel(testParams, config)
+    channelFromParams(testParams, config)
     | view { "Input: $it" }
     | run_wf
     | view { output ->
