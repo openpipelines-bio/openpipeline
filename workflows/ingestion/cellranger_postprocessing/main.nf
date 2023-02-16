@@ -9,15 +9,15 @@ include { from_10xh5_to_h5mu } from targetDir + "/convert/from_10xh5_to_h5mu/mai
 include { subset_h5mu } from targetDir + "/filter/subset_h5mu/main.nf"
 include { publish } from targetDir + "/transfer/publish/main.nf"
 
-include { readConfig; viashChannel; helpMessage } from workflowDir + "/utils/WorkflowHelper.nf"
+include { readConfig; channelFromParams; preprocessInputs; helpMessage } from workflowDir + "/utils/WorkflowHelper.nf"
 include { setWorkflowArguments; getWorkflowArguments; passthroughMap as pmap } from workflowDir + "/utils/DataflowHelper.nf"
 
-config = readConfig("$projectDir/config.vsh.yaml")
+config = readConfig("$workflowDir/ingestion/cellranger_postprocessing/config.vsh.yaml")
 
 workflow {
   helpMessage(config)
 
-  viashChannel(params, config)
+  channelFromParams(params, config)
     | view { "Input: $it" }
     | run_wf
     | view { "Output: $it" }
@@ -30,7 +30,7 @@ workflow run_wf {
   main:
 
   mid0 = input_ch
-  
+    | preprocessInputs("config": config)
     // split params for downstream components
     | setWorkflowArguments(
       correction: [
@@ -88,7 +88,6 @@ workflow test_wf {
       [
         id: "foo",
         input: params.resources_test + "/pbmc_1k_protein_v3/pbmc_1k_protein_v3_raw_feature_bc_matrix.h5",
-        epochs: 50,
         perform_correction: true,
         min_genes: 100,
         min_counts: 1000
@@ -96,7 +95,6 @@ workflow test_wf {
       [
         id: "bar",
         input: params.resources_test + "/pbmc_1k_protein_v3/pbmc_1k_protein_v3_raw_feature_bc_matrix.h5",
-        epochs: 50,
         perform_correction: true
       ],
       [
@@ -109,7 +107,7 @@ workflow test_wf {
   ]
 
   output_ch =
-    viashChannel(testParams, config)
+    channelFromParams(testParams, config)
 
     // first filter and convert to h5mu
     | pmap { id, data -> [ id, [ input: data.input ], data ] }

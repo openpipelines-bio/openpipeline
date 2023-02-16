@@ -11,6 +11,16 @@ These options were previously covered in the `bin/init` script, but this new fea
 
 ## BUG FIXES
 
+* `filter/filter_with_scrublet`: now sets `use_approx_neighbors` to `False` to avoid using `annoy` because it fails on processors that are missing the AVX-512 instruction sets.
+
+* `workflows`: Updated `WorkflowHelper` to newer version that allows applying defaults when calling a subworkflow from another workflow.
+
+* `qc/calculate_qc_metric`: pin matplotlib to <3.7 to fix scanpy compatibility (see https://github.com/scverse/scanpy/issues/2411).  
+
+* `workflows`: fix a bug when running a subworkflow from a workflow would cause the parent config to be read instead of the subworklow config.
+
+* `correction/cellbender_remove_background`: Fix description of input for cellbender_remove_background.
+
 * `filter/do_filter`: resolved an issue where the .obs column instead of the .var column was being logged when filtering using the .var column.
 
 * `workflows/rna_singlesample` and `workflows/prot_singlesample`: Correctly set var and obs columns while filtering with counts.

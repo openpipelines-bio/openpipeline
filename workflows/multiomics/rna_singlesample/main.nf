@@ -7,15 +7,15 @@ include { filter_with_counts } from targetDir + "/filter/filter_with_counts/main
 include { filter_with_scrublet } from targetDir + "/filter/filter_with_scrublet/main.nf"
 include { do_filter } from targetDir + "/filter/do_filter/main.nf"
 
-include { readConfig; viashChannel; helpMessage } from workflowDir + "/utils/WorkflowHelper.nf"
+include { readConfig; helpMessage; channelFromParams; preprocessInputs } from workflowDir + "/utils/WorkflowHelper.nf"
 include { setWorkflowArguments; getWorkflowArguments } from workflowDir + "/utils/DataflowHelper.nf"
 
-config = readConfig("$projectDir/config.vsh.yaml")
+config = readConfig("$workflowDir/multiomics/rna_singlesample/config.vsh.yaml")
 
 workflow {
   helpMessage(config)
 
-  viashChannel(params, config)
+  channelFromParams(params, config)
     | view { "Input: $it" }
     | run_wf
     | view { "Output: $it" }
@@ -28,6 +28,7 @@ workflow run_wf {
 
   main:
   output_ch = input_ch
+    | preprocessInputs("config": config)
     | setWorkflowArguments(
       filter_with_counts: [
           "min_counts": "min_counts",
@@ -89,7 +90,7 @@ workflow test_wf {
   ]
 
   output_ch =
-    viashChannel(testParams, config)
+    channelFromParams(testParams, config)
     // Add test passthrough 
     | map {list -> list + [test_passthrough: "test"]} 
     | view { "Input: $it" }
