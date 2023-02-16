@@ -11,6 +11,8 @@ These options were previously covered in the `bin/init` script, but this new fea
 
 ## BUG FIXES
 
+* `qc/calculate_qc_metric`: pin matplotlib to <3.7 to fix scanpy compatibility (see https://github.com/scverse/scanpy/issues/2411).  
+
 * `workflows`: fix a bug when running a subworkflow from a workflow would cause the parent config to be read instead of the subworklow config.
 
 * `correction/cellbender_remove_background`: Fix description of input for cellbender_remove_background.
