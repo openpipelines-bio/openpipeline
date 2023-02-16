@@ -11,6 +11,8 @@ These options were previously covered in the `bin/init` script, but this new fea
 
 ## BUG FIXES
 
+* Fix running `mapping/cellranger_multi` without passing all references.
+
 * `workflows`: Updated `WorkflowHelper` to newer version that allows applying defaults when calling a subworkflow from another workflow.
 
 * `qc/calculate_qc_metric`: pin matplotlib to <3.7 to fix scanpy compatibility (see https://github.com/scverse/scanpy/issues/2411).  
