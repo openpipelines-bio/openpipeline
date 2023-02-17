@@ -27,7 +27,7 @@ workflow run_wf {
 
   main:
   output_ch = input_ch
-    preprocessInputs("config": config)
+    | preprocessInputs("config": config)
     // split params for downstream components
     | setWorkflowArguments(
       cellranger_multi: [
