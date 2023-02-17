@@ -239,7 +239,9 @@ workflow test_wf3 {
       ]
     ],
     obs_covariates: "sample_id",
-    rna_min_counts: 2
+    rna_min_counts: 2,
+    var_qc_metrics: "highly_variable",
+    filter_with_hvg_var_output: "highly_variable"
   ]
 
   input_ch = channelFromParams(testParams, config)
