@@ -162,6 +162,10 @@ platforms:
     # image: nvcr.io/nvidia/cuda:11.6.0-base-ubuntu20.04
     # image: pytorch/pytorch:1.12.1-cuda11.3-cudnn8-runtime
     setup:
+      - type: docker
+        env:
+        # Remove when muon > 0.1.2 is released
+          - SKLEARN_ALLOW_DEPRECATED_SKLEARN_PACKAGE_INSTALL True
       - type: apt
         packages:
           # - python3-pip

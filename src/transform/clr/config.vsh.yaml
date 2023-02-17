@@ -36,6 +36,10 @@ platforms:
   - type: docker
     image: python:3.8
     setup:
+      - type: docker
+        env:
+        # Remove when muon > 0.1.2 is released
+          - SKLEARN_ALLOW_DEPRECATED_SKLEARN_PACKAGE_INSTALL True
       - type: python
         packages:
           - mudata~=0.2.0
