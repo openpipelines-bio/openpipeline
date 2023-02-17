@@ -40,12 +40,12 @@
         "type": "object",
         "description": "No description",
         "properties": {
-          "prot_min_counts": {
+          "min_counts": {
             "type": "integer",
             "description": "Minimum number of counts captured per cell.",
             "default": ""
           },
-          "prot_max_counts": {
+          "max_counts": {
             "type": "integer",
             "description": "Maximum number of counts captured per cell.",
             "default": ""
