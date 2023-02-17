@@ -252,6 +252,6 @@ jobs:
           git add .
           git checkout -b "release-$TAG"
           git commit -m "OpenPipelines release $TAG"
-          gh auth login --with-token "${{ secrets.GTHB_PAT }}"
+          gh auth login --with-token <<< "${{ secrets.GTHB_PAT }}"
           git push --set-upstream origin "release-$TAG"
           gh pr create --title "Openpipeline release $TAG" --base main --head "release-$TAG" --body "" --project "openpipelines-bio/website"
