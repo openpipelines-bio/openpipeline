@@ -396,14 +396,15 @@ function ViashDockerfile {
   cat << 'VIASHDOCKER'
 FROM python:3.8
 
+ENV SKLEARN_ALLOW_DEPRECATED_SKLEARN_PACKAGE_INSTALL True
 RUN pip install --upgrade pip && \
   pip install --upgrade --no-cache-dir "mudata~=0.2.0" "anndata~=0.8.0" "muon~=0.1.2" "scanpy~=1.9.1" "matplotlib<3.7.0"
 
 LABEL org.opencontainers.image.authors="Dries Schaumont"
 LABEL org.opencontainers.image.description="Companion container for running component transform clr"
-LABEL org.opencontainers.image.created="2023-02-17T13:17:37Z"
+LABEL org.opencontainers.image.created="2023-02-17T13:56:41Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="afb351a2fcda5ee3077faa343eda91c524a6fd55"
+LABEL org.opencontainers.image.revision="4a56cb454f9c741b8d6e9f840ccb4b3c21e7ae87"
 LABEL org.opencontainers.image.version="main_build"
 VIASHDOCKER
 }
