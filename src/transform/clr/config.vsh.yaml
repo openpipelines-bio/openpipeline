@@ -34,6 +34,9 @@ functionality:
     - path: ../../../resources_test/pbmc_1k_protein_v3
 platforms:
   - type: docker
+    env: 
+      # Remove when muon > 0.1.2 is released
+      - SKLEARN_ALLOW_DEPRECATED_SKLEARN_PACKAGE_INSTALL True
     image: python:3.8
     setup:
       - type: python
