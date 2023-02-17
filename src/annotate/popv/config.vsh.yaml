@@ -8,42 +8,20 @@ functionality:
       roles: [ author ]
   argument_groups:
     - name: Inputs
+      description: Arguments related to the input (aka query) dataset.
       arguments:
         - name: "--input"
-          alternatives: ["-i"]
+          alternatives: [-i]
           type: file
-          must_exist: true
-          description: "Input h5ad file"
+          description: Input h5mu file.
           direction: input
           required: true
-        - name: "--output_dir"
-          alternatives: ["-o"]
-          type: file
-          description: "Output directory"
-          direction: output
-          required: true
-        - name: "--compression"
+          example: input.h5mu
+        - name: "--modality"
+          description: List of modalities to process.
           type: string
-          description: "Compression algorithm, or none for uncompressed, of h5ad output file"
-          default: "gzip"
+          default: "rna"
           required: false
-        - name: "--tissue_tabula_sapiens"
-          type: string
-          description: "Limited to Tabula Sapiens available tissues. The tissue that will be used as reference to call cell types. Available tissues are: Bladder, Blood, Bone_Marrow, Kidney, Large_Intestine, Lung, Lymph_Node, Pancreas, Small_Intestine, Spleen, Thymus, Trachea, Vasculature"
-          default: ""
-          required: false
-        - name: "--tissue_reference_file"
-          type: file
-          description: "User-provided reference tissue. The data that will be used as reference to call cell types."
-          default: ""
-          direction: input
-          required: false
-        - name: "--methods"
-          type: string
-          description: "Methods to call cell types. By default, runs to scVI and scANVI. Available methods are: scvi, scanvi, bbknn, svm, rf, onclass, scanorama"
-          example: ["scvi", "scanvi"]
-          required: true
-          multiple: true
         - name: "--query_obs_covariates"
           type: string
           description: "The query data .obs field that defines the covariate to regress out."
@@ -59,6 +37,20 @@ functionality:
           type: string
           description: "If obs_cell_type_key is not None, will treat everything not labeled unknown_celltype_label as a labeled cell"
           default: "unknown"
+          required: false
+    - name: Reference
+      description: Arguments related to the reference dataset.
+      arguments:
+        - name: "--tissue_tabula_sapiens"
+          type: string
+          description: "Limited to Tabula Sapiens available tissues. The tissue that will be used as reference to call cell types. Available tissues are: Bladder, Blood, Bone_Marrow, Kidney, Large_Intestine, Lung, Lymph_Node, Pancreas, Small_Intestine, Spleen, Thymus, Trachea, Vasculature"
+          default: ""
+          required: false
+        - name: "--tissue_reference_file"
+          type: file
+          description: "User-provided reference tissue. The data that will be used as reference to call cell types."
+          default: ""
+          direction: input
           required: false
         - name: "--reference_obs_cell_type_key"
           type: string
@@ -76,6 +68,29 @@ functionality:
           description: "Path to CL ontology files for PopV"
           direction: input
           required: true
+    - name: Outputs
+      description: Arguments related to the output.
+      arguments:
+        - name: "--output_dir"
+          alternatives: ["-o"]
+          type: file
+          description: "Output directory"
+          direction: output
+          required: true
+        - name: "--compression"
+          type: string
+          description: "Compression algorithm, or none for uncompressed, of h5ad output file"
+          default: "gzip"
+          required: false
+    - name: Arguments
+      description: Other arguments.
+      arguments:
+        - name: "--methods"
+          type: string
+          description: "Methods to call cell types. By default, runs to scVI and scANVI. Available methods are: scvi, scanvi, bbknn, svm, rf, onclass, scanorama"
+          example: ["scvi", "scanvi"]
+          required: true
+          multiple: true
         - name: "--plots"
           type: boolean
           description: "Creation of agreement and frequency plots between selected cell type algorithmn(s) and final PopV ensemble called cell type."
