@@ -4,10 +4,8 @@ functionality:
   version: "dev"
   description: "Performs popular major vote cell typing on single cell sequence data https://github.com/czbiohub/PopV"
   authors:
-    - name: Matthias Beyens
-      email: matthias.beyens@gmail.com
+    - __merge__: ../../authors/matthias_beyens.yaml
       roles: [ author ]
-      props: { github: MatthiasBeyens, orcid: "0000-0003-3304-0706" }
   argument_groups:
     - name: Inputs
       arguments:
