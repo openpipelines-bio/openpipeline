@@ -245,6 +245,7 @@ jobs:
       - name: Create Pull Request
         env:
           TAG: ${{ github.event.inputs.version_tag }}
+          GH_TOKEN: ${{ secrets.GTHB_PAT }}
         working-directory: website
         run: |
           git config user.name github-actions
@@ -252,6 +253,5 @@ jobs:
           git add .
           git checkout -b "release-$TAG"
           git commit -m "OpenPipelines release $TAG"
-          gh auth login --with-token <<< "${{ secrets.GTHB_PAT }}"
           git push --set-upstream origin "release-$TAG"
           gh pr create --title "Openpipeline release $TAG" --base main --head "release-$TAG" --body "" --project "openpipelines-bio/website"
