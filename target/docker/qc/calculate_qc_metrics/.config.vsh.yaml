@@ -200,5 +200,5 @@ info:
   output: "/home/runner/work/openpipeline/openpipeline/target/docker/qc/calculate_qc_metrics"
   executable: "/home/runner/work/openpipeline/openpipeline/target/docker/qc/calculate_qc_metrics/calculate_qc_metrics"
   viash_version: "0.6.7"
-  git_commit: "afb351a2fcda5ee3077faa343eda91c524a6fd55"
+  git_commit: "03a7b097270144896ea994add91599b781029401"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"

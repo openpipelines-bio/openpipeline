@@ -11,6 +11,8 @@ These options were previously covered in the `bin/init` script, but this new fea
 
 ## BUG FIXES
 
+* `workflows/full_pipeline`: Fix setting .var output column for filter_with_hvg.
+
 * Fix running `mapping/cellranger_multi` without passing all references.
 
 * `filter/filter_with_scrublet`: now sets `use_approx_neighbors` to `False` to avoid using `annoy` because it fails on processors that are missing the AVX-512 instruction sets.

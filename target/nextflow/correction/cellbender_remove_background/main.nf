@@ -372,6 +372,12 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
       "target_image_source" : "https://github.com/openpipelines-bio/openpipeline",
       "setup" : [
         {
+          "type" : "docker",
+          "env" : [
+            "SKLEARN_ALLOW_DEPRECATED_SKLEARN_PACKAGE_INSTALL True"
+          ]
+        },
+        {
           "type" : "apt",
           "packages" : [
             "git"
@@ -428,7 +434,7 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
     "config" : "/home/runner/work/openpipeline/openpipeline/src/correction/cellbender_remove_background/config.vsh.yaml",
     "platform" : "nextflow",
     "viash_version" : "0.6.7",
-    "git_commit" : "afb351a2fcda5ee3077faa343eda91c524a6fd55",
+    "git_commit" : "03a7b097270144896ea994add91599b781029401",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))

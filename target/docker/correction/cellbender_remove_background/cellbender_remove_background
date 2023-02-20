@@ -521,6 +521,7 @@ function ViashDockerfile {
   cat << 'VIASHDOCKER'
 FROM nvcr.io/nvidia/pytorch:22.09-py3
 
+ENV SKLEARN_ALLOW_DEPRECATED_SKLEARN_PACKAGE_INSTALL True
 RUN apt-get update && \
   DEBIAN_FRONTEND=noninteractive apt-get install -y git && \
   rm -rf /var/lib/apt/lists/*
@@ -530,9 +531,9 @@ RUN pip install --upgrade pip && \
   pip install --upgrade --no-cache-dir "git+https://github.com/broadinstitute/CellBender"
 
 LABEL org.opencontainers.image.description="Companion container for running component correction cellbender_remove_background"
-LABEL org.opencontainers.image.created="2023-02-17T13:20:30Z"
+LABEL org.opencontainers.image.created="2023-02-20T13:54:27Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="afb351a2fcda5ee3077faa343eda91c524a6fd55"
+LABEL org.opencontainers.image.revision="03a7b097270144896ea994add91599b781029401"
 LABEL org.opencontainers.image.version="0.7.0"
 VIASHDOCKER
 }

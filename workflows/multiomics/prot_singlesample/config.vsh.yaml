@@ -32,11 +32,11 @@ functionality:
           example: output.h5mu
     - name: "Filtering options"
       arguments:
-        - name: "--prot_min_counts"
+        - name: "--min_counts"
           example: 200
           type: integer
           description: Minimum number of counts captured per cell.
-        - name: "--prot_max_counts"
+        - name: "--max_counts"
           example: 5000000
           type: integer
           description: Maximum number of counts captured per cell.
