@@ -245,7 +245,7 @@ jobs:
       - name: Create Pull Request
         env:
           TAG: ${{ github.event.inputs.version_tag }}
-          GH_TOKEN: ${{ secrets.GTHB_PAT }}
+          GITHUB_TOKEN: ${{ secrets.GTHB_PAT }}
         working-directory: website
         run: |
           git config user.name github-actions
