@@ -434,7 +434,7 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
     "config" : "/home/runner/work/openpipeline/openpipeline/src/correction/cellbender_remove_background/config.vsh.yaml",
     "platform" : "nextflow",
     "viash_version" : "0.6.7",
-    "git_commit" : "49f48c38c6a1f467e0a27d0f964e38053db84803",
+    "git_commit" : "2fc27e96cdce5bb9782261aff2da39625e7cc4cc",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))
