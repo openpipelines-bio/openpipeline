@@ -36,11 +36,18 @@ platforms:
   - type: docker
     image: python:3.8
     setup:
+      - type: docker
+        env:
+        # Remove when muon > 0.1.2 is released
+          - SKLEARN_ALLOW_DEPRECATED_SKLEARN_PACKAGE_INSTALL True
       - type: python
         packages:
           - mudata~=0.2.0
           - anndata~=0.8.0
           - muon~=0.1.2
+          - scanpy~=1.9.1
+          # https://github.com/scverse/scanpy/issues/2411
+          - matplotlib<3.7.0
     test_setup:
       - type: python
         packages:

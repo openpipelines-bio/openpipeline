@@ -171,8 +171,8 @@ function ViashHelp {
   echo "Inputs:"
   echo "    -i, --input"
   echo "        type: file, required parameter, file must exist"
-  echo "        example: input.h5"
-  echo "        Input file."
+  echo "        example: input.h5mu"
+  echo "        Input h5mu file."
   echo ""
   echo "    --modality"
   echo "        type: string"
@@ -521,6 +521,7 @@ function ViashDockerfile {
   cat << 'VIASHDOCKER'
 FROM nvcr.io/nvidia/pytorch:22.09-py3
 
+ENV SKLEARN_ALLOW_DEPRECATED_SKLEARN_PACKAGE_INSTALL True
 RUN apt-get update && \
   DEBIAN_FRONTEND=noninteractive apt-get install -y git && \
   rm -rf /var/lib/apt/lists/*
@@ -530,9 +531,9 @@ RUN pip install --upgrade pip && \
   pip install --upgrade --no-cache-dir "git+https://github.com/broadinstitute/CellBender"
 
 LABEL org.opencontainers.image.description="Companion container for running component correction cellbender_remove_background"
-LABEL org.opencontainers.image.created="2023-02-03T10:56:19Z"
+LABEL org.opencontainers.image.created="2023-02-20T20:26:19Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="73446a883c07161b1c714a9d001841dc2a1dd589"
+LABEL org.opencontainers.image.revision="6a454d03363640176a835035e31c358593b8937d"
 LABEL org.opencontainers.image.version="integration_build"
 VIASHDOCKER
 }

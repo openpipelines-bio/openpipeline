@@ -52,7 +52,11 @@ platforms:
           - python3-pip
           - python-is-python3
       - type: python
-        pip: [ scanpy~=1.9.1, anndata~=0.8.0 ]
+        packages: 
+          - scanpy~=1.9.1
+          - anndata~=0.8.0
+          # https://github.com/scverse/scanpy/issues/2411
+          - matplotlib<3.7.0
       - type: r
         cran: [ anndata, hdf5r, testthat ]
       - type: r

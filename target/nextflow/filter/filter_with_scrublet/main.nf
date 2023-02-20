@@ -242,9 +242,11 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
           "user" : false,
           "packages" : [
             "scanpy~=1.9.1",
+            "matplotlib<3.7.0",
             "scrublet",
             "mudata~=0.2.0",
-            "anndata~=0.8.0"
+            "anndata~=0.8.0",
+            "annoy==1.16.3"
           ],
           "upgrade" : true
         }
@@ -274,7 +276,7 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
     "config" : "/home/runner/work/openpipeline/openpipeline/src/filter/filter_with_scrublet/config.vsh.yaml",
     "platform" : "nextflow",
     "viash_version" : "0.6.7",
-    "git_commit" : "73446a883c07161b1c714a9d001841dc2a1dd589",
+    "git_commit" : "6a454d03363640176a835035e31c358593b8937d",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))
@@ -344,6 +346,7 @@ doublet_scores, predicted_doublets = scrub.scrub_doublets(
     min_gene_variability_pctl=par["min_gene_variablity_percent"],
     n_prin_comps=par["num_pca_components"],
     distance_metric=par["distance_metric"],
+    use_approx_neighbors=False
 )
 keep_cells = np.invert(predicted_doublets)
 

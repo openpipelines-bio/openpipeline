@@ -361,6 +361,7 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
       {
         "type" : "file",
         "path" : "../../../resources_test/10x_5k_anticmv/raw/",
+        "dest" : "10x_5k_anticmv/raw/",
         "parent" : "file:/home/runner/work/openpipeline/openpipeline/src/mapping/cellranger_multi/config.vsh.yaml"
       },
       {
@@ -426,7 +427,7 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
     "config" : "/home/runner/work/openpipeline/openpipeline/src/mapping/cellranger_multi/config.vsh.yaml",
     "platform" : "nextflow",
     "viash_version" : "0.6.7",
-    "git_commit" : "73446a883c07161b1c714a9d001841dc2a1dd589",
+    "git_commit" : "6a454d03363640176a835035e31c358593b8937d",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))
@@ -635,7 +636,7 @@ def main(par: dict[str, Any], meta: dict[str, Any]):
         for reference_par_name in REFERENCES:
             reference = par[reference_par_name]
             logger.info('Looking at %s to check if it needs decompressing', reference)
-            if Path(reference).is_file() and tarfile.is_tarfile(reference):
+            if reference and Path(reference).is_file() and tarfile.is_tarfile(reference):
                 extaction_dir_name = Path(reference.stem).stem # Remove two extensions (if they exist)
                 unpacked_directory = temp_dir_path / extaction_dir_name
                 logger.info('Extracting %s to %s', reference, unpacked_directory)

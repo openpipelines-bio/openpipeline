@@ -35,9 +35,9 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
             "alternatives" : [
               "-i"
             ],
-            "description" : "Input file.",
+            "description" : "Input h5mu file.",
             "example" : [
-              "input.h5"
+              "input.h5mu"
             ],
             "must_exist" : true,
             "create_parent" : true,
@@ -372,6 +372,12 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
       "target_image_source" : "https://github.com/openpipelines-bio/openpipeline",
       "setup" : [
         {
+          "type" : "docker",
+          "env" : [
+            "SKLEARN_ALLOW_DEPRECATED_SKLEARN_PACKAGE_INSTALL True"
+          ]
+        },
+        {
           "type" : "apt",
           "packages" : [
             "git"
@@ -396,7 +402,9 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
           "type" : "python",
           "user" : false,
           "packages" : [
-            "muon"
+            "muon",
+            "scanpy~=1.9.1",
+            "matplotlib<3.7.0"
           ],
           "upgrade" : true
         }
@@ -426,7 +434,7 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
     "config" : "/home/runner/work/openpipeline/openpipeline/src/correction/cellbender_remove_background/config.vsh.yaml",
     "platform" : "nextflow",
     "viash_version" : "0.6.7",
-    "git_commit" : "73446a883c07161b1c714a9d001841dc2a1dd589",
+    "git_commit" : "6a454d03363640176a835035e31c358593b8937d",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))

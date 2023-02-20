@@ -131,12 +131,20 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
       "target_image_source" : "https://github.com/openpipelines-bio/openpipeline",
       "setup" : [
         {
+          "type" : "docker",
+          "env" : [
+            "SKLEARN_ALLOW_DEPRECATED_SKLEARN_PACKAGE_INSTALL True"
+          ]
+        },
+        {
           "type" : "python",
           "user" : false,
           "packages" : [
             "mudata~=0.2.0",
             "anndata~=0.8.0",
-            "muon~=0.1.2"
+            "muon~=0.1.2",
+            "scanpy~=1.9.1",
+            "matplotlib<3.7.0"
           ],
           "upgrade" : true
         }
@@ -173,7 +181,7 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
     "config" : "/home/runner/work/openpipeline/openpipeline/src/transform/clr/config.vsh.yaml",
     "platform" : "nextflow",
     "viash_version" : "0.6.7",
-    "git_commit" : "73446a883c07161b1c714a9d001841dc2a1dd589",
+    "git_commit" : "6a454d03363640176a835035e31c358593b8937d",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))

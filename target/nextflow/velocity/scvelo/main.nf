@@ -274,7 +274,7 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
     "config" : "/home/runner/work/openpipeline/openpipeline/src/velocity/scvelo/config.vsh.yaml",
     "platform" : "nextflow",
     "viash_version" : "0.6.7",
-    "git_commit" : "73446a883c07161b1c714a9d001841dc2a1dd589",
+    "git_commit" : "6a454d03363640176a835035e31c358593b8937d",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))

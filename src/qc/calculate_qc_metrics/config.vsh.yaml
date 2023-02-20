@@ -80,9 +80,13 @@ platforms:
           - mudata~=0.2.0
           - anndata~=0.8.0
           - scikit-learn~=1.2.0
+          # Fix for https://github.com/scverse/scanpy/issues/2411
+          - matplotlib<3.7.0 
     test_setup:
       - type: python
         packages: 
           - viashpy
-          - scanpy
+          - scanpy~=1.9.1
+          # https://github.com/scverse/scanpy/issues/2411
+          - matplotlib<3.7.0
   - type: nextflow

@@ -413,13 +413,13 @@ RUN apt-get update && \
   rm -rf /var/lib/apt/lists/*
 
 RUN pip install --upgrade pip && \
-  pip install --upgrade --no-cache-dir "scanpy~=1.9.1" "mudata~=0.2.0" "anndata~=0.8.0"
+  pip install --upgrade --no-cache-dir "scanpy~=1.9.1" "matplotlib<3.7.0" "mudata~=0.2.0" "anndata~=0.8.0"
 
 LABEL org.opencontainers.image.authors="Dries Schaumont"
 LABEL org.opencontainers.image.description="Companion container for running component transform scale"
-LABEL org.opencontainers.image.created="2023-02-03T10:56:17Z"
+LABEL org.opencontainers.image.created="2023-02-20T20:26:15Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="73446a883c07161b1c714a9d001841dc2a1dd589"
+LABEL org.opencontainers.image.revision="6a454d03363640176a835035e31c358593b8937d"
 LABEL org.opencontainers.image.version="integration_build"
 VIASHDOCKER
 }

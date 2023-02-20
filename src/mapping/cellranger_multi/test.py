@@ -14,15 +14,15 @@ meta = {
 }
 ## VIASH END
 
-input1_R1 = meta["resources_dir"] + "raw/5k_human_antiCMV_T_TBNK_connect_GEX_1_subset_S1_L001_R1_001.fastq.gz"
-input1_R2 = meta["resources_dir"] + "raw/5k_human_antiCMV_T_TBNK_connect_GEX_1_subset_S1_L001_R2_001.fastq.gz"
-input2_R1 = meta["resources_dir"] + "raw/5k_human_antiCMV_T_TBNK_connect_AB_subset_S2_L004_R1_001.fastq.gz"
-input2_R2 = meta["resources_dir"] + "raw/5k_human_antiCMV_T_TBNK_connect_AB_subset_S2_L004_R2_001.fastq.gz"
-input3_R1 =  meta["resources_dir"] + "raw/5k_human_antiCMV_T_TBNK_connect_VDJ_subset_S1_L001_R1_001.fastq.gz"
-input3_R2 =  meta["resources_dir"] + "raw/5k_human_antiCMV_T_TBNK_connect_VDJ_subset_S1_L001_R2_001.fastq.gz"
+input1_R1 = meta["resources_dir"] + "10x_5k_anticmv/raw/5k_human_antiCMV_T_TBNK_connect_GEX_1_subset_S1_L001_R1_001.fastq.gz"
+input1_R2 = meta["resources_dir"] + "10x_5k_anticmv/raw/5k_human_antiCMV_T_TBNK_connect_GEX_1_subset_S1_L001_R2_001.fastq.gz"
+input2_R1 = meta["resources_dir"] + "10x_5k_anticmv/raw/5k_human_antiCMV_T_TBNK_connect_AB_subset_S2_L004_R1_001.fastq.gz"
+input2_R2 = meta["resources_dir"] + "10x_5k_anticmv/raw/5k_human_antiCMV_T_TBNK_connect_AB_subset_S2_L004_R2_001.fastq.gz"
+input3_R1 =  meta["resources_dir"] + "10x_5k_anticmv/raw/5k_human_antiCMV_T_TBNK_connect_VDJ_subset_S1_L001_R1_001.fastq.gz"
+input3_R2 =  meta["resources_dir"] + "10x_5k_anticmv/raw/5k_human_antiCMV_T_TBNK_connect_VDJ_subset_S1_L001_R2_001.fastq.gz"
 gex_reference =  meta["resources_dir"] +  "reference_gencodev41_chr1/reference_cellranger.tar.gz"
-feature_reference = meta["resources_dir"] + "raw/feature_reference.csv"
-vdj_reference = meta["resources_dir"]+  "raw/refdata-cellranger-vdj-GRCh38-alts-ensembl-7.0.0.tar.gz"
+feature_reference = meta["resources_dir"] + "10x_5k_anticmv/raw/feature_reference.csv"
+vdj_reference = meta["resources_dir"]+  "10x_5k_anticmv/raw/refdata-cellranger-vdj-GRCh38-alts-ensembl-7.0.0.tar.gz"
 
 
 class TestCellrangerMulti(TestCase):
@@ -122,7 +122,27 @@ class TestCellrangerMulti(TestCase):
         print (expected_csv_content, flush=True)
         assert expected_csv_content in config_contents
 
-
+    def test_cellranger_multi_no_vdj_reference(self):
+        # GH291
+        args=[
+            "--output", "output4/",
+            "--input", input1_R1,
+            "--input", input1_R2,
+            "--input", input2_R1,
+            "--input", input2_R2,
+            "--input", input3_R1,
+            "--input", input3_R2,
+            "--gex_reference", gex_reference,
+            "--feature_reference", feature_reference,
+            "--library_id", "5k_human_antiCMV_T_TBNK_connect_GEX_1_subset;5k_human_antiCMV_T_TBNK_connect_AB_subset",
+            "--library_type", "Gene Expression;Antibody Capture",
+            "--dryrun"]
+        if meta['cpus']:
+            args.extend(["---cpus", str(meta['cpus'])])
+        if meta['memory_gb']:
+            args.extend(["---memory", f"{meta['memory_gb']}GB"])
+        self._run_and_check_output(args)
+        self.assertTrue(Path("output4/config.csv").is_file())
 
 if __name__ == "__main__":
     main()
