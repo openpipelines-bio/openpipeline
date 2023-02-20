@@ -255,4 +255,4 @@ jobs:
           git checkout -b "release-$TAG"
           git commit -m "OpenPipelines release $TAG"
           git push --set-upstream origin "release-$TAG"
-          gh pr create --title "Openpipeline release $TAG" --base main --head "release-$TAG" --body "" --project "openpipelines-bio/website"
+          gh pr create --title "Openpipeline release $TAG" --base main --head "release-$TAG" --body ""
