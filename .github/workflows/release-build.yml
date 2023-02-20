@@ -231,6 +231,7 @@ jobs:
         with:
           repository: openpipelines-bio/website
           path: website
+          token: ${{ secrets.GTHB_PAT }}
 
       - uses: viash-io/viash-actions/setup@v3
 
