@@ -252,7 +252,7 @@ jobs:
           git config user.name github-actions
           git config user.email github-actions@github.com
           git add .
-          git checkout -b "release-$TAG"
+          git checkout -B "release-$TAG"
           git commit -m "OpenPipelines release $TAG"
           git push --set-upstream origin "release-$TAG"
           gh pr create --title "Openpipeline release $TAG" --base main --head "release-$TAG" --body ""
