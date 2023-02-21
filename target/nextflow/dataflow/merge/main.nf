@@ -156,6 +156,9 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
       "id" : "nextflow",
       "variant" : "vdsl3",
       "directives" : {
+        "label" : [
+          "highmem"
+        ],
         "tag" : "$id"
       },
       "auto" : {
@@ -172,7 +175,7 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
     "config" : "/home/runner/work/openpipeline/openpipeline/src/dataflow/merge/config.vsh.yml",
     "platform" : "nextflow",
     "viash_version" : "0.6.7",
-    "git_commit" : "f341348b3734785f5e50a0f95f19f4a04763012e",
+    "git_commit" : "849c8f8762bb6f1bdaaf0f847a8fba1633423209",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))
@@ -257,6 +260,9 @@ thisDefaultProcessArgs = [
     "image" : "openpipelines-bio/dataflow_merge",
     "tag" : "main_build"
   },
+  "label" : [
+    "highmem"
+  ],
   "tag" : "$id"
 }'''),
   // auto settings
