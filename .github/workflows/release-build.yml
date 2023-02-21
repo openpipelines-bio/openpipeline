@@ -242,7 +242,7 @@ jobs:
           output_dir: website
           dest_path: "{type}s/{namespace}/{name}.qmd"
           viash_pro_token: ${{ secrets.GTHB_PAT }}
-          tools_version: relase
+          tools_version: main_build
 
       - name: Create Pull Request
         env:
