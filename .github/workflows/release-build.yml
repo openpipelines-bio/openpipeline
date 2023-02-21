@@ -115,10 +115,11 @@ jobs:
     - name: Build container
       uses: viash-io/viash-actions/ns-build@v3
       with:
-        config_mod: .functionality.version := 'main_build'
+        config_mod: .functionality.version := '${{ github.event.inputs.version_tag }}'
         platform: docker
         src: ${{ matrix.component.dir }}
         setup: build
+        
         
     - name: Login to container registry
       uses: docker/login-action@v2
@@ -241,7 +242,7 @@ jobs:
           output_dir: website
           dest_path: "{type}s/{namespace}/{name}.qmd"
           viash_pro_token: ${{ secrets.GTHB_PAT }}
-          tools_version: main_build
+          tools_version: relase
 
       - name: Create Pull Request
         env:
