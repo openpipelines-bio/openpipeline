@@ -210,6 +210,13 @@ jobs:
         key: ${{ needs.list.outputs.cache_key }}
         fail-on-cache-miss: true
 
+    - name: Login to the nvidia container registry
+      uses: docker/login-action@v2
+      with:
+        registry: nvcr.io
+        username: ${{ secrets.NVIDIA_USERNAME }}
+        password: ${{ secrets.NVIDIA_PASSWORD }}
+
     - name: Test component
       timeout-minutes: 30
       run: |
