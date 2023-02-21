@@ -101,6 +101,7 @@ jobs:
       with:
         path: resources_test
         key: ${{ needs.list.outputs.cache_key }}
+        fail-on-cache-miss: true
 
     - name: Run test
       timeout-minutes: 30

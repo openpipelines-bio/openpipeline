@@ -171,6 +171,7 @@ jobs:
       with:
         path: resources_test
         key: ${{ needs.list.outputs.cache_key }}
+        fail-on-cache-miss: true
 
     - name: Run integration test
       timeout-minutes: 45
@@ -207,6 +208,7 @@ jobs:
       with:
         path: resources_test
         key: ${{ needs.list.outputs.cache_key }}
+        fail-on-cache-miss: true
 
     - name: Test component
       timeout-minutes: 30
