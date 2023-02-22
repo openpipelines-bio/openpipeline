@@ -1,3 +1,9 @@
+# openpipelines 0.7.1
+
+## BUG FIXES
+
+* `workflows/integration`: `init_pos` is no longer set to the integration layer (e.g. `X_pca_integrated`).
+
 # openpipelines 0.7.0
 
 ## MAJOR CHANGES
