@@ -4,6 +4,8 @@
 
 * `workflows/integration`: `init_pos` is no longer set to the integration layer (e.g. `X_pca_integrated`).
 
+* `dimred/pca`: fix `variance` slot containing a second copy of the variance ratio matyrix and not the variances.
+
 # openpipelines 0.7.0
 
 ## MAJOR CHANGES
