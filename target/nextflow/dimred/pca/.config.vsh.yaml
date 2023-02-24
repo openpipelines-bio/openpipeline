@@ -1,7 +1,7 @@
 functionality:
   name: "pca"
   namespace: "dimred"
-  version: "0.7.0"
+  version: "0.7.1-beta"
   authors:
   - name: "Dries De Maeyer"
     email: "ddemaeyer@gmail.com"
@@ -232,5 +232,5 @@ info:
   output: "/home/runner/work/openpipeline/openpipeline/target/nextflow/dimred/pca"
   executable: "/home/runner/work/openpipeline/openpipeline/target/nextflow/dimred/pca/pca"
   viash_version: "0.6.7"
-  git_commit: "0620b212a10f6a29c5e2152bca43230563df23b2"
+  git_commit: "69041f3c28d8a83149b03250b44166af932806e7"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"
