@@ -62,7 +62,8 @@ workflow run_wf {
         "prot_multisample_args": [:],
         "integration_args": [
           "obs_covariates": "obs_covariates",
-          "var_pca_feature_selection": "filter_with_hvg_var_output" // run PCA on highly variable genes only
+          "var_pca_feature_selection": "filter_with_hvg_var_output", // run PCA on highly variable genes only
+          "rna_theta": "rna_harmony_theta"
         ]
     )
     // add ids to obs_names and to .obs[sample_id]
@@ -241,7 +242,8 @@ workflow test_wf3 {
     obs_covariates: "sample_id",
     rna_min_counts: 2,
     var_qc_metrics: "highly_variable",
-    filter_with_hvg_var_output: "highly_variable"
+    filter_with_hvg_var_output: "highly_variable",
+    rna_harmony_theta: 3
   ]
 
   input_ch = channelFromParams(testParams, config)
