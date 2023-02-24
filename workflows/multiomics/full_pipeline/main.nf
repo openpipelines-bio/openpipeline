@@ -30,10 +30,13 @@ workflow run_wf {
   input_ch
 
   main:
-  start_ch = input_ch
+  parsed_arguments_ch = input_ch
     | preprocessInputs("config": config)
     | setWorkflowArguments (
-        "add_id_args": ["input": "input"],
+        "add_id_args": ["input": "input",
+                        "make_observation_keys_unique": "make_observation_keys_unique",
+                        "obs_output": "add_id_obs_output",
+                        "add_id_to_obs": "add_id_to_obs"],
         "split_modalities_args": [:],
         "rna_singlesample_args": [
           "min_counts": "rna_min_counts",
@@ -65,19 +68,23 @@ workflow run_wf {
           "var_pca_feature_selection": "filter_with_hvg_var_output" // run PCA on highly variable genes only
         ]
     )
-    // add ids to obs_names and to .obs[sample_id]
     | getWorkflowArguments(key: "add_id_args")
 
+    add_id_ch = parsed_arguments_ch
+    | filter{ it[1].add_id_to_obs }
+    // add ids 
     | pmap { id, data ->
-        def new_data = data + [
-          input_id: id,
-          make_observation_keys_unique: true,
-          obs_output: "sample_id"
-        ]
+        def new_data = data + [input_id: id]
         [id, new_data]
     }
     | add_id
 
+    no_id_added_ch = parsed_arguments_ch
+    | filter{ ! (it[1].add_id_to_obs) }
+
+    samples_with_id_ch = add_id_ch.mix(no_id_added_ch)
+
+    start_ch = samples_with_id_ch
     // split by modality
     | getWorkflowArguments(key: "split_modalities_args")
     | split_modalities
@@ -131,7 +138,9 @@ workflow run_wf {
           input_ms_ch | modality_processor.multisample : \
           input_ms_ch | concat.run(
             key: "concat_" + modality_processor.id,
-            renameKeys: [input_id: "sample_id"]
+            renameKeys: [input_id: "sample_id"],
+            // The Ids have already been added in this pipeline
+            args: [ add_id_to_obs: false ] 
           )
       )
       return out_ch

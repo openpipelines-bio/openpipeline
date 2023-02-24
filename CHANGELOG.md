@@ -4,6 +4,12 @@
 
 * `workflows/integration`: `init_pos` is no longer set to the integration layer (e.g. `X_pca_integrated`).
 
+## MINOR CHANGES
+
+* `workflows/full_pipeline`: Allow not setting the sample ID to the .obs column of the MuData object.
+
+* `workflows/rna_multisample`: Add the ID of the sample to the .obs column of the MuData object.
+
 # openpipelines 0.7.0
 
 ## MAJOR CHANGES

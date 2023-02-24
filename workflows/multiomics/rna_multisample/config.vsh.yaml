@@ -31,6 +31,27 @@ functionality:
           multiple: true
           description: Path to the samples.
           example: dataset.h5mu
+    - name: "Sample ID options"
+      description: |
+        Options for adding the id to .obs on the MuData object. Having a sample 
+        id present in a requirement of several components for this pipeline.
+      arguments:
+        - name: "--add_id_to_obs"
+          description: "Add the value passed with --id to .obs."
+          type: boolean
+          default: true
+        - name: --add_id_obs_output
+          description: |
+            .Obs column to add the sample IDs to. Required and only used when 
+            --add_id_to_obs is set to 'true'
+          type: string
+          default: "sample_id"
+        - name: "--add_id_make_observation_keys_unique"
+          type: boolean
+          description: |
+            Join the id to the .obs index (.obs_names). 
+            Only used when --add_id_to_obs is set to 'true'.
+          default: true
     - name: "Filtering highly variable genes"
       arguments:
         - name: "--filter_with_hvg_var_output"
