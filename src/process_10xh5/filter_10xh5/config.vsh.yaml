@@ -57,10 +57,8 @@ platforms:
         packages: libhdf5-dev
       - type: python
         packages: 
-          - scanpy~=1.9.1
+          - scanpy~=1.9.2
           - anndata~=0.8.0
-          # https://github.com/scverse/scanpy/issues/2411
-          - matplotlib<3.7.0
       - type: r
         cran: [ anndata, hdf5r ]
   - type: nextflow
