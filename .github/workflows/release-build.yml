@@ -226,7 +226,7 @@ jobs:
         viash test \
           "${{ matrix.component.config }}" \
           --config_mod ".functionality.version := '${{ github.event.inputs.version_tag }}'" \
-          --config_mod ".platforms[.type == 'docker'].image := 'ghcr.io/openpipelines-bio/${{ matrix.component.config }}:${{ github.event.inputs.version_tag }}'" \
+          --config_mod ".platforms[.type == 'docker'].image := 'ghcr.io/openpipelines-bio/${{ matrix.component.name }}:${{ github.event.inputs.version_tag }}'" \
           --cpus 2 \
           --memory "5gb"
 
