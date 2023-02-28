@@ -6,6 +6,8 @@
 
 ## MINOR CHANGES
 
+* Update to Viash 0.7.0.
+
 * Several components: update to scanpy 1.9.2
 
 * `process_10xh5/filter_10xh5`: speed up build by using `eddelbuettel/r2u:22.04` base container.
