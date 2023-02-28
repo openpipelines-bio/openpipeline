@@ -34,7 +34,8 @@ jobs:
 
     outputs:
       matrix: ${{ steps.set_matrix.outputs.matrix }}
-      cache_key: ${{ steps.cache.outputs.cache_key }}
+      test_resources_dirs: ${{ steps.set_matrix.outputs.matrix }}
+      cache_dirs: ${{ steps.find_resources.outputs.cache_dirs }}
 
     steps:
     - uses: actions/checkout@v3
@@ -78,9 +79,49 @@ jobs:
           }
         ]' ${{ steps.ns_list_filtered.outputs.output_file }} )" >> $GITHUB_OUTPUT
 
+      # create cache
+      - name: Find resources
+        id: find_resources
+        run: |
+          readarray -t resources < <(jq -c -r 'reduce ( .[] | (.info.config | capture("^(?<dir>.*\/)").dir) as $dir | (.functionality.test_resources | map(select(.type == "file"))) | map($dir + .path)) as $item ([]; . + $item) | unique | .[]' ${{ steps.ns_list_filtered.outputs.output_file }} )
+          all_directories=()
+          for resource in "${resources[@]}"; do
+            resource_project_path=$(realpath --quiet --relative-to="$GITHUB_WORKSPACE" "$resource")
+            cache_dir_with_children="${resource_project_path#*resources_test/}"
+            top_cache_dir="${cache_dir_with_children%%/*}"
+            # Check if the file is within the 'resources_test' folder
+            if [[ $resource_project_path == *"resources_test"* ]]; then
+              all_directories+=( "$top_cache_dir" )
+            fi
+          done
+          IFS=" " read -r -a unique_directories <<< "$(tr ' ' '\n' <<< "${all_directories[@]}" | sort -u | tr '\n' ' ')"
+          echo "cache_dirs=$(jq --compact-output --null-input '$ARGS.positional' --args -- "${unique_directories[@]}")" >> $GITHUB_OUTPUT
+  
+  cache_resources:
+    needs: list 
+    env:
+      s3_bucket: s3://openpipelines-data/
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        resource_dir: ${{ fromJson(needs.list.outputs.cache_dirs) }}
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - uses: viash-io/viash-actions/setup@v3
+
+      - uses: viash-io/viash-actions/project/sync-and-cache-s3@v3
+        id: cache_${{matrix.resource_dir}}
+        with:
+          s3_bucket: ${{ format('{0}/{1}', env.s3_bucket, matrix.resource_dir)
+          dest_path: ${{ format('{0}/{1}', 'resources_test', matrix.resource_dir)
+          cache_key_prefix: ${{ format('{0}_{1}__', 'resources_test', matrix.resource_dir)
+
   # phase 2
   viash_test:
-    needs: list
+    needs: [cache_resources, list]
     if: ${{ needs.list.outputs.matrix != '[]' && needs.list.outputs.matrix != '' }}
     runs-on: ubuntu-latest
 
@@ -94,13 +135,34 @@ jobs:
 
     - uses: viash-io/viash-actions/setup@v3
 
-    # use cache
-    - name: Cache resources data
+    - name: Find cached directories
+      id: find_cache_dirs
+      run: |
+        readarray -t resources < <(viash config view --format json "${{ matrix.component.config }}" | jq -c '(.info.config | capture("^(?<dir>.*\/)").dir) as $dir | .functionality.test_resources | map(select(.type == "file")) | map($dir + .path) | unique')
+        all_directories=()
+        for resource in "${resources[@]}"; do
+          resource_project_path=$(realpath --quiet --relative-to="$GITHUB_WORKSPACE" "$resource")
+          cache_dir_with_children="${resource_project_path#*resources_test/}"
+          top_cache_dir="${cache_dir_with_children%%/*}"
+          # Check if the file is within the 'resources_test' folder
+          if [[ $resource_project_path == *"resources_test"* ]]; then
+            all_directories+=( "resources_test/$top_cache_dir" )
+          fi
+        done
+        IFS=" " read -r -a unique_directories <<< "$(tr ' ' '\n' <<< "${all_directories[@]}" | sort -u | tr '\n' ' ')"
+        echo "resources_dir=$(jq --compact-output --null-input '$ARGS.positional' --args -- "${unique_directories[@]}")" >> $GITHUB_OUTPUT
+
+        keys=()
+        for unique_directory in "$unique_directories[@]"; do
+          keys+= ("resources_test_$unique_directory__")
+        done
+
+    - name: Restore cache
       uses: actions/cache@v3
       timeout-minutes: 10
       with:
-        path: resources_test
-        key: ${{ needs.list.outputs.cache_key }}
+        path: ${{ steps.output.resources_dir }}
+        key: ${{ steps.output.keys }}
         fail-on-cache-miss: true
 
     - name: Login to the nvidia container registry
