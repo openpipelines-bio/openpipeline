@@ -4,6 +4,10 @@
 
 * `workflows/integration`: `init_pos` is no longer set to the integration layer (e.g. `X_pca_integrated`).
 
+## MINOR CHANGES
+
+* Update to Viash 0.7.0.
+
 # openpipelines 0.7.0
 
 ## MAJOR CHANGES
