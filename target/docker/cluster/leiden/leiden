@@ -429,13 +429,13 @@ RUN apt-get update && \
   rm -rf /var/lib/apt/lists/*
 
 RUN pip install --upgrade pip && \
-  pip install --upgrade --no-cache-dir "scanpy~=1.9.1" "matplotlib<3.7.0" "leidenalg~=0.8.9" "mudata~=0.2.0" "anndata~=0.8.0"
+  pip install --upgrade --no-cache-dir "scanpy~=1.9.2" "leidenalg~=0.8.9" "mudata~=0.2.0" "anndata~=0.8.0"
 
 LABEL org.opencontainers.image.authors="Dries De Maeyer"
 LABEL org.opencontainers.image.description="Companion container for running component cluster leiden"
-LABEL org.opencontainers.image.created="2023-02-28T12:14:17Z"
+LABEL org.opencontainers.image.created="2023-02-28T12:14:54Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="ecc6f9b9b990088617fe6313d31b984f6bbbaa08"
+LABEL org.opencontainers.image.revision="8c2b28f84161abd0ea0db855be36ce6e10585857"
 LABEL org.opencontainers.image.version="main_build"
 VIASHDOCKER
 }

@@ -398,13 +398,13 @@ FROM python:3.8
 
 ENV SKLEARN_ALLOW_DEPRECATED_SKLEARN_PACKAGE_INSTALL True
 RUN pip install --upgrade pip && \
-  pip install --upgrade --no-cache-dir "mudata~=0.2.0" "anndata~=0.8.0" "muon~=0.1.2" "scanpy~=1.9.1" "matplotlib<3.7.0"
+  pip install --upgrade --no-cache-dir "mudata~=0.2.0" "anndata~=0.8.0" "muon~=0.1.2" "scanpy~=1.9.2"
 
 LABEL org.opencontainers.image.authors="Dries Schaumont"
 LABEL org.opencontainers.image.description="Companion container for running component transform clr"
-LABEL org.opencontainers.image.created="2023-02-28T12:14:19Z"
+LABEL org.opencontainers.image.created="2023-02-28T12:14:57Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="ecc6f9b9b990088617fe6313d31b984f6bbbaa08"
+LABEL org.opencontainers.image.revision="8c2b28f84161abd0ea0db855be36ce6e10585857"
 LABEL org.opencontainers.image.version="main_build"
 VIASHDOCKER
 }

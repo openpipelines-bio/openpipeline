@@ -181,7 +181,7 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
     "config" : "/home/runner/work/openpipeline/openpipeline/src/demux/bcl2fastq/config.vsh.yaml",
     "platform" : "nextflow",
     "viash_version" : "0.6.7",
-    "git_commit" : "ecc6f9b9b990088617fe6313d31b984f6bbbaa08",
+    "git_commit" : "8c2b28f84161abd0ea0db855be36ce6e10585857",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))

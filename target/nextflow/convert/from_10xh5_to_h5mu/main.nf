@@ -280,8 +280,7 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
           "packages" : [
             "mudata~=0.2.0",
             "anndata~=0.8.0",
-            "scanpy",
-            "matplotlib<3.7.0"
+            "scanpy~=1.9.2"
           ],
           "upgrade" : true
         }
@@ -308,7 +307,7 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
     "config" : "/home/runner/work/openpipeline/openpipeline/src/convert/from_10xh5_to_h5mu/config.vsh.yaml",
     "platform" : "nextflow",
     "viash_version" : "0.6.7",
-    "git_commit" : "ecc6f9b9b990088617fe6313d31b984f6bbbaa08",
+    "git_commit" : "8c2b28f84161abd0ea0db855be36ce6e10585857",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))

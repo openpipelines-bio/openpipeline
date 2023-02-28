@@ -241,8 +241,7 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
           "type" : "python",
           "user" : false,
           "packages" : [
-            "scanpy~=1.9.1",
-            "matplotlib<3.7.0",
+            "scanpy~=1.9.2",
             "scrublet",
             "mudata~=0.2.0",
             "anndata~=0.8.0",
@@ -276,7 +275,7 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
     "config" : "/home/runner/work/openpipeline/openpipeline/src/filter/filter_with_scrublet/config.vsh.yaml",
     "platform" : "nextflow",
     "viash_version" : "0.6.7",
-    "git_commit" : "ecc6f9b9b990088617fe6313d31b984f6bbbaa08",
+    "git_commit" : "8c2b28f84161abd0ea0db855be36ce6e10585857",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))
