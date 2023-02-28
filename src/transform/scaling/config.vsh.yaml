@@ -5,10 +5,8 @@ functionality:
   description: |
     Scale data to unit variance and zero mean.
   authors:
-    - name: Dries Schaumont
-      email: dries@data-intuitive.com
+    - __merge__: ../../authors/dries_schaumont.yaml
       roles: [ maintainer ]
-      props: { github: DriesSchaumont, orcid: "0000-0002-4389-0440" }
   arguments:
     # input
     - name: "--input"
@@ -58,6 +56,8 @@ platforms:
       - type: python
         packages:
           - scanpy~=1.9.1
+          # https://github.com/scverse/scanpy/issues/2411
+          - matplotlib<3.7.0
           - mudata~=0.2.0
           - anndata~=0.8.0
   - type: nextflow

@@ -5,12 +5,9 @@ functionality:
   description: |
     BBKNN network generation
   authors:
-    - name: Dries De Maeyer
-      email: ddemaeyer@gmail.com
+    - __merge__: ../../authors/dries_de_maeyer.yaml
       roles: [ author ]
-      props: { account: ddemaey1 }
-    - name: Dries Schaumont
-      email: dries@data-intuitive.com
+    - __merge__: ../../authors/dries_schaumont.yaml
       roles: [ maintainer ]
   arguments:
     # inputs
@@ -84,8 +81,9 @@ platforms:
           - mudata~=0.2.0
           - anndata~=0.8.0
           - scanpy~=1.9.1 # Will result in NameError: name 'logg' is not defined otherwise
+          # https://github.com/scverse/scanpy/issues/2411
+          - matplotlib<3.7.0
           - bbknn
   - type: nextflow
-    variant: vdsl3
     directives:
       label: highmem

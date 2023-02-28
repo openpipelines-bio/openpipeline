@@ -1,0 +1,55 @@
+functionality:
+  name: clr
+  namespace: "transform"
+  description: |
+    Perform CLR normalization on CITE-seq data (Stoeckius et al., 2017).
+  authors:
+    - __merge__: ../../authors/dries_schaumont.yaml
+      roles: [ maintainer ]
+  arguments:
+    - name: "--input"
+      alternatives: ["-i"]
+      type: file
+      description: Input h5mu file
+      direction: input
+      required: true
+      example: input.h5mu
+    - name: "--modality"
+      type: string
+      default: "prot"
+      required: false
+    - name: "--output"
+      alternatives: ["-o"]
+      type: file
+      description: Output h5mu file.
+      direction: output
+      required: true
+      default: output.h5mu
+  resources:
+    - type: python_script
+      path: script.py
+  test_resources:
+    - type: python_script
+      path: run_test.py
+    - path: ../../../resources_test/pbmc_1k_protein_v3
+platforms:
+  - type: docker
+    image: python:3.8
+    setup:
+      - type: docker
+        env:
+        # Remove when muon > 0.1.2 is released
+          - SKLEARN_ALLOW_DEPRECATED_SKLEARN_PACKAGE_INSTALL True
+      - type: python
+        packages:
+          - mudata~=0.2.0
+          - anndata~=0.8.0
+          - muon~=0.1.2
+          - scanpy~=1.9.1
+          # https://github.com/scverse/scanpy/issues/2411
+          - matplotlib<3.7.0
+    test_setup:
+      - type: python
+        packages:
+          - viashpy
+  - type: nextflow

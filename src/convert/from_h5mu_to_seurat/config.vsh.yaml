@@ -14,10 +14,8 @@ functionality:
       - Feature names with underscores ('_') are automatically replaced with dashes ('-')
       - Seurat does not support global variables metadata /var.
   authors:
-    - name: Robrecht Cannoodt
-      email: robrecht@data-intuitive.com
+    - __merge__: ../../authors/robrecht_cannoodt.yaml
       roles: [ author, maintainer ]
-      props: { github: rcannood, orcid: "0000-0003-3641-729X" }
   arguments:
     - name: "--input"
       alternatives: ["-i"]
@@ -54,10 +52,13 @@ platforms:
           - python3-pip
           - python-is-python3
       - type: python
-        pip: [ scanpy~=1.9.1, anndata~=0.8.0 ]
+        packages: 
+          - scanpy~=1.9.1
+          - anndata~=0.8.0
+          # https://github.com/scverse/scanpy/issues/2411
+          - matplotlib<3.7.0
       - type: r
         cran: [ anndata, hdf5r, testthat ]
       - type: r
         github: pmbio/MuDataSeurat
   - type: nextflow
-    variant: vdsl3

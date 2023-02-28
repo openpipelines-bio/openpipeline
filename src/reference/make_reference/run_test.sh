@@ -10,15 +10,15 @@ echo "> Running $meta_functionality_name."
 fasta="myreference.fa.gz"
 gtf="myreference.gtf.gz"
 
-wget https://ftp.ebi.ac.uk/pub/databases/gencode/Gencode_human/release_41/GRCh38.primary_assembly.genome.fa.gz
-wget https://ftp.ebi.ac.uk/pub/databases/gencode/Gencode_human/release_41/gencode.v41.annotation.gtf.gz
+wget https://ftp.ensembl.org/pub/release-109/fasta/homo_sapiens/dna/Homo_sapiens.GRCh38.dna.chromosome.1.fa.gz
+wget https://ftp.ensembl.org/pub/release-109/gtf/homo_sapiens/Homo_sapiens.GRCh38.109.chr.gtf.gz
 wget https://assets.thermofisher.com/TFS-Assets/LSG/manuals/ERCC92.zip
 
 $meta_executable \
-  --genome_fasta "GRCh38.primary_assembly.genome.fa.gz" \
-  --transcriptome_gtf "gencode.v41.annotation.gtf.gz" \
+  --genome_fasta "Homo_sapiens.GRCh38.dna.chromosome.1.fa.gz" \
+  --transcriptome_gtf "Homo_sapiens.GRCh38.109.chr.gtf.gz" \
   --ercc "ERCC92.zip" \
-  --subset_regex "(ERCC-00002|chr1)" \
+  --subset_regex "(ERCC-00002|1)" \
   --output_fasta $fasta \
   --output_gtf $gtf
 
@@ -30,20 +30,12 @@ echo ">> Checking whether output can be found"
 [[ ! -f $gtf ]] && echo "Output gtf file could not be found!" && exit 1
 
 echo ">> Checking contents of fasta"
-if ! zgrep -q '>chr1' $fasta; then
-  echo "Could not find chr1 in output reference!"
+if ! zgrep -q '>1' $fasta; then
+  echo "Could not find chromosome '1' in output reference!"
   exit 1
 fi
 if ! zgrep -q '>ERCC-00002' $fasta; then
   echo "Could not find ERCC-00002 in output reference!"
-  exit 1
-fi
-if zgrep -q '>chr11' $fasta; then
-  echo "Found chr11 in output reference!"
-  exit 1
-fi
-if zgrep -q '>chr2' $fasta; then
-  echo "Found chr2 in output reference!"
   exit 1
 fi
 

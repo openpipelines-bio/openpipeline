@@ -9,14 +9,10 @@ functionality:
 
     If exclude_highly_expressed=True, very highly expressed genes are excluded from the computation of the normalization factor (size factor) for each cell. This is meaningful as these can strongly influence the resulting normalized values for all other genes [Weinreb17].
   authors:
-    - name: Dries De Maeyer
-      email: ddemaeyer@gmail.com
+    - __merge__: ../../authors/dries_de_maeyer.yaml
       roles: [ maintainer ]
-      props: { account: ddemaey1 }
-    - name: Robrecht Cannoodt
-      email: robrecht@data-intuitive.com
+    - __merge__: ../../authors/robrecht_cannoodt.yaml
       roles: [ contributor ]
-      props: { github: rcannood, orcid: "0000-0003-3641-729X" }
   arguments:
     # input
     - name: "--input"
@@ -77,8 +73,8 @@ platforms:
       - type: python
         packages:
           - scanpy~=1.9.1
-          - muon
           - mudata~=0.2.0
           - anndata~=0.8.0
+          # https://github.com/scverse/scanpy/issues/2411
+          - matplotlib<3.7.0
   - type: nextflow
-    variant: vdsl3

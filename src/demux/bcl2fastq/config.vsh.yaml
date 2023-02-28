@@ -4,9 +4,8 @@ functionality:
   description: |
     Convert bcl files to fastq files using bcl2fastq.
   authors:
-    - name: Toni Verbeiren
+    - __merge__: ../../authors/toni_verbeiren.yaml
       roles: [ author, maintainer ]
-      props: { github: tverbeiren }
   arguments:
     - name: "--input"
       alternatives: [ "-i", "--runfolder_dir" ]
@@ -27,18 +26,12 @@ functionality:
       required: true
       description: Output directory containig fastq files
       example: fastq_dir
-    - name: "--separate_reports"
-      type: boolean_true
-      description: |
-        Should reports be stored in a separate dir.
-        Should be used with the --reports argument.
     - name: "--reports"
       type: file
       direction: output
       required: false
       description: Reports directory
       example: reports_dir
-      default: "reports"
     - name: "--ignore_missing"
       type: boolean_true
   resources:
@@ -52,6 +45,5 @@ platforms:
   - type: docker
     image: ghcr.io/data-intuitive/bcl2fastq:2.20
   - type: nextflow
-    variant: vdsl3
     directives:
       label: [ midmem, midcpu ]

@@ -1,8 +1,9 @@
 import scanpy as sc
-import muon as mu
+import mudata as mu
 import numpy as np
 import logging
 from sys import stdout
+import re
 
 ## VIASH START
 par = {
@@ -37,12 +38,25 @@ mod = par['modality']
 logger.info(f"Processing modality '%s'", mod)
 data = mdata.mod[mod]
 
-# Workaround for issue 
+# Workaround for issue
 # https://github.com/scverse/scanpy/issues/2239
 # https://github.com/scverse/scanpy/issues/2181
-if 'log1p' in data.uns and 'base' not in data.uns['log1p']:
-    data.uns['log1p']['base'] = None
-#sc.pp.log1p(data)
+if par['flavor'] != "seurat_v3":
+    # This component requires log normalized data when flavor is not seurat_v3
+    # We assume that the data is correctly normalized but scanpy will look at
+    # .uns to check the transformations performed on the data.
+    # To prevent scanpy from automatically tranforming the counts when they are
+    # already transformed, we set the appropriate values to .uns.
+    if 'log1p' not in data.uns:
+        logger.warning("When flavor is not set to 'seurat_v3', "
+                       "the input data for this component must be log-transformed. "
+                       "However, the 'log1p' dictionairy in .uns has not been set. "
+                       "This is fine if you did not log transform your data with scanpy."
+                       "Otherwise, please check if you are providing log transformed "
+                       "data using --layer.")
+        data.uns['log1p'] = {'base': None}
+    elif 'log1p' in data.uns and 'base' not in data.uns['log1p']:
+        data.uns['log1p']['base'] = None
 
 logger.info("\tUnfiltered data: %s", data)
 
@@ -59,14 +73,22 @@ hvg_args = {
     'flavor': par["flavor"],
     'subset': False,
     'inplace': False,
-    'layer': par['layer']
+    'layer': par['layer'],
 }
 
+optional_parameters = {
+    "max_disp": "max_disp",
+    "obs_batch_key": "batch_key",
+    "n_top_genes": "n_top_genes"
+}
 # only add parameter if it's passed
-if par.get("max_disp", None) is not None:
-    hvg_args["max_disp"] = par["max_disp"]
-if par.get("obs_batch_key", None) is not None:
-    hvg_args["batch_key"] = par["obs_batch_key"]
+for par_name, dest_name in optional_parameters.items():
+    if par.get(par_name):
+        hvg_args[dest_name] = par[par_name]
+
+# scanpy does not do this check, although it is stated in the documentation
+if par['flavor'] == "seurat_v3" and not par['n_top_genes']:
+    raise ValueError("When flavor is set to 'seurat_v3', you are required to set 'n_top_genes'.")
 
 # call function
 try:
@@ -74,15 +96,20 @@ try:
     out.index = data.var.index
 except ValueError as err:
     if str(err) == "cannot specify integer `bins` when input data contains infinity":
-        err.args = ("Cannot specify integer `bins` when input data contains infinity. Perhaps input data has not been log normalized?",)
+        err.args = ("Cannot specify integer `bins` when input data contains infinity. "
+                    "Perhaps input data has not been log normalized?",)
+    if re.search("Bin edges must be unique:", str(err)):
+        raise RuntimeError("Scanpy failed to calculate hvg. The error "
+                           "returned by scanpy (see above) could be the "
+                           "result from trying to use this component on unfiltered data.") from err
     raise err
 
 logger.info("\tStoring output into .var")
 if par.get("var_name_filter", None) is not None:
     data.var[par["var_name_filter"]] = out["highly_variable"]
 
-if par.get("varm_name", None) is not None:
-    # drop mean_bin as muon/anndata doesn't support tuples
+if par.get("varm_name", None) is not None and 'mean_bin' in out:
+    # drop mean_bin as mudata/anndata doesn't support tuples
     data.varm[par["varm_name"]] = out.drop("mean_bin", axis=1)
 
 if par["do_subset"]:
@@ -90,4 +117,4 @@ if par["do_subset"]:
     mdata.mod[mod] = data[:,keep_feats]
 
 logger.info("Writing h5mu to file")
-mdata.write_h5mu(par["output"])
+mdata.write_h5mu(par["output"], compression="gzip")

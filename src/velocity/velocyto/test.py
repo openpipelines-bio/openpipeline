@@ -53,9 +53,9 @@ class TestVelocyto(unittest.TestCase):
             self.assertListEqual(ds.ra.keys(), ['Accession', 'Chromosome', 'End', 'Gene', 'Start', 'Strand'])
             rows, cols = ds.shape
             self.assertTrue(rows > 0)
-            self.assertTrue(cols > 0) 
+            self.assertTrue(cols > 0)
 
-    
+
     def test_velocyto_bd_rhapsody(self):
         # check whether component also accepts uncompressed gtf files
         with tempfile.NamedTemporaryFile(suffix=".gtf", mode='wb') as genes_uncompressed:
@@ -79,7 +79,7 @@ class TestVelocyto(unittest.TestCase):
             self.assertListEqual(ds.ra.keys(), ['Accession', 'Chromosome', 'End', 'Gene', 'Start', 'Strand'])
             rows, cols = ds.shape
             self.assertTrue(rows > 0)
-            self.assertTrue(cols > 0) 
+            self.assertTrue(cols > 0)
 
 
 if __name__ == "__main__":

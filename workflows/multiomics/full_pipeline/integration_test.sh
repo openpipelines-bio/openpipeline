@@ -10,10 +10,27 @@ cd "$REPO_ROOT"
 
 export NXF_VER=21.10.6
 
-bin/nextflow \
+nextflow \
   run . \
   -main-script workflows/multiomics/full_pipeline/main.nf \
   -entry test_wf \
   -resume \
   -profile docker,no_publish \
   -c workflows/utils/labels_ci.config
+
+nextflow \
+  run . \
+  -main-script workflows/multiomics/full_pipeline/main.nf \
+  -entry test_wf2 \
+  -resume \
+  -profile docker,no_publish \
+  -c workflows/utils/labels_ci.config
+
+nextflow \
+  run . \
+  -main-script workflows/multiomics/full_pipeline/main.nf \
+  -entry test_wf3 \
+  -resume \
+  -profile docker,no_publish \
+  -c workflows/utils/labels_ci.config
+

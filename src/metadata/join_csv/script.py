@@ -48,13 +48,13 @@ except KeyError as e:
     raise KeyError(f"Not all sample IDs selected from {matrix} "
                     "(using the column selected with --var_key or --obs_key) were found in "
                     "the csv file.") from e
-new_matrix = pd.concat([original_matrix.reset_index(drop=True), 
+new_matrix = pd.concat([original_matrix.reset_index(drop=True),
                         new_columns.reset_index(drop=True)], axis=1)\
                         .set_axis(original_matrix.index)
 setattr(mod_data, matrix, new_matrix)
 
 logger.info("Write output to mudata file")
-mdata.write_h5mu(par['output'])
+mdata.write_h5mu(par['output'], compression="gzip")
 
-        
+
 

@@ -1,6 +1,6 @@
 import scanpy as sc
-import muon as mu
-import logging 
+import mudata as mu
+import logging
 from sys import stdout
 ## VIASH START
 par = {
@@ -40,4 +40,4 @@ if output_data:
     dat.layers[par["output_layer"]] = output_data.X
 
 logger.info("Writing to file")
-mdata.write(filename=par["output"])
+mdata.write_h5mu(filename=par["output"], compression="gzip")

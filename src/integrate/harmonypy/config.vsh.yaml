@@ -5,13 +5,10 @@ functionality:
   description: "Performs Harmony integration based as described in https://github.com/immunogenomics/harmony.
                 Based on an implementation in python from https://github.com/slowkow/harmonypy"
   authors:
-    - name: Dries Schaumont
-      email: dries@data-intuitive.com
+    - __merge__: ../../authors/dries_schaumont.yaml
       roles: [ maintainer ]
-    - name: Robrecht Cannoodt
-      email: robrecht@data-intuitive.com
+    - __merge__: ../../authors/robrecht_cannoodt.yaml
       roles: [ contributor ]
-      props: { github: rcannood, orcid: "0000-0003-3641-729X" }
   arguments:
     - name: "--input"
       alternatives: ["-i"]
@@ -67,7 +64,8 @@ platforms:
           - anndata~=0.8.0
           - harmonypy~=0.0.6
           - scanpy
+          # https://github.com/scverse/scanpy/issues/2411
+          - matplotlib<3.7.0
   - type: nextflow
-    variant: vdsl3
     directives:
       label: [highmem, highcpu]

@@ -7,12 +7,10 @@ functionality:
     https://emea.support.illumina.com/bulletins/2020/10/upgrading-from-bcl2fastq-to-bcl-convert.html
     and https://support.illumina.com/sequencing/sequencing_software/bcl-convert/compatibility.html
   authors:
-    - name: Toni Verbeiren
+    - __merge__: ../../authors/toni_verbeiren.yaml
       roles: [ author, maintainer ]
-      props: { github: tverbeiren }
-    - name: Marijke Van Moerbeke
+    - __merge__: ../../authors/marijke_van_moerbeke.yaml
       roles: [ author ]
-      props: { orcid: 0000-0002-3097-5621 }
   arguments:
     - name: "--input"
       alternatives: [ "-i" ]
@@ -33,18 +31,12 @@ functionality:
       required: true
       description: Output directory containig fastq files
       example: fastq_dir
-    - name: "--separate_reports"
-      type: boolean_true
-      description: |
-        Should reports be stored in a separate dir.
-        Should be used with the --reports argument.
     - name: "--reports"
       type: file
       direction: output
       required: false
       description: Reports directory
       example: reports_dir
-      default: "reports"
     - name: "--test_mode"
       type: boolean
       default: false
@@ -60,6 +52,5 @@ platforms:
   - type: docker
     image: ghcr.io/data-intuitive/bclconvert:3.10
   - type: nextflow
-    variant: vdsl3
     directives:
       label: [ midmem, midcpu ]

@@ -4,13 +4,10 @@ functionality:
   description: |
     Build a transcriptomics reference into one of many formats.
   authors:
-    - name: Angela Pisco
+    - __merge__: ../../../src/authors/angela_pisco.yaml
       roles: [ author ]
-      props: { github: aopisco, orcid: "0000-0003-0142-2355" }
-    - name: Robrecht Cannoodt
-      email: robrecht@data-intuitive.com
+    - __merge__: ../../../src/authors/robrecht_cannoodt.yaml
       roles: [ author, maintainer ]
-      props: { github: rcannood, orcid: "0000-0003-3641-729X" }
   argument_groups:
     - name: Inputs
       arguments:
@@ -37,10 +34,10 @@ functionality:
       arguments:
         - type: string
           name: --target
-          choices: [ cellranger, bd_rhapsody ]
+          choices: [ cellranger, bd_rhapsody, star ]
           description: Which reference indices to generate. 
           multiple: true
-          default: [ raw ]
+          default: [ star ]
         - type: file
           name: --output_fasta
           direction: output
@@ -55,12 +52,17 @@ functionality:
           name: --output_cellranger
           direction: output
           description: Output index
-          example: index.tar.gz
+          example: cellranger_index.tar.gz
         - type: file
           name: --output_bd_rhapsody
           direction: output
           description: Output index
-          example: index.tar.gz
+          example: bdrhap_index.tar.gz
+        - type: file
+          name: --output_star
+          direction: output
+          description: Output index
+          example: star_index.tar.gz
     - name: Arguments
       arguments:
         - type: string

@@ -1,4 +1,4 @@
-import muon as mu
+import mudata as mu
 import anndata
 import logging
 from sys import stdout
@@ -30,15 +30,15 @@ try:
 except:
     pass
 
-logger.info("Converting to muon")
-muon = mu.MuData(data)
+logger.info("Converting to mudata")
+mudata = mu.MuData(data)
 
 try:
-    muon.var_names_make_unique()
+    mudata.var_names_make_unique()
 except:
     pass
 
 logger.info("Writing to %s.", par['output'])
-muon.write_h5mu(par["output"])
+mudata.write_h5mu(par["output"], compression="gzip")
 
 logger.info("Finished")

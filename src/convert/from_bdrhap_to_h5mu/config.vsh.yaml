@@ -5,10 +5,8 @@ functionality:
   description: |
     Convert the output of a BD Rhapsody WTA pipeline to a MuData h5 file.
   authors:
-    - name: Robrecht Cannoodt
-      email: robrecht@data-intuitive.com
+    - __merge__: ../../authors/robrecht_cannoodt.yaml
       roles: [ maintainer ]
-      props: { github: rcannood, orcid: "0000-0003-3641-729X" }
   argument_groups:
     - name: Inputs
       arguments:
@@ -41,7 +39,7 @@ functionality:
     - path: ../../../resources_test/bdrhap_5kjrt/processed/WTA.bd_rhapsody.output_raw
 platforms:
   - type: docker
-    image: ghcr.io/data-intuitive/randpy:r4.0_py3.8
+    image: ghcr.io/data-intuitive/randpy:r4.2_py3.8
     setup:
       - type: docker
         run: apt update && apt upgrade -y
@@ -50,4 +48,3 @@ platforms:
       - type: r
         cran: anndata
   - type: nextflow
-    variant: vdsl3

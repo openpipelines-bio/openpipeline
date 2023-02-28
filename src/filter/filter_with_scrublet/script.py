@@ -1,5 +1,5 @@
 import scrublet as scr
-import muon as mu
+import mudata as mu
 import numpy as np
 import logging
 from sys import stdout
@@ -49,6 +49,7 @@ doublet_scores, predicted_doublets = scrub.scrub_doublets(
     min_gene_variability_pctl=par["min_gene_variablity_percent"],
     n_prin_comps=par["num_pca_components"],
     distance_metric=par["distance_metric"],
+    use_approx_neighbors=False
 )
 keep_cells = np.invert(predicted_doublets)
 
@@ -62,4 +63,4 @@ if par["do_subset"]:
     mdata.mod[mod] = data[keep_cells, :]
 
 logger.info("Writing h5mu to %s", par["output"])
-mdata.write_h5mu(par["output"])
+mdata.write_h5mu(par["output"], compression="gzip")

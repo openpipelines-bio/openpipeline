@@ -3,12 +3,10 @@ functionality:
   namespace: "convert"
   version: "dev"
   description: |
-    Converts a single layer h5ad file into a single muon object
+    Converts a single layer h5ad file into a single MuData object
   authors:
-    - name: Dries De Maeyer
-      email: ddemaeyer@gmail.com
+    - __merge__: ../../authors/dries_de_maeyer.yaml
       roles: [ maintainer ]
-      props: { account: ddemaey1 }
   arguments:
     - name: "--input"
       alternatives: ["-i"]
@@ -26,7 +24,7 @@ functionality:
     - name: "--output"
       alternatives: ["-o"]
       type: file
-      description: Output muon file.
+      description: Output MuData file.
       default: output.h5mu
       direction: output
   resources:
@@ -39,10 +37,9 @@ functionality:
 platforms:
   - type: docker
     image: python:3.8
-    python:
-      packages:
-        - muon
-        - mudata~=0.2.0
-        - anndata~=0.8.0
+    setup:
+      - type: python
+        packages:
+          - mudata~=0.2.0
+          - anndata~=0.8.0
   - type: nextflow
-    variant: vdsl3

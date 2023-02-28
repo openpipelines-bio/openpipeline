@@ -1,0 +1,48 @@
+functionality:
+  name: from_h5mu_to_h5ad
+  namespace: "convert"
+  version: "dev"
+  description: |
+    Converts a h5mu file into a h5ad file.
+  authors:
+    - __merge__: ../../authors/robrecht_cannoodt.yaml
+      roles: [ maintainer ]
+  arguments:
+    - name: "--input"
+      alternatives: ["-i"]
+      type: file
+      description: Input MuData file
+      default: input.h5mu
+      direction: input
+      required: true
+    - name: "--modality"
+      type: string
+      default: "rna"
+      required: false
+    - name: "--output"
+      alternatives: ["-o"]
+      type: file
+      description: Output AnnData file.
+      default: output.h5ad
+      direction: output
+    - name: "--compression"
+      type: string
+      description: The compression format to be used on the final h5ad object.
+      default: "gzip"
+      choices: ["gzip", "lzf"]
+  resources:
+    - type: python_script
+      path: script.py
+  test_resources:
+    - type: python_script
+      path: test.py
+    - path: ../../../resources_test/pbmc_1k_protein_v3
+platforms:
+  - type: docker
+    image: python:3.8
+    setup:
+      - type: python
+        packages:
+          - mudata~=0.2.0
+          - anndata~=0.8.0
+  - type: nextflow

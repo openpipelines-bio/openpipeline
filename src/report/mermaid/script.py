@@ -1,12 +1,11 @@
+import base64
+import requests, io
+from PIL import Image
+
 ## VIASH START
 par = {
 }
 ## VIASH END
-
-
-import base64
-import requests, io
-from PIL import Image
 
 file = open(par["input"],mode='r')
 graph = file.read()

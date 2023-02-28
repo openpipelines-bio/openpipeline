@@ -1,10 +1,161 @@
+# openpipelines 0.7.1
+
+## BUG FIXES
+
+* `workflows/integration`: `init_pos` is no longer set to the integration layer (e.g. `X_pca_integrated`).
+
+# openpipelines 0.7.0
+
+## MAJOR CHANGES
+
+* Removed `bin` folder. As of viash 0.6.4, a `_viash.yaml` file can be included in the root of a repository to set common viash options for the project.
+These options were previously covered in the `bin/init` script, but this new feature of viash makes its use unnecessary. The `viash` and `nextlow` should now be installed in a directory that is included in your `$PATH`.
+
+## MINOR CHANGES
+
+* `filter/do_filter`: raise an error instead of printing a warning when providing a column for `var_filer` or `obs_filter` that doesn't exist.
+
+## BUG FIXES
+
+* `workflows/full_pipeline`: Fix setting .var output column for filter_with_hvg.
+
+* Fix running `mapping/cellranger_multi` without passing all references.
+
+* `filter/filter_with_scrublet`: now sets `use_approx_neighbors` to `False` to avoid using `annoy` because it fails on processors that are missing the AVX-512 instruction sets.
+
+* `workflows`: Updated `WorkflowHelper` to newer version that allows applying defaults when calling a subworkflow from another workflow.
+
+* Several components: pin matplotlib to <3.7 to fix scanpy compatibility (see https://github.com/scverse/scanpy/issues/2411).  
+
+* `workflows`: fix a bug when running a subworkflow from a workflow would cause the parent config to be read instead of the subworklow config.
+
+* `correction/cellbender_remove_background`: Fix description of input for cellbender_remove_background.
+
+* `filter/do_filter`: resolved an issue where the .obs column instead of the .var column was being logged when filtering using the .var column.
+
+* `workflows/rna_singlesample` and `workflows/prot_singlesample`: Correctly set var and obs columns while filtering with counts.
+
+* `filter/do_filter`: removed the default input value for `var_filter` argument.
+
+* `workflows/full_pipeline` and `workflows/integration`: fix PCA not using highly variable genes filter.
+
+# openpipelines 0.6.2
+
+## NEW FUNCTIONALITY
+
+* `workflows/full_pipeline`: added `filter_with_hvg_obs_batch_key` argument for batched detection of highly variable genes.
+
+* `workflows/rna_multisample`: added `filter_with_hvg_obs_batch_key`, `filter_with_hvg_flavor` and `filter_with_hvg_n_top_genes` arguments.
+
+* `qc/calculate_qc_metrics`: Add basic statistics: `pct_dropout`, `num_zero_obs`, `obs_mean` and `total_counts` are added to .var. `num_nonzero_vars`, `pct_{var_qc_metrics}`, `total_counts_{var_qc_metrics}`, `pct_of_counts_in_top_{top_n_vars}_vars` and `total_counts` are included in .obs
+
+* `workflows/multiomics/rna_multisample` and `workflows/multiomics/full_pipeline`: add `qc/calculate_qc_metrics` component to workflow.
+
+* `workflows/multiomics/prot_singlesample`: Processing unimodal single-sample CITE-seq data.
+
+* `workflows/multiomics/rna_singlesample` and `workflows/multiomics/full_pipeline`: Add filtering arguments to pipeline.
+
+## MINOR CHANGES
+
+* `convert/from_bdrhap_to_h5mu`: bump R version to 4.2.
+
+* `process_10xh5/filter_10xh5`: bump R version to 4.2.
+
+* `dataflow/concat`: include path of file in error message when reading a mudata file fails.
+
+* `mapping/cellranger_multi`: write cellranger console output to a `cellranger_multi.log` file.
+
+## BUG FIXES
+
+* `mapping/htseq_count_to_h5mu`: Fix a bug where reading in the gtf file caused `AttributeError`. 
+
+* `dataflow/concat`: the `--input_id` is no longer required when `--mode` is not `move`.
+
+* `filter/filter_with_hvg`: does no longer try to use `--varm_name` to set non-existant metadata when running with `--flavor seurat_v3`, which was causing `KeyError`.
+
+* `filter/filter_with_hvg`: Enforce that `n_top_genes` is set when `flavor` is set to 'seurat_v3'.
+
+* `filter/filter_with_hvg`: Improve error message when trying to use 'cell_ranger' as `flavor` and passing unfiltered data.
+
+* `mapping/cellranger_multi` now applies `gex_chemistry`, `gex_secondary_analysis`, `gex_generate_bam`, `gex_include_introns` and `gex_expect_cells`.
+
+# openpipeline 0.6.1
+
+## NEW FUNCTIONALITY
+
+* `mapping/multi_star`: A parallellized version of running STAR (and HTSeq).
+
+* `mapping/multi_star_to_h5mu`: Convert the output of `multi_star` to a h5mu file.
+
+## BUG FIXES
+
+* `filter/filter_with_counts`: Fix an issue where mitochrondrial genes were being detected in .var_names, which contain ENSAMBL IDs instead of gene symbols in the pipelines. Solution was to create a `--var_gene_names` argument which allows selecting a .var column to check using a regex (`--mitochondrial_gene_regex`).
+
+* `dataflow/concat`, `report/mermaid`, `transform/clr`: Don't forget to exit with code returned by pytest.
+# openpipeline 0.6.0
+
+## NEW FUNCTIONALITY
+
+* `workflows/full_pipeline`: add `filter_with_hvg_var_output` argument.
+
+* `dimred/pca`: Add `--overwrite` and `--var_input` arguments.
+
+* `tranform/clr`: Perform CLR normalization on CITE-seq data.
+
+* `workflows/ingestion/cellranger_multi`: Run Cell Ranger multi and convert the output to .h5mu.
+
+* `filter/remove_modality`: Remove a single modality from a MuData file.
+
+* `mapping/star_align`: Align `.fastq` files using STAR.
+
+* `mapping/star_align_v273a`: Align `.fastq` files using STAR v2.7.3a.
+
+* `mapping/star_build_reference`: Create a STAR reference index.
+
+* `mapping/cellranger_multi`: Align fastq files using Cell Ranger multi.
+
+* `mapping/samtools_sort`: Sort and (optionally) index alignments.
+
+* `mapping/htseq_count`: Quantify gene expression for subsequent testing for differential expression.
+
+* `mapping/htseq_count_to_h5mu`: Convert one or more HTSeq outputs to a MuData file.
+
+* Added from `convert/from_cellranger_multi_to_h5mu` component.
+
+## MAJOR CHANGES
+
+* `convert/from_velocyto_to_h5mu`: Moved to `velocity/velocyto_to_h5mu`.
+  It also now accepts an optional `--input_h5mu` argument, to allow directly reading
+  the RNA velocity data into a `.h5mu` file containing the other modalities.
+
+* `resources_test/cellranger_tiny_fastq`: Include RNA velocity computations as part of
+  the script.
+
+* `mapping/cellranger_mkfastq`: remove --memory and --cpu arguments as (resource management is automatically provided by viash).
+
+## MINOR CHANGES
+
+* Several components: use `gzip` compression for writing .h5mu files.
+
+* Default value for `obs_covariates` argument of full pipeline is now `sample_id`.
+
+* Set the `tag` directive of all Nextflow components to '$id'.
+
+## BUG FIXES
+
+* Keep data for modalities that are not specifically enabled when running full pipeline.
+
+* Fix many components thanks to Viash 0.6.4, which causes errors to be 
+  thrown when input and output files are defined but not found.
+
+
 # openpipeline 0.5.1
 
 ## BREAKING CHANGES
 
 * `reference/make_reference`: Input files changed from `type: string` to `type: file` to allow Nextflow to cache the input files fetched from URL.
 
-* several components (except `from_h5ad_to_5hmu`): the `--modality` arguments no longer accept multiple values.
+* several components (except `from_h5ad_to_h5mu`): the `--modality` arguments no longer accept multiple values.
 
 * Remove outdated `resources_test_scripts`.
 
@@ -28,10 +179,10 @@
 
 * `integrate/add_metadata`: Add a csv containing metadata to the .obs or .var field of a mudata file.
 
-* `DataFlowHelper.nf`: Added `passthroughMap`. Usage:
+* `DataflowHelper.nf`: Added `passthroughMap`. Usage:
 
   ```groovy
-  include { passthroughMap as pmap } from "./DataFlowHelper.nf"
+  include { passthroughMap as pmap } from "./DataflowHelper.nf"
   
   workflow {
     Channel.fromList([["id", [input: "foo"], "passthrough"]])
@@ -62,7 +213,7 @@
 
 ## MAJOR CHANGES
 
-* `workflows/utils/DataFlowHelper.nf`: Added helper functions `setWorkflowArguments()` and `getWorkflowArguments()` to split the data field of a channel event into a hashmap. Example usage:
+* `workflows/utils/DataflowHelper.nf`: Added helper functions `setWorkflowArguments()` and `getWorkflowArguments()` to split the data field of a channel event into a hashmap. Example usage:
   ```groovy
   | setWorkflowArguments(
     pca: [ "input": "input", "obsm_output": "obsm_pca" ]
