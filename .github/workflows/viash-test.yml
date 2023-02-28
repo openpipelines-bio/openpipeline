@@ -107,10 +107,21 @@ jobs:
     - name: Sync if caching failed
       shell: bash
       if: steps.restore_cache.outputs.cache-hit != 'true'
-      run:
+      run: |
+        readarray -t resources < <(viash config view --format json "${{ matrix.component.config }}" | jq -r -c '(.info.config | capture("^(?<dir>.*\/)").dir) as $dir | .functionality.test_resources | map(select(.type == "file")) | map($dir + .path) | unique | .[]')
+        resources_to_sync=()
+        for resource in "${resources[@]}"; do
+          if [[ $resource == *"resources_test"* ]]; then
+            relative_path=${resource#*resources_test/}
+            relative_path_trailing_slash_removed=${relative_path%/}
+            s3_path="s3://openpipelines-data/$relative_path_trailing_slash_removed"
+            resources_to_sync+=( "$s3_path" )
+          fi
+        done
+        
         AWS_EC2_METADATA_DISABLED=true \
         aws s3 sync \
-        s3://openpipelines-data/ \
+        "${resources_to_sync[@]}" \
         resources_test \
         --delete --no-sign-request
 
