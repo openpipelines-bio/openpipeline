@@ -114,9 +114,9 @@ jobs:
 
       - uses: viash-io/viash-actions/project/sync-and-cache-s3@v3
         with:
-          s3_bucket: ${{ format('{0}/{1}', env.s3_bucket, matrix.resource_dir)
-          dest_path: ${{ format('{0}/{1}', 'resources_test', matrix.resource_dir)
-          cache_key_prefix: ${{ format('{0}_{1}__', 'resources_test', matrix.resource_dir)
+          s3_bucket: ${{ format('{0}/{1}', env.s3_bucket, matrix.resource_dir) }}
+          dest_path: ${{ format('{0}/{1}', 'resources_test', matrix.resource_dir) }}
+          cache_key_prefix: ${{ format('{0}_{1}__', 'resources_test', matrix.resource_dir) }}
 
   # phase 2
   viash_test:
