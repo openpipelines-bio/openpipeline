@@ -115,15 +115,15 @@ jobs:
             relative_path=${resource#*resources_test/}
             relative_path_trailing_slash_removed=${relative_path%/}
             s3_path="s3://openpipelines-data/$relative_path_trailing_slash_removed"
-            resources_to_sync+=( "$s3_path" )
+
+            AWS_EC2_METADATA_DISABLED=true \
+            aws s3 sync \
+            "$s3_path" \
+            "$resource" \
+            --delete --no-sign-request
+
           fi
         done
-        
-        AWS_EC2_METADATA_DISABLED=true \
-        aws s3 sync \
-        "${resources_to_sync[@]}" \
-        resources_test \
-        --delete --no-sign-request
 
     - name: Login to the nvidia container registry
       uses: docker/login-action@v2
