@@ -96,12 +96,23 @@ jobs:
 
     # use cache
     - name: Cache resources data
-      uses: actions/cache@v3
-      timeout-minutes: 10
+      id: restore_cache
+      uses: actions/cache/restore@v3
+      env:
+        SEGMENT_DOWNLOAD_TIMEOUT_MINS: 5
       with:
         path: resources_test
         key: ${{ needs.list.outputs.cache_key }}
-        fail-on-cache-miss: true
+
+    - name: Sync if caching failed
+      shell: bash
+      if: steps.restore_cache.outputs.cache-hit != 'true'
+      run:
+        AWS_EC2_METADATA_DISABLED=true \
+          aws s3 sync \
+          s3://openpipelines-data/ \
+          resources_test \
+          --delete --no-sign-request
 
     - name: Login to the nvidia container registry
       uses: docker/login-action@v2
