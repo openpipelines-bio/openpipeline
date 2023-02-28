@@ -10,15 +10,15 @@ include { concat } from targetDir + '/dataflow/concat/main.nf'
 include { calculate_qc_metrics } from targetDir + '/qc/calculate_qc_metrics/main.nf'
 include { delete_layer } from targetDir + '/transform/delete_layer/main.nf'
 
-include { readConfig; viashChannel; helpMessage } from workflowDir + "/utils/WorkflowHelper.nf"
+include { readConfig; helpMessage; channelFromParams; preprocessInputs } from workflowDir + "/utils/WorkflowHelper.nf"
 include { setWorkflowArguments; getWorkflowArguments; passthroughMap as pmap; passthroughFlatMap as pFlatMap } from workflowDir + "/utils/DataflowHelper.nf"
 
-config = readConfig("$projectDir/config.vsh.yaml")
+config = readConfig("$workflowDir/multiomics/rna_multisample/config.vsh.yaml")
 
 workflow {
   helpMessage(config)
 
-  viashChannel(params, config)
+  channelFromParams(params, config)
     | view { "Input: $it" }
     | run_wf
     | view { "Output: $it" }
@@ -30,6 +30,7 @@ workflow run_wf {
 
   main:
   output_ch = input_ch
+    | preprocessInputs("config": config)
     // add the id to the arguments
     | pmap { id, data ->
       def new_data = data + [ input_id: data.sample_id ]
@@ -41,7 +42,7 @@ workflow run_wf {
       "log1p": [:],
       "delete_layer": [:],
       "filter_with_hvg": [
-        "filter_with_hvg_var_output": "var_name_filter",
+        "var_name_filter": "filter_with_hvg_var_output",
         "n_top_genes": "filter_with_hvg_n_top_genes",
         "flavor": "filter_with_hvg_flavor",
         "obs_batch_key": "filter_with_hvg_obs_batch_key"
@@ -99,7 +100,7 @@ workflow test_wf {
   ]
 
   output_ch =
-    viashChannel(testParams, config)
+    channelFromParams(testParams, config)
     | map {list -> list + [test_passthrough: "test"]}
     | view { "Input: $it" }
     | run_wf

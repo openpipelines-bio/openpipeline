@@ -84,5 +84,5 @@ platforms:
       - type: python
         packages: 
           - viashpy
-          - scanpy
+          - scanpy~=1.9.2
   - type: nextflow

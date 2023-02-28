@@ -3,17 +3,17 @@ nextflow.enable.dsl=2
 workflowDir = params.rootDir + "/workflows"
 targetDir = params.rootDir + "/target/nextflow"
 
-include { readConfig; viashChannel; helpMessage } from workflowDir + "/utils/WorkflowHelper.nf"
+include { readConfig; helpMessage; channelFromParams; preprocessInputs } from workflowDir + "/utils/WorkflowHelper.nf"
 include { filter_with_counts } from targetDir + "/filter/filter_with_counts/main.nf"
 include { do_filter } from targetDir + "/filter/do_filter/main.nf"
 include { setWorkflowArguments; getWorkflowArguments } from workflowDir + "/utils/DataflowHelper.nf"
 
-config = readConfig("$projectDir/config.vsh.yaml")
+config = readConfig("$workflowDir/multiomics/prot_singlesample/config.vsh.yaml")
 
 workflow {
   helpMessage(config)
 
-  viashChannel(params, config)
+  channelFromParams(params, config)
     | view { "Input: $it" }
     | run_wf
     | view { "Output: $it" }
@@ -26,6 +26,7 @@ workflow run_wf {
   main:
   output_ch = input_ch
     // split params for downstream components
+    | preprocessInputs("config": config)
     | setWorkflowArguments(
       filter_with_counts: [
           "min_counts": "min_counts",
@@ -41,11 +42,20 @@ workflow run_wf {
     // filtering
     | getWorkflowArguments(key: "filter_with_counts")
     | filter_with_counts.run(
-        args: [ var_gene_names: "gene_symbol", modality: "prot"]
+        args: [ 
+          var_gene_names: "gene_symbol",
+          modality: "prot", 
+          obs_name_filter: "filter_with_counts",
+          var_name_filter: "filter_with_counts"
+        ]
     )
     | getWorkflowArguments(key: "do_filter")
     | do_filter.run(
-      args: [ obs_filter: "filter_with_counts", modality: "prot" ]
+        args: [
+          obs_filter: "filter_with_counts",
+          modality: "prot",
+          var_filter: "filter_with_counts"
+        ]
     )
     | map {list -> [list[0], list[1]] + list.drop(3)}
     | view { "Output: $it" }
@@ -73,7 +83,7 @@ workflow test_wf {
   ]
 
   output_ch =
-    viashChannel(testParams, config)
+    channelFromParams(testParams, config)
     // Add test passthrough 
     | map {list -> list + [test_passthrough: "test"]}
     | view { "Input: $it" }

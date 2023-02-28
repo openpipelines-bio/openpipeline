@@ -200,7 +200,7 @@ def main(par: dict[str, Any], meta: dict[str, Any]):
         for reference_par_name in REFERENCES:
             reference = par[reference_par_name]
             logger.info('Looking at %s to check if it needs decompressing', reference)
-            if Path(reference).is_file() and tarfile.is_tarfile(reference):
+            if reference and Path(reference).is_file() and tarfile.is_tarfile(reference):
                 extaction_dir_name = Path(reference.stem).stem # Remove two extensions (if they exist)
                 unpacked_directory = temp_dir_path / extaction_dir_name
                 logger.info('Extracting %s to %s', reference, unpacked_directory)

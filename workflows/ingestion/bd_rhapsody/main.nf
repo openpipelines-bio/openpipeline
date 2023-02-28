@@ -6,14 +6,14 @@ targetDir = params.rootDir + "/target/nextflow"
 include { bd_rhapsody } from targetDir + "/mapping/bd_rhapsody/main.nf"
 include { from_bdrhap_to_h5mu } from targetDir + "/convert/from_bdrhap_to_h5mu/main.nf"
 
-include { readConfig; viashChannel; helpMessage } from workflowDir + "/utils/WorkflowHelper.nf"
+include { readConfig; channelFromParams; preprocessInputs; helpMessage } from workflowDir + "/utils/WorkflowHelper.nf"
 
-config = readConfig("$projectDir/config.vsh.yaml")
+config = readConfig("$workflowDir/ingestion/bd_rhapsody/config.vsh.yaml")
 
 workflow {
   helpMessage(config)
 
-  viashChannel(params, config)
+  channelFromParams(params, config)
     | view { "Input: $it" }
     | run_wf
     | view { "Output: $it" }
@@ -25,7 +25,7 @@ workflow run_wf {
 
   main:
   output_ch = input_ch
-
+    | preprocessInputs("config": config)
     // store output value in 3rd slot for later use
     // and transform for concat component
     | map { id, data ->
@@ -66,7 +66,7 @@ workflow test_wf {
   ]
 
   output_ch =
-    viashChannel(testParams, config)
+    channelFromParams(testParams, config)
       | view { "Input: $it" }
       | run_wf
       | view { output ->

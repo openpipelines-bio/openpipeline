@@ -78,7 +78,7 @@ velo_gtf="$cellranger_tiny_ref/genes/genes.gtf.gz"
 velo_bam="$bam_dir/possorted_genome_bam.bam"
 velo_loom="${OUT}/velocyto.loom"
 if [ ! -f "$velo_loom" ]; then
-  bin/viash run src/velocity/velocyto/config.vsh.yaml -- \
+  viash run src/velocity/velocyto/config.vsh.yaml -- \
     --input "$velo_bam" \
     --output "$velo_loom" \
     --transcriptome "$velo_gtf"
@@ -87,7 +87,7 @@ fi
 # combine raw counts with velocyto data
 dataset_h5mu="${OUT}/dataset.h5mu"
 if [ ! -f "$dataset_h5mu" ]; then
-  bin/viash run src/velocity/velocyto_to_h5mu/config.vsh.yaml -- \
+  viash run src/velocity/velocyto_to_h5mu/config.vsh.yaml -- \
     --input_loom "$velo_loom" \
     --input_h5mu "$raw_h5mu" \
     --output "$dataset_h5mu"
@@ -96,7 +96,7 @@ fi
 # run htseq
 htseq_counts="${OUT}/htseq_counts.tsv"
 if [ ! -f "$htseq_counts" ]; then
-  bin/viash run src/mapping/htseq_count/config.vsh.yaml -- \
+  viash run src/mapping/htseq_count/config.vsh.yaml -- \
   --input "$velo_bam" \
   --reference "$velo_gtf" \
   --output "$htseq_counts"
@@ -104,7 +104,7 @@ fi
 
 multi_star="${OUT}/multi_star"
 if [ ! -d "$multi_star" ]; then
-  bin/viash run src/mapping/multi_star/config.vsh.yaml -- \
+  viash run src/mapping/multi_star/config.vsh.yaml -- \
     --input_id "tinygex" \
     --input_r1 "$cellranger_tiny_fastq/tinygex_S1_L001_R1_001.fastq.gz" \
     --input_r2 "$cellranger_tiny_fastq/tinygex_S1_L001_R2_001.fastq.gz" \

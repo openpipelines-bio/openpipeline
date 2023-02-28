@@ -1,3 +1,50 @@
+# openpipelines 0.7.1
+
+## BUG FIXES
+
+* `workflows/integration`: `init_pos` is no longer set to the integration layer (e.g. `X_pca_integrated`).
+
+## MINOR CHANGES
+
+* Several components: update to scanpy 1.9.2
+
+* `process_10xh5/filter_10xh5`: speed up build by using `eddelbuettel/r2u:22.04` base container.
+
+# openpipelines 0.7.0
+
+## MAJOR CHANGES
+
+* Removed `bin` folder. As of viash 0.6.4, a `_viash.yaml` file can be included in the root of a repository to set common viash options for the project.
+These options were previously covered in the `bin/init` script, but this new feature of viash makes its use unnecessary. The `viash` and `nextlow` should now be installed in a directory that is included in your `$PATH`.
+
+## MINOR CHANGES
+
+* `filter/do_filter`: raise an error instead of printing a warning when providing a column for `var_filer` or `obs_filter` that doesn't exist.
+
+## BUG FIXES
+
+* `workflows/full_pipeline`: Fix setting .var output column for filter_with_hvg.
+
+* Fix running `mapping/cellranger_multi` without passing all references.
+
+* `filter/filter_with_scrublet`: now sets `use_approx_neighbors` to `False` to avoid using `annoy` because it fails on processors that are missing the AVX-512 instruction sets.
+
+* `workflows`: Updated `WorkflowHelper` to newer version that allows applying defaults when calling a subworkflow from another workflow.
+
+* Several components: pin matplotlib to <3.7 to fix scanpy compatibility (see https://github.com/scverse/scanpy/issues/2411).  
+
+* `workflows`: fix a bug when running a subworkflow from a workflow would cause the parent config to be read instead of the subworklow config.
+
+* `correction/cellbender_remove_background`: Fix description of input for cellbender_remove_background.
+
+* `filter/do_filter`: resolved an issue where the .obs column instead of the .var column was being logged when filtering using the .var column.
+
+* `workflows/rna_singlesample` and `workflows/prot_singlesample`: Correctly set var and obs columns while filtering with counts.
+
+* `filter/do_filter`: removed the default input value for `var_filter` argument.
+
+* `workflows/full_pipeline` and `workflows/integration`: fix PCA not using highly variable genes filter.
+
 # openpipelines 0.6.2
 
 ## NEW FUNCTIONALITY

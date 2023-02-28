@@ -72,7 +72,7 @@ platforms:
         packages: libhdf5-dev
       - type: python
         packages:
-          - scanpy~=1.9.1
+          - scanpy~=1.9.2
           - mudata~=0.2.0
           - anndata~=0.8.0
   - type: nextflow
