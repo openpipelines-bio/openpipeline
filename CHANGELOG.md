@@ -4,6 +4,10 @@
 
 * `workflows/integration`: `init_pos` is no longer set to the integration layer (e.g. `X_pca_integrated`).
 
+## MINOR CHANGES
+
+* `process_10xh5/filter_10xh5`: speed up build by using `eddelbuettel/r2u:22.04` base container.
+
 # openpipelines 0.7.0
 
 ## MAJOR CHANGES

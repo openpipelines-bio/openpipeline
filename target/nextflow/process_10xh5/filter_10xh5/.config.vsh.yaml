@@ -108,7 +108,7 @@ functionality:
 platforms:
 - type: "docker"
   id: "docker"
-  image: "ghcr.io/data-intuitive/randpy:r4.2_py3.8"
+  image: "eddelbuettel/r2u:22.04"
   target_organization: "openpipelines-bio"
   target_registry: "ghcr.io"
   namespace_separator: "_"
@@ -119,18 +119,9 @@ platforms:
   run_args: []
   target_image_source: "https://github.com/openpipelines-bio/openpipeline"
   setup:
-  - type: "docker"
-    resources: []
-    label: []
-    add: []
-    copy: []
-    run:
-    - "apt update && apt upgrade -y"
-    build_args: []
-    env: []
   - type: "apt"
     packages:
-    - "libhdf5-dev"
+    - "libhdf5-dev python3-pip python3-dev"
     interactive: false
   - type: "python"
     user: false
@@ -152,6 +143,7 @@ platforms:
   - type: "r"
     packages: []
     cran:
+    - "testthat"
     - "anndata"
     - "hdf5r"
     bioc: []
@@ -190,5 +182,5 @@ info:
   output: "/home/runner/work/openpipeline/openpipeline/target/nextflow/process_10xh5/filter_10xh5"
   executable: "/home/runner/work/openpipeline/openpipeline/target/nextflow/process_10xh5/filter_10xh5/filter_10xh5"
   viash_version: "0.6.7"
-  git_commit: "2cac74e46cb3e865e26c4b6c77192c41daff949c"
+  git_commit: "ecc6f9b9b990088617fe6313d31b984f6bbbaa08"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"
