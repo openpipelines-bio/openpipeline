@@ -109,10 +109,10 @@ jobs:
       if: steps.restore_cache.outputs.cache-hit != 'true'
       run:
         AWS_EC2_METADATA_DISABLED=true \
-          aws s3 sync \
-          s3://openpipelines-data/ \
-          resources_test \
-          --delete --no-sign-request
+        aws s3 sync \
+        s3://openpipelines-data/ \
+        resources_test \
+        --delete --no-sign-request
 
     - name: Login to the nvidia container registry
       uses: docker/login-action@v2
