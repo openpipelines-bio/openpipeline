@@ -109,22 +109,19 @@ jobs:
       if: steps.restore_cache.outputs.cache-hit != 'true'
       run: |
         readarray -t resources < <(viash config view --format json "${{ matrix.component.config }}" | jq -r -c '(.info.config | capture("^(?<dir>.*\/)").dir) as $dir | .functionality.test_resources | map(select(.type == "file")) | map($dir + .path) | unique | .[]')
+        resources_to_sync=()
         for resource in "${resources[@]}"; do
           if [[ $resource == *"resources_test"* ]]; then
             relative_path=${resource#*resources_test/}
             relative_path_trailing_slash_removed=${relative_path%/}
             s3_path="s3://openpipelines-data/$relative_path_trailing_slash_removed"
-            s3_lookup=$(AWS_EC2_METADATA_DISABLED=true aws s3 ls --no-sign-request "$s3_path" 2>&1)
-            extra_args=()
-            if [[ $s3_lookup =~ .*/$ ]]; then
-              extra_args+=("--recursive")
-            fi
+
             AWS_EC2_METADATA_DISABLED=true \
-            aws s3 cp \
+            aws s3 sync \
             "$s3_path" \
             "$resource" \
-            --no-sign-request \
-            "${extra_args[@]}"
+            --delete --no-sign-request
+
           fi
         done
 
