@@ -115,7 +115,7 @@ jobs:
             relative_path_trailing_slash_removed=${relative_path%/}
             s3_path="s3://openpipelines-data/$relative_path_trailing_slash_removed"
             echo "Syncing $s3_path to $resource"
-            s3_lookup=$(aws s3 ls "$s3_path" 2>&1)
+            s3_lookup=$(AWS_EC2_METADATA_DISABLED=true aws s3 ls --no-sign-request "$s3_path" 2>&1)
             echo "Lookup: $s3_lookup"
             extra_args=()
             if [[ $s3_lookup =~ .*/$ ]]; then
