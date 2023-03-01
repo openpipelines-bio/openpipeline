@@ -22,4 +22,4 @@ scanorama_integrate(mod,
                     approx=par["approx"],
                     batch_size=par["batch_size"] )
 
-mdata.write_h5mu(par["output"], compression = "gzip")
+mdata.write_h5mu(par["output"], compression=par["output_compression"])

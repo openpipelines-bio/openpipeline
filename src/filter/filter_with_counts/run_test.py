@@ -51,7 +51,8 @@ def test_filter_nothing(run_component, input_path,
     run_component([
         "--input", input_path,
         "--output", "output-1.h5mu",
-        "--min_cells_per_gene", "3"
+        "--min_cells_per_gene", "3",
+        "--output_compression", "gzip"
         ])
     assert Path("output-1.h5mu").is_file()
     mu_out = mu.read_h5mu("output-1.h5mu")

@@ -25,6 +25,11 @@ functionality:
       description: Output AnnData file.
       default: output.h5ad
       direction: output
+    - name: "--output_compression"
+      type: string
+      choices: ["gzip", "lzf"]
+      required: false
+      example: "gzip"
     - name: "--compression"
       type: string
       description: The compression format to be used on the final h5ad object.

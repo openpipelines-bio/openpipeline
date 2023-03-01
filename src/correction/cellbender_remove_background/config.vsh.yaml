@@ -32,7 +32,12 @@ functionality:
           description: Full count matrix as an h5mu file, with background RNA removed. This file contains all the original droplet barcodes.
           direction: output
           required: true
-          example: output.h5
+          example: output.h5mu
+        - name: "--output_compression"
+          type: string
+          choices: ["gzip", "lzf"]
+          required: false
+          example: "gzip"
         - name: "--layer_output"
           description: Output layer
           type: string

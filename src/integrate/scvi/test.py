@@ -35,7 +35,8 @@ class TestscVI(unittest.TestCase):
                 "--modality", "rna",
                 "--obs_batch", "batch",
                 "--output", "output.h5mu",
-                "--max_epochs", "1"])
+                "--max_epochs", "1",
+                "--compression_output", "gzip"])
             self.assertTrue(Path("output.h5mu").is_file())
             output_data = mudata.read_h5mu("output.h5mu")
             self.assertIn('X_scvi_integrated', output_data.mod['rna'].obsm)

@@ -42,6 +42,12 @@ functionality:
           description: Output h5mu file.
           direction: output
           required: true
+        - name: "--output_compression"
+          type: string
+          description: The compression format to be used on the output h5mu object.
+          choices: ["gzip", "lzf"]
+          required: false
+          example: "gzip"
         - name: "--obsm_output"
           type: string
           default: "X_scvi_integrated"

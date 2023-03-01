@@ -122,4 +122,4 @@ print("> convert to mudata", flush=True)
 mdata = md.MuData(adata)
 
 print("> write to file", flush=True)
-mdata.write_h5mu(par["output"], compression="gzip")
+mdata.write_h5mu(par["output"], compression=par["output_compression"])
