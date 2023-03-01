@@ -407,9 +407,9 @@ FROM bash:5.1.16
 RUN :
 LABEL org.opencontainers.image.authors="Robrecht Cannoodt"
 LABEL org.opencontainers.image.description="Companion container for running component download download_file"
-LABEL org.opencontainers.image.created="2023-03-01T10:30:57Z"
+LABEL org.opencontainers.image.created="2023-03-01T12:30:07Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="911b7b08597ad71bdacb2fd0853a5c94c77265cc"
+LABEL org.opencontainers.image.revision="6c6a6fa859ec22b3c0585b638c5b693b37a5dd5b"
 LABEL org.opencontainers.image.version="main_build"
 VIASHDOCKER
 }

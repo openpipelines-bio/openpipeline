@@ -333,5 +333,5 @@ info:
   output: "/home/runner/work/openpipeline/openpipeline/target/nextflow/filter/filter_with_hvg"
   executable: "/home/runner/work/openpipeline/openpipeline/target/nextflow/filter/filter_with_hvg/filter_with_hvg"
   viash_version: "0.7.0"
-  git_commit: "911b7b08597ad71bdacb2fd0853a5c94c77265cc"
+  git_commit: "6c6a6fa859ec22b3c0585b638c5b693b37a5dd5b"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"
