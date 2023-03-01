@@ -99,7 +99,7 @@ jobs:
       id: restore_cache
       uses: actions/cache/restore@v3
       env:
-        SEGMENT_DOWNLOAD_TIMEOUT_MINS: 5
+        SEGMENT_DOWNLOAD_TIMEOUT_MINS: 1
       with:
         path: resources_test
         key: ${{ needs.list.outputs.cache_key }}
@@ -115,7 +115,7 @@ jobs:
             relative_path=${resource#*resources_test/}
             relative_path_trailing_slash_removed=${relative_path%/}
             s3_path="s3://openpipelines-data/$relative_path_trailing_slash_removed"
-
+            echo "Syncing $s3_path to $resource"
             AWS_EC2_METADATA_DISABLED=true \
             aws s3 sync \
             "$s3_path" \
