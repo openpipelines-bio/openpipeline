@@ -117,12 +117,17 @@ jobs:
             relative_path_trailing_slash_removed=${relative_path%/}
             s3_path="s3://openpipelines-data/$relative_path_trailing_slash_removed"
             echo "Syncing $s3_path to $resource"
+            s3_lookup=$(aws s3 ls "$s3_path" 2>&1)
+            extra_args=()
+            if [[ $extra_args == */ ]]; then
+              extra_args+=( "--recursive" )
+            fi
             AWS_EC2_METADATA_DISABLED=true \
             aws s3 cp \
             "$s3_path" \
             "$resource" \
-            --no-sign-request
-
+            --no-sign-request \
+            "${extra_args[@]}"
             if [[ -f "$resource" ]]; then
               echo "$resource is a file"
             fi
