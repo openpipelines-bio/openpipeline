@@ -185,10 +185,7 @@ platforms:
       - type: python
         packages: 
           - muon
-          - scanpy~=1.9.1
-          # https://github.com/scverse/scanpy/issues/2411
-          - matplotlib<3.7.0
-      
+          - scanpy~=1.9.2
   - type: nextflow
     directives:
       label: [gpu]
