@@ -119,7 +119,7 @@ jobs:
             echo "Syncing $s3_path to $resource"
             s3_lookup=$(aws s3 ls "$s3_path" 2>&1)
             extra_args=()
-            if [[ $extra_args == */ ]]; then
+            if [[ $s3_lookup =~ .*/$ ]]; then
               extra_args+=( "--recursive" )
             fi
             AWS_EC2_METADATA_DISABLED=true \
