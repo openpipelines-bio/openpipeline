@@ -27,10 +27,6 @@ functionality:
       choices: ["gzip", "lzf"]
       required: false
       example: "gzip"
-    - name: "--compression"
-      type: string
-      description: The compression format to be used on the final h5mu object.
-      default: "gzip"
   resources:
     - type: python_script
       path: ./script.py
