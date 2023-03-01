@@ -118,7 +118,8 @@ jobs:
             s3_path="s3://openpipelines-data/$relative_path_trailing_slash_removed"
             echo "Syncing $s3_path to $resource"
             AWS_EC2_METADATA_DISABLED=true \
-            aws s3 sync \
+            aws s3 cp \
+            --recursive \
             "$s3_path" \
             "$resource" \
             --delete --no-sign-request
