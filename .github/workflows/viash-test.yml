@@ -94,20 +94,19 @@ jobs:
 
     - uses: viash-io/viash-actions/setup@v3
 
-    # # use cache
-    # - name: Cache resources data
-    #   id: restore_cache
-    #   uses: actions/cache/restore@v3
-    #   env:
-    #     SEGMENT_DOWNLOAD_TIMEOUT_MINS: 5
-    #   with:
-    #     path: resources_test
-    #     key: ${{ needs.list.outputs.cache_key }}
+    # use cache
+    - name: Cache resources data
+      id: restore_cache
+      uses: actions/cache/restore@v3
+      env:
+        SEGMENT_DOWNLOAD_TIMEOUT_MINS: 5
+      with:
+        path: resources_test
+        key: ${{ needs.list.outputs.cache_key }}
 
     - name: Sync if caching failed
       shell: bash
-      # if: steps.restore_cache.outputs.cache-hit != 'true'
-      if: true
+      if: steps.restore_cache.outputs.cache-hit != 'true'
       run: |
         readarray -t resources < <(viash config view --format json "${{ matrix.component.config }}" | jq -r -c '(.info.config | capture("^(?<dir>.*\/)").dir) as $dir | .functionality.test_resources | map(select(.type == "file")) | map($dir + .path) | unique | .[]')
         resources_to_sync=()
@@ -128,9 +127,6 @@ jobs:
             "$resource" \
             --no-sign-request \
             "${extra_args[@]}"
-            if [[ -f "$resource" ]]; then
-              echo "$resource is a file"
-            fi
 
           fi
         done
