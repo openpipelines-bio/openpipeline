@@ -94,19 +94,19 @@ jobs:
 
     - uses: viash-io/viash-actions/setup@v3
 
-    # # use cache
-    # - name: Cache resources data
-    #   id: restore_cache
-    #   uses: actions/cache/restore@v3
-    #   env:
-    #     SEGMENT_DOWNLOAD_TIMEOUT_MINS: 5
-    #   with:
-    #     path: resources_test
-    #     key: ${{ needs.list.outputs.cache_key }}
+    # use cache
+    - name: Cache resources data
+      id: restore_cache
+      uses: actions/cache/restore@v3
+      env:
+        SEGMENT_DOWNLOAD_TIMEOUT_MINS: 5
+      with:
+        path: resources_test
+        key: ${{ needs.list.outputs.cache_key }}
 
     - name: Sync if caching failed
       shell: bash
-      if: true
+      if: steps.restore_cache.outputs.cache-hit != 'true'
       run: |
         readarray -t resources < <(viash config view --format json "${{ matrix.component.config }}" | jq -r -c '(.info.config | capture("^(?<dir>.*\/)").dir) as $dir | .functionality.test_resources | map(select(.type == "file")) | map($dir + .path) | unique | .[]')
         for resource in "${resources[@]}"; do
@@ -114,15 +114,11 @@ jobs:
             relative_path=${resource#*resources_test/}
             relative_path_trailing_slash_removed=${relative_path%/}
             s3_path="s3://openpipelines-data/$relative_path_trailing_slash_removed"
-            echo "Syncing $s3_path to $resource"
             s3_lookup=$(AWS_EC2_METADATA_DISABLED=true aws s3 ls --no-sign-request "$s3_path" 2>&1)
-            echo "Lookup: $s3_lookup"
             extra_args=()
             if [[ $s3_lookup =~ .*/$ ]]; then
               extra_args+=("--recursive")
-              echo "Setting extra arg"
             fi
-            echo "aws s3 cp $s3_path $resource --no-sign-request ${extra_args[@]}"
             AWS_EC2_METADATA_DISABLED=true \
             aws s3 cp \
             "$s3_path" \
