@@ -122,7 +122,7 @@ jobs:
             --recursive \
             "$s3_path" \
             "$resource" \
-            --delete --no-sign-request
+            --no-sign-request
 
             if [[ -f "$resource" ]]; then
               echo "$resource is a file"
