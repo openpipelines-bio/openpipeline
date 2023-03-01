@@ -123,6 +123,10 @@ jobs:
             "$resource" \
             --delete --no-sign-request
 
+            if [[ -f "$resource" ]]; then
+              echo "$resource is a file"
+            fi
+
           fi
         done
 
