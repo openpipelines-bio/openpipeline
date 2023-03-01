@@ -52,7 +52,7 @@ jobs:
 
     - name: Get changed files
       id: changed-files
-      uses: tj-actions/changed-files@v35.5.6
+      uses: tj-actions/changed-files@v35.6.0
       with:
         separator: ";"
         diff_relative: true
@@ -96,12 +96,37 @@ jobs:
 
     # use cache
     - name: Cache resources data
-      uses: actions/cache@v3
-      timeout-minutes: 10
+      id: restore_cache
+      uses: actions/cache/restore@v3
+      env:
+        SEGMENT_DOWNLOAD_TIMEOUT_MINS: 5
       with:
         path: resources_test
         key: ${{ needs.list.outputs.cache_key }}
-        fail-on-cache-miss: true
+
+    - name: Sync if caching failed
+      shell: bash
+      if: steps.restore_cache.outputs.cache-hit != 'true'
+      run: |
+        readarray -t resources < <(viash config view --format json "${{ matrix.component.config }}" | jq -r -c '(.info.config | capture("^(?<dir>.*\/)").dir) as $dir | .functionality.test_resources | map(select(.type == "file")) | map($dir + .path) | unique | .[]')
+        for resource in "${resources[@]}"; do
+          if [[ $resource == *"resources_test"* ]]; then
+            relative_path=${resource#*resources_test/}
+            relative_path_trailing_slash_removed=${relative_path%/}
+            s3_path="s3://openpipelines-data/$relative_path_trailing_slash_removed"
+            s3_lookup=$(AWS_EC2_METADATA_DISABLED=true aws s3 ls --no-sign-request "$s3_path" 2>&1)
+            extra_args=()
+            if [[ $s3_lookup =~ .*/$ ]]; then
+              extra_args+=("--recursive")
+            fi
+            AWS_EC2_METADATA_DISABLED=true \
+            aws s3 cp \
+            "$s3_path" \
+            "$resource" \
+            --no-sign-request \
+            "${extra_args[@]}"
+          fi
+        done
 
     - name: Login to the nvidia container registry
       uses: docker/login-action@v2
