@@ -238,7 +238,7 @@ workflow test_wf3 {
         publish_dir: "foo/"
       ]
     ],
-    obs_covariates: "sample_id",
+    obs_covariates: [],
     rna_min_counts: 2,
     var_qc_metrics: "highly_variable",
     filter_with_hvg_var_output: "highly_variable"
