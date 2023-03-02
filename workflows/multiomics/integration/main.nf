@@ -73,7 +73,8 @@ workflow run_wf {
 
     | getWorkflowArguments(key: "umap")
     | umap.run(
-      auto: [ publish: true ]
+      auto: [ publish: true ],
+      args: [ output_compression: "gzip" ]
     )
 
     // remove splitArgs
