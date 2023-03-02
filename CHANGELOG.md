@@ -6,6 +6,8 @@
 
 ## MINOR CHANGES
 
+* Add `highmem` label to `dimred/pca` component.
+
 * Remove disabled `convert/from_csv_to_h5mu` component.
 
 * Update to Viash 0.7.0.
