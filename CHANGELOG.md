@@ -6,7 +6,7 @@
 
 ## MINOR CHANGES
 
-* `integratio` and `full` workflow: do not run harmony integration when `obs_covariates` is not provided.
+* `integration` and `full` workflows: do not run harmony integration when `obs_covariates` is not provided.
 
 * Remove disabled `convert/from_csv_to_h5mu` component.
 
