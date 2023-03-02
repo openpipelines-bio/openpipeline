@@ -10,7 +10,7 @@ include { leiden } from targetDir + '/cluster/leiden/main.nf'
 include { harmonypy } from targetDir + '/integrate/harmonypy/main.nf'
 
 include { readConfig; helpMessage; preprocessInputs; channelFromParams } from workflowDir + "/utils/WorkflowHelper.nf"
-include { setWorkflowArguments; getWorkflowArguments; passthroughMap as pmap } from workflowDir + "/utils/DataflowHelper.nf"
+include { setWorkflowArguments; getWorkflowArguments } from workflowDir + "/utils/DataflowHelper.nf"
 
 config = readConfig("$workflowDir/multiomics/integration/config.vsh.yaml")
 
