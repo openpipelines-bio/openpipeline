@@ -10,8 +10,6 @@ functionality:
     props:
       github: "DriesSchaumont"
       orcid: "0000-0002-4389-0440"
-  inputs: []
-  outputs: []
   arguments:
   - type: "file"
     name: "--input"
@@ -89,7 +87,7 @@ platforms:
   image: "python:3.8"
   target_organization: "openpipelines-bio"
   target_registry: "ghcr.io"
-  namespace_separator: "_"
+  namespace_separator: "/"
   resolve_volume: "Automatic"
   chown: true
   port: []
@@ -139,6 +137,6 @@ info:
   platform: "docker"
   output: "/home/runner/work/openpipeline/openpipeline/target/docker/filter/subset_h5mu"
   executable: "/home/runner/work/openpipeline/openpipeline/target/docker/filter/subset_h5mu/subset_h5mu"
-  viash_version: "0.6.7"
-  git_commit: "6a454d03363640176a835035e31c358593b8937d"
+  viash_version: "0.7.0"
+  git_commit: "aba8d5ddde8edc9b3da2757e785651c9d4915168"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"

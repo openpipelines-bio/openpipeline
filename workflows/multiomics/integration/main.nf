@@ -53,7 +53,6 @@ workflow run_wf {
         "obs_name": "obs_cluster"
       ],
       umap: [ 
-        "init_pos": "obsm_integrated",
         "uns_neighbors": "uns_neighbors",
         "output": "output",
         "obsm_output": "obsm_umap"

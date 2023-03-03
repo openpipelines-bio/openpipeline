@@ -9,8 +9,6 @@ functionality:
     - "maintainer"
     props:
       github: "tverbeiren"
-  inputs: []
-  outputs: []
   arguments:
   - type: "file"
     name: "--input"
@@ -99,7 +97,7 @@ platforms:
   image: "ghcr.io/data-intuitive/bcl2fastq:2.20"
   target_organization: "openpipelines-bio"
   target_registry: "ghcr.io"
-  namespace_separator: "_"
+  namespace_separator: "/"
   resolve_volume: "Automatic"
   chown: true
   port: []
@@ -135,6 +133,6 @@ info:
   platform: "nextflow"
   output: "/home/runner/work/openpipeline/openpipeline/target/nextflow/demux/bcl2fastq"
   executable: "/home/runner/work/openpipeline/openpipeline/target/nextflow/demux/bcl2fastq/bcl2fastq"
-  viash_version: "0.6.7"
-  git_commit: "6a454d03363640176a835035e31c358593b8937d"
+  viash_version: "0.7.0"
+  git_commit: "aba8d5ddde8edc9b3da2757e785651c9d4915168"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"
