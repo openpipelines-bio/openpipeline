@@ -1,5 +1,9 @@
 # openpipelines 0.7.1
 
+## NEW FUNCTIONALITY
+
+* `workflows/ingestion/cellranger_mapping`: Added `convert_filtered_cellranger_output` to output the filtered Cell Ranger data as h5mu, not the converted raw 10xh5 output.
+
 ## BUG FIXES
 
 * `workflows/integration`: `init_pos` is no longer set to the integration layer (e.g. `X_pca_integrated`).
