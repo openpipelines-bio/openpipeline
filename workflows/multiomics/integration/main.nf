@@ -59,10 +59,10 @@ workflow run_wf {
     )
     | map { tup ->
       assert tup.size() >= 3: "Event should have length 3 or greater."
-      id = tup[0]
-      current_args = tup[1]
-      other_args = tup[2]
-      passthrough = tup.drop(3)
+      def id = tup[0]
+      def current_args = tup[1]
+      def other_args = tup[2]
+      def passthrough = tup.drop(3)
       // If obs_covariates is not set or emtpy, harmony will not be run
       // In this case, the layer that find_neighbour uses should not originate from harmonypy but from pca
       if (!other_args.integration.obs_covariates || 
