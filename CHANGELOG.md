@@ -16,6 +16,8 @@
 
 ## MINOR CHANGES
 
+* `convert/from_bdrhap_to_h5mu`, `files/make_params` and `integrate/harmony`: use `eddelbuettel/r2u:22.04` as base container.
+
 * Add `highmem` label to `dimred/pca` component.
 
 * Remove disabled `convert/from_csv_to_h5mu` component.

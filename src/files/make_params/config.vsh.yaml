@@ -51,5 +51,8 @@ functionality:
       path: script.R
 platforms:
   - type: docker
-    image: ghcr.io/data-intuitive/randpy:r4.0
+    image: eddelbuettel/r2u:22.04
+    setup:
+      - type: apt
+        packages: [python3, python3-dev, python3-pip, python-is-python3]
   - type: nextflow
