@@ -2,7 +2,7 @@
 
 ## NEW FUNCTIONALITY
 
-* `workflows/ingestion/cellranger_mapping`: Added `convert_filtered_cellranger_output` to output the filtered Cell Ranger data as h5mu, not the converted raw 10xh5 output.
+* `workflows/ingestion/cellranger_mapping`: Added `output_type` to output the filtered Cell Ranger data as h5mu, not the converted raw 10xh5 output.
 
 ## BUG FIXES
 

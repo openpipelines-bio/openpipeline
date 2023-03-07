@@ -41,7 +41,7 @@ workflow run_wf {
       from_10xh5_to_h5mu: [ 
         "output": "output_h5mu",
         "obsm_metrics": "obsm_metrics",
-        "convert_filtered_cellranger_output": "convert_filtered_cellranger_output",
+        "output_type": "output_type",
       ]
     )
 
@@ -52,7 +52,7 @@ workflow run_wf {
     | cellranger_count_split
     // convert to h5mu
     | pmap { id, output_data, other_args -> 
-      input_data = other_args.from_10xh5_to_h5mu.convert_filtered_cellranger_output ? 
+      input_data = other_args.from_10xh5_to_h5mu.output_type == "filtered" ? 
         output_data.filtered_h5 : output_data.raw_h5
       // combine new data for from_10xh5_to_h5mu
       new_data =
@@ -85,7 +85,7 @@ workflow test_wf {
     id: "foo",
     input: params.resources_test + "/cellranger_tiny_fastq/cellranger_tiny_fastq",
     reference: params.resources_test + "/cellranger_tiny_fastq/cellranger_tiny_ref",
-    convert_filtered_cellranger_output: true
+    output_type: "filtered",
   ]
 
   output_ch =

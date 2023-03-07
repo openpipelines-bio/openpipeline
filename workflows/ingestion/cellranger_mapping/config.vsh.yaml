@@ -49,10 +49,11 @@ functionality:
           type: string
           description: Name of the .obsm slot under which to QC metrics (if any).
           default: "metrics_summary"
-        - name: "--convert_filtered_cellranger_output"
-          type: boolean
-          description: "Output the filtered Cell Ranger data as h5mu, not the converted raw 10xh5 output."
-          default: false
+        - name: "--output_type"
+          type: string
+          description: "Which Cell Ranger output to use for converting to h5mu."
+          choices: [ raw, filtered ]
+          default: raw
     - name: Cell Ranger arguments
       arguments:
         - type: integer
