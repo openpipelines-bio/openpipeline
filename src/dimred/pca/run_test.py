@@ -4,6 +4,7 @@ import pytest
 from pathlib import Path
 from mudata import read_h5mu
 import re
+import numpy as np
 import sys
 
 ## VIASH START
@@ -38,6 +39,9 @@ def test_pca(run_component):
     assert "pca_variance" in data.mod['rna'].uns
     assert "pca_loadings" in data.mod['rna'].varm
     assert "X_foo" in data.mod['rna'].obsm
+    # GH298
+    assert not np.array_equal(data.mod['rna'].uns['pca_variance']['variance'],
+                              data.mod['rna'].uns['pca_variance']['variance_ratio'])
 
 def test_no_overwrite_but_field_also_not_present(run_component, tmp_path):
     input_data = read_h5mu(input)

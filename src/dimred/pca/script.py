@@ -71,7 +71,7 @@ for parameter_name, field in check_exist_dict.items():
 
 data.obsm[par["obsm_output"]] = output_adata.obsm['X_pca']
 data.varm[par["varm_output"]] = output_adata.varm['PCs']
-data.uns[par["uns_output"]] = { "variance": output_adata.uns['pca']['variance_ratio'],
+data.uns[par["uns_output"]] = { "variance": output_adata.uns['pca']['variance'],
                                 "variance_ratio": output_adata.uns['pca']['variance_ratio'] }
 
 
