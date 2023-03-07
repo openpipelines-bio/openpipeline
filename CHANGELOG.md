@@ -10,6 +10,10 @@
 
 * `workflows/integration`: `init_pos` is no longer set to the integration layer (e.g. `X_pca_integrated`).
 
+## NEW FUNCTIONALITY
+
+* Added `--rna_theta` and `--rna_harmony_theta` to full and integration pipeline respectively in order to tune the diversity clustering penalty parameter for harmony integration.
+
 * `dimred/pca`: fix `variance` slot containing a second copy of the variance ratio matrix and not the variances.
 
 ## MINOR CHANGES

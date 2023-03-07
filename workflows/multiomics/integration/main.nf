@@ -40,7 +40,8 @@ workflow run_wf {
       integration: [
         "obsm_input": "obsm_pca",
         "obs_covariates": "obs_covariates",
-        "obsm_output": "obsm_integrated"
+        "obsm_output": "obsm_integrated",
+        "theta": "rna_theta"
       ],
       neighbors: [
         "obsm_input": "obsm_integrated", 
