@@ -401,9 +401,12 @@ function ViashDockerCheckCommands {
 #   ViashDockerFile
 function ViashDockerfile {
   cat << 'VIASHDOCKER'
-FROM ghcr.io/data-intuitive/randpy:r4.2_py3.8
+FROM eddelbuettel/r2u:22.04
 
-RUN apt update && apt upgrade -y
+RUN apt-get update && \
+  DEBIAN_FRONTEND=noninteractive apt-get install -y python3 python3-dev python3-pip python-is-python3 && \
+  rm -rf /var/lib/apt/lists/*
+
 RUN pip install --upgrade pip && \
   pip install --upgrade --no-cache-dir "anndata~=0.8" "mudata~=0.2.0"
 
@@ -412,9 +415,9 @@ RUN Rscript -e 'if (!requireNamespace("remotes", quietly = TRUE)) install.packag
 
 LABEL org.opencontainers.image.authors="Robrecht Cannoodt"
 LABEL org.opencontainers.image.description="Companion container for running component convert from_bdrhap_to_h5mu"
-LABEL org.opencontainers.image.created="2023-03-07T15:04:30Z"
+LABEL org.opencontainers.image.created="2023-03-07T15:33:31Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="c71a92a148058e6b76da4160a0d75aad5a18d96e"
+LABEL org.opencontainers.image.revision="0c6cf75a0c22dcc1475fb998cd2854677b689c95"
 LABEL org.opencontainers.image.version="main_build"
 VIASHDOCKER
 }
