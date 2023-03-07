@@ -53,7 +53,8 @@ class TestAddMetadata(TestCase):
                     "--output", "with_metadat.h5mu",
                     "--modality", "mod1",
                     "--var_key", "sample_id_var",
-                    "--csv_key", "id"
+                    "--csv_key", "id",
+                    "--compression_output", "gzip"
                     ])
             result = read_h5mu("with_metadat.h5mu")
             original_data = read_h5mu(self.temp_h5mu.name)

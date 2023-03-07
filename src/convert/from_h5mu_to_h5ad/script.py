@@ -14,7 +14,7 @@ par = {
     "input": "resources_test/pbmc_1k_protein_v3/pbmc_1k_protein_v3_filtered_feature_bc_matrix.h5mu",
     "modality": "rna",
     "output": "output.h5mu",
-    "compression": "gzip",
+    "output_compression": "gzip",
 }
 ## VIASH END
 
@@ -27,6 +27,6 @@ logger.info("Converting to h5ad")
 adat = dat.mod[par["modality"]]
 
 logger.info("Writing to %s.", par['output'])
-adat.write_h5ad(par["output"], compression="gzip")
+adat.write_h5ad(par["output"], compression=par["output_compression"])
 
 logger.info("Finished")

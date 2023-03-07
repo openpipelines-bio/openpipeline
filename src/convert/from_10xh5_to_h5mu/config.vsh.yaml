@@ -30,6 +30,11 @@ functionality:
           example: output.h5mu
           direction: output
           __merge__: api_output.yaml
+        - name: "--output_compression"
+          type: string
+          choices: ["gzip", "lzf"]
+          required: false
+          example: "gzip"
         - name: "--uns_metrics"
           type: string
           description: Name of the .uns slot under which to QC metrics (if any).

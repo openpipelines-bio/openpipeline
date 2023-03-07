@@ -49,7 +49,8 @@ workflow run_wf {
       ],
       clustering: [
         "obsp_connectivities": "obsp_neighbor_connectivities",
-        "obs_name": "obs_cluster"
+        "obs_name": "obs_cluster",
+        "resolution": "leiden_resolution",
       ],
       umap: [ 
         "uns_neighbors": "uns_neighbors",
@@ -118,7 +119,8 @@ workflow test_wf {
         id: "foo_without_harmony",
         input: params.resources_test + "/concat_test_data/concatenated_brain_filtered_feature_bc_matrix_subset.h5mu",
         layer: "",
-        obs_covariates: []
+        obs_covariates: [],
+        leiden_resolution: 2,
       ],
     ]
   ]

@@ -1,12 +1,22 @@
 # openpipelines 0.7.1
 
+## NEW FUNCTIONALITY
+
+* Several components:  added `--output_compression` component to set the compression of output .h5mu files.
+
+* `workflows/full_pipeline` and `workflows/integration`: Added `leiden_resolution` argument to control the coarseness of the clustering.
+
 ## BUG FIXES
 
 * `workflows/integration`: `init_pos` is no longer set to the integration layer (e.g. `X_pca_integrated`).
 
+* `dimred/pca`: fix `variance` slot containing a second copy of the variance ratio matrix and not the variances.
+
 ## MINOR CHANGES
 
 * `integration` and `full` workflows: do not run harmony integration when `obs_covariates` is not provided.
+
+* Add `highmem` label to `dimred/pca` component.
 
 * Remove disabled `convert/from_csv_to_h5mu` component.
 
@@ -15,6 +25,10 @@
 * Several components: update to scanpy 1.9.2
 
 * `process_10xh5/filter_10xh5`: speed up build by using `eddelbuettel/r2u:22.04` base container.
+
+## MAJOR CHANGES
+
+* `dataflow/concat`: Renamed `--compression` to `--output_compression`.
 
 # openpipelines 0.7.0
 

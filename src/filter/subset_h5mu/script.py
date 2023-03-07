@@ -19,4 +19,4 @@ if __name__ == "__main__":
         data = data[:par["number_of_observations"]]
 
     # write data
-    data.write_h5mu(par["output"], compression="gzip")
+    data.write_h5mu(par["output"], compression=par["output_compression"])

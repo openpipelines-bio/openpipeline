@@ -21,10 +21,12 @@ functionality:
       type: file
       direction: output
       default: "output.h5mu"
-    - name: "--compression"
+    - name: "--output_compression"
       type: string
-      description: The compression format to be used on the final h5mu object.
-      default: "gzip"
+      description: The compression format to be used on the output h5mu object.
+      choices: ["gzip", "lzf"]
+      required: false
+      example: "gzip"
   resources:
     - type: python_script
       path: ./script.py

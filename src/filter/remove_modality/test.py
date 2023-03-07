@@ -21,7 +21,8 @@ input_sample_file = f"{resources_dir}/pbmc_1k_protein_v3_filtered_feature_bc_mat
 def test_remove_component(run_component):
     run_component(["--input", input_sample_file,
                    "--modality", "rna",
-                   "--output", "removed_rna.h5mu"])
+                   "--output", "removed_rna.h5mu",
+                   "--output_compression", "gzip"])
     assert Path("removed_rna.h5mu").is_file()
     output = read_h5mu("removed_rna.h5mu")
     assert list(output.mod.keys()) == ["prot"]

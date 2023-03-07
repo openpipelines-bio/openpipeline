@@ -51,7 +51,8 @@ class TestAddId(TestCase):
         self._run_and_check_output([
                     "--input", self.temp_h5mu.name,
                     "--output", "with_id.h5mu",
-                    "--input_id", "test_id"
+                    "--input_id", "test_id",
+                    "--output_compression", "gzip"
                     ])
         self.assertTrue(Path("with_id.h5mu").is_file())
         input_data = read_h5mu(self.temp_h5mu.name)

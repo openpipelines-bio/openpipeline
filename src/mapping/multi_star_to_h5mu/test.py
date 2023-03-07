@@ -16,7 +16,8 @@ cmd_pars = [
     meta["executable"],
     "--input", str(input),
     "--output", output,
-    "---cpus", "2"
+    "---cpus", "2",
+    "--output_compression", "gzip"
 ]
 subprocess.run(cmd_pars, check=True)
 

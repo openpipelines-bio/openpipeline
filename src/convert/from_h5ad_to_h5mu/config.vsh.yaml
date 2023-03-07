@@ -27,6 +27,11 @@ functionality:
       description: Output MuData file.
       default: output.h5mu
       direction: output
+    - name: "--output_compression"
+      type: string
+      choices: ["gzip", "lzf"]
+      required: false
+      example: "gzip"
   resources:
     - type: python_script
       path: script.py

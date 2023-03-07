@@ -36,7 +36,7 @@ def main():
             sample_modalities[mod_name] = mod_data
 
     merged = md.MuData(sample_modalities)
-    merged.write_h5mu(par["output"], compression="gzip")
+    merged.write_h5mu(par["output"], compression=par["output_compression"])
     logger.info('Finished')
 
 

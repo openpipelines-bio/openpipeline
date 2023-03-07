@@ -36,4 +36,4 @@ if new_layer:
     data.uns['log1p'] = new_layer.uns['log1p']
 
 logger.info("Writing to file %s", par["output"])
-mdata.write_h5mu(filename=par["output"], compression="gzip")
+mdata.write_h5mu(filename=par["output"], compression=par["output_compression"])
