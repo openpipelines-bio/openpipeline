@@ -78,6 +78,10 @@ functionality:
           type: string
           description: Name of the .obs key under which to add the cluster labels.
           default: "leiden"
+        - name: "--leiden_resolution"
+          type: double
+          description: Control the coarseness of the clustering. Higher values lead to more clusters.
+          default: 1
     - name: Umap options
       arguments:
         - name: "--obsm_umap"
