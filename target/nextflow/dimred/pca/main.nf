@@ -238,8 +238,7 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
       "variant" : "vdsl3",
       "directives" : {
         "label" : [
-          "highcpu",
-          "highmem"
+          "highcpu"
         ],
         "tag" : "$id"
       },
@@ -257,7 +256,7 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
     "config" : "/home/runner/work/openpipeline/openpipeline/src/dimred/pca/config.vsh.yaml",
     "platform" : "nextflow",
     "viash_version" : "0.7.0",
-    "git_commit" : "b5599d2086832dd304f6a0954de9ea37f1df50c6",
+    "git_commit" : "c2a79cbf44d52a0bf5f445553e0d38dcf41d0aa9",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))
@@ -380,8 +379,7 @@ thisDefaultProcessArgs = [
     "tag" : "main_build"
   },
   "label" : [
-    "highcpu",
-    "highmem"
+    "highcpu"
   ],
   "tag" : "$id"
 }'''),

@@ -87,6 +87,4 @@ platforms:
           - viashpy
   - type: nextflow
     directives:
-      label: 
-        - highcpu
-        - highmem
+      label: highcpu

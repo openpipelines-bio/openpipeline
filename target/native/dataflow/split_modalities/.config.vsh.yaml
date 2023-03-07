@@ -152,5 +152,5 @@ info:
   output: "/home/runner/work/openpipeline/openpipeline/target/native/dataflow/split_modalities"
   executable: "/home/runner/work/openpipeline/openpipeline/target/native/dataflow/split_modalities/split_modalities"
   viash_version: "0.7.0"
-  git_commit: "b5599d2086832dd304f6a0954de9ea37f1df50c6"
+  git_commit: "c2a79cbf44d52a0bf5f445553e0d38dcf41d0aa9"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"
