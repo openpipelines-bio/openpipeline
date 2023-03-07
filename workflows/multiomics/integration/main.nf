@@ -10,7 +10,7 @@ include { leiden } from targetDir + '/cluster/leiden/main.nf'
 include { harmonypy } from targetDir + '/integrate/harmonypy/main.nf'
 
 include { readConfig; helpMessage; preprocessInputs; channelFromParams } from workflowDir + "/utils/WorkflowHelper.nf"
-include { setWorkflowArguments; getWorkflowArguments } from workflowDir + "/utils/DataflowHelper.nf"
+include { setWorkflowArguments; getWorkflowArguments; passthroughMap as pmap } from workflowDir + "/utils/DataflowHelper.nf"
 
 config = readConfig("$workflowDir/multiomics/integration/config.vsh.yaml")
 
@@ -58,13 +58,13 @@ workflow run_wf {
         "obsm_output": "obsm_umap"
       ]
     )
-    | pmap { id, args, grouped_args ->
+    | pmap { id, args, other_args ->
       // If obs_covariates is not set or empty, harmony will not be run
       // In this case, the layer that find_neighbour uses should not originate from harmonypy but from pca
       def obs_cov = other_args.integration.obs_covariates ?: []
-      if (obs_cov.obs_covariates.empty) {
+      if (obs_cov.empty) {
         new_neighbors = other_args.neighbors + [obsm_input: other_args.pca.obsm_output]
-      } else 
+      } else {
         new_neighbors = other_args.neighbors + [obsm_input: other_args.integration.obsm_output]
       }
       new_other = other_args + [neighbors: new_neighbors]
