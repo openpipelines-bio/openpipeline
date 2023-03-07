@@ -6,15 +6,19 @@
 
 * `workflows/full_pipeline` and `workflows/integration`: Added `leiden_resolution` argument to control the coarseness of the clustering.
 
+* Added `--rna_theta` and `--rna_harmony_theta` to full and integration pipeline respectively in order to tune the diversity clustering penalty parameter for harmony integration.
+
+* `dimred/pca`: fix `variance` slot containing a second copy of the variance ratio matrix and not the variances.
+
 ## BUG FIXES
 
 * `workflows/integration`: `init_pos` is no longer set to the integration layer (e.g. `X_pca_integrated`).
 
-* `dimred/pca`: fix `variance` slot containing a second copy of the variance ratio matrix and not the variances.
-
 ## MINOR CHANGES
 
 * `integration` and `full` workflows: do not run harmony integration when `obs_covariates` is not provided.
+
+* `convert/from_bdrhap_to_h5mu`, `files/make_params` and `integrate/harmony`: use `eddelbuettel/r2u:22.04` as base container.
 
 * Add `highmem` label to `dimred/pca` component.
 

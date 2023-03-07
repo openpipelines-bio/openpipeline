@@ -63,6 +63,7 @@ workflow run_wf {
         "integration_args": [
           "obs_covariates": "obs_covariates",
           "var_pca_feature_selection": "filter_with_hvg_var_output", // run PCA on highly variable genes only
+          "rna_theta": "rna_harmony_theta",
           "leiden_resolution": "leiden_resolution",
         ]
     )
@@ -243,6 +244,7 @@ workflow test_wf3 {
     rna_min_counts: 2,
     var_qc_metrics: "highly_variable",
     filter_with_hvg_var_output: "highly_variable",
+    rna_harmony_theta: 3,
     leiden_resolution: 2,
   ]
 
