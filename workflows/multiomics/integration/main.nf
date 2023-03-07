@@ -57,21 +57,17 @@ workflow run_wf {
         "obsm_output": "obsm_umap"
       ]
     )
-    | map { tup ->
-      assert tup.size() >= 3: "Event should have length 3 or greater."
-      def id = tup[0]
-      def current_args = tup[1]
-      def other_args = tup[2]
-      def passthrough = tup.drop(3)
-      // If obs_covariates is not set or emtpy, harmony will not be run
+    | pmap { id, args, grouped_args ->
+      // If obs_covariates is not set or empty, harmony will not be run
       // In this case, the layer that find_neighbour uses should not originate from harmonypy but from pca
-      if (!other_args.integration.obs_covariates || 
-        (other_args.integration.obs_covariates && other_args.integration.obs_covariates.empty)) {
-        other_args.neighbors.put("obsm_input", other_args.pca.obsm_output)
-      } else {
-        other_args.neighbors.put("obsm_input", other_args.integration.obsm_output)
+      def obs_cov = other_args.integration.obs_covariates ?: []
+      if (obs_cov.obs_covariates.empty) {
+        new_neighbors = other_args.neighbors + [obsm_input: other_args.pca.obsm_output]
+      } else 
+        new_neighbors = other_args.neighbors + [obsm_input: other_args.integration.obsm_output]
       }
-      [id, current_args, other_args] + passthrough
+      new_other = other_args + [neighbors: new_neighbors]
+      [id, args, new_other]
     }
     | getWorkflowArguments(key: "pca")
     | pca
