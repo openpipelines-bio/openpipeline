@@ -4,7 +4,7 @@
 
 * `workflows/integration`: `init_pos` is no longer set to the integration layer (e.g. `X_pca_integrated`).
 
-* `dimred/pca`: fix `variance` slot containing a second copy of the variance ratio matyrix and not the variances.
+* `dimred/pca`: fix `variance` slot containing a second copy of the variance ratio matrix and not the variances.
 
 ## MINOR CHANGES
 
