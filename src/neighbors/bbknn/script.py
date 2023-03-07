@@ -28,4 +28,4 @@ bbknn.bbknn(
     trim=par["n_trim"]
 )
 
-h5mu_data.write_h5mu(par["output"], compression = "gzip")
+h5mu_data.write_h5mu(par["output"], compression=par["output_compression"])

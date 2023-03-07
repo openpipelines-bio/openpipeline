@@ -40,4 +40,4 @@ if (
     )
 
 logger.info("Writing to file")
-mdata.write_h5mu(filename=par["output"], compression="gzip")
+mdata.write_h5mu(filename=par["output"], compression=par["output_compression"])

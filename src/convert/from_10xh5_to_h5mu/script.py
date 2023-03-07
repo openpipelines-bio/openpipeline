@@ -19,7 +19,8 @@ par = {
     "uns_metrics": "metrics_cellranger",
     "output": "foo.h5mu",
     "min_genes": None,
-    "min_counts": None
+    "min_counts": None,
+    "output_compression": "gzip",
 }
 ## VIASH END
 
@@ -70,4 +71,4 @@ mdata.obs = adata.obs
 
 # write output
 logger.info("Writing %s", par["output"])
-mdata.write_h5mu(par["output"], compression="gzip")
+mdata.write_h5mu(par["output"], compression=par["output_compression"])

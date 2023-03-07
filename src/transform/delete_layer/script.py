@@ -34,7 +34,7 @@ def main():
         logger.info('Deleting layer %s from modality %s.', layer, mod_name)
         del mod.layers[layer]
     logger.info('Writing output to %s.', par['output'])
-    input_data.write_h5mu(par['output'], compression="gzip")
+    input_data.write_h5mu(par['output'], compression=par["output_compression"])
     logger.info('Finished.')
 
 if __name__ == "__main__":

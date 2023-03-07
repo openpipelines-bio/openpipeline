@@ -39,6 +39,12 @@ functionality:
           direction: output
           required: true
           example: output.h5mu
+        - name: "--output_compression"
+          type: string
+          description: The compression format to be used on the output h5mu object.
+          choices: ["gzip", "lzf"]
+          required: false
+          example: "gzip"
     - name: "Metadata Input"
       arguments:
         - name: "--input_csv"

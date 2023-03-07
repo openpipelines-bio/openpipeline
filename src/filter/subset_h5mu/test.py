@@ -47,7 +47,8 @@ class TestFilterWithCounts(TestCase):
         self._run_and_check_output([
             "--input", input_path,
             "--output", "output-1.h5mu",
-            "--number_of_observations", "100"
+            "--number_of_observations", "100",
+            "--output_compression", "gzip"
             ])
         self.assertTrue(Path("output-1.h5mu").is_file(), msg="Output file not found")
         mu_out = mu.read_h5mu("output-1.h5mu")

@@ -10,7 +10,8 @@ cmd_pars = [
     meta["executable"],
     "--input", input,
     "--output", output,
-    "--id", "foo"
+    "--id", "foo",
+    "--output_compression", "gzip",
 ]
 out = subprocess.check_output(cmd_pars).decode("utf-8")
 

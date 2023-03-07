@@ -73,7 +73,8 @@ def test_filter_with_hvg(run_component, lognormed_test_data_path):
         "--flavor", "seurat",
         "--input", lognormed_test_data_path,
         "--output", "output.h5mu",
-        "--layer", "log_transformed"])
+        "--layer", "log_transformed",
+        "--output_compression", "gzip"])
     assert os.path.exists("output.h5mu")
     data = mu.read_h5mu("output.h5mu")
     assert "filter_with_hvg" in data.mod["rna"].var.columns
