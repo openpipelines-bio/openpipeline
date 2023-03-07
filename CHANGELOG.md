@@ -2,6 +2,8 @@
 
 ## NEW FUNCTIONALITY
 
+* Several components:  added `--output_compression` component to set the compression of output .h5mu files.
+
 * `workflows/full_pipeline` and `workflows/integration`: Added `leiden_resolution` argument to control the coarseness of the clustering.
 
 ## BUG FIXES
@@ -19,6 +21,10 @@
 * Several components: update to scanpy 1.9.2
 
 * `process_10xh5/filter_10xh5`: speed up build by using `eddelbuettel/r2u:22.04` base container.
+
+## MAJOR CHANGES
+
+* `dataflow/concat`: Renamed `--compression` to `--output_compression`.
 
 # openpipelines 0.7.0
 

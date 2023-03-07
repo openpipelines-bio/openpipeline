@@ -51,6 +51,7 @@ def test_no_overwrite_but_field_also_not_present(run_component, tmp_path):
         "--output",  "output.h5mu",
         "--obsm_output", "X_foo",
         "--num_components", "26",
+        "--output_compression", "gzip"
     ])
     assert Path("output.h5mu").is_file()
     data = mu.read_h5mu("output.h5mu")

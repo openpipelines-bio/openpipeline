@@ -43,6 +43,12 @@ functionality:
       required: true
       example: output.h5mu
 
+    - name: "--output_compression"
+      type: string
+      choices: ["gzip", "lzf"]
+      required: false
+      example: "gzip"
+  
     - name: "--obs_name"
       type: string
       description: Name of the .obs key under which to add the cluster labels.

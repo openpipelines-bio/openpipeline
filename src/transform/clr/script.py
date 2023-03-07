@@ -15,7 +15,7 @@ def main():
     modality = input_h5mu[par['modality']]
     normalized_counts = pt.pp.clr(modality, inplace=False)
     input_h5mu[par["modality"]].layers['clr'] = normalized_counts
-    input_h5mu.write_h5mu(par['output'], compression="gzip")
+    input_h5mu.write_h5mu(par['output'], compression=par["output_compression"])
 
 if __name__ == "__main__":
     main()

@@ -30,7 +30,8 @@ class TestSplit(unittest.TestCase):
         self._run_and_check_output([
             "--input", input_file,
             "--output", str(output_dir),
-            "--output_types", str(output_types)
+            "--output_types", str(output_types),
+            "--output_compression", "gzip"
         ])
         self.assertTrue(output_types.is_file())
 
