@@ -21,6 +21,7 @@ obsp_neighbor_connectivities: "connectivities"
 
 # Clustering options
 obs_cluster: "leiden"
+leiden_resolution: 1
 
 # Umap options
 obsm_umap: "X_umap"

@@ -108,6 +108,11 @@
             "type": "string",
             "description": "Name of the .obs key under which to add the cluster labels.",
             "default": "leiden"
+          },
+          "leiden_resolution": {
+            "type": "number",
+            "description": "Control the coarseness of the clustering. Higher values lead to more clusters.",
+            "default": "1"
           }
           
         }

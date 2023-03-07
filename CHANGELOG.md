@@ -1,10 +1,16 @@
 # openpipelines 0.7.1
 
+## NEW FUNCTIONALITY
+
+* `workflows/full_pipeline` and `workflows/integration`: Added `leiden_resolution` argument to control the coarseness of the clustering.
+
 ## BUG FIXES
 
 * `workflows/integration`: `init_pos` is no longer set to the integration layer (e.g. `X_pca_integrated`).
 
 ## MINOR CHANGES
+
+* Add `highmem` label to `dimred/pca` component.
 
 * Remove disabled `convert/from_csv_to_h5mu` component.
 
