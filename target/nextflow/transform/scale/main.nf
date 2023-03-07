@@ -114,6 +114,23 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
         "multiple" : false,
         "multiple_sep" : ":",
         "dest" : "par"
+      },
+      {
+        "type" : "string",
+        "name" : "--output_compression",
+        "description" : "The compression format to be used on the output h5mu object.",
+        "example" : [
+          "gzip"
+        ],
+        "required" : false,
+        "choices" : [
+          "gzip",
+          "lzf"
+        ],
+        "direction" : "input",
+        "multiple" : false,
+        "multiple_sep" : ":",
+        "dest" : "par"
       }
     ],
     "resources" : [
@@ -204,7 +221,7 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
     "config" : "/home/runner/work/openpipeline/openpipeline/src/transform/scaling/config.vsh.yaml",
     "platform" : "nextflow",
     "viash_version" : "0.7.0",
-    "git_commit" : "c2a79cbf44d52a0bf5f445553e0d38dcf41d0aa9",
+    "git_commit" : "d1349aaf3bcba1941598666c15e6dd055ec3349a",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))
@@ -232,7 +249,8 @@ par = {
   'modality': $( if [ ! -z ${VIASH_PAR_MODALITY+x} ]; then echo "r'${VIASH_PAR_MODALITY//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'max_value': $( if [ ! -z ${VIASH_PAR_MAX_VALUE+x} ]; then echo "float(r'${VIASH_PAR_MAX_VALUE//\\'/\\'\\"\\'\\"r\\'}')"; else echo None; fi ),
   'zero_center': $( if [ ! -z ${VIASH_PAR_ZERO_CENTER+x} ]; then echo "r'${VIASH_PAR_ZERO_CENTER//\\'/\\'\\"\\'\\"r\\'}'.lower() == 'true'"; else echo None; fi ),
-  'output': $( if [ ! -z ${VIASH_PAR_OUTPUT+x} ]; then echo "r'${VIASH_PAR_OUTPUT//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi )
+  'output': $( if [ ! -z ${VIASH_PAR_OUTPUT+x} ]; then echo "r'${VIASH_PAR_OUTPUT//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
+  'output_compression': $( if [ ! -z ${VIASH_PAR_OUTPUT_COMPRESSION+x} ]; then echo "r'${VIASH_PAR_OUTPUT_COMPRESSION//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi )
 }
 meta = {
   'functionality_name': $( if [ ! -z ${VIASH_META_FUNCTIONALITY_NAME+x} ]; then echo "r'${VIASH_META_FUNCTIONALITY_NAME//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
@@ -264,7 +282,7 @@ def main():
                     max_value=par["max_value"])
 
     logger.info("Writing to %s", par["output"])
-    mudata.write_h5mu(filename=par["output"], compression="gzip")
+    mudata.write_h5mu(filename=par["output"], compression=par["output_compression"])
     logger.info("Finished")
 
 if __name__ == "__main__":

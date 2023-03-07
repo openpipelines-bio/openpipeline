@@ -171,6 +171,12 @@ function ViashHelp {
   echo "        type: file, required parameter, output, file must exist"
   echo "        Output directory. If it does not exist, will be created."
   echo ""
+  echo "    --output_compression"
+  echo "        type: string"
+  echo "        example: gzip"
+  echo "        choices: [ gzip, lzf ]"
+  echo "        The compression format to be used on the output h5mu object."
+  echo ""
   echo "Filtering and normalization:"
   echo "    Arguments for filtering, normalization an log transform (see"
   echo "    scvelo.pp.filter_and_normalize function)"
@@ -276,6 +282,17 @@ while [[ $# -gt 0 ]]; do
         --output=*)
             [ -n "$VIASH_PAR_OUTPUT" ] && ViashError Bad arguments for option \'--output=*\': \'$VIASH_PAR_OUTPUT\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
             VIASH_PAR_OUTPUT=$(ViashRemoveFlags "$1")
+            shift 1
+            ;;
+        --output_compression)
+            [ -n "$VIASH_PAR_OUTPUT_COMPRESSION" ] && ViashError Bad arguments for option \'--output_compression\': \'$VIASH_PAR_OUTPUT_COMPRESSION\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+            VIASH_PAR_OUTPUT_COMPRESSION="$2"
+            [ $# -lt 2 ] && ViashError Not enough arguments passed to --output_compression. Use "--help" to get more information on the parameters. && exit 1
+            shift 2
+            ;;
+        --output_compression=*)
+            [ -n "$VIASH_PAR_OUTPUT_COMPRESSION" ] && ViashError Bad arguments for option \'--output_compression=*\': \'$VIASH_PAR_OUTPUT_COMPRESSION\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+            VIASH_PAR_OUTPUT_COMPRESSION=$(ViashRemoveFlags "$1")
             shift 1
             ;;
         --min_counts)
@@ -613,6 +630,19 @@ if [[ -n "$VIASH_META_MEMORY_PB" ]]; then
   fi
 fi
 
+# check whether value is belongs to a set of choices
+if [ ! -z "$VIASH_PAR_OUTPUT_COMPRESSION" ]; then
+  VIASH_PAR_OUTPUT_COMPRESSION_CHOICES=("gzip:lzf")
+  IFS=':'
+  set -f
+  if ! [[ ":${VIASH_PAR_OUTPUT_COMPRESSION_CHOICES[*]}:" =~ ":$VIASH_PAR_OUTPUT_COMPRESSION:" ]]; then
+    ViashError '--output_compression' specified value of \'$VIASH_PAR_OUTPUT_COMPRESSION\' is not in the list of allowed values. Use "--help" to get more information on the parameters.
+    exit 1
+  fi
+  set +f
+  unset IFS
+fi
+
 # create parent directories of output files, if so desired
 if [ ! -z "$VIASH_PAR_OUTPUT" ] && [ ! -d "$(dirname "$VIASH_PAR_OUTPUT")" ]; then
   mkdir -p "$(dirname "$VIASH_PAR_OUTPUT")"
@@ -654,6 +684,7 @@ logger.addHandler(console_handler)
 par = {
   'input': $( if [ ! -z ${VIASH_PAR_INPUT+x} ]; then echo "r'${VIASH_PAR_INPUT//\'/\'\"\'\"r\'}'"; else echo None; fi ),
   'output': $( if [ ! -z ${VIASH_PAR_OUTPUT+x} ]; then echo "r'${VIASH_PAR_OUTPUT//\'/\'\"\'\"r\'}'"; else echo None; fi ),
+  'output_compression': $( if [ ! -z ${VIASH_PAR_OUTPUT_COMPRESSION+x} ]; then echo "r'${VIASH_PAR_OUTPUT_COMPRESSION//\'/\'\"\'\"r\'}'"; else echo None; fi ),
   'min_counts': $( if [ ! -z ${VIASH_PAR_MIN_COUNTS+x} ]; then echo "int(r'${VIASH_PAR_MIN_COUNTS//\'/\'\"\'\"r\'}')"; else echo None; fi ),
   'min_counts_u': $( if [ ! -z ${VIASH_PAR_MIN_COUNTS_U+x} ]; then echo "int(r'${VIASH_PAR_MIN_COUNTS_U//\'/\'\"\'\"r\'}')"; else echo None; fi ),
   'min_cells': $( if [ ! -z ${VIASH_PAR_MIN_CELLS+x} ]; then echo "int(r'${VIASH_PAR_MIN_CELLS//\'/\'\"\'\"r\'}')"; else echo None; fi ),
@@ -740,7 +771,7 @@ def main():
 
     # Create output
     ouput_data = mudata.MuData({'rna_velocity': adata})
-    ouput_data.write_h5mu(output_dir / f"{sample_name}.h5mu", compression="gzip")
+    ouput_data.write_h5mu(output_dir / f"{sample_name}.h5mu", compression=par["output_compression"])
 
 if __name__ == "__main__":
     main()

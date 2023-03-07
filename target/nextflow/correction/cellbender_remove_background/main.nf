@@ -73,12 +73,28 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
             ],
             "description" : "Full count matrix as an h5mu file, with background RNA removed. This file contains all the original droplet barcodes.",
             "example" : [
-              "output.h5"
+              "output.h5mu"
             ],
             "must_exist" : true,
             "create_parent" : true,
             "required" : true,
             "direction" : "output",
+            "multiple" : false,
+            "multiple_sep" : ":",
+            "dest" : "par"
+          },
+          {
+            "type" : "string",
+            "name" : "--output_compression",
+            "example" : [
+              "gzip"
+            ],
+            "required" : false,
+            "choices" : [
+              "gzip",
+              "lzf"
+            ],
+            "direction" : "input",
             "multiple" : false,
             "multiple_sep" : ":",
             "dest" : "par"
@@ -433,7 +449,7 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
     "config" : "/home/runner/work/openpipeline/openpipeline/src/correction/cellbender_remove_background/config.vsh.yaml",
     "platform" : "nextflow",
     "viash_version" : "0.7.0",
-    "git_commit" : "c2a79cbf44d52a0bf5f445553e0d38dcf41d0aa9",
+    "git_commit" : "d1349aaf3bcba1941598666c15e6dd055ec3349a",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))
@@ -465,6 +481,7 @@ par = {
   'input': $( if [ ! -z ${VIASH_PAR_INPUT+x} ]; then echo "r'${VIASH_PAR_INPUT//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'modality': $( if [ ! -z ${VIASH_PAR_MODALITY+x} ]; then echo "r'${VIASH_PAR_MODALITY//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'output': $( if [ ! -z ${VIASH_PAR_OUTPUT+x} ]; then echo "r'${VIASH_PAR_OUTPUT//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
+  'output_compression': $( if [ ! -z ${VIASH_PAR_OUTPUT_COMPRESSION+x} ]; then echo "r'${VIASH_PAR_OUTPUT_COMPRESSION//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'layer_output': $( if [ ! -z ${VIASH_PAR_LAYER_OUTPUT+x} ]; then echo "r'${VIASH_PAR_LAYER_OUTPUT//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'obs_latent_rt_efficiency': $( if [ ! -z ${VIASH_PAR_OBS_LATENT_RT_EFFICIENCY+x} ]; then echo "r'${VIASH_PAR_OBS_LATENT_RT_EFFICIENCY//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'obs_latent_cell_probability': $( if [ ! -z ${VIASH_PAR_OBS_LATENT_CELL_PROBABILITY+x} ]; then echo "r'${VIASH_PAR_OBS_LATENT_CELL_PROBABILITY//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
@@ -600,7 +617,7 @@ with tempfile.TemporaryDirectory(prefix="cellbender-", dir=meta["temp_dir"]) as 
 
 
 logger.info("Writing to file %s", par["output"])
-mdata.write_h5mu(filename=par["output"], compression="gzip")
+mdata.write_h5mu(filename=par["output"], compression=par["output_compression"])
 
 VIASHMAIN
 python "$tempscript"

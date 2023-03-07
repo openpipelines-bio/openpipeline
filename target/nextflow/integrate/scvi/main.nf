@@ -141,6 +141,23 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
           },
           {
             "type" : "string",
+            "name" : "--output_compression",
+            "description" : "The compression format to be used on the output h5mu object.",
+            "example" : [
+              "gzip"
+            ],
+            "required" : false,
+            "choices" : [
+              "gzip",
+              "lzf"
+            ],
+            "direction" : "input",
+            "multiple" : false,
+            "multiple_sep" : ":",
+            "dest" : "par"
+          },
+          {
+            "type" : "string",
             "name" : "--obsm_output",
             "description" : "In which .obsm slot to store the resulting integrated embedding.",
             "default" : [
@@ -357,7 +374,7 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
     "config" : "/home/runner/work/openpipeline/openpipeline/src/integrate/scvi/config.vsh.yaml",
     "platform" : "nextflow",
     "viash_version" : "0.7.0",
-    "git_commit" : "c2a79cbf44d52a0bf5f445553e0d38dcf41d0aa9",
+    "git_commit" : "d1349aaf3bcba1941598666c15e6dd055ec3349a",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))
@@ -386,6 +403,7 @@ par = {
   'obs_batch': $( if [ ! -z ${VIASH_PAR_OBS_BATCH+x} ]; then echo "r'${VIASH_PAR_OBS_BATCH//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'var_input': $( if [ ! -z ${VIASH_PAR_VAR_INPUT+x} ]; then echo "r'${VIASH_PAR_VAR_INPUT//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'output': $( if [ ! -z ${VIASH_PAR_OUTPUT+x} ]; then echo "r'${VIASH_PAR_OUTPUT//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
+  'output_compression': $( if [ ! -z ${VIASH_PAR_OUTPUT_COMPRESSION+x} ]; then echo "r'${VIASH_PAR_OUTPUT_COMPRESSION//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'obsm_output': $( if [ ! -z ${VIASH_PAR_OBSM_OUTPUT+x} ]; then echo "r'${VIASH_PAR_OBSM_OUTPUT//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'early_stopping': $( if [ ! -z ${VIASH_PAR_EARLY_STOPPING+x} ]; then echo "r'${VIASH_PAR_EARLY_STOPPING//\\'/\\'\\"\\'\\"r\\'}'.lower() == 'true'"; else echo None; fi ),
   'early_stopping_monitor': $( if [ ! -z ${VIASH_PAR_EARLY_STOPPING_MONITOR+x} ]; then echo "r'${VIASH_PAR_EARLY_STOPPING_MONITOR//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
@@ -469,7 +487,7 @@ def main():
     adata.obsm[par['obsm_output']] = vae_uns.get_latent_representation()
 
     mdata.mod[par['modality']] = adata
-    mdata.write_h5mu(par['output'].strip(), compression="gzip")
+    mdata.write_h5mu(par['output'].strip(), compression=par["output_compression"])
 
 if __name__ == "__main__":
     main()

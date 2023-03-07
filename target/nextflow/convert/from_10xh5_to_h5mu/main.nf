@@ -191,6 +191,22 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
           },
           {
             "type" : "string",
+            "name" : "--output_compression",
+            "example" : [
+              "gzip"
+            ],
+            "required" : false,
+            "choices" : [
+              "gzip",
+              "lzf"
+            ],
+            "direction" : "input",
+            "multiple" : false,
+            "multiple_sep" : ":",
+            "dest" : "par"
+          },
+          {
+            "type" : "string",
             "name" : "--uns_metrics",
             "description" : "Name of the .uns slot under which to QC metrics (if any).",
             "default" : [
@@ -307,7 +323,7 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
     "config" : "/home/runner/work/openpipeline/openpipeline/src/convert/from_10xh5_to_h5mu/config.vsh.yaml",
     "platform" : "nextflow",
     "viash_version" : "0.7.0",
-    "git_commit" : "c2a79cbf44d52a0bf5f445553e0d38dcf41d0aa9",
+    "git_commit" : "d1349aaf3bcba1941598666c15e6dd055ec3349a",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))
@@ -336,6 +352,7 @@ par = {
   'input': $( if [ ! -z ${VIASH_PAR_INPUT+x} ]; then echo "r'${VIASH_PAR_INPUT//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'input_metrics_summary': $( if [ ! -z ${VIASH_PAR_INPUT_METRICS_SUMMARY+x} ]; then echo "r'${VIASH_PAR_INPUT_METRICS_SUMMARY//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'output': $( if [ ! -z ${VIASH_PAR_OUTPUT+x} ]; then echo "r'${VIASH_PAR_OUTPUT//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
+  'output_compression': $( if [ ! -z ${VIASH_PAR_OUTPUT_COMPRESSION+x} ]; then echo "r'${VIASH_PAR_OUTPUT_COMPRESSION//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'uns_metrics': $( if [ ! -z ${VIASH_PAR_UNS_METRICS+x} ]; then echo "r'${VIASH_PAR_UNS_METRICS//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'min_genes': $( if [ ! -z ${VIASH_PAR_MIN_GENES+x} ]; then echo "int(r'${VIASH_PAR_MIN_GENES//\\'/\\'\\"\\'\\"r\\'}')"; else echo None; fi ),
   'min_counts': $( if [ ! -z ${VIASH_PAR_MIN_COUNTS+x} ]; then echo "int(r'${VIASH_PAR_MIN_COUNTS//\\'/\\'\\"\\'\\"r\\'}')"; else echo None; fi )
@@ -404,7 +421,7 @@ mdata.obs = adata.obs
 
 # write output
 logger.info("Writing %s", par["output"])
-mdata.write_h5mu(par["output"], compression="gzip")
+mdata.write_h5mu(par["output"], compression=par["output_compression"])
 
 VIASHMAIN
 python "$tempscript"

@@ -109,6 +109,23 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
       },
       {
         "type" : "string",
+        "name" : "--output_compression",
+        "description" : "The compression format to be used on the output h5mu object.",
+        "example" : [
+          "gzip"
+        ],
+        "required" : false,
+        "choices" : [
+          "gzip",
+          "lzf"
+        ],
+        "direction" : "input",
+        "multiple" : false,
+        "multiple_sep" : ":",
+        "dest" : "par"
+      },
+      {
+        "type" : "string",
         "name" : "--var_name_filter",
         "description" : "In which .var slot to store a boolean array corresponding to which observations should be filtered out.",
         "default" : [
@@ -337,7 +354,7 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
     "config" : "/home/runner/work/openpipeline/openpipeline/src/filter/filter_with_hvg/config.vsh.yaml",
     "platform" : "nextflow",
     "viash_version" : "0.7.0",
-    "git_commit" : "c2a79cbf44d52a0bf5f445553e0d38dcf41d0aa9",
+    "git_commit" : "d1349aaf3bcba1941598666c15e6dd055ec3349a",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))
@@ -360,6 +377,7 @@ par = {
   'modality': $( if [ ! -z ${VIASH_PAR_MODALITY+x} ]; then echo "r'${VIASH_PAR_MODALITY//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'layer': $( if [ ! -z ${VIASH_PAR_LAYER+x} ]; then echo "r'${VIASH_PAR_LAYER//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'output': $( if [ ! -z ${VIASH_PAR_OUTPUT+x} ]; then echo "r'${VIASH_PAR_OUTPUT//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
+  'output_compression': $( if [ ! -z ${VIASH_PAR_OUTPUT_COMPRESSION+x} ]; then echo "r'${VIASH_PAR_OUTPUT_COMPRESSION//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'var_name_filter': $( if [ ! -z ${VIASH_PAR_VAR_NAME_FILTER+x} ]; then echo "r'${VIASH_PAR_VAR_NAME_FILTER//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'varm_name': $( if [ ! -z ${VIASH_PAR_VARM_NAME+x} ]; then echo "r'${VIASH_PAR_VARM_NAME//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'do_subset': $( if [ ! -z ${VIASH_PAR_DO_SUBSET+x} ]; then echo "r'${VIASH_PAR_DO_SUBSET//\\'/\\'\\"\\'\\"r\\'}'.lower() == 'true'"; else echo None; fi ),
@@ -483,7 +501,7 @@ if par["do_subset"]:
     mdata.mod[mod] = data[:,keep_feats]
 
 logger.info("Writing h5mu to file")
-mdata.write_h5mu(par["output"], compression="gzip")
+mdata.write_h5mu(par["output"], compression=par["output_compression"])
 
 VIASHMAIN
 python "$tempscript"

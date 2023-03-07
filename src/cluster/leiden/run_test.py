@@ -17,6 +17,7 @@ cmd_pars = [
     "--input", input,
     "--obs_name", "fooleiden",
     "--output", output,
+    "--output_compression", "gzip"
 ]
 out = subprocess.check_output(cmd_pars).decode("utf-8")
 

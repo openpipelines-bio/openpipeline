@@ -114,6 +114,23 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
       },
       {
         "type" : "string",
+        "name" : "--output_compression",
+        "description" : "The compression format to be used on the output h5mu object.",
+        "example" : [
+          "gzip"
+        ],
+        "required" : false,
+        "choices" : [
+          "gzip",
+          "lzf"
+        ],
+        "direction" : "input",
+        "multiple" : false,
+        "multiple_sep" : ":",
+        "dest" : "par"
+      },
+      {
+        "type" : "string",
         "name" : "--output_layer",
         "description" : "Output layer to use. By default, use X.",
         "required" : false,
@@ -227,7 +244,7 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
     "config" : "/home/runner/work/openpipeline/openpipeline/src/transform/normalize_total/config.vsh.yaml",
     "platform" : "nextflow",
     "viash_version" : "0.7.0",
-    "git_commit" : "c2a79cbf44d52a0bf5f445553e0d38dcf41d0aa9",
+    "git_commit" : "d1349aaf3bcba1941598666c15e6dd055ec3349a",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))
@@ -247,6 +264,7 @@ par = {
   'modality': $( if [ ! -z ${VIASH_PAR_MODALITY+x} ]; then echo "r'${VIASH_PAR_MODALITY//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'input_layer': $( if [ ! -z ${VIASH_PAR_INPUT_LAYER+x} ]; then echo "r'${VIASH_PAR_INPUT_LAYER//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'output': $( if [ ! -z ${VIASH_PAR_OUTPUT+x} ]; then echo "r'${VIASH_PAR_OUTPUT//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
+  'output_compression': $( if [ ! -z ${VIASH_PAR_OUTPUT_COMPRESSION+x} ]; then echo "r'${VIASH_PAR_OUTPUT_COMPRESSION//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'output_layer': $( if [ ! -z ${VIASH_PAR_OUTPUT_LAYER+x} ]; then echo "r'${VIASH_PAR_OUTPUT_LAYER//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'target_sum': $( if [ ! -z ${VIASH_PAR_TARGET_SUM+x} ]; then echo "int(r'${VIASH_PAR_TARGET_SUM//\\'/\\'\\"\\'\\"r\\'}')"; else echo None; fi ),
   'exclude_highly_expressed': $( if [ ! -z ${VIASH_PAR_EXCLUDE_HIGHLY_EXPRESSED+x} ]; then echo "r'${VIASH_PAR_EXCLUDE_HIGHLY_EXPRESSED//\\'/\\'\\"\\'\\"r\\'}'.lower() == 'true'"; else echo None; fi )
@@ -295,7 +313,7 @@ if output_data:
     dat.layers[par["output_layer"]] = output_data.X
 
 logger.info("Writing to file")
-mdata.write_h5mu(filename=par["output"], compression="gzip")
+mdata.write_h5mu(filename=par["output"], compression=par["output_compression"])
 
 VIASHMAIN
 python "$tempscript"

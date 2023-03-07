@@ -127,6 +127,23 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
             "multiple" : false,
             "multiple_sep" : ":",
             "dest" : "par"
+          },
+          {
+            "type" : "string",
+            "name" : "--output_compression",
+            "description" : "The compression format to be used on the output h5mu object.",
+            "example" : [
+              "gzip"
+            ],
+            "required" : false,
+            "choices" : [
+              "gzip",
+              "lzf"
+            ],
+            "direction" : "input",
+            "multiple" : false,
+            "multiple_sep" : ":",
+            "dest" : "par"
           }
         ]
       }
@@ -213,7 +230,7 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
     "config" : "/home/runner/work/openpipeline/openpipeline/src/qc/calculate_qc_metrics/config.vsh.yaml",
     "platform" : "nextflow",
     "viash_version" : "0.7.0",
-    "git_commit" : "c2a79cbf44d52a0bf5f445553e0d38dcf41d0aa9",
+    "git_commit" : "d1349aaf3bcba1941598666c15e6dd055ec3349a",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))
@@ -235,7 +252,8 @@ par = {
   'layer': $( if [ ! -z ${VIASH_PAR_LAYER+x} ]; then echo "r'${VIASH_PAR_LAYER//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'var_qc_metrics': $( if [ ! -z ${VIASH_PAR_VAR_QC_METRICS+x} ]; then echo "r'${VIASH_PAR_VAR_QC_METRICS//\\'/\\'\\"\\'\\"r\\'}'.split(',')"; else echo None; fi ),
   'top_n_vars': $( if [ ! -z ${VIASH_PAR_TOP_N_VARS+x} ]; then echo "list(map(int, r'${VIASH_PAR_TOP_N_VARS//\\'/\\'\\"\\'\\"r\\'}'.split(',')))"; else echo None; fi ),
-  'output': $( if [ ! -z ${VIASH_PAR_OUTPUT+x} ]; then echo "r'${VIASH_PAR_OUTPUT//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi )
+  'output': $( if [ ! -z ${VIASH_PAR_OUTPUT+x} ]; then echo "r'${VIASH_PAR_OUTPUT//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
+  'output_compression': $( if [ ! -z ${VIASH_PAR_OUTPUT_COMPRESSION+x} ]; then echo "r'${VIASH_PAR_OUTPUT_COMPRESSION//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi )
 }
 meta = {
   'functionality_name': $( if [ ! -z ${VIASH_META_FUNCTIONALITY_NAME+x} ]; then echo "r'${VIASH_META_FUNCTIONALITY_NAME//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
@@ -312,7 +330,7 @@ def main():
            {f"total_counts_{qc_metrix}": col for qc_metrix, col in total_expr_qc.items()}) | \\\\
            {f"pct_of_counts_in_top_{n_top}_vars": col for n_top, col in top_metrics.items()})
 
-    input_data.write(par["output"], compression="gzip")
+    input_data.write(par["output"], compression=par["output_compression"])
             
 def get_top_from_csr_matrix(matrix, top_n_genes):
     # csr matrices stores a 3D matrix in a format such that data for individual cells

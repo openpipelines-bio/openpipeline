@@ -136,6 +136,23 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
           },
           {
             "type" : "string",
+            "name" : "--output_compression",
+            "description" : "The compression format to be used on the output h5mu object.",
+            "example" : [
+              "gzip"
+            ],
+            "required" : false,
+            "choices" : [
+              "gzip",
+              "lzf"
+            ],
+            "direction" : "input",
+            "multiple" : false,
+            "multiple_sep" : ":",
+            "dest" : "par"
+          },
+          {
+            "type" : "string",
             "name" : "--layer_spliced",
             "description" : "Output layer for the spliced reads.",
             "default" : [
@@ -248,7 +265,7 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
     "config" : "/home/runner/work/openpipeline/openpipeline/src/velocity/velocyto_to_h5mu/config.vsh.yaml",
     "platform" : "nextflow",
     "viash_version" : "0.7.0",
-    "git_commit" : "c2a79cbf44d52a0bf5f445553e0d38dcf41d0aa9",
+    "git_commit" : "d1349aaf3bcba1941598666c15e6dd055ec3349a",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))
@@ -267,6 +284,7 @@ par = {
   'input_h5mu': $( if [ ! -z ${VIASH_PAR_INPUT_H5MU+x} ]; then echo "r'${VIASH_PAR_INPUT_H5MU//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'modality': $( if [ ! -z ${VIASH_PAR_MODALITY+x} ]; then echo "r'${VIASH_PAR_MODALITY//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'output': $( if [ ! -z ${VIASH_PAR_OUTPUT+x} ]; then echo "r'${VIASH_PAR_OUTPUT//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
+  'output_compression': $( if [ ! -z ${VIASH_PAR_OUTPUT_COMPRESSION+x} ]; then echo "r'${VIASH_PAR_OUTPUT_COMPRESSION//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'layer_spliced': $( if [ ! -z ${VIASH_PAR_LAYER_SPLICED+x} ]; then echo "r'${VIASH_PAR_LAYER_SPLICED//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'layer_unspliced': $( if [ ! -z ${VIASH_PAR_LAYER_UNSPLICED+x} ]; then echo "r'${VIASH_PAR_LAYER_UNSPLICED//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'layer_ambiguous': $( if [ ! -z ${VIASH_PAR_LAYER_AMBIGUOUS+x} ]; then echo "r'${VIASH_PAR_LAYER_AMBIGUOUS//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi )
@@ -318,7 +336,7 @@ else:
 print("Resulting mudata:", mdata, flush=True)
 
 print("Writing h5mu to file", flush=True)
-mdata.write_h5mu(par["output"], compression="gzip")
+mdata.write_h5mu(par["output"], compression=par["output_compression"])
 
 VIASHMAIN
 python "$tempscript"

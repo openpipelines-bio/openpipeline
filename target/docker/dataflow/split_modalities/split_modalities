@@ -177,6 +177,12 @@ function ViashHelp {
   echo "        example: /path/to/output"
   echo "        Output directory containing multiple h5mu files."
   echo ""
+  echo "    --output_compression"
+  echo "        type: string"
+  echo "        example: gzip"
+  echo "        choices: [ gzip, lzf ]"
+  echo "        The compression format to be used on the output h5mu object."
+  echo ""
   echo "    --output_types"
   echo "        type: file, required parameter, output, file must exist"
   echo "        example: types.csv"
@@ -410,9 +416,9 @@ RUN pip install --upgrade pip && \
 
 LABEL org.opencontainers.image.authors="Dries Schaumont, Robrecht Cannoodt"
 LABEL org.opencontainers.image.description="Companion container for running component dataflow split_modalities"
-LABEL org.opencontainers.image.created="2023-03-07T11:47:47Z"
+LABEL org.opencontainers.image.created="2023-03-07T12:41:13Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="c2a79cbf44d52a0bf5f445553e0d38dcf41d0aa9"
+LABEL org.opencontainers.image.revision="d1349aaf3bcba1941598666c15e6dd055ec3349a"
 LABEL org.opencontainers.image.version="main_build"
 VIASHDOCKER
 }
@@ -598,6 +604,17 @@ while [[ $# -gt 0 ]]; do
             VIASH_PAR_OUTPUT="$2"
             [ $# -lt 2 ] && ViashError Not enough arguments passed to -o. Use "--help" to get more information on the parameters. && exit 1
             shift 2
+            ;;
+        --output_compression)
+            [ -n "$VIASH_PAR_OUTPUT_COMPRESSION" ] && ViashError Bad arguments for option \'--output_compression\': \'$VIASH_PAR_OUTPUT_COMPRESSION\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+            VIASH_PAR_OUTPUT_COMPRESSION="$2"
+            [ $# -lt 2 ] && ViashError Not enough arguments passed to --output_compression. Use "--help" to get more information on the parameters. && exit 1
+            shift 2
+            ;;
+        --output_compression=*)
+            [ -n "$VIASH_PAR_OUTPUT_COMPRESSION" ] && ViashError Bad arguments for option \'--output_compression=*\': \'$VIASH_PAR_OUTPUT_COMPRESSION\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+            VIASH_PAR_OUTPUT_COMPRESSION=$(ViashRemoveFlags "$1")
+            shift 1
             ;;
         --output_types)
             [ -n "$VIASH_PAR_OUTPUT_TYPES" ] && ViashError Bad arguments for option \'--output_types\': \'$VIASH_PAR_OUTPUT_TYPES\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
@@ -827,6 +844,19 @@ if [[ -n "$VIASH_META_MEMORY_PB" ]]; then
   fi
 fi
 
+# check whether value is belongs to a set of choices
+if [ ! -z "$VIASH_PAR_OUTPUT_COMPRESSION" ]; then
+  VIASH_PAR_OUTPUT_COMPRESSION_CHOICES=("gzip:lzf")
+  IFS=':'
+  set -f
+  if ! [[ ":${VIASH_PAR_OUTPUT_COMPRESSION_CHOICES[*]}:" =~ ":$VIASH_PAR_OUTPUT_COMPRESSION:" ]]; then
+    ViashError '--output_compression' specified value of \'$VIASH_PAR_OUTPUT_COMPRESSION\' is not in the list of allowed values. Use "--help" to get more information on the parameters.
+    exit 1
+  fi
+  set +f
+  unset IFS
+fi
+
 # create parent directories of output files, if so desired
 if [ ! -z "$VIASH_PAR_OUTPUT" ] && [ ! -d "$(dirname "$VIASH_PAR_OUTPUT")" ]; then
   mkdir -p "$(dirname "$VIASH_PAR_OUTPUT")"
@@ -924,6 +954,7 @@ logger.addHandler(console_handler)
 par = {
   'input': $( if [ ! -z ${VIASH_PAR_INPUT+x} ]; then echo "r'${VIASH_PAR_INPUT//\'/\'\"\'\"r\'}'"; else echo None; fi ),
   'output': $( if [ ! -z ${VIASH_PAR_OUTPUT+x} ]; then echo "r'${VIASH_PAR_OUTPUT//\'/\'\"\'\"r\'}'"; else echo None; fi ),
+  'output_compression': $( if [ ! -z ${VIASH_PAR_OUTPUT_COMPRESSION+x} ]; then echo "r'${VIASH_PAR_OUTPUT_COMPRESSION//\'/\'\"\'\"r\'}'"; else echo None; fi ),
   'output_types': $( if [ ! -z ${VIASH_PAR_OUTPUT_TYPES+x} ]; then echo "r'${VIASH_PAR_OUTPUT_TYPES//\'/\'\"\'\"r\'}'"; else echo None; fi ),
   'compression': $( if [ ! -z ${VIASH_PAR_COMPRESSION+x} ]; then echo "r'${VIASH_PAR_COMPRESSION//\'/\'\"\'\"r\'}'"; else echo None; fi )
 }
@@ -964,7 +995,7 @@ def main() -> None:
     for mod_name, mod in sample.mod.items():
         new_sample = md.MuData({mod_name: mod})
         logger.info('Writing to %s', names[mod_name])
-        new_sample.write_h5mu(output_dir / names[mod_name], compression="gzip")
+        new_sample.write_h5mu(output_dir / names[mod_name], compression=par["output_compression"])
 
     logger.info("Finished")
 

@@ -102,6 +102,23 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
         "dest" : "par"
       },
       {
+        "type" : "string",
+        "name" : "--output_compression",
+        "description" : "The compression format to be used on the output h5mu object.",
+        "example" : [
+          "gzip"
+        ],
+        "required" : false,
+        "choices" : [
+          "gzip",
+          "lzf"
+        ],
+        "direction" : "input",
+        "multiple" : false,
+        "multiple_sep" : ":",
+        "dest" : "par"
+      },
+      {
         "type" : "boolean_true",
         "name" : "--make_observation_keys_unique",
         "description" : "Join the id to the .obs index (.obs_names).",
@@ -183,7 +200,7 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
     "config" : "/home/runner/work/openpipeline/openpipeline/src/metadata/add_id/config.vsh.yaml",
     "platform" : "nextflow",
     "viash_version" : "0.7.0",
-    "git_commit" : "c2a79cbf44d52a0bf5f445553e0d38dcf41d0aa9",
+    "git_commit" : "d1349aaf3bcba1941598666c15e6dd055ec3349a",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))
@@ -212,6 +229,7 @@ par = {
   'input_id': $( if [ ! -z ${VIASH_PAR_INPUT_ID+x} ]; then echo "r'${VIASH_PAR_INPUT_ID//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'obs_output': $( if [ ! -z ${VIASH_PAR_OBS_OUTPUT+x} ]; then echo "r'${VIASH_PAR_OBS_OUTPUT//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'output': $( if [ ! -z ${VIASH_PAR_OUTPUT+x} ]; then echo "r'${VIASH_PAR_OUTPUT//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
+  'output_compression': $( if [ ! -z ${VIASH_PAR_OUTPUT_COMPRESSION+x} ]; then echo "r'${VIASH_PAR_OUTPUT_COMPRESSION//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'make_observation_keys_unique': $( if [ ! -z ${VIASH_PAR_MAKE_OBSERVATION_KEYS_UNIQUE+x} ]; then echo "r'${VIASH_PAR_MAKE_OBSERVATION_KEYS_UNIQUE//\\'/\\'\\"\\'\\"r\\'}'.lower() == 'true'"; else echo None; fi )
 }
 meta = {
@@ -260,7 +278,7 @@ def main():
     if par["make_observation_keys_unique"]:
         make_observation_keys_unique(par["input_id"], input_data)
     logger.info("Writing out data to '%s'.", par["output"])
-    input_data.write_h5mu(par["output"], compression="gzip")
+    input_data.write_h5mu(par["output"], compression=par["output_compression"])
 
 if __name__ == '__main__':
     main()

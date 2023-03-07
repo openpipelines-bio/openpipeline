@@ -29,6 +29,11 @@
             "description": "Output file.",
             "default": "$id.$key.output.h5mu"
           },
+          "output_compression": {
+            "type": "string",
+            "description": "No description","enum": ["gzip", "lzf"],
+            "default": ""
+          },
           "obs_name": {
             "type": "string",
             "description": "Name of the .obs key under which to add the cluster labels.",

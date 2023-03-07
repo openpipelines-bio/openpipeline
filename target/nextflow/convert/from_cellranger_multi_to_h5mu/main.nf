@@ -81,6 +81,22 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
       },
       {
         "type" : "string",
+        "name" : "--output_compression",
+        "example" : [
+          "gzip"
+        ],
+        "required" : false,
+        "choices" : [
+          "gzip",
+          "lzf"
+        ],
+        "direction" : "input",
+        "multiple" : false,
+        "multiple_sep" : ":",
+        "dest" : "par"
+      },
+      {
+        "type" : "string",
         "name" : "--uns_metrics",
         "description" : "Name of the .uns slot under which to QC metrics (if any).",
         "default" : [
@@ -165,7 +181,7 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
     "config" : "/home/runner/work/openpipeline/openpipeline/src/convert/from_cellranger_multi_to_h5mu/config.vsh.yaml",
     "platform" : "nextflow",
     "viash_version" : "0.7.0",
-    "git_commit" : "c2a79cbf44d52a0bf5f445553e0d38dcf41d0aa9",
+    "git_commit" : "d1349aaf3bcba1941598666c15e6dd055ec3349a",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))
@@ -187,6 +203,7 @@ from collections import defaultdict
 par = {
   'input': $( if [ ! -z ${VIASH_PAR_INPUT+x} ]; then echo "r'${VIASH_PAR_INPUT//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'output': $( if [ ! -z ${VIASH_PAR_OUTPUT+x} ]; then echo "r'${VIASH_PAR_OUTPUT//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
+  'output_compression': $( if [ ! -z ${VIASH_PAR_OUTPUT_COMPRESSION+x} ]; then echo "r'${VIASH_PAR_OUTPUT_COMPRESSION//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'uns_metrics': $( if [ ! -z ${VIASH_PAR_UNS_METRICS+x} ]; then echo "r'${VIASH_PAR_UNS_METRICS//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi )
 }
 meta = {
@@ -337,7 +354,7 @@ def main():
     input_data = gather_input_data(cellranger_multi_dir)
     result = get_modalities(input_data)
     logger.info("Writing %s", par["output"])
-    result.write_h5mu(par["output"], compression="gzip")
+    result.write_h5mu(par["output"], compression=par["output_compression"])
 
 if __name__ == "__main__":
     main()

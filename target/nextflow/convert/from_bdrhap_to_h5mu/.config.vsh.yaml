@@ -59,6 +59,20 @@ functionality:
       multiple: false
       multiple_sep: ":"
       dest: "par"
+    - type: "string"
+      name: "--output_compression"
+      alternatives: []
+      example:
+      - "gzip"
+      default: []
+      required: false
+      choices:
+      - "gzip"
+      - "lzf"
+      direction: "input"
+      multiple: false
+      multiple_sep: ":"
+      dest: "par"
   resources:
   - type: "r_script"
     path: "script.R"
@@ -152,5 +166,5 @@ info:
   output: "/home/runner/work/openpipeline/openpipeline/target/nextflow/convert/from_bdrhap_to_h5mu"
   executable: "/home/runner/work/openpipeline/openpipeline/target/nextflow/convert/from_bdrhap_to_h5mu/from_bdrhap_to_h5mu"
   viash_version: "0.7.0"
-  git_commit: "c2a79cbf44d52a0bf5f445553e0d38dcf41d0aa9"
+  git_commit: "d1349aaf3bcba1941598666c15e6dd055ec3349a"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"

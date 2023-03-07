@@ -93,7 +93,7 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
       },
       {
         "type" : "string",
-        "name" : "--compression",
+        "name" : "--output_compression",
         "description" : "The compression format to be used on the final h5ad object.",
         "default" : [
           "gzip"
@@ -179,7 +179,7 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
     "config" : "/home/runner/work/openpipeline/openpipeline/src/convert/from_h5mu_to_h5ad/config.vsh.yaml",
     "platform" : "nextflow",
     "viash_version" : "0.7.0",
-    "git_commit" : "c2a79cbf44d52a0bf5f445553e0d38dcf41d0aa9",
+    "git_commit" : "d1349aaf3bcba1941598666c15e6dd055ec3349a",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))
@@ -205,7 +205,7 @@ par = {
   'input': $( if [ ! -z ${VIASH_PAR_INPUT+x} ]; then echo "r'${VIASH_PAR_INPUT//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'modality': $( if [ ! -z ${VIASH_PAR_MODALITY+x} ]; then echo "r'${VIASH_PAR_MODALITY//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'output': $( if [ ! -z ${VIASH_PAR_OUTPUT+x} ]; then echo "r'${VIASH_PAR_OUTPUT//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
-  'compression': $( if [ ! -z ${VIASH_PAR_COMPRESSION+x} ]; then echo "r'${VIASH_PAR_COMPRESSION//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi )
+  'output_compression': $( if [ ! -z ${VIASH_PAR_OUTPUT_COMPRESSION+x} ]; then echo "r'${VIASH_PAR_OUTPUT_COMPRESSION//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi )
 }
 meta = {
   'functionality_name': $( if [ ! -z ${VIASH_META_FUNCTIONALITY_NAME+x} ]; then echo "r'${VIASH_META_FUNCTIONALITY_NAME//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
@@ -233,7 +233,7 @@ logger.info("Converting to h5ad")
 adat = dat.mod[par["modality"]]
 
 logger.info("Writing to %s.", par['output'])
-adat.write_h5ad(par["output"], compression="gzip")
+adat.write_h5ad(par["output"], compression=par["output_compression"])
 
 logger.info("Finished")
 

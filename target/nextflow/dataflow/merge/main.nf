@@ -81,12 +81,16 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
       },
       {
         "type" : "string",
-        "name" : "--compression",
-        "description" : "The compression format to be used on the final h5mu object.",
-        "default" : [
+        "name" : "--output_compression",
+        "description" : "The compression format to be used on the output h5mu object.",
+        "example" : [
           "gzip"
         ],
         "required" : false,
+        "choices" : [
+          "gzip",
+          "lzf"
+        ],
         "direction" : "input",
         "multiple" : false,
         "multiple_sep" : ":",
@@ -175,7 +179,7 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
     "config" : "/home/runner/work/openpipeline/openpipeline/src/dataflow/merge/config.vsh.yml",
     "platform" : "nextflow",
     "viash_version" : "0.7.0",
-    "git_commit" : "c2a79cbf44d52a0bf5f445553e0d38dcf41d0aa9",
+    "git_commit" : "d1349aaf3bcba1941598666c15e6dd055ec3349a",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))
@@ -197,7 +201,7 @@ import mudata as md
 par = {
   'input': $( if [ ! -z ${VIASH_PAR_INPUT+x} ]; then echo "r'${VIASH_PAR_INPUT//\\'/\\'\\"\\'\\"r\\'}'.split(',')"; else echo None; fi ),
   'output': $( if [ ! -z ${VIASH_PAR_OUTPUT+x} ]; then echo "r'${VIASH_PAR_OUTPUT//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
-  'compression': $( if [ ! -z ${VIASH_PAR_COMPRESSION+x} ]; then echo "r'${VIASH_PAR_COMPRESSION//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi )
+  'output_compression': $( if [ ! -z ${VIASH_PAR_OUTPUT_COMPRESSION+x} ]; then echo "r'${VIASH_PAR_OUTPUT_COMPRESSION//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi )
 }
 meta = {
   'functionality_name': $( if [ ! -z ${VIASH_META_FUNCTIONALITY_NAME+x} ]; then echo "r'${VIASH_META_FUNCTIONALITY_NAME//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
@@ -237,7 +241,7 @@ def main():
             sample_modalities[mod_name] = mod_data
 
     merged = md.MuData(sample_modalities)
-    merged.write_h5mu(par["output"], compression="gzip")
+    merged.write_h5mu(par["output"], compression=par["output_compression"])
     logger.info('Finished')
 
 

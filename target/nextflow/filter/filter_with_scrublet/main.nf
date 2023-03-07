@@ -99,6 +99,23 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
       },
       {
         "type" : "string",
+        "name" : "--output_compression",
+        "description" : "The compression format to be used on the output h5mu object.",
+        "example" : [
+          "gzip"
+        ],
+        "required" : false,
+        "choices" : [
+          "gzip",
+          "lzf"
+        ],
+        "direction" : "input",
+        "multiple" : false,
+        "multiple_sep" : ":",
+        "dest" : "par"
+      },
+      {
+        "type" : "string",
         "name" : "--obs_name_filter",
         "description" : "In which .obs slot to store a boolean array corresponding to which observations should be filtered out.",
         "default" : [
@@ -275,7 +292,7 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
     "config" : "/home/runner/work/openpipeline/openpipeline/src/filter/filter_with_scrublet/config.vsh.yaml",
     "platform" : "nextflow",
     "viash_version" : "0.7.0",
-    "git_commit" : "c2a79cbf44d52a0bf5f445553e0d38dcf41d0aa9",
+    "git_commit" : "d1349aaf3bcba1941598666c15e6dd055ec3349a",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))
@@ -303,6 +320,7 @@ par = {
   'input': $( if [ ! -z ${VIASH_PAR_INPUT+x} ]; then echo "r'${VIASH_PAR_INPUT//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'modality': $( if [ ! -z ${VIASH_PAR_MODALITY+x} ]; then echo "r'${VIASH_PAR_MODALITY//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'output': $( if [ ! -z ${VIASH_PAR_OUTPUT+x} ]; then echo "r'${VIASH_PAR_OUTPUT//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
+  'output_compression': $( if [ ! -z ${VIASH_PAR_OUTPUT_COMPRESSION+x} ]; then echo "r'${VIASH_PAR_OUTPUT_COMPRESSION//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'obs_name_filter': $( if [ ! -z ${VIASH_PAR_OBS_NAME_FILTER+x} ]; then echo "r'${VIASH_PAR_OBS_NAME_FILTER//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'do_subset': $( if [ ! -z ${VIASH_PAR_DO_SUBSET+x} ]; then echo "r'${VIASH_PAR_DO_SUBSET//\\'/\\'\\"\\'\\"r\\'}'.lower() == 'true'"; else echo None; fi ),
   'obs_name_doublet_score': $( if [ ! -z ${VIASH_PAR_OBS_NAME_DOUBLET_SCORE+x} ]; then echo "r'${VIASH_PAR_OBS_NAME_DOUBLET_SCORE//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
@@ -359,7 +377,7 @@ if par["do_subset"]:
     mdata.mod[mod] = data[keep_cells, :]
 
 logger.info("Writing h5mu to %s", par["output"])
-mdata.write_h5mu(par["output"], compression="gzip")
+mdata.write_h5mu(par["output"], compression=par["output_compression"])
 
 VIASHMAIN
 python "$tempscript"

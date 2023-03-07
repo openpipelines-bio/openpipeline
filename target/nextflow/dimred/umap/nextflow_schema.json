@@ -37,6 +37,11 @@
             "description": "Output h5mu file.",
             "default": "$id.$key.output.h5mu"
           },
+          "output_compression": {
+            "type": "string",
+            "description": "The compression format to be used on the output h5mu object.","enum": ["gzip", "lzf"],
+            "default": ""
+          },
           "obsm_output": {
             "type": "string",
             "description": "The pre/postfix under which to store the UMAP results.",

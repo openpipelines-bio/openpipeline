@@ -114,6 +114,23 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
       },
       {
         "type" : "string",
+        "name" : "--output_compression",
+        "description" : "The compression format to be used on the output h5mu object.",
+        "example" : [
+          "gzip"
+        ],
+        "required" : false,
+        "choices" : [
+          "gzip",
+          "lzf"
+        ],
+        "direction" : "input",
+        "multiple" : false,
+        "multiple_sep" : ":",
+        "dest" : "par"
+      },
+      {
+        "type" : "string",
         "name" : "--obsm_output",
         "description" : "In which .obsm slot to store the resulting embedding.",
         "default" : [
@@ -238,7 +255,8 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
       "variant" : "vdsl3",
       "directives" : {
         "label" : [
-          "highcpu"
+          "highcpu",
+          "highmem"
         ],
         "tag" : "$id"
       },
@@ -256,7 +274,7 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
     "config" : "/home/runner/work/openpipeline/openpipeline/src/dimred/pca/config.vsh.yaml",
     "platform" : "nextflow",
     "viash_version" : "0.7.0",
-    "git_commit" : "c2a79cbf44d52a0bf5f445553e0d38dcf41d0aa9",
+    "git_commit" : "d1349aaf3bcba1941598666c15e6dd055ec3349a",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))
@@ -279,6 +297,7 @@ par = {
   'layer': $( if [ ! -z ${VIASH_PAR_LAYER+x} ]; then echo "r'${VIASH_PAR_LAYER//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'var_input': $( if [ ! -z ${VIASH_PAR_VAR_INPUT+x} ]; then echo "r'${VIASH_PAR_VAR_INPUT//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'output': $( if [ ! -z ${VIASH_PAR_OUTPUT+x} ]; then echo "r'${VIASH_PAR_OUTPUT//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
+  'output_compression': $( if [ ! -z ${VIASH_PAR_OUTPUT_COMPRESSION+x} ]; then echo "r'${VIASH_PAR_OUTPUT_COMPRESSION//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'obsm_output': $( if [ ! -z ${VIASH_PAR_OBSM_OUTPUT+x} ]; then echo "r'${VIASH_PAR_OBSM_OUTPUT//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'varm_output': $( if [ ! -z ${VIASH_PAR_VARM_OUTPUT+x} ]; then echo "r'${VIASH_PAR_VARM_OUTPUT//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'uns_output': $( if [ ! -z ${VIASH_PAR_UNS_OUTPUT+x} ]; then echo "r'${VIASH_PAR_UNS_OUTPUT//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
@@ -358,7 +377,7 @@ data.uns[par["uns_output"]] = { "variance": output_adata.uns['pca']['variance_ra
 
 
 logger.info("Writing to %s.", par["output"])
-mdata.write_h5mu(filename=par["output"], compression="gzip")
+mdata.write_h5mu(filename=par["output"], compression=par["output_compression"])
 
 logger.info("Finished")
 
@@ -379,7 +398,8 @@ thisDefaultProcessArgs = [
     "tag" : "main_build"
   },
   "label" : [
-    "highcpu"
+    "highcpu",
+    "highmem"
   ],
   "tag" : "$id"
 }'''),

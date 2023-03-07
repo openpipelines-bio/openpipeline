@@ -176,6 +176,12 @@ function ViashHelp {
   echo "        type: file, required parameter, output, file must exist"
   echo "        example: output.h5mu"
   echo "        Output h5mu file."
+  echo ""
+  echo "    --output_compression"
+  echo "        type: string"
+  echo "        example: gzip"
+  echo "        choices: [ gzip, lzf ]"
+  echo "        The compression format to be used on the output h5mu object."
 }
 
 ######## Helper functions for setting up Docker images for viash ########
@@ -399,9 +405,9 @@ RUN pip install --upgrade pip && \
   pip install --upgrade --no-cache-dir "mudata~=0.2.0" "anndata~=0.8.0"
 
 LABEL org.opencontainers.image.description="Companion container for running component metadata join_uns_to_obs"
-LABEL org.opencontainers.image.created="2023-03-07T11:47:47Z"
+LABEL org.opencontainers.image.created="2023-03-07T12:41:13Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="c2a79cbf44d52a0bf5f445553e0d38dcf41d0aa9"
+LABEL org.opencontainers.image.revision="d1349aaf3bcba1941598666c15e6dd055ec3349a"
 LABEL org.opencontainers.image.version="main_build"
 VIASHDOCKER
 }
@@ -610,6 +616,17 @@ while [[ $# -gt 0 ]]; do
             [ $# -lt 2 ] && ViashError Not enough arguments passed to -o. Use "--help" to get more information on the parameters. && exit 1
             shift 2
             ;;
+        --output_compression)
+            [ -n "$VIASH_PAR_OUTPUT_COMPRESSION" ] && ViashError Bad arguments for option \'--output_compression\': \'$VIASH_PAR_OUTPUT_COMPRESSION\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+            VIASH_PAR_OUTPUT_COMPRESSION="$2"
+            [ $# -lt 2 ] && ViashError Not enough arguments passed to --output_compression. Use "--help" to get more information on the parameters. && exit 1
+            shift 2
+            ;;
+        --output_compression=*)
+            [ -n "$VIASH_PAR_OUTPUT_COMPRESSION" ] && ViashError Bad arguments for option \'--output_compression=*\': \'$VIASH_PAR_OUTPUT_COMPRESSION\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+            VIASH_PAR_OUTPUT_COMPRESSION=$(ViashRemoveFlags "$1")
+            shift 1
+            ;;
         ---setup)
             VIASH_MODE='docker_setup'
             VIASH_DOCKER_SETUP_STRATEGY="$2"
@@ -816,6 +833,19 @@ if [[ -n "$VIASH_META_MEMORY_PB" ]]; then
   fi
 fi
 
+# check whether value is belongs to a set of choices
+if [ ! -z "$VIASH_PAR_OUTPUT_COMPRESSION" ]; then
+  VIASH_PAR_OUTPUT_COMPRESSION_CHOICES=("gzip:lzf")
+  IFS=':'
+  set -f
+  if ! [[ ":${VIASH_PAR_OUTPUT_COMPRESSION_CHOICES[*]}:" =~ ":$VIASH_PAR_OUTPUT_COMPRESSION:" ]]; then
+    ViashError '--output_compression' specified value of \'$VIASH_PAR_OUTPUT_COMPRESSION\' is not in the list of allowed values. Use "--help" to get more information on the parameters.
+    exit 1
+  fi
+  set +f
+  unset IFS
+fi
+
 # create parent directories of output files, if so desired
 if [ ! -z "$VIASH_PAR_OUTPUT" ] && [ ! -d "$(dirname "$VIASH_PAR_OUTPUT")" ]; then
   mkdir -p "$(dirname "$VIASH_PAR_OUTPUT")"
@@ -904,7 +934,8 @@ par = {
   'input': $( if [ ! -z ${VIASH_PAR_INPUT+x} ]; then echo "r'${VIASH_PAR_INPUT//\'/\'\"\'\"r\'}'"; else echo None; fi ),
   'modality': $( if [ ! -z ${VIASH_PAR_MODALITY+x} ]; then echo "r'${VIASH_PAR_MODALITY//\'/\'\"\'\"r\'}'"; else echo None; fi ),
   'uns_key': $( if [ ! -z ${VIASH_PAR_UNS_KEY+x} ]; then echo "r'${VIASH_PAR_UNS_KEY//\'/\'\"\'\"r\'}'"; else echo None; fi ),
-  'output': $( if [ ! -z ${VIASH_PAR_OUTPUT+x} ]; then echo "r'${VIASH_PAR_OUTPUT//\'/\'\"\'\"r\'}'"; else echo None; fi )
+  'output': $( if [ ! -z ${VIASH_PAR_OUTPUT+x} ]; then echo "r'${VIASH_PAR_OUTPUT//\'/\'\"\'\"r\'}'"; else echo None; fi ),
+  'output_compression': $( if [ ! -z ${VIASH_PAR_OUTPUT_COMPRESSION+x} ]; then echo "r'${VIASH_PAR_OUTPUT_COMPRESSION//\'/\'\"\'\"r\'}'"; else echo None; fi )
 }
 meta = {
   'functionality_name': $( if [ ! -z ${VIASH_META_FUNCTIONALITY_NAME+x} ]; then echo "r'${VIASH_META_FUNCTIONALITY_NAME//\'/\'\"\'\"r\'}'"; else echo None; fi ),
@@ -944,7 +975,7 @@ uns_df_rep.index = mod_data.obs_names
 mod_data.obs = pd.concat([obs_drop, uns_df_rep], axis=1)
 
 logger.info("Write output to mudata file")
-mdata.write_h5mu(par['output'], compression="gzip")
+mdata.write_h5mu(par['output'], compression=par["ouput_compression"])
 
         
 

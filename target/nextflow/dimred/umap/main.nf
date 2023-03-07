@@ -109,6 +109,23 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
           },
           {
             "type" : "string",
+            "name" : "--output_compression",
+            "description" : "The compression format to be used on the output h5mu object.",
+            "example" : [
+              "gzip"
+            ],
+            "required" : false,
+            "choices" : [
+              "gzip",
+              "lzf"
+            ],
+            "direction" : "input",
+            "multiple" : false,
+            "multiple_sep" : ":",
+            "dest" : "par"
+          },
+          {
+            "type" : "string",
             "name" : "--obsm_output",
             "description" : "The pre/postfix under which to store the UMAP results.",
             "default" : [
@@ -303,7 +320,7 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
     "config" : "/home/runner/work/openpipeline/openpipeline/src/dimred/umap/config.vsh.yaml",
     "platform" : "nextflow",
     "viash_version" : "0.7.0",
-    "git_commit" : "c2a79cbf44d52a0bf5f445553e0d38dcf41d0aa9",
+    "git_commit" : "d1349aaf3bcba1941598666c15e6dd055ec3349a",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))
@@ -325,6 +342,7 @@ par = {
   'modality': $( if [ ! -z ${VIASH_PAR_MODALITY+x} ]; then echo "r'${VIASH_PAR_MODALITY//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'uns_neighbors': $( if [ ! -z ${VIASH_PAR_UNS_NEIGHBORS+x} ]; then echo "r'${VIASH_PAR_UNS_NEIGHBORS//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'output': $( if [ ! -z ${VIASH_PAR_OUTPUT+x} ]; then echo "r'${VIASH_PAR_OUTPUT//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
+  'output_compression': $( if [ ! -z ${VIASH_PAR_OUTPUT_COMPRESSION+x} ]; then echo "r'${VIASH_PAR_OUTPUT_COMPRESSION//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'obsm_output': $( if [ ! -z ${VIASH_PAR_OBSM_OUTPUT+x} ]; then echo "r'${VIASH_PAR_OBSM_OUTPUT//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'min_dist': $( if [ ! -z ${VIASH_PAR_MIN_DIST+x} ]; then echo "float(r'${VIASH_PAR_MIN_DIST//\\'/\\'\\"\\'\\"r\\'}')"; else echo None; fi ),
   'spread': $( if [ ! -z ${VIASH_PAR_SPREAD+x} ]; then echo "float(r'${VIASH_PAR_SPREAD//\\'/\\'\\"\\'\\"r\\'}')"; else echo None; fi ),
@@ -408,7 +426,7 @@ sc.tl.umap(
 data.obsm[par['obsm_output']] = temp_adata.obsm['X_umap']
 
 logger.info("Writing to %s.", par["output"])
-mdata.write_h5mu(filename=par["output"], compression="gzip")
+mdata.write_h5mu(filename=par["output"], compression=par["output_compression"])
 
 logger.info("Finished")
 

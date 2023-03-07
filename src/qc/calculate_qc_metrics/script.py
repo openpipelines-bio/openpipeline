@@ -72,7 +72,7 @@ def main():
            {f"total_counts_{qc_metrix}": col for qc_metrix, col in total_expr_qc.items()}) | \
            {f"pct_of_counts_in_top_{n_top}_vars": col for n_top, col in top_metrics.items()})
 
-    input_data.write(par["output"], compression="gzip")
+    input_data.write(par["output"], compression=par["output_compression"])
             
 def get_top_from_csr_matrix(matrix, top_n_genes):
     # csr matrices stores a 3D matrix in a format such that data for individual cells

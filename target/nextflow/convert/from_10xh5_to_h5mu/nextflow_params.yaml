@@ -4,6 +4,7 @@ input: # please fill in - example: "raw_feature_bc_matrix.h5"
 
 # Outputs
 # output: "$id.$key.output.h5mu"
+# output_compression: "gzip"
 uns_metrics: "metrics_cellranger"
 
 # Arguments

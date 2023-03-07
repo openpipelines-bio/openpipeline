@@ -7,6 +7,7 @@ mitochondrial_gene_regex: "^[mM][tT]-"
 
 # Outputs
 # output: "$id.$key.output.h5mu"
+# output_compression: "gzip"
 do_subset: false
 obs_name_filter: "filter_with_counts"
 var_name_filter: "filter_with_counts"

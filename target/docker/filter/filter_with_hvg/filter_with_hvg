@@ -200,6 +200,12 @@ function ViashHelp {
   echo "        example: output.h5mu"
   echo "        Output h5mu file."
   echo ""
+  echo "    --output_compression"
+  echo "        type: string"
+  echo "        example: gzip"
+  echo "        choices: [ gzip, lzf ]"
+  echo "        The compression format to be used on the output h5mu object."
+  echo ""
   echo "    --var_name_filter"
   echo "        type: string"
   echo "        default: filter_with_hvg"
@@ -501,9 +507,9 @@ RUN pip install --upgrade pip && \
 
 LABEL org.opencontainers.image.authors="Dries De Maeyer, Robrecht Cannoodt"
 LABEL org.opencontainers.image.description="Companion container for running component filter filter_with_hvg"
-LABEL org.opencontainers.image.created="2023-03-07T11:47:40Z"
+LABEL org.opencontainers.image.created="2023-03-07T12:41:06Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="c2a79cbf44d52a0bf5f445553e0d38dcf41d0aa9"
+LABEL org.opencontainers.image.revision="d1349aaf3bcba1941598666c15e6dd055ec3349a"
 LABEL org.opencontainers.image.version="main_build"
 VIASHDOCKER
 }
@@ -698,6 +704,17 @@ while [[ $# -gt 0 ]]; do
         --output=*)
             [ -n "$VIASH_PAR_OUTPUT" ] && ViashError Bad arguments for option \'--output=*\': \'$VIASH_PAR_OUTPUT\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
             VIASH_PAR_OUTPUT=$(ViashRemoveFlags "$1")
+            shift 1
+            ;;
+        --output_compression)
+            [ -n "$VIASH_PAR_OUTPUT_COMPRESSION" ] && ViashError Bad arguments for option \'--output_compression\': \'$VIASH_PAR_OUTPUT_COMPRESSION\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+            VIASH_PAR_OUTPUT_COMPRESSION="$2"
+            [ $# -lt 2 ] && ViashError Not enough arguments passed to --output_compression. Use "--help" to get more information on the parameters. && exit 1
+            shift 2
+            ;;
+        --output_compression=*)
+            [ -n "$VIASH_PAR_OUTPUT_COMPRESSION" ] && ViashError Bad arguments for option \'--output_compression=*\': \'$VIASH_PAR_OUTPUT_COMPRESSION\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+            VIASH_PAR_OUTPUT_COMPRESSION=$(ViashRemoveFlags "$1")
             shift 1
             ;;
         --var_name_filter)
@@ -1100,6 +1117,18 @@ if [[ -n "$VIASH_META_MEMORY_PB" ]]; then
 fi
 
 # check whether value is belongs to a set of choices
+if [ ! -z "$VIASH_PAR_OUTPUT_COMPRESSION" ]; then
+  VIASH_PAR_OUTPUT_COMPRESSION_CHOICES=("gzip:lzf")
+  IFS=':'
+  set -f
+  if ! [[ ":${VIASH_PAR_OUTPUT_COMPRESSION_CHOICES[*]}:" =~ ":$VIASH_PAR_OUTPUT_COMPRESSION:" ]]; then
+    ViashError '--output_compression' specified value of \'$VIASH_PAR_OUTPUT_COMPRESSION\' is not in the list of allowed values. Use "--help" to get more information on the parameters.
+    exit 1
+  fi
+  set +f
+  unset IFS
+fi
+
 if [ ! -z "$VIASH_PAR_FLAVOR" ]; then
   VIASH_PAR_FLAVOR_CHOICES=("seurat:cell_ranger:seurat_v3")
   IFS=':'
@@ -1196,6 +1225,7 @@ par = {
   'modality': $( if [ ! -z ${VIASH_PAR_MODALITY+x} ]; then echo "r'${VIASH_PAR_MODALITY//\'/\'\"\'\"r\'}'"; else echo None; fi ),
   'layer': $( if [ ! -z ${VIASH_PAR_LAYER+x} ]; then echo "r'${VIASH_PAR_LAYER//\'/\'\"\'\"r\'}'"; else echo None; fi ),
   'output': $( if [ ! -z ${VIASH_PAR_OUTPUT+x} ]; then echo "r'${VIASH_PAR_OUTPUT//\'/\'\"\'\"r\'}'"; else echo None; fi ),
+  'output_compression': $( if [ ! -z ${VIASH_PAR_OUTPUT_COMPRESSION+x} ]; then echo "r'${VIASH_PAR_OUTPUT_COMPRESSION//\'/\'\"\'\"r\'}'"; else echo None; fi ),
   'var_name_filter': $( if [ ! -z ${VIASH_PAR_VAR_NAME_FILTER+x} ]; then echo "r'${VIASH_PAR_VAR_NAME_FILTER//\'/\'\"\'\"r\'}'"; else echo None; fi ),
   'varm_name': $( if [ ! -z ${VIASH_PAR_VARM_NAME+x} ]; then echo "r'${VIASH_PAR_VARM_NAME//\'/\'\"\'\"r\'}'"; else echo None; fi ),
   'do_subset': $( if [ ! -z ${VIASH_PAR_DO_SUBSET+x} ]; then echo "r'${VIASH_PAR_DO_SUBSET//\'/\'\"\'\"r\'}'.lower() == 'true'"; else echo None; fi ),
@@ -1319,7 +1349,7 @@ if par["do_subset"]:
     mdata.mod[mod] = data[:,keep_feats]
 
 logger.info("Writing h5mu to file")
-mdata.write_h5mu(par["output"], compression="gzip")
+mdata.write_h5mu(par["output"], compression=par["output_compression"])
 
 VIASHMAIN
 python "\$tempscript" &

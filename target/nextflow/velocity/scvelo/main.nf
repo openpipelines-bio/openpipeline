@@ -74,6 +74,23 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
             "multiple" : false,
             "multiple_sep" : ":",
             "dest" : "par"
+          },
+          {
+            "type" : "string",
+            "name" : "--output_compression",
+            "description" : "The compression format to be used on the output h5mu object.",
+            "example" : [
+              "gzip"
+            ],
+            "required" : false,
+            "choices" : [
+              "gzip",
+              "lzf"
+            ],
+            "direction" : "input",
+            "multiple" : false,
+            "multiple_sep" : ":",
+            "dest" : "par"
           }
         ]
       },
@@ -274,7 +291,7 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
     "config" : "/home/runner/work/openpipeline/openpipeline/src/velocity/scvelo/config.vsh.yaml",
     "platform" : "nextflow",
     "viash_version" : "0.7.0",
-    "git_commit" : "c2a79cbf44d52a0bf5f445553e0d38dcf41d0aa9",
+    "git_commit" : "d1349aaf3bcba1941598666c15e6dd055ec3349a",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))
@@ -304,6 +321,7 @@ logger.addHandler(console_handler)
 par = {
   'input': $( if [ ! -z ${VIASH_PAR_INPUT+x} ]; then echo "r'${VIASH_PAR_INPUT//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'output': $( if [ ! -z ${VIASH_PAR_OUTPUT+x} ]; then echo "r'${VIASH_PAR_OUTPUT//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
+  'output_compression': $( if [ ! -z ${VIASH_PAR_OUTPUT_COMPRESSION+x} ]; then echo "r'${VIASH_PAR_OUTPUT_COMPRESSION//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'min_counts': $( if [ ! -z ${VIASH_PAR_MIN_COUNTS+x} ]; then echo "int(r'${VIASH_PAR_MIN_COUNTS//\\'/\\'\\"\\'\\"r\\'}')"; else echo None; fi ),
   'min_counts_u': $( if [ ! -z ${VIASH_PAR_MIN_COUNTS_U+x} ]; then echo "int(r'${VIASH_PAR_MIN_COUNTS_U//\\'/\\'\\"\\'\\"r\\'}')"; else echo None; fi ),
   'min_cells': $( if [ ! -z ${VIASH_PAR_MIN_CELLS+x} ]; then echo "int(r'${VIASH_PAR_MIN_CELLS//\\'/\\'\\"\\'\\"r\\'}')"; else echo None; fi ),
@@ -390,7 +408,7 @@ def main():
 
     # Create output
     ouput_data = mudata.MuData({'rna_velocity': adata})
-    ouput_data.write_h5mu(output_dir / f"{sample_name}.h5mu", compression="gzip")
+    ouput_data.write_h5mu(output_dir / f"{sample_name}.h5mu", compression=par["output_compression"])
 
 if __name__ == "__main__":
     main()

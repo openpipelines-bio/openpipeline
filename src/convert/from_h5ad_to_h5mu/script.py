@@ -8,7 +8,7 @@ par = {
     "input": ["resources_test/pbmc_1k_protein_v3/pbmc_1k_protein_v3_filtered_feature_bc_matrix.h5ad"],
     "modality": ["rna"],
     "output": "output.h5mu",
-    "compression": "gzip",
+    "output_compression": "gzip",
     "conversions_obsm": '{"counts_antibody":"prot", "counts_custom": "custom"}',
 }
 ## VIASH END
@@ -39,6 +39,6 @@ except:
     pass
 
 logger.info("Writing to %s.", par['output'])
-mudata.write_h5mu(par["output"], compression="gzip")
+mudata.write_h5mu(par["output"], compression=par["output_compression"])
 
 logger.info("Finished")

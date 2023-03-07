@@ -104,6 +104,22 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
       },
       {
         "type" : "string",
+        "name" : "--output_compression",
+        "example" : [
+          "gzip"
+        ],
+        "required" : false,
+        "choices" : [
+          "gzip",
+          "lzf"
+        ],
+        "direction" : "input",
+        "multiple" : false,
+        "multiple_sep" : ":",
+        "dest" : "par"
+      },
+      {
+        "type" : "string",
         "name" : "--obs_name",
         "description" : "Name of the .obs key under which to add the cluster labels.",
         "default" : [
@@ -211,7 +227,7 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
     "config" : "/home/runner/work/openpipeline/openpipeline/src/cluster/leiden/config.vsh.yaml",
     "platform" : "nextflow",
     "viash_version" : "0.7.0",
-    "git_commit" : "c2a79cbf44d52a0bf5f445553e0d38dcf41d0aa9",
+    "git_commit" : "d1349aaf3bcba1941598666c15e6dd055ec3349a",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))
@@ -232,6 +248,7 @@ par = {
   'modality': $( if [ ! -z ${VIASH_PAR_MODALITY+x} ]; then echo "r'${VIASH_PAR_MODALITY//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'obsp_connectivities': $( if [ ! -z ${VIASH_PAR_OBSP_CONNECTIVITIES+x} ]; then echo "r'${VIASH_PAR_OBSP_CONNECTIVITIES//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'output': $( if [ ! -z ${VIASH_PAR_OUTPUT+x} ]; then echo "r'${VIASH_PAR_OUTPUT//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
+  'output_compression': $( if [ ! -z ${VIASH_PAR_OUTPUT_COMPRESSION+x} ]; then echo "r'${VIASH_PAR_OUTPUT_COMPRESSION//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'obs_name': $( if [ ! -z ${VIASH_PAR_OBS_NAME+x} ]; then echo "r'${VIASH_PAR_OBS_NAME//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'resolution': $( if [ ! -z ${VIASH_PAR_RESOLUTION+x} ]; then echo "float(r'${VIASH_PAR_RESOLUTION//\\'/\\'\\"\\'\\"r\\'}')"; else echo None; fi )
 }
@@ -272,7 +289,7 @@ sc.tl.leiden(
     )
 
 logger.info("Writing to %s.", par["output"])
-mdata.write_h5mu(filename=par["output"])
+mdata.write_h5mu(filename=par["output"], compression=par["output_compression"])
 logger.info("Finished.")
 
 VIASHMAIN

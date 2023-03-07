@@ -36,7 +36,8 @@ class TestMerge(unittest.TestCase):
         self._run_and_check_output([
             "--input", input_sample1_file,
             "--input", input_sample2_file,
-            "--output", "merge.h5mu"])
+            "--output", "merge.h5mu",
+            "--output_compression", "gzip"])
 
         self.assertTrue(Path("merge.h5mu").is_file())
         concatenated_data = md.read("merge.h5mu")

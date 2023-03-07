@@ -29,6 +29,11 @@
             "description": "Output h5mu file.",
             "default": "$id.$key.output.h5mu"
           },
+          "output_compression": {
+            "type": "string",
+            "description": "The compression format to be used on the output h5mu object.","enum": ["gzip", "lzf"],
+            "default": ""
+          },
           "var_name_filter": {
             "type": "string",
             "description": "In which .var slot to store a boolean array corresponding to which observations should be filtered out.",

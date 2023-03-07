@@ -4,6 +4,7 @@ modality: "rna"
 # max_value: 123.0
 zero_center: true
 # output: "$id.$key.output.h5mu"
+# output_compression: "gzip"
 
 # Nextflow input-output arguments
 publish_dir: # please fill in - example: "output/"

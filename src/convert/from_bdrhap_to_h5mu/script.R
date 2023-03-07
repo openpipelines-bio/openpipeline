@@ -236,4 +236,4 @@ modalities <-
 mdata <- mudata$MuData(modalities[!sapply(modalities, is.null)])
 
 cat("Writing to h5mu file\n")
-mdata$write(par$output, compression="gzip")
+mdata$write(par$output, compression=par$output_compression)

@@ -15,7 +15,8 @@ par = {
     "output": "foo.h5mu",
     "sample_names": ["mouse", "human"],
     "compression": "gzip",
-    "other_axis_mode": "move"
+    "other_axis_mode": "move",
+    "output_compression": "gzip"
 }
 meta = {
     "cpus": 10
@@ -309,8 +310,8 @@ def main() -> None:
                                                   par["other_axis_mode"],
                                                   input_ids=input_ids)
     logger.info("Writing out data to '%s' with compression '%s'.",
-                par["output"], par["compression"])
-    concatenated_samples.write_h5mu(par["output"], compression=par["compression"])
+                par["output"], par["output_compression"])
+    concatenated_samples.write_h5mu(par["output"], compression=par["output_compression"])
 
 
 if __name__ == "__main__":

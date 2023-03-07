@@ -414,9 +414,9 @@ FROM ghcr.io/data-intuitive/bclconvert:3.10
 RUN :
 LABEL org.opencontainers.image.authors="Toni Verbeiren, Marijke Van Moerbeke"
 LABEL org.opencontainers.image.description="Companion container for running component demux bcl_convert"
-LABEL org.opencontainers.image.created="2023-03-07T11:47:39Z"
+LABEL org.opencontainers.image.created="2023-03-07T12:41:05Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="c2a79cbf44d52a0bf5f445553e0d38dcf41d0aa9"
+LABEL org.opencontainers.image.revision="d1349aaf3bcba1941598666c15e6dd055ec3349a"
 LABEL org.opencontainers.image.version="main_build"
 VIASHDOCKER
 }

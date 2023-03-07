@@ -27,6 +27,7 @@ cmd_pars = [
     f"./{meta['functionality_name']}",
     "--input", input,
     "--output", output,
+    "--output_compression", "gzip"
 ]
 out = subprocess.check_output(cmd_pars).decode("utf-8")
 

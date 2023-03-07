@@ -47,6 +47,11 @@
             "description": "Output h5mu file.",
             "default": "$id.$key.output.output"
           },
+          "output_compression": {
+            "type": "string",
+            "description": "The compression format to be used on the output h5mu object.","enum": ["gzip", "lzf"],
+            "default": ""
+          },
           "obsm_output": {
             "type": "string",
             "description": "In which .obsm slot to store the resulting integrated embedding.",

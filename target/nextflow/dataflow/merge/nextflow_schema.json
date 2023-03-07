@@ -19,10 +19,10 @@
             "description": "Path to the output file.",
             "default": "$id.$key.output.h5mu"
           },
-          "compression": {
+          "output_compression": {
             "type": "string",
-            "description": "The compression format to be used on the final h5mu object.",
-            "default": "gzip"
+            "description": "The compression format to be used on the output h5mu object.","enum": ["gzip", "lzf"],
+            "default": ""
           }
           
         }

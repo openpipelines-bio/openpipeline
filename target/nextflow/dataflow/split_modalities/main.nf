@@ -93,6 +93,23 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
         "dest" : "par"
       },
       {
+        "type" : "string",
+        "name" : "--output_compression",
+        "description" : "The compression format to be used on the output h5mu object.",
+        "example" : [
+          "gzip"
+        ],
+        "required" : false,
+        "choices" : [
+          "gzip",
+          "lzf"
+        ],
+        "direction" : "input",
+        "multiple" : false,
+        "multiple_sep" : ":",
+        "dest" : "par"
+      },
+      {
         "type" : "file",
         "name" : "--output_types",
         "description" : "A csv containing the base filename and modality type per output file.",
@@ -195,7 +212,7 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
     "config" : "/home/runner/work/openpipeline/openpipeline/src/dataflow/split_modalities/config.vsh.yaml",
     "platform" : "nextflow",
     "viash_version" : "0.7.0",
-    "git_commit" : "c2a79cbf44d52a0bf5f445553e0d38dcf41d0aa9",
+    "git_commit" : "d1349aaf3bcba1941598666c15e6dd055ec3349a",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))
@@ -223,6 +240,7 @@ logger.addHandler(console_handler)
 par = {
   'input': $( if [ ! -z ${VIASH_PAR_INPUT+x} ]; then echo "r'${VIASH_PAR_INPUT//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'output': $( if [ ! -z ${VIASH_PAR_OUTPUT+x} ]; then echo "r'${VIASH_PAR_OUTPUT//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
+  'output_compression': $( if [ ! -z ${VIASH_PAR_OUTPUT_COMPRESSION+x} ]; then echo "r'${VIASH_PAR_OUTPUT_COMPRESSION//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'output_types': $( if [ ! -z ${VIASH_PAR_OUTPUT_TYPES+x} ]; then echo "r'${VIASH_PAR_OUTPUT_TYPES//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'compression': $( if [ ! -z ${VIASH_PAR_COMPRESSION+x} ]; then echo "r'${VIASH_PAR_COMPRESSION//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi )
 }
@@ -263,7 +281,7 @@ def main() -> None:
     for mod_name, mod in sample.mod.items():
         new_sample = md.MuData({mod_name: mod})
         logger.info('Writing to %s', names[mod_name])
-        new_sample.write_h5mu(output_dir / names[mod_name], compression="gzip")
+        new_sample.write_h5mu(output_dir / names[mod_name], compression=par["output_compression"])
 
     logger.info("Finished")
 

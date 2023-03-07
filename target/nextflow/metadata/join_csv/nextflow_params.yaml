@@ -6,6 +6,7 @@ modality: "rna"
 
 # MuData Output
 # output: "$id.$key.output.h5mu"
+# output_compression: "gzip"
 
 # Metadata Input
 input_csv: # please fill in - example: "metadata.csv"

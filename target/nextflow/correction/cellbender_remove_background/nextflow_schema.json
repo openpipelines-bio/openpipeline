@@ -30,7 +30,12 @@
           "output": {
             "type": "string",
             "description": "Full count matrix as an h5mu file, with background RNA removed. This file contains all the original droplet barcodes.",
-            "default": "$id.$key.output.h5"
+            "default": "$id.$key.output.h5mu"
+          },
+          "output_compression": {
+            "type": "string",
+            "description": "No description","enum": ["gzip", "lzf"],
+            "default": ""
           },
           "layer_output": {
             "type": "string",

@@ -144,6 +144,23 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
             "dest" : "par"
           },
           {
+            "type" : "string",
+            "name" : "--output_compression",
+            "description" : "The compression format to be used on the output h5mu object.",
+            "example" : [
+              "gzip"
+            ],
+            "required" : false,
+            "choices" : [
+              "gzip",
+              "lzf"
+            ],
+            "direction" : "input",
+            "multiple" : false,
+            "multiple_sep" : ":",
+            "dest" : "par"
+          },
+          {
             "type" : "boolean_true",
             "name" : "--do_subset",
             "description" : "Whether to subset before storing the output.",
@@ -355,7 +372,7 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
     "config" : "/home/runner/work/openpipeline/openpipeline/src/filter/filter_with_counts/config.vsh.yaml",
     "platform" : "nextflow",
     "viash_version" : "0.7.0",
-    "git_commit" : "c2a79cbf44d52a0bf5f445553e0d38dcf41d0aa9",
+    "git_commit" : "d1349aaf3bcba1941598666c15e6dd055ec3349a",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))
@@ -380,6 +397,7 @@ par = {
   'var_gene_names': $( if [ ! -z ${VIASH_PAR_VAR_GENE_NAMES+x} ]; then echo "r'${VIASH_PAR_VAR_GENE_NAMES//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'mitochondrial_gene_regex': $( if [ ! -z ${VIASH_PAR_MITOCHONDRIAL_GENE_REGEX+x} ]; then echo "r'${VIASH_PAR_MITOCHONDRIAL_GENE_REGEX//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'output': $( if [ ! -z ${VIASH_PAR_OUTPUT+x} ]; then echo "r'${VIASH_PAR_OUTPUT//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
+  'output_compression': $( if [ ! -z ${VIASH_PAR_OUTPUT_COMPRESSION+x} ]; then echo "r'${VIASH_PAR_OUTPUT_COMPRESSION//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'do_subset': $( if [ ! -z ${VIASH_PAR_DO_SUBSET+x} ]; then echo "r'${VIASH_PAR_DO_SUBSET//\\'/\\'\\"\\'\\"r\\'}'.lower() == 'true'"; else echo None; fi ),
   'obs_name_filter': $( if [ ! -z ${VIASH_PAR_OBS_NAME_FILTER+x} ]; then echo "r'${VIASH_PAR_OBS_NAME_FILTER//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'var_name_filter': $( if [ ! -z ${VIASH_PAR_VAR_NAME_FILTER+x} ]; then echo "r'${VIASH_PAR_VAR_NAME_FILTER//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
@@ -479,7 +497,7 @@ if par["do_subset"]:
 
 logger.info("\\\\tFiltered data: %s", data)
 logger.info("Writing output data to %s", par["output"])
-mdata.write_h5mu(par["output"], compression="gzip")
+mdata.write_h5mu(par["output"], compression=par["output_compression"])
 
 logger.info("Finished")
 

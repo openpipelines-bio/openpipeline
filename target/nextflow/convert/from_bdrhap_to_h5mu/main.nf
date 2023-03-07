@@ -99,6 +99,22 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
             "multiple" : false,
             "multiple_sep" : ":",
             "dest" : "par"
+          },
+          {
+            "type" : "string",
+            "name" : "--output_compression",
+            "example" : [
+              "gzip"
+            ],
+            "required" : false,
+            "choices" : [
+              "gzip",
+              "lzf"
+            ],
+            "direction" : "input",
+            "multiple" : false,
+            "multiple_sep" : ":",
+            "dest" : "par"
           }
         ]
       }
@@ -186,7 +202,7 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
     "config" : "/home/runner/work/openpipeline/openpipeline/src/convert/from_bdrhap_to_h5mu/config.vsh.yaml",
     "platform" : "nextflow",
     "viash_version" : "0.7.0",
-    "git_commit" : "c2a79cbf44d52a0bf5f445553e0d38dcf41d0aa9",
+    "git_commit" : "d1349aaf3bcba1941598666c15e6dd055ec3349a",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))
@@ -211,7 +227,8 @@ mudata <- reticulate::import("mudata")
 par <- list(
   "id" = $( if [ ! -z ${VIASH_PAR_ID+x} ]; then echo -n "'"; echo -n "$VIASH_PAR_ID" | sed "s#['\\\\]#\\\\\\\\&#g"; echo "'"; else echo NULL; fi ),
   "input" = $( if [ ! -z ${VIASH_PAR_INPUT+x} ]; then echo -n "'"; echo -n "$VIASH_PAR_INPUT" | sed "s#['\\\\]#\\\\\\\\&#g"; echo "'"; else echo NULL; fi ),
-  "output" = $( if [ ! -z ${VIASH_PAR_OUTPUT+x} ]; then echo -n "'"; echo -n "$VIASH_PAR_OUTPUT" | sed "s#['\\\\]#\\\\\\\\&#g"; echo "'"; else echo NULL; fi )
+  "output" = $( if [ ! -z ${VIASH_PAR_OUTPUT+x} ]; then echo -n "'"; echo -n "$VIASH_PAR_OUTPUT" | sed "s#['\\\\]#\\\\\\\\&#g"; echo "'"; else echo NULL; fi ),
+  "output_compression" = $( if [ ! -z ${VIASH_PAR_OUTPUT_COMPRESSION+x} ]; then echo -n "'"; echo -n "$VIASH_PAR_OUTPUT_COMPRESSION" | sed "s#['\\\\]#\\\\\\\\&#g"; echo "'"; else echo NULL; fi )
 )
 meta <- list(
   "functionality_name" = $( if [ ! -z ${VIASH_META_FUNCTIONALITY_NAME+x} ]; then echo -n "'"; echo -n "$VIASH_META_FUNCTIONALITY_NAME" | sed "s#['\\\\]#\\\\\\\\&#g"; echo "'"; else echo NULL; fi ),
@@ -457,7 +474,7 @@ modalities <-
 mdata <- mudata\\$MuData(modalities[!sapply(modalities, is.null)])
 
 cat("Writing to h5mu file\\\\n")
-mdata\\$write(par\\$output, compression="gzip")
+mdata\\$write(par\\$output, compression=par\\$output_compression)
 
 VIASHMAIN
 Rscript "$tempscript"

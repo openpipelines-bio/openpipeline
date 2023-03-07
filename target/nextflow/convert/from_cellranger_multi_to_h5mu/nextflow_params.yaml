@@ -1,6 +1,7 @@
 # Arguments
 input: # please fill in - example: "input_dir_containing_modalities"
 # output: "$id.$key.output.h5mu"
+# output_compression: "gzip"
 uns_metrics: "metrics_cellranger"
 
 # Nextflow input-output arguments

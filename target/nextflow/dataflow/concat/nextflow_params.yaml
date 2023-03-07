@@ -2,8 +2,8 @@
 input: # please fill in - example: ["sample_paths"]
 # input_id: ["foo"]
 # output: "$id.$key.output.h5mu"
+# output_compression: "gzip"
 obs_sample_name: "sample_id"
-compression: "gzip"
 other_axis_mode: "move"
 
 # Nextflow input-output arguments
