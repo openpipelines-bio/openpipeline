@@ -148,7 +148,7 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
     {
       "type" : "docker",
       "id" : "docker",
-      "image" : "eddelbuettel/r2u:22.04",
+      "image" : "ghcr.io/data-intuitive/randpy:r4.2_py3.8",
       "target_organization" : "openpipelines-bio",
       "target_registry" : "ghcr.io",
       "namespace_separator" : "/",
@@ -158,14 +158,10 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
       "target_image_source" : "https://github.com/openpipelines-bio/openpipeline",
       "setup" : [
         {
-          "type" : "apt",
-          "packages" : [
-            "python3",
-            "python3-dev",
-            "python3-pip",
-            "python-is-python3"
-          ],
-          "interactive" : false
+          "type" : "docker",
+          "run" : [
+            "apt update && apt upgrade -y"
+          ]
         },
         {
           "type" : "python",
@@ -180,15 +176,6 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
           "type" : "r",
           "cran" : [
             "anndata"
-          ],
-          "bioc_force_install" : false
-        }
-      ],
-      "test_setup" : [
-        {
-          "type" : "r",
-          "cran" : [
-            "tidyverse"
           ],
           "bioc_force_install" : false
         }
@@ -215,7 +202,7 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
     "config" : "/home/runner/work/openpipeline/openpipeline/src/convert/from_bdrhap_to_h5mu/config.vsh.yaml",
     "platform" : "nextflow",
     "viash_version" : "0.7.0",
-    "git_commit" : "0c6cf75a0c22dcc1475fb998cd2854677b689c95",
+    "git_commit" : "8b62986939efbeff5b9fe4b3e228cfafff34b6bd",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))

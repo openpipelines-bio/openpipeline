@@ -180,26 +180,14 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
     {
       "type" : "docker",
       "id" : "docker",
-      "image" : "eddelbuettel/r2u:22.04",
+      "image" : "ghcr.io/data-intuitive/randpy:r4.0",
       "target_organization" : "openpipelines-bio",
       "target_registry" : "ghcr.io",
       "namespace_separator" : "/",
       "resolve_volume" : "Automatic",
       "chown" : true,
       "setup_strategy" : "ifneedbepullelsecachedbuild",
-      "target_image_source" : "https://github.com/openpipelines-bio/openpipeline",
-      "setup" : [
-        {
-          "type" : "apt",
-          "packages" : [
-            "python3",
-            "python3-dev",
-            "python3-pip",
-            "python-is-python3"
-          ],
-          "interactive" : false
-        }
-      ]
+      "target_image_source" : "https://github.com/openpipelines-bio/openpipeline"
     },
     {
       "type" : "nextflow",
@@ -222,7 +210,7 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
     "config" : "/home/runner/work/openpipeline/openpipeline/src/files/make_params/config.vsh.yaml",
     "platform" : "nextflow",
     "viash_version" : "0.7.0",
-    "git_commit" : "0c6cf75a0c22dcc1475fb998cd2854677b689c95",
+    "git_commit" : "8b62986939efbeff5b9fe4b3e228cfafff34b6bd",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))
