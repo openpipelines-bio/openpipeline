@@ -84,7 +84,7 @@ def main():
 
     # Create output
     ouput_data = mudata.MuData({'rna_velocity': adata})
-    ouput_data.write_h5mu(output_dir / f"{sample_name}.h5mu", compression="gzip")
+    ouput_data.write_h5mu(output_dir / f"{sample_name}.h5mu", compression=par["output_compression"])
 
 if __name__ == "__main__":
     main()

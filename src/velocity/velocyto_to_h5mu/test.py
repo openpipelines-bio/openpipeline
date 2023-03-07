@@ -24,7 +24,8 @@ subprocess.run(
         "--input_h5mu",
         input_h5mu,
         "--output",
-        output
+        output,
+        "--output_compresion", "gzip"
     ],
     check=True
 )

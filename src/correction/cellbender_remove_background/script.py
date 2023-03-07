@@ -51,7 +51,8 @@ par = {
     "z_layers": [500],
     "training_fraction": 0.9,
     "empty_drop_training_fraction": 0.5,
-    "expected_cells_from_qc": True
+    "expected_cells_from_qc": True,
+    "output_compression": "gzip"
 }
 meta = {
     'temp_dir': os.getenv("VIASH_TEMP"),
@@ -157,4 +158,4 @@ with tempfile.TemporaryDirectory(prefix="cellbender-", dir=meta["temp_dir"]) as 
 
 
 logger.info("Writing to file %s", par["output"])
-mdata.write_h5mu(filename=par["output"], compression="gzip")
+mdata.write_h5mu(filename=par["output"], compression=par["output_compression"])

@@ -19,7 +19,8 @@ cmd_pars = [
     "--input_counts", f"{input};{input}",
     "--reference", reference,
     "--output", output,
-    "---cpus", "2"
+    "---cpus", "2",
+    "--output_compression", "gzip"
 ]
 subprocess.run(cmd_pars, check=True)
 

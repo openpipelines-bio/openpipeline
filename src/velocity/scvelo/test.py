@@ -24,7 +24,8 @@ class TestScVelo(unittest.TestCase):
     def test_scvelo(self):
         self._run_and_check_output([
             "--input", input_loom,
-            "--output", "./foo/"])
+            "--output", "./foo/",
+            "--output_compression", "gzip"])
         self.assertTrue(Path("./foo").is_dir())
         self.assertTrue(Path("./foo/scvelo_proportions.pdf").is_file())
         self.assertTrue(Path("./foo/scvelo_embedding.pdf").is_file())

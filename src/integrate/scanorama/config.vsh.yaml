@@ -27,6 +27,12 @@ functionality:
       direction: output
       required: true
       default: "output.h5ad"
+    - name: "--output_compression"
+      type: string
+      description: The compression format to be used on the output h5mu object.
+      choices: ["gzip", "lzf"]
+      required: false
+      example: "gzip"
     - name: "--obs_batch"
       type: string
       description: Column name discriminating between your batches.

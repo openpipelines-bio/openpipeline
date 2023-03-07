@@ -24,6 +24,7 @@ def test_clr(run_component):
     run_component([
         "--input", input_file,
         "--output", "foo.h5mu",
+        "--output_compression", "gzip"
     ])
     assert Path("foo.h5mu").is_file()
     output_h5mu = read_h5mu("foo.h5mu")

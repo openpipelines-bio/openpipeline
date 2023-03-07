@@ -139,6 +139,12 @@ functionality:
           type: double
           default: 2
           multiple: true
+    - name: Leiden Clustering Options
+      arguments:
+        - name: "--leiden_resolution"
+          type: double
+          description: Control the coarseness of the clustering. Higher values lead to more clusters.
+          default: 1
   resources:
     - type: nextflow_script
       path: main.nf

@@ -34,7 +34,8 @@ class TestScanorama(unittest.TestCase):
                 "--input", tempfile_input_file.name,
                 "--output", "output.h5mu",
                 "--obs_batch", "batch",
-                "--obsm_input", "X_pca"])
+                "--obsm_input", "X_pca",
+                "--output_compression", "gzip"])
             self.assertTrue(Path("output.h5mu").is_file())
             data = read_h5mu("output.h5mu")
             self.assertTrue("X_scanorama" in data.mod['rna'].obsm)

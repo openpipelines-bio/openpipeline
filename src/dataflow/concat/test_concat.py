@@ -88,7 +88,8 @@ def test_concatenate_samples_with_same_observation_ids_raises(run_component):
                 "--input", input_sample1_file,
                 "--output", "concat.h5mu",
                 "--other_axis_mode", "move",
-                "---cpus", str(meta["cpus"])
+                "---cpus", str(meta["cpus"]),
+                "--output_compression", "gzip"
                 ])
     re.search(r"ValueError: Observations are not unique across samples\.",
             err.value.stdout.decode('utf-8'))

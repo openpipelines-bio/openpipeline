@@ -41,7 +41,8 @@ class TestMappingToHLCA(unittest.TestCase):
                 "--modality", "rna",
                 "--output", "output.h5mu",
                 "--model_output", "./model_output",
-                "--max_epochs", "1"])
+                "--max_epochs", "1",
+                "--output_compression", "gzip"])
             self.assertTrue(Path("output.h5mu").is_file())
             output_data = mudata.read_h5mu("output.h5mu")
             self.assertIn('X_integrated_scanvi', output_data.mod['rna'].obsm)
