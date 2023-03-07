@@ -320,7 +320,7 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
     "config" : "/home/runner/work/openpipeline/openpipeline/src/dimred/umap/config.vsh.yaml",
     "platform" : "nextflow",
     "viash_version" : "0.7.0",
-    "git_commit" : "d1349aaf3bcba1941598666c15e6dd055ec3349a",
+    "git_commit" : "04d21ce49744206a1d302bf9c6822a9eb71383fc",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))

@@ -274,7 +274,7 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
     "config" : "/home/runner/work/openpipeline/openpipeline/src/dimred/pca/config.vsh.yaml",
     "platform" : "nextflow",
     "viash_version" : "0.7.0",
-    "git_commit" : "d1349aaf3bcba1941598666c15e6dd055ec3349a",
+    "git_commit" : "04d21ce49744206a1d302bf9c6822a9eb71383fc",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))
@@ -372,7 +372,7 @@ for parameter_name, field in check_exist_dict.items():
 
 data.obsm[par["obsm_output"]] = output_adata.obsm['X_pca']
 data.varm[par["varm_output"]] = output_adata.varm['PCs']
-data.uns[par["uns_output"]] = { "variance": output_adata.uns['pca']['variance_ratio'],
+data.uns[par["uns_output"]] = { "variance": output_adata.uns['pca']['variance'],
                                 "variance_ratio": output_adata.uns['pca']['variance_ratio'] }
 
 
