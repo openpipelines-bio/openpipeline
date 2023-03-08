@@ -214,7 +214,6 @@ jobs:
       with:
         path: resources_test
         key: ${{ needs.list.outputs.cache_key }}
-        fail-on-cache-miss: true
 
     - name: Sync if caching failed
       shell: bash
