@@ -159,6 +159,15 @@ jobs:
 
     - uses: nf-core/setup-nextflow@v1.2.0
 
+    # build target dir
+    # use containers from release branch, hopefully these are available
+    - name: Build target dir
+      uses: viash-io/viash-actions/ns-build@v3
+      with:
+        config_mod: ".functionality.version := '${{ github.event.inputs.version_tag }}'"
+        parallel: true
+        platform: nextflow
+
     # use cache
     - name: Cache resources data
       uses: actions/cache@v3
