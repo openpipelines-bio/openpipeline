@@ -26,7 +26,7 @@
 
 * Remove disabled `convert/from_csv_to_h5mu` component.
 
-* Update to Viash 0.7.0.
+* Update to Viash 0.7.1.
 
 * Several components: update to scanpy 1.9.2
 
