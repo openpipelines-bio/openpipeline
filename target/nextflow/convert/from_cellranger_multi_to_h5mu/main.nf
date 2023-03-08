@@ -181,7 +181,7 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
     "config" : "/home/runner/work/openpipeline/openpipeline/src/convert/from_cellranger_multi_to_h5mu/config.vsh.yaml",
     "platform" : "nextflow",
     "viash_version" : "0.7.1",
-    "git_commit" : "b4273f5c47f297cc000b87289468e080000ddcb1",
+    "git_commit" : "fc7617bf03a3a45cf1d3c95e595a493000df6b26",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))
