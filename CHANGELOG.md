@@ -2,6 +2,8 @@
 
 ## NEW FUNCTIONALITY
 
+* `workflows/ingestion/cellranger_mapping`: Added `output_type` to output the filtered Cell Ranger data as h5mu, not the converted raw 10xh5 output.
+
 * Several components:  added `--output_compression` component to set the compression of output .h5mu files.
 
 * `workflows/full_pipeline` and `workflows/integration`: Added `leiden_resolution` argument to control the coarseness of the clustering.
