@@ -26,7 +26,8 @@ workflow run_wf {
         preprocessed_ch = input_ch
           | preprocessInputs("config": config)
         commonOptions = [
-            auto: [ publish: true ]
+            auto: [ publish: true ],
+            args: [ output_compression: "gzip" ]
         ]
         ch_10xh5 = preprocessed_ch
             | filter{ it[1].input_type == "10xh5" }
