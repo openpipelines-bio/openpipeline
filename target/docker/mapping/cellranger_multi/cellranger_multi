@@ -522,9 +522,9 @@ RUN pip install --upgrade pip && \
 
 LABEL org.opencontainers.image.authors="Angela Pisco, Robrecht Cannoodt, Dries De Maeyer"
 LABEL org.opencontainers.image.description="Companion container for running component mapping cellranger_multi"
-LABEL org.opencontainers.image.created="2023-03-08T10:34:39Z"
+LABEL org.opencontainers.image.created="2023-03-08T13:25:26Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="eb904be1f71bab7dcb9ad664a0bade089562963c"
+LABEL org.opencontainers.image.revision="7d67ab213951560ce94292890fc56c86ee392f39"
 LABEL org.opencontainers.image.version="0.7.1"
 VIASHDOCKER
 }
@@ -1412,7 +1412,7 @@ def process_params(par: dict[str, Any]) -> str:
     if len(par["input"]) == 1 and par["input"][0].is_dir():
         logger.info("Detected '--input' as a directory, "
                     "traversing to see if we can detect any FASTQ files.")
-        par["input"] = [input_path for input_path in par["input"].rglob('*')
+        par["input"] = [input_path for input_path in par["input"][0].rglob('*')
                         if re.match(fastq_regex, input_path.name) ]
 
     # check input fastq files

@@ -14,6 +14,8 @@
 
 ## BUG FIXES
 
+* `mapping/cellranger_multi`: Fix an issue where using a directory as value for `--input` would cause `AttributeError`.
+
 * `workflows/integration`: `init_pos` is no longer set to the integration layer (e.g. `X_pca_integrated`).
 
 ## MINOR CHANGES

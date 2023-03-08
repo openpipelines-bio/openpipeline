@@ -84,6 +84,25 @@ class TestCellrangerMulti(TestCase):
                         "--library_id", "5k_human_antiCMV_T_TBNK_connect_GEX_1_subset;5k_human_antiCMV_T_TBNK_connect_AB_subset;5k_human_antiCMV_T_TBNK_connect_VDJ_subset",
                         "--library_type", "Gene Expression;Antibody Capture;VDJ",
                         "--dryrun"])
+    
+    def test_cellranger_multi_directory_input(self):
+        args=[
+            "--output", "output5/",
+            "--input", meta["resources_dir"] + "10x_5k_anticmv/raw/",
+            "--gex_reference", gex_reference,
+            "--vdj_reference", vdj_reference,
+            "--feature_reference", feature_reference,
+            "--library_id", "5k_human_antiCMV_T_TBNK_connect_GEX_1_subset;5k_human_antiCMV_T_TBNK_connect_AB_subset;5k_human_antiCMV_T_TBNK_connect_VDJ_subset",
+            "--library_type", "Gene Expression;Antibody Capture;VDJ",
+            "--gex_secondary_analysis", "true",
+            "--gex_generate_bam", "false",
+            "--gex_include_introns", "false",
+            "--dryrun"]
+        if meta['cpus']:
+            args.extend(["---cpus", str(meta['cpus'])])
+        if meta['memory_gb']:
+            args.extend(["---memory", f"{meta['memory_gb']}GB"])
+        self._run_and_check_output(args)
 
     def test_cellranger_multi_applies_gex_options(self):
         args=[
