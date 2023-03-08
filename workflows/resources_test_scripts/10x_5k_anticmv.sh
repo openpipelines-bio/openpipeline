@@ -48,7 +48,7 @@ function seqkit_head {
   output="$2"
   if [[ ! -f "$output" ]]; then
     echo "> Processing `basename $input`"
-    seqkit head -n 1000000 "$input" | gzip > "$output"
+    seqkit head -n 200000 "$input" | gzip > "$output"
   fi
 }
 
@@ -103,7 +103,6 @@ nextflow \
   -main-script target/nextflow/mapping/cellranger_multi/main.nf \
   -resume \
   -profile docker,mount_temp \
-  -with-trace work/trace.txt \
   -params-file /tmp/params.yaml \
   -c workflows/utils/labels.config \
   -c workflows/utils/errorstrat_ignore.config
