@@ -3,7 +3,8 @@ input: # please fill in - example: "input.h5mu"
 modality: "rna"
 
 # Outputs
-# output: "$id.$key.output.h5"
+# output: "$id.$key.output.h5mu"
+# output_compression: "gzip"
 layer_output: "corrected"
 obs_latent_rt_efficiency: "latent_rt_efficiency"
 obs_latent_cell_probability: "latent_cell_probability"

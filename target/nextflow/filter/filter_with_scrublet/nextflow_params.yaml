@@ -2,6 +2,7 @@
 input: # please fill in - example: "input.h5mu"
 modality: "rna"
 # output: "$id.$key.output.h5mu"
+# output_compression: "gzip"
 obs_name_filter: "filter_with_scrublet"
 do_subset: false
 obs_name_doublet_score: "scrublet_doublet_score"

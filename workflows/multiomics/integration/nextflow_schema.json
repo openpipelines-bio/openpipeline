@@ -72,6 +72,11 @@
             "type": "string",
             "description": "The .obs field(s) that define the covariate(s) to regress out.",
             "default": ""
+          },
+          "rna_theta": {
+            "type": "number",
+            "description": "Diversity clustering penalty parameter. Specify for each variable in group.by.vars. ","help_text": "Diversity clustering penalty parameter. Specify for each variable in group.by.vars. \ntheta=0 does not encourage any diversity. Larger values of theta\nresult in more diverse clusters.\"\n",
+            "default": "2"
           }
           
         }
@@ -108,6 +113,11 @@
             "type": "string",
             "description": "Name of the .obs key under which to add the cluster labels.",
             "default": "leiden"
+          },
+          "leiden_resolution": {
+            "type": "number",
+            "description": "Control the coarseness of the clustering. Higher values lead to more clusters.",
+            "default": "1"
           }
           
         }

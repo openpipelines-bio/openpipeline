@@ -6,6 +6,7 @@ dataset_name: "test_dataset"
 
 # Outputs
 # output: "$id.$key.output.output"
+# output_compression: "gzip"
 # model_output: "$id.$key.model_output.model_output"
 obsm_output: "X_integrated_scanvi"
 

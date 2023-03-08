@@ -29,6 +29,11 @@
             "description": "Output h5mu file.",
             "default": "$id.$key.output.h5mu"
           },
+          "output_compression": {
+            "type": "string",
+            "description": "The compression format to be used on the output h5mu object.","enum": ["gzip", "lzf"],
+            "default": ""
+          },
           "missing_ok": {
             "type": "boolean",
             "description": "Do not raise an error if the layer does not exist for all modalities.",

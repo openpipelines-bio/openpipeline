@@ -54,7 +54,8 @@ workflow run_wf {
         args: [
           obs_filter: "filter_with_counts",
           modality: "prot",
-          var_filter: "filter_with_counts"
+          var_filter: "filter_with_counts",
+          output_compression: "gzip"
         ]
     )
     | map {list -> [list[0], list[1]] + list.drop(3)}

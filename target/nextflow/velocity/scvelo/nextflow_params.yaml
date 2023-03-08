@@ -3,6 +3,7 @@ input: # please fill in - example: "path/to/file"
 
 # Outputs
 # output: "$id.$key.output.output"
+# output_compression: "gzip"
 
 # Filtering and normalization
 # min_counts: 123

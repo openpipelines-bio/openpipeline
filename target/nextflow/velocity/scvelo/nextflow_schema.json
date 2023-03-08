@@ -26,6 +26,11 @@
             "type": "string",
             "description": "Output directory. If it does not exist, will be created.",
             "default": "$id.$key.output.output"
+          },
+          "output_compression": {
+            "type": "string",
+            "description": "The compression format to be used on the output h5mu object.","enum": ["gzip", "lzf"],
+            "default": ""
           }
           
         }

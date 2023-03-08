@@ -19,6 +19,11 @@
             "description": "Output directory containing multiple h5mu files.",
             "default": "$id.$key.output.output"
           },
+          "output_compression": {
+            "type": "string",
+            "description": "The compression format to be used on the output h5mu object.","enum": ["gzip", "lzf"],
+            "default": ""
+          },
           "output_types": {
             "type": "string",
             "description": "A csv containing the base filename and modality type per output file.",

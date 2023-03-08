@@ -1,7 +1,7 @@
 functionality:
   name: "filter_with_scrublet"
   namespace: "filter"
-  version: "0.7.1-beta"
+  version: "0.7.1"
   authors:
   - name: "Dries De Maeyer"
     email: "ddemaeyer@gmail.com"
@@ -17,8 +17,6 @@ functionality:
     props:
       github: "rcannood"
       orcid: "0000-0003-3641-729X"
-  inputs: []
-  outputs: []
   arguments:
   - type: "file"
     name: "--input"
@@ -57,6 +55,21 @@ functionality:
     create_parent: true
     required: false
     direction: "output"
+    multiple: false
+    multiple_sep: ":"
+    dest: "par"
+  - type: "string"
+    name: "--output_compression"
+    alternatives: []
+    description: "The compression format to be used on the output h5mu object."
+    example:
+    - "gzip"
+    default: []
+    required: false
+    choices:
+    - "gzip"
+    - "lzf"
+    direction: "input"
     multiple: false
     multiple_sep: ":"
     dest: "par"
@@ -193,7 +206,7 @@ platforms:
   image: "python:3.10"
   target_organization: "openpipelines-bio"
   target_registry: "ghcr.io"
-  namespace_separator: "_"
+  namespace_separator: "/"
   resolve_volume: "Automatic"
   chown: true
   port: []
@@ -205,8 +218,7 @@ platforms:
   - type: "python"
     user: false
     packages:
-    - "scanpy~=1.9.1"
-    - "matplotlib<3.7.0"
+    - "scanpy~=1.9.2"
     - "scrublet"
     - "mudata~=0.2.0"
     - "anndata~=0.8.0"
@@ -249,6 +261,6 @@ info:
   platform: "docker"
   output: "/home/runner/work/openpipeline/openpipeline/target/docker/filter/filter_with_scrublet"
   executable: "/home/runner/work/openpipeline/openpipeline/target/docker/filter/filter_with_scrublet/filter_with_scrublet"
-  viash_version: "0.6.7"
-  git_commit: "201bfcad654a79c3bd2fd81442e3bd856f14b38d"
+  viash_version: "0.7.0"
+  git_commit: "eb904be1f71bab7dcb9ad664a0bade089562963c"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"

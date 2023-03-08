@@ -49,7 +49,9 @@ workflow run_wf {
   // perform correction if so desired
   mid1_corrected = mid0
     | filter{ it[2].correction.perform_correction }
-    | cellbender_remove_background
+    | cellbender_remove_background.run(
+      args: [ output_compression: "gzip" ]
+    )
     | pmap{ id, file -> [ id, [ input: file, layer: "corrected" ]]}
     // todo: allow setting the layer
   mid1_uncorrected = mid0
@@ -61,7 +63,10 @@ workflow run_wf {
   mid2_filtered = mid1
     | filter{ it[2].filter_with_counts.min_genes != null || it[2].filter_with_counts.min_counts != null }
     | getWorkflowArguments(key: "filter_with_counts")
-    | filter_with_counts.run(args: [do_subset: true])
+    | filter_with_counts.run(
+        args: [do_subset: true,
+               output_compression: "gzip"]
+    )
   mid2_unfiltered = mid1
     | filter{ it[2].filter_with_counts.min_genes == null && it[2].filter_with_counts.min_counts == null }
   mid2 = mid2_filtered.mix(mid2_unfiltered)

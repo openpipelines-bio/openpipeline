@@ -34,18 +34,23 @@
         "properties": {
           "output_raw": {
             "type": "string",
-            "description": "The raw output folder.",
+            "description": "Location where the output folder from Cell Ranger will be stored.",
             "default": "$id.$key.output_raw.output_raw"
           },
           "output_h5mu": {
             "type": "string",
-            "description": "The converted h5mu file.",
+            "description": "The output from Cell Ranger, converted to h5mu.",
             "default": "$id.$key.output_h5mu.h5mu"
           },
           "obsm_metrics": {
             "type": "string",
             "description": "Name of the .obsm slot under which to QC metrics (if any).",
             "default": "metrics_summary"
+          },
+          "output_type": {
+            "type": "string",
+            "description": "Which Cell Ranger output to use for converting to h5mu.","enum": ["raw", "filtered"],
+            "default": "raw"
           }
           
         }

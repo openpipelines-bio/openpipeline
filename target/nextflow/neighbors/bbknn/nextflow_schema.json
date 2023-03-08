@@ -34,6 +34,11 @@
             "description": "Output .h5mu file.",
             "default": "$id.$key.output.output"
           },
+          "output_compression": {
+            "type": "string",
+            "description": "The compression format to be used on the output h5mu object.","enum": ["gzip", "lzf"],
+            "default": ""
+          },
           "uns_output": {
             "type": "string",
             "description": "Mandatory .uns slot to store various neighbor output objects.",

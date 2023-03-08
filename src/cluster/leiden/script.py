@@ -35,5 +35,5 @@ sc.tl.leiden(
     )
 
 logger.info("Writing to %s.", par["output"])
-mdata.write_h5mu(filename=par["output"])
+mdata.write_h5mu(filename=par["output"], compression=par["output_compression"])
 logger.info("Finished.")

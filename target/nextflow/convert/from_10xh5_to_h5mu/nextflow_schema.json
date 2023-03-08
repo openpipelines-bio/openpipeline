@@ -32,6 +32,11 @@
             "description": "Output h5mu file.",
             "default": "$id.$key.output.h5mu"
           },
+          "output_compression": {
+            "type": "string",
+            "description": "No description","enum": ["gzip", "lzf"],
+            "default": ""
+          },
           "uns_metrics": {
             "type": "string",
             "description": "Name of the .uns slot under which to QC metrics (if any).",

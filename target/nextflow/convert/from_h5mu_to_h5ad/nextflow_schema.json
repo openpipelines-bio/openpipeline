@@ -24,7 +24,7 @@
             "description": "Output AnnData file.",
             "default": "$id.$key.output.h5ad"
           },
-          "compression": {
+          "output_compression": {
             "type": "string",
             "description": "The compression format to be used on the final h5ad object.","enum": ["gzip", "lzf"],
             "default": "gzip"

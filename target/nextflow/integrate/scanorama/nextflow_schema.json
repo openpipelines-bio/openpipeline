@@ -24,6 +24,11 @@
             "description": "Output .h5mu file",
             "default": "$id.$key.output.h5ad"
           },
+          "output_compression": {
+            "type": "string",
+            "description": "The compression format to be used on the output h5mu object.","enum": ["gzip", "lzf"],
+            "default": ""
+          },
           "obs_batch": {
             "type": "string",
             "description": "Column name discriminating between your batches.",

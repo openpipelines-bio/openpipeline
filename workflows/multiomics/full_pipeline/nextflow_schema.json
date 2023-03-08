@@ -149,6 +149,32 @@
           
         }
       },
+      "harmony integration options" : {
+        "title": "Harmony integration options",
+        "type": "object",
+        "description": "No description",
+        "properties": {
+          "rna_harmony_theta": {
+            "type": "number",
+            "description": "Diversity clustering penalty parameter. Specify for each variable in group.by.vars. ","help_text": "Diversity clustering penalty parameter. Specify for each variable in group.by.vars. \ntheta=0 does not encourage any diversity. Larger values of theta\nresult in more diverse clusters.\"\n",
+            "default": "2"
+          }
+          
+        }
+      },
+      "leiden clustering options" : {
+        "title": "Leiden Clustering Options",
+        "type": "object",
+        "description": "No description",
+        "properties": {
+          "leiden_resolution": {
+            "type": "number",
+            "description": "Control the coarseness of the clustering. Higher values lead to more clusters.",
+            "default": "1"
+          }
+          
+        }
+      },
       "nextflow input-output arguments" : {
         "title": "Nextflow input-output arguments",
         "type": "object",
@@ -183,6 +209,12 @@
       },
       {
         "$ref": "#/definitions/qc metrics calculation options"
+      },
+      {
+        "$ref": "#/definitions/harmony integration options"
+      },
+      {
+        "$ref": "#/definitions/leiden clustering options"
       },
       {
         "$ref": "#/definitions/nextflow input-output arguments"

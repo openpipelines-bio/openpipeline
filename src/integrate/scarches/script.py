@@ -221,7 +221,7 @@ def main():
         logger.warning("KeyError was thrown during updating mudata. Probably, the file is fixed after that, but be careful")
 
     logger.info("Saving h5mu file")
-    mdata_query.write_h5mu(par["output"].strip())
+    mdata_query.write_h5mu(par["output"].strip(), compression=par["output_compression"])
 
     logger.info("Saving model")
     vae_query.save(par["model_output"], overwrite=True)

@@ -36,7 +36,8 @@ def test_1logp(run_component, input_path, output_layer):
     run_args = [
         f"./{meta['functionality_name']}",
         "--input", input_path,
-        "--output", output
+        "--output", output,
+        "--output_compresion", "gzip"
         ]
     if output_layer:
         run_args.extend(["--output_layer", output_layer])

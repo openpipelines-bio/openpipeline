@@ -24,15 +24,15 @@
             "description": "No description",
             "default": "$id.$key.output.h5mu"
           },
+          "output_compression": {
+            "type": "string",
+            "description": "The compression format to be used on the output h5mu object.","enum": ["gzip", "lzf"],
+            "default": ""
+          },
           "obs_sample_name": {
             "type": "string",
             "description": "Name of the .obs key under which to add the sample names.",
             "default": "sample_id"
-          },
-          "compression": {
-            "type": "string",
-            "description": "The compression format to be used on the final h5mu object.",
-            "default": "gzip"
           },
           "other_axis_mode": {
             "type": "string",

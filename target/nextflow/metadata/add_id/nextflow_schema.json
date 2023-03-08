@@ -29,6 +29,11 @@
             "description": "No description",
             "default": "$id.$key.output.h5mu"
           },
+          "output_compression": {
+            "type": "string",
+            "description": "The compression format to be used on the output h5mu object.","enum": ["gzip", "lzf"],
+            "default": ""
+          },
           "make_observation_keys_unique": {
             "type": "boolean",
             "description": "Join the id to the .obs index (.obs_names).",

@@ -1,7 +1,7 @@
 functionality:
   name: "do_filter"
   namespace: "filter"
-  version: "0.7.1-beta"
+  version: "0.7.1"
   authors:
   - name: "Robrecht Cannoodt"
     email: "robrecht@data-intuitive.com"
@@ -11,8 +11,6 @@ functionality:
     props:
       github: "rcannood"
       orcid: "0000-0003-3641-729X"
-  inputs: []
-  outputs: []
   arguments:
   - type: "file"
     name: "--input"
@@ -80,6 +78,21 @@ functionality:
     multiple: false
     multiple_sep: ":"
     dest: "par"
+  - type: "string"
+    name: "--output_compression"
+    alternatives: []
+    description: "The compression format to be used on the output h5mu object."
+    example:
+    - "gzip"
+    default: []
+    required: false
+    choices:
+    - "gzip"
+    - "lzf"
+    direction: "input"
+    multiple: false
+    multiple_sep: ":"
+    dest: "par"
   argument_groups: []
   resources:
   - type: "python_script"
@@ -103,7 +116,7 @@ platforms:
   image: "python:3.9"
   target_organization: "openpipelines-bio"
   target_registry: "ghcr.io"
-  namespace_separator: "_"
+  namespace_separator: "/"
   resolve_volume: "Automatic"
   chown: true
   port: []
@@ -168,6 +181,6 @@ info:
   platform: "nextflow"
   output: "/home/runner/work/openpipeline/openpipeline/target/nextflow/filter/do_filter"
   executable: "/home/runner/work/openpipeline/openpipeline/target/nextflow/filter/do_filter/do_filter"
-  viash_version: "0.6.7"
-  git_commit: "201bfcad654a79c3bd2fd81442e3bd856f14b38d"
+  viash_version: "0.7.0"
+  git_commit: "eb904be1f71bab7dcb9ad664a0bade089562963c"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"

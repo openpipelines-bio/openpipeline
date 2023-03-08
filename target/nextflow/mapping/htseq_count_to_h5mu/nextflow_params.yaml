@@ -1,5 +1,6 @@
 # Outputs
 # output: "$id.$key.output.h5mu"
+# output_compression: "gzip"
 
 # Input
 input_id: # please fill in - example: ["foo"]

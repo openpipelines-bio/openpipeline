@@ -41,7 +41,7 @@ def main() -> None:
     for mod_name, mod in sample.mod.items():
         new_sample = md.MuData({mod_name: mod})
         logger.info('Writing to %s', names[mod_name])
-        new_sample.write_h5mu(output_dir / names[mod_name], compression="gzip")
+        new_sample.write_h5mu(output_dir / names[mod_name], compression=par["output_compression"])
 
     logger.info("Finished")
 

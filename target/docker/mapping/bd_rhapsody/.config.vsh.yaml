@@ -1,7 +1,7 @@
 functionality:
   name: "bd_rhapsody"
   namespace: "mapping"
-  version: "0.7.1-beta"
+  version: "0.7.1"
   authors:
   - name: "Robrecht Cannoodt"
     email: "robrecht@data-intuitive.com"
@@ -10,8 +10,6 @@ functionality:
     props:
       github: "rcannood"
       orcid: "0000-0003-3641-729X"
-  inputs: []
-  outputs: []
   arguments: []
   argument_groups:
   - name: "Inputs"
@@ -350,7 +348,7 @@ platforms:
   image: "ghcr.io/data-intuitive/bd_rhapsody:1.10.1"
   target_organization: "openpipelines-bio"
   target_registry: "ghcr.io"
-  namespace_separator: "_"
+  namespace_separator: "/"
   resolve_volume: "Automatic"
   chown: true
   port: []
@@ -401,6 +399,6 @@ info:
   platform: "docker"
   output: "/home/runner/work/openpipeline/openpipeline/target/docker/mapping/bd_rhapsody"
   executable: "/home/runner/work/openpipeline/openpipeline/target/docker/mapping/bd_rhapsody/bd_rhapsody"
-  viash_version: "0.6.7"
-  git_commit: "201bfcad654a79c3bd2fd81442e3bd856f14b38d"
+  viash_version: "0.7.0"
+  git_commit: "eb904be1f71bab7dcb9ad664a0bade089562963c"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"

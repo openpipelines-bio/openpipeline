@@ -23,6 +23,11 @@
             "type": "string",
             "description": "Output MuData file.",
             "default": "$id.$key.output.h5mu"
+          },
+          "output_compression": {
+            "type": "string",
+            "description": "No description","enum": ["gzip", "lzf"],
+            "default": ""
           }
           
         }

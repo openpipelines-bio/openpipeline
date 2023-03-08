@@ -29,6 +29,12 @@ filter_with_hvg_obs_batch_key: "sample_id"
 var_qc_metrics: ["filter_with_hvg"]
 top_n_vars: [50, 100, 200, 500]
 
+# Harmony integration options
+rna_harmony_theta: [2]
+
+# Leiden Clustering Options
+leiden_resolution: 1
+
 # Nextflow input-output arguments
 publish_dir: # please fill in - example: "output/"
 # param_list: "my_params.yaml"
