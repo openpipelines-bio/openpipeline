@@ -245,7 +245,7 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
     "config" : "/home/runner/work/openpipeline/openpipeline/src/integrate/harmonypy/config.vsh.yaml",
     "platform" : "nextflow",
     "viash_version" : "0.7.0",
-    "git_commit" : "82175c839b5b616a4889c7d9b4fef9b8e1b70631",
+    "git_commit" : "478be7b0eeaf7164718fa5705f0f426fc05f6ab5",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))
