@@ -16,6 +16,8 @@
 
 ## MINOR CHANGES
 
+* `integration` and `full` workflows: do not run harmony integration when `obs_covariates` is not provided.
+
 * Add `highmem` label to `dimred/pca` component.
 
 * Remove disabled `convert/from_csv_to_h5mu` component.
