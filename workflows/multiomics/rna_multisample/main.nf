@@ -73,13 +73,14 @@ workflow run_wf {
     | getWorkflowArguments(key: "filter_with_hvg")
     | filter_with_hvg.run(
       auto: [ publish: true ],
-      args: [ layer: "log_normalized"]
+      args: [ layer: "log_normalized", output_compression: "gzip"]
     )
     | getWorkflowArguments(key: "qc_metrics")
     | calculate_qc_metrics.run(
       // layer: null to use .X and not log transformed
       args: [
-        input_layer: null,       
+        input_layer: null,
+        output_compression: "gzip"
       ]
     )
     | map {list -> [list[0], list[1]] + list.drop(3)}

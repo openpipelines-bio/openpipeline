@@ -44,7 +44,7 @@ workflow run_wf {
     | map { id, file, orig_data -> 
       [ id, [ id: id, input: file, output: orig_data.output_h5mu ] ]
     }
-    | from_bdrhap_to_h5mu.run(auto: [ publish: true ])
+    | from_bdrhap_to_h5mu.run(auto: [ publish: true, output_compression: "gzip" ])
 
   emit:
   output_ch
