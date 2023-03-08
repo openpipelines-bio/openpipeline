@@ -113,5 +113,5 @@ info:
   output: "/home/runner/work/openpipeline/openpipeline/target/docker/qc/fastqc"
   executable: "/home/runner/work/openpipeline/openpipeline/target/docker/qc/fastqc/fastqc"
   viash_version: "0.7.0"
-  git_commit: "55ec8d09a110b4818bfe0a8a5977ed26d57add08"
+  git_commit: "eb0e699bccc1e781c2bbb3f9ab824f49b0dd4124"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"
