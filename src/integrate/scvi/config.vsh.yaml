@@ -42,6 +42,11 @@ functionality:
           description: Output h5mu file.
           direction: output
           required: true
+        - name: "--model_output"
+          type: file
+          description: Folder where the state of the trained model will be saved to.
+          required: false
+          direction: output
         - name: "--output_compression"
           type: string
           description: The compression format to be used on the output h5mu object.
