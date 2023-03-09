@@ -190,7 +190,7 @@ jobs:
             to_not_remove+=("! -path ./resources_test/$relative_path_trailing_slash_removed")
           fi
         done
-        find ./resources_test/ "${to_not_remove[@]} exec rm -r {} +"
+        find ./resources_test/ "${to_not_remove[@]}" exec rm -r {} +
 
     - name: Run integration test
       timeout-minutes: 45
