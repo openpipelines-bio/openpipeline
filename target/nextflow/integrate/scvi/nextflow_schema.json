@@ -47,6 +47,11 @@
             "description": "Output h5mu file.",
             "default": "$id.$key.output.output"
           },
+          "model_output": {
+            "type": "string",
+            "description": "Folder where the state of the trained model will be saved to.",
+            "default": "$id.$key.model_output.model_output"
+          },
           "output_compression": {
             "type": "string",
             "description": "The compression format to be used on the output h5mu object.","enum": ["gzip", "lzf"],
