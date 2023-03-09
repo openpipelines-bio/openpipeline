@@ -95,6 +95,7 @@ jobs:
           { 
             "name": (.functionality.namespace + "/" + .functionality.name),
             "main_script": ((.info.config | capture("^(?<dir>.*\/)").dir) + "/" + .functionality.test_resources[].path),
+            "config": .info.config,
             "entry": .functionality.test_resources[].entrypoint
           }
         ]' ${{ steps.ns_list_workflows.outputs.output_file }} )" >> $GITHUB_OUTPUT
@@ -176,6 +177,20 @@ jobs:
         path: resources_test
         key: ${{ needs.list.outputs.cache_key }}
         fail-on-cache-miss: true
+    
+    - name: Remove unused test resources to save space
+      shell: bash
+      run: |
+        readarray -t resources < <(viash config view --format json "${{ matrix.component.config }}" | jq -r -c '(.info.config | capture("^(?<dir>.*\/)").dir) as $dir | .functionality.test_resources | map(select(.type == "file")) | map($dir + .path) | unique | .[]')
+        to_not_remove=()
+        for resource in "${resources[@]}"; do
+          if [[ $resource == *"resources_test"* ]]; then
+            relative_path=${resource#*resources_test/}
+            relative_path_trailing_slash_removed=${relative_path%/}
+            to_not_remove+=("! -path ./resources_test/$relative_path_trailing_slash_removed")
+          fi
+        done
+        find ./resources_test/ "${to_not_remove[@]} exec rm -r {} +"
 
     - name: Run integration test
       timeout-minutes: 45
@@ -208,7 +223,7 @@ jobs:
     # use cache
     - name: Cache resources data
       id: restore_cache
-      uses: actions/cache@v3
+      uses: actions/cache/restore@v3
       env:
         SEGMENT_DOWNLOAD_TIMEOUT_MINS: 5
       with:
