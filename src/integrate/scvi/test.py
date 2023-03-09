@@ -35,6 +35,7 @@ class TestscVI(unittest.TestCase):
                 "--modality", "rna",
                 "--obs_batch", "batch",
                 "--output", "output.h5mu",
+                "--model_output", "test/",
                 "--max_epochs", "1",
                 "--compression_output", "gzip"])
             self.assertTrue(Path("output.h5mu").is_file())
@@ -42,6 +43,8 @@ class TestscVI(unittest.TestCase):
             self.assertIn('X_scvi_integrated', output_data.mod['rna'].obsm)
             self.assertIn('_scvi_batch', output_data.mod['rna'].obs.columns.tolist())
             self.assertIn('_scvi_labels',  output_data.mod['rna'].obs.columns.tolist())
+            self.assertTrue(Path("test").is_dir())
+            self.assertTrue(Path("test/model_params.pt").is_file())
 
 if __name__ == '__main__':
     unittest.main()
