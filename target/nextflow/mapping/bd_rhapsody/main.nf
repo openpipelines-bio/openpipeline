@@ -431,7 +431,7 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
       "image" : "ghcr.io/data-intuitive/bd_rhapsody:1.10.1",
       "target_organization" : "openpipelines-bio",
       "target_registry" : "ghcr.io",
-      "namespace_separator" : "/",
+      "namespace_separator" : "_",
       "resolve_volume" : "Automatic",
       "chown" : true,
       "setup_strategy" : "ifneedbepullelsecachedbuild",
@@ -472,7 +472,7 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
     "config" : "/home/runner/work/openpipeline/openpipeline/src/mapping/bd_rhapsody/config.vsh.yaml",
     "platform" : "nextflow",
     "viash_version" : "0.7.1",
-    "git_commit" : "f1503bb7b2751bb1ae634db6e5739e49f4adf825",
+    "git_commit" : "fadec284bd669a560376d5777f5b4fc3c9b11562",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))
@@ -926,7 +926,7 @@ thisDefaultProcessArgs = [
   directives: jsonSlurper.parseText('''{
   "container" : {
     "registry" : "ghcr.io",
-    "image" : "openpipelines-bio/mapping/bd_rhapsody",
+    "image" : "openpipelines-bio/mapping_bd_rhapsody",
     "tag" : "0.7.1"
   },
   "label" : [

@@ -323,7 +323,7 @@ platforms:
   image: "ghcr.io/data-intuitive/cellranger:7.0"
   target_organization: "openpipelines-bio"
   target_registry: "ghcr.io"
-  namespace_separator: "/"
+  namespace_separator: "_"
   resolve_volume: "Automatic"
   chown: true
   port: []
@@ -383,5 +383,5 @@ info:
   output: "/home/runner/work/openpipeline/openpipeline/target/nextflow/mapping/cellranger_multi"
   executable: "/home/runner/work/openpipeline/openpipeline/target/nextflow/mapping/cellranger_multi/cellranger_multi"
   viash_version: "0.7.1"
-  git_commit: "f1503bb7b2751bb1ae634db6e5739e49f4adf825"
+  git_commit: "fadec284bd669a560376d5777f5b4fc3c9b11562"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"
