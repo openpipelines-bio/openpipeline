@@ -183,7 +183,7 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
       "image" : "ghcr.io/data-intuitive/randpy:r4.0",
       "target_organization" : "openpipelines-bio",
       "target_registry" : "ghcr.io",
-      "namespace_separator" : "/",
+      "namespace_separator" : "_",
       "resolve_volume" : "Automatic",
       "chown" : true,
       "setup_strategy" : "ifneedbepullelsecachedbuild",
@@ -210,7 +210,7 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
     "config" : "/home/runner/work/openpipeline/openpipeline/src/files/make_params/config.vsh.yaml",
     "platform" : "nextflow",
     "viash_version" : "0.7.1",
-    "git_commit" : "302fba1d45d1bd1f1e7b77f92aa6ca19c1c4df9f",
+    "git_commit" : "fadec284bd669a560376d5777f5b4fc3c9b11562",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))
@@ -325,7 +325,7 @@ thisDefaultProcessArgs = [
   directives: jsonSlurper.parseText('''{
   "container" : {
     "registry" : "ghcr.io",
-    "image" : "openpipelines-bio/files/make_params",
+    "image" : "openpipelines-bio/files_make_params",
     "tag" : "main_build"
   },
   "tag" : "$id"

@@ -278,7 +278,7 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
       "image" : "python:3.8",
       "target_organization" : "openpipelines-bio",
       "target_registry" : "ghcr.io",
-      "namespace_separator" : "/",
+      "namespace_separator" : "_",
       "resolve_volume" : "Automatic",
       "chown" : true,
       "setup_strategy" : "ifneedbepullelsecachedbuild",
@@ -320,7 +320,7 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
     "config" : "/home/runner/work/openpipeline/openpipeline/src/dimred/umap/config.vsh.yaml",
     "platform" : "nextflow",
     "viash_version" : "0.7.1",
-    "git_commit" : "302fba1d45d1bd1f1e7b77f92aa6ca19c1c4df9f",
+    "git_commit" : "fadec284bd669a560376d5777f5b4fc3c9b11562",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))
@@ -443,7 +443,7 @@ thisDefaultProcessArgs = [
   directives: jsonSlurper.parseText('''{
   "container" : {
     "registry" : "ghcr.io",
-    "image" : "openpipelines-bio/dimred/umap",
+    "image" : "openpipelines-bio/dimred_umap",
     "tag" : "main_build"
   },
   "label" : [
