@@ -167,7 +167,7 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
     "config" : "/home/runner/work/openpipeline/openpipeline/src/convert/from_10xmtx_to_h5mu/config.vsh.yaml",
     "platform" : "nextflow",
     "viash_version" : "0.7.1",
-    "git_commit" : "9efea24dac93ab001eac80bc71d7aa4c975d607e",
+    "git_commit" : "4057ae371e745d2cb2844ecb6269858c570f409f",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))
