@@ -282,7 +282,7 @@ jobs:
   push_documentation:
     runs-on: ubuntu-latest
     needs: [ list ]
-    if: "${{ inputs.push_documentation == 'true' }}"
+    if: "${{ github.event.inputs.push_documentation == 'true' }}"
 
     steps:
       - uses: actions/checkout@v3
