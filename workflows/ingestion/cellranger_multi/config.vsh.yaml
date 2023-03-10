@@ -153,7 +153,10 @@ functionality:
   resources:
     - type: nextflow_script
       path: main.nf
-  # test_resources:
-  #   - type: nextflow_script
-  #     path: main.nf
-  #     entrypoint: test_wf
+  test_resources:
+    - type: nextflow_script
+      path: main.nf
+      entrypoint: test_wf
+    - path: ../../../resources_test/10x_5k_anticmv/raw/
+      dest: 10x_5k_anticmv/raw/
+    - path: ../../../resources_test/reference_gencodev41_chr1
