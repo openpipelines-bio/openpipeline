@@ -193,7 +193,7 @@ jobs:
         # Remove last prune and -o
         unset 'to_not_remove[${#to_not_remove[@]}-1]'
         unset 'to_not_remove[${#to_not_remove[@]}-1]'
-        find ./resources_test/ \( "${to_not_remove[@]}" \) -prune -o -exec rm -rf {} +
+        find ./resources_test/ \( "${to_not_remove[@]}" \) -prune -o -type f -exec rm {} +
     - name: Run integration test
       timeout-minutes: 45
       run: |
