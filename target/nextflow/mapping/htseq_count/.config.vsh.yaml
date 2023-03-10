@@ -410,5 +410,5 @@ info:
   output: "/home/runner/work/openpipeline/openpipeline/target/nextflow/mapping/htseq_count"
   executable: "/home/runner/work/openpipeline/openpipeline/target/nextflow/mapping/htseq_count/htseq_count"
   viash_version: "0.7.1"
-  git_commit: "302fba1d45d1bd1f1e7b77f92aa6ca19c1c4df9f"
+  git_commit: "9efea24dac93ab001eac80bc71d7aa4c975d607e"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"
