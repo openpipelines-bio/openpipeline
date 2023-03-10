@@ -101,3 +101,4 @@ functionality:
     - type: nextflow_script
       path: main.nf
       entrypoint: test_wf
+    - path: ../../../resources_test/cellranger_tiny_fastq
