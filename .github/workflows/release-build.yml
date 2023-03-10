@@ -94,9 +94,9 @@ jobs:
         echo "workflows=$(jq -c '[ .[] | 
           { 
             "name": (.functionality.namespace + "/" + .functionality.name),
-            "main_script": ((.info.config | capture("^(?<dir>.*\/)").dir) + "/" + .functionality.test_resources[].path),
+            "main_script": ((.info.config | capture("^(?<dir>.*\/)").dir) + "/" + (.functionality.test_resources | map(select(.type == "nextflow_script")) | unique | .[].path )),
             "config": .info.config,
-            "entry": .functionality.test_resources[].entrypoint
+            "entry": .functionality.test_resources | map(select(.type == "nextflow_script")) | .[].entrypoint
           }
         ]' ${{ steps.ns_list_workflows.outputs.output_file }} )" >> $GITHUB_OUTPUT
 
