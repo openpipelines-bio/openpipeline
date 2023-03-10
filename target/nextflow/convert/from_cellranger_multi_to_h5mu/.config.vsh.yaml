@@ -149,5 +149,5 @@ info:
   output: "/home/runner/work/openpipeline/openpipeline/target/nextflow/convert/from_cellranger_multi_to_h5mu"
   executable: "/home/runner/work/openpipeline/openpipeline/target/nextflow/convert/from_cellranger_multi_to_h5mu/from_cellranger_multi_to_h5mu"
   viash_version: "0.7.1"
-  git_commit: "6ead2278a14411a7f7dcd6ced27329fd5e38c2f0"
+  git_commit: "f1503bb7b2751bb1ae634db6e5739e49f4adf825"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"
