@@ -230,7 +230,7 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
     "config" : "/home/runner/work/openpipeline/openpipeline/src/qc/calculate_qc_metrics/config.vsh.yaml",
     "platform" : "nextflow",
     "viash_version" : "0.7.1",
-    "git_commit" : "5bb8a4526a2ebdf218c22466a70cb046dafd4559",
+    "git_commit" : "6ead2278a14411a7f7dcd6ced27329fd5e38c2f0",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))
