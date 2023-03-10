@@ -4,6 +4,8 @@
 
 * `integrate/scvi`: use `nvcr.io/nvidia/pytorch:22.09-py3` as base container to enable GPU acceleration.
 
+* `integrate/scvi`: add `--model_output` to save model.
+
 * `workflows/ingestion/cellranger_mapping`: Added `output_type` to output the filtered Cell Ranger data as h5mu, not the converted raw 10xh5 output.
 
 * Several components:  added `--output_compression` component to set the compression of output .h5mu files.
