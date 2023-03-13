@@ -472,7 +472,7 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
     "config" : "/home/runner/work/openpipeline/openpipeline/src/mapping/bd_rhapsody/config.vsh.yaml",
     "platform" : "nextflow",
     "viash_version" : "0.7.1",
-    "git_commit" : "fadec284bd669a560376d5777f5b4fc3c9b11562",
+    "git_commit" : "7375c630b4990af5136d8880410a56a2c77596ef",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))
