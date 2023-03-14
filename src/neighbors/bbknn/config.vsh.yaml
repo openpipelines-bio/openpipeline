@@ -37,6 +37,13 @@ functionality:
       description: Output .h5mu file.
       direction: output
       required: true
+    
+    - name: "--output_compression"
+      type: string
+      description: The compression format to be used on the output h5mu object.
+      choices: ["gzip", "lzf"]
+      required: false
+      example: "gzip"
       
     - name: "--uns_output"
       type: string
@@ -80,9 +87,7 @@ platforms:
         packages:
           - mudata~=0.2.0
           - anndata~=0.8.0
-          - scanpy~=1.9.1 # Will result in NameError: name 'logg' is not defined otherwise
-          # https://github.com/scverse/scanpy/issues/2411
-          - matplotlib<3.7.0
+          - scanpy~=1.9.2 # Will result in NameError: name 'logg' is not defined otherwise
           - bbknn
   - type: nextflow
     directives:

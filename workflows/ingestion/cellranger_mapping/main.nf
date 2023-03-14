@@ -40,14 +40,8 @@ workflow run_wf {
       ],
       from_10xh5_to_h5mu: [ 
         "output": "output_h5mu",
-        "obsm_metrics": "obsm_metrics"
-      ],
-      correction: [
-        "perform_correction": "perform_correction"
-      ],
-      filter_with_counts: [
-        "min_genes": "min_genes",
-        "min_counts": "min_counts",
+        "obsm_metrics": "obsm_metrics",
+        "output_type": "output_type",
       ]
     )
 
@@ -56,25 +50,28 @@ workflow run_wf {
 
     // split output dir into map
     | cellranger_count_split
-
     // convert to h5mu
-    | pmap { id, output_data, split_args -> 
-      
+    | pmap { id, output_data, other_args -> 
+      input_data = other_args.from_10xh5_to_h5mu.output_type == "filtered" ? 
+        output_data.filtered_h5 : output_data.raw_h5
       // combine new data for from_10xh5_to_h5mu
-      new_data = 
+      new_data =
         [ 
-          input: output_data.raw_h5, 
+          input: input_data, 
           input_metrics_summary: output_data.metrics_summary
         ] +
-        split_args.from_10xh5_to_h5mu
+        other_args.from_10xh5_to_h5mu
 
       // store output to fourth field to return as output
-      [ id, new_data, split_args, output_data ]
+      [ id, new_data, other_args, output_data ]
     }
-    | from_10xh5_to_h5mu.run(auto: [ publish: true ])
+    | from_10xh5_to_h5mu.run(
+      auto: [ publish: true ],
+      args: [ output_compression: "gzip" ]
+    )
     
     // return output map
-    | pmap { id, data, split_args, output_data ->
+    | pmap { id, data, other_args, output_data ->
       [ id, output_data + [h5mu: data] ]
     }
 
@@ -90,7 +87,8 @@ workflow test_wf {
   testParams = [
     id: "foo",
     input: params.resources_test + "/cellranger_tiny_fastq/cellranger_tiny_fastq",
-    reference: params.resources_test + "/cellranger_tiny_fastq/cellranger_tiny_ref"
+    reference: params.resources_test + "/cellranger_tiny_fastq/cellranger_tiny_ref",
+    output_type: "filtered",
   ]
 
   output_ch =

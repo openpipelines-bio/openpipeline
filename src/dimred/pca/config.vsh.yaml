@@ -41,6 +41,13 @@ functionality:
       required: true
       example: output.h5mu
 
+    - name: "--output_compression"
+      type: string
+      description: The compression format to be used on the output h5mu object.
+      choices: ["gzip", "lzf"]
+      required: false
+      example: "gzip"
+
     - name: "--obsm_output"
       type: string
       default: "X_pca"
@@ -78,9 +85,7 @@ platforms:
     setup:
       - type: python
         packages:
-          - scanpy~=1.9.1
-          # https://github.com/scverse/scanpy/issues/2411
-          - matplotlib<3.7.0
+          - scanpy~=1.9.2
           - mudata~=0.2.0
           - anndata~=0.8.0
     test_setup:
@@ -89,4 +94,6 @@ platforms:
           - viashpy
   - type: nextflow
     directives:
-      label: highcpu
+      label: 
+        - highcpu
+        - highmem

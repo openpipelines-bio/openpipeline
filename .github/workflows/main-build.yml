@@ -1,4 +1,5 @@
 name: main build
+concurrency: main_build
 
 on:
   push:

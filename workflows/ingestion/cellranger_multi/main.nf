@@ -53,8 +53,11 @@ workflow run_wf {
 
     | getWorkflowArguments(key: "cellranger_multi")
     | cellranger_multi.run(auto: [ publish: true ])
-    | from_cellranger_multi_to_h5mu.run(auto: [ publish: true ])
-     | pmap { id, data, output_data ->
+    | from_cellranger_multi_to_h5mu.run(
+        auto: [ publish: true ],
+        args: [ output_compression: "gzip" ]
+    )
+    | pmap { id, data, output_data ->
       [ id, output_data + [h5mu: data] ]
     }
 

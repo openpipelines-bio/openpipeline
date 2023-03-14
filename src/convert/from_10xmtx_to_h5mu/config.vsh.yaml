@@ -21,6 +21,11 @@ functionality:
       description: Output h5mu file.
       example: output.h5mu
       direction: output
+    - name: "--output_compression"
+      type: string
+      choices: ["gzip", "lzf"]
+      required: false
+      example: "gzip"
   resources:
     - type: python_script
       path: script.py
@@ -34,9 +39,7 @@ platforms:
     setup:
       - type: python
         packages:
-          - scanpy
-          # https://github.com/scverse/scanpy/issues/2411
-          - matplotlib<3.7.0
+          - scanpy~=1.9.2
           - mudata~=0.2.0
           - anndata~=0.8.0
   - type: nextflow

@@ -50,3 +50,4 @@ functionality:
     - type: nextflow_script
       path: main.nf
       entrypoint: test_wf
+    - path: ../../../resources_test/pbmc_1k_protein_v3

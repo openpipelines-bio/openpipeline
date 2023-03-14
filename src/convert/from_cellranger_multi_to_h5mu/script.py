@@ -145,7 +145,7 @@ def main():
     input_data = gather_input_data(cellranger_multi_dir)
     result = get_modalities(input_data)
     logger.info("Writing %s", par["output"])
-    result.write_h5mu(par["output"], compression="gzip")
+    result.write_h5mu(par["output"], compression=par["output_compression"])
 
 if __name__ == "__main__":
     main()

@@ -50,7 +50,8 @@ class TestFilterWithScrublet(TestCase):
         self._run_and_check_output([
                 "--input", input_path,
                 "--output", "output-1.h5mu",
-                "--min_counts", "3"
+                "--min_counts", "3",
+                "--output_compression", "gzip"
         ])
         self.assertTrue(Path("output-1.h5mu").is_file(), msg="Output file not found")
         mu_out = mu.read_h5mu("output-1.h5mu")

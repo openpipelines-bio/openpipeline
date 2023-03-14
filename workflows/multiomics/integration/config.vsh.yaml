@@ -58,6 +58,14 @@ functionality:
           example: ["batch", "sample"]
           multiple: true
           required: true
+        - name: "--rna_theta"
+          type: double
+          description: |
+            Diversity clustering penalty parameter. Specify for each variable in group.by.vars. 
+            theta=0 does not encourage any diversity. Larger values of theta
+            result in more diverse clusters."
+          default: 2
+          multiple: true
     - name: Neighbour calculation
       arguments:
         - name: "--uns_neighbors"
@@ -78,6 +86,10 @@ functionality:
           type: string
           description: Name of the .obs key under which to add the cluster labels.
           default: "leiden"
+        - name: "--leiden_resolution"
+          type: double
+          description: Control the coarseness of the clustering. Higher values lead to more clusters.
+          default: 1
     - name: Umap options
       arguments:
         - name: "--obsm_umap"
@@ -93,3 +105,4 @@ functionality:
     - type: nextflow_script
       path: main.nf
       entrypoint: test_wf
+    - path: ../../../resources_test/concat_test_data

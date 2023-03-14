@@ -40,6 +40,13 @@ functionality:
       direction: output
       example: output.h5mu
 
+    - name: "--output_compression"
+      type: string
+      description: The compression format to be used on the output h5mu object.
+      choices: ["gzip", "lzf"]
+      required: false
+      example: "gzip"
+  
     - name: "--var_name_filter"
       type: string
       default: "filter_with_hvg"
@@ -118,8 +125,7 @@ platforms:
     setup: 
       - type: python
         packages:
-          # Keep using master until scanpy version > 1.9.1 is release (1.9.2 or 1.10)
-          - git+https://github.com/scverse/scanpy.git@master
+          - scanpy~=1.9.2
           - mudata~=0.2.0
           - anndata~=0.8.0
           - scikit-misc

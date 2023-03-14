@@ -94,8 +94,9 @@ jobs:
         echo "workflows=$(jq -c '[ .[] | 
           { 
             "name": (.functionality.namespace + "/" + .functionality.name),
-            "main_script": ((.info.config | capture("^(?<dir>.*\/)").dir) + "/" + .functionality.test_resources[].path),
-            "entry": .functionality.test_resources[].entrypoint
+            "main_script": ((.info.config | capture("^(?<dir>.*\/)").dir) + "/" + (.functionality.test_resources | map(select(.type == "nextflow_script")) | unique | .[].path )),
+            "config": .info.config,
+            "entry": .functionality.test_resources | map(select(.type == "nextflow_script")) | .[].entrypoint
           }
         ]' ${{ steps.ns_list_workflows.outputs.output_file }} )" >> $GITHUB_OUTPUT
 
@@ -166,6 +167,7 @@ jobs:
       with:
         config_mod: ".functionality.version := '${{ github.event.inputs.version_tag }}'"
         parallel: true
+        platform: nextflow
 
     # use cache
     - name: Cache resources data
@@ -175,6 +177,26 @@ jobs:
         path: resources_test
         key: ${{ needs.list.outputs.cache_key }}
         fail-on-cache-miss: true
+    
+    - name: Remove unused test resources to save space
+      shell: bash
+      run: |
+        readarray -t resources < <(viash config view --format json "${{ matrix.component.config }}" | jq -r -c '(.info.config | capture("^(?<dir>.*\/)").dir) as $dir | .functionality.test_resources | map(select(.type == "file")) | map($dir + .path) | unique | .[]')
+        to_not_remove=()
+        for resource in "${resources[@]}"; do
+          if [[ $resource == *"resources_test"* ]]; then
+            relative_path=${resource#*resources_test/}
+            relative_path_trailing_slash_removed=${relative_path%/}
+            to_not_remove+=("-path" "./resources_test/$relative_path_trailing_slash_removed" "-prune" "-o")
+          fi
+        done
+        # Remove last prune and -o
+        if (( ${#errors[@]} )); then
+          unset 'to_not_remove[${#to_not_remove[@]}-1]'
+          unset 'to_not_remove[${#to_not_remove[@]}-1]'
+          to_not_remove+=( "(" "${to_not_remove[@]}" ")" "-prune" "-o")
+        fi
+        find ./resources_test/ "${to_not_remove[@]}" -type f -exec rm {} +
 
     - name: Run integration test
       timeout-minutes: 45
@@ -206,12 +228,37 @@ jobs:
 
     # use cache
     - name: Cache resources data
-      uses: actions/cache@v3
-      timeout-minutes: 5
+      id: restore_cache
+      uses: actions/cache/restore@v3
+      env:
+        SEGMENT_DOWNLOAD_TIMEOUT_MINS: 5
       with:
         path: resources_test
         key: ${{ needs.list.outputs.cache_key }}
-        fail-on-cache-miss: true
+
+    - name: Sync if caching failed
+      shell: bash
+      if: steps.restore_cache.outputs.cache-hit != 'true'
+      run: |
+        readarray -t resources < <(viash config view --format json "${{ matrix.component.config }}" | jq -r -c '(.info.config | capture("^(?<dir>.*\/)").dir) as $dir | .functionality.test_resources | map(select(.type == "file")) | map($dir + .path) | unique | .[]')
+        for resource in "${resources[@]}"; do
+          if [[ $resource == *"resources_test"* ]]; then
+            relative_path=${resource#*resources_test/}
+            relative_path_trailing_slash_removed=${relative_path%/}
+            s3_path="s3://openpipelines-data/$relative_path_trailing_slash_removed"
+            s3_lookup=$(AWS_EC2_METADATA_DISABLED=true aws s3 ls --no-sign-request "$s3_path" 2>&1)
+            extra_args=()
+            if [[ $s3_lookup =~ .*/$ ]]; then
+              extra_args+=("--recursive")
+            fi
+            AWS_EC2_METADATA_DISABLED=true \
+            aws s3 cp \
+            "$s3_path" \
+            "$resource" \
+            --no-sign-request \
+            "${extra_args[@]}"
+          fi
+        done
 
     - name: Login to the nvidia container registry
       uses: docker/login-action@v2
@@ -225,8 +272,8 @@ jobs:
       run: |
         viash test \
           "${{ matrix.component.config }}" \
-          --config_mod ".functionality.version := '${{ github.event.inputs.version_tag }}'" \
           --config_mod ".platforms[.type == 'docker'].image := 'ghcr.io/openpipelines-bio/${{ matrix.component.name }}:${{ github.event.inputs.version_tag }}'" \
+          --config_mod ".platforms[.type == 'docker'].setup := []" \
           --cpus 2 \
           --memory "5gb"
 
@@ -235,7 +282,7 @@ jobs:
   push_documentation:
     runs-on: ubuntu-latest
     needs: [ list ]
-    if: "${{ inputs.push_documentation == 'true' }}"
+    if: "${{ github.event.inputs.push_documentation == 'true' }}"
 
     steps:
       - uses: actions/checkout@v3
