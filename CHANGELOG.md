@@ -6,6 +6,10 @@
 
 * Added `clr` functionality to `prot_multisample` pipeline.
 
+## BUG FIXES
+
+* `transform/clr`: fix anndata object instead of matrix being stored as a layer in output `MuData`, resulting in `NoneTypeError` object after reading the `.layers` back in.
+
 # openpipelines 0.7.1
 
 ## NEW FUNCTIONALITY
