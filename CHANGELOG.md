@@ -1,3 +1,7 @@
+# openpipelines 0.7.2
+
+* `integrate/scarches`, `integrate/scvi` and `correction/cellbender_remove_background`: Update base container to `nvcr.io/nvidia/pytorch:22`.12-py3
+
 # openpipelines 0.7.1
 
 ## NEW FUNCTIONALITY
