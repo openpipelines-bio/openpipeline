@@ -378,7 +378,7 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
     {
       "type" : "docker",
       "id" : "docker",
-      "image" : "nvcr.io/nvidia/pytorch:22.09-py3",
+      "image" : "nvcr.io/nvidia/pytorch:22.12-py3",
       "target_organization" : "openpipelines-bio",
       "target_registry" : "ghcr.io",
       "namespace_separator" : "_",
@@ -449,7 +449,7 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
     "config" : "/home/runner/work/openpipeline/openpipeline/src/correction/cellbender_remove_background/config.vsh.yaml",
     "platform" : "nextflow",
     "viash_version" : "0.7.1",
-    "git_commit" : "b36d6fa727b3bfff5468cdc3b5f1f9b579d7ccae",
+    "git_commit" : "94c1fb7611b06e8e282df8d6d045475a3968d6b1",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))

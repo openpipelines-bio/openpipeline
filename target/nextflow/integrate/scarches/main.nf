@@ -317,7 +317,7 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
     {
       "type" : "docker",
       "id" : "docker",
-      "image" : "python:3.8",
+      "image" : "nvcr.io/nvidia/pytorch:22.12-py3",
       "target_organization" : "openpipelines-bio",
       "target_registry" : "ghcr.io",
       "namespace_separator" : "_",
@@ -327,24 +327,13 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
       "target_image_source" : "https://github.com/openpipelines-bio/openpipeline",
       "setup" : [
         {
-          "type" : "apt",
-          "packages" : [
-            "libopenblas-dev",
-            "liblapack-dev",
-            "gfortran"
-          ],
-          "interactive" : false
-        },
-        {
           "type" : "python",
           "user" : false,
           "packages" : [
             "mudata~=0.2.0",
             "anndata~=0.8.0",
-            "torchmetrics~=0.7.0",
-            "pytorch-lightning~=1.7.0",
-            "scvi-tools~=0.18.0",
-            "pandas"
+            "scvi-tools~=0.19",
+            "pandas~=1.5.3"
           ],
           "upgrade" : true
         }
@@ -379,7 +368,7 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
     "config" : "/home/runner/work/openpipeline/openpipeline/src/integrate/scarches/config.vsh.yaml",
     "platform" : "nextflow",
     "viash_version" : "0.7.1",
-    "git_commit" : "b36d6fa727b3bfff5468cdc3b5f1f9b579d7ccae",
+    "git_commit" : "94c1fb7611b06e8e282df8d6d045475a3968d6b1",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))
