@@ -110,7 +110,7 @@ functionality:
 platforms:
   - type: docker
     image: nvcr.io/nvidia/pytorch:22.12-py3
-    run_args: ["--gpus all"]
+    # run_args: ["--gpus all"]
     setup:
       - type: python
         packages:
