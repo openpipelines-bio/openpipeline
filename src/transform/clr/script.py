@@ -3,7 +3,7 @@ from mudata import read_h5mu
 
 ## VIASH START
 par = {
-    'input': '/home/di/code/openpipeline/work/f1/3a5269aaf10aaf09fee85b0d4bfcab/pbmc.do_filter.output.h5mu',
+    'input': 'resources_test/pbmc_1k_protein_v3/pbmc_1k_protein_v3_filtered_feature_bc_matrix.h5mu',
     'modality': 'prot',
     'output': "foo.h5mu"
 }
