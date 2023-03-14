@@ -1,3 +1,11 @@
+# openpipelines 0.7.2
+
+## NEW FUNCTIONALITY
+
+* Added `multiomics/prot_multisample` pipeline.
+
+* Added `clr` functionality to `prot_multisample` pipeline.
+
 # openpipelines 0.7.1
 
 ## NEW FUNCTIONALITY
