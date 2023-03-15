@@ -2,6 +2,10 @@
 
 * `integrate/scarches`, `integrate/scvi` and `correction/cellbender_remove_background`: Update base container to `nvcr.io/nvidia/pytorch:22`.12-py3
 
+# MINOR CHANGES
+
+* `workflows/multiomics/full_pipeline`: publish the output from from sample merging to allow running different integrations.
+
 # openpipelines 0.7.1
 
 ## NEW FUNCTIONALITY
