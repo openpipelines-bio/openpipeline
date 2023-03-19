@@ -46,7 +46,7 @@ if [ ! -z "$par_callAmbientRNAs" ]; then
 fi
 
 if [ ! -d "$par_output" ]; then
-  mkdir $par_output
+  mkdir -p "$par_output"
 fi
 
 vireo --cellData $par_cellData --nDonor $par_nDonor --genoTag $par_genoTag --nInit $par_nInit \

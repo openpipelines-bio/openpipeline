@@ -30,7 +30,7 @@ if [ "$par_ignore" = true ]; then
 fi
 
 if [ ! -d "$par_output" ]; then
-  mkdir $par_output
+  mkdir -p "$par_output"
 fi
 
 /opt/souporcell/souporcell_pipeline.py --bam $par_bam --fasta $par_fasta --barcodes $par_barcodes \

@@ -1,6 +1,6 @@
 #!/bin/bash
 if [ ! -d "$par_output" ]; then
-  mkdir $par_output
+  mkdir -p "$par_output"
 fi
 samtools view -S -b -q 10 -F 3844 $par_bam > ${par_output}filtered.bam
 cd $par_output

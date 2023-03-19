@@ -25,7 +25,7 @@ if [ ! -z "$par_groupList" ]; then
 fi
 
 if [ ! -d "$par_output" ]; then
-  mkdir $par_output
+  mkdir -p $par_output
 fi
 
 popscle demuxlet --tag-group $par_tagGroup --tag-UMI $par_tagUMI \
@@ -36,6 +36,6 @@ popscle demuxlet --tag-group $par_tagGroup --tag-UMI $par_tagUMI \
        --vcf $par_vcf --vcf-verbose $par_vcfVerbose --cap-BQ $par_capBQ --min-BQ $par_minBQ \
        --min-MQ $par_minMQ --min-TD $par_minTD --excl-flag $par_exclFlag \
        --min-total $par_minTotal --min-umi $par_minUmi --min-snp $par_minSnp \
-       --out ${par_output}${par_out} ${extra_params[@]}
+       --out ${par_output}/${par_out} ${extra_params[@]}
 
-Rscript summary.R --demuxlet_out ${par_output}${par_out}.best
+Rscript summary.R --demuxlet_out ${par_output}/${par_out}.best

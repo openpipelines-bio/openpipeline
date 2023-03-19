@@ -202,7 +202,7 @@ if [ ! -z "$par_genotype_variant_threshold" ]; then
 fi
 
 if [ ! -d "$par_output" ]; then
-  mkdir $par_output
+  mkdir -p "$par_output"
 fi
      
 freebayes --fasta-reference $par_fasta_reference --pvar $par_pvar --theta $par_theta \
@@ -222,4 +222,4 @@ freebayes --fasta-reference $par_fasta_reference --pvar $par_pvar --theta $par_t
           --genotyping-max-banddepth $par_genotyping_max_banddepth \
           --posterior-integration-limits $par_posterior_integration_limits \
           --read-dependence-factor $par_read_dependence_factor  \
-          --vcf ${par_output}${par_vcf} ${extra_params[@]}
+          --vcf ${par_output}/${par_vcf} ${extra_params[@]}
