@@ -40,10 +40,6 @@ functionality:
     - name: "--printSkipSNPs"
       type: boolean_true
       description: If use, the SNPs skipped when loading VCF will be printed.
-    - name: "--nproc"
-      type: integer
-      default: 1
-      description: Number of subprocesses.
     - name: "--chrom"
       type: string
       description: "The chromosomes to use in integer format 1-22, comma separated"

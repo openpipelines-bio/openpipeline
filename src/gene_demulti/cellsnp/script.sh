@@ -65,6 +65,12 @@ if [ "$par_countORPHAN" = true ]; then
   extra_params+=( "--countORPHAN" )
 fi
           
-cellsnp-lite --nproc $par_nproc --cellTAG $par_cellTAG --UMItag $par_UMItag \
-             --minCOUNT $par_minCOUNT --minMAF $par_minMAF --minLEN $par_minLEN \
-             --minMAPQ $par_minMAPQ --outDir $par_output ${extra_params[@]}
+cellsnp-lite \
+  ${meta_cpus:+--nproc $meta_cpus}
+  --cellTAG $par_cellTAG \
+  --UMItag $par_UMItag \
+  --minCOUNT $par_minCOUNT \
+  --minMAF $par_minMAF \
+  --minLEN $par_minLEN \
+  --minMAPQ $par_minMAPQ \
+  --outDir $par_output ${extra_params[@]}
