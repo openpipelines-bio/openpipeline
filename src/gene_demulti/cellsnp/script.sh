@@ -2,75 +2,34 @@
 
 set -eo pipefail
 
-# add additional params
-extra_params=( )
+# Unset flags if they equal 'false'
+[[ "$par_genotype" == "false" ]] && unset par_genotype
+[[ "$par_gzip" == "false" ]] && unset par_gzip
+[[ "$par_printSkipSNPs" == "false" ]] && unset par_printSkipSNPs
+[[ "$par_doubletGL" == "false" ]] && unset par_doubletGL
+[[ "$par_countORPHAN" == "false" ]] && unset par_countORPHAN
 
-if [ ! -z "$par_samFile" ]; then
-  extra_params+=( "--samFile $par_samFile" )
-fi
-  
-if [ ! -z "$par_samFileList" ]; then
-  extra_params+=( "--samFileList $par_samFileList" )
-fi
-
-if [ ! -z "$par_regionsVCF" ]; then
-  extra_params+=( "--regionsVCF $par_regionsVCF" )
-fi
-
-if [ ! -z "$par_targetsVCF" ] ; then
-  extra_params+=( "--targetsVCF $par_targetsVCF" )
-fi
-
-if [ ! -z "$par_barcodeFile" ]; then
-  extra_params+=( "--barcodeFile $par_barcodeFile" )
-fi
-
-if [ ! -z "$par_sampleList" ]; then
-  extra_params+=( "--sampleList $par_sampleList" )
-fi
-
-if [ ! -z "$par_sampleIDs" ]; then
-  extra_params+=( "--sampleIDs $par_sampleIDs" )
-fi
-
-if [ "$par_genotype" = true ]; then
-  extra_params+=( "--genotype" )
-fi
-
-if [ "$par_gzip" = true ]; then
-  extra_params+=( "--gzip" )
-fi
-
-if [ "$par_printSkipSNPs" = true ]; then
-  extra_params+=( "--printSkipSNPs" )
-fi
-
-if [ ! -z "$par_chrom" ]; then
-  extra_params+=( "--chrom $par_chrom" )
-fi
-
-if [ "$par_doubletGL" = true ]; then
-  extra_params+=( "--doubletGL")
-fi
-
-if [ ! -z "$par_inclFLAG" ]; then
-  extra_params+=( "--inclFLAG $par_inclFLAG" )
-fi
-
-if [ ! -z "$par_exclFLAG" ]; then
-  extra_params+=( "--exclFLAG $par_exclFLAG" )
-fi
-
-if [ "$par_countORPHAN" = true ]; then
-  extra_params+=( "--countORPHAN" )
-fi
-          
 cellsnp-lite \
-  ${meta_cpus:+--nproc $meta_cpus}
+  ${meta_cpus:+--nproc $meta_cpus} \
   --cellTAG $par_cellTAG \
   --UMItag $par_UMItag \
   --minCOUNT $par_minCOUNT \
   --minMAF $par_minMAF \
   --minLEN $par_minLEN \
   --minMAPQ $par_minMAPQ \
-  --outDir $par_output ${extra_params[@]}
+  --outDir $par_output \
+  ${par_samFile:+--samFile $par_samFile} \
+  ${par_samFileList:+--samFileList $par_samFileList} \
+  ${par_regionsVCF:+--regionsVCF $par_regionsVCF} \
+  ${par_targetsVCF:+--targetsVCF $par_targetsVCF} \
+  ${par_barcodeFile:+--barcodeFile $par_barcodeFile} \
+  ${par_sampleList:+--sampleList $par_sampleList} \
+  ${par_sampleIDs:+--sampleIDs $par_sampleIDs} \
+  ${par_genotype:+--genotype} \
+  ${par_gzip:+--gzip} \
+  ${par_printSkipSNPs:+--printSkipSNPs} \
+  ${par_chrom:+--chrom $par_chrom} \
+  ${par_doubletGL:+--doubletGL} \
+  ${par_inclFLAG:+--inclFLAG $par_inclFLAG} \
+  ${par_exclFLAG:+--exclFLAG $par_exclFLAG} \
+  ${par_countORPHAN:+--countORPHAN}

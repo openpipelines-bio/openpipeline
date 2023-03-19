@@ -19,10 +19,6 @@ functionality:
     - name: "--barcodes"
       type: file
       description: barcodes.tsv from cellranger
-    - name: "--threads"
-      type: integer
-      description: max threads to use
-      default: 3
     - name: "--clusters"
       type: integer
       description: number cluster, tbd add easy way to run on a range of k

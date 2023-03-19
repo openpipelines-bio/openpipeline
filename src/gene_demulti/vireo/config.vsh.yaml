@@ -62,10 +62,6 @@ functionality:
       type: boolean
       default: false
       description: If use, detect ambient RNAs in each cell.
-    - name: "--nproc"
-      type: integer
-      default: 1
-      description: Number of subprocesses for computing, this sacrifices memory for speedups.
   - name: "Output"
     arguments:
     - name: "--output"

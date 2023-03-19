@@ -2,53 +2,34 @@
 
 set -eo pipefail
 
-# add additional params
-extra_params=( )
-
-if [ ! -z "$par_vartrixData" ]; then 
-  extra_params+=( "--vatrixData $par_vartrixData" )
-fi
-  
-if [ ! -z "$par_donorFile" ]; then 
-  extra_params+=( "--donorFile $par_donorFile" )
-fi
-
-if [ ! -z "$par_noDoublet" ]; then 
-  extra_params+=( "--noDoublet" )
-fi
-
-if [ ! -z "$par_extraDonorMode" ] ; then 
-  extra_params+=( "--extraDonorMode $par_extraDonorMode" )
-fi
-
-if [ ! -z "$par_forceLearnGT" ]; then 
-  extra_params+=( "--forceLearnGT" )
-fi
-
-if [ ! -z "$par_ASEmode" ]; then 
-  extra_params+=( "--ASEmode" )
-fi
-
-if [ ! -z "$par_noPlot" ]; then 
-  extra_params+=( "--noPlot" )
-fi
-
-if [ ! -z "$par_randSeed" ]; then 
-  extra_params+=( "--randSeed $par_randSeed" )
-fi
-
-if [ ! -z "$par_cellRange" ]; then 
-  extra_params+=( "--cellRange $par_cellRange" )
-fi
-
-if [ ! -z "$par_callAmbientRNAs" ]; then 
-  extra_params+=( "--callAmbientRNAs" )
-fi
+# Unset flags if they equal 'false'
+[[ "$par_noDoublet" == "false" ]] && unset par_noDoublet
+[[ "$par_forceLearnGT" == "false" ]] && unset par_forceLearnGT
+[[ "$par_ASEmode" == "false" ]] && unset par_ASEmode
+[[ "$par_noPlot" == "false" ]] && unset par_noPlot
+[[ "$par_callAmbientRNAs" == "false" ]] && unset par_callAmbientRNAs
 
 if [ ! -d "$par_output" ]; then
   mkdir -p "$par_output"
 fi
 
-vireo --cellData $par_cellData --nDonor $par_nDonor --genoTag $par_genoTag --nInit $par_nInit \
-       --extraDonor $par_extraDonor --nproc $par_nproc --out ${par_output} ${extra_params[@]}
-cut -d$'\t' -f 1-2 ${par_output}donor_ids.tsv > ${par_output}assignment.tsv
+vireo \
+  --cellData $par_cellData \
+  --nDonor $par_nDonor \
+  --genoTag $par_genoTag \
+  --nInit $par_nInit \
+  --extraDonor $par_extraDonor \
+  --nproc $par_nproc \
+  --out "${par_output}" \
+  ${par_vartrixData:+--vatrixData $par_vartrixData} \
+  ${par_donorFile:+--donorFile $par_donorFile} \
+  ${par_noDoublet:+--noDoublet} \
+  ${par_extraDonorMode:+--extraDonorMode $par_extraDonorMode} \
+  ${par_forceLearnGT:+--forceLearnGT} \
+  ${par_ASEmode:+--ASEmode} \
+  ${par_noPlot:+--noPlot} \
+  ${par_randSeed:+--randSeed $par_randSeed} \
+  ${par_cellRange:+--cellRange $par_cellRange} \
+  ${par_callAmbientRNAs:+--callAmbientRNAs}
+
+cut -d$'\t' -f 1-2 "${par_output}/donor_ids.tsv" > "${par_output}/assignment.tsv"
