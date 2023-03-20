@@ -10,6 +10,7 @@ obs_latent_rt_efficiency: "latent_rt_efficiency"
 obs_latent_cell_probability: "latent_cell_probability"
 obs_latent_scale: "latent_scale"
 var_ambient_expression: "ambient_expression"
+obsm_latent_gene_encoding: "cellbender_latent_gene_encoding"
 
 # Arguments
 # expected_cells: 1000

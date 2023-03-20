@@ -61,6 +61,11 @@
             "type": "string",
             "description": "No description",
             "default": "ambient_expression"
+          },
+          "obsm_latent_gene_encoding": {
+            "type": "string",
+            "description": "No description",
+            "default": "cellbender_latent_gene_encoding"
           }
           
         }

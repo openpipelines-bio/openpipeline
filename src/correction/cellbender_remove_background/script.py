@@ -7,6 +7,7 @@ import subprocess
 import os
 import sys
 import numpy as np
+from scipy.sparse import csr_matrix
 
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
@@ -52,7 +53,8 @@ par = {
     "training_fraction": 0.9,
     "empty_drop_training_fraction": 0.5,
     "expected_cells_from_qc": True,
-    "output_compression": "gzip"
+    "output_compression": "gzip",
+    "obsm_latent_gene_encoding": "cellbender_latent_gene_encoding"
 }
 meta = {
     'temp_dir': os.getenv("VIASH_TEMP"),
@@ -150,11 +152,23 @@ with tempfile.TemporaryDirectory(prefix="cellbender-", dir=meta["temp_dir"]) as 
         if par[to_name]:
             data.var[par[to_name]] = adata_out.var[from_name]
 
-    # logger.info("Copying .obsm output to MuData")
-    # obsm_store = { "obsm_latent_gene_encoding": "latent_gene_encoding" }
-    # for to_name, from_name in obsm_store.items():
-    #     if par[to_name]:
-    #         data.obsm[par[to_name]] = adata_out.obsm[from_name]
+    logger.info("Copying obsm_latent_gene_encoding output to MuData")
+    obsm_store = { "obsm_latent_gene_encoding": "latent_gene_encoding" }
+    for to_name, from_name in obsm_store.items():
+        if par[to_name]:
+            if from_name in adata_out.obsm:
+                 data.obsm[par[to_name]] = adata_out.obsm[from_name]
+            elif from_name in adata_out.uns and 'barcode_indices_for_latents' in adata_out.uns:
+                matrix_to_store = adata_out.uns[from_name]
+                number_of_obs = data.X.shape[0]
+                latent_space_sparse = csr_matrix((number_of_obs, par['z_dim']),
+                                                 dtype=adata_out.uns[from_name].dtype)
+                obs_rows_in_space_representation = adata_out.uns['barcode_indices_for_latents']
+                latent_space_sparse[obs_rows_in_space_representation] = adata_out.uns[from_name]
+                data.obsm[par[to_name]] = latent_space_sparse
+            else:
+                raise RuntimeError("Requested to save latent gene encoding, but the data is either missing "
+                                   "from cellbender output or in an incorrect format.")
 
 
 logger.info("Writing to file %s", par["output"])

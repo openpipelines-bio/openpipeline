@@ -159,6 +159,18 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
             "multiple" : false,
             "multiple_sep" : ":",
             "dest" : "par"
+          },
+          {
+            "type" : "string",
+            "name" : "--obsm_latent_gene_encoding",
+            "default" : [
+              "cellbender_latent_gene_encoding"
+            ],
+            "required" : false,
+            "direction" : "input",
+            "multiple" : false,
+            "multiple_sep" : ":",
+            "dest" : "par"
           }
         ]
       },
@@ -449,7 +461,7 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
     "config" : "/home/runner/work/openpipeline/openpipeline/src/correction/cellbender_remove_background/config.vsh.yaml",
     "platform" : "nextflow",
     "viash_version" : "0.7.1",
-    "git_commit" : "88066ac918dc4b237c78d0ab1317049c30a0f3d2",
+    "git_commit" : "8513714fb5d299c2fb1e6803e5347b7d49583d16",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))
@@ -467,6 +479,7 @@ import subprocess
 import os
 import sys
 import numpy as np
+from scipy.sparse import csr_matrix
 
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
@@ -487,6 +500,7 @@ par = {
   'obs_latent_cell_probability': $( if [ ! -z ${VIASH_PAR_OBS_LATENT_CELL_PROBABILITY+x} ]; then echo "r'${VIASH_PAR_OBS_LATENT_CELL_PROBABILITY//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'obs_latent_scale': $( if [ ! -z ${VIASH_PAR_OBS_LATENT_SCALE+x} ]; then echo "r'${VIASH_PAR_OBS_LATENT_SCALE//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'var_ambient_expression': $( if [ ! -z ${VIASH_PAR_VAR_AMBIENT_EXPRESSION+x} ]; then echo "r'${VIASH_PAR_VAR_AMBIENT_EXPRESSION//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
+  'obsm_latent_gene_encoding': $( if [ ! -z ${VIASH_PAR_OBSM_LATENT_GENE_ENCODING+x} ]; then echo "r'${VIASH_PAR_OBSM_LATENT_GENE_ENCODING//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'expected_cells': $( if [ ! -z ${VIASH_PAR_EXPECTED_CELLS+x} ]; then echo "int(r'${VIASH_PAR_EXPECTED_CELLS//\\'/\\'\\"\\'\\"r\\'}')"; else echo None; fi ),
   'total_droplets_included': $( if [ ! -z ${VIASH_PAR_TOTAL_DROPLETS_INCLUDED+x} ]; then echo "int(r'${VIASH_PAR_TOTAL_DROPLETS_INCLUDED//\\'/\\'\\"\\'\\"r\\'}')"; else echo None; fi ),
   'expected_cells_from_qc': $( if [ ! -z ${VIASH_PAR_EXPECTED_CELLS_FROM_QC+x} ]; then echo "r'${VIASH_PAR_EXPECTED_CELLS_FROM_QC//\\'/\\'\\"\\'\\"r\\'}'.lower() == 'true'"; else echo None; fi ),
@@ -609,11 +623,23 @@ with tempfile.TemporaryDirectory(prefix="cellbender-", dir=meta["temp_dir"]) as 
         if par[to_name]:
             data.var[par[to_name]] = adata_out.var[from_name]
 
-    # logger.info("Copying .obsm output to MuData")
-    # obsm_store = { "obsm_latent_gene_encoding": "latent_gene_encoding" }
-    # for to_name, from_name in obsm_store.items():
-    #     if par[to_name]:
-    #         data.obsm[par[to_name]] = adata_out.obsm[from_name]
+    logger.info("Copying obsm_latent_gene_encoding output to MuData")
+    obsm_store = { "obsm_latent_gene_encoding": "latent_gene_encoding" }
+    for to_name, from_name in obsm_store.items():
+        if par[to_name]:
+            if from_name in adata_out.obsm:
+                 data.obsm[par[to_name]] = adata_out.obsm[from_name]
+            elif from_name in adata_out.uns and 'barcode_indices_for_latents' in adata_out.uns:
+                matrix_to_store = adata_out.uns[from_name]
+                number_of_obs = data.X.shape[0]
+                latent_space_sparse = csr_matrix((number_of_obs, par['z_dim']),
+                                                 dtype=adata_out.uns[from_name].dtype)
+                obs_rows_in_space_representation = adata_out.uns['barcode_indices_for_latents']
+                latent_space_sparse[obs_rows_in_space_representation] = adata_out.uns[from_name]
+                data.obsm[par[to_name]] = latent_space_sparse
+            else:
+                raise RuntimeError("Requested to save latent gene encoding, but the data is either missing "
+                                   "from cellbender output or in an incorrect format.")
 
 
 logger.info("Writing to file %s", par["output"])

@@ -2,6 +2,10 @@
 
 * `integrate/scarches`, `integrate/scvi` and `correction/cellbender_remove_background`: Update base container to `nvcr.io/nvidia/pytorch:22`.12-py3
 
+## NEW FUNCTIONALITY
+
+* `correction/cellbender_remove_background`: add `obsm_latent_gene_encoding` parameter to store the latent gene representation.
+
 # openpipelines 0.7.1
 
 ## NEW FUNCTIONALITY
