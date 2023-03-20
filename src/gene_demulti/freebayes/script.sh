@@ -3,7 +3,7 @@ set -eo pipefail
 
 # Unset boolean flags if their values are not 'true'
 for flag in par_stdin par_gvcf par_only_use_input_alleles par_report_all_haplotype_alleles par_report_monomorphic par_strict_vcf \
-             par_pooled_discrete par_pooled_continuous par_use_reference_allele par_no_snps par_no_indels par_no_mnps par_no_complex \
+             par_pooled_discrete par_pooled_continuous par_use_reference_allele par_throw_away_snp_obs par_throw_away_indel_obs par_throw_away_mnps_obs par_throw_away_complex_obs \
              par_no_partial_observations par_dont_left_align_indels par_use_duplicate_reads par_standard_filters par_no_population_priors \
              par_hwe_priors_off par_binomial_obs_priors_off par_allele_balance_priors_off par_legacy_gls par_report_genotype_likelihood_max \
              par_exclude_unobserved_genotypes par_use_mapping_quality par_harmonic_indel_quality par_genotype_qualities par_debug par_dd; do
@@ -61,10 +61,10 @@ freebayes \
   ${par_pooled_discrete:+--pooled-discrete} \
   ${par_pooled_continuous:+--pooled-continuous} \
   ${par_use_reference_allele:+--use-reference-allele} \
-  ${par_no_snps:+--no-snps} \
-  ${par_no_indels:+--no-indels} \
-  ${par_no_mnps:+--no-mnps} \
-  ${par_no_complex:+--no-complex} \
+  ${par_throw_away_snp_obs:+--throw-away-snp-obs} \
+  ${par_throw_away_indel_obs:+--throw-away-indel-obs} \
+  ${par_throw_away_mnps_obs:+--throw-away-mnps-obs} \
+  ${par_throw_away_complex_obs:+--throw-away-complex-obs} \
   ${par_no_partial_observations:+--no-partial-observations} \
   ${par_dont_left_align_indels:+--dont-left-align-indels} \
   ${par_use_duplicate_reads:+--use-duplicate-reads} \

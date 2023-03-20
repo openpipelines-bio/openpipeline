@@ -86,16 +86,16 @@ functionality:
       type: string
       description: Assign mapping quality of MQ to the reference allele at each site and base quality of BQ.
       default: "100,60"
-    - name: "--no_snps"
+    - name: "--throw_away_snp_obs"
       type: boolean_true
       description: Ignore SNP alleles.
-    - name: "--no_mnps"
+    - name: "--throw_away_mnps_obs"
       type: boolean_false
       description: Ignore multi-nuceotide polymorphisms, MNPs. MNPs are excluded as default.
-    - name: "--no_indels"
+    - name: "--throw_away_indel_obs"
       type: boolean_false
       description: Ignore insertion and deletion alleles. Indels are excluded as default.
-    - name: "--no_complex"
+    - name: "--throw_away_complex_obs"
       type: boolean_false
       description: Ignore complex events (composites of other classes). Complex are excluded as default
     - name: "--use_best_n_alleles"
@@ -273,8 +273,10 @@ functionality:
     - path: ../../../resources_test/cellranger_tiny_fastq
 platforms:
   - type: docker
-    image: biocontainers/freebayes:v1.2.0-2-deb_cv1
+    image: ubuntu:22.04
+    setup:
+      - type: apt
+        packages: freebayes
   - type: nextflow
-    variant: vdsl3
     directives:
       label: [ highmem, highcpu ]
