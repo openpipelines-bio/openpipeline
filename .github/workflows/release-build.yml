@@ -267,7 +267,7 @@ jobs:
       if: ${{ env.NVIDIA_PASSWORD != '' }}
       with:
         registry: nvcr.io
-        username: $$oauthtoken
+        username: $oauthtoken
         password: ${{ env.NVIDIA_PASSWORD }}
 
     - name: Test component
