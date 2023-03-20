@@ -1,16 +1,12 @@
-import os
 import sys
-import subprocess
+import re
 import logging
-from pathlib import Path
-
-import pandas as pd
-import matplotlib
-import scanpy as sc
-import popv
-from torch.cuda import is_available as cuda_is_available
 import numpy as np
+import mudata as mu
+import anndata as ad
+import popv
 
+from torch.cuda import is_available as cuda_is_available
 try:
     from torch.backends.mps import is_available as mps_is_available
 except ModuleNotFoundError:
@@ -19,7 +15,7 @@ except ModuleNotFoundError:
     def mps_is_available():
         return False
 
-
+# set up logger
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
 console_handler = logging.StreamHandler(sys.stdout)
@@ -28,173 +24,124 @@ console_handler.setFormatter(logFormatter)
 logger.addHandler(console_handler)
 
 
-### VIASH START
+## VIASH START
 par = {
-    # I/O params
-    "input": "./resources_test/annotation_test_data/blood_test_query.h5ad",
-    "output_dir": "./resources_test/annotation_test_data/",
-    "compression": "gzip",
-    # Component params
-    "tissue_tabula_sapiens": "Blood",
-    "tissue_reference_file": "./resources_test/annotation_test_data/blood_test_reference.h5ad",
-    "methods": ["scvi", "scanvi"],
-    "query_obs_covariate": ["batch"],
-    "query_obs_cell_type_key": "none",
-    "query_obs_cell_type_unknown_label": "unknown",
-    "reference_obs_cell_type_key": "cell_ontology_class",
-    "reference_obs_covariate": ["donor", "method"],
-    "ontology_files_path": "./resources_test/annotation_test_data/popv_cl_ontology/",
-    "plots": False
-    }
-### VIASH END
+  # 'input': 'resources_test/pbmc_1k_protein_v3/pbmc_1k_protein_v3_filtered_feature_bc_matrix.h5mu',
+  'input': 'resources_test/concat_test_data/human_brain_3k_filtered_feature_bc_matrix_subset.h5mu',
+  'modality': 'rna',
+  'query_obs_covariates': ["batch"],
+  'query_obs_cell_type_key': 'value',
+  'query_obs_cell_type_unknown_label': 'unknown',
+  'reference': "resources_test/annotation_test_data/tmp_TS_Blood_filtered.h5ad",
+  'reference_obs_cell_type_key': "cell_ontology_class",
+  'reference_obs_covariate': ["donor", "method"],
+  'output': 'output.h5mu',
+  'compression': 'gzip',
+  'methods': ["knn_on_scvi", "scanvi"],
+  "output_plots": "plots.pdf"
+}
+meta = {}
+## VIASH END
 
 
-def get_tabula_sapiens_reference_url(tissue):
-    if tissue == 'Bladder':
-        refdata_url ='https://www.dropbox.com/s/p5x1lb0jyl8293c/Bladder.h5ad?dl=1'
-    elif tissue == 'Blood':
-        refdata_url = 'https://www.dropbox.com/s/4cg6zj340oelhlg/Blood.h5ad?dl=1'
-    elif tissue == 'Bone_Marrow':
-        refdata_url = 'https://www.dropbox.com/s/rwfovoyafpd64io/Bone_Marrow.h5ad?dl=1'
-    elif tissue == 'Fat':
-        refdata_url = 'https://www.dropbox.com/s/if1d7iloovi8e9o/Fat.h5ad?dl=1'
-    elif tissue == 'Heart':
-        refdata_url = 'https://www.dropbox.com/s/0udrdzjl2z087jj/Heart.h5ad?dl=1'
-    elif tissue == 'Kidney':
-        refdata_url = 'https://www.dropbox.com/s/8sx9fhjfgnyjgdz/Kidney.h5ad?dl=1'
-    elif tissue == 'Large_Intestine':
-        refdata_url = 'https://www.dropbox.com/s/272sajn0hkj62le/Large_Intestine.h5ad?dl=1'
-    elif tissue == 'Liver':
-        refdata_url = 'https://www.dropbox.com/s/g0ahumalnm0mp38/Liver.h5ad?dl=1'
-    elif tissue == 'Lung':
-        refdata_url = 'https://www.dropbox.com/s/2kuzdamjevev2ci/Lung.h5ad?dl=1'
-    elif tissue == 'Lymph_Node':
-        refdata_url = 'https://www.dropbox.com/s/tetuh62010uothb/Lymph_Node.h5ad?dl=1'
-    elif tissue == 'Mammary':
-        refdata_url = 'https://www.dropbox.com/s/krm4pv4ev6cynns/Mammary.h5ad?dl=1'
-    elif tissue == 'Muscle':
-        refdata_url = 'https://www.dropbox.com/s/0jhvnoy49rvrlqn/Muscle.h5ad?dl=1'
-    elif tissue == 'Pancreas':
-        refdata_url = 'https://www.dropbox.com/s/kn0zodnmxwx0yhe/Pancreas.h5ad?dl=1'
-    elif tissue == 'Prostate':
-        refdata_url = 'https://www.dropbox.com/s/040fb5jr0zcur7h/Prostate.h5ad?dl=1'
-    elif tissue == 'Salivary Gland':
-        refdata_url = 'https://www.dropbox.com/s/rwia1ji7eztga6b/Salivary_Gland.h5ad?dl=1'
-    elif tissue == 'Skin':  
-        refdata_url = 'https://www.dropbox.com/s/ucvdksq2jnug2nh/Skin.h5ad?dl=1'
-    elif tissue == 'Small_Intestine':
-        refdata_url = 'https://www.dropbox.com/s/06ia5n2yex3dq8j/Small_Intestine.h5ad?dl=1'
-    elif tissue == 'Spleen':
-        refdata_url = 'https://www.dropbox.com/s/m2d0gme847qdhr1/Spleen.h5ad?dl=1'
-    elif tissue == 'Thymus':
-        refdata_url = 'https://www.dropbox.com/s/i84bcyk87scesml/Thymus.h5ad?dl=1'
-    elif tissue == 'Trachea':
-        refdata_url = 'https://www.dropbox.com/s/ppt7b6w73gvceap/Trachea.h5ad?dl=1'
-    elif tissue == 'Vasculature':
-        refdata_url = 'https://www.dropbox.com/s/1eq0zamel5etmoq/Vasculature.h5ad?dl=1'
-    return refdata_url
+use_gpu = cuda_is_available() or mps_is_available()
+logger.info('GPU enabled? %s', use_gpu)
 
+# changes:
+# - input dataset is a mudata object
+# - expect reference to be download apriori
+# - CL ontology is now part of the docker container
+# - switch reference to ensembl ids as soon as possible
+# - find common variables by intersecting the ensembl genes
+#   TODO: perform ortholog mapping if need be
+# - TODO: turn static variables into args: https://github.com/czbiohub/PopV/blob/main/popv/preprocessing.py
 
-def download_tabula_sapiens_reference_h5ad(refdata_url, local_refdata):
-    logger.info('Downloading reference data')
-    result = subprocess.run(
-        ["wget", refdata_url, "-O", local_refdata], capture_output=True, text=True
-        )
-    # logger.info(result.stdout)
-    # logger.info(result.stderr)
+# define static variables
+input_obs_label = None
+reference_obs_batch = "donor_assay"
+reference_obs_label = "cell_ontology_class"
 
-
-def check_nonnegative_integers(adata):
-    if popv._check_nonnegative_integers(adata.X):
-        logger.info('Raw counts present in .X')
-    elif popv._check_nonnegative_integers(adata.raw.X):
-        logger.info('Raw counts present in .raw.X')
-        adata.X = adata.raw.X
-    else:
-        raise BaseException('Make sure data .X or .raw.X contains raw counts.')
-    return adata
-
-
-def main():
+def main(par, meta):
+    ### PREPROCESSING REFERENCE ###
+    logger.info("### PREPROCESSING REFERENCE ###")
     
-    logger.info('Prepping query data for cell typing')
-    adata_query = sc.read_h5ad(par["input"])
-    # TODO: Hack around cross-species mouse-human, so be cautious
-    # TODO: implement cross-species mapping
-    adata_query.var_names = adata_query.var_names.str.upper()
-    adata_query.obs_names_make_unique()
-    adata_query.var_names_make_unique()
-    adata_query = check_nonnegative_integers(adata_query)
+    # take a look at reference data
+    logger.info("Reading reference data '%s'", par["reference"])
+    reference = ad.read_h5ad(par["reference"])
+    
+    logger.info("Setting reference var index to Ensembl IDs")
+    reference.var["gene_symbol"] = list(reference.var.index)
+    reference.var.index = [re.sub("\\.[0-9]+$", "", s) for s in reference.var["ensemblid"]]
 
-    # TODO: add possibility to come up with own reference data e.g. atlasses
-    if own_data:
-        logger.info('Prepping user-provided {} reference data for cell typing'.format(par["tissue_reference_file"]))
-        adata_reference = sc.read_h5ad(par["tissue_reference_file"])
-    else:
-        logger.info('Prepping Tabula Sapiens {} reference data for cell typing'.format(par["tissue_tabula_sapiens"]))
-        refdata_url = get_tabula_sapiens_reference_url(par["tissue_tabula_sapiens"])
-        local_refdata = 'tabula_sapiens_reference_{}.h5ad'.format(par["tissue_tabula_sapiens"])
-        download_tabula_sapiens_reference_h5ad(refdata_url, local_refdata)
-        adata_reference = sc.read_h5ad(local_refdata)
-    adata_reference.obs_names_make_unique()
-    adata_reference.var_names_make_unique()
-    adata_reference = check_nonnegative_integers(adata_reference)
-    ref_cell_types = adata_reference.obs['cell_type_tissue'].unique().to_list()
-    logger.info('Reference data includes {} cell types {}'.format(len(ref_cell_types), ', '.join(ref_cell_types)))
-
-    min_celltype_size = np.min(adata_reference.obs.groupby('cell_ontology_class').size())
+    logger.info("Detect number of samples per label")
+    min_celltype_size = np.min(reference.obs.groupby(reference_obs_label).size())
     n_samples_per_label = np.max((min_celltype_size, 100))
-    
-    common_markers = list(set(adata_reference.var.index).intersection(set(adata_query.var.index)))
-    logger.info(('Common features between query and reference data: {}'.format(len(common_markers))))
-    adata_query_intersection = adata_query[:, common_markers]
-    adata_reference_intersection = adata_reference[:, common_markers]
-    assert adata_query_intersection.var.index.shape == adata_reference_intersection.var.index.shape, 'Something went wrong in the process of finding common markers!'
-    
-    # Lower mem footprint
-    del adata_reference
-    
-    # TODO: add highly variable genes param to component
-    # TODO: add training_mode to component
-    # TODO: add pretrained_scvi option
-    # TODO: add pretrained_scANVI option
-    logger.info('PopV process query...')
-    adata_query_reference = popv.process_query(
-        query_adata=adata_query_intersection,
-        ref_adata=adata_reference_intersection,
-        save_folder=par["output_dir"],
-        query_batch_key='batch',
-        query_labels_key=None,
-        unknown_celltype_label='unknown',
-        pretrained_scvi_path=None,
-        training_mode='offline',
-        ref_labels_key="cell_ontology_class",
-        ref_batch_key=['donor', 'method'],
-        n_samples_per_label=n_samples_per_label,
-        hvg=True)
-    
-    # Lower mem footprint
-    del adata_query_intersection
-    del adata_reference_intersection
 
-    # TODO: assess CPU performance
-    # TODO: assess GPU performance
-    # TODO: add pretrained_scvi option
-    # TODO: add pretrained_scANVI option
-    logger.info('PopV annotate data...')
-    popv.annotate_data(
-        adata=adata_query_reference,
+
+    ### PREPROCESSING INPUT ###
+    logger.info("### PREPROCESSING INPUT ###")
+    logger.info("Reading '%s'", par["input"])
+    input = mu.read_h5mu(par["input"])
+    input_modality = input.mod[par['modality']]
+
+    # subset with var column
+    if par["input_var_subset"]:
+        logger.info("Subset input with .var['%s']", par["input_var_subset"])
+        input_modality = input_modality[:,input_modality.var[par["input_var_subset"]]].copy()
+        
+
+    ### ALIGN REFERENCE AND INPUT ###
+    logger.info("### ALIGN REFERENCE AND INPUT ###")
+
+    logger.info("Detecting common vars based on ensembl ids")
+    common_ens_ids = list(set(reference.var.index).intersection(set(input_modality.var.index)))
+    
+    logger.info('  reference n_vars: %i', reference.n_vars)
+    logger.info('  input n_vars: %i', input_modality.n_vars)
+    logger.info('  intersect n_vars: %i', len(common_ens_ids))
+    assert len(common_ens_ids) >= 100, "The intersection of genes is too small."
+
+    # perform intersection
+    input_modality = input_modality[:, common_ens_ids].copy()
+    reference = reference[:, common_ens_ids].copy()
+    
+    ### ALIGN REFERENCE AND INPUT ###
+    logger.info("### ALIGN REFERENCE AND INPUT ###")
+    # TODO: add training_mode to component
+    logger.info('Run PopV processing')
+    adata = popv.preprocessing.Process_Query(
+        # input
+        query_adata=input_modality,
+        query_labels_key=par["input_obs_labels"],
+        query_batch_key=par["input_obs_batch"],
+        query_layers_key=par["input_obs_layer"],
+        # reference
+        ref_adata=reference,
+        ref_labels_key=par["reference_obs_labels"],
+        ref_batch_key=par["reference_obs_batch"],
+        # pretrained model
+        prediction_mode='retrain',
+        pretrained_scvi_path=None, # TODO: implement
+        # options
+        unknown_celltype_label='unknown',
+        # outputs
+        save_path_trained_models="/pwd/output_popv", # TODO: fix
+        n_samples_per_label=n_samples_per_label,
+        # hardcoded values
+        cl_obo_folder="/opt/popv_cl_ontology/",
+        use_gpu=use_gpu
+    ).adata
+    
+    # Lower mem footprint
+    del input_modality_intersect
+    del reference_intersect
+
+    logger.info('Annotate data')
+    popv.annotation.annotate_data(
+        adata=adata.adata,
         methods=par["methods"],
-        save_path=par["output_dir"],
-        pretrained_scvi_path=None,
-        pretrained_scanvi_path=None,
-        onclass_ontology_file="{}/cl.ontology".format(par["ontology_files_path"]),
-        onclass_obo_fp="{}/cl.obo".format(par["ontology_files_path"]),
-        onclass_emb_fp="{}/cl.ontology.nlp.emb".format(par["ontology_files_path"]),
-        scvi_max_epochs=None,
-        scanvi_max_epochs=None,
-        use_gpu=(cuda_is_available() or mps_is_available())
-        )
+        save_path="/pwd/output_annotate", # TODO: fix
+    )
     
     # Lower mem footprint
     del adata_query_reference
@@ -265,7 +212,6 @@ def main():
 if __name__ == "__main__":
     logger.info('PopV cell type annotation component')
     
-    logger.info('GPU enabled? {}'.format((cuda_is_available() or mps_is_available())))
     input_file_name = ''.join(par["input"].split('/')[-1].split('.')[:-1])
     adata_query_cell_typed_file = '{}/{}_cell_typed.h5ad'.format(par["output_dir"], input_file_name)
     logger.info('PopV output can be found: {}'.format(par["output_dir"]))
@@ -294,4 +240,5 @@ if __name__ == "__main__":
     par["input"] = Path(par["input"].strip()).resolve()
     par["tissue_reference_file"] = Path(par["tissue_reference_file"].strip()).resolve()    
 
-    main()
+    main(par, meta)
+
