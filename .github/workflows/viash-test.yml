@@ -130,10 +130,13 @@ jobs:
 
     - name: Login to the nvidia container registry
       uses: docker/login-action@v2
+      env: 
+          NVIDIA_PASSWORD: ${{ secrets.NVIDIA_PASSWORD }}
+      if: ${{ env.NVIDIA_PASSWORD != '' }}
       with:
         registry: nvcr.io
-        username: ${{ secrets.NVIDIA_USERNAME }}
-        password: ${{ secrets.NVIDIA_PASSWORD }}
+        username: $oauthtoken
+        password: ${{ env.NVIDIA_PASSWORD }}
 
     - name: Run test
       timeout-minutes: 30
