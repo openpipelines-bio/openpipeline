@@ -4,7 +4,8 @@ functionality:
   description: |
     "dsc-pileup is a software tool to pileup reads and corresponding base quality for each overlapping SNPs and each barcode. By using pileup files, it would allow us to run demuxlet/freemuxlet pretty fast multiple times without going over the BAM file again.
   authors:
-    - name: Xichen Wu
+    - __merge__: ../../authors/xichen_wu.yaml
+      roles: [ author ]
   argument_groups:
   - name: "Input"
     arguments:
@@ -108,6 +109,5 @@ platforms:
     - type: docker
       run: git clone --depth 1 https://github.com/statgen/popscle.git /tmp/popscle && mkdir -p /tmp/popscle/build && cd /tmp/popscle/build && cmake .. && make && cp /tmp/popscle/bin/popscle /usr/local/bin
   - type: nextflow
-    variant: vdsl3
     directives:
       label: [ midmem, midcpu ]

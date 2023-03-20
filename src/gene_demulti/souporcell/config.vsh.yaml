@@ -3,7 +3,8 @@ functionality:
   namespace: gene_demulti
   description: "souporcell is a method for clustering mixed-genotype scRNAseq experiments by individual."
   authors:
-    - name: Xichen Wu
+    - __merge__: ../../authors/xichen_wu.yaml
+      roles: [ author ]
   argument_groups:
   - name: "Input"
     arguments:
@@ -75,6 +76,5 @@ platforms:
   - type: docker
     image: cumulusprod/souporcell:2021.03
   - type: nextflow
-    variant: vdsl3
     directives:
       label: [ highmem, highcpu ]

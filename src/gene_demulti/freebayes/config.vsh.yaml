@@ -3,7 +3,8 @@ functionality:
   namespace: gene_demulti
   description: "freebayes is a Bayesian genetic variant detector designed to find small polymorphisms, specifically SNPs."
   authors:
-    - name: Xichen Wu
+    - __merge__: ../../authors/xichen_wu.yaml
+      roles: [ author ]
   argument_groups:
   - name: "Input"
     arguments:

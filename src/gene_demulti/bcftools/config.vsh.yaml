@@ -3,7 +3,8 @@ functionality:
   namespace: gene_demulti
   description: Filter the variants called by freebayes or cellSNP
   authors:
-    - name: Xichen Wu
+    - __merge__: ../../authors/xichen_wu.yaml
+      roles: [ author ]
   arguments:
     - name: "--vcf"
       type: file
@@ -42,6 +43,5 @@ platforms:
     - type: docker
       run: wget https://github.com/samtools/bcftools/releases/download/1.16/bcftools-1.16.tar.bz2 -O bcftools.tar.bz2 && tar -xjvf bcftools.tar.bz2 && cd bcftools-1.16 && make prefix=/usr/local install
   - type: nextflow
-    variant: vdsl3
     directives:
       label: [ midmem, midcpu ]

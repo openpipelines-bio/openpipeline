@@ -3,7 +3,8 @@ functionality:
   namespace: gene_demulti
   description: "cellSNP aims to pileup the expressed alleles in single-cell or bulk RNA-seq data. It can be directly used for donor deconvolution in multiplexed single-cell RNA-seq data, particularly with vireo."
   authors:
-    - name: Xichen Wu
+    - __merge__: ../../authors/xichen_wu.yaml
+      roles: [ author ]
   argument_groups:
   - name: "Input"
     arguments:
@@ -105,6 +106,5 @@ platforms:
     - type: docker
       run : git clone https://github.com/single-cell-genetics/cellsnp-lite.git && cd cellsnp-lite && autoreconf -iv && ./configure --with-htslib=/htslib-1.16 && make && make install
   - type: nextflow
-    variant: vdsl3
     directives:
       label: [ highmem, highcpu ]

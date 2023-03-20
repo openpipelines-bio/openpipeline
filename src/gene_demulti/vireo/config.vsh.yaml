@@ -3,7 +3,8 @@ functionality:
   namespace: gene_demulti
   description: "Vireo is primarily designed for demultiplexing cells into donors by modelling of expressed alleles."
   authors:
-    - name: Xichen Wu
+    - __merge__: ../../authors/xichen_wu.yaml
+      roles: [ author ]
   argument_groups:
   - name: "Input"
     arguments:
@@ -84,6 +85,5 @@ platforms:
     - type: python
       pip: [ threadpoolctl, vireoSNP ]
   - type: nextflow
-    variant: vdsl3
     directives:
       label: [ midmem, midcpu ]
