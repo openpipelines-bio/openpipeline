@@ -20,7 +20,7 @@ fi
   --min_ref $par_min_ref \
   --max_loci $par_max_loci \
   --out_dir $par_output \
-  ${meta_cpus:+--threads $par_threads} \
+  --threads ${par_threads:=1} \
   ${par_restarts:+--restarts $par_restarts} \
   ${par_common_variants:+--common_variants $par_common_variants} \
   ${par_known_genotypes:+--known_genotypes $par_known_genotypes} \

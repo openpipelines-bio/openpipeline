@@ -19,7 +19,6 @@ vireo \
   --genoTag $par_genoTag \
   --nInit $par_nInit \
   --extraDonor $par_extraDonor \
-  --nproc $par_nproc \
   --out "${par_output}" \
   ${par_vartrixData:+--vatrixData $par_vartrixData} \
   ${par_donorFile:+--donorFile $par_donorFile} \
@@ -30,6 +29,7 @@ vireo \
   ${par_noPlot:+--noPlot} \
   ${par_randSeed:+--randSeed $par_randSeed} \
   ${par_cellRange:+--cellRange $par_cellRange} \
-  ${par_callAmbientRNAs:+--callAmbientRNAs}
+  ${par_callAmbientRNAs:+--callAmbientRNAs} \
+  ${meta_cpus:+--nproc $meta_cpus}
 
 cut -d$'\t' -f 1-2 "$par_output/donor_ids.tsv" > "$par_output/assignment.tsv"
