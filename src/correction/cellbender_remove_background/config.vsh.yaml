@@ -54,9 +54,9 @@ functionality:
         - name: "--var_ambient_expression"
           type: string
           default: "ambient_expression"
-        # - name: "--obsm_latent_gene_encoding"
-        #   type: string
-        #   default: "latent_gene_encoding"
+        - name: "--obsm_latent_gene_encoding"
+          type: string
+          default: "cellbender_latent_gene_encoding"
     - name: Arguments
       arguments:
         - name: "--expected_cells"
