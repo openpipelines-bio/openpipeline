@@ -197,7 +197,7 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
     "config" : "/home/runner/work/openpipeline/openpipeline/src/transform/clr/config.vsh.yaml",
     "platform" : "nextflow",
     "viash_version" : "0.7.1",
-    "git_commit" : "8513714fb5d299c2fb1e6803e5347b7d49583d16",
+    "git_commit" : "0ddefec86af7541a7c7cae792c71333f58f44663",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))
@@ -239,7 +239,7 @@ def main():
     input_h5mu = read_h5mu(par['input'])
     modality = input_h5mu[par['modality']]
     normalized_counts = pt.pp.clr(modality, inplace=False)
-    input_h5mu[par["modality"]].layers['clr'] = normalized_counts
+    input_h5mu[par["modality"]].layers['clr'] = normalized_counts.X
     input_h5mu.write_h5mu(par['output'], compression=par["output_compression"])
 
 if __name__ == "__main__":
