@@ -1,5 +1,7 @@
+#!/bin/bash
+
 set -ex
-echo "$meta_resources_dir"
+
 echo ">>> Running executable"
 $meta_executable \
     --plp "$meta_resources_dir/demuxafy_test_data/dsc_pileup/dscpileup_out" --output freemuxlet_result/ --out freemux_out --nsample 14

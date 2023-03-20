@@ -1,5 +1,7 @@
+#!/bin/bash
+
 set -ex
-echo "$meta_resources_dir"
+
 echo ">>> Running executable"
 $meta_executable \
     --vcf "$meta_resources_dir/demuxafy_test_data/test_dataset_chr1_2.vcf,$meta_resources_dir/demuxafy_test_data/test_dataset_chr3_4.vcf" \

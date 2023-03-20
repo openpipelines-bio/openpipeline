@@ -1,5 +1,7 @@
+#!/bin/bash
+
 set -ex
-echo "$meta_resources_dir"
+
 echo ">>> Running executable"
 $meta_executable \
     --samFile "$meta_resources_dir/demuxafy_test_data/pooled.sorted.bam" \

@@ -17,7 +17,7 @@ popscle dsc-pileup \
   --sam-verbose $par_samVerbose \
   --vcf $par_vcf \
   --vcf-verbose $par_vcfVerbose \
-  --out "${par_output}/${par_out}" \
+  --out "$par_output/$par_out" \
   --cap-BQ $par_capBQ \
   --min-BQ $par_minBQ \
   --min-MQ $par_minMQ \

@@ -32,4 +32,4 @@ vireo \
   ${par_cellRange:+--cellRange $par_cellRange} \
   ${par_callAmbientRNAs:+--callAmbientRNAs}
 
-cut -d$'\t' -f 1-2 "${par_output}/donor_ids.tsv" > "${par_output}/assignment.tsv"
+cut -d$'\t' -f 1-2 "$par_output/donor_ids.tsv" > "$par_output/assignment.tsv"

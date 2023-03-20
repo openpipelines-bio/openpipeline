@@ -17,8 +17,8 @@ scSplit count \
   ${par_com:+--com $par_com}
 
 scSplit run \
-  --ref "${par_output}/$par_ref" \
-  --alt "${par_output}/$par_alt" \
+  --ref "$par_output/$par_ref" \
+  --alt "$par_output/$par_alt" \
   --out $par_output \
   --num $par_num \
   ${par_sub:+--sub $par_sub} \
@@ -28,12 +28,12 @@ scSplit run \
 
 if [ "$par_geno" = true ]; then
   scSplit genotype \
-    --ref "${par_output}/$par_ref" \
-    --alt "${par_output}/$par_alt" \
-    --psc "${par_output}/${par_psc}" \
-    $par_output
+    --ref "$par_output/$par_ref" \
+    --alt "$par_output/$par_alt" \
+    --psc "$par_output/$par_psc" \
+    "$par_output"
 fi
 
-sed 1d ${par_output}/scSplit_result.csv > "${par_output}/res.tsv"
-{ echo cell$'\t'donor_id; "cat ${par_output}/res.tsv"; } > "${par_output}/assignment.tsv"
-rm "${par_output}/res.tsv"
+sed 1d "$par_output/scSplit_result.csv" > "$par_output/res.tsv"
+{ echo cell$'\t'donor_id; cat "$par_output/res.tsv"; } > "$par_output/assignment.tsv"
+rm "$par_output/res.tsv"

@@ -28,11 +28,11 @@ popscle demuxlet \
   --min-total $par_minTotal \
   --min-umi $par_minUmi \
   --min-snp $par_minSnp \
-  --out ${par_output}/${par_out} \
+  --out "$par_output/$par_out" \
   ${par_plp:+--plp $par_plp} \
   ${par_sam:+--sam $par_sam} \
   ${par_sm:+--sm $par_sm} \
   ${par_smList:+--sm-list $par_smList} \
   ${par_groupList:+--group-list $par_groupList}
 
-Rscript summary.R --demuxlet_out ${par_output}/${par_out}.best
+Rscript summary.R --demuxlet_out "$par_output/$par_out.best"

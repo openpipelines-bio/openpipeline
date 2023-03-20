@@ -21,11 +21,11 @@ popscle freemuxlet \
   --min-total $par_minTotal \
   --min-umi $par_minUmi \
   --min-snp $par_minSnp \
-  --out "$par_output/${par_out}" \
+  --out "$par_output/$par_out" \
   ${par_initCluster:+--init-cluster $par_initCluster} \
   ${par_auxFiles:+--aux-files} \
   ${par_keepInitMissing:+--keep-init-missing} \
   ${par_randomizeSingletScore:+--randomize-singlet-score} \
   ${par_groupList:+--group-list $par_groupList}
 
-Rscript summary.R --freemuxlet_out "${par_output}/${par_out}.clust1.samples.gz"
+Rscript summary.R --freemuxlet_out "$par_output/$par_out.clust1.samples.gz"
