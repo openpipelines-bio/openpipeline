@@ -167,7 +167,10 @@ workflow run_wf {
     | map { list -> 
       ["merged", list.collect{it[1]}] + list[0].drop(2)
     }
-    | merge
+    | merge.run(
+        auto: [ publish: true ],
+        args: [ output_compression: "gzip" ]
+    )
     | getWorkflowArguments(key: "integration_args")
     | pmap {id, input_args -> [id, input_args + [layer: "log_normalized"]]}
     | integration
