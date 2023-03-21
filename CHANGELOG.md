@@ -20,6 +20,10 @@
 
 * `correction/cellbender_remove_background`: add `obsm_latent_gene_encoding` parameter to store the latent gene representation.
 
+# MINOR CHANGES
+
+* `workflows/multiomics/full_pipeline`: publish the output from from sample merging to allow running different integrations.
+
 # openpipelines 0.7.1
 
 ## NEW FUNCTIONALITY
