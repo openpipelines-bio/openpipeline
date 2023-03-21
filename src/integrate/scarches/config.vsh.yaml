@@ -104,21 +104,15 @@ functionality:
     - path: ../../../resources_test/HLCA_reference_model/HLCA_reference_model.zip
 platforms:
   - type: docker
-    image: python:3.8
+    image: nvcr.io/nvidia/pytorch:22.12-py3
+    # run_args: ["--gpus all"]
     setup:
-      - type: apt
-        packages:
-          - libopenblas-dev
-          - liblapack-dev
-          - gfortran
       - type: python
         packages:
           - mudata~=0.2.0
           - anndata~=0.8.0
-          - torchmetrics~=0.7.0
-          - pytorch-lightning~=1.7.0
-          - scvi-tools~=0.18.0
-          - pandas
+          - scvi-tools~=0.19          
+          - pandas~=1.5.3
   - type: nextflow
     variant: vdsl3
     directives:

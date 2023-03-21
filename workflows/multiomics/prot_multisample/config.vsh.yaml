@@ -1,0 +1,36 @@
+functionality:
+  name: "prot_multisample"
+  namespace: "multiomics"
+  description: "Processing unimodal multi-sample ADT data."
+  authors:
+    - __merge__: ../../../src/authors/dries_schaumont.yaml
+      roles: [ author ]
+  argument_groups:
+    - name: "Inputs"
+      arguments:
+        - name: "--id"
+          required: true
+          type: string
+          description: ID of the concatenated file
+          example: concatenated
+        - name: "--sample_id"
+          required: true
+          type: string
+          multiple_sep: ';'
+          multiple: true
+          description: IDs of the sample.
+          example: foo
+        - name: "--input"
+          required: true
+          type: file
+          multiple_sep: ';'
+          multiple: true
+          description: Path to the samples.
+          example: dataset.h5mu
+  resources:
+    - type: nextflow_script
+      path: main.nf
+  # test_resources:
+  #   - type: nextflow_script
+  #     path: main.nf
+  #     entrypoint: test_wf

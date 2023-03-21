@@ -10,6 +10,7 @@ include { remove_modality }  from targetDir + '/filter/remove_modality/main.nf'
 include { run_wf as rna_singlesample } from workflowDir + '/multiomics/rna_singlesample/main.nf'
 include { run_wf as rna_multisample } from workflowDir + '/multiomics/rna_multisample/main.nf'
 include { run_wf as prot_singlesample } from workflowDir + '/multiomics/prot_singlesample/main.nf'
+include { run_wf as prot_multisample } from workflowDir + '/multiomics/prot_multisample/main.nf'
 include { run_wf as integration } from workflowDir + '/multiomics/integration/main.nf'
 
 include { readConfig; helpMessage; readCsv; preprocessInputs; channelFromParams } from workflowDir + "/utils/WorkflowHelper.nf"
@@ -100,7 +101,7 @@ workflow run_wf {
 
     modality_processors = [
       ["id": "rna", "singlesample": rna_singlesample, "multisample": rna_multisample],
-      ["id": "prot", "singlesample": prot_singlesample, "multisample": null]
+      ["id": "prot", "singlesample": prot_singlesample, "multisample": prot_multisample]
     ]
     known_modalities = modality_processors.collect{it.id}
 
