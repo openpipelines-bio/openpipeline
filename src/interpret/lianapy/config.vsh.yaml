@@ -36,7 +36,7 @@ functionality:
       description: "The key of the observations grouping to consider."
     - name: "--resource_name"
       type: string
-      choises: ["baccin2019", "cellcall", "cellchatdb", "cellinker", "cellphonedb", "celltalkdb", "connectomedb2020", "consensus", "embrace", "guide2pharma", "hpmr", "icellnet", "italk", "kirouac2010", "lrdb", "mouseconsensus", "ramilowski2015" ]
+      choices: [ "baccin2019", "cellcall", "cellchatdb", "cellinker", "cellphonedb", "celltalkdb", "connectomedb2020", "consensus", "embrace", "guide2pharma", "hpmr", "icellnet", "italk", "kirouac2010", "lrdb", "mouseconsensus", "ramilowski2015" ]
       default: "consensus"
       required: false
       description: "Name of the resource to be loaded and use for ligand-receptor inference."
@@ -52,7 +52,7 @@ functionality:
       description: "Minimum cells per cell identity ('groupby') to be considered for downstream analysis."
     - name: "--aggregate_method"
       type: string
-      choises: ["mean", "rra"]
+      choices: [ "mean", "rra" ]
       default: "rra"
       required: false
       description: "Method aggregation approach, one of ['mean', 'rra'], where 'mean' represents the mean rank, while 'rra' is the RobustRankAggregate (Kolde et al., 2014) of the interactions."
