@@ -10,7 +10,7 @@ par = {
     "output": "foo.h5mu",
     "output_compression": "gzip",
     "modality": "rna",
-    "layer": "log_normalized",
+    "layer": None,
     "groupby": "bulk_labels",
     "resource_name": "consensus",
     "expr_prop": 0.1,
@@ -37,6 +37,10 @@ def main():
     orig_gene_label = mod.var.index
     mod.var_names = mod.var['gene_symbol'].astype(str)
     mod.var_names_make_unique()
+
+    # if statement needed as Layer could be None or string
+    if par['layer'] == "None":
+        par['layer'] = None
 
     liana.mt.rank_aggregate(
         adata = mod,

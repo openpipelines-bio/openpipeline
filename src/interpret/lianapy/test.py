@@ -28,7 +28,7 @@ class TestLianaPy(unittest.TestCase):
             "--input", input_file,
             "--output_compression", "gzip",
             "--modality", "rna",
-            "--layer", "log_normalized",
+            "--layer", "None",
             "--groupby", "bulk_labels",
             "--resource_name", "consensus",
             "--expr_prop", "0.1",
