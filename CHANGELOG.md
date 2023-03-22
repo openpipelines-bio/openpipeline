@@ -1,6 +1,11 @@
 # openpipelines 0.7.2
 
-* `integrate/scarches`, `integrate/scvi` and `correction/cellbender_remove_background`: Update base container to `nvcr.io/nvidia/pytorch:22`.12-py3
+## NEW FUNCTIONALITY
+
+* Added genetic demultiplexing methods `cellsnp`, `demuxlet`, `freebayes`, `freemuxlet`, `scsplit`, `sourorcell` and `vireo`.
+
+## MINOR CHANGES
+* `integrate/scarches`, `integrate/scvi` and `correction/cellbender_remove_background`: Update base container to `nvcr.io/nvidia/pytorch:22.12-py3`
 
 # openpipelines 0.7.1
 
