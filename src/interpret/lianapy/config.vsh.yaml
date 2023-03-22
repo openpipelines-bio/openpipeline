@@ -15,14 +15,20 @@ functionality:
       description: Output h5mu file.
       direction: output
       required: true
-    - name: "--compression"
+    - name: "--output_compression"
       type: string
+      choices: ["gzip", "lzf"]
       default: "gzip"
       required: false
     - name: "--modality"
       type: string
       default: "rna"
       required: false
+    - name: "--layer"
+      type: string
+      default: log_normalized
+      required: false
+      description: "Layer in anndata.AnnData.layers to use. If None, use anndata.AnnData.X."
     - name: "--groupby"
       type: string
       default: "bulk_labels"
@@ -30,6 +36,7 @@ functionality:
       description: "The key of the observations grouping to consider."
     - name: "--resource_name"
       type: string
+      choises: ["baccin2019", "cellcall", "cellchatdb", "cellinker", "cellphonedb", "celltalkdb", "connectomedb2020", "consensus", "embrace", "guide2pharma", "hpmr", "icellnet", "italk", "kirouac2010", "lrdb", "mouseconsensus", "ramilowski2015" ]
       default: "consensus"
       required: false
       description: "Name of the resource to be loaded and use for ligand-receptor inference."
@@ -45,6 +52,7 @@ functionality:
       description: "Minimum cells per cell identity ('groupby') to be considered for downstream analysis."
     - name: "--aggregate_method"
       type: string
+      choises: ["mean", "rra"]
       default: "rra"
       required: false
       description: "Method aggregation approach, one of ['mean', 'rra'], where 'mean' represents the mean rank, while 'rra' is the RobustRankAggregate (Kolde et al., 2014) of the interactions."
@@ -53,11 +61,6 @@ functionality:
       default: False
       required: false
       description: "Bool whether to return all LRs, or only those that surpass the 'expr_prop' threshold. Those interactions that do not pass the 'expr_prop' threshold will be assigned to the *worst* score of the ones that do. 'False' by default."
-    - name: "--layer"
-      type: string
-      default: log_normalized
-      required: false
-      description: "Layer in anndata.AnnData.layers to use. If None, use anndata.AnnData.X."
     - name: "--n_perms"
       type: integer
       default: 100
@@ -77,8 +80,6 @@ platforms:
       - type: python
         packages:
           - mudata~=0.2.0
-          - liana
+          - liana~=0.1.7
           - numpy
   - type: nextflow
-    directives:
-      label: [ highmem, highcpu ]

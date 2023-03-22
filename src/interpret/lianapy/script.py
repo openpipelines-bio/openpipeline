@@ -8,15 +8,15 @@ import numpy as np
 par = {
     "input": "integration.pca.output.h5mu",
     "output": "foo.h5mu",
-    "compression": "gzip",
+    "output_compression": "gzip",
     "modality": "rna",
+    "layer": "log_normalized",
     "groupby": "bulk_labels",
     "resource_name": "consensus",
     "expr_prop": 0.1,
     "min_cells": 5,
     "aggregate_method": "rra",
     "return_all_lrs": False,
-    "layer": "log_normalized",
     "n_perms": 100,
 }
 ### VIASH END
@@ -57,7 +57,7 @@ def main():
     mod.var_names = orig_gene_label
 
     # TODO: make sure compression is needed
-    mdata.write_h5mu(par['output'].strip(), compression=par['compression'])
+    mdata.write_h5mu(par['output'].strip(), compression=par['output_compression'])
 
 if __name__ == "__main__":
     main()

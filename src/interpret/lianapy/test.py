@@ -26,15 +26,15 @@ class TestLianaPy(unittest.TestCase):
         input_data = mudata.read_h5mu(input_file)
         self._run_and_check_output([
             "--input", input_file,
-            "--compression", "gzip",
+            "--output_compression", "gzip",
             "--modality", "rna",
+            "--layer", "log_normalized",
             "--groupby", "bulk_labels",
             "--resource_name", "consensus",
             "--expr_prop", "0.1",
             "--min_cells", "5",
             "--aggregate_method", "rra",
             "--return_all_lrs", "False",
-            "--layer", "log_normalized",
             "--n_perms", "11",
             "--output", "output.h5mu"])
         self.assertTrue(Path("output.h5mu").is_file())
