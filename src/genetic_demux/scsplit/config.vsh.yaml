@@ -1,6 +1,6 @@
 functionality:
   name: scsplit
-  namespace: gene_demulti
+  namespace: genetic_demux
   description: "scsplit is a genotype-free demultiplexing methode of pooled single-cell RNA-seq, using a hidden state model for identifying genetically distinct samples within a mixed population."
   authors:
     - __merge__: ../../authors/xichen_wu.yaml

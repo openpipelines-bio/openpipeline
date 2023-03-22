@@ -1,6 +1,6 @@
 functionality:
   name: freemuxlet
-  namespace: gene_demulti
+  namespace: genetic_demux
   description: |
     "freemuxlet is a software tool to deconvolute sample identity and identify multiplets when multiple samples are pooled by barcoded single cell sequencing. |
     If external genotyping data is not available, the genotyping-free version demuxlet, freemuxlet, would be recommended. "

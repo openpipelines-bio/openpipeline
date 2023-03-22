@@ -1,10 +1,8 @@
 functionality:
-  name: demuxlet
-  namespace: gene_demulti
+  name: dsc_pileup
+  namespace: genetic_demux
   description: |
-    "Demuxlet is a software tool to deconvolute sample identity and identify multiplets when multiple samples are pooled by barcoded single cell sequencing. |
-    If external genotyping data for each sample is available (e.g. from SNP arrays), demuxlet would be recommended. |
-    Be careful that the parameters on the github is not in line with the newest help version. |
+    "dsc-pileup is a software tool to pileup reads and corresponding base quality for each overlapping SNPs and each barcode. By using pileup files, it would allow us to run demuxlet/freemuxlet pretty fast multiple times without going over the BAM file again.
   authors:
     - __merge__: ../../authors/xichen_wu.yaml
       roles: [ author ]
@@ -22,44 +20,13 @@ functionality:
       type: string
       default: 'UB'
       description: Tag representing UMIs. For 10x genomiucs, use UB.
-    - name: "--plp"
-      type: string
-      description: Input pileup format. If the value is a string, it will be considered as the path of the plp file. If the value is boolean true, it will perform dscpileup.
+    - name: "--excludeFlag"
+      type: integer
+      default: 1796
+      description: SAM/BAM FLAGs to be excluded.
     - name: "--vcf"
       type: file
-      description: Input VCF/BCF file, containing the individual genotypes (GT), posterior probability (GP), or genotype likelihood (PL).
-    - name: "--field"
-      type: string
-      default: "GT"
-      description: FORMAT field to extract the genotype, likelihood, or posterior from
-    - name: "--genoErrorOffset"
-      type: double
-      default: 0.10
-      description: Offset of genotype error rate. [error] = [offset] + [1-offset]*[coeff]*[1-r2]
-    - name: "--genoErrorCoeff"
-      type: double
-      default: 0.0
-      description: Slope of genotype error rate. [error] = [offset] + [1-offset]*[coeff]*[1-r2]
-    - name: "--r2Info"
-      type: string
-      default: "R2"
-      description: INFO field name representing R2 value. Used for representing imputation quality.
-    - name: "--minMac"
-      type: integer
-      default: 1
-      description: Minimum minor allele frequency.
-    - name: "--minCallrate"
-      type: double
-      default: 0.50
-      description: Minimum call rate.
-    - name: "--alpha"
-      type: string
-      default: "0.5"
-      description: Grid of alpha to search for (default is 0.1, 0.2, 0.3, 0.4, 0.5)
-    - name: "--doubletPrior"
-      type: double
-      default: 0.5
-      description: Prior of doublet
+      description: "Input VCF/BCF file for dsc-pileup, containing the AC and AN field."
     - name: "--sm"
       type: string
       description: "List of sample IDs to compare to (default: use all)."
@@ -74,9 +41,12 @@ functionality:
       type: integer
       default: 1000
       description: Verbose message frequency for VCF/BCF.
+    - name: "--skipUmi"
+      type: boolean_true
+      description: Do not generate [prefix].umi.gz file, which stores the regions covered by each barcode/UMI pair.
     - name: "--capBQ"
       type: integer
-      default: 20
+      default: 40
       description: Maximum base quality (higher BQ will be capped).
     - name: "--minBQ"
       type: integer
@@ -93,7 +63,7 @@ functionality:
     - name: "--exclFlag"
       type: integer
       default: 3844
-      description: "SAM/BAM FLAGs to be excluded."
+      description: SAM/BAM FLAGs to be excluded for SNP overlapping Read filtering Options.
     - name: "--groupList"
       type: string
       description: List of tag readgroup/cell barcode to consider in this run. All other barcodes will be ignored. This is useful for parallelized run.
@@ -101,14 +71,14 @@ functionality:
       type: integer
       default: 0
       description: Minimum number of total reads for a droplet/cell to be considered.
+    - name: "--minUniq"
+      type: integer
+      default: 0
+      description: Minimum number of unique reads (determined by UMI/SNP pair) for a droplet/cell to be considered.
     - name: "--minSnp"
       type: integer
       default: 0
       description: Minimum number of SNPs with coverage for a droplet/cell to be considered.
-    - name: "--minUmi"
-      type: integer
-      default: 0
-      description: Minimum number of UMIs for a droplet/cell to be considered.
   - name: "Output"
     arguments:
     - name: "--output"
@@ -119,13 +89,11 @@ functionality:
       example: "demux/"
     - name: "--out"
       type: string
-      description: demuxlet output file prefix
-      example: "demuxlet"
+      description: dsc-pileup output file prefix
+      example: "demuxlet_dsc"
   resources:
     - type: bash_script
       path: script.sh
-    - type: r_script
-      path: summary.R
   test_resources:
     - type: bash_script
       path: test.sh
@@ -140,8 +108,6 @@ platforms:
       run: git clone https://github.com/samtools/htslib.git /tmp/htslib && cd /tmp/htslib && git submodule update --init --recursive && autoreconf -i && ./configure --prefix=/usr/local/ && make && make install
     - type: docker
       run: git clone --depth 1 https://github.com/statgen/popscle.git /tmp/popscle && mkdir -p /tmp/popscle/build && cd /tmp/popscle/build && cmake .. && make && cp /tmp/popscle/bin/popscle /usr/local/bin
-    - type: r
-      cran: [ data.table, argparser ]
   - type: nextflow
     directives:
       label: [ midmem, midcpu ]
