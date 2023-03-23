@@ -112,6 +112,9 @@ platforms:
     image: nvcr.io/nvidia/pytorch:22.12-py3
     # run_args: ["--gpus all"]
     setup:
+      - type: docker
+        run: |
+          pip install --upgrade "jax[cuda]" -f https://storage.googleapis.com/jax-releases/jax_cuda_releases.html
       - type: python
         packages:
           - mudata~=0.2.0
