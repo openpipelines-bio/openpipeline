@@ -6,6 +6,8 @@
 
 * Added `clr` functionality to `prot_multisample` pipeline.
 
+* Added `interpret/lianapy`: Enables the use of any combination of ligand-receptor methods and resources, and their consensus.
+
 ## BUG FIXES
 
 * `transform/clr`: fix anndata object instead of matrix being stored as a layer in output `MuData`, resulting in `NoneTypeError` object after reading the `.layers` back in.
