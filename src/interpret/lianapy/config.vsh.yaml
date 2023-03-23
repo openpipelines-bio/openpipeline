@@ -2,6 +2,11 @@ functionality:
   name: lianapy
   namespace: "interpret"
   description: "Performs LIANA integration based as described in https://github.com/saezlab/liana-py"
+  authors:
+    - __merge__: ../../authors/mauro_saporita.yaml
+      roles: [ author ]
+    - __merge__: ../../authors/povilas_gibas.yaml
+      roles: [ author ]
   arguments:
     - name: "--input"
       alternatives: ["-i"]
