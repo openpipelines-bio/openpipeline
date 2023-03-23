@@ -26,9 +26,8 @@ functionality:
       required: false
     - name: "--layer"
       type: string
-      default: "None"
       required: false
-      description: "Layer in anndata.AnnData.layers to use. If None, use anndata.AnnData.X."
+      description: "Layer in anndata.AnnData.layers to use. If None, use mudata.mod[modality].X."
     - name: "--groupby"
       type: string
       default: "bulk_labels"

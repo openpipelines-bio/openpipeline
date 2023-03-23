@@ -38,10 +38,6 @@ def main():
     mod.var_names = mod.var['gene_symbol'].astype(str)
     mod.var_names_make_unique()
 
-    # if statement needed as Layer could be None or string
-    if par['layer'] == "None":
-        par['layer'] = None
-
     liana.mt.rank_aggregate(
         adata = mod,
         groupby = par['groupby'],
