@@ -122,4 +122,4 @@ platforms:
           - scvi-tools~=0.19
   - type: nextflow
     directives:
-      label: [highmem, highcpu]
+      label: [highmem, highcpu, gpu]
