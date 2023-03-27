@@ -363,8 +363,6 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
       "variant" : "vdsl3",
       "directives" : {
         "label" : [
-          "highmem",
-          "highcpu",
           "gpu"
         ],
         "tag" : "$id"
@@ -383,7 +381,7 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
     "config" : "/home/runner/work/openpipeline/openpipeline/src/integrate/scvi/config.vsh.yaml",
     "platform" : "nextflow",
     "viash_version" : "0.7.1",
-    "git_commit" : "f255d047a3a6cc0b2c8401c91f67fd6637185d14",
+    "git_commit" : "34d8a1cd5349d715bdfbfe82d799829ce73876e9",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))
@@ -521,8 +519,6 @@ thisDefaultProcessArgs = [
     "tag" : "main_build"
   },
   "label" : [
-    "highmem",
-    "highcpu",
     "gpu"
   ],
   "tag" : "$id"
