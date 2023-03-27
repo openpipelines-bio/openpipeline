@@ -342,7 +342,7 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
         {
           "type" : "docker",
           "run" : [
-            "pip install --upgrade \\"jax[cuda]\\" -f https://storage.googleapis.com/jax-releases/jax_cuda_releases.html\n"
+            "pip install \\"jax[cuda]\\" -f https://storage.googleapis.com/jax-releases/jax_cuda_releases.html\n"
           ]
         },
         {
@@ -350,10 +350,17 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
           "user" : false,
           "packages" : [
             "mudata~=0.2.0",
-            "anndata~=0.8.0",
-            "scvi-tools~=0.20.3"
+            "anndata~=0.8.0"
           ],
           "upgrade" : true
+        },
+        {
+          "type" : "python",
+          "user" : false,
+          "packages" : [
+            "scvi-tools~=0.20.3"
+          ],
+          "upgrade" : false
         }
       ]
     },
@@ -381,7 +388,7 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
     "config" : "/home/runner/work/openpipeline/openpipeline/src/integrate/scvi/config.vsh.yaml",
     "platform" : "nextflow",
     "viash_version" : "0.7.1",
-    "git_commit" : "0c0bf552181f1f8f1d01ae21a76ce7643e8c75d0",
+    "git_commit" : "4926261db8956bf62ae5adec842334c3e288ee0d",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))
