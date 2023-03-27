@@ -351,7 +351,7 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
           "packages" : [
             "mudata~=0.2.0",
             "anndata~=0.8.0",
-            "scvi-tools~=0.19"
+            "scvi-tools~=0.20.3"
           ],
           "upgrade" : true
         }
@@ -381,7 +381,7 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
     "config" : "/home/runner/work/openpipeline/openpipeline/src/integrate/scvi/config.vsh.yaml",
     "platform" : "nextflow",
     "viash_version" : "0.7.1",
-    "git_commit" : "34d8a1cd5349d715bdfbfe82d799829ce73876e9",
+    "git_commit" : "0c0bf552181f1f8f1d01ae21a76ce7643e8c75d0",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))
