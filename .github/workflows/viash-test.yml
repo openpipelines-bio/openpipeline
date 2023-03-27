@@ -43,6 +43,10 @@ jobs:
 
     - uses: viash-io/viash-actions/setup@v3
 
+    - name: Check if all config can be parsed if there is no unicode support
+      run: |
+        LANG=C viash ns list > /dev/null
+
     - uses: viash-io/viash-actions/project/sync-and-cache-s3@v3
       id: cache
       with:
