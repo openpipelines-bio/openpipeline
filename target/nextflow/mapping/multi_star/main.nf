@@ -593,7 +593,7 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
           {
             "type" : "string",
             "name" : "--clipAdapterType",
-            "description" : "adapter clipping type\n\n- Hamming ... adapter clipping based on Hamming distance, with the number of mismatches controlled by --clip5pAdapterMMp\n- CellRanger4 ... 5p and 3p adapter clipping similar to CellRanger4. Utilizes Opal package by Martin Šošić: https://github.com/Martinsos/opal\n- None ... no adapter clipping, all other clip* parameters are disregarded",
+            "description" : "adapter clipping type\n\n- Hamming ... adapter clipping based on Hamming distance, with the number of mismatches controlled by --clip5pAdapterMMp\n- CellRanger4 ... 5p and 3p adapter clipping similar to CellRanger4. Utilizes Opal package by Martin Sosic: https://github.com/Martinsos/opal\n- None ... no adapter clipping, all other clip* parameters are disregarded",
             "info" : {
               "step" : "star",
               "orig_arg" : "--clipAdapterType"
@@ -2782,7 +2782,7 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
           {
             "type" : "string",
             "name" : "--waspOutputMode",
-            "description" : "WASP allele-specific output type. This is re-implementation of the original WASP mappability filtering by Bryce van de Geijn, Graham McVicker, Yoav Gilad & Jonathan K Pritchard. Please cite the original WASP paper: Nature Methods 12, 1061–1063 (2015), https://www.nature.com/articles/nmeth.3582 .\n\n- SAMtag      ... add WASP tags to the alignments that pass WASP filtering",
+            "description" : "WASP allele-specific output type. This is re-implementation of the original WASP mappability filtering by Bryce van de Geijn, Graham McVicker, Yoav Gilad & Jonathan K Pritchard. Please cite the original WASP paper: Nature Methods 12, 1061-1063 (2015), https://www.nature.com/articles/nmeth.3582 .\n\n- SAMtag      ... add WASP tags to the alignments that pass WASP filtering",
             "info" : {
               "step" : "star",
               "orig_arg" : "--waspOutputMode"
@@ -3510,7 +3510,7 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
     "config" : "/home/runner/work/openpipeline/openpipeline/src/mapping/multi_star/config.vsh.yaml",
     "platform" : "nextflow",
     "viash_version" : "0.7.1",
-    "git_commit" : "87ca800149eb27876a5e3ce19a7ac28101152585",
+    "git_commit" : "3b097a0fd69bf6652817bca6b079f6f88ff8a743",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))

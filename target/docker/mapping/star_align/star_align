@@ -380,7 +380,7 @@ function ViashHelp {
   echo "        - Hamming ... adapter clipping based on Hamming distance, with the"
   echo "        number of mismatches controlled by --clip5pAdapterMMp"
   echo "        - CellRanger4 ... 5p and 3p adapter clipping similar to CellRanger4."
-  echo "        Utilizes Opal package by Martin Šošić: https://github.com/Martinsos/opal"
+  echo "        Utilizes Opal package by Martin Sosic: https://github.com/Martinsos/opal"
   echo "        - None ... no adapter clipping, all other clip* parameters are"
   echo "        disregarded"
   echo ""
@@ -1305,7 +1305,7 @@ function ViashHelp {
   echo "        WASP allele-specific output type. This is re-implementation of the"
   echo "        original WASP mappability filtering by Bryce van de Geijn, Graham"
   echo "        McVicker, Yoav Gilad & Jonathan K Pritchard. Please cite the original"
-  echo "        WASP paper: Nature Methods 12, 1061–1063 (2015),"
+  echo "        WASP paper: Nature Methods 12, 1061-1063 (2015),"
   echo "        https://www.nature.com/articles/nmeth.3582 ."
   echo "        - SAMtag      ... add WASP tags to the alignments that pass WASP"
   echo "        filtering"
@@ -1783,9 +1783,9 @@ RUN apt-get update && \
 
 LABEL org.opencontainers.image.authors="Angela Pisco, Robrecht Cannoodt"
 LABEL org.opencontainers.image.description="Companion container for running component mapping star_align"
-LABEL org.opencontainers.image.created="2023-03-23T16:51:20Z"
+LABEL org.opencontainers.image.created="2023-03-27T11:24:26Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="87ca800149eb27876a5e3ce19a7ac28101152585"
+LABEL org.opencontainers.image.revision="3b097a0fd69bf6652817bca6b079f6f88ff8a743"
 LABEL org.opencontainers.image.version="main_build"
 VIASHDOCKER
 }
