@@ -114,11 +114,14 @@ platforms:
     setup:
       - type: docker
         run: |
-          pip install --upgrade "jax[cuda]" -f https://storage.googleapis.com/jax-releases/jax_cuda_releases.html
+          pip install "jax[cuda]" -f https://storage.googleapis.com/jax-releases/jax_cuda_releases.html
       - type: python
         packages:
           - mudata~=0.2.0
           - anndata~=0.8.0
+      - type: python
+        upgrade: false
+        packages:
           - scvi-tools~=0.20.3
   - type: nextflow
     directives:
