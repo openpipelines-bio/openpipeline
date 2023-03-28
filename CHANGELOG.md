@@ -16,6 +16,10 @@
 
 * `integrate/scarches`, `integrate/scvi` and `correction/cellbender_remove_background`: Update base container to `nvcr.io/nvidia/pytorch:22.12-py3`
 
+* `integrate/scvi`: add `gpu` label for nextflow platform.
+
+* `integrate/scvi`: use cuda enabled `jax` install.
+
 ## NEW FUNCTIONALITY
 
 * `correction/cellbender_remove_background`: add `obsm_latent_gene_encoding` parameter to store the latent gene representation.
