@@ -172,4 +172,4 @@ platforms:
         pypi: [ pandas ]
   - type: nextflow
     directives:
-      label: [ veryhighmem, highcpu, error_ignore ]
+      label: [ veryhighmem, highcpu ]

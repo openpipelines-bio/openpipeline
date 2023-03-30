@@ -4,8 +4,6 @@
 
 * Added an extra label `veryhighmem` mostly for `cellranger_multi` with a large number of samples.
 
-* Added a extra labels `error_ignore` and `error_retry` for per-component configuration `errorStategy`.
-
 * Added `multiomics/prot_multisample` pipeline.
 
 * Added `clr` functionality to `prot_multisample` pipeline.
