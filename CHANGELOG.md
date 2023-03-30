@@ -2,6 +2,8 @@
 
 ## NEW FUNCTIONALITY
 
+* Added an extra label `veryhighmem` mostly for `cellranger_multi` with a large number of samples.
+
 * Added `multiomics/prot_multisample` pipeline.
 
 * Added `clr` functionality to `prot_multisample` pipeline.
