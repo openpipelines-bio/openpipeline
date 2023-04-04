@@ -7,6 +7,7 @@ import mudata as mu
 import anndata as ad
 import popv
 
+# todo: is this still needed?
 from torch.cuda import is_available as cuda_is_available
 try:
     from torch.backends.mps import is_available as mps_is_available
@@ -24,6 +25,8 @@ logFormatter = logging.Formatter("%(asctime)s %(levelname)-8s %(message)s")
 console_handler.setFormatter(logFormatter)
 logger.addHandler(console_handler)
 
+# where to find the obo files
+cl_obo_folder = "/opt/popv_cl_ontology/"
 
 ## VIASH START
 par = {
@@ -54,6 +57,8 @@ par = {
     'prediction_mode': None
 }
 meta = {}
+# for debugging the obo folder can be somewhere local
+cl_obo_folder = "popv_cl_ontology/"
 ## VIASH END
 
 use_gpu = cuda_is_available() or mps_is_available()
@@ -65,9 +70,13 @@ logger.info('GPU enabled? %s', use_gpu)
 # - CL ontology is now part of the docker container
 # - switch reference to ensembl ids as soon as possible
 # - find common variables by intersecting the ensembl genes
+# - store output in obsm, and store some values in the obs
 #   TODO: perform ortholog mapping if need be
 
 def main(par, meta):
+    assert len(par["methods"]) >= 1, 'Please, specify at least one method for cell typing.'
+    logger.info("Cell typing methods: {}".format(par["methods"]))
+
     ### PREPROCESSING REFERENCE ###
     logger.info("### PREPROCESSING REFERENCE ###")
     
@@ -83,7 +92,6 @@ def main(par, meta):
     min_celltype_size = np.min(reference.obs.groupby(par["reference_obs_batch"]).size())
     n_samples_per_label = np.max((min_celltype_size, 100))
 
-
     ### PREPROCESSING INPUT ###
     logger.info("### PREPROCESSING INPUT ###")
     logger.info("Reading '%s'", par["input"])
@@ -93,6 +101,7 @@ def main(par, meta):
     # subset with var column
     if par["input_var_subset"]:
         logger.info("Subset input with .var['%s']", par["input_var_subset"])
+        assert par["input_var_subset"] in input_modality.var, f"--input_var_subset='{par['input_var_subset']}' needs to be a column in .var"
         input_modality = input_modality[:,input_modality.var[par["input_var_subset"]]].copy()
 
     ### ALIGN REFERENCE AND INPUT ###
@@ -133,116 +142,50 @@ def main(par, meta):
         save_path_trained_models="output_popv", # TODO: fix output path
         n_samples_per_label=n_samples_per_label,
         # hardcoded values
-        cl_obo_folder="/opt/popv_cl_ontology/",
-        # cl_obo_folder="popv_cl_ontology/",
+        cl_obo_folder=cl_obo_folder,
         use_gpu=use_gpu
     )
-    
-    # Lower mem footprint
-    # del input_modality_intersect
-    # del reference_intersect
+    # pq_adata_orig = pq.adata.copy()
 
     logger.info('Annotate data')
     popv.annotation.annotate_data(
         adata=pq.adata,
-        #methods=par["methods"],
-        # save_path=par["output_models"]
+        methods=par["methods"]
     )
-    
-    # Lower mem footprint
-    del adata_query_reference
-    
-    # logger.info('Adding summary statistics...')
-    # predictions_fn = os.path.join(par["output_dir"], 'predictions.csv')
-    # predictions = pd.read_csv(predictions_fn, index_col = 0)
-    # for col in predictions.columns:
-    #     adata_query.obs[col] = predictions.loc[adata_query.obs_names][col]
-    # if 'scvi' in par["methods"]:
-    #     scvi_latent_space_fn = os.path.join(par["output_dir"], 'scvi_latent.csv')
-    #     scvi_latent_space = pd.read_csv(scvi_latent_space_fn, index_col=0)
-    #     adata_query.obsm['X_scvi'] = scvi_latent_space.loc[adata_query.obs_names]
-    # if 'scanvi' in par["methods"]:
-    #     scanvi_latent_space_fn = os.path.join(par["output_dir"], 'scanvi_latent.csv')
-    #     scanvi_latent_space = pd.read_csv(scanvi_latent_space_fn, index_col=0)
-    #     adata_query.obsm['X_scanvi'] = scanvi_latent_space.loc[adata_query.obs_names]
 
-    # if 'scvi' in par["methods"]:
-    #     logger.info('Re-calculating embedding...')
-    #     sc.pp.neighbors(adata_query, use_rep="X_scvi")
-    #     sc.tl.umap(adata_query, min_dist=0.3)
+    popv_input = pq.adata[input.obs_names]
 
-    # logger.info('Storing cell annotated data...')
-    # adata_query.write(
-    #     adata_query_cell_typed_file,
-    #     compression=par["compression"]
-    #     )
+    # select columns starting with "popv_"
+    popv_obs_cols = popv_input.obs.columns[popv_input.obs.columns.str.startswith('popv_')]
+
+    # create new data frame with selected columns
+    df_popv = popv_input.obs[popv_obs_cols]
+
+    # remove prefix from column names
+    df_popv.columns = df_popv.columns.str.replace('popv_', '')
+
+    # store output in mudata .obsm
+    input.mod[par['modality']].obsm["popv_output"] = df_popv
+
+    # copy important output in mudata .obs
+    for col in ["popv_prediction"]:
+        if col in popv_input.obs.columns:
+            input.mod[par['modality']].obs[col] = popv_input.obs[col]
+
+    # code to explore how the output differs from the original
+    # for attr in ["obs", "var", "uns", "obsm", "layers", "obsp"]:
+    #     old_keys = set(getattr(pq_adata_orig, attr).keys())
+    #     new_keys = set(getattr(pq.adata, attr).keys())
+    #     diff_keys = list(new_keys.difference(old_keys))
+    #     diff_keys.sort()
+    #     print(f"{attr}:", flush=True)
+    #     for key in diff_keys:
+    #         print(f"  {key}", flush=True)
     
-    # if par["plots"]:
-    #     logger.info('Creating agreement plots...')
-    #     all_prediction_keys = [
-    #     "popv_knn_on_bbknn_prediction",
-    #     "popv_knn_on_scvi_online_prediction",
-    #     "popv_knn_on_scvi_offline_prediction",
-    #     "popv_scanvi_online_prediction",
-    #     "popv_scanvi_offline_prediction",
-    #     "popv_svm_prediction",
-    #     "popv_rf_prediction",
-    #     "popv_onclass_prediction",
-    #     "popv_knn_on_scanorama_prediction"
-    #     ]
-    #     obs_keys = adata_query.obs.keys()
-    #     pred_keys = [key for key in obs_keys if key in all_prediction_keys]
-    #     popv.make_agreement_plots(
-    #         adata_query,
-    #         methods=pred_keys,
-    #         popv_prediction_key = 'popv_prediction',
-    #         save_folder=par["output_dir"]
-    #         )
-        
-    #     logger.info('Creating frequency plots...')
-    #     ax = adata_query.obs['popv_prediction_score'].value_counts().sort_index().plot.bar()
-    #     ax.set_xlabel('Score')
-    #     ax.set_ylabel("Frequency")
-    #     ax.set_title("PopV Prediction Score Frequency")
-    #     figpath = os.path.join(par["output_dir"], "prediction_score_barplot.pdf")
-    #     ax.get_figure().savefig(figpath, bbox_inches="tight", dpi=300)
-        
-    #     ax = adata_query.obs.groupby('popv_prediction')['popv_prediction_score'].mean().plot.bar()
-    #     ax.set_ylabel('Celltype')
-    #     ax.set_xlabel('Averge number of methods in agreement')
-    #     ax.set_title('Agreement per method by cell type')
-    #     figpath = os.path.join(par["output_dir"], "percelltype_agreement_barplot.pdf")
-    #     ax.get_figure().savefig(figpath, bbox_inches='tight', dpi=300)
-
+    # write output
+    logger.info("Writing %s", par["output"])
+    input.write_h5mu(par["output"], compression=par["output_compression"])
 
 if __name__ == "__main__":
-    logger.info('PopV cell type annotation component')
-    
-    # input_file_name = ''.join(par["input"].split('/')[-1].split('.')[:-1])
-    # adata_query_cell_typed_file = '{}/{}_cell_typed.h5ad'.format(par["output_dir"], input_file_name)
-    # logger.info('PopV output can be found: {}'.format(par["output_dir"]))
-    # logger.info('Cell typed file stored: {}'.format(adata_query_cell_typed_file))
-
-    # if len(par["tissue_tabula_sapiens"]) >= 1:
-    #     logger.info('Cell typing done on Tabula Sapiens reference data.')
-    #     own_data = False
-    # elif len(par["tissue_reference_file"]) >= 1:
-    #     logger.info('Cell typing done on user-provided provided reference data.')
-    #     own_data = True
-    # else:
-    #     raise BaseException("Please, tissue_tabula_sapiens or tissue_reference_file...")
-    
-    assert len(par["methods"]) >= 1, 'Please, specify at least one method for cell typing.'
-    logger.info("Cell typing methods: {}".format(par["methods"]))
-
-    # if not par["query_obs_cell_type_key"] == 'none':
-    #     assert isinstance(par["query_obs_cell_type_unknown_label"], str), 'Please, specify unknown cell type label in your .obs obs_cell_type_key.'
-    # else:
-    #     par["query_obs_cell_type_key"] = None
-        
-    # logger.info('Making file paths absolute')
-    # par["input"] = Path(par["input"].strip()).resolve()
-    # par["tissue_reference_file"] = Path(par["tissue_reference_file"].strip()).resolve()    
-
     main(par, meta)
 
