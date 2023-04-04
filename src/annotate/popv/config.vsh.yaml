@@ -36,6 +36,10 @@ functionality:
           type: string
           description: Key in obs field of query adata for label information. This is only used for training scANVI. Make sure to set unknown_celltype_label to mark unlabelled cells.
           required: false
+        - name: "--input_var_subset"
+          type: string
+          description: Subset the input object with this column.
+          required: false
         - name: "--unknown_celltype_label"
           type: string
           description: If query_labels_key is not None, cells with label unknown_celltype_label will be treated as unknown and will be predicted by the model.
@@ -116,8 +120,8 @@ functionality:
     - path: ../../../resources_test/annotation_test_data/
 platforms:
   - type: docker
-    # image: nvidia/cuda:11.3.0-runtime-ubuntu20.04
-    image: rocm/pytorch:rocm5.4_ubuntu20.04_py3.8_pytorch_1.12.1
+    #image: nvcr.io/nvidia/pytorch:22.12-py3
+    image: python:3.9
     setup:
       - type: python
         git:
@@ -126,6 +130,7 @@ platforms:
           - mudata~=0.2.0
           - anndata~=0.8.0
           - scanpy~=1.9.2
+          - scvi-tools~=0.20.3
       - type: docker
         run: |
           mkdir -p /opt/popv_cl_ontology && \
