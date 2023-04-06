@@ -1,0 +1,152 @@
+name: viash test
+
+on:
+  pull_request:
+  push:
+    branches: [ '**' ]
+
+jobs:
+  run_ci_check_job:
+    runs-on: ubuntu-latest
+    outputs:
+      run_ci: ${{ steps.github_cli.outputs.check }}
+    steps:
+      - name: 'Check if branch has an existing pull request and the trigger was a push'
+        id: github_cli
+        run: |
+          pull_request=$(gh pr list -R ${{ github.repository }} -H ${{ github.ref_name }} --json url --state open --limit 1 | jq '.[0].url')
+          # If the branch has a PR and this run was triggered by a push event, do not run
+          if [[ "$pull_request" != "null" && "$GITHUB_REF_NAME" != "main" && "${{ github.event_name == 'push' }}" == "true" && "${{ !contains(github.event.head_commit.message, 'ci force') }}" == "true" ]]; then
+            echo "check=false" >> $GITHUB_OUTPUT
+          else
+            echo "check=true" >> $GITHUB_OUTPUT
+          fi
+        env:
+          GITHUB_TOKEN: ${{ secrets.GTHB_PAT }}
+
+  # phase 1
+  list:
+    needs: run_ci_check_job
+    env:
+      s3_bucket: s3://openpipelines-data/
+    runs-on: ubuntu-latest
+    if: "needs.run_ci_check_job.outputs.run_ci == 'true'"
+
+    outputs:
+      matrix: ${{ steps.set_matrix.outputs.matrix }}
+      cache_key: ${{ steps.cache.outputs.cache_key }}
+
+    steps:
+    - uses: actions/checkout@v3
+      with:
+        fetch-depth: 0 
+
+    - uses: viash-io/viash-actions/setup@v3
+
+    - name: Check if all config can be parsed if there is no unicode support
+      run: |
+        LANG=C viash ns list > /dev/null
+
+    - uses: viash-io/viash-actions/project/sync-and-cache-s3@v3
+      id: cache
+      with:
+        s3_bucket: $s3_bucket
+        dest_path: resources_test
+        cache_key_prefix: resources_test__
+
+    - name: Get changed files
+      id: changed-files
+      uses: tj-actions/changed-files@v35.7.11
+      with:
+        separator: ";"
+        diff_relative: true
+
+    - id: ns_list
+      uses: viash-io/viash-actions/ns-list@v3
+      with:
+        platform: docker
+        format: json
+
+    - id: ns_list_filtered
+      uses: viash-io/viash-actions/project/detect-changed-components@v3
+      with:
+        input_file: "${{ steps.ns_list.outputs.output_file }}"
+
+    - id: set_matrix
+      run: |
+        echo "matrix=$(jq -c '[ .[] | 
+          { 
+            "name": (.functionality.namespace + "/" + .functionality.name),
+            "config": .info.config,
+            "dir": .info.config | capture("^(?<dir>.*\/)").dir
+          }
+        ]' ${{ steps.ns_list_filtered.outputs.output_file }} )" >> $GITHUB_OUTPUT
+
+  # phase 2
+  viash_test:
+    needs: list
+    if: ${{ needs.list.outputs.matrix != '[]' && needs.list.outputs.matrix != '' }}
+    runs-on: ubuntu-latest
+
+    strategy:
+      fail-fast: false
+      matrix:
+        component: ${{ fromJson(needs.list.outputs.matrix) }}
+
+    steps:
+    - uses: actions/checkout@v3
+
+    - uses: viash-io/viash-actions/setup@v3
+
+    # use cache
+    - name: Cache resources data
+      id: restore_cache
+      uses: actions/cache/restore@v3
+      env:
+        SEGMENT_DOWNLOAD_TIMEOUT_MINS: 5
+      with:
+        path: resources_test
+        key: ${{ needs.list.outputs.cache_key }}
+
+    - name: Sync if caching failed
+      shell: bash
+      if: steps.restore_cache.outputs.cache-hit != 'true'
+      run: |
+        readarray -t resources < <(viash config view --format json "${{ matrix.component.config }}" | jq -r -c '(.info.config | capture("^(?<dir>.*\/)").dir) as $dir | .functionality.test_resources | map(select(.type == "file")) | map($dir + .path) | unique | .[]')
+        for resource in "${resources[@]}"; do
+          if [[ $resource == *"resources_test"* ]]; then
+            relative_path=${resource#*resources_test/}
+            relative_path_trailing_slash_removed=${relative_path%/}
+            s3_path="s3://openpipelines-data/$relative_path_trailing_slash_removed"
+            s3_lookup=$(AWS_EC2_METADATA_DISABLED=true aws s3 ls --no-sign-request "$s3_path" 2>&1)
+            extra_args=()
+            if [[ $s3_lookup =~ .*/$ ]]; then
+              extra_args+=("--recursive")
+            fi
+            AWS_EC2_METADATA_DISABLED=true \
+            aws s3 cp \
+            "$s3_path" \
+            "$resource" \
+            --no-sign-request \
+            "${extra_args[@]}"
+          fi
+        done
+
+    - name: Login to the nvidia container registry
+      uses: docker/login-action@v2
+      env: 
+          NVIDIA_PASSWORD: ${{ secrets.NVIDIA_PASSWORD }}
+      if: ${{ env.NVIDIA_PASSWORD != '' }}
+      with:
+        registry: nvcr.io
+        username: $oauthtoken
+        password: ${{ env.NVIDIA_PASSWORD }}
+
+    - name: Run test
+      timeout-minutes: 30
+      run: |
+        viash test \
+          "${{ matrix.component.config }}" \
+          --cpus 2 \
+          --memory "5gb"
+
