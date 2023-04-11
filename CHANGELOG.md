@@ -22,6 +22,8 @@
 
 * `integrate/scvi`: use cuda enabled `jax` install.
 
+* `convert/from_cellranger_multi_to_h5mu`: update pandas to 2.0.0
+
 ## NEW FUNCTIONALITY
 
 * `correction/cellbender_remove_background`: add `obsm_latent_gene_encoding` parameter to store the latent gene representation.
