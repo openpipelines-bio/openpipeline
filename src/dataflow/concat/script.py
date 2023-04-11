@@ -155,17 +155,21 @@ def cast_to_original_dtype(result: pd.DataFrame,
                            orignal_dtypes: dict[str, pd.core.dtypes.dtypes.Dtype]) -> pd.DataFrame:
     """
     Cast the dataframe to dtypes that can be written by mudata.
-    """
-    logger.debug('Trying to cast to "category" or keep original datatype.')
-    for col_name, orig_dtype in orignal_dtypes.items():
-        try:
-            result = result.astype({col_name: "category"}, copy=True)
-            result[col_name].cat.categories = result[col_name].cat.categories.astype(str)
-        except (ValueError, TypeError):
-            try:
-                result = result.astype({col_name: orig_dtype}, copy=True)
-            except (ValueError, TypeError):
-                logger.warning("Could not keep datatype for column %s", col_name)
+    """    
+    # dtype inferral workfs better with np.nan
+    result = result.replace({pd.NA: np.nan})
+
+    # MuData supports nullable booleans and ints
+    # ie. `IntegerArray` and `BooleanArray`
+    result = result.convert_dtypes(infer_objects=True,
+                                   convert_integer=True,
+                                   convert_string=False,
+                                   convert_boolean=True,
+                                   convert_floating=False)
+    
+    # Convert leftover 'object' columns to string
+    object_cols = result.select_dtypes(include='object').columns.values
+    result[object_cols] = result[object_cols].astype('category')
     return result
 
 
