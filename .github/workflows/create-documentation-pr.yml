@@ -68,9 +68,9 @@ jobs:
 
       - uses: viash-io/viash-actions/setup@v3
 
-      - uses: viash-io/viash-actions/pro/generate-documentation-qmd@v3
-        working-directory: openpipelines
+      - uses: viash-io/viash-actions/pro/generate-documentation-qmd@add_working_dir
         with:
+          working_directory: openpipelines
           input_dir: target/
           output_dir: ../website
           dest_path: "{type}s/{namespace}/{name}.qmd"
