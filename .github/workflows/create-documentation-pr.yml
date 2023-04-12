@@ -90,4 +90,4 @@ jobs:
           git checkout -B "release-$REF"
           git commit -m "OpenPipelines release $REF"
           git push --set-upstream origin "release-$REF"
-          gh pr create --title "Openpipeline release $REF" --base main --head "release-${GITHUB_REF#refs/heads/}" --body ""
+          gh pr create --title "Openpipeline release $REF" --base main --head "release-$REF" --body ""
