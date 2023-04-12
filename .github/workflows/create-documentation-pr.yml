@@ -66,7 +66,7 @@ jobs:
       - uses: viash-io/viash-actions/pro/generate-documentation-qmd@add_working_dir
         with:
           working_directory: openpipelines
-          input_dir: target/
+          input_dir: ./
           output_dir: ../website
           dest_path: "{type}s/{namespace}/{name}.qmd"
           viash_pro_token: ${{ secrets.GTHB_PAT }}
