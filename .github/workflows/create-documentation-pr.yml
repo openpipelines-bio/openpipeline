@@ -80,7 +80,7 @@ jobs:
           git config user.name github-actions
           git config user.email github-actions@github.com
           git add .
-          git checkout -B "release-${{ env.GITHUB_REF_NAME }}"
-          git commit -m "OpenPipelines release ${{ env.GITHUB_REF_NAME }}"
-          git push --set-upstream origin "release-${{ env.GITHUB_REF_NAME }}"
-          gh pr create --title "Openpipeline release ${{ env.GITHUB_REF_NAME }}" --base main --head "release-${{ env.GITHUB_REF_NAME }}" --body ""
+          git checkout -B "release-${{ github.ref_name }}"
+          git commit -m "OpenPipelines release ${{ github.ref_name }}"
+          git push --set-upstream origin "release-${{ github.ref_name }}"
+          gh pr create --title "Openpipeline release ${{ github.ref_name }}" --base main --head "release-${{ github.ref_name }}" --body ""
