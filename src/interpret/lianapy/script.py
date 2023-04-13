@@ -36,7 +36,7 @@ def main():
 
     # Solve gene labels
     orig_gene_label = mod.var.index
-    mod.var_names = mod.var['gene_symbol'].astype(str)
+    mod.var_names = mod.var[par['gene_symbol']].astype(str)
     mod.var_names_make_unique()
 
     liana.mt.rank_aggregate(
