@@ -1,6 +1,7 @@
 
 import sys
 import re
+import tempfile
 import logging
 import numpy as np
 import mudata as mu
@@ -30,31 +31,28 @@ cl_obo_folder = "/opt/popv_cl_ontology/"
 
 ## VIASH START
 par = {
-    'input': 'resources_test/pbmc_1k_protein_v3/pbmc_1k_protein_v3_filtered_feature_bc_matrix.h5mu',
-    # 'input': 'resources_test/concat_test_data/human_brain_3k_filtered_feature_bc_matrix_subset.h5mu',
-    'modality': 'rna',
-    'reference': 'resources_test/annotation_test_data/tmp_TS_Blood_filtered.h5ad',
-    'input_obs_batch': None,
-    'input_obs_layer': None,
-    'input_obs_labels': None,
-    'input_var_subset': None,
-    'unknown_celltype_label': 'unknown',
-    'reference_obs_labels': 'cell_ontology_class',
-    'reference_obs_batch': 'donor_assay',
-    'reference_models': None,
-    'output': 'output.h5mu',
-    'output_compression': 'gzip',
-    'output_models': 'output.tar.gz',
-    'methods': [
-        # 'celltypist',
-        # 'knn_on_bbknn',
-        # 'knn_on_scanorama',
-        # 'knn_on_scvi',
-        'rf',
-        # 'scanvi',
-        'svm',
-    ],
-    'prediction_mode': None
+    "input": "resources_test/pbmc_1k_protein_v3/pbmc_1k_protein_v3_filtered_feature_bc_matrix.h5mu",
+    # "input": "resources_test/concat_test_data/human_brain_3k_filtered_feature_bc_matrix_subset.h5mu",
+    "modality": "rna",
+    "reference": "resources_test/annotation_test_data/tmp_TS_Blood_filtered.h5ad",
+    "input_obs_batch": None,
+    "input_layer": None,
+    "input_obs_label": None,
+    "input_var_subset": None,
+    "unknown_celltype_label": "unknown",
+    "reference_obs_label": "cell_ontology_class",
+    "reference_obs_batch": "donor_assay",
+    "output": "output.h5mu",
+    "output_compression": "gzip",
+    "methods": [
+        # "celltypist",
+        # "knn_on_bbknn",
+        # "knn_on_scanorama",
+        # "knn_on_scvi",
+        "rf",
+        # "scanvi",
+        "svm",
+    ]
 }
 meta = {}
 # for debugging the obo folder can be somewhere local
@@ -62,7 +60,7 @@ cl_obo_folder = "popv_cl_ontology/"
 ## VIASH END
 
 use_gpu = cuda_is_available() or mps_is_available()
-logger.info('GPU enabled? %s', use_gpu)
+logger.info("GPU enabled? %s", use_gpu)
 
 # changes:
 # - input dataset is a mudata object
@@ -74,7 +72,7 @@ logger.info('GPU enabled? %s', use_gpu)
 #   TODO: perform ortholog mapping if need be
 
 def main(par, meta):
-    assert len(par["methods"]) >= 1, 'Please, specify at least one method for cell typing.'
+    assert len(par["methods"]) >= 1, "Please, specify at least one method for cell typing."
     logger.info("Cell typing methods: {}".format(par["methods"]))
 
     ### PREPROCESSING REFERENCE ###
@@ -96,7 +94,7 @@ def main(par, meta):
     logger.info("### PREPROCESSING INPUT ###")
     logger.info("Reading '%s'", par["input"])
     input = mu.read_h5mu(par["input"])
-    input_modality = input.mod[par['modality']]
+    input_modality = input.mod[par["modality"]]
 
     # subset with var column
     if par["input_var_subset"]:
@@ -110,9 +108,9 @@ def main(par, meta):
     logger.info("Detecting common vars based on ensembl ids")
     common_ens_ids = list(set(reference.var.index).intersection(set(input_modality.var.index)))
     
-    logger.info('  reference n_vars: %i', reference.n_vars)
-    logger.info('  input n_vars: %i', input_modality.n_vars)
-    logger.info('  intersect n_vars: %i', len(common_ens_ids))
+    logger.info("  reference n_vars: %i", reference.n_vars)
+    logger.info("  input n_vars: %i", input_modality.n_vars)
+    logger.info("  intersect n_vars: %i", len(common_ens_ids))
     assert len(common_ens_ids) >= 100, "The intersection of genes is too small."
 
     # perform intersection
@@ -121,56 +119,59 @@ def main(par, meta):
     
     ### ALIGN REFERENCE AND INPUT ###
     logger.info("### ALIGN REFERENCE AND INPUT ###")
-    # TODO: add training_mode to component
-    logger.info('Run PopV processing')
-    pq = popv.preprocessing.Process_Query(
-        # input
-        query_adata=input_modality,
-        query_labels_key=par["input_obs_labels"],
-        query_batch_key=par["input_obs_batch"],
-        query_layers_key=par["input_obs_layer"],
-        # reference
-        ref_adata=reference,
-        ref_labels_key=par["reference_obs_labels"],
-        ref_batch_key=par["reference_obs_batch"],
-        # pretrained model
-        prediction_mode='retrain',
-        pretrained_scvi_path=None, # TODO: implement
-        # options
-        unknown_celltype_label='unknown',
-        # outputs
-        save_path_trained_models="output_popv", # TODO: fix output path
-        n_samples_per_label=n_samples_per_label,
-        # hardcoded values
-        cl_obo_folder=cl_obo_folder,
-        use_gpu=use_gpu
-    )
-    # pq_adata_orig = pq.adata.copy()
 
-    logger.info('Annotate data')
-    popv.annotation.annotate_data(
-        adata=pq.adata,
-        methods=par["methods"]
-    )
+    with tempfile.TemporaryDirectory(prefix="popv-", dir=meta["temp_dir"]) as temp_dir:
+        logger.info("Run PopV processing")
+        pq = popv.preprocessing.Process_Query(
+            # input
+            query_adata=input_modality,
+            query_labels_key=par["input_obs_label"],
+            query_batch_key=par["input_obs_batch"],
+            query_layers_key=par["input_layer"],
+            # reference
+            ref_adata=reference,
+            ref_labels_key=par["reference_obs_label"],
+            ref_batch_key=par["reference_obs_batch"],
+            # options
+            unknown_celltype_label=par["unknown_celltype_label"],
+            n_samples_per_label=n_samples_per_label,
+            # pretrained model
+            # Might need to be parameterized at some point
+            prediction_mode="retrain",
+            pretrained_scvi_path=None,
+            # outputs
+            # Might need to be parameterized at some point
+            save_path_trained_models=temp_dir,
+            # hardcoded values
+            cl_obo_folder=cl_obo_folder,
+            use_gpu=use_gpu
+        )
+        # pq_adata_orig = pq.adata.copy()
+
+        logger.info("Annotate data")
+        popv.annotation.annotate_data(
+            adata=pq.adata,
+            methods=par["methods"]
+        )
 
     popv_input = pq.adata[input.obs_names]
 
     # select columns starting with "popv_"
-    popv_obs_cols = popv_input.obs.columns[popv_input.obs.columns.str.startswith('popv_')]
+    popv_obs_cols = popv_input.obs.columns[popv_input.obs.columns.str.startswith("popv_")]
 
     # create new data frame with selected columns
     df_popv = popv_input.obs[popv_obs_cols]
 
     # remove prefix from column names
-    df_popv.columns = df_popv.columns.str.replace('popv_', '')
+    df_popv.columns = df_popv.columns.str.replace("popv_", "")
 
     # store output in mudata .obsm
-    input.mod[par['modality']].obsm["popv_output"] = df_popv
+    input.mod[par["modality"]].obsm["popv_output"] = df_popv
 
     # copy important output in mudata .obs
     for col in ["popv_prediction"]:
         if col in popv_input.obs.columns:
-            input.mod[par['modality']].obs[col] = popv_input.obs[col]
+            input.mod[par["modality"]].obs[col] = popv_input.obs[col]
 
     # code to explore how the output differs from the original
     # for attr in ["obs", "var", "uns", "obsm", "layers", "obsp"]:

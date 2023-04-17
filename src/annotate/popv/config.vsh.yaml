@@ -19,29 +19,29 @@ functionality:
           required: true
           example: input.h5mu
         - name: "--modality"
-          description: List of modalities to process.
+          description: Which modality to process.
           type: string
           default: "rna"
           required: false
+        - name: "--input_layer"
+          type: string
+          description: Which layer to use. If no value is provided, the counts are assumed to be in the `.X` slot. Otherwise, count data is expected to be in `.layers[input_layer]`.
+          required: false
         - name: "--input_obs_batch"
           type: string
-          description: Key in obs field of query adata for batch information.
-          required: false
-        - name: "--input_obs_layer"
-          type: string
-          description: If not None, will use data from query_adata.layers[query_layers_key].
-          required: false
-        - name: "--input_obs_labels"
-          type: string
-          description: Key in obs field of query adata for label information. This is only used for training scANVI. Make sure to set unknown_celltype_label to mark unlabelled cells.
+          description: Key in obs field of input adata for batch information. If no value is provided, batch label is assumed to be unknown.
           required: false
         - name: "--input_var_subset"
           type: string
           description: Subset the input object with this column.
           required: false
+        - name: "--input_obs_label"
+          type: string
+          description: Key in obs field of input adata for label information. This is only used for training scANVI. Unlabelled cells should be set to `"unknown_celltype_label"`.
+          required: false
         - name: "--unknown_celltype_label"
           type: string
-          description: If query_labels_key is not None, cells with label unknown_celltype_label will be treated as unknown and will be predicted by the model.
+          description: If `input_obs_label` is specified, cells with this value will be treated as unknown and will be predicted by the model.
           default: "unknown"
           required: false
     - name: Reference
@@ -52,22 +52,22 @@ functionality:
           description: "User-provided reference tissue. The data that will be used as reference to call cell types."
           example: TS_Bladder_filtered.h5ad
           direction: input
-          required: false
-        - name: "--reference_obs_labels"
+          required: true
+        - name: "--reference_obs_label"
           type: string
-          description: Key in obs field of reference AnnData with cell-type information
+          description: Key in obs field of reference AnnData with cell-type information.
           default: "cell_ontology_class"
           required: false
         - name: "--reference_obs_batch"
           type: string
-          description: List of Keys (or None) in obs field of reference AnnData to use as batch covariate.
+          description: Key in obs field of input adata for batch information.
           default: "donor_assay"
           required: false
-        - name: "--reference_models"
-          type: file
-          description: Pretrained models. Can be a directory or a tar gz.
-          required: false
-          example: pretrained_models_Bladder_ts.tar.gz
+        # - name: "--reference_models"
+        #   type: file
+        #   description: Pretrained models. Can be a directory or a tar gz.
+        #   required: false
+        #   example: pretrained_models_Bladder_ts.tar.gz
     - name: Outputs
       description: Output arguments.
       arguments:
@@ -82,12 +82,12 @@ functionality:
           choices: ["gzip", "lzf"]
           required: false
           example: "gzip"
-        - name: "--output_models"
-          type: file
-          direction: output
-          description: If `prediction_mode == "retrain"`, saves models to a directory and compresses the results into a tar gz.
-          example: "output.tar.gz"
-          required: false
+        # - name: "--output_models"
+        #   type: file
+        #   direction: output
+        #   description: If `prediction_mode == "retrain"`, saves models to a directory and compresses the results into a tar gz.
+        #   example: "output.tar.gz"
+        #   required: false
     - name: Arguments
       description: Other arguments.
       arguments:
@@ -98,13 +98,13 @@ functionality:
           choices: [celltypist, knn_on_bbknn, knn_on_scanorama, knn_on_scvi, onclass, rf, scanvi, svm]
           required: true
           multiple: true
-        - name: "--prediction_mode"
-          type: string
-          description: |
-            Execution mode of cell-type annotation.
-            "retrain": Train all prediction models and saves them to disk. Argument `output_models` must be defined.
-            "inference": Classify all cells based on pretrained models. Argument `reference_models` must be defined.
-            "fast": Fast inference using only query cells and single epoch in scArches.
+        # - name: "--prediction_mode"
+        #   type: string
+        #   description: |
+        #     Execution mode of cell-type annotation.
+        #     "retrain": Train all prediction models and saves them to disk. Argument `output_models` must be defined.
+        #     "inference": Classify all cells based on pretrained models. Argument `reference_models` must be defined.
+        #     "fast": Fast inference using only query cells and single epoch in scArches.
         # - name: "--plots"
         #   type: boolean
         #   description: "Creation of agreement and frequency plots between selected cell type algorithmn(s) and final PopV ensemble called cell type."
