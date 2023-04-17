@@ -151,3 +151,5 @@ functionality:
     - type: nextflow_script
       path: main.nf
       entrypoint: test_wf
+    - path: ../../../resources_test/bdrhap_5kjrt
+    - path: ../../../resources_test/reference_gencodev41_chr1/

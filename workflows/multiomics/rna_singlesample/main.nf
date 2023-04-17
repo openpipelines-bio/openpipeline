@@ -63,7 +63,7 @@ workflow run_wf {
     | getWorkflowArguments(key: "filter_with_scrublet")
     | view {"scrublet: $it"}
     | filter_with_scrublet.run(
-      auto: [ publish: true ]
+      auto: [ publish: true, output_compression: "gzip" ]
     )
     | map {list -> [list[0], list[1]] + list.drop(3)}
     // TODO: ambient rna correction

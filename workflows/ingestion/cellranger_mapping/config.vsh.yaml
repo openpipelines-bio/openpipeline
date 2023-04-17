@@ -36,19 +36,24 @@ functionality:
         - name: "--output_raw"
           type: file
           direction: output
-          description: "The raw output folder."
+          description: "Location where the output folder from Cell Ranger will be stored."
           required: true
           example: output_dir/
         - name: "--output_h5mu"
           type: file
           direction: output
-          description: "The converted h5mu file."
+          description: "The output from Cell Ranger, converted to h5mu."
           required: true
           example: output.h5mu
         - name: "--obsm_metrics"
           type: string
           description: Name of the .obsm slot under which to QC metrics (if any).
           default: "metrics_summary"
+        - name: "--output_type"
+          type: string
+          description: "Which Cell Ranger output to use for converting to h5mu."
+          choices: [ raw, filtered ]
+          default: raw
     - name: Cell Ranger arguments
       arguments:
         - type: integer
@@ -96,3 +101,4 @@ functionality:
     - type: nextflow_script
       path: main.nf
       entrypoint: test_wf
+    - path: ../../../resources_test/cellranger_tiny_fastq

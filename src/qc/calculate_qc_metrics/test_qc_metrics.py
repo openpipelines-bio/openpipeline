@@ -43,7 +43,8 @@ def test_add_qc(run_component, input_data_path):
         "--input", input_data_path,
         "--output", "foo.h5mu",
         "--modality", "rna",
-        "--top_n_vars", "10,20,90"
+        "--top_n_vars", "10,20,90",
+        "--output_compression", "gzip"
         ])
     
     assert Path("foo.h5mu").is_file()

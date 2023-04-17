@@ -135,7 +135,7 @@ def process_params(par: dict[str, Any]) -> str:
     if len(par["input"]) == 1 and par["input"][0].is_dir():
         logger.info("Detected '--input' as a directory, "
                     "traversing to see if we can detect any FASTQ files.")
-        par["input"] = [input_path for input_path in par["input"].rglob('*')
+        par["input"] = [input_path for input_path in par["input"][0].rglob('*')
                         if re.match(fastq_regex, input_path.name) ]
 
     # check input fastq files

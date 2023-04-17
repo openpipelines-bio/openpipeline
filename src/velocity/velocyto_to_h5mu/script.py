@@ -43,4 +43,4 @@ else:
 print("Resulting mudata:", mdata, flush=True)
 
 print("Writing h5mu to file", flush=True)
-mdata.write_h5mu(par["output"], compression="gzip")
+mdata.write_h5mu(par["output"], compression=par["output_compression"])

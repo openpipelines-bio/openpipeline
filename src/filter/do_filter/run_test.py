@@ -75,7 +75,8 @@ def test_filtering_a_little_bit(run_component,
         "--input", test_data_filter_with_random,
         "--output", random_h5mu_path,
         "--obs_filter", "filter_with_random",
-        "--var_filter", "filter_with_random"
+        "--var_filter", "filter_with_random",
+        "--output_compression", "gzip"
         ])
     assert random_h5mu_path.is_file(), "Output file not found"
     mu_out = mu.read_h5mu(random_h5mu_path)

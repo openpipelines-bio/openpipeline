@@ -63,4 +63,4 @@ if par["do_subset"]:
     mdata.mod[mod] = data[keep_cells, :]
 
 logger.info("Writing h5mu to %s", par["output"])
-mdata.write_h5mu(par["output"], compression="gzip")
+mdata.write_h5mu(par["output"], compression=par["output_compression"])

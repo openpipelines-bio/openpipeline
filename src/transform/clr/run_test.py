@@ -24,10 +24,12 @@ def test_clr(run_component):
     run_component([
         "--input", input_file,
         "--output", "foo.h5mu",
+        "--output_compression", "gzip"
     ])
     assert Path("foo.h5mu").is_file()
     output_h5mu = read_h5mu("foo.h5mu")
     assert 'clr' in output_h5mu.mod['prot'].layers.keys()
+    assert output_h5mu.mod['prot'].layers['clr'] is not None
 
 if __name__ == '__main__':
     sys.exit(pytest.main([__file__], plugins=["viashpy"]))

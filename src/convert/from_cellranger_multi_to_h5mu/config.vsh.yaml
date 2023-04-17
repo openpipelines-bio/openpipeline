@@ -35,6 +35,11 @@ functionality:
       description: Output h5mu file.
       example: output.h5mu
       direction: output
+    - name: "--output_compression"
+      type: string
+      choices: ["gzip", "lzf"]
+      required: false
+      example: "gzip"
     - name: "--uns_metrics"
       type: string
       description: Name of the .uns slot under which to QC metrics (if any).

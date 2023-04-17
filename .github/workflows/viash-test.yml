@@ -43,6 +43,10 @@ jobs:
 
     - uses: viash-io/viash-actions/setup@v3
 
+    - name: Check if all config can be parsed if there is no unicode support
+      run: |
+        LANG=C viash ns list > /dev/null
+
     - uses: viash-io/viash-actions/project/sync-and-cache-s3@v3
       id: cache
       with:
@@ -52,7 +56,7 @@ jobs:
 
     - name: Get changed files
       id: changed-files
-      uses: tj-actions/changed-files@v35.6.0
+      uses: tj-actions/changed-files@v35.8.0
       with:
         separator: ";"
         diff_relative: true
@@ -130,10 +134,13 @@ jobs:
 
     - name: Login to the nvidia container registry
       uses: docker/login-action@v2
+      env: 
+          NVIDIA_PASSWORD: ${{ secrets.NVIDIA_PASSWORD }}
+      if: ${{ env.NVIDIA_PASSWORD != '' }}
       with:
         registry: nvcr.io
-        username: ${{ secrets.NVIDIA_USERNAME }}
-        password: ${{ secrets.NVIDIA_PASSWORD }}
+        username: $oauthtoken
+        password: ${{ env.NVIDIA_PASSWORD }}
 
     - name: Run test
       timeout-minutes: 30

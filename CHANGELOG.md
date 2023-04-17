@@ -1,20 +1,86 @@
-# openpipelines 0.7.1
+# openpipelines 0.7.2
 
-## BUG FIXES
+## NEW FUNCTIONALITY
 
-* `workflows/integration`: `init_pos` is no longer set to the integration layer (e.g. `X_pca_integrated`).
+* Added an extra label `veryhighmem` mostly for `cellranger_multi` with a large number of samples.
 
-## MINOR CHANGES
+* Added `multiomics/prot_multisample` pipeline.
+
+* Added `clr` functionality to `prot_multisample` pipeline.
+
+* Added `interpret/lianapy`: Enables the use of any combination of ligand-receptor methods and resources, and their consensus.
 
 * `workflows/full_pipeline`: Allow not setting the sample ID to the .obs column of the MuData object.
 
 * `workflows/rna_multisample`: Add the ID of the sample to the .obs column of the MuData object.
 
-* Update to Viash 0.7.0.
+## BUG FIXES
+
+* `transform/clr`: fix anndata object instead of matrix being stored as a layer in output `MuData`, resulting in `NoneTypeError` object after reading the `.layers` back in.
+
+* `dataflow/concat`: fixed a bug where boolean values were cast to their string representation.
+
+## MINOR CHANGES
+
+* `integrate/scarches`, `integrate/scvi` and `correction/cellbender_remove_background`: Update base container to `nvcr.io/nvidia/pytorch:22.12-py3`
+
+* `integrate/scvi`: add `gpu` label for nextflow platform.
+
+* `integrate/scvi`: use cuda enabled `jax` install.
+
+* `dataflow/concat`: bump pandas to 2.0.0.
+
+* `dataflow/concat`: Boolean and integer columns are now represented by the `BooleanArray` and `IntegerArray` dtypes in order to allow storing `NA` values.
+
+## NEW FUNCTIONALITY
+
+* `correction/cellbender_remove_background`: add `obsm_latent_gene_encoding` parameter to store the latent gene representation.
+
+# MINOR CHANGES
+
+* `workflows/multiomics/full_pipeline`: publish the output from from sample merging to allow running different integrations.
+
+# openpipelines 0.7.1
+
+## NEW FUNCTIONALITY
+
+* `integrate/scvi`: use `nvcr.io/nvidia/pytorch:22.09-py3` as base container to enable GPU acceleration.
+
+* `integrate/scvi`: add `--model_output` to save model.
+
+* `workflows/ingestion/cellranger_mapping`: Added `output_type` to output the filtered Cell Ranger data as h5mu, not the converted raw 10xh5 output.
+
+* Several components:  added `--output_compression` component to set the compression of output .h5mu files.
+
+* `workflows/full_pipeline` and `workflows/integration`: Added `leiden_resolution` argument to control the coarseness of the clustering.
+
+* Added `--rna_theta` and `--rna_harmony_theta` to full and integration pipeline respectively in order to tune the diversity clustering penalty parameter for harmony integration.
+
+* `dimred/pca`: fix `variance` slot containing a second copy of the variance ratio matrix and not the variances.
+
+## BUG FIXES
+
+* `mapping/cellranger_multi`: Fix an issue where using a directory as value for `--input` would cause `AttributeError`.
+
+* `workflows/integration`: `init_pos` is no longer set to the integration layer (e.g. `X_pca_integrated`).
+
+## MINOR CHANGES
+
+* `integration` and `full` workflows: do not run harmony integration when `obs_covariates` is not provided.
+
+* Add `highmem` label to `dimred/pca` component.
+
+* Remove disabled `convert/from_csv_to_h5mu` component.
+
+* Update to Viash 0.7.1.
 
 * Several components: update to scanpy 1.9.2
 
 * `process_10xh5/filter_10xh5`: speed up build by using `eddelbuettel/r2u:22.04` base container.
+
+## MAJOR CHANGES
+
+* `dataflow/concat`: Renamed `--compression` to `--output_compression`.
 
 # openpipelines 0.7.0
 
@@ -220,6 +286,8 @@ These options were previously covered in the `bin/init` script, but this new fea
 * `correction/cellbender_remove_background`: Eliminating technical artifacts from high-throughput single-cell RNA sequencing data.
 
 * `workflows/ingestion/cellranger_postprocessing`: Add post-processing of h5mu files created from Cell Ranger data.
+
+* `annotate/popv`: Performs popular major vote cell typing on single cell sequence data.
 
 ## MAJOR CHANGES
 

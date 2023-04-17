@@ -55,4 +55,4 @@ adata.obsp[par["obsp_distances"]] = neighbors.distances
 adata.obsp[par["obsp_connectivities"]] = neighbors.connectivities
 
 logger.info("Writing to %s", par["output"])
-mdata.write_h5mu(filename=par["output"], compression="gzip")
+mdata.write_h5mu(filename=par["output"], compression=par["output_compression"])
