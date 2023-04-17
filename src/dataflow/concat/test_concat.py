@@ -68,6 +68,12 @@ def copied_mudata_with_extra_var_column(tmp_path, mudata_copy_with_unique_obs, e
     original_mudata.update_var()
     copied_mudata.mod['rna'].var['test'] = np.nan
     copied_mudata.mod['atac'].var['test'] = np.nan
+    original_mudata.var = original_mudata.var.convert_dtypes(infer_objects=True,
+                                                             convert_integer=True,
+                                                             convert_string=False,
+                                                             convert_boolean=True,
+                                                             convert_floating=False)
+    
     copied_mudata.update_var()
     copied_mudata.update_obs()
     original_mudata_path = tmp_path / "original.h5mu"
@@ -244,7 +250,7 @@ def test_concat_different_columns_per_modality_and_per_sample(run_component, mud
     assert concatenated_data.var.loc['chr1:3094399-3095523']['genome'] == 'mm10'
     assert concatenated_data.mod['atac'].var.loc['chr1:3094399-3095523']['genome'] == 'mm10'
 
-@pytest.mark.parametrize("exta_var_column_value,expected", [("bar", "bar"), (True, "True")])
+@pytest.mark.parametrize("exta_var_column_value,expected", [("bar", "bar"), (True, True), (0.1, 0.1), (np.nan, pd.NA)])
 @pytest.mark.parametrize("mudata_copy_with_unique_obs",
                           [input_sample1_file],
                           indirect=["mudata_copy_with_unique_obs"])
@@ -265,9 +271,13 @@ def test_concat_remove_na(run_component, copied_mudata_with_extra_var_column, ex
 
     assert Path("concat.h5mu").is_file() is True
     concatenated_data = md.read("concat.h5mu")
-
-    assert concatenated_data.var.loc['chr1:3094399-3095523']['test'] == expected
-    assert concatenated_data.mod['atac'].var.loc['chr1:3094399-3095523']['test'] == expected
+    
+    if not pd.isna(expected):
+        assert concatenated_data.var.loc['chr1:3094399-3095523']['test'] == expected
+        assert concatenated_data.mod['atac'].var.loc['chr1:3094399-3095523']['test'] == expected
+    else:
+        assert pd.isna(concatenated_data.var.loc['chr1:3094399-3095523']['test'])
+        assert pd.isna(concatenated_data.mod['atac'].var.loc['chr1:3094399-3095523']['test'])
 
     assert pd.isna(concatenated_data.var.loc['ENSMUSG00000051951']['test']) is True
     assert pd.isna(concatenated_data.mod['rna'].var.loc['ENSMUSG00000051951']['test']) is True

@@ -68,6 +68,7 @@ platforms:
         packages:
           - mudata~=0.2.0
           - anndata~=0.8.0
+          - pandas~=2.0.0
     test_setup:
       - type: python
         packages:
