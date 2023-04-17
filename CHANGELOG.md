@@ -14,6 +14,8 @@
 
 * `transform/clr`: fix anndata object instead of matrix being stored as a layer in output `MuData`, resulting in `NoneTypeError` object after reading the `.layers` back in.
 
+* `dataflow/concat`: fixed a bug where boolean values were cast to their string representation.
+
 ## MINOR CHANGES
 
 * `integrate/scarches`, `integrate/scvi` and `correction/cellbender_remove_background`: Update base container to `nvcr.io/nvidia/pytorch:22.12-py3`
@@ -21,6 +23,10 @@
 * `integrate/scvi`: add `gpu` label for nextflow platform.
 
 * `integrate/scvi`: use cuda enabled `jax` install.
+
+* `dataflow/concat`: bump pandas to 2.0.0.
+
+* `dataflow/concat`: Boolean and integer columns are now represented by the `BooleanArray` and `IntegerArray` dtypes in order to allow storing `NA` values.
 
 ## NEW FUNCTIONALITY
 

@@ -10,10 +10,10 @@ from multiprocessing import Pool
 
 ### VIASH START
 par = {
-    "input": ["resources_test/concat/e18_mouse_brain_fresh_5k_filtered_feature_bc_matrix_subset.h5mu",
-              "resources_test/concat/human_brain_3k_filtered_feature_bc_matrix_subset.h5mu"],
+    "input": ["resources_test/concat_test_data/e18_mouse_brain_fresh_5k_filtered_feature_bc_matrix_subset_unique_obs.h5mu",
+              "resources_test/concat_test_data/human_brain_3k_filtered_feature_bc_matrix_subset_unique_obs.h5mu"],
     "output": "foo.h5mu",
-    "sample_names": ["mouse", "human"],
+    "input_id": ["mouse", "human"],
     "compression": "gzip",
     "other_axis_mode": "move",
     "output_compression": "gzip"
@@ -84,33 +84,10 @@ def concatenate_matrices(n_processes: int, input_ids: tuple[str], matrices: Iter
                                                  input_ids,
                                                  matrices,
                                                  column_names)
-    original_dtypes = get_original_dtypes(matrices, column_names)
-    concatenated_matrix = set_dtypes_concatenated_columns(original_dtypes, concatenated_matrix)
-    conflicts = set_dtypes_conflicts(original_dtypes, conflicts)
+    concatenated_matrix = cast_to_writeable_dtype(concatenated_matrix)
+    conflicts = {conflict_name: cast_to_writeable_dtype(conflict_df) 
+                 for conflict_name, conflict_df in conflicts.items()}
     return conflicts, concatenated_matrix
-
-def set_dtypes_conflicts(original_dtypes: dict[str, pd.core.dtypes.dtypes.Dtype],
-                         conflicts: tuple[dict[str, pd.DataFrame], pd.DataFrame]) -> \
-                        tuple[dict[str, pd.DataFrame], pd.DataFrame]:
-    """
-    Ensure the correct datatypes for the conflict dataframes.
-    """
-    conflicts_correct_dtypes = {}
-    for conflict_name, confict_data in conflicts.items():
-        original_dtype = original_dtypes[conflict_name.removeprefix('conflict_')]
-        new_conflict_dtypes = {column: original_dtype for column in confict_data.columns}
-        confict_data = cast_to_original_dtype(confict_data, new_conflict_dtypes)
-        conflicts_correct_dtypes[conflict_name] = confict_data
-    return conflicts_correct_dtypes
-
-def set_dtypes_concatenated_columns(original_dtypes: dict[str, pd.core.dtypes.dtypes.Dtype],
-                                    concatenated_matrix: pd.DataFrame) -> pd.DataFrame:
-    """
-    Ensure the correct datatypes for the concatenated columns that did not contain conflicts.
-    """
-    curr_concat_matrix_cols_dtypes = {col: dtype for col, dtype in original_dtypes.items()
-                                      if col in concatenated_matrix.columns}
-    return cast_to_original_dtype(concatenated_matrix, curr_concat_matrix_cols_dtypes)
 
 def get_first_non_na_value_vector(df):
     numpy_arr = df.to_numpy()
@@ -151,40 +128,26 @@ def split_conflicts_and_concatenated_columns(n_processes: int,
 
     return conflicts, concatenated_matrix
 
-def cast_to_original_dtype(result: pd.DataFrame,
-                           orignal_dtypes: dict[str, pd.core.dtypes.dtypes.Dtype]) -> pd.DataFrame:
+def cast_to_writeable_dtype(result: pd.DataFrame) -> pd.DataFrame:
     """
     Cast the dataframe to dtypes that can be written by mudata.
-    """
-    logger.debug('Trying to cast to "category" or keep original datatype.')
-    for col_name, orig_dtype in orignal_dtypes.items():
-        try:
-            result = result.astype({col_name: "category"}, copy=True)
-            result[col_name].cat.categories = result[col_name].cat.categories.astype(str)
-        except (ValueError, TypeError):
-            try:
-                result = result.astype({col_name: orig_dtype}, copy=True)
-            except (ValueError, TypeError):
-                logger.warning("Could not keep datatype for column %s", col_name)
+    """    
+    # dtype inferral workfs better with np.nan
+    result = result.replace({pd.NA: np.nan})
+
+    # MuData supports nullable booleans and ints
+    # ie. `IntegerArray` and `BooleanArray`
+    result = result.convert_dtypes(infer_objects=True,
+                                   convert_integer=True,
+                                   convert_string=False,
+                                   convert_boolean=True,
+                                   convert_floating=False)
+    
+    # Convert leftover 'object' columns to string
+    object_cols = result.select_dtypes(include='object').columns.values
+    for obj_col in object_cols:
+        result[obj_col].astype(str).astype('category')
     return result
-
-
-def get_original_dtypes(matrices: Iterable[pd.DataFrame],
-                        column_names: Iterable[str]) -> \
-                        dict[str, pd.core.dtypes.dtypes.Dtype]:
-    """
-    Get the datatypes of columns in a list of dataframes.
-    If a column occurs in more than 1 dataframe, includes the dtype of the column
-    in the dataframe that comes first in the list.
-    """
-    dtypes = {}
-    for col_name in column_names:
-        for matrix in matrices:
-            col = matrix.get(col_name, None)
-            if col is not None and col_name not in dtypes:
-                dtypes[col_name] = col.dtype
-    return dtypes
-
 
 def split_conflicts_modalities(n_processes: int, input_ids: tuple[str], modalities: Iterable[anndata.AnnData]) \
         -> tuple[dict[str, dict[str, pd.DataFrame]],  dict[str, pd.DataFrame | None]]:
@@ -213,11 +176,6 @@ def set_matrices(concatenated_data: mu.MuData,
     from the different modalities.
     """
     mod = concatenated_data.mod[mod_name]
-    original_dtypes_global_matrices = {
-        global_matrix_name: getattr(concatenated_data, global_matrix_name).dtypes
-        for global_matrix_name
-        in new_matrices.keys()
-    }
     for matrix_name, data in new_matrices.items():
         new_index = getattr(mod, matrix_name).index
         if data is None:
@@ -229,9 +187,9 @@ def set_matrices(concatenated_data: mu.MuData,
     # the 'global' matrices must also be updated. This is done by mudata automatically
     # by calling mudata.update() before writing. However, we need to make sure that the
     # dtypes of these global matrices are also correct for writing..
-    for global_matrix_name, dtypes in original_dtypes_global_matrices.items():
+    for global_matrix_name in new_matrices.keys():
         matrix = getattr(concatenated_data, global_matrix_name)
-        setattr(concatenated_data, global_matrix_name, cast_to_original_dtype(matrix, dtypes))
+        setattr(concatenated_data, global_matrix_name, cast_to_writeable_dtype(matrix))
     return concatenated_data
 
 def set_conflicts(concatenated_data: mu.MuData,
