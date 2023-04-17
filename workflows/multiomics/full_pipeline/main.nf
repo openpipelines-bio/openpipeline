@@ -108,7 +108,6 @@ workflow run_wf {
         [ new_id, ["input": new_data], new_passthrough, [ modality: dat.name ]]
       }
     }
-    | view {"After collection: $it"}
 
     modality_processors = [
       ["id": "rna", "singlesample": rna_singlesample, "multisample": rna_multisample],
