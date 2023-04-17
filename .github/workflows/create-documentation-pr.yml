@@ -9,7 +9,6 @@ jobs:
     outputs:
       component_matrix: ${{ steps.set_matrix.outputs.components }}
       workflow_matrix: ${{ steps.set_matrix.outputs.workflows }}
-
     steps:
     - uses: actions/checkout@v3
 
@@ -64,10 +63,11 @@ jobs:
 
       - uses: viash-io/viash-actions/setup@v3
 
-      - uses: viash-io/viash-actions/pro/generate-documentation-qmd@v3
+      - uses: viash-io/viash-actions/pro/generate-documentation-qmd@add_working_dir
         with:
+          working_directory: openpipelines
           input_dir: ./
-          output_dir: website
+          output_dir: ../website/components/
           dest_path: "{type}s/{namespace}/{name}.qmd"
           viash_pro_token: ${{ secrets.GTHB_PAT }}
           tools_version: main_build
@@ -80,7 +80,7 @@ jobs:
           git config user.name github-actions
           git config user.email github-actions@github.com
           git add .
-          git checkout -B "release-${GITHUB_REF#refs/heads/}"
-          git commit -m "OpenPipelines release ${GITHUB_REF#refs/heads/}"
-          git push --set-upstream origin "release-${GITHUB_REF#refs/heads/}"
-          gh pr create --title "Openpipeline release ${GITHUB_REF#refs/heads/}" --base main --head "release-${GITHUB_REF#refs/heads/}" --body ""
+          git checkout -B "release-${{ github.ref_name }}"
+          git commit -m "OpenPipelines release ${{ github.ref_name }}"
+          git push --set-upstream origin "release-${{ github.ref_name }}"
+          gh pr create --title "Openpipeline release ${{ github.ref_name }}" --base main --head "release-${{ github.ref_name }}" --body ""

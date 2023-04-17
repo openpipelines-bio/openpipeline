@@ -14,6 +14,8 @@
 
 * `transform/clr`: fix anndata object instead of matrix being stored as a layer in output `MuData`, resulting in `NoneTypeError` object after reading the `.layers` back in.
 
+* `dataflow/concat`: fixed a bug where boolean values were cast to their string representation.
+
 ## MINOR CHANGES
 
 * `integrate/scarches`, `integrate/scvi` and `correction/cellbender_remove_background`: Update base container to `nvcr.io/nvidia/pytorch:22.12-py3`
@@ -22,7 +24,9 @@
 
 * `integrate/scvi`: use cuda enabled `jax` install.
 
-* `convert/from_cellranger_multi_to_h5mu`: update pandas to 2.0.0
+* `convert/from_cellranger_multi_to_h5mu` and `dataflow/concat`: update pandas to 2.0.0
+
+* `dataflow/concat`: Boolean and integer columns are now represented by the `BooleanArray` and `IntegerArray` dtypes in order to allow storing `NA` values.
 
 ## NEW FUNCTIONALITY
 
@@ -278,6 +282,8 @@ These options were previously covered in the `bin/init` script, but this new fea
 * `correction/cellbender_remove_background`: Eliminating technical artifacts from high-throughput single-cell RNA sequencing data.
 
 * `workflows/ingestion/cellranger_postprocessing`: Add post-processing of h5mu files created from Cell Ranger data.
+
+* `annotate/popv`: Performs popular major vote cell typing on single cell sequence data.
 
 ## MAJOR CHANGES
 
