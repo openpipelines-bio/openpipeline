@@ -64,13 +64,8 @@ workflow run_wf {
     // The add_id processes will be executed several times
     // Before that, we must make the ID (first element of list)
     // unique. The global ID is stored so that it can be retreived later.
-    | map {list ->
-      def id = list[0]
-      def data = list[1]
-      def other_arguments = list[2]
-      def passthrough = list.drop(3)
-      other_arguments["id"] = id
-      [id, data, other_arguments] + passthrough
+    | pmap {id, data, other ->
+      [id, data, other + [id: id]]
     }
     // Split the input into multiple events in the channel so that 
     // the add_id process can be run multiple times
