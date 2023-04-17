@@ -85,7 +85,7 @@ workflow run_wf {
     | getWorkflowArguments(key: "split_modalities_args")
 
   split_ch = add_id_ch
-    | filter(workflow.stubRun)
+    | filter{workflow.stubRun}
     | split_modalities
 
   split_stub_ch = add_id_ch
