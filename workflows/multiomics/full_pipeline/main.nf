@@ -85,7 +85,7 @@ workflow run_wf {
     | getWorkflowArguments(key: "split_modalities_args")
 
   split_ch = add_id_ch
-    | filter{workflow.stubRun}
+    | filter{!workflow.stubRun}
     | split_modalities
 
   split_stub_ch = add_id_ch
@@ -93,9 +93,8 @@ workflow run_wf {
     | map {it -> [it[0], it[1].input, it[2]]}
     | splitStub
     | map {it -> [it[0], ["output": it[1], "output_types": it[2]], it[3]]}
-    | view()
 
-  start_ch = split_stub_ch
+  start_ch = split_ch.concat(split_stub_ch)
     // combine output types csv
     | pFlatMap {id, data, passthrough ->
       def outputDir = data.output
