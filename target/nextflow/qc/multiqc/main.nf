@@ -119,7 +119,7 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
     "config" : "/home/runner/work/openpipeline/openpipeline/src/qc/multiqc/config.vsh.yaml",
     "platform" : "nextflow",
     "viash_version" : "0.7.1",
-    "git_commit" : "6e6ff58d179570387af7f159850eb58c7762e7d6",
+    "git_commit" : "6a48b21ca1d01077ba2929db5a3a968511f5d17a",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))

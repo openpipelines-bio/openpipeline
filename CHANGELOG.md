@@ -277,6 +277,8 @@ These options were previously covered in the `bin/init` script, but this new fea
 
 * `workflows/ingestion/cellranger_postprocessing`: Add post-processing of h5mu files created from Cell Ranger data.
 
+* `annotate/popv`: Performs popular major vote cell typing on single cell sequence data.
+
 ## MAJOR CHANGES
 
 * `workflows/utils/DataflowHelper.nf`: Added helper functions `setWorkflowArguments()` and `getWorkflowArguments()` to split the data field of a channel event into a hashmap. Example usage:
