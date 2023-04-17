@@ -16,6 +16,8 @@
 
 * `dataflow/concat`: fixed a bug where boolean values were cast to their string representation.
 
+* `workflows/full_pipeline`: fix running pipeline with `-stub`.
+
 ## MINOR CHANGES
 
 * `integrate/scarches`, `integrate/scvi` and `correction/cellbender_remove_background`: Update base container to `nvcr.io/nvidia/pytorch:22.12-py3`
