@@ -1,0 +1,53 @@
+functionality:
+  name: spaceranger_mkfastq
+  namespace: demux
+  description: Demultiplex raw spatial sequencing data
+  usage: |
+    spaceranger_mkfastq \
+      --input /path/to/bcl \
+      --sample_sheet SampleSheet.csv \
+      --output /path/to/output
+  authors:
+    - __merge__: ../../authors/samuel_d_souza.yaml
+      roles: [ author ]
+  arguments:
+    - type: file
+      name: --input
+      description: Path to the (untarred) BCL files. Expects 'RunParameters.xml' at './'.
+      example: /path/to/bcl
+      required: true
+    - type: file
+      name: --sample_sheet
+      description: The path to the sample sheet.
+      example: SampleSheet.csv
+      required: true
+    - type: file
+      name: --output
+      direction: output
+      description: The folder to store the demux results
+      example: "/path/to/output"
+      default: fastqs
+      required: true
+    - name: "--reports"
+      type: file
+      direction: output
+      required: false
+      description: Reports directory
+      example: reports_dir
+  resources:
+    - type: bash_script
+      path: script.sh
+  test_resources:
+    - type: python_script
+      path: test.py
+    - path: ../../../resources_test/spaceranger_tiny_bcl
+platforms:
+  - type: docker
+    image: ghcr.io/data-intuitive/spaceranger:1.3
+    setup:
+      - type: docker
+        run: apt update && apt upgrade -y
+  - type: nextflow
+    directives:
+      label: [ highmem, highcpu ]
+
