@@ -489,9 +489,9 @@ RUN pip install --upgrade pip && \
 
 LABEL org.opencontainers.image.authors="Malte D. Luecken, Dries Schaumont"
 LABEL org.opencontainers.image.description="Companion container for running component integrate scvi"
-LABEL org.opencontainers.image.created="2023-04-17T11:53:12Z"
+LABEL org.opencontainers.image.created="2023-04-20T09:51:27Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="de7bcf6a4b8c31510f5f72223b296cdad347ec4f"
+LABEL org.opencontainers.image.revision="c695c1885854591a2ce7e07457b7e4a480440ae9"
 LABEL org.opencontainers.image.version="main_build"
 VIASHDOCKER
 }
