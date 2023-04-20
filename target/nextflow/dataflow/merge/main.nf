@@ -109,7 +109,7 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
     "test_resources" : [
       {
         "type" : "python_script",
-        "path" : "test.py",
+        "path" : "test_merge.py",
         "is_executable" : true,
         "parent" : "file:/home/runner/work/openpipeline/openpipeline/src/dataflow/merge/config.vsh.yml"
       },
@@ -144,8 +144,19 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
           "type" : "python",
           "user" : false,
           "packages" : [
-            "anndata~=0.8.0",
-            "mudata~=0.2.0"
+            "anndata~=0.9.0",
+            "mudata~=0.2.0",
+            "pandas~=2.0.0"
+          ],
+          "upgrade" : true
+        }
+      ],
+      "test_setup" : [
+        {
+          "type" : "python",
+          "user" : false,
+          "packages" : [
+            "viashpy"
           ],
           "upgrade" : true
         }
@@ -179,7 +190,7 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
     "config" : "/home/runner/work/openpipeline/openpipeline/src/dataflow/merge/config.vsh.yml",
     "platform" : "nextflow",
     "viash_version" : "0.7.1",
-    "git_commit" : "c695c1885854591a2ce7e07457b7e4a480440ae9",
+    "git_commit" : "e5a8d3c20890c2882b9b21815e8ed2d844cb6e01",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))
@@ -189,11 +200,11 @@ tempscript=".viash_script.sh"
 cat > "$tempscript" << VIASHMAIN
 
 from __future__ import annotations
-from pathlib import Path
 from sys import stdout
 import logging
 import mudata as md
-
+import pandas as pd
+import numpy as np
 
 
 ### VIASH START
@@ -241,6 +252,25 @@ def main():
             sample_modalities[mod_name] = mod_data
 
     merged = md.MuData(sample_modalities)
+    merged.update()
+    for df_attr in ("var", "obs"):
+        df = getattr(merged, df_attr)
+        df = df.replace({pd.NA: np.nan}, inplace=False)
+        
+        # MuData supports nullable booleans and ints
+        # ie. \\`IntegerArray\\` and \\`BooleanArray\\`
+        df = df.convert_dtypes(infer_objects=True,
+                               convert_integer=True,
+                               convert_string=False,
+                               convert_boolean=True,
+                               convert_floating=False)
+
+        # Convert leftover 'object' columns to string
+        object_cols = df.select_dtypes(include='object').columns.values
+        for obj_col in object_cols:
+            df[obj_col].astype(str).astype('category')
+        setattr(merged, df_attr, df)
+
     merged.write_h5mu(par["output"], compression=par["output_compression"])
     logger.info('Finished')
 

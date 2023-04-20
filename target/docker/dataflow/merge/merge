@@ -399,13 +399,13 @@ function ViashDockerfile {
 FROM python:3.10
 
 RUN pip install --upgrade pip && \
-  pip install --upgrade --no-cache-dir "anndata~=0.8.0" "mudata~=0.2.0"
+  pip install --upgrade --no-cache-dir "anndata~=0.9.0" "mudata~=0.2.0" "pandas~=2.0.0"
 
 LABEL org.opencontainers.image.authors="Dries Schaumont"
 LABEL org.opencontainers.image.description="Companion container for running component dataflow merge"
-LABEL org.opencontainers.image.created="2023-04-20T09:51:30Z"
+LABEL org.opencontainers.image.created="2023-04-20T11:51:59Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="c695c1885854591a2ce7e07457b7e4a480440ae9"
+LABEL org.opencontainers.image.revision="e5a8d3c20890c2882b9b21815e8ed2d844cb6e01"
 LABEL org.opencontainers.image.version="main_build"
 VIASHDOCKER
 }
@@ -909,11 +909,11 @@ trap interrupt INT SIGINT
 cat > "\$tempscript" << 'VIASHMAIN'
 
 from __future__ import annotations
-from pathlib import Path
 from sys import stdout
 import logging
 import mudata as md
-
+import pandas as pd
+import numpy as np
 
 
 ### VIASH START
@@ -961,6 +961,25 @@ def main():
             sample_modalities[mod_name] = mod_data
 
     merged = md.MuData(sample_modalities)
+    merged.update()
+    for df_attr in ("var", "obs"):
+        df = getattr(merged, df_attr)
+        df = df.replace({pd.NA: np.nan}, inplace=False)
+        
+        # MuData supports nullable booleans and ints
+        # ie. \`IntegerArray\` and \`BooleanArray\`
+        df = df.convert_dtypes(infer_objects=True,
+                               convert_integer=True,
+                               convert_string=False,
+                               convert_boolean=True,
+                               convert_floating=False)
+
+        # Convert leftover 'object' columns to string
+        object_cols = df.select_dtypes(include='object').columns.values
+        for obj_col in object_cols:
+            df[obj_col].astype(str).astype('category')
+        setattr(merged, df_attr, df)
+
     merged.write_h5mu(par["output"], compression=par["output_compression"])
     logger.info('Finished')
 
