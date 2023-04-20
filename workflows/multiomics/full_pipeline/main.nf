@@ -12,11 +12,11 @@ include { run_wf as rna_multisample } from workflowDir + '/multiomics/rna_multis
 include { run_wf as prot_singlesample } from workflowDir + '/multiomics/prot_singlesample/main.nf'
 include { run_wf as prot_multisample } from workflowDir + '/multiomics/prot_multisample/main.nf'
 include { run_wf as integration } from workflowDir + '/multiomics/integration/main.nf'
+include { splitStub } from workflowDir + '/multiomics/full_pipeline/split_stub.nf'
 
 include { readConfig; helpMessage; readCsv; preprocessInputs; channelFromParams } from workflowDir + "/utils/WorkflowHelper.nf"
 include {  setWorkflowArguments; getWorkflowArguments; passthroughMap as pmap; passthroughFlatMap as pFlatMap } from workflowDir + "/utils/DataflowHelper.nf"
 config = readConfig("$workflowDir/multiomics/full_pipeline/config.vsh.yaml")
-
 
 workflow {
   helpMessage(config)
@@ -31,7 +31,7 @@ workflow run_wf {
   input_ch
 
   main:
-  start_ch = input_ch
+  add_id_ch = input_ch
     | preprocessInputs("config": config)
     | setWorkflowArguments (
         "add_id_args": ["input": "input"],
@@ -83,8 +83,18 @@ workflow run_wf {
 
     // split by modality
     | getWorkflowArguments(key: "split_modalities_args")
+
+  split_ch = add_id_ch
+    | filter{!workflow.stubRun}
     | split_modalities
 
+  split_stub_ch = add_id_ch
+    | filter{workflow.stubRun}
+    | map {it -> [it[0], it[1].input, it[2]]}
+    | splitStub
+    | map {it -> [it[0], ["output": it[1], "output_types": it[2]], it[3]]}
+
+  start_ch = split_ch.concat(split_stub_ch)
     // combine output types csv
     | pFlatMap {id, data, passthrough ->
       def outputDir = data.output
