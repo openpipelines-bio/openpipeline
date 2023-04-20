@@ -26,7 +26,7 @@
 
 * `integrate/scvi`: use cuda enabled `jax` install.
 
-* `dataflow/concat` and `dataflow/merge`: bump pandas to 2.0.0.
+* `convert/from_cellranger_multi_to_h5mu`, `dataflow/concat` and `dataflow/merge`: update pandas to 2.0.0
 
 * `dataflow/concat` and `dataflow/merge`: Boolean and integer columns are now represented by the `BooleanArray` and `IntegerArray` dtypes in order to allow storing `NA` values.
 

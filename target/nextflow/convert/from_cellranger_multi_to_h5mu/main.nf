@@ -154,7 +154,8 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
             "scanpy~=1.9.2",
             "mudata~=0.2.0",
             "anndata~=0.8.0",
-            "scirpy~=0.11.1"
+            "scirpy~=0.11.1",
+            "pandas~=2.0.0"
           ],
           "upgrade" : true
         }
@@ -181,7 +182,7 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
     "config" : "/home/runner/work/openpipeline/openpipeline/src/convert/from_cellranger_multi_to_h5mu/config.vsh.yaml",
     "platform" : "nextflow",
     "viash_version" : "0.7.1",
-    "git_commit" : "e5a8d3c20890c2882b9b21815e8ed2d844cb6e01",
+    "git_commit" : "268af8b64fba6f605260b8074cba91b3ee3d1df4",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))
@@ -312,12 +313,12 @@ def process_metrics_summary(mudata: mudata.MuData, metrics_file: Path):
                                   thousands=",").applymap(read_percentage)
 
     mudata.uns[par["uns_metrics"]] = metrics_summary
-    for colname, coldata in metrics_summary.iteritems():
+    for colname, coldata in metrics_summary.items():
         try:
-            new_column = coldata.astype({colname: "category"}, copy=True)
-            new_column.cat.categories = new_column.cat.categories.astype(str)
+            new_column = coldata.astype(str, copy=True).astype({colname: "category"})
             metrics_summary[colname] = new_column
         except (ValueError, TypeError):
+            logger.warning(f"Could not store column {colname} from metrics.")
             pass
     return mudata
 

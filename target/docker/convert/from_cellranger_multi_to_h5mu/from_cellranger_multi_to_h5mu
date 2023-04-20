@@ -417,13 +417,13 @@ function ViashDockerfile {
 FROM python:3.8
 
 RUN pip install --upgrade pip && \
-  pip install --upgrade --no-cache-dir "scanpy~=1.9.2" "mudata~=0.2.0" "anndata~=0.8.0" "scirpy~=0.11.1"
+  pip install --upgrade --no-cache-dir "scanpy~=1.9.2" "mudata~=0.2.0" "anndata~=0.8.0" "scirpy~=0.11.1" "pandas~=2.0.0"
 
 LABEL org.opencontainers.image.authors="Dries Schaumont"
 LABEL org.opencontainers.image.description="Companion container for running component convert from_cellranger_multi_to_h5mu"
-LABEL org.opencontainers.image.created="2023-04-20T11:51:53Z"
+LABEL org.opencontainers.image.created="2023-04-20T13:15:03Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="e5a8d3c20890c2882b9b21815e8ed2d844cb6e01"
+LABEL org.opencontainers.image.revision="268af8b64fba6f605260b8074cba91b3ee3d1df4"
 LABEL org.opencontainers.image.version="main_build"
 VIASHDOCKER
 }
@@ -1035,12 +1035,12 @@ def process_metrics_summary(mudata: mudata.MuData, metrics_file: Path):
                                   thousands=",").applymap(read_percentage)
 
     mudata.uns[par["uns_metrics"]] = metrics_summary
-    for colname, coldata in metrics_summary.iteritems():
+    for colname, coldata in metrics_summary.items():
         try:
-            new_column = coldata.astype({colname: "category"}, copy=True)
-            new_column.cat.categories = new_column.cat.categories.astype(str)
+            new_column = coldata.astype(str, copy=True).astype({colname: "category"})
             metrics_summary[colname] = new_column
         except (ValueError, TypeError):
+            logger.warning(f"Could not store column {colname} from metrics.")
             pass
     return mudata
 
