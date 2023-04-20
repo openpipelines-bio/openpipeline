@@ -14,7 +14,7 @@
 
 * `transform/clr`: fix anndata object instead of matrix being stored as a layer in output `MuData`, resulting in `NoneTypeError` object after reading the `.layers` back in.
 
-* `dataflow/concat`: fixed a bug where boolean values were cast to their string representation.
+* `dataflow/concat` and `dataflow/merge`: fixed a bug where boolean values were cast to their string representation.
 
 ## MINOR CHANGES
 
@@ -24,9 +24,9 @@
 
 * `integrate/scvi`: use cuda enabled `jax` install.
 
-* `dataflow/concat`: bump pandas to 2.0.0.
+* `dataflow/concat` and `dataflow/merge`: bump pandas to 2.0.0.
 
-* `dataflow/concat`: Boolean and integer columns are now represented by the `BooleanArray` and `IntegerArray` dtypes in order to allow storing `NA` values.
+* `dataflow/concat` and `dataflow/merge`: Boolean and integer columns are now represented by the `BooleanArray` and `IntegerArray` dtypes in order to allow storing `NA` values.
 
 ## NEW FUNCTIONALITY
 
