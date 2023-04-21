@@ -45,6 +45,7 @@ if [ ! -f "${OUT}/bcl/sample_sheet.csv" ]; then
 
 fi
 
+# run 
 if [ ! -d "${OUT}/fastqs" ]; then
   mkdir -p "$OUT/fastqs"
 
