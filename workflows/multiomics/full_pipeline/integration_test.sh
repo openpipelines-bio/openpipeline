@@ -18,6 +18,15 @@ nextflow \
   -profile docker,no_publish \
   -c workflows/utils/labels_ci.config
 
+# Same as above but with remote file.
+nextflow \
+  run . \
+  -main-script workflows/multiomics/full_pipeline/main.nf \
+  -resume \
+  -profile docker,no_publish \
+  -c workflows/utils/labels_ci.config \
+  --param_list s3://openpipelines-data/test_param_list.yaml
+
 nextflow \
   run . \
   -main-script workflows/multiomics/full_pipeline/main.nf \
