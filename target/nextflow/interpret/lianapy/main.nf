@@ -166,6 +166,19 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
         "dest" : "par"
       },
       {
+        "type" : "string",
+        "name" : "--gene_symbol",
+        "description" : "Column name in var DataFrame in which gene symbol are stored.",
+        "default" : [
+          "gene_symbol"
+        ],
+        "required" : false,
+        "direction" : "input",
+        "multiple" : false,
+        "multiple_sep" : ":",
+        "dest" : "par"
+      },
+      {
         "type" : "double",
         "name" : "--expr_prop",
         "description" : "Minimum expression proportion for the ligands/receptors (and their subunits) in the corresponding cell identities. Set to '0', to return unfiltered results.",
@@ -306,7 +319,7 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
     "config" : "/home/runner/work/openpipeline/openpipeline/src/interpret/lianapy/config.vsh.yaml",
     "platform" : "nextflow",
     "viash_version" : "0.7.1",
-    "git_commit" : "67008b5501c0533c571fff10077b657b0a7414e2",
+    "git_commit" : "aa00055660f0f2f215fd603ef0a9888eb636f1ee",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))
@@ -331,6 +344,7 @@ par = {
   'layer': $( if [ ! -z ${VIASH_PAR_LAYER+x} ]; then echo "r'${VIASH_PAR_LAYER//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'groupby': $( if [ ! -z ${VIASH_PAR_GROUPBY+x} ]; then echo "r'${VIASH_PAR_GROUPBY//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'resource_name': $( if [ ! -z ${VIASH_PAR_RESOURCE_NAME+x} ]; then echo "r'${VIASH_PAR_RESOURCE_NAME//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
+  'gene_symbol': $( if [ ! -z ${VIASH_PAR_GENE_SYMBOL+x} ]; then echo "r'${VIASH_PAR_GENE_SYMBOL//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'expr_prop': $( if [ ! -z ${VIASH_PAR_EXPR_PROP+x} ]; then echo "float(r'${VIASH_PAR_EXPR_PROP//\\'/\\'\\"\\'\\"r\\'}')"; else echo None; fi ),
   'min_cells': $( if [ ! -z ${VIASH_PAR_MIN_CELLS+x} ]; then echo "int(r'${VIASH_PAR_MIN_CELLS//\\'/\\'\\"\\'\\"r\\'}')"; else echo None; fi ),
   'aggregate_method': $( if [ ! -z ${VIASH_PAR_AGGREGATE_METHOD+x} ]; then echo "r'${VIASH_PAR_AGGREGATE_METHOD//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
@@ -361,14 +375,14 @@ def main():
     mdata = mudata.read(par['input'].strip())
     mod = mdata.mod[par['modality']]
 
-    # TODO: Remove when grouping labels exist
-    # Add grouping labels
-    foo = mod.obsm.to_df().iloc[:, 0]
-    mod.obs[par['groupby']] = np.sign(foo).astype('category')
+    # Add dummy grouping labels when they do not exist
+    if par['groupby'] not in mod.obs:
+        foo = mod.obsm.to_df().iloc[:, 0]
+        mod.obs[par['groupby']] = np.sign(foo).astype('category')
 
     # Solve gene labels
     orig_gene_label = mod.var.index
-    mod.var_names = mod.var['gene_symbol'].astype(str)
+    mod.var_names = mod.var[par['gene_symbol']].astype(str)
     mod.var_names_make_unique()
 
     liana.mt.rank_aggregate(

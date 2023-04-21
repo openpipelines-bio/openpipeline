@@ -200,6 +200,11 @@ function ViashHelp {
   echo "italk, kirouac2010, lrdb, mouseconsensus, ramilowski2015 ]"
   echo "        Name of the resource to be loaded and use for ligand-receptor inference."
   echo ""
+  echo "    --gene_symbol"
+  echo "        type: string"
+  echo "        default: gene_symbol"
+  echo "        Column name in var DataFrame in which gene symbol are stored."
+  echo ""
   echo "    --expr_prop"
   echo "        type: double"
   echo "        default: 0.1"
@@ -458,9 +463,9 @@ RUN pip install --upgrade pip && \
 
 LABEL org.opencontainers.image.authors="Mauro Saporita, Povilas Gibas"
 LABEL org.opencontainers.image.description="Companion container for running component interpret lianapy"
-LABEL org.opencontainers.image.created="2023-04-21T06:35:08Z"
+LABEL org.opencontainers.image.created="2023-04-21T07:26:46Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="67008b5501c0533c571fff10077b657b0a7414e2"
+LABEL org.opencontainers.image.revision="aa00055660f0f2f215fd603ef0a9888eb636f1ee"
 LABEL org.opencontainers.image.version="main_build"
 VIASHDOCKER
 }
@@ -702,6 +707,17 @@ while [[ $# -gt 0 ]]; do
             VIASH_PAR_RESOURCE_NAME=$(ViashRemoveFlags "$1")
             shift 1
             ;;
+        --gene_symbol)
+            [ -n "$VIASH_PAR_GENE_SYMBOL" ] && ViashError Bad arguments for option \'--gene_symbol\': \'$VIASH_PAR_GENE_SYMBOL\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+            VIASH_PAR_GENE_SYMBOL="$2"
+            [ $# -lt 2 ] && ViashError Not enough arguments passed to --gene_symbol. Use "--help" to get more information on the parameters. && exit 1
+            shift 2
+            ;;
+        --gene_symbol=*)
+            [ -n "$VIASH_PAR_GENE_SYMBOL" ] && ViashError Bad arguments for option \'--gene_symbol=*\': \'$VIASH_PAR_GENE_SYMBOL\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+            VIASH_PAR_GENE_SYMBOL=$(ViashRemoveFlags "$1")
+            shift 1
+            ;;
         --expr_prop)
             [ -n "$VIASH_PAR_EXPR_PROP" ] && ViashError Bad arguments for option \'--expr_prop\': \'$VIASH_PAR_EXPR_PROP\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
             VIASH_PAR_EXPR_PROP="$2"
@@ -917,6 +933,9 @@ fi
 if [ -z ${VIASH_PAR_RESOURCE_NAME+x} ]; then
   VIASH_PAR_RESOURCE_NAME="consensus"
 fi
+if [ -z ${VIASH_PAR_GENE_SYMBOL+x} ]; then
+  VIASH_PAR_GENE_SYMBOL="gene_symbol"
+fi
 if [ -z ${VIASH_PAR_EXPR_PROP+x} ]; then
   VIASH_PAR_EXPR_PROP="0.1"
 fi
@@ -1130,6 +1149,7 @@ par = {
   'layer': $( if [ ! -z ${VIASH_PAR_LAYER+x} ]; then echo "r'${VIASH_PAR_LAYER//\'/\'\"\'\"r\'}'"; else echo None; fi ),
   'groupby': $( if [ ! -z ${VIASH_PAR_GROUPBY+x} ]; then echo "r'${VIASH_PAR_GROUPBY//\'/\'\"\'\"r\'}'"; else echo None; fi ),
   'resource_name': $( if [ ! -z ${VIASH_PAR_RESOURCE_NAME+x} ]; then echo "r'${VIASH_PAR_RESOURCE_NAME//\'/\'\"\'\"r\'}'"; else echo None; fi ),
+  'gene_symbol': $( if [ ! -z ${VIASH_PAR_GENE_SYMBOL+x} ]; then echo "r'${VIASH_PAR_GENE_SYMBOL//\'/\'\"\'\"r\'}'"; else echo None; fi ),
   'expr_prop': $( if [ ! -z ${VIASH_PAR_EXPR_PROP+x} ]; then echo "float(r'${VIASH_PAR_EXPR_PROP//\'/\'\"\'\"r\'}')"; else echo None; fi ),
   'min_cells': $( if [ ! -z ${VIASH_PAR_MIN_CELLS+x} ]; then echo "int(r'${VIASH_PAR_MIN_CELLS//\'/\'\"\'\"r\'}')"; else echo None; fi ),
   'aggregate_method': $( if [ ! -z ${VIASH_PAR_AGGREGATE_METHOD+x} ]; then echo "r'${VIASH_PAR_AGGREGATE_METHOD//\'/\'\"\'\"r\'}'"; else echo None; fi ),
@@ -1160,14 +1180,14 @@ def main():
     mdata = mudata.read(par['input'].strip())
     mod = mdata.mod[par['modality']]
 
-    # TODO: Remove when grouping labels exist
-    # Add grouping labels
-    foo = mod.obsm.to_df().iloc[:, 0]
-    mod.obs[par['groupby']] = np.sign(foo).astype('category')
+    # Add dummy grouping labels when they do not exist
+    if par['groupby'] not in mod.obs:
+        foo = mod.obsm.to_df().iloc[:, 0]
+        mod.obs[par['groupby']] = np.sign(foo).astype('category')
 
     # Solve gene labels
     orig_gene_label = mod.var.index
-    mod.var_names = mod.var['gene_symbol'].astype(str)
+    mod.var_names = mod.var[par['gene_symbol']].astype(str)
     mod.var_names_make_unique()
 
     liana.mt.rank_aggregate(
