@@ -51,15 +51,15 @@ functionality:
       name: --image_type
       description: Type of capture area image (darkimage or colorizedimage).
     - type: boolean
-      name: "--reorient-images"
+      name: --reorient-images
       default: true
       description: Whether the pipeline should rotate and mirror the image to align the upright hourglass fiducial pattern in the top left corner.
     - type: boolean
-      name: "--no-bam"
+      name: --no-bam
       default: false
       description: Whether to generate a BAM file.
     - type: boolean
-      name: "--nosecondary"
+      name: --nosecondary
       default: false
       description: Disable secondary analysis, such as dimensionality reduction, clustering, spatial enrichment calculation (Moran's I) and visualization.
   resources:

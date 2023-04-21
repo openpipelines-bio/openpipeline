@@ -28,8 +28,8 @@ functionality:
       example: "/path/to/output"
       default: fastqs
       required: true
-    - name: "--reports"
-      type: file
+    - type: file
+      name: "--reports"
       direction: output
       required: false
       description: Reports directory
