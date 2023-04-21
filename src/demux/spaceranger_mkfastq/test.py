@@ -28,6 +28,7 @@ cmd_pars = [
     "--sample_sheet", sample_sheet,
     "--output", output
 ]
+
 if meta['cpus']:
     cmd_pars.extend(["---cpus", str(meta['cpus'])])
 if meta['memory_gb']:

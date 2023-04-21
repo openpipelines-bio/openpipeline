@@ -49,8 +49,7 @@ functionality:
       required: true
     - type: string
       name: --image_type
-      example: "darkimage" or "colorizedimage"
-      description: Type of capture area image.
+      description: Type of capture area image (darkimage or colorizedimage).
     - type: boolean
       name: "--reorient-images"
       default: true

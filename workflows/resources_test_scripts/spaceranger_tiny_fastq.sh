@@ -68,13 +68,13 @@ if [[ ! -f "${OUT}/reference/refdata-gex-mm10-2020-A" ]]; then
 fi
 
 # Run spaceranger_count
-if [[ ! -d "${OUT}/fastqs" ]]; then
-  mkdir -p "$OUT/fastqs"
+# if [[ ! -d "${OUT}/fastqs" ]]; then
+#   mkdir -p "$OUT/fastqs"
 
-  target/docker/mapping/spaceranger_count/spaceranger_count \
-    --input="${OUT}/fastqs" \
-    --reference="${OUT}/reference/refdata-gex-mm10-2020-A" \
-    --image="${OUT}/image/V1_Adult_Mouse_Brain_image.tif" \
-    --slide="V19L01-041" \
-    --area="C1"
-fi
+#   target/docker/mapping/spaceranger_count/spaceranger_count \
+#     --input="${OUT}/fastq" \
+#     --reference="${OUT}/reference/refdata-gex-mm10-2020-A" \
+#     --image="${OUT}/image/V1_Adult_Mouse_Brain_image.tif" \
+#     --slide="V19L01-041" \
+#     --area="C1"
+# fi
