@@ -48,7 +48,7 @@ functionality:
       type: string
       default: "gene_symbol"
       required: false
-      description: "Column name in var DataFrame in which gene symbol stored."
+      description: "Column name in var DataFrame in which gene symbol are stored."
     - name: "--expr_prop"
       type: double
       default: 0.1
