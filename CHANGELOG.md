@@ -18,6 +18,8 @@
 
 * `workflows/full_pipeline`: fix running pipeline with `-stub`.
 
+* Fixed an issue where passing a remote file URI (for example `http://` or `s3://`) as `param_list` caused `No such file` errors.
+
 ## MINOR CHANGES
 
 * `integrate/scarches`, `integrate/scvi` and `correction/cellbender_remove_background`: Update base container to `nvcr.io/nvidia/pytorch:22.12-py3`
