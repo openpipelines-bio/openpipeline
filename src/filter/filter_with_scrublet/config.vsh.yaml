@@ -102,6 +102,11 @@ functionality:
       default: "euclidean"
       description: The distance metric used for computing similarities.
 
+    - name: "--allow_automatic_threshold_detection_fail"
+      type: "boolean_true"
+      description: |
+        When scrublet fails to automatically determine the double score threshold, 
+        allow the component to continue and set the output columns to NA.
   resources:
     - type: python_script
       path: script.py

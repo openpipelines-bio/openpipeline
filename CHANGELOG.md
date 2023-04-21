@@ -10,6 +10,8 @@
 
 * Added `interpret/lianapy`: Enables the use of any combination of ligand-receptor methods and resources, and their consensus.
 
+* `filter/filter_with_scrublet`: Add `--allow_automatic_threshold_detection_fail`: when scrublet fails to detect doublets, the component will now put `NA` in the output columns.
+
 ## BUG FIXES
 
 * `transform/clr`: fix anndata object instead of matrix being stored as a layer in output `MuData`, resulting in `NoneTypeError` object after reading the `.layers` back in.
