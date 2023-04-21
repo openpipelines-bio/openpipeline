@@ -153,5 +153,5 @@ info:
   output: "/home/runner/work/openpipeline/openpipeline/target/nextflow/filter/remove_modality"
   executable: "/home/runner/work/openpipeline/openpipeline/target/nextflow/filter/remove_modality/remove_modality"
   viash_version: "0.7.1"
-  git_commit: "268af8b64fba6f605260b8074cba91b3ee3d1df4"
+  git_commit: "67008b5501c0533c571fff10077b657b0a7414e2"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"
