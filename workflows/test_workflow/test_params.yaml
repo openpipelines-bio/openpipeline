@@ -1,0 +1,4 @@
+- id: "foo"
+  input: "https://github.com/openpipelines-bio/openpipeline/blob/main/LICENSE"
+- id: "bar"
+  input: "https://github.com/openpipelines-bio/openpipeline/blob/main/CHANGELOG.md"

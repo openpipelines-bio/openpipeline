@@ -1,0 +1,17 @@
+functionality:
+  name: "test_workflow"  
+  argument_groups:
+    - name: Inputs
+      arguments:
+        - name: "--input"
+          type: file
+        - name: "--id"
+          type: string
+          description: ID of the sample.
+  resources:
+    - type: nextflow_script
+      path: main.nf
+  test_resources:
+    - type: nextflow_script
+      path: main.nf
+      entrypoint: test_wf

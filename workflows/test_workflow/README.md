@@ -1,0 +1,1 @@
+nextflow run . -main-script workflows/test_workflow/main.nf -profile docker,no_publish -c workflows/utils/labels_ci.config --param_list "https://raw.githubusercontent.com/openpipelines-bio/openpipeline/test_remote_uri/workflows/test_workflow/test_params.yaml"
