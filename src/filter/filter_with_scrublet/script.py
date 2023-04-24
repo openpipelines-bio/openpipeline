@@ -14,10 +14,11 @@ logger.addHandler(console_handler)
 
 ### VIASH START
 par = {
-    # "input": "resources_test/pbmc_1k_protein_v3/pbmc_1k_protein_v3_filtered_feature_bc_matrix.h5mu",
-    "input": "output/pbmc_1k_protein_v3_filtered_feature_bc_matrix.h5mu.h5mu",
-    "modality": [ "rna" ],
+    "input": "resources_test/pbmc_1k_protein_v3/pbmc_1k_protein_v3_filtered_feature_bc_matrix.h5mu",
+    # "input": "output/pbmc_1k_protein_v3_filtered_feature_bc_matrix.h5mu.h5mu",
+    "modality": "rna",
     "output": "output.h5mu",
+    "output_compression": "gzip",
     "obs_name_filter": "filter_with_scrublet",
     # "expected_doublet_rate": 0.05,
     "min_counts": 2,
@@ -58,6 +59,7 @@ try:
 except TypeError:
     if par['allow_automatic_threshold_detection_fail']:
         # Scrublet might not throw an error and return None if it fails to detect doublets...
+        logger.info("\tScrublet could not automatically detect the doublet score threshold. Setting output columns to NA.")
         keep_cells = np.nan
         doublet_scores = np.nan
     else:

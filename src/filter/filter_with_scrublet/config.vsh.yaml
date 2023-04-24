@@ -112,7 +112,7 @@ functionality:
       path: script.py
   test_resources:
     - type: python_script
-      path: run_test.py
+      path: test.py
     - path: ../../../resources_test/pbmc_1k_protein_v3
 platforms:
   - type: docker
@@ -126,6 +126,10 @@ platforms:
           - mudata~=0.2.0
           - anndata~=0.8.0
           - annoy==1.16.3
+    test_setup:
+      - type: python
+        packages:
+         - viashpy
   - type: nextflow
     directives:
       label: highcpu
