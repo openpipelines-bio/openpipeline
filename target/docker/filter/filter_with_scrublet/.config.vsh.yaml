@@ -175,6 +175,14 @@ functionality:
     multiple: false
     multiple_sep: ":"
     dest: "par"
+  - type: "boolean_true"
+    name: "--allow_automatic_threshold_detection_fail"
+    alternatives: []
+    description: "When scrublet fails to automatically determine the double score\
+      \ threshold, \nallow the component to continue and set the output columns to\
+      \ NA.\n"
+    direction: "input"
+    dest: "par"
   argument_groups: []
   resources:
   - type: "python_script"
@@ -192,7 +200,7 @@ functionality:
     \  ~6.9% ~14,400 ~9,000\n  ~7.6% ~16,000 ~10,000\n"
   test_resources:
   - type: "python_script"
-    path: "run_test.py"
+    path: "test.py"
     is_executable: true
   - type: "file"
     path: "../../../resources_test/pbmc_1k_protein_v3"
@@ -234,7 +242,22 @@ platforms:
     url: []
     script: []
     upgrade: true
-  test_setup: []
+  test_setup:
+  - type: "python"
+    user: false
+    packages:
+    - "viashpy"
+    pip: []
+    pypi: []
+    git: []
+    github: []
+    gitlab: []
+    mercurial: []
+    svn: []
+    bazaar: []
+    url: []
+    script: []
+    upgrade: true
 - type: "nextflow"
   id: "nextflow"
   variant: "vdsl3"
@@ -262,5 +285,5 @@ info:
   output: "/home/runner/work/openpipeline/openpipeline/target/docker/filter/filter_with_scrublet"
   executable: "/home/runner/work/openpipeline/openpipeline/target/docker/filter/filter_with_scrublet/filter_with_scrublet"
   viash_version: "0.7.1"
-  git_commit: "90e49ca27a56eb98517715ddcea94834a511ea51"
+  git_commit: "762575a8f5e52add5ed46f45d4895000873acd8e"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"

@@ -211,6 +211,13 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
         "multiple" : false,
         "multiple_sep" : ":",
         "dest" : "par"
+      },
+      {
+        "type" : "boolean_true",
+        "name" : "--allow_automatic_threshold_detection_fail",
+        "description" : "When scrublet fails to automatically determine the double score threshold, \nallow the component to continue and set the output columns to NA.\n",
+        "direction" : "input",
+        "dest" : "par"
       }
     ],
     "resources" : [
@@ -225,7 +232,7 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
     "test_resources" : [
       {
         "type" : "python_script",
-        "path" : "run_test.py",
+        "path" : "test.py",
         "is_executable" : true,
         "parent" : "file:/home/runner/work/openpipeline/openpipeline/src/filter/filter_with_scrublet/config.vsh.yaml"
       },
@@ -266,6 +273,16 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
           ],
           "upgrade" : true
         }
+      ],
+      "test_setup" : [
+        {
+          "type" : "python",
+          "user" : false,
+          "packages" : [
+            "viashpy"
+          ],
+          "upgrade" : true
+        }
       ]
     },
     {
@@ -292,7 +309,7 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
     "config" : "/home/runner/work/openpipeline/openpipeline/src/filter/filter_with_scrublet/config.vsh.yaml",
     "platform" : "nextflow",
     "viash_version" : "0.7.1",
-    "git_commit" : "90e49ca27a56eb98517715ddcea94834a511ea51",
+    "git_commit" : "762575a8f5e52add5ed46f45d4895000873acd8e",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))
@@ -306,6 +323,7 @@ import mudata as mu
 import numpy as np
 import logging
 from sys import stdout
+import pandas as pd 
 
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
@@ -328,7 +346,8 @@ par = {
   'min_cells': $( if [ ! -z ${VIASH_PAR_MIN_CELLS+x} ]; then echo "int(r'${VIASH_PAR_MIN_CELLS//\\'/\\'\\"\\'\\"r\\'}')"; else echo None; fi ),
   'min_gene_variablity_percent': $( if [ ! -z ${VIASH_PAR_MIN_GENE_VARIABLITY_PERCENT+x} ]; then echo "float(r'${VIASH_PAR_MIN_GENE_VARIABLITY_PERCENT//\\'/\\'\\"\\'\\"r\\'}')"; else echo None; fi ),
   'num_pca_components': $( if [ ! -z ${VIASH_PAR_NUM_PCA_COMPONENTS+x} ]; then echo "int(r'${VIASH_PAR_NUM_PCA_COMPONENTS//\\'/\\'\\"\\'\\"r\\'}')"; else echo None; fi ),
-  'distance_metric': $( if [ ! -z ${VIASH_PAR_DISTANCE_METRIC+x} ]; then echo "r'${VIASH_PAR_DISTANCE_METRIC//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi )
+  'distance_metric': $( if [ ! -z ${VIASH_PAR_DISTANCE_METRIC+x} ]; then echo "r'${VIASH_PAR_DISTANCE_METRIC//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
+  'allow_automatic_threshold_detection_fail': $( if [ ! -z ${VIASH_PAR_ALLOW_AUTOMATIC_THRESHOLD_DETECTION_FAIL+x} ]; then echo "r'${VIASH_PAR_ALLOW_AUTOMATIC_THRESHOLD_DETECTION_FAIL//\\'/\\'\\"\\'\\"r\\'}'.lower() == 'true'"; else echo None; fi )
 }
 meta = {
   'functionality_name': $( if [ ! -z ${VIASH_META_FUNCTIONALITY_NAME+x} ]; then echo "r'${VIASH_META_FUNCTIONALITY_NAME//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
@@ -365,16 +384,33 @@ doublet_scores, predicted_doublets = scrub.scrub_doublets(
     distance_metric=par["distance_metric"],
     use_approx_neighbors=False
 )
-keep_cells = np.invert(predicted_doublets)
+
+try:
+    keep_cells = np.invert(predicted_doublets)
+except TypeError:
+    if par['allow_automatic_threshold_detection_fail']:
+        # Scrublet might not throw an error and return None if it fails to detect doublets...
+        logger.info("\\\\tScrublet could not automatically detect the doublet score threshold. Setting output columns to NA.")
+        keep_cells = np.nan
+        doublet_scores = np.nan
+    else:
+        raise RuntimeError("Scrublet could not automatically detect the doublet score threshold. "
+                           "--allow_automatic_threshold_detection_fail can be used to ignore this failure "
+                           "and set the corresponding output columns to NA.")
 
 logger.info("\\\\tStoring output into .obs")
 if par["obs_name_doublet_score"] is not None:
     data.obs[par["obs_name_doublet_score"]] = doublet_scores
+    data.obs[par["obs_name_doublet_score"]] = data.obs[par["obs_name_doublet_score"]].astype("float64")
 if par["obs_name_filter"] is not None:
     data.obs[par["obs_name_filter"]] = keep_cells
+    data.obs[par["obs_name_filter"]] = data.obs[par["obs_name_filter"]].astype(pd.BooleanDtype())
 
 if par["do_subset"]:
-    mdata.mod[mod] = data[keep_cells, :]
+    if pd.api.types.is_scalar(keep_cells) and pd.isna(keep_cells):
+        logger.warning("Not subsetting beacuse doublets were not predicted")
+    else: 
+        mdata.mod[mod] = data[keep_cells, :]
 
 logger.info("Writing h5mu to %s", par["output"])
 mdata.write_h5mu(par["output"], compression=par["output_compression"])
