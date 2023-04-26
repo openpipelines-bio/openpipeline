@@ -12,10 +12,6 @@
 
 * `filter/filter_with_scrublet`: Add `--allow_automatic_threshold_detection_fail`: when scrublet fails to detect doublets, the component will now put `NA` in the output columns.
 
-* `workflows/full_pipeline`: Allow not setting the sample ID to the .obs column of the MuData object.
-
-* `workflows/rna_multisample`: Add the ID of the sample to the .obs column of the MuData object.
-
 ## BUG FIXES
 
 * `transform/clr`: fix anndata object instead of matrix being stored as a layer in output `MuData`, resulting in `NoneTypeError` object after reading the `.layers` back in.
