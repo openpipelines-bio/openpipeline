@@ -59,7 +59,7 @@ workflow run_wf {
     )
     | getWorkflowArguments(key: "add_id")
     
-    add_id_ch = parsed_arguments_ch
+  add_id_ch = parsed_arguments_ch
     | filter{ it[1].add_id_to_obs }
     // The add_id processes will be executed several times
     // Before that, we must make the ID (first element of list)
@@ -94,12 +94,12 @@ workflow run_wf {
 
     // Do nothing for the samples that do not need to have their ID 
     // added to the MuData object
-    no_id_added_ch = parsed_arguments_ch
+  no_id_added_ch = parsed_arguments_ch
     | filter{ ! (it[1].add_id_to_obs) }
 
-    samples_with_id_ch = add_id_ch.mix(no_id_added_ch)
+  samples_with_id_ch = add_id_ch.mix(no_id_added_ch)
 
-    output_ch = samples_with_id_ch
+  output_ch = samples_with_id_ch
     | getWorkflowArguments(key: "concat")
     | concat
     | getWorkflowArguments(key: "normalize_total")
