@@ -93,7 +93,7 @@ jobs:
           }
         ]' ${{ steps.ns_list_components.outputs.output_file }} )" >> $GITHUB_OUTPUT
 
-        echo "workflows=$(jq -c '[ .[] | 
+        echo "workflows=$(jq -c '[ .[] | select(.entrypoint) |
           { 
             "name": (.functionality.namespace + "/" + .functionality.name),
             "main_script": ((.info.config | capture("^(?<dir>.*\/)").dir) + "/" + (.functionality.test_resources | map(select(.type == "nextflow_script")) | unique | .[].path )),
