@@ -39,8 +39,8 @@ workflow run_wf {
         "rna_singlesample_args": [
           "min_counts": "rna_min_counts",
           "max_counts": "rna_max_counts",
-          "min_genes_per_cell": "rna_min_vars_per_cell",
-          "max_genes_per_cell": "rna_max_vars_per_cell",
+          "min_genes_per_cell": "rna_min_genes_per_cell",
+          "max_genes_per_cell": "rna_max_genes_per_cell",
           "min_cells_per_gene": "rna_min_cells_per_gene",
           "min_fraction_mito": "rna_min_fraction_mito",
           "max_fraction_mito": "rna_max_fraction_mito",
@@ -48,8 +48,8 @@ workflow run_wf {
         "prot_singlesample_args": [
           "min_counts": "prot_min_counts",
           "max_counts": "prot_max_counts",
-          "min_proteins_per_cell": "prot_min_vars_per_cell",
-          "max_proteins_per_cell": "prot_max_vars_per_cell",
+          "min_proteins_per_cell": "prot_min_proteins_per_cell",
+          "max_proteins_per_cell": "prot_max_proteins_per_cell",
           "min_cells_per_protein": "prot_min_cells_per_protein",
           "min_fraction_mito": "prot_min_fraction_mito",
           "max_fraction_mito": "prot_max_fraction_mito",
