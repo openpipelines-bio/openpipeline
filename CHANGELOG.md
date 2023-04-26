@@ -1,12 +1,4 @@
-# openpipelines 0.8.0 (unreleased)
-
-## BREAKING CHANGES
-
-* `workflows/full_pipeline`: Renamed inconsistencies in argument naming (#372):
-  - `rna_min_vars_per_cell` was renamed to `rna_min_genes_per_cell`
-  - `rna_max_vars_per_cell` was renamed to `rna_max_genes_per_cell`
-  - `prot_min_vars_per_cell` was renamed to `prot_min_proteins_per_cell`
-  - `prot_max_vars_per_cell` was renamed to `prot_max_proteins_per_cell`
+# openpipelines 0.7.2
 
 ## NEW FUNCTIONALITY
 
@@ -20,6 +12,10 @@
 
 * `filter/filter_with_scrublet`: Add `--allow_automatic_threshold_detection_fail`: when scrublet fails to detect doublets, the component will now put `NA` in the output columns.
 
+* `workflows/full_pipeline`: Allow not setting the sample ID to the .obs column of the MuData object.
+
+* `workflows/rna_multisample`: Add the ID of the sample to the .obs column of the MuData object.
+
 ## BUG FIXES
 
 * `transform/clr`: fix anndata object instead of matrix being stored as a layer in output `MuData`, resulting in `NoneTypeError` object after reading the `.layers` back in.
@@ -29,8 +25,6 @@
 * `workflows/full_pipeline`: fix running pipeline with `-stub`.
 
 * Fixed an issue where passing a remote file URI (for example `http://` or `s3://`) as `param_list` caused `No such file` errors.
-
-* `workflows/full_pipeline`: Fix incorrectly named filtering arguments (#372).
 
 ## MINOR CHANGES
 
