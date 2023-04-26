@@ -1,4 +1,4 @@
-# openpipelines 0.7.2
+# openpipelines 0.7.2 (unreleased)
 
 ## NEW FUNCTIONALITY
 
@@ -21,6 +21,8 @@
 * `workflows/full_pipeline`: fix running pipeline with `-stub`.
 
 * Fixed an issue where passing a remote file URI (for example `http://` or `s3://`) as `param_list` caused `No such file` errors.
+
+* `workflows/full_pipeline`: Fix incorrectly named filtering arguments (#372).
 
 ## MINOR CHANGES
 
