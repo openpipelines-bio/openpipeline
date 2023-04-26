@@ -1,4 +1,12 @@
-# openpipelines 0.7.2 (unreleased)
+# openpipelines 0.8.0 (unreleased)
+
+## BREAKING CHANGES
+
+* `workflows/full_pipeline`: Renamed inconsistencies in argument naming (#372):
+  - `rna_min_vars_per_cell` was renamed to `rna_min_genes_per_cell`
+  - `rna_max_vars_per_cell` was renamed to `rna_max_genes_per_cell`
+  - `prot_min_vars_per_cell` was renamed to `prot_min_proteins_per_cell`
+  - `prot_max_vars_per_cell` was renamed to `prot_max_proteins_per_cell`
 
 ## NEW FUNCTIONALITY
 
