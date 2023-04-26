@@ -31,7 +31,8 @@ class TestScaling(TestCase):
         """
         self._run_and_check_output([
             "--input", input_file,
-            "--output", "scaled.h5mu"])
+            "--output", "scaled.h5mu",
+            "--ouput_compression", "gzip"])
 
         self.assertTrue(Path("scaled.h5mu").is_file())
         output_data = read_h5mu("scaled.h5mu")

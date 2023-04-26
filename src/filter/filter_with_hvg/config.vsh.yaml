@@ -40,6 +40,13 @@ functionality:
       direction: output
       example: output.h5mu
 
+    - name: "--output_compression"
+      type: string
+      description: The compression format to be used on the output h5mu object.
+      choices: ["gzip", "lzf"]
+      required: false
+      example: "gzip"
+  
     - name: "--var_name_filter"
       type: string
       default: "filter_with_hvg"

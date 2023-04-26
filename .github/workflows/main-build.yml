@@ -1,4 +1,5 @@
 name: main build
+concurrency: main_build
 
 on:
   push:
@@ -50,6 +51,7 @@ jobs:
         github_token: ${{ secrets.GITHUB_TOKEN }}
         publish_dir: .
         publish_branch: main_build
+        exclude_assets: ''
 
     - id: ns_list
       uses: viash-io/viash-actions/ns-list@v3

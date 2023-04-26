@@ -129,6 +129,22 @@ functionality:
           multiple_sep: ','
           required: false
           default: [50, 100, 200, 500]
+    - name: "Harmony integration options"
+      arguments:
+        - name: --rna_harmony_theta
+          description: |
+            Diversity clustering penalty parameter. Specify for each variable in group.by.vars. 
+            theta=0 does not encourage any diversity. Larger values of theta
+            result in more diverse clusters."
+          type: double
+          default: 2
+          multiple: true
+    - name: Leiden Clustering Options
+      arguments:
+        - name: "--leiden_resolution"
+          type: double
+          description: Control the coarseness of the clustering. Higher values lead to more clusters.
+          default: 1
   resources:
     - type: nextflow_script
       path: main.nf
@@ -136,3 +152,11 @@ functionality:
     - type: nextflow_script
       path: main.nf
       entrypoint: test_wf
+    - type: nextflow_script
+      path: main.nf
+      entrypoint: test_wf2
+    - type: nextflow_script
+      path: main.nf
+      entrypoint: test_wf3
+    - path: ../../../resources_test/concat_test_data
+    - path: ../../../resources_test/pbmc_1k_protein_v3

@@ -42,6 +42,7 @@ jobs:
         github_token: ${{ secrets.GITHUB_TOKEN }}
         publish_dir: .
         publish_branch: integration_build
+        exclude-assets: ''
 
     - id: ns_list_components
       uses: viash-io/viash-actions/ns-list@v3

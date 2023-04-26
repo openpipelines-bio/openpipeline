@@ -29,7 +29,8 @@ class TestUMAP(TestCase):
                 "--input", input,
                 "--output",  "output.h5mu",
                 "--obsm_output", "X_foo",
-                "--num_components", "26"
+                "--num_components", "26",
+                "--output_compression", "gzip"
             ])
         self.assertTrue(Path("output.h5mu").is_file(), msg="No output was created.")
         data = mu.read_h5mu("output.h5mu")

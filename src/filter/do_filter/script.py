@@ -55,4 +55,4 @@ for var_name in par["var_filter"]:
 mdata.mod[mod] = mdata.mod[mod][obs_filt, var_filt].copy()
 
 logger.info("Writing h5mu to file %s.", par["output"])
-mdata.write_h5mu(par["output"], compression="gzip")
+mdata.write_h5mu(par["output"], compression=par["output_compression"])

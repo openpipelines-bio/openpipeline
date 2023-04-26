@@ -30,7 +30,8 @@ class TestHarmonyPy(unittest.TestCase):
             "--obsm_input", "X_pca",
             "--obsm_output", "X_pca_int",
             "--obs_covariates", "leiden",
-            "--output", "output.h5mu"])
+            "--output", "output.h5mu",
+            "--output_compression", "gzip"])
         self.assertTrue(Path("output.h5mu").is_file())
         output_data = mudata.read_h5mu("output.h5mu")
         np.testing.assert_array_equal(output_data.mod['rna'].X.data, input_data.mod['rna'].X.data)

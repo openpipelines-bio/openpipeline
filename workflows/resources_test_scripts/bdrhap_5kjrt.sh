@@ -76,7 +76,7 @@ if [[ ! -f "$mapping_dir/12WTA_S1_L432_R1_001_chr1.fastq" ]]; then
   samtools view -F 260 "$mapping_dir/Aligned.out.sam" > "$mapping_dir/primary_aligned_reads.sam"
   echo "cut"
   cut -f 1 "$mapping_dir/primary_aligned_reads.sam" | sort | uniq > "$mapping_dir/mapped_reads.txt"
-  head -1000000 "$mapping_dir/mapped_reads.txt" > "$mapping_dir/mapped_reads_subset.txt"
+  head -500000 "$mapping_dir/mapped_reads.txt" > "$mapping_dir/mapped_reads_subset.txt"
   echo "seqkit"
   seqkit grep --threads "$n_threads" -f "$mapping_dir/mapped_reads_subset.txt" "$tar_dir/12WTA_S1_L432_R1_001.fastq.gz" > "$mapping_dir/12WTA_S1_L432_R1_001_chr1.fastq"
   seqkit grep --threads "$n_threads" -f "$mapping_dir/mapped_reads_subset.txt" "$tar_dir/12WTA_S1_L432_R2_001.fastq.gz" > "$mapping_dir/12WTA_S1_L432_R2_001_chr1.fastq"
@@ -99,12 +99,12 @@ fi
 abc_r1_file="$raw_dir/12ABC_S1_L432_R1_001_subset.fastq.gz"
 if [[ ! -f "$abc_r1_file" ]]; then
   echo "> Processing `basename $abc_r1_file`"
-  seqkit head -n 1000000 "$tar_dir/12ABC_S1_L432_R1_001.fastq.gz" | gzip > "$abc_r1_file"
+  seqkit head -n 500000 "$tar_dir/12ABC_S1_L432_R1_001.fastq.gz" | gzip > "$abc_r1_file"
 fi
 abc_r2_file="$raw_dir/12ABC_S1_L432_R2_001_subset.fastq.gz"
 if [[ ! -f "$abc_r2_file" ]]; then
   echo "> Processing `basename $abc_r2_file`"
-  seqkit head -n 1000000 "$tar_dir/12ABC_S1_L432_R2_001.fastq.gz" | gzip > "$abc_r2_file"
+  seqkit head -n 500000 "$tar_dir/12ABC_S1_L432_R2_001.fastq.gz" | gzip > "$abc_r2_file"
 fi
 wta_r1_file="$raw_dir/12WTA_S1_L432_R1_001_subset.fastq.gz"
 if [[ ! -f "$wta_r1_file" ]]; then

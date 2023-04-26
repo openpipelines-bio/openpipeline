@@ -25,7 +25,10 @@ par = {
     "reduce_lr_on_plateau": True,
     "lr_factor": 0.6,
     "lr_patience": 30,
-    "epochs": 500}
+    "max_epochs": 500,
+    "model_output": "test/",
+    "output_compression": "gzip",
+    }
 ### VIASH END
 
 
@@ -84,7 +87,9 @@ def main():
     adata.obsm[par['obsm_output']] = vae_uns.get_latent_representation()
 
     mdata.mod[par['modality']] = adata
-    mdata.write_h5mu(par['output'].strip(), compression="gzip")
+    mdata.write_h5mu(par['output'].strip(), compression=par["output_compression"])
+    if par["model_output"]:
+        vae_uns.save(par["model_output"], overwrite=True)
 
 if __name__ == "__main__":
     main()

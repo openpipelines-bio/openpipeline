@@ -33,7 +33,8 @@ class TestDeleteLayer(TestCase):
                 "--input", tempfile.name,
                 "--modality", "rna",
                 "--layer", "test",
-                "--output", "deleted_layer.h5mu"])
+                "--output", "deleted_layer.h5mu",
+                "--output_compression", "gzip"])
         self.assertTrue(Path("deleted_layer.h5mu").is_file())
         output_data = read_h5mu('deleted_layer.h5mu')
         self.assertNotIn('test', output_data.mod['rna'].layers.keys())
