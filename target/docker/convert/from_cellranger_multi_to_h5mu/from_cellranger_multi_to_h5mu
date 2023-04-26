@@ -421,9 +421,9 @@ RUN pip install --upgrade pip && \
 
 LABEL org.opencontainers.image.authors="Dries Schaumont"
 LABEL org.opencontainers.image.description="Companion container for running component convert from_cellranger_multi_to_h5mu"
-LABEL org.opencontainers.image.created="2023-04-25T10:00:27Z"
+LABEL org.opencontainers.image.created="2023-04-26T08:10:46Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="03992a90c2e242f327be4818c7d3d2eae4a65eb9"
+LABEL org.opencontainers.image.revision="3f2beee0f3218d6a2e6b93c5cc76ca83a7e7d96e"
 LABEL org.opencontainers.image.version="main_build"
 VIASHDOCKER
 }
