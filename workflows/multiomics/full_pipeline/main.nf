@@ -48,9 +48,9 @@ workflow run_wf {
         "prot_singlesample_args": [
           "min_counts": "prot_min_counts",
           "max_counts": "prot_max_counts",
-          "min_genes_per_cell": "prot_min_vars_per_cell",
-          "max_genes_per_cell": "prot_max_vars_per_cell",
-          "min_cells_per_gene": "prot_min_cells_per_protein",
+          "min_proteins_per_cell": "prot_min_vars_per_cell",
+          "max_proteins_per_cell": "prot_max_vars_per_cell",
+          "min_cells_per_protein": "prot_min_cells_per_protein",
           "min_fraction_mito": "prot_min_fraction_mito",
           "max_fraction_mito": "prot_max_fraction_mito",
         ],

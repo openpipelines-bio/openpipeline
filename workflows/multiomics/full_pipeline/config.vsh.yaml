@@ -46,10 +46,10 @@ functionality:
           type: integer
           description: Maximum of non-zero values per cell.
 
-        - name: "--min_cells_per_protein"
+        - name: "--rna_min_cells_per_gene"
           example: 3
           type: integer
-          description: Minimum of non-zero values per antibody.
+          description: Minimum of non-zero values per gene.
 
         - name: "--rna_min_fraction_mito"
           example: 0
