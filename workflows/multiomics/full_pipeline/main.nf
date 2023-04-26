@@ -39,8 +39,8 @@ workflow run_wf {
         "rna_singlesample_args": [
           "min_counts": "rna_min_counts",
           "max_counts": "rna_max_counts",
-          "min_genes_per_cell": "rna_min_vars_per_cell",
-          "max_genes_per_cell": "rna_max_vars_per_cell",
+          "min_genes_per_cell": "rna_min_genes_per_cell",
+          "max_genes_per_cell": "rna_max_genes_per_cell",
           "min_cells_per_gene": "rna_min_cells_per_gene",
           "min_fraction_mito": "rna_min_fraction_mito",
           "max_fraction_mito": "rna_max_fraction_mito",
@@ -48,9 +48,9 @@ workflow run_wf {
         "prot_singlesample_args": [
           "min_counts": "prot_min_counts",
           "max_counts": "prot_max_counts",
-          "min_genes_per_cell": "prot_min_vars_per_cell",
-          "max_genes_per_cell": "prot_max_vars_per_cell",
-          "min_cells_per_gene": "prot_min_cells_per_protein",
+          "min_proteins_per_cell": "prot_min_proteins_per_cell",
+          "max_proteins_per_cell": "prot_max_proteins_per_cell",
+          "min_cells_per_protein": "prot_min_cells_per_protein",
           "min_fraction_mito": "prot_min_fraction_mito",
           "max_fraction_mito": "prot_max_fraction_mito",
         ],
@@ -316,7 +316,24 @@ workflow test_wf2 {
         [
           id: "pbmc",
           input: params.resources_test + "/pbmc_1k_protein_v3/pbmc_1k_protein_v3_filtered_feature_bc_matrix.h5mu",
-          publish_dir: "test2/"
+        ],
+        [
+          id: "pbmc_with_more_args",
+          input: params.resources_test + "/pbmc_1k_protein_v3/pbmc_1k_protein_v3_filtered_feature_bc_matrix.h5mu",
+          rna_min_counts: 1,
+          rna_max_counts: 1000000,
+          rna_min_genes_per_cell: 1,
+          rna_max_genes_per_cell: 1000000,
+          rna_min_cells_per_gene: 1,
+          rna_min_fraction_mito: 0,
+          rna_max_fraction_mito: 1,
+          prot_min_counts: 1,
+          prot_max_counts: 1000000,
+          prot_min_proteins_per_cell: 1,
+          prot_max_proteins_per_cell: 1000000,
+          prot_min_cells_per_protein: 1,
+          prot_min_fraction_mito: 0,
+          prot_max_fraction_mito: 1
         ],
       ],
       obs_covariates: "sample_id",
@@ -335,7 +352,7 @@ workflow test_wf2 {
       }
       | toSortedList()
       | map { output_list ->
-        assert output_list.size() == 1 : "output channel should contain one event"
+        assert output_list.size() == 2 : "output channel should contain one event"
         assert output_list[0][0] == "merged" : "Output ID should be 'merged'"
       }
 }
