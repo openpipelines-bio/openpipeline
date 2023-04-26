@@ -11,6 +11,7 @@ par = {
     "output_compression": "gzip",
     "modality": "rna",
     "layer": None,
+    "gene_symbol": "gene_symbol",
     "groupby": "bulk_labels",
     "resource_name": "consensus",
     "expr_prop": 0.1,
@@ -28,14 +29,14 @@ def main():
     mdata = mudata.read(par['input'].strip())
     mod = mdata.mod[par['modality']]
 
-    # TODO: Remove when grouping labels exist
-    # Add grouping labels
-    foo = mod.obsm.to_df().iloc[:, 0]
-    mod.obs[par['groupby']] = np.sign(foo).astype('category')
+    # Add dummy grouping labels when they do not exist
+    if par['groupby'] not in mod.obs:
+        foo = mod.obsm.to_df().iloc[:, 0]
+        mod.obs[par['groupby']] = np.sign(foo).astype('category')
 
     # Solve gene labels
     orig_gene_label = mod.var.index
-    mod.var_names = mod.var['gene_symbol'].astype(str)
+    mod.var_names = mod.var[par['gene_symbol']].astype(str)
     mod.var_names_make_unique()
 
     liana.mt.rank_aggregate(

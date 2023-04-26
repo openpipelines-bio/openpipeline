@@ -10,6 +10,8 @@
 
 * Added `interpret/lianapy`: Enables the use of any combination of ligand-receptor methods and resources, and their consensus.
 
+* `filter/filter_with_scrublet`: Add `--allow_automatic_threshold_detection_fail`: when scrublet fails to detect doublets, the component will now put `NA` in the output columns.
+
 * `workflows/full_pipeline`: Allow not setting the sample ID to the .obs column of the MuData object.
 
 * `workflows/rna_multisample`: Add the ID of the sample to the .obs column of the MuData object.
@@ -18,7 +20,11 @@
 
 * `transform/clr`: fix anndata object instead of matrix being stored as a layer in output `MuData`, resulting in `NoneTypeError` object after reading the `.layers` back in.
 
-* `dataflow/concat`: fixed a bug where boolean values were cast to their string representation.
+* `dataflow/concat` and `dataflow/merge`: fixed a bug where boolean values were cast to their string representation.
+
+* `workflows/full_pipeline`: fix running pipeline with `-stub`.
+
+* Fixed an issue where passing a remote file URI (for example `http://` or `s3://`) as `param_list` caused `No such file` errors.
 
 ## MINOR CHANGES
 
@@ -28,9 +34,9 @@
 
 * `integrate/scvi`: use cuda enabled `jax` install.
 
-* `dataflow/concat`: bump pandas to 2.0.0.
+* `convert/from_cellranger_multi_to_h5mu`, `dataflow/concat` and `dataflow/merge`: update pandas to 2.0.0
 
-* `dataflow/concat`: Boolean and integer columns are now represented by the `BooleanArray` and `IntegerArray` dtypes in order to allow storing `NA` values.
+* `dataflow/concat` and `dataflow/merge`: Boolean and integer columns are now represented by the `BooleanArray` and `IntegerArray` dtypes in order to allow storing `NA` values.
 
 ## NEW FUNCTIONALITY
 

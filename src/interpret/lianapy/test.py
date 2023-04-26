@@ -31,6 +31,7 @@ class TestLianaPy(unittest.TestCase):
             # "--layer", "log_normalized",
             "--groupby", "bulk_labels",
             "--resource_name", "consensus",
+            "--gene_symbol", "gene_symbol",
             "--expr_prop", "0.1",
             "--min_cells", "5",
             "--aggregate_method", "rra",

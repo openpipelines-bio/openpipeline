@@ -12,11 +12,11 @@ include { run_wf as rna_multisample } from workflowDir + '/multiomics/rna_multis
 include { run_wf as prot_singlesample } from workflowDir + '/multiomics/prot_singlesample/main.nf'
 include { run_wf as prot_multisample } from workflowDir + '/multiomics/prot_multisample/main.nf'
 include { run_wf as integration } from workflowDir + '/multiomics/integration/main.nf'
+include { splitStub } from workflowDir + '/multiomics/full_pipeline/split_stub.nf'
 
 include { readConfig; helpMessage; readCsv; preprocessInputs; channelFromParams } from workflowDir + "/utils/WorkflowHelper.nf"
 include {  setWorkflowArguments; getWorkflowArguments; passthroughMap as pmap; passthroughFlatMap as pFlatMap } from workflowDir + "/utils/DataflowHelper.nf"
 config = readConfig("$workflowDir/multiomics/full_pipeline/config.vsh.yaml")
-
 
 workflow {
   helpMessage(config)
@@ -31,6 +31,7 @@ workflow run_wf {
   input_ch
 
   main:
+
   parsed_arguments_ch = input_ch
     | preprocessInputs("config": config)
     | setWorkflowArguments (
@@ -73,7 +74,7 @@ workflow run_wf {
     )
     | getWorkflowArguments(key: "add_id_args")
 
-    add_id_ch = parsed_arguments_ch
+  add_id_ch = parsed_arguments_ch
     | filter{ it[1].add_id_to_obs }
     // add ids 
     | pmap { id, data ->
@@ -82,16 +83,26 @@ workflow run_wf {
     }
     | add_id
 
-    no_id_added_ch = parsed_arguments_ch
+  no_id_added_ch = parsed_arguments_ch
     | filter{ ! (it[1].add_id_to_obs) }
 
-    samples_with_id_ch = add_id_ch.mix(no_id_added_ch)
+  samples_with_id_ch = add_id_ch.mix(no_id_added_ch)
 
-    start_ch = samples_with_id_ch
+  start_ch = samples_with_id_ch
     // split by modality
     | getWorkflowArguments(key: "split_modalities_args")
+
+  split_ch = add_id_ch
+    | filter{!workflow.stubRun}
     | split_modalities
 
+  split_stub_ch = add_id_ch
+    | filter{workflow.stubRun}
+    | map {it -> [it[0], it[1].input, it[2]]}
+    | splitStub
+    | map {it -> [it[0], ["output": it[1], "output_types": it[2]], it[3]]}
+
+  start_ch = split_ch.concat(split_stub_ch)
     // combine output types csv
     | pFlatMap {id, data, passthrough ->
       def outputDir = data.output
@@ -106,48 +117,48 @@ workflow run_wf {
       }
     }
 
-    modality_processors = [
-      ["id": "rna", "singlesample": rna_singlesample, "multisample": rna_multisample],
-      ["id": "prot", "singlesample": prot_singlesample, "multisample": prot_multisample]
-    ]
-    known_modalities = modality_processors.collect{it.id}
+  modality_processors = [
+    ["id": "rna", "singlesample": rna_singlesample, "multisample": rna_multisample],
+    ["id": "prot", "singlesample": prot_singlesample, "multisample": prot_multisample]
+  ]
+  known_modalities = modality_processors.collect{it.id}
 
-    mod_chs = modality_processors.collect{ modality_processor ->
-      // Select the files corresponding to the currently selected modality
-      mod_ch = start_ch
-        | filter{ it[3].modality == modality_processor.id }
-        | getWorkflowArguments(key: ("$modality_processor.id" + "_singlesample_args").toString() )
-        | view { "single-sample-input-$modality_processor.id: $it" }
-      // Run the single-sample processing if defined
-      ss_ch = (modality_processor.singlesample ? \
-               mod_ch | modality_processor.singlesample : \
-               mod_ch)
-      
-      // Reformat arguments to serve to the multisample processing
-      input_ms_ch = ss_ch
-        | view { "single-sample-output-$modality_processor.id: $it" }
-        | toSortedList{ a, b -> b[0] <=> a[0] }
-        | filter { it.size() != 0 } // filter when event is empty
-        | map{ list -> 
-          def new_data = ["sample_id": list.collect{it[0]}, "input": list.collect{it[1]}]
-          ["combined_$modality_processor.id", new_data] + list[0].drop(2)
-        }
-        | getWorkflowArguments(key: ("$modality_processor.id" + "_multisample_args").toString() )
-        | view { "input multichannel-$modality_processor.id: $it" }
-      
-      // Run the multisample processing if defined, otherwise just concatenate samples together
-      out_ch = (
-        modality_processor.multisample ? \
-          input_ms_ch | modality_processor.multisample : \
-          input_ms_ch | concat.run(
-            key: "concat_" + modality_processor.id,
-            renameKeys: [input_id: "sample_id"],
-            // The Ids have already been added in this pipeline
-            args: [ add_id_to_obs: false ] 
-          )
-      )
-      return out_ch
-    }
+  mod_chs = modality_processors.collect{ modality_processor ->
+    // Select the files corresponding to the currently selected modality
+    mod_ch = start_ch
+      | filter{ it[3].modality == modality_processor.id }
+      | getWorkflowArguments(key: ("$modality_processor.id" + "_singlesample_args").toString() )
+      | view { "single-sample-input-$modality_processor.id: $it" }
+    // Run the single-sample processing if defined
+    ss_ch = (modality_processor.singlesample ? \
+              mod_ch | modality_processor.singlesample : \
+              mod_ch)
+    
+    // Reformat arguments to serve to the multisample processing
+    input_ms_ch = ss_ch
+      | view { "single-sample-output-$modality_processor.id: $it" }
+      | toSortedList{ a, b -> b[0] <=> a[0] }
+      | filter { it.size() != 0 } // filter when event is empty
+      | map{ list -> 
+        def new_data = ["sample_id": list.collect{it[0]}, "input": list.collect{it[1]}]
+        ["combined_$modality_processor.id", new_data] + list[0].drop(2)
+      }
+      | getWorkflowArguments(key: ("$modality_processor.id" + "_multisample_args").toString() )
+      | view { "input multichannel-$modality_processor.id: $it" }
+    
+    // Run the multisample processing if defined, otherwise just concatenate samples together
+    out_ch = (
+      modality_processor.multisample ? \
+        input_ms_ch | modality_processor.multisample : \
+        input_ms_ch | concat.run(
+          key: "concat_" + modality_processor.id,
+          renameKeys: [input_id: "sample_id"],
+          // The Ids have already been added in this pipeline
+          args: [ add_id_to_obs: false ] 
+        )
+    )
+    return out_ch
+  }
     
   // Keep and concat unknown modalities as well
   unknown_channel = start_ch
