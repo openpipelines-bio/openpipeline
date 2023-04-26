@@ -67,11 +67,11 @@ jobs:
           }
         ]' ${{ steps.ns_list_components.outputs.output_file }} )" >> $GITHUB_OUTPUT
 
-        echo "workflows=$(jq -c '[ .[] | select(.entrypoint) |
+        echo "workflows=$(jq -c '[ .[] | . as $config | .functionality.test_resources[] | select(.type == "nextflow_script", .entrypoint) |
           { 
-            "name": (.functionality.namespace + "/" + .functionality.name),
-            "main_script": ((.info.config | capture("^(?<dir>.*\/)").dir) + "/" + .functionality.test_resources[].path),
-            "entry": .functionality.test_resources[].entrypoint
+            "name": ($config.functionality.namespace + "/" + $config.functionality.name),
+            "main_script": (($config.info.config | capture("^(?<dir>.*\/)").dir) + "/" + .path),
+            "entry": .entrypoint
           }
         ]' ${{ steps.ns_list_workflows.outputs.output_file }} )" >> $GITHUB_OUTPUT
 
