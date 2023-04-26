@@ -33,7 +33,7 @@ def main():
                     max_value=par["max_value"])
 
     logger.info("Writing to %s", par["output"])
-    mudata.write_h5mu(filename=par["output"], compression="gzip")
+    mudata.write_h5mu(filename=par["output"], compression=par["output_compression"])
     logger.info("Finished")
 
 if __name__ == "__main__":

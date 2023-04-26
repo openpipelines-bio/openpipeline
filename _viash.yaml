@@ -1,10 +1,11 @@
-viash_version: 0.7.0
+viash_version: 0.7.1
 
 source: src
 target: target
 
 config_mods: |
   .functionality.version := 'dev'
+  .platforms[.type == 'docker'].namespace_separator := '_'
   .platforms[.type == 'docker'].target_registry := 'ghcr.io'
   .platforms[.type == 'docker'].target_organization := 'openpipelines-bio'
   .platforms[.type == 'docker'].target_image_source := 'https://github.com/openpipelines-bio/openpipeline'

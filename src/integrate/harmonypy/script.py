@@ -24,7 +24,7 @@ def main():
     metadata = mod.obs
     ho = run_harmony(pca_embedding, metadata, par['obs_covariates'], theta=par['theta'])
     mod.obsm[par["obsm_output"]] = ho.Z_corr.T
-    mdata.write_h5mu(par['output'].strip(), compression="gzip")
+    mdata.write_h5mu(par['output'].strip(), compression=par["output_compression"])
 
 if __name__ == "__main__":
     main()

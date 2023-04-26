@@ -54,7 +54,7 @@ functionality:
     multiple_sep: ":"
     dest: "par"
   - type: "string"
-    name: "--compression"
+    name: "--output_compression"
     alternatives: []
     description: "The compression format to be used on the final h5ad object."
     example: []
@@ -90,7 +90,7 @@ platforms:
   image: "python:3.8"
   target_organization: "openpipelines-bio"
   target_registry: "ghcr.io"
-  namespace_separator: "/"
+  namespace_separator: "_"
   resolve_volume: "Automatic"
   chown: true
   port: []
@@ -140,6 +140,6 @@ info:
   platform: "nextflow"
   output: "/home/runner/work/openpipeline/openpipeline/target/nextflow/convert/from_h5mu_to_h5ad"
   executable: "/home/runner/work/openpipeline/openpipeline/target/nextflow/convert/from_h5mu_to_h5ad/from_h5mu_to_h5ad"
-  viash_version: "0.7.0"
-  git_commit: "aba8d5ddde8edc9b3da2757e785651c9d4915168"
+  viash_version: "0.7.1"
+  git_commit: "9e9e871b07429c52d9831bc85cb96b7e66b2f8de"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"

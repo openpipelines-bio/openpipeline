@@ -30,6 +30,11 @@ functionality:
           description: "Output h5mu file."
           required: true
           example: output.h5mu
+        - name: "--output_compression"
+          type: string
+          choices: ["gzip", "lzf"]
+          required: false
+          example: "gzip"
   resources:
     - type: r_script
       path: script.R

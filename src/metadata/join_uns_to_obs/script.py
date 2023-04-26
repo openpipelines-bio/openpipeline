@@ -40,7 +40,7 @@ uns_df_rep.index = mod_data.obs_names
 mod_data.obs = pd.concat([obs_drop, uns_df_rep], axis=1)
 
 logger.info("Write output to mudata file")
-mdata.write_h5mu(par['output'], compression="gzip")
+mdata.write_h5mu(par['output'], compression=par["ouput_compression"])
 
         
 

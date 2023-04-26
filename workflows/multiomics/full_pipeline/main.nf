@@ -10,12 +10,13 @@ include { remove_modality }  from targetDir + '/filter/remove_modality/main.nf'
 include { run_wf as rna_singlesample } from workflowDir + '/multiomics/rna_singlesample/main.nf'
 include { run_wf as rna_multisample } from workflowDir + '/multiomics/rna_multisample/main.nf'
 include { run_wf as prot_singlesample } from workflowDir + '/multiomics/prot_singlesample/main.nf'
+include { run_wf as prot_multisample } from workflowDir + '/multiomics/prot_multisample/main.nf'
 include { run_wf as integration } from workflowDir + '/multiomics/integration/main.nf'
+include { splitStub } from workflowDir + '/multiomics/full_pipeline/split_stub.nf'
 
 include { readConfig; helpMessage; readCsv; preprocessInputs; channelFromParams } from workflowDir + "/utils/WorkflowHelper.nf"
 include {  setWorkflowArguments; getWorkflowArguments; passthroughMap as pmap; passthroughFlatMap as pFlatMap } from workflowDir + "/utils/DataflowHelper.nf"
 config = readConfig("$workflowDir/multiomics/full_pipeline/config.vsh.yaml")
-
 
 workflow {
   helpMessage(config)
@@ -30,7 +31,7 @@ workflow run_wf {
   input_ch
 
   main:
-  start_ch = input_ch
+  add_id_ch = input_ch
     | preprocessInputs("config": config)
     | setWorkflowArguments (
         "add_id_args": ["input": "input"],
@@ -38,8 +39,8 @@ workflow run_wf {
         "rna_singlesample_args": [
           "min_counts": "rna_min_counts",
           "max_counts": "rna_max_counts",
-          "min_genes_per_cell": "rna_min_vars_per_cell",
-          "max_genes_per_cell": "rna_max_vars_per_cell",
+          "min_genes_per_cell": "rna_min_genes_per_cell",
+          "max_genes_per_cell": "rna_max_genes_per_cell",
           "min_cells_per_gene": "rna_min_cells_per_gene",
           "min_fraction_mito": "rna_min_fraction_mito",
           "max_fraction_mito": "rna_max_fraction_mito",
@@ -47,9 +48,9 @@ workflow run_wf {
         "prot_singlesample_args": [
           "min_counts": "prot_min_counts",
           "max_counts": "prot_max_counts",
-          "min_genes_per_cell": "prot_min_vars_per_cell",
-          "max_genes_per_cell": "prot_max_vars_per_cell",
-          "min_cells_per_gene": "prot_min_cells_per_protein",
+          "min_proteins_per_cell": "prot_min_proteins_per_cell",
+          "max_proteins_per_cell": "prot_max_proteins_per_cell",
+          "min_cells_per_protein": "prot_min_cells_per_protein",
           "min_fraction_mito": "prot_min_fraction_mito",
           "max_fraction_mito": "prot_max_fraction_mito",
         ],
@@ -62,7 +63,9 @@ workflow run_wf {
         "prot_multisample_args": [:],
         "integration_args": [
           "obs_covariates": "obs_covariates",
-          "var_pca_feature_selection": "filter_with_hvg_var_output" // run PCA on highly variable genes only
+          "var_pca_feature_selection": "filter_with_hvg_var_output", // run PCA on highly variable genes only
+          "rna_theta": "rna_harmony_theta",
+          "leiden_resolution": "leiden_resolution",
         ]
     )
     // add ids to obs_names and to .obs[sample_id]
@@ -80,8 +83,18 @@ workflow run_wf {
 
     // split by modality
     | getWorkflowArguments(key: "split_modalities_args")
+
+  split_ch = add_id_ch
+    | filter{!workflow.stubRun}
     | split_modalities
 
+  split_stub_ch = add_id_ch
+    | filter{workflow.stubRun}
+    | map {it -> [it[0], it[1].input, it[2]]}
+    | splitStub
+    | map {it -> [it[0], ["output": it[1], "output_types": it[2]], it[3]]}
+
+  start_ch = split_ch.concat(split_stub_ch)
     // combine output types csv
     | pFlatMap {id, data, passthrough ->
       def outputDir = data.output
@@ -98,7 +111,7 @@ workflow run_wf {
 
     modality_processors = [
       ["id": "rna", "singlesample": rna_singlesample, "multisample": rna_multisample],
-      ["id": "prot", "singlesample": prot_singlesample, "multisample": null]
+      ["id": "prot", "singlesample": prot_singlesample, "multisample": prot_multisample]
     ]
     known_modalities = modality_processors.collect{it.id}
 
@@ -164,7 +177,10 @@ workflow run_wf {
     | map { list -> 
       ["merged", list.collect{it[1]}] + list[0].drop(2)
     }
-    | merge
+    | merge.run(
+        auto: [ publish: true ],
+        args: [ output_compression: "gzip" ]
+    )
     | getWorkflowArguments(key: "integration_args")
     | pmap {id, input_args -> [id, input_args + [layer: "log_normalized"]]}
     | integration
@@ -238,10 +254,12 @@ workflow test_wf3 {
         publish_dir: "foo/"
       ]
     ],
-    obs_covariates: "sample_id",
+    obs_covariates: [],
     rna_min_counts: 2,
     var_qc_metrics: "highly_variable",
-    filter_with_hvg_var_output: "highly_variable"
+    filter_with_hvg_var_output: "highly_variable",
+    rna_harmony_theta: 3,
+    leiden_resolution: 2,
   ]
 
   input_ch = channelFromParams(testParams, config)
@@ -298,7 +316,24 @@ workflow test_wf2 {
         [
           id: "pbmc",
           input: params.resources_test + "/pbmc_1k_protein_v3/pbmc_1k_protein_v3_filtered_feature_bc_matrix.h5mu",
-          publish_dir: "test2/"
+        ],
+        [
+          id: "pbmc_with_more_args",
+          input: params.resources_test + "/pbmc_1k_protein_v3/pbmc_1k_protein_v3_filtered_feature_bc_matrix.h5mu",
+          rna_min_counts: 1,
+          rna_max_counts: 1000000,
+          rna_min_genes_per_cell: 1,
+          rna_max_genes_per_cell: 1000000,
+          rna_min_cells_per_gene: 1,
+          rna_min_fraction_mito: 0,
+          rna_max_fraction_mito: 1,
+          prot_min_counts: 1,
+          prot_max_counts: 1000000,
+          prot_min_proteins_per_cell: 1,
+          prot_max_proteins_per_cell: 1000000,
+          prot_min_cells_per_protein: 1,
+          prot_min_fraction_mito: 0,
+          prot_max_fraction_mito: 1
         ],
       ],
       obs_covariates: "sample_id",
@@ -317,7 +352,7 @@ workflow test_wf2 {
       }
       | toSortedList()
       | map { output_list ->
-        assert output_list.size() == 1 : "output channel should contain one event"
+        assert output_list.size() == 2 : "output channel should contain one event"
         assert output_list[0][0] == "merged" : "Output ID should be 'merged'"
       }
 }

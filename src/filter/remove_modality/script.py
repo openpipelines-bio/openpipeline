@@ -16,4 +16,4 @@ new_mods = {mod_name: mod for mod_name, mod
             if mod_name not in par['modality']}
 
 new_mudata = MuData(new_mods)
-new_mudata.write_h5mu(filename=par["output"], compression="gzip")
+new_mudata.write_h5mu(filename=par["output"], compression=par["output_compression"])

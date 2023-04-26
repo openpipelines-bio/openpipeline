@@ -10,7 +10,8 @@ from collections import defaultdict
 par = {
     "input": "resources_test/10x_5k_anticmv/processed/10x_5k_anticmv.cellranger_multi.output.output",
     "output": "foo.h5mu",
-    "uns_metrics": "metrics_cellranger"
+    "uns_metrics": "metrics_cellranger",
+    "output_compression": "gzip"
 }
 ## VIASH END
 
@@ -103,12 +104,12 @@ def process_metrics_summary(mudata: mudata.MuData, metrics_file: Path):
                                   thousands=",").applymap(read_percentage)
 
     mudata.uns[par["uns_metrics"]] = metrics_summary
-    for colname, coldata in metrics_summary.iteritems():
+    for colname, coldata in metrics_summary.items():
         try:
-            new_column = coldata.astype({colname: "category"}, copy=True)
-            new_column.cat.categories = new_column.cat.categories.astype(str)
+            new_column = coldata.astype(str, copy=True).astype({colname: "category"})
             metrics_summary[colname] = new_column
         except (ValueError, TypeError):
+            logger.warning(f"Could not store column {colname} from metrics.")
             pass
     return mudata
 
@@ -145,7 +146,7 @@ def main():
     input_data = gather_input_data(cellranger_multi_dir)
     result = get_modalities(input_data)
     logger.info("Writing %s", par["output"])
-    result.write_h5mu(par["output"], compression="gzip")
+    result.write_h5mu(par["output"], compression=par["output_compression"])
 
 if __name__ == "__main__":
     main()

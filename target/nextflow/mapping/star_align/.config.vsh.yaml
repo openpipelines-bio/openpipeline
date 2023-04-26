@@ -481,7 +481,7 @@ functionality:
       description: "adapter clipping type\n\n- Hamming ... adapter clipping based\
         \ on Hamming distance, with the number of mismatches controlled by --clip5pAdapterMMp\n\
         - CellRanger4 ... 5p and 3p adapter clipping similar to CellRanger4. Utilizes\
-        \ Opal package by Martin Šošić: https://github.com/Martinsos/opal\n- None\
+        \ Opal package by Martin Sosic: https://github.com/Martinsos/opal\n- None\
         \ ... no adapter clipping, all other clip* parameters are disregarded"
       example:
       - "Hamming"
@@ -2376,7 +2376,7 @@ functionality:
       description: "WASP allele-specific output type. This is re-implementation of\
         \ the original WASP mappability filtering by Bryce van de Geijn, Graham McVicker,\
         \ Yoav Gilad & Jonathan K Pritchard. Please cite the original WASP paper:\
-        \ Nature Methods 12, 1061–1063 (2015), https://www.nature.com/articles/nmeth.3582\
+        \ Nature Methods 12, 1061-1063 (2015), https://www.nature.com/articles/nmeth.3582\
         \ .\n\n- SAMtag      ... add WASP tags to the alignments that pass WASP filtering"
       example: []
       default: []
@@ -2812,7 +2812,7 @@ platforms:
   image: "python:3.10"
   target_organization: "openpipelines-bio"
   target_registry: "ghcr.io"
-  namespace_separator: "/"
+  namespace_separator: "_"
   resolve_volume: "Automatic"
   chown: true
   port: []
@@ -2870,6 +2870,6 @@ info:
   platform: "nextflow"
   output: "/home/runner/work/openpipeline/openpipeline/target/nextflow/mapping/star_align"
   executable: "/home/runner/work/openpipeline/openpipeline/target/nextflow/mapping/star_align/star_align"
-  viash_version: "0.7.0"
-  git_commit: "aba8d5ddde8edc9b3da2757e785651c9d4915168"
+  viash_version: "0.7.1"
+  git_commit: "9e9e871b07429c52d9831bc85cb96b7e66b2f8de"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"

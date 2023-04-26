@@ -25,7 +25,8 @@ class TestCellrangerMultiToH5mu(TestCase):
 
     def test_cellranger_multi_basic(self):
         self._run_and_check_output(["--input", cellranger_multi_output,
-                                    "--output", "output.h5mu"])
+                                    "--output", "output.h5mu",
+                                    "--output_compression", "gzip"])
         self.assertTrue(Path("output.h5mu").is_file())
         converted_data = read_h5mu("output.h5mu")
         self.assertListEqual(list(converted_data.mod.keys()), ['rna', 'prot', 'vdj_t'])
