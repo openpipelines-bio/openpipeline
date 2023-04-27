@@ -6,17 +6,17 @@ obs_covariates: ["sample_id"]
 # RNA filtering options
 # rna_min_counts: 200
 # rna_max_counts: 5000000
-# rna_min_vars_per_cell: 200
-# rna_max_vars_per_cell: 1500000
-# min_cells_per_protein: 3
+# rna_min_genes_per_cell: 200
+# rna_max_genes_per_cell: 1500000
+# rna_min_cells_per_gene: 3
 # rna_min_fraction_mito: 0
 # rna_max_fraction_mito: 0.2
 
 # CITE-seq filtering options
 # prot_min_counts: 3
 # prot_max_counts: 5000000
-# prot_min_vars_per_cell: 200
-# prot_max_vars_per_cell: 100000000
+# prot_min_proteins_per_cell: 200
+# prot_max_proteins_per_cell: 100000000
 # prot_min_cells_per_protein: 3
 # prot_min_fraction_mito: 0
 # prot_max_fraction_mito: 0.2

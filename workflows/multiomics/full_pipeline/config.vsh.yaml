@@ -37,19 +37,19 @@ functionality:
           type: integer
           description: Maximum number of counts captured per cell.
   
-        - name: "--rna_min_vars_per_cell"
+        - name: "--rna_min_genes_per_cell"
           type: integer
           example: 200
           description: Minimum of non-zero values per cell.
-        - name: "--rna_max_vars_per_cell"
+        - name: "--rna_max_genes_per_cell"
           example: 1500000
           type: integer
           description: Maximum of non-zero values per cell.
 
-        - name: "--min_cells_per_protein"
+        - name: "--rna_min_cells_per_gene"
           example: 3
           type: integer
-          description: Minimum of non-zero values per antibody.
+          description: Minimum of non-zero values per gene.
 
         - name: "--rna_min_fraction_mito"
           example: 0
@@ -70,11 +70,11 @@ functionality:
           type: integer
           example: 5000000
 
-        - name: "--prot_min_vars_per_cell"
+        - name: "--prot_min_proteins_per_cell"
           type: integer
           example: 200
           description: Minimum of non-zero values per cell.
-        - name: "--prot_max_vars_per_cell"
+        - name: "--prot_max_proteins_per_cell"
           description: Maximum of non-zero values per cell.
           type: integer
           example: 100000000
