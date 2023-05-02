@@ -29,7 +29,7 @@ functionality:
       default: fastqs
       required: true
     - type: file
-      name: "--reports"
+      name: --reports
       direction: output
       required: false
       description: Reports directory

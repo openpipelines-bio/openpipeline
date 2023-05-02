@@ -1,7 +1,12 @@
 functionality:
   name: spaceranger_count
   namespace: mapping
-  description: Align fastq files using spaceranger count.
+  description: Align fastq files using spaceranger count
+  usage: |
+    spaceranger_count \
+      --input /path/to/bcl \
+      --sample_sheet SampleSheet.csv \
+      --output /path/to/output
   authors:
     - __merge__: ../../authors/samuel_d_souza.yaml
       roles: [ author ]
@@ -44,18 +49,18 @@ functionality:
     - type: file
       name: --output
       direction: output
-      description: The folder to store the alignment results.
+      description: The folder to store the demux results
       example: "/path/to/output"
+      default: counts
       required: true
     - type: string
       name: --image_type
       description: Type of capture area image (darkimage or colorizedimage).
     - type: boolean
-      name: --reorient-images
-      default: true
+      name: --reorient_images
       description: Whether the pipeline should rotate and mirror the image to align the upright hourglass fiducial pattern in the top left corner.
     - type: boolean
-      name: --no-bam
+      name: --no_bam
       default: false
       description: Whether to generate a BAM file.
     - type: boolean
