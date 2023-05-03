@@ -1,0 +1,107 @@
+functionality:
+  name: totalvi
+  namespace: "integrate"
+  version: "dev"
+  description: "Performs mapping to the reference by totalvi model: https://docs.scvi-tools.org/en/stable/tutorials/notebooks/scarches_scvi_tools.html#Reference-mapping-with-TOTALVI"
+  authors:
+    - __merge__: ../../authors/vladimir_shitov.yaml
+  argument_groups:
+    - name: Inputs
+      arguments:
+        - name: "--query"
+          alternatives: ["-q"]
+          type: file
+          description: Input h5mu file
+          direction: input
+          required: true
+        - name: "--reference"
+          alternatives: ["-r"]
+          type: file
+          description: Input h5mu file
+          direction: input
+          required: true
+        - name: "--force_retrain"
+          alternatives: ["-f"]
+          type: boolean_true
+          description: If true, retrain the model and save it to reference_model_path
+        - name: "--query_modality"
+          type: string
+          default: "rna"
+          required: false
+        - name: "--query_proteins_key"
+          type: string
+          description: Name of the modality containing proteins in the query
+          required: false
+        - name: "--reference_modality"
+          type: string
+          default: "rna"
+          required: false
+        - name: "--reference_proteins_key"
+          type: string
+          description: Name of the modality containing proteins in the reference
+          required: false
+        - name: "--input_layer"
+          type: string
+          required: false
+          description: "Input layer to use. If None, X is used"
+        - name: "--obs_batch"
+          type: string
+          default: "sample_id"
+          required: false
+          description: Column name discriminating between your batches.
+        - name: "--var_input"
+          type: string
+          required: false
+          description: ".var column containing highly variable genes. By default, do not subset genes."
+    - name: Outputs
+      arguments:
+        - name: "--output"
+          alternatives: ["-o"]
+          type: file
+          description: Output h5mu file.
+          direction: output
+          required: true
+        - name: "--obsm_output"
+          type: string
+          default: "X_integrated_totalvi"
+          required: false
+          description: "In which .obsm slot to store the resulting integrated embedding."
+        - name: "--reference_model_path"
+          type: file
+          description: Directory with the reference model. If not exists, trained model will be saved there
+          required: false
+          default: "totalvi_model_reference/"
+        - name: "--query_model_path"
+          type: file
+          description: Directory, where the query model will be saved
+          required: false
+          default: "totalvi_model_query/"
+  resources:
+    - type: python_script
+      path: script.py
+  test_resources:
+    - type: python_script
+      path: test.py
+    - path: ../../../resources_test/scvi_tools/scvi_tools_pancreas_ref_test.h5mu
+    - path: ../../../resources_test/scvi_tools/scvi_tools_pancreas_query_test.h5mu
+platforms:
+  - type: docker
+    image: python:3.8
+    setup:
+      - type: apt
+        packages:
+          - libopenblas-dev
+          - liblapack-dev
+          - gfortran
+      - type: python
+        packages:
+          - mudata~=0.2.0
+          - anndata~=0.8.0
+          - torchmetrics~=0.6.0
+          - scvi-tools
+  - type: nextflow
+    variant: vdsl3
+    directives:
+      label: [highmem, highcpu]
+  - type: native
+	
