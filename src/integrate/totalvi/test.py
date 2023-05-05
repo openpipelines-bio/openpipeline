@@ -31,7 +31,7 @@ class TesttotalVI(unittest.TestCase):
             "--reference", input_file,
             "--query_proteins_key", "prot",
             "--reference_proteins_key", "prot",
-            "--var_input" "filter_with_hvg",
+            "--var_input", "filter_with_hvg",
             "--reference_model_path", "totalvi_reference_model/",
             "--query_model_path", "totalvi_query_model/",
             "--max_epochs", "1",
