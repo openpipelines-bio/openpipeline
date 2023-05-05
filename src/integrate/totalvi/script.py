@@ -120,7 +120,6 @@ def map_query_to_reference(mdata_reference, mdata_query, adata_query):
 
     return vae_query, adata_query
 
-
 def main():
     logger = _setup_logger()
 
@@ -128,31 +127,35 @@ def main():
     adata_query = mdata_query.mod[par["query_modality"]]
 
     if par["var_input"]:
-        # Subset to HVG
-        adata_query = adata_query[:,adata_query.var["var_input"]].copy()
+        logger.info("Subsetting highly variable genes")
+        adata_query = adata_query[:,adata_query.var[par["var_input"]]].copy()
 
     if par["reference"].endswith(".h5mu"):
+        logger.info("Reading reference")
         mdata_reference = mudata.read(par["reference"].strip())
+
+        logger.info("Mapping query to the reference")
         vae_query, adata_query = map_query_to_reference(mdata_reference, mdata_query, adata_query)
     else:
         raise ValueError("Incorrect format of reference, please provide a .h5mu file")
 
     adata_query.uns["integration_method"] = "totalvi"
 
-    # Get the latent output
+    logger.info("Getting the latent representation of query")
     adata_query.obsm[par["obsm_output"]] = vae_query.get_latent_representation()
 
     mdata_query.mod[par["query_modality"]] = adata_query
     try:
+        logger.info("Updating mdata")
         mdata_query.update()
     except KeyError:
         logger.error("Key error was thrown during mdata update. Be careful")
 
-    # Save query
+    logger.info("Saving updated query data")
     mdata_query.write_h5mu(par['output'].strip())
-    # Save query model
+    
+    logger.info("Saving query model")
     vae_query.save(par["query_model_path"], overwrite=True)
 
 if __name__ == "__main__":
     main()
-	
