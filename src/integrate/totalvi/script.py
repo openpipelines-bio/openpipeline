@@ -128,7 +128,8 @@ def main():
 
     if par["var_input"]:
         logger.info("Subsetting highly variable genes")
-        adata_query = adata_query[:,adata_query.var[par["var_input"]]].copy()
+        selected_genes = adata.var_names[adata.var[par["var_input"]]]
+        adata = adata[:, selected_genes].copy()
 
     if par["reference"].endswith(".h5mu"):
         logger.info("Reading reference")
