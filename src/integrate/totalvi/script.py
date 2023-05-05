@@ -141,7 +141,8 @@ def main():
     logger = _setup_logger()
 
     mdata_query = mudata.read(par["query"].strip())
-    adata_query = mdata_query.mod[par["query_modality"]]
+    adata_query = convert_mudata_to_anndata(mdata_query, rna_modality_key=par["query_modality"],
+                                             protein_modality_key=par["query_proteins_key"], input_layer=par["input_layer"])
 
     if par["var_input"]:
         logger.info("Subsetting highly variable genes for query")
