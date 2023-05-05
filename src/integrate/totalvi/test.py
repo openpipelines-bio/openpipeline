@@ -34,8 +34,8 @@ class TesttotalVI(unittest.TestCase):
             "--var_input" "filter_with_hvg",
             "--reference_model_path", "totalvi_reference_model/",
             "--query_model_path", "totalvi_query_model/",
-            "--max_epochs", 1,
-            "--max_query_epochs", 1,
+            "--max_epochs", "1",
+            "--max_query_epochs", "1",
             "--output", "output.h5mu"])
 
         self.assertTrue(Path("output.h5mu").is_file())
