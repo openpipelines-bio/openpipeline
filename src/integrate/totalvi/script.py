@@ -107,7 +107,7 @@ def map_query_to_reference(mdata_reference, mdata_query, adata_query):
     )
 
     if is_retraining_model():
-        vae_reference = build_reference_model(mdata_reference)
+        vae_reference = build_reference_model(adata_reference)
     else:
         vae_reference = scvi.model.TOTALVI.load(dir_path=par["reference_model_path"], adata=adata_reference)
 
