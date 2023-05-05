@@ -62,14 +62,20 @@ def align_proteins_names(adata_reference, mdata_query, adata_query, reference_pr
     return adata_query
 
 
-def convert_mudata_to_anndata(mdata, rna_modality_key, protein_modality_key):
+def convert_mudata_to_anndata(mdata, rna_modality_key, protein_modality_key, input_layer):
     """TOTALVI requires data to be stored in AnnData format with proteins in .obsm slot. This function performs the conversion"""
     adata = mdata.mod[rna_modality_key]
 
     if protein_modality_key in mdata.mod:
         # Put the proteins modality into .obsm slot
-        proteins_reference = mdata.mod[protein_modality_key]
-        adata.obsm[protein_modality_key] = proteins_reference
+        proteins_reference_adata = mdata.mod[protein_modality_key]
+
+        if input_layer is None:
+            proteins = proteins_reference_adata.X
+        else:
+            proteins = proteins_reference_adata.obsm[input_layer]
+
+        adata.obsm[protein_modality_key] = proteins
 
     return adata
 
@@ -92,7 +98,7 @@ def map_query_to_reference(mdata_reference, mdata_query, adata_query):
     """Build model on the provided reference if necessary, and map query to the reference"""
 
     adata_reference = convert_mudata_to_anndata(mdata_reference, rna_modality_key=par["reference_modality"],
-                                                protein_modality_key=par["reference_proteins_key"])
+                                                protein_modality_key=par["reference_proteins_key"], input_layer=par["input_layer"])
 
     scvi.model.TOTALVI.setup_anndata(
         adata_reference,
