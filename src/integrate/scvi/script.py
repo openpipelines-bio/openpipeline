@@ -38,7 +38,8 @@ def main():
 
     if par['var_input']:
         # Subset to HVG
-        adata = adata[:,adata.var['var_input']].copy()
+        selected_genes = adata.var_names[adata.var[par["var_input"]]]
+        adata = adata[:, selected_genes].copy()
 
     # Set up the data
     scvi.model.SCVI.setup_anndata(
