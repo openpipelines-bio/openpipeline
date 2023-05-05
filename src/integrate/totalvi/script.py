@@ -35,6 +35,7 @@ par = {
     "obsm_output": "X_integrated_totalvi",
     "reference_model_path": "totalvi_model_reference/",
     "query_model_path": "totalvi_model_query/",
+    "max_epochs": 400
 }
 ### VIASH END
 
@@ -88,10 +89,10 @@ def convert_mudata_to_anndata(mdata: MuData, rna_modality_key, protein_modality_
     return adata
 
 
-def build_reference_model(adata_reference) -> scvi.model.TOTALVI:
+def build_reference_model(adata_reference: AnnData, max_train_epochs: int = 400) -> scvi.model.TOTALVI:
 
     vae_reference = scvi.model.TOTALVI(adata_reference, use_layer_norm="both", use_batch_norm="none")
-    vae_reference.train()
+    vae_reference.train(max_train_epochs)
 
     return vae_reference
 
@@ -115,7 +116,7 @@ def map_query_to_reference(mdata_reference: MuData, mdata_query: MuData, adata_q
     )
 
     if is_retraining_model():
-        vae_reference = build_reference_model(adata_reference)
+        vae_reference = build_reference_model(adata_reference, max_train_epochs=par["max_epochs"])
     else:
         vae_reference = scvi.model.TOTALVI.load(dir_path=par["reference_model_path"], adata=adata_reference)
 

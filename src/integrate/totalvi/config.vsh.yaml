@@ -76,6 +76,12 @@ functionality:
           description: Directory, where the query model will be saved
           required: false
           default: "totalvi_model_query/"
+    - name: "Learning parameters"
+      arguments:
+        - name: "--max_epochs"
+          type: integer
+          description: "Number of passes through the dataset
+          required: true
   resources:
     - type: python_script
       path: script.py
