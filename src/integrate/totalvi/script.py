@@ -100,6 +100,8 @@ def build_reference_model(adata_reference: AnnData, max_train_epochs: int = 400)
     vae_reference = scvi.model.TOTALVI(adata_reference, use_layer_norm="both", use_batch_norm="none")
     vae_reference.train(max_train_epochs)
 
+    vae_reference.save(par["reference_model_path"])
+
     return vae_reference
 
 def is_retraining_model() -> bool:
