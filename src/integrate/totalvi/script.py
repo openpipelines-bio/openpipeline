@@ -1,5 +1,9 @@
+from typing import Tuple
+
 import logging
 import mudata
+from anndata import AnnData  # For type hints
+from mudata import MuData  # For type hints
 import numpy as np
 from pandas import DataFrame
 import scvi
@@ -47,7 +51,7 @@ def _setup_logger():  # Is there a place where to put common code to not repeat 
     return logger
 
 
-def align_proteins_names(adata_reference, mdata_query, adata_query, reference_proteins_key: str, query_proteins_key: str):
+def align_proteins_names(adata_reference: AnnData, mdata_query: MuData, adata_query: AnnData, reference_proteins_key: str, query_proteins_key: str) -> AnnData:
     """Make sure that proteins are located in the same .obsm slot in reference and query. Pad query proteins with zeros if they are absent"""
     proteins_reference = adata_reference.obsm[reference_proteins_key]
 
@@ -62,9 +66,9 @@ def align_proteins_names(adata_reference, mdata_query, adata_query, reference_pr
     return adata_query
 
 
-def convert_mudata_to_anndata(mdata, rna_modality_key, protein_modality_key, input_layer):
+def convert_mudata_to_anndata(mdata: MuData, rna_modality_key, protein_modality_key, input_layer) -> AnnData:
     """TOTALVI requires data to be stored in AnnData format with proteins in .obsm slot. This function performs the conversion"""
-    adata = mdata.mod[rna_modality_key]
+    adata: AnnData = mdata.mod[rna_modality_key]
 
     if protein_modality_key in mdata.mod:
         # Put the proteins modality into .obsm slot
@@ -94,10 +98,10 @@ def is_retraining_model() -> bool:
     return not trained_model_exists or par["force_retrain"]
 
 
-def map_query_to_reference(mdata_reference, mdata_query, adata_query):
+def map_query_to_reference(mdata_reference: MuData, mdata_query: MuData, adata_query: AnnData) -> Tuple[scvi.model.TOTALVI, AnnData]:
     """Build model on the provided reference if necessary, and map query to the reference"""
 
-    adata_reference = convert_mudata_to_anndata(mdata_reference, rna_modality_key=par["reference_modality"],
+    adata_reference: AnnData = convert_mudata_to_anndata(mdata_reference, rna_modality_key=par["reference_modality"],
                                                 protein_modality_key=par["reference_proteins_key"], input_layer=par["input_layer"])
 
     scvi.model.TOTALVI.setup_anndata(
@@ -111,7 +115,7 @@ def map_query_to_reference(mdata_reference, mdata_query, adata_query):
     else:
         vae_reference = scvi.model.TOTALVI.load(dir_path=par["reference_model_path"], adata=adata_reference)
 
-    adata_query = align_proteins_names(adata_reference, mdata_query, adata_query, reference_proteins_key=par["reference_proteins_key"],
+    adata_query: AnnData = align_proteins_names(adata_reference, mdata_query, adata_query, reference_proteins_key=par["reference_proteins_key"],
                                        query_proteins_key=par["query_proteins_key"])
 
     # Reorder genes and pad missing genes with 0s
