@@ -35,7 +35,9 @@ par = {
     "obsm_output": "X_integrated_totalvi",
     "reference_model_path": "totalvi_model_reference/",
     "query_model_path": "totalvi_model_query/",
-    "max_epochs": 400
+    "max_epochs": 400,
+    "max_query_epochs": 200,
+    "weight_decay": 0.0
 }
 ### VIASH END
 
@@ -131,7 +133,7 @@ def map_query_to_reference(mdata_reference: MuData, mdata_query: MuData, adata_q
         adata_query,
         vae_reference
     )
-    vae_query.train(200, plan_kwargs=dict(weight_decay=0.0))
+    vae_query.train(par["max_query_epochs"], plan_kwargs=dict(weight_decay=par["weight_decay"]))
 
     return vae_query, adata_query
 

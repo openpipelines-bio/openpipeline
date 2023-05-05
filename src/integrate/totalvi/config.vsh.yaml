@@ -80,8 +80,19 @@ functionality:
       arguments:
         - name: "--max_epochs"
           type: integer
-          description: "Number of passes through the dataset
-          required: true
+          description: "Number of passes through the dataset"
+          required: false
+          default: 400
+        - name: "--max_query_epochs"
+          type: integer
+          description: "Number of passes through the dataset, when fine-tuning model for query"
+          required: false
+          default: 200
+        - name: "--weight_decay"
+          type: double
+          description: "Weight decay, when fine-tuning model for query"
+          required: false
+          default: 0.0
   resources:
     - type: python_script
       path: script.py
