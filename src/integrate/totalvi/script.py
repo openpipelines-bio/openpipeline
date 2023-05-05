@@ -70,9 +70,13 @@ def align_proteins_names(adata_reference: AnnData, mdata_query: MuData, adata_qu
     return adata_query
 
 
-def convert_mudata_to_anndata(mdata: MuData, rna_modality_key, protein_modality_key, input_layer) -> AnnData:
+def convert_mudata_to_anndata(mdata: MuData, rna_modality_key, protein_modality_key, input_layer, hvg_var_key=None) -> AnnData:
     """TOTALVI requires data to be stored in AnnData format with proteins in .obsm slot. This function performs the conversion"""
     adata: AnnData = mdata.mod[rna_modality_key]
+
+    if hvg_var_key:
+        selected_genes = adata.var_names[adata.var[hvg_var_key]]
+        adata = adata[:, selected_genes].copy()
 
     if protein_modality_key in mdata.mod:
         # Put the proteins modality into .obsm slot
@@ -108,8 +112,8 @@ def is_retraining_model() -> bool:
 def map_query_to_reference(mdata_reference: MuData, mdata_query: MuData, adata_query: AnnData) -> Tuple[scvi.model.TOTALVI, AnnData]:
     """Build model on the provided reference if necessary, and map query to the reference"""
 
-    adata_reference: AnnData = convert_mudata_to_anndata(mdata_reference, rna_modality_key=par["reference_modality"],
-                                                protein_modality_key=par["reference_proteins_key"], input_layer=par["input_layer"])
+    adata_reference: AnnData = convert_mudata_to_anndata(mdata_reference, rna_modality_key=par["reference_modality"], protein_modality_key=par["reference_proteins_key"],
+                                                         input_layer=par["input_layer"], hvg_var_key=par["var_input"])
 
     scvi.model.TOTALVI.setup_anndata(
         adata_reference,
@@ -141,13 +145,8 @@ def main():
     logger = _setup_logger()
 
     mdata_query = mudata.read(par["query"].strip())
-    adata_query = convert_mudata_to_anndata(mdata_query, rna_modality_key=par["query_modality"],
-                                             protein_modality_key=par["query_proteins_key"], input_layer=par["input_layer"])
-
-    if par["var_input"]:
-        logger.info("Subsetting highly variable genes for query")
-        selected_genes = adata_query.var_names[adata_query.var[par["var_input"]]]
-        adata_query = adata_query[:, selected_genes].copy()
+    adata_query = convert_mudata_to_anndata(mdata_query, rna_modality_key=par["query_modality"], protein_modality_key=par["query_proteins_key"],
+                                            input_layer=par["input_layer"], hvg_var_key=par["var_input"])
 
     if par["reference"].endswith(".h5mu"):
         logger.info("Reading reference")
