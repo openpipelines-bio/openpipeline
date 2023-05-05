@@ -7,6 +7,7 @@ from mudata import MuData  # For type hints
 import numpy as np
 from pandas import DataFrame
 import scvi
+from scipy.sparse import issparse
 from torch.cuda import is_available as cuda_is_available
 try:
     from torch.backends.mps import is_available as mps_is_available
@@ -78,6 +79,9 @@ def convert_mudata_to_anndata(mdata: MuData, rna_modality_key, protein_modality_
             proteins = proteins_reference_adata.X
         else:
             proteins = proteins_reference_adata.obsm[input_layer]
+
+        if issparse(proteins):
+            proteins = proteins.toarray()
 
         adata.obsm[protein_modality_key] = proteins
 
