@@ -291,8 +291,8 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
           "user" : false,
           "packages" : [
             "mudata~=0.2.0",
-            "liana~=0.1.7",
-            "numpy"
+            "liana~=0.1.8",
+            "numpy~=1.23.5"
           ],
           "upgrade" : true
         }
@@ -319,7 +319,7 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
     "config" : "/home/runner/work/openpipeline/openpipeline/src/interpret/lianapy/config.vsh.yaml",
     "platform" : "nextflow",
     "viash_version" : "0.7.1",
-    "git_commit" : "410383ab1d99acc331ff316753a4d1ee90c481b8",
+    "git_commit" : "17e01ee1bcfe5b0ccfef814b84d435b4406e0a12",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))

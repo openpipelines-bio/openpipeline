@@ -459,13 +459,13 @@ function ViashDockerfile {
 FROM python:3.10
 
 RUN pip install --upgrade pip && \
-  pip install --upgrade --no-cache-dir "mudata~=0.2.0" "liana~=0.1.7" "numpy"
+  pip install --upgrade --no-cache-dir "mudata~=0.2.0" "liana~=0.1.8" "numpy~=1.23.5"
 
 LABEL org.opencontainers.image.authors="Mauro Saporita, Povilas Gibas"
 LABEL org.opencontainers.image.description="Companion container for running component interpret lianapy"
-LABEL org.opencontainers.image.created="2023-05-08T13:06:22Z"
+LABEL org.opencontainers.image.created="2023-05-08T15:09:37Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="410383ab1d99acc331ff316753a4d1ee90c481b8"
+LABEL org.opencontainers.image.revision="17e01ee1bcfe5b0ccfef814b84d435b4406e0a12"
 LABEL org.opencontainers.image.version="main_build"
 VIASHDOCKER
 }
