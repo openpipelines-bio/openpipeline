@@ -4,6 +4,7 @@ workflowDir = params.rootDir + "/workflows"
 targetDir = params.rootDir + "/target/nextflow"
 
 include { clr } from targetDir + '/transform/clr/main.nf'
+include { concat } from targetDir + '/dataflow/concat/main.nf'
 
 include { readConfig; helpMessage; channelFromParams; preprocessInputs } from workflowDir + "/utils/WorkflowHelper.nf"
 include { setWorkflowArguments; getWorkflowArguments; passthroughMap as pmap; passthroughFlatMap as pFlatMap } from workflowDir + "/utils/DataflowHelper.nf"
@@ -25,10 +26,18 @@ workflow run_wf {
 
   main:
   output_ch = input_ch
-  | preprocessInputs("config": config)
+    | preprocessInputs("config": config)
+    // add the id to the arguments
+    | pmap { id, data ->
+      def new_data = data + [ input_id: data.sample_id ]
+      [id, new_data]
+    }
     | setWorkflowArguments (
-      "clr": [:]
+      "clr": [:],
+      "concat": [:]
     )
+    | getWorkflowArguments(key: "concat")
+    | concat.run([ modality: "prot" ])
     | getWorkflowArguments(key: "clr")
     | clr
     | map {list -> [list[0], list[1]] + list.drop(3)}
@@ -44,6 +53,7 @@ workflow test_wf {
   // or when running from s3: params.resources_test = "s3://openpipelines-data/"
   testParams = [
     id: "adt_samples",
+    sample_id: "pbmc",
     input: params.resources_test + "/pbmc_1k_protein_v3/pbmc_1k_protein_v3_mms.h5mu",
   ]
 
