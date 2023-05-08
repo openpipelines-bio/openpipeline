@@ -89,6 +89,7 @@ platforms:
       - type: python
         packages:
           - mudata~=0.2.0
-          - liana~=0.1.7
-          - numpy
+          - liana~=0.1.8
+          # See https://github.com/saezlab/liana-py/issues/24
+          - numpy~=1.23.5
   - type: nextflow
