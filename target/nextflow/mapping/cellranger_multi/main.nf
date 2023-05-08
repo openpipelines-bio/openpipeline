@@ -427,7 +427,7 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
     "config" : "/home/runner/work/openpipeline/openpipeline/src/mapping/cellranger_multi/config.vsh.yaml",
     "platform" : "nextflow",
     "viash_version" : "0.7.1",
-    "git_commit" : "2b590f6f9b6d6be1f78c8df42966bf487c0b534c",
+    "git_commit" : "410383ab1d99acc331ff316753a4d1ee90c481b8",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))

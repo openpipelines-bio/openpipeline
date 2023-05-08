@@ -352,7 +352,8 @@ workflow test_wf2 {
       }
       | toSortedList()
       | map { output_list ->
-        assert output_list.size() == 2 : "output channel should contain one event"
+        // The result of this pipeline is always 1 merged sample, regardless of the number of input samples. 
+        assert output_list.size() == 1 : "output channel should contain one event"
         assert output_list[0][0] == "merged" : "Output ID should be 'merged'"
       }
 }
