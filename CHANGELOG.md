@@ -8,6 +8,8 @@
   - `prot_min_vars_per_cell` was renamed to `prot_min_proteins_per_cell`
   - `prot_max_vars_per_cell` was renamed to `prot_max_proteins_per_cell`
 
+* `velocity/scvelo`: bump anndata from <0.8 to 0.9.
+
 ## NEW FUNCTIONALITY
 
 * Added an extra label `veryhighmem` mostly for `cellranger_multi` with a large number of samples.
