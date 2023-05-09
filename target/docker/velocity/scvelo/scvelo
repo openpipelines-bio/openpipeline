@@ -454,13 +454,13 @@ function ViashDockerfile {
 FROM python:3.9
 
 RUN pip install --upgrade pip && \
-  pip install --upgrade --no-cache-dir "scvelo" "mudata" "anndata<0.8"
+  pip install --upgrade --no-cache-dir "scvelo~=0.2.5" "mudata~=0.2.1" "anndata~=0.9.0" "numpy~=1.23.5"
 
 LABEL org.opencontainers.image.authors="Dries Schaumont"
 LABEL org.opencontainers.image.description="Companion container for running component velocity scvelo"
-LABEL org.opencontainers.image.created="2023-05-09T07:36:48Z"
+LABEL org.opencontainers.image.created="2023-05-09T08:46:13Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="667d33b83932157fe324ee5f2df4f90fb0630e0c"
+LABEL org.opencontainers.image.revision="096825ee8dbc033262fbe15f6116a11ed07dcf9b"
 LABEL org.opencontainers.image.version="main_build"
 VIASHDOCKER
 }
