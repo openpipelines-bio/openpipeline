@@ -8,6 +8,8 @@
   - `prot_min_vars_per_cell` was renamed to `prot_min_proteins_per_cell`
   - `prot_max_vars_per_cell` was renamed to `prot_max_proteins_per_cell`
 
+* `velocity/scvelo`: bump anndata from <0.8 to 0.9.
+
 ## NEW FUNCTIONALITY
 
 * Added an extra label `veryhighmem` mostly for `cellranger_multi` with a large number of samples.
@@ -43,6 +45,8 @@
 * `convert/from_cellranger_multi_to_h5mu`, `dataflow/concat` and `dataflow/merge`: update pandas to 2.0.0
 
 * `dataflow/concat` and `dataflow/merge`: Boolean and integer columns are now represented by the `BooleanArray` and `IntegerArray` dtypes in order to allow storing `NA` values.
+
+* `interpret/lianapy`: use the latest development release (commit 11156ddd0139a49dfebdd08ac230f0ebf008b7f8) of lianapy in order to fix compatibility with numpy 1.24.x.
 
 ## NEW FUNCTIONALITY
 

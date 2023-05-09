@@ -245,8 +245,8 @@ platforms:
     user: false
     packages:
     - "mudata~=0.2.0"
-    - "liana~=0.1.7"
-    - "numpy"
+    - "git+https://github.com/saezlab/liana-py.git@11156ddd0139a49dfebdd08ac230f0ebf008b7f8"
+    - "numpy~=1.24.3"
     pip: []
     pypi: []
     git: []
@@ -285,5 +285,5 @@ info:
   output: "/home/runner/work/openpipeline/openpipeline/target/docker/interpret/lianapy"
   executable: "/home/runner/work/openpipeline/openpipeline/target/docker/interpret/lianapy/lianapy"
   viash_version: "0.7.1"
-  git_commit: "410383ab1d99acc331ff316753a4d1ee90c481b8"
+  git_commit: "096825ee8dbc033262fbe15f6116a11ed07dcf9b"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"
