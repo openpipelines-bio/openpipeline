@@ -158,7 +158,7 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
     "config" : "/home/runner/work/openpipeline/openpipeline/src/metadata/join_uns_to_obs/config.vsh.yml",
     "platform" : "nextflow",
     "viash_version" : "0.7.1",
-    "git_commit" : "096825ee8dbc033262fbe15f6116a11ed07dcf9b",
+    "git_commit" : "9772b97416184474fb6532371de7c3fd8c85500c",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))
