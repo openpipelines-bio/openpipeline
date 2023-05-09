@@ -39,7 +39,7 @@ workflow run_wf {
                  "input_id": "sample_id",
                  "obs_output": "add_id_obs_output",
                  "make_observation_keys_unique": "add_id_make_observation_keys_unique"],
-      "concat": ["input_id": "input_id"],
+      "concat": ["input_id": "sample_id"],
     )
     | getWorkflowArguments(key: "add_id")
 
