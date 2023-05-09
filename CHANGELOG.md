@@ -52,6 +52,8 @@
 
 * `interpret/lianapy`: use the latest development release (commit 11156ddd0139a49dfebdd08ac230f0ebf008b7f8) of lianapy in order to fix compatibility with numpy 1.24.x.
 
+* `filter/filter_with_hvg`: Add error when specified input layer cannot be found in input data.
+
 ## NEW FUNCTIONALITY
 
 * `correction/cellbender_remove_background`: add `obsm_latent_gene_encoding` parameter to store the latent gene representation.
