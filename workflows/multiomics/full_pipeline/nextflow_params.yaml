@@ -3,6 +3,11 @@ id: # please fill in - example: "foo"
 input: # please fill in - example: "input.h5mu"
 obs_covariates: ["sample_id"]
 
+# Sample ID options
+add_id_to_obs: true
+add_id_obs_output: "sample_id"
+add_id_make_observation_keys_unique: true
+
 # RNA filtering options
 # rna_min_counts: 200
 # rna_max_counts: 5000000
