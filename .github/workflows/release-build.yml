@@ -37,7 +37,7 @@ jobs:
     - name: Remove target folder from .gitignore
       run: |
         # allow publishing the target folder
-        sed -i '/^target.*/d' .gitignore
+        sed -i '/^\/target\/$/d' .gitignore
 
     - uses: viash-io/viash-actions/ns-build@v3
       with:
@@ -67,7 +67,7 @@ jobs:
         publish_dir: .
         publish_branch: release
         full_commit_message: "Deploy for release ${{ github.event.inputs.version_tag }} from ${{ github.sha }}"
-        exclude-assets: ''
+        exclude_assets: ''
 
 
     - id: ns_list_components
@@ -93,7 +93,7 @@ jobs:
           }
         ]' ${{ steps.ns_list_components.outputs.output_file }} )" >> $GITHUB_OUTPUT
 
-        echo "workflows=$(jq -c '[ .[] | . as $config | .functionality.test_resources[] | select(.type == "nextflow_script", .entrypoint) |
+        echo "workflows=$(jq -c '[ .[] | . as $config | (.functionality.test_resources // [])[] | select(.type == "nextflow_script", .entrypoint) |
           { 
             "name": ($config.functionality.namespace + "/" + $config.functionality.name),
             "main_script": (($config.info.config | capture("^(?<dir>.*\/)").dir) + "/" + .path),
