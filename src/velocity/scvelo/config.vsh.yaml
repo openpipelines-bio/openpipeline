@@ -79,9 +79,10 @@ platforms:
     setup:
       - type: python
         pip:
-          - scvelo
-          - mudata
-          - anndata<0.8
+          - scvelo~=0.2.5
+          - mudata~=0.2.1
+          - anndata~=0.9.0
+          - numpy~=1.23.5
   - type: native
   - type: nextflow
     directives:

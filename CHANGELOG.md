@@ -1,4 +1,14 @@
-# openpipelines 0.7.2
+# openpipelines 0.8.0 (unreleased)
+
+## BREAKING CHANGES
+
+* `workflows/full_pipeline`: Renamed inconsistencies in argument naming (#372):
+  - `rna_min_vars_per_cell` was renamed to `rna_min_genes_per_cell`
+  - `rna_max_vars_per_cell` was renamed to `rna_max_genes_per_cell`
+  - `prot_min_vars_per_cell` was renamed to `prot_min_proteins_per_cell`
+  - `prot_max_vars_per_cell` was renamed to `prot_max_proteins_per_cell`
+
+* `velocity/scvelo`: bump anndata from <0.8 to 0.9.
 
 ## NEW FUNCTIONALITY
 
@@ -26,6 +36,8 @@
 
 * Fixed an issue where passing a remote file URI (for example `http://` or `s3://`) as `param_list` caused `No such file` errors.
 
+* `workflows/full_pipeline`: Fix incorrectly named filtering arguments (#372).
+
 ## MINOR CHANGES
 
 * `integrate/scarches`, `integrate/scvi` and `correction/cellbender_remove_background`: Update base container to `nvcr.io/nvidia/pytorch:22.12-py3`
@@ -37,6 +49,8 @@
 * `convert/from_cellranger_multi_to_h5mu`, `dataflow/concat` and `dataflow/merge`: update pandas to 2.0.0
 
 * `dataflow/concat` and `dataflow/merge`: Boolean and integer columns are now represented by the `BooleanArray` and `IntegerArray` dtypes in order to allow storing `NA` values.
+
+* `interpret/lianapy`: use the latest development release (commit 11156ddd0139a49dfebdd08ac230f0ebf008b7f8) of lianapy in order to fix compatibility with numpy 1.24.x.
 
 ## NEW FUNCTIONALITY
 
