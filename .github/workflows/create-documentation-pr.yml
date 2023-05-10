@@ -1,6 +1,10 @@
 name: create documentation PR
 
-on: workflow_dispatch
+on:
+  workflow_dispatch:
+  push:
+    tags:
+      - '*'
 
 jobs:
   list:
