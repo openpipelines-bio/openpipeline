@@ -54,7 +54,7 @@
 
 * `interpret/lianapy`: use the latest development release (commit 11156ddd0139a49dfebdd08ac230f0ebf008b7f8) of lianapy in order to fix compatibility with numpy 1.24.x.
 
-* `workflows/multiomics/full_pipeline`: publish the output from from sample merging to allow running different integrations.
+* `workflows/multiomics/full_pipeline`: publish the output from sample merging to allow running different integrations.
 
 # openpipelines 0.7.1
 
