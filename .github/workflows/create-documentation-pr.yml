@@ -7,7 +7,6 @@ on:
         description: |
           The branch or tag name when generaing the QMDs. Also used for the name of the PR.
           The name of the current branch or tag is used by default
-        default: 'warning'
         type: string
   push:
     tags:
