@@ -6,6 +6,7 @@ import logging
 import sys
 import pytest
 import re
+import pandas as pd
 
 
 ## VIASH START
@@ -14,7 +15,6 @@ meta = {
     'config': './src/filter/filter_with_hvg/config.vsh.yaml',
     'executable': './target/docker/filter/filter_with_hvg/filter_with_hvg'
 }
-
 ## VIASH END
 
 logger = logging.getLogger()
@@ -79,7 +79,7 @@ def test_filter_with_hvg(run_component, lognormed_test_data_path):
     data = mu.read_h5mu("output.h5mu")
     assert "filter_with_hvg" in data.mod["rna"].var.columns
 
-def test_filter_with_hvg_batch_with_(run_component, lognormed_batch_test_data_path):
+def test_filter_with_hvg_batch_with_batch(run_component, lognormed_batch_test_data_path):
     """
     Make sure that selecting a layer works together with obs_batch_key.
     https://github.com/scverse/scanpy/issues/2396
@@ -91,8 +91,18 @@ def test_filter_with_hvg_batch_with_(run_component, lognormed_batch_test_data_pa
         "--obs_batch_key", "batch",
         "--layer", "log_transformed"])
     assert os.path.exists("output.h5mu")
-    data = mu.read_h5mu("output.h5mu")
-    assert "filter_with_hvg" in data.mod["rna"].var.columns
+    output_data = mu.read_h5mu("output.h5mu")
+    assert "filter_with_hvg" in output_data.mod["rna"].var.columns
+
+    # Check the contents of the output to check if the correct layer was selected
+    input_data = mu.read_h5mu(lognormed_batch_test_data_path).mod['rna'].copy()
+    input_data.X = input_data.layers['log_transformed'].copy()
+    del input_data.layers['log_transformed']
+    input_data.uns['log1p']['base'] = None
+    expected_output = sc.pp.highly_variable_genes(input_data, batch_key="batch", inplace=False, subset=False)
+    pd.testing.assert_series_equal(expected_output['highly_variable'],
+                                   output_data.mod['rna'].var['filter_with_hvg'],
+                                   check_names=False)
 
 def test_filter_with_hvg_seurat_v3_requires_n_top_genes(run_component, input_path):
     with pytest.raises(subprocess.CalledProcessError) as err:

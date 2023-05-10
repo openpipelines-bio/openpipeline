@@ -1,4 +1,4 @@
-# openpipelines 0.8.0 (unreleased)
+# openpipelines 0.8.0
 
 ## BREAKING CHANGES
 
@@ -26,6 +26,8 @@
 
 * `workflows/rna_multisample`: Add the ID of the sample to the .obs column of the MuData object.
 
+* `correction/cellbender_remove_background`: add `obsm_latent_gene_encoding` parameter to store the latent gene representation.
+
 ## BUG FIXES
 
 * `transform/clr`: fix anndata object instead of matrix being stored as a layer in output `MuData`, resulting in `NoneTypeError` object after reading the `.layers` back in.
@@ -37,6 +39,8 @@
 * Fixed an issue where passing a remote file URI (for example `http://` or `s3://`) as `param_list` caused `No such file` errors.
 
 * `workflows/full_pipeline`: Fix incorrectly named filtering arguments (#372).
+
+* `correction/cellbender_remove_background`: add `obsm_latent_gene_encoding` parameter to store the latent gene representation.
 
 ## MINOR CHANGES
 
@@ -52,13 +56,9 @@
 
 * `interpret/lianapy`: use the latest development release (commit 11156ddd0139a49dfebdd08ac230f0ebf008b7f8) of lianapy in order to fix compatibility with numpy 1.24.x.
 
-## NEW FUNCTIONALITY
+* `filter/filter_with_hvg`: Add error when specified input layer cannot be found in input data.
 
-* `correction/cellbender_remove_background`: add `obsm_latent_gene_encoding` parameter to store the latent gene representation.
-
-# MINOR CHANGES
-
-* `workflows/multiomics/full_pipeline`: publish the output from from sample merging to allow running different integrations.
+* `workflows/multiomics/full_pipeline`: publish the output from sample merging to allow running different integrations.
 
 # openpipelines 0.7.1
 
