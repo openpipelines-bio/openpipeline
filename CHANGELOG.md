@@ -38,6 +38,8 @@
 
 * `workflows/full_pipeline`: Fix incorrectly named filtering arguments (#372).
 
+* `correction/cellbender_remove_background`: add `obsm_latent_gene_encoding` parameter to store the latent gene representation.
+
 ## MINOR CHANGES
 
 * `integrate/scarches`, `integrate/scvi` and `correction/cellbender_remove_background`: Update base container to `nvcr.io/nvidia/pytorch:22.12-py3`
@@ -51,12 +53,6 @@
 * `dataflow/concat` and `dataflow/merge`: Boolean and integer columns are now represented by the `BooleanArray` and `IntegerArray` dtypes in order to allow storing `NA` values.
 
 * `interpret/lianapy`: use the latest development release (commit 11156ddd0139a49dfebdd08ac230f0ebf008b7f8) of lianapy in order to fix compatibility with numpy 1.24.x.
-
-## NEW FUNCTIONALITY
-
-* `correction/cellbender_remove_background`: add `obsm_latent_gene_encoding` parameter to store the latent gene representation.
-
-# MINOR CHANGES
 
 * `workflows/multiomics/full_pipeline`: publish the output from from sample merging to allow running different integrations.
 
