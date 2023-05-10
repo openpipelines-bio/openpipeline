@@ -1,2 +1,14 @@
 name: Angela Pisco
-props: { github: aopisco, orcid: "0000-0003-0142-2355" }
+info:
+  role: Contributor
+  links:
+    github: aopisco
+    orcid: "0000-0003-0142-2355"
+    linkedin: aopisco
+  organizations:
+    - name: Insitro
+      href: https://insitro.com
+      role: Director of Computational Biology
+    - name: Open Problems
+      href: https://openproblems.bio
+      role: Core Member
