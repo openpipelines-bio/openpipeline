@@ -1,4 +1,4 @@
-# openpipelines 0.8.0 (unreleased)
+# openpipelines 0.8.0
 
 ## BREAKING CHANGES
 
