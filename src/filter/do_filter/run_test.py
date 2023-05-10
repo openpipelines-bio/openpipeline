@@ -111,7 +111,7 @@ def test_nonexisting_column_raises(run_component,
             "--input", test_data_filter_nothing,
             "--output", random_h5mu_path,
             "--obs_filter", "doesnotexist"])
-    re.search(r"\.mod\['rna'\]\.obs\['doesnotexist'\] does not exist\.",
+    assert re.search(r"\.mod\[rna\]\.obs\[doesnotexist\] does not exist\.",
         err.value.stdout.decode('utf-8'))
     
     with pytest.raises(CalledProcessError) as err:
@@ -120,7 +120,7 @@ def test_nonexisting_column_raises(run_component,
             "--output", random_h5mu_path,
             "--var_filter", "doesnotexist"])
 
-    re.search(r"\.mod\['rna'\]\.var\['doesnotexist'\] does not exist\.",
+    assert re.search(r"\.mod\[rna\]\.var\[doesnotexist\] does not exist\.",
         err.value.stdout.decode('utf-8'))
 if __name__ == '__main__':
     sys.exit(pytest.main([__file__], plugins=["viashpy"]))

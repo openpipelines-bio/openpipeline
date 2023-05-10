@@ -27,6 +27,29 @@
           
         }
       },
+      "sample id options" : {
+        "title": "Sample ID options",
+        "type": "object",
+        "description": "Options for adding the id to .obs on the MuData object. Having a sample \nid present in a requirement of several components for this pipeline.\n",
+        "properties": {
+          "add_id_to_obs": {
+            "type": "boolean",
+            "description": "Add the value passed with --id to .obs.",
+            "default": "True"
+          },
+          "add_id_obs_output": {
+            "type": "string",
+            "description": ".Obs column to add the sample IDs to. Required and only used when ","help_text": ".Obs column to add the sample IDs to. Required and only used when \n--add_id_to_obs is set to \u0027true\u0027\n",
+            "default": "sample_id"
+          },
+          "add_id_make_observation_keys_unique": {
+            "type": "boolean",
+            "description": "Join the id to the .obs index (.obs_names). ","help_text": "Join the id to the .obs index (.obs_names). \nOnly used when --add_id_to_obs is set to \u0027true\u0027.\n",
+            "default": "True"
+          }
+          
+        }
+      },
       "rna filtering options" : {
         "title": "RNA filtering options",
         "type": "object",
@@ -42,19 +65,19 @@
             "description": "Maximum number of counts captured per cell.",
             "default": ""
           },
-          "rna_min_vars_per_cell": {
+          "rna_min_genes_per_cell": {
             "type": "integer",
             "description": "Minimum of non-zero values per cell.",
             "default": ""
           },
-          "rna_max_vars_per_cell": {
+          "rna_max_genes_per_cell": {
             "type": "integer",
             "description": "Maximum of non-zero values per cell.",
             "default": ""
           },
-          "min_cells_per_protein": {
+          "rna_min_cells_per_gene": {
             "type": "integer",
-            "description": "Minimum of non-zero values per antibody.",
+            "description": "Minimum of non-zero values per gene.",
             "default": ""
           },
           "rna_min_fraction_mito": {
@@ -85,12 +108,12 @@
             "description": "Minimum number of counts per cell.",
             "default": ""
           },
-          "prot_min_vars_per_cell": {
+          "prot_min_proteins_per_cell": {
             "type": "integer",
             "description": "Minimum of non-zero values per cell.",
             "default": ""
           },
-          "prot_max_vars_per_cell": {
+          "prot_max_proteins_per_cell": {
             "type": "integer",
             "description": "Maximum of non-zero values per cell.",
             "default": ""
@@ -197,6 +220,9 @@
     "allOf": [
       {
         "$ref": "#/definitions/inputs"
+      },
+      {
+        "$ref": "#/definitions/sample id options"
       },
       {
         "$ref": "#/definitions/rna filtering options"

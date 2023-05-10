@@ -11,6 +11,7 @@ min_cells: 3
 min_gene_variablity_percent: 85
 num_pca_components: 30
 distance_metric: "euclidean"
+allow_automatic_threshold_detection_fail: false
 
 # Nextflow input-output arguments
 publish_dir: # please fill in - example: "output/"

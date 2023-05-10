@@ -1,3 +1,61 @@
+# openpipelines 0.8.0
+
+## BREAKING CHANGES
+
+* `workflows/full_pipeline`: Renamed inconsistencies in argument naming (#372):
+  - `rna_min_vars_per_cell` was renamed to `rna_min_genes_per_cell`
+  - `rna_max_vars_per_cell` was renamed to `rna_max_genes_per_cell`
+  - `prot_min_vars_per_cell` was renamed to `prot_min_proteins_per_cell`
+  - `prot_max_vars_per_cell` was renamed to `prot_max_proteins_per_cell`
+
+* `velocity/scvelo`: bump anndata from <0.8 to 0.9.
+
+## NEW FUNCTIONALITY
+
+* Added an extra label `veryhighmem` mostly for `cellranger_multi` with a large number of samples.
+
+* Added `multiomics/prot_multisample` pipeline.
+
+* Added `clr` functionality to `prot_multisample` pipeline.
+
+* Added `interpret/lianapy`: Enables the use of any combination of ligand-receptor methods and resources, and their consensus.
+
+* `filter/filter_with_scrublet`: Add `--allow_automatic_threshold_detection_fail`: when scrublet fails to detect doublets, the component will now put `NA` in the output columns.
+
+* `workflows/full_pipeline`: Allow not setting the sample ID to the .obs column of the MuData object.
+
+* `workflows/rna_multisample`: Add the ID of the sample to the .obs column of the MuData object.
+
+## BUG FIXES
+
+* `transform/clr`: fix anndata object instead of matrix being stored as a layer in output `MuData`, resulting in `NoneTypeError` object after reading the `.layers` back in.
+
+* `dataflow/concat` and `dataflow/merge`: fixed a bug where boolean values were cast to their string representation.
+
+* `workflows/full_pipeline`: fix running pipeline with `-stub`.
+
+* Fixed an issue where passing a remote file URI (for example `http://` or `s3://`) as `param_list` caused `No such file` errors.
+
+* `workflows/full_pipeline`: Fix incorrectly named filtering arguments (#372).
+
+* `correction/cellbender_remove_background`: add `obsm_latent_gene_encoding` parameter to store the latent gene representation.
+
+## MINOR CHANGES
+
+* `integrate/scarches`, `integrate/scvi` and `correction/cellbender_remove_background`: Update base container to `nvcr.io/nvidia/pytorch:22.12-py3`
+
+* `integrate/scvi`: add `gpu` label for nextflow platform.
+
+* `integrate/scvi`: use cuda enabled `jax` install.
+
+* `convert/from_cellranger_multi_to_h5mu`, `dataflow/concat` and `dataflow/merge`: update pandas to 2.0.0
+
+* `dataflow/concat` and `dataflow/merge`: Boolean and integer columns are now represented by the `BooleanArray` and `IntegerArray` dtypes in order to allow storing `NA` values.
+
+* `interpret/lianapy`: use the latest development release (commit 11156ddd0139a49dfebdd08ac230f0ebf008b7f8) of lianapy in order to fix compatibility with numpy 1.24.x.
+
+* `workflows/multiomics/full_pipeline`: publish the output from sample merging to allow running different integrations.
+
 # openpipelines 0.7.1
 
 ## NEW FUNCTIONALITY
@@ -244,6 +302,8 @@ These options were previously covered in the `bin/init` script, but this new fea
 * `correction/cellbender_remove_background`: Eliminating technical artifacts from high-throughput single-cell RNA sequencing data.
 
 * `workflows/ingestion/cellranger_postprocessing`: Add post-processing of h5mu files created from Cell Ranger data.
+
+* `annotate/popv`: Performs popular major vote cell typing on single cell sequence data.
 
 ## MAJOR CHANGES
 

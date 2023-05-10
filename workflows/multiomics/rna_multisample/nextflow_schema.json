@@ -27,6 +27,29 @@
           
         }
       },
+      "sample id options" : {
+        "title": "Sample ID options",
+        "type": "object",
+        "description": "Options for adding the id to .obs on the MuData object. Having a sample \nid present in a requirement of several components for this pipeline.\n",
+        "properties": {
+          "add_id_to_obs": {
+            "type": "boolean",
+            "description": "Add the value passed with --id to .obs.",
+            "default": "True"
+          },
+          "add_id_obs_output": {
+            "type": "string",
+            "description": ".Obs column to add the sample IDs to. Required and only used when ","help_text": ".Obs column to add the sample IDs to. Required and only used when \n--add_id_to_obs is set to \u0027true\u0027\n",
+            "default": "sample_id"
+          },
+          "add_id_make_observation_keys_unique": {
+            "type": "boolean",
+            "description": "Join the id to the .obs index (.obs_names). ","help_text": "Join the id to the .obs index (.obs_names). \nOnly used when --add_id_to_obs is set to \u0027true\u0027.\n",
+            "default": "True"
+          }
+          
+        }
+      },
       "filtering highly variable genes" : {
         "title": "Filtering highly variable genes",
         "type": "object",
@@ -95,6 +118,9 @@
     "allOf": [
       {
         "$ref": "#/definitions/inputs"
+      },
+      {
+        "$ref": "#/definitions/sample id options"
       },
       {
         "$ref": "#/definitions/filtering highly variable genes"

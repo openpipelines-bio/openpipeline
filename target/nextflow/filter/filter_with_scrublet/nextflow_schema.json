@@ -68,6 +68,11 @@
             "type": "string",
             "description": "The distance metric used for computing similarities.",
             "default": "euclidean"
+          },
+          "allow_automatic_threshold_detection_fail": {
+            "type": "boolean",
+            "description": "When scrublet fails to automatically determine the double score threshold, ","help_text": "When scrublet fails to automatically determine the double score threshold, \nallow the component to continue and set the output columns to NA.\n",
+            "default": "False"
           }
           
         }
