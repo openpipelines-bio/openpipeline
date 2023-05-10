@@ -26,6 +26,8 @@
 
 * `workflows/rna_multisample`: Add the ID of the sample to the .obs column of the MuData object.
 
+* `correction/cellbender_remove_background`: add `obsm_latent_gene_encoding` parameter to store the latent gene representation.
+
 ## BUG FIXES
 
 * `transform/clr`: fix anndata object instead of matrix being stored as a layer in output `MuData`, resulting in `NoneTypeError` object after reading the `.layers` back in.
@@ -53,6 +55,8 @@
 * `dataflow/concat` and `dataflow/merge`: Boolean and integer columns are now represented by the `BooleanArray` and `IntegerArray` dtypes in order to allow storing `NA` values.
 
 * `interpret/lianapy`: use the latest development release (commit 11156ddd0139a49dfebdd08ac230f0ebf008b7f8) of lianapy in order to fix compatibility with numpy 1.24.x.
+
+* `filter/filter_with_hvg`: Add error when specified input layer cannot be found in input data.
 
 * `workflows/multiomics/full_pipeline`: publish the output from sample merging to allow running different integrations.
 

@@ -354,7 +354,7 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
     "config" : "/home/runner/work/openpipeline/openpipeline/src/filter/filter_with_hvg/config.vsh.yaml",
     "platform" : "nextflow",
     "viash_version" : "0.7.1",
-    "git_commit" : "b877b4c6a3234ae319b5dc329ead31b5c5624791",
+    "git_commit" : "3c365f724e47b95cacc4d8a7d59927d54bcaa92f",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))
@@ -474,10 +474,14 @@ for par_name, dest_name in optional_parameters.items():
 if par['flavor'] == "seurat_v3" and not par['n_top_genes']:
     raise ValueError("When flavor is set to 'seurat_v3', you are required to set 'n_top_genes'.")
 
+if par["layer"] and not par['layer'] in data.layers:
+    raise ValueError(f"Layer '{par['layer']}' not found in layers for modality '{mod}'. "
+                     f"Found layers are: {','.join(data.layers)}")
 # call function
 try:
     out = sc.pp.highly_variable_genes(**hvg_args)
-    out.index = data.var.index
+    if par['obs_batch_key'] is not None:
+        assert (out.index == data.var.index).all(), "Expected output index values to be equivalent to the input index"
 except ValueError as err:
     if str(err) == "cannot specify integer \\`bins\\` when input data contains infinity":
         err.args = ("Cannot specify integer \\`bins\\` when input data contains infinity. "
@@ -488,6 +492,7 @@ except ValueError as err:
                            "result from trying to use this component on unfiltered data.") from err
     raise err
 
+out.index = data.var.index
 logger.info("\\\\tStoring output into .var")
 if par.get("var_name_filter", None) is not None:
     data.var[par["var_name_filter"]] = out["highly_variable"]
