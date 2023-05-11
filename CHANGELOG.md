@@ -10,7 +10,7 @@
 
 * `velocity/scvelo`: bump anndata from <0.8 to 0.9.
 
-* The `cripr` and `hashing` modalities have been renamed to `gdo` and `hto` respectively ([#391](https://github.com/openpipelines-bio/openpipeline/issues/391)).
+* The `cripr` and `hashing` modalities have been renamed to `gdo` and `hto` respectively ([#392](https://github.com/openpipelines-bio/openpipeline/pull/392)).
 
 ## NEW FUNCTIONALITY
 
