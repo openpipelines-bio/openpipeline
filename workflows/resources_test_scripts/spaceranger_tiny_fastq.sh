@@ -68,13 +68,14 @@ if [[ ! -f "${OUT}/reference/refdata-gex-mm10-2020-A" ]]; then
 fi
 
 # Run spaceranger_count
-# if [[ ! -d "${OUT}/fastqs" ]]; then
-#   mkdir -p "$OUT/fastqs"
+if [[ ! -d "${OUT}/counts" ]]; then
+  mkdir -p "$OUT/counts"
 
-#   target/docker/mapping/spaceranger_count/spaceranger_count \
-#     --input="${OUT}/fastq" \
-#     --reference="${OUT}/reference/refdata-gex-mm10-2020-A" \
-#     --image="${OUT}/image/V1_Adult_Mouse_Brain_image.tif" \
-#     --slide="V19L01-041" \
-#     --area="C1"
-# fi
+  viash run src/mapping/spaceranger_count/config.vsh.yaml -- \
+    --input "${OUT}/spaceranger_tiny_fastq" \
+    --reference "${OUT}/reference" \
+    --image "${OUT}/image/V1_Adult_Mouse_Brain_image.tif" \
+    --slide "V19J01-123" \
+    --area "A1" \
+    --output "${OUT}/counts"
+fi

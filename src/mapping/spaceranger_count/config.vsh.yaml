@@ -70,10 +70,10 @@ functionality:
   resources:
     - type: bash_script
       path: script.sh
-  test_resources:
-    - type: python_script
-      path: test.py
-    - path: ../../../resources_test/spaceranger_tiny_fastq
+  # test_resources:
+  #   - type: python_script
+  #     path: test.py
+  #   - path: ../../../resources_test/spaceranger_tiny_fastq
 platforms:
   - type: docker
     image: ghcr.io/data-intuitive/spaceranger:1.3

@@ -6,9 +6,6 @@ set -eo pipefail
 par_input='resources_test/spaceranger_tiny_bcl/bcl'
 par_sample_sheet='resources_test/spaceranger_tiny_bcl/bcl/sample_sheet.csv'
 par_output=foo
-par_input=`realpath $par_input`
-par_sample_sheet=`realpath $par_sample_sheet`
-par_output=`realpath $par_output`
 ## VIASH END
 
 # create temporary directory

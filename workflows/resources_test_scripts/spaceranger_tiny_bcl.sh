@@ -49,7 +49,7 @@ fi
 if [ ! -d "${OUT}/fastqs" ]; then
   mkdir -p "$OUT/fastqs"
 
-  target/docker/demux/cellranger_mkfastq/cellranger_mkfastq \
+  viash run src/demux/spaceranger_mkfastq/config.vsh.yaml -- \
     --input "${OUT}/bcl" \
     --sample_sheet "${OUT}/bcl/sample_sheet.csv" \
     --output "${OUT}/fastqs"
