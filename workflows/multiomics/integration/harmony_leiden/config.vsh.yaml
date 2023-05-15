@@ -1,12 +1,8 @@
 functionality:
-  name: "integration"
-  namespace: "multiomics"
-  description: "A pipeline for demultiplexing multimodal multi-sample RNA transcriptomics data."
+  name: "harmony_leiden"
+  namespace: "integration/common"
+  description: "Run harmony integration followed by neighbour calculations, leiden clustering and run umap on the result."
   authors:
-    - __merge__: ../../../src/authors/dries_de_maeyer.yaml
-      roles: [ author ]
-    - __merge__: ../../../src/authors/robrecht_cannoodt.yaml
-      roles: [ author, maintainer ]
     - __merge__: ../../../src/authors/dries_schaumont.yaml
       roles: [ author ]
   argument_groups:
@@ -35,18 +31,26 @@ functionality:
           direction: output
           description: Destination path to the output.
           example: output.h5mu
-    - name: PCA options
+    - name: Neighbour calculation
       arguments:
-        - name: "--obsm_pca"
+        - name: "--uns_neighbors"
           type: string
-          default: "X_pca"
-          description: "In which .obsm slot to store the resulting PCA embedding."
-        - name: "--var_pca_feature_selection"
+          default: harmonypy_integration_neighbors
+          description: In which .uns slot to store various neighbor output objects.
+        - name: "--obsp_neighbor_distances"
           type: string
-          required: false
-          description: Column name in .var matrix that will be used to select which genes to run the PCA on.
+          default: "harmonypy_integration_distances"
+          description: "In which .obsp slot to store the distance matrix between the resulting neighbors."
+        - name: "--obsp_neighbor_connectivities"
+          type: string
+          default: "harmonypy_integration_connectivities"
+          description: "In which .obsp slot to store the connectivities matrix between the resulting neighbors."
     - name: Harmony integration options
       arguments:
+        - name: "--embedding"
+          default: "X_pca"
+          type: string
+          description: "Embedding to use as input"
         - name: "--obsm_integrated"
           type: string
           default: "X_pca_integrated"
@@ -66,26 +70,12 @@ functionality:
             result in more diverse clusters."
           default: 2
           multiple: true
-    - name: Neighbour calculation
-      arguments:
-        - name: "--uns_neighbors"
-          type: string
-          default: neighbors
-          description: In which .uns slot to store various neighbor output objects.
-        - name: "--obsp_neighbor_distances"
-          type: string
-          default: "distances"
-          description: "In which .obsp slot to store the distance matrix between the resulting neighbors."
-        - name: "--obsp_neighbor_connectivities"
-          type: string
-          default: "connectivities"
-          description: "In which .obsp slot to store the connectivities matrix between the resulting neighbors."
     - name: Clustering options
       arguments:
         - name: "--obs_cluster"
           type: string
           description: Name of the .obs key under which to add the cluster labels.
-          default: "leiden"
+          default: "harmony_integration_leiden"
         - name: "--leiden_resolution"
           type: double
           description: Control the coarseness of the clustering. Higher values lead to more clusters.
@@ -94,10 +84,9 @@ functionality:
       arguments:
         - name: "--obsm_umap"
           type: string
-          default: "X_umap"
+          default: "X_leiden_harmony_umap"
           required: false
           description: "In which .obsm slot to store the resulting UMAP embedding."
-
   resources:
     - type: nextflow_script
       path: main.nf
