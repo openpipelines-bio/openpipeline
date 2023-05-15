@@ -1,4 +1,26 @@
-# openpipelines 0.8.0 (unreleased)
+# openpipelines 0.9.0
+
+## BREAKING CHANGES
+
+Running the integration in the `full_pipeline` deemed to be impractical because a plethora of integration methods exist, which in turn interact with other functionality (like clustering). This generates a large number of possible usecases which one pipeline cannot cover in an easy manner. Instead, each integration methods will be split into its separate pipeline, and the `full_pipeline` will prepare for integration by performing steps that are required by many integration methods. Therefore, the following changes were performed:
+
+  * `workflows/full_pipeline`: `harmony` integration and `leiden` clustering are removed from the pipeline.
+
+  * Added `integration_setup` to run calculations that output information commonly required by the integration methods. This pipeline runs PCA, nearest neighbours and UMAP. This pipeline is run as a subpipeline at the end of `full_pipeline`.
+
+  * Added `leiden_harmony` integration pipeline: run harmony integration followed by neighbour calculations and leiden clustering. Also runs umap on the result.
+
+  * Removed the `integration` pipeline.
+
+The old behavior of the `full_pipeline` can be obtained by running `full_pipeline` followed by the `leiden_harmony` pipeline.
+
+## NEW FUNCTIONALITY
+
+* `workflows/full_pipeline`: PCA, nearest neighbours and UMAP are now calculated for the `prot` modality.
+
+* `transform/clr`: added `output_layer` argument.
+
+# openpipelines 0.8.0
 
 ## BREAKING CHANGES
 
@@ -38,6 +60,8 @@
 
 * `workflows/full_pipeline`: Fix incorrectly named filtering arguments (#372).
 
+* `correction/cellbender_remove_background`: add `obsm_latent_gene_encoding` parameter to store the latent gene representation.
+
 ## MINOR CHANGES
 
 * `integrate/scarches`, `integrate/scvi` and `correction/cellbender_remove_background`: Update base container to `nvcr.io/nvidia/pytorch:22.12-py3`
@@ -52,13 +76,7 @@
 
 * `interpret/lianapy`: use the latest development release (commit 11156ddd0139a49dfebdd08ac230f0ebf008b7f8) of lianapy in order to fix compatibility with numpy 1.24.x.
 
-## NEW FUNCTIONALITY
-
-* `correction/cellbender_remove_background`: add `obsm_latent_gene_encoding` parameter to store the latent gene representation.
-
-# MINOR CHANGES
-
-* `workflows/multiomics/full_pipeline`: publish the output from from sample merging to allow running different integrations.
+* `workflows/multiomics/full_pipeline`: publish the output from sample merging to allow running different integrations.
 
 # openpipelines 0.7.1
 

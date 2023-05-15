@@ -31,6 +31,10 @@ functionality:
       choices: ["gzip", "lzf"]
       required: false
       example: "gzip"
+    - name: "--output_layer"
+      type: string
+      description: Output layer to use. By default, use X.
+      required: false
   resources:
     - type: python_script
       path: script.py
@@ -40,7 +44,7 @@ functionality:
     - path: ../../../resources_test/pbmc_1k_protein_v3
 platforms:
   - type: docker
-    image: python:3.8
+    image: python:3.10
     setup:
       - type: docker
         env:
