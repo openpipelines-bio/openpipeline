@@ -153,7 +153,6 @@ workflow run_wf {
           args: [ add_id_to_obs: false ] 
         )
     )
-    | view {"out_ch: $it"}
     return out_ch
   }
     
