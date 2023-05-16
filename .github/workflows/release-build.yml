@@ -6,9 +6,6 @@ on:
       version_tag:
         description: Version tag
         required: true
-      push_documentation:
-        type: boolean
-        description: Create a PR to push workflow and component documentation to the website
 
 jobs:
   # phase 1
@@ -281,45 +278,3 @@ jobs:
           --config_mod ".platforms[.type == 'docker'].setup := []" \
           --cpus 2 \
           --memory "5gb"
-
-  ###################################3
-  # phase 5
-  push_documentation:
-    runs-on: ubuntu-latest
-    needs: [ list ]
-    if: "${{ github.event.inputs.push_documentation == 'true' }}"
-
-    steps:
-      - uses: actions/checkout@v3
-        with:
-          path: openpipelines
-
-      - uses: actions/checkout@v3
-        with:
-          repository: openpipelines-bio/website
-          path: website
-          token: ${{ secrets.GTHB_PAT }}
-
-      - uses: viash-io/viash-actions/setup@v3
-
-      - uses: viash-io/viash-actions/pro/generate-documentation-qmd@v3
-        with:
-          input_dir: ./
-          output_dir: website
-          dest_path: "{type}s/{namespace}/{name}.qmd"
-          viash_pro_token: ${{ secrets.GTHB_PAT }}
-          tools_version: main_build
-
-      - name: Create Pull Request
-        env:
-          TAG: ${{ github.event.inputs.version_tag }}
-          GITHUB_TOKEN: ${{ secrets.GTHB_PAT }}
-        working-directory: website
-        run: |
-          git config user.name github-actions
-          git config user.email github-actions@github.com
-          git add .
-          git checkout -B "release-$TAG"
-          git commit -m "OpenPipelines release $TAG"
-          git push --set-upstream origin "release-$TAG"
-          gh pr create --title "Openpipeline release $TAG" --base main --head "release-$TAG" --body ""

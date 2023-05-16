@@ -169,5 +169,5 @@ info:
   output: "/home/runner/work/openpipeline/openpipeline/target/docker/reference/make_reference"
   executable: "/home/runner/work/openpipeline/openpipeline/target/docker/reference/make_reference/make_reference"
   viash_version: "0.7.1"
-  git_commit: "b9d5771b7c41c6c8b97a3d8bfa5f2e446b1703d1"
+  git_commit: "38fc7b6059432b58fc383df26f39b2ef7bcf104e"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"
