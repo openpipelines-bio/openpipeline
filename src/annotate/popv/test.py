@@ -30,5 +30,16 @@ def test_simple_execution(run_component):
 
     print(f"output: {output}", flush=True)
 
+def test_popv_with_other_layer(run_component, tmp_path):
+    input_h5mu = mu.read(input_file)
+    input_h5mu.mod['rna'].layers['test'] = input_h5mu.mod['rna'].X.copy()
+    input_h5mu.write_h5mu(tmp_path / "input.h5mu")
+    run_component([
+        "--input", tmp_path / "input.h5mu",
+        "--reference", reference_file,
+        "--output", "output.h5mu",
+        "--methods", "rf:svm"
+    ])
+
 if __name__ == '__main__':
     sys.exit(pytest.main([__file__, "--capture=no"], plugins=["viashpy"]))
