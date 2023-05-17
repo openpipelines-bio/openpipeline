@@ -86,8 +86,8 @@ def process_counts(counts_folder: Path):
             "VDJ": "vdj",
             "VDJ-T": "vdj_t",
             "VDJ-B": "vdj_b",
-            "CRISPR Guide Capture": "crispr",
-            "Multiplexing Capture": "hashing"
+            "CRISPR Guide Capture": "gdo",
+            "Multiplexing Capture": "hto"
         })
     return mudata.MuData(adata, feature_types=feature_types)
 
