@@ -6,13 +6,15 @@ Running the integration in the `full_pipeline` deemed to be impractical because 
 
   * `workflows/full_pipeline`: `harmony` integration and `leiden` clustering are removed from the pipeline.
 
-  * Added `integration_setup` to run calculations that output information commonly required by the integration methods. This pipeline runs PCA, nearest neighbours and UMAP. This pipeline is run as a subpipeline at the end of `full_pipeline`.
+  * Added `initialize_integration` to run calculations that output information commonly required by the integration methods. This pipeline runs PCA, nearest neighbours and UMAP. This pipeline is run as a subpipeline at the end of `full_pipeline`.
 
   * Added `leiden_harmony` integration pipeline: run harmony integration followed by neighbour calculations and leiden clustering. Also runs umap on the result.
 
   * Removed the `integration` pipeline.
 
 The old behavior of the `full_pipeline` can be obtained by running `full_pipeline` followed by the `leiden_harmony` pipeline.
+
+* The `cripr` and `hashing` modalities have been renamed to `gdo` and `hto` respectively ([#392](https://github.com/openpipelines-bio/openpipeline/pull/392)).
 
 ## NEW FUNCTIONALITY
 

@@ -421,9 +421,9 @@ RUN pip install --upgrade pip && \
 
 LABEL org.opencontainers.image.authors="Dries Schaumont"
 LABEL org.opencontainers.image.description="Companion container for running component convert from_cellranger_multi_to_h5mu"
-LABEL org.opencontainers.image.created="2023-05-16T14:36:49Z"
+LABEL org.opencontainers.image.created="2023-05-17T11:53:03Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="38fc7b6059432b58fc383df26f39b2ef7bcf104e"
+LABEL org.opencontainers.image.revision="53783a738c84d94a2152e9306aff2e920fe1afff"
 LABEL org.opencontainers.image.version="integration_build"
 VIASHDOCKER
 }
@@ -1017,8 +1017,8 @@ def process_counts(counts_folder: Path):
             "VDJ": "vdj",
             "VDJ-T": "vdj_t",
             "VDJ-B": "vdj_b",
-            "CRISPR Guide Capture": "crispr",
-            "Multiplexing Capture": "hashing"
+            "CRISPR Guide Capture": "gdo",
+            "Multiplexing Capture": "hto"
         })
     return mudata.MuData(adata, feature_types=feature_types)
 
