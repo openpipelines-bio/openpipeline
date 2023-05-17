@@ -1,3 +1,9 @@
+# openpipelines 0.9.0
+
+## BREAKING CHANGES
+
+* The `cripr` and `hashing` modalities have been renamed to `gdo` and `hto` respectively ([#392](https://github.com/openpipelines-bio/openpipeline/pull/392)).
+
 # openpipelines 0.8.0
 
 ## BREAKING CHANGES
@@ -9,8 +15,6 @@
   - `prot_max_vars_per_cell` was renamed to `prot_max_proteins_per_cell`
 
 * `velocity/scvelo`: bump anndata from <0.8 to 0.9.
-
-* The `cripr` and `hashing` modalities have been renamed to `gdo` and `hto` respectively ([#392](https://github.com/openpipelines-bio/openpipeline/pull/392)).
 
 ## NEW FUNCTIONALITY
 
