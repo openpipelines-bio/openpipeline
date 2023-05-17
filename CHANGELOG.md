@@ -16,7 +16,6 @@ The old behavior of the `full_pipeline` can be obtained by running `full_pipelin
 
 * The `cripr` and `hashing` modalities have been renamed to `gdo` and `hto` respectively ([#392](https://github.com/openpipelines-bio/openpipeline/pull/392)).
 
-
 ## NEW FUNCTIONALITY
 
 * `workflows/full_pipeline`: PCA, nearest neighbours and UMAP are now calculated for the `prot` modality.
