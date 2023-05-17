@@ -1,6 +1,6 @@
 functionality:
-  name: "initialize_integration"
-  namespace: "integration/initialize_integration"
+  name: "integration_setup"
+  namespace: "integration/common"
   description: "Run calculations that output information required for most integration methods: PCA, nearest neighbour and UMAP."
   authors:
     - __merge__: ../../../../src/authors/dries_schaumont.yaml

@@ -10,7 +10,7 @@ include { umap } from targetDir + '/dimred/umap/main.nf'
 include { readConfig; helpMessage; preprocessInputs; channelFromParams } from workflowDir + "/utils/WorkflowHelper.nf"
 include { setWorkflowArguments; getWorkflowArguments; passthroughMap as pmap } from workflowDir + "/utils/DataflowHelper.nf"
 
-config = readConfig("$workflowDir/multiomics/integration/initialize_integration/config.vsh.yaml")
+config = readConfig("$workflowDir/multiomics/integration/integration_setup/config.vsh.yaml")
 
 workflow {
   helpMessage(config)

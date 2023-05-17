@@ -11,8 +11,8 @@ include { run_wf as rna_singlesample } from workflowDir + '/multiomics/rna_singl
 include { run_wf as rna_multisample } from workflowDir + '/multiomics/rna_multisample/main.nf'
 include { run_wf as prot_singlesample } from workflowDir + '/multiomics/prot_singlesample/main.nf'
 include { run_wf as prot_multisample } from workflowDir + '/multiomics/prot_multisample/main.nf'
-include { run_wf as initialize_integration_rna } from workflowDir + '/multiomics/integration/initialize_integration/main.nf'
-include { run_wf as initialize_integration_prot } from workflowDir + '/multiomics/integration/initialize_integration/main.nf'
+include { run_wf as integration_setup_rna } from workflowDir + '/multiomics/integration/integration_setup/main.nf'
+include { run_wf as integration_setup_prot } from workflowDir + '/multiomics/integration/integration_setup/main.nf'
 include { splitStub } from workflowDir + '/multiomics/full_pipeline/split_stub.nf'
 
 include { readConfig; helpMessage; readCsv; preprocessInputs; channelFromParams } from workflowDir + "/utils/WorkflowHelper.nf"
@@ -189,8 +189,8 @@ workflow run_wf {
     | merge.run(args: [ output_compression: "gzip" ])
   
   integration_processors = [
-    [id: "rna", "workflow": initialize_integration_rna, "args": ["layer": "log_normalized", "modality": "rna"]],
-    [id: "prot", "workflow": initialize_integration_prot, "args": ["layer": "clr", "modality": "prot"]],
+    [id: "rna", "workflow": integration_setup_rna, "args": ["layer": "log_normalized", "modality": "rna"]],
+    [id: "prot", "workflow": integration_setup_prot, "args": ["layer": "clr", "modality": "prot"]],
   ]
 
   output_ch = integration_processors.inject(for_integration_ch){ channel_in, processor ->
