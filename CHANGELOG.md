@@ -26,7 +26,7 @@ The old behavior of the `full_pipeline` can be obtained by running `full_pipelin
 
 ## BUG FIXES
 
-* `integrate/scvi`: the `max_epochs` argument is no longer required since it has a default value.
+* `integrate/scvi`: the max_epochs is no longer required since it has a default value.
 
 # openpipelines 0.8.0
 
