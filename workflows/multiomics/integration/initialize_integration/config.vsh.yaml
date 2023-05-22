@@ -1,13 +1,9 @@
 functionality:
-  name: "integration"
-  namespace: "multiomics"
-  description: "A pipeline for demultiplexing multimodal multi-sample RNA transcriptomics data."
+  name: "initialize_integration"
+  namespace: "integration/initialize_integration"
+  description: "Run calculations that output information required for most integration methods: PCA, nearest neighbour and UMAP."
   authors:
-    - __merge__: ../../../src/authors/dries_de_maeyer.yaml
-      roles: [ author ]
-    - __merge__: ../../../src/authors/robrecht_cannoodt.yaml
-      roles: [ author, maintainer ]
-    - __merge__: ../../../src/authors/dries_schaumont.yaml
+    - __merge__: ../../../../src/authors/dries_schaumont.yaml
       roles: [ author ]
   argument_groups:
     - name: "Inputs"
@@ -27,6 +23,11 @@ functionality:
           type: string
           description: use specified layer for expression values instead of the .X object from the modality.
           required: false
+        - name: "--modality"
+          description: Which modality to process.
+          type: string
+          default: "rna"
+          required: false
     - name: "Outputs"
       arguments:
         - name: "--output"
@@ -45,27 +46,6 @@ functionality:
           type: string
           required: false
           description: Column name in .var matrix that will be used to select which genes to run the PCA on.
-    - name: Harmony integration options
-      arguments:
-        - name: "--obsm_integrated"
-          type: string
-          default: "X_pca_integrated"
-          required: false
-          description: "In which .obsm slot to store the resulting integrated embedding."
-        - name: "--obs_covariates"
-          type: string
-          description: "The .obs field(s) that define the covariate(s) to regress out."
-          example: ["batch", "sample"]
-          multiple: true
-          required: true
-        - name: "--rna_theta"
-          type: double
-          description: |
-            Diversity clustering penalty parameter. Specify for each variable in group.by.vars. 
-            theta=0 does not encourage any diversity. Larger values of theta
-            result in more diverse clusters."
-          default: 2
-          multiple: true
     - name: Neighbour calculation
       arguments:
         - name: "--uns_neighbors"
@@ -80,16 +60,6 @@ functionality:
           type: string
           default: "connectivities"
           description: "In which .obsp slot to store the connectivities matrix between the resulting neighbors."
-    - name: Clustering options
-      arguments:
-        - name: "--obs_cluster"
-          type: string
-          description: Name of the .obs key under which to add the cluster labels.
-          default: "leiden"
-        - name: "--leiden_resolution"
-          type: double
-          description: Control the coarseness of the clustering. Higher values lead to more clusters.
-          default: 1
     - name: Umap options
       arguments:
         - name: "--obsm_umap"
@@ -97,7 +67,6 @@ functionality:
           default: "X_umap"
           required: false
           description: "In which .obsm slot to store the resulting UMAP embedding."
-
   resources:
     - type: nextflow_script
       path: main.nf
@@ -105,4 +74,4 @@ functionality:
     - type: nextflow_script
       path: main.nf
       entrypoint: test_wf
-    - path: ../../../resources_test/concat_test_data
+    - path: ../../../../resources_test/concat_test_data

@@ -11,7 +11,8 @@ include { run_wf as rna_singlesample } from workflowDir + '/multiomics/rna_singl
 include { run_wf as rna_multisample } from workflowDir + '/multiomics/rna_multisample/main.nf'
 include { run_wf as prot_singlesample } from workflowDir + '/multiomics/prot_singlesample/main.nf'
 include { run_wf as prot_multisample } from workflowDir + '/multiomics/prot_multisample/main.nf'
-include { run_wf as integration } from workflowDir + '/multiomics/integration/main.nf'
+include { run_wf as initialize_integration_rna } from workflowDir + '/multiomics/integration/initialize_integration/main.nf'
+include { run_wf as initialize_integration_prot } from workflowDir + '/multiomics/integration/initialize_integration/main.nf'
 include { splitStub } from workflowDir + '/multiomics/full_pipeline/split_stub.nf'
 
 include { readConfig; helpMessage; readCsv; preprocessInputs; channelFromParams } from workflowDir + "/utils/WorkflowHelper.nf"
@@ -65,12 +66,11 @@ workflow run_wf {
           "top_n_vars": "top_n_vars"
         ],
         "prot_multisample_args": [:],
-        "integration_args": [
-          "obs_covariates": "obs_covariates",
+        "integration_args_rna": [
           "var_pca_feature_selection": "filter_with_hvg_var_output", // run PCA on highly variable genes only
-          "rna_theta": "rna_harmony_theta",
-          "leiden_resolution": "leiden_resolution",
-        ]
+          "output": "output"
+        ],
+        "integration_args_prot": ["output": "output"]
     )
     | getWorkflowArguments(key: "add_id_args")
 
@@ -87,10 +87,6 @@ workflow run_wf {
     | filter{ ! (it[1].add_id_to_obs) }
 
   samples_with_id_ch = add_id_ch.mix(no_id_added_ch)
-
-  start_ch = samples_with_id_ch
-    // split by modality
-    | getWorkflowArguments(key: "split_modalities_args")
 
   split_ch = add_id_ch
     | filter{!workflow.stubRun}
@@ -182,19 +178,31 @@ workflow run_wf {
 
   // Concat channel if more than one modality was found
   merge_ch = unknown_channel.concat(*mod_chs)
-  output_ch = merge_ch
+  for_integration_ch = merge_ch
     | toSortedList{ a, b -> b[0] <=> a[0] }
     | map { list -> 
-      ["merged", list.collect{it[1]}] + list[0].drop(2)
+      def new_input = list.collect{it[1]}
+      def other_arguments = list[0][2] // Get the first set, the other ones are copies
+      def modalities_list = ["modalities": list.collect({it[-1].modality}).unique()]
+      ["merged", new_input] + other_arguments + modalities_list
     }
-    | merge.run(
-        auto: [ publish: true ],
-        args: [ output_compression: "gzip" ]
-    )
-    | getWorkflowArguments(key: "integration_args")
-    | pmap {id, input_args -> [id, input_args + [layer: "log_normalized"]]}
-    | integration
-    | map {list -> [list[0], list[1]]} 
+    | merge.run(args: [ output_compression: "gzip" ])
+  
+  integration_processors = [
+    [id: "rna", "workflow": initialize_integration_rna, "args": ["layer": "log_normalized", "modality": "rna"]],
+    [id: "prot", "workflow": initialize_integration_prot, "args": ["layer": "clr", "modality": "prot"]],
+  ]
+
+  output_ch = integration_processors.inject(for_integration_ch){ channel_in, processor ->
+    channel_out_integrated = channel_in
+      | filter{it[3].modalities.contains(processor.id)}
+      | pmap {id, input_args -> [id, ["input": input_args] + processor.args]}
+      | processor.workflow
+    ch_in_unmodified = channel_in
+      | filter{ !(it[3].modalities.contains(processor.id)) }
+    return channel_out_integrated.concat(ch_in_unmodified)
+  }
+  | map {list -> [list[0], list[1]]} 
 
   emit:
   output_ch
@@ -220,7 +228,6 @@ workflow test_wf {
           publish_dir: "foo/"
         ]
       ],
-      obs_covariates: "sample_id",
       rna_min_counts: 2,
       prot_min_counts: 3
     ]
@@ -264,12 +271,9 @@ workflow test_wf3 {
         publish_dir: "foo/"
       ]
     ],
-    obs_covariates: [],
     rna_min_counts: 2,
     var_qc_metrics: "highly_variable",
     filter_with_hvg_var_output: "highly_variable",
-    rna_harmony_theta: 3,
-    leiden_resolution: 2,
   ]
 
   input_ch = channelFromParams(testParams, config)
@@ -346,7 +350,6 @@ workflow test_wf2 {
           prot_max_fraction_mito: 1
         ],
       ],
-      obs_covariates: "sample_id",
       rna_min_counts: 2,
       prot_min_counts: 3
     ]
