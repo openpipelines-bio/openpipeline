@@ -6,26 +6,23 @@ layer: "log_normalized"
 # Outputs
 # output: "$id.$key.output.h5mu"
 
-# PCA options
-obsm_pca: "X_pca"
-# var_pca_feature_selection: "foo"
+# Neighbour calculation
+uns_neighbors: "harmonypy_integration_neighbors"
+obsp_neighbor_distances: "harmonypy_integration_distances"
+obsp_neighbor_connectivities: "harmonypy_integration_connectivities"
 
 # Harmony integration options
+embedding: "X_pca"
 obsm_integrated: "X_pca_integrated"
 obs_covariates: # please fill in - example: ["batch", "sample"]
 rna_theta: [2]
 
-# Neighbour calculation
-uns_neighbors: "neighbors"
-obsp_neighbor_distances: "distances"
-obsp_neighbor_connectivities: "connectivities"
-
 # Clustering options
-obs_cluster: "leiden"
+obs_cluster: "harmony_integration_leiden"
 leiden_resolution: 1
 
 # Umap options
-obsm_umap: "X_umap"
+obsm_umap: "X_leiden_harmony_umap"
 
 # Nextflow input-output arguments
 publish_dir: # please fill in - example: "output/"

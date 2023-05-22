@@ -28,6 +28,11 @@
             "type": "string",
             "description": "The compression format to be used on the output h5mu object.","enum": ["gzip", "lzf"],
             "default": ""
+          },
+          "output_layer": {
+            "type": "string",
+            "description": "Output layer to use. By default, use X.",
+            "default": ""
           }
           
         }

@@ -1,7 +1,6 @@
 # Inputs
 id: # please fill in - example: "foo"
 input: # please fill in - example: "input.h5mu"
-obs_covariates: ["sample_id"]
 
 # Sample ID options
 add_id_to_obs: true
@@ -33,12 +32,6 @@ filter_with_hvg_obs_batch_key: "sample_id"
 # QC metrics calculation options
 var_qc_metrics: ["filter_with_hvg"]
 top_n_vars: [50, 100, 200, 500]
-
-# Harmony integration options
-rna_harmony_theta: [2]
-
-# Leiden Clustering Options
-leiden_resolution: 1
 
 # Nextflow input-output arguments
 publish_dir: # please fill in - example: "output/"

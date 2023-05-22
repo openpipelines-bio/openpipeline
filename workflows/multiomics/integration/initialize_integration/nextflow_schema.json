@@ -1,7 +1,7 @@
 {
     "$schema": "http://json-schema.org/draft-07/schema",
-    "title": "integration",
-    "description": "A pipeline for demultiplexing multimodal multi-sample RNA transcriptomics data.",
+    "title": "initialize_integration",
+    "description": "Run calculations that output information required for most integration methods: PCA, nearest neighbour and UMAP.",
     "type": "object",
     "definitions": {
       "inputs" : {
@@ -23,6 +23,11 @@
             "type": "string",
             "description": "use specified layer for expression values instead of the .X object from the modality.",
             "default": "log_normalized"
+          },
+          "modality": {
+            "type": "string",
+            "description": "Which modality to process.",
+            "default": "rna"
           }
           
         }
@@ -58,29 +63,6 @@
           
         }
       },
-      "harmony integration options" : {
-        "title": "Harmony integration options",
-        "type": "object",
-        "description": "No description",
-        "properties": {
-          "obsm_integrated": {
-            "type": "string",
-            "description": "In which .obsm slot to store the resulting integrated embedding.",
-            "default": "X_pca_integrated"
-          },
-          "obs_covariates": {
-            "type": "string",
-            "description": "The .obs field(s) that define the covariate(s) to regress out.",
-            "default": ""
-          },
-          "rna_theta": {
-            "type": "number",
-            "description": "Diversity clustering penalty parameter. Specify for each variable in group.by.vars. ","help_text": "Diversity clustering penalty parameter. Specify for each variable in group.by.vars. \ntheta=0 does not encourage any diversity. Larger values of theta\nresult in more diverse clusters.\"\n",
-            "default": "2"
-          }
-          
-        }
-      },
       "neighbour calculation" : {
         "title": "Neighbour calculation",
         "type": "object",
@@ -100,24 +82,6 @@
             "type": "string",
             "description": "In which .obsp slot to store the connectivities matrix between the resulting neighbors.",
             "default": "connectivities"
-          }
-          
-        }
-      },
-      "clustering options" : {
-        "title": "Clustering options",
-        "type": "object",
-        "description": "No description",
-        "properties": {
-          "obs_cluster": {
-            "type": "string",
-            "description": "Name of the .obs key under which to add the cluster labels.",
-            "default": "leiden"
-          },
-          "leiden_resolution": {
-            "type": "number",
-            "description": "Control the coarseness of the clustering. Higher values lead to more clusters.",
-            "default": "1"
           }
           
         }
@@ -165,13 +129,7 @@
         "$ref": "#/definitions/pca options"
       },
       {
-        "$ref": "#/definitions/harmony integration options"
-      },
-      {
         "$ref": "#/definitions/neighbour calculation"
-      },
-      {
-        "$ref": "#/definitions/clustering options"
       },
       {
         "$ref": "#/definitions/umap options"

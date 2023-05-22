@@ -183,6 +183,10 @@ function ViashHelp {
   echo "        example: gzip"
   echo "        choices: [ gzip, lzf ]"
   echo "        The compression format to be used on the output h5mu object."
+  echo ""
+  echo "    --output_layer"
+  echo "        type: string"
+  echo "        Output layer to use. By default, use X."
 }
 
 ######## Helper functions for setting up Docker images for viash ########
@@ -400,7 +404,7 @@ function ViashDockerCheckCommands {
 #   ViashDockerFile
 function ViashDockerfile {
   cat << 'VIASHDOCKER'
-FROM python:3.8
+FROM python:3.10
 
 ENV SKLEARN_ALLOW_DEPRECATED_SKLEARN_PACKAGE_INSTALL True
 RUN pip install --upgrade pip && \
@@ -408,9 +412,9 @@ RUN pip install --upgrade pip && \
 
 LABEL org.opencontainers.image.authors="Dries Schaumont"
 LABEL org.opencontainers.image.description="Companion container for running component transform clr"
-LABEL org.opencontainers.image.created="2023-05-17T08:08:20Z"
+LABEL org.opencontainers.image.created="2023-05-22T20:23:54Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="b0e21b3b4715267055b2defbb147c7a9c5d0a7bd"
+LABEL org.opencontainers.image.revision="90ee31de3a2ebf249fdf5fd1a7a2be470f99325d"
 LABEL org.opencontainers.image.version="main_build"
 VIASHDOCKER
 }
@@ -617,6 +621,17 @@ while [[ $# -gt 0 ]]; do
         --output_compression=*)
             [ -n "$VIASH_PAR_OUTPUT_COMPRESSION" ] && ViashError Bad arguments for option \'--output_compression=*\': \'$VIASH_PAR_OUTPUT_COMPRESSION\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
             VIASH_PAR_OUTPUT_COMPRESSION=$(ViashRemoveFlags "$1")
+            shift 1
+            ;;
+        --output_layer)
+            [ -n "$VIASH_PAR_OUTPUT_LAYER" ] && ViashError Bad arguments for option \'--output_layer\': \'$VIASH_PAR_OUTPUT_LAYER\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+            VIASH_PAR_OUTPUT_LAYER="$2"
+            [ $# -lt 2 ] && ViashError Not enough arguments passed to --output_layer. Use "--help" to get more information on the parameters. && exit 1
+            shift 2
+            ;;
+        --output_layer=*)
+            [ -n "$VIASH_PAR_OUTPUT_LAYER" ] && ViashError Bad arguments for option \'--output_layer=*\': \'$VIASH_PAR_OUTPUT_LAYER\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+            VIASH_PAR_OUTPUT_LAYER=$(ViashRemoveFlags "$1")
             shift 1
             ;;
         ---setup)
@@ -913,7 +928,8 @@ par = {
   'input': $( if [ ! -z ${VIASH_PAR_INPUT+x} ]; then echo "r'${VIASH_PAR_INPUT//\'/\'\"\'\"r\'}'"; else echo None; fi ),
   'modality': $( if [ ! -z ${VIASH_PAR_MODALITY+x} ]; then echo "r'${VIASH_PAR_MODALITY//\'/\'\"\'\"r\'}'"; else echo None; fi ),
   'output': $( if [ ! -z ${VIASH_PAR_OUTPUT+x} ]; then echo "r'${VIASH_PAR_OUTPUT//\'/\'\"\'\"r\'}'"; else echo None; fi ),
-  'output_compression': $( if [ ! -z ${VIASH_PAR_OUTPUT_COMPRESSION+x} ]; then echo "r'${VIASH_PAR_OUTPUT_COMPRESSION//\'/\'\"\'\"r\'}'"; else echo None; fi )
+  'output_compression': $( if [ ! -z ${VIASH_PAR_OUTPUT_COMPRESSION+x} ]; then echo "r'${VIASH_PAR_OUTPUT_COMPRESSION//\'/\'\"\'\"r\'}'"; else echo None; fi ),
+  'output_layer': $( if [ ! -z ${VIASH_PAR_OUTPUT_LAYER+x} ]; then echo "r'${VIASH_PAR_OUTPUT_LAYER//\'/\'\"\'\"r\'}'"; else echo None; fi )
 }
 meta = {
   'functionality_name': $( if [ ! -z ${VIASH_META_FUNCTIONALITY_NAME+x} ]; then echo "r'${VIASH_META_FUNCTIONALITY_NAME//\'/\'\"\'\"r\'}'"; else echo None; fi ),
@@ -936,8 +952,9 @@ meta = {
 def main():
     input_h5mu = read_h5mu(par['input'])
     modality = input_h5mu[par['modality']]
-    normalized_counts = pt.pp.clr(modality, inplace=False)
-    input_h5mu[par["modality"]].layers['clr'] = normalized_counts.X
+    normalized_counts = pt.pp.clr(modality, inplace=False if par['output_layer'] else True)
+    if normalized_counts:
+        input_h5mu[par["modality"]].layers[par['output_layer']] = normalized_counts.X
     input_h5mu.write_h5mu(par['output'], compression=par["output_compression"])
 
 if __name__ == "__main__":

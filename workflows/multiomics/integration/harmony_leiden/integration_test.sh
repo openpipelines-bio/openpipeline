@@ -11,9 +11,8 @@ cd "$REPO_ROOT"
 export NXF_VER=21.10.6
 
 nextflow run . \
-  -main-script workflows/multiomics/integration/main.nf \
+  -main-script workflows/multiomics/integration/harmony_leiden/main.nf \
   -profile docker,no_publish \
-  -resume \
   -entry test_wf \
   -with-trace work/trace.txt \
-  -with-dag workflows/multiomics/integration/graph.dot
+  -with-dag workflows/multiomics/integration/harmony_leiden/graph.dot
