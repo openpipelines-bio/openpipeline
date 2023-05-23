@@ -1,4 +1,4 @@
-# openpipelines 0.9.0
+# openpipelines 0.9.0 (unreleased)
 
 ## BREAKING CHANGES
 
@@ -21,6 +21,11 @@ The old behavior of the `full_pipeline` can be obtained by running `full_pipelin
 * `workflows/full_pipeline`: PCA, nearest neighbours and UMAP are now calculated for the `prot` modality.
 
 * `transform/clr`: added `output_layer` argument.
+
+## BUG FIXES
+
+* `annotate/popv`: Fix concat issue when the input data has multiple layers (#395, PR #397).
+
 
 # openpipelines 0.8.0
 
