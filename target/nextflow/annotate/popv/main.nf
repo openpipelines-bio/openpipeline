@@ -167,6 +167,16 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
           },
           {
             "type" : "string",
+            "name" : "--reference_layer",
+            "description" : "Which layer to use. If no value is provided, the counts are assumed to be in the `.X` slot. Otherwise, count data is expected to be in `.layers[reference_layer]`.",
+            "required" : false,
+            "direction" : "input",
+            "multiple" : false,
+            "multiple_sep" : ":",
+            "dest" : "par"
+          },
+          {
+            "type" : "string",
             "name" : "--reference_obs_label",
             "description" : "Key in obs field of reference AnnData with cell-type information.",
             "default" : [
@@ -269,7 +279,7 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
         "parent" : "file:/home/runner/work/openpipeline/openpipeline/src/annotate/popv/config.vsh.yaml"
       }
     ],
-    "description" : "Performs popular major vote cell typing on single cell sequence data https://github.com/czbiohub/PopV",
+    "description" : "Performs popular major vote cell typing on single cell sequence data using multiple algorithms. Note that this is a one-shot version of PopV.",
     "test_resources" : [
       {
         "type" : "python_script",
@@ -321,7 +331,7 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
         {
           "type" : "docker",
           "run" : [
-            "mkdir -p /opt/popv_cl_ontology && \\\\\nwget https://raw.githubusercontent.com/czbiohub/PopV/main/ontology/cl.obo -O \\"/opt/popv_cl_ontology/cl.obo\\" && \\\\\nwget https://raw.githubusercontent.com/czbiohub/PopV/main/ontology/cl.ontology -O \\"/opt/popv_cl_ontology/cl.ontology\\" && \\\\\nwget https://raw.githubusercontent.com/czbiohub/PopV/main/ontology/cl.ontology.nlp.emb -O \\"/opt/popv_cl_ontology/cl.ontology.nlp.emb\\"\n"
+            "cd /opt && mkdir -p /opt/popv_cl_ontology && \\\\\nwget https://raw.githubusercontent.com/czbiohub/PopV/main/ontology/cl.obo -O \\"popv_cl_ontology/cl.obo\\" && \\\\\nwget https://raw.githubusercontent.com/czbiohub/PopV/main/ontology/cl.ontology -O \\"popv_cl_ontology/cl.ontology\\" && \\\\\nwget https://raw.githubusercontent.com/czbiohub/PopV/main/ontology/cl.ontology.nlp.emb -O \\"popv_cl_ontology/cl.ontology.nlp.emb\\"\n"
           ]
         }
       ],
@@ -361,7 +371,7 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
     "config" : "/home/runner/work/openpipeline/openpipeline/src/annotate/popv/config.vsh.yaml",
     "platform" : "nextflow",
     "viash_version" : "0.7.1",
-    "git_commit" : "90ee31de3a2ebf249fdf5fd1a7a2be470f99325d",
+    "git_commit" : "50d7e1cafa987bc36ca7e690d510bff4da5de4c5",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))
@@ -375,7 +385,9 @@ import sys
 import re
 import tempfile
 import logging
+import typing
 import numpy as np
+import pandas as pd
 import mudata as mu
 import anndata as ad
 import popv
@@ -412,6 +424,7 @@ par = {
   'input_obs_label': $( if [ ! -z ${VIASH_PAR_INPUT_OBS_LABEL+x} ]; then echo "r'${VIASH_PAR_INPUT_OBS_LABEL//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'unknown_celltype_label': $( if [ ! -z ${VIASH_PAR_UNKNOWN_CELLTYPE_LABEL+x} ]; then echo "r'${VIASH_PAR_UNKNOWN_CELLTYPE_LABEL//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'reference': $( if [ ! -z ${VIASH_PAR_REFERENCE+x} ]; then echo "r'${VIASH_PAR_REFERENCE//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
+  'reference_layer': $( if [ ! -z ${VIASH_PAR_REFERENCE_LAYER+x} ]; then echo "r'${VIASH_PAR_REFERENCE_LAYER//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'reference_obs_label': $( if [ ! -z ${VIASH_PAR_REFERENCE_OBS_LABEL+x} ]; then echo "r'${VIASH_PAR_REFERENCE_OBS_LABEL//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'reference_obs_batch': $( if [ ! -z ${VIASH_PAR_REFERENCE_OBS_BATCH+x} ]; then echo "r'${VIASH_PAR_REFERENCE_OBS_BATCH//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'output': $( if [ ! -z ${VIASH_PAR_OUTPUT+x} ]; then echo "r'${VIASH_PAR_OUTPUT//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
@@ -438,14 +451,28 @@ meta = {
 use_gpu = cuda_is_available() or mps_is_available()
 logger.info("GPU enabled? %s", use_gpu)
 
-# changes:
-# - input dataset is a mudata object
-# - expect reference to be download apriori
-# - CL ontology is now part of the docker container
-# - switch reference to ensembl ids as soon as possible
-# - find common variables by intersecting the ensembl genes
-# - store output in obsm, and store some values in the obs
-#   TODO: perform ortholog mapping if need be
+# Helper functions
+def get_X(adata: ad.AnnData, layer: typing.Optional[str], var_index: typing.Optional[str]):
+    """Fetch the counts data from X or a layer. Subset columns by var_index if so desired."""
+    if var_index:
+        adata = adata[:, var_index]
+    if layer:
+        return adata.layers[layer]
+    else:
+        return adata.X
+def get_obs(adata: ad.AnnData, obs_label: typing.Optional[str], obs_batch: typing.Optional[str]):
+    """Subset the obs dataframe to just the columns defined by the obs_label and obs_batch."""
+    df = pd.DataFrame(
+        index=adata.obs.index
+    )       
+    if obs_label:
+        df[obs_label] = adata.obs[obs_label]
+    if obs_batch:
+        df[obs_batch] = adata.obs[obs_batch]
+    return df
+def get_var(adata: ad.AnnData, var_index: list[str]):
+    """Fetch the var dataframe. Subset rows by var_index if so desired."""
+    return adata.var.loc[var_index]
 
 def main(par, meta):
     assert len(par["methods"]) >= 1, "Please, specify at least one method for cell typing."
@@ -476,7 +503,7 @@ def main(par, meta):
     if par["input_var_subset"]:
         logger.info("Subset input with .var['%s']", par["input_var_subset"])
         assert par["input_var_subset"] in input_modality.var, f"--input_var_subset='{par['input_var_subset']}' needs to be a column in .var"
-        input_modality = input_modality[:,input_modality.var[par["input_var_subset"]]].copy()
+        input_modality = input_modality[:,input_modality.var[par["input_var_subset"]]]
 
     ### ALIGN REFERENCE AND INPUT ###
     logger.info("### ALIGN REFERENCE AND INPUT ###")
@@ -489,9 +516,19 @@ def main(par, meta):
     logger.info("  intersect n_vars: %i", len(common_ens_ids))
     assert len(common_ens_ids) >= 100, "The intersection of genes is too small."
 
-    # perform intersection
-    input_modality = input_modality[:, common_ens_ids].copy()
-    reference = reference[:, common_ens_ids].copy()
+    # subset input objects to make sure popv is using the data we expect
+    input_modality = ad.AnnData(
+        X = get_X(input_modality, par["input_layer"], common_ens_ids),
+        obs = get_obs(input_modality, par["input_obs_label"], par["input_obs_batch"]),
+        var = get_var(input_modality, common_ens_ids)
+    )
+    reference = ad.AnnData(
+        X = get_X(reference, par["reference_layer"], common_ens_ids),
+        obs = get_obs(reference, par["reference_obs_label"], par["reference_obs_batch"]),
+        var = get_var(reference, common_ens_ids)
+    )
+
+    # remove layers that 
     
     ### ALIGN REFERENCE AND INPUT ###
     logger.info("### ALIGN REFERENCE AND INPUT ###")
@@ -503,7 +540,7 @@ def main(par, meta):
             query_adata=input_modality,
             query_labels_key=par["input_obs_label"],
             query_batch_key=par["input_obs_batch"],
-            query_layers_key=par["input_layer"],
+            query_layers_key=None, # this is taken care of by subset
             # reference
             ref_adata=reference,
             ref_labels_key=par["reference_obs_label"],
@@ -522,7 +559,6 @@ def main(par, meta):
             cl_obo_folder=cl_obo_folder,
             use_gpu=use_gpu
         )
-        # pq_adata_orig = pq.adata.copy()
 
         logger.info("Annotate data")
         popv.annotation.annotate_data(

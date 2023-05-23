@@ -135,6 +135,19 @@ functionality:
       multiple_sep: ":"
       dest: "par"
     - type: "string"
+      name: "--reference_layer"
+      alternatives: []
+      description: "Which layer to use. If no value is provided, the counts are assumed\
+        \ to be in the `.X` slot. Otherwise, count data is expected to be in `.layers[reference_layer]`."
+      example: []
+      default: []
+      required: false
+      choices: []
+      direction: "input"
+      multiple: false
+      multiple_sep: ":"
+      dest: "par"
+    - type: "string"
       name: "--reference_obs_label"
       alternatives: []
       description: "Key in obs field of reference AnnData with cell-type information."
@@ -222,7 +235,7 @@ functionality:
     path: "script.py"
     is_executable: true
   description: "Performs popular major vote cell typing on single cell sequence data\
-    \ https://github.com/czbiohub/PopV"
+    \ using multiple algorithms. Note that this is a one-shot version of PopV."
   test_resources:
   - type: "python_script"
     path: "test.py"
@@ -273,10 +286,10 @@ platforms:
     add: []
     copy: []
     run:
-    - "mkdir -p /opt/popv_cl_ontology && \\\nwget https://raw.githubusercontent.com/czbiohub/PopV/main/ontology/cl.obo\
-      \ -O \"/opt/popv_cl_ontology/cl.obo\" && \\\nwget https://raw.githubusercontent.com/czbiohub/PopV/main/ontology/cl.ontology\
-      \ -O \"/opt/popv_cl_ontology/cl.ontology\" && \\\nwget https://raw.githubusercontent.com/czbiohub/PopV/main/ontology/cl.ontology.nlp.emb\
-      \ -O \"/opt/popv_cl_ontology/cl.ontology.nlp.emb\"\n"
+    - "cd /opt && mkdir -p /opt/popv_cl_ontology && \\\nwget https://raw.githubusercontent.com/czbiohub/PopV/main/ontology/cl.obo\
+      \ -O \"popv_cl_ontology/cl.obo\" && \\\nwget https://raw.githubusercontent.com/czbiohub/PopV/main/ontology/cl.ontology\
+      \ -O \"popv_cl_ontology/cl.ontology\" && \\\nwget https://raw.githubusercontent.com/czbiohub/PopV/main/ontology/cl.ontology.nlp.emb\
+      \ -O \"popv_cl_ontology/cl.ontology.nlp.emb\"\n"
     build_args: []
     env: []
   test_setup:
@@ -323,5 +336,5 @@ info:
   output: "/home/runner/work/openpipeline/openpipeline/target/docker/annotate/popv"
   executable: "/home/runner/work/openpipeline/openpipeline/target/docker/annotate/popv/popv"
   viash_version: "0.7.1"
-  git_commit: "90ee31de3a2ebf249fdf5fd1a7a2be470f99325d"
+  git_commit: "50d7e1cafa987bc36ca7e690d510bff4da5de4c5"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"
