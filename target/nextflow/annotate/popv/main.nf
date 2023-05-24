@@ -371,7 +371,7 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
     "config" : "/home/runner/work/openpipeline/openpipeline/src/annotate/popv/config.vsh.yaml",
     "platform" : "nextflow",
     "viash_version" : "0.7.1",
-    "git_commit" : "50d7e1cafa987bc36ca7e690d510bff4da5de4c5",
+    "git_commit" : "a5953d49aa00614fd01775e6d9d40a76deac5d00",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))
@@ -379,7 +379,6 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
 thisScript = '''set -e
 tempscript=".viash_script.sh"
 cat > "$tempscript" << VIASHMAIN
-
 
 import sys
 import re
@@ -460,16 +459,10 @@ def get_X(adata: ad.AnnData, layer: typing.Optional[str], var_index: typing.Opti
         return adata.layers[layer]
     else:
         return adata.X
-def get_obs(adata: ad.AnnData, obs_label: typing.Optional[str], obs_batch: typing.Optional[str]):
+def get_obs(adata: ad.AnnData, obs_par_names):
     """Subset the obs dataframe to just the columns defined by the obs_label and obs_batch."""
-    df = pd.DataFrame(
-        index=adata.obs.index
-    )       
-    if obs_label:
-        df[obs_label] = adata.obs[obs_label]
-    if obs_batch:
-        df[obs_batch] = adata.obs[obs_batch]
-    return df
+    obs_columns = reference_obs_cols = [par[x] for x in obs_par_names if par[x]]
+    return adata.obs[obs_columns]
 def get_var(adata: ad.AnnData, var_index: list[str]):
     """Fetch the var dataframe. Subset rows by var_index if so desired."""
     return adata.var.loc[var_index]
@@ -519,12 +512,12 @@ def main(par, meta):
     # subset input objects to make sure popv is using the data we expect
     input_modality = ad.AnnData(
         X = get_X(input_modality, par["input_layer"], common_ens_ids),
-        obs = get_obs(input_modality, par["input_obs_label"], par["input_obs_batch"]),
+        obs = get_obs(input_modality, ["input_obs_label", "input_obs_batch"]),
         var = get_var(input_modality, common_ens_ids)
     )
     reference = ad.AnnData(
         X = get_X(reference, par["reference_layer"], common_ens_ids),
-        obs = get_obs(reference, par["reference_obs_label"], par["reference_obs_batch"]),
+        obs = get_obs(reference, ["reference_obs_label", "reference_obs_batch"]),
         var = get_var(reference, common_ens_ids)
     )
 
