@@ -28,6 +28,8 @@ The old behavior of the `full_pipeline` can be obtained by running `full_pipelin
 
 * `annotate/popv`: Fix indexing issue when MuData object contain non overlapping modalities (PR #405).
 
+* `mapping/multi_star`: Fix issue where temp dir could not be created when group_id contains slashes (PR #406).
+
 # openpipelines 0.8.0
 
 ## BREAKING CHANGES

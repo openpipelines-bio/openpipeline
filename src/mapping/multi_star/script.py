@@ -207,6 +207,7 @@ def star_and_htseq(
     num_threads: int
 ):
     star_output = par["output"] / "per" / group_id
+    temp_dir_group = temp_dir / f"star_tmp_{group_id}"
     unsorted_bam = star_output / "Aligned.out.bam"
     sorted_bam = star_output / "Aligned.sorted.out.bam"
     counts_file = star_output / "htseq-count.txt"
@@ -214,6 +215,7 @@ def star_and_htseq(
 
     print(f">> Running STAR for group '{group_id}' with command:", flush=True)
     star_output.mkdir(parents=True, exist_ok=True)
+    temp_dir_group.parent.mkdir(parents=True, exist_ok=True)
     run_star(
         r1_files=r1_files,
         r2_files=r2_files,
