@@ -14,7 +14,7 @@ Running the integration in the `full_pipeline` deemed to be impractical because 
 
 The old behavior of the `full_pipeline` can be obtained by running `full_pipeline` followed by the `leiden_harmony` pipeline.
 
-* The `cripr` and `hashing` modalities have been renamed to `gdo` and `hto` respectively ([#392](https://github.com/openpipelines-bio/openpipeline/pull/392)).
+* The `crispr` and `hashing` modalities have been renamed to `gdo` and `hto` respectively ([#392](https://github.com/openpipelines-bio/openpipeline/pull/392)).
 
 ## NEW FUNCTIONALITY
 
