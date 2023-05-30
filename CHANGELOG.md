@@ -26,6 +26,7 @@ The old behavior of the `full_pipeline` can be obtained by running `full_pipelin
 
 * `annotate/popv`: Fix concat issue when the input data has multiple layers (#395, PR #397).
 
+* `annotate/popv`: Fix indexing issue when MuData object contain non overlapping modalities (PR #405).
 
 # openpipelines 0.8.0
 
