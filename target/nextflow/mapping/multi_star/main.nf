@@ -3510,7 +3510,7 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
     "config" : "/home/runner/work/openpipeline/openpipeline/src/mapping/multi_star/config.vsh.yaml",
     "platform" : "nextflow",
     "viash_version" : "0.7.1",
-    "git_commit" : "0c0ceacfcc475e6743ad118d56283ec9405db7f1",
+    "git_commit" : "275ed3f9481a5183da75c603edd18436aee5daa4",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))
@@ -3919,6 +3919,7 @@ def star_and_htseq(
     num_threads: int
 ):
     star_output = par["output"] / "per" / group_id
+    temp_dir_group = temp_dir / f"star_tmp_{group_id}"
     unsorted_bam = star_output / "Aligned.out.bam"
     sorted_bam = star_output / "Aligned.sorted.out.bam"
     counts_file = star_output / "htseq-count.txt"
@@ -3926,6 +3927,7 @@ def star_and_htseq(
 
     print(f">> Running STAR for group '{group_id}' with command:", flush=True)
     star_output.mkdir(parents=True, exist_ok=True)
+    temp_dir_group.parent.mkdir(parents=True, exist_ok=True)
     run_star(
         r1_files=r1_files,
         r2_files=r2_files,

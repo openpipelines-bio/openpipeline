@@ -463,9 +463,9 @@ RUN pip install --upgrade pip && \
 
 LABEL org.opencontainers.image.authors="Mauro Saporita, Povilas Gibas"
 LABEL org.opencontainers.image.description="Companion container for running component interpret lianapy"
-LABEL org.opencontainers.image.created="2023-05-30T10:08:06Z"
+LABEL org.opencontainers.image.created="2023-05-30T10:58:09Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="0c0ceacfcc475e6743ad118d56283ec9405db7f1"
+LABEL org.opencontainers.image.revision="275ed3f9481a5183da75c603edd18436aee5daa4"
 LABEL org.opencontainers.image.version="main_build"
 VIASHDOCKER
 }
