@@ -175,7 +175,7 @@ def main(par, meta):
             methods=par["methods"]
         )
 
-    popv_input = pq.adata[input.obs_names]
+    popv_input = pq.adata[input_modality.obs_names]
 
     # select columns starting with "popv_"
     popv_obs_cols = popv_input.obs.columns[popv_input.obs.columns.str.startswith("popv_")]

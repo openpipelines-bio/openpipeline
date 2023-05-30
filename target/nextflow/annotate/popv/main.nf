@@ -371,7 +371,7 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
     "config" : "/home/runner/work/openpipeline/openpipeline/src/annotate/popv/config.vsh.yaml",
     "platform" : "nextflow",
     "viash_version" : "0.7.1",
-    "git_commit" : "a5953d49aa00614fd01775e6d9d40a76deac5d00",
+    "git_commit" : "e148fd48d03c8ce529fb2f834116d09db4a198c1",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))
@@ -559,7 +559,7 @@ def main(par, meta):
             methods=par["methods"]
         )
 
-    popv_input = pq.adata[input.obs_names]
+    popv_input = pq.adata[input_modality.obs_names]
 
     # select columns starting with "popv_"
     popv_obs_cols = popv_input.obs.columns[popv_input.obs.columns.str.startswith("popv_")]
