@@ -100,7 +100,7 @@ class TestXGBoost(unittest.TestCase):
             adata = input_data.mod["rna"]
 
             # Simulate a latent embedding
-            # Later, we can use a real one by calling `integrate` component in advamnce
+            # Later, we can use a real one by calling `integrate` component in advance
             adata.obsm["X_integrated_scanvi"] = np.random.normal(size=(adata.n_obs, 30))
 
             input_data.write(tempfile_input_file.name)
