@@ -483,9 +483,9 @@ wget https://raw.githubusercontent.com/czbiohub/PopV/main/ontology/cl.ontology.n
 
 LABEL org.opencontainers.image.authors="Matthias Beyens, Robrecht Cannoodt"
 LABEL org.opencontainers.image.description="Companion container for running component annotate popv"
-LABEL org.opencontainers.image.created="2023-05-31T09:53:16Z"
+LABEL org.opencontainers.image.created="2023-05-31T15:41:53Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="f2e21f1f2d74edac46fca1d608976ca77ca65d0f"
+LABEL org.opencontainers.image.revision="b017d7cd7e7a42810e37559ff30ddd61ae817b58"
 LABEL org.opencontainers.image.version="main_build"
 VIASHDOCKER
 }
