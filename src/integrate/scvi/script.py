@@ -32,14 +32,31 @@ par = {
 ### VIASH END
 
 
+def subset_hvg(adata, hvg_col):
+    """Subset highly variable genes from AnnData object
+    
+    Parameters
+    ----------
+    adata : AnnData
+        Annotated data object
+    hvg_col : str
+        Name of the boolean column in `adata.var` that contains the information if genes should be used or not
+
+    Returns
+    -------
+    AnnData
+        Copy of `adata` with subsetted genes
+    """
+    return adata[:, adata.var[hvg_col]].copy()
+
+
 def main():
     mdata = mudata.read(par["input"].strip())
     adata = mdata.mod[par['modality']]
 
     if par['var_input']:
         # Subset to HVG
-        selected_genes = adata.var_names[adata.var[par["var_input"]]]
-        adata = adata[:, selected_genes].copy()
+        adata = subset_hvg(adata, hvg_col=par["var_input"])
 
     # Set up the data
     scvi.model.SCVI.setup_anndata(
