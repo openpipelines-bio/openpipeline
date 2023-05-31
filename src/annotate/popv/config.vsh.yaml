@@ -1,7 +1,7 @@
 functionality:
   name: popv
   namespace: "annotate"
-  description: "Performs popular major vote cell typing on single cell sequence data https://github.com/czbiohub/PopV"
+  description: "Performs popular major vote cell typing on single cell sequence data using multiple algorithms. Note that this is a one-shot version of PopV."
   authors:
     - __merge__: ../../authors/matthias_beyens.yaml
       roles: [ author ]
@@ -53,6 +53,10 @@ functionality:
           example: TS_Bladder_filtered.h5ad
           direction: input
           required: true
+        - name: "--reference_layer"
+          type: string
+          description: Which layer to use. If no value is provided, the counts are assumed to be in the `.X` slot. Otherwise, count data is expected to be in `.layers[reference_layer]`.
+          required: false
         - name: "--reference_obs_label"
           type: string
           description: Key in obs field of reference AnnData with cell-type information.
@@ -134,10 +138,10 @@ platforms:
       # download ontology required by popv
       - type: docker
         run: |
-          mkdir -p /opt/popv_cl_ontology && \
-          wget https://raw.githubusercontent.com/czbiohub/PopV/main/ontology/cl.obo -O "/opt/popv_cl_ontology/cl.obo" && \
-          wget https://raw.githubusercontent.com/czbiohub/PopV/main/ontology/cl.ontology -O "/opt/popv_cl_ontology/cl.ontology" && \
-          wget https://raw.githubusercontent.com/czbiohub/PopV/main/ontology/cl.ontology.nlp.emb -O "/opt/popv_cl_ontology/cl.ontology.nlp.emb"
+          cd /opt && mkdir -p /opt/popv_cl_ontology && \
+          wget https://raw.githubusercontent.com/czbiohub/PopV/main/ontology/cl.obo -O "popv_cl_ontology/cl.obo" && \
+          wget https://raw.githubusercontent.com/czbiohub/PopV/main/ontology/cl.ontology -O "popv_cl_ontology/cl.ontology" && \
+          wget https://raw.githubusercontent.com/czbiohub/PopV/main/ontology/cl.ontology.nlp.emb -O "popv_cl_ontology/cl.ontology.nlp.emb"
     test_setup:
       - type: python
         packages:
