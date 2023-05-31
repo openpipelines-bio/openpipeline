@@ -32,7 +32,7 @@
 
 * `workflows/full_pipeline`: Fix incorrectly named filtering arguments (#372).
 
-* `integrate/scvi`: Fix subsetting HVG
+* `integrate/scvi`: Fix bug when subsetting using the `var_input` argument (PR #385).
 
 ## MINOR CHANGES
 
