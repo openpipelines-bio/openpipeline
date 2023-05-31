@@ -15,6 +15,7 @@ par = {
     "query_obsm_key": "X_integrated_scanvi",
     "output": "foo.h5mu",
     "obs_output_suffix": "_pred",
+    "output_uns_key": "labels_transfer",
     "n_neighbors": 1
 }
 ### VIASH END
@@ -71,8 +72,8 @@ def main():
 
     weights = distances_to_affinities(ref_distances)
 
-    if "labels_transfer" not in adata.uns:
-        adata.uns["labels_transfer"] = {}
+    if par["output_uns_key"] not in adata.uns:
+        adata.uns[par["output_uns_key"]] = {}
 
     # for each annotation level, get prediction and uncertainty
     for target in par["targets"]:
@@ -83,7 +84,8 @@ def main():
         predicted_label_col_name = target + par["obs_output_suffix"]
         adata.obs[predicted_label_col_name], adata.obs[target + "_uncertainty"] = prediction, uncertainty
         
-        adata.uns["labels_transfer"][predicted_label_col_name] = {
+        # Write information about labels transfer to uns
+        adata.uns[par["output_uns_key"]][predicted_label_col_name] = {
             "method": "KNN_pynndescent",
             "n_neighbors": par["n_neighbors"],
             "reference": par["reference"]
