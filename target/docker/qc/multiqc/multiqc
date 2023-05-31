@@ -392,9 +392,9 @@ RUN pip install --upgrade pip && \
   pip install --upgrade --no-cache-dir "multiqc"
 
 LABEL org.opencontainers.image.description="Companion container for running component qc multiqc"
-LABEL org.opencontainers.image.created="2023-05-30T10:58:05Z"
+LABEL org.opencontainers.image.created="2023-05-31T08:49:43Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="275ed3f9481a5183da75c603edd18436aee5daa4"
+LABEL org.opencontainers.image.revision="87117a5a2cbcae3a1822c26b043045a286f5e687"
 LABEL org.opencontainers.image.version="main_build"
 VIASHDOCKER
 }
