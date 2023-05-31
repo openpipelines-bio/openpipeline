@@ -24,7 +24,7 @@ The old behavior of the `full_pipeline` can be obtained by running `full_pipelin
 
 ## MINOR CHANGES
 
-* `mapping/multi_star`: Added `--min_success_rate` which causes component to fail when the success rate of processed samples were successful (#408).
+* `mapping/multi_star`: Added `--min_success_rate` which causes component to fail when the success rate of processed samples were successful (PR #408).
 
 ## BUG FIXES
 
@@ -33,6 +33,8 @@ The old behavior of the `full_pipeline` can be obtained by running `full_pipelin
 * `annotate/popv`: Fix indexing issue when MuData object contain non overlapping modalities (PR #405).
 
 * `mapping/multi_star`: Fix issue where temp dir could not be created when group_id contains slashes (PR #406).
+
+* `mapping/multi_star_to_h5mu`: Use glob to look for count files recursively (PR #408).
 
 # openpipelines 0.8.0
 
