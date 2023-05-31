@@ -180,7 +180,7 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
     "config" : "/home/runner/work/openpipeline/openpipeline/src/mapping/multi_star_to_h5mu/config.vsh.yaml",
     "platform" : "nextflow",
     "viash_version" : "0.7.1",
-    "git_commit" : "87117a5a2cbcae3a1822c26b043045a286f5e687",
+    "git_commit" : "f2e21f1f2d74edac46fca1d608976ca77ca65d0f",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))
@@ -223,17 +223,13 @@ meta = {
 # convert to path
 input_dir = Path(par["input"])
 
-
-# look for observation dirs and ids
-per_obs_dirs = [ x for x in (input_dir / "per").iterdir() if x.is_dir() ]
-
 # read counts information
 print("> Read counts data", flush=True)
 per_obs_data = []
 
-for per_obs_dir in per_obs_dirs:
+for input_counts in (input_dir / "per").glob("**/htseq-count.txt"):
+    per_obs_dir = input_counts.parent
     input_id = per_obs_dir.name
-    input_counts = per_obs_dir / "htseq-count.txt"
     input_multiqc = per_obs_dir / "multiqc_data" / "multiqc_data.json"
 
     data = pd.read_table(

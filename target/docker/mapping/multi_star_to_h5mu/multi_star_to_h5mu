@@ -404,9 +404,9 @@ RUN pip install --upgrade pip && \
 
 LABEL org.opencontainers.image.authors="Robrecht Cannoodt, Angela Pisco"
 LABEL org.opencontainers.image.description="Companion container for running component mapping multi_star_to_h5mu"
-LABEL org.opencontainers.image.created="2023-05-31T08:49:45Z"
+LABEL org.opencontainers.image.created="2023-05-31T09:53:19Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="87117a5a2cbcae3a1822c26b043045a286f5e687"
+LABEL org.opencontainers.image.revision="f2e21f1f2d74edac46fca1d608976ca77ca65d0f"
 LABEL org.opencontainers.image.version="main_build"
 VIASHDOCKER
 }
@@ -912,17 +912,13 @@ meta = {
 # convert to path
 input_dir = Path(par["input"])
 
-
-# look for observation dirs and ids
-per_obs_dirs = [ x for x in (input_dir / "per").iterdir() if x.is_dir() ]
-
 # read counts information
 print("> Read counts data", flush=True)
 per_obs_data = []
 
-for per_obs_dir in per_obs_dirs:
+for input_counts in (input_dir / "per").glob("**/htseq-count.txt"):
+    per_obs_dir = input_counts.parent
     input_id = per_obs_dir.name
-    input_counts = per_obs_dir / "htseq-count.txt"
     input_multiqc = per_obs_dir / "multiqc_data" / "multiqc_data.json"
 
     data = pd.read_table(
