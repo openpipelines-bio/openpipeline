@@ -4,20 +4,37 @@ functionality:
   version: "main_build"
   authors:
   - name: "Malte D. Luecken"
-    email: "malte.luecken@helmholtz-muenchen.de"
     roles:
     - "author"
-    props:
-      github: "LuckyMD"
-      orcid: "0000-0001-7464-7921"
+    info:
+      role: "Core Team"
+      links:
+        email: "malte.luecken@helmholtz-muenchen.de"
+        github: "LuckyMD"
+        orcid: "0000-0001-7464-7921"
+        linkedin: "malte-l%C3%BCcken-b8b21049"
+        twitter: "MDLuecken"
+      organizations:
+      - name: "Helmholtz Munich"
+        href: "https://www.helmholtz-munich.de"
+        role: "Group Leader"
+      - name: "Open Problems"
+        href: "https://openproblems.bio"
+        role: "Core Member"
   - name: "Dries Schaumont"
-    email: "dries@data-intuitive.com"
     roles:
     - "maintainer"
-    props:
-      github: "DriesSchaumont"
-      orcid: "0000-0002-4389-0440"
-  arguments: []
+    info:
+      role: "Core Team"
+      links:
+        email: "dries@data-intuitive.com"
+        github: "DriesSchaumont"
+        orcid: "0000-0002-4389-0440"
+        linkedin: "dries-schaumont"
+      organizations:
+      - name: "Data Intuitive"
+        href: "https://www.data-intuitive.com"
+        role: "Data Scientist"
   argument_groups:
   - name: "Inputs"
     arguments:
@@ -26,8 +43,7 @@ functionality:
       alternatives:
       - "-i"
       description: "Input h5mu file"
-      example: []
-      default: []
+      info: null
       must_exist: true
       create_parent: true
       required: true
@@ -37,50 +53,40 @@ functionality:
       dest: "par"
     - type: "string"
       name: "--modality"
-      alternatives: []
-      example: []
+      info: null
       default:
       - "rna"
       required: false
-      choices: []
       direction: "input"
       multiple: false
       multiple_sep: ":"
       dest: "par"
     - type: "string"
       name: "--input_layer"
-      alternatives: []
       description: "Input layer to use. If None, X is used"
-      example: []
-      default: []
+      info: null
       required: false
-      choices: []
       direction: "input"
       multiple: false
       multiple_sep: ":"
       dest: "par"
     - type: "string"
       name: "--obs_batch"
-      alternatives: []
       description: "Column name discriminating between your batches."
-      example: []
+      info: null
       default:
       - "sample_id"
       required: false
-      choices: []
       direction: "input"
       multiple: false
       multiple_sep: ":"
       dest: "par"
     - type: "string"
       name: "--var_input"
-      alternatives: []
       description: ".var column containing highly variable genes. By default, do not\
         \ subset genes."
-      example: []
-      default: []
+      info: null
       required: false
-      choices: []
       direction: "input"
       multiple: false
       multiple_sep: ":"
@@ -92,8 +98,7 @@ functionality:
       alternatives:
       - "-o"
       description: "Output h5mu file."
-      example: []
-      default: []
+      info: null
       must_exist: true
       create_parent: true
       required: true
@@ -103,10 +108,8 @@ functionality:
       dest: "par"
     - type: "file"
       name: "--model_output"
-      alternatives: []
       description: "Folder where the state of the trained model will be saved to."
-      example: []
-      default: []
+      info: null
       must_exist: true
       create_parent: true
       required: false
@@ -116,11 +119,10 @@ functionality:
       dest: "par"
     - type: "string"
       name: "--output_compression"
-      alternatives: []
       description: "The compression format to be used on the output h5mu object."
+      info: null
       example:
       - "gzip"
-      default: []
       required: false
       choices:
       - "gzip"
@@ -131,13 +133,11 @@ functionality:
       dest: "par"
     - type: "string"
       name: "--obsm_output"
-      alternatives: []
       description: "In which .obsm slot to store the resulting integrated embedding."
-      example: []
+      info: null
       default:
       - "X_scvi_integrated"
       required: false
-      choices: []
       direction: "input"
       multiple: false
       multiple_sep: ":"
@@ -146,11 +146,9 @@ functionality:
     arguments:
     - type: "boolean"
       name: "--early_stopping"
-      alternatives: []
       description: "Whether to perform early stopping with respect to the validation\
         \ set."
-      example: []
-      default: []
+      info: null
       required: false
       direction: "input"
       multiple: false
@@ -158,9 +156,8 @@ functionality:
       dest: "par"
     - type: "string"
       name: "--early_stopping_monitor"
-      alternatives: []
       description: "Metric logged during validation set epoch."
-      example: []
+      info: null
       default:
       - "elbo_validation"
       required: false
@@ -174,14 +171,12 @@ functionality:
       dest: "par"
     - type: "integer"
       name: "--early_stopping_patience"
-      alternatives: []
       description: "Number of validation epochs with no improvement after which training\
         \ will be stopped."
-      example: []
+      info: null
       default:
       - 45
       required: false
-      choices: []
       min: 1
       direction: "input"
       multiple: false
@@ -189,10 +184,9 @@ functionality:
       dest: "par"
     - type: "double"
       name: "--early_stopping_min_delta"
-      alternatives: []
       description: "Minimum change in the monitored quantity to qualify as an improvement,\
         \ i.e. an absolute change of less than min_delta, will count as no improvement."
-      example: []
+      info: null
       default:
       - 0.0
       required: false
@@ -205,23 +199,19 @@ functionality:
     arguments:
     - type: "integer"
       name: "--max_epochs"
-      alternatives: []
       description: "Number of passes through the dataset, defaults to (20000 / number\
         \ of cells) * 400 or 400; whichever is smallest."
-      example: []
-      default: []
+      info: null
       required: true
-      choices: []
       direction: "input"
       multiple: false
       multiple_sep: ":"
       dest: "par"
     - type: "boolean"
       name: "--reduce_lr_on_plateau"
-      alternatives: []
       description: "Whether to monitor validation loss and reduce learning rate when\
         \ validation set `lr_scheduler_metric` plateaus."
-      example: []
+      info: null
       default:
       - true
       required: false
@@ -231,9 +221,8 @@ functionality:
       dest: "par"
     - type: "double"
       name: "--lr_factor"
-      alternatives: []
       description: "Factor to reduce learning rate."
-      example: []
+      info: null
       default:
       - 0.6
       required: false
@@ -244,10 +233,9 @@ functionality:
       dest: "par"
     - type: "double"
       name: "--lr_patience"
-      alternatives: []
       description: "Number of epochs with no improvement after which learning rate\
         \ will be reduced."
-      example: []
+      info: null
       default:
       - 30.0
       required: false
@@ -267,9 +255,8 @@ functionality:
     is_executable: true
   - type: "file"
     path: "../../../resources_test/pbmc_1k_protein_v3/pbmc_1k_protein_v3_mms.h5mu"
+  info: null
   status: "enabled"
-  requirements:
-    commands: []
   set_wd_to_resources_dir: false
 platforms:
 - type: "docker"
@@ -280,70 +267,69 @@ platforms:
   namespace_separator: "_"
   resolve_volume: "Automatic"
   chown: true
-  port: []
   setup_strategy: "ifneedbepullelsecachedbuild"
-  run_args: []
   target_image_source: "https://github.com/openpipelines-bio/openpipeline"
   setup:
   - type: "docker"
-    label: []
-    add: []
-    copy: []
     run:
     - "pip install \"jax[cuda]\" -f https://storage.googleapis.com/jax-releases/jax_cuda_releases.html\n"
-    build_args: []
-    env: []
   - type: "python"
     user: false
     packages:
     - "mudata~=0.2.0"
     - "anndata~=0.8.0"
-    pip: []
-    pypi: []
-    git: []
-    github: []
-    gitlab: []
-    mercurial: []
-    svn: []
-    bazaar: []
-    url: []
-    script: []
     upgrade: true
   - type: "python"
     user: false
     packages:
     - "scvi-tools~=0.20.3"
-    pip: []
-    pypi: []
-    git: []
-    github: []
-    gitlab: []
-    mercurial: []
-    svn: []
-    bazaar: []
-    url: []
-    script: []
     upgrade: false
-  test_setup: []
+  entrypoint: []
+  cmd: null
 - type: "nextflow"
   id: "nextflow"
   variant: "vdsl3"
   directives:
-    accelerator: {}
-    conda: []
-    containerOptions: []
     label:
     - "gpu"
-    module: []
-    pod: []
-    publishDir: []
-    queue: []
     tag: "$id"
   auto:
     simplifyInput: true
     simplifyOutput: true
     transcript: false
     publish: false
+  config:
+    labels:
+      mem1gb: "memory = 1.GB"
+      mem2gb: "memory = 2.GB"
+      mem4gb: "memory = 4.GB"
+      mem8gb: "memory = 8.GB"
+      mem16gb: "memory = 16.GB"
+      mem32gb: "memory = 32.GB"
+      mem64gb: "memory = 64.GB"
+      mem128gb: "memory = 128.GB"
+      mem256gb: "memory = 256.GB"
+      mem512gb: "memory = 512.GB"
+      mem1tb: "memory = 1.TB"
+      mem2tb: "memory = 2.TB"
+      mem4tb: "memory = 4.TB"
+      mem8tb: "memory = 8.TB"
+      mem16tb: "memory = 16.TB"
+      mem32tb: "memory = 32.TB"
+      mem64tb: "memory = 64.TB"
+      mem128tb: "memory = 128.TB"
+      mem256tb: "memory = 256.TB"
+      mem512tb: "memory = 512.TB"
+      cpu1: "cpus = 1"
+      cpu2: "cpus = 2"
+      cpu5: "cpus = 5"
+      cpu10: "cpus = 10"
+      cpu20: "cpus = 20"
+      cpu50: "cpus = 50"
+      cpu100: "cpus = 100"
+      cpu200: "cpus = 200"
+      cpu500: "cpus = 500"
+      cpu1000: "cpus = 1000"
   debug: false
   container: "docker"
 info:
@@ -351,6 +337,6 @@ info:
   platform: "nextflow"
   output: "/home/runner/work/openpipeline/openpipeline/target/nextflow/integrate/scvi"
   executable: "/home/runner/work/openpipeline/openpipeline/target/nextflow/integrate/scvi/scvi"
-  viash_version: "0.7.1"
-  git_commit: "b017d7cd7e7a42810e37559ff30ddd61ae817b58"
+  viash_version: "0.7.4"
+  git_commit: "c980573910451dff4667fde00fe06eab9e844d5c"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"

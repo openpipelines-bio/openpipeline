@@ -1,3 +1,12 @@
 name: Dries Schaumont
-email: dries@data-intuitive.com
-props: { github: DriesSchaumont, orcid: "0000-0002-4389-0440" }
+info:
+  role: Core Team
+  links:
+    email: dries@data-intuitive.com
+    github: DriesSchaumont
+    orcid: "0000-0002-4389-0440"
+    linkedin: dries-schaumont
+  organizations:
+    - name: Data Intuitive
+      href: https://www.data-intuitive.com
+      role: Data Scientist

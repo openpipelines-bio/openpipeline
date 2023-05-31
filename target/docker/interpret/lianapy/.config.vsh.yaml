@@ -4,25 +4,38 @@ functionality:
   version: "main_build"
   authors:
   - name: "Mauro Saporita"
-    email: "maurosaporita@gmail.com"
     roles:
     - "author"
-    props:
-      github: "mauro-saporita"
+    info:
+      role: "Contributor"
+      links:
+        email: "maurosaporita@gmail.com"
+        github: "mauro-saporita"
+        linkedin: "mauro-saporita-930b06a5"
+      organization:
+      - name: "Ardigen"
+        href: "https://ardigen.com"
+        role: "Lead Nextflow Developer"
   - name: "Povilas Gibas"
-    email: "povilasgibas@gmail.com"
     roles:
     - "author"
-    props:
-      github: "PoGibas"
+    info:
+      role: "Contributor"
+      links:
+        email: "povilasgibas@gmail.com"
+        github: "PoGibas"
+        linkedin: "povilas-gibas"
+      organization:
+      - name: "Ardigen"
+        href: "https://ardigen.com"
+        role: "Bioinformatician"
   arguments:
   - type: "file"
     name: "--input"
     alternatives:
     - "-i"
     description: "Input h5mu file"
-    example: []
-    default: []
+    info: null
     must_exist: true
     create_parent: true
     required: true
@@ -35,8 +48,7 @@ functionality:
     alternatives:
     - "-o"
     description: "Output h5mu file."
-    example: []
-    default: []
+    info: null
     must_exist: true
     create_parent: true
     required: true
@@ -46,8 +58,7 @@ functionality:
     dest: "par"
   - type: "string"
     name: "--output_compression"
-    alternatives: []
-    example: []
+    info: null
     default:
     - "gzip"
     required: false
@@ -60,46 +71,38 @@ functionality:
     dest: "par"
   - type: "string"
     name: "--modality"
-    alternatives: []
-    example: []
+    info: null
     default:
     - "rna"
     required: false
-    choices: []
     direction: "input"
     multiple: false
     multiple_sep: ":"
     dest: "par"
   - type: "string"
     name: "--layer"
-    alternatives: []
     description: "Layer in anndata.AnnData.layers to use. If None, use mudata.mod[modality].X."
-    example: []
-    default: []
+    info: null
     required: false
-    choices: []
     direction: "input"
     multiple: false
     multiple_sep: ":"
     dest: "par"
   - type: "string"
     name: "--groupby"
-    alternatives: []
     description: "The key of the observations grouping to consider."
-    example: []
+    info: null
     default:
     - "bulk_labels"
     required: false
-    choices: []
     direction: "input"
     multiple: false
     multiple_sep: ":"
     dest: "par"
   - type: "string"
     name: "--resource_name"
-    alternatives: []
     description: "Name of the resource to be loaded and use for ligand-receptor inference."
-    example: []
+    info: null
     default:
     - "consensus"
     required: false
@@ -127,24 +130,21 @@ functionality:
     dest: "par"
   - type: "string"
     name: "--gene_symbol"
-    alternatives: []
     description: "Column name in var DataFrame in which gene symbol are stored."
-    example: []
+    info: null
     default:
     - "gene_symbol"
     required: false
-    choices: []
     direction: "input"
     multiple: false
     multiple_sep: ":"
     dest: "par"
   - type: "double"
     name: "--expr_prop"
-    alternatives: []
     description: "Minimum expression proportion for the ligands/receptors (and their\
       \ subunits) in the corresponding cell identities. Set to '0', to return unfiltered\
       \ results."
-    example: []
+    info: null
     default:
     - 0.1
     required: false
@@ -154,25 +154,22 @@ functionality:
     dest: "par"
   - type: "integer"
     name: "--min_cells"
-    alternatives: []
     description: "Minimum cells per cell identity ('groupby') to be considered for\
       \ downstream analysis."
-    example: []
+    info: null
     default:
     - 5
     required: false
-    choices: []
     direction: "input"
     multiple: false
     multiple_sep: ":"
     dest: "par"
   - type: "string"
     name: "--aggregate_method"
-    alternatives: []
     description: "Method aggregation approach, one of ['mean', 'rra'], where 'mean'\
       \ represents the mean rank, while 'rra' is the RobustRankAggregate (Kolde et\
       \ al., 2014) of the interactions."
-    example: []
+    info: null
     default:
     - "rra"
     required: false
@@ -185,11 +182,10 @@ functionality:
     dest: "par"
   - type: "boolean"
     name: "--return_all_lrs"
-    alternatives: []
     description: "Bool whether to return all LRs, or only those that surpass the 'expr_prop'\
       \ threshold. Those interactions that do not pass the 'expr_prop' threshold will\
       \ be assigned to the *worst* score of the ones that do. 'False' by default."
-    example: []
+    info: null
     default:
     - false
     required: false
@@ -199,19 +195,16 @@ functionality:
     dest: "par"
   - type: "integer"
     name: "--n_perms"
-    alternatives: []
     description: "Number of permutations for the permutation test. Note that this\
       \ is relevant only for permutation-based methods - e.g. 'CellPhoneDB"
-    example: []
+    info: null
     default:
     - 100
     required: false
-    choices: []
     direction: "input"
     multiple: false
     multiple_sep: ":"
     dest: "par"
-  argument_groups: []
   resources:
   - type: "python_script"
     path: "script.py"
@@ -223,9 +216,8 @@ functionality:
     is_executable: true
   - type: "file"
     path: "../../../resources_test/pbmc_1k_protein_v3/pbmc_1k_protein_v3_mms.h5mu"
+  info: null
   status: "enabled"
-  requirements:
-    commands: []
   set_wd_to_resources_dir: false
 platforms:
 - type: "docker"
@@ -236,9 +228,7 @@ platforms:
   namespace_separator: "_"
   resolve_volume: "Automatic"
   chown: true
-  port: []
   setup_strategy: "ifneedbepullelsecachedbuild"
-  run_args: []
   target_image_source: "https://github.com/openpipelines-bio/openpipeline"
   setup:
   - type: "python"
@@ -247,36 +237,51 @@ platforms:
     - "mudata~=0.2.0"
     - "git+https://github.com/saezlab/liana-py.git@11156ddd0139a49dfebdd08ac230f0ebf008b7f8"
     - "numpy~=1.24.3"
-    pip: []
-    pypi: []
-    git: []
-    github: []
-    gitlab: []
-    mercurial: []
-    svn: []
-    bazaar: []
-    url: []
-    script: []
     upgrade: true
-  test_setup: []
+  entrypoint: []
+  cmd: null
 - type: "nextflow"
   id: "nextflow"
   variant: "vdsl3"
   directives:
-    accelerator: {}
-    conda: []
-    containerOptions: []
-    label: []
-    module: []
-    pod: []
-    publishDir: []
-    queue: []
     tag: "$id"
   auto:
     simplifyInput: true
     simplifyOutput: true
     transcript: false
     publish: false
+  config:
+    labels:
+      mem1gb: "memory = 1.GB"
+      mem2gb: "memory = 2.GB"
+      mem4gb: "memory = 4.GB"
+      mem8gb: "memory = 8.GB"
+      mem16gb: "memory = 16.GB"
+      mem32gb: "memory = 32.GB"
+      mem64gb: "memory = 64.GB"
+      mem128gb: "memory = 128.GB"
+      mem256gb: "memory = 256.GB"
+      mem512gb: "memory = 512.GB"
+      mem1tb: "memory = 1.TB"
+      mem2tb: "memory = 2.TB"
+      mem4tb: "memory = 4.TB"
+      mem8tb: "memory = 8.TB"
+      mem16tb: "memory = 16.TB"
+      mem32tb: "memory = 32.TB"
+      mem64tb: "memory = 64.TB"
+      mem128tb: "memory = 128.TB"
+      mem256tb: "memory = 256.TB"
+      mem512tb: "memory = 512.TB"
+      cpu1: "cpus = 1"
+      cpu2: "cpus = 2"
+      cpu5: "cpus = 5"
+      cpu10: "cpus = 10"
+      cpu20: "cpus = 20"
+      cpu50: "cpus = 50"
+      cpu100: "cpus = 100"
+      cpu200: "cpus = 200"
+      cpu500: "cpus = 500"
+      cpu1000: "cpus = 1000"
   debug: false
   container: "docker"
 info:
@@ -284,6 +289,6 @@ info:
   platform: "docker"
   output: "/home/runner/work/openpipeline/openpipeline/target/docker/interpret/lianapy"
   executable: "/home/runner/work/openpipeline/openpipeline/target/docker/interpret/lianapy/lianapy"
-  viash_version: "0.7.1"
-  git_commit: "b017d7cd7e7a42810e37559ff30ddd61ae817b58"
+  viash_version: "0.7.4"
+  git_commit: "c980573910451dff4667fde00fe06eab9e844d5c"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"
