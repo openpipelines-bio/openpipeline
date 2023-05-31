@@ -42,7 +42,7 @@ functionality:
                   description: "SCANVI or any other embedding on which a classifier is trained. Could have any name, specify it in `reference_obsm_key` argument"
         - name: "--targets"
           type: string
-          default: "ann_level_1,ann_level_2,ann_level_3,ann_level_4,ann_level_5,ann_finest_level"
+          default: [ ann_level_1, ann_level_2, ann_level_3, ann_level_4, ann_level_5, ann_finest_level ]
           required: false
           multiple: true
           multiple_sep: ","
