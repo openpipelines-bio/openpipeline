@@ -22,6 +22,10 @@ The old behavior of the `full_pipeline` can be obtained by running `full_pipelin
 
 * `transform/clr`: added `output_layer` argument.
 
+## MINOR CHANGES
+
+* `mapping/multi_star`: Added `--min_success_rate` which causes component to fail when the success rate of processed samples were successful (#408).
+
 ## BUG FIXES
 
 * `annotate/popv`: Fix concat issue when the input data has multiple layers (#395, PR #397).
