@@ -1,3 +1,16 @@
 name: Malte D. Luecken
-email: malte.luecken@helmholtz-muenchen.de
-props: { github: LuckyMD, orcid: "0000-0001-7464-7921" }
+info:
+  role: Core Team
+  links:
+    email: malte.luecken@helmholtz-muenchen.de
+    github: LuckyMD
+    orcid: "0000-0001-7464-7921"
+    linkedin: malte-l%C3%BCcken-b8b21049
+    twitter: MDLuecken
+  organizations:
+    - name: Helmholtz Munich
+      href: https://www.helmholtz-munich.de
+      role: Group Leader
+    - name: Open Problems
+      href: https://openproblems.bio
+      role: Core Member
