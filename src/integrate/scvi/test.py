@@ -1,8 +1,10 @@
 import unittest
 import subprocess
-from tempfile import NamedTemporaryFile
-import mudata
 from pathlib import Path
+from tempfile import NamedTemporaryFile
+
+import mudata
+
 from utils import subset_hvg
 
 ## VIASH START
