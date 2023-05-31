@@ -62,6 +62,10 @@ functionality:
           name: --run_multiqc
           description: Whether or not to also run MultiQC at the end.
           default: true
+        - type: double
+          name: --min_success_rate
+          default: 0.5
+          description: Fail when the success rate is below this threshold.
   resources:
     - type: python_script
       path: script.py

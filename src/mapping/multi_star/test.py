@@ -1,7 +1,5 @@
 import subprocess
 from pathlib import Path
-# import pytest
-import sys
 
 ## VIASH START
 meta = {
@@ -91,5 +89,3 @@ def test_one_sample():
 if __name__ == '__main__':
     test_two_samples()
     test_one_sample()
-    # retcode = pytest.main([__file__])
-    # sys.exit(retcode)
