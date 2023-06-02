@@ -1,11 +1,8 @@
 from pathlib import Path
 import subprocess
-from tempfile import NamedTemporaryFile
 import unittest
 
 import mudata
-import numpy as np
-import pandas as pd
 
 ## VIASH START
 meta = {
