@@ -71,7 +71,7 @@ def align_proteins_names(adata_reference: AnnData, mdata_query: MuData, adata_qu
 
 
 def convert_mudata_to_anndata(mdata: MuData, rna_modality_key, protein_modality_key, input_layer, hvg_var_key=None) -> AnnData:
-    """TOTALVI requires data to be stored in AnnData format with proteins in .obsm slot. This function performs the conversion"""
+    """TOTALVI requires data to be stored in AnnData format with protein counts in .obsm slot. This function performs the conversion"""
     adata: AnnData = mdata.mod[rna_modality_key]
 
     if hvg_var_key:
