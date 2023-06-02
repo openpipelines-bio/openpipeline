@@ -8,14 +8,6 @@ import numpy as np
 from pandas import DataFrame
 import scvi
 from scipy.sparse import issparse
-from torch.cuda import is_available as cuda_is_available
-try:
-    from torch.backends.mps import is_available as mps_is_available
-except ModuleNotFoundError:
-    # Older pytorch versions
-    # MacOS GPUs
-    def mps_is_available():
-        return False
     
 import os
 
