@@ -1,7 +1,6 @@
 functionality:
   name: totalvi
   namespace: "integrate"
-  version: "dev"
   description: "Performs mapping to the reference by totalvi model: https://docs.scvi-tools.org/en/stable/tutorials/notebooks/scarches_scvi_tools.html#Reference-mapping-with-TOTALVI"
   authors:
     - __merge__: ../../authors/vladimir_shitov.yaml
