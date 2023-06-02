@@ -38,6 +38,7 @@ functionality:
         - name: "--reference_proteins_modality"
           type: string
           description: Name of the modality containing proteins in the reference
+          default: "prot"
           required: false
         - name: "--input_layer"
           type: string
