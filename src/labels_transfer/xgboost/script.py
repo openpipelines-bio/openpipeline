@@ -23,7 +23,7 @@ par = {
     "query_obsm_key": "X_integrated_scanvi",
     "output": "foo.h5mu",
     "model_output": "model",
-    "obs_output_suffix": "_pred",
+    "output_obs_suffix": "_pred",
     "output_uns_key": "labels_transfer",
     "force_retrain": False,
     "use_gpu": True,
@@ -227,7 +227,7 @@ def build_ref_classifiers(adata_reference, targets, model_path,
         classifiers[label] = {
             "filename": filename,
             "labels": labels_encoder.classes_.tolist(),
-            "obs_column": label + par["obs_output_suffix"],
+            "obs_column": label + par["output_obs_suffix"],
             "model_params": training_params,
         }
         
@@ -336,7 +336,7 @@ def predict(
     cell_type_classifier_model.load_model(fname=cell_type_classifier_model_path)
 
     logger.info("Predicting labels")
-    predicted_labels_col = annotation_column_name + par["obs_output_suffix"]
+    predicted_labels_col = annotation_column_name + par["output_obs_suffix"]
     project_labels(query_dataset, cell_type_classifier_model, annotation_column_name=predicted_labels_col, logger=logger)
 
     logger.info("Converting labels from numbers to classes")
@@ -379,7 +379,7 @@ def main():
 
     for target in par["targets"]:
         logger.info(f"Predicting {target}")
-        predicted_label_col_name = target + par["obs_output_suffix"]
+        predicted_label_col_name = target + par["output_obs_suffix"]
 
         adata = predict(query_dataset=adata,
                         cell_type_classifier_model_path=os.path.join(par["model_output"], "classifier_" + target + ".xgb"),

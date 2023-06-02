@@ -14,7 +14,7 @@
           - type: "string"
             name: "target_pred"
             description: "Transfered labels. Could have any name, specified in `targets` argument \
-            \ with suffix specified in `obs_output_suffix` argument."
+            \ with suffix specified in `output_obs_suffix` argument."
             required: true
           - type: "double"
             name: "target_uncertainty"

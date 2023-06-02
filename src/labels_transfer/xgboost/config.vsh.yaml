@@ -80,11 +80,11 @@ functionality:
           default: "model"
           description: Output directory for model
           required: false
-        - name: "--obs_output_suffix"
+        - name: "--output_obs_suffix"
           type: string
           default: "_pred"
           required: false
-          description: "Suffix to add to each target name in .obs slot to store the predicted classes"
+          description: "Suffix to add to each target name in .obs slot to store the predicted classes. For example, if `targets` is `cell_type`, predicted target in query will be `cell_type_pred`"
         - name: "--output_uns_key"
           type: string
           default: "labels_transfer"

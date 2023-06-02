@@ -14,7 +14,7 @@ par = {
     "reference_obsm_key": "X_integrated_scanvi",
     "query_obsm_key": "X_integrated_scanvi",
     "output": "foo.h5mu",
-    "obs_output_suffix": "_pred",
+    "output_obs_suffix": "_pred",
     "output_uns_key": "labels_transfer",
     "n_neighbors": 1
 }
@@ -81,7 +81,7 @@ def main():
         prediction, uncertainty = weighted_prediction(weights, ref_cats)
         prediction = np.asarray(adata_reference.obs[target].cat.categories)[prediction]
         
-        predicted_label_col_name = target + par["obs_output_suffix"]
+        predicted_label_col_name = target + par["output_obs_suffix"]
         adata.obs[predicted_label_col_name], adata.obs[target + "_uncertainty"] = prediction, uncertainty
         
         # Write information about labels transfer to uns
