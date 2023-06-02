@@ -42,7 +42,7 @@ class TestKNN(unittest.TestCase):
                 "--query_obsm_key", "X_integrated_scanvi",
                 "--reference", "https://zenodo.org/record/6337966/files/HLCA_emb_and_metadata.h5ad",
                 "--output", "output.h5mu",
-                "-k", 5,
+                "-k", "5",
                 "--targets", "ann_level_1"])
 
         self.assertTrue(Path("output.h5mu").is_file())
@@ -76,7 +76,7 @@ class TestKNN(unittest.TestCase):
                 "--query_obsm_key", "X_integrated_scanvi",
                 "--reference", "https://zenodo.org/record/6337966/files/HLCA_emb_and_metadata.h5ad",
                 "--output", "output.h5mu",
-                "-k", 5,
+                "-k", "5",
                 "--targets", ",".join(targets)])
 
         self.assertTrue(Path("output.h5mu").is_file())

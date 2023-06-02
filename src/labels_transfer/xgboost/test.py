@@ -112,7 +112,7 @@ class TestXGBoost(unittest.TestCase):
                 "--query_obsm_key", "X_integrated_scanvi",
                 "--reference", "https://zenodo.org/record/6337966/files/HLCA_emb_and_metadata.h5ad",
                 "--output", "output.h5mu",
-                "--max_depth", 6,
+                "--max_depth", "6",
                 "--targets", ",".join(targets)])
 
             self.assertTrue(Path("output.h5mu").is_file())
