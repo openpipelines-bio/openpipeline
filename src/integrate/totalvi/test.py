@@ -29,8 +29,8 @@ class TesttotalVI(unittest.TestCase):
         self._run_and_check_output([
             "--input", input_file,
             "--reference", input_file,
-            "--query_proteins_key", "prot",
-            "--reference_proteins_key", "prot",
+            "--query_proteins_modality", "prot",
+            "--reference_proteins_modality", "prot",
             "--var_input", "filter_with_hvg",
             "--reference_model_path", "totalvi_reference_model/",
             "--query_model_path", "totalvi_query_model/",

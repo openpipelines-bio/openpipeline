@@ -24,9 +24,9 @@ par = {
     "input": "resources_test/scvi_tools/totalvi_pbmc_query_test.h5mu",
     "reference": "resources_test/scvi_tools/totalvi_pbmc_ref_test.h5mu",
     "query_modality": "rna",
-    "query_proteins_key": None,
+    "query_proteins_modality": None,
     "reference_modality": "rna",
-    "reference_proteins_key": None,
+    "reference_proteins_modality": None,
     "force_retrain": False,
     "input_layer": None,
     "obs_batch": "sample_id",
@@ -114,13 +114,13 @@ def is_retraining_model() -> bool:
 def map_query_to_reference(mdata_reference: MuData, mdata_query: MuData, adata_query: AnnData) -> Tuple[scvi.model.TOTALVI, AnnData]:
     """Build model on the provided reference if necessary, and map query to the reference"""
 
-    adata_reference: AnnData = convert_mudata_to_anndata(mdata_reference, rna_modality_key=par["reference_modality"], protein_modality_key=par["reference_proteins_key"],
+    adata_reference: AnnData = convert_mudata_to_anndata(mdata_reference, rna_modality_key=par["reference_modality"], protein_modality_key=par["reference_proteins_modality"],
                                                          input_layer=par["input_layer"], hvg_var_key=par["var_input"])
 
     scvi.model.TOTALVI.setup_anndata(
         adata_reference,
         batch_key=par["obs_batch"],
-        protein_expression_obsm_key=par["reference_proteins_key"]
+        protein_expression_obsm_key=par["reference_proteins_modality"]
     )
 
     if is_retraining_model():
@@ -128,8 +128,8 @@ def map_query_to_reference(mdata_reference: MuData, mdata_query: MuData, adata_q
     else:
         vae_reference = scvi.model.TOTALVI.load(dir_path=par["reference_model_path"], adata=adata_reference)
 
-    adata_query: AnnData = align_proteins_names(adata_reference, mdata_query, adata_query, reference_proteins_key=par["reference_proteins_key"],
-                                       query_proteins_key=par["query_proteins_key"])
+    adata_query: AnnData = align_proteins_names(adata_reference, mdata_query, adata_query, reference_proteins_key=par["reference_proteins_modality"],
+                                       query_proteins_key=par["query_proteins_modality"])
 
     # Reorder genes and pad missing genes with 0s
     scvi.model.TOTALVI.prepare_query_anndata(adata_query, vae_reference)
@@ -147,7 +147,7 @@ def main():
     logger = _setup_logger()
 
     mdata_query = mudata.read(par["query"].strip())
-    adata_query = convert_mudata_to_anndata(mdata_query, rna_modality_key=par["query_modality"], protein_modality_key=par["query_proteins_key"],
+    adata_query = convert_mudata_to_anndata(mdata_query, rna_modality_key=par["query_modality"], protein_modality_key=par["query_proteins_modality"],
                                             input_layer=par["input_layer"], hvg_var_key=par["var_input"])
 
     if par["reference"].endswith(".h5mu"):

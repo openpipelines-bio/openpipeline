@@ -27,7 +27,7 @@ functionality:
           type: string
           default: "rna"
           required: false
-        - name: "--query_proteins_key"
+        - name: "--query_proteins_modality"
           type: string
           description: Name of the modality in the input (query) h5mu file containing protein data
           required: false
@@ -35,7 +35,7 @@ functionality:
           type: string
           default: "rna"
           required: false
-        - name: "--reference_proteins_key"
+        - name: "--reference_proteins_modality"
           type: string
           description: Name of the modality containing proteins in the reference
           required: false
