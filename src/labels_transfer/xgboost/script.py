@@ -24,6 +24,7 @@ par = {
     "output": "foo.h5mu",
     "model_output": "model",
     "obs_output_suffix": "_pred",
+    "output_uns_key": "labels_transfer",
     "force_retrain": False,
     "use_gpu": True,
     "verbosity": 1,
@@ -370,8 +371,8 @@ def main():
     build_ref_classifiers(adata_reference, targets_to_train, model_path=par["model_output"], 
                           gpu=par["use_gpu"], eval_verbosity=par["verbosity"], logger=logger)
 
-    if "labels_transfer" not in adata.uns:
-        adata.uns["labels_transfer"] = {}
+    if par["output_uns_key"] not in adata.uns:
+        adata.uns[par["output_uns_key"]] = {}
 
     with open(par["model_output"] + "/model_info.json", "r") as f:
         models_info = json.loads(f.read())
@@ -387,7 +388,8 @@ def main():
                         use_gpu=par["use_gpu"],
                         logger=logger)
         
-        adata.uns["labels_transfer"][predicted_label_col_name] = {
+        # Save information about the transfer to .uns
+        adata.uns[par["output_uns_key"]][predicted_label_col_name] = {
             "method": "XGBClassifier",
             **training_params
         }

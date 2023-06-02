@@ -85,6 +85,11 @@ functionality:
           default: "_pred"
           required: false
           description: "Suffix to add to each target name in .obs slot to store the predicted classes"
+        - name: "--output_uns_key"
+          type: string
+          default: "labels_transfer"
+          required: false
+          description: "Key to store the information about the parameters in .uns slot"
     - name: "Learning parameters"
       arguments:
         - name: "--learning_rate"
