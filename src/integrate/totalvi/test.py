@@ -27,7 +27,7 @@ class TesttotalVI(unittest.TestCase):
     def test_totalvi(self):
         """Map data containing proteins on itself"""
         self._run_and_check_output([
-            "--query", input_file,
+            "--input", input_file,
             "--reference", input_file,
             "--query_proteins_key", "prot",
             "--reference_proteins_key", "prot",

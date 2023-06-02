@@ -21,7 +21,7 @@ import os
 
 ### VIASH START
 par = {
-    "query": "resources_test/scvi_tools/totalvi_pbmc_query_test.h5mu",
+    "input": "resources_test/scvi_tools/totalvi_pbmc_query_test.h5mu",
     "reference": "resources_test/scvi_tools/totalvi_pbmc_ref_test.h5mu",
     "query_modality": "rna",
     "query_proteins_key": None,

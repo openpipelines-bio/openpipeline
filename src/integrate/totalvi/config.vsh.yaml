@@ -7,16 +7,16 @@ functionality:
   argument_groups:
     - name: Inputs
       arguments:
-        - name: "--query"
+        - name: "--input"
           alternatives: ["-q"]
           type: file
-          description: Input h5mu file
+          description: Input h5mu file with query data to integrate with reference.
           direction: input
           required: true
         - name: "--reference"
           alternatives: ["-r"]
           type: file
-          description: Input h5mu file
+          description: Input h5mu file with reference data to train the TOTALVI model.
           direction: input
           required: true
         - name: "--force_retrain"
