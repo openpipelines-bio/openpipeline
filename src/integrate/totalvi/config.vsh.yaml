@@ -29,7 +29,7 @@ functionality:
           required: false
         - name: "--query_proteins_key"
           type: string
-          description: Name of the modality containing proteins in the query
+          description: Name of the modality in the input (query) h5mu file containing protein data
           required: false
         - name: "--reference_modality"
           type: string
