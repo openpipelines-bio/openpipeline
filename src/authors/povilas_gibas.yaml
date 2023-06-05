@@ -1,3 +1,11 @@
 name: Povilas Gibas
-email: povilasgibas@gmail.com
-props: { github: PoGibas }
+info:
+  role: Contributor
+  links:
+    email: povilasgibas@gmail.com
+    github: PoGibas
+    linkedin: povilas-gibas
+  organization:
+    - name: Ardigen
+      href: https://ardigen.com
+      role: Bioinformatician

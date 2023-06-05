@@ -1,4 +1,4 @@
-# openpipelines 0.9.0
+# openpipelines 0.9.0 (unreleased)
 
 ## BREAKING CHANGES
 
@@ -6,7 +6,7 @@ Running the integration in the `full_pipeline` deemed to be impractical because 
 
   * `workflows/full_pipeline`: `harmony` integration and `leiden` clustering are removed from the pipeline.
 
-  * Added `integration_setup` to run calculations that output information commonly required by the integration methods. This pipeline runs PCA, nearest neighbours and UMAP. This pipeline is run as a subpipeline at the end of `full_pipeline`.
+  * Added `initialize_integration` to run calculations that output information commonly required by the integration methods. This pipeline runs PCA, nearest neighbours and UMAP. This pipeline is run as a subpipeline at the end of `full_pipeline`.
 
   * Added `leiden_harmony` integration pipeline: run harmony integration followed by neighbour calculations and leiden clustering. Also runs umap on the result.
 
@@ -14,7 +14,27 @@ Running the integration in the `full_pipeline` deemed to be impractical because 
 
 The old behavior of the `full_pipeline` can be obtained by running `full_pipeline` followed by the `leiden_harmony` pipeline.
 
-* The `cripr` and `hashing` modalities have been renamed to `gdo` and `hto` respectively ([#392](https://github.com/openpipelines-bio/openpipeline/pull/392)).
+* The `crispr` and `hashing` modalities have been renamed to `gdo` and `hto` respectively ([#392](https://github.com/openpipelines-bio/openpipeline/pull/392)).
+
+## NEW FUNCTIONALITY
+
+* `workflows/full_pipeline`: PCA, nearest neighbours and UMAP are now calculated for the `prot` modality.
+
+* `transform/clr`: added `output_layer` argument.
+
+## MINOR CHANGES
+
+* `mapping/multi_star`: Added `--min_success_rate` which causes component to fail when the success rate of processed samples were successful (PR #408).
+
+## BUG FIXES
+
+* `annotate/popv`: Fix concat issue when the input data has multiple layers (#395, PR #397).
+
+* `annotate/popv`: Fix indexing issue when MuData object contain non overlapping modalities (PR #405).
+
+* `mapping/multi_star`: Fix issue where temp dir could not be created when group_id contains slashes (PR #406).
+
+* `mapping/multi_star_to_h5mu`: Use glob to look for count files recursively (PR #408).
 
 ## NEW FUNCTIONALITY
 

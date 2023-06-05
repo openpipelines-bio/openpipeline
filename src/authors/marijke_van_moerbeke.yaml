@@ -1,2 +1,10 @@
 name: Marijke Van Moerbeke
-props: { orcid: 0000-0002-3097-5621 }
+info:
+  role: Contributor
+  links:
+    orcid: 0000-0002-3097-5621
+    linkedin: marijke-van-moerbeke-84303a34
+  organizations:
+    - name: OpenAnalytics
+      href: https://www.openanalytics.eu
+      role: Statistical Consultant

@@ -1,3 +1,11 @@
 name: Mauro Saporita
-email: maurosaporita@gmail.com
-props: { github: mauro-saporita }
+info:
+  role: Contributor
+  links:
+    email: maurosaporita@gmail.com
+    github: mauro-saporita
+    linkedin: mauro-saporita-930b06a5
+  organization:
+    - name: Ardigen
+      href: https://ardigen.com
+      role: Lead Nextflow Developer
