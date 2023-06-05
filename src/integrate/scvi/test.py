@@ -5,14 +5,16 @@ from tempfile import NamedTemporaryFile
 
 import mudata
 
-from utils import subset_hvg
-
 ## VIASH START
 meta = {
     'executable': './target/docker/integrate/scvi/scvi',
     'resources_dir': './resources_test/pbmc_1k_protein_v3/'
 }
 ## VIASH END
+
+import sys
+sys.path.append(meta['resources_dir'])
+from utils import subset_hvg
 
 input_file = f"{meta['resources_dir']}/pbmc_1k_protein_v3_mms.h5mu"
 
