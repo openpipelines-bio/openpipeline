@@ -1,7 +1,6 @@
 import mudata
 import scvi
 from torch.cuda import is_available as cuda_is_available
-from utils import subset_hvg
 try:
     from torch.backends.mps import is_available as mps_is_available
 except ModuleNotFoundError:
@@ -30,7 +29,15 @@ par = {
     "model_output": "test/",
     "output_compression": "gzip",
     }
+
+meta = {
+    "resources_dir": 'src/integrate/scvi'
+}
 ### VIASH END
+
+import sys
+sys.path.append(meta['resources_dir'])
+from utils import subset_hvg
 
 
 def main():
