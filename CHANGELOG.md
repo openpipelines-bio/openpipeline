@@ -16,6 +16,8 @@ The old behavior of the `full_pipeline` can be obtained by running `full_pipelin
 
 * The `crispr` and `hashing` modalities have been renamed to `gdo` and `hto` respectively ([#392](https://github.com/openpipelines-bio/openpipeline/pull/392)).
 
+* Updated viash to 0.7.4
+
 ## NEW FUNCTIONALITY
 
 * `workflows/full_pipeline`: PCA, nearest neighbours and UMAP are now calculated for the `prot` modality.

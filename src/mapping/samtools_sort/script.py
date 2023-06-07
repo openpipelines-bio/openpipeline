@@ -6,14 +6,13 @@ import yaml
 ## VIASH START
 par = {
     'input': ['resources_test/cellranger_tiny_fastq/bam/possorted_genome_bam.bam'],
-    'reference': 'resources_test/cellranger_tiny_fastq/cellranger_tiny_ref/genes/genes.gtf.gz',
     'output_bam': 'test_output.bam',
     'output_bai': 'test_output.bam.bai'
 }
 meta = {
     'cpus': 2,
     'temp_dir': '/tmp',
-    'config': 'src/mapping/htseq/config.vsh.yaml'
+    'config': '/pwd/src/mapping/samtools_sort/config.vsh.yaml'
 }
 ## VIASH END
 
@@ -29,7 +28,10 @@ def generate_args(par, config):
 
     for arg in arguments:
         arg_val = par.get(arg["name"].removeprefix("--"))
-        orig_arg = arg.get("info", {}).get("orig_arg")
+        # The info key is always present (changed in viash 0.7.4) 
+        # in the parsed config (None if not specified in source config)
+        info = arg["info"]
+        orig_arg = info.get("orig_arg") if info else None
         if arg_val and orig_arg:
             if not arg.get("multiple", False):
                 arg_val = [arg_val]
