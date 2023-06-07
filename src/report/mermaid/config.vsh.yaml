@@ -36,7 +36,7 @@ platforms:
       - type: python
         packages:
           - requests
-          - Pillow~=9.2.0
+          - Pillow~=9.4.0
     test_setup:
       - type: python
         packages:
