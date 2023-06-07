@@ -159,6 +159,21 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
           },
           {
             "type" : "file",
+            "name" : "--vdj_inner_enrichment_primers",
+            "description" : "V(D)J Immune Profiling libraries: if inner enrichment primers other than those provided \nin the 10x Genomics kits are used, they need to be specified here as a\ntext file with one primer per line.\n",
+            "example" : [
+              "enrichment_primers.txt"
+            ],
+            "must_exist" : true,
+            "create_parent" : true,
+            "required" : false,
+            "direction" : "input",
+            "multiple" : false,
+            "multiple_sep" : ":",
+            "dest" : "par"
+          },
+          {
+            "type" : "file",
             "name" : "--feature_reference",
             "description" : "Path to the Feature reference CSV file, declaring Feature Barcode constructs and associated barcodes. Required only for Antibody Capture or CRISPR Guide Capture libraries. See https://support.10xgenomics.com/single-cell-gene-expression/software/pipelines/latest/using/feature-bc-analysis#feature-ref for more information.",
             "example" : [
@@ -504,7 +519,7 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
     "platform" : "nextflow",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/mapping/cellranger_multi",
     "viash_version" : "0.7.4",
-    "git_commit" : "940b43d06098530c173f0e5b6de13edccd8e59ab",
+    "git_commit" : "f9144459e86797b50a0e30a770de1a51859542a8",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))
@@ -540,6 +555,7 @@ par = {
   'input': $( if [ ! -z ${VIASH_PAR_INPUT+x} ]; then echo "r'${VIASH_PAR_INPUT//\\'/\\'\\"\\'\\"r\\'}'.split(';')"; else echo None; fi ),
   'gex_reference': $( if [ ! -z ${VIASH_PAR_GEX_REFERENCE+x} ]; then echo "r'${VIASH_PAR_GEX_REFERENCE//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'vdj_reference': $( if [ ! -z ${VIASH_PAR_VDJ_REFERENCE+x} ]; then echo "r'${VIASH_PAR_VDJ_REFERENCE//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
+  'vdj_inner_enrichment_primers': $( if [ ! -z ${VIASH_PAR_VDJ_INNER_ENRICHMENT_PRIMERS+x} ]; then echo "r'${VIASH_PAR_VDJ_INNER_ENRICHMENT_PRIMERS//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'feature_reference': $( if [ ! -z ${VIASH_PAR_FEATURE_REFERENCE+x} ]; then echo "r'${VIASH_PAR_FEATURE_REFERENCE//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'library_id': $( if [ ! -z ${VIASH_PAR_LIBRARY_ID+x} ]; then echo "r'${VIASH_PAR_LIBRARY_ID//\\'/\\'\\"\\'\\"r\\'}'.split(';')"; else echo None; fi ),
   'library_type': $( if [ ! -z ${VIASH_PAR_LIBRARY_TYPE+x} ]; then echo "r'${VIASH_PAR_LIBRARY_TYPE//\\'/\\'\\"\\'\\"r\\'}'.split(';')"; else echo None; fi ),
@@ -594,7 +610,8 @@ GEX_CONFIG_KEYS = {
     "gex_include_introns": "include-introns"
 }
 FEATURE_CONFIG_KEYS = {"feature_reference": "reference"}
-VDJ_CONFIG_KEYS = {"vdj_reference": "reference"}
+VDJ_CONFIG_KEYS = {"vdj_reference": "reference",
+                   "vdj_inner_enrichment_primers": "inner-enrichment-primers"}
 
 REFERENCE_SECTIONS = {
     "gene-expression": (GEX_CONFIG_KEYS, "index"),

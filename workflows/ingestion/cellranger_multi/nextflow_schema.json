@@ -33,6 +33,11 @@
             "type": "string",
             "description": "Path to the Feature reference CSV file, declaring Feature Barcode","help_text": "Path to the Feature reference CSV file, declaring Feature Barcode\nconstructs and associated barcodes. Required only for Antibody Capture \nor CRISPR Guide Capture libraries. See \nhttps://support.10xgenomics.com/single-cell-gene-expression/software/pipelines/latest/using/feature-bc-analysis#feature-ref \nfor more information.\n",
             "default": ""
+          },
+          "vdj_inner_enrichment_primers": {
+            "type": "string",
+            "description": "V(D)J Immune Profiling libraries: if inner enrichment primers other than those provided ","help_text": "V(D)J Immune Profiling libraries: if inner enrichment primers other than those provided \nin the 10x Genomics kits are used, they need to be specified here as a\ntext file with one primer per line.\n",
+            "default": ""
           }
           
         }
