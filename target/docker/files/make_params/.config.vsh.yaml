@@ -203,5 +203,5 @@ info:
   output: "/home/runner/work/openpipeline/openpipeline/target/docker/files/make_params"
   executable: "/home/runner/work/openpipeline/openpipeline/target/docker/files/make_params/make_params"
   viash_version: "0.7.4"
-  git_commit: "4ebe52249e545397c7b1555ad8deb5dc8201a3a5"
+  git_commit: "940b43d06098530c173f0e5b6de13edccd8e59ab"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"
