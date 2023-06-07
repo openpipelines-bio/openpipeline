@@ -36,6 +36,8 @@ The old behavior of the `full_pipeline` can be obtained by running `full_pipelin
 
 * `mapping/multi_star_to_h5mu`: Use glob to look for count files recursively (PR #408).
 
+* `annotate/popv`: Pin `PopV`, `jax` and `jaxlib` versions.
+
 # openpipelines 0.8.0
 
 ## BREAKING CHANGES
