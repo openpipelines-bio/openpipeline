@@ -236,7 +236,7 @@ function ViashHelp {
   echo ""
   echo "Learning parameters:"
   echo "    --max_epochs"
-  echo "        type: integer, required parameter"
+  echo "        type: integer"
   echo "        Number of passes through the dataset, defaults to (20000 / number of"
   echo "        cells) * 400 or 400; whichever is smallest."
   echo ""
@@ -490,9 +490,9 @@ RUN pip install --upgrade pip && \
 
 LABEL org.opencontainers.image.authors="Malte D. Luecken, Dries Schaumont"
 LABEL org.opencontainers.image.description="Companion container for running component integrate scvi"
-LABEL org.opencontainers.image.created="2023-06-06T06:57:21Z"
+LABEL org.opencontainers.image.created="2023-06-07T08:52:45Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="6288cc2ed98d4caa4638fc369001dbea0e839175"
+LABEL org.opencontainers.image.revision="eaab28578b8c36c7e6cd09eabb8efde9ee377ba1"
 LABEL org.opencontainers.image.version="main_build"
 
 VIASHDOCKER
@@ -969,10 +969,6 @@ if [ -z ${VIASH_PAR_INPUT+x} ]; then
 fi
 if [ -z ${VIASH_PAR_OUTPUT+x} ]; then
   ViashError '--output' is a required argument. Use "--help" to get more information on the parameters.
-  exit 1
-fi
-if [ -z ${VIASH_PAR_MAX_EPOCHS+x} ]; then
-  ViashError '--max_epochs' is a required argument. Use "--help" to get more information on the parameters.
   exit 1
 fi
 if [ -z ${VIASH_META_FUNCTIONALITY_NAME+x} ]; then
