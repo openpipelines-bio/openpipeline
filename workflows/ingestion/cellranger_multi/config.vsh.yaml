@@ -7,7 +7,8 @@ functionality:
   authors:
     - __merge__: ../../../src/authors/dries_schaumont.yaml
       roles: [ author ]
-  argument_groups:
+  argument_groups: 
+  # For extensive documentation: see https://support.10xgenomics.com/single-cell-vdj/software/pipelines/7.0/using/multi
     - name: Inputs
       arguments:
         - name: "--id"
