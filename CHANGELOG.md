@@ -16,7 +16,7 @@ The old behavior of the `full_pipeline` can be obtained by running `full_pipelin
 
 * The `crispr` and `hashing` modalities have been renamed to `gdo` and `hto` respectively ([#392](https://github.com/openpipelines-bio/openpipeline/pull/392)).
 
-* Updated viash to 0.7.4
+* Updated Viash to 0.7.4 (PR #390).
 
 ## NEW FUNCTIONALITY
 
