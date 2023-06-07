@@ -364,7 +364,7 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
     "platform" : "nextflow",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/mapping/samtools_sort",
     "viash_version" : "0.7.4",
-    "git_commit" : "561847d3eeb1c4664eae378114d4e8deb5ffa35b",
+    "git_commit" : "d40f4b143643939f2e17fe64c151990648f26c9a",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))
@@ -420,7 +420,10 @@ def generate_args(par, config):
 
     for arg in arguments:
         arg_val = par.get(arg["name"].removeprefix("--"))
-        orig_arg = arg.get("info", {}).get("orig_arg")
+        # The info key is always present (changed in viash 0.7.4) 
+        # in the parsed config (None if not specified in source config)
+        info = arg["info"] or {}
+        orig_arg = info.get("orig_arg")
         if arg_val and orig_arg:
             if not arg.get("multiple", False):
                 arg_val = [arg_val]

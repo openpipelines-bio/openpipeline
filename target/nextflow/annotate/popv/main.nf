@@ -346,18 +346,25 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
             "mudata~=0.2.0",
             "anndata~=0.8.0",
             "scanpy~=1.9.2",
-            "scvi-tools~=0.20.3"
-          ],
-          "git" : [
-            "https://github.com/czbiohub/PopV.git"
+            "scvi-tools~=0.20.3",
+            "git+https://github.com/YosefLab/PopV.git@v0.2"
           ],
           "upgrade" : true
         },
         {
           "type" : "docker",
           "run" : [
-            "cd /opt && mkdir -p /opt/popv_cl_ontology && \\\\\nwget https://raw.githubusercontent.com/czbiohub/PopV/main/ontology/cl.obo -O \\"popv_cl_ontology/cl.obo\\" && \\\\\nwget https://raw.githubusercontent.com/czbiohub/PopV/main/ontology/cl.ontology -O \\"popv_cl_ontology/cl.ontology\\" && \\\\\nwget https://raw.githubusercontent.com/czbiohub/PopV/main/ontology/cl.ontology.nlp.emb -O \\"popv_cl_ontology/cl.ontology.nlp.emb\\"\n"
+            "cd /opt && mkdir -p /opt/popv_cl_ontology && \\\\\nwget https://raw.githubusercontent.com/YosefLab/PopV/v0.2/ontology/cl.obo -O \\"popv_cl_ontology/cl.obo\\" && \\\\\nwget https://raw.githubusercontent.com/YosefLab/PopV/v0.2/ontology/cl.ontology -O \\"popv_cl_ontology/cl.ontology\\" && \\\\\nwget https://raw.githubusercontent.com/YosefLab/PopV/v0.2/ontology/cl.ontology.nlp.emb -O \\"popv_cl_ontology/cl.ontology.nlp.emb\\"\n"
           ]
+        },
+        {
+          "type" : "python",
+          "user" : false,
+          "packages" : [
+            "jax==0.4.9",
+            "jaxlib==0.4.9"
+          ],
+          "upgrade" : true
         }
       ],
       "test_setup" : [
@@ -431,7 +438,7 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
     "platform" : "nextflow",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/annotate/popv",
     "viash_version" : "0.7.4",
-    "git_commit" : "561847d3eeb1c4664eae378114d4e8deb5ffa35b",
+    "git_commit" : "d40f4b143643939f2e17fe64c151990648f26c9a",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))
