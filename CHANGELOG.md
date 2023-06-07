@@ -26,6 +26,8 @@ The old behavior of the `full_pipeline` can be obtained by running `full_pipelin
 
 * `workflows/integration/scvi`: Run scvi integration followed by neighbour calculations and run umap on the result (PR #396).
 
+* `mapping/cellranger_multi` and `workflows/ingestion/cellranger_multi`: Added `--vdj_inner_enrichment_primers` argument (PR #417).
+
 ## MINOR CHANGES
 
 * `mapping/multi_star`: Added `--min_success_rate` which causes component to fail when the success rate of processed samples were successful (PR #408).
