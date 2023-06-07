@@ -12,7 +12,7 @@ par = {
 meta = {
     'cpus': 2,
     'temp_dir': '/tmp',
-    'config': '/pwd/src/mapping/samtools_sort/config.vsh.yaml'
+    'config': 'src/mapping/htseq/config.vsh.yaml'
 }
 ## VIASH END
 
