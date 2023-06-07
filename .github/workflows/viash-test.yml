@@ -56,7 +56,7 @@ jobs:
 
     - name: Get changed files
       id: changed-files
-      uses: tj-actions/changed-files@v36.0.14
+      uses: tj-actions/changed-files@v36.0.17
       with:
         separator: ";"
         diff_relative: true
@@ -132,7 +132,8 @@ jobs:
           fi
         done
 
-    - name: Remove unused test resources to save space
+    - name: Remove unused test resources to save space (only when restoring from cache)
+      if: steps.restore_cache.outputs.cache-hit == 'true'
       shell: bash
       run: |
         readarray -t resources < <(viash config view --format json "${{ matrix.component.config }}" | jq -r -c '(.info.config | capture("^(?<dir>.*\/)").dir) as $dir | .functionality.test_resources | map(select(.type == "file")) | map($dir + .path) | unique | .[]')
