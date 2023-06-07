@@ -22,6 +22,8 @@ The old behavior of the `full_pipeline` can be obtained by running `full_pipelin
 
 * `transform/clr`: added `output_layer` argument.
 
+* `workflows/integration/scvi`: Run scvi integration followed by neighbour calculations and run umap on the result.
+
 ## MINOR CHANGES
 
 * `mapping/multi_star`: Added `--min_success_rate` which causes component to fail when the success rate of processed samples were successful (PR #408).
@@ -37,6 +39,8 @@ The old behavior of the `full_pipeline` can be obtained by running `full_pipelin
 * `mapping/multi_star_to_h5mu`: Use glob to look for count files recursively (PR #408).
 
 * `annotate/popv`: Pin `PopV`, `jax` and `jaxlib` versions.
+
+* `integrate/scvi`: the max_epochs is no longer required since it has a default value.
 
 # openpipelines 0.8.0
 
