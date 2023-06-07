@@ -36,6 +36,18 @@ The old behavior of the `full_pipeline` can be obtained by running `full_pipelin
 
 * `mapping/multi_star_to_h5mu`: Use glob to look for count files recursively (PR #408).
 
+## NEW FUNCTIONALITY
+
+* `workflows/full_pipeline`: PCA, nearest neighbours and UMAP are now calculated for the `prot` modality.
+
+* `transform/clr`: added `output_layer` argument.
+
+* `workflows/integration/scvi`: Run scvi integration followed by neighbour calculations and run umap on the result.
+
+## BUG FIXES
+
+* `integrate/scvi`: the max_epochs is no longer required since it has a default value.
+
 # openpipelines 0.8.0
 
 ## BREAKING CHANGES
