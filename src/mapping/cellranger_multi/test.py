@@ -4,6 +4,7 @@ from pathlib import Path
 import tarfile
 from tempfile import TemporaryDirectory
 from textwrap import dedent
+import re
 
 ## VIASH START
 meta = {
@@ -106,7 +107,7 @@ class TestCellrangerMulti(TestCase):
     
     def test_vdj_inner_enrichment_primers(self):
         with TemporaryDirectory() as tempdir:
-            enrichment_primers_file = tempdir / "enrichment_primers.txt"
+            enrichment_primers_file = Path(tempdir) / "enrichment_primers.txt"
             with enrichment_primers_file.open('w') as primers_file_open:
                 primers_file_open.write("AGTCTCTCAGCTGGTACACG\nTCTGATGGCTCAAACACAGC")
             args=[
@@ -130,14 +131,8 @@ class TestCellrangerMulti(TestCase):
             self.assertTrue(Path("output5/config.csv").is_file())
             with Path("output5/config.csv").open('r') as config_file:
                 config_contents = config_file.read()
-            expected_csv_content = dedent(
-                """\
-                chemistry,auto
-                no-secondary,False
-                no-bam,True
-                include-introns,False
-                """)
-            assert expected_csv_content in config_contents
+            expected_csv_content = r"\[vdj\]\nreference,.*\ninner-enrichment-primers,.*\n"
+            assert re.search(expected_csv_content, config_contents)
 
     def test_cellranger_multi_applies_gex_options(self):
         args=[
