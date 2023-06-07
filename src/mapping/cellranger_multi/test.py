@@ -103,6 +103,41 @@ class TestCellrangerMulti(TestCase):
         if meta['memory_gb']:
             args.extend(["---memory", f"{meta['memory_gb']}GB"])
         self._run_and_check_output(args)
+    
+    def test_vdj_inner_enrichment_primers(self):
+        with TemporaryDirectory() as tempdir:
+            enrichment_primers_file = tempdir / "enrichment_primers.txt"
+            with enrichment_primers_file.open('w') as primers_file_open:
+                primers_file_open.write("AGTCTCTCAGCTGGTACACG\nTCTGATGGCTCAAACACAGC")
+            args=[
+                "--output", "output5/",
+                "--input", meta["resources_dir"] + "10x_5k_anticmv/raw/",
+                "--gex_reference", gex_reference,
+                "--vdj_reference", vdj_reference,
+                "--feature_reference", feature_reference,
+                "--library_id", "5k_human_antiCMV_T_TBNK_connect_GEX_1_subset;5k_human_antiCMV_T_TBNK_connect_AB_subset;5k_human_antiCMV_T_TBNK_connect_VDJ_subset",
+                "--library_type", "Gene Expression;Antibody Capture;VDJ",
+                "--gex_secondary_analysis", "true",
+                "--gex_generate_bam", "false",
+                "--gex_include_introns", "false",
+                "--inner_enrichment_primers", str(enrichment_primers_file),
+                "--dryrun"]
+            if meta['cpus']:
+                args.extend(["---cpus", str(meta['cpus'])])
+            if meta['memory_gb']:
+                args.extend(["---memory", f"{meta['memory_gb']}GB"])
+            self._run_and_check_output(args)
+            self.assertTrue(Path("output5/config.csv").is_file())
+            with Path("output5/config.csv").open('r') as config_file:
+                config_contents = config_file.read()
+            expected_csv_content = dedent(
+                """\
+                chemistry,auto
+                no-secondary,False
+                no-bam,True
+                include-introns,False
+                """)
+            assert expected_csv_content in config_contents
 
     def test_cellranger_multi_applies_gex_options(self):
         args=[

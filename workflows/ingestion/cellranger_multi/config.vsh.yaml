@@ -42,6 +42,14 @@ functionality:
             for more information.
           example: "feature_reference.csv"
           required: false
+        - name: "--inner_enrichment_primers"
+          type: file
+          description: |
+            V(D)J Immune Profiling libraries: if inner enrichment primers other than those provided 
+            in the 10x Genomics kits are used, they need to be specified here as a
+            text file with one primer per line.
+          example: "enrichment_primers.txt"
+          required: false
     - name: Outputs
       arguments:
         - name: "--output_raw"

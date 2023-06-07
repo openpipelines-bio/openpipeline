@@ -82,7 +82,8 @@ GEX_CONFIG_KEYS = {
     "gex_include_introns": "include-introns"
 }
 FEATURE_CONFIG_KEYS = {"feature_reference": "reference"}
-VDJ_CONFIG_KEYS = {"vdj_reference": "reference"}
+VDJ_CONFIG_KEYS = {"vdj_reference": "reference",
+                   "inner_enrichment_primers": "inner-enrichment-primers"}
 
 REFERENCE_SECTIONS = {
     "gene-expression": (GEX_CONFIG_KEYS, "index"),
