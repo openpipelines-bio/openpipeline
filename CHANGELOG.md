@@ -26,7 +26,7 @@ The old behavior of the `full_pipeline` can be obtained by running `full_pipelin
 
 * `workflows/integration/scvi`: Run scvi integration followed by neighbour calculations and run umap on the result (PR #396).
 
-* `mapping/cellranger_multi` and `workflows/ingestion/cellranger_multi`: Added `--inner_enrichment_primers` argument (PR #417).
+* `mapping/cellranger_multi` and `workflows/ingestion/cellranger_multi`: Added `--vdj_inner_enrichment_primers` argument (PR #417).
 
 ## MINOR CHANGES
 

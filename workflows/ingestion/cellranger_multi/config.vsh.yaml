@@ -43,7 +43,7 @@ functionality:
             for more information.
           example: "feature_reference.csv"
           required: false
-        - name: "--inner_enrichment_primers"
+        - name: "--vdj_inner_enrichment_primers"
           type: file
           description: |
             V(D)J Immune Profiling libraries: if inner enrichment primers other than those provided 

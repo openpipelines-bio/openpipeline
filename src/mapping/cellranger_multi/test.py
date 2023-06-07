@@ -121,7 +121,7 @@ class TestCellrangerMulti(TestCase):
                 "--gex_secondary_analysis", "true",
                 "--gex_generate_bam", "false",
                 "--gex_include_introns", "false",
-                "--inner_enrichment_primers", str(enrichment_primers_file),
+                "--vdj_inner_enrichment_primers", str(enrichment_primers_file),
                 "--dryrun"]
             if meta['cpus']:
                 args.extend(["---cpus", str(meta['cpus'])])

@@ -44,7 +44,7 @@ workflow run_wf {
         "library_type": "library_type",
         "library_subsample": "library_subsample",
         "library_lanes": "library_lanes",
-        "inner_enrichment_primers": "inner_enrichment_primers"
+        "vdj_inner_enrichment_primers": "vdj_inner_enrichment_primers"
       ],
       from_cellranger_multi_to_h5mu: [
         "output": "output_h5mu",
