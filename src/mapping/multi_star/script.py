@@ -111,8 +111,11 @@ def generate_cmd_arguments(par, arguments_info, step_filter=None, flatten=False)
 
     for key, arg in arguments_info.items():
         arg_val = par.get(key)
-        orig_arg = arg.get("info", {}).get("orig_arg")
-        step = arg.get("info", {}).get("step")
+        # The info key is always present (changed in viash 0.7.4) 
+        # in the parsed config (None if not specified in source config)
+        info = arg["info"] or {}
+        orig_arg = info.get("orig_arg")
+        step = info.get("step")
         if arg_val and orig_arg and (not step_filter or step == step_filter):
             if not arg.get("multiple", False):
                 arg_val = [arg_val]
