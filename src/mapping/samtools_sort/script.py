@@ -30,8 +30,8 @@ def generate_args(par, config):
         arg_val = par.get(arg["name"].removeprefix("--"))
         # The info key is always present (changed in viash 0.7.4) 
         # in the parsed config (None if not specified in source config)
-        info = arg["info"]
-        orig_arg = info.get("orig_arg") if info else None
+        info = arg["info"] or {}
+        orig_arg = info.get("orig_arg")
         if arg_val and orig_arg:
             if not arg.get("multiple", False):
                 arg_val = [arg_val]
