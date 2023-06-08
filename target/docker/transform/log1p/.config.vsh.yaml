@@ -7,7 +7,7 @@ functionality:
     roles:
     - "maintainer"
     info:
-      role: "Core Team"
+      role: "Core Team Member"
       links:
         email: "ddemaeyer@gmail.com"
         github: "ddemaeyer"
@@ -20,7 +20,7 @@ functionality:
     roles:
     - "contributor"
     info:
-      role: "Core Team"
+      role: "Core Team Member"
       links:
         email: "robrecht@data-intuitive.com"
         github: "rcannood"
@@ -209,5 +209,5 @@ info:
   output: "/home/runner/work/openpipeline/openpipeline/target/docker/transform/log1p"
   executable: "/home/runner/work/openpipeline/openpipeline/target/docker/transform/log1p/log1p"
   viash_version: "0.7.4"
-  git_commit: "f9144459e86797b50a0e30a770de1a51859542a8"
+  git_commit: "c8b6c84c1bfa065ccedaae47a38ba3f773c942cf"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"

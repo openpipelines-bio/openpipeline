@@ -37,7 +37,7 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
           "maintainer"
         ],
         "info" : {
-          "role" : "Core Team",
+          "role" : "Core Team Member",
           "links" : {
             "github" : "tverbeiren",
             "linkedin" : "verbeiren"
@@ -254,7 +254,7 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
     "platform" : "nextflow",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/demux/bcl_convert",
     "viash_version" : "0.7.4",
-    "git_commit" : "f9144459e86797b50a0e30a770de1a51859542a8",
+    "git_commit" : "c8b6c84c1bfa065ccedaae47a38ba3f773c942cf",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))

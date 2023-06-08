@@ -63,7 +63,7 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
           "maintainer"
         ],
         "info" : {
-          "role" : "Core Team",
+          "role" : "Core Team Member",
           "links" : {
             "email" : "robrecht@data-intuitive.com",
             "github" : "rcannood",
@@ -1735,7 +1735,7 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
           },
           {
             "type" : "integer",
-            "name" : "--outSJfilterIntro''' + '''nMaxVsReadN",
+            "name" : "--outSJfilt''' + '''erIntronMaxVsReadN",
             "description" : "maximum gap allowed for junctions supported by 1,2,3,,,N reads\n\ni.e. by default junctions supported by 1 read can have gaps <=50000b, by 2 reads: <=100000b, by 3 reads: <=200000. by >=4 reads any gap <=alignIntronMax\ndoes not apply to annotated junctions",
             "info" : {
               "step" : "star",
@@ -3493,7 +3493,7 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
         },
         {
           "type" : "docker",
-         ''' + ''' "run" : [
+  ''' + '''        "run" : [
             "apt-get update && \\\\\n  apt-get install -y --no-install-recommends ${PACKAGES} && \\\\\n  cd /tmp && \\\\\n  wget --no-check-certificate https://github.com/alexdobin/STAR/archive/refs/tags/${STAR_VERSION}.zip && \\\\\n  unzip ${STAR_VERSION}.zip && \\\\\n  cd STAR-${STAR_VERSION}/source && \\\\\n  make STARstatic CXXFLAGS_SIMD=-std=c++11 && \\\\\n  cp STAR /usr/local/bin && \\\\\n  cd / && \\\\\n  rm -rf /tmp/STAR-${STAR_VERSION} /tmp/${STAR_VERSION}.zip && \\\\\n  apt-get --purge autoremove -y ${PACKAGES} && \\\\\n  apt-get clean\n"
           ]
         },
@@ -3589,7 +3589,7 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
     "platform" : "nextflow",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/mapping/multi_star",
     "viash_version" : "0.7.4",
-    "git_commit" : "f9144459e86797b50a0e30a770de1a51859542a8",
+    "git_commit" : "c8b6c84c1bfa065ccedaae47a38ba3f773c942cf",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))

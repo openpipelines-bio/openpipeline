@@ -63,7 +63,7 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
           "maintainer"
         ],
         "info" : {
-          "role" : "Core Team",
+          "role" : "Core Team Member",
           "links" : {
             "email" : "robrecht@data-intuitive.com",
             "github" : "rcannood",
@@ -1678,7 +1678,7 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
             "type" : "integer",
             "name" : "--alignSJoverhangMin",
             "description" : "minimum overhang (i.e. block size) for spliced alignments",
-            "example" :''' + ''' [
+            "exa''' + '''mple" : [
               5
             ],
             "required" : false,
@@ -2627,7 +2627,7 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
     "platform" : "nextflow",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/mapping/star_align",
     "viash_version" : "0.7.4",
-    "git_commit" : "f9144459e86797b50a0e30a770de1a51859542a8",
+    "git_commit" : "c8b6c84c1bfa065ccedaae47a38ba3f773c942cf",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))
