@@ -1,0 +1,145 @@
+functionality:
+  name: cellxgene_census
+  namespace: "query"
+  description: "Query CellxGene Census or user-specified TileDBSoma object, and eventually fetch cell and gene metadata or/and expression counts."
+  authors:
+    - __merge__: ../../authors/matthias_beyens.yaml
+      roles: [ author ]
+  argument_groups:
+    - name: Inputs
+      description: "Arguments related to the input (aka query) dataset."
+      arguments:
+        # TODO: add user-provided release of census, e.g. TileDBSoma
+        - name: "--input_database"
+          type: string
+          description: "Full input database S3 prefix URL. Default: CellxGene Census"
+          direction: input
+          required: false
+          example: "s3://"
+          default: "CellxGene"
+        - name: "--modality"
+          description: "Which modality to process."
+          type: string
+          default: "rna"
+          required: false
+        # TODO: escalate to downloaded version, current pinned to https://github.com/obophenotype/cell-ontology/releases/download/v2023-05-22/cl-base.obo fixed in image download
+        - name: "--cell_ontology_release"
+          description: "Cell Ontology release date. More information: https://github.com/obophenotype/cell-ontology/releases/"
+          type: string
+          default: "2023-05-22"
+          required: false
+        - name: "--cellxgene_release"
+          description: "CellxGene Census release date. More information: https://chanzuckerberg.github.io/cellxgene-census/cellxgene_census_docsite_data_release_info.html"
+          type: string
+          default: "2023-05-15"
+          required: false
+    - name: Query
+      description: Arguments related to the query.
+      arguments:
+        - name: "--species"
+          type: string
+          description: "Specie(s) of interest. If not specified, Homo Sapiens will be queried."
+          required: false
+          example: "homo_sapiens"
+          default: "homo_sapiens"
+          choices: ["homo_sapiens", "mus_musculus"]
+          direction: input
+          multiple: false
+        - name: "--cell_type"
+          type: string
+          description: "Cell type(s) of interest. Cell type should be one of the Cell Ontology terms. If not specified, all cell types will be queried."
+          required: false
+          example: ["mesothelial fibroblast"]
+          direction: input
+          multiple: true
+        - name: "--tissue"
+          type: string
+          description: "Tissue(s) of interest. If not specified, all tissues will be queried."
+          required: false
+          example: ["lung"]
+          direction: input
+          multiple: true
+        - name: "--technology"
+          type: string
+          description: "Technology(ies) of interest. If not specified, all technologies will be queried."
+          required: false
+          example: ["10x 3' v3"]
+          # TODO: add all possible technologies
+          choices: ["10x 3' v1", "10x 3' v2", "10x 3' v3", "10x 5' v1", "10x 5' v2"]
+          direction: input
+          multiple: true
+        - name: "--suspension"
+          type: string
+          description: "Suspension(s) of interest. If not specified, all suspensions will be queried."
+          required: false
+          example: ["cell"]
+          # TODO: add all possible suspensions
+          choices: ["cell", "nucleus"]
+          direction: input
+          multiple: true
+        - name: "--is_primary_data"
+          type: boolean
+          default: True
+          description: "Allow only primary data in the query in order to prevent of data duplication."
+          required: false
+          direction: input
+        - name: "--metadata_only"
+          type: boolean
+          default: True
+          description: By default only returns metadata of obs layer of query. If False, returns metadata of obs layer and gene expression matrix of query
+          direction: input
+          required: false
+    - name: Outputs
+      description: Output arguments.
+      arguments:
+        - name: "--output"
+          type: file
+          description: Output h5mu file.
+          direction: output
+          required: true
+          example: output.h5mu
+        - name: "--output_compression"
+          type: string
+          choices: ["gzip", "lzf"]
+          required: false
+          example: "gzip"
+    # - name: Arguments
+    #   description: Other arguments.
+    #   arguments:
+    #     - name: "--methods"
+    #       type: string
+    #       description: "Methods to call cell types. By default, runs to knn_on_scvi and scanvi."
+    #       example: ["knn_on_scvi", "scanvi"]
+    #       choices: [celltypist, knn_on_bbknn, knn_on_scanorama, knn_on_scvi, onclass, rf, scanvi, svm]
+    #       required: true
+    #       multiple: true
+  resources:
+    - type: python_script
+      path: script.py
+  test_resources:
+    - type: python_script
+      path: test.py
+platforms:
+  - type: docker
+  # TODO: increase python version
+    image: python:3.9
+    setup:
+      - type: python
+        packages:
+          - mudata~=0.2.0
+          - anndata~=0.8.0
+          - cellxgene-census~=1.2.0
+          - obonet~=1.0.0
+          # - scikit-misc~=0.2.0
+      # TODO: escalate to downloaded version, current pinned to https://github.com/obophenotype/cell-ontology/releases/download/v2023-05-22/cl-base.obo fixed in image download
+      - type: docker
+        run: |
+          cd /opt && mkdir -p /opt/cellxgene_census_cl_ontology && \
+          wget https://github.com/obophenotype/cell-ontology/releases/download/v2023-05-22/cl-base.obo -O "cellxgene_census_cl_ontology/cl.obo"
+    test_setup:
+      - type: python
+        packages:
+          - viashpy
+  - type: nextflow
+    directives:
+      label: [highmem]
