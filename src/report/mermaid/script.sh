@@ -6,5 +6,5 @@ mmdc -p "$meta_resources_dir/puppeteer-config.json" \
     --width "$par_width" \
     --height "$par_height" \
     ${par_background_color:+--backgroundColor $par_background_color} \
-    ${output_format:+--outputFormat $output_format}
+    ${output_format:+--outputFormat $par_output_format}
 
