@@ -5,7 +5,7 @@ info:
     email: maurosaporita@gmail.com
     github: mauro-saporita
     linkedin: mauro-saporita-930b06a5
-  organization:
+  organizations:
     - name: Ardigen
       href: https://ardigen.com
       role: Lead Nextflow Developer
