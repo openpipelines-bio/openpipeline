@@ -406,7 +406,7 @@ RUN apt-get update && \
 
 LABEL org.opencontainers.image.authors="Angela Oliveira Pisco, Robrecht Cannoodt"
 LABEL org.opencontainers.image.description="Companion container for running component reference build_bdrhap_reference"
-LABEL org.opencontainers.image.created="2023-06-09T11:46:49Z"
+LABEL org.opencontainers.image.created="2023-06-09T14:09:06Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
 LABEL org.opencontainers.image.revision="7d82cf8da3bcb1041fe313a069f7c897cfe6f5f5"
 LABEL org.opencontainers.image.version="integration_build"
