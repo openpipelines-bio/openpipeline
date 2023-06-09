@@ -413,7 +413,7 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
     "platform" : "nextflow",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/integrate/scarches",
     "viash_version" : "0.7.4",
-    "git_commit" : "31e7d14f88ce0217fb8ab8a25bd5f91f16e15128",
+    "git_commit" : "7d82cf8da3bcb1041fe313a069f7c897cfe6f5f5",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))
