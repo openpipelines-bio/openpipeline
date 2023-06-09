@@ -74,6 +74,6 @@ platforms:
           - procps
       - type: python
         packages:
-          - mudata~=0.2.0
-          - anndata~=0.8.0
+          - mudata~=0.2.3
+          - anndata~=0.9.1
   - type: nextflow

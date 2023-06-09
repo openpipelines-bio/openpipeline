@@ -44,8 +44,8 @@ platforms:
           - procps
       - type: python
         packages:
-          - anndata~=0.9.0
-          - mudata~=0.2.0
+          - anndata~=0.9.1
+          - mudata~=0.2.3
           - pandas~=2.0.0
     test_setup:
       - type: python

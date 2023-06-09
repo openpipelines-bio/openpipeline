@@ -175,8 +175,8 @@ platforms:
           - git
       - type: python
         packages: 
-          - anndata~=0.8.0
-          - mudata~=0.2.0
+          - anndata~=0.9.1
+          - mudata~=0.2.3
           - muon~=0.1.5
           # - torch
           # - torchvision
@@ -187,7 +187,7 @@ platforms:
     test_setup:
       - type: python
         packages: 
-          - muon
+          - muon~=0.1.4
           - scanpy~=1.9.2
   - type: nextflow
     directives:

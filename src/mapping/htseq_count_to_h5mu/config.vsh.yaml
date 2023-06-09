@@ -61,8 +61,8 @@ platforms:
           - procps
       - type: python
         packages:
-          - anndata~=0.8.0
-          - mudata~=0.2.0
+          - anndata~=0.9.1
+          - mudata~=0.2.3
           - gtfparse
            # see https://github.com/openvax/gtfparse/pull/34
           - polars[pyarrow] < 0.16.14
