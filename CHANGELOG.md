@@ -30,7 +30,7 @@ The old behavior of the `full_pipeline` can be obtained by running `full_pipelin
 
 ## MAJOR CHANGES
 
-* `report/mermaid`: Now used `mermaid-cli` to generate images instead of creating a request to `mermaid.ink`. New `--output_format`, `--width`, `--height` and  `--background_color` arguments were added.
+* `report/mermaid`: Now used `mermaid-cli` to generate images instead of creating a request to `mermaid.ink`. New `--output_format`, `--width`, `--height` and  `--background_color` arguments were added (PR #419).
 
 ## MINOR CHANGES
 
