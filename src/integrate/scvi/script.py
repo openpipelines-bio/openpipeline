@@ -37,7 +37,7 @@ meta = {
 
 import sys
 sys.path.append(meta['resources_dir'])
-from utils import subset_hvg
+from subset_vars import subset_vars
 
 
 def main():
@@ -46,7 +46,7 @@ def main():
 
     if par['var_input']:
         # Subset to HVG
-        adata = subset_hvg(adata, hvg_col=par["var_input"])
+        adata = subset_vars(adata, hvg_col=par["var_input"])
 
     # Set up the data
     scvi.model.SCVI.setup_anndata(
