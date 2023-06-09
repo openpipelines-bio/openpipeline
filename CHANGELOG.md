@@ -28,6 +28,10 @@ The old behavior of the `full_pipeline` can be obtained by running `full_pipelin
 
 * `mapping/cellranger_multi` and `workflows/ingestion/cellranger_multi`: Added `--vdj_inner_enrichment_primers` argument (PR #417).
 
+## MAJOR CHANGES
+
+* `report/mermaid`: Now used `mermaid-cli` to generate images instead of creating a request to `mermaid.ink`. New `--output_format`, `--width`, `--height` and  `--background_color` arguments were added (PR #419).
+
 ## MINOR CHANGES
 
 * `mapping/multi_star`: Added `--min_success_rate` which causes component to fail when the success rate of processed samples were successful (PR #408).
