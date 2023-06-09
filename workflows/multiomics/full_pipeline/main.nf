@@ -37,7 +37,7 @@ workflow run_wf {
     | preprocessInputs("config": config)
     | setWorkflowArguments (
         "add_id_args": ["input": "input",
-                        "make_observation_keys_unique": "make_observation_keys_unique",
+                        "make_observation_keys_unique": "add_id_make_observation_keys_unique",
                         "obs_output": "add_id_obs_output",
                         "add_id_to_obs": "add_id_to_obs"],
         "split_modalities_args": [:],
