@@ -50,14 +50,20 @@ The old behavior of the `full_pipeline` can be obtained by running `full_pipelin
 
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 61a267f997 (Rework mermaid component (#419))
 * All components that used `python` as base container: use `slim` version to reduce container image size (PR #427).
 
 =======
 >>>>>>> 6296146bcf (Rework mermaid component (#419))
+<<<<<<< HEAD
 =======
 * All components that used `python` as base container: use `slim` version to reduce container image size (PR #427).
 
 >>>>>>> ef5840e5c2 (Use smaller images. (#427))
+=======
+>>>>>>> 61a267f997 (Rework mermaid component (#419))
 ## MINOR CHANGES
 
 * `mapping/multi_star`: Added `--min_success_rate` which causes component to fail when the success rate of processed samples were successful (PR #408).
