@@ -7,8 +7,15 @@ functionality:
     roles:
     - "author"
     - "maintainer"
-    props:
-      github: "tverbeiren"
+    info:
+      role: "Core Team Member"
+      links:
+        github: "tverbeiren"
+        linkedin: "verbeiren"
+      organizations:
+      - name: "Data Intuitive"
+        href: "https://www.data-intuitive.com"
+        role: "Data Scientist and CEO"
   arguments:
   - type: "file"
     name: "--input"
@@ -16,9 +23,9 @@ functionality:
     - "-i"
     - "--runfolder_dir"
     description: "Input run directory"
+    info: null
     example:
     - "bcl_dir"
-    default: []
     must_exist: true
     create_parent: true
     required: true
@@ -31,9 +38,9 @@ functionality:
     alternatives:
     - "-s"
     description: "Pointer to the sample sheet"
+    info: null
     example:
     - "SampleSheet.csv"
-    default: []
     must_exist: true
     create_parent: true
     required: true
@@ -46,9 +53,9 @@ functionality:
     alternatives:
     - "-o"
     description: "Output directory containig fastq files"
+    info: null
     example:
     - "fastq_dir"
-    default: []
     must_exist: true
     create_parent: true
     required: true
@@ -58,11 +65,10 @@ functionality:
     dest: "par"
   - type: "file"
     name: "--reports"
-    alternatives: []
     description: "Reports directory"
+    info: null
     example:
     - "reports_dir"
-    default: []
     must_exist: true
     create_parent: true
     required: false
@@ -72,10 +78,9 @@ functionality:
     dest: "par"
   - type: "boolean_true"
     name: "--ignore_missing"
-    alternatives: []
+    info: null
     direction: "input"
     dest: "par"
-  argument_groups: []
   resources:
   - type: "bash_script"
     path: "script.sh"
@@ -87,9 +92,8 @@ functionality:
     is_executable: true
   - type: "file"
     path: "../../../resources_test/cellranger_tiny_bcl/bcl"
+  info: null
   status: "enabled"
-  requirements:
-    commands: []
   set_wd_to_resources_dir: false
 platforms:
 - type: "docker"
@@ -100,32 +104,55 @@ platforms:
   namespace_separator: "_"
   resolve_volume: "Automatic"
   chown: true
-  port: []
   setup_strategy: "ifneedbepullelsecachedbuild"
-  run_args: []
   target_image_source: "https://github.com/openpipelines-bio/openpipeline"
-  setup: []
-  test_setup: []
+  entrypoint: []
+  cmd: null
 - type: "nextflow"
   id: "nextflow"
   variant: "vdsl3"
   directives:
-    accelerator: {}
-    conda: []
-    containerOptions: []
     label:
     - "midmem"
     - "midcpu"
-    module: []
-    pod: []
-    publishDir: []
-    queue: []
     tag: "$id"
   auto:
     simplifyInput: true
     simplifyOutput: true
     transcript: false
     publish: false
+  config:
+    labels:
+      mem1gb: "memory = 1.GB"
+      mem2gb: "memory = 2.GB"
+      mem4gb: "memory = 4.GB"
+      mem8gb: "memory = 8.GB"
+      mem16gb: "memory = 16.GB"
+      mem32gb: "memory = 32.GB"
+      mem64gb: "memory = 64.GB"
+      mem128gb: "memory = 128.GB"
+      mem256gb: "memory = 256.GB"
+      mem512gb: "memory = 512.GB"
+      mem1tb: "memory = 1.TB"
+      mem2tb: "memory = 2.TB"
+      mem4tb: "memory = 4.TB"
+      mem8tb: "memory = 8.TB"
+      mem16tb: "memory = 16.TB"
+      mem32tb: "memory = 32.TB"
+      mem64tb: "memory = 64.TB"
+      mem128tb: "memory = 128.TB"
+      mem256tb: "memory = 256.TB"
+      mem512tb: "memory = 512.TB"
+      cpu1: "cpus = 1"
+      cpu2: "cpus = 2"
+      cpu5: "cpus = 5"
+      cpu10: "cpus = 10"
+      cpu20: "cpus = 20"
+      cpu50: "cpus = 50"
+      cpu100: "cpus = 100"
+      cpu200: "cpus = 200"
+      cpu500: "cpus = 500"
+      cpu1000: "cpus = 1000"
   debug: false
   container: "docker"
 info:
@@ -133,6 +160,6 @@ info:
   platform: "docker"
   output: "/home/runner/work/openpipeline/openpipeline/target/docker/demux/bcl2fastq"
   executable: "/home/runner/work/openpipeline/openpipeline/target/docker/demux/bcl2fastq/bcl2fastq"
-  viash_version: "0.7.1"
-  git_commit: "53783a738c84d94a2152e9306aff2e920fe1afff"
+  viash_version: "0.7.4"
+  git_commit: "31e7d14f88ce0217fb8ab8a25bd5f91f16e15128"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"

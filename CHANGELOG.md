@@ -1,4 +1,4 @@
-# openpipelines 0.9.0
+# openpipelines 0.9.0 (unreleased)
 
 ## BREAKING CHANGES
 
@@ -14,13 +14,41 @@ Running the integration in the `full_pipeline` deemed to be impractical because 
 
 The old behavior of the `full_pipeline` can be obtained by running `full_pipeline` followed by the `leiden_harmony` pipeline.
 
-* The `cripr` and `hashing` modalities have been renamed to `gdo` and `hto` respectively ([#392](https://github.com/openpipelines-bio/openpipeline/pull/392)).
+* The `crispr` and `hashing` modalities have been renamed to `gdo` and `hto` respectively (PR #392).
+
+* Updated Viash to 0.7.4 (PR #390).
 
 ## NEW FUNCTIONALITY
 
-* `workflows/full_pipeline`: PCA, nearest neighbours and UMAP are now calculated for the `prot` modality.
+* `workflows/full_pipeline`: PCA, nearest neighbours and UMAP are now calculated for the `prot` modality (PR #396).
 
-* `transform/clr`: added `output_layer` argument.
+* `transform/clr`: added `output_layer` argument (PR #396).
+
+* `workflows/integration/scvi`: Run scvi integration followed by neighbour calculations and run umap on the result (PR #396).
+
+* `mapping/cellranger_multi` and `workflows/ingestion/cellranger_multi`: Added `--vdj_inner_enrichment_primers` argument (PR #417).
+
+## MAJOR CHANGES
+
+* `report/mermaid`: Now used `mermaid-cli` to generate images instead of creating a request to `mermaid.ink`. New `--output_format`, `--width`, `--height` and  `--background_color` arguments were added (PR #419).
+
+## MINOR CHANGES
+
+* `mapping/multi_star`: Added `--min_success_rate` which causes component to fail when the success rate of processed samples were successful (PR #408).
+
+## BUG FIXES
+
+* `annotate/popv`: Fix concat issue when the input data has multiple layers (#395, PR #397).
+
+* `annotate/popv`: Fix indexing issue when MuData object contain non overlapping modalities (PR #405).
+
+* `mapping/multi_star`: Fix issue where temp dir could not be created when group_id contains slashes (PR #406).
+
+* `mapping/multi_star_to_h5mu`: Use glob to look for count files recursively (PR #408).
+
+* `annotate/popv`: Pin `PopV`, `jax` and `jaxlib` versions (PR #415).
+
+* `integrate/scvi`: the max_epochs is no longer required since it has a default value (PR #396).
 
 # openpipelines 0.8.0
 

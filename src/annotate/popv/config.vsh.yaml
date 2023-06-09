@@ -1,7 +1,7 @@
 functionality:
   name: popv
   namespace: "annotate"
-  description: "Performs popular major vote cell typing on single cell sequence data https://github.com/czbiohub/PopV"
+  description: "Performs popular major vote cell typing on single cell sequence data using multiple algorithms. Note that this is a one-shot version of PopV."
   authors:
     - __merge__: ../../authors/matthias_beyens.yaml
       roles: [ author ]
@@ -53,6 +53,10 @@ functionality:
           example: TS_Bladder_filtered.h5ad
           direction: input
           required: true
+        - name: "--reference_layer"
+          type: string
+          description: Which layer to use. If no value is provided, the counts are assumed to be in the `.X` slot. Otherwise, count data is expected to be in `.layers[reference_layer]`.
+          required: false
         - name: "--reference_obs_label"
           type: string
           description: Key in obs field of reference AnnData with cell-type information.
@@ -124,20 +128,21 @@ platforms:
     image: python:3.9
     setup:
       - type: python
-        git:
-          - https://github.com/czbiohub/PopV.git
         packages:
           - mudata~=0.2.0
           - anndata~=0.8.0
           - scanpy~=1.9.2
           - scvi-tools~=0.20.3
+          - git+https://github.com/YosefLab/PopV.git@v0.2
       # download ontology required by popv
       - type: docker
         run: |
-          mkdir -p /opt/popv_cl_ontology && \
-          wget https://raw.githubusercontent.com/czbiohub/PopV/main/ontology/cl.obo -O "/opt/popv_cl_ontology/cl.obo" && \
-          wget https://raw.githubusercontent.com/czbiohub/PopV/main/ontology/cl.ontology -O "/opt/popv_cl_ontology/cl.ontology" && \
-          wget https://raw.githubusercontent.com/czbiohub/PopV/main/ontology/cl.ontology.nlp.emb -O "/opt/popv_cl_ontology/cl.ontology.nlp.emb"
+          cd /opt && mkdir -p /opt/popv_cl_ontology && \
+          wget https://raw.githubusercontent.com/YosefLab/PopV/v0.2/ontology/cl.obo -O "popv_cl_ontology/cl.obo" && \
+          wget https://raw.githubusercontent.com/YosefLab/PopV/v0.2/ontology/cl.ontology -O "popv_cl_ontology/cl.ontology" && \
+          wget https://raw.githubusercontent.com/YosefLab/PopV/v0.2/ontology/cl.ontology.nlp.emb -O "popv_cl_ontology/cl.ontology.nlp.emb"
+      - type: python
+        packages: [jax==0.4.9, jaxlib==0.4.9]
     test_setup:
       - type: python
         packages:
