@@ -38,6 +38,9 @@ platforms:
   - type: docker
     image: python:3.10-slim
     setup:
+      - type: apt
+        packages:
+          - procps
       - type: python
         packages:
           - anndata~=0.8.0
