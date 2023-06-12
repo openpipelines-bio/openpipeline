@@ -14,7 +14,7 @@ meta = {
 
 import sys
 sys.path.append(meta['resources_dir'])
-from utils import subset_hvg
+from subset_vars import subset_vars
 
 input_file = f"{meta['resources_dir']}/pbmc_1k_protein_v3_mms.h5mu"
 
@@ -62,7 +62,7 @@ class TestHVGSubsetting(unittest.TestCase):
         adata.var["highly_variable_features"] = False
         adata.var.iloc[:old_n_genes // 2, adata.var.columns.get_indexer(["highly_variable_features"])] = True
 
-        adata = subset_hvg(adata, hvg_col="highly_variable_features")
+        adata = subset_vars(adata, subset_col="highly_variable_features")
 
         # Correct number of genes is subsetted
         self.assertEqual(adata.n_vars, old_n_genes // 2)

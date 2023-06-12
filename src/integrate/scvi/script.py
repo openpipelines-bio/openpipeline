@@ -46,7 +46,7 @@ def main():
 
     if par['var_input']:
         # Subset to HVG
-        adata = subset_vars(adata, hvg_col=par["var_input"])
+        adata = subset_vars(adata, subset_col=par["var_input"])
 
     # Set up the data
     scvi.model.SCVI.setup_anndata(
