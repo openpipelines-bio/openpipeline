@@ -30,6 +30,7 @@ par = {
     "technology": None,
     "suspension": None,
     "is_primary_data": True,
+    "obs_column_names": ["disease"],
     "output": "output.h5mu",
     "output_compression": "gzip",
     "metadata_only": True
@@ -77,7 +78,7 @@ def get_cell_type_terms():
         dict: _description_
         list: _description_
     """
-    logging.info("Reading Cell Ontology OBO")
+    logger.info("Reading Cell Ontology OBO")
     co = read_cell_ontology()
     id_to_name = {id_: data.get("name") for id_, data in co.nodes(data=True)}
     id_to_name = {k: v for k, v in id_to_name.items() if v is not None}
@@ -87,7 +88,7 @@ def get_cell_type_terms():
     lower_hierarchy_cell_of_interest_map = {}
     cell_of_interest_terms = []
     for cell_type in par["cell_type"]:
-        logging.info("Locating all child cell types of %s", cell_type)
+        logger.info("Locating all child cell types of %s", cell_type)
         node = name_to_id[cell_type]
         lower_hierarchy_cell_of_interest_map.update(
             {parent:id_to_name[parent] for parent, child, key in co.in_edges(node, keys=True) if key == 'is_a'}
@@ -96,6 +97,8 @@ def get_cell_type_terms():
         cell_of_interest_terms.extend(
             list(lower_hierarchy_cell_of_interest_map.keys())
             )
+
+    logger.info(lower_hierarchy_cell_of_interest_map)
 
     return lower_hierarchy_cell_of_interest_map, cell_of_interest_terms
 
@@ -124,29 +127,29 @@ def build_census_query():
         _query = _query + f' and assay in {par["technology"]}'
     if par["suspension"]:
         _query = _query + f' and suspension_type in {par["suspension"]}'
-    logging.info("Census query: %s", _query)
+    logger.info("Census query: %s", _query)
 
     return _query
 
+
 def extract_metadata(census_connection, query):
-    logging.info("Extracting only metadata")
+    logger.info("Extracting only metadata")
+    logger.info(census_connection["census_data"][par["species"]].obs)
     return (
-        census_connection["census_data"][par["species"]]
-        .obs.read(
-            value_filter=query
-        )
-        .concat()
-        .to_pandas()
+        census_connection["census_data"][par["species"]].obs.read(
+            value_filter=query,
+            column_names=par["obs_column_names"]).concat().to_pandas()
         )
 
 
 def extract_metadata_expression(census_connection, query):
-    logging.info("Extracting metadata and gene expression matrix")
+    logger.info("Extracting metadata and gene expression matrix")
     return (
         cellxgene_census.get_anndata(
             census_connection,
             organism = par["species"],
-            obs_value_filter = query
+            obs_value_filter = query,
+            column_names = {"obs": par["obs_column_names"]}
             )
         )
 

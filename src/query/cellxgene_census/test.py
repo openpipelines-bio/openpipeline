@@ -19,9 +19,8 @@ def test_cellxgene(run_component):
         "--cell_ontology_release", "2023-05-22",
         "--cellxgene_release", "2023-05-15",
         "--species", "homo_sapiens",
-        "--cell_type", 'mesothelial fibroblast',
         "--tissue", "lung",
-        "--suspension", "cell",
+        "--obs_column_names", "disease",
         "--output", OUTPUT_FILE,
         "--metadata_only", "True"
     ])

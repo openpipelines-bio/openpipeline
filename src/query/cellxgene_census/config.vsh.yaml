@@ -83,6 +83,12 @@ functionality:
           description: "Allow only primary data in the query in order to prevent of data duplication."
           required: false
           direction: input
+        - name: "--obs_column_names"
+          type: string
+          description: "obs columns of interest. If not specified, all columns will be returned."
+          required: false
+          direction: input
+          multiple: true   
         - name: "--metadata_only"
           type: boolean
           default: True
