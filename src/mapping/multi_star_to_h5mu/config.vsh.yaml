@@ -36,7 +36,7 @@ functionality:
     - path: ../../../resources_test/cellranger_tiny_fastq/multi_star
 platforms:
   - type: docker
-    image: python:3.10
+    image: python:3.10-slim
     setup:
       - type: python
         packages:

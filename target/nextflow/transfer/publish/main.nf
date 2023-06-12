@@ -106,7 +106,7 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
     {
       "type" : "docker",
       "id" : "docker",
-      "image" : "python:3.10",
+      "image" : "ubuntu:22.04",
       "target_organization" : "openpipelines-bio",
       "target_registry" : "ghcr.io",
       "namespace_separator" : "_",
@@ -171,7 +171,7 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
     "platform" : "nextflow",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/transfer/publish",
     "viash_version" : "0.7.4",
-    "git_commit" : "7d82cf8da3bcb1041fe313a069f7c897cfe6f5f5",
+    "git_commit" : "31e96f1c3bd99397f2689aa22a2e4f9c1a189a3b",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))

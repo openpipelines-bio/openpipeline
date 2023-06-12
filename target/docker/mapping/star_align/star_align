@@ -1763,13 +1763,13 @@ function ViashDockerCheckCommands {
 #   ViashDockerFile
 function ViashDockerfile {
   cat << 'VIASHDOCKER'
-FROM python:3.10
+FROM python:3.10-slim
 
 ENTRYPOINT []
 
  
 ENV STAR_VERSION 2.7.10a
-ENV PACKAGES gcc g++ make wget zlib1g-dev unzip
+ENV PACKAGES gcc g++ make wget zlib1g-dev unzip procps
 RUN apt-get update && \
   apt-get install -y --no-install-recommends ${PACKAGES} && \
   cd /tmp && \
@@ -1785,9 +1785,9 @@ RUN apt-get update && \
 
 LABEL org.opencontainers.image.authors="Angela Oliveira Pisco, Robrecht Cannoodt"
 LABEL org.opencontainers.image.description="Companion container for running component mapping star_align"
-LABEL org.opencontainers.image.created="2023-06-12T06:58:38Z"
+LABEL org.opencontainers.image.created="2023-06-12T08:43:17Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="7d82cf8da3bcb1041fe313a069f7c897cfe6f5f5"
+LABEL org.opencontainers.image.revision="31e96f1c3bd99397f2689aa22a2e4f9c1a189a3b"
 LABEL org.opencontainers.image.version="integration_build"
 
 VIASHDOCKER

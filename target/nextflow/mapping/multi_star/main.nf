@@ -3475,7 +3475,7 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
     {
       "type" : "docker",
       "id" : "docker",
-      "image" : "python:3.10",
+      "image" : "python:3.10-slim",
       "target_organization" : "openpipelines-bio",
       "target_registry" : "ghcr.io",
       "namespace_separator" : "_",
@@ -3492,7 +3492,7 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
           ]
         },
         {
-          "type" : "doc''' + '''ker",
+          "type" :''' + ''' "docker",
           "run" : [
             "apt-get update && \\\\\n  apt-get install -y --no-install-recommends ${PACKAGES} && \\\\\n  cd /tmp && \\\\\n  wget --no-check-certificate https://github.com/alexdobin/STAR/archive/refs/tags/${STAR_VERSION}.zip && \\\\\n  unzip ${STAR_VERSION}.zip && \\\\\n  cd STAR-${STAR_VERSION}/source && \\\\\n  make STARstatic CXXFLAGS_SIMD=-std=c++11 && \\\\\n  cp STAR /usr/local/bin && \\\\\n  cd / && \\\\\n  rm -rf /tmp/STAR-${STAR_VERSION} /tmp/${STAR_VERSION}.zip && \\\\\n  apt-get --purge autoremove -y ${PACKAGES} && \\\\\n  apt-get clean\n"
           ]
@@ -3500,7 +3500,8 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
         {
           "type" : "apt",
           "packages" : [
-            "samtools"
+            "samtools",
+            "procps"
           ],
           "interactive" : false
         },
@@ -3589,7 +3590,7 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
     "platform" : "nextflow",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/mapping/multi_star",
     "viash_version" : "0.7.4",
-    "git_commit" : "7d82cf8da3bcb1041fe313a069f7c897cfe6f5f5",
+    "git_commit" : "31e96f1c3bd99397f2689aa22a2e4f9c1a189a3b",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))

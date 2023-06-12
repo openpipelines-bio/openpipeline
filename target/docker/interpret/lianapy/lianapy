@@ -456,19 +456,23 @@ function ViashDockerCheckCommands {
 #   ViashDockerFile
 function ViashDockerfile {
   cat << 'VIASHDOCKER'
-FROM python:3.10
+FROM python:3.10-slim
 
 ENTRYPOINT []
 
  
+RUN apt-get update && \
+  DEBIAN_FRONTEND=noninteractive apt-get install -y procps git && \
+  rm -rf /var/lib/apt/lists/*
+
 RUN pip install --upgrade pip && \
   pip install --upgrade --no-cache-dir "mudata~=0.2.0" "git+https://github.com/saezlab/liana-py.git@11156ddd0139a49dfebdd08ac230f0ebf008b7f8" "numpy~=1.24.3"
 
 LABEL org.opencontainers.image.authors="Mauro Saporita, Povilas Gibas"
 LABEL org.opencontainers.image.description="Companion container for running component interpret lianapy"
-LABEL org.opencontainers.image.created="2023-06-12T06:58:42Z"
+LABEL org.opencontainers.image.created="2023-06-12T08:43:21Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="7d82cf8da3bcb1041fe313a069f7c897cfe6f5f5"
+LABEL org.opencontainers.image.revision="31e96f1c3bd99397f2689aa22a2e4f9c1a189a3b"
 LABEL org.opencontainers.image.version="integration_build"
 
 VIASHDOCKER
