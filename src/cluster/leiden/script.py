@@ -16,11 +16,6 @@ par = {
     "uns_name_prefix": "leiden",
     "output_compression": "gzip"
 }
-
-meta = {
-    'cpus': 4
-}
-
 ## VIASH END
 
 logger = logging.getLogger()
