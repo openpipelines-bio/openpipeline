@@ -8,7 +8,7 @@ functionality:
     - name: Inputs
       arguments:
         - name: "--input"
-          alternatives: ["-q"]
+          alternatives: ["-i"]
           type: file
           description: Input h5mu file with query data to integrate with reference.
           direction: input
