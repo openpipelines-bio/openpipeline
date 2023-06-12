@@ -46,9 +46,12 @@ platforms:
   - type: docker
     image: python:3.10-slim
     setup:
+<<<<<<< HEAD
       - type: apt
         packages: 
           - procps
+=======
+>>>>>>> 5bbb3b6145 (Update muon (#428))
       - type: python
         packages:
           - mudata~=0.2.0
