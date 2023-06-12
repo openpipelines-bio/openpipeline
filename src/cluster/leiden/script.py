@@ -2,7 +2,6 @@ import logging
 from sys import stdout
 import mudata as mu
 import scanpy as sc
-from multiprocessing import Pool
 from functools import partial
 
 ## VIASH START
