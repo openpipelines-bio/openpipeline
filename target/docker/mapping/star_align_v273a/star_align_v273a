@@ -1768,8 +1768,12 @@ FROM python:3.10-slim
 ENTRYPOINT []
 
  
+RUN apt-get update && \
+  DEBIAN_FRONTEND=noninteractive apt-get install -y procps && \
+  rm -rf /var/lib/apt/lists/*
+
 ENV STAR_VERSION 2.7.3a
-ENV PACKAGES gcc g++ make wget zlib1g-dev unzip procps
+ENV PACKAGES gcc g++ make wget zlib1g-dev unzip
 RUN apt-get update && \
   apt-get install -y --no-install-recommends ${PACKAGES} && \
   cd /tmp && \
@@ -1785,9 +1789,9 @@ RUN apt-get update && \
 
 LABEL org.opencontainers.image.authors="Angela Oliveira Pisco, Robrecht Cannoodt"
 LABEL org.opencontainers.image.description="Companion container for running component mapping star_align_v273a"
-LABEL org.opencontainers.image.created="2023-06-12T09:20:46Z"
+LABEL org.opencontainers.image.created="2023-06-12T11:22:35Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="673b4f8f5d72bf6b00cda67049f22e7fe65c6f01"
+LABEL org.opencontainers.image.revision="e4055ab24bd5a3a5f24ac26fcd176c58845dc3be"
 LABEL org.opencontainers.image.version="integration_build"
 
 VIASHDOCKER
