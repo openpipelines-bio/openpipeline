@@ -306,6 +306,13 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
       "target_image_source" : "https://github.com/openpipelines-bio/openpipeline",
       "setup" : [
         {
+          "type" : "apt",
+          "packages" : [
+            "procps"
+          ],
+          "interactive" : false
+        },
+        {
           "type" : "python",
           "user" : false,
           "packages" : [
@@ -373,7 +380,7 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
     "platform" : "nextflow",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/convert/from_10xh5_to_h5mu",
     "viash_version" : "0.7.4",
-    "git_commit" : "31e96f1c3bd99397f2689aa22a2e4f9c1a189a3b",
+    "git_commit" : "673b4f8f5d72bf6b00cda67049f22e7fe65c6f01",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))

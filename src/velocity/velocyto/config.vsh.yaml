@@ -59,6 +59,7 @@ platforms:
         packages:
           - procps
           - build-essential
+          - file
       - type: python
         pip:
           - numpy
