@@ -20,6 +20,8 @@ The old behavior of the `full_pipeline` can be obtained by running `full_pipelin
 
 ## NEW FUNCTIONALITY
 
+* `cluster/leiden` and `integration/harmony_leiden`: allow running leiden multiple times with multiple resolutions.
+
 * `workflows/full_pipeline`: PCA, nearest neighbours and UMAP are now calculated for the `prot` modality (PR #396).
 
 * `transform/clr`: added `output_layer` argument (PR #396).

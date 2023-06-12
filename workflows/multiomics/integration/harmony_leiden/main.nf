@@ -88,7 +88,8 @@ workflow test_wf {
         input: params.resources_test + "/pbmc_1k_protein_v3/pbmc_1k_protein_v3_mms.h5mu",
         layer: "log_normalized",
         obs_covariates: "sample_id",
-        embedding: "X_pca"
+        embedding: "X_pca",
+        leiden_resolution: [1, 0.25]
       ]
     ]
   ]

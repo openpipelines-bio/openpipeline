@@ -49,19 +49,28 @@ functionality:
       required: false
       example: "gzip"
   
-    - name: "--obs_name"
+    - name: "--obs_name_prefix"
       type: string
-      description: Name of the .obs key under which to add the cluster labels.
+      description: 
+        Name of the .obs key prefix under which to add the cluster labels.
+        The value specified for this parameter will the suffixed with an underscore and the resolution.
       default: "leiden"
 
-      # todo: add uns_params
-      # example: uns["leiden"] = {'params': {'n_iterations': -1, 'random_state': 0, 'resolution': 1.0}}
+    - name: "--uns_name_prefix"
+      type: string
+      description:
+        Name of the .uns key prefix under which to run information.
+        The value specified for this parameter will the suffixed with an underscore and the resolution.
+      default: "leiden"
 
     # arguments
     - name: "--resolution"
       type: double
-      description: A parameter value controlling the coarseness of the clustering. Higher values lead to more clusters.
-      default: 1
+      description: |
+        A parameter value controlling the coarseness of the clustering. Higher values lead to more clusters.
+        Multiple values will result in clustering being performed multiple times.
+      default: [1]
+      multiple: true
   resources:
     - type: python_script
       path: script.py
