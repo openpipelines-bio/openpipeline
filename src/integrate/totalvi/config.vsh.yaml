@@ -66,6 +66,16 @@ functionality:
           default: "X_integrated_totalvi"
           required: false
           description: "In which .obsm slot to store the resulting integrated embedding."
+        - name: "--obsm_normalized_rna_output"
+          type: string
+          default: "X_totalvi_normalized_rna"
+          required: false
+          description: "In which .obsm slot to store the normalized RNA from TOTALVI."
+        - name: "--obsm_normalized_protein_output"
+          type: string
+          default: "X_totalvi_normalized_protein"
+          required: false
+          description: "In which .obsm slot to store the normalized protein data from TOTALVI."
         - name: "--reference_model_path"
           type: file
           description: Directory with the reference model. If not exists, trained model will be saved there

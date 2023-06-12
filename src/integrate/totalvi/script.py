@@ -25,6 +25,8 @@ par = {
     "var_input": None,
     "output": "foo.h5mu",
     "obsm_output": "X_integrated_totalvi",
+    "obsm_normalized_rna_output": "X_totalvi_normalized_rna",
+    "obsm_normalized_protein_output": "X_totalvi_normalized_protein",
     "reference_model_path": "totalvi_model_reference/",
     "query_model_path": "totalvi_model_query/",
     "max_epochs": 400,
@@ -155,6 +157,11 @@ def main():
 
     logger.info("Getting the latent representation of query")
     adata_query.obsm[par["obsm_output"]] = vae_query.get_latent_representation()
+    
+    norm_rna, norm_protein = vae_query.get_normalized_expression()
+    adata_query.obsm[par["obsm_normalized_rna_output"]] = norm_rna
+    # Would make more sense to write it to .obsm for protein modality, but query might not have this modality at all
+    adata_query.obsm[par["obsm_normalized_protein_output"]] = norm_protein
 
     mdata_query.mod[par["query_modality"]] = adata_query
     try:

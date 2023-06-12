@@ -40,6 +40,8 @@ class TesttotalVI(unittest.TestCase):
         self.assertIn('X_integrated_totalvi', output_data.mod['rna'].obsm)
         self.assertIn('_scvi_batch', output_data.mod['rna'].obs.columns.tolist())
         self.assertIn('_scvi_labels',  output_data.mod['rna'].obs.columns.tolist())
+        self.assertIn('X_totalvi_normalized_rna', output_data.mod['rna'].obsm)
+        self.assertIn('X_totalvi_normalized_protein', output_data.mod['rna'].obsm)
 
 
 if __name__ == '__main__':
