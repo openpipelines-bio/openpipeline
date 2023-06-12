@@ -107,7 +107,7 @@ workflow test_wf {
     | pmap { id, data -> [ id, [ input: data.input ], data ] }
     | from_10xh5_to_h5mu
     | pmap { id, file -> [ id, [ input: file ] ] }
-    | subset_h5mu.run(args: [ number_of_observations: 100000 ])
+    | subset_h5mu.run(args: [ number_of_observations: 50000 ])
     | pmap { id, file, orig_params -> [id, orig_params + [ input: file ] ] }
 
     | view { "Input: $it" }
@@ -147,7 +147,7 @@ workflow test_wf2 {
     | pmap { id, data -> [ id, [ input: data.input ], data ] }
     | from_10xh5_to_h5mu
     | pmap { id, file -> [ id, [ input: file ] ] }
-    | subset_h5mu.run(args: [ number_of_observations: 100000 ])
+    | subset_h5mu.run(args: [ number_of_observations: 50000 ])
     | pmap { id, file, orig_params -> [id, orig_params + [ input: file ] ] }
 
     | view { "Input: $it" }
@@ -188,7 +188,7 @@ workflow test_wf3 {
     | pmap { id, data -> [ id, [ input: data.input ], data ] }
     | from_10xh5_to_h5mu
     | pmap { id, file -> [ id, [ input: file ] ] }
-    | subset_h5mu.run(args: [ number_of_observations: 100000 ])
+    | subset_h5mu.run(args: [ number_of_observations: 50000 ])
     | pmap { id, file, orig_params -> [id, orig_params + [ input: file ] ] }
 
     | view { "Input: $it" }
