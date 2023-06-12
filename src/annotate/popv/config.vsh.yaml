@@ -125,8 +125,14 @@ functionality:
 platforms:
   - type: docker
     #image: nvcr.io/nvidia/pytorch:22.12-py3
-    image: python:3.9
+    image: python:3.9-slim
     setup:
+      - type: apt
+        packages:
+          - procps
+          - git
+          - build-essential
+          - wget
       - type: python
         packages:
           - mudata~=0.2.0

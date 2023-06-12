@@ -46,13 +46,13 @@ functionality:
     - path: ../../../resources_test/cellranger_tiny_fastq
 platforms:
   - type: docker
-    image: python:3.10
+    image: python:3.10-slim
     setup:
       # setup derived from https://github.com/alexdobin/STAR/blob/master/extras/docker/Dockerfile
       - type: docker
         env: 
           - STAR_VERSION 2.7.3a
-          - PACKAGES gcc g++ make wget zlib1g-dev unzip
+          - PACKAGES gcc g++ make wget zlib1g-dev unzip procps
       - type: docker
         run: |
           apt-get update && \

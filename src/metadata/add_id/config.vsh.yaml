@@ -47,8 +47,11 @@ functionality:
     - path: ../../../resources_test/concat_test_data/e18_mouse_brain_fresh_5k_filtered_feature_bc_matrix_subset_unique_obs.h5mu
 platforms:
   - type: docker
-    image: python:3.10
+    image: python:3.10-slim
     setup:
+      - type: apt
+        packages: 
+          - procps
       - type: python
         packages:
           - mudata~=0.2.0
