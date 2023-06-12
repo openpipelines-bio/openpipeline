@@ -36,7 +36,7 @@ The old behavior of the `full_pipeline` can be obtained by running `full_pipelin
 
 * `mapping/multi_star`: Added `--min_success_rate` which causes component to fail when the success rate of processed samples were successful (PR #408).
 
-* `correction/cellbender_remove_background` and `transform/clr`: update muon to 0.1.5
+* `correction/cellbender_remove_background` and `transform/clr`: update muon to 0.1.5 (#PR 428)
 
 ## BUG FIXES
 
