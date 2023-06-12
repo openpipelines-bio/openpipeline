@@ -1,4 +1,58 @@
-# openpipelines 0.8.0 (unreleased)
+# openpipelines 0.9.0 (unreleased)
+
+## BREAKING CHANGES
+
+Running the integration in the `full_pipeline` deemed to be impractical because a plethora of integration methods exist, which in turn interact with other functionality (like clustering). This generates a large number of possible usecases which one pipeline cannot cover in an easy manner. Instead, each integration methods will be split into its separate pipeline, and the `full_pipeline` will prepare for integration by performing steps that are required by many integration methods. Therefore, the following changes were performed:
+
+  * `workflows/full_pipeline`: `harmony` integration and `leiden` clustering are removed from the pipeline.
+
+  * Added `initialize_integration` to run calculations that output information commonly required by the integration methods. This pipeline runs PCA, nearest neighbours and UMAP. This pipeline is run as a subpipeline at the end of `full_pipeline`.
+
+  * Added `leiden_harmony` integration pipeline: run harmony integration followed by neighbour calculations and leiden clustering. Also runs umap on the result.
+
+  * Removed the `integration` pipeline.
+
+The old behavior of the `full_pipeline` can be obtained by running `full_pipeline` followed by the `leiden_harmony` pipeline.
+
+* The `crispr` and `hashing` modalities have been renamed to `gdo` and `hto` respectively (PR #392).
+
+* Updated Viash to 0.7.4 (PR #390).
+
+## NEW FUNCTIONALITY
+
+* `workflows/full_pipeline`: PCA, nearest neighbours and UMAP are now calculated for the `prot` modality (PR #396).
+
+* `transform/clr`: added `output_layer` argument (PR #396).
+
+* `workflows/integration/scvi`: Run scvi integration followed by neighbour calculations and run umap on the result (PR #396).
+
+* `mapping/cellranger_multi` and `workflows/ingestion/cellranger_multi`: Added `--vdj_inner_enrichment_primers` argument (PR #417).
+
+## MAJOR CHANGES
+
+* `report/mermaid`: Now used `mermaid-cli` to generate images instead of creating a request to `mermaid.ink`. New `--output_format`, `--width`, `--height` and  `--background_color` arguments were added (PR #419).
+
+## MINOR CHANGES
+
+* `mapping/multi_star`: Added `--min_success_rate` which causes component to fail when the success rate of processed samples were successful (PR #408).
+
+## BUG FIXES
+
+* `annotate/popv`: Fix concat issue when the input data has multiple layers (#395, PR #397).
+
+* `annotate/popv`: Fix indexing issue when MuData object contain non overlapping modalities (PR #405).
+
+* `mapping/multi_star`: Fix issue where temp dir could not be created when group_id contains slashes (PR #406).
+
+* `mapping/multi_star_to_h5mu`: Use glob to look for count files recursively (PR #408).
+
+* `annotate/popv`: Pin `PopV`, `jax` and `jaxlib` versions (PR #415).
+
+* `integrate/scvi`: the max_epochs is no longer required since it has a default value (PR #396).
+
+* `workflows/full_pipeline`: fix `make_observation_keys_unique` parameter not being correctly passed to the `add_id` component, causing `ValueError: Observations are not unique across samples` during execution of the `concat` component (PR #422).
+
+# openpipelines 0.8.0
 
 ## BREAKING CHANGES
 
@@ -7,6 +61,8 @@
   - `rna_max_vars_per_cell` was renamed to `rna_max_genes_per_cell`
   - `prot_min_vars_per_cell` was renamed to `prot_min_proteins_per_cell`
   - `prot_max_vars_per_cell` was renamed to `prot_max_proteins_per_cell`
+
+* `velocity/scvelo`: bump anndata from <0.8 to 0.9.
 
 ## NEW FUNCTIONALITY
 
@@ -20,6 +76,12 @@
 
 * `filter/filter_with_scrublet`: Add `--allow_automatic_threshold_detection_fail`: when scrublet fails to detect doublets, the component will now put `NA` in the output columns.
 
+* `workflows/full_pipeline`: Allow not setting the sample ID to the .obs column of the MuData object.
+
+* `workflows/rna_multisample`: Add the ID of the sample to the .obs column of the MuData object.
+
+* `correction/cellbender_remove_background`: add `obsm_latent_gene_encoding` parameter to store the latent gene representation.
+
 ## BUG FIXES
 
 * `transform/clr`: fix anndata object instead of matrix being stored as a layer in output `MuData`, resulting in `NoneTypeError` object after reading the `.layers` back in.
@@ -31,6 +93,8 @@
 * Fixed an issue where passing a remote file URI (for example `http://` or `s3://`) as `param_list` caused `No such file` errors.
 
 * `workflows/full_pipeline`: Fix incorrectly named filtering arguments (#372).
+
+* `correction/cellbender_remove_background`: add `obsm_latent_gene_encoding` parameter to store the latent gene representation.
 
 ## MINOR CHANGES
 
@@ -44,13 +108,11 @@
 
 * `dataflow/concat` and `dataflow/merge`: Boolean and integer columns are now represented by the `BooleanArray` and `IntegerArray` dtypes in order to allow storing `NA` values.
 
-## NEW FUNCTIONALITY
+* `interpret/lianapy`: use the latest development release (commit 11156ddd0139a49dfebdd08ac230f0ebf008b7f8) of lianapy in order to fix compatibility with numpy 1.24.x.
 
-* `correction/cellbender_remove_background`: add `obsm_latent_gene_encoding` parameter to store the latent gene representation.
+* `filter/filter_with_hvg`: Add error when specified input layer cannot be found in input data.
 
-# MINOR CHANGES
-
-* `workflows/multiomics/full_pipeline`: publish the output from from sample merging to allow running different integrations.
+* `workflows/multiomics/full_pipeline`: publish the output from sample merging to allow running different integrations.
 
 # openpipelines 0.7.1
 

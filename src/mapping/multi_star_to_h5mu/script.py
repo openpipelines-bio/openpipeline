@@ -7,7 +7,7 @@ import json
 
 ## VIASH START
 par = {
-    "input": "/home/rcannood/workspace/czb/utilities/foo3",
+    "input": "output/A2_raw",
     "output": "test_output.h5mu"
 }
 meta = {
@@ -18,17 +18,13 @@ meta = {
 # convert to path
 input_dir = Path(par["input"])
 
-
-# look for observation dirs and ids
-per_obs_dirs = [ x for x in (input_dir / "per").iterdir() if x.is_dir() ]
-
 # read counts information
 print("> Read counts data", flush=True)
 per_obs_data = []
 
-for per_obs_dir in per_obs_dirs:
+for input_counts in (input_dir / "per").glob("**/htseq-count.txt"):
+    per_obs_dir = input_counts.parent
     input_id = per_obs_dir.name
-    input_counts = per_obs_dir / "htseq-count.txt"
     input_multiqc = per_obs_dir / "multiqc_data" / "multiqc_data.json"
 
     data = pd.read_table(

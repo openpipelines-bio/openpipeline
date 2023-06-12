@@ -56,7 +56,7 @@ jobs:
 
     - name: Get changed files
       id: changed-files
-      uses: tj-actions/changed-files@v35.9.0
+      uses: tj-actions/changed-files@v36.1.0
       with:
         separator: ";"
         diff_relative: true
@@ -131,6 +131,27 @@ jobs:
             "${extra_args[@]}"
           fi
         done
+
+    - name: Remove unused test resources to save space (only when restoring from cache)
+      if: steps.restore_cache.outputs.cache-hit == 'true'
+      shell: bash
+      run: |
+        readarray -t resources < <(viash config view --format json "${{ matrix.component.config }}" | jq -r -c '(.info.config | capture("^(?<dir>.*\/)").dir) as $dir | .functionality.test_resources | map(select(.type == "file")) | map($dir + .path) | unique | .[]')
+        to_not_remove=()
+        for resource in "${resources[@]}"; do
+          if [[ $resource == *"resources_test"* ]]; then
+            relative_path=${resource#*resources_test/}
+            relative_path_trailing_slash_removed=${relative_path%/}
+            to_not_remove+=("-path" "./resources_test/$relative_path_trailing_slash_removed" "-prune" "-o")
+          fi
+        done
+        # Remove last prune and -o
+        if (( ${#errors[@]} )); then
+          unset 'to_not_remove[${#to_not_remove[@]}-1]'
+          unset 'to_not_remove[${#to_not_remove[@]}-1]'
+          to_not_remove+=( "(" "${to_not_remove[@]}" ")" "-prune" "-o")
+        fi
+        find ./resources_test/ "${to_not_remove[@]}" -type f -exec rm {} +
 
     - name: Login to the nvidia container registry
       uses: docker/login-action@v2

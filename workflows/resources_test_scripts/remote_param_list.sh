@@ -16,21 +16,19 @@ cat > $OUT << HERE
 - id: "mouse"
   input: s3://openpipelines-data/concat_test_data/e18_mouse_brain_fresh_5k_filtered_feature_bc_matrix_subset_unique_obs.h5mu
   publish_dir: "foo_remote/"
-  obs_covariates: "sample_id"
   rna_min_counts: 2
   prot_min_counts: 3
 - id: "human"
   input: s3://openpipelines-data/concat_test_data/human_brain_3k_filtered_feature_bc_matrix_subset_unique_obs.h5mu
   publish_dir: "foo_remote/"
-  obs_covariates: "sample_id"
   rna_min_counts: 2
   prot_min_counts: 3
 HERE
 
 cat > $OUT_CSV << EOF
-"id","input","publish_dir","obs_covariates","rna_min_counts","prot_min_counts"
-"mouse","s3://openpipelines-data/concat_test_data/e18_mouse_brain_fresh_5k_filtered_feature_bc_matrix_subset_unique_obs.h5mu","foo_remote/","sample_id","2","3"
-"human","s3://openpipelines-data/concat_test_data/human_brain_3k_filtered_feature_bc_matrix_subset_unique_obs.h5mu","foo_remote/","sample_id","2","3"
+"id","input","publish_dir","rna_min_counts","prot_min_counts"
+"mouse","s3://openpipelines-data/concat_test_data/e18_mouse_brain_fresh_5k_filtered_feature_bc_matrix_subset_unique_obs.h5mu","foo_remote/","2","3"
+"human","s3://openpipelines-data/concat_test_data/human_brain_3k_filtered_feature_bc_matrix_subset_unique_obs.h5mu","foo_remote/","2","3"
 EOF
 
 cat > $OUT_JSON << HERE
@@ -39,7 +37,6 @@ cat > $OUT_JSON << HERE
         "id": "mouse",
         "input": "s3://openpipelines-data/concat_test_data/e18_mouse_brain_fresh_5k_filtered_feature_bc_matrix_subset_unique_obs.h5mu",
         "publish_dir": "foo_remote/",
-        "obs_covariates": "sample_id",
         "rna_min_counts": 2,
         "prot_min_counts": 3
     },
@@ -47,7 +44,6 @@ cat > $OUT_JSON << HERE
         "id": "human",
         "input": "s3://openpipelines-data/concat_test_data/human_brain_3k_filtered_feature_bc_matrix_subset_unique_obs.h5mu",
         "publish_dir": "foo_remote/",
-        "obs_covariates": "sample_id",
         "rna_min_counts": 2,
         "prot_min_counts": 3
     }
