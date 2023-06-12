@@ -412,9 +412,9 @@ RUN pip install --upgrade pip && \
 
 LABEL org.opencontainers.image.authors="Dries De Maeyer"
 LABEL org.opencontainers.image.description="Companion container for running component convert from_h5ad_to_h5mu"
-LABEL org.opencontainers.image.created="2023-06-12T13:02:28Z"
+LABEL org.opencontainers.image.created="2023-06-12T14:26:34Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="555965b8825ea146b5affe7457306759e0329464"
+LABEL org.opencontainers.image.revision="426e0d5d9849e99cc19805603dd690794b6246c8"
 LABEL org.opencontainers.image.version="integration_build"
 
 VIASHDOCKER

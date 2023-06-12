@@ -405,12 +405,6 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
       "target_image_source" : "https://github.com/openpipelines-bio/openpipeline",
       "setup" : [
         {
-          "type" : "docker",
-          "env" : [
-            "SKLEARN_ALLOW_DEPRECATED_SKLEARN_PACKAGE_INSTALL True"
-          ]
-        },
-        {
           "type" : "apt",
           "packages" : [
             "git"
@@ -422,7 +416,8 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
           "user" : false,
           "packages" : [
             "anndata~=0.8.0",
-            "mudata~=0.2.0"
+            "mudata~=0.2.0",
+            "muon~=0.1.5"
           ],
           "github" : [
             "broadinstitute/CellBender"
@@ -501,7 +496,7 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
     "platform" : "nextflow",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/correction/cellbender_remove_background",
     "viash_version" : "0.7.4",
-    "git_commit" : "555965b8825ea146b5affe7457306759e0329464",
+    "git_commit" : "426e0d5d9849e99cc19805603dd690794b6246c8",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))
