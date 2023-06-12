@@ -5,6 +5,7 @@ target: target
 
 config_mods: |
   .functionality.version := 'dev'
+  .functionality.requirements.commands := ['ps']
   .platforms[.type == 'docker'].namespace_separator := '_'
   .platforms[.type == 'docker'].target_registry := 'ghcr.io'
   .platforms[.type == 'docker'].target_organization := 'openpipelines-bio'

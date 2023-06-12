@@ -75,8 +75,11 @@ functionality:
     - path: ../../../resources_test/rna_velocity/velocyto_processed/cellranger_tiny.loom
 platforms:
   - type: docker
-    image: python:3.9
+    image: python:3.9-slim
     setup:
+      - type: apt
+        packages:
+          - procps
       - type: python
         pip:
           - scvelo~=0.2.5
