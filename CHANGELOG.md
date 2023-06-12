@@ -32,7 +32,7 @@ The old behavior of the `full_pipeline` can be obtained by running `full_pipelin
 
 * `report/mermaid`: Now used `mermaid-cli` to generate images instead of creating a request to `mermaid.ink`. New `--output_format`, `--width`, `--height` and  `--background_color` arguments were added (PR #419).
 
-* All components that used `python` as base container: use `slim` version to reduce container image size(PR #427).
+* All components that used `python` as base container: use `slim` version to reduce container image size (PR #427).
 
 ## MINOR CHANGES
 
