@@ -179,8 +179,11 @@ functionality:
     - path: ../../../resources_test/cellranger_tiny_fastq
 platforms:
   - type: docker
-    image: python:3.10
+    image: python:3.10-slim
     setup:
+      - type: apt
+        packages: 
+          - procps
       - type: python
         packages:
           - HTSeq

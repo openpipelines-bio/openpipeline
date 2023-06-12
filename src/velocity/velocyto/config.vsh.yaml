@@ -53,8 +53,13 @@ functionality:
     - path: ../../../resources_test/reference_gencodev41_chr1
 platforms:
   - type: docker
-    image: python:3.9
+    image: python:3.9-slim
     setup:
+      - type: apt
+        packages:
+          - procps
+          - build-essential
+          - file
       - type: python
         pip:
           - numpy
