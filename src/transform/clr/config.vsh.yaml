@@ -47,11 +47,17 @@ platforms:
     image: python:3.10-slim
     setup:
 <<<<<<< HEAD
+<<<<<<< HEAD
       - type: apt
         packages: 
           - procps
 =======
 >>>>>>> 5bbb3b6145 (Update muon (#428))
+=======
+      - type: apt
+        packages: 
+          - procps
+>>>>>>> ef5840e5c2 (Use smaller images. (#427))
       - type: python
         packages:
           - mudata~=0.2.0
