@@ -404,9 +404,9 @@ RUN apt-get update && \
   rm -rf /var/lib/apt/lists/*
 
 LABEL org.opencontainers.image.description="Companion container for running component qc fastqc"
-LABEL org.opencontainers.image.created="2023-06-12T11:22:35Z"
+LABEL org.opencontainers.image.created="2023-06-12T12:19:26Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="e4055ab24bd5a3a5f24ac26fcd176c58845dc3be"
+LABEL org.opencontainers.image.revision="86d60c608750f50023c184da7447f9484b52501a"
 LABEL org.opencontainers.image.version="integration_build"
 
 VIASHDOCKER
@@ -447,7 +447,7 @@ function ViashDockerBuild {
     fi
     exit 1
   fi
-  ViashDockerCheckCommands "$1" 'bash'
+  ViashDockerCheckCommands "$1" 'ps' 'bash'
 }
 
 # ViashAbsolutePath: generate absolute path from relative path

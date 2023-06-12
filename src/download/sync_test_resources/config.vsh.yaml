@@ -43,5 +43,9 @@ functionality:
 platforms:
   - type: docker
     image: "amazon/aws-cli:2.11.0"
+    setup:
+      - type: yum
+        packages:
+          - procps
   - type: native
   - type: nextflow

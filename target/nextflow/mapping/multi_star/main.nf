@@ -3469,6 +3469,11 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
       }
     ],
     "status" : "enabled",
+    "requirements" : {
+      "commands" : [
+        "ps"
+      ]
+    },
     "set_wd_to_resources_dir" : false
   },
   "platforms" : [
@@ -3488,11 +3493,11 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
           "type" : "docker",
           "env" : [
             "STAR_VERSION 2.7.10a",
-            "PACKAGES gcc g++ make wget zlib1g-dev unzip"
+            "PACKAGES gcc g++ make wg''' + '''et zlib1g-dev unzip"
           ]
         },
         {
-          "type" :''' + ''' "docker",
+          "type" : "docker",
           "run" : [
             "apt-get update && \\\\\n  apt-get install -y --no-install-recommends ${PACKAGES} && \\\\\n  cd /tmp && \\\\\n  wget --no-check-certificate https://github.com/alexdobin/STAR/archive/refs/tags/${STAR_VERSION}.zip && \\\\\n  unzip ${STAR_VERSION}.zip && \\\\\n  cd STAR-${STAR_VERSION}/source && \\\\\n  make STARstatic CXXFLAGS_SIMD=-std=c++11 && \\\\\n  cp STAR /usr/local/bin && \\\\\n  cd / && \\\\\n  rm -rf /tmp/STAR-${STAR_VERSION} /tmp/${STAR_VERSION}.zip && \\\\\n  apt-get --purge autoremove -y ${PACKAGES} && \\\\\n  apt-get clean\n"
           ]
@@ -3590,7 +3595,7 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
     "platform" : "nextflow",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/mapping/multi_star",
     "viash_version" : "0.7.4",
-    "git_commit" : "e4055ab24bd5a3a5f24ac26fcd176c58845dc3be",
+    "git_commit" : "86d60c608750f50023c184da7447f9484b52501a",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))
