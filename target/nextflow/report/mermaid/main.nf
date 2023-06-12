@@ -254,7 +254,7 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
     "platform" : "nextflow",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/report/mermaid",
     "viash_version" : "0.7.4",
-    "git_commit" : "86d60c608750f50023c184da7447f9484b52501a",
+    "git_commit" : "555965b8825ea146b5affe7457306759e0329464",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))
