@@ -138,7 +138,7 @@ def map_query_to_reference(mdata_reference: MuData, mdata_query: MuData, adata_q
 def main():
     logger = _setup_logger()
 
-    mdata_query = mudata.read(par["query"].strip())
+    mdata_query = mudata.read(par["input"].strip())
     adata_query = convert_mudata_to_anndata(mdata_query, rna_modality_key=par["query_modality"], protein_modality_key=par["query_proteins_modality"],
                                             input_layer=par["input_layer"], hvg_var_key=par["var_input"])
 
