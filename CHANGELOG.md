@@ -18,6 +18,8 @@ The old behavior of the `full_pipeline` can be obtained by running `full_pipelin
 
 * Updated Viash to 0.7.4 (PR #390).
 
+* `cluster/leiden`: `--obs_name` has been renamed to `--obs_name_prefix` to reflect the fact that the column name for the cluster labels in .obs are now composed of a prefix suffixed by an underscore and the resolution used.
+
 ## NEW FUNCTIONALITY
 
 * `cluster/leiden` and `integration/harmony_leiden`: allow running leiden multiple times with multiple resolutions.
@@ -29,6 +31,8 @@ The old behavior of the `full_pipeline` can be obtained by running `full_pipelin
 * `workflows/integration/scvi`: Run scvi integration followed by neighbour calculations and run umap on the result (PR #396).
 
 * `mapping/cellranger_multi` and `workflows/ingestion/cellranger_multi`: Added `--vdj_inner_enrichment_primers` argument (PR #417).
+
+* `cluster/leiden`: added `--uns_name_prefix` argument for setting the key prefix for the .uns slot where information about the parametrization is stored.
 
 ## MAJOR CHANGES
 
