@@ -18,7 +18,7 @@ The old behavior of the `full_pipeline` can be obtained by running `full_pipelin
 
 * Updated Viash to 0.7.4 (PR #390).
 
-* `cluster/leiden`: Output is now stored into .obsm instead of .obsm.
+* `cluster/leiden`: Output is now stored into .obsm instead of .obs.
 
 ## NEW FUNCTIONALITY
 
