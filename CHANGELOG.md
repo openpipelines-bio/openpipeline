@@ -40,6 +40,8 @@ The old behavior of the `full_pipeline` can be obtained by running `full_pipelin
 
 * `correction/cellbender_remove_background` and `transform/clr`: update muon to 0.1.5 (#PR 428)
 
+* `ingestion/cellranger_postprocessing`: split integration tests into several workflows (#PR 425).
+
 ## BUG FIXES
 
 * `annotate/popv`: Fix concat issue when the input data has multiple layers (#395, PR #397).
