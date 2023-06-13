@@ -32,7 +32,7 @@ The old behavior of the `full_pipeline` can be obtained by running `full_pipelin
 
 * `mapping/cellranger_multi` and `workflows/ingestion/cellranger_multi`: Added `--vdj_inner_enrichment_primers` argument (PR #417).
 
-* `cluster/leiden`: added `--uns_name_prefix` argument for setting the key prefix for the .uns slot where information about the parametrization is stored.
+* `metadata/move_obsm_to_obs`: Move a matrix in an `.obsm` slot into `.obs`.
 
 ## MAJOR CHANGES
 

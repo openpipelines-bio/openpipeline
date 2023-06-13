@@ -49,19 +49,15 @@ functionality:
       required: false
       example: "gzip"
   
-    - name: "--obs_name_prefix"
+    - name: "--obsm_name"
       type: string
-      description: 
-        Name of the .obs key prefix under which to add the cluster labels.
-        The value specified for this parameter will the suffixed with an underscore and the resolution.
+      description: |
+        Name of the .obsm key under which to add the cluster labels.
+        The name of the columns in the matrix will correspond to the resolutions.
       default: "leiden"
 
-    - name: "--uns_name_prefix"
-      type: string
-      description:
-        Name of the .uns key prefix under which to run information.
-        The value specified for this parameter will the suffixed with an underscore and the resolution.
-      default: "leiden"
+      # todo: add uns_params
+      # example: uns["leiden"] = {'params': {'n_iterations': -1, 'random_state': 0, 'resolution': 1.0}}
 
     # arguments
     - name: "--resolution"
