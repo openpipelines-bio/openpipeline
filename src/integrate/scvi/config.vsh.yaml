@@ -8,6 +8,8 @@ functionality:
       roles: [ author ]
     - __merge__: ../../authors/dries_schaumont.yaml
       roles: [ maintainer ]
+    - __merge__: ../../authors/matthias_beyens.yaml
+      roles: [ contributor ]
   argument_groups:
     - name: Inputs
       arguments:
