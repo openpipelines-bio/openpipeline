@@ -12,16 +12,6 @@ logFormatter = logging.Formatter("%(asctime)s %(levelname)-8s %(message)s")
 console_handler.setFormatter(logFormatter)
 logger.addHandler(console_handler)
 
-### VIASH START
-par = {
-    "input": "work/f5/5f6365898ca5a42a360301a0c9e200/TSP15_Eye_ScleraEtc_10X_2_1.add_id.output.h5mu",
-    "output": "foo.h5mu",
-    "modality": "rna",
-    "obsm_key": "sample_id",
-}
-### VIASH END
-
-
 
 logger.info("Read mudata from file")
 mdata = read_h5mu(par['input'])
