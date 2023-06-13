@@ -200,16 +200,20 @@ function ViashHelp {
   echo "        example: gzip"
   echo "        choices: [ gzip, lzf ]"
   echo ""
-  echo "    --obs_name"
+  echo "    --obsm_name"
   echo "        type: string"
   echo "        default: leiden"
-  echo "        Name of the .obs key under which to add the cluster labels."
+  echo "        Name of the .obsm key under which to add the cluster labels."
+  echo "        The name of the columns in the matrix will correspond to the"
+  echo "        resolutions."
   echo ""
   echo "    --resolution"
-  echo "        type: double"
+  echo "        type: double, multiple values allowed"
   echo "        default: 1.0"
   echo "        A parameter value controlling the coarseness of the clustering. Higher"
   echo "        values lead to more clusters."
+  echo "        Multiple values will result in clustering being performed multiple"
+  echo "        times."
 }
 
 ######## Helper functions for setting up Docker images for viash ########
@@ -441,9 +445,9 @@ RUN pip install --upgrade pip && \
 
 LABEL org.opencontainers.image.authors="Dries De Maeyer"
 LABEL org.opencontainers.image.description="Companion container for running component cluster leiden"
-LABEL org.opencontainers.image.created="2023-06-13T11:05:02Z"
+LABEL org.opencontainers.image.created="2023-06-13T16:47:43Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="c98121489cf5e94c64c1df205381f43c7c1667d3"
+LABEL org.opencontainers.image.revision="1580b0a0bc00bb9f88ccf07190f8d16a0b2869a2"
 LABEL org.opencontainers.image.version="integration_build"
 
 VIASHDOCKER
@@ -664,26 +668,32 @@ while [[ $# -gt 0 ]]; do
             VIASH_PAR_OUTPUT_COMPRESSION=$(ViashRemoveFlags "$1")
             shift 1
             ;;
-        --obs_name)
-            [ -n "$VIASH_PAR_OBS_NAME" ] && ViashError Bad arguments for option \'--obs_name\': \'$VIASH_PAR_OBS_NAME\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
-            VIASH_PAR_OBS_NAME="$2"
-            [ $# -lt 2 ] && ViashError Not enough arguments passed to --obs_name. Use "--help" to get more information on the parameters. && exit 1
+        --obsm_name)
+            [ -n "$VIASH_PAR_OBSM_NAME" ] && ViashError Bad arguments for option \'--obsm_name\': \'$VIASH_PAR_OBSM_NAME\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+            VIASH_PAR_OBSM_NAME="$2"
+            [ $# -lt 2 ] && ViashError Not enough arguments passed to --obsm_name. Use "--help" to get more information on the parameters. && exit 1
             shift 2
             ;;
-        --obs_name=*)
-            [ -n "$VIASH_PAR_OBS_NAME" ] && ViashError Bad arguments for option \'--obs_name=*\': \'$VIASH_PAR_OBS_NAME\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
-            VIASH_PAR_OBS_NAME=$(ViashRemoveFlags "$1")
+        --obsm_name=*)
+            [ -n "$VIASH_PAR_OBSM_NAME" ] && ViashError Bad arguments for option \'--obsm_name=*\': \'$VIASH_PAR_OBSM_NAME\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+            VIASH_PAR_OBSM_NAME=$(ViashRemoveFlags "$1")
             shift 1
             ;;
         --resolution)
-            [ -n "$VIASH_PAR_RESOLUTION" ] && ViashError Bad arguments for option \'--resolution\': \'$VIASH_PAR_RESOLUTION\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
-            VIASH_PAR_RESOLUTION="$2"
+            if [ -z "$VIASH_PAR_RESOLUTION" ]; then
+              VIASH_PAR_RESOLUTION="$2"
+            else
+              VIASH_PAR_RESOLUTION="$VIASH_PAR_RESOLUTION:""$2"
+            fi
             [ $# -lt 2 ] && ViashError Not enough arguments passed to --resolution. Use "--help" to get more information on the parameters. && exit 1
             shift 2
             ;;
         --resolution=*)
-            [ -n "$VIASH_PAR_RESOLUTION" ] && ViashError Bad arguments for option \'--resolution=*\': \'$VIASH_PAR_RESOLUTION\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
-            VIASH_PAR_RESOLUTION=$(ViashRemoveFlags "$1")
+            if [ -z "$VIASH_PAR_RESOLUTION" ]; then
+              VIASH_PAR_RESOLUTION=$(ViashRemoveFlags "$1")
+            else
+              VIASH_PAR_RESOLUTION="$VIASH_PAR_RESOLUTION:"$(ViashRemoveFlags "$1")
+            fi
             shift 1
             ;;
         ---setup)
@@ -840,8 +850,8 @@ fi
 if [ -z ${VIASH_PAR_OBSP_CONNECTIVITIES+x} ]; then
   VIASH_PAR_OBSP_CONNECTIVITIES="connectivities"
 fi
-if [ -z ${VIASH_PAR_OBS_NAME+x} ]; then
-  VIASH_PAR_OBS_NAME="leiden"
+if [ -z ${VIASH_PAR_OBSM_NAME+x} ]; then
+  VIASH_PAR_OBSM_NAME="leiden"
 fi
 if [ -z ${VIASH_PAR_RESOLUTION+x} ]; then
   VIASH_PAR_RESOLUTION="1.0"
@@ -854,12 +864,19 @@ if [ ! -z "$VIASH_PAR_INPUT" ] && [ ! -e "$VIASH_PAR_INPUT" ]; then
 fi
 
 # check whether parameters values are of the right type
-if [[ -n "$VIASH_PAR_RESOLUTION" ]]; then
-  if ! [[ "$VIASH_PAR_RESOLUTION" =~ ^[-+]?(\.[0-9]+|[0-9]+(\.[0-9]*)?)([eE][-+]?[0-9]+)?$ ]]; then
-    ViashError '--resolution' has to be a double. Use "--help" to get more information on the parameters.
-    exit 1
-  fi
+if [ -n "$VIASH_PAR_RESOLUTION" ]; then
+  IFS=':'
+  set -f
+  for val in $VIASH_PAR_RESOLUTION; do
+    if ! [[ "${val}" =~ ^[-+]?(\.[0-9]+|[0-9]+(\.[0-9]*)?)([eE][-+]?[0-9]+)?$ ]]; then
+      ViashError '--resolution' has to be a double. Use "--help" to get more information on the parameters.
+      exit 1
+    fi
+  done
+  set +f
+  unset IFS
 fi
+
 if [[ -n "$VIASH_META_CPUS" ]]; then
   if ! [[ "$VIASH_META_CPUS" =~ ^[-+]?[0-9]+$ ]]; then
     ViashError 'cpus' has to be an integer. Use "--help" to get more information on the parameters.
@@ -988,7 +1005,9 @@ cat > "\$tempscript" << 'VIASHMAIN'
 import logging
 from sys import stdout
 import mudata as mu
+import pandas as pd
 import scanpy as sc
+from functools import partial
 
 ## VIASH START
 # The following code has been auto-generated by Viash.
@@ -998,8 +1017,8 @@ par = {
   'obsp_connectivities': $( if [ ! -z ${VIASH_PAR_OBSP_CONNECTIVITIES+x} ]; then echo "r'${VIASH_PAR_OBSP_CONNECTIVITIES//\'/\'\"\'\"r\'}'"; else echo None; fi ),
   'output': $( if [ ! -z ${VIASH_PAR_OUTPUT+x} ]; then echo "r'${VIASH_PAR_OUTPUT//\'/\'\"\'\"r\'}'"; else echo None; fi ),
   'output_compression': $( if [ ! -z ${VIASH_PAR_OUTPUT_COMPRESSION+x} ]; then echo "r'${VIASH_PAR_OUTPUT_COMPRESSION//\'/\'\"\'\"r\'}'"; else echo None; fi ),
-  'obs_name': $( if [ ! -z ${VIASH_PAR_OBS_NAME+x} ]; then echo "r'${VIASH_PAR_OBS_NAME//\'/\'\"\'\"r\'}'"; else echo None; fi ),
-  'resolution': $( if [ ! -z ${VIASH_PAR_RESOLUTION+x} ]; then echo "float(r'${VIASH_PAR_RESOLUTION//\'/\'\"\'\"r\'}')"; else echo None; fi )
+  'obsm_name': $( if [ ! -z ${VIASH_PAR_OBSM_NAME+x} ]; then echo "r'${VIASH_PAR_OBSM_NAME//\'/\'\"\'\"r\'}'"; else echo None; fi ),
+  'resolution': $( if [ ! -z ${VIASH_PAR_RESOLUTION+x} ]; then echo "list(map(float, r'${VIASH_PAR_RESOLUTION//\'/\'\"\'\"r\'}'.split(':')))"; else echo None; fi )
 }
 meta = {
   'functionality_name': $( if [ ! -z ${VIASH_META_FUNCTIONALITY_NAME+x} ]; then echo "r'${VIASH_META_FUNCTIONALITY_NAME//\'/\'\"\'\"r\'}'"; else echo None; fi ),
@@ -1028,15 +1047,21 @@ logger.addHandler(console_handler)
 logger.info("Reading %s.", par["input"])
 mdata = mu.read_h5mu(par["input"])
 
+
+def run_single_resolution(adata, resolution):
+    adata_out = sc.tl.leiden(
+        adata,
+        resolution=resolution,
+        key_added=str(resolution),
+        obsp=par['obsp_connectivities'],
+        copy=True
+        )
+    return adata_out.obs[str(resolution)]
+
 logger.info("Processing modality '%s'.", par['modality'])
 data = mdata.mod[par['modality']]
-sc.tl.leiden(
-    data,
-    resolution=par["resolution"],
-    key_added=par["obs_name"],
-    obsp=par["obsp_connectivities"]
-    )
-
+results = {str(resolution): run_single_resolution(data, resolution) for resolution in par["resolution"]}
+data.obsm[par["obsm_name"]] = pd.DataFrame(results)
 logger.info("Writing to %s.", par["output"])
 mdata.write_h5mu(filename=par["output"], compression=par["output_compression"])
 logger.info("Finished.")
