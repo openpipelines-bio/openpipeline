@@ -18,7 +18,7 @@ The old behavior of the `full_pipeline` can be obtained by running `full_pipelin
 
 * Updated Viash to 0.7.4 (PR #390).
 
-* `cluster/leiden`: `--obs_name` has been renamed to `--obs_name_prefix` to reflect the fact that the column name for the cluster labels in .obs are now composed of a prefix suffixed by an underscore and the resolution used.
+* `cluster/leiden`: Output is now stored into .obsm instead of .obsm.
 
 ## NEW FUNCTIONALITY
 
