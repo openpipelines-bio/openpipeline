@@ -221,6 +221,12 @@ jobs:
         component: ${{ fromJson(needs.list.outputs.component_matrix) }}
 
     steps:
+    - name: "Remove Android SDK and .NET"
+      shell: bash
+      run: |
+        sudo rm -rf /usr/local/lib/android
+        sudo rm -rf /usr/share/dotnet
+  
     - uses: actions/checkout@v3
 
     - uses: viash-io/viash-actions/setup@v3
