@@ -1,12 +1,12 @@
 name: Robrecht Cannoodt
 info:
-  role: Core Team
+  role: Core Team Member
   links:
     email: robrecht@data-intuitive.com
     github: rcannood
     orcid: "0000-0003-3641-729X"
     linkedin: robrechtcannoodt
-  organization:
+  organizations:
     - name: Data Intuitive
       href: https://www.data-intuitive.com
       role: Data Science Engineer

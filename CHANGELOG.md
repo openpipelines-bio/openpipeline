@@ -28,9 +28,17 @@ The old behavior of the `full_pipeline` can be obtained by running `full_pipelin
 
 * `mapping/cellranger_multi` and `workflows/ingestion/cellranger_multi`: Added `--vdj_inner_enrichment_primers` argument (PR #417).
 
+## MAJOR CHANGES
+
+* `report/mermaid`: Now used `mermaid-cli` to generate images instead of creating a request to `mermaid.ink`. New `--output_format`, `--width`, `--height` and  `--background_color` arguments were added (PR #419).
+
+* All components that used `python` as base container: use `slim` version to reduce container image size (PR #427).
+
 ## MINOR CHANGES
 
 * `mapping/multi_star`: Added `--min_success_rate` which causes component to fail when the success rate of processed samples were successful (PR #408).
+
+* `correction/cellbender_remove_background` and `transform/clr`: update muon to 0.1.5 (#PR 428)
 
 ## BUG FIXES
 
@@ -45,6 +53,8 @@ The old behavior of the `full_pipeline` can be obtained by running `full_pipelin
 * `annotate/popv`: Pin `PopV`, `jax` and `jaxlib` versions (PR #415).
 
 * `integrate/scvi`: the max_epochs is no longer required since it has a default value (PR #396).
+
+* `workflows/full_pipeline`: fix `make_observation_keys_unique` parameter not being correctly passed to the `add_id` component, causing `ValueError: Observations are not unique across samples` during execution of the `concat` component (PR #422).
 
 # openpipelines 0.8.0
 

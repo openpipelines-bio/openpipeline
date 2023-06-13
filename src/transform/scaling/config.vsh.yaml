@@ -55,10 +55,10 @@ platforms:
   - type: docker
     image: python:3.10-slim-bullseye
     setup:
-      - type: docker
-        run: apt update && apt upgrade -y
       - type: apt
-        packages: libhdf5-dev
+        packages:
+          - libhdf5-dev
+          - procps
       - type: python
         packages:
           - scanpy~=1.9.2

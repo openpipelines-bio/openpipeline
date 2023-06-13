@@ -71,10 +71,12 @@ functionality:
     - path: ../../../resources_test/pbmc_1k_protein_v3
 platforms:
   - type: docker
-    image: python:3.8
+    image: python:3.8-slim
     setup:
       - type: apt
-        packages: [ cmake ]
+        packages: 
+          - cmake
+          - procps
       - type: python
         packages:
           - scanpy~=1.9.2

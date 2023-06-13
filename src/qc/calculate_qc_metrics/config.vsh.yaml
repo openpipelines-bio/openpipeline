@@ -79,8 +79,11 @@ functionality:
     - path: ../../../resources_test/pbmc_1k_protein_v3/pbmc_1k_protein_v3_filtered_feature_bc_matrix.h5mu
 platforms:
   - type: docker
-    image: python:3.9
+    image: python:3.9-slim
     setup:
+      - type: apt
+        packages: 
+          - procps
       - type: python
         packages:
           - mudata~=0.2.0
