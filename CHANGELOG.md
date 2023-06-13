@@ -40,6 +40,8 @@ The old behavior of the `full_pipeline` can be obtained by running `full_pipelin
 
 * `correction/cellbender_remove_background` and `transform/clr`: update muon to 0.1.5 (#PR 428)
 
+* `ingestion/cellranger_postprocessing`: split integration tests into several workflows (#PR 425).
+
 ## BUG FIXES
 
 * `annotate/popv`: Fix concat issue when the input data has multiple layers (#395, PR #397).
@@ -117,6 +119,8 @@ The old behavior of the `full_pipeline` can be obtained by running `full_pipelin
 * `filter/filter_with_hvg`: Add error when specified input layer cannot be found in input data.
 
 * `workflows/multiomics/full_pipeline`: publish the output from sample merging to allow running different integrations.
+
+* CI: Remove Android SDK and .NET folders from runner image in order to avoid `no space left on device.` (PR #425)
 
 # openpipelines 0.7.1
 
