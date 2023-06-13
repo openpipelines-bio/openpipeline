@@ -47,7 +47,7 @@ functionality:
           type: string
           default: "scanorama_integration_connectivities"
           description: "In which .obsp slot to store the connectivities matrix between the resulting neighbors."
-    - name: Scanorama integration options
+    - name: "Scanorama integration options"
       arguments:
         - name: "--obs_batch"
           type: string
@@ -82,23 +82,24 @@ functionality:
           type: double
           description: "Alignment score minimum cutoff"
           default: 0.1
-        - name: Clustering options
-          arguments:
-            - name: "--obs_cluster"
-              type: string
-              description: Name of the .obs key under which to add the cluster labels.
-              default: "scanorama_integration_leiden"
-            - name: "--leiden_resolution"
-              type: double
-              description: Control the coarseness of the clustering. Higher values lead to more clusters.
-              default: 1
-        - name: Umap options
-          arguments:
-            - name: "--obsm_umap"
-              type: string
-              default: "X_leiden_scanorama_umap"
-              required: false
-              description: "In which .obsm slot to store the resulting UMAP embedding."
+    - name: "Clustering options"
+      arguments:
+        - name: "--obs_cluster"
+          type: string
+          description: Name of the .obs key under which to add the cluster labels.
+          default: "scanorama_integration_leiden"
+        - name: "--leiden_resolution"
+          type: double
+          description: Control the coarseness of the clustering. Higher values lead to more clusters.
+          multiple: true
+          default: [1]
+    - name: "Umap options"
+      arguments:
+        - name: "--obsm_umap"
+          type: string
+          default: "X_leiden_scanorama_umap"
+          required: false
+          description: "In which .obsm slot to store the resulting UMAP embedding."
   resources:
     - type: nextflow_script
       path: main.nf
