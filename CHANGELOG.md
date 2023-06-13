@@ -32,7 +32,7 @@ The old behavior of the `full_pipeline` can be obtained by running `full_pipelin
 
 * `mapping/cellranger_multi` and `workflows/ingestion/cellranger_multi`: Added `--vdj_inner_enrichment_primers` argument (PR #417).
 
-* `metadata/move_obsm_to_obs`: Move a matrix in an `.obsm` slot into `.obs`.
+* `metadata/move_obsm_to_obs`: Move a matrix from an `.obsm` slot into `.obs`.
 
 ## MAJOR CHANGES
 
