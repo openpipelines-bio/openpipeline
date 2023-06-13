@@ -19,7 +19,7 @@ rna_theta: [2]
 
 # Clustering options
 obs_cluster: "harmony_integration_leiden"
-leiden_resolution: 1
+leiden_resolution: [1]
 
 # Umap options
 obsm_umap: "X_leiden_harmony_umap"

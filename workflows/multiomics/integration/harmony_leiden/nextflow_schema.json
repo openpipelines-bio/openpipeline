@@ -104,7 +104,7 @@
           "leiden_resolution": {
             "type": "number",
             "description": "Control the coarseness of the clustering. Higher values lead to more clusters.",
-            "default": "1"
+            "default": "[1]"
           }
           
         }

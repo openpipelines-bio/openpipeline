@@ -245,13 +245,18 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
       }
     ],
     "status" : "enabled",
+    "requirements" : {
+      "commands" : [
+        "ps"
+      ]
+    },
     "set_wd_to_resources_dir" : false
   },
   "platforms" : [
     {
       "type" : "docker",
       "id" : "docker",
-      "image" : "python:3.9",
+      "image" : "python:3.9-slim",
       "target_organization" : "openpipelines-bio",
       "target_registry" : "ghcr.io",
       "namespace_separator" : "_",
@@ -260,6 +265,13 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
       "setup_strategy" : "ifneedbepullelsecachedbuild",
       "target_image_source" : "https://github.com/openpipelines-bio/openpipeline",
       "setup" : [
+        {
+          "type" : "apt",
+          "packages" : [
+            "procps"
+          ],
+          "interactive" : false
+        },
         {
           "type" : "python",
           "user" : false,
@@ -337,7 +349,7 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
     "platform" : "nextflow",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/velocity/scvelo",
     "viash_version" : "0.7.4",
-    "git_commit" : "d19dff150fd1f4e80ce67ab9ad95fcc93acba414",
+    "git_commit" : "1580b0a0bc00bb9f88ccf07190f8d16a0b2869a2",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))

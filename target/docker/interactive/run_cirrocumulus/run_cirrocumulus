@@ -400,9 +400,9 @@ RUN pip install --upgrade pip && \
   pip install --upgrade --no-cache-dir "requests" "aiohttp" "cirrocumulus"
 
 LABEL org.opencontainers.image.description="Companion container for running component interactive run_cirrocumulus"
-LABEL org.opencontainers.image.created="2023-06-09T14:04:28Z"
+LABEL org.opencontainers.image.created="2023-06-13T15:57:50Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="d19dff150fd1f4e80ce67ab9ad95fcc93acba414"
+LABEL org.opencontainers.image.revision="1580b0a0bc00bb9f88ccf07190f8d16a0b2869a2"
 LABEL org.opencontainers.image.version="main_build"
 
 VIASHDOCKER
@@ -443,7 +443,7 @@ function ViashDockerBuild {
     fi
     exit 1
   fi
-  ViashDockerCheckCommands "$1" 'bash'
+  ViashDockerCheckCommands "$1" 'ps' 'bash'
 }
 
 # ViashAbsolutePath: generate absolute path from relative path

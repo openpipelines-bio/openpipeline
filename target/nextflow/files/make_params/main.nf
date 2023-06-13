@@ -205,6 +205,11 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
     ],
     "description" : "Looks for files in a directory and turn it in a params file.",
     "status" : "enabled",
+    "requirements" : {
+      "commands" : [
+        "ps"
+      ]
+    },
     "set_wd_to_resources_dir" : false
   },
   "platforms" : [
@@ -276,7 +281,7 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
     "platform" : "nextflow",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/files/make_params",
     "viash_version" : "0.7.4",
-    "git_commit" : "d19dff150fd1f4e80ce67ab9ad95fcc93acba414",
+    "git_commit" : "1580b0a0bc00bb9f88ccf07190f8d16a0b2869a2",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))

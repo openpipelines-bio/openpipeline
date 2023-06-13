@@ -1,0 +1,187 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema",
+    "title": "scanorama_leiden",
+    "description": "Run scanorama integration followed by neighbour calculations, leiden clustering and run umap on the result.",
+    "type": "object",
+    "definitions": {
+      "inputs" : {
+        "title": "Inputs",
+        "type": "object",
+        "description": "No description",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "ID of the sample.",
+            "default": ""
+          },
+          "input": {
+            "type": "string",
+            "description": "Path to the sample.",
+            "default": ""
+          },
+          "layer": {
+            "type": "string",
+            "description": "use specified layer for expression values instead of the .X object from the modality.",
+            "default": "log_normalized"
+          }
+          
+        }
+      },
+      "outputs" : {
+        "title": "Outputs",
+        "type": "object",
+        "description": "No description",
+        "properties": {
+          "output": {
+            "type": "string",
+            "description": "Destination path to the output.",
+            "default": "$id.$key.output.h5mu"
+          }
+          
+        }
+      },
+      "neighbour calculation" : {
+        "title": "Neighbour calculation",
+        "type": "object",
+        "description": "No description",
+        "properties": {
+          "uns_neighbors": {
+            "type": "string",
+            "description": "In which .uns slot to store various neighbor output objects.",
+            "default": "scanorama_integration_neighbors"
+          },
+          "obsp_neighbor_distances": {
+            "type": "string",
+            "description": "In which .obsp slot to store the distance matrix between the resulting neighbors.",
+            "default": "scanorama_integration_distances"
+          },
+          "obsp_neighbor_connectivities": {
+            "type": "string",
+            "description": "In which .obsp slot to store the connectivities matrix between the resulting neighbors.",
+            "default": "scanorama_integration_connectivities"
+          }
+          
+        }
+      },
+      "scanorama integration options" : {
+        "title": "Scanorama integration options",
+        "type": "object",
+        "description": "No description",
+        "properties": {
+          "obs_batch": {
+            "type": "string",
+            "description": "Column name discriminating between your batches.",
+            "default": "sample_id"
+          },
+          "obsm_input": {
+            "type": "string",
+            "description": ".osbm slot that points to embedding to run scanorama on.",
+            "default": "X_pca"
+          },
+          "obsm_output": {
+            "type": "string",
+            "description": "The name of the field in adata.obsm where the integrated embeddings will be stored after running this function. Defaults to X_scanorama.",
+            "default": "X_scanorama"
+          },
+          "knn": {
+            "type": "integer",
+            "description": "Number of nearest neighbors to use for matching.",
+            "default": "20"
+          },
+          "batch_size": {
+            "type": "integer",
+            "description": "The batch size used in the alignment vector computation. Useful when integrating very large (\u003e100k samples) datasets. Set to large value that runs within available memory.",
+            "default": "5000"
+          },
+          "sigma": {
+            "type": "number",
+            "description": "Correction smoothing parameter on Gaussian kernel.",
+            "default": "15"
+          },
+          "approx": {
+            "type": "boolean",
+            "description": "Use approximate nearest neighbors with Python annoy; greatly speeds up matching runtime.",
+            "default": "True"
+          },
+          "alpha": {
+            "type": "number",
+            "description": "Alignment score minimum cutoff",
+            "default": "0.1"
+          }
+          
+        }
+      },
+      "clustering options" : {
+        "title": "Clustering options",
+        "type": "object",
+        "description": "No description",
+        "properties": {
+          "obs_cluster": {
+            "type": "string",
+            "description": "Name of the .obs key under which to add the cluster labels.",
+            "default": "scanorama_integration_leiden"
+          },
+          "leiden_resolution": {
+            "type": "number",
+            "description": "Control the coarseness of the clustering. Higher values lead to more clusters.",
+            "default": "[1]"
+          }
+          
+        }
+      },
+      "umap options" : {
+        "title": "Umap options",
+        "type": "object",
+        "description": "No description",
+        "properties": {
+          "obsm_umap": {
+            "type": "string",
+            "description": "In which .obsm slot to store the resulting UMAP embedding.",
+            "default": "X_leiden_scanorama_umap"
+          }
+          
+        }
+      },
+      "nextflow input-output arguments" : {
+        "title": "Nextflow input-output arguments",
+        "type": "object",
+        "description": "Input/output parameters for Nextflow itself. Please note that both publishDir and publish_dir are supported but at least one has to be configured.",
+        "properties": {
+          "publish_dir": {
+            "type": "string",
+            "description": "Path to an output directory.",
+            "default": ""
+          },
+          "param_list": {
+            "type": "string",
+            "description": "Allows inputting multiple parameter sets to initialise a Nextflow channel. A `param_list` can either be a list of maps, a csv file, a json file, a yaml file, or simply a yaml blob.","help_text": "Allows inputting multiple parameter sets to initialise a Nextflow channel. A `param_list` can either be a list of maps, a csv file, a json file, a yaml file, or simply a yaml blob.\n\n* A list of maps (as-is) where the keys of each map corresponds to the arguments of the pipeline. Example: in a `nextflow.config` file: `param_list: [ [\u0027id\u0027: \u0027foo\u0027, \u0027input\u0027: \u0027foo.txt\u0027], [\u0027id\u0027: \u0027bar\u0027, \u0027input\u0027: \u0027bar.txt\u0027] ]`.\n* A csv file should have column names which correspond to the different arguments of this pipeline. Example: `--param_list data.csv` with columns `id,input`.\n* A json or a yaml file should be a list of maps, each of which has keys corresponding to the arguments of the pipeline. Example: `--param_list data.json` with contents `[ {\u0027id\u0027: \u0027foo\u0027, \u0027input\u0027: \u0027foo.txt\u0027}, {\u0027id\u0027: \u0027bar\u0027, \u0027input\u0027: \u0027bar.txt\u0027} ]`.\n* A yaml blob can also be passed directly as a string. Example: `--param_list \"[ {\u0027id\u0027: \u0027foo\u0027, \u0027input\u0027: \u0027foo.txt\u0027}, {\u0027id\u0027: \u0027bar\u0027, \u0027input\u0027: \u0027bar.txt\u0027} ]\"`.\n\nWhen passing a csv, json or yaml file, relative path names are relativized to the location of the parameter file. No relativation is performed when `param_list` is a list of maps (as-is) or a yaml blob.","hidden": true,
+            "default": ""
+          }
+          
+        }
+      }
+    },
+    "allOf": [
+      {
+        "$ref": "#/definitions/inputs"
+      },
+      {
+        "$ref": "#/definitions/outputs"
+      },
+      {
+        "$ref": "#/definitions/neighbour calculation"
+      },
+      {
+        "$ref": "#/definitions/scanorama integration options"
+      },
+      {
+        "$ref": "#/definitions/clustering options"
+      },
+      {
+        "$ref": "#/definitions/umap options"
+      },
+      {
+        "$ref": "#/definitions/nextflow input-output arguments"
+      }
+      ]
+}

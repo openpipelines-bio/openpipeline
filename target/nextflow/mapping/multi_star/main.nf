@@ -3469,13 +3469,18 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
       }
     ],
     "status" : "enabled",
+    "requirements" : {
+      "commands" : [
+        "ps"
+      ]
+    },
     "set_wd_to_resources_dir" : false
   },
   "platforms" : [
     {
       "type" : "docker",
       "id" : "docker",
-      "image" : "python:3.10",
+      "image" : "python:3.10-slim",
       "target_organization" : "openpipelines-bio",
       "target_registry" : "ghcr.io",
       "namespace_separator" : "_",
@@ -3488,19 +3493,20 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
           "type" : "docker",
           "env" : [
             "STAR_VERSION 2.7.10a",
-            "PACKAGES gcc g++ make wget zlib1g-dev unzip"
+            "PACKAGES gcc g++ make wget zlib''' + '''1g-dev unzip"
           ]
         },
         {
           "type" : "docker",
- ''' + '''         "run" : [
+          "run" : [
             "apt-get update && \\\\\n  apt-get install -y --no-install-recommends ${PACKAGES} && \\\\\n  cd /tmp && \\\\\n  wget --no-check-certificate https://github.com/alexdobin/STAR/archive/refs/tags/${STAR_VERSION}.zip && \\\\\n  unzip ${STAR_VERSION}.zip && \\\\\n  cd STAR-${STAR_VERSION}/source && \\\\\n  make STARstatic CXXFLAGS_SIMD=-std=c++11 && \\\\\n  cp STAR /usr/local/bin && \\\\\n  cd / && \\\\\n  rm -rf /tmp/STAR-${STAR_VERSION} /tmp/${STAR_VERSION}.zip && \\\\\n  apt-get --purge autoremove -y ${PACKAGES} && \\\\\n  apt-get clean\n"
           ]
         },
         {
           "type" : "apt",
           "packages" : [
-            "samtools"
+            "samtools",
+            "procps"
           ],
           "interactive" : false
         },
@@ -3589,7 +3595,7 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
     "platform" : "nextflow",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/mapping/multi_star",
     "viash_version" : "0.7.4",
-    "git_commit" : "d19dff150fd1f4e80ce67ab9ad95fcc93acba414",
+    "git_commit" : "1580b0a0bc00bb9f88ccf07190f8d16a0b2869a2",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))

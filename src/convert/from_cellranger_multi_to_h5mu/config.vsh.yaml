@@ -53,8 +53,11 @@ functionality:
     - path: ../../../resources_test/10x_5k_anticmv
 platforms:
   - type: docker
-    image: python:3.8
+    image: python:3.8-slim
     setup:
+      - type: apt
+        packages: 
+          - procps
       - type: python
         packages:
           - scanpy~=1.9.2

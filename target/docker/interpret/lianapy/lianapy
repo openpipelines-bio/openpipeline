@@ -456,19 +456,23 @@ function ViashDockerCheckCommands {
 #   ViashDockerFile
 function ViashDockerfile {
   cat << 'VIASHDOCKER'
-FROM python:3.10
+FROM python:3.10-slim
 
 ENTRYPOINT []
 
  
+RUN apt-get update && \
+  DEBIAN_FRONTEND=noninteractive apt-get install -y procps git && \
+  rm -rf /var/lib/apt/lists/*
+
 RUN pip install --upgrade pip && \
   pip install --upgrade --no-cache-dir "mudata~=0.2.0" "git+https://github.com/saezlab/liana-py.git@11156ddd0139a49dfebdd08ac230f0ebf008b7f8" "numpy~=1.24.3"
 
 LABEL org.opencontainers.image.authors="Mauro Saporita, Povilas Gibas"
 LABEL org.opencontainers.image.description="Companion container for running component interpret lianapy"
-LABEL org.opencontainers.image.created="2023-06-09T14:04:32Z"
+LABEL org.opencontainers.image.created="2023-06-13T15:57:55Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="d19dff150fd1f4e80ce67ab9ad95fcc93acba414"
+LABEL org.opencontainers.image.revision="1580b0a0bc00bb9f88ccf07190f8d16a0b2869a2"
 LABEL org.opencontainers.image.version="main_build"
 
 VIASHDOCKER
@@ -509,7 +513,7 @@ function ViashDockerBuild {
     fi
     exit 1
   fi
-  ViashDockerCheckCommands "$1" 'bash'
+  ViashDockerCheckCommands "$1" 'ps' 'bash'
 }
 
 # ViashAbsolutePath: generate absolute path from relative path

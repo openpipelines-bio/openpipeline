@@ -413,19 +413,23 @@ function ViashDockerCheckCommands {
 #   ViashDockerFile
 function ViashDockerfile {
   cat << 'VIASHDOCKER'
-FROM python:3.8
+FROM python:3.8-slim
 
 ENTRYPOINT []
 
  
+RUN apt-get update && \
+  DEBIAN_FRONTEND=noninteractive apt-get install -y procps && \
+  rm -rf /var/lib/apt/lists/*
+
 RUN pip install --upgrade pip && \
   pip install --upgrade --no-cache-dir "scanpy~=1.9.2" "mudata~=0.2.0" "anndata~=0.8.0" "scirpy~=0.11.1" "pandas~=2.0.0"
 
 LABEL org.opencontainers.image.authors="Dries Schaumont"
 LABEL org.opencontainers.image.description="Companion container for running component convert from_cellranger_multi_to_h5mu"
-LABEL org.opencontainers.image.created="2023-06-09T14:04:30Z"
+LABEL org.opencontainers.image.created="2023-06-13T15:57:53Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="d19dff150fd1f4e80ce67ab9ad95fcc93acba414"
+LABEL org.opencontainers.image.revision="1580b0a0bc00bb9f88ccf07190f8d16a0b2869a2"
 LABEL org.opencontainers.image.version="main_build"
 
 VIASHDOCKER
@@ -466,7 +470,7 @@ function ViashDockerBuild {
     fi
     exit 1
   fi
-  ViashDockerCheckCommands "$1" 'bash'
+  ViashDockerCheckCommands "$1" 'ps' 'bash'
 }
 
 # ViashAbsolutePath: generate absolute path from relative path

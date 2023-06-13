@@ -152,13 +152,18 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
       }
     ],
     "status" : "enabled",
+    "requirements" : {
+      "commands" : [
+        "ps"
+      ]
+    },
     "set_wd_to_resources_dir" : false
   },
   "platforms" : [
     {
       "type" : "docker",
       "id" : "docker",
-      "image" : "python:3.10",
+      "image" : "python:3.10-slim",
       "target_organization" : "openpipelines-bio",
       "target_registry" : "ghcr.io",
       "namespace_separator" : "_",
@@ -168,10 +173,11 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
       "target_image_source" : "https://github.com/openpipelines-bio/openpipeline",
       "setup" : [
         {
-          "type" : "docker",
-          "env" : [
-            "SKLEARN_ALLOW_DEPRECATED_SKLEARN_PACKAGE_INSTALL True"
-          ]
+          "type" : "apt",
+          "packages" : [
+            "procps"
+          ],
+          "interactive" : false
         },
         {
           "type" : "python",
@@ -179,7 +185,7 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
           "packages" : [
             "mudata~=0.2.0",
             "anndata~=0.8.0",
-            "muon~=0.1.2",
+            "muon~=0.1.5",
             "scanpy~=1.9.2"
           ],
           "upgrade" : true
@@ -252,7 +258,7 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
     "platform" : "nextflow",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/transform/clr",
     "viash_version" : "0.7.4",
-    "git_commit" : "d19dff150fd1f4e80ce67ab9ad95fcc93acba414",
+    "git_commit" : "1580b0a0bc00bb9f88ccf07190f8d16a0b2869a2",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))

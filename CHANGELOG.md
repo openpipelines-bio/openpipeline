@@ -18,7 +18,11 @@ The old behavior of the `full_pipeline` can be obtained by running `full_pipelin
 
 * Updated Viash to 0.7.4 (PR #390).
 
+* `cluster/leiden`: Output is now stored into `.obsm` instead of `.obs` (PR #431).
+
 ## NEW FUNCTIONALITY
+
+* `cluster/leiden` and `integration/harmony_leiden`: allow running leiden multiple times with multiple resolutions (PR #431).
 
 * `workflows/full_pipeline`: PCA, nearest neighbours and UMAP are now calculated for the `prot` modality (PR #396).
 
@@ -28,13 +32,21 @@ The old behavior of the `full_pipeline` can be obtained by running `full_pipelin
 
 * `mapping/cellranger_multi` and `workflows/ingestion/cellranger_multi`: Added `--vdj_inner_enrichment_primers` argument (PR #417).
 
+* `metadata/move_obsm_to_obs`: Move a matrix from an `.obsm` slot into `.obs` (PR #431).
+
 ## MAJOR CHANGES
 
 * `report/mermaid`: Now used `mermaid-cli` to generate images instead of creating a request to `mermaid.ink`. New `--output_format`, `--width`, `--height` and  `--background_color` arguments were added (PR #419).
 
+* All components that used `python` as base container: use `slim` version to reduce container image size (PR #427).
+
 ## MINOR CHANGES
 
 * `mapping/multi_star`: Added `--min_success_rate` which causes component to fail when the success rate of processed samples were successful (PR #408).
+
+* `correction/cellbender_remove_background` and `transform/clr`: update muon to 0.1.5 (#PR 428)
+
+* `ingestion/cellranger_postprocessing`: split integration tests into several workflows (#PR 425).
 
 ## BUG FIXES
 
@@ -113,6 +125,8 @@ The old behavior of the `full_pipeline` can be obtained by running `full_pipelin
 * `filter/filter_with_hvg`: Add error when specified input layer cannot be found in input data.
 
 * `workflows/multiomics/full_pipeline`: publish the output from sample merging to allow running different integrations.
+
+* CI: Remove Android SDK and .NET folders from runner image in order to avoid `no space left on device.` (PR #425)
 
 # openpipelines 0.7.1
 
