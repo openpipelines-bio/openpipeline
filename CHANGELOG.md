@@ -18,11 +18,11 @@ The old behavior of the `full_pipeline` can be obtained by running `full_pipelin
 
 * Updated Viash to 0.7.4 (PR #390).
 
-* `cluster/leiden`: Output is now stored into .obsm instead of .obs.
+* `cluster/leiden`: Output is now stored into `.obsm` instead of `.obs` (PR #431).
 
 ## NEW FUNCTIONALITY
 
-* `cluster/leiden` and `integration/harmony_leiden`: allow running leiden multiple times with multiple resolutions.
+* `cluster/leiden` and `integration/harmony_leiden`: allow running leiden multiple times with multiple resolutions (PR #431).
 
 * `workflows/full_pipeline`: PCA, nearest neighbours and UMAP are now calculated for the `prot` modality (PR #396).
 
@@ -32,7 +32,7 @@ The old behavior of the `full_pipeline` can be obtained by running `full_pipelin
 
 * `mapping/cellranger_multi` and `workflows/ingestion/cellranger_multi`: Added `--vdj_inner_enrichment_primers` argument (PR #417).
 
-* `metadata/move_obsm_to_obs`: Move a matrix from an `.obsm` slot into `.obs`.
+* `metadata/move_obsm_to_obs`: Move a matrix from an `.obsm` slot into `.obs` (PR #431).
 
 ## MAJOR CHANGES
 
