@@ -259,5 +259,5 @@ info:
   output: "/home/runner/work/openpipeline/openpipeline/target/nextflow/mapping/cellranger_count"
   executable: "/home/runner/work/openpipeline/openpipeline/target/nextflow/mapping/cellranger_count/cellranger_count"
   viash_version: "0.7.4"
-  git_commit: "426e0d5d9849e99cc19805603dd690794b6246c8"
+  git_commit: "c98121489cf5e94c64c1df205381f43c7c1667d3"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"
