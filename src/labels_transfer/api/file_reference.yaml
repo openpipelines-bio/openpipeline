@@ -1,5 +1,6 @@
 type: "file"
 description: "The reference data to train classifiers on."
+example: https://zenodo.org/record/6337966/files/HLCA_emb_and_metadata.h5ad
 info:
   label: "Reference"
   file_format:
@@ -7,12 +8,14 @@ info:
     obs:
       - type: "string"
         name: "target"
-        description: "Labels to train classifier on. Could have any name, specify it in `targets` argument."
+        description: |
+          Labels to train classifier on. Could have any name, specify it in `targets` argument.
         required: true
     obsm:
       - type: "double"
         name: "X_integrated_scanvi"
-        description: "The embedding to train the classifier on. Could have any name, specify it in `reference_obsm_key` argument.\
-                      \ If not specified, .X matrix is used. Make sure that embedding was obtained in the same way \
-                      \ as the query embedding (e.g. by the same model or preprocessing)."
+        description: |
+          The embedding to train the classifier on. Could have any name, specify it in `reference_obsm_key` argument.
+          If not specified, .X matrix is used. Make sure that embedding was obtained in the same way
+          as the query embedding (e.g. by the same model or preprocessing).
         required: false
