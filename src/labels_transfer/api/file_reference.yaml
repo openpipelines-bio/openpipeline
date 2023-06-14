@@ -1,14 +1,15 @@
-- type: "file"
-  name: "--reference"
-  description: "The reference data to train classifiers on. Can be a .h5ad file or link to .h5ad file. By default, HLCA is used"
-  info:
-    short_description: "Reference data"
-    slots:
-      obs:
+type: "file"
+description: "The reference data to train classifiers on."
+info:
+  label: "Reference"
+  file_format:
+    type: h5ad
+    obs:
       - type: "string"
         name: "target"
-        description: "Labels to train classifier on. Could have any name, specify it in `targets` argument"
-      obsm:
+        description: "Labels to train classifier on. Could have any name, specify it in `targets` argument."
+        required: true
+    obsm:
       - type: "double"
         name: "X_integrated_scanvi"
         description: "The embedding to train the classifier on. Could have any name, specify it in `reference_obsm_key` argument.\

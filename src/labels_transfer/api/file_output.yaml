@@ -1,16 +1,14 @@
-- type: "file"
-  name: "--output"
-  description: "The query data in .h5mu format with predicted labels transfered from the reference."
-  info:
-    short_description: "Output data"
-    slots:
-      modality:
-      - type: "string"
-        name: "rna"
+type: "file"
+description: "The query data in .h5mu format with predicted labels transfered from the reference."
+info:
+  label: "Output data"
+  file_format:
+    type: h5mu
+    mod:
+      rna:
         description: "Modality in AnnData format containing RNA data."
         required: true
-        slots:
-          obs:
+        obs:
           - type: "string"
             name: "target_pred"
             description: "Transfered labels. Could have any name, specified in `targets` argument \
@@ -20,13 +18,13 @@
             name: "target_uncertainty"
             description: "The uncertainty of predictions for labels."
             required: true
-          obsm:
+        obsm:
           - type: "double"
             name: "X_integrated_scanvi"
             description: "The embedding used for the classifier's inference. Could have any name,\
             \ specified by `query_obsm_key` argument."
             required: false
-          uns:
+        uns:
           - type: "string"
             name: "labels_transfer"
             description: "The name of the uns slot containing the information about labels transfer. \
