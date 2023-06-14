@@ -4,9 +4,9 @@ functionality:
   status: disabled
   description: "Performs Harmony integration based as described in https://github.com/immunogenomics/harmony."
   authors:
-    - __merge__: ../../authors/dries_de_maeyer.yaml
+    - __merge__: /src/authors/dries_de_maeyer.yaml
       roles: [ author ]
-    - __merge__: ../../authors/robrecht_cannoodt.yaml
+    - __merge__: /src/authors/robrecht_cannoodt.yaml
       roles: [ maintainer, author ]
   arguments:
     - name: "--input"

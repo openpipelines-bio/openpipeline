@@ -7,11 +7,11 @@ functionality:
     If an input h5mu file is also provided, the velocity
     h5ad object will get added to that h5mu instead.
   authors:
-    - __merge__: ../../authors/dries_schaumont.yaml
+    - __merge__: /src/authors/dries_schaumont.yaml
       roles: [ maintainer, author ]
-    - __merge__: ../../authors/robrecht_cannoodt.yaml
+    - __merge__: /src/authors/robrecht_cannoodt.yaml
       roles: [ author ]
-    - __merge__: ../../authors/angela_pisco.yaml
+    - __merge__: /src/authors/angela_pisco.yaml
       roles: [ contributor ]
   argument_groups:
     - name: Inputs
@@ -63,8 +63,11 @@ functionality:
     - path: ../../../resources_test/cellranger_tiny_fastq
 platforms:
   - type: docker
-    image: python:3.10
+    image: python:3.10-slim
     setup:
+      - type: apt
+        packages:
+          - procps
       - type: python
         packages: 
           - mudata~=0.2.0

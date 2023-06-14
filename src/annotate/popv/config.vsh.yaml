@@ -3,9 +3,9 @@ functionality:
   namespace: "annotate"
   description: "Performs popular major vote cell typing on single cell sequence data using multiple algorithms. Note that this is a one-shot version of PopV."
   authors:
-    - __merge__: ../../authors/matthias_beyens.yaml
+    - __merge__: /src/authors/matthias_beyens.yaml
       roles: [ author ]
-    - __merge__: ../../authors/robrecht_cannoodt.yaml
+    - __merge__: /src/authors/robrecht_cannoodt.yaml
       roles: [ author ]
   argument_groups:
     - name: Inputs
@@ -125,23 +125,30 @@ functionality:
 platforms:
   - type: docker
     #image: nvcr.io/nvidia/pytorch:22.12-py3
-    image: python:3.9
+    image: python:3.9-slim
     setup:
+      - type: apt
+        packages:
+          - procps
+          - git
+          - build-essential
+          - wget
       - type: python
-        git:
-          - https://github.com/czbiohub/PopV.git
         packages:
           - mudata~=0.2.0
           - anndata~=0.8.0
           - scanpy~=1.9.2
           - scvi-tools~=0.20.3
+          - git+https://github.com/YosefLab/PopV.git@v0.2
       # download ontology required by popv
       - type: docker
         run: |
           cd /opt && mkdir -p /opt/popv_cl_ontology && \
-          wget https://raw.githubusercontent.com/czbiohub/PopV/main/ontology/cl.obo -O "popv_cl_ontology/cl.obo" && \
-          wget https://raw.githubusercontent.com/czbiohub/PopV/main/ontology/cl.ontology -O "popv_cl_ontology/cl.ontology" && \
-          wget https://raw.githubusercontent.com/czbiohub/PopV/main/ontology/cl.ontology.nlp.emb -O "popv_cl_ontology/cl.ontology.nlp.emb"
+          wget https://raw.githubusercontent.com/YosefLab/PopV/v0.2/ontology/cl.obo -O "popv_cl_ontology/cl.obo" && \
+          wget https://raw.githubusercontent.com/YosefLab/PopV/v0.2/ontology/cl.ontology -O "popv_cl_ontology/cl.ontology" && \
+          wget https://raw.githubusercontent.com/YosefLab/PopV/v0.2/ontology/cl.ontology.nlp.emb -O "popv_cl_ontology/cl.ontology.nlp.emb"
+      - type: python
+        packages: [jax==0.4.9, jaxlib==0.4.9]
     test_setup:
       - type: python
         packages:

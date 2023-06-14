@@ -4,10 +4,12 @@ functionality:
   version: "dev"
   description: "Performs scvi integration as done in the human lung cell atlas https://github.com/LungCellAtlas/HLCA"
   authors:
-    - __merge__: ../../authors/malte_luecken.yaml
+    - __merge__: /src/authors/malte_luecken.yaml
       roles: [ author ]
-    - __merge__: ../../authors/dries_schaumont.yaml
+    - __merge__: /src/authors/dries_schaumont.yaml
       roles: [ maintainer ]
+    - __merge__: /src/authors/matthias_beyens.yaml
+      roles: [ contributor ]
   argument_groups:
     - name: Inputs
       arguments:
@@ -85,7 +87,7 @@ functionality:
         - name: "--max_epochs"
           type: integer
           description: "Number of passes through the dataset, defaults to (20000 / number of cells) * 400 or 400; whichever is smallest."
-          required: true
+          required: false
         - name: "--reduce_lr_on_plateau"
           description: "Whether to monitor validation loss and reduce learning rate when validation set `lr_scheduler_metric` plateaus."
           type: boolean
@@ -100,6 +102,16 @@ functionality:
           type: double
           default: 30
           min: 0
+    - name: "Data validition"
+      arguments:
+        - name: "--n_obs_min_count"
+          type: integer
+          description: "Minimum number of cells threshold ensuring that every obs_batch category has sufficient observations (cells) for model training."
+          required: false
+        - name: "--n_var_min_count"
+          type: integer
+          description: "Minimum number of genes threshold ensuring that every var_input filter has sufficient observations (genes) for model training."
+          required: false
   resources:
     - type: python_script
       path: script.py
@@ -121,6 +133,7 @@ platforms:
         packages:
           - mudata~=0.2.0
           - anndata~=0.8.0
+          - scanpy~=1.9.2
       - type: python
         upgrade: false
         packages:

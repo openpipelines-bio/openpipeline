@@ -7,9 +7,9 @@ functionality:
     https://emea.support.illumina.com/bulletins/2020/10/upgrading-from-bcl2fastq-to-bcl-convert.html
     and https://support.illumina.com/sequencing/sequencing_software/bcl-convert/compatibility.html
   authors:
-    - __merge__: ../../authors/toni_verbeiren.yaml
+    - __merge__: /src/authors/toni_verbeiren.yaml
       roles: [ author, maintainer ]
-    - __merge__: ../../authors/marijke_van_moerbeke.yaml
+    - __merge__: /src/authors/marijke_van_moerbeke.yaml
       roles: [ author ]
   arguments:
     - name: "--input"

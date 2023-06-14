@@ -1,3 +1,11 @@
 name: Dries De Maeyer
-email: ddemaeyer@gmail.com
-props: { github: ddemaeyer }
+info:
+  role: Core Team Member
+  links:
+    email: ddemaeyer@gmail.com
+    github: ddemaeyer
+    linkedin: dries-de-maeyer-b46a814
+  organizations:
+    - name: Janssen Pharmaceuticals
+      href: https://www.janssen.com
+      role: Principal Scientist

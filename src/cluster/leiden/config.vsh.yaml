@@ -12,7 +12,7 @@ functionality:
     Traag18: Traag et al. (2018), From Louvain to Leiden: guaranteeing well-connected communities arXiv.  
     Wolf18: Wolf et al. (2018), Scanpy: large-scale single-cell gene expression data analysis, Genome Biology.  
   authors:
-    - __merge__: ../../authors/dries_de_maeyer.yaml
+    - __merge__: /src/authors/dries_de_maeyer.yaml
       roles: [ maintainer ]
   arguments:
     # input
@@ -49,9 +49,11 @@ functionality:
       required: false
       example: "gzip"
   
-    - name: "--obs_name"
+    - name: "--obsm_name"
       type: string
-      description: Name of the .obs key under which to add the cluster labels.
+      description: |
+        Name of the .obsm key under which to add the cluster labels.
+        The name of the columns in the matrix will correspond to the resolutions.
       default: "leiden"
 
       # todo: add uns_params
@@ -60,8 +62,11 @@ functionality:
     # arguments
     - name: "--resolution"
       type: double
-      description: A parameter value controlling the coarseness of the clustering. Higher values lead to more clusters.
-      default: 1
+      description: |
+        A parameter value controlling the coarseness of the clustering. Higher values lead to more clusters.
+        Multiple values will result in clustering being performed multiple times.
+      default: [1]
+      multiple: true
   resources:
     - type: python_script
       path: script.py
@@ -71,10 +76,12 @@ functionality:
     - path: ../../../resources_test/pbmc_1k_protein_v3
 platforms:
   - type: docker
-    image: python:3.8
+    image: python:3.8-slim
     setup:
       - type: apt
-        packages: [ cmake ]
+        packages: 
+          - cmake
+          - procps
       - type: python
         packages:
           - scanpy~=1.9.2

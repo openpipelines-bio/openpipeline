@@ -3,9 +3,9 @@ functionality:
   namespace: mapping
   description: Align fastq files using STAR.
   authors:
-    - __merge__: ../../authors/angela_pisco.yaml
+    - __merge__: /src/authors/angela_pisco.yaml
       roles: [ author ]
-    - __merge__: ../../authors/robrecht_cannoodt.yaml
+    - __merge__: /src/authors/robrecht_cannoodt.yaml
       roles: [ author, maintainer ]
   # generated the argument groups using `utils/process_params.R`
   __merge__: [., arguments_star.yaml, arguments_htseq.yaml]
@@ -75,7 +75,7 @@ functionality:
     - path: ../../../resources_test/cellranger_tiny_fastq
 platforms:
   - type: docker
-    image: python:3.10
+    image: python:3.10-slim
     setup:
       # setup derived from https://github.com/alexdobin/STAR/blob/master/extras/docker/Dockerfile
       - type: docker
@@ -99,6 +99,7 @@ platforms:
       - type: apt
         packages: 
           - samtools
+          - procps
       - type: python
         packages: 
           - pyyaml

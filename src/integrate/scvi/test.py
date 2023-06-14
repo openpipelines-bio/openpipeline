@@ -42,6 +42,8 @@ class TestscVI(unittest.TestCase):
                 "--output", "output.h5mu",
                 "--model_output", "test/",
                 "--max_epochs", "1",
+                "--n_obs_min_count", "10",
+                "--n_var_min_count", "10",
                 "--output_compression", "gzip"])
             self.assertTrue(Path("output.h5mu").is_file())
             output_data = mudata.read_h5mu("output.h5mu")

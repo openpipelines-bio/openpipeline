@@ -4,7 +4,7 @@ functionality:
   version: "dev"
   description: Publish an artifact and optionally rename with parameters
   authors:
-    - __merge__: ../../authors/toni_verbeiren.yaml
+    - __merge__: /src/authors/toni_verbeiren.yaml
       roles: [ maintainer ]
   arguments:
     - name: "--input"
@@ -27,5 +27,5 @@ functionality:
       path: run_test.sh
 platforms:
   - type: docker
-    image: python:3.10
+    image: ubuntu:22.04
   - type: nextflow

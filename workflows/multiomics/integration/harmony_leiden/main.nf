@@ -8,7 +8,7 @@ include { leiden } from targetDir + '/cluster/leiden/main.nf'
 include { harmonypy } from targetDir + '/integrate/harmonypy/main.nf'
 include { umap } from targetDir + '/dimred/umap/main.nf'
 include { find_neighbors } from targetDir + '/neighbors/find_neighbors/main.nf'
-
+include { move_obsm_to_obs } from targetDir + '/metadata/move_obsm_to_obs/main.nf'
 include { readConfig; helpMessage; preprocessInputs; channelFromParams } from workflowDir + "/utils/WorkflowHelper.nf"
 include { setWorkflowArguments; getWorkflowArguments; passthroughMap as pmap } from workflowDir + "/utils/DataflowHelper.nf"
 
@@ -53,19 +53,22 @@ workflow run_wf {
         "uns_neighbors": "uns_neighbors",
         "output": "output",
         "obsm_output": "obsm_umap"
-      ]
+      ],
+      move_obsm_to_obs_leiden: []
     )
     | getWorkflowArguments(key: "harmony")
     | harmonypy
     | getWorkflowArguments(key: "neighbors")
     | find_neighbors
     | getWorkflowArguments(key: "clustering")
-    | leiden
+    | leiden.run(args: [obsm_name: "leiden"])
     | getWorkflowArguments(key: "umap")
     | umap.run(
       auto: [ publish: true ],
       args: [ output_compression: "gzip" ]
     )
+    | getWorkflowArguments(key: "move_obsm_to_obs_leiden")
+    | move_obsm_to_obs.run(args: [ obsm_key: "leiden" ] )
 
     // remove splitArgs
     | map { tup ->
@@ -88,7 +91,8 @@ workflow test_wf {
         input: params.resources_test + "/pbmc_1k_protein_v3/pbmc_1k_protein_v3_mms.h5mu",
         layer: "log_normalized",
         obs_covariates: "sample_id",
-        embedding: "X_pca"
+        embedding: "X_pca",
+        leiden_resolution: [1, 0.25]
       ]
     ]
   ]
