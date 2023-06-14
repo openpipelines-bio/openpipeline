@@ -36,6 +36,13 @@ The old behavior of the `full_pipeline` can be obtained by running `full_pipelin
 
 * `integrate/scvi` validity checks for non-normalized input, obs and vars in order to proceed to training (PR #429).
 
+* `schemas`: Added schema files for authors (PR #436).
+
+* `schemas`: Add schema file for Viash configs (PR #436).
+
+* `schemas`: Refactor author import paths (PR #436).
+
+
 ## MAJOR CHANGES
 
 * `report/mermaid`: Now used `mermaid-cli` to generate images instead of creating a request to `mermaid.ink`. New `--output_format`, `--width`, `--height` and  `--background_color` arguments were added (PR #419).
