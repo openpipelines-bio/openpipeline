@@ -4,7 +4,7 @@ description: A file format specification file.
 type: "object"
 properties:
   info:
-    $ref: "defs_common.yaml#/definitions/FileInfo"
+    $ref: "defs_common.yaml#/definitions/FileFormat"
   create_parent:
     description: "If the output filename is a path and it does not exist, create\
       \ it before executing the script (only for `direction: output`)."

@@ -211,7 +211,7 @@ definitions:
         type: boolean
     required: [name, __merge__, direction, required]
     additionalProperties: false
-  FileInfo:
+  FileFormat:
     description: 'File format metadata'
     type: object
     required: [label, file_format]
