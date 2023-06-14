@@ -8,6 +8,8 @@ functionality:
       roles: [ author ]
     - __merge__: ../../authors/dries_schaumont.yaml
       roles: [ maintainer ]
+    - __merge__: ../../authors/matthias_beyens.yaml
+      roles: [ contributor ]
   argument_groups:
     - name: Inputs
       arguments:
@@ -100,6 +102,16 @@ functionality:
           type: double
           default: 30
           min: 0
+    - name: "Data validition"
+      arguments:
+        - name: "--n_obs_min_count"
+          type: integer
+          description: "Minimum number of cells threshold ensuring that every obs_batch category has sufficient observations (cells) for model training."
+          required: false
+        - name: "--n_var_min_count"
+          type: integer
+          description: "Minimum number of genes threshold ensuring that every var_input filter has sufficient observations (genes) for model training."
+          required: false
   resources:
     - type: python_script
       path: script.py
@@ -119,6 +131,7 @@ platforms:
         packages:
           - mudata~=0.2.0
           - anndata~=0.8.0
+          - scanpy~=1.9.2
       - type: python
         upgrade: false
         packages:

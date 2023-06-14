@@ -1,18 +1,18 @@
-
 nextflow.enable.dsl=2
 
 workflowDir = params.rootDir + "/workflows"
 targetDir = params.rootDir + "/target/nextflow"
 
 include { leiden } from targetDir + '/cluster/leiden/main.nf'
-include { harmonypy } from targetDir + '/integrate/harmonypy/main.nf'
+include { scanorama } from targetDir + '/integrate/scanorama/main.nf'
 include { umap } from targetDir + '/dimred/umap/main.nf'
-include { find_neighbors } from targetDir + '/neighbors/find_neighbors/main.nf'
 include { move_obsm_to_obs } from targetDir + '/metadata/move_obsm_to_obs/main.nf'
+include { find_neighbors } from targetDir + '/neighbors/find_neighbors/main.nf'
+
 include { readConfig; helpMessage; preprocessInputs; channelFromParams } from workflowDir + "/utils/WorkflowHelper.nf"
 include { setWorkflowArguments; getWorkflowArguments; passthroughMap as pmap } from workflowDir + "/utils/DataflowHelper.nf"
 
-config = readConfig("$workflowDir/multiomics/integration/harmony_leiden/config.vsh.yaml")
+config = readConfig("$workflowDir/multiomics/integration/scanorama_leiden/config.vsh.yaml")
 
 workflow {
   helpMessage(config)
@@ -32,11 +32,10 @@ workflow run_wf {
     | preprocessInputs("config": config)
     // split params for downstream components
     | setWorkflowArguments(
-      harmony: [
-        "obsm_input": "embedding",
-        "obs_covariates": "obs_covariates",
-        "obsm_output": "obsm_integrated",
-        "theta": "rna_theta"
+      scanorama: [
+        "obsm_input": "X_pca",
+        "obs_batch": "sample_id",
+        "obsm_output": "obsm_integrated"
       ],
       neighbors: [
         "uns_output": "uns_neighbors",
@@ -56,8 +55,8 @@ workflow run_wf {
       ],
       move_obsm_to_obs_leiden: []
     )
-    | getWorkflowArguments(key: "harmony")
-    | harmonypy
+    | getWorkflowArguments(key: "scanorama")
+    | scanorama
     | getWorkflowArguments(key: "neighbors")
     | find_neighbors
     | getWorkflowArguments(key: "clustering")
@@ -90,8 +89,6 @@ workflow test_wf {
         id: "foo",
         input: params.resources_test + "/pbmc_1k_protein_v3/pbmc_1k_protein_v3_mms.h5mu",
         layer: "log_normalized",
-        obs_covariates: "sample_id",
-        embedding: "X_pca",
         leiden_resolution: [1, 0.25]
       ]
     ]
