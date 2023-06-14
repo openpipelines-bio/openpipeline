@@ -28,7 +28,7 @@ The old behavior of the `full_pipeline` can be obtained by running `full_pipelin
 
 * `mapping/cellranger_multi` and `workflows/ingestion/cellranger_multi`: Added `--vdj_inner_enrichment_primers` argument (PR #417).
 
-* `query/cellxgene_census`: Cellxgene census component for data intake into openpipeline (PR #433).
+* `query/cellxgene_census`: Cellxgene census component for data intake inti openpipeline (PR #433).
 
 ## MAJOR CHANGES
 
