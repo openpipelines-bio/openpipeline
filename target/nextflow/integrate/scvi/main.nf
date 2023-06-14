@@ -381,6 +381,11 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
         "path" : "script.py",
         "is_executable" : true,
         "parent" : "file:/home/runner/work/openpipeline/openpipeline/src/integrate/scvi/"
+      },
+      {
+        "type" : "file",
+        "path" : "../../utils/subset_vars.py",
+        "parent" : "file:/home/runner/work/openpipeline/openpipeline/src/integrate/scvi/"
       }
     ],
     "description" : "Performs scvi integration as done in the human lung cell atlas https://github.com/LungCellAtlas/HLCA",
@@ -389,6 +394,11 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
         "type" : "python_script",
         "path" : "test.py",
         "is_executable" : true,
+        "parent" : "file:/home/runner/work/openpipeline/openpipeline/src/integrate/scvi/"
+      },
+      {
+        "type" : "file",
+        "path" : "../../utils/subset_vars.py",
         "parent" : "file:/home/runner/work/openpipeline/openpipeline/src/integrate/scvi/"
       },
       {
@@ -503,7 +513,7 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
     "platform" : "nextflow",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/integrate/scvi",
     "viash_version" : "0.7.4",
-    "git_commit" : "fbb04c22819f505e39f18921169f2aef41d2b8b7",
+    "git_commit" : "ff067cf6c23b844663b4d71f022282afc0d7f377",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))
@@ -563,6 +573,10 @@ meta = {
 
 ### VIASH END
 
+import sys
+sys.path.append(meta['resources_dir'])
+from subset_vars import subset_vars
+
 #TODO: optionally, move to qa
 # https://github.com/openpipelines-bio/openpipeline/issues/435
 def check_validity_anndata(adata, layer, obs_batch,
@@ -583,13 +597,14 @@ def check_validity_anndata(adata, layer, obs_batch,
         f"Anndata has fewer than {n_var_min_count} genes."
 
 
+
 def main():
     mdata = mudata.read(par["input"].strip())
     adata = mdata.mod[par['modality']]
 
     if par['var_input']:
         # Subset to HVG
-        adata = adata[:,adata.var['var_input']].copy()
+        adata = subset_vars(adata, subset_col=par["var_input"])
 
     check_validity_anndata(
         adata, par['input_layer'], par['obs_batch'],

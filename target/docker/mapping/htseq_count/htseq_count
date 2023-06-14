@@ -526,9 +526,9 @@ RUN pip install --upgrade pip && \
 
 LABEL org.opencontainers.image.authors="Robrecht Cannoodt, Angela Oliveira Pisco"
 LABEL org.opencontainers.image.description="Companion container for running component mapping htseq_count"
-LABEL org.opencontainers.image.created="2023-06-14T13:48:06Z"
+LABEL org.opencontainers.image.created="2023-06-14T14:20:05Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="fbb04c22819f505e39f18921169f2aef41d2b8b7"
+LABEL org.opencontainers.image.revision="ff067cf6c23b844663b4d71f022282afc0d7f377"
 LABEL org.opencontainers.image.version="main_build"
 
 VIASHDOCKER
