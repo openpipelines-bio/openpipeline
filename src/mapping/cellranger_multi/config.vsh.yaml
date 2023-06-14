@@ -34,6 +34,15 @@ functionality:
           example: "reference_vdj.tar.gz"
           required: false
 
+        - name: "--vdj_inner_enrichment_primers"
+          type: file
+          description: |
+            V(D)J Immune Profiling libraries: if inner enrichment primers other than those provided 
+            in the 10x Genomics kits are used, they need to be specified here as a
+            text file with one primer per line.
+          example: "enrichment_primers.txt"
+          required: false
+
         - name: "--feature_reference"
           type: file
           description: "Path to the Feature reference CSV file, declaring Feature Barcode constructs and associated barcodes. Required only for Antibody Capture or CRISPR Guide Capture libraries. See https://support.10xgenomics.com/single-cell-gene-expression/software/pipelines/latest/using/feature-bc-analysis#feature-ref for more information."
@@ -118,7 +127,7 @@ functionality:
 
         - type: boolean
           name: "--gex_generate_bam"
-          default: true
+          default: false
           description: Whether to generate a BAM file.
         
         - type: boolean
@@ -160,6 +169,7 @@ functionality:
     - type: python_script
       path: test.py
     - path: ../../../resources_test/10x_5k_anticmv/raw/
+      dest: 10x_5k_anticmv/raw/
     - path: ../../../resources_test/reference_gencodev41_chr1
 platforms:
   - type: docker
@@ -171,4 +181,4 @@ platforms:
         pypi: [ pandas ]
   - type: nextflow
     directives:
-      label: [ highmem, highcpu ]
+      label: [ veryhighmem, highcpu ]

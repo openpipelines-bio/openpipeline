@@ -24,7 +24,8 @@ cmd_pars = [
     meta["executable"],
     "--input", file_input,
     "--output", file_output,
-    "--epochs", "5"
+    "--epochs", "5",
+    "--output_compression", "gzip"
 ]
 # todo: if cuda is available, add --cuda
 out = subprocess.check_output(cmd_pars).decode("utf-8")

@@ -9,14 +9,14 @@ par = {
 ### VIASH END
 
 if __name__ == "__main__":
-  # read data
-  data = mudata.read(par["input"])
+    # read data
+    data = mudata.read(par["input"])
 
-  # subset data
-  if par["modality"]:
-    data.mod[par["modality"]] = data.mod[par["modality"]][:par["number_of_observations"]]
-  else:
-    data = data[:par["number_of_observations"]]
+    # subset data
+    if par["modality"]:
+        data.mod[par["modality"]] = data.mod[par["modality"]][:par["number_of_observations"]]
+    else:
+        data = data[:par["number_of_observations"]]
 
-  # write data
-  data.write(par["output"])
+    # write data
+    data.write_h5mu(par["output"], compression=par["output_compression"])

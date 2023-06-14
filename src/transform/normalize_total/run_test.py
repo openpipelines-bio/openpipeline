@@ -1,6 +1,6 @@
 import subprocess
 from os import path
-import muon as mu
+import mudata as mu
 import numpy as np
 import logging
 from sys import stdout
@@ -27,6 +27,7 @@ cmd_pars = [
     f"./{meta['functionality_name']}",
     "--input", input,
     "--output", output,
+    "--output_compression", "gzip"
 ]
 out = subprocess.check_output(cmd_pars).decode("utf-8")
 

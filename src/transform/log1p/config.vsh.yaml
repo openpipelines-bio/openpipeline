@@ -43,6 +43,13 @@ functionality:
       required: true
       default: output.h5mu
 
+    - name: "--output_compression"
+      type: string
+      description: The compression format to be used on the output h5mu object.
+      choices: ["gzip", "lzf"]
+      required: false
+      example: "gzip"
+
     # arguments
     - name: "--base"
       type: double
@@ -56,12 +63,19 @@ functionality:
     - path: ../../../resources_test/pbmc_1k_protein_v3
 platforms:
   - type: docker
-    image: python:3.8
+    image: python:3.8-slim
     setup:
+      - type: apt
+        packages: 
+          - procps
       - type: python
         packages:
-          - scanpy~=1.9.1
-          - muon
+          - scanpy~=1.9.2
           - mudata~=0.2.0
           - anndata~=0.8.0
+    test_setup:
+      - type: python
+        packages:
+          - viashpy
+          - pytest
   - type: nextflow

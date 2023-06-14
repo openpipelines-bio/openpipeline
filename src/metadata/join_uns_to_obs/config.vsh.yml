@@ -24,13 +24,22 @@ functionality:
       direction: output
       required: true
       example: output.h5mu
+    - name: "--output_compression"
+      type: string
+      description: The compression format to be used on the output h5mu object.
+      choices: ["gzip", "lzf"]
+      required: false
+      example: "gzip"
   resources:
     - type:  python_script
       path: script.py
 platforms:
   - type: docker
-    image: python:3.10
+    image: python:3.10-slim
     setup:
+      - type: apt
+        packages: 
+          - procps
       - type: python
         packages:
           - mudata~=0.2.0

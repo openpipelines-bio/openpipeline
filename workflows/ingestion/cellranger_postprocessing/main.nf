@@ -9,15 +9,15 @@ include { from_10xh5_to_h5mu } from targetDir + "/convert/from_10xh5_to_h5mu/mai
 include { subset_h5mu } from targetDir + "/filter/subset_h5mu/main.nf"
 include { publish } from targetDir + "/transfer/publish/main.nf"
 
-include { readConfig; viashChannel; helpMessage } from workflowDir + "/utils/WorkflowHelper.nf"
+include { readConfig; channelFromParams; preprocessInputs; helpMessage } from workflowDir + "/utils/WorkflowHelper.nf"
 include { setWorkflowArguments; getWorkflowArguments; passthroughMap as pmap } from workflowDir + "/utils/DataflowHelper.nf"
 
-config = readConfig("$projectDir/config.vsh.yaml")
+config = readConfig("$workflowDir/ingestion/cellranger_postprocessing/config.vsh.yaml")
 
 workflow {
   helpMessage(config)
 
-  viashChannel(params, config)
+  channelFromParams(params, config)
     | view { "Input: $it" }
     | run_wf
     | view { "Output: $it" }
@@ -30,7 +30,7 @@ workflow run_wf {
   main:
 
   mid0 = input_ch
-  
+    | preprocessInputs("config": config)
     // split params for downstream components
     | setWorkflowArguments(
       correction: [
@@ -49,7 +49,9 @@ workflow run_wf {
   // perform correction if so desired
   mid1_corrected = mid0
     | filter{ it[2].correction.perform_correction }
-    | cellbender_remove_background
+    | cellbender_remove_background.run(
+      args: [ output_compression: "gzip" ]
+    )
     | pmap{ id, file -> [ id, [ input: file, layer: "corrected" ]]}
     // todo: allow setting the layer
   mid1_uncorrected = mid0
@@ -61,7 +63,10 @@ workflow run_wf {
   mid2_filtered = mid1
     | filter{ it[2].filter_with_counts.min_genes != null || it[2].filter_with_counts.min_counts != null }
     | getWorkflowArguments(key: "filter_with_counts")
-    | filter_with_counts.run(args: [do_subset: true])
+    | filter_with_counts.run(
+        args: [do_subset: true,
+               output_compression: "gzip"]
+    )
   mid2_unfiltered = mid1
     | filter{ it[2].filter_with_counts.min_genes == null && it[2].filter_with_counts.min_counts == null }
   mid2 = mid2_filtered.mix(mid2_unfiltered)
@@ -88,20 +93,7 @@ workflow test_wf {
       [
         id: "foo",
         input: params.resources_test + "/pbmc_1k_protein_v3/pbmc_1k_protein_v3_raw_feature_bc_matrix.h5",
-        epochs: 50,
         perform_correction: true,
-        min_genes: 100,
-        min_counts: 1000
-      ],
-      [
-        id: "bar",
-        input: params.resources_test + "/pbmc_1k_protein_v3/pbmc_1k_protein_v3_raw_feature_bc_matrix.h5",
-        epochs: 50,
-        perform_correction: true
-      ],
-      [
-        id: "zing",
-        input: params.resources_test + "/pbmc_1k_protein_v3/pbmc_1k_protein_v3_raw_feature_bc_matrix.h5",
         min_genes: 100,
         min_counts: 1000
       ]
@@ -109,13 +101,13 @@ workflow test_wf {
   ]
 
   output_ch =
-    viashChannel(testParams, config)
+    channelFromParams(testParams, config)
 
     // first filter and convert to h5mu
     | pmap { id, data -> [ id, [ input: data.input ], data ] }
     | from_10xh5_to_h5mu
     | pmap { id, file -> [ id, [ input: file ] ] }
-    | subset_h5mu.run(args: [ number_of_observations: 100000 ])
+    | subset_h5mu.run(args: [ number_of_observations: 50000 ])
     | pmap { id, file, orig_params -> [id, orig_params + [ input: file ] ] }
 
     | view { "Input: $it" }
@@ -128,7 +120,88 @@ workflow test_wf {
     }
     | toList()
     | map { output_list ->
-      assert output_list.size() == 3 : "output channel should contain three events"
+      assert output_list.size() == 1 : "output channel should contain one event"
+    }
+    //| check_format(args: {""}) // todo: check whether output h5mu has the right slots defined
+}
+
+workflow test_wf2 {
+  // allow changing the resources_test dir
+  params.resources_test = params.rootDir + "/resources_test"
+
+  // or when running from s3: params.resources_test = "s3://openpipelines-data/"
+  testParams = [
+    param_list: [
+      [
+        id: "bar",
+        input: params.resources_test + "/pbmc_1k_protein_v3/pbmc_1k_protein_v3_raw_feature_bc_matrix.h5",
+        perform_correction: true
+      ]
+    ]
+  ]
+
+  output_ch =
+    channelFromParams(testParams, config)
+
+    // first filter and convert to h5mu
+    | pmap { id, data -> [ id, [ input: data.input ], data ] }
+    | from_10xh5_to_h5mu
+    | pmap { id, file -> [ id, [ input: file ] ] }
+    | subset_h5mu.run(args: [ number_of_observations: 50000 ])
+    | pmap { id, file, orig_params -> [id, orig_params + [ input: file ] ] }
+
+    | view { "Input: $it" }
+    | run_wf
+    | view { output ->
+      assert output.size() == 2 : "outputs should contain two elements; [id, out]"
+      assert output[1] instanceof Map : "Output should be a Map."
+      // todo: check whether output dir contains fastq files
+      "Output: $output"
+    }
+    | toList()
+    | map { output_list ->
+      assert output_list.size() == 1 : "output channel should contain one event"
+    }
+    //| check_format(args: {""}) // todo: check whether output h5mu has the right slots defined
+}
+
+workflow test_wf3 {
+  // allow changing the resources_test dir
+  params.resources_test = params.rootDir + "/resources_test"
+
+  // or when running from s3: params.resources_test = "s3://openpipelines-data/"
+  testParams = [
+    param_list: [
+      [
+        id: "zing",
+        input: params.resources_test + "/pbmc_1k_protein_v3/pbmc_1k_protein_v3_raw_feature_bc_matrix.h5",
+        min_genes: 100,
+        min_counts: 1000
+      ]
+    ]
+  ]
+
+  output_ch =
+    channelFromParams(testParams, config)
+
+    // first filter and convert to h5mu
+    | pmap { id, data -> [ id, [ input: data.input ], data ] }
+    | from_10xh5_to_h5mu
+    | pmap { id, file -> [ id, [ input: file ] ] }
+    | subset_h5mu.run(args: [ number_of_observations: 50000 ])
+    | pmap { id, file, orig_params -> [id, orig_params + [ input: file ] ] }
+
+    | view { "Input: $it" }
+    | run_wf
+    | view { output ->
+      assert output.size() == 2 : "outputs should contain two elements; [id, out]"
+      assert output[1] instanceof Map : "Output should be a Map."
+      // todo: check whether output dir contains fastq files
+      "Output: $output"
+    }
+    | toList()
+    | map { output_list ->
+      assert output_list.size() == 1 : "output channel should contain one event"
     }
     //| check_format(args: {""}) // todo: check whether output h5mu has the right slots defined
 }

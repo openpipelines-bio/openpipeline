@@ -29,6 +29,12 @@ functionality:
           description: Output h5mu file.
           example: output.h5mu
           direction: output
+          __merge__: api_output.yaml
+        - name: "--output_compression"
+          type: string
+          choices: ["gzip", "lzf"]
+          required: false
+          example: "gzip"
         - name: "--uns_metrics"
           type: string
           description: Name of the .uns slot under which to QC metrics (if any).
@@ -52,11 +58,14 @@ functionality:
     - path: ../../../resources_test/pbmc_1k_protein_v3
 platforms:
   - type: docker
-    image: python:3.8
+    image: python:3.8-slim
     setup:
+      - type: apt
+        packages:
+          - procps
       - type: python
         packages:
           - mudata~=0.2.0
           - anndata~=0.8.0
-          - scanpy
+          - scanpy~=1.9.2
   - type: nextflow

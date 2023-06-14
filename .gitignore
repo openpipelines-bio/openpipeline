@@ -11,6 +11,9 @@
 *.Rproj
 .Rproj.user
 
+# Python virtual environments
+.venv
+
 # temporary files related
 temp
 
@@ -27,9 +30,10 @@ out/
 # viash related
 .viash_log*
 log.txt
-target
+/target/
 check_results/
 out/
 output*
 output_log/
 resources_test
+/viash_tools/

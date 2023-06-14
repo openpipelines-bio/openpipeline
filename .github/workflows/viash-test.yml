@@ -16,7 +16,7 @@ jobs:
         run: |
           pull_request=$(gh pr list -R ${{ github.repository }} -H ${{ github.ref_name }} --json url --state open --limit 1 | jq '.[0].url')
           # If the branch has a PR and this run was triggered by a push event, do not run
-          if [[ "$pull_request" != "null" && "${{ github.event_name == 'push' }}" == "true" && "${{ !contains(github.event.head_commit.message, 'ci force') }}" == "true" ]]; then
+          if [[ "$pull_request" != "null" && "$GITHUB_REF_NAME" != "main" && "${{ github.event_name == 'push' }}" == "true" && "${{ !contains(github.event.head_commit.message, 'ci force') }}" == "true" ]]; then
             echo "check=false" >> $GITHUB_OUTPUT
           else
             echo "check=true" >> $GITHUB_OUTPUT
@@ -24,124 +24,150 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GTHB_PAT }}
 
-
   # phase 1
-  list_components:
+  list:
     needs: run_ci_check_job
     env:
       s3_bucket: s3://openpipelines-data/
     runs-on: ubuntu-latest
     if: "needs.run_ci_check_job.outputs.run_ci == 'true'"
+
     outputs:
       matrix: ${{ steps.set_matrix.outputs.matrix }}
-      cachehash: ${{ steps.cachehash.outputs.cachehash }}
+      cache_key: ${{ steps.cache.outputs.cache_key }}
+
     steps:
     - uses: actions/checkout@v3
       with:
         fetch-depth: 0 
 
-    - name: Fetch viash
-      run: |
-        bin/init -n
-        tree .
-        bin/viash -h
+    - uses: viash-io/viash-actions/setup@v3
 
-    # create cachehash key
-    - name: Create hash key
-      id: cachehash
+    - name: Check if all config can be parsed if there is no unicode support
       run: |
-        AWS_EC2_METADATA_DISABLED=true aws s3 ls $s3_bucket --recursive --no-sign-request > bucket-contents.txt
-        echo "cachehash=resources_test__$( md5sum bucket-contents.txt | awk '{ print $1 }' )" >> $GITHUB_OUTPUT
-    
-    # initialize cache
-    - name: Cache resources data
-      uses: actions/cache@v3
+        LANG=C viash ns list > /dev/null
+
+    - uses: viash-io/viash-actions/project/sync-and-cache-s3@v3
+      id: cache
       with:
-        path: resources_test
-        key: ${{ steps.cachehash.outputs.cachehash }}
-        restore-keys: resources_test_
-
-    # sync if need be
-    - name: Sync test resources
-      run: |
-        bin/viash run \
-          -p native \
-          src/download/sync_test_resources/config.vsh.yaml -- \
-          --input $s3_bucket \
-          --delete
-        tree resources_test/ -L 3
+        s3_bucket: $s3_bucket
+        dest_path: resources_test
+        cache_key_prefix: resources_test__
 
     - name: Get changed files
       id: changed-files
-      uses: tj-actions/changed-files@v34.5.0
+      uses: tj-actions/changed-files@v36.1.0
       with:
         separator: ";"
         diff_relative: true
 
-    # store component locations
-    - name: Set matrix to only run tests for components that had their config or resources changed.
-      id: set_matrix
+    - id: ns_list
+      uses: viash-io/viash-actions/ns-list@v3
+      with:
+        platform: docker
+        format: json
+
+    - id: ns_list_filtered
+      uses: viash-io/viash-actions/project/detect-changed-components@v3
+      with:
+        input_file: "${{ steps.ns_list.outputs.output_file }}"
+
+    - id: set_matrix
       run: |
-        IFS=$';' read -a changed_files <<< "${{ steps.changed-files.outputs.all_changed_files }}"
-        echo "Changed files: "${changed_files[*]}""
-        readarray -t components < <(bin/viash ns list -p docker --format json | jq -c '[ .[] |
-                                                                                          (.info.config | capture("^(?<dir>.*\/)").dir) as $dir | 
-                                                                                          { "name": .functionality.name, 
-                                                                                            "config": .info.config, 
-                                                                                            "resources": ([.info.config] + 
-                                                                                                          ([.functionality.resources[].path?, 
-                                                                                                            .functionality.test_resources[].path?] | 
-                                                                                                            map($dir + .)
-                                                                                                            )
-                                                                                                          )
-                                                                                          }
-                                                                                        ][]')
-        declare -a result_array_matrix=()
-        for component in "${components[@]}"; do
-          readarray -t resources < <(jq -cr '.resources[]' <<< "$component")
-          for resource_rel_path in "${resources[@]}"; do
-            resource_project_path=$(realpath --relative-to="$GITHUB_WORKSPACE" "$resource_rel_path")
-            echo "Checking path $resource_project_path"
-            if [[ " ${changed_files[*]} " =~ " ${resource_project_path} " || "$GITHUB_REF" == "refs/heads/main" || "${{ contains(github.event.head_commit.message, 'ci force') }}" == "true" ]]; then
-              result_array_matrix+="$component"
-              break
-            fi
-          done
-        done
-        json=$(jq -cs '.' <<< "${result_array_matrix[*]}")
-        echo "matrix=$json" >> $GITHUB_OUTPUT
+        echo "matrix=$(jq -c '[ .[] | 
+          { 
+            "name": (.functionality.namespace + "/" + .functionality.name),
+            "config": .info.config,
+            "dir": .info.config | capture("^(?<dir>.*\/)").dir
+          }
+        ]' ${{ steps.ns_list_filtered.outputs.output_file }} )" >> $GITHUB_OUTPUT
 
   # phase 2
   viash_test:
-    needs: list_components
-    if: ${{ needs.list_components.outputs.matrix != '[]' && needs.list_components.outputs.matrix != '' }}
+    needs: list
+    if: ${{ needs.list.outputs.matrix != '[]' && needs.list.outputs.matrix != '' }}
     runs-on: ubuntu-latest
 
     strategy:
       fail-fast: false
       matrix:
-        component: ${{ fromJson(needs.list_components.outputs.matrix) }}
+        component: ${{ fromJson(needs.list.outputs.matrix) }}
 
     steps:
     - uses: actions/checkout@v3
 
-    - name: Fetch viash
-      run: |
-        bin/init -n
-        bin/viash -h
+    - uses: viash-io/viash-actions/setup@v3
 
     # use cache
     - name: Cache resources data
-      uses: actions/cache@v3
-      timeout-minutes: 5
+      id: restore_cache
+      uses: actions/cache/restore@v3
+      env:
+        SEGMENT_DOWNLOAD_TIMEOUT_MINS: 5
       with:
         path: resources_test
-        key: ${{ needs.list_components.outputs.cachehash }}
+        key: ${{ needs.list.outputs.cache_key }}
+
+    - name: Sync if caching failed
+      shell: bash
+      if: steps.restore_cache.outputs.cache-hit != 'true'
+      run: |
+        readarray -t resources < <(viash config view --format json "${{ matrix.component.config }}" | jq -r -c '(.info.config | capture("^(?<dir>.*\/)").dir) as $dir | .functionality.test_resources | map(select(.type == "file")) | map($dir + .path) | unique | .[]')
+        for resource in "${resources[@]}"; do
+          if [[ $resource == *"resources_test"* ]]; then
+            relative_path=${resource#*resources_test/}
+            relative_path_trailing_slash_removed=${relative_path%/}
+            s3_path="s3://openpipelines-data/$relative_path_trailing_slash_removed"
+            s3_lookup=$(AWS_EC2_METADATA_DISABLED=true aws s3 ls --no-sign-request "$s3_path" 2>&1)
+            extra_args=()
+            if [[ $s3_lookup =~ .*/$ ]]; then
+              extra_args+=("--recursive")
+            fi
+            AWS_EC2_METADATA_DISABLED=true \
+            aws s3 cp \
+            "$s3_path" \
+            "$resource" \
+            --no-sign-request \
+            "${extra_args[@]}"
+          fi
+        done
+
+    - name: Remove unused test resources to save space (only when restoring from cache)
+      if: steps.restore_cache.outputs.cache-hit == 'true'
+      shell: bash
+      run: |
+        readarray -t resources < <(viash config view --format json "${{ matrix.component.config }}" | jq -r -c '(.info.config | capture("^(?<dir>.*\/)").dir) as $dir | .functionality.test_resources | map(select(.type == "file")) | map($dir + .path) | unique | .[]')
+        to_not_remove=()
+        for resource in "${resources[@]}"; do
+          if [[ $resource == *"resources_test"* ]]; then
+            relative_path=${resource#*resources_test/}
+            relative_path_trailing_slash_removed=${relative_path%/}
+            to_not_remove+=("-path" "./resources_test/$relative_path_trailing_slash_removed" "-prune" "-o")
+          fi
+        done
+        # Remove last prune and -o
+        if (( ${#errors[@]} )); then
+          unset 'to_not_remove[${#to_not_remove[@]}-1]'
+          unset 'to_not_remove[${#to_not_remove[@]}-1]'
+          to_not_remove+=( "(" "${to_not_remove[@]}" ")" "-prune" "-o")
+        fi
+        find ./resources_test/ "${to_not_remove[@]}" -type f -exec rm {} +
+
+    - name: Login to the nvidia container registry
+      uses: docker/login-action@v2
+      env: 
+          NVIDIA_PASSWORD: ${{ secrets.NVIDIA_PASSWORD }}
+      if: ${{ env.NVIDIA_PASSWORD != '' }}
+      with:
+        registry: nvcr.io
+        username: $oauthtoken
+        password: ${{ env.NVIDIA_PASSWORD }}
 
     - name: Run test
       timeout-minutes: 30
       run: |
-        bin/viash test -p docker ${{ matrix.component.config }} \
-         -c '.functionality.requirements.cpus := 2' \
-         -c '.functionality.requirements.memory := "5gb"'
+        viash test \
+          "${{ matrix.component.config }}" \
+          --cpus 2 \
+          --memory "5gb"
 

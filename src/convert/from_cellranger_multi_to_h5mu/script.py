@@ -5,11 +5,13 @@ import scanpy
 import pandas as pd
 import mudata
 from scirpy.io import read_10x_vdj
+from collections import defaultdict
 ## VIASH START
 par = {
     "input": "resources_test/10x_5k_anticmv/processed/10x_5k_anticmv.cellranger_multi.output.output",
     "output": "foo.h5mu",
-    "uns_metrics": "metrics_cellranger"
+    "uns_metrics": "metrics_cellranger",
+    "output_compression": "gzip"
 }
 ## VIASH END
 
@@ -37,19 +39,19 @@ def gather_input_data(dir: Path):
         if not required_subfolder in folder_contents:
             raise ValueError(f"Input folder must contain the subfolder {required_subfolder} please make "
                                "sure that the specified input folder is a valid cellranger multi output.")
-    
+
     multi_dir = dir / 'multi'
     for library_type in multi_dir.iterdir():
         if not library_type.is_dir():
             logger.warning("%s is not a directory. Contents of the multi folder "
-                           "must be directories to be recognized as valid input data", 
+                           "must be directories to be recognized as valid input data",
                            library_type)
             continue
         if library_type.name not in POSSIBLE_LIBRARY_TYPES:
             raise ValueError(f"Contents of the 'multi' folder must be found one of the following: {','.join(POSSIBLE_LIBRARY_TYPES)}.")
 
         found_input[library_type.name] = library_type
-    
+
     per_sample_outs_dir = dir / 'per_sample_outs'
     metric_summaries = list(per_sample_outs_dir.glob('*/metrics_summary.csv'))
     if len(metric_summaries) > 1:
@@ -73,7 +75,21 @@ def process_counts(counts_folder: Path):
 
     # generate output
     logger.info("Convert to mudata")
-    return mudata.MuData(adata)
+
+    def modality_name_factory(library_type):
+        return ("".join(library_type.replace("-", "_").split())).lower()
+
+    feature_types = defaultdict(modality_name_factory, {
+            "Gene Expression": "rna",
+            "Peaks": "atac",
+            "Antibody Capture": "prot",
+            "VDJ": "vdj",
+            "VDJ-T": "vdj_t",
+            "VDJ-B": "vdj_b",
+            "CRISPR Guide Capture": "gdo",
+            "Multiplexing Capture": "hto"
+        })
+    return mudata.MuData(adata, feature_types=feature_types)
 
 def process_metrics_summary(mudata: mudata.MuData, metrics_file: Path):
     def read_percentage(val):
@@ -82,18 +98,18 @@ def process_metrics_summary(mudata: mudata.MuData, metrics_file: Path):
         except (AttributeError, ValueError):
             return val
 
-    metrics_summary = pd.read_csv(metrics_file, 
+    metrics_summary = pd.read_csv(metrics_file,
                                   decimal=".",
                                   quotechar='"',
                                   thousands=",").applymap(read_percentage)
-    
+
     mudata.uns[par["uns_metrics"]] = metrics_summary
-    for colname, coldata in metrics_summary.iteritems():
+    for colname, coldata in metrics_summary.items():
         try:
-            new_column = coldata.astype({colname: "category"}, copy=True)
-            new_column.cat.categories = new_column.cat.categories.astype(str)
+            new_column = coldata.astype(str, copy=True).astype({colname: "category"})
             metrics_summary[colname] = new_column
         except (ValueError, TypeError):
+            logger.warning(f"Could not store column {colname} from metrics.")
             pass
     return mudata
 
@@ -120,7 +136,7 @@ def get_modalities(input_data):
         try:
             parser_function = dispatcher[modality_name]
         except KeyError as e:
-            raise ValueError("This component does not support the " 
+            raise ValueError("This component does not support the "
                              f"parsing of the modality '{modality_name}' yet.") from e
         mudata_file = parser_function(mudata_file, modality_data_path)
     return mudata_file
@@ -130,7 +146,7 @@ def main():
     input_data = gather_input_data(cellranger_multi_dir)
     result = get_modalities(input_data)
     logger.info("Writing %s", par["output"])
-    result.write_h5mu(par["output"])
+    result.write_h5mu(par["output"], compression=par["output_compression"])
 
 if __name__ == "__main__":
     main()

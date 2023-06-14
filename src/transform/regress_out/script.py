@@ -1,5 +1,5 @@
 import scanpy as sc
-import muon as mu
+import mudata as mu
 import multiprocessing
 import logging
 from sys import stdout
@@ -32,12 +32,12 @@ if (
     mod = par["modality"]
     logger.info("Regress out variables on modality %s", mod)
     data = mdata.mod[mod]
-    
+
     sc.pp.regress_out(
-        data, 
-        keys=par["obs_keys"], 
+        data,
+        keys=par["obs_keys"],
         n_jobs=multiprocessing.cpu_count() - 1
     )
 
 logger.info("Writing to file")
-mdata.write(filename=par["output"])
+mdata.write_h5mu(filename=par["output"], compression=par["output_compression"])

@@ -14,7 +14,7 @@ logger.addHandler(console_handler)
 
 ## VIASH START
 meta = {
-    'executable': 'target/docker/convert/from_h5mu_to_h5ad/from_h5mu_to_h5ad'
+    'executable': 'target/docker/convert/from_h5mu_to_h5ad/from_h5mu_to_h5ad',
     'resources_dir': 'resources_test'
 }
 ## VIASH END
@@ -29,6 +29,7 @@ cmd_pars = [
     "--modality", "rna",
     "--input", input,
     "--output", output,
+    "--output_compression", "gzip"
 ]
 out = subprocess.check_output(cmd_pars).decode("utf-8")
 

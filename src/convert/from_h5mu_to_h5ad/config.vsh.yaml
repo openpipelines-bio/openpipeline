@@ -25,7 +25,7 @@ functionality:
       description: Output AnnData file.
       default: output.h5ad
       direction: output
-    - name: "--compression"
+    - name: "--output_compression"
       type: string
       description: The compression format to be used on the final h5ad object.
       default: "gzip"
@@ -39,11 +39,13 @@ functionality:
     - path: ../../../resources_test/pbmc_1k_protein_v3
 platforms:
   - type: docker
-    image: python:3.8
+    image: python:3.8-slim
     setup:
+      - type: apt
+        packages: 
+          - procps
       - type: python
         packages:
-          - muon
           - mudata~=0.2.0
           - anndata~=0.8.0
   - type: nextflow

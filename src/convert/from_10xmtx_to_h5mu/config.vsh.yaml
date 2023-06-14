@@ -21,6 +21,11 @@ functionality:
       description: Output h5mu file.
       example: output.h5mu
       direction: output
+    - name: "--output_compression"
+      type: string
+      choices: ["gzip", "lzf"]
+      required: false
+      example: "gzip"
   resources:
     - type: python_script
       path: script.py
@@ -30,11 +35,14 @@ functionality:
     - path: ../../../resources_test/pbmc_1k_protein_v3
 platforms:
   - type: docker
-    image: python:3.8
+    image: python:3.8-slim
     setup:
+      - type: apt
+        packages: 
+          - procps
       - type: python
         packages:
-          - scanpy
+          - scanpy~=1.9.2
           - mudata~=0.2.0
           - anndata~=0.8.0
   - type: nextflow

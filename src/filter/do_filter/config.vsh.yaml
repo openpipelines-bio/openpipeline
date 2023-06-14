@@ -29,7 +29,7 @@ functionality:
       
     - name: "--var_filter"
       type: string
-      default: "filter_with_x"
+      example: "filter_with_x"
       multiple: true
       description: Which .var columns to use to filter the observations by.
     
@@ -40,6 +40,13 @@ functionality:
       direction: output
       example: output.h5mu
 
+    - name: "--output_compression"
+      type: string
+      description: The compression format to be used on the output h5mu object.
+      choices: ["gzip", "lzf"]
+      required: false
+      example: "gzip"
+
   resources:
     - type: python_script
       path: script.py
@@ -49,11 +56,17 @@ functionality:
     - path: ../../../resources_test/pbmc_1k_protein_v3
 platforms:
   - type: docker
-    image: python:3.8
+    image: python:3.9-slim
     setup:
+      - type: apt
+        packages: 
+          - procps
       - type: python
         packages:
-          - muon
           - mudata~=0.2.0
           - anndata~=0.8.0
+    test_setup:
+      - type: python
+        packages:
+          - viashpy~=0.2.1
   - type: nextflow

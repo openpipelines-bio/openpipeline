@@ -51,7 +51,8 @@ class TestAddId(TestCase):
         self._run_and_check_output([
                     "--input", self.temp_h5mu.name,
                     "--output", "with_id.h5mu",
-                    "--input_id", "test_id"
+                    "--input_id", "test_id",
+                    "--output_compression", "gzip"
                     ])
         self.assertTrue(Path("with_id.h5mu").is_file())
         input_data = read_h5mu(self.temp_h5mu.name)
@@ -72,7 +73,7 @@ class TestAddId(TestCase):
         output_data = read_h5mu("with_id.h5mu")
         self.assertIn("test_key", output_data.obs.columns.to_list())
         for mod_data in output_data.mod.values():
-             self.assertIn("test_key", mod_data.obs.columns.to_list())
+            self.assertIn("test_key", mod_data.obs.columns.to_list())
         self.assertSetEqual({"test_id"}, set(output_data.obs["test_key"].to_list()))
         pd.testing.assert_index_equal(output_data.obs.index, input_data.obs.index)
 

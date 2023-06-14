@@ -1,4 +1,4 @@
-import muon as mu
+import mudata as mu
 import numpy as np
 import logging
 from sys import stdout
@@ -35,21 +35,24 @@ logger.info("Processing modality '%s'", mod)
 obs_filt = np.repeat(True, mdata.mod[mod].n_obs)
 var_filt = np.repeat(True, mdata.mod[mod].n_vars)
 
+par["obs_filter"] = par["obs_filter"] if par["obs_filter"] else []
+par["var_filter"] = par["var_filter"] if par["var_filter"] else []
+
 for obs_name in par["obs_filter"]:
     logger.info("Filtering modality '%s' observations by .obs['%s']", mod, obs_name)
+    if not obs_name in mdata.mod[mod].obs:
+        raise ValueError(f".mod[{mod}].obs[{obs_name}] does not exist.")
     if obs_name in mdata.mod[mod].obs:
         obs_filt &= mdata.mod[mod].obs[obs_name]
-    else:
-        logger.warning(".mod['%s'].obs['%s'] does not exist. Skipping.", mod, obs_name)
 
 for var_name in par["var_filter"]:
-    logger.info("Filtering modality '%s' variables by .var['%s']", mod, obs_name)
+    logger.info("Filtering modality '%s' variables by .var['%s']", mod, var_name)
+    if not var_name in mdata.mod[mod].var:
+        raise ValueError(f".mod[{mod}].var[{var_name}] does not exist.")
     if var_name in mdata.mod[mod].var:
         var_filt &= mdata.mod[mod].var[var_name]
-    else:
-        logger.warning(".mod['%s'.var['%s'] does not exist. Skipping.", mod, obs_name)
 
 mdata.mod[mod] = mdata.mod[mod][obs_filt, var_filt].copy()
 
 logger.info("Writing h5mu to file %s.", par["output"])
-mdata.write_h5mu(par["output"])
+mdata.write_h5mu(par["output"], compression=par["output_compression"])

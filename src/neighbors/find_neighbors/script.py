@@ -1,4 +1,4 @@
-import muon as mu
+import mudata as mu
 import scanpy as sc
 import logging
 from sys import stdout
@@ -32,7 +32,7 @@ logger.info("Computing a neighborhood graph on modality %s", mod)
 adata = mdata.mod[mod]
 neighbors = sc.Neighbors(adata)
 neighbors.compute_neighbors(
-    n_neighbors=par["num_neighbors"], 
+    n_neighbors=par["num_neighbors"],
     use_rep=par["obsm_input"],
     metric=par["metric"],
     random_state=par["seed"],
@@ -43,7 +43,7 @@ adata.uns[par["uns_output"]] = {
     'connectivities_key': par["obsp_connectivities"],
     'distances_key': par["obsp_distances"],
     'params': {
-        'n_neighbors': neighbors.n_neighbors, 
+        'n_neighbors': neighbors.n_neighbors,
         'method': "umap",
         'random_state': par["seed"],
         'metric': par["metric"],
@@ -55,4 +55,4 @@ adata.obsp[par["obsp_distances"]] = neighbors.distances
 adata.obsp[par["obsp_connectivities"]] = neighbors.connectivities
 
 logger.info("Writing to %s", par["output"])
-mdata.write(filename=par["output"])
+mdata.write_h5mu(filename=par["output"], compression=par["output_compression"])

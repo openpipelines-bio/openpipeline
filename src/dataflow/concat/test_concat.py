@@ -5,13 +5,17 @@ import pandas as pd
 import numpy as np
 import pytest
 import re
+import sys
 
 ## VIASH START
 meta = {
     'executable': './target/docker/dataflow/concat/concat',
     'resources_dir': './resources_test/concat_test_data/',
-    'cpus': 2
+    'cpus': 2,
+    'config': '/home/di/code/openpipeline/src/dataflow/concat/config.vsh.yaml'
 }
+
+
 ## VIASH END
 
 meta['cpus'] = 1 if not meta['cpus'] else meta['cpus']
@@ -64,6 +68,12 @@ def copied_mudata_with_extra_var_column(tmp_path, mudata_copy_with_unique_obs, e
     original_mudata.update_var()
     copied_mudata.mod['rna'].var['test'] = np.nan
     copied_mudata.mod['atac'].var['test'] = np.nan
+    original_mudata.var = original_mudata.var.convert_dtypes(infer_objects=True,
+                                                             convert_integer=True,
+                                                             convert_string=False,
+                                                             convert_boolean=True,
+                                                             convert_floating=False)
+    
     copied_mudata.update_var()
     copied_mudata.update_obs()
     original_mudata_path = tmp_path / "original.h5mu"
@@ -84,7 +94,8 @@ def test_concatenate_samples_with_same_observation_ids_raises(run_component):
                 "--input", input_sample1_file,
                 "--output", "concat.h5mu",
                 "--other_axis_mode", "move",
-                "---cpus", str(meta["cpus"])
+                "---cpus", str(meta["cpus"]),
+                "--output_compression", "gzip"
                 ])
     re.search(r"ValueError: Observations are not unique across samples\.",
             err.value.stdout.decode('utf-8'))
@@ -239,7 +250,7 @@ def test_concat_different_columns_per_modality_and_per_sample(run_component, mud
     assert concatenated_data.var.loc['chr1:3094399-3095523']['genome'] == 'mm10'
     assert concatenated_data.mod['atac'].var.loc['chr1:3094399-3095523']['genome'] == 'mm10'
 
-@pytest.mark.parametrize("exta_var_column_value,expected", [("bar", "bar"), (True, "True")])
+@pytest.mark.parametrize("exta_var_column_value,expected", [("bar", "bar"), (True, True), (0.1, 0.1), (np.nan, pd.NA)])
 @pytest.mark.parametrize("mudata_copy_with_unique_obs",
                           [input_sample1_file],
                           indirect=["mudata_copy_with_unique_obs"])
@@ -260,9 +271,13 @@ def test_concat_remove_na(run_component, copied_mudata_with_extra_var_column, ex
 
     assert Path("concat.h5mu").is_file() is True
     concatenated_data = md.read("concat.h5mu")
-
-    assert concatenated_data.var.loc['chr1:3094399-3095523']['test'] == expected
-    assert concatenated_data.mod['atac'].var.loc['chr1:3094399-3095523']['test'] == expected
+    
+    if not pd.isna(expected):
+        assert concatenated_data.var.loc['chr1:3094399-3095523']['test'] == expected
+        assert concatenated_data.mod['atac'].var.loc['chr1:3094399-3095523']['test'] == expected
+    else:
+        assert pd.isna(concatenated_data.var.loc['chr1:3094399-3095523']['test'])
+        assert pd.isna(concatenated_data.mod['atac'].var.loc['chr1:3094399-3095523']['test'])
 
     assert pd.isna(concatenated_data.var.loc['ENSMUSG00000051951']['test']) is True
     assert pd.isna(concatenated_data.mod['rna'].var.loc['ENSMUSG00000051951']['test']) is True
@@ -326,6 +341,20 @@ def test_mode_move(run_component, tmp_path):
             assert concatenated_mod.varm == {}
         assert concatenated_mod.obsm == {}
 
+def test_concat_invalid_h5_error_includes_path(run_component, tmp_path):
+    empty_file = tmp_path / "empty.h5mu"
+    empty_file.touch()
+    with pytest.raises(subprocess.CalledProcessError) as err:
+        run_component([
+                "--input_id", "mouse,empty",
+                "--input", input_sample1_file,
+                "--input", empty_file,
+                "--output", "concat.h5mu",
+                "--other_axis_mode", "move",
+                "---cpus", str(meta["cpus"])
+                ])
+    assert re.search(rf"ValueError: Failed to load .*{str(empty_file.name)}\.",
+                     err.value.stdout.decode('utf-8'))
 
 if __name__ == '__main__':
-    pytest.main([__file__], plugins=["viashpy"])
+    sys.exit(pytest.main([__file__], plugins=["viashpy"]))

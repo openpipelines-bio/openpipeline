@@ -22,6 +22,12 @@ functionality:
       description: Output h5mu file.
       direction: output
       required: true
+    - name: "--output_compression"
+      type: string
+      description: The compression format to be used on the output h5mu object.
+      choices: ["gzip", "lzf"]
+      required: false
+      example: "gzip"
     - name: "--modality"
       type: string
       default: "rna"
@@ -56,14 +62,17 @@ functionality:
     - path: ../../../resources_test/pbmc_1k_protein_v3/pbmc_1k_protein_v3_mms.h5mu
 platforms:
   - type: docker
-    image: python:3.10
+    image: python:3.10-slim
     setup:
+      - type: apt
+        packages: 
+          - procps
       - type: python
         packages:
           - mudata~=0.2.0
           - anndata~=0.8.0
           - harmonypy~=0.0.6
-          - scanpy
+          - scanpy~=1.9.2
   - type: nextflow
     directives:
       label: [highmem, highcpu]

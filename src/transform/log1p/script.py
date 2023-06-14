@@ -1,5 +1,5 @@
 import scanpy as sc
-import muon as mu
+import mudata as mu
 import logging
 from sys import stdout
 
@@ -9,6 +9,7 @@ par = {
     "output": "output.h5mu",
     "base": None,
     "modality": "rna",
+    "output_layer": "foo",
 }
 meta = {"functionality_name": "lognorm"}
 ## VIASH END
@@ -32,6 +33,7 @@ new_layer = sc.pp.log1p(data,
                         copy=True if par['output_layer'] else False)
 if new_layer:
     data.layers[par['output_layer']] = new_layer.X
+    data.uns['log1p'] = new_layer.uns['log1p']
 
 logger.info("Writing to file %s", par["output"])
-mdata.write(filename=par["output"])
+mdata.write_h5mu(filename=par["output"], compression=par["output_compression"])

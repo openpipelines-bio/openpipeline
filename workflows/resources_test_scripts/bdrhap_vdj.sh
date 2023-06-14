@@ -61,7 +61,7 @@ vdj_version: human
 HERE
 
 # run bd rhapsody pipeline
-bin/nextflow \
+nextflow \
   run . \
   -main-script workflows/ingestion/bd_rhapsody/main.nf \
   -resume \

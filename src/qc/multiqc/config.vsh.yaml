@@ -28,8 +28,11 @@ functionality:
   #     path: test.sh
 platforms:
   - type: docker
-    image: python:3.8
+    image: python:3.8-slim
     setup:
+      - type: apt
+        packages: 
+          - procps
       - type: python
         packages: [ multiqc ]
   - type: nextflow

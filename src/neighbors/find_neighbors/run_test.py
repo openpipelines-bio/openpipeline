@@ -1,6 +1,6 @@
 import subprocess
 from os import path
-import muon as mu
+import mudata as mu
 import logging
 from sys import stdout
 
@@ -27,7 +27,8 @@ cmd_pars = [
     "--obsm_input", "X_pca",
     "--uns_output", "foo_neigh",
     "--obsp_distances", "bar_dist",
-    "--obsp_connectivities", "baz_conn"
+    "--obsp_connectivities", "baz_conn",
+    "--output_compression", "gzip"
 ]
 out = subprocess.check_output(cmd_pars).decode("utf-8")
 

@@ -51,16 +51,8 @@ target/docker/convert/from_10xh5_to_h5mu/from_10xh5_to_h5mu \
   --input_metrics_summary "${OUT}_metrics_summary.csv" \
   --output "${OUT}_raw_feature_bc_matrix.h5mu"
 
-# Convert h5mu to h5ad
-python <<HEREDOC
-import muon as mu
-h5mu_data = mu.read_h5mu("${OUT}_filtered_feature_bc_matrix.h5mu")
-h5mu_data.mod['rna'].write("${OUT}_filtered_feature_bc_matrix_rna.h5ad")
-h5mu_data.mod['prot'].write("${OUT}_filtered_feature_bc_matrix_prot.h5ad")
-HEREDOC
-
 # run single sample
-NXF_VER=21.10.6 bin/nextflow \
+NXF_VER=21.10.6 nextflow \
   run . \
   -main-script workflows/multiomics/rna_singlesample/main.nf \
   -profile docker \
@@ -71,7 +63,7 @@ NXF_VER=21.10.6 bin/nextflow \
   -resume
 
 # run multisample
-NXF_VER=21.10.6 bin/nextflow \
+NXF_VER=21.10.6 nextflow \
   run . \
   -main-script workflows/multiomics/rna_multisample/main.nf \
   -profile docker \
@@ -82,7 +74,7 @@ NXF_VER=21.10.6 bin/nextflow \
   -resume
 
 # run integration
-NXF_VER=21.10.6 bin/nextflow \
+NXF_VER=21.10.6 nextflow \
   run . \
   -main-script workflows/multiomics/integration/main.nf \
   -profile docker \

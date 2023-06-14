@@ -26,9 +26,12 @@ cmd_pars = [
     meta["executable"],
     "--input", input,
     "--sample_sheet", sample_sheet,
-    "--output", output,
-    "--memory", "4" 
+    "--output", output
 ]
+if meta['cpus']:
+    cmd_pars.extend(["---cpus", str(meta['cpus'])])
+if meta['memory_gb']:
+    cmd_pars.extend(["---memory", f"{meta['memory_gb']}GB"])
 subprocess.check_call(cmd_pars, encoding="utf-8", timeout=500)
 
 logger.info("> Check if file exists")

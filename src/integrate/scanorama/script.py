@@ -12,14 +12,14 @@ mod_name = par["modality"]
 mod = mdata.mod[mod_name]
 
 # Integration.
-scanorama_integrate(mod, 
-                    key=par["obs_batch"], 
+scanorama_integrate(mod,
+                    key=par["obs_batch"],
                     basis=par["obsm_input"],
                     adjusted_basis=par["obsm_output"],
                     knn=par["knn"],
-                    alpha=par["alpha"], 
+                    alpha=par["alpha"],
                     sigma=par["sigma"],
                     approx=par["approx"],
                     batch_size=par["batch_size"] )
 
-mdata.write(par["output"], compression = "gzip")
+mdata.write_h5mu(par["output"], compression=par["output_compression"])

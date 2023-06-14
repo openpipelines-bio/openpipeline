@@ -1,0 +1,33 @@
+info:
+  slots:
+    mod:
+      - name: rna
+        required: true
+        description: Gene expression counts.
+        slots:
+          var: &global_var
+            - name: gene_symbol 
+              type: string
+              description: Identification of the gene.
+              required: true
+            - name: feature_types
+              type: string
+              description: The full name of the modality.
+              required: true
+            - name: genome
+              type: string
+              description: Reference that was used to generate the data.
+              required: true
+      - name: prot
+        required: false
+        description: Protein abundancy
+        slots:
+          var: *global_var
+      - name: "vdj"
+        required: false
+        description: VDJ transcript counts
+        slots:
+          var: *global_var
+
+
+
