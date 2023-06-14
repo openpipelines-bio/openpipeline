@@ -3,9 +3,9 @@ functionality:
   namespace: mapping
   description: Align fastq files using STAR.
   authors:
-    - __merge__: ../../authors/angela_pisco.yaml
+    - __merge__: /src/authors/angela_pisco.yaml
       roles: [ author ]
-    - __merge__: ../../authors/robrecht_cannoodt.yaml
+    - __merge__: /src/authors/robrecht_cannoodt.yaml
       roles: [ author, maintainer ]
   # generated the argument groups using `utils/process_params.R`
   __merge__: [., argument_groups.yaml]

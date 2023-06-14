@@ -5,7 +5,7 @@ functionality:
   description: |
     Remove observations and variables based on specified .obs and .var columns.
   authors:
-    - __merge__: ../../authors/robrecht_cannoodt.yaml
+    - __merge__: /src/authors/robrecht_cannoodt.yaml
       roles: [ maintainer, contributor ]
   arguments:
     # input
