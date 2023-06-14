@@ -40,9 +40,9 @@ The old behavior of the `full_pipeline` can be obtained by running `full_pipelin
 
 * `schemas`: Added schema file for Viash configs (PR #436).
 
-* `schemas`: Added schema file for file format specification files (PR #436).
-
 * `schemas`: Refactor author import paths (PR #436).
+
+* `schemas`: Added schema file for file format specification files (PR #437).
 
 
 ## MAJOR CHANGES
