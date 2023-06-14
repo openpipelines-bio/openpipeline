@@ -12,7 +12,7 @@ definitions:
         description: "Definition of the platforms"
         type: "array"
         items:
-          $ref: "schemadefs_viash.yaml#/definitions/Platforms"
+          $ref: "defs_viash.yaml#/definitions/Platforms"
     required:
     - "functionality"
     additionalProperties: false
@@ -71,14 +71,14 @@ definitions:
                 enum: [maintainer, author, contributor]
       status:
         description: "Allows setting a component to active, deprecated or disabled."
-        $ref: "schemadefs_viash.yaml#/definitions/Status"
+        $ref: "defs_viash.yaml#/definitions/Status"
       requirements:
         description: "@[Computational requirements](computational_requirements) related\
           \ to running the component. \n`cpus` specifies the maximum number of (logical)\
           \ cpus a component is allowed to use., whereas\n`memory` specifies the maximum\
           \ amount of memory a component is allowed to allicate. Memory units must\
           \ be\nin B, KB, MB, GB, TB or PB."
-        $ref: "schemadefs_viash.yaml#/definitions/ComputationalRequirements"
+        $ref: "defs_viash.yaml#/definitions/ComputationalRequirements"
       resources:
         description: "@[Resources](resources) are files that support the component.\
           \ The first resource should be @[a script](scripting_languages) that will\
@@ -98,7 +98,7 @@ definitions:
           \ should be made executable.\n"
         type: "array"
         items:
-          $ref: "schemadefs_viash.yaml#/definitions/Resource"
+          $ref: "defs_viash.yaml#/definitions/Resource"
       test_resources:
         description: "One or more @[scripts](scripting_languages) to be used to test\
           \ the component behaviour when `viash test` is invoked. Additional files\
@@ -108,7 +108,7 @@ definitions:
           \ Testing](unit_testing) for more info."
         type: "array"
         items:
-          $ref: "schemadefs_viash.yaml#/definitions/Resource"
+          $ref: "defs_viash.yaml#/definitions/Resource"
       argument_groups:
         description: "A grouping of the @[arguments](argument), used to display the\
           \ help message.\n\n - `name: foo`, the name of the argument group. \n -\
@@ -117,7 +117,7 @@ definitions:
           \ list of the arguments names.\n\n"
         type: "array"
         items:
-          $ref: "schemadefs_viash.yaml#/definitions/ArgumentGroup"
+          $ref: "defs_viash.yaml#/definitions/ArgumentGroup"
       description:
         description: "A description of the component. This will be displayed with\
           \ `--help`."
@@ -139,7 +139,7 @@ definitions:
           \ - @[boolean_true](arg_boolean_true)\n - @[boolean_false](arg_boolean_false)\n"
         type: "array"
         items:
-          $ref: "schemadefs_viash.yaml#/definitions/Argument"
+          $ref: "defs_viash.yaml#/definitions/Argument"
     required:
     - "name"
     additionalProperties: false
@@ -202,7 +202,7 @@ definitions:
         $ref: "#/definitions/Merge"
       direction:
         description: Makes this argument an `input` or an `output`, as in does the file/folder needs to be read or written. `input` by default.
-        $ref: 'schemadefs_viash.yaml#/definitions/Direction'
+        $ref: 'defs_viash.yaml#/definitions/Direction'
       info:
         description: 'Structured information. Can be any shape: a string, vector, map or even nested map.'
         type: object
@@ -217,9 +217,9 @@ definitions:
     required: [label, file_format]
     properties:
       label:
-        $ref: "schemadefs_common.yaml#/definitions/Label"
+        $ref: "defs_common.yaml#/definitions/Label"
       summary: 
-        $ref: "schemadefs_common.yaml#/definitions/Summary"
+        $ref: "defs_common.yaml#/definitions/Summary"
       file_format:
         oneOf:
           - type: object

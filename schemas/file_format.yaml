@@ -4,7 +4,7 @@ description: A file format specification file.
 type: "object"
 properties:
   info:
-    $ref: "schemadefs_common.yaml#/definitions/FileInfo"
+    $ref: "defs_common.yaml#/definitions/FileInfo"
   create_parent:
     description: "If the output filename is a path and it does not exist, create\
       \ it before executing the script (only for `direction: output`)."
@@ -51,6 +51,6 @@ properties:
       \ an error will be produced if no value was provided. `false` by default."
     type: "boolean"
   __merge__:
-    $ref: "schemadefs_common.yaml#/definitions/Merge"
+    $ref: "defs_common.yaml#/definitions/Merge"
 required:  [type, info]
 additionalProperties: false
