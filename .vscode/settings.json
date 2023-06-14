@@ -1,9 +1,9 @@
 {
   "yaml.schemas": {
-    // "src/schemas/schema_component_api.yaml": "src/**/api/comp_*.yaml",
-    // "src/schemas/schema_file_api.yaml": "src/**/api/file_*.yaml",
-    "src/schemas/schema_author.yaml": "src/authors/**.yaml",
-    "src/schemas/schema_viash_config.yaml": "src/**/*.vsh.yaml"
+    // "schemas/schema_component_api.yaml": "src/**/api/comp_*.yaml",
+    // "schemas/schema_file_api.yaml": "src/**/api/file_*.yaml",
+    "schemas/author.yaml": "src/authors/**.yaml",
+    "schemas/viash_config.yaml": "src/**/*.vsh.yaml"
   },
   "files.watcherExclude": {
     "**/target": true

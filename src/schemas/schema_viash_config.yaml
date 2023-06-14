@@ -1,2 +1,0 @@
-oneOf:
-  - $ref: "schemadefs_common.yaml#/definitions/Config"
