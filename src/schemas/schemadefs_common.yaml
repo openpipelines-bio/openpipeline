@@ -211,7 +211,88 @@ definitions:
         type: boolean
     required: [name, __merge__, direction, required]
     additionalProperties: false
+  FileInfo:
+    description: 'File format metadata'
+    type: object
+    required: [label, file_format]
+    properties:
+      label:
+        $ref: "schemadefs_common.yaml#/definitions/Label"
+      summary: 
+        $ref: "schemadefs_common.yaml#/definitions/Summary"
+      file_format:
+        oneOf:
+          - type: object
+            required: [type]
+            additionalProperties: false
+            properties:
+              type:
+                const: h5ad
+              X:
+                $ref: "#/definitions/AnnDataSlot"
+              layers:
+                type: array
+                items:
+                  $ref: "#/definitions/AnnDataSlot"
+              var:
+                type: array
+                items:
+                  $ref: "#/definitions/AnnDataSlot"
+              varm:
+                type: array
+                items:
+                  $ref: "#/definitions/AnnDataSlot"
+              varp:
+                type: array
+                items:
+                  $ref: "#/definitions/AnnDataSlot"
+              obs:
+                type: array
+                items:
+                  $ref: "#/definitions/AnnDataSlot"
+              obsm:
+                type: array
+                items:
+                  $ref: "#/definitions/AnnDataSlot"
+              obsp:
+                type: array
+                items:
+                  $ref: "#/definitions/AnnDataSlot"
+              uns:
+                type: array
+                items:
+                  oneOf:
+                    - $ref: "#/definitions/AnnDataSlot"
+                    - $ref: "#/definitions/AnnDataSlotObject"
+          - type: object
+            required: [type, mod]
+            additionalProperties: false
+            properties:
+              type:
+                const: h5mu
+              mod:
+                type: object
+                additionalProperties: false
+                properties:
+                  rna:
+                    "#/definitions/AnnData"
+                  atac:
+                    "#/definitions/AnnData"
+                  prot:
+                    "#/definitions/AnnData"
+                  vdj:
+                    "#/definitions/AnnData"
+                  vdj_t:
+                    "#/definitions/AnnData"
+                  vdj_b:
+                    "#/definitions/AnnData"
+                  gdo:
+                    "#/definitions/AnnData"
+                  hto:
+                    "#/definitions/AnnData"
   MuData:
+    required: [mod]
+    additionalProperties: false
     properties:
       mod:
         type: object
@@ -234,6 +315,7 @@ definitions:
           hto:
             "#/definitions/AnnData"
   AnnData:
+    additionalProperties: false
     properties:
       X:
         $ref: "#/definitions/AnnDataSlot"

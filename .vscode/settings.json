@@ -1,7 +1,7 @@
 {
   "yaml.schemas": {
     // "src/schemas/schema_component_api.yaml": "src/**/api/comp_*.yaml",
-    // "src/schemas/schema_file_api.yaml": "src/**/api/file_*.yaml",
+    "src/schemas/schema_file_api.yaml": "src/**/file_*.yaml",
     "src/schemas/schema_author.yaml": "src/authors/**.yaml",
     "src/schemas/schema_viash_config.yaml": "src/**/*.vsh.yaml"
   },
