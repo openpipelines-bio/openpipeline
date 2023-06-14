@@ -6,7 +6,7 @@ functionality:
     be created from the .obsm key suffixed with an underscore and the name of the columns
     of the specified .obsm matrix.
   authors:
-    - __merge__: ../../authors/dries_schaumont.yaml
+    - __merge__: /src/authors/dries_schaumont.yaml
       roles: [ author ]
   argument_groups:
     - name: "MuData Input"

@@ -3,9 +3,9 @@ functionality:
   namespace: reference
   description: Compile a reference into a STAR index compatible with the BD Rhapsody pipeline.
   authors:
-    - __merge__: ../../authors/angela_pisco.yaml
+    - __merge__: /src/authors/angela_pisco.yaml
       roles: [ author ]
-    - __merge__: ../../authors/robrecht_cannoodt.yaml
+    - __merge__: /src/authors/robrecht_cannoodt.yaml
       roles: [ author, maintainer ]
   arguments:
     # inputs

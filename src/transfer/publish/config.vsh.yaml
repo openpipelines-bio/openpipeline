@@ -4,7 +4,7 @@ functionality:
   version: "dev"
   description: Publish an artifact and optionally rename with parameters
   authors:
-    - __merge__: ../../authors/toni_verbeiren.yaml
+    - __merge__: /src/authors/toni_verbeiren.yaml
       roles: [ maintainer ]
   arguments:
     - name: "--input"
