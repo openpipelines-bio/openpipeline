@@ -121,6 +121,24 @@
           
         }
       },
+      "data validition" : {
+        "title": "Data validition",
+        "type": "object",
+        "description": "No description",
+        "properties": {
+          "n_obs_min_count": {
+            "type": "integer",
+            "description": "Minimum number of cells threshold ensuring that every obs_batch category has sufficient observations (cells) for model training.",
+            "default": ""
+          },
+          "n_var_min_count": {
+            "type": "integer",
+            "description": "Minimum number of genes threshold ensuring that every var_input filter has sufficient observations (genes) for model training.",
+            "default": ""
+          }
+          
+        }
+      },
       "nextflow input-output arguments" : {
         "title": "Nextflow input-output arguments",
         "type": "object",
@@ -152,6 +170,9 @@
       },
       {
         "$ref": "#/definitions/learning parameters"
+      },
+      {
+        "$ref": "#/definitions/data validition"
       },
       {
         "$ref": "#/definitions/nextflow input-output arguments"

@@ -34,6 +34,8 @@ The old behavior of the `full_pipeline` can be obtained by running `full_pipelin
 
 * `metadata/move_obsm_to_obs`: Move a matrix from an `.obsm` slot into `.obs` (PR #431).
 
+* `integrate/scvi` validity checks for non-normalized input, obs and vars in order to proceed to training (PR #429).
+
 ## MAJOR CHANGES
 
 * `report/mermaid`: Now used `mermaid-cli` to generate images instead of creating a request to `mermaid.ink`. New `--output_format`, `--width`, `--height` and  `--background_color` arguments were added (PR #419).

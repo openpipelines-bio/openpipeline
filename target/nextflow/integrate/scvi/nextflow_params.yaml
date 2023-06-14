@@ -23,6 +23,10 @@ reduce_lr_on_plateau: true
 lr_factor: 0.6
 lr_patience: 30
 
+# Data validition
+# n_obs_min_count: 123
+# n_var_min_count: 123
+
 # Nextflow input-output arguments
 publish_dir: # please fill in - example: "output/"
 # param_list: "my_params.yaml"
