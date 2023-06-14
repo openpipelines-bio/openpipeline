@@ -4,9 +4,9 @@ functionality:
   description: |
     Split the modalities from a single .h5mu multimodal sample into seperate .h5mu files. 
   authors:
-    - __merge__: ../../authors/dries_schaumont.yaml
+    - __merge__: /src/authors/dries_schaumont.yaml
       roles: [ maintainer ]
-    - __merge__: ../../authors/robrecht_cannoodt.yaml
+    - __merge__: /src/authors/robrecht_cannoodt.yaml
       roles: [ contributor ]
   arguments:
     - name: "--input"

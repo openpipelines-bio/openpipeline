@@ -21,7 +21,7 @@ functionality:
     name: BD Rhapsody
     short_description: A wrapper for the BD Rhapsody Analysis CWL v1.10.1 pipeline
   authors:
-    - __merge__: ../../authors/robrecht_cannoodt.yaml
+    - __merge__: /src/authors/robrecht_cannoodt.yaml
       roles: [ maintainer ]
   argument_groups:
     - name: Inputs
