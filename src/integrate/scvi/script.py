@@ -34,8 +34,8 @@ par = {
     }
 ### VIASH END
 
-#TODO: optionally, move to utils
-# https://github.com/openpipelines-bio/openpipeline/issues/413
+#TODO: optionally, move to qa
+# https://github.com/openpipelines-bio/openpipeline/issues/435
 def check_validity_anndata(adata, layer, obs_batch,
                            n_obs_min_count, n_var_min_count):
     assert check_nonnegative_integers(
