@@ -118,6 +118,8 @@ The old behavior of the `full_pipeline` can be obtained by running `full_pipelin
 
 * `workflows/full_pipeline`: Fix incorrectly named filtering arguments (#372).
 
+* `integrate/scvi`: Fix bug when subsetting using the `var_input` argument (PR #385).
+* 
 * `correction/cellbender_remove_background`: add `obsm_latent_gene_encoding` parameter to store the latent gene representation.
 
 ## MINOR CHANGES
