@@ -128,7 +128,7 @@ functionality:
 platforms:
   - type: docker
   # TODO: increase python version
-    image: python:3.9
+    image: python:3.10
     setup:
       - type: python
         packages:
