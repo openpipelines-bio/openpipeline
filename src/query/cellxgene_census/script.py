@@ -64,7 +64,7 @@ def read_cell_ontology():
     )
 
 
-def get_cell_type_terms():
+def get_cell_type_terms(cell_types):
     logger.info("Reading Cell Ontology OBO")
 
     co = read_cell_ontology()
@@ -85,7 +85,7 @@ def get_cell_type_terms():
     # TODO: can be more pythonic
     lower_hierarchy_cell_of_interest_map = {}
     cell_of_interest_terms = []
-    for cell_type in par["cell_type"]:
+    for cell_type in cell_types:
         logger.info("Locating all child cell types of %s", cell_type)
         node = name_to_id[cell_type]
         lower_hierarchy_cell_of_interest_map.update(
@@ -121,7 +121,7 @@ def get_cell_type_terms():
 def build_census_query(par):
     _query = f'is_primary_data == {par["is_primary_data"]}'
     query_builder = {
-        'cell_type': f' and cell_type_ontology_term_id in {get_cell_type_terms()}',
+        'cell_type': f' and cell_type_ontology_term_id in {get_cell_type_terms(par["cell_type"])}',
         'tissue': f' and tissue in {par["tissue"]}',
         'technology': f' and assay in {par["technology"]}',
         'suspension': f' and suspension_type in {par["suspension"]}',
