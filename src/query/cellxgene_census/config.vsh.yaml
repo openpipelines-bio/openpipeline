@@ -22,12 +22,6 @@ functionality:
           type: string
           default: "rna"
           required: false
-        # TODO: escalate to downloaded version, current pinned to https://github.com/obophenotype/cell-ontology/releases/download/v2023-05-22/cl-base.obo fixed in image download
-        # - name: "--cell_ontology_release"
-        #   description: "Cell Ontology release date. More information: https://github.com/obophenotype/cell-ontology/releases/"
-        #   type: string
-        #   default: "2023-05-22"
-        #   required: false
         - name: "--cellxgene_release"
           description: "CellxGene Census release date. More information: https://chanzuckerberg.github.io/cellxgene-census/cellxgene_census_docsite_data_release_info.html"
           type: string

@@ -22,8 +22,6 @@ cl_obo_folder = "/opt/cellxgene_census_cl_ontology/"
 par = {
     "input_database": "CellxGene",
     "modality": "rna",
-    #TODO: escalate to downloaded version
-    # "cell_ontology_release": "2023-05-22",
     "cellxgene_release": "2023-05-15",
     "species": "homo_sapiens",
     "cell_type": ["mesothelial fibroblast"],
