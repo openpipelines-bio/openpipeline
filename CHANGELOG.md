@@ -44,6 +44,8 @@ The old behavior of the `full_pipeline` can be obtained by running `full_pipelin
 
 * `schemas`: Added schema file for file format specification files (PR #437).
 
+* `query/cellxgene_census`: Query Cellxgene census component and save the results to a MuData file. (PR #433).
+
 ## MAJOR CHANGES
 
 * `report/mermaid`: Now used `mermaid-cli` to generate images instead of creating a request to `mermaid.ink`. New `--output_format`, `--width`, `--height` and  `--background_color` arguments were added (PR #419).
