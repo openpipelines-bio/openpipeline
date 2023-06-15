@@ -30,4 +30,4 @@ def test_cellxgene(run_component):
     assert os.path.exists(OUTPUT_FILE), "Output file does not exist"
 
 if __name__ == '__main__':
-    sys.exit(pytest.main([__file__, "--capture=no"], plugins=["viashpy"]))
+    sys.exit(pytest.main([__file__]))
