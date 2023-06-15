@@ -2,7 +2,6 @@ import sys
 import os
 import pytest
 import mudata as md
-import pandas as pd
 
 ## VIASH START
 meta = {
@@ -42,11 +41,11 @@ def test_cellxgene_extract_metadata_expression(run_component):
         "--modality", "rna",
         "--cellxgene_release", "2023-05-15",
         "--species", "homo_sapiens",
-        "--tissue", "mesothelial fibroblast",
+        "--tissue", "eye",
         "--obs_column_names", "disease",
+        "--cell_type", "neuron",
         "--output", OUTPUT_FILE,
         "--metadata_only", "False"
-
     ])
 
     # check whether file exists
