@@ -63,7 +63,7 @@ workflow run_wf {
     | getWorkflowArguments(key: "clustering")
     | leiden.run(args: [obsm_name: "leiden"])
     | getWorkflowArguments(key: "umap")
-    | umap.run
+    | umap
     | getWorkflowArguments(key: "move_obsm_to_obs_leiden")
     | move_obsm_to_obs.run(
         args: [ obsm_key: "leiden", output_compression: "gzip" ],     
