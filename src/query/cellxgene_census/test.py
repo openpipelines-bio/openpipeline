@@ -58,7 +58,7 @@ def test_cellxgene_extract_metadata_expression(run_component):
     assert "is_primary_data" in obs.columns
     assert "cell_type_ontology_term_id" in obs.columns
     assert "disease" in obs.columns
-    assert "soma_joinid" in var.colums
+    assert "soma_joinid" in var.columns
     assert "feature_id" in var.columns
     assert "cell_type_ontology_term_id" in var.columns
     assert component_data.mod['rna'].n_obs
