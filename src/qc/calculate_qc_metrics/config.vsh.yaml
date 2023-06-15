@@ -21,7 +21,7 @@ functionality:
       - total_counts -> total_{expr_type}
       
   authors:
-    - __merge__: ../../authors/dries_schaumont.yaml
+    - __merge__: /src/authors/dries_schaumont.yaml
       roles: [ author ]
   argument_groups:
     - name: Inputs

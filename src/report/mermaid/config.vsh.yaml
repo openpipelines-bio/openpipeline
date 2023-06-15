@@ -5,7 +5,7 @@ functionality:
   description: |
     Generates a network from mermaid code.
   authors:
-    - __merge__: ../../authors/dries_de_maeyer.yaml
+    - __merge__: /src/authors/dries_de_maeyer.yaml
       roles: [ maintainer ]
   arguments:
     - name: "--input"

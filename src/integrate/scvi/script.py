@@ -32,7 +32,15 @@ par = {
     "model_output": "test/",
     "output_compression": "gzip",
     }
+
+meta = {
+    "resources_dir": 'src/integrate/scvi'
+}
 ### VIASH END
+
+import sys
+sys.path.append(meta['resources_dir'])
+from subset_vars import subset_vars
 
 #TODO: optionally, move to qa
 # https://github.com/openpipelines-bio/openpipeline/issues/435
@@ -54,13 +62,14 @@ def check_validity_anndata(adata, layer, obs_batch,
         f"Anndata has fewer than {n_var_min_count} genes."
 
 
+
 def main():
     mdata = mudata.read(par["input"].strip())
     adata = mdata.mod[par['modality']]
 
     if par['var_input']:
         # Subset to HVG
-        adata = adata[:,adata.var['var_input']].copy()
+        adata = subset_vars(adata, subset_col=par["var_input"])
 
     check_validity_anndata(
         adata, par['input_layer'], par['obs_batch'],

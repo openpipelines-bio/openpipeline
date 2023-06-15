@@ -1,8 +1,9 @@
 import unittest
 import subprocess
-from tempfile import NamedTemporaryFile
-import mudata
 from pathlib import Path
+from tempfile import NamedTemporaryFile
+
+import mudata
 
 ## VIASH START
 meta = {
@@ -10,6 +11,10 @@ meta = {
     'resources_dir': './resources_test/pbmc_1k_protein_v3/'
 }
 ## VIASH END
+
+import sys
+sys.path.append(meta['resources_dir'])
+from subset_vars import subset_vars
 
 input_file = f"{meta['resources_dir']}/pbmc_1k_protein_v3_mms.h5mu"
 
@@ -48,5 +53,23 @@ class TestscVI(unittest.TestCase):
             self.assertTrue(Path("test").is_dir())
             self.assertTrue(Path("test/model.pt").is_file())
 
+
+class TestHVGSubsetting(unittest.TestCase):
+    def test_hvg_subsetting(self):
+        input_data = mudata.read_h5mu(input_file)
+        adata = input_data.mod["rna"]
+
+        old_n_genes = adata.n_vars
+
+        adata.var["highly_variable_features"] = False
+        adata.var.iloc[:old_n_genes // 2, adata.var.columns.get_indexer(["highly_variable_features"])] = True
+
+        adata = subset_vars(adata, subset_col="highly_variable_features")
+
+        # Correct number of genes is subsetted
+        self.assertEqual(adata.n_vars, old_n_genes // 2)
+        # Only HVG are subsetted
+        self.assertEqual(adata.var["highly_variable_features"].all(), True)
+        
 if __name__ == '__main__':
     unittest.main()

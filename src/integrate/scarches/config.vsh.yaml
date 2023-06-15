@@ -4,7 +4,7 @@ functionality:
   version: "dev"
   description: "Performs reference mapping with scArches"
   authors:
-    - __merge__: ../../authors/vladimir_shitov.yaml
+    - __merge__: /src/authors/vladimir_shitov.yaml
   argument_groups:
     - name: Inputs
       arguments:

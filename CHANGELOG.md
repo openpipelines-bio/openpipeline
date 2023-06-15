@@ -36,6 +36,14 @@ The old behavior of the `full_pipeline` can be obtained by running `full_pipelin
 
 * `integrate/scvi` validity checks for non-normalized input, obs and vars in order to proceed to training (PR #429).
 
+* `schemas`: Added schema files for authors (PR #436).
+
+* `schemas`: Added schema file for Viash configs (PR #436).
+
+* `schemas`: Refactor author import paths (PR #436).
+
+* `schemas`: Added schema file for file format specification files (PR #437).
+
 * `query/cellxgene_census`: Cellxgene census component for data intake inti openpipeline (PR #433).
 
 ## MAJOR CHANGES
@@ -48,9 +56,13 @@ The old behavior of the `full_pipeline` can be obtained by running `full_pipelin
 
 * `mapping/multi_star`: Added `--min_success_rate` which causes component to fail when the success rate of processed samples were successful (PR #408).
 
-* `correction/cellbender_remove_background` and `transform/clr`: update muon to 0.1.5 (#PR 428)
+* `correction/cellbender_remove_background` and `transform/clr`: update muon to 0.1.5 (PR #428)
 
-* `ingestion/cellranger_postprocessing`: split integration tests into several workflows (#PR 425).
+* `ingestion/cellranger_postprocessing`: split integration tests into several workflows (PR #425).
+
+* `schemas`: Add schema file for author yamls (PR #436).
+
+* `mapping/multi_star`, `mapping/star_build_reference` and `mapping/star_align`: update STAR from 2.7.10a to 2.7.10b (PR #441).
 
 ## BUG FIXES
 
@@ -110,6 +122,8 @@ The old behavior of the `full_pipeline` can be obtained by running `full_pipelin
 
 * `workflows/full_pipeline`: Fix incorrectly named filtering arguments (#372).
 
+* `integrate/scvi`: Fix bug when subsetting using the `var_input` argument (PR #385).
+* 
 * `correction/cellbender_remove_background`: add `obsm_latent_gene_encoding` parameter to store the latent gene representation.
 
 ## MINOR CHANGES
