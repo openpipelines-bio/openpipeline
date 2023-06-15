@@ -298,7 +298,7 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
     "platform" : "nextflow",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/mapping/htseq_count_to_h5mu",
     "viash_version" : "0.7.4",
-    "git_commit" : "784b3aba8f8449b2b502ce4d174ce2d8c4b9d3ac",
+    "git_commit" : "b17b72c0b0d70e8b0aa113659cac4c7634fb8c35",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))

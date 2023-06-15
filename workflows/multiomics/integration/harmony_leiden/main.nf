@@ -36,7 +36,7 @@ workflow run_wf {
         "obsm_input": "embedding",
         "obs_covariates": "obs_covariates",
         "obsm_output": "obsm_integrated",
-        "theta": "rna_theta"
+        "theta": "theta"
       ],
       neighbors: [
         "uns_output": "uns_neighbors",

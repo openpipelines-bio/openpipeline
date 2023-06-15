@@ -15,7 +15,7 @@ obsp_neighbor_connectivities: "harmonypy_integration_connectivities"
 embedding: "X_pca"
 obsm_integrated: "X_pca_integrated"
 obs_covariates: # please fill in - example: ["batch", "sample"]
-rna_theta: [2]
+theta: [2]
 
 # Clustering options
 obs_cluster: "harmony_integration_leiden"
