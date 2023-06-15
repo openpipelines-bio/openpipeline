@@ -1,6 +1,6 @@
 import sys
 import logging
-import cellxgene_census 
+import cellxgene_census
 import mudata as mu
 import anndata as ad
 import pandas as pd
@@ -38,21 +38,21 @@ par = {
 ### VIASH END
 
 
-def connect_census():
-    """Connect to CellxGene Census or user-provided TileDBSoma object
-
-    Returns:
-        _type_: _description_
+def connect_census(input_database, release):
     """
-    if par["input_database"] != "CellxGene":
-        raise NotImplementedError("Custom census database is not implemented yet!")
+    aConnect to CellxGene Census or user-provided TileDBSoma object
+    """
+    if input_database != "CellxGene":
+        raise NotImplementedError(
+            "Custom census database is not implemented yet!"
+            )
 
     logger.info(
         "Initializing %s release %s",
-        par["input_database"],par["cellxgene_release"]
+        input_database, release
         )
     return cellxgene_census.open_soma(
-        census_version = par["cellxgene_release"]
+        census_version = release
         )
 
 
@@ -69,12 +69,6 @@ def read_cell_ontology():
 
 
 def get_cell_type_terms():
-    """_summary_
-
-    Returns:
-        dict: _description_
-        list: _description_
-    """
     logger.info("Reading Cell Ontology OBO")
     co = read_cell_ontology()
     id_to_name = {id_: data.get("name") for id_, data in co.nodes(data=True)}
@@ -113,7 +107,7 @@ def get_cell_type_terms():
 #     logging.info(avail_cells_overview)
 
 
-def build_census_query():
+def build_census_query(par):
     _query = f'is_primary_data == {par["is_primary_data"]}'
     if par["cell_type"]:
         _, cell_of_interest_terms = get_cell_type_terms()
@@ -129,46 +123,54 @@ def build_census_query():
     return _query
 
 
-def extract_metadata(census_connection, query):
+def extract_metadata(census_connection, query, species, obs_column_names):
     logger.info("Extracting only metadata")
-    logger.info(census_connection["census_data"][par["species"]].obs)
+    logger.info(census_connection["census_data"][species].obs)
     return (
-        census_connection["census_data"][par["species"]].obs.read(
+        census_connection["census_data"][species].obs.read(
             value_filter=query,
-            column_names=par["obs_column_names"]).concat().to_pandas()
+            column_names=obs_column_names).concat().to_pandas()
         )
 
 
-def extract_metadata_expression(census_connection, query):
+def extract_metadata_expression(
+    census_connection, query,species, obs_column_names):
     logger.info("Extracting metadata and gene expression matrix")
     return (
         cellxgene_census.get_anndata(
             census_connection,
-            organism = par["species"],
+            organism = species,
             obs_value_filter = query,
-            column_names = {"obs": par["obs_column_names"]}
+            column_names = {"obs": obs_column_names}
             )
         )
 
 
-def write_mudata(mdata):
-    logger.info("Writing %s", par["output"])
+def write_mudata(mdata, output_location, compression):
+    logger.info("Writing %s", output_location)
     mdata.write_h5mu(
-        par["output"],
-        compression = par["output_compression"]
+        output_location,
+        compression = compression
         )
 
 
 def main():
 
-    census_connection = connect_census()
-    query = build_census_query()
+    census_connection = connect_census(
+        par["input_database"],
+        par["cellxgene_release"]
+        )
+    query = build_census_query(par)
 
     if par["metadata_only"]:
-        query_data = extract_metadata(census_connection, query)
+        query_data = extract_metadata(
+            census_connection, query, par["species"], par["obs_column_names"]
+            )
 
     else:
-        query_data = extract_metadata_expression(census_connection, query)
+        query_data = extract_metadata_expression(
+            census_connection, query, par["species"], par["obs_column_names"]
+            )
 
     # clean-up mem
     census_connection.close()
@@ -185,7 +187,7 @@ def main():
             )
         mdata.var_names_make_unique()
 
-    write_mudata(mdata)
+    write_mudata(mdata, par["output"], par["compression"])
 
 if __name__ == "__main__":
     main()

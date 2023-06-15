@@ -128,15 +128,14 @@ functionality:
 platforms:
   - type: docker
   # TODO: increase python version
-    image: python:3.10
+    image: python:3.9
     setup:
       - type: python
         packages:
           - mudata~=0.2.0
           - anndata~=0.8.0
-          - cellxgene-census~=1.2.0
+          # - cellxgene-census~=1.1.0
           - obonet~=1.0.0
-          # - scikit-misc~=0.2.0
       # TODO: escalate to downloaded version, current pinned to https://github.com/obophenotype/cell-ontology/releases/download/v2023-05-22/cl-base.obo fixed in image download
       - type: docker
         run: |
