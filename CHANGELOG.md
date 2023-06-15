@@ -78,6 +78,8 @@ The old behavior of the `full_pipeline` can be obtained by running `full_pipelin
 
 * `workflows/full_pipeline`: fix `make_observation_keys_unique` parameter not being correctly passed to the `add_id` component, causing `ValueError: Observations are not unique across samples` during execution of the `concat` component (PR #422).
 
+* `annotate/popv`: now sets `aprox` to `False` to avoid using `annoy` in scanorama because it fails on processors that are missing the AVX-512 instruction sets.
+
 # openpipelines 0.8.0
 
 ## BREAKING CHANGES
