@@ -13,7 +13,6 @@ functionality:
         - name: "--input_database"
           type: string
           description: "Full input database S3 prefix URL. Default: CellxGene Census"
-          direction: input
           required: false
           example: "s3://"
           default: "CellxGene"
@@ -37,21 +36,18 @@ functionality:
           example: "homo_sapiens"
           default: "homo_sapiens"
           choices: ["homo_sapiens", "mus_musculus"]
-          direction: input
           multiple: false
         - name: "--cell_type"
           type: string
           description: "Cell type(s) of interest. Cell type should be one of the Cell Ontology terms. If not specified, all cell types will be queried."
           required: false
           example: ["mesothelial fibroblast"]
-          direction: input
           multiple: true
         - name: "--tissue"
           type: string
           description: "Tissue(s) of interest. If not specified, all tissues will be queried."
           required: false
           example: ["lung"]
-          direction: input
           multiple: true
         - name: "--technology"
           type: string
@@ -60,7 +56,6 @@ functionality:
           example: ["10x 3' v3"]
           # TODO: add all possible technologies
           choices: ["10x 3' v1", "10x 3' v2", "10x 3' v3", "10x 5' v1", "10x 5' v2"]
-          direction: input
           multiple: true
         - name: "--suspension"
           type: string
@@ -69,25 +64,21 @@ functionality:
           example: ["cell"]
           # TODO: add all possible suspensions
           choices: ["cell", "nucleus"]
-          direction: input
           multiple: true
         - name: "--is_primary_data"
           type: boolean
           default: True
           description: "Allow only primary data in the query in order to prevent of data duplication."
           required: false
-          direction: input
         - name: "--obs_column_names"
           type: string
           description: "obs columns of interest. If not specified, all columns will be returned."
           required: false
-          direction: input
           multiple: true   
         - name: "--metadata_only"
           type: boolean
           default: True
           description: By default only returns metadata of obs layer of query. If False, returns metadata of obs layer and gene expression matrix of query
-          direction: input
           required: false
     - name: Outputs
       description: Output arguments.

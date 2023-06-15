@@ -1,9 +1,9 @@
 import sys
+import os
 import logging
 import cellxgene_census
 import mudata as mu
 import anndata as ad
-import pandas as pd
 from scipy.sparse import csr_matrix
 import obonet
 
@@ -29,8 +29,11 @@ par = {
     "obs_column_names": ["disease"],
     "output": "output.h5mu",
     "output_compression": "gzip",
-    "metadata_only": True
+    "metadata_only": False
 }
+
+meta = {'resources_dir': os.path.abspath('./src/query/cellxgene_census/')}
+
 ### VIASH END
 
 
@@ -52,22 +55,24 @@ def connect_census(input_database, release):
         )
 
 
-def read_cell_ontology():
+def read_cell_ontology(obo_file):
     """Reads Cell Type OBO Foundry file
 
     Returns:
         graph: cell type obo ontology
     """
     return obonet.read_obo(
-        "./cl-base.obo",
+        obo_file,
         encoding="utf-8"
     )
 
 
-def get_cell_type_terms(cell_types):
+def get_cell_type_terms(cell_types, obo_file):
+    if not cell_types:
+        return
     logger.info("Reading Cell Ontology OBO")
 
-    co = read_cell_ontology()
+    co = read_cell_ontology(obo_file)
     id_to_name = {
         id_: data.get("name")
         for id_, data in co.nodes(data=True)
@@ -91,7 +96,7 @@ def get_cell_type_terms(cell_types):
         lower_hierarchy_cell_of_interest_map.update(
             {
                 parent:id_to_name[parent]
-                for parent, child, key in co.in_edges(node, keys=True)
+                for parent, _, key in co.in_edges(node, keys=True)
                 if key == 'is_a'
                 }
             )
@@ -102,7 +107,7 @@ def get_cell_type_terms(cell_types):
 
     logger.info(lower_hierarchy_cell_of_interest_map)
 
-    return lower_hierarchy_cell_of_interest_map, cell_of_interest_terms
+    return cell_of_interest_terms
 
 
 # TODO: function to explore cell types available in query data
@@ -118,10 +123,10 @@ def get_cell_type_terms(cell_types):
 #     logging.info(avail_cells_overview)
 
 
-def build_census_query(par):
+def build_census_query(par, obo_file):
     _query = f'is_primary_data == {par["is_primary_data"]}'
     query_builder = {
-        'cell_type': f' and cell_type_ontology_term_id in {get_cell_type_terms(par["cell_type"])}',
+        'cell_type': f' and cell_type_ontology_term_id in {get_cell_type_terms(par["cell_type"], obo_file)}',
         'tissue': f' and tissue in {par["tissue"]}',
         'technology': f' and assay in {par["technology"]}',
         'suspension': f' and suspension_type in {par["suspension"]}',
@@ -174,7 +179,7 @@ def main():
         par["input_database"],
         par["cellxgene_release"]
         )
-    query = build_census_query(par)
+    query = build_census_query(par, f"{meta['resources_dir']}/cl-base.obo")
 
     if par["metadata_only"]:
         query_data = extract_metadata(
@@ -193,7 +198,7 @@ def main():
         {par["modality"]: query_data}
         )
 
-    write_mudata(mdata, par["output"], par["compression"])
+    write_mudata(mdata, par["output"], par["output_compression"])
 
 if __name__ == "__main__":
     main()
