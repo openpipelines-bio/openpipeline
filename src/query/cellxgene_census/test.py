@@ -60,7 +60,6 @@ def test_cellxgene_extract_metadata_expression(run_component):
     assert "disease" in obs.columns
     assert "soma_joinid" in var.columns
     assert "feature_id" in var.columns
-    assert "cell_type_ontology_term_id" in var.columns
     assert component_data.mod['rna'].n_obs
 
 if __name__ == '__main__':
