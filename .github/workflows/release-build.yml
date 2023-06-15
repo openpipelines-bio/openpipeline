@@ -111,6 +111,13 @@ jobs:
         component: ${{ fromJson(needs.list.outputs.component_matrix) }}
 
     steps:
+    # Remove unnecessary files to free up space. Otherwise, we get 'no space left on device.'
+    - name: "Remove Android SDK and .NET"
+      shell: bash
+      run: |
+        sudo rm -rf /usr/local/lib/android
+        sudo rm -rf /usr/share/dotnet
+
     - uses: actions/checkout@v3
 
     - uses: viash-io/viash-actions/setup@v3
@@ -153,6 +160,13 @@ jobs:
         component: ${{ fromJson(needs.list.outputs.workflow_matrix) }}
 
     steps:
+    # Remove unnecessary files to free up space. Otherwise, we get 'no space left on device.'
+    - name: "Remove Android SDK and .NET"
+      shell: bash
+      run: |
+        sudo rm -rf /usr/local/lib/android
+        sudo rm -rf /usr/share/dotnet
+
     - uses: actions/checkout@v3
 
     - uses: viash-io/viash-actions/setup@v3
