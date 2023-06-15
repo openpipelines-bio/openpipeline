@@ -3,6 +3,7 @@ input: # please fill in - example: "input.h5mu"
 modality: "prot"
 # output: "$id.$key.output.h5mu"
 # output_compression: "gzip"
+# output_layer: "foo"
 
 # Nextflow input-output arguments
 publish_dir: # please fill in - example: "output/"

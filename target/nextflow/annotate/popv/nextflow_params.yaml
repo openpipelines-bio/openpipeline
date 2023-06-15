@@ -16,6 +16,7 @@ methods: # please fill in - example: ["knn_on_scvi", "scanvi"]
 
 # Reference
 reference: # please fill in - example: "TS_Bladder_filtered.h5ad"
+# reference_layer: "foo"
 reference_obs_label: "cell_ontology_class"
 reference_obs_batch: "donor_assay"
 

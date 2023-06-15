@@ -3,9 +3,9 @@ functionality:
   namespace: mapping
   description: Align fastq files using STAR.
   authors:
-    - __merge__: ../../authors/angela_pisco.yaml
+    - __merge__: /src/authors/angela_pisco.yaml
       roles: [ author ]
-    - __merge__: ../../authors/robrecht_cannoodt.yaml
+    - __merge__: /src/authors/robrecht_cannoodt.yaml
       roles: [ author, maintainer ]
   # generated the argument groups using `utils/process_params.R`
   __merge__: [., arguments_star.yaml, arguments_htseq.yaml]
@@ -62,6 +62,10 @@ functionality:
           name: --run_multiqc
           description: Whether or not to also run MultiQC at the end.
           default: true
+        - type: double
+          name: --min_success_rate
+          default: 0.5
+          description: Fail when the success rate is below this threshold.
   resources:
     - type: python_script
       path: script.py
@@ -71,12 +75,12 @@ functionality:
     - path: ../../../resources_test/cellranger_tiny_fastq
 platforms:
   - type: docker
-    image: python:3.10
+    image: python:3.10-slim
     setup:
       # setup derived from https://github.com/alexdobin/STAR/blob/master/extras/docker/Dockerfile
       - type: docker
         env: 
-          - STAR_VERSION 2.7.10a
+          - STAR_VERSION 2.7.10b
           - PACKAGES gcc g++ make wget zlib1g-dev unzip
       - type: docker
         run: |
@@ -95,6 +99,7 @@ platforms:
       - type: apt
         packages: 
           - samtools
+          - procps
       - type: python
         packages: 
           - pyyaml

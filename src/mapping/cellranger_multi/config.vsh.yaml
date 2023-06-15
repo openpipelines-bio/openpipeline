@@ -3,11 +3,11 @@ functionality:
   namespace: mapping
   description: Align fastq files using Cell Ranger multi.
   authors:
-    - __merge__: ../../authors/angela_pisco.yaml
+    - __merge__: /src/authors/angela_pisco.yaml
       roles: [ author ]
-    - __merge__: ../../authors/robrecht_cannoodt.yaml
+    - __merge__: /src/authors/robrecht_cannoodt.yaml
       roles: [ author, maintainer ]
-    - __merge__: ../../authors/dries_de_maeyer.yaml
+    - __merge__: /src/authors/dries_de_maeyer.yaml
       roles: [ author ]
   argument_groups:
     - name: Input files
@@ -32,6 +32,15 @@ functionality:
           type: file
           description: "VDJ refence index built by Cell Ranger mkref."
           example: "reference_vdj.tar.gz"
+          required: false
+
+        - name: "--vdj_inner_enrichment_primers"
+          type: file
+          description: |
+            V(D)J Immune Profiling libraries: if inner enrichment primers other than those provided 
+            in the 10x Genomics kits are used, they need to be specified here as a
+            text file with one primer per line.
+          example: "enrichment_primers.txt"
           required: false
 
         - name: "--feature_reference"

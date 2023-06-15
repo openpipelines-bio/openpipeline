@@ -5,7 +5,7 @@ functionality:
   description: |
     Remove observations and variables based on specified .obs and .var columns.
   authors:
-    - __merge__: ../../authors/robrecht_cannoodt.yaml
+    - __merge__: /src/authors/robrecht_cannoodt.yaml
       roles: [ maintainer, contributor ]
   arguments:
     # input
@@ -56,8 +56,11 @@ functionality:
     - path: ../../../resources_test/pbmc_1k_protein_v3
 platforms:
   - type: docker
-    image: python:3.9
+    image: python:3.9-slim
     setup:
+      - type: apt
+        packages: 
+          - procps
       - type: python
         packages:
           - mudata~=0.2.0

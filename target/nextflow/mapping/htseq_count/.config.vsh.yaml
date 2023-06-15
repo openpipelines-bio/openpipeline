@@ -1,36 +1,53 @@
 functionality:
   name: "htseq_count"
   namespace: "mapping"
-  version: "0.8.0"
+  version: "0.9.0"
   authors:
   - name: "Robrecht Cannoodt"
-    email: "robrecht@data-intuitive.com"
     roles:
     - "author"
     - "maintainer"
-    props:
-      github: "rcannood"
-      orcid: "0000-0003-3641-729X"
-  - name: "Angela Pisco"
+    info:
+      role: "Core Team Member"
+      links:
+        email: "robrecht@data-intuitive.com"
+        github: "rcannood"
+        orcid: "0000-0003-3641-729X"
+        linkedin: "robrechtcannoodt"
+      organizations:
+      - name: "Data Intuitive"
+        href: "https://www.data-intuitive.com"
+        role: "Data Science Engineer"
+      - name: "Open Problems"
+        href: "https://openproblems.bio"
+        role: "Core Member"
+  - name: "Angela Oliveira Pisco"
     roles:
     - "author"
-    props:
-      github: "aopisco"
-      orcid: "0000-0003-0142-2355"
-  arguments: []
+    info:
+      role: "Contributor"
+      links:
+        github: "aopisco"
+        orcid: "0000-0003-0142-2355"
+        linkedin: "aopisco"
+      organizations:
+      - name: "Insitro"
+        href: "https://insitro.com"
+        role: "Director of Computational Biology"
+      - name: "Open Problems"
+        href: "https://openproblems.bio"
+        role: "Core Member"
   argument_groups:
   - name: "Input"
     arguments:
     - type: "file"
       name: "--input"
-      alternatives: []
       description: "Path to the SAM/BAM files containing the mapped reads."
       info:
         orig_arg: "samfilenames"
       example:
       - "mysample1.BAM"
       - "mysample2.BAM"
-      default: []
       must_exist: true
       create_parent: true
       required: true
@@ -40,13 +57,11 @@ functionality:
       dest: "par"
     - type: "file"
       name: "--reference"
-      alternatives: []
       description: "Path to the GTF file containing the features."
       info:
         orig_arg: "featurefilename"
       example:
       - "reference.gtf"
-      default: []
       must_exist: true
       create_parent: true
       required: true
@@ -58,13 +73,11 @@ functionality:
     arguments:
     - type: "file"
       name: "--output"
-      alternatives: []
       description: "Filename to output the counts to."
       info:
         orig_arg: "--counts_output"
       example:
       - "htseq-count.tsv"
-      default: []
       must_exist: true
       create_parent: true
       required: true
@@ -74,22 +87,18 @@ functionality:
       dest: "par"
     - type: "string"
       name: "--output_delimiter"
-      alternatives: []
       description: "Column delimiter in output."
       info:
         orig_arg: "--delimiter"
       example:
       - "\t"
-      default: []
       required: false
-      choices: []
       direction: "input"
       multiple: false
       multiple_sep: ":"
       dest: "par"
     - type: "file"
       name: "--output_sam"
-      alternatives: []
       description: "Write out all SAM alignment records into SAM/BAM files (one per\
         \ input file needed), \nannotating each line with its feature assignment (as\
         \ an optional field with tag 'XF'). \nSee the -p option to use BAM instead\
@@ -99,7 +108,6 @@ functionality:
       example:
       - "mysample1_out.BAM"
       - "mysample2_out.BAM"
-      default: []
       must_exist: true
       create_parent: true
       required: false
@@ -109,12 +117,9 @@ functionality:
       dest: "par"
     - type: "string"
       name: "--output_sam_format"
-      alternatives: []
       description: "Format to use with the --output_sam argument."
       info:
         orig_arg: "--samout-format"
-      example: []
-      default: []
       required: false
       choices:
       - "sam"
@@ -134,7 +139,6 @@ functionality:
         \ must be specified. Ignored for single-end data.\n"
       info:
         orig_arg: "--order"
-      example: []
       default:
       - "name"
       required: false
@@ -153,7 +157,6 @@ functionality:
         \ 'yes' with reversed strand interpretation."
       info:
         orig_arg: "--stranded"
-      example: []
       default:
       - "yes"
       required: false
@@ -175,11 +178,9 @@ functionality:
         \ depends on the software \nused to map the reads.\n"
       info:
         orig_arg: "--minaqual"
-      example: []
       default:
       - 10
       required: false
-      choices: []
       direction: "input"
       multiple: false
       multiple_sep: ":"
@@ -194,9 +195,7 @@ functionality:
         orig_arg: "--type"
       example:
       - "exon"
-      default: []
       required: false
-      choices: []
       direction: "input"
       multiple: false
       multiple_sep: ":"
@@ -217,16 +216,13 @@ functionality:
         orig_arg: "--idattr"
       example:
       - "gene_id"
-      default: []
       required: false
-      choices: []
       direction: "input"
       multiple: true
       multiple_sep: ":"
       dest: "par"
     - type: "string"
       name: "--additional_attributes"
-      alternatives: []
       description: "Additional feature attributes (suitable for Ensembl GTF files:\
         \ gene_name). Use multiple times\nfor more than one additional attribute.\
         \ These attributes are only used as annotations in the\noutput, while the\
@@ -236,16 +232,13 @@ functionality:
         orig_arg: "--additional-attr"
       example:
       - "gene_name"
-      default: []
       required: false
-      choices: []
       direction: "input"
       multiple: true
       multiple_sep: ":"
       dest: "par"
     - type: "boolean_true"
       name: "--add_chromosome_info"
-      alternatives: []
       description: "Store information about the chromosome of each feature as an additional\
         \ attribute\n(e.g. colunm in the TSV output file).\n"
       info:
@@ -259,7 +252,6 @@ functionality:
       description: "Mode to handle reads overlapping more than one feature."
       info:
         orig_arg: "--mode"
-      example: []
       default:
       - "union"
       required: false
@@ -273,12 +265,10 @@ functionality:
       dest: "par"
     - type: "string"
       name: "--non_unique"
-      alternatives: []
       description: "Whether and how to score reads that are not uniquely aligned or\
         \ ambiguously assigned to features."
       info:
         orig_arg: "--nonunique"
-      example: []
       default:
       - "none"
       required: false
@@ -293,12 +283,9 @@ functionality:
       dest: "par"
     - type: "string"
       name: "--secondary_alignments"
-      alternatives: []
       description: "Whether to score secondary alignments (0x100 flag)."
       info:
         orig_arg: "--secondary-alignments"
-      example: []
-      default: []
       required: false
       choices:
       - "score"
@@ -309,12 +296,9 @@ functionality:
       dest: "par"
     - type: "string"
       name: "--supplementary_alignments"
-      alternatives: []
       description: "Whether to score supplementary alignments (0x800 flag)."
       info:
         orig_arg: "--supplementary-alignments"
-      example: []
-      default: []
       required: false
       choices:
       - "score"
@@ -325,7 +309,6 @@ functionality:
       dest: "par"
     - type: "boolean_true"
       name: "--counts_output_sparse"
-      alternatives: []
       description: "Store the counts as a sparse matrix (mtx, h5ad, loom)."
       info:
         orig_arg: "--counts-output-sparse"
@@ -345,24 +328,28 @@ functionality:
     is_executable: true
   - type: "file"
     path: "../../../resources_test/cellranger_tiny_fastq"
+  info: null
   status: "enabled"
   requirements:
-    commands: []
+    commands:
+    - "ps"
   set_wd_to_resources_dir: false
 platforms:
 - type: "docker"
   id: "docker"
-  image: "python:3.10"
+  image: "python:3.10-slim"
   target_organization: "openpipelines-bio"
   target_registry: "ghcr.io"
   namespace_separator: "_"
   resolve_volume: "Automatic"
   chown: true
-  port: []
   setup_strategy: "ifneedbepullelsecachedbuild"
-  run_args: []
   target_image_source: "https://github.com/openpipelines-bio/openpipeline"
   setup:
+  - type: "apt"
+    packages:
+    - "procps"
+    interactive: false
   - type: "python"
     user: false
     packages:
@@ -370,38 +357,54 @@ platforms:
     - "pyyaml"
     - "scipy"
     - "anndata~=0.8.0"
-    pip: []
-    pypi: []
-    git: []
-    github: []
-    gitlab: []
-    mercurial: []
-    svn: []
-    bazaar: []
-    url: []
-    script: []
     upgrade: true
-  test_setup: []
+  entrypoint: []
+  cmd: null
 - type: "nextflow"
   id: "nextflow"
   variant: "vdsl3"
   directives:
-    accelerator: {}
-    conda: []
-    containerOptions: []
     label:
     - "highmem"
     - "highcpu"
-    module: []
-    pod: []
-    publishDir: []
-    queue: []
     tag: "$id"
   auto:
     simplifyInput: true
     simplifyOutput: true
     transcript: false
     publish: false
+  config:
+    labels:
+      mem1gb: "memory = 1.GB"
+      mem2gb: "memory = 2.GB"
+      mem4gb: "memory = 4.GB"
+      mem8gb: "memory = 8.GB"
+      mem16gb: "memory = 16.GB"
+      mem32gb: "memory = 32.GB"
+      mem64gb: "memory = 64.GB"
+      mem128gb: "memory = 128.GB"
+      mem256gb: "memory = 256.GB"
+      mem512gb: "memory = 512.GB"
+      mem1tb: "memory = 1.TB"
+      mem2tb: "memory = 2.TB"
+      mem4tb: "memory = 4.TB"
+      mem8tb: "memory = 8.TB"
+      mem16tb: "memory = 16.TB"
+      mem32tb: "memory = 32.TB"
+      mem64tb: "memory = 64.TB"
+      mem128tb: "memory = 128.TB"
+      mem256tb: "memory = 256.TB"
+      mem512tb: "memory = 512.TB"
+      cpu1: "cpus = 1"
+      cpu2: "cpus = 2"
+      cpu5: "cpus = 5"
+      cpu10: "cpus = 10"
+      cpu20: "cpus = 20"
+      cpu50: "cpus = 50"
+      cpu100: "cpus = 100"
+      cpu200: "cpus = 200"
+      cpu500: "cpus = 500"
+      cpu1000: "cpus = 1000"
   debug: false
   container: "docker"
 info:
@@ -409,6 +412,6 @@ info:
   platform: "nextflow"
   output: "/home/runner/work/openpipeline/openpipeline/target/nextflow/mapping/htseq_count"
   executable: "/home/runner/work/openpipeline/openpipeline/target/nextflow/mapping/htseq_count/htseq_count"
-  viash_version: "0.7.1"
-  git_commit: "2f032d89fdd8b21b1198078f99e38852942a231d"
+  viash_version: "0.7.4"
+  git_commit: "3129581540608f27e8c7051671687349a57fd65e"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"

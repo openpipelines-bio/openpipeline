@@ -1,7 +1,7 @@
 {
     "$schema": "http://json-schema.org/draft-07/schema",
     "title": "popv",
-    "description": "Performs popular major vote cell typing on single cell sequence data https://github.com/czbiohub/PopV",
+    "description": "Performs popular major vote cell typing on single cell sequence data using multiple algorithms. Note that this is a one-shot version of PopV.",
     "type": "object",
     "definitions": {
       "inputs" : {
@@ -86,6 +86,11 @@
           "reference": {
             "type": "string",
             "description": "User-provided reference tissue. The data that will be used as reference to call cell types.",
+            "default": ""
+          },
+          "reference_layer": {
+            "type": "string",
+            "description": "Which layer to use. If no value is provided, the counts are assumed to be in the `.X` slot. Otherwise, count data is expected to be in `.layers[reference_layer]`.",
             "default": ""
           },
           "reference_obs_label": {

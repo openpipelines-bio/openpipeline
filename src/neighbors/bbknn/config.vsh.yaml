@@ -5,9 +5,9 @@ functionality:
   description: |
     BBKNN network generation
   authors:
-    - __merge__: ../../authors/dries_de_maeyer.yaml
+    - __merge__: /src/authors/dries_de_maeyer.yaml
       roles: [ author ]
-    - __merge__: ../../authors/dries_schaumont.yaml
+    - __merge__: /src/authors/dries_schaumont.yaml
       roles: [ maintainer ]
   arguments:
     # inputs
@@ -81,8 +81,12 @@ functionality:
     - path: ../../../resources_test/pbmc_1k_protein_v3/pbmc_1k_protein_v3_mms.h5mu
 platforms:
   - type: docker
-    image: python:3.8
+    image: python:3.8-slim
     setup:
+      - type: apt
+        packages: 
+          - procps
+          - build-essential
       - type: python
         packages:
           - mudata~=0.2.0

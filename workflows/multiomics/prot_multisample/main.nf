@@ -87,7 +87,9 @@ workflow run_wf {
     | getWorkflowArguments(key: "concat")
     | concat.run([ modality: "prot" ])
     | getWorkflowArguments(key: "clr")
-    | clr
+    | clr.run(
+      args: [ output_layer: "clr" ]
+    )
     | map {list -> [list[0], list[1]] + list.drop(3)}
   emit:
   output_ch

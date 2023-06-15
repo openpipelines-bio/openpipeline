@@ -1,3 +1,4 @@
+from scanpy._utils import check_nonnegative_integers
 import mudata
 import scvi
 from torch.cuda import is_available as cuda_is_available
@@ -26,10 +27,40 @@ par = {
     "lr_factor": 0.6,
     "lr_patience": 30,
     "max_epochs": 500,
+    "n_obs_min_count": 10,
+    "n_var_min_count": 10,
     "model_output": "test/",
     "output_compression": "gzip",
     }
+
+meta = {
+    "resources_dir": 'src/integrate/scvi'
+}
 ### VIASH END
+
+import sys
+sys.path.append(meta['resources_dir'])
+from subset_vars import subset_vars
+
+#TODO: optionally, move to qa
+# https://github.com/openpipelines-bio/openpipeline/issues/435
+def check_validity_anndata(adata, layer, obs_batch,
+                           n_obs_min_count, n_var_min_count):
+    assert check_nonnegative_integers(
+        adata.layers[layer] if layer else adata.X
+    ), f"Make sure input adata contains raw_counts"
+
+    assert len(set(adata.var_names)) == len(
+        adata.var_names
+    ), f"Dataset contains multiple genes with same gene name."
+
+    # Ensure every obs_batch category has sufficient observations
+    assert min(adata.obs[[obs_batch]].value_counts()) > n_obs_min_count, \
+        f"Anndata has fewer than {n_obs_min_count} cells."
+
+    assert adata.n_vars > n_var_min_count, \
+        f"Anndata has fewer than {n_var_min_count} genes."
+
 
 
 def main():
@@ -38,8 +69,12 @@ def main():
 
     if par['var_input']:
         # Subset to HVG
-        adata = adata[:,adata.var['var_input']].copy()
+        adata = subset_vars(adata, subset_col=par["var_input"])
 
+    check_validity_anndata(
+        adata, par['input_layer'], par['obs_batch'],
+        par["n_obs_min_count"], par["n_var_min_count"]
+        )
     # Set up the data
     scvi.model.SCVI.setup_anndata(
         adata,

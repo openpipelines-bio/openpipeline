@@ -1,3 +1,12 @@
 name: Vladimir Shitov
-email: vladimir.shitov@helmholtz-muenchen.de
-props: { github: vladimirshitov, orcid: "0000-0002-1960-8812" }
+info:
+  role: Contributor
+  links:
+    email: vladimir.shitov@helmholtz-muenchen.de
+    github: vladimirshitov
+    orcid: "0000-0002-1960-8812"
+    linkedin: vladimir-shitov-9a659513b
+  organizations:
+    - name: Helmholtz Munich
+      href: https://www.helmholtz-munich.de
+      role: PhD Candidate

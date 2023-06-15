@@ -34,15 +34,15 @@
             "description": "No description","enum": ["gzip", "lzf"],
             "default": ""
           },
-          "obs_name": {
+          "obsm_name": {
             "type": "string",
-            "description": "Name of the .obs key under which to add the cluster labels.",
+            "description": "Name of the .obsm key under which to add the cluster labels.","help_text": "Name of the .obsm key under which to add the cluster labels.\nThe name of the columns in the matrix will correspond to the resolutions.\n",
             "default": "leiden"
           },
           "resolution": {
             "type": "number",
-            "description": "A parameter value controlling the coarseness of the clustering. Higher values lead to more clusters.",
-            "default": "1"
+            "description": "A parameter value controlling the coarseness of the clustering. Higher values lead to more clusters.","help_text": "A parameter value controlling the coarseness of the clustering. Higher values lead to more clusters.\nMultiple values will result in clustering being performed multiple times.\n",
+            "default": "[1]"
           }
           
         }

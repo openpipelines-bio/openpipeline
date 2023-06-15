@@ -3,9 +3,9 @@ functionality:
   namespace: "interpret"
   description: "Performs LIANA integration based as described in https://github.com/saezlab/liana-py"
   authors:
-    - __merge__: ../../authors/mauro_saporita.yaml
+    - __merge__: /src/authors/mauro_saporita.yaml
       roles: [ author ]
-    - __merge__: ../../authors/povilas_gibas.yaml
+    - __merge__: /src/authors/povilas_gibas.yaml
       roles: [ author ]
   arguments:
     - name: "--input"
@@ -84,8 +84,12 @@ functionality:
     - path: ../../../resources_test/pbmc_1k_protein_v3/pbmc_1k_protein_v3_mms.h5mu
 platforms:
   - type: docker
-    image: python:3.10
+    image: python:3.10-slim
     setup:
+      - type: apt
+        packages: 
+          - procps
+          - git
       - type: python
         packages:
           - mudata~=0.2.0

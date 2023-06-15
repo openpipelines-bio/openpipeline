@@ -19,7 +19,7 @@ functionality:
 
     Currently does not allow parsing the output from cell barcode demultiplexing.
   authors:
-    - __merge__: ../../authors/dries_schaumont.yaml
+    - __merge__: /src/authors/dries_schaumont.yaml
       roles: [ maintainer ]
   arguments:
     - name: "--input"
@@ -53,8 +53,11 @@ functionality:
     - path: ../../../resources_test/10x_5k_anticmv
 platforms:
   - type: docker
-    image: python:3.8
+    image: python:3.8-slim
     setup:
+      - type: apt
+        packages: 
+          - procps
       - type: python
         packages:
           - scanpy~=1.9.2

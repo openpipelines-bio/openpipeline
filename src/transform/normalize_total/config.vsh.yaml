@@ -9,9 +9,9 @@ functionality:
 
     If exclude_highly_expressed=True, very highly expressed genes are excluded from the computation of the normalization factor (size factor) for each cell. This is meaningful as these can strongly influence the resulting normalized values for all other genes [Weinreb17].
   authors:
-    - __merge__: ../../authors/dries_de_maeyer.yaml
+    - __merge__: /src/authors/dries_de_maeyer.yaml
       roles: [ maintainer ]
-    - __merge__: ../../authors/robrecht_cannoodt.yaml
+    - __merge__: /src/authors/robrecht_cannoodt.yaml
       roles: [ contributor ]
   arguments:
     # input
@@ -71,12 +71,12 @@ functionality:
     - path: ../../../resources_test/pbmc_1k_protein_v3
 platforms:
   - type: docker
-    image: python:3.10-bullseye
+    image: python:3.10-slim-bullseye
     setup:
-      - type: docker
-        run: apt update && apt upgrade -y
       - type: apt
-        packages: libhdf5-dev
+        packages: 
+          - libhdf5-dev
+          - procps
       - type: python
         packages:
           - scanpy~=1.9.2

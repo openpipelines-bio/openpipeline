@@ -1,22 +1,28 @@
 functionality:
   name: "mermaid"
   namespace: "report"
-  version: "0.8.0"
+  version: "0.9.0"
   authors:
   - name: "Dries De Maeyer"
-    email: "ddemaeyer@gmail.com"
     roles:
     - "maintainer"
-    props:
-      github: "ddemaeyer"
+    info:
+      role: "Core Team Member"
+      links:
+        email: "ddemaeyer@gmail.com"
+        github: "ddemaeyer"
+        linkedin: "dries-de-maeyer-b46a814"
+      organizations:
+      - name: "Janssen Pharmaceuticals"
+        href: "https://www.janssen.com"
+        role: "Principal Scientist"
   arguments:
   - type: "file"
     name: "--input"
     alternatives:
     - "-i"
     description: "Input directory"
-    example: []
-    default: []
+    info: null
     must_exist: true
     create_parent: true
     required: true
@@ -29,8 +35,7 @@ functionality:
     alternatives:
     - "-o"
     description: "Generated network as output."
-    example: []
-    default: []
+    info: null
     must_exist: true
     create_parent: true
     required: true
@@ -38,85 +43,135 @@ functionality:
     multiple: false
     multiple_sep: ":"
     dest: "par"
-  argument_groups: []
+  - type: "string"
+    name: "--output_format"
+    description: "Output format for the generated image. By default will be inferred\
+      \ from the extension \nof the file specified with --output.\n"
+    info: null
+    required: false
+    choices:
+    - "svg"
+    - "png"
+    - "pdf"
+    direction: "input"
+    multiple: false
+    multiple_sep: ":"
+    dest: "par"
+  - type: "integer"
+    name: "--width"
+    description: "Width of the page"
+    info: null
+    default:
+    - 800
+    required: false
+    direction: "input"
+    multiple: false
+    multiple_sep: ":"
+    dest: "par"
+  - type: "integer"
+    name: "--height"
+    description: "Height of the page"
+    info: null
+    default:
+    - 600
+    required: false
+    direction: "input"
+    multiple: false
+    multiple_sep: ":"
+    dest: "par"
+  - type: "string"
+    name: "--background_color"
+    description: "Background color for pngs/svgs (not pdfs)"
+    info: null
+    example:
+    - "#F0F0F0"
+    default:
+    - "white"
+    required: false
+    direction: "input"
+    multiple: false
+    multiple_sep: ":"
+    dest: "par"
   resources:
-  - type: "python_script"
-    path: "script.py"
+  - type: "bash_script"
+    path: "script.sh"
     is_executable: true
-  description: "Generates a network from mermaid code. \n\nSee `https://mermaid-js.github.io/mermaid/#/Tutorials`.\
-    \ \nThis component uses the external mermaid.ink service to generate visual networks.\n"
+  - type: "file"
+    path: "./puppeteer-config.json"
+  description: "Generates a network from mermaid code.\n"
   test_resources:
-  - type: "python_script"
-    path: "test.py"
+  - type: "bash_script"
+    path: "test.sh"
     is_executable: true
+  info: null
   status: "enabled"
   requirements:
-    commands: []
+    commands:
+    - "ps"
   set_wd_to_resources_dir: false
 platforms:
 - type: "docker"
   id: "docker"
-  image: "python:3.10"
+  image: "node:20-bullseye"
   target_organization: "openpipelines-bio"
   target_registry: "ghcr.io"
   namespace_separator: "_"
   resolve_volume: "Automatic"
   chown: true
-  port: []
   setup_strategy: "ifneedbepullelsecachedbuild"
-  run_args: []
   target_image_source: "https://github.com/openpipelines-bio/openpipeline"
   setup:
-  - type: "python"
-    user: false
+  - type: "javascript"
+    npm:
+    - "@mermaid-js/mermaid-cli"
+  - type: "apt"
     packages:
-    - "requests"
-    - "Pillow~=9.2.0"
-    pip: []
-    pypi: []
-    git: []
-    github: []
-    gitlab: []
-    mercurial: []
-    svn: []
-    bazaar: []
-    url: []
-    script: []
-    upgrade: true
-  test_setup:
-  - type: "python"
-    user: false
-    packages:
-    - "viashpy"
-    pip: []
-    pypi: []
-    git: []
-    github: []
-    gitlab: []
-    mercurial: []
-    svn: []
-    bazaar: []
-    url: []
-    script: []
-    upgrade: true
+    - "chromium"
+    interactive: false
+  entrypoint: []
+  cmd: null
 - type: "nextflow"
   id: "nextflow"
   variant: "vdsl3"
   directives:
-    accelerator: {}
-    conda: []
-    containerOptions: []
-    label: []
-    module: []
-    pod: []
-    publishDir: []
-    queue: []
     tag: "$id"
   auto:
     simplifyInput: true
     simplifyOutput: true
     transcript: false
     publish: false
+  config:
+    labels:
+      mem1gb: "memory = 1.GB"
+      mem2gb: "memory = 2.GB"
+      mem4gb: "memory = 4.GB"
+      mem8gb: "memory = 8.GB"
+      mem16gb: "memory = 16.GB"
+      mem32gb: "memory = 32.GB"
+      mem64gb: "memory = 64.GB"
+      mem128gb: "memory = 128.GB"
+      mem256gb: "memory = 256.GB"
+      mem512gb: "memory = 512.GB"
+      mem1tb: "memory = 1.TB"
+      mem2tb: "memory = 2.TB"
+      mem4tb: "memory = 4.TB"
+      mem8tb: "memory = 8.TB"
+      mem16tb: "memory = 16.TB"
+      mem32tb: "memory = 32.TB"
+      mem64tb: "memory = 64.TB"
+      mem128tb: "memory = 128.TB"
+      mem256tb: "memory = 256.TB"
+      mem512tb: "memory = 512.TB"
+      cpu1: "cpus = 1"
+      cpu2: "cpus = 2"
+      cpu5: "cpus = 5"
+      cpu10: "cpus = 10"
+      cpu20: "cpus = 20"
+      cpu50: "cpus = 50"
+      cpu100: "cpus = 100"
+      cpu200: "cpus = 200"
+      cpu500: "cpus = 500"
+      cpu1000: "cpus = 1000"
   debug: false
   container: "docker"
 info:
@@ -124,6 +179,6 @@ info:
   platform: "nextflow"
   output: "/home/runner/work/openpipeline/openpipeline/target/nextflow/report/mermaid"
   executable: "/home/runner/work/openpipeline/openpipeline/target/nextflow/report/mermaid/mermaid"
-  viash_version: "0.7.1"
-  git_commit: "2f032d89fdd8b21b1198078f99e38852942a231d"
+  viash_version: "0.7.4"
+  git_commit: "3129581540608f27e8c7051671687349a57fd65e"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"

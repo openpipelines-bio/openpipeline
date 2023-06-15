@@ -56,6 +56,11 @@
             "type": "boolean",
             "description": "Whether or not to also run MultiQC at the end.",
             "default": "True"
+          },
+          "min_success_rate": {
+            "type": "number",
+            "description": "Fail when the success rate is below this threshold.",
+            "default": "0.5"
           }
           
         }

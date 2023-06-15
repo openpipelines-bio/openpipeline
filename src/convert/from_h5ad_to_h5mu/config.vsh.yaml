@@ -5,7 +5,7 @@ functionality:
   description: |
     Converts a single layer h5ad file into a single MuData object
   authors:
-    - __merge__: ../../authors/dries_de_maeyer.yaml
+    - __merge__: /src/authors/dries_de_maeyer.yaml
       roles: [ maintainer ]
   arguments:
     - name: "--input"
@@ -41,8 +41,11 @@ functionality:
     - path: ../../../resources_test/pbmc_1k_protein_v3
 platforms:
   - type: docker
-    image: python:3.8
+    image: python:3.8-slim
     setup:
+      - type: apt
+        packages: 
+          - procps
       - type: python
         packages:
           - mudata~=0.2.0

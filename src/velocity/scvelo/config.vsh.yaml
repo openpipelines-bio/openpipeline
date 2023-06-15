@@ -2,7 +2,7 @@ functionality:
   name: scvelo
   namespace: "velocity"
   authors:
-    - __merge__: ../../authors/dries_schaumont.yaml
+    - __merge__: /src/authors/dries_schaumont.yaml
       roles: [ maintainer ]
   argument_groups:
     - name: Inputs
@@ -75,8 +75,11 @@ functionality:
     - path: ../../../resources_test/rna_velocity/velocyto_processed/cellranger_tiny.loom
 platforms:
   - type: docker
-    image: python:3.9
+    image: python:3.9-slim
     setup:
+      - type: apt
+        packages:
+          - procps
       - type: python
         pip:
           - scvelo~=0.2.5

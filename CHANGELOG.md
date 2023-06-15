@@ -1,3 +1,83 @@
+# openpipelines 0.9.0
+
+## BREAKING CHANGES
+
+Running the integration in the `full_pipeline` deemed to be impractical because a plethora of integration methods exist, which in turn interact with other functionality (like clustering). This generates a large number of possible usecases which one pipeline cannot cover in an easy manner. Instead, each integration methods will be split into its separate pipeline, and the `full_pipeline` will prepare for integration by performing steps that are required by many integration methods. Therefore, the following changes were performed:
+
+  * `workflows/full_pipeline`: `harmony` integration and `leiden` clustering are removed from the pipeline.
+
+  * Added `initialize_integration` to run calculations that output information commonly required by the integration methods. This pipeline runs PCA, nearest neighbours and UMAP. This pipeline is run as a subpipeline at the end of `full_pipeline`.
+
+  * Added `leiden_harmony` integration pipeline: run harmony integration followed by neighbour calculations and leiden clustering. Also runs umap on the result.
+
+  * Removed the `integration` pipeline.
+
+The old behavior of the `full_pipeline` can be obtained by running `full_pipeline` followed by the `leiden_harmony` pipeline.
+
+* The `crispr` and `hashing` modalities have been renamed to `gdo` and `hto` respectively (PR #392).
+
+* Updated Viash to 0.7.4 (PR #390).
+
+* `cluster/leiden`: Output is now stored into `.obsm` instead of `.obs` (PR #431).
+
+## NEW FUNCTIONALITY
+
+* `cluster/leiden` and `integration/harmony_leiden`: allow running leiden multiple times with multiple resolutions (PR #431).
+
+* `workflows/full_pipeline`: PCA, nearest neighbours and UMAP are now calculated for the `prot` modality (PR #396).
+
+* `transform/clr`: added `output_layer` argument (PR #396).
+
+* `workflows/integration/scvi`: Run scvi integration followed by neighbour calculations and run umap on the result (PR #396).
+
+* `mapping/cellranger_multi` and `workflows/ingestion/cellranger_multi`: Added `--vdj_inner_enrichment_primers` argument (PR #417).
+
+* `metadata/move_obsm_to_obs`: Move a matrix from an `.obsm` slot into `.obs` (PR #431).
+
+* `integrate/scvi` validity checks for non-normalized input, obs and vars in order to proceed to training (PR #429).
+
+* `schemas`: Added schema files for authors (PR #436).
+
+* `schemas`: Added schema file for Viash configs (PR #436).
+
+* `schemas`: Refactor author import paths (PR #436).
+
+* `schemas`: Added schema file for file format specification files (PR #437).
+
+## MAJOR CHANGES
+
+* `report/mermaid`: Now used `mermaid-cli` to generate images instead of creating a request to `mermaid.ink`. New `--output_format`, `--width`, `--height` and  `--background_color` arguments were added (PR #419).
+
+* All components that used `python` as base container: use `slim` version to reduce container image size (PR #427).
+
+## MINOR CHANGES
+
+* `mapping/multi_star`: Added `--min_success_rate` which causes component to fail when the success rate of processed samples were successful (PR #408).
+
+* `correction/cellbender_remove_background` and `transform/clr`: update muon to 0.1.5 (PR #428)
+
+* `ingestion/cellranger_postprocessing`: split integration tests into several workflows (PR #425).
+
+* `schemas`: Add schema file for author yamls (PR #436).
+
+* `mapping/multi_star`, `mapping/star_build_reference` and `mapping/star_align`: update STAR from 2.7.10a to 2.7.10b (PR #441).
+
+## BUG FIXES
+
+* `annotate/popv`: Fix concat issue when the input data has multiple layers (#395, PR #397).
+
+* `annotate/popv`: Fix indexing issue when MuData object contain non overlapping modalities (PR #405).
+
+* `mapping/multi_star`: Fix issue where temp dir could not be created when group_id contains slashes (PR #406).
+
+* `mapping/multi_star_to_h5mu`: Use glob to look for count files recursively (PR #408).
+
+* `annotate/popv`: Pin `PopV`, `jax` and `jaxlib` versions (PR #415).
+
+* `integrate/scvi`: the max_epochs is no longer required since it has a default value (PR #396).
+
+* `workflows/full_pipeline`: fix `make_observation_keys_unique` parameter not being correctly passed to the `add_id` component, causing `ValueError: Observations are not unique across samples` during execution of the `concat` component (PR #422).
+
 # openpipelines 0.8.0
 
 ## BREAKING CHANGES
@@ -40,6 +120,8 @@
 
 * `workflows/full_pipeline`: Fix incorrectly named filtering arguments (#372).
 
+* `integrate/scvi`: Fix bug when subsetting using the `var_input` argument (PR #385).
+* 
 * `correction/cellbender_remove_background`: add `obsm_latent_gene_encoding` parameter to store the latent gene representation.
 
 ## MINOR CHANGES
@@ -59,6 +141,8 @@
 * `filter/filter_with_hvg`: Add error when specified input layer cannot be found in input data.
 
 * `workflows/multiomics/full_pipeline`: publish the output from sample merging to allow running different integrations.
+
+* CI: Remove Android SDK and .NET folders from runner image in order to avoid `no space left on device.` (PR #425)
 
 # openpipelines 0.7.1
 

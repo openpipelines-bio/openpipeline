@@ -1,7 +1,7 @@
 {
     "$schema": "http://json-schema.org/draft-07/schema",
-    "title": "integration",
-    "description": "A pipeline for demultiplexing multimodal multi-sample RNA transcriptomics data.",
+    "title": "scanorama_leiden",
+    "description": "Run scanorama integration followed by neighbour calculations, leiden clustering and run umap on the result.",
     "type": "object",
     "definitions": {
       "inputs" : {
@@ -40,47 +40,6 @@
           
         }
       },
-      "pca options" : {
-        "title": "PCA options",
-        "type": "object",
-        "description": "No description",
-        "properties": {
-          "obsm_pca": {
-            "type": "string",
-            "description": "In which .obsm slot to store the resulting PCA embedding.",
-            "default": "X_pca"
-          },
-          "var_pca_feature_selection": {
-            "type": "string",
-            "description": "Column name in .var matrix that will be used to select which genes to run the PCA on.",
-            "default": ""
-          }
-          
-        }
-      },
-      "harmony integration options" : {
-        "title": "Harmony integration options",
-        "type": "object",
-        "description": "No description",
-        "properties": {
-          "obsm_integrated": {
-            "type": "string",
-            "description": "In which .obsm slot to store the resulting integrated embedding.",
-            "default": "X_pca_integrated"
-          },
-          "obs_covariates": {
-            "type": "string",
-            "description": "The .obs field(s) that define the covariate(s) to regress out.",
-            "default": ""
-          },
-          "rna_theta": {
-            "type": "number",
-            "description": "Diversity clustering penalty parameter. Specify for each variable in group.by.vars. ","help_text": "Diversity clustering penalty parameter. Specify for each variable in group.by.vars. \ntheta=0 does not encourage any diversity. Larger values of theta\nresult in more diverse clusters.\"\n",
-            "default": "2"
-          }
-          
-        }
-      },
       "neighbour calculation" : {
         "title": "Neighbour calculation",
         "type": "object",
@@ -89,17 +48,65 @@
           "uns_neighbors": {
             "type": "string",
             "description": "In which .uns slot to store various neighbor output objects.",
-            "default": "neighbors"
+            "default": "scanorama_integration_neighbors"
           },
           "obsp_neighbor_distances": {
             "type": "string",
             "description": "In which .obsp slot to store the distance matrix between the resulting neighbors.",
-            "default": "distances"
+            "default": "scanorama_integration_distances"
           },
           "obsp_neighbor_connectivities": {
             "type": "string",
             "description": "In which .obsp slot to store the connectivities matrix between the resulting neighbors.",
-            "default": "connectivities"
+            "default": "scanorama_integration_connectivities"
+          }
+          
+        }
+      },
+      "scanorama integration options" : {
+        "title": "Scanorama integration options",
+        "type": "object",
+        "description": "No description",
+        "properties": {
+          "obs_batch": {
+            "type": "string",
+            "description": "Column name discriminating between your batches.",
+            "default": "sample_id"
+          },
+          "obsm_input": {
+            "type": "string",
+            "description": ".osbm slot that points to embedding to run scanorama on.",
+            "default": "X_pca"
+          },
+          "obsm_output": {
+            "type": "string",
+            "description": "The name of the field in adata.obsm where the integrated embeddings will be stored after running this function. Defaults to X_scanorama.",
+            "default": "X_scanorama"
+          },
+          "knn": {
+            "type": "integer",
+            "description": "Number of nearest neighbors to use for matching.",
+            "default": "20"
+          },
+          "batch_size": {
+            "type": "integer",
+            "description": "The batch size used in the alignment vector computation. Useful when integrating very large (\u003e100k samples) datasets. Set to large value that runs within available memory.",
+            "default": "5000"
+          },
+          "sigma": {
+            "type": "number",
+            "description": "Correction smoothing parameter on Gaussian kernel.",
+            "default": "15"
+          },
+          "approx": {
+            "type": "boolean",
+            "description": "Use approximate nearest neighbors with Python annoy; greatly speeds up matching runtime.",
+            "default": "True"
+          },
+          "alpha": {
+            "type": "number",
+            "description": "Alignment score minimum cutoff",
+            "default": "0.1"
           }
           
         }
@@ -112,12 +119,12 @@
           "obs_cluster": {
             "type": "string",
             "description": "Name of the .obs key under which to add the cluster labels.",
-            "default": "leiden"
+            "default": "scanorama_integration_leiden"
           },
           "leiden_resolution": {
             "type": "number",
             "description": "Control the coarseness of the clustering. Higher values lead to more clusters.",
-            "default": "1"
+            "default": "[1]"
           }
           
         }
@@ -130,7 +137,7 @@
           "obsm_umap": {
             "type": "string",
             "description": "In which .obsm slot to store the resulting UMAP embedding.",
-            "default": "X_umap"
+            "default": "X_leiden_scanorama_umap"
           }
           
         }
@@ -162,13 +169,10 @@
         "$ref": "#/definitions/outputs"
       },
       {
-        "$ref": "#/definitions/pca options"
-      },
-      {
-        "$ref": "#/definitions/harmony integration options"
-      },
-      {
         "$ref": "#/definitions/neighbour calculation"
+      },
+      {
+        "$ref": "#/definitions/scanorama integration options"
       },
       {
         "$ref": "#/definitions/clustering options"

@@ -5,7 +5,7 @@ functionality:
   description: |
     Converts a 10x h5 into an h5mu file.
   authors:
-    - __merge__: ../../authors/robrecht_cannoodt.yaml
+    - __merge__: /src/authors/robrecht_cannoodt.yaml
       roles: [ maintainer ]
   argument_groups:
     - name: Inputs
@@ -58,8 +58,11 @@ functionality:
     - path: ../../../resources_test/pbmc_1k_protein_v3
 platforms:
   - type: docker
-    image: python:3.8
+    image: python:3.8-slim
     setup:
+      - type: apt
+        packages:
+          - procps
       - type: python
         packages:
           - mudata~=0.2.0

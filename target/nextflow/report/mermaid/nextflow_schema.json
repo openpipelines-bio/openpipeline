@@ -1,7 +1,7 @@
 {
     "$schema": "http://json-schema.org/draft-07/schema",
     "title": "mermaid",
-    "description": "Generates a network from mermaid code. \n\nSee `https://mermaid-js.github.io/mermaid/#/Tutorials`. \nThis component uses the external mermaid.ink service to generate visual networks.\n",
+    "description": "Generates a network from mermaid code.\n",
     "type": "object",
     "definitions": {
       "arguments" : {
@@ -18,6 +18,26 @@
             "type": "string",
             "description": "Generated network as output.",
             "default": "$id.$key.output.output"
+          },
+          "output_format": {
+            "type": "string",
+            "description": "Output format for the generated image. By default will be inferred from the extension ","help_text": "Output format for the generated image. By default will be inferred from the extension \nof the file specified with --output.\n","enum": ["svg", "png", "pdf"],
+            "default": ""
+          },
+          "width": {
+            "type": "integer",
+            "description": "Width of the page",
+            "default": "800"
+          },
+          "height": {
+            "type": "integer",
+            "description": "Height of the page",
+            "default": "600"
+          },
+          "background_color": {
+            "type": "string",
+            "description": "Background color for pngs/svgs (not pdfs)",
+            "default": "white"
           }
           
         }

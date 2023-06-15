@@ -4,8 +4,8 @@ modality: "rna"
 obsp_connectivities: "connectivities"
 # output: "$id.$key.output.h5mu"
 # output_compression: "gzip"
-obs_name: "leiden"
-resolution: 1
+obsm_name: "leiden"
+resolution: [1]
 
 # Nextflow input-output arguments
 publish_dir: # please fill in - example: "output/"
