@@ -51,6 +51,6 @@ def test_cellxgene_extract_metadata_expression(run_component):
     var, obs = component_data.mod['rna'].var, component_data.mod['rna'].obs
     assert "soma_joinid" in var
     assert "soma_joinid" in obs
-    
+
 if __name__ == '__main__':
     sys.exit(pytest.main([__file__]))
