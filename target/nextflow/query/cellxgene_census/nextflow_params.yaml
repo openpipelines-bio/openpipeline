@@ -1,0 +1,22 @@
+# Inputs
+input_database: "CellxGene"
+modality: "rna"
+cellxgene_release: "2023-05-15"
+
+# Outputs
+# output: "$id.$key.output.h5mu"
+# output_compression: "gzip"
+
+# Query
+species: "homo_sapiens"
+# cell_type: ["mesothelial fibroblast"]
+# tissue: ["lung"]
+# technology: ["10x 3' v3"]
+# suspension: ["cell"]
+is_primary_data: true
+# obs_column_names: ["foo"]
+metadata_only: true
+
+# Nextflow input-output arguments
+publish_dir: # please fill in - example: "output/"
+# param_list: "my_params.yaml"

@@ -453,7 +453,7 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
     "platform" : "nextflow",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/annotate/popv",
     "viash_version" : "0.7.4",
-    "git_commit" : "8cff7e61fccc48c1e87e5f0dad57027b8f2bfd00",
+    "git_commit" : "04edf70ea536ff2d688c579e3bbebb0db01b5b60",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))
@@ -633,11 +633,14 @@ def main(par, meta):
             cl_obo_folder=cl_obo_folder,
             use_gpu=use_gpu
         )
-
+        method_kwargs = {}
+        if 'scanorama' in par['methods']:
+            method_kwargs['scanorama'] = {'approx': False}
         logger.info("Annotate data")
         popv.annotation.annotate_data(
             adata=pq.adata,
-            methods=par["methods"]
+            methods=par["methods"],
+            methods_kwargs=method_kwargs
         )
 
     popv_input = pq.adata[input_modality.obs_names]
