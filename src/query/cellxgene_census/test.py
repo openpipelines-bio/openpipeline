@@ -2,7 +2,7 @@ import sys
 import os
 import pytest
 import mudata as md
-import pd
+import pandas as pd
 
 ## VIASH START
 meta = {
