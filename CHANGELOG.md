@@ -60,7 +60,7 @@ The old behavior of the `full_pipeline` can be obtained by running `full_pipelin
 
 * `schemas`: Add schema file for author yamls (PR #436).
 
-* `mapping/multi_star`, `mapping/star_build_reference` and `mapping/star_align`: update STAR from 2.7.10a to 2.7.10b.
+* `mapping/multi_star`, `mapping/star_build_reference` and `mapping/star_align`: update STAR from 2.7.10a to 2.7.10b (PR #441).
 
 ## BUG FIXES
 
