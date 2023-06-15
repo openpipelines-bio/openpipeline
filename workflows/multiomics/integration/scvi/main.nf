@@ -69,7 +69,10 @@ workflow run_wf {
     | getWorkflowArguments(key: "neighbors")
     | find_neighbors
     | getWorkflowArguments(key: "umap")
-    | umap
+    | umap.run(
+        args: [ output_compression: "gzip" ],     
+        auto: [ publish: true ]
+    )
     | pmap {id, arguments, other_arguments ->
       return [id, arguments]
     }
