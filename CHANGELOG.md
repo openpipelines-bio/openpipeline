@@ -44,7 +44,7 @@ The old behavior of the `full_pipeline` can be obtained by running `full_pipelin
 
 * `schemas`: Added schema file for file format specification files (PR #437).
 
-* `query/cellxgene_census`: Cellxgene census component for data intake inti openpipeline (PR #433).
+* `query/cellxgene_census`: Query Cellxgene census component and save the results to a MuData file. (PR #433).
 
 ## MAJOR CHANGES
 
