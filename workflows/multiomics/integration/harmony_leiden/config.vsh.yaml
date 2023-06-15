@@ -62,7 +62,7 @@ functionality:
           example: ["batch", "sample"]
           multiple: true
           required: true
-        - name: "--rna_theta"
+        - name: "--theta"
           type: double
           description: |
             Diversity clustering penalty parameter. Specify for each variable in group.by.vars. 
