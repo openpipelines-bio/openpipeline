@@ -168,11 +168,14 @@ def main(par, meta):
             cl_obo_folder=cl_obo_folder,
             use_gpu=use_gpu
         )
-
+        method_kwargs = {}
+        if 'scanorama' in par['methods']:
+            method_kwargs['scanorama'] = {'approx': False}
         logger.info("Annotate data")
         popv.annotation.annotate_data(
             adata=pq.adata,
-            methods=par["methods"]
+            methods=par["methods"],
+            methods_kwargs=method_kwargs
         )
 
     popv_input = pq.adata[input_modality.obs_names]
