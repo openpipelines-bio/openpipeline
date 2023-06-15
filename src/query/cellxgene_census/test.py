@@ -14,7 +14,7 @@ OUTPUT_FILE = "output.h5mu"
 
 def test_cellxgene(run_component):
     run_component([
-        "--input_database", "CellxGene",
+        "--input_database", "s",
         "--modality", "rna",
         "--cell_ontology_release", "2023-05-22",
         "--cellxgene_release", "2023-05-15",

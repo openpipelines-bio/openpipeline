@@ -45,10 +45,7 @@ def connect_census():
         _type_: _description_
     """
     if par["input_database"] != "CellxGene":
-        logger.info(
-            "Custom census database is not implemented yet!"
-            )
-        sys.exit(1)
+        raise NotImplementedError("Custom census database is not implemented yet!")
 
     logger.info(
         "Initializing %s release %s",
