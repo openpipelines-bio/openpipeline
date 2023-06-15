@@ -71,10 +71,21 @@ def read_cell_ontology():
 
 def get_cell_type_terms():
     logger.info("Reading Cell Ontology OBO")
+
     co = read_cell_ontology()
-    id_to_name = {id_: data.get("name") for id_, data in co.nodes(data=True)}
-    id_to_name = {k: v for k, v in id_to_name.items() if v is not None}
-    name_to_id = {v: k for k, v in id_to_name.items()}
+    id_to_name = {
+        id_: data.get("name")
+        for id_, data in co.nodes(data=True)
+        }
+    id_to_name = {
+        term_id: term_name
+        for term_id, term_name in id_to_name.items()
+        if term_name is not None
+        }
+    name_to_id = {
+        term_name: term_id
+        for term_id, term_name in id_to_name.items()
+        }
 
     # TODO: can be more pythonic
     lower_hierarchy_cell_of_interest_map = {}
@@ -83,7 +94,11 @@ def get_cell_type_terms():
         logger.info("Locating all child cell types of %s", cell_type)
         node = name_to_id[cell_type]
         lower_hierarchy_cell_of_interest_map.update(
-            {parent:id_to_name[parent] for parent, child, key in co.in_edges(node, keys=True) if key == 'is_a'}
+            {
+                parent:id_to_name[parent]
+                for parent, child, key in co.in_edges(node, keys=True)
+                if key == 'is_a'
+                }
             )
         lower_hierarchy_cell_of_interest_map.update({node: cell_type})
         cell_of_interest_terms.extend(
@@ -110,16 +125,15 @@ def get_cell_type_terms():
 
 def build_census_query(par):
     _query = f'is_primary_data == {par["is_primary_data"]}'
-    if par["cell_type"]:
-        _, cell_of_interest_terms = get_cell_type_terms()
-        _query = _query + f' and cell_type_ontology_term_id in {cell_of_interest_terms}'
-    if par["tissue"]:
-        _query = _query + f' and tissue in {par["tissue"]}'
-    if par["technology"]:
-        _query = _query + f' and assay in {par["technology"]}'
-    if par["suspension"]:
-        _query = _query + f' and suspension_type in {par["suspension"]}'
-    logger.info("Census query: %s", _query)
+    query_builder = {
+        'cell_type': f' and cell_type_ontology_term_id in {get_cell_type_terms()}',
+        'tissue': f' and tissue in {par["tissue"]}',
+        'technology': f' and assay in {par["technology"]}',
+        'suspension': f' and suspension_type in {par["suspension"]}',
+    }
+    for parameter_name, query_part in query_builder.items():
+        if par[parameter_name]:
+            _query += query_part
 
     return _query
 
