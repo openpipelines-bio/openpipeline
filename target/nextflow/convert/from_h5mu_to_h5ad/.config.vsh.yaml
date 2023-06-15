@@ -166,5 +166,5 @@ info:
   output: "/home/runner/work/openpipeline/openpipeline/target/nextflow/convert/from_h5mu_to_h5ad"
   executable: "/home/runner/work/openpipeline/openpipeline/target/nextflow/convert/from_h5mu_to_h5ad/from_h5mu_to_h5ad"
   viash_version: "0.7.4"
-  git_commit: "9bafe117bc72d77d19633663b67622252515bfb7"
+  git_commit: "3129581540608f27e8c7051671687349a57fd65e"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"
