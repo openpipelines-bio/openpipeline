@@ -22,7 +22,8 @@ cl_obo_folder = "/opt/cellxgene_census_cl_ontology/"
 par = {
     "input_database": "CellxGene",
     "modality": "rna",
-    "cell_ontology_release": "2023-05-22",
+    #TODO: escalate to downloaded version
+    # "cell_ontology_release": "2023-05-22",
     "cellxgene_release": "2023-05-15",
     "species": "homo_sapiens",
     "cell_type": ["mesothelial fibroblast"],
@@ -40,7 +41,7 @@ par = {
 
 def connect_census(input_database, release):
     """
-    aConnect to CellxGene Census or user-provided TileDBSoma object
+    Connect to CellxGene Census or user-provided TileDBSoma object
     """
     if input_database != "CellxGene":
         raise NotImplementedError(
@@ -125,25 +126,29 @@ def build_census_query(par):
 
 def extract_metadata(census_connection, query, species, obs_column_names):
     logger.info("Extracting only metadata")
-    logger.info(census_connection["census_data"][species].obs)
-    return (
-        census_connection["census_data"][species].obs.read(
-            value_filter=query,
-            column_names=obs_column_names).concat().to_pandas()
-        )
+
+    query_data = census_connection["census_data"][species].obs.read(
+        value_filter=query,
+        column_names=obs_column_names).concat().to_pandas()
+
+    return ad.AnnData(obs=query_data)
 
 
 def extract_metadata_expression(
     census_connection, query,species, obs_column_names):
     logger.info("Extracting metadata and gene expression matrix")
-    return (
-        cellxgene_census.get_anndata(
-            census_connection,
-            organism = species,
-            obs_value_filter = query,
-            column_names = {"obs": obs_column_names}
-            )
+
+    query_data = cellxgene_census.get_anndata(
+        census_connection,
+        organism = species,
+        obs_value_filter = query,
+        column_names = {"obs": obs_column_names}
         )
+
+    query_data.X = csr_matrix(query_data.X)
+    query_data.var_names_make_unique()
+
+    return query_data
 
 
 def write_mudata(mdata, output_location, compression):
@@ -172,20 +177,12 @@ def main():
             census_connection, query, par["species"], par["obs_column_names"]
             )
 
-    # clean-up mem
     census_connection.close()
     del census_connection
 
-    if isinstance(query_data, pd.core.frame.DataFrame):
-        mdata = mu.MuData(
-            {par["modality"]: ad.AnnData(obs=query_data)}
-            )
-    else:
-        query_data.X = csr_matrix(query_data.X)
-        mdata = mu.MuData(
-            {par["modality"]: query_data}
-            )
-        mdata.var_names_make_unique()
+    mdata = mu.MuData(
+        {par["modality"]: query_data}
+        )
 
     write_mudata(mdata, par["output"], par["compression"])
 

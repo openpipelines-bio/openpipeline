@@ -16,7 +16,8 @@ def test_cellxgene(run_component):
     run_component([
         "--input_database", "CellxGene",
         "--modality", "rna",
-        "--cell_ontology_release", "2023-05-22",
+        #TODO: escalate to downloaded version
+        # "--cell_ontology_release", "2023-05-22",
         "--cellxgene_release", "2023-05-15",
         "--species", "homo_sapiens",
         "--tissue", "lung",
