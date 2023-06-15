@@ -106,6 +106,7 @@ functionality:
   resources:
     - type: python_script
       path: script.py
+    - path: ./cl-base.obo
   test_resources:
     - type: python_script
       path: test.py
