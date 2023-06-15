@@ -216,5 +216,5 @@ info:
   output: "/home/runner/work/openpipeline/openpipeline/target/nextflow/transform/log1p"
   executable: "/home/runner/work/openpipeline/openpipeline/target/nextflow/transform/log1p/log1p"
   viash_version: "0.7.4"
-  git_commit: "b17b72c0b0d70e8b0aa113659cac4c7634fb8c35"
+  git_commit: "aa4395642d8f944e758d92ba3f1029790b95d1c1"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"
