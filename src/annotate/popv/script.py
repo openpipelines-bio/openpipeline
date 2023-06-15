@@ -175,7 +175,7 @@ def main(par, meta):
         popv.annotation.annotate_data(
             adata=pq.adata,
             methods=par["methods"],
-
+            methods_kwargs=method_kwargs
         )
 
     popv_input = pq.adata[input_modality.obs_names]
