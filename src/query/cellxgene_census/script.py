@@ -15,9 +15,6 @@ logFormatter = logging.Formatter("%(asctime)s %(levelname)-8s %(message)s")
 console_handler.setFormatter(logFormatter)
 logger.addHandler(console_handler)
 
-# where to find the obo files
-cl_obo_folder = "/opt/cellxgene_census_cl_ontology/"
-
 ## VIASH START
 par = {
     "input_database": "CellxGene",
@@ -62,7 +59,7 @@ def read_cell_ontology():
         graph: cell type obo ontology
     """
     return obonet.read_obo(
-        f"{cl_obo_folder}/cl.obo",
+        "./cl-base.obo",
         encoding="utf-8"
     )
 
