@@ -58,7 +58,7 @@ workflow run_wf {
         "obsm_output": "obsm_umap",
         "modality": "modality"
       ],
-      move_obsm_to_obs_leiden: []
+      move_obsm_to_obs_leiden: ["modality": "modality"]
     )
     | getWorkflowArguments(key: "harmony")
     | harmonypy
