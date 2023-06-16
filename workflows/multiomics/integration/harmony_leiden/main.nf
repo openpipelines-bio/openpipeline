@@ -70,7 +70,7 @@ workflow run_wf {
     | umap
     | getWorkflowArguments(key: "move_obsm_to_obs_leiden")
     | move_obsm_to_obs.run(
-        args: [ obsm_key: "leiden", output_compression: "gzip" ],     
+        args: [ obsm_key: "leiden", output_compression: "gzip", "modality": "modality" ],     
         auto: [ publish: true ],
     )
 
