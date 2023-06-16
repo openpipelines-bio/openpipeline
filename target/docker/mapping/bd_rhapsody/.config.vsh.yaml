@@ -1,7 +1,7 @@
 functionality:
   name: "bd_rhapsody"
   namespace: "mapping"
-  version: "0.9.0"
+  version: "0.8.0"
   authors:
   - name: "Robrecht Cannoodt"
     roles:
@@ -410,5 +410,5 @@ info:
   output: "/home/runner/work/openpipeline/openpipeline/target/docker/mapping/bd_rhapsody"
   executable: "/home/runner/work/openpipeline/openpipeline/target/docker/mapping/bd_rhapsody/bd_rhapsody"
   viash_version: "0.7.4"
-  git_commit: "3129581540608f27e8c7051671687349a57fd65e"
+  git_commit: "04edf70ea536ff2d688c579e3bbebb0db01b5b60"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"

@@ -1,0 +1,129 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema",
+    "title": "cellxgene_census",
+    "description": "Query CellxGene Census or user-specified TileDBSoma object, and eventually fetch cell and gene metadata or/and expression counts.",
+    "type": "object",
+    "definitions": {
+      "inputs" : {
+        "title": "Inputs",
+        "type": "object",
+        "description": "Arguments related to the input (aka query) dataset.",
+        "properties": {
+          "input_database": {
+            "type": "string",
+            "description": "Full input database S3 prefix URL. Default: CellxGene Census",
+            "default": "CellxGene"
+          },
+          "modality": {
+            "type": "string",
+            "description": "Which modality to store the output in.",
+            "default": "rna"
+          },
+          "cellxgene_release": {
+            "type": "string",
+            "description": "CellxGene Census release date. More information: https://chanzuckerberg.github.io/cellxgene-census/cellxgene_census_docsite_data_release_info.html",
+            "default": "2023-05-15"
+          }
+          
+        }
+      },
+      "outputs" : {
+        "title": "Outputs",
+        "type": "object",
+        "description": "Output arguments.",
+        "properties": {
+          "output": {
+            "type": "string",
+            "description": "Output h5mu file.",
+            "default": "$id.$key.output.h5mu"
+          },
+          "output_compression": {
+            "type": "string",
+            "description": "No description","enum": ["gzip", "lzf"],
+            "default": ""
+          }
+          
+        }
+      },
+      "query" : {
+        "title": "Query",
+        "type": "object",
+        "description": "Arguments related to the query.",
+        "properties": {
+          "species": {
+            "type": "string",
+            "description": "Specie(s) of interest. If not specified, Homo Sapiens will be queried.","enum": ["homo_sapiens", "mus_musculus"],
+            "default": "homo_sapiens"
+          },
+          "cell_type": {
+            "type": "string",
+            "description": "Cell type(s) of interest. Cell type should be one of the Cell Ontology terms. If not specified, all cell types will be queried.",
+            "default": ""
+          },
+          "tissue": {
+            "type": "string",
+            "description": "Tissue(s) of interest. If not specified, all tissues will be queried.",
+            "default": ""
+          },
+          "technology": {
+            "type": "string",
+            "description": "Technology(ies) of interest. If not specified, all technologies will be queried.","enum": ["10x 3\u0027 v1", "10x 3\u0027 v2", "10x 3\u0027 v3", "10x 5\u0027 v1", "10x 5\u0027 v2"],
+            "default": ""
+          },
+          "suspension": {
+            "type": "string",
+            "description": "Suspension(s) of interest. If not specified, all suspensions will be queried.","enum": ["cell", "nucleus"],
+            "default": ""
+          },
+          "is_primary_data": {
+            "type": "boolean",
+            "description": "Allow only primary data in the query in order to prevent of data duplication.",
+            "default": "True"
+          },
+          "obs_column_names": {
+            "type": "string",
+            "description": "obs columns of interest. If not specified, all columns will be returned.",
+            "default": ""
+          },
+          "metadata_only": {
+            "type": "boolean",
+            "description": "By default only returns metadata of obs layer of query. If False, returns metadata of obs layer and gene expression matrix of query",
+            "default": "True"
+          }
+          
+        }
+      },
+      "nextflow input-output arguments" : {
+        "title": "Nextflow input-output arguments",
+        "type": "object",
+        "description": "Input/output parameters for Nextflow itself. Please note that both publishDir and publish_dir are supported but at least one has to be configured.",
+        "properties": {
+          "publish_dir": {
+            "type": "string",
+            "description": "Path to an output directory.",
+            "default": ""
+          },
+          "param_list": {
+            "type": "string",
+            "description": "Allows inputting multiple parameter sets to initialise a Nextflow channel. A `param_list` can either be a list of maps, a csv file, a json file, a yaml file, or simply a yaml blob.","help_text": "Allows inputting multiple parameter sets to initialise a Nextflow channel. A `param_list` can either be a list of maps, a csv file, a json file, a yaml file, or simply a yaml blob.\n\n* A list of maps (as-is) where the keys of each map corresponds to the arguments of the pipeline. Example: in a `nextflow.config` file: `param_list: [ [\u0027id\u0027: \u0027foo\u0027, \u0027input\u0027: \u0027foo.txt\u0027], [\u0027id\u0027: \u0027bar\u0027, \u0027input\u0027: \u0027bar.txt\u0027] ]`.\n* A csv file should have column names which correspond to the different arguments of this pipeline. Example: `--param_list data.csv` with columns `id,input`.\n* A json or a yaml file should be a list of maps, each of which has keys corresponding to the arguments of the pipeline. Example: `--param_list data.json` with contents `[ {\u0027id\u0027: \u0027foo\u0027, \u0027input\u0027: \u0027foo.txt\u0027}, {\u0027id\u0027: \u0027bar\u0027, \u0027input\u0027: \u0027bar.txt\u0027} ]`.\n* A yaml blob can also be passed directly as a string. Example: `--param_list \"[ {\u0027id\u0027: \u0027foo\u0027, \u0027input\u0027: \u0027foo.txt\u0027}, {\u0027id\u0027: \u0027bar\u0027, \u0027input\u0027: \u0027bar.txt\u0027} ]\"`.\n\nWhen passing a csv, json or yaml file, relative path names are relativized to the location of the parameter file. No relativation is performed when `param_list` is a list of maps (as-is) or a yaml blob.","hidden": true,
+            "default": ""
+          }
+          
+        }
+      }
+    },
+    "allOf": [
+      {
+        "$ref": "#/definitions/inputs"
+      },
+      {
+        "$ref": "#/definitions/outputs"
+      },
+      {
+        "$ref": "#/definitions/query"
+      },
+      {
+        "$ref": "#/definitions/nextflow input-output arguments"
+      }
+      ]
+}
