@@ -54,7 +54,7 @@ The old behavior of the `full_pipeline` can be obtained by running `full_pipelin
 
 ## MINOR CHANGES
 
-* `integrate/scvi`: update scvi to 1.0.0
+* `integrate/scvi`: update scvi to 1.0.0 (PR #448)
 
 * `mapping/multi_star`: Added `--min_success_rate` which causes component to fail when the success rate of processed samples were successful (PR #408).
 
