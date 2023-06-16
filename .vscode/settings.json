@@ -6,6 +6,7 @@
       "schemas/viash_config.yaml": "src/**/*.vsh.yaml"
     },
     "files.watcherExclude": {
-      "**/target": true
+      "**/target": true,
+      ".github": true
     }
   }
