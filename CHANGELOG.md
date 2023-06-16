@@ -146,7 +146,7 @@ The old behavior of the `full_pipeline` can be obtained by running `full_pipelin
 
 * `workflows/multiomics/full_pipeline`: publish the output from sample merging to allow running different integrations.
 
-* CI: Remove Android SDK and .NET folders from runner image in order to avoid `no space left on device.` (PR #425)
+* CI: Remove various unused software libraries from runner image in order to avoid `no space left on device` (PR #425, PR #447).
 
 # openpipelines 0.7.1
 
