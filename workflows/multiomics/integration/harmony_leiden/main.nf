@@ -36,23 +36,27 @@ workflow run_wf {
         "obsm_input": "embedding",
         "obs_covariates": "obs_covariates",
         "obsm_output": "obsm_integrated",
-        "theta": "rna_theta"
+        "theta": "theta",
+        "modality": "modality"
       ],
       neighbors: [
         "uns_output": "uns_neighbors",
         "obsp_distances": "obsp_neighbor_distances",
         "obsp_connectivities": "obsp_neighbor_connectivities",
-        "obsm_input": "obsm_integrated"
+        "obsm_input": "obsm_integrated",
+        "modality": "modality"
       ],
       clustering: [
         "obsp_connectivities": "obsp_neighbor_connectivities",
         "obs_name": "obs_cluster",
         "resolution": "leiden_resolution",
+        "modality": "modality"
       ],
       umap: [ 
         "uns_neighbors": "uns_neighbors",
         "output": "output",
-        "obsm_output": "obsm_umap"
+        "obsm_output": "obsm_umap",
+        "modality": "modality"
       ],
       move_obsm_to_obs_leiden: []
     )
@@ -63,12 +67,12 @@ workflow run_wf {
     | getWorkflowArguments(key: "clustering")
     | leiden.run(args: [obsm_name: "leiden"])
     | getWorkflowArguments(key: "umap")
-    | umap.run(
-      auto: [ publish: true ],
-      args: [ output_compression: "gzip" ]
-    )
+    | umap
     | getWorkflowArguments(key: "move_obsm_to_obs_leiden")
-    | move_obsm_to_obs.run(args: [ obsm_key: "leiden" ] )
+    | move_obsm_to_obs.run(
+        args: [ obsm_key: "leiden", output_compression: "gzip" ],     
+        auto: [ publish: true ],
+    )
 
     // remove splitArgs
     | map { tup ->

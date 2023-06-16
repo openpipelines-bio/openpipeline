@@ -45,17 +45,20 @@ workflow run_wf {
         "lr_factor": "lr_factor",
         "lr_patience": "lr_patience",
         "output_model": "output_model",
+        "modality": "modality"
       ],
       neighbors: [
         "uns_output": "uns_neighbors",
         "obsp_distances": "obsp_neighbor_distances",
         "obsp_connectivities": "obsp_neighbor_connectivities",
-        "obsm_input": "obsm_output" // use output from scvi as input for neighbors
+        "obsm_input": "obsm_output", // use output from scvi as input for neighbors,
+        "modality": "modality"
       ],
       umap: [ 
         "uns_neighbors": "uns_neighbors",
         "output": "output",
-        "obsm_output": "obsm_umap"
+        "obsm_output": "obsm_umap",
+        "modality": "modality"
       ]
     )
     | getWorkflowArguments(key: "scvi")
@@ -69,7 +72,10 @@ workflow run_wf {
     | getWorkflowArguments(key: "neighbors")
     | find_neighbors
     | getWorkflowArguments(key: "umap")
-    | umap
+    | umap.run(
+        args: [ output_compression: "gzip" ],     
+        auto: [ publish: true ]
+    )
     | pmap {id, arguments, other_arguments ->
       return [id, arguments]
     }

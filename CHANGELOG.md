@@ -1,4 +1,4 @@
-# openpipelines 0.9.0 (unreleased)
+# openpipelines 0.9.0
 
 ## BREAKING CHANGES
 
@@ -44,6 +44,8 @@ The old behavior of the `full_pipeline` can be obtained by running `full_pipelin
 
 * `schemas`: Added schema file for file format specification files (PR #437).
 
+* `query/cellxgene_census`: Query Cellxgene census component and save the results to a MuData file. (PR #433).
+
 ## MAJOR CHANGES
 
 * `report/mermaid`: Now used `mermaid-cli` to generate images instead of creating a request to `mermaid.ink`. New `--output_format`, `--width`, `--height` and  `--background_color` arguments were added (PR #419).
@@ -52,6 +54,8 @@ The old behavior of the `full_pipeline` can be obtained by running `full_pipelin
 
 ## MINOR CHANGES
 
+* `integrate/scvi`: update scvi to 1.0.0 (PR #448)
+
 * `mapping/multi_star`: Added `--min_success_rate` which causes component to fail when the success rate of processed samples were successful (PR #408).
 
 * `correction/cellbender_remove_background` and `transform/clr`: update muon to 0.1.5 (PR #428)
@@ -59,6 +63,8 @@ The old behavior of the `full_pipeline` can be obtained by running `full_pipelin
 * `ingestion/cellranger_postprocessing`: split integration tests into several workflows (PR #425).
 
 * `schemas`: Add schema file for author yamls (PR #436).
+
+* `mapping/multi_star`, `mapping/star_build_reference` and `mapping/star_align`: update STAR from 2.7.10a to 2.7.10b (PR #441).
 
 ## BUG FIXES
 
@@ -75,6 +81,8 @@ The old behavior of the `full_pipeline` can be obtained by running `full_pipelin
 * `integrate/scvi`: the max_epochs is no longer required since it has a default value (PR #396).
 
 * `workflows/full_pipeline`: fix `make_observation_keys_unique` parameter not being correctly passed to the `add_id` component, causing `ValueError: Observations are not unique across samples` during execution of the `concat` component (PR #422).
+
+* `annotate/popv`: now sets `aprox` to `False` to avoid using `annoy` in scanorama because it fails on processors that are missing the AVX-512 instruction sets, causing `Illegal instruction (core dumped)`.
 
 # openpipelines 0.8.0
 
