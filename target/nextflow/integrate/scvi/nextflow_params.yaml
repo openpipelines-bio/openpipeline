@@ -24,8 +24,8 @@ lr_factor: 0.6
 lr_patience: 30
 
 # Data validition
-# n_obs_min_count: 123
-# n_var_min_count: 123
+n_obs_min_count: 0
+n_var_min_count: 0
 
 # Nextflow input-output arguments
 publish_dir: # please fill in - example: "output/"

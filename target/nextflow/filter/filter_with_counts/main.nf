@@ -445,7 +445,7 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
     "platform" : "nextflow",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/filter/filter_with_counts",
     "viash_version" : "0.7.4",
-    "git_commit" : "6b51ae40f5bf5421975b59ef99cba2d310f69c2e",
+    "git_commit" : "749cc03ae76eafabb8bdb89f1d70a258474e99fc",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))

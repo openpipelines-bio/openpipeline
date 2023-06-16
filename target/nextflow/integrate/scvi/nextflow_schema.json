@@ -129,12 +129,12 @@
           "n_obs_min_count": {
             "type": "integer",
             "description": "Minimum number of cells threshold ensuring that every obs_batch category has sufficient observations (cells) for model training.",
-            "default": ""
+            "default": "0"
           },
           "n_var_min_count": {
             "type": "integer",
             "description": "Minimum number of genes threshold ensuring that every var_input filter has sufficient observations (genes) for model training.",
-            "default": ""
+            "default": "0"
           }
           
         }
