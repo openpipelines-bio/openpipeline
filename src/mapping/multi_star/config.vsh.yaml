@@ -3,9 +3,9 @@ functionality:
   namespace: mapping
   description: Align fastq files using STAR.
   authors:
-    - __merge__: ../../authors/angela_pisco.yaml
+    - __merge__: /src/authors/angela_pisco.yaml
       roles: [ author ]
-    - __merge__: ../../authors/robrecht_cannoodt.yaml
+    - __merge__: /src/authors/robrecht_cannoodt.yaml
       roles: [ author, maintainer ]
   # generated the argument groups using `utils/process_params.R`
   __merge__: [., arguments_star.yaml, arguments_htseq.yaml]
@@ -80,7 +80,7 @@ platforms:
       # setup derived from https://github.com/alexdobin/STAR/blob/master/extras/docker/Dockerfile
       - type: docker
         env: 
-          - STAR_VERSION 2.7.10a
+          - STAR_VERSION 2.7.10b
           - PACKAGES gcc g++ make wget zlib1g-dev unzip
       - type: docker
         run: |

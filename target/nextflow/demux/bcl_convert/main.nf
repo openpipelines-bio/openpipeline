@@ -59,6 +59,7 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
         "info" : {
           "role" : "Contributor",
           "links" : {
+            "github" : "mvanmoerbeke",
             "orcid" : "0000-0002-3097-5621",
             "linkedin" : "marijke-van-moerbeke-84303a34"
           },
@@ -259,7 +260,7 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
     "platform" : "nextflow",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/demux/bcl_convert",
     "viash_version" : "0.7.4",
-    "git_commit" : "1580b0a0bc00bb9f88ccf07190f8d16a0b2869a2",
+    "git_commit" : "6cd5884954fcb7a787e84960afe31db09c32502c",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))

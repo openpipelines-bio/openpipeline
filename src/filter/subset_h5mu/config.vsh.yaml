@@ -5,7 +5,7 @@ functionality:
   description: |
     Create a subset of a mudata file by selecting the first number of observations
   authors:
-    - __merge__: ../../authors/dries_schaumont.yaml
+    - __merge__: /src/authors/dries_schaumont.yaml
       roles: [ maintainer ]
   arguments:
     - name: "--input"

@@ -420,7 +420,7 @@ RUN apt-get update && \
   DEBIAN_FRONTEND=noninteractive apt-get install -y procps && \
   rm -rf /var/lib/apt/lists/*
 
-ENV STAR_VERSION 2.7.10a
+ENV STAR_VERSION 2.7.10b
 ENV PACKAGES gcc g++ make wget zlib1g-dev unzip
 RUN apt-get update && \
   apt-get install -y --no-install-recommends ${PACKAGES} && \
@@ -437,9 +437,9 @@ RUN apt-get update && \
 
 LABEL org.opencontainers.image.authors="Dries Schaumont"
 LABEL org.opencontainers.image.description="Companion container for running component mapping star_build_reference"
-LABEL org.opencontainers.image.created="2023-06-13T16:47:38Z"
+LABEL org.opencontainers.image.created="2023-06-16T11:53:35Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="1580b0a0bc00bb9f88ccf07190f8d16a0b2869a2"
+LABEL org.opencontainers.image.revision="6cd5884954fcb7a787e84960afe31db09c32502c"
 LABEL org.opencontainers.image.version="integration_build"
 
 VIASHDOCKER

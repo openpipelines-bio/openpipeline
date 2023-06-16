@@ -6,7 +6,7 @@ functionality:
     Add id of .obs. Also allows to make .obs_names (the .obs index) unique 
     by prefixing the values with an unique id per .h5mu file.
   authors:
-    - __merge__: ../../authors/dries_schaumont.yaml
+    - __merge__: /src/authors/dries_schaumont.yaml
       roles: [ maintainer ]
   arguments:
     - name: "--input"

@@ -4,7 +4,6 @@
 # pycache
 *__pycache__*
 .nfs*
-.vscode
 
 # R related
 .Rhistory

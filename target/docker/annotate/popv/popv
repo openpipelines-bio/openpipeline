@@ -490,9 +490,9 @@ RUN pip install --upgrade pip && \
 
 LABEL org.opencontainers.image.authors="Matthias Beyens, Robrecht Cannoodt"
 LABEL org.opencontainers.image.description="Companion container for running component annotate popv"
-LABEL org.opencontainers.image.created="2023-06-13T16:47:36Z"
+LABEL org.opencontainers.image.created="2023-06-16T11:53:38Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="1580b0a0bc00bb9f88ccf07190f8d16a0b2869a2"
+LABEL org.opencontainers.image.revision="6cd5884954fcb7a787e84960afe31db09c32502c"
 LABEL org.opencontainers.image.version="integration_build"
 
 VIASHDOCKER
@@ -1307,11 +1307,14 @@ def main(par, meta):
             cl_obo_folder=cl_obo_folder,
             use_gpu=use_gpu
         )
-
+        method_kwargs = {}
+        if 'scanorama' in par['methods']:
+            method_kwargs['scanorama'] = {'approx': False}
         logger.info("Annotate data")
         popv.annotation.annotate_data(
             adata=pq.adata,
-            methods=par["methods"]
+            methods=par["methods"],
+            methods_kwargs=method_kwargs
         )
 
     popv_input = pq.adata[input_modality.obs_names]

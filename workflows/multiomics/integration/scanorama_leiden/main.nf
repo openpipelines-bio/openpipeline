@@ -62,12 +62,12 @@ workflow run_wf {
     | getWorkflowArguments(key: "clustering")
     | leiden.run(args: [obsm_name: "leiden"])
     | getWorkflowArguments(key: "umap")
-    | umap.run(
-      auto: [ publish: true ],
-      args: [ output_compression: "gzip" ]
-    )
+    | umap
     | getWorkflowArguments(key: "move_obsm_to_obs_leiden")
-    | move_obsm_to_obs.run(args: [ obsm_key: "leiden" ] )
+    | move_obsm_to_obs.run(
+        args: [ obsm_key: "leiden", output_compression: "gzip" ],     
+        auto: [ publish: true ]
+    )
 
     // remove splitArgs
     | map { tup ->

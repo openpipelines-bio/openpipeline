@@ -12,6 +12,7 @@
 // Component authors:
 //  * Malte D. Luecken (author)
 //  * Dries Schaumont (maintainer)
+//  * Matthias Beyens (contributor)
 
 nextflow.enable.dsl=2
 
@@ -76,6 +77,28 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
               "name" : "Data Intuitive",
               "href" : "https://www.data-intuitive.com",
               "role" : "Data Scientist"
+            }
+          ]
+        }
+      },
+      {
+        "name" : "Matthias Beyens",
+        "roles" : [
+          "contributor"
+        ],
+        "info" : {
+          "role" : "Contributor",
+          "links" : {
+            "github" : "MatthiasBeyens",
+            "orcid" : "0000-0003-3304-0706",
+            "email" : "matthias.beyens@gmail.com",
+            "linkedin" : "mbeyens"
+          },
+          "organizations" : [
+            {
+              "name" : "Janssen Pharmaceuticals",
+              "href" : "https://www.janssen.com",
+              "role" : "Principal Scientist"
             }
           ]
         }
@@ -325,6 +348,31 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
             "dest" : "par"
           }
         ]
+      },
+      {
+        "name" : "Data validition",
+        "arguments" : [
+          {
+            "type" : "integer",
+            "name" : "--n_obs_min_count",
+            "description" : "Minimum number of cells threshold ensuring that every obs_batch category has sufficient observations (cells) for model training.",
+            "required" : false,
+            "direction" : "input",
+            "multiple" : false,
+            "multiple_sep" : ":",
+            "dest" : "par"
+          },
+          {
+            "type" : "integer",
+            "name" : "--n_var_min_count",
+            "description" : "Minimum number of genes threshold ensuring that every var_input filter has sufficient observations (genes) for model training.",
+            "required" : false,
+            "direction" : "input",
+            "multiple" : false,
+            "multiple_sep" : ":",
+            "dest" : "par"
+          }
+        ]
       }
     ],
     "resources" : [
@@ -332,6 +380,11 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
         "type" : "python_script",
         "path" : "script.py",
         "is_executable" : true,
+        "parent" : "file:/home/runner/work/openpipeline/openpipeline/src/integrate/scvi/"
+      },
+      {
+        "type" : "file",
+        "path" : "../../utils/subset_vars.py",
         "parent" : "file:/home/runner/work/openpipeline/openpipeline/src/integrate/scvi/"
       }
     ],
@@ -341,6 +394,11 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
         "type" : "python_script",
         "path" : "test.py",
         "is_executable" : true,
+        "parent" : "file:/home/runner/work/openpipeline/openpipeline/src/integrate/scvi/"
+      },
+      {
+        "type" : "file",
+        "path" : "../../utils/subset_vars.py",
         "parent" : "file:/home/runner/work/openpipeline/openpipeline/src/integrate/scvi/"
       },
       {
@@ -381,7 +439,8 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
           "user" : false,
           "packages" : [
             "mudata~=0.2.0",
-            "anndata~=0.8.0"
+            "anndata~=0.8.0",
+            "scanpy~=1.9.2"
           ],
           "upgrade" : true
         },
@@ -454,7 +513,7 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
     "platform" : "nextflow",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/integrate/scvi",
     "viash_version" : "0.7.4",
-    "git_commit" : "1580b0a0bc00bb9f88ccf07190f8d16a0b2869a2",
+    "git_commit" : "6cd5884954fcb7a787e84960afe31db09c32502c",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))
@@ -462,6 +521,7 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
 thisScript = '''set -e
 tempscript=".viash_script.sh"
 cat > "$tempscript" << VIASHMAIN
+from scanpy._utils import check_nonnegative_integers
 import mudata
 import scvi
 from torch.cuda import is_available as cuda_is_available
@@ -492,7 +552,9 @@ par = {
   'max_epochs': $( if [ ! -z ${VIASH_PAR_MAX_EPOCHS+x} ]; then echo "int(r'${VIASH_PAR_MAX_EPOCHS//\\'/\\'\\"\\'\\"r\\'}')"; else echo None; fi ),
   'reduce_lr_on_plateau': $( if [ ! -z ${VIASH_PAR_REDUCE_LR_ON_PLATEAU+x} ]; then echo "r'${VIASH_PAR_REDUCE_LR_ON_PLATEAU//\\'/\\'\\"\\'\\"r\\'}'.lower() == 'true'"; else echo None; fi ),
   'lr_factor': $( if [ ! -z ${VIASH_PAR_LR_FACTOR+x} ]; then echo "float(r'${VIASH_PAR_LR_FACTOR//\\'/\\'\\"\\'\\"r\\'}')"; else echo None; fi ),
-  'lr_patience': $( if [ ! -z ${VIASH_PAR_LR_PATIENCE+x} ]; then echo "float(r'${VIASH_PAR_LR_PATIENCE//\\'/\\'\\"\\'\\"r\\'}')"; else echo None; fi )
+  'lr_patience': $( if [ ! -z ${VIASH_PAR_LR_PATIENCE+x} ]; then echo "float(r'${VIASH_PAR_LR_PATIENCE//\\'/\\'\\"\\'\\"r\\'}')"; else echo None; fi ),
+  'n_obs_min_count': $( if [ ! -z ${VIASH_PAR_N_OBS_MIN_COUNT+x} ]; then echo "int(r'${VIASH_PAR_N_OBS_MIN_COUNT//\\'/\\'\\"\\'\\"r\\'}')"; else echo None; fi ),
+  'n_var_min_count': $( if [ ! -z ${VIASH_PAR_N_VAR_MIN_COUNT+x} ]; then echo "int(r'${VIASH_PAR_N_VAR_MIN_COUNT//\\'/\\'\\"\\'\\"r\\'}')"; else echo None; fi )
 }
 meta = {
   'functionality_name': $( if [ ! -z ${VIASH_META_FUNCTIONALITY_NAME+x} ]; then echo "r'${VIASH_META_FUNCTIONALITY_NAME//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
@@ -511,6 +573,30 @@ meta = {
 
 ### VIASH END
 
+import sys
+sys.path.append(meta['resources_dir'])
+from subset_vars import subset_vars
+
+#TODO: optionally, move to qa
+# https://github.com/openpipelines-bio/openpipeline/issues/435
+def check_validity_anndata(adata, layer, obs_batch,
+                           n_obs_min_count, n_var_min_count):
+    assert check_nonnegative_integers(
+        adata.layers[layer] if layer else adata.X
+    ), f"Make sure input adata contains raw_counts"
+
+    assert len(set(adata.var_names)) == len(
+        adata.var_names
+    ), f"Dataset contains multiple genes with same gene name."
+
+    # Ensure every obs_batch category has sufficient observations
+    assert min(adata.obs[[obs_batch]].value_counts()) > n_obs_min_count, \\\\
+        f"Anndata has fewer than {n_obs_min_count} cells."
+
+    assert adata.n_vars > n_var_min_count, \\\\
+        f"Anndata has fewer than {n_var_min_count} genes."
+
+
 
 def main():
     mdata = mudata.read(par["input"].strip())
@@ -518,8 +604,12 @@ def main():
 
     if par['var_input']:
         # Subset to HVG
-        adata = adata[:,adata.var['var_input']].copy()
+        adata = subset_vars(adata, subset_col=par["var_input"])
 
+    check_validity_anndata(
+        adata, par['input_layer'], par['obs_batch'],
+        par["n_obs_min_count"], par["n_var_min_count"]
+        )
     # Set up the data
     scvi.model.SCVI.setup_anndata(
         adata,
