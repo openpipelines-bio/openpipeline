@@ -23,6 +23,11 @@
             "type": "string",
             "description": "use specified layer for expression values instead of the .X object from the modality.",
             "default": "log_normalized"
+          },
+          "modality": {
+            "type": "string",
+            "description": "Which modality to process.",
+            "default": "rna"
           }
           
         }
