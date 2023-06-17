@@ -1,7 +1,7 @@
 functionality:
   name: "build_cellranger_reference"
   namespace: "reference"
-  version: "0.8.0"
+  version: "0.9.0"
   authors:
   - name: "Angela Oliveira Pisco"
     roles:
@@ -160,5 +160,5 @@ info:
   output: "/home/runner/work/openpipeline/openpipeline/target/docker/reference/build_cellranger_reference"
   executable: "/home/runner/work/openpipeline/openpipeline/target/docker/reference/build_cellranger_reference/build_cellranger_reference"
   viash_version: "0.7.4"
-  git_commit: "04edf70ea536ff2d688c579e3bbebb0db01b5b60"
+  git_commit: "50d0394499fb7317854251b491f8f735626cf075"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"
