@@ -55,9 +55,7 @@ workflow run_wf {
           "max_counts": "prot_max_counts",
           "min_proteins_per_cell": "prot_min_proteins_per_cell",
           "max_proteins_per_cell": "prot_max_proteins_per_cell",
-          "min_cells_per_protein": "prot_min_cells_per_protein",
-          "min_fraction_mito": "prot_min_fraction_mito",
-          "max_fraction_mito": "prot_max_fraction_mito",
+          "min_cells_per_protein": "prot_min_cells_per_protein"
         ],
         "rna_multisample_args": [
           "filter_with_hvg_var_output": "filter_with_hvg_var_output",
