@@ -164,11 +164,9 @@ def main():
     adata_query.obsm[par["obsm_normalized_protein_output"]] = norm_protein.to_numpy()
 
     mdata_query.mod[par["query_modality"]] = adata_query
-    try:
-        logger.info("Updating mdata")
-        mdata_query.update()
-    except KeyError:
-        logger.error("Key error was thrown during mdata update. Be careful")
+    
+    logger.info("Updating mdata")
+    mdata_query.update()
 
     logger.info("Saving updated query data")
     mdata_query.write_h5mu(par['output'].strip())
