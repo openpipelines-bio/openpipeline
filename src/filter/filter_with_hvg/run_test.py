@@ -145,4 +145,4 @@ def test_filter_with_hvg_cell_ranger_unfiltered_data_change_error_message(run_co
 
 
 if __name__ == '__main__':
-    sys.exit(pytest.main([__file__], plugins=["viashpy"]))
+    sys.exit(pytest.main([__file__]))
