@@ -357,4 +357,4 @@ def test_concat_invalid_h5_error_includes_path(run_component, tmp_path):
                      err.value.stdout.decode('utf-8'))
 
 if __name__ == '__main__':
-    sys.exit(pytest.main([__file__], plugins=["viashpy"]))
+    sys.exit(pytest.main([__file__]))

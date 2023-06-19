@@ -129,4 +129,4 @@ def test_compare_scanpy(run_component,
 
 
 if __name__ == "__main__":
-    sys.exit(pytest.main([__file__], plugins=["viashpy"]))
+    sys.exit(pytest.main([__file__]))
