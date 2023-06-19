@@ -20,6 +20,8 @@ The old behavior of the `full_pipeline` can be obtained by running `full_pipelin
 
 * `cluster/leiden`: Output is now stored into `.obsm` instead of `.obs` (PR #431).
 
+* `workflows/full_pipeline`: removed `--prot_min_fraction_mito` and `--prot_max_fraction_mito` (PR #451)
+
 ## NEW FUNCTIONALITY
 
 * `cluster/leiden` and `integration/harmony_leiden`: allow running leiden multiple times with multiple resolutions (PR #431).
