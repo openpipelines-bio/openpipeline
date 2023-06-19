@@ -84,6 +84,8 @@ The old behavior of the `full_pipeline` can be obtained by running `full_pipelin
 
 * `annotate/popv`: now sets `aprox` to `False` to avoid using `annoy` in scanorama because it fails on processors that are missing the AVX-512 instruction sets, causing `Illegal instruction (core dumped)`.
 
+* `workflows/full_pipeline`: Avoid adding sample names to observation ids twice (PR #457). 
+
 # openpipelines 0.8.0
 
 ## BREAKING CHANGES
