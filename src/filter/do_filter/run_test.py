@@ -123,4 +123,4 @@ def test_nonexisting_column_raises(run_component,
     assert re.search(r"\.mod\[rna\]\.var\[doesnotexist\] does not exist\.",
         err.value.stdout.decode('utf-8'))
 if __name__ == '__main__':
-    sys.exit(pytest.main([__file__], plugins=["viashpy"]))
+    sys.exit(pytest.main([__file__]))
