@@ -36,25 +36,29 @@ workflow run_wf {
         "obsm_input": "embedding",
         "obs_covariates": "obs_covariates",
         "obsm_output": "obsm_integrated",
-        "theta": "theta"
+        "theta": "theta",
+        "modality": "modality"
       ],
       neighbors: [
         "uns_output": "uns_neighbors",
         "obsp_distances": "obsp_neighbor_distances",
         "obsp_connectivities": "obsp_neighbor_connectivities",
-        "obsm_input": "obsm_integrated"
+        "obsm_input": "obsm_integrated",
+        "modality": "modality"
       ],
       clustering: [
         "obsp_connectivities": "obsp_neighbor_connectivities",
         "obs_name": "obs_cluster",
         "resolution": "leiden_resolution",
+        "modality": "modality"
       ],
       umap: [ 
         "uns_neighbors": "uns_neighbors",
         "output": "output",
-        "obsm_output": "obsm_umap"
+        "obsm_output": "obsm_umap",
+        "modality": "modality"
       ],
-      move_obsm_to_obs_leiden: []
+      move_obsm_to_obs_leiden: ["modality": "modality"]
     )
     | getWorkflowArguments(key: "harmony")
     | harmonypy

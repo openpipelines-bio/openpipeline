@@ -158,4 +158,4 @@ def test_output_field_already_present_raises(run_component):
     assert error_found
 
 if __name__ == '__main__':
-    sys.exit(pytest.main([__file__], plugins=["viashpy"]))
+    sys.exit(pytest.main([__file__]))

@@ -1,14 +1,6 @@
 from scanpy._utils import check_nonnegative_integers
 import mudata
 import scvi
-from torch.cuda import is_available as cuda_is_available
-try:
-    from torch.backends.mps import is_available as mps_is_available
-except ModuleNotFoundError:
-    # Older pytorch versions
-    # MacOS GPUs
-    def mps_is_available():
-        return False
 
 ### VIASH START
 par = {
@@ -114,7 +106,7 @@ def main():
         early_stopping_min_delta=par['early_stopping_min_delta'],
         plan_kwargs=plan_kwargs,
         check_val_every_n_epoch=1,
-        use_gpu=(cuda_is_available() or mps_is_available()),
+        accelerator="auto",
     )
     #Note: train_size=1.0 should give better results, but then can't do early_stopping on validation set
 
