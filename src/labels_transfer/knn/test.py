@@ -27,7 +27,7 @@ class TestKNN(unittest.TestCase):
             raise e
 
     def test_one_class(self):
-        with NamedTemporaryFile("w", suffix=".h5mu") as tempfile_reference_file:
+        with NamedTemporaryFile("w", suffix=".h5ad") as tempfile_reference_file:
             reference_adata = anndata.read_h5ad(reference_file)
             reference_adata.obsm["X_integrated_scanvi"] = np.random.normal(size=(reference_adata.n_obs, 30))
             reference_adata.obs["ann_level_1"] = np.random.choice(["CD4 T cells", "CD8 T cells"], size=reference_adata.n_obs)
@@ -68,7 +68,7 @@ class TestKNN(unittest.TestCase):
 
         targets = ["ann_level_1", "ann_level_2", "ann_level_3", "ann_level_4", "ann_level_5", "ann_finest_level"]
         
-        with NamedTemporaryFile("w", suffix=".h5mu") as tempfile_reference_file:
+        with NamedTemporaryFile("w", suffix=".h5ad") as tempfile_reference_file:
             reference_adata = anndata.read_h5ad(reference_file)
             reference_adata.obsm["X_integrated_scanvi"] = np.random.normal(size=(reference_adata.n_obs, 30))
             
