@@ -120,5 +120,5 @@ info:
   output: "/home/runner/work/openpipeline/openpipeline/target/nextflow/transfer/publish"
   executable: "/home/runner/work/openpipeline/openpipeline/target/nextflow/transfer/publish/publish"
   viash_version: "0.7.4"
-  git_commit: "50d0394499fb7317854251b491f8f735626cf075"
+  git_commit: "116e567506114ba153923d1b92db2281741c974a"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"

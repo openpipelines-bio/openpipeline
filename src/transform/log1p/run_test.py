@@ -71,4 +71,4 @@ def test_1logp(run_component, input_path, output_layer):
     assert 'log1p' in rna_out.uns
 
 if __name__ == '__main__':
-    sys.exit(pytest.main([__file__], plugins=["viashpy"]))
+    sys.exit(pytest.main([__file__]))

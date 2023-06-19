@@ -140,12 +140,16 @@ workflow run_wf {
         ["combined_$modality_processor.id", new_data] + list[0].drop(2)
       }
       | getWorkflowArguments(key: ("$modality_processor.id" + "_multisample_args").toString() )
-      | view { "input multichannel-$modality_processor.id: $it" }
     
     // Run the multisample processing if defined, otherwise just concatenate samples together
     out_ch = (
       modality_processor.multisample ? \
-        input_ms_ch | modality_processor.multisample : \
+        input_ms_ch
+          | pmap {id, input_args, other_arguments -> 
+              [id, ["add_id_to_obs": false] + input_args, other_arguments]
+          } 
+          | view { "input multichannel-$modality_processor.id: $it" }
+          | modality_processor.multisample : \
         input_ms_ch | concat.run(
           key: "concat_" + modality_processor.id,
           renameKeys: [input_id: "sample_id"],
