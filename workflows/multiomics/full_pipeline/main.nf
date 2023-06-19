@@ -343,9 +343,7 @@ workflow test_wf2 {
           prot_max_counts: 1000000,
           prot_min_proteins_per_cell: 1,
           prot_max_proteins_per_cell: 1000000,
-          prot_min_cells_per_protein: 1,
-          prot_min_fraction_mito: 0,
-          prot_max_fraction_mito: 1
+          prot_min_cells_per_protein: 1
         ],
       ],
       rna_min_counts: 2,
