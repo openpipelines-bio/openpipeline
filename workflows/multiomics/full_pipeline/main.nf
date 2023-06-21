@@ -166,7 +166,7 @@ workflow run_wf {
     | map { lst -> // Put modality name in first element so that we can group on it
         [lst[3].modality] + lst
       }
-    | groupTuple(by: 0)
+    | groupTuple(by: 0, sort: "hash")
     // [ String, List[String], List[Map[String, Any]], ... ]
     | map { grouped_lst ->
       def new_id = "combined_${grouped_lst[0]}"

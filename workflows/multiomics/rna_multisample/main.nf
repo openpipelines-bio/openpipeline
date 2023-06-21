@@ -65,7 +65,8 @@ workflow run_wf {
     // Before that, we must make the ID (first element of list)
     // unique. The global ID is stored so that it can be retreived later.
     | pmap {id, data, other ->
-      [id, data, other + [id: id]]
+      def globalid = id
+      [id, data, other + [id: globalid]]
     }
     // Split the input into multiple events in the channel so that 
     // the add_id process can be run multiple times
