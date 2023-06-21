@@ -66,7 +66,7 @@ def align_proteins_names(adata_reference: AnnData, mdata_query: MuData, adata_qu
 
 def extract_proteins_to_anndata(mdata: MuData, rna_modality_key, protein_modality_key, input_layer, hvg_var_key=None) -> AnnData:
     """TOTALVI requires data to be stored in AnnData format with protein counts in .obsm slot. This function performs the conversion"""
-    adata: AnnData = mdata.mod[rna_modality_key]
+    adata: AnnData = mdata.mod[rna_modality_key].copy()
 
     if hvg_var_key:
         selected_genes = adata.var_names[adata.var[hvg_var_key]]
@@ -74,7 +74,7 @@ def extract_proteins_to_anndata(mdata: MuData, rna_modality_key, protein_modalit
 
     if protein_modality_key in mdata.mod:
         # Put the proteins modality into .obsm slot
-        proteins_reference_adata = mdata.mod[protein_modality_key]
+        proteins_reference_adata = mdata.mod[protein_modality_key].copy()
 
         if input_layer is None:
             proteins = proteins_reference_adata.X
