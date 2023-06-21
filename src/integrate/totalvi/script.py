@@ -167,7 +167,7 @@ def main():
     mdata_query.update()
 
     logger.info("Saving updated query data")
-    mdata_query.write_h5mu(par['output'].strip())
+    mdata_query.write_h5mu(par["output"].strip())
     
     logger.info("Saving query model")
     vae_query.save(par["query_model_path"], overwrite=True)
