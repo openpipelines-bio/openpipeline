@@ -64,7 +64,7 @@ def align_proteins_names(adata_reference: AnnData, mdata_query: MuData, adata_qu
     return adata_query
 
 
-def convert_mudata_to_anndata(mdata: MuData, rna_modality_key, protein_modality_key, input_layer, hvg_var_key=None) -> AnnData:
+def extract_proteins_to_anndata(mdata: MuData, rna_modality_key, protein_modality_key, input_layer, hvg_var_key=None) -> AnnData:
     """TOTALVI requires data to be stored in AnnData format with protein counts in .obsm slot. This function performs the conversion"""
     adata: AnnData = mdata.mod[rna_modality_key]
 
@@ -108,7 +108,7 @@ def is_retraining_model() -> bool:
 def map_query_to_reference(mdata_reference: MuData, mdata_query: MuData, adata_query: AnnData) -> Tuple[scvi.model.TOTALVI, AnnData]:
     """Build model on the provided reference if necessary, and map query to the reference"""
 
-    adata_reference: AnnData = convert_mudata_to_anndata(mdata_reference, rna_modality_key=par["reference_modality"], protein_modality_key=par["reference_proteins_modality"],
+    adata_reference: AnnData = extract_proteins_to_anndata(mdata_reference, rna_modality_key=par["reference_modality"], protein_modality_key=par["reference_proteins_modality"],
                                                          input_layer=par["input_layer"], hvg_var_key=par["var_input"])
 
     scvi.model.TOTALVI.setup_anndata(
@@ -141,7 +141,7 @@ def main():
     logger = _setup_logger()
 
     mdata_query = mudata.read(par["input"].strip())
-    adata_query = convert_mudata_to_anndata(mdata_query, rna_modality_key=par["query_modality"], protein_modality_key=par["query_proteins_modality"],
+    adata_query = extract_proteins_to_anndata(mdata_query, rna_modality_key=par["query_modality"], protein_modality_key=par["query_proteins_modality"],
                                             input_layer=par["input_layer"], hvg_var_key=par["var_input"])
 
     if par["reference"].endswith(".h5mu"):
