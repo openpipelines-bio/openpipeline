@@ -156,14 +156,12 @@ def main():
     adata_query.uns["integration_method"] = "totalvi"
 
     logger.info("Getting the latent representation of query")
-    adata_query.obsm[par["obsm_output"]] = vae_query.get_latent_representation()
+    mdata_query.mod[par["query_modality"]].obsm[par["obsm_output"]] = vae_query.get_latent_representation()
     
     norm_rna, norm_protein = vae_query.get_normalized_expression()
-    adata_query.obsm[par["obsm_normalized_rna_output"]] = norm_rna.to_numpy()
+    mdata_query.mod[par["query_modality"]].obsm[par["obsm_normalized_rna_output"]] = norm_rna.to_numpy()
     # Would make more sense to write it to .obsm for protein modality, but query might not have this modality at all
-    adata_query.obsm[par["obsm_normalized_protein_output"]] = norm_protein.to_numpy()
-
-    mdata_query.mod[par["query_modality"]] = adata_query
+    mdata_query.mod[par["query_modality"]].obsm[par["obsm_normalized_protein_output"]] = norm_protein.to_numpy()
     
     logger.info("Updating mdata")
     mdata_query.update()
