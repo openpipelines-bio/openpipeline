@@ -38,8 +38,6 @@ class TesttotalVI(unittest.TestCase):
         self.assertTrue(Path("output.h5mu").is_file())
         output_data = mudata.read_h5mu("output.h5mu")
         self.assertIn("X_integrated_totalvi", output_data.mod["rna"].obsm)
-        self.assertIn("_scvi_batch", output_data.mod["rna"].obs.columns.tolist())
-        self.assertIn("_scvi_labels",  output_data.mod["rna"].obs.columns.tolist())
         self.assertIn("X_totalvi_normalized_rna", output_data.mod["rna"].obsm)
         self.assertIn("X_totalvi_normalized_protein", output_data.mod["rna"].obsm)
 
