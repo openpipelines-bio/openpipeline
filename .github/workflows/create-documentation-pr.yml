@@ -22,17 +22,17 @@ jobs:
     steps:
     - uses: actions/checkout@v3
 
-    - uses: viash-io/viash-actions/setup@v3
+    - uses: viash-io/viash-actions/setup@v4
 
     - id: ns_list_components
-      uses: viash-io/viash-actions/ns-list@v3
+      uses: viash-io/viash-actions/ns-list@v4
       with:
         platform: docker
         src: src
         format: json
 
     - id: ns_list_workflows
-      uses: viash-io/viash-actions/ns-list@v3
+      uses: viash-io/viash-actions/ns-list@v4
       with:
         src: workflows
         format: json
@@ -71,7 +71,7 @@ jobs:
           path: website
           token: ${{ secrets.GTHB_PAT }}
 
-      - uses: viash-io/viash-actions/setup@v3
+      - uses: viash-io/viash-actions/setup@v4
       
       - name: Get tag to use
         id: get_tag

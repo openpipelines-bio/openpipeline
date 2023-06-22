@@ -296,5 +296,5 @@ info:
   output: "/home/runner/work/openpipeline/openpipeline/target/docker/filter/filter_with_scrublet"
   executable: "/home/runner/work/openpipeline/openpipeline/target/docker/filter/filter_with_scrublet/filter_with_scrublet"
   viash_version: "0.7.4"
-  git_commit: "0e3e607b8a8e0d15ff3c570bfed806fb849a7479"
+  git_commit: "f32fe83de802a205ec8893add69084e8cfdef645"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"
