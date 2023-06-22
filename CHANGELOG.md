@@ -2,7 +2,7 @@
 
 ## BUG FIXES
 
-* Fix an issue with `workflows/full_pipeline` and `workflows/rna_multisample` not correctly caching previous runs (PR #460).
+* Fix an issue with `workflows/full_pipeline` not correctly caching previous runs (PR #460).
 
 # openpipelines 0.9.0
 
