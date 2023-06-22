@@ -3,6 +3,7 @@ import subprocess
 from pathlib import Path
 from tempfile import NamedTemporaryFile
 
+import anndata
 import mudata
 import numpy as np
 
@@ -10,11 +11,12 @@ import numpy as np
 ## VIASH START
 meta = {
     'executable': './target/docker/labels_transfer/xgboost/xgboost',
-    'resources_dir': './resources_test/pbmc_1k_protein_v3/'
+    'resources_dir': './resources_test/'
 }
 ## VIASH END
 
-input_file = f"{meta['resources_dir']}/pbmc_1k_protein_v3_mms.h5mu"
+input_file = f"{meta['resources_dir']}/pbmc_1k_protein_v3/pbmc_1k_protein_v3_filtered_feature_bc_matrix.h5mu"
+reference_file = f"{meta['resources_dir']}/annotation_test_data/TS_Blood_filtered.h5ad"
 
 class TestXGBoost(unittest.TestCase):
     def _run_and_check_output(self, args_as_list):
@@ -25,25 +27,31 @@ class TestXGBoost(unittest.TestCase):
             raise e
 
     def test_one_class(self):
+
+        with NamedTemporaryFile("w", suffix=".h5ad") as tempfile_reference_file:
+            reference_adata = anndata.read_h5ad(reference_file)
+            reference_adata.obsm["X_integrated_scanvi"] = np.random.normal(size=(reference_adata.n_obs, 30))
+            reference_adata.obs["ann_level_1"] = np.random.choice(["CD4 T cells", "CD8 T cells"], size=reference_adata.n_obs)
+            reference_adata.write(tempfile_reference_file.name)
         
-        with NamedTemporaryFile("w", suffix=".h5mu") as tempfile_input_file:
-            input_data = mudata.read_h5mu(input_file)
-            adata = input_data.mod["rna"]
+            with NamedTemporaryFile("w", suffix=".h5mu") as tempfile_input_file:
+                input_data = mudata.read_h5mu(input_file)
+                adata = input_data.mod["rna"]
 
-            # Simulate a latent embedding
-            # Later, we can use a real one by calling `integrate` component in advamnce
-            adata.obsm["X_integrated_scanvi"] = np.random.normal(size=(adata.n_obs, 30))
+                # Simulate a latent embedding
+                # Later, we can use a real one by calling `integrate` component in advamnce
+                adata.obsm["X_integrated_scanvi"] = np.random.normal(size=(adata.n_obs, 30))
 
-            input_data.write(tempfile_input_file.name)
+                input_data.write(tempfile_input_file.name)
 
-            self._run_and_check_output([
-                "--input", tempfile_input_file.name,
-                "--modality", "rna",
-                "--query_obsm_key", "X_integrated_scanvi",
-                "--reference", "https://zenodo.org/record/6337966/files/HLCA_emb_and_metadata.h5ad",
-                "--output", "output.h5mu",
-                "--max_depth", 6,
-                "--targets", "ann_level_1"])
+                self._run_and_check_output([
+                    "--input", tempfile_input_file.name,
+                    "--modality", "rna",
+                    "--query_obsm_key", "X_integrated_scanvi",
+                    "--reference", tempfile_reference_file.name,
+                    "--reference_obsm_key", "X_integrated_scanvi",
+                    "--output", "output.h5mu",
+                    "--targets", "ann_level_1"])
 
         self.assertTrue(Path("output.h5mu").is_file())
 
@@ -59,25 +67,36 @@ class TestXGBoost(unittest.TestCase):
     def test_multiple_classes(self):
 
         targets = ["ann_level_1", "ann_level_2", "ann_level_3", "ann_level_4", "ann_level_5", "ann_finest_level"]
-        
-        with NamedTemporaryFile("w", suffix=".h5mu") as tempfile_input_file:
-            input_data = mudata.read_h5mu(input_file)
-            adata = input_data.mod["rna"]
 
-            # Simulate a latent embedding
-            # Later, we can use a real one by calling `integrate` component in advamnce
-            adata.obsm["X_integrated_scanvi"] = np.random.normal(size=(adata.n_obs, 30))
+        with NamedTemporaryFile("w", suffix=".h5ad") as tempfile_reference_file:
+            reference_adata = anndata.read_h5ad(reference_file)
+            reference_adata.obsm["X_integrated_scanvi"] = np.random.normal(size=(reference_adata.n_obs, 30))
 
-            input_data.write(tempfile_input_file.name)
+            for i, target in enumerate(targets):
+                class_names = [str(idx) for idx in range(i + 1)]  # e.g. ["0", "1", "2"], the higher the level, the more the classes
+                reference_adata.obs[target] = np.random.choice(class_names, size=reference_adata.n_obs)
 
-            self._run_and_check_output([
-                "--input", tempfile_input_file.name,
-                "--modality", "rna",
-                "--query_obsm_key", "X_integrated_scanvi",
-                "--reference", "https://zenodo.org/record/6337966/files/HLCA_emb_and_metadata.h5ad",
-                "--output", "output.h5mu",
-                "--max_depth", 6,
-                "--targets", ",".join(targets)])
+            reference_adata.write(tempfile_reference_file.name)
+
+            with NamedTemporaryFile("w", suffix=".h5mu") as tempfile_input_file:
+                input_data = mudata.read_h5mu(input_file)
+                adata = input_data.mod["rna"]
+
+                # Simulate a latent embedding
+                # Later, we can use a real one by calling `integrate` component in advamnce
+                adata.obsm["X_integrated_scanvi"] = np.random.normal(size=(adata.n_obs, 30))
+
+                input_data.write(tempfile_input_file.name)
+
+                self._run_and_check_output([
+                    "--input", tempfile_input_file.name,
+                    "--modality", "rna",
+                    "--query_obsm_key", "X_integrated_scanvi",
+                    "--reference", tempfile_reference_file.name,
+                    "--reference_obsm_key", "X_integrated_scanvi",
+                    "--output", "output.h5mu",
+                    "--max_depth", 6,
+                    "--targets", ",".join(targets)])
 
         self.assertTrue(Path("output.h5mu").is_file())
 
@@ -93,51 +112,58 @@ class TestXGBoost(unittest.TestCase):
 
     def test_retraining(self):
 
-        targets = ["ann_level_1", "ann_level_2"]
+        with NamedTemporaryFile("w", suffix=".h5ad") as tempfile_reference_file:
+            reference_adata = anndata.read_h5ad(reference_file)
+            reference_adata.obsm["X_integrated_scanvi"] = np.random.normal(size=(reference_adata.n_obs, 30))
+            reference_adata.obs["ann_level_1"] = np.random.choice(["CD4 T cells", "CD8 T cells"], size=reference_adata.n_obs)
+            reference_adata.obs["ann_level_2"] = np.random.choice(["CD4 naive T cells", "CD4 memory T cells", "CD8 naive T cells", "CD8 memory T cells"], size=reference_adata.n_obs)
+            reference_adata.write(tempfile_reference_file.name)
+
+            targets = ["ann_level_1", "ann_level_2"]
         
-        with NamedTemporaryFile("w", suffix=".h5mu") as tempfile_input_file:
-            input_data = mudata.read_h5mu(input_file)
-            adata = input_data.mod["rna"]
+            with NamedTemporaryFile("w", suffix=".h5mu") as tempfile_input_file:
+                input_data = mudata.read_h5mu(input_file)
+                adata = input_data.mod["rna"]
 
-            # Simulate a latent embedding
-            # Later, we can use a real one by calling `integrate` component in advance
-            adata.obsm["X_integrated_scanvi"] = np.random.normal(size=(adata.n_obs, 30))
+                # Simulate a latent embedding
+                # Later, we can use a real one by calling `integrate` component in advance
+                adata.obsm["X_integrated_scanvi"] = np.random.normal(size=(adata.n_obs, 30))
 
-            input_data.write(tempfile_input_file.name)
+                input_data.write(tempfile_input_file.name)
 
-            # Train first 2 targets
-            self._run_and_check_output([
-                "--input", tempfile_input_file.name,
-                "--modality", "rna",
-                "--query_obsm_key", "X_integrated_scanvi",
-                "--reference", "https://zenodo.org/record/6337966/files/HLCA_emb_and_metadata.h5ad",
-                "--output", "output.h5mu",
-                "--max_depth", "6",
-                "--targets", ",".join(targets)])
+                # Train first 2 targets
+                self._run_and_check_output([
+                    "--input", tempfile_input_file.name,
+                    "--modality", "rna",
+                    "--query_obsm_key", "X_integrated_scanvi",
+                    "--reference", tempfile_reference_file.name,
+                    "--output", "output.h5mu",
+                    "--max_depth", "6",
+                    "--targets", ",".join(targets)])
 
-            self.assertTrue(Path("output.h5mu").is_file())
+                self.assertTrue(Path("output.h5mu").is_file())
 
-            output_data = mudata.read_h5mu("output.h5mu")
+                output_data = mudata.read_h5mu("output.h5mu")
 
-            for target in targets:
-                self.assertIn(f"{target}_pred", output_data.mod["rna"].obs)
-                self.assertIn(f"{target}_uncertainty", output_data.mod["rna"].obs)
-                self.assertIn("labels_transfer", output_data.mod["rna"].uns)
-                self.assertIn(f"{target}_pred", output_data.mod["rna"].uns["labels_transfer"])
-                self.assertEqual("XGBClassifier", output_data.mod["rna"].uns["labels_transfer"][f"{target}_pred"]["method"])
-                self.assertEqual(6, output_data.mod["rna"].uns["labels_transfer"][f"{target}_pred"]["max_depth"])
+                for target in targets:
+                    self.assertIn(f"{target}_pred", output_data.mod["rna"].obs)
+                    self.assertIn(f"{target}_uncertainty", output_data.mod["rna"].obs)
+                    self.assertIn("labels_transfer", output_data.mod["rna"].uns)
+                    self.assertIn(f"{target}_pred", output_data.mod["rna"].uns["labels_transfer"])
+                    self.assertEqual("XGBClassifier", output_data.mod["rna"].uns["labels_transfer"][f"{target}_pred"]["method"])
+                    self.assertEqual(6, output_data.mod["rna"].uns["labels_transfer"][f"{target}_pred"]["max_depth"])
 
-            # Add one more target
-            # Now the code should use 2 previously trained models, and train only the third
-            targets.append("ann_level_3")
-            self._run_and_check_output([
-                "--input", tempfile_input_file.name,
-                "--modality", "rna",
-                "--query_obsm_key", "X_integrated_scanvi",
-                "--reference", "https://zenodo.org/record/6337966/files/HLCA_emb_and_metadata.h5ad",
-                "--output", "output.h5mu",
-                "--max_depth", 4,  # Change parameter so that we could make sure if the model is old or new
-                "--targets", ",".join(targets)])
+                # Add one more target
+                # Now the code should use 2 previously trained models, and train only the third
+                targets.append("ann_level_3")
+                self._run_and_check_output([
+                    "--input", tempfile_input_file.name,
+                    "--modality", "rna",
+                    "--query_obsm_key", "X_integrated_scanvi",
+                    "--reference", tempfile_reference_file.name,
+                    "--output", "output.h5mu",
+                    "--max_depth", "4",  # Change parameter so that we could make sure if the model is old or new
+                    "--targets", ",".join(targets)])
 
         self.assertTrue(Path("output.h5mu").is_file())
 
