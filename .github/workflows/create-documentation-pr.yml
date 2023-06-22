@@ -80,7 +80,7 @@ jobs:
           TAG_OR_BRANCH_NAME=${INPUT_TAG:-"${{ github.ref_name }}"}
           echo "tag=$TAG_OR_BRANCH_NAME" >> $GITHUB_OUTPUT
 
-      - uses: viash-io/viash-actions/pro/generate-documentation-qmd@add_src_dir2
+      - uses: viash-io/viash-actions/pro/generate-documentation-qmd@v4
         with:
           project_directory: openpipelines
           src: ./
