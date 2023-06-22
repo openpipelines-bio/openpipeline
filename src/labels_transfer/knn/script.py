@@ -1,6 +1,9 @@
+import warnings
+
 import mudata
 import numpy as np
 import scanpy as sc
+from scipy.sparse import issparse
 import pynndescent
 import numba
 
@@ -59,6 +62,11 @@ def main():
         X_train = adata_reference.X
     else:
         X_train = adata_reference.obsm[par["reference_obsm_key"]]
+
+    # pynndescent does not support sparse matrices
+    if issparse(X_train):
+        warnings.warn("Converting sparse matrix to dense. This may consume a lot of memory.")
+        X_train = X_train.toarray()
 
     ref_nn_index = pynndescent.NNDescent(X_train, n_neighbors=par["n_neighbors"])
     ref_nn_index.prepare()
