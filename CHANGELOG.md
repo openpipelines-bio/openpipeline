@@ -1,4 +1,8 @@
-# openpipelines 0.9.1
+# openpipelines 0.10.0
+
+## BREAKING CHANGES
+
+* `workflows/full_pipeline`: removed `--prot_min_fraction_mito` and `--prot_max_fraction_mito` (PR #451)
 
 ## BUG FIXES
 
@@ -25,8 +29,6 @@ The old behavior of the `full_pipeline` can be obtained by running `full_pipelin
 * Updated Viash to 0.7.4 (PR #390).
 
 * `cluster/leiden`: Output is now stored into `.obsm` instead of `.obs` (PR #431).
-
-* `workflows/full_pipeline`: removed `--prot_min_fraction_mito` and `--prot_max_fraction_mito` (PR #451)
 
 ## NEW FUNCTIONALITY
 
