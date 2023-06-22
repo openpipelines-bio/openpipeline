@@ -120,18 +120,40 @@ functionality:
           description: |
             If specified, highly-variable genes are selected within each batch separately and merged. This simple 
             process avoids the selection of batch-specific genes and acts as a lightweight batch correction method.
+    - name: "Mitochondrial Gene Detection"
+      arguments:
+        - name: "--var_name_mitochondrial_genes"
+          type: string
+          required: false
+          description: |
+            In which .var slot to store a boolean array corresponding the mitochondrial genes.
+        - name: "--var_gene_names"
+          required: false
+          example: "gene_symbol"
+          type: string
+          description: |
+            .var column name to be used to detect mitochondrial genes instead of .var_names (default if not set).
+            Gene names matching with the regex value from --mitochondrial_gene_regex will be identified
+            as a mitochondrial gene.
+        - name: --mitochondrial_gene_regex
+          type: string
+          description: |
+            Regex string that identifies mitochondrial genes from --var_gene_names.
+            By default will detect human and mouse mitochondrial genes from a gene symbol.
+          required: false
+          default: "^[mM][tT]-"
     - name: "QC metrics calculation options"
       arguments:
         - name: "--var_qc_metrics"
           description: |
             Keys to select a boolean (containing only True or False) column from .var.
             For each cell, calculate the proportion of total values for genes which are labeled 'True', 
-            compared to the total sum of the values for all genes.
+            compared to the total sum of the values for all genes. Defaults to the combined values specified for
+            --var_name_mitochondrial_genes and --filter_with_hvg_var_output.
           type: string
           multiple: True
           multiple_sep: ','
           required: false
-          default: ["filter_with_hvg"]
           example: "ercc,highly_variable"
         - name: "--top_n_vars"
           type: integer

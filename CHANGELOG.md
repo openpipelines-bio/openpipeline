@@ -1,3 +1,15 @@
+# openpipelines 0.10.0
+
+## MINOR CHANGES
+
+* `full_pipeline`: default value for `--var_qc_metrics` is now the combined values specified for `--mitochondrial_gene_regex` and `--filter_with_hvg_var_output`.
+
+## NEW FUNCTIONALITY
+
+* `filter/filter_with_counts`: add `--var_name_mitochondrial_genes` argument to store a boolean array corresponding the detected mitochondrial genes.
+
+* `full_pipeline` and `rna_singlesample` pipelines: add `--var_name_mitochondrial_genes`,  `--var_gene_names` and `--mitochondrial_gene_regex` arguments to specify mitochondrial gene detection behaviour.
+
 # openpipelines 0.9.0
 
 ## BREAKING CHANGES

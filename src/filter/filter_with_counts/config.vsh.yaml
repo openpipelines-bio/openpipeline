@@ -37,7 +37,7 @@ functionality:
           example: "gene_symbol"
           type: string
           description: |
-            .var column name to be used to detect mitochondrial genes instead of .var_names (default if not set). 
+            .var column name to be used to detect mitochondrial genes instead of .var_names (default if not set).
             Gene names matching with the regex value from --mitochondrial_gene_regex will be identified
             as a mitochondrial gene.
 
@@ -75,6 +75,13 @@ functionality:
           type: string
           default: "filter_with_counts"
           description: In which .var slot to store a boolean array corresponding to which variables should be removed.
+
+        - name: "--var_name_mitochondrial_genes"
+          type: string
+          required: false
+          description: |
+            In which .var slot to store a boolean array corresponding the mitochondrial genes.
+            Will only be used if --min_fraction_mito or --max_fraction_mito are specified.
 
     - name: Arguments
       arguments:
