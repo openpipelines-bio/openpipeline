@@ -3,9 +3,9 @@ functionality:
   namespace: "integration/scanorama_leiden"
   description: "Run scanorama integration followed by neighbour calculations, leiden clustering and run umap on the result."
   authors:
-    - __merge__: ../../../../src/authors/mauro_saporita.yaml
+    - __merge__: /src/authors/mauro_saporita.yaml
       roles: [ author ]
-    - __merge__: ../../../../src/authors/povilas_gibas.yaml
+    - __merge__: /src/authors/povilas_gibas.yaml
       roles: [ author ]
   argument_groups:
     - name: "Inputs"
