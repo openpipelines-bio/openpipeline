@@ -93,6 +93,7 @@ class TestKNN(unittest.TestCase):
                     "--modality", "rna",
                     "--query_obsm_key", "X_integrated_scanvi",
                     "--reference", tempfile_reference_file.name,
+                    "--reference_obsm_key", "X_integrated_scanvi",
                     "--output", "output.h5mu",
                     "-k", "5",
                     "--targets", ",".join(targets)])
