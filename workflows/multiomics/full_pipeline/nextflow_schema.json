@@ -117,16 +117,6 @@
             "type": "integer",
             "description": "Minimum of non-zero values per protein.",
             "default": ""
-          },
-          "prot_min_fraction_mito": {
-            "type": "number",
-            "description": "Minimum fraction of proteins that are mitochondrial.",
-            "default": ""
-          },
-          "prot_max_fraction_mito": {
-            "type": "number",
-            "description": "Maximum fraction of proteins that are mitochondrial.",
-            "default": ""
           }
           
         }

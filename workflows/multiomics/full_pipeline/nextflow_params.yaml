@@ -22,8 +22,6 @@ add_id_make_observation_keys_unique: true
 # prot_min_proteins_per_cell: 200
 # prot_max_proteins_per_cell: 100000000
 # prot_min_cells_per_protein: 3
-# prot_min_fraction_mito: 0
-# prot_max_fraction_mito: 0.2
 
 # Highly variable gene detection
 filter_with_hvg_var_output: "filter_with_hvg"

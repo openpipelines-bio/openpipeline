@@ -3,7 +3,7 @@ functionality:
   namespace: "multiomics"
   description: "A pipeline to analyse multiple multiomics samples."
   authors:
-    - __merge__: ../../../src/authors/dries_schaumont.yaml
+    - __merge__: /src/authors/dries_schaumont.yaml
       roles: [ author, maintainer ]
   argument_groups:
     - name: Inputs
@@ -97,15 +97,7 @@ functionality:
           example: 3
           type: integer
           description: Minimum of non-zero values per protein.
-        
-        - name: "--prot_min_fraction_mito"
-          example: 0
-          type: double
-          description: Minimum fraction of proteins that are mitochondrial.
-        - name: "--prot_max_fraction_mito"
-          example: 0.2
-          type: double
-          description: Maximum fraction of proteins that are mitochondrial.
+
     - name: "Highly variable gene detection"
       arguments:
         - name: "--filter_with_hvg_var_output"

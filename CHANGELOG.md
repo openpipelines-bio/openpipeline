@@ -1,4 +1,8 @@
-# openpipelines 0.9.1
+# openpipelines 0.10.0
+
+## BREAKING CHANGES
+
+* `workflows/full_pipeline`: removed `--prot_min_fraction_mito` and `--prot_max_fraction_mito` (PR #451)
 
 ## BUG FIXES
 
