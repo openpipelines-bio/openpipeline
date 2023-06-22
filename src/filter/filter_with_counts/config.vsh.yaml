@@ -37,7 +37,7 @@ functionality:
           example: "gene_symbol"
           type: string
           description: |
-            .var column name to be used to detect mitochondrial genes instead of .var_names (default if not set).
+            .var column name to be used to detect mitochondrial genes instead of .var_names (default if not set). 
             Gene names matching with the regex value from --mitochondrial_gene_regex will be identified
             as a mitochondrial gene.
 
