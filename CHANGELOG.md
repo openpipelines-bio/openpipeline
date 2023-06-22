@@ -1,3 +1,9 @@
+# openpipelines 0.9.1
+
+## BUG FIXES
+
+* Fix incorrect namespaces of the integration pipelines.
+
 # openpipelines 0.9.0
 
 ## BREAKING CHANGES

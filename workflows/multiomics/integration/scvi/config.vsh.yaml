@@ -1,6 +1,6 @@
 functionality:
   name: "scvi"
-  namespace: "integration/scvi"
+  namespace: "multiomics/integration"
   description: "Run scvi integration followed by neighbour calculations and run umap on the result."
   authors:
     - __merge__: ../../../../src/authors/dries_schaumont.yaml
@@ -60,7 +60,6 @@ functionality:
       arguments:
         - name: "--obs_batch"
           type: string
-          required: false
           description: Column name discriminating between your batches.
           required: true
         - name: "--obsm_output"
