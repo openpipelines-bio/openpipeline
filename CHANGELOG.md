@@ -2,7 +2,7 @@
 
 ## BUG FIXES
 
-* Fix incorrect namespaces of the integration pipelines.
+* Fix incorrect namespaces of the integration pipelines (#464).
 
 # openpipelines 0.9.0
 
