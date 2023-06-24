@@ -32,4 +32,5 @@ vireo \
   ${par_callAmbientRNAs:+--callAmbientRNAs} \
   ${meta_cpus:+--nproc $meta_cpus}
 
-cut -d$'\t' -f 1-2 "$par_output/donor_ids.tsv" > "$par_output/assignment.tsv"
+cut -d$'\t' -f 1-2 "$par_output/donor_ids.tsv" | tr '\t' ',' > "$par_output/cell_annotation.csv"
+awk 'BEGIN{FS=OFS=","} NR>1{ gsub("donor", "", $2) } 1' "$par_output/cell_annotation.csv" > "$par_output/cell_annotation_temp.csv" && mv "$par_output/cell_annotation_temp.csv" "$par_output/cell_annotation.csv"

@@ -18,4 +18,6 @@ res[DROPLET.TYPE=="AMB",]$`donor_id` = "AMB"
 colnames(res)[1] <- "cell"
 demuxlet_assign <- res[, c("cell", "donor_id")]
 
-write.table(demuxlet_assign, paste0(dirname(args$demuxlet_out),"/assignment.tsv"), quote = FALSE)
+write.csv(demuxlet_assign,
+    paste0(dirname(args$demuxlet_out), "/cell_annotation.csv"),
+    row.names = FALSE, quote = FALSE)

@@ -34,6 +34,7 @@ if [ "$par_geno" = true ]; then
     "$par_output"
 fi
 
-sed 1d "$par_output/scSplit_result.csv" > "$par_output/res.tsv"
-{ echo cell$'\t'donor_id; cat "$par_output/res.tsv"; } > "$par_output/assignment.tsv"
-rm "$par_output/res.tsv"
+echo "cell,donor_id" > "$par_output/cell_annotation.csv"
+sed -e '1d' -e 's/SNG-//g' "$par_output/scSplit_result.csv" | 
+sed 's/\t/,/g' | awk 'BEGIN{FS=OFS=","} { if ($2 ~ /^DBL-/) $2 = "doublet"; print }' \
+>> "$par_output/cell_annotation.csv"

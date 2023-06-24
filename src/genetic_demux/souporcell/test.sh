@@ -14,6 +14,6 @@ $meta_executable \
     --output soup_result/
 
 [[ ! -f soup_result/clusters.tsv ]] && echo "Output donor assignment file could not be found!" && exit 1
-[[ ! -f soup_result/assignment.tsv ]] && echo "Output summarized donor assignment file could not be found!" && exit 1
+[[ ! -f soup_result/cell_annotation.csv ]] && echo "Output cell annotation file could not be found!" && exit 1
 
 echo ">>> Test finished successfully"

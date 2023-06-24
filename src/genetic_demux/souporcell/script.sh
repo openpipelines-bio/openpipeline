@@ -28,7 +28,7 @@ fi
   ${par_skip_remap:+--skip_remap True} \
   ${par_ignore:+--ignore True}
 
-cut -d$'\t' -f 1-2 "$par_output/clusters.tsv" > "$par_output/assignment.tsv"
-sed 1d "$par_output/assignment.tsv" > $par_output/res.tsv
-{ echo cell$'\t'donor_id; cat "$par_output/res.tsv"; } > "$par_output/assignment.tsv"
-rm ${par_output}res.tsv
+cut -d$'\t' -f 1-3 "$par_output/clusters.tsv" | 
+sed 's/\t/,/g' | 
+awk 'BEGIN{FS=OFS=","} {$2=($2=="singlet")?$3:$2; NF=NF-1; print}' | 
+sed '1s/barcode,status/cell,donor_id/' > "$par_output/cell_annotation.csv"

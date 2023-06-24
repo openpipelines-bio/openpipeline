@@ -15,5 +15,5 @@ $meta_executable \
     --output scSplit_result/
 
 [[ ! -f scSplit_result/scSplit_result.csv ]] && echo "Output donor assignment file could not be found!" && exit 1
-[[ ! -f scSplit_result/assignment.tsv ]] && echo "Output donor assignment file as tsv format could not be found!" && exit 1
+[[ ! -f scSplit_result/cell_annotation.csv ]] && echo "Output cell annotation file as tsv format could not be found!" && exit 1
 echo ">>> Test finished successfully"
