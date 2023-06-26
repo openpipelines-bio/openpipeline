@@ -196,6 +196,9 @@ def build_ref_classifiers(adata_reference, targets, model_path,
     else:
         logger.info(f"Using obsm key {par['reference_obsm_key']} as data sourse")
         X_reference = adata_reference.obsm[par["reference_obsm_key"]]
+
+    if not os.path.exists(model_path):
+        os.makedirs(model_path, exist_ok=True)
     
     # Map from name of classifier to file names
     classifiers = dict()
@@ -362,7 +365,7 @@ def main():
     targets_to_train = []
 
     for target in par["targets"]:
-        if f"classifier_{target}.xgb" not in os.listdir(par["model_output"]) or par["force_retrain"]:
+        if not os.path.exists(par["model_output"]) or f"classifier_{target}.xgb" not in os.listdir(par["model_output"]) or par["force_retrain"]:
             logger.info(f"Classifier for {target} added to a training schedule")
             targets_to_train.append(target)
         else:
