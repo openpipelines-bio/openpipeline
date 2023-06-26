@@ -1,3 +1,4 @@
+import logging
 import warnings
 
 import mudata
@@ -22,6 +23,20 @@ par = {
     "n_neighbors": 1
 }
 ### VIASH END
+
+def _setup_logger():
+    # TODO: move to utils 
+    
+    from sys import stdout
+
+    logger = logging.getLogger()
+    logger.setLevel(logging.INFO)
+    console_handler = logging.StreamHandler(stdout)
+    logFormatter = logging.Formatter("%(asctime)s %(levelname)-8s %(message)s")
+    console_handler.setFormatter(logFormatter)
+    logger.addHandler(console_handler)
+
+    return logger
 
 
 @numba.njit
@@ -53,14 +68,20 @@ def distances_to_affinities(distances):
     return distances_tilda / np.sum(distances_tilda, axis=1, keepdims=True)
 
 def main():
+    logger = _setup_logger()
+
+    logger.info("Reading input (query) data")
     mdata = mudata.read(par["input"].strip())
     adata = mdata.mod[par["modality"]]
 
+    logger.info("Reading reference data")
     adata_reference = sc.read(par["reference"], backup_url=par["reference"])
 
     if par["reference_obsm_key"] is None:
+        logger.info("Using X layer of reference data")
         X_train = adata_reference.X
     else:
+        logger.info("Using obsm layer {} of reference data", par["reference_obsm_key"])
         X_train = adata_reference.obsm[par["reference_obsm_key"]]
 
     # pynndescent does not support sparse matrices
@@ -68,12 +89,17 @@ def main():
         warnings.warn("Converting sparse matrix to dense. This may consume a lot of memory.")
         X_train = X_train.toarray()
 
+    logger.debug("Shape of train data: {}", X_train.shape)
+
+    logger.info("Building NN index")
     ref_nn_index = pynndescent.NNDescent(X_train, n_neighbors=par["n_neighbors"])
     ref_nn_index.prepare()
 
     if par["query_obsm_key"] is None:
+        logger.info("Using X layer of query data")
         query = adata.X
     else:
+        logger.info("Using obsm layer {} of query data", par["query_obsm_key"])
         query = adata.obsm[par["query_obsm_key"]]
 
     ref_neighbors, ref_distances = ref_nn_index.query(query, k=par["n_neighbors"])
@@ -85,6 +111,7 @@ def main():
 
     # for each annotation level, get prediction and uncertainty
     for target in par["targets"]:
+        logger.info("Predicting labels for {}", target)
         ref_cats = adata_reference.obs[target].cat.codes.to_numpy()[ref_neighbors]
         prediction, uncertainty = weighted_prediction(weights, ref_cats)
         prediction = np.asarray(adata_reference.obs[target].cat.categories)[prediction]
