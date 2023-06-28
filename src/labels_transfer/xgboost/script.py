@@ -391,11 +391,12 @@ def main():
                         use_gpu=par["use_gpu"],
                         logger=logger)
         
-        # Save information about the transfer to .uns
-        adata.uns[par["output_uns_key"]][predicted_label_col_name] = {
-            "method": "XGBClassifier",
-            **training_params
-        }
+        if target in targets_to_train:
+            # Save information about the transfer to .uns
+            adata.uns[par["output_uns_key"]][predicted_label_col_name] = {
+                "method": "XGBClassifier",
+                **training_params
+            }
 
     logger.info("Updating mdata")
     mdata.mod[par['modality']] = adata
