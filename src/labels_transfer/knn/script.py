@@ -81,7 +81,7 @@ def main():
         logger.info("Using X layer of reference data")
         X_train = adata_reference.X
     else:
-        logger.info("Using obsm layer {} of reference data", par["reference_obsm_key"])
+        logger.info(f"Using obsm layer {par['reference_obsm_key']} of reference data")
         X_train = adata_reference.obsm[par["reference_obsm_key"]]
 
     # pynndescent does not support sparse matrices
@@ -89,7 +89,7 @@ def main():
         warnings.warn("Converting sparse matrix to dense. This may consume a lot of memory.")
         X_train = X_train.toarray()
 
-    logger.debug("Shape of train data: {}", X_train.shape)
+    logger.debug(f"Shape of train data: {X_train.shape}")
 
     logger.info("Building NN index")
     ref_nn_index = pynndescent.NNDescent(X_train, n_neighbors=par["n_neighbors"])
@@ -99,7 +99,7 @@ def main():
         logger.info("Using X layer of query data")
         query = adata.X
     else:
-        logger.info("Using obsm layer {} of query data", par["query_obsm_key"])
+        logger.info(f"Using obsm layer {par['query_obsm_key']} of query data")
         query = adata.obsm[par["query_obsm_key"]]
 
     ref_neighbors, ref_distances = ref_nn_index.query(query, k=par["n_neighbors"])
@@ -111,7 +111,7 @@ def main():
 
     # for each annotation level, get prediction and uncertainty
     for target in par["targets"]:
-        logger.info("Predicting labels for {}", target)
+        logger.info(f"Predicting labels for {target}")
         ref_cats = adata_reference.obs[target].cat.codes.to_numpy()[ref_neighbors]
         prediction, uncertainty = weighted_prediction(weights, ref_cats)
         prediction = np.asarray(adata_reference.obs[target].cat.categories)[prediction]
