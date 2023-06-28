@@ -30,7 +30,7 @@ class TestXGBoost(unittest.TestCase):
 
         with NamedTemporaryFile("w", suffix=".h5ad") as tempfile_reference_file:
             reference_adata = anndata.read_h5ad(reference_file)
-            reference_adata.obsm["X_integrated_scanvi"] = np.random.normal(size=(reference_adata.n_obs, 30))
+            reference_adata.obsm["X_integrated_scvi"] = np.random.normal(size=(reference_adata.n_obs, 30))
             reference_adata.obs["ann_level_1"] = np.random.choice(["CD4 T cells", "CD8 T cells"], size=reference_adata.n_obs)
             reference_adata.write(tempfile_reference_file.name)
         
@@ -40,16 +40,16 @@ class TestXGBoost(unittest.TestCase):
 
                 # Simulate a latent embedding
                 # Later, we can use a real one by calling `integrate` component in advamnce
-                adata.obsm["X_integrated_scanvi"] = np.random.normal(size=(adata.n_obs, 30))
+                adata.obsm["X_integrated_scvi"] = np.random.normal(size=(adata.n_obs, 30))
 
                 input_data.write(tempfile_input_file.name)
 
                 self._run_and_check_output([
                     "--input", tempfile_input_file.name,
                     "--modality", "rna",
-                    "--query_obsm_key", "X_integrated_scanvi",
+                    "--query_obsm_key", "X_integrated_scvi",
                     "--reference", tempfile_reference_file.name,
-                    "--reference_obsm_key", "X_integrated_scanvi",
+                    "--reference_obsm_key", "X_integrated_scvi",
                     "--output", "output.h5mu",
                     "--targets", "ann_level_1"])
 
