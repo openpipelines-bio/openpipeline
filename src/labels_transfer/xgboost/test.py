@@ -2,6 +2,7 @@ import unittest
 import subprocess
 from pathlib import Path
 from tempfile import NamedTemporaryFile
+import os
 
 import anndata
 import mudata
@@ -50,6 +51,7 @@ class TestXGBoost(unittest.TestCase):
                     "--query_obsm_key", "X_integrated_scvi",
                     "--reference", tempfile_reference_file.name,
                     "--reference_obsm_key", "X_integrated_scvi",
+                    "--model_output", "model_one_class",
                     "--output", "output.h5mu",
                     "--targets", "ann_level_1"])
 
@@ -63,6 +65,9 @@ class TestXGBoost(unittest.TestCase):
         self.assertEqual("XGBClassifier", output_data.mod["rna"].uns["labels_transfer"]["ann_level_1_pred"]["method"])
         self.assertEqual(6, output_data.mod["rna"].uns["labels_transfer"]["ann_level_1_pred"]["max_depth"])
         self.assertNotIn("ann_level_2_pred", output_data.mod["rna"].obs)
+
+        # Remove output file to prevent errors in the next tests
+        Path("output.h5mu").unlink()
 
     def test_multiple_classes(self):
 
@@ -95,6 +100,7 @@ class TestXGBoost(unittest.TestCase):
                     "--reference", tempfile_reference_file.name,
                     "--reference_obsm_key", "X_integrated_scanvi",
                     "--output", "output.h5mu",
+                    "--model_output", "model_multiple_classes",
                     "--max_depth", "6",
                     "--targets", ",".join(targets)])
 
@@ -109,6 +115,9 @@ class TestXGBoost(unittest.TestCase):
             self.assertIn(f"{target}_pred", output_data.mod["rna"].uns["labels_transfer"])
             self.assertEqual("XGBClassifier", output_data.mod["rna"].uns["labels_transfer"][f"{target}_pred"]["method"])
             self.assertEqual(6, output_data.mod["rna"].uns["labels_transfer"][f"{target}_pred"]["max_depth"])
+
+        # Remove output file to prevent errors in the next tests
+        Path("output.h5mu").unlink()
 
     def test_retraining(self):
 
@@ -140,6 +149,7 @@ class TestXGBoost(unittest.TestCase):
                     "--reference", tempfile_reference_file.name,
                     "--reference_obsm_key", "X_integrated_scanvi",
                     "--output", "output.h5mu",
+                    "--model_output", "model_retraining",
                     "--max_depth", "6",
                     "--targets", ",".join(targets)])
 
@@ -164,6 +174,7 @@ class TestXGBoost(unittest.TestCase):
                     "--query_obsm_key", "X_integrated_scanvi",
                     "--reference", tempfile_reference_file.name,
                     "--reference_obsm_key", "X_integrated_scanvi",
+                    "--model_output", "model_retraining",
                     "--output", "output.h5mu",
                     "--max_depth", "4",  # Change parameter so that we could make sure if the model is old or new
                     "--targets", ",".join(targets)])
@@ -182,6 +193,9 @@ class TestXGBoost(unittest.TestCase):
         self.assertEqual(6, output_data.mod["rna"].uns["labels_transfer"][f"{targets[0]}_pred"]["max_depth"])
         self.assertEqual(6, output_data.mod["rna"].uns["labels_transfer"][f"{targets[1]}_pred"]["max_depth"])
         self.assertEqual(4, output_data.mod["rna"].uns["labels_transfer"][f"{targets[2]}_pred"]["max_depth"])
+
+        # Remove output file to prevent errors in the next tests
+        Path("output.h5mu").unlink()
 
 if __name__ == '__main__':
     unittest.main()
