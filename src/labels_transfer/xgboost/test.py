@@ -137,6 +137,7 @@ class TestXGBoost(unittest.TestCase):
                     "--modality", "rna",
                     "--query_obsm_key", "X_integrated_scanvi",
                     "--reference", tempfile_reference_file.name,
+                    "--reference_obsm_key", "X_integrated_scanvi",
                     "--output", "output.h5mu",
                     "--max_depth", "6",
                     "--targets", ",".join(targets)])
@@ -161,6 +162,7 @@ class TestXGBoost(unittest.TestCase):
                     "--modality", "rna",
                     "--query_obsm_key", "X_integrated_scanvi",
                     "--reference", tempfile_reference_file.name,
+                    "--reference_obsm_key", "X_integrated_scanvi",
                     "--output", "output.h5mu",
                     "--max_depth", "4",  # Change parameter so that we could make sure if the model is old or new
                     "--targets", ",".join(targets)])
