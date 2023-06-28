@@ -117,6 +117,7 @@ class TestXGBoost(unittest.TestCase):
             reference_adata.obsm["X_integrated_scanvi"] = np.random.normal(size=(reference_adata.n_obs, 30))
             reference_adata.obs["ann_level_1"] = np.random.choice(["CD4 T cells", "CD8 T cells"], size=reference_adata.n_obs)
             reference_adata.obs["ann_level_2"] = np.random.choice(["CD4 naive T cells", "CD4 memory T cells", "CD8 naive T cells", "CD8 memory T cells"], size=reference_adata.n_obs)
+            reference_adata.obs["ann_level_3"] = np.random.choice(["CD4 naive T cells", "CD4 memory T cells", "CD8 naive T cells", "CD8 memory T cells", "T Rex cells"], size=reference_adata.n_obs)
             reference_adata.write(tempfile_reference_file.name)
 
             targets = ["ann_level_1", "ann_level_2"]
