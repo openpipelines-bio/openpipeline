@@ -57,7 +57,7 @@ class TestXGBoost(unittest.TestCase):
 
         output_data = mudata.read_h5mu("output.h5mu")
         self.assertIn("ann_level_1_pred", output_data.mod["rna"].obs)
-        self.assertIn("ann_level_1_uncertainty", output_data.mod["rna"].obs)
+        self.assertIn("ann_level_1_pred_uncertainty", output_data.mod["rna"].obs)
         self.assertIn("labels_transfer", output_data.mod["rna"].uns)
         self.assertIn("ann_level_1_pred", output_data.mod["rna"].uns["labels_transfer"])
         self.assertEqual("XGBClassifier", output_data.mod["rna"].uns["labels_transfer"]["ann_level_1_pred"]["method"])
@@ -104,7 +104,7 @@ class TestXGBoost(unittest.TestCase):
 
         for target in targets:
             self.assertIn(f"{target}_pred", output_data.mod["rna"].obs)
-            self.assertIn(f"{target}_uncertainty", output_data.mod["rna"].obs)
+            self.assertIn(f"{target}_pred_uncertainty", output_data.mod["rna"].obs)
             self.assertIn("labels_transfer", output_data.mod["rna"].uns)
             self.assertIn(f"{target}_pred", output_data.mod["rna"].uns["labels_transfer"])
             self.assertEqual("XGBClassifier", output_data.mod["rna"].uns["labels_transfer"][f"{target}_pred"]["method"])
@@ -147,7 +147,7 @@ class TestXGBoost(unittest.TestCase):
 
                 for target in targets:
                     self.assertIn(f"{target}_pred", output_data.mod["rna"].obs)
-                    self.assertIn(f"{target}_uncertainty", output_data.mod["rna"].obs)
+                    self.assertIn(f"{target}_pred_uncertainty", output_data.mod["rna"].obs)
                     self.assertIn("labels_transfer", output_data.mod["rna"].uns)
                     self.assertIn(f"{target}_pred", output_data.mod["rna"].uns["labels_transfer"])
                     self.assertEqual("XGBClassifier", output_data.mod["rna"].uns["labels_transfer"][f"{target}_pred"]["method"])
@@ -171,7 +171,7 @@ class TestXGBoost(unittest.TestCase):
 
         for target in targets:
             self.assertIn(f"{target}_pred", output_data.mod["rna"].obs)
-            self.assertIn(f"{target}_uncertainty", output_data.mod["rna"].obs)
+            self.assertIn(f"{target}_pred_uncertainty", output_data.mod["rna"].obs)
             self.assertIn("labels_transfer", output_data.mod["rna"].uns)
             self.assertIn(f"{target}_pred", output_data.mod["rna"].uns["labels_transfer"])
             self.assertEqual("XGBClassifier", output_data.mod["rna"].uns["labels_transfer"][f"{target}_pred"]["method"])
