@@ -79,7 +79,7 @@ platforms:
       - type: python
         packages:
           - mudata~=0.2.0
-          - pynndescent~=0.1.1
+          - pynndescent~=0.5.8
           - numba~=0.56.4
           - numpy~=1.23.5
           - scanpy~=1.9.1
