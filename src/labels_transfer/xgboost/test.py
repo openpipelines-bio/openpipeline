@@ -78,7 +78,7 @@ class TestXGBoost(unittest.TestCase):
             reference_adata.obsm["X_integrated_scanvi"] = np.random.normal(size=(reference_adata.n_obs, 30))
 
             for i, target in enumerate(targets):
-                class_names = [str(idx) for idx in range(i + 1)]  # e.g. ["0", "1", "2"], the higher the level, the more the classes
+                class_names = [str(idx) for idx in range(i + 2)]  # e.g. ["0", "1", "2"], the higher the level, the more the classes
                 reference_adata.obs[target] = np.random.choice(class_names, size=reference_adata.n_obs)
 
             reference_adata.write(tempfile_reference_file.name)
