@@ -95,7 +95,7 @@ class TestXGBoost(unittest.TestCase):
                     "--reference", tempfile_reference_file.name,
                     "--reference_obsm_key", "X_integrated_scanvi",
                     "--output", "output.h5mu",
-                    "--max_depth", 6,
+                    "--max_depth", "6",
                     "--targets", ",".join(targets)])
 
         self.assertTrue(Path("output.h5mu").is_file())
