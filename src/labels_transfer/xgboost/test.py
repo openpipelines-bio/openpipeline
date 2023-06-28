@@ -169,7 +169,7 @@ class TestXGBoost(unittest.TestCase):
                 # Now the code should use 2 previously trained models, and train only the third
                 targets.append("ann_level_3")
                 self._run_and_check_output([
-                    "--input", tempfile_input_file.name,
+                    "--input", "output.h5mu",
                     "--modality", "rna",
                     "--query_obsm_key", "X_integrated_scanvi",
                     "--reference", tempfile_reference_file.name,
