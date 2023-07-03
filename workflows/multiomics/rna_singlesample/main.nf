@@ -38,6 +38,10 @@ workflow run_wf {
           "min_cells_per_gene": "min_cells_per_gene",
           "min_fraction_mito": "min_fraction_mito",
           "max_fraction_mito": "max_fraction_mito",
+          "var_name_mitochondrial_genes": "var_name_mitochondrial_genes",
+          "mitochondrial_gene_regex": "mitochondrial_gene_regex",
+          "var_gene_names": "var_gene_names"
+
       ],
       do_filter: [:],
       filter_with_scrublet: [:]
