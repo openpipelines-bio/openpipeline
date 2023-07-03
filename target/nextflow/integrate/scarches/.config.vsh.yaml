@@ -318,5 +318,5 @@ info:
   output: "/home/runner/work/openpipeline/openpipeline/target/nextflow/integrate/scarches"
   executable: "/home/runner/work/openpipeline/openpipeline/target/nextflow/integrate/scarches/scarches"
   viash_version: "0.7.4"
-  git_commit: "e8923e5811ce707e6985ec7df6e5c74afe2234ff"
+  git_commit: "f0f59c67ff783a6476871da7c5cbaf47abb3c37b"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"

@@ -425,7 +425,7 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
     {
       "type" : "docker",
       "id" : "docker",
-      "image" : "nvcr.io/nvidia/pytorch:23.05-py3",
+      "image" : "nvcr.io/nvidia/pytorch:23.06-py3",
       "target_organization" : "openpipelines-bio",
       "target_registry" : "ghcr.io",
       "namespace_separator" : "_",
@@ -462,6 +462,7 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
           "type" : "python",
           "user" : false,
           "packages" : [
+            "numba~=0.57.1",
             "scvi-tools~=1.0.0"
           ],
           "upgrade" : false
@@ -527,7 +528,7 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
     "platform" : "nextflow",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/integrate/scvi",
     "viash_version" : "0.7.4",
-    "git_commit" : "e8923e5811ce707e6985ec7df6e5c74afe2234ff",
+    "git_commit" : "f0f59c67ff783a6476871da7c5cbaf47abb3c37b",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))

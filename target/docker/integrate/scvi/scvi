@@ -489,7 +489,7 @@ function ViashDockerCheckCommands {
 #   ViashDockerFile
 function ViashDockerfile {
   cat << 'VIASHDOCKER'
-FROM nvcr.io/nvidia/pytorch:23.05-py3
+FROM nvcr.io/nvidia/pytorch:23.06-py3
 
 ENTRYPOINT []
 
@@ -504,13 +504,13 @@ RUN pip install --upgrade pip && \
   pip install --upgrade --no-cache-dir "mudata~=0.2.0" "anndata~=0.8.0" "scanpy~=1.9.2"
 
 RUN pip install --upgrade pip && \
-  pip install --no-cache-dir "scvi-tools~=1.0.0"
+  pip install --no-cache-dir "numba~=0.57.1" "scvi-tools~=1.0.0"
 
 LABEL org.opencontainers.image.authors="Malte D. Luecken, Dries Schaumont, Matthias Beyens"
 LABEL org.opencontainers.image.description="Companion container for running component integrate scvi"
-LABEL org.opencontainers.image.created="2023-06-30T13:59:25Z"
+LABEL org.opencontainers.image.created="2023-07-03T08:43:33Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="e8923e5811ce707e6985ec7df6e5c74afe2234ff"
+LABEL org.opencontainers.image.revision="f0f59c67ff783a6476871da7c5cbaf47abb3c37b"
 LABEL org.opencontainers.image.version="main_build"
 
 VIASHDOCKER
