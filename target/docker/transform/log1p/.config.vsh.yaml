@@ -216,5 +216,5 @@ info:
   output: "/home/runner/work/openpipeline/openpipeline/target/docker/transform/log1p"
   executable: "/home/runner/work/openpipeline/openpipeline/target/docker/transform/log1p/log1p"
   viash_version: "0.7.4"
-  git_commit: "f0f59c67ff783a6476871da7c5cbaf47abb3c37b"
+  git_commit: "7ca26b6beaec4fc7c74cc2b57c4eb2db3ce0a292"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"

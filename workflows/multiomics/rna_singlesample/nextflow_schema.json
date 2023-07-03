@@ -78,6 +78,29 @@
           
         }
       },
+      "mitochondrial gene detection" : {
+        "title": "Mitochondrial gene detection",
+        "type": "object",
+        "description": "No description",
+        "properties": {
+          "var_name_mitochondrial_genes": {
+            "type": "string",
+            "description": "In which .var slot to store a boolean array corresponding the mitochondrial genes.","help_text": "In which .var slot to store a boolean array corresponding the mitochondrial genes.\n",
+            "default": ""
+          },
+          "var_gene_names": {
+            "type": "string",
+            "description": ".var column name to be used to detect mitochondrial genes instead of .var_names (default if not set).","help_text": ".var column name to be used to detect mitochondrial genes instead of .var_names (default if not set).\nGene names matching with the regex value from --mitochondrial_gene_regex will be identified\nas a mitochondrial gene.\n",
+            "default": ""
+          },
+          "mitochondrial_gene_regex": {
+            "type": "string",
+            "description": "Regex string that identifies mitochondrial genes from --var_gene_names.","help_text": "Regex string that identifies mitochondrial genes from --var_gene_names.\nBy default will detect human and mouse mitochondrial genes from a gene symbol.\n",
+            "default": "^[mM][tT]-"
+          }
+          
+        }
+      },
       "nextflow input-output arguments" : {
         "title": "Nextflow input-output arguments",
         "type": "object",
@@ -106,6 +129,9 @@
       },
       {
         "$ref": "#/definitions/filtering options"
+      },
+      {
+        "$ref": "#/definitions/mitochondrial gene detection"
       },
       {
         "$ref": "#/definitions/nextflow input-output arguments"

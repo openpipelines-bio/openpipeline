@@ -218,6 +218,16 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
             "multiple" : false,
             "multiple_sep" : ":",
             "dest" : "par"
+          },
+          {
+            "type" : "string",
+            "name" : "--var_name_mitochondrial_genes",
+            "description" : "In which .var slot to store a boolean array corresponding the mitochondrial genes.\nWill only be used if --min_fraction_mito or --max_fraction_mito are specified.\n",
+            "required" : false,
+            "direction" : "input",
+            "multiple" : false,
+            "multiple_sep" : ":",
+            "dest" : "par"
           }
         ]
       },
@@ -445,7 +455,7 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
     "platform" : "nextflow",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/filter/filter_with_counts",
     "viash_version" : "0.7.4",
-    "git_commit" : "f0f59c67ff783a6476871da7c5cbaf47abb3c37b",
+    "git_commit" : "7ca26b6beaec4fc7c74cc2b57c4eb2db3ce0a292",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))
@@ -473,6 +483,7 @@ par = {
   'do_subset': $( if [ ! -z ${VIASH_PAR_DO_SUBSET+x} ]; then echo "r'${VIASH_PAR_DO_SUBSET//\\'/\\'\\"\\'\\"r\\'}'.lower() == 'true'"; else echo None; fi ),
   'obs_name_filter': $( if [ ! -z ${VIASH_PAR_OBS_NAME_FILTER+x} ]; then echo "r'${VIASH_PAR_OBS_NAME_FILTER//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'var_name_filter': $( if [ ! -z ${VIASH_PAR_VAR_NAME_FILTER+x} ]; then echo "r'${VIASH_PAR_VAR_NAME_FILTER//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
+  'var_name_mitochondrial_genes': $( if [ ! -z ${VIASH_PAR_VAR_NAME_MITOCHONDRIAL_GENES+x} ]; then echo "r'${VIASH_PAR_VAR_NAME_MITOCHONDRIAL_GENES//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'min_counts': $( if [ ! -z ${VIASH_PAR_MIN_COUNTS+x} ]; then echo "int(r'${VIASH_PAR_MIN_COUNTS//\\'/\\'\\"\\'\\"r\\'}')"; else echo None; fi ),
   'max_counts': $( if [ ! -z ${VIASH_PAR_MAX_COUNTS+x} ]; then echo "int(r'${VIASH_PAR_MAX_COUNTS//\\'/\\'\\"\\'\\"r\\'}')"; else echo None; fi ),
   'min_genes_per_cell': $( if [ ! -z ${VIASH_PAR_MIN_GENES_PER_CELL+x} ]; then echo "int(r'${VIASH_PAR_MIN_GENES_PER_CELL//\\'/\\'\\"\\'\\"r\\'}')"; else echo None; fi ),
@@ -529,6 +540,9 @@ def apply_filter_to_mask(mask, base, filter, comparator):
     num_removed = np.sum(np.invert(new_filt) & mask)
     mask &= new_filt
     return num_removed, mask
+
+if par["var_name_mitochondrial_genes"]:
+    data.var[par["var_name_mitochondrial_genes"]] = mito_genes
 
 # Filter genes
 keep_genes = np.repeat(True, data.n_vars)

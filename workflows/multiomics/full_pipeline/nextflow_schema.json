@@ -139,6 +139,29 @@
           
         }
       },
+      "mitochondrial gene detection" : {
+        "title": "Mitochondrial Gene Detection",
+        "type": "object",
+        "description": "No description",
+        "properties": {
+          "var_name_mitochondrial_genes": {
+            "type": "string",
+            "description": "In which .var slot to store a boolean array corresponding the mitochondrial genes.","help_text": "In which .var slot to store a boolean array corresponding the mitochondrial genes.\n",
+            "default": ""
+          },
+          "var_gene_names": {
+            "type": "string",
+            "description": ".var column name to be used to detect mitochondrial genes instead of .var_names (default if not set).","help_text": ".var column name to be used to detect mitochondrial genes instead of .var_names (default if not set).\nGene names matching with the regex value from --mitochondrial_gene_regex will be identified\nas a mitochondrial gene.\n",
+            "default": ""
+          },
+          "mitochondrial_gene_regex": {
+            "type": "string",
+            "description": "Regex string that identifies mitochondrial genes from --var_gene_names.","help_text": "Regex string that identifies mitochondrial genes from --var_gene_names.\nBy default will detect human and mouse mitochondrial genes from a gene symbol.\n",
+            "default": "^[mM][tT]-"
+          }
+          
+        }
+      },
       "qc metrics calculation options" : {
         "title": "QC metrics calculation options",
         "type": "object",
@@ -146,8 +169,8 @@
         "properties": {
           "var_qc_metrics": {
             "type": "string",
-            "description": "Keys to select a boolean (containing only True or False) column from .var.","help_text": "Keys to select a boolean (containing only True or False) column from .var.\nFor each cell, calculate the proportion of total values for genes which are labeled \u0027True\u0027, \ncompared to the total sum of the values for all genes.\n",
-            "default": "['filter_with_hvg']"
+            "description": "Keys to select a boolean (containing only True or False) column from .var.","help_text": "Keys to select a boolean (containing only True or False) column from .var.\nFor each cell, calculate the proportion of total values for genes which are labeled \u0027True\u0027, \ncompared to the total sum of the values for all genes. Defaults to the combined values specified for\n--var_name_mitochondrial_genes and --filter_with_hvg_var_output.\n",
+            "default": ""
           },
           "top_n_vars": {
             "type": "integer",
@@ -191,6 +214,9 @@
       },
       {
         "$ref": "#/definitions/highly variable gene detection"
+      },
+      {
+        "$ref": "#/definitions/mitochondrial gene detection"
       },
       {
         "$ref": "#/definitions/qc metrics calculation options"

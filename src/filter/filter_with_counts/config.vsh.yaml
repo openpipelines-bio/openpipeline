@@ -76,6 +76,13 @@ functionality:
           default: "filter_with_counts"
           description: In which .var slot to store a boolean array corresponding to which variables should be removed.
 
+        - name: "--var_name_mitochondrial_genes"
+          type: string
+          required: false
+          description: |
+            In which .var slot to store a boolean array corresponding the mitochondrial genes.
+            Will only be used if --min_fraction_mito or --max_fraction_mito are specified.
+
     - name: Arguments
       arguments:
         - name: "--min_counts"

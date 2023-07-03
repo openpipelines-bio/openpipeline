@@ -66,6 +66,11 @@
             "type": "string",
             "description": "In which .var slot to store a boolean array corresponding to which variables should be removed.",
             "default": "filter_with_counts"
+          },
+          "var_name_mitochondrial_genes": {
+            "type": "string",
+            "description": "In which .var slot to store a boolean array corresponding the mitochondrial genes.","help_text": "In which .var slot to store a boolean array corresponding the mitochondrial genes.\nWill only be used if --min_fraction_mito or --max_fraction_mito are specified.\n",
+            "default": ""
           }
           
         }

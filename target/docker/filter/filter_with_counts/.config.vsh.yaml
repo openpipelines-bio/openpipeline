@@ -155,6 +155,17 @@ functionality:
       multiple: false
       multiple_sep: ":"
       dest: "par"
+    - type: "string"
+      name: "--var_name_mitochondrial_genes"
+      description: "In which .var slot to store a boolean array corresponding the\
+        \ mitochondrial genes.\nWill only be used if --min_fraction_mito or --max_fraction_mito\
+        \ are specified.\n"
+      info: null
+      required: false
+      direction: "input"
+      multiple: false
+      multiple_sep: ":"
+      dest: "par"
   - name: "Arguments"
     arguments:
     - type: "integer"
@@ -333,5 +344,5 @@ info:
   output: "/home/runner/work/openpipeline/openpipeline/target/docker/filter/filter_with_counts"
   executable: "/home/runner/work/openpipeline/openpipeline/target/docker/filter/filter_with_counts/filter_with_counts"
   viash_version: "0.7.4"
-  git_commit: "f0f59c67ff783a6476871da7c5cbaf47abb3c37b"
+  git_commit: "7ca26b6beaec4fc7c74cc2b57c4eb2db3ce0a292"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"

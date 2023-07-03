@@ -100,7 +100,7 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
             "name" : "--var_qc_metrics",
             "description" : "Keys to select a boolean (containing only True or False) column from .var.\nFor each cell, calculate the proportion of total values for genes which are labeled 'True', \ncompared to the total sum of the values for all genes.\n",
             "example" : [
-              "ercc,highly_variable"
+              "ercc,highly_variable,mitochondrial"
             ],
             "required" : false,
             "direction" : "input",
@@ -287,7 +287,7 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
     "platform" : "nextflow",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/qc/calculate_qc_metrics",
     "viash_version" : "0.7.4",
-    "git_commit" : "f0f59c67ff783a6476871da7c5cbaf47abb3c37b",
+    "git_commit" : "7ca26b6beaec4fc7c74cc2b57c4eb2db3ce0a292",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))

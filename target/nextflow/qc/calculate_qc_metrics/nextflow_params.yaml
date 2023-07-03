@@ -2,7 +2,7 @@
 input: # please fill in - example: "input.h5mu"
 modality: "rna"
 # layer: "raw_counts"
-# var_qc_metrics: ["ercc", "highly_variable"]
+# var_qc_metrics: ["ercc", "highly_variable", "mitochondrial"]
 # top_n_vars: [123]
 
 # Outputs

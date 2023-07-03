@@ -11,6 +11,7 @@ mitochondrial_gene_regex: "^[mM][tT]-"
 do_subset: false
 obs_name_filter: "filter_with_counts"
 var_name_filter: "filter_with_counts"
+# var_name_mitochondrial_genes: "foo"
 
 # Arguments
 # min_counts: 200
