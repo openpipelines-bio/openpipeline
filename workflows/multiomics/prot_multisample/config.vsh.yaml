@@ -3,7 +3,7 @@ functionality:
   namespace: "multiomics"
   description: "Processing unimodal multi-sample ADT data."
   authors:
-    - __merge__: ../../../src/authors/dries_schaumont.yaml
+    - __merge__: /src/authors/dries_schaumont.yaml
       roles: [ author ]
   argument_groups:
     - name: "Inputs"

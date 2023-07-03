@@ -63,7 +63,7 @@ workflow run_wf {
     | filter{ it[1].add_id_to_obs }
     // The add_id processes will be executed several times
     // Before that, we must make the ID (first element of list)
-    // unique. The global ID is stored so that it can be retreived later.
+    // unique. The global ID is stored so that it can be retrieved later.
     | pmap {id, data, other ->
       [id, data, other + [id: id]]
     }
