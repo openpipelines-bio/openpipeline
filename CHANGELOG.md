@@ -18,6 +18,8 @@
 
 * Fix an issue with `workflows/full_pipeline` not correctly caching previous runs (PR #460).
 
+* Fix incorrect namespaces of the integration pipelines (PR #464).
+
 # openpipelines 0.9.0
 
 ## BREAKING CHANGES
