@@ -156,5 +156,5 @@ info:
   output: "/home/runner/work/openpipeline/openpipeline/target/nextflow/convert/from_10xmtx_to_h5mu"
   executable: "/home/runner/work/openpipeline/openpipeline/target/nextflow/convert/from_10xmtx_to_h5mu/from_10xmtx_to_h5mu"
   viash_version: "0.7.4"
-  git_commit: "8a5967cdebd712e0ed8efb2f90ee78cc0303a676"
+  git_commit: "c233ac9fbd183c9c7c561af61ad0ffa5db52c8c0"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"
