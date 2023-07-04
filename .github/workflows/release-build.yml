@@ -113,8 +113,6 @@ jobs:
     steps:
     # Remove unnecessary files to free up space. Otherwise, we get 'no space left on device.'
     - uses: data-intuitive/reclaim-the-bytes@v1
-      with:
-        remove-swap: false
 
     - uses: actions/checkout@v3
 
@@ -160,8 +158,6 @@ jobs:
     steps:
     # Remove unnecessary files to free up space. Otherwise, we get 'no space left on device.'
     - uses: data-intuitive/reclaim-the-bytes@v1
-      with:
-        remove-swap: false
 
     - uses: actions/checkout@v3
 
@@ -233,9 +229,7 @@ jobs:
     steps:
     # Remove unnecessary files to free up space. Otherwise, we get 'no space left on device.'
     - uses: data-intuitive/reclaim-the-bytes@v1
-      with:
-        remove-swap: false
-
+  
     - uses: actions/checkout@v3
 
     - uses: viash-io/viash-actions/setup@v4
