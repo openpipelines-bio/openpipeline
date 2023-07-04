@@ -35,6 +35,14 @@ workflow run_wf {
 
   parsed_arguments_ch = input_ch
     | preprocessInputs("config": config)
+    | pmap {id, args ->
+      def var_qc_default = [args.filter_with_hvg_var_output]
+      if (args.var_name_mitochondrial_genes) {
+        var_qc_default.add(args.var_name_mitochondrial_genes)
+      }
+      def new_args = args + ["var_qc_metrics": var_qc_default.join(",")]
+      [id, new_args]
+    }
     | setWorkflowArguments (
         "add_id_args": ["input": "input",
                         "make_observation_keys_unique": "add_id_make_observation_keys_unique",
@@ -49,15 +57,16 @@ workflow run_wf {
           "min_cells_per_gene": "rna_min_cells_per_gene",
           "min_fraction_mito": "rna_min_fraction_mito",
           "max_fraction_mito": "rna_max_fraction_mito",
+          "var_name_mitochondrial_genes": "var_name_mitochondrial_genes",
+          "var_gene_names": "var_gene_names",
+          "mitochondrial_gene_regex": "mitochondrial_gene_regex"
         ],
         "prot_singlesample_args": [
           "min_counts": "prot_min_counts",
           "max_counts": "prot_max_counts",
           "min_proteins_per_cell": "prot_min_proteins_per_cell",
           "max_proteins_per_cell": "prot_max_proteins_per_cell",
-          "min_cells_per_protein": "prot_min_cells_per_protein",
-          "min_fraction_mito": "prot_min_fraction_mito",
-          "max_fraction_mito": "prot_max_fraction_mito",
+          "min_cells_per_protein": "prot_min_cells_per_protein"
         ],
         "rna_multisample_args": [
           "filter_with_hvg_var_output": "filter_with_hvg_var_output",
@@ -166,7 +175,7 @@ workflow run_wf {
     | map { lst -> // Put modality name in first element so that we can group on it
         [lst[3].modality] + lst
       }
-    | groupTuple(by: 0)
+    | groupTuple(by: 0, sort: "hash")
     // [ String, List[String], List[Map[String, Any]], ... ]
     | map { grouped_lst ->
       def new_id = "combined_${grouped_lst[0]}"
@@ -350,8 +359,7 @@ workflow test_wf2 {
           prot_min_proteins_per_cell: 1,
           prot_max_proteins_per_cell: 1000000,
           prot_min_cells_per_protein: 1,
-          prot_min_fraction_mito: 0,
-          prot_max_fraction_mito: 1
+          var_name_mitochondrial_genes: 'mitochondrial',
         ],
       ],
       rna_min_counts: 2,

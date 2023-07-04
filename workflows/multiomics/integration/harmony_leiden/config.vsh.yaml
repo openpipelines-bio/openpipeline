@@ -3,7 +3,7 @@ functionality:
   namespace: "multiomics/integration"
   description: "Run harmony integration followed by neighbour calculations, leiden clustering and run umap on the result."
   authors:
-    - __merge__: ../../../../src/authors/dries_schaumont.yaml
+    - __merge__: /src/authors/dries_schaumont.yaml
       roles: [ author ]
   argument_groups:
     - name: "Inputs"

@@ -1,8 +1,24 @@
-# openpipelines 0.9.1
+# openpipelines 0.10.0
+
+## BREAKING CHANGES
+
+* `workflows/full_pipeline`: removed `--prot_min_fraction_mito` and `--prot_max_fraction_mito` (PR #451)
+
+## MINOR CHANGES
+
+* `full_pipeline`: default value for `--var_qc_metrics` is now the combined values specified for `--mitochondrial_gene_regex` and `--filter_with_hvg_var_output`.
+
+## NEW FUNCTIONALITY
+
+* `filter/filter_with_counts`: add `--var_name_mitochondrial_genes` argument to store a boolean array corresponding the detected mitochondrial genes.
+
+* `full_pipeline` and `rna_singlesample` pipelines: add `--var_name_mitochondrial_genes`,  `--var_gene_names` and `--mitochondrial_gene_regex` arguments to specify mitochondrial gene detection behaviour.
 
 ## BUG FIXES
 
-* Fix incorrect namespaces of the integration pipelines (#464).
+* Fix an issue with `workflows/full_pipeline` not correctly caching previous runs (PR #460).
+
+* Fix incorrect namespaces of the integration pipelines (PR #464).
 
 # openpipelines 0.9.0
 
