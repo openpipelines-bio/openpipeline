@@ -8,6 +8,8 @@
 
 * `full_pipeline`: default value for `--var_qc_metrics` is now the combined values specified for `--mitochondrial_gene_regex` and `--filter_with_hvg_var_output`.
 
+* `dataflow/concat`: reduce memory consumption by only reading one modality at the same time (PR #474). 
+
 ## NEW FUNCTIONALITY
 
 * `filter/filter_with_counts`: add `--var_name_mitochondrial_genes` argument to store a boolean array corresponding the detected mitochondrial genes.
