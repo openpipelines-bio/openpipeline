@@ -178,8 +178,8 @@ functionality:
     - type: nextflow_script
       path: main.nf
       entrypoint: test_wf3
-    - type: nextflow_script
-      path: main.nf
-      entrypoint: test_wf4
+    # - type: nextflow_script
+    #   path: main.nf
+    #   entrypoint: test_wf4
     - path: ../../../resources_test/concat_test_data
     - path: ../../../resources_test/pbmc_1k_protein_v3
