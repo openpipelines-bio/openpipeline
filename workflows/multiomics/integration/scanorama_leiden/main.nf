@@ -60,7 +60,9 @@ workflow run_wf {
         "modality": "modality"
 
       ],
-      move_obsm_to_obs_leiden: []
+      move_obsm_to_obs_leiden: [
+        "output": "output"
+      ]
     )
     | getWorkflowArguments(key: "scanorama")
     | scanorama
@@ -96,7 +98,8 @@ workflow test_wf {
         id: "foo",
         input: params.resources_test + "/pbmc_1k_protein_v3/pbmc_1k_protein_v3_mms.h5mu",
         layer: "log_normalized",
-        leiden_resolution: [1, 0.25]
+        leiden_resolution: [1, 0.25],
+        output: "foo.final.h5mu"
       ]
     ]
   ]
@@ -114,6 +117,8 @@ workflow test_wf {
     | map { output_list ->
       assert output_list.size() == 1 : "output channel should contain 1 event"
       assert (output_list.collect({it[0]}) as Set).equals(["foo"] as Set): "Output ID should be same as input ID"
+      assert (output_list.collect({it[1].getFileName().toString()}) as Set).equals(["foo.final.h5mu"] as Set)
+
     }
     //| check_format(args: {""}) // todo: check whether output h5mu has the right slots defined
 }

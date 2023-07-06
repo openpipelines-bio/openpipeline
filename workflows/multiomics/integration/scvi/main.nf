@@ -58,7 +58,8 @@ workflow run_wf {
         "uns_neighbors": "uns_neighbors",
         "output": "output",
         "obsm_output": "obsm_umap",
-        "modality": "modality"
+        "modality": "modality",
+        "output": "output"
       ]
     )
     | getWorkflowArguments(key: "scvi")
@@ -96,7 +97,8 @@ workflow test_wf {
         input: params.resources_test + "/pbmc_1k_protein_v3/pbmc_1k_protein_v3_mms.h5mu",
         layer: "log_normalized",
         obs_batch: "sample_id",
-        max_epochs: 1
+        max_epochs: 1,
+        output: "foo.final.h5mu",
       ]
     ]
   ]
@@ -116,6 +118,7 @@ workflow test_wf {
     | map { output_list ->
       assert output_list.size() == 1 : "output channel should contain 1 event"
       assert (output_list.collect({it[0]}) as Set).equals(["foo"] as Set): "Output ID should be same as input ID"
+      assert (output_list.collect({it[1].getFileName().toString()}) as Set).equals(["foo.final.h5mu"] as Set)
     }
     //| check_format(args: {""}) // todo: check whether output h5mu has the right slots defined
 }
