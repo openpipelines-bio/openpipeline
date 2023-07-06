@@ -22,6 +22,8 @@
 
 * Fix incorrect namespaces of the integration pipelines (PR #464).
 
+* Fix an issue in several workflows where the `--output` argument would not work (PR #476).
+
 # openpipelines 0.9.0
 
 ## BREAKING CHANGES
