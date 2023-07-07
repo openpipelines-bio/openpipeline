@@ -87,7 +87,7 @@ workflow run_wf {
   // Check that the output name is unique for all samples (we concat into one file)
   parsed_arguments_ch
     | toSortedList
-    | map  { list ->
+    | map { list ->
         found_output_files = list.collect{it[2].get('publish').getOrDefault("output", null)}.unique()
         assert found_output_files.size() < 2, "The specified output file is not the same for all samples. Found: $found_output_files"
     }
