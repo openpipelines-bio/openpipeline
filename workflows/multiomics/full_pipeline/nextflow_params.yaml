@@ -2,6 +2,9 @@
 id: # please fill in - example: "foo"
 input: # please fill in - example: "input.h5mu"
 
+# Outputs
+# output: "$id.$key.output.h5mu"
+
 # Sample ID options
 add_id_to_obs: true
 add_id_obs_output: "sample_id"

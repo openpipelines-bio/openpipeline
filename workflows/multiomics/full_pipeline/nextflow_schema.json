@@ -22,6 +22,19 @@
           
         }
       },
+      "outputs" : {
+        "title": "Outputs",
+        "type": "object",
+        "description": "No description",
+        "properties": {
+          "output": {
+            "type": "string",
+            "description": "Destination path to the output.",
+            "default": "$id.$key.output.h5mu"
+          }
+          
+        }
+      },
       "sample id options" : {
         "title": "Sample ID options",
         "type": "object",
@@ -202,6 +215,9 @@
     "allOf": [
       {
         "$ref": "#/definitions/inputs"
+      },
+      {
+        "$ref": "#/definitions/outputs"
       },
       {
         "$ref": "#/definitions/sample id options"
