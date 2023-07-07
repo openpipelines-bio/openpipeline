@@ -62,7 +62,7 @@ def main():
                                  f"not found in .var for modality {par['modality']}")
             qc_column = var[qc_metric]
             if qc_column.isna().any():
-                if not par["var_qc_metrics_fill_na_value"]:
+                if par["var_qc_metrics_fill_na_value"] is None:
                     raise ValueError(f"The .var column '{qc_metric}', selected by '--var_qc_metrics', contains NA values. "
                                      "It is ambiguous whether or not to include these values in the static calulation. "
                                      "You can explicitly map the NA values to 'False' or 'True using '--var_qc_metrics_fill_na_value'")
