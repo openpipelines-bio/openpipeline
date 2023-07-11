@@ -24,7 +24,7 @@ input = meta["resources_dir"] + "pbmc_1k_protein_v3/pbmc_1k_protein_v3_mms.h5mu"
 def test_pca(run_component):
     run_component([
             "--input", input,
-            "--output",  "output.h5mu",
+            "--output", "output.h5mu",
             "--obsm_output", "X_foo",
             "--num_components", "26",
             "--overwrite"
@@ -52,7 +52,7 @@ def test_no_overwrite_but_field_also_not_present(run_component, tmp_path):
     input_data.write(tmp_file)
     run_component([
         "--input", tmp_file,
-        "--output",  "output.h5mu",
+        "--output", "output.h5mu",
         "--obsm_output", "X_foo",
         "--num_components", "26",
         "--output_compression", "gzip"
@@ -75,8 +75,8 @@ def test_selecting_input_layer(run_component, tmp_path):
     tmp_file = tmp_path / "input_data_adjusted.h5mu"
     input_data.write_h5mu(tmp_file)
     run_component([
-            "--input",tmp_file,
-            "--output",  "output.h5mu",
+            "--input", tmp_file,
+            "--output", "output.h5mu",
             "--obsm_output", "test_foo",
             "--num_components", "26",
             "--layer", "test",
@@ -96,7 +96,7 @@ def test_highly_variable_column_does_not_exist_raises(run_component):
     with pytest.raises(subprocess.CalledProcessError) as err:
         run_component([
                 "--input", input,
-                "--output",  "output.h5mu",
+                "--output", "output.h5mu",
                 "--obsm_output", "X_foo",
                 "--num_components", "26",
                 "--var_input", "does_not_exist"
@@ -114,7 +114,7 @@ def test_select_highly_variable_column(run_component, tmp_path):
     input_data.write_h5mu(tmp_file)
     run_component([
             "--input", tmp_file,
-            "--output",  "output.h5mu",
+            "--output", "output.h5mu",
             "--obsm_output", "X_foo",
             "--num_components", "26",
             "--var_input", "filter_with_hvg",
@@ -134,7 +134,7 @@ def test_raise_if_input_layer_is_missing(run_component):
     with pytest.raises(subprocess.CalledProcessError) as err:
         run_component([
                 "--input", input,
-                "--output",  "output.h5mu",
+                "--output", "output.h5mu",
                 "--obsm_output", "X_foo",
                 "--num_components", "26",
                 "--layer", "does_not_exist",
@@ -148,7 +148,7 @@ def test_output_field_already_present_raises(run_component):
     with pytest.raises(subprocess.CalledProcessError) as err:
         run_component([
             "--input", input,
-            "--output",  "output.h5mu",
+            "--output", "output.h5mu",
             "--obsm_output", "X_foo",
             "--num_components", "26"
         ])
