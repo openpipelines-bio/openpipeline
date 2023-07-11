@@ -2,6 +2,8 @@ functionality:
   name: "rna_multisample"
   namespace: "multiomics"
   description: "Processing unimodal multi-sample RNA transcriptomics data."
+  info:
+    image: image.svg
   authors:
     - __merge__: /src/authors/dries_de_maeyer.yaml
       roles: [ author ]
