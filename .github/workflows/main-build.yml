@@ -3,7 +3,7 @@ concurrency: main_build
 
 on:
   push:
-    branches: [ 'main' ]
+    branches: [ 'main', 'feature/push_viashhub' ]
 
 jobs:
   # phase 1
@@ -108,6 +108,28 @@ jobs:
       uses: viash-io/viash-actions/ns-build@v4
       with:
         config_mod: .functionality.version := 'main_build'
+        platform: docker
+        src: ${{ matrix.component.dir }}
+        setup: push
+
+    # Retag docker images and push to Viash-Hub
+    - name: Retag images
+      run: |
+        viash ns exec \
+        'docker tag ghcr.io/openpipelines-bio/{namespace}_{functionality-name}:main_build viash-hub.com:5050/openpipelines-bio/openpipeline/{namespace}_{functionality-name}:main_build' \
+        --apply_platform -p docker
+
+    - name: Login to Viash-Hub container registry
+      uses: docker/login-action@v2
+      with:
+        registry: viash-hub.com:5050
+        username: ${{ secrets.VIASHHUB_USER }}
+        password: ${{ secrets.VIASHHUB_PASS }}
+
+    - name: Push container
+      uses: viash-io/viash-actions/ns-build@v4
+      with:
+        config_mod: .functionality.version := 'main_build';.platforms[.type == 'docker'].target_registry := 'viash-hub.com:5050';.platforms[.type == 'docker'].target_organization := 'openpipelines-bio/openpipeline';.platforms[.type == 'docker'].target_image_source := 'https://viash-hub.com/openpipelines-bio/openpipeline'
         platform: docker
         src: ${{ matrix.component.dir }}
         setup: push
