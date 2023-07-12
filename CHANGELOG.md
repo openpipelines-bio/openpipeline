@@ -16,6 +16,8 @@
 
 * `full_pipeline` and `rna_singlesample` pipelines: add `--var_name_mitochondrial_genes`,  `--var_gene_names` and `--mitochondrial_gene_regex` arguments to specify mitochondrial gene detection behaviour.
 
+* Docker images built on `main_build` now are also tagged for and push to viash-hub.com (PR #480).
+
 ## BUG FIXES
 
 * Fix an issue with `workflows/full_pipeline` not correctly caching previous runs (PR #460).
