@@ -8,6 +8,8 @@
 
 * `full_pipeline`: default value for `--var_qc_metrics` is now the combined values specified for `--mitochondrial_gene_regex` and `--filter_with_hvg_var_output`.
 
+* `dataflow/concat`: reduce memory consumption by only reading one modality at the same time (PR #474). 
+
 ## NEW FUNCTIONALITY
 
 * `filter/filter_with_counts`: add `--var_name_mitochondrial_genes` argument to store a boolean array corresponding the detected mitochondrial genes.
@@ -21,6 +23,8 @@
 * Fix an issue with `workflows/full_pipeline` not correctly caching previous runs (PR #460).
 
 * Fix incorrect namespaces of the integration pipelines (PR #464).
+
+* Fix an issue in several workflows where the `--output` argument would not work (PR #476).
 
 # openpipelines 0.9.0
 
