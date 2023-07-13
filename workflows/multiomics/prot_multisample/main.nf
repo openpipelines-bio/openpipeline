@@ -34,7 +34,7 @@ workflow run_wf {
       [id, new_data]
     }
     | setWorkflowArguments (
-      "clr": [:],
+      "clr": ["output": "output"],
       "add_id": ["input": "input",
                  "input_id": "sample_id",
                  "obs_output": "add_id_obs_output",
@@ -43,11 +43,20 @@ workflow run_wf {
     )
     | getWorkflowArguments(key: "add_id")
 
+
+  // Check that the output name is unique for all samples (we concat into one file)
+  parsed_arguments_ch
+    | toSortedList
+    | map  { list ->
+        found_output_files = list.collect{it[2].get('clr').getOrDefault("output", null)}.unique()
+        assert found_output_files.size() < 2, "The specified output file is not the same for all samples. Found: $found_output_files"
+    }
+
   add_id_ch = parsed_arguments_ch
     | filter{ it[1].add_id_to_obs }
     // The add_id processes will be executed several times
     // Before that, we must make the ID (first element of list)
-    // unique. The global ID is stored so that it can be retreived later.
+    // unique. The global ID is stored so that it can be retrieved later.
     | pmap {id, data, other ->
       [id, data, other + [id: id]]
     }
@@ -137,7 +146,8 @@ workflow test2_wf {
     input: params.resources_test + "/pbmc_1k_protein_v3/pbmc_1k_protein_v3_mms.h5mu",
     add_id_make_observation_keys_unique: true,
     add_id_to_obs: true,
-    add_id_obs_output: "foo_column"
+    add_id_obs_output: "foo_column",
+    output: "adt_samples_add_id.final.h5mu"
   ]
 
   output_ch =
@@ -154,6 +164,7 @@ workflow test2_wf {
     | map { output_list ->
       assert output_list.size() == 1 : "output channel should contain one event"
       assert output_list[0][0] == "adt_samples_add_id" : "Output ID should be same as input ID"
+      assert (output_list.collect({it[1].getFileName().toString()}) as Set).equals(["adt_samples_add_id.final.h5mu"] as Set)
     }
     //| check_format(args: {""}) // todo: check whether output h5mu has the right slots defined
 }

@@ -3,11 +3,11 @@ functionality:
   namespace: "multiomics"
   description: "Processing unimodal single-sample CITE-seq data."
   authors:
-    - __merge__: ../../../src/authors/dries_de_maeyer.yaml
+    - __merge__: /src/authors/dries_de_maeyer.yaml
       roles: [ author ]
-    - __merge__: ../../../src/authors/robrecht_cannoodt.yaml
+    - __merge__: /src/authors/robrecht_cannoodt.yaml
       roles: [ author, maintainer ]
-    - __merge__: ../../../src/authors/dries_schaumont.yaml
+    - __merge__: /src/authors/dries_schaumont.yaml
       roles: [ author ]
   argument_groups:
     - name: "Input"

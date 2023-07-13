@@ -17,9 +17,9 @@ jobs:
     steps:
     - uses: actions/checkout@v3
 
-    - uses: viash-io/viash-actions/setup@v3
+    - uses: viash-io/viash-actions/setup@v4
 
-    - uses: viash-io/viash-actions/project/sync-and-cache-s3@v3
+    - uses: viash-io/viash-actions/project/sync-and-cache-s3@v4
       id: cache
       with:
         s3_bucket: $s3_bucket
@@ -31,7 +31,7 @@ jobs:
         # allow publishing the target folder
         sed -i '/^\/target\/$/d' .gitignore
 
-    - uses: viash-io/viash-actions/ns-build@v3
+    - uses: viash-io/viash-actions/ns-build@v4
       with:
         config_mod: .functionality.version := 'integration_build'
         parallel: true
@@ -45,14 +45,14 @@ jobs:
         exclude_assets: ''
 
     - id: ns_list_components
-      uses: viash-io/viash-actions/ns-list@v3
+      uses: viash-io/viash-actions/ns-list@v4
       with:
         platform: docker
         src: src
         format: json
 
     - id: ns_list_workflows
-      uses: viash-io/viash-actions/ns-list@v3
+      uses: viash-io/viash-actions/ns-list@v4
       with:
         src: workflows
         format: json
@@ -89,14 +89,14 @@ jobs:
 
     steps:
     # Remove unnecessary files to free up space. Otherwise, we get 'no space left on device.'
-    - uses: data-intuitive/reclaim-the-bytes@v1
+    - uses: data-intuitive/reclaim-the-bytes@v2
     
     - uses: actions/checkout@v3
 
-    - uses: viash-io/viash-actions/setup@v3
+    - uses: viash-io/viash-actions/setup@v4
 
     - name: Build container
-      uses: viash-io/viash-actions/ns-build@v3
+      uses: viash-io/viash-actions/ns-build@v4
       with:
         config_mod: .functionality.version := 'integration_build'
         setup: build
@@ -110,7 +110,7 @@ jobs:
         password: ${{ secrets.GTHB_PAT }}
 
     - name: Push container
-      uses: viash-io/viash-actions/ns-build@v3
+      uses: viash-io/viash-actions/ns-build@v4
       with:
         config_mod: .functionality.version := 'integration_build'
         platform: docker
@@ -132,18 +132,18 @@ jobs:
 
     steps:
     # Remove unnecessary files to free up space. Otherwise, we get 'no space left on device.'
-    - uses: data-intuitive/reclaim-the-bytes@v1
+    - uses: data-intuitive/reclaim-the-bytes@v2
         
     - uses: actions/checkout@v3
 
-    - uses: viash-io/viash-actions/setup@v3
+    - uses: viash-io/viash-actions/setup@v4
 
     - uses: nf-core/setup-nextflow@v1.3.0
 
     # build target dir
     # use containers from integration_build branch, hopefully these are available
     - name: Build target dir
-      uses: viash-io/viash-actions/ns-build@v3
+      uses: viash-io/viash-actions/ns-build@v4
       with:
         config_mod: ".functionality.version := 'integration_build'"
         parallel: true

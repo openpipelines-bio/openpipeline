@@ -48,7 +48,7 @@ functionality:
           type: string
           multiple: True
           multiple_sep: ','
-          example: "ercc,highly_variable"
+          example: "ercc,highly_variable,mitochondrial"
         - name: "--top_n_vars"
           type: integer
           description: |

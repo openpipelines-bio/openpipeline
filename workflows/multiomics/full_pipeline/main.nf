@@ -7,6 +7,7 @@ include { split_modalities } from targetDir + '/dataflow/split_modalities/main.n
 include { merge } from targetDir + '/dataflow/merge/main.nf'
 include { concat } from targetDir + '/dataflow/concat/main.nf'
 include { remove_modality }  from targetDir + '/filter/remove_modality/main.nf'
+include { publish }  from targetDir + '/transfer/publish/main.nf'
 include { run_wf as rna_singlesample } from workflowDir + '/multiomics/rna_singlesample/main.nf'
 include { run_wf as rna_multisample } from workflowDir + '/multiomics/rna_multisample/main.nf'
 include { run_wf as prot_singlesample } from workflowDir + '/multiomics/prot_singlesample/main.nf'
@@ -35,6 +36,14 @@ workflow run_wf {
 
   parsed_arguments_ch = input_ch
     | preprocessInputs("config": config)
+    | pmap {id, args ->
+      def var_qc_default = [args.filter_with_hvg_var_output]
+      if (args.var_name_mitochondrial_genes) {
+        var_qc_default.add(args.var_name_mitochondrial_genes)
+      }
+      def new_args = args + ["var_qc_metrics": var_qc_default.join(",")]
+      [id, new_args]
+    }
     | setWorkflowArguments (
         "add_id_args": ["input": "input",
                         "make_observation_keys_unique": "add_id_make_observation_keys_unique",
@@ -49,15 +58,16 @@ workflow run_wf {
           "min_cells_per_gene": "rna_min_cells_per_gene",
           "min_fraction_mito": "rna_min_fraction_mito",
           "max_fraction_mito": "rna_max_fraction_mito",
+          "var_name_mitochondrial_genes": "var_name_mitochondrial_genes",
+          "var_gene_names": "var_gene_names",
+          "mitochondrial_gene_regex": "mitochondrial_gene_regex"
         ],
         "prot_singlesample_args": [
           "min_counts": "prot_min_counts",
           "max_counts": "prot_max_counts",
           "min_proteins_per_cell": "prot_min_proteins_per_cell",
           "max_proteins_per_cell": "prot_max_proteins_per_cell",
-          "min_cells_per_protein": "prot_min_cells_per_protein",
-          "min_fraction_mito": "prot_min_fraction_mito",
-          "max_fraction_mito": "prot_max_fraction_mito",
+          "min_cells_per_protein": "prot_min_cells_per_protein"
         ],
         "rna_multisample_args": [
           "filter_with_hvg_var_output": "filter_with_hvg_var_output",
@@ -68,11 +78,19 @@ workflow run_wf {
         "prot_multisample_args": [:],
         "integration_args_rna": [
           "var_pca_feature_selection": "filter_with_hvg_var_output", // run PCA on highly variable genes only
-          "output": "output"
         ],
-        "integration_args_prot": ["output": "output"]
+        "integration_args_prot": [:],
+        "publish": ["output": "output"],
     )
     | getWorkflowArguments(key: "add_id_args")
+
+  // Check that the output name is unique for all samples (we concat into one file)
+  parsed_arguments_ch
+    | toSortedList
+    | map { list ->
+        found_output_files = list.collect{it[2].get('publish').getOrDefault("output", null)}.unique()
+        assert found_output_files.size() < 2, "The specified output file is not the same for all samples. Found: $found_output_files"
+    }
 
   add_id_ch = parsed_arguments_ch
     | filter{ it[1].add_id_to_obs }
@@ -140,12 +158,16 @@ workflow run_wf {
         ["combined_$modality_processor.id", new_data] + list[0].drop(2)
       }
       | getWorkflowArguments(key: ("$modality_processor.id" + "_multisample_args").toString() )
-      | view { "input multichannel-$modality_processor.id: $it" }
     
     // Run the multisample processing if defined, otherwise just concatenate samples together
     out_ch = (
       modality_processor.multisample ? \
-        input_ms_ch | modality_processor.multisample : \
+        input_ms_ch
+          | pmap {id, input_args, other_arguments -> 
+              [id, ["add_id_to_obs": false] + input_args, other_arguments]
+          } 
+          | view { "input multichannel-$modality_processor.id: $it" }
+          | modality_processor.multisample : \
         input_ms_ch | concat.run(
           key: "concat_" + modality_processor.id,
           renameKeys: [input_id: "sample_id"],
@@ -162,7 +184,7 @@ workflow run_wf {
     | map { lst -> // Put modality name in first element so that we can group on it
         [lst[3].modality] + lst
       }
-    | groupTuple(by: 0)
+    | groupTuple(by: 0, sort: "hash")
     // [ String, List[String], List[Map[String, Any]], ... ]
     | map { grouped_lst ->
       def new_id = "combined_${grouped_lst[0]}"
@@ -189,20 +211,25 @@ workflow run_wf {
     | merge.run(args: [ output_compression: "gzip" ])
   
   integration_processors = [
-    [id: "rna", "workflow": initialize_integration_rna, "args": ["layer": "log_normalized", "modality": "rna"]],
-    [id: "prot", "workflow": initialize_integration_prot, "args": ["layer": "clr", "modality": "prot"]],
+    [id: "rna", "workflow": initialize_integration_rna, "extra_args": ["layer": "log_normalized", "modality": "rna"]],
+    [id: "prot", "workflow": initialize_integration_prot, "extra_args": ["layer": "clr", "modality": "prot"]],
   ]
 
   output_ch = integration_processors.inject(for_integration_ch){ channel_in, processor ->
     channel_out_integrated = channel_in
       | filter{it[3].modalities.contains(processor.id)}
-      | pmap {id, input_args -> [id, ["input": input_args] + processor.args]}
+      | view {"integration-input-$processor.id: $it"}
+      | getWorkflowArguments(key: ("integration_args_" + processor.id).toString() )
+      | pmap {id, input_args -> [id, input_args + processor.extra_args]}
       | processor.workflow
     ch_in_unmodified = channel_in
       | filter{ !(it[3].modalities.contains(processor.id)) }
+      | view {"unmodified-$processor.id: $it"}
     return channel_out_integrated.concat(ch_in_unmodified)
   }
-  | map {list -> [list[0], list[1]]} 
+  | getWorkflowArguments(key: "publish")
+  | publish
+  | map {list -> [list[0], list[1]]}
 
   emit:
   output_ch
@@ -229,7 +256,8 @@ workflow test_wf {
         ]
       ],
       rna_min_counts: 2,
-      prot_min_counts: 3
+      prot_min_counts: 3,
+      output: "full_pipeline_output.h5mu"
     ]
 
 
@@ -246,6 +274,7 @@ workflow test_wf {
       | map { output_list ->
         assert output_list.size() == 1 : "output channel should contain one event"
         assert output_list[0][0] == "merged" : "Output ID should be 'merged'"
+        assert output_list[0][1].getFileName().toString() == "full_pipeline_output.h5mu" : "Output file should be named 'full_pipeline_output.h5mu'. Found: ${output_list[0][1]}"
       }
   
 }
@@ -330,6 +359,7 @@ workflow test_wf2 {
         [
           id: "pbmc",
           input: params.resources_test + "/pbmc_1k_protein_v3/pbmc_1k_protein_v3_filtered_feature_bc_matrix.h5mu",
+          var_name_mitochondrial_genes: 'mitochondrial'
         ],
         [
           id: "pbmc_with_more_args",
@@ -346,8 +376,7 @@ workflow test_wf2 {
           prot_min_proteins_per_cell: 1,
           prot_max_proteins_per_cell: 1000000,
           prot_min_cells_per_protein: 1,
-          prot_min_fraction_mito: 0,
-          prot_max_fraction_mito: 1
+          var_name_mitochondrial_genes: 'mitochondrial',
         ],
       ],
       rna_min_counts: 2,
@@ -370,3 +399,34 @@ workflow test_wf2 {
         assert output_list[0][0] == "merged" : "Output ID should be 'merged'"
       }
 }
+
+// The following test is supposed to fail. It is used to test the error handling of the pipeline.
+// However, there is not way to catch the error originating from the workflow
+
+// workflow test_wf4 {
+
+//   helpMessage(config)
+
+//   // allow changing the resources_test dir
+//   params.resources_test = params.rootDir + "/resources_test"
+  
+
+//   testParams = [
+//     param_list: [
+//         [
+//           id: "pbmc",
+//           input: params.resources_test + "/pbmc_1k_protein_v3/pbmc_1k_protein_v3_filtered_feature_bc_matrix.h5mu",
+//           output: "foo.h5mu"
+//         ],
+//         [
+//           id: "pbmc_with_more_args",
+//           input: params.resources_test + "/pbmc_1k_protein_v3/pbmc_1k_protein_v3_filtered_feature_bc_matrix.h5mu",
+//           output: "foo2.h5mu"
+//         ],
+//       ],
+
+//     ]
+
+//     output_ch = channelFromParams(testParams, config)
+//       | run_wf
+// }

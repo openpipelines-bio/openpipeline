@@ -1,9 +1,9 @@
 functionality:
   name: "harmony_leiden"
-  namespace: "integration/common"
+  namespace: "multiomics/integration"
   description: "Run harmony integration followed by neighbour calculations, leiden clustering and run umap on the result."
   authors:
-    - __merge__: ../../../../src/authors/dries_schaumont.yaml
+    - __merge__: /src/authors/dries_schaumont.yaml
       roles: [ author ]
   argument_groups:
     - name: "Inputs"
@@ -79,7 +79,10 @@ functionality:
       arguments:
         - name: "--obs_cluster"
           type: string
-          description: Name of the .obs key under which to add the cluster labels.
+          description: |
+            Prefix for the .obs keys under which to add the cluster labels. Newly created columns in .obs will 
+            be created from the specified value for '--obs_cluster' suffixed with an underscore and one of the resolutions
+            resolutions specified in '--leiden_resolution'.
           default: "harmony_integration_leiden"
         - name: "--leiden_resolution"
           type: double

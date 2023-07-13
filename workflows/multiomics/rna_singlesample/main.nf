@@ -38,9 +38,13 @@ workflow run_wf {
           "min_cells_per_gene": "min_cells_per_gene",
           "min_fraction_mito": "min_fraction_mito",
           "max_fraction_mito": "max_fraction_mito",
+          "var_name_mitochondrial_genes": "var_name_mitochondrial_genes",
+          "mitochondrial_gene_regex": "mitochondrial_gene_regex",
+          "var_gene_names": "var_gene_names"
+
       ],
       do_filter: [:],
-      filter_with_scrublet: [:]
+      filter_with_scrublet: ["output": "output"]
     )
 
     // cell filtering
@@ -86,7 +90,8 @@ workflow test_wf {
     max_genes_per_cell: 10000000,
     min_cells_per_gene: 2,
     min_fraction_mito: 0.05,
-    max_fraction_mito: 0.2
+    max_fraction_mito: 0.2,
+    output: "foo.final.h5mu"
   ]
 
   output_ch =
@@ -105,6 +110,8 @@ workflow test_wf {
     | map { output_list ->
       assert output_list.size() == 1 : "output channel should contain one event"
       assert output_list[0][0] == "foo" : "Output ID should be same as input ID"
+      assert (output_list.collect({it[1].getFileName().toString()}) as Set).equals(["foo.final.h5mu"] as Set)
+
     }
     //| check_format(args: {""}) // todo: check whether output h5mu has the right slots defined
 }
