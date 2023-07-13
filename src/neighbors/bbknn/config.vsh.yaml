@@ -93,6 +93,7 @@ platforms:
           - anndata~=0.8.0
           - scanpy~=1.9.2 # Will result in NameError: name 'logg' is not defined otherwise
           - bbknn
+          - scikit-learn~=1.2.2
   - type: nextflow
     directives:
       label: highmem

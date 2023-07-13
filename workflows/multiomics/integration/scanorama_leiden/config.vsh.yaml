@@ -1,11 +1,11 @@
 functionality:
   name: "scanorama_leiden"
-  namespace: "integration/scanorama_leiden"
+  namespace: "multiomics/integration"
   description: "Run scanorama integration followed by neighbour calculations, leiden clustering and run umap on the result."
   authors:
-    - __merge__: ../../../../src/authors/mauro_saporita.yaml
+    - __merge__: /src/authors/mauro_saporita.yaml
       roles: [ author ]
-    - __merge__: ../../../../src/authors/povilas_gibas.yaml
+    - __merge__: /src/authors/povilas_gibas.yaml
       roles: [ author ]
   argument_groups:
     - name: "Inputs"
@@ -24,6 +24,11 @@ functionality:
           default: "log_normalized"
           type: string
           description: use specified layer for expression values instead of the .X object from the modality.
+          required: false
+        - name: "--modality"
+          description: Which modality to process.
+          type: string
+          default: "rna"
           required: false
     - name: "Outputs"
       arguments:

@@ -160,4 +160,4 @@ def test_doublet_automatic_threshold_detection_fails_recovery(run_component, inp
     assert not mu_out.mod['rna'].obs['filter_with_scrublet'].any()
 
 if __name__ == '__main__':
-    exit(pytest.main([__file__], plugins=["viashpy"]))
+    exit(pytest.main([__file__]))

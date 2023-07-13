@@ -1,3 +1,31 @@
+# openpipelines 0.10.0
+
+## BREAKING CHANGES
+
+* `workflows/full_pipeline`: removed `--prot_min_fraction_mito` and `--prot_max_fraction_mito` (PR #451)
+
+## MINOR CHANGES
+
+* `full_pipeline`: default value for `--var_qc_metrics` is now the combined values specified for `--mitochondrial_gene_regex` and `--filter_with_hvg_var_output`.
+
+* `dataflow/concat`: reduce memory consumption by only reading one modality at the same time (PR #474). 
+
+## NEW FUNCTIONALITY
+
+* `filter/filter_with_counts`: add `--var_name_mitochondrial_genes` argument to store a boolean array corresponding the detected mitochondrial genes.
+
+* `full_pipeline` and `rna_singlesample` pipelines: add `--var_name_mitochondrial_genes`,  `--var_gene_names` and `--mitochondrial_gene_regex` arguments to specify mitochondrial gene detection behaviour.
+
+* Added `multiomics/multisample` pipeline to run multisample processing followed by the integration setup. It is considered an entrypoint into the full pipeline which skips the single-sample processing. The idea is to allow a a re-run of these steps after a sample has already been processed by the `full_pipeline`. Keep in mind that samples that are provided as input to this pipeline are processed separately and are not concatenated. Hence, the input should be a concatenated sample (PR #475).  
+
+## BUG FIXES
+
+* Fix an issue with `workflows/full_pipeline` not correctly caching previous runs (PR #460).
+
+* Fix incorrect namespaces of the integration pipelines (PR #464).
+
+* Fix an issue in several workflows where the `--output` argument would not work (PR #476).
+
 # openpipelines 0.9.0
 
 ## BREAKING CHANGES
@@ -83,6 +111,8 @@ The old behavior of the `full_pipeline` can be obtained by running `full_pipelin
 * `workflows/full_pipeline`: fix `make_observation_keys_unique` parameter not being correctly passed to the `add_id` component, causing `ValueError: Observations are not unique across samples` during execution of the `concat` component (PR #422).
 
 * `annotate/popv`: now sets `aprox` to `False` to avoid using `annoy` in scanorama because it fails on processors that are missing the AVX-512 instruction sets, causing `Illegal instruction (core dumped)`.
+
+* `workflows/full_pipeline`: Avoid adding sample names to observation ids twice (PR #457). 
 
 # openpipelines 0.8.0
 

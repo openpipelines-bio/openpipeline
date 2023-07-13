@@ -458,13 +458,13 @@ RUN apt-get update && \
   rm -rf /var/lib/apt/lists/*
 
 RUN pip install --upgrade pip && \
-  pip install --upgrade --no-cache-dir "mudata~=0.2.0" "anndata~=0.8.0" "scanpy~=1.9.2" "bbknn"
+  pip install --upgrade --no-cache-dir "mudata~=0.2.0" "anndata~=0.8.0" "scanpy~=1.9.2" "bbknn" "scikit-learn~=1.2.2"
 
 LABEL org.opencontainers.image.authors="Dries De Maeyer, Dries Schaumont"
 LABEL org.opencontainers.image.description="Companion container for running component neighbors bbknn"
-LABEL org.opencontainers.image.created="2023-06-16T12:46:36Z"
+LABEL org.opencontainers.image.created="2023-07-13T14:26:21Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="5b72b2aebe364756fd9d9627dd4d39a5a2f9c64d"
+LABEL org.opencontainers.image.revision="2dff898f65889bb8943c1205b8a8c38f16d903bf"
 LABEL org.opencontainers.image.version="integration_build"
 
 VIASHDOCKER

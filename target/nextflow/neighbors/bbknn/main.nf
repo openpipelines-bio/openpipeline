@@ -294,7 +294,8 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
             "mudata~=0.2.0",
             "anndata~=0.8.0",
             "scanpy~=1.9.2",
-            "bbknn"
+            "bbknn",
+            "scikit-learn~=1.2.2"
           ],
           "upgrade" : true
         }
@@ -359,7 +360,7 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
     "platform" : "nextflow",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/neighbors/bbknn",
     "viash_version" : "0.7.4",
-    "git_commit" : "5b72b2aebe364756fd9d9627dd4d39a5a2f9c64d",
+    "git_commit" : "2dff898f65889bb8943c1205b8a8c38f16d903bf",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))
