@@ -22,7 +22,9 @@
 
 * Fix incorrect namespaces of the integration pipelines (PR #464).
 
-* Fix an issue in several workflows where the `--output` argument would not work (PR #476).
+* Fix an issue in several workflows where the `--output` argument would not work (PR #476).'
+
+* `integration/harmony_leiden` and `integration/scanorama_leiden`: Fix an issue where the prefix of the columns that store the leiden clusters was hardcoded to `leiden`, instead of adapting to the value for `--obs_cluster`
 
 # openpipelines 0.9.0
 
