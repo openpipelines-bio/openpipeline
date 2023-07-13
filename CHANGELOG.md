@@ -4,6 +4,8 @@
 
 * `workflows/full_pipeline`: removed `--prot_min_fraction_mito` and `--prot_max_fraction_mito` (PR #451)
 
+* `workflows/rna_multisample` and `workflows/prot_multisample`: Removed concatenation from these pipelines. The input for these pipelines is now a single mudata file that contains data for multiple samples. If you wish to use this pipeline on multiple single-sample mudata files, you can use the `dataflow/concat` components on them first. This also implies that the ability to add ids to multiple single-sample mudata files prior to concatenation is no longer required, hence the removal of `--add_id_to_obs`, `--sample_id`, `--add_id_obs_output`,  and `--add_id_make_observation_keys_unique` (PR #475).
+
 ## MINOR CHANGES
 
 * `full_pipeline`: default value for `--var_qc_metrics` is now the combined values specified for `--mitochondrial_gene_regex` and `--filter_with_hvg_var_output`.
