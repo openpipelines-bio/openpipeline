@@ -48,7 +48,7 @@ workflow run_wf {
       ],
       clustering: [
         "obsp_connectivities": "obsp_neighbor_connectivities",
-        "obs_name": "obs_cluster",
+        "obsm_name": "obs_cluster",
         "resolution": "leiden_resolution",
         "modality": "modality"
       ],
@@ -59,6 +59,7 @@ workflow run_wf {
         "modality": "modality"
       ],
       move_obsm_to_obs_leiden: [
+        "obsm_key": "obs_cluster",
         "modality": "modality",
         "output": "output",
       ]
@@ -68,7 +69,7 @@ workflow run_wf {
     | getWorkflowArguments(key: "neighbors")
     | find_neighbors
     | getWorkflowArguments(key: "clustering")
-    | leiden.run(args: [obsm_name: "leiden"])
+    | leiden
     | getWorkflowArguments(key: "umap")
     | umap
     | getWorkflowArguments(key: "move_obsm_to_obs_leiden")
