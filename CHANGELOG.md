@@ -1,3 +1,29 @@
+# openpipelines 0.10.0
+
+## BREAKING CHANGES
+
+* `workflows/full_pipeline`: removed `--prot_min_fraction_mito` and `--prot_max_fraction_mito` (PR #451)
+
+## MINOR CHANGES
+
+* `full_pipeline`: default value for `--var_qc_metrics` is now the combined values specified for `--mitochondrial_gene_regex` and `--filter_with_hvg_var_output`.
+
+* `dataflow/concat`: reduce memory consumption by only reading one modality at the same time (PR #474). 
+
+## NEW FUNCTIONALITY
+
+* `filter/filter_with_counts`: add `--var_name_mitochondrial_genes` argument to store a boolean array corresponding the detected mitochondrial genes.
+
+* `full_pipeline` and `rna_singlesample` pipelines: add `--var_name_mitochondrial_genes`,  `--var_gene_names` and `--mitochondrial_gene_regex` arguments to specify mitochondrial gene detection behaviour.
+
+## BUG FIXES
+
+* Fix an issue with `workflows/full_pipeline` not correctly caching previous runs (PR #460).
+
+* Fix incorrect namespaces of the integration pipelines (PR #464).
+
+* Fix an issue in several workflows where the `--output` argument would not work (PR #476).
+
 # openpipelines 0.9.0
 
 ## BREAKING CHANGES
@@ -50,31 +76,8 @@ The old behavior of the `full_pipeline` can be obtained by running `full_pipelin
 
 * `report/mermaid`: Now used `mermaid-cli` to generate images instead of creating a request to `mermaid.ink`. New `--output_format`, `--width`, `--height` and  `--background_color` arguments were added (PR #419).
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
->>>>>>> 61a267f997 (Rework mermaid component (#419))
-=======
->>>>>>> 9cef614c44 (Use smaller images. (#427))
 * All components that used `python` as base container: use `slim` version to reduce container image size (PR #427).
 
-=======
->>>>>>> 6296146bcf (Rework mermaid component (#419))
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
->>>>>>> 9cef614c44 (Use smaller images. (#427))
-=======
-* All components that used `python` as base container: use `slim` version to reduce container image size (PR #427).
-
->>>>>>> ef5840e5c2 (Use smaller images. (#427))
-<<<<<<< HEAD
-=======
->>>>>>> 61a267f997 (Rework mermaid component (#419))
-=======
->>>>>>> 9cef614c44 (Use smaller images. (#427))
 ## MINOR CHANGES
 
 * `integrate/scvi`: update scvi to 1.0.0 (PR #448)
@@ -106,6 +109,8 @@ The old behavior of the `full_pipeline` can be obtained by running `full_pipelin
 * `workflows/full_pipeline`: fix `make_observation_keys_unique` parameter not being correctly passed to the `add_id` component, causing `ValueError: Observations are not unique across samples` during execution of the `concat` component (PR #422).
 
 * `annotate/popv`: now sets `aprox` to `False` to avoid using `annoy` in scanorama because it fails on processors that are missing the AVX-512 instruction sets, causing `Illegal instruction (core dumped)`.
+
+* `workflows/full_pipeline`: Avoid adding sample names to observation ids twice (PR #457). 
 
 # openpipelines 0.8.0
 
