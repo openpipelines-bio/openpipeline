@@ -46,33 +46,9 @@ platforms:
   - type: docker
     image: python:3.10-slim
     setup:
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
->>>>>>> dc4d3f18e2 (Update muon (#428))
-=======
->>>>>>> 9cef614c44 (Use smaller images. (#427))
       - type: apt
         packages: 
           - procps
-=======
->>>>>>> 5bbb3b6145 (Update muon (#428))
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
->>>>>>> 9cef614c44 (Use smaller images. (#427))
-=======
-      - type: apt
-        packages: 
-          - procps
->>>>>>> ef5840e5c2 (Use smaller images. (#427))
-<<<<<<< HEAD
-=======
->>>>>>> dc4d3f18e2 (Update muon (#428))
-=======
->>>>>>> 9cef614c44 (Use smaller images. (#427))
       - type: python
         packages:
           - mudata~=0.2.0
