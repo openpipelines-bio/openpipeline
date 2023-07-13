@@ -428,9 +428,9 @@ RUN apt-get update && \
 
 LABEL org.opencontainers.image.authors="Angela Oliveira Pisco, Robrecht Cannoodt"
 LABEL org.opencontainers.image.description="Companion container for running component reference make_reference"
-LABEL org.opencontainers.image.created="2023-07-12T07:47:02Z"
+LABEL org.opencontainers.image.created="2023-07-13T11:50:19Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="1808da50396aee5500463421eed7b054d8798300"
+LABEL org.opencontainers.image.revision="0573ee6f1f2f9a0e0afd52cfe9da92f1da7315a5"
 LABEL org.opencontainers.image.version="main_build"
 
 VIASHDOCKER
