@@ -14,7 +14,6 @@ nextflow \
   run . \
   -main-script workflows/multiomics/multisample/main.nf \
   -entry test_wf \
-  -resume \
   -profile docker,no_publish \
   -c workflows/utils/labels_ci.config
 

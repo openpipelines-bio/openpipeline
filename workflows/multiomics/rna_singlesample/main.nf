@@ -65,7 +65,6 @@ workflow run_wf {
     )
     // doublet calling
     | getWorkflowArguments(key: "filter_with_scrublet")
-    | view {"scrublet: $it"}
     | filter_with_scrublet.run(
       auto: [ publish: true, output_compression: "gzip" ]
     )

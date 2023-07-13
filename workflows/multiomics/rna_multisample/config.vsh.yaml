@@ -17,18 +17,9 @@ functionality:
           type: string
           description: ID of the concatenated file
           example: concatenated
-        - name: "--sample_id"
-          required: true
-          type: string
-          multiple_sep: ';'
-          multiple: true
-          description: IDs of the sample.
-          example: foo
         - name: "--input"
           required: true
           type: file
-          multiple_sep: ';'
-          multiple: true
           description: Path to the samples.
           example: dataset.h5mu
     - name: "Output"
