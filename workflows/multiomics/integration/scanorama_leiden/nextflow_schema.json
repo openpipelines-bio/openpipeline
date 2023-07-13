@@ -123,7 +123,7 @@
         "properties": {
           "obs_cluster": {
             "type": "string",
-            "description": "Name of the .obs key under which to add the cluster labels.",
+            "description": "Prefix for the .obs keys under which to add the cluster labels. Newly created columns in .obs will ","help_text": "Prefix for the .obs keys under which to add the cluster labels. Newly created columns in .obs will \nbe created from the specified value for \u0027--obs_cluster\u0027 suffixed with an underscore and one of the\nresolutions specified in \u0027--leiden_resolution\u0027.\n",
             "default": "scanorama_integration_leiden"
           },
           "leiden_resolution": {
