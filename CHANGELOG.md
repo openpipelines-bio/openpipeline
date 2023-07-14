@@ -32,7 +32,7 @@
 
 * `integration/harmony_leiden` and `integration/scanorama_leiden`: Fix an issue where the prefix of the columns that store the leiden clusters was hardcoded to `leiden`, instead of adapting to the value for `--obs_cluster` (PR #482). 
 
-* `velocity/velocyto`: Resolve symbolic link before checking whether the transcriptome is a gzip.
+* `velocity/velocyto`: Resolve symbolic link before checking whether the transcriptome is a gzip (PR #484).
 
 # openpipelines 0.9.0
 
