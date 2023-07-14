@@ -49,6 +49,11 @@ functionality:
           multiple: True
           multiple_sep: ','
           example: "ercc,highly_variable,mitochondrial"
+        - name: "--var_qc_metrics_fill_na_value"
+          type: boolean
+          description: |
+            Fill any 'NA' values found in the columns specified with --var_qc_metrics to 'True' or 'False'.
+            as False.
         - name: "--top_n_vars"
           type: integer
           description: |
