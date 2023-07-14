@@ -7,7 +7,7 @@ include { publish }  from targetDir + '/transfer/publish/main.nf'
 
 include { split_modalities_workflow as split_modalities_workflow } from workflowDir + '/multiomics/full_pipeline/main.nf'
 include { multisample_processing_workflow as multisample_processing_workflow } from workflowDir + '/multiomics/full_pipeline/main.nf'
-include { integration_workflow as integration_workflow } from workflowDir + '/multiomics/full_pipeline/main.nf'
+include { integration_setup_workflow as integration_setup_workflow } from workflowDir + '/multiomics/full_pipeline/main.nf'
 
 include { readConfig; helpMessage; readCsv; preprocessInputs; channelFromParams } from workflowDir + "/utils/WorkflowHelper.nf"
 include { setWorkflowArguments; getWorkflowArguments; passthroughMap as pmap; passthroughFlatMap as pFlatMap } from workflowDir + "/utils/DataflowHelper.nf"
@@ -55,7 +55,7 @@ workflow run_wf {
         [id, new_input] + other_arguments + modalities_list
       }
     | merge.run(args: [ output_compression: "gzip" ])
-    | integration_workflow
+    | integration_setup_workflow
     | getWorkflowArguments(key: "publish")
     | publish
     | map {list -> [list[0], list[1]]}

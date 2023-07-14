@@ -20,7 +20,52 @@ include { readConfig; helpMessage; readCsv; preprocessInputs; channelFromParams 
 include {  setWorkflowArguments; getWorkflowArguments; passthroughMap as pmap; passthroughFlatMap as pFlatMap; strictMap as smap } from workflowDir + "/utils/DataflowHelper.nf"
 config = readConfig("$workflowDir/multiomics/full_pipeline/config.vsh.yaml")
 
+workflow {
+  helpMessage(config)
+
+  channelFromParams(params, config)
+    | run_wf
+
+}
+
+workflow run_wf {
+  take:
+    input_ch
+
+  main:
+    output_ch = input_ch
+      | add_arguments
+      | getWorkflowArguments(key: "add_id_args")
+      | add_id_workflow
+      | getWorkflowArguments(key: "split_modalities_args")
+      | split_modalities_workflow
+      | singlesample_processing_workflow
+      | concat_workflow
+      | multisample_processing_workflow
+      | toSortedList{ a, b -> b[0] <=> a[0] }
+      | map { list -> 
+          def new_input = list.collect{it[1].input}
+          def other_arguments = list[0][2] // Get the first set, the other ones are copies
+          def modalities_list = ["modalities": list.collect({it[-1].modality}).unique()]
+          ["merged", ["input": new_input]] + other_arguments + modalities_list
+      }
+      | merge.run(args: [ output_compression: "gzip" ])
+      | integration_setup_workflow
+      | getWorkflowArguments(key: "publish")
+      | publish
+      | map {list -> [list[0], list[1]]}
+      
+
+  emit:
+    output_ch
+}
+
+// =================================
+// === start of helper workflows ===
+// =================================
+
 workflow add_arguments {
+  // Process the specified arguments for the workflow run and perform basic assertions on argument sanity.
   take:
     input_ch
 
@@ -87,6 +132,9 @@ workflow add_arguments {
 }
 
 workflow add_id_workflow {
+  // If requested, add the id of the events (samples) a column in .obs. 
+  // Also allows to make .obs_names (the .obs index) unique, by prefixing the values with an unique id per .h5mu file.
+  // The latter is usefull to avoid duplicate observations during concatenation.
   take: 
     parsed_arguments_ch
 
@@ -110,6 +158,7 @@ workflow add_id_workflow {
   }
 
 workflow split_modalities_workflow {
+  // Split multimodal MuData files into several unimodal MuData files.
   take:
     samples_with_id_ch
 
@@ -144,6 +193,8 @@ workflow split_modalities_workflow {
 }
 
 workflow singlesample_processing_workflow {
+  // Perform processing of unimodal single-sample MuData object
+  // Each modality and each sample is processed individually.
   take:
     start_ch
 
@@ -177,6 +228,8 @@ workflow singlesample_processing_workflow {
 }
 
 workflow concat_workflow {
+  // Concatenate multiple single-sample unimodal MuData objects back into several multi-sample files.
+  // One multi-sample MuData file is created per modality.
   take:
     singlesample_ch
 
@@ -211,6 +264,8 @@ workflow concat_workflow {
 }
 
 workflow multisample_processing_workflow {
+  // Perform processing of multisample unimodal MuData files.
+  // Each modality is processed individually.
   take:
     concat_ch
 
@@ -242,7 +297,10 @@ workflow multisample_processing_workflow {
     multisample_ch
 }
 
-workflow integration_workflow {
+workflow integration_setup_workflow {
+  // Processing of multi-modal multisample MuData files.
+  // Performs calculations on samples that have *not* been integrated,
+  // and can be considered a "no-integration" workflow.
   take:
     for_integration_ch
 
@@ -268,45 +326,9 @@ workflow integration_workflow {
     output_ch
 }
 
-workflow {
-  helpMessage(config)
-
-  channelFromParams(params, config)
-    | run_wf
-
-}
-
-workflow run_wf {
-  take:
-    input_ch
-
-  main:
-    output_ch = input_ch
-      | add_arguments
-      | getWorkflowArguments(key: "add_id_args")
-      | add_id_workflow
-      | getWorkflowArguments(key: "split_modalities_args")
-      | split_modalities_workflow
-      | singlesample_processing_workflow
-      | concat_workflow
-      | multisample_processing_workflow
-      | toSortedList{ a, b -> b[0] <=> a[0] }
-      | map { list -> 
-          def new_input = list.collect{it[1].input}
-          def other_arguments = list[0][2] // Get the first set, the other ones are copies
-          def modalities_list = ["modalities": list.collect({it[-1].modality}).unique()]
-          ["merged", ["input": new_input]] + other_arguments + modalities_list
-      }
-      | merge.run(args: [ output_compression: "gzip" ])
-      | integration_workflow
-      | getWorkflowArguments(key: "publish")
-      | publish
-      | map {list -> [list[0], list[1]]}
-      
-
-  emit:
-    output_ch
-}
+// ===============================
+// === start of test workflows ===
+// ===============================
 
 workflow test_wf {
   helpMessage(config)
