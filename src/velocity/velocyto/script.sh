@@ -27,8 +27,6 @@ fi
 output_dir=`dirname "$par_output"`
 sample_id=`basename "$par_output" .loom`
 
-
-
 if (file `readlink -f "$par_transcriptome"` | grep -q compressed ) ; then
   # create temporary directory
   tmpdir=$(mktemp -d "$meta_temp_dir/$meta_functionality_name-XXXXXXXX")
