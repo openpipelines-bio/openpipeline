@@ -22,6 +22,8 @@
 
 * Added `multiomics/multisample` pipeline to run multisample processing followed by the integration setup. It is considered an entrypoint into the full pipeline which skips the single-sample processing. The idea is to allow a a re-run of these steps after a sample has already been processed by the `full_pipeline`. Keep in mind that samples that are provided as input to this pipeline are processed separately and are not concatenated. Hence, the input should be a concatenated sample (PR #475).  
 
+* `workflows/prot_multisample` and `workflows/full_pipelines`: add basic QC statistics to prot modality (PR #485).
+
 ## BUG FIXES
 
 * Fix an issue with `workflows/full_pipeline` not correctly caching previous runs (PR #460).
