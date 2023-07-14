@@ -1,28 +1,30 @@
 functionality:
-  name: "rna_multisample"
+  name: "multisample"
   namespace: "multiomics"
-  description: "Processing unimodal multi-sample RNA transcriptomics data."
+  description: |
+    This workflow serves as an entrypoint into the 'full_pipeline' in order to
+    re-run the multisample processing and the integration setup. An input .h5mu file will 
+    first be split in order to run the multisample processing per modality. Next, the modalities
+    are merged again and the integration setup pipeline is executed. Please note that this workflow
+    assumes that samples from multiple pipelines are already concatenated. 
   authors:
-    - __merge__: /src/authors/dries_de_maeyer.yaml
-      roles: [ author ]
-    - __merge__: /src/authors/robrecht_cannoodt.yaml
-      roles: [ author, maintainer ]
     - __merge__: /src/authors/dries_schaumont.yaml
-      roles: [ author ]
+      roles: [ author, maintainer ]
   argument_groups:
-    - name: "Inputs"
+    - name: Inputs
       arguments:
         - name: "--id"
           required: true
           type: string
-          description: ID of the concatenated file
-          example: concatenated
+          description: ID of the sample.
+          example: foo
         - name: "--input"
+          alternatives: [-i]
+          description: Path to the sample.
           required: true
+          example: input.h5mu
           type: file
-          description: Path to the samples.
-          example: dataset.h5mu
-    - name: "Output"
+    - name: "Outputs"
       arguments:
         - name: "--output"
           type: file
@@ -30,7 +32,7 @@ functionality:
           direction: output
           description: Destination path to the output.
           example: output.h5mu
-    - name: "Filtering highly variable genes"
+    - name: "Highly variable gene detection"
       arguments:
         - name: "--filter_with_hvg_var_output"
           required: false
@@ -43,21 +45,7 @@ functionality:
           required: false
           description: |
             If specified, highly-variable genes are selected within each batch separately and merged. This simple 
-            process avoids the selection of batch-specific genes and acts as a lightweight batch correction method. 
-            For all flavors, genes are first sorted by how many batches they are a HVG. For dispersion-based flavors 
-            ties are broken by normalized dispersion. If flavor = 'seurat_v3', ties are broken by the median (across
-            batches) rank based on within-batch normalized variance.
-        - name: "--filter_with_hvg_flavor"
-          type: string
-          default: "seurat"
-          choices: ["seurat", "cell_ranger", "seurat_v3"]
-          description: |
-            Choose the flavor for identifying highly variable genes. For the dispersion based methods
-            in their default workflows, Seurat passes the cutoffs whereas Cell Ranger passes n_top_genes.
-        - name: "--filter_with_hvg_n_top_genes"
-          required: false
-          type: integer
-          description: Number of highly-variable genes to keep. Mandatory if filter_with_hvg_flavor is set to 'seurat_v3'.
+            process avoids the selection of batch-specific genes and acts as a lightweight batch correction method.
     - name: "QC metrics calculation options"
       arguments:
         - name: "--var_qc_metrics"
