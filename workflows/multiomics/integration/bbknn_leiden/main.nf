@@ -6,6 +6,7 @@ targetDir = params.rootDir + "/target/nextflow"
 include { leiden } from targetDir + '/cluster/leiden/main.nf'
 include { umap } from targetDir + '/dimred/umap/main.nf'
 include { bbknn } from targetDir + '/neighbors/bbknn/main.nf'
+include { move_obsm_to_obs } from targetDir + '/metadata/move_obsm_to_obs/main.nf'
 
 include { readConfig; helpMessage; preprocessInputs; channelFromParams } from workflowDir + "/utils/WorkflowHelper.nf"
 include { setWorkflowArguments; getWorkflowArguments; passthroughMap as pmap } from workflowDir + "/utils/DataflowHelper.nf"
@@ -36,13 +37,18 @@ workflow run_wf {
       ],
       clustering: [
         "obsp_connectivities": "obsp_neighbor_connectivities",
-        "obs_name": "obs_cluster",
+        "obsm_name": "obs_cluster",
         "resolution": "leiden_resolution",
       ],
       umap: [ 
         "uns_neighbors": "uns_neighbors",
         "output": "output",
         "obsm_output": "obsm_umap"
+      ],
+      move_obsm_to_obs_leiden: [
+        "obsm_key": "obs_cluster",
+        "modality": "modality",
+        "output": "output",
       ]
     )
     | getWorkflowArguments(key: "bbknn")
@@ -50,9 +56,11 @@ workflow run_wf {
     | getWorkflowArguments(key: "clustering")
     | leiden
     | getWorkflowArguments(key: "umap")
-    | umap.run(
-      auto: [ publish: true ],
-      args: [ output_compression: "gzip" ]
+    | umap
+    | getWorkflowArguments(key: "move_obsm_to_obs_leiden")
+    | move_obsm_to_obs.run(
+        args: [ obsm_key: "leiden", output_compression: "gzip" ],     
+        auto: [ publish: true ],
     )
 
     // remove splitArgs
