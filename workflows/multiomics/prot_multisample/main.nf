@@ -6,6 +6,7 @@ targetDir = params.rootDir + "/target/nextflow"
 include { clr } from targetDir + '/transform/clr/main.nf'
 include { concat } from targetDir + '/dataflow/concat/main.nf'
 include { add_id } from targetDir + '/metadata/add_id/main.nf'
+include { calculate_qc_metrics } from targetDir + '/qc/calculate_qc_metrics/main.nf'
 
 include { readConfig; helpMessage; channelFromParams; preprocessInputs } from workflowDir + "/utils/WorkflowHelper.nf"
 include { setWorkflowArguments; getWorkflowArguments; passthroughMap as pmap; passthroughFlatMap as pFlatMap } from workflowDir + "/utils/DataflowHelper.nf"
@@ -29,7 +30,11 @@ workflow run_wf {
   processed_input_ch = input_ch
     | preprocessInputs("config": config)
     | setWorkflowArguments (
-      "clr": ["output": "output"],
+      "clr": [:],
+      "qc_metrics": [
+        "top_n_vars": "top_n_vars",
+        "output": "output",
+      ]
     )
   processed_input_ch
     | toSortedList
@@ -42,6 +47,16 @@ workflow run_wf {
     | getWorkflowArguments(key: "clr")
     | clr.run(
       args: [ output_layer: "clr" ]
+    )
+    | getWorkflowArguments(key: "qc_metrics")
+    | calculate_qc_metrics.run(
+      // layer: null to use .X and not log transformed
+      args: [
+        input_layer: null,
+        var_qc_metrics: null,
+        modality: "prot",
+        output_compression: "gzip"
+      ]
     )
     | map {list -> [list[0], list[1]] + list.drop(3)}
 
