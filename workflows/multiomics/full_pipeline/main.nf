@@ -134,7 +134,7 @@ workflow add_arguments {
 workflow add_id_workflow {
   // If requested, add the id of the events (samples) a column in .obs. 
   // Also allows to make .obs_names (the .obs index) unique, by prefixing the values with an unique id per .h5mu file.
-  // The latter is usefull to avoid duplicate observations during concatenation.
+  // The latter is useful to avoid duplicate observations during concatenation.
   take: 
     parsed_arguments_ch
 
