@@ -47,7 +47,7 @@ workflow run_wf {
         "uns_output": "uns_neighbors",
         "obsp_distances": "obsp_neighbor_distances",
         "obsp_connectivities": "obsp_neighbor_connectivities",
-        "obsm_input": "obsm_integrated",
+        "obsm_input": "obsm_output",
         "modality": "modality"
 
       ],

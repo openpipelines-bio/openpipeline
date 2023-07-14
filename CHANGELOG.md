@@ -34,7 +34,9 @@
 
 * `velocity/velocyto`: Resolve symbolic link before checking whether the transcriptome is a gzip (PR #484).
 
-* `workflows/integration/scanorama_leiden`: fix an issue where `--obsm_input`, `--obs_batch`, `--batch_size`, `--sigma`, `--approx`, `--alpha` and `-knn` were not working beacuse they were not passed through to the scanorama component.      
+* `workflows/integration/scanorama_leiden`: fix an issue where `--obsm_input`, --obs_batch`, `--batch_size`, `--sigma`, `--approx`, `--alpha` and `-knn` were not working beacuse they were not passed through to the scanorama component (PR #487).
+
+* `workflows/integration/scanorama_leiden`: fix leiden being calculated on the wrong embedding because the `--obsm_input` argument was not correctly set to the output embedding of scanorama (PR #487).
 
 # openpipelines 0.9.0
 
