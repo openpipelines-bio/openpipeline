@@ -1,7 +1,9 @@
 from mudata import read_h5mu
 from scipy.sparse import issparse, isspmatrix_coo, csr_matrix
 from sklearn.utils.sparsefuncs import mean_variance_axis
+from sys import stdout
 import numpy as np
+import logging
 
 ## VIASH START
 par = {
@@ -13,6 +15,14 @@ par = {
     "var_qc_metrics": None,
 }
 ## VIASH END
+
+logger = logging.getLogger()
+logger.setLevel(logging.INFO)
+console_handler = logging.StreamHandler(stdout)
+logFormatter = logging.Formatter("%(asctime)s %(levelname)-8s %(message)s")
+console_handler.setFormatter(logFormatter)
+logger.addHandler(console_handler)
+
 
 def main():
     input_data = read_h5mu(par["input"])
@@ -50,7 +60,15 @@ def main():
             if not qc_metric in var:
                 raise ValueError(f"Value for --var_qc_metrics, {qc_metric} "
                                  f"not found in .var for modality {par['modality']}")
-            qc_column = var[qc_metric].values
+            qc_column = var[qc_metric]
+            if qc_column.isna().any():
+                if par["var_qc_metrics_fill_na_value"] is None:
+                    raise ValueError(f"The .var column '{qc_metric}', selected by '--var_qc_metrics', contains NA values. "
+                                     "It is ambiguous whether or not to include these values in the static calulation. "
+                                     "You can explicitly map the NA values to 'False' or 'True using '--var_qc_metrics_fill_na_value'")
+                else:
+                    qc_column = qc_column.fillna(par['var_qc_metrics_fill_na_value'], inplace=False)
+            qc_column = qc_column.values
             if not set(np.unique(qc_column)) == set((True, False)):
                 raise ValueError(f"Column {qc_metric} in .var for modality {par['modality']} "
                                  f"must only contain boolean values")

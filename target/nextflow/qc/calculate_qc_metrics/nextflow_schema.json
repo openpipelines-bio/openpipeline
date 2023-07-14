@@ -29,6 +29,11 @@
             "description": "Keys to select a boolean (containing only True or False) column from .var.","help_text": "Keys to select a boolean (containing only True or False) column from .var.\nFor each cell, calculate the proportion of total values for genes which are labeled \u0027True\u0027, \ncompared to the total sum of the values for all genes.\n",
             "default": ""
           },
+          "var_qc_metrics_fill_na_value": {
+            "type": "boolean",
+            "description": "Fill any \u0027NA\u0027 values found in the columns specified with --var_qc_metrics to \u0027True\u0027 or \u0027False\u0027.","help_text": "Fill any \u0027NA\u0027 values found in the columns specified with --var_qc_metrics to \u0027True\u0027 or \u0027False\u0027.\nas False.\n",
+            "default": ""
+          },
           "top_n_vars": {
             "type": "integer",
             "description": "Number of top vars to be used to calculate cumulative proportions.","help_text": "Number of top vars to be used to calculate cumulative proportions.\nIf not specified, proportions are not calculated. `--top_n_vars 20,50` finds\ncumulative proportion to the 20th and 50th most expressed vars.\n",
