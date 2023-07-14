@@ -34,6 +34,8 @@
 
 * `velocity/velocyto`: Resolve symbolic link before checking whether the transcriptome is a gzip (PR #484).
 
+* `workflows/integration/scanorama_leiden`: fix an issue where `--batch_size`, `--sigma`, `--approx`, `--alpha` and `-knn` were not working beacuse they were not passed through to the scanorama component.      
+
 # openpipelines 0.9.0
 
 ## BREAKING CHANGES
