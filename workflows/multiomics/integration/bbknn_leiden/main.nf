@@ -44,6 +44,7 @@ workflow run_wf {
       umap: [ 
         "uns_neighbors": "uns_neighbors",
         "output": "output",
+        "modality": "modality",
         "obsm_output": "obsm_umap"
       ],
       move_obsm_to_obs_leiden: [
