@@ -37,6 +37,7 @@ workflow run_wf {
       ],
       clustering: [
         "obsp_connectivities": "obsp_neighbor_connectivities",
+        "modality": "modality",
         "obsm_name": "obs_cluster",
         "resolution": "leiden_resolution",
       ],
