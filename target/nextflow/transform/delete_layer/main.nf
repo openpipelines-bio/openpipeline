@@ -253,7 +253,7 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
     "platform" : "nextflow",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/transform/delete_layer",
     "viash_version" : "0.7.4",
-    "git_commit" : "359c35fa8ef81dbdc3b7a9052190d7aabecc6071",
+    "git_commit" : "9d58372cae05477f54f4861ee3c1e925ef64a00a",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))
