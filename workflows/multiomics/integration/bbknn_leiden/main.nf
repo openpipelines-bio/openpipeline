@@ -32,20 +32,27 @@ workflow run_wf {
     // split params for downstream components
     | setWorkflowArguments(
       bbknn: [
-        "obsm_input": "embedding",
-        "obs_batch": "sample_id"
+        "obsm_input": "obsm_input",
+        "obs_batch": "obs_batch",
+        "modality": "modality",
+        "uns_output": "uns_output",
+        "obsp_distances": "obsp_distances",
+        "obsp_connectivities": "obsp_connectivities",
+        "n_neighbors_within_batch": "n_neighbors_within_batch",
+        "n_pcs": "n_pcs",
+        "n_trim": "n_trim"
       ],
       clustering: [
-        "obsp_connectivities": "obsp_neighbor_connectivities",
-        "modality": "modality",
+        "obsp_connectivities": "obsp_connectivities",
         "obsm_name": "obs_cluster",
         "resolution": "leiden_resolution",
+        "modality": "modality"
       ],
       umap: [ 
         "uns_neighbors": "uns_neighbors",
         "output": "output",
-        "modality": "modality",
-        "obsm_output": "obsm_umap"
+        "obsm_output": "obsm_umap",
+        "modality": "modality"
       ],
       move_obsm_to_obs_leiden: [
         "obsm_key": "obs_cluster",
