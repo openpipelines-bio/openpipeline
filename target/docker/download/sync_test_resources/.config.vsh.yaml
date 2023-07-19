@@ -165,5 +165,5 @@ info:
   output: "/home/runner/work/openpipeline/openpipeline/target/docker/download/sync_test_resources"
   executable: "/home/runner/work/openpipeline/openpipeline/target/docker/download/sync_test_resources/sync_test_resources"
   viash_version: "0.7.4"
-  git_commit: "9d58372cae05477f54f4861ee3c1e925ef64a00a"
+  git_commit: "2e62e18b8d75cc46a5ce1708393f6f63a4715a1e"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"
