@@ -51,7 +51,7 @@ functionality:
     - type: python_script
       path: test_cellranger_multi_to_h5mu.py
     - path: ../../../resources_test/10x_5k_anticmv
-    - path: ../../../resources_test/10x_5k_lung_crispr/processed
+    - path: ../../../resources_test/10x_5k_lung_crispr
 platforms:
   - type: docker
     image: python:3.10-slim

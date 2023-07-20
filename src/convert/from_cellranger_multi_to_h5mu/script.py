@@ -72,7 +72,7 @@ def gather_input_data(dir: Path):
         if len(found_files) > 1:
             raise ValueError(f"Found more than one file for glob '{file_glob}' file. "
                             "This component currently only supports parsing cellranger multi output for one sample.")
-        file_name = Path(found_files[0]).name.removesuffix('.csv')
+        file_name = Path(file_glob).name.removesuffix('.csv')
         found_input[file_name] = found_files[0] if found_files else None
 
     return found_input
