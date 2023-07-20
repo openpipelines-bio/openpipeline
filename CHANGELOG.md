@@ -12,9 +12,9 @@
 
 * `dataflow/concat`: reduce memory consumption by only reading one modality at the same time (PR #474).
 
-* Components that use CellRanger, BCL Convert or bcl2fastq: updated from Ubuntu 20.04 to Ubuntu 22.04.
+* Components that use CellRanger, BCL Convert or bcl2fastq: updated from Ubuntu 20.04 to Ubuntu 22.04 (PR #494).
 
-* Components that use CellRanger: updated Picard to 2.27.5.
+* Components that use CellRanger: updated Picard to 2.27.5 (PR #494).
 
 ## NEW FUNCTIONALITY
 
@@ -26,11 +26,11 @@
 
 * Added `multiomics/multisample` pipeline to run multisample processing followed by the integration setup. It is considered an entrypoint into the full pipeline which skips the single-sample processing. The idea is to allow a a re-run of these steps after a sample has already been processed by the `full_pipeline`. Keep in mind that samples that are provided as input to this pipeline are processed separately and are not concatenated. Hence, the input should be a concatenated sample (PR #475).  
 
-* `mapping/cellranger_multi`: Add tests for the mapping of Crispr Guide Capture data.
+* `mapping/cellranger_multi`: Add tests for the mapping of Crispr Guide Capture data (PR #494).
 
-* `converr/from_cellranger_multi_to_h5mu`: add `perturbation_efficiencies_by_feature` and `perturbation_efficiencies_by_feature` information to .uns slot of `gdo` modality.
+* `convert/from_cellranger_multi_to_h5mu`: add `perturbation_efficiencies_by_feature` and `perturbation_efficiencies_by_feature` information to .uns slot of `gdo` modality (PR #494).
 
-* `converr/from_cellranger_multi_to_h5mu`: add `feature_reference` information to the MuData object. Information is split between the modalities. For example `CRISPR Guide Capture` information if added to the `.uns` slot of the `gdo` modality, while `Antibody Capture` information is added to the .uns slot of `prot`.
+* `convert/from_cellranger_multi_to_h5mu`: add `feature_reference` information to the MuData object. Information is split between the modalities. For example `CRISPR Guide Capture` information if added to the `.uns` slot of the `gdo` modality, while `Antibody Capture` information is added to the .uns slot of `prot` (PR #494).
 
 ## BUG FIXES
 
@@ -48,7 +48,7 @@
 
 * `workflows/integration/scanorama_leiden`: fix leiden being calculated on the wrong embedding because the `--obsm_input` argument was not correctly set to the output embedding of scanorama (PR #487).
 
-* `mapping/cellranger_multi`: Fix and issue where modalities did not have the proper name.
+* `mapping/cellranger_multi`: Fix and issue where modalities did not have the proper name (PR #494).
  
 # openpipelines 0.9.0
 
