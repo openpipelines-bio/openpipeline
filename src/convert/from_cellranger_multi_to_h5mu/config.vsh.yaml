@@ -49,11 +49,12 @@ functionality:
       path: script.py
   test_resources:
     - type: python_script
-      path: test.py
+      path: test_cellranger_multi_to_h5mu.py
     - path: ../../../resources_test/10x_5k_anticmv
+    - path: ../../../resources_test/10x_5k_lung_crispr/processed
 platforms:
   - type: docker
-    image: python:3.8-slim
+    image: python:3.10-slim
     setup:
       - type: apt
         packages: 
@@ -65,6 +66,8 @@ platforms:
           - anndata~=0.8.0
           - scirpy~=0.11.1
           - pandas~=2.0.0
+    test_setup:
+      - type: python
+        packages:
+          - viashpy~=3.2.0
   - type: nextflow
-    variant: vdsl3
-

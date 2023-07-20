@@ -6,9 +6,11 @@ import pandas as pd
 import mudata
 from scirpy.io import read_10x_vdj
 from collections import defaultdict
+from functools import partial
+
 ## VIASH START
 par = {
-    "input": "resources_test/10x_5k_anticmv/processed/10x_5k_anticmv.cellranger_multi.output.output",
+    "input": "resources_test/10x_5k_lung_crispr/processed/10x_5k_lung_crispr.cellranger_multi.output.output",
     "output": "foo.h5mu",
     "uns_metrics": "metrics_cellranger",
     "output_compression": "gzip"
@@ -24,6 +26,16 @@ logger.addHandler(console_handler)
 
 POSSIBLE_LIBRARY_TYPES = ('vdj_t', 'vdj_b', 'vdj_t_gd', 'count')
 
+FEATURE_TYPES_NAMES = {
+            "Gene Expression": "rna",
+            "Peaks": "atac",
+            "Antibody Capture": "prot",
+            "VDJ": "vdj",
+            "VDJ-T": "vdj_t",
+            "VDJ-B": "vdj_b",
+            "CRISPR Guide Capture": "gdo",
+            "Multiplexing Capture": "hto"
+        }
 
 def gather_input_data(dir: Path):
     if not dir.is_dir():
@@ -53,13 +65,36 @@ def gather_input_data(dir: Path):
         found_input[library_type.name] = library_type
 
     per_sample_outs_dir = dir / 'per_sample_outs'
-    metric_summaries = list(per_sample_outs_dir.glob('*/metrics_summary.csv'))
-    if len(metric_summaries) > 1:
-        raise ValueError("Found more than one 'metrics_summery.csv' file. "
-                         "This component currently only supports parsing cellranger multi output for one sample.")
-    found_input["metrics_summary"] = metric_summaries[0]
+    for file_glob in ('*/metrics_summary.csv', '*/count/feature_reference.csv',
+                      '*/count/crispr_analysis/perturbation_efficiencies_by_feature.csv',
+                      '*/count/crispr_analysis/perturbation_efficiencies_by_target.csv'):
+        found_files = list(per_sample_outs_dir.glob(file_glob))
+        if len(found_files) > 1:
+            raise ValueError(f"Found more than one file for glob '{file_glob}' file. "
+                            "This component currently only supports parsing cellranger multi output for one sample.")
+        file_name = Path(found_files[0]).name.removesuffix('.csv')
+        found_input[file_name] = found_files[0] if found_files else None
+
     return found_input
 
+
+def proces_perturbation(key_name: str, mudata: mudata.MuData, efficiency_file: Path):
+    assert 'gdo' in mudata.mod
+    eff_df = pd.read_csv(efficiency_file, index_col="Perturbation", sep=",", decimal=".", quotechar='"')
+    mudata.mod['gdo'].uns[key_name] = eff_df
+    return mudata
+
+def process_feature_reference(mudata: mudata.MuData, efficiency_file: Path):
+    df = pd.read_csv(efficiency_file, index_col="id", sep=",", decimal=".", quotechar='"')
+    assert 'feature_type' in df.columns, "Columns 'feature_type' should be present in features_reference file."
+    feature_types = df['feature_type']
+    if set(feature_types) - set(FEATURE_TYPES_NAMES):
+        raise ValueError("Not all feature types present in the features_reference file are supported by this component.")
+    for feature_type in feature_types:
+        modality = FEATURE_TYPES_NAMES[feature_type]
+        subset_df = df.loc[df['feature_type'] == feature_type]
+        mudata.mod[modality].uns['feature_reference'] = subset_df
+    return mudata
 
 def process_counts(counts_folder: Path):
     counts_matrix_file = counts_folder / "raw_feature_bc_matrix.h5"
@@ -79,17 +114,8 @@ def process_counts(counts_folder: Path):
     def modality_name_factory(library_type):
         return ("".join(library_type.replace("-", "_").split())).lower()
 
-    feature_types = defaultdict(modality_name_factory, {
-            "Gene Expression": "rna",
-            "Peaks": "atac",
-            "Antibody Capture": "prot",
-            "VDJ": "vdj",
-            "VDJ-T": "vdj_t",
-            "VDJ-B": "vdj_b",
-            "CRISPR Guide Capture": "gdo",
-            "Multiplexing Capture": "hto"
-        })
-    return mudata.MuData(adata, feature_types=feature_types)
+    feature_types = defaultdict(modality_name_factory, FEATURE_TYPES_NAMES)
+    return mudata.MuData(adata, feature_types_names=feature_types)
 
 def process_metrics_summary(mudata: mudata.MuData, metrics_file: Path):
     def read_percentage(val):
@@ -127,7 +153,10 @@ def get_modalities(input_data):
         'vdj_t': process_vdj,
         'vdj_b': process_vdj,
         'vdj_t_gd': process_vdj,
-        'metrics_summary': process_metrics_summary
+        'metrics_summary': process_metrics_summary,
+        'feature_reference': process_feature_reference,
+        'perturbation_efficiencies_by_feature': partial(proces_perturbation, 'perturbation_efficiencies_by_feature'),
+        'perturbation_efficiencies_by_target': partial(proces_perturbation, 'perturbation_efficiencies_by_target'),
     }
     mudata_file = process_counts(input_data['count'])
     for modality_name, modality_data_path in input_data.items():
@@ -137,7 +166,7 @@ def get_modalities(input_data):
             parser_function = dispatcher[modality_name]
         except KeyError as e:
             raise ValueError("This component does not support the "
-                             f"parsing of the modality '{modality_name}' yet.") from e
+                             f"parsing of the '{modality_name}' yet.") from e
         mudata_file = parser_function(mudata_file, modality_data_path)
     return mudata_file
 
