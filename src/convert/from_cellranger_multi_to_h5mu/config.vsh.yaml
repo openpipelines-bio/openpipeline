@@ -69,5 +69,5 @@ platforms:
     test_setup:
       - type: python
         packages:
-          - viashpy~=3.2.0
+          - viashpy~=0.3.2
   - type: nextflow
