@@ -203,13 +203,13 @@ def test_cellranger_multi_crispt_data(run_component):
         args.extend(["---memory", f"{meta['memory_gb']}GB"])
     run_component(args)
     # check for raw data
-    assert Path("output1/multi/count/raw_feature_bc_matrix.h5").is_file()
+    assert Path("output5/multi/count/raw_feature_bc_matrix.h5").is_file()
     # check for metrics summary
-    assert Path("output1/per_sample_outs/run/metrics_summary.csv").is_file()
+    assert Path("output5/per_sample_outs/run/metrics_summary.csv").is_file()
     # check for filtered gex+ab data
-    assert Path("output1/per_sample_outs/run/count/sample_filtered_feature_bc_matrix.h5").is_file()
+    assert Path("output5/per_sample_outs/run/count/sample_filtered_feature_bc_matrix.h5").is_file()
     # check for crispr data
-    assert Path("output1/per_sample_outs/run/count/crispr_analysis/").is_dir()
+    assert Path("output5/per_sample_outs/run/count/crispr_analysis/").is_dir()
 
 if __name__ == '__main__':
     sys.exit(pytest.main([__file__]))
