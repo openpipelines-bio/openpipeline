@@ -54,7 +54,6 @@ workflow run_wf {
       ],
       umap: [ 
         "uns_neighbors": "uns_neighbors",
-        "output": "output",
         "obsm_output": "obsm_umap",
         "modality": "modality"
       ],
@@ -74,7 +73,7 @@ workflow run_wf {
     | umap
     | getWorkflowArguments(key: "move_obsm_to_obs_leiden")
     | move_obsm_to_obs.run(
-        args: [ obsm_key: "leiden", output_compression: "gzip" ],     
+        args: [ output_compression: "gzip" ],
         auto: [ publish: true ],
     )
 
