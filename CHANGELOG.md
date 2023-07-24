@@ -16,7 +16,7 @@
 
 * Components that use CellRanger: updated Picard to 2.27.5 (PR #494).
 
-* `interprete/liana`: Update lianapy to 0.1.9.
+* `interprete/liana`: Update lianapy to 0.1.9 (PR #497).
 
 ## NEW FUNCTIONALITY
 
