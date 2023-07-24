@@ -14,6 +14,9 @@ jobs:
       component_matrix: ${{ steps.set_matrix.outputs.matrix }}
       cache_key: ${{ steps.cache.outputs.cache_key }}
 
+    env:
+        GITHUB_SERVER_URL: 'https://viash-hub.com'
+
     steps:
     - uses: actions/checkout@v3
 
@@ -47,8 +50,8 @@ jobs:
 
     - name: Deploy to target branch
       uses: peaceiris/actions-gh-pages@v3.9.3
-      env:
-        GITHUB_SERVER_URL: 'https://viash-hub.com'
+      # env:
+      #   GITHUB_SERVER_URL: 'https://viash-hub.com'
       with:
         #github_token: ${{ secrets.GITHUB_TOKEN }}
         personal_token: ${{ secrets.VIASHHUB_PAT}}
