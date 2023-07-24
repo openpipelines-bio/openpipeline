@@ -33,22 +33,27 @@ workflow run_wf {
     // split params for downstream components
     | setWorkflowArguments(
       scanorama: [
-        "obsm_input": "X_pca",
-        "obs_batch": "sample_id",
-        "obsm_output": "obsm_integrated",
-        "modality": "modality"
+        "obsm_input": "obsm_input",
+        "obs_batch": "obs_batch",
+        "obsm_output": "obsm_output",
+        "modality": "modality",
+        "batch_size": "batch_size",
+        "sigma": "sigma",
+        "approx": "approx",
+        "alpha": "alpha",
+        "knn": "knn",
       ],
       neighbors: [
         "uns_output": "uns_neighbors",
         "obsp_distances": "obsp_neighbor_distances",
         "obsp_connectivities": "obsp_neighbor_connectivities",
-        "obsm_input": "obsm_integrated",
+        "obsm_input": "obsm_output",
         "modality": "modality"
 
       ],
       clustering: [
         "obsp_connectivities": "obsp_neighbor_connectivities",
-        "obs_name": "obs_cluster",
+        "obsm_name": "obs_cluster",
         "resolution": "leiden_resolution",
         "modality": "modality"
 
@@ -61,6 +66,7 @@ workflow run_wf {
 
       ],
       move_obsm_to_obs_leiden: [
+        "obsm_key": "obs_cluster",
         "output": "output"
       ]
     )
@@ -69,12 +75,12 @@ workflow run_wf {
     | getWorkflowArguments(key: "neighbors")
     | find_neighbors
     | getWorkflowArguments(key: "clustering")
-    | leiden.run(args: [obsm_name: "leiden"])
+    | leiden
     | getWorkflowArguments(key: "umap")
     | umap
     | getWorkflowArguments(key: "move_obsm_to_obs_leiden")
     | move_obsm_to_obs.run(
-        args: [ obsm_key: "leiden", output_compression: "gzip" ],     
+        args: [ output_compression: "gzip" ],     
         auto: [ publish: true ]
     )
 

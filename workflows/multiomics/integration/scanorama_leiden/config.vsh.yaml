@@ -61,7 +61,7 @@ functionality:
           required: false
         - name: "--obsm_input"
           type: string
-          description: .osbm slot that points to embedding to run scanorama on. 
+          description: .obsm slot that points to embedding to run scanorama on. 
           default: "X_pca"
         - name: "--obsm_output"
           type: string
@@ -91,7 +91,10 @@ functionality:
       arguments:
         - name: "--obs_cluster"
           type: string
-          description: Name of the .obs key under which to add the cluster labels.
+          description: |
+            Prefix for the .obs keys under which to add the cluster labels. Newly created columns in .obs will 
+            be created from the specified value for '--obs_cluster' suffixed with an underscore and one of the
+            resolutions specified in '--leiden_resolution'.
           default: "scanorama_integration_leiden"
         - name: "--leiden_resolution"
           type: double
