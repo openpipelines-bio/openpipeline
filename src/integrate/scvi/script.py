@@ -71,7 +71,11 @@ def main():
     scvi.model.SCVI.setup_anndata(
         adata,
         batch_key=par['obs_batch'],
-        layer=par['input_layer']
+        layer=par['input_layer'],
+        labels_key=par['obs_labels'],
+        size_factor_key=par['obs_size_factor'],
+        categorical_covariate_keys=par['obs_categorical_covariate'],
+        continuous_covariate_keys=par['obs_continuous_covariate'],
     )
 
     # Set up the model
