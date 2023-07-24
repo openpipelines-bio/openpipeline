@@ -411,7 +411,7 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
     "test_resources" : [
       {
         "type" : "python_script",
-        "path" : "test.py",
+        "path" : "test_cellranger.py",
         "is_executable" : true,
         "parent" : "file:/home/runner/work/openpipeline/openpipeline/src/mapping/cellranger_multi/"
       },
@@ -419,6 +419,12 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
         "type" : "file",
         "path" : "../../../resources_test/10x_5k_anticmv/raw/",
         "dest" : "10x_5k_anticmv/raw/",
+        "parent" : "file:/home/runner/work/openpipeline/openpipeline/src/mapping/cellranger_multi/"
+      },
+      {
+        "type" : "file",
+        "path" : "../../../resources_test/10x_5k_lung_crispr/raw/",
+        "dest" : "10x_5k_lung_crispr/raw/",
         "parent" : "file:/home/runner/work/openpipeline/openpipeline/src/mapping/cellranger_multi/"
       },
       {
@@ -451,14 +457,24 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
         {
           "type" : "docker",
           "run" : [
-            "apt update && apt upgrade -y"
+            "DEBIAN_FRONTEND=noninteractive apt update && apt upgrade -y && rm -rf /var/lib/apt/lists/*"
           ]
         },
         {
           "type" : "python",
           "user" : false,
-          "pypi" : [
+          "packages" : [
             "pandas"
+          ],
+          "upgrade" : true
+        }
+      ],
+      "test_setup" : [
+        {
+          "type" : "python",
+          "user" : false,
+          "packages" : [
+            "viashpy~=0.3.2"
           ],
           "upgrade" : true
         }
@@ -524,7 +540,7 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
     "platform" : "nextflow",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/mapping/cellranger_multi",
     "viash_version" : "0.7.4",
-    "git_commit" : "b0c87ac5ad39ddb13d7f1760a726c6212a2e89a3",
+    "git_commit" : "8804f9fd74f5e61d4af2c7fbf9db45a565c1386c",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))
