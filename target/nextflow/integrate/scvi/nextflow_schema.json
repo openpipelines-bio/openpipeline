@@ -65,6 +65,77 @@
           
         }
       },
+      "scvi options" : {
+        "title": "SCVI options",
+        "type": "object",
+        "description": "No description",
+        "properties": {
+          "n_hidden_nodes": {
+            "type": "integer",
+            "description": "Number of nodes per hidden layer.",
+            "default": "128"
+          },
+          "n_dimensions_latent_space": {
+            "type": "integer",
+            "description": "Dimensionality of the latent space.",
+            "default": "30"
+          },
+          "n_hidden_layers": {
+            "type": "integer",
+            "description": "Number of hidden layers used for encoder and decoder neural-networks.",
+            "default": "2"
+          },
+          "dropout_rate": {
+            "type": "number",
+            "description": "Dropout rate for the neural networks.",
+            "default": "0.1"
+          },
+          "dispersion": {
+            "type": "string",
+            "description": "Set the behavior for the dispersion for negative binomial distributions:","help_text": "Set the behavior for the dispersion for negative binomial distributions:\n- gene: dispersion parameter of negative binomial is constant per gene across cells\n- gene-batch: dispersion can differ between different batches\n- gene-label: dispersion can differ between different labels\n- gene-cell:  dispersion can differ for every gene in every cell\n","enum": ["gene", "gene-batch", "gene-label", "gene-cell"],
+            "default": "gene"
+          },
+          "gene_likelihood": {
+            "type": "string",
+            "description": "Model used to generate the expression data from a count-based likelihood distribution.","help_text": "Model used to generate the expression data from a count-based likelihood distribution.\n- nb: Negative binomial distribution\n- zinb: Zero-inflated negative binomial distribution\n- poisson: Poisson distribution\n","enum": ["nb", "zinb", "poisson"],
+            "default": "nb"
+          }
+          
+        }
+      },
+      "variational auto-encoder model options" : {
+        "title": "Variational auto-encoder model options",
+        "type": "object",
+        "description": "No description",
+        "properties": {
+          "use_layer_normalization": {
+            "type": "string",
+            "description": "Neural networks for which to enable layer normalization. ","help_text": "Neural networks for which to enable layer normalization. \n","enum": ["encoder", "decoder", "none", "both"],
+            "default": "both"
+          },
+          "use_batch_normalization": {
+            "type": "string",
+            "description": "Neural networks for which to enable batch normalization. ","help_text": "Neural networks for which to enable batch normalization. \n","enum": ["encoder", "decoder", "none", "both"],
+            "default": "none"
+          },
+          "encode_covariates": {
+            "type": "boolean",
+            "description": "Whether to concatenate covariates to expression in encoder",
+            "default": "True"
+          },
+          "deeply_inject_covariates": {
+            "type": "boolean",
+            "description": "Whether to concatenate covariates into output of hidden layers in encoder/decoder. ","help_text": "Whether to concatenate covariates into output of hidden layers in encoder/decoder. \nThis option only applies when n_layers \u003e 1. The covariates are concatenated to\nthe input of subsequent hidden layers.\n",
+            "default": "False"
+          },
+          "use_observed_lib_size": {
+            "type": "boolean",
+            "description": "Use observed library size for RNA as scaling factor in mean of conditional distribution.","help_text": "Use observed library size for RNA as scaling factor in mean of conditional distribution.\n",
+            "default": "False"
+          }
+          
+        }
+      },
       "early stopping arguments" : {
         "title": "Early stopping arguments",
         "type": "object",
@@ -164,6 +235,12 @@
       },
       {
         "$ref": "#/definitions/outputs"
+      },
+      {
+        "$ref": "#/definitions/scvi options"
+      },
+      {
+        "$ref": "#/definitions/variational auto-encoder model options"
       },
       {
         "$ref": "#/definitions/early stopping arguments"

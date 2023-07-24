@@ -77,17 +77,17 @@ def main():
     # Set up the model
     vae_uns = scvi.model.SCVI(
         adata,
-        n_hidden=128, #this is the default
-        n_latent=30,
-        n_layers=2,
-        dropout_rate=0.1, #this is the default
-        dispersion='gene', #this is the default
-        gene_likelihood='nb',
-        use_layer_norm='both',
-        use_batch_norm="none",
-        encode_covariates=True, #Parameterization for better scArches performance -> maybe don't use this always?
-        deeply_inject_covariates=False, #Parameterization for better scArches performance -> maybe don't use this always?
-        use_observed_lib_size=False, #When size_factors are not passed
+        n_hidden=par["n_hidden_nodes"],
+        n_latent=par["n_dimensions_latent_space"],
+        n_layers=par["n_hidden_layers"],
+        dropout_rate=par["dropout_rate"],
+        dispersion=par["dispersion"],
+        gene_likelihood=par["gene_likelihood"],
+        use_layer_norm=par["use_layer_normalization"],
+        use_batch_norm=par["use_batch_normalization"],
+        encode_covariates=par["encode_covariates"], # Default (True) is for better scArches performance -> maybe don't use this always?
+        deeply_inject_covariates=par["deeply_inject_covariates"], # Default (False) for better scArches performance -> maybe don't use this always?
+        use_observed_lib_size=par["use_observed_lib_size"], # When size_factors are not passed
     )
 
     plan_kwargs = {

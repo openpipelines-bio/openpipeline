@@ -208,6 +208,78 @@ function ViashHelp {
   echo "        default: X_scvi_integrated"
   echo "        In which .obsm slot to store the resulting integrated embedding."
   echo ""
+  echo "SCVI options:"
+  echo "    --n_hidden_nodes"
+  echo "        type: integer"
+  echo "        default: 128"
+  echo "        Number of nodes per hidden layer."
+  echo ""
+  echo "    --n_dimensions_latent_space"
+  echo "        type: integer"
+  echo "        default: 30"
+  echo "        Dimensionality of the latent space."
+  echo ""
+  echo "    --n_hidden_layers"
+  echo "        type: integer"
+  echo "        default: 2"
+  echo "        Number of hidden layers used for encoder and decoder neural-networks."
+  echo ""
+  echo "    --dropout_rate"
+  echo "        type: double"
+  echo "        default: 0.1"
+  echo "        Dropout rate for the neural networks."
+  echo ""
+  echo "    --dispersion"
+  echo "        type: string"
+  echo "        default: gene"
+  echo "        choices: [ gene, gene-batch, gene-label, gene-cell ]"
+  echo "        Set the behavior for the dispersion for negative binomial distributions:"
+  echo "        - gene: dispersion parameter of negative binomial is constant per gene"
+  echo "        across cells"
+  echo "        - gene-batch: dispersion can differ between different batches"
+  echo "        - gene-label: dispersion can differ between different labels"
+  echo "        - gene-cell:  dispersion can differ for every gene in every cell"
+  echo ""
+  echo "    --gene_likelihood"
+  echo "        type: string"
+  echo "        default: nb"
+  echo "        choices: [ nb, zinb, poisson ]"
+  echo "        Model used to generate the expression data from a count-based likelihood"
+  echo "        distribution."
+  echo "        - nb: Negative binomial distribution"
+  echo "        - zinb: Zero-inflated negative binomial distribution"
+  echo "        - poisson: Poisson distribution"
+  echo ""
+  echo "Variational auto-encoder model options:"
+  echo "    --use_layer_normalization"
+  echo "        type: string"
+  echo "        default: both"
+  echo "        choices: [ encoder, decoder, none, both ]"
+  echo "        Neural networks for which to enable layer normalization."
+  echo ""
+  echo "    --use_batch_normalization"
+  echo "        type: string"
+  echo "        default: none"
+  echo "        choices: [ encoder, decoder, none, both ]"
+  echo "        Neural networks for which to enable batch normalization."
+  echo ""
+  echo "    --encode_covariates"
+  echo "        type: boolean_false"
+  echo "        Whether to concatenate covariates to expression in encoder"
+  echo ""
+  echo "    --deeply_inject_covariates"
+  echo "        type: boolean_true"
+  echo "        Whether to concatenate covariates into output of hidden layers in"
+  echo "        encoder/decoder."
+  echo "        This option only applies when n_layers > 1. The covariates are"
+  echo "        concatenated to"
+  echo "        the input of subsequent hidden layers."
+  echo ""
+  echo "    --use_observed_lib_size"
+  echo "        type: boolean_true"
+  echo "        Use observed library size for RNA as scaling factor in mean of"
+  echo "        conditional distribution."
+  echo ""
   echo "Early stopping arguments:"
   echo "    --early_stopping"
   echo "        type: boolean"
@@ -508,9 +580,9 @@ RUN pip install --upgrade pip && \
 
 LABEL org.opencontainers.image.authors="Malte D. Luecken, Dries Schaumont, Matthias Beyens"
 LABEL org.opencontainers.image.description="Companion container for running component integrate scvi"
-LABEL org.opencontainers.image.created="2023-07-24T07:02:52Z"
+LABEL org.opencontainers.image.created="2023-07-24T07:43:48Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="8804f9fd74f5e61d4af2c7fbf9db45a565c1386c"
+LABEL org.opencontainers.image.revision="ed67bb4d25961482d584104bfa009b035a9f2b62"
 LABEL org.opencontainers.image.version="main_build"
 
 VIASHDOCKER
@@ -773,6 +845,109 @@ while [[ $# -gt 0 ]]; do
         --obsm_output=*)
             [ -n "$VIASH_PAR_OBSM_OUTPUT" ] && ViashError Bad arguments for option \'--obsm_output=*\': \'$VIASH_PAR_OBSM_OUTPUT\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
             VIASH_PAR_OBSM_OUTPUT=$(ViashRemoveFlags "$1")
+            shift 1
+            ;;
+        --n_hidden_nodes)
+            [ -n "$VIASH_PAR_N_HIDDEN_NODES" ] && ViashError Bad arguments for option \'--n_hidden_nodes\': \'$VIASH_PAR_N_HIDDEN_NODES\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+            VIASH_PAR_N_HIDDEN_NODES="$2"
+            [ $# -lt 2 ] && ViashError Not enough arguments passed to --n_hidden_nodes. Use "--help" to get more information on the parameters. && exit 1
+            shift 2
+            ;;
+        --n_hidden_nodes=*)
+            [ -n "$VIASH_PAR_N_HIDDEN_NODES" ] && ViashError Bad arguments for option \'--n_hidden_nodes=*\': \'$VIASH_PAR_N_HIDDEN_NODES\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+            VIASH_PAR_N_HIDDEN_NODES=$(ViashRemoveFlags "$1")
+            shift 1
+            ;;
+        --n_dimensions_latent_space)
+            [ -n "$VIASH_PAR_N_DIMENSIONS_LATENT_SPACE" ] && ViashError Bad arguments for option \'--n_dimensions_latent_space\': \'$VIASH_PAR_N_DIMENSIONS_LATENT_SPACE\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+            VIASH_PAR_N_DIMENSIONS_LATENT_SPACE="$2"
+            [ $# -lt 2 ] && ViashError Not enough arguments passed to --n_dimensions_latent_space. Use "--help" to get more information on the parameters. && exit 1
+            shift 2
+            ;;
+        --n_dimensions_latent_space=*)
+            [ -n "$VIASH_PAR_N_DIMENSIONS_LATENT_SPACE" ] && ViashError Bad arguments for option \'--n_dimensions_latent_space=*\': \'$VIASH_PAR_N_DIMENSIONS_LATENT_SPACE\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+            VIASH_PAR_N_DIMENSIONS_LATENT_SPACE=$(ViashRemoveFlags "$1")
+            shift 1
+            ;;
+        --n_hidden_layers)
+            [ -n "$VIASH_PAR_N_HIDDEN_LAYERS" ] && ViashError Bad arguments for option \'--n_hidden_layers\': \'$VIASH_PAR_N_HIDDEN_LAYERS\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+            VIASH_PAR_N_HIDDEN_LAYERS="$2"
+            [ $# -lt 2 ] && ViashError Not enough arguments passed to --n_hidden_layers. Use "--help" to get more information on the parameters. && exit 1
+            shift 2
+            ;;
+        --n_hidden_layers=*)
+            [ -n "$VIASH_PAR_N_HIDDEN_LAYERS" ] && ViashError Bad arguments for option \'--n_hidden_layers=*\': \'$VIASH_PAR_N_HIDDEN_LAYERS\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+            VIASH_PAR_N_HIDDEN_LAYERS=$(ViashRemoveFlags "$1")
+            shift 1
+            ;;
+        --dropout_rate)
+            [ -n "$VIASH_PAR_DROPOUT_RATE" ] && ViashError Bad arguments for option \'--dropout_rate\': \'$VIASH_PAR_DROPOUT_RATE\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+            VIASH_PAR_DROPOUT_RATE="$2"
+            [ $# -lt 2 ] && ViashError Not enough arguments passed to --dropout_rate. Use "--help" to get more information on the parameters. && exit 1
+            shift 2
+            ;;
+        --dropout_rate=*)
+            [ -n "$VIASH_PAR_DROPOUT_RATE" ] && ViashError Bad arguments for option \'--dropout_rate=*\': \'$VIASH_PAR_DROPOUT_RATE\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+            VIASH_PAR_DROPOUT_RATE=$(ViashRemoveFlags "$1")
+            shift 1
+            ;;
+        --dispersion)
+            [ -n "$VIASH_PAR_DISPERSION" ] && ViashError Bad arguments for option \'--dispersion\': \'$VIASH_PAR_DISPERSION\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+            VIASH_PAR_DISPERSION="$2"
+            [ $# -lt 2 ] && ViashError Not enough arguments passed to --dispersion. Use "--help" to get more information on the parameters. && exit 1
+            shift 2
+            ;;
+        --dispersion=*)
+            [ -n "$VIASH_PAR_DISPERSION" ] && ViashError Bad arguments for option \'--dispersion=*\': \'$VIASH_PAR_DISPERSION\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+            VIASH_PAR_DISPERSION=$(ViashRemoveFlags "$1")
+            shift 1
+            ;;
+        --gene_likelihood)
+            [ -n "$VIASH_PAR_GENE_LIKELIHOOD" ] && ViashError Bad arguments for option \'--gene_likelihood\': \'$VIASH_PAR_GENE_LIKELIHOOD\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+            VIASH_PAR_GENE_LIKELIHOOD="$2"
+            [ $# -lt 2 ] && ViashError Not enough arguments passed to --gene_likelihood. Use "--help" to get more information on the parameters. && exit 1
+            shift 2
+            ;;
+        --gene_likelihood=*)
+            [ -n "$VIASH_PAR_GENE_LIKELIHOOD" ] && ViashError Bad arguments for option \'--gene_likelihood=*\': \'$VIASH_PAR_GENE_LIKELIHOOD\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+            VIASH_PAR_GENE_LIKELIHOOD=$(ViashRemoveFlags "$1")
+            shift 1
+            ;;
+        --use_layer_normalization)
+            [ -n "$VIASH_PAR_USE_LAYER_NORMALIZATION" ] && ViashError Bad arguments for option \'--use_layer_normalization\': \'$VIASH_PAR_USE_LAYER_NORMALIZATION\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+            VIASH_PAR_USE_LAYER_NORMALIZATION="$2"
+            [ $# -lt 2 ] && ViashError Not enough arguments passed to --use_layer_normalization. Use "--help" to get more information on the parameters. && exit 1
+            shift 2
+            ;;
+        --use_layer_normalization=*)
+            [ -n "$VIASH_PAR_USE_LAYER_NORMALIZATION" ] && ViashError Bad arguments for option \'--use_layer_normalization=*\': \'$VIASH_PAR_USE_LAYER_NORMALIZATION\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+            VIASH_PAR_USE_LAYER_NORMALIZATION=$(ViashRemoveFlags "$1")
+            shift 1
+            ;;
+        --use_batch_normalization)
+            [ -n "$VIASH_PAR_USE_BATCH_NORMALIZATION" ] && ViashError Bad arguments for option \'--use_batch_normalization\': \'$VIASH_PAR_USE_BATCH_NORMALIZATION\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+            VIASH_PAR_USE_BATCH_NORMALIZATION="$2"
+            [ $# -lt 2 ] && ViashError Not enough arguments passed to --use_batch_normalization. Use "--help" to get more information on the parameters. && exit 1
+            shift 2
+            ;;
+        --use_batch_normalization=*)
+            [ -n "$VIASH_PAR_USE_BATCH_NORMALIZATION" ] && ViashError Bad arguments for option \'--use_batch_normalization=*\': \'$VIASH_PAR_USE_BATCH_NORMALIZATION\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+            VIASH_PAR_USE_BATCH_NORMALIZATION=$(ViashRemoveFlags "$1")
+            shift 1
+            ;;
+        --encode_covariates)
+            [ -n "$VIASH_PAR_ENCODE_COVARIATES" ] && ViashError Bad arguments for option \'--encode_covariates\': \'$VIASH_PAR_ENCODE_COVARIATES\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+            VIASH_PAR_ENCODE_COVARIATES=false
+            shift 1
+            ;;
+        --deeply_inject_covariates)
+            [ -n "$VIASH_PAR_DEEPLY_INJECT_COVARIATES" ] && ViashError Bad arguments for option \'--deeply_inject_covariates\': \'$VIASH_PAR_DEEPLY_INJECT_COVARIATES\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+            VIASH_PAR_DEEPLY_INJECT_COVARIATES=true
+            shift 1
+            ;;
+        --use_observed_lib_size)
+            [ -n "$VIASH_PAR_USE_OBSERVED_LIB_SIZE" ] && ViashError Bad arguments for option \'--use_observed_lib_size\': \'$VIASH_PAR_USE_OBSERVED_LIB_SIZE\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+            VIASH_PAR_USE_OBSERVED_LIB_SIZE=true
             shift 1
             ;;
         --early_stopping)
@@ -1042,6 +1217,39 @@ fi
 if [ -z ${VIASH_PAR_OBSM_OUTPUT+x} ]; then
   VIASH_PAR_OBSM_OUTPUT="X_scvi_integrated"
 fi
+if [ -z ${VIASH_PAR_N_HIDDEN_NODES+x} ]; then
+  VIASH_PAR_N_HIDDEN_NODES="128"
+fi
+if [ -z ${VIASH_PAR_N_DIMENSIONS_LATENT_SPACE+x} ]; then
+  VIASH_PAR_N_DIMENSIONS_LATENT_SPACE="30"
+fi
+if [ -z ${VIASH_PAR_N_HIDDEN_LAYERS+x} ]; then
+  VIASH_PAR_N_HIDDEN_LAYERS="2"
+fi
+if [ -z ${VIASH_PAR_DROPOUT_RATE+x} ]; then
+  VIASH_PAR_DROPOUT_RATE="0.1"
+fi
+if [ -z ${VIASH_PAR_DISPERSION+x} ]; then
+  VIASH_PAR_DISPERSION="gene"
+fi
+if [ -z ${VIASH_PAR_GENE_LIKELIHOOD+x} ]; then
+  VIASH_PAR_GENE_LIKELIHOOD="nb"
+fi
+if [ -z ${VIASH_PAR_USE_LAYER_NORMALIZATION+x} ]; then
+  VIASH_PAR_USE_LAYER_NORMALIZATION="both"
+fi
+if [ -z ${VIASH_PAR_USE_BATCH_NORMALIZATION+x} ]; then
+  VIASH_PAR_USE_BATCH_NORMALIZATION="none"
+fi
+if [ -z ${VIASH_PAR_ENCODE_COVARIATES+x} ]; then
+  VIASH_PAR_ENCODE_COVARIATES="true"
+fi
+if [ -z ${VIASH_PAR_DEEPLY_INJECT_COVARIATES+x} ]; then
+  VIASH_PAR_DEEPLY_INJECT_COVARIATES="false"
+fi
+if [ -z ${VIASH_PAR_USE_OBSERVED_LIB_SIZE+x} ]; then
+  VIASH_PAR_USE_OBSERVED_LIB_SIZE="false"
+fi
 if [ -z ${VIASH_PAR_EARLY_STOPPING_MONITOR+x} ]; then
   VIASH_PAR_EARLY_STOPPING_MONITOR="elbo_validation"
 fi
@@ -1074,6 +1282,48 @@ if [ ! -z "$VIASH_PAR_INPUT" ] && [ ! -e "$VIASH_PAR_INPUT" ]; then
 fi
 
 # check whether parameters values are of the right type
+if [[ -n "$VIASH_PAR_N_HIDDEN_NODES" ]]; then
+  if ! [[ "$VIASH_PAR_N_HIDDEN_NODES" =~ ^[-+]?[0-9]+$ ]]; then
+    ViashError '--n_hidden_nodes' has to be an integer. Use "--help" to get more information on the parameters.
+    exit 1
+  fi
+fi
+if [[ -n "$VIASH_PAR_N_DIMENSIONS_LATENT_SPACE" ]]; then
+  if ! [[ "$VIASH_PAR_N_DIMENSIONS_LATENT_SPACE" =~ ^[-+]?[0-9]+$ ]]; then
+    ViashError '--n_dimensions_latent_space' has to be an integer. Use "--help" to get more information on the parameters.
+    exit 1
+  fi
+fi
+if [[ -n "$VIASH_PAR_N_HIDDEN_LAYERS" ]]; then
+  if ! [[ "$VIASH_PAR_N_HIDDEN_LAYERS" =~ ^[-+]?[0-9]+$ ]]; then
+    ViashError '--n_hidden_layers' has to be an integer. Use "--help" to get more information on the parameters.
+    exit 1
+  fi
+fi
+if [[ -n "$VIASH_PAR_DROPOUT_RATE" ]]; then
+  if ! [[ "$VIASH_PAR_DROPOUT_RATE" =~ ^[-+]?(\.[0-9]+|[0-9]+(\.[0-9]*)?)([eE][-+]?[0-9]+)?$ ]]; then
+    ViashError '--dropout_rate' has to be a double. Use "--help" to get more information on the parameters.
+    exit 1
+  fi
+fi
+if [[ -n "$VIASH_PAR_ENCODE_COVARIATES" ]]; then
+  if ! [[ "$VIASH_PAR_ENCODE_COVARIATES" =~ ^(true|True|TRUE|false|False|FALSE|yes|Yes|YES|no|No|NO)$ ]]; then
+    ViashError '--encode_covariates' has to be a boolean_false. Use "--help" to get more information on the parameters.
+    exit 1
+  fi
+fi
+if [[ -n "$VIASH_PAR_DEEPLY_INJECT_COVARIATES" ]]; then
+  if ! [[ "$VIASH_PAR_DEEPLY_INJECT_COVARIATES" =~ ^(true|True|TRUE|false|False|FALSE|yes|Yes|YES|no|No|NO)$ ]]; then
+    ViashError '--deeply_inject_covariates' has to be a boolean_true. Use "--help" to get more information on the parameters.
+    exit 1
+  fi
+fi
+if [[ -n "$VIASH_PAR_USE_OBSERVED_LIB_SIZE" ]]; then
+  if ! [[ "$VIASH_PAR_USE_OBSERVED_LIB_SIZE" =~ ^(true|True|TRUE|false|False|FALSE|yes|Yes|YES|no|No|NO)$ ]]; then
+    ViashError '--use_observed_lib_size' has to be a boolean_true. Use "--help" to get more information on the parameters.
+    exit 1
+  fi
+fi
 if [[ -n "$VIASH_PAR_EARLY_STOPPING" ]]; then
   if ! [[ "$VIASH_PAR_EARLY_STOPPING" =~ ^(true|True|TRUE|false|False|FALSE|yes|Yes|YES|no|No|NO)$ ]]; then
     ViashError '--early_stopping' has to be a boolean. Use "--help" to get more information on the parameters.
@@ -1227,6 +1477,54 @@ if [ ! -z "$VIASH_PAR_OUTPUT_COMPRESSION" ]; then
   unset IFS
 fi
 
+if [ ! -z "$VIASH_PAR_DISPERSION" ]; then
+  VIASH_PAR_DISPERSION_CHOICES=("gene:gene-batch:gene-label:gene-cell")
+  IFS=':'
+  set -f
+  if ! [[ ":${VIASH_PAR_DISPERSION_CHOICES[*]}:" =~ ":$VIASH_PAR_DISPERSION:" ]]; then
+    ViashError '--dispersion' specified value of \'$VIASH_PAR_DISPERSION\' is not in the list of allowed values. Use "--help" to get more information on the parameters.
+    exit 1
+  fi
+  set +f
+  unset IFS
+fi
+
+if [ ! -z "$VIASH_PAR_GENE_LIKELIHOOD" ]; then
+  VIASH_PAR_GENE_LIKELIHOOD_CHOICES=("nb:zinb:poisson")
+  IFS=':'
+  set -f
+  if ! [[ ":${VIASH_PAR_GENE_LIKELIHOOD_CHOICES[*]}:" =~ ":$VIASH_PAR_GENE_LIKELIHOOD:" ]]; then
+    ViashError '--gene_likelihood' specified value of \'$VIASH_PAR_GENE_LIKELIHOOD\' is not in the list of allowed values. Use "--help" to get more information on the parameters.
+    exit 1
+  fi
+  set +f
+  unset IFS
+fi
+
+if [ ! -z "$VIASH_PAR_USE_LAYER_NORMALIZATION" ]; then
+  VIASH_PAR_USE_LAYER_NORMALIZATION_CHOICES=("encoder:decoder:none:both")
+  IFS=':'
+  set -f
+  if ! [[ ":${VIASH_PAR_USE_LAYER_NORMALIZATION_CHOICES[*]}:" =~ ":$VIASH_PAR_USE_LAYER_NORMALIZATION:" ]]; then
+    ViashError '--use_layer_normalization' specified value of \'$VIASH_PAR_USE_LAYER_NORMALIZATION\' is not in the list of allowed values. Use "--help" to get more information on the parameters.
+    exit 1
+  fi
+  set +f
+  unset IFS
+fi
+
+if [ ! -z "$VIASH_PAR_USE_BATCH_NORMALIZATION" ]; then
+  VIASH_PAR_USE_BATCH_NORMALIZATION_CHOICES=("encoder:decoder:none:both")
+  IFS=':'
+  set -f
+  if ! [[ ":${VIASH_PAR_USE_BATCH_NORMALIZATION_CHOICES[*]}:" =~ ":$VIASH_PAR_USE_BATCH_NORMALIZATION:" ]]; then
+    ViashError '--use_batch_normalization' specified value of \'$VIASH_PAR_USE_BATCH_NORMALIZATION\' is not in the list of allowed values. Use "--help" to get more information on the parameters.
+    exit 1
+  fi
+  set +f
+  unset IFS
+fi
+
 if [ ! -z "$VIASH_PAR_EARLY_STOPPING_MONITOR" ]; then
   VIASH_PAR_EARLY_STOPPING_MONITOR_CHOICES=("elbo_validation:reconstruction_loss_validation:kl_local_validation")
   IFS=':'
@@ -1332,6 +1630,17 @@ par = {
   'model_output': $( if [ ! -z ${VIASH_PAR_MODEL_OUTPUT+x} ]; then echo "r'${VIASH_PAR_MODEL_OUTPUT//\'/\'\"\'\"r\'}'"; else echo None; fi ),
   'output_compression': $( if [ ! -z ${VIASH_PAR_OUTPUT_COMPRESSION+x} ]; then echo "r'${VIASH_PAR_OUTPUT_COMPRESSION//\'/\'\"\'\"r\'}'"; else echo None; fi ),
   'obsm_output': $( if [ ! -z ${VIASH_PAR_OBSM_OUTPUT+x} ]; then echo "r'${VIASH_PAR_OBSM_OUTPUT//\'/\'\"\'\"r\'}'"; else echo None; fi ),
+  'n_hidden_nodes': $( if [ ! -z ${VIASH_PAR_N_HIDDEN_NODES+x} ]; then echo "int(r'${VIASH_PAR_N_HIDDEN_NODES//\'/\'\"\'\"r\'}')"; else echo None; fi ),
+  'n_dimensions_latent_space': $( if [ ! -z ${VIASH_PAR_N_DIMENSIONS_LATENT_SPACE+x} ]; then echo "int(r'${VIASH_PAR_N_DIMENSIONS_LATENT_SPACE//\'/\'\"\'\"r\'}')"; else echo None; fi ),
+  'n_hidden_layers': $( if [ ! -z ${VIASH_PAR_N_HIDDEN_LAYERS+x} ]; then echo "int(r'${VIASH_PAR_N_HIDDEN_LAYERS//\'/\'\"\'\"r\'}')"; else echo None; fi ),
+  'dropout_rate': $( if [ ! -z ${VIASH_PAR_DROPOUT_RATE+x} ]; then echo "float(r'${VIASH_PAR_DROPOUT_RATE//\'/\'\"\'\"r\'}')"; else echo None; fi ),
+  'dispersion': $( if [ ! -z ${VIASH_PAR_DISPERSION+x} ]; then echo "r'${VIASH_PAR_DISPERSION//\'/\'\"\'\"r\'}'"; else echo None; fi ),
+  'gene_likelihood': $( if [ ! -z ${VIASH_PAR_GENE_LIKELIHOOD+x} ]; then echo "r'${VIASH_PAR_GENE_LIKELIHOOD//\'/\'\"\'\"r\'}'"; else echo None; fi ),
+  'use_layer_normalization': $( if [ ! -z ${VIASH_PAR_USE_LAYER_NORMALIZATION+x} ]; then echo "r'${VIASH_PAR_USE_LAYER_NORMALIZATION//\'/\'\"\'\"r\'}'"; else echo None; fi ),
+  'use_batch_normalization': $( if [ ! -z ${VIASH_PAR_USE_BATCH_NORMALIZATION+x} ]; then echo "r'${VIASH_PAR_USE_BATCH_NORMALIZATION//\'/\'\"\'\"r\'}'"; else echo None; fi ),
+  'encode_covariates': $( if [ ! -z ${VIASH_PAR_ENCODE_COVARIATES+x} ]; then echo "r'${VIASH_PAR_ENCODE_COVARIATES//\'/\'\"\'\"r\'}'.lower() == 'true'"; else echo None; fi ),
+  'deeply_inject_covariates': $( if [ ! -z ${VIASH_PAR_DEEPLY_INJECT_COVARIATES+x} ]; then echo "r'${VIASH_PAR_DEEPLY_INJECT_COVARIATES//\'/\'\"\'\"r\'}'.lower() == 'true'"; else echo None; fi ),
+  'use_observed_lib_size': $( if [ ! -z ${VIASH_PAR_USE_OBSERVED_LIB_SIZE+x} ]; then echo "r'${VIASH_PAR_USE_OBSERVED_LIB_SIZE//\'/\'\"\'\"r\'}'.lower() == 'true'"; else echo None; fi ),
   'early_stopping': $( if [ ! -z ${VIASH_PAR_EARLY_STOPPING+x} ]; then echo "r'${VIASH_PAR_EARLY_STOPPING//\'/\'\"\'\"r\'}'.lower() == 'true'"; else echo None; fi ),
   'early_stopping_monitor': $( if [ ! -z ${VIASH_PAR_EARLY_STOPPING_MONITOR+x} ]; then echo "r'${VIASH_PAR_EARLY_STOPPING_MONITOR//\'/\'\"\'\"r\'}'"; else echo None; fi ),
   'early_stopping_patience': $( if [ ! -z ${VIASH_PAR_EARLY_STOPPING_PATIENCE+x} ]; then echo "int(r'${VIASH_PAR_EARLY_STOPPING_PATIENCE//\'/\'\"\'\"r\'}')"; else echo None; fi ),
@@ -1407,17 +1716,17 @@ def main():
     # Set up the model
     vae_uns = scvi.model.SCVI(
         adata,
-        n_hidden=128, #this is the default
-        n_latent=30,
-        n_layers=2,
-        dropout_rate=0.1, #this is the default
-        dispersion='gene', #this is the default
-        gene_likelihood='nb',
-        use_layer_norm='both',
-        use_batch_norm="none",
-        encode_covariates=True, #Parameterization for better scArches performance -> maybe don't use this always?
-        deeply_inject_covariates=False, #Parameterization for better scArches performance -> maybe don't use this always?
-        use_observed_lib_size=False, #When size_factors are not passed
+        n_hidden=par["n_hidden_nodes"],
+        n_latent=par["n_dimensions_latent_space"],
+        n_layers=par["n_hidden_layers"],
+        dropout_rate=par["dropout_rate"],
+        dispersion=par["dispersion"],
+        gene_likelihood=par["gene_likelihood"],
+        use_layer_norm=par["use_layer_normalization"],
+        use_batch_norm=par["use_batch_normalization"],
+        encode_covariates=par["encode_covariates"], # Default (True) is for better scArches performance -> maybe don't use this always?
+        deeply_inject_covariates=par["deeply_inject_covariates"], # Default (False) for better scArches performance -> maybe don't use this always?
+        use_observed_lib_size=par["use_observed_lib_size"], # When size_factors are not passed
     )
 
     plan_kwargs = {
