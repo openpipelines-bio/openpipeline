@@ -45,16 +45,16 @@ jobs:
         viash_pro_token: ${{ secrets.GTHB_PAT }}
         tools_version: 'main_build'
 
-    # - name: Deploy to target branch
-    #   uses: peaceiris/actions-gh-pages@v3
-    #   env:
-    #     GITHUB_SERVER_URL: 'https://viash-hub.com'
-    #   with:
-    #     #github_token: ${{ secrets.GITHUB_TOKEN }}
-    #     personal_token: ${{ secrets.VIASHHUB_PAT}}
-    #     publish_dir: .
-    #     publish_branch: main_build
-    #     exclude_assets: ''
+    - name: Deploy to target branch
+      uses: peaceiris/actions-gh-pages@v3
+      env:
+        GITHUB_SERVER_URL: 'https://viash-hub.com'
+      with:
+        #github_token: ${{ secrets.GITHUB_TOKEN }}
+        personal_token: ${{ secrets.VIASHHUB_PAT}}
+        publish_dir: .
+        publish_branch: main_build
+        exclude_assets: ''
 
     - id: ns_list
       uses: viash-io/viash-actions/ns-list@v4
