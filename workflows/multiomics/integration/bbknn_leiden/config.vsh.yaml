@@ -1,6 +1,6 @@
 functionality:
   name: "bbknn_leiden"
-  namespace: "integration/common"
+  namespace: "multiomics/integration"
   description: "Run bbknn followed by leiden clustering and run umap on the result."
   authors:
     - __merge__: ../../../../src/authors/mauro_saporita.yaml
