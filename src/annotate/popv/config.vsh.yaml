@@ -135,11 +135,15 @@ platforms:
           - wget
       - type: python
         packages:
-          - mudata~=0.2.3
-          - anndata~=0.9.1
           - scanpy~=1.9.2
           - scvi-tools~=0.20.3
-          - git+https://github.com/YosefLab/PopV.git@v0.2
+          - popv~=0.3.2
+      # These need to be updated AFTER popv is installed.
+      # See https://github.com/YosefLab/PopV/issues/30
+      - type: python
+        packages:
+          - mudata~=0.2.3
+          - anndata~=0.9.1
       # download ontology required by popv
       - type: docker
         run: |
