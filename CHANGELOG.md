@@ -10,7 +10,11 @@
 
 * `full_pipeline`: default value for `--var_qc_metrics` is now the combined values specified for `--mitochondrial_gene_regex` and `--filter_with_hvg_var_output`.
 
-* `dataflow/concat`: reduce memory consumption by only reading one modality at the same time (PR #474). 
+* `dataflow/concat`: reduce memory consumption by only reading one modality at the same time (PR #474).
+
+* Components that use CellRanger, BCL Convert or bcl2fastq: updated from Ubuntu 20.04 to Ubuntu 22.04 (PR #494).
+
+* Components that use CellRanger: updated Picard to 2.27.5 (PR #494).
 
 ## NEW FUNCTIONALITY
 
@@ -24,6 +28,12 @@
 
 * `workflows/prot_multisample` and `workflows/full_pipelines`: add basic QC statistics to prot modality (PR #485).
 
+* `mapping/cellranger_multi`: Add tests for the mapping of Crispr Guide Capture data (PR #494).
+
+* `convert/from_cellranger_multi_to_h5mu`: add `perturbation_efficiencies_by_feature` and `perturbation_efficiencies_by_feature` information to .uns slot of `gdo` modality (PR #494).
+
+* `convert/from_cellranger_multi_to_h5mu`: add `feature_reference` information to the MuData object. Information is split between the modalities. For example `CRISPR Guide Capture` information if added to the `.uns` slot of the `gdo` modality, while `Antibody Capture` information is added to the .uns slot of `prot` (PR #494).
+
 ## BUG FIXES
 
 * Fix an issue with `workflows/full_pipeline` not correctly caching previous runs (PR #460).
@@ -34,6 +44,14 @@
 
 * `integration/harmony_leiden` and `integration/scanorama_leiden`: Fix an issue where the prefix of the columns that store the leiden clusters was hardcoded to `leiden`, instead of adapting to the value for `--obs_cluster` (PR #482). 
 
+* `velocity/velocyto`: Resolve symbolic link before checking whether the transcriptome is a gzip (PR #484).
+
+* `workflows/integration/scanorama_leiden`: fix an issue where `--obsm_input`, --obs_batch`, `--batch_size`, `--sigma`, `--approx`, `--alpha` and `-knn` were not working beacuse they were not passed through to the scanorama component (PR #487).
+
+* `workflows/integration/scanorama_leiden`: fix leiden being calculated on the wrong embedding because the `--obsm_input` argument was not correctly set to the output embedding of scanorama (PR #487).
+
+* `mapping/cellranger_multi`: Fix and issue where modalities did not have the proper name (PR #494).
+ 
 # openpipelines 0.9.0
 
 ## BREAKING CHANGES

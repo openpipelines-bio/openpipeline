@@ -33,16 +33,21 @@ workflow run_wf {
     // split params for downstream components
     | setWorkflowArguments(
       scanorama: [
-        "obsm_input": "X_pca",
-        "obs_batch": "sample_id",
-        "obsm_output": "obsm_integrated",
-        "modality": "modality"
+        "obsm_input": "obsm_input",
+        "obs_batch": "obs_batch",
+        "obsm_output": "obsm_output",
+        "modality": "modality",
+        "batch_size": "batch_size",
+        "sigma": "sigma",
+        "approx": "approx",
+        "alpha": "alpha",
+        "knn": "knn",
       ],
       neighbors: [
         "uns_output": "uns_neighbors",
         "obsp_distances": "obsp_neighbor_distances",
         "obsp_connectivities": "obsp_neighbor_connectivities",
-        "obsm_input": "obsm_integrated",
+        "obsm_input": "obsm_output",
         "modality": "modality"
 
       ],
