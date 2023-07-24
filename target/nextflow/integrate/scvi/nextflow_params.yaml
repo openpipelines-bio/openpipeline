@@ -4,6 +4,10 @@ modality: "rna"
 # input_layer: "foo"
 obs_batch: "sample_id"
 # var_input: "foo"
+# obs_labels: "foo"
+# obs_size_factor: "foo"
+# obs_categorical_covariate: ["foo"]
+# obs_continuous_covariate: ["foo"]
 
 # Outputs
 # output: "$id.$key.output.output"

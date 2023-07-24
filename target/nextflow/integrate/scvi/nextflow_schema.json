@@ -33,6 +33,26 @@
             "type": "string",
             "description": ".var column containing highly variable genes. By default, do not subset genes.",
             "default": ""
+          },
+          "obs_labels": {
+            "type": "string",
+            "description": "Key in adata.obs for label information. Categories will automatically be ","help_text": "Key in adata.obs for label information. Categories will automatically be \nconverted into integer categories and saved to adata.obs[\u0027_scvi_labels\u0027].\nIf None, assigns the same label to all the data.\n",
+            "default": ""
+          },
+          "obs_size_factor": {
+            "type": "string",
+            "description": "Key in adata.obs for size factor information. Instead of using library size as a size factor,","help_text": "Key in adata.obs for size factor information. Instead of using library size as a size factor,\nthe provided size factor column will be used as offset in the mean of the likelihood.\nAssumed to be on linear scale.\n",
+            "default": ""
+          },
+          "obs_categorical_covariate": {
+            "type": "string",
+            "description": "Keys in adata.obs that correspond to categorical data. These covariates can be added in","help_text": "Keys in adata.obs that correspond to categorical data. These covariates can be added in\naddition to the batch covariate and are also treated as nuisance factors\n(i.e., the model tries to minimize their effects on the latent space).\nThus, these should not be used for biologically-relevant factors that you do _not_ want to correct for.\n",
+            "default": ""
+          },
+          "obs_continuous_covariate": {
+            "type": "string",
+            "description": "Keys in adata.obs that correspond to continuous data. These covariates can be added in","help_text": "Keys in adata.obs that correspond to continuous data. These covariates can be added in\naddition to the batch covariate and are also treated as nuisance factors\n(i.e., the model tries to minimize their effects on the latent space). Thus, these should not be\nused for biologically-relevant factors that you do _not_ want to correct for.\n",
+            "default": ""
           }
           
         }
