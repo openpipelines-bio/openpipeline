@@ -466,13 +466,13 @@ RUN apt-get update && \
   rm -rf /var/lib/apt/lists/*
 
 RUN pip install --upgrade pip && \
-  pip install --upgrade --no-cache-dir "mudata~=0.2.0" "git+https://github.com/saezlab/liana-py.git@11156ddd0139a49dfebdd08ac230f0ebf008b7f8" "numpy~=1.24.3"
+  pip install --upgrade --no-cache-dir "mudata~=0.2.0" "liana~=0.1.9" "numpy~=1.24.3"
 
 LABEL org.opencontainers.image.authors="Mauro Saporita, Povilas Gibas"
 LABEL org.opencontainers.image.description="Companion container for running component interpret lianapy"
-LABEL org.opencontainers.image.created="2023-07-24T16:07:21Z"
+LABEL org.opencontainers.image.created="2023-07-25T08:31:36Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="46c62523a46c5214faee7952ec9fcf0007140a6e"
+LABEL org.opencontainers.image.revision="f53c4512a31f64ac1d7bddd369a1328a13ecc122"
 LABEL org.opencontainers.image.version="main_build"
 
 VIASHDOCKER
