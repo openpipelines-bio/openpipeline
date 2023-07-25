@@ -25,6 +25,10 @@ reduce_lr_on_plateau: true
 lr_factor: 0.6
 lr_patience: 30
 
+# Clustering options
+obs_cluster: "scvi_integration_leiden"
+leiden_resolution: [1]
+
 # Umap options
 obsm_umap: "X_scvi_umap"
 

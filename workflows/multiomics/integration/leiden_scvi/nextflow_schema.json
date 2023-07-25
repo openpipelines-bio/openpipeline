@@ -1,7 +1,7 @@
 {
     "$schema": "http://json-schema.org/draft-07/schema",
-    "title": "scvi",
-    "description": "Run scvi integration followed by neighbour calculations and run umap on the result.",
+    "title": "leiden_scvi",
+    "description": "Run scvi integration followed by neighbour calculations, leiden clustering and run umap on the result.",
     "type": "object",
     "definitions": {
       "inputs" : {
@@ -131,6 +131,24 @@
           
         }
       },
+      "clustering options" : {
+        "title": "Clustering options",
+        "type": "object",
+        "description": "No description",
+        "properties": {
+          "obs_cluster": {
+            "type": "string",
+            "description": "Prefix for the .obs keys under which to add the cluster labels. Newly created columns in .obs will ","help_text": "Prefix for the .obs keys under which to add the cluster labels. Newly created columns in .obs will \nbe created from the specified value for \u0027--obs_cluster\u0027 suffixed with an underscore and one of the resolutions\nresolutions specified in \u0027--leiden_resolution\u0027.\n",
+            "default": "scvi_integration_leiden"
+          },
+          "leiden_resolution": {
+            "type": "number",
+            "description": "Control the coarseness of the clustering. Higher values lead to more clusters.",
+            "default": "[1]"
+          }
+          
+        }
+      },
       "umap options" : {
         "title": "Umap options",
         "type": "object",
@@ -175,6 +193,9 @@
       },
       {
         "$ref": "#/definitions/scvi integration options"
+      },
+      {
+        "$ref": "#/definitions/clustering options"
       },
       {
         "$ref": "#/definitions/umap options"
