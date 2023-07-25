@@ -22,7 +22,7 @@ jobs:
     - name: Push main to Viash-hub
       #if: ${{ GITHUB_REF_NAME }} == 'main'
       run: |
-        git remote set-url viash-hub https://x-access-token:${{ secrets.VIASHHUB_PAT }}@viash-hub.com/openpipelines-bio/openpipeline.git
+        git remote add viash-hub https://x-access-token:${{ secrets.VIASHHUB_PAT }}@viash-hub.com/openpipelines-bio/openpipeline.git
         # git push -f viash-hub main
         git push -f viash-hub ${{ github.ref_name }}
 
@@ -63,7 +63,7 @@ jobs:
         cd $repo_dir
         rsync -a --exclude='.git' ${{ github.workspace }}/ .
         git add --all
-        git remote set-url viash-hub https://x-access-token:${{ secrets.VIASHHUB_PAT }}@viash-hub.com/openpipelines-bio/openpipeline.git
+        git remote add viash-hub https://x-access-token:${{ secrets.VIASHHUB_PAT }}@viash-hub.com/openpipelines-bio/openpipeline.git
         git config user.name ${{ github.actor }}
         git config user.email ${{ github.actor }}@users.noreply.github.com
         git commit -m "deploy: ${{ github.sha }}"
