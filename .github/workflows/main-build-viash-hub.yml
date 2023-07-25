@@ -56,6 +56,20 @@ jobs:
     #     publish_branch: main_build
     #     exclude_assets: ''
 
+    # commands based on peaceiris/actions-gh-pages@v3
+    - name: Deploy to Viash-Hub
+      run: |
+        echo Start deploy to Viash-Hub
+        git clone --depth=1 --single-branch --branch main_build https://x-access-token:${{ github.token }}@github.com/openpipelines-bio/openpipeline.git ${{ github.workspace }}
+        git rm -r --ignore-unmatch *
+        git remote rm origin
+        git remote add origin https://x-access-token:${{ secrets.VIASHHUB_PAT }}@viash-hub.com/openpipelines-bio/openpipeline.git
+        git add --all
+        git config user.name ${{ github.actor }}
+        git config user.email ${{ github.actor }}@users.noreply.github.com
+        git commit -m deploy: ${{ github.sha }}
+        git push origin main_build
+
     - id: ns_list
       uses: viash-io/viash-actions/ns-list@v4
       with:
