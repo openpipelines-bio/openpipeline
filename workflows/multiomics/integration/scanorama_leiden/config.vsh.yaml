@@ -61,7 +61,7 @@ functionality:
           required: false
         - name: "--obsm_input"
           type: string
-          description: .osbm slot that points to embedding to run scanorama on. 
+          description: .obsm slot that points to embedding to run scanorama on. 
           default: "X_pca"
         - name: "--obsm_output"
           type: string
