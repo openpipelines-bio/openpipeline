@@ -60,14 +60,19 @@ jobs:
     - name: Deploy to Viash-Hub
       run: |
         echo Start deploy to Viash-Hub
-        git clone --depth=1 --single-branch --branch main_build https://x-access-token:${{ github.token }}@github.com/openpipelines-bio/openpipeline.git ${{ github.workspace }}
+        repo_dir=/home/runner/openpipeline-deploy-`date +%s`
+        git clone --depth=1 --single-branch --branch main_build https://x-access-token:${{ github.token }}@github.com/openpipelines-bio/openpipeline.git $repo_dir
+        cd $repo_dir
         git rm -r --ignore-unmatch *
+        rm ${{ github.workspace }}/.git
+        cp -r ${{ github.workspace }}/. .
+        touch .nojekyll
         git remote rm origin
         git remote add origin https://x-access-token:${{ secrets.VIASHHUB_PAT }}@viash-hub.com/openpipelines-bio/openpipeline.git
         git add --all
         git config user.name ${{ github.actor }}
         git config user.email ${{ github.actor }}@users.noreply.github.com
-        git commit -m deploy: ${{ github.sha }}
+        git commit -m "deploy: ${{ github.sha }}"
         git push origin main_build
 
     - id: ns_list
