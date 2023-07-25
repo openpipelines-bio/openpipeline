@@ -16,6 +16,8 @@
 
 * Components that use CellRanger: updated Picard to 2.27.5 (PR #494).
 
+* `interprete/liana`: Update lianapy to 0.1.9 (PR #497).
+
 ## NEW FUNCTIONALITY
 
 * `integrate/scvi`: Add `--n_hidden_nodes`, `--n_dimensions_latent_space`, `--n_hidden_layers`, `--dropout_rate`, `--dispersion`, `--gene_likelihood`, `--use_layer_normalization`, `--use_batch_normalization`, `--encode_covariates`, `--deeply_inject_covariates` and `--use_observed_lib_size` parameters.
