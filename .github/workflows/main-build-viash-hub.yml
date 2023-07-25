@@ -61,7 +61,7 @@ jobs:
       run: |
         echo Start deploy to Viash-Hub
         repo_dir=/home/runner/openpipeline-deploy-`date +%s`
-        git clone --depth=1 --single-branch --branch main_build https://x-access-token:${{ github.token }}@github.com/openpipelines-bio/openpipeline.git $repo_dir
+        git clone --single-branch --branch main_build https://x-access-token:${{ github.token }}@github.com/openpipelines-bio/openpipeline.git $repo_dir
         cd $repo_dir
         git rm -r --ignore-unmatch *
         rm -rf ${{ github.workspace }}/.git
