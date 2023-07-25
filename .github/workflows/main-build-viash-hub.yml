@@ -20,7 +20,7 @@ jobs:
         fetch-depth: 0
 
     - name: Push main to Viash-hub
-      if: ${{ github.ref_name }} == 'main'
+      if: "${{ github.ref_name == 'main' }}"
       run: |
         git remote add viash-hub https://x-access-token:${{ secrets.VIASHHUB_PAT }}@viash-hub.com/openpipelines-bio/openpipeline.git
         git push -f viash-hub ${{ github.ref_name }}
