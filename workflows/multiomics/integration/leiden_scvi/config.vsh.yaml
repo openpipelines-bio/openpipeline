@@ -1,7 +1,7 @@
 functionality:
-  name: "scvi"
+  name: "leiden_scvi"
   namespace: "multiomics/integration"
-  description: "Run scvi integration followed by neighbour calculations and run umap on the result."
+  description: "Run scvi integration followed by neighbour calculations, leiden clustering and run umap on the result."
   authors:
     - __merge__: /src/authors/dries_schaumont.yaml
       roles: [ author ]
@@ -105,6 +105,20 @@ functionality:
           type: double
           default: 30
           min: 0
+    - name: Clustering options
+      arguments:
+        - name: "--obs_cluster"
+          type: string
+          description: |
+            Prefix for the .obs keys under which to add the cluster labels. Newly created columns in .obs will 
+            be created from the specified value for '--obs_cluster' suffixed with an underscore and one of the resolutions
+            resolutions specified in '--leiden_resolution'.
+          default: "scvi_integration_leiden"
+        - name: "--leiden_resolution"
+          type: double
+          description: Control the coarseness of the clustering. Higher values lead to more clusters.
+          default: [1]
+          multiple: true
     - name: Umap options
       arguments:
         - name: "--obsm_umap"
