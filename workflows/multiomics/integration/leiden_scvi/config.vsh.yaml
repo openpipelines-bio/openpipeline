@@ -1,7 +1,7 @@
 functionality:
-  name: "scvi"
+  name: "leiden_scvi"
   namespace: "multiomics/integration"
-  description: "Run scvi integration followed by neighbour calculations and run umap on the result."
+  description: "Run scvi integration followed by neighbour calculations, leiden clustering and run umap on the result."
   authors:
     - __merge__: /src/authors/dries_schaumont.yaml
       roles: [ author ]
