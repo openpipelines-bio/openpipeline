@@ -16,6 +16,15 @@ jobs:
 
     steps:
     - uses: actions/checkout@v3
+      with:
+        fetch-depth: 0
+
+    - name: Push main to Viash-hub
+      #if: ${{ GITHUB_REF_NAME }} == 'main'
+      run: |
+        git remote set-url viash-hub https://x-access-token:${{ secrets.VIASHHUB_PAT }}@viash-hub.com/openpipelines-bio/openpipeline.git
+        # git push -f viash-hub main
+        git push -f viash-hub ${{ github.ref_name }}
 
     - uses: viash-io/viash-actions/setup@v4
 
@@ -45,35 +54,20 @@ jobs:
         viash_pro_token: ${{ secrets.GTHB_PAT }}
         tools_version: 'main_build'
 
-    # - name: Deploy to target branch
-    #   uses: peaceiris/actions-gh-pages@v3
-    #   # env:
-    #   #   GITHUB_SERVER_URL: 'https://viash-hub.com'
-    #   with:
-    #     #github_token: ${{ secrets.GITHUB_TOKEN }}
-    #     personal_token: ${{ secrets.VIASHHUB_PAT}}
-    #     publish_dir: .
-    #     publish_branch: main_build
-    #     exclude_assets: ''
-
-    # commands based on peaceiris/actions-gh-pages@v3
     - name: Deploy to Viash-Hub
       run: |
-        echo Start deploy to Viash-Hub
+        # Deploy to Viash-Hub, commands based on peaceiris/actions-gh-pages@v3
         repo_dir=/home/runner/openpipeline-deploy-`date +%s`
-        # removed --depth=1 for now
-        git clone --single-branch --branch main_build https://x-access-token:${{ github.token }}@github.com/openpipelines-bio/openpipeline.git $repo_dir
+        # removed --depth=1 given that we rewrite the remote history.
+        git clone --single-branch --branch main_build --no-checkout https://x-access-token:${{ github.token }}@github.com/openpipelines-bio/openpipeline.git $repo_dir
         cd $repo_dir
-        git rm -rq --ignore-unmatch *
-        #rm -rf ${{ github.workspace }}/.git
-        #cp -r ${{ github.workspace }}/. .
         rsync -a --exclude='.git' ${{ github.workspace }}/ .
-        git remote set-url origin https://x-access-token:${{ secrets.VIASHHUB_PAT }}@viash-hub.com/openpipelines-bio/openpipeline.git
         git add --all
+        git remote set-url viash-hub https://x-access-token:${{ secrets.VIASHHUB_PAT }}@viash-hub.com/openpipelines-bio/openpipeline.git
         git config user.name ${{ github.actor }}
         git config user.email ${{ github.actor }}@users.noreply.github.com
         git commit -m "deploy: ${{ github.sha }}"
-        git push -f origin main_build
+        git push -f viash-hub main_build
 
     - id: ns_list
       uses: viash-io/viash-actions/ns-list@v4
