@@ -36,7 +36,7 @@
 
 * `convert/from_cellranger_multi_to_h5mu`: add `feature_reference` information to the MuData object. Information is split between the modalities. For example `CRISPR Guide Capture` information if added to the `.uns` slot of the `gdo` modality, while `Antibody Capture` information is added to the .uns slot of `prot` (PR #494).
 
-* Docker images built on `main_build` now are also tagged for and push to viash-hub.com (PR #480).
+* Add `main_build_viash_hub` action to build, tag, and push components and docker images for viash-hub.com (PR #480).
 
 ## BUG FIXES
 
