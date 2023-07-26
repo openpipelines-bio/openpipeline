@@ -134,9 +134,7 @@ platforms:
         packages: 
           - procps
       - type: python
-        packages:
-          - mudata~=0.2.0
-          - anndata~=0.8.0
+        __merge__: /src/base/requirements/anndata_mudata.yaml
     test_setup:
       - type: python
         packages: viashpy
