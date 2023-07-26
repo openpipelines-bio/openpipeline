@@ -65,7 +65,9 @@
 * `workflows/integration/scanorama_leiden`: fix leiden being calculated on the wrong embedding because the `--obsm_input` argument was not correctly set to the output embedding of scanorama (PR #487).
 
 * `mapping/cellranger_multi`: Fix and issue where modalities did not have the proper name (PR #494).
- 
+
+* `metadata/add_uns_to_obs`: Fix `KeyError: 'ouput_compression'` error.
+
 # openpipelines 0.9.0
 
 ## BREAKING CHANGES
