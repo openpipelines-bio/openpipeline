@@ -72,42 +72,18 @@ def get_cell_type_terms(cell_types, obo_file):
         return
     logger.info("Reading Cell Ontology OBO")
 
-    co = read_cell_ontology(obo_file)
-    id_to_name = {
-        id_: data.get("name")
-        for id_, data in co.nodes(data=True)
-        }
-    id_to_name = {
-        term_id: term_name
-        for term_id, term_name in id_to_name.items()
-        if term_name is not None
-        }
-    name_to_id = {
-        term_name: term_id
-        for term_id, term_name in id_to_name.items()
-        }
+    graph = read_cell_ontology(obo_file)
 
-    # TODO: can be more pythonic
-    lower_hierarchy_cell_of_interest_map = {}
-    cell_of_interest_terms = []
-    for cell_type in cell_types:
-        logger.info("Locating all child cell types of %s", cell_type)
-        node = name_to_id[cell_type]
-        lower_hierarchy_cell_of_interest_map.update(
-            {
-                parent:id_to_name[parent]
-                for parent, _, key in co.in_edges(node, keys=True)
-                if key == 'is_a'
-                }
-            )
-        lower_hierarchy_cell_of_interest_map.update({node: cell_type})
-        cell_of_interest_terms.extend(
-            list(lower_hierarchy_cell_of_interest_map.keys())
-            )
+    id_to_name = {id_: data.get('name') for id_, data in graph.nodes(data=True)}
+    name_to_id = {data['name']: id_ for id_, data in graph.nodes(data=True) if 'name' in data}
+    
+    def flatten_extend(matrix):
+        flat_list = []
+        for row in matrix:
+            flat_list.extend(row)
+        return flat_list
 
-    logger.info(lower_hierarchy_cell_of_interest_map)
-
-    return cell_of_interest_terms
+    return set(flatten_extend([sorted(subterm for subterm in networkx.ancestors(graph, name_to_id[ct])) for ct in cell_types ]))
 
 
 # TODO: function to explore cell types available in query data
