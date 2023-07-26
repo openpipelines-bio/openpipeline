@@ -66,7 +66,7 @@
 
 * `mapping/cellranger_multi`: Fix and issue where modalities did not have the proper name (PR #494).
 
-* `metadata/add_uns_to_obs`: Fix `KeyError: 'ouput_compression'` error.
+* `metadata/add_uns_to_obs`: Fix `KeyError: 'ouput_compression'` error (PR #501).
 
 # openpipelines 0.9.0
 
