@@ -91,8 +91,8 @@ platforms:
           - procps
           - git
       - type: python
+        __merge__: [/src/base/requirements/anndata_mudata.yaml, .]
         packages:
-          - mudata~=0.2.3
           - liana~=0.1.9
           - numpy~=1.24.3
   - type: nextflow

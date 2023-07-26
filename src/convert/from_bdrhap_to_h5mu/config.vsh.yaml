@@ -49,9 +49,7 @@ platforms:
       - type: docker
         run: apt update && apt upgrade -y
       - type: python
-        pip: 
-          - anndata~=0.9.1
-          - mudata~=0.2.3
+        __merge__: [/src/base/requirements/anndata_mudata.yaml, .]
       - type: r
         cran: anndata
   - type: nextflow

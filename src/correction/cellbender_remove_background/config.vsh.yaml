@@ -174,9 +174,8 @@ platforms:
           # - python-is-python3
           - git
       - type: python
+        __merge__: [/src/base/requirements/anndata_mudata.yaml, .]
         packages: 
-          - anndata~=0.9.1
-          - mudata~=0.2.3
           - muon~=0.1.5
           # - torch
           # - torchvision

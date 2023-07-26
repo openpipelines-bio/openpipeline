@@ -189,7 +189,7 @@ platforms:
           - HTSeq
           - pyyaml
           - scipy
-          - anndata~=0.9.1
+          - pandas~=2.0.0
   - type: nextflow
     directives:
       label: [ highmem, highcpu ]

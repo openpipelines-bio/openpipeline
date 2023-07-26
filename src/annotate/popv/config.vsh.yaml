@@ -122,6 +122,7 @@ functionality:
       path: test.py
     - path: ../../../resources_test/annotation_test_data/
     - path: ../../../resources_test/pbmc_1k_protein_v3/
+
 platforms:
   - type: docker
     #image: nvcr.io/nvidia/pytorch:22.12-py3
@@ -141,9 +142,7 @@ platforms:
       # These need to be updated AFTER popv is installed.
       # See https://github.com/YosefLab/PopV/issues/30
       - type: python
-        packages:
-          - mudata~=0.2.3
-          - anndata~=0.9.1
+        __merge__: [ /src/base/requirements/anndata_mudata.yaml, .]
       # download ontology required by popv
       - type: docker
         run: |

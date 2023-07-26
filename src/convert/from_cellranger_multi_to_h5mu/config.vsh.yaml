@@ -60,10 +60,9 @@ platforms:
         packages: 
           - procps
       - type: python
+        __merge__: [/src/base/requirements/anndata_mudata.yaml, .]
         packages:
           - scanpy~=1.9.2
-          - mudata~=0.2.3
-          - anndata~=0.9.1
           - scirpy~=0.11.1
           - pandas~=2.0.0
     test_setup:

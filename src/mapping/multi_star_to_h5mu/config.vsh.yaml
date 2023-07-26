@@ -42,9 +42,7 @@ platforms:
         packages:
           - procps
       - type: python
-        packages:
-          - anndata~=0.9.1
-          - mudata~=0.2.3
+        __merge__: /src/base/requirements/anndata_mudata.yaml
   - type: nextflow
     directives:
       label: [ midmem, midcpu ]
