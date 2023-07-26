@@ -1,7 +1,7 @@
 {
     "$schema": "http://json-schema.org/draft-07/schema",
     "title": "join_uns_to_obs",
-    "description": "Join a data frame in .uns containing metadata to the .obs of a mudata file.",
+    "description": "Join a data frame of length 1 (1 row index value) in .uns containing metadata to the .obs of a mudata file.",
     "type": "object",
     "definitions": {
       "arguments" : {

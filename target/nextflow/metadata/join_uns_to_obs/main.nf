@@ -109,7 +109,15 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
         "parent" : "file:/home/runner/work/openpipeline/openpipeline/src/metadata/join_uns_to_obs/"
       }
     ],
-    "description" : "Join a data frame in .uns containing metadata to the .obs of a mudata file.",
+    "description" : "Join a data frame of length 1 (1 row index value) in .uns containing metadata to the .obs of a mudata file.",
+    "test_resources" : [
+      {
+        "type" : "python_script",
+        "path" : "test_join_uns_to_obs.py",
+        "is_executable" : true,
+        "parent" : "file:/home/runner/work/openpipeline/openpipeline/src/metadata/join_uns_to_obs/"
+      }
+    ],
     "status" : "enabled",
     "requirements" : {
       "commands" : [
@@ -144,6 +152,16 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
           "packages" : [
             "mudata~=0.2.3",
             "anndata~=0.9.1"
+          ],
+          "upgrade" : true
+        }
+      ],
+      "test_setup" : [
+        {
+          "type" : "python",
+          "user" : false,
+          "packages" : [
+            "viashpy"
           ],
           "upgrade" : true
         }
@@ -205,7 +223,7 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
     "platform" : "nextflow",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/metadata/join_uns_to_obs",
     "viash_version" : "0.7.4",
-    "git_commit" : "9ea488daa642c9e542b79a7cd9a721bf3916b696",
+    "git_commit" : "4e985f8f03df326744ad367e0bdb8379fbd0d61e",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))
@@ -272,7 +290,7 @@ uns_df_rep.index = mod_data.obs_names
 mod_data.obs = pd.concat([obs_drop, uns_df_rep], axis=1)
 
 logger.info("Write output to mudata file")
-mdata.write_h5mu(par['output'], compression=par["ouput_compression"])
+mdata.write_h5mu(par['output'], compression=par["output_compression"])
 
         
 VIASHMAIN
