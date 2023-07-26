@@ -47,5 +47,5 @@ platforms:
         packages: 
           - procps
       - type: python
-        __merge__: [/src/base/requirements/anndata_mudata.yaml]
+        __merge__: /src/base/requirements/anndata_mudata.yaml
   - type: nextflow
