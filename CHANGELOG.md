@@ -8,6 +8,10 @@
 
 * The `scvi` pipeline was renamed to `leiden_scvi` because `leiden` clustering was added to the pipeline (PR #499).
 
+## MAJOR CHANGES
+
+* Several components: update anndata to 0.9.3 and mudata to 0.2.3 (PR #423).
+
 ## MINOR CHANGES
 
 * `full_pipeline`: default value for `--var_qc_metrics` is now the combined values specified for `--mitochondrial_gene_regex` and `--filter_with_hvg_var_output`.

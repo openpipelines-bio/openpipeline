@@ -178,9 +178,9 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
           "type" : "python",
           "user" : false,
           "packages" : [
+            "mudata~=0.2.3",
+            "anndata~=0.9.1",
             "scanpy~=1.9.2",
-            "mudata~=0.2.0",
-            "anndata~=0.8.0",
             "scirpy~=0.11.1",
             "pandas~=2.0.0"
           ],
@@ -254,7 +254,7 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
     "platform" : "nextflow",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/convert/from_cellranger_multi_to_h5mu",
     "viash_version" : "0.7.4",
-    "git_commit" : "77bb4b8f362bc3e92718ac4b9e01268f6693764c",
+    "git_commit" : "9ea488daa642c9e542b79a7cd9a721bf3916b696",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))

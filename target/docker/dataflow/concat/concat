@@ -433,13 +433,13 @@ RUN apt-get update && \
   rm -rf /var/lib/apt/lists/*
 
 RUN pip install --upgrade pip && \
-  pip install --upgrade --no-cache-dir "mudata~=0.2.0" "anndata~=0.8.0" "pandas~=2.0.0"
+  pip install --upgrade --no-cache-dir "mudata~=0.2.3" "anndata~=0.9.1" "pandas~=2.0.0"
 
 LABEL org.opencontainers.image.authors="Dries Schaumont"
 LABEL org.opencontainers.image.description="Companion container for running component dataflow concat"
-LABEL org.opencontainers.image.created="2023-07-25T14:15:35Z"
+LABEL org.opencontainers.image.created="2023-07-26T09:16:10Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="77bb4b8f362bc3e92718ac4b9e01268f6693764c"
+LABEL org.opencontainers.image.revision="9ea488daa642c9e542b79a7cd9a721bf3916b696"
 LABEL org.opencontainers.image.version="main_build"
 
 VIASHDOCKER

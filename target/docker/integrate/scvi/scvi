@@ -607,16 +607,16 @@ RUN apt-get update && \
 RUN pip install "jax[cuda]" -f https://storage.googleapis.com/jax-releases/jax_cuda_releases.html
 
 RUN pip install --upgrade pip && \
-  pip install --upgrade --no-cache-dir "mudata~=0.2.0" "anndata~=0.8.0" "scanpy~=1.9.2"
+  pip install --upgrade --no-cache-dir "mudata~=0.2.3" "anndata~=0.9.1" "scanpy~=1.9.2"
 
 RUN pip install --upgrade pip && \
   pip install --no-cache-dir "numba~=0.57.1" "scvi-tools~=1.0.0"
 
 LABEL org.opencontainers.image.authors="Malte D. Luecken, Dries Schaumont, Matthias Beyens"
 LABEL org.opencontainers.image.description="Companion container for running component integrate scvi"
-LABEL org.opencontainers.image.created="2023-07-25T14:15:31Z"
+LABEL org.opencontainers.image.created="2023-07-26T09:16:07Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="77bb4b8f362bc3e92718ac4b9e01268f6693764c"
+LABEL org.opencontainers.image.revision="9ea488daa642c9e542b79a7cd9a721bf3916b696"
 LABEL org.opencontainers.image.version="main_build"
 
 VIASHDOCKER

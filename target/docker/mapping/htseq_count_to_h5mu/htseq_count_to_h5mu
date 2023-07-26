@@ -417,13 +417,13 @@ RUN apt-get update && \
   rm -rf /var/lib/apt/lists/*
 
 RUN pip install --upgrade pip && \
-  pip install --upgrade --no-cache-dir "anndata~=0.8.0" "mudata~=0.2.0" "gtfparse" "polars[pyarrow] < 0.16.14"
+  pip install --upgrade --no-cache-dir "mudata~=0.2.3" "anndata~=0.9.1" "gtfparse" "polars[pyarrow] < 0.16.14"
 
 LABEL org.opencontainers.image.authors="Robrecht Cannoodt, Angela Oliveira Pisco"
 LABEL org.opencontainers.image.description="Companion container for running component mapping htseq_count_to_h5mu"
-LABEL org.opencontainers.image.created="2023-07-25T14:15:30Z"
+LABEL org.opencontainers.image.created="2023-07-26T09:16:06Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="77bb4b8f362bc3e92718ac4b9e01268f6693764c"
+LABEL org.opencontainers.image.revision="9ea488daa642c9e542b79a7cd9a721bf3916b696"
 LABEL org.opencontainers.image.version="main_build"
 
 VIASHDOCKER
