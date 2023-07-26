@@ -18,7 +18,6 @@ trap clean_up EXIT
 
 
 echo ">>> Running multiqc, outputting to $tmpdir"
-# $meta_executable --input "${fastq_files[@]}" --output "$tmpdir"
 $meta_executable --input "$meta_resources_dir/fastqc" --output "$tmpdir"
 
 echo ">>> Checking exitcode"
