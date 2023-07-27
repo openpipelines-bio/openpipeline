@@ -6,7 +6,7 @@ import mudata as mu
 import anndata as ad
 from scipy.sparse import csr_matrix
 import obonet
-import networx
+import networkx
 
 # set up logger
 logger = logging.getLogger()
