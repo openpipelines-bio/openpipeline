@@ -6,6 +6,7 @@ import mudata as mu
 import anndata as ad
 from scipy.sparse import csr_matrix
 import obonet
+import networx
 
 # set up logger
 logger = logging.getLogger()
@@ -67,24 +68,24 @@ def read_cell_ontology(obo_file):
     )
 
 
-def get_cell_type_terms(cell_types, obo_file):
-    if not cell_types:
-        return
-    logger.info("Reading Cell Ontology OBO")
-
-    graph = read_cell_ontology(obo_file)
-
-    id_to_name = {id_: data.get('name') for id_, data in graph.nodes(data=True)}
-    name_to_id = {data['name']: id_ for id_, data in graph.nodes(data=True) if 'name' in data}
+def get_child_terms_from_ontology(cell_types, ontology, relations_to_consider = None):
     
+    if relations_to_consider:
+        def filter_edge(n1, n2, e):
+            return e in relations_to_consider
+        
+        ontology = networkx.subgraph_view(ontology, filter_edge = filter_edge)
+    
+    id_to_name = {id_: data.get('name') for id_, data in ontology.nodes(data=True)}
+    name_to_id = {data['name']: id_ for id_, data in ontology.nodes(data=True) if 'name' in data}
+
     def flatten_extend(matrix):
         flat_list = []
         for row in matrix:
             flat_list.extend(row)
         return flat_list
-
-    return set(flatten_extend([sorted(subterm for subterm in networkx.ancestors(graph, name_to_id[ct])) for ct in cell_types ]))
-
+    
+    return set([cell_types[0]] + flatten_extend([sorted(subterm for subterm in networkx.ancestors(ontology, name_to_id[ct])) for ct in cell_types ]))
 
 # TODO: function to explore cell types available in query data
 # def view_available_cell_types(lower_hierarchy_cell_of_interest_map, cell_of_interest_terms):
@@ -102,7 +103,7 @@ def get_cell_type_terms(cell_types, obo_file):
 def build_census_query(par, obo_file):
     _query = f'is_primary_data == {par["is_primary_data"]}'
     query_builder = {
-        'cell_type': f' and cell_type_ontology_term_id in {get_cell_type_terms(par["cell_type"], obo_file)}',
+        'cell_type': f' and cell_type_ontology_term_id in {get_child_terms_from_ontology(cell_types = par["cell_type"], ontology = obo_file, relations_to_consider = ["is_a"])}',
         'tissue': f' and tissue in {par["tissue"]}',
         'technology': f' and assay in {par["technology"]}',
         'suspension': f' and suspension_type in {par["suspension"]}',
