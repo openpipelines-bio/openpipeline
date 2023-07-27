@@ -17,7 +17,6 @@ functionality:
     - name: "--pattern"
       type: string
       description: An optional regular expression. Only file names which match the regular expression will be matched.
-      direction: input
       required: true
       example: "*.fastq.gz"
     - name: "--n_dirname_drop"
@@ -49,6 +48,10 @@ functionality:
   resources:
     - type: r_script
       path: script.R
+  test_resources:
+    - type: bash_script
+      path: test_make_params.sh
+    - path: ../../../src
 platforms:
   - type: docker
     image: ghcr.io/data-intuitive/randpy:r4.0

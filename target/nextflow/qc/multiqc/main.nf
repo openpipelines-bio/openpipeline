@@ -72,6 +72,19 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
       }
     ],
     "description" : "Component for multiqc (https://multiqc.info/)\n",
+    "test_resources" : [
+      {
+        "type" : "bash_script",
+        "path" : "test.sh",
+        "is_executable" : true,
+        "parent" : "file:/home/runner/work/openpipeline/openpipeline/src/qc/multiqc/"
+      },
+      {
+        "type" : "file",
+        "path" : "../../../resources_test/10x_5k_anticmv/fastqc/",
+        "parent" : "file:/home/runner/work/openpipeline/openpipeline/src/qc/multiqc/"
+      }
+    ],
     "status" : "enabled",
     "requirements" : {
       "commands" : [
@@ -166,7 +179,7 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
     "platform" : "nextflow",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/qc/multiqc",
     "viash_version" : "0.7.4",
-    "git_commit" : "4e985f8f03df326744ad367e0bdb8379fbd0d61e",
+    "git_commit" : "02f515117c62818a6638e39bc5cb761ddd5bea39",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))
@@ -196,7 +209,7 @@ $( if [ ! -z ${VIASH_META_MEMORY_PB+x} ]; then echo "${VIASH_META_MEMORY_PB}" | 
 
 set -eo pipefail
 
-multiqc -o "\\$par_output" \\$par_input
+multiqc -o "\\$par_output" "\\$par_input"
 VIASHMAIN
 bash "$tempscript"
 '''

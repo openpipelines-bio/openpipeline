@@ -106,3 +106,12 @@ nextflow \
   -params-file /tmp/params.yaml \
   -c workflows/utils/labels.config \
   -c workflows/utils/errorstrat_ignore.config
+
+# create fastqc directory
+fastqc_dir="$OUT/fastqc"
+mkdir -p "$fastqc_dir"
+
+./target/docker/qc/fastqc/fastqc \
+  --input "$raw_dir" \
+  --mode "dir" \
+  --output "$fastqc_dir"
