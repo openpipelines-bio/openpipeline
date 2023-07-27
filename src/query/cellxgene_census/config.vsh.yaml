@@ -4,6 +4,7 @@ functionality:
   description: "Query CellxGene Census or user-specified TileDBSoma object, and eventually fetch cell and gene metadata or/and expression counts."
   authors:
     - __merge__: ../../authors/matthias_beyens.yaml
+    - __merge__: ../../authors/dries_de_maeyer.yaml
       roles: [ author ]
   argument_groups:
     - name: Inputs
@@ -37,49 +38,13 @@ functionality:
           default: "homo_sapiens"
           choices: ["homo_sapiens", "mus_musculus"]
           multiple: false
-        - name: "--cell_type"
+        - name: "--cell_query"
           type: string
-          description: "Cell type(s) of interest. Cell type should be one of the Cell Ontology terms. If not specified, all cell types will be queried."
+          description: "The query for selecting the cells as defined by the cellxgene census schema."
           required: false
-          example: ["mesothelial fibroblast"]
+          example: "is_primary_data == True and cell_type_ontology_term_id in ['CL:0000136', 'CL:1000311', 'CL:0002616', 'CL:0002617', 'CL:0002615', 'CL:0001070', 'CL:1000310', 'CL:0000449', 'CL:1000309', 'CL:0002521', 'CL:0000448'] and assay_ontology_term_id in ['EFO:0009922', 'EFO:0009899', 'EFO:0011025', 'EFO:0030004', 'EFO:0030003'] and development_stage_ontology_term_id in ['HsapDv:0000084', 'HsapDv:0000098', 'HsapDv:0000097', 'HsapDv:0000099', 'HsapDv:0000096'] and suspension_type == 'cell'"
           multiple: true
-        - name: "--tissue"
-          type: string
-          description: "Tissue(s) of interest. If not specified, all tissues will be queried."
-          required: false
-          example: ["lung"]
-          multiple: true
-        - name: "--technology"
-          type: string
-          description: "Technology(ies) of interest. If not specified, all technologies will be queried."
-          required: false
-          example: ["10x 3' v3"]
-          # TODO: add all possible technologies
-          choices: ["10x 3' v1", "10x 3' v2", "10x 3' v3", "10x 5' v1", "10x 5' v2"]
-          multiple: true
-        - name: "--suspension"
-          type: string
-          description: "Suspension(s) of interest. If not specified, all suspensions will be queried."
-          required: false
-          example: ["cell"]
-          # TODO: add all possible suspensions
-          choices: ["cell", "nucleus"]
-          multiple: true
-        - name: "--is_primary_data"
-          type: boolean
-          default: True
-          description: "Allow only primary data in the query in order to prevent of data duplication."
-          required: false
-        - name: "--obs_column_names"
-          type: string
-          description: "obs columns of interest. If not specified, all columns will be returned."
-          required: false
-          multiple: true   
-        - name: "--metadata_only"
-          type: boolean
-          default: True
-          description: By default only returns metadata of obs layer of query. If False, returns metadata of obs layer and gene expression matrix of query
-          required: false
+      
     - name: Outputs
       description: Output arguments.
       arguments:
@@ -97,7 +62,6 @@ functionality:
   resources:
     - type: python_script
       path: script.py
-    - path: ./cl-base.obo
   test_resources:
     - type: python_script
       path: test.py
