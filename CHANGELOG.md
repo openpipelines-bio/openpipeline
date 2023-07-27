@@ -771,6 +771,7 @@ on each modality instead of on the whole `MuData` object.
 
 * `bd_rhapsody_wta`: Remove temporary directory after execution.
 
+* `files/make_params`: Implement unit tests (PR #505).
 
 # openpipeline 0.1.0
 
