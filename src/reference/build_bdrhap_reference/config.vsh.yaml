@@ -38,6 +38,20 @@ platforms:
     setup:
       - type: apt
         packages: [ pigz ]
+    test_setup:
+      - type: docker
+        env:
+          - GOPATH /root/go
+          - GOBIN /root/go/bin
+          - PATH "${PATH}:/root/go/bin"
+      - type: apt
+        packages: [ golang ]
+      - type: docker
+        run: |
+          go get golang.org/dl/go1.20.6 && go1.20.6 download && \
+          git clone --branch v2.5.0 https://github.com/shenwei356/seqkit.git && \
+          cd seqkit/seqkit/ && go1.20.6 build && cp seqkit /usr/bin/ && cd ../../ && rm -rf seqkit
+
   - type: nextflow
     directives:
       label: [ highmem, highcpu ]

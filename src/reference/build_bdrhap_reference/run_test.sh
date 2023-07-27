@@ -13,9 +13,20 @@ function clean_up {
 }
 trap clean_up EXIT
 
+function seqkit_head {
+  input="$1"
+  output="$2"
+  if [[ ! -f "$output" ]]; then
+    echo "> Processing `basename $input`"
+    seqkit head -n 1000 "$input" | gzip > "$output"
+  fi
+}
+
+seqkit_head "$meta_resources_dir/reference_gencodev41_chr1/reference.fa.gz" "$tmpdir/reference_small.fa.gz"
+
 echo "> Running $meta_functionality_name, writing to $tmpdir."
 $meta_executable \
-  --genome_fasta "$meta_resources_dir/reference_gencodev41_chr1/reference.fa.gz" \
+  --genome_fasta "$tmpdir/reference_small.fa.gz" \
   --transcriptome_gtf "$meta_resources_dir/reference_gencodev41_chr1/reference.gtf.gz" \
   --output "$tmpdir/myreference.tar.gz" \
   ---cpus 2
