@@ -17,7 +17,8 @@ echo "> Running $meta_functionality_name, writing to $tmpdir."
 $meta_executable \
   --genome_fasta "$meta_resources_dir/reference_gencodev41_chr1/reference.fa.gz" \
   --transcriptome_gtf "$meta_resources_dir/reference_gencodev41_chr1/reference.gtf.gz" \
-  --output "$tmpdir/myreference.tar.gz"
+  --output "$tmpdir/myreference.tar.gz" \
+  ---cpus 2
 
 exit_code=$?
 [[ $exit_code != 0 ]] && echo "Non zero exit code: $exit_code" && exit 1
