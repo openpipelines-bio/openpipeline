@@ -65,7 +65,7 @@ def main():
     query_data = cellxgene_census.get_anndata(
         census = census_connection,
         obs_value_filter = par["cell_query"],
-        organism = par["organism"]
+        organism = par["species"]
     )
     census_connection.close()
     del census_connection
