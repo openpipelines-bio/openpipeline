@@ -85,7 +85,7 @@ def get_child_terms_from_ontology(cell_types, ontology, relations_to_consider = 
             flat_list.extend(row)
         return flat_list
     
-    return set([cell_types[0]] + flatten_extend([sorted(subterm for subterm in networkx.ancestors(ontology, name_to_id[ct])) for ct in cell_types ]))
+    return list(set([cell_types[0]] + flatten_extend([sorted(subterm for subterm in networkx.ancestors(ontology, name_to_id[ct])) for ct in cell_types ])))
 
 # TODO: function to explore cell types available in query data
 # def view_available_cell_types(lower_hierarchy_cell_of_interest_map, cell_of_interest_terms):
