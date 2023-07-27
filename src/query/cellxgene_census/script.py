@@ -174,6 +174,9 @@ def main():
     mdata = mu.MuData(
         {par["modality"]: query_data}
         )
+    
+    mdata["rna"].var_names = mdata["rna"].var["feature_id"]
+    mdata["rna"].var["gene_symbol"] = mdata["rna"].var["feature_name"]
 
     write_mudata(mdata, par["output"], par["output_compression"])
 
