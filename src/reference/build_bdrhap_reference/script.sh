@@ -37,7 +37,7 @@ STAR \
   --genomeFastaFiles "$tmpdir/genome.fa" \
   --sjdbGTFfile "$tmpdir/transcriptome.gtf" \
   --sjdbOverhang 100 \
-  --genomeSAindexNbases 11 \
+  --genomeSAindexNbases 4 \
   "${extra_params[@]}"
 
 echo "> Creating archive"
