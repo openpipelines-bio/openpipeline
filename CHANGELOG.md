@@ -26,6 +26,8 @@
 
 * `qc/multiqc`: add unittests (PR #502).
 
+* `reference/build_cellranger_reference`: add unit tests (PR #506).
+
 ## NEW FUNCTIONALITY
 
 * `integrate/scvi`: Add `--n_hidden_nodes`, `--n_dimensions_latent_space`, `--n_hidden_layers`, `--dropout_rate`, `--dispersion`, `--gene_likelihood`, `--use_layer_normalization`, `--use_batch_normalization`, `--encode_covariates`, `--deeply_inject_covariates` and `--use_observed_lib_size` parameters.
