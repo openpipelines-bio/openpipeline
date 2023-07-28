@@ -26,6 +26,8 @@
 
 * `qc/multiqc`: add unittests (PR #502).
 
+* `reference/build_cellranger_reference`: add unit tests (PR #506).
+
 * `reference/build_bd_rhapsody_reference`: add unittests (PR #504).
 
 ## NEW FUNCTIONALITY
