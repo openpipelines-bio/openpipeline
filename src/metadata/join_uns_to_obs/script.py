@@ -12,7 +12,7 @@ logger.addHandler(console_handler)
 
 ### VIASH START
 par = {
-    "input": "work/f5/5f6365898ca5a42a360301a0c9e200/TSP15_Eye_ScleraEtc_10X_2_1.add_id.output.h5mu",
+    "input": "resources_test/pbmc_1k_protein_v3/pbmc_1k_protein_v3_filtered_feature_bc_matrix.h5mu",
     "uns_key": "metrics_cellranger",
     "output": "foo.h5mu",
     "modality": "rna"
@@ -40,7 +40,7 @@ uns_df_rep.index = mod_data.obs_names
 mod_data.obs = pd.concat([obs_drop, uns_df_rep], axis=1)
 
 logger.info("Write output to mudata file")
-mdata.write_h5mu(par['output'], compression=par["ouput_compression"])
+mdata.write_h5mu(par['output'], compression=par["output_compression"])
 
         
 

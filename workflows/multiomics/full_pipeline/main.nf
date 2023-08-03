@@ -177,7 +177,7 @@ workflow split_modalities_workflow {
       // combine output types csv
       | pFlatMap {id, data, passthrough ->
         def outputDir = data.output
-        def types = readCsv(data.output_types.toString())
+        def types = readCsv(data.output_types.toUriString())
         
         types.collect{ dat ->
           // def new_id = id + "_" + dat.name

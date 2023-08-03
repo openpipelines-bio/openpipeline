@@ -1,5 +1,7 @@
 name: main build
-concurrency: main_build
+concurrency: 
+  group: main_build
+  cancel-in-progress: true
 
 on:
   push:
