@@ -272,7 +272,7 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
     "platform" : "nextflow",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/filter/do_filter",
     "viash_version" : "0.7.4",
-    "git_commit" : "4e435d46ed40b7973bbad81554c64961cb033e0e",
+    "git_commit" : "eccdc24477aec7ed3bfcba743075f64610d1eb01",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))

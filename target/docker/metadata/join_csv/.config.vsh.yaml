@@ -213,5 +213,5 @@ info:
   output: "/home/runner/work/openpipeline/openpipeline/target/docker/metadata/join_csv"
   executable: "/home/runner/work/openpipeline/openpipeline/target/docker/metadata/join_csv/join_csv"
   viash_version: "0.7.4"
-  git_commit: "4e435d46ed40b7973bbad81554c64961cb033e0e"
+  git_commit: "eccdc24477aec7ed3bfcba743075f64610d1eb01"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"
