@@ -229,8 +229,8 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
           "type" : "python",
           "user" : false,
           "packages" : [
-            "anndata~=0.8.0",
-            "mudata~=0.2.0",
+            "mudata~=0.2.3",
+            "anndata~=0.9.1",
             "gtfparse",
             "polars[pyarrow] < 0.16.14"
           ],
@@ -298,7 +298,7 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
     "platform" : "nextflow",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/mapping/htseq_count_to_h5mu",
     "viash_version" : "0.7.4",
-    "git_commit" : "9a4771d9729f2a984200765bf01142a44ce1543d",
+    "git_commit" : "be12d8ac4cdf211dab2df866b3ec279bf096d05a",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))

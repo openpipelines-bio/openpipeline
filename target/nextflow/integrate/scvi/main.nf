@@ -167,6 +167,46 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
             "multiple" : false,
             "multiple_sep" : ":",
             "dest" : "par"
+          },
+          {
+            "type" : "string",
+            "name" : "--obs_labels",
+            "description" : "Key in adata.obs for label information. Categories will automatically be \nconverted into integer categories and saved to adata.obs['_scvi_labels'].\nIf None, assigns the same label to all the data.\n",
+            "required" : false,
+            "direction" : "input",
+            "multiple" : false,
+            "multiple_sep" : ":",
+            "dest" : "par"
+          },
+          {
+            "type" : "string",
+            "name" : "--obs_size_factor",
+            "description" : "Key in adata.obs for size factor information. Instead of using library size as a size factor,\nthe provided size factor column will be used as offset in the mean of the likelihood.\nAssumed to be on linear scale.\n",
+            "required" : false,
+            "direction" : "input",
+            "multiple" : false,
+            "multiple_sep" : ":",
+            "dest" : "par"
+          },
+          {
+            "type" : "string",
+            "name" : "--obs_categorical_covariate",
+            "description" : "Keys in adata.obs that correspond to categorical data. These covariates can be added in\naddition to the batch covariate and are also treated as nuisance factors\n(i.e., the model tries to minimize their effects on the latent space).\nThus, these should not be used for biologically-relevant factors that you do _not_ want to correct for.\n",
+            "required" : false,
+            "direction" : "input",
+            "multiple" : true,
+            "multiple_sep" : ":",
+            "dest" : "par"
+          },
+          {
+            "type" : "string",
+            "name" : "--obs_continuous_covariate",
+            "description" : "Keys in adata.obs that correspond to continuous data. These covariates can be added in\naddition to the batch covariate and are also treated as nuisance factors\n(i.e., the model tries to minimize their effects on the latent space). Thus, these should not be\nused for biologically-relevant factors that you do _not_ want to correct for.\n",
+            "required" : false,
+            "direction" : "input",
+            "multiple" : true,
+            "multiple_sep" : ":",
+            "dest" : "par"
           }
         ]
       },
@@ -228,6 +268,164 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
             "direction" : "input",
             "multiple" : false,
             "multiple_sep" : ":",
+            "dest" : "par"
+          }
+        ]
+      },
+      {
+        "name" : "SCVI options",
+        "arguments" : [
+          {
+            "type" : "integer",
+            "name" : "--n_hidden_nodes",
+            "description" : "Number of nodes per hidden layer.",
+            "default" : [
+              128
+            ],
+            "required" : false,
+            "direction" : "input",
+            "multiple" : false,
+            "multiple_sep" : ":",
+            "dest" : "par"
+          },
+          {
+            "type" : "integer",
+            "name" : "--n_dimensions_latent_space",
+            "description" : "Dimensionality of the latent space.",
+            "default" : [
+              30
+            ],
+            "required" : false,
+            "direction" : "input",
+            "multiple" : false,
+            "multiple_sep" : ":",
+            "dest" : "par"
+          },
+          {
+            "type" : "integer",
+            "name" : "--n_hidden_layers",
+            "description" : "Number of hidden layers used for encoder and decoder neural-networks.",
+            "default" : [
+              2
+            ],
+            "required" : false,
+            "direction" : "input",
+            "multiple" : false,
+            "multiple_sep" : ":",
+            "dest" : "par"
+          },
+          {
+            "type" : "double",
+            "name" : "--dropout_rate",
+            "description" : "Dropout rate for the neural networks.",
+            "default" : [
+              0.1
+            ],
+            "required" : false,
+            "direction" : "input",
+            "multiple" : false,
+            "multiple_sep" : ":",
+            "dest" : "par"
+          },
+          {
+            "type" : "string",
+            "name" : "--dispersion",
+            "description" : "Set the behavior for the dispersion for negative binomial distributions:\n- gene: dispersion parameter of negative binomial is constant per gene across cells\n- gene-batch: dispersion can differ between different batches\n- gene-label: dispersion can differ between different labels\n- gene-cell:  dispersion can differ for every gene in every cell\n",
+            "default" : [
+              "gene"
+            ],
+            "required" : false,
+            "choices" : [
+              "gene",
+              "gene-batch",
+              "gene-label",
+              "gene-cell"
+            ],
+            "direction" : "input",
+            "multiple" : false,
+            "multiple_sep" : ":",
+            "dest" : "par"
+          },
+          {
+            "type" : "string",
+            "name" : "--gene_likelihood",
+            "description" : "Model used to generate the expression data from a count-based likelihood distribution.\n- nb: Negative binomial distribution\n- zinb: Zero-inflated negative binomial distribution\n- poisson: Poisson distribution\n",
+            "default" : [
+              "nb"
+            ],
+            "required" : false,
+            "choices" : [
+              "nb",
+              "zinb",
+              "poisson"
+            ],
+            "direction" : "input",
+            "multiple" : false,
+            "multiple_sep" : ":",
+            "dest" : "par"
+          }
+        ]
+      },
+      {
+        "name" : "Variational auto-encoder model options",
+        "arguments" : [
+          {
+            "type" : "string",
+            "name" : "--use_layer_normalization",
+            "description" : "Neural networks for which to enable layer normalization. \n",
+            "default" : [
+              "both"
+            ],
+            "required" : false,
+            "choices" : [
+              "encoder",
+              "decoder",
+              "none",
+              "both"
+            ],
+            "direction" : "input",
+            "multiple" : false,
+            "multiple_sep" : ":",
+            "dest" : "par"
+          },
+          {
+            "type" : "string",
+            "name" : "--use_batch_normalization",
+            "description" : "Neural networks for which to enable batch normalization. \n",
+            "default" : [
+              "none"
+            ],
+            "required" : false,
+            "choices" : [
+              "encoder",
+              "decoder",
+              "none",
+              "both"
+            ],
+            "direction" : "input",
+            "multiple" : false,
+            "multiple_sep" : ":",
+            "dest" : "par"
+          },
+          {
+            "type" : "boolean_false",
+            "name" : "--encode_covariates",
+            "description" : "Whether to concatenate covariates to expression in encoder",
+            "direction" : "input",
+            "dest" : "par"
+          },
+          {
+            "type" : "boolean_true",
+            "name" : "--deeply_inject_covariates",
+            "description" : "Whether to concatenate covariates into output of hidden layers in encoder/decoder. \nThis option only applies when n_layers > 1. The covariates are concatenated to\nthe input of subsequent hidden layers.\n",
+            "direction" : "input",
+            "dest" : "par"
+          },
+          {
+            "type" : "boolean_true",
+            "name" : "--use_observed_lib_size",
+            "description" : "Use observed library size for RNA as scaling factor in mean of conditional distribution.\n",
+            "direction" : "input",
             "dest" : "par"
           }
         ]
@@ -452,8 +650,8 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
           "type" : "python",
           "user" : false,
           "packages" : [
-            "mudata~=0.2.0",
-            "anndata~=0.8.0",
+            "mudata~=0.2.3",
+            "anndata~=0.9.1",
             "scanpy~=1.9.2"
           ],
           "upgrade" : true
@@ -528,7 +726,7 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
     "platform" : "nextflow",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/integrate/scvi",
     "viash_version" : "0.7.4",
-    "git_commit" : "9a4771d9729f2a984200765bf01142a44ce1543d",
+    "git_commit" : "be12d8ac4cdf211dab2df866b3ec279bf096d05a",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))
@@ -548,10 +746,25 @@ par = {
   'input_layer': $( if [ ! -z ${VIASH_PAR_INPUT_LAYER+x} ]; then echo "r'${VIASH_PAR_INPUT_LAYER//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'obs_batch': $( if [ ! -z ${VIASH_PAR_OBS_BATCH+x} ]; then echo "r'${VIASH_PAR_OBS_BATCH//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'var_input': $( if [ ! -z ${VIASH_PAR_VAR_INPUT+x} ]; then echo "r'${VIASH_PAR_VAR_INPUT//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
+  'obs_labels': $( if [ ! -z ${VIASH_PAR_OBS_LABELS+x} ]; then echo "r'${VIASH_PAR_OBS_LABELS//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
+  'obs_size_factor': $( if [ ! -z ${VIASH_PAR_OBS_SIZE_FACTOR+x} ]; then echo "r'${VIASH_PAR_OBS_SIZE_FACTOR//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
+  'obs_categorical_covariate': $( if [ ! -z ${VIASH_PAR_OBS_CATEGORICAL_COVARIATE+x} ]; then echo "r'${VIASH_PAR_OBS_CATEGORICAL_COVARIATE//\\'/\\'\\"\\'\\"r\\'}'.split(':')"; else echo None; fi ),
+  'obs_continuous_covariate': $( if [ ! -z ${VIASH_PAR_OBS_CONTINUOUS_COVARIATE+x} ]; then echo "r'${VIASH_PAR_OBS_CONTINUOUS_COVARIATE//\\'/\\'\\"\\'\\"r\\'}'.split(':')"; else echo None; fi ),
   'output': $( if [ ! -z ${VIASH_PAR_OUTPUT+x} ]; then echo "r'${VIASH_PAR_OUTPUT//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'model_output': $( if [ ! -z ${VIASH_PAR_MODEL_OUTPUT+x} ]; then echo "r'${VIASH_PAR_MODEL_OUTPUT//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'output_compression': $( if [ ! -z ${VIASH_PAR_OUTPUT_COMPRESSION+x} ]; then echo "r'${VIASH_PAR_OUTPUT_COMPRESSION//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'obsm_output': $( if [ ! -z ${VIASH_PAR_OBSM_OUTPUT+x} ]; then echo "r'${VIASH_PAR_OBSM_OUTPUT//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
+  'n_hidden_nodes': $( if [ ! -z ${VIASH_PAR_N_HIDDEN_NODES+x} ]; then echo "int(r'${VIASH_PAR_N_HIDDEN_NODES//\\'/\\'\\"\\'\\"r\\'}')"; else echo None; fi ),
+  'n_dimensions_latent_space': $( if [ ! -z ${VIASH_PAR_N_DIMENSIONS_LATENT_SPACE+x} ]; then echo "int(r'${VIASH_PAR_N_DIMENSIONS_LATENT_SPACE//\\'/\\'\\"\\'\\"r\\'}')"; else echo None; fi ),
+  'n_hidden_layers': $( if [ ! -z ${VIASH_PAR_N_HIDDEN_LAYERS+x} ]; then echo "int(r'${VIASH_PAR_N_HIDDEN_LAYERS//\\'/\\'\\"\\'\\"r\\'}')"; else echo None; fi ),
+  'dropout_rate': $( if [ ! -z ${VIASH_PAR_DROPOUT_RATE+x} ]; then echo "float(r'${VIASH_PAR_DROPOUT_RATE//\\'/\\'\\"\\'\\"r\\'}')"; else echo None; fi ),
+  'dispersion': $( if [ ! -z ${VIASH_PAR_DISPERSION+x} ]; then echo "r'${VIASH_PAR_DISPERSION//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
+  'gene_likelihood': $( if [ ! -z ${VIASH_PAR_GENE_LIKELIHOOD+x} ]; then echo "r'${VIASH_PAR_GENE_LIKELIHOOD//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
+  'use_layer_normalization': $( if [ ! -z ${VIASH_PAR_USE_LAYER_NORMALIZATION+x} ]; then echo "r'${VIASH_PAR_USE_LAYER_NORMALIZATION//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
+  'use_batch_normalization': $( if [ ! -z ${VIASH_PAR_USE_BATCH_NORMALIZATION+x} ]; then echo "r'${VIASH_PAR_USE_BATCH_NORMALIZATION//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
+  'encode_covariates': $( if [ ! -z ${VIASH_PAR_ENCODE_COVARIATES+x} ]; then echo "r'${VIASH_PAR_ENCODE_COVARIATES//\\'/\\'\\"\\'\\"r\\'}'.lower() == 'true'"; else echo None; fi ),
+  'deeply_inject_covariates': $( if [ ! -z ${VIASH_PAR_DEEPLY_INJECT_COVARIATES+x} ]; then echo "r'${VIASH_PAR_DEEPLY_INJECT_COVARIATES//\\'/\\'\\"\\'\\"r\\'}'.lower() == 'true'"; else echo None; fi ),
+  'use_observed_lib_size': $( if [ ! -z ${VIASH_PAR_USE_OBSERVED_LIB_SIZE+x} ]; then echo "r'${VIASH_PAR_USE_OBSERVED_LIB_SIZE//\\'/\\'\\"\\'\\"r\\'}'.lower() == 'true'"; else echo None; fi ),
   'early_stopping': $( if [ ! -z ${VIASH_PAR_EARLY_STOPPING+x} ]; then echo "r'${VIASH_PAR_EARLY_STOPPING//\\'/\\'\\"\\'\\"r\\'}'.lower() == 'true'"; else echo None; fi ),
   'early_stopping_monitor': $( if [ ! -z ${VIASH_PAR_EARLY_STOPPING_MONITOR+x} ]; then echo "r'${VIASH_PAR_EARLY_STOPPING_MONITOR//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'early_stopping_patience': $( if [ ! -z ${VIASH_PAR_EARLY_STOPPING_PATIENCE+x} ]; then echo "int(r'${VIASH_PAR_EARLY_STOPPING_PATIENCE//\\'/\\'\\"\\'\\"r\\'}')"; else echo None; fi ),
@@ -621,23 +834,27 @@ def main():
     scvi.model.SCVI.setup_anndata(
         adata,
         batch_key=par['obs_batch'],
-        layer=par['input_layer']
+        layer=par['input_layer'],
+        labels_key=par['obs_labels'],
+        size_factor_key=par['obs_size_factor'],
+        categorical_covariate_keys=par['obs_categorical_covariate'],
+        continuous_covariate_keys=par['obs_continuous_covariate'],
     )
 
     # Set up the model
     vae_uns = scvi.model.SCVI(
         adata,
-        n_hidden=128, #this is the default
-        n_latent=30,
-        n_layers=2,
-        dropout_rate=0.1, #this is the default
-        dispersion='gene', #this is the default
-        gene_likelihood='nb',
-        use_layer_norm='both',
-        use_batch_norm="none",
-        encode_covariates=True, #Parameterization for better scArches performance -> maybe don't use this always?
-        deeply_inject_covariates=False, #Parameterization for better scArches performance -> maybe don't use this always?
-        use_observed_lib_size=False, #When size_factors are not passed
+        n_hidden=par["n_hidden_nodes"],
+        n_latent=par["n_dimensions_latent_space"],
+        n_layers=par["n_hidden_layers"],
+        dropout_rate=par["dropout_rate"],
+        dispersion=par["dispersion"],
+        gene_likelihood=par["gene_likelihood"],
+        use_layer_norm=par["use_layer_normalization"],
+        use_batch_norm=par["use_batch_normalization"],
+        encode_covariates=par["encode_covariates"], # Default (True) is for better scArches performance -> maybe don't use this always?
+        deeply_inject_covariates=par["deeply_inject_covariates"], # Default (False) for better scArches performance -> maybe don't use this always?
+        use_observed_lib_size=par["use_observed_lib_size"], # When size_factors are not passed
     )
 
     plan_kwargs = {

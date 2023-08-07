@@ -141,6 +141,19 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
       }
     ],
     "description" : "Compile a reference into a STAR index compatible with the BD Rhapsody pipeline.",
+    "test_resources" : [
+      {
+        "type" : "bash_script",
+        "path" : "run_test.sh",
+        "is_executable" : true,
+        "parent" : "file:/home/runner/work/openpipeline/openpipeline/src/reference/build_bdrhap_reference/"
+      },
+      {
+        "type" : "file",
+        "path" : "../../../resources_test/reference_gencodev41_chr1",
+        "parent" : "file:/home/runner/work/openpipeline/openpipeline/src/reference/build_bdrhap_reference/"
+      }
+    ],
     "status" : "enabled",
     "requirements" : {
       "commands" : [
@@ -168,6 +181,29 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
             "pigz"
           ],
           "interactive" : false
+        }
+      ],
+      "test_setup" : [
+        {
+          "type" : "docker",
+          "env" : [
+            "GOPATH /root/go",
+            "GOBIN /root/go/bin",
+            "PATH \\"${PATH}:/root/go/bin\\""
+          ]
+        },
+        {
+          "type" : "apt",
+          "packages" : [
+            "golang"
+          ],
+          "interactive" : false
+        },
+        {
+          "type" : "docker",
+          "run" : [
+            "go get golang.org/dl/go1.20.6 && go1.20.6 download && \\\\\ngit clone --branch v2.5.0 https://github.com/shenwei356/seqkit.git && \\\\\ncd seqkit/seqkit/ && go1.20.6 build && cp seqkit /usr/bin/ && cd ../../ && rm -rf seqkit\n"
+          ]
         }
       ]
     },
@@ -231,7 +267,7 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
     "platform" : "nextflow",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/reference/build_bdrhap_reference",
     "viash_version" : "0.7.4",
-    "git_commit" : "9a4771d9729f2a984200765bf01142a44ce1543d",
+    "git_commit" : "be12d8ac4cdf211dab2df866b3ec279bf096d05a",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))

@@ -85,10 +85,12 @@ functionality:
     \nCurrently does not allow parsing the output from cell barcode demultiplexing.\n"
   test_resources:
   - type: "python_script"
-    path: "test.py"
+    path: "test_cellranger_multi_to_h5mu.py"
     is_executable: true
   - type: "file"
     path: "../../../resources_test/10x_5k_anticmv"
+  - type: "file"
+    path: "../../../resources_test/10x_5k_lung_crispr"
   info: null
   status: "enabled"
   requirements:
@@ -98,7 +100,7 @@ functionality:
 platforms:
 - type: "docker"
   id: "docker"
-  image: "python:3.8-slim"
+  image: "python:3.10-slim"
   target_organization: "openpipelines-bio"
   target_registry: "ghcr.io"
   namespace_separator: "_"
@@ -114,11 +116,17 @@ platforms:
   - type: "python"
     user: false
     packages:
+    - "mudata~=0.2.3"
+    - "anndata~=0.9.1"
     - "scanpy~=1.9.2"
-    - "mudata~=0.2.0"
-    - "anndata~=0.8.0"
     - "scirpy~=0.11.1"
     - "pandas~=2.0.0"
+    upgrade: true
+  test_setup:
+  - type: "python"
+    user: false
+    packages:
+    - "viashpy~=0.3.2"
     upgrade: true
   entrypoint: []
   cmd: null
@@ -172,5 +180,5 @@ info:
   output: "/home/runner/work/openpipeline/openpipeline/target/docker/convert/from_cellranger_multi_to_h5mu"
   executable: "/home/runner/work/openpipeline/openpipeline/target/docker/convert/from_cellranger_multi_to_h5mu/from_cellranger_multi_to_h5mu"
   viash_version: "0.7.4"
-  git_commit: "9a4771d9729f2a984200765bf01142a44ce1543d"
+  git_commit: "be12d8ac4cdf211dab2df866b3ec279bf096d05a"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"

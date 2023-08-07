@@ -5,6 +5,7 @@ workflowDir = params.rootDir + "/workflows"
 targetDir = params.rootDir + "/target/nextflow"
 
 include { leiden } from targetDir + '/cluster/leiden/main.nf'
+include { move_obsm_to_obs } from targetDir + '/metadata/move_obsm_to_obs/main.nf'
 include { scvi } from targetDir + '/integrate/scvi/main.nf'
 include { umap } from targetDir + '/dimred/umap/main.nf'
 include { find_neighbors } from targetDir + '/neighbors/find_neighbors/main.nf'
@@ -12,7 +13,7 @@ include { find_neighbors } from targetDir + '/neighbors/find_neighbors/main.nf'
 include { readConfig; helpMessage; preprocessInputs; channelFromParams } from workflowDir + "/utils/WorkflowHelper.nf"
 include { setWorkflowArguments; getWorkflowArguments; passthroughMap as pmap } from workflowDir + "/utils/DataflowHelper.nf"
 
-config = readConfig("$workflowDir/multiomics/integration/scvi/config.vsh.yaml")
+config = readConfig("$workflowDir/multiomics/integration/leiden_scvi/config.vsh.yaml")
 
 workflow {
   helpMessage(config)
@@ -54,12 +55,21 @@ workflow run_wf {
         "obsm_input": "obsm_output", // use output from scvi as input for neighbors,
         "modality": "modality"
       ],
+      clustering: [
+        "obsp_connectivities": "obsp_neighbor_connectivities",
+        "obsm_name": "obs_cluster",
+        "resolution": "leiden_resolution",
+        "modality": "modality",
+      ],
       umap: [ 
         "uns_neighbors": "uns_neighbors",
-        "output": "output",
         "obsm_output": "obsm_umap",
         "modality": "modality",
-        "output": "output"
+      ],
+      move_obsm_to_obs_leiden: [
+        "obsm_key": "obs_cluster",
+        "modality": "modality",
+        "output": "output",
       ]
     )
     | getWorkflowArguments(key: "scvi")
@@ -72,10 +82,14 @@ workflow run_wf {
     }
     | getWorkflowArguments(key: "neighbors")
     | find_neighbors
+    | getWorkflowArguments(key: "clustering")
+    | leiden
     | getWorkflowArguments(key: "umap")
-    | umap.run(
-        args: [ output_compression: "gzip" ],     
-        auto: [ publish: true ]
+    | umap
+    | getWorkflowArguments(key: "move_obsm_to_obs_leiden")
+    | move_obsm_to_obs.run(
+      args: [ output_compression: "gzip" ],
+      auto: [ publish: true ],
     )
     | pmap {id, arguments, other_arguments ->
       return [id, arguments]

@@ -230,10 +230,10 @@ platforms:
   - type: "python"
     user: false
     packages:
+    - "mudata~=0.2.3"
+    - "anndata~=0.9.1"
     - "scanpy~=1.9.2"
     - "scrublet"
-    - "mudata~=0.2.0"
-    - "anndata~=0.8.0"
     - "annoy==1.16.3"
     upgrade: true
   test_setup:
@@ -296,5 +296,5 @@ info:
   output: "/home/runner/work/openpipeline/openpipeline/target/docker/filter/filter_with_scrublet"
   executable: "/home/runner/work/openpipeline/openpipeline/target/docker/filter/filter_with_scrublet/filter_with_scrublet"
   viash_version: "0.7.4"
-  git_commit: "9a4771d9729f2a984200765bf01142a44ce1543d"
+  git_commit: "be12d8ac4cdf211dab2df866b3ec279bf096d05a"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"

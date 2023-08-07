@@ -410,9 +410,9 @@ ENTRYPOINT []
 RUN :
 LABEL org.opencontainers.image.authors="Toni Verbeiren"
 LABEL org.opencontainers.image.description="Companion container for running component demux bcl2fastq"
-LABEL org.opencontainers.image.created="2023-07-13T14:46:50Z"
+LABEL org.opencontainers.image.created="2023-08-07T13:42:53Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="9a4771d9729f2a984200765bf01142a44ce1543d"
+LABEL org.opencontainers.image.revision="be12d8ac4cdf211dab2df866b3ec279bf096d05a"
 LABEL org.opencontainers.image.version="integration_build"
 
 VIASHDOCKER

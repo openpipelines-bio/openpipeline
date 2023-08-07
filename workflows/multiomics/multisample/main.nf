@@ -7,7 +7,7 @@ include { publish }  from targetDir + '/transfer/publish/main.nf'
 
 include { split_modalities_workflow as split_modalities_workflow } from workflowDir + '/multiomics/full_pipeline/main.nf'
 include { multisample_processing_workflow as multisample_processing_workflow } from workflowDir + '/multiomics/full_pipeline/main.nf'
-include { integration_workflow as integration_workflow } from workflowDir + '/multiomics/full_pipeline/main.nf'
+include { integration_setup_workflow as integration_setup_workflow } from workflowDir + '/multiomics/full_pipeline/main.nf'
 
 include { readConfig; helpMessage; readCsv; preprocessInputs; channelFromParams } from workflowDir + "/utils/WorkflowHelper.nf"
 include { setWorkflowArguments; getWorkflowArguments; passthroughMap as pmap; passthroughFlatMap as pFlatMap } from workflowDir + "/utils/DataflowHelper.nf"
@@ -39,8 +39,9 @@ workflow run_wf {
         "prot_multisample_args": [:],
           "integration_args_rna": [
             "var_pca_feature_selection": "filter_with_hvg_var_output", // run PCA on highly variable genes only
+            "pca_overwrite": "pca_overwrite"
           ],
-        "integration_args_prot": [:],
+        "integration_args_prot": ["pca_overwrite": "pca_overwrite"],
         "publish": ["output": "output"],
     )
     | getWorkflowArguments(key: "split_modalities_args")
@@ -55,7 +56,7 @@ workflow run_wf {
         [id, new_input] + other_arguments + modalities_list
       }
     | merge.run(args: [ output_compression: "gzip" ])
-    | integration_workflow
+    | integration_setup_workflow
     | getWorkflowArguments(key: "publish")
     | publish
     | map {list -> [list[0], list[1]]}
@@ -102,6 +103,41 @@ workflow test_wf {
         print "output_list: $output_list"
         assert output_list.size() == 2 : "output channel should contain two events"
         assert output_list.collect({it[0]}).sort() == ["test", "test2"] : "First output ID should be 'test'"
+      }
+  
+}
+
+workflow test_wf2 {
+  helpMessage(config)
+
+  // allow changing the resources_test dir
+  params.resources_test = params.rootDir + "/resources_test"
+
+  // or when running from s3: params.resources_test = "s3://openpipelines-data/"
+  
+  testParams = [
+      input: params.resources_test + "/10x_5k_anticmv/5k_human_antiCMV_T_TBNK_connect_mms.h5mu",
+      pca_overwrite: true,
+      id: "test",
+      publish_dir: "foo/",
+      output: "test.h5mu"
+    ]
+
+
+  output_ch =
+    channelFromParams(testParams, config)
+      | view { "Input: $it" }
+      | run_wf
+      | view { output ->
+        assert output.size() == 2 : "outputs should contain two elements; [id, file], was $output"
+        assert output[1].toString().endsWith(".h5mu") : "Output file should be a h5mu file. Found: ${output[1]}"
+        "Output: $output"
+      }
+      | toSortedList()
+      | map { output_list ->
+        print "output_list: $output_list"
+        assert output_list.size() == 1 : "output channel should contain two events"
+        assert output_list.collect({it[0]}).sort() == ["test"] : "First output ID should be 'test'"
       }
   
 }

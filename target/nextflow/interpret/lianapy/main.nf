@@ -325,8 +325,9 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
           "type" : "python",
           "user" : false,
           "packages" : [
-            "mudata~=0.2.0",
-            "git+https://github.com/saezlab/liana-py.git@11156ddd0139a49dfebdd08ac230f0ebf008b7f8",
+            "mudata~=0.2.3",
+            "anndata~=0.9.1",
+            "liana~=0.1.9",
             "numpy~=1.24.3"
           ],
           "upgrade" : true
@@ -389,7 +390,7 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
     "platform" : "nextflow",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/interpret/lianapy",
     "viash_version" : "0.7.4",
-    "git_commit" : "9a4771d9729f2a984200765bf01142a44ce1543d",
+    "git_commit" : "be12d8ac4cdf211dab2df866b3ec279bf096d05a",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))

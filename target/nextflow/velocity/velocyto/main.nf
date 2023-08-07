@@ -303,7 +303,7 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
     "platform" : "nextflow",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/velocity/velocyto",
     "viash_version" : "0.7.4",
-    "git_commit" : "9a4771d9729f2a984200765bf01142a44ce1543d",
+    "git_commit" : "be12d8ac4cdf211dab2df866b3ec279bf096d05a",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))
@@ -356,7 +356,7 @@ fi
 output_dir=\\`dirname "\\$par_output"\\`
 sample_id=\\`basename "\\$par_output" .loom\\`
 
-if (file "\\$par_transcriptome" | grep -q compressed ) ; then
+if (file \\`readlink -f "\\$par_transcriptome"\\` | grep -q compressed ) ; then
   # create temporary directory
   tmpdir=\\$(mktemp -d "\\$meta_temp_dir/\\$meta_functionality_name-XXXXXXXX")
   function clean_up {

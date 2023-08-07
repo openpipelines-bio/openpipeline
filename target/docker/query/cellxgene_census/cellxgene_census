@@ -470,13 +470,13 @@ ENTRYPOINT []
 
  
 RUN pip install --upgrade pip && \
-  pip install --upgrade --no-cache-dir "mudata~=0.2.0" "anndata~=0.8.0" "cellxgene-census~=1.2.0" "obonet~=1.0.0"
+  pip install --upgrade --no-cache-dir "mudata~=0.2.3" "anndata~=0.9.1" "cellxgene-census~=1.2.0" "obonet~=1.0.0"
 
 LABEL org.opencontainers.image.authors="Matthias Beyens"
 LABEL org.opencontainers.image.description="Companion container for running component query cellxgene_census"
-LABEL org.opencontainers.image.created="2023-07-13T14:46:43Z"
+LABEL org.opencontainers.image.created="2023-08-07T13:42:54Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="9a4771d9729f2a984200765bf01142a44ce1543d"
+LABEL org.opencontainers.image.revision="be12d8ac4cdf211dab2df866b3ec279bf096d05a"
 LABEL org.opencontainers.image.version="integration_build"
 
 VIASHDOCKER
