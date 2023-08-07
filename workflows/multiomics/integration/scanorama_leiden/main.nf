@@ -60,7 +60,6 @@ workflow run_wf {
       ],
       umap: [ 
         "uns_neighbors": "uns_neighbors",
-        "output": "output",
         "obsm_output": "obsm_umap",
         "modality": "modality"
 
