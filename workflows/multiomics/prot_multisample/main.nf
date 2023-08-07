@@ -56,7 +56,8 @@ workflow run_wf {
         var_qc_metrics: null,
         modality: "prot",
         output_compression: "gzip"
-      ]
+      ],
+      key: "prot_calculate_qc_metrics"
     )
     | map {list -> [list[0], list[1]] + list.drop(3)}
 

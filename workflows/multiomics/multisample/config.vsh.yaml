@@ -69,6 +69,11 @@ functionality:
           multiple_sep: ','
           required: false
           default: [50, 100, 200, 500]
+    - name: "PCA options"
+      arguments:
+        - name: "--pca_overwrite"
+          type: boolean_true
+          description: "Allow overwriting slots for PCA output."
   resources:
     - type: nextflow_script
       path: main.nf
@@ -77,3 +82,5 @@ functionality:
       path: main.nf
       entrypoint: test_wf
     - path: ../../../resources_test/concat_test_data
+    - path: ../../../resources_test/10x_5k_anticmv
+

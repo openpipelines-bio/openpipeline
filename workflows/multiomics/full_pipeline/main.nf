@@ -52,7 +52,7 @@ workflow run_wf {
       | merge.run(args: [ output_compression: "gzip" ])
       | integration_setup_workflow
       | getWorkflowArguments(key: "publish")
-      | publish
+      | publish.run(auto: [ publish: true ])
       | map {list -> [list[0], list[1]]}
       
 
