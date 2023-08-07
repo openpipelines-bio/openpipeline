@@ -56,6 +56,8 @@
 
 ## BUG FIXES
 
+* Fix an issue with `workflows/multiomics/scanorama_leiden` where the `--output` argument doesn't work as expected (PR #).
+
 * Fix an issue with `workflows/full_pipeline` not correctly caching previous runs (PR #460).
 
 * Fix incorrect namespaces of the integration pipelines (PR #464).
