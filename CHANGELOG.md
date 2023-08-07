@@ -56,7 +56,7 @@
 
 ## BUG FIXES
 
-* Fix an issue with `workflows/multiomics/scanorama_leiden` where the `--output` argument doesn't work as expected (PR #).
+* Fix an issue with `workflows/multiomics/scanorama_leiden` where the `--output` argument doesn't work as expected (PR #509).
 
 * Fix an issue with `workflows/full_pipeline` not correctly caching previous runs (PR #460).
 
