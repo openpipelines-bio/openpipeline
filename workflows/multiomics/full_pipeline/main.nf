@@ -114,8 +114,11 @@ workflow add_arguments {
           "prot_multisample_args": [:],
           "integration_args_rna": [
             "var_pca_feature_selection": "filter_with_hvg_var_output", // run PCA on highly variable genes only
+            "pca_overwrite": "pca_overwrite",
           ],
-          "integration_args_prot": [:],
+          "integration_args_prot": [
+            "pca_overwrite": "pca_overwrite",
+          ],
           "publish": ["output": "output"]
       )
     
