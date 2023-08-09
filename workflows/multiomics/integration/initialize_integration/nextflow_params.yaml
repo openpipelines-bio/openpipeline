@@ -10,6 +10,7 @@ modality: "rna"
 # PCA options
 obsm_pca: "X_pca"
 # var_pca_feature_selection: "foo"
+pca_overwrite: false
 
 # Neighbour calculation
 uns_neighbors: "neighbors"

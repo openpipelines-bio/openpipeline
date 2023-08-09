@@ -380,7 +380,7 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
     "platform" : "nextflow",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/neighbors/find_neighbors",
     "viash_version" : "0.7.4",
-    "git_commit" : "eccdc24477aec7ed3bfcba743075f64610d1eb01",
+    "git_commit" : "0db6b379e720c0680a90d1650405554a231ca26d",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))

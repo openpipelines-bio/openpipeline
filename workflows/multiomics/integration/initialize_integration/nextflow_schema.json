@@ -59,6 +59,11 @@
             "type": "string",
             "description": "Column name in .var matrix that will be used to select which genes to run the PCA on.",
             "default": ""
+          },
+          "pca_overwrite": {
+            "type": "boolean",
+            "description": "Allow overwriting slots for PCA output.",
+            "default": "False"
           }
           
         }

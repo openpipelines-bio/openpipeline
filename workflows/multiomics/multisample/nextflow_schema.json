@@ -71,6 +71,19 @@
           
         }
       },
+      "pca options" : {
+        "title": "PCA options",
+        "type": "object",
+        "description": "No description",
+        "properties": {
+          "pca_overwrite": {
+            "type": "boolean",
+            "description": "Allow overwriting slots for PCA output.",
+            "default": "False"
+          }
+          
+        }
+      },
       "nextflow input-output arguments" : {
         "title": "Nextflow input-output arguments",
         "type": "object",
@@ -102,6 +115,9 @@
       },
       {
         "$ref": "#/definitions/qc metrics calculation options"
+      },
+      {
+        "$ref": "#/definitions/pca options"
       },
       {
         "$ref": "#/definitions/nextflow input-output arguments"
