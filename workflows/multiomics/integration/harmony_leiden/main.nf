@@ -33,67 +33,55 @@ workflow run_wf {
 
     // run harmonypy
     | harmonypy.run(
-      fromState: { id, state -> 
-        [
-          "input": state.input,
-          "modality": state.modality,
-          "obsm_input": state.embedding,
-          "obs_covariates": state.obs_covariates,
-          "obsm_output": state.obsm_integrated,
-          "theta": state.theta
-        ]
-      },
-      toState: { id, output, state ->
-        state + ["input": output]
-      }
+      fromState: [
+          "input": "input",
+          "modality": "modality",
+          "obsm_input": "embedding",
+          "obs_covariates": "obs_covariates",
+          "obsm_output": "obsm_integrated",
+          "theta": "theta"
+      ],
+      toState: ["input": "output"],
+      auto: [simplifyOutput: false]
     )
     
     // run knn
     | find_neighbors.run(
-      fromState: { id, state ->
-        [
-          "input": state.input,
-          "modality": state.modality,
-          "uns_output": state.uns_neighbors,
-          "obsp_distances": state.obsp_neighbor_distances,
-          "obsp_connectivities": state.obsp_neighbor_connectivities,
-          "obsm_input": state.obsm_integrated
-        ]
-      },
-      toState: { id, output, state ->
-        state + ["input": output]
-      }
+      fromState: [
+        "input": "input",
+        "modality": "modality",
+        "uns_output": "uns_neighbors",
+        "obsp_distances": "obsp_neighbor_distances",
+        "obsp_connectivities": "obsp_neighbor_connectivities",
+        "obsm_input": "obsm_integrated"
+      ],
+      toState: ["input": "output"],
+      auto: [simplifyOutput: false]
     )
 
     // run leiden clustering
     | leiden.run(
-      fromState: { id, state ->
-        [
-          "input": state.input,
-          "modality": state.modality,
-          "obsp_connectivities": state.obsp_neighbor_connectivities,
-          "obsm_name": state.obs_cluster,
-          "resolution": state.leiden_resolution
-        ]
-      },
-      toState: { id, output, state ->
-        state + ["input": output]
-      }
+      fromState: [
+        "input": "input",
+        "modality": "modality",
+        "obsp_connectivities": "obsp_neighbor_connectivities",
+        "obsm_name": "obs_cluster",
+        "resolution": "leiden_resolution"
+      ],
+      toState: ["input": "output"],
+      auto: [simplifyOutput: false]
     )
     
     // run umap
     | umap.run(
-      fromState: { id, state ->
-        [
-          "input": state.input,
-          "modality": state.modality,
-          "obsm_input": state.obsm_integrated,
-          "obsm_output": state.obsm_umap
-        ]
-      },
-      toState: { id, output, state ->
-        state + ["input": output]
-      }
+      fromState: [
+        "input": "input",
+        "modality": "modality",
+        "obsm_input": "obsm_integrated",
+        "obsm_output": "obsm_umap"
+      ],
+      toState: ["input": "output"],
+      auto: [simplifyOutput: false]
     )
     
     // move obsm to obs
@@ -106,10 +94,6 @@ workflow run_wf {
           "output": state.output,
           "output_compression": "gzip"
         ]
-      },
-      // simply replace the state with the output
-      toState: { id, output, state ->
-        output
       },
       auto: [ publish: true ]
     )
