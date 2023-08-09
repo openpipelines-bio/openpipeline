@@ -113,18 +113,3 @@ jobs:
         platform: docker
         src: ${{ matrix.component.dir }}
         setup: push
-
-    # Retag docker images and push to Viash-Hub
-    - name: Login to Viash-Hub container registry
-      uses: docker/login-action@v2
-      with:
-        registry: viash-hub.com:5050
-        username: ${{ secrets.VIASHHUB_USER }}
-        password: ${{ secrets.VIASHHUB_PAT }}
-
-    - name: Retag image
-      run: |
-        componentName=${{ matrix.component.name }}
-        imageName=${componentName/\//_}
-        docker tag ghcr.io/openpipelines-bio/$imageName:main_build viash-hub.com:5050/openpipelines-bio/openpipeline/$imageName:main_build
-        docker push viash-hub.com:5050/openpipelines-bio/openpipeline/$imageName:main_build
