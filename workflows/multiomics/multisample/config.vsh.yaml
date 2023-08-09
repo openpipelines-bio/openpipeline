@@ -72,9 +72,8 @@ functionality:
     - name: "PCA options"
       arguments:
         - name: "--pca_overwrite"
-          type: boolean
+          type: boolean_true
           description: "Allow overwriting slots for PCA output."
-          default: true
   resources:
     - type: nextflow_script
       path: main.nf
