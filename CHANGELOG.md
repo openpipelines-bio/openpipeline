@@ -54,6 +54,8 @@
 
 * `convert/from_cellranger_multi_to_h5mu`: add `feature_reference` information to the MuData object. Information is split between the modalities. For example `CRISPR Guide Capture` information if added to the `.uns` slot of the `gdo` modality, while `Antibody Capture` information is added to the .uns slot of `prot` (PR #494).
 
+* `workflows/full_pipeline`: Add `pca_overwrite` argument (PR #511).
+
 ## BUG FIXES
 
 * Fix an issue with `workflows/multiomics/scanorama_leiden` where the `--output` argument doesn't work as expected (PR #509).
