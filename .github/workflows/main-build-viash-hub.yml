@@ -54,19 +54,27 @@ jobs:
         tools_version: 'main_build'
 
     - name: Deploy to Viash-Hub
-      run: |
-        # Deploy to Viash-Hub, commands based on peaceiris/actions-gh-pages@v3
-        repo_dir=/home/runner/openpipeline-deploy-`date +%s`
-        # removed --depth=1 given that we rewrite the remote history.
-        git clone --single-branch --branch main_build --no-checkout https://x-access-token:${{ github.token }}@github.com/openpipelines-bio/openpipeline.git $repo_dir
-        cd $repo_dir
-        rsync -a --exclude='.git' ${{ github.workspace }}/ .
-        git add --all
-        git remote add viash-hub https://x-access-token:${{ secrets.VIASHHUB_PAT }}@viash-hub.com/openpipelines-bio/openpipeline.git
-        git config user.name ${{ github.actor }}
-        git config user.email ${{ github.actor }}@users.noreply.github.com
-        git commit -m "deploy: ${{ github.sha }}"
-        git push -f viash-hub main_build
+      # run: |
+      #   # Deploy to Viash-Hub, commands based on peaceiris/actions-gh-pages@v3
+      #   repo_dir=/home/runner/openpipeline-deploy-`date +%s`
+      #   # removed --depth=1 given that we rewrite the remote history.
+      #   git clone --single-branch --branch main_build --no-checkout https://x-access-token:${{ github.token }}@github.com/openpipelines-bio/openpipeline.git $repo_dir
+      #   cd $repo_dir
+      #   rsync -a --exclude='.git' ${{ github.workspace }}/ .
+      #   git add --all
+      #   git remote add viash-hub https://x-access-token:${{ secrets.VIASHHUB_PAT }}@viash-hub.com/openpipelines-bio/openpipeline.git
+      #   git config user.name ${{ github.actor }}
+      #   git config user.email ${{ github.actor }}@users.noreply.github.com
+      #   git commit -m "deploy: ${{ github.sha }}"
+      #   git push -f viash-hub main_build
+      uses: viash-io/viash-actions/viash-hub/push@viash-hub-push
+      with:
+        github_token: ${{ github.token }}
+        viash_hub_token: ${{ secrets.VIASHHUB_PAT }}
+        viash_hub_repo: openpipelines-bio/openpipeline
+        github_repo: openpipelines-bio/openpipeline
+        src-branch: main_build
+        dest-branch: main_build
 
     - id: ns_list
       uses: viash-io/viash-actions/ns-list@v4
