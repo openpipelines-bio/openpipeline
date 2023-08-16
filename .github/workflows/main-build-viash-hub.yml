@@ -32,9 +32,13 @@ jobs:
         # allow publishing the target folder
         sed -i '/^\/target\/$/d' .gitignore
 
-    - uses: viash-io/viash-actions/ns-build@v4
+    - uses: viash-io/viash-actions/ns-build@viash-hub-push
       with:
-        config_mod: .functionality.version := 'main_build'; .platforms[.type == 'docker'].target_registry := 'viash-hub.com:5050'; .platforms[.type == 'docker'].target_organization := 'openpipelines-bio/openpipeline'; .platforms[.type == 'docker'].target_image_source := 'https://viash-hub.com/openpipelines-bio/openpipeline'
+        config_mod: |
+          .functionality.version := 'main_build'
+          .platforms[.type == 'docker'].target_registry := 'viash-hub.com:5050'
+          .platforms[.type == 'docker'].target_organization := 'openpipelines-bio/openpipeline'
+          .platforms[.type == 'docker'].target_image_source := 'https://viash-hub.com/openpipelines-bio/openpipeline'
         parallel: true
 
     - name: Build nextflow schemas
