@@ -11,6 +11,6 @@ $meta_executable \
     --field GP
 
 [[ ! -f demuxlet_result/out.best ]] && echo "Output result file could not be found!" && exit 1
-[[ ! -f demuxlet_result/assignment.tsv ]] && echo "Output donor assignment file could not be found!" && exit 1
+[[ ! -f demuxlet_result/cell_annotation.csv ]] && echo "Output cell annotation file could not be found!" && exit 1
 
 echo ">>> Test finished successfully"
