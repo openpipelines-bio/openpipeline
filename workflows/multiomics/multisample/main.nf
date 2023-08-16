@@ -39,8 +39,9 @@ workflow run_wf {
         "prot_multisample_args": [:],
           "integration_args_rna": [
             "var_pca_feature_selection": "filter_with_hvg_var_output", // run PCA on highly variable genes only
+            "pca_overwrite": "pca_overwrite"
           ],
-        "integration_args_prot": [:],
+        "integration_args_prot": ["pca_overwrite": "pca_overwrite"],
         "publish": ["output": "output"],
     )
     | getWorkflowArguments(key: "split_modalities_args")
@@ -102,6 +103,41 @@ workflow test_wf {
         print "output_list: $output_list"
         assert output_list.size() == 2 : "output channel should contain two events"
         assert output_list.collect({it[0]}).sort() == ["test", "test2"] : "First output ID should be 'test'"
+      }
+  
+}
+
+workflow test_wf2 {
+  helpMessage(config)
+
+  // allow changing the resources_test dir
+  params.resources_test = params.rootDir + "/resources_test"
+
+  // or when running from s3: params.resources_test = "s3://openpipelines-data/"
+  
+  testParams = [
+      input: params.resources_test + "/10x_5k_anticmv/5k_human_antiCMV_T_TBNK_connect_mms.h5mu",
+      pca_overwrite: true,
+      id: "test",
+      publish_dir: "foo/",
+      output: "test.h5mu"
+    ]
+
+
+  output_ch =
+    channelFromParams(testParams, config)
+      | view { "Input: $it" }
+      | run_wf
+      | view { output ->
+        assert output.size() == 2 : "outputs should contain two elements; [id, file], was $output"
+        assert output[1].toString().endsWith(".h5mu") : "Output file should be a h5mu file. Found: ${output[1]}"
+        "Output: $output"
+      }
+      | toSortedList()
+      | map { output_list ->
+        print "output_list: $output_list"
+        assert output_list.size() == 1 : "output channel should contain two events"
+        assert output_list.collect({it[0]}).sort() == ["test"] : "First output ID should be 'test'"
       }
   
 }

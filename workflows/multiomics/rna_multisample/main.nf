@@ -85,7 +85,8 @@ workflow run_wf {
       args: [
         input_layer: null,
         output_compression: "gzip"
-      ]
+      ],
+      key: "rna_calculate_qc_metrics"
     )
     | map {list -> [list[0], list[1]] + list.drop(3)}
 
