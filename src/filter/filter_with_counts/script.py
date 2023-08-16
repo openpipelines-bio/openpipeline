@@ -60,6 +60,9 @@ def apply_filter_to_mask(mask, base, filter, comparator):
     mask &= new_filt
     return num_removed, mask
 
+if par["var_name_mitochondrial_genes"]:
+    data.var[par["var_name_mitochondrial_genes"]] = mito_genes
+
 # Filter genes
 keep_genes = np.repeat(True, data.n_vars)
 if par["min_cells_per_gene"] is not None:

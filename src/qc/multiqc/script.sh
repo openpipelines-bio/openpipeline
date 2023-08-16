@@ -2,4 +2,4 @@
 
 set -eo pipefail
 
-multiqc -o "$par_output" $par_input
+multiqc -o "$par_output" "$par_input"

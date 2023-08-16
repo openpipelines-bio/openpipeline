@@ -4,9 +4,9 @@ functionality:
   description: |
     Convert the output of `multi_star` to a h5mu.
   authors:
-    - __merge__: ../../authors/robrecht_cannoodt.yaml
+    - __merge__: /src/authors/robrecht_cannoodt.yaml
       roles: [ author, maintainer ]
-    - __merge__: ../../authors/angela_pisco.yaml
+    - __merge__: /src/authors/angela_pisco.yaml
       roles: [ author ]
   arguments:
     - type: file
@@ -36,12 +36,13 @@ functionality:
     - path: ../../../resources_test/cellranger_tiny_fastq/multi_star
 platforms:
   - type: docker
-    image: python:3.10
+    image: python:3.10-slim
     setup:
-      - type: python
+      - type: apt
         packages:
-          - anndata~=0.8.0
-          - mudata~=0.2.0
+          - procps
+      - type: python
+        __merge__: /src/base/requirements/anndata_mudata.yaml
   - type: nextflow
     directives:
       label: [ midmem, midcpu ]

@@ -14,7 +14,7 @@ functionality:
       - Feature names with underscores ('_') are automatically replaced with dashes ('-')
       - Seurat does not support global variables metadata /var.
   authors:
-    - __merge__: ../../authors/robrecht_cannoodt.yaml
+    - __merge__: /src/authors/robrecht_cannoodt.yaml
       roles: [ author, maintainer ]
   arguments:
     - name: "--input"
@@ -54,7 +54,7 @@ platforms:
       - type: python
         packages: 
           - scanpy~=1.9.2
-          - anndata~=0.8.0
+          - anndata~=0.9.1
       - type: r
         cran: [ anndata, hdf5r, testthat ]
       - type: r

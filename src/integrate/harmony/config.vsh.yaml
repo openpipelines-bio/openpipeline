@@ -4,9 +4,9 @@ functionality:
   status: disabled
   description: "Performs Harmony integration based as described in https://github.com/immunogenomics/harmony."
   authors:
-    - __merge__: ../../authors/dries_de_maeyer.yaml
+    - __merge__: /src/authors/dries_de_maeyer.yaml
       roles: [ author ]
-    - __merge__: ../../authors/robrecht_cannoodt.yaml
+    - __merge__: /src/authors/robrecht_cannoodt.yaml
       roles: [ maintainer, author ]
   arguments:
     - name: "--input"
@@ -64,9 +64,7 @@ platforms:
     image: ghcr.io/data-intuitive/randpy:r4.0_py3.10
     setup:
       - type: python
-        packages:
-          - mudata~=0.2.0
-          - anndata~=0.8.0
+        __merge__: /src/base/requirements/anndata_mudata.yaml
       - type: r
         cran: 
           - harmony

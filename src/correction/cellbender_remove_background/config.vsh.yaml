@@ -54,9 +54,9 @@ functionality:
         - name: "--var_ambient_expression"
           type: string
           default: "ambient_expression"
-        # - name: "--obsm_latent_gene_encoding"
-        #   type: string
-        #   default: "latent_gene_encoding"
+        - name: "--obsm_latent_gene_encoding"
+          type: string
+          default: "cellbender_latent_gene_encoding"
     - name: Arguments
       arguments:
         - name: "--expected_cells"
@@ -168,19 +168,15 @@ platforms:
     # image: nvcr.io/nvidia/cuda:11.6.0-base-ubuntu20.04
     # image: pytorch/pytorch:1.12.1-cuda11.3-cudnn8-runtime
     setup:
-      - type: docker
-        env:
-        # Remove when muon > 0.1.2 is released
-          - SKLEARN_ALLOW_DEPRECATED_SKLEARN_PACKAGE_INSTALL True
       - type: apt
         packages:
           # - python3-pip
           # - python-is-python3
           - git
       - type: python
+        __merge__: [/src/base/requirements/anndata_mudata.yaml, .]
         packages: 
-          - anndata~=0.8.0
-          - mudata~=0.2.0
+          - muon~=0.1.5
           # - torch
           # - torchvision
           # - torchaudio
@@ -190,7 +186,7 @@ platforms:
     test_setup:
       - type: python
         packages: 
-          - muon
+          - muon~=0.1.4
           - scanpy~=1.9.2
   - type: nextflow
     directives:

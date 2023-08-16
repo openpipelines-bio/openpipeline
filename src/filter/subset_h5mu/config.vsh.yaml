@@ -5,7 +5,7 @@ functionality:
   description: |
     Create a subset of a mudata file by selecting the first number of observations
   authors:
-    - __merge__: ../../authors/dries_schaumont.yaml
+    - __merge__: /src/authors/dries_schaumont.yaml
       roles: [ maintainer ]
   arguments:
     - name: "--input"
@@ -42,10 +42,11 @@ functionality:
     - path: ../../../resources_test/pbmc_1k_protein_v3/pbmc_1k_protein_v3_filtered_feature_bc_matrix.h5mu
 platforms:
   - type: docker
-    image: python:3.8
+    image: python:3.8-slim
     setup:
+      - type: apt
+        packages: 
+          - procps
       - type: python
-        packages:
-          - mudata~=0.2.0
-          - anndata~=0.8.0
+        __merge__: /src/base/requirements/anndata_mudata.yaml
   - type: nextflow

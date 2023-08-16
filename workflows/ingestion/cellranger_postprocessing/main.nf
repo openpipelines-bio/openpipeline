@@ -96,12 +96,82 @@ workflow test_wf {
         perform_correction: true,
         min_genes: 100,
         min_counts: 1000
-      ],
+      ]
+    ]
+  ]
+
+  output_ch =
+    channelFromParams(testParams, config)
+
+    // first filter and convert to h5mu
+    | pmap { id, data -> [ id, [ input: data.input ], data ] }
+    | from_10xh5_to_h5mu
+    | pmap { id, file -> [ id, [ input: file ] ] }
+    | subset_h5mu.run(args: [ number_of_observations: 50000 ])
+    | pmap { id, file, orig_params -> [id, orig_params + [ input: file ] ] }
+
+    | view { "Input: $it" }
+    | run_wf
+    | view { output ->
+      assert output.size() == 2 : "outputs should contain two elements; [id, out]"
+      assert output[1] instanceof Map : "Output should be a Map."
+      // todo: check whether output dir contains fastq files
+      "Output: $output"
+    }
+    | toList()
+    | map { output_list ->
+      assert output_list.size() == 1 : "output channel should contain one event"
+    }
+    //| check_format(args: {""}) // todo: check whether output h5mu has the right slots defined
+}
+
+workflow test_wf2 {
+  // allow changing the resources_test dir
+  params.resources_test = params.rootDir + "/resources_test"
+
+  // or when running from s3: params.resources_test = "s3://openpipelines-data/"
+  testParams = [
+    param_list: [
       [
         id: "bar",
         input: params.resources_test + "/pbmc_1k_protein_v3/pbmc_1k_protein_v3_raw_feature_bc_matrix.h5",
         perform_correction: true
-      ],
+      ]
+    ]
+  ]
+
+  output_ch =
+    channelFromParams(testParams, config)
+
+    // first filter and convert to h5mu
+    | pmap { id, data -> [ id, [ input: data.input ], data ] }
+    | from_10xh5_to_h5mu
+    | pmap { id, file -> [ id, [ input: file ] ] }
+    | subset_h5mu.run(args: [ number_of_observations: 50000 ])
+    | pmap { id, file, orig_params -> [id, orig_params + [ input: file ] ] }
+
+    | view { "Input: $it" }
+    | run_wf
+    | view { output ->
+      assert output.size() == 2 : "outputs should contain two elements; [id, out]"
+      assert output[1] instanceof Map : "Output should be a Map."
+      // todo: check whether output dir contains fastq files
+      "Output: $output"
+    }
+    | toList()
+    | map { output_list ->
+      assert output_list.size() == 1 : "output channel should contain one event"
+    }
+    //| check_format(args: {""}) // todo: check whether output h5mu has the right slots defined
+}
+
+workflow test_wf3 {
+  // allow changing the resources_test dir
+  params.resources_test = params.rootDir + "/resources_test"
+
+  // or when running from s3: params.resources_test = "s3://openpipelines-data/"
+  testParams = [
+    param_list: [
       [
         id: "zing",
         input: params.resources_test + "/pbmc_1k_protein_v3/pbmc_1k_protein_v3_raw_feature_bc_matrix.h5",
@@ -118,7 +188,7 @@ workflow test_wf {
     | pmap { id, data -> [ id, [ input: data.input ], data ] }
     | from_10xh5_to_h5mu
     | pmap { id, file -> [ id, [ input: file ] ] }
-    | subset_h5mu.run(args: [ number_of_observations: 100000 ])
+    | subset_h5mu.run(args: [ number_of_observations: 50000 ])
     | pmap { id, file, orig_params -> [id, orig_params + [ input: file ] ] }
 
     | view { "Input: $it" }
@@ -131,7 +201,7 @@ workflow test_wf {
     }
     | toList()
     | map { output_list ->
-      assert output_list.size() == 3 : "output channel should contain three events"
+      assert output_list.size() == 1 : "output channel should contain one event"
     }
     //| check_format(args: {""}) // todo: check whether output h5mu has the right slots defined
 }

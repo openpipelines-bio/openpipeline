@@ -5,7 +5,7 @@ functionality:
   description: |
     Converts a 10x mtx into an h5mu file.
   authors:
-    - __merge__: ../../authors/robrecht_cannoodt.yaml
+    - __merge__: /src/authors/robrecht_cannoodt.yaml
       roles: [ maintainer ]
   arguments:
     - name: "--input"
@@ -35,12 +35,14 @@ functionality:
     - path: ../../../resources_test/pbmc_1k_protein_v3
 platforms:
   - type: docker
-    image: python:3.8
+    image: python:3.8-slim
     setup:
+      - type: apt
+        packages: 
+          - procps
       - type: python
+        __merge__: [/src/base/requirements/anndata_mudata.yaml, .]
         packages:
           - scanpy~=1.9.2
-          - mudata~=0.2.0
-          - anndata~=0.8.0
   - type: nextflow
 

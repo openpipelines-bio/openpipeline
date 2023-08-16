@@ -3,11 +3,11 @@ functionality:
   namespace: mapping
   description: Align fastq files using Cell Ranger multi.
   authors:
-    - __merge__: ../../authors/angela_pisco.yaml
+    - __merge__: /src/authors/angela_pisco.yaml
       roles: [ author ]
-    - __merge__: ../../authors/robrecht_cannoodt.yaml
+    - __merge__: /src/authors/robrecht_cannoodt.yaml
       roles: [ author, maintainer ]
-    - __merge__: ../../authors/dries_de_maeyer.yaml
+    - __merge__: /src/authors/dries_de_maeyer.yaml
       roles: [ author ]
   argument_groups:
     - name: Input files
@@ -32,6 +32,15 @@ functionality:
           type: file
           description: "VDJ refence index built by Cell Ranger mkref."
           example: "reference_vdj.tar.gz"
+          required: false
+
+        - name: "--vdj_inner_enrichment_primers"
+          type: file
+          description: |
+            V(D)J Immune Profiling libraries: if inner enrichment primers other than those provided 
+            in the 10x Genomics kits are used, they need to be specified here as a
+            text file with one primer per line.
+          example: "enrichment_primers.txt"
           required: false
 
         - name: "--feature_reference"
@@ -158,18 +167,25 @@ functionality:
       path: script.py
   test_resources:
     - type: python_script
-      path: test.py
+      path: test_cellranger.py
     - path: ../../../resources_test/10x_5k_anticmv/raw/
       dest: 10x_5k_anticmv/raw/
+    - path: ../../../resources_test/10x_5k_lung_crispr/raw/
+      dest: 10x_5k_lung_crispr/raw/
     - path: ../../../resources_test/reference_gencodev41_chr1
 platforms:
   - type: docker
     image: ghcr.io/data-intuitive/cellranger:7.0
     setup:
       - type: docker
-        run: apt update && apt upgrade -y
+        run: DEBIAN_FRONTEND=noninteractive apt update && apt upgrade -y && rm -rf /var/lib/apt/lists/*
       - type: python
-        pypi: [ pandas ]
+        packages: 
+          - pandas
+    test_setup:
+      - type: python
+        packages:
+          - viashpy~=0.3.2
   - type: nextflow
     directives:
-      label: [ highmem, highcpu ]
+      label: [ veryhighmem, highcpu ]

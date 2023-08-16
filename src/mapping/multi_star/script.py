@@ -1,15 +1,15 @@
+from typing import Any, Dict, List, Tuple
+import math
 import tempfile
 import subprocess
-from pathlib import Path
 import tarfile
 import gzip
 import shutil
-from typing import Any, Dict, List
+from pathlib import Path
 import yaml
-from multiprocess import Pool
-import math
-import gtfparse
 import pandas as pd
+from multiprocess import Pool
+import gtfparse
 
 ## VIASH START
 par = {
@@ -111,8 +111,11 @@ def generate_cmd_arguments(par, arguments_info, step_filter=None, flatten=False)
 
     for key, arg in arguments_info.items():
         arg_val = par.get(key)
-        orig_arg = arg.get("info", {}).get("orig_arg")
-        step = arg.get("info", {}).get("step")
+        # The info key is always present (changed in viash 0.7.4) 
+        # in the parsed config (None if not specified in source config)
+        info = arg["info"] or {}
+        orig_arg = info.get("orig_arg")
+        step = info.get("step")
         if arg_val and orig_arg and (not step_filter or step == step_filter):
             if not arg.get("multiple", False):
                 arg_val = [arg_val]
@@ -205,8 +208,9 @@ def star_and_htseq(
     par: Dict[str, Any],
     arguments_info: Dict[str, Any],
     num_threads: int
-):
+) -> Tuple[int, str] :
     star_output = par["output"] / "per" / group_id
+    temp_dir_group = temp_dir / f"star_tmp_{group_id}"
     unsorted_bam = star_output / "Aligned.out.bam"
     sorted_bam = star_output / "Aligned.sorted.out.bam"
     counts_file = star_output / "htseq-count.txt"
@@ -214,6 +218,7 @@ def star_and_htseq(
 
     print(f">> Running STAR for group '{group_id}' with command:", flush=True)
     star_output.mkdir(parents=True, exist_ok=True)
+    temp_dir_group.parent.mkdir(parents=True, exist_ok=True)
     run_star(
         r1_files=r1_files,
         r2_files=r2_files,
@@ -223,20 +228,26 @@ def star_and_htseq(
         arguments_info=arguments_info,
         num_threads=num_threads
     )
-    assert unsorted_bam.exists()
+    if not unsorted_bam.exists():
+        return (1, f"Could not find unsorted bam at '{unsorted_bam}'")
 
     if par["run_htseq_count"]:
         print(f">> Running samtools sort for group '{group_id}' with command:", flush=True)
         run_samtools_sort(unsorted_bam, sorted_bam)
-        assert sorted_bam.exists()
+        if not sorted_bam.exists():
+            return (1, f"Could not find sorted bam at '{unsorted_bam}'")
 
         print(f">> Running htseq-count for group '{group_id}' with command:", flush=True)
         run_htseq_count(sorted_bam, counts_file, par, arguments_info)
-        assert counts_file.exists()
+        if not counts_file.exists():
+            return (1, f"Could not find counts at '{counts_file}'")
 
     if par["run_multiqc"]:
         run_multiqc(star_output)
-        assert multiqc_path.exists()
+        if not multiqc_path.exists():
+            return (1, f"Could not find MultiQC output at '{multiqc_path}'")
+    
+    return (0, "")
 
 def run_star(
     r1_files: List[Path],
@@ -352,13 +363,14 @@ def main(par, meta):
     # fetch all arguments from the config and turn it into a Dict[str, Argument]
     arguments_info = fetch_arguments_info(config)
 
-    temp_dir = "tmp/"
+    # temp_dir = "tmp/"
     with tempfile.TemporaryDirectory(
         prefix=f"{meta['functionality_name']}-",
         dir=meta["temp_dir"],
         ignore_cleanup_errors=True
     ) as temp_dir:
         temp_dir = Path(temp_dir)
+        temp_dir.mkdir(parents=True, exist_ok=True)
 
         # turn file strings into Paths and decompress gzip if need be
         gz_args = ["input_r1", "input_r2", "reference_index", "reference_gtf"]
@@ -396,7 +408,7 @@ def main(par, meta):
         num_threads_per_task = math.ceil(cpus / pool_size)
 
         with Pool(pool_size) as pool:
-            pool.starmap(
+            outs = pool.starmap(
                 lambda group_id, files: star_and_htseq(
                     group_id=group_id,
                     r1_files=files[0],
@@ -409,9 +421,17 @@ def main(par, meta):
                 grouped_inputs.items()
             )
 
-        # finally:
-        #     print(">> Removing genome from memory", flush=True)
-        #     unload_star_reference(par["reference_index"])
+        num_errored = 0
+        for exit, msg in outs:
+            if exit != 0:
+                print(f"Error: {msg}")
+                num_errored += 1
+
+        pct_succeeded = 1.0 - num_errored / len(outs)
+        print("------------------")
+        print(f"Success rate: {math.ceil(pct_succeeded * 100)}%")
+
+        assert pct_succeeded >= par["min_success_rate"], f"Success rate should be at least {math.ceil(par['min_success_rate'] * 100)}%"
 
 if __name__ == "__main__":
     main(par, meta)

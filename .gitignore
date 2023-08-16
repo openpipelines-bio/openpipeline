@@ -4,7 +4,6 @@
 # pycache
 *__pycache__*
 .nfs*
-.vscode
 
 # R related
 .Rhistory
@@ -30,10 +29,13 @@ out/
 # viash related
 .viash_log*
 log.txt
-target
+/target/
 check_results/
 out/
 output*
 output_log/
 resources_test
 /viash_tools/
+
+# vscode
+.vscode/launch.json

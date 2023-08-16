@@ -5,9 +5,9 @@ functionality:
   description: "Performs Harmony integration based as described in https://github.com/immunogenomics/harmony.
                 Based on an implementation in python from https://github.com/slowkow/harmonypy"
   authors:
-    - __merge__: ../../authors/dries_schaumont.yaml
+    - __merge__: /src/authors/dries_schaumont.yaml
       roles: [ maintainer ]
-    - __merge__: ../../authors/robrecht_cannoodt.yaml
+    - __merge__: /src/authors/robrecht_cannoodt.yaml
       roles: [ contributor ]
   arguments:
     - name: "--input"
@@ -62,12 +62,14 @@ functionality:
     - path: ../../../resources_test/pbmc_1k_protein_v3/pbmc_1k_protein_v3_mms.h5mu
 platforms:
   - type: docker
-    image: python:3.10
+    image: python:3.10-slim
     setup:
+      - type: apt
+        packages: 
+          - procps
       - type: python
+        __merge__: [/src/base/requirements/anndata_mudata.yaml, .]
         packages:
-          - mudata~=0.2.0
-          - anndata~=0.8.0
           - harmonypy~=0.0.6
           - scanpy~=1.9.2
   - type: nextflow

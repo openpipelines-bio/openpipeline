@@ -6,9 +6,6 @@ on:
       version_tag:
         description: Version tag
         required: true
-      push_documentation:
-        type: boolean
-        description: Create a PR to push workflow and component documentation to the website
 
 jobs:
   # phase 1
@@ -25,9 +22,9 @@ jobs:
     steps:
     - uses: actions/checkout@v3
 
-    - uses: viash-io/viash-actions/setup@v3
+    - uses: viash-io/viash-actions/setup@v4
 
-    - uses: viash-io/viash-actions/project/sync-and-cache-s3@v3
+    - uses: viash-io/viash-actions/project/sync-and-cache-s3@v4
       id: cache
       with:
         s3_bucket: $s3_bucket
@@ -37,15 +34,15 @@ jobs:
     - name: Remove target folder from .gitignore
       run: |
         # allow publishing the target folder
-        sed -i '/^target.*/d' .gitignore
+        sed -i '/^\/target\/$/d' .gitignore
 
-    - uses: viash-io/viash-actions/ns-build@v3
+    - uses: viash-io/viash-actions/ns-build@v4
       with:
         config_mod: ".functionality.version := '${{ github.event.inputs.version_tag }}'"
         parallel: true
 
     - name: Build nextflow schemas
-      uses: viash-io/viash-actions/pro/build-nextflow-schemas@v3
+      uses: viash-io/viash-actions/pro/build-nextflow-schemas@v4
       with:
         workflows: workflows
         components: src
@@ -53,7 +50,7 @@ jobs:
         tools_version: 'main_build'
    
     - name: Build parameter files
-      uses: viash-io/viash-actions/pro/build-nextflow-params@v3
+      uses: viash-io/viash-actions/pro/build-nextflow-params@v4
       with:
         workflows: workflows
         components: src
@@ -67,16 +64,18 @@ jobs:
         publish_dir: .
         publish_branch: release
         full_commit_message: "Deploy for release ${{ github.event.inputs.version_tag }} from ${{ github.sha }}"
+        exclude_assets: ''
+
 
     - id: ns_list_components
-      uses: viash-io/viash-actions/ns-list@v3
+      uses: viash-io/viash-actions/ns-list@v4
       with:
         platform: docker
         src: src
         format: json
 
     - id: ns_list_workflows
-      uses: viash-io/viash-actions/ns-list@v3
+      uses: viash-io/viash-actions/ns-list@v4
       with:
         src: workflows
         format: json
@@ -91,14 +90,14 @@ jobs:
           }
         ]' ${{ steps.ns_list_components.outputs.output_file }} )" >> $GITHUB_OUTPUT
 
-        echo "workflows=$(jq -c '[ .[] | 
+        echo "workflows=$(jq -c '[ .[] | . as $config | (.functionality.test_resources // [])[] | select(.type == "nextflow_script", .entrypoint) |
           { 
-            "name": (.functionality.namespace + "/" + .functionality.name),
-            "main_script": ((.info.config | capture("^(?<dir>.*\/)").dir) + "/" + (.functionality.test_resources | map(select(.type == "nextflow_script")) | unique | .[].path )),
-            "config": .info.config,
-            "entry": .functionality.test_resources | map(select(.type == "nextflow_script")) | .[].entrypoint
+            "name": ($config.functionality.namespace + "/" + $config.functionality.name),
+            "main_script": (($config.info.config | capture("^(?<dir>.*\/)").dir) + "/" + .path),
+            "entry": .entrypoint,
+            "config": $config.info.config
           }
-        ]' ${{ steps.ns_list_workflows.outputs.output_file }} )" >> $GITHUB_OUTPUT
+        ] | unique' ${{ steps.ns_list_workflows.outputs.output_file }} )" >> $GITHUB_OUTPUT
 
   # phase 2
   build:
@@ -112,12 +111,15 @@ jobs:
         component: ${{ fromJson(needs.list.outputs.component_matrix) }}
 
     steps:
+    # Remove unnecessary files to free up space. Otherwise, we get 'no space left on device.'
+    - uses: data-intuitive/reclaim-the-bytes@v2
+
     - uses: actions/checkout@v3
 
-    - uses: viash-io/viash-actions/setup@v3
+    - uses: viash-io/viash-actions/setup@v4
 
     - name: Build container
-      uses: viash-io/viash-actions/ns-build@v3
+      uses: viash-io/viash-actions/ns-build@v4
       with:
         config_mod: .functionality.version := '${{ github.event.inputs.version_tag }}'
         platform: docker
@@ -133,7 +135,7 @@ jobs:
         password: ${{ secrets.GTHB_PAT }}
 
     - name: Push container
-      uses: viash-io/viash-actions/ns-build@v3
+      uses: viash-io/viash-actions/ns-build@v4
       with:
         config_mod: .functionality.version := '${{ github.event.inputs.version_tag }}'
         platform: docker
@@ -154,16 +156,19 @@ jobs:
         component: ${{ fromJson(needs.list.outputs.workflow_matrix) }}
 
     steps:
+    # Remove unnecessary files to free up space. Otherwise, we get 'no space left on device.'
+    - uses: data-intuitive/reclaim-the-bytes@v2
+
     - uses: actions/checkout@v3
 
-    - uses: viash-io/viash-actions/setup@v3
+    - uses: viash-io/viash-actions/setup@v4
 
-    - uses: nf-core/setup-nextflow@v1.2.0
+    - uses: nf-core/setup-nextflow@v1.3.0
 
     # build target dir
     # use containers from release branch, hopefully these are available
     - name: Build target dir
-      uses: viash-io/viash-actions/ns-build@v3
+      uses: viash-io/viash-actions/ns-build@v4
       with:
         config_mod: ".functionality.version := '${{ github.event.inputs.version_tag }}'"
         parallel: true
@@ -222,9 +227,12 @@ jobs:
         component: ${{ fromJson(needs.list.outputs.component_matrix) }}
 
     steps:
+    # Remove unnecessary files to free up space. Otherwise, we get 'no space left on device.'
+    - uses: data-intuitive/reclaim-the-bytes@v2
+
     - uses: actions/checkout@v3
 
-    - uses: viash-io/viash-actions/setup@v3
+    - uses: viash-io/viash-actions/setup@v4
 
     # use cache
     - name: Cache resources data
@@ -279,45 +287,3 @@ jobs:
           --config_mod ".platforms[.type == 'docker'].setup := []" \
           --cpus 2 \
           --memory "5gb"
-
-  ###################################3
-  # phase 5
-  push_documentation:
-    runs-on: ubuntu-latest
-    needs: [ list ]
-    if: "${{ github.event.inputs.push_documentation == 'true' }}"
-
-    steps:
-      - uses: actions/checkout@v3
-        with:
-          path: openpipelines
-
-      - uses: actions/checkout@v3
-        with:
-          repository: openpipelines-bio/website
-          path: website
-          token: ${{ secrets.GTHB_PAT }}
-
-      - uses: viash-io/viash-actions/setup@v3
-
-      - uses: viash-io/viash-actions/pro/generate-documentation-qmd@v3
-        with:
-          input_dir: ./
-          output_dir: website
-          dest_path: "{type}s/{namespace}/{name}.qmd"
-          viash_pro_token: ${{ secrets.GTHB_PAT }}
-          tools_version: main_build
-
-      - name: Create Pull Request
-        env:
-          TAG: ${{ github.event.inputs.version_tag }}
-          GITHUB_TOKEN: ${{ secrets.GTHB_PAT }}
-        working-directory: website
-        run: |
-          git config user.name github-actions
-          git config user.email github-actions@github.com
-          git add .
-          git checkout -B "release-$TAG"
-          git commit -m "OpenPipelines release $TAG"
-          git push --set-upstream origin "release-$TAG"
-          gh pr create --title "Openpipeline release $TAG" --base main --head "release-$TAG" --body ""

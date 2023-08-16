@@ -1,2 +1,10 @@
 name: Samuel D'Souza
-props: { github: srdsam }
+info:
+  role: Contributor
+  links:
+    github: srdsam
+    linkedin: samuel-d-souza-887023150/
+  organizations:
+    - name: Chan Zuckerberg Biohub
+      href: https://www.czbiohub.org
+      role: Data Engineer

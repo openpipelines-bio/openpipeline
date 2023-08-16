@@ -5,7 +5,7 @@ functionality:
   description: |
     Convert the output of a BD Rhapsody WTA pipeline to a MuData h5 file.
   authors:
-    - __merge__: ../../authors/robrecht_cannoodt.yaml
+    - __merge__: /src/authors/robrecht_cannoodt.yaml
       roles: [ maintainer ]
   argument_groups:
     - name: Inputs
@@ -49,7 +49,7 @@ platforms:
       - type: docker
         run: apt update && apt upgrade -y
       - type: python
-        pip: [anndata~=0.8, mudata~=0.2.0]
+        __merge__: /src/base/requirements/anndata_mudata.yaml
       - type: r
         cran: anndata
   - type: nextflow

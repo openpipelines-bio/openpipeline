@@ -28,4 +28,4 @@ def test_remove_component(run_component):
     assert list(output.mod.keys()) == ["prot"]
 
 if __name__ == '__main__':
-    exit(pytest.main([__file__], plugins=["viashpy"]))
+    exit(pytest.main([__file__]))

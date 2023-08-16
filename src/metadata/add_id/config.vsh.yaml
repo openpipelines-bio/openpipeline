@@ -6,7 +6,7 @@ functionality:
     Add id of .obs. Also allows to make .obs_names (the .obs index) unique 
     by prefixing the values with an unique id per .h5mu file.
   authors:
-    - __merge__: ../../authors/dries_schaumont.yaml
+    - __merge__: /src/authors/dries_schaumont.yaml
       roles: [ maintainer ]
   arguments:
     - name: "--input"
@@ -47,11 +47,12 @@ functionality:
     - path: ../../../resources_test/concat_test_data/e18_mouse_brain_fresh_5k_filtered_feature_bc_matrix_subset_unique_obs.h5mu
 platforms:
   - type: docker
-    image: python:3.10
+    image: python:3.10-slim
     setup:
+      - type: apt
+        packages: 
+          - procps
       - type: python
-        packages:
-          - mudata~=0.2.0
-          - anndata~=0.8.0
+        __merge__: /src/base/requirements/anndata_mudata.yaml
   - type: native
   - type: nextflow

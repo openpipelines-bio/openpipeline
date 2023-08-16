@@ -24,9 +24,9 @@ functionality:
       ~6.9% ~14,400 ~9,000
       ~7.6% ~16,000 ~10,000
   authors:
-    - __merge__: ../../authors/dries_de_maeyer.yaml
+    - __merge__: /src/authors/dries_de_maeyer.yaml
       roles: [ contributor ]
-    - __merge__: ../../authors/robrecht_cannoodt.yaml
+    - __merge__: /src/authors/robrecht_cannoodt.yaml
       roles: [ maintainer, contributor ]
   arguments:
     # input
@@ -102,25 +102,37 @@ functionality:
       default: "euclidean"
       description: The distance metric used for computing similarities.
 
+    - name: "--allow_automatic_threshold_detection_fail"
+      type: "boolean_true"
+      description: |
+        When scrublet fails to automatically determine the double score threshold, 
+        allow the component to continue and set the output columns to NA.
   resources:
     - type: python_script
       path: script.py
   test_resources:
     - type: python_script
-      path: run_test.py
+      path: test.py
     - path: ../../../resources_test/pbmc_1k_protein_v3
 platforms:
   - type: docker
-    image: python:3.10
+    image: python:3.10-slim
     run_args: [--env NUMBA_CACHE_DIR=/tmp]
     setup:
+      - type: apt
+        packages: 
+          - procps
+          - build-essential
       - type: python
+        __merge__: [/src/base/requirements/anndata_mudata.yaml, .]
         packages:
           - scanpy~=1.9.2
           - scrublet
-          - mudata~=0.2.0
-          - anndata~=0.8.0
           - annoy==1.16.3
+    test_setup:
+      - type: python
+        packages:
+         - viashpy
   - type: nextflow
     directives:
       label: highcpu

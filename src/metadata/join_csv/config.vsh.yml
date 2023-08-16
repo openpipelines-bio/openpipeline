@@ -3,7 +3,7 @@ functionality:
   namespace: "metadata"
   description: "Join a csv containing metadata to the .obs or .var field of a mudata file."
   authors:
-    - __merge__: ../../authors/dries_schaumont.yaml
+    - __merge__: /src/authors/dries_schaumont.yaml
       roles: [ author ]
   argument_groups:
     - name: "MuData Input"
@@ -67,10 +67,11 @@ functionality:
       path: test.py
 platforms:
   - type: docker
-    image: python:3.10
+    image: python:3.10-slim
     setup:
+      - type: apt
+        packages: 
+          - procps
       - type: python
-        packages:
-          - mudata~=0.2.0
-          - anndata~=0.8.0
+        __merge__: /src/base/requirements/anndata_mudata.yaml
   - type: nextflow

@@ -106,3 +106,44 @@ nextflow \
   -params-file /tmp/params.yaml \
   -c workflows/utils/labels.config \
   -c workflows/utils/errorstrat_ignore.config
+
+# Create h5mu
+cat > /tmp/params.yaml << HERE
+id: "$ID"
+input: "$OUT/processed/10x_5k_anticmv.cellranger_multi.output.output"
+publish_dir: "$OUT/"
+output: "$orig_sample_id.h5mu"
+HERE
+
+nextflow \
+  run . \
+  -main-script target/nextflow/convert/from_cellranger_multi_to_h5mu/main.nf \
+  -resume \
+  -profile docker,mount_temp \
+  -params-file /tmp/params.yaml \
+  -c workflows/utils/labels.config
+
+cat > /tmp/params.yaml << HERE
+id: "$ID"
+input: "$OUT/$orig_sample_id.h5mu"
+publish_dir: "$OUT/"
+output: "${orig_sample_id}_mms.h5mu"
+HERE
+
+# Run full pipeline
+nextflow \
+  run . \
+  -main-script workflows/multiomics/full_pipeline/main.nf \
+  -resume \
+  -profile docker,mount_temp \
+  -params-file /tmp/params.yaml \
+  -c workflows/utils/labels.config
+
+# create fastqc directory
+fastqc_dir="$OUT/fastqc"
+mkdir -p "$fastqc_dir"
+
+./target/docker/qc/fastqc/fastqc \
+  --input "$raw_dir" \
+  --mode "dir" \
+  --output "$fastqc_dir"

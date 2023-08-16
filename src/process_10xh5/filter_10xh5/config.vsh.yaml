@@ -10,7 +10,7 @@ functionality:
       --output pbmc_1k_protein_v3_raw_feature_bc_matrix_filtered.h5 \
       --min_library_size 1000 --min_cells_per_gene 300
   authors:
-    - __merge__: ../../authors/robrecht_cannoodt.yaml
+    - __merge__: /src/authors/robrecht_cannoodt.yaml
       roles: [ maintainer ]
   arguments:
     - name: "--input"
@@ -54,9 +54,9 @@ platforms:
       - type: apt
         packages: libhdf5-dev python3-pip python3-dev
       - type: python
+        __merge__: [/src/base/requirements/anndata_mudata.yaml, .]
         packages: 
           - scanpy~=1.9.2
-          - anndata~=0.8.0
       - type: r
         cran: [ testthat, anndata, hdf5r ]
   - type: nextflow

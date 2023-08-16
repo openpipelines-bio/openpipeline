@@ -1,5 +1,7 @@
 name: main build
-concurrency: main_build
+concurrency: 
+  group: main_build
+  cancel-in-progress: true
 
 on:
   push:
@@ -17,20 +19,20 @@ jobs:
     steps:
     - uses: actions/checkout@v3
 
-    - uses: viash-io/viash-actions/setup@v3
+    - uses: viash-io/viash-actions/setup@v4
 
     - name: Remove target folder from .gitignore
       run: |
         # allow publishing the target folder
-        sed -i '/^target.*/d' .gitignore
+        sed -i '/^\/target\/$/d' .gitignore
 
-    - uses: viash-io/viash-actions/ns-build@v3
+    - uses: viash-io/viash-actions/ns-build@v4
       with:
         config_mod: .functionality.version := 'main_build'
         parallel: true
 
     - name: Build nextflow schemas
-      uses: viash-io/viash-actions/pro/build-nextflow-schemas@v3
+      uses: viash-io/viash-actions/pro/build-nextflow-schemas@v4
       with:
         workflows: workflows
         components: src
@@ -38,7 +40,7 @@ jobs:
         tools_version: 'main_build'
    
     - name: Build parameter files
-      uses: viash-io/viash-actions/pro/build-nextflow-params@v3
+      uses: viash-io/viash-actions/pro/build-nextflow-params@v4
       with:
         workflows: workflows
         components: src
@@ -51,9 +53,10 @@ jobs:
         github_token: ${{ secrets.GITHUB_TOKEN }}
         publish_dir: .
         publish_branch: main_build
+        exclude_assets: ''
 
     - id: ns_list
-      uses: viash-io/viash-actions/ns-list@v3
+      uses: viash-io/viash-actions/ns-list@v4
       with:
         platform: docker
         src: src
@@ -81,12 +84,15 @@ jobs:
         component: ${{ fromJson(needs.list.outputs.component_matrix) }}
 
     steps:
+    # Remove unnecessary files to free up space. Otherwise, we get 'no space left on device.'
+    - uses: data-intuitive/reclaim-the-bytes@v2
+
     - uses: actions/checkout@v3
 
-    - uses: viash-io/viash-actions/setup@v3
+    - uses: viash-io/viash-actions/setup@v4
 
     - name: Build container
-      uses: viash-io/viash-actions/ns-build@v3
+      uses: viash-io/viash-actions/ns-build@v4
       with:
         config_mod: .functionality.version := 'main_build'
         platform: docker
@@ -101,7 +107,7 @@ jobs:
         password: ${{ secrets.GTHB_PAT }}
 
     - name: Push container
-      uses: viash-io/viash-actions/ns-build@v3
+      uses: viash-io/viash-actions/ns-build@v4
       with:
         config_mod: .functionality.version := 'main_build'
         platform: docker

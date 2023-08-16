@@ -23,13 +23,17 @@ functionality:
   resources:
     - type: bash_script
       path: script.sh
-  # test_resources:
-  #   - type: bash_script
-  #     path: test.sh
+  test_resources:
+    - type: bash_script
+      path: test.sh
+    - path: ../../../resources_test/10x_5k_anticmv/fastqc/
 platforms:
   - type: docker
-    image: python:3.8
+    image: python:3.8-slim
     setup:
+      - type: apt
+        packages: 
+          - procps
       - type: python
         packages: [ multiqc ]
   - type: nextflow

@@ -1,11 +1,239 @@
-# openpipelines 0.7.2
+# openpipelines 0.10.0
+
+
+## BREAKING CHANGES
+
+* `workflows/full_pipeline`: removed `--prot_min_fraction_mito` and `--prot_max_fraction_mito` (PR #451)
+
+* `workflows/rna_multisample` and `workflows/prot_multisample`: Removed concatenation from these pipelines. The input for these pipelines is now a single mudata file that contains data for multiple samples. If you wish to use this pipeline on multiple single-sample mudata files, you can use the `dataflow/concat` components on them first. This also implies that the ability to add ids to multiple single-sample mudata files prior to concatenation is no longer required, hence the removal of `--add_id_to_obs`, `--sample_id`, `--add_id_obs_output`,  and `--add_id_make_observation_keys_unique` (PR #475).
+
+* The `scvi` pipeline was renamed to `scvi_leiden` because `leiden` clustering was added to the pipeline (PR #499).
+
+## MAJOR CHANGES
+
+* Several components: update anndata to 0.9.3 and mudata to 0.2.3 (PR #423).
+
+## MINOR CHANGES
+
+* `full_pipeline`: default value for `--var_qc_metrics` is now the combined values specified for `--mitochondrial_gene_regex` and `--filter_with_hvg_var_output`.
+
+* `dataflow/concat`: reduce memory consumption by only reading one modality at the same time (PR #474).
+
+* Components that use CellRanger, BCL Convert or bcl2fastq: updated from Ubuntu 20.04 to Ubuntu 22.04 (PR #494).
+
+* Components that use CellRanger: updated Picard to 2.27.5 (PR #494).
+
+* `interprete/liana`: Update lianapy to 0.1.9 (PR #497).
+
+* `qc/multiqc`: add unittests (PR #502).
+
+* `reference/build_cellranger_reference`: add unit tests (PR #506).
+
+* `reference/build_bd_rhapsody_reference`: add unittests (PR #504).
 
 ## NEW FUNCTIONALITY
 
 * Added genetic demultiplexing methods `cellsnp`, `demuxlet`, `freebayes`, `freemuxlet`, `scsplit`, `sourorcell` and `vireo`.
 
+* `integrate/scvi`: Add `--n_hidden_nodes`, `--n_dimensions_latent_space`, `--n_hidden_layers`, `--dropout_rate`, `--dispersion`, `--gene_likelihood`, `--use_layer_normalization`, `--use_batch_normalization`, `--encode_covariates`, `--deeply_inject_covariates` and `--use_observed_lib_size` parameters.
+
+* `filter/filter_with_counts`: add `--var_name_mitochondrial_genes` argument to store a boolean array corresponding the detected mitochondrial genes.
+
+* `full_pipeline` and `rna_singlesample` pipelines: add `--var_name_mitochondrial_genes`,  `--var_gene_names` and `--mitochondrial_gene_regex` arguments to specify mitochondrial gene detection behaviour.
+
+* `integrate/scvi`: Add `--obs_labels`, `--obs_size_factor`, `--obs_categorical_covariate` and `--obs_continuous_covariate` arguments (PR #496).
+
+* Added `var_qc_metrics_fill_na_value` argument to `calculate_qc_metrics` (PR #477).
+
+* Added `multiomics/multisample` pipeline to run multisample processing followed by the integration setup. It is considered an entrypoint into the full pipeline which skips the single-sample processing. The idea is to allow a a re-run of these steps after a sample has already been processed by the `full_pipeline`. Keep in mind that samples that are provided as input to this pipeline are processed separately and are not concatenated. Hence, the input should be a concatenated sample (PR #475). 
+
+* Added `multiomics/integration/bbknn_leiden` workflow. (PR #456).
+
+* `workflows/prot_multisample` and `workflows/full_pipelines`: add basic QC statistics to prot modality (PR #485).
+
+* `mapping/cellranger_multi`: Add tests for the mapping of Crispr Guide Capture data (PR #494).
+
+* `convert/from_cellranger_multi_to_h5mu`: add `perturbation_efficiencies_by_feature` and `perturbation_efficiencies_by_feature` information to .uns slot of `gdo` modality (PR #494).
+
+* `convert/from_cellranger_multi_to_h5mu`: add `feature_reference` information to the MuData object. Information is split between the modalities. For example `CRISPR Guide Capture` information if added to the `.uns` slot of the `gdo` modality, while `Antibody Capture` information is added to the .uns slot of `prot` (PR #494).
+
+* `workflows/full_pipeline`: Add `pca_overwrite` argument (PR #511).
+
+## BUG FIXES
+
+* Fix an issue with `workflows/multiomics/scanorama_leiden` where the `--output` argument doesn't work as expected (PR #509).
+
+* Fix an issue with `workflows/full_pipeline` not correctly caching previous runs (PR #460).
+
+* Fix incorrect namespaces of the integration pipelines (PR #464).
+
+* Fix an issue in several workflows where the `--output` argument would not work (PR #476).
+
+* `integration/harmony_leiden` and `integration/scanorama_leiden`: Fix an issue where the prefix of the columns that store the leiden clusters was hardcoded to `leiden`, instead of adapting to the value for `--obs_cluster` (PR #482). 
+
+* `velocity/velocyto`: Resolve symbolic link before checking whether the transcriptome is a gzip (PR #484).
+
+* `workflows/integration/scanorama_leiden`: fix an issue where `--obsm_input`, --obs_batch`, `--batch_size`, `--sigma`, `--approx`, `--alpha` and `-knn` were not working beacuse they were not passed through to the scanorama component (PR #487).
+
+* `workflows/integration/scanorama_leiden`: fix leiden being calculated on the wrong embedding because the `--obsm_input` argument was not correctly set to the output embedding of scanorama (PR #487).
+
+* `mapping/cellranger_multi`: Fix and issue where modalities did not have the proper name (PR #494).
+
+* `metadata/add_uns_to_obs`: Fix `KeyError: 'ouput_compression'` error (PR #501).
+
+# openpipelines 0.9.0
+
+## BREAKING CHANGES
+
+Running the integration in the `full_pipeline` deemed to be impractical because a plethora of integration methods exist, which in turn interact with other functionality (like clustering). This generates a large number of possible usecases which one pipeline cannot cover in an easy manner. Instead, each integration methods will be split into its separate pipeline, and the `full_pipeline` will prepare for integration by performing steps that are required by many integration methods. Therefore, the following changes were performed:
+
+  * `workflows/full_pipeline`: `harmony` integration and `leiden` clustering are removed from the pipeline.
+
+  * Added `initialize_integration` to run calculations that output information commonly required by the integration methods. This pipeline runs PCA, nearest neighbours and UMAP. This pipeline is run as a subpipeline at the end of `full_pipeline`.
+
+  * Added `leiden_harmony` integration pipeline: run harmony integration followed by neighbour calculations and leiden clustering. Also runs umap on the result.
+
+  * Removed the `integration` pipeline.
+
+The old behavior of the `full_pipeline` can be obtained by running `full_pipeline` followed by the `leiden_harmony` pipeline.
+
+* The `crispr` and `hashing` modalities have been renamed to `gdo` and `hto` respectively (PR #392).
+
+* Updated Viash to 0.7.4 (PR #390).
+
+* `cluster/leiden`: Output is now stored into `.obsm` instead of `.obs` (PR #431).
+
+## NEW FUNCTIONALITY
+
+* `cluster/leiden` and `integration/harmony_leiden`: allow running leiden multiple times with multiple resolutions (PR #431).
+
+* `workflows/full_pipeline`: PCA, nearest neighbours and UMAP are now calculated for the `prot` modality (PR #396).
+
+* `transform/clr`: added `output_layer` argument (PR #396).
+
+* `workflows/integration/scvi`: Run scvi integration followed by neighbour calculations and run umap on the result (PR #396).
+
+* `mapping/cellranger_multi` and `workflows/ingestion/cellranger_multi`: Added `--vdj_inner_enrichment_primers` argument (PR #417).
+
+* `metadata/move_obsm_to_obs`: Move a matrix from an `.obsm` slot into `.obs` (PR #431).
+
+* `integrate/scvi` validity checks for non-normalized input, obs and vars in order to proceed to training (PR #429).
+
+* `schemas`: Added schema files for authors (PR #436).
+
+* `schemas`: Added schema file for Viash configs (PR #436).
+
+* `schemas`: Refactor author import paths (PR #436).
+
+* `schemas`: Added schema file for file format specification files (PR #437).
+
+* `query/cellxgene_census`: Query Cellxgene census component and save the results to a MuData file. (PR #433).
+
+## MAJOR CHANGES
+
+* `report/mermaid`: Now used `mermaid-cli` to generate images instead of creating a request to `mermaid.ink`. New `--output_format`, `--width`, `--height` and  `--background_color` arguments were added (PR #419).
+
+* All components that used `python` as base container: use `slim` version to reduce container image size (PR #427).
+
 ## MINOR CHANGES
+
+* `integrate/scvi`: update scvi to 1.0.0 (PR #448)
+
+* `mapping/multi_star`: Added `--min_success_rate` which causes component to fail when the success rate of processed samples were successful (PR #408).
+
+* `correction/cellbender_remove_background` and `transform/clr`: update muon to 0.1.5 (PR #428)
+
+* `ingestion/cellranger_postprocessing`: split integration tests into several workflows (PR #425).
+
+* `schemas`: Add schema file for author yamls (PR #436).
+
+* `mapping/multi_star`, `mapping/star_build_reference` and `mapping/star_align`: update STAR from 2.7.10a to 2.7.10b (PR #441).
+
+## BUG FIXES
+
+* `annotate/popv`: Fix concat issue when the input data has multiple layers (#395, PR #397).
+
+* `annotate/popv`: Fix indexing issue when MuData object contain non overlapping modalities (PR #405).
+
+* `mapping/multi_star`: Fix issue where temp dir could not be created when group_id contains slashes (PR #406).
+
+* `mapping/multi_star_to_h5mu`: Use glob to look for count files recursively (PR #408).
+
+* `annotate/popv`: Pin `PopV`, `jax` and `jaxlib` versions (PR #415).
+
+* `integrate/scvi`: the max_epochs is no longer required since it has a default value (PR #396).
+
+* `workflows/full_pipeline`: fix `make_observation_keys_unique` parameter not being correctly passed to the `add_id` component, causing `ValueError: Observations are not unique across samples` during execution of the `concat` component (PR #422).
+
+* `annotate/popv`: now sets `aprox` to `False` to avoid using `annoy` in scanorama because it fails on processors that are missing the AVX-512 instruction sets, causing `Illegal instruction (core dumped)`.
+
+* `workflows/full_pipeline`: Avoid adding sample names to observation ids twice (PR #457). 
+
+# openpipelines 0.8.0
+
+## BREAKING CHANGES
+
+* `workflows/full_pipeline`: Renamed inconsistencies in argument naming (#372):
+  - `rna_min_vars_per_cell` was renamed to `rna_min_genes_per_cell`
+  - `rna_max_vars_per_cell` was renamed to `rna_max_genes_per_cell`
+  - `prot_min_vars_per_cell` was renamed to `prot_min_proteins_per_cell`
+  - `prot_max_vars_per_cell` was renamed to `prot_max_proteins_per_cell`
+
+* `velocity/scvelo`: bump anndata from <0.8 to 0.9.
+
+## NEW FUNCTIONALITY
+
+* Added an extra label `veryhighmem` mostly for `cellranger_multi` with a large number of samples.
+
+* Added `multiomics/prot_multisample` pipeline.
+
+* Added `clr` functionality to `prot_multisample` pipeline.
+
+* Added `interpret/lianapy`: Enables the use of any combination of ligand-receptor methods and resources, and their consensus.
+
+* `filter/filter_with_scrublet`: Add `--allow_automatic_threshold_detection_fail`: when scrublet fails to detect doublets, the component will now put `NA` in the output columns.
+
+* `workflows/full_pipeline`: Allow not setting the sample ID to the .obs column of the MuData object.
+
+* `workflows/rna_multisample`: Add the ID of the sample to the .obs column of the MuData object.
+
+* `correction/cellbender_remove_background`: add `obsm_latent_gene_encoding` parameter to store the latent gene representation.
+
+## BUG FIXES
+
+* `transform/clr`: fix anndata object instead of matrix being stored as a layer in output `MuData`, resulting in `NoneTypeError` object after reading the `.layers` back in.
+
+* `dataflow/concat` and `dataflow/merge`: fixed a bug where boolean values were cast to their string representation.
+
+* `workflows/full_pipeline`: fix running pipeline with `-stub`.
+
+* Fixed an issue where passing a remote file URI (for example `http://` or `s3://`) as `param_list` caused `No such file` errors.
+
+* `workflows/full_pipeline`: Fix incorrectly named filtering arguments (#372).
+
+* `integrate/scvi`: Fix bug when subsetting using the `var_input` argument (PR #385).
+* 
+* `correction/cellbender_remove_background`: add `obsm_latent_gene_encoding` parameter to store the latent gene representation.
+
+## MINOR CHANGES
+
 * `integrate/scarches`, `integrate/scvi` and `correction/cellbender_remove_background`: Update base container to `nvcr.io/nvidia/pytorch:22.12-py3`
+
+* `integrate/scvi`: add `gpu` label for nextflow platform.
+
+* `integrate/scvi`: use cuda enabled `jax` install.
+
+* `convert/from_cellranger_multi_to_h5mu`, `dataflow/concat` and `dataflow/merge`: update pandas to 2.0.0
+
+* `dataflow/concat` and `dataflow/merge`: Boolean and integer columns are now represented by the `BooleanArray` and `IntegerArray` dtypes in order to allow storing `NA` values.
+
+* `interpret/lianapy`: use the latest development release (commit 11156ddd0139a49dfebdd08ac230f0ebf008b7f8) of lianapy in order to fix compatibility with numpy 1.24.x.
+
+* `filter/filter_with_hvg`: Add error when specified input layer cannot be found in input data.
+
+* `workflows/multiomics/full_pipeline`: publish the output from sample merging to allow running different integrations.
+
+* CI: Remove various unused software libraries from runner image in order to avoid `no space left on device` (PR #425, PR #447).
 
 # openpipelines 0.7.1
 
@@ -253,6 +481,8 @@ These options were previously covered in the `bin/init` script, but this new fea
 * `correction/cellbender_remove_background`: Eliminating technical artifacts from high-throughput single-cell RNA sequencing data.
 
 * `workflows/ingestion/cellranger_postprocessing`: Add post-processing of h5mu files created from Cell Ranger data.
+
+* `annotate/popv`: Performs popular major vote cell typing on single cell sequence data.
 
 ## MAJOR CHANGES
 
@@ -552,6 +782,7 @@ on each modality instead of on the whole `MuData` object.
 
 * `bd_rhapsody_wta`: Remove temporary directory after execution.
 
+* `files/make_params`: Implement unit tests (PR #505).
 
 # openpipeline 0.1.0
 

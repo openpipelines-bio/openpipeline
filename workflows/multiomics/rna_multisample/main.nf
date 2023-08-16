@@ -9,6 +9,7 @@ include { filter_with_hvg } from targetDir + '/filter/filter_with_hvg/main.nf'
 include { concat } from targetDir + '/dataflow/concat/main.nf'
 include { calculate_qc_metrics } from targetDir + '/qc/calculate_qc_metrics/main.nf'
 include { delete_layer } from targetDir + '/transform/delete_layer/main.nf'
+include { add_id } from targetDir + "/metadata/add_id/main.nf"
 
 include { readConfig; helpMessage; channelFromParams; preprocessInputs } from workflowDir + "/utils/WorkflowHelper.nf"
 include { setWorkflowArguments; getWorkflowArguments; passthroughMap as pmap; passthroughFlatMap as pFlatMap } from workflowDir + "/utils/DataflowHelper.nf"
@@ -29,15 +30,9 @@ workflow run_wf {
   input_ch
 
   main:
-  output_ch = input_ch
+  parsed_arguments_ch = input_ch
     | preprocessInputs("config": config)
-    // add the id to the arguments
-    | pmap { id, data ->
-      def new_data = data + [ input_id: data.sample_id ]
-      [id, new_data]
-    }
     | setWorkflowArguments (
-      "concat": [:],
       "normalize_total": [:],
       "log1p": [:],
       "delete_layer": [:],
@@ -49,11 +44,20 @@ workflow run_wf {
       ],
       "qc_metrics": [
         "var_qc_metrics": "var_qc_metrics",
-        "top_n_vars": "top_n_vars"
+        "top_n_vars": "top_n_vars",
+        "output": "output",
       ]
     )
-    | getWorkflowArguments(key: "concat")
-    | concat
+  
+  // Check that the output name is unique for all samples (we concat into one file)
+  parsed_arguments_ch
+    | toSortedList
+    | map  { list ->
+        found_output_files = list.collect{it[2].get('qc_metrics').getOrDefault("output", null)}.unique()
+        assert found_output_files.size() < 2, "The specified output file is not the same for all samples. Found: $found_output_files"
+    }
+
+  output_ch = parsed_arguments_ch
     | getWorkflowArguments(key: "normalize_total")
     | normalize_total.run( 
       args: [ output_layer: "normalized" ]
@@ -81,7 +85,8 @@ workflow run_wf {
       args: [
         input_layer: null,
         output_compression: "gzip"
-      ]
+      ],
+      key: "rna_calculate_qc_metrics"
     )
     | map {list -> [list[0], list[1]] + list.drop(3)}
 
@@ -95,9 +100,12 @@ workflow test_wf {
 
   // or when running from s3: params.resources_test = "s3://openpipelines-data/"
   testParams = [
-    id: "combined_samples_rna",
-    sample_id: "mouse;brain",
-    input: params.resources_test + "/concat_test_data/e18_mouse_brain_fresh_5k_filtered_feature_bc_matrix_subset_unique_obs.h5mu;" + params.resources_test + "/concat_test_data/human_brain_3k_filtered_feature_bc_matrix_subset_unique_obs.h5mu",
+    param_list: [
+      [id: "concatenated_file",
+       input: params.resources_test + "/concat_test_data/concatenated_brain_filtered_feature_bc_matrix_subset.h5mu",
+       output: "concatenated_file.final.h5mu"
+      ]
+    ]
   ]
 
   output_ch =
@@ -113,7 +121,8 @@ workflow test_wf {
     | toList()
     | map { output_list ->
       assert output_list.size() == 1 : "output channel should contain one event"
-      assert output_list[0][0] == "combined_samples_rna" : "Output ID should be same as input ID"
+      assert output_list[0][0] == "concatenated_file" : "Output ID should be same as input ID"
+      assert (output_list.collect({it[1].getFileName().toString()}) as Set).equals(["concatenated_file.final.h5mu"] as Set)
     }
     //| check_format(args: {""}) // todo: check whether output h5mu has the right slots defined
 }

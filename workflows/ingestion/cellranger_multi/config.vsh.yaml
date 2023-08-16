@@ -5,9 +5,10 @@ functionality:
   info:
     name: Cell Ranger multi
   authors:
-    - __merge__: ../../../src/authors/dries_schaumont.yaml
+    - __merge__: /src/authors/dries_schaumont.yaml
       roles: [ author ]
-  argument_groups:
+  argument_groups: 
+  # For extensive documentation: see https://support.10xgenomics.com/single-cell-vdj/software/pipelines/7.0/using/multi
     - name: Inputs
       arguments:
         - name: "--id"
@@ -41,6 +42,14 @@ functionality:
             https://support.10xgenomics.com/single-cell-gene-expression/software/pipelines/latest/using/feature-bc-analysis#feature-ref 
             for more information.
           example: "feature_reference.csv"
+          required: false
+        - name: "--vdj_inner_enrichment_primers"
+          type: file
+          description: |
+            V(D)J Immune Profiling libraries: if inner enrichment primers other than those provided 
+            in the 10x Genomics kits are used, they need to be specified here as a
+            text file with one primer per line.
+          example: "enrichment_primers.txt"
           required: false
     - name: Outputs
       arguments:
