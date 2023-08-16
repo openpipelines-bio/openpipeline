@@ -119,7 +119,11 @@ jobs:
     - name: Build container
       uses: viash-io/viash-actions/ns-build@v4
       with:
-        config_mod: .functionality.version := 'main_build'; .platforms[.type == 'docker'].target_registry := 'viash-hub.com:5050'; .platforms[.type == 'docker'].target_organization := 'openpipelines-bio/openpipeline'; .platforms[.type == 'docker'].target_image_source := 'https://viash-hub.com/openpipelines-bio/openpipeline'
+        config_mod: |
+          .functionality.version := 'main_build'
+          .platforms[.type == 'docker'].target_registry := 'viash-hub.com:5050'
+          .platforms[.type == 'docker'].target_organization := 'openpipelines-bio/openpipeline'
+          .platforms[.type == 'docker'].target_image_source := 'https://viash-hub.com/openpipelines-bio/openpipeline'
         platform: docker
         src: ${{ matrix.component.dir }}
         setup: build
@@ -134,7 +138,11 @@ jobs:
     - name: Push container to Viash-Hub
       uses: viash-io/viash-actions/ns-build@v4
       with:
-        config_mod: .functionality.version := 'main_build'; .platforms[.type == 'docker'].target_registry := 'viash-hub.com:5050'; .platforms[.type == 'docker'].target_organization := 'openpipelines-bio/openpipeline'; .platforms[.type == 'docker'].target_image_source := 'https://viash-hub.com/openpipelines-bio/openpipeline'
+        config_mod: |
+          .functionality.version := 'main_build'
+          .platforms[.type == 'docker'].target_registry := 'viash-hub.com:5050'
+          .platforms[.type == 'docker'].target_organization := 'openpipelines-bio/openpipeline'
+          .platforms[.type == 'docker'].target_image_source := 'https://viash-hub.com/openpipelines-bio/openpipeline'
         platform: docker
         src: ${{ matrix.component.dir }}
         setup: push
