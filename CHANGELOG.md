@@ -36,6 +36,10 @@
 
 * Removed unused `version: dev` (PR #513).
 
+* `multiomics/integration/harmony_leiden`: Refactored data flow (PR #513).
+
+* `ingestion/bd_rhapsody`: Refactored data flow (PR #513).
+
 
 ## NEW FUNCTIONALITY
 
