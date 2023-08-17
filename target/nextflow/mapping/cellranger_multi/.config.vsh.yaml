@@ -416,5 +416,5 @@ info:
   output: "/home/runner/work/openpipeline/openpipeline/target/nextflow/mapping/cellranger_multi"
   executable: "/home/runner/work/openpipeline/openpipeline/target/nextflow/mapping/cellranger_multi/cellranger_multi"
   viash_version: "0.7.4"
-  git_commit: "0db6b379e720c0680a90d1650405554a231ca26d"
+  git_commit: "d63b9ec4b2a64c6e6e5a4012b50d5c3def5a39ae"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"
