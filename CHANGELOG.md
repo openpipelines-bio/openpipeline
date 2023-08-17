@@ -12,6 +12,16 @@
 
 * Several components: update anndata to 0.9.3 and mudata to 0.2.3 (PR #423).
 
+* Updated to Viash 0.7.5 (PR #513).
+
+* Removed deprecated `variant: vdsl3` tags (PR #513).
+
+* Removed unused `version: dev` (PR #513).
+
+* `multiomics/integration/harmony_leiden`: Refactored data flow (PR #513).
+
+* `ingestion/bd_rhapsody`: Refactored data flow (PR #513).
+
 ## MINOR CHANGES
 
 * `full_pipeline`: default value for `--var_qc_metrics` is now the combined values specified for `--mitochondrial_gene_regex` and `--filter_with_hvg_var_output`.
@@ -29,16 +39,6 @@
 * `reference/build_cellranger_reference`: add unit tests (PR #506).
 
 * `reference/build_bd_rhapsody_reference`: add unittests (PR #504).
-
-* Updated to Viash 0.7.5 (PR #513).
-
-* Removed deprecated `variant: vdsl3` tags (PR #513).
-
-* Removed unused `version: dev` (PR #513).
-
-* `multiomics/integration/harmony_leiden`: Refactored data flow (PR #513).
-
-* `ingestion/bd_rhapsody`: Refactored data flow (PR #513).
 
 
 ## NEW FUNCTIONALITY
