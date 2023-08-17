@@ -34,7 +34,8 @@ workflow run_wf {
         "input": "input", 
         "obsm_output": "obsm_pca",
         "var_input": "var_pca_feature_selection",
-        "modality": "modality"
+        "modality": "modality",
+        "overwrite": "pca_overwrite"
       ],
       neighbors: [
         "uns_output": "uns_neighbors",

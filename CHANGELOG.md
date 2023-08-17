@@ -4,25 +4,79 @@
 
 * `workflows/full_pipeline`: removed `--prot_min_fraction_mito` and `--prot_max_fraction_mito` (PR #451)
 
+* `workflows/rna_multisample` and `workflows/prot_multisample`: Removed concatenation from these pipelines. The input for these pipelines is now a single mudata file that contains data for multiple samples. If you wish to use this pipeline on multiple single-sample mudata files, you can use the `dataflow/concat` components on them first. This also implies that the ability to add ids to multiple single-sample mudata files prior to concatenation is no longer required, hence the removal of `--add_id_to_obs`, `--sample_id`, `--add_id_obs_output`,  and `--add_id_make_observation_keys_unique` (PR #475).
+
+* The `scvi` pipeline was renamed to `scvi_leiden` because `leiden` clustering was added to the pipeline (PR #499).
+
+## MAJOR CHANGES
+
+* Several components: update anndata to 0.9.3 and mudata to 0.2.3 (PR #423).
+
 ## MINOR CHANGES
 
 * `full_pipeline`: default value for `--var_qc_metrics` is now the combined values specified for `--mitochondrial_gene_regex` and `--filter_with_hvg_var_output`.
 
-* `dataflow/concat`: reduce memory consumption by only reading one modality at the same time (PR #474). 
+* `dataflow/concat`: reduce memory consumption by only reading one modality at the same time (PR #474).
+
+* Components that use CellRanger, BCL Convert or bcl2fastq: updated from Ubuntu 20.04 to Ubuntu 22.04 (PR #494).
+
+* Components that use CellRanger: updated Picard to 2.27.5 (PR #494).
+
+* `interprete/liana`: Update lianapy to 0.1.9 (PR #497).
+
+* `qc/multiqc`: add unittests (PR #502).
+
+* `reference/build_cellranger_reference`: add unit tests (PR #506).
+
+* `reference/build_bd_rhapsody_reference`: add unittests (PR #504).
 
 ## NEW FUNCTIONALITY
+
+* `integrate/scvi`: Add `--n_hidden_nodes`, `--n_dimensions_latent_space`, `--n_hidden_layers`, `--dropout_rate`, `--dispersion`, `--gene_likelihood`, `--use_layer_normalization`, `--use_batch_normalization`, `--encode_covariates`, `--deeply_inject_covariates` and `--use_observed_lib_size` parameters.
 
 * `filter/filter_with_counts`: add `--var_name_mitochondrial_genes` argument to store a boolean array corresponding the detected mitochondrial genes.
 
 * `full_pipeline` and `rna_singlesample` pipelines: add `--var_name_mitochondrial_genes`,  `--var_gene_names` and `--mitochondrial_gene_regex` arguments to specify mitochondrial gene detection behaviour.
 
+* `integrate/scvi`: Add `--obs_labels`, `--obs_size_factor`, `--obs_categorical_covariate` and `--obs_continuous_covariate` arguments (PR #496).
+
+* Added `var_qc_metrics_fill_na_value` argument to `calculate_qc_metrics` (PR #477).
+
+* Added `multiomics/multisample` pipeline to run multisample processing followed by the integration setup. It is considered an entrypoint into the full pipeline which skips the single-sample processing. The idea is to allow a a re-run of these steps after a sample has already been processed by the `full_pipeline`. Keep in mind that samples that are provided as input to this pipeline are processed separately and are not concatenated. Hence, the input should be a concatenated sample (PR #475). 
+
+* Added `multiomics/integration/bbknn_leiden` workflow. (PR #456).
+
+* `workflows/prot_multisample` and `workflows/full_pipelines`: add basic QC statistics to prot modality (PR #485).
+
+* `mapping/cellranger_multi`: Add tests for the mapping of Crispr Guide Capture data (PR #494).
+
+* `convert/from_cellranger_multi_to_h5mu`: add `perturbation_efficiencies_by_feature` and `perturbation_efficiencies_by_feature` information to .uns slot of `gdo` modality (PR #494).
+
+* `convert/from_cellranger_multi_to_h5mu`: add `feature_reference` information to the MuData object. Information is split between the modalities. For example `CRISPR Guide Capture` information if added to the `.uns` slot of the `gdo` modality, while `Antibody Capture` information is added to the .uns slot of `prot` (PR #494).
+
+* `workflows/full_pipeline`: Add `pca_overwrite` argument (PR #511).
+
 ## BUG FIXES
+
+* Fix an issue with `workflows/multiomics/scanorama_leiden` where the `--output` argument doesn't work as expected (PR #509).
 
 * Fix an issue with `workflows/full_pipeline` not correctly caching previous runs (PR #460).
 
 * Fix incorrect namespaces of the integration pipelines (PR #464).
 
 * Fix an issue in several workflows where the `--output` argument would not work (PR #476).
+
+* `integration/harmony_leiden` and `integration/scanorama_leiden`: Fix an issue where the prefix of the columns that store the leiden clusters was hardcoded to `leiden`, instead of adapting to the value for `--obs_cluster` (PR #482). 
+
+* `velocity/velocyto`: Resolve symbolic link before checking whether the transcriptome is a gzip (PR #484).
+
+* `workflows/integration/scanorama_leiden`: fix an issue where `--obsm_input`, --obs_batch`, `--batch_size`, `--sigma`, `--approx`, `--alpha` and `-knn` were not working beacuse they were not passed through to the scanorama component (PR #487).
+
+* `workflows/integration/scanorama_leiden`: fix leiden being calculated on the wrong embedding because the `--obsm_input` argument was not correctly set to the output embedding of scanorama (PR #487).
+
+* `mapping/cellranger_multi`: Fix and issue where modalities did not have the proper name (PR #494).
+
+* `metadata/add_uns_to_obs`: Fix `KeyError: 'ouput_compression'` error (PR #501).
 
 # openpipelines 0.9.0
 
@@ -725,6 +779,7 @@ on each modality instead of on the whole `MuData` object.
 
 * `bd_rhapsody_wta`: Remove temporary directory after execution.
 
+* `files/make_params`: Implement unit tests (PR #505).
 
 # openpipeline 0.1.0
 
