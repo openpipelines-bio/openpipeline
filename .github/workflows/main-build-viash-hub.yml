@@ -57,8 +57,8 @@ jobs:
         viash_pro_token: ${{ secrets.GTHB_PAT }}
         tools_version: 'main_build'
 
-    - name: Push build artifacts to Viash-Hub
-      uses: viash-io/viash-actions/viash-hub/push@viash-hub-push
+    - name: Deploy build artifacts to Viash-Hub
+      uses: viash-io/viash-actions/viash-hub/deploy@viash-hub-push
       with:
         github_token: ${{ github.token }}
         viash_hub_token: ${{ secrets.VIASHHUB_PAT }}
