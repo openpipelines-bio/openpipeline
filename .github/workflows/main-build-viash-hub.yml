@@ -57,7 +57,7 @@ jobs:
         tools_version: 'main_build'
 
     - name: Deploy build artifacts to Viash-Hub
-      uses: viash-io/viash-actions/viash-hub/deploy@viash-hub-push
+      uses: viash-io/viash-actions/viash-hub/deploy@v4
       with:
         github_token: ${{ github.token }}
         viash_hub_token: ${{ secrets.VIASHHUB_PAT }}
@@ -103,7 +103,7 @@ jobs:
     - uses: viash-io/viash-actions/setup@v4
 
     - name: Build container
-      uses: viash-io/viash-actions/ns-build@viash-hub-push
+      uses: viash-io/viash-actions/ns-build@v4
       with:
         config_mod: |
           .functionality.version := 'main_build'
@@ -122,7 +122,7 @@ jobs:
         password: ${{ secrets.VIASHHUB_PAT }}
 
     - name: Push container to Viash-Hub
-      uses: viash-io/viash-actions/ns-build@viash-hub-push
+      uses: viash-io/viash-actions/ns-build@v4
       with:
         config_mod: |
           .functionality.version := 'main_build'
