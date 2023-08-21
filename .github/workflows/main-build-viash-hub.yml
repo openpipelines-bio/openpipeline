@@ -3,7 +3,7 @@ concurrency: main_build_viash_hub
 
 on:
   push:
-    branches: [ 'main', 'feature/push_viashhub' ]
+    branches: [ 'main' ]
 
 jobs:
   # phase 1
@@ -20,10 +20,9 @@ jobs:
         fetch-depth: 0
 
     - name: Push main to Viash-hub
-      if: "${{ github.ref_name == 'main' }}"
       run: |
         git remote add viash-hub https://x-access-token:${{ secrets.VIASHHUB_PAT }}@viash-hub.com/openpipelines-bio/openpipeline.git
-        git push -f viash-hub ${{ github.ref_name }}
+        git push -f viash-hub main
 
     - uses: viash-io/viash-actions/setup@v4
 
