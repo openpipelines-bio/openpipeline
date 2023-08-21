@@ -104,7 +104,7 @@ jobs:
     - uses: viash-io/viash-actions/setup@v4
 
     - name: Build container
-      uses: viash-io/viash-actions/ns-build@v4
+      uses: viash-io/viash-actions/ns-build@viash-hub-push
       with:
         config_mod: |
           .functionality.version := 'main_build'
@@ -123,7 +123,7 @@ jobs:
         password: ${{ secrets.VIASHHUB_PAT }}
 
     - name: Push container to Viash-Hub
-      uses: viash-io/viash-actions/ns-build@v4
+      uses: viash-io/viash-actions/ns-build@viash-hub-push
       with:
         config_mod: |
           .functionality.version := 'main_build'
