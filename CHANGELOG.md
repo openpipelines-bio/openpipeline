@@ -32,6 +32,8 @@
 
 ## NEW FUNCTIONALITY
 
+* Resource management: when a process exits with a status code between 137 and 140, retry the process with increased memory requirements. Memory scales by multiplying the base memory assigned to the process with the attempt number (PR #518).
+
 * `integrate/scvi`: Add `--n_hidden_nodes`, `--n_dimensions_latent_space`, `--n_hidden_layers`, `--dropout_rate`, `--dispersion`, `--gene_likelihood`, `--use_layer_normalization`, `--use_batch_normalization`, `--encode_covariates`, `--deeply_inject_covariates` and `--use_observed_lib_size` parameters.
 
 * `filter/filter_with_counts`: add `--var_name_mitochondrial_genes` argument to store a boolean array corresponding the detected mitochondrial genes.
@@ -79,6 +81,8 @@
 * `mapping/cellranger_multi`: Fix and issue where modalities did not have the proper name (PR #494).
 
 * `metadata/add_uns_to_obs`: Fix `KeyError: 'ouput_compression'` error (PR #501).
+
+* `neighbors/bbknn`: Fix `--input` not being a required argument (PR #518).
 
 # openpipelines 0.9.0
 
