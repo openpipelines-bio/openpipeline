@@ -296,7 +296,6 @@ platforms:
   cmd: null
 - type: "nextflow"
   id: "nextflow"
-  variant: "vdsl3"
   directives:
     tag: "$id"
   auto:
@@ -343,6 +342,6 @@ info:
   platform: "docker"
   output: "/home/runner/work/openpipeline/openpipeline/target/docker/filter/filter_with_counts"
   executable: "/home/runner/work/openpipeline/openpipeline/target/docker/filter/filter_with_counts/filter_with_counts"
-  viash_version: "0.7.4"
-  git_commit: "8b3bdc657d4dec9bd090fe79764e56f4427525fc"
+  viash_version: "0.7.5"
+  git_commit: "ada1147eec75611346255f9979ee0805333f5fbb"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"
