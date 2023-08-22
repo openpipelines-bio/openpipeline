@@ -13,7 +13,7 @@ include { find_neighbors } from targetDir + '/neighbors/find_neighbors/main.nf'
 include { readConfig; helpMessage; preprocessInputs; channelFromParams } from workflowDir + "/utils/WorkflowHelper.nf"
 include { setWorkflowArguments; getWorkflowArguments; passthroughMap as pmap } from workflowDir + "/utils/DataflowHelper.nf"
 
-config = readConfig("$workflowDir/multiomics/integration/leiden_scvi/config.vsh.yaml")
+config = readConfig("$workflowDir/multiomics/integration/scvi_leiden/config.vsh.yaml")
 
 workflow {
   helpMessage(config)

@@ -46,6 +46,9 @@ functionality:
           type: string
           required: false
           description: Column name in .var matrix that will be used to select which genes to run the PCA on.
+        - name: "--pca_overwrite"
+          type: boolean_true
+          description: "Allow overwriting slots for PCA output."
     - name: Neighbour calculation
       arguments:
         - name: "--uns_neighbors"
