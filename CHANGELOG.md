@@ -16,7 +16,7 @@
 
 ## MINOR CHANGES
 
-* * Add resource labels to several components (PR #518).
+* Add resource labels to several components (PR #518).
 
 * `full_pipeline`: default value for `--var_qc_metrics` is now the combined values specified for `--mitochondrial_gene_regex` and `--filter_with_hvg_var_output`.
 
