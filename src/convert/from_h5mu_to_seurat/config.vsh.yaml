@@ -3,7 +3,6 @@ functionality:
   # MuDataSeurat is currently broken -- https://github.com/PMBio/MuDataSeurat/issues/9
   status: disabled 
   namespace: "convert"
-  version: "dev"
   description: |
     Converts an h5mu file into a Seurat file.
 

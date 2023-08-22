@@ -12,6 +12,16 @@
 
 * Several components: update anndata to 0.9.3 and mudata to 0.2.3 (PR #423).
 
+* Updated to Viash 0.7.5 (PR #513).
+
+* Removed deprecated `variant: vdsl3` tags (PR #513).
+
+* Removed unused `version: dev` (PR #513).
+
+* `multiomics/integration/harmony_leiden`: Refactored data flow (PR #513).
+
+* `ingestion/bd_rhapsody`: Refactored data flow (PR #513).
+
 ## MINOR CHANGES
 
 * `full_pipeline`: default value for `--var_qc_metrics` is now the combined values specified for `--mitochondrial_gene_regex` and `--filter_with_hvg_var_output`.
@@ -57,6 +67,10 @@
 * Added `multiomics/integration/totalvi_leiden` pipeline (PR #500).
 
 * Added totalVI component (PR #386).
+
+* `workflows/full_pipeline`: Add `pca_overwrite` argument (PR #511).
+
+* Add `main_build_viash_hub` action to build, tag, and push components and docker images for viash-hub.com (PR #480).
 
 ## BUG FIXES
 

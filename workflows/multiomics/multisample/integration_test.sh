@@ -17,3 +17,10 @@ nextflow \
   -profile docker,no_publish \
   -c workflows/utils/labels_ci.config
 
+
+nextflow \
+  run . \
+  -main-script workflows/multiomics/multisample/main.nf \
+  -entry test_wf2 \
+  -profile docker,no_publish \
+  -c workflows/utils/labels_ci.config
