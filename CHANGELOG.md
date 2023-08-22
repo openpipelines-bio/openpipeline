@@ -56,6 +56,8 @@
 
 * `workflows/full_pipeline`: Add `pca_overwrite` argument (PR #511).
 
+* Add `main_build_viash_hub` action to build, tag, and push components and docker images for viash-hub.com (PR #480).
+
 ## BUG FIXES
 
 * Fix an issue with `workflows/multiomics/scanorama_leiden` where the `--output` argument doesn't work as expected (PR #509).
