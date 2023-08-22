@@ -117,4 +117,4 @@ platforms:
           - viashpy
   - type: nextflow
     directives:
-      label: [highmem]
+      label: [highmem, singlecpu]

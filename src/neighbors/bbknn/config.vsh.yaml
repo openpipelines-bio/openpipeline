@@ -16,7 +16,7 @@ functionality:
       type: file
       description: Input h5mu file
       direction: input
-      required: 
+      required: true
     - name: "--modality"
       type: string
       default: "rna"
@@ -95,4 +95,4 @@ platforms:
           - scikit-learn~=1.2.2
   - type: nextflow
     directives:
-      label: highmem
+      label: [lowcpu, highmem]

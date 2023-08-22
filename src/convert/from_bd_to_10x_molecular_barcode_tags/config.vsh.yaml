@@ -42,3 +42,5 @@ platforms:
       - type: apt
         packages: [ samtools ]
   - type: nextflow
+    directives:
+      label: [lowmem, singlecpu]

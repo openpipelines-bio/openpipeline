@@ -116,4 +116,4 @@ platforms:
           - scanpy~=1.9.2
   - type: nextflow
     directives:
-      label: highcpu
+      label: [highcpu, midmem]

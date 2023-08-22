@@ -134,3 +134,5 @@ platforms:
           - pytest
           - viashpy
   - type: nextflow
+    directives:
+      label: [singlecpu, lowmem]

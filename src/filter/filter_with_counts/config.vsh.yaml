@@ -139,3 +139,5 @@ platforms:
       - type: python
         packages: viashpy
   - type: nextflow
+    directives:
+      label: [singlecpu, lowmem]

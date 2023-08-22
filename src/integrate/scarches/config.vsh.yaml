@@ -113,7 +113,6 @@ platforms:
           - scvi-tools~=0.19          
           - pandas~=1.5.3
   - type: nextflow
-    variant: vdsl3
     directives:
       label: [highmem, highcpu]
   - type: native

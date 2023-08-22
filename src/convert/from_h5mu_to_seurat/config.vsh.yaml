@@ -60,3 +60,5 @@ platforms:
       - type: r
         github: pmbio/MuDataSeurat
   - type: nextflow
+    directives:
+      label: [lowmem, singlecpu]

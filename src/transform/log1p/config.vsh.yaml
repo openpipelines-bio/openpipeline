@@ -78,3 +78,5 @@ platforms:
           - viashpy
           - pytest
   - type: nextflow
+    directives:
+      label: [midmem, lowcpu]

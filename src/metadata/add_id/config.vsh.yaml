@@ -56,3 +56,5 @@ platforms:
         __merge__: /src/base/requirements/anndata_mudata.yaml
   - type: native
   - type: nextflow
+    directives:
+      label: [ singlecpu, lowmem ]
