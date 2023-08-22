@@ -1,7 +1,6 @@
 functionality:
   name: "from_10xh5_to_h5mu"
   namespace: "convert"
-  version: "dev"
   description: |
     Converts a 10x h5 into an h5mu file.
   authors:

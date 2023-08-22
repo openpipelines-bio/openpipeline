@@ -6,11 +6,21 @@
 
 * `workflows/rna_multisample` and `workflows/prot_multisample`: Removed concatenation from these pipelines. The input for these pipelines is now a single mudata file that contains data for multiple samples. If you wish to use this pipeline on multiple single-sample mudata files, you can use the `dataflow/concat` components on them first. This also implies that the ability to add ids to multiple single-sample mudata files prior to concatenation is no longer required, hence the removal of `--add_id_to_obs`, `--sample_id`, `--add_id_obs_output`,  and `--add_id_make_observation_keys_unique` (PR #475).
 
-* The `scvi` pipeline was renamed to `leiden_scvi` because `leiden` clustering was added to the pipeline (PR #499).
+* The `scvi` pipeline was renamed to `scvi_leiden` because `leiden` clustering was added to the pipeline (PR #499).
 
 ## MAJOR CHANGES
 
 * Several components: update anndata to 0.9.3 and mudata to 0.2.3 (PR #423).
+
+* Updated to Viash 0.7.5 (PR #513).
+
+* Removed deprecated `variant: vdsl3` tags (PR #513).
+
+* Removed unused `version: dev` (PR #513).
+
+* `multiomics/integration/harmony_leiden`: Refactored data flow (PR #513).
+
+* `ingestion/bd_rhapsody`: Refactored data flow (PR #513).
 
 ## MINOR CHANGES
 
@@ -54,7 +64,11 @@
 
 * `convert/from_cellranger_multi_to_h5mu`: add `feature_reference` information to the MuData object. Information is split between the modalities. For example `CRISPR Guide Capture` information if added to the `.uns` slot of the `gdo` modality, while `Antibody Capture` information is added to the .uns slot of `prot` (PR #494).
 
+* `workflows/full_pipeline`: Add `pca_overwrite` argument (PR #511).
+
 ## BUG FIXES
+
+* Fix an issue with `workflows/multiomics/scanorama_leiden` where the `--output` argument doesn't work as expected (PR #509).
 
 * Fix an issue with `workflows/full_pipeline` not correctly caching previous runs (PR #460).
 

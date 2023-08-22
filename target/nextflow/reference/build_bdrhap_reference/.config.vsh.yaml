@@ -130,7 +130,6 @@ platforms:
   cmd: null
 - type: "nextflow"
   id: "nextflow"
-  variant: "vdsl3"
   directives:
     label:
     - "highmem"
@@ -180,6 +179,6 @@ info:
   platform: "nextflow"
   output: "/home/runner/work/openpipeline/openpipeline/target/nextflow/reference/build_bdrhap_reference"
   executable: "/home/runner/work/openpipeline/openpipeline/target/nextflow/reference/build_bdrhap_reference/build_bdrhap_reference"
-  viash_version: "0.7.4"
-  git_commit: "be12d8ac4cdf211dab2df866b3ec279bf096d05a"
+  viash_version: "0.7.5"
+  git_commit: "abccc7bec968a59961625065fb401d79c4a682db"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"
