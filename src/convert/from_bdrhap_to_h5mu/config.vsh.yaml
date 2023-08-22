@@ -53,3 +53,5 @@ platforms:
       - type: r
         cran: anndata
   - type: nextflow
+    directives:
+      label: [lowmem, singlecpu]
