@@ -3,10 +3,6 @@ import os
 import logging
 import cellxgene_census
 import mudata as mu
-import anndata as ad
-from scipy.sparse import csr_matrix
-import obonet
-import networkx
 
 # set up logger
 logger = logging.getLogger()
@@ -23,6 +19,8 @@ par = {
     "cellxgene_release": "2023-05-15",
     "species": "homo_sapiens",
     "cell_query": "is_primary_data == True and cell_type_ontology_term_id in ['CL:0000136', 'CL:1000311', 'CL:0002616', 'CL:0002617', 'CL:0002615', 'CL:0001070', 'CL:1000310', 'CL:0000449', 'CL:1000309', 'CL:0002521', 'CL:0000448'] and assay_ontology_term_id in ['EFO:0009922', 'EFO:0009899', 'EFO:0011025', 'EFO:0030004', 'EFO:0030003'] and development_stage_ontology_term_id in ['HsapDv:0000084', 'HsapDv:0000098', 'HsapDv:0000097', 'HsapDv:0000099', 'HsapDv:0000096'] and suspension_type == 'cell'",
+    "cells_filter_columns": ["dataset_id", "tissue", "assay", "disease", "cell_type"],
+    "min_cells_filter_columns": 100,
     "output": "output.h5mu",
     "output_compression": "gzip",
 }
@@ -50,6 +48,31 @@ def connect_census(input_database, release):
         )
 
 
+def add_cellcensus_metadata_obs(census_connection, query_data):
+    census_datasets = census_connection["census_info"]["datasets"].read().concat().to_pandas()
+    
+    dataset_info = census_datasets[census_datasets.dataset_id.isin(query_data.obs.dataset_id.cat.categories)]\
+    [['collection_id', 'collection_name', 'collection_doi', 'dataset_id', 'dataset_title']]\
+    .reset_index(drop=True)\
+    .apply(lambda x: x.astype('category'))
+    
+    return query_data.obs.merge(
+        dataset_info, on='dataset_id', how = 'left'
+        )
+
+
+def cellcensus_cell_filter(query_data, cells_filter_columns, min_cells_filter_columns):
+    t0 = query_data.shape
+    query_data = query_data[
+        query_data.obs.groupby(cells_filter_columns)["soma_joinid"].transform('count') >= min_cells_filter_columns
+        ]
+    t1 = query_data.shape
+    logger.info(
+        'Removed %s cells based on %s min_cells_filter_columns of %s cells_filter_columns.'
+        % ((t0[0] - t1[0]), min_cells_filter_columns, cells_filter_columns)
+        )
+    return query_data
+    
 def write_mudata(mdata, output_location, compression):
     logger.info("Writing %s", output_location)
     
@@ -67,8 +90,25 @@ def main():
         obs_value_filter = par["cell_query"],
         organism = par["species"]
     )
+    
+    query_data.obs = add_cellcensus_metadata_obs(
+        census_connection,
+        query_data
+        )
+
     census_connection.close()
     del census_connection
+
+    if par["cells_filter_columns"]:
+        if not par["min_cells_filter_columns"]:
+            raise NotImplementedError(
+            "You specified cells_filter_columns, thus add min_cells_filter_columns!"
+            )
+        query_data = cellcensus_cell_filter(
+            query_data,
+            par["cells_filter_columns"],
+            par["min_cells_filter_columns"]
+            )
 
     mdata = mu.MuData(
         {par["modality"]: query_data}
@@ -77,7 +117,11 @@ def main():
     mdata["rna"].var_names = mdata["rna"].var["feature_id"]
     mdata["rna"].var["gene_symbol"] = mdata["rna"].var["feature_name"]
 
-    write_mudata(mdata, par["output"], par["output_compression"])
+    write_mudata(
+        mdata,
+        par["output"],
+        par["output_compression"]
+        )
 
 if __name__ == "__main__":
     main()
