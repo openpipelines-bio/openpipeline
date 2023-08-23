@@ -389,7 +389,7 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
     "platform" : "nextflow",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/interpret/lianapy",
     "viash_version" : "0.7.5",
-    "git_commit" : "ada1147eec75611346255f9979ee0805333f5fbb",
+    "git_commit" : "5e9431504b8f53e9d069fb3a8fd35f82e44be05f",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))
