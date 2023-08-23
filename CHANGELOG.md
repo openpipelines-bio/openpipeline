@@ -64,7 +64,13 @@
 
 * `convert/from_cellranger_multi_to_h5mu`: add `feature_reference` information to the MuData object. Information is split between the modalities. For example `CRISPR Guide Capture` information if added to the `.uns` slot of the `gdo` modality, while `Antibody Capture` information is added to the .uns slot of `prot` (PR #494).
 
+* Added `multiomics/integration/totalvi_leiden` pipeline (PR #500).
+
+* Added totalVI component (PR #386).
+
 * `workflows/full_pipeline`: Add `pca_overwrite` argument (PR #511).
+
+* Add `main_build_viash_hub` action to build, tag, and push components and docker images for viash-hub.com (PR #480).
 
 ## BUG FIXES
 
