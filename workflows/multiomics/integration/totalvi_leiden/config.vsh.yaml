@@ -64,7 +64,8 @@ functionality:
         - name: "--obs_batch"
           type: string
           description: .Obs column name discriminating between your batches.
-          required: true
+          required: false
+          default: "sample_id"
         - name: "--max_epochs"
           type: integer
           description: "Number of passes through the dataset"

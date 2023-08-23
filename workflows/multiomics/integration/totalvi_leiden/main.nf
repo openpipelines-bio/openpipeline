@@ -31,41 +31,51 @@ workflow neighbors_leiden_umap {
 
   main:
   output_ch = integrated_ch 
-    | setWorkflowArguments(
-      neighbors: [
+    | find_neighbors.run(
+      fromState: [
+        "input": "input",
         "uns_output": "uns_neighbors",
         "obsp_distances": "obsp_neighbor_distances",
         "obsp_connectivities": "obsp_neighbor_connectivities",
         "obsm_input": "obsm_output", // use output from scvi as input for neighbors,
         "query_modality": "modality"
       ],
-      clustering: [
+      toState: ["input": "output"],
+      auto: [simplifyOutput: false]
+    )
+    | leiden.run(
+      fromState: [
+        "input": "input",
         "obsp_connectivities": "obsp_neighbor_connectivities",
         "obsm_name": "obs_cluster",
         "resolution": "leiden_resolution",
         "query_modality": "modality",
       ],
-      umap: [ 
+      toState: ["input": "output"],
+      auto: [simplifyOutput: false]
+    )
+    | umap.run(
+      fromState: [
+        "input": "input",
         "uns_neighbors": "uns_neighbors",
         "obsm_output": "obsm_umap",
         "query_modality": "modality",
       ],
-      move_obsm_to_obs_leiden: [
-        "obsm_key": "obs_cluster",
-        "query_modality": "modality"
-      ]
+      toState: ["input": "output"],
+      auto: [simplifyOutput: false]
     )
-    | getWorkflowArguments(key: "neighbors")
-    | find_neighbors
-    | getWorkflowArguments(key: "clustering")
-    | leiden
-    | getWorkflowArguments(key: "umap")
-    | umap
-    | getWorkflowArguments(key: "move_obsm_to_obs_leiden")
-    | move_obsm_to_obs.run(args: ["compression": "gzip"])
-    | pmap {id, arguments, other_arguments ->
-      return [id, arguments]
-    }
+    | move_obsm_to_obs.run(
+      fromState: { id, state ->
+        [ 
+          "input": state.input,
+          "obsm_key": state.obs_cluster,
+          "query_modality": state.modality,
+          "compression": "gzip"
+        ]
+      },
+      toState: ["input": "output"],
+      auto: [simplifyOutput: false]
+    )
 
   emit:
   output_ch
@@ -78,11 +88,15 @@ workflow run_wf {
   main:
   output_ch = input_ch
     | preprocessInputs("config": config)
+    | map {id, state -> 
+      def new_state = state + ["workflow_output": state.output]
+      [id, new_state]
+    }
     // split params for downstream components
-    | setWorkflowArguments(
-      totalvi: [
+    | totalvi.run(
+      fromState: [
         "input": "input",
-        "layer": "input_layer",
+        "layer": "layer",
         "obs_batch": "obs_batch",
         "query_modality": "modality",
         "query_proteins_modality": "prot_modality",
@@ -96,9 +110,15 @@ workflow run_wf {
         "force_retrain": "force_retrain",
         "weight_decay": "weight_decay",
         "max_epochs": "max_epochs",
-        "max_query_epochs": "max_query_epochs"
+        "max_query_epochs": "max_query_epochs",
+        "reference": "reference"
       ],
-      neighbors_leiden_umap_rna: [
+      toState: ["input": "output"],
+      auto: [simplifyOutput: false]
+    )
+    | map { id, state -> // for gene expression
+      stateMapping = [
+        "input": "input",
         "uns_neighbors": "rna_uns_neighbors",
         "obsp_neighbor_distances": "rna_obsp_neighbor_distances",
         "obsp_neighbor_connectivities": "rna_obsp_neighbor_connectivities",
@@ -108,8 +128,15 @@ workflow run_wf {
         "uns_neighbors": "rna_uns_neighbors",
         "obsm_umap": "obsm_umap",
         "modality": "modality"
-      ],
-      neighbors_leiden_umap_prot: [
+      ]
+      def new_state = stateMapping.collectEntries{newKey, origKey ->
+        [newKey, state[origKey]]
+      }
+      [id, new_state, state]
+    }
+    | neighbors_leiden_umap
+    | map { id, state, orig_state -> // for ADT
+      stateMapping = [
         "uns_neighbors": "prot_uns_neighbors",
         "obsp_neighbor_distances": "prot_obsp_neighbor_distances",
         "obsp_neighbor_connectivities": "prot_obsp_neighbor_connectivities",
@@ -118,29 +145,22 @@ workflow run_wf {
         "leiden_resolution": "prot_leiden_resolution",
         "uns_neighbors": "prot_uns_neighbors",
         "obsm_umap": "obsm_umap",
-        "modality": "prot_modality"
+        "modality": "prot_modality",
+        "workflow_output": "workflow_output"
+      ]
+      def new_state = stateMapping.collectEntries{newKey, origKey ->
+        [newKey, orig_state[origKey]]
+      }
+      [id, new_state + ["input": state.input]]
+    }
+    | neighbors_leiden_umap
+    | publish.run(
+      fromState: [
+        "input": "input",
+        "output": "workflow_output"
       ],
-      "publish": ["output": "output"]
-
+      auto: [ publish: true ]
     )
-    | getWorkflowArguments(key: "totalvi")
-    | totalvi
-    | pmap {id, arguments, other_arguments -> 
-      def input = arguments.output
-      def new_arguments = arguments.clone()
-      new_arguments.removeAll({k, v -> ["output", "model_output"].contains(k)})
-      return [id, new_arguments + ["input": input], other_arguments]
-    }
-    | getWorkflowArguments(key: "neighbors_leiden_umap_rna")
-    | neighbors_leiden_umap
-    | getWorkflowArguments(key: "neighbors_leiden_umap_prot")
-    | neighbors_leiden_umap
-    | getWorkflowArguments(key: "publish")
-    | publish.run(auto: [ publish: true ])
-
-    | pmap {id, arguments, other_arguments ->
-      return [id, arguments]
-    }
   emit:
   output_ch
 }
@@ -182,7 +202,7 @@ workflow test_wf {
     | run_wf
     | view { output ->
       assert output.size() == 2 : "outputs should contain two elements; [id, file]"
-      assert output[1].toString().endsWith(".h5mu") : "Output file should be a h5mu file. Found: ${output_list[1]}"
+      assert output[1].toString().endsWith(".h5mu") : "Output file should be a h5mu file. Found: ${output[1]}"
       "Output: $output"
     }
     | toList()
