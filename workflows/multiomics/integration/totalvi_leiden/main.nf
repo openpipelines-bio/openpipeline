@@ -88,11 +88,11 @@ workflow run_wf {
   main:
   output_ch = input_ch
     | preprocessInputs("config": config)
+    // Avoid conflict with other output arguments
     | map {id, state -> 
       def new_state = state + ["workflow_output": state.output]
       [id, new_state]
     }
-    // split params for downstream components
     | totalvi.run(
       fromState: [
         "input": "input",
