@@ -18,7 +18,7 @@ par = {
     "modality": "rna",
     "cellxgene_release": "2023-05-15",
     "species": "homo_sapiens",
-    "cell_query": "is_primary_data == True and cell_type_ontology_term_id in ['CL:0000136', 'CL:1000311', 'CL:0002616'] suspension_type == 'cell'",
+    "cell_query": "is_primary_data == True and cell_type_ontology_term_id in ['CL:0000136', 'CL:1000311', 'CL:0002616'] and suspension_type == 'cell'",
     "cells_filter_columns": ["dataset_id", "tissue", "assay", "disease", "cell_type"],
     "min_cells_filter_columns": 100,
     "output": "output.h5mu",
@@ -80,6 +80,11 @@ def write_mudata(mdata, output_location, compression):
 
 def main():
 
+    # start dev
+    logger.info('cells_filter_columns: %s' % par["cells_filter_columns"])
+    logger.info('min_cells_filter_columns: %s' % par["min_cells_filter_columns"])
+    # end dev
+    
     census_connection = connect_census(
         par["input_database"],
         par["cellxgene_release"]

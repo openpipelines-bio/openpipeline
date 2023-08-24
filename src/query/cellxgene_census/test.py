@@ -20,7 +20,7 @@ def test_cellxgene_extract_metadata_expression(run_component):
         "--modality", "rna",
         "--cellxgene_release", "2023-05-15",
         "--species", "homo_sapiens",
-        "--cell_query", "is_primary_data == True and cell_type_ontology_term_id in ['CL:0000136', 'CL:1000311', 'CL:0002616'] suspension_type == 'cell'",
+        "--cell_query", "is_primary_data == True and cell_type_ontology_term_id in ['CL:0000136', 'CL:1000311', 'CL:0002616'] and suspension_type == 'cell'",
         "--output", OUTPUT_FILE,
     ])
 
