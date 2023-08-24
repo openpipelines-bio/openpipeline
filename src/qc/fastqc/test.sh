@@ -7,7 +7,7 @@ echo ">>> Testing files mode"
 sample="tinygex_S1_L001_I1_001"
 
 # don't specify the mode 'files' as this is the default
-./fastqc --input "cellranger_tiny_fastq/$sample.fastq.gz" --output filemode-report
+./fastqc --input "cellranger_tiny_fastq/$sample.fastq.gz" --output filemode-report --threads 2
 
 echo ">> Checking whether output dir exists"
 [[ ! -d filemode-report ]] && echo "Output dir could not be found!" && exit 1

@@ -56,3 +56,5 @@ platforms:
   - type: docker
     image: ghcr.io/data-intuitive/randpy:r4.0
   - type: nextflow
+    directives:
+      label: [singlecpu, lowmem]

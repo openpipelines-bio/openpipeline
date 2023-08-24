@@ -8,9 +8,14 @@
 
 * The `scvi` pipeline was renamed to `scvi_leiden` because `leiden` clustering was added to the pipeline (PR #499).
 
+* Upgrade `correction/cellbender_remove_background` from CellBender v0.2 to CellBender v0.3.0 (PR #523).
+  Between these versions, several arguments related to the slots of the output file have been changed.
+
 ## MAJOR CHANGES
 
 * Several components: update anndata to 0.9.3 and mudata to 0.2.3 (PR #423).
+
+* Base resources assigned for a process without any labels is now 1 CPU and 2GB (PR #518).
 
 * Updated to Viash 0.7.5 (PR #513).
 
@@ -23,6 +28,8 @@
 * `ingestion/bd_rhapsody`: Refactored data flow (PR #513).
 
 ## MINOR CHANGES
+
+* Add resource labels to several components (PR #518).
 
 * `full_pipeline`: default value for `--var_qc_metrics` is now the combined values specified for `--mitochondrial_gene_regex` and `--filter_with_hvg_var_output`.
 
@@ -41,6 +48,8 @@
 * `reference/build_bd_rhapsody_reference`: add unittests (PR #504).
 
 ## NEW FUNCTIONALITY
+
+* Resource management: when a process exits with a status code between 137 and 140, retry the process with increased memory requirements. Memory scales by multiplying the base memory assigned to the process with the attempt number (PR #518).
 
 * `integrate/scvi`: Add `--n_hidden_nodes`, `--n_dimensions_latent_space`, `--n_hidden_layers`, `--dropout_rate`, `--dispersion`, `--gene_likelihood`, `--use_layer_normalization`, `--use_batch_normalization`, `--encode_covariates`, `--deeply_inject_covariates` and `--use_observed_lib_size` parameters.
 
@@ -93,6 +102,10 @@
 * `mapping/cellranger_multi`: Fix and issue where modalities did not have the proper name (PR #494).
 
 * `metadata/add_uns_to_obs`: Fix `KeyError: 'ouput_compression'` error (PR #501).
+
+* `neighbors/bbknn`: Fix `--input` not being a required argument (PR #518).
+
+* Create `correction/cellbender_remove_background_v0.2` for legacy CellBender v0.2 format (PR #523).
 
 # openpipelines 0.9.0
 

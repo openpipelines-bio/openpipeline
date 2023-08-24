@@ -329,7 +329,8 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
       "id" : "nextflow",
       "directives" : {
         "label" : [
-          "highcpu"
+          "highcpu",
+          "midmem"
         ],
         "tag" : "$id"
       },
@@ -382,7 +383,7 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
     "platform" : "nextflow",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/filter/filter_with_scrublet",
     "viash_version" : "0.7.5",
-    "git_commit" : "7b1416e9022c9b39aa861271b7a4f3e67b78d8cf",
+    "git_commit" : "afcb33f0cf2748b0c8b6f5eba5a864d7844e9470",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))
@@ -503,7 +504,8 @@ thisDefaultProcessArgs = [
     "tag" : "integration_build"
   },
   "label" : [
-    "highcpu"
+    "highcpu",
+    "midmem"
   ],
   "tag" : "$id"
 }'''),

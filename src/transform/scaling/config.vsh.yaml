@@ -63,4 +63,6 @@ platforms:
         packages:
           - scanpy~=1.9.2
   - type: nextflow
+    directives:
+      label: [lowmem, lowcpu]
   - type: native

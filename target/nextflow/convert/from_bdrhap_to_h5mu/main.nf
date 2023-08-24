@@ -205,6 +205,10 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
       "type" : "nextflow",
       "id" : "nextflow",
       "directives" : {
+        "label" : [
+          "lowmem",
+          "singlecpu"
+        ],
         "tag" : "$id"
       },
       "auto" : {
@@ -256,7 +260,7 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
     "platform" : "nextflow",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/convert/from_bdrhap_to_h5mu",
     "viash_version" : "0.7.5",
-    "git_commit" : "7b1416e9022c9b39aa861271b7a4f3e67b78d8cf",
+    "git_commit" : "afcb33f0cf2748b0c8b6f5eba5a864d7844e9470",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))
@@ -544,6 +548,10 @@ thisDefaultProcessArgs = [
     "image" : "openpipelines-bio/convert_from_bdrhap_to_h5mu",
     "tag" : "integration_build"
   },
+  "label" : [
+    "lowmem",
+    "singlecpu"
+  ],
   "tag" : "$id"
 }'''),
   // auto settings

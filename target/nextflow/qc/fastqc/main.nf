@@ -81,6 +81,19 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
         "multiple" : false,
         "multiple_sep" : ":",
         "dest" : "par"
+      },
+      {
+        "type" : "integer",
+        "name" : "--threads",
+        "alternatives" : [
+          "-t"
+        ],
+        "description" : "Specifies the number of files which can be processed simultaneously. Each thread will be allocated 250MB of\nmemory.\n",
+        "required" : false,
+        "direction" : "input",
+        "multiple" : false,
+        "multiple_sep" : ":",
+        "dest" : "par"
       }
     ],
     "resources" : [
@@ -139,6 +152,10 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
       "type" : "nextflow",
       "id" : "nextflow",
       "directives" : {
+        "label" : [
+          "lowcpu",
+          "midmem"
+        ],
         "tag" : "$id"
       },
       "auto" : {
@@ -190,7 +207,7 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
     "platform" : "nextflow",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/qc/fastqc",
     "viash_version" : "0.7.5",
-    "git_commit" : "7b1416e9022c9b39aa861271b7a4f3e67b78d8cf",
+    "git_commit" : "afcb33f0cf2748b0c8b6f5eba5a864d7844e9470",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))
@@ -203,6 +220,7 @@ cat > "$tempscript" << VIASHMAIN
 $( if [ ! -z ${VIASH_PAR_MODE+x} ]; then echo "${VIASH_PAR_MODE}" | sed "s#'#'\\"'\\"'#g;s#.*#par_mode='&'#" ; else echo "# par_mode="; fi )
 $( if [ ! -z ${VIASH_PAR_INPUT+x} ]; then echo "${VIASH_PAR_INPUT}" | sed "s#'#'\\"'\\"'#g;s#.*#par_input='&'#" ; else echo "# par_input="; fi )
 $( if [ ! -z ${VIASH_PAR_OUTPUT+x} ]; then echo "${VIASH_PAR_OUTPUT}" | sed "s#'#'\\"'\\"'#g;s#.*#par_output='&'#" ; else echo "# par_output="; fi )
+$( if [ ! -z ${VIASH_PAR_THREADS+x} ]; then echo "${VIASH_PAR_THREADS}" | sed "s#'#'\\"'\\"'#g;s#.*#par_threads='&'#" ; else echo "# par_threads="; fi )
 $( if [ ! -z ${VIASH_META_FUNCTIONALITY_NAME+x} ]; then echo "${VIASH_META_FUNCTIONALITY_NAME}" | sed "s#'#'\\"'\\"'#g;s#.*#meta_functionality_name='&'#" ; else echo "# meta_functionality_name="; fi )
 $( if [ ! -z ${VIASH_META_RESOURCES_DIR+x} ]; then echo "${VIASH_META_RESOURCES_DIR}" | sed "s#'#'\\"'\\"'#g;s#.*#meta_resources_dir='&'#" ; else echo "# meta_resources_dir="; fi )
 $( if [ ! -z ${VIASH_META_EXECUTABLE+x} ]; then echo "${VIASH_META_EXECUTABLE}" | sed "s#'#'\\"'\\"'#g;s#.*#meta_executable='&'#" ; else echo "# meta_executable="; fi )
@@ -227,7 +245,7 @@ if [ "\\$par_mode" == "dir" ]; then
   par_input="\\$par_input/*.fastq.gz"
 fi
 
-eval fastqc -o "\\$par_output" "\\$par_input"
+eval fastqc \\${par_threads:+--threads \\$par_threads} -o "\\$par_output" "\\$par_input"
 VIASHMAIN
 bash "$tempscript"
 '''
@@ -244,6 +262,10 @@ thisDefaultProcessArgs = [
     "image" : "openpipelines-bio/qc_fastqc",
     "tag" : "integration_build"
   },
+  "label" : [
+    "lowcpu",
+    "midmem"
+  ],
   "tag" : "$id"
 }'''),
   // auto settings

@@ -96,3 +96,5 @@ platforms:
           - liana~=0.1.9
           - numpy~=1.24.3
   - type: nextflow
+    directives:
+      label: [lowmem, lowcpu]

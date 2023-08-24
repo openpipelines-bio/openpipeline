@@ -177,6 +177,12 @@ function ViashHelp {
   echo "        type: file, required parameter, output, file must exist"
   echo "        example: qc"
   echo "        Output directory to write reports to."
+  echo ""
+  echo "    -t, --threads"
+  echo "        type: integer"
+  echo "        Specifies the number of files which can be processed simultaneously."
+  echo "        Each thread will be allocated 250MB of"
+  echo "        memory."
 }
 
 ######## Helper functions for setting up Docker images for viash ########
@@ -404,9 +410,9 @@ RUN apt-get update && \
   rm -rf /var/lib/apt/lists/*
 
 LABEL org.opencontainers.image.description="Companion container for running component qc fastqc"
-LABEL org.opencontainers.image.created="2023-08-23T13:15:33Z"
+LABEL org.opencontainers.image.created="2023-08-24T11:05:33Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="7b1416e9022c9b39aa861271b7a4f3e67b78d8cf"
+LABEL org.opencontainers.image.revision="afcb33f0cf2748b0c8b6f5eba5a864d7844e9470"
 LABEL org.opencontainers.image.version="integration_build"
 
 VIASHDOCKER
@@ -612,6 +618,23 @@ while [[ $# -gt 0 ]]; do
             [ $# -lt 2 ] && ViashError Not enough arguments passed to -o. Use "--help" to get more information on the parameters. && exit 1
             shift 2
             ;;
+        --threads)
+            [ -n "$VIASH_PAR_THREADS" ] && ViashError Bad arguments for option \'--threads\': \'$VIASH_PAR_THREADS\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+            VIASH_PAR_THREADS="$2"
+            [ $# -lt 2 ] && ViashError Not enough arguments passed to --threads. Use "--help" to get more information on the parameters. && exit 1
+            shift 2
+            ;;
+        --threads=*)
+            [ -n "$VIASH_PAR_THREADS" ] && ViashError Bad arguments for option \'--threads=*\': \'$VIASH_PAR_THREADS\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+            VIASH_PAR_THREADS=$(ViashRemoveFlags "$1")
+            shift 1
+            ;;
+        -t)
+            [ -n "$VIASH_PAR_THREADS" ] && ViashError Bad arguments for option \'-t\': \'$VIASH_PAR_THREADS\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+            VIASH_PAR_THREADS="$2"
+            [ $# -lt 2 ] && ViashError Not enough arguments passed to -t. Use "--help" to get more information on the parameters. && exit 1
+            shift 2
+            ;;
         ---setup)
             VIASH_MODE='docker_setup'
             VIASH_DOCKER_SETUP_STRATEGY="$2"
@@ -771,6 +794,12 @@ if [ ! -z "$VIASH_PAR_INPUT" ] && [ ! -e "$VIASH_PAR_INPUT" ]; then
 fi
 
 # check whether parameters values are of the right type
+if [[ -n "$VIASH_PAR_THREADS" ]]; then
+  if ! [[ "$VIASH_PAR_THREADS" =~ ^[-+]?[0-9]+$ ]]; then
+    ViashError '--threads' has to be an integer. Use "--help" to get more information on the parameters.
+    exit 1
+  fi
+fi
 if [[ -n "$VIASH_META_CPUS" ]]; then
   if ! [[ "$VIASH_META_CPUS" =~ ^[-+]?[0-9]+$ ]]; then
     ViashError 'cpus' has to be an integer. Use "--help" to get more information on the parameters.
@@ -901,6 +930,7 @@ cat > "\$tempscript" << 'VIASHMAIN'
 $( if [ ! -z ${VIASH_PAR_MODE+x} ]; then echo "${VIASH_PAR_MODE}" | sed "s#'#'\"'\"'#g;s#.*#par_mode='&'#" ; else echo "# par_mode="; fi )
 $( if [ ! -z ${VIASH_PAR_INPUT+x} ]; then echo "${VIASH_PAR_INPUT}" | sed "s#'#'\"'\"'#g;s#.*#par_input='&'#" ; else echo "# par_input="; fi )
 $( if [ ! -z ${VIASH_PAR_OUTPUT+x} ]; then echo "${VIASH_PAR_OUTPUT}" | sed "s#'#'\"'\"'#g;s#.*#par_output='&'#" ; else echo "# par_output="; fi )
+$( if [ ! -z ${VIASH_PAR_THREADS+x} ]; then echo "${VIASH_PAR_THREADS}" | sed "s#'#'\"'\"'#g;s#.*#par_threads='&'#" ; else echo "# par_threads="; fi )
 $( if [ ! -z ${VIASH_META_FUNCTIONALITY_NAME+x} ]; then echo "${VIASH_META_FUNCTIONALITY_NAME}" | sed "s#'#'\"'\"'#g;s#.*#meta_functionality_name='&'#" ; else echo "# meta_functionality_name="; fi )
 $( if [ ! -z ${VIASH_META_RESOURCES_DIR+x} ]; then echo "${VIASH_META_RESOURCES_DIR}" | sed "s#'#'\"'\"'#g;s#.*#meta_resources_dir='&'#" ; else echo "# meta_resources_dir="; fi )
 $( if [ ! -z ${VIASH_META_EXECUTABLE+x} ]; then echo "${VIASH_META_EXECUTABLE}" | sed "s#'#'\"'\"'#g;s#.*#meta_executable='&'#" ; else echo "# meta_executable="; fi )
@@ -925,7 +955,7 @@ if [ "\$par_mode" == "dir" ]; then
   par_input="\$par_input/*.fastq.gz"
 fi
 
-eval fastqc -o "\$par_output" "\$par_input"
+eval fastqc \${par_threads:+--threads \$par_threads} -o "\$par_output" "\$par_input"
 VIASHMAIN
 bash "\$tempscript" &
 wait "\$!"

@@ -35,7 +35,7 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
             "alternatives" : [
               "-i"
             ],
-            "description" : "Input h5mu file.",
+            "description" : "Input h5mu file. Data file on which to run tool. Data must be un-filtered: it should include empty droplets.",
             "example" : [
               "input.h5mu"
             ],
@@ -104,7 +104,7 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
             "name" : "--layer_output",
             "description" : "Output layer",
             "default" : [
-              "corrected"
+              "cellbender_corrected"
             ],
             "required" : false,
             "direction" : "input",
@@ -114,9 +114,9 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
           },
           {
             "type" : "string",
-            "name" : "--obs_latent_rt_efficiency",
+            "name" : "--obs_background_fraction",
             "default" : [
-              "latent_rt_efficiency"
+              "cellbender_background_fraction"
             ],
             "required" : false,
             "direction" : "input",
@@ -126,9 +126,33 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
           },
           {
             "type" : "string",
-            "name" : "--obs_latent_cell_probability",
+            "name" : "--obs_cell_probability",
             "default" : [
-              "latent_cell_probability"
+              "cellbender_cell_probability"
+            ],
+            "required" : false,
+            "direction" : "input",
+            "multiple" : false,
+            "multiple_sep" : ":",
+            "dest" : "par"
+          },
+          {
+            "type" : "string",
+            "name" : "--obs_cell_size",
+            "default" : [
+              "cellbender_cell_size"
+            ],
+            "required" : false,
+            "direction" : "input",
+            "multiple" : false,
+            "multiple_sep" : ":",
+            "dest" : "par"
+          },
+          {
+            "type" : "string",
+            "name" : "--obs_droplet_efficiency",
+            "default" : [
+              "cellbender_droplet_efficiency"
             ],
             "required" : false,
             "direction" : "input",
@@ -140,7 +164,7 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
             "type" : "string",
             "name" : "--obs_latent_scale",
             "default" : [
-              "latent_scale"
+              "cellbender_latent_scale"
             ],
             "required" : false,
             "direction" : "input",
@@ -152,7 +176,7 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
             "type" : "string",
             "name" : "--var_ambient_expression",
             "default" : [
-              "ambient_expression"
+              "cellbender_ambient_expression"
             ],
             "required" : false,
             "direction" : "input",
@@ -162,9 +186,9 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
           },
           {
             "type" : "string",
-            "name" : "--obsm_latent_gene_encoding",
+            "name" : "--obsm_gene_expression_encoding",
             "default" : [
-              "cellbender_latent_gene_encoding"
+              "cellbender_gene_expression_encoding"
             ],
             "required" : false,
             "direction" : "input",
@@ -177,6 +201,19 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
       {
         "name" : "Arguments",
         "arguments" : [
+          {
+            "type" : "boolean",
+            "name" : "--expected_cells_from_qc",
+            "description" : "Will use the Cell Ranger QC to determine the estimated number of cells",
+            "default" : [
+              false
+            ],
+            "required" : false,
+            "direction" : "input",
+            "multiple" : false,
+            "multiple_sep" : ":",
+            "dest" : "par"
+          },
           {
             "type" : "integer",
             "name" : "--expected_cells",
@@ -193,7 +230,7 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
           {
             "type" : "integer",
             "name" : "--total_droplets_included",
-            "description" : "The number of droplets from the rank-ordered UMI plot\nthat will be analyzed. The largest 'total_droplets'\ndroplets will have their cell probabilities inferred\nas an output.\n",
+            "description" : "The number of droplets from the rank-ordered UMI plot\nthat will have their cell probabilities inferred as an\noutput. Include the droplets which might contain cells.\nDroplets beyond TOTAL_DROPLETS_INCLUDED should be\n'surely empty' droplets.\n",
             "example" : [
               25000
             ],
@@ -204,12 +241,19 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
             "dest" : "par"
           },
           {
-            "type" : "boolean",
-            "name" : "--expected_cells_from_qc",
-            "description" : "Will use the Cell Ranger QC to determine the estimated number of cells",
-            "default" : [
-              true
-            ],
+            "type" : "integer",
+            "name" : "--force_cell_umi_prior",
+            "description" : "Ignore CellBender's heuristic prior estimation, and use this prior for UMI counts in cells.",
+            "required" : false,
+            "direction" : "input",
+            "multiple" : false,
+            "multiple_sep" : ":",
+            "dest" : "par"
+          },
+          {
+            "type" : "integer",
+            "name" : "--force_empty_umi_prior",
+            "description" : "Ignore CellBender's heuristic prior estimation, and use this prior for UMI counts in empty droplets.",
             "required" : false,
             "direction" : "input",
             "multiple" : false,
@@ -219,12 +263,13 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
           {
             "type" : "string",
             "name" : "--model",
-            "description" : "Which model is being used for count data. 'simple'\ndoes not model either ambient RNA or random barcode\nswapping (for debugging purposes -- not recommended).\n'ambient' assumes background RNA is incorporated into\ndroplets. 'swapping' assumes background RNA comes from\nrandom barcode swapping. 'full' uses a combined\nambient and swapping model.\n",
+            "description" : "Which model is being used for count data.\n\n* 'naive' subtracts the estimated ambient profile.\n* 'simple' does not model either ambient RNA or random barcode swapping (for debugging purposes -- not recommended).\n* 'ambient' assumes background RNA is incorporated into droplets.\n* 'swapping' assumes background RNA comes from random barcode swapping (via PCR chimeras).\n* 'full' uses a combined ambient and swapping model.\n",
             "default" : [
               "full"
             ],
             "required" : false,
             "choices" : [
+              "naive",
               "simple",
               "ambient",
               "swapping",
@@ -253,7 +298,7 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
             "name" : "--low_count_threshold",
             "description" : "Droplets with UMI counts below this number are completely \nexcluded from the analysis. This can help identify the correct \nprior for empty droplet counts in the rare case where empty \ncounts are extremely high (over 200).\n",
             "default" : [
-              15
+              5
             ],
             "required" : false,
             "direction" : "input",
@@ -266,7 +311,7 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
             "name" : "--z_dim",
             "description" : "Dimension of latent variable z.\n",
             "default" : [
-              100
+              64
             ],
             "required" : false,
             "direction" : "input",
@@ -279,7 +324,7 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
             "name" : "--z_layers",
             "description" : "Dimension of hidden layers in the encoder for z.\n",
             "default" : [
-              500
+              512
             ],
             "required" : false,
             "direction" : "input",
@@ -305,7 +350,7 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
             "name" : "--empty_drop_training_fraction",
             "description" : "Training detail: the fraction of the training data each epoch that \nis drawn (randomly sampled) from surely empty droplets.\n",
             "default" : [
-              0.5
+              0.2
             ],
             "required" : false,
             "direction" : "input",
@@ -314,9 +359,19 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
             "dest" : "par"
           },
           {
+            "type" : "integer",
+            "name" : "--ignore_features",
+            "description" : "Integer indices of features to ignore entirely. In the output\ncount matrix, the counts for these features will be unchanged.\n",
+            "required" : false,
+            "direction" : "input",
+            "multiple" : true,
+            "multiple_sep" : ":",
+            "dest" : "par"
+          },
+          {
             "type" : "double",
             "name" : "--fpr",
-            "description" : "Target false positive rate in (0, 1). A false positive\nis a true signal count that is erroneously removed.\nMore background removal is accompanied by more signal\nremoval at high values of FPR. You can specify\nmultiple values, which will create multiple output\nfiles.\n",
+            "description" : "Target 'delta' false positive rate in [0, 1). Use 0 for a cohort\nof samples which will be jointly analyzed for differential expression.\nA false positive is a true signal count that is erroneously removed.\nMore background removal is accompanied by more signal removal at\nhigh values of FPR. You can specify multiple values, which will\ncreate multiple output files.\n",
             "default" : [
               0.01
             ],
@@ -327,23 +382,177 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
             "dest" : "par"
           },
           {
-            "type" : "boolean_true",
-            "name" : "--exclude_antibody_capture",
-            "description" : "Including the flag --exclude-antibody-capture will\ncause remove-background to operate on gene counts\nonly, ignoring other features.\n",
+            "type" : "string",
+            "name" : "--exclude_feature_types",
+            "description" : "Feature types to ignore during the analysis. These features will\nbe left unchanged in the output file.\n",
+            "required" : false,
             "direction" : "input",
+            "multiple" : true,
+            "multiple_sep" : ":",
+            "dest" : "par"
+          },
+          {
+            "type" : "double",
+            "name" : "--projected_ambient_count_threshold",
+            "description" : "Controls how many features are included in the analysis, which\ncan lead to a large speedup. If a feature is expected to have less\nthan PROJECTED_AMBIENT_COUNT_THRESHOLD counts total in all cells\n(summed), then that gene is excluded, and it will be unchanged\nin the output count matrix. For example, \nPROJECTED_AMBIENT_COUNT_THRESHOLD = 0 will include all features\nwhich have even a single count in any empty droplet.\n",
+            "default" : [
+              0.1
+            ],
+            "required" : false,
+            "direction" : "input",
+            "multiple" : false,
+            "multiple_sep" : ":",
             "dest" : "par"
           },
           {
             "type" : "double",
             "name" : "--learning_rate",
-            "description" : "Training detail: lower learning rate for inference. A\nOneCycle learning rate schedule is used, where the\nupper learning rate is ten times this value. (For this\nvalue, probably do not exceed 1e-3).\n",
-            "example" : [
+            "description" : "Training detail: lower learning rate for inference.\nA OneCycle learning rate schedule is used, where the\nupper learning rate is ten times this value. (For this\nvalue, probably do not exceed 1e-3).\n",
+            "default" : [
               1.0E-4
             ],
             "required" : false,
             "direction" : "input",
             "multiple" : false,
             "multiple_sep" : ":",
+            "dest" : "par"
+          },
+          {
+            "type" : "double",
+            "name" : "--final_elbo_fail_fraction",
+            "description" : "Training is considered to have failed if \n(best_test_ELBO - final_test_ELBO)/(best_test_ELBO - initial_test_ELBO) > FINAL_ELBO_FAIL_FRACTION.\nTraining will automatically re-run if --num-training-tries > 1.\nBy default, will not fail training based on final_training_ELBO.\n",
+            "required" : false,
+            "direction" : "input",
+            "multiple" : false,
+            "multiple_sep" : ":",
+            "dest" : "par"
+          },
+          {
+            "type" : "double",
+            "name" : "--epoch_elbo_fail_fraction",
+            "description" : "Training is considered to have failed if \n(previous_epoch_test_ELBO - current_epoch_test_ELBO)/(previous_epoch_test_ELBO - initial_train_ELBO) > EPOCH_ELBO_FAIL_FRACTION.\nTraining will automatically re-run if --num-training-tries > 1.\nBy default, will not fail training based on epoch_training_ELBO.\n",
+            "required" : false,
+            "direction" : "input",
+            "multiple" : false,
+            "multiple_sep" : ":",
+            "dest" : "par"
+          },
+          {
+            "type" : "integer",
+            "name" : "--num_training_tries",
+            "description" : "Number of times to attempt to train the model. At each subsequent attempt,\nthe learning rate is multiplied by LEARNING_RATE_RETRY_MULT.\n",
+            "default" : [
+              1
+            ],
+            "required" : false,
+            "direction" : "input",
+            "multiple" : false,
+            "multiple_sep" : ":",
+            "dest" : "par"
+          },
+          {
+            "type" : "double",
+            "name" : "--learning_rate_retry_mult",
+            "description" : "Learning rate is multiplied by this amount each time a new training\nattempt is made. (This parameter is only used if training fails based\non EPOCH_ELBO_FAIL_FRACTION or FINAL_ELBO_FAIL_FRACTION and\nNUM_TRAINING_TRIES is > 1.) \n",
+            "default" : [
+              0.2
+            ],
+            "required" : false,
+            "direction" : "input",
+            "multiple" : false,
+            "multiple_sep" : ":",
+            "dest" : "par"
+          },
+          {
+            "type" : "integer",
+            "name" : "--posterior_batch_size",
+            "description" : "Training detail: size of batches when creating the posterior.\nReduce this to avoid running out of GPU memory creating the posterior\n(will be slower).\n",
+            "default" : [
+              128
+            ],
+            "required" : false,
+            "direction" : "input",
+            "multiple" : false,
+            "multiple_sep" : ":",
+            "dest" : "par"
+          },
+          {
+            "type" : "string",
+            "name" : "--posterior_regulation",
+            "description" : "Posterior regularization method. (For experts: not required for normal usage,\nsee documentation). \n\n* PRq is approximate quantile-targeting.\n* PRmu is approximate mean-targeting aggregated over genes (behavior of v0.2.0).\n* PRmu_gene is approximate mean-targeting per gene.\n",
+            "required" : false,
+            "choices" : [
+              "PRq",
+              "PRmu",
+              "PRmu_gene"
+            ],
+            "direction" : "input",
+            "multiple" : false,
+            "multiple_sep" : ":",
+            "dest" : "par"
+          },
+          {
+            "type" : "double",
+            "name" : "--alpha",
+            "description" : "Tunable parameter alpha for the PRq posterior regularization method\n(not normally used: see documentation).\n",
+            "required" : false,
+            "direction" : "input",
+            "multiple" : false,
+            "multiple_sep" : ":",
+            "dest" : "par"
+          },
+          {
+            "type" : "double",
+            "name" : "--q",
+            "description" : "Tunable parameter q for the CDF threshold estimation method (not\nnormally used: see documentation).\n",
+            "required" : false,
+            "direction" : "input",
+            "multiple" : false,
+            "multiple_sep" : ":",
+            "dest" : "par"
+          },
+          {
+            "type" : "string",
+            "name" : "--estimator",
+            "description" : "Output denoised count estimation method. (For experts: not required\nfor normal usage, see documentation).\n",
+            "default" : [
+              "mckp"
+            ],
+            "required" : false,
+            "choices" : [
+              "map",
+              "mean",
+              "cdf",
+              "sample",
+              "mckp"
+            ],
+            "direction" : "input",
+            "multiple" : false,
+            "multiple_sep" : ":",
+            "dest" : "par"
+          },
+          {
+            "type" : "boolean_true",
+            "name" : "--estimator_multiple_cpu",
+            "description" : "Including the flag --estimator-multiple-cpu will use more than one\nCPU to compute the MCKP output count estimator in parallel (does nothing\nfor other estimators).\n",
+            "direction" : "input",
+            "dest" : "par"
+          },
+          {
+            "type" : "boolean",
+            "name" : "--constant_learning_rate",
+            "description" : "Including the flag --constant-learning-rate will use the ClippedAdam\noptimizer instead of the OneCycleLR learning rate schedule, which is\nthe default. Learning is faster with the OneCycleLR schedule.\nHowever, training can easily be continued from a checkpoint for more\nepochs than the initial command specified when using ClippedAdam. On\nthe other hand, if using the OneCycleLR schedule with 150 epochs\nspecified, it is not possible to pick up from that final checkpoint\nand continue training until 250 epochs.\n",
+            "required" : false,
+            "direction" : "input",
+            "multiple" : false,
+            "multiple_sep" : ":",
+            "dest" : "par"
+          },
+          {
+            "type" : "boolean_true",
+            "name" : "--debug",
+            "description" : "Including the flag --debug will log extra messages useful for debugging.\n",
+            "direction" : "input",
             "dest" : "par"
           },
           {
@@ -405,24 +614,24 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
       "target_image_source" : "https://github.com/openpipelines-bio/openpipeline",
       "setup" : [
         {
-          "type" : "apt",
-          "packages" : [
-            "git"
-          ],
-          "interactive" : false
-        },
-        {
           "type" : "python",
           "user" : false,
           "packages" : [
             "mudata~=0.2.3",
             "anndata~=0.9.1",
-            "muon~=0.1.5"
-          ],
-          "github" : [
-            "broadinstitute/CellBender"
+            "tables"
           ],
           "upgrade" : true
+        },
+        {
+          "type" : "docker",
+          "run" : [
+            "apt-get update && apt-get install -y wget && \\\\\n  wget -O $HOME/miniconda.sh https://repo.anaconda.com/miniconda/Miniconda3-py37_23.1.0-1-Linux-x86_64.sh && \\\\\n  apt-get purge -y wget && apt-get autoremove -y && apt-get clean && \\\\\n  chmod +x $HOME/miniconda.sh && \\\\\n  $HOME/miniconda.sh -b -p $CONDA_DIR && \\\\\n  rm $HOME/miniconda.sh && \\\\\n  conda create -n cellbender_env python=3.7 && \\\\\n  /bin/bash -c \\"source activate cellbender_env && pip install 'cellbender~=0.3.0'\\" && \\\\\n  echo -e '#!/bin/bash\\\\nsource activate cellbender_env\\\\ncellbender \\"$@\\"' > /usr/bin/cellbender_in_conda && \\\\\n  chmod +x /usr/bin/cellbender_in_conda\n"
+          ],
+          "env" : [
+            "CONDA_DIR=\\"/opt/conda\\"",
+            "PATH=\\"$PATH:$CONDA_DIR/bin\\""
+          ]
         }
       ],
       "test_setup" : [
@@ -430,7 +639,7 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
           "type" : "python",
           "user" : false,
           "packages" : [
-            "muon~=0.1.4",
+            "muon~=0.1.5",
             "scanpy~=1.9.2"
           ],
           "upgrade" : true
@@ -442,6 +651,8 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
       "id" : "nextflow",
       "directives" : {
         "label" : [
+          "singlecpu",
+          "lowmem",
           "gpu"
         ],
         "tag" : "$id"
@@ -495,7 +706,7 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
     "platform" : "nextflow",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/correction/cellbender_remove_background",
     "viash_version" : "0.7.5",
-    "git_commit" : "7b1416e9022c9b39aa861271b7a4f3e67b78d8cf",
+    "git_commit" : "afcb33f0cf2748b0c8b6f5eba5a864d7844e9470",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))
@@ -529,14 +740,18 @@ par = {
   'output': $( if [ ! -z ${VIASH_PAR_OUTPUT+x} ]; then echo "r'${VIASH_PAR_OUTPUT//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'output_compression': $( if [ ! -z ${VIASH_PAR_OUTPUT_COMPRESSION+x} ]; then echo "r'${VIASH_PAR_OUTPUT_COMPRESSION//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'layer_output': $( if [ ! -z ${VIASH_PAR_LAYER_OUTPUT+x} ]; then echo "r'${VIASH_PAR_LAYER_OUTPUT//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
-  'obs_latent_rt_efficiency': $( if [ ! -z ${VIASH_PAR_OBS_LATENT_RT_EFFICIENCY+x} ]; then echo "r'${VIASH_PAR_OBS_LATENT_RT_EFFICIENCY//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
-  'obs_latent_cell_probability': $( if [ ! -z ${VIASH_PAR_OBS_LATENT_CELL_PROBABILITY+x} ]; then echo "r'${VIASH_PAR_OBS_LATENT_CELL_PROBABILITY//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
+  'obs_background_fraction': $( if [ ! -z ${VIASH_PAR_OBS_BACKGROUND_FRACTION+x} ]; then echo "r'${VIASH_PAR_OBS_BACKGROUND_FRACTION//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
+  'obs_cell_probability': $( if [ ! -z ${VIASH_PAR_OBS_CELL_PROBABILITY+x} ]; then echo "r'${VIASH_PAR_OBS_CELL_PROBABILITY//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
+  'obs_cell_size': $( if [ ! -z ${VIASH_PAR_OBS_CELL_SIZE+x} ]; then echo "r'${VIASH_PAR_OBS_CELL_SIZE//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
+  'obs_droplet_efficiency': $( if [ ! -z ${VIASH_PAR_OBS_DROPLET_EFFICIENCY+x} ]; then echo "r'${VIASH_PAR_OBS_DROPLET_EFFICIENCY//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'obs_latent_scale': $( if [ ! -z ${VIASH_PAR_OBS_LATENT_SCALE+x} ]; then echo "r'${VIASH_PAR_OBS_LATENT_SCALE//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'var_ambient_expression': $( if [ ! -z ${VIASH_PAR_VAR_AMBIENT_EXPRESSION+x} ]; then echo "r'${VIASH_PAR_VAR_AMBIENT_EXPRESSION//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
-  'obsm_latent_gene_encoding': $( if [ ! -z ${VIASH_PAR_OBSM_LATENT_GENE_ENCODING+x} ]; then echo "r'${VIASH_PAR_OBSM_LATENT_GENE_ENCODING//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
+  'obsm_gene_expression_encoding': $( if [ ! -z ${VIASH_PAR_OBSM_GENE_EXPRESSION_ENCODING+x} ]; then echo "r'${VIASH_PAR_OBSM_GENE_EXPRESSION_ENCODING//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
+  'expected_cells_from_qc': $( if [ ! -z ${VIASH_PAR_EXPECTED_CELLS_FROM_QC+x} ]; then echo "r'${VIASH_PAR_EXPECTED_CELLS_FROM_QC//\\'/\\'\\"\\'\\"r\\'}'.lower() == 'true'"; else echo None; fi ),
   'expected_cells': $( if [ ! -z ${VIASH_PAR_EXPECTED_CELLS+x} ]; then echo "int(r'${VIASH_PAR_EXPECTED_CELLS//\\'/\\'\\"\\'\\"r\\'}')"; else echo None; fi ),
   'total_droplets_included': $( if [ ! -z ${VIASH_PAR_TOTAL_DROPLETS_INCLUDED+x} ]; then echo "int(r'${VIASH_PAR_TOTAL_DROPLETS_INCLUDED//\\'/\\'\\"\\'\\"r\\'}')"; else echo None; fi ),
-  'expected_cells_from_qc': $( if [ ! -z ${VIASH_PAR_EXPECTED_CELLS_FROM_QC+x} ]; then echo "r'${VIASH_PAR_EXPECTED_CELLS_FROM_QC//\\'/\\'\\"\\'\\"r\\'}'.lower() == 'true'"; else echo None; fi ),
+  'force_cell_umi_prior': $( if [ ! -z ${VIASH_PAR_FORCE_CELL_UMI_PRIOR+x} ]; then echo "int(r'${VIASH_PAR_FORCE_CELL_UMI_PRIOR//\\'/\\'\\"\\'\\"r\\'}')"; else echo None; fi ),
+  'force_empty_umi_prior': $( if [ ! -z ${VIASH_PAR_FORCE_EMPTY_UMI_PRIOR+x} ]; then echo "int(r'${VIASH_PAR_FORCE_EMPTY_UMI_PRIOR//\\'/\\'\\"\\'\\"r\\'}')"; else echo None; fi ),
   'model': $( if [ ! -z ${VIASH_PAR_MODEL+x} ]; then echo "r'${VIASH_PAR_MODEL//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'epochs': $( if [ ! -z ${VIASH_PAR_EPOCHS+x} ]; then echo "int(r'${VIASH_PAR_EPOCHS//\\'/\\'\\"\\'\\"r\\'}')"; else echo None; fi ),
   'low_count_threshold': $( if [ ! -z ${VIASH_PAR_LOW_COUNT_THRESHOLD+x} ]; then echo "int(r'${VIASH_PAR_LOW_COUNT_THRESHOLD//\\'/\\'\\"\\'\\"r\\'}')"; else echo None; fi ),
@@ -544,9 +759,23 @@ par = {
   'z_layers': $( if [ ! -z ${VIASH_PAR_Z_LAYERS+x} ]; then echo "list(map(int, r'${VIASH_PAR_Z_LAYERS//\\'/\\'\\"\\'\\"r\\'}'.split(':')))"; else echo None; fi ),
   'training_fraction': $( if [ ! -z ${VIASH_PAR_TRAINING_FRACTION+x} ]; then echo "float(r'${VIASH_PAR_TRAINING_FRACTION//\\'/\\'\\"\\'\\"r\\'}')"; else echo None; fi ),
   'empty_drop_training_fraction': $( if [ ! -z ${VIASH_PAR_EMPTY_DROP_TRAINING_FRACTION+x} ]; then echo "float(r'${VIASH_PAR_EMPTY_DROP_TRAINING_FRACTION//\\'/\\'\\"\\'\\"r\\'}')"; else echo None; fi ),
+  'ignore_features': $( if [ ! -z ${VIASH_PAR_IGNORE_FEATURES+x} ]; then echo "list(map(int, r'${VIASH_PAR_IGNORE_FEATURES//\\'/\\'\\"\\'\\"r\\'}'.split(':')))"; else echo None; fi ),
   'fpr': $( if [ ! -z ${VIASH_PAR_FPR+x} ]; then echo "list(map(float, r'${VIASH_PAR_FPR//\\'/\\'\\"\\'\\"r\\'}'.split(':')))"; else echo None; fi ),
-  'exclude_antibody_capture': $( if [ ! -z ${VIASH_PAR_EXCLUDE_ANTIBODY_CAPTURE+x} ]; then echo "r'${VIASH_PAR_EXCLUDE_ANTIBODY_CAPTURE//\\'/\\'\\"\\'\\"r\\'}'.lower() == 'true'"; else echo None; fi ),
+  'exclude_feature_types': $( if [ ! -z ${VIASH_PAR_EXCLUDE_FEATURE_TYPES+x} ]; then echo "r'${VIASH_PAR_EXCLUDE_FEATURE_TYPES//\\'/\\'\\"\\'\\"r\\'}'.split(':')"; else echo None; fi ),
+  'projected_ambient_count_threshold': $( if [ ! -z ${VIASH_PAR_PROJECTED_AMBIENT_COUNT_THRESHOLD+x} ]; then echo "float(r'${VIASH_PAR_PROJECTED_AMBIENT_COUNT_THRESHOLD//\\'/\\'\\"\\'\\"r\\'}')"; else echo None; fi ),
   'learning_rate': $( if [ ! -z ${VIASH_PAR_LEARNING_RATE+x} ]; then echo "float(r'${VIASH_PAR_LEARNING_RATE//\\'/\\'\\"\\'\\"r\\'}')"; else echo None; fi ),
+  'final_elbo_fail_fraction': $( if [ ! -z ${VIASH_PAR_FINAL_ELBO_FAIL_FRACTION+x} ]; then echo "float(r'${VIASH_PAR_FINAL_ELBO_FAIL_FRACTION//\\'/\\'\\"\\'\\"r\\'}')"; else echo None; fi ),
+  'epoch_elbo_fail_fraction': $( if [ ! -z ${VIASH_PAR_EPOCH_ELBO_FAIL_FRACTION+x} ]; then echo "float(r'${VIASH_PAR_EPOCH_ELBO_FAIL_FRACTION//\\'/\\'\\"\\'\\"r\\'}')"; else echo None; fi ),
+  'num_training_tries': $( if [ ! -z ${VIASH_PAR_NUM_TRAINING_TRIES+x} ]; then echo "int(r'${VIASH_PAR_NUM_TRAINING_TRIES//\\'/\\'\\"\\'\\"r\\'}')"; else echo None; fi ),
+  'learning_rate_retry_mult': $( if [ ! -z ${VIASH_PAR_LEARNING_RATE_RETRY_MULT+x} ]; then echo "float(r'${VIASH_PAR_LEARNING_RATE_RETRY_MULT//\\'/\\'\\"\\'\\"r\\'}')"; else echo None; fi ),
+  'posterior_batch_size': $( if [ ! -z ${VIASH_PAR_POSTERIOR_BATCH_SIZE+x} ]; then echo "int(r'${VIASH_PAR_POSTERIOR_BATCH_SIZE//\\'/\\'\\"\\'\\"r\\'}')"; else echo None; fi ),
+  'posterior_regulation': $( if [ ! -z ${VIASH_PAR_POSTERIOR_REGULATION+x} ]; then echo "r'${VIASH_PAR_POSTERIOR_REGULATION//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
+  'alpha': $( if [ ! -z ${VIASH_PAR_ALPHA+x} ]; then echo "float(r'${VIASH_PAR_ALPHA//\\'/\\'\\"\\'\\"r\\'}')"; else echo None; fi ),
+  'q': $( if [ ! -z ${VIASH_PAR_Q+x} ]; then echo "float(r'${VIASH_PAR_Q//\\'/\\'\\"\\'\\"r\\'}')"; else echo None; fi ),
+  'estimator': $( if [ ! -z ${VIASH_PAR_ESTIMATOR+x} ]; then echo "r'${VIASH_PAR_ESTIMATOR//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
+  'estimator_multiple_cpu': $( if [ ! -z ${VIASH_PAR_ESTIMATOR_MULTIPLE_CPU+x} ]; then echo "r'${VIASH_PAR_ESTIMATOR_MULTIPLE_CPU//\\'/\\'\\"\\'\\"r\\'}'.lower() == 'true'"; else echo None; fi ),
+  'constant_learning_rate': $( if [ ! -z ${VIASH_PAR_CONSTANT_LEARNING_RATE+x} ]; then echo "r'${VIASH_PAR_CONSTANT_LEARNING_RATE//\\'/\\'\\"\\'\\"r\\'}'.lower() == 'true'"; else echo None; fi ),
+  'debug': $( if [ ! -z ${VIASH_PAR_DEBUG+x} ]; then echo "r'${VIASH_PAR_DEBUG//\\'/\\'\\"\\'\\"r\\'}'.lower() == 'true'"; else echo None; fi ),
   'cuda': $( if [ ! -z ${VIASH_PAR_CUDA+x} ]; then echo "r'${VIASH_PAR_CUDA//\\'/\\'\\"\\'\\"r\\'}'.lower() == 'true'"; else echo None; fi )
 }
 meta = {
@@ -566,7 +795,7 @@ meta = {
 
 ## VIASH END
 
-sys.path.append(meta['resources_dir'])
+sys.path.append(meta["resources_dir"])
 from helper import anndata_from_h5
 
 logger.info("Reading input mudata")
@@ -576,7 +805,8 @@ mod = par["modality"]
 logger.info("Performing log transformation on modality %s", mod)
 data = mdata.mod[mod]
 
-# with pathlib.Path(meta["temp_dir"]) / "cellbender" as temp_dir:
+# import pathlib
+# with pathlib.Path(os.path.dirname(par["output"])) / "cellbender" as temp_dir:
 #     os.mkdir(temp_dir)
 with tempfile.TemporaryDirectory(prefix="cellbender-", dir=meta["temp_dir"]) as temp_dir:
     # construct paths within tempdir
@@ -588,24 +818,46 @@ with tempfile.TemporaryDirectory(prefix="cellbender-", dir=meta["temp_dir"]) as 
 
     logger.info("Constructing CellBender command")
     cmd_pars = [
-        "cellbender", "remove-background",
+        "cellbender_in_conda", "remove-background",
         "--input", input_file,
-        "--output", output_file
+        "--output", output_file,
+        # don't create checkpoints because they're not used / returned anyways
+        "--checkpoint-mins", "99999999"
     ]
+
+    if meta.get("cpus") is not None:
+        cmd_pars += ["--cpu-threads", str(meta["cpus"])]
 
     extra_args = [
         ("--expected-cells", "expected_cells", True),
         ("--total-droplets-included", "total_droplets_included", True),
+        ("--force-cell-umi-prior", "force_cell_umi_prior", True),
+        ("--force-empty-umi-prior", "force_empty_umi_prior", True),
         ("--model", "model", True),
         ("--epochs", "epochs", True),
-        ("--cuda", "cuda", False),
         ("--low-count-threshold", "low_count_threshold", True),
         ("--z-dim", "z_dim", True),
         ("--z-layers", "z_layers", True),
         ("--training-fraction", "training_fraction", True),
-        ("--exclude-antibody-capture", "exclude_antibody_capture", False),
-        ("--learning-rate", "learning_rate", True),
         ("--empty-drop-training-fraction", "empty_drop_training_fraction", True),
+        ("--ignore-features", "ignore_features", True),
+        ("--fpr", "fpr", True),
+        ("--exclude-feature-types", "exclude_feature_types", True),
+        ("--projected-ambient-count-threshold", "projected_ambient_count_threshold", True),
+        ("--learning-rate", "learning_rate", True),
+        ("--final-elbo-fail-fraction", "final_elbo_fail_fraction", True),
+        ("--epoch-elbo-fail-fraction", "epoch_elbo_fail_fraction", True),
+        ("--num-training-tries", "num_training_tries", True),
+        ("--learning-rate-retry-mult", "learning_rate_retry_mult", True),
+        ("--posterior-batch-size", "posterior_batch_size", True),
+        ("--posterior-regulation", "posterior_regulation", True),
+        ("--alpha", "alpha", True),
+        ("--q", "q", True),
+        ("--estimator", "estimator", True),
+        ("--estimator-multiple-cpu", "estimator_multiple_cpu", False),
+        ("--constant-learning-rate", "constant_learning_rate", False),
+        ("--debug", "debug", False),
+        ("--cuda", "cuda", False),
     ]
     for (flag, name, is_kwarg) in extra_args:
         if par[name]:
@@ -631,13 +883,26 @@ with tempfile.TemporaryDirectory(prefix="cellbender-", dir=meta["temp_dir"]) as 
     # adata_out = sc.read_10x_h5(output_file, gex_only=False)
     adata_out = anndata_from_h5(output_file, analyzed_barcodes_only=False)
 
+    logger.info("CellBender output format:", adata_out)
+
+    # AnnData object with n_obs × n_vars = 6794880 × 33538
+    #     obs: 'cellbender_analyzed'
+    #     var: 'ambient_expression', 'feature_type', 'genome', 'gene_id', 'cellbender_analyzed'
+    #     uns: 'background_fraction', 'barcode_indices_for_latents', 'cell_probability', 'cell_size', 'droplet_efficiency', 'gene_expression_encoding', 
+    #          'cell_size_lognormal_std', 'empty_droplet_size_lognormal_loc', 'empty_droplet_size_lognormal_scale', 'swapping_fraction_dist_params', 
+    #          'barcodes_analyzed', 'barcodes_analyzed_inds', 'estimator', 'features_analyzed_inds', 'fraction_data_used_for_testing', 'learning_curve_learning_rate_epoch', 
+    #          'learning_curve_learning_rate_value', 'learning_curve_test_elbo', 'learning_curve_test_epoch', 'learning_curve_train_elbo', 'learning_curve_train_epoch', 
+    #          'target_false_positive_rate'
+
     logger.info("Copying X output to MuData")
     data.layers[par["layer_output"]] = adata_out.X
 
     logger.info("Copying .obs output to MuData")
     obs_store = {
-        "obs_latent_rt_efficiency": "latent_RT_efficiency",
-        "obs_latent_cell_probability": "latent_cell_probability",
+        "obs_background_fraction": "background_fraction",
+        "obs_cell_probability": "cell_probability",
+        "obs_cell_size": "cell_size",
+        "obs_droplet_efficiency": "droplet_efficiency",
         "obs_latent_scale": "latent_scale"
     }
     for to_name, from_name in obs_store.items():
@@ -645,9 +910,9 @@ with tempfile.TemporaryDirectory(prefix="cellbender-", dir=meta["temp_dir"]) as 
             if from_name in adata_out.obs:
                 data.obs[par[to_name]] = adata_out.obs[from_name]
             # when using unfiltered data, the values will be in uns instead of obs
-            elif from_name in adata_out.uns and 'barcode_indices_for_latents' in adata_out.uns:
+            elif from_name in adata_out.uns and "barcode_indices_for_latents" in adata_out.uns:
                 vec = np.zeros(data.n_obs)
-                vec[adata_out.uns['barcode_indices_for_latents']] = adata_out.uns[from_name]
+                vec[adata_out.uns["barcode_indices_for_latents"]] = adata_out.uns[from_name]
                 data.obs[par[to_name]] = vec
 
     logger.info("Copying .var output to MuData")
@@ -656,18 +921,18 @@ with tempfile.TemporaryDirectory(prefix="cellbender-", dir=meta["temp_dir"]) as 
         if par[to_name]:
             data.var[par[to_name]] = adata_out.var[from_name]
 
-    logger.info("Copying obsm_latent_gene_encoding output to MuData")
-    obsm_store = { "obsm_latent_gene_encoding": "latent_gene_encoding" }
+    logger.info("Copying obsm_gene_expression_encoding output to MuData")
+    obsm_store = { "obsm_gene_expression_encoding": "gene_expression_encoding" }
     for to_name, from_name in obsm_store.items():
         if par[to_name]:
             if from_name in adata_out.obsm:
                  data.obsm[par[to_name]] = adata_out.obsm[from_name]
-            elif from_name in adata_out.uns and 'barcode_indices_for_latents' in adata_out.uns:
+            elif from_name in adata_out.uns and "barcode_indices_for_latents" in adata_out.uns:
                 matrix_to_store = adata_out.uns[from_name]
                 number_of_obs = data.X.shape[0]
-                latent_space_sparse = csr_matrix((number_of_obs, par['z_dim']),
+                latent_space_sparse = csr_matrix((number_of_obs, par["z_dim"]),
                                                  dtype=adata_out.uns[from_name].dtype)
-                obs_rows_in_space_representation = adata_out.uns['barcode_indices_for_latents']
+                obs_rows_in_space_representation = adata_out.uns["barcode_indices_for_latents"]
                 latent_space_sparse[obs_rows_in_space_representation] = adata_out.uns[from_name]
                 data.obsm[par[to_name]] = latent_space_sparse
             else:
@@ -694,6 +959,8 @@ thisDefaultProcessArgs = [
     "tag" : "integration_build"
   },
   "label" : [
+    "singlecpu",
+    "lowmem",
     "gpu"
   ],
   "tag" : "$id"
