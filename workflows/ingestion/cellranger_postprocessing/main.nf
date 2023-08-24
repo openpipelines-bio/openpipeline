@@ -52,7 +52,7 @@ workflow run_wf {
     | cellbender_remove_background.run(
       args: [ output_compression: "gzip" ]
     )
-    | pmap{ id, file -> [ id, [ input: file, layer: "corrected" ]]}
+    | pmap{ id, file -> [ id, [ input: file, layer: "cellbender_corrected" ]]}
     // todo: allow setting the layer
   mid1_uncorrected = mid0
     | filter{ ! it[2].correction.perform_correction }
