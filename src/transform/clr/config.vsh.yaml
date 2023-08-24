@@ -59,3 +59,6 @@ platforms:
         packages:
           - viashpy
   - type: nextflow
+    directives:
+      label: [lowmem, midcpu]
+

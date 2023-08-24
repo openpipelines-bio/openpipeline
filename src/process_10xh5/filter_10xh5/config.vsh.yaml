@@ -59,3 +59,5 @@ platforms:
       - type: r
         cran: [ testthat, anndata, hdf5r ]
   - type: nextflow
+    directives:
+      label: [singlecpu, lowmem]
