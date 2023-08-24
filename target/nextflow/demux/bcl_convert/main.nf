@@ -259,7 +259,7 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
     "platform" : "nextflow",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/demux/bcl_convert",
     "viash_version" : "0.7.5",
-    "git_commit" : "c7c5a7f91ce61c88d29e51f4db4620685cc2a73d",
+    "git_commit" : "64e6e66844903eabf73a9a8ae1760ec40b187480",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))
