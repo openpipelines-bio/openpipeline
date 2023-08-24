@@ -86,4 +86,4 @@ platforms:
           - scanorama
   - type: nextflow
     directives:
-      label: [highmem]
+      label: [midcpu, highmem]

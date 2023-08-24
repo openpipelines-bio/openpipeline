@@ -69,3 +69,5 @@ platforms:
         packages:
           - viashpy~=0.3.2
   - type: nextflow
+    directives:
+      label: [lowmem, singlecpu]

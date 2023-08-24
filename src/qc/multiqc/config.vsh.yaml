@@ -36,3 +36,5 @@ platforms:
       - type: python
         packages: [ multiqc ]
   - type: nextflow
+    directives:
+      label: [singlecpu, lowmem]
