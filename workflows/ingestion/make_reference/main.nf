@@ -117,10 +117,10 @@ workflow test_wf {
   params.param_list = [
     [
       id: "gencode_v41_ercc",
-      genome_fasta: "https://ftp.ebi.ac.uk/pub/databases/gencode/Gencode_human/release_41/GRCh38.primary_assembly.genome.fa.gz",
-      transcriptome_gtf: "https://ftp.ebi.ac.uk/pub/databases/gencode/Gencode_human/release_41/gencode.v41.annotation.gtf.gz",
-      ercc: "https://assets.thermofisher.com/TFS-Assets/LSG/manuals/ERCC92.zip",
-      subset_regex: "(ERCC-00002|chr20)",
+      genome_fasta: params.resources_test + "/reference_gencodev41_chr1/reference.fa.gz",
+      transcriptome_gtf: params.resources_test + "/reference_gencodev41_chr1/reference.gtf.gz",
+      ercc: params.resources_test + "/reference_gencodev41_chr1/ERCC92.zip",
+      subset_regex: "(ERCC-00002|chr1)",
       target: ["cellranger", "bd_rhapsody", "star"]
     ]
   ]
