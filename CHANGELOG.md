@@ -14,6 +14,16 @@
 
 * Base resources assigned for a process without any labels is now 1 CPU and 2GB (PR #518).
 
+* Updated to Viash 0.7.5 (PR #513).
+
+* Removed deprecated `variant: vdsl3` tags (PR #513).
+
+* Removed unused `version: dev` (PR #513).
+
+* `multiomics/integration/harmony_leiden`: Refactored data flow (PR #513).
+
+* `ingestion/bd_rhapsody`: Refactored data flow (PR #513).
+
 ## MINOR CHANGES
 
 * Add resource labels to several components (PR #518).

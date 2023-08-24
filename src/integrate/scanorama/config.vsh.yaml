@@ -1,7 +1,6 @@
 functionality:
   name: scanorama
   namespace: "integrate"
-  version: "dev"
   description: |
     Use Scanorama to integrate different experiments.
   authors:

@@ -1,7 +1,6 @@
 functionality:
   name: from_h5mu_to_h5ad
   namespace: "convert"
-  version: "dev"
   description: |
     Converts a h5mu file into a h5ad file.
   authors:

@@ -1,7 +1,6 @@
 functionality:
   name: scarches
   namespace: "integrate"
-  version: "dev"
   description: "Performs reference mapping with scArches"
   authors:
     - __merge__: /src/authors/vladimir_shitov.yaml
