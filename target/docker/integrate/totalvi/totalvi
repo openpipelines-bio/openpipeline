@@ -485,9 +485,9 @@ RUN pip install --upgrade pip && \
 
 LABEL org.opencontainers.image.authors="Vladimir Shitov"
 LABEL org.opencontainers.image.description="Companion container for running component integrate totalvi"
-LABEL org.opencontainers.image.created="2023-08-24T08:32:31Z"
+LABEL org.opencontainers.image.created="2023-08-24T09:25:40Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="493a3b7a14c3d347c8e770edba4a3682323ec9f0"
+LABEL org.opencontainers.image.revision="c7c5a7f91ce61c88d29e51f4db4620685cc2a73d"
 LABEL org.opencontainers.image.version="main_build"
 
 VIASHDOCKER
@@ -1300,8 +1300,7 @@ def align_proteins_names(adata_reference: AnnData, mdata_query: MuData, adata_qu
 
     # If query has no protein data, put matrix of zeros 
     if not query_proteins_key or query_proteins_key not in mdata_query.mod:
-        data = np.zeros((adata_query.n_obs, proteins_reference.shape[1]))
-        adata_query.obsm[reference_proteins_key] = DataFrame(columns=proteins_reference.columns, index=adata_query.obs_names, data=data)
+        adata_query.obsm[reference_proteins_key] = np.zeros((adata_query.n_obs, proteins_reference.shape[1]))
     else:
         # Make sure that proteins expression has the same key in query and reference
         adata_query.obsm[reference_proteins_key] = adata_query.obsm[query_proteins_key]
@@ -1386,8 +1385,11 @@ def main():
     logger = _setup_logger()
 
     mdata_query = mudata.read(par["input"].strip())
-    adata_query = extract_proteins_to_anndata(mdata_query, rna_modality_key=par["query_modality"], protein_modality_key=par["query_proteins_modality"],
-                                            input_layer=par["input_layer"], hvg_var_key=par["var_input"])
+    adata_query = extract_proteins_to_anndata(mdata_query,
+                                              rna_modality_key=par["query_modality"],
+                                              protein_modality_key=par["query_proteins_modality"],
+                                              input_layer=par["input_layer"],
+                                              hvg_var_key=par["var_input"])
 
     if par["reference"].endswith(".h5mu"):
         logger.info("Reading reference")
@@ -1405,8 +1407,9 @@ def main():
     
     norm_rna, norm_protein = vae_query.get_normalized_expression()
     mdata_query.mod[par["query_modality"]].obsm[par["obsm_normalized_rna_output"]] = norm_rna.to_numpy()
-    # Would make more sense to write it to .obsm for protein modality, but query might not have this modality at all
-    mdata_query.mod[par["query_modality"]].obsm[par["obsm_normalized_protein_output"]] = norm_protein.to_numpy()
+
+    if par["query_proteins_modality"] in mdata_query.mod:
+        mdata_query.mod[par["query_proteins_modality"]].obsm[par["obsm_normalized_protein_output"]] = norm_protein.to_numpy()
     
     logger.info("Updating mdata")
     mdata_query.update()

@@ -39,7 +39,7 @@ class TesttotalVI(unittest.TestCase):
         output_data = mudata.read_h5mu("output.h5mu")
         self.assertIn("X_integrated_totalvi", output_data.mod["rna"].obsm)
         self.assertIn("X_totalvi_normalized_rna", output_data.mod["rna"].obsm)
-        self.assertIn("X_totalvi_normalized_protein", output_data.mod["rna"].obsm)
+        self.assertIn("X_totalvi_normalized_protein", output_data.mod["prot"].obsm)
 
 
 if __name__ == "__main__":
