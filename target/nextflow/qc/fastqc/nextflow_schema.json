@@ -23,6 +23,11 @@
             "type": "string",
             "description": "Output directory to write reports to.",
             "default": "$id.$key.output.output"
+          },
+          "threads": {
+            "type": "integer",
+            "description": "Specifies the number of files which can be processed simultaneously. Each thread will be allocated 250MB of","help_text": "Specifies the number of files which can be processed simultaneously. Each thread will be allocated 250MB of\nmemory.\n",
+            "default": ""
           }
           
         }

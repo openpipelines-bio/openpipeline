@@ -73,4 +73,4 @@ platforms:
   - type: native
   - type: nextflow
     directives:
-      label: highmem
+      label: [highmem, lowcpu]

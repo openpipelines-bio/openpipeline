@@ -253,6 +253,10 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
       "type" : "nextflow",
       "id" : "nextflow",
       "directives" : {
+        "label" : [
+          "midmem",
+          "lowcpu"
+        ],
         "tag" : "$id"
       },
       "auto" : {
@@ -304,7 +308,7 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
     "platform" : "nextflow",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/transform/normalize_total",
     "viash_version" : "0.7.5",
-    "git_commit" : "5e9431504b8f53e9d069fb3a8fd35f82e44be05f",
+    "git_commit" : "493a3b7a14c3d347c8e770edba4a3682323ec9f0",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))
@@ -389,6 +393,10 @@ thisDefaultProcessArgs = [
     "image" : "openpipelines-bio/transform_normalize_total",
     "tag" : "main_build"
   },
+  "label" : [
+    "midmem",
+    "lowcpu"
+  ],
   "tag" : "$id"
 }'''),
   // auto settings
