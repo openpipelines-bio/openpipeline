@@ -74,3 +74,5 @@ platforms:
           - scanpy~=1.9.2
           - loompy
   - type: nextflow
+    directives:
+      label: [lowmem, lowcpu]
