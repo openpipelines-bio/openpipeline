@@ -1,7 +1,6 @@
 functionality:
   name: scvi
   namespace: "integrate"
-  version: "dev"
   description: "Performs scvi integration as done in the human lung cell atlas https://github.com/LungCellAtlas/HLCA"
   authors:
     - __merge__: /src/authors/malte_luecken.yaml
@@ -248,4 +247,4 @@ platforms:
           - scvi-tools~=1.0.0
   - type: nextflow
     directives:
-      label: [gpu]
+      label: [singlecpu, midmem, gpu]

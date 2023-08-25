@@ -1,7 +1,6 @@
 functionality:
   name: from_h5ad_to_h5mu
   namespace: "convert"
-  version: "dev"
   description: |
     Converts a single layer h5ad file into a single MuData object
   authors:
@@ -49,3 +48,5 @@ platforms:
       - type: python
         __merge__: /src/base/requirements/anndata_mudata.yaml
   - type: nextflow
+    directives:
+      label: [lowmem, singlecpu]

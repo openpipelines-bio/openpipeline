@@ -1,7 +1,6 @@
 functionality:
   name: find_neighbors
   namespace: "neighbors"
-  version: "dev"
   description: |
     Compute a neighborhood graph of observations [McInnes18].
 
@@ -97,3 +96,5 @@ platforms:
         packages:
           - scanpy~=1.9.2
   - type: nextflow
+    directives:
+      label: [lowcpu, midmem]

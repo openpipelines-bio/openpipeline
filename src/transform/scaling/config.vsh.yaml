@@ -1,7 +1,6 @@
 functionality:
   name: scale
   namespace: "transform"
-  version: "dev"
   description: |
     Scale data to unit variance and zero mean.
   authors:
@@ -64,4 +63,6 @@ platforms:
         packages:
           - scanpy~=1.9.2
   - type: nextflow
+    directives:
+      label: [lowmem, lowcpu]
   - type: native

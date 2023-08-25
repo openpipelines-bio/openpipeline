@@ -99,3 +99,5 @@ platforms:
           - viashpy
           - scanpy~=1.9.2
   - type: nextflow
+    directives:
+      label: [singlecpu, midmem]

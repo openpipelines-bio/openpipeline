@@ -1,7 +1,6 @@
 functionality:
   name: remove_modality
   namespace: "filter"
-  version: "dev"
   description: |
     Remove a modality from a .h5mu file
   authors:
@@ -50,3 +49,5 @@ platforms:
         packages:
          - viashpy
   - type: nextflow
+    directives:
+      label: [singlecpu, lowmem]

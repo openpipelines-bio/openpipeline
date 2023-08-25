@@ -1,7 +1,6 @@
 functionality:
   name: delete_layer
   namespace: "transform"
-  version: "dev"
   description: |
     Delete an anndata layer from one or more modalities.
   authors:
@@ -57,3 +56,5 @@ platforms:
       - type: python
         __merge__: /src/base/requirements/anndata_mudata.yaml
   - type: nextflow
+    directives:
+      label: [lowmem, lowcpu]

@@ -1,7 +1,6 @@
 functionality:
   name: "multiqc"
   namespace: "qc"
-  version: 0.0.1
   description: |
     Component for multiqc (https://multiqc.info/)
   arguments:
@@ -37,3 +36,5 @@ platforms:
       - type: python
         packages: [ multiqc ]
   - type: nextflow
+    directives:
+      label: [singlecpu, lowmem]
