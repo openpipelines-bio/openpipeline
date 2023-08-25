@@ -59,9 +59,10 @@ def distances_to_affinities(distances):
 
     return distances_tilda / np.sum(distances_tilda, axis=1, keepdims=True)
 
-def main():
+def main(par):
     logger = _setup_logger()
 
+    logger.info("Checking arguments")
     par = check_arguments(par)
 
     logger.info("Reading input (query) data")
@@ -90,8 +91,7 @@ def main():
 
     weights = distances_to_affinities(ref_distances)
 
-    if par["output_uns_parameters"] not in adata.uns:
-        uns_parameters = {}
+    output_uns_parameters = adata.uns.get(par["output_uns_parameters"], {})
 
     # for each annotation level, get prediction and uncertainty
     
@@ -104,19 +104,17 @@ def main():
         adata.obs[obs_pred], adata.obs[obs_unc] = prediction, uncertainty
         
         # Write information about labels transfer to uns
-        uns_parameters[obs_tar] = {
+        output_uns_parameters[obs_tar] = {
             "method": "KNN_pynndescent",
             "n_neighbors": par["n_neighbors"],
-            "reference": par["reference"],
-            "obs_prediction": obs_pred,
-            "obs_uncertainty": obs_unc
+            "reference": par["reference"]
         }
 
-    adata.uns[par["output_uns_parameters"]] = uns_parameters
+    adata.uns[par["output_uns_parameters"]] = output_uns_parameters
 
     mdata.mod[par['modality']] = adata
     mdata.update()
     mdata.write_h5mu(par['output'].strip())
 
 if __name__ == "__main__":
-    main()
+    main(par)

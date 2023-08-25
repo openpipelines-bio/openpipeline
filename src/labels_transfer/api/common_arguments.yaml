@@ -111,7 +111,7 @@
                     - type: "double"
                       name: "uncertainty"
                       description: "The uncertainty of the predicted labels. Override using the `--output_obs_uncertainty` argument."
-                      required: true
+                      required: false
                   obsm:
                     - type: "double"
                       name: "X_integrated_scanvi"
@@ -143,7 +143,6 @@
             In which `.obs` slots to store the uncertainty of the predictions.
             If provided, must have the same length as `--reference_obs_targets`.
             If empty, will default to the `reference_obs_targets` combined with the `"_uncertainty"` suffix.
-          default: [ ann_level_1, ann_level_2, ann_level_3, ann_level_4, ann_level_5, ann_finest_level ]
         - name: "--output_uns_parameters"
           type: string
           default: "labels_transfer"

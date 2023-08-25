@@ -15,24 +15,24 @@ def _setup_logger():
 
 def check_arguments(par):
     # check output .obs predictions
-    if par["output_obs_predictions"] is None:
-        par["output_obs_predictions"] = [ t + "_pred" + t for t in par["reference_obs_targets"]]
-    assert len(par["output_obs_predictions"]) == len(par["reference_obs_targets"]), "Number of output_obs_predictions must match number of reference_obs_targets"
+    if not par["output_obs_predictions"]:
+        par["output_obs_predictions"] = [ t + "_pred" for t in par["reference_obs_targets"]]
+    assert len(par["output_obs_predictions"]) == len(par["reference_obs_targets"]), f"Number of output_obs_predictions must match number of reference_obs_targets\npar: {par}"
 
     # check output .obs uncertainty
-    if par["output_obs_uncertainty"] is None:
+    if not par["output_obs_uncertainty"]:
         par["output_obs_uncertainty"] = [ t + "_uncertainty" for t in par["reference_obs_targets"]]
-    assert len(par["output_obs_uncertainty"]) == len(par["reference_obs_targets"]), "Number of output_obs_uncertainty must match number of reference_obs_targets"
+    assert len(par["output_obs_uncertainty"]) == len(par["reference_obs_targets"]), f"Number of output_obs_uncertainty must match number of reference_obs_targets\npar: {par}"
 
-    return 
+    return par
 
 def get_reference_features(adata_reference, par, logger):
-    if par["reference_obsm_key"] is None:
+    if par["reference_obsm_features"] is None:
         logger.info("Using .X of reference data")
         train_data = adata_reference.X
     else:
-        logger.info(f"Using .obsm[{par['reference_obsm_key']}] of reference data")
-        train_data = adata_reference.obsm[par["reference_obsm_key"]]
+        logger.info(f"Using .obsm[{par['reference_obsm_features']}] of reference data")
+        train_data = adata_reference.obsm[par["reference_obsm_features"]]
 
     return train_data
 
