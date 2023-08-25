@@ -1,7 +1,6 @@
 functionality:
   name: scvi
   namespace: "integrate"
-  version: "dev"
   description: "Performs scvi integration as done in the human lung cell atlas https://github.com/LungCellAtlas/HLCA"
   authors:
     - __merge__: /src/authors/malte_luecken.yaml
@@ -36,6 +35,38 @@ functionality:
           type: string
           required: false
           description: ".var column containing highly variable genes. By default, do not subset genes."
+        - name: "--obs_labels"
+          type: string
+          required: false
+          description: |
+            Key in adata.obs for label information. Categories will automatically be 
+            converted into integer categories and saved to adata.obs['_scvi_labels'].
+            If None, assigns the same label to all the data.
+        - name: "--obs_size_factor"
+          type: string
+          required: false
+          description: |
+            Key in adata.obs for size factor information. Instead of using library size as a size factor,
+            the provided size factor column will be used as offset in the mean of the likelihood.
+            Assumed to be on linear scale.
+        - name: "--obs_categorical_covariate"
+          type: string
+          required: false
+          multiple: true
+          description: |
+            Keys in adata.obs that correspond to categorical data. These covariates can be added in
+            addition to the batch covariate and are also treated as nuisance factors
+            (i.e., the model tries to minimize their effects on the latent space).
+            Thus, these should not be used for biologically-relevant factors that you do _not_ want to correct for.
+        - name: "--obs_continuous_covariate"
+          type: string
+          required: false
+          multiple: true
+          description: |
+            Keys in adata.obs that correspond to continuous data. These covariates can be added in
+            addition to the batch covariate and are also treated as nuisance factors
+            (i.e., the model tries to minimize their effects on the latent space). Thus, these should not be
+            used for biologically-relevant factors that you do _not_ want to correct for.
     - name: Outputs
       arguments:
         - name: "--output"
@@ -60,6 +91,75 @@ functionality:
           default: "X_scvi_integrated"
           required: false
           description: "In which .obsm slot to store the resulting integrated embedding."
+    - name: "SCVI options"
+      arguments:
+        - name: --n_hidden_nodes
+          type: integer
+          required: false
+          default: 128 # this is not the default in SCVI
+          description: "Number of nodes per hidden layer."
+        - name: --n_dimensions_latent_space
+          type: integer
+          required: false
+          default: 30 # this is not the default in SCVI
+          description: "Dimensionality of the latent space."
+        - name: "--n_hidden_layers"
+          required: false
+          type: integer
+          default: 2 # this is not the default in SCVI
+          description:  Number of hidden layers used for encoder and decoder neural-networks.
+        - name: --dropout_rate
+          type: double
+          required: false
+          default: 0.1 
+          description: "Dropout rate for the neural networks."
+        - name: "--dispersion"
+          type: string
+          required: false
+          choices: ["gene", "gene-batch", "gene-label", "gene-cell"]
+          default: "gene"
+          description: |
+            Set the behavior for the dispersion for negative binomial distributions:
+            - gene: dispersion parameter of negative binomial is constant per gene across cells
+            - gene-batch: dispersion can differ between different batches
+            - gene-label: dispersion can differ between different labels
+            - gene-cell:  dispersion can differ for every gene in every cell
+        - name: "--gene_likelihood"
+          type: string
+          default: "nb" # This is not the default in SCVI
+          choices: ["nb", "zinb", "poisson"]
+          description: |
+            Model used to generate the expression data from a count-based likelihood distribution.
+            - nb: Negative binomial distribution
+            - zinb: Zero-inflated negative binomial distribution
+            - poisson: Poisson distribution
+    - name: "Variational auto-encoder model options"
+      arguments:
+        - name: "--use_layer_normalization"
+          description: |
+            Neural networks for which to enable layer normalization. 
+          type: string
+          choices: ["encoder", "decoder", "none", "both"]
+          default: "both" # This is not the default in SCVI
+        - name: "--use_batch_normalization"
+          description: |
+            Neural networks for which to enable batch normalization. 
+          type: string
+          choices: ["encoder", "decoder", "none", "both"]
+          default: "none" # This is not the default in SCVI
+        - name: "--encode_covariates"
+          type: boolean_false # This is not the default in SCVI
+          description: "Whether to concatenate covariates to expression in encoder"
+        - name: "--deeply_inject_covariates"
+          type: boolean_true
+          description: |
+            Whether to concatenate covariates into output of hidden layers in encoder/decoder. 
+            This option only applies when n_layers > 1. The covariates are concatenated to
+            the input of subsequent hidden layers.
+        - name: "--use_observed_lib_size"
+          type: boolean_true # This is not the default in SCVI
+          description: |
+            Use observed library size for RNA as scaling factor in mean of conditional distribution.
     - name: "Early stopping arguments"
       arguments:
         - name: "--early_stopping"
@@ -108,34 +208,43 @@ functionality:
           type: integer
           description: "Minimum number of cells threshold ensuring that every obs_batch category has sufficient observations (cells) for model training."
           required: false
+          default: 0
         - name: "--n_var_min_count"
           type: integer
           description: "Minimum number of genes threshold ensuring that every var_input filter has sufficient observations (genes) for model training."
           required: false
+          default: 0
   resources:
     - type: python_script
       path: script.py
+    - path: ../../utils/subset_vars.py
   test_resources:
     - type: python_script
       path: test.py
+    - path: ../../utils/subset_vars.py
     - path: ../../../resources_test/pbmc_1k_protein_v3/pbmc_1k_protein_v3_mms.h5mu
 platforms:
   - type: docker
-    image: nvcr.io/nvidia/pytorch:22.12-py3
+    image: nvcr.io/nvidia/pytorch:23.06-py3
     # run_args: ["--gpus all"]
     setup:
+      - type: apt
+        packages:
+          - libpng-dev
+          - libjpeg-dev
       - type: docker
         run: |
           pip install "jax[cuda]" -f https://storage.googleapis.com/jax-releases/jax_cuda_releases.html
       - type: python
+        __merge__: [/src/base/requirements/anndata_mudata.yaml, .]
         packages:
-          - mudata~=0.2.0
-          - anndata~=0.8.0
           - scanpy~=1.9.2
       - type: python
         upgrade: false
         packages:
-          - scvi-tools~=0.20.3
+          # Pinning numba prevents recompiling when pip starts looking for a compatible version
+          - numba~=0.57.1
+          - scvi-tools~=1.0.0
   - type: nextflow
     directives:
-      label: [gpu]
+      label: [singlecpu, midmem, gpu]

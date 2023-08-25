@@ -1,7 +1,6 @@
 functionality:
   name: regress_out
   namespace: "transform"
-  version: "dev"
   description: |
     Regress out (mostly) unwanted sources of variation.
     Uses simple linear regression. This is inspired by Seurat's regressOut function in R [Satija15]. 
@@ -53,8 +52,9 @@ platforms:
         packages: 
           - procps
       - type: python
+        __merge__: [/src/base/requirements/anndata_mudata.yaml, .]
         packages:
           - scanpy~=1.9.2
-          - mudata~=0.2.0
-          - anndata~=0.8
   - type: nextflow
+    directives:
+      label: [lowmem, lowcpu]

@@ -1,7 +1,6 @@
 functionality:
   name: filter_with_counts
   namespace: "filter"
-  version: "dev"
   description: |
     Filter scRNA-seq data based on the primary QC metrics. 
     This is based on both the UMI counts, the gene counts 
@@ -76,6 +75,13 @@ functionality:
           default: "filter_with_counts"
           description: In which .var slot to store a boolean array corresponding to which variables should be removed.
 
+        - name: "--var_name_mitochondrial_genes"
+          type: string
+          required: false
+          description: |
+            In which .var slot to store a boolean array corresponding the mitochondrial genes.
+            Will only be used if --min_fraction_mito or --max_fraction_mito are specified.
+
     - name: Arguments
       arguments:
         - name: "--min_counts"
@@ -127,10 +133,10 @@ platforms:
         packages: 
           - procps
       - type: python
-        packages:
-          - mudata~=0.2.0
-          - anndata~=0.8.0
+        __merge__: /src/base/requirements/anndata_mudata.yaml
     test_setup:
       - type: python
         packages: viashpy
   - type: nextflow
+    directives:
+      label: [singlecpu, lowmem]

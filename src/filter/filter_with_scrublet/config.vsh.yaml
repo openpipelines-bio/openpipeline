@@ -1,7 +1,6 @@
 functionality:
   name: filter_with_scrublet
   namespace: "filter"
-  version: "dev"
   description: |
     Doublet detection using the Scrublet method (Wolock, Lopez and Klein, 2019).
     The method tests for potential doublets by using the expression profiles of
@@ -124,11 +123,10 @@ platforms:
           - procps
           - build-essential
       - type: python
+        __merge__: [/src/base/requirements/anndata_mudata.yaml, .]
         packages:
           - scanpy~=1.9.2
           - scrublet
-          - mudata~=0.2.0
-          - anndata~=0.8.0
           - annoy==1.16.3
     test_setup:
       - type: python
@@ -136,4 +134,4 @@ platforms:
          - viashpy
   - type: nextflow
     directives:
-      label: highcpu
+      label: [highcpu, midmem]

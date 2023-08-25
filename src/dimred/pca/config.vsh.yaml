@@ -1,7 +1,6 @@
 functionality:
   name: pca
   namespace: "dimred"
-  version: "dev"
   description: |
     Computes PCA coordinates, loadings and variance decomposition. Uses the implementation of scikit-learn [Pedregosa11].
   authors:
@@ -87,10 +86,9 @@ platforms:
         packages: 
           - procps
       - type: python
+        __merge__: [/src/base/requirements/anndata_mudata.yaml, .]
         packages:
           - scanpy~=1.9.2
-          - mudata~=0.2.0
-          - anndata~=0.8.0
     test_setup:
       - type: python
         packages: 

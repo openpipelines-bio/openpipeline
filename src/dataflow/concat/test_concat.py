@@ -353,8 +353,8 @@ def test_concat_invalid_h5_error_includes_path(run_component, tmp_path):
                 "--other_axis_mode", "move",
                 "---cpus", str(meta["cpus"])
                 ])
-    assert re.search(rf"ValueError: Failed to load .*{str(empty_file.name)}\.",
+    assert re.search(rf"OSError: Failed to load .*{str(empty_file.name)}\. Is it a valid h5 file?",
                      err.value.stdout.decode('utf-8'))
 
 if __name__ == '__main__':
-    sys.exit(pytest.main([__file__], plugins=["viashpy"]))
+    sys.exit(pytest.main([__file__]))

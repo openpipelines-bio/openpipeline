@@ -3,7 +3,6 @@ functionality:
   # MuDataSeurat is currently broken -- https://github.com/PMBio/MuDataSeurat/issues/9
   status: disabled 
   namespace: "convert"
-  version: "dev"
   description: |
     Converts an h5mu file into a Seurat file.
 
@@ -54,9 +53,11 @@ platforms:
       - type: python
         packages: 
           - scanpy~=1.9.2
-          - anndata~=0.8.0
+          - anndata~=0.9.1
       - type: r
         cran: [ anndata, hdf5r, testthat ]
       - type: r
         github: pmbio/MuDataSeurat
   - type: nextflow
+    directives:
+      label: [lowmem, singlecpu]

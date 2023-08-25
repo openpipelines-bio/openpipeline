@@ -1,7 +1,6 @@
 functionality:
   name: scanorama
   namespace: "integrate"
-  version: "dev"
   description: |
     Use Scanorama to integrate different experiments.
   authors:
@@ -81,11 +80,10 @@ platforms:
           - procps
           - build-essential
       - type: python
+        __merge__: [/src/base/requirements/anndata_mudata.yaml, .]
         packages:
-          - mudata~=0.2.0
-          - anndata~=0.8.0
           - scanpy~=1.9.2
           - scanorama
   - type: nextflow
     directives:
-      label: [highmem]
+      label: [midcpu, highmem]

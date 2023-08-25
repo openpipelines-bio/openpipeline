@@ -1,7 +1,6 @@
 functionality:
   name: find_neighbors
   namespace: "neighbors"
-  version: "dev"
   description: |
     Compute a neighborhood graph of observations [McInnes18].
 
@@ -93,8 +92,9 @@ platforms:
         packages: 
           - procps
       - type: python
+        __merge__: [/src/base/requirements/anndata_mudata.yaml, .]
         packages:
           - scanpy~=1.9.2
-          - mudata~=0.2.0
-          - anndata~=0.8.0
   - type: nextflow
+    directives:
+      label: [lowcpu, midmem]

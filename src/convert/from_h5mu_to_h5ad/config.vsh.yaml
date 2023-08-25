@@ -1,7 +1,6 @@
 functionality:
   name: from_h5mu_to_h5ad
   namespace: "convert"
-  version: "dev"
   description: |
     Converts a h5mu file into a h5ad file.
   authors:
@@ -45,7 +44,7 @@ platforms:
         packages: 
           - procps
       - type: python
-        packages:
-          - mudata~=0.2.0
-          - anndata~=0.8.0
+        __merge__: [/src/base/requirements/anndata_mudata.yaml]
   - type: nextflow
+    directives:
+      label: [lowmem, singlecpu]

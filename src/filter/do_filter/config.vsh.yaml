@@ -1,7 +1,6 @@
 functionality:
   name: do_filter
   namespace: "filter"
-  version: "dev"
   description: |
     Remove observations and variables based on specified .obs and .var columns.
   authors:
@@ -62,11 +61,11 @@ platforms:
         packages: 
           - procps
       - type: python
-        packages:
-          - mudata~=0.2.0
-          - anndata~=0.8.0
+        __merge__: /src/base/requirements/anndata_mudata.yaml
     test_setup:
       - type: python
         packages:
           - viashpy~=0.2.1
   - type: nextflow
+    directives:
+      label: [singlecpu, lowmem]

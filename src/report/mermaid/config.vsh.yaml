@@ -1,7 +1,6 @@
 functionality:
   name: mermaid
   namespace: "report"
-  version: "dev"
   description: |
     Generates a network from mermaid code.
   authors:

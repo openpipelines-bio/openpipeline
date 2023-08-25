@@ -80,7 +80,7 @@ platforms:
       # setup derived from https://github.com/alexdobin/STAR/blob/master/extras/docker/Dockerfile
       - type: docker
         env: 
-          - STAR_VERSION 2.7.10a
+          - STAR_VERSION 2.7.10b
           - PACKAGES gcc g++ make wget zlib1g-dev unzip
       - type: docker
         run: |

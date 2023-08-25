@@ -1,7 +1,6 @@
 functionality:
   name: bbknn
   namespace: "neighbors"
-  version: "dev"
   description: |
     BBKNN network generation
   authors:
@@ -16,7 +15,7 @@ functionality:
       type: file
       description: Input h5mu file
       direction: input
-      required: 
+      required: true
     - name: "--modality"
       type: string
       default: "rna"
@@ -88,11 +87,11 @@ platforms:
           - procps
           - build-essential
       - type: python
+        __merge__: [/src/base/requirements/anndata_mudata.yaml, .]
         packages:
-          - mudata~=0.2.0
-          - anndata~=0.8.0
           - scanpy~=1.9.2 # Will result in NameError: name 'logg' is not defined otherwise
           - bbknn
+          - scikit-learn~=1.2.2
   - type: nextflow
     directives:
-      label: highmem
+      label: [lowcpu, highmem]

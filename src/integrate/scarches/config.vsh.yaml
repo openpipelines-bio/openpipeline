@@ -1,7 +1,6 @@
 functionality:
   name: scarches
   namespace: "integrate"
-  version: "dev"
   description: "Performs reference mapping with scArches"
   authors:
     - __merge__: /src/authors/vladimir_shitov.yaml
@@ -108,13 +107,11 @@ platforms:
     # run_args: ["--gpus all"]
     setup:
       - type: python
+        __merge__: [/src/base/requirements/anndata_mudata.yaml, .]
         packages:
-          - mudata~=0.2.0
-          - anndata~=0.8.0
           - scvi-tools~=0.19          
           - pandas~=1.5.3
   - type: nextflow
-    variant: vdsl3
     directives:
       label: [highmem, highcpu]
   - type: native

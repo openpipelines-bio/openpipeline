@@ -11,8 +11,9 @@ cd "$REPO_ROOT"
 export NXF_VER=21.10.6
 
 nextflow run . \
-  -main-script workflows/multiomics/integration/integration_setup/main.nf \
+  -main-script workflows/multiomics/integration/leiden_scvi/main.nf \
   -profile docker,no_publish \
   -entry test_wf \
   -with-trace work/trace.txt \
-  -with-dag workflows/multiomics/integration/integration_setup/graph.dot
+  -with-dag workflows/multiomics/integration/scvi/graph.dot \
+  -c workflows/utils/labels_ci.config

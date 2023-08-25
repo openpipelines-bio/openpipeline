@@ -23,6 +23,13 @@ functionality:
       required: true
       description: Output directory to write reports to.
       example: qc/
+    - name: "--threads"
+      alternatives: ["-t"]
+      type: integer
+      required: false
+      description: |
+        Specifies the number of files which can be processed simultaneously. Each thread will be allocated 250MB of
+        memory.
   resources:
     - type: bash_script
       path: script.sh
@@ -37,3 +44,5 @@ platforms:
       - type: apt
         packages: [ fastqc ]
   - type: nextflow
+    directives:
+      label: [lowcpu, midmem]

@@ -1,7 +1,6 @@
 functionality:
   name: "from_bdrhap_to_h5mu"
   namespace: "convert"
-  version: "dev"
   description: |
     Convert the output of a BD Rhapsody WTA pipeline to a MuData h5 file.
   authors:
@@ -49,7 +48,9 @@ platforms:
       - type: docker
         run: apt update && apt upgrade -y
       - type: python
-        pip: [anndata~=0.8, mudata~=0.2.0]
+        __merge__: /src/base/requirements/anndata_mudata.yaml
       - type: r
         cran: anndata
   - type: nextflow
+    directives:
+      label: [lowmem, singlecpu]

@@ -1,14 +1,6 @@
 from scanpy._utils import check_nonnegative_integers
 import mudata
 import scvi
-from torch.cuda import is_available as cuda_is_available
-try:
-    from torch.backends.mps import is_available as mps_is_available
-except ModuleNotFoundError:
-    # Older pytorch versions
-    # MacOS GPUs
-    def mps_is_available():
-        return False
 
 ### VIASH START
 par = {
@@ -32,7 +24,15 @@ par = {
     "model_output": "test/",
     "output_compression": "gzip",
     }
+
+meta = {
+    "resources_dir": 'src/integrate/scvi'
+}
 ### VIASH END
+
+import sys
+sys.path.append(meta['resources_dir'])
+from subset_vars import subset_vars
 
 #TODO: optionally, move to qa
 # https://github.com/openpipelines-bio/openpipeline/issues/435
@@ -54,13 +54,14 @@ def check_validity_anndata(adata, layer, obs_batch,
         f"Anndata has fewer than {n_var_min_count} genes."
 
 
+
 def main():
     mdata = mudata.read(par["input"].strip())
     adata = mdata.mod[par['modality']]
 
     if par['var_input']:
         # Subset to HVG
-        adata = adata[:,adata.var['var_input']].copy()
+        adata = subset_vars(adata, subset_col=par["var_input"])
 
     check_validity_anndata(
         adata, par['input_layer'], par['obs_batch'],
@@ -70,23 +71,27 @@ def main():
     scvi.model.SCVI.setup_anndata(
         adata,
         batch_key=par['obs_batch'],
-        layer=par['input_layer']
+        layer=par['input_layer'],
+        labels_key=par['obs_labels'],
+        size_factor_key=par['obs_size_factor'],
+        categorical_covariate_keys=par['obs_categorical_covariate'],
+        continuous_covariate_keys=par['obs_continuous_covariate'],
     )
 
     # Set up the model
     vae_uns = scvi.model.SCVI(
         adata,
-        n_hidden=128, #this is the default
-        n_latent=30,
-        n_layers=2,
-        dropout_rate=0.1, #this is the default
-        dispersion='gene', #this is the default
-        gene_likelihood='nb',
-        use_layer_norm='both',
-        use_batch_norm="none",
-        encode_covariates=True, #Parameterization for better scArches performance -> maybe don't use this always?
-        deeply_inject_covariates=False, #Parameterization for better scArches performance -> maybe don't use this always?
-        use_observed_lib_size=False, #When size_factors are not passed
+        n_hidden=par["n_hidden_nodes"],
+        n_latent=par["n_dimensions_latent_space"],
+        n_layers=par["n_hidden_layers"],
+        dropout_rate=par["dropout_rate"],
+        dispersion=par["dispersion"],
+        gene_likelihood=par["gene_likelihood"],
+        use_layer_norm=par["use_layer_normalization"],
+        use_batch_norm=par["use_batch_normalization"],
+        encode_covariates=par["encode_covariates"], # Default (True) is for better scArches performance -> maybe don't use this always?
+        deeply_inject_covariates=par["deeply_inject_covariates"], # Default (False) for better scArches performance -> maybe don't use this always?
+        use_observed_lib_size=par["use_observed_lib_size"], # When size_factors are not passed
     )
 
     plan_kwargs = {
@@ -105,7 +110,7 @@ def main():
         early_stopping_min_delta=par['early_stopping_min_delta'],
         plan_kwargs=plan_kwargs,
         check_val_every_n_epoch=1,
-        use_gpu=(cuda_is_available() or mps_is_available()),
+        accelerator="auto",
     )
     #Note: train_size=1.0 should give better results, but then can't do early_stopping on validation set
 

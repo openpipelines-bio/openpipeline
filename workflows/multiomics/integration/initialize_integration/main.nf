@@ -34,7 +34,8 @@ workflow run_wf {
         "input": "input", 
         "obsm_output": "obsm_pca",
         "var_input": "var_pca_feature_selection",
-        "modality": "modality"
+        "modality": "modality",
+        "overwrite": "pca_overwrite"
       ],
       neighbors: [
         "uns_output": "uns_neighbors",
@@ -79,6 +80,13 @@ workflow test_wf {
         id: "foo",
         input: params.resources_test + "/concat_test_data/concatenated_brain_filtered_feature_bc_matrix_subset.h5mu",
         layer: "",
+        output: "foo.final.h5mu"
+      ],
+      [
+        id: "foo2",
+        input: params.resources_test + "/concat_test_data/concatenated_brain_filtered_feature_bc_matrix_subset.h5mu",
+        layer: "",
+        output: "foo2.final.h5mu"
       ]
     ]
   ]
@@ -92,10 +100,11 @@ workflow test_wf {
       assert output[1].toString().endsWith(".h5mu") : "Output file should be a h5mu file. Found: ${output_list[1]}"
       "Output: $output"
     }
-    | toList()
+    | toSortedList()
     | map { output_list ->
-      assert output_list.size() == 1 : "output channel should contain one events"
-      assert (output_list.collect({it[0]}) as Set).equals(["foo"] as Set): "Output ID should be same as input ID"
+      assert output_list.size() == 2 : "output channel should contain two events"
+      assert (output_list.collect({it[0]}) as Set).equals(["foo", "foo2"] as Set): "Output ID should be same as input ID"
+      assert (output_list.collect({it[1].getFileName().toString()}) as Set).equals(["foo.final.h5mu", "foo2.final.h5mu" ] as Set)
     }
     //| check_format(args: {""}) // todo: check whether output h5mu has the right slots defined
 }
