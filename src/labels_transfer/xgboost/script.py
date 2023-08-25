@@ -1,7 +1,9 @@
+import sys
 import json
-import logging
 import os
 from typing import Optional
+import yaml
+from pathlib import Path
 
 import mudata
 import numpy as np
@@ -16,15 +18,15 @@ from sklearn.preprocessing import LabelEncoder
 ### VIASH START
 par = {
     "input": "resources_test/pbmc_1k_protein_v3/pbmc_1k_protein_v3_mms.h5mu",
-    "reference": "https://zenodo.org/record/6337966/files/HLCA_emb_and_metadata.h5ad",
-    "targets": ["ann_level_1", "ann_level_2", "ann_level_3", "ann_level_4", "ann_level_5", "ann_finest_level"],
     "modality": "rna",
-    "reference_obsm_key": "X_integrated_scanvi",
-    "query_obsm_key": "X_integrated_scanvi",
+    "input_obsm_features": "X_integrated_scanvi",
+    "reference": "https://zenodo.org/record/6337966/files/HLCA_emb_and_metadata.h5ad",
+    "reference_obsm_features": "X_integrated_scanvi",
+    "reference_obs_targets": ["ann_level_1", "ann_level_2", "ann_level_3", "ann_level_4", "ann_level_5", "ann_finest_level"],
     "output": "foo.h5mu",
-    "model_output": "model",
-    "output_obs_suffix": "_pred",
-    "output_uns_key": "labels_transfer",
+    "output_obs_predictions": None,
+    "output_obs_uncertainty": None,
+    "output_uns_parameters": "labels_transfer",
     "force_retrain": False,
     "use_gpu": True,
     "verbosity": 1,
@@ -42,37 +44,22 @@ par = {
     "reg_alpha": 0,
     "scale_pos_weight": 1,
 }
+meta = {
+    "resources_dir": "src/labels_transfer/utils",
+    "config": "src/labels_transfer/xgboost/config.vsh.yaml"
+}
 ### VIASH END
 
-training_params = {
-    "learning_rate": par["learning_rate"],
-    "min_split_loss": par["min_split_loss"],
-    "max_depth": par["max_depth"],
-    "min_child_weight": par["min_child_weight"],
-    "max_delta_step": par["max_delta_step"],
-    "subsample": par["subsample"],
-    "sampling_method": par["sampling_method"],
-    "colsample_bytree": par["colsample_bytree"],
-    "colsample_bylevel": par["colsample_bylevel"],
-    "colsample_bynode": par["colsample_bynode"],
-    "reg_lambda": par["reg_lambda"],
-    "reg_alpha": par["reg_alpha"],
-    "scale_pos_weight": par["scale_pos_weight"],
-}
+sys.path.append(meta["resources_dir"])
+from helper import _setup_logger, check_arguments, get_reference_features, get_query_features
 
+# read config arguments
+config = yaml.safe_load(Path(meta["config"]).read_text())
 
-def _setup_logger():
-     from sys import stdout
-
-     logger = logging.getLogger()
-     logger.setLevel(logging.INFO)
-     console_handler = logging.StreamHandler(stdout)
-     logFormatter = logging.Formatter("%(asctime)s %(levelname)-8s %(message)s")
-     console_handler.setFormatter(logFormatter)
-     logger.addHandler(console_handler)
-
-     return logger
-     
+# look for training params for method
+argument_groups = { grp["name"]: grp["arguments"] for grp in config["functionality"]["argument_groups"] }
+training_arg_names = [ arg["name"].replace("--", "") for arg in argument_groups["Learning parameters"] ]
+training_params = { arg_name: par[arg_name] for arg_name in training_arg_names }
 
 def encode_labels(y):
     labels_encoder = LabelEncoder()
@@ -82,7 +69,6 @@ def encode_labels(y):
 
 
 def get_model_eval(xgb_model, X_test, y_test, labels_encoder):
-    
     preds = xgb_model.predict(X_test)
     
     cr = classification_report(labels_encoder.inverse_transform(y_test),
@@ -94,7 +80,6 @@ def get_model_eval(xgb_model, X_test, y_test, labels_encoder):
 
 
 def train_test_split_adata(adata, labels):
-    
     train_data = pd.DataFrame(data=adata.X, index=adata.obs_names)
 
     X_train, X_test, y_train, y_test = train_test_split(
@@ -104,7 +89,6 @@ def train_test_split_adata(adata, labels):
 
 
 def train_xgb_model(X_train, y_train, gpu=True) -> xgb.XGBClassifier:
-    
     n_classes = len(np.unique(y_train))
     objective = "binary:logistic" if n_classes == 2 else "multi:softprob"
     
@@ -178,7 +162,6 @@ def build_ref_classifiers(adata_reference, targets, model_path,
     classifier_ann_finest_level.xgb*    model_info.json*
     classifier_ann_level_1.xgb*         model_params.pt* 
     ```
-    
     """
     if logger is None:
         logger = _setup_logger()
@@ -190,12 +173,7 @@ def build_ref_classifiers(adata_reference, targets, model_path,
     if eval_verbosity < 0 or eval_verbosity > 2:
         raise ValueError("`eval_verbosity` should be an integer between 0 and 2.")
 
-    if par["reference_obsm_key"] is None:
-        logger.info("Using X as data sourse")
-        X_reference = adata_reference.X
-    else:
-        logger.info(f"Using obsm key {par['reference_obsm_key']} as data sourse")
-        X_reference = adata_reference.obsm[par["reference_obsm_key"]]
+    train_data = get_reference_features(adata_reference, par, logger)
 
     if not os.path.exists(model_path):
         os.makedirs(model_path, exist_ok=True)
@@ -203,7 +181,7 @@ def build_ref_classifiers(adata_reference, targets, model_path,
     # Map from name of classifier to file names
     classifiers = dict()
     
-    for label in targets:
+    for label, obs_pred in zip(targets, par["output_obs_predictions"]):
         if label not in adata_reference.obs:
             raise ValueError(f"{label} is not in the `adata` object passed!")
 
@@ -214,7 +192,7 @@ def build_ref_classifiers(adata_reference, targets, model_path,
         
         logger.info(f"Building classifier for {label}...")
         xgb_model = build_classifier(
-            X=X_reference,
+            X=train_data,
             y=labels,
             labels_encoder=labels_encoder,
             label_key=label,
@@ -230,7 +208,7 @@ def build_ref_classifiers(adata_reference, targets, model_path,
         classifiers[label] = {
             "filename": filename,
             "labels": labels_encoder.classes_.tolist(),
-            "obs_column": label + par["output_obs_suffix"],
+            "obs_column": obs_pred,
             "model_params": training_params,
         }
         
@@ -259,12 +237,14 @@ def build_ref_classifiers(adata_reference, targets, model_path,
         f.write(json_string)
 
 
-def project_labels(query_dataset,
-                   cell_type_classifier_model: xgb.XGBClassifier,
-                   annotation_column_name='pred_labels',
-                   uncertainty_thresh=None,  # Note: currently not passed to predict function
-                   logger = None
-                   ):
+def project_labels(
+    query_dataset,
+    cell_type_classifier_model: xgb.XGBClassifier,
+    annotation_column_name='label_pred',
+    uncertainty_column_name='label_uncertainty',
+    uncertainty_thresh=None,  # Note: currently not passed to predict function
+    logger=None
+):
     """
     A function that projects predicted labels onto the query dataset, along with uncertainty scores.
     Performs in-place update of the adata object, adding columns to the `obs` DataFrame.
@@ -273,6 +253,7 @@ def project_labels(query_dataset,
         * `query_dataset`: The query `AnnData` object
         * `model_file`: Path to the classification model file
         * `prediction_key`: Column name in `adata.obs` where to store the predicted labels
+        * `uncertainty_key`: Column name in `adata.obs` where to store the uncertainty scores
         * `uncertainty_thresh`: The uncertainty threshold above which we call a cell 'Unknown'
 
     Output:
@@ -285,41 +266,38 @@ def project_labels(query_dataset,
     if (uncertainty_thresh is not None) and (uncertainty_thresh < 0 or uncertainty_thresh > 1):
         raise ValueError(f'`uncertainty_thresh` must be `None` or between 0 and 1.')
 
-    if par["query_obsm_key"] is None:
-        logger.info(f"Using X as data sourse")
-        X_query = query_dataset.X
-    else:
-        logger.info(f"Using obsm key {par['query_obsm_key']} as data sourse")
-        X_query = query_dataset.obsm[par["query_obsm_key"]]
+    query_data = get_query_features(query_dataset, par, logger)
 
     # Predict labels and probabilities
-    query_dataset.obs[annotation_column_name] = cell_type_classifier_model.predict(X_query)
+    query_dataset.obs[annotation_column_name] = cell_type_classifier_model.predict(query_data)
 
     logger.info("Predicting probabilities")
-    probs = cell_type_classifier_model.predict_proba(X_query)
+    probs = cell_type_classifier_model.predict_proba(query_data)
 
     # Format probabilities
     df_probs = pd.DataFrame(probs, columns=cell_type_classifier_model.classes_, index=query_dataset.obs_names)
-    query_dataset.obs[annotation_column_name + "_uncertainty"] = 1 - df_probs.max(1)
+    query_dataset.obs[uncertainty_column_name] = 1 - df_probs.max(1)
 
     # Note: this is here in case we want to propose a set of values for the user to accept to seed the
     #       manual curation of predicted labels
     if uncertainty_thresh is not None:
         logger.info("Marking uncertain predictions")
         query_dataset.obs[annotation_column_name + "_filtered"] = [
-            val if query_dataset.obs[annotation_column_name + "_uncertainty"][i] < uncertainty_thresh
+            val if query_dataset.obs[uncertainty_column_name][i] < uncertainty_thresh
             else "Unknown" for i, val in enumerate(query_dataset.obs[annotation_column_name])]
 
     return query_dataset
 
 
 def predict(
-        query_dataset,
-        cell_type_classifier_model_path,
-        annotation_column_name: str,
-        models_info,
-        use_gpu: bool = False,
-        logger=None
+    query_dataset,
+    cell_type_classifier_model_path,
+    annotation_column_name: str,
+    prediction_column_name: str,
+    uncertainty_column_name: str,
+    models_info,
+    use_gpu: bool = False,
+    logger=None
 ) -> pd.DataFrame:
     """
     Returns `obs` DataFrame with prediction columns appended
@@ -339,19 +317,25 @@ def predict(
     cell_type_classifier_model.load_model(fname=cell_type_classifier_model_path)
 
     logger.info("Predicting labels")
-    predicted_labels_col = annotation_column_name + par["output_obs_suffix"]
-    project_labels(query_dataset, cell_type_classifier_model, annotation_column_name=predicted_labels_col, logger=logger)
+    project_labels(query_dataset, 
+                   cell_type_classifier_model, 
+                   annotation_column_name=prediction_column_name, 
+                   uncertainty_column_name=uncertainty_column_name,
+                   logger=logger)
 
     logger.info("Converting labels from numbers to classes")
     labels_encoder = LabelEncoder()
     labels_encoder.classes_ = np.array(labels)
-    query_dataset.obs[predicted_labels_col] = labels_encoder.inverse_transform(query_dataset.obs[predicted_labels_col])
+    query_dataset.obs[prediction_column_name] = labels_encoder.inverse_transform(query_dataset.obs[prediction_column_name])
 
     return query_dataset
 
 
-def main():
+def main(par):
     logger = _setup_logger()
+
+    logger.info("Checking arguments")
+    par = check_arguments(par)
 
     mdata = mudata.read(par["input"].strip())
     adata = mdata.mod[par["modality"]]
@@ -364,39 +348,41 @@ def main():
 
     targets_to_train = []
 
-    for target in par["targets"]:
-        if not os.path.exists(par["model_output"]) or f"classifier_{target}.xgb" not in os.listdir(par["model_output"]) or par["force_retrain"]:
-            logger.info(f"Classifier for {target} added to a training schedule")
-            targets_to_train.append(target)
+    for obs_target in par["reference_obs_targets"]:
+        if not os.path.exists(par["model_output"]) or f"classifier_{obs_target}.xgb" not in os.listdir(par["model_output"]) or par["force_retrain"]:
+            logger.info(f"Classifier for {obs_target} added to a training schedule")
+            targets_to_train.append(obs_target)
         else:
-            logger.info(f"Found classifier for {target}, no retraining required")
+            logger.info(f"Found classifier for {obs_target}, no retraining required")
 
     build_ref_classifiers(adata_reference, targets_to_train, model_path=par["model_output"], 
                           gpu=par["use_gpu"], eval_verbosity=par["verbosity"], logger=logger)
 
-    if par["output_uns_key"] not in adata.uns:
-        adata.uns[par["output_uns_key"]] = {}
+    output_uns_parameters = adata.uns.get(par["output_uns_parameters"], {})
 
     with open(par["model_output"] + "/model_info.json", "r") as f:
         models_info = json.loads(f.read())
 
-    for target in par["targets"]:
-        logger.info(f"Predicting {target}")
-        predicted_label_col_name = target + par["output_obs_suffix"]
+    for obs_target, obs_pred, obs_unc in zip(par["reference_obs_targets"], par["output_obs_predictions"], par["output_obs_uncertainty"]):
+        logger.info(f"Predicting {obs_target}")
 
         adata = predict(query_dataset=adata,
-                        cell_type_classifier_model_path=os.path.join(par["model_output"], "classifier_" + target + ".xgb"),
-                        annotation_column_name=target, 
+                        cell_type_classifier_model_path=os.path.join(par["model_output"], "classifier_" + obs_target + ".xgb"),
+                        annotation_column_name=obs_target, 
+                        prediction_column_name=obs_pred,
+                        uncertainty_column_name=obs_unc,
                         models_info=models_info,
                         use_gpu=par["use_gpu"],
                         logger=logger)
         
-        if target in targets_to_train:
+        if obs_target in targets_to_train:
             # Save information about the transfer to .uns
-            adata.uns[par["output_uns_key"]][predicted_label_col_name] = {
+            output_uns_parameters[obs_target] = {
                 "method": "XGBClassifier",
                 **training_params
             }
+
+    adata.uns[par["output_uns_parameters"]] = output_uns_parameters
 
     logger.info("Updating mdata")
     mdata.mod[par['modality']] = adata
@@ -406,4 +392,4 @@ def main():
     mdata.write_h5mu(par['output'].strip())
 
 if __name__ == "__main__":
-    main()
+    main(par)
