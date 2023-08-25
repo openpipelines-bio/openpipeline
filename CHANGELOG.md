@@ -8,6 +8,9 @@
 
 * The `scvi` pipeline was renamed to `scvi_leiden` because `leiden` clustering was added to the pipeline (PR #499).
 
+* Upgrade `correction/cellbender_remove_background` from CellBender v0.2 to CellBender v0.3.0 (PR #523).
+  Between these versions, several arguments related to the slots of the output file have been changed.
+
 ## MAJOR CHANGES
 
 * Several components: update anndata to 0.9.3 and mudata to 0.2.3 (PR #423).
@@ -101,6 +104,8 @@
 * `metadata/add_uns_to_obs`: Fix `KeyError: 'ouput_compression'` error (PR #501).
 
 * `neighbors/bbknn`: Fix `--input` not being a required argument (PR #518).
+
+* Create `correction/cellbender_remove_background_v0.2` for legacy CellBender v0.2 format (PR #523).
 
 # openpipelines 0.9.0
 
