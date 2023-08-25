@@ -24,8 +24,7 @@ functionality:
           required: false
         - name: "--obsm_key"
           type: string
-          description: |
-            .obms entry to move to .obs
+          description: Key of a data structure to move from `.obsm` to `.obs`.
           required: true
     - name: "MuData Output"
       arguments:
