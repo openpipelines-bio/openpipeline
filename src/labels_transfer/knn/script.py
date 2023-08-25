@@ -1,4 +1,4 @@
-import logging
+import sys
 import warnings
 
 import mudata
@@ -9,34 +9,27 @@ import pynndescent
 import numba
 
 
-### VIASH START
+## VIASH START
 par = {
     "input": "resources_test/pbmc_1k_protein_v3/pbmc_1k_protein_v3_mms.h5mu",
-    "reference": "https://zenodo.org/record/6337966/files/HLCA_emb_and_metadata.h5ad",
-    "targets": ["ann_level_1", "ann_level_2", "ann_level_3", "ann_level_4", "ann_level_5", "ann_finest_level"],
     "modality": "rna",
-    "reference_obsm_key": "X_integrated_scanvi",
-    "query_obsm_key": "X_integrated_scanvi",
+    "input_obsm_features": "X_integrated_scanvi",
+    "reference": "https://zenodo.org/record/6337966/files/HLCA_emb_and_metadata.h5ad",
+    "reference_obsm_features": "X_integrated_scanvi",
+    "reference_obs_targets": ["ann_level_1", "ann_level_2", "ann_level_3", "ann_level_4", "ann_level_5", "ann_finest_level"],
     "output": "foo.h5mu",
-    "output_obs_suffix": "_pred",
-    "output_uns_key": "labels_transfer",
+    "output_obs_predictions": None,
+    "output_obs_uncertainty": None,
+    "output_uns_parameters": "labels_transfer",
     "n_neighbors": 1
 }
-### VIASH END
+meta = {
+    "resources_dir": "src/labels_transfer/utils"
+}
+## VIASH END
 
-def _setup_logger():
-    # TODO: move to utils 
-    
-    from sys import stdout
-
-    logger = logging.getLogger()
-    logger.setLevel(logging.INFO)
-    console_handler = logging.StreamHandler(stdout)
-    logFormatter = logging.Formatter("%(asctime)s %(levelname)-8s %(message)s")
-    console_handler.setFormatter(logFormatter)
-    logger.addHandler(console_handler)
-
-    return logger
+sys.path.append(meta["resources_dir"])
+from helper import _setup_logger, check_arguments, get_reference_features, get_query_features
 
 
 @numba.njit
@@ -58,7 +51,6 @@ def weighted_prediction(weights, ref_cats):
 
     return predictions, uncertainty
 
-
 def distances_to_affinities(distances):
     stds = np.std(distances, axis=1)
     stds = (2.0 / stds) ** 2
@@ -70,61 +62,57 @@ def distances_to_affinities(distances):
 def main():
     logger = _setup_logger()
 
+    par = check_arguments(par)
+
     logger.info("Reading input (query) data")
-    mdata = mudata.read(par["input"].strip())
+    mdata = mudata.read(par["input"])
     adata = mdata.mod[par["modality"]]
 
     logger.info("Reading reference data")
     adata_reference = sc.read(par["reference"], backup_url=par["reference"])
 
-    if par["reference_obsm_key"] is None:
-        logger.info("Using X layer of reference data")
-        X_train = adata_reference.X
-    else:
-        logger.info(f"Using obsm layer {par['reference_obsm_key']} of reference data")
-        X_train = adata_reference.obsm[par["reference_obsm_key"]]
+    # fetch feature data
+    train_data = get_reference_features(adata_reference, par, logger)
+    query_data = get_query_features(adata, par, logger)
 
     # pynndescent does not support sparse matrices
-    if issparse(X_train):
+    if issparse(train_data):
         warnings.warn("Converting sparse matrix to dense. This may consume a lot of memory.")
-        X_train = X_train.toarray()
+        train_data = train_data.toarray()
 
-    logger.debug(f"Shape of train data: {X_train.shape}")
+    logger.debug(f"Shape of train data: {train_data.shape}")
 
     logger.info("Building NN index")
-    ref_nn_index = pynndescent.NNDescent(X_train, n_neighbors=par["n_neighbors"])
+    ref_nn_index = pynndescent.NNDescent(train_data, n_neighbors=par["n_neighbors"])
     ref_nn_index.prepare()
 
-    if par["query_obsm_key"] is None:
-        logger.info("Using X layer of query data")
-        query = adata.X
-    else:
-        logger.info(f"Using obsm layer {par['query_obsm_key']} of query data")
-        query = adata.obsm[par["query_obsm_key"]]
-
-    ref_neighbors, ref_distances = ref_nn_index.query(query, k=par["n_neighbors"])
+    ref_neighbors, ref_distances = ref_nn_index.query(query_data, k=par["n_neighbors"])
 
     weights = distances_to_affinities(ref_distances)
 
-    if par["output_uns_key"] not in adata.uns:
-        adata.uns[par["output_uns_key"]] = {}
+    if par["output_uns_parameters"] not in adata.uns:
+        uns_parameters = {}
 
     # for each annotation level, get prediction and uncertainty
-    for target in par["targets"]:
-        logger.info(f"Predicting labels for {target}")
-        ref_cats = adata_reference.obs[target].cat.codes.to_numpy()[ref_neighbors]
+    
+    for obs_tar, obs_pred, obs_unc in zip(par["reference_obs_targets"], par["output_obs_predictions"], par["output_obs_uncertainty"]):
+        logger.info(f"Predicting labels for {obs_tar}")
+        ref_cats = adata_reference.obs[obs_tar].cat.codes.to_numpy()[ref_neighbors]
         prediction, uncertainty = weighted_prediction(weights, ref_cats)
-        prediction = np.asarray(adata_reference.obs[target].cat.categories)[prediction]
+        prediction = np.asarray(adata_reference.obs[obs_tar].cat.categories)[prediction]
         
-        predicted_label_col_name = target + par["output_obs_suffix"]
-        adata.obs[predicted_label_col_name], adata.obs[target + "_uncertainty"] = prediction, uncertainty
+        adata.obs[obs_pred], adata.obs[obs_unc] = prediction, uncertainty
         
         # Write information about labels transfer to uns
-        adata.uns[par["output_uns_key"]][predicted_label_col_name] = {
+        uns_parameters[obs_tar] = {
             "method": "KNN_pynndescent",
             "n_neighbors": par["n_neighbors"],
-            "reference": par["reference"]
+            "reference": par["reference"],
+            "obs_prediction": obs_pred,
+            "obs_uncertainty": obs_unc
         }
+
+    adata.uns[par["output_uns_parameters"]] = uns_parameters
 
     mdata.mod[par['modality']] = adata
     mdata.update()
