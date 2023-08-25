@@ -7,6 +7,7 @@ input: # please fill in - example: "input.h5mu"
 
 # Correction arguments
 perform_correction: false
+cellbender_epochs: 150
 
 # Filtering arguments
 # min_genes: 100
