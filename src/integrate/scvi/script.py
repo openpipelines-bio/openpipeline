@@ -59,10 +59,11 @@ def main():
     mdata = mudata.read(par["input"].strip())
     adata = mdata.mod[par['modality']]
 
-    # TODO: undo subset
     if par['var_input']:
         # Subset to HVG
         adata_subset = subset_vars(adata, subset_col=par["var_input"]).copy()
+    else:
+        adata_subset = adata
 
     check_validity_anndata(
         adata_subset, par['input_layer'], par['obs_batch'],
