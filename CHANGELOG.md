@@ -81,6 +81,18 @@
 
 * Add `main_build_viash_hub` action to build, tag, and push components and docker images for viash-hub.com (PR #480).
 
+## DOCUMENTATION
+
+* `images`: Added images for various concepts, such as a sample, a cell, RNA, ADT, ATAC, VDJ (PR #515).
+
+* `multiomics/rna_singlesample`: Add image for workflow (PR #515).
+
+* `multiomics/rna_multisample`: Add image for workflow (PR #515).
+
+* `multiomics/prot_singlesample`: Add image for workflow (PR #515).
+
+* `multiomics/prot_multisample`: Add image for workflow (PR #515).
+
 ## BUG FIXES
 
 * Fix an issue with `workflows/multiomics/scanorama_leiden` where the `--output` argument doesn't work as expected (PR #509).
