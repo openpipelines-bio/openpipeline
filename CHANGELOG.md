@@ -8,6 +8,9 @@
 
 * The `scvi` pipeline was renamed to `scvi_leiden` because `leiden` clustering was added to the pipeline (PR #499).
 
+* Upgrade `correction/cellbender_remove_background` from CellBender v0.2 to CellBender v0.3.0 (PR #523).
+  Between these versions, several arguments related to the slots of the output file have been changed.
+
 ## MAJOR CHANGES
 
 * Several components: update anndata to 0.9.3 and mudata to 0.2.3 (PR #423).
@@ -46,7 +49,7 @@
 
 ## NEW FUNCTIONALITY
 
-* Resource management: when a process exits with a status code between 137 and 140, retry the process with increased memory requirements. Memory scales by multiplying the base memory assigned to the process with the attempt number (PR #518).
+* Resource management: when a process exits with a status code between 137 and 140, retry the process with increased memory requirements. Memory scales by multiplying the base memory assigned to the process with the attempt number (PR #518 and PR #527).
 
 * `integrate/scvi`: Add `--n_hidden_nodes`, `--n_dimensions_latent_space`, `--n_hidden_layers`, `--dropout_rate`, `--dispersion`, `--gene_likelihood`, `--use_layer_normalization`, `--use_batch_normalization`, `--encode_covariates`, `--deeply_inject_covariates` and `--use_observed_lib_size` parameters.
 
@@ -78,6 +81,18 @@
 
 * Add `main_build_viash_hub` action to build, tag, and push components and docker images for viash-hub.com (PR #480).
 
+## DOCUMENTATION
+
+* `images`: Added images for various concepts, such as a sample, a cell, RNA, ADT, ATAC, VDJ (PR #515).
+
+* `multiomics/rna_singlesample`: Add image for workflow (PR #515).
+
+* `multiomics/rna_multisample`: Add image for workflow (PR #515).
+
+* `multiomics/prot_singlesample`: Add image for workflow (PR #515).
+
+* `multiomics/prot_multisample`: Add image for workflow (PR #515).
+
 ## BUG FIXES
 
 * Fix an issue with `workflows/multiomics/scanorama_leiden` where the `--output` argument doesn't work as expected (PR #509).
@@ -101,6 +116,8 @@
 * `metadata/add_uns_to_obs`: Fix `KeyError: 'ouput_compression'` error (PR #501).
 
 * `neighbors/bbknn`: Fix `--input` not being a required argument (PR #518).
+
+* Create `correction/cellbender_remove_background_v0.2` for legacy CellBender v0.2 format (PR #523).
 
 * `integrate/scvi`: Ensure output has the same dimensionality as the input (PR #524).
 

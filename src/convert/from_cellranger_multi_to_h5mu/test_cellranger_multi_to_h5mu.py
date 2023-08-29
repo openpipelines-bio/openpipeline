@@ -1,4 +1,3 @@
-import subprocess
 from pathlib import Path
 from mudata import read_h5mu
 import sys

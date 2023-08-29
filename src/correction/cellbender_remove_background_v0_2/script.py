@@ -20,7 +20,7 @@ logger.addHandler(console_handler)
 import muon
 file_raw = "./resources_test/pbmc_1k_protein_v3/pbmc_1k_protein_v3_raw_feature_bc_matrix.h5"
 mdat = muon.read_10x_h5(file_raw)
-# mdat = mdat[0:100000,] # subsample to reduce computational time
+mdat = mdat[0:100000,] # subsample to reduce computational time
 file_input = "cellbender_remove_background_input.h5mu"
 mdat.write_h5mu(file_input)
 
@@ -31,52 +31,38 @@ par = {
     # outputs
     "output": "output.h5mu",
     "layer_output": "corrected",
-    "obs_background_fraction": "background_fraction",
-    "obs_cell_probability": "cell_probability",
-    "obs_cell_size": "cell_size",
-    "obs_droplet_efficiency": "droplet_efficiency",
+    "obs_latent_rt_efficiency": "latent_rt_efficiency",
+    "obs_latent_cell_probability": "latent_cell_probability",
     "obs_latent_scale": "latent_scale",
     "var_ambient_expression": "ambient_expression",
-    "obsm_gene_expression_encoding": "gene_expression_encoding",
+    # "obsm_latent_gene_encoding": "latent_gene_encoding",
     # args
-    "expected_cells_from_qc": False,
-    "expected_cells": 1000,
-    "total_droplets_included": 25000,
-    "force_cell_umi_prior": None,
-    "force_empty_umi_prior": None,
+    "total_droplets_included": None,
+    "min_counts": 1000,
+    "epochs": 5,
+    "fpr": 0.01,
+    "exclude_antibody_capture": False,
+    "learning_rate": 0.001,
+    "layer_corrected": "corrected",
+    "cuda": False,
+    "expected_cells": None,
     "model": "full",
-    "epochs": 150,
-    "low_count_threshold": 5,
-    "z_dim": 64,
-    "z_layers": [512],
+    "low_count_threshold": 15,
+    "z_dim": 100,
+    "z_layers": [500],
     "training_fraction": 0.9,
-    "empty_drop_training_fraction": 0.2,
-    "ignore_features": [],
-    "fpr": [0.01],
-    "exclude_feature_types": [],
-    "projected_ambient_count_threshold": 0.1,
-    "learning_rate": 1.0E-4,
-    "final_elbo_fail_fraction": None,
-    "epoch_elbo_fail_fraction": None,
-    "num_training_tries": 1,
-    "learning_rate_retry_mult": 0.2,
-    "posterior_batch_size": 128,
-    "posterior_regulation": None,
-    "alpha": None,
-    "q": None,
-    "estimator": "mckp",
-    "estimator_multiple_cpu": False,
-    "constant_learning_rate": True,
-    "debug": False,
-    "cuda": False
+    "empty_drop_training_fraction": 0.5,
+    "expected_cells_from_qc": True,
+    "output_compression": "gzip",
+    "obsm_latent_gene_encoding": "cellbender_latent_gene_encoding"
 }
 meta = {
-    "temp_dir": os.getenv("VIASH_TEMP"),
-    "resources_dir": "src/correction/cellbender_remove_background"
+    'temp_dir': os.getenv("VIASH_TEMP"),
+    'resources_dir': 'src/correction/cellbender_remove_background'
 }
 ## VIASH END
 
-sys.path.append(meta["resources_dir"])
+sys.path.append(meta['resources_dir'])
 from helper import anndata_from_h5
 
 logger.info("Reading input mudata")
@@ -86,8 +72,7 @@ mod = par["modality"]
 logger.info("Performing log transformation on modality %s", mod)
 data = mdata.mod[mod]
 
-# import pathlib
-# with pathlib.Path(os.path.dirname(par["output"])) / "cellbender" as temp_dir:
+# with pathlib.Path(meta["temp_dir"]) / "cellbender" as temp_dir:
 #     os.mkdir(temp_dir)
 with tempfile.TemporaryDirectory(prefix="cellbender-", dir=meta["temp_dir"]) as temp_dir:
     # construct paths within tempdir
@@ -99,46 +84,24 @@ with tempfile.TemporaryDirectory(prefix="cellbender-", dir=meta["temp_dir"]) as 
 
     logger.info("Constructing CellBender command")
     cmd_pars = [
-        "cellbender_in_conda", "remove-background",
+        "cellbender", "remove-background",
         "--input", input_file,
-        "--output", output_file,
-        # don't create checkpoints because they're not used / returned anyways
-        "--checkpoint-mins", "99999999"
+        "--output", output_file
     ]
-
-    if meta.get("cpus") is not None:
-        cmd_pars += ["--cpu-threads", str(meta["cpus"])]
 
     extra_args = [
         ("--expected-cells", "expected_cells", True),
         ("--total-droplets-included", "total_droplets_included", True),
-        ("--force-cell-umi-prior", "force_cell_umi_prior", True),
-        ("--force-empty-umi-prior", "force_empty_umi_prior", True),
         ("--model", "model", True),
         ("--epochs", "epochs", True),
+        ("--cuda", "cuda", False),
         ("--low-count-threshold", "low_count_threshold", True),
         ("--z-dim", "z_dim", True),
         ("--z-layers", "z_layers", True),
         ("--training-fraction", "training_fraction", True),
-        ("--empty-drop-training-fraction", "empty_drop_training_fraction", True),
-        ("--ignore-features", "ignore_features", True),
-        ("--fpr", "fpr", True),
-        ("--exclude-feature-types", "exclude_feature_types", True),
-        ("--projected-ambient-count-threshold", "projected_ambient_count_threshold", True),
+        ("--exclude-antibody-capture", "exclude_antibody_capture", False),
         ("--learning-rate", "learning_rate", True),
-        ("--final-elbo-fail-fraction", "final_elbo_fail_fraction", True),
-        ("--epoch-elbo-fail-fraction", "epoch_elbo_fail_fraction", True),
-        ("--num-training-tries", "num_training_tries", True),
-        ("--learning-rate-retry-mult", "learning_rate_retry_mult", True),
-        ("--posterior-batch-size", "posterior_batch_size", True),
-        ("--posterior-regulation", "posterior_regulation", True),
-        ("--alpha", "alpha", True),
-        ("--q", "q", True),
-        ("--estimator", "estimator", True),
-        ("--estimator-multiple-cpu", "estimator_multiple_cpu", False),
-        ("--constant-learning-rate", "constant_learning_rate", False),
-        ("--debug", "debug", False),
-        ("--cuda", "cuda", False),
+        ("--empty-drop-training-fraction", "empty_drop_training_fraction", True),
     ]
     for (flag, name, is_kwarg) in extra_args:
         if par[name]:
@@ -164,26 +127,13 @@ with tempfile.TemporaryDirectory(prefix="cellbender-", dir=meta["temp_dir"]) as 
     # adata_out = sc.read_10x_h5(output_file, gex_only=False)
     adata_out = anndata_from_h5(output_file, analyzed_barcodes_only=False)
 
-    logger.info("CellBender output format:", adata_out)
-
-    # AnnData object with n_obs × n_vars = 6794880 × 33538
-    #     obs: 'cellbender_analyzed'
-    #     var: 'ambient_expression', 'feature_type', 'genome', 'gene_id', 'cellbender_analyzed'
-    #     uns: 'background_fraction', 'barcode_indices_for_latents', 'cell_probability', 'cell_size', 'droplet_efficiency', 'gene_expression_encoding', 
-    #          'cell_size_lognormal_std', 'empty_droplet_size_lognormal_loc', 'empty_droplet_size_lognormal_scale', 'swapping_fraction_dist_params', 
-    #          'barcodes_analyzed', 'barcodes_analyzed_inds', 'estimator', 'features_analyzed_inds', 'fraction_data_used_for_testing', 'learning_curve_learning_rate_epoch', 
-    #          'learning_curve_learning_rate_value', 'learning_curve_test_elbo', 'learning_curve_test_epoch', 'learning_curve_train_elbo', 'learning_curve_train_epoch', 
-    #          'target_false_positive_rate'
-
     logger.info("Copying X output to MuData")
     data.layers[par["layer_output"]] = adata_out.X
 
     logger.info("Copying .obs output to MuData")
     obs_store = {
-        "obs_background_fraction": "background_fraction",
-        "obs_cell_probability": "cell_probability",
-        "obs_cell_size": "cell_size",
-        "obs_droplet_efficiency": "droplet_efficiency",
+        "obs_latent_rt_efficiency": "latent_RT_efficiency",
+        "obs_latent_cell_probability": "latent_cell_probability",
         "obs_latent_scale": "latent_scale"
     }
     for to_name, from_name in obs_store.items():
@@ -191,9 +141,9 @@ with tempfile.TemporaryDirectory(prefix="cellbender-", dir=meta["temp_dir"]) as 
             if from_name in adata_out.obs:
                 data.obs[par[to_name]] = adata_out.obs[from_name]
             # when using unfiltered data, the values will be in uns instead of obs
-            elif from_name in adata_out.uns and "barcode_indices_for_latents" in adata_out.uns:
+            elif from_name in adata_out.uns and 'barcode_indices_for_latents' in adata_out.uns:
                 vec = np.zeros(data.n_obs)
-                vec[adata_out.uns["barcode_indices_for_latents"]] = adata_out.uns[from_name]
+                vec[adata_out.uns['barcode_indices_for_latents']] = adata_out.uns[from_name]
                 data.obs[par[to_name]] = vec
 
     logger.info("Copying .var output to MuData")
@@ -202,18 +152,18 @@ with tempfile.TemporaryDirectory(prefix="cellbender-", dir=meta["temp_dir"]) as 
         if par[to_name]:
             data.var[par[to_name]] = adata_out.var[from_name]
 
-    logger.info("Copying obsm_gene_expression_encoding output to MuData")
-    obsm_store = { "obsm_gene_expression_encoding": "gene_expression_encoding" }
+    logger.info("Copying obsm_latent_gene_encoding output to MuData")
+    obsm_store = { "obsm_latent_gene_encoding": "latent_gene_encoding" }
     for to_name, from_name in obsm_store.items():
         if par[to_name]:
             if from_name in adata_out.obsm:
                  data.obsm[par[to_name]] = adata_out.obsm[from_name]
-            elif from_name in adata_out.uns and "barcode_indices_for_latents" in adata_out.uns:
+            elif from_name in adata_out.uns and 'barcode_indices_for_latents' in adata_out.uns:
                 matrix_to_store = adata_out.uns[from_name]
                 number_of_obs = data.X.shape[0]
-                latent_space_sparse = csr_matrix((number_of_obs, par["z_dim"]),
+                latent_space_sparse = csr_matrix((number_of_obs, par['z_dim']),
                                                  dtype=adata_out.uns[from_name].dtype)
-                obs_rows_in_space_representation = adata_out.uns["barcode_indices_for_latents"]
+                obs_rows_in_space_representation = adata_out.uns['barcode_indices_for_latents']
                 latent_space_sparse[obs_rows_in_space_representation] = adata_out.uns[from_name]
                 data.obsm[par[to_name]] = latent_space_sparse
             else:
