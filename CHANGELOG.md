@@ -102,6 +102,8 @@
 
 * `neighbors/bbknn`: Fix `--input` not being a required argument (PR #518).
 
+* `integrate/scvi`: Ensure output has the same dimensionality as the input (PR #524).
+
 # openpipelines 0.9.0
 
 ## BREAKING CHANGES

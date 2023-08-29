@@ -63,7 +63,7 @@ def main():
         # Subset to HVG
         adata_subset = subset_vars(adata, subset_col=par["var_input"]).copy()
     else:
-        adata_subset = adata
+        adata_subset = adata.copy()
 
     check_validity_anndata(
         adata_subset, par['input_layer'], par['obs_batch'],
