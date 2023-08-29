@@ -89,10 +89,14 @@ def cellcensus_cell_filter(query_data, cells_filter_columns, min_cells_filter_co
         % ((t0[0] - t1[0]), min_cells_filter_columns, cells_filter_columns)
         )
     return query_data
-    
+
+
 def write_mudata(mdata, output_location, compression):
     logger.info("Writing %s", output_location)
-    
+    mdata.write_h5mu(
+        output_location,
+        compression=compression
+        )
 
 
 def main():
