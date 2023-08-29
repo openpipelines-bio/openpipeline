@@ -66,13 +66,13 @@ def add_cellcensus_metadata_obs(census_connection, query_data):
     )
     census_datasets = census_connection["census_info"]["datasets"].read().concat().to_pandas()
     
-    logger.info(query_data.obs.dtypes)
-    
+    query_data.obs.dataset_id = query_data.obs.dataset_id.astype("category")
+
     dataset_info = census_datasets[census_datasets.dataset_id.isin(query_data.obs.dataset_id.cat.categories)]\
     [['collection_id', 'collection_name', 'collection_doi', 'dataset_id', 'dataset_title']]\
     .reset_index(drop=True)\
     .apply(lambda x: x.astype('category'))
-    
+
     return query_data.obs.merge(
         dataset_info, on='dataset_id', how = 'left'
         )
