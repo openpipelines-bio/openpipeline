@@ -48,8 +48,25 @@ def connect_census(input_database, release):
         )
 
 
+def get_anndata(census_connection, cell_query, species):
+    logger.info(
+        "Getting gene expression data based on %s query.",
+        cell_query
+        )
+    return cellxgene_census.get_anndata(
+        census = census_connection,
+        obs_value_filter = cell_query,
+        organism = species
+    )
+
+
 def add_cellcensus_metadata_obs(census_connection, query_data):
+    logger.info(
+    "Adding extented metadata to gene expression data."
+    )
     census_datasets = census_connection["census_info"]["datasets"].read().concat().to_pandas()
+    
+    logger.info(query_data.obs.dtypes)
     
     dataset_info = census_datasets[census_datasets.dataset_id.isin(query_data.obs.dataset_id.cat.categories)]\
     [['collection_id', 'collection_name', 'collection_doi', 'dataset_id', 'dataset_title']]\
@@ -90,11 +107,11 @@ def main():
         par["cellxgene_release"]
         ) 
 
-    query_data = cellxgene_census.get_anndata(
-        census = census_connection,
-        obs_value_filter = par["cell_query"],
-        organism = par["species"]
-    )
+    query_data = get_anndata(
+        census_connection,
+        par["cell_query"],
+        par["species"]
+        )
     
     query_data.obs = add_cellcensus_metadata_obs(
         census_connection,
