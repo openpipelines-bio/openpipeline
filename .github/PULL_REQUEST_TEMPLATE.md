@@ -15,6 +15,7 @@ Closes #xxxx (Replace xxxx with the GitHub issue number)
   - [ ] New functionality
   - [ ] Major changes
   - [ ] Minor changes
+  - [ ] Documentation
   - [ ] Bug fixes
 
 - [ ] Proposed changes are described in the CHANGELOG.md
