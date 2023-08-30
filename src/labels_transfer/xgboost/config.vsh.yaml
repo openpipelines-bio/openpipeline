@@ -108,6 +108,7 @@ functionality:
     - type: python_script
       path: script.py
     - path: ../utils/helper.py
+    - path: ../../utils/setup_logger.py
   test_resources:
     - type: python_script
       path: test.py

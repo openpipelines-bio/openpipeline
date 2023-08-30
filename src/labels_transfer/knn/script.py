@@ -29,8 +29,8 @@ meta = {
 ## VIASH END
 
 sys.path.append(meta["resources_dir"])
-from helper import _setup_logger, check_arguments, get_reference_features, get_query_features
-
+from helper import check_arguments, get_reference_features, get_query_features
+from setup_logger import setup_logger
 
 @numba.njit
 def weighted_prediction(weights, ref_cats):
@@ -60,7 +60,7 @@ def distances_to_affinities(distances):
     return distances_tilda / np.sum(distances_tilda, axis=1, keepdims=True)
 
 def main(par):
-    logger = _setup_logger()
+    logger = setup_logger()
 
     logger.info("Checking arguments")
     par = check_arguments(par)

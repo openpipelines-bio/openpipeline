@@ -51,7 +51,8 @@ meta = {
 ### VIASH END
 
 sys.path.append(meta["resources_dir"])
-from helper import _setup_logger, check_arguments, get_reference_features, get_query_features
+from helper import check_arguments, get_reference_features, get_query_features
+from setup_logger import setup_logger
 
 # read config arguments
 config = yaml.safe_load(Path(meta["config"]).read_text())
@@ -164,7 +165,7 @@ def build_ref_classifiers(adata_reference, targets, model_path,
     ```
     """
     if logger is None:
-        logger = _setup_logger()
+        logger = setup_logger()
 
     # Check inputs
     if not isinstance(eval_verbosity, int):
@@ -261,7 +262,7 @@ def project_labels(
 
     """
     if logger is None:
-        logger = _setup_logger()
+        logger = setup_logger()
 
     if (uncertainty_thresh is not None) and (uncertainty_thresh < 0 or uncertainty_thresh > 1):
         raise ValueError(f'`uncertainty_thresh` must be `None` or between 0 and 1.')
@@ -304,7 +305,7 @@ def predict(
     """
 
     if logger is None:
-        logger = _setup_logger()
+        logger = setup_logger()
 
     tree_method = "gpu_hist" if use_gpu else "hist"
 
@@ -332,7 +333,7 @@ def predict(
 
 
 def main(par):
-    logger = _setup_logger()
+    logger = setup_logger()
 
     logger.info("Checking arguments")
     par = check_arguments(par)
