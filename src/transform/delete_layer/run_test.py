@@ -1,8 +1,9 @@
-from unittest import TestCase, main
+import pytest
+import sys
 from mudata import read_h5mu
-from tempfile import NamedTemporaryFile
 from pathlib import Path
-from subprocess import check_output, CalledProcessError, STDOUT
+from subprocess import CalledProcessError
+import re
 
 ## VIASH START
 meta = {
@@ -14,53 +15,63 @@ meta = {
 resources_dir, functionality_name = meta["resources_dir"], meta["functionality_name"]
 input_file = f"{resources_dir}/pbmc_1k_protein_v3/pbmc_1k_protein_v3_mms.h5mu"
 
-class TestDeleteLayer(TestCase):
-    def _run_and_check_output(self, args_as_list, expected_raise=False):
-        try:
-            check_output([meta['executable']] + args_as_list, stderr=STDOUT)
-        except CalledProcessError as e:
-            if not expected_raise:
-                print(e.stdout.decode("utf-8"))
-            raise e
 
-    def test_delete_layer(self):
-        original_input_data = read_h5mu(input_file)
-        new_layer = original_input_data.mod['rna'].X
-        original_input_data.mod['rna'].layers['test'] = new_layer
-        with NamedTemporaryFile(suffix=".h5mu") as tempfile:
-            original_input_data.write_h5mu(tempfile.name)
-            self._run_and_check_output([
-                "--input", tempfile.name,
-                "--modality", "rna",
-                "--layer", "test",
-                "--output", "deleted_layer.h5mu",
-                "--output_compression", "gzip"])
-        self.assertTrue(Path("deleted_layer.h5mu").is_file())
-        output_data = read_h5mu('deleted_layer.h5mu')
-        self.assertNotIn('test', output_data.mod['rna'].layers.keys())
+def test_delete_layer(run_component, tmp_path):
+    original_input_data = read_h5mu(input_file)
+    new_layer = original_input_data.mod['rna'].X
+    original_input_data.mod['rna'].layers['test'] = new_layer
+    tempfile = tmp_path / "input.h5mu"
+    original_input_data.write_h5mu(tempfile.name)
+    run_component([
+        "--input", tempfile.name,
+        "--modality", "rna",
+        "--layer", "test",
+        "--output", "deleted_layer.h5mu"])
+    assert Path("deleted_layer.h5mu").is_file()
+    output_data = read_h5mu('deleted_layer.h5mu')
+    assert 'test' not in output_data.mod['rna'].layers.keys()
+    assert set(output_data.mod) == {'rna', 'prot'}
 
-    def test_missing_layer_raises(self):
-        with self.assertRaises(CalledProcessError) as err:
-            self._run_and_check_output([
-                "--input", input_file,
-                "--modality", "rna",
-                "--layer", "test",
-                "--output", "missing_layer.h5mu"],
-                expected_raise=True)
-            self.assertIn("Layer 'test' is not present in modality rna.",
-                          err.exception.stdout.decode('utf-8'))
-
-    def test_missing_layer_missing_ok(self):
-        self._run_and_check_output([
+def test_missing_layer_raises(run_component):
+    with pytest.raises(CalledProcessError) as err:
+        run_component([
             "--input", input_file,
             "--modality", "rna",
             "--layer", "test",
-            "--output", "missing_layer_ok.h5mu",
-            "--missing_ok"])
-        self.assertTrue(Path("missing_layer_ok.h5mu").is_file())
-        output_data = read_h5mu('missing_layer_ok.h5mu')
-        self.assertNotIn('test', output_data.mod['rna'].layers.keys())
+            "--output", "missing_layer.h5mu"])
+    re.search(r"Layer 'test' is not present in modality rna\.",
+              err.value.stdout.decode('utf-8'))
+
+def test_missing_layer_missing_ok(run_component):
+    run_component([
+        "--input", input_file,
+        "--modality", "rna",
+        "--layer", "test",
+        "--output", "missing_layer_ok.h5mu",
+        "--missing_ok"])
+    assert Path("missing_layer_ok.h5mu").is_file()
+    output_data = read_h5mu('missing_layer_ok.h5mu')
+    assert 'test' not in output_data.mod['rna'].layers.keys()
+    assert set(output_data.mod) == {'rna', 'prot'}
+
+@pytest.mark.parametrize("output_compression", ["gzip", "lzf"])
+def test_delete_layer_with_compression(run_component, tmp_path, output_compression):
+    original_input_data = read_h5mu(input_file)
+    new_layer = original_input_data.mod['rna'].X
+    original_input_data.mod['rna'].layers['test'] = new_layer
+    tempfile = tmp_path / "input.h5mu"
+    original_input_data.write_h5mu(tempfile.name)
+    run_component([
+        "--input", tempfile.name,
+        "--modality", "rna",
+        "--layer", "test",
+        "--output", "deleted_layer.h5mu",
+        "--output_compression", output_compression])
+    assert Path("deleted_layer.h5mu").is_file()
+    output_data = read_h5mu('deleted_layer.h5mu')
+    assert 'test' not in output_data.mod['rna'].layers.keys()
+    assert set(output_data.mod) == {'rna', 'prot'}
 
 
 if __name__ == "__main__":
-    main()
+    sys.exit(pytest.main([__file__]))
