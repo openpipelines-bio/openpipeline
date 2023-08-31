@@ -293,5 +293,5 @@ info:
   output: "/home/runner/work/openpipeline/openpipeline/target/docker/query/cellxgene_census"
   executable: "/home/runner/work/openpipeline/openpipeline/target/docker/query/cellxgene_census/cellxgene_census"
   viash_version: "0.7.5"
-  git_commit: "c17d5ff1c3c65a2d262d7bfb30dff49ae19b244e"
+  git_commit: "05bf17e9353650df5423157161109558100b48c8"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"

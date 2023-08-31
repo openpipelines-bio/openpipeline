@@ -1,0 +1,138 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema",
+    "title": "xgboost",
+    "description": "Performs label transfer from reference to query using XGBoost classifier",
+    "type": "object",
+    "definitions": {
+      "execution arguments" : {
+        "title": "Execution arguments",
+        "type": "object",
+        "description": "No description",
+        "properties": {
+          "force_retrain": {
+            "type": "boolean",
+            "description": "Retrain models on the reference even if model_output directory already has trained classifiers. WARNING! It will rewrite existing classifiers for targets in the model_output directory!",
+            "default": "False"
+          },
+          "use_gpu": {
+            "type": "boolean",
+            "description": "Use GPU during models training and inference (recommended).",
+            "default": "False"
+          },
+          "verbosity": {
+            "type": "integer",
+            "description": "The verbosity level for evaluation of the classifier from the range [0,2]",
+            "default": "1"
+          },
+          "model_output": {
+            "type": "string",
+            "description": "Output directory for model",
+            "default": "$id.$key.model_output.model_output"
+          }
+          
+        }
+      },
+      "learning parameters" : {
+        "title": "Learning parameters",
+        "type": "object",
+        "description": "No description",
+        "properties": {
+          "learning_rate": {
+            "type": "number",
+            "description": "Step size shrinkage used in update to prevents overfitting. Range: [0,1]. See https://xgboost.readthedocs.io/en/stable/parameter.html#parameters-for-tree-booster for the reference",
+            "default": "0.3"
+          },
+          "min_split_loss": {
+            "type": "number",
+            "description": "Minimum loss reduction required to make a further partition on a leaf node of the tree. See https://xgboost.readthedocs.io/en/stable/parameter.html#parameters-for-tree-booster for the reference",
+            "default": "0"
+          },
+          "max_depth": {
+            "type": "integer",
+            "description": "Maximum depth of a tree. See https://xgboost.readthedocs.io/en/stable/parameter.html#parameters-for-tree-booster for the reference",
+            "default": "6"
+          },
+          "min_child_weight": {
+            "type": "integer",
+            "description": "Minimum sum of instance weight (hessian) needed in a child. See https://xgboost.readthedocs.io/en/stable/parameter.html#parameters-for-tree-booster for the reference",
+            "default": "1"
+          },
+          "max_delta_step": {
+            "type": "number",
+            "description": "Maximum delta step we allow each leaf output to be. See https://xgboost.readthedocs.io/en/stable/parameter.html#parameters-for-tree-booster for the reference",
+            "default": "0"
+          },
+          "subsample": {
+            "type": "number",
+            "description": "Subsample ratio of the training instances. See https://xgboost.readthedocs.io/en/stable/parameter.html#parameters-for-tree-booster for the reference",
+            "default": "1"
+          },
+          "sampling_method": {
+            "type": "string",
+            "description": "The method to use to sample the training instances. See https://xgboost.readthedocs.io/en/stable/parameter.html#parameters-for-tree-booster for the reference","enum": ["uniform", "gradient_based"],
+            "default": "uniform"
+          },
+          "colsample_bytree": {
+            "type": "number",
+            "description": "Fraction of columns to be subsampled. Range (0, 1]. See https://xgboost.readthedocs.io/en/stable/parameter.html#parameters-for-tree-booster for the reference",
+            "default": "1"
+          },
+          "colsample_bylevel": {
+            "type": "number",
+            "description": "Subsample ratio of columns for each level. Range (0, 1]. See https://xgboost.readthedocs.io/en/stable/parameter.html#parameters-for-tree-booster for the reference",
+            "default": "1"
+          },
+          "colsample_bynode": {
+            "type": "number",
+            "description": "Subsample ratio of columns for each node (split). Range (0, 1]. See https://xgboost.readthedocs.io/en/stable/parameter.html#parameters-for-tree-booster for the reference",
+            "default": "1"
+          },
+          "reg_lambda": {
+            "type": "number",
+            "description": "L2 regularization term on weights. See https://xgboost.readthedocs.io/en/stable/parameter.html#parameters-for-tree-booster for the reference",
+            "default": "1"
+          },
+          "reg_alpha": {
+            "type": "number",
+            "description": "L1 regularization term on weights. See https://xgboost.readthedocs.io/en/stable/parameter.html#parameters-for-tree-booster for the reference",
+            "default": "0"
+          },
+          "scale_pos_weight": {
+            "type": "number",
+            "description": "Control the balance of positive and negative weights, useful for unbalanced classes. See https://xgboost.readthedocs.io/en/stable/parameter.html#parameters-for-tree-booster for the reference",
+            "default": "1"
+          }
+          
+        }
+      },
+      "nextflow input-output arguments" : {
+        "title": "Nextflow input-output arguments",
+        "type": "object",
+        "description": "Input/output parameters for Nextflow itself. Please note that both publishDir and publish_dir are supported but at least one has to be configured.",
+        "properties": {
+          "publish_dir": {
+            "type": "string",
+            "description": "Path to an output directory.",
+            "default": ""
+          },
+          "param_list": {
+            "type": "string",
+            "description": "Allows inputting multiple parameter sets to initialise a Nextflow channel. A `param_list` can either be a list of maps, a csv file, a json file, a yaml file, or simply a yaml blob.","help_text": "Allows inputting multiple parameter sets to initialise a Nextflow channel. A `param_list` can either be a list of maps, a csv file, a json file, a yaml file, or simply a yaml blob.\n\n* A list of maps (as-is) where the keys of each map corresponds to the arguments of the pipeline. Example: in a `nextflow.config` file: `param_list: [ [\u0027id\u0027: \u0027foo\u0027, \u0027input\u0027: \u0027foo.txt\u0027], [\u0027id\u0027: \u0027bar\u0027, \u0027input\u0027: \u0027bar.txt\u0027] ]`.\n* A csv file should have column names which correspond to the different arguments of this pipeline. Example: `--param_list data.csv` with columns `id,input`.\n* A json or a yaml file should be a list of maps, each of which has keys corresponding to the arguments of the pipeline. Example: `--param_list data.json` with contents `[ {\u0027id\u0027: \u0027foo\u0027, \u0027input\u0027: \u0027foo.txt\u0027}, {\u0027id\u0027: \u0027bar\u0027, \u0027input\u0027: \u0027bar.txt\u0027} ]`.\n* A yaml blob can also be passed directly as a string. Example: `--param_list \"[ {\u0027id\u0027: \u0027foo\u0027, \u0027input\u0027: \u0027foo.txt\u0027}, {\u0027id\u0027: \u0027bar\u0027, \u0027input\u0027: \u0027bar.txt\u0027} ]\"`.\n\nWhen passing a csv, json or yaml file, relative path names are relativized to the location of the parameter file. No relativation is performed when `param_list` is a list of maps (as-is) or a yaml blob.","hidden": true,
+            "default": ""
+          }
+          
+        }
+      }
+    },
+    "allOf": [
+      {
+        "$ref": "#/definitions/execution arguments"
+      },
+      {
+        "$ref": "#/definitions/learning parameters"
+      },
+      {
+        "$ref": "#/definitions/nextflow input-output arguments"
+      }
+      ]
+}
