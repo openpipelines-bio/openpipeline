@@ -245,6 +245,9 @@ platforms:
           # Pinning numba prevents recompiling when pip starts looking for a compatible version
           - numba~=0.57.1
           - scvi-tools~=1.0.0
+    test_setup:
+      - type: python
+        packages: viashpy
   - type: nextflow
     directives:
       label: [singlecpu, midmem, gpu]

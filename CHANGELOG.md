@@ -121,6 +121,8 @@
 
 * Create `correction/cellbender_remove_background_v0.2` for legacy CellBender v0.2 format (PR #523).
 
+* `integrate/scvi`: Ensure output has the same dimensionality as the input (PR #524).
+
 # openpipelines 0.9.0
 
 ## BREAKING CHANGES
