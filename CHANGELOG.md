@@ -27,6 +27,8 @@
 
 * `ingestion/bd_rhapsody`: Refactored data flow (PR #513).
 
+* `query/cellxgene_census`: increased returned metadata content, revised query option, added filtering strategy and refactored functionality (PR #520).
+
 ## MINOR CHANGES
 
 * Add resource labels to several components (PR #518).
