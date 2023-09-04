@@ -13,7 +13,7 @@ input = f"{meta['resources_dir']}/pbmc_1k_protein_v3/pbmc_1k_protein_v3_mms.h5mu
 output = "output.h5mu"
 
 def test_run(run_component, tmp_path): 
-    output = f"{tmp_path}/output.h5mu"
+    output = tmp_path / "output.h5mu"
 
     cmd_pars = [
         meta["executable"],

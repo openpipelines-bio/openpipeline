@@ -313,8 +313,7 @@ def predict(
     project_labels(query_dataset, 
                    cell_type_classifier_model, 
                    annotation_column_name=prediction_column_name, 
-                   uncertainty_column_name=uncertainty_column_name,
-                   logger=logger)
+                   uncertainty_column_name=uncertainty_column_name)
 
     logger.info("Converting labels from numbers to classes")
     labels_encoder = LabelEncoder()

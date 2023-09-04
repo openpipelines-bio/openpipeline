@@ -1,6 +1,5 @@
 import sys
 import pytest
-import re
 import subprocess
 import mudata as mu
 
@@ -39,10 +38,10 @@ def test_raise_if_uns_neighbor_is_missing(run_component, tmp_path):
             "--obsm_output", "X_foo",
             "--num_components", "26",
             "--uns_neighbors", "does_not_exist"
-        ], expected_raise=True)
-    assert not output.is_file(), "No output should be created."
-    assert re.search(r"ValueError: 'does_not_exist' was not found in \.mod\['rna'\]\.uns\.",
-        err.value.stdout.decode('utf-8'))
+        ])
+        assert not output.is_file(), "No output should be created."
+        assert "ValueError: 'does_not_exist' was not found in .mod['rna'].uns." in \
+            err.stdout.decode('utf-8')
 
 if __name__ == "__main__":
     sys.exit(pytest.main([__file__]))

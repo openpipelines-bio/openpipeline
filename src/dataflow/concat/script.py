@@ -1,7 +1,7 @@
 from __future__ import annotations
+import sys
 import anndata
 import mudata as mu
-from sys import stdout
 import pandas as pd
 import numpy as np
 from collections.abc import Iterable
