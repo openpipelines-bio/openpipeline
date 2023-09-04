@@ -9,13 +9,9 @@ cellxgene_release: "2023-05-15"
 
 # Query
 species: "homo_sapiens"
-# cell_type: ["mesothelial fibroblast"]
-# tissue: ["lung"]
-# technology: ["10x 3' v3"]
-# suspension: ["cell"]
-is_primary_data: true
-# obs_column_names: ["foo"]
-metadata_only: true
+# cell_query: "is_primary_data == True and cell_type_ontology_term_id in ['CL:0000136', 'CL:1000311', 'CL:0002616'] and suspension_type == 'cell'"
+# cells_filter_columns: ["dataset_id", "tissue", "assay", "disease", "cell_type"]
+# min_cells_filter_columns: 100
 
 # Nextflow input-output arguments
 publish_dir: # please fill in - example: "output/"
