@@ -4,7 +4,6 @@ import pytest
 import mudata as mu
 from pathlib import Path
 import pandas as pd
-from anndata.tests.helpers import assert_equal
 
 ## VIASH START
 meta = {
@@ -16,6 +15,11 @@ meta = {
 
 
 input_file = Path(f"{meta['resources_dir']}/e18_mouse_brain_fresh_5k_filtered_feature_bc_matrix_subset_unique_obs.h5mu")
+
+def compare_anndata(first, second):
+    for attr_name in ("obs", "var"):
+        pd.testing.assert_frame_equal(getattr(first, attr_name), 
+                                      getattr(second, attr_name))
 
 @pytest.mark.parametrize("compression_type", ["gzip", "lzf"])
 def test_compress_h5mu(run_component, tmp_path, compression_type):
@@ -39,7 +43,7 @@ def test_compress_h5mu(run_component, tmp_path, compression_type):
         assert mod_name in output.mod, f"{mod_name} found in uncompressed file, but not in compressed output file."
         mod_compressed = output.mod[mod_name]
         mod_uncompressed = uncompressed_h5mu.mod[mod_name]
-        assert_equal(mod_compressed, mod_uncompressed)
+        compare_anndata(mod_compressed, mod_uncompressed)
     assert output_file.stat().st_size < input_file.stat().st_size
 
 
