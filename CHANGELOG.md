@@ -49,6 +49,8 @@
 
 ## NEW FUNCTIONALITY
 
+* Added `compression/compress_h5mu` component (PR #530).
+
 * Resource management: when a process exits with a status code between 137 and 140, retry the process with increased memory requirements. Memory scales by multiplying the base memory assigned to the process with the attempt number (PR #518 and PR #527).
 
 * `integrate/scvi`: Add `--n_hidden_nodes`, `--n_dimensions_latent_space`, `--n_hidden_layers`, `--dropout_rate`, `--dispersion`, `--gene_likelihood`, `--use_layer_normalization`, `--use_batch_normalization`, `--encode_covariates`, `--deeply_inject_covariates` and `--use_observed_lib_size` parameters.
