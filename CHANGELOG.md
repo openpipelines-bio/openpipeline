@@ -27,9 +27,9 @@
 
 * `ingestion/bd_rhapsody`: Refactored data flow (PR #513).
 
-* Refactor loggers using `setup_logger()` helper function.
+* Refactor loggers using `setup_logger()` helper function (PR #534).
 
-* Refactor unittest tests to pytest tests.
+* Refactor unittest tests to pytest tests (PR #534).
 
 ## MINOR CHANGES
 
