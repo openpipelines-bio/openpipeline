@@ -1,19 +1,10 @@
 import sys
 import os
-import logging
 import cellxgene_census
 import mudata as mu
 import anndata as ad
 from scipy.sparse import csr_matrix
 import obonet
-
-# set up logger
-logger = logging.getLogger()
-logger.setLevel(logging.INFO)
-console_handler = logging.StreamHandler(sys.stdout)
-logFormatter = logging.Formatter("%(asctime)s %(levelname)-8s %(message)s")
-console_handler.setFormatter(logFormatter)
-logger.addHandler(console_handler)
 
 ## VIASH START
 par = {
@@ -36,6 +27,9 @@ meta = {'resources_dir': os.path.abspath('./src/query/cellxgene_census/')}
 
 ### VIASH END
 
+sys.path.append(meta["resources_dir"])
+from setup_logger import setup_logger
+logger = setup_logger()
 
 def connect_census(input_database, release):
     """

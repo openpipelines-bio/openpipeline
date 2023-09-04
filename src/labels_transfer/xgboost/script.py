@@ -53,6 +53,7 @@ meta = {
 sys.path.append(meta["resources_dir"])
 from helper import check_arguments, get_reference_features, get_query_features
 from setup_logger import setup_logger
+logger = setup_logger()
 
 # read config arguments
 config = yaml.safe_load(Path(meta["config"]).read_text())
@@ -136,7 +137,7 @@ def build_classifier(X, y, labels_encoder, label_key, eval_verbosity: Optional[i
 
 
 def build_ref_classifiers(adata_reference, targets, model_path,
-                          eval_verbosity: Optional[int] = 1, gpu: Optional[bool] = True, logger=None) -> None:
+                          eval_verbosity: Optional[int] = 1, gpu: Optional[bool] = True) -> None:
     """
     This function builds xgboost classifiers on a reference embedding for a designated number of 
     adata_reference.obs columns. Classifier .xgb files and a model_info.json file is written to the `model_path`
@@ -164,8 +165,6 @@ def build_ref_classifiers(adata_reference, targets, model_path,
     classifier_ann_level_1.xgb*         model_params.pt* 
     ```
     """
-    if logger is None:
-        logger = setup_logger()
 
     # Check inputs
     if not isinstance(eval_verbosity, int):
@@ -261,8 +260,6 @@ def project_labels(
         Nothing is output, the passed anndata is modified inplace
 
     """
-    if logger is None:
-        logger = setup_logger()
 
     if (uncertainty_thresh is not None) and (uncertainty_thresh < 0 or uncertainty_thresh > 1):
         raise ValueError(f'`uncertainty_thresh` must be `None` or between 0 and 1.')
@@ -304,9 +301,6 @@ def predict(
     Returns `obs` DataFrame with prediction columns appended
     """
 
-    if logger is None:
-        logger = setup_logger()
-
     tree_method = "gpu_hist" if use_gpu else "hist"
 
     labels = models_info["classifier_info"][annotation_column_name]["labels"]
@@ -333,8 +327,6 @@ def predict(
 
 
 def main(par):
-    logger = setup_logger()
-
     logger.info("Checking arguments")
     par = check_arguments(par)
 

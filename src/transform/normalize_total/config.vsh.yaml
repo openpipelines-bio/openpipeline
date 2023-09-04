@@ -64,9 +64,10 @@ functionality:
   resources:
     - type: python_script
       path: script.py
+    - path: /src/utils/setup_logger.py
   test_resources:
     - type: python_script
-      path: run_test.py
+      path: test.py
     - path: ../../../resources_test/pbmc_1k_protein_v3
 platforms:
   - type: docker
@@ -80,6 +81,9 @@ platforms:
         __merge__: [/src/base/requirements/anndata_mudata.yaml, .]
         packages:
           - scanpy~=1.9.2
+    test_setup:
+      - type: python
+        packages: viashpy
   - type: nextflow
     directives:
       label: [midmem, lowcpu]

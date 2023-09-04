@@ -1,6 +1,5 @@
 import mudata as mu
 import numpy as np
-import logging
 import sys
 import pytest
 import uuid
@@ -18,12 +17,9 @@ meta = {
 resources_dir, functionality_name = meta["resources_dir"], meta["functionality_name"]
 input_path = f"{resources_dir}/pbmc_1k_protein_v3/pbmc_1k_protein_v3_filtered_feature_bc_matrix.h5mu"
 
-logger = logging.getLogger()
-logger.setLevel(logging.INFO)
-console_handler = logging.StreamHandler(sys.stdout)
-logFormatter = logging.Formatter("%(asctime)s %(levelname)-8s %(message)s")
-console_handler.setFormatter(logFormatter)
-logger.addHandler(console_handler)
+sys.path.append(meta["resources_dir"])
+from setup_logger import setup_logger
+logger = setup_logger()
 
 @pytest.fixture
 def random_h5mu_path(tmp_path):

@@ -1,7 +1,6 @@
 import subprocess
 import mudata as mu
-import logging
-from sys import stdout
+import sys
 from unittest import TestCase, main
 from pathlib import Path
 
@@ -12,14 +11,10 @@ meta = {
 }
 ## VIASH END
 
-logger = logging.getLogger()
-logger.setLevel(logging.INFO)
-console_handler = logging.StreamHandler(stdout)
-logFormatter = logging.Formatter("%(asctime)s %(levelname)-8s %(message)s")
-console_handler.setFormatter(logFormatter)
-logger.addHandler(console_handler)
+sys.path.append(meta["resources_dir"])
+from setup_logger import setup_logger
+logger = setup_logger()
 
-resources_dir, functionality_name = meta["resources_dir"], meta["functionality_name"]
 input_path = f"{meta['resources_dir']}/pbmc_1k_protein_v3_filtered_feature_bc_matrix.h5mu"
 
 class TestFilterWithCounts(TestCase):

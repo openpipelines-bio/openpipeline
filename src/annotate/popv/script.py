@@ -1,10 +1,8 @@
 import sys
 import re
 import tempfile
-import logging
 import typing
 import numpy as np
-import pandas as pd
 import mudata as mu
 import anndata as ad
 import popv
@@ -18,14 +16,6 @@ except ModuleNotFoundError:
     # MacOS GPUs
     def mps_is_available():
         return False
-
-# set up logger
-logger = logging.getLogger()
-logger.setLevel(logging.INFO)
-console_handler = logging.StreamHandler(sys.stdout)
-logFormatter = logging.Formatter("%(asctime)s %(levelname)-8s %(message)s")
-console_handler.setFormatter(logFormatter)
-logger.addHandler(console_handler)
 
 # where to find the obo files
 cl_obo_folder = "/opt/popv_cl_ontology/"
@@ -61,7 +51,11 @@ meta = {}
 cl_obo_folder = "popv_cl_ontology/"
 # for debugging
 temp_dir = "temp/"
-## VIASH END
+## VIASH 
+
+sys.path.append(meta["resources_dir"])
+from setup_logger import setup_logger
+logger = setup_logger()
 
 use_gpu = cuda_is_available() or mps_is_available()
 logger.info("GPU enabled? %s", use_gpu)
