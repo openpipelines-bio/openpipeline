@@ -97,7 +97,7 @@ def test_concatenate_samples_with_same_observation_ids_raises(run_component):
                 "---cpus", str(meta["cpus"]),
                 "--output_compression", "gzip"
                 ])
-    re.search(r"ValueError: Observations are not unique across samples\.",
+    assert re.search(r"ValueError: Observations are not unique across samples\.",
             err.value.stdout.decode('utf-8'))
 
 @pytest.mark.parametrize("mudata_without_genome",

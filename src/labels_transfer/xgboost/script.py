@@ -173,7 +173,7 @@ def build_ref_classifiers(adata_reference, targets, model_path,
     if eval_verbosity < 0 or eval_verbosity > 2:
         raise ValueError("`eval_verbosity` should be an integer between 0 and 2.")
 
-    train_data = get_reference_features(adata_reference, par, logger)
+    train_data = get_reference_features(adata_reference, par)
 
     if not os.path.exists(model_path):
         os.makedirs(model_path, exist_ok=True)
@@ -242,8 +242,7 @@ def project_labels(
     cell_type_classifier_model: xgb.XGBClassifier,
     annotation_column_name='label_pred',
     uncertainty_column_name='label_uncertainty',
-    uncertainty_thresh=None,  # Note: currently not passed to predict function
-    logger=None
+    uncertainty_thresh=None  # Note: currently not passed to predict function
 ):
     """
     A function that projects predicted labels onto the query dataset, along with uncertainty scores.
@@ -264,7 +263,7 @@ def project_labels(
     if (uncertainty_thresh is not None) and (uncertainty_thresh < 0 or uncertainty_thresh > 1):
         raise ValueError(f'`uncertainty_thresh` must be `None` or between 0 and 1.')
 
-    query_data = get_query_features(query_dataset, par, logger)
+    query_data = get_query_features(query_dataset, par)
 
     # Predict labels and probabilities
     query_dataset.obs[annotation_column_name] = cell_type_classifier_model.predict(query_data)
@@ -294,8 +293,7 @@ def predict(
     prediction_column_name: str,
     uncertainty_column_name: str,
     models_info,
-    use_gpu: bool = False,
-    logger=None
+    use_gpu: bool = False
 ) -> pd.DataFrame:
     """
     Returns `obs` DataFrame with prediction columns appended
@@ -349,7 +347,7 @@ def main(par):
             logger.info(f"Found classifier for {obs_target}, no retraining required")
 
     build_ref_classifiers(adata_reference, targets_to_train, model_path=par["model_output"], 
-                          gpu=par["use_gpu"], eval_verbosity=par["verbosity"], logger=logger)
+                          gpu=par["use_gpu"], eval_verbosity=par["verbosity"])
 
     output_uns_parameters = adata.uns.get(par["output_uns_parameters"], {})
 
@@ -365,8 +363,7 @@ def main(par):
                         prediction_column_name=obs_pred,
                         uncertainty_column_name=obs_unc,
                         models_info=models_info,
-                        use_gpu=par["use_gpu"],
-                        logger=logger)
+                        use_gpu=par["use_gpu"])
         
         if obs_target in targets_to_train:
             # Save information about the transfer to .uns

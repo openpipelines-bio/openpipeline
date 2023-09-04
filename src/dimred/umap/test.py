@@ -1,5 +1,7 @@
 import sys
 import pytest
+import re
+import subprocess
 import mudata as mu
 
 ## VIASH START
@@ -30,7 +32,7 @@ def test_umap(run_component, tmp_path):
 
 def test_raise_if_uns_neighbor_is_missing(run_component, tmp_path):
     output = tmp_path / "output.h5mu"
-    with pytest.raises(SystemExit, match=r"ValueError: 'does_not_exist' was not found in \.mod\['rna'\]\.uns\."):
+    with pytest.raises(subprocess.CalledProcessError) as err:
         run_component([
             "--input", input,
             "--output", str(output),
@@ -39,6 +41,8 @@ def test_raise_if_uns_neighbor_is_missing(run_component, tmp_path):
             "--uns_neighbors", "does_not_exist"
         ], expected_raise=True)
     assert not output.is_file(), "No output should be created."
+    assert re.search(r"ValueError: 'does_not_exist' was not found in \.mod\['rna'\]\.uns\.",
+        err.value.stdout.decode('utf-8'))
 
 if __name__ == "__main__":
     sys.exit(pytest.main([__file__]))

@@ -20,7 +20,6 @@ def test_run(run_component, tmp_path):
 
     tmp_output = tmp_path / "output.h5mu"
 
-    output = "output.h5mu"
     cmd_pars = [
         "--modality", "rna",
         "--input", str(tmp_rna),
@@ -31,9 +30,9 @@ def test_run(run_component, tmp_path):
     ]
     run_component(cmd_pars)
 
-    assert output.is_file(), "No output was created."
+    assert tmp_output.is_file(), "No output was created."
 
-    mdata2 = mu.read_h5mu(output)
+    mdata2 = mu.read_h5mu(tmp_output)
 
     assert "rna" in mdata2.mod, "Resulting mudata should contain rna modality"
     assert "prot" in mdata2.mod, "Resulting mudata should contain rna modality"
