@@ -223,6 +223,8 @@ functionality:
   - type: "python_script"
     path: "script.py"
     is_executable: true
+  - type: "file"
+    path: "src/utils/setup_logger.py"
   description: "Performs popular major vote cell typing on single cell sequence data\
     \ using multiple algorithms. Note that this is a one-shot version of PopV."
   test_resources:
@@ -230,9 +232,9 @@ functionality:
     path: "test.py"
     is_executable: true
   - type: "file"
-    path: "../../../resources_test/annotation_test_data/"
+    path: "resources_test/annotation_test_data/"
   - type: "file"
-    path: "../../../resources_test/pbmc_1k_protein_v3/"
+    path: "resources_test/pbmc_1k_protein_v3/"
   info: null
   status: "enabled"
   requirements:
@@ -273,10 +275,8 @@ platforms:
     upgrade: true
   - type: "docker"
     run:
-    - "cd /opt && mkdir -p /opt/popv_cl_ontology && \\\nwget https://raw.githubusercontent.com/YosefLab/PopV/v0.2/ontology/cl.obo\
-      \ -O \"popv_cl_ontology/cl.obo\" && \\\nwget https://raw.githubusercontent.com/YosefLab/PopV/v0.2/ontology/cl.ontology\
-      \ -O \"popv_cl_ontology/cl.ontology\" && \\\nwget https://raw.githubusercontent.com/YosefLab/PopV/v0.2/ontology/cl.ontology.nlp.emb\
-      \ -O \"popv_cl_ontology/cl.ontology.nlp.emb\"\n"
+    - "cd /opt && git clone --depth 1 https://github.com/YosefLab/PopV.git && \\\n\
+      \  cd PopV && git fetch --depth 1 origin tag v0.2 && git checkout v0.2\n"
   - type: "python"
     user: false
     packages:
@@ -343,5 +343,5 @@ info:
   output: "/home/runner/work/openpipeline/openpipeline/target/docker/annotate/popv"
   executable: "/home/runner/work/openpipeline/openpipeline/target/docker/annotate/popv/popv"
   viash_version: "0.7.5"
-  git_commit: "5f0d263958c8723c11a393c7c851f0d300f3c984"
+  git_commit: "2db0a7c4ab9631347df0db42f885149852ea99af"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"

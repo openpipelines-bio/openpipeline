@@ -145,22 +145,27 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
       },
       {
         "type" : "file",
-        "path" : "../../utils/compress_h5mu.py",
-        "parent" : "file:/home/runner/work/openpipeline/openpipeline/src/transform/delete_layer/"
+        "path" : "src/utils/compress_h5mu.py",
+        "parent" : "file:///home/runner/work/openpipeline/openpipeline/"
+      },
+      {
+        "type" : "file",
+        "path" : "src/utils/setup_logger.py",
+        "parent" : "file:///home/runner/work/openpipeline/openpipeline/"
       }
     ],
     "description" : "Delete an anndata layer from one or more modalities.\n",
     "test_resources" : [
       {
         "type" : "python_script",
-        "path" : "run_test.py",
+        "path" : "test.py",
         "is_executable" : true,
         "parent" : "file:/home/runner/work/openpipeline/openpipeline/src/transform/delete_layer/"
       },
       {
         "type" : "file",
-        "path" : "../../../resources_test/pbmc_1k_protein_v3",
-        "parent" : "file:/home/runner/work/openpipeline/openpipeline/src/transform/delete_layer/"
+        "path" : "resources_test/pbmc_1k_protein_v3",
+        "parent" : "file:///home/runner/work/openpipeline/openpipeline/"
       }
     ],
     "status" : "enabled",
@@ -271,7 +276,7 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
     "platform" : "nextflow",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/transform/delete_layer",
     "viash_version" : "0.7.5",
-    "git_commit" : "5f0d263958c8723c11a393c7c851f0d300f3c984",
+    "git_commit" : "2db0a7c4ab9631347df0db42f885149852ea99af",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))
@@ -279,9 +284,8 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
 thisScript = '''set -e
 tempscript=".viash_script.sh"
 cat > "$tempscript" << VIASHMAIN
-from mudata import read_h5ad, write_h5ad
 import sys
-import logging
+from mudata import read_h5ad, write_h5ad
 import shutil
 from pathlib import Path
 
@@ -313,17 +317,14 @@ meta = {
 ## VIASH END
 
 sys.path.append(meta["resources_dir"])
-from compress_h5mu import compress_h5mu
+from setup_logger import setup_logger
+logger = setup_logger()
 
-logger = logging.getLogger()
-logger.setLevel(logging.INFO)
-console_handler = logging.StreamHandler(sys.stdout)
-logFormatter = logging.Formatter("%(asctime)s %(levelname)-8s %(message)s")
-console_handler.setFormatter(logFormatter)
-logger.addHandler(console_handler)
+from compress_h5mu import compress_h5mu
 
 def main():
     input_file, output_file, mod_name = Path(par["input"]), Path(par["output"]), par['modality']
+
     logger.info('Reading input file %s, modality %s.', input_file, mod_name)
     mod = read_h5ad(input_file, mod=mod_name)
     for layer in par['layer']:
@@ -333,8 +334,8 @@ def main():
             raise ValueError(f"Layer '{layer}' is not present in modality {mod_name}.")
         logger.info('Deleting layer %s from modality %s.', layer, mod_name)
         del mod.layers[layer]
+
     logger.info('Writing output to %s.', par['output'])
-    
     output_file_uncompressed = output_file.with_name(output_file.stem + "_uncompressed.h5mu") \\\\
         if par["output_compression"] else output_file
     shutil.copyfile(par['input'], output_file_uncompressed)
@@ -342,6 +343,7 @@ def main():
     if par["output_compression"]:
         compress_h5mu(output_file_uncompressed, output_file, compression=par["output_compression"])
         output_file_uncompressed.unlink()
+
     logger.info('Finished.')
 
 if __name__ == "__main__":

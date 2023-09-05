@@ -20,7 +20,7 @@ jobs:
       component_matrix: ${{ steps.set_matrix.outputs.components }}
       workflow_matrix: ${{ steps.set_matrix.outputs.workflows }}
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
 
     - uses: viash-io/viash-actions/setup@v4
 
@@ -61,11 +61,11 @@ jobs:
     needs: [ list ]
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
           path: openpipelines
 
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
           repository: openpipelines-bio/website
           path: website

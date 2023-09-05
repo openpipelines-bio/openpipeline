@@ -1,9 +1,8 @@
+import sys
 from mudata import read_h5mu
 from scipy.sparse import issparse, isspmatrix_coo, csr_matrix
 from sklearn.utils.sparsefuncs import mean_variance_axis
-from sys import stdout
 import numpy as np
-import logging
 
 ## VIASH START
 par = {
@@ -16,13 +15,9 @@ par = {
 }
 ## VIASH END
 
-logger = logging.getLogger()
-logger.setLevel(logging.INFO)
-console_handler = logging.StreamHandler(stdout)
-logFormatter = logging.Formatter("%(asctime)s %(levelname)-8s %(message)s")
-console_handler.setFormatter(logFormatter)
-logger.addHandler(console_handler)
-
+sys.path.append(meta["resources_dir"])
+from setup_logger import setup_logger
+logger = setup_logger()
 
 def main():
     input_data = read_h5mu(par["input"])

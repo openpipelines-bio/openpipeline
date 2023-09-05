@@ -156,25 +156,30 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
         "path" : "script.py",
         "is_executable" : true,
         "parent" : "file:/home/runner/work/openpipeline/openpipeline/src/dataflow/concat/"
+      },
+      {
+        "type" : "file",
+        "path" : "src/utils/setup_logger.py",
+        "parent" : "file:///home/runner/work/openpipeline/openpipeline/"
       }
     ],
     "description" : "Concatenates several uni-modal samples in .h5mu files into a single file.\n",
     "test_resources" : [
       {
         "type" : "python_script",
-        "path" : "test_concat.py",
+        "path" : "test.py",
         "is_executable" : true,
         "parent" : "file:/home/runner/work/openpipeline/openpipeline/src/dataflow/concat/"
       },
       {
         "type" : "file",
-        "path" : "../../../resources_test/concat_test_data/e18_mouse_brain_fresh_5k_filtered_feature_bc_matrix_subset_unique_obs.h5mu",
-        "parent" : "file:/home/runner/work/openpipeline/openpipeline/src/dataflow/concat/"
+        "path" : "resources_test/concat_test_data/e18_mouse_brain_fresh_5k_filtered_feature_bc_matrix_subset_unique_obs.h5mu",
+        "parent" : "file:///home/runner/work/openpipeline/openpipeline/"
       },
       {
         "type" : "file",
-        "path" : "../../../resources_test/concat_test_data/human_brain_3k_filtered_feature_bc_matrix_subset_unique_obs.h5mu",
-        "parent" : "file:/home/runner/work/openpipeline/openpipeline/src/dataflow/concat/"
+        "path" : "resources_test/concat_test_data/human_brain_3k_filtered_feature_bc_matrix_subset_unique_obs.h5mu",
+        "parent" : "file:///home/runner/work/openpipeline/openpipeline/"
       }
     ],
     "status" : "enabled",
@@ -290,7 +295,7 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
     "platform" : "nextflow",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/dataflow/concat",
     "viash_version" : "0.7.5",
-    "git_commit" : "5f0d263958c8723c11a393c7c851f0d300f3c984",
+    "git_commit" : "2db0a7c4ab9631347df0db42f885149852ea99af",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))
@@ -299,10 +304,9 @@ thisScript = '''set -e
 tempscript=".viash_script.sh"
 cat > "$tempscript" << VIASHMAIN
 from __future__ import annotations
-import logging
+import sys
 import anndata
 import mudata as mu
-from sys import stdout
 import pandas as pd
 import numpy as np
 from collections.abc import Iterable
@@ -337,12 +341,9 @@ meta = {
 
 ### VIASH END
 
-logger = logging.getLogger()
-logger.setLevel(logging.INFO)
-console_handler = logging.StreamHandler(stdout)
-logFormatter = logging.Formatter("%(asctime)s %(levelname)-8s %(message)s")
-console_handler.setFormatter(logFormatter)
-logger.addHandler(console_handler)
+sys.path.append(meta["resources_dir"])
+from setup_logger import setup_logger
+logger = setup_logger()
 
 def indexes_unique(indices: Iterable[pd.Index]) -> bool:
     combined_indices = indices[0].append(indices[1:])

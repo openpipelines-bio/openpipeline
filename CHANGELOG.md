@@ -29,6 +29,10 @@
 
 * `query/cellxgene_census`: increased returned metadata content, revised query option, added filtering strategy and refactored functionality (PR #520).
 
+* Refactor loggers using `setup_logger()` helper function (PR #534).
+
+* Refactor unittest tests to pytest tests (PR #534).
+
 ## MINOR CHANGES
 
 * Add resource labels to several components (PR #518).
@@ -124,6 +128,8 @@
 * Create `correction/cellbender_remove_background_v0.2` for legacy CellBender v0.2 format (PR #523).
 
 * `integrate/scvi`: Ensure output has the same dimensionality as the input (PR #524).
+
+* `mapping/bd_rhapsody`: Fix `--dryrun` argument not working (PR #534).
 
 # openpipelines 0.9.0
 

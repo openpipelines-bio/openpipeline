@@ -1,7 +1,6 @@
 import scanpy as sc
 import mudata as mu
-import logging
-from sys import stdout
+import sys
 import anndata as ad
 
 ## VIASH START
@@ -22,12 +21,9 @@ par = {
 }
 ## VIASH END
 
-logger = logging.getLogger()
-logger.setLevel(logging.INFO)
-console_handler = logging.StreamHandler(stdout)
-logFormatter = logging.Formatter("%(asctime)s %(levelname)-8s %(message)s")
-console_handler.setFormatter(logFormatter)
-logger.addHandler(console_handler)
+sys.path.append(meta["resources_dir"])
+from setup_logger import setup_logger
+logger = setup_logger()
 
 logger.info("Reading %s", par["input"])
 mdata = mu.read_h5mu(par["input"])

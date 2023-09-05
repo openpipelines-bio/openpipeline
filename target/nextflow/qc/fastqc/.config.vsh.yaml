@@ -73,7 +73,7 @@ functionality:
     path: "test.sh"
     is_executable: true
   - type: "file"
-    path: "../../../resources_test/cellranger_tiny_fastq/cellranger_tiny_fastq"
+    path: "resources_test/cellranger_tiny_fastq/cellranger_tiny_fastq"
   info: null
   status: "enabled"
   requirements:
@@ -150,5 +150,5 @@ info:
   output: "/home/runner/work/openpipeline/openpipeline/target/nextflow/qc/fastqc"
   executable: "/home/runner/work/openpipeline/openpipeline/target/nextflow/qc/fastqc/fastqc"
   viash_version: "0.7.5"
-  git_commit: "5f0d263958c8723c11a393c7c851f0d300f3c984"
+  git_commit: "2db0a7c4ab9631347df0db42f885149852ea99af"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"

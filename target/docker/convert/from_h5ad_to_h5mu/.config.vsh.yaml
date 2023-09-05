@@ -74,13 +74,15 @@ functionality:
   - type: "python_script"
     path: "script.py"
     is_executable: true
+  - type: "file"
+    path: "src/utils/setup_logger.py"
   description: "Converts a single layer h5ad file into a single MuData object\n"
   test_resources:
   - type: "python_script"
-    path: "run_test.py"
+    path: "test.py"
     is_executable: true
   - type: "file"
-    path: "../../../resources_test/pbmc_1k_protein_v3"
+    path: "resources_test/pbmc_1k_protein_v3"
   info: null
   status: "enabled"
   requirements:
@@ -108,6 +110,12 @@ platforms:
     packages:
     - "mudata~=0.2.3"
     - "anndata~=0.9.1"
+    upgrade: true
+  test_setup:
+  - type: "python"
+    user: false
+    packages:
+    - "viashpy"
     upgrade: true
   entrypoint: []
   cmd: null
@@ -163,5 +171,5 @@ info:
   output: "/home/runner/work/openpipeline/openpipeline/target/docker/convert/from_h5ad_to_h5mu"
   executable: "/home/runner/work/openpipeline/openpipeline/target/docker/convert/from_h5ad_to_h5mu/from_h5ad_to_h5mu"
   viash_version: "0.7.5"
-  git_commit: "5f0d263958c8723c11a393c7c851f0d300f3c984"
+  git_commit: "2db0a7c4ab9631347df0db42f885149852ea99af"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"

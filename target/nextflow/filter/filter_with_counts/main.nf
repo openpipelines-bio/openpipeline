@@ -334,20 +334,25 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
         "path" : "script.py",
         "is_executable" : true,
         "parent" : "file:/home/runner/work/openpipeline/openpipeline/src/filter/filter_with_counts/"
+      },
+      {
+        "type" : "file",
+        "path" : "src/utils/setup_logger.py",
+        "parent" : "file:///home/runner/work/openpipeline/openpipeline/"
       }
     ],
     "description" : "Filter scRNA-seq data based on the primary QC metrics. \nThis is based on both the UMI counts, the gene counts \nand the mitochondrial genes (genes starting with mt/MT).\n",
     "test_resources" : [
       {
         "type" : "python_script",
-        "path" : "run_test.py",
+        "path" : "test.py",
         "is_executable" : true,
         "parent" : "file:/home/runner/work/openpipeline/openpipeline/src/filter/filter_with_counts/"
       },
       {
         "type" : "file",
-        "path" : "../../../resources_test/pbmc_1k_protein_v3",
-        "parent" : "file:/home/runner/work/openpipeline/openpipeline/src/filter/filter_with_counts/"
+        "path" : "resources_test/pbmc_1k_protein_v3",
+        "parent" : "file:///home/runner/work/openpipeline/openpipeline/"
       }
     ],
     "status" : "enabled",
@@ -458,7 +463,7 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
     "platform" : "nextflow",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/filter/filter_with_counts",
     "viash_version" : "0.7.5",
-    "git_commit" : "5f0d263958c8723c11a393c7c851f0d300f3c984",
+    "git_commit" : "2db0a7c4ab9631347df0db42f885149852ea99af",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))
@@ -469,8 +474,7 @@ cat > "$tempscript" << VIASHMAIN
 
 import mudata as mu
 import numpy as np
-import logging
-from sys import stdout
+import sys
 from operator import le, ge, gt
 
 ### VIASH START
@@ -512,12 +516,9 @@ meta = {
 
 ### VIASH END
 
-logger = logging.getLogger()
-logger.setLevel(logging.INFO)
-console_handler = logging.StreamHandler(stdout)
-logFormatter = logging.Formatter("%(asctime)s %(levelname)-8s %(message)s")
-console_handler.setFormatter(logFormatter)
-logger.addHandler(console_handler)
+sys.path.append(meta["resources_dir"])
+from setup_logger import setup_logger
+logger = setup_logger()
 
 logger.info("Reading input data")
 mdata = mu.read_h5mu(par["input"])

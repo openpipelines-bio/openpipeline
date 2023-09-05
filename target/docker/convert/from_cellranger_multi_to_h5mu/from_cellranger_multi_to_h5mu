@@ -427,9 +427,9 @@ RUN pip install --upgrade pip && \
 
 LABEL org.opencontainers.image.authors="Dries Schaumont"
 LABEL org.opencontainers.image.description="Companion container for running component convert from_cellranger_multi_to_h5mu"
-LABEL org.opencontainers.image.created="2023-09-04T15:10:43Z"
+LABEL org.opencontainers.image.created="2023-09-05T12:25:36Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="5f0d263958c8723c11a393c7c851f0d300f3c984"
+LABEL org.opencontainers.image.revision="2db0a7c4ab9631347df0db42f885149852ea99af"
 LABEL org.opencontainers.image.version="main_build"
 
 VIASHDOCKER
@@ -921,8 +921,7 @@ trap clean_up EXIT
 trap interrupt INT SIGINT
 cat > "\$tempscript" << 'VIASHMAIN'
 from pathlib import Path
-import logging
-from sys import stdout
+import sys
 import scanpy
 import pandas as pd
 import mudata
@@ -955,12 +954,9 @@ meta = {
 
 ## VIASH END
 
-logger = logging.getLogger()
-logger.setLevel(logging.INFO)
-console_handler = logging.StreamHandler(stdout)
-logFormatter = logging.Formatter("%(asctime)s %(levelname)-8s %(message)s")
-console_handler.setFormatter(logFormatter)
-logger.addHandler(console_handler)
+sys.path.append(meta["resources_dir"])
+from setup_logger import setup_logger
+logger = setup_logger()
 
 POSSIBLE_LIBRARY_TYPES = ('vdj_t', 'vdj_b', 'vdj_t_gd', 'count')
 

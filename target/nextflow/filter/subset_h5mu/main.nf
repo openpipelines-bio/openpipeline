@@ -132,6 +132,11 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
         "path" : "script.py",
         "is_executable" : true,
         "parent" : "file:/home/runner/work/openpipeline/openpipeline/src/filter/subset_h5mu/"
+      },
+      {
+        "type" : "file",
+        "path" : "src/utils/setup_logger.py",
+        "parent" : "file:///home/runner/work/openpipeline/openpipeline/"
       }
     ],
     "description" : "Create a subset of a mudata file by selecting the first number of observations\n",
@@ -144,8 +149,8 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
       },
       {
         "type" : "file",
-        "path" : "../../../resources_test/pbmc_1k_protein_v3/pbmc_1k_protein_v3_filtered_feature_bc_matrix.h5mu",
-        "parent" : "file:/home/runner/work/openpipeline/openpipeline/src/filter/subset_h5mu/"
+        "path" : "resources_test/pbmc_1k_protein_v3/pbmc_1k_protein_v3_filtered_feature_bc_matrix.h5mu",
+        "parent" : "file:///home/runner/work/openpipeline/openpipeline/"
       }
     ],
     "status" : "enabled",
@@ -182,6 +187,16 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
           "packages" : [
             "mudata~=0.2.3",
             "anndata~=0.9.1"
+          ],
+          "upgrade" : true
+        }
+      ],
+      "test_setup" : [
+        {
+          "type" : "python",
+          "user" : false,
+          "packages" : [
+            "viashpy"
           ],
           "upgrade" : true
         }
@@ -246,7 +261,7 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
     "platform" : "nextflow",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/filter/subset_h5mu",
     "viash_version" : "0.7.5",
-    "git_commit" : "5f0d263958c8723c11a393c7c851f0d300f3c984",
+    "git_commit" : "2db0a7c4ab9631347df0db42f885149852ea99af",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))

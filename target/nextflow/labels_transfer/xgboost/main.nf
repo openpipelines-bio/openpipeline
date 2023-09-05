@@ -574,8 +574,8 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
       },
       {
         "type" : "file",
-        "path" : "../../utils/setup_logger.py",
-        "parent" : "file:/home/runner/work/openpipeline/openpipeline/src/labels_transfer/xgboost/"
+        "path" : "src/utils/setup_logger.py",
+        "parent" : "file:///home/runner/work/openpipeline/openpipeline/"
       }
     ],
     "description" : "Performs label transfer from reference to query using XGBoost classifier",
@@ -588,13 +588,13 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
       },
       {
         "type" : "file",
-        "path" : "../../../resources_test/annotation_test_data/",
-        "parent" : "file:/home/runner/work/openpipeline/openpipeline/src/labels_transfer/xgboost/"
+        "path" : "resources_test/annotation_test_data/",
+        "parent" : "file:///home/runner/work/openpipeline/openpipeline/"
       },
       {
         "type" : "file",
-        "path" : "../../../resources_test/pbmc_1k_protein_v3/",
-        "parent" : "file:/home/runner/work/openpipeline/openpipeline/src/labels_transfer/xgboost/"
+        "path" : "resources_test/pbmc_1k_protein_v3/",
+        "parent" : "file:///home/runner/work/openpipeline/openpipeline/"
       }
     ],
     "info" : {
@@ -735,7 +735,7 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
     "platform" : "nextflow",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/labels_transfer/xgboost",
     "viash_version" : "0.7.5",
-    "git_commit" : "5f0d263958c8723c11a393c7c851f0d300f3c984",
+    "git_commit" : "2db0a7c4ab9631347df0db42f885149852ea99af",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))
@@ -811,6 +811,7 @@ meta = {
 sys.path.append(meta["resources_dir"])
 from helper import check_arguments, get_reference_features, get_query_features
 from setup_logger import setup_logger
+logger = setup_logger()
 
 # read config arguments
 config = yaml.safe_load(Path(meta["config"]).read_text())
@@ -894,7 +895,7 @@ def build_classifier(X, y, labels_encoder, label_key, eval_verbosity: Optional[i
 
 
 def build_ref_classifiers(adata_reference, targets, model_path,
-                          eval_verbosity: Optional[int] = 1, gpu: Optional[bool] = True, logger=None) -> None:
+                          eval_verbosity: Optional[int] = 1, gpu: Optional[bool] = True) -> None:
     """
     This function builds xgboost classifiers on a reference embedding for a designated number of 
     adata_reference.obs columns. Classifier .xgb files and a model_info.json file is written to the \\`model_path\\`
@@ -922,8 +923,6 @@ def build_ref_classifiers(adata_reference, targets, model_path,
     classifier_ann_level_1.xgb*         model_params.pt* 
     \\`\\`\\`
     """
-    if logger is None:
-        logger = setup_logger()
 
     # Check inputs
     if not isinstance(eval_verbosity, int):
@@ -1001,8 +1000,7 @@ def project_labels(
     cell_type_classifier_model: xgb.XGBClassifier,
     annotation_column_name='label_pred',
     uncertainty_column_name='label_uncertainty',
-    uncertainty_thresh=None,  # Note: currently not passed to predict function
-    logger=None
+    uncertainty_thresh=None  # Note: currently not passed to predict function
 ):
     """
     A function that projects predicted labels onto the query dataset, along with uncertainty scores.
@@ -1019,8 +1017,6 @@ def project_labels(
         Nothing is output, the passed anndata is modified inplace
 
     """
-    if logger is None:
-        logger = setup_logger()
 
     if (uncertainty_thresh is not None) and (uncertainty_thresh < 0 or uncertainty_thresh > 1):
         raise ValueError(f'\\`uncertainty_thresh\\` must be \\`None\\` or between 0 and 1.')
@@ -1055,15 +1051,11 @@ def predict(
     prediction_column_name: str,
     uncertainty_column_name: str,
     models_info,
-    use_gpu: bool = False,
-    logger=None
+    use_gpu: bool = False
 ) -> pd.DataFrame:
     """
     Returns \\`obs\\` DataFrame with prediction columns appended
     """
-
-    if logger is None:
-        logger = setup_logger()
 
     tree_method = "gpu_hist" if use_gpu else "hist"
 
@@ -1079,8 +1071,7 @@ def predict(
     project_labels(query_dataset, 
                    cell_type_classifier_model, 
                    annotation_column_name=prediction_column_name, 
-                   uncertainty_column_name=uncertainty_column_name,
-                   logger=logger)
+                   uncertainty_column_name=uncertainty_column_name)
 
     logger.info("Converting labels from numbers to classes")
     labels_encoder = LabelEncoder()
@@ -1091,8 +1082,6 @@ def predict(
 
 
 def main(par):
-    logger = setup_logger()
-
     logger.info("Checking arguments")
     par = check_arguments(par)
 
@@ -1115,7 +1104,7 @@ def main(par):
             logger.info(f"Found classifier for {obs_target}, no retraining required")
 
     build_ref_classifiers(adata_reference, targets_to_train, model_path=par["model_output"], 
-                          gpu=par["use_gpu"], eval_verbosity=par["verbosity"], logger=logger)
+                          gpu=par["use_gpu"], eval_verbosity=par["verbosity"])
 
     output_uns_parameters = adata.uns.get(par["output_uns_parameters"], {})
 
@@ -1131,8 +1120,7 @@ def main(par):
                         prediction_column_name=obs_pred,
                         uncertainty_column_name=obs_unc,
                         models_info=models_info,
-                        use_gpu=par["use_gpu"],
-                        logger=logger)
+                        use_gpu=par["use_gpu"])
         
         if obs_target in targets_to_train:
             # Save information about the transfer to .uns

@@ -1,15 +1,6 @@
 from __future__ import annotations
-import logging
+import sys
 from mudata import read_h5mu, MuData
-from sys import stdout
-from collections.abc import Iterable
-
-logger = logging.getLogger()
-logger.setLevel(logging.INFO)
-console_handler = logging.StreamHandler(stdout)
-logFormatter = logging.Formatter("%(asctime)s %(levelname)-8s %(message)s")
-console_handler.setFormatter(logFormatter)
-logger.addHandler(console_handler)
 
 ### VIASH START
 par = {
@@ -20,6 +11,9 @@ par = {
 }
 ### VIASH END
 
+sys.path.append(meta["resources_dir"])
+from setup_logger import setup_logger
+logger = setup_logger()
 
 def make_observation_keys_unique(sample_id: str, sample: MuData) -> None:
     """

@@ -212,8 +212,8 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
       },
       {
         "type" : "file",
-        "path" : "../../../resources_test/pbmc_1k_protein_v3/pbmc_1k_protein_v3_mms.h5mu",
-        "parent" : "file:/home/runner/work/openpipeline/openpipeline/src/integrate/harmonypy/"
+        "path" : "resources_test/pbmc_1k_protein_v3/pbmc_1k_protein_v3_mms.h5mu",
+        "parent" : "file:///home/runner/work/openpipeline/openpipeline/"
       }
     ],
     "status" : "enabled",
@@ -252,6 +252,16 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
             "anndata~=0.9.1",
             "harmonypy~=0.0.6",
             "scanpy~=1.9.2"
+          ],
+          "upgrade" : true
+        }
+      ],
+      "test_setup" : [
+        {
+          "type" : "python",
+          "user" : false,
+          "packages" : [
+            "viashpy"
           ],
           "upgrade" : true
         }
@@ -316,7 +326,7 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
     "platform" : "nextflow",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/integrate/harmonypy",
     "viash_version" : "0.7.5",
-    "git_commit" : "5f0d263958c8723c11a393c7c851f0d300f3c984",
+    "git_commit" : "2db0a7c4ab9631347df0db42f885149852ea99af",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))

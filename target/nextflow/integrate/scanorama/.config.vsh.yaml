@@ -177,7 +177,7 @@ functionality:
     dest: "par"
   resources:
   - type: "python_script"
-    path: "./script.py"
+    path: "script.py"
     is_executable: true
   description: "Use Scanorama to integrate different experiments.\n"
   test_resources:
@@ -185,7 +185,7 @@ functionality:
     path: "test.py"
     is_executable: true
   - type: "file"
-    path: "../../../resources_test/pbmc_1k_protein_v3/pbmc_1k_protein_v3_mms.h5mu"
+    path: "resources_test/pbmc_1k_protein_v3/pbmc_1k_protein_v3_mms.h5mu"
   info: null
   status: "enabled"
   requirements:
@@ -216,6 +216,12 @@ platforms:
     - "anndata~=0.9.1"
     - "scanpy~=1.9.2"
     - "scanorama"
+    upgrade: true
+  test_setup:
+  - type: "python"
+    user: false
+    packages:
+    - "viashpy"
     upgrade: true
   entrypoint: []
   cmd: null
@@ -271,5 +277,5 @@ info:
   output: "/home/runner/work/openpipeline/openpipeline/target/nextflow/integrate/scanorama"
   executable: "/home/runner/work/openpipeline/openpipeline/target/nextflow/integrate/scanorama/scanorama"
   viash_version: "0.7.5"
-  git_commit: "5f0d263958c8723c11a393c7c851f0d300f3c984"
+  git_commit: "2db0a7c4ab9631347df0db42f885149852ea99af"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"

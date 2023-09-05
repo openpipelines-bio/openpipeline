@@ -1,6 +1,5 @@
 from pathlib import Path
-import logging
-from sys import stdout
+import sys
 import scanpy
 import pandas as pd
 import mudata
@@ -17,12 +16,9 @@ par = {
 }
 ## VIASH END
 
-logger = logging.getLogger()
-logger.setLevel(logging.INFO)
-console_handler = logging.StreamHandler(stdout)
-logFormatter = logging.Formatter("%(asctime)s %(levelname)-8s %(message)s")
-console_handler.setFormatter(logFormatter)
-logger.addHandler(console_handler)
+sys.path.append(meta["resources_dir"])
+from setup_logger import setup_logger
+logger = setup_logger()
 
 POSSIBLE_LIBRARY_TYPES = ('vdj_t', 'vdj_b', 'vdj_t_gd', 'count')
 
