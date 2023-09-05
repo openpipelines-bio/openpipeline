@@ -52,14 +52,15 @@ def test_velocyto_bd_rhapsody(run_component, tmp_path):
     """Check whether component also accepts uncompressed gtf files"""
 
     output_file = tmp_path / "foo" / "velocyto.loom"
-    genes_uncompressed = tmp_path / "genes.gtf"
+    transcriptome = tmp_path / "genes.gtf"
     
-    with gzip.open(input_gtf_bd, 'rb') as genes_compressed:
-        shutil.copyfileobj(genes_compressed, genes_uncompressed)
+    with open(transcriptome, "wb") as gtf_uncompressed:
+        with gzip.open(input_gtf_bd, 'rb') as gtf_compressed:
+            shutil.copyfileobj(gtf_compressed, gtf_uncompressed)
 
     run_component([
         "--input", input_bam_bd,
-        "--transcriptome", str(genes_uncompressed),
+        "--transcriptome", str(transcriptome),
         "--output", str(output_file),
         "--barcode", input_barcodes_bd
     ])

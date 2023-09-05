@@ -28,7 +28,9 @@ def test_clr(run_component, tmp_path):
     assert 'clr' in output_h5mu.mod['prot'].layers.keys()
     assert output_h5mu.mod['prot'].layers['clr'] is not None
 
-def test_clr_output_to_x(run_component):
+def test_clr_output_to_x(run_component, tmp_path):
+    output_file = tmp_path / "foo.h5mu"
+
     original_x = read_h5mu(input_file).mod['prot'].X
     run_component([
         "--input", input_file,

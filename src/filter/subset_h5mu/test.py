@@ -28,7 +28,6 @@ def test_filter_nothing(run_component, tmp_path):
     mu_in = mu.read_h5mu(input_path)
     mu_out = mu.read_h5mu(output_path)
 
-    orig_obs = mu_in.mod['rna'].n_obs
     orig_vars = mu_in.mod['rna'].n_vars
     orig_prot_obs = mu_in.mod['prot'].n_obs
     orig_prot_vars = mu_in.mod['prot'].n_vars
@@ -36,10 +35,10 @@ def test_filter_nothing(run_component, tmp_path):
     new_obs = mu_out.mod['rna'].n_obs
     new_vars = mu_out.mod['rna'].n_vars
     
-    assert new_obs == orig_obs, "No RNA obs should have been filtered"
+    assert new_obs == 100, "Output should only contain 100 observations"
     assert new_vars == orig_vars, "No RNA vars should have been filtered"
-    assert mu_out.mod['prot'].n_obs == orig_prot_obs,"No prot obs should have been filtered"
-    assert mu_out.mod['prot'].n_vars == orig_prot_vars,"No prot vars should have been filtered"
+    assert mu_out.mod['prot'].n_obs == orig_prot_obs, "No prot obs should have been filtered"
+    assert mu_out.mod['prot'].n_vars == orig_prot_vars, "No prot vars should have been filtered"
     assert list(mu_out.mod['rna'].var['feature_types'].cat.categories) == ["Gene Expression"], \
         "Feature types of RNA modality should be Gene Expression"
     assert list(mu_out.mod['prot'].var['feature_types'].cat.categories) == ["Antibody Capture"], \
