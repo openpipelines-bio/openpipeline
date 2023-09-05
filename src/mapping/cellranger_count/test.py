@@ -22,10 +22,13 @@ cmd_pars = [
     meta["executable"],
     "--input", input,
     "--reference", reference,
-    "--output", output,
-    "---cores", "2",
-    "---memory", "5gb"
+    "--output", output
 ]
+if meta.get("cpus"):
+    cmd_pars.extend(["---cpus", str(meta["cpus"])])
+if meta.get("memory_gb"):
+    cmd_pars.extend(["---memory", f"{meta['memory_gb']}gb"])
+
 out = subprocess.check_output(cmd_pars).decode("utf-8")
 
 logger.info("> Check if file exists")
@@ -44,10 +47,12 @@ cmd_pars = [
     "--input", input_files[0],
     "--input", input_files[1],
     "--reference", reference,
-    "--output", output,
-    "---cores", "2",
-    "---memory", "5gb"
+    "--output", output
 ]
+if meta.get("cpus"):
+    cmd_pars.extend(["---cpus", str(meta["cpus"])])
+if meta.get("memory_gb"):
+    cmd_pars.extend(["---memory", f"{meta['memory_gb']}gb"])
 out = subprocess.check_output(cmd_pars).decode("utf-8")
 
 logger.info("> Check if file exists")

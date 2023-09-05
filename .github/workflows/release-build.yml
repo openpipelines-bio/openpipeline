@@ -286,4 +286,4 @@ jobs:
           --config_mod ".platforms[.type == 'docker'].image := 'ghcr.io/openpipelines-bio/${{ matrix.component.name }}:${{ github.event.inputs.version_tag }}'" \
           --config_mod ".platforms[.type == 'docker'].setup := []" \
           --cpus 2 \
-          --memory "5gb"
+          --memory "6gb"
