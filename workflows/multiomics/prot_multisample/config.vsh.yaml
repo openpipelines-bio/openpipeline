@@ -2,6 +2,8 @@ functionality:
   name: "prot_multisample"
   namespace: "multiomics"
   description: "Processing unimodal multi-sample ADT data."
+  info:
+    image: /images/concepts/fig_workflow_multiomics_adt_multisample.svg
   authors:
     - __merge__: /src/authors/dries_schaumont.yaml
       roles: [ author ]
@@ -45,4 +47,4 @@ functionality:
     - type: nextflow_script
       path: main.nf
       entrypoint: test_wf
-    - path: ../../../resources_test/pbmc_1k_protein_v3
+    - path: /resources_test/pbmc_1k_protein_v3

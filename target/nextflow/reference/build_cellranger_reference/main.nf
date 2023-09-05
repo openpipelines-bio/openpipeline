@@ -150,8 +150,8 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
       },
       {
         "type" : "file",
-        "path" : "../../../resources_test/reference_gencodev41_chr1",
-        "parent" : "file:/home/runner/work/openpipeline/openpipeline/src/reference/build_cellranger_reference/"
+        "path" : "resources_test/reference_gencodev41_chr1",
+        "parent" : "file:///home/runner/work/openpipeline/openpipeline/"
       }
     ],
     "status" : "enabled",
@@ -267,7 +267,7 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
     "platform" : "nextflow",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/reference/build_cellranger_reference",
     "viash_version" : "0.7.5",
-    "git_commit" : "afcb33f0cf2748b0c8b6f5eba5a864d7844e9470",
+    "git_commit" : "fdddb509ae9b91b27e646e212c818e1ddfc89699",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))

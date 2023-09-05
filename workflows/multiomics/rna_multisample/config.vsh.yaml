@@ -2,6 +2,8 @@ functionality:
   name: "rna_multisample"
   namespace: "multiomics"
   description: "Processing unimodal multi-sample RNA transcriptomics data."
+  info:
+    image: /images/concepts/fig_workflow_multiomics_rna_multisample.svg
   authors:
     - __merge__: /src/authors/dries_de_maeyer.yaml
       roles: [ author ]
@@ -88,4 +90,4 @@ functionality:
     - type: nextflow_script
       path: main.nf
       entrypoint: test_wf
-    - path: ../../../resources_test/concat_test_data
+    - path: /resources_test/concat_test_data

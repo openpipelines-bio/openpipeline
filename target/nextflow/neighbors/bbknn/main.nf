@@ -254,8 +254,8 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
       },
       {
         "type" : "file",
-        "path" : "../../../resources_test/pbmc_1k_protein_v3/pbmc_1k_protein_v3_mms.h5mu",
-        "parent" : "file:/home/runner/work/openpipeline/openpipeline/src/neighbors/bbknn/"
+        "path" : "resources_test/pbmc_1k_protein_v3/pbmc_1k_protein_v3_mms.h5mu",
+        "parent" : "file:///home/runner/work/openpipeline/openpipeline/"
       }
     ],
     "status" : "enabled",
@@ -296,6 +296,16 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
             "scanpy~=1.9.2",
             "bbknn",
             "scikit-learn~=1.2.2"
+          ],
+          "upgrade" : true
+        }
+      ],
+      "test_setup" : [
+        {
+          "type" : "python",
+          "user" : false,
+          "packages" : [
+            "viashpy"
           ],
           "upgrade" : true
         }
@@ -360,7 +370,7 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
     "platform" : "nextflow",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/neighbors/bbknn",
     "viash_version" : "0.7.5",
-    "git_commit" : "afcb33f0cf2748b0c8b6f5eba5a864d7844e9470",
+    "git_commit" : "fdddb509ae9b91b27e646e212c818e1ddfc89699",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))

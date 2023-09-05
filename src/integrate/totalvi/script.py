@@ -1,15 +1,14 @@
 from typing import Tuple
 
-import logging
+import os
+import sys
 import mudata
 from anndata import AnnData  # For type hints
 from mudata import MuData  # For type hints
 import numpy as np
-from pandas import DataFrame
 import scvi
 from scipy.sparse import issparse
     
-import os
 
 ### VIASH START
 par = {
@@ -35,19 +34,9 @@ par = {
 }
 ### VIASH END
 
-
-def _setup_logger():  # Is there a place where to put common code to not repeat it across components?
-    from sys import stdout
-
-    logger = logging.getLogger()
-    logger.setLevel(logging.INFO)
-    console_handler = logging.StreamHandler(stdout)
-    logFormatter = logging.Formatter("%(asctime)s %(levelname)-8s %(message)s")
-    console_handler.setFormatter(logFormatter)
-    logger.addHandler(console_handler)
-
-    return logger
-
+sys.path.append(meta["resources_dir"])
+from setup_logger import setup_logger
+logger = setup_logger()
 
 def align_proteins_names(adata_reference: AnnData, mdata_query: MuData, adata_query: AnnData, reference_proteins_key: str, query_proteins_key: str) -> AnnData:
     """Make sure that proteins are located in the same .obsm slot in reference and query. Pad query proteins with zeros if they are absent"""
@@ -137,8 +126,6 @@ def map_query_to_reference(mdata_reference: MuData, mdata_query: MuData, adata_q
     return vae_query, adata_query
 
 def main():
-    logger = _setup_logger()
-
     mdata_query = mudata.read(par["input"].strip())
     adata_query = extract_proteins_to_anndata(mdata_query,
                                               rna_modality_key=par["query_modality"],

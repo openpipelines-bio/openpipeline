@@ -177,6 +177,11 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
         "path" : "script.sh",
         "is_executable" : true,
         "parent" : "file:/home/runner/work/openpipeline/openpipeline/src/demux/cellranger_mkfastq/"
+      },
+      {
+        "type" : "file",
+        "path" : "src/utils/setup_logger.py",
+        "parent" : "file:///home/runner/work/openpipeline/openpipeline/"
       }
     ],
     "description" : "Demultiplex raw sequencing data",
@@ -190,8 +195,8 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
       },
       {
         "type" : "file",
-        "path" : "../../../resources_test/cellranger_tiny_bcl",
-        "parent" : "file:/home/runner/work/openpipeline/openpipeline/src/demux/cellranger_mkfastq/"
+        "path" : "resources_test/cellranger_tiny_bcl",
+        "parent" : "file:///home/runner/work/openpipeline/openpipeline/"
       }
     ],
     "status" : "enabled",
@@ -218,8 +223,18 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
         {
           "type" : "docker",
           "run" : [
-            "apt update && apt upgrade -y"
+            "apt-get update && apt-get upgrade -y"
           ]
+        }
+      ],
+      "test_setup" : [
+        {
+          "type" : "python",
+          "user" : false,
+          "packages" : [
+            "viashpy"
+          ],
+          "upgrade" : true
         }
       ]
     },
@@ -282,7 +297,7 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
     "platform" : "nextflow",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/demux/cellranger_mkfastq",
     "viash_version" : "0.7.5",
-    "git_commit" : "afcb33f0cf2748b0c8b6f5eba5a864d7844e9470",
+    "git_commit" : "fdddb509ae9b91b27e646e212c818e1ddfc89699",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))

@@ -1,8 +1,6 @@
-import unittest
-import subprocess
-from tempfile import NamedTemporaryFile
+import sys
+import pytest
 import mudata
-from pathlib import Path
 import numpy as np
 
 ## VIASH START
@@ -14,30 +12,27 @@ meta = {
 
 input_file = f"{meta['resources_dir']}/pbmc_1k_protein_v3_mms.h5mu"
 
-class TestHarmonyPy(unittest.TestCase):
-    def _run_and_check_output(self, args_as_list):
-        try:
-            subprocess.check_output([meta['executable']] + args_as_list)
-        except subprocess.CalledProcessError as e:
-            print(e.stdout.decode("utf-8"))
-            raise e
+def test_harmonypy(run_component, tmp_path):
+    output_path = tmp_path / "output.h5mu"
 
-    def test_harmonypy(self):
-        input_data = mudata.read_h5mu(input_file)
-        self._run_and_check_output([
-            "--input", input_file,
-            "--modality", "rna",
-            "--obsm_input", "X_pca",
-            "--obsm_output", "X_pca_int",
-            "--obs_covariates", "leiden",
-            "--output", "output.h5mu",
-            "--output_compression", "gzip"])
-        self.assertTrue(Path("output.h5mu").is_file())
-        output_data = mudata.read_h5mu("output.h5mu")
-        np.testing.assert_array_equal(output_data.mod['rna'].X.data, input_data.mod['rna'].X.data)
-        np.testing.assert_array_equal(input_data.mod['rna'].obsm['X_pca'], output_data.mod['rna'].obsm['X_pca'])
-        self.assertIn('X_pca_int', output_data.mod['rna'].obsm)
-        self.assertTupleEqual(output_data.mod['rna'].obsm['X_pca_int'].shape, input_data.mod['rna'].obsm['X_pca'].shape)
+    # run component
+    run_component([
+        "--input", input_file,
+        "--modality", "rna",
+        "--obsm_input", "X_pca",
+        "--obsm_output", "X_pca_int",
+        "--obs_covariates", "leiden",
+        "--output", str(output_path),
+        "--output_compression", "gzip"])
+    assert output_path.is_file()
 
-if __name__ == '__main__':
-    unittest.main()
+    # check output
+    input_data = mudata.read_h5mu(input_file)
+    output_data = mudata.read_h5mu(output_path)
+    np.testing.assert_array_equal(output_data.mod['rna'].X.data, input_data.mod['rna'].X.data)
+    np.testing.assert_array_equal(input_data.mod['rna'].obsm['X_pca'], output_data.mod['rna'].obsm['X_pca'])
+    assert 'X_pca_int' in output_data.mod['rna'].obsm
+    assert output_data.mod['rna'].obsm['X_pca_int'].shape == input_data.mod['rna'].obsm['X_pca'].shape
+
+if __name__ == "__main__":
+    sys.exit(pytest.main([__file__]))

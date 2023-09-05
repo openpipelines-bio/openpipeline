@@ -110,16 +110,21 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
     "resources" : [
       {
         "type" : "python_script",
-        "path" : "./script.py",
+        "path" : "script.py",
         "is_executable" : true,
         "parent" : "file:/home/runner/work/openpipeline/openpipeline/src/dataflow/merge/"
+      },
+      {
+        "type" : "file",
+        "path" : "src/utils/setup_logger.py",
+        "parent" : "file:///home/runner/work/openpipeline/openpipeline/"
       }
     ],
     "description" : "Combine one or more single-modality .h5mu files together into one .h5mu file.\n",
     "test_resources" : [
       {
         "type" : "python_script",
-        "path" : "test_merge.py",
+        "path" : "test.py",
         "is_executable" : true,
         "parent" : "file:/home/runner/work/openpipeline/openpipeline/src/dataflow/merge/"
       },
@@ -247,7 +252,7 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
     "platform" : "nextflow",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/dataflow/merge",
     "viash_version" : "0.7.5",
-    "git_commit" : "afcb33f0cf2748b0c8b6f5eba5a864d7844e9470",
+    "git_commit" : "fdddb509ae9b91b27e646e212c818e1ddfc89699",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))
@@ -256,8 +261,7 @@ thisScript = '''set -e
 tempscript=".viash_script.sh"
 cat > "$tempscript" << VIASHMAIN
 from __future__ import annotations
-from sys import stdout
-import logging
+import sys
 import mudata as md
 import pandas as pd
 import numpy as np
@@ -287,13 +291,9 @@ meta = {
 
 ### VIASH END
 
-logger = logging.getLogger()
-logger.setLevel(logging.INFO)
-console_handler = logging.StreamHandler(stdout)
-logFormatter = logging.Formatter("%(asctime)s %(levelname)-8s %(message)s")
-console_handler.setFormatter(logFormatter)
-logger.addHandler(console_handler)
-
+sys.path.append(meta["resources_dir"])
+from setup_logger import setup_logger
+logger = setup_logger()
 
 def main():
     logger.info('Reading input files %s', ",".join(par["input"]))

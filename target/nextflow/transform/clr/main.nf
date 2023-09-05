@@ -141,14 +141,14 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
     "test_resources" : [
       {
         "type" : "python_script",
-        "path" : "run_test.py",
+        "path" : "test.py",
         "is_executable" : true,
         "parent" : "file:/home/runner/work/openpipeline/openpipeline/src/transform/clr/"
       },
       {
         "type" : "file",
-        "path" : "../../../resources_test/pbmc_1k_protein_v3",
-        "parent" : "file:/home/runner/work/openpipeline/openpipeline/src/transform/clr/"
+        "path" : "resources_test/pbmc_1k_protein_v3",
+        "parent" : "file:///home/runner/work/openpipeline/openpipeline/"
       }
     ],
     "status" : "enabled",
@@ -261,7 +261,7 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
     "platform" : "nextflow",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/transform/clr",
     "viash_version" : "0.7.5",
-    "git_commit" : "afcb33f0cf2748b0c8b6f5eba5a864d7844e9470",
+    "git_commit" : "fdddb509ae9b91b27e646e212c818e1ddfc89699",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))

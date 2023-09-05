@@ -2,6 +2,8 @@ functionality:
   name: "prot_singlesample"
   namespace: "multiomics"
   description: "Processing unimodal single-sample CITE-seq data."
+  info:
+    image: /images/concepts/fig_workflow_multiomics_adt_singlesample.svg
   authors:
     - __merge__: /src/authors/dries_de_maeyer.yaml
       roles: [ author ]
@@ -70,4 +72,4 @@ functionality:
     - type: nextflow_script
       path: main.nf
       entrypoint: test_wf
-    - path: ../../../resources_test/pbmc_1k_protein_v3
+    - path: /resources_test/pbmc_1k_protein_v3

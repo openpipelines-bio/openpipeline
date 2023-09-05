@@ -125,25 +125,30 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
         "path" : "script.py",
         "is_executable" : true,
         "parent" : "file:/home/runner/work/openpipeline/openpipeline/src/convert/from_cellranger_multi_to_h5mu/"
+      },
+      {
+        "type" : "file",
+        "path" : "src/utils/setup_logger.py",
+        "parent" : "file:///home/runner/work/openpipeline/openpipeline/"
       }
     ],
     "description" : "Converts the output from cellranger multi to a single .h5mu file.\nBy default, will map the following library type names to modality names:\n  - Gene Expression: rna\n  - Peaks: atac\n  - Antibody Capture: prot\n  - VDJ: vdj\n  - VDJ-T: vdj_t\n  - VDJ-B: vdj_b\n  - CRISPR Guide Capture: crispr\n  - Multiplexing Capture: hashing\n\nOther library types have their whitepace removed and dashes replaced by\nunderscores to generate the modality name.\n\nCurrently does not allow parsing the output from cell barcode demultiplexing.\n",
     "test_resources" : [
       {
         "type" : "python_script",
-        "path" : "test_cellranger_multi_to_h5mu.py",
+        "path" : "test.py",
         "is_executable" : true,
         "parent" : "file:/home/runner/work/openpipeline/openpipeline/src/convert/from_cellranger_multi_to_h5mu/"
       },
       {
         "type" : "file",
-        "path" : "../../../resources_test/10x_5k_anticmv",
-        "parent" : "file:/home/runner/work/openpipeline/openpipeline/src/convert/from_cellranger_multi_to_h5mu/"
+        "path" : "resources_test/10x_5k_anticmv",
+        "parent" : "file:///home/runner/work/openpipeline/openpipeline/"
       },
       {
         "type" : "file",
-        "path" : "../../../resources_test/10x_5k_lung_crispr",
-        "parent" : "file:/home/runner/work/openpipeline/openpipeline/src/convert/from_cellranger_multi_to_h5mu/"
+        "path" : "resources_test/10x_5k_lung_crispr",
+        "parent" : "file:///home/runner/work/openpipeline/openpipeline/"
       }
     ],
     "status" : "enabled",
@@ -257,7 +262,7 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
     "platform" : "nextflow",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/convert/from_cellranger_multi_to_h5mu",
     "viash_version" : "0.7.5",
-    "git_commit" : "afcb33f0cf2748b0c8b6f5eba5a864d7844e9470",
+    "git_commit" : "fdddb509ae9b91b27e646e212c818e1ddfc89699",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))
@@ -266,8 +271,7 @@ thisScript = '''set -e
 tempscript=".viash_script.sh"
 cat > "$tempscript" << VIASHMAIN
 from pathlib import Path
-import logging
-from sys import stdout
+import sys
 import scanpy
 import pandas as pd
 import mudata
@@ -300,12 +304,9 @@ meta = {
 
 ## VIASH END
 
-logger = logging.getLogger()
-logger.setLevel(logging.INFO)
-console_handler = logging.StreamHandler(stdout)
-logFormatter = logging.Formatter("%(asctime)s %(levelname)-8s %(message)s")
-console_handler.setFormatter(logFormatter)
-logger.addHandler(console_handler)
+sys.path.append(meta["resources_dir"])
+from setup_logger import setup_logger
+logger = setup_logger()
 
 POSSIBLE_LIBRARY_TYPES = ('vdj_t', 'vdj_b', 'vdj_t_gd', 'count')
 

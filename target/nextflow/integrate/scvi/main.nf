@@ -607,8 +607,8 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
       },
       {
         "type" : "file",
-        "path" : "../../../resources_test/pbmc_1k_protein_v3/pbmc_1k_protein_v3_mms.h5mu",
-        "parent" : "file:/home/runner/work/openpipeline/openpipeline/src/integrate/scvi/"
+        "path" : "resources_test/pbmc_1k_protein_v3/pbmc_1k_protein_v3_mms.h5mu",
+        "parent" : "file:///home/runner/work/openpipeline/openpipeline/"
       }
     ],
     "status" : "enabled",
@@ -664,6 +664,16 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
             "scvi-tools~=1.0.0"
           ],
           "upgrade" : false
+        }
+      ],
+      "test_setup" : [
+        {
+          "type" : "python",
+          "user" : false,
+          "packages" : [
+            "viashpy"
+          ],
+          "upgrade" : true
         }
       ]
     },
@@ -727,7 +737,7 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
     "platform" : "nextflow",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/integrate/scvi",
     "viash_version" : "0.7.5",
-    "git_commit" : "afcb33f0cf2748b0c8b6f5eba5a864d7844e9470",
+    "git_commit" : "fdddb509ae9b91b27e646e212c818e1ddfc89699",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))
@@ -825,15 +835,17 @@ def main():
 
     if par['var_input']:
         # Subset to HVG
-        adata = subset_vars(adata, subset_col=par["var_input"])
+        adata_subset = subset_vars(adata, subset_col=par["var_input"]).copy()
+    else:
+        adata_subset = adata.copy()
 
     check_validity_anndata(
-        adata, par['input_layer'], par['obs_batch'],
+        adata_subset, par['input_layer'], par['obs_batch'],
         par["n_obs_min_count"], par["n_var_min_count"]
-        )
+    )
     # Set up the data
     scvi.model.SCVI.setup_anndata(
-        adata,
+        adata_subset,
         batch_key=par['obs_batch'],
         layer=par['input_layer'],
         labels_key=par['obs_labels'],
@@ -844,7 +856,7 @@ def main():
 
     # Set up the model
     vae_uns = scvi.model.SCVI(
-        adata,
+        adata_subset,
         n_hidden=par["n_hidden_nodes"],
         n_latent=par["n_dimensions_latent_space"],
         n_layers=par["n_hidden_layers"],
@@ -867,7 +879,7 @@ def main():
 
     # Train the model
     vae_uns.train(
-        max_epochs = par['max_epochs'],
+        max_epochs=par['max_epochs'],
         early_stopping=par['early_stopping'],
         early_stopping_monitor=par['early_stopping_monitor'],
         early_stopping_patience=par['early_stopping_patience'],
@@ -876,7 +888,7 @@ def main():
         check_val_every_n_epoch=1,
         accelerator="auto",
     )
-    #Note: train_size=1.0 should give better results, but then can't do early_stopping on validation set
+    # Note: train_size=1.0 should give better results, but then can't do early_stopping on validation set
 
     # Get the latent output
     adata.obsm[par['obsm_output']] = vae_uns.get_latent_representation()

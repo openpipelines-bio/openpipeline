@@ -1,20 +1,10 @@
 import mudata as mu
-# import scanpy as sc
-import logging
 import tempfile
-# import pathlib
 import subprocess
 import os
 import sys
 import numpy as np
 from scipy.sparse import csr_matrix
-
-logger = logging.getLogger()
-logger.setLevel(logging.INFO)
-console_handler = logging.StreamHandler(sys.stdout)
-logFormatter = logging.Formatter("%(asctime)s %(levelname)-8s %(message)s")
-console_handler.setFormatter(logFormatter)
-logger.addHandler(console_handler)
 
 ## VIASH START
 import muon
@@ -77,6 +67,9 @@ meta = {
 ## VIASH END
 
 sys.path.append(meta["resources_dir"])
+from setup_logger import setup_logger
+logger = setup_logger()
+
 from helper import anndata_from_h5
 
 logger.info("Reading input mudata")

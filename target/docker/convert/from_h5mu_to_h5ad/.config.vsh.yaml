@@ -79,13 +79,15 @@ functionality:
   - type: "python_script"
     path: "script.py"
     is_executable: true
+  - type: "file"
+    path: "src/utils/setup_logger.py"
   description: "Converts a h5mu file into a h5ad file.\n"
   test_resources:
   - type: "python_script"
     path: "test.py"
     is_executable: true
   - type: "file"
-    path: "../../../resources_test/pbmc_1k_protein_v3"
+    path: "resources_test/pbmc_1k_protein_v3"
   info: null
   status: "enabled"
   requirements:
@@ -113,6 +115,12 @@ platforms:
     packages:
     - "mudata~=0.2.3"
     - "anndata~=0.9.1"
+    upgrade: true
+  test_setup:
+  - type: "python"
+    user: false
+    packages:
+    - "viashpy"
     upgrade: true
   entrypoint: []
   cmd: null
@@ -168,5 +176,5 @@ info:
   output: "/home/runner/work/openpipeline/openpipeline/target/docker/convert/from_h5mu_to_h5ad"
   executable: "/home/runner/work/openpipeline/openpipeline/target/docker/convert/from_h5mu_to_h5ad/from_h5mu_to_h5ad"
   viash_version: "0.7.5"
-  git_commit: "afcb33f0cf2748b0c8b6f5eba5a864d7844e9470"
+  git_commit: "fdddb509ae9b91b27e646e212c818e1ddfc89699"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"

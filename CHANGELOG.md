@@ -27,6 +27,12 @@
 
 * `ingestion/bd_rhapsody`: Refactored data flow (PR #513).
 
+* `query/cellxgene_census`: increased returned metadata content, revised query option, added filtering strategy and refactored functionality (PR #520).
+
+* Refactor loggers using `setup_logger()` helper function (PR #534).
+
+* Refactor unittest tests to pytest tests (PR #534).
+
 ## MINOR CHANGES
 
 * Add resource labels to several components (PR #518).
@@ -49,7 +55,9 @@
 
 ## NEW FUNCTIONALITY
 
-* Resource management: when a process exits with a status code between 137 and 140, retry the process with increased memory requirements. Memory scales by multiplying the base memory assigned to the process with the attempt number (PR #518).
+* Added `compression/compress_h5mu` component (PR #530).
+
+* Resource management: when a process exits with a status code between 137 and 140, retry the process with increased memory requirements. Memory scales by multiplying the base memory assigned to the process with the attempt number (PR #518 and PR #527).
 
 * `integrate/scvi`: Add `--n_hidden_nodes`, `--n_dimensions_latent_space`, `--n_hidden_layers`, `--dropout_rate`, `--dispersion`, `--gene_likelihood`, `--use_layer_normalization`, `--use_batch_normalization`, `--encode_covariates`, `--deeply_inject_covariates` and `--use_observed_lib_size` parameters.
 
@@ -81,6 +89,18 @@
 
 * Add `main_build_viash_hub` action to build, tag, and push components and docker images for viash-hub.com (PR #480).
 
+## DOCUMENTATION
+
+* `images`: Added images for various concepts, such as a sample, a cell, RNA, ADT, ATAC, VDJ (PR #515).
+
+* `multiomics/rna_singlesample`: Add image for workflow (PR #515).
+
+* `multiomics/rna_multisample`: Add image for workflow (PR #515).
+
+* `multiomics/prot_singlesample`: Add image for workflow (PR #515).
+
+* `multiomics/prot_multisample`: Add image for workflow (PR #515).
+
 ## BUG FIXES
 
 * Fix an issue with `workflows/multiomics/scanorama_leiden` where the `--output` argument doesn't work as expected (PR #509).
@@ -106,6 +126,10 @@
 * `neighbors/bbknn`: Fix `--input` not being a required argument (PR #518).
 
 * Create `correction/cellbender_remove_background_v0.2` for legacy CellBender v0.2 format (PR #523).
+
+* `integrate/scvi`: Ensure output has the same dimensionality as the input (PR #524).
+
+* `mapping/bd_rhapsody`: Fix `--dryrun` argument not working (PR #534).
 
 # openpipelines 0.9.0
 

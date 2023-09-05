@@ -1,8 +1,6 @@
-import unittest
-import subprocess
-from pathlib import Path
+import sys
+import pytest
 from mudata import read_h5mu
-from tempfile import NamedTemporaryFile
 
 ## VIASH START
 meta = {
@@ -13,51 +11,53 @@ meta = {
 
 input_file = f"{meta['resources_dir']}/pbmc_1k_protein_v3_mms.h5mu"
 
-class TestScanorama(unittest.TestCase):
-    def _run_and_check_output(self, args_as_list):
-        try:
-            subprocess.check_output([meta['executable']] + args_as_list)
-        except subprocess.CalledProcessError as e:
-            print(e.stdout.decode("utf-8"))
-            raise e
+@pytest.fixture
+def input_with_batch(tmp_path):
+    tmp_input_path = tmp_path / "input.h5mu"
 
-    def test_simple_integration(self):
-        input_data = read_h5mu(input_file)
-        mod = input_data.mod['rna']
-        number_of_obs = mod.n_obs
-        mod.obs['batch'] = 'A'
-        column_index = mod.obs.columns.get_indexer(['batch'])
-        mod.obs.iloc[slice(number_of_obs//2, None), column_index] = 'B'
-        with NamedTemporaryFile('w', suffix=".h5mu") as tempfile_input_file:
-            input_data.write(tempfile_input_file.name)
-            self._run_and_check_output([
-                "--input", tempfile_input_file.name,
-                "--output", "output.h5mu",
-                "--obs_batch", "batch",
-                "--obsm_input", "X_pca",
-                "--output_compression", "gzip"])
-            self.assertTrue(Path("output.h5mu").is_file())
-            data = read_h5mu("output.h5mu")
-            self.assertTrue("X_scanorama" in data.mod['rna'].obsm)
+    input_data = read_h5mu(input_file)
+    mod = input_data.mod['rna']
+    number_of_obs = mod.n_obs
+    mod.obs['batch'] = 'A'
+    column_index = mod.obs.columns.get_indexer(['batch'])
+    mod.obs.iloc[slice(number_of_obs//2, None), column_index] = 'B'
+    input_data.write(tmp_input_path)
 
-    def test_obsm_output(self):
-        input_data = read_h5mu(input_file)
-        mod = input_data.mod['rna']
-        number_of_obs = mod.n_obs
-        mod.obs['batch'] = 'A'
-        column_index = mod.obs.columns.get_indexer(['batch'])
-        mod.obs.iloc[slice(number_of_obs//2, None), column_index] = 'B'
-        with NamedTemporaryFile('w', suffix=".h5mu") as tempfile_input_file:
-            input_data.write(tempfile_input_file.name)
-            self._run_and_check_output([
-                "--input", tempfile_input_file.name,
-                "--output", "output.h5mu",
-                "--obsm_output", "X_test",
-                "--obs_batch", "batch",
-                "--obsm_input", "X_pca"])
-            self.assertTrue(Path("output.h5mu").is_file())
-            data = read_h5mu("output.h5mu")
-            self.assertTrue("X_test" in data.mod['rna'].obsm)
+    return tmp_input_path, input_data
+
+def test_simple_integration(run_component, input_with_batch, tmp_path):
+    tmp_input_path, _ = input_with_batch
+    output_path = tmp_path / "output.h5mu"
+
+    # run component
+    run_component([
+        "--input", str(tmp_input_path),
+        "--output", str(output_path),
+        "--obs_batch", "batch",
+        "--obsm_input", "X_pca",
+        "--output_compression", "gzip"])
+    assert output_path.is_file()
+
+    # check output
+    data = read_h5mu(output_path)
+    assert "X_scanorama" in data.mod['rna'].obsm
+
+def test_obsm_output(run_component, input_with_batch, tmp_path):
+    tmp_input_path, _ = input_with_batch
+    output_path = tmp_path / "output.h5mu"
+
+    # run component
+    run_component([
+        "--input", str(tmp_input_path),
+        "--output", str(output_path),
+        "--obsm_output", "X_test",
+        "--obs_batch", "batch",
+        "--obsm_input", "X_pca"])
+    assert output_path.is_file()
+
+    # check output
+    data = read_h5mu(output_path)
+    assert "X_test" in data.mod['rna'].obsm
 
 if __name__ == "__main__":
-    unittest.main()
+    sys.exit(pytest.main([__file__]))

@@ -1,15 +1,6 @@
-from mudata import read_h5mu
+import sys
 import pandas as pd
-
-import logging
-from sys import stdout
-
-logger = logging.getLogger()
-logger.setLevel(logging.INFO)
-console_handler = logging.StreamHandler(stdout)
-logFormatter = logging.Formatter("%(asctime)s %(levelname)-8s %(message)s")
-console_handler.setFormatter(logFormatter)
-logger.addHandler(console_handler)
+from mudata import read_h5mu
 
 ### VIASH START
 par = {
@@ -22,6 +13,10 @@ par = {
     "var_key": None
 }
 ### VIASH END
+
+sys.path.append(meta["resources_dir"])
+from setup_logger import setup_logger
+logger = setup_logger()
 
 if par["obs_key"] and par["var_key"]:
     raise ValueError("--obs_key can not be used in conjuction with --var_key.")

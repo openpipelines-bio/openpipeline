@@ -10,7 +10,8 @@
 // files.
 // 
 // Component authors:
-//  * Matthias Beyens (author)
+//  * Matthias Beyens
+//  * Dries De Maeyer (author)
 
 nextflow.enable.dsl=2
 
@@ -31,9 +32,6 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
     "authors" : [
       {
         "name" : "Matthias Beyens",
-        "roles" : [
-          "author"
-        ],
         "info" : {
           "role" : "Contributor",
           "links" : {
@@ -41,6 +39,27 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
             "orcid" : "0000-0003-3304-0706",
             "email" : "matthias.beyens@gmail.com",
             "linkedin" : "mbeyens"
+          },
+          "organizations" : [
+            {
+              "name" : "Janssen Pharmaceuticals",
+              "href" : "https://www.janssen.com",
+              "role" : "Principal Scientist"
+            }
+          ]
+        }
+      },
+      {
+        "name" : "Dries De Maeyer",
+        "roles" : [
+          "author"
+        ],
+        "info" : {
+          "role" : "Core Team Member",
+          "links" : {
+            "email" : "ddemaeyer@gmail.com",
+            "github" : "ddemaeyer",
+            "linkedin" : "dries-de-maeyer-b46a814"
           },
           "organizations" : [
             {
@@ -127,73 +146,10 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
           },
           {
             "type" : "string",
-            "name" : "--cell_type",
-            "description" : "Cell type(s) of interest. Cell type should be one of the Cell Ontology terms. If not specified, all cell types will be queried.",
+            "name" : "--cell_query",
+            "description" : "The query for selecting the cells as defined by the cellxgene census schema.",
             "example" : [
-              "mesothelial fibroblast"
-            ],
-            "required" : false,
-            "direction" : "input",
-            "multiple" : true,
-            "multiple_sep" : ":",
-            "dest" : "par"
-          },
-          {
-            "type" : "string",
-            "name" : "--tissue",
-            "description" : "Tissue(s) of interest. If not specified, all tissues will be queried.",
-            "example" : [
-              "lung"
-            ],
-            "required" : false,
-            "direction" : "input",
-            "multiple" : true,
-            "multiple_sep" : ":",
-            "dest" : "par"
-          },
-          {
-            "type" : "string",
-            "name" : "--technology",
-            "description" : "Technology(ies) of interest. If not specified, all technologies will be queried.",
-            "example" : [
-              "10x 3' v3"
-            ],
-            "required" : false,
-            "choices" : [
-              "10x 3' v1",
-              "10x 3' v2",
-              "10x 3' v3",
-              "10x 5' v1",
-              "10x 5' v2"
-            ],
-            "direction" : "input",
-            "multiple" : true,
-            "multiple_sep" : ":",
-            "dest" : "par"
-          },
-          {
-            "type" : "string",
-            "name" : "--suspension",
-            "description" : "Suspension(s) of interest. If not specified, all suspensions will be queried.",
-            "example" : [
-              "cell"
-            ],
-            "required" : false,
-            "choices" : [
-              "cell",
-              "nucleus"
-            ],
-            "direction" : "input",
-            "multiple" : true,
-            "multiple_sep" : ":",
-            "dest" : "par"
-          },
-          {
-            "type" : "boolean",
-            "name" : "--is_primary_data",
-            "description" : "Allow only primary data in the query in order to prevent of data duplication.",
-            "default" : [
-              true
+              "is_primary_data == True and cell_type_ontology_term_id in ['CL:0000136', 'CL:1000311', 'CL:0002616'] and suspension_type == 'cell'"
             ],
             "required" : false,
             "direction" : "input",
@@ -203,8 +159,15 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
           },
           {
             "type" : "string",
-            "name" : "--obs_column_names",
-            "description" : "obs columns of interest. If not specified, all columns will be returned.",
+            "name" : "--cells_filter_columns",
+            "description" : "The query for selecting the cells as defined by the cellxgene census schema.",
+            "example" : [
+              "dataset_id",
+              "tissue",
+              "assay",
+              "disease",
+              "cell_type"
+            ],
             "required" : false,
             "direction" : "input",
             "multiple" : true,
@@ -212,11 +175,11 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
             "dest" : "par"
           },
           {
-            "type" : "boolean",
-            "name" : "--metadata_only",
-            "description" : "By default only returns metadata of obs layer of query. If False, returns metadata of obs layer and gene expression matrix of query",
-            "default" : [
-              true
+            "type" : "double",
+            "name" : "--min_cells_filter_columns",
+            "description" : "Minimum of amount of summed cells_filter_columns cells",
+            "example" : [
+              100.0
             ],
             "required" : false,
             "direction" : "input",
@@ -273,8 +236,8 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
       },
       {
         "type" : "file",
-        "path" : "./cl-base.obo",
-        "parent" : "file:/home/runner/work/openpipeline/openpipeline/src/query/cellxgene_census/"
+        "path" : "src/utils/setup_logger.py",
+        "parent" : "file:///home/runner/work/openpipeline/openpipeline/"
       }
     ],
     "description" : "Query CellxGene Census or user-specified TileDBSoma object, and eventually fetch cell and gene metadata or/and expression counts.",
@@ -389,7 +352,7 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
     "platform" : "nextflow",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/query/cellxgene_census",
     "viash_version" : "0.7.5",
-    "git_commit" : "afcb33f0cf2748b0c8b6f5eba5a864d7844e9470",
+    "git_commit" : "fdddb509ae9b91b27e646e212c818e1ddfc89699",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))
@@ -399,20 +362,8 @@ tempscript=".viash_script.sh"
 cat > "$tempscript" << VIASHMAIN
 import sys
 import os
-import logging
 import cellxgene_census
 import mudata as mu
-import anndata as ad
-from scipy.sparse import csr_matrix
-import obonet
-
-# set up logger
-logger = logging.getLogger()
-logger.setLevel(logging.INFO)
-console_handler = logging.StreamHandler(sys.stdout)
-logFormatter = logging.Formatter("%(asctime)s %(levelname)-8s %(message)s")
-console_handler.setFormatter(logFormatter)
-logger.addHandler(console_handler)
 
 ## VIASH START
 # The following code has been auto-generated by Viash.
@@ -421,13 +372,9 @@ par = {
   'modality': $( if [ ! -z ${VIASH_PAR_MODALITY+x} ]; then echo "r'${VIASH_PAR_MODALITY//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'cellxgene_release': $( if [ ! -z ${VIASH_PAR_CELLXGENE_RELEASE+x} ]; then echo "r'${VIASH_PAR_CELLXGENE_RELEASE//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'species': $( if [ ! -z ${VIASH_PAR_SPECIES+x} ]; then echo "r'${VIASH_PAR_SPECIES//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
-  'cell_type': $( if [ ! -z ${VIASH_PAR_CELL_TYPE+x} ]; then echo "r'${VIASH_PAR_CELL_TYPE//\\'/\\'\\"\\'\\"r\\'}'.split(':')"; else echo None; fi ),
-  'tissue': $( if [ ! -z ${VIASH_PAR_TISSUE+x} ]; then echo "r'${VIASH_PAR_TISSUE//\\'/\\'\\"\\'\\"r\\'}'.split(':')"; else echo None; fi ),
-  'technology': $( if [ ! -z ${VIASH_PAR_TECHNOLOGY+x} ]; then echo "r'${VIASH_PAR_TECHNOLOGY//\\'/\\'\\"\\'\\"r\\'}'.split(':')"; else echo None; fi ),
-  'suspension': $( if [ ! -z ${VIASH_PAR_SUSPENSION+x} ]; then echo "r'${VIASH_PAR_SUSPENSION//\\'/\\'\\"\\'\\"r\\'}'.split(':')"; else echo None; fi ),
-  'is_primary_data': $( if [ ! -z ${VIASH_PAR_IS_PRIMARY_DATA+x} ]; then echo "r'${VIASH_PAR_IS_PRIMARY_DATA//\\'/\\'\\"\\'\\"r\\'}'.lower() == 'true'"; else echo None; fi ),
-  'obs_column_names': $( if [ ! -z ${VIASH_PAR_OBS_COLUMN_NAMES+x} ]; then echo "r'${VIASH_PAR_OBS_COLUMN_NAMES//\\'/\\'\\"\\'\\"r\\'}'.split(':')"; else echo None; fi ),
-  'metadata_only': $( if [ ! -z ${VIASH_PAR_METADATA_ONLY+x} ]; then echo "r'${VIASH_PAR_METADATA_ONLY//\\'/\\'\\"\\'\\"r\\'}'.lower() == 'true'"; else echo None; fi ),
+  'cell_query': $( if [ ! -z ${VIASH_PAR_CELL_QUERY+x} ]; then echo "r'${VIASH_PAR_CELL_QUERY//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
+  'cells_filter_columns': $( if [ ! -z ${VIASH_PAR_CELLS_FILTER_COLUMNS+x} ]; then echo "r'${VIASH_PAR_CELLS_FILTER_COLUMNS//\\'/\\'\\"\\'\\"r\\'}'.split(':')"; else echo None; fi ),
+  'min_cells_filter_columns': $( if [ ! -z ${VIASH_PAR_MIN_CELLS_FILTER_COLUMNS+x} ]; then echo "float(r'${VIASH_PAR_MIN_CELLS_FILTER_COLUMNS//\\'/\\'\\"\\'\\"r\\'}')"; else echo None; fi ),
   'output': $( if [ ! -z ${VIASH_PAR_OUTPUT+x} ]; then echo "r'${VIASH_PAR_OUTPUT//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'output_compression': $( if [ ! -z ${VIASH_PAR_OUTPUT_COMPRESSION+x} ]; then echo "r'${VIASH_PAR_OUTPUT_COMPRESSION//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi )
 }
@@ -448,6 +395,9 @@ meta = {
 
 ### VIASH END
 
+sys.path.append(meta["resources_dir"])
+from setup_logger import setup_logger
+logger = setup_logger()
 
 def connect_census(input_database, release):
     """
@@ -467,113 +417,46 @@ def connect_census(input_database, release):
         )
 
 
-def read_cell_ontology(obo_file):
-    """Reads Cell Type OBO Foundry file
-
-    Returns:
-        graph: cell type obo ontology
-    """
-    return obonet.read_obo(
-        obo_file,
-        encoding="utf-8"
+def get_anndata(census_connection, cell_query, species):
+    logger.info(
+        "Getting gene expression data based on %s query.",
+        cell_query
+        )
+    return cellxgene_census.get_anndata(
+        census = census_connection,
+        obs_value_filter = cell_query,
+        organism = species
     )
 
 
-def get_cell_type_terms(cell_types, obo_file):
-    if not cell_types:
-        return
-    logger.info("Reading Cell Ontology OBO")
+def add_cellcensus_metadata_obs(census_connection, query_data):
+    logger.info(
+    "Adding extented metadata to gene expression data."
+    )
+    census_datasets = census_connection["census_info"]["datasets"].read().concat().to_pandas()
+    
+    query_data.obs.dataset_id = query_data.obs.dataset_id.astype("category")
 
-    co = read_cell_ontology(obo_file)
-    id_to_name = {
-        id_: data.get("name")
-        for id_, data in co.nodes(data=True)
-        }
-    id_to_name = {
-        term_id: term_name
-        for term_id, term_name in id_to_name.items()
-        if term_name is not None
-        }
-    name_to_id = {
-        term_name: term_id
-        for term_id, term_name in id_to_name.items()
-        }
+    dataset_info = census_datasets[census_datasets.dataset_id.isin(query_data.obs.dataset_id.cat.categories)]\\\\
+    [['collection_id', 'collection_name', 'collection_doi', 'dataset_id', 'dataset_title']]\\\\
+    .reset_index(drop=True)\\\\
+    .apply(lambda x: x.astype('category'))
 
-    # TODO: can be more pythonic
-    lower_hierarchy_cell_of_interest_map = {}
-    cell_of_interest_terms = []
-    for cell_type in cell_types:
-        logger.info("Locating all child cell types of %s", cell_type)
-        node = name_to_id[cell_type]
-        lower_hierarchy_cell_of_interest_map.update(
-            {
-                parent:id_to_name[parent]
-                for parent, _, key in co.in_edges(node, keys=True)
-                if key == 'is_a'
-                }
-            )
-        lower_hierarchy_cell_of_interest_map.update({node: cell_type})
-        cell_of_interest_terms.extend(
-            list(lower_hierarchy_cell_of_interest_map.keys())
-            )
-
-    logger.info(lower_hierarchy_cell_of_interest_map)
-
-    return cell_of_interest_terms
-
-
-# TODO: function to explore cell types available in query data
-# def view_available_cell_types(lower_hierarchy_cell_of_interest_map, cell_of_interest_terms):
-#     cells_of_interest_query_terms = list(adata.obs.cell_type_ontology_term_id.unique())
-#     avail_cells_overview = []
-#     for term in cell_of_interest_terms:
-#         if term in cells_of_interest_query_terms:
-#             avail_cells_overview.append("Available: {}-{}".format(term, lower_hierarchy_cell_of_interest_map[term]))
-#         else:
-#             avail_cells_overview.append("Unavailable: {}-{}".format(term, lower_hierarchy_cell_of_interest_map[term]))
-#     avail_cells_overview.sort()
-#     logging.info(avail_cells_overview)
-
-
-def build_census_query(par, obo_file):
-    _query = f'is_primary_data == {par["is_primary_data"]}'
-    query_builder = {
-        'cell_type': f' and cell_type_ontology_term_id in {get_cell_type_terms(par["cell_type"], obo_file)}',
-        'tissue': f' and tissue in {par["tissue"]}',
-        'technology': f' and assay in {par["technology"]}',
-        'suspension': f' and suspension_type in {par["suspension"]}',
-    }
-    for parameter_name, query_part in query_builder.items():
-        if par[parameter_name]:
-            _query += query_part
-
-    return _query
-
-
-def extract_metadata(census_connection, query, species, obs_column_names):
-    logger.info("Extracting only metadata")
-
-    query_data = census_connection["census_data"][species].obs.read(
-        value_filter=query,
-        column_names=obs_column_names).concat().to_pandas()
-
-    return ad.AnnData(obs=query_data)
-
-
-def extract_metadata_expression(
-    census_connection, query,species, obs_column_names):
-    logger.info("Extracting metadata and gene expression matrix")
-
-    query_data = cellxgene_census.get_anndata(
-        census_connection,
-        organism = species,
-        obs_value_filter = query,
-        column_names = {"obs": obs_column_names}
+    return query_data.obs.merge(
+        dataset_info, on='dataset_id', how = 'left'
         )
 
-    query_data.X = csr_matrix(query_data.X)
-    query_data.var_names_make_unique()
 
+def cellcensus_cell_filter(query_data, cells_filter_columns, min_cells_filter_columns):
+    t0 = query_data.shape
+    query_data = query_data[
+        query_data.obs.groupby(cells_filter_columns)["soma_joinid"].transform('count') >= min_cells_filter_columns
+        ]
+    t1 = query_data.shape
+    logger.info(
+        'Removed %s cells based on %s min_cells_filter_columns of %s cells_filter_columns.'
+        % ((t0[0] - t1[0]), min_cells_filter_columns, cells_filter_columns)
+        )
     return query_data
 
 
@@ -581,36 +464,59 @@ def write_mudata(mdata, output_location, compression):
     logger.info("Writing %s", output_location)
     mdata.write_h5mu(
         output_location,
-        compression = compression
+        compression=compression
         )
 
 
 def main():
 
+    # start dev
+    logger.info('cells_filter_columns: %s' % par["cells_filter_columns"])
+    logger.info('min_cells_filter_columns: %s' % par["min_cells_filter_columns"])
+    # end dev
+    
     census_connection = connect_census(
         par["input_database"],
         par["cellxgene_release"]
+        ) 
+
+    query_data = get_anndata(
+        census_connection,
+        par["cell_query"],
+        par["species"]
         )
-    query = build_census_query(par, f"{meta['resources_dir']}/cl-base.obo")
-
-    if par["metadata_only"]:
-        query_data = extract_metadata(
-            census_connection, query, par["species"], par["obs_column_names"]
-            )
-
-    else:
-        query_data = extract_metadata_expression(
-            census_connection, query, par["species"], par["obs_column_names"]
-            )
+    
+    query_data.obs = add_cellcensus_metadata_obs(
+        census_connection,
+        query_data
+        )
 
     census_connection.close()
     del census_connection
 
+    if par["cells_filter_columns"]:
+        if not par["min_cells_filter_columns"]:
+            raise NotImplementedError(
+            "You specified cells_filter_columns, thus add min_cells_filter_columns!"
+            )
+        query_data = cellcensus_cell_filter(
+            query_data,
+            par["cells_filter_columns"],
+            par["min_cells_filter_columns"]
+            )
+
     mdata = mu.MuData(
         {par["modality"]: query_data}
         )
+    
+    mdata["rna"].var_names = mdata["rna"].var["feature_id"]
+    mdata["rna"].var["gene_symbol"] = mdata["rna"].var["feature_name"]
 
-    write_mudata(mdata, par["output"], par["output_compression"])
+    write_mudata(
+        mdata,
+        par["output"],
+        par["output_compression"]
+        )
 
 if __name__ == "__main__":
     main()

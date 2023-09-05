@@ -3464,8 +3464,8 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
       },
       {
         "type" : "file",
-        "path" : "../../../resources_test/cellranger_tiny_fastq",
-        "parent" : "file:/home/runner/work/openpipeline/openpipeline/src/mapping/multi_star/"
+        "path" : "resources_test/cellranger_tiny_fastq",
+        "parent" : "file:///home/runner/work/openpipeline/openpipeline/"
       }
     ],
     "status" : "enabled",
@@ -3493,8 +3493,8 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
           "type" : "docker",
           "env" : [
             "STAR_VERSION 2.7.10b",
-            "PACKAGES gcc g++ make wg''' + '''et zlib1g-dev unzip"
-          ]
+            "PACKAGES gcc g++ make wget zlib1g-dev unzip"
+         ''' + ''' ]
         },
         {
           "type" : "docker",
@@ -3594,7 +3594,7 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
     "platform" : "nextflow",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/mapping/multi_star",
     "viash_version" : "0.7.5",
-    "git_commit" : "afcb33f0cf2748b0c8b6f5eba5a864d7844e9470",
+    "git_commit" : "fdddb509ae9b91b27e646e212c818e1ddfc89699",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))
