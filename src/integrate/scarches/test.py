@@ -47,7 +47,7 @@ def test_hlca_reference_model(run_component, input_with_batch, tmp_path):
     output_data = mudata.read_h5mu(output_path)
     assert 'X_integrated_scanvi' in output_data.mod['rna'].obsm
     assert output_data["rna"].uns["integration_method"] == "SCANVI"
-    assert "model.pt" in output_model_path.iterdir()
+    assert (output_model_path / "model.pt").is_file()
 
 if __name__ == "__main__":
     sys.exit(pytest.main([__file__]))
