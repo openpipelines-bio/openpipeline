@@ -102,7 +102,7 @@ functionality:
   test_resources:
     - type: python_script
       path: test.py
-    - path: ../../../resources_test/pbmc_1k_protein_v3
+    - path: /resources_test/pbmc_1k_protein_v3
 platforms:
   - type: docker
     image: python:3.8-slim

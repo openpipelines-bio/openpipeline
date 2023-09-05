@@ -149,9 +149,9 @@ functionality:
       path: test_wta.sh
     - type: bash_script
       path: test_targeted.sh
-    - path: ../../../resources_test/bdrhap_vdj
-    - path: ../../../resources_test/bdrhap_5kjrt
-    - path: ../../../resources_test/reference_gencodev41_chr1/
+    - path: /resources_test/bdrhap_vdj
+    - path: /resources_test/bdrhap_5kjrt
+    - path: /resources_test/reference_gencodev41_chr1/
 
 platforms:
   - type: docker

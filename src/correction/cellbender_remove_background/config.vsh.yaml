@@ -275,7 +275,7 @@ functionality:
     - type: python_script
       path: test.py
     # normally cellbender should only be run on unfiltered data, but for the purposes of the unit test the filtered data will do.
-    - path: ../../../resources_test/pbmc_1k_protein_v3/pbmc_1k_protein_v3_raw_feature_bc_matrix.h5
+    - path: /resources_test/pbmc_1k_protein_v3/pbmc_1k_protein_v3_raw_feature_bc_matrix.h5
 platforms:
   - type: docker
     image: nvcr.io/nvidia/pytorch:22.12-py3

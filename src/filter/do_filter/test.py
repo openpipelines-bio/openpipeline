@@ -1,10 +1,11 @@
-import mudata as mu
-import numpy as np
+
 import sys
 import pytest
 import uuid
 from subprocess import CalledProcessError
 import re
+import mudata as mu
+import numpy as np
 
 ## VIASH START
 meta = {
@@ -14,12 +15,8 @@ meta = {
      'config': './src/filter/do_filter/config.vsh.yaml'
 }
 ## VIASH END
-resources_dir, functionality_name = meta["resources_dir"], meta["functionality_name"]
-input_path = f"{resources_dir}/pbmc_1k_protein_v3/pbmc_1k_protein_v3_filtered_feature_bc_matrix.h5mu"
 
-sys.path.append(meta["resources_dir"])
-from setup_logger import setup_logger
-logger = setup_logger()
+input_path = f"{meta['resources_dir']}/pbmc_1k_protein_v3/pbmc_1k_protein_v3_filtered_feature_bc_matrix.h5mu"
 
 @pytest.fixture
 def random_h5mu_path(tmp_path):
@@ -118,5 +115,6 @@ def test_nonexisting_column_raises(run_component,
 
     assert re.search(r"\.mod\[rna\]\.var\[doesnotexist\] does not exist\.",
         err.value.stdout.decode('utf-8'))
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     sys.exit(pytest.main([__file__]))

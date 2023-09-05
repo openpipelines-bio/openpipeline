@@ -18,7 +18,7 @@ except ModuleNotFoundError:
         return False
 
 # where to find the obo files
-cl_obo_folder = "/opt/popv_cl_ontology/"
+cl_obo_folder = "/opt/PopV/ontology/"
 
 ## VIASH START
 par = {
@@ -49,9 +49,7 @@ par = {
 meta = {}
 # for debugging the obo folder can be somewhere local
 cl_obo_folder = "popv_cl_ontology/"
-# for debugging
-temp_dir = "temp/"
-## VIASH 
+## VIASH END
 
 sys.path.append(meta["resources_dir"])
 from setup_logger import setup_logger
@@ -71,7 +69,7 @@ def get_X(adata: ad.AnnData, layer: typing.Optional[str], var_index: typing.Opti
         return adata.X
 def get_obs(adata: ad.AnnData, obs_par_names):
     """Subset the obs dataframe to just the columns defined by the obs_label and obs_batch."""
-    obs_columns = reference_obs_cols = [par[x] for x in obs_par_names if par[x]]
+    obs_columns = [par[x] for x in obs_par_names if par[x]]
     return adata.obs[obs_columns]
 def get_var(adata: ad.AnnData, var_index: list[str]):
     """Fetch the var dataframe. Subset rows by var_index if so desired."""

@@ -1,8 +1,6 @@
-import subprocess
-import mudata as mu
 import sys
-from unittest import TestCase, main
-from pathlib import Path
+import pytest
+import mudata as mu
 
 ## VIASH START
 meta = {
@@ -11,53 +9,41 @@ meta = {
 }
 ## VIASH END
 
-sys.path.append(meta["resources_dir"])
-from setup_logger import setup_logger
-logger = setup_logger()
-
 input_path = f"{meta['resources_dir']}/pbmc_1k_protein_v3_filtered_feature_bc_matrix.h5mu"
 
-class TestFilterWithCounts(TestCase):
-    def setUp(self) -> None:
-        mu_in = mu.read_h5mu(input_path)
-        self.orig_obs = mu_in.mod['rna'].n_obs
-        self.orig_vars = mu_in.mod['rna'].n_vars
-        self.orig_prot_obs = mu_in.mod['prot'].n_obs
-        self.orig_prot_vars = mu_in.mod['prot'].n_vars
-        return super().setUp()
+def test_filter_nothing(run_component, tmp_path):
+    output_path = tmp_path / "output.h5mu"
+    
+    # run component
+    run_component([
+        "--input", input_path,
+        "--output", str(output_path),
+        "--number_of_observations", "100",
+        "--output_compression", "gzip"
+    ])
+    
+    assert output_path.is_file(), "Output file not found"
 
-    def tearDown(self) -> None:
-        return super().tearDown()
+    # check output file
+    mu_in = mu.read_h5mu(input_path)
+    mu_out = mu.read_h5mu(output_path)
 
-    def _run_and_check_output(self, args_as_list):
-        try:
-            subprocess_args = [meta['executable']] + args_as_list
-            logger.info(" ".join(subprocess_args))
-            subprocess.check_output(subprocess_args)
-        except subprocess.CalledProcessError as e:
-            logger.info(e.stdout.decode("utf-8"))
-            raise e
+    orig_obs = mu_in.mod['rna'].n_obs
+    orig_vars = mu_in.mod['rna'].n_vars
+    orig_prot_obs = mu_in.mod['prot'].n_obs
+    orig_prot_vars = mu_in.mod['prot'].n_vars
 
-    def test_filter_nothing(self):
-        self._run_and_check_output([
-            "--input", input_path,
-            "--output", "output-1.h5mu",
-            "--number_of_observations", "100",
-            "--output_compression", "gzip"
-            ])
-        self.assertTrue(Path("output-1.h5mu").is_file(), msg="Output file not found")
-        mu_out = mu.read_h5mu("output-1.h5mu")
-        new_obs = mu_out.mod['rna'].n_obs
-        new_vars = mu_out.mod['rna'].n_vars
-        self.assertEqual(new_obs, 100, msg="No RNA obs should have been filtered")
-        self.assertEqual(new_vars, self.orig_vars, msg="No RNA vars should have been filtered")
-        self.assertEqual(mu_out.mod['prot'].n_obs, self.orig_prot_obs, msg="No prot obs should have been filtered")
-        self.assertEqual(mu_out.mod['prot'].n_vars, self.orig_prot_vars, msg="No prot vars should have been filtered")
-        self.assertListEqual(list(mu_out.mod['rna'].var['feature_types'].cat.categories), ["Gene Expression"],
-                             msg="Feature types of RNA modality should be Gene Expression")
-        self.assertListEqual(list(mu_out.mod['prot'].var['feature_types'].cat.categories), ["Antibody Capture"],
-                             msg="Feature types of prot modality should be Antibody Capture")
-
+    new_obs = mu_out.mod['rna'].n_obs
+    new_vars = mu_out.mod['rna'].n_vars
+    
+    assert new_obs == orig_obs, "No RNA obs should have been filtered"
+    assert new_vars == orig_vars, "No RNA vars should have been filtered"
+    assert mu_out.mod['prot'].n_obs == orig_prot_obs,"No prot obs should have been filtered"
+    assert mu_out.mod['prot'].n_vars == orig_prot_vars,"No prot vars should have been filtered"
+    assert list(mu_out.mod['rna'].var['feature_types'].cat.categories) == ["Gene Expression"], \
+        "Feature types of RNA modality should be Gene Expression"
+    assert list(mu_out.mod['prot'].var['feature_types'].cat.categories) == ["Antibody Capture"], \
+        "Feature types of prot modality should be Antibody Capture"
 
 if __name__ == "__main__":
-    main()
+    sys.exit(pytest.main([__file__]))

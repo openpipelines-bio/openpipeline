@@ -14,8 +14,6 @@ meta = {
     'cpus': 2,
     'config': '/home/di/code/openpipeline/src/dataflow/concat/config.vsh.yaml'
 }
-
-
 ## VIASH END
 
 meta['cpus'] = 1 if not meta['cpus'] else meta['cpus']
@@ -25,8 +23,8 @@ resources_dir = meta["resources_dir"]
 # for the features that need to be handled by the concat component.
 # The tests below that specifically test the concatenation of conflicting data need to introduce
 # the conflict.
-input_sample1_file = f"{resources_dir}/e18_mouse_brain_fresh_5k_filtered_feature_bc_matrix_subset_unique_obs.h5mu"
-input_sample2_file = f"{resources_dir}/human_brain_3k_filtered_feature_bc_matrix_subset_unique_obs.h5mu"
+input_sample1_file = f"{meta['resources_dir']}/e18_mouse_brain_fresh_5k_filtered_feature_bc_matrix_subset_unique_obs.h5mu"
+input_sample2_file = f"{meta['resources_dir']}/human_brain_3k_filtered_feature_bc_matrix_subset_unique_obs.h5mu"
 
 @pytest.fixture
 def mudata_without_genome(tmp_path, request):

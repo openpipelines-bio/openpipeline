@@ -1,6 +1,6 @@
+import sys
 import pytest
 from pathlib import Path
-from tempfile import NamedTemporaryFile
 import anndata
 import mudata
 import numpy as np
@@ -47,13 +47,13 @@ def test_args(tmp_path, request):
 
 @pytest.mark.parametrize("test_args", [("X_integrated_scvi", ["celltype"], None), ("X_int", ["ann_level_1", "ann_level_2", "ann_level_3"], "lab_tran")], indirect=True)
 def test_label_transfer(run_component, test_args):
-    tempfile_reference_file, reference_adata, tempfile_input_file, query_adata, obsm_features, obs_targets, output_uns_parameters = test_args
+    tempfile_reference_file, _, tempfile_input_file, _, obsm_features, obs_targets, output_uns_parameters = test_args
 
     args = [
-        "--input", tempfile_input_file.name,
+        "--input", str(tempfile_input_file),
         "--modality", "rna",
         "--input_obsm_features", obsm_features,
-        "--reference", tempfile_reference_file.name,
+        "--reference", str(tempfile_reference_file),
         "--reference_obsm_features", obsm_features,
         "--reference_obs_targets", ",".join(obs_targets),
         "--output", "output.h5mu",
@@ -83,14 +83,16 @@ def test_label_transfer(run_component, test_args):
 
 
 @pytest.mark.parametrize("test_args", [("X_int", ["ann_level_1", "ann_level_2", "ann_level_3"], "lab_tran")], indirect=True)
-def test_retraining(run_component, test_args):
-    tempfile_reference_file, reference_adata, tempfile_input_file, query_adata, obsm_features, obs_targets, output_uns_parameters = test_args
+def test_retraining(run_component, test_args, tmp_path):
+    output_path = tmp_path / "output.h5mu"
+    output2_path = tmp_path / "output2.h5mu"
+    tempfile_reference_file, _, tempfile_input_file, _, obsm_features, obs_targets, output_uns_parameters = test_args
 
     # Train first 2 targets
     args = [
         "--modality", "rna",
         "--input_obsm_features", obsm_features,
-        "--reference", tempfile_reference_file.name,
+        "--reference", str(tempfile_reference_file),
         "--reference_obsm_features", obsm_features,
         "--model_output", "model_retraining"]
     
@@ -98,27 +100,27 @@ def test_retraining(run_component, test_args):
         args.extend(["--output_uns_parameters", output_uns_parameters])
     
     args1 = args + [
-        "--input", tempfile_input_file.name,
-        "--output", "output.h5mu",
+        "--input", str(tempfile_input_file),
+        "--output", str(output_path),
         "--reference_obs_targets", ",".join(obs_targets[:2]),
         "--max_depth", "6"]
     run_component(args1)
 
-    assert Path("output.h5mu").is_file()
+    assert output_path.is_file()
 
     # Add more targets
     # Now the code should use 2 previously trained models,
     # and train only the remaining targets
     args2 = args + [
-        "--input", "output.h5mu",
-        "--output", "output2.h5mu",
+        "--input", str(output_path),
+        "--output", str(output2_path),
         "--reference_obs_targets", ",".join(obs_targets),
         "--max_depth", "4"]
     run_component(args2)
 
-    assert Path("output2.h5mu").is_file()
+    assert output2_path.is_file()
 
-    output_data = mudata.read_h5mu("output2.h5mu")
+    output_data = mudata.read_h5mu(output2_path)
 
     for target in obs_targets:
         assert f"{target}_pred" in output_data.mod["rna"].obs, f"Predictions are missing from output\noutput: {output_data.mod['rna'].obs}"
@@ -133,4 +135,4 @@ def test_retraining(run_component, test_args):
 
 
 if __name__ == '__main__':
-    exit(pytest.main([__file__]))
+    sys.exit(pytest.main([__file__]))

@@ -47,7 +47,7 @@ functionality:
   test_resources:
     - type: bash_script
       path: test.sh
-    - path: ../../../resources_test/cellranger_tiny_bcl/bcl2
+    - path: /resources_test/cellranger_tiny_bcl/bcl2
 platforms:
   - type: docker
     image: ghcr.io/data-intuitive/bclconvert:3.10

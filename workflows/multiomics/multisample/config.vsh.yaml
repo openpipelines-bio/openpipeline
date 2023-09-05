@@ -81,6 +81,6 @@ functionality:
     - type: nextflow_script
       path: main.nf
       entrypoint: test_wf
-    - path: ../../../resources_test/concat_test_data
-    - path: ../../../resources_test/10x_5k_anticmv
+    - path: /resources_test/concat_test_data
+    - path: /resources_test/10x_5k_anticmv
 

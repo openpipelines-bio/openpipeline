@@ -1,7 +1,7 @@
+import sys
+import pytest
 import mudata as mu
 import numpy as np
-import pytest
-import sys
 
 ## VIASH START
 meta = {
@@ -11,10 +11,9 @@ meta = {
 ## VIASH END
 
 orig_input = f"{meta['resources_dir']}/pbmc_1k_protein_v3/pbmc_1k_protein_v3_filtered_feature_bc_matrix.h5mu"
-input = "input.h5mu"
-output = "output.h5mu"
 
-def run_test(run_component, tmp_path):
+def test_regress_out(run_component, tmp_path):
+    input = tmp_path / "input.h5mu"
     output = tmp_path / "output.h5mu"
 
     # add column to obs
