@@ -129,6 +129,8 @@
 
 * `integrate/scvi`: Ensure output has the same dimensionality as the input (PR #524).
 
+* `mapping/bd_rhapsody`: Fix `--dryrun` argument not working (PR #534).
+
 # openpipelines 0.9.0
 
 ## BREAKING CHANGES

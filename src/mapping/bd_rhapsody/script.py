@@ -381,15 +381,15 @@ def main(par: dict[str, Any], meta: dict[str, Any]):
         if not par["dryrun"]:
             cmd = ["cwl-runner"] + proc_pars + [cwl_file, os.path.basename(config_file)]
 
-        env = dict(os.environ)
-        env["TMPDIR"] = temp_dir
+            env = dict(os.environ)
+            env["TMPDIR"] = temp_dir
 
-        logger.info("> " + ' '.join(cmd))
-        _ = subprocess.check_call(
-            cmd,
-            cwd=os.path.dirname(config_file),
-            env=env
-        )
+            logger.info("> " + ' '.join(cmd))
+            _ = subprocess.check_call(
+                cmd,
+                cwd=os.path.dirname(config_file),
+                env=env
+            )
 
         # extracting feature ids from references
         # extract info from reference files (while they still exist)
@@ -397,23 +397,25 @@ def main(par: dict[str, Any], meta: dict[str, Any]):
         feature_types_file = os.path.join(par["output"], "feature_types.tsv")
         feature_df.to_csv(feature_types_file, sep="\t", index=False)
 
-    # look for counts file
-    if not par["sample_prefix"]:
-        par["sample_prefix"] = "sample"
-    counts_filename = par["sample_prefix"] + "_RSEC_MolsPerCell.csv"
-    
-    if par["sample_tags_version"]:
-        counts_filename = "Combined_" + counts_filename
-    counts_file = os.path.join(par["output"], counts_filename)
-    
-    if not os.path.exists(counts_file):
-        raise ValueError(f"Could not find output counts file '{counts_filename}'")
 
-    # look for metrics file
-    metrics_filename = par["sample_prefix"] + "_Metrics_Summary.csv"
-    metrics_file = os.path.join(par["output"], metrics_filename)
-    if not os.path.exists(metrics_file):
-        raise ValueError(f"Could not find output metrics file '{metrics_filename}'")
+    if not par["dryrun"]:
+        # look for counts file
+        if not par["sample_prefix"]:
+            par["sample_prefix"] = "sample"
+        counts_filename = par["sample_prefix"] + "_RSEC_MolsPerCell.csv"
+        
+        if par["sample_tags_version"]:
+            counts_filename = "Combined_" + counts_filename
+        counts_file = os.path.join(par["output"], counts_filename)
+        
+        if not os.path.exists(counts_file):
+            raise ValueError(f"Could not find output counts file '{counts_filename}'")
+
+        # look for metrics file
+        metrics_filename = par["sample_prefix"] + "_Metrics_Summary.csv"
+        metrics_file = os.path.join(par["output"], metrics_filename)
+        if not os.path.exists(metrics_file):
+            raise ValueError(f"Could not find output metrics file '{metrics_filename}'")
 
 if __name__ == "__main__":
     main(par, meta)
