@@ -674,9 +674,9 @@ RUN apt-get update && apt-get install -y wget && \
   chmod +x /usr/bin/cellbender_in_conda
 
 LABEL org.opencontainers.image.description="Companion container for running component correction cellbender_remove_background"
-LABEL org.opencontainers.image.created="2023-09-05T12:25:45Z"
+LABEL org.opencontainers.image.created="2023-09-05T12:30:19Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="2db0a7c4ab9631347df0db42f885149852ea99af"
+LABEL org.opencontainers.image.revision="fdddb509ae9b91b27e646e212c818e1ddfc89699"
 LABEL org.opencontainers.image.version="main_build"
 
 VIASHDOCKER
