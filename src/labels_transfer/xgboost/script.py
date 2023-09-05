@@ -173,7 +173,7 @@ def build_ref_classifiers(adata_reference, targets, model_path,
     if eval_verbosity < 0 or eval_verbosity > 2:
         raise ValueError("`eval_verbosity` should be an integer between 0 and 2.")
 
-    train_data = get_reference_features(adata_reference, par)
+    train_data = get_reference_features(adata_reference, par, logger)
 
     if not os.path.exists(model_path):
         os.makedirs(model_path, exist_ok=True)
@@ -263,7 +263,7 @@ def project_labels(
     if (uncertainty_thresh is not None) and (uncertainty_thresh < 0 or uncertainty_thresh > 1):
         raise ValueError(f'`uncertainty_thresh` must be `None` or between 0 and 1.')
 
-    query_data = get_query_features(query_dataset, par)
+    query_data = get_query_features(query_dataset, par, logger)
 
     # Predict labels and probabilities
     query_dataset.obs[annotation_column_name] = cell_type_classifier_model.predict(query_data)

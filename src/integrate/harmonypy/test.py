@@ -28,7 +28,7 @@ def test_harmonypy(run_component, tmp_path):
 
     # check output
     input_data = mudata.read_h5mu(input_file)
-    output_data = mudata.read_h5mu("output.h5mu")
+    output_data = mudata.read_h5mu(output_path)
     np.testing.assert_array_equal(output_data.mod['rna'].X.data, input_data.mod['rna'].X.data)
     np.testing.assert_array_equal(input_data.mod['rna'].obsm['X_pca'], output_data.mod['rna'].obsm['X_pca'])
     assert 'X_pca_int' in output_data.mod['rna'].obsm

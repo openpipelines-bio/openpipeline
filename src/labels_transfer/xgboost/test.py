@@ -20,8 +20,10 @@ input_file = f"{meta['resources_dir']}/pbmc_1k_protein_v3/pbmc_1k_protein_v3_fil
 def test_args(tmp_path, request):
     obsm_features, obs_targets, output_uns_parameters = request.param
 
-    # read reference
     tempfile_reference_file = tmp_path / "reference.h5ad"
+    tempfile_input_file = tmp_path / "input.h5mu"
+
+    # read reference
     reference_adata = anndata.read_h5ad(reference_file)
 
     # generate reference obs targets
@@ -30,19 +32,18 @@ def test_args(tmp_path, request):
         reference_adata.obs[target] = np.random.choice(class_names, size=reference_adata.n_obs)
 
     # read input query
-    tempfile_input_file = tmp_path / "input.h5mu"
-    input_data = mudata.read_h5mu(input_file)
-    adata = input_data.mod["rna"]
+    input_mudata = mudata.read_h5mu(input_file)
+    input_rna_adata = input_mudata.mod["rna"]
     
     # generate features
     reference_adata.obsm[obsm_features] = np.random.normal(size=(reference_adata.n_obs, 30))
-    adata.obsm[obsm_features] = np.random.normal(size=(adata.n_obs, 30))
+    input_rna_adata.obsm[obsm_features] = np.random.normal(size=(input_rna_adata.n_obs, 30))
 
     # write files
-    reference_adata.write(tempfile_reference_file.name)
-    input_data.write(tempfile_input_file.name)
+    reference_adata.write_h5ad(str(tempfile_reference_file))
+    input_mudata.write_h5mu(str(tempfile_input_file))
 
-    return tempfile_reference_file, reference_adata, tempfile_input_file, adata, obsm_features, obs_targets, output_uns_parameters
+    return tempfile_reference_file, reference_adata, tempfile_input_file, input_rna_adata, obsm_features, obs_targets, output_uns_parameters
 
 
 @pytest.mark.parametrize("test_args", [("X_integrated_scvi", ["celltype"], None), ("X_int", ["ann_level_1", "ann_level_2", "ann_level_3"], "lab_tran")], indirect=True)
@@ -84,6 +85,7 @@ def test_label_transfer(run_component, test_args):
 
 @pytest.mark.parametrize("test_args", [("X_int", ["ann_level_1", "ann_level_2", "ann_level_3"], "lab_tran")], indirect=True)
 def test_retraining(run_component, test_args, tmp_path):
+    output_model = tmp_path / "model_retraining"
     output_path = tmp_path / "output.h5mu"
     output2_path = tmp_path / "output2.h5mu"
     tempfile_reference_file, _, tempfile_input_file, _, obsm_features, obs_targets, output_uns_parameters = test_args
@@ -94,7 +96,7 @@ def test_retraining(run_component, test_args, tmp_path):
         "--input_obsm_features", obsm_features,
         "--reference", str(tempfile_reference_file),
         "--reference_obsm_features", obsm_features,
-        "--model_output", "model_retraining"]
+        "--model_output", str(output_model)]
     
     if output_uns_parameters is not None:
         args.extend(["--output_uns_parameters", output_uns_parameters])

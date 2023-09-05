@@ -20,13 +20,13 @@ input_data_path = f"{meta['resources_dir']}/pbmc_1k_protein_v3_filtered_feature_
 
 
 @pytest.fixture
-def mudata_w_random_boolean_column(input_data_random_boolean_column, tmp_path):
+def mudata_w_random_boolean_column(tmp_path):
     input_data = md.read_h5mu(input_data_path)
     input_var = input_data.mod['rna'].var
     input_var["custom"] = np.random.choice([True, False], len(input_var), p=[0.8, 0.2])
 
     new_input_path = tmp_path / "input_with_custom_col.h5mu"
-    input_data_random_boolean_column.write(new_input_path)
+    input_data.write(new_input_path)
     return new_input_path, input_data
 
 def test_add_qc(run_component):

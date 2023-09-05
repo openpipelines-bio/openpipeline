@@ -18,7 +18,6 @@ meta = {
 
 meta['cpus'] = 1 if not meta['cpus'] else meta['cpus']
 
-resources_dir = meta["resources_dir"]
 # Note: the .var for these samples have no overlap, so there are no conflicting annotations
 # for the features that need to be handled by the concat component.
 # The tests below that specifically test the concatenation of conflicting data need to introduce
