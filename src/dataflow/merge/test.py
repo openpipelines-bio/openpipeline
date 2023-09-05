@@ -1,10 +1,7 @@
 import sys
-
-from tempfile import NamedTemporaryFile
-from pathlib import Path
 import pytest
-import subprocess
 from pathlib import Path
+import subprocess
 import mudata as md
 import pandas as pd
 import numpy as np
@@ -18,10 +15,9 @@ meta = {
 }
 ## VIASH END
 
-
 resources_dir = meta["resources_dir"]
-input_sample1_file = f"{resources_dir}/pbmc_1k_protein_v3_filtered_feature_bc_matrix_rna.h5mu"
-input_sample2_file = f"{resources_dir}/pbmc_1k_protein_v3_filtered_feature_bc_matrix_prot.h5mu"
+input_sample1_file = f"{meta['resources_dir']}/pbmc_1k_protein_v3_filtered_feature_bc_matrix_rna.h5mu"
+input_sample2_file = f"{meta['resources_dir']}/pbmc_1k_protein_v3_filtered_feature_bc_matrix_prot.h5mu"
 
 @pytest.fixture
 def mudata_non_overlapping_observations(request, tmp_path):
@@ -139,21 +135,22 @@ def test_boolean_and_na_types(run_component, mudata_with_extra_var_column, expec
     assert pd.isna(merged_data.mod[second_sample_mod].var.loc['CD3_TotalSeqB']['test'])
 
 
-def test_same_modalities_raises(run_component):
+def test_same_modalities_raises(run_component, tmp_path):
     """
     Raise when trying to merge modalities with the same name.
     """
-    with NamedTemporaryFile('w', suffix=".h5mu") as tempfile:
-        data_sample1 = md.read(input_sample1_file)
-        data_sample1.mod = {'prot': data_sample1.mod['rna']}
-        data_sample1.write(tempfile.name, compression="gzip")
-        with pytest.raises(subprocess.CalledProcessError) as err:
-            run_component([
-                "--input", tempfile.name,
-                "--input", input_sample2_file,
-                "--output", "merge.h5mu"])
-        assert re.search(r"ValueError: Modality 'prot' was found in more than 1 sample\.",
-                  err.value.stdout.decode('utf-8'))
+    tempfile = tmp_path / "temp.h5mu"
+    data_sample1 = md.read(input_sample1_file)
+    data_sample1.mod = {'prot': data_sample1.mod['rna']}
+    data_sample1.write(tempfile.name, compression="gzip")
+    
+    with pytest.raises(subprocess.CalledProcessError) as err:
+        run_component([
+            "--input", tempfile.name,
+            "--input", input_sample2_file,
+            "--output", "merge.h5mu"])
+    assert re.search(r"ValueError: Modality 'prot' was found in more than 1 sample\.",
+                err.value.stdout.decode('utf-8'))
 
 if __name__ == '__main__':
     sys.exit(pytest.main([__file__]))

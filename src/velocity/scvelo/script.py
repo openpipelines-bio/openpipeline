@@ -1,20 +1,13 @@
+import sys
 import scvelo
 import mudata
-import logging
 from contextlib import redirect_stdout
 from pathlib import Path
 import matplotlib as mpl
-from collections import defaultdict
-from sys import stdout
-
-logger = logging.getLogger()
-logger.setLevel(logging.INFO)
-console_handler = logging.StreamHandler(stdout)
-logFormatter = logging.Formatter("%(asctime)s %(levelname)-8s %(message)s")
-console_handler.setFormatter(logFormatter)
-logger.addHandler(console_handler)
 
 ## VIASH START
+from collections import defaultdict
+
 def none_factory():
     return None
 
@@ -25,6 +18,11 @@ par = defaultdict(none_factory, {
     'n_neighbors': 30
 })
 ## VIASH END
+
+sys.path.append(meta["resources_dir"])
+from setup_logger import setup_logger
+logger = setup_logger()
+
 mpl.rcParams['savefig.dpi']=150
 
 # Script must be wrapped into a main function because scvelo spawn subprocesses

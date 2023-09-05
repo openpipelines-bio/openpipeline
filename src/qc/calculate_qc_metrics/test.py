@@ -13,32 +13,23 @@ meta = {
     'config': './src/qc/calculate_qc_metrics/config.vsh.yaml',
     'cpus': 2
 }
-
-
 ## VIASH END
 
-@pytest.fixture
-def resources_dir():
-    return meta["resources_dir"]
+
+input_data_path = f"{meta['resources_dir']}/pbmc_1k_protein_v3_filtered_feature_bc_matrix.h5mu"
+
 
 @pytest.fixture
-def input_data_path(resources_dir):
-    return f"{resources_dir}/pbmc_1k_protein_v3_filtered_feature_bc_matrix.h5mu"
-
-@pytest.fixture
-def input_data_random_boolean_column(input_data_path):
+def mudata_w_random_boolean_column(tmp_path):
     input_data = md.read_h5mu(input_data_path)
     input_var = input_data.mod['rna'].var
     input_var["custom"] = np.random.choice([True, False], len(input_var), p=[0.8, 0.2])
-    return input_data
 
-@pytest.fixture
-def input_data_random_boolean_column_path(input_data_random_boolean_column, tmp_path):
     new_input_path = tmp_path / "input_with_custom_col.h5mu"
-    input_data_random_boolean_column.write(new_input_path)
-    return new_input_path
+    input_data.write(new_input_path)
+    return new_input_path, input_data
 
-def test_add_qc(run_component, input_data_path):
+def test_add_qc(run_component):
     run_component([
         "--input", input_data_path,
         "--output", "foo.h5mu",
@@ -59,36 +50,42 @@ def test_add_qc(run_component, input_data_path):
     assert "obs_mean" in var
     assert "total_counts" in var
 
-def test_calculcate_qc_var_qc_metrics(run_component, input_data_random_boolean_column_path):
+def test_calculcate_qc_var_qc_metrics(run_component, mudata_w_random_boolean_column, tmp_path):
+    input_path, _ = mudata_w_random_boolean_column
+
+    output_path = tmp_path / "foo.h5mu"
     run_component([
-        "--input", input_data_random_boolean_column_path,
-        "--output", "foo.h5mu",
+        "--input", str(input_path),
+        "--output", str(output_path),
         "--modality", "rna",
         "--top_n_vars", "10,20,90",
         "--var_qc_metrics", "custom",
         ])
-    assert Path("foo.h5mu").is_file()
-    data_with_qc = md.read("foo.h5mu")
+    assert output_path.is_file()
+    data_with_qc = md.read(output_path)
     for qc_metric in ('pct_custom', 'total_counts_custom'):
         assert qc_metric in data_with_qc.mod['rna'].obs
 
 def test_compare_scanpy(run_component,
-                        input_data_random_boolean_column_path,
-                        input_data_random_boolean_column):
+                        mudata_w_random_boolean_column,
+                        tmp_path):
+    input_path, input_mudata = mudata_w_random_boolean_column
+    output_path = tmp_path / "foo.h5mu"
+
     run_component([
-        "--input", input_data_random_boolean_column_path,
-        "--output", "foo.h5mu",
+        "--input", str(input_path),
+        "--output", str(output_path),
         "--modality", "rna",
         "--top_n_vars", "10,20,90",
         "--var_qc_metrics", "custom",
         ])
-    assert Path("foo.h5mu").is_file()
+    assert output_path.is_file()
 
-    component_data = md.read("foo.h5mu")
+    component_data = md.read(output_path)
     rna_mod = component_data.mod['rna']
 
     sc.pp.calculate_qc_metrics(
-        input_data_random_boolean_column.mod['rna'],
+        input_mudata.mod['rna'],
         expr_type="counts",
         var_type="genes",
         qc_vars=["custom"],
@@ -97,7 +94,7 @@ def test_compare_scanpy(run_component,
         inplace=True,
         log1p=False
     )
-    scanpy_var =  input_data_random_boolean_column.mod['rna'].var
+    scanpy_var =  input_mudata.mod['rna'].var
     component_var = rna_mod.var
 
     vars_to_compare = {
@@ -112,7 +109,7 @@ def test_compare_scanpy(run_component,
                             check_names=False)
 
 
-    scanpy_obs =  input_data_random_boolean_column.mod['rna'].obs
+    scanpy_obs =  input_mudata.mod['rna'].obs
     component_obs = rna_mod.obs
     obs_to_compare = {
         'num_nonzero_vars': 'n_genes_by_counts',

@@ -1,6 +1,6 @@
 #!/bin/bash
 
-
+set -e
 
 echo ">> Running $meta_functionality_name in Targeted mode"
 "$meta_executable" \

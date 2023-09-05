@@ -14,19 +14,16 @@ meta = {
     'cpus': 2,
     'config': '/home/di/code/openpipeline/src/dataflow/concat/config.vsh.yaml'
 }
-
-
 ## VIASH END
 
 meta['cpus'] = 1 if not meta['cpus'] else meta['cpus']
 
-resources_dir = meta["resources_dir"]
 # Note: the .var for these samples have no overlap, so there are no conflicting annotations
 # for the features that need to be handled by the concat component.
 # The tests below that specifically test the concatenation of conflicting data need to introduce
 # the conflict.
-input_sample1_file = f"{resources_dir}/e18_mouse_brain_fresh_5k_filtered_feature_bc_matrix_subset_unique_obs.h5mu"
-input_sample2_file = f"{resources_dir}/human_brain_3k_filtered_feature_bc_matrix_subset_unique_obs.h5mu"
+input_sample1_file = f"{meta['resources_dir']}/e18_mouse_brain_fresh_5k_filtered_feature_bc_matrix_subset_unique_obs.h5mu"
+input_sample2_file = f"{meta['resources_dir']}/human_brain_3k_filtered_feature_bc_matrix_subset_unique_obs.h5mu"
 
 @pytest.fixture
 def mudata_without_genome(tmp_path, request):
@@ -97,8 +94,8 @@ def test_concatenate_samples_with_same_observation_ids_raises(run_component):
                 "---cpus", str(meta["cpus"]),
                 "--output_compression", "gzip"
                 ])
-    re.search(r"ValueError: Observations are not unique across samples\.",
-            err.value.stdout.decode('utf-8'))
+        assert "ValueError: Observations are not unique across samples." in \
+            err.value.stdout.decode('utf-8')
 
 @pytest.mark.parametrize("mudata_without_genome",
                           [([input_sample1_file], ["rna", "atac"])],
@@ -353,8 +350,8 @@ def test_concat_invalid_h5_error_includes_path(run_component, tmp_path):
                 "--other_axis_mode", "move",
                 "---cpus", str(meta["cpus"])
                 ])
-    assert re.search(rf"OSError: Failed to load .*{str(empty_file.name)}\. Is it a valid h5 file?",
-                     err.value.stdout.decode('utf-8'))
+        assert re.search(rf"OSError: Failed to load .*{str(empty_file)}\. Is it a valid h5 file?",
+            err.value.stdout.decode('utf-8'))
 
 if __name__ == '__main__':
-    sys.exit(pytest.main([__file__]))
+    sys.exit(pytest.main([__file__, "-v"]))

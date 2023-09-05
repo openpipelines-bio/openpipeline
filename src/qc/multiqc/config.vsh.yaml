@@ -25,7 +25,7 @@ functionality:
   test_resources:
     - type: bash_script
       path: test.sh
-    - path: ../../../resources_test/10x_5k_anticmv/fastqc/
+    - path: /resources_test/10x_5k_anticmv/fastqc/
 platforms:
   - type: docker
     image: python:3.8-slim

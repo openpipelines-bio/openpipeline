@@ -32,7 +32,7 @@ functionality:
   test_resources:
     - type: python_script
       path: run_test.py
-    - path: ../../../resources_test/concat_test_data/e18_mouse_brain_fresh_5k_filtered_feature_bc_matrix_subset_unique_obs.h5mu
+    - path: /resources_test/concat_test_data/e18_mouse_brain_fresh_5k_filtered_feature_bc_matrix_subset_unique_obs.h5mu
 platforms:
   - type: docker
     image: python:3.10-slim

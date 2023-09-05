@@ -1,6 +1,5 @@
-from mudata import read_h5ad, write_h5ad
 import sys
-import logging
+from mudata import read_h5ad, write_h5ad
 import shutil
 from pathlib import Path
 
@@ -29,17 +28,14 @@ par["input"] = "/tmp/input.h5mu"
 ## VIASH END
 
 sys.path.append(meta["resources_dir"])
-from compress_h5mu import compress_h5mu
+from setup_logger import setup_logger
+logger = setup_logger()
 
-logger = logging.getLogger()
-logger.setLevel(logging.INFO)
-console_handler = logging.StreamHandler(sys.stdout)
-logFormatter = logging.Formatter("%(asctime)s %(levelname)-8s %(message)s")
-console_handler.setFormatter(logFormatter)
-logger.addHandler(console_handler)
+from compress_h5mu import compress_h5mu
 
 def main():
     input_file, output_file, mod_name = Path(par["input"]), Path(par["output"]), par['modality']
+
     logger.info('Reading input file %s, modality %s.', input_file, mod_name)
     mod = read_h5ad(input_file, mod=mod_name)
     for layer in par['layer']:
@@ -49,8 +45,8 @@ def main():
             raise ValueError(f"Layer '{layer}' is not present in modality {mod_name}.")
         logger.info('Deleting layer %s from modality %s.', layer, mod_name)
         del mod.layers[layer]
+
     logger.info('Writing output to %s.', par['output'])
-    
     output_file_uncompressed = output_file.with_name(output_file.stem + "_uncompressed.h5mu") \
         if par["output_compression"] else output_file
     shutil.copyfile(par['input'], output_file_uncompressed)
@@ -58,6 +54,7 @@ def main():
     if par["output_compression"]:
         compress_h5mu(output_file_uncompressed, output_file, compression=par["output_compression"])
         output_file_uncompressed.unlink()
+
     logger.info('Finished.')
 
 if __name__ == "__main__":
