@@ -9,18 +9,22 @@ par = {
     'obsm_input': 'X_pca',
     'n_neighbors_within_batch': 3,
     'n_trim': None,
-    'n_pcs': 50
+    'n_pcs': 50,
+    'output': 'output.h5mu',
+    'output_compression': 'gzip',
+    'obsp_connectivities': 'my_connectivities',
+    'obsp_distances': 'my_distances',
+    'uns_neighbors': 'my_neighbors'
 }
 ### VIASH END
 
-# todo: make use of --uns_output, --obsp_connectivities and --obsp_distances
-# to configure output field
+mudata = read_h5mu(par["input"])
+adata = mudata.mod[par["modality"]]
 
-h5mu_data = read_h5mu(par["input"])
-modality_name = par["modality"]
-modality = h5mu_data.mod[modality_name]
+# copy data
+tmp_adata = adata.copy()
 bbknn.bbknn(
-    modality,
+    tmp_adata,
     use_rep=par["obsm_input"],
     batch_key = par["obs_batch"],
     neighbors_within_batch=par["n_neighbors_within_batch"],
@@ -28,4 +32,12 @@ bbknn.bbknn(
     trim=par["n_trim"]
 )
 
-h5mu_data.write_h5mu(par["output"], compression=par["output_compression"])
+# store output
+adata.obsp[par["obsp_connectivities"]] = tmp_adata.obsp["connectivities"]
+adata.obsp[par["obsp_distances"]] = tmp_adata.obsp["distances"]
+adata.uns[par["uns_neighbors"]] = tmp_adata.uns["neighbors"]
+adata.uns[par["uns_neighbors"]]["distances_key"] = par["obsp_distances"]
+adata.uns[par["uns_neighbors"]]["connectivities_key"] = par["obsp_connectivities"]
+
+# write to file
+mudata.write_h5mu(par["output"], compression=par["output_compression"])

@@ -131,6 +131,8 @@
 
 * `mapping/bd_rhapsody`: Fix `--dryrun` argument not working (PR #534).
 
+* `neighbors/bbknn`: Fix `--uns_output`, `--obsp_distances` and `--obsp_connectivities` not being processed correctly (PR #535).
+
 # openpipelines 0.9.0
 
 ## BREAKING CHANGES
