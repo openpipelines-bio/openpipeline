@@ -184,5 +184,5 @@ info:
   output: "/home/runner/work/openpipeline/openpipeline/target/docker/convert/from_cellranger_multi_to_h5mu"
   executable: "/home/runner/work/openpipeline/openpipeline/target/docker/convert/from_cellranger_multi_to_h5mu/from_cellranger_multi_to_h5mu"
   viash_version: "0.7.5"
-  git_commit: "bad3de1fde50f131f1c3a392e5bb2b11d22779fd"
+  git_commit: "bc9c07361c06f876b61e07af340902e5cefa0c4b"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"

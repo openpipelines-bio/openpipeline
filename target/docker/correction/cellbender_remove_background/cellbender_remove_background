@@ -674,9 +674,9 @@ RUN apt-get update && apt-get install -y wget && \
   chmod +x /usr/bin/cellbender_in_conda
 
 LABEL org.opencontainers.image.description="Companion container for running component correction cellbender_remove_background"
-LABEL org.opencontainers.image.created="2023-09-06T08:05:41Z"
+LABEL org.opencontainers.image.created="2023-09-06T12:50:31Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="bad3de1fde50f131f1c3a392e5bb2b11d22779fd"
+LABEL org.opencontainers.image.revision="bc9c07361c06f876b61e07af340902e5cefa0c4b"
 LABEL org.opencontainers.image.version="0.10.0"
 
 VIASHDOCKER
@@ -2050,7 +2050,7 @@ with tempfile.TemporaryDirectory(prefix="cellbender-", dir=meta["temp_dir"]) as 
 
     logger.info("CellBender output format:", adata_out)
 
-    # AnnData object with n_obs × n_vars = 6794880 × 33538
+    # AnnData object with n_obs x n_vars = 6794880 x 33538
     #     obs: 'cellbender_analyzed'
     #     var: 'ambient_expression', 'feature_type', 'genome', 'gene_id', 'cellbender_analyzed'
     #     uns: 'background_fraction', 'barcode_indices_for_latents', 'cell_probability', 'cell_size', 'droplet_efficiency', 'gene_expression_encoding', 

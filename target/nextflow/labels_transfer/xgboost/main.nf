@@ -735,7 +735,7 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
     "platform" : "nextflow",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/labels_transfer/xgboost",
     "viash_version" : "0.7.5",
-    "git_commit" : "bad3de1fde50f131f1c3a392e5bb2b11d22779fd",
+    "git_commit" : "bc9c07361c06f876b61e07af340902e5cefa0c4b",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))
@@ -911,7 +911,7 @@ def build_ref_classifiers(adata_reference, targets, model_path,
     Example:
     \\`\\`\\`
     >>> adata
-    AnnData object with n_obs × n_vars = 700 × 765
+    AnnData object with n_obs x n_vars = 700 x 765
     obs: "ann_finest_level", "ann_level_1"
     
     >>> os.listdir("/path/to/model")

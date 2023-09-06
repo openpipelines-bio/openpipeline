@@ -159,7 +159,7 @@ with tempfile.TemporaryDirectory(prefix="cellbender-", dir=meta["temp_dir"]) as 
 
     logger.info("CellBender output format:", adata_out)
 
-    # AnnData object with n_obs × n_vars = 6794880 × 33538
+    # AnnData object with n_obs x n_vars = 6794880 x 33538
     #     obs: 'cellbender_analyzed'
     #     var: 'ambient_expression', 'feature_type', 'genome', 'gene_id', 'cellbender_analyzed'
     #     uns: 'background_fraction', 'barcode_indices_for_latents', 'cell_probability', 'cell_size', 'droplet_efficiency', 'gene_expression_encoding', 

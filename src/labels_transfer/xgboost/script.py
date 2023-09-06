@@ -153,7 +153,7 @@ def build_ref_classifiers(adata_reference, targets, model_path,
     Example:
     ```
     >>> adata
-    AnnData object with n_obs × n_vars = 700 × 765
+    AnnData object with n_obs x n_vars = 700 x 765
     obs: "ann_finest_level", "ann_level_1"
     
     >>> os.listdir("/path/to/model")
