@@ -1,7 +1,7 @@
 functionality:
   name: "scanorama"
   namespace: "integrate"
-  version: "0.9.0"
+  version: "0.10.0"
   authors:
   - name: "Dries De Maeyer"
     roles:
@@ -177,7 +177,7 @@ functionality:
     dest: "par"
   resources:
   - type: "python_script"
-    path: "./script.py"
+    path: "script.py"
     is_executable: true
   description: "Use Scanorama to integrate different experiments.\n"
   test_resources:
@@ -185,7 +185,7 @@ functionality:
     path: "test.py"
     is_executable: true
   - type: "file"
-    path: "../../../resources_test/pbmc_1k_protein_v3/pbmc_1k_protein_v3_mms.h5mu"
+    path: "resources_test/pbmc_1k_protein_v3/pbmc_1k_protein_v3_mms.h5mu"
   info: null
   status: "enabled"
   requirements:
@@ -212,18 +212,24 @@ platforms:
   - type: "python"
     user: false
     packages:
-    - "mudata~=0.2.0"
-    - "anndata~=0.8.0"
+    - "mudata~=0.2.3"
+    - "anndata~=0.9.1"
     - "scanpy~=1.9.2"
     - "scanorama"
+    upgrade: true
+  test_setup:
+  - type: "python"
+    user: false
+    packages:
+    - "viashpy"
     upgrade: true
   entrypoint: []
   cmd: null
 - type: "nextflow"
   id: "nextflow"
-  variant: "vdsl3"
   directives:
     label:
+    - "midcpu"
     - "highmem"
     tag: "$id"
   auto:
@@ -270,6 +276,6 @@ info:
   platform: "nextflow"
   output: "/home/runner/work/openpipeline/openpipeline/target/nextflow/integrate/scanorama"
   executable: "/home/runner/work/openpipeline/openpipeline/target/nextflow/integrate/scanorama/scanorama"
-  viash_version: "0.7.4"
-  git_commit: "116e567506114ba153923d1b92db2281741c974a"
+  viash_version: "0.7.5"
+  git_commit: "bad3de1fde50f131f1c3a392e5bb2b11d22779fd"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"

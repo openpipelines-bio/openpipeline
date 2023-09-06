@@ -21,7 +21,7 @@
           },
           "obsm_key": {
             "type": "string",
-            "description": ".obms entry to move to .obs","help_text": ".obms entry to move to .obs\n",
+            "description": "Key of a data structure to move from `.obsm` to `.obs`.",
             "default": ""
           }
           

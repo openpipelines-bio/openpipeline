@@ -5,11 +5,11 @@ functionality:
   info:
     name: Cell Ranger mapping
   authors:
-    - __merge__: ../../../src/authors/angela_pisco.yaml
+    - __merge__: /src/authors/angela_pisco.yaml
       roles: [ author ]
-    - __merge__: ../../../src/authors/robrecht_cannoodt.yaml
+    - __merge__: /src/authors/robrecht_cannoodt.yaml
       roles: [ author, maintainer ]
-    - __merge__: ../../../src/authors/dries_de_maeyer.yaml
+    - __merge__: /src/authors/dries_de_maeyer.yaml
       roles: [ author ]
   argument_groups:
     - name: Inputs
@@ -101,4 +101,4 @@ functionality:
     - type: nextflow_script
       path: main.nf
       entrypoint: test_wf
-    - path: ../../../resources_test/cellranger_tiny_fastq
+    - path: /resources_test/cellranger_tiny_fastq

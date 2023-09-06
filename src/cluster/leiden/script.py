@@ -1,9 +1,7 @@
-import logging
-from sys import stdout
+import sys
 import mudata as mu
 import pandas as pd
 import scanpy as sc
-from functools import partial
 
 ## VIASH START
 par = {
@@ -19,12 +17,9 @@ par = {
 }
 ## VIASH END
 
-logger = logging.getLogger()
-logger.setLevel(logging.INFO)
-console_handler = logging.StreamHandler(stdout)
-logFormatter = logging.Formatter("%(asctime)s %(levelname)-8s %(message)s")
-console_handler.setFormatter(logFormatter)
-logger.addHandler(console_handler)
+sys.path.append(meta["resources_dir"])
+from setup_logger import setup_logger
+logger = setup_logger()
 
 logger.info("Reading %s.", par["input"])
 mdata = mu.read_h5mu(par["input"])

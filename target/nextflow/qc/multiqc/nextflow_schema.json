@@ -1,7 +1,7 @@
 {
     "$schema": "http://json-schema.org/draft-07/schema",
     "title": "multiqc",
-    "description": "Component for multiqc (https://multiqc.info/)\n",
+    "description": "MultiQC aggregates results from bioinformatics analyses across many samples into a single report.\nIt searches a given directory for analysis logs and compiles a HTML report. It\u0027s a general use tool, perfect for summarising the output from numerous bioinformatics tools.\n",
     "type": "object",
     "definitions": {
       "arguments" : {
@@ -11,12 +11,12 @@
         "properties": {
           "input": {
             "type": "string",
-            "description": "Describe the input file.",
+            "description": "Inputs for MultiQC.",
             "default": ""
           },
           "output": {
             "type": "string",
-            "description": "Describe the output file.",
+            "description": "Create report in the specified output directory.",
             "default": "$id.$key.output.output"
           }
           

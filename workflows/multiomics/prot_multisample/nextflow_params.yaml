@@ -1,12 +1,12 @@
 # Inputs
 id: # please fill in - example: "concatenated"
-sample_id: # please fill in - example: ["foo"]
-input: # please fill in - example: ["dataset.h5mu"]
+input: # please fill in - example: "dataset.h5mu"
 
-# Sample ID options
-add_id_to_obs: true
-add_id_obs_output: "sample_id"
-add_id_make_observation_keys_unique: true
+# Outputs
+# output: "$id.$key.output.h5mu"
+
+# QC metrics calculation options
+top_n_vars: [50, 100, 200, 500]
 
 # Nextflow input-output arguments
 publish_dir: # please fill in - example: "output/"

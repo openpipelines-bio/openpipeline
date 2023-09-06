@@ -5,9 +5,9 @@ functionality:
   info:
     name: Cell Ranger post-processing
   authors:
-    - __merge__: ../../../src/authors/angela_pisco.yaml
+    - __merge__: /src/authors/angela_pisco.yaml
       roles: [ author ]
-    - __merge__: ../../../src/authors/robrecht_cannoodt.yaml
+    - __merge__: /src/authors/robrecht_cannoodt.yaml
       roles: [ author, maintainer ]
   argument_groups:
     - name: Inputs
@@ -33,6 +33,10 @@ functionality:
         - name: "--perform_correction"
           type: boolean_true
           description: Whether or not to run CellBender to perform count correction.
+        - name: "--cellbender_epochs"
+          type: integer
+          description: Number of epochs to run CellBender for.
+          default: 150
     - name: Filtering arguments
       arguments:
         - name: "--min_genes"
@@ -53,8 +57,5 @@ functionality:
     - type: nextflow_script
       path: main.nf
       entrypoint: test_wf2
-    - type: nextflow_script
-      path: main.nf
-      entrypoint: test_wf3
     
-    - path: ../../../resources_test/pbmc_1k_protein_v3
+    - path: /resources_test/pbmc_1k_protein_v3

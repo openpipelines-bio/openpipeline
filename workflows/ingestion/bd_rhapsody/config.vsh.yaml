@@ -18,7 +18,7 @@ functionality:
     name: BD Rhapsody
     short_description: A generic pipeline for running BD Rhapsody WTA or Targeted mapping, with support for AbSeq, VDJ and/or SMK.
   authors:
-    - __merge__: ../../../src/authors/robrecht_cannoodt.yaml
+    - __merge__: /src/authors/robrecht_cannoodt.yaml
       roles: [ maintainer ]
   argument_groups:
     - name: Inputs
@@ -151,5 +151,5 @@ functionality:
     - type: nextflow_script
       path: main.nf
       entrypoint: test_wf
-    - path: ../../../resources_test/bdrhap_5kjrt
-    - path: ../../../resources_test/reference_gencodev41_chr1/
+    - path: /resources_test/bdrhap_5kjrt
+    - path: /resources_test/reference_gencodev41_chr1/

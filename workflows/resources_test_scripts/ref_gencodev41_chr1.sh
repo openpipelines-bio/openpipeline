@@ -11,6 +11,8 @@ ID=reference_gencodev41_chr1
 OUT=resources_test/$ID
 
 
+wget "https://assets.thermofisher.com/TFS-Assets/LSG/manuals/ERCC92.zip" -O "$OUT/ERCC92.zip"
+
 NXF_VER=21.10.6 nextflow \
   run . \
   -main-script workflows/ingestion/make_reference/main.nf \

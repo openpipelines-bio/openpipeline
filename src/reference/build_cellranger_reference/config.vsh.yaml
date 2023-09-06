@@ -28,16 +28,29 @@ functionality:
   resources:
     - type: bash_script
       path: script.sh
-  # todo: add back tests once test data is pushed to s3
-  # test_resources:
-  #   - type: bash_script
-  #     path: run_test.sh
+  test_resources:
+    - type: bash_script
+      path: run_test.sh
+    - path: /resources_test/reference_gencodev41_chr1
 platforms:
   - type: docker
     image: ghcr.io/data-intuitive/cellranger:7.0
     setup:
       - type: apt
         packages: [ pigz ]
+    test_setup:
+      - type: docker
+        env:
+          - GOPATH /root/go
+          - GOBIN /root/go/bin
+          - PATH "${PATH}:/root/go/bin"
+      - type: apt
+        packages: [ golang, git ]
+      - type: docker
+        run: |
+          go install golang.org/dl/go1.20.6@latest && go1.20.6 download && \
+          git clone --branch v2.5.0 https://github.com/shenwei356/seqkit.git && \
+          cd seqkit/seqkit/ && go1.20.6 build && cp seqkit /usr/bin/ && cd ../../ && rm -rf seqkit
   - type: nextflow
     directives:
       label: [ highmem, highcpu ]

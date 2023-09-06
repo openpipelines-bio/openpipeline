@@ -33,6 +33,26 @@
             "type": "string",
             "description": ".var column containing highly variable genes. By default, do not subset genes.",
             "default": ""
+          },
+          "obs_labels": {
+            "type": "string",
+            "description": "Key in adata.obs for label information. Categories will automatically be ","help_text": "Key in adata.obs for label information. Categories will automatically be \nconverted into integer categories and saved to adata.obs[\u0027_scvi_labels\u0027].\nIf None, assigns the same label to all the data.\n",
+            "default": ""
+          },
+          "obs_size_factor": {
+            "type": "string",
+            "description": "Key in adata.obs for size factor information. Instead of using library size as a size factor,","help_text": "Key in adata.obs for size factor information. Instead of using library size as a size factor,\nthe provided size factor column will be used as offset in the mean of the likelihood.\nAssumed to be on linear scale.\n",
+            "default": ""
+          },
+          "obs_categorical_covariate": {
+            "type": "string",
+            "description": "Keys in adata.obs that correspond to categorical data. These covariates can be added in","help_text": "Keys in adata.obs that correspond to categorical data. These covariates can be added in\naddition to the batch covariate and are also treated as nuisance factors\n(i.e., the model tries to minimize their effects on the latent space).\nThus, these should not be used for biologically-relevant factors that you do _not_ want to correct for.\n",
+            "default": ""
+          },
+          "obs_continuous_covariate": {
+            "type": "string",
+            "description": "Keys in adata.obs that correspond to continuous data. These covariates can be added in","help_text": "Keys in adata.obs that correspond to continuous data. These covariates can be added in\naddition to the batch covariate and are also treated as nuisance factors\n(i.e., the model tries to minimize their effects on the latent space). Thus, these should not be\nused for biologically-relevant factors that you do _not_ want to correct for.\n",
+            "default": ""
           }
           
         }
@@ -61,6 +81,77 @@
             "type": "string",
             "description": "In which .obsm slot to store the resulting integrated embedding.",
             "default": "X_scvi_integrated"
+          }
+          
+        }
+      },
+      "scvi options" : {
+        "title": "SCVI options",
+        "type": "object",
+        "description": "No description",
+        "properties": {
+          "n_hidden_nodes": {
+            "type": "integer",
+            "description": "Number of nodes per hidden layer.",
+            "default": "128"
+          },
+          "n_dimensions_latent_space": {
+            "type": "integer",
+            "description": "Dimensionality of the latent space.",
+            "default": "30"
+          },
+          "n_hidden_layers": {
+            "type": "integer",
+            "description": "Number of hidden layers used for encoder and decoder neural-networks.",
+            "default": "2"
+          },
+          "dropout_rate": {
+            "type": "number",
+            "description": "Dropout rate for the neural networks.",
+            "default": "0.1"
+          },
+          "dispersion": {
+            "type": "string",
+            "description": "Set the behavior for the dispersion for negative binomial distributions:","help_text": "Set the behavior for the dispersion for negative binomial distributions:\n- gene: dispersion parameter of negative binomial is constant per gene across cells\n- gene-batch: dispersion can differ between different batches\n- gene-label: dispersion can differ between different labels\n- gene-cell:  dispersion can differ for every gene in every cell\n","enum": ["gene", "gene-batch", "gene-label", "gene-cell"],
+            "default": "gene"
+          },
+          "gene_likelihood": {
+            "type": "string",
+            "description": "Model used to generate the expression data from a count-based likelihood distribution.","help_text": "Model used to generate the expression data from a count-based likelihood distribution.\n- nb: Negative binomial distribution\n- zinb: Zero-inflated negative binomial distribution\n- poisson: Poisson distribution\n","enum": ["nb", "zinb", "poisson"],
+            "default": "nb"
+          }
+          
+        }
+      },
+      "variational auto-encoder model options" : {
+        "title": "Variational auto-encoder model options",
+        "type": "object",
+        "description": "No description",
+        "properties": {
+          "use_layer_normalization": {
+            "type": "string",
+            "description": "Neural networks for which to enable layer normalization. ","help_text": "Neural networks for which to enable layer normalization. \n","enum": ["encoder", "decoder", "none", "both"],
+            "default": "both"
+          },
+          "use_batch_normalization": {
+            "type": "string",
+            "description": "Neural networks for which to enable batch normalization. ","help_text": "Neural networks for which to enable batch normalization. \n","enum": ["encoder", "decoder", "none", "both"],
+            "default": "none"
+          },
+          "encode_covariates": {
+            "type": "boolean",
+            "description": "Whether to concatenate covariates to expression in encoder",
+            "default": "True"
+          },
+          "deeply_inject_covariates": {
+            "type": "boolean",
+            "description": "Whether to concatenate covariates into output of hidden layers in encoder/decoder. ","help_text": "Whether to concatenate covariates into output of hidden layers in encoder/decoder. \nThis option only applies when n_layers \u003e 1. The covariates are concatenated to\nthe input of subsequent hidden layers.\n",
+            "default": "False"
+          },
+          "use_observed_lib_size": {
+            "type": "boolean",
+            "description": "Use observed library size for RNA as scaling factor in mean of conditional distribution.","help_text": "Use observed library size for RNA as scaling factor in mean of conditional distribution.\n",
+            "default": "False"
           }
           
         }
@@ -164,6 +255,12 @@
       },
       {
         "$ref": "#/definitions/outputs"
+      },
+      {
+        "$ref": "#/definitions/scvi options"
+      },
+      {
+        "$ref": "#/definitions/variational auto-encoder model options"
       },
       {
         "$ref": "#/definitions/early stopping arguments"

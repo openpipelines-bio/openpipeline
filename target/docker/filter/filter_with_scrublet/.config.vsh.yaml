@@ -1,7 +1,7 @@
 functionality:
   name: "filter_with_scrublet"
   namespace: "filter"
-  version: "0.9.0"
+  version: "0.10.0"
   authors:
   - name: "Dries De Maeyer"
     roles:
@@ -186,6 +186,8 @@ functionality:
   - type: "python_script"
     path: "script.py"
     is_executable: true
+  - type: "file"
+    path: "src/utils/setup_logger.py"
   description: "Doublet detection using the Scrublet method (Wolock, Lopez and Klein,\
     \ 2019).\nThe method tests for potential doublets by using the expression profiles\
     \ of\ncells to generate synthetic potential doubles which are tested against cells.\
@@ -201,7 +203,7 @@ functionality:
     path: "test.py"
     is_executable: true
   - type: "file"
-    path: "../../../resources_test/pbmc_1k_protein_v3"
+    path: "resources_test/pbmc_1k_protein_v3"
   info: null
   status: "enabled"
   requirements:
@@ -230,10 +232,10 @@ platforms:
   - type: "python"
     user: false
     packages:
+    - "mudata~=0.2.3"
+    - "anndata~=0.9.1"
     - "scanpy~=1.9.2"
     - "scrublet"
-    - "mudata~=0.2.0"
-    - "anndata~=0.8.0"
     - "annoy==1.16.3"
     upgrade: true
   test_setup:
@@ -246,10 +248,10 @@ platforms:
   cmd: null
 - type: "nextflow"
   id: "nextflow"
-  variant: "vdsl3"
   directives:
     label:
     - "highcpu"
+    - "midmem"
     tag: "$id"
   auto:
     simplifyInput: true
@@ -295,6 +297,6 @@ info:
   platform: "docker"
   output: "/home/runner/work/openpipeline/openpipeline/target/docker/filter/filter_with_scrublet"
   executable: "/home/runner/work/openpipeline/openpipeline/target/docker/filter/filter_with_scrublet/filter_with_scrublet"
-  viash_version: "0.7.4"
-  git_commit: "116e567506114ba153923d1b92db2281741c974a"
+  viash_version: "0.7.5"
+  git_commit: "bad3de1fde50f131f1c3a392e5bb2b11d22779fd"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"

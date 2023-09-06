@@ -1,7 +1,6 @@
 functionality:
   name: from_h5mu_to_h5ad
   namespace: "convert"
-  version: "dev"
   description: |
     Converts a h5mu file into a h5ad file.
   authors:
@@ -33,10 +32,11 @@ functionality:
   resources:
     - type: python_script
       path: script.py
+    - path: /src/utils/setup_logger.py
   test_resources:
     - type: python_script
       path: test.py
-    - path: ../../../resources_test/pbmc_1k_protein_v3
+    - path: /resources_test/pbmc_1k_protein_v3
 platforms:
   - type: docker
     image: python:3.8-slim
@@ -45,7 +45,10 @@ platforms:
         packages: 
           - procps
       - type: python
-        packages:
-          - mudata~=0.2.0
-          - anndata~=0.8.0
+        __merge__: [/src/base/requirements/anndata_mudata.yaml]
+    test_setup:
+      - type: python
+        packages: viashpy
   - type: nextflow
+    directives:
+      label: [lowmem, singlecpu]

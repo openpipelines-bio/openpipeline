@@ -2,12 +2,14 @@ functionality:
   name: "rna_singlesample"
   namespace: "multiomics"
   description: "Processing unimodal single-sample RNA transcriptomics data."
+  info:
+    image: /images/concepts/fig_workflow_multiomics_rna_singlesample.svg
   authors:
-    - __merge__: ../../../src/authors/dries_de_maeyer.yaml
+    - __merge__: /src/authors/dries_de_maeyer.yaml
       roles: [ author ]
-    - __merge__: ../../../src/authors/robrecht_cannoodt.yaml
+    - __merge__: /src/authors/robrecht_cannoodt.yaml
       roles: [ author, maintainer ]
-    - __merge__: ../../../src/authors/dries_schaumont.yaml
+    - __merge__: /src/authors/dries_schaumont.yaml
       roles: [ author ]
   argument_groups:
     - name: "Input"
@@ -63,6 +65,28 @@ functionality:
           type: double
           example: 0.2
           description: Maximum fraction of UMIs that are mitochondrial.
+    - name: "Mitochondrial gene detection"
+      arguments:
+        - name: "--var_name_mitochondrial_genes"
+          type: string
+          required: false
+          description: |
+            In which .var slot to store a boolean array corresponding the mitochondrial genes.
+        - name: "--var_gene_names"
+          required: false
+          example: "gene_symbol"
+          type: string
+          description: |
+            .var column name to be used to detect mitochondrial genes instead of .var_names (default if not set).
+            Gene names matching with the regex value from --mitochondrial_gene_regex will be identified
+            as a mitochondrial gene.
+        - name: --mitochondrial_gene_regex
+          type: string
+          description: |
+            Regex string that identifies mitochondrial genes from --var_gene_names.
+            By default will detect human and mouse mitochondrial genes from a gene symbol.
+          required: false
+          default: "^[mM][tT]-"
   resources:
     - type: nextflow_script
       path: main.nf
@@ -70,4 +94,4 @@ functionality:
     - type: nextflow_script
       path: main.nf
       entrypoint: test_wf
-    - path: ../../../resources_test/pbmc_1k_protein_v3
+    - path: /resources_test/pbmc_1k_protein_v3

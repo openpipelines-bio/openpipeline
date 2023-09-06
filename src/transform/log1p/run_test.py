@@ -1,12 +1,10 @@
-import subprocess
 from os import path
 import mudata as mu
 import numpy as np
-import logging
+import sys
 import pytest
 import sys
-from operator import getitem, attrgetter
-
+from operator import attrgetter
 
 ## VIASH START
 meta = {
@@ -19,13 +17,6 @@ meta = {
 
 ## VIASH END
 
-logger = logging.getLogger()
-logger.setLevel(logging.INFO)
-console_handler = logging.StreamHandler(sys.stdout)
-logFormatter = logging.Formatter("%(asctime)s %(levelname)-8s %(message)s")
-console_handler.setFormatter(logFormatter)
-logger.addHandler(console_handler)
-
 @pytest.fixture
 def input_path():
     return f"{meta['resources_dir']}/pbmc_1k_protein_v3/pbmc_1k_protein_v3_filtered_feature_bc_matrix.h5mu"
@@ -34,11 +25,10 @@ def input_path():
 def test_1logp(run_component, input_path, output_layer):
     output = "output.h5mu"
     run_args = [
-        f"./{meta['functionality_name']}",
         "--input", input_path,
         "--output", output,
         "--output_compresion", "gzip"
-        ]
+    ]
     if output_layer:
         run_args.extend(["--output_layer", output_layer])
     run_component(run_args)

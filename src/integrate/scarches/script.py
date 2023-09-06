@@ -1,4 +1,4 @@
-import logging
+import sys
 import mudata
 import scvi
 from torch.cuda import is_available as cuda_is_available
@@ -27,17 +27,9 @@ par = {
     "max_epochs": 500}
 ### VIASH END
 
-def _setup_logger():
-    from sys import stdout
-
-    logger = logging.getLogger()
-    logger.setLevel(logging.INFO)
-    console_handler = logging.StreamHandler(stdout)
-    logFormatter = logging.Formatter("%(asctime)s %(levelname)-8s %(message)s")
-    console_handler.setFormatter(logFormatter)
-    logger.addHandler(console_handler)
-
-    return logger
+sys.path.append(meta["resources_dir"])
+from setup_logger import setup_logger
+logger = setup_logger()
 
 def _read_model_name_from_registry(model_path) -> str:
     """Read registry with information about the model, return the model name"""
@@ -79,7 +71,7 @@ def extract_file_name(file_path):
     return file_path[slash_position + 1: dot_position]
 
 
-def map_to_existing_reference(adata_query, model_path, logger, check_val_every_n_epoch=1):
+def map_to_existing_reference(adata_query, model_path, check_val_every_n_epoch=1):
     """
     A function to map the query data to the reference atlas
 
@@ -184,7 +176,6 @@ def _get_model_path(model_path: str):
 
 
 def main():
-    logger = _setup_logger()
 
     mdata_query = mudata.read(par["input"].strip())
     adata_query = mdata_query.mod[par["modality"]].copy()
@@ -199,7 +190,7 @@ def main():
         adata_query.obs["dataset"] = par["dataset_name"]
 
     model_path = _get_model_path(par["reference"])
-    vae_query, adata_query = map_to_existing_reference(adata_query, model_path=model_path, logger=logger)
+    vae_query, adata_query = map_to_existing_reference(adata_query, model_path=model_path)
     model_name = _read_model_name_from_registry(model_path)
 
     # Save info about the used model

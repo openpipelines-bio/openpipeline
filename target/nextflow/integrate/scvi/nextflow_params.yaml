@@ -4,12 +4,31 @@ modality: "rna"
 # input_layer: "foo"
 obs_batch: "sample_id"
 # var_input: "foo"
+# obs_labels: "foo"
+# obs_size_factor: "foo"
+# obs_categorical_covariate: ["foo"]
+# obs_continuous_covariate: ["foo"]
 
 # Outputs
 # output: "$id.$key.output.output"
 # model_output: "$id.$key.model_output.model_output"
 # output_compression: "gzip"
 obsm_output: "X_scvi_integrated"
+
+# SCVI options
+n_hidden_nodes: 128
+n_dimensions_latent_space: 30
+n_hidden_layers: 2
+dropout_rate: 0.1
+dispersion: "gene"
+gene_likelihood: "nb"
+
+# Variational auto-encoder model options
+use_layer_normalization: "both"
+use_batch_normalization: "none"
+encode_covariates: true
+deeply_inject_covariates: false
+use_observed_lib_size: false
 
 # Early stopping arguments
 # early_stopping: true

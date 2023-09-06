@@ -55,40 +55,20 @@
             "description": "Specie(s) of interest. If not specified, Homo Sapiens will be queried.","enum": ["homo_sapiens", "mus_musculus"],
             "default": "homo_sapiens"
           },
-          "cell_type": {
+          "cell_query": {
             "type": "string",
-            "description": "Cell type(s) of interest. Cell type should be one of the Cell Ontology terms. If not specified, all cell types will be queried.",
+            "description": "The query for selecting the cells as defined by the cellxgene census schema.",
             "default": ""
           },
-          "tissue": {
+          "cells_filter_columns": {
             "type": "string",
-            "description": "Tissue(s) of interest. If not specified, all tissues will be queried.",
+            "description": "The query for selecting the cells as defined by the cellxgene census schema.",
             "default": ""
           },
-          "technology": {
-            "type": "string",
-            "description": "Technology(ies) of interest. If not specified, all technologies will be queried.","enum": ["10x 3\u0027 v1", "10x 3\u0027 v2", "10x 3\u0027 v3", "10x 5\u0027 v1", "10x 5\u0027 v2"],
+          "min_cells_filter_columns": {
+            "type": "number",
+            "description": "Minimum of amount of summed cells_filter_columns cells",
             "default": ""
-          },
-          "suspension": {
-            "type": "string",
-            "description": "Suspension(s) of interest. If not specified, all suspensions will be queried.","enum": ["cell", "nucleus"],
-            "default": ""
-          },
-          "is_primary_data": {
-            "type": "boolean",
-            "description": "Allow only primary data in the query in order to prevent of data duplication.",
-            "default": "True"
-          },
-          "obs_column_names": {
-            "type": "string",
-            "description": "obs columns of interest. If not specified, all columns will be returned.",
-            "default": ""
-          },
-          "metadata_only": {
-            "type": "boolean",
-            "description": "By default only returns metadata of obs layer of query. If False, returns metadata of obs layer and gene expression matrix of query",
-            "default": "True"
           }
           
         }

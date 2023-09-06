@@ -1,7 +1,7 @@
 functionality:
   name: "make_params"
   namespace: "files"
-  version: "0.9.0"
+  version: "0.10.0"
   authors:
   - name: "Angela Oliveira Pisco"
     roles:
@@ -137,6 +137,12 @@ functionality:
     path: "script.R"
     is_executable: true
   description: "Looks for files in a directory and turn it in a params file."
+  test_resources:
+  - type: "bash_script"
+    path: "test_make_params.sh"
+    is_executable: true
+  - type: "file"
+    path: "../../../src"
   info: null
   status: "enabled"
   requirements:
@@ -158,8 +164,10 @@ platforms:
   cmd: null
 - type: "nextflow"
   id: "nextflow"
-  variant: "vdsl3"
   directives:
+    label:
+    - "singlecpu"
+    - "lowmem"
     tag: "$id"
   auto:
     simplifyInput: true
@@ -205,6 +213,6 @@ info:
   platform: "docker"
   output: "/home/runner/work/openpipeline/openpipeline/target/docker/files/make_params"
   executable: "/home/runner/work/openpipeline/openpipeline/target/docker/files/make_params/make_params"
-  viash_version: "0.7.4"
-  git_commit: "116e567506114ba153923d1b92db2281741c974a"
+  viash_version: "0.7.5"
+  git_commit: "bad3de1fde50f131f1c3a392e5bb2b11d22779fd"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"

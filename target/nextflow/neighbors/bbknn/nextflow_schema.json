@@ -32,7 +32,7 @@
           "output": {
             "type": "string",
             "description": "Output .h5mu file.",
-            "default": "$id.$key.output.output"
+            "default": "$id.$key.output.h5mu"
           },
           "output_compression": {
             "type": "string",

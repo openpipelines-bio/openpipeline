@@ -176,7 +176,7 @@ functionality:
   test_resources:
     - type: python_script
       path: test.py
-    - path: ../../../resources_test/cellranger_tiny_fastq
+    - path: /resources_test/cellranger_tiny_fastq
 platforms:
   - type: docker
     image: python:3.10-slim
@@ -189,7 +189,7 @@ platforms:
           - HTSeq
           - pyyaml
           - scipy
-          - anndata~=0.8.0
+          - pandas~=2.0.0
   - type: nextflow
     directives:
       label: [ highmem, highcpu ]

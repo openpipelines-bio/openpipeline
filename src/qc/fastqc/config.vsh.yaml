@@ -23,13 +23,20 @@ functionality:
       required: true
       description: Output directory to write reports to.
       example: qc/
+    - name: "--threads"
+      alternatives: ["-t"]
+      type: integer
+      required: false
+      description: |
+        Specifies the number of files which can be processed simultaneously. Each thread will be allocated 250MB of
+        memory.
   resources:
     - type: bash_script
       path: script.sh
   test_resources:
     - type: bash_script
       path: test.sh
-    - path: ../../../resources_test/cellranger_tiny_fastq/cellranger_tiny_fastq
+    - path: /resources_test/cellranger_tiny_fastq/cellranger_tiny_fastq
 platforms:
   - type: docker
     image: ubuntu:22.04
@@ -37,3 +44,5 @@ platforms:
       - type: apt
         packages: [ fastqc ]
   - type: nextflow
+    directives:
+      label: [lowcpu, midmem]

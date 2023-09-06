@@ -1,10 +1,8 @@
 import sys
 import re
 import tempfile
-import logging
 import typing
 import numpy as np
-import pandas as pd
 import mudata as mu
 import anndata as ad
 import popv
@@ -19,16 +17,8 @@ except ModuleNotFoundError:
     def mps_is_available():
         return False
 
-# set up logger
-logger = logging.getLogger()
-logger.setLevel(logging.INFO)
-console_handler = logging.StreamHandler(sys.stdout)
-logFormatter = logging.Formatter("%(asctime)s %(levelname)-8s %(message)s")
-console_handler.setFormatter(logFormatter)
-logger.addHandler(console_handler)
-
 # where to find the obo files
-cl_obo_folder = "/opt/popv_cl_ontology/"
+cl_obo_folder = "/opt/PopV/ontology/"
 
 ## VIASH START
 par = {
@@ -59,9 +49,11 @@ par = {
 meta = {}
 # for debugging the obo folder can be somewhere local
 cl_obo_folder = "popv_cl_ontology/"
-# for debugging
-temp_dir = "temp/"
 ## VIASH END
+
+sys.path.append(meta["resources_dir"])
+from setup_logger import setup_logger
+logger = setup_logger()
 
 use_gpu = cuda_is_available() or mps_is_available()
 logger.info("GPU enabled? %s", use_gpu)
@@ -77,7 +69,7 @@ def get_X(adata: ad.AnnData, layer: typing.Optional[str], var_index: typing.Opti
         return adata.X
 def get_obs(adata: ad.AnnData, obs_par_names):
     """Subset the obs dataframe to just the columns defined by the obs_label and obs_batch."""
-    obs_columns = reference_obs_cols = [par[x] for x in obs_par_names if par[x]]
+    obs_columns = [par[x] for x in obs_par_names if par[x]]
     return adata.obs[obs_columns]
 def get_var(adata: ad.AnnData, var_index: list[str]):
     """Fetch the var dataframe. Subset rows by var_index if so desired."""

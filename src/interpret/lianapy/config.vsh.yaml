@@ -81,7 +81,7 @@ functionality:
   test_resources:
     - type: python_script
       path: test.py
-    - path: ../../../resources_test/pbmc_1k_protein_v3/pbmc_1k_protein_v3_mms.h5mu
+    - path: /resources_test/pbmc_1k_protein_v3/pbmc_1k_protein_v3_mms.h5mu
 platforms:
   - type: docker
     image: python:3.10-slim
@@ -91,10 +91,13 @@ platforms:
           - procps
           - git
       - type: python
+        __merge__: [/src/base/requirements/anndata_mudata.yaml, .]
         packages:
-          - mudata~=0.2.0
-          # Fix for https://github.com/saezlab/liana-py/issues/24
-          # Remove when liana > 1.8 is released
-          - git+https://github.com/saezlab/liana-py.git@11156ddd0139a49dfebdd08ac230f0ebf008b7f8
+          - liana~=0.1.9
           - numpy~=1.24.3
+    test_setup:
+      - type: python
+        packages: viashpy
   - type: nextflow
+    directives:
+      label: [lowmem, lowcpu]

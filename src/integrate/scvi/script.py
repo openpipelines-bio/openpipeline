@@ -61,33 +61,39 @@ def main():
 
     if par['var_input']:
         # Subset to HVG
-        adata = subset_vars(adata, subset_col=par["var_input"])
+        adata_subset = subset_vars(adata, subset_col=par["var_input"]).copy()
+    else:
+        adata_subset = adata.copy()
 
     check_validity_anndata(
-        adata, par['input_layer'], par['obs_batch'],
+        adata_subset, par['input_layer'], par['obs_batch'],
         par["n_obs_min_count"], par["n_var_min_count"]
-        )
+    )
     # Set up the data
     scvi.model.SCVI.setup_anndata(
-        adata,
+        adata_subset,
         batch_key=par['obs_batch'],
-        layer=par['input_layer']
+        layer=par['input_layer'],
+        labels_key=par['obs_labels'],
+        size_factor_key=par['obs_size_factor'],
+        categorical_covariate_keys=par['obs_categorical_covariate'],
+        continuous_covariate_keys=par['obs_continuous_covariate'],
     )
 
     # Set up the model
     vae_uns = scvi.model.SCVI(
-        adata,
-        n_hidden=128, #this is the default
-        n_latent=30,
-        n_layers=2,
-        dropout_rate=0.1, #this is the default
-        dispersion='gene', #this is the default
-        gene_likelihood='nb',
-        use_layer_norm='both',
-        use_batch_norm="none",
-        encode_covariates=True, #Parameterization for better scArches performance -> maybe don't use this always?
-        deeply_inject_covariates=False, #Parameterization for better scArches performance -> maybe don't use this always?
-        use_observed_lib_size=False, #When size_factors are not passed
+        adata_subset,
+        n_hidden=par["n_hidden_nodes"],
+        n_latent=par["n_dimensions_latent_space"],
+        n_layers=par["n_hidden_layers"],
+        dropout_rate=par["dropout_rate"],
+        dispersion=par["dispersion"],
+        gene_likelihood=par["gene_likelihood"],
+        use_layer_norm=par["use_layer_normalization"],
+        use_batch_norm=par["use_batch_normalization"],
+        encode_covariates=par["encode_covariates"], # Default (True) is for better scArches performance -> maybe don't use this always?
+        deeply_inject_covariates=par["deeply_inject_covariates"], # Default (False) for better scArches performance -> maybe don't use this always?
+        use_observed_lib_size=par["use_observed_lib_size"], # When size_factors are not passed
     )
 
     plan_kwargs = {
@@ -99,7 +105,7 @@ def main():
 
     # Train the model
     vae_uns.train(
-        max_epochs = par['max_epochs'],
+        max_epochs=par['max_epochs'],
         early_stopping=par['early_stopping'],
         early_stopping_monitor=par['early_stopping_monitor'],
         early_stopping_patience=par['early_stopping_patience'],
@@ -108,7 +114,7 @@ def main():
         check_val_every_n_epoch=1,
         accelerator="auto",
     )
-    #Note: train_size=1.0 should give better results, but then can't do early_stopping on validation set
+    # Note: train_size=1.0 should give better results, but then can't do early_stopping on validation set
 
     # Get the latent output
     adata.obsm[par['obsm_output']] = vae_uns.get_latent_representation()

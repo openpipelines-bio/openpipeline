@@ -1,16 +1,7 @@
-import subprocess
-from os import path
-from sys import stdout
-import logging
+import sys
+import pytest
 import anndata as ad
 import mudata as mu
-
-logger = logging.getLogger()
-logger.setLevel(logging.INFO)
-console_handler = logging.StreamHandler(stdout)
-logFormatter = logging.Formatter("%(asctime)s %(levelname)-8s %(message)s")
-console_handler.setFormatter(logFormatter)
-logger.addHandler(console_handler)
 
 ## VIASH START
 meta = {
@@ -20,28 +11,25 @@ meta = {
 ## VIASH END
 
 input = meta["resources_dir"] + "/pbmc_1k_protein_v3/pbmc_1k_protein_v3_mms.h5mu"
-output = "output.h5ad"
 
-logger.info("> Run the command")
-output = "output.h5mu"
-cmd_pars = [
-    meta["executable"],
-    "--modality", "rna",
-    "--input", input,
-    "--output", output,
-    "--output_compression", "gzip"
-]
-out = subprocess.check_output(cmd_pars).decode("utf-8")
+def test_run(run_component, tmp_path):
+    output = tmp_path / "output.h5ad"
 
-logger.info("> Check if file exists")
-assert path.exists(output), "No output was created."
+    cmd_pars = [
+        "--modality", "rna",
+        "--input", input,
+        "--output", str(output),
+        "--output_compression", "gzip"
+    ]
+    run_component(cmd_pars)
 
-logger.info("> Read the output")
-adata = ad.read_h5ad(output)
+    assert output.is_file(), "No output was created."
 
-logger.info("> Compare against expected output")
-mdata = mu.read_h5mu(input)
-assert adata.n_obs == mdata.mod["rna"].n_obs
-assert adata.n_vars == mdata.mod["rna"].n_vars
+    adata = ad.read_h5ad(output)
 
-logger.info("> All tests passed")
+    mdata = mu.read_h5mu(input)
+    assert adata.n_obs == mdata.mod["rna"].n_obs
+    assert adata.n_vars == mdata.mod["rna"].n_vars
+
+if __name__ == "__main__":
+    sys.exit(pytest.main([__file__]))

@@ -1,7 +1,7 @@
 functionality:
   name: "from_bdrhap_to_h5mu"
   namespace: "convert"
-  version: "0.9.0"
+  version: "0.10.0"
   authors:
   - name: "Robrecht Cannoodt"
     roles:
@@ -89,7 +89,7 @@ functionality:
     path: "run_test.py"
     is_executable: true
   - type: "file"
-    path: "../../../resources_test/bdrhap_5kjrt/processed/WTA.bd_rhapsody.output_raw"
+    path: "resources_test/bdrhap_5kjrt/processed/WTA.bd_rhapsody.output_raw"
   info: null
   status: "enabled"
   requirements:
@@ -113,9 +113,9 @@ platforms:
     - "apt update && apt upgrade -y"
   - type: "python"
     user: false
-    pip:
-    - "anndata~=0.8"
-    - "mudata~=0.2.0"
+    packages:
+    - "mudata~=0.2.3"
+    - "anndata~=0.9.1"
     upgrade: true
   - type: "r"
     cran:
@@ -125,8 +125,10 @@ platforms:
   cmd: null
 - type: "nextflow"
   id: "nextflow"
-  variant: "vdsl3"
   directives:
+    label:
+    - "lowmem"
+    - "singlecpu"
     tag: "$id"
   auto:
     simplifyInput: true
@@ -172,6 +174,6 @@ info:
   platform: "docker"
   output: "/home/runner/work/openpipeline/openpipeline/target/docker/convert/from_bdrhap_to_h5mu"
   executable: "/home/runner/work/openpipeline/openpipeline/target/docker/convert/from_bdrhap_to_h5mu/from_bdrhap_to_h5mu"
-  viash_version: "0.7.4"
-  git_commit: "116e567506114ba153923d1b92db2281741c974a"
+  viash_version: "0.7.5"
+  git_commit: "bad3de1fde50f131f1c3a392e5bb2b11d22779fd"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"

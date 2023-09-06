@@ -1,9 +1,9 @@
 functionality:
   name: "initialize_integration"
-  namespace: "integration/initialize_integration"
+  namespace: "multiomics/integration"
   description: "Run calculations that output information required for most integration methods: PCA, nearest neighbour and UMAP."
   authors:
-    - __merge__: ../../../../src/authors/dries_schaumont.yaml
+    - __merge__: /src/authors/dries_schaumont.yaml
       roles: [ author ]
   argument_groups:
     - name: "Inputs"
@@ -46,6 +46,9 @@ functionality:
           type: string
           required: false
           description: Column name in .var matrix that will be used to select which genes to run the PCA on.
+        - name: "--pca_overwrite"
+          type: boolean_true
+          description: "Allow overwriting slots for PCA output."
     - name: Neighbour calculation
       arguments:
         - name: "--uns_neighbors"
@@ -74,4 +77,4 @@ functionality:
     - type: nextflow_script
       path: main.nf
       entrypoint: test_wf
-    - path: ../../../../resources_test/concat_test_data
+    - path: ..//resources_test/concat_test_data

@@ -1,24 +1,19 @@
-from mudata import read_h5mu
+import sys
 import pandas as pd
-import logging
-from sys import stdout
-
-logger = logging.getLogger()
-logger.setLevel(logging.INFO)
-console_handler = logging.StreamHandler(stdout)
-logFormatter = logging.Formatter("%(asctime)s %(levelname)-8s %(message)s")
-console_handler.setFormatter(logFormatter)
-logger.addHandler(console_handler)
+from mudata import read_h5mu
 
 ### VIASH START
 par = {
-    "input": "work/f5/5f6365898ca5a42a360301a0c9e200/TSP15_Eye_ScleraEtc_10X_2_1.add_id.output.h5mu",
+    "input": "resources_test/pbmc_1k_protein_v3/pbmc_1k_protein_v3_filtered_feature_bc_matrix.h5mu",
     "uns_key": "metrics_cellranger",
     "output": "foo.h5mu",
     "modality": "rna"
 }
 ### VIASH END
 
+sys.path.append(meta["resources_dir"])
+from setup_logger import setup_logger
+logger = setup_logger()
 
 logger.info("Read mudata from file")
 mdata = read_h5mu(par['input'])
@@ -40,7 +35,7 @@ uns_df_rep.index = mod_data.obs_names
 mod_data.obs = pd.concat([obs_drop, uns_df_rep], axis=1)
 
 logger.info("Write output to mudata file")
-mdata.write_h5mu(par['output'], compression=par["ouput_compression"])
+mdata.write_h5mu(par['output'], compression=par["output_compression"])
 
         
 

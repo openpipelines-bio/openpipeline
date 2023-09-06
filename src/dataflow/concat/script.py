@@ -1,12 +1,13 @@
 from __future__ import annotations
-import logging
+import sys
 import anndata
 import mudata as mu
-from sys import stdout
 import pandas as pd
 import numpy as np
 from collections.abc import Iterable
 from multiprocessing import Pool
+from pathlib import Path
+import h5py
 
 ### VIASH START
 par = {
@@ -23,36 +24,19 @@ meta = {
 }
 ### VIASH END
 
-logger = logging.getLogger()
-logger.setLevel(logging.INFO)
-console_handler = logging.StreamHandler(stdout)
-logFormatter = logging.Formatter("%(asctime)s %(levelname)-8s %(message)s")
-console_handler.setFormatter(logFormatter)
-logger.addHandler(console_handler)
+sys.path.append(meta["resources_dir"])
+from setup_logger import setup_logger
+logger = setup_logger()
 
 def indexes_unique(indices: Iterable[pd.Index]) -> bool:
     combined_indices = indices[0].append(indices[1:])
     return combined_indices.is_unique
 
-def check_observations_unique(samples: Iterable[mu.MuData]) -> None:
+def check_observations_unique(samples: Iterable[anndata.AnnData]) -> None:
     observation_ids = [sample.obs.index for sample in samples]
     if not indexes_unique(observation_ids):
         raise ValueError("Observations are not unique across samples.")
 
-def group_modalities(samples: Iterable[anndata.AnnData]) -> dict[str, anndata.AnnData]:
-    """
-    Split up the modalities of all samples and group them per modality.
-    """
-    mods = {}
-    for sample in samples:
-        for mod_name, mod in sample.mod.items():
-            mods.setdefault(mod_name, []).append(mod)
-
-    if len(set(len(mod) for mod in mods.values())) != 1:
-        logger.warning("One or more samples seem to have a different number of modalities.")
-
-    logger.info("Successfully sorted modalities for the different samples.")
-    return mods
 
 def nunique(row):
     unique = pd.unique(row)
@@ -167,15 +151,13 @@ def split_conflicts_modalities(n_processes: int, input_ids: tuple[str], modaliti
             concatenated_result[matrix_name] = concatenated_matrix
         return conflicts_result, concatenated_result
 
-def set_matrices(concatenated_data: mu.MuData,
-                 mod_name: str,
+def set_matrices(mod: mu.MuData,
                  new_matrices: dict[str, pd.DataFrame | None]) -> mu.MuData:
     """
     Add the calculated matrices to the mudata object. Ensure the correct datatypes
     for the matrices that are composed from the combination of the matrices
     from the different modalities.
     """
-    mod = concatenated_data.mod[mod_name]
     for matrix_name, data in new_matrices.items():
         new_index = getattr(mod, matrix_name).index
         if data is None:
@@ -183,23 +165,15 @@ def set_matrices(concatenated_data: mu.MuData,
         if data.index.empty:
             data.index = new_index
         setattr(mod, matrix_name, data)
-    # After setting the matrices (.e.g. .mod['rna'].var) for each of the modalities
-    # the 'global' matrices must also be updated. This is done by mudata automatically
-    # by calling mudata.update() before writing. However, we need to make sure that the
-    # dtypes of these global matrices are also correct for writing..
-    for global_matrix_name in new_matrices.keys():
-        matrix = getattr(concatenated_data, global_matrix_name)
-        setattr(concatenated_data, global_matrix_name, cast_to_writeable_dtype(matrix))
-    return concatenated_data
+    return mod
 
-def set_conflicts(concatenated_data: mu.MuData,
-                  mod_name: str,
+
+def set_conflicts(mod: anndata.AnnData,
                   conflicts: dict[str, dict[str, pd.DataFrame]]) -> mu.MuData:
     """
     Store dataframes containing the conflicting columns in .obsm,
     one key per column name from the original data.
     """
-    mod = concatenated_data.mod[mod_name]
     mutlidim_to_singledim = {
         'varm': 'var',
         'obsm': 'obs'
@@ -209,10 +183,35 @@ def set_conflicts(concatenated_data: mu.MuData,
             singledim_name = mutlidim_to_singledim[conflict_matrix_name]
             singledim_index = getattr(mod, singledim_name).index
             getattr(mod, conflict_matrix_name)[conflict_name] = conflict_data.reindex(singledim_index)
-    concatenated_data.update()
+    return mod
+
+def concatenate_modality(n_processes: int, mod: str, input_files: Iterable[str | Path], 
+                         other_axis_mode: str, input_ids: tuple[str]) -> anndata.AnnData:
+    
+    concat_modes = {
+        "move": None,
+    }
+    other_axis_mode_to_apply = concat_modes.get(other_axis_mode, other_axis_mode)
+
+    mod_data = []
+    for input_file in input_files:
+        try:
+            mod_data.append(mu.read_h5ad(input_file, mod=mod))
+        except KeyError as e: # Modality does not exist for this sample, skip it
+            if f"Unable to open object '{mod}' doesn't exist" not in str(e):
+                raise e
+            pass
+    check_observations_unique(mod_data)
+
+    concatenated_data = anndata.concat(mod_data, join='outer', merge=other_axis_mode_to_apply)
+
+    if other_axis_mode == "move":
+        conflicts, new_matrices = split_conflicts_modalities(n_processes, input_ids, mod_data)
+        concatenated_data = set_conflicts(concatenated_data, conflicts)
+        concatenated_data = set_matrices(concatenated_data, new_matrices)
     return concatenated_data
 
-def concatenate_modalities(n_processes: int, modalities: dict[str, Iterable[anndata.AnnData]],
+def concatenate_modalities(n_processes: int, modalities: set[str], input_files: Path | str,
                            other_axis_mode: str, input_ids: tuple[str] | None = None) -> mu.MuData:
     """
     Join the modalities together into a single multimodal sample.
@@ -220,38 +219,36 @@ def concatenate_modalities(n_processes: int, modalities: dict[str, Iterable[annd
     logger.info('Concatenating samples.')
     if other_axis_mode == "move" and not input_ids:
         raise ValueError("--mode 'move' requires --input_ids.")
-    concat_modes = {
-        "move": None,
-    }
-    other_axis_mode_to_apply = concat_modes.get(other_axis_mode, other_axis_mode)
-    new_mods = {mod_name: anndata.concat(modes,
-                                         join='outer',
-                                         merge=other_axis_mode_to_apply)
-                for mod_name, modes in modalities.items()}
+    new_mods = {}
+    for mod_name in modalities:
+        new_mods[mod_name] = concatenate_modality(n_processes, mod_name, input_files, other_axis_mode, input_ids)
     concatenated_data = mu.MuData(new_mods)
-    logger.info('Concatenated data shape: %s', concatenated_data.shape)
-    if other_axis_mode == "move":
-        for mod_name, modes in modalities.items():
-            conflicts, new_matrices = split_conflicts_modalities(n_processes, input_ids, modes)
-            concatenated_data = set_conflicts(concatenated_data, mod_name, conflicts)
-            concatenated_data = set_matrices(concatenated_data, mod_name, new_matrices)
+
+    # After setting the matrices (.e.g. .mod['rna'].var) for each of the modalities
+    # the 'global' matrices must also be updated. This is done by mudata automatically
+    # by calling mudata.update() before writing. However, we need to make sure that the
+    # dtypes of these global matrices are also correct for writing..
+    for global_matrix_name in ("var", "obs"):
+        matrix = getattr(concatenated_data, global_matrix_name)
+        setattr(concatenated_data, global_matrix_name, cast_to_writeable_dtype(matrix))
     logger.info("Concatenation successful.")
     return concatenated_data
 
 
 def main() -> None:
-    # Read in sample names and sample .h5mu files
-    samples: list[mu.MuData] = []
+    # Get a list of all possible modalities
+    mods = set()
     for path in par["input"]:
         try:
-            samples.append(mu.read(path.strip()))
-        except ValueError as e:
-            raise ValueError(f"Failed to load {path}.") from e
+            with h5py.File(path, 'r') as f_root:
+                mods = mods | set(f_root["mod"].keys())
+        except OSError:
+            raise OSError(f"Failed to load {path}. Is it a valid h5 file?")
 
     input_ids = None
     if par["input_id"]:
         input_ids: tuple[str] = tuple(i.strip() for i in par["input_id"])
-        if len(input_ids) != len(samples):
+        if len(input_ids) != len(par["input"]):
             raise ValueError("The number of sample names must match the number of sample files.")
 
         if len(set(input_ids)) != len(input_ids):
@@ -260,11 +257,10 @@ def main() -> None:
     logger.info("\nConcatenating data from paths:\n\t%s",
                 "\n\t".join(par["input"]))
 
-    check_observations_unique(samples)
-    mods = group_modalities(samples)
     n_processes = meta["cpus"] if meta["cpus"] else 1
     concatenated_samples = concatenate_modalities(n_processes,
                                                   mods,
+                                                  par["input"],
                                                   par["other_axis_mode"],
                                                   input_ids=input_ids)
     logger.info("Writing out data to '%s' with compression '%s'.",

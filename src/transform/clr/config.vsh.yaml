@@ -40,8 +40,8 @@ functionality:
       path: script.py
   test_resources:
     - type: python_script
-      path: run_test.py
-    - path: ../../../resources_test/pbmc_1k_protein_v3
+      path: test.py
+    - path: /resources_test/pbmc_1k_protein_v3
 platforms:
   - type: docker
     image: python:3.10-slim
@@ -50,9 +50,8 @@ platforms:
         packages: 
           - procps
       - type: python
+        __merge__: [/src/base/requirements/anndata_mudata.yaml, .]
         packages:
-          - mudata~=0.2.0
-          - anndata~=0.8.0
           - muon~=0.1.5
           - scanpy~=1.9.2
     test_setup:
@@ -60,3 +59,6 @@ platforms:
         packages:
           - viashpy
   - type: nextflow
+    directives:
+      label: [lowmem, midcpu]
+

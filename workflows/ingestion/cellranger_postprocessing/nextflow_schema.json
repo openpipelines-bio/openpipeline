@@ -44,6 +44,11 @@
             "type": "boolean",
             "description": "Whether or not to run CellBender to perform count correction.",
             "default": "False"
+          },
+          "cellbender_epochs": {
+            "type": "integer",
+            "description": "Number of epochs to run CellBender for.",
+            "default": "150"
           }
           
         }

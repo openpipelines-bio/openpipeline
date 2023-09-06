@@ -1,15 +1,6 @@
 import subprocess
 from os import path
-import logging
-from sys import stdout
-
-logger = logging.getLogger()
-logger.setLevel(logging.INFO)
-console_handler = logging.StreamHandler(stdout)
-logFormatter = logging.Formatter("%(asctime)s %(levelname)-8s %(message)s")
-console_handler.setFormatter(logFormatter)
-logger.addHandler(console_handler)
-
+import sys
 
 ## VIASH START
 meta = {
@@ -17,6 +8,10 @@ meta = {
     "resources_dir": "resources_test"
 }
 ## VIASH END
+
+sys.path.append(meta["resources_dir"])
+from setup_logger import setup_logger
+logger = setup_logger()
 
 logger.info("> Running command with folder")
 input = meta["resources_dir"] + "/cellranger_tiny_fastq/cellranger_tiny_fastq/"
@@ -27,10 +22,13 @@ cmd_pars = [
     meta["executable"],
     "--input", input,
     "--reference", reference,
-    "--output", output,
-    "---cores", "2",
-    "---memory", "5gb"
+    "--output", output
 ]
+if meta.get("cpus"):
+    cmd_pars.extend(["---cpus", str(meta["cpus"])])
+if meta.get("memory_gb"):
+    cmd_pars.extend(["---memory", f"{meta['memory_gb']}gb"])
+
 out = subprocess.check_output(cmd_pars).decode("utf-8")
 
 logger.info("> Check if file exists")
@@ -49,10 +47,12 @@ cmd_pars = [
     "--input", input_files[0],
     "--input", input_files[1],
     "--reference", reference,
-    "--output", output,
-    "---cores", "2",
-    "---memory", "5gb"
+    "--output", output
 ]
+if meta.get("cpus"):
+    cmd_pars.extend(["---cpus", str(meta["cpus"])])
+if meta.get("memory_gb"):
+    cmd_pars.extend(["---memory", f"{meta['memory_gb']}gb"])
 out = subprocess.check_output(cmd_pars).decode("utf-8")
 
 logger.info("> Check if file exists")
