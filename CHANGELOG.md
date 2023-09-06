@@ -131,6 +131,8 @@
 
 * `mapping/bd_rhapsody`: Fix `--dryrun` argument not working (PR #534).
 
+* `qc/multiqc`: Fix component not working for multiple inputs. Also converted Bash script to Python scripts.
+
 # openpipelines 0.9.0
 
 ## BREAKING CHANGES
