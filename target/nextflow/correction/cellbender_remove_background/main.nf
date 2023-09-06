@@ -711,7 +711,7 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
     "platform" : "nextflow",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/correction/cellbender_remove_background",
     "viash_version" : "0.7.5",
-    "git_commit" : "bad3de1fde50f131f1c3a392e5bb2b11d22779fd",
+    "git_commit" : "bc9c07361c06f876b61e07af340902e5cefa0c4b",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))
@@ -883,7 +883,7 @@ with tempfile.TemporaryDirectory(prefix="cellbender-", dir=meta["temp_dir"]) as 
 
     logger.info("CellBender output format:", adata_out)
 
-    # AnnData object with n_obs × n_vars = 6794880 × 33538
+    # AnnData object with n_obs x n_vars = 6794880 x 33538
     #     obs: 'cellbender_analyzed'
     #     var: 'ambient_expression', 'feature_type', 'genome', 'gene_id', 'cellbender_analyzed'
     #     uns: 'background_fraction', 'barcode_indices_for_latents', 'cell_probability', 'cell_size', 'droplet_efficiency', 'gene_expression_encoding', 
