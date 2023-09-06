@@ -32,11 +32,12 @@ workflow run_wf {
       auto: [ publish: true ],
       fromState: { id, state ->
         // pass all arguments except:
-        //  - remove output_h5mu
+        //  - remove output_h5mu and output_compression
         //  - rename output_raw to output
         def data_ = state.clone()
         data_.remove("output_h5mu")
         data_.remove("output_raw")
+        data_.remove("output_compression")
         data_ + [ output: state.output_raw ]
       },
       toState: { id, output, state ->
