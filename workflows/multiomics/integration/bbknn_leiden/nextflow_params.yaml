@@ -21,7 +21,7 @@ n_pcs: 50
 obs_cluster: "bbknn_integration_leiden"
 leiden_resolution: 1
 
-# Umap options
+# UMAP options
 obsm_umap: "X_leiden_bbknn_umap"
 
 # Nextflow input-output arguments

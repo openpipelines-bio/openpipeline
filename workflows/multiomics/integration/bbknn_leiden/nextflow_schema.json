@@ -112,7 +112,7 @@
         }
       },
       "umap options" : {
-        "title": "Umap options",
+        "title": "UMAP options",
         "type": "object",
         "description": "No description",
         "properties": {
