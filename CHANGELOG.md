@@ -133,6 +133,8 @@
 
 * `mapping/bd_rhapsody`: Fix `--dryrun` argument not working (PR #534).
 
+* `qc/multiqc`: Fix component not working for multiple inputs (PR #537). Also converted Bash script to Python scripts.
+
 * `neighbors/bbknn`: Fix `--uns_output`, `--obsp_distances` and `--obsp_connectivities` not being processed correctly (PR #538).
 
 # openpipelines 0.9.0
