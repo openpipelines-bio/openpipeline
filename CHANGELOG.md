@@ -89,6 +89,8 @@
 
 * Add `main_build_viash_hub` action to build, tag, and push components and docker images for viash-hub.com (PR #480).
 
+* `integration/bbknn_leiden`: Update state management to `fromState` / `toState` (PR #535).
+
 ## DOCUMENTATION
 
 * `images`: Added images for various concepts, such as a sample, a cell, RNA, ADT, ATAC, VDJ (PR #515).
