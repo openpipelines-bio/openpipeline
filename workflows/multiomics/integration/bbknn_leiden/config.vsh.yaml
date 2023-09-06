@@ -84,7 +84,7 @@ functionality:
           type: double
           description: Control the coarseness of the clustering. Higher values lead to more clusters.
           default: [1]
-    - name: Umap options
+    - name: UMAP options
       arguments:
         - name: "--obsm_umap"
           type: string

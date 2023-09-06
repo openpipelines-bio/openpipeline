@@ -89,6 +89,8 @@
 
 * Add `main_build_viash_hub` action to build, tag, and push components and docker images for viash-hub.com (PR #480).
 
+* `integration/bbknn_leiden`: Update state management to `fromState` / `toState` (PR #538).
+
 ## DOCUMENTATION
 
 * `images`: Added images for various concepts, such as a sample, a cell, RNA, ADT, ATAC, VDJ (PR #515).
@@ -132,6 +134,8 @@
 * `mapping/bd_rhapsody`: Fix `--dryrun` argument not working (PR #534).
 
 * `qc/multiqc`: Fix component not working for multiple inputs (PR #537). Also converted Bash script to Python scripts.
+
+* `neighbors/bbknn`: Fix `--uns_output`, `--obsp_distances` and `--obsp_connectivities` not being processed correctly (PR #538).
 
 # openpipelines 0.9.0
 
