@@ -14,7 +14,7 @@ par = {
     'output_compression': 'gzip',
     'obsp_connectivities': 'my_connectivities',
     'obsp_distances': 'my_distances',
-    'uns_neighbors': 'my_neighbors'
+    'uns_output': 'my_neighbors'
 }
 ### VIASH END
 
@@ -35,9 +35,9 @@ bbknn.bbknn(
 # store output
 adata.obsp[par["obsp_connectivities"]] = tmp_adata.obsp["connectivities"]
 adata.obsp[par["obsp_distances"]] = tmp_adata.obsp["distances"]
-adata.uns[par["uns_neighbors"]] = tmp_adata.uns["neighbors"]
-adata.uns[par["uns_neighbors"]]["distances_key"] = par["obsp_distances"]
-adata.uns[par["uns_neighbors"]]["connectivities_key"] = par["obsp_connectivities"]
+adata.uns[par["uns_output"]] = tmp_adata.uns["neighbors"]
+adata.uns[par["uns_output"]]["distances_key"] = par["obsp_distances"]
+adata.uns[par["uns_output"]]["connectivities_key"] = par["obsp_connectivities"]
 
 # write to file
 mudata.write_h5mu(par["output"], compression=par["output_compression"])
