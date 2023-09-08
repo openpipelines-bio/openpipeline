@@ -1,8 +1,16 @@
-# openpipeline 0.10.1
+# openpipelines 0.10.1
+
+## MINOR CHANGES
+
+* `integration/scvi_leiden`: Expose hvg selection argument `--var_input` (#543, PR #547).
 
 ## BUG FIXES
 
 * `integration/bbknn_leiden`: Set leiden clustering parameter to multiple (#542, PR #545).
+
+* `integration/scvi_leiden`: Fix component name in Viash config (PR #547).
+
+* `integration/harmony_leiden`: Pass `--uns_neighbors` argument `umap` (PR #548).
 
 # openpipelines 0.10.0
 

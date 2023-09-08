@@ -16,6 +16,7 @@ obsp_neighbor_connectivities: "scvi_integration_connectivities"
 # Scvi integration options
 obs_batch: # please fill in - example: "foo"
 obsm_output: "X_scvi_integrated"
+# var_input: "foo"
 # early_stopping: true
 early_stopping_monitor: "elbo_validation"
 early_stopping_patience: 45

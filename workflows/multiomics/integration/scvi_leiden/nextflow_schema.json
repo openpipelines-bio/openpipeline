@@ -1,6 +1,6 @@
 {
     "$schema": "http://json-schema.org/draft-07/schema",
-    "title": "leiden_scvi",
+    "title": "scvi_leiden",
     "description": "Run scvi integration followed by neighbour calculations, leiden clustering and run umap on the result.",
     "type": "object",
     "definitions": {
@@ -87,6 +87,11 @@
             "type": "string",
             "description": "In which .obsm slot to store the resulting integrated embedding.",
             "default": "X_scvi_integrated"
+          },
+          "var_input": {
+            "type": "string",
+            "description": ".var column containing highly variable genes. By default, do not subset genes.",
+            "default": ""
           },
           "early_stopping": {
             "type": "boolean",

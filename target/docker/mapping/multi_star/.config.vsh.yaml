@@ -3074,5 +3074,5 @@ info:
   output: "/home/runner/work/openpipeline/openpipeline/target/docker/mapping/multi_star"
   executable: "/home/runner/work/openpipeline/openpipeline/target/docker/mapping/multi_star/multi_star"
   viash_version: "0.7.5"
-  git_commit: "8bf088c305ab2647aebf819661374a3bbc2e1953"
+  git_commit: "ca4cce50d787a2663f98c324329ddf57708a52ae"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"
