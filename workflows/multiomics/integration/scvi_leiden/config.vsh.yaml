@@ -67,6 +67,10 @@ functionality:
           default: "X_scvi_integrated"
           required: false
           description: "In which .obsm slot to store the resulting integrated embedding."
+        - name: "--var_input"
+          type: string
+          required: false
+          description: ".var column containing highly variable genes. By default, do not subset genes."
         - name: "--early_stopping"
           required: false
           type: boolean
