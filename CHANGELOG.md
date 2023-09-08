@@ -2,7 +2,7 @@
 
 ## BUG FIXES
 
-* `integration/bbknn_leiden`: Set leiden clustering parameter to multiple (#542).
+* `integration/bbknn_leiden`: Set leiden clustering parameter to multiple (#542, PR #545).
 
 # openpipelines 0.10.0
 
