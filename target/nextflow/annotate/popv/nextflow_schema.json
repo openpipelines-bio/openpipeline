@@ -11,37 +11,44 @@
         "properties": {
           "input": {
             "type": "string",
-            "description": "Input h5mu file.",
+            "description": "Type: `file`, required, example: `\"input.h5mu\"`. Input h5mu file",
+            "help_text": "Type: `file`, required, example: `\"input.h5mu\"`. Input h5mu file.",
             "default": ""
           },
           "modality": {
             "type": "string",
-            "description": "Which modality to process.",
+            "description": "Type: `string`, default: `\"rna\"`. Which modality to process",
+            "help_text": "Type: `string`, default: `\"rna\"`. Which modality to process.",
             "default": "rna"
           },
           "input_layer": {
             "type": "string",
-            "description": "Which layer to use. If no value is provided, the counts are assumed to be in the `.X` slot. Otherwise, count data is expected to be in `.layers[input_layer]`.",
+            "description": "Type: `string`. Which layer to use",
+            "help_text": "Type: `string`. Which layer to use. If no value is provided, the counts are assumed to be in the `.X` slot. Otherwise, count data is expected to be in `.layers[input_layer]`.",
             "default": ""
           },
           "input_obs_batch": {
             "type": "string",
-            "description": "Key in obs field of input adata for batch information. If no value is provided, batch label is assumed to be unknown.",
+            "description": "Type: `string`. Key in obs field of input adata for batch information",
+            "help_text": "Type: `string`. Key in obs field of input adata for batch information. If no value is provided, batch label is assumed to be unknown.",
             "default": ""
           },
           "input_var_subset": {
             "type": "string",
-            "description": "Subset the input object with this column.",
+            "description": "Type: `string`. Subset the input object with this column",
+            "help_text": "Type: `string`. Subset the input object with this column.",
             "default": ""
           },
           "input_obs_label": {
             "type": "string",
-            "description": "Key in obs field of input adata for label information. This is only used for training scANVI. Unlabelled cells should be set to `\"unknown_celltype_label\"`.",
+            "description": "Type: `string`. Key in obs field of input adata for label information",
+            "help_text": "Type: `string`. Key in obs field of input adata for label information. This is only used for training scANVI. Unlabelled cells should be set to `\"unknown_celltype_label\"`.",
             "default": ""
           },
           "unknown_celltype_label": {
             "type": "string",
-            "description": "If `input_obs_label` is specified, cells with this value will be treated as unknown and will be predicted by the model.",
+            "description": "Type: `string`, default: `\"unknown\"`. If `input_obs_label` is specified, cells with this value will be treated as unknown and will be predicted by the model",
+            "help_text": "Type: `string`, default: `\"unknown\"`. If `input_obs_label` is specified, cells with this value will be treated as unknown and will be predicted by the model.",
             "default": "unknown"
           }
           
@@ -54,12 +61,14 @@
         "properties": {
           "output": {
             "type": "string",
-            "description": "Output h5mu file.",
+            "description": "Type: `file`, required, default: `\"$id.$key.output.h5mu\"`, example: `\"output.h5mu\"`. Output h5mu file",
+            "help_text": "Type: `file`, required, default: `\"$id.$key.output.h5mu\"`, example: `\"output.h5mu\"`. Output h5mu file.",
             "default": "$id.$key.output.h5mu"
           },
           "output_compression": {
             "type": "string",
-            "description": "No description","enum": ["gzip", "lzf"],
+            "description": "Type: `string`, example: `\"gzip\"`, choices: ``gzip`, `lzf``. ",
+            "help_text": "Type: `string`, example: `\"gzip\"`, choices: ``gzip`, `lzf``. ","enum": ["gzip", "lzf"],
             "default": ""
           }
           
@@ -72,7 +81,8 @@
         "properties": {
           "methods": {
             "type": "string",
-            "description": "Methods to call cell types. By default, runs to knn_on_scvi and scanvi.","enum": ["celltypist", "knn_on_bbknn", "knn_on_scanorama", "knn_on_scvi", "onclass", "rf", "scanvi", "svm"],
+            "description": "Type: List of `string`, required, example: `[\"knn_on_scvi\", \"scanvi\"]`, multiple_sep: `\":\"`, choices: ``celltypist`, `knn_on_bbknn`, `knn_on_scanorama`, `knn_on_scvi`, `onclass`, `rf`, `scanvi`, `svm``. Methods to call cell types",
+            "help_text": "Type: List of `string`, required, example: `[\"knn_on_scvi\", \"scanvi\"]`, multiple_sep: `\":\"`, choices: ``celltypist`, `knn_on_bbknn`, `knn_on_scanorama`, `knn_on_scvi`, `onclass`, `rf`, `scanvi`, `svm``. Methods to call cell types. By default, runs to knn_on_scvi and scanvi.","enum": ["celltypist", "knn_on_bbknn", "knn_on_scanorama", "knn_on_scvi", "onclass", "rf", "scanvi", "svm"],
             "default": ""
           }
           
@@ -85,22 +95,26 @@
         "properties": {
           "reference": {
             "type": "string",
-            "description": "User-provided reference tissue. The data that will be used as reference to call cell types.",
+            "description": "Type: `file`, required, example: `\"TS_Bladder_filtered.h5ad\"`. User-provided reference tissue",
+            "help_text": "Type: `file`, required, example: `\"TS_Bladder_filtered.h5ad\"`. User-provided reference tissue. The data that will be used as reference to call cell types.",
             "default": ""
           },
           "reference_layer": {
             "type": "string",
-            "description": "Which layer to use. If no value is provided, the counts are assumed to be in the `.X` slot. Otherwise, count data is expected to be in `.layers[reference_layer]`.",
+            "description": "Type: `string`. Which layer to use",
+            "help_text": "Type: `string`. Which layer to use. If no value is provided, the counts are assumed to be in the `.X` slot. Otherwise, count data is expected to be in `.layers[reference_layer]`.",
             "default": ""
           },
           "reference_obs_label": {
             "type": "string",
-            "description": "Key in obs field of reference AnnData with cell-type information.",
+            "description": "Type: `string`, default: `\"cell_ontology_class\"`. Key in obs field of reference AnnData with cell-type information",
+            "help_text": "Type: `string`, default: `\"cell_ontology_class\"`. Key in obs field of reference AnnData with cell-type information.",
             "default": "cell_ontology_class"
           },
           "reference_obs_batch": {
             "type": "string",
-            "description": "Key in obs field of input adata for batch information.",
+            "description": "Type: `string`, default: `\"donor_assay\"`. Key in obs field of input adata for batch information",
+            "help_text": "Type: `string`, default: `\"donor_assay\"`. Key in obs field of input adata for batch information.",
             "default": "donor_assay"
           }
           
@@ -113,12 +127,14 @@
         "properties": {
           "publish_dir": {
             "type": "string",
-            "description": "Path to an output directory.",
+            "description": "Type: `string`, required, example: `\"output/\"`. Path to an output directory",
+            "help_text": "Type: `string`, required, example: `\"output/\"`. Path to an output directory.",
             "default": ""
           },
           "param_list": {
             "type": "string",
-            "description": "Allows inputting multiple parameter sets to initialise a Nextflow channel. A `param_list` can either be a list of maps, a csv file, a json file, a yaml file, or simply a yaml blob.","help_text": "Allows inputting multiple parameter sets to initialise a Nextflow channel. A `param_list` can either be a list of maps, a csv file, a json file, a yaml file, or simply a yaml blob.\n\n* A list of maps (as-is) where the keys of each map corresponds to the arguments of the pipeline. Example: in a `nextflow.config` file: `param_list: [ [\u0027id\u0027: \u0027foo\u0027, \u0027input\u0027: \u0027foo.txt\u0027], [\u0027id\u0027: \u0027bar\u0027, \u0027input\u0027: \u0027bar.txt\u0027] ]`.\n* A csv file should have column names which correspond to the different arguments of this pipeline. Example: `--param_list data.csv` with columns `id,input`.\n* A json or a yaml file should be a list of maps, each of which has keys corresponding to the arguments of the pipeline. Example: `--param_list data.json` with contents `[ {\u0027id\u0027: \u0027foo\u0027, \u0027input\u0027: \u0027foo.txt\u0027}, {\u0027id\u0027: \u0027bar\u0027, \u0027input\u0027: \u0027bar.txt\u0027} ]`.\n* A yaml blob can also be passed directly as a string. Example: `--param_list \"[ {\u0027id\u0027: \u0027foo\u0027, \u0027input\u0027: \u0027foo.txt\u0027}, {\u0027id\u0027: \u0027bar\u0027, \u0027input\u0027: \u0027bar.txt\u0027} ]\"`.\n\nWhen passing a csv, json or yaml file, relative path names are relativized to the location of the parameter file. No relativation is performed when `param_list` is a list of maps (as-is) or a yaml blob.","hidden": true,
+            "description": "Type: `string`, example: `\"my_params.yaml\"`. Allows inputting multiple parameter sets to initialise a Nextflow channel",
+            "help_text": "Type: `string`, example: `\"my_params.yaml\"`. Allows inputting multiple parameter sets to initialise a Nextflow channel. A `param_list` can either be a list of maps, a csv file, a json file, a yaml file, or simply a yaml blob.\n\n* A list of maps (as-is) where the keys of each map corresponds to the arguments of the pipeline. Example: in a `nextflow.config` file: `param_list: [ [\u0027id\u0027: \u0027foo\u0027, \u0027input\u0027: \u0027foo.txt\u0027], [\u0027id\u0027: \u0027bar\u0027, \u0027input\u0027: \u0027bar.txt\u0027] ]`.\n* A csv file should have column names which correspond to the different arguments of this pipeline. Example: `--param_list data.csv` with columns `id,input`.\n* A json or a yaml file should be a list of maps, each of which has keys corresponding to the arguments of the pipeline. Example: `--param_list data.json` with contents `[ {\u0027id\u0027: \u0027foo\u0027, \u0027input\u0027: \u0027foo.txt\u0027}, {\u0027id\u0027: \u0027bar\u0027, \u0027input\u0027: \u0027bar.txt\u0027} ]`.\n* A yaml blob can also be passed directly as a string. Example: `--param_list \"[ {\u0027id\u0027: \u0027foo\u0027, \u0027input\u0027: \u0027foo.txt\u0027}, {\u0027id\u0027: \u0027bar\u0027, \u0027input\u0027: \u0027bar.txt\u0027} ]\"`.\n\nWhen passing a csv, json or yaml file, relative path names are relativized to the location of the parameter file. No relativation is performed when `param_list` is a list of maps (as-is) or a yaml blob.","hidden": true,
             "default": ""
           }
           
