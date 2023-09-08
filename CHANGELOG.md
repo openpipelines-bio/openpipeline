@@ -12,6 +12,8 @@
 
 * `integration/harmony_leiden`: Pass `--uns_neighbors` argument `umap` (PR #548).
 
+* Add workaround for bug where resources aren't available when using Nextflow fusion by including `setup_logger`, `subset_vars` and `compress_h5mu` in the script itself.
+
 # openpipelines 0.10.0
 
 ## BREAKING CHANGES
