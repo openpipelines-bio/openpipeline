@@ -10,6 +10,8 @@
 
 * `integration/scvi_leiden`: Fix component name in Viash config (PR #547).
 
+* `integration/harmony_leiden`: Pass `--uns_neighbors` argument `umap` (PR #548).
+
 # openpipelines 0.10.0
 
 ## BREAKING CHANGES
