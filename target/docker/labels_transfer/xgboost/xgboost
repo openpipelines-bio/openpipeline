@@ -595,9 +595,9 @@ RUN pip install --upgrade pip && \
 
 LABEL org.opencontainers.image.authors="Vladimir Shitov"
 LABEL org.opencontainers.image.description="Companion container for running component labels_transfer xgboost"
-LABEL org.opencontainers.image.created="2023-09-08T13:18:09Z"
+LABEL org.opencontainers.image.created="2023-09-08T14:22:55Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="ca4cce50d787a2663f98c324329ddf57708a52ae"
+LABEL org.opencontainers.image.revision="c73d14fc5711d223d419ec19bbdaea3f6cc49958"
 LABEL org.opencontainers.image.version="main_build"
 
 VIASHDOCKER
@@ -1620,7 +1620,22 @@ meta = {
 
 sys.path.append(meta["resources_dir"])
 from helper import check_arguments, get_reference_features, get_query_features
-from setup_logger import setup_logger
+# START TEMPORARY WORKAROUND setup_logger
+# reason: resources aren't available when using Nextflow fusion
+# from setup_logger import setup_logger
+def setup_logger():
+    import logging
+    from sys import stdout
+
+    logger = logging.getLogger()
+    logger.setLevel(logging.INFO)
+    console_handler = logging.StreamHandler(stdout)
+    logFormatter = logging.Formatter("%(asctime)s %(levelname)-8s %(message)s")
+    console_handler.setFormatter(logFormatter)
+    logger.addHandler(console_handler)
+
+    return logger
+# END TEMPORARY WORKAROUND setup_logger
 logger = setup_logger()
 
 # read config arguments

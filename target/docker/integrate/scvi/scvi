@@ -614,9 +614,9 @@ RUN pip install --upgrade pip && \
 
 LABEL org.opencontainers.image.authors="Malte D. Luecken, Dries Schaumont, Matthias Beyens"
 LABEL org.opencontainers.image.description="Companion container for running component integrate scvi"
-LABEL org.opencontainers.image.created="2023-09-08T13:18:13Z"
+LABEL org.opencontainers.image.created="2023-09-08T14:22:59Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="ca4cce50d787a2663f98c324329ddf57708a52ae"
+LABEL org.opencontainers.image.revision="c73d14fc5711d223d419ec19bbdaea3f6cc49958"
 LABEL org.opencontainers.image.version="main_build"
 
 VIASHDOCKER
@@ -1766,7 +1766,14 @@ meta = {
 
 import sys
 sys.path.append(meta['resources_dir'])
-from subset_vars import subset_vars
+
+# START TEMPORARY WORKAROUND subset_vars
+# reason: resources aren't available when using Nextflow fusion
+# from subset_vars import subset_vars
+def subset_vars(adata, subset_col):
+    return adata[:, adata.var[subset_col]].copy()
+
+# END TEMPORARY WORKAROUND subset_vars
 
 #TODO: optionally, move to qa
 # https://github.com/openpipelines-bio/openpipeline/issues/435
