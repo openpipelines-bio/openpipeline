@@ -1,3 +1,9 @@
+# openpipelines 0.10.1
+
+## BUG FIXES
+
+* `integration/scvi_leiden`: Fix component name in Viash config.
+
 # openpipelines 0.10.0
 
 ## BREAKING CHANGES
