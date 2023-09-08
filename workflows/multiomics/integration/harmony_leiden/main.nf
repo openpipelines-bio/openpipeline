@@ -78,7 +78,8 @@ workflow run_wf {
         "input": "input",
         "modality": "modality",
         "obsm_input": "obsm_integrated",
-        "obsm_output": "obsm_umap"
+        "obsm_output": "obsm_umap",
+        "uns_neighbors": "uns_neighbors"
       ],
       toState: ["input": "output"],
       auto: [simplifyOutput: false]
