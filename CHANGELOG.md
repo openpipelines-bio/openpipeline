@@ -6,7 +6,7 @@
 
 ## BUG FIXES
 
-* `integration/bbknn_leiden`: Set leiden clustering parameter to multiple (#542, PR 
+* `integration/bbknn_leiden`: Set leiden clustering parameter to multiple (#542, PR #545).
 
 * `integration/scvi_leiden`: Fix component name in Viash config (PR #547).
 
