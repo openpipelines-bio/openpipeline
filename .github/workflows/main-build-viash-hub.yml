@@ -21,9 +21,8 @@ jobs:
 
     - name: Push main to Viash-hub
       run: |
-        git fetch origin
         git remote add viash-hub https://x-access-token:${{ secrets.VIASHHUB_PAT }}@viash-hub.com/openpipelines-bio/openpipeline.git
-        git push -f viash-hub main
+        git push -f viash-hub hub_main_build
 
     - uses: viash-io/viash-actions/setup@v4
 
