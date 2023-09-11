@@ -3,7 +3,7 @@ concurrency: main_build_viash_hub
 
 on:
   push:
-    branches: [ 'main' ]
+    branches: [ 'main', 'hub_main_build' ]
 
 jobs:
   # phase 1
