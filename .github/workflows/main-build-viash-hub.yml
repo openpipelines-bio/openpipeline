@@ -115,7 +115,7 @@ jobs:
         setup: build
 
     - name: Login to Viash-Hub container registry
-      uses: docker/login-action@v2
+      uses: docker/login-action@v3
       with:
         registry: viash-hub.com:5050
         username: ${{ secrets.VIASHHUB_USER }}
