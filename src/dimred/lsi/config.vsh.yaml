@@ -1,0 +1,100 @@
+functionality:
+  name: lsi
+  namespace: "dimred"
+  description: |
+    Runs Latent Semantic Indexing. Computes cell embeddings, feature loadings and singular values. Uses the implementation of scipy.
+  arguments:
+    # inputs
+    - name: "--input"
+      alternatives: ["-i"]
+      type: file
+      description: Input h5mu file
+      direction: input
+      required: true
+      example: input.h5mu
+
+    - name: "--modality"
+      type: string
+      default: "atac"
+      required: false
+
+    - name: "--layer"
+      type: string
+      description: Use specified layer for expression values instead of the .X object from the modality.
+      required: false
+
+    - name: "--var_input"
+      type: string
+      description: Column name in .var matrix that will be used to select which genes to run the LSI on.
+      required: false
+
+    # outputs
+    - name: "--output"
+      alternatives: ["-o"]
+      type: file
+      description: Output h5mu file.
+      direction: output
+      required: true
+      example: output.h5mu
+
+    - name: "--output_compression"
+      type: string
+      default: "gzip"
+      description: The compression format to be used on the output h5mu object.
+      choices: ["gzip", "lzf"]
+      required: false
+
+    - name: "--obsm_output"
+      type: string
+      default: "X_lsi"
+      description: In which .obsm slot to store the resulting embedding.
+      required: false
+
+    - name: "--varm_output"
+      type: string
+      default: "LSI"
+      description: In which .varm slot to store the resulting loadings matrix.
+      required: false
+
+    - name: "--uns_output"
+      type: string
+      default: "lsi"
+      description: In which .uns slot to store the stdev.
+      required: false
+    
+    # arguments
+    - name: "--num_components"
+      type: integer
+      default: 50
+      description: Number of components to compute, defaults to 50.
+      required: false
+      
+    - name: "--scale_embeddings"
+      type: boolean_true
+      description: Scale embeddings to zero mean and unit variance.
+
+    - name: "--overwrite"
+      type: boolean_true
+      description: Allow overwriting .obsm, .varm and .uns slots.
+      
+  resources:
+    - type: python_script
+      path: script.py
+
+platforms:
+  - type: docker
+    image: python:3.8-slim
+    setup:
+      - type: apt
+        packages:
+          - procps
+      - type: python
+        __merge__: [/src/base/requirements/anndata_mudata.yaml, .]
+        packages:
+          - scanpy~=1.9.2
+          - muon~=0.1.3
+  - type: nextflow
+    directives:
+      label: 
+        - highcpu
+        - highmem
