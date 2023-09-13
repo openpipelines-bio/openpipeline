@@ -1,4 +1,4 @@
-name: release build
+name: release build viash hub
 
 on: 
   workflow_dispatch:
