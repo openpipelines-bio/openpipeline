@@ -1,4 +1,4 @@
-name: release build
+name: release build viash hub
 
 on: 
   workflow_dispatch:
@@ -142,7 +142,7 @@ jobs:
         
         
     - name: Login to container registry
-      uses: docker/login-action@v2
+      uses: docker/login-action@v3
       with:
         registry: ghcr.io
         username: ${{ secrets.GTHB_USER }}
@@ -291,7 +291,7 @@ jobs:
         done
 
     - name: Login to the nvidia container registry
-      uses: docker/login-action@v2
+      uses: docker/login-action@v3
       env: 
           NVIDIA_PASSWORD: ${{ secrets.NVIDIA_PASSWORD }}
       if: ${{ env.NVIDIA_PASSWORD != '' }}

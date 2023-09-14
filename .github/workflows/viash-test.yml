@@ -157,7 +157,7 @@ jobs:
         find ./resources_test/ "${to_not_remove[@]}" -type f -exec rm {} +
 
     - name: Login to the nvidia container registry
-      uses: docker/login-action@v2
+      uses: docker/login-action@v3
       env: 
           NVIDIA_PASSWORD: ${{ secrets.NVIDIA_PASSWORD }}
       if: ${{ env.NVIDIA_PASSWORD != '' }}

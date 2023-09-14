@@ -463,9 +463,9 @@ RUN pip install --upgrade pip && \
 
 LABEL org.opencontainers.image.authors="Dries De Maeyer, Dries Schaumont"
 LABEL org.opencontainers.image.description="Companion container for running component neighbors bbknn"
-LABEL org.opencontainers.image.created="2023-09-13T13:12:09Z"
+LABEL org.opencontainers.image.created="2023-09-14T07:08:33Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="77cfbe091f61034bd45b8b27f733c8f237a347d2"
+LABEL org.opencontainers.image.revision="679aa4eb97581c8dbc9fb9d68214dd2b579f1288"
 LABEL org.opencontainers.image.version="main_build"
 
 VIASHDOCKER
