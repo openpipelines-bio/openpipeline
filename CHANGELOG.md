@@ -1,3 +1,9 @@
+# openpipelines 0.10.2
+
+## MINOR CHANGES
+
+* `query/cellxgene_census`: avoid creating MuData object in memory by writing the modality directly to disk.
+
 # openpipelines 0.10.1
 
 ## MINOR CHANGES
