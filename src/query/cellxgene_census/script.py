@@ -145,7 +145,7 @@ def main():
             par["min_cells_filter_columns"]
             )
         
-    query_data.var_names =query_data.var["feature_id"]
+    query_data.var_names = query_data.var["feature_id"]
     query_data.var["gene_symbol"] = query_data.var["feature_name"]
 
     # Create empty mudata file
