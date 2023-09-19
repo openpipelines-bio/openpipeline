@@ -67,15 +67,15 @@ jobs:
         tools_version: 'main_build'
 
     - name: Deploy build artifacts to Viash-Hub
-      uses: viash-io/viash-actions/viash-hub/deploy@v4
+      uses: viash-io/viash-actions/viash-hub/deploy@viash-hub-deploy-commit-message
       with:
         github_token: ${{ github.token }}
         viash_hub_token: ${{ secrets.VIASHHUB_PAT }}
         viash_hub_repo: openpipelines-bio/openpipeline
         github_repo: openpipelines-bio/openpipeline
-        src-branch: release
-        dest-branch: release
-        # full_commit_message: "Deploy for release ${{ github.event.inputs.version_tag }} from ${{ github.sha }}"
+        src_branch: release
+        dest_branch: release
+        commit_message: "Deploy for release ${{ github.event.inputs.version_tag }} from ${{ github.sha }}"
 
     - id: ns_list_components
       uses: viash-io/viash-actions/ns-list@v4
@@ -141,12 +141,12 @@ jobs:
         setup: build
         
         
-    - name: Login to container registry
+    - name: Login to Viash-Hub container registry
       uses: docker/login-action@v3
       with:
-        registry: ghcr.io
-        username: ${{ secrets.GTHB_USER }}
-        password: ${{ secrets.GTHB_PAT }}
+        registry: viash-hub.com:5050
+        username: ${{ secrets.VIASHHUB_USER }}
+        password: ${{ secrets.VIASHHUB_PAT }}
 
     - name: Push container
       uses: viash-io/viash-actions/ns-build@v4
