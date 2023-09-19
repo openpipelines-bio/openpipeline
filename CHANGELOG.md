@@ -1,3 +1,9 @@
+# openpipelines 0.10.2
+
+## MINOR CHANGES
+
+* `query/cellxgene_census`: replaced label `singlecpu` with label `midcpu`.
+
 # openpipelines 0.10.1
 
 ## MINOR CHANGES
