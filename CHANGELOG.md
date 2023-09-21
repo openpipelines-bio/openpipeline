@@ -4,6 +4,8 @@
 
 * `query/cellxgene_census`: avoid creating MuData object in memory by writing the modality directly to disk (PR #558).
 
+* `integrate/scvi`: use `midcpu` label instead of `singlecpu` (PR #561).
+
 # openpipelines 0.10.1
 
 ## MINOR CHANGES
