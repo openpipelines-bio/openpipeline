@@ -63,8 +63,8 @@ jobs:
         viash_hub_token: ${{ secrets.VIASHHUB_PAT }}
         viash_hub_repo: openpipelines-bio/openpipeline
         github_repo: openpipelines-bio/openpipeline
-        src-branch: main_build
-        dest-branch: main_build
+        src_branch: main_build
+        dest_branch: main_build
 
     - id: ns_list
       uses: viash-io/viash-actions/ns-list@v4
