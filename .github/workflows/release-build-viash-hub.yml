@@ -67,7 +67,7 @@ jobs:
         tools_version: 'main_build'
 
     - name: Deploy build artifacts to Viash-Hub
-      uses: viash-io/viash-actions/viash-hub/deploy@viash-hub-deploy-commit-message
+      uses: viash-io/viash-actions/viash-hub/deploy@v4
       with:
         github_token: ${{ github.token }}
         viash_hub_token: ${{ secrets.VIASHHUB_PAT }}
