@@ -36,7 +36,7 @@ functionality:
           direction: output
           description: Destination path to the output.
           example: output.h5mu
-        - name: "--output_model"
+        - name: "--model_output"
           type: file
           description: Folder where the state of the trained model will be saved to.
           required: true

@@ -46,7 +46,7 @@ workflow run_wf {
         "reduce_lr_on_plateau": "reduce_lr_on_plateau",
         "lr_factor": "lr_factor",
         "lr_patience": "lr_patience",
-        "output_model": "output_model",
+        "model_output": "model_output",
         "modality": "modality"
       ],
       neighbors: [
