@@ -4,6 +4,10 @@
 
 * `query/cellxgene_census`: avoid creating MuData object in memory by writing the modality directly to disk (PR #558).
 
+## BUG FIXES
+
+* `scvi_leiden` workflow: correctly pass the location where to store the trained model to the `scvi` component. Also, use `model_output` instead of `output_model` in order to align with the parameter from the `scvi` component.
+
 # openpipelines 0.10.1
 
 ## MINOR CHANGES
