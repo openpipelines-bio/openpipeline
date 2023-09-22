@@ -40,8 +40,7 @@ workflow neighbors_leiden_umap {
         "obsm_input": "obsm_output", // use output from scvi as input for neighbors,
         "query_modality": "modality"
       ],
-      toState: ["input": "output"],
-      auto: [simplifyOutput: false]
+      toState: ["input": "output"]
     )
     | leiden.run(
       fromState: [
@@ -51,8 +50,7 @@ workflow neighbors_leiden_umap {
         "resolution": "leiden_resolution",
         "query_modality": "modality",
       ],
-      toState: ["input": "output"],
-      auto: [simplifyOutput: false]
+      toState: ["input": "output"]
     )
     | umap.run(
       fromState: [
@@ -61,8 +59,7 @@ workflow neighbors_leiden_umap {
         "obsm_output": "obsm_umap",
         "query_modality": "modality",
       ],
-      toState: ["input": "output"],
-      auto: [simplifyOutput: false]
+      toState: ["input": "output"]
     )
     | move_obsm_to_obs.run(
       fromState: { id, state ->
@@ -73,8 +70,7 @@ workflow neighbors_leiden_umap {
           "compression": "gzip"
         ]
       },
-      toState: ["input": "output"],
-      auto: [simplifyOutput: false]
+      toState: ["input": "output"]
     )
 
   emit:
@@ -113,8 +109,7 @@ workflow run_wf {
         "max_query_epochs": "max_query_epochs",
         "reference": "reference"
       ],
-      toState: ["input": "output"],
-      auto: [simplifyOutput: false]
+      toState: ["input": "output"]
     )
     | map { id, state -> // for gene expression
       stateMapping = [

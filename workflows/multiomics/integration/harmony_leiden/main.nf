@@ -41,8 +41,7 @@ workflow run_wf {
           "obsm_output": "obsm_integrated",
           "theta": "theta"
       ],
-      toState: ["input": "output"],
-      auto: [simplifyOutput: false]
+      toState: ["input": "output"]
     )
     
     // run knn
@@ -55,8 +54,7 @@ workflow run_wf {
         "obsp_connectivities": "obsp_neighbor_connectivities",
         "obsm_input": "obsm_integrated"
       ],
-      toState: ["input": "output"],
-      auto: [simplifyOutput: false]
+      toState: ["input": "output"]
     )
 
     // run leiden clustering
@@ -68,8 +66,7 @@ workflow run_wf {
         "obsm_name": "obs_cluster",
         "resolution": "leiden_resolution"
       ],
-      toState: ["input": "output"],
-      auto: [simplifyOutput: false]
+      toState: ["input": "output"]
     )
     
     // run umap
@@ -81,8 +78,7 @@ workflow run_wf {
         "obsm_output": "obsm_umap",
         "uns_neighbors": "uns_neighbors"
       ],
-      toState: ["input": "output"],
-      auto: [simplifyOutput: false]
+      toState: ["input": "output"]
     )
     
     // move obsm to obs
@@ -128,7 +124,7 @@ workflow test_wf {
     | run_wf
     | view { output ->
       assert output.size() == 2 : "outputs should contain two elements; [id, file]"
-      assert output[1].toString().endsWith(".h5mu") : "Output file should be a h5mu file. Found: ${output_list[1]}"
+      assert output[1].output.toString().endsWith(".h5mu") : "Output file should be a h5mu file. Found: ${output[1]}"
       "Output: $output"
     }
     | toList()

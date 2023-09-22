@@ -62,8 +62,7 @@ workflow run_wf {
       // ],
       toState: [
         "input": "output"
-      ],
-      auto: [ simplifyOutput: false ]
+      ]
     )
 
     // run leiden on the bbknn graph
@@ -77,8 +76,7 @@ workflow run_wf {
       ],
       toState: [
         "input": "output"
-      ],
-      auto: [ simplifyOutput: false ]
+      ]
     )
 
     // run umap on the bbknn graph
@@ -91,8 +89,7 @@ workflow run_wf {
       ],
       toState: [
         "input": "output"
-      ],
-      auto: [ simplifyOutput: false ]
+      ]
     )
 
     // move obsm leiden cluster dataframe to obs
@@ -109,10 +106,7 @@ workflow run_wf {
       toState: { id, output, state -> 
         [ output: output.output ]
       },
-      auto: [
-        publish: true,
-        simplifyOutput: false
-      ]
+      auto: [publish: true]
     )
 
   emit:
