@@ -12,7 +12,7 @@
 
 ## MINOR CHANGES
 
-* `annotate/popv`: bumb `jax` and `jaxlib` to `0.4.10`, scanpy to `1.9.4`, scvi to `1.0.3` and pin `ml-dtypes` to < 0.3.0 (PR #565).
+* `annotate/popv`: bump `jax` and `jaxlib` to `0.4.10`, scanpy to `1.9.4`, scvi to `1.0.3` and pin `ml-dtypes` to < 0.3.0 (PR #565).
 
 * `mapping/bd_rhapsody`: pin pandas version to <2 (PR #563). 
 
