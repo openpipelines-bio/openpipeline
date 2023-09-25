@@ -9,7 +9,7 @@ mudata <- reticulate::import("mudata")
 ## VIASH START
 par <- list(
   id = "foo",
-  input = "/home/di/code/openpipelines-multisample/work/52/9911467090109524521b0dc4f410f7/foo.bd_rhapsody.output_raw",
+  input = "resources_test/bdrhap_5kjrt/processed/WTA.bd_rhapsody.output_raw",
   output = "test.h5mu"
 )
 ## VIASH END
