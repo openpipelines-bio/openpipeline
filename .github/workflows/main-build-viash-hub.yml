@@ -120,7 +120,12 @@ jobs:
         registry: viash-hub.com:5050
         username: ${{ secrets.VIASHHUB_USER }}
         password: ${{ secrets.VIASHHUB_PAT }}
-
+    
+    - name: Update Docker settings
+      run: |
+        sudo sed -i 's/ }/, \"max-concurrent-uploads\": 2 }/' /etc/docker/daemon.json
+        sudo systemctl restart docker
+  
     - name: Push container to Viash-Hub
       uses: viash-io/viash-actions/ns-build@v4
       with:
