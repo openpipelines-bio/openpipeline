@@ -7,7 +7,7 @@ cd "$REPO_ROOT"
 
 export NXF_VER=21.10.6
 
-./nextflow \
+nextflow \
   run . \
   -main-script workflows/ingestion/conversion/main.nf \
   -entry test_wf \
