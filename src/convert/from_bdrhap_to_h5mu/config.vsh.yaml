@@ -49,8 +49,6 @@ platforms:
         run: apt update && apt upgrade -y
       - type: python
         __merge__: /src/base/requirements/anndata_mudata.yaml
-        packages:
-          - pandas < 2.0
       - type: r
         cran: anndata
   - type: nextflow
