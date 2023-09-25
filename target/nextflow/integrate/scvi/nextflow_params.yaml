@@ -11,7 +11,7 @@ obs_batch: "sample_id"
 
 # Outputs
 # output: "$id.$key.output.output"
-# model_output: "$id.$key.model_output.model_output"
+# output_model: "$id.$key.output_model.output_model"
 # output_compression: "gzip"
 obsm_output: "X_scvi_integrated"
 

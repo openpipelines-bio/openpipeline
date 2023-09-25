@@ -411,5 +411,5 @@ info:
   output: "/home/runner/work/openpipeline/openpipeline/target/docker/mapping/bd_rhapsody"
   executable: "/home/runner/work/openpipeline/openpipeline/target/docker/mapping/bd_rhapsody/bd_rhapsody"
   viash_version: "0.7.5"
-  git_commit: "20f395e0ae5e0e6ab1dad6d406ab848e173d7d77"
+  git_commit: "538f5b45a72a7a21b75aad690573b1a77e8049c8"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"

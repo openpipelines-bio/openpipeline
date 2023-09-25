@@ -1,8 +1,16 @@
-# openpipelines 0.10.2
+# openpipelines 0.11.0
+
+## BREAKING CHANGES
+
+* `integrate/scvi`: rename `model_output` argument to `output_model` in order to align with the `scvi_leiden` workflow. This also fixes a bug with the workflow where the argument did not function (PR  #562).
 
 ## MINOR CHANGES
 
+* `query/cellxgene_census`: replaced label `singlecpu` with label `midcpu`.
+
 * `query/cellxgene_census`: avoid creating MuData object in memory by writing the modality directly to disk (PR #558).
+
+* `integrate/scvi`: use `midcpu` label instead of `singlecpu` (PR #561).
 
 # openpipelines 0.10.1
 

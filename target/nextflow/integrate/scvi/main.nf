@@ -230,7 +230,7 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
           },
           {
             "type" : "file",
-            "name" : "--model_output",
+            "name" : "--output_model",
             "description" : "Folder where the state of the trained model will be saved to.",
             "must_exist" : true,
             "create_parent" : true,
@@ -682,7 +682,7 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
       "id" : "nextflow",
       "directives" : {
         "label" : [
-          "singlecpu",
+          "midcpu",
           "midmem",
           "gpu"
         ],
@@ -737,7 +737,7 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
     "platform" : "nextflow",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/integrate/scvi",
     "viash_version" : "0.7.5",
-    "git_commit" : "20f395e0ae5e0e6ab1dad6d406ab848e173d7d77",
+    "git_commit" : "538f5b45a72a7a21b75aad690573b1a77e8049c8",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))
@@ -762,7 +762,7 @@ par = {
   'obs_categorical_covariate': $( if [ ! -z ${VIASH_PAR_OBS_CATEGORICAL_COVARIATE+x} ]; then echo "r'${VIASH_PAR_OBS_CATEGORICAL_COVARIATE//\\'/\\'\\"\\'\\"r\\'}'.split(':')"; else echo None; fi ),
   'obs_continuous_covariate': $( if [ ! -z ${VIASH_PAR_OBS_CONTINUOUS_COVARIATE+x} ]; then echo "r'${VIASH_PAR_OBS_CONTINUOUS_COVARIATE//\\'/\\'\\"\\'\\"r\\'}'.split(':')"; else echo None; fi ),
   'output': $( if [ ! -z ${VIASH_PAR_OUTPUT+x} ]; then echo "r'${VIASH_PAR_OUTPUT//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
-  'model_output': $( if [ ! -z ${VIASH_PAR_MODEL_OUTPUT+x} ]; then echo "r'${VIASH_PAR_MODEL_OUTPUT//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
+  'output_model': $( if [ ! -z ${VIASH_PAR_OUTPUT_MODEL+x} ]; then echo "r'${VIASH_PAR_OUTPUT_MODEL//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'output_compression': $( if [ ! -z ${VIASH_PAR_OUTPUT_COMPRESSION+x} ]; then echo "r'${VIASH_PAR_OUTPUT_COMPRESSION//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'obsm_output': $( if [ ! -z ${VIASH_PAR_OBSM_OUTPUT+x} ]; then echo "r'${VIASH_PAR_OBSM_OUTPUT//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'n_hidden_nodes': $( if [ ! -z ${VIASH_PAR_N_HIDDEN_NODES+x} ]; then echo "int(r'${VIASH_PAR_N_HIDDEN_NODES//\\'/\\'\\"\\'\\"r\\'}')"; else echo None; fi ),
@@ -902,8 +902,8 @@ def main():
 
     mdata.mod[par['modality']] = adata
     mdata.write_h5mu(par['output'].strip(), compression=par["output_compression"])
-    if par["model_output"]:
-        vae_uns.save(par["model_output"], overwrite=True)
+    if par["output_model"]:
+        vae_uns.save(par["output_model"], overwrite=True)
 
 if __name__ == "__main__":
     main()
@@ -924,7 +924,7 @@ thisDefaultProcessArgs = [
     "tag" : "main_build"
   },
   "label" : [
-    "singlecpu",
+    "midcpu",
     "midmem",
     "gpu"
   ],
