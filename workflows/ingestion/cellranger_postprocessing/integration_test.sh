@@ -18,7 +18,8 @@ nextflow \
   -profile docker \
   --publish_dir output \
   -c workflows/utils/labels_ci.config \
-  -with-trace work/trace.txt
+  -with-trace work/trace.txt \
+  -resume
 
 nextflow \
   run . \
@@ -28,4 +29,5 @@ nextflow \
   -profile docker \
   --publish_dir output \
   -c workflows/utils/labels_ci.config \
-  -with-trace work/trace.txt
+  -with-trace work/trace.txt \
+  -resume

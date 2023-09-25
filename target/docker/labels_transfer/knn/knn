@@ -468,9 +468,9 @@ RUN pip install --upgrade pip && \
 
 LABEL org.opencontainers.image.authors="Vladimir Shitov"
 LABEL org.opencontainers.image.description="Companion container for running component labels_transfer knn"
-LABEL org.opencontainers.image.created="2023-09-05T12:34:42Z"
+LABEL org.opencontainers.image.created="2023-09-25T07:03:42Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="fdddb509ae9b91b27e646e212c818e1ddfc89699"
+LABEL org.opencontainers.image.revision="deed5783d761c2a1d717717b9ca4b7740710b69e"
 LABEL org.opencontainers.image.version="integration_build"
 
 VIASHDOCKER
@@ -1114,7 +1114,22 @@ meta = {
 
 sys.path.append(meta["resources_dir"])
 from helper import check_arguments, get_reference_features, get_query_features
-from setup_logger import setup_logger
+# START TEMPORARY WORKAROUND setup_logger
+# reason: resources aren't available when using Nextflow fusion
+# from setup_logger import setup_logger
+def setup_logger():
+    import logging
+    from sys import stdout
+
+    logger = logging.getLogger()
+    logger.setLevel(logging.INFO)
+    console_handler = logging.StreamHandler(stdout)
+    logFormatter = logging.Formatter("%(asctime)s %(levelname)-8s %(message)s")
+    console_handler.setFormatter(logFormatter)
+    logger.addHandler(console_handler)
+
+    return logger
+# END TEMPORARY WORKAROUND setup_logger
 
 @numba.njit
 def weighted_prediction(weights, ref_cats):

@@ -684,7 +684,7 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
       },
       "auto" : {
         "simplifyInput" : true,
-        "simplifyOutput" : true,
+        "simplifyOutput" : false,
         "transcript" : false,
         "publish" : false
       },
@@ -735,7 +735,7 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
     "platform" : "nextflow",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/labels_transfer/xgboost",
     "viash_version" : "0.7.5",
-    "git_commit" : "fdddb509ae9b91b27e646e212c818e1ddfc89699",
+    "git_commit" : "deed5783d761c2a1d717717b9ca4b7740710b69e",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))
@@ -810,7 +810,22 @@ meta = {
 
 sys.path.append(meta["resources_dir"])
 from helper import check_arguments, get_reference_features, get_query_features
-from setup_logger import setup_logger
+# START TEMPORARY WORKAROUND setup_logger
+# reason: resources aren't available when using Nextflow fusion
+# from setup_logger import setup_logger
+def setup_logger():
+    import logging
+    from sys import stdout
+
+    logger = logging.getLogger()
+    logger.setLevel(logging.INFO)
+    console_handler = logging.StreamHandler(stdout)
+    logFormatter = logging.Formatter("%(asctime)s %(levelname)-8s %(message)s")
+    console_handler.setFormatter(logFormatter)
+    logger.addHandler(console_handler)
+
+    return logger
+# END TEMPORARY WORKAROUND setup_logger
 logger = setup_logger()
 
 # read config arguments
@@ -911,7 +926,7 @@ def build_ref_classifiers(adata_reference, targets, model_path,
     Example:
     \\`\\`\\`
     >>> adata
-    AnnData object with n_obs × n_vars = 700 × 765
+    AnnData object with n_obs x n_vars = 700 x 765
     obs: "ann_finest_level", "ann_level_1"
     
     >>> os.listdir("/path/to/model")
@@ -1166,7 +1181,7 @@ thisDefaultProcessArgs = [
   // auto settings
   auto: jsonSlurper.parseText('''{
   "simplifyInput" : true,
-  "simplifyOutput" : true,
+  "simplifyOutput" : false,
   "transcript" : false,
   "publish" : false
 }'''),

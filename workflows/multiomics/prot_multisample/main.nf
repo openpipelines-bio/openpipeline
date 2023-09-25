@@ -48,6 +48,10 @@ workflow run_wf {
     | clr.run(
       args: [ output_layer: "clr" ]
     )
+    | pmap {id, data ->
+        def new_data = ["input": data.output]
+        [id, new_data]
+    }
     | getWorkflowArguments(key: "qc_metrics")
     | calculate_qc_metrics.run(
       // layer: null to use .X and not log transformed
@@ -84,7 +88,7 @@ workflow test_wf {
     | run_wf
     | view { output ->
       assert output.size() == 3 : "outputs should contain three elements; [id, file, passthrough]"
-      assert output[1].toString().endsWith(".h5mu") : "Output file should be a h5mu file. Found: ${output_list[1]}"
+      assert output[1].output.toString().endsWith(".h5mu") : "Output file should be a h5mu file. Found: ${output[1]}"
       "Output: $output"
     }
     | toList()

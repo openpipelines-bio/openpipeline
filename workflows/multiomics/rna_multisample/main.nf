@@ -62,16 +62,28 @@ workflow run_wf {
     | normalize_total.run( 
       args: [ output_layer: "normalized" ]
     )
+    | pmap {id, data ->
+      def new_data = ["input": data.output]
+      [id, new_data]
+    }
 
     | getWorkflowArguments(key: "log1p")
     | log1p.run( 
       args: [ output_layer: "log_normalized", input_layer: "normalized" ]
     )
+    | pmap {id, data ->
+      def new_data = ["input": data.output]
+      [id, new_data]
+    }
 
     | getWorkflowArguments(key: "delete_layer")
     | delete_layer.run(
       args: [ layer: "normalized", modality: "rna" ]
     )
+    | pmap {id, data ->
+      def new_data = ["input": data.output]
+      [id, new_data]
+    }
 
     // feature annotation
     | getWorkflowArguments(key: "filter_with_hvg")
@@ -79,6 +91,11 @@ workflow run_wf {
       auto: [ publish: true ],
       args: [ layer: "log_normalized", output_compression: "gzip"]
     )
+    | pmap {id, data ->
+      def new_data = ["input": data.output]
+      [id, new_data]
+    }
+
     | getWorkflowArguments(key: "qc_metrics")
     | calculate_qc_metrics.run(
       // layer: null to use .X and not log transformed
@@ -115,14 +132,14 @@ workflow test_wf {
     | run_wf
     | view { output ->
       assert output.size() == 3 : "outputs should contain three elements; [id, file, passthrough]"
-      assert output[1].toString().endsWith(".h5mu") : "Output file should be a h5mu file. Found: ${output_list[1]}"
+      assert output[1].output.toString().endsWith(".h5mu") : "Output file should be a h5mu file. Found: ${output[1]}"
       "Output: $output"
     }
     | toList()
     | map { output_list ->
       assert output_list.size() == 1 : "output channel should contain one event"
       assert output_list[0][0] == "concatenated_file" : "Output ID should be same as input ID"
-      assert (output_list.collect({it[1].getFileName().toString()}) as Set).equals(["concatenated_file.final.h5mu"] as Set)
+      assert (output_list.collect({it[1].output.getFileName().toString()}) as Set).equals(["concatenated_file.final.h5mu"] as Set)
     }
     //| check_format(args: {""}) // todo: check whether output h5mu has the right slots defined
 }

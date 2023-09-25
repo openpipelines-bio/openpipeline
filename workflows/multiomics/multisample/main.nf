@@ -46,17 +46,29 @@ workflow run_wf {
     )
     | getWorkflowArguments(key: "split_modalities_args")
     | split_modalities_workflow
+    | pmap {id, data ->
+        def new_data = ["input": data.output]
+        [id, new_data]
+    }
     | multisample_processing_workflow
     | groupTuple(by: 0, sort: "hash")
     | map { list -> 
         def id = list[0]
-        def new_input = list[1].collect({it.input})
+        def new_input = list[1].collect({it.output})
         def other_arguments = list[2][0] // Get the first set, the other ones are copies
         def modalities_list = ["modalities": list[-1].collect({it.modality}).unique()]
-        [id, new_input] + other_arguments + modalities_list
+        [id, ["input": new_input]] + other_arguments + modalities_list
       }
     | merge.run(args: [ output_compression: "gzip" ])
+    | pmap {id, data ->
+        def new_data = ["input": data.output]
+        [id, new_data]
+    }
     | integration_setup_workflow
+    | pmap {id, data ->
+        def new_data = ["input": data.output]
+        [id, new_data]
+    }
     | getWorkflowArguments(key: "publish")
     | publish
     | map {list -> [list[0], list[1]]}
@@ -95,7 +107,7 @@ workflow test_wf {
       | run_wf
       | view { output ->
         assert output.size() == 2 : "outputs should contain two elements; [id, file]"
-        assert output[1].toString().endsWith(".h5mu") : "Output file should be a h5mu file. Found: ${output[1]}"
+        assert output[1].output.toString().endsWith(".h5mu") : "Output file should be a h5mu file. Found: ${output[1]}"
         "Output: $output"
       }
       | toSortedList()
@@ -130,7 +142,7 @@ workflow test_wf2 {
       | run_wf
       | view { output ->
         assert output.size() == 2 : "outputs should contain two elements; [id, file], was $output"
-        assert output[1].toString().endsWith(".h5mu") : "Output file should be a h5mu file. Found: ${output[1]}"
+        assert output[1].output.toString().endsWith(".h5mu") : "Output file should be a h5mu file. Found: ${output[1]}"
         "Output: $output"
       }
       | toSortedList()

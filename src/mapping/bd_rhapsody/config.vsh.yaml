@@ -173,7 +173,7 @@ platforms:
     setup:
       - type: python
         packages:
-          - pandas
+          - pandas<2
   - type: nextflow
     directives:
       label: [ highmem, highcpu ]

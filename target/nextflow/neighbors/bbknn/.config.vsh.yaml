@@ -83,6 +83,8 @@ functionality:
     - "-o"
     description: "Output .h5mu file."
     info: null
+    example:
+    - "output.h5mu"
     must_exist: true
     create_parent: true
     required: true
@@ -198,7 +200,7 @@ functionality:
 platforms:
 - type: "docker"
   id: "docker"
-  image: "python:3.8-slim"
+  image: "python:3.10-slim"
   target_organization: "openpipelines-bio"
   target_registry: "ghcr.io"
   namespace_separator: "_"
@@ -238,7 +240,7 @@ platforms:
     tag: "$id"
   auto:
     simplifyInput: true
-    simplifyOutput: true
+    simplifyOutput: false
     transcript: false
     publish: false
   config:
@@ -281,5 +283,5 @@ info:
   output: "/home/runner/work/openpipeline/openpipeline/target/nextflow/neighbors/bbknn"
   executable: "/home/runner/work/openpipeline/openpipeline/target/nextflow/neighbors/bbknn/bbknn"
   viash_version: "0.7.5"
-  git_commit: "fdddb509ae9b91b27e646e212c818e1ddfc89699"
+  git_commit: "deed5783d761c2a1d717717b9ca4b7740710b69e"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"

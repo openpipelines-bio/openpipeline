@@ -664,7 +664,7 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
       },
       "auto" : {
         "simplifyInput" : true,
-        "simplifyOutput" : true,
+        "simplifyOutput" : false,
         "transcript" : false,
         "publish" : false
       },
@@ -711,7 +711,7 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
     "platform" : "nextflow",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/correction/cellbender_remove_background",
     "viash_version" : "0.7.5",
-    "git_commit" : "fdddb509ae9b91b27e646e212c818e1ddfc89699",
+    "git_commit" : "deed5783d761c2a1d717717b9ca4b7740710b69e",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))
@@ -791,7 +791,22 @@ meta = {
 ## VIASH END
 
 sys.path.append(meta["resources_dir"])
-from setup_logger import setup_logger
+# START TEMPORARY WORKAROUND setup_logger
+# reason: resources aren't available when using Nextflow fusion
+# from setup_logger import setup_logger
+def setup_logger():
+    import logging
+    from sys import stdout
+
+    logger = logging.getLogger()
+    logger.setLevel(logging.INFO)
+    console_handler = logging.StreamHandler(stdout)
+    logFormatter = logging.Formatter("%(asctime)s %(levelname)-8s %(message)s")
+    console_handler.setFormatter(logFormatter)
+    logger.addHandler(console_handler)
+
+    return logger
+# END TEMPORARY WORKAROUND setup_logger
 logger = setup_logger()
 
 from helper import anndata_from_h5
@@ -883,7 +898,7 @@ with tempfile.TemporaryDirectory(prefix="cellbender-", dir=meta["temp_dir"]) as 
 
     logger.info("CellBender output format:", adata_out)
 
-    # AnnData object with n_obs × n_vars = 6794880 × 33538
+    # AnnData object with n_obs x n_vars = 6794880 x 33538
     #     obs: 'cellbender_analyzed'
     #     var: 'ambient_expression', 'feature_type', 'genome', 'gene_id', 'cellbender_analyzed'
     #     uns: 'background_fraction', 'barcode_indices_for_latents', 'cell_probability', 'cell_size', 'droplet_efficiency', 'gene_expression_encoding', 
@@ -966,7 +981,7 @@ thisDefaultProcessArgs = [
   // auto settings
   auto: jsonSlurper.parseText('''{
   "simplifyInput" : true,
-  "simplifyOutput" : true,
+  "simplifyOutput" : false,
   "transcript" : false,
   "publish" : false
 }'''),

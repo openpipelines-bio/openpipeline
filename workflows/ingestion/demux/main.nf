@@ -10,6 +10,7 @@ include { fastqc } from targetDir + "/qc/fastqc/main.nf"
 include { multiqc } from targetDir + "/qc/multiqc/main.nf"
 
 include { readConfig; channelFromParams; preprocessInputs; helpMessage } from workflowDir + "/utils/WorkflowHelper.nf"
+include { passthroughMap as pmap } from workflowDir + "/utils/DataflowHelper.nf"
 
 config = readConfig("$workflowDir/ingestion/demux/config.vsh.yaml")
 
@@ -72,6 +73,9 @@ workflow run_wf {
       )
 
   output_ch = all_ch
+    | map {  tup ->
+      [tup[0], ["output": tup[1]]]
+    }
 
   emit:
   output_ch
@@ -110,7 +114,7 @@ workflow test_wf {
     | run_wf
     | view { output ->
       assert output.size() == 2 : "outputs should contain two elements; [id, file]"
-      assert output[1].isDirectory() : "Output path should be a directory."
+      assert output[1].output.isDirectory() : "Output path should be a directory."
       // todo: check whether output dir contains fastq files
       "Output: $output"
     }

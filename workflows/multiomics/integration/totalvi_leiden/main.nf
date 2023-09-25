@@ -40,8 +40,7 @@ workflow neighbors_leiden_umap {
         "obsm_input": "obsm_output", // use output from scvi as input for neighbors,
         "query_modality": "modality"
       ],
-      toState: ["input": "output"],
-      auto: [simplifyOutput: false]
+      toState: ["input": "output"]
     )
     | leiden.run(
       fromState: [
@@ -51,8 +50,7 @@ workflow neighbors_leiden_umap {
         "resolution": "leiden_resolution",
         "query_modality": "modality",
       ],
-      toState: ["input": "output"],
-      auto: [simplifyOutput: false]
+      toState: ["input": "output"]
     )
     | umap.run(
       fromState: [
@@ -61,8 +59,7 @@ workflow neighbors_leiden_umap {
         "obsm_output": "obsm_umap",
         "query_modality": "modality",
       ],
-      toState: ["input": "output"],
-      auto: [simplifyOutput: false]
+      toState: ["input": "output"]
     )
     | move_obsm_to_obs.run(
       fromState: { id, state ->
@@ -73,8 +70,7 @@ workflow neighbors_leiden_umap {
           "compression": "gzip"
         ]
       },
-      toState: ["input": "output"],
-      auto: [simplifyOutput: false]
+      toState: ["input": "output"]
     )
 
   emit:
@@ -113,8 +109,7 @@ workflow run_wf {
         "max_query_epochs": "max_query_epochs",
         "reference": "reference"
       ],
-      toState: ["input": "output"],
-      auto: [simplifyOutput: false]
+      toState: ["input": "output"]
     )
     | map { id, state -> // for gene expression
       stateMapping = [
@@ -202,14 +197,14 @@ workflow test_wf {
     | run_wf
     | view { output ->
       assert output.size() == 2 : "outputs should contain two elements; [id, file]"
-      assert output[1].toString().endsWith(".h5mu") : "Output file should be a h5mu file. Found: ${output[1]}"
+      assert output[1].output.toString().endsWith(".h5mu") : "Output file should be a h5mu file. Found: ${output[1]}"
       "Output: $output"
     }
     | toList()
     | map { output_list ->
       assert output_list.size() == 1 : "output channel should contain 1 event"
       assert (output_list.collect({it[0]}) as Set).equals(["foo"] as Set): "Output ID should be same as input ID"
-      assert (output_list.collect({it[1].getFileName().toString()}) as Set).equals(["foo.final.h5mu"] as Set)
+      assert (output_list.collect({it[1].output.getFileName().toString()}) as Set).equals(["foo.final.h5mu"] as Set)
     }
     //| check_format(args: {""}) // todo: check whether output h5mu has the right slots defined
 }

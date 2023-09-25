@@ -250,4 +250,4 @@ platforms:
         packages: viashpy
   - type: nextflow
     directives:
-      label: [singlecpu, midmem, gpu]
+      label: [midcpu, midmem, gpu]

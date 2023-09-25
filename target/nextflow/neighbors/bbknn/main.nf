@@ -135,6 +135,9 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
           "-o"
         ],
         "description" : "Output .h5mu file.",
+        "example" : [
+          "output.h5mu"
+        ],
         "must_exist" : true,
         "create_parent" : true,
         "required" : true,
@@ -270,7 +273,7 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
     {
       "type" : "docker",
       "id" : "docker",
-      "image" : "python:3.8-slim",
+      "image" : "python:3.10-slim",
       "target_organization" : "openpipelines-bio",
       "target_registry" : "ghcr.io",
       "namespace_separator" : "_",
@@ -323,7 +326,7 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
       },
       "auto" : {
         "simplifyInput" : true,
-        "simplifyOutput" : true,
+        "simplifyOutput" : false,
         "transcript" : false,
         "publish" : false
       },
@@ -370,7 +373,7 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
     "platform" : "nextflow",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/neighbors/bbknn",
     "viash_version" : "0.7.5",
-    "git_commit" : "fdddb509ae9b91b27e646e212c818e1ddfc89699",
+    "git_commit" : "deed5783d761c2a1d717717b9ca4b7740710b69e",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))
@@ -414,14 +417,13 @@ meta = {
 
 ### VIASH END
 
-# todo: make use of --uns_output, --obsp_connectivities and --obsp_distances
-# to configure output field
+mudata = read_h5mu(par["input"])
+adata = mudata.mod[par["modality"]]
 
-h5mu_data = read_h5mu(par["input"])
-modality_name = par["modality"]
-modality = h5mu_data.mod[modality_name]
+# copy data
+tmp_adata = adata.copy()
 bbknn.bbknn(
-    modality,
+    tmp_adata,
     use_rep=par["obsm_input"],
     batch_key = par["obs_batch"],
     neighbors_within_batch=par["n_neighbors_within_batch"],
@@ -429,7 +431,15 @@ bbknn.bbknn(
     trim=par["n_trim"]
 )
 
-h5mu_data.write_h5mu(par["output"], compression=par["output_compression"])
+# store output
+adata.obsp[par["obsp_connectivities"]] = tmp_adata.obsp["connectivities"]
+adata.obsp[par["obsp_distances"]] = tmp_adata.obsp["distances"]
+adata.uns[par["uns_output"]] = tmp_adata.uns["neighbors"]
+adata.uns[par["uns_output"]]["distances_key"] = par["obsp_distances"]
+adata.uns[par["uns_output"]]["connectivities_key"] = par["obsp_connectivities"]
+
+# write to file
+mudata.write_h5mu(par["output"], compression=par["output_compression"])
 VIASHMAIN
 python -B "$tempscript"
 '''
@@ -455,7 +465,7 @@ thisDefaultProcessArgs = [
   // auto settings
   auto: jsonSlurper.parseText('''{
   "simplifyInput" : true,
-  "simplifyOutput" : true,
+  "simplifyOutput" : false,
   "transcript" : false,
   "publish" : false
 }'''),

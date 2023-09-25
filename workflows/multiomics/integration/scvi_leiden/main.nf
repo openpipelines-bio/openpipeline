@@ -37,6 +37,7 @@ workflow run_wf {
         "input": "input",
         "obs_batch": "obs_batch",
         "obsm_output": "obsm_output",
+        "var_input": "var_input",
         "early_stopping": "early_stopping",
         "early_stopping_monitor": "early_stopping_monitor",
         "early_stopping_patience": "early_stopping_patience",
@@ -82,10 +83,22 @@ workflow run_wf {
     }
     | getWorkflowArguments(key: "neighbors")
     | find_neighbors
+    | pmap {id, data ->
+        def new_data = ["input": data.output]
+        [id, new_data]
+    }
     | getWorkflowArguments(key: "clustering")
     | leiden
+    | pmap {id, data ->
+      def new_data = ["input": data.output]
+      [id, new_data]
+    }
     | getWorkflowArguments(key: "umap")
     | umap
+    | pmap {id, data ->
+        def new_data = ["input": data.output]
+        [id, new_data]
+    }
     | getWorkflowArguments(key: "move_obsm_to_obs_leiden")
     | move_obsm_to_obs.run(
       args: [ output_compression: "gzip" ],
@@ -125,14 +138,14 @@ workflow test_wf {
     | run_wf
     | view { output ->
       assert output.size() == 3 : "outputs should contain two elements; [id, file, passthrough]"
-      assert output[1].toString().endsWith(".h5mu") : "Output file should be a h5mu file. Found: ${output_list[1]}"
+      assert output[1].output.toString().endsWith(".h5mu") : "Output file should be a h5mu file. Found: ${output[1]}"
       "Output: $output"
     }
     | toList()
     | map { output_list ->
       assert output_list.size() == 1 : "output channel should contain 1 event"
       assert (output_list.collect({it[0]}) as Set).equals(["foo"] as Set): "Output ID should be same as input ID"
-      assert (output_list.collect({it[1].getFileName().toString()}) as Set).equals(["foo.final.h5mu"] as Set)
+      assert (output_list.collect({it[1].output.getFileName().toString()}) as Set).equals(["foo.final.h5mu"] as Set)
     }
     //| check_format(args: {""}) // todo: check whether output h5mu has the right slots defined
 }

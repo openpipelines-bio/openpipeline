@@ -2,6 +2,7 @@ import sys
 import os
 import cellxgene_census
 import mudata as mu
+import anndata as ad
 
 ## VIASH START
 par = {
@@ -20,7 +21,22 @@ meta = {'resources_dir': os.path.abspath('./src/query/cellxgene_census/')}
 ### VIASH END
 
 sys.path.append(meta["resources_dir"])
-from setup_logger import setup_logger
+# START TEMPORARY WORKAROUND setup_logger
+# reason: resources aren't available when using Nextflow fusion
+# from setup_logger import setup_logger
+def setup_logger():
+    import logging
+    from sys import stdout
+
+    logger = logging.getLogger()
+    logger.setLevel(logging.INFO)
+    console_handler = logging.StreamHandler(stdout)
+    logFormatter = logging.Formatter("%(asctime)s %(levelname)-8s %(message)s")
+    console_handler.setFormatter(logFormatter)
+    logger.addHandler(console_handler)
+
+    return logger
+# END TEMPORARY WORKAROUND setup_logger
 logger = setup_logger()
 
 def connect_census(input_database, release):
@@ -128,19 +144,20 @@ def main():
             par["cells_filter_columns"],
             par["min_cells_filter_columns"]
             )
+        
+    query_data.var_names = query_data.var["feature_id"]
+    query_data.var["gene_symbol"] = query_data.var["feature_name"]
 
-    mdata = mu.MuData(
-        {par["modality"]: query_data}
-        )
+    # Create empty mudata file
+    mdata = mu.MuData({par["modality"]: ad.AnnData()})
     
-    mdata["rna"].var_names = mdata["rna"].var["feature_id"]
-    mdata["rna"].var["gene_symbol"] = mdata["rna"].var["feature_name"]
-
     write_mudata(
         mdata,
         par["output"],
         par["output_compression"]
         )
+
+    mu.write_h5ad(par["output"], data=query_data, mod=par["modality"])
 
 if __name__ == "__main__":
     main()

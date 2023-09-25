@@ -1,3 +1,39 @@
+# openpipelines 0.11.0
+
+## BREAKING CHANGES
+
+* Nextflow VDSL3: set `simplifyOutput` to `False` by default. This implies that components and workflows will output a hashmap with a sole "output" entry when there is only one output (PR #563).
+
+## BUG FIXES
+
+* `convert/from_bdrhap_to_h5mu`: Avoid `TypeError: Can't implicitly convert non-string objects to strings` by using categorical dtypes when a string column contains NA values (PR #563).
+
+## MINOR CHANGES
+
+* `mapping/bd_rhapsody`: pin pandas version to <2 (PR #563). 
+
+* `query/cellxgene_census`: replaced label `singlecpu` with label `midcpu`.
+
+* `query/cellxgene_census`: avoid creating MuData object in memory by writing the modality directly to disk (PR #558).
+
+* `integrate/scvi`: use `midcpu` label instead of `singlecpu` (PR #561).
+
+# openpipelines 0.10.1
+
+## MINOR CHANGES
+
+* `integration/scvi_leiden`: Expose hvg selection argument `--var_input` (#543, PR #547).
+
+## BUG FIXES
+
+* `integration/bbknn_leiden`: Set leiden clustering parameter to multiple (#542, PR #545).
+
+* `integration/scvi_leiden`: Fix component name in Viash config (PR #547).
+
+* `integration/harmony_leiden`: Pass `--uns_neighbors` argument `umap` (PR #548).
+
+* Add workaround for bug where resources aren't available when using Nextflow fusion by including `setup_logger`, `subset_vars` and `compress_h5mu` in the script itself (PR #549).
+
 # openpipelines 0.10.0
 
 ## BREAKING CHANGES
@@ -89,6 +125,8 @@
 
 * Add `main_build_viash_hub` action to build, tag, and push components and docker images for viash-hub.com (PR #480).
 
+* `integration/bbknn_leiden`: Update state management to `fromState` / `toState` (PR #538).
+
 ## DOCUMENTATION
 
 * `images`: Added images for various concepts, such as a sample, a cell, RNA, ADT, ATAC, VDJ (PR #515).
@@ -130,6 +168,10 @@
 * `integrate/scvi`: Ensure output has the same dimensionality as the input (PR #524).
 
 * `mapping/bd_rhapsody`: Fix `--dryrun` argument not working (PR #534).
+
+* `qc/multiqc`: Fix component not working for multiple inputs (PR #537). Also converted Bash script to Python scripts.
+
+* `neighbors/bbknn`: Fix `--uns_output`, `--obsp_distances` and `--obsp_connectivities` not being processed correctly (PR #538).
 
 # openpipelines 0.9.0
 
