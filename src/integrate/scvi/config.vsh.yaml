@@ -75,7 +75,7 @@ functionality:
           description: Output h5mu file.
           direction: output
           required: true
-        - name: "--model_output"
+        - name: "--output_model"
           type: file
           description: Folder where the state of the trained model will be saved to.
           required: false
