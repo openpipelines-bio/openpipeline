@@ -9,7 +9,7 @@ mudata <- reticulate::import("mudata")
 ## VIASH START
 par <- list(
   id = "foo",
-  input = "resources_test/bdrhap_5kjrt/processed/WTA.bd_rhapsody.output_raw",
+  input = "/home/di/code/openpipelines-multisample/work/52/9911467090109524521b0dc4f410f7/foo.bd_rhapsody.output_raw",
   output = "test.h5mu"
 )
 ## VIASH END
@@ -174,11 +174,14 @@ missing_features <- tibble(
   reference_file = NA_character_,
   note = "Feature annotation file missing, assuming type is Gene Expression"
 )
+
 var1 <-
   if (nrow(missing_features) > 0) {
     cat("Feature annotation file missing, assuming type is Gene Expression\n")
     bind_rows(var0, missing_features) %>%
       slice(match(colnames(counts), feature_id))
+    # Avoid nullable string columnns https://github.com/scverse/anndata/issues/679
+    missing_features %>% mutate(across(reference_file, as.factor))
   } else {
     var0
   }
