@@ -37,11 +37,32 @@ workflow run_wf {
       | add_arguments
       | getWorkflowArguments(key: "add_id_args")
       | add_id_workflow
+      | pmap {id, data ->
+        def new_data = ["input": data.output]
+        [id, new_data]
+      }
       | getWorkflowArguments(key: "split_modalities_args")
       | split_modalities_workflow
+      | pmap {id, data ->
+        def new_data = ["input": data.output]
+        [id, new_data]
+      }
       | singlesample_processing_workflow
+      | pmap {id, data ->
+        def new_data = ["input": data.output]
+        [id, new_data]
+      }
+      | view {"After singlesample_processing_workflow: $it"}
       | concat_workflow
+      | pmap {id, data ->
+          def new_data = ["input": data.output]
+          [id, new_data]
+        }
       | multisample_processing_workflow
+      | pmap {id, data ->
+        def new_data = ["input": data.output]
+        [id, new_data]
+      }
       | toSortedList{ a, b -> b[0] <=> a[0] }
       | map { list -> 
           def new_input = list.collect{it[1].input}
@@ -50,10 +71,18 @@ workflow run_wf {
           ["merged", ["input": new_input]] + other_arguments + modalities_list
       }
       | merge.run(args: [ output_compression: "gzip" ])
+      | pmap {id, data ->
+        def new_data = ["input": data.output]
+        [id, new_data]
+      }
       | integration_setup_workflow
+      | pmap {id, data ->
+        def new_data = ["input": data.output]
+        [id, new_data]
+      }
       | getWorkflowArguments(key: "publish")
       | publish.run(auto: [ publish: true ])
-      | map {list -> [list[0], list[1]]}
+      | map {list -> [list[0], list[1].output]}
       
 
   emit:
@@ -153,6 +182,10 @@ workflow add_id_workflow {
 
     no_id_added_ch = parsed_arguments_ch
       | filter{ ! (it[1].add_id_to_obs) }
+      | pmap {id, data ->
+        def new_data = ["input": data.output]
+        [id, new_data]
+      }
 
     samples_with_id_ch = id_added_ch.mix(no_id_added_ch)
 
@@ -187,7 +220,7 @@ workflow split_modalities_workflow {
           def new_id = id // it's okay because the channel will get split up anyways
           def new_data = outputDir.resolve(dat.filename)
           def new_passthrough = passthrough
-          [ new_id, ["input": new_data], new_passthrough, [ modality: dat.name ]]
+          [ new_id, ["output": new_data], new_passthrough, [ modality: dat.name ]]
         }
       }
 
@@ -221,7 +254,7 @@ workflow singlesample_processing_workflow {
     unknown_mods = start_ch
       | filter { ! known_modalities.contains(it[3].modality.toString())}
       | smap { id, args, state, modality ->
-        [id, args.input, state, modality]
+        [id, ["output": args.input], state, modality]
       }
   
     singlesample_ch = unknown_mods.concat(*mod_chs)
@@ -245,7 +278,7 @@ workflow concat_workflow {
       | map { grouped_lst ->
         def new_id = "combined_${grouped_lst[0]}"
         def new_data = [
-          "input": grouped_lst[2],
+          "input": grouped_lst[2].collect{it.get("input")},
           "input_id": grouped_lst[1]
         ]
         // passthrough is copied, just pick the first
@@ -255,11 +288,8 @@ workflow concat_workflow {
       }
       | concat.run(
           // The Ids have already been added in this pipeline
-          args: [ add_id_to_obs: false ],
-          auto: [ simplifyOutput: false ]
+          args: [ add_id_to_obs: false ]
       )
-      | smap {id, args, state, modality -> [id, ["input": args.output], state, modality]}
-      | view{"Concat output: $it"}
 
   emit:
     concat_ch
@@ -285,15 +315,13 @@ workflow multisample_processing_workflow {
         | getWorkflowArguments(key: ("$modality_processor.id" + "_multisample_args").toString() )
         | view { "input multichannel-$modality_processor.id: $it" }
         | modality_processor.multisample
-        | smap {id, args, passthrough, modality -> [id, ["input": args], passthrough, modality]}
-
         | view { "output multichannel-$modality_processor.id: $it" }
     }
 
     unknown_channel = concat_ch
       | filter { ! known_modalities.contains(it[3].modality.toString())}
+      | smap {id, args, passthrough, modality -> [id, ["output": args.input], passthrough, modality]}
       | view { "output multichannel-" + it[3].modality + ": $it" }
-
     multisample_ch = unknown_channel.concat(*mod_chs)
 
   emit:
@@ -320,10 +348,19 @@ workflow integration_setup_workflow {
         | pmap {id, input_args -> [id, input_args + processor.extra_args]}
         | view {"integration-input-$processor.id: $it"}
         | processor.workflow
+        | pmap {id, data ->
+          def new_data = ["input": data.output]
+          [id, new_data]
+        }
       ch_in_unmodified = channel_in
-        | filter{ !(it[3].modalities.contains(processor.id)) }
+        | filter{ !(it[3].modalities.contains(processor.id)) }\
+
       return channel_out_integrated.concat(ch_in_unmodified)
     }
+  | pmap {id, data ->
+    def new_data = ["output": data.input]
+    [id, new_data]
+  }
 
   emit:
     output_ch
@@ -427,7 +464,7 @@ workflow test_wf3 {
       // Put back values for other parameters after removing modalities
       | map { tup ->
         tup[2].remove("input")
-        new_data = [input: tup[1]]
+        new_data = [input: tup[1].output]
         new_data.putAll(tup[2])
         [tup[0], new_data]
       }

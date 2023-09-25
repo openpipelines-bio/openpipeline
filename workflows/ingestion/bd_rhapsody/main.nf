@@ -40,10 +40,11 @@ workflow run_wf {
         data_.remove("output_compression")
         data_ + [ output: state.output_raw ]
       },
-      toState: { id, output, state ->
-        state + [ output_raw: output ]
+      toState: { id, data, state ->
+        state + [ output_raw: data.output ]
       }
     )
+    | view {"After bd_rhapsody: $it"}
 
     // convert to h5mu
     | from_bdrhap_to_h5mu.run(
@@ -55,10 +56,10 @@ workflow run_wf {
           output_compression: "gzip"
         ]
       },
-      toState: { id, output, state ->
+      toState: { id, data, state ->
         [
           output_raw: state.output_h5mu,
-          output_h5mu: output
+          output_h5mu: data.output
         ]
       },
       auto: [publish: true]

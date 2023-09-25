@@ -2,9 +2,17 @@
 
 ## BREAKING CHANGES
 
+* Nextflow VDSL3: set `simplifyOutput` to `False` by default. This implies that components and workflows will output a hashmap with a sole "output" entry when there is only one output (PR #563).
+
 * `integrate/scvi`: rename `model_output` argument to `output_model` in order to align with the `scvi_leiden` workflow. This also fixes a bug with the workflow where the argument did not function (PR  #562).
 
+## BUG FIXES
+
+* `convert/from_bdrhap_to_h5mu`: Avoid `TypeError: Can't implicitly convert non-string objects to strings` by using categorical dtypes when a string column contains NA values (PR #563).
+
 ## MINOR CHANGES
+
+* `mapping/bd_rhapsody`: pin pandas version to <2 (PR #563). 
 
 * `query/cellxgene_census`: replaced label `singlecpu` with label `midcpu`.
 

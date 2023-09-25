@@ -400,7 +400,7 @@ function ViashDockerCheckCommands {
 #   ViashDockerFile
 function ViashDockerfile {
   cat << 'VIASHDOCKER'
-FROM ghcr.io/data-intuitive/randpy:r4.2_py3.8
+FROM ghcr.io/data-intuitive/randpy:r4.2_py3.9
 
 ENTRYPOINT []
 
@@ -414,9 +414,9 @@ RUN Rscript -e 'if (!requireNamespace("remotes", quietly = TRUE)) install.packag
 
 LABEL org.opencontainers.image.authors="Robrecht Cannoodt"
 LABEL org.opencontainers.image.description="Companion container for running component convert from_bdrhap_to_h5mu"
-LABEL org.opencontainers.image.created="2023-09-25T09:41:12Z"
+LABEL org.opencontainers.image.created="2023-09-25T11:23:45Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="538f5b45a72a7a21b75aad690573b1a77e8049c8"
+LABEL org.opencontainers.image.revision="2ec4e66c55628925e6c633428679bdc2ec22715b"
 LABEL org.opencontainers.image.version="main_build"
 
 VIASHDOCKER
@@ -1111,11 +1111,14 @@ missing_features <- tibble(
   reference_file = NA_character_,
   note = "Feature annotation file missing, assuming type is Gene Expression"
 )
+
 var1 <-
   if (nrow(missing_features) > 0) {
     cat("Feature annotation file missing, assuming type is Gene Expression\\n")
     bind_rows(var0, missing_features) %>%
       slice(match(colnames(counts), feature_id))
+    # Avoid nullable string columnns https://github.com/scverse/anndata/issues/679
+    missing_features %>% mutate(across(reference_file, as.factor))
   } else {
     var0
   }

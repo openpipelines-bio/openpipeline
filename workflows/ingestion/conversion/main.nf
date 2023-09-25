@@ -7,6 +7,7 @@ include { from_10xh5_to_h5mu } from targetDir + "/convert/from_10xh5_to_h5mu/mai
 include { from_10xmtx_to_h5mu } from targetDir + "/convert/from_10xmtx_to_h5mu/main.nf" 
 include { from_h5ad_to_h5mu } from targetDir + "/convert/from_h5ad_to_h5mu/main.nf" 
 include { readConfig; channelFromParams; preprocessInputs; helpMessage } from workflowDir + "/utils/WorkflowHelper.nf"
+include { passthroughMap as pmap } from workflowDir + "/utils/DataflowHelper.nf"
 
 
 config = readConfig("$workflowDir/ingestion/conversion/config.vsh.yaml")
@@ -89,7 +90,7 @@ workflow test_wf {
     | run_wf
     | view { output ->
         assert output.size() == 2 : "outputs should contain two elements; [id, file]"
-        assert output[1].toString().endsWith(".h5mu") : "Output file should be a h5mu file. Found: ${output[1]}"
+        assert output[1].output.toString().endsWith(".h5mu") : "Output file should be a h5mu file. Found: ${output[1]}"
         "Output: $output"
       }
       | toSortedList()

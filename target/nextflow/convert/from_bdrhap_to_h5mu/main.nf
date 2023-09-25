@@ -168,7 +168,7 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
     {
       "type" : "docker",
       "id" : "docker",
-      "image" : "ghcr.io/data-intuitive/randpy:r4.2_py3.8",
+      "image" : "ghcr.io/data-intuitive/randpy:r4.2_py3.9",
       "target_organization" : "openpipelines-bio",
       "target_registry" : "ghcr.io",
       "namespace_separator" : "_",
@@ -213,7 +213,7 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
       },
       "auto" : {
         "simplifyInput" : true,
-        "simplifyOutput" : true,
+        "simplifyOutput" : false,
         "transcript" : false,
         "publish" : false
       },
@@ -260,7 +260,7 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
     "platform" : "nextflow",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/convert/from_bdrhap_to_h5mu",
     "viash_version" : "0.7.5",
-    "git_commit" : "538f5b45a72a7a21b75aad690573b1a77e8049c8",
+    "git_commit" : "2ec4e66c55628925e6c633428679bdc2ec22715b",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))
@@ -469,11 +469,14 @@ missing_features <- tibble(
   reference_file = NA_character_,
   note = "Feature annotation file missing, assuming type is Gene Expression"
 )
+
 var1 <-
   if (nrow(missing_features) > 0) {
     cat("Feature annotation file missing, assuming type is Gene Expression\\\\n")
     bind_rows(var0, missing_features) %>%
       slice(match(colnames(counts), feature_id))
+    # Avoid nullable string columnns https://github.com/scverse/anndata/issues/679
+    missing_features %>% mutate(across(reference_file, as.factor))
   } else {
     var0
   }
@@ -557,7 +560,7 @@ thisDefaultProcessArgs = [
   // auto settings
   auto: jsonSlurper.parseText('''{
   "simplifyInput" : true,
-  "simplifyOutput" : true,
+  "simplifyOutput" : false,
   "transcript" : false,
   "publish" : false
 }'''),
