@@ -10,6 +10,8 @@
 
 * `convert/from_bdrhap_to_h5mu`: Avoid `TypeError: Can't implicitly convert non-string objects to strings` by using categorical dtypes when a string column contains NA values (PR #563).
 
+* `qc/calculate_qc_metrics`: fix calculating mitochondrial gene related QC metrics when only or no mitochondrial genes were found.
+
 ## MINOR CHANGES
 
 * `mapping/bd_rhapsody`: pin pandas version to <2 (PR #563). 
