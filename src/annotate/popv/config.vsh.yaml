@@ -142,7 +142,7 @@ platforms:
           - scvi-tools~=1.0.3
           - popv~=0.3.2
           - jax==0.4.10
-          - jax==0.4.10
+          - jaxlib==0.4.10
           - ml-dtypes<0.3.0
       # These need to be updated AFTER popv is installed.
       # See https://github.com/YosefLab/PopV/issues/30
