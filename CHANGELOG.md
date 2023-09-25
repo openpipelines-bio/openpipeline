@@ -12,6 +12,8 @@
 
 ## MINOR CHANGES
 
+* `annotate/popv`: bumb `jax` and `jaxlib` to `0.4.10`, pin `ml-dtypes` to < 0.3.0.
+
 * `mapping/bd_rhapsody`: pin pandas version to <2 (PR #563). 
 
 * `query/cellxgene_census`: replaced label `singlecpu` with label `midcpu`.
