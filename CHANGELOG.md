@@ -14,6 +14,8 @@
 
 ## MINOR CHANGES
 
+* `annotate/popv`: bump `jax` and `jaxlib` to `0.4.10`, scanpy to `1.9.4`, scvi to `1.0.3` and pin `ml-dtypes` to < 0.3.0 (PR #565).
+
 * `velocity/scvelo`: pin matplotlib to < 3.8.0 (PR #566).
 
 * `mapping/multi_star`: pin multiqc to 1.15.0 (PR #566).

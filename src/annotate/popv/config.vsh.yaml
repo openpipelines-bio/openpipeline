@@ -138,9 +138,12 @@ platforms:
           - wget
       - type: python
         packages:
-          - scanpy~=1.9.2
-          - scvi-tools~=0.20.3
+          - scanpy~=1.9.4
+          - scvi-tools~=1.0.3
           - popv~=0.3.2
+          - jax==0.4.10
+          - jaxlib==0.4.10
+          - ml-dtypes<0.3.0
       # These need to be updated AFTER popv is installed.
       # See https://github.com/YosefLab/PopV/issues/30
       - type: python
@@ -150,8 +153,6 @@ platforms:
         run: |
           cd /opt && git clone --depth 1 https://github.com/YosefLab/PopV.git && \
             cd PopV && git fetch --depth 1 origin tag v0.2 && git checkout v0.2
-      - type: python
-        packages: [jax==0.4.9, jaxlib==0.4.9]
     test_setup:
       - type: python
         packages:
