@@ -16,22 +16,55 @@ meta = {
 ## VIASH END
 
 
-input_data_path = f"{meta['resources_dir']}/pbmc_1k_protein_v3_filtered_feature_bc_matrix.h5mu"
+@pytest.fixture
+def input_path():
+    return f"{meta['resources_dir']}/pbmc_1k_protein_v3_filtered_feature_bc_matrix.h5mu"
+
+@pytest.fixture
+def input_mudata(input_path):
+    return md.read_h5mu(input_path)
 
 
 @pytest.fixture
-def mudata_w_random_boolean_column(tmp_path):
-    input_data = md.read_h5mu(input_data_path)
-    input_var = input_data.mod['rna'].var
+def mudata_w_na_boolean_colum(tmp_path, input_mudata):
+    input_var = input_mudata.mod['rna'].var
+    input_var["custom"] = np.nan
+
+    new_input_path = tmp_path / "input_with_custom_col.h5mu"
+    input_mudata.write(new_input_path)
+    return new_input_path
+
+@pytest.fixture
+def mudata_w_false_boolean_colum(tmp_path, input_mudata):
+    input_var = input_mudata.mod['rna'].var
+    input_var["custom"] = True
+
+    new_input_path = tmp_path / "input_with_custom_col.h5mu"
+    input_mudata.write(new_input_path)
+    return new_input_path
+
+
+@pytest.fixture
+def mudata_w_true_boolean_colum(tmp_path, input_mudata):
+    input_var = input_mudata.mod['rna'].var
+    input_var["custom"] = True
+
+    new_input_path = tmp_path / "input_with_custom_col.h5mu"
+    input_mudata.write(new_input_path)
+    return new_input_path
+
+@pytest.fixture
+def mudata_w_random_boolean_column(tmp_path, input_mudata):
+    input_var = input_mudata.mod['rna'].var
     input_var["custom"] = np.random.choice([True, False], len(input_var), p=[0.8, 0.2])
 
     new_input_path = tmp_path / "input_with_custom_col.h5mu"
-    input_data.write(new_input_path)
-    return new_input_path, input_data
+    input_mudata.write(new_input_path)
+    return new_input_path
 
-def test_add_qc(run_component):
+def test_add_qc(run_component, input_path):
     run_component([
-        "--input", input_data_path,
+        "--input", input_path,
         "--output", "foo.h5mu",
         "--modality", "rna",
         "--top_n_vars", "10,20,90",
@@ -50,17 +83,25 @@ def test_add_qc(run_component):
     assert "obs_mean" in var
     assert "total_counts" in var
 
-def test_calculcate_qc_var_qc_metrics(run_component, mudata_w_random_boolean_column, tmp_path):
-    input_path, _ = mudata_w_random_boolean_column
-
+@pytest.mark.parametrize("edited_input_mudata", ["mudata_w_true_boolean_colum",
+                                                 "mudata_w_false_boolean_colum",
+                                                 "mudata_w_na_boolean_colum",
+                                                 "mudata_w_random_boolean_column"])
+def test_calculcate_qc_var_qc_metrics(run_component, request, edited_input_mudata, tmp_path):
+    input_path = request.getfixturevalue(edited_input_mudata)
     output_path = tmp_path / "foo.h5mu"
-    run_component([
+
+    args = [
         "--input", str(input_path),
         "--output", str(output_path),
         "--modality", "rna",
         "--top_n_vars", "10,20,90",
         "--var_qc_metrics", "custom",
-        ])
+    ]
+    if edited_input_mudata == "mudata_w_na_boolean_colum":
+        args.extend(["--var_qc_metrics_fill_na_value", "True"])
+
+    run_component(args)
     assert output_path.is_file()
     data_with_qc = md.read(output_path)
     for qc_metric in ('pct_custom', 'total_counts_custom'):
@@ -68,12 +109,13 @@ def test_calculcate_qc_var_qc_metrics(run_component, mudata_w_random_boolean_col
 
 def test_compare_scanpy(run_component,
                         mudata_w_random_boolean_column,
+                        input_mudata,
                         tmp_path):
-    input_path, input_mudata = mudata_w_random_boolean_column
+    
     output_path = tmp_path / "foo.h5mu"
 
     run_component([
-        "--input", str(input_path),
+        "--input", str(mudata_w_random_boolean_column),
         "--output", str(output_path),
         "--modality", "rna",
         "--top_n_vars", "10,20,90",

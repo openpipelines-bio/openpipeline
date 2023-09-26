@@ -305,7 +305,7 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
     "platform" : "nextflow",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/qc/calculate_qc_metrics",
     "viash_version" : "0.7.5",
-    "git_commit" : "7f7c1813098de2a3e4a123913e18b0580fa50fd7",
+    "git_commit" : "834a0eb840a46f57310372e2ac8275b879c0479e",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))
@@ -412,7 +412,7 @@ def main():
                 else:
                     qc_column = qc_column.fillna(par['var_qc_metrics_fill_na_value'], inplace=False)
             qc_column = qc_column.values
-            if not set(np.unique(qc_column)) == set((True, False)):
+            if set(np.unique(qc_column)) - {True, False}:
                 raise ValueError(f"Column {qc_metric} in .var for modality {par['modality']} "
                                  f"must only contain boolean values")
             

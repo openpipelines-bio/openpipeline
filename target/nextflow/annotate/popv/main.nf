@@ -363,9 +363,12 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
           "type" : "python",
           "user" : false,
           "packages" : [
-            "scanpy~=1.9.2",
-            "scvi-tools~=0.20.3",
-            "popv~=0.3.2"
+            "scanpy~=1.9.4",
+            "scvi-tools~=1.0.3",
+            "popv~=0.3.2",
+            "jax==0.4.10",
+            "jaxlib==0.4.10",
+            "ml-dtypes<0.3.0"
           ],
           "upgrade" : true
         },
@@ -383,15 +386,6 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
           "run" : [
             "cd /opt && git clone --depth 1 https://github.com/YosefLab/PopV.git && \\\\\n  cd PopV && git fetch --depth 1 origin tag v0.2 && git checkout v0.2\n"
           ]
-        },
-        {
-          "type" : "python",
-          "user" : false,
-          "packages" : [
-            "jax==0.4.9",
-            "jaxlib==0.4.9"
-          ],
-          "upgrade" : true
         }
       ],
       "test_setup" : [
@@ -464,7 +458,7 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
     "platform" : "nextflow",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/annotate/popv",
     "viash_version" : "0.7.5",
-    "git_commit" : "7f7c1813098de2a3e4a123913e18b0580fa50fd7",
+    "git_commit" : "834a0eb840a46f57310372e2ac8275b879c0479e",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))
