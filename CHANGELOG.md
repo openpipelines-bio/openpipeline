@@ -12,6 +12,10 @@
 
 ## MINOR CHANGES
 
+* `velocity/scvelo`: pin matplotlib to < 3.8.0 (PR #566).
+
+* `mapping/multi_star`: pin multiqc to 1.15.0 (PR #566).
+
 * `mapping/bd_rhapsody`: pin pandas version to <2 (PR #563). 
 
 * `query/cellxgene_census`: replaced label `singlecpu` with label `midcpu`.
