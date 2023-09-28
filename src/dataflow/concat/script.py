@@ -7,7 +7,9 @@ import numpy as np
 from collections.abc import Iterable
 from multiprocessing import Pool
 from pathlib import Path
-import h5py
+from h5py import File as H5File
+from typing import Literal
+import shutil
 
 ### VIASH START
 par = {
@@ -15,18 +17,70 @@ par = {
               "resources_test/concat_test_data/human_brain_3k_filtered_feature_bc_matrix_subset_unique_obs.h5mu"],
     "output": "foo.h5mu",
     "input_id": ["mouse", "human"],
-    "compression": "gzip",
     "other_axis_mode": "move",
     "output_compression": "gzip"
 }
 meta = {
-    "cpus": 10
+    "cpus": 10,
+    "resources_dir": "resources_test/"
 }
 ### VIASH END
 
 sys.path.append(meta["resources_dir"])
-# START TEMPORARY WORKAROUND setup_logger
+
+# START TEMPORARY WORKAROUND compress_h5mu
 # reason: resources aren't available when using Nextflow fusion
+
+# from compress_h5mu import compress_h5mu
+from h5py import Group, Dataset
+from typing import Union
+from functools import partial
+
+def compress_h5mu(input_path: Union[str, Path], 
+                output_path: Union[str, Path], 
+                compression: Union[Literal['gzip'], Literal['lzf']]):
+    input_path, output_path = str(input_path), str(output_path)
+
+    def copy_attributes(in_object, out_object):
+        for key, value in in_object.attrs.items():
+            out_object.attrs[key] = value
+
+    def visit_path(output_h5: H5File,
+                   compression: Union[Literal['gzip'], Literal['lzf']], 
+                   name: str, object: Union[Group, Dataset]):
+            if isinstance(object, Group):
+                new_group = output_h5.create_group(name)
+                copy_attributes(object, new_group)
+            elif isinstance(object, Dataset):
+                # Compression only works for non-scalar Dataset objects
+                # Scalar objects dont have a shape defined
+                if not object.compression and object.shape not in [None, ()]: 
+                    new_dataset = output_h5.create_dataset(name, data=object, compression=compression)
+                    copy_attributes(object, new_dataset)
+                else:
+                    output_h5.copy(object, name)
+            else:
+                raise NotImplementedError(f"Could not copy element {name}, "
+                                          f"type has not been implemented yet: {type(object)}")
+
+    with H5File(input_path, 'r') as input_h5, H5File(output_path, 'w', userblock_size=512) as output_h5:
+        copy_attributes(input_h5, output_h5)
+        input_h5.visititems(partial(visit_path, output_h5, compression))
+
+    with open(input_path, "rb") as input_bytes:
+        # Mudata puts metadata like this in the first 512 bytes:
+        # MuData (format-version=0.1.0;creator=muon;creator-version=0.2.0)
+        # See mudata/_core/io.py, read_h5mu() function
+        starting_metadata = input_bytes.read(100)
+        # The metadata is padded with extra null bytes up until 512 bytes
+        truncate_location = starting_metadata.find(b"\x00")
+        starting_metadata = starting_metadata[:truncate_location]
+    with open(output_path, "br+") as f:
+        nbytes = f.write(starting_metadata)
+        f.write(b"\0" * (512 - nbytes))
+# END TEMPORARY WORKAROUND compress_h5mu
+
+# START TEMPORARY WORKAROUND setup_logger
 # from setup_logger import setup_logger
 def setup_logger():
     import logging
@@ -226,28 +280,36 @@ def concatenate_modality(n_processes: int, mod: str, input_files: Iterable[str |
         concatenated_data = set_matrices(concatenated_data, new_matrices)
     return concatenated_data
 
-def concatenate_modalities(n_processes: int, modalities: set[str], input_files: Path | str,
-                           other_axis_mode: str, input_ids: tuple[str] | None = None) -> mu.MuData:
+def concatenate_modalities(n_processes: int, modalities: list[str], input_files: Path | str,
+                           other_axis_mode: str, output_file: Path | str,
+                           compression: Literal['gzip'] | Literal['lzf'],
+                           input_ids: tuple[str] | None = None) -> mu.MuData:
     """
     Join the modalities together into a single multimodal sample.
     """
     logger.info('Concatenating samples.')
-    if other_axis_mode == "move" and not input_ids:
-        raise ValueError("--mode 'move' requires --input_ids.")
-    new_mods = {}
-    for mod_name in modalities:
-        new_mods[mod_name] = concatenate_modality(n_processes, mod_name, input_files, other_axis_mode, input_ids)
-    concatenated_data = mu.MuData(new_mods)
+    output_file, input_files = Path(output_file), [Path(input_file) for input_file in input_files]
+    output_file_uncompressed = output_file.with_name(output_file.stem + "_uncompressed.h5mu")
+    output_file_uncompressed.touch()
+    # Create empty mudata file
+    mdata = mu.MuData({modality: anndata.AnnData() for modality in modalities})
+    mdata.write(output_file_uncompressed, compression=compression)
 
-    # After setting the matrices (.e.g. .mod['rna'].var) for each of the modalities
-    # the 'global' matrices must also be updated. This is done by mudata automatically
-    # by calling mudata.update() before writing. However, we need to make sure that the
-    # dtypes of these global matrices are also correct for writing..
-    for global_matrix_name in ("var", "obs"):
-        matrix = getattr(concatenated_data, global_matrix_name)
-        setattr(concatenated_data, global_matrix_name, cast_to_writeable_dtype(matrix))
+    for mod_name in modalities:
+        new_mod = concatenate_modality(n_processes, mod_name, 
+                                       input_files, other_axis_mode, 
+                                       input_ids)
+        logger.info("Writing out modality '%s' to '%s' with compression '%s'.",
+                    mod_name, output_file_uncompressed, compression)
+        mu.write_h5ad(output_file_uncompressed, data=new_mod, mod=mod_name)
+    
+    if compression:
+        compress_h5mu(output_file_uncompressed, output_file, compression=compression)
+        output_file_uncompressed.unlink()
+    else:
+        shutil.move(output_file_uncompressed, output_file)
+
     logger.info("Concatenation successful.")
-    return concatenated_data
 
 
 def main() -> None:
@@ -255,7 +317,7 @@ def main() -> None:
     mods = set()
     for path in par["input"]:
         try:
-            with h5py.File(path, 'r') as f_root:
+            with H5File(path, 'r') as f_root:
                 mods = mods | set(f_root["mod"].keys())
         except OSError:
             raise OSError(f"Failed to load {path}. Is it a valid h5 file?")
@@ -272,15 +334,17 @@ def main() -> None:
     logger.info("\nConcatenating data from paths:\n\t%s",
                 "\n\t".join(par["input"]))
 
+    if par["other_axis_mode"] == "move" and not input_ids:
+        raise ValueError("--mode 'move' requires --input_ids.")
+
     n_processes = meta["cpus"] if meta["cpus"] else 1
-    concatenated_samples = concatenate_modalities(n_processes,
-                                                  mods,
-                                                  par["input"],
-                                                  par["other_axis_mode"],
-                                                  input_ids=input_ids)
-    logger.info("Writing out data to '%s' with compression '%s'.",
-                par["output"], par["output_compression"])
-    concatenated_samples.write_h5mu(par["output"], compression=par["output_compression"])
+    concatenate_modalities(n_processes,
+                           list(mods),
+                           par["input"],
+                           par["other_axis_mode"],
+                           par["output"],
+                           par["output_compression"],
+                           input_ids=input_ids)
 
 
 if __name__ == "__main__":
