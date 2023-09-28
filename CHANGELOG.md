@@ -12,6 +12,8 @@
 
 ## MINOR CHANGES
 
+* `dataflow/concat`: bump pandas to ~=2.1.1 and reduce memory consumption by only reading one modality into memory at a time (PR #468). 
+
 * `velocity/scvelo`: pin matplotlib to < 3.8.0 (PR #566).
 
 * `mapping/multi_star`: pin multiqc to 1.15.0 (PR #566).
