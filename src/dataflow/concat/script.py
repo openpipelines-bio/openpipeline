@@ -7,7 +7,7 @@ import numpy as np
 from collections.abc import Iterable
 from multiprocessing import Pool
 from pathlib import Path
-import h5py
+from h5py import File as H5File
 from typing import Literal
 import shutil
 
@@ -27,29 +27,14 @@ meta = {
 ### VIASH END
 
 sys.path.append(meta["resources_dir"])
-# START TEMPORARY WORKAROUND setup_logger
+
+# START TEMPORARY WORKAROUND compress_h5mu
 # reason: resources aren't available when using Nextflow fusion
-# from setup_logger import setup_logger
+
 # from compress_h5mu import compress_h5mu
- 
-from h5py import File as H5File
 from h5py import Group, Dataset
-from pathlib import Path
-from typing import Union, Literal
+from typing import Union
 from functools import partial
-
-def setup_logger():
-    import logging
-    from sys import stdout
-
-    logger = logging.getLogger()
-    logger.setLevel(logging.INFO)
-    console_handler = logging.StreamHandler(stdout)
-    logFormatter = logging.Formatter("%(asctime)s %(levelname)-8s %(message)s")
-    console_handler.setFormatter(logFormatter)
-    logger.addHandler(console_handler)
-
-    return logger
 
 def compress_h5mu(input_path: Union[str, Path], 
                 output_path: Union[str, Path], 
@@ -93,6 +78,22 @@ def compress_h5mu(input_path: Union[str, Path],
     with open(output_path, "br+") as f:
         nbytes = f.write(starting_metadata)
         f.write(b"\0" * (512 - nbytes))
+# END TEMPORARY WORKAROUND compress_h5mu
+
+# START TEMPORARY WORKAROUND setup_logger
+# from setup_logger import setup_logger
+def setup_logger():
+    import logging
+    from sys import stdout
+
+    logger = logging.getLogger()
+    logger.setLevel(logging.INFO)
+    console_handler = logging.StreamHandler(stdout)
+    logFormatter = logging.Formatter("%(asctime)s %(levelname)-8s %(message)s")
+    console_handler.setFormatter(logFormatter)
+    logger.addHandler(console_handler)
+
+    return logger
 # END TEMPORARY WORKAROUND setup_logger
 logger = setup_logger()
 
@@ -316,7 +317,7 @@ def main() -> None:
     mods = set()
     for path in par["input"]:
         try:
-            with h5py.File(path, 'r') as f_root:
+            with H5File(path, 'r') as f_root:
                 mods = mods | set(f_root["mod"].keys())
         except OSError:
             raise OSError(f"Failed to load {path}. Is it a valid h5 file?")
