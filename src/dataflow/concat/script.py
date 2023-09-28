@@ -21,7 +21,8 @@ par = {
     "output_compression": "gzip"
 }
 meta = {
-    "cpus": 10
+    "cpus": 10,
+    "resources_dir": "resources_test/"
 }
 ### VIASH END
 
@@ -342,15 +343,7 @@ def main() -> None:
                            par["other_axis_mode"],
                            par["output"],
                            par["output_compression"],
-                                                  input_ids=input_ids)
-                                                  input_ids=input_ids)
-    logger.info("Writing out data to '%s' with compression '%s'.",
-                par["output"], par["output_compression"])
-    concatenated_samples.write_h5mu(par["output"], compression=par["output_compression"])
                            input_ids=input_ids)
-    logger.info("Writing out data to '%s' with compression '%s'.",
-                par["output"], par["output_compression"])
-    concatenated_samples.write_h5mu(par["output"], compression=par["output_compression"])
 
 
 if __name__ == "__main__":
