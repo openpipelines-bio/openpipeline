@@ -14,7 +14,7 @@
 
 ## MINOR CHANGES
 
-* `dataflow/concat`: bump pandas to ~=2.1.1 and reduce memory consumption by only reading one modality into memory at a time (PR #468). 
+* `dataflow/concat`: bump pandas to ~=2.1.1 and reduce memory consumption by only reading one modality into memory at a time (PR #568). 
 
 * `annotate/popv`: bump `jax` and `jaxlib` to `0.4.10`, scanpy to `1.9.4`, scvi to `1.0.3` and pin `ml-dtypes` to < 0.3.0 (PR #565).
 
