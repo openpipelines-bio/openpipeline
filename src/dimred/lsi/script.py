@@ -1,11 +1,9 @@
-import scanpy as sc
 import muon as mu
 import mudata as md
-import logging
 from anndata import AnnData
-from sys import stdout
 import numpy as np
 import sys
+
 
 ## VIASH START
 par = {
@@ -13,19 +11,22 @@ par = {
     "scale_embeddings": True, # scale embeddings to zero mean and unit variance
     "modality": "atac", # on which modality the LSI should be run 
     "layer": None, # on which layer to run the LSI, if None, will run it on anndata.X 
-    "var_input": "highly_variable", # column in anndata.var of the highly variable features 
-    #parameters for the output: 
+    "var_input": None, # column in anndata.var of the highly variable features
+
     "overwrite": True, 
-    "obsm_output": "X_lsi", # name of the slot in .obsm
-    "varm_output": "LSI", #name of the slot in .varm
-    "uns_output": "lsi", # name of the slot in .uns
-    "output": "output.h5mu", #path to the output file 
+    "obsm_output": "X_lsi",
+    "varm_output": "LSI",
+    "uns_output": "lsi",
+    "output": "output.h5mu",
     "output_compression": "gzip"
 }
 ## VIASH END
 
 
 sys.path.append(meta["resources_dir"])
+from subset_vars import subset_vars
+
+
 # START TEMPORARY WORKAROUND setup_logger
 # reason: resources aren't available when using Nextflow fusion
 # from setup_logger import setup_logger
@@ -52,28 +53,30 @@ mdata = md.read_h5mu(par["input"])
 #2. subset on modality
 if par["modality"] not in mdata.mod:
     raise ValueError(f" Modality '{par['modality']}' was not found in mudata {par['input']}.")
-logger.info("Computing LSI for modality '%s'", par['modality'])
 adata = mdata.mod[par['modality']]
+
 
 #3. Specify layer
 if par['layer'] and par["layer"] not in adata.layers:
     raise ValueError(f" Layer '{par['layer']}' was not found in modality '{par['modality']}'.")
 layer = adata.X if not par['layer'] else adata.layers[par['layer']]
-adata_input_layer = AnnData(layer)
-adata_input_layer.var.index = adata.var.index
+adata_input_layer = AnnData(layer, var=adata.var)
+
+
+if not par["layer"]:
+    logger.info("Using modality '%s' and adata.X for LSI computation", par['modality'])
+else:
+    logger.info("Using modality '%s' and layer '%s' for LSI computation", par['modality'], par["layer"])
+
 
 #4. Subset on highly variable features if applicable
-use_highly_variable = False
 if par["var_input"]:
-    if not par["var_input"] in adata.var.columns:
-        raise ValueError(f"Requested to use .var column '{par['var_input']}' "
-                         "as a selection of genes to run the LSI on, "
-                         f"but the column is not available for modality '{par['modality']}'")
-    use_highly_variable = True
-    #subset anndata on highly variable 
-    adata_input_layer = adata_input_layer[:, adata.var[par["var_input"]]] 
+    adata_input_layer = subset_vars(adata_input_layer, par["var_input"])
+
+
 
 #5. Run LSI
+logger.info("Computing %s LSI components on %s features", par["num_components"], adata_input_layer.X.shape[1])
 mu.atac.tl.lsi(adata_input_layer, scale_embeddings = par["scale_embeddings"], n_comps = par["num_components"])
 
 
@@ -93,7 +96,7 @@ for parameter_name, field in check_exist_dict.items():
 
 adata.obsm[par["obsm_output"]] = adata_input_layer.obsm['X_lsi']
 adata.uns[par["uns_output"]] = adata_input_layer.uns['lsi']
-if use_highly_variable: 
+if par["var_input"]:
     adata.varm[par["varm_output"]] = np.zeros(shape=(adata.n_vars, adata_input_layer.varm["LSI"].shape[1]))
     adata.varm[par["varm_output"]][adata.var[par["var_input"]]] = adata_input_layer.varm['LSI']
 else:
