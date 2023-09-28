@@ -64,7 +64,7 @@ functionality:
     - path: /resources_test/concat_test_data/human_brain_3k_filtered_feature_bc_matrix_subset_unique_obs.h5mu
 platforms:
   - type: docker
-    image: python:3.10.10-slim
+    image: python:3.10-slim
     setup:
       - type: apt
         packages: 
@@ -72,7 +72,7 @@ platforms:
       - type: python
         __merge__: [/src/base/requirements/anndata_mudata.yaml, .]
         packages:
-          - pandas~=2.0.0
+          - pandas~=2.1.1
     test_setup:
       - type: python
         packages:
