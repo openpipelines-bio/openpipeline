@@ -21,7 +21,7 @@ par = {
     "max_epochs": 500,
     "n_obs_min_count": 10,
     "n_var_min_count": 10,
-    "model_output": "test/",
+    "output_model": "test/",
     "output_compression": "gzip",
     }
 
@@ -128,8 +128,8 @@ def main():
 
     mdata.mod[par['modality']] = adata
     mdata.write_h5mu(par['output'].strip(), compression=par["output_compression"])
-    if par["model_output"]:
-        vae_uns.save(par["model_output"], overwrite=True)
+    if par["output_model"]:
+        vae_uns.save(par["output_model"], overwrite=True)
 
 if __name__ == "__main__":
     main()

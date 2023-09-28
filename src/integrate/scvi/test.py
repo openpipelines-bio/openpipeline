@@ -49,7 +49,7 @@ def test_scvi(run_component, mudata_with_mod_rna_obs_batch):
         "--modality", "rna",
         "--obs_batch", obs_batch,
         "--output", "output.h5mu",
-        "--model_output", "test/",
+        "--output_model", "test/",
         "--max_epochs", "1",
         "--n_obs_min_count", "10",
         "--n_var_min_count", "10",

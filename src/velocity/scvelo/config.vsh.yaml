@@ -86,6 +86,8 @@ platforms:
         packages:
           - scvelo~=0.2.5
           - numpy~=1.23.5
+          # Avoid https://github.com/theislab/scvelo/issues/1124
+          - matplotlib<3.8.0
     test_setup:
       - type: python
         packages: viashpy

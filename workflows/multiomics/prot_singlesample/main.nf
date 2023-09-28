@@ -6,7 +6,7 @@ targetDir = params.rootDir + "/target/nextflow"
 include { readConfig; helpMessage; channelFromParams; preprocessInputs } from workflowDir + "/utils/WorkflowHelper.nf"
 include { filter_with_counts } from targetDir + "/filter/filter_with_counts/main.nf"
 include { do_filter } from targetDir + "/filter/do_filter/main.nf"
-include { setWorkflowArguments; getWorkflowArguments } from workflowDir + "/utils/DataflowHelper.nf"
+include { setWorkflowArguments; getWorkflowArguments; passthroughMap as pmap} from workflowDir + "/utils/DataflowHelper.nf"
 
 config = readConfig("$workflowDir/multiomics/prot_singlesample/config.vsh.yaml")
 
@@ -49,6 +49,10 @@ workflow run_wf {
           var_name_filter: "filter_with_counts"
         ]
     )
+    | pmap {id, data ->
+      def new_data = ["input": data.output]
+      [id, new_data]
+    }
     | getWorkflowArguments(key: "do_filter")
     | do_filter.run(
         args: [
@@ -92,14 +96,14 @@ workflow test_wf {
     | run_wf
     | view { output ->
       assert output.size() == 3 : "outputs should contain two elements; [id, file, passthrough]"
-      assert output[1].toString().endsWith(".h5mu") : "Output file should be a h5mu file. Found: ${output[1]}"
+      assert output[1].output.toString().endsWith(".h5mu") : "Output file should be a h5mu file. Found: ${output[1]}"
       "Output: $output"
     }
     | toSortedList()
     | map { output_list ->
       assert output_list.size() == 1 : "output channel should contain one event"
       assert output_list[0][0] == "foo" : "Output ID should be same as input ID"
-      assert (output_list.collect({it[1].getFileName().toString()}) as Set).equals(["foo.final.h5mu"] as Set)
+      assert (output_list.collect({it[1].output.getFileName().toString()}) as Set).equals(["foo.final.h5mu"] as Set)
     }
     //| check_format(args: {""}) // todo: check whether output h5mu has the right slots defined
 }

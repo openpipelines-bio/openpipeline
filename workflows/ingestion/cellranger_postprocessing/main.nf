@@ -46,8 +46,7 @@ workflow run_wf {
       },
       toState: { id, output, state -> 
         state + [input: output.output, layer: "cellbender_corrected"]
-      },
-      auto: [simplifyOutput: false]
+      }
     )
   mid1_uncorrected = mid0
     | filter{ ! it[1].perform_correction }
@@ -67,8 +66,7 @@ workflow run_wf {
           do_subset: true
         ]
       },
-      toState: [input: "output"],
-      auto: [simplifyOutput: false]
+      toState: [input: "output"]
     )
   mid2_unfiltered = mid1
     | filter{ it[1].min_genes == null && it[1].min_counts == null }
@@ -78,7 +76,7 @@ workflow run_wf {
   output_ch = mid2
     | publish.run(
       fromState: [ input: "input", output: "output" ],
-      auto: [ publish: true, simplifyOutput: false ]
+      auto: [ publish: true ]
     )
 
   emit:
@@ -109,8 +107,7 @@ workflow test_wf {
     // first filter and convert to h5mu
     | from_10xh5_to_h5mu.run(
       fromState: ["input"],
-      toState: ["input": "output"],
-      auto: [simplifyOutput: false]
+      toState: ["input": "output"]
     )
 
     | view { "Input: $it" }
@@ -152,8 +149,7 @@ workflow test_wf2 {
     // first filter and convert to h5mu
     | from_10xh5_to_h5mu.run(
       fromState: ["input"],
-      toState: ["input": "output"],
-      auto: [simplifyOutput: false]
+      toState: ["input": "output"]
     )
 
     | view { "Input: $it" }

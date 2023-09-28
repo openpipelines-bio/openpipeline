@@ -77,11 +77,11 @@
             "help_text": "Type: `file`, required, default: `\"$id.$key.output.output\"`. Output h5mu file.",
             "default": "$id.$key.output.output"
           },
-          "model_output": {
+          "output_model": {
             "type": "string",
-            "description": "Type: `file`, default: `\"$id.$key.model_output.model_output\"`. Folder where the state of the trained model will be saved to",
-            "help_text": "Type: `file`, default: `\"$id.$key.model_output.model_output\"`. Folder where the state of the trained model will be saved to.",
-            "default": "$id.$key.model_output.model_output"
+            "description": "Type: `file`, default: `\"$id.$key.output_model.output_model\"`. Folder where the state of the trained model will be saved to",
+            "help_text": "Type: `file`, default: `\"$id.$key.output_model.output_model\"`. Folder where the state of the trained model will be saved to.",
+            "default": "$id.$key.output_model.output_model"
           },
           "output_compression": {
             "type": "string",

@@ -47,7 +47,10 @@ workflow run_wf {
 
     | getWorkflowArguments(key: "cellranger_count")
     | cellranger_count.run(auto: [ publish: true ])
-
+    | pmap {id, data ->
+        def new_data = ["input": data.output]
+        [id, new_data]
+    }
     // split output dir into map
     | cellranger_count_split
     // convert to h5mu

@@ -1,3 +1,35 @@
+# openpipelines 0.11.0
+
+## BREAKING CHANGES
+
+* Nextflow VDSL3: set `simplifyOutput` to `False` by default. This implies that components and workflows will output a hashmap with a sole "output" entry when there is only one output (PR #563).
+
+* `integrate/scvi`: rename `model_output` argument to `output_model` in order to align with the `scvi_leiden` workflow. This also fixes a bug with the workflow where the argument did not function (PR  #562).
+
+## BUG FIXES
+
+* `convert/from_bdrhap_to_h5mu`: Avoid `TypeError: Can't implicitly convert non-string objects to strings` by using categorical dtypes when a string column contains NA values (PR #563).
+
+* `qc/calculate_qc_metrics`: fix calculating mitochondrial gene related QC metrics when only or no mitochondrial genes were found (PR #564).
+
+## MINOR CHANGES
+
+* `dataflow/concat`: bump pandas to ~=2.1.1 and reduce memory consumption by only reading one modality into memory at a time (PR #568). 
+
+* `annotate/popv`: bump `jax` and `jaxlib` to `0.4.10`, scanpy to `1.9.4`, scvi to `1.0.3` and pin `ml-dtypes` to < 0.3.0 (PR #565).
+
+* `velocity/scvelo`: pin matplotlib to < 3.8.0 (PR #566).
+
+* `mapping/multi_star`: pin multiqc to 1.15.0 (PR #566).
+
+* `mapping/bd_rhapsody`: pin pandas version to <2 (PR #563). 
+
+* `query/cellxgene_census`: replaced label `singlecpu` with label `midcpu`.
+
+* `query/cellxgene_census`: avoid creating MuData object in memory by writing the modality directly to disk (PR #558).
+
+* `integrate/scvi`: use `midcpu` label instead of `singlecpu` (PR #561).
+
 # openpipelines 0.10.1
 
 ## MINOR CHANGES

@@ -15,4 +15,5 @@ nextflow run . \
   -profile docker,no_publish \
   -entry test_wf \
   -with-trace work/trace.txt \
-  -with-dag workflows/multiomics/integration/initialize_integration/graph.dot
+  -with-dag workflows/multiomics/integration/initialize_integration/graph.dot \
+  -resume

@@ -12,7 +12,7 @@ meta = {
     'executable': './target/docker/dataflow/concat/concat',
     'resources_dir': './resources_test/concat_test_data/',
     'cpus': 2,
-    'config': '/home/di/code/openpipeline/src/dataflow/concat/config.vsh.yaml'
+    'config': './src/dataflow/concat/config.vsh.yaml'
 }
 ## VIASH END
 

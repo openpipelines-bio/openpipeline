@@ -1,7 +1,7 @@
 functionality:
   name: "bd_rhapsody"
   namespace: "mapping"
-  version: "0.10.1"
+  version: "0.11.0"
   authors:
   - name: "Robrecht Cannoodt"
     roles:
@@ -355,7 +355,7 @@ platforms:
   - type: "python"
     user: false
     packages:
-    - "pandas"
+    - "pandas<2"
     upgrade: true
   entrypoint: []
   cmd: null
@@ -368,7 +368,7 @@ platforms:
     tag: "$id"
   auto:
     simplifyInput: true
-    simplifyOutput: true
+    simplifyOutput: false
     transcript: false
     publish: false
   config:
@@ -411,5 +411,5 @@ info:
   output: "/home/runner/work/openpipeline/openpipeline/target/nextflow/mapping/bd_rhapsody"
   executable: "/home/runner/work/openpipeline/openpipeline/target/nextflow/mapping/bd_rhapsody/bd_rhapsody"
   viash_version: "0.7.5"
-  git_commit: "3d2a0f21b49b7c8bc40e44e668191f0a8cb784b5"
+  git_commit: "2b9ad1d517a01d6a7a8498182848c8b974fd024a"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"
