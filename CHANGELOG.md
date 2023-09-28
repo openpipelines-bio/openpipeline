@@ -10,9 +10,13 @@
 
 * `convert/from_bdrhap_to_h5mu`: Avoid `TypeError: Can't implicitly convert non-string objects to strings` by using categorical dtypes when a string column contains NA values (PR #563).
 
+* `qc/calculate_qc_metrics`: fix calculating mitochondrial gene related QC metrics when only or no mitochondrial genes were found (PR #564).
+
 ## MINOR CHANGES
 
 * `dataflow/concat`: bump pandas to ~=2.1.1 and reduce memory consumption by only reading one modality into memory at a time (PR #468). 
+
+* `annotate/popv`: bump `jax` and `jaxlib` to `0.4.10`, scanpy to `1.9.4`, scvi to `1.0.3` and pin `ml-dtypes` to < 0.3.0 (PR #565).
 
 * `velocity/scvelo`: pin matplotlib to < 3.8.0 (PR #566).
 
