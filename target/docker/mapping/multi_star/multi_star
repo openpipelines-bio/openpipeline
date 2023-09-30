@@ -1857,13 +1857,13 @@ RUN apt-get update && \
   rm -rf /var/lib/apt/lists/*
 
 RUN pip install --upgrade pip && \
-  pip install --upgrade --no-cache-dir "pyyaml" "HTSeq" "multiprocess" "gtfparse<2.0" "pandas" "multiqc"
+  pip install --upgrade --no-cache-dir "pyyaml" "HTSeq" "multiprocess" "gtfparse<2.0" "pandas" "multiqc~=1.15.0"
 
 LABEL org.opencontainers.image.authors="Angela Oliveira Pisco, Robrecht Cannoodt"
 LABEL org.opencontainers.image.description="Companion container for running component mapping multi_star"
-LABEL org.opencontainers.image.created="2023-09-25T11:28:21Z"
+LABEL org.opencontainers.image.created="2023-09-30T02:38:11Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="cbc8aacf58332a8f6b4f47fa05bee9feaaf74898"
+LABEL org.opencontainers.image.revision="5c9982100663d9e3e9a6c835864ec68252c33916"
 LABEL org.opencontainers.image.version="integration_build"
 
 VIASHDOCKER

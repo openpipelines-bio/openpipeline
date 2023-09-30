@@ -478,7 +478,7 @@ RUN apt-get update && \
   rm -rf /var/lib/apt/lists/*
 
 RUN pip install --upgrade pip && \
-  pip install --upgrade --no-cache-dir "scanpy~=1.9.2" "scvi-tools~=0.20.3" "popv~=0.3.2"
+  pip install --upgrade --no-cache-dir "scanpy~=1.9.4" "scvi-tools~=1.0.3" "popv~=0.3.2" "jax==0.4.10" "jaxlib==0.4.10" "ml-dtypes<0.3.0"
 
 RUN pip install --upgrade pip && \
   pip install --upgrade --no-cache-dir "mudata~=0.2.3" "anndata~=0.9.1"
@@ -486,14 +486,11 @@ RUN pip install --upgrade pip && \
 RUN cd /opt && git clone --depth 1 https://github.com/YosefLab/PopV.git && \
   cd PopV && git fetch --depth 1 origin tag v0.2 && git checkout v0.2
 
-RUN pip install --upgrade pip && \
-  pip install --upgrade --no-cache-dir "jax==0.4.9" "jaxlib==0.4.9"
-
 LABEL org.opencontainers.image.authors="Matthias Beyens, Robrecht Cannoodt"
 LABEL org.opencontainers.image.description="Companion container for running component annotate popv"
-LABEL org.opencontainers.image.created="2023-09-25T11:28:22Z"
+LABEL org.opencontainers.image.created="2023-09-30T02:38:01Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="cbc8aacf58332a8f6b4f47fa05bee9feaaf74898"
+LABEL org.opencontainers.image.revision="5c9982100663d9e3e9a6c835864ec68252c33916"
 LABEL org.opencontainers.image.version="integration_build"
 
 VIASHDOCKER

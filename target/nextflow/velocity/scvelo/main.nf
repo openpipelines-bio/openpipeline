@@ -284,7 +284,8 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
             "mudata~=0.2.3",
             "anndata~=0.9.1",
             "scvelo~=0.2.5",
-            "numpy~=1.23.5"
+            "numpy~=1.23.5",
+            "matplotlib<3.8.0"
           ],
           "upgrade" : true
         }
@@ -363,7 +364,7 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
     "platform" : "nextflow",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/velocity/scvelo",
     "viash_version" : "0.7.5",
-    "git_commit" : "cbc8aacf58332a8f6b4f47fa05bee9feaaf74898",
+    "git_commit" : "5c9982100663d9e3e9a6c835864ec68252c33916",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))
