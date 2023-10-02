@@ -172,5 +172,5 @@ jobs:
         viash test \
           "${{ matrix.component.config }}" \
           --cpus 2 \
-          --memory "5gb"
+          --memory "7gb"
 
