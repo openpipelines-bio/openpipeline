@@ -16,7 +16,7 @@ meta = {
 }
 ## VIASH END
 
-meta['cpus'] = 1 if not meta['cpus'] else meta['cpus']
+meta['cpus'] = 1
 
 # Note: the .var for these samples have no overlap, so there are no conflicting annotations
 # for the features that need to be handled by the concat component.
