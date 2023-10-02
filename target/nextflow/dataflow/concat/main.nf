@@ -206,7 +206,8 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
         {
           "type" : "apt",
           "packages" : [
-            "procps"
+            "procps",
+            "git"
           ],
           "interactive" : false
         },
@@ -226,7 +227,7 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
           "type" : "python",
           "user" : false,
           "packages" : [
-            "viashpy"
+            "git+https://github.com/viash-io/viashpy.git@13-automatically-add-cpus-and-memory-to-the-cmd-args"
           ],
           "upgrade" : true
         }
@@ -295,7 +296,7 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
     "platform" : "nextflow",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/dataflow/concat",
     "viash_version" : "0.7.5",
-    "git_commit" : "5c9982100663d9e3e9a6c835864ec68252c33916",
+    "git_commit" : "265c59fbbc510771721881c1976a713791866585",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))
