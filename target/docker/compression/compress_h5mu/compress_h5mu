@@ -408,9 +408,9 @@ RUN pip install --upgrade pip && \
 
 LABEL org.opencontainers.image.authors="Dries Schaumont"
 LABEL org.opencontainers.image.description="Companion container for running component compression compress_h5mu"
-LABEL org.opencontainers.image.created="2023-10-02T09:12:49Z"
+LABEL org.opencontainers.image.created="2023-10-03T08:34:07Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="24ce0130cd3d0b593b2dcba63fb682a59e5ccb21"
+LABEL org.opencontainers.image.revision="b741077dbb308e1c83a3b404e4d49b6f3cbff942"
 LABEL org.opencontainers.image.version="main_build"
 
 VIASHDOCKER
