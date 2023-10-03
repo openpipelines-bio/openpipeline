@@ -77,7 +77,7 @@ platforms:
     test_setup:
       - type: python
         packages:
-          - git+https://github.com/viash-io/viashpy.git@13-automatically-add-cpus-and-memory-to-the-cmd-args
+          - viashpy
   - type: native
   - type: nextflow
     directives:
