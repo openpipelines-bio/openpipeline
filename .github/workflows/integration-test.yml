@@ -1,9 +1,6 @@
 name: integration test
 
-on:
-  workflow_dispatch:
-  schedule:
-    - cron: '33 2 * * *'
+on: workflow_dispatch
 
 jobs:
   # phase 1
