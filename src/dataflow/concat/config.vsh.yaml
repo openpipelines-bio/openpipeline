@@ -69,7 +69,6 @@ platforms:
       - type: apt
         packages: 
           - procps
-          - git
       - type: python
         __merge__: [/src/base/requirements/anndata_mudata.yaml, .]
         packages:
