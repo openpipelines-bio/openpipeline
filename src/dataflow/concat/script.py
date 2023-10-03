@@ -203,7 +203,7 @@ def cast_to_writeable_dtype(result: pd.DataFrame) -> pd.DataFrame:
     return result
 
 def split_conflicts_modalities(n_processes: int, input_ids: tuple[str], samples: Iterable[anndata.AnnData], output: anndata.AnnData) \
-        -> tuple[dict[str, dict[str, pd.DataFrame]],  dict[str, pd.DataFrame | None]]:
+        -> anndata.AnnData:
     """
     Merge .var and .obs matrices of the anndata objects. Columns are merged
     when the values (excl NA) are the same in each of the matrices.
@@ -254,7 +254,7 @@ def concatenate_modality(n_processes: int, mod: str, input_files: Iterable[str |
 def concatenate_modalities(n_processes: int, modalities: list[str], input_files: Path | str,
                            other_axis_mode: str, output_file: Path | str,
                            compression: Literal['gzip'] | Literal['lzf'],
-                           input_ids: tuple[str] | None = None) -> mu.MuData:
+                           input_ids: tuple[str] | None = None) -> None:
     """
     Join the modalities together into a single multimodal sample.
     """
