@@ -6,6 +6,10 @@
 
 * `integrate/scvi`: rename `model_output` argument to `output_model` in order to align with the `scvi_leiden` workflow. This also fixes a bug with the workflow where the argument did not function (PR  #562).
 
+## MINOR CHANGES
+
+* `dataflow/concat`: reduce memory consumption when using `--mode move` by processing only one annotation matrix (`.var`, `.obs`) at a time (PR #569).
+
 ## BUG FIXES
 
 * `convert/from_bdrhap_to_h5mu`: Avoid `TypeError: Can't implicitly convert non-string objects to strings` by using categorical dtypes when a string column contains NA values (PR #563).
