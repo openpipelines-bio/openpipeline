@@ -202,57 +202,29 @@ def cast_to_writeable_dtype(result: pd.DataFrame) -> pd.DataFrame:
         result[obj_col].astype(str).astype('category')
     return result
 
-def split_conflicts_modalities(n_processes: int, input_ids: tuple[str], modalities: Iterable[anndata.AnnData]) \
-        -> tuple[dict[str, dict[str, pd.DataFrame]],  dict[str, pd.DataFrame | None]]:
-        """
-        Merge .var and .obs matrices of the anndata objects. Columns are merged
-        when the values (excl NA) are the same in each of the matrices.
-        Conflicting columns are moved to a separate dataframe (one dataframe for each column,
-        containing all the corresponding column from each sample).
-        """
-        matrices_to_parse = ("var", "obs")
-        concatenated_result = {}
-        conflicts_result = {}
-        for matrix_name in matrices_to_parse:
-            matrices = [getattr(modality, matrix_name) for modality in modalities]
-            conflicts, concatenated_matrix = concatenate_matrices(n_processes, input_ids, matrices)
-            conflicts_result[f"{matrix_name}m"] = conflicts
-            concatenated_result[matrix_name] = concatenated_matrix
-        return conflicts_result, concatenated_result
+def split_conflicts_modalities(n_processes: int, input_ids: tuple[str], samples: Iterable[anndata.AnnData], output: anndata.AnnData) \
+        -> anndata.AnnData:
+    """
+    Merge .var and .obs matrices of the anndata objects. Columns are merged
+    when the values (excl NA) are the same in each of the matrices.
+    Conflicting columns are moved to a separate dataframe (one dataframe for each column,
+    containing all the corresponding column from each sample).
+    """
+    matrices_to_parse = ("var", "obs")
+    for matrix_name in matrices_to_parse:
+        matrices = [getattr(sample, matrix_name) for sample in samples]
+        conflicts, concatenated_matrix = concatenate_matrices(n_processes, input_ids, matrices)
+        
+        # Write the conflicts to the output
+        matrix_index = getattr(output, matrix_name).index
+        for conflict_name, conflict_data in conflicts.items():
+            getattr(output, f"{matrix_name}m")[conflict_name] = conflict_data.reindex(matrix_index)
 
-def set_matrices(mod: mu.MuData,
-                 new_matrices: dict[str, pd.DataFrame | None]) -> mu.MuData:
-    """
-    Add the calculated matrices to the mudata object. Ensure the correct datatypes
-    for the matrices that are composed from the combination of the matrices
-    from the different modalities.
-    """
-    for matrix_name, data in new_matrices.items():
-        new_index = getattr(mod, matrix_name).index
-        if data is None:
-            data = pd.DataFrame(index=new_index)
-        if data.index.empty:
-            data.index = new_index
-        setattr(mod, matrix_name, data)
-    return mod
+        # Set other annotation matrices in the output
+        setattr(output, matrix_name, pd.DataFrame() if concatenated_matrix is None else concatenated_matrix)
 
+    return output
 
-def set_conflicts(mod: anndata.AnnData,
-                  conflicts: dict[str, dict[str, pd.DataFrame]]) -> mu.MuData:
-    """
-    Store dataframes containing the conflicting columns in .obsm,
-    one key per column name from the original data.
-    """
-    mutlidim_to_singledim = {
-        'varm': 'var',
-        'obsm': 'obs'
-    }
-    for conflict_matrix_name, conflict in conflicts.items():
-        for conflict_name, conflict_data in conflict.items():
-            singledim_name = mutlidim_to_singledim[conflict_matrix_name]
-            singledim_index = getattr(mod, singledim_name).index
-            getattr(mod, conflict_matrix_name)[conflict_name] = conflict_data.reindex(singledim_index)
-    return mod
 
 def concatenate_modality(n_processes: int, mod: str, input_files: Iterable[str | Path], 
                          other_axis_mode: str, input_ids: tuple[str]) -> anndata.AnnData:
@@ -275,15 +247,14 @@ def concatenate_modality(n_processes: int, mod: str, input_files: Iterable[str |
     concatenated_data = anndata.concat(mod_data, join='outer', merge=other_axis_mode_to_apply)
 
     if other_axis_mode == "move":
-        conflicts, new_matrices = split_conflicts_modalities(n_processes, input_ids, mod_data)
-        concatenated_data = set_conflicts(concatenated_data, conflicts)
-        concatenated_data = set_matrices(concatenated_data, new_matrices)
+        concatenated_data = split_conflicts_modalities(n_processes, input_ids, mod_data, concatenated_data)
+    
     return concatenated_data
 
 def concatenate_modalities(n_processes: int, modalities: list[str], input_files: Path | str,
                            other_axis_mode: str, output_file: Path | str,
                            compression: Literal['gzip'] | Literal['lzf'],
-                           input_ids: tuple[str] | None = None) -> mu.MuData:
+                           input_ids: tuple[str] | None = None) -> None:
     """
     Join the modalities together into a single multimodal sample.
     """
@@ -310,7 +281,6 @@ def concatenate_modalities(n_processes: int, modalities: list[str], input_files:
         shutil.move(output_file_uncompressed, output_file)
 
     logger.info("Concatenation successful.")
-
 
 def main() -> None:
     # Get a list of all possible modalities
