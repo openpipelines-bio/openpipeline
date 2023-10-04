@@ -185,8 +185,7 @@ platforms:
           - pandas
     test_setup:
       - type: python
-        packages:
-          - viashpy~=0.3.2
+        __merge__: [ /src/base/requirements/viashpy.yaml, .]
   - type: nextflow
     directives:
       label: [ veryhighmem, highcpu ]
