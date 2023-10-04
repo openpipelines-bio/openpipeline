@@ -8,7 +8,7 @@
 
 ## MINOR CHANGES
 
-* `dataflow/concat`: reduce memory consumption when using `--mode move` by processing only one annotation matrix (`.var`, `.obs`) at a time (PR #569).
+* `dataflow/concat`: reduce memory consumption when using `--other_axis_mode move` by processing only one annotation matrix (`.var`, `.obs`) at a time (PR #569).
 
 ## BUG FIXES
 
