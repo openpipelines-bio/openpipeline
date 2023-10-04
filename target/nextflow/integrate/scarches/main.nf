@@ -337,7 +337,7 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
     {
       "type" : "docker",
       "id" : "docker",
-      "image" : "nvcr.io/nvidia/pytorch:22.12-py3",
+      "image" : "nvcr.io/nvidia/pytorch:23.09-py3",
       "target_organization" : "openpipelines-bio",
       "target_registry" : "ghcr.io",
       "namespace_separator" : "_",
@@ -352,8 +352,8 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
           "packages" : [
             "mudata~=0.2.3",
             "anndata~=0.9.1",
-            "scvi-tools~=0.19",
-            "pandas~=1.5.0"
+            "scvi-tools~=1.0.3",
+            "pandas~=2.1.0"
           ],
           "upgrade" : true
         }
@@ -363,7 +363,7 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
           "type" : "python",
           "user" : false,
           "packages" : [
-            "viashpy"
+            "viashpy==0.4.1"
           ],
           "upgrade" : true
         }
@@ -432,7 +432,7 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
     "platform" : "nextflow",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/integrate/scarches",
     "viash_version" : "0.7.5",
-    "git_commit" : "9a1890f844548072e5459592670259292432f3ef",
+    "git_commit" : "f71635b8057c887dac6061dfb7545fd27d12e102",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))

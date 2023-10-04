@@ -471,19 +471,19 @@ function ViashDockerCheckCommands {
 #   ViashDockerFile
 function ViashDockerfile {
   cat << 'VIASHDOCKER'
-FROM nvcr.io/nvidia/pytorch:22.12-py3
+FROM nvcr.io/nvidia/pytorch:23.09-py3
 
 ENTRYPOINT []
 
  
 RUN pip install --upgrade pip && \
-  pip install --upgrade --no-cache-dir "mudata~=0.2.3" "anndata~=0.9.1" "scvi-tools~=0.19" "pandas~=1.5.0"
+  pip install --upgrade --no-cache-dir "mudata~=0.2.3" "anndata~=0.9.1" "scvi-tools~=1.0.3" "pandas~=2.1.0"
 
 LABEL org.opencontainers.image.authors="Vladimir Shitov"
 LABEL org.opencontainers.image.description="Companion container for running component integrate scarches"
-LABEL org.opencontainers.image.created="2023-10-04T07:30:11Z"
+LABEL org.opencontainers.image.created="2023-10-04T14:25:56Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="9a1890f844548072e5459592670259292432f3ef"
+LABEL org.opencontainers.image.revision="f71635b8057c887dac6061dfb7545fd27d12e102"
 LABEL org.opencontainers.image.version="main_build"
 
 VIASHDOCKER

@@ -348,7 +348,7 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
     {
       "type" : "docker",
       "id" : "docker",
-      "image" : "python:3.8",
+      "image" : "python:3.9",
       "target_organization" : "openpipelines-bio",
       "target_registry" : "ghcr.io",
       "namespace_separator" : "_",
@@ -373,7 +373,7 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
             "mudata~=0.2.3",
             "anndata~=0.9.1",
             "torchmetrics~=0.11.0",
-            "scvi-tools~=0.19"
+            "scvi-tools~=1.0.3"
           ],
           "upgrade" : true
         }
@@ -383,7 +383,7 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
           "type" : "python",
           "user" : false,
           "packages" : [
-            "viashpy"
+            "viashpy==0.4.1"
           ],
           "upgrade" : true
         }
@@ -452,7 +452,7 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
     "platform" : "nextflow",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/integrate/totalvi",
     "viash_version" : "0.7.5",
-    "git_commit" : "9a1890f844548072e5459592670259292432f3ef",
+    "git_commit" : "f71635b8057c887dac6061dfb7545fd27d12e102",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))
