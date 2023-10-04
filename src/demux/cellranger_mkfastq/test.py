@@ -19,10 +19,6 @@ def test_run(run_component, tmp_path):
         "--sample_sheet", sample_sheet,
         "--output", str(output)
     ]
-    if meta['cpus']:
-        cmd_pars.extend(["---cpus", str(meta['cpus'])])
-    if meta['memory_gb']:
-        cmd_pars.extend(["---memory", f"{meta['memory_gb']}GB"])
 
     run_component(cmd_pars)
 
