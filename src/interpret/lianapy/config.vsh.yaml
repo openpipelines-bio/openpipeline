@@ -97,7 +97,8 @@ platforms:
           - numpy~=1.24.3
     test_setup:
       - type: python
-        packages: viashpy
+        __merge__: [ /src/base/requirements/viashpy.yaml, .]
+
   - type: nextflow
     directives:
       label: [lowmem, lowcpu]
