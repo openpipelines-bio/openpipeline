@@ -398,7 +398,7 @@ function ViashDockerCheckCommands {
 #   ViashDockerFile
 function ViashDockerfile {
   cat << 'VIASHDOCKER'
-FROM python:3.8-slim
+FROM python:3.9-slim
 
 ENTRYPOINT []
 
@@ -412,9 +412,9 @@ RUN pip install --upgrade pip && \
 
 LABEL org.opencontainers.image.authors="Dries De Maeyer"
 LABEL org.opencontainers.image.description="Companion container for running component convert from_h5ad_to_h5mu"
-LABEL org.opencontainers.image.created="2023-10-04T02:38:48Z"
+LABEL org.opencontainers.image.created="2023-10-05T02:40:55Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="b741077dbb308e1c83a3b404e4d49b6f3cbff942"
+LABEL org.opencontainers.image.revision="f71635b8057c887dac6061dfb7545fd27d12e102"
 LABEL org.opencontainers.image.version="integration_build"
 
 VIASHDOCKER
