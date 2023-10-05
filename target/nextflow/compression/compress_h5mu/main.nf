@@ -240,7 +240,7 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
     "platform" : "nextflow",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/compression/compress_h5mu",
     "viash_version" : "0.7.5",
-    "git_commit" : "f71635b8057c887dac6061dfb7545fd27d12e102",
+    "git_commit" : "5c7795a00acae30bfd5b56881fd342eff4925275",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))
