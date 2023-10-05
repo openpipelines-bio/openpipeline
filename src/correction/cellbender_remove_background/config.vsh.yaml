@@ -278,7 +278,7 @@ functionality:
 platforms:
   - type: docker
     image: nvcr.io/nvidia/cuda:11.8.0-devel-ubuntu22.04
-    run_args: ["--gpus all"]
+    # run_args: ["--gpus all"]
     setup:
       - type: docker
         env:
