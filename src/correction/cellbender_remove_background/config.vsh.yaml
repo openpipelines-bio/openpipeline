@@ -278,11 +278,8 @@ functionality:
 platforms:
   - type: docker
     image: nvcr.io/nvidia/cuda:11.8.0-devel-ubuntu22.04
-    # todo: change to cuda image?
-    # run_args: ["--gpus all"]
-    entrypoint: "conda run --no-capture-output /bin/bash"
+    run_args: ["--gpus all"]
     setup:
-      # workaro
       - type: docker
         env:
           - PYENV_ROOT="/root/.pyenv"
@@ -297,7 +294,7 @@ platforms:
           && apt-get clean
       - type: python
         packages:
-          # Use this version of mudata because it is the only one that supports python 3.7
+          # Use this version of mudata because it is the last one that supports python 3.7
           - mudata~=0.2.1
           - cellbender~=0.3.0
     test_setup:
