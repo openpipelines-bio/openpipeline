@@ -20,7 +20,11 @@
 
 * `integrate/totalvi`: update python to 3.9 and scvi-tools to `~=1.0.3` (PR #572).
 
+* `correction/cellbender_remove_background`: change base image to `nvcr.io/nvidia/cuda:11.8.0-devel-ubuntu22.04` and downwgrade MuData to 0.2.1 because it is the oldest version that uses python 3.7 (PR #575).
+
 ## BUG FIXES
+
+* `correction/cellbender_remove_background`: fix missing helper functionality when using Fusion (PR #575).
 
 * `convert/from_bdrhap_to_h5mu`: Avoid `TypeError: Can't implicitly convert non-string objects to strings` by using categorical dtypes when a string column contains NA values (PR #563).
 
