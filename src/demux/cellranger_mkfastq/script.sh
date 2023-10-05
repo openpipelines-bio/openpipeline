@@ -36,8 +36,8 @@ if [ ! -z "$meta_cpus" ]; then
   extra_params+=( "--localcores=$meta_cpus" )
 fi
 if [ ! -z "$meta_memory_gb" ]; then 
-  # always keep 2gb for the OS itself
-  memory_gb=`python -c "print(int('$meta_memory_gb') - 2)"`
+  # always keep 1gb for the OS itself
+  memory_gb=`python -c "print(int('$meta_memory_gb') - 1)"`
   extra_params+=( "--localmem=$memory_gb" )
 fi
 
