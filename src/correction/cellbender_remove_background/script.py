@@ -5,7 +5,7 @@ import os
 import sys
 import numpy as np
 from scipy.sparse import csr_matrix
-
+from cellbender.remove_background.downstream import anndata_from_h5
 ## VIASH START
 import muon
 file_raw = "./resources_test/pbmc_1k_protein_v3/pbmc_1k_protein_v3_raw_feature_bc_matrix.h5"
@@ -85,7 +85,6 @@ def setup_logger():
 # END TEMPORARY WORKAROUND setup_logger
 logger = setup_logger()
 
-from helper import anndata_from_h5
 
 logger.info("Reading input mudata")
 mdata = mu.read_h5mu(par["input"])
@@ -107,7 +106,7 @@ with tempfile.TemporaryDirectory(prefix="cellbender-", dir=meta["temp_dir"]) as 
 
     logger.info("Constructing CellBender command")
     cmd_pars = [
-        "cellbender_in_conda", "remove-background",
+        "cellbender", "remove-background",
         "--input", input_file,
         "--output", output_file,
         # don't create checkpoints because they're not used / returned anyways
