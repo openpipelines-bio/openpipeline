@@ -197,7 +197,7 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
           "type" : "python",
           "user" : false,
           "packages" : [
-            "viashpy~=0.3.2"
+            "viashpy==0.5.0"
           ],
           "upgrade" : true
         }
@@ -262,7 +262,7 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
     "platform" : "nextflow",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/convert/from_cellranger_multi_to_h5mu",
     "viash_version" : "0.7.5",
-    "git_commit" : "2b9ad1d517a01d6a7a8498182848c8b974fd024a",
+    "git_commit" : "ed23da36129699b67405aa930656c091d80fda31",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))

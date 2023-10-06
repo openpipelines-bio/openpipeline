@@ -520,8 +520,6 @@ functionality:
     path: "script.py"
     is_executable: true
   - type: "file"
-    path: "helper.py"
-  - type: "file"
     path: "src/utils/setup_logger.py"
   description: "Eliminating technical artifacts from high-throughput single-cell RNA\
     \ sequencing data.\n\nThis module removes counts due to ambient RNA molecules\
@@ -545,7 +543,7 @@ functionality:
 platforms:
 - type: "docker"
   id: "docker"
-  image: "nvcr.io/nvidia/pytorch:22.12-py3"
+  image: "nvcr.io/nvidia/cuda:11.8.0-devel-ubuntu22.04"
   target_organization: "openpipelines-bio"
   target_registry: "ghcr.io"
   namespace_separator: "_"
@@ -554,32 +552,30 @@ platforms:
   setup_strategy: "ifneedbepullelsecachedbuild"
   target_image_source: "https://github.com/openpipelines-bio/openpipeline"
   setup:
+  - type: "docker"
+    run:
+    - "apt update && DEBIAN_FRONTEND=noninteractive apt install -y make build-essential\
+      \ libssl-dev zlib1g-dev libbz2-dev libreadline-dev libsqlite3-dev wget ca-certificates\
+      \ curl llvm libncurses5-dev xz-utils tk-dev libxml2-dev libxmlsec1-dev libffi-dev\
+      \ liblzma-dev mecab-ipadic-utf8 git \\\n&& curl https://pyenv.run | bash \\\n\
+      && pyenv update \\\n&& pyenv install $PYTHON_VERSION \\\n&& pyenv global $PYTHON_VERSION\
+      \ \\\n&& apt-get clean\n"
+    env:
+    - "PYENV_ROOT=\"/root/.pyenv\""
+    - "PATH=\"$PYENV_ROOT/shims:$PYENV_ROOT/bin:$PATH\""
+    - "PYTHON_VERSION=3.7.16"
   - type: "python"
     user: false
     packages:
-    - "mudata~=0.2.3"
-    - "anndata~=0.9.1"
-    - "tables"
+    - "mudata~=0.2.1"
+    - "cellbender~=0.3.0"
     upgrade: true
-  - type: "docker"
-    run:
-    - "apt-get update && apt-get install -y wget && \\\n  wget -O $HOME/miniconda.sh\
-      \ https://repo.anaconda.com/miniconda/Miniconda3-py37_23.1.0-1-Linux-x86_64.sh\
-      \ && \\\n  apt-get purge -y wget && apt-get autoremove -y && apt-get clean &&\
-      \ \\\n  chmod +x $HOME/miniconda.sh && \\\n  $HOME/miniconda.sh -b -p $CONDA_DIR\
-      \ && \\\n  rm $HOME/miniconda.sh && \\\n  conda create -n cellbender_env python=3.7\
-      \ && \\\n  /bin/bash -c \"source activate cellbender_env && pip install 'cellbender~=0.3.0'\"\
-      \ && \\\n  echo -e '#!/bin/bash\\nsource activate cellbender_env\\ncellbender\
-      \ \"$@\"' > /usr/bin/cellbender_in_conda && \\\n  chmod +x /usr/bin/cellbender_in_conda\n"
-    env:
-    - "CONDA_DIR=\"/opt/conda\""
-    - "PATH=\"$PATH:$CONDA_DIR/bin\""
   test_setup:
   - type: "python"
     user: false
     packages:
-    - "muon~=0.1.5"
-    - "scanpy~=1.9.2"
+    - "muon"
+    - "scanpy"
     upgrade: true
   entrypoint: []
   cmd: null
@@ -636,5 +632,5 @@ info:
   output: "/home/runner/work/openpipeline/openpipeline/target/docker/correction/cellbender_remove_background"
   executable: "/home/runner/work/openpipeline/openpipeline/target/docker/correction/cellbender_remove_background/cellbender_remove_background"
   viash_version: "0.7.5"
-  git_commit: "2b9ad1d517a01d6a7a8498182848c8b974fd024a"
+  git_commit: "ed23da36129699b67405aa930656c091d80fda31"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"

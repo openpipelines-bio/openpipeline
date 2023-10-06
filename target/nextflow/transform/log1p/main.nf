@@ -217,7 +217,7 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
     {
       "type" : "docker",
       "id" : "docker",
-      "image" : "python:3.8-slim",
+      "image" : "python:3.9-slim",
       "target_organization" : "openpipelines-bio",
       "target_registry" : "ghcr.io",
       "namespace_separator" : "_",
@@ -249,8 +249,7 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
           "type" : "python",
           "user" : false,
           "packages" : [
-            "viashpy",
-            "pytest"
+            "viashpy==0.5.0"
           ],
           "upgrade" : true
         }
@@ -315,7 +314,7 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
     "platform" : "nextflow",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/transform/log1p",
     "viash_version" : "0.7.5",
-    "git_commit" : "2b9ad1d517a01d6a7a8498182848c8b974fd024a",
+    "git_commit" : "ed23da36129699b67405aa930656c091d80fda31",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))

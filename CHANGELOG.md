@@ -6,7 +6,25 @@
 
 * `integrate/scvi`: rename `model_output` argument to `output_model` in order to align with the `scvi_leiden` workflow. This also fixes a bug with the workflow where the argument did not function (PR  #562).
 
+## MINOR CHANGES
+
+* `dataflow/concat`: reduce memory consumption when using `--other_axis_mode move` by processing only one annotation matrix (`.var`, `.obs`) at a time (PR #569).
+
+* Update viashpy and pin it to `0.5.0` (PR #572 and PR #577).
+
+* `convert/from_h5ad_to_h5mu`, `convert/from_h5mu_to_h5ad`, `dimred/pca`, `dimred/umap/`, 
+`filter/filter_with_counts`, `filter/filter_with_hvg`, `filter/remove_modality`, `filter/subset_h5mu`, 
+`integrate/scanorama`, `transform/delete_layer` and `transform/log1p`: update python to `3.9` (PR #572).
+
+* `integrate/scarches`: update base image, `scvi-tools` and `pandas` to `nvcr.io/nvidia/pytorch:23.09-py3`, `~=1.0.3` and `~=2.1.0` respectively (PR #572).
+
+* `integrate/totalvi`: update python to 3.9 and scvi-tools to `~=1.0.3` (PR #572).
+
+* `correction/cellbender_remove_background`: change base image to `nvcr.io/nvidia/cuda:11.8.0-devel-ubuntu22.04` and downwgrade MuData to 0.2.1 because it is the oldest version that uses python 3.7 (PR #575).
+
 ## BUG FIXES
+
+* `correction/cellbender_remove_background`: fix missing helper functionality when using Fusion (PR #575).
 
 * `convert/from_bdrhap_to_h5mu`: Avoid `TypeError: Can't implicitly convert non-string objects to strings` by using categorical dtypes when a string column contains NA values (PR #563).
 
