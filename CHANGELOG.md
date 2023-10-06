@@ -6,7 +6,7 @@
 
 * `integrate/scvi`: rename `model_output` argument to `output_model` in order to align with the `scvi_leiden` workflow. This also fixes a bug with the workflow where the argument did not function (PR  #562).
 
-* Disabled `correction/cellbender_remove_background_v0_2`.
+* Disabled `correction/cellbender_remove_background_v0_2` (PR #578).
 
 ## MINOR CHANGES
 
