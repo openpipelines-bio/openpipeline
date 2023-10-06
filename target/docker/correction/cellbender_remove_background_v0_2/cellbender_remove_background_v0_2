@@ -533,17 +533,13 @@ FROM nvcr.io/nvidia/pytorch:22.12-py3
 ENTRYPOINT []
 
  
-RUN apt-get update && \
-  DEBIAN_FRONTEND=noninteractive apt-get install -y git && \
-  rm -rf /var/lib/apt/lists/*
-
 RUN pip install --upgrade pip && \
-  pip install --upgrade --no-cache-dir "mudata~=0.2.3" "anndata~=0.9.1" "muon~=0.1.5" "cellbender~=0.2.0"
+  pip install --upgrade --no-cache-dir "mudata~=0.2.3" "anndata~=0.9.1" "muon==0.1.5" "tables==3.8.0" "cellbender==0.2.1"
 
 LABEL org.opencontainers.image.description="Companion container for running component correction cellbender_remove_background_v0_2"
-LABEL org.opencontainers.image.created="2023-10-06T05:33:31Z"
+LABEL org.opencontainers.image.created="2023-10-06T08:10:19Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="0879c27651c14f00fba164947b8acef450d935b1"
+LABEL org.opencontainers.image.revision="ed23da36129699b67405aa930656c091d80fda31"
 LABEL org.opencontainers.image.version="main_build"
 
 VIASHDOCKER
