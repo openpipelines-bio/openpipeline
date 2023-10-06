@@ -66,6 +66,7 @@ functionality:
         A parameter value controlling the coarseness of the clustering. Higher values lead to more clusters.
         Multiple values will result in clustering being performed multiple times.
       default: [1]
+      required: true
       multiple: true
   resources:
     - type: python_script
