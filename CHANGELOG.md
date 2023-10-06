@@ -24,7 +24,7 @@
 
 ## BUG FIXES
 
-* `transform/clr`: raise an error when CLR fails to return the requested output.
+* `transform/clr`: raise an error when CLR fails to return the requested output (PR #579).
 
 * `correction/cellbender_remove_background`: fix missing helper functionality when using Fusion (PR #575).
 
