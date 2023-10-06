@@ -261,7 +261,7 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
     "platform" : "nextflow",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/transform/clr",
     "viash_version" : "0.7.5",
-    "git_commit" : "3865bdfbbbb5aefdc89f4bfd9857284cec223608",
+    "git_commit" : "0e4fad21c55679b90bd7b4a98f502c9cdbfd3311",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))
@@ -303,6 +303,8 @@ def main():
     input_h5mu = read_h5mu(par['input'])
     modality = input_h5mu[par['modality']]
     normalized_counts = pt.pp.clr(modality, inplace=False if par['output_layer'] else True)
+    if par['output_layer'] and not normalized_counts:
+        raise RuntimeError("CLR failed to return the requested output layer")
     if normalized_counts:
         input_h5mu[par["modality"]].layers[par['output_layer']] = normalized_counts.X
     input_h5mu.write_h5mu(par['output'], compression=par["output_compression"])

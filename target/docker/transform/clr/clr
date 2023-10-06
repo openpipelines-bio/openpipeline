@@ -417,9 +417,9 @@ RUN pip install --upgrade pip && \
 
 LABEL org.opencontainers.image.authors="Dries Schaumont"
 LABEL org.opencontainers.image.description="Companion container for running component transform clr"
-LABEL org.opencontainers.image.created="2023-10-06T09:11:34Z"
+LABEL org.opencontainers.image.created="2023-10-06T16:29:16Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="3865bdfbbbb5aefdc89f4bfd9857284cec223608"
+LABEL org.opencontainers.image.revision="0e4fad21c55679b90bd7b4a98f502c9cdbfd3311"
 LABEL org.opencontainers.image.version="integration_build"
 
 VIASHDOCKER
@@ -959,6 +959,8 @@ def main():
     input_h5mu = read_h5mu(par['input'])
     modality = input_h5mu[par['modality']]
     normalized_counts = pt.pp.clr(modality, inplace=False if par['output_layer'] else True)
+    if par['output_layer'] and not normalized_counts:
+        raise RuntimeError("CLR failed to return the requested output layer")
     if normalized_counts:
         input_h5mu[par["modality"]].layers[par['output_layer']] = normalized_counts.X
     input_h5mu.write_h5mu(par['output'], compression=par["output_compression"])
