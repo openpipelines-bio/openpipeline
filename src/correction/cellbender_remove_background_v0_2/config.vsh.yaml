@@ -1,6 +1,5 @@
 functionality:
   name: cellbender_remove_background_v0_2
-  status: disabled
   namespace: "correction"
   description: |
     Eliminating technical artifacts from high-throughput single-cell RNA sequencing data.
@@ -170,16 +169,12 @@ platforms:
     # image: nvcr.io/nvidia/cuda:11.6.0-base-ubuntu20.04
     # image: pytorch/pytorch:1.12.1-cuda11.3-cudnn8-runtime
     setup:
-      - type: apt
-        packages:
-          # - python3-pip
-          # - python-is-python3
-          - git
       - type: python
-        __merge__: [/src/base/requirements/anndata_mudata.yaml, .]
-        packages: 
-          - muon~=0.1.5
-          - cellbender~=0.2.0
+        __merge__: /src/base/requirements/anndata_mudata.yaml
+        packages:
+          - muon==0.1.5
+          - tables==3.8.0
+          - cellbender==0.2.1
           # - torch
           # - torchvision
           # - torchaudio
