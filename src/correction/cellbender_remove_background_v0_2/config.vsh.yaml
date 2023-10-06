@@ -1,5 +1,6 @@
 functionality:
   name: cellbender_remove_background_v0_2
+  status: disabled
   namespace: "correction"
   description: |
     Eliminating technical artifacts from high-throughput single-cell RNA sequencing data.
