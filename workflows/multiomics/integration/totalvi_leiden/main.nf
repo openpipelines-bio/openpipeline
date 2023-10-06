@@ -56,7 +56,7 @@ workflow neighbors_leiden_umap {
       toState: ["input": "output"]
     )
     | move_obsm_to_obs.run(
-      fromState: [ 
+      fromState: [
         "input": "input",
         "obsm_key": "obs_cluster",
         "query_modality": "modality",
@@ -156,7 +156,7 @@ workflow run_wf {
     }
     | neighbors_leiden_umap
     | publish.run(
-      fromState: {id, state-> [
+      fromState: { id, state -> [
           "input": state.output,
           "output": state.workflow_output,
           "compression": "gzip"

@@ -84,7 +84,7 @@ workflow run_wf {
 
   output_ch = with_leiden_ch.mix(without_leiden_ch)
     | umap.run(
-      fromState: {id, state ->
+      fromState: { id, state ->
         [
           "input": state.input,
           "uns_neighbors": state.uns_neighbors,

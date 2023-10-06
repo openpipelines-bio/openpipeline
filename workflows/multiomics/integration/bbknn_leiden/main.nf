@@ -109,7 +109,7 @@ workflow run_wf {
       toState: { id, output, state -> 
         [ output: output.output ]
       },
-      auto: [ publish: true ]
+      auto: [publish: true]
     )
 
   emit:
