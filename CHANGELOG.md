@@ -24,6 +24,8 @@
 
 ## BUG FIXES
 
+* `transform/clr`: raise an error when CLR fails to return the requested output.
+
 * `correction/cellbender_remove_background`: fix missing helper functionality when using Fusion (PR #575).
 
 * `convert/from_bdrhap_to_h5mu`: Avoid `TypeError: Can't implicitly convert non-string objects to strings` by using categorical dtypes when a string column contains NA values (PR #563).
