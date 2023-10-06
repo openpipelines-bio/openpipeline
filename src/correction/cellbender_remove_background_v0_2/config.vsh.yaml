@@ -166,24 +166,12 @@ platforms:
   - type: docker
     image: nvcr.io/nvidia/pytorch:22.12-py3
     # run_args: ["--gpus all"]
-    # image: nvcr.io/nvidia/cuda:11.6.0-base-ubuntu20.04
-    # image: pytorch/pytorch:1.12.1-cuda11.3-cudnn8-runtime
     setup:
-      - type: apt
-        packages:
-          # - python3-pip
-          # - python-is-python3
-          - git
       - type: python
-        __merge__: [/src/base/requirements/anndata_mudata.yaml, .]
-        packages: 
-          - muon~=0.1.5
-          - cellbender~=0.2.0
-          # - torch
-          # - torchvision
-          # - torchaudio
-          # - "--extra-index-url"
-          # - "https://download.pytorch.org/whl/cu116"
+        __merge__: py_requirements.yaml
+      # make sure we end up with the right version of anndata and mudata
+      - type: python
+        __merge__: /src/base/requirements/anndata_mudata.yaml
     test_setup:
       - type: python
         packages: 
