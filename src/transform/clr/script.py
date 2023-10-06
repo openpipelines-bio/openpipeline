@@ -14,6 +14,8 @@ def main():
     input_h5mu = read_h5mu(par['input'])
     modality = input_h5mu[par['modality']]
     normalized_counts = pt.pp.clr(modality, inplace=False if par['output_layer'] else True)
+    if par['output_layer'] and not normalized_counts:
+        raise RuntimeError("CLR failed to return the requested output layer")
     if normalized_counts:
         input_h5mu[par["modality"]].layers[par['output_layer']] = normalized_counts.X
     input_h5mu.write_h5mu(par['output'], compression=par["output_compression"])
