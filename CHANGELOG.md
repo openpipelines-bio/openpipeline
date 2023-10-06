@@ -10,7 +10,7 @@
 
 * `dataflow/concat`: reduce memory consumption when using `--other_axis_mode move` by processing only one annotation matrix (`.var`, `.obs`) at a time (PR #569).
 
-* Update viashpy and pin it to `0.4.1` (PR #572).
+* Update viashpy and pin it to `0.5.0` (PR #572 and PR #577).
 
 * `convert/from_h5ad_to_h5mu`, `convert/from_h5mu_to_h5ad`, `dimred/pca`, `dimred/umap/`, 
 `filter/filter_with_counts`, `filter/filter_with_hvg`, `filter/remove_modality`, `filter/subset_h5mu`, 
