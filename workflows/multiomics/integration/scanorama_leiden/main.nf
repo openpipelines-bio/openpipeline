@@ -28,11 +28,11 @@ workflow run_wf {
   input_ch
 
   main:
-  neighbors_ch = input_ch
+  output_ch = input_ch
     | preprocessInputs("config": config)
-    | scanorama.run(
-      fromState: [
-        "input": "input",
+    // split params for downstream components
+    | setWorkflowArguments(
+      scanorama: [
         "obsm_input": "obsm_input",
         "obs_batch": "obs_batch",
         "obsm_output": "obsm_output",
@@ -43,62 +43,66 @@ workflow run_wf {
         "alpha": "alpha",
         "knn": "knn",
       ],
-      toState: ["input": "output"]
-    )
-    | find_neighbors.run(
-      fromState: [
-        "input": "input",
+      neighbors: [
         "uns_output": "uns_neighbors",
         "obsp_distances": "obsp_neighbor_distances",
         "obsp_connectivities": "obsp_neighbor_connectivities",
         "obsm_input": "obsm_output",
         "modality": "modality"
-      ],
-      toState: ["input": "output"]
-    )
 
-  with_leiden_ch = neighbors_ch
-    | filter{id, state -> state.leiden_resolution}
-    | leiden.run(
-      fromState: [
-        "input": "input",
+      ],
+      clustering: [
         "obsp_connectivities": "obsp_neighbor_connectivities",
         "obsm_name": "obs_cluster",
         "resolution": "leiden_resolution",
         "modality": "modality"
+
       ],
-      toState: ["input": "output"]
+      umap: [ 
+        "uns_neighbors": "uns_neighbors",
+        "obsm_output": "obsm_umap",
+        "modality": "modality"
+
+      ],
+      move_obsm_to_obs_leiden: [
+        "obsm_key": "obs_cluster",
+        "output": "output"
+      ]
     )
+    | getWorkflowArguments(key: "scanorama")
+    | scanorama
+    | pmap {id, data ->
+        def new_data = ["input": data.output]
+        [id, new_data]
+    }
+    | getWorkflowArguments(key: "neighbors")
+    | find_neighbors
+    | pmap {id, data ->
+        def new_data = ["input": data.output]
+        [id, new_data]
+    }
+    | getWorkflowArguments(key: "clustering")
+    | leiden
+    | pmap {id, data ->
+        def new_data = ["input": data.output]
+        [id, new_data]
+    }
+    | getWorkflowArguments(key: "umap")
+    | umap
+    | pmap {id, data ->
+        def new_data = ["input": data.output]
+        [id, new_data]
+    }
+    | getWorkflowArguments(key: "move_obsm_to_obs_leiden")
     | move_obsm_to_obs.run(
-      fromState:
-        [
-          "input": "input",
-          "obsm_key": "obs_cluster",
-          "modality": "modality",
-        ],
-      toState: ["input": "output"]
+        args: [ output_compression: "gzip" ],     
+        auto: [ publish: true ]
     )
 
-  without_leiden_ch = neighbors_ch
-    | filter{id, state -> !state.leiden_resolution}
-
-  output_ch = with_leiden_ch.mix(without_leiden_ch)
-    | umap.run(
-      fromState: { id, state ->
-        [
-          "input": state.input,
-          "uns_neighbors": state.uns_neighbors,
-          "obsm_output": state.obsm_umap,
-          "modality": state.modality,
-          "output": state.output,
-          "output_compression": "gzip"
-        ]
-      },
-      auto: [ publish: true ],
-      toState: { id, output, state ->
-        [ output: output.output ]
-      }
-    )
+    // remove splitArgs
+    | map { tup ->
+      tup.take(2) + tup.drop(3)
+    }
 
   emit:
   output_ch
@@ -116,42 +120,6 @@ workflow test_wf {
         input: params.resources_test + "/pbmc_1k_protein_v3/pbmc_1k_protein_v3_mms.h5mu",
         layer: "log_normalized",
         leiden_resolution: [1, 0.25],
-        output: "foo.final.h5mu"
-      ]
-    ]
-  ]
-
-  output_ch =
-    channelFromParams(testParams, config)
-    | view { "Input: $it" }
-    | run_wf
-    | view { output ->
-      assert output.size() == 2 : "outputs should contain two elements; [id, file]"
-      assert output[1].output.toString().endsWith(".h5mu") : "Output file should be a h5mu file. Found: ${output_list[1]}"
-      "Output: $output"
-    }
-    | toList()
-    | map { output_list ->
-      assert output_list.size() == 1 : "output channel should contain 1 event"
-      assert (output_list.collect({it[0]}) as Set).equals(["foo"] as Set): "Output ID should be same as input ID"
-      assert (output_list.collect({it[1].output.getFileName().toString()}) as Set).equals(["foo.final.h5mu"] as Set)
-
-    }
-    //| check_format(args: {""}) // todo: check whether output h5mu has the right slots defined
-}
-
-workflow test_wf2 {
-  // allow changing the resources_test dir
-  params.resources_test = params.rootDir + "/resources_test"
-
-  // or when running from s3: params.resources_test = "s3://openpipelines-data/"
-  testParams = [
-    param_list: [
-      [
-        id: "foo",
-        input: params.resources_test + "/pbmc_1k_protein_v3/pbmc_1k_protein_v3_mms.h5mu",
-        layer: "log_normalized",
-        leiden_resolution: [],
         output: "foo.final.h5mu"
       ]
     ]
