@@ -22,7 +22,11 @@
 
 * `correction/cellbender_remove_background`: change base image to `nvcr.io/nvidia/cuda:11.8.0-devel-ubuntu22.04` and downwgrade MuData to 0.2.1 because it is the oldest version that uses python 3.7 (PR #575).
 
+* Several integration workflows: prevent leiden from being executed when no resolutions are provided (PR #583).
+
 ## BUG FIXES
+
+* `transform/clr`: raise an error when CLR fails to return the requested output (PR #579).
 
 * `correction/cellbender_remove_background`: fix missing helper functionality when using Fusion (PR #575).
 

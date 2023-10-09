@@ -499,7 +499,7 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
     "platform" : "nextflow",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/labels_transfer/knn",
     "viash_version" : "0.7.5",
-    "git_commit" : "ed23da36129699b67405aa930656c091d80fda31",
+    "git_commit" : "046363b2986affd608f6e48a6f5197ae42ad6710",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))
