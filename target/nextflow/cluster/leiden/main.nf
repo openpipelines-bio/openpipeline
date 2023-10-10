@@ -149,7 +149,7 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
         "default" : [
           1.0
         ],
-        "required" : false,
+        "required" : true,
         "direction" : "input",
         "multiple" : true,
         "multiple_sep" : ":",
@@ -284,7 +284,7 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
     "platform" : "nextflow",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/cluster/leiden",
     "viash_version" : "0.7.5",
-    "git_commit" : "7114740e651291b1cec6bf200ea244c9d8942daf",
+    "git_commit" : "046363b2986affd608f6e48a6f5197ae42ad6710",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))
