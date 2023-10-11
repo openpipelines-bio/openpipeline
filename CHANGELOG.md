@@ -24,18 +24,6 @@
 
 * Several integration workflows: prevent leiden from being executed when no resolutions are provided (PR #583).
 
-## BUG FIXES
-
-* `transform/clr`: raise an error when CLR fails to return the requested output (PR #579).
-
-* `correction/cellbender_remove_background`: fix missing helper functionality when using Fusion (PR #575).
-
-* `convert/from_bdrhap_to_h5mu`: Avoid `TypeError: Can't implicitly convert non-string objects to strings` by using categorical dtypes when a string column contains NA values (PR #563).
-
-* `qc/calculate_qc_metrics`: fix calculating mitochondrial gene related QC metrics when only or no mitochondrial genes were found (PR #564).
-
-## MINOR CHANGES
-
 * `dataflow/concat`: bump pandas to ~=2.1.1 and reduce memory consumption by only reading one modality into memory at a time (PR #568). 
 
 * `annotate/popv`: bump `jax` and `jaxlib` to `0.4.10`, scanpy to `1.9.4`, scvi to `1.0.3` and pin `ml-dtypes` to < 0.3.0 (PR #565).
@@ -51,6 +39,16 @@
 * `query/cellxgene_census`: avoid creating MuData object in memory by writing the modality directly to disk (PR #558).
 
 * `integrate/scvi`: use `midcpu` label instead of `singlecpu` (PR #561).
+
+## BUG FIXES
+
+* `transform/clr`: raise an error when CLR fails to return the requested output (PR #579).
+
+* `correction/cellbender_remove_background`: fix missing helper functionality when using Fusion (PR #575).
+
+* `convert/from_bdrhap_to_h5mu`: Avoid `TypeError: Can't implicitly convert non-string objects to strings` by using categorical dtypes when a string column contains NA values (PR #563).
+
+* `qc/calculate_qc_metrics`: fix calculating mitochondrial gene related QC metrics when only or no mitochondrial genes were found (PR #564).
 
 # openpipelines 0.10.1
 
