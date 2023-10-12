@@ -52,13 +52,13 @@ mdata = md.read_h5mu(par["input"])
 
 #2. subset on modality
 if par["modality"] not in mdata.mod:
-    raise ValueError(f" Modality '{par['modality']}' was not found in mudata {par['input']}.")
+    raise ValueError(f"Modality '{par['modality']}' was not found in mudata {par['input']}.")
 adata = mdata.mod[par['modality']]
 
 
 #3. Specify layer
 if par['layer'] and par["layer"] not in adata.layers:
-    raise ValueError(f" Layer '{par['layer']}' was not found in modality '{par['modality']}'.")
+    raise ValueError(f"Layer '{par['layer']}' was not found in modality '{par['modality']}'.")
 layer = adata.X if not par['layer'] else adata.layers[par['layer']]
 adata_input_layer = AnnData(layer, var=adata.var)
 
