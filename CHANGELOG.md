@@ -894,6 +894,7 @@ on each modality instead of on the whole `MuData` object.
 ## NEW FUNCTIONALITY
 
 * Added `from_10x_to_h5ad` and `download_10x_dataset` components.
+* Added `dimred/lsi` component
 
 ## MINOR CHANGES
 * Workflow `bd_rhapsody_wta`: Minor change to workflow to allow for easy processing of multiple samples with a tsv.
