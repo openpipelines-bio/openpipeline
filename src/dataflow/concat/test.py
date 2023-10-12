@@ -12,7 +12,7 @@ meta = {
     'executable': './target/docker/dataflow/concat/concat',
     'resources_dir': './resources_test/concat_test_data/',
     'cpus': 2,
-    'config': '/home/di/code/openpipeline/src/dataflow/concat/config.vsh.yaml'
+    'config': './src/dataflow/concat/config.vsh.yaml'
 }
 ## VIASH END
 
@@ -91,7 +91,6 @@ def test_concatenate_samples_with_same_observation_ids_raises(run_component):
                 "--input", input_sample1_file,
                 "--output", "concat.h5mu",
                 "--other_axis_mode", "move",
-                "---cpus", str(meta["cpus"]),
                 "--output_compression", "gzip"
                 ])
         assert "ValueError: Observations are not unique across samples." in \
@@ -114,8 +113,7 @@ def test_concat_different_var_columns_per_sample(run_component, mudata_without_g
             "--input", sample1_without_genome,
             "--input", input_sample2_file,
             "--output", "concat.h5mu",
-            "--other_axis_mode", "move",
-            "---cpus", str(meta["cpus"])
+            "--other_axis_mode", "move"
             ])
 
     assert Path("concat.h5mu").is_file() is True
@@ -162,8 +160,7 @@ def test_concat_different_columns_per_modality(run_component, mudata_without_gen
             "--input", sample1_without_genome,
             "--input", sample2_without_genome,
             "--output", "concat.h5mu",
-            "--other_axis_mode", "move",
-            "---cpus", str(meta["cpus"])
+            "--other_axis_mode", "move"
             ])
 
     assert Path("concat.h5mu").is_file() is True
@@ -211,8 +208,7 @@ def test_concat_different_columns_per_modality_and_per_sample(run_component, mud
         "--input", sample_1_without_genome,
         "--input", input_sample2_file,
         "--output", "concat.h5mu",
-        "--other_axis_mode", "move",
-        "---cpus", str(meta["cpus"])
+        "--other_axis_mode", "move"
         ])
 
     assert Path("concat.h5mu").is_file() == True
@@ -262,8 +258,7 @@ def test_concat_remove_na(run_component, copied_mudata_with_extra_var_column, ex
         "--input", tempfile_input1,
         "--input", tempfile_input2,
         "--output", "concat.h5mu",
-        "--other_axis_mode", "move",
-        "---cpus", str(meta["cpus"])
+        "--other_axis_mode", "move"
         ])
 
     assert Path("concat.h5mu").is_file() is True
@@ -299,9 +294,8 @@ def test_mode_move(run_component, tmp_path):
         "--input", tempfile_input1.name,
         "--input", tempfile_input2.name,
         "--output", "concat.h5mu",
-        "--other_axis_mode", "move",
-        "---cpus", str(meta["cpus"])]
-        )
+        "--other_axis_mode", "move"
+        ])
     assert Path("concat.h5mu").is_file() is True
     concatenated_data = md.read("concat.h5mu")
 
@@ -347,8 +341,7 @@ def test_concat_invalid_h5_error_includes_path(run_component, tmp_path):
                 "--input", input_sample1_file,
                 "--input", empty_file,
                 "--output", "concat.h5mu",
-                "--other_axis_mode", "move",
-                "---cpus", str(meta["cpus"])
+                "--other_axis_mode", "move"
                 ])
         assert re.search(rf"OSError: Failed to load .*{str(empty_file)}\. Is it a valid h5 file?",
             err.value.stdout.decode('utf-8'))

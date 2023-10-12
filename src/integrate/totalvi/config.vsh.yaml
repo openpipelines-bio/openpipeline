@@ -115,7 +115,7 @@ functionality:
     - path: /resources_test/pbmc_1k_protein_v3/pbmc_1k_protein_v3_mms.h5mu
 platforms:
   - type: docker
-    image: python:3.8
+    image: python:3.9
     setup:
       - type: apt
         packages:
@@ -126,10 +126,11 @@ platforms:
         __merge__: [/src/base/requirements/anndata_mudata.yaml, .]
         packages:
           - torchmetrics~=0.11.0
-          - scvi-tools~=0.19
+          - scvi-tools~=1.0.3
     test_setup:
       - type: python
-        packages: viashpy
+        __merge__: [ /src/base/requirements/viashpy.yaml, .]
+
   - type: nextflow
     directives:
       label: [highmem, highcpu]

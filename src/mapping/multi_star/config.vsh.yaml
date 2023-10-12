@@ -107,7 +107,9 @@ platforms:
           - multiprocess
           - gtfparse<2.0
           - pandas
-          - multiqc
+          # Pin multiqc to avoid 
+          # 'TypeError: expected str, bytes or os.PathLike object, not NoneType'
+          - multiqc~=1.15.0
     test_setup:
       - type: python
         packages:
