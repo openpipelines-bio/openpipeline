@@ -3,7 +3,7 @@ functionality:
   namespace: "dimred"
   description: |
     Runs Latent Semantic Indexing. Computes cell embeddings, feature loadings and singular values. Uses the implementation of scipy.
-  #arguments:
+
   argument_groups:
     - name: Inputs
       arguments:
@@ -40,7 +40,8 @@ functionality:
           required: false
 
         - name: "--scale_embeddings"
-          type: boolean_true
+          type: boolean
+          default: true
           description: Scale embeddings to zero mean and unit variance.
 
     - name: Outputs
@@ -87,10 +88,15 @@ functionality:
     - type: python_script
       path: script.py
     - path: ../../utils/subset_vars.py
+  test_resources:
+    - type: python_script
+      path: test.py
+    - path: ../../utils/subset_vars.py
+    - path: ../../../resources_test/LSI
 
 platforms:
   - type: docker
-    image: python:3.8-slim
+    image: python:3.9-slim
     setup:
       - type: apt
         packages:
@@ -98,8 +104,12 @@ platforms:
       - type: python
         __merge__: [../../../src/base/requirements/anndata_mudata.yaml, .]
         packages:
-          - scanpy~=1.9.2
-          - muon~=0.1.3
+          - muon~=0.1.5
+    test_setup:
+      - type: python
+        __merge__: [../../../src/base/requirements/anndata_mudata.yaml, .]
+        packages: 
+          - pytest
   - type: nextflow
     directives:
       label: 
