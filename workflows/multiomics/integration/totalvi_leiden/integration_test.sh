@@ -15,3 +15,9 @@ nextflow run . \
   -profile docker,no_publish \
   -entry test_wf \
   -c workflows/utils/labels_ci.config
+
+nextflow run . \
+  -main-script workflows/multiomics/integration/totalvi_leiden/main.nf \
+  -profile docker,no_publish \
+  -entry test_wf2 \
+  -c workflows/utils/labels_ci.config

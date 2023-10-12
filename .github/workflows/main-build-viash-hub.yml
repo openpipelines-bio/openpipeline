@@ -31,7 +31,7 @@ jobs:
         # allow publishing the target folder
         sed -i '/^\/target\/$/d' .gitignore
 
-    - uses: viash-io/viash-actions/ns-build@viash-hub-push
+    - uses: viash-io/viash-actions/ns-build@v4
       with:
         config_mod: |
           .functionality.version := 'main_build'
@@ -63,8 +63,8 @@ jobs:
         viash_hub_token: ${{ secrets.VIASHHUB_PAT }}
         viash_hub_repo: openpipelines-bio/openpipeline
         github_repo: openpipelines-bio/openpipeline
-        src-branch: main_build
-        dest-branch: main_build
+        src_branch: main_build
+        dest_branch: main_build
 
     - id: ns_list
       uses: viash-io/viash-actions/ns-list@v4
@@ -115,12 +115,17 @@ jobs:
         setup: build
 
     - name: Login to Viash-Hub container registry
-      uses: docker/login-action@v2
+      uses: docker/login-action@v3
       with:
         registry: viash-hub.com:5050
         username: ${{ secrets.VIASHHUB_USER }}
         password: ${{ secrets.VIASHHUB_PAT }}
-
+    
+    - name: Update Docker settings
+      run: |
+        sudo sed -i 's/ }/, \"max-concurrent-uploads\": 2 }/' /etc/docker/daemon.json
+        sudo systemctl restart docker
+  
     - name: Push container to Viash-Hub
       uses: viash-io/viash-actions/ns-build@v4
       with:

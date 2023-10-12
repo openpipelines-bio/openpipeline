@@ -73,7 +73,7 @@ functionality:
     - path: /resources_test/pbmc_1k_protein_v3/pbmc_1k_protein_v3_mms.h5mu
 platforms:
   - type: docker
-    image: python:3.8-slim
+    image: python:3.9-slim
     setup:
       - type: apt
         packages: 
@@ -86,7 +86,7 @@ platforms:
           - scanorama
     test_setup:
       - type: python
-        packages: viashpy
+        __merge__: [ /src/base/requirements/viashpy.yaml, .]
   - type: nextflow
     directives:
       label: [midcpu, highmem]

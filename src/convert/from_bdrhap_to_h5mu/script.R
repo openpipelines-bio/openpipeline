@@ -174,11 +174,14 @@ missing_features <- tibble(
   reference_file = NA_character_,
   note = "Feature annotation file missing, assuming type is Gene Expression"
 )
+
 var1 <-
   if (nrow(missing_features) > 0) {
     cat("Feature annotation file missing, assuming type is Gene Expression\n")
     bind_rows(var0, missing_features) %>%
       slice(match(colnames(counts), feature_id))
+    # Avoid nullable string columnns https://github.com/scverse/anndata/issues/679
+    missing_features %>% mutate(across(reference_file, as.factor))
   } else {
     var0
   }

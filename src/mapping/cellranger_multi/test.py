@@ -40,10 +40,6 @@ def test_cellranger_multi(run_component):
             "--feature_reference", feature_reference,
             "--library_id", "5k_human_antiCMV_T_TBNK_connect_GEX_1_subset;5k_human_antiCMV_T_TBNK_connect_AB_subset;5k_human_antiCMV_T_TBNK_connect_VDJ_subset",
             "--library_type", "Gene Expression;Antibody Capture;VDJ"]
-    if meta['cpus']:
-        args.extend(["---cpus", str(meta['cpus'])])
-    if meta['memory_gb']:
-        args.extend(["---memory", f"{meta['memory_gb']}GB"])
     run_component(args)
 
     # check for raw data
@@ -91,10 +87,6 @@ def test_cellranger_multi_directory_input(run_component):
         "--gex_generate_bam", "false",
         "--gex_include_introns", "false",
         "--dryrun"]
-    if meta['cpus']:
-        args.extend(["---cpus", str(meta['cpus'])])
-    if meta['memory_gb']:
-        args.extend(["---memory", f"{meta['memory_gb']}GB"])
     run_component(args)
 
 def test_vdj_inner_enrichment_primers(run_component, tmp_path):
@@ -115,10 +107,6 @@ def test_vdj_inner_enrichment_primers(run_component, tmp_path):
         "--gex_include_introns", "false",
         "--vdj_inner_enrichment_primers", str(enrichment_primers_file),
         "--dryrun"]
-    if meta['cpus']:
-        args.extend(["---cpus", str(meta['cpus'])])
-    if meta['memory_gb']:
-        args.extend(["---memory", f"{meta['memory_gb']}GB"])
     run_component(args)
     assert Path("output5/config.csv").is_file()
     with Path("output5/config.csv").open('r') as config_file:
@@ -144,10 +132,6 @@ def test_cellranger_multi_applies_gex_options(run_component):
             "--gex_generate_bam", "false",
             "--gex_include_introns", "false",
             "--dryrun"]
-    if meta['cpus']:
-        args.extend(["---cpus", str(meta['cpus'])])
-    if meta['memory_gb']:
-        args.extend(["---memory", f"{meta['memory_gb']}GB"])
     run_component(args)
 
     assert Path("output3/config.csv").is_file()
@@ -178,10 +162,6 @@ def test_cellranger_multi_no_vdj_reference(run_component):
         "--library_id", "5k_human_antiCMV_T_TBNK_connect_GEX_1_subset;5k_human_antiCMV_T_TBNK_connect_AB_subset",
         "--library_type", "Gene Expression;Antibody Capture",
         "--dryrun"]
-    if meta['cpus']:
-        args.extend(["---cpus", str(meta['cpus'])])
-    if meta['memory_gb']:
-        args.extend(["---memory", f"{meta['memory_gb']}GB"])
     run_component(args)
     assert Path("output4/config.csv").is_file()
 
@@ -197,10 +177,6 @@ def test_cellranger_multi_crispt_data(run_component):
         "--feature_reference", meta["resources_dir"] + "10x_5k_lung_crispr/raw/SC3_v3_NextGem_DI_CRISPR_A549_5K_Multiplex_count_feature_reference_corrected.csv",
         "--output", "output5/"
     ]
-    if meta['cpus']:
-        args.extend(["---cpus", str(meta['cpus'])])
-    if meta['memory_gb']:
-        args.extend(["---memory", f"{meta['memory_gb']}GB"])
     run_component(args)
     # check for raw data
     assert Path("output5/multi/count/raw_feature_bc_matrix.h5").is_file()
