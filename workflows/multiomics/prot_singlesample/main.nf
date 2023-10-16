@@ -117,11 +117,12 @@ workflow test_wf {
 
   output_ch =
     channelFromParams(testParams, config)
+    | map {list -> list + [test_passthrough: "test"]}
     // Add test passthrough 
     | view { "Input: $it" }
     | run_wf
     | view { output ->
-      assert output.size() == 2 : "outputs should contain two elements; [id, file]"
+      assert output.size() == 3 : "outputs should contain two elements; [id, file, passthrough]"
       assert output[1].output.toString().endsWith(".h5mu") : "Output file should be a h5mu file. Found: ${output[1].output}"
       "Output: $output"
     }
