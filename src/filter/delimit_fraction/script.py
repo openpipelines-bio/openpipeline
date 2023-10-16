@@ -2,24 +2,19 @@
 import mudata as mu
 import numpy as np
 import sys
-from operator import le, ge, gt
+from operator import le, ge
+from pandas.api.types import is_float_dtype
+
 
 ### VIASH START
 par = {
   'input': 'resources_test/pbmc_1k_protein_v3/pbmc_1k_protein_v3_filtered_feature_bc_matrix.h5mu',
   'modality': 'rna',
   'output': 'output.h5mu',
-  'obs_name_filter': 'filter_with_counts',
   'var_name_filter': 'filter_with_counts',
-  'do_subset': True,
-  'min_counts': int('200'),
-  'max_counts': int('5000000'),
-  'min_genes_per_cell': int('200'),
-  'max_genes_per_cell': int('1500000'),
-  'min_cells_per_gene': int('3'),
-}
-meta = {
-    'functionality_name': 'filter_on_counts'
+  'min_fraction': 0,
+  'max_fraction': 1,
+  'output_compression': 'gzip'
 }
 ### VIASH END
 
@@ -54,9 +49,6 @@ data = mdata.mod[mod]
 logger.info("\tUnfiltered data: %s", data)
 
 logger.info("\tComputing aggregations.")
-n_counts_per_cell = np.ravel(np.sum(data.X, axis=1))
-n_cells_per_gene = np.sum(data.X > 0, axis=0)
-n_genes_per_cell = np.sum(data.X > 0, axis=1)
 
 def apply_filter_to_mask(mask, base, filter, comparator):
     new_filt = np.ravel(comparator(base, filter))
@@ -64,22 +56,22 @@ def apply_filter_to_mask(mask, base, filter, comparator):
     mask &= new_filt
     return num_removed, mask
 
-# Filter genes
-keep_genes = np.repeat(True, data.n_vars)
-if par["min_cells_per_gene"] is not None:
-    num_removed, keep_genes = apply_filter_to_mask(keep_genes,
-                                                   n_cells_per_gene,
-                                                   par['min_cells_per_gene'],
-                                                   ge)
-    logger.info("\tRemoving %s genes with non-zero values in <%s cells.",
-                num_removed, par['min_cells_per_gene'])
+try:
+    fraction = data.obs[par['obs_fraction_column']]
+except KeyError:
+    raise ValueError(f"Could not find column '{par['obs_fraction_column']}'")
+if not is_float_dtype(fraction):
+    raise ValueError(f"Column '{par['obs_fraction_column']}' does not contain float datatype.")
+if fraction.max() > 1:
+    raise ValueError(f"Column '{par['obs_fraction_column']}' contains values > 1.")
+if fraction.min() < 0:
+    raise ValueError(f"Column '{par['obs_fraction_column']}' contains values < 0.")
+
 
 # Filter cells
-filters = (("min_genes_per_cell", n_genes_per_cell, ge, "\tRemoving %s cells with non-zero values in <%s genes."),
-           ("max_genes_per_cell", n_genes_per_cell, le, "\tRemoving %s cells with non-zero values in >%s genes."),
-           ("min_counts", n_counts_per_cell, ge, "\tRemoving %s cells with <%s total counts."),
-           ("max_counts", n_counts_per_cell, le, "\tRemoving %s cells with >%s total counts."),
-           (0, np.sum(data[:,keep_genes].X, axis=1), gt, "\tRemoving %s cells with %s counts"))
+filters = (("min_fraction", fraction, ge, "\tRemoving %s cells with <%s percentage mitochondrial reads."),
+           ("max_fraction", fraction, le, "\tRemoving %s cells with >%s percentage mitochondrial reads."),
+          )
 
 keep_cells = np.repeat(True, data.n_obs)
 for filter_name_or_value, base, comparator, message in filters:
@@ -91,10 +83,7 @@ for filter_name_or_value, base, comparator, message in filters:
         num_removed, keep_cells = apply_filter_to_mask(keep_cells, base, filter, comparator)
         logger.info(message, num_removed, filter)
 
-if par["obs_name_filter"] is not None:
-    data.obs[par["obs_name_filter"]] = keep_cells
-if par["var_name_filter"] is not None:
-    data.var[par["var_name_filter"]] = keep_genes
+data.obs[par["obs_name_filter"]] = keep_cells
 
 logger.info("\tFiltered data: %s", data)
 logger.info("Writing output data to %s", par["output"])

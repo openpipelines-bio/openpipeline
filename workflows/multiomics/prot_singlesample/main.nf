@@ -7,6 +7,7 @@ include { readConfig; helpMessage; channelFromParams; preprocessInputs } from wo
 include { filter_with_counts } from targetDir + "/filter/filter_with_counts/main.nf"
 include { do_filter } from targetDir + "/filter/do_filter/main.nf"
 include { setWorkflowArguments; getWorkflowArguments; passthroughMap as pmap} from workflowDir + "/utils/DataflowHelper.nf"
+include { qc as unfiltered_counts_qc_metrics_prot } from workflowDir + "/qc/qc/main.nf"
 
 config = readConfig("$workflowDir/multiomics/prot_singlesample/config.vsh.yaml")
 
@@ -27,43 +28,69 @@ workflow run_wf {
   output_ch = input_ch
     // split params for downstream components
     | preprocessInputs("config": config)
-    | setWorkflowArguments(
-      filter_with_counts: [
+    | pmap {id, state ->
+      def new_state = state + ["workflow_output": state.output]
+      [id, new_state]
+    }
+          
+    | pmap { id, orig_state ->
+      def new_state = [
+        "input": orig_state.input,
+        "var_name_mitondrial": null,
+        "mitochondrial_gene_regex": null,
+        "top_n_vars": orig_state.top_n_vars,
+        "output": orig_state.output,
+        "modality": "prot",
+        "layer": null,
+        "var_qc_metrics": orig_state.var_qc_metrics
+      ]
+      [id, new_state, orig_state]
+    }
+
+    | unfiltered_counts_qc_metrics_prot
+    | pmap { id, state, orig_state ->
+      stateMapping = [
           "min_counts": "min_counts",
           "max_counts": "max_counts",
           "min_genes_per_cell": "min_proteins_per_cell",
           "max_genes_per_cell": "max_proteins_per_cell",
           "min_cells_per_gene": "min_cells_per_protein",
           "min_fraction_mito": "min_fraction_mito",
-          "max_fraction_mito": "max_fraction_mito"
-        ],
-      do_filter: ["output": "output"]
-    )
-    // filtering
-    | getWorkflowArguments(key: "filter_with_counts")
-    | filter_with_counts.run(
-        args: [ 
-          var_gene_names: "gene_symbol",
-          modality: "prot", 
-          obs_name_filter: "filter_with_counts",
-          var_name_filter: "filter_with_counts"
-        ]
-    )
-    | pmap {id, data ->
-      def new_data = ["input": data.output]
-      [id, new_data]
+          "max_fraction_mito": "max_fraction_mito",
+          "workflow_output": "workflow_output"
+      ]
+      def new_state = stateMapping.collectEntries{newKey, origKey ->
+        [newKey, orig_state[origKey]]
+      }
+      [id, new_state + ["input": state.output]]
     }
-    | getWorkflowArguments(key: "do_filter")
-    | do_filter.run(
-        args: [
-          obs_filter: "filter_with_counts",
-          modality: "prot",
-          var_filter: "filter_with_counts",
-          output_compression: "gzip"
+
+    // filtering
+    | filter_with_counts.run(
+      fromState: { id, state ->
+        [
+          "input": state.input,
+          "obs_name_filter": "filter_with_counts",
+          "var_name_filter": "filter_with_counts",
+          "modality": "prot"
         ]
+      },
+      toState: ["input": "output"]
     )
-    | map {list -> [list[0], list[1]] + list.drop(3)}
-    | view { "Output: $it" }
+    | do_filter.run(
+      fromState : { id, state ->
+        [
+          "input": state.input,
+          "obs_filter": state.filter_with_counts,
+          "modality": "prot",
+          "var_filter": state.filter_with_counts,
+          "output_compression": "gzip",
+          "output": state.workflow_output
+        ]
+      },
+      toState: ["output": "output"],
+      auto: [ publish: true ]
+    )
 
   emit:
   output_ch
@@ -91,12 +118,11 @@ workflow test_wf {
   output_ch =
     channelFromParams(testParams, config)
     // Add test passthrough 
-    | map {list -> list + [test_passthrough: "test"]}
     | view { "Input: $it" }
     | run_wf
     | view { output ->
-      assert output.size() == 3 : "outputs should contain two elements; [id, file, passthrough]"
-      assert output[1].output.toString().endsWith(".h5mu") : "Output file should be a h5mu file. Found: ${output[1]}"
+      assert output.size() == 2 : "outputs should contain two elements; [id, file]"
+      assert output[1].output.toString().endsWith(".h5mu") : "Output file should be a h5mu file. Found: ${output[1].output}"
       "Output: $output"
     }
     | toSortedList()

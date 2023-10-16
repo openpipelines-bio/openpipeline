@@ -7,7 +7,7 @@ include { clr } from targetDir + '/transform/clr/main.nf'
 include { concat } from targetDir + '/dataflow/concat/main.nf'
 include { add_id } from targetDir + '/metadata/add_id/main.nf'
 include { calculate_qc_metrics } from targetDir + '/qc/calculate_qc_metrics/main.nf'
-
+include { qc as prot_qc } from workflowDir + '/qc/qc/main.nf'
 include { readConfig; helpMessage; channelFromParams; preprocessInputs } from workflowDir + "/utils/WorkflowHelper.nf"
 include { setWorkflowArguments; getWorkflowArguments; passthroughMap as pmap; passthroughFlatMap as pFlatMap } from workflowDir + "/utils/DataflowHelper.nf"
 
@@ -29,41 +29,44 @@ workflow run_wf {
   main:
   processed_input_ch = input_ch
     | preprocessInputs("config": config)
-    | setWorkflowArguments (
-      "clr": [:],
-      "qc_metrics": [
-        "top_n_vars": "top_n_vars",
-        "output": "output",
-      ]
-    )
+
   processed_input_ch
     | toSortedList
     | map  { list ->
-        found_output_files = list.collect{it[2].get('clr').getOrDefault("output", null)}.unique()
+        found_output_files = list.collect{it[1].getOrDefault("output", null)}.unique()
         assert found_output_files.size() < 2, "The specified output file is not the same for all samples. Found: $found_output_files"
     }
 
   output_ch = processed_input_ch
-    | getWorkflowArguments(key: "clr")
     | clr.run(
-      args: [ output_layer: "clr" ]
+      fromState: ["input": "input"],
+      toState: ["input": "output"],
+      args: [ 
+        output_layer: "clr", 
+        modality: "prot"
+      ]
     )
-    | pmap {id, data ->
-        def new_data = ["input": data.output]
-        [id, new_data]
+    | pmap { id, state ->
+      stateMapping = [
+        "input": "input",
+        "top_n_vars": "top_n_vars",
+        "output": "output"
+      ]
+      def new_state = stateMapping.collectEntries{newKey, origKey ->
+        [newKey, state[origKey]]
+      }
+      static_args = [
+        "var_qc_metrics": null,
+        "input_layer": null, // layer: null to use .X and not log transformed
+        "modality": "prot",
+        "var_name_mitochondrial_genes": null,
+        "var_qc_metrics": null
+      ]
+      new_state = new_state + static_args
+      [id, new_state]
     }
-    | getWorkflowArguments(key: "qc_metrics")
-    | calculate_qc_metrics.run(
-      // layer: null to use .X and not log transformed
-      args: [
-        input_layer: null,
-        var_qc_metrics: null,
-        modality: "prot",
-        output_compression: "gzip"
-      ],
-      key: "prot_calculate_qc_metrics"
-    )
-    | map {list -> [list[0], list[1]] + list.drop(3)}
+    | prot_qc
+
 
   emit:
   output_ch
@@ -83,12 +86,11 @@ workflow test_wf {
 
   output_ch =
     channelFromParams(testParams, config)
-    | map {list -> list + [test_passthrough: "test"]}
     | view { "Input: $it" }
     | run_wf
     | view { output ->
-      assert output.size() == 3 : "outputs should contain three elements; [id, file, passthrough]"
-      assert output[1].output.toString().endsWith(".h5mu") : "Output file should be a h5mu file. Found: ${output[1]}"
+      assert output.size() == 2 : "outputs should contain three elements; [id, file]"
+      assert output[1].output.toString().endsWith(".h5mu") : "Output file should be a h5mu file. Found: ${output[1].output}"
       "Output: $output"
     }
     | toList()
