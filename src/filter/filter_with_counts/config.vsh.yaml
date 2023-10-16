@@ -43,7 +43,9 @@ functionality:
           choices: ["gzip", "lzf"]
           required: false
           example: "gzip"
-        
+        - name: "--do_subset"
+          type: boolean_true
+          description: Whether to subset before storing the output.
         - name: "--obs_name_filter"
           type: string
           default: "filter_with_counts"

@@ -96,6 +96,9 @@ if par["obs_name_filter"] is not None:
 if par["var_name_filter"] is not None:
     data.var[par["var_name_filter"]] = keep_genes
 
+if par["do_subset"]:
+    mdata.mod[mod] = data[keep_cells, keep_genes]
+
 logger.info("\tFiltered data: %s", data)
 logger.info("Writing output data to %s", par["output"])
 mdata.write_h5mu(par["output"], compression=par["output_compression"])
