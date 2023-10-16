@@ -117,8 +117,8 @@ workflow test_wf {
 
   output_ch =
     channelFromParams(testParams, config)
-    | map {list -> list + [test_passthrough: "test"]}
     // Add test passthrough 
+    | map {list -> list + [test_passthrough: "test"]}
     | view { "Input: $it" }
     | run_wf
     | view { output ->
