@@ -51,16 +51,6 @@ functionality:
           multiple_sep: ','
           required: false
           default: [50, 100, 200, 500]
-        - name: "--top_n_vars"
-          type: integer
-          description: |
-            Number of top vars to be used to calculate cumulative proportions.
-            If not specified, proportions are not calculated. `--top_n_vars 20,50` finds
-            cumulative proportion to the 20th and 50th most expressed vars.
-          multiple: true
-          multiple_sep: ','
-          required: false
-          default: [50, 100, 200, 500]
   resources:
     - type: nextflow_script
       path: main.nf
