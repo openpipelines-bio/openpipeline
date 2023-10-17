@@ -50,6 +50,10 @@
 
 * `qc/calculate_qc_metrics`: fix calculating mitochondrial gene related QC metrics when only or no mitochondrial genes were found (PR #564).
 
+## NEW FUNCTIONALITY
+
+* Added `protein_processing/dsb_index` and `protein_processing/dsb_normalize` components (PR #588).
+
 # openpipelines 0.10.1
 
 ## MINOR CHANGES
@@ -122,8 +126,6 @@
 * `reference/build_bd_rhapsody_reference`: add unittests (PR #504).
 
 ## NEW FUNCTIONALITY
-
-* Added `protein_processing/dsb_index` and `protein_processing/dsb_normalize` component.
 
 * Added `compression/compress_h5mu` component (PR #530).
 
