@@ -123,6 +123,8 @@
 
 ## NEW FUNCTIONALITY
 
+* Added `protein_processing/dsb_index` and `protein_processing/dsb_normalize` component.
+
 * Added `compression/compress_h5mu` component (PR #530).
 
 * Resource management: when a process exits with a status code between 137 and 140, retry the process with increased memory requirements. Memory scales by multiplying the base memory assigned to the process with the attempt number (PR #518 and PR #527).
