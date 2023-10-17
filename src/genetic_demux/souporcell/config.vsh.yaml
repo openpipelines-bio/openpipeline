@@ -74,7 +74,7 @@ functionality:
     - path: ../../../resources_test/demuxafy_test_data
 platforms:
   - type: docker
-    image: cumulusprod/souporcell:2021.03
+    image: cumulusprod/souporcell
   - type: nextflow
     directives:
       label: [ highmem, highcpu ]
