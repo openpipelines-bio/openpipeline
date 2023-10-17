@@ -124,6 +124,7 @@ workflow add_arguments {
             "min_fraction_mito": "rna_min_fraction_mito",
             "max_fraction_mito": "rna_max_fraction_mito",
             "var_name_mitochondrial_genes": "var_name_mitochondrial_genes",
+            "obs_name_mitochondrial_fraction": "obs_name_mitochondrial_fraction",
             "var_gene_names": "var_gene_names",
             "mitochondrial_gene_regex": "mitochondrial_gene_regex"
           ],
@@ -511,6 +512,7 @@ workflow test_wf2 {
           prot_max_proteins_per_cell: 1000000,
           prot_min_cells_per_protein: 1,
           var_name_mitochondrial_genes: 'mitochondrial',
+          obs_name_mitochondrial_fraction: 'fraction_mitochondrial'
         ],
       ],
       rna_min_counts: 2,
