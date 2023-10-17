@@ -85,13 +85,6 @@ NXF_VER=21.10.6 nextflow \
   --obs_covariates sample_id \
   -resume
 
-    mdata = mu.read_h5mu(input)
-
-    tmp_rna = tmp_path / "rna.h5ad"
-    tmp_prot = tmp_path / "prot.h5ad"
-    mdata.mod["rna"].write_h5ad(tmp_rna)
-    mdata.mod["prot"].write_h5ad(tmp_prot)
-
 python <<HEREDOC
 import mudata as mu
 mudata = mu.read_h5mu("${DIR}/pbmc_1k_protein_v3_filtered_feature_bc_matrix.h5mu")
