@@ -259,7 +259,7 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
     "platform" : "nextflow",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/convert/from_h5mu_to_h5ad",
     "viash_version" : "0.7.5",
-    "git_commit" : "3f03a6b5371364cd19f90b2e4648521b0cb6fdde",
+    "git_commit" : "125f0afa4ac570f5c381f84dd0bef0ad16c9865b",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))

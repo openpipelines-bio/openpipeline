@@ -173,7 +173,7 @@ function ViashHelp {
   echo ""
   echo "Obs metrics:"
   echo "  - num_nonzero_vars -> n_genes_by_{expr_type}"
-  echo "  - pct_{var_qc_metrics} -> pct_{expr_type}_{qc_var}"
+  echo "  - pct_{var_qc_metrics]} -> pct_{expr_type}_{qc_var}"
   echo "  - total_counts_{var_qc_metrics} -> total_{expr_type}_{qc_var}"
   echo "  - pct_of_counts_in_top_{top_n_vars}_vars ->"
   echo "pct_{expr_type}_in_top_{n}_{var_type}"
@@ -457,9 +457,9 @@ RUN pip install --upgrade pip && \
 
 LABEL org.opencontainers.image.authors="Dries Schaumont"
 LABEL org.opencontainers.image.description="Companion container for running component qc calculate_qc_metrics"
-LABEL org.opencontainers.image.created="2023-10-17T13:35:02Z"
+LABEL org.opencontainers.image.created="2023-10-18T02:38:41Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="3f03a6b5371364cd19f90b2e4648521b0cb6fdde"
+LABEL org.opencontainers.image.revision="125f0afa4ac570f5c381f84dd0bef0ad16c9865b"
 LABEL org.opencontainers.image.version="integration_build"
 
 VIASHDOCKER

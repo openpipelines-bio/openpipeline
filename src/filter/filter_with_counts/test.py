@@ -90,6 +90,9 @@ def test_filtering_a_little(run_component, input_path,
         "--min_genes_per_cell", "200",
         "--max_genes_per_cell", "1500000",
         "--min_cells_per_gene", "10",
+        "--min_fraction_mito", "0",
+        "--max_fraction_mito", "0.2",
+        "--var_gene_names", "gene_symbol",
         "--do_subset"])
     assert Path("output-2.h5mu").is_file()
     mu_out = mu.read_h5mu("output-2.h5mu")
@@ -118,6 +121,86 @@ def test_filter_cells_without_counts(run_component, input_h5mu, tmp_path):
     assert mu_out.mod['rna'].obs.at[obs_to_remove, 'filter_with_counts'] == False
     assert "mitochondrial" not in mu_out.mod['rna'].var
 
+
+def test_filter_mitochondrial(run_component, input_path,
+                              input_n_rna_obs, input_n_prot_obs,
+                              input_n_rna_vars, input_n_prot_vars):
+    run_component([
+        "--input", input_path,
+        "--output", "output-4.h5mu",
+        "--var_gene_names", "gene_symbol",
+        "--max_fraction_mito", "0.2",
+        "--do_subset"
+        ])
+    assert Path("output-4.h5mu").is_file()
+    mu_out = mu.read_h5mu("output-4.h5mu")
+    new_obs = mu_out.mod['rna'].n_obs
+    new_vars = mu_out.mod['rna'].n_vars
+    assert new_obs < input_n_rna_obs
+    assert new_vars == input_n_rna_vars
+    assert mu_out.mod['prot'].n_obs == input_n_prot_obs
+    assert mu_out.mod['prot'].n_vars == input_n_prot_vars
+    assert list(mu_out.mod['rna'].var['feature_types'].cat.categories) == ["Gene Expression"]
+    assert list(mu_out.mod['prot'].var['feature_types'].cat.categories) == ["Antibody Capture"]
+    assert "mitochondrial" not in mu_out.mod['rna'].var
+
+def test_filter_mitochondrial_regex(run_component, input_path,
+                                    input_n_rna_obs, input_n_prot_obs,
+                                    input_n_rna_vars, input_n_prot_vars):
+    run_component([
+        "--input", input_path,
+        "--output", "output-5.h5mu",
+        "--var_gene_names", "gene_symbol",
+        "--max_fraction_mito", "0.2",
+        "--mitochondrial_gene_regex", "^[M][T]-",
+        "--do_subset"
+        ])
+    assert Path("output-5.h5mu").is_file()
+    mu_out = mu.read_h5mu("output-5.h5mu")
+    new_obs = mu_out.mod['rna'].n_obs
+    new_vars = mu_out.mod['rna'].n_vars
+    assert new_obs < input_n_rna_obs
+    assert new_vars == input_n_rna_vars
+    assert mu_out.mod['prot'].n_obs == input_n_prot_obs
+    assert mu_out.mod['prot'].n_vars == input_n_prot_vars
+    assert list(mu_out.mod['rna'].var['feature_types'].cat.categories) == ["Gene Expression"]
+    assert list(mu_out.mod['prot'].var['feature_types'].cat.categories) == ["Antibody Capture"]
+    assert "mitochondrial" not in mu_out.mod['rna'].var
+
+
+def test_filter_mitochondrial_column_not_set(run_component, input_path,
+                                             input_n_rna_obs, input_n_prot_obs,
+                                             input_n_rna_vars, input_n_prot_vars):
+    run_component([
+        "--input", input_path,
+        "--output", "output-6.h5mu",
+        "--max_fraction_mito", "0.2",
+        "--mitochondrial_gene_regex", "^[mM][tT]-",
+        "--do_subset"
+        ])
+    assert Path("output-6.h5mu").is_file()
+    mu_out = mu.read_h5mu("output-6.h5mu")
+    new_obs = mu_out.mod['rna'].n_obs
+    new_vars = mu_out.mod['rna'].n_vars
+    assert new_obs == input_n_rna_obs # Stays the same because filtering on the wrong column
+    assert new_vars == input_n_rna_vars
+    assert mu_out.mod['prot'].n_obs == input_n_prot_obs
+    assert mu_out.mod['prot'].n_vars == input_n_prot_vars
+    assert list(mu_out.mod['rna'].var['feature_types'].cat.categories) == ["Gene Expression"]
+    assert list(mu_out.mod['prot'].var['feature_types'].cat.categories) == ["Antibody Capture"]
+    assert "mitochondrial" not in mu_out.mod['rna'].var.columns
+
+def test_var_name_mitochondrial_genes(run_component, input_path):
+    run_component([
+        "--input", input_path,
+        "--output", "output-4.h5mu",
+        "--var_gene_names", "gene_symbol",
+        "--max_fraction_mito", "0.2",
+        "--var_name_mitochondrial_genes", "mitochondrial"
+        ])
+    assert Path("output-6.h5mu").is_file()
+    mu_out = mu.read_h5mu("output-4.h5mu")
+    assert "mitochondrial" in mu_out.mod['rna'].var.columns
 
 if __name__ == "__main__":
     exit(pytest.main([__file__]))
