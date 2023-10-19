@@ -60,4 +60,4 @@ platforms:
 
   - type: nextflow
     directives:
-      label: [highcpu, midmem]
+      label: [lowcpu, midmem]
