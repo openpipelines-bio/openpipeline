@@ -2,7 +2,7 @@ functionality:
   name: leiden
   namespace: "cluster"
   description: |
-    Cluster cells using the [Leiden algorithm] [Traag18] implemented in the Scanpy framework [Wolf18]. 
+    Cluster cells using the [Leiden algorithm] [Traag18] implemented in the [Scanpy framework] [Wolf18]. 
     Leiden is an improved version of the [Louvain algorithm] [Blondel08]. 
     It has been proposed for single-cell analysis by [Levine15] [Levine15]. 
     This requires having ran `neighbors/find_neighbors` or `neighbors/bbknn` first.
