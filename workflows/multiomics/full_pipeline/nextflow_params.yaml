@@ -32,6 +32,7 @@ filter_with_hvg_obs_batch_key: "sample_id"
 
 # Mitochondrial Gene Detection
 # var_name_mitochondrial_genes: "foo"
+# obs_name_mitochondrial_fraction: "foo"
 # var_gene_names: "gene_symbol"
 mitochondrial_gene_regex: "^[mM][tT]-"
 

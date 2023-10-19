@@ -75,9 +75,16 @@ workflow test_wf {
         output: "\$id.h5mu"
       ],
       [
-        id: "h5ad",
+        id: "10xmtx",
         input: params.resources_test + "/pbmc_1k_protein_v3/pbmc_1k_protein_v3_filtered_feature_bc_matrix",
         input_type: "10xmtx",
+        modality: "rna",
+        output: "\$key.h5mu"
+      ],
+      [
+        id: "h5ad",
+        input: params.resources_test + "/pbmc_1k_protein_v3/pbmc_1k_protein_v3_filtered_feature_bc_matrix_rna.h5ad",
+        input_type: "h5ad",
         modality: "rna",
         output: "\$key.h5mu"
       ]
@@ -95,6 +102,6 @@ workflow test_wf {
       }
       | toSortedList()
       | map { output_list ->
-        assert output_list.size() == 3 : "output channel should contain three events"
+        assert output_list.size() == 4 : "output channel should contain four events"
       }
 }

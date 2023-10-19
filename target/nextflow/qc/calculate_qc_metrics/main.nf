@@ -181,7 +181,7 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
         "parent" : "file:///home/runner/work/openpipeline/openpipeline/"
       }
     ],
-    "description" : "Add basic quality control metrics to an .h5mu file.\n\nThe metrics are comparable to what scanpy.pp.calculate_qc_metrics output,\nalthough they have slightly different names:\n\nVar metrics (name in this component -> name in scanpy):\n  - pct_dropout -> pct_dropout_by_{expr_type}\n  - num_nonzero_obs -> n_cells_by_{expr_type}\n  - obs_mean -> mean_{expr_type}\n  - total_counts -> total_{expr_type}\n\nObs metrics:\n  - num_nonzero_vars -> n_genes_by_{expr_type}\n  - pct_{var_qc_metrics]} -> pct_{expr_type}_{qc_var}\n  - total_counts_{var_qc_metrics} -> total_{expr_type}_{qc_var}\n  - pct_of_counts_in_top_{top_n_vars}_vars -> pct_{expr_type}_in_top_{n}_{var_type}\n  - total_counts -> total_{expr_type}\n  \n",
+    "description" : "Add basic quality control metrics to an .h5mu file.\n\nThe metrics are comparable to what scanpy.pp.calculate_qc_metrics output,\nalthough they have slightly different names:\n\nVar metrics (name in this component -> name in scanpy):\n  - pct_dropout -> pct_dropout_by_{expr_type}\n  - num_nonzero_obs -> n_cells_by_{expr_type}\n  - obs_mean -> mean_{expr_type}\n  - total_counts -> total_{expr_type}\n\nObs metrics:\n  - num_nonzero_vars -> n_genes_by_{expr_type}\n  - pct_{var_qc_metrics} -> pct_{expr_type}_{qc_var}\n  - total_counts_{var_qc_metrics} -> total_{expr_type}_{qc_var}\n  - pct_of_counts_in_top_{top_n_vars}_vars -> pct_{expr_type}_in_top_{n}_{var_type}\n  - total_counts -> total_{expr_type}\n  \n",
     "test_resources" : [
       {
         "type" : "python_script",
@@ -305,7 +305,7 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
     "platform" : "nextflow",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/qc/calculate_qc_metrics",
     "viash_version" : "0.7.5",
-    "git_commit" : "046363b2986affd608f6e48a6f5197ae42ad6710",
+    "git_commit" : "01755452e62f6ab737a018c60b9d7facd67a8c01",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))

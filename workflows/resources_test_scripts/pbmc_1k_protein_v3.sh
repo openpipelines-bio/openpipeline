@@ -84,3 +84,9 @@ NXF_VER=21.10.6 nextflow \
   --publishDir `dirname $OUT` \
   --obs_covariates sample_id \
   -resume
+
+python <<HEREDOC
+import mudata as mu
+mudata = mu.read_h5mu("${DIR}/pbmc_1k_protein_v3_filtered_feature_bc_matrix.h5mu")
+mudata.mod["rna"].write_h5ad("${DIR}/pbmc_1k_protein_v3_filtered_feature_bc_matrix_rna.h5ad")
+HEREDOC

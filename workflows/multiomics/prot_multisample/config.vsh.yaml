@@ -30,6 +30,17 @@ functionality:
           example: output.h5mu
     - name: "QC metrics calculation options"
       arguments:
+        - name: "--var_qc_metrics"
+          description: |
+            Keys to select a boolean (containing only True or False) column from .var.
+            For each cell, calculate the proportion of total values for genes which are labeled 'True', 
+            compared to the total sum of the values for all genes. Defaults to the value from
+            --var_name_mitochondrial_genes.
+          type: string
+          multiple: True
+          multiple_sep: ','
+          required: false
+          example: "ercc,highly_variable"
         - name: "--top_n_vars"
           type: integer
           description: |

@@ -73,18 +73,6 @@
             "type": "integer",
             "description": "Type: `integer`, example: `3`. Minimum of non-zero values per gene",
             "help_text": "Type: `integer`, example: `3`. Minimum of non-zero values per gene."
-          },
-          
-          "min_fraction_mito": {
-            "type": "number",
-            "description": "Type: `double`, example: `0`. Minimum fraction of proteins that are mitochondrial",
-            "help_text": "Type: `double`, example: `0`. Minimum fraction of proteins that are mitochondrial."
-          },
-          
-          "max_fraction_mito": {
-            "type": "number",
-            "description": "Type: `double`, example: `0.2`. Maximum fraction of proteins that are mitochondrial",
-            "help_text": "Type: `double`, example: `0.2`. Maximum fraction of proteins that are mitochondrial."
           }
           
         }
