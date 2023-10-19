@@ -1,3 +1,9 @@
+# openpipelines 0.12.0
+
+## NEW FUNCTIONALITY
+
+* Added `filter/intersect_obs` component which removes observations that are not shared between modalities (PR #589).
+
 # openpipelines 0.11.0
 
 ## BREAKING CHANGES

@@ -7,7 +7,7 @@ import uuid
 
 ## VIASH START
 meta = {
-    'executable': './target/docker/filter/intersect_modalities/intersect_modalities',
+    'executable': './target/docker/filter/intersect_obs/intersect_obs',
     'resources_dir': './resources_test/',
     'cpus': 2,
     'config': './src/filter/intersect_modalities/config.vsh.yaml'
@@ -39,7 +39,7 @@ def sample_mudata(generate_h5mu, tmp_path):
     return output_file
     
 
-def test_intersect_modaltiies(run_component, sample_mudata, tmp_path):
+def test_intersect_obs(run_component, sample_mudata, tmp_path):
     output_path = tmp_path / f"{uuid.uuid4()}.h5mu"
 
     # run component
