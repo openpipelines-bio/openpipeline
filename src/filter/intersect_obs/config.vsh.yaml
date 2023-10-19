@@ -1,5 +1,5 @@
 functionality:
-  name: intersect_modalities
+  name: intersect_obs
   namespace: "filter"
   description: |
     Create an intersection between two or more modalities.
