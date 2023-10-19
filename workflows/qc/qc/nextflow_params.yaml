@@ -5,7 +5,6 @@ modality: "rna"
 # layer: "raw_counts"
 
 # Outputs
-overwrite_slots: false
 # output: "$id.$key.output.h5mu"
 
 # Mitochondrial Gene Detection

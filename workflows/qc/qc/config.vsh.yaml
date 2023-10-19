@@ -81,9 +81,6 @@ functionality:
           default: [50, 100, 200, 500]
     - name: "Outputs"
       arguments:
-        - name: "--overwrite_slots"
-          type: boolean_true
-          description: "Allow overwriting output slots"
         - name: "--output"
           type: file
           required: true
