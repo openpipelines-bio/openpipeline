@@ -2,12 +2,14 @@ import mudata as mu
 import sys
 from pathlib import Path
 import pytest
+import numpy as np
+from subprocess import CalledProcessError
 
 ## VIASH START
 meta = {
-    'executable': './target/docker/filter/filter_with_counts/filter_with_counts',
+    'executable': './target/docker/filter/delimit_fraction/delimit_fraction',
     'resources_dir': 'resources_test/',
-    'config': "/home/di/code/openpipeline/src/filter/filter_with_counts/config.vsh.yaml"
+    'config': "./src/filter/delimit_fraction/config.vsh.yaml"
 }
 
 ## VIASH END
@@ -33,12 +35,34 @@ logger = setup_logger()
 
 
 @pytest.fixture
-def input_path():
+def original_input_path():
     return f"{meta['resources_dir']}/pbmc_1k_protein_v3/pbmc_1k_protein_v3_filtered_feature_bc_matrix.h5mu"
 
 @pytest.fixture
-def input_h5mu(input_path):
-    return mu.read_h5mu(input_path)
+def input_h5mu(original_input_path):
+    input_data = mu.read_h5mu(original_input_path)
+    input_data.mod['rna'].obs['test_fraction'] = np.random.rand(input_data.mod['rna'].n_obs)
+    return input_data
+
+
+@pytest.fixture
+def input_h5mu_string_data(original_input_path):
+    input_data = mu.read_h5mu(original_input_path)
+    input_data.mod['rna'].obs['test_fraction'] = np.random.choice(['these', 'are', 'random', 'values'], input_data.mod['rna'].n_obs)
+    return input_data
+
+@pytest.fixture
+def input_path(input_h5mu, tmp_path):
+    output_path = tmp_path / "temp_h5mu.h5mu"
+    input_h5mu.write(output_path)
+    return output_path
+
+
+@pytest.fixture
+def input_path_string_data(input_h5mu_string_data, tmp_path):
+    output_path = tmp_path / "temp_h5mu_string.h5mu"
+    input_h5mu_string_data.write(output_path)
+    return output_path
 
 @pytest.fixture
 def input_n_rna_obs(input_h5mu):
@@ -62,19 +86,22 @@ def test_filter_nothing(run_component, input_path,
     run_component([
         "--input", input_path,
         "--output", "output-1.h5mu",
-        "--min_cells_per_gene", "3",
-        "--output_compression", "gzip"
+        "--min_fraction", "0",
+        "--max_fraction", "1",
+        "--output_compression", "gzip",
+        "--obs_name_filter", "test_output",
+        "--obs_fraction_column", "test_fraction"
         ])
     assert Path("output-1.h5mu").is_file()
     mu_out = mu.read_h5mu("output-1.h5mu")
-    assert "filter_with_counts" in mu_out.mod["rna"].obs
-    assert "filter_with_counts" in mu_out.mod["rna"].var
+    assert "test_output" in mu_out.mod["rna"].obs
     new_obs = mu_out.mod['rna'].n_obs
     new_vars = mu_out.mod['rna'].n_vars
     assert new_obs == input_n_rna_obs
     assert new_vars == input_n_rna_vars
     assert mu_out.mod['prot'].n_obs == input_n_prot_obs
     assert mu_out.mod['prot'].n_vars == input_n_prot_vars
+    assert mu_out.mod['rna'].obs['test_output'].all()
     assert list(mu_out.mod['rna'].var['feature_types'].cat.categories) == ["Gene Expression"]
     assert list(mu_out.mod['prot'].var['feature_types'].cat.categories) == ["Antibody Capture"]
 
@@ -84,39 +111,40 @@ def test_filtering_a_little(run_component, input_path,
     run_component([
         "--input", input_path,
         "--output", "output-2.h5mu",
-        "--modality", "rna",
-        "--min_counts", "200",
-        "--max_counts", "5000000",
-        "--min_genes_per_cell", "200",
-        "--max_genes_per_cell", "1500000",
-        "--min_cells_per_gene", "10",
-        "--do_subset"])
+        "--min_fraction", "0.5",
+        "--max_fraction", "0.7",
+        "--output_compression", "gzip",
+        "--obs_name_filter", "test_output",
+        "--obs_fraction_column", "test_fraction"     
+    ])
+
     assert Path("output-2.h5mu").is_file()
     mu_out = mu.read_h5mu("output-2.h5mu")
     new_obs = mu_out.mod['rna'].n_obs
     new_vars = mu_out.mod['rna'].n_vars
-    assert new_obs < input_n_rna_obs
-    assert new_vars < input_n_rna_vars
+    assert new_obs == input_n_rna_obs
+    assert new_vars == input_n_rna_vars
     assert mu_out.mod['prot'].n_obs == input_n_prot_obs
     assert mu_out.mod['prot'].n_vars == input_n_prot_vars
     assert list(mu_out.mod['rna'].var['feature_types'].cat.categories) == ["Gene Expression"]
+    assert not mu_out.mod['rna'].obs['test_output'].all()
+    assert list(mu_out.mod['rna'].var['feature_types'].cat.categories) == ["Gene Expression"]
     assert list(mu_out.mod['prot'].var['feature_types'].cat.categories) == ["Antibody Capture"]
 
-def test_filter_cells_without_counts(run_component, input_h5mu, tmp_path):
-    # create_an_empty_cell
-    obs_to_remove = input_h5mu.mod['rna'].obs.index[0]
-    input_h5mu.mod['rna'].X[0] = 0
-    temp_h5mu_path = tmp_path / "temp.h5mu"
-    input_h5mu.write(temp_h5mu_path)
-    run_component([
-        "--input", temp_h5mu_path,
-        "--output", "output-3.h5mu",
-        "--min_cells_per_gene", "0",
-    ])
-    assert Path("output-3.h5mu").is_file()
-    mu_out = mu.read_h5mu("output-3.h5mu")
-    assert mu_out.mod['rna'].obs.at[obs_to_remove, 'filter_with_counts'] == False
-    assert "mitochondrial" not in mu_out.mod['rna'].var
+
+def test_filtering_wrong_data_raises(run_component, input_path_string_data):
+    with pytest.raises(CalledProcessError) as err:
+        run_component([
+            "--input", input_path_string_data,
+            "--output", "output-2.h5mu",
+            "--min_fraction", "0.5",
+            "--max_fraction", "0.7",
+            "--output_compression", "gzip",
+            "--obs_name_filter", "test_output",
+            "--obs_fraction_column", "test_fraction"     
+        ])
+    assert "Column 'test_fraction' does not contain float datatype." in \
+            err.value.stdout.decode('utf-8')
 
 
 if __name__ == "__main__":
