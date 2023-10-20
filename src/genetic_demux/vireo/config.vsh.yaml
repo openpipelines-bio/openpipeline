@@ -3,7 +3,7 @@ functionality:
   namespace: genetic_demux
   description: "Vireo is primarily designed for demultiplexing cells into donors by modelling of expressed alleles."
   authors:
-    - __merge__: ../../authors/xichen_wu.yaml
+    - __merge__: /src/authors/xichen_wu.yaml
       roles: [ author ]
   argument_groups:
   - name: "Input"
