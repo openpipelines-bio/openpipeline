@@ -15,7 +15,7 @@ functionality:
 
     Obs metrics:
       - num_nonzero_vars -> n_genes_by_{expr_type}
-      - pct_{var_qc_metrics]} -> pct_{expr_type}_{qc_var}
+      - pct_{var_qc_metrics} -> pct_{expr_type}_{qc_var}
       - total_counts_{var_qc_metrics} -> total_{expr_type}_{qc_var}
       - pct_of_counts_in_top_{top_n_vars}_vars -> pct_{expr_type}_in_top_{n}_{var_type}
       - total_counts -> total_{expr_type}
@@ -78,10 +78,11 @@ functionality:
   resources:
     - type: python_script
       path: script.py
+    - path: /src/utils/setup_logger.py
   test_resources:
     - type: python_script
-      path: test_qc_metrics.py
-    - path: ../../../resources_test/pbmc_1k_protein_v3/pbmc_1k_protein_v3_filtered_feature_bc_matrix.h5mu
+      path: test.py
+    - path: /resources_test/pbmc_1k_protein_v3/pbmc_1k_protein_v3_filtered_feature_bc_matrix.h5mu
 platforms:
   - type: docker
     image: python:3.9-slim
@@ -95,7 +96,9 @@ platforms:
           - scikit-learn~=1.2.0
     test_setup:
       - type: python
+        __merge__: [ /src/base/requirements/viashpy.yaml, .]
         packages: 
-          - viashpy
           - scanpy~=1.9.2
   - type: nextflow
+    directives:
+      label: [singlecpu, midmem]

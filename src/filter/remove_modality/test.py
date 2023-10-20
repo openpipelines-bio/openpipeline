@@ -1,7 +1,6 @@
+import sys
 import pytest
-from pathlib import Path
 from mudata import read_h5mu
-from sys import exit
 
 ## VIASH START
 meta = {
@@ -11,21 +10,22 @@ meta = {
 }
 ## VIASH END
 
-
-meta['cpus'] = 1 if not meta['cpus'] else meta['cpus']
-
-resources_dir = meta["resources_dir"]
-input_sample_file = f"{resources_dir}/pbmc_1k_protein_v3_filtered_feature_bc_matrix.h5mu"
+input_sample_file = f"{meta['resources_dir']}/pbmc_1k_protein_v3_filtered_feature_bc_matrix.h5mu"
 
 
-def test_remove_component(run_component):
-    run_component(["--input", input_sample_file,
-                   "--modality", "rna",
-                   "--output", "removed_rna.h5mu",
-                   "--output_compression", "gzip"])
-    assert Path("removed_rna.h5mu").is_file()
-    output = read_h5mu("removed_rna.h5mu")
+def test_remove_component(run_component, tmp_path):
+    output_path = tmp_path / "output.h5mu"
+
+    # run component
+    run_component([
+        "--input", input_sample_file,
+        "--modality", "rna",
+        "--output", str(output_path),
+        "--output_compression", "gzip"
+    ])
+    assert output_path.is_file()
+    output = read_h5mu(output_path)
     assert list(output.mod.keys()) == ["prot"]
 
-if __name__ == '__main__':
-    exit(pytest.main([__file__]))
+if __name__ == "__main__":
+    sys.exit(pytest.main([__file__]))

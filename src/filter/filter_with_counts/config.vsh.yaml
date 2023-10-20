@@ -1,7 +1,6 @@
 functionality:
   name: filter_with_counts
   namespace: "filter"
-  version: "dev"
   description: |
     Filter scRNA-seq data based on the primary QC metrics. 
     This is based on both the UMI counts, the gene counts 
@@ -31,24 +30,6 @@ functionality:
           type: string
           example: "raw_counts"
           required: false
-
-        - name: "--var_gene_names"
-          required: false
-          example: "gene_symbol"
-          type: string
-          description: |
-            .var column name to be used to detect mitochondrial genes instead of .var_names (default if not set). 
-            Gene names matching with the regex value from --mitochondrial_gene_regex will be identified
-            as a mitochondrial gene.
-
-        - name: --mitochondrial_gene_regex
-          type: string
-          description: |
-            Regex string that identifies mitochondrial genes from --var_gene_names.
-            By default will detect human and mouse mitochondrial genes from a gene symbol.
-          required: false
-          default: "^[mM][tT]-"
-
     - name: Outputs
       arguments:
         - name: "--output"
@@ -65,7 +46,6 @@ functionality:
         - name: "--do_subset"
           type: boolean_true
           description: Whether to subset before storing the output.
-
         - name: "--obs_name_filter"
           type: string
           default: "filter_with_counts"
@@ -76,12 +56,6 @@ functionality:
           default: "filter_with_counts"
           description: In which .var slot to store a boolean array corresponding to which variables should be removed.
 
-        - name: "--var_name_mitochondrial_genes"
-          type: string
-          required: false
-          description: |
-            In which .var slot to store a boolean array corresponding the mitochondrial genes.
-            Will only be used if --min_fraction_mito or --max_fraction_mito are specified.
 
     - name: Arguments
       arguments:
@@ -110,25 +84,17 @@ functionality:
           type: integer
           description: Minimum of non-zero values per gene.
 
-        - name: "--min_fraction_mito"
-          example: 0
-          type: double
-          description: Minimum fraction of UMIs that are mitochondrial.
-
-        - name: "--max_fraction_mito"
-          example: 0.2
-          type: double
-          description: Maximum fraction of UMIs that are mitochondrial.
   resources:
     - type: python_script
       path: script.py
+    - path: /src/utils/setup_logger.py
   test_resources:
     - type: python_script
-      path: run_test.py
-    - path: ../../../resources_test/pbmc_1k_protein_v3
+      path: test.py
+    - path: /resources_test/pbmc_1k_protein_v3
 platforms:
   - type: docker
-    image: python:3.8-slim
+    image: python:3.9-slim
     setup:
       - type: apt
         packages: 
@@ -137,5 +103,7 @@ platforms:
         __merge__: /src/base/requirements/anndata_mudata.yaml
     test_setup:
       - type: python
-        packages: viashpy
+        __merge__: [ /src/base/requirements/viashpy.yaml, .]
   - type: nextflow
+    directives:
+      label: [singlecpu, lowmem]

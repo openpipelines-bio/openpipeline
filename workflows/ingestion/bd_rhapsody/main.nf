@@ -26,25 +26,44 @@ workflow run_wf {
   main:
   output_ch = input_ch
     | preprocessInputs("config": config)
-    // store output value in 3rd slot for later use
-    // and transform for concat component
-    | map { id, data ->
-      new_data = data.clone()
-      new_data.remove("output_h5mu")
-      new_data.remove("output_raw")
-      new_data = new_data + [ output: data.output_raw ]
-      
-      [id, new_data, data]
-    }
 
     // run bd rhapsody
-    | bd_rhapsody.run(auto: [ publish: true ])
+    | bd_rhapsody.run(
+      auto: [ publish: true ],
+      fromState: { id, state ->
+        // pass all arguments except:
+        //  - remove output_h5mu and output_compression
+        //  - rename output_raw to output
+        def data_ = state.clone()
+        data_.remove("output_h5mu")
+        data_.remove("output_raw")
+        data_.remove("output_compression")
+        data_ + [ output: state.output_raw ]
+      },
+      toState: { id, data, state ->
+        state + [ output_raw: data.output ]
+      }
+    )
+    | view {"After bd_rhapsody: $it"}
 
     // convert to h5mu
-    | map { id, file, orig_data -> 
-      [ id, [ id: id, input: file, output: orig_data.output_h5mu ] ]
-    }
-    | from_bdrhap_to_h5mu.run(auto: [ publish: true, output_compression: "gzip" ])
+    | from_bdrhap_to_h5mu.run(
+      fromState: { id, state ->
+        [
+          id: id,
+          input: state.output_raw,
+          output: state.output_h5mu,
+          output_compression: "gzip"
+        ]
+      },
+      toState: { id, data, state ->
+        [
+          output_raw: state.output_h5mu,
+          output_h5mu: data.output
+        ]
+      },
+      auto: [publish: true]
+    )
 
   emit:
   output_ch
@@ -71,13 +90,19 @@ workflow test_wf {
       | run_wf
       | view { output ->
         assert output.size() == 2 : "outputs should contain two elements; [id, file]"
-        assert output[1].toString().endsWith(".h5mu") : "Output file should be a h5mu file. Found: ${output[1]}"
+
+        def id = output[0]
+        def data = output[1]
+
+        assert id == "foo" : "Output ID should be same as input ID"
+        assert "output_raw" in data : "Output should contain output_raw"
+        assert "output_h5mu" in data : "Output should contain output_h5mu"
+        assert data.output_h5mu.toString().endsWith(".h5mu") : "Output file should be a h5mu file. Found: ${output[1]}"
         "Output: $output"
       }
       | toList()
       | view { output_list ->
         assert output_list.size() == 1 : "output channel should contain one event"
-        assert output_list[0][0] == "foo" : "Output ID should be same as input ID"
       }
       // | check_format(args: {""}) // todo: check whether output h5mu has the right slots defined
 }

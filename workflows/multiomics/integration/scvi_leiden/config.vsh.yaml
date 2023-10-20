@@ -1,5 +1,5 @@
 functionality:
-  name: "leiden_scvi"
+  name: "scvi_leiden"
   namespace: "multiomics/integration"
   description: "Run scvi integration followed by neighbour calculations, leiden clustering and run umap on the result."
   authors:
@@ -67,6 +67,10 @@ functionality:
           default: "X_scvi_integrated"
           required: false
           description: "In which .obsm slot to store the resulting integrated embedding."
+        - name: "--var_input"
+          type: string
+          required: false
+          description: ".var column containing highly variable genes. By default, do not subset genes."
         - name: "--early_stopping"
           required: false
           type: boolean
@@ -133,4 +137,7 @@ functionality:
     - type: nextflow_script
       path: main.nf
       entrypoint: test_wf
-    - path: ../../../resources_test/pbmc_1k_protein_v3
+    - type: nextflow_script
+      path: main.nf
+      entrypoint: test_wf2
+    - path: /resources_test/pbmc_1k_protein_v3

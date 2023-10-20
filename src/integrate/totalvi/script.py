@@ -1,24 +1,23 @@
 from typing import Tuple
 
-import logging
+import os
+import sys
 import mudata
 from anndata import AnnData  # For type hints
 from mudata import MuData  # For type hints
 import numpy as np
-from pandas import DataFrame
 import scvi
 from scipy.sparse import issparse
     
-import os
 
 ### VIASH START
 par = {
-    "input": "resources_test/scvi_tools/totalvi_pbmc_query_test.h5mu",
-    "reference": "resources_test/scvi_tools/totalvi_pbmc_ref_test.h5mu",
+    "input": "resources_test/pbmc_1k_protein_v3/pbmc_1k_protein_v3_mms.h5mu",
+    "reference": "resources_test/pbmc_1k_protein_v3/pbmc_1k_protein_v3_mms.h5mu",
     "query_modality": "rna",
-    "query_proteins_modality": None,
+    "query_proteins_modality": "prot",
     "reference_modality": "rna",
-    "reference_proteins_modality": None,
+    "reference_proteins_modality": "prot",
     "force_retrain": False,
     "input_layer": None,
     "obs_batch": "sample_id",
@@ -29,14 +28,18 @@ par = {
     "obsm_normalized_protein_output": "X_totalvi_normalized_protein",
     "reference_model_path": "totalvi_model_reference/",
     "query_model_path": "totalvi_model_query/",
-    "max_epochs": 400,
-    "max_query_epochs": 200,
+    "max_epochs": 1,
+    "max_query_epochs": 1,
     "weight_decay": 0.0
 }
 ### VIASH END
 
-
-def _setup_logger():  # Is there a place where to put common code to not repeat it across components?
+sys.path.append(meta["resources_dir"])
+# START TEMPORARY WORKAROUND setup_logger
+# reason: resources aren't available when using Nextflow fusion
+# from setup_logger import setup_logger
+def setup_logger():
+    import logging
     from sys import stdout
 
     logger = logging.getLogger()
@@ -47,7 +50,8 @@ def _setup_logger():  # Is there a place where to put common code to not repeat 
     logger.addHandler(console_handler)
 
     return logger
-
+# END TEMPORARY WORKAROUND setup_logger
+logger = setup_logger()
 
 def align_proteins_names(adata_reference: AnnData, mdata_query: MuData, adata_query: AnnData, reference_proteins_key: str, query_proteins_key: str) -> AnnData:
     """Make sure that proteins are located in the same .obsm slot in reference and query. Pad query proteins with zeros if they are absent"""
@@ -55,8 +59,7 @@ def align_proteins_names(adata_reference: AnnData, mdata_query: MuData, adata_qu
 
     # If query has no protein data, put matrix of zeros 
     if not query_proteins_key or query_proteins_key not in mdata_query.mod:
-        data = np.zeros((adata_query.n_obs, proteins_reference.shape[1]))
-        adata_query.obsm[reference_proteins_key] = DataFrame(columns=proteins_reference.columns, index=adata_query.obs_names, data=data)
+        adata_query.obsm[reference_proteins_key] = np.zeros((adata_query.n_obs, proteins_reference.shape[1]))
     else:
         # Make sure that proteins expression has the same key in query and reference
         adata_query.obsm[reference_proteins_key] = adata_query.obsm[query_proteins_key]
@@ -138,11 +141,12 @@ def map_query_to_reference(mdata_reference: MuData, mdata_query: MuData, adata_q
     return vae_query, adata_query
 
 def main():
-    logger = _setup_logger()
-
     mdata_query = mudata.read(par["input"].strip())
-    adata_query = extract_proteins_to_anndata(mdata_query, rna_modality_key=par["query_modality"], protein_modality_key=par["query_proteins_modality"],
-                                            input_layer=par["input_layer"], hvg_var_key=par["var_input"])
+    adata_query = extract_proteins_to_anndata(mdata_query,
+                                              rna_modality_key=par["query_modality"],
+                                              protein_modality_key=par["query_proteins_modality"],
+                                              input_layer=par["input_layer"],
+                                              hvg_var_key=par["var_input"])
 
     if par["reference"].endswith(".h5mu"):
         logger.info("Reading reference")
@@ -160,8 +164,9 @@ def main():
     
     norm_rna, norm_protein = vae_query.get_normalized_expression()
     mdata_query.mod[par["query_modality"]].obsm[par["obsm_normalized_rna_output"]] = norm_rna.to_numpy()
-    # Would make more sense to write it to .obsm for protein modality, but query might not have this modality at all
-    mdata_query.mod[par["query_modality"]].obsm[par["obsm_normalized_protein_output"]] = norm_protein.to_numpy()
+
+    if par["query_proteins_modality"] in mdata_query.mod:
+        mdata_query.mod[par["query_proteins_modality"]].obsm[par["obsm_normalized_protein_output"]] = norm_protein.to_numpy()
     
     logger.info("Updating mdata")
     mdata_query.update()

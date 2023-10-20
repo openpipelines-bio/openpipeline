@@ -1,6 +1,9 @@
 name: integration test
 
-on: workflow_dispatch
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '33 2 * * *'
 
 jobs:
   # phase 1
@@ -15,7 +18,7 @@ jobs:
       cache_key: ${{ steps.cache.outputs.cache_key }}
 
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
 
     - uses: viash-io/viash-actions/setup@v4
 
@@ -91,7 +94,7 @@ jobs:
     # Remove unnecessary files to free up space. Otherwise, we get 'no space left on device.'
     - uses: data-intuitive/reclaim-the-bytes@v2
     
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
 
     - uses: viash-io/viash-actions/setup@v4
 
@@ -103,7 +106,7 @@ jobs:
         src: ${{ matrix.component.dir }}
         
     - name: Login to container registry
-      uses: docker/login-action@v2
+      uses: docker/login-action@v3
       with:
         registry: ghcr.io
         username: ${{ secrets.GTHB_USER }}
@@ -134,7 +137,7 @@ jobs:
     # Remove unnecessary files to free up space. Otherwise, we get 'no space left on device.'
     - uses: data-intuitive/reclaim-the-bytes@v2
         
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
 
     - uses: viash-io/viash-actions/setup@v4
 
@@ -178,7 +181,7 @@ jobs:
         find ./resources_test/ "${to_not_remove[@]}" -type f -exec rm {} +
 
     - name: Run integration test
-      timeout-minutes: 45
+      timeout-minutes: 60
       run: |
         # todo: replace with viash test command
         export NXF_VER=22.04.5

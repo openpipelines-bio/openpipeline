@@ -84,7 +84,8 @@ functionality:
           type: double
           description: Control the coarseness of the clustering. Higher values lead to more clusters.
           default: [1]
-    - name: Umap options
+          multiple: true
+    - name: UMAP options
       arguments:
         - name: "--obsm_umap"
           type: string
@@ -98,4 +99,7 @@ functionality:
     - type: nextflow_script
       path: main.nf
       entrypoint: test_wf
-    - path: ../../../resources_test/pbmc_1k_protein_v3
+    - type: nextflow_script
+      path: main.nf
+      entrypoint: test_wf2
+    - path: /resources_test/pbmc_1k_protein_v3

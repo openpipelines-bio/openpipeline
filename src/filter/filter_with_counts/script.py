@@ -1,8 +1,7 @@
 
 import mudata as mu
 import numpy as np
-import logging
-from sys import stdout
+import sys
 from operator import le, ge, gt
 
 ### VIASH START
@@ -18,22 +17,30 @@ par = {
   'min_genes_per_cell': int('200'),
   'max_genes_per_cell': int('1500000'),
   'min_cells_per_gene': int('3'),
-  'min_fraction_mito': float('0.0'),
-  'max_fraction_mito': float('0.2'),
-  "var_gene_names": "gene_symbol",
-  "mitochondrial_gene_regex": "^[mM][tT]-"
 }
 meta = {
     'functionality_name': 'filter_on_counts'
 }
 ### VIASH END
 
-logger = logging.getLogger()
-logger.setLevel(logging.INFO)
-console_handler = logging.StreamHandler(stdout)
-logFormatter = logging.Formatter("%(asctime)s %(levelname)-8s %(message)s")
-console_handler.setFormatter(logFormatter)
-logger.addHandler(console_handler)
+sys.path.append(meta["resources_dir"])
+# START TEMPORARY WORKAROUND setup_logger
+# reason: resources aren't available when using Nextflow fusion
+# from setup_logger import setup_logger
+def setup_logger():
+    import logging
+    from sys import stdout
+
+    logger = logging.getLogger()
+    logger.setLevel(logging.INFO)
+    console_handler = logging.StreamHandler(stdout)
+    logFormatter = logging.Formatter("%(asctime)s %(levelname)-8s %(message)s")
+    console_handler.setFormatter(logFormatter)
+    logger.addHandler(console_handler)
+
+    return logger
+# END TEMPORARY WORKAROUND setup_logger
+logger = setup_logger()
 
 logger.info("Reading input data")
 mdata = mu.read_h5mu(par["input"])
@@ -50,18 +57,12 @@ logger.info("\tComputing aggregations.")
 n_counts_per_cell = np.ravel(np.sum(data.X, axis=1))
 n_cells_per_gene = np.sum(data.X > 0, axis=0)
 n_genes_per_cell = np.sum(data.X > 0, axis=1)
-genes_column = data.var[par["var_gene_names"]] if par["var_gene_names"] else data.var_names
-mito_genes = genes_column.str.contains(par["mitochondrial_gene_regex"], regex=True)
-pct_mito = np.ravel(np.sum(data[:, mito_genes].X, axis=1) / np.sum(data.X, axis=1))
 
 def apply_filter_to_mask(mask, base, filter, comparator):
     new_filt = np.ravel(comparator(base, filter))
     num_removed = np.sum(np.invert(new_filt) & mask)
     mask &= new_filt
     return num_removed, mask
-
-if par["var_name_mitochondrial_genes"]:
-    data.var[par["var_name_mitochondrial_genes"]] = mito_genes
 
 # Filter genes
 keep_genes = np.repeat(True, data.n_vars)
@@ -78,8 +79,6 @@ filters = (("min_genes_per_cell", n_genes_per_cell, ge, "\tRemoving %s cells wit
            ("max_genes_per_cell", n_genes_per_cell, le, "\tRemoving %s cells with non-zero values in >%s genes."),
            ("min_counts", n_counts_per_cell, ge, "\tRemoving %s cells with <%s total counts."),
            ("max_counts", n_counts_per_cell, le, "\tRemoving %s cells with >%s total counts."),
-           ("min_fraction_mito", pct_mito, ge, "\tRemoving %s cells with <%s percentage mitochondrial reads."),
-           ("max_fraction_mito", pct_mito, le, "\tRemoving %s cells with >%s percentage mitochondrial reads."),
            (0, np.sum(data[:,keep_genes].X, axis=1), gt, "\tRemoving %s cells with %s counts"))
 
 keep_cells = np.repeat(True, data.n_obs)

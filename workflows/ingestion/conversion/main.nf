@@ -7,6 +7,7 @@ include { from_10xh5_to_h5mu } from targetDir + "/convert/from_10xh5_to_h5mu/mai
 include { from_10xmtx_to_h5mu } from targetDir + "/convert/from_10xmtx_to_h5mu/main.nf" 
 include { from_h5ad_to_h5mu } from targetDir + "/convert/from_h5ad_to_h5mu/main.nf" 
 include { readConfig; channelFromParams; preprocessInputs; helpMessage } from workflowDir + "/utils/WorkflowHelper.nf"
+include { passthroughMap as pmap } from workflowDir + "/utils/DataflowHelper.nf"
 
 
 config = readConfig("$workflowDir/ingestion/conversion/config.vsh.yaml")
@@ -74,9 +75,16 @@ workflow test_wf {
         output: "\$id.h5mu"
       ],
       [
-        id: "h5ad",
+        id: "10xmtx",
         input: params.resources_test + "/pbmc_1k_protein_v3/pbmc_1k_protein_v3_filtered_feature_bc_matrix",
         input_type: "10xmtx",
+        modality: "rna",
+        output: "\$key.h5mu"
+      ],
+      [
+        id: "h5ad",
+        input: params.resources_test + "/pbmc_1k_protein_v3/pbmc_1k_protein_v3_filtered_feature_bc_matrix_rna.h5ad",
+        input_type: "h5ad",
         modality: "rna",
         output: "\$key.h5mu"
       ]
@@ -89,11 +97,11 @@ workflow test_wf {
     | run_wf
     | view { output ->
         assert output.size() == 2 : "outputs should contain two elements; [id, file]"
-        assert output[1].toString().endsWith(".h5mu") : "Output file should be a h5mu file. Found: ${output[1]}"
+        assert output[1].output.toString().endsWith(".h5mu") : "Output file should be a h5mu file. Found: ${output[1]}"
         "Output: $output"
       }
       | toSortedList()
       | map { output_list ->
-        assert output_list.size() == 3 : "output channel should contain three events"
+        assert output_list.size() == 4 : "output channel should contain four events"
       }
 }

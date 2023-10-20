@@ -1,7 +1,6 @@
 functionality:
   name: scvi
   namespace: "integrate"
-  version: "dev"
   description: "Performs scvi integration as done in the human lung cell atlas https://github.com/LungCellAtlas/HLCA"
   authors:
     - __merge__: /src/authors/malte_luecken.yaml
@@ -76,7 +75,7 @@ functionality:
           description: Output h5mu file.
           direction: output
           required: true
-        - name: "--model_output"
+        - name: "--output_model"
           type: file
           description: Folder where the state of the trained model will be saved to.
           required: false
@@ -223,7 +222,7 @@ functionality:
     - type: python_script
       path: test.py
     - path: ../../utils/subset_vars.py
-    - path: ../../../resources_test/pbmc_1k_protein_v3/pbmc_1k_protein_v3_mms.h5mu
+    - path: /resources_test/pbmc_1k_protein_v3/pbmc_1k_protein_v3_mms.h5mu
 platforms:
   - type: docker
     image: nvcr.io/nvidia/pytorch:23.06-py3
@@ -246,6 +245,9 @@ platforms:
           # Pinning numba prevents recompiling when pip starts looking for a compatible version
           - numba~=0.57.1
           - scvi-tools~=1.0.0
+    test_setup:
+      - type: python
+        __merge__: [ /src/base/requirements/viashpy.yaml, .]
   - type: nextflow
     directives:
-      label: [gpu]
+      label: [midcpu, midmem, gpu]

@@ -3,7 +3,6 @@ functionality:
   # MuDataSeurat is currently broken -- https://github.com/PMBio/MuDataSeurat/issues/9
   status: disabled 
   namespace: "convert"
-  version: "dev"
   description: |
     Converts an h5mu file into a Seurat file.
 
@@ -37,7 +36,7 @@ functionality:
   test_resources:
     - type: r_script
       path: run_test.R
-    - path: ../../../resources_test/pbmc_1k_protein_v3
+    - path: /resources_test/pbmc_1k_protein_v3
 platforms:
   - type: docker
     image: eddelbuettel/r2u:22.04
@@ -60,3 +59,5 @@ platforms:
       - type: r
         github: pmbio/MuDataSeurat
   - type: nextflow
+    directives:
+      label: [lowmem, singlecpu]

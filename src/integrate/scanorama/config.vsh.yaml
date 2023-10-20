@@ -1,7 +1,6 @@
 functionality:
   name: scanorama
   namespace: "integrate"
-  version: "dev"
   description: |
     Use Scanorama to integrate different experiments.
   authors:
@@ -67,14 +66,14 @@ functionality:
       default: 0.1
   resources:
     - type: python_script
-      path: ./script.py
+      path: script.py
   test_resources:
     - type: python_script
       path: test.py
-    - path: ../../../resources_test/pbmc_1k_protein_v3/pbmc_1k_protein_v3_mms.h5mu
+    - path: /resources_test/pbmc_1k_protein_v3/pbmc_1k_protein_v3_mms.h5mu
 platforms:
   - type: docker
-    image: python:3.8-slim
+    image: python:3.9-slim
     setup:
       - type: apt
         packages: 
@@ -85,6 +84,9 @@ platforms:
         packages:
           - scanpy~=1.9.2
           - scanorama
+    test_setup:
+      - type: python
+        __merge__: [ /src/base/requirements/viashpy.yaml, .]
   - type: nextflow
     directives:
-      label: [highmem]
+      label: [midcpu, highmem]

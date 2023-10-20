@@ -1,7 +1,6 @@
 functionality:
   name: do_filter
   namespace: "filter"
-  version: "dev"
   description: |
     Remove observations and variables based on specified .obs and .var columns.
   authors:
@@ -50,10 +49,11 @@ functionality:
   resources:
     - type: python_script
       path: script.py
+    - path: /src/utils/setup_logger.py
   test_resources:
     - type: python_script
-      path: run_test.py
-    - path: ../../../resources_test/pbmc_1k_protein_v3
+      path: test.py
+    - path: /resources_test/pbmc_1k_protein_v3
 platforms:
   - type: docker
     image: python:3.9-slim
@@ -65,6 +65,7 @@ platforms:
         __merge__: /src/base/requirements/anndata_mudata.yaml
     test_setup:
       - type: python
-        packages:
-          - viashpy~=0.2.1
+        __merge__: [ /src/base/requirements/viashpy.yaml, .]
   - type: nextflow
+    directives:
+      label: [singlecpu, lowmem]

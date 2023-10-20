@@ -117,11 +117,13 @@ functionality:
   resources:
     - type: python_script
       path: script.py
+    - path: /src/utils/setup_logger.py
+    
   test_resources:
     - type: python_script
       path: test.py
-    - path: ../../../resources_test/annotation_test_data/
-    - path: ../../../resources_test/pbmc_1k_protein_v3/
+    - path: /resources_test/annotation_test_data/
+    - path: /resources_test/pbmc_1k_protein_v3/
 
 platforms:
   - type: docker
@@ -136,9 +138,12 @@ platforms:
           - wget
       - type: python
         packages:
-          - scanpy~=1.9.2
-          - scvi-tools~=0.20.3
+          - scanpy~=1.9.4
+          - scvi-tools~=1.0.3
           - popv~=0.3.2
+          - jax==0.4.10
+          - jaxlib==0.4.10
+          - ml-dtypes<0.3.0
       # These need to be updated AFTER popv is installed.
       # See https://github.com/YosefLab/PopV/issues/30
       - type: python
@@ -146,16 +151,11 @@ platforms:
       # download ontology required by popv
       - type: docker
         run: |
-          cd /opt && mkdir -p /opt/popv_cl_ontology && \
-          wget https://raw.githubusercontent.com/YosefLab/PopV/v0.2/ontology/cl.obo -O "popv_cl_ontology/cl.obo" && \
-          wget https://raw.githubusercontent.com/YosefLab/PopV/v0.2/ontology/cl.ontology -O "popv_cl_ontology/cl.ontology" && \
-          wget https://raw.githubusercontent.com/YosefLab/PopV/v0.2/ontology/cl.ontology.nlp.emb -O "popv_cl_ontology/cl.ontology.nlp.emb"
-      - type: python
-        packages: [jax==0.4.9, jaxlib==0.4.9]
+          cd /opt && git clone --depth 1 https://github.com/YosefLab/PopV.git && \
+            cd PopV && git fetch --depth 1 origin tag v0.2 && git checkout v0.2
     test_setup:
       - type: python
-        packages:
-          - viashpy
+        __merge__: [ /src/base/requirements/viashpy.yaml, .]
   - type: nextflow
     directives:
       # TODO: should add new label highmem-single-gpu and lowmem-single-gpu

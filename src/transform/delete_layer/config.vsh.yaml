@@ -1,7 +1,6 @@
 functionality:
   name: delete_layer
   namespace: "transform"
-  version: "dev"
   description: |
     Delete an anndata layer from one or more modalities.
   authors:
@@ -43,17 +42,24 @@ functionality:
   resources:
     - type: python_script
       path: script.py
+    - path: /src/utils/compress_h5mu.py
+    - path: /src/utils/setup_logger.py
   test_resources:
     - type: python_script
-      path: run_test.py
-    - path: ../../../resources_test/pbmc_1k_protein_v3
+      path: test.py
+    - path: /resources_test/pbmc_1k_protein_v3
 platforms:
   - type: docker
-    image: python:3.8-slim
+    image: python:3.9-slim
     setup:
       - type: apt
         packages: 
           - procps
       - type: python
         __merge__: /src/base/requirements/anndata_mudata.yaml
+    test_setup:
+      - type: python
+        __merge__: [ /src/base/requirements/viashpy.yaml, .]
   - type: nextflow
+    directives:
+      label: [midmem, singlecpu]

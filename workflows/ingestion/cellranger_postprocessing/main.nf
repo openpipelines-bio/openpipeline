@@ -31,53 +31,53 @@ workflow run_wf {
 
   mid0 = input_ch
     | preprocessInputs("config": config)
-    // split params for downstream components
-    | setWorkflowArguments(
-      correction: [
-        "perform_correction": "perform_correction"
-      ],
-      filter_with_counts: [
-        "min_genes": "min_genes",
-        "min_counts": "min_counts",
-      ],
-      publish: [
-        "output": "output"
-      ]
-    )
-
 
   // perform correction if so desired
   mid1_corrected = mid0
-    | filter{ it[2].correction.perform_correction }
+    | filter{ it[1].perform_correction }
     | cellbender_remove_background.run(
-      args: [ output_compression: "gzip" ]
+      fromState: { id, state ->
+        [
+          input: state.input,
+          epochs: state.cellbender_epochs,
+          output_layer: "cellbender_corrected",
+          output_compression: "gzip"
+        ]
+      },
+      toState: { id, output, state -> 
+        state + [input: output.output, layer: "cellbender_corrected"]
+      }
     )
-    | pmap{ id, file -> [ id, [ input: file, layer: "corrected" ]]}
-    // todo: allow setting the layer
   mid1_uncorrected = mid0
-    | filter{ ! it[2].correction.perform_correction }
+    | filter{ ! it[1].perform_correction }
   mid1 = mid1_corrected.mix(mid1_uncorrected)
 
   // perform filtering if so desired
-  // todo: set layer
   mid2_filtered = mid1
-    | filter{ it[2].filter_with_counts.min_genes != null || it[2].filter_with_counts.min_counts != null }
-    | getWorkflowArguments(key: "filter_with_counts")
+    | filter{ it[1].min_genes != null || it[1].min_counts != null }
     | filter_with_counts.run(
-        args: [do_subset: true,
-               output_compression: "gzip"]
+      fromState: { id, state ->
+        [
+          input: state.input,
+          min_genes: state.min_genes,
+          min_counts: state.min_counts,
+          layer: state.layer,
+          output_compression: "gzip",
+          do_subset: true
+        ]
+      },
+      toState: [input: "output"]
     )
   mid2_unfiltered = mid1
-    | filter{ it[2].filter_with_counts.min_genes == null && it[2].filter_with_counts.min_counts == null }
+    | filter{ it[1].min_genes == null && it[1].min_counts == null }
   mid2 = mid2_filtered.mix(mid2_unfiltered)
     
   // return output map
   output_ch = mid2
-    | pmap { id, data, split_args ->
-      file = data instanceof Map ? data.input : data
-      [ id, [input: file, output: split_args.publish.output] ]
-    }
-    | publish.run(auto: [ publish: true, simplifyOutput: false ])
+    | publish.run(
+      fromState: [ input: "input", output: "output" ],
+      auto: [ publish: true ]
+    )
 
   emit:
   output_ch
@@ -95,7 +95,8 @@ workflow test_wf {
         input: params.resources_test + "/pbmc_1k_protein_v3/pbmc_1k_protein_v3_raw_feature_bc_matrix.h5",
         perform_correction: true,
         min_genes: 100,
-        min_counts: 1000
+        min_counts: 1000,
+        cellbender_epochs: 5
       ]
     ]
   ]
@@ -104,11 +105,10 @@ workflow test_wf {
     channelFromParams(testParams, config)
 
     // first filter and convert to h5mu
-    | pmap { id, data -> [ id, [ input: data.input ], data ] }
-    | from_10xh5_to_h5mu
-    | pmap { id, file -> [ id, [ input: file ] ] }
-    | subset_h5mu.run(args: [ number_of_observations: 50000 ])
-    | pmap { id, file, orig_params -> [id, orig_params + [ input: file ] ] }
+    | from_10xh5_to_h5mu.run(
+      fromState: ["input"],
+      toState: ["input": "output"]
+    )
 
     | view { "Input: $it" }
     | run_wf
@@ -133,63 +133,24 @@ workflow test_wf2 {
   testParams = [
     param_list: [
       [
-        id: "bar",
-        input: params.resources_test + "/pbmc_1k_protein_v3/pbmc_1k_protein_v3_raw_feature_bc_matrix.h5",
-        perform_correction: true
-      ]
-    ]
-  ]
-
-  output_ch =
-    channelFromParams(testParams, config)
-
-    // first filter and convert to h5mu
-    | pmap { id, data -> [ id, [ input: data.input ], data ] }
-    | from_10xh5_to_h5mu
-    | pmap { id, file -> [ id, [ input: file ] ] }
-    | subset_h5mu.run(args: [ number_of_observations: 50000 ])
-    | pmap { id, file, orig_params -> [id, orig_params + [ input: file ] ] }
-
-    | view { "Input: $it" }
-    | run_wf
-    | view { output ->
-      assert output.size() == 2 : "outputs should contain two elements; [id, out]"
-      assert output[1] instanceof Map : "Output should be a Map."
-      // todo: check whether output dir contains fastq files
-      "Output: $output"
-    }
-    | toList()
-    | map { output_list ->
-      assert output_list.size() == 1 : "output channel should contain one event"
-    }
-    //| check_format(args: {""}) // todo: check whether output h5mu has the right slots defined
-}
-
-workflow test_wf3 {
-  // allow changing the resources_test dir
-  params.resources_test = params.rootDir + "/resources_test"
-
-  // or when running from s3: params.resources_test = "s3://openpipelines-data/"
-  testParams = [
-    param_list: [
-      [
         id: "zing",
         input: params.resources_test + "/pbmc_1k_protein_v3/pbmc_1k_protein_v3_raw_feature_bc_matrix.h5",
+        perform_correction: false,
         min_genes: 100,
-        min_counts: 1000
+        min_counts: 1000,
+        cellbender_epochs: 5
       ]
     ]
   ]
 
   output_ch =
     channelFromParams(testParams, config)
-
+    
     // first filter and convert to h5mu
-    | pmap { id, data -> [ id, [ input: data.input ], data ] }
-    | from_10xh5_to_h5mu
-    | pmap { id, file -> [ id, [ input: file ] ] }
-    | subset_h5mu.run(args: [ number_of_observations: 50000 ])
-    | pmap { id, file, orig_params -> [id, orig_params + [ input: file ] ] }
+    | from_10xh5_to_h5mu.run(
+      fromState: ["input"],
+      toState: ["input": "output"]
+    )
 
     | view { "Input: $it" }
     | run_wf

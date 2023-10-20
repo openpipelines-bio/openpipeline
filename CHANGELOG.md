@@ -1,3 +1,104 @@
+# openpipelines 0.12.0
+
+## BREAKING CHANGES
+
+The detection of mitochondrial genes has been revisited in order to remove the interdependency with the count filtering and the QC metric calculation.
+Implementing this changes involved breaking some existing functionality:
+
+* `filter/filter_with_counts`: removed `--var_gene_names`, `--mitochondrial_gene_regex`, `--var_name_mitochondrial_genes`, `--min_fraction_mito` and `--max_fraction_mito` (PR #585).
+
+* `workflows/prot_singlesample`: removed `--min_fraction_mito` and `--max_fraction_mito` because regex-based detection detection of mitochondrial genes is not possible (PR #585).
+
+* The fraction of counts that originated from mitochondrial genes used to be written to an .obs column with a name that was derived from `pct_` suffixed by the name of the mitochondrial gene column. The `--obs_name_mitochondrial_fraction` argument is introduced to change the destination column and the default prefix has changed from `pct_` to `fraction_` (PR #585).
+
+## NEW FUNCTIONALITY
+
+* `workflows/qc`: A pipeline to add basic qc statistics to a MuData object (PR #585). 
+
+* `workflows/rna_singlesample`: added `--obs_name_mitochondrial_fraction` and make sure that the values from `--max_fraction_mito`  and `--min_fraction_mito` are bound between 0 and 1 (PR #585).
+
+* Added `filter/delimit_fraction`: Turns an annotation column containing values between 0 and 1 into a boolean column based on thresholds (PR #585).
+
+* Added `metadata/grep_annotation_column`: Perform a regex lookup on a column from the annotation matrices .obs or .var (PR #585).
+
+* `workflows/full_pipelines`: added `--obs_name_mitochondrial_fraction` argument (PR #585).
+
+* `workflows/prot_multisample`: added `--var_qc_metrics` and `--top_n_vars` arguments (PR #585).
+
+* Added genetic demultiplexing methods `cellsnp`, `demuxlet`, `freebayes`, `freemuxlet`, `scsplit`, `sourorcell` and `vireo` (PR #343).
+
+## MINOR CHANGES
+
+* Refactored `prot_multisample` and `prot_singlesample` pipelines to use `fromState` and `toState` functionality (PR #585).
+
+# openpipelines 0.11.0
+
+## BREAKING CHANGES
+
+* Nextflow VDSL3: set `simplifyOutput` to `False` by default. This implies that components and workflows will output a hashmap with a sole "output" entry when there is only one output (PR #563).
+
+* `integrate/scvi`: rename `model_output` argument to `output_model` in order to align with the `scvi_leiden` workflow. This also fixes a bug with the workflow where the argument did not function (PR  #562).
+
+## MINOR CHANGES
+
+* `dataflow/concat`: reduce memory consumption when using `--other_axis_mode move` by processing only one annotation matrix (`.var`, `.obs`) at a time (PR #569).
+
+* Update viashpy and pin it to `0.5.0` (PR #572 and PR #577).
+
+* `convert/from_h5ad_to_h5mu`, `convert/from_h5mu_to_h5ad`, `dimred/pca`, `dimred/umap/`, 
+`filter/filter_with_counts`, `filter/filter_with_hvg`, `filter/remove_modality`, `filter/subset_h5mu`, 
+`integrate/scanorama`, `transform/delete_layer` and `transform/log1p`: update python to `3.9` (PR #572).
+
+* `integrate/scarches`: update base image, `scvi-tools` and `pandas` to `nvcr.io/nvidia/pytorch:23.09-py3`, `~=1.0.3` and `~=2.1.0` respectively (PR #572).
+
+* `integrate/totalvi`: update python to 3.9 and scvi-tools to `~=1.0.3` (PR #572).
+
+* `correction/cellbender_remove_background`: change base image to `nvcr.io/nvidia/cuda:11.8.0-devel-ubuntu22.04` and downwgrade MuData to 0.2.1 because it is the oldest version that uses python 3.7 (PR #575).
+
+* Several integration workflows: prevent leiden from being executed when no resolutions are provided (PR #583).
+
+* `dataflow/concat`: bump pandas to ~=2.1.1 and reduce memory consumption by only reading one modality into memory at a time (PR #568). 
+
+* `annotate/popv`: bump `jax` and `jaxlib` to `0.4.10`, scanpy to `1.9.4`, scvi to `1.0.3` and pin `ml-dtypes` to < 0.3.0 (PR #565).
+
+* `velocity/scvelo`: pin matplotlib to < 3.8.0 (PR #566).
+
+* `mapping/multi_star`: pin multiqc to 1.15.0 (PR #566).
+
+* `mapping/bd_rhapsody`: pin pandas version to <2 (PR #563). 
+
+* `query/cellxgene_census`: replaced label `singlecpu` with label `midcpu`.
+
+* `query/cellxgene_census`: avoid creating MuData object in memory by writing the modality directly to disk (PR #558).
+
+* `integrate/scvi`: use `midcpu` label instead of `singlecpu` (PR #561).
+
+## BUG FIXES
+
+* `transform/clr`: raise an error when CLR fails to return the requested output (PR #579).
+
+* `correction/cellbender_remove_background`: fix missing helper functionality when using Fusion (PR #575).
+
+* `convert/from_bdrhap_to_h5mu`: Avoid `TypeError: Can't implicitly convert non-string objects to strings` by using categorical dtypes when a string column contains NA values (PR #563).
+
+* `qc/calculate_qc_metrics`: fix calculating mitochondrial gene related QC metrics when only or no mitochondrial genes were found (PR #564).
+
+# openpipelines 0.10.1
+
+## MINOR CHANGES
+
+* `integration/scvi_leiden`: Expose hvg selection argument `--var_input` (#543, PR #547).
+
+## BUG FIXES
+
+* `integration/bbknn_leiden`: Set leiden clustering parameter to multiple (#542, PR #545).
+
+* `integration/scvi_leiden`: Fix component name in Viash config (PR #547).
+
+* `integration/harmony_leiden`: Pass `--uns_neighbors` argument `umap` (PR #548).
+
+* Add workaround for bug where resources aren't available when using Nextflow fusion by including `setup_logger`, `subset_vars` and `compress_h5mu` in the script itself (PR #549).
+
 # openpipelines 0.10.0
 
 
@@ -9,11 +110,34 @@
 
 * The `scvi` pipeline was renamed to `scvi_leiden` because `leiden` clustering was added to the pipeline (PR #499).
 
+* Upgrade `correction/cellbender_remove_background` from CellBender v0.2 to CellBender v0.3.0 (PR #523).
+  Between these versions, several arguments related to the slots of the output file have been changed.
+
 ## MAJOR CHANGES
 
 * Several components: update anndata to 0.9.3 and mudata to 0.2.3 (PR #423).
 
+* Base resources assigned for a process without any labels is now 1 CPU and 2GB (PR #518).
+
+* Updated to Viash 0.7.5 (PR #513).
+
+* Removed deprecated `variant: vdsl3` tags (PR #513).
+
+* Removed unused `version: dev` (PR #513).
+
+* `multiomics/integration/harmony_leiden`: Refactored data flow (PR #513).
+
+* `ingestion/bd_rhapsody`: Refactored data flow (PR #513).
+
+* `query/cellxgene_census`: increased returned metadata content, revised query option, added filtering strategy and refactored functionality (PR #520).
+
+* Refactor loggers using `setup_logger()` helper function (PR #534).
+
+* Refactor unittest tests to pytest tests (PR #534).
+
 ## MINOR CHANGES
+
+* Add resource labels to several components (PR #518).
 
 * `full_pipeline`: default value for `--var_qc_metrics` is now the combined values specified for `--mitochondrial_gene_regex` and `--filter_with_hvg_var_output`.
 
@@ -33,7 +157,9 @@
 
 ## NEW FUNCTIONALITY
 
-* Added genetic demultiplexing methods `cellsnp`, `demuxlet`, `freebayes`, `freemuxlet`, `scsplit`, `sourorcell` and `vireo`.
+* Added `compression/compress_h5mu` component (PR #530).
+
+* Resource management: when a process exits with a status code between 137 and 140, retry the process with increased memory requirements. Memory scales by multiplying the base memory assigned to the process with the attempt number (PR #518 and PR #527).
 
 * `integrate/scvi`: Add `--n_hidden_nodes`, `--n_dimensions_latent_space`, `--n_hidden_layers`, `--dropout_rate`, `--dispersion`, `--gene_likelihood`, `--use_layer_normalization`, `--use_batch_normalization`, `--encode_covariates`, `--deeply_inject_covariates` and `--use_observed_lib_size` parameters.
 
@@ -57,7 +183,27 @@
 
 * `convert/from_cellranger_multi_to_h5mu`: add `feature_reference` information to the MuData object. Information is split between the modalities. For example `CRISPR Guide Capture` information if added to the `.uns` slot of the `gdo` modality, while `Antibody Capture` information is added to the .uns slot of `prot` (PR #494).
 
+* Added `multiomics/integration/totalvi_leiden` pipeline (PR #500).
+
+* Added totalVI component (PR #386).
+
 * `workflows/full_pipeline`: Add `pca_overwrite` argument (PR #511).
+
+* Add `main_build_viash_hub` action to build, tag, and push components and docker images for viash-hub.com (PR #480).
+
+* `integration/bbknn_leiden`: Update state management to `fromState` / `toState` (PR #538).
+
+## DOCUMENTATION
+
+* `images`: Added images for various concepts, such as a sample, a cell, RNA, ADT, ATAC, VDJ (PR #515).
+
+* `multiomics/rna_singlesample`: Add image for workflow (PR #515).
+
+* `multiomics/rna_multisample`: Add image for workflow (PR #515).
+
+* `multiomics/prot_singlesample`: Add image for workflow (PR #515).
+
+* `multiomics/prot_multisample`: Add image for workflow (PR #515).
 
 ## BUG FIXES
 
@@ -80,6 +226,18 @@
 * `mapping/cellranger_multi`: Fix and issue where modalities did not have the proper name (PR #494).
 
 * `metadata/add_uns_to_obs`: Fix `KeyError: 'ouput_compression'` error (PR #501).
+
+* `neighbors/bbknn`: Fix `--input` not being a required argument (PR #518).
+
+* Create `correction/cellbender_remove_background_v0.2` for legacy CellBender v0.2 format (PR #523).
+
+* `integrate/scvi`: Ensure output has the same dimensionality as the input (PR #524).
+
+* `mapping/bd_rhapsody`: Fix `--dryrun` argument not working (PR #534).
+
+* `qc/multiqc`: Fix component not working for multiple inputs (PR #537). Also converted Bash script to Python scripts.
+
+* `neighbors/bbknn`: Fix `--uns_output`, `--obsp_distances` and `--obsp_connectivities` not being processed correctly (PR #538).
 
 # openpipelines 0.9.0
 

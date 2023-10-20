@@ -1,7 +1,6 @@
 functionality:
   name: "from_bdrhap_to_h5mu"
   namespace: "convert"
-  version: "dev"
   description: |
     Convert the output of a BD Rhapsody WTA pipeline to a MuData h5 file.
   authors:
@@ -41,10 +40,10 @@ functionality:
   test_resources:
     - type: python_script
       path: run_test.py
-    - path: ../../../resources_test/bdrhap_5kjrt/processed/WTA.bd_rhapsody.output_raw
+    - path: /resources_test/bdrhap_5kjrt/processed/WTA.bd_rhapsody.output_raw
 platforms:
   - type: docker
-    image: ghcr.io/data-intuitive/randpy:r4.2_py3.8
+    image: ghcr.io/data-intuitive/randpy:r4.2_py3.9
     setup:
       - type: docker
         run: apt update && apt upgrade -y
@@ -53,3 +52,5 @@ platforms:
       - type: r
         cran: anndata
   - type: nextflow
+    directives:
+      label: [lowmem, singlecpu]

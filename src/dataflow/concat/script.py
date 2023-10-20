@@ -1,14 +1,15 @@
 from __future__ import annotations
-import logging
+import sys
 import anndata
 import mudata as mu
-from sys import stdout
 import pandas as pd
 import numpy as np
 from collections.abc import Iterable
 from multiprocessing import Pool
 from pathlib import Path
-import h5py
+from h5py import File as H5File
+from typing import Literal
+import shutil
 
 ### VIASH START
 par = {
@@ -16,21 +17,85 @@ par = {
               "resources_test/concat_test_data/human_brain_3k_filtered_feature_bc_matrix_subset_unique_obs.h5mu"],
     "output": "foo.h5mu",
     "input_id": ["mouse", "human"],
-    "compression": "gzip",
     "other_axis_mode": "move",
     "output_compression": "gzip"
 }
 meta = {
-    "cpus": 10
+    "cpus": 10,
+    "resources_dir": "resources_test/"
 }
 ### VIASH END
 
-logger = logging.getLogger()
-logger.setLevel(logging.INFO)
-console_handler = logging.StreamHandler(stdout)
-logFormatter = logging.Formatter("%(asctime)s %(levelname)-8s %(message)s")
-console_handler.setFormatter(logFormatter)
-logger.addHandler(console_handler)
+sys.path.append(meta["resources_dir"])
+
+# START TEMPORARY WORKAROUND compress_h5mu
+# reason: resources aren't available when using Nextflow fusion
+
+# from compress_h5mu import compress_h5mu
+from h5py import Group, Dataset
+from typing import Union
+from functools import partial
+
+def compress_h5mu(input_path: Union[str, Path], 
+                output_path: Union[str, Path], 
+                compression: Union[Literal['gzip'], Literal['lzf']]):
+    input_path, output_path = str(input_path), str(output_path)
+
+    def copy_attributes(in_object, out_object):
+        for key, value in in_object.attrs.items():
+            out_object.attrs[key] = value
+
+    def visit_path(output_h5: H5File,
+                   compression: Union[Literal['gzip'], Literal['lzf']], 
+                   name: str, object: Union[Group, Dataset]):
+            if isinstance(object, Group):
+                new_group = output_h5.create_group(name)
+                copy_attributes(object, new_group)
+            elif isinstance(object, Dataset):
+                # Compression only works for non-scalar Dataset objects
+                # Scalar objects dont have a shape defined
+                if not object.compression and object.shape not in [None, ()]: 
+                    new_dataset = output_h5.create_dataset(name, data=object, compression=compression)
+                    copy_attributes(object, new_dataset)
+                else:
+                    output_h5.copy(object, name)
+            else:
+                raise NotImplementedError(f"Could not copy element {name}, "
+                                          f"type has not been implemented yet: {type(object)}")
+
+    with H5File(input_path, 'r') as input_h5, H5File(output_path, 'w', userblock_size=512) as output_h5:
+        copy_attributes(input_h5, output_h5)
+        input_h5.visititems(partial(visit_path, output_h5, compression))
+
+    with open(input_path, "rb") as input_bytes:
+        # Mudata puts metadata like this in the first 512 bytes:
+        # MuData (format-version=0.1.0;creator=muon;creator-version=0.2.0)
+        # See mudata/_core/io.py, read_h5mu() function
+        starting_metadata = input_bytes.read(100)
+        # The metadata is padded with extra null bytes up until 512 bytes
+        truncate_location = starting_metadata.find(b"\x00")
+        starting_metadata = starting_metadata[:truncate_location]
+    with open(output_path, "br+") as f:
+        nbytes = f.write(starting_metadata)
+        f.write(b"\0" * (512 - nbytes))
+# END TEMPORARY WORKAROUND compress_h5mu
+
+# START TEMPORARY WORKAROUND setup_logger
+# from setup_logger import setup_logger
+def setup_logger():
+    import logging
+    from sys import stdout
+
+    logger = logging.getLogger()
+    logger.setLevel(logging.INFO)
+    console_handler = logging.StreamHandler(stdout)
+    logFormatter = logging.Formatter("%(asctime)s %(levelname)-8s %(message)s")
+    console_handler.setFormatter(logFormatter)
+    logger.addHandler(console_handler)
+
+    return logger
+# END TEMPORARY WORKAROUND setup_logger
+logger = setup_logger()
 
 def indexes_unique(indices: Iterable[pd.Index]) -> bool:
     combined_indices = indices[0].append(indices[1:])
@@ -137,57 +202,29 @@ def cast_to_writeable_dtype(result: pd.DataFrame) -> pd.DataFrame:
         result[obj_col].astype(str).astype('category')
     return result
 
-def split_conflicts_modalities(n_processes: int, input_ids: tuple[str], modalities: Iterable[anndata.AnnData]) \
-        -> tuple[dict[str, dict[str, pd.DataFrame]],  dict[str, pd.DataFrame | None]]:
-        """
-        Merge .var and .obs matrices of the anndata objects. Columns are merged
-        when the values (excl NA) are the same in each of the matrices.
-        Conflicting columns are moved to a separate dataframe (one dataframe for each column,
-        containing all the corresponding column from each sample).
-        """
-        matrices_to_parse = ("var", "obs")
-        concatenated_result = {}
-        conflicts_result = {}
-        for matrix_name in matrices_to_parse:
-            matrices = [getattr(modality, matrix_name) for modality in modalities]
-            conflicts, concatenated_matrix = concatenate_matrices(n_processes, input_ids, matrices)
-            conflicts_result[f"{matrix_name}m"] = conflicts
-            concatenated_result[matrix_name] = concatenated_matrix
-        return conflicts_result, concatenated_result
+def split_conflicts_modalities(n_processes: int, input_ids: tuple[str], samples: Iterable[anndata.AnnData], output: anndata.AnnData) \
+        -> anndata.AnnData:
+    """
+    Merge .var and .obs matrices of the anndata objects. Columns are merged
+    when the values (excl NA) are the same in each of the matrices.
+    Conflicting columns are moved to a separate dataframe (one dataframe for each column,
+    containing all the corresponding column from each sample).
+    """
+    matrices_to_parse = ("var", "obs")
+    for matrix_name in matrices_to_parse:
+        matrices = [getattr(sample, matrix_name) for sample in samples]
+        conflicts, concatenated_matrix = concatenate_matrices(n_processes, input_ids, matrices)
+        
+        # Write the conflicts to the output
+        matrix_index = getattr(output, matrix_name).index
+        for conflict_name, conflict_data in conflicts.items():
+            getattr(output, f"{matrix_name}m")[conflict_name] = conflict_data.reindex(matrix_index)
 
-def set_matrices(mod: mu.MuData,
-                 new_matrices: dict[str, pd.DataFrame | None]) -> mu.MuData:
-    """
-    Add the calculated matrices to the mudata object. Ensure the correct datatypes
-    for the matrices that are composed from the combination of the matrices
-    from the different modalities.
-    """
-    for matrix_name, data in new_matrices.items():
-        new_index = getattr(mod, matrix_name).index
-        if data is None:
-            data = pd.DataFrame(index=new_index)
-        if data.index.empty:
-            data.index = new_index
-        setattr(mod, matrix_name, data)
-    return mod
+        # Set other annotation matrices in the output
+        setattr(output, matrix_name, pd.DataFrame() if concatenated_matrix is None else concatenated_matrix)
 
+    return output
 
-def set_conflicts(mod: anndata.AnnData,
-                  conflicts: dict[str, dict[str, pd.DataFrame]]) -> mu.MuData:
-    """
-    Store dataframes containing the conflicting columns in .obsm,
-    one key per column name from the original data.
-    """
-    mutlidim_to_singledim = {
-        'varm': 'var',
-        'obsm': 'obs'
-    }
-    for conflict_matrix_name, conflict in conflicts.items():
-        for conflict_name, conflict_data in conflict.items():
-            singledim_name = mutlidim_to_singledim[conflict_matrix_name]
-            singledim_index = getattr(mod, singledim_name).index
-            getattr(mod, conflict_matrix_name)[conflict_name] = conflict_data.reindex(singledim_index)
-    return mod
 
 def concatenate_modality(n_processes: int, mod: str, input_files: Iterable[str | Path], 
                          other_axis_mode: str, input_ids: tuple[str]) -> anndata.AnnData:
@@ -210,41 +247,47 @@ def concatenate_modality(n_processes: int, mod: str, input_files: Iterable[str |
     concatenated_data = anndata.concat(mod_data, join='outer', merge=other_axis_mode_to_apply)
 
     if other_axis_mode == "move":
-        conflicts, new_matrices = split_conflicts_modalities(n_processes, input_ids, mod_data)
-        concatenated_data = set_conflicts(concatenated_data, conflicts)
-        concatenated_data = set_matrices(concatenated_data, new_matrices)
+        concatenated_data = split_conflicts_modalities(n_processes, input_ids, mod_data, concatenated_data)
+    
     return concatenated_data
 
-def concatenate_modalities(n_processes: int, modalities: set[str], input_files: Path | str,
-                           other_axis_mode: str, input_ids: tuple[str] | None = None) -> mu.MuData:
+def concatenate_modalities(n_processes: int, modalities: list[str], input_files: Path | str,
+                           other_axis_mode: str, output_file: Path | str,
+                           compression: Literal['gzip'] | Literal['lzf'],
+                           input_ids: tuple[str] | None = None) -> None:
     """
     Join the modalities together into a single multimodal sample.
     """
     logger.info('Concatenating samples.')
-    if other_axis_mode == "move" and not input_ids:
-        raise ValueError("--mode 'move' requires --input_ids.")
-    new_mods = {}
+    output_file, input_files = Path(output_file), [Path(input_file) for input_file in input_files]
+    output_file_uncompressed = output_file.with_name(output_file.stem + "_uncompressed.h5mu")
+    output_file_uncompressed.touch()
+    # Create empty mudata file
+    mdata = mu.MuData({modality: anndata.AnnData() for modality in modalities})
+    mdata.write(output_file_uncompressed, compression=compression)
+
     for mod_name in modalities:
-        new_mods[mod_name] = concatenate_modality(n_processes, mod_name, input_files, other_axis_mode, input_ids)
-    concatenated_data = mu.MuData(new_mods)
+        new_mod = concatenate_modality(n_processes, mod_name, 
+                                       input_files, other_axis_mode, 
+                                       input_ids)
+        logger.info("Writing out modality '%s' to '%s' with compression '%s'.",
+                    mod_name, output_file_uncompressed, compression)
+        mu.write_h5ad(output_file_uncompressed, data=new_mod, mod=mod_name)
+    
+    if compression:
+        compress_h5mu(output_file_uncompressed, output_file, compression=compression)
+        output_file_uncompressed.unlink()
+    else:
+        shutil.move(output_file_uncompressed, output_file)
 
-    # After setting the matrices (.e.g. .mod['rna'].var) for each of the modalities
-    # the 'global' matrices must also be updated. This is done by mudata automatically
-    # by calling mudata.update() before writing. However, we need to make sure that the
-    # dtypes of these global matrices are also correct for writing..
-    for global_matrix_name in ("var", "obs"):
-        matrix = getattr(concatenated_data, global_matrix_name)
-        setattr(concatenated_data, global_matrix_name, cast_to_writeable_dtype(matrix))
     logger.info("Concatenation successful.")
-    return concatenated_data
-
 
 def main() -> None:
     # Get a list of all possible modalities
     mods = set()
     for path in par["input"]:
         try:
-            with h5py.File(path, 'r') as f_root:
+            with H5File(path, 'r') as f_root:
                 mods = mods | set(f_root["mod"].keys())
         except OSError:
             raise OSError(f"Failed to load {path}. Is it a valid h5 file?")
@@ -261,15 +304,17 @@ def main() -> None:
     logger.info("\nConcatenating data from paths:\n\t%s",
                 "\n\t".join(par["input"]))
 
+    if par["other_axis_mode"] == "move" and not input_ids:
+        raise ValueError("--mode 'move' requires --input_ids.")
+
     n_processes = meta["cpus"] if meta["cpus"] else 1
-    concatenated_samples = concatenate_modalities(n_processes,
-                                                  mods,
-                                                  par["input"],
-                                                  par["other_axis_mode"],
-                                                  input_ids=input_ids)
-    logger.info("Writing out data to '%s' with compression '%s'.",
-                par["output"], par["output_compression"])
-    concatenated_samples.write_h5mu(par["output"], compression=par["output_compression"])
+    concatenate_modalities(n_processes,
+                           list(mods),
+                           par["input"],
+                           par["other_axis_mode"],
+                           par["output"],
+                           par["output_compression"],
+                           input_ids=input_ids)
 
 
 if __name__ == "__main__":

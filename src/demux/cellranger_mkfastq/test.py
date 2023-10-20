@@ -1,7 +1,5 @@
-import subprocess
-from os import path
-import logging
-from sys import stdout
+import sys
+import pytest
 
 ## VIASH START
 meta = {
@@ -10,31 +8,23 @@ meta = {
 }
 ## VIASH END
 
-logger = logging.getLogger()
-logger.setLevel(logging.INFO)
-console_handler = logging.StreamHandler(stdout)
-logFormatter = logging.Formatter("%(asctime)s %(levelname)-8s %(message)s")
-console_handler.setFormatter(logFormatter)
-logger.addHandler(console_handler)
-
-logger.info("> Running command.")
 input = meta["resources_dir"] + "/cellranger_tiny_bcl/bcl"
 sample_sheet = meta["resources_dir"] + "/cellranger_tiny_bcl/bcl/sample_sheet.csv"
-output = "test_output"
 
-cmd_pars = [
-    meta["executable"],
-    "--input", input,
-    "--sample_sheet", sample_sheet,
-    "--output", output
-]
-if meta['cpus']:
-    cmd_pars.extend(["---cpus", str(meta['cpus'])])
-if meta['memory_gb']:
-    cmd_pars.extend(["---memory", f"{meta['memory_gb']}GB"])
-subprocess.check_call(cmd_pars, encoding="utf-8", timeout=500)
+def test_run(run_component, tmp_path):
+    output = tmp_path / "output"
 
-logger.info("> Check if file exists")
-assert path.exists(output + "/H35KCBCXY/test_sample"), "No output was created."
+    cmd_pars = [
+        "--input", input,
+        "--sample_sheet", sample_sheet,
+        "--output", str(output)
+    ]
 
-logger.info("> Completed Successfully!")
+    run_component(cmd_pars)
+
+    expected_dir: Path = output / "H35KCBCXY" / "test_sample"
+    assert expected_dir.is_dir(), "No output was created."
+
+
+if __name__ == "__main__":
+    sys.exit(pytest.main([__file__]))

@@ -1,9 +1,8 @@
+import sys
 from mudata import read_h5mu
 from scipy.sparse import issparse, isspmatrix_coo, csr_matrix
 from sklearn.utils.sparsefuncs import mean_variance_axis
-from sys import stdout
 import numpy as np
-import logging
 
 ## VIASH START
 par = {
@@ -16,13 +15,24 @@ par = {
 }
 ## VIASH END
 
-logger = logging.getLogger()
-logger.setLevel(logging.INFO)
-console_handler = logging.StreamHandler(stdout)
-logFormatter = logging.Formatter("%(asctime)s %(levelname)-8s %(message)s")
-console_handler.setFormatter(logFormatter)
-logger.addHandler(console_handler)
+sys.path.append(meta["resources_dir"])
+# START TEMPORARY WORKAROUND setup_logger
+# reason: resources aren't available when using Nextflow fusion
+# from setup_logger import setup_logger
+def setup_logger():
+    import logging
+    from sys import stdout
 
+    logger = logging.getLogger()
+    logger.setLevel(logging.INFO)
+    console_handler = logging.StreamHandler(stdout)
+    logFormatter = logging.Formatter("%(asctime)s %(levelname)-8s %(message)s")
+    console_handler.setFormatter(logFormatter)
+    logger.addHandler(console_handler)
+
+    return logger
+# END TEMPORARY WORKAROUND setup_logger
+logger = setup_logger()
 
 def main():
     input_data = read_h5mu(par["input"])
@@ -69,7 +79,7 @@ def main():
                 else:
                     qc_column = qc_column.fillna(par['var_qc_metrics_fill_na_value'], inplace=False)
             qc_column = qc_column.values
-            if not set(np.unique(qc_column)) == set((True, False)):
+            if set(np.unique(qc_column)) - {True, False}:
                 raise ValueError(f"Column {qc_metric} in .var for modality {par['modality']} "
                                  f"must only contain boolean values")
             

@@ -1,7 +1,6 @@
 functionality:
   name: filter_10xh5
   namespace: "process_10xh5"
-  version: "dev"
   description: |
     Filter a 10x h5 dataset.
   usage: | 
@@ -46,7 +45,7 @@ functionality:
   test_resources:
     - type: r_script
       path: run_test.R
-    - path: ../../../resources_test/pbmc_1k_protein_v3/pbmc_1k_protein_v3_filtered_feature_bc_matrix.h5
+    - path: /resources_test/pbmc_1k_protein_v3/pbmc_1k_protein_v3_filtered_feature_bc_matrix.h5
 platforms:
   - type: docker
     image: eddelbuettel/r2u:22.04
@@ -60,3 +59,5 @@ platforms:
       - type: r
         cran: [ testthat, anndata, hdf5r ]
   - type: nextflow
+    directives:
+      label: [singlecpu, lowmem]

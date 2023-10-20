@@ -1,18 +1,9 @@
 import subprocess
 from os import path
-import logging
-from sys import stdout
+import sys
 from pathlib import Path
 from tempfile import TemporaryDirectory
 import shutil
-
-logger = logging.getLogger()
-logger.setLevel(logging.INFO)
-console_handler = logging.StreamHandler(stdout)
-logFormatter = logging.Formatter("%(asctime)s %(levelname)-8s %(message)s")
-console_handler.setFormatter(logFormatter)
-logger.addHandler(console_handler)
-
 
 ## VIASH START
 meta = {
@@ -20,6 +11,25 @@ meta = {
     "resources_dir": "resources_test"
 }
 ## VIASH END
+
+sys.path.append(meta["resources_dir"])
+# START TEMPORARY WORKAROUND setup_logger
+# reason: resources aren't available when using Nextflow fusion
+# from setup_logger import setup_logger
+def setup_logger():
+    import logging
+    from sys import stdout
+
+    logger = logging.getLogger()
+    logger.setLevel(logging.INFO)
+    console_handler = logging.StreamHandler(stdout)
+    logFormatter = logging.Formatter("%(asctime)s %(levelname)-8s %(message)s")
+    console_handler.setFormatter(logFormatter)
+    logger.addHandler(console_handler)
+
+    return logger
+# END TEMPORARY WORKAROUND setup_logger
+logger = setup_logger()
 
 ## Test 1: use input dir
 logger.info("> Running command with folder")
