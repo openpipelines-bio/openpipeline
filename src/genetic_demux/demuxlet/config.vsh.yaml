@@ -14,11 +14,11 @@ functionality:
     - name: "--sam"
       type: file
       description: Input SAM/BAM/CRAM file. Must be sorted by coordinates and indexed.
-    - name: "--tagGroup"
+    - name: "--tag_group"
       type: string
       default: 'CB'
       description: Tag representing readgroup or cell barcodes, in the case to partition the BAM file into multiple groups. For 10x genomics, use CB.
-    - name: "--tagUMI"
+    - name: "--tag_umi"
       type: string
       default: 'UB'
       description: Tag representing UMIs. For 10x genomiucs, use UB.
@@ -32,23 +32,23 @@ functionality:
       type: string
       default: "GT"
       description: FORMAT field to extract the genotype, likelihood, or posterior from
-    - name: "--genoErrorOffset"
+    - name: "--geno_error_offset"
       type: double
       default: 0.10
       description: Offset of genotype error rate. [error] = [offset] + [1-offset]*[coeff]*[1-r2]
-    - name: "--genoErrorCoeff"
+    - name: "--geno_error_coeff"
       type: double
       default: 0.0
       description: Slope of genotype error rate. [error] = [offset] + [1-offset]*[coeff]*[1-r2]
-    - name: "--r2Info"
+    - name: "--r2_info"
       type: string
       default: "R2"
       description: INFO field name representing R2 value. Used for representing imputation quality.
-    - name: "--minMac"
+    - name: "--min_mac"
       type: integer
       default: 1
       description: Minimum minor allele frequency.
-    - name: "--minCallrate"
+    - name: "--min_call_rate"
       type: double
       default: 0.50
       description: Minimum call rate.
@@ -56,56 +56,56 @@ functionality:
       type: string
       default: "0.5"
       description: Grid of alpha to search for (default is 0.1, 0.2, 0.3, 0.4, 0.5)
-    - name: "--doubletPrior"
+    - name: "--doublet_prior"
       type: double
       default: 0.5
       description: Prior of doublet
     - name: "--sm"
       type: string
       description: "List of sample IDs to compare to (default: use all)."
-    - name: "--smList"
+    - name: "--sm_list"
       type: string
       description: File containing the list of sample IDs to compare.
-    - name: "--samVerbose"
+    - name: "--sam_verbose"
       type: integer
       default: 1000000
       description: Verbose message frequency for SAM/BAM/CRAM.
-    - name: "--vcfVerbose"
+    - name: "--vcf_verbose"
       type: integer
       default: 1000
       description: Verbose message frequency for VCF/BCF.
-    - name: "--capBQ"
+    - name: "--cap_bq"
       type: integer
       default: 20
       description: Maximum base quality (higher BQ will be capped).
-    - name: "--minBQ"
+    - name: "--min_bq"
       type: integer
       default: 13
       description: Minimum base quality to consider (lower BQ will be skipped).
-    - name: "--minMQ"
+    - name: "--min_mq"
       type: integer
       default: 20
       description: Minimum mapping quality to consider (lower MQ will be ignored).
-    - name: "--minTD"
+    - name: "--min_td"
       type: integer
       default: 0
       description: Minimum distance to the tail (lower will be ignored).
-    - name: "--exclFlag"
+    - name: "--excl_flag"
       type: integer
       default: 3844
       description: "SAM/BAM FLAGs to be excluded."
-    - name: "--groupList"
+    - name: "--group_list"
       type: string
       description: List of tag readgroup/cell barcode to consider in this run. All other barcodes will be ignored. This is useful for parallelized run.
-    - name: "--minTotal"
+    - name: "--min_total"
       type: integer
       default: 0
       description: Minimum number of total reads for a droplet/cell to be considered.
-    - name: "--minSnp"
+    - name: "--min_snp"
       type: integer
       default: 0
       description: Minimum number of SNPs with coverage for a droplet/cell to be considered.
-    - name: "--minUmi"
+    - name: "--min_umi"
       type: integer
       default: 0
       description: Minimum number of UMIs for a droplet/cell to be considered.
