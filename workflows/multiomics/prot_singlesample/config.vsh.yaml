@@ -56,15 +56,6 @@ functionality:
           example: 3
           type: integer
           description: Minimum of non-zero values per gene.
-
-        - name: "--min_fraction_mito"
-          example: 0
-          type: double
-          description: Minimum fraction of proteins that are mitochondrial.
-        - name: "--max_fraction_mito"
-          type: double
-          example: 0.2
-          description: Maximum fraction of proteins that are mitochondrial.
   resources:
     - type: nextflow_script
       path: main.nf
