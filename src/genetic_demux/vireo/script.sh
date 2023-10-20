@@ -3,33 +3,33 @@
 set -eo pipefail
 
 # Unset flags if they equal 'false'
-[[ "$par_noDoublet" == "false" ]] && unset par_noDoublet
-[[ "$par_forceLearnGT" == "false" ]] && unset par_forceLearnGT
-[[ "$par_ASEmode" == "false" ]] && unset par_ASEmode
-[[ "$par_noPlot" == "false" ]] && unset par_noPlot
-[[ "$par_callAmbientRNAs" == "false" ]] && unset par_callAmbientRNAs
+[[ "$par_no_doublet" == "false" ]] && unset par_no_doublet
+[[ "$par_force_learn_gt" == "false" ]] && unset par_force_learn_gt
+[[ "$par_ase_mode" == "false" ]] && unset par_ase_mode
+[[ "$par_no_plot" == "false" ]] && unset par_no_plot
+[[ "$par_call_ambient_rnas" == "false" ]] && unset par_call_ambient_rnas
 
 if [ ! -d "$par_output" ]; then
   mkdir -p "$par_output"
 fi
 
 vireo \
-  --cellData $par_cellData \
-  --nDonor $par_nDonor \
-  --genoTag $par_genoTag \
-  --nInit $par_nInit \
-  --extraDonor $par_extraDonor \
+  --cellData $par_cell_data \
+  --nDonor $par_n_donor \
+  --genoTag $par_geno_tag \
+  --nInit $par_n_init \
+  --extraDonor $par_extra_donor \
   --out "${par_output}" \
-  ${par_vartrixData:+--vatrixData $par_vartrixData} \
-  ${par_donorFile:+--donorFile $par_donorFile} \
-  ${par_noDoublet:+--noDoublet} \
-  ${par_extraDonorMode:+--extraDonorMode $par_extraDonorMode} \
-  ${par_forceLearnGT:+--forceLearnGT} \
-  ${par_ASEmode:+--ASEmode} \
-  ${par_noPlot:+--noPlot} \
-  ${par_randSeed:+--randSeed $par_randSeed} \
-  ${par_cellRange:+--cellRange $par_cellRange} \
-  ${par_callAmbientRNAs:+--callAmbientRNAs} \
+  ${par_vartrix_data:+--vatrixData $par_vartrix_data} \
+  ${par_donor_file:+--donorFile $par_donor_file} \
+  ${par_no_doublet:+--noDoublet} \
+  ${par_extra_donorMode:+--extraDonorMode $par_extra_donorMode} \
+  ${par_force_learn_gt:+--forceLearnGT} \
+  ${par_ase_mode:+--ASEmode} \
+  ${par_no_plot:+--noPlot} \
+  ${par_rand_seed:+--randSeed $par_rand_seed} \
+  ${par_cell_range:+--cellRange $par_cell_range} \
+  ${par_call_ambient_rnas:+--callAmbientRNAs} \
   ${meta_cpus:+--nproc $meta_cpus}
 
 cut -d$'\t' -f 1-2 "$par_output/donor_ids.tsv" | tr '\t' ',' > "$par_output/cell_annotation.csv"

@@ -8,58 +8,58 @@ functionality:
   argument_groups:
   - name: "Input"
     arguments:
-    - name: "--cellData"
+    - name: "--cell_data"
       type: file
       description: The cell genotype file in VCF format or cellSNP folder with sparse matrices.
-    - name: "--nDonor"
+    - name: "--n_donor"
       type: integer
       default: 2
       description: Number of donors to demultiplex; can be larger than provided in donor_file.
-    - name: "--vartrixData"
+    - name: "--vartrix_data"
       type: file
       description: The cell genotype files in vartrix outputs.
-    - name: "--donorFile"
+    - name: "--donor_file"
       type: file
       description: The donor genotype file in VCF format. Please filter the sample and region with bcftools first!
-    - name: "--genoTag"
+    - name: "--geno_tag"
       type: string
       default: "PL"
       description: The tag for donor genotype.
       choices: ["GT", "GP", "PL"]
-    - name: "--noDoublet"
+    - name: "--no_doublet"
       type: boolean
       default: false
       description: If use, not checking doublets.
-    - name: "--nInit"
+    - name: "--n_init"
       type: integer
       default: 50
       description: Number of random initializations, when GT needs to learn.
-    - name: "--extraDonor"
+    - name: "--extra_donor"
       type: integer
       default: 0
       description: Number of extra donor in pre-cluster, when GT needs to learn.
-    - name: "--extraDonorMode"
+    - name: "--extra_donorMode"
       type: string
       description: "Method for searching from extra donors. size: n_cell per donor; distance: GT distance between donors"
-    - name: "--forceLearnGT"
+    - name: "--force_learn_gt"
       type: boolean
       default: false
       description: If use, treat donor GT as prior only.
-    - name: "--ASEmode"
+    - name: "--ase_mode"
       type: boolean
       default: false
       description: If use, turn on SNP specific allelic ratio.
-    - name: "--noPlot"
+    - name: "--no_plot"
       type: boolean
       default: false
       description: If use, turn off plotting GT distance.
-    - name: "--randSeed"
+    - name: "--rand_seed"
       type: integer
       description: Seed for random initialization
-    - name: "--cellRange"
+    - name: "--cell_range"
       type: string
       description: Range of cells to process.
-    - name: "--callAmbientRNAs"
+    - name: "--call_ambient_rnas"
       type: boolean
       default: false
       description: If use, detect ambient RNAs in each cell.

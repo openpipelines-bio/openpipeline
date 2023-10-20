@@ -12,15 +12,15 @@ functionality:
     - name: "--sam"
       type: file
       description: Input SAM/BAM/CRAM file. Must be sorted by coordinates and indexed.
-    - name: "--tagGroup"
+    - name: "--tag_group"
       type: string
       default: 'CB'
       description: Tag representing readgroup or cell barcodes, in the case to partition the BAM file into multiple groups. For 10x genomics, use CB.
-    - name: "--tagUMI"
+    - name: "--tag_umi"
       type: string
       default: 'UB'
       description: Tag representing UMIs. For 10x genomiucs, use UB.
-    - name: "--excludeFlag"
+    - name: "--exclude_flag"
       type: integer
       default: 1796
       description: SAM/BAM FLAGs to be excluded.
@@ -30,52 +30,52 @@ functionality:
     - name: "--sm"
       type: string
       description: "List of sample IDs to compare to (default: use all)."
-    - name: "--smList"
+    - name: "--sm_list"
       type: string
       description: File containing the list of sample IDs to compare.
-    - name: "--samVerbose"
+    - name: "--sam_verbose"
       type: integer
       default: 1000000
       description: Verbose message frequency for SAM/BAM/CRAM.
-    - name: "--vcfVerbose"
+    - name: "--vcf_verbose"
       type: integer
       default: 1000
       description: Verbose message frequency for VCF/BCF.
-    - name: "--skipUmi"
+    - name: "--skip_umi"
       type: boolean_true
       description: Do not generate [prefix].umi.gz file, which stores the regions covered by each barcode/UMI pair.
-    - name: "--capBQ"
+    - name: "--cap_bq"
       type: integer
       default: 40
       description: Maximum base quality (higher BQ will be capped).
-    - name: "--minBQ"
+    - name: "--min_bq"
       type: integer
       default: 13
       description: Minimum base quality to consider (lower BQ will be skipped).
-    - name: "--minMQ"
+    - name: "--min_mq"
       type: integer
       default: 20
       description: Minimum mapping quality to consider (lower MQ will be ignored).
-    - name: "--minTD"
+    - name: "--min_td"
       type: integer
       default: 0
       description: Minimum distance to the tail (lower will be ignored).
-    - name: "--exclFlag"
+    - name: "--excl_flag"
       type: integer
       default: 3844
       description: SAM/BAM FLAGs to be excluded for SNP overlapping Read filtering Options.
-    - name: "--groupList"
+    - name: "--group_list"
       type: string
       description: List of tag readgroup/cell barcode to consider in this run. All other barcodes will be ignored. This is useful for parallelized run.
-    - name: "--minTotal"
+    - name: "--min_total"
       type: integer
       default: 0
       description: Minimum number of total reads for a droplet/cell to be considered.
-    - name: "--minUniq"
+    - name: "--min_uniq"
       type: integer
       default: 0
       description: Minimum number of unique reads (determined by UMI/SNP pair) for a droplet/cell to be considered.
-    - name: "--minSnp"
+    - name: "--min_snp"
       type: integer
       default: 0
       description: Minimum number of SNPs with coverage for a droplet/cell to be considered.

@@ -5,31 +5,31 @@ set -eo pipefail
 # Unset flags if they equal 'false'
 [[ "$par_genotype" == "false" ]] && unset par_genotype
 [[ "$par_gzip" == "false" ]] && unset par_gzip
-[[ "$par_printSkipSNPs" == "false" ]] && unset par_printSkipSNPs
-[[ "$par_doubletGL" == "false" ]] && unset par_doubletGL
-[[ "$par_countORPHAN" == "false" ]] && unset par_countORPHAN
+[[ "$par_print_skip_snps" == "false" ]] && unset par_print_skip_snps
+[[ "$par_doublet_gl" == "false" ]] && unset par_doublet_gl
+[[ "$par_count_orphan" == "false" ]] && unset par_count_orphan
 
 cellsnp-lite \
   ${meta_cpus:+--nproc $meta_cpus} \
-  --cellTAG $par_cellTAG \
-  --UMItag $par_UMItag \
-  --minCOUNT $par_minCOUNT \
-  --minMAF $par_minMAF \
-  --minLEN $par_minLEN \
-  --minMAPQ $par_minMAPQ \
+  --cellTAG $par_cell_tag \
+  --UMItag $par_umi_tag \
+  --minCOUNT $par_min_count \
+  --minMAF $par_min_maf \
+  --minLEN $par_min_len \
+  --minMAPQ $par_min_mapq \
   --outDir $par_output \
-  ${par_samFile:+--samFile $par_samFile} \
-  ${par_samFileList:+--samFileList $par_samFileList} \
-  ${par_regionsVCF:+--regionsVCF $par_regionsVCF} \
-  ${par_targetsVCF:+--targetsVCF $par_targetsVCF} \
-  ${par_barcodeFile:+--barcodeFile $par_barcodeFile} \
-  ${par_sampleList:+--sampleList $par_sampleList} \
-  ${par_sampleIDs:+--sampleIDs $par_sampleIDs} \
+  ${par_sam_file:+--samFile $par_sam_file} \
+  ${par_sam_fileList:+--samFileList $par_sam_fileList} \
+  ${par_regions_vcf:+--regionsVCF $par_regions_vcf} \
+  ${par_targets_vcf:+--targetsVCF $par_targets_vcf} \
+  ${par_barcode_file:+--barcodeFile $par_barcode_file} \
+  ${par_sample_list:+--sampleList $par_sample_list} \
+  ${par_sample_ids:+--sampleIDs $par_sample_ids} \
   ${par_genotype:+--genotype} \
   ${par_gzip:+--gzip} \
-  ${par_printSkipSNPs:+--printSkipSNPs} \
+  ${par_print_skip_snps:+--printSkipSNPs} \
   ${par_chrom:+--chrom $par_chrom} \
-  ${par_doubletGL:+--doubletGL} \
-  ${par_inclFLAG:+--inclFLAG $par_inclFLAG} \
-  ${par_exclFLAG:+--exclFLAG $par_exclFLAG} \
-  ${par_countORPHAN:+--countORPHAN}
+  ${par_doublet_gl:+--doubletGL} \
+  ${par_incl_flag:+--inclFLAG $par_incl_flag} \
+  ${par_excl_flag:+--exclFLAG $par_excl_flag} \
+  ${par_count_orphan:+--countORPHAN}

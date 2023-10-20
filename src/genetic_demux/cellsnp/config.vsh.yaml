@@ -8,28 +8,28 @@ functionality:
   argument_groups:
   - name: "Input"
     arguments:
-    - name: "--samFile"
+    - name: "--sam_file"
       type: file
       description: "Indexed sam/bam file(s), comma separated multiple samples. Mode 1a & 2a: one sam/bam file with single cell. Mode 1b & 2b: one or multiple bulk sam/bam files, no barcodes needed, but sample ids and regionsVCF."
-    - name: "--samIndexFile"
+    - name: "--sam_index_file"
       type: file
       description: Input SAM/BAM Index file, problem with samFileList.
-    - name: "--samFileList"
+    - name: "--sam_fileList"
       type: file
       description: A list file containing bam files, each per line, for Mode 1b & 2b.
-    - name: "--regionsVCF"
+    - name: "--regions_vcf"
       type: file
       description: A vcf file listing all candidate SNPs, for fetch each variants. If None, pileup the genome. Needed for bulk samples.
-    - name: "--targetsVCF"
+    - name: "--targets_vcf"
       type: file
-      description: "Similar as --regionsVCF, but the next position is accessed by streaming rather than indexing/jumping (like -T in samtools/bcftools mpileup)."
-    - name: "--barcodeFile"
+      description: "Similar as --regions_vcf, but the next position is accessed by streaming rather than indexing/jumping (like -T in samtools/bcftools mpileup)."
+    - name: "--barcode_file"
       type: file
       description: A plain file listing all effective cell barcode.
-    - name: "--sampleList"
+    - name: "--sample_list"
       type: file
       description: A list file containing sample IDs, each per line.
-    - name: "--sampleIDs"
+    - name: "--sample_ids"
       type: string
       description: Comma separated sample ids.
     - name: "--genotype"
@@ -38,45 +38,45 @@ functionality:
     - name: "--gzip"
       type: boolean_true
       description: If use, the output files will be zipped into BGZF format.
-    - name: "--printSkipSNPs"
+    - name: "--print_skip_snps"
       type: boolean_true
       description: If use, the SNPs skipped when loading VCF will be printed.
     - name: "--chrom"
       type: string
       description: "The chromosomes to use in integer format 1-22, comma separated"
-    - name: "--cellTAG"
+    - name: "--cell_tag"
       type: string
       default: "CB"
       description: Tag for cell barcodes, turn off with None.
-    - name: "--UMItag"
+    - name: "--umi_tag"
       type: string
       default: "Auto"
       description: "Tag for UMI: UR, Auto, None. For Auto mode, use UR if barcodes is inputted, otherwise use None. None mode means no UMI but read counts."
-    - name: "--minCOUNT"
+    - name: "--min_count"
       type: integer
       default: 20
       description: Minimum aggragated count.
-    - name: "--minMAF"
+    - name: "--min_maf"
       type: double
       default: 0.00
       description: Minimum minor allele frequency.
-    - name: "--doubletGL"
+    - name: "--doublet_gl"
       type: boolean_true
       description: If use, keep doublet GT likelihood, i.e., GT=0.5 and GT=1.5.
-    - name: "--inclFLAG"
+    - name: "--incl_flag"
       type: string
       description: "Required flags: skip reads with all mask bits unset."
-    - name: "--exclFLAG"
+    - name: "--excl_flag"
       type: string
       description: "Filter flags: skip reads with any mask bits set [UNMAP,SECONDARY,QCFAIL (when use UMI) or UNMAP,SECONDARY,QCFAIL,DUP (otherwise)]"
-    - name: "--countORPHAN"
+    - name: "--count_orphan"
       type: boolean_true
       description: If use, do not skip anomalous read pairs.
-    - name: "--minMAPQ"
+    - name: "--min_mapq"
       type: integer
       default: 20
       description: Minimum MAPQ for read filtering.
-    - name: "--minLEN"
+    - name: "--min_len"
       type: integer
       default: 30
       description: Minimum mapped length for read filtering.
