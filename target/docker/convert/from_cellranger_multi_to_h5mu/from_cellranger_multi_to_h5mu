@@ -423,13 +423,13 @@ RUN apt-get update && \
   rm -rf /var/lib/apt/lists/*
 
 RUN pip install --upgrade pip && \
-  pip install --upgrade --no-cache-dir "mudata~=0.2.3" "anndata~=0.9.1" "scanpy~=1.9.2" "scirpy~=0.11.1" "pandas~=2.0.0"
+  pip install --upgrade --no-cache-dir "mudata~=0.2.3" "anndata~=0.9.1" "scanpy~=1.9.5" "scirpy~=0.11.1" "pandas~=2.0.0"
 
 LABEL org.opencontainers.image.authors="Dries Schaumont"
 LABEL org.opencontainers.image.description="Companion container for running component convert from_cellranger_multi_to_h5mu"
-LABEL org.opencontainers.image.created="2023-10-20T09:45:29Z"
+LABEL org.opencontainers.image.created="2023-10-23T09:44:33Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="05fa08f7c657da8f724f066020cd6524266381a5"
+LABEL org.opencontainers.image.revision="b41a65886f61959c7f83f84a0569c3da1d7a2856"
 LABEL org.opencontainers.image.version="main_build"
 
 VIASHDOCKER
