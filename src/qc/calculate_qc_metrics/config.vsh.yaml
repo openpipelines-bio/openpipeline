@@ -96,9 +96,7 @@ platforms:
           - scikit-learn~=1.2.0
     test_setup:
       - type: python
-        __merge__: [ /src/base/requirements/viashpy.yaml, .]
-        packages: 
-          - scanpy~=1.9.2
+        __merge__: [ /src/base/requirements/viashpy.yaml, /src/base/requirements/scanpy.yaml, .]
   - type: nextflow
     directives:
       label: [singlecpu, midmem]
