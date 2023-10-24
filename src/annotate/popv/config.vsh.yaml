@@ -137,8 +137,8 @@ platforms:
           - build-essential
           - wget
       - type: python
+        __merge__: [ /src/base/requirements/scanpy.yaml, .]
         packages:
-          - scanpy~=1.9.4
           - scvi-tools~=1.0.3
           - popv~=0.3.2
           - jax==0.4.10

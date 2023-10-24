@@ -51,8 +51,8 @@ platforms:
           - python3-pip
           - python-is-python3
       - type: python
+        __merge__: [/src/base/requirements/scanpy.yaml, .]
         packages: 
-          - scanpy~=1.9.2
           - anndata~=0.9.1
       - type: r
         cran: [ anndata, hdf5r, testthat ]

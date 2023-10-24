@@ -27,6 +27,8 @@ Implementing this changes involved breaking some existing functionality:
 
 ## MINOR CHANGES
 
+* Several components: bump scanpy to 1.9.5 (PR #594).
+
 * Refactored `prot_multisample` and `prot_singlesample` pipelines to use `fromState` and `toState` functionality (PR #585).
 
 # openpipelines 0.11.0

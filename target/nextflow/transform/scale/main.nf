@@ -205,7 +205,7 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
           "packages" : [
             "mudata~=0.2.3",
             "anndata~=0.9.1",
-            "scanpy~=1.9.2"
+            "scanpy~=1.9.5"
           ],
           "upgrade" : true
         }
@@ -284,7 +284,7 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
     "platform" : "nextflow",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/transform/scale",
     "viash_version" : "0.7.5",
-    "git_commit" : "05fa08f7c657da8f724f066020cd6524266381a5",
+    "git_commit" : "b41a65886f61959c7f83f84a0569c3da1d7a2856",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))

@@ -427,8 +427,7 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
           "type" : "python",
           "user" : false,
           "packages" : [
-            "muon~=0.1.4",
-            "scanpy~=1.9.2"
+            "muon~=0.1.4"
           ],
           "upgrade" : true
         }
@@ -492,7 +491,7 @@ thisConfig = processConfig(jsonSlurper.parseText('''{
     "platform" : "nextflow",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/correction/cellbender_remove_background_v0_2",
     "viash_version" : "0.7.5",
-    "git_commit" : "05fa08f7c657da8f724f066020cd6524266381a5",
+    "git_commit" : "b41a65886f61959c7f83f84a0569c3da1d7a2856",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))
