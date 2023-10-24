@@ -16,6 +16,7 @@ input: # please fill in - example: "dataset.h5mu"
 
 # Mitochondrial gene detection
 # var_name_mitochondrial_genes: "foo"
+# obs_name_mitochondrial_fraction: "foo"
 # var_gene_names: "gene_symbol"
 mitochondrial_gene_regex: "^[mM][tT]-"
 

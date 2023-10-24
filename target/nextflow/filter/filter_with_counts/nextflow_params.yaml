@@ -2,8 +2,6 @@
 input: # please fill in - example: "input.h5mu"
 modality: "rna"
 # layer: "raw_counts"
-# var_gene_names: "gene_symbol"
-mitochondrial_gene_regex: "^[mM][tT]-"
 
 # Outputs
 # output: "$id.$key.output.h5mu"
@@ -11,7 +9,6 @@ mitochondrial_gene_regex: "^[mM][tT]-"
 do_subset: false
 obs_name_filter: "filter_with_counts"
 var_name_filter: "filter_with_counts"
-# var_name_mitochondrial_genes: "foo"
 
 # Arguments
 # min_counts: 200
@@ -19,8 +16,6 @@ var_name_filter: "filter_with_counts"
 # min_genes_per_cell: 200
 # max_genes_per_cell: 1500000
 # min_cells_per_gene: 3
-# min_fraction_mito: 0
-# max_fraction_mito: 0.2
 
 # Nextflow input-output arguments
 publish_dir: # please fill in - example: "output/"

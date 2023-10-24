@@ -11,8 +11,6 @@ input: # please fill in - example: "dataset.h5mu"
 # min_proteins_per_cell: 200
 # max_proteins_per_cell: 1500000
 # min_cells_per_protein: 3
-# min_fraction_mito: 0
-# max_fraction_mito: 0.2
 
 # Nextflow input-output arguments
 publish_dir: # please fill in - example: "output/"

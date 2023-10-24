@@ -27,19 +27,6 @@
             "type": "string",
             "description": "Type: `string`, example: `raw_counts`. ",
             "help_text": "Type: `string`, example: `raw_counts`. "
-          },
-          
-          "var_gene_names": {
-            "type": "string",
-            "description": "Type: `string`, example: `gene_symbol`. ",
-            "help_text": "Type: `string`, example: `gene_symbol`. .var column name to be used to detect mitochondrial genes instead of .var_names (default if not set). \nGene names matching with the regex value from --mitochondrial_gene_regex will be identified\nas a mitochondrial gene.\n"
-          },
-          
-          "mitochondrial_gene_regex": {
-            "type": "string",
-            "description": "Type: `string`, default: `^[mM][tT]-`. Regex string that identifies mitochondrial genes from --var_gene_names",
-            "help_text": "Type: `string`, default: `^[mM][tT]-`. Regex string that identifies mitochondrial genes from --var_gene_names.\nBy default will detect human and mouse mitochondrial genes from a gene symbol.\n",
-            "default": "^[mM][tT]-"
           }
           
         }
@@ -84,12 +71,6 @@
             "description": "Type: `string`, default: `filter_with_counts`. In which ",
             "help_text": "Type: `string`, default: `filter_with_counts`. In which .var slot to store a boolean array corresponding to which variables should be removed.",
             "default": "filter_with_counts"
-          },
-          
-          "var_name_mitochondrial_genes": {
-            "type": "string",
-            "description": "Type: `string`. In which ",
-            "help_text": "Type: `string`. In which .var slot to store a boolean array corresponding the mitochondrial genes.\nWill only be used if --min_fraction_mito or --max_fraction_mito are specified.\n"
           }
           
         }
@@ -128,18 +109,6 @@
             "type": "integer",
             "description": "Type: `integer`, example: `3`. Minimum of non-zero values per gene",
             "help_text": "Type: `integer`, example: `3`. Minimum of non-zero values per gene."
-          },
-          
-          "min_fraction_mito": {
-            "type": "number",
-            "description": "Type: `double`, example: `0`. Minimum fraction of UMIs that are mitochondrial",
-            "help_text": "Type: `double`, example: `0`. Minimum fraction of UMIs that are mitochondrial."
-          },
-          
-          "max_fraction_mito": {
-            "type": "number",
-            "description": "Type: `double`, example: `0.2`. Maximum fraction of UMIs that are mitochondrial",
-            "help_text": "Type: `double`, example: `0.2`. Maximum fraction of UMIs that are mitochondrial."
           }
           
         }

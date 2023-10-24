@@ -1,3 +1,36 @@
+# openpipelines 0.12.0
+
+## BREAKING CHANGES
+
+The detection of mitochondrial genes has been revisited in order to remove the interdependency with the count filtering and the QC metric calculation.
+Implementing this changes involved breaking some existing functionality:
+
+* `filter/filter_with_counts`: removed `--var_gene_names`, `--mitochondrial_gene_regex`, `--var_name_mitochondrial_genes`, `--min_fraction_mito` and `--max_fraction_mito` (PR #585).
+
+* `workflows/prot_singlesample`: removed `--min_fraction_mito` and `--max_fraction_mito` because regex-based detection detection of mitochondrial genes is not possible (PR #585).
+
+* The fraction of counts that originated from mitochondrial genes used to be written to an .obs column with a name that was derived from `pct_` suffixed by the name of the mitochondrial gene column. The `--obs_name_mitochondrial_fraction` argument is introduced to change the destination column and the default prefix has changed from `pct_` to `fraction_` (PR #585).
+
+## NEW FUNCTIONALITY
+
+* `workflows/qc`: A pipeline to add basic qc statistics to a MuData object (PR #585). 
+
+* `workflows/rna_singlesample`: added `--obs_name_mitochondrial_fraction` and make sure that the values from `--max_fraction_mito`  and `--min_fraction_mito` are bound between 0 and 1 (PR #585).
+
+* Added `filter/delimit_fraction`: Turns an annotation column containing values between 0 and 1 into a boolean column based on thresholds (PR #585).
+
+* Added `metadata/grep_annotation_column`: Perform a regex lookup on a column from the annotation matrices .obs or .var (PR #585).
+
+* `workflows/full_pipelines`: added `--obs_name_mitochondrial_fraction` argument (PR #585).
+
+* `workflows/prot_multisample`: added `--var_qc_metrics` and `--top_n_vars` arguments (PR #585).
+
+## MINOR CHANGES
+
+* Several components: bump scanpy to 1.9.5 (PR #594).
+
+* Refactored `prot_multisample` and `prot_singlesample` pipelines to use `fromState` and `toState` functionality (PR #585).
+
 # openpipelines 0.11.0
 
 ## BREAKING CHANGES
