@@ -1,3 +1,15 @@
+# openpipelines 0.13.0
+
+## BREAKING CHANGES
+
+This project now uses viash version 0.8.0 to build components and workflows. Moving to project involved the following changes:
+
+* Bump viash version to 0.8.0 (PR #598) in the project configuration.
+
+* The `concat` component had been deprecated and will be removed in a future release. It's functionality has been copied to the `concatenate_h5mu` component because the name is in conflict with the `concat` operator from nextflow (PR #598).
+
+* All pipelines no longer use the anonymous workflow. Instead, these workflows were given a name which was added to the viash config as the entrypoint to the pipeline (PR #598).
+
 # openpipelines 0.12.0
 
 ## BREAKING CHANGES
