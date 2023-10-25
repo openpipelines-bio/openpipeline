@@ -12,7 +12,7 @@ include { setWorkflowArguments; getWorkflowArguments; passthroughMap as pmap } f
 
 config = readConfig("$workflowDir/ingestion/cellranger_multi/config.vsh.yaml")
 
-workflow {
+workflow cellranger_multi_entrypoint {
   helpMessage(config)
 
   channelFromParams(params, config)

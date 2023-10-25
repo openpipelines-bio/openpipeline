@@ -5,7 +5,7 @@ targetDir = params.rootDir + "/target/nextflow"
 include { add_id } from targetDir + "/metadata/add_id/main.nf"
 include { split_modalities } from targetDir + '/dataflow/split_modalities/main.nf'
 include { merge } from targetDir + '/dataflow/merge/main.nf'
-include { concat } from targetDir + '/dataflow/concat/main.nf'
+include { concatenate_h5mu } from targetDir + '/dataflow/concatenate_h5mu/main.nf'
 include { remove_modality }  from targetDir + '/filter/remove_modality/main.nf'
 include { publish }  from targetDir + '/transfer/publish/main.nf'
 include { run_wf as rna_singlesample } from workflowDir + '/multiomics/rna_singlesample/main.nf'
@@ -20,7 +20,7 @@ include { readConfig; helpMessage; readCsv; preprocessInputs; channelFromParams 
 include {  setWorkflowArguments; getWorkflowArguments; passthroughMap as pmap; passthroughFlatMap as pFlatMap; strictMap as smap } from workflowDir + "/utils/DataflowHelper.nf"
 config = readConfig("$workflowDir/multiomics/full_pipeline/config.vsh.yaml")
 
-workflow {
+workflow full_pipeline {
   helpMessage(config)
 
   channelFromParams(params, config)
@@ -287,10 +287,7 @@ workflow concat_workflow {
         def new_modalities = grouped_lst[4][0]
         [new_id, new_data] + new_passthrough + new_modalities
       }
-      | concat.run(
-          // The Ids have already been added in this pipeline
-          args: [ add_id_to_obs: false ]
-      )
+      | concatenate_h5mu
 
   emit:
     concat_ch

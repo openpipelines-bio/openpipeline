@@ -13,7 +13,7 @@ include { readConfig; helpMessage; readCsv; preprocessInputs; channelFromParams 
 include { setWorkflowArguments; getWorkflowArguments; passthroughMap as pmap; passthroughFlatMap as pFlatMap } from workflowDir + "/utils/DataflowHelper.nf"
 config = readConfig("$workflowDir/multiomics/multisample/config.vsh.yaml")
 
-workflow {
+workflow multisample {
   helpMessage(config)
 
   channelFromParams(params, config)

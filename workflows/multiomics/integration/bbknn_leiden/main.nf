@@ -13,7 +13,7 @@ include { setWorkflowArguments; getWorkflowArguments; passthroughMap as pmap } f
 
 config = readConfig("$workflowDir/multiomics/integration/bbknn_leiden/config.vsh.yaml")
 
-workflow {
+workflow bbknn_leiden {
   helpMessage(config)
 
   channelFromParams(params, config)

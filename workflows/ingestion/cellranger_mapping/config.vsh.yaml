@@ -97,6 +97,7 @@ functionality:
   resources:
     - type: nextflow_script
       path: main.nf
+      entrypoint: cellranger_mapping
   test_resources:
     - type: nextflow_script
       path: main.nf

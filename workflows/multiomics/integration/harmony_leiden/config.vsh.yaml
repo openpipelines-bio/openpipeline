@@ -99,6 +99,7 @@ functionality:
   resources:
     - type: nextflow_script
       path: main.nf
+      entrypoint: harmony_leiden
   test_resources:
     - type: nextflow_script
       path: main.nf

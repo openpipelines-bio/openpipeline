@@ -13,7 +13,7 @@ include { setWorkflowArguments; getWorkflowArguments } from workflowDir + "/util
 
 config = readConfig("$workflowDir/ingestion/make_reference/config.vsh.yaml")
 
-workflow {
+workflow make_reference_entrypoint {
   helpMessage(config)
 
   channelFromParams(params, config)

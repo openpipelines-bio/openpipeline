@@ -19,8 +19,6 @@ functionality:
           alternatives: [-i]
           description: Path to the sample.
           required: true
-          multiple: true
-          multiple_sep: ';'
           example: input.h5mu
           type: file
         - name: "--input_type"
@@ -48,6 +46,7 @@ functionality:
   resources:
     - type: nextflow_script
       path: main.nf
+      entrypoint: conversion
   test_resources:
     - type: nextflow_script
       path: main.nf

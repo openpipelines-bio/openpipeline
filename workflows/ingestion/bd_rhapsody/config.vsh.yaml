@@ -147,6 +147,7 @@ functionality:
   resources:
     - type: nextflow_script
       path: main.nf
+      entrypoint: bd_rhapsody_entrypoint
   test_resources:
     - type: nextflow_script
       path: main.nf

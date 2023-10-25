@@ -72,6 +72,7 @@ functionality:
   resources:
     - type: nextflow_script
       path: main.nf
+      entrypoint: make_reference_entrypoint
   test_resources:
     - type: nextflow_script
       path: main.nf

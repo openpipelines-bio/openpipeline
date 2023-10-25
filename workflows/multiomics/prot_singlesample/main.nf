@@ -11,7 +11,7 @@ include { qc as unfiltered_counts_qc_metrics_prot } from workflowDir + "/qc/qc/m
 
 config = readConfig("$workflowDir/multiomics/prot_singlesample/config.vsh.yaml")
 
-workflow {
+workflow prot_singlesample {
   helpMessage(config)
 
   channelFromParams(params, config)

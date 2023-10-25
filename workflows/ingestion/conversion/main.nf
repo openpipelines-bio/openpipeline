@@ -12,7 +12,7 @@ include { passthroughMap as pmap } from workflowDir + "/utils/DataflowHelper.nf"
 
 config = readConfig("$workflowDir/ingestion/conversion/config.vsh.yaml")
 
-workflow {
+workflow conversion {
   helpMessage(config)
 
   channelFromParams(params, config)
@@ -26,6 +26,7 @@ workflow run_wf {
     main:
         preprocessed_ch = input_ch
           | preprocessInputs("config": config)
+          | view{"HERE: $it"}
         commonOptions = [
             auto: [ publish: true ],
             args: [ output_compression: "gzip" ]
