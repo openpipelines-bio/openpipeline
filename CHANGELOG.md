@@ -2,7 +2,7 @@
 
 ## BREAKING CHANGES
 
-This project now uses viash version 0.8.0 to build components and workflows. Moving to project involved the following changes:
+This project now uses viash version 0.8.0 to build components and workflows. Moving to 0.8.0 involved the following changes:
 
 * Bump viash version to 0.8.0 (PR #598) in the project configuration.
 
