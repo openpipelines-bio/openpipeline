@@ -1,40 +1,38 @@
 nextflow.enable.dsl=2
 
-targetDir = params.rootDir + "/target/nextflow"
+// TODO: once viash supports 'viash test' on this workflow,
+//   - the import will be added automatically
+//   - access the test resources with `meta.resources_dir' instead of `params.resources_test'
 
-include { demux; readConfig; channelFromParams } from targetDir + "/workflows/ingestion/demux/main.nf"
-
-thisConfig = readConfig(moduleDir.resolve("config.vsh.yaml"))
+include { demux } from params.rootDir + "/target/nextflow/workflows/ingestion/demux/main.nf"
 
 workflow test_wf {
-  // allow changing the resources_test dir
-  params.resources_test = params.rootDir + "/resources_test"
+  // TODO: change this to `resources_test = meta.resources_dir`
+  resources_test = file("${params.rootDir}/resources_test")
 
-  // or when running from s3: params.resources_test = "s3://openpipelines-data/"
-  params.param_list = [
+  // or when running from s3:
+  Channel.fromList([
     [
       id: "mkfastq_test",
-      input: params.resources_test + "/cellranger_tiny_bcl/bcl",
-      sample_sheet: params.resources_test + "/cellranger_tiny_bcl/bcl/sample_sheet.csv",
+      input: resources_test.resolve("cellranger_tiny_bcl/bcl"),
+      sample_sheet: resources_test.resolve("cellranger_tiny_bcl/bcl/sample_sheet.csv"),
       demultiplexer: "mkfastq"
     ],
     [
       id: "bclconvert_test",
-      input: params.resources_test + "/cellranger_tiny_bcl/bcl2/",
-      sample_sheet: params.resources_test + "/cellranger_tiny_bcl/bcl2/sample_sheet.csv",
+      input: resources_test.resolve("cellranger_tiny_bcl/bcl2/"),
+      sample_sheet: resources_test.resolve("cellranger_tiny_bcl/bcl2/sample_sheet.csv"),
       demultiplexer: "bclconvert"
     ],
     [
       id: "bcl2fastq_test",
-      input: params.resources_test + "/cellranger_tiny_bcl/bcl",
-      sample_sheet: params.resources_test + "/cellranger_tiny_bcl/bcl/sample_sheet.csv",
+      input: resources_test.resolve("cellranger_tiny_bcl/bcl"),
+      sample_sheet: resources_test.resolve("cellranger_tiny_bcl/bcl/sample_sheet.csv"),
       demultiplexer: "bcl2fastq",
       ignore_missing: true
     ]
-  ]
-
-  output_ch =
-    channelFromParams(params, thisConfig)
+  ])
+    | map{ state -> [state.id, state] }
     | demux
     | view { output ->
       assert output.size() == 2 : "outputs should contain two elements; [id, state]"
