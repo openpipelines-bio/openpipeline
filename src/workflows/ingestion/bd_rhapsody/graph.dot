@@ -1,0 +1,206 @@
+digraph "graph" {
+p0 [shape=point,label="",fixedsize=true,width=0.1,xlabel="Channel.fromList"];
+p1 [shape=circle,label="",fixedsize=true,width=0.1,xlabel="view"];
+p0 -> p1;
+
+p1 [shape=circle,label="",fixedsize=true,width=0.1,xlabel="view"];
+p2 [shape=circle,label="",fixedsize=true,width=0.1,xlabel="toSortedList"];
+p1 -> p2 [label="input_ch"];
+
+p2 [shape=circle,label="",fixedsize=true,width=0.1,xlabel="toSortedList"];
+p3 [shape=circle,label="",fixedsize=true,width=0.1,xlabel="map"];
+p2 -> p3;
+
+p3 [shape=circle,label="",fixedsize=true,width=0.1,xlabel="map"];
+p4 [shape=circle,label="",fixedsize=true,width=0.1,xlabel="flatMap"];
+p3 -> p4;
+
+p4 [shape=circle,label="",fixedsize=true,width=0.1,xlabel="flatMap"];
+p5 [shape=circle,label="",fixedsize=true,width=0.1,xlabel="filter"];
+p4 -> p5 [label="input_"];
+
+p5 [shape=circle,label="",fixedsize=true,width=0.1,xlabel="filter"];
+p6 [shape=circle,label="",fixedsize=true,width=0.1,xlabel="map"];
+p5 -> p6;
+
+p6 [shape=circle,label="",fixedsize=true,width=0.1,xlabel="map"];
+p7 [shape=circle,label="",fixedsize=true,width=0.1,xlabel="map"];
+p6 -> p7;
+
+p7 [shape=circle,label="",fixedsize=true,width=0.1,xlabel="map"];
+p9 [shape=circle,label="",fixedsize=true,width=0.1,xlabel="map"];
+p7 -> p9 [label="chRun"];
+
+p8 [shape=point,label="",fixedsize=true,width=0.1,xlabel="Channel.empty"];
+p24 [shape=circle,label="",fixedsize=true,width=0.1,xlabel="concat"];
+p8 -> p24 [label="chPassthrough"];
+
+p9 [shape=circle,label="",fixedsize=true,width=0.1,xlabel="map"];
+p10 [shape=circle,label="",fixedsize=true,width=0.1,xlabel="map"];
+p9 -> p10 [label="chArgs"];
+
+p10 [shape=circle,label="",fixedsize=true,width=0.1,xlabel="map"];
+p11 [shape=circle,label="",fixedsize=true,width=0.1,xlabel="map"];
+p10 -> p11 [label="chArgsWithDefaults"];
+
+p11 [shape=circle,label="",fixedsize=true,width=0.1,xlabel="map"];
+p12 [shape=circle,label="",fixedsize=true,width=0.1,xlabel="map"];
+p11 -> p12 [label="input_"];
+
+p12 [shape=circle,label="",fixedsize=true,width=0.1,xlabel="map"];
+p13 [label="test_wf:run_wf:bd_rhapsody:processWf:bd_rhapsody_process"];
+p12 -> p13;
+
+p13 [label="test_wf:run_wf:bd_rhapsody:processWf:bd_rhapsody_process"];
+p14 [shape=circle,label="",fixedsize=true,width=0.1,xlabel="map"];
+p13 -> p14;
+
+p14 [shape=circle,label="",fixedsize=true,width=0.1,xlabel="map"];
+p15 [shape=circle,label="",fixedsize=true,width=0.1,xlabel="map"];
+p14 -> p15 [label="output_"];
+
+p15 [shape=circle,label="",fixedsize=true,width=0.1,xlabel="map"];
+p17 [shape=circle,label="",fixedsize=true,width=0.1,xlabel="map"];
+p15 -> p17 [label="chInitialOutput"];
+
+p7 [shape=circle,label="",fixedsize=true,width=0.1,xlabel="map"];
+p16 [shape=circle,label="",fixedsize=true,width=0.1,xlabel="map"];
+p7 -> p16 [label="chRun"];
+
+p16 [shape=circle,label="",fixedsize=true,width=0.1,xlabel="map"];
+p19 [shape=circle,label="",fixedsize=true,width=0.1,xlabel="cross"];
+p16 -> p19;
+
+p17 [shape=circle,label="",fixedsize=true,width=0.1,xlabel="map"];
+p18 [shape=point];
+p17 -> p18;
+
+p15 [shape=circle,label="",fixedsize=true,width=0.1,xlabel="map"];
+p19 [shape=circle,label="",fixedsize=true,width=0.1,xlabel="cross"];
+p15 -> p19 [label="chInitialOutput"];
+
+p19 [shape=circle,label="",fixedsize=true,width=0.1,xlabel="cross"];
+p20 [shape=circle,label="",fixedsize=true,width=0.1,xlabel="map"];
+p19 -> p20;
+
+p20 [shape=circle,label="",fixedsize=true,width=0.1,xlabel="map"];
+p21 [shape=circle,label="",fixedsize=true,width=0.1,xlabel="map"];
+p20 -> p21;
+
+p21 [shape=circle,label="",fixedsize=true,width=0.1,xlabel="map"];
+p22 [shape=circle,label="",fixedsize=true,width=0.1,xlabel="map"];
+p21 -> p22 [label="chNewState"];
+
+p22 [shape=circle,label="",fixedsize=true,width=0.1,xlabel="map"];
+p23 [shape=circle,label="",fixedsize=true,width=0.1,xlabel="map"];
+p22 -> p23;
+
+p23 [shape=circle,label="",fixedsize=true,width=0.1,xlabel="map"];
+p24 [shape=circle,label="",fixedsize=true,width=0.1,xlabel="concat"];
+p23 -> p24;
+
+p24 [shape=circle,label="",fixedsize=true,width=0.1,xlabel="concat"];
+p25 [shape=circle,label="",fixedsize=true,width=0.1,xlabel="view"];
+p24 -> p25 [label="chReturn"];
+
+p25 [shape=circle,label="",fixedsize=true,width=0.1,xlabel="view"];
+p26 [shape=circle,label="",fixedsize=true,width=0.1,xlabel="filter"];
+p25 -> p26 [label="input_"];
+
+p26 [shape=circle,label="",fixedsize=true,width=0.1,xlabel="filter"];
+p27 [shape=circle,label="",fixedsize=true,width=0.1,xlabel="map"];
+p26 -> p27;
+
+p27 [shape=circle,label="",fixedsize=true,width=0.1,xlabel="map"];
+p28 [shape=circle,label="",fixedsize=true,width=0.1,xlabel="map"];
+p27 -> p28;
+
+p28 [shape=circle,label="",fixedsize=true,width=0.1,xlabel="map"];
+p30 [shape=circle,label="",fixedsize=true,width=0.1,xlabel="map"];
+p28 -> p30 [label="chRun"];
+
+p29 [shape=point,label="",fixedsize=true,width=0.1,xlabel="Channel.empty"];
+p45 [shape=circle,label="",fixedsize=true,width=0.1,xlabel="concat"];
+p29 -> p45 [label="chPassthrough"];
+
+p30 [shape=circle,label="",fixedsize=true,width=0.1,xlabel="map"];
+p31 [shape=circle,label="",fixedsize=true,width=0.1,xlabel="map"];
+p30 -> p31 [label="chArgs"];
+
+p31 [shape=circle,label="",fixedsize=true,width=0.1,xlabel="map"];
+p32 [shape=circle,label="",fixedsize=true,width=0.1,xlabel="map"];
+p31 -> p32 [label="chArgsWithDefaults"];
+
+p32 [shape=circle,label="",fixedsize=true,width=0.1,xlabel="map"];
+p33 [shape=circle,label="",fixedsize=true,width=0.1,xlabel="map"];
+p32 -> p33 [label="input_"];
+
+p33 [shape=circle,label="",fixedsize=true,width=0.1,xlabel="map"];
+p34 [label="test_wf:run_wf:from_bdrhap_to_h5mu:processWf:from_bdrhap_to_h5mu_process"];
+p33 -> p34;
+
+p34 [label="test_wf:run_wf:from_bdrhap_to_h5mu:processWf:from_bdrhap_to_h5mu_process"];
+p35 [shape=circle,label="",fixedsize=true,width=0.1,xlabel="map"];
+p34 -> p35;
+
+p35 [shape=circle,label="",fixedsize=true,width=0.1,xlabel="map"];
+p36 [shape=circle,label="",fixedsize=true,width=0.1,xlabel="map"];
+p35 -> p36 [label="output_"];
+
+p36 [shape=circle,label="",fixedsize=true,width=0.1,xlabel="map"];
+p38 [shape=circle,label="",fixedsize=true,width=0.1,xlabel="map"];
+p36 -> p38 [label="chInitialOutput"];
+
+p28 [shape=circle,label="",fixedsize=true,width=0.1,xlabel="map"];
+p37 [shape=circle,label="",fixedsize=true,width=0.1,xlabel="map"];
+p28 -> p37 [label="chRun"];
+
+p37 [shape=circle,label="",fixedsize=true,width=0.1,xlabel="map"];
+p40 [shape=circle,label="",fixedsize=true,width=0.1,xlabel="cross"];
+p37 -> p40;
+
+p38 [shape=circle,label="",fixedsize=true,width=0.1,xlabel="map"];
+p39 [shape=point];
+p38 -> p39;
+
+p36 [shape=circle,label="",fixedsize=true,width=0.1,xlabel="map"];
+p40 [shape=circle,label="",fixedsize=true,width=0.1,xlabel="cross"];
+p36 -> p40 [label="chInitialOutput"];
+
+p40 [shape=circle,label="",fixedsize=true,width=0.1,xlabel="cross"];
+p41 [shape=circle,label="",fixedsize=true,width=0.1,xlabel="map"];
+p40 -> p41;
+
+p41 [shape=circle,label="",fixedsize=true,width=0.1,xlabel="map"];
+p42 [shape=circle,label="",fixedsize=true,width=0.1,xlabel="map"];
+p41 -> p42;
+
+p42 [shape=circle,label="",fixedsize=true,width=0.1,xlabel="map"];
+p43 [shape=circle,label="",fixedsize=true,width=0.1,xlabel="map"];
+p42 -> p43 [label="chNewState"];
+
+p43 [shape=circle,label="",fixedsize=true,width=0.1,xlabel="map"];
+p44 [shape=circle,label="",fixedsize=true,width=0.1,xlabel="map"];
+p43 -> p44;
+
+p44 [shape=circle,label="",fixedsize=true,width=0.1,xlabel="map"];
+p45 [shape=circle,label="",fixedsize=true,width=0.1,xlabel="concat"];
+p44 -> p45;
+
+p45 [shape=circle,label="",fixedsize=true,width=0.1,xlabel="concat"];
+p46 [shape=circle,label="",fixedsize=true,width=0.1,xlabel="view"];
+p45 -> p46 [label="chReturn"];
+
+p46 [shape=circle,label="",fixedsize=true,width=0.1,xlabel="view"];
+p47 [shape=circle,label="",fixedsize=true,width=0.1,xlabel="toList"];
+p46 -> p47;
+
+p47 [shape=circle,label="",fixedsize=true,width=0.1,xlabel="toList"];
+p48 [shape=circle,label="",fixedsize=true,width=0.1,xlabel="view"];
+p47 -> p48;
+
+p48 [shape=circle,label="",fixedsize=true,width=0.1,xlabel="view"];
+p49 [shape=point];
+p48 -> p49 [label="output_ch"];
+
+}
