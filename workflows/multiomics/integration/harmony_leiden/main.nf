@@ -14,7 +14,7 @@ include { setWorkflowArguments; getWorkflowArguments; passthroughMap as pmap } f
 
 config = readConfig("$workflowDir/multiomics/integration/harmony_leiden/config.vsh.yaml")
 
-workflow {
+workflow harmony_leiden {
   helpMessage(config)
 
   channelFromParams(params, config)

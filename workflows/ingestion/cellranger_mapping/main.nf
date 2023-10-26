@@ -12,7 +12,7 @@ include { setWorkflowArguments; getWorkflowArguments; passthroughMap as pmap } f
 
 config = readConfig("$workflowDir/ingestion/cellranger_mapping/config.vsh.yaml")
 
-workflow {
+workflow cellranger_mapping {
   helpMessage(config)
 
   channelFromParams(params, config)

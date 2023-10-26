@@ -162,6 +162,7 @@ functionality:
   resources:
     - type: nextflow_script
       path: main.nf
+      entrypoint: cellranger_multi_entrypoint
   test_resources:
     - type: nextflow_script
       path: main.nf

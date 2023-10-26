@@ -10,7 +10,7 @@ include { readConfig; channelFromParams; preprocessInputs; helpMessage } from wo
 
 config = readConfig("$workflowDir/ingestion/bd_rhapsody/config.vsh.yaml")
 
-workflow {
+workflow bd_rhapsody_entrypoint {
   helpMessage(config)
 
   channelFromParams(params, config)

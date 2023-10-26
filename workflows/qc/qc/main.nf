@@ -11,7 +11,7 @@ include { readConfig; helpMessage; readCsv; preprocessInputs; channelFromParams 
 include { strictMap as smap; passthroughMap as pmap; } from workflowDir + "/utils/DataflowHelper.nf"
 config = readConfig("$workflowDir/qc/qc/config.vsh.yaml")
 
-workflow {
+workflow qc_entrypoint {
   helpMessage(config)
 
   channelFromParams(params, config)

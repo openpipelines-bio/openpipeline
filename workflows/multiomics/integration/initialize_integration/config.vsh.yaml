@@ -73,6 +73,7 @@ functionality:
   resources:
     - type: nextflow_script
       path: main.nf
+      entrypoint: initialize_integration
   test_resources:
     - type: nextflow_script
       path: main.nf

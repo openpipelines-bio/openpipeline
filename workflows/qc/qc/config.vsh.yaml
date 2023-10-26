@@ -90,6 +90,7 @@ functionality:
   resources:
     - type: nextflow_script
       path: main.nf
+      entrypoint: qc_entrypoint
   test_resources:
     - type: nextflow_script
       path: main.nf

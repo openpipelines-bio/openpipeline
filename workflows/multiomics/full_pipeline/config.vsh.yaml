@@ -180,6 +180,7 @@ functionality:
   resources:
     - type: nextflow_script
       path: main.nf
+      entrypoint: full_pipeline
   test_resources:
     - type: nextflow_script
       path: main.nf
