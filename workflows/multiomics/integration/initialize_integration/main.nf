@@ -12,7 +12,7 @@ include { setWorkflowArguments; getWorkflowArguments; passthroughMap as pmap } f
 
 config = readConfig("$workflowDir/multiomics/integration/initialize_integration/config.vsh.yaml")
 
-workflow {
+workflow initialize_integration {
   helpMessage(config)
 
   channelFromParams(params, config)

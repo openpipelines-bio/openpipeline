@@ -111,6 +111,7 @@ functionality:
   resources:
     - type: nextflow_script
       path: main.nf
+      entrypoint: scanorama_leiden
   test_resources:
     - type: nextflow_script
       path: main.nf

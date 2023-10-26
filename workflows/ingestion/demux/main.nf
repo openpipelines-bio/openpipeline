@@ -14,7 +14,7 @@ include { passthroughMap as pmap } from workflowDir + "/utils/DataflowHelper.nf"
 
 config = readConfig("$workflowDir/ingestion/demux/config.vsh.yaml")
 
-workflow {
+workflow demux {
   helpMessage(config)
 
   channelFromParams(params, config)

@@ -50,6 +50,7 @@ functionality:
   resources:
     - type: nextflow_script
       path: main.nf
+      entrypoint: cellranger_postprocessing
   test_resources:
     - type: nextflow_script
       path: main.nf

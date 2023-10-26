@@ -59,6 +59,7 @@ functionality:
   resources:
     - type: nextflow_script
       path: main.nf
+      entrypoint: prot_singlesample
   test_resources:
     - type: nextflow_script
       path: main.nf

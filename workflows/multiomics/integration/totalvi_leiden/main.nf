@@ -16,7 +16,7 @@ include { setWorkflowArguments; getWorkflowArguments; passthroughMap as pmap } f
 
 config = readConfig("$workflowDir/multiomics/integration/totalvi_leiden/config.vsh.yaml")
 
-workflow {
+workflow totalvi_leiden {
   helpMessage(config)
 
   channelFromParams(params, config)

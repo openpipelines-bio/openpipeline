@@ -177,6 +177,7 @@ functionality:
   resources:
     - type: nextflow_script
       path: main.nf
+      entrypoint: totalvi_leiden
   test_resources:
     - type: nextflow_script
       path: main.nf

@@ -14,7 +14,7 @@ include { setWorkflowArguments; getWorkflowArguments; passthroughMap as pmap } f
 
 config = readConfig("$workflowDir/multiomics/rna_singlesample/config.vsh.yaml")
 
-workflow {
+workflow rna_singlesample {
   helpMessage(config)
 
   channelFromParams(params, config)
