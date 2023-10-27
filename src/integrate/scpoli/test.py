@@ -17,13 +17,16 @@ def input_with_batch(tmp_path):
     tmp_input_path = tmp_path / "input.h5mu"
 
     input_data = read_h5mu(input_file)
-    mod = input_data.mod['rna']
-    number_of_obs = mod.n_obs
-    mod.obs['batch'] = 'A'
 
-    mod.obs["cell_type"] = np.random.choice(["celltype_A", "celltype_B"], len(mod.obs["batch"]))
-    column_index = mod.obs.columns.get_indexer(['batch'])
-    mod.obs.iloc[slice(number_of_obs//2, None), column_index] = 'B'
+    mod = input_data.mod['rna']
+
+    mod.obs["batch_1"] = np.random.choice(["A1", "A2"], mod.n_obs)
+    mod.obs["batch_2"] = np.random.choice(["B1", "B2"], mod.n_obs)
+
+    mod.obs["cell_type"] = np.random.choice(["celltype_A", "celltype_B"], mod.n_obs)
+
+    
+
     input_data.write(tmp_input_path)
 
     return tmp_input_path, input_data
@@ -36,7 +39,8 @@ def test_simple_integration(run_component, input_with_batch, tmp_path):
     run_component([
         "--input", str(tmp_input_path),
         "--output", str(output_path),
-        "--condition_keys", "sample_id",
+        "--condition_keys", "batch_1",
+        "--condition_keys", "batch_2",
         "--cell_type_keys", "cell_type",
         "--output_compression", "gzip", 
         "--n_epochs", "1"])

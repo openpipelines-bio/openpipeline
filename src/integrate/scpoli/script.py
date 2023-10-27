@@ -11,9 +11,11 @@ mu_data = mu.read(par["input"])
 # Extract a specific modality as an AnnData object (Modality name will be provided by Viash)
 adata = mu_data[par["modality"]]
 
+source_data = adata.copy()
+
 # Build the scPoli reference model
 scpoli_model = scPoli(
-    adata=adata,
+    adata=source_data,
     condition_keys=par["condition_keys"],
     cell_type_keys=par["cell_type_keys"],
     hidden_layer_sizes=par["hidden_layer_sizes"],
@@ -28,15 +30,16 @@ scpoli_model.train(
     alpha_epoch_anneal=par["alpha_epoch_anneal"],  
     eta=par["eta"])
 
+
+
 if par["output_model"]:
     scpoli_model.save(par["output_model"], overwrite=True)
 
 # Get latent representation of the input data
 data_latent = scpoli_model.get_latent(
-    adata,
+    source_data,
     mean=True
 )
-
 
 adata.obsm[par["obsm_output"]] = data_latent
 

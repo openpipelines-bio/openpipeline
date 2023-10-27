@@ -24,6 +24,7 @@ functionality:
         type: string
         default: "sample_id"
         required: true 
+        multiple: true
       - name: "--cell_type_keys"
         type: string
         default: "cell_type"
