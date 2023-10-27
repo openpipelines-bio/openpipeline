@@ -1,0 +1,119 @@
+functionality:
+  name: "scpoli"
+  namespace: "integration"
+  description: |
+    scpoli Component
+    
+    scPoli (Population-level integration of single-cell datasets enables multi-scale analysis across samples) is a method for integrating single-cell RNA-seq data from multiple samples into a unified reference space. It facilitates multi-scale analysis across different samples by capturing population-level information. This Viash component allows you to apply scPoli to your single-cell data, extract meaningful latent representations, and perform population-level integration.
+
+  authors:
+    - __merge__: /src/authors/dries_de_maeyer.yaml
+      roles: [ author ]
+  argument_groups:
+    - name: Inputs
+      arguments:
+      - name: "--input"
+        type: file
+        description: "Location of the input file."
+        direction: "input"
+      - name: "--modality"
+        type: string
+        default: "rna"
+        direction: "input"
+      - name: "--condition_keys"
+        type: string
+        default: "sample_id"
+        required: true 
+      - name: "--cell_type_keys"
+        type: string
+        default: "cell_type"
+        description: "Key for cell type information in the input data."
+        required: true 
+      - name: "--obs_condition_key"
+        type: string
+        multiple: true
+        description: "Key for condition information in the input data."
+    - name: Outputs
+      arguments: 
+      - name: "--output"
+        type: file
+        description: "Location to save the output data."
+        direction: "output"
+      - name: "--output_model"
+        type: file
+        description: "Output path for saving the scPoli model."
+        direction: "output"
+      - name: "--output_compression"
+        type: string
+        description: The compression format to be used on the output h5mu object.
+        choices: ["gzip", "lzf"]
+        required: false
+        example: "gzip"
+      - name: "--obsm_output"
+        type: string
+        default: "X_scpoli_integrated"
+        required: false
+        description: "In which .obsm slot to store the resulting integrated embedding."
+    - name: "scPoli options"
+      arguments:
+      - name: "--alpha_epoch_anneal"
+        type: double
+        default: 100
+      - name: "--hidden_layer_sizes"
+        type: integer
+        multiple: true
+        description: "List of hidden layer sizes for scPoli model."
+        default: [100,100]
+      - name: "--latent_dim"
+        type: integer
+        description: "The latent dimension for scPoli model."
+      - name: "--embedding_dims"
+        type: integer
+        description: "The embedding dimension for scPoli model."
+        default: 5
+      - name: "--n_epochs"
+        type: integer
+        default: 50
+        description: "Number of epochs for training."
+      - name: "--eta"
+        type: integer
+        default: 10
+      - name: "--pretraining_epochs"
+        type: integer
+        description: "Number of pretraining epochs."
+        default: 40
+      - name: "--scvi_tools_random_seed"
+        type: integer
+        description: "Since v1.0.0, scvi-tools no longer uses a random seed by default. Run `scvi.settings.seed = 0` to reproduce results from previous versions."
+        default: 0
+
+      
+  resources:
+    - type: python_script
+      path: ./script.py
+  test_resources:
+    - type: python_script
+      path: test.py
+    - path: ../../../resources_test/pbmc_1k_protein_v3/pbmc_1k_protein_v3_mms.h5mu
+
+platforms:
+  - type: docker
+    image: nvcr.io/nvidia/pytorch:23.06-py3
+    setup:     
+      - type: docker
+        run: |
+          pip install "jax[cuda]" -f https://storage.googleapis.com/jax-releases/jax_cuda_releases.html
+      - type: python
+        __merge__: [/src/base/requirements/anndata_mudata.yaml, .]
+        packages:
+          - scarches
+          - mvtcr
+          - pandas==2.1.2
+          - multigrate
+          - torch_geometric
+    test_setup:
+      - type: python
+        __merge__: [ /src/base/requirements/viashpy.yaml, .]
+  - type: nextflow
+    directives:
+      label: ["highcpu", "midmem", "gpu"]
