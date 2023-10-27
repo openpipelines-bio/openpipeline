@@ -2900,7 +2900,8 @@ meta = [
           "user" : false,
           "packages" : [
             "mudata~=0.2.3",
-            "anndata~=0.9.1"
+            "anndata~=0.9.1",
+            "pandas!=2.1.2"
           ],
           "upgrade" : true
         }
@@ -2965,7 +2966,7 @@ meta = [
     "platform" : "nextflow",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/mapping/multi_star_to_h5mu",
     "viash_version" : "0.8.0",
-    "git_commit" : "1d41770febbf6855bb9968c94cd08e8de00b3c97",
+    "git_commit" : "c3de36954b1b7906a1ddb1d9e4e2ea79f3ef1a4b",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))
