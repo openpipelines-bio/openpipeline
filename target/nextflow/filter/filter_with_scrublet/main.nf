@@ -3019,6 +3019,7 @@ meta = [
           "packages" : [
             "mudata~=0.2.3",
             "anndata~=0.9.1",
+            "pandas!=2.1.2",
             "scanpy~=1.9.5",
             "scrublet",
             "annoy==1.16.3"
@@ -3096,7 +3097,7 @@ meta = [
     "platform" : "nextflow",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/filter/filter_with_scrublet",
     "viash_version" : "0.8.0",
-    "git_commit" : "433dac8bd5d508e165fa4ef4e25780a9e7f3b350",
+    "git_commit" : "80c88e74dce73c26e9f847adc79dceea7d8883de",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))

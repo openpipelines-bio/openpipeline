@@ -432,13 +432,13 @@ RUN apt-get update && \
   rm -rf /var/lib/apt/lists/*
 
 RUN pip install --upgrade pip && \
-  pip install --upgrade --no-cache-dir "mudata~=0.2.3" "anndata~=0.9.1"
+  pip install --upgrade --no-cache-dir "mudata~=0.2.3" "anndata~=0.9.1" "pandas!=2.1.2"
 
 LABEL org.opencontainers.image.authors="Dries Schaumont"
 LABEL org.opencontainers.image.description="Companion container for running component transform delete_layer"
-LABEL org.opencontainers.image.created="2023-10-27T04:40:53Z"
+LABEL org.opencontainers.image.created="2023-10-27T06:42:21Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="433dac8bd5d508e165fa4ef4e25780a9e7f3b350"
+LABEL org.opencontainers.image.revision="80c88e74dce73c26e9f847adc79dceea7d8883de"
 LABEL org.opencontainers.image.version="integration_build"
 
 VIASHDOCKER
