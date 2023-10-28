@@ -11,9 +11,9 @@ cd "$REPO_ROOT"
 export NXF_VER=21.10.6
 
 nextflow run . \
-  -main-script workflows/multiomics/rna_multisample/main.nf \
+  -main-script src/workflows/multiomics/rna_multisample/main.nf \
   -profile docker,no_publish \
   -resume \
   -entry test_wf \
   -with-trace work/trace.txt \
-  -c workflows/utils/labels_ci.config
+  -c src/workflows/utils/labels_ci.config

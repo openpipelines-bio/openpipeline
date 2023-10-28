@@ -12,8 +12,8 @@ export NXF_VER=21.10.6
 
 nextflow \
   run . \
-  -main-script workflows/qc/qc/main.nf \
+  -main-script src/workflows/qc/qc/main.nf \
   -entry test_wf \
   -resume \
   -profile docker,no_publish \
-  -c workflows/utils/labels_ci.config
+  -c src/workflows/utils/labels_ci.config

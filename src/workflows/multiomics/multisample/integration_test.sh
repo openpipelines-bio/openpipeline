@@ -12,10 +12,10 @@ export NXF_VER=23.04.2
 
 nextflow \
   run . \
-  -main-script workflows/multiomics/multisample/main.nf \
+  -main-script src/workflows/multiomics/multisample/main.nf \
   -entry test_wf \
   -profile docker,no_publish \
-  -c workflows/utils/labels_ci.config \
+  -c src/workflows/utils/labels_ci.config \
   -resume
 
 
