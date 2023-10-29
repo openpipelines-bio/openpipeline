@@ -82,7 +82,7 @@ res2 <- res %>%
     )
   )
 
-freeuxlet_assign <- res2 %>% select(cell = BARCODE, donor_id)
+freemuxlet_assign <- res2 %>% select(cell = BARCODE, donor_id)
 
 readr::write_csv(
   freemuxlet_assign,
