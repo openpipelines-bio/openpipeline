@@ -10,6 +10,11 @@ This project now uses viash version 0.8.0 to build components and workflows. Mov
 
 * All pipelines no longer use the anonymous workflow. Instead, these workflows were given a name which was added to the viash config as the entrypoint to the pipeline (PR #598).
 
+* Removed the `workflows` folder and moved its contents to new locations (PR #605):
+    1. The `resources_test_scripts` folder now resides in the root of the project. 
+    2. All workflows have been moved to the `src/workflows` folder.
+    3. Adjust GitHub Actions to account for new workflow paths.
+
 # openpipelines 0.12.0
 
 ## BREAKING CHANGES
