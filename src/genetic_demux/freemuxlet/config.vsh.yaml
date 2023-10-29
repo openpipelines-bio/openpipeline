@@ -93,10 +93,8 @@ functionality:
       description: freemuxlet Output file prefix
       example: "freemuxlet"
   resources:
-    - type: bash_script
-      path: script.sh
     - type: r_script
-      path: summary.R
+      path: script.R
   test_resources:
     - type: bash_script
       path: test.sh
@@ -112,7 +110,7 @@ platforms:
     - type: docker
       run: git clone --depth 1 https://github.com/statgen/popscle.git /tmp/popscle && mkdir -p /tmp/popscle/build && cd /tmp/popscle/build && cmake .. && make && cp /tmp/popscle/bin/popscle /usr/local/bin
     - type: r
-      cran: [ data.table, argparser, R.utils ]
+      cran: [ readr, processx, dplyr ]
   - type: nextflow
     directives:
       label: [ midmem, midcpu ]
