@@ -42,6 +42,8 @@ Implementing this changes involved breaking some existing functionality:
 
 * `workflows/prot_multisample`: added `--var_qc_metrics` and `--top_n_vars` arguments (PR #585).
 
+* Added genetic demultiplexing methods `cellsnp`, `demuxlet`, `freebayes`, `freemuxlet`, `scsplit`, `sourorcell` and `vireo` (PR #343).
+
 ## MINOR CHANGES
 
 * Several components: bump scanpy to 1.9.5 (PR #594).
@@ -117,6 +119,7 @@ Implementing this changes involved breaking some existing functionality:
 * Add workaround for bug where resources aren't available when using Nextflow fusion by including `setup_logger`, `subset_vars` and `compress_h5mu` in the script itself (PR #549).
 
 # openpipelines 0.10.0
+
 
 ## BREAKING CHANGES
 

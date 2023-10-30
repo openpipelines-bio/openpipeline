@@ -1,0 +1,23 @@
+# Input
+# fasta: "path/to/file"
+# bam: "path/to/file"
+# bam_index: "path/to/file"
+# barcodes: "path/to/file"
+# clusters: 123
+ploidy: 2
+min_alt: 10
+min_ref: 10
+max_loci: 2048
+# restarts: 123
+# common_variants: "path/to/file"
+# known_genotypes: "path/to/file"
+# known_genotypes_sample_names: "foo"
+skip_remap: false
+ignore: false
+
+# Output
+# output: "$id.$key.output.output"
+
+# Nextflow input-output arguments
+publish_dir: # please fill in - example: "output/"
+# param_list: "my_params.yaml"
