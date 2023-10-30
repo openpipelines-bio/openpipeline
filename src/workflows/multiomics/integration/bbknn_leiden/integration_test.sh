@@ -15,9 +15,3 @@ nextflow run . \
   -profile docker,no_publish \
   -entry test_wf \
   -c src/workflows/utils/labels_ci.config
-
-nextflow run . \
-  -main-script src/workflows/multiomics/integration/bbknn_leiden/test.nf \
-  -profile docker,no_publish \
-  -entry test_wf2 \
-  -c src/workflows/utils/labels_ci.config

@@ -4,76 +4,41 @@ include { bbknn_leiden } from params.rootDir + "/target/nextflow/workflows/multi
 
 workflow test_wf {
   resources_test = file("${params.rootDir}/resources_test")
-
   output_ch =
     Channel.fromList([
       [
-        id: "foo",
-        input: resources_test.resolve("/pbmc_1k_protein_v3/pbmc_1k_protein_v3_mms.h5mu"),
+        id: "simple_execution_test",
+        input: resources_test.resolve("pbmc_1k_protein_v3/pbmc_1k_protein_v3_mms.h5mu"),
         layer: "log_normalized"
-      ]
-    ])
-    | map{ state -> [state.id, state] }
-    | bbknn_leiden
-    | view { tup ->
-      assert tup.size() == 2 : "outputs should contain two elements; [id, output]"
-
-      // check id
-      def id = tup[0]
-      assert id == "foo" : "ID should be 'foo'. Found: ${id}"
-
-      // check output
-      def output = tup[1]
-      assert output instanceof Map: "Output should be a map. Found: ${output}"
-      assert "output" in output : "Output should contain key 'output'. Found: ${output}"
-
-      // check h5mu
-      def output_h5mu = output.output
-      assert output_h5mu.toString().endsWith(".h5mu") : "Output file should be a h5mu file. Found: ${output}"
-
-      "Output: $output"
-    }
-    | toList()
-    | map { output_list ->
-      assert output_list.size() == 1 : "output channel should contain 1 event"
-    }
-    //| check_format(args: {""}) // todo: check whether output h5mu has the right slots defined
-}
-
-workflow test_wf2 {
-  resources_test = file("${params.rootDir}/resources_test")
-
-  output_ch = Channel.fromList([
+      ],
       [
-        id: "foo",
-        input: resources_test.resolve("/pbmc_1k_protein_v3/pbmc_1k_protein_v3_mms.h5mu"),
-        layer: "log_normalized",
-        leiden_resolution: []
+       id: "no_leiden_resolutions_test",
+       input: resources_test.resolve("pbmc_1k_protein_v3/pbmc_1k_protein_v3_mms.h5mu"),
+       layer: "log_normalized",
+       leiden_resolution: []
       ]
     ])
     | map{ state -> [state.id, state] }
     | bbknn_leiden
-    | view { tup ->
-      assert tup.size() == 2 : "outputs should contain two elements; [id, output]"
+    | view { output ->
+      assert output.size() == 2 : "Outputs should contain two elements; [id, state]"
 
       // check id
-      def id = tup[0]
-      assert id == "foo" : "ID should be 'foo'. Found: ${id}"
+      def id = output[0]
+      assert id.endsWith("_test")
 
       // check output
-      def output = tup[1]
-      assert output instanceof Map: "Output should be a map. Found: ${output}"
-      assert "output" in output : "Output should contain key 'output'. Found: ${output}"
-
-      // check h5mu
-      def output_h5mu = output.output
-      assert output_h5mu.toString().endsWith(".h5mu") : "Output file should be a h5mu file. Found: ${output}"
+      def state = output[1]
+      assert state instanceof Map : "State should be a map. Found: ${state}"
+      assert state.containsKey("output") : "Output should contain key 'output'."
+      assert state.output.isFile() : "'output' should be a file."
+      assert state.output.toString().endsWith(".h5mu") : "Output file should end with '.h5mu'. Found: ${state.output}"
 
       "Output: $output"
     }
-    | toList()
+    | toSortedList({a, b -> a[0] <=> b[0]})
     | map { output_list ->
-      assert output_list.size() == 1 : "output channel should contain 1 event"
+      assert output_list.size() == 2 : "output channel should contain 2 events"
+      assert output_list.collect{it[0]} == ["no_leiden_resolutions_test", "simple_execution_test"]
     }
-    //| check_format(args: {""}) // todo: check whether output h5mu has the right slots defined
 }
