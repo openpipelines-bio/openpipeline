@@ -1,0 +1,145 @@
+functionality:
+  name: demuxlet
+  namespace: genetic_demux
+  description: |
+    "Demuxlet is a software tool to deconvolute sample identity and identify multiplets when multiple samples are pooled by barcoded single cell sequencing. |
+    If external genotyping data for each sample is available (e.g. from SNP arrays), demuxlet would be recommended. |
+    Be careful that the parameters on the github is not in line with the newest help version. |
+  authors:
+    - __merge__: /src/authors/xichen_wu.yaml
+      roles: [ author ]
+  argument_groups:
+  - name: "Input"
+    arguments:
+    - name: "--sam"
+      type: file
+      description: Input SAM/BAM/CRAM file. Must be sorted by coordinates and indexed.
+    - name: "--tag_group"
+      type: string
+      default: 'CB'
+      description: Tag representing readgroup or cell barcodes, in the case to partition the BAM file into multiple groups. For 10x genomics, use CB.
+    - name: "--tag_umi"
+      type: string
+      default: 'UB'
+      description: Tag representing UMIs. For 10x genomiucs, use UB.
+    - name: "--plp"
+      type: string
+      description: Input pileup format. If the value is a string, it will be considered as the path of the plp file. If the value is boolean true, it will perform dscpileup.
+    - name: "--vcf"
+      type: file
+      description: Input VCF/BCF file, containing the individual genotypes (GT), posterior probability (GP), or genotype likelihood (PL).
+    - name: "--field"
+      type: string
+      default: "GT"
+      description: FORMAT field to extract the genotype, likelihood, or posterior from
+    - name: "--geno_error_offset"
+      type: double
+      default: 0.10
+      description: Offset of genotype error rate. [error] = [offset] + [1-offset]*[coeff]*[1-r2]
+    - name: "--geno_error_coeff"
+      type: double
+      default: 0.0
+      description: Slope of genotype error rate. [error] = [offset] + [1-offset]*[coeff]*[1-r2]
+    - name: "--r2_info"
+      type: string
+      default: "R2"
+      description: INFO field name representing R2 value. Used for representing imputation quality.
+    - name: "--min_mac"
+      type: integer
+      default: 1
+      description: Minimum minor allele frequency.
+    - name: "--min_call_rate"
+      type: double
+      default: 0.50
+      description: Minimum call rate.
+    - name: "--alpha"
+      type: string
+      default: "0.5"
+      description: Grid of alpha to search for (default is 0.1, 0.2, 0.3, 0.4, 0.5)
+    - name: "--doublet_prior"
+      type: double
+      default: 0.5
+      description: Prior of doublet
+    - name: "--sm"
+      type: string
+      description: "List of sample IDs to compare to (default: use all)."
+    - name: "--sm_list"
+      type: string
+      description: File containing the list of sample IDs to compare.
+    - name: "--sam_verbose"
+      type: integer
+      default: 1000000
+      description: Verbose message frequency for SAM/BAM/CRAM.
+    - name: "--vcf_verbose"
+      type: integer
+      default: 1000
+      description: Verbose message frequency for VCF/BCF.
+    - name: "--cap_bq"
+      type: integer
+      default: 20
+      description: Maximum base quality (higher BQ will be capped).
+    - name: "--min_bq"
+      type: integer
+      default: 13
+      description: Minimum base quality to consider (lower BQ will be skipped).
+    - name: "--min_mq"
+      type: integer
+      default: 20
+      description: Minimum mapping quality to consider (lower MQ will be ignored).
+    - name: "--min_td"
+      type: integer
+      default: 0
+      description: Minimum distance to the tail (lower will be ignored).
+    - name: "--excl_flag"
+      type: integer
+      default: 3844
+      description: "SAM/BAM FLAGs to be excluded."
+    - name: "--group_list"
+      type: string
+      description: List of tag readgroup/cell barcode to consider in this run. All other barcodes will be ignored. This is useful for parallelized run.
+    - name: "--min_total"
+      type: integer
+      default: 0
+      description: Minimum number of total reads for a droplet/cell to be considered.
+    - name: "--min_snp"
+      type: integer
+      default: 0
+      description: Minimum number of SNPs with coverage for a droplet/cell to be considered.
+    - name: "--min_umi"
+      type: integer
+      default: 0
+      description: Minimum number of UMIs for a droplet/cell to be considered.
+  - name: "Output"
+    arguments:
+    - name: "--output"
+      alternatives: [ "-o" ]
+      type: file
+      direction: output
+      description: Output directory 
+      example: "demux/"
+    - name: "--out"
+      type: string
+      description: demuxlet output file prefix
+      example: "demuxlet"
+  resources:
+    - type: r_script
+      path: script.R
+  test_resources:
+    - type: bash_script
+      path: test.sh
+    - path: ../../../resources_test/demuxafy_test_data
+platforms:
+  - type: docker
+    image: ubuntu:20.04
+    setup:
+    - type: apt
+      packages: [ autoconf, wget, git, build-essential, libcurl4-openssl-dev, cmake, libbz2-dev, libssl-dev, liblzma-dev, zlib1g-dev, r-base]
+    - type: docker
+      run: git clone https://github.com/samtools/htslib.git /tmp/htslib && cd /tmp/htslib && git submodule update --init --recursive && autoreconf -i && ./configure --prefix=/usr/local/ && make && make install
+    - type: docker
+      run: git clone --depth 1 https://github.com/statgen/popscle.git /tmp/popscle && mkdir -p /tmp/popscle/build && cd /tmp/popscle/build && cmake .. && make && cp /tmp/popscle/bin/popscle /usr/local/bin
+    - type: r
+      cran: [ readr, processx, dplyr ]
+  - type: nextflow
+    directives:
+      label: [ midmem, midcpu ]
