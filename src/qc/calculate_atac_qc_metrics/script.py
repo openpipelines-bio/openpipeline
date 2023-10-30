@@ -40,7 +40,7 @@ def setup_logger():
 logger = setup_logger()
 
 def main():
-    mdata = mu.read_10x_h5(par["input"])
+    mdata = mu.read(par["input"])
 
     mdata.var_names_make_unique()
     atac = mdata.mod[par["modality"]]
