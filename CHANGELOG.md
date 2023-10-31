@@ -23,6 +23,8 @@ This project now uses viash version 0.8.0 to build components and workflows. Mov
 
 * Refactored `rna_multisample` pipeline to use `fromState` and `toState` functionality (PR #607).
 
+* Refactored `cellranger_multi` workflow to use `fromState` and `toState` functionality (PR #609).
+
 # openpipelines 0.12.0
 
 ## BREAKING CHANGES
