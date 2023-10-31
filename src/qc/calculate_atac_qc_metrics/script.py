@@ -51,7 +51,7 @@ def main():
             atac.obs.drop(col, axis=1, inplace=True)
     
     # Calculate general qc metrics using scanpy
-    sc.pp.calculate_qc_metrics(atac, percent_top=None, log1p=False, inplace=True)
+    sc.pp.calculate_qc_metrics(atac, percent_top=None, log1p=False, inplace=True, layer=par["layer"])
 
     # Rename columns
     atac.obs.rename(

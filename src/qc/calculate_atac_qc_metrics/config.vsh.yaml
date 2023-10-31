@@ -35,7 +35,9 @@ functionality:
           type: string
           default: "atac"
           required: false
-        - name: "--layer" # TODO: use
+        - name: "--layer"
+          description: |
+            Layer at `.layers` to use for the calculation. If not provided, `.X` is used.
           type: string
           example: "raw_counts"
           required: false
