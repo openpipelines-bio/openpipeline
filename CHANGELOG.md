@@ -2,18 +2,17 @@
 
 ## BREAKING CHANGES
 
-This project now uses viash version 0.8.0 to build components and workflows. Moving to 0.8.0 involved the following changes:
+* This project now uses viash version 0.8.0 to build components and workflows. Moving to 0.8.0 involved the following changes:
 
-* Bump viash version to 0.8.0 (PR #598) in the project configuration.
+    * Bump viash version to 0.8.0 (PR #598) in the project configuration.
+    * The `concat` component had been deprecated and will be removed in a future release. It's functionality has been copied to the `concatenate_h5mu` component because the name is in conflict with the `concat` operator from nextflow (PR #598).
+    * All pipelines no longer use the anonymous workflow. Instead, these workflows were given a name which was added to the viash config as the entrypoint to the pipeline (PR #598).
+    * Removed the `workflows` folder and moved its contents to new locations (PR #605):
+        1. The `resources_test_scripts` folder now resides in the root of the project. 
+        2. All workflows have been moved to the `src/workflows` folder.
+        3. Adjust GitHub Actions to account for new workflow paths.
 
-* The `concat` component had been deprecated and will be removed in a future release. It's functionality has been copied to the `concatenate_h5mu` component because the name is in conflict with the `concat` operator from nextflow (PR #598).
-
-* All pipelines no longer use the anonymous workflow. Instead, these workflows were given a name which was added to the viash config as the entrypoint to the pipeline (PR #598).
-
-* Removed the `workflows` folder and moved its contents to new locations (PR #605):
-    1. The `resources_test_scripts` folder now resides in the root of the project. 
-    2. All workflows have been moved to the `src/workflows` folder.
-    3. Adjust GitHub Actions to account for new workflow paths.
+* Renamed `obsm_metrics` to `uns_metrics` for the `cellranger_mapping` workflow because the cellranger metrics are stored in `.uns` and not `.obsm` (PR #610).
 
 ## NEW FUNCTIONALITY
 
@@ -24,6 +23,9 @@ This project now uses viash version 0.8.0 to build components and workflows. Mov
 * Refactored `rna_multisample` pipeline to use `fromState` and `toState` functionality (PR #607).
 
 * Refactored `cellranger_multi` workflow to use `fromState` and `toState` functionality (PR #609).
+
+* Refactored `cellranger_mapping` workflow to use `fromState` and `toState` functionality (PR #610).
+
 
 # openpipelines 0.12.0
 
