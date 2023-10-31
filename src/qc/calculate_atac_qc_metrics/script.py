@@ -1,5 +1,4 @@
 import sys
-import warnings
 
 import scanpy as sc
 import muon as mu
@@ -40,20 +39,23 @@ def setup_logger():
 logger = setup_logger()
 
 def main():
+    logger.info("Reading input data")
     mdata = mu.read(par["input"])
 
+    logger.debug("Making var names unique")
     mdata.var_names_make_unique()
     atac = mdata.mod[par["modality"]]
 
+    logger.info("Checking if QC columns are already calculated")
     for col in ("n_features_per_cell", "total_fragment_counts"):
         if col in atac.obs:
-            warnings.warn(f"{col} is already in atac.obs, dropping")
+            logger.warning(f"{col} is already in atac.obs, dropping")
             atac.obs.drop(col, axis=1, inplace=True)
     
-    # Calculate general qc metrics using scanpy
+    logger.info("Calculating QC metrics")
     sc.pp.calculate_qc_metrics(atac, percent_top=None, log1p=False, inplace=True, layer=par["layer"])
 
-    # Rename columns
+    logger.debug("Renaming QC columns")
     atac.obs.rename(
         columns={
             "n_genes_by_counts": "n_features_per_cell",
@@ -62,20 +64,26 @@ def main():
         inplace=True,
     )
 
+    logger.debug("Adding log-transformed total fragment counts")
     # log-transform total counts and add as column
     atac.obs["log_total_fragment_counts"] = np.log10(atac.obs["total_fragment_counts"])
 
     if par["fragments_path"] is not None:
+        logger.info("Trying to locate frafments")
         ac.tl.locate_fragments(atac, fragments=par["fragments_path"])
+    else:
+        logger.info("Skipping fragment location: `fragments_path` is not set")
     
     # Calculate the nucleosome signal across cells
     if "files" in atac.uns and "fragments" in atac.uns["files"]:
+        logger.info("Trying to calculate nucleosome signal")
         ac.tl.nucleosome_signal(atac, n=par["n_fragments_for_nucleosome_signal"] * atac.n_obs)
         atac.obs["nuc_signal_filter"] = [
             "NS_FAIL" if ns > par["nuc_signal_threshold"] else "NS_PASS"
             for ns in atac.obs["nucleosome_signal"]
         ]
-
+    else:
+        logger.info("Skipping nucleosome signal calculation: fragments information is not found")
 
     # If interval information is available, calculate TSS enrichment
     if "interval" in mdata.var or ("rna" in mdata.mod and "interval" in mdata.mod["rna"]):
@@ -85,7 +93,10 @@ def main():
             "TSS_FAIL" if score < par["tss_threshold"] else "TSS_PASS"
             for score in atac.obs["tss_score"]
         ]
+    else:
+        logger.info("Skipping TSS enrichment calculation: genes intervals are not found")
 
+    logger.info("Writing output")
     mdata.write(par["output"], compression=par["output_compression"])
             
 if __name__ == "__main__":
