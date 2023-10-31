@@ -31,10 +31,27 @@ def example_mudata(tmp_path):
     return mdata_path
 
 @pytest.fixture
+def neurips_mudata(tmp_path):
+    """From the `NeurIPS Multimodal Single-Cell Integration Challenge
+    <https://www.kaggle.com/competitions/open-problems-multimodal/data>`
+    
+    Link is taken from the Moscot repository: 
+    https://github.com/theislab/moscot/blob/cb53435c80fafe58046ead3c42a767fd0b818aaa/src/moscot/datasets.py#L67
+
+    """
+    adata = sc.read("../data/neurips_data.h5ad", backup_url="https://figshare.com/ndownloader/files/37993503")
+
+    mdata = md.MuData({"atac": adata})
+    mdata_path = tmp_path / "neurips.h5mu"
+    mdata.write(mdata_path)
+
+    return mdata_path
+
+@pytest.fixture
 def input_mudata(input_path):
     return md.read_h5mu(input_path)
 
-@pytest.mark.parametrize("mudata", ["example_mudata"])
+@pytest.mark.parametrize("mudata", ["example_mudata", "neurips_mudata"])
 def test_qc_columns_in_tables(run_component, request, mudata, tmp_path):
     input_path = request.getfixturevalue(mudata)
     output_path = tmp_path / "foo.h5mu"
