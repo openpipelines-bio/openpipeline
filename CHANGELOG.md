@@ -15,6 +15,10 @@ This project now uses viash version 0.8.0 to build components and workflows. Mov
     2. All workflows have been moved to the `src/workflows` folder.
     3. Adjust GitHub Actions to account for new workflow paths.
 
+## MINOR CHANGES
+
+* Refactored `rna_multisample` pipeline to use `fromState` and `toState` functionality.
+
 # openpipelines 0.12.0
 
 ## BREAKING CHANGES
