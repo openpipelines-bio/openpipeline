@@ -411,5 +411,5 @@ info:
   output: "/home/runner/work/openpipeline/openpipeline/target/nextflow/mapping/bd_rhapsody"
   executable: "/home/runner/work/openpipeline/openpipeline/target/nextflow/mapping/bd_rhapsody/bd_rhapsody"
   viash_version: "0.8.0"
-  git_commit: "e70c8d4504b5a073d0014bbf88f67bdc8c1f0bdb"
+  git_commit: "d40f04146436d0cac765f68dc9de6688688017da"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"

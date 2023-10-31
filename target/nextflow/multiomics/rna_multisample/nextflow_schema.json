@@ -20,6 +20,13 @@
             "type": "string",
             "description": "Type: `file`, required, example: `dataset.h5mu`. Path to the samples",
             "help_text": "Type: `file`, required, example: `dataset.h5mu`. Path to the samples."
+          },
+          
+          "modality": {
+            "type": "string",
+            "description": "Type: `string`, default: `rna`. Modality to process",
+            "help_text": "Type: `string`, default: `rna`. Modality to process.",
+            "default": "rna"
           }
           
         }

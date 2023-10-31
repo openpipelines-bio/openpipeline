@@ -24,6 +24,10 @@ functionality:
           type: file
           description: Path to the samples.
           example: dataset.h5mu
+        - name: "--modality"
+          type: string
+          description: Modality to process.
+          default: "rna"
     - name: "Output"
       arguments:
         - name: "--output"
