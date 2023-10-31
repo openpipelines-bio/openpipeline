@@ -55,5 +55,30 @@ def test_qc_columns_in_tables(run_component, request, mudata, tmp_path):
     for qc_metric in ("n_cells_by_counts", "mean_counts", "pct_dropout_by_counts", "total_counts"):
         assert qc_metric in data_with_qc.mod["atac"].var
 
+
+def test_calculations_correctness(run_component, example_mudata, tmp_path):
+    output_path = tmp_path / "foo.h5mu"
+
+    args = [
+        "--input", str(example_mudata),
+        "--output", str(output_path),
+        "--modality", "atac",
+        "--n_fragments_for_nucleosome_signal", "100"
+    ]
+
+    run_component(args)
+    assert output_path.is_file()
+    data_with_qc = md.read(output_path)
+
+    assert np.allclose(data_with_qc.mod["atac"].obs["n_features_per_cell"], [0, 2, 1, 2, 1])
+    assert np.allclose(data_with_qc.mod["atac"].obs["total_fragment_counts"], [0, 2, 10, 101, 1000])
+    assert np.allclose(data_with_qc.mod["atac"].obs["log_total_fragment_counts"], [-np.inf, np.log10(2), np.log10(10), np.log10(101), np.log10(1000)])
+
+    assert np.allclose(data_with_qc.mod["atac"].var["n_cells_by_counts"], [4, 0, 2])
+    assert np.allclose(data_with_qc.mod["atac"].var["mean_counts"], [222.2, 0, 0.4])
+    assert np.allclose(data_with_qc.mod["atac"].var["pct_dropout_by_counts"], [20, 100, 60])
+    assert np.allclose(data_with_qc.mod["atac"].var["total_counts"], [1111, 0, 2])
+
+
 if __name__ == "__main__":
     sys.exit(pytest.main([__file__]))
