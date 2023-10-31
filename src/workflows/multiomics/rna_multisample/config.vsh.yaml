@@ -1,6 +1,6 @@
 functionality:
   name: "rna_multisample"
-  namespace: "multiomics"
+  namespace: "workflows/multiomics"
   description: "Processing unimodal multi-sample RNA transcriptomics data."
   info:
     image: /images/concepts/fig_workflow_multiomics_rna_multisample.svg
@@ -87,13 +87,20 @@ functionality:
           multiple_sep: ','
           required: false
           default: [50, 100, 200, 500]
+  dependencies:
+    - name: transform/normalize_total
+    - name: transform/log1p
+    - name: filter/filter_with_hvg
+    - name: qc/calculate_qc_metrics
+    - name: transform/delete_layer
+    - name: metadata/add_id
   resources:
     - type: nextflow_script
       path: main.nf
-      entrypoint: rna_multisample
+      entrypoint: run_wf
   test_resources:
     - type: nextflow_script
-      path: main.nf
+      path: test.nf
       entrypoint: test_wf
     - path: /resources_test/concat_test_data
 platforms:
