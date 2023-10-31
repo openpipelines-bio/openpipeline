@@ -23,6 +23,8 @@ def synthetic_example():
         [100, 0, 1],
         [1000, 0, 0]
     ]))
+    atac.obs_names = ["A", "B", "C", "D", "E"]
+    atac.var_names = ["x", "y", "z"]
 
     return md.MuData({"atac": atac})
 
