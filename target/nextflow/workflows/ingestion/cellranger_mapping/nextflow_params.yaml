@@ -6,7 +6,7 @@ reference: # please fill in - example: "reference.tar.gz"
 # Outputs
 # output_raw: "$id.$key.output_raw.output_raw"
 # output_h5mu: "$id.$key.output_h5mu.h5mu"
-obsm_metrics: "metrics_summary"
+uns_metrics: "metrics_summary"
 output_type: "raw"
 
 # Cell Ranger arguments

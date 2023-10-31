@@ -3045,7 +3045,7 @@ meta = [
     "platform" : "nextflow",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/dimred/pca",
     "viash_version" : "0.8.0",
-    "git_commit" : "b6ca0afba43553fe79edcdc07c73b011d5c26696",
+    "git_commit" : "d999df94a8ec84def6bb95f63a832baef1fd44e9",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))

@@ -50,10 +50,10 @@
             "default": "$id.$key.output_h5mu.h5mu"
           },
           
-          "obsm_metrics": {
+          "uns_metrics": {
             "type": "string",
             "description": "Type: `string`, default: `metrics_summary`. Name of the ",
-            "help_text": "Type: `string`, default: `metrics_summary`. Name of the .obsm slot under which to QC metrics (if any).",
+            "help_text": "Type: `string`, default: `metrics_summary`. Name of the .uns slot under which to QC metrics (if any).",
             "default": "metrics_summary"
           },
           
