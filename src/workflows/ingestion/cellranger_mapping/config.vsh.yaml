@@ -45,9 +45,9 @@ functionality:
           description: "The output from Cell Ranger, converted to h5mu."
           required: true
           example: output.h5mu
-        - name: "--obsm_metrics"
+        - name: "--uns_metrics"
           type: string
-          description: Name of the .obsm slot under which to QC metrics (if any).
+          description: Name of the .uns slot under which to QC metrics (if any).
           default: "metrics_summary"
         - name: "--output_type"
           type: string
