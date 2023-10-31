@@ -87,13 +87,17 @@ functionality:
           direction: output
           description: Destination path to the output.
           example: output.h5mu
+  dependencies:
+    - name: transfer/publish
+    - name: metadata/grep_annotation_column
+    - name: qc/calculate_qc_metrics
   resources:
     - type: nextflow_script
       path: main.nf
-      entrypoint: qc_entrypoint
+      entrypoint: run_wf
   test_resources:
     - type: nextflow_script
-      path: main.nf
+      path: test.nf
       entrypoint: test_wf
     - path: /resources_test/concat_test_data
     - path: /resources_test/pbmc_1k_protein_v3
