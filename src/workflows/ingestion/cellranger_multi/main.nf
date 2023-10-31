@@ -28,13 +28,16 @@ workflow run_wf {
   main:
   output_ch = input_ch
     | preprocessInputs("config": config)
-    // split params for downstream components
-    | setWorkflowArguments(
-      cellranger_multi: [
+    | cellranger_multi.run(
+      fromState: [
         "input": "input",
+        "output": "output_raw",
         "cell_multiplex_sample_id": "cell_multiplex_sample_id",
         "cell_multiplex_oligo_ids": "cell_multiplex_oligo_ids",
         "cell_multiplex_description": "cell_multiplex_description",
+        "gex_reference": "gex_reference",
+        "feature_reference": "feature_reference",
+        "vdj_reference": "vdj_reference",
         "gex_expect_cells": "gex_expect_cells",
         "gex_chemistry": "gex_chemistry",
         "gex_secondary_analysis": "gex_secondary_analysis",
@@ -46,26 +49,24 @@ workflow run_wf {
         "library_lanes": "library_lanes",
         "vdj_inner_enrichment_primers": "vdj_inner_enrichment_primers"
       ],
-      from_cellranger_multi_to_h5mu: [
-        "output": "output_h5mu",
-        "uns_metrics": "uns_metrics"
-      ]
+      toState: [
+        "output_raw": "output", 
+        "input": "output"
+      ],
+      auto: [ publish: true ]
     )
-
-    | getWorkflowArguments(key: "cellranger_multi")
-    | cellranger_multi.run(auto: [ publish: true ])
-    | pmap {id, data ->
-      def new_data = ["input": data.output]
-      [id, new_data]
-    }
     | from_cellranger_multi_to_h5mu.run(
-        auto: [ publish: true ],
-        args: [ output_compression: "gzip" ]
+      fromState: {id, state ->
+        [
+          "input": state.input,
+          "output": state.output_h5mu,
+          "uns_metrics": state.uns_metrics,
+          "output_compression": "gzip"
+        ]
+      },
+      toState: ["output_h5mu": "output"],
+      auto: [ publish: true ],
     )
-    | pmap { id, data, output_data ->
-      [ id, output_data + [h5mu: data.output] ]
-    }
-
 
   emit:
   output_ch
