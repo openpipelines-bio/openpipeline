@@ -1,125 +1,60 @@
-nextflow.enable.dsl=2
-
-workflowDir = params.rootDir + "/src/workflows"
-targetDir = params.rootDir + "/target/nextflow"
-
-include { cellranger_mkfastq } from targetDir + "/demux/cellranger_mkfastq/main.nf"
-include { bcl_convert } from targetDir + "/demux/bcl_convert/main.nf"
-include { bcl2fastq } from targetDir + "/demux/bcl2fastq/main.nf"
-include { fastqc } from targetDir + "/qc/fastqc/main.nf"
-include { multiqc } from targetDir + "/qc/multiqc/main.nf"
-
-include { readConfig; channelFromParams; preprocessInputs; helpMessage } from workflowDir + "/utils/WorkflowHelper.nf"
-include { passthroughMap as pmap } from workflowDir + "/utils/DataflowHelper.nf"
-
-config = readConfig("$workflowDir/ingestion/demux/config.vsh.yaml")
-
-workflow demux {
-  helpMessage(config)
-
-  channelFromParams(params, config)
-    | run_wf
-}
-
 workflow run_wf {
   take:
   input_ch
 
   main:
-  commonOptions = [
-    args: [ output: "fastq/\$id" ],
-    auto: [ publish: true ]
-  ]
-  preprocessed_ch = input_ch
-    | preprocessInputs("config": config)
+  output_ch = input_ch
 
-  mkfastq_ch = preprocessed_ch
-    | filter{ it[1].demultiplexer == "mkfastq" }
-    | cellranger_mkfastq.run(commonOptions)
-    
-  bcl_convert_ch = preprocessed_ch
-    | filter{ it[1].demultiplexer  == "bclconvert" }
-    | bcl_convert.run(commonOptions)
-
-  bcl2fastq_ch = preprocessed_ch
-    | filter{ it[1].demultiplexer  == "bcl2fastq" }
-    | bcl2fastq.run(commonOptions)
-
-  /* Combine the different demultiplexer channels */
-  all_ch =
-    mkfastq_ch
-      | mix( bcl_convert_ch, bcl2fastq_ch )
-      | map {  tup ->
-        [tup[0], tup[1].output]
-      }
-
-  /* Generate fastqc reports for every sample */
-  all_ch
-    | fastqc.run(
-        [
-          args: [ mode: "dir", output: "fastqc/\$id" ],
-          auto: [ publish: true ]
-        ]
-      )
-
-  /* Generate multiqc report */
-  all_ch
-    | map{ it[1] }
-    | toSortedList
-    | map{ [ "multiqc", it ] }
-    | multiqc.run(
-        args: [ output: "multiqc/report" ],
-        auto: [ publish: true ]
-      )
-
-  output_ch = all_ch
-    | map {  tup ->
-      [tup[0], ["output": tup[1]]]
+    // translate the demultiplexer argument to the component name that needs to be run
+    | map { id, state ->
+      def funcNameMapper = [
+        bclconvert: "bcl_convert",
+        bcl2fastq: "bcl2fastq",
+        mkfastq: "cellranger_mkfastq"
+      ]
+      def funcName = funcNameMapper[state.demultiplexer]
+      def newState = state + [funcName: funcName]
+      [id, newState]
     }
+
+    // run the demultiplexers
+    | runComponents(
+      components: [cellranger_mkfastq, bcl_convert, bcl2fastq],
+      filter: { id, state, config ->
+        state.funcName == config.functionality.name
+      },
+      fromState: { id, state, config ->
+        def data = [
+          input: state.input,
+          sample_sheet: state.sample_sheet,
+          reports: null // disable reports so they end up in the output dir
+        ]
+        if (config.functionality.name == "bcl2fastq") {
+          data.ignore_missing = state.ignore_missing
+        }
+        data
+      },
+      toState: ["output_fastq": "output"]
+    )
+
+    // run fastqc
+    | fastqc.run(
+      fromState: ["input": "output_fastq"],
+      args: [mode: "dir"],
+      toState: ["output_fastqc": "output"]
+    )
+
+    // run multiqc
+    | multiqc.run(
+      fromState: { id, state ->
+        ["input": [state.output_fastq]]
+      },
+      toState: ["output_multiqc": "output"]
+    )
+
+    // subset state to the outputs
+    | setState(["output_fastq", "output_fastqc", "output_multiqc"])
 
   emit:
   output_ch
-}
-
-workflow test_wf {
-  // allow changing the resources_test dir
-  params.resources_test = params.rootDir + "/resources_test"
-
-  // or when running from s3: params.resources_test = "s3://openpipelines-data/"
-  params.param_list = [
-    [
-      id: "mkfastq_test",
-      input: params.resources_test + "/cellranger_tiny_bcl/bcl",
-      sample_sheet: params.resources_test + "/cellranger_tiny_bcl/bcl/sample_sheet.csv",
-      demultiplexer: "mkfastq"
-    ],
-    [
-      id: "bclconvert_test",
-      input: params.resources_test + "/cellranger_tiny_bcl/bcl2/",
-      sample_sheet: params.resources_test + "/cellranger_tiny_bcl/bcl2/sample_sheet.csv",
-      demultiplexer: "bclconvert"
-    ],
-    [
-      id: "bcl2fastq_test",
-      input: params.resources_test + "/cellranger_tiny_bcl/bcl",
-      sample_sheet: params.resources_test + "/cellranger_tiny_bcl/bcl/sample_sheet.csv",
-      demultiplexer: "bcl2fastq",
-      ignore_missing: true
-    ]
-  ]
-
-  output_ch =
-    channelFromParams(params, config)
-    | view{ "Input: $it" }
-    | run_wf
-    | view { output ->
-      assert output.size() == 2 : "outputs should contain two elements; [id, file]"
-      assert output[1].output.isDirectory() : "Output path should be a directory."
-      // todo: check whether output dir contains fastq files
-      "Output: $output"
-    }
-    | toList()
-    | map { output_list ->
-      assert output_list.size() == 3 : "There should be three outputs"
-    }
 }
