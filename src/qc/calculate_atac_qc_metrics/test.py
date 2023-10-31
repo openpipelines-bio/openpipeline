@@ -34,6 +34,15 @@ def example_mudata(tmp_path, synthetic_example):
     return mdata_path
 
 @pytest.fixture
+def example_mudata_with_layer(tmp_path, synthetic_example):
+    synthetic_example.mod["atac"].layers["atac_counts"] = synthetic_example.mod["atac"].X.copy()
+    synthetic_example.mod["atac"].X = np.random.normal(size=synthetic_example.mod["atac"].X.shape)
+    mdata_path = tmp_path / "example.h5mu"
+    synthetic_example.write(mdata_path)
+    
+    return mdata_path
+
+@pytest.fixture
 def neurips_mudata(tmp_path):
     """From the `NeurIPS Multimodal Single-Cell Integration Challenge
     <https://www.kaggle.com/competitions/open-problems-multimodal/data>`
@@ -76,15 +85,20 @@ def test_qc_columns_in_tables(run_component, request, mudata, tmp_path):
         assert qc_metric in data_with_qc.mod["atac"].var
 
 
-def test_calculations_correctness(run_component, example_mudata, tmp_path):
+@pytest.mark.parametrize("mudata", ["example_mudata", "example_mudata_with_layer"])
+def test_calculations_correctness(request, run_component, mudata, tmp_path):
+    input_path = request.getfixturevalue(mudata)
     output_path = tmp_path / "foo.h5mu"
 
     args = [
-        "--input", str(example_mudata),
+        "--input", str(input_path),
         "--output", str(output_path),
         "--modality", "atac",
         "--n_fragments_for_nucleosome_signal", "100"
     ]
+
+    if mudata == "example_mudata_with_layer":
+        args.extend(["--layer", "atac_counts"])
 
     run_component(args)
     assert output_path.is_file()
