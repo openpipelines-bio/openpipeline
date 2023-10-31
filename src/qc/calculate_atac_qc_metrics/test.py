@@ -15,7 +15,7 @@ meta = {
 ## VIASH END
 
 @pytest.fixture
-def example_mudata(tmp_path):
+def synthetic_example():
     atac = sc.AnnData(np.array([
         [0, 0, 0],
         [1, 0, 1],
@@ -24,9 +24,12 @@ def example_mudata(tmp_path):
         [1000, 0, 0]
     ]))
 
-    mdata = md.MuData({"atac": atac})
+    return md.MuData({"atac": atac})
+
+@pytest.fixture
+def example_mudata(tmp_path, synthetic_example):
     mdata_path = tmp_path / "example.h5mu"
-    mdata.write(mdata_path)
+    synthetic_example.write(mdata_path)
     
     return mdata_path
 
