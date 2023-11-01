@@ -29,54 +29,59 @@ workflow run_wf {
   output_ch = input_ch
     | preprocessInputs("config": config)
     // split params for downstream components
-    | setWorkflowArguments(
-      cellranger_count: [
+    | cellranger_count.run(
+      fromState: [
         "input": "input",
+        "output": "output_raw",
         "expect_cells": "expect_cells",
         "chemistry": "chemistry",
         "secondary_analysis": "secondary_analysis",
         "generate_bam": "generate_bam",
-        "include_introns": "include_introns"
+        "include_introns": "include_introns",
+        "reference": "reference"
       ],
-      from_10xh5_to_h5mu: [ 
-        "output": "output_h5mu",
-        "obsm_metrics": "obsm_metrics",
-        "output_type": "output_type",
-      ]
+      toState: [
+        "input": "output",
+        "output_raw": "output"
+      ],
+      auto: [ publish: true ]
     )
-
-    | getWorkflowArguments(key: "cellranger_count")
-    | cellranger_count.run(auto: [ publish: true ])
-    | pmap {id, data ->
-        def new_data = ["input": data.output]
-        [id, new_data]
-    }
     // split output dir into map
-    | cellranger_count_split
-    // convert to h5mu
-    | pmap { id, output_data, other_args -> 
-      input_data = other_args.from_10xh5_to_h5mu.output_type == "filtered" ? 
-        output_data.filtered_h5 : output_data.raw_h5
-      // combine new data for from_10xh5_to_h5mu
-      new_data =
-        [ 
-          input: input_data, 
-          input_metrics_summary: output_data.metrics_summary
-        ] +
-        other_args.from_10xh5_to_h5mu
-
-      // store output to fourth field to return as output
-      [ id, new_data, other_args, output_data ]
-    }
-    | from_10xh5_to_h5mu.run(
-      auto: [ publish: true ],
-      args: [ output_compression: "gzip" ]
+    | cellranger_count_split.run(
+      fromState: {id, state -> 
+        def stateMapping = [
+          "input": state.input,
+        ]
+        outputType = state.output_type == "raw" ? "raw_h5" : "filtered_h5"
+        stateMapping += [outputType: "\$id.\$key.${outputType}.h5"]
+        stateMapping += ["metrics_summary": "\$id.\$key.metrics_summary.csv"]
+        return stateMapping
+      },
+      toState: {id, output, state -> 
+        def outputFile = state.output_type == "raw" ? output.raw_h5 : output.filtered_h5
+        def newState = state + [ "input": outputFile ] 
+        return newState
+      }
     )
-    
-    // return output map
-    | pmap { id, data, other_args, output_data ->
-      [ id, output_data + [h5mu: data] ]
-    }
+    // convert to h5mu
+    | from_10xh5_to_h5mu.run(
+      fromState: {id, state ->
+        [
+          "input": state.input,
+          "output_compression": "gzip",
+          "output": state.output_h5mu,
+          "uns_metrics": state.uns_metrics,
+          "input_metrics_summary": state.metrics_summary
+        ]
+      },
+      toState: { id, output, state ->
+        [
+          "output_raw": state.output_raw,
+          "output_h5mu": output.output
+        ]
+      },
+      auto: [ publish: true ],
+    )
 
   emit:
   output_ch
