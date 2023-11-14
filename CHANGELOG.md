@@ -26,6 +26,13 @@
 
 * Refactored `cellranger_mapping` workflow to use `fromState` and `toState` functionality (PR #610).
 
+# openpipelines 0.12.1
+
+## BUG FIXES
+
+* `rna_singlesample`: Fix filtering parameters values `min_counts`, `max_counts`, `min_genes_per_cell`, `max_genes_per_cell` and `min_cells_per_gene` not being passed to the `filter_with_counts` component (PR #614).
+
+* `prot_singlesample`: Fix filtering parameters values `min_counts`, `max_counts`, `min_proteins_per_cell`, `max_proteins_per_cell` and `min_cells_per_protein` not being passed to the `filter_with_counts` component (PR #614).
 
 # openpipelines 0.12.0
 
