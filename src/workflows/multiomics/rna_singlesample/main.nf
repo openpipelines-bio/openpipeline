@@ -99,6 +99,12 @@ workflow run_wf {
         "var_name_mitochondrial_genes": "var_name_mitochondrial_genes",
         "workflow_output": "workflow_output"
       ]
+      if (orig_state.min_fraction_mito) {
+        stateMapping += ["min_fraction_mito": "min_fraction_mito"]
+      }
+      if (orig_state.max_fraction_mito) {
+        stateMapping += ["max_fraction_mito": "max_fraction_mito"] 
+      }
       def new_state = stateMapping.collectEntries{newKey, origKey ->
         [newKey, orig_state[origKey]]
       }
@@ -113,6 +119,8 @@ workflow run_wf {
         [
           "input": state.input,
           "obs_name_filter": "filter_mitochondrial",
+          "min_fraction": state.min_fraction_mito,
+          "max_fraction": state.max_fraction_mito,
           "obs_fraction_column": "fraction_$state.var_name_mitochondrial_genes"
         ]
       },
@@ -128,12 +136,16 @@ workflow run_wf {
         [
           "input": state.input,
           "obs_name_filter": "filter_with_counts",
-          "var_name_filter": "filter_with_counts"
+          "var_name_filter": "filter_with_counts",
+          "min_counts": state.min_counts,
+          "max_counts": state.max_counts,
+          "min_genes_per_cell": state.min_genes_per_cell,
+          "max_genes_per_cell": state.max_genes_per_cell,
+          "min_cells_per_gene": state.min_cells_per_gene,
         ]
       },
       toState: ["input": "output"]
     )
-    | view {"before filter: $it"}
     | do_filter.run(
       fromState: {id, state ->
         def stateMapping = [

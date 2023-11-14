@@ -55,8 +55,6 @@ workflow run_wf {
           "min_genes_per_cell": "min_proteins_per_cell",
           "max_genes_per_cell": "max_proteins_per_cell",
           "min_cells_per_gene": "min_cells_per_protein",
-          "min_fraction_mito": "min_fraction_mito",
-          "max_fraction_mito": "max_fraction_mito",
           "workflow_output": "workflow_output"
       ]
       def new_state = stateMapping.collectEntries{newKey, origKey ->
@@ -70,6 +68,11 @@ workflow run_wf {
       fromState: { id, state ->
         [
           "input": state.input,
+          "min_counts": state.min_counts,
+          "max_counts": state.max_counts,
+          "min_genes_per_cell": state.min_proteins_per_cell,
+          "max_genes_per_cell": state.max_proteins_per_cell,
+          "min_cells_per_gene": state.min_cells_per_protein,
           "obs_name_filter": "filter_with_counts",
           "var_name_filter": "filter_with_counts",
           "modality": "prot"
@@ -81,9 +84,9 @@ workflow run_wf {
       fromState : { id, state ->
         [
           "input": state.input,
-          "obs_filter": state.filter_with_counts,
+          "obs_filter": "filter_with_counts",
           "modality": "prot",
-          "var_filter": state.filter_with_counts,
+          "var_filter": "filter_with_counts",
           "output_compression": "gzip",
           "output": state.workflow_output
         ]
