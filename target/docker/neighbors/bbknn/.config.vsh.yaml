@@ -284,5 +284,5 @@ info:
   output: "/home/runner/work/openpipeline/openpipeline/target/docker/neighbors/bbknn"
   executable: "/home/runner/work/openpipeline/openpipeline/target/docker/neighbors/bbknn/bbknn"
   viash_version: "0.8.0"
-  git_commit: "d999df94a8ec84def6bb95f63a832baef1fd44e9"
+  git_commit: "27e74d90836a0e38db3e05b3d6c91f73b2d48fad"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"
