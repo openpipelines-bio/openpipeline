@@ -18,7 +18,7 @@
 
 * `rna_multisample` workflow: added `--modality` argument (PR #607).
 
-* Re-enable `convert/from_h5mu_to_seurat` component.
+* Re-enable `convert/from_h5mu_to_seurat` component (PR #616).
 
 ## MINOR CHANGES
 
