@@ -20,21 +20,20 @@ par = {
 
 if par['data_raw'].endswith('h5mu'):
     raw_data = mu.read_h5mu(par['data_raw'])
-    if "prot" not in raw_data.mod or "rna" not in raw_data.mod:
-        raise TypeError("Raw data does not contain 'prot' or 'rna' modalities")
-    if raw_data.mod["rna"].n_obs != raw_data.mod["prot"].n_obs:
-        raise ValueError("different numbers of cells in 'rna' and 'prot' modalities.")
+elif par['data_raw'].endswith('h5'):
+    raw_data = mu.read_10x_h5(par['data_raw'])
 else:
     raise TypeError("data_raw must be a MuData object with 'prot' and 'rna' modalities")
+
+if "prot" not in raw_data.mod or "rna" not in raw_data.mod:
+    raise TypeError("Raw data does not contain 'prot' or 'rna' modalities")
+if raw_data.mod["rna"].n_obs != raw_data.mod["prot"].n_obs:
+    raise ValueError("different numbers of cells in 'rna' and 'prot' modalities.")
 
 droplet_barcode = raw_data.mod["prot"].obs_names
 if par["cell_index"] is not None:
     cell_barcode = pd.read_csv(par["cell_index"],header=None).iloc[:, 0].tolist()
-    # cell_barcode = list(set(droplet_barcode) & set(cell_barcode))
-    # [idx for idx in droplet_barcode if idx in cell_index_list_given]
     empty_barcode = list(set(droplet_barcode).difference(cell_barcode))
-    # [idx for idx in droplet_barcode if idx not in cell_index_list_given]
-
 else:
     cell_barcode = None
     empty_barcode = None
@@ -51,7 +50,6 @@ if par['empty_counts_range'] is not None:
     empty_idx = droplet_barcode[empty_idx]
     if empty_barcode is not None:
         empty_barcode = list(set(empty_barcode) & set(empty_idx))
-        # [idx for idx in empty_barcode if idx in empty_idx]
     else:
         empty_barcode = empty_idx
 
@@ -64,7 +62,6 @@ if par['cell_counts_range'] is not None:
     cell_idx = droplet_barcode[cell_idx]
     if cell_barcode is not None:
         cell_barcode = list(set(cell_barcode) & set(cell_idx))
-        #[idx for idx in cell_barcode if idx in cell_idx]
     else:
         cell_barcode = cell_idx
 
@@ -73,10 +70,8 @@ if empty_barcode is None:
         raise ValueError("Neither cell_index nor counts ranges for empty droplets "
                          "or cells provided for filtering empty droplets.")
     empty_barcode = list(set(droplet_barcode).difference(cell_barcode))
-    # [idx for idx in droplet_barcode if idx not in cell_barcode]
 elif cell_barcode is None:
     cell_barcode = list(set(droplet_barcode).difference(empty_barcode))
-    # [idx for idx in droplet_barcode if idx not in empty_barcode]
 
 if not os.path.exists(par["output"]):
     os.makedirs(par["output"])

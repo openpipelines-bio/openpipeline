@@ -27,10 +27,12 @@ if par['data_raw'] is not None:
         raw_data = sc.read_h5ad(par['data_raw'])
     elif par['data_raw'].endswith('h5mu'):
         raw_data = mu.read_h5mu(par['data_raw'])
-        if "prot" not in raw_data.mod:
-            raise TypeError("data_raw must be an AnnData or a MuData object with 'prot' modality")
+    elif par['data_raw'].endswith('h5'):
+        raw_data = mu.read_10x_h5(par['data_raw'])
     else:
         raise TypeError("data_raw must be an AnnData or a MuData object with 'prot' modality")
+    if "prot" not in raw_data.mod:
+            raise TypeError("data_raw must be an AnnData or a MuData object with 'prot' modality")
 else:
     raise ValueError( "Raw data is not available.")
 

@@ -21,7 +21,7 @@ logFormatter = logging.Formatter("%(asctime)s %(levelname)-8s %(message)s")
 console_handler.setFormatter(logFormatter)
 logger.addHandler(console_handler)
 
-input = f"{meta['resources_dir']}/pbmc_1k_protein_v3/pbmc_1k_protein_v3_raw_feature_bc_matrix.h5mu"
+input = f"{meta['resources_dir']}/pbmc_1k_protein_v3/pbmc_1k_protein_v3_raw_feature_bc_matrix.h5"
 cell_index = f"{meta['resources_dir']}/pbmc_1k_protein_v3/pbmc_1k_protein_v3_filtered_feature_bc_matrix/barcodes.tsv.gz"
 output_cell_idx = "dsb_output/cell_idx.csv"
 output_empty_idx = "dsb_output/empty_idx.csv"
