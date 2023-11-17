@@ -1,3 +1,39 @@
+# openpipelines 0.13.0
+
+## BREAKING CHANGES
+
+* This project now uses viash version 0.8.0 to build components and workflows. Moving to 0.8.0 involved the following changes:
+
+    * Bump viash version to 0.8.0 (PR #598) in the project configuration.
+    * The `concat` component had been deprecated and will be removed in a future release. It's functionality has been copied to the `concatenate_h5mu` component because the name is in conflict with the `concat` operator from nextflow (PR #598).
+    * All pipelines no longer use the anonymous workflow. Instead, these workflows were given a name which was added to the viash config as the entrypoint to the pipeline (PR #598).
+    * Removed the `workflows` folder and moved its contents to new locations (PR #605):
+        1. The `resources_test_scripts` folder now resides in the root of the project. 
+        2. All workflows have been moved to the `src/workflows` folder.
+        3. Adjust GitHub Actions to account for new workflow paths.
+
+* Renamed `obsm_metrics` to `uns_metrics` for the `cellranger_mapping` workflow because the cellranger metrics are stored in `.uns` and not `.obsm` (PR #610).
+
+## NEW FUNCTIONALITY
+
+* `rna_multisample` workflow: added `--modality` argument (PR #607).
+
+## MINOR CHANGES
+
+* Refactored `rna_multisample` pipeline to use `fromState` and `toState` functionality (PR #607).
+
+* Refactored `cellranger_multi` workflow to use `fromState` and `toState` functionality (PR #609).
+
+* Refactored `cellranger_mapping` workflow to use `fromState` and `toState` functionality (PR #610).
+
+# openpipelines 0.12.1
+
+## BUG FIXES
+
+* `rna_singlesample`: Fix filtering parameters values `min_counts`, `max_counts`, `min_genes_per_cell`, `max_genes_per_cell` and `min_cells_per_gene` not being passed to the `filter_with_counts` component (PR #614).
+
+* `prot_singlesample`: Fix filtering parameters values `min_counts`, `max_counts`, `min_proteins_per_cell`, `max_proteins_per_cell` and `min_cells_per_protein` not being passed to the `filter_with_counts` component (PR #614).
+
 # openpipelines 0.12.0
 
 ## BREAKING CHANGES
@@ -25,7 +61,11 @@ Implementing this changes involved breaking some existing functionality:
 
 * `workflows/prot_multisample`: added `--var_qc_metrics` and `--top_n_vars` arguments (PR #585).
 
+* Added genetic demultiplexing methods `cellsnp`, `demuxlet`, `freebayes`, `freemuxlet`, `scsplit`, `sourorcell` and `vireo` (PR #343).
+
 ## MINOR CHANGES
+
+* Several components: bump scanpy to 1.9.5 (PR #594).
 
 * Refactored `prot_multisample` and `prot_singlesample` pipelines to use `fromState` and `toState` functionality (PR #585).
 
@@ -98,6 +138,7 @@ Implementing this changes involved breaking some existing functionality:
 * Add workaround for bug where resources aren't available when using Nextflow fusion by including `setup_logger`, `subset_vars` and `compress_h5mu` in the script itself (PR #549).
 
 # openpipelines 0.10.0
+
 
 ## BREAKING CHANGES
 

@@ -184,7 +184,6 @@ platforms:
       - type: python
         packages: 
           - muon~=0.1.4
-          - scanpy~=1.9.2
   - type: nextflow
     directives:
       label: [gpu]

@@ -124,9 +124,8 @@ platforms:
           - procps
           - build-essential
       - type: python
-        __merge__: [/src/base/requirements/anndata_mudata.yaml, .]
+        __merge__: [/src/base/requirements/anndata_mudata.yaml, /src/base/requirements/scanpy.yaml, .]
         packages:
-          - scanpy~=1.9.2
           - scrublet
           - annoy==1.16.3
     test_setup:

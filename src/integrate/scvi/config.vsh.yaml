@@ -236,9 +236,7 @@ platforms:
         run: |
           pip install "jax[cuda]" -f https://storage.googleapis.com/jax-releases/jax_cuda_releases.html
       - type: python
-        __merge__: [/src/base/requirements/anndata_mudata.yaml, .]
-        packages:
-          - scanpy~=1.9.2
+        __merge__: [/src/base/requirements/anndata_mudata.yaml, /src/base/requirements/scanpy.yaml, .]
       - type: python
         upgrade: false
         packages:
