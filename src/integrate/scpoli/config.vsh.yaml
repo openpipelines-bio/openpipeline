@@ -109,7 +109,6 @@ platforms:
         packages:
           - scarches
           - mvtcr
-          - pandas==2.1.2
           - multigrate
           - torch_geometric
     test_setup:

@@ -25,8 +25,6 @@ def input_with_batch(tmp_path):
 
     mod.obs["cell_type"] = np.random.choice(["celltype_A", "celltype_B"], mod.n_obs)
 
-    
-
     input_data.write(tmp_input_path)
 
     return tmp_input_path, input_data
