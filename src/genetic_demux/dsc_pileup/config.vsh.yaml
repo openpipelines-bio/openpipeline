@@ -1,0 +1,113 @@
+functionality:
+  name: dsc_pileup
+  namespace: genetic_demux
+  description: |
+    "dsc-pileup is a software tool to pileup reads and corresponding base quality for each overlapping SNPs and each barcode. By using pileup files, it would allow us to run demuxlet/freemuxlet pretty fast multiple times without going over the BAM file again.
+  authors:
+    - __merge__: /src/authors/xichen_wu.yaml
+      roles: [ author ]
+  argument_groups:
+  - name: "Input"
+    arguments:
+    - name: "--sam"
+      type: file
+      description: Input SAM/BAM/CRAM file. Must be sorted by coordinates and indexed.
+    - name: "--tag_group"
+      type: string
+      default: 'CB'
+      description: Tag representing readgroup or cell barcodes, in the case to partition the BAM file into multiple groups. For 10x genomics, use CB.
+    - name: "--tag_umi"
+      type: string
+      default: 'UB'
+      description: Tag representing UMIs. For 10x genomiucs, use UB.
+    - name: "--exclude_flag"
+      type: integer
+      default: 1796
+      description: SAM/BAM FLAGs to be excluded.
+    - name: "--vcf"
+      type: file
+      description: "Input VCF/BCF file for dsc-pileup, containing the AC and AN field."
+    - name: "--sm"
+      type: string
+      description: "List of sample IDs to compare to (default: use all)."
+    - name: "--sm_list"
+      type: string
+      description: File containing the list of sample IDs to compare.
+    - name: "--sam_verbose"
+      type: integer
+      default: 1000000
+      description: Verbose message frequency for SAM/BAM/CRAM.
+    - name: "--vcf_verbose"
+      type: integer
+      default: 1000
+      description: Verbose message frequency for VCF/BCF.
+    - name: "--skip_umi"
+      type: boolean_true
+      description: Do not generate [prefix].umi.gz file, which stores the regions covered by each barcode/UMI pair.
+    - name: "--cap_bq"
+      type: integer
+      default: 40
+      description: Maximum base quality (higher BQ will be capped).
+    - name: "--min_bq"
+      type: integer
+      default: 13
+      description: Minimum base quality to consider (lower BQ will be skipped).
+    - name: "--min_mq"
+      type: integer
+      default: 20
+      description: Minimum mapping quality to consider (lower MQ will be ignored).
+    - name: "--min_td"
+      type: integer
+      default: 0
+      description: Minimum distance to the tail (lower will be ignored).
+    - name: "--excl_flag"
+      type: integer
+      default: 3844
+      description: SAM/BAM FLAGs to be excluded for SNP overlapping Read filtering Options.
+    - name: "--group_list"
+      type: string
+      description: List of tag readgroup/cell barcode to consider in this run. All other barcodes will be ignored. This is useful for parallelized run.
+    - name: "--min_total"
+      type: integer
+      default: 0
+      description: Minimum number of total reads for a droplet/cell to be considered.
+    - name: "--min_uniq"
+      type: integer
+      default: 0
+      description: Minimum number of unique reads (determined by UMI/SNP pair) for a droplet/cell to be considered.
+    - name: "--min_snp"
+      type: integer
+      default: 0
+      description: Minimum number of SNPs with coverage for a droplet/cell to be considered.
+  - name: "Output"
+    arguments:
+    - name: "--output"
+      alternatives: [ "-o" ]
+      type: file
+      direction: output
+      description: Output directory 
+      example: "demux/"
+    - name: "--out"
+      type: string
+      description: dsc-pileup output file prefix
+      example: "demuxlet_dsc"
+  resources:
+    - type: bash_script
+      path: script.sh
+  test_resources:
+    - type: bash_script
+      path: test.sh
+    - path: ../../../resources_test/demuxafy_test_data
+platforms:
+  - type: docker
+    image: ubuntu:20.04
+    setup:
+    - type: apt
+      packages: [ autoconf, wget, git, build-essential, libcurl4-openssl-dev, cmake, libbz2-dev, libssl-dev, liblzma-dev, zlib1g-dev, r-base]
+    - type: docker
+      run: git clone https://github.com/samtools/htslib.git /tmp/htslib && cd /tmp/htslib && git submodule update --init --recursive && autoreconf -i && ./configure --prefix=/usr/local/ && make && make install
+    - type: docker
+      run: git clone --depth 1 https://github.com/statgen/popscle.git /tmp/popscle && mkdir -p /tmp/popscle/build && cd /tmp/popscle/build && cmake .. && make && cp /tmp/popscle/bin/popscle /usr/local/bin
+  - type: nextflow
+    directives:
+      label: [ midmem, midcpu ]
