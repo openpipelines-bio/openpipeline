@@ -14,7 +14,7 @@ meta = {
 }
 ## VIASH END
 
-input_sample_file = f"{meta['resources_dir']}/pbmc_1k_protein_v3_filtered_feature_bc_matrix.h5mu"
+input_sample_file = f"{meta['resources_dir']}/pbmc_1k_protein_v3/pbmc_1k_protein_v3_mms.h5mu"
 
 
 @pytest.fixture
@@ -53,6 +53,31 @@ def test_intersect_obs(run_component, sample_mudata, tmp_path):
     output = read_h5mu(output_path)
     assert list(output.mod.keys()) == ["mod1", "mod2"]
     assert output.obs_names.tolist() == ["obs2"]
+
+
+def test_intersect_obs_with_real(run_component, tmp_path):
+    input_path = tmp_path / f"{uuid.uuid4()}.h5mu"
+    output_path = tmp_path / f"{uuid.uuid4()}.h5mu"
+
+    # subset input
+    input = read_h5mu(input_sample_file)
+    input.mod["rna"] = input.mod["rna"][range(0, 100)]
+    input.mod["prot"] = input.mod["prot"][range(50, 150)]
+    input.update_obs()
+    input.write(input_path)
+
+    # run component
+    run_component([
+        "--input", input_path,
+        "--modalities", "rna:prot",
+        "--output", str(output_path),
+        "--output_compression", "gzip"
+    ])
+    assert output_path.is_file()
+    output = read_h5mu(output_path)
+    assert list(output.mod.keys()) == ["rna", "prot"]
+    assert output.n_obs == 50
+    assert output.obs_names.tolist() == input.obs_names[range(50, 100)].tolist()
 
 if __name__ == "__main__":
     sys.exit(pytest.main([__file__]))
