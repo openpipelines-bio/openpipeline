@@ -12,6 +12,7 @@ cd "$REPO_ROOT"
 ID=cellranger_atac_tiny_bcl
 OUT="resources_test/$ID/"
 DIR="$OUT"
+REFERENCE_DIR=resources_test/reference_gencodev41_chr1
 
 # create tempdir
 MY_TEMP="${VIASH_TEMP:-/tmp}"
@@ -52,11 +53,22 @@ fi
 
 # Download JASPAR files for reference building
 motifs_url="https://jaspar.genereg.net/download/data/2018/CORE/JASPAR2018_CORE_non-redundant_pfms_jaspar.txt"
-motifs_in="resources_test/reference_gencodev41_chr1/JASPAR2018_CORE_non-redundant_pfms_jaspar.txt"
+motifs_in="${REFERENCE_DIR}/JASPAR2018_CORE_non-redundant_pfms_jaspar.txt"
 
 if [ ! -f "$motifs_in" ]; then
     curl -sS "$motifs_url" > "$motifs_in"
 fi
+
+# Change motif headers so the human-readable motif name precedes the motif
+# identifier. So ">MA0004.1    Arnt" -> ">Arnt_MA0004.1".
+motifs_modified="${REFERENCE_DIR}/$(basename "$motifs_in").modified"
+awk '{
+    if ( substr($1, 1, 1) == ">" ) {
+        print ">" $2 "_" substr($1,2)
+    } else {
+        print
+    }
+}' "$motifs_in" > "$motifs_modified"
 
 if [ ! -d "${OUT}/fastqs" ]; then
   mkdir -p "$OUT/fastqs"
