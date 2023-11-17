@@ -52,6 +52,7 @@ if [ ! -f "${OUT}/bcl/sample_sheet.csv" ]; then
 fi
 
 # Download JASPAR files for reference building
+# Source of the code below: https://support.10xgenomics.com/single-cell-atac/software/release-notes/references#GRCh38-2020-A-2.0.0
 motifs_url="https://jaspar.genereg.net/download/data/2018/CORE/JASPAR2018_CORE_non-redundant_pfms_jaspar.txt"
 motifs_in="${REFERENCE_DIR}/JASPAR2018_CORE_non-redundant_pfms_jaspar.txt"
 
