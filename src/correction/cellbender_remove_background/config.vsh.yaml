@@ -301,7 +301,6 @@ platforms:
       - type: python
         packages: 
           - muon
-          - scanpy
   - type: nextflow
     directives:
       label: [singlecpu, lowmem, gpu]
