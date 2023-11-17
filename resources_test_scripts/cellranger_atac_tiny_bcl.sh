@@ -50,6 +50,14 @@ if [ ! -f "${OUT}/bcl/sample_sheet.csv" ]; then
     --output "${OUT}/bcl/sample_sheet.csv"
 fi
 
+# Download JASPAR files for reference building
+motifs_url="https://jaspar.genereg.net/download/data/2018/CORE/JASPAR2018_CORE_non-redundant_pfms_jaspar.txt"
+motifs_in="resources_test/reference_gencodev41_chr1/JASPAR2018_CORE_non-redundant_pfms_jaspar.txt"
+
+if [ ! -f "$motifs_in" ]; then
+    curl -sS "$motifs_url" > "$motifs_in"
+fi
+
 if [ ! -d "${OUT}/fastqs" ]; then
   mkdir -p "$OUT/fastqs"
 
