@@ -6,9 +6,12 @@ import shutil
 
 ## VIASH START
 par = {
-
+    "input": "resources_test/pbmc_1k_protein_v3/pbmc_1k_protein_v3_mms.h5mu",
+    "modalities": ["rna", "prot"],
+    "output": "output.h5mu"
 }
 meta = {
+    
 }
 ## VIASH END
 
