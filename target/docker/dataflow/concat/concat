@@ -452,7 +452,7 @@ RUN pip install --upgrade pip && \
 
 LABEL org.opencontainers.image.authors="Dries Schaumont"
 LABEL org.opencontainers.image.description="Companion container for running component dataflow concat"
-LABEL org.opencontainers.image.created="2023-11-17T02:42:10Z"
+LABEL org.opencontainers.image.created="2023-11-18T02:39:50Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
 LABEL org.opencontainers.image.revision="27e74d90836a0e38db3e05b3d6c91f73b2d48fad"
 LABEL org.opencontainers.image.version="integration_build"
