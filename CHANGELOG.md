@@ -28,6 +28,10 @@
 
 * Refactored `cellranger_mapping` workflow to use `fromState` and `toState` functionality (PR #610).
 
+## BUG FIXES
+
+* `dataflow/concatenate_h5mu`: Fix an issue where joining columns with different datatypes caused `TypeError`.
+
 # openpipelines 0.12.1
 
 ## BUG FIXES

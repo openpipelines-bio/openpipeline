@@ -199,7 +199,7 @@ def cast_to_writeable_dtype(result: pd.DataFrame) -> pd.DataFrame:
     # Convert leftover 'object' columns to string
     object_cols = result.select_dtypes(include='object').columns.values
     for obj_col in object_cols:
-        result[obj_col].astype(str).astype('category')
+        result[obj_col] = result[obj_col].astype(str).astype('category')
     return result
 
 def split_conflicts_modalities(n_processes: int, input_ids: tuple[str], samples: Iterable[anndata.AnnData], output: anndata.AnnData) \
