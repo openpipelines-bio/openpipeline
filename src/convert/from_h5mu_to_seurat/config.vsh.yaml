@@ -1,7 +1,5 @@
 functionality:
   name: "from_h5mu_to_seurat"
-  # MuDataSeurat is currently broken -- https://github.com/PMBio/MuDataSeurat/issues/9
-  status: disabled 
   namespace: "convert"
   description: |
     Converts an h5mu file into a Seurat file.
@@ -51,9 +49,7 @@ platforms:
           - python3-pip
           - python-is-python3
       - type: python
-        __merge__: [/src/base/requirements/scanpy.yaml, .]
-        packages: 
-          - anndata~=0.9.1
+        __merge__: [/src/base/requirements/scanpy.yaml, /src/base/requirements/anndata.yaml, .]
       - type: r
         cran: [ anndata, hdf5r, testthat ]
       - type: r

@@ -1,5 +1,4 @@
-
+__merge__: [/src/base/requirements/anndata.yaml, .]
 packages:
   - mudata~=0.2.3
-  - anndata~=0.9.1
   - pandas!=2.1.2
