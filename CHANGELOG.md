@@ -18,6 +18,8 @@
 
 * `rna_multisample` workflow: added `--modality` argument (PR #607).
 
+* Re-enable `convert/from_h5mu_to_seurat` component (PR #616).
+
 ## MINOR CHANGES
 
 * Refactored `rna_multisample` pipeline to use `fromState` and `toState` functionality (PR #607).

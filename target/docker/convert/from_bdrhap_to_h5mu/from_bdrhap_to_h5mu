@@ -422,16 +422,16 @@ ENTRYPOINT []
  
 RUN apt update && apt upgrade -y
 RUN pip install --upgrade pip && \
-  pip install --upgrade --no-cache-dir "mudata~=0.2.3" "anndata~=0.9.1" "pandas!=2.1.2"
+  pip install --upgrade --no-cache-dir "anndata~=0.9.1" "mudata~=0.2.3" "pandas!=2.1.2"
 
 RUN Rscript -e 'if (!requireNamespace("remotes", quietly = TRUE)) install.packages("remotes")' && \
   Rscript -e 'remotes::install_cran(c("anndata"), repos = "https://cran.rstudio.com")'
 
 LABEL org.opencontainers.image.authors="Robrecht Cannoodt"
 LABEL org.opencontainers.image.description="Companion container for running component convert from_bdrhap_to_h5mu"
-LABEL org.opencontainers.image.created="2023-11-14T06:09:22Z"
+LABEL org.opencontainers.image.created="2023-11-20T05:18:36Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="27e74d90836a0e38db3e05b3d6c91f73b2d48fad"
+LABEL org.opencontainers.image.revision="513ae78c20aedc952f45b3fc3df89e1b6adf2e95"
 LABEL org.opencontainers.image.version="main_build"
 
 VIASHDOCKER

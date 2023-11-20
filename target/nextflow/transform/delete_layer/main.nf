@@ -2908,8 +2908,8 @@ meta = [
           "type" : "python",
           "user" : false,
           "packages" : [
-            "mudata~=0.2.3",
             "anndata~=0.9.1",
+            "mudata~=0.2.3",
             "pandas!=2.1.2"
           ],
           "upgrade" : true
@@ -2985,7 +2985,7 @@ meta = [
     "platform" : "nextflow",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/transform/delete_layer",
     "viash_version" : "0.8.0",
-    "git_commit" : "27e74d90836a0e38db3e05b3d6c91f73b2d48fad",
+    "git_commit" : "513ae78c20aedc952f45b3fc3df89e1b6adf2e95",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))
