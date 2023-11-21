@@ -22,6 +22,7 @@ functionality:
           alternatives: [-i]
           description: Path to the sample.
           required: true
+          multiple: true
           example: input.h5mu
           type: file
     - name: "Outputs"
@@ -74,16 +75,26 @@ functionality:
         - name: "--pca_overwrite"
           type: boolean_true
           description: "Allow overwriting slots for PCA output."
+  dependencies:
+    - name: dataflow/merge
+    - name: workflows/multiomics/split_modalities
+      alias: split_modalities_workflow
+    - name: workflows/multiomics/prot_multisample
+    - name: workflows/multiomics/rna_multisample
+    - name: workflows/multiomics/integration/initialize_integration
+      alias: initialize_integration_rna
+    - name: workflows/multiomics/integration/initialize_integration
+      alias: initialize_integration_prot
   resources:
     - type: nextflow_script
       path: main.nf
-      entrypoint: multisample
+      entrypoint: run_wf
   test_resources:
     - type: nextflow_script
-      path: main.nf
+      path: test.nf
       entrypoint: test_wf
     - type: nextflow_script
-      path: main.nf
+      path: test.nf
       entrypoint: test_wf2
     - path: /resources_test/concat_test_data
     - path: /resources_test/10x_5k_anticmv

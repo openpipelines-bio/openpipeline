@@ -1,9 +1,9 @@
 process splitStub {
       input:
-        tuple val(id), path(unused), val(passthrough)
+        tuple val(id), path(unused), val(passthrough_state)
 
       output:
-        tuple val(id), path("stub_h5mus"), path("modalities.csv"), val(passthrough)
+        tuple val(id), path("stub_h5mus"), path("modalities.csv"), val(passthrough_state)
 
       script:
         """

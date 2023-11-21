@@ -35,7 +35,6 @@ workflow run_wf {
         ["output": output.output]
       },
       auto: [publish: true],
-      debug: true
     )
   
   emit:

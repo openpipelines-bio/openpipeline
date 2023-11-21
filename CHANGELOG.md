@@ -4,7 +4,7 @@
 
 * This project now uses viash version 0.8.0 to build components and workflows. Moving to 0.8.0 involved the following changes:
 
-    * Bump viash version to 0.8.0 (PR #598) in the project configuration.
+    * Bump viash version to 0.8.0 (PR #598 and PR #606) in the project configuration.
     * The `concat` component had been deprecated and will be removed in a future release. It's functionality has been copied to the `concatenate_h5mu` component because the name is in conflict with the `concat` operator from nextflow (PR #598).
     * All pipelines no longer use the anonymous workflow. Instead, these workflows were given a name which was added to the viash config as the entrypoint to the pipeline (PR #598).
     * Removed the `workflows` folder and moved its contents to new locations (PR #605):
@@ -16,15 +16,17 @@
 
 ## NEW FUNCTIONALITY
 
+* All workflow now use `dependencies` to handle includes from other workflows (PR #606).
+
 * `rna_multisample` workflow: added `--modality` argument (PR #607).
+
+* `multisample` workflow: in addition to using multimodal files as input, this workflow now also accepts a list of files. The list of files must be the unimodal equivalents of 
+of a split multimodal files. The modalities in the list must be unique and after processing the modalities will be merged into multimodal files (PR #606).  
 
 ## MINOR CHANGES
 
-* Refactored `rna_multisample` pipeline to use `fromState` and `toState` functionality (PR #607).
+* Refactored `rna_multisample` (PR #607), `cellranger_multi` (PR #609), `cellranger_mapping` (PR #610) and other (PR #606) pipelines to use `fromState` and `toState` functionality.
 
-* Refactored `cellranger_multi` workflow to use `fromState` and `toState` functionality (PR #609).
-
-* Refactored `cellranger_mapping` workflow to use `fromState` and `toState` functionality (PR #610).
 
 # openpipelines 0.12.1
 

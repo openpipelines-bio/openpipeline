@@ -54,7 +54,6 @@ workflow run_wf {
         return newState
       },
       auto: [ publish: true ],
-      debug: true
     )
     | setState(targetMapping.values().collect{"output_$it"} + ["output_fasta", "output_gtf"])
     | groupTuple(by: 0, sort: "hash")

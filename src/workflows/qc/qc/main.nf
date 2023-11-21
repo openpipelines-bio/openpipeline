@@ -71,7 +71,8 @@ workflow run_wf {
           ]
         },
         auto: [ publish: true ]
-      )      
+      )
+      | setState(["output"]) 
 
   emit:
   output_ch
