@@ -14,6 +14,14 @@
 
 * Renamed `obsm_metrics` to `uns_metrics` for the `cellranger_mapping` workflow because the cellranger metrics are stored in `.uns` and not `.obsm` (PR #610).
 
+* `query/cellxgene_census`: Refactored the interface, documentation and internal workings of this component (PR #xxx).
+  - `--input_database` and `--cellxgene_release` were renamed to `--input_uri` and `--census_version`, respectively, to align with the cellxgene_census naming and documentation.
+  - `cells_filter_columns` and `--min_cells_filter_columns` were renamed to `--cell_filter_grouping` and `cell_filter_minimum_count` to better reflect the purpose of these arguments.
+  - `--modality` was renamed to `--output_modality` to better reflect the purpose of this argument.
+  - Documentation of the components and its arguments was improved.
+  - Python version was bumped to 3.10, and `obonet` was dropped from the list of dependencies.
+  - Refactoring of the internal code to improve readability and maintainability.
+
 ## NEW FUNCTIONALITY
 
 * `rna_multisample` workflow: added `--modality` argument (PR #607).
