@@ -18,6 +18,8 @@
 
 * `rna_multisample` workflow: added `--modality` argument (PR #607).
 
+* Added `filter/intersect_obs` component which removes observations that are not shared between modalities (PR #589).
+
 * Re-enable `convert/from_h5mu_to_seurat` component (PR #616).
 
 ## MINOR CHANGES
