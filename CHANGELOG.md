@@ -30,6 +30,8 @@
 
 * Refactored `cellranger_mapping` workflow to use `fromState` and `toState` functionality (PR #610).
 
+* Updated the Viash YAML schemas to the latest version of Viash (PR #620).
+
 # openpipelines 0.12.1
 
 ## BUG FIXES
