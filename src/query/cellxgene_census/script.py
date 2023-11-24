@@ -48,9 +48,9 @@ def connect_census(uri, census_version):
     """
     Connect to CellxGene Census or user-provided TileDBSoma object
     """
-    census_version = census_version or "stable"
-    logger.info("Connecting to CellxGene Census at %s", f"'{uri}'" if uri else f"version '{census_version}'")
-    return cellxgene_census.open_soma(uri=uri, census_version=census_version)
+    ver = census_version or "stable"
+    logger.info("Connecting to CellxGene Census at %s", f"'{uri}'" if uri else f"version '{ver}'")
+    return cellxgene_census.open_soma(uri=uri, census_version=ver)
 
 def get_anndata(census_connection, cell_query, species):
     logger.info("Getting gene expression data based on %s query.", cell_query)
