@@ -3014,7 +3014,7 @@ meta = [
     "platform" : "nextflow",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/qc/calculate_qc_metrics",
     "viash_version" : "0.8.0",
-    "git_commit" : "513ae78c20aedc952f45b3fc3df89e1b6adf2e95",
+    "git_commit" : "f1b9449d88e80edc7a39bf9a2526ffea6e55643b",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))
