@@ -3141,7 +3141,7 @@ meta = [
     "platform" : "nextflow",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/integrate/scarches",
     "viash_version" : "0.8.0",
-    "git_commit" : "f1b9449d88e80edc7a39bf9a2526ffea6e55643b",
+    "git_commit" : "b6d6543af3e9c4bc46782a893685d829246a3870",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))
