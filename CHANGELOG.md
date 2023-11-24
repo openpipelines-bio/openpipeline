@@ -19,7 +19,8 @@
   - `--input_database` and `--cellxgene_release` were renamed to `--input_uri` and `--census_version`, respectively, to align with the cellxgene_census naming and documentation.
   - `cells_filter_columns` and `--min_cells_filter_columns` were renamed to `--cell_filter_grouping` and `cell_filter_minimum_count` to better reflect the purpose of these arguments.
   - `--modality` was renamed to `--output_modality` to better reflect the purpose of this argument.
-  - Documentation of the components and its arguments was improved.
+  - Removed `--dataset_id` since it was no longer being used.
+  - Documentation of the component and its arguments was improved.
   - Python version was bumped to 3.10, and `obonet` was dropped from the list of dependencies.
   - Refactoring of the internal code to improve readability and maintainability.
 
