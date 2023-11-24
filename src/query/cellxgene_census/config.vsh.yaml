@@ -38,9 +38,9 @@ functionality:
           required: false
           default: "homo_sapiens"
           multiple: false
-        - name: "--cell_query"
+        - name: "--obs_value_filter"
           type: string
-          description: "The query for selecting the cells as defined by the cellxgene census schema."
+          description: "Filter for selecting the `obs` metadata (i.e. cells). Value is a filter query written in the SOMA `value_filter` syntax."
           required: false
           example: "is_primary_data == True and cell_type_ontology_term_id in ['CL:0000136', 'CL:1000311', 'CL:0002616'] and suspension_type == 'cell'"
         - name: "--cell_filter_grouping"

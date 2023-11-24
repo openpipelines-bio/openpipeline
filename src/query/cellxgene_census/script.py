@@ -9,7 +9,7 @@ par = {
     "input_uri": None,
     "census_version": "stable",
     "species": "homo_sapiens",
-    "cell_query": "is_primary_data == True and cell_type_ontology_term_id in ['CL:0000136', 'CL:1000311', 'CL:0002616'] and suspension_type == 'cell'",
+    "obs_value_filter": "is_primary_data == True and cell_type_ontology_term_id in ['CL:0000136', 'CL:1000311', 'CL:0002616'] and suspension_type == 'cell'",
     "cell_filter_grouping": ["dataset_id", "tissue", "assay", "disease", "cell_type"],
     "cell_filter_minimum_count": 100,
     "output": "output.h5mu",
@@ -18,7 +18,7 @@ par = {
 }
 
 meta = {"resources_dir": os.path.abspath("./src/query/cellxgene_census/")}
-### VIASH END
+## VIASH END
 
 sys.path.append(meta["resources_dir"])
 
@@ -52,10 +52,10 @@ def connect_census(uri, census_version):
     logger.info("Connecting to CellxGene Census at %s", f"'{uri}'" if uri else f"version '{ver}'")
     return cellxgene_census.open_soma(uri=uri, census_version=ver)
 
-def get_anndata(census_connection, cell_query, species):
-    logger.info("Getting gene expression data based on %s query.", cell_query)
+def get_anndata(census_connection, obs_value_filter, species):
+    logger.info("Getting gene expression data based on %s query.", obs_value_filter)
     return cellxgene_census.get_anndata(
-        census=census_connection, obs_value_filter=cell_query, organism=species
+        census=census_connection, obs_value_filter=obs_value_filter, organism=species
     )
 
 
@@ -118,7 +118,7 @@ def main():
         )
     
     with connect_census(uri=par["input_uri"], census_version=par["census_version"]) as conn:
-        query_data = get_anndata(conn, par["cell_query"], par["species"])
+        query_data = get_anndata(conn, par["obs_value_filter"], par["species"])
 
         query_data.obs = add_cellcensus_metadata_obs(conn, query_data)
 

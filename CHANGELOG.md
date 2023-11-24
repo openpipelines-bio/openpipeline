@@ -17,6 +17,7 @@
 * `query/cellxgene_census`: Refactored the interface, documentation and internal workings of this component (PR #621).
 
   - `--input_database` and `--cellxgene_release` were renamed to `--input_uri` and `--census_version`, respectively, to align with the cellxgene_census naming and documentation.
+  - `--cell_query` was renamed to `--obs_value_filter` to align with the cellxgene_census naming and documentation.
   - `cells_filter_columns` and `--min_cells_filter_columns` were renamed to `--cell_filter_grouping` and `cell_filter_minimum_count` to better reflect the purpose of these arguments.
   - `--modality` was renamed to `--output_modality` to better reflect the purpose of this argument.
   - Removed `--dataset_id` since it was no longer being used.
