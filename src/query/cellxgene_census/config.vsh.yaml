@@ -19,7 +19,6 @@ functionality:
     - name: Input database
       description: "Open CellxGene Census by version or URI."
       arguments:
-        # TODO: add user-provided release of census, e.g. TileDBSoma
         - name: "--input_uri"
           type: string
           description: "If specified, a URI containing the Census SOMA objects. If specified, will take precedence over the `--census_version` argument."
