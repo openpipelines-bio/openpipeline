@@ -20,6 +20,8 @@
 
 * Added `filter/intersect_obs` component which removes observations that are not shared between modalities (PR #589).
 
+* Re-enable `convert/from_h5mu_to_seurat` component (PR #616).
+
 ## MINOR CHANGES
 
 * Refactored `rna_multisample` pipeline to use `fromState` and `toState` functionality (PR #607).
