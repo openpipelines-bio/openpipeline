@@ -40,7 +40,7 @@ platforms:
         packages: [ pigz ]
     test_setup:
       - type: apt
-        packages: [ git wget ]
+        packages: [ git, wget ]
       - type: docker
         run: |
           TARGETARCH="${TARGETARCH:-$(dpkg --print-architecture)}" && \
