@@ -2949,7 +2949,7 @@ meta = [
     "platform" : "nextflow",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/compression/compress_h5mu",
     "viash_version" : "0.8.0",
-    "git_commit" : "b6d6543af3e9c4bc46782a893685d829246a3870",
+    "git_commit" : "1598c0da21c66b7db0cc9f36e56f1a4fe426693a",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))

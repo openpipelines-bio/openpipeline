@@ -2893,25 +2893,17 @@ meta = [
       ],
       "test_setup" : [
         {
-          "type" : "docker",
-          "env" : [
-            "GOPATH /root/go",
-            "GOBIN /root/go/bin",
-            "PATH \\"${PATH}:/root/go/bin\\""
-          ]
-        },
-        {
           "type" : "apt",
           "packages" : [
-            "golang",
-            "git"
+            "git",
+            "wget"
           ],
           "interactive" : false
         },
         {
           "type" : "docker",
           "run" : [
-            "go install golang.org/dl/go1.20.6@latest && go1.20.6 download && \\\\\ngit clone --branch v2.5.0 https://github.com/shenwei356/seqkit.git && \\\\\ncd seqkit/seqkit/ && go1.20.6 build && cp seqkit /usr/bin/ && cd ../../ && rm -rf seqkit\n"
+            "TARGETARCH=\\"${TARGETARCH:-$(dpkg --print-architecture)}\\" && \\\\\nTARGETOS=\\"${TARGETOS:-linux}\\" && \\\\\nPATH=\\"${PATH}:/usr/local/go/bin\\" && \\\\\nwget https://go.dev/dl/go1.21.4.$TARGETOS-$TARGETARCH.tar.gz && tar -C /usr/local/ -xzf go1.21.4.$TARGETOS-$TARGETARCH.tar.gz && \\\\\nrm go1.21.4.$TARGETOS-$TARGETARCH.tar.gz && \\\\\ngit clone --branch v2.5.0 https://github.com/shenwei356/seqkit.git && \\\\\ncd seqkit/seqkit/ && go build && cp seqkit /usr/bin/ && cd ../../ && rm -rf seqkit && rm -r /usr/local/go\n"
           ]
         }
       ]
@@ -2975,7 +2967,7 @@ meta = [
     "platform" : "nextflow",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/reference/build_cellranger_reference",
     "viash_version" : "0.8.0",
-    "git_commit" : "b6d6543af3e9c4bc46782a893685d829246a3870",
+    "git_commit" : "1598c0da21c66b7db0cc9f36e56f1a4fe426693a",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))
