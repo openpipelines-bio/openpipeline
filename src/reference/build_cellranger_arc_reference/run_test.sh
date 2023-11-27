@@ -28,7 +28,7 @@ $meta_executable \
   --genome_fasta "$meta_resources_dir/reference_gencodev41_chr1/reference.fa.gz" \
   --annotation_gtf "$meta_resources_dir/reference_gencodev41_chr1/reference.gtf.gz" \
   --motifs_file "$meta_resources_dir/reference_gencodev41_chr1/JASPAR2024_CORE_non-redundant_pfms_jaspar.txt.modified" \
-  --output "$meta_resources_dir/myreference.tar.gz" \
+  --output "$tmpdir/myreference.tar.gz" \
   ---cpus ${meta_memory_gb:-1} \
   ---memory ${meta_memory_gb:-5}GB
 
