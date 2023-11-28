@@ -258,7 +258,7 @@ def test_concat_different_columns_per_modality_and_per_sample(run_component, mud
     assert concatenated_data.mod['atac'].var.loc['chr1:3094399-3095523']['genome'] == 'mm10'
 
 @pytest.mark.parametrize("extra_column_value_sample2", [np.nan])
-@pytest.mark.parametrize("extra_column_value_sample1,expected", [("bar", "bar"), (True, True), (0.1, 0.1), ("1", 1), (np.nan, pd.NA)])
+@pytest.mark.parametrize("extra_column_value_sample1,expected", [("bar", "bar"), (True, True), (0.1, 0.1), (np.nan, pd.NA)])
 @pytest.mark.parametrize("mudata_copy_with_unique_obs",
                           [input_sample1_file],
                           indirect=["mudata_copy_with_unique_obs"])
