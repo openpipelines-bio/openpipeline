@@ -197,9 +197,10 @@ def cast_to_writeable_dtype(result: pd.DataFrame) -> pd.DataFrame:
                                    convert_floating=False)
     
     # Convert leftover 'object' columns to string
+    # However, na values are supported, so convert all values except NA's to string
     object_cols = result.select_dtypes(include='object').columns.values
     for obj_col in object_cols:
-        result[obj_col].astype(str).astype('category')
+        result[obj_col] = result[obj_col].where(result[obj_col].isna(), result[obj_col].astype(str)).astype('category')
     return result
 
 def split_conflicts_modalities(n_processes: int, input_ids: tuple[str], samples: Iterable[anndata.AnnData], output: anndata.AnnData) \

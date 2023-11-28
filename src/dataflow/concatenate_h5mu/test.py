@@ -54,25 +54,39 @@ def mudata_copy_with_unique_obs(request):
     return mudata_contents, copied_contents
 
 @pytest.fixture
-def exta_var_column_value():
+def extra_column_value_sample1():
     return "bar"
 
 @pytest.fixture
-def copied_mudata_with_extra_var_column(tmp_path, mudata_copy_with_unique_obs, exta_var_column_value):
+def extra_column_value_sample2():
+    return "bar"
+
+@pytest.fixture
+def extra_column_annotation_matrix():
+    return 'var'
+
+@pytest.fixture
+def copied_mudata_with_extra_annotation_column(tmp_path, mudata_copy_with_unique_obs,
+                                               extra_column_annotation_matrix,
+                                               extra_column_value_sample1,
+                                               extra_column_value_sample2):
     [original_mudata, copied_mudata] = mudata_copy_with_unique_obs
-    original_mudata.mod['rna'].var['test'] = np.nan
-    original_mudata.mod['atac'].var['test'] = exta_var_column_value
-    original_mudata.update_var()
-    copied_mudata.mod['rna'].var['test'] = np.nan
-    copied_mudata.mod['atac'].var['test'] = np.nan
-    original_mudata.var = original_mudata.var.convert_dtypes(infer_objects=True,
-                                                             convert_integer=True,
-                                                             convert_string=False,
-                                                             convert_boolean=True,
-                                                             convert_floating=False)
-    
-    copied_mudata.update_var()
-    copied_mudata.update_obs()
+    getattr(original_mudata.mod['rna'], extra_column_annotation_matrix)['test']  = np.nan
+    getattr(original_mudata.mod['atac'], extra_column_annotation_matrix)['test'] = extra_column_value_sample1
+    original_mudata.update()
+
+    getattr(copied_mudata.mod['rna'], extra_column_annotation_matrix)['test'] = np.nan
+    getattr(copied_mudata.mod['atac'], extra_column_annotation_matrix)['test'] = extra_column_value_sample2
+    mudata_cast_types = getattr(original_mudata, extra_column_annotation_matrix).convert_dtypes(
+        infer_objects=True,
+        convert_integer=True,
+        convert_string=False,
+        convert_boolean=True,
+        convert_floating=False
+    )
+    setattr(original_mudata, extra_column_annotation_matrix, mudata_cast_types)
+    copied_mudata.update()
+
     original_mudata_path = tmp_path / "original.h5mu"
     copy_mudata_path = tmp_path / "modified_copy.h5mu"
     original_mudata.write(str(original_mudata_path), compression="gzip")
@@ -243,16 +257,17 @@ def test_concat_different_columns_per_modality_and_per_sample(run_component, mud
     assert concatenated_data.var.loc['chr1:3094399-3095523']['genome'] == 'mm10'
     assert concatenated_data.mod['atac'].var.loc['chr1:3094399-3095523']['genome'] == 'mm10'
 
-@pytest.mark.parametrize("exta_var_column_value,expected", [("bar", "bar"), (True, True), (0.1, 0.1), (np.nan, pd.NA)])
+@pytest.mark.parametrize("extra_column_value_sample2", [np.nan])
+@pytest.mark.parametrize("extra_column_value_sample1,expected", [("bar", "bar"), (True, True), (0.1, 0.1), (np.nan, pd.NA)])
 @pytest.mark.parametrize("mudata_copy_with_unique_obs",
                           [input_sample1_file],
                           indirect=["mudata_copy_with_unique_obs"])
-def test_concat_remove_na(run_component, copied_mudata_with_extra_var_column, expected):
+def test_concat_remove_na(run_component, copied_mudata_with_extra_annotation_column, expected):
     """
     Test concatenation of samples where the column from one sample contains NA values
     NA values should be removed from the concatenated result
     """
-    tempfile_input1, tempfile_input2 = copied_mudata_with_extra_var_column
+    tempfile_input1, tempfile_input2 = copied_mudata_with_extra_annotation_column
     run_component([
         "--input_id", "mouse,human",
         "--input", tempfile_input1,
@@ -273,6 +288,27 @@ def test_concat_remove_na(run_component, copied_mudata_with_extra_var_column, ex
 
     assert pd.isna(concatenated_data.var.loc['ENSMUSG00000051951']['test']) is True
     assert pd.isna(concatenated_data.mod['rna'].var.loc['ENSMUSG00000051951']['test']) is True
+
+@pytest.mark.parametrize("extra_column_annotation_matrix", ["obs"])
+@pytest.mark.parametrize("extra_column_value_sample1,extra_column_value_sample2,expected", [(1, "1", pd.CategoricalDtype(categories=['1.0', '1']))])
+@pytest.mark.parametrize("mudata_copy_with_unique_obs",
+                          [input_sample1_file],
+                          indirect=["mudata_copy_with_unique_obs"])
+def test_concat_dtypes(run_component, copied_mudata_with_extra_annotation_column, expected):
+    """
+    Test joining column with different dtypes to make sure that they are writable.
+    The default path is to convert all non-na values to strings and wrap the column into a categorical dtype.
+    """
+    tempfile_input1, tempfile_input2 = copied_mudata_with_extra_annotation_column
+    run_component([
+        "--input_id", "mouse,human",
+        "--input", tempfile_input1,
+        "--input", tempfile_input2,
+        "--output", "concat.h5mu",
+        "--other_axis_mode", "move"
+        ])
+    concatenated_data = md.read("concat.h5mu")
+    concatenated_data.mod['atac'].obs['test'].dtype == expected
 
 
 def test_mode_move(run_component, tmp_path):
