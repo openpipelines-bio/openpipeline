@@ -32,6 +32,8 @@
 
 * Updated the Viash YAML schemas to the latest version of Viash (PR #620).
 
+* `build_cellranger_reference`: Bump go version to `1.21.4` when building seqkit for testing the component (PR #624).
+
 ## BUG FIXES
 
 * `dataflow/concatenate_h5mu` and `dataflow/concat`: Fix an issue where joining columns with different datatypes caused `TypeError` (PR #619).
