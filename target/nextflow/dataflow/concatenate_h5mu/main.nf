@@ -3004,7 +3004,7 @@ meta = [
     "platform" : "nextflow",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/dataflow/concatenate_h5mu",
     "viash_version" : "0.8.0",
-    "git_commit" : "1598c0da21c66b7db0cc9f36e56f1a4fe426693a",
+    "git_commit" : "2242a6746fe6c245459124081b5061b4fd3872af",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))
@@ -3233,9 +3233,10 @@ def cast_to_writeable_dtype(result: pd.DataFrame) -> pd.DataFrame:
                                    convert_floating=False)
     
     # Convert leftover 'object' columns to string
+    # However, na values are supported, so convert all values except NA's to string
     object_cols = result.select_dtypes(include='object').columns.values
     for obj_col in object_cols:
-        result[obj_col].astype(str).astype('category')
+        result[obj_col] = result[obj_col].where(result[obj_col].isna(), result[obj_col].astype(str)).astype('category')
     return result
 
 def split_conflicts_modalities(n_processes: int, input_ids: tuple[str], samples: Iterable[anndata.AnnData], output: anndata.AnnData) \\\\
