@@ -297,8 +297,8 @@ def test_concat_remove_na(run_component, copied_mudata_with_extra_annotation_col
                           indirect=["mudata_copy_with_unique_obs"])
 def test_concat_dtypes(run_component, copied_mudata_with_extra_annotation_column, expected):
     """
-    Test concatenation of samples where the column from one sample contains NA values
-    NA values should be removed from the concatenated result
+    Test joining column with different dtypes to make sure that they are writable.
+    The default path is to convert all non-na values to strings and wrap the column into a categorical dtype.
     """
     tempfile_input1, tempfile_input2 = copied_mudata_with_extra_annotation_column
     run_component([
