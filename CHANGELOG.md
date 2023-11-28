@@ -21,12 +21,20 @@
 * `rna_multisample` workflow: added `--modality` argument (PR #607).
 
 * `multisample` workflow: in addition to using multimodal files as input, this workflow now also accepts a list of files. The list of files must be the unimodal equivalents of 
-of a split multimodal files. The modalities in the list must be unique and after processing the modalities will be merged into multimodal files (PR #606).  
+of a split multimodal files. The modalities in the list must be unique and after processing the modalities will be merged into multimodal files (PR #606).
+
+* Added `filter/intersect_obs` component which removes observations that are not shared between modalities (PR #589).
+
+* Re-enable `convert/from_h5mu_to_seurat` component (PR #616).
 
 ## MINOR CHANGES
 
 * Refactored `rna_multisample` (PR #607), `cellranger_multi` (PR #609), `cellranger_mapping` (PR #610) and other (PR #606) pipelines to use `fromState` and `toState` functionality.
 
+
+* Updated the Viash YAML schemas to the latest version of Viash (PR #620).
+
+* `build_cellranger_reference`: Bump go version to `1.21.4` when building seqkit for testing the component (PR #624).
 
 # openpipelines 0.12.1
 
