@@ -18,6 +18,10 @@
 
 * `rna_multisample` workflow: added `--modality` argument (PR #607).
 
+* Added `filter/intersect_obs` component which removes observations that are not shared between modalities (PR #589).
+
+* Re-enable `convert/from_h5mu_to_seurat` component (PR #616).
+
 ## MINOR CHANGES
 
 * Refactored `rna_multisample` pipeline to use `fromState` and `toState` functionality (PR #607).
@@ -25,6 +29,14 @@
 * Refactored `cellranger_multi` workflow to use `fromState` and `toState` functionality (PR #609).
 
 * Refactored `cellranger_mapping` workflow to use `fromState` and `toState` functionality (PR #610).
+
+* Updated the Viash YAML schemas to the latest version of Viash (PR #620).
+
+* `build_cellranger_reference`: Bump go version to `1.21.4` when building seqkit for testing the component (PR #624).
+
+## BUG FIXES
+
+* `dataflow/concatenate_h5mu` and `dataflow/concat`: Fix an issue where joining columns with different datatypes caused `TypeError` (PR #619).
 
 # openpipelines 0.12.1
 

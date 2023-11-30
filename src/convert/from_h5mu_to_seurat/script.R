@@ -7,6 +7,8 @@ par <- list(
 )
 ## VIASH END
 
+cat("Reading input file\n")
 obj <- ReadH5MU(par$input)
 
+cat("Writing output file\n")
 saveRDS(obj, file = par$output, compress = TRUE)
