@@ -3,6 +3,9 @@ functionality:
   namespace: "dimred"
   description: |
     Runs Latent Semantic Indexing. Computes cell embeddings, feature loadings and singular values. Uses the implementation of scipy.
+  authors:
+    - __merge__: /src/authors/sarah_ouologuem.yaml
+      roles: [ contributer ]
 
   argument_groups:
     - name: Inputs
