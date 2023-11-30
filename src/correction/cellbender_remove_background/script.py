@@ -166,9 +166,6 @@ with tempfile.TemporaryDirectory(prefix="cellbender-", dir=meta["temp_dir"]) as 
     out = subprocess.check_output(cmd_pars).decode("utf-8")
 
     logger.info("Reading CellBender 10xh5 output file: '%s'", output_file)
-    # have to use custom read_10x_h5 function for now
-    # will be fixed when https://github.com/scverse/scanpy/pull/2344 is merged
-    # adata_out = sc.read_10x_h5(output_file, gex_only=False)
     adata_out = anndata_from_h5(output_file, analyzed_barcodes_only=False)
 
     logger.info("CellBender output format:", adata_out)

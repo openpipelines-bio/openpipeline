@@ -53,9 +53,7 @@ platforms:
       - type: apt
         packages: libhdf5-dev python3-pip python3-dev
       - type: python
-        __merge__: [/src/base/requirements/anndata_mudata.yaml, .]
-        packages: 
-          - scanpy~=1.9.2
+        __merge__: [/src/base/requirements/anndata_mudata.yaml, /src/base/requirements/scanpy.yaml, .]
       - type: r
         cran: [ testthat, anndata, hdf5r ]
   - type: nextflow

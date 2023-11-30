@@ -3,8 +3,8 @@ functionality:
   namespace: "query"
   description: "Query CellxGene Census or user-specified TileDBSoma object, and eventually fetch cell and gene metadata or/and expression counts."
   authors:
-    - __merge__: ../../authors/matthias_beyens.yaml
-    - __merge__: ../../authors/dries_de_maeyer.yaml
+    - __merge__: /src/authors/matthias_beyens.yaml
+    - __merge__: /src/authors/dries_de_maeyer.yaml
       roles: [ author ]
   argument_groups:
     - name: Inputs

@@ -30,19 +30,20 @@ jobs:
       with:
         config_mod: .functionality.version := 'main_build'
         parallel: true
+        query: ^(?!workflows)
 
     - name: Build nextflow schemas
       uses: viash-io/viash-actions/pro/build-nextflow-schemas@v4
       with:
-        workflows: workflows
         components: src
+        workflows: src
         viash_pro_token: ${{ secrets.GTHB_PAT }}
         tools_version: 'main_build'
    
     - name: Build parameter files
       uses: viash-io/viash-actions/pro/build-nextflow-params@v4
       with:
-        workflows: workflows
+        workflows: src
         components: src
         viash_pro_token: ${{ secrets.GTHB_PAT }}
         tools_version: 'main_build'
@@ -61,6 +62,7 @@ jobs:
         platform: docker
         src: src
         format: json
+        query_namespace: ^(?!workflows)
 
     - id: set_matrix
       run: |

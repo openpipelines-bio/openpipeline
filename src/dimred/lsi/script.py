@@ -83,7 +83,7 @@ mu.atac.tl.lsi(adata_input_layer, scale_embeddings = par["scale_embeddings"], n_
 
 #6. Store output in object
 check_exist_dict = {
-    "obsm_output": ("obs"),
+    "obsm_output": ("obsm"),
     "varm_output": ("varm"),
     "uns_output": ("uns")
 }
