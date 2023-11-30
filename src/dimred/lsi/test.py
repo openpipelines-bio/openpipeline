@@ -12,7 +12,7 @@ meta = {
 }
 ## VIASH END
 
-input_path = f"{meta['resources_dir']}/LSI/test_data.h5mu"
+input_path = f"{meta['resources_dir']}/concat_test_data/e18_mouse_brain_fresh_5k_filtered_feature_bc_matrix_subset_unique_obs.h5mu"
 
 
 '''
