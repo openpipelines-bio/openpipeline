@@ -25,8 +25,8 @@ zcat "$meta_resources_dir/reference_gencodev41_chr1/reference.gtf.gz" | awk '$4 
 
 echo "> Running $meta_functionality_name, writing to $tmpdir."
 $meta_executable \
-  --genome_fasta "$meta_resources_dir/reference_gencodev41_chr1/reference.fa.gz" \
-  --annotation_gtf "$meta_resources_dir/reference_gencodev41_chr1/reference.gtf.gz" \
+  --genome_fasta "$tmpdir/reference_small.fa.gz" \
+  --annotation_gtf "$tmpdir/reference_small.gtf.gz" \
   --motifs_file "$meta_resources_dir/reference_gencodev41_chr1/JASPAR2024_CORE_non-redundant_pfms_jaspar.txt.modified" \
   --output "$tmpdir/myreference.tar.gz" \
   ---cpus ${meta_memory_gb:-1} \
