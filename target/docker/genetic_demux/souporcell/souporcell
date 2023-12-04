@@ -478,7 +478,7 @@ ENTRYPOINT []
 RUN :
 LABEL org.opencontainers.image.authors="Xichen Wu"
 LABEL org.opencontainers.image.description="Companion container for running component genetic_demux souporcell"
-LABEL org.opencontainers.image.created="2023-12-03T02:42:16Z"
+LABEL org.opencontainers.image.created="2023-12-04T02:43:43Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
 LABEL org.opencontainers.image.revision="2242a6746fe6c245459124081b5061b4fd3872af"
 LABEL org.opencontainers.image.version="integration_build"
