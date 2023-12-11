@@ -3008,7 +3008,7 @@ meta = [
     "platform" : "nextflow",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/mapping/cellranger_count_split",
     "viash_version" : "0.8.0",
-    "git_commit" : "1cd9bd163af543d657558903f1a482c143114398",
+    "git_commit" : "4e5185e23e87dd9af05120ddbc9e2dfe723e1ba4",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))
