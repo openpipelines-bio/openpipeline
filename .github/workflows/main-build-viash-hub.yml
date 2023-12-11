@@ -41,6 +41,16 @@ jobs:
         parallel: true
         query_namespace: ^(?!workflows)
 
+    - uses: viash-io/viash-actions/ns-build@v4
+      with:
+        config_mod: |
+          .functionality.version := 'main_build'
+          .platforms[.type == 'docker'].target_registry := 'viash-hub.com:5050'
+          .platforms[.type == 'docker'].target_organization := 'openpipelines-bio/openpipeline'
+          .platforms[.type == 'docker'].target_image_source := 'https://viash-hub.com/openpipelines-bio/openpipeline'
+        parallel: true
+        query_namespace: ^workflows
+
     - name: Build nextflow schemas
       uses: viash-io/viash-actions/pro/build-nextflow-schemas@v4
       with:
