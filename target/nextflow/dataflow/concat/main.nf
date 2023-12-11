@@ -3004,7 +3004,7 @@ meta = [
     "platform" : "nextflow",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/dataflow/concat",
     "viash_version" : "0.8.0",
-    "git_commit" : "2242a6746fe6c245459124081b5061b4fd3872af",
+    "git_commit" : "1cd9bd163af543d657558903f1a482c143114398",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))
