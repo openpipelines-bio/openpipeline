@@ -1,11 +1,13 @@
 name: main build
 concurrency: 
-  group: main_build
+  group: ${{ github.workflow }}-${{ github.ref_name}}
   cancel-in-progress: true
 
 on:
+  workflow_dispatch:
   push:
     branches: [ 'main' ]
+
 
 jobs:
   # phase 1
@@ -28,7 +30,7 @@ jobs:
 
     - uses: viash-io/viash-actions/ns-build@v4
       with:
-        config_mod: .functionality.version := 'main_build'
+        config_mod: .functionality.version := '${{ github.ref_name }}_build'
         parallel: true
         query: ^(?!workflows)
 
@@ -53,7 +55,7 @@ jobs:
       with:
         github_token: ${{ secrets.GITHUB_TOKEN }}
         publish_dir: .
-        publish_branch: main_build
+        publish_branch: ${{ github.ref_name }}_build
         exclude_assets: ''
 
     - id: ns_list
@@ -96,7 +98,7 @@ jobs:
     - name: Build container
       uses: viash-io/viash-actions/ns-build@v4
       with:
-        config_mod: .functionality.version := 'main_build'
+        config_mod: .functionality.version := '${{ github.ref_name }}_build'
         platform: docker
         src: ${{ matrix.component.dir }}
         setup: build
@@ -111,7 +113,7 @@ jobs:
     - name: Push container
       uses: viash-io/viash-actions/ns-build@v4
       with:
-        config_mod: .functionality.version := 'main_build'
+        config_mod: .functionality.version := '${{ github.ref_name }}_build'
         platform: docker
         src: ${{ matrix.component.dir }}
         setup: push
