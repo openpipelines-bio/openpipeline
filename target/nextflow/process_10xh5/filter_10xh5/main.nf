@@ -2881,6 +2881,7 @@ meta = [
       "image" : "eddelbuettel/r2u:22.04",
       "target_organization" : "openpipelines-bio",
       "target_registry" : "ghcr.io",
+      "target_tag" : "main_build",
       "namespace_separator" : "_",
       "resolve_volume" : "Automatic",
       "chown" : true,
@@ -2975,7 +2976,7 @@ meta = [
     "platform" : "nextflow",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/process_10xh5/filter_10xh5",
     "viash_version" : "0.8.0",
-    "git_commit" : "5b6bc3a12de8c84dc342d05d0343e8a311b64943",
+    "git_commit" : "51566389f8c6dba9481fd2b8567203f69df90fb6",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))
