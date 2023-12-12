@@ -5,6 +5,12 @@ concurrency:
 
 on:
   workflow_dispatch:
+    inputs:
+      push_containers:
+        type: boolean
+        required: false
+        default: true
+        description: push the containers to the registry
   push:
     branches: [ 'main' ]
 
@@ -112,6 +118,7 @@ jobs:
 
     - name: Push container
       uses: viash-io/viash-actions/ns-build@v4
+      if: ${{github.event_name == 'push' || github.event.inputs.push_containers == 'true' }}
       with:
         config_mod: .functionality.version := '${{ github.ref_name }}_build'
         platform: docker
