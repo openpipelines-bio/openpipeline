@@ -47,7 +47,13 @@ jobs:
           .platforms[.type == 'docker'].target_tag := '${{ github.event_name == 'push' && 'main_build' || github.event.inputs.target_tag }}'
         parallel: true
         query: ^(?!workflows)
-
+    
+    - uses: viash-io/viash-actions/ns-build@v4
+      with:
+        config_mod: .functionality.version := '${{ github.ref_name }}_build'
+        parallel: true
+        query: ^workflows
+  
     - name: Build nextflow schemas
       uses: viash-io/viash-actions/pro/build-nextflow-schemas@v4
       with:
