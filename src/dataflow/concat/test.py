@@ -318,7 +318,7 @@ def test_concat_dtypes(run_component, copied_mudata_with_extra_annotation_column
         "--other_axis_mode", "move"
         ])
     concatenated_data = md.read("concat.h5mu")
-    concatenated_data.mod['atac'].obs['test'].dtype == expected
+    concatenated_data.mod['atac'].var['test'].dtype == expected
 
 @pytest.mark.parametrize("extra_column_annotation_matrix", ["var"])
 @pytest.mark.parametrize("extra_column_value_sample1,extra_column_value_sample2", [("2", "1")])
