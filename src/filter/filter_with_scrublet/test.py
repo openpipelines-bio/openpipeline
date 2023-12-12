@@ -157,7 +157,7 @@ def test_doublet_automatic_threshold_detection_fails_recovery(run_component, inp
     assert Path(output_mu).is_file(), "Output file not found"
 
     mu_out = mu.read_h5mu(output_mu)
-    assert not mu_out.mod['rna'].obs['filter_with_scrublet'].any()
+    assert mu_out.mod['rna'].obs['filter_with_scrublet'].isna().all()
 
 if __name__ == '__main__':
     exit(pytest.main([__file__]))
