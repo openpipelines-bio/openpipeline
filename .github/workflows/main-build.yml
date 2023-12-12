@@ -44,7 +44,7 @@ jobs:
       with:
         config_mod: |
           .functionality.version := '${{ github.ref_name }}_build'
-          .platforms[.type == 'nextflow'].target_tag := '${{ github.event_name == 'push' && 'main_build' || github.event.inputs.target_tag }}'
+          .platforms[.type == 'docker'].target_tag := '${{ github.event_name == 'push' && 'main_build' || github.event.inputs.target_tag }}'
         parallel: true
         query: ^(?!workflows)
 
