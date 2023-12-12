@@ -93,6 +93,7 @@ jobs:
   # phase 2
   build:
     needs: list
+    if: ${{github.event_name == 'push' || github.event.inputs.push_containers == 'true' }}
 
     runs-on: ubuntu-latest
 
@@ -112,7 +113,9 @@ jobs:
     - name: Build container
       uses: viash-io/viash-actions/ns-build@v4
       with:
-        config_mod: .functionality.version := '${{ github.ref_name }}_build'
+        config_mod: |
+          .functionality.version := '${{ github.event_name == 'push' && 'main_build' || github.event.inputs.target_tag }}'
+          .platforms[.type == 'docker'].target_tag := '${{ github.event_name == 'push' && 'main_build' || github.event.inputs.target_tag }}'
         platform: docker
         src: ${{ matrix.component.dir }}
         setup: build
@@ -126,7 +129,6 @@ jobs:
 
     - name: Push container
       uses: viash-io/viash-actions/ns-build@v4
-      if: ${{github.event_name == 'push' || github.event.inputs.push_containers == 'true' }}
       with:
         config_mod: .functionality.version := '${{ github.ref_name }}_build'
         platform: docker
