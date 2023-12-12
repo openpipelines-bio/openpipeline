@@ -41,13 +41,6 @@ jobs:
         parallel: true
         query_namespace: ^(?!workflows)
 
-    - uses: viash-io/viash-actions/ns-build@v4
-      with:
-        config_mod: |
-          .functionality.version := 'main_build'
-        parallel: true
-        query_namespace: ^workflows
-
     - name: Build nextflow schemas
       uses: viash-io/viash-actions/pro/build-nextflow-schemas@v4
       with:
