@@ -11,6 +11,12 @@ on:
         required: false
         default: true
         description: push the containers to the registry
+      target_tag:
+        type: string
+        required: false
+        default: main_build
+        description: Version tag of existing containers to use. Is `main_build` by default.
+
   push:
     branches: [ 'main' ]
 
@@ -36,7 +42,9 @@ jobs:
 
     - uses: viash-io/viash-actions/ns-build@v4
       with:
-        config_mod: .functionality.version := '${{ github.ref_name }}_build'
+        config_mod: |
+          .functionality.version := '${{ github.ref_name }}_build'
+          .platforms[.type == 'nextflow'].target_tag := '${{ github.event_name == 'push' && 'main_build' || github.event.inputs.target_tag }}'
         parallel: true
         query: ^(?!workflows)
 
