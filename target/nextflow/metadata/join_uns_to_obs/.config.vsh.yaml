@@ -166,5 +166,5 @@ info:
   output: "/home/runner/work/openpipeline/openpipeline/target/nextflow/metadata/join_uns_to_obs"
   executable: "/home/runner/work/openpipeline/openpipeline/target/nextflow/metadata/join_uns_to_obs/join_uns_to_obs"
   viash_version: "0.8.0"
-  git_commit: "4e5185e23e87dd9af05120ddbc9e2dfe723e1ba4"
+  git_commit: "5b6bc3a12de8c84dc342d05d0343e8a311b64943"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"
