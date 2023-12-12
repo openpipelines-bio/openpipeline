@@ -1,11 +1,25 @@
 name: main build
 concurrency: 
-  group: main_build
+  group: ${{ github.workflow }}-${{ github.ref_name}}
   cancel-in-progress: true
 
 on:
+  workflow_dispatch:
+    inputs:
+      push_containers:
+        type: boolean
+        required: false
+        default: true
+        description: push the containers to the registry
+      target_tag:
+        type: string
+        required: false
+        default: main_build
+        description: Version tag of existing containers to use. Is `main_build` by default.
+
   push:
     branches: [ 'main' ]
+
 
 jobs:
   # phase 1
@@ -28,9 +42,18 @@ jobs:
 
     - uses: viash-io/viash-actions/ns-build@v4
       with:
-        config_mod: .functionality.version := 'main_build'
+        config_mod: |
+          .functionality.version := '${{ github.ref_name }}_build'
+          .platforms[.type == 'docker'].target_tag := '${{ github.event_name == 'push' && 'main_build' || github.event.inputs.target_tag }}'
         parallel: true
-
+        query: ^(?!workflows)
+    
+    - uses: viash-io/viash-actions/ns-build@v4
+      with:
+        config_mod: .functionality.version := '${{ github.ref_name }}_build'
+        parallel: true
+        query: ^workflows
+  
     - name: Build nextflow schemas
       uses: viash-io/viash-actions/pro/build-nextflow-schemas@v4
       with:
@@ -52,7 +75,7 @@ jobs:
       with:
         github_token: ${{ secrets.GITHUB_TOKEN }}
         publish_dir: .
-        publish_branch: main_build
+        publish_branch: ${{ github.ref_name }}_build
         exclude_assets: ''
 
     - id: ns_list
@@ -76,6 +99,7 @@ jobs:
   # phase 2
   build:
     needs: list
+    if: ${{github.event_name == 'push' || github.event.inputs.push_containers == 'true' }}
 
     runs-on: ubuntu-latest
 
@@ -95,7 +119,9 @@ jobs:
     - name: Build container
       uses: viash-io/viash-actions/ns-build@v4
       with:
-        config_mod: .functionality.version := 'main_build'
+        config_mod: |
+          .functionality.version := '${{ github.event_name == 'push' && 'main_build' || github.event.inputs.target_tag }}'
+          .platforms[.type == 'docker'].target_tag := '${{ github.event_name == 'push' && 'main_build' || github.event.inputs.target_tag }}'
         platform: docker
         src: ${{ matrix.component.dir }}
         setup: build
@@ -110,7 +136,7 @@ jobs:
     - name: Push container
       uses: viash-io/viash-actions/ns-build@v4
       with:
-        config_mod: .functionality.version := 'main_build'
+        config_mod: .functionality.version := '${{ github.ref_name }}_build'
         platform: docker
         src: ${{ matrix.component.dir }}
         setup: push
