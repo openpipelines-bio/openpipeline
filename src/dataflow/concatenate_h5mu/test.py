@@ -299,7 +299,7 @@ def test_concat_remove_na(run_component, copied_mudata_with_extra_annotation_col
     assert pd.isna(concatenated_data.var.loc['ENSMUSG00000051951']['test']) is True
     assert pd.isna(concatenated_data.mod['rna'].var.loc['ENSMUSG00000051951']['test']) is True
 
-@pytest.mark.parametrize("extra_column_annotation_matrix", ["var"])
+@pytest.mark.parametrize("extra_column_annotation_matrix", ["obs"])
 @pytest.mark.parametrize("extra_column_value_sample1,extra_column_value_sample2,expected", [(1, "1", pd.CategoricalDtype(categories=['1.0', '1']))])
 @pytest.mark.parametrize("mudata_copy_with_unique_obs",
                           [input_sample1_file],
@@ -318,7 +318,7 @@ def test_concat_dtypes(run_component, copied_mudata_with_extra_annotation_column
         "--other_axis_mode", "move"
         ])
     concatenated_data = md.read("concat.h5mu")
-    concatenated_data.mod['atac'].var['test'].dtype == expected
+    concatenated_data.mod['atac'].obs['test'].dtype == expected
 
 @pytest.mark.parametrize("extra_column_annotation_matrix", ["var"])
 @pytest.mark.parametrize("extra_column_value_sample1,extra_column_value_sample2", [("2", "1")])
