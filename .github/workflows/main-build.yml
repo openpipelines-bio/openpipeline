@@ -38,9 +38,9 @@ jobs:
     - name: Branch to checkout (use existing target branch if it exists)
       id: get_checkout_branch
       run: |
-        if ! git ls-remote --heads --exit-code https://github.com/openpipelines-bio/openpipeline.git ${{ github.ref }}_build > /dev/null; then
+        if ! git ls-remote --heads --exit-code https://github.com/openpipelines-bio/openpipeline.git ${{ github.ref_name }}_build > /dev/null; then
           echo "Remote branch does not exist, fetching current branch and building on top of it"
-          echo "checkout_branch=''" >> "$GITHUB_OUTPUT"
+          echo "checkout_branch=${{ github.ref_name }}" >> "$GITHUB_OUTPUT"
         else
           echo "Remote branch exists, checking out existing branch"
           echo "checkout_branch=${{ github.ref_name }}_build" >> "$GITHUB_OUTPUT"
