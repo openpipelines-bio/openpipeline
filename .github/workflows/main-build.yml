@@ -40,8 +40,6 @@ jobs:
 
     - name: overwrite checkout behavior
       run: |
-        git remote set-url origin 'https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{github.repository}}'
-        git restore --source=origin --staged --worktree -- workflows
         ls -latr workflows
 
     - uses: viash-io/viash-actions/setup@v4
