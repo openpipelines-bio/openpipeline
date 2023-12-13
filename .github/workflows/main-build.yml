@@ -81,7 +81,7 @@ jobs:
         github_token: ${{ secrets.GITHUB_TOKEN }}
         publish_dir: .
         publish_branch: ${{ github.ref_name }}_build
-        exclude_assets: 'workflows'
+        exclude_assets: ''
 
     - id: ns_list
       uses: viash-io/viash-actions/ns-list@v4
