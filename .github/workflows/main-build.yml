@@ -31,6 +31,11 @@ jobs:
       cache_key: ${{ steps.cache.outputs.cache_key }}
 
     steps:
+
+    - name: Keep symlinks as-is
+      run: |
+        git config --global core.symlinks true
+      
     - uses: actions/checkout@v4
 
     - uses: viash-io/viash-actions/setup@v4
