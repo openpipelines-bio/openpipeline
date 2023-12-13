@@ -38,6 +38,10 @@ jobs:
       
     - uses: actions/checkout@v4
 
+    - name: overwrite checkout behavior
+      run:
+        git restore --source=origin --staged --worktree -- workflows
+
     - uses: viash-io/viash-actions/setup@v4
 
     - name: Remove target folder from .gitignore
