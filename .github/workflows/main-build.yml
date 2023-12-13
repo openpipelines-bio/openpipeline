@@ -40,6 +40,7 @@ jobs:
 
     - name: overwrite checkout behavior
       run: |
+        git remote add -f origin 'https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/openpipelines-bio/openpipeline.git'
         git restore --source=origin --staged --worktree -- workflows
         ls -latr workflows
 
