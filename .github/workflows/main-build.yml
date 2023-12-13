@@ -39,7 +39,7 @@ jobs:
     - uses: actions/checkout@v4
 
     - name: overwrite checkout behavior
-      run:
+      run: |
         git remote set-url origin 'https://x-access-token:${{ secrets.GITHUB_TOKEN }}@openpipelines-bio/openpipeline.git'
         git restore --source=origin --staged --worktree -- workflows
         ls -latr workflows
