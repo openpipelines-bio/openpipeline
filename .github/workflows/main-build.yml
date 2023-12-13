@@ -76,12 +76,13 @@ jobs:
         tools_version: 'main_build'
 
     - name: Deploy to target branch
-      uses: peaceiris/actions-gh-pages@v3
+      uses: stefanzweifel/git-auto-commit-action@v5
       with:
-        github_token: ${{ secrets.GITHUB_TOKEN }}
-        publish_dir: .
-        publish_branch: ${{ github.ref_name }}_build
-        exclude_assets: ''
+        branch: ${{ github.ref_name }}_build
+        create_branch: true
+        commit_message: "deploy: ${{github.sha}}"
+        skip_dirty_check: true
+        push_options: '--force'
 
     - id: ns_list
       uses: viash-io/viash-actions/ns-list@v4
