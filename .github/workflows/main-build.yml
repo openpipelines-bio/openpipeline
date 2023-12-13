@@ -39,13 +39,17 @@ jobs:
       id: get_checkout_branch
       run: |
         git ls-remote "https://github.com/openpipelines-bio/openpipeline.git" | grep ${{ github.ref }}
-        if [ "${PIPESTATUS[0]}" -ne 0 ]; then
+        exit_code_fetch_remote="${PIPESTATUS[0]}"
+        exit_code_grep="${PIPESTATUS[1]}"
+        if [ "$exit_code_fetch_remote" -ne 0 ]; then
           echo "Failed to fetch remote resources."
           exit 1
         fi
-        if [ "${PIPESTATUS[1]}" -ne 0 ]; then
+        if [ "$exit_code_grep" -ne 0 ]; then
+          echo "Remote branch does not exist, fetching current branch and building on top of it"
           echo "checkout_branch=''" >> "$GITHUB_OUTPUT"
         else
+          echo "Remote branch exists, checking out existing branch"
           echo "checkout_branch=${{ github.ref_name }}_build" >> "$GITHUB_OUTPUT"
         fi
   
