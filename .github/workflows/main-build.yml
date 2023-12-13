@@ -31,13 +31,30 @@ jobs:
       cache_key: ${{ steps.cache.outputs.cache_key }}
 
     steps:
-
     - name: Keep symlinks as-is
       run: |
         git config --global core.symlinks true
-      
+  
+    - name: Branch to checkout (use existing target branch if it exists)
+      id: get_checkout_branch
+      run: |
+        if ! git ls-remote --heads --exit-code https://github.com/openpipelines-bio/openpipeline.git ${{ github.ref_name }}_build > /dev/null; then
+          echo "Remote branch does not exist, fetching current branch and building on top of it"
+          echo "checkout_branch=${{ github.ref_name }}" >> "$GITHUB_OUTPUT"
+        else
+          echo "Remote branch exists, checking out existing branch"
+          echo "checkout_branch=${{ github.ref_name }}_build" >> "$GITHUB_OUTPUT"
+        fi
+  
     - uses: actions/checkout@v4
+      with:
+        ref: ${{ steps.get_checkout_branch.outputs.checkout_branch }}
 
+    - name: Fetch changes from main
+      run: |
+        git fetch origin ${{github.ref_name}} 
+        git checkout -f --no-overlay origin/${{github.ref_name}} -- '.'
+    
     - uses: viash-io/viash-actions/setup@v4
 
     - name: Remove target folder from .gitignore
@@ -78,11 +95,10 @@ jobs:
     - name: Deploy to target branch
       uses: stefanzweifel/git-auto-commit-action@v5
       with:
-        branch: ${{ github.ref_name }}_build
         create_branch: true
         commit_message: "deploy: ${{github.sha}}"
         skip_dirty_check: true
-        push_options: '--force'
+        branch: ${{ github.ref_name }}_build
 
     - id: ns_list
       uses: viash-io/viash-actions/ns-list@v4
