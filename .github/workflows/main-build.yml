@@ -40,8 +40,8 @@ jobs:
 
     - name: overwrite checkout behavior
       run:
-        git remote set-url origin 'https://x-access-token:${{ secrets.GITHUB_TOKEN }}@openpipelines-bio/openpipeline.git' && \
-        git restore --source=origin --staged --worktree -- workflows && \
+        git remote set-url origin 'https://x-access-token:${{ secrets.GITHUB_TOKEN }}@openpipelines-bio/openpipeline.git'
+        git restore --source=origin --staged --worktree -- workflows
         ls -latr workflows
 
     - uses: viash-io/viash-actions/setup@v4
