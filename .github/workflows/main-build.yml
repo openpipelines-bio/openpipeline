@@ -9,7 +9,7 @@ on:
       push_containers:
         type: boolean
         required: false
-        default: true
+        default: false
         description: push the containers to the registry
       target_tag:
         type: string
