@@ -117,7 +117,7 @@ def input_with_failed_run():
     return new_mudata_path
 
 
-def test_doublet_automatic_threshold_detection_fails_recovery(run_component, input_with_failed_run):
+def test_doublet_automatic_threshold_detection_fails(run_component, input_with_failed_run):
     """
     Test if the component fails if doublet score threshold could not automatically be set
     """
