@@ -304,6 +304,6 @@ info:
   platform: "nextflow"
   output: "/home/runner/work/openpipeline/openpipeline/target/nextflow/neighbors/find_neighbors"
   executable: "/home/runner/work/openpipeline/openpipeline/target/nextflow/neighbors/find_neighbors/find_neighbors"
-  viash_version: "0.8.0"
-  git_commit: "dda7fe3d88e5fa0f0ae9901687ee4677e70871e3"
+  viash_version: "0.8.2"
+  git_commit: "4d3c88522c21225a02343fba5031f3363a9cf2d9"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"
