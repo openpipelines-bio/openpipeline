@@ -2954,6 +2954,7 @@ meta = [
             "anndata~=0.9.1",
             "mudata~=0.2.3",
             "pandas!=2.1.2",
+            "statsmodels==0.14.0",
             "scanpy~=1.9.5"
           ],
           "upgrade" : true
@@ -3033,7 +3034,7 @@ meta = [
     "platform" : "nextflow",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/transform/scale",
     "viash_version" : "0.8.2",
-    "git_commit" : "4d3c88522c21225a02343fba5031f3363a9cf2d9",
+    "git_commit" : "a5552242e98c8d881a8b930a67af86d0f1afe6b0",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))

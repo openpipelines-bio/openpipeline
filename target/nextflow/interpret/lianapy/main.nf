@@ -3076,6 +3076,7 @@ meta = [
             "anndata~=0.9.1",
             "mudata~=0.2.3",
             "pandas!=2.1.2",
+            "statsmodels==0.14.0",
             "liana~=0.1.9",
             "numpy~=1.24.3"
           ],
@@ -3152,7 +3153,7 @@ meta = [
     "platform" : "nextflow",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/interpret/lianapy",
     "viash_version" : "0.8.2",
-    "git_commit" : "4d3c88522c21225a02343fba5031f3363a9cf2d9",
+    "git_commit" : "a5552242e98c8d881a8b930a67af86d0f1afe6b0",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))
