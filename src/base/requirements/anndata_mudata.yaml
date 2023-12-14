@@ -2,3 +2,4 @@ __merge__: [/src/base/requirements/anndata.yaml, .]
 packages:
   - mudata~=0.2.3
   - pandas!=2.1.2
+  - statsmodels==0.14.0
