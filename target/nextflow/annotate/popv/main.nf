@@ -3112,6 +3112,7 @@ meta = [
           "user" : false,
           "packages" : [
             "scanpy~=1.9.5",
+            "statsmodels==0.14.0",
             "scvi-tools~=1.0.3",
             "popv~=0.3.2",
             "jax==0.4.10",
@@ -3126,8 +3127,7 @@ meta = [
           "packages" : [
             "anndata~=0.9.1",
             "mudata~=0.2.3",
-            "pandas!=2.1.2",
-            "statsmodels==0.14.0"
+            "pandas!=2.1.2"
           ],
           "upgrade" : true
         },
@@ -3208,7 +3208,7 @@ meta = [
     "platform" : "nextflow",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/annotate/popv",
     "viash_version" : "0.8.2",
-    "git_commit" : "a5552242e98c8d881a8b930a67af86d0f1afe6b0",
+    "git_commit" : "1f2692c1e56a8a44e74992d773db5a56a3fb7d3e",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))
