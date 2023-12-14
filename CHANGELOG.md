@@ -2,9 +2,9 @@
 
 ## BREAKING CHANGES
 
-* This project now uses viash version 0.8.0 to build components and workflows. Moving to 0.8.0 involved the following changes:
+* This project now uses viash version 0.8.2 to build components and workflows. Moving to 0.8.0 involved the following changes:
 
-    * Bump viash version to 0.8.0 (PR #598) in the project configuration.
+    * Bump viash version to 0.8.2 (PR #598 and PR#638) in the project configuration.
     * The `concat` component had been deprecated and will be removed in a future release. It's functionality has been copied to the `concatenate_h5mu` component because the name is in conflict with the `concat` operator from nextflow (PR #598).
     * All pipelines no longer use the anonymous workflow. Instead, these workflows were given a name which was added to the viash config as the entrypoint to the pipeline (PR #598).
     * Removed the `workflows` folder and moved its contents to new locations (PR #605):
