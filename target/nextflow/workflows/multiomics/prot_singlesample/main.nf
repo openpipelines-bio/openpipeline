@@ -3066,7 +3066,7 @@ meta = [
     "platform" : "nextflow",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/workflows/multiomics/prot_singlesample",
     "viash_version" : "0.8.2",
-    "git_commit" : "11e4cde5b3fe0164e54e0f9faa25482fc72bc8fb",
+    "git_commit" : "3fc54f60a816a14a592d378192745fef86927d99",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))

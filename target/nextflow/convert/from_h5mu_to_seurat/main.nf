@@ -2861,7 +2861,7 @@ meta = [
       },
       {
         "type" : "file",
-        "path" : "resources_test/pbmc_1k_protein_v3",
+        "path" : "resources_test/10x_5k_anticmv/",
         "parent" : "file:///home/runner/work/openpipeline/openpipeline/"
       }
     ],
@@ -2925,8 +2925,22 @@ meta = [
         },
         {
           "type" : "r",
+          "url" : [
+            "https://cran.r-project.org/src/contrib/Archive/SeuratObject/SeuratObject_4.0.2.tar.gz"
+          ],
+          "bioc_force_install" : false
+        },
+        {
+          "type" : "r",
+          "url" : [
+            "https://cran.r-project.org/src/contrib/Archive/Seurat/Seurat_4.0.4.tar.gz"
+          ],
+          "bioc_force_install" : false
+        },
+        {
+          "type" : "r",
           "github" : [
-            "pmbio/MuDataSeurat"
+            "pmbio/MuDataSeurat@empty-tables-and-nullable"
           ],
           "bioc_force_install" : false
         }
@@ -2991,7 +3005,7 @@ meta = [
     "platform" : "nextflow",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/convert/from_h5mu_to_seurat",
     "viash_version" : "0.8.2",
-    "git_commit" : "11e4cde5b3fe0164e54e0f9faa25482fc72bc8fb",
+    "git_commit" : "3fc54f60a816a14a592d378192745fef86927d99",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))

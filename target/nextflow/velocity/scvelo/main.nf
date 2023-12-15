@@ -3008,7 +3008,7 @@ meta = [
     {
       "type" : "docker",
       "id" : "docker",
-      "image" : "python:3.9-slim",
+      "image" : "python:3.10-slim",
       "target_organization" : "openpipelines-bio",
       "target_registry" : "ghcr.io",
       "target_tag" : "main_build",
@@ -3032,9 +3032,7 @@ meta = [
             "anndata~=0.9.1",
             "mudata~=0.2.3",
             "pandas!=2.1.2",
-            "scvelo~=0.2.5",
-            "numpy~=1.23.5",
-            "matplotlib<3.8.0"
+            "scvelo~=0.3.1"
           ],
           "upgrade" : true
         }
@@ -3113,7 +3111,7 @@ meta = [
     "platform" : "nextflow",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/velocity/scvelo",
     "viash_version" : "0.8.2",
-    "git_commit" : "11e4cde5b3fe0164e54e0f9faa25482fc72bc8fb",
+    "git_commit" : "3fc54f60a816a14a592d378192745fef86927d99",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))
