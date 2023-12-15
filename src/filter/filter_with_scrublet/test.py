@@ -131,12 +131,12 @@ def test_doublet_automatic_threshold_detection_fails(run_component, input_with_f
             "--num_pca_components", "1",
             "--min_gene_variablity_percent", "0"
         ])
-        assert re.search(r"RuntimeError: Scrublet could not automatically detect the doublet score threshold\. "
-            r"--allow_automatic_threshold_detection_fail can be used to ignore this failure and "
-            r"set the corresponding output columns to NA\.",
-            e_info.value)
-        
-        assert Path(output_mu).is_file(), "Output file not found"
+    assert re.search(r"RuntimeError: Scrublet could not automatically detect the doublet score threshold\. "
+        r"--allow_automatic_threshold_detection_fail can be used to ignore this failure and "
+        r"set the corresponding output columns to NA\.",
+        e_info.value.stdout.decode('utf-8'))
+
+    assert not Path(output_mu).is_file(), "Output file not found"
 
 
 def test_doublet_automatic_threshold_detection_fails_recovery(run_component, input_with_failed_run):
