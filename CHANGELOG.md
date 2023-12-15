@@ -32,7 +32,7 @@
 
 * Updated the Viash YAML schemas to the latest version of Viash (PR #620).
 
-* `build_cellranger_reference`: Bump go version to `1.21.4` when building seqkit for testing the component (PR #624).
+* `build_cellranger_reference` and `build_bdrhap_reference`: Bump go version to `1.21.4` when building seqkit for testing the component (PR #624 and PR #637).
 
 ## BUG FIXES
 
