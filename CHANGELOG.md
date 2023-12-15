@@ -24,6 +24,8 @@
 
 ## MINOR CHANGES
 
+* `velocity/scvelo`: bump scvelo to 0.3.1 and python to 3.10.
+
 * Refactored `rna_multisample` pipeline to use `fromState` and `toState` functionality (PR #607).
 
 * Refactored `cellranger_multi` workflow to use `fromState` and `toState` functionality (PR #609).
