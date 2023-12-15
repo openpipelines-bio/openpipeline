@@ -26,6 +26,8 @@
 
 * Pin `from_h5mu_to_seurat` to use Seurat to version 4 (PR #630).
 
+* `velocity/scvelo`: bump scvelo to 0.3.1 and python to 3.10 (PR #640).
+
 * Refactored `rna_multisample` pipeline to use `fromState` and `toState` functionality (PR #607).
 
 * Refactored `cellranger_multi` workflow to use `fromState` and `toState` functionality (PR #609).
