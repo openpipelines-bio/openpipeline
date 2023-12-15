@@ -34,9 +34,13 @@ of a split multimodal files. The modalities in the list must be unique and after
 
 * Updated the Viash YAML schemas to the latest version of Viash (PR #620).
 
-* `build_cellranger_reference`: Bump go version to `1.21.4` when building seqkit for testing the component (PR #624).
+* `build_cellranger_reference` and `build_bdrhap_reference`: Bump go version to `1.21.4` when building seqkit for testing the component (PR #624 and PR #637).
+
+* `correction/cellbender_remove_background`: Remove `muon` as a test dependency (PR #636).
 
 ## BUG FIXES
+
+* `dataflow/concatenate_h5mu` and `dataflow/concat`: Fix `TypeError` when using mode 'move' and a column with conflicting metadata does not exist across all samples (PR #631).
 
 * `dataflow/concatenate_h5mu` and `dataflow/concat`: Fix an issue where joining columns with different datatypes caused `TypeError` (PR #619).
 
