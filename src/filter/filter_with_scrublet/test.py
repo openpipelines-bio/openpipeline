@@ -99,7 +99,7 @@ def input_with_failed_run():
     x_data = np.repeat(mudata.mod['rna'].X.todense(), nobs, axis=0)
     
     # Random perturbations because otherwise the detection fails in other ways (PCA cannot be run)
-    replace_rate = 0.000001
+    replace_rate = 0.0000004
     mask = np.random.choice([0, 1], size=x_data.shape, p=((1 - replace_rate), replace_rate)).astype("bool")
     r = np.random.rand(*x_data.shape) * np.max(x_data)
     x_data[mask] = r[mask]
