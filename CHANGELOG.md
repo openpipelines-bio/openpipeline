@@ -24,6 +24,8 @@
 
 ## MINOR CHANGES
 
+* Pin `from_h5mu_to_seurat` to use Seurat to version 4 (PR #630).
+
 * `velocity/scvelo`: bump scvelo to 0.3.1 and python to 3.10 (PR #640).
 
 * Refactored `rna_multisample` pipeline to use `fromState` and `toState` functionality (PR #607).
@@ -39,6 +41,8 @@
 * `correction/cellbender_remove_background`: Remove `muon` as a test dependency (PR #636).
 
 ## BUG FIXES
+
+* `dataflow/concatenate_h5mu` and `dataflow/concat`: Fix `TypeError` when using mode 'move' and a column with conflicting metadata does not exist across all samples (PR #631).
 
 * `dataflow/concatenate_h5mu` and `dataflow/concat`: Fix an issue where joining columns with different datatypes caused `TypeError` (PR #619).
 
