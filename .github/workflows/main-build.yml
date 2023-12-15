@@ -56,6 +56,8 @@ jobs:
         git checkout -f --no-overlay origin/${{github.ref_name}} -- '.'
     
     - uses: viash-io/viash-actions/setup@v4
+      with:
+        version: nested_workflows_symlink
 
     - name: Remove target folder from .gitignore
       run: |
