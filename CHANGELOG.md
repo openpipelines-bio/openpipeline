@@ -28,9 +28,11 @@ of a split multimodal files. The modalities in the list must be unique and after
 * Re-enable `convert/from_h5mu_to_seurat` component (PR #616).
 
 ## MINOR CHANGES
-
 * Refactored `rna_multisample` (PR #607), `cellranger_multi` (PR #609), `cellranger_mapping` (PR #610) and other (PR #606) pipelines to use `fromState` and `toState` functionality.
 
+* Pin `from_h5mu_to_seurat` to use Seurat to version 4 (PR #630).
+
+* `velocity/scvelo`: bump scvelo to 0.3.1 and python to 3.10 (PR #640).
 
 * Updated the Viash YAML schemas to the latest version of Viash (PR #620).
 
