@@ -7,12 +7,7 @@ import numpy as np
 from scipy.sparse import csr_matrix
 from cellbender.remove_background.downstream import anndata_from_h5
 ## VIASH START
-import muon
-file_raw = "./resources_test/pbmc_1k_protein_v3/pbmc_1k_protein_v3_raw_feature_bc_matrix.h5"
-mdat = muon.read_10x_h5(file_raw)
-# mdat = mdat[0:100000,] # subsample to reduce computational time
-file_input = "cellbender_remove_background_input.h5mu"
-mdat.write_h5mu(file_input)
+file_input = "./resources_test/pbmc_1k_protein_v3/pbmc_1k_protein_v3_raw_feature_bc_matrix.h5mu"
 
 par = {
     # inputs
