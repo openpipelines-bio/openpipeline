@@ -24,7 +24,7 @@
 
 ## MINOR CHANGES
 
-* `velocity/scvelo`: bump scvelo to 0.3.1 and python to 3.10.
+* `velocity/scvelo`: bump scvelo to 0.3.1 and python to 3.10 (PR #640).
 
 * Refactored `rna_multisample` pipeline to use `fromState` and `toState` functionality (PR #607).
 
