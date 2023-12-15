@@ -95,7 +95,7 @@ def input_with_failed_run():
 
     # Simulate a failed scrublet run by passing very little cells
     mudata = mudata_in[152].copy()
-    nobs = 100
+    nobs = 20
     x_data = np.repeat(mudata.mod['rna'].X.todense(), nobs, axis=0)
     
     # Random perturbations because otherwise the detection fails in other ways (PCA cannot be run)
