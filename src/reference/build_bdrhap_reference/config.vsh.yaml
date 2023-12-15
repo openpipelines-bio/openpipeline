@@ -39,18 +39,17 @@ platforms:
       - type: apt
         packages: [ pigz ]
     test_setup:
-      - type: docker
-        env:
-          - GOPATH /root/go
-          - GOBIN /root/go/bin
-          - PATH "${PATH}:/root/go/bin"
       - type: apt
-        packages: [ golang ]
+        packages: [ git, wget ]
       - type: docker
         run: |
-          go get golang.org/dl/go1.20.6 && go1.20.6 download && \
+          TARGETARCH="${TARGETARCH:-$(dpkg --print-architecture)}" && \
+          TARGETOS="${TARGETOS:-linux}" && \
+          PATH="${PATH}:/usr/local/go/bin" && \
+          wget https://go.dev/dl/go1.21.4.$TARGETOS-$TARGETARCH.tar.gz && tar -C /usr/local/ -xzf go1.21.4.$TARGETOS-$TARGETARCH.tar.gz && \
+          rm go1.21.4.$TARGETOS-$TARGETARCH.tar.gz && \
           git clone --branch v2.5.0 https://github.com/shenwei356/seqkit.git && \
-          cd seqkit/seqkit/ && go1.20.6 build && cp seqkit /usr/bin/ && cd ../../ && rm -rf seqkit
+          cd seqkit/seqkit/ && go build && cp seqkit /usr/bin/ && cd ../../ && rm -rf seqkit && rm -r /usr/local/go
 
   - type: nextflow
     directives:
