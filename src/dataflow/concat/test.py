@@ -1,5 +1,4 @@
 import mudata as md
-import anndata as ad
 import subprocess
 from pathlib import Path
 import pandas as pd
@@ -7,6 +6,7 @@ import numpy as np
 import pytest
 import re
 import sys
+import uuid
 
 ## VIASH START
 meta = {
@@ -45,13 +45,22 @@ def mudata_without_genome(tmp_path, request):
         result.append(new_path)
     return result
 
+
 @pytest.fixture
-def mudata_copy_with_unique_obs(request):
+def make_obs_names_unique():
+    def wrapper(mudata):
+        for mod_data in mudata.mod.values():
+            mod_data.obs.index = mod_data.obs.index.map(
+                lambda index_val: uuid.uuid4().hex + index_val
+            )
+    return wrapper
+
+@pytest.fixture
+def mudata_copy_with_unique_obs(request, make_obs_names_unique):
     mudata_to_copy = request.param
     mudata_contents = md.read(mudata_to_copy)
     copied_contents = mudata_contents.copy()
-    for mod_data in copied_contents.mod.values():
-        mod_data.obs.index = "make_unique_" + mod_data.obs.index
+    make_obs_names_unique(copied_contents)
     return mudata_contents, copied_contents
 
 @pytest.fixture
@@ -310,6 +319,34 @@ def test_concat_dtypes(run_component, copied_mudata_with_extra_annotation_column
         ])
     concatenated_data = md.read("concat.h5mu")
     concatenated_data.mod['atac'].obs['test'].dtype == expected
+
+@pytest.mark.parametrize("extra_column_annotation_matrix", ["var"])
+@pytest.mark.parametrize("extra_column_value_sample1,extra_column_value_sample2", [("2", "1")])
+@pytest.mark.parametrize("mudata_copy_with_unique_obs",
+                          [input_sample1_file],
+                          indirect=["mudata_copy_with_unique_obs"])
+def test_resolve_annotation_conflict_missing_column(run_component, copied_mudata_with_extra_annotation_column, make_obs_names_unique, tmp_path):
+    """
+    Test using mode 'move' and resolving a conflict in metadata between the samples,
+    but the metadata column is missing in one of the samples.
+    """
+    tempfile_input1, tempfile_input2 = copied_mudata_with_extra_annotation_column
+    original_data = md.read_h5mu(input_sample1_file)
+    make_obs_names_unique(original_data)
+    original_data_path = tmp_path / f"{uuid.uuid4().hex}.h5mu"
+    original_data.write_h5mu(original_data_path)
+    run_component([
+        "--input_id", "mouse,human,sample_without_column",
+        "--input", tempfile_input1,
+        "--input", tempfile_input2,
+        "--input", original_data_path,
+        "--output", "concat.h5mu",
+        "--other_axis_mode", "move"
+        ])
+    concatenated_data = md.read("concat.h5mu")
+    assert 'test' not in concatenated_data.mod['atac'].var.columns
+    assert 'test' not in concatenated_data.mod['atac'].obs.columns
+    assert 'conflict_test' in concatenated_data.mod['atac'].varm
 
 def test_mode_move(run_component, tmp_path):
     tempfile_input1 = tmp_path / "input1.h5mu"
