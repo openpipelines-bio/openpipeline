@@ -24,6 +24,8 @@
 
 ## MINOR CHANGES
 
+* Pin `from_h5mu_to_seurat` to use Seurat to version 4 (PR #630).
+
 * Refactored `rna_multisample` pipeline to use `fromState` and `toState` functionality (PR #607).
 
 * Refactored `cellranger_multi` workflow to use `fromState` and `toState` functionality (PR #609).
