@@ -95,7 +95,7 @@ def input_with_failed_run():
 
     # Simulate a failed scrublet run by passing very little cells
     mudata = mudata_in[152].copy()
-    nobs = 20
+    nobs = 14
     x_data = np.repeat(mudata.mod['rna'].X.todense(), nobs, axis=0)
     
     # Random perturbations because otherwise the detection fails in other ways (PCA cannot be run)
@@ -130,6 +130,8 @@ def test_doublet_automatic_threshold_detection_fails(run_component, input_with_f
             "--output_compression", "gzip",
             "--num_pca_components", "1",
             "--min_gene_variablity_percent", "0"
+            "--min_cells", "1",
+            "--min_counts", "1",
         ])
     assert re.search(r"RuntimeError: Scrublet could not automatically detect the doublet score threshold\. "
         r"--allow_automatic_threshold_detection_fail can be used to ignore this failure and "
@@ -152,6 +154,8 @@ def test_doublet_automatic_threshold_detection_fails_recovery(run_component, inp
         "--output_compression", "gzip",
         "--num_pca_components", "1",
         "--min_gene_variablity_percent", "0",
+        "--min_cells", "1",
+        "--min_counts", "1",
         "--allow_automatic_threshold_detection_fail"
     ])
     assert Path(output_mu).is_file(), "Output file not found"
