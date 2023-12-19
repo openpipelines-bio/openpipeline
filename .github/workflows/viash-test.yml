@@ -102,6 +102,8 @@ jobs:
 
     - uses: viash-io/viash-actions/setup@v4
 
+    - uses: viash-io/viash-actions/update-docker-engine@v3
+
     # use cache
     - name: Cache resources data
       id: restore_cache
