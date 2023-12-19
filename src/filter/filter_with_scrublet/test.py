@@ -129,7 +129,7 @@ def test_doublet_automatic_threshold_detection_fails(run_component, input_with_f
             "--output", output_mu,
             "--output_compression", "gzip",
             "--num_pca_components", "1",
-            "--min_gene_variablity_percent", "0"
+            "--min_gene_variablity_percent", "0",
             "--min_cells", "1",
             "--min_counts", "1",
         ])
