@@ -105,7 +105,7 @@ platforms:
           - pyyaml
           - HTSeq
           - multiprocess
-          - gtfparse<2.0
+          - gtfparse
           - pandas
           # Pin multiqc to avoid 
           # 'TypeError: expected str, bytes or os.PathLike object, not NoneType'

@@ -10,6 +10,7 @@ import yaml
 import pandas as pd
 from multiprocess import Pool
 import gtfparse
+import polars as pl
 
 ## VIASH START
 par = {
@@ -30,7 +31,7 @@ meta = {
     "functionality_name": "star_and_htseq",
     "cpus": 30,
     "temp_dir": "/tmp",
-    "config": "src/mapping/multi_star/.config.vsh.yaml",
+    "config": "/home/di/code/openpipelines-multisample/src/mapping/multi_star/config.vsh.yaml",
 }
 ## VIASH END
 
@@ -328,12 +329,12 @@ def run_htseq_count(
 
 def get_feature_info(reference_gtf) -> pd.DataFrame:
     ref = gtfparse.read_gtf(reference_gtf)
-    ref_genes = ref.loc[(ref["feature"] == "gene") | (ref["source"] == "ERCC")]
+    ref_genes = ref.filter((pl.col("feature") == "gene") | (pl.col("source") == "ERCC"))
     return pd.DataFrame(
         {
-            "feature_id": ref_genes["gene_id"],
+            "feature_id": pd.Index(ref_genes.get_column("gene_id")),
             "feature_type": "Gene Expression",
-            "feature_name": ref_genes["gene_name"]
+            "feature_name": ref_genes.get_column("gene_name").to_pandas()
         }
     )
 
