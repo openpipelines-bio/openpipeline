@@ -31,7 +31,7 @@ meta = {
     "functionality_name": "star_and_htseq",
     "cpus": 30,
     "temp_dir": "/tmp",
-    "config": "/home/di/code/openpipelines-multisample/src/mapping/multi_star/config.vsh.yaml",
+    "config": "src/mapping/multi_star/.config.vsh.yaml",
 }
 ## VIASH END
 
