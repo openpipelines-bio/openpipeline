@@ -58,7 +58,7 @@ workflow run_wf {
       }
 
     //
-    // Multissample processing
+    // Multisample processing
     //
     def multisample_arguments = [
       "rna": [
