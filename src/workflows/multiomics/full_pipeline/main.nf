@@ -1,5 +1,3 @@
-import java.util.concurrent.ConcurrentHashMap;
-
 workflow run_wf {
   take:
     input_ch
@@ -70,7 +68,7 @@ workflow run_wf {
     //
     // Singlesample processing
     //
-    ConcurrentHashMap<String, String> singlesample_arguments = [
+    def singlesample_arguments = [
       "rna": [
         "min_counts": "rna_min_counts",
         "max_counts": "rna_max_counts",
@@ -91,7 +89,8 @@ workflow run_wf {
         "max_proteins_per_cell": "prot_max_proteins_per_cell",
         "min_cells_per_protein": "prot_min_cells_per_protein"
       ]
-    ]
+    ].asImmutable()
+
     multisample_ch_known = modalities_ch 
       // run the singlesample processing
       | runEach(

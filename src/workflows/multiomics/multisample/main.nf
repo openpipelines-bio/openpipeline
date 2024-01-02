@@ -1,5 +1,3 @@
-import java.util.concurrent.ConcurrentHashMap;
-
 workflow run_wf {
   take:
   input_ch
@@ -62,7 +60,7 @@ workflow run_wf {
     //
     // Multissample processing
     //
-    ConcurrentHashMap<String, String> multisample_arguments = [
+    def multisample_arguments = [
       "rna": [
         "filter_with_hvg_var_output": "filter_with_hvg_var_output",
         "filter_with_hvg_obs_batch_key": "filter_with_hvg_obs_batch_key",
@@ -70,7 +68,8 @@ workflow run_wf {
         "top_n_vars": "top_n_vars"
       ],
       "prot": [:]
-    ]
+    ].asImmutable()
+
     multimodal_ch_known = multisample_ch
       | runEach(
         components: [rna_multisample, prot_multisample],
