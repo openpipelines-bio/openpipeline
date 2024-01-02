@@ -1,9 +1,9 @@
 process splitStub {
   input:
-    tuple val(id), path(unused), val(passthrough_state)
+    tuple val(id), path(unused)
 
   output:
-    tuple val(id), path("stub_h5mus"), path("modalities.csv"), val(passthrough_state)
+    tuple val(id), path("stub_h5mus"), path("modalities.csv")
 
   script:
     """
@@ -29,7 +29,7 @@ workflow run_wf {
   main:
     split_ch = input_ch
       | split_modalities_component.run(
-        runIf: {id, state -> !workflow.stubRun},
+        filter: {!workflow.stubRun}, 
         fromState: ["input": "input"],
         toState: [
           "output": "output",
@@ -39,12 +39,12 @@ workflow run_wf {
 
     split_stub_ch = input_ch
       | filter{workflow.stubRun}
-      | map {id, state -> [id, state.input, state]}
       // This is not a build viash component, so we cannot use
       // fromState or toState functionality
+      | map {id, state -> [id, state.input]}
       | splitStub
-      | map {id, output, output_types, state -> 
-        [id, state + ["output": output, "output_types": output_types]]
+      | map {id, output, output_types ->
+        [id, ["output": output, "output_types": output_types]]
       }
 
     output_ch = split_ch.concat(split_stub_ch)

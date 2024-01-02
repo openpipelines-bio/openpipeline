@@ -41,7 +41,7 @@ workflow run_wf {
           newState + ["input": output.output]
         }
       )
-      | split_modalities.run(
+      | split_modalities_workflow.run(
         fromState: ["input": "input"],
         toState: ["output": "output", "output_types": "output_types"]
       )

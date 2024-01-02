@@ -179,7 +179,8 @@ functionality:
           description: "Allow overwriting slots for PCA output."
   dependencies:
     - name: metadata/add_id
-    - name: dataflow/split_modalities
+    - name: workflows/multiomics/split_modalities
+      alias: split_modalities_workflow
     - name: dataflow/merge
     - name: dataflow/concatenate_h5mu
     - name: transfer/publish
