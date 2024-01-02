@@ -4,14 +4,11 @@ workflow run_wf {
 
   main:
 
-  input_ch
-    | toSortedList
-    | map { list ->
-        found_output_files = list.collect{it[1].getOrDefault("output", null)}.unique()
-        assert found_output_files.size() < 2, "The specified output file is not the same for all samples. Found: $found_output_files"
-    }
-
   output_ch = input_ch
+    | map {id, state ->
+      def new_state = state + ["workflow_output": state.output]
+      [id, new_state]
+    }
     | clr.run(
       fromState: ["input": "input"],
       toState: ["input": "output"],
@@ -21,10 +18,12 @@ workflow run_wf {
       ]
     )
     | prot_qc.run(
+      // TODO: remove when viash 0.8.3 is released
       key: "prot_qc",
       fromState: { id, state ->
         def newState = [
           "id": id,
+          "output": state.workflow_output,
           "input": state.input,
           "top_n_vars": state.top_n_vars,
           "var_qc_metrics": null,

@@ -92,6 +92,7 @@ functionality:
     - name: transform/log1p
     - name: filter/filter_with_hvg
     - name: qc/calculate_qc_metrics
+      alias: rna_qc
     - name: transform/delete_layer
     - name: metadata/add_id
   resources:

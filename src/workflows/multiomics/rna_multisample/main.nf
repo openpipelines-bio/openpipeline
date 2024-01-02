@@ -3,21 +3,11 @@ workflow run_wf {
   input_ch
 
   main:
-  parsed_arguments_ch = input_ch
+  output_ch = input_ch
     | map {id, state ->
       def new_state = state + ["workflow_output": state.output]
       [id, new_state]
     }
-
-  // Check that the output name is unique for all samples (we concat into one file)
-  parsed_arguments_ch
-    | toSortedList
-    | map { list ->
-        found_output_files = list.collect{it[1].getOrDefault('workflow_output', null)}.unique()
-        assert found_output_files.size() < 2, "The specified output file is not the same for all samples. Found: $found_output_files"
-    }
-
-  output_ch = parsed_arguments_ch
     | normalize_total.run(
       fromState: { id, state ->
         [
@@ -63,7 +53,9 @@ workflow run_wf {
       },
       toState: ["input": "output"],
     )
-    | calculate_qc_metrics.run(
+    | rna_qc.run(
+      // TODO: remove when viash 0.8.3 is released
+      key: "rna_qc",
       // layer: null to use .X and not log transformed
       fromState: {id, state ->
         [
@@ -76,12 +68,8 @@ workflow run_wf {
           "top_n_vars": state.top_n_vars,
         ]
       },
-      toState: {id, output, state -> 
-        ["output": output.output]
-      },
-      key: "rna_calculate_qc_metrics",
-      auto: [ publish: true ]
     )
+    | setState(["output"])
 
   emit:
   output_ch
