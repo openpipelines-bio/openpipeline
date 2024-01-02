@@ -6,7 +6,7 @@ workflow run_wf {
     multisample_ch = input_ch
       // The input for this workflow can either be a list of unimodal files
       // or a single multimodal file. To destingish between the two, the files will be split either way.
-      // For mutliple unimodal files, the result before or after splitting is identical.
+      // For multiple unimodal files, the result before or after splitting is identical.
       // In both cases, this workflow requires split files.
       
       // Split must be called on each item of the input list, so split it into multiple events with unique ids
