@@ -37,30 +37,32 @@ workflow test_wf {
   
 }
 
-// workflow test_wf2 {
-//   // allow changing the resources_test dir
-//   resources_test = file("${params.rootDir}/resources_test")
+workflow test_wf2 {
+  // allow changing the resources_test dir
+  resources_test = file("${params.rootDir}/resources_test")
 
-//   output_ch = Channel.fromList([
-//         input: resources_test.resolve("10x_5k_anticmv/5k_human_antiCMV_T_TBNK_connect_mms.h5mu"),
-//         pca_overwrite: true,
-//         id: "test",
-//         publish_dir: "foo/",
-//         output: "test.h5mu"
-//     ])
-//     | map{ state -> [state.id, state] }
-//     | view { "Input: $it" }
-//     | multisample
-//     | view { output ->
-//     assert output.size() == 2 : "outputs should contain two elements; [id, file], was $output"
-//     assert output[1].output.toString().endsWith(".h5mu") : "Output file should be a h5mu file. Found: ${output[1]}"
-//     "Output: $output"
-//     }
-//     | toSortedList()
-//     | map { output_list ->
-//     print "output_list: $output_list"
-//     assert output_list.size() == 1 : "output channel should contain two events"
-//     assert output_list.collect({it[0]}).sort() == ["test"] : "First output ID should be 'test'"
-//     }
+  output_ch = Channel.fromList([
+      [
+          input: resources_test.resolve("10x_5k_anticmv/5k_human_antiCMV_T_TBNK_connect_mms.h5mu"),
+          pca_overwrite: true,
+          id: "test",
+          publish_dir: "foo/",
+          output: "test.h5mu"
+      ]
+    ])
+    | map{ state -> [state.id, state] }
+    | view { "Input: $it" }
+    | multisample
+    | view { output ->
+    assert output.size() == 2 : "outputs should contain two elements; [id, file], was $output"
+    assert output[1].output.toString().endsWith(".h5mu") : "Output file should be a h5mu file. Found: ${output[1]}"
+    "Output: $output"
+    }
+    | toSortedList()
+    | map { output_list ->
+    print "output_list: $output_list"
+    assert output_list.size() == 1 : "output channel should contain two events"
+    assert output_list.collect({it[0]}).sort() == ["test"] : "First output ID should be 'test'"
+    }
   
-// }
+}

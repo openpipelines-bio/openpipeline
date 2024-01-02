@@ -13,7 +13,7 @@ workflow run_wf {
       // Unique ids are required to run a component
       | flatMap {id, state ->
         def newEvents = state.input.withIndex().collect{input_file, index -> 
-          def newState = state + ["input": input_file]
+          def newState = state + ["input": input_file, "original_id": id]
           ["${id}_${index}", newState]
         }
         newEvents
@@ -37,15 +37,14 @@ workflow run_wf {
         def types = readCsv(state.output_types.toUriString())
         
         types.collect{ dat ->
-          def reg = ~/_[0-9]+$/
-          def new_id = id - reg + "_${dat.name}" // Make a unique ID again by appending the modality name.
+          def new_id = state.original_id + "_${dat.name}" // Make a unique ID by appending the modality name.
           def new_data = outputDir.resolve(dat.filename)
           [ new_id, state + ["input": new_data, modality: dat.name]]
         }
       }
       // Remove arguments from split modalities from state
       | map {id, state -> 
-        def keysToRemove = ["output_types"]
+        def keysToRemove = ["output_types", "original_id"]
         def newState = state.findAll{it.key !in keysToRemove}
         [id, newState]
       }
