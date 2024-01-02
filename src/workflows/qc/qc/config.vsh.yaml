@@ -1,6 +1,6 @@
 functionality:
   name: "qc"
-  namespace: "workflows/qc/qc"
+  namespace: "workflows/qc"
   description: "A pipeline to add basic qc statistics to a MuData "
   authors:
     - __merge__: /src/authors/dries_schaumont.yaml

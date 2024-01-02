@@ -59,7 +59,7 @@ functionality:
   dependencies:
     - name: filter/filter_with_counts
     - name: filter/do_filter
-    - name: workflows/qc/qc/qc
+    - name: workflows/qc/qc
       alias: unfiltered_counts_qc_metrics_prot
   resources:
     - type: nextflow_script

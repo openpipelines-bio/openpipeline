@@ -110,7 +110,7 @@ functionality:
     - name: filter/filter_with_scrublet
     - name: filter/do_filter
     - name: filter/delimit_fraction
-    - name: workflows/qc/qc/qc
+    - name: workflows/qc/qc
       alias: unfiltered_counts_qc_metrics_rna
   test_resources:
     - type: nextflow_script
