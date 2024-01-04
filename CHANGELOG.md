@@ -16,7 +16,7 @@
 
 ## NEW FUNCTIONALITY
 
-* `qc/calculate_qc_metrics`: allow setting the output column names and disabling the calculation of several metrics.
+* `qc/calculate_qc_metrics`: allow setting the output column names and disabling the calculation of several metrics (PR #644).
 
 * `rna_multisample` workflow: added `--modality` argument (PR #607).
 
