@@ -8,24 +8,6 @@ workflow run_wf {
       def new_state = state + ["workflow_output": state.output]
       [id, new_state]
     }
-    | unfiltered_counts_qc_metrics_prot.run(
-      key: "unfiltered_counts_qc_metrics_prot",
-      fromState: { id, state ->
-        def newState = [
-          "id": id,
-          "input": state.input,
-          "var_name_mitondrial": null,
-          "mitochondrial_gene_regex": null,
-          "top_n_vars": state.top_n_vars,
-          "output": state.output,
-          "modality": "prot",
-          "layer": null,
-          "var_qc_metrics": state.var_qc_metrics 
-        ]
-        newState
-      },
-      toState: ["input": "output"]
-    )
     // filtering
     | filter_with_counts.run(
       key: "prot_filter_with_counts",

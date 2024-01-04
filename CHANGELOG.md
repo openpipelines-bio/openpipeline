@@ -14,11 +14,15 @@
 
 * Renamed `obsm_metrics` to `uns_metrics` for the `cellranger_mapping` workflow because the cellranger metrics are stored in `.uns` and not `.obsm` (PR #610).
 
+* `prot_singlesample`, `rna_singlesample`, `prot_multisample` and `rna_multisample`: QC statistics are now only calculated once where needed. This means that the mitochondrial gene detection is performed in the `rna_singlesample` pipeline and the other count based statistics are calculated during the `prot_multisample` and `rna_multisample` pipelines. In both cases, the `qc` pipeline is being used, but only parts of that workflow are activated by parametrization. Previously the count based statistics were calculated in both the `singlesample` and `multisample` pipelines, with the results from the multisample pipelines overwriting the previous results (PR #604).
+
 ## NEW FUNCTIONALITY
 
 * All workflow now use `dependencies` to handle includes from other workflows (PR #606).
 
 * `qc/calculate_qc_metrics`: allow setting the output column names and disabling the calculation of several metrics (PR #644).
+
+* `rna_multisample`, `prot_multisample` and `qc` workflows: allow setting the output column names and disabling the calculation of several metrics (PR #606).
 
 * `rna_multisample` workflow: added `--modality` argument (PR #607).
 

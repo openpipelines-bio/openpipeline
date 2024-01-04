@@ -42,7 +42,9 @@ workflow run_wf {
         }
       )
       | split_modalities_workflow.run(
-        fromState: ["input": "input"],
+        fromState: {id, state ->
+          def newState = ["input": state.input, "id": id]
+        },
         toState: ["output": "output", "output_types": "output_types"]
       )
       | flatMap {id, state ->

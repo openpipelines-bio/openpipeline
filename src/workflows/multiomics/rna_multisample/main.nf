@@ -59,6 +59,7 @@ workflow run_wf {
       // layer: null to use .X and not log transformed
       fromState: {id, state ->
         [
+          "id": id,
           "input": state.input,
           "output": state.workflow_output,
           "input_layer": null,
@@ -66,6 +67,12 @@ workflow run_wf {
           "modality": state.modality,
           "var_qc_metrics": state.var_qc_metrics,
           "top_n_vars": state.top_n_vars,
+          "num_nonzero_vars": state.num_nonzero_vars,
+          "total_counts_var": state.total_counts_var,
+          "num_nonzero_obs": state.num_nonzero_obs,
+          "total_counts_obs": state.total_counts_obs,
+          "obs_mean": state.obs_mean,
+          "pct_dropout": state.pct_dropout
         ]
       },
     )

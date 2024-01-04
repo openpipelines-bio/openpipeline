@@ -30,7 +30,12 @@ workflow run_wf {
           "input_layer": null, // layer: null to use .X and not log transformed
           "modality": "prot",
           "var_name_mitochondrial_genes": null,
-          "var_qc_metrics": null
+          "num_nonzero_vars": state.num_nonzero_vars,
+          "total_counts_var": state.total_counts_var,
+          "num_nonzero_obs": state.num_nonzero_obs,
+          "total_counts_obs": state.total_counts_obs,
+          "obs_mean": state.obs_mean,
+          "pct_dropout": state.pct_dropout
         ]
         newState
       }

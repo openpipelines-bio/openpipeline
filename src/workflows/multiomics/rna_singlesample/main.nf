@@ -29,7 +29,7 @@ workflow run_wf {
       }
       [id, state]
     }
-    | unfiltered_counts_qc_metrics_rna.run(
+    | qc.run(
       fromState: { id, state ->
         // The rna singlesample processing allows detecting mitochondrial genes and filtering based
         // on the fraction of mitochondrial genes per cell
@@ -38,7 +38,15 @@ workflow run_wf {
 
         def new_state = [
           "input": state.input,
-          "top_n_vars": state.top_n_vars,
+          // disable other qc metric calculations
+          // only mitochondrial gene detection is required at this point
+          "top_n_vars": [],
+          "num_nonzero_vars": null,
+          "total_counts_var": null,
+          "num_nonzero_obs": null,
+          "total_counts_obs": null,
+          "obs_mean": null,
+          "pct_dropout": null,
           "output": state.output,
           "modality": "rna",
           "layer": null
