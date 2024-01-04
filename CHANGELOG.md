@@ -18,6 +18,8 @@
 
 * All workflow now use `dependencies` to handle includes from other workflows (PR #606).
 
+* `qc/calculate_qc_metrics`: allow setting the output column names and disabling the calculation of several metrics (PR #644).
+
 * `rna_multisample` workflow: added `--modality` argument (PR #607).
 
 * `multisample` workflow: in addition to using multimodal files as input, this workflow now also accepts a list of files. The list of files must be the unimodal equivalents of 
