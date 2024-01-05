@@ -16,7 +16,7 @@
 
 ## NEW FUNCTIONALITY
 
-* `cluster/leiden`: Allow calculating multiple resolutions in parallel
+* `cluster/leiden`: Allow calculating multiple resolutions in parallel (PR #645).
 
 * `rna_multisample` workflow: added `--modality` argument (PR #607).
 
