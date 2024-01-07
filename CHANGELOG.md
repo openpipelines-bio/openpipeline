@@ -26,6 +26,8 @@
 
 ## MINOR CHANGES
 
+* Several components: update anndata to `0.10.4` and mudata to `0.2.3`.
+
 * `cluster/leiden`: Bump python to 3.11 and leidenalg to 0.10.0 (PR #645).
 
 * Pin `from_h5mu_to_seurat` to use Seurat to version 4 (PR #630).
