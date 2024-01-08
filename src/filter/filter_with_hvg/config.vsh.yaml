@@ -112,6 +112,13 @@ functionality:
         For all flavors, genes are first sorted by how many batches they are a HVG. For dispersion-based flavors 
         ties are broken by normalized dispersion. If flavor = 'seurat_v3', ties are broken by the median (across
         batches) rank based on within-batch normalized variance.
+
+    - name: "--output_obs_num_highly_variable_genes"
+      type: string
+      description: |
+        When specified, store the number of genes that were found. The value from this argument is used as the 
+        column name.
+
   resources:
     - type: python_script
       path: script.py
