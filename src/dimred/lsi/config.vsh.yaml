@@ -5,7 +5,7 @@ functionality:
     Runs Latent Semantic Indexing. Computes cell embeddings, feature loadings and singular values. Uses the implementation of scipy.
   authors:
     - __merge__: /src/authors/sarah_ouologuem.yaml
-      roles: [ contributer ]
+      roles: [ contributor ]
 
   argument_groups:
     - name: Inputs
@@ -111,7 +111,6 @@ platforms:
           - muon~=0.1.5
     test_setup:
       - type: python
-        __merge__: [../../../src/base/requirements/anndata_mudata.yaml, .]
         packages: 
           - pytest
   - type: nextflow
