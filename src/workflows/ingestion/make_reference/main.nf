@@ -35,10 +35,10 @@ workflow run_wf {
         star_build_reference
       ],
       filter: { id, state, component ->
-        state.target.contains(targetMapping.get(component.name))
+        state.target.contains(targetMapping.get(component.config.functionality.name))
       },
       fromState: { id, state, component ->
-        def target = targetMapping.get(component.name)
+        def target = targetMapping.get(component.config.functionality.name)
         def passed_state = [
           input: state.input,
           output: state.get("output_" + target),
@@ -49,7 +49,7 @@ workflow run_wf {
         passed_state
       },
       toState: {id, output, state, component ->
-        def target = targetMapping.get(component.name)
+        def target = targetMapping.get(component.config.functionality.name)
         def newState = state + ["output_$target": output.output]
         return newState
       },
