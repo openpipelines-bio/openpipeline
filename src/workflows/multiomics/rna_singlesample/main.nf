@@ -124,7 +124,7 @@ workflow run_wf {
         "input": "input",
         "output": "workflow_output"
       ],
-      args: [ output_compression: "gzip"],
+      args: [output_compression: "gzip"],
       auto: [ publish: true ]
     )
 
