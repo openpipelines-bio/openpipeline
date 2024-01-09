@@ -131,7 +131,7 @@ workflow run_wf {
       }
       [id, new_state + ["input": state.output]]
     }
-    | neighbors_leiden_umap  
+    | neighbors_leiden_umap
     | publish.run(
       fromState: { id, state -> [
           "input": state.output,
