@@ -23,6 +23,10 @@ par = {
   'layer': 'log_transformed'
 }
 
+meta = {
+    'resources_dir': "."
+}
+
 mu_in = mu.read_h5mu('resources_test/pbmc_1k_protein_v3/pbmc_1k_protein_v3_filtered_feature_bc_matrix.h5mu')
 rna_in = mu_in.mod["rna"]
 assert "filter_with_hvg" not in rna_in.var.columns
@@ -141,6 +145,9 @@ if par.get("var_name_filter", None) is not None:
 if par.get("varm_name", None) is not None and 'mean_bin' in out:
     # drop mean_bin as mudata/anndata doesn't support tuples
     data.varm[par["varm_name"]] = out.drop("mean_bin", axis=1)
+
+if par['output_obs_num_highly_variable_genes']:
+    data.obs[par['output_obs_num_highly_variable_genes']] = out["highly_variable"].sum()
 
 if par["do_subset"]:
     keep_feats = np.ravel(data.var[par["var_name_filter"]])

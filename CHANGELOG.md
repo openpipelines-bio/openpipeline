@@ -16,6 +16,8 @@
 
 ## NEW FUNCTIONALITY
 
+* `filter_with_hvg`: add `output_obs_num_highly_variable_genes` argument in order to store the number of highly variable genes that were discovered.
+
 * `cluster/leiden`: Allow calculating multiple resolutions in parallel (PR #645).
 
 * `rna_multisample` workflow: added `--modality` argument (PR #607).
