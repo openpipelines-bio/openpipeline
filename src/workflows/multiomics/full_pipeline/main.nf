@@ -98,7 +98,7 @@ workflow run_wf {
       | runEach(
         components: [rna_singlesample, prot_singlesample],
         filter: { id, state, component ->
-          state.modality + "_singlesample" == component.name
+          state.modality + "_singlesample" == component.config.functionality.name
         },
         fromState: { id, state, component ->
           def newState = singlesample_arguments.get(state.modality).collectEntries{key_, value_ -> 
