@@ -18,6 +18,8 @@
 
 * `qc/calculate_qc_metrics`: allow setting the output column names and disabling the calculation of several metrics (PR #644).
 
+* `cluster/leiden`: Allow calculating multiple resolutions in parallel (PR #645).
+* 
 * `rna_multisample` workflow: added `--modality` argument (PR #607).
 
 * Added `filter/intersect_obs` component which removes observations that are not shared between modalities (PR #589).
@@ -25,6 +27,10 @@
 * Re-enable `convert/from_h5mu_to_seurat` component (PR #616).
 
 ## MINOR CHANGES
+
+* `cluster/leiden`: Bump python to 3.11 and leidenalg to 0.10.0 (PR #645).
+
+* `mapping/htseq_count_to_h5mu` and `multi_star`: update polars and gtfparse (PR #642). 
 
 * Pin `from_h5mu_to_seurat` to use Seurat to version 4 (PR #630).
 
