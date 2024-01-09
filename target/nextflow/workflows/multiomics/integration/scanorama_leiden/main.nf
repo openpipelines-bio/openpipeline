@@ -3198,7 +3198,7 @@ meta = [
     "platform" : "nextflow",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/workflows/multiomics/integration/scanorama_leiden",
     "viash_version" : "0.8.2",
-    "git_commit" : "bcf121ea7495169f81045f9b80d1185cb801d18a",
+    "git_commit" : "1e947b7c3c163b2b9289775849c79848b1af3dbd",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))
