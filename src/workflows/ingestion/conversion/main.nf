@@ -4,21 +4,15 @@ workflow run_wf {
 
   main:
   output_ch = input_ch
-    // translate the input_type argument to the component name that needs to be run
-    | map { id, state ->
-      def componentNameMapper = [
-        "10xh5": from_10xh5_to_h5mu,
-        "10xmtx": from_10xmtx_to_h5mu,
-        "h5ad": from_h5ad_to_h5mu
-      ]
-      def component = componentNameMapper[state.input_type]
-      def new_state = state + ["component": component]
-      [id, new_state]
-    }
     | runEach(
       components: [from_10xh5_to_h5mu, from_h5ad_to_h5mu, from_10xmtx_to_h5mu],
       filter: { id, state, component ->
-        state.component == component
+        def componentNameMapper = [
+          "10xh5": "from_10xh5_to_h5mu",
+          "10xmtx": "from_10xmtx_to_h5mu",
+          "h5ad": "from_h5ad_to_h5mu"
+        ]
+        componentNameMapper[state.input_type] == component.config.functionality.name
       },
       fromState: { id, state, component ->
         def passed_state = [
