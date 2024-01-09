@@ -2,9 +2,9 @@
 
 ## BREAKING CHANGES
 
-* This project now uses viash version 0.8.0 to build components and workflows. Moving to 0.8.0 involved the following changes:
+* This project now uses viash version 0.8.2 to build components and workflows. Moving to 0.8.0 involved the following changes:
 
-    * Bump viash version to 0.8.0 (PR #598) in the project configuration.
+    * Bump viash version to 0.8.2 (PR #598 and PR#638) in the project configuration.
     * The `concat` component had been deprecated and will be removed in a future release. It's functionality has been copied to the `concatenate_h5mu` component because the name is in conflict with the `concat` operator from nextflow (PR #598).
     * All pipelines no longer use the anonymous workflow. Instead, these workflows were given a name which was added to the viash config as the entrypoint to the pipeline (PR #598).
     * Removed the `workflows` folder and moved its contents to new locations (PR #605):
@@ -16,6 +16,8 @@
 
 ## NEW FUNCTIONALITY
 
+* `cluster/leiden`: Allow calculating multiple resolutions in parallel (PR #645).
+
 * `rna_multisample` workflow: added `--modality` argument (PR #607).
 
 * Added `filter/intersect_obs` component which removes observations that are not shared between modalities (PR #589).
@@ -23,6 +25,14 @@
 * Re-enable `convert/from_h5mu_to_seurat` component (PR #616).
 
 ## MINOR CHANGES
+
+* `cluster/leiden`: Bump python to 3.11 and leidenalg to 0.10.0 (PR #645).
+
+* `mapping/htseq_count_to_h5mu` and `multi_star`: update polars and gtfparse (PR #642). 
+
+* Pin `from_h5mu_to_seurat` to use Seurat to version 4 (PR #630).
+
+* `velocity/scvelo`: bump scvelo to 0.3.1 and python to 3.10 (PR #640).
 
 * Refactored `rna_multisample` pipeline to use `fromState` and `toState` functionality (PR #607).
 
@@ -32,9 +42,13 @@
 
 * Updated the Viash YAML schemas to the latest version of Viash (PR #620).
 
-* `build_cellranger_reference`: Bump go version to `1.21.4` when building seqkit for testing the component (PR #624).
+* `build_cellranger_reference` and `build_bdrhap_reference`: Bump go version to `1.21.4` when building seqkit for testing the component (PR #624 and PR #637).
+
+* `correction/cellbender_remove_background`: Remove `muon` as a test dependency (PR #636).
 
 ## BUG FIXES
+
+* `dataflow/concatenate_h5mu` and `dataflow/concat`: Fix `TypeError` when using mode 'move' and a column with conflicting metadata does not exist across all samples (PR #631).
 
 * `dataflow/concatenate_h5mu` and `dataflow/concat`: Fix an issue where joining columns with different datatypes caused `TypeError` (PR #619).
 

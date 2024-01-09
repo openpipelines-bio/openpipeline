@@ -121,20 +121,19 @@ def any_row_contains_duplicate_values(n_processes: int, frame: pd.DataFrame) -> 
         is_duplicated = pool.map(nunique, iter(numpy_array))
     return any(is_duplicated)
 
-def concatenate_matrices(n_processes: int, input_ids: tuple[str], matrices: Iterable[pd.DataFrame]) \
+def concatenate_matrices(n_processes: int, matrices: dict[str, pd.DataFrame]) \
     -> tuple[dict[str, pd.DataFrame], pd.DataFrame | None, dict[str, pd.core.dtypes.dtypes.Dtype]]:
     """
     Merge matrices by combining columns that have the same name.
     Columns that contain conflicting values (e.i. the columns have different values),
     are not merged, but instead moved to a new dataframe.
     """
-    column_names = set(column_name for var in matrices for column_name in var)
+    column_names = set(column_name for var in matrices.values() for column_name in var)
     logger.debug('Trying to concatenate columns: %s.', ",".join(column_names))
     if not column_names:
         return {}, None
     conflicts, concatenated_matrix = \
         split_conflicts_and_concatenated_columns(n_processes,
-                                                 input_ids,
                                                  matrices,
                                                  column_names)
     concatenated_matrix = cast_to_writeable_dtype(concatenated_matrix)
@@ -150,8 +149,7 @@ def get_first_non_na_value_vector(df):
     return pd.Series(numpy_arr.ravel()[flat_index], index=df.index, name=df.columns[0])
 
 def split_conflicts_and_concatenated_columns(n_processes: int,
-                                             input_ids: tuple[str],
-                                             matrices: Iterable[pd.DataFrame],
+                                             matrices: dict[str, pd.DataFrame],
                                              column_names: Iterable[str]) -> \
                                             tuple[dict[str, pd.DataFrame], pd.DataFrame]:
     """
@@ -164,11 +162,13 @@ def split_conflicts_and_concatenated_columns(n_processes: int,
     conflicts = {}
     concatenated_matrix = []
     for column_name in column_names:
-        columns = [var[column_name] for var in matrices if column_name in var]
+        columns = {input_id: var[column_name]
+                   for input_id, var in matrices.items()
+                   if column_name in var}
         assert columns, "Some columns should have been found."
-        concatenated_columns = pd.concat(columns, axis=1, join="outer")
+        concatenated_columns = pd.concat(columns.values(), axis=1, join="outer")
         if any_row_contains_duplicate_values(n_processes, concatenated_columns):
-            concatenated_columns.columns = input_ids
+            concatenated_columns.columns = columns.keys() # Use the sample id as column name
             conflicts[f'conflict_{column_name}'] = concatenated_columns
         else:
             unique_values = get_first_non_na_value_vector(concatenated_columns)
@@ -203,7 +203,7 @@ def cast_to_writeable_dtype(result: pd.DataFrame) -> pd.DataFrame:
         result[obj_col] = result[obj_col].where(result[obj_col].isna(), result[obj_col].astype(str)).astype('category')
     return result
 
-def split_conflicts_modalities(n_processes: int, input_ids: tuple[str], samples: Iterable[anndata.AnnData], output: anndata.AnnData) \
+def split_conflicts_modalities(n_processes: int, samples: dict[str, anndata.AnnData], output: anndata.AnnData) \
         -> anndata.AnnData:
     """
     Merge .var and .obs matrices of the anndata objects. Columns are merged
@@ -213,8 +213,8 @@ def split_conflicts_modalities(n_processes: int, input_ids: tuple[str], samples:
     """
     matrices_to_parse = ("var", "obs")
     for matrix_name in matrices_to_parse:
-        matrices = [getattr(sample, matrix_name) for sample in samples]
-        conflicts, concatenated_matrix = concatenate_matrices(n_processes, input_ids, matrices)
+        matrices = {sample_id: getattr(sample, matrix_name) for sample_id, sample in samples.items()}
+        conflicts, concatenated_matrix = concatenate_matrices(n_processes, matrices)
         
         # Write the conflicts to the output
         matrix_index = getattr(output, matrix_name).index
@@ -235,20 +235,20 @@ def concatenate_modality(n_processes: int, mod: str, input_files: Iterable[str |
     }
     other_axis_mode_to_apply = concat_modes.get(other_axis_mode, other_axis_mode)
 
-    mod_data = []
-    for input_file in input_files:
+    mod_data = {}
+    for input_id, input_file in zip(input_ids, input_files):
         try:
-            mod_data.append(mu.read_h5ad(input_file, mod=mod))
+            mod_data[input_id] = mu.read_h5ad(input_file, mod=mod)
         except KeyError as e: # Modality does not exist for this sample, skip it
             if f"Unable to open object '{mod}' doesn't exist" not in str(e):
                 raise e
             pass
-    check_observations_unique(mod_data)
+    check_observations_unique(mod_data.values())
 
-    concatenated_data = anndata.concat(mod_data, join='outer', merge=other_axis_mode_to_apply)
+    concatenated_data = anndata.concat(mod_data.values(), join='outer', merge=other_axis_mode_to_apply)
 
     if other_axis_mode == "move":
-        concatenated_data = split_conflicts_modalities(n_processes, input_ids, mod_data, concatenated_data)
+        concatenated_data = split_conflicts_modalities(n_processes, mod_data, concatenated_data)
     
     return concatenated_data
 

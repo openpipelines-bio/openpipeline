@@ -1,11 +1,25 @@
 name: main build
 concurrency: 
-  group: main_build
+  group: ${{ github.workflow }}-${{ github.ref_name}}
   cancel-in-progress: true
 
 on:
+  workflow_dispatch:
+    inputs:
+      push_containers:
+        type: boolean
+        required: false
+        default: false
+        description: push the containers to the registry
+      target_tag:
+        type: string
+        required: false
+        default: main_build
+        description: Version tag of existing containers to use. Is `main_build` by default.
+
   push:
     branches: [ 'main' ]
+
 
 jobs:
   # phase 1
@@ -17,8 +31,30 @@ jobs:
       cache_key: ${{ steps.cache.outputs.cache_key }}
 
     steps:
+    - name: Keep symlinks as-is
+      run: |
+        git config --global core.symlinks true
+  
+    - name: Branch to checkout (use existing target branch if it exists)
+      id: get_checkout_branch
+      run: |
+        if ! git ls-remote --heads --exit-code https://github.com/openpipelines-bio/openpipeline.git ${{ github.ref_name }}_build > /dev/null; then
+          echo "Remote branch does not exist, fetching current branch and building on top of it"
+          echo "checkout_branch=${{ github.ref_name }}" >> "$GITHUB_OUTPUT"
+        else
+          echo "Remote branch exists, checking out existing branch"
+          echo "checkout_branch=${{ github.ref_name }}_build" >> "$GITHUB_OUTPUT"
+        fi
+  
     - uses: actions/checkout@v4
+      with:
+        ref: ${{ steps.get_checkout_branch.outputs.checkout_branch }}
 
+    - name: Fetch changes from main
+      run: |
+        git fetch origin ${{github.ref_name}} 
+        git checkout -f --no-overlay origin/${{github.ref_name}} -- '.'
+    
     - uses: viash-io/viash-actions/setup@v4
 
     - name: Remove target folder from .gitignore
@@ -28,10 +64,18 @@ jobs:
 
     - uses: viash-io/viash-actions/ns-build@v4
       with:
-        config_mod: .functionality.version := 'main_build'
+        config_mod: |
+          .functionality.version := '${{ github.ref_name }}_build'
+          .platforms[.type == 'docker'].target_tag := '${{ github.event_name == 'push' && 'main_build' || github.event.inputs.target_tag }}'
         parallel: true
         query: ^(?!workflows)
-
+    
+    - uses: viash-io/viash-actions/ns-build@v4
+      with:
+        config_mod: .functionality.version := '${{ github.ref_name }}_build'
+        parallel: true
+        query: ^workflows
+  
     - name: Build nextflow schemas
       uses: viash-io/viash-actions/pro/build-nextflow-schemas@v4
       with:
@@ -49,12 +93,12 @@ jobs:
         tools_version: 'main_build'
 
     - name: Deploy to target branch
-      uses: peaceiris/actions-gh-pages@v3
+      uses: stefanzweifel/git-auto-commit-action@v5
       with:
-        github_token: ${{ secrets.GITHUB_TOKEN }}
-        publish_dir: .
-        publish_branch: main_build
-        exclude_assets: ''
+        create_branch: true
+        commit_message: "deploy: ${{github.sha}}"
+        skip_dirty_check: true
+        branch: ${{ github.ref_name }}_build
 
     - id: ns_list
       uses: viash-io/viash-actions/ns-list@v4
@@ -77,6 +121,7 @@ jobs:
   # phase 2
   build:
     needs: list
+    if: ${{github.event_name == 'push' || github.event.inputs.push_containers == 'true' }}
 
     runs-on: ubuntu-latest
 
@@ -96,7 +141,9 @@ jobs:
     - name: Build container
       uses: viash-io/viash-actions/ns-build@v4
       with:
-        config_mod: .functionality.version := 'main_build'
+        config_mod: |
+          .functionality.version := '${{ github.event_name == 'push' && 'main_build' || github.event.inputs.target_tag }}'
+          .platforms[.type == 'docker'].target_tag := '${{ github.event_name == 'push' && 'main_build' || github.event.inputs.target_tag }}'
         platform: docker
         src: ${{ matrix.component.dir }}
         setup: build
@@ -111,7 +158,7 @@ jobs:
     - name: Push container
       uses: viash-io/viash-actions/ns-build@v4
       with:
-        config_mod: .functionality.version := 'main_build'
+        config_mod: .functionality.version := '${{ github.ref_name }}_build'
         platform: docker
         src: ${{ matrix.component.dir }}
         setup: push
