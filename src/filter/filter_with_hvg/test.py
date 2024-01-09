@@ -152,6 +152,22 @@ def test_filter_with_hvg_cell_ranger_unfiltered_data_change_error_message(run_co
                      r"returned by scanpy \(see above\) could be the "
                      r"result from trying to use this component on unfiltered data\.",
                     err.value.stdout.decode('utf-8'))
+    
+def test_add_number_of_highly_variable_genes_selected(run_component, lognormed_test_data_path):
+    run_component([
+        "--flavor", "seurat",
+        "--input", lognormed_test_data_path,
+        "--output", "output.h5mu",
+        "--layer", "log_transformed",
+        "--output_obs_num_highly_variable_genes", "foo",
+        "--output_compression", "gzip"])
+    assert os.path.exists("output.h5mu")
+    data = mu.read_h5mu("output.h5mu")
+    assert "filter_with_hvg" in data.mod["rna"].var.columns
+    assert "foo" in data.mod["rna"].obs.columns
+    result_col = data.mod["rna"].obs["foo"]
+    assert (result_col <= len(data.mod["rna"].var_names)).all()
+    assert (result_col > 0).any() 
 
 
 if __name__ == '__main__':
