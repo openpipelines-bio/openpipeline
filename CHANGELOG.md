@@ -24,6 +24,8 @@
 
 ## MINOR CHANGES
 
+* `mapping/htseq_count_to_h5mu` and `multi_star`: update polars and gtfparse (PR #642). 
+
 * Pin `from_h5mu_to_seurat` to use Seurat to version 4 (PR #630).
 
 * `velocity/scvelo`: bump scvelo to 0.3.1 and python to 3.10 (PR #640).
