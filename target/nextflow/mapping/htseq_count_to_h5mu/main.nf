@@ -2981,7 +2981,7 @@ meta = [
             "mudata~=0.2.3",
             "pandas!=2.1.2",
             "gtfparse",
-            "polars[pyarrow] < 0.16.14"
+            "polars[pyarrow]"
           ],
           "upgrade" : true
         }
@@ -3046,7 +3046,7 @@ meta = [
     "platform" : "nextflow",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/mapping/htseq_count_to_h5mu",
     "viash_version" : "0.8.2",
-    "git_commit" : "544fded0745086c83a2d95e163652852576d030c",
+    "git_commit" : "bcf121ea7495169f81045f9b80d1185cb801d18a",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))
