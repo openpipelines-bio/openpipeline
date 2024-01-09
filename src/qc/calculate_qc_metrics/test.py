@@ -85,12 +85,12 @@ def test_add_qc(run_component, input_path):
 
 
 @pytest.mark.parametrize("optional_parameter,annotation_matrix,arg_value,expected_name",
-                         [("--num_nonzero_vars", "obs", "lorem", "lorem"),
-                          ("--total_counts_var", "obs", "ipsum", "ipsum"),
-                          ("--num_nonzero_obs", "var", "dolor", "dolor"),
-                          ("--total_counts_obs", "var", "amet", "amet"),
-                          ("--obs_mean", "var", "sit", "sit"),
-                          ("--pct_dropout", "var", "elit", "elit")])
+                         [("--output_obs_num_nonzero_vars", "obs", "lorem", "lorem"),
+                          ("--output_obs_total_counts_vars", "obs", "ipsum", "ipsum"),
+                          ("--output_var_num_nonzero_obs", "var", "dolor", "dolor"),
+                          ("--output_var_total_counts_obs", "var", "amet", "amet"),
+                          ("--output_var_obs_mean", "var", "sit", "sit"),
+                          ("--output_var_pct_dropout", "var", "elit", "elit")])
 def test_qc_metrics_set_output_column(run_component,
                                       mudata_w_random_boolean_column,
                                       optional_parameter,
@@ -114,12 +114,12 @@ def test_qc_metrics_set_output_column(run_component,
 @pytest.mark.parametrize("optional_parameter,annotation_matrix,expected_missing,",
                          [("--var_qc_metrics", "obs", "total_counts_.*|pct_*"),
                           ("--top_n_vars", "obs", "pct_of_counts_in_top_.*"),
-                          ("--num_nonzero_vars", "obs", "num_nonzero_vars"),
-                          ("--total_counts_var", "obs", "total_counts"),
-                          ("--num_nonzero_obs", "var", "num_nonzero_obs"),
-                          ("--total_counts_obs", "var", "total_counts"),
-                          ("--obs_mean", "var", "obs_mean"),
-                          ("--pct_dropout", "var", "pct_dropout")])
+                          ("--output_obs_num_nonzero_vars", "obs", "num_nonzero_vars"),
+                          ("--output_obs_total_counts_vars", "obs", "total_counts"),
+                          ("--output_var_num_nonzero_obs", "var", "num_nonzero_obs"),
+                          ("--output_var_total_counts_obs", "var", "total_counts"),
+                          ("--output_var_obs_mean", "var", "obs_mean"),
+                          ("--output_var_pct_dropout", "var", "pct_dropout")])
 def test_qc_metrics_optional(run_component,
                              mudata_w_random_boolean_column,
                              optional_parameter,

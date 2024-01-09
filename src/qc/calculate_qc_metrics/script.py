@@ -48,18 +48,18 @@ def main():
     var_columns_to_add = {}
 
     # var statistics
-    if par['obs_mean']:
+    if par['output_var_obs_mean']:
         obs_mean, _  = mean_variance_axis(layer, axis=0)
-        var_columns_to_add[par['obs_mean']] = obs_mean
-    if par['total_counts_obs']:
+        var_columns_to_add[par['output_var_obs_mean']] = obs_mean
+    if par['output_var_total_counts_obs']:
         total_counts_obs = np.ravel(layer.sum(axis=0))
-        var_columns_to_add[par['total_counts_obs']] = total_counts_obs
+        var_columns_to_add[par['output_var_total_counts_obs']] = total_counts_obs
 
     num_nonzero_obs = layer.getnnz(axis=0)
-    if par['num_nonzero_obs']:
-       var_columns_to_add[par['num_nonzero_obs']] = num_nonzero_obs
-    if par['pct_dropout']:
-        var_columns_to_add[par['pct_dropout']] = (1 - num_nonzero_obs / layer.shape[0]) * 100
+    if par['output_var_num_nonzero_obs']:
+       var_columns_to_add[par['output_var_num_nonzero_obs']] = num_nonzero_obs
+    if par['output_var_pct_dropout']:
+        var_columns_to_add[par['output_var_pct_dropout']] = (1 - num_nonzero_obs / layer.shape[0]) * 100
 
     modality_data.var = modality_data.var.assign(**var_columns_to_add)
 
@@ -67,12 +67,12 @@ def main():
     obs_columns_to_add = {}
     total_counts_var = np.ravel(layer.sum(axis=1))
 
-    if par['num_nonzero_vars']:
+    if par['output_obs_num_nonzero_vars']:
        num_nonzero_vars = layer.getnnz(axis=1)
-       obs_columns_to_add[par['num_nonzero_vars']] = num_nonzero_vars
+       obs_columns_to_add[par['output_obs_num_nonzero_vars']] = num_nonzero_vars
 
-    if par['total_counts_var']:
-        obs_columns_to_add[par['total_counts_var']] = total_counts_var
+    if par['output_obs_total_counts_vars']:
+        obs_columns_to_add[par['output_obs_total_counts_vars']] = total_counts_var
 
     top_metrics = {}
     if par["top_n_vars"]:
