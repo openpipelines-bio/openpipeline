@@ -30,12 +30,12 @@ workflow run_wf {
           "input_layer": null, // layer: null to use .X and not log transformed
           "modality": "prot",
           "var_name_mitochondrial_genes": null,
-          "num_nonzero_vars": state.num_nonzero_vars,
-          "total_counts_var": state.total_counts_var,
-          "num_nonzero_obs": state.num_nonzero_obs,
-          "total_counts_obs": state.total_counts_obs,
-          "obs_mean": state.obs_mean,
-          "pct_dropout": state.pct_dropout
+          "output_obs_num_nonzero_vars": state.output_obs_num_nonzero_vars,
+          "output_obs_total_counts_vars": state.output_obs_total_counts_vars,
+          "num_nonzeoutput_var_num_nonzero_obsro_obs": state.output_var_num_nonzero_obs,
+          "output_var_total_counts_obs": state.output_var_total_counts_obs,
+          "output_var_obs_mean": state.output_var_obs_mean,
+          "output_var_pct_dropout": state.pct_dropout
         ]
         newState
       }

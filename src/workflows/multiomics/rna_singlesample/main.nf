@@ -41,7 +41,7 @@ workflow run_wf {
           // disable other qc metric calculations
           // only mitochondrial gene detection is required at this point
           "top_n_vars": [],
-          "output_num_nonzero_vars": null,
+          "output_obs_num_nonzero_vars": null,
           "output_obs_total_counts_vars": null,
           "output_var_num_nonzero_obs": null,
           "output_var_total_counts_obs": null,

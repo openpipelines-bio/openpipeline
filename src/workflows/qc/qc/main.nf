@@ -57,8 +57,8 @@ workflow run_wf {
             "output_obs_total_counts_vars": state.output_obs_total_counts_vars,
             "output_var_num_nonzero_obs": state.output_var_num_nonzero_obs,
             "output_var_total_counts_obs": state.output_var_total_counts_obs,
-            "output_var_obs_mean": state.obs_mean,
-            "output_var_pct_dropout": state.pct_dropout
+            "output_var_obs_mean": state.output_var_obs_mean,
+            "output_var_pct_dropout": state.output_var_pct_dropout
           ]
           if (state.var_qc_metrics) {
             newState += ["var_qc_metrics": state.var_qc_metrics]
