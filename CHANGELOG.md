@@ -63,6 +63,8 @@
 
 * `rna_multisample`, `prot_multisample` and `qc` workflows: allow setting the output column names and disabling the calculation of several metrics (PR #606).
 
+* `cluster/leiden`: Allow calculating multiple resolutions in parallel (PR #645).
+
 * `rna_multisample` workflow: added `--modality` argument (PR #607).
 
 * `multisample` workflow: in addition to using multimodal files as input, this workflow now also accepts a list of files. The list of files must be the unimodal equivalents of 
@@ -74,6 +76,10 @@ of a split multimodal files. The modalities in the list must be unique and after
 
 ## MINOR CHANGES
 * Refactored `rna_multisample` (PR #607), `cellranger_multi` (PR #609), `cellranger_mapping` (PR #610) and other (PR #606) pipelines to use `fromState` and `toState` functionality.
+
+* `cluster/leiden`: Bump python to 3.11 and leidenalg to 0.10.0 (PR #645).
+
+* `mapping/htseq_count_to_h5mu` and `multi_star`: update polars and gtfparse (PR #642). 
 
 * Pin `from_h5mu_to_seurat` to use Seurat to version 4 (PR #630).
 
