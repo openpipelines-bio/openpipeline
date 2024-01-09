@@ -41,12 +41,12 @@ workflow run_wf {
           // disable other qc metric calculations
           // only mitochondrial gene detection is required at this point
           "top_n_vars": [],
-          "num_nonzero_vars": null,
-          "total_counts_var": null,
-          "num_nonzero_obs": null,
-          "total_counts_obs": null,
-          "obs_mean": null,
-          "pct_dropout": null,
+          "output_num_nonzero_vars": null,
+          "output_obs_total_counts_vars": null,
+          "output_var_num_nonzero_obs": null,
+          "output_var_total_counts_obs": null,
+          "output_var_obs_mean": null,
+          "output_var_pct_dropout": null,
           "output": state.output,
           "modality": "rna",
           "layer": null
