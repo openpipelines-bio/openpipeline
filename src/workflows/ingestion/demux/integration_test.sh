@@ -10,6 +10,8 @@ cd "$REPO_ROOT"
 
 export NXF_VER=21.10.6
 
+viash ns build -q 'workflows/ingestion/demux'
+
 nextflow \
   run . \
   -main-script src/workflows/ingestion/demux/test.nf \
