@@ -1,6 +1,6 @@
 nextflow.enable.dsl=2
 
-include { qc } from params.rootDir + "/target/nextflow/workflows/qc/qc/qc/main.nf"
+include { qc } from params.rootDir + "/target/nextflow/workflows/qc/qc/main.nf"
 
 
 workflow test_wf {
