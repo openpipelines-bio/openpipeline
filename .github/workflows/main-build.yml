@@ -33,7 +33,6 @@ jobs:
 
     outputs:
       component_matrix: ${{ steps.set_matrix.outputs.matrix }}
-      cache_key: ${{ steps.cache.outputs.cache_key }}
 
     steps:
     - name: Keep symlinks as-is
@@ -188,7 +187,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        component: ${{ fromJson(needs.list.outputs.component_matrix) }}
+        component: ${{ fromJson(needs.build_and_deploy_target_folder.outputs.component_matrix) }}
 
     steps:
     # Remove unnecessary files to free up space. Otherwise, we get 'no space left on device.'
@@ -224,7 +223,7 @@ jobs:
         setup: push
     
     - name: Login to Viash-Hub container registry
-      if: ${{ github.event.inputs.deploy_to_viash_hub == 'true' }}
+      if: ${{ github.event_name == 'push' || github.event.inputs.deploy_to_viash_hub == 'true' }}
       uses: docker/login-action@v3
       with:
         registry: viash-hub.com:5050
@@ -232,20 +231,20 @@ jobs:
         password: ${{ secrets.VIASHHUB_PAT }}
 
     - name: Update Docker settings
-      if: ${{ github.event.inputs.deploy_to_viash_hub == 'true' }}
+      if: ${{ github.event_name == 'push' || github.event.inputs.deploy_to_viash_hub == 'true' }}
       run: |
         sudo sed -i 's/ }/, \"max-concurrent-uploads\": 2 }/' /etc/docker/daemon.json
         sudo systemctl restart docker
 
     - name: "Re-tag containers for viash-hub"
-      if: ${{ github.event.inputs.deploy_to_viash_hub == 'true' }}
+      if: ${{ github.event_name == 'push' || github.event.inputs.deploy_to_viash_hub == 'true' }}
       run: |
         viash ns exec --apply_platform -p docker \
         'docker tag ghcr.io/openpipelines-bio/{namespace}_{functionality-name}:${{ github.event_name == 'push' && 'main_build' || github.event.inputs.target_tag }} \
         viash-hub.com:5050/openpipelines-bio/openpipeline/{namespace}_{functionality-name}:${{ github.ref_name }}_build'
   
     - name: Push container to Viash-Hub
-      if: ${{ github.event.inputs.deploy_to_viash_hub == 'true' }}
+      if: ${{ github.event_name == 'push' || github.event.inputs.deploy_to_viash_hub == 'true' }}
       uses: viash-io/viash-actions/ns-build@v4
       with:
         config_mod: |
