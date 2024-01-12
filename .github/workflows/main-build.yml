@@ -33,7 +33,6 @@ jobs:
 
     outputs:
       component_matrix: ${{ steps.set_matrix.outputs.matrix }}
-      cache_key: ${{ steps.cache.outputs.cache_key }}
 
     steps:
     - name: Keep symlinks as-is
@@ -188,7 +187,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        component: ${{ fromJson(needs.list.outputs.component_matrix) }}
+        component: ${{ fromJson(needs.build_and_deploy_target_folder.outputs.component_matrix) }}
 
     steps:
     # Remove unnecessary files to free up space. Otherwise, we get 'no space left on device.'
