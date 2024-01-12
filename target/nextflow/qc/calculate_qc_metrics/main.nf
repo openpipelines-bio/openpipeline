@@ -2841,7 +2841,12 @@ meta = [
             "multiple" : false,
             "multiple_sep" : ":",
             "dest" : "par"
-          },
+          }
+        ]
+      },
+      {
+        "name" : "Metrics added to .obs",
+        "arguments" : [
           {
             "type" : "string",
             "name" : "--var_qc_metrics",
@@ -2873,6 +2878,89 @@ meta = [
             "direction" : "input",
             "multiple" : true,
             "multiple_sep" : ",",
+            "dest" : "par"
+          },
+          {
+            "type" : "string",
+            "name" : "--output_obs_num_nonzero_vars",
+            "description" : "Name of column in .obs describing, for each observation, the number of stored values\n(including explicit zeroes). In other words, the name of the column that counts\nfor each row the number of columns that contain data.\n",
+            "default" : [
+              "num_nonzero_vars"
+            ],
+            "required" : false,
+            "direction" : "input",
+            "multiple" : false,
+            "multiple_sep" : ":",
+            "dest" : "par"
+          },
+          {
+            "type" : "string",
+            "name" : "--output_obs_total_counts_vars",
+            "description" : "Name of the column for .obs describing, for each observation (row),\nthe sum of the stored values in the columns.\n",
+            "default" : [
+              "total_counts"
+            ],
+            "required" : false,
+            "direction" : "input",
+            "multiple" : false,
+            "multiple_sep" : ":",
+            "dest" : "par"
+          }
+        ]
+      },
+      {
+        "name" : "Metrics added to .var",
+        "arguments" : [
+          {
+            "type" : "string",
+            "name" : "--output_var_num_nonzero_obs",
+            "description" : "Name of column describing, for each feature, the number of stored values\n(including explicit zeroes). In other words, the name of the column that counts\nfor each column the number of rows that contain data.\n",
+            "default" : [
+              "num_nonzero_obs"
+            ],
+            "required" : false,
+            "direction" : "input",
+            "multiple" : false,
+            "multiple_sep" : ":",
+            "dest" : "par"
+          },
+          {
+            "type" : "string",
+            "name" : "--output_var_total_counts_obs",
+            "description" : "Name of the column in .var describing, for each feature (column),\nthe sum of the stored values in the rows.\n",
+            "default" : [
+              "total_counts"
+            ],
+            "required" : false,
+            "direction" : "input",
+            "multiple" : false,
+            "multiple_sep" : ":",
+            "dest" : "par"
+          },
+          {
+            "type" : "string",
+            "name" : "--output_var_obs_mean",
+            "description" : "Name of the column in .obs providing the mean of the values in each row.\n",
+            "default" : [
+              "obs_mean"
+            ],
+            "required" : false,
+            "direction" : "input",
+            "multiple" : false,
+            "multiple_sep" : ":",
+            "dest" : "par"
+          },
+          {
+            "type" : "string",
+            "name" : "--output_var_pct_dropout",
+            "description" : "Name of the column in .obs providing for each feature the percentage of\nobservations the feature does not appear on (i.e. is missing). Same as `--num_nonzero_obs`\nbut percentage based.\n",
+            "default" : [
+              "pct_dropout"
+            ],
+            "required" : false,
+            "direction" : "input",
+            "multiple" : false,
+            "multiple_sep" : ":",
             "dest" : "par"
           }
         ]
@@ -3055,7 +3143,7 @@ meta = [
     "platform" : "nextflow",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/qc/calculate_qc_metrics",
     "viash_version" : "0.8.2",
-    "git_commit" : "1e947b7c3c163b2b9289775849c79848b1af3dbd",
+    "git_commit" : "de028d8b21b82c99fa574f706c66984faee5b2bb",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))
@@ -3085,6 +3173,12 @@ par = {
   'var_qc_metrics': $( if [ ! -z ${VIASH_PAR_VAR_QC_METRICS+x} ]; then echo "r'${VIASH_PAR_VAR_QC_METRICS//\\'/\\'\\"\\'\\"r\\'}'.split(',')"; else echo None; fi ),
   'var_qc_metrics_fill_na_value': $( if [ ! -z ${VIASH_PAR_VAR_QC_METRICS_FILL_NA_VALUE+x} ]; then echo "r'${VIASH_PAR_VAR_QC_METRICS_FILL_NA_VALUE//\\'/\\'\\"\\'\\"r\\'}'.lower() == 'true'"; else echo None; fi ),
   'top_n_vars': $( if [ ! -z ${VIASH_PAR_TOP_N_VARS+x} ]; then echo "list(map(int, r'${VIASH_PAR_TOP_N_VARS//\\'/\\'\\"\\'\\"r\\'}'.split(',')))"; else echo None; fi ),
+  'output_obs_num_nonzero_vars': $( if [ ! -z ${VIASH_PAR_OUTPUT_OBS_NUM_NONZERO_VARS+x} ]; then echo "r'${VIASH_PAR_OUTPUT_OBS_NUM_NONZERO_VARS//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
+  'output_obs_total_counts_vars': $( if [ ! -z ${VIASH_PAR_OUTPUT_OBS_TOTAL_COUNTS_VARS+x} ]; then echo "r'${VIASH_PAR_OUTPUT_OBS_TOTAL_COUNTS_VARS//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
+  'output_var_num_nonzero_obs': $( if [ ! -z ${VIASH_PAR_OUTPUT_VAR_NUM_NONZERO_OBS+x} ]; then echo "r'${VIASH_PAR_OUTPUT_VAR_NUM_NONZERO_OBS//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
+  'output_var_total_counts_obs': $( if [ ! -z ${VIASH_PAR_OUTPUT_VAR_TOTAL_COUNTS_OBS+x} ]; then echo "r'${VIASH_PAR_OUTPUT_VAR_TOTAL_COUNTS_OBS//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
+  'output_var_obs_mean': $( if [ ! -z ${VIASH_PAR_OUTPUT_VAR_OBS_MEAN+x} ]; then echo "r'${VIASH_PAR_OUTPUT_VAR_OBS_MEAN//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
+  'output_var_pct_dropout': $( if [ ! -z ${VIASH_PAR_OUTPUT_VAR_PCT_DROPOUT+x} ]; then echo "r'${VIASH_PAR_OUTPUT_VAR_PCT_DROPOUT//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'output': $( if [ ! -z ${VIASH_PAR_OUTPUT+x} ]; then echo "r'${VIASH_PAR_OUTPUT//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'output_compression': $( if [ ! -z ${VIASH_PAR_OUTPUT_COMPRESSION+x} ]; then echo "r'${VIASH_PAR_OUTPUT_COMPRESSION//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi )
 }
@@ -3137,16 +3231,35 @@ def main():
     if isspmatrix_coo(layer):
         layer = csr_matrix(layer)
     layer.eliminate_zeros()
-    
+
+    var_columns_to_add = {}
+
     # var statistics
+    if par['output_var_obs_mean']:
+        obs_mean, _  = mean_variance_axis(layer, axis=0)
+        var_columns_to_add[par['output_var_obs_mean']] = obs_mean
+    if par['output_var_total_counts_obs']:
+        total_counts_obs = np.ravel(layer.sum(axis=0))
+        var_columns_to_add[par['output_var_total_counts_obs']] = total_counts_obs
+
     num_nonzero_obs = layer.getnnz(axis=0)
-    obs_mean, _  = mean_variance_axis(layer, axis=0)
-    pct_dropout = (1 - num_nonzero_obs / layer.shape[0]) * 100
-    total_counts_obs = np.ravel(layer.sum(axis=0))
+    if par['output_var_num_nonzero_obs']:
+       var_columns_to_add[par['output_var_num_nonzero_obs']] = num_nonzero_obs
+    if par['output_var_pct_dropout']:
+        var_columns_to_add[par['output_var_pct_dropout']] = (1 - num_nonzero_obs / layer.shape[0]) * 100
+
+    modality_data.var = modality_data.var.assign(**var_columns_to_add)
 
     # obs statistics
-    num_nonzero_vars = layer.getnnz(axis=1)
+    obs_columns_to_add = {}
     total_counts_var = np.ravel(layer.sum(axis=1))
+
+    if par['output_obs_num_nonzero_vars']:
+       num_nonzero_vars = layer.getnnz(axis=1)
+       obs_columns_to_add[par['output_obs_num_nonzero_vars']] = num_nonzero_vars
+
+    if par['output_obs_total_counts_vars']:
+        obs_columns_to_add[par['output_obs_total_counts_vars']] = total_counts_var
 
     top_metrics = {}
     if par["top_n_vars"]:
@@ -3155,13 +3268,14 @@ def main():
         top_metrics = {distribution_size: distribution * 100
                        for distribution_size, distribution 
                        in zip(par["top_n_vars"], distributions.T)}
+        obs_columns_to_add |= {f"pct_of_counts_in_top_{n_top}_vars": col for
+                               n_top, col in top_metrics.items()}
     
-    total_expr_qc = {}
-    pct_expr_qc = {}
     if par["var_qc_metrics"]:
+        print(f"qc_metrics: {par['var_qc_metrics']}")
         for qc_metric in par["var_qc_metrics"]:
             if not qc_metric in var:
-                raise ValueError(f"Value for --var_qc_metrics, {qc_metric} "
+                raise ValueError(f"Value for --var_qc_metrics, '{qc_metric}' "
                                  f"not found in .var for modality {par['modality']}")
             qc_column = var[qc_metric]
             if qc_column.isna().any():
@@ -3175,23 +3289,13 @@ def main():
             if set(np.unique(qc_column)) - {True, False}:
                 raise ValueError(f"Column {qc_metric} in .var for modality {par['modality']} "
                                  f"must only contain boolean values")
-            
-            total_expr_qc[qc_metric] = np.ravel(layer[:, qc_column].sum(axis=1))
-            pct_expr_qc[qc_metric] =  total_expr_qc[qc_metric] / total_counts_var * 100
-    
-    # Write all of the calculated statistics
-    modality_data.var = modality_data.var.assign(
-        **{"pct_dropout": pct_dropout,
-           "num_nonzero_obs": num_nonzero_obs,
-           "obs_mean": obs_mean,
-           "total_counts": total_counts_obs})
-    
-    modality_data.obs = modality_data.obs.assign(
-        **({"num_nonzero_vars": num_nonzero_vars,
-            "total_counts": total_counts_var} | \\\\
-           {f"pct_{qc_metric}": col for qc_metric, col in pct_expr_qc.items()} | \\\\
-           {f"total_counts_{qc_metrix}": col for qc_metrix, col in total_expr_qc.items()}) | \\\\
-           {f"pct_of_counts_in_top_{n_top}_vars": col for n_top, col in top_metrics.items()})
+            total_counts_qc_metric = np.ravel(layer[:, qc_column].sum(axis=1))
+            obs_columns_to_add |= {
+                f"total_counts_{qc_metric}": total_counts_qc_metric,
+                f"pct_{qc_metric}": total_counts_qc_metric / total_counts_var * 100
+            }
+
+    modality_data.obs = modality_data.obs.assign(**obs_columns_to_add)
 
     input_data.write(par["output"], compression=par["output_compression"])
             

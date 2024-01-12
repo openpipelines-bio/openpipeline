@@ -40,6 +40,8 @@ functionality:
           type: string
           example: "raw_counts"
           required: false
+    - name: Metrics added to .obs
+      arguments:
         - name: "--var_qc_metrics"
           description: |
             Keys to select a boolean (containing only True or False) column from .var.
@@ -61,7 +63,53 @@ functionality:
             If not specified, proportions are not calculated. `--top_n_vars 20,50` finds
             cumulative proportion to the 20th and 50th most expressed vars.
           multiple: true
+          required: false
           multiple_sep: ','
+        - name: "--output_obs_num_nonzero_vars"
+          description: |
+            Name of column in .obs describing, for each observation, the number of stored values
+            (including explicit zeroes). In other words, the name of the column that counts
+            for each row the number of columns that contain data.
+          type: string
+          required: false
+          default: "num_nonzero_vars"
+        - name: "--output_obs_total_counts_vars"
+          description: |
+            Name of the column for .obs describing, for each observation (row),
+            the sum of the stored values in the columns.
+          type: string
+          required: false
+          default: total_counts
+    - name: Metrics added to .var
+      arguments:
+        - name: "--output_var_num_nonzero_obs"
+          description: |
+            Name of column describing, for each feature, the number of stored values
+            (including explicit zeroes). In other words, the name of the column that counts
+            for each column the number of rows that contain data.
+          type: string
+          required: false
+          default: "num_nonzero_obs"
+        - name: "--output_var_total_counts_obs"
+          description: |
+            Name of the column in .var describing, for each feature (column),
+            the sum of the stored values in the rows.
+          type: string
+          required: false
+          default: total_counts
+        - name: "--output_var_obs_mean"
+          type: string
+          description: |
+            Name of the column in .obs providing the mean of the values in each row.
+          default: "obs_mean"
+          required: false
+        - name: "--output_var_pct_dropout"
+          type: string
+          default: "pct_dropout"
+          description: |
+            Name of the column in .obs providing for each feature the percentage of
+            observations the feature does not appear on (i.e. is missing). Same as `--num_nonzero_obs`
+            but percentage based.
     - name: Outputs
       arguments:
         - name: "--output"
