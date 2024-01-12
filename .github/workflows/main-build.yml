@@ -247,8 +247,7 @@ jobs:
       if: ${{ github.event_name == 'push' || github.event.inputs.deploy_to_viash_hub == 'true' }}
       run: |
         viash ns exec --apply_platform -p docker \
-        'docker tag ghcr.io/openpipelines-bio/{namespace}_{functionality-name}:${{ github.event_name == 'push' && 'main_build' || github.event.inputs.target_tag }} \
-        viash-hub.com:5050/openpipelines-bio/openpipeline/{namespace}_{functionality-name}:${{ github.ref_name }}_build'
+        'docker tag ghcr.io/openpipelines-bio/{namespace}_{functionality-name}:${{ github.event_name == 'push' && 'main_build' || github.event.inputs.target_tag }} viash-hub.com:5050/openpipelines-bio/openpipeline/{namespace}_{functionality-name}:${{ github.ref_name }}_build'
   
     - name: Push container to Viash-Hub
       if: ${{ github.event_name == 'push' || github.event.inputs.deploy_to_viash_hub == 'true' }}
