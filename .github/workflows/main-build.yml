@@ -182,6 +182,7 @@ jobs:
         commit_message: "deploy: ${{github.sha}}"
         skip_dirty_check: true
         branch: ${{ github.ref_name }}_build
+        skip_checkout: true
 
   # phase 2
   build_and_deploy_docker_containers:
