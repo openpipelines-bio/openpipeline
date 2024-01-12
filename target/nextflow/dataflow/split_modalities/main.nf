@@ -3051,7 +3051,7 @@ meta = [
     "platform" : "nextflow",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/dataflow/split_modalities",
     "viash_version" : "0.8.2",
-    "git_commit" : "de028d8b21b82c99fa574f706c66984faee5b2bb",
+    "git_commit" : "93ffd5a98417d4ea3a83129f1fadc145a2dd65a2",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))
