@@ -145,8 +145,8 @@ jobs:
       if: ${{ github.event_name == 'push' || github.event.inputs.deploy_to_viash_hub == 'true' }}
       # This is needed because git-auto-commit-action uses origin by default
       run: |
-        git remote set-url viash-hub https://x-access-token:${{ secrets.VIASHHUB_PAT }}@viash-hub.com/openpipelines-bio/openpipeline.git
-        git fetch viash-hub
+        git remote add viash-hub https://x-access-token:${{ secrets.VIASHHUB_PAT }}@viash-hub.com/openpipelines-bio/openpipeline.git
+        git fetch viash-hub/${{ github.ref_name }}_build
         git reset --hard viash-hub/${{ github.ref_name }}_build
         git checkout -f --no-overlay origin/${{github.ref_name}} -- '.'
         git remote set-url origin https://x-access-token:${{ secrets.VIASHHUB_PAT }}@viash-hub.com/openpipelines-bio/openpipeline.git

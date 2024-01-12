@@ -3101,7 +3101,7 @@ meta = [
     "platform" : "nextflow",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/query/cellxgene_census",
     "viash_version" : "0.8.2",
-    "git_commit" : "5cede69ba0fb8f3bb72de1c762edfa1c6f95590c",
+    "git_commit" : "fc1a49451623f9f38c83903cc58d510ca7a9350c",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))
