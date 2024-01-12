@@ -2960,7 +2960,7 @@ meta = [
     "platform" : "nextflow",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/genetic_demux/samtools",
     "viash_version" : "0.8.2",
-    "git_commit" : "50ab7e12773859e4cce59f1b1003dccdb43c641d",
+    "git_commit" : "5cede69ba0fb8f3bb72de1c762edfa1c6f95590c",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))
