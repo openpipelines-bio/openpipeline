@@ -135,14 +135,14 @@ jobs:
         ]' ${{ steps.ns_list.outputs.output_file }} )" >> $GITHUB_OUTPUT
 
     - uses: actions/checkout@v4
-      if: ${{ github.event.inputs.deploy_to_viash_hub == 'true' }}
+      if: ${{ github.event_name == 'push' || github.event.inputs.deploy_to_viash_hub == 'true' }}
       with:
         ref: '${{ github.ref_name }}_build'
         fetch-depth: 0
         clean: true
 
     - uses: viash-io/viash-actions/ns-build@v4
-      if: ${{ github.event.inputs.deploy_to_viash_hub == 'true' }}
+      if: ${{ github.event_name == 'push' || github.event.inputs.deploy_to_viash_hub == 'true' }}
       with:
         config_mod: |
           .functionality.version := '${{ github.ref_name }}_build'
@@ -154,7 +154,7 @@ jobs:
         query: ^(?!workflows)
       
     - uses: viash-io/viash-actions/ns-build@v4
-      if: ${{ github.event.inputs.deploy_to_viash_hub == 'true' }}
+      if: ${{ github.event_name == 'push' || github.event.inputs.deploy_to_viash_hub == 'true' }}
       with:
         config_mod: |
           .functionality.version := '${{ github.ref_name }}_build'
@@ -162,14 +162,14 @@ jobs:
         query: ^workflows
     
     - name: Set origin to viash-hub
-      if: ${{ github.event.inputs.deploy_to_viash_hub == 'true' }}
+      if: ${{ github.event_name == 'push' || github.event.inputs.deploy_to_viash_hub == 'true' }}
       # This is needed because git-auto-commit-action uses origin by default
       run: |
         git remote rm viash-hub
         git remote set-url origin https://x-access-token:${{ secrets.VIASHHUB_PAT }}@viash-hub.com/openpipelines-bio/openpipeline.git
    
     - name: Deploy to target branch
-      if: ${{ github.event.inputs.deploy_to_viash_hub == 'true' }}
+      if: ${{ github.event_name == 'push' || github.event.inputs.deploy_to_viash_hub == 'true' }}
       uses: stefanzweifel/git-auto-commit-action@v5
       with:
         create_branch: true
