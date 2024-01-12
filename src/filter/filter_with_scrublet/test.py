@@ -117,7 +117,7 @@ def input_with_failed_run():
     return new_mudata_path
 
 
-def test_doublet_automatic_threshold_detection_fails_recovery(run_component, input_with_failed_run):
+def test_doublet_automatic_threshold_detection_fails(run_component, input_with_failed_run):
     """
     Test if the component fails if doublet score threshold could not automatically be set
     """
@@ -129,14 +129,16 @@ def test_doublet_automatic_threshold_detection_fails_recovery(run_component, inp
             "--output", output_mu,
             "--output_compression", "gzip",
             "--num_pca_components", "1",
-            "--min_gene_variablity_percent", "0"
+            "--min_gene_variablity_percent", "0",
+            "--min_cells", "1",
+            "--min_counts", "1",
         ])
-        assert re.search(r"RuntimeError: Scrublet could not automatically detect the doublet score threshold\. "
-            r"--allow_automatic_threshold_detection_fail can be used to ignore this failure and "
-            r"set the corresponding output columns to NA\.",
-            e_info.value)
-        
-        assert Path(output_mu).is_file(), "Output file not found"
+    assert re.search(r"RuntimeError: Scrublet could not automatically detect the doublet score threshold\. "
+        r"--allow_automatic_threshold_detection_fail can be used to ignore this failure and "
+        r"set the corresponding output columns to NA\.",
+        e_info.value.stdout.decode('utf-8'))
+
+    assert not Path(output_mu).is_file(), "Output file not found"
 
 
 def test_doublet_automatic_threshold_detection_fails_recovery(run_component, input_with_failed_run):
@@ -152,12 +154,14 @@ def test_doublet_automatic_threshold_detection_fails_recovery(run_component, inp
         "--output_compression", "gzip",
         "--num_pca_components", "1",
         "--min_gene_variablity_percent", "0",
+        "--min_cells", "1",
+        "--min_counts", "1",
         "--allow_automatic_threshold_detection_fail"
     ])
     assert Path(output_mu).is_file(), "Output file not found"
 
     mu_out = mu.read_h5mu(output_mu)
-    assert not mu_out.mod['rna'].obs['filter_with_scrublet'].any()
+    assert mu_out.mod['rna'].obs['filter_with_scrublet'].isna().all()
 
 if __name__ == '__main__':
     exit(pytest.main([__file__]))

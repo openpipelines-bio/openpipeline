@@ -50,6 +50,8 @@
 
 ## BUG FIXES
 
+* `filter/filter_with_scrublet`: (Testing) Fix duplicate test function names (PR #641).
+
 * `dataflow/concatenate_h5mu` and `dataflow/concat`: Fix `TypeError` when using mode 'move' and a column with conflicting metadata does not exist across all samples (PR #631).
 
 * `dataflow/concatenate_h5mu` and `dataflow/concat`: Fix an issue where joining columns with different datatypes caused `TypeError` (PR #619).
