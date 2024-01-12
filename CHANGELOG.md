@@ -16,8 +16,10 @@
 
 ## NEW FUNCTIONALITY
 
-* `cluster/leiden`: Allow calculating multiple resolutions in parallel (PR #645).
+* `qc/calculate_qc_metrics`: allow setting the output column names and disabling the calculation of several metrics (PR #644).
 
+* `cluster/leiden`: Allow calculating multiple resolutions in parallel (PR #645).
+* 
 * `rna_multisample` workflow: added `--modality` argument (PR #607).
 
 * Added `filter/intersect_obs` component which removes observations that are not shared between modalities (PR #589).
