@@ -3001,7 +3001,7 @@ meta = [
     "platform" : "nextflow",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/report/mermaid",
     "viash_version" : "0.8.2",
-    "git_commit" : "343e661482d968fff5e9b6165d32f73010595c1e",
+    "git_commit" : "d004f3f514dc2f376512ea1dbd49240d8ce1cf06",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))
