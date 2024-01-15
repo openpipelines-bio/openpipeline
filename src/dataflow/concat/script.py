@@ -222,7 +222,9 @@ def split_conflicts_modalities(n_processes: int, samples: dict[str, anndata.AnnD
             getattr(output, f"{matrix_name}m")[conflict_name] = conflict_data.reindex(matrix_index)
 
         # Set other annotation matrices in the output
-        setattr(output, matrix_name, pd.DataFrame() if concatenated_matrix is None else concatenated_matrix)
+        setattr(output, matrix_name, 
+                pd.DataFrame() if concatenated_matrix is None \
+                else concatenated_matrix.reindex(matrix_index))
 
     return output
 

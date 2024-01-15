@@ -7,6 +7,7 @@ import pytest
 import re
 import sys
 import uuid
+import muon
 
 ## VIASH START
 meta = {
@@ -418,6 +419,41 @@ def test_concat_invalid_h5_error_includes_path(run_component, tmp_path):
                 ])
         assert re.search(rf"OSError: Failed to load .*{str(empty_file)}\. Is it a valid h5 file?",
             err.value.stdout.decode('utf-8'))
+        
+
+@pytest.mark.parametrize("mudata_without_genome",
+                          [([input_sample1_file], ["rna", "atac"])],
+                          indirect=["mudata_without_genome"])
+def test_concat_var_obs_names_order(run_component, mudata_without_genome):
+    """
+    Test what happens when concatenating samples with differing auxiliary
+    (like in .var) columns (present in 1 sample, absent in other).
+    When concatenating the samples, all columns should be present in the
+    resulting object, filling the values from samples with the missing
+    column with NA.
+    """
+    [sample1_without_genome,] = mudata_without_genome
+    run_component([
+            "--input_id", "mouse,human",
+            "--input", sample1_without_genome,
+            "--input", input_sample2_file,
+            "--output", "concat.h5mu",
+            "--other_axis_mode", "move"
+            ])
+
+    assert Path("concat.h5mu").is_file() is True
+    concatenated_data = md.read("concat.h5mu")
+
+    data_sample1 = md.read(sample1_without_genome)
+    data_sample2 = md.read(input_sample2_file)
+    for sample_name, sample in {"mouse": data_sample1, "human": data_sample2}.items():
+        for mod_name in sample.mod.keys():
+            data_sample = sample.mod[mod_name]
+            processed_data = concatenated_data.mod[mod_name].copy()
+            muon.pp.filter_obs(processed_data, 'sample_id', lambda x: x == sample_name)
+            muon.pp.filter_var(processed_data, data_sample.var_names)
+            pd.testing.assert_frame_equal(data_sample.to_df().sort_index().sort_index(axis=1), 
+                                          processed_data.to_df().sort_index().sort_index(axis=1))
 
 if __name__ == '__main__':
     sys.exit(pytest.main([__file__, "-v"]))
