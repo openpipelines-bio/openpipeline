@@ -452,8 +452,13 @@ def test_concat_var_obs_names_order(run_component, mudata_without_genome):
             processed_data = concatenated_data.mod[mod_name].copy()
             muon.pp.filter_obs(processed_data, 'sample_id', lambda x: x == sample_name)
             muon.pp.filter_var(processed_data, data_sample.var_names)
-            pd.testing.assert_frame_equal(data_sample.to_df().sort_index().sort_index(axis=1), 
-                                          processed_data.to_df().sort_index().sort_index(axis=1))
+            data_sample_to_test = data_sample.to_df()
+            data_sample_to_test.sort_index(inplace=True)
+            data_sample_to_test.sort_index(axis=1, inplace=True)
+            processed_data_to_test = processed_data.to_df()
+            processed_data_to_test.sort_index(inplace=True)
+            processed_data_to_test.sort_index(axis=1, inplace=True)
+            pd.testing.assert_frame_equal(data_sample_to_test, processed_data_to_test)
 
 if __name__ == '__main__':
     sys.exit(pytest.main([__file__, "-v"]))
