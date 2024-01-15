@@ -444,11 +444,10 @@ def test_concat_var_obs_names_order(run_component, mudata_without_genome):
     assert Path("concat.h5mu").is_file() is True
     concatenated_data = md.read("concat.h5mu")
 
-    data_sample1 = md.read(sample1_without_genome)
-    data_sample2 = md.read(input_sample2_file)
-    for sample_name, sample in {"mouse": data_sample1, "human": data_sample2}.items():
-        for mod_name in sample.mod.keys():
-            data_sample = sample.mod[mod_name]
+    for sample_name, sample_path in {"mouse": sample1_without_genome, 
+                                     "human": input_sample2_file}.items():
+        for mod_name in ["rna", "atac"]:
+            data_sample = md.read_h5ad(sample_path, mod=mod_name)
             processed_data = concatenated_data.mod[mod_name].copy()
             muon.pp.filter_obs(processed_data, 'sample_id', lambda x: x == sample_name)
             muon.pp.filter_var(processed_data, data_sample.var_names)
