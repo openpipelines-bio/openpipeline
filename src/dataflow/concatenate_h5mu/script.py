@@ -18,7 +18,8 @@ par = {
     "output": "foo.h5mu",
     "input_id": ["mouse", "human"],
     "other_axis_mode": "move",
-    "output_compression": "gzip"
+    "output_compression": "gzip",
+    "enable_assertions": True
 }
 meta = {
     "cpus": 10,
@@ -121,7 +122,7 @@ def any_row_contains_duplicate_values(n_processes: int, frame: pd.DataFrame) -> 
         is_duplicated = pool.map(nunique, iter(numpy_array))
     return any(is_duplicated)
 
-def concatenate_matrices(n_processes: int, matrices: dict[str, pd.DataFrame]) \
+def concatenate_matrices(n_processes: int, matrices: dict[str, pd.DataFrame], align_to: pd.Index) \
     -> tuple[dict[str, pd.DataFrame], pd.DataFrame | None, dict[str, pd.core.dtypes.dtypes.Dtype]]:
     """
     Merge matrices by combining columns that have the same name.
@@ -131,14 +132,22 @@ def concatenate_matrices(n_processes: int, matrices: dict[str, pd.DataFrame]) \
     column_names = set(column_name for var in matrices.values() for column_name in var)
     logger.debug('Trying to concatenate columns: %s.', ",".join(column_names))
     if not column_names:
-        return {}, None
+        return {}, pd.DataFrame(index=align_to)
     conflicts, concatenated_matrix = \
         split_conflicts_and_concatenated_columns(n_processes,
                                                  matrices,
-                                                 column_names)
+                                                 column_names,
+                                                 align_to)
     concatenated_matrix = cast_to_writeable_dtype(concatenated_matrix)
     conflicts = {conflict_name: cast_to_writeable_dtype(conflict_df) 
                  for conflict_name, conflict_df in conflicts.items()}
+    if par["enable_assertions"]: 
+        assert all([align_to.equals(to_check.index) for to_check in conflicts.values()]), \
+        "Runtime check failed: non-conflicting columns should have the same indices. "
+        "Please report this as a bug."
+        assert concatenated_matrix.index.equals(align_to), \
+        "Runtime check failed: annotation dataframe should have the same "
+        "index as the final MuData object. Please report this as a bug."
     return conflicts, concatenated_matrix
 
 def get_first_non_na_value_vector(df):
@@ -150,7 +159,8 @@ def get_first_non_na_value_vector(df):
 
 def split_conflicts_and_concatenated_columns(n_processes: int,
                                              matrices: dict[str, pd.DataFrame],
-                                             column_names: Iterable[str]) -> \
+                                             column_names: Iterable[str],
+                                             align_to: pd.Index) -> \
                                             tuple[dict[str, pd.DataFrame], pd.DataFrame]:
     """
     Retrieve columns with the same name from a list of dataframes which are
@@ -166,20 +176,22 @@ def split_conflicts_and_concatenated_columns(n_processes: int,
                    for input_id, var in matrices.items()
                    if column_name in var}
         assert columns, "Some columns should have been found."
-        concatenated_columns = pd.concat(columns.values(), axis=1, join="outer")
+        concatenated_columns = pd.concat(columns.values(), axis=1, 
+                                         verify_integrity=par["enable_assertions"],
+                                         join="outer", sort=False)
+        concatenated_columns = concatenated_columns.reindex(align_to, copy=False) 
         if any_row_contains_duplicate_values(n_processes, concatenated_columns):
             concatenated_columns.columns = columns.keys() # Use the sample id as column name
             conflicts[f'conflict_{column_name}'] = concatenated_columns
         else:
             unique_values = get_first_non_na_value_vector(concatenated_columns)
-            # concatenated_columns.fillna(method='bfill', axis=1).iloc[:, 0]
             concatenated_matrix.append(unique_values)
-    if concatenated_matrix:
-        concatenated_matrix = pd.concat(concatenated_matrix, join="outer", axis=1)
-    else:
-        concatenated_matrix = pd.DataFrame()
-
-    return conflicts, concatenated_matrix
+    if not concatenated_matrix:
+        return conflicts, pd.DataFrame(index=align_to)
+    concatenated_matrix = pd.concat(concatenated_matrix, join="outer",
+                                    verify_integrity=par["enable_assertions"],
+                                    axis=1, sort=False)
+    return conflicts, concatenated_matrix.reindex(align_to, copy=False)
 
 def cast_to_writeable_dtype(result: pd.DataFrame) -> pd.DataFrame:
     """
@@ -214,15 +226,15 @@ def split_conflicts_modalities(n_processes: int, samples: dict[str, anndata.AnnD
     matrices_to_parse = ("var", "obs")
     for matrix_name in matrices_to_parse:
         matrices = {sample_id: getattr(sample, matrix_name) for sample_id, sample in samples.items()}
-        conflicts, concatenated_matrix = concatenate_matrices(n_processes, matrices)
+        output_index = getattr(output, matrix_name).index
+        conflicts, concatenated_matrix = concatenate_matrices(n_processes, matrices, output_index)
         
         # Write the conflicts to the output
-        matrix_index = getattr(output, matrix_name).index
         for conflict_name, conflict_data in conflicts.items():
-            getattr(output, f"{matrix_name}m")[conflict_name] = conflict_data.reindex(matrix_index)
+            getattr(output, f"{matrix_name}m")[conflict_name] = conflict_data
 
         # Set other annotation matrices in the output
-        setattr(output, matrix_name, pd.DataFrame() if concatenated_matrix is None else concatenated_matrix)
+        setattr(output, matrix_name, concatenated_matrix)
 
     return output
 
