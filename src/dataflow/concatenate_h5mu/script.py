@@ -170,44 +170,28 @@ def split_conflicts_and_concatenated_columns(n_processes: int,
     with the same name that store conflicting values.
     """
     conflicts = {}
-    # Observations are unique, so check for a one-to-one join of the indexes
-    # one-to-one: check if join keys are unique in both left and right datasets.
-    validate = None if not par["enable_assertions"] else "one_to_one"
-    columns_to_join = []
+    concatenated_matrix = []
     for column_name in column_names:
-        # rename: use sample ids as the name of the column
-        # as pandas' join() requires unique column names
-        columns = {input_id: var[column_name].rename(input_id)
+        columns = {input_id: var[column_name]
                    for input_id, var in matrices.items()
                    if column_name in var}
         assert columns, "Some columns should have been found."
-        concatenated_columns = pd.DataFrame(index=align_to).join(columns.values(), validate=validate, 
-                                                                 how="left", sort=False)
+        concatenated_columns = pd.concat(columns.values(), axis=1, 
+                                         verify_integrity=par["enable_assertions"],
+                                         join="outer", sort=False)
+        concatenated_columns = concatenated_columns.reindex(align_to, copy=False) 
         if any_row_contains_duplicate_values(n_processes, concatenated_columns):
-            if par["enable_assertions"]:
-                assert concatenated_columns.index.equals(align_to), \
-                "Runtime check failed: conflicting columns dataframe should have the same index "
-                "as the final concatenated MuData object. Please report this as a bug."
+            concatenated_columns.columns = columns.keys() # Use the sample id as column name
             conflicts[f'conflict_{column_name}'] = concatenated_columns
         else:
             unique_values = get_first_non_na_value_vector(concatenated_columns)
-             # overwrite the column name from sample ID with the original annotation column name
-            unique_values.name = column_name
-            columns_to_join.append(unique_values)
-    if par["enable_assertions"]:
-        assert all([columns_to_join[0].index.equals(to_check.index) 
-                    for to_check in columns_to_join]), \
-        "Runtime check failed: non-conflicting columns should have the same indices. "
-        "Please report this as a bug."
-    concatenated_matrix = pd.DataFrame(index=align_to)
-    concatenated_matrix = concatenated_matrix.join(columns_to_join, how="left", 
-                                                   sort=False, validate=validate)
-    if par["enable_assertions"]:
-        assert concatenated_matrix.index.equals(align_to), \
-        "Runtime check failed: annotation dataframe should have "
-        "the same index as the final MuData object. Please report "
-        "this as a bug."
-    return conflicts, concatenated_matrix
+            concatenated_matrix.append(unique_values)
+    if not concatenated_matrix:
+        return conflicts, pd.DataFrame(index=align_to)
+    concatenated_matrix = pd.concat(concatenated_matrix, join="outer",
+                                    verify_integrity=par["enable_assertions"],
+                                    axis=1, sort=False)
+    return conflicts, concatenated_matrix.reindex(align_to, copy=False)
 
 def cast_to_writeable_dtype(result: pd.DataFrame) -> pd.DataFrame:
     """
