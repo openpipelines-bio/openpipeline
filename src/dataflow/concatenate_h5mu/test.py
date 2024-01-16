@@ -466,4 +466,4 @@ def test_concat_var_obs_names_order(run_component_with_assertions, mudata_withou
             # pd.testing.assert_frame_equal(data_sample_to_test, processed_data_to_test, check_like=True)
 
 if __name__ == '__main__':
-    sys.exit(pytest.main([__file__, "-v", "-x"]))
+    sys.exit(pytest.main([__file__, "-v", "-x", "--log-cli-level"]))
