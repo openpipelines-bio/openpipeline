@@ -10,6 +10,7 @@ from pathlib import Path
 from h5py import File as H5File
 from typing import Literal
 import shutil
+import gc
 
 ### VIASH START
 par = {
@@ -180,6 +181,7 @@ def split_conflicts_and_concatenated_columns(n_processes: int,
                                          verify_integrity=par["enable_assertions"],
                                          join="outer", sort=False)
         concatenated_columns = concatenated_columns.reindex(align_to, copy=False) 
+        gc.collect()
         if any_row_contains_duplicate_values(n_processes, concatenated_columns):
             concatenated_columns.columns = columns.keys() # Use the sample id as column name
             conflicts[f'conflict_{column_name}'] = concatenated_columns
@@ -191,7 +193,9 @@ def split_conflicts_and_concatenated_columns(n_processes: int,
     concatenated_matrix = pd.concat(concatenated_matrix, join="outer",
                                     verify_integrity=par["enable_assertions"],
                                     axis=1, sort=False)
-    return conflicts, concatenated_matrix.reindex(align_to, copy=False)
+    concatenated_matrix = concatenated_matrix.reindex(align_to, copy=False)
+    gc.collect()
+    return conflicts, concatenated_matrix
 
 def cast_to_writeable_dtype(result: pd.DataFrame) -> pd.DataFrame:
     """
