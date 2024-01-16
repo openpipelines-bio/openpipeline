@@ -18,8 +18,7 @@ par = {
     "output": "foo.h5mu",
     "input_id": ["mouse", "human"],
     "other_axis_mode": "move",
-    "output_compression": "gzip",
-    "enable_assertions": True
+    "output_compression": "gzip"
 }
 meta = {
     "cpus": 10,
@@ -170,7 +169,6 @@ def split_conflicts_and_concatenated_columns(n_processes: int,
                    if column_name in var}
         assert columns, "Some columns should have been found."
         concatenated_columns = pd.concat(columns.values(), axis=1, 
-                                         verify_integrity=par["enable_assertions"],
                                          join="outer", sort=False)
         if any_row_contains_duplicate_values(n_processes, concatenated_columns):
             concatenated_columns.columns = columns.keys() # Use the sample id as column name
@@ -183,7 +181,6 @@ def split_conflicts_and_concatenated_columns(n_processes: int,
     if not concatenated_matrix:
         return conflicts, pd.DataFrame(index=align_to)
     concatenated_matrix = pd.concat(concatenated_matrix, join="outer",
-                                    verify_integrity=par["enable_assertions"],
                                     axis=1, sort=False)
     if align_to is not None:
         concatenated_matrix = concatenated_matrix.reindex(align_to, copy=False)
@@ -227,13 +224,6 @@ def split_conflicts_modalities(n_processes: int, samples: dict[str, anndata.AnnD
         conflicts, concatenated_matrix = concatenate_matrices(n_processes, matrices, align_to)
         if concatenated_matrix.empty:
            concatenated_matrix.index = output_index 
-        if par["enable_assertions"]: 
-            assert all([output_index.equals(to_check.index) for to_check in conflicts.values()]), \
-            "Runtime check failed: non-conflicting columns should have the same indices. "
-            "Please report this as a bug."
-            assert concatenated_matrix.index.equals(output_index), \
-            "Runtime check failed: annotation dataframe should have the same "
-            "index as the final MuData object. Please report this as a bug."
         # Write the conflicts to the output
         for conflict_name, conflict_data in conflicts.items():
             getattr(output, f"{matrix_name}m")[conflict_name] = conflict_data
