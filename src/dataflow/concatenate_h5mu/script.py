@@ -122,7 +122,7 @@ def any_row_contains_duplicate_values(n_processes: int, frame: pd.DataFrame) -> 
         is_duplicated = pool.map(nunique, iter(numpy_array))
     return any(is_duplicated)
 
-def concatenate_matrices(n_processes: int, matrices: dict[str, pd.DataFrame], align_to: pd.Index) \
+def concatenate_matrices(n_processes: int, matrices: dict[str, pd.DataFrame], align_to: pd.Index | None) \
     -> tuple[dict[str, pd.DataFrame], pd.DataFrame | None, dict[str, pd.core.dtypes.dtypes.Dtype]]:
     """
     Merge matrices by combining columns that have the same name.
@@ -141,13 +141,6 @@ def concatenate_matrices(n_processes: int, matrices: dict[str, pd.DataFrame], al
     concatenated_matrix = cast_to_writeable_dtype(concatenated_matrix)
     conflicts = {conflict_name: cast_to_writeable_dtype(conflict_df) 
                  for conflict_name, conflict_df in conflicts.items()}
-    if par["enable_assertions"]: 
-        assert all([align_to.equals(to_check.index) for to_check in conflicts.values()]), \
-        "Runtime check failed: non-conflicting columns should have the same indices. "
-        "Please report this as a bug."
-        assert concatenated_matrix.index.equals(align_to), \
-        "Runtime check failed: annotation dataframe should have the same "
-        "index as the final MuData object. Please report this as a bug."
     return conflicts, concatenated_matrix
 
 def get_first_non_na_value_vector(df):
@@ -160,7 +153,7 @@ def get_first_non_na_value_vector(df):
 def split_conflicts_and_concatenated_columns(n_processes: int,
                                              matrices: dict[str, pd.DataFrame],
                                              column_names: Iterable[str],
-                                             align_to: pd.Index) -> \
+                                             align_to: pd.Index | None = None) -> \
                                             tuple[dict[str, pd.DataFrame], pd.DataFrame]:
     """
     Retrieve columns with the same name from a list of dataframes which are
@@ -179,10 +172,11 @@ def split_conflicts_and_concatenated_columns(n_processes: int,
         concatenated_columns = pd.concat(columns.values(), axis=1, 
                                          verify_integrity=par["enable_assertions"],
                                          join="outer", sort=False)
-        concatenated_columns = concatenated_columns.reindex(align_to, copy=False) 
         if any_row_contains_duplicate_values(n_processes, concatenated_columns):
             concatenated_columns.columns = columns.keys() # Use the sample id as column name
-            conflicts[f'conflict_{column_name}'] = concatenated_columns
+            if align_to is not None:
+                concatenated_columns = concatenated_columns.reindex(align_to, copy=False)
+            conflicts[f'conflict_{column_name}'] = concatenated_columns 
         else:
             unique_values = get_first_non_na_value_vector(concatenated_columns)
             concatenated_matrix.append(unique_values)
@@ -191,7 +185,9 @@ def split_conflicts_and_concatenated_columns(n_processes: int,
     concatenated_matrix = pd.concat(concatenated_matrix, join="outer",
                                     verify_integrity=par["enable_assertions"],
                                     axis=1, sort=False)
-    return conflicts, concatenated_matrix.reindex(align_to, copy=False)
+    if align_to is not None:
+        concatenated_matrix = concatenated_matrix.reindex(align_to, copy=False)
+    return conflicts, concatenated_matrix
 
 def cast_to_writeable_dtype(result: pd.DataFrame) -> pd.DataFrame:
     """
@@ -226,9 +222,18 @@ def split_conflicts_modalities(n_processes: int, samples: dict[str, anndata.AnnD
     matrices_to_parse = ("var", "obs")
     for matrix_name in matrices_to_parse:
         matrices = {sample_id: getattr(sample, matrix_name) for sample_id, sample in samples.items()}
-        output_index = getattr(output, matrix_name).index
-        conflicts, concatenated_matrix = concatenate_matrices(n_processes, matrices, output_index)
-        
+        output_index = getattr(output, matrix_name).index 
+        align_to = output_index if matrix_name == "var" else None
+        conflicts, concatenated_matrix = concatenate_matrices(n_processes, matrices, align_to)
+        if concatenated_matrix.empty:
+           concatenated_matrix.index = output_index 
+        if par["enable_assertions"]: 
+            assert all([output_index.equals(to_check.index) for to_check in conflicts.values()]), \
+            "Runtime check failed: non-conflicting columns should have the same indices. "
+            "Please report this as a bug."
+            assert concatenated_matrix.index.equals(output_index), \
+            "Runtime check failed: annotation dataframe should have the same "
+            "index as the final MuData object. Please report this as a bug."
         # Write the conflicts to the output
         for conflict_name, conflict_data in conflicts.items():
             getattr(output, f"{matrix_name}m")[conflict_name] = conflict_data

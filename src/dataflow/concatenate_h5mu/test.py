@@ -9,7 +9,6 @@ import sys
 import uuid
 import muon
 
-enable_runtime_assertions = False
 ## VIASH START
 meta = {
     'executable': './target/docker/dataflow/concatenate_h5mu/concatenate_h5mu',
@@ -17,7 +16,6 @@ meta = {
     'cpus': 2,
     'config': './src/dataflow/concatenate_h5mu/config.vsh.yaml'
 }
-enable_runtime_assertions = True
 ## VIASH END
 
 meta['cpus'] = 1 if not meta['cpus'] else meta['cpus']
@@ -28,6 +26,14 @@ meta['cpus'] = 1 if not meta['cpus'] else meta['cpus']
 # the conflict.
 input_sample1_file = f"{meta['resources_dir']}/e18_mouse_brain_fresh_5k_filtered_feature_bc_matrix_subset_unique_obs.h5mu"
 input_sample2_file = f"{meta['resources_dir']}/human_brain_3k_filtered_feature_bc_matrix_subset_unique_obs.h5mu"
+
+@pytest.fixture
+def anndata_to_sparse_dataframe():
+    def wrapper(anndata_object):
+        return pd.DataFrame.sparse.from_spmatrix(anndata_object.X,
+                                                 index=anndata_object.obs_names, 
+                                                 columns=anndata_object.var_names)
+    return wrapper
 
 @pytest.fixture
 def mudata_without_genome(tmp_path, request):
@@ -109,8 +115,7 @@ def copied_mudata_with_extra_annotation_column(tmp_path, mudata_copy_with_unique
 @pytest.fixture
 def run_component_with_assertions(run_component):
     def wrapper(args_as_list):
-        if enable_runtime_assertions:
-            args_as_list.append("--enable_assertions")
+        args_as_list.append("--enable_assertions")
         return run_component(args_as_list)
     return wrapper
 
@@ -434,7 +439,8 @@ def test_concat_invalid_h5_error_includes_path(run_component_with_assertions, tm
 @pytest.mark.parametrize("mudata_without_genome",
                           [([input_sample1_file], ["rna", "atac"])],
                           indirect=["mudata_without_genome"])
-def test_concat_var_obs_names_order(run_component_with_assertions, mudata_without_genome):
+def test_concat_var_obs_names_order(run_component_with_assertions, mudata_without_genome, 
+                                    anndata_to_sparse_dataframe):
     """
     Test what happens when concatenating samples with differing auxiliary
     (like in .var) columns (present in 1 sample, absent in other).
@@ -454,13 +460,18 @@ def test_concat_var_obs_names_order(run_component_with_assertions, mudata_withou
     for sample_name, sample_path in {"mouse": sample1_without_genome, 
                                      "human": input_sample2_file}.items():
         for mod_name in ["rna", "atac"]:
-            data_sample = md.read_h5ad(sample_path, mod=mod_name, backed='r')
+            data_sample = md.read_h5ad(sample_path, mod=mod_name)
             processed_data = md.read_h5ad("concat.h5mu", mod=mod_name)
             muon.pp.filter_obs(processed_data, 'sample_id', lambda x: x == sample_name)
             muon.pp.filter_var(processed_data, data_sample.var_names)
-            data_sample_to_test = data_sample.to_df()
-            processed_data_to_test = processed_data.to_df()
-            pd.testing.assert_frame_equal(data_sample_to_test, processed_data_to_test, check_like=True)
+            data_sample_to_test = anndata_to_sparse_dataframe(data_sample)
+            processed_data_to_test = anndata_to_sparse_dataframe(processed_data)
+            data_sample_to_test = data_sample_to_test.reindex_like(processed_data_to_test)
+            pd.testing.assert_index_equal(data_sample_to_test.columns, processed_data_to_test.columns)
+            pd.testing.assert_index_equal(data_sample_to_test.index, processed_data_to_test.index)
+            for (_, col1), (_, col2) in zip(data_sample_to_test.items(), processed_data_to_test.items()):
+                pd._testing.assert_sp_array_equal(col1.array, col2.array)
+            
 
 if __name__ == '__main__':
-    sys.exit(pytest.main([__file__, "-v", "-x"]))
+    sys.exit(pytest.main([__file__, "-v"]))
