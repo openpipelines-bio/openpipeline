@@ -104,13 +104,20 @@ def copied_mudata_with_extra_annotation_column(tmp_path, mudata_copy_with_unique
     copied_mudata.write(str(copy_mudata_path), compression="gzip")
     return original_mudata_path, copy_mudata_path
 
-def test_concatenate_samples_with_same_observation_ids_raises(run_component):
+@pytest.fixture
+def run_component_with_assertions(run_component):
+    def wrapper(args_as_list):
+        args_as_list.append("--enable_assertions")
+        return run_component(args_as_list)
+    return wrapper
+
+def test_concatenate_samples_with_same_observation_ids_raises(run_component_with_assertions):
     """
     Test how concat handles overlapping observation IDs.
     This should raise.
     """
     with pytest.raises(subprocess.CalledProcessError) as err:
-        run_component([
+        run_component_with_assertions([
                 "--input_id", "mouse,mouse2",
                 "--input", input_sample1_file,
                 "--input", input_sample1_file,
@@ -124,7 +131,7 @@ def test_concatenate_samples_with_same_observation_ids_raises(run_component):
 @pytest.mark.parametrize("mudata_without_genome",
                           [([input_sample1_file], ["rna", "atac"])],
                           indirect=["mudata_without_genome"])
-def test_concat_different_var_columns_per_sample(run_component, mudata_without_genome):
+def test_concat_different_var_columns_per_sample(run_component_with_assertions, mudata_without_genome):
     """
     Test what happens when concatenating samples with differing auxiliary
     (like in .var) columns (present in 1 sample, absent in other).
@@ -133,7 +140,7 @@ def test_concat_different_var_columns_per_sample(run_component, mudata_without_g
     column with NA.
     """
     [sample1_without_genome,] = mudata_without_genome
-    run_component([
+    run_component_with_assertions([
             "--input_id", "mouse,human",
             "--input", sample1_without_genome,
             "--input", input_sample2_file,
@@ -173,14 +180,14 @@ def test_concat_different_var_columns_per_sample(run_component, mudata_without_g
 @pytest.mark.parametrize("mudata_without_genome",
                           [([input_sample1_file, input_sample2_file], ["rna"])],
                           indirect=["mudata_without_genome"])
-def test_concat_different_columns_per_modality(run_component, mudata_without_genome):
+def test_concat_different_columns_per_modality(run_component_with_assertions, mudata_without_genome):
     """
     Test what happens when concatenating samples that have auxiliary columns
     that differ between the modalities, but the difference is the same in all samples.
     """
     sample1_without_genome, sample2_without_genome = mudata_without_genome
 
-    run_component([
+    run_component_with_assertions([
             "--input_id", "mouse,human",
             "--input", sample1_without_genome,
             "--input", sample2_without_genome,
@@ -221,14 +228,14 @@ def test_concat_different_columns_per_modality(run_component, mudata_without_gen
 @pytest.mark.parametrize("mudata_without_genome",
                           [([input_sample1_file], ["rna"])],
                           indirect=["mudata_without_genome"])
-def test_concat_different_columns_per_modality_and_per_sample(run_component, mudata_without_genome):
+def test_concat_different_columns_per_modality_and_per_sample(run_component_with_assertions, mudata_without_genome):
     """
     Test what happens when concatenating samples that have auxiliary columns
     that differ between the modalities and also between samples
     """
 
     [sample_1_without_genome, ] = mudata_without_genome
-    run_component([
+    run_component_with_assertions([
         "--input_id", "mouse,human",
         "--input", sample_1_without_genome,
         "--input", input_sample2_file,
@@ -273,13 +280,13 @@ def test_concat_different_columns_per_modality_and_per_sample(run_component, mud
 @pytest.mark.parametrize("mudata_copy_with_unique_obs",
                           [input_sample1_file],
                           indirect=["mudata_copy_with_unique_obs"])
-def test_concat_remove_na(run_component, copied_mudata_with_extra_annotation_column, expected):
+def test_concat_remove_na(run_component_with_assertions, copied_mudata_with_extra_annotation_column, expected):
     """
     Test concatenation of samples where the column from one sample contains NA values
     NA values should be removed from the concatenated result
     """
     tempfile_input1, tempfile_input2 = copied_mudata_with_extra_annotation_column
-    run_component([
+    run_component_with_assertions([
         "--input_id", "mouse,human",
         "--input", tempfile_input1,
         "--input", tempfile_input2,
@@ -305,13 +312,13 @@ def test_concat_remove_na(run_component, copied_mudata_with_extra_annotation_col
 @pytest.mark.parametrize("mudata_copy_with_unique_obs",
                           [input_sample1_file],
                           indirect=["mudata_copy_with_unique_obs"])
-def test_concat_dtypes(run_component, copied_mudata_with_extra_annotation_column, expected):
+def test_concat_dtypes(run_component_with_assertions, copied_mudata_with_extra_annotation_column, expected):
     """
     Test joining column with different dtypes to make sure that they are writable.
     The default path is to convert all non-na values to strings and wrap the column into a categorical dtype.
     """
     tempfile_input1, tempfile_input2 = copied_mudata_with_extra_annotation_column
-    run_component([
+    run_component_with_assertions([
         "--input_id", "mouse,human",
         "--input", tempfile_input1,
         "--input", tempfile_input2,
@@ -326,7 +333,7 @@ def test_concat_dtypes(run_component, copied_mudata_with_extra_annotation_column
 @pytest.mark.parametrize("mudata_copy_with_unique_obs",
                           [input_sample1_file],
                           indirect=["mudata_copy_with_unique_obs"])
-def test_resolve_annotation_conflict_missing_column(run_component, copied_mudata_with_extra_annotation_column, make_obs_names_unique, tmp_path):
+def test_resolve_annotation_conflict_missing_column(run_component_with_assertions, copied_mudata_with_extra_annotation_column, make_obs_names_unique, tmp_path):
     """
     Test using mode 'move' and resolving a conflict in metadata between the samples,
     but the metadata column is missing in one of the samples.
@@ -336,7 +343,7 @@ def test_resolve_annotation_conflict_missing_column(run_component, copied_mudata
     make_obs_names_unique(original_data)
     original_data_path = tmp_path / f"{uuid.uuid4().hex}.h5mu"
     original_data.write_h5mu(original_data_path)
-    run_component([
+    run_component_with_assertions([
         "--input_id", "mouse,human,sample_without_column",
         "--input", tempfile_input1,
         "--input", tempfile_input2,
@@ -406,11 +413,11 @@ def test_mode_move(run_component, tmp_path):
             assert concatenated_mod.varm == {}
         assert concatenated_mod.obsm == {}
 
-def test_concat_invalid_h5_error_includes_path(run_component, tmp_path):
+def test_concat_invalid_h5_error_includes_path(run_component_with_assertions, tmp_path):
     empty_file = tmp_path / "empty.h5mu"
     empty_file.touch()
     with pytest.raises(subprocess.CalledProcessError) as err:
-        run_component([
+        run_component_with_assertions([
                 "--input_id", "mouse,empty",
                 "--input", input_sample1_file,
                 "--input", empty_file,
@@ -424,7 +431,7 @@ def test_concat_invalid_h5_error_includes_path(run_component, tmp_path):
 @pytest.mark.parametrize("mudata_without_genome",
                           [([input_sample1_file], ["rna", "atac"])],
                           indirect=["mudata_without_genome"])
-def test_concat_var_obs_names_order(run_component, mudata_without_genome):
+def test_concat_var_obs_names_order(run_component_with_assertions, mudata_without_genome):
     """
     Test what happens when concatenating samples with differing auxiliary
     (like in .var) columns (present in 1 sample, absent in other).
@@ -433,14 +440,13 @@ def test_concat_var_obs_names_order(run_component, mudata_without_genome):
     column with NA.
     """
     [sample1_without_genome,] = mudata_without_genome
-    run_component([
+    run_component_with_assertions([
             "--input_id", "mouse,human",
             "--input", sample1_without_genome,
             "--input", input_sample2_file,
             "--output", "concat.h5mu",
             "--other_axis_mode", "move"
             ])
-    print("FINISHED", flush=True)
     assert Path("concat.h5mu").is_file() is True
     for sample_name, sample_path in {"mouse": sample1_without_genome, 
                                      "human": input_sample2_file}.items():
@@ -458,4 +464,4 @@ def test_concat_var_obs_names_order(run_component, mudata_without_genome):
             pd.testing.assert_frame_equal(data_sample_to_test, processed_data_to_test)
 
 if __name__ == '__main__':
-    sys.exit(pytest.main([__file__, "-v"]))
+    sys.exit(pytest.main([__file__, "-v", "-x"]))

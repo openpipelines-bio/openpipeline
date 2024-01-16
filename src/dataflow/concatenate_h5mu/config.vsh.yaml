@@ -52,6 +52,10 @@ functionality:
          - first: keep the annotation from the first sample
          - only: keep elements that show up in only one of the objects (1 unique element in only 1 sample)
          - move: identical to 'same', but moving the conflicting values to .varm or .obsm
+    - name: "--enable_assertions"
+      type: boolean_true
+      description: |
+        Enable assertions to check data integrity. Enabling this option may come at the cost of performance. 
   resources:
     - type: python_script
       path: script.py
