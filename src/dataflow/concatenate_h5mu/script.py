@@ -194,7 +194,6 @@ def split_conflicts_and_concatenated_columns(n_processes: int,
                                     verify_integrity=par["enable_assertions"],
                                     axis=1, sort=False)
     concatenated_matrix = concatenated_matrix.reindex(align_to, copy=False)
-    gc.collect()
     return conflicts, concatenated_matrix
 
 def cast_to_writeable_dtype(result: pd.DataFrame) -> pd.DataFrame:

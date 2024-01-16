@@ -424,7 +424,7 @@ def test_concat_invalid_h5_error_includes_path(run_component, tmp_path):
 @pytest.mark.parametrize("mudata_without_genome",
                           [([input_sample1_file], ["rna", "atac"])],
                           indirect=["mudata_without_genome"])
-def test_concat_var_obs_names_order(run_component, mudata_without_genome):
+def test_concat_var_obs_names_order(run_component, mudata_without_genome, anndata_to_sparse_dataframe):
     """
     Test what happens when concatenating samples with differing auxiliary
     (like in .var) columns (present in 1 sample, absent in other).
@@ -440,7 +440,6 @@ def test_concat_var_obs_names_order(run_component, mudata_without_genome):
             "--output", "concat.h5mu",
             "--other_axis_mode", "move"
             ])
-    print("FINISHED", flush=True)
     assert Path("concat.h5mu").is_file() is True
     for sample_name, sample_path in {"mouse": sample1_without_genome, 
                                      "human": input_sample2_file}.items():
@@ -449,13 +448,17 @@ def test_concat_var_obs_names_order(run_component, mudata_without_genome):
             processed_data = md.read_h5ad("concat.h5mu", mod=mod_name)
             muon.pp.filter_obs(processed_data, 'sample_id', lambda x: x == sample_name)
             muon.pp.filter_var(processed_data, data_sample.var_names)
-            data_sample_to_test = data_sample.to_df()
-            data_sample_to_test.sort_index(inplace=True)
-            data_sample_to_test.sort_index(axis=1, inplace=True)
-            processed_data_to_test = processed_data.to_df()
-            processed_data_to_test.sort_index(inplace=True)
-            processed_data_to_test.sort_index(axis=1, inplace=True)
-            pd.testing.assert_frame_equal(data_sample_to_test, processed_data_to_test)
+            # pd.testing.assert_frame_equal(data_sample.to_df(), processed_data.to_df(), check_like=True)
+            data_sample_to_test = anndata_to_sparse_dataframe(data_sample)
+            del data_sample
+            processed_data_to_test = anndata_to_sparse_dataframe(processed_data)
+            del processed_data 
+            data_sample_to_test = data_sample_to_test.reindex_like(processed_data_to_test)
+            pd.testing.assert_index_equal(data_sample_to_test.columns, processed_data_to_test.columns)
+            pd.testing.assert_index_equal(data_sample_to_test.index, processed_data_to_test.index)
+            for (_, col1), (_, col2) in zip(data_sample_to_test.items(), processed_data_to_test.items()):
+                pd._testing.assert_sp_array_equal(col1.array, col2.array)
+            
 
 if __name__ == '__main__':
     sys.exit(pytest.main([__file__, "-v"]))
