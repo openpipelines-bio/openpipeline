@@ -9,6 +9,7 @@ import sys
 import uuid
 import muon
 
+enable_runtime_assertions = False
 ## VIASH START
 meta = {
     'executable': './target/docker/dataflow/concatenate_h5mu/concatenate_h5mu',
@@ -16,6 +17,7 @@ meta = {
     'cpus': 2,
     'config': './src/dataflow/concatenate_h5mu/config.vsh.yaml'
 }
+enable_runtime_assertions = True
 ## VIASH END
 
 meta['cpus'] = 1 if not meta['cpus'] else meta['cpus']
@@ -107,7 +109,8 @@ def copied_mudata_with_extra_annotation_column(tmp_path, mudata_copy_with_unique
 @pytest.fixture
 def run_component_with_assertions(run_component):
     def wrapper(args_as_list):
-        args_as_list.append("--enable_assertions")
+        if enable_runtime_assertions:
+            args_as_list.append("--enable_assertions")
         return run_component(args_as_list)
     return wrapper
 
