@@ -3117,7 +3117,7 @@ meta = [
     "platform" : "nextflow",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/mapping/samtools_sort",
     "viash_version" : "0.8.2",
-    "git_commit" : "c86c8f1fbba3663c9d97821dae0546e883a93251",
+    "git_commit" : "8e140c68e622a277b26f6ed478255d368be36e5c",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))
