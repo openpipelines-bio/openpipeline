@@ -1,8 +1,10 @@
-# openpipelines 0.12.1
+# openpipelines 0.12.2
 
 ## BUG FIXES
 
 * `dataflow/concat` and `dataflow/concatenate_h5mu`: Fix an issue where using `--mode move` on samples with non-overlapping features would cause `var_names` to become unaligned to the data (PR #653). 
+
+# openpipelines 0.12.1
 
 ## BUG FIXES
 
