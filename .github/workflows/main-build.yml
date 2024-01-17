@@ -11,6 +11,12 @@ on:
         required: false
         default: false
         description: push the containers to the registry
+      version:
+        type: string
+        required: false
+        description: |
+          Version to tag the build components with (e.i functionality.version).
+          Defaults to name of the branch that triggered the workflow, suffixed by "_build".
       target_tag:
         type: string
         required: false
@@ -81,14 +87,14 @@ jobs:
     - uses: viash-io/viash-actions/ns-build@v4
       with:
         config_mod: |
-          .functionality.version := '${{ github.ref_name }}_build'
+          .functionality.version := "${{ github.event.inputs.version || format('{0}_build', github.ref_name) }}"
           .platforms[.type == 'docker'].target_tag := '${{ github.event_name == 'push' && 'main_build' || github.event.inputs.target_tag }}'
         parallel: true
         query: ^(?!workflows)
     
     - uses: viash-io/viash-actions/ns-build@v4
       with:
-        config_mod: .functionality.version := '${{ github.ref_name }}_build'
+        config_mod: .functionality.version := "${{ github.event.inputs.version || format('{0}_build', github.ref_name) }}"
         parallel: true
         query: ^workflows
   
@@ -158,7 +164,7 @@ jobs:
       if: ${{ github.event_name == 'push' || github.event.inputs.deploy_to_viash_hub == 'true' }}
       with:
         config_mod: |
-          .functionality.version := '${{ github.ref_name }}_build'
+          .functionality.version := "${{ github.event.inputs.version || format('{0}_build', github.ref_name) }}"
           .platforms[.type == 'docker'].target_tag := '${{ github.event_name == 'push' && 'main_build' || github.event.inputs.target_tag }}'
           .platforms[.type == 'docker'].target_organization := 'openpipelines-bio/openpipeline'
           .platforms[.type == 'docker'].target_registry := 'viash-hub.com:5050'
@@ -170,7 +176,7 @@ jobs:
       if: ${{ github.event_name == 'push' || github.event.inputs.deploy_to_viash_hub == 'true' }}
       with:
         config_mod: |
-          .functionality.version := '${{ github.ref_name }}_build'
+          .functionality.version := "${{ github.event.inputs.version || format('{0}_build', github.ref_name) }}"
         parallel: true
         query: ^workflows
    
@@ -208,7 +214,7 @@ jobs:
       uses: viash-io/viash-actions/ns-build@v4
       with:
         config_mod: |
-          .functionality.version := '${{ github.event_name == 'push' && 'main_build' || github.event.inputs.target_tag }}'
+          .functionality.version := "${{ github.event.inputs.version || format('{0}_build', github.ref_name) }}"
           .platforms[.type == 'docker'].target_tag := '${{ github.event_name == 'push' && 'main_build' || github.event.inputs.target_tag }}'
         platform: docker
         src: ${{ matrix.component.dir }}
@@ -224,7 +230,7 @@ jobs:
     - name: Push container
       uses: viash-io/viash-actions/ns-build@v4
       with:
-        config_mod: .functionality.version := '${{ github.ref_name }}_build'
+        config_mod: .functionality.version := "${{ github.event.inputs.version || format('{0}_build', github.ref_name) }}"
         platform: docker
         src: ${{ matrix.component.dir }}
         setup: push
@@ -254,7 +260,7 @@ jobs:
       uses: viash-io/viash-actions/ns-build@v4
       with:
         config_mod: |
-          .functionality.version := '${{ github.ref_name }}_build'
+          .functionality.version := "${{ github.event.inputs.version || format('{0}_build', github.ref_name) }}"
           .platforms[.type == 'docker'].target_registry := 'viash-hub.com:5050'
           .platforms[.type == 'docker'].target_organization := 'openpipelines-bio/openpipeline'
           .platforms[.type == 'docker'].target_image_source := 'https://viash-hub.com/openpipelines-bio/openpipeline'
