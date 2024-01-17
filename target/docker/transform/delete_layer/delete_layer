@@ -436,9 +436,9 @@ RUN pip install --upgrade pip && \
 
 LABEL org.opencontainers.image.authors="Dries Schaumont"
 LABEL org.opencontainers.image.description="Companion container for running component transform delete_layer"
-LABEL org.opencontainers.image.created="2024-01-17T08:12:12Z"
+LABEL org.opencontainers.image.created="2024-01-17T08:34:03Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="8e140c68e622a277b26f6ed478255d368be36e5c"
+LABEL org.opencontainers.image.revision="6fa45ff0a05b5a5e1e5cf69afdba54e2f8406445"
 LABEL org.opencontainers.image.version="main_build"
 
 VIASHDOCKER
