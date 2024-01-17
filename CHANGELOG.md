@@ -2,6 +2,10 @@
 
 ## BUG FIXES
 
+* `dataflow/concat` and `dataflow/concatenate_h5mu`: Fix an issue where using `--mode mode` on samples with non-overlapping features would cause `var_names` to become unaligned to the data (PR #653). 
+
+## BUG FIXES
+
 * `rna_singlesample`: Fix filtering parameters values `min_counts`, `max_counts`, `min_genes_per_cell`, `max_genes_per_cell` and `min_cells_per_gene` not being passed to the `filter_with_counts` component (PR #614).
 
 * `prot_singlesample`: Fix filtering parameters values `min_counts`, `max_counts`, `min_proteins_per_cell`, `max_proteins_per_cell` and `min_cells_per_protein` not being passed to the `filter_with_counts` component (PR #614).
