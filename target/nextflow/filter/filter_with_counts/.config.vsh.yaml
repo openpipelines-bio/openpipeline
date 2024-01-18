@@ -1,7 +1,7 @@
 functionality:
   name: "filter_with_counts"
   namespace: "filter"
-  version: "0.11.0"
+  version: "0.11.1"
   authors:
   - name: "Dries De Maeyer"
     roles:
@@ -272,6 +272,7 @@ platforms:
   image: "python:3.9-slim"
   target_organization: "openpipelines-bio"
   target_registry: "ghcr.io"
+  target_tag: "0.11.0"
   namespace_separator: "_"
   resolve_volume: "Automatic"
   chown: true
@@ -348,5 +349,6 @@ info:
   output: "/home/runner/work/openpipeline/openpipeline/target/nextflow/filter/filter_with_counts"
   executable: "/home/runner/work/openpipeline/openpipeline/target/nextflow/filter/filter_with_counts/filter_with_counts"
   viash_version: "0.7.5"
-  git_commit: "125f0afa4ac570f5c381f84dd0bef0ad16c9865b"
+  git_commit: "8e2c12ee3bfaf764b6d068085b281256764cadbb"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"
+  git_tag: "0.11.0-3-g8e2c12ee3b"
