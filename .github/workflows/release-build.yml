@@ -177,7 +177,7 @@ jobs:
 
     # use cache
     - name: Cache resources data
-      uses: actions/cache@v3
+      uses: actions/cache@v4
       timeout-minutes: 5
       with:
         path: resources_test
@@ -238,7 +238,7 @@ jobs:
     # use cache
     - name: Cache resources data
       id: restore_cache
-      uses: actions/cache/restore@v3
+      uses: actions/cache/restore@v4
       env:
         SEGMENT_DOWNLOAD_TIMEOUT_MINS: 5
       with:
