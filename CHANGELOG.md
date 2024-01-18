@@ -28,7 +28,7 @@
 
 ## MINOR CHANGES
 
-* `metadata/add_id`: add more runtime logging.
+* `metadata/add_id`: add more runtime logging (PR #663).
 
 * `cluster/leiden`: Bump python to 3.11 and leidenalg to 0.10.0 (PR #645).
 
