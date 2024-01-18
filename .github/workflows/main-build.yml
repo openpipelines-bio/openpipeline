@@ -56,7 +56,7 @@ on:
       component_matrix:
         description: "A JSON object that can be used to populate a github actions matrix for component jobs."
         value: ${{ jobs.build_and_deploy_target_folder.outputs.component_matrix }}
-      workflows_matrix:
+      workflow_matrix:
         description: "A JSON object that can be used to populate a github actions matrix for workflow jobs."
         value: ${{ jobs.build_and_deploy_target_folder.outputs.workflow_matrix}}
     secrets:
