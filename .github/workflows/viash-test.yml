@@ -105,7 +105,7 @@ jobs:
     # use cache
     - name: Cache resources data
       id: restore_cache
-      uses: actions/cache/restore@v3
+      uses: actions/cache/restore@v4
       env:
         SEGMENT_DOWNLOAD_TIMEOUT_MINS: 5
       with:
