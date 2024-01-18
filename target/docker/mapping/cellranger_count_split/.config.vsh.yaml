@@ -1,7 +1,7 @@
 functionality:
   name: "cellranger_count_split"
   namespace: "mapping"
-  version: "0.12.0"
+  version: "0.12.2"
   authors:
   - name: "Angela Oliveira Pisco"
     roles:
@@ -152,6 +152,7 @@ platforms:
   image: "ubuntu:jammy"
   target_organization: "openpipelines-bio"
   target_registry: "ghcr.io"
+  target_tag: "0.12.0"
   namespace_separator: "_"
   resolve_volume: "Automatic"
   chown: true
@@ -212,5 +213,6 @@ info:
   output: "/home/runner/work/openpipeline/openpipeline/target/docker/mapping/cellranger_count_split"
   executable: "/home/runner/work/openpipeline/openpipeline/target/docker/mapping/cellranger_count_split/cellranger_count_split"
   viash_version: "0.7.5"
-  git_commit: "b41a65886f61959c7f83f84a0569c3da1d7a2856"
+  git_commit: "47de7d80f389f495616a550f90ab36c5722d66c7"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"
+  git_tag: "0.12.1-3-g47de7d80f3"
