@@ -160,6 +160,11 @@ jobs:
         git remote set-url origin https://x-access-token:${{ secrets.VIASHHUB_PAT }}@viash-hub.com/openpipelines-bio/openpipeline.git
         git remote rm viash-hub
 
+    - name: Remove target folder from .gitignore
+      run: |
+        # allow publishing the target folder
+        sed -i '/^\/target\/$/d' .gitignore
+
     - uses: viash-io/viash-actions/ns-build@v4
       if: ${{ github.event_name == 'push' || github.event.inputs.deploy_to_viash_hub == 'true' }}
       with:
