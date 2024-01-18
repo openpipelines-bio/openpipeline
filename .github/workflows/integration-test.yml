@@ -13,7 +13,7 @@ jobs:
       push_containers: true
       version: 'integration_build'
       target_tag: 'integration_build'
-      deploy_to_viash_hub: 'false'
+      deploy_to_viash_hub: false
     secrets: inherit
 
   # Synchronize S3 Bucket and create cache for per-component runs
