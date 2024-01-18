@@ -37,8 +37,8 @@ def make_observation_keys_unique(sample_id: str, sample: MuData) -> None:
     (unique for a sample) to each observation key, the observation key is made
     unique across all samples as well.
     """
-    logger.info('Making observation keys unique across all '
-                'samples by appending prefix %s to the observation names.',
+    logger.info("Making observation keys unique across all "
+                "samples by appending prefix '%s' to the observation names.",
                 sample_id)
     sample.obs.index = f"{sample_id}_" + sample.obs.index
     make_observation_keys_unique_per_mod(sample_id, sample)
