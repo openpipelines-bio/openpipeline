@@ -8,7 +8,7 @@ on:
 jobs:
   # Build and create containers
   build:
-    uses: ./.github/workflows/main-build.yaml
+    uses: ./.github/workflows/main-build.yml
     with:
       push_containers: true
       version: 'integration_build'
