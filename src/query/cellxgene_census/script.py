@@ -91,18 +91,19 @@ def filter_min_cells_per_group(adata, par):
 
 def filter_by_counts(adata, par):
     logger.info("Remove cells with few counts and genes with few counts.")
-    t0 = adata.shape
+    n_cells_before, n_genes_before = adata.shape
     # remove cells with few counts and genes with few counts
-    if par["cell_filter_min_counts"]:
-        sc.pp.filter_cells(adata, min_counts=par["cell_filter_min_counts"])
-    if par["cell_filter_min_genes"]:
-        sc.pp.filter_cells(adata, min_genes=par["cell_filter_min_genes"])
-    if par["gene_filter_min_counts"]:
-        sc.pp.filter_genes(adata, min_counts=par["gene_filter_min_counts"])
-    if par["gene_filter_min_cells"]:
-        sc.pp.filter_genes(adata, min_cells=par["gene_filter_min_cells"])
-    t1 = adata.shape
-    logger.info("Removed %s cells and %s genes.", (t0[0] - t1[0]), (t0[1] - t1[1]))
+    scanpy_proc = {
+        par["cell_filter_min_counts"]: (sc.pp.filter_cells, "min_counts"),
+        par["cell_filter_min_genes"]: (sc.pp.filter_cells, "min_genes"),
+        par["gene_filter_min_counts"]: (sc.pp.filter_genes, "min_counts"),
+        par["gene_filter_min_cells"]: (sc.pp.filter_genes, "min_cells"),
+    }
+    for threshold, (func, arg) in scanpy_proc.items():
+        if threshold:
+            func(adata, **{arg: threshold})
+    n_cells_after, n_genes_after = adata.shape
+    logger.info("Removed %s cells and %s genes.", (n_cells_before - n_cells_after), (n_genes_before - n_genes_after))
 
 def move_x_to_layers(adata):
     logger.info("Move .X to .layers['counts']")
@@ -117,28 +118,16 @@ def print_summary(adata):
     logger.info(f"Resulting dataset: {adata}")
 
     logger.info("Summary of dataset:")
-    print_unique(adata, "assay")
-    print_unique(adata, "assay_ontology_term_id")
-    print_unique(adata, "cell_type")
-    print_unique(adata, "cell_type_ontology_term_id")
-    print_unique(adata, "dataset_id")
-    print_unique(adata, "development_stage")
-    print_unique(adata, "development_stage_ontology_term_id")
-    print_unique(adata, "disease")
-    print_unique(adata, "disease_ontology_term_id")
-    print_unique(adata, "tissue")
-    print_unique(adata, "tissue_ontology_term_id")
-    print_unique(adata, "tissue_general")
-    print_unique(adata, "tissue_general_ontology_term_id")
+    obs_fields = ["assay", "assay_ontology_term_id", "cell_type", "cell_type_ontology_term_id", "dataset_id", "development_stage", "development_stage_ontology_term_id", "disease", "disease_ontology_term_id", "tissue", "tissue_ontology_term_id", "tissue_general", "tissue_general_ontology_term_id"]
+    for field in obs_fields:
+        print_unique(adata, field)
 
 def write_anndata(adata, par):
     logger.info("Writing MuData object to '%s'", par["output"])
 
-    mdata = mu.MuData({par["output_modality"]: ad.AnnData()})
+    mdata = mu.MuData({par["output_modality"]: adata})
 
     mdata.write_h5mu(par["output"], compression=par["output_compression"])
-
-    mu.write_h5ad(par["output"], data=adata, mod=par["output_modality"])
 
 def main(par, meta):
     # check arguments
