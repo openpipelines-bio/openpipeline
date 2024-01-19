@@ -24,9 +24,11 @@ def test_cellxgene_extract_metadata_expression(run_component, tmp_path):
     # check whether file exists
     assert os.path.exists(output_file), "Output file does not exist"
 
-    component_data = md.read(output_file)
-    assert 'rna' in component_data.mod, "Output should contain 'rna' modality."
-    var, obs = component_data.mod['rna'].var, component_data.mod['rna'].obs
+    mdata = md.read(output_file)
+    print(f"Output: {mdata}")
+
+    assert 'rna' in mdata.mod, "Output should contain 'rna' modality."
+    var, obs = mdata.mod['rna'].var, mdata.mod['rna'].obs
     assert not obs.empty, ".obs should not be empty"
     assert "is_primary_data" in obs.columns
     assert np.all(obs["is_primary_data"] == True)
@@ -34,7 +36,7 @@ def test_cellxgene_extract_metadata_expression(run_component, tmp_path):
     assert "disease" in obs.columns
     assert "soma_joinid" in var.columns
     assert "feature_id" in var.columns
-    assert component_data.mod['rna'].n_obs
+    assert mdata.mod['rna'].n_obs
 
 if __name__ == '__main__':
     sys.exit(pytest.main([__file__]))
