@@ -60,6 +60,21 @@ def get_anndata(census_connection, par):
         organism=par["species"]
     )
 
+def add_cellcensus_metadata_obs(census_connection, adata):
+    logger.info("Adding additional metadata to gene expression data.")
+    census_datasets = census_connection["census_info"]["datasets"].read().concat().to_pandas()
+
+    adata.obs.dataset_id = adata.obs.dataset_id.astype("category")
+
+    dataset_info = census_datasets[census_datasets.dataset_id.isin(adata.obs.dataset_id.cat.categories)]\
+        [['collection_id', 'collection_name', 'collection_doi', 'dataset_id', 'dataset_title']]\
+    .reset_index(drop=True)\
+    .apply(lambda x: x.astype('category'))
+
+    adata.obs = adata.obs.merge(
+        dataset_info, on='dataset_id', how='left'
+    )
+
 def filter_min_cells_per_group(adata, par):
     t0 = adata.shape
     cell_count = adata.obs \
@@ -134,6 +149,9 @@ def main(par, meta):
     
     with connect_census(uri=par["input_uri"], census_version=par["census_version"]) as conn:
         adata = get_anndata(conn, par)
+        
+        if par["add_experiment_metadata"]:
+            add_cellcensus_metadata_obs(conn, adata)
     
     print(f"AnnData: {adata}", flush=True)
 
