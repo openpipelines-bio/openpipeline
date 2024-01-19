@@ -27,7 +27,7 @@ jobs:
 
     steps:
     - uses: viash-io/viash-actions/project/sync-and-cache-s3@v4
-      id: 'cache' 
+      id: cache 
       with:
         s3_bucket: $s3_bucket
         dest_path: resources_test
