@@ -53,7 +53,6 @@ def connect_census(uri, census_version):
 
 def get_anndata(census_connection, par):
     logger.info("Getting gene expression data based on `%s` query.", par["obs_value_filter"])
-    # workaround for https://github.com/chanzuckerberg/cellxgene-census/issues/891
     return cellxgene_census.get_anndata(
         census=census_connection,
         obs_value_filter=par["obs_value_filter"],
