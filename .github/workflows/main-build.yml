@@ -28,6 +28,46 @@ on:
         default: false
         description: Also build packages and docker images for viash-hub.com and push them.
 
+  # when used as a subworkflow
+  workflow_call:
+    inputs:
+      push_containers:
+        type: boolean
+        required: false
+        default: false
+        description: push the containers to the registry
+      version:
+        type: string
+        required: false
+        description: |
+          Version to tag the build components with (e.i functionality.version).
+          Defaults to name of the branch that triggered the workflow, suffixed by "_build".
+      target_tag:
+        type: string
+        required: false
+        default: main_build
+        description: Version tag of existing containers to use. Is `main_build` by default.
+      deploy_to_viash_hub:
+        type: boolean
+        required: false
+        default: false
+        description: Also build packages and docker images for viash-hub.com and push them.
+    outputs:
+      component_matrix:
+        description: "A JSON object that can be used to populate a github actions matrix for component jobs."
+        value: ${{ jobs.build_and_deploy_target_folder.outputs.component_matrix }}
+      workflow_matrix:
+        description: "A JSON object that can be used to populate a github actions matrix for workflow jobs."
+        value: ${{ jobs.build_and_deploy_target_folder.outputs.workflow_matrix}}
+    secrets:
+      VIASHHUB_USER:
+        required: true
+      VIASHHUB_PAT:
+        required: true
+      GTHB_USER:
+        required: true 
+      GTHB_PAT:
+        required: true
   push:
     branches: [ 'main' ]
 
@@ -38,7 +78,9 @@ jobs:
     runs-on: ubuntu-latest
 
     outputs:
-      component_matrix: ${{ steps.set_matrix.outputs.matrix }}
+      component_matrix: ${{ steps.set_matrix.outputs.components }}
+      workflow_matrix: ${{ steps.set_matrix.outputs.workflows }}
+
 
     steps:
     - name: Keep symlinks as-is
@@ -122,7 +164,8 @@ jobs:
         skip_dirty_check: true
         branch: ${{ github.ref_name }}_build
 
-    - id: ns_list
+    - name: "List components"
+      id: ns_list
       uses: viash-io/viash-actions/ns-list@v4
       with:
         platform: docker
@@ -130,15 +173,33 @@ jobs:
         format: json
         query_namespace: ^(?!workflows)
 
-    - id: set_matrix
+    - name: "List workflows"
+      id: ns_list_workflows
+      uses: viash-io/viash-actions/ns-list@v4
+      with:
+        src: src
+        format: json
+        query_namespace: ^workflows
+
+    - name: "Parse JSON output from 'viash ns list' as input for matrix."
+      id: set_matrix
       run: |
-        echo "matrix=$(jq -c '[ .[] | 
+        echo "components=$(jq -c '[ .[] | 
           { 
             "name": (.functionality.namespace + "/" + .functionality.name),
             "config": .info.config,
             "dir": .info.config | capture("^(?<dir>.*\/)").dir
           }
         ]' ${{ steps.ns_list.outputs.output_file }} )" >> $GITHUB_OUTPUT
+
+        echo "workflows=$(jq -c '[ .[] | . as $config | (.functionality.test_resources // [])[] | select(.type == "nextflow_script", .entrypoint) |
+        { 
+          "name": ($config.functionality.namespace + "/" + $config.functionality.name),
+          "main_script": (($config.info.config | capture("^(?<dir>.*\/)").dir) + "/" + .path),
+          "entry": .entrypoint,
+          "config": $config.info.config
+        }
+        ] | unique' ${{ steps.ns_list_workflows.outputs.output_file }} )" >> $GITHUB_OUTPUT
 
     - uses: actions/checkout@v4
       if: ${{ github.event_name == 'push' || github.event.inputs.deploy_to_viash_hub == 'true' }}
