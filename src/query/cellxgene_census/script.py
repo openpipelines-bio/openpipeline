@@ -76,16 +76,16 @@ def add_cellcensus_metadata_obs(census_connection, adata):
     )
 
 def filter_min_cells_per_group(adata, par):
-    t0 = adata.shape
+    n_cells_before, _ = adata.shape
     cell_count = adata.obs \
         .groupby(par["cell_filter_grouping"])["soma_joinid"] \
         .transform("count") \
         
     adata = adata[cell_count >= par["cell_filter_minimum_count"]]
-    t1 = adata.shape
+    n_cells_after, _ = adata.shape
     logger.info(
         "Removed %s cells based on %s cell_filter_minimum_count of %s cell_filter_grouping."
-        % ((t0[0] - t1[0]), par["cell_filter_minimum_count"], par["cell_filter_grouping"])
+        % ((n_cells_before - n_cells_after), par["cell_filter_minimum_count"], par["cell_filter_grouping"])
     )
     return adata
 
