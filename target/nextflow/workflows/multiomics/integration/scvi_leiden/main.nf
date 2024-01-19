@@ -3228,7 +3228,7 @@ meta = [
     "platform" : "nextflow",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/workflows/multiomics/integration/scvi_leiden",
     "viash_version" : "0.8.2",
-    "git_commit" : "0566898da764646933675e29494ddf654472d7f5",
+    "git_commit" : "b203b03da741b2b9277b6b33c464086326fa1e76",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))
