@@ -29,7 +29,7 @@ functionality:
           type: string
           example: "stable"
           required: false
-        - name: "--add_experiment_metadata"
+        - name: "--add_dataset_metadata"
           type: boolean_true
           description: "If true, the experiment metadata will be added to the cell metadata."
     - name: Cell query

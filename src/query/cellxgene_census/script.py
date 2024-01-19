@@ -150,7 +150,7 @@ def main(par, meta):
     with connect_census(uri=par["input_uri"], census_version=par["census_version"]) as conn:
         adata = get_anndata(conn, par)
         
-        if par["add_experiment_metadata"]:
+        if par["add_dataset_metadata"]:
             add_cellcensus_metadata_obs(conn, adata)
     
     print(f"AnnData: {adata}", flush=True)
