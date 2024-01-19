@@ -28,6 +28,8 @@
 
 ## MINOR CHANGES
 
+* `metadata/add_id`: add more runtime logging (PR #663).
+
 * `cluster/leiden`: Bump python to 3.11 and leidenalg to 0.10.0 (PR #645).
 
 * `mapping/htseq_count_to_h5mu` and `multi_star`: update polars and gtfparse (PR #642). 

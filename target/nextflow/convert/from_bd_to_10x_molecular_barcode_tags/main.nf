@@ -2894,7 +2894,7 @@ meta = [
       "image" : "ubuntu:latest",
       "target_organization" : "openpipelines-bio",
       "target_registry" : "ghcr.io",
-      "target_tag" : "",
+      "target_tag" : "main_build",
       "namespace_separator" : "_",
       "resolve_volume" : "Automatic",
       "chown" : true,
@@ -2969,7 +2969,7 @@ meta = [
     "platform" : "nextflow",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/convert/from_bd_to_10x_molecular_barcode_tags",
     "viash_version" : "0.8.2",
-    "git_commit" : "b203b03da741b2b9277b6b33c464086326fa1e76",
+    "git_commit" : "160efd13cd0ea5c625d453ea0e045a5dd1dc3a51",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))
@@ -3424,7 +3424,7 @@ meta["defaults"] = [
   "container" : {
     "registry" : "ghcr.io",
     "image" : "openpipelines-bio/convert_from_bd_to_10x_molecular_barcode_tags",
-    "tag" : ""
+    "tag" : "main_build"
   },
   "label" : [
     "lowmem",

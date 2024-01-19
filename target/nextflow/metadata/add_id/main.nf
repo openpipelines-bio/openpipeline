@@ -2925,7 +2925,7 @@ meta = [
       "image" : "python:3.10-slim",
       "target_organization" : "openpipelines-bio",
       "target_registry" : "ghcr.io",
-      "target_tag" : "",
+      "target_tag" : "main_build",
       "namespace_separator" : "_",
       "resolve_volume" : "Automatic",
       "chown" : true,
@@ -3024,7 +3024,7 @@ meta = [
     "platform" : "nextflow",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/metadata/add_id",
     "viash_version" : "0.8.2",
-    "git_commit" : "b203b03da741b2b9277b6b33c464086326fa1e76",
+    "git_commit" : "160efd13cd0ea5c625d453ea0e045a5dd1dc3a51",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))
@@ -3099,9 +3099,12 @@ def make_observation_keys_unique(sample_id: str, sample: MuData) -> None:
     (unique for a sample) to each observation key, the observation key is made
     unique across all samples as well.
     """
-    logger.info('Making observation keys unique across all samples.')
+    logger.info("Making observation keys unique across all "
+                "samples by appending prefix '%s' to the observation names.",
+                sample_id)
     sample.obs.index = f"{sample_id}_" + sample.obs.index
     make_observation_keys_unique_per_mod(sample_id, sample)
+    logger.info("Done making observation keys unique.")
 
 
 def make_observation_keys_unique_per_mod(sample_id: str, sample: MuData) -> None:
@@ -3109,18 +3112,28 @@ def make_observation_keys_unique_per_mod(sample_id: str, sample: MuData) -> None
     Updating MuData.obs_names is not allowed (it is read-only).
     So the observation keys for each modality has to be updated manually.
     """
-    for mod in sample.mod.values():
+    for mod_name, mod in sample.mod.items():
+        logger.info("Processing modality '%s'", mod_name)
         mod.obs_names = f"{sample_id}_" + mod.obs_names
 
 def main():
+    logger.info("Reading input file '%s'.", par["input"])
     input_data = read_h5mu(par["input"])
+    logger.info("Adding column '%s' to global .obs dataframe, populated with ID '%s'", 
+                par["obs_output"], par["input_id"])
     input_data.obs[par["obs_output"]] = par["input_id"]
-    for mod_data in input_data.mod.values():
+    logger.info("Done adding column to global .obs")
+    for mod_name, mod_data in input_data.mod.items():
+        logger.info("Adding column '%s' to .obs dataframe for modality '%s', "
+                    "populated with ID '%s'", par["obs_output"], mod_name, par["input_id"])
         mod_data.obs[par["obs_output"]] = par["input_id"]
+    logger.info("Done adding per-modality columns.")
     if par["make_observation_keys_unique"]:
         make_observation_keys_unique(par["input_id"], input_data)
-    logger.info("Writing out data to '%s'.", par["output"])
+    logger.info("Writing out data to '%s' with compression '%s'.", 
+                par["output"], par["output_compression"])
     input_data.write_h5mu(par["output"], compression=par["output_compression"])
+    logger.info("Finished")
 
 if __name__ == '__main__':
     main()
@@ -3473,7 +3486,7 @@ meta["defaults"] = [
   "container" : {
     "registry" : "ghcr.io",
     "image" : "openpipelines-bio/metadata_add_id",
-    "tag" : ""
+    "tag" : "main_build"
   },
   "label" : [
     "singlecpu",
