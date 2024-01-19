@@ -1,6 +1,6 @@
 functionality:
   name: cellxgene_census
-  namespace: "query"
+  namespace: datasets/loaders
   description: |
     Query cells from a CellxGene Census or custom TileDBSoma object.
     Aside from fetching the cells' RNA counts (`.X`), cell metadata
@@ -29,20 +29,22 @@ functionality:
           type: string
           example: "stable"
           required: false
-    - name: Query
+    - name: Cell query
       description: Arguments related to the query.
       arguments:
         - name: "--species"
           type: string
           description: The organism to query, usually one of `Homo sapiens` or `Mus musculus`.
-          required: false
-          default: "homo_sapiens"
-          multiple: false
+          required: true
+          example: "homo_sapiens"
         - name: "--obs_value_filter"
           type: string
           description: "Filter for selecting the `obs` metadata (i.e. cells). Value is a filter query written in the SOMA `value_filter` syntax."
-          required: false
+          required: true
           example: "is_primary_data == True and cell_type_ontology_term_id in ['CL:0000136', 'CL:1000311', 'CL:0002616'] and suspension_type == 'cell'"
+    - name: Filter cells by grouping
+      description: "Filter groups with fewer than X number of cells."
+      arguments:
         - name: "--cell_filter_grouping"
           type: string
           description: |
@@ -54,12 +56,35 @@ functionality:
           example: ["dataset_id", "tissue", "assay", "disease", "cell_type"]
           multiple: true
         - name: "--cell_filter_minimum_count"
-          type: double
+          type: integer
           description: |
             A minimum number of cells per group to retain. If `--cell_filter_grouping`
             is defined, this parameter should also be provided and vice versa.
           required: false
           example: 100
+    - name: Count filtering
+      description: Arguments related to filtering cells and genes by counts.
+      arguments:
+        - name: "--cell_filter_min_genes"
+          type: integer
+          description: Remove cells with less than this number of genes.
+          required: false
+          default: 50
+        - name: "--cell_filter_min_counts"
+          type: integer
+          description: Remove cells with less than this number of counts.
+          required: false
+          default: 0
+        - name: "--gene_filter_min_cells"
+          type: integer
+          description: Remove genes expressed in less than this number of cells.
+          required: false
+          default: 5
+        - name: "--gene_filter_min_counts"
+          type: integer
+          description: Remove genes with less than this number of counts.
+          required: false
+          default: 0
     - name: Outputs
       description: Output arguments.
       arguments:
@@ -69,6 +94,170 @@ functionality:
           direction: output
           required: true
           example: output.h5mu
+          info:
+            label: "CellxGene dataset"
+            summary: A dataset queried from the CellxGene Census platform
+            description: |
+              The format of this file is derived from the [CELLxGENE schema v4.0.0](https://github.com/chanzuckerberg/single-cell-curation/blob/main/schema/4.0.0/schema.md).
+            structure:
+              rna:
+                layers: 
+                  - type: integer
+                    name: counts
+                    description: Raw counts
+                    required: true
+                obs:
+                  - type: string
+                    name: dataset_id
+                    description: Identifier for the dataset from which the cell data is derived, useful for tracking and referencing purposes.
+                    required: false
+
+                  - type: string
+                    name: assay
+                    description: Type of assay used to generate the cell data, indicating the methodology or technique employed.
+                    required: false
+
+                  - type: string
+                    name: assay_ontology_term_id
+                    description: Experimental Factor Ontology (`EFO:`) term identifier for the assay, providing a standardized reference to the assay type.
+                    required: false
+
+                  - type: string
+                    name: cell_type
+                    description: Classification of the cell type based on its characteristics and function within the tissue or organism.
+                    required: false
+
+                  - type: string
+                    name: cell_type_ontology_term_id
+                    description: Cell Ontology (`CL:`) term identifier for the cell type, offering a standardized reference to the specific cell classification.
+                    required: false
+
+                  - type: string
+                    name: development_stage
+                    description: Stage of development of the organism or tissue from which the cell is derived, indicating its maturity or developmental phase.
+                    required: false
+
+                  - type: string
+                    name: development_stage_ontology_term_id
+                    description: |
+                      Ontology term identifier for the developmental stage, providing a standardized reference to the organism's developmental phase.
+
+                      If the organism is human (`organism_ontology_term_id == 'NCBITaxon:9606'`), then the Human Developmental Stages (`HsapDv:`) ontology is used.  
+                      If the organism is mouse (`organism_ontology_term_id == 'NCBITaxon:10090'`), then the Mouse Developmental Stages (`MmusDv:`) ontology is used.
+                      Otherwise, the Uberon (`UBERON:`) ontology is used.
+                    required: false
+
+                  - type: string
+                    name: disease
+                    description: Information on any disease or pathological condition associated with the cell or donor.
+                    required: false
+
+                  - type: string
+                    name: disease_ontology_term_id
+                    description: |
+                      Ontology term identifier for the disease, enabling standardized disease classification and referencing.
+
+                      Must be a term from the Mondo Disease Ontology (`MONDO:`) ontology term, or `PATO:0000461` from the Phenotype And Trait Ontology (`PATO:`).
+                    required: false
+
+                  - type: string
+                    name: donor_id
+                    description: Identifier for the donor from whom the cell sample is obtained.
+                    required: false
+
+                  - type: boolean
+                    name: is_primary_data
+                    description: Indicates whether the data is primary (directly obtained from experiments) or has been computationally derived from other primary data.
+                    required: false
+
+                  - type: string
+                    name: organism
+                    description: Organism from which the cell sample is obtained.
+                    required: false
+                  
+                  - type: string
+                    name: organism_ontology_term_id
+                    description: |
+                      Ontology term identifier for the organism, providing a standardized reference for the organism.
+
+                      Must be a term from the NCBI Taxonomy Ontology (`NCBITaxon:`) which is a child of `NCBITaxon:33208`.
+                    required: false
+
+                  - type: string
+                    name: self_reported_ethnicity
+                    description: Ethnicity of the donor as self-reported, relevant for studies considering genetic diversity and population-specific traits.
+                    required: false
+
+                  - type: string
+                    name: self_reported_ethnicity_ontology_term_id
+                    description: |
+                      Ontology term identifier for the self-reported ethnicity, providing a standardized reference for ethnic classifications.
+
+                      If the organism is human (`organism_ontology_term_id == 'NCBITaxon:9606'`), then the Human Ancestry Ontology (`HANCESTRO:`) is used.
+                    required: false
+
+                  - type: string
+                    name: sex
+                    description: Biological sex of the donor or source organism, crucial for studies involving sex-specific traits or conditions.
+                    required: false
+
+                  - type: string
+                    name: sex_ontology_term_id
+                    description: Ontology term identifier for the biological sex, ensuring standardized classification of sex. Only `PATO:0000383`, `PATO:0000384` and `PATO:0001340` are allowed.
+                    required: false
+
+                  - type: string
+                    name: suspension_type
+                    description: Type of suspension or medium in which the cells were stored or processed, important for understanding cell handling and conditions.
+                    required: false
+
+                  - type: string
+                    name: tissue
+                    description: Specific tissue from which the cells were derived, key for context and specificity in cell studies.
+                    required: false
+
+                  - type: string
+                    name: tissue_ontology_term_id
+                    description: |
+                      Ontology term identifier for the tissue, providing a standardized reference for the tissue type.
+
+                      For organoid or tissue samples, the Uber-anatomy ontology (`UBERON:`) is used. The term ids must be a child term of `UBERON:0001062` (anatomical entity).
+                      For cell cultures, the Cell Ontology (`CL:`) is used. The term ids cannot be `CL:0000255`, `CL:0000257` or `CL:0000548`.
+                    required: false
+
+                  - type: string
+                    name: tissue_general
+                    description: General category or classification of the tissue, useful for broader grouping and comparison of cell data.
+                    required: false
+
+                  - type: string
+                    name: tissue_general_ontology_term_id
+                    description: |
+                      Ontology term identifier for the general tissue category, aiding in standardizing and grouping tissue types.
+
+                      For organoid or tissue samples, the Uber-anatomy ontology (`UBERON:`) is used. The term ids must be a child term of `UBERON:0001062` (anatomical entity).
+                      For cell cultures, the Cell Ontology (`CL:`) is used. The term ids cannot be `CL:0000255`, `CL:0000257` or `CL:0000548`.
+                    required: false
+
+                  - type: integer
+                    name: soma_joinid
+                    description: If the dataset was retrieved from CELLxGENE census, this is a unique identifier for the cell.
+                    required: false
+                var:
+                  - type: string
+                    name: feature_id
+                    description: Unique identifier for the feature, usually a ENSEMBL gene id.
+                    required: false
+                  
+                  - type: string
+                    name: feature_name
+                    description: A human-readable name for the feature, usually a gene symbol.
+                    required: false
+
+                  - type: integer
+                    name: soma_joinid
+                    description: If the dataset was retrieved from CELLxGENE census, this is a unique identifier for the feature.
+                    required: false
         - name: "--output_compression"
           type: string
           choices: ["gzip", "lzf"]
@@ -88,12 +277,13 @@ functionality:
       path: test.py
 platforms:
   - type: docker
-    image: python:3.10
+    image: python:3.11
     setup:
       - type: python
         __merge__: [/src/base/requirements/anndata_mudata.yaml, .]
         packages:
-          - cellxgene-census~=1.2.0
+          - cellxgene-census
+          - scanpy
     test_setup:
       - type: python
         __merge__: [ /src/base/requirements/viashpy.yaml, .]
