@@ -2934,7 +2934,7 @@ meta = [
       "image" : "python:3.9-slim",
       "target_organization" : "openpipelines-bio",
       "target_registry" : "ghcr.io",
-      "target_tag" : "main_build",
+      "target_tag" : "",
       "namespace_separator" : "_",
       "resolve_volume" : "Automatic",
       "chown" : true,
@@ -3029,7 +3029,7 @@ meta = [
     "platform" : "nextflow",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/filter/do_filter",
     "viash_version" : "0.8.2",
-    "git_commit" : "160efd13cd0ea5c625d453ea0e045a5dd1dc3a51",
+    "git_commit" : "efbad500343d6cb5949353027a4a0203a7dfae46",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))
@@ -3476,7 +3476,7 @@ meta["defaults"] = [
   "container" : {
     "registry" : "ghcr.io",
     "image" : "openpipelines-bio/filter_do_filter",
-    "tag" : "main_build"
+    "tag" : ""
   },
   "label" : [
     "singlecpu",
