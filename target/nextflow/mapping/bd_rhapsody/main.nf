@@ -3279,7 +3279,7 @@ meta = [
     "platform" : "nextflow",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/mapping/bd_rhapsody",
     "viash_version" : "0.8.2",
-    "git_commit" : "09877948a2b7b883362bb9f46b5526fe34f9c331",
+    "git_commit" : "1b9539155b85564f40cb99966ccf4a0acd614bc8",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))
