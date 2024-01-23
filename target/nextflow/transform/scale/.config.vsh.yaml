@@ -1,7 +1,7 @@
 functionality:
   name: "scale"
   namespace: "transform"
-  version: "setting_deploy_branch_build_build"
+  version: "integration_build"
   authors:
   - name: "Dries Schaumont"
     roles:
@@ -119,7 +119,7 @@ platforms:
   image: "python:3.10-slim-bullseye"
   target_organization: "openpipelines-bio"
   target_registry: "ghcr.io"
-  target_tag: ""
+  target_tag: "integration_build"
   namespace_separator: "_"
   resolve_volume: "Automatic"
   chown: true
@@ -202,5 +202,5 @@ info:
   output: "/home/runner/work/openpipeline/openpipeline/target/nextflow/transform/scale"
   executable: "/home/runner/work/openpipeline/openpipeline/target/nextflow/transform/scale/scale"
   viash_version: "0.8.3"
-  git_commit: "00f00795037a5810e1907b8890f38e4397b201e1"
+  git_commit: "b15f6715b006cabcb1ee680f34d1b58857de6177"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"
