@@ -209,14 +209,14 @@ jobs:
         ] | unique' ${{ steps.ns_list_workflows.outputs.output_file }} )" >> $GITHUB_OUTPUT
 
     - uses: actions/checkout@v4
-      if: ${{ github.event_name == 'push' || inputs.deploy_to_viash_hub == 'true' }}
+      if: ${{ github.event_name == 'push' || inputs.deploy_to_viash_hub }}
       with:
         ref:  ${{ !inputs.deploy_branch && format('{0}_build', github.ref_name) || inputs.deploy_branch  }}
         fetch-depth: 0
         clean: true
 
     - name: Set origin to viash-hub and commit on top of it.
-      if: ${{ github.event_name == 'push' || inputs.deploy_to_viash_hub == 'true' }}
+      if: ${{ github.event_name == 'push' || inputs.deploy_to_viash_hub }}
       # This is needed because git-auto-commit-action uses origin by default
       run: |
         git remote add viash-hub https://x-access-token:${{ secrets.VIASHHUB_PAT }}@viash-hub.com/openpipelines-bio/openpipeline.git
@@ -234,7 +234,7 @@ jobs:
         sed -i '/^\/target\/$/d' .gitignore
 
     - uses: viash-io/viash-actions/ns-build@v4
-      if: ${{ github.event_name == 'push' || inputs.deploy_to_viash_hub == 'true' }}
+      if: ${{ github.event_name == 'push' || inputs.deploy_to_viash_hub }}
       with:
         config_mod: |
           .functionality.version := " ${{ !inputs.deploy_branch && format('{0}_build', github.ref_name) || inputs.deploy_branch  }}"
