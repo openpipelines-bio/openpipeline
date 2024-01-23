@@ -18,8 +18,8 @@
           
           "input": {
             "type": "string",
-            "description": "Type: `file`, required, example: `input.h5mu`. Path to the sample",
-            "help_text": "Type: `file`, required, example: `input.h5mu`. Path to the sample."
+            "description": "Type: List of `file`, required, example: `input.h5mu`, multiple_sep: `\":\"`. Path to the sample",
+            "help_text": "Type: List of `file`, required, example: `input.h5mu`, multiple_sep: `\":\"`. Path to the sample."
           }
           
         }

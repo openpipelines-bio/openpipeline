@@ -11,13 +11,7 @@ cd "$REPO_ROOT"
 export NXF_VER=23.04.2
 
 nextflow run . \
-  -main-script src/workflows/multiomics/integration/totalvi_leiden/main.nf \
+  -main-script src/workflows/multiomics/integration/totalvi_leiden/test.nf \
   -profile docker,no_publish \
   -entry test_wf \
-  -c src/workflows/utils/labels_ci.config
-
-nextflow run . \
-  -main-script src/workflows/multiomics/integration/totalvi_leiden/main.nf \
-  -profile docker,no_publish \
-  -entry test_wf2 \
   -c src/workflows/utils/labels_ci.config

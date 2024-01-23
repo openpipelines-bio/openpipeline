@@ -56,13 +56,16 @@ functionality:
           example: 3
           type: integer
           description: Minimum of non-zero values per gene.
+  dependencies:
+    - name: filter/filter_with_counts
+    - name: filter/do_filter
   resources:
     - type: nextflow_script
       path: main.nf
-      entrypoint: prot_singlesample
+      entrypoint: run_wf
   test_resources:
     - type: nextflow_script
-      path: main.nf
+      path: test.nf
       entrypoint: test_wf
     - path: /resources_test/pbmc_1k_protein_v3
 platforms:

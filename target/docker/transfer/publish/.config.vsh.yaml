@@ -119,6 +119,6 @@ info:
   platform: "docker"
   output: "/home/runner/work/openpipeline/openpipeline/target/docker/transfer/publish"
   executable: "/home/runner/work/openpipeline/openpipeline/target/docker/transfer/publish/publish"
-  viash_version: "0.8.2"
-  git_commit: "7c0726730a2beec75afd1e432b39cc7e6e2b2cc2"
+  viash_version: "0.8.3"
+  git_commit: "f3782ea172b62419004f91b5be63e714f5686674"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"

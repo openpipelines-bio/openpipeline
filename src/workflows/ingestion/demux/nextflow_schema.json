@@ -41,6 +41,27 @@
             "type": "boolean",
             "description": "Type: `boolean`. Should the demultiplexer ignore missing entities (filter, ",
             "help_text": "Type: `boolean`. Should the demultiplexer ignore missing entities (filter, ...)"
+          },
+          
+          "output_fastq": {
+            "type": "string",
+            "description": "Type: `file`, required, default: `$id.$key.output_fastq.output_fastq`, example: `fastq_dir`. Output directory containig fastq files",
+            "help_text": "Type: `file`, required, default: `$id.$key.output_fastq.output_fastq`, example: `fastq_dir`. Output directory containig fastq files",
+            "default": "$id.$key.output_fastq.output_fastq"
+          },
+          
+          "output_fastqc": {
+            "type": "string",
+            "description": "Type: `file`, default: `$id.$key.output_fastqc.output_fastqc`, example: `reports_dir`. Reports directory produced by FastQC",
+            "help_text": "Type: `file`, default: `$id.$key.output_fastqc.output_fastqc`, example: `reports_dir`. Reports directory produced by FastQC",
+            "default": "$id.$key.output_fastqc.output_fastqc"
+          },
+          
+          "output_multiqc": {
+            "type": "string",
+            "description": "Type: `file`, default: `$id.$key.output_multiqc.output_multiqc`, example: `reports_dir`. Reports directory produced by MultiQC",
+            "help_text": "Type: `file`, default: `$id.$key.output_multiqc.output_multiqc`, example: `reports_dir`. Reports directory produced by MultiQC",
+            "default": "$id.$key.output_multiqc.output_multiqc"
           }
           
         }
