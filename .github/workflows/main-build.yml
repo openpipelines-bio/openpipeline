@@ -47,12 +47,12 @@ on:
         required: false
         default: main_build
         description: Version tag of existing containers to use. Is `main_build` by default.
-        github.event.inputs.appName:
-          type: string
-          required: false
-          description: |
-            Branch to deploy the build to. Defaults to name of the branch 
-            that triggered the workflow, suffixed by "_build".
+      deploy_branch:
+        type: string
+        required: false
+        description: |
+          Branch to deploy the build to. Defaults to name of the branch 
+          that triggered the workflow, suffixed by "_build".
       deploy_to_viash_hub:
         type: boolean
         required: false
