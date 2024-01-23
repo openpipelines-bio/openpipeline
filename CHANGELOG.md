@@ -50,7 +50,7 @@
 
 * `correction/cellbender_remove_background`: Remove `muon` as a test dependency (PR #636).
 
-* (Automatic testing) Update viashpy to 0.6.0.
+* (Automatic testing) Update viashpy to 0.6.0 (PR #665).
 
 ## BUG FIXES
 
