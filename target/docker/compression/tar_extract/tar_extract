@@ -421,9 +421,9 @@ ENTRYPOINT []
  
 RUN :
 LABEL org.opencontainers.image.description="Companion container for running component compression tar_extract"
-LABEL org.opencontainers.image.created="2024-01-23T15:55:54Z"
+LABEL org.opencontainers.image.created="2024-01-23T19:19:25Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="1f3e6b9933d08f375d22c0cbf3739c4ee91e651e"
+LABEL org.opencontainers.image.revision="d2e962558260c1decbcf15b8135709ff6a74e60c"
 LABEL org.opencontainers.image.version="integration_build"
 
 VIASHDOCKER
