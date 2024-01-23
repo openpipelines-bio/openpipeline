@@ -50,6 +50,8 @@
 
 * `correction/cellbender_remove_background`: Remove `muon` as a test dependency (PR #636).
 
+* (Automatic testing) Update viashpy to 0.6.0 (PR #665).
+
 ## BUG FIXES
 
 * `dataflow/concat` and `dataflow/concatenate_h5mu`: Fix an issue where using `--mode move` on samples with non-overlapping features would cause `var_names` to become unaligned to the data (PR #653).   
