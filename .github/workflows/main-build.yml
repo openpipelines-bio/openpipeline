@@ -265,6 +265,7 @@ jobs:
 
   # phase 2
   build_and_deploy_docker_containers:
+    name: "Build and Deploy Docker Images"
     needs: build_and_deploy_target_folder
     if: ${{github.event_name == 'push' || inputs.push_containers }}
 
