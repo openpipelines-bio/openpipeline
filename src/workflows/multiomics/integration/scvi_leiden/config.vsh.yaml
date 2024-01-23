@@ -130,17 +130,20 @@ functionality:
           default: "X_scvi_umap"
           required: false
           description: "In which .obsm slot to store the resulting UMAP embedding."
+  dependencies:
+    - name: cluster/leiden
+    - name: metadata/move_obsm_to_obs
+    - name: integrate/scvi
+    - name: dimred/umap
+    - name: neighbors/find_neighbors
   resources:
     - type: nextflow_script
       path: main.nf
-      entrypoint: scvi_leiden
+      entrypoint: run_wf
   test_resources:
     - type: nextflow_script
-      path: main.nf
+      path: test.nf
       entrypoint: test_wf
-    - type: nextflow_script
-      path: main.nf
-      entrypoint: test_wf2
     - path: /resources_test/pbmc_1k_protein_v3
 platforms:
   - type: nextflow

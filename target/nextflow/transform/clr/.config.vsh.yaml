@@ -1,7 +1,7 @@
 functionality:
   name: "clr"
   namespace: "transform"
-  version: "integration_build"
+  version: "setting_deploy_branch_build_build"
   authors:
   - name: "Dries Schaumont"
     roles:
@@ -104,6 +104,7 @@ platforms:
   image: "python:3.10-slim"
   target_organization: "openpipelines-bio"
   target_registry: "ghcr.io"
+  target_tag: ""
   namespace_separator: "_"
   resolve_volume: "Automatic"
   chown: true
@@ -121,13 +122,14 @@ platforms:
     - "mudata~=0.2.3"
     - "pandas!=2.1.2"
     - "scanpy~=1.9.5"
+    - "statsmodels==0.14.0"
     - "muon~=0.1.5"
     upgrade: true
   test_setup:
   - type: "python"
     user: false
     packages:
-    - "viashpy==0.5.0"
+    - "viashpy==0.6.0"
     upgrade: true
   entrypoint: []
   cmd: null
@@ -182,6 +184,6 @@ info:
   platform: "nextflow"
   output: "/home/runner/work/openpipeline/openpipeline/target/nextflow/transform/clr"
   executable: "/home/runner/work/openpipeline/openpipeline/target/nextflow/transform/clr/clr"
-  viash_version: "0.8.0"
-  git_commit: "2242a6746fe6c245459124081b5061b4fd3872af"
+  viash_version: "0.8.3"
+  git_commit: "00f00795037a5810e1907b8890f38e4397b201e1"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"

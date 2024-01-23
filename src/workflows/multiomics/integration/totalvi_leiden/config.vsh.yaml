@@ -174,17 +174,21 @@ functionality:
           default: "X_totalvi_umap"
           required: false
           description: "In which .obsm slot to store the resulting UMAP embedding."
+  dependencies:
+    - name: cluster/leiden
+    - name: metadata/move_obsm_to_obs
+    - name: integrate/totalvi
+    - name: dimred/umap
+    - name: neighbors/find_neighbors
+    - name: transfer/publish
   resources:
     - type: nextflow_script
       path: main.nf
-      entrypoint: totalvi_leiden
+      entrypoint: run_wf
   test_resources:
     - type: nextflow_script
       path: main.nf
       entrypoint: test_wf
-    - type: nextflow_script
-      path: main.nf
-      entrypoint: test_wf2
     - path: /resources_test/pbmc_1k_protein_v3/pbmc_1k_protein_v3_mms.h5mu
 platforms:
   - type: nextflow

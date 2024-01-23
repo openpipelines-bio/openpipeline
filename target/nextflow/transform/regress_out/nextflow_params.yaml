@@ -1,0 +1,10 @@
+# Arguments
+input: # please fill in - example: "input.h5mu"
+# output: "$id.$key.output.h5mu"
+# output_compression: "gzip"
+modality: "rna"
+# obs_keys: ["foo"]
+
+# Nextflow input-output arguments
+publish_dir: # please fill in - example: "output/"
+# param_list: "my_params.yaml"

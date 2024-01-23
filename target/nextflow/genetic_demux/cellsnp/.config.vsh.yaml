@@ -1,7 +1,7 @@
 functionality:
   name: "cellsnp"
   namespace: "genetic_demux"
-  version: "integration_build"
+  version: "setting_deploy_branch_build_build"
   authors:
   - name: "Xichen Wu"
     roles:
@@ -277,6 +277,7 @@ platforms:
   image: "ubuntu:latest"
   target_organization: "openpipelines-bio"
   target_registry: "ghcr.io"
+  target_tag: ""
   namespace_separator: "_"
   resolve_volume: "Automatic"
   chown: true
@@ -364,6 +365,6 @@ info:
   platform: "nextflow"
   output: "/home/runner/work/openpipeline/openpipeline/target/nextflow/genetic_demux/cellsnp"
   executable: "/home/runner/work/openpipeline/openpipeline/target/nextflow/genetic_demux/cellsnp/cellsnp"
-  viash_version: "0.8.0"
-  git_commit: "2242a6746fe6c245459124081b5061b4fd3872af"
+  viash_version: "0.8.3"
+  git_commit: "00f00795037a5810e1907b8890f38e4397b201e1"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"
