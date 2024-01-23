@@ -2890,7 +2890,7 @@ meta = [
       "image" : "python:3.10-slim",
       "target_organization" : "openpipelines-bio",
       "target_registry" : "ghcr.io",
-      "target_tag" : "",
+      "target_tag" : "main_build",
       "namespace_separator" : "_",
       "resolve_volume" : "Automatic",
       "chown" : true,
@@ -2920,7 +2920,7 @@ meta = [
           "type" : "python",
           "user" : false,
           "packages" : [
-            "viashpy==0.5.0"
+            "viashpy==0.6.0"
           ],
           "upgrade" : true
         }
@@ -2989,7 +2989,7 @@ meta = [
     "platform" : "nextflow",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/compression/compress_h5mu",
     "viash_version" : "0.8.2",
-    "git_commit" : "9b43ef5b7918ef90f152ba4faf55a746d72465c6",
+    "git_commit" : "7c0726730a2beec75afd1e432b39cc7e6e2b2cc2",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))
@@ -3438,7 +3438,7 @@ meta["defaults"] = [
   "container" : {
     "registry" : "ghcr.io",
     "image" : "openpipelines-bio/compression_compress_h5mu",
-    "tag" : ""
+    "tag" : "main_build"
   },
   "label" : [
     "singlecpu",
