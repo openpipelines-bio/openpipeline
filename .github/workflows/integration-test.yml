@@ -91,7 +91,7 @@ jobs:
           unset 'to_not_remove[${#to_not_remove[@]}-1]'
           to_not_remove+=( "(" "${to_not_remove[@]}" ")" "-prune" "-o")
         fi
-        echo "Not removing @{to_not_remove[@]}"
+        echo "Not removing ${to_not_remove[@]}"
         find ./resources_test/ "${to_not_remove[@]}" -type f -exec rm {} +
         tree ./resources_test/
 
