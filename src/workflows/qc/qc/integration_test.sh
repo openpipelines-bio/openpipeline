@@ -10,9 +10,11 @@ cd "$REPO_ROOT"
 
 export NXF_VER=21.10.6
 
+viash ns build -q '^workflows/qc/qc'
+
 nextflow \
   run . \
-  -main-script src/workflows/qc/qc/main.nf \
+  -main-script src/workflows/qc/qc/test.nf \
   -entry test_wf \
   -resume \
   -profile docker,no_publish \

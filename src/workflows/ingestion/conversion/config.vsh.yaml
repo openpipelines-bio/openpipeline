@@ -43,13 +43,17 @@ functionality:
           type: string
           multiple: true
           description: "Name of the modality where the h5ad is stored in the h5mu object."
+  dependencies:
+    - name: convert/from_10xh5_to_h5mu
+    - name: convert/from_10xmtx_to_h5mu
+    - name: convert/from_h5ad_to_h5mu
   resources:
     - type: nextflow_script
       path: main.nf
-      entrypoint: conversion
+      entrypoint: run_wf
   test_resources:
     - type: nextflow_script
-      path: main.nf
+      path: test.nf
       entrypoint: test_wf
     - path: /resources_test/pbmc_1k_protein_v3
 platforms:

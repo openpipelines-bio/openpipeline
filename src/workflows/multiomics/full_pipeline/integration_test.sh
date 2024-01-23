@@ -10,9 +10,11 @@ cd "$REPO_ROOT"
 
 export NXF_VER=21.10.6
 
+viash ns build -q '^workflows'
+
 nextflow \
   run . \
-  -main-script src/workflows/multiomics/full_pipeline/main.nf \
+  -main-script src/workflows/multiomics/full_pipeline/test.nf \
   -entry test_wf \
   -resume \
   -profile docker,no_publish \
@@ -21,7 +23,7 @@ nextflow \
 # Same as above but with remote yaml file.
 nextflow \
   run . \
-  -main-script src/workflows/multiomics/full_pipeline/main.nf \
+  -main-script src/workflows/multiomics/full_pipeline/test.nf \
   -entry test_wf \
   -resume \
   -profile docker,no_publish \
@@ -31,7 +33,7 @@ nextflow \
 # Same as above but with remote json file.
 nextflow \
   run . \
-  -main-script src/workflows/multiomics/full_pipeline/main.nf \
+  -main-script src/workflows/multiomics/full_pipeline/test.nf \
   -entry test_wf \
   -resume \
   -profile docker,no_publish \
@@ -41,7 +43,7 @@ nextflow \
 # Same as above but with remote csv file.
 nextflow \
   run . \
-  -main-script src/workflows/multiomics/full_pipeline/main.nf \
+  -main-script src/workflows/multiomics/full_pipeline/test.nf \
   -entry test_wf \
   -resume \
   -profile docker,no_publish \
@@ -50,7 +52,7 @@ nextflow \
 
 nextflow \
   run . \
-  -main-script src/workflows/multiomics/full_pipeline/main.nf \
+  -main-script src/workflows/multiomics/full_pipeline/test.nf \
   -entry test_wf2 \
   -resume \
   -profile docker,no_publish \
@@ -58,7 +60,7 @@ nextflow \
 
 nextflow \
   run . \
-  -main-script src/workflows/multiomics/full_pipeline/main.nf \
+  -main-script src/workflows/multiomics/full_pipeline/test.nf \
   -entry test_wf3 \
   -resume \
   -profile docker,no_publish \

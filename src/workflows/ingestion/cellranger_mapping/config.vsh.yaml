@@ -94,13 +94,17 @@ functionality:
           name: "--include_introns"
           default: true
           description: Include intronic reads in count (default=true unless --target-panel is specified in which case default=false)
+  dependencies:
+    - name: mapping/cellranger_count
+    - name: mapping/cellranger_count_split
+    - name: convert/from_10xh5_to_h5mu
   resources:
     - type: nextflow_script
       path: main.nf
-      entrypoint: cellranger_mapping
+      entrypoint: run_wf
   test_resources:
     - type: nextflow_script
-      path: main.nf
+      path: test.nf
       entrypoint: test_wf
     - path: /resources_test/cellranger_tiny_fastq
 platforms:

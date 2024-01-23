@@ -104,10 +104,16 @@ functionality:
   resources:
     - type: nextflow_script
       path: main.nf
-      entrypoint: rna_singlesample
+      entrypoint: run_wf
+  dependencies:
+    - name: filter/filter_with_counts
+    - name: filter/filter_with_scrublet
+    - name: filter/do_filter
+    - name: filter/delimit_fraction
+    - name: workflows/qc/qc
   test_resources:
     - type: nextflow_script
-      path: main.nf
+      path: test.nf
       entrypoint: test_wf
     - path: /resources_test/pbmc_1k_protein_v3
 platforms:

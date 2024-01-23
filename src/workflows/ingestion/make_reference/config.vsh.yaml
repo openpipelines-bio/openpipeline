@@ -69,13 +69,19 @@ functionality:
           name: --subset_regex
           description: Will subset the reference chromosomes using the given regex.
           example: (ERCC-00002|chr1)
+  dependencies:
+    - name: reference/make_reference
+      alias: make_reference_component
+    - name: reference/build_bdrhap_reference
+    - name: mapping/star_build_reference
+    - name: reference/build_cellranger_reference
   resources:
     - type: nextflow_script
       path: main.nf
-      entrypoint: make_reference_entrypoint
+      entrypoint: run_wf
   test_resources:
     - type: nextflow_script
-      path: main.nf
+      path: test.nf
       entrypoint: test_wf
     - path: /resources_test/reference_gencodev41_chr1
 platforms:

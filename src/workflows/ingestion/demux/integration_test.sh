@@ -10,11 +10,13 @@ cd "$REPO_ROOT"
 
 export NXF_VER=21.10.6
 
+viash ns build -q 'workflows/ingestion/demux'
+
 nextflow \
   run . \
-  -main-script workflows/ingestion/demux/main.nf \
+  -main-script src/workflows/ingestion/demux/test.nf \
   -entry test_wf \
   -resume \
   -profile docker,no_publish \
   -with-trace work/trace.txt \
-  -c workflows/utils/labels_ci.config
+  -c src/workflows/utils/labels_ci.config

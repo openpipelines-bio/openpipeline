@@ -10,17 +10,12 @@ cd "$REPO_ROOT"
 
 export NXF_VER=21.10.6
 
+viash ns build -q rna_singlesample
+
 nextflow run . \
-  -main-script src/workflows/multiomics/rna_singlesample/main.nf \
+  -main-script src/workflows/multiomics/rna_singlesample/test.nf \
   -profile docker,no_publish \
   -entry test_wf \
   -with-trace work/trace.txt \
-  -c workflows/utils/labels_ci.config
+  -c src/workflows/utils/labels_ci.config
 
-
-nextflow run . \
-  -main-script workflows/multiomics/rna_singlesample/main.nf \
-  -profile docker,no_publish \
-  -entry test_wf2 \
-  -with-trace work/trace.txt \
-  -c workflows/utils/labels_ci.config

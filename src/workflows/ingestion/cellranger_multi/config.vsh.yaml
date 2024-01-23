@@ -159,13 +159,17 @@ functionality:
           example: "1-4"
           multiple: true
           multiple_sep: ";"
+  dependencies:
+    - name: mapping/cellranger_multi
+      alias: cellranger_multi_component
+    - name: convert/from_cellranger_multi_to_h5mu
   resources:
     - type: nextflow_script
       path: main.nf
-      entrypoint: cellranger_multi_entrypoint
+      entrypoint: run_wf
   test_resources:
     - type: nextflow_script
-      path: main.nf
+      path: test.nf
       entrypoint: test_wf
     - path: /resources_test/10x_5k_anticmv/raw/
       dest: 10x_5k_anticmv/raw/

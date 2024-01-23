@@ -95,14 +95,16 @@ functionality:
   resources:
     - type: nextflow_script
       path: main.nf
-      entrypoint: bbknn_leiden
+      entrypoint: run_wf
   test_resources:
     - type: nextflow_script
-      path: main.nf
+      path: test.nf
       entrypoint: test_wf
-    - type: nextflow_script
-      path: main.nf
-      entrypoint: test_wf2
     - path: /resources_test/pbmc_1k_protein_v3
+  dependencies:
+    - name: cluster/leiden
+    - name: dimred/umap
+    - name: neighbors/bbknn
+    - name: metadata/move_obsm_to_obs 
 platforms:
   - type: nextflow

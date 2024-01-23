@@ -144,13 +144,17 @@ functionality:
         - name: "--dryrun"
           type: boolean_true
           description: "If true, the output directory will only contain the CWL input files, but the pipeline itself will not be executed."
+  dependencies:
+    - name: mapping/bd_rhapsody
+      alias: bd_rhapsody_component
+    - name: convert/from_bdrhap_to_h5mu
   resources:
     - type: nextflow_script
       path: main.nf
-      entrypoint: bd_rhapsody_entrypoint
+      entrypoint: run_wf
   test_resources:
     - type: nextflow_script
-      path: main.nf
+      path: test.nf
       entrypoint: test_wf
     - path: /resources_test/bdrhap_5kjrt
     - path: /resources_test/reference_gencodev41_chr1/

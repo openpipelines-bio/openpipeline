@@ -50,15 +50,21 @@ functionality:
   resources:
     - type: nextflow_script
       path: main.nf
-      entrypoint: cellranger_postprocessing
+      entrypoint: run_wf
+  dependencies:
+    - name: correction/cellbender_remove_background
+    - name: filter/filter_with_counts
+    - name: filter/subset_h5mu
+    - name: transfer/publish
+  # test_dependencies:
+  #   - name: convert/from_10xh5_to_h5mu
   test_resources:
     - type: nextflow_script
-      path: main.nf
+      path: test.nf
       entrypoint: test_wf
     - type: nextflow_script
-      path: main.nf
+      path: test.nf
       entrypoint: test_wf2
-    
     - path: /resources_test/pbmc_1k_protein_v3
 platforms:
   - type: nextflow

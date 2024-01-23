@@ -1,36 +1,20 @@
-nextflow.enable.dsl=2
-
-workflowDir = params.rootDir + "/src/workflows"
-targetDir = params.rootDir + "/target/nextflow"
-
-include { make_reference } from targetDir + "/reference/make_reference/main.nf"
-include { build_bdrhap_reference } from targetDir + "/reference/build_bdrhap_reference/main.nf"
-include { star_build_reference } from targetDir + "/mapping/star_build_reference/main.nf"
-include { build_cellranger_reference } from targetDir + "/reference/build_cellranger_reference/main.nf"
-
-include { readConfig; channelFromParams; preprocessInputs; helpMessage } from workflowDir + "/utils/WorkflowHelper.nf"
-include { setWorkflowArguments; getWorkflowArguments } from workflowDir + "/utils/DataflowHelper.nf"
-
-config = readConfig("$workflowDir/ingestion/make_reference/config.vsh.yaml")
-
-workflow make_reference_entrypoint {
-  helpMessage(config)
-
-  channelFromParams(params, config)
-    | run_wf
-}
-
 workflow run_wf {
   take:
   input_ch
 
   main:
-  
-  ref_ch = input_ch
+
+  def targetMapping = [
+    "build_cellranger_reference": "cellranger",
+    "build_bdrhap_reference": "bd_rhapsody",
+    "star_build_reference": "star" 
+  ]
+
+  output_ch = input_ch
     // split params for downstream components
-    | preprocessInputs("config": config)
-    | setWorkflowArguments(
-      make_reference: [
+    | make_reference_component.run(
+      fromState: [
+        "input": "input",
         "genome_fasta": "genome_fasta", 
         "transcriptome_gtf": "transcriptome_gtf",
         "ercc": "ercc",
@@ -38,105 +22,43 @@ workflow run_wf {
         "output_gtf": "output_gtf",
         "subset_regex": "subset_regex"
       ],
-      cellranger: [
-        "output": "output_cellranger",
-        "target": "target"
+      toState: [
+        "output_fasta": "output_fasta",
+        "output_gtf": "output_gtf"
       ],
-      bd_rhapsody: [
-        "output": "output_bd_rhapsody",
-        "target": "target"
+      auto: [publish: true]
+    )
+    | runEach(
+      components: [ 
+        build_cellranger_reference,
+        build_bdrhap_reference,
+        star_build_reference
       ],
-      star: [
-        "output": "output_star",
-        "target": "target"
-      ]
+      filter: { id, state, component ->
+        state.target.contains(targetMapping.get(component.config.functionality.name))
+      },
+      fromState: { id, state, component ->
+        def target = targetMapping.get(component.config.functionality.name)
+        def passed_state = [
+          input: state.input,
+          output: state.get("output_" + target),
+          target: state.target,
+          genome_fasta: state.output_fasta,
+          transcriptome_gtf: state.output_gtf
+        ]
+        passed_state
+      },
+      toState: {id, output, state, component ->
+        def target = targetMapping.get(component.config.functionality.name)
+        def newState = state + ["output_$target": output.output]
+        return newState
+      },
+      auto: [ publish: true ],
     )
-
-    // generate reference
-    | getWorkflowArguments(key: "make_reference")
-    | make_reference.run(auto: [ publish: true ])
-
-
-  // generate cellranger index (if so desired)
-  cellranger_ch = ref_ch
-    | getWorkflowArguments(key: "cellranger")
-    | filter{ "cellranger" in it[1].target }
-    | build_cellranger_reference.run(
-      renameKeys: [ genome_fasta: "output_fasta", transcriptome_gtf: "output_gtf" ], 
-      auto: [ publish: true ]
-    )
-    | map{ tup -> tup.take(2) }
-
-  // generate bd_rhapsody index (if so desired)
-  bd_rhapsody = ref_ch
-    | getWorkflowArguments(key: "bd_rhapsody")
-    | filter{ "bd_rhapsody" in it[1].target }
-    | build_bdrhap_reference.run(
-      renameKeys: [ genome_fasta: "output_fasta", transcriptome_gtf: "output_gtf" ], 
-      auto: [ publish: true ]
-    )
-    | map{ tup -> tup.take(2) }
-
-  // generate star index (if so desired)
-  star = ref_ch
-    | getWorkflowArguments(key: "star")
-    | filter{ "star" in it[1].target }
-    | star_build_reference.run(
-      renameKeys: [ genome_fasta: "output_fasta", transcriptome_gtf: "output_gtf" ], 
-      auto: [ publish: true ]
-    )
-    | map{ tup -> tup.take(2) }
+    | setState(targetMapping.values().collect{"output_$it"} + ["output_fasta", "output_gtf"])
+    | groupTuple(by: 0, sort: "hash")
+    | map {id, state_list -> [id, state_list.inject{acc, val -> acc + val}]}
   
-  // merge everything together
-  passthr_ch = input_ch
-    | map{ tup -> [ tup[0] ] + tup.drop(2) }
-
-  output_ch = ref_ch
-    | map{ tup -> tup.take(2) }
-    | join(cellranger_ch, remainder: true)
-    | join(bd_rhapsody, remainder: true)
-    | join(star, remainder: true)
-    | join(passthr_ch)
-    | map{ tup -> 
-      id = tup[0]
-      data = tup[1] + [ output_cellranger: tup[2], output_bd_rhapsody: tup[3], output_star: tup[4] ]
-      data = data.findAll{it.value != null} // remove empty fields
-      psthr = tup.drop(4)
-      [ id, data ] + psthr
-    }
-
   emit:
   output_ch
-}
-
-workflow test_wf {
-  // allow changing the resources_test dir
-  params.resources_test = params.rootDir + "/resources_test"
-
-  // or when running from s3: params.resources_test = "s3://openpipelines-data/"
-  params.param_list = [
-    [
-      id: "gencode_v41_ercc",
-      genome_fasta: params.resources_test + "/reference_gencodev41_chr1/reference.fa.gz",
-      transcriptome_gtf: params.resources_test + "/reference_gencodev41_chr1/reference.gtf.gz",
-      ercc: params.resources_test + "/reference_gencodev41_chr1/ERCC92.zip",
-      subset_regex: "(ERCC-00002|chr1)",
-      target: ["cellranger", "bd_rhapsody", "star"]
-    ]
-  ]
-
-  output_ch =
-    channelFromParams(params, config)
-    | view{ "Input: $it" }
-    | run_wf
-    | view { output ->
-      assert output.size() == 3 : "outputs should contain two elements; [id, file, passthrough]"
-      assert output[1].size() == 5 : "output data should contain 5 elements"
-      // todo: check output data tuple
-      "Output: $output"
-    }
-    | toList()
-    | map { output_list ->
-      assert output_list.size() == 1 : "There should be one output"
-    }
 }

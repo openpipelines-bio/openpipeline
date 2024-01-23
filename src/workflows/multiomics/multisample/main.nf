@@ -1,155 +1,184 @@
-nextflow.enable.dsl=2
-workflowDir = params.rootDir + "/src/workflows"
-targetDir = params.rootDir + "/target/nextflow"
-
-include { merge } from targetDir + '/dataflow/merge/main.nf'
-include { publish }  from targetDir + '/transfer/publish/main.nf'
-
-include { split_modalities_workflow as split_modalities_workflow } from workflowDir + '/multiomics/full_pipeline/main.nf'
-include { multisample_processing_workflow as multisample_processing_workflow } from workflowDir + '/multiomics/full_pipeline/main.nf'
-include { integration_setup_workflow as integration_setup_workflow } from workflowDir + '/multiomics/full_pipeline/main.nf'
-
-include { readConfig; helpMessage; readCsv; preprocessInputs; channelFromParams } from workflowDir + "/utils/WorkflowHelper.nf"
-include { setWorkflowArguments; getWorkflowArguments; passthroughMap as pmap; passthroughFlatMap as pFlatMap } from workflowDir + "/utils/DataflowHelper.nf"
-config = readConfig("$workflowDir/multiomics/multisample/config.vsh.yaml")
-
-workflow multisample {
-  helpMessage(config)
-
-  channelFromParams(params, config)
-    | run_wf
-
-}
-
 workflow run_wf {
   take:
   input_ch
 
   main:
-  output_ch = input_ch
-    | preprocessInputs("config": config)
-    | setWorkflowArguments (
-        "split_modalities_args": [:],
-        "rna_multisample_args": [
-          "filter_with_hvg_var_output": "filter_with_hvg_var_output",
-          "filter_with_hvg_obs_batch_key": "filter_with_hvg_obs_batch_key",
-          "var_qc_metrics": "var_qc_metrics",
-          "top_n_vars": "top_n_vars"
-        ],
-        "prot_multisample_args": [:],
-          "integration_args_rna": [
-            "var_pca_feature_selection": "filter_with_hvg_var_output", // run PCA on highly variable genes only
-            "pca_overwrite": "pca_overwrite"
-          ],
-        "integration_args_prot": ["pca_overwrite": "pca_overwrite"],
-        "publish": ["output": "output"],
-    )
-    | getWorkflowArguments(key: "split_modalities_args")
-    | split_modalities_workflow
-    | pmap {id, data ->
-        def new_data = ["input": data.output]
-        [id, new_data]
-    }
-    | multisample_processing_workflow
-    | groupTuple(by: 0, sort: "hash")
-    | map { list -> 
-        def id = list[0]
-        def new_input = list[1].collect({it.output})
-        def other_arguments = list[2][0] // Get the first set, the other ones are copies
-        def modalities_list = ["modalities": list[-1].collect({it.modality}).unique()]
-        [id, ["input": new_input]] + other_arguments + modalities_list
+    multisample_ch = input_ch
+      // The input for this workflow can either be a list of unimodal files
+      // or a single multimodal file. To destingish between the two, the files will be split either way.
+      // For multiple unimodal files, the result before or after splitting is identical.
+      // In both cases, this workflow requires split files.
+      
+      // Split must be called on each item of the input list, so split it into multiple events with unique ids
+      // Unique ids are required to run a component
+      | flatMap {id, state ->
+        def newEvents = state.input.withIndex().collect{input_file, index -> 
+          def newState = state + ["input": input_file, "original_id": id]
+          ["${id}_${index}", newState]
+        }
+        newEvents
       }
-    | merge.run(args: [ output_compression: "gzip" ])
-    | pmap {id, data ->
-        def new_data = ["input": data.output]
-        [id, new_data]
-    }
-    | integration_setup_workflow
-    | pmap {id, data ->
-        def new_data = ["input": data.output]
-        [id, new_data]
-    }
-    | getWorkflowArguments(key: "publish")
-    | publish
-    | map {list -> [list[0], list[1]]}
+      | split_modalities_workflow.run(
+        fromState: {id, state ->
+          [
+            "input": state.input,
+            "id": id
+          ]
+        },
+        toState: [
+          "output": "output", 
+          "output_types": "output_types"
+        ]
+      )
+      // gather the output from split_modalities_workflow
+      // by reading the output csv (the csv contains 1 line per output file)
+      | flatMap {id, state ->
+        def outputDir = state.output
+        def types = readCsv(state.output_types.toUriString())
+        
+        types.collect{ dat ->
+          def new_id = state.original_id + "_${dat.name}" // Make a unique ID by appending the modality name.
+          def new_data = outputDir.resolve(dat.filename)
+          [ new_id, state + ["input": new_data, modality: dat.name]]
+        }
+      }
+      // Remove arguments from split modalities from state
+      | map {id, state -> 
+        def keysToRemove = ["output_types", "original_id"]
+        def newState = state.findAll{it.key !in keysToRemove}
+        [id, newState]
+      }
+    
+    multisample_ch
+      | toSortedList()
+      | map{all_input ->
+        def ids = all_input.collect({it[0]})
+        assert ids.clone().unique().size() == ids.size(): "Found duplicate modalities in the input."
+      }
+
+    //
+    // Multisample processing
+    //
+    def multisample_arguments = [
+      "rna": [
+        "filter_with_hvg_var_output": "filter_with_hvg_var_output",
+        "filter_with_hvg_obs_batch_key": "filter_with_hvg_obs_batch_key",
+        "var_qc_metrics": "var_qc_metrics",
+        "top_n_vars": "top_n_vars"
+      ],
+      "prot": [:]
+    ].asImmutable()
+
+    multimodal_ch_known = multisample_ch
+      | runEach(
+        components: [rna_multisample, prot_multisample],
+        filter: { id, state, component ->
+          state.modality + "_multisample" == component.config.functionality.name
+        },
+        fromState: { id, state, component -> 
+          def newState = multisample_arguments.get(state.modality).collectEntries{key_, value_ -> 
+            [key_, state[value_]]
+          }
+          newState + ["id": id, "input": state.input]
+        },
+        toState: {id, output, state, component ->
+          def newState = state + ["input": output.output]
+          return newState
+        }
+      )
+
+    multimodal_ch_unknown = multisample_ch
+      | filter { id, state -> state.modality !in multisample_arguments.keySet() }
+    
+    multimodal_ch = multimodal_ch_unknown.mix(multimodal_ch_known)
+      // Remove arguments for multisample processing from state.
+      | map {id, state -> 
+        def keysToRemove = multisample_arguments.inject([]){currentKeys, modality, stateMapping -> 
+          def newKeys = currentKeys + stateMapping.values()
+          return newKeys
+        }
+        def newState = state.findAll{it.key !in keysToRemove}
+        [id, newState]
+      }
+      | view {"After multisample processing: $it"}
+
+      //
+      // Merging: joining the observations from all modalities together. Everything in 1 file.
+      //
+
+      // Set the original IDs back into place to use them in groupTuple
+      | map {id, state ->
+        def newEvent = [state.id, state]
+        newEvent
+      }
+      // Group the modalities back together per input sample
+      | groupTuple(by: 0, sort: "hash")
+      | view {"After toSortedList: $it"}
+      | map { id, states ->
+          def new_input = states.collect{it.input}
+          def modalities = states.collect{it.modality}.unique()
+          def other_state_keys = states.inject([].toSet()){ current_keys, state ->
+            def new_keys = current_keys + state.keySet()
+            return new_keys
+          }.minus(["output", "input", "modality"])
+          def new_state = other_state_keys.inject([:]){ old_state, argument_name ->
+            argument_values = states.collect{it.get(argument_name)}.unique()
+            assert argument_values.size() == 1, "Arguments should be the same across modalities. Please report this \
+                                                 as a bug. Argument name: $argument_name, \
+                                                 argument value: $argument_values"
+            def argument_value
+            argument_values.each { argument_value = it }
+            def current_state = old_state + [(argument_name): argument_value]
+            return current_state
+          }
+          [id, new_state + ["input": new_input, "modalities": modalities]]
+      }
+      | view {"Input merge channel: $it"}
+      | merge.run(
+        fromState: ["input": "input"],
+        toState: ["input": "output"],
+      )
+      | view {"After merging processing: $it"}
+
+      // Processing of multi-modal multisample MuData files.
+      // Performs calculations on samples that have *not* been integrated,
+      // and can be considered a "no-integration" workflow.
+
+      output_ch = [initialize_integration_rna, initialize_integration_prot].inject(multimodal_ch){ channel_in, component ->
+        channel_out_integrated = channel_in
+          | component.run(
+            runIf: {id, state ->
+              def reg = ~/^initialize_integration_/
+              state.modalities.contains(component.name - reg)
+            },
+            fromState: { id, state -> 
+              def stateMappings = [
+                "initialize_integration_rna": 
+                  [
+                    "id": id,
+                    "input": state.input,
+                    "layer": "log_normalized",
+                    "modality": "rna",
+                    "var_pca_feature_selection": state.filter_with_hvg_var_output, // run PCA on highly variable genes only
+                    "pca_overwrite": state.pca_overwrite,
+                  ],
+                "initialize_integration_prot":
+                  [
+                    "id": id,
+                    "input": state.input,
+                    "layer": "clr",
+                    "modality": "prot",
+                    "pca_overwrite": state.pca_overwrite
+                  ]
+              ]
+              return stateMappings[component.name]
+            },
+            toState: ["input": "output"]
+          )
+      }
+      | setState(["output": "input"])
+
 
   emit:
   output_ch
-}
-
-workflow test_wf {
-  helpMessage(config)
-
-  // allow changing the resources_test dir
-  params.resources_test = params.rootDir + "/resources_test"
-
-  // or when running from s3: params.resources_test = "s3://openpipelines-data/"
-  
-  testParams = [
-      param_list: [
-        [
-          id: "test",
-          input: params.resources_test + "/concat_test_data/concatenated_brain_filtered_feature_bc_matrix_subset.h5mu",
-          publish_dir: "foo/"
-        ],
-        [
-          id: "test2",
-          input: params.resources_test + "/concat_test_data/concatenated_brain_filtered_feature_bc_matrix_subset.h5mu",
-          publish_dir: "foo/"
-        ],
-      ]
-    ]
-
-
-  output_ch =
-    channelFromParams(testParams, config)
-      | view { "Input: $it" }
-      | run_wf
-      | view { output ->
-        assert output.size() == 2 : "outputs should contain two elements; [id, file]"
-        assert output[1].output.toString().endsWith(".h5mu") : "Output file should be a h5mu file. Found: ${output[1]}"
-        "Output: $output"
-      }
-      | toSortedList()
-      | map { output_list ->
-        print "output_list: $output_list"
-        assert output_list.size() == 2 : "output channel should contain two events"
-        assert output_list.collect({it[0]}).sort() == ["test", "test2"] : "First output ID should be 'test'"
-      }
-  
-}
-
-workflow test_wf2 {
-  helpMessage(config)
-
-  // allow changing the resources_test dir
-  params.resources_test = params.rootDir + "/resources_test"
-
-  // or when running from s3: params.resources_test = "s3://openpipelines-data/"
-  
-  testParams = [
-      input: params.resources_test + "/10x_5k_anticmv/5k_human_antiCMV_T_TBNK_connect_mms.h5mu",
-      pca_overwrite: true,
-      id: "test",
-      publish_dir: "foo/",
-      output: "test.h5mu"
-    ]
-
-
-  output_ch =
-    channelFromParams(testParams, config)
-      | view { "Input: $it" }
-      | run_wf
-      | view { output ->
-        assert output.size() == 2 : "outputs should contain two elements; [id, file], was $output"
-        assert output[1].output.toString().endsWith(".h5mu") : "Output file should be a h5mu file. Found: ${output[1]}"
-        "Output: $output"
-      }
-      | toSortedList()
-      | map { output_list ->
-        print "output_list: $output_list"
-        assert output_list.size() == 1 : "output channel should contain two events"
-        assert output_list.collect({it[0]}).sort() == ["test"] : "First output ID should be 'test'"
-      }
-  
 }

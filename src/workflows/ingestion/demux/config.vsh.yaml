@@ -43,14 +43,38 @@ functionality:
     - name: "--ignore_missing"
       type: boolean
       description: Should the demultiplexer ignore missing entities (filter, ...)
+    - name: "--output_fastq"
+      type: file
+      direction: output
+      required: true
+      description: Output directory containig fastq files
+      example: fastq_dir
+    - name: "--output_fastqc"
+      type: file
+      direction: output
+      required: false
+      description: Reports directory produced by FastQC
+      example: reports_dir
+    - name: "--output_multiqc"
+      type: file
+      direction: output
+      required: false
+      description: Reports directory produced by MultiQC
+      example: reports_dir
   resources:
     - type: nextflow_script
       path: main.nf
-      entrypoint: demux
+      entrypoint: run_wf
   test_resources:
     - type: nextflow_script
-      path: main.nf
+      path: test.nf
       entrypoint: test_wf
     - path: /resources_test/cellranger_tiny_bcl
+  dependencies:
+    - name: demux/cellranger_mkfastq
+    - name: demux/bcl_convert
+    - name: demux/bcl2fastq
+    - name: qc/fastqc
+    - name: qc/multiqc
 platforms:
   - type: nextflow
