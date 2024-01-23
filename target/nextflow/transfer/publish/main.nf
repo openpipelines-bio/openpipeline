@@ -2861,7 +2861,7 @@ meta = [
       "image" : "ubuntu:22.04",
       "target_organization" : "openpipelines-bio",
       "target_registry" : "ghcr.io",
-      "target_tag" : "main_build",
+      "target_tag" : "",
       "namespace_separator" : "_",
       "resolve_volume" : "Automatic",
       "chown" : true,
@@ -2923,7 +2923,7 @@ meta = [
     "platform" : "nextflow",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/transfer/publish",
     "viash_version" : "0.8.2",
-    "git_commit" : "787bfad0ff4fd9fab717fac62e8ebc570529a148",
+    "git_commit" : "9b43ef5b7918ef90f152ba4faf55a746d72465c6",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))
@@ -3316,7 +3316,7 @@ meta["defaults"] = [
   "container" : {
     "registry" : "ghcr.io",
     "image" : "openpipelines-bio/transfer_publish",
-    "tag" : "main_build"
+    "tag" : ""
   },
   "tag" : "$id"
 }'''),

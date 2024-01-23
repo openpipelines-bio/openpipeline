@@ -307,5 +307,5 @@ info:
   output: "/home/runner/work/openpipeline/openpipeline/target/nextflow/workflows/multiomics/integration/bbknn_leiden"
   executable: "/home/runner/work/openpipeline/openpipeline/target/nextflow/workflows/multiomics/integration/bbknn_leiden/main.nf"
   viash_version: "0.8.2"
-  git_commit: "787bfad0ff4fd9fab717fac62e8ebc570529a148"
+  git_commit: "9b43ef5b7918ef90f152ba4faf55a746d72465c6"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"
