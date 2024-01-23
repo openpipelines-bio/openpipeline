@@ -81,6 +81,8 @@ of a split multimodal files. The modalities in the list must be unique and after
 ## MINOR CHANGES
 * Refactored `rna_multisample` (PR #607), `cellranger_multi` (PR #609), `cellranger_mapping` (PR #610) and other (PR #606) pipelines to use `fromState` and `toState` functionality.
 
+* `metadata/add_id`: add more runtime logging (PR #663).
+
 * `cluster/leiden`: Bump python to 3.11 and leidenalg to 0.10.0 (PR #645).
 
 * `mapping/htseq_count_to_h5mu` and `multi_star`: update polars and gtfparse (PR #642). 
@@ -94,6 +96,8 @@ of a split multimodal files. The modalities in the list must be unique and after
 * `build_cellranger_reference` and `build_bdrhap_reference`: Bump go version to `1.21.4` when building seqkit for testing the component (PR #624 and PR #637).
 
 * `correction/cellbender_remove_background`: Remove `muon` as a test dependency (PR #636).
+
+* (Automatic testing) Update viashpy to 0.6.0 (PR #665).
 
 ## BUG FIXES
 
