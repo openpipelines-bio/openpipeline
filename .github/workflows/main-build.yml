@@ -88,7 +88,7 @@ jobs:
       workflow_matrix: ${{ steps.set_matrix.outputs.workflows }}
 
     env:
-      DEPLOY_BRANCH: ${{ github.event.inputs.deploy_branch != '' && github.event.inputs.deploy_branch || format('{0}_build', github.ref_name) }}
+      DEPLOY_BRANCH: ${{ !github.event.inputs.deploy_branch && format('{0}_build', github.ref_name) || github.event.inputs.deploy_branch  }}
 
     steps:
     - name: Keep symlinks as-is
