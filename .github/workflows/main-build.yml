@@ -1,6 +1,6 @@
 name: Build
 concurrency: 
-  group: ${{ github.workflow }}-${{ github.ref_name}}-build
+  group: ${{ github.workflow }}-${{ github.event.inputs.deploy_branch && format('{0}_build', github.ref_name) || github.event.inputs.deploy_branch }}
   cancel-in-progress: true
 
 on:
@@ -47,7 +47,7 @@ on:
         required: false
         default: main_build
         description: Version tag of existing containers to use. Is `main_build` by default.
-      deploy_branch:
+        github.event.inputs.appName:
           type: string
           required: false
           description: |
