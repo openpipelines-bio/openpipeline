@@ -61,8 +61,8 @@ workflow run_wf {
     //
     def multisample_arguments = [
       "rna": [
-        "filter_with_hvg_var_output": "filter_with_hvg_var_output",
-        "filter_with_hvg_obs_batch_key": "filter_with_hvg_obs_batch_key",
+        "highly_variable_features_var_output": "highly_variable_features_var_output",
+        "highly_variable_features_obs_batch_key": "highly_variable_features_obs_batch_key",
         "var_qc_metrics": "var_qc_metrics",
         "top_n_vars": "top_n_vars"
       ],
@@ -159,7 +159,7 @@ workflow run_wf {
                     "input": state.input,
                     "layer": "log_normalized",
                     "modality": "rna",
-                    "var_pca_feature_selection": state.filter_with_hvg_var_output, // run PCA on highly variable genes only
+                    "var_pca_feature_selection": state.highly_variable_features_var_output, // run PCA on highly variable genes only
                     "pca_overwrite": state.pca_overwrite,
                   ],
                 "initialize_integration_prot":
