@@ -40,6 +40,16 @@
        multisample workflows are executed in-tandem. If you wish to execute the singlesample workflows
        in a seperate manner and still include count based statistics, please run the `qc` pipeline
        on the result of the singlesample workflow (PR #604).
+    * The `filter/filter_with_hvg` component has been deprecated. It's functionality has been copied to 
+      `metadata/highly_variable_features_scanpy` with a few notable exceptions: (1) the `--do_filter` argment
+      has been removed. (2) The `--n_top_genes` has argument has been deprecated in favour of 
+      `--n_top_features` (PR #667).
+    * `full_pipeline`, `multisample` and `rna_multisample` pipelines: `--filter_with_hvg_var_output` and 
+      `--filter_with_hvg_obs_batch_key` are now deprecated in favour of `--highly_variable_features_obs_batch_key` 
+      and `--highly_variable_features_var_output` respectively. For the `rna_multisample` pipeline,
+      this applies to `--filter_with_hvg_n_top_genes` and `--filter_with_hvg_flavor` as well,
+      which are superseded by `--highly_variable_features_n_top_features` and
+      `--highly_variable_features_flavor` (PR #667).
  
 * Renamed `obsm_metrics` to `uns_metrics` for the `cellranger_mapping` workflow because the cellranger metrics are stored in `.uns` and not `.obsm` (PR #610).
 
