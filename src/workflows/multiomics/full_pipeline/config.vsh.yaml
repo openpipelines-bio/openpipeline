@@ -106,16 +106,14 @@ functionality:
           type: integer
           description: Minimum of non-zero values per protein.
 
-    - name: "Highly variable features detection"
+    - name: "Highly variable gene detection"
       arguments:
-        - name: "--highly_variable_features_var_output"
-          alternatives: ["--filter_with_hvg_var_output"]
+        - name: "--filter_with_hvg_var_output"
           required: false
           type: string
           default: "filter_with_hvg"
           description: In which .var slot to store a boolean array corresponding to the highly variable genes.
-        - name: "--highly_variable_features_obs_batch_key"
-          alternatives: ["--filter_with_hvg_obs_batch_key"]
+        - name: "--filter_with_hvg_obs_batch_key"
           type: string
           default: "sample_id"
           required: false
@@ -158,7 +156,7 @@ functionality:
             Keys to select a boolean (containing only True or False) column from .var.
             For each cell, calculate the proportion of total values for genes which are labeled 'True', 
             compared to the total sum of the values for all genes. Defaults to the combined values specified for
-            --var_name_mitochondrial_genes and --highly_variable_features_var_output.
+            --var_name_mitochondrial_genes and --filter_with_hvg_var_output.
           type: string
           multiple: True
           multiple_sep: ','
