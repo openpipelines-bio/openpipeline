@@ -13,7 +13,7 @@ workflow run_wf {
       // If requested to be detected, make sure the mitochondrial genes
       // are added to the input of the qc metrics calculation
       | map {id, state ->
-        def var_qc_default = [state.highly_variable_features_var_output]
+        def var_qc_default = [state.filter_with_hvg_var_output]
         if (state.var_name_mitochondrial_genes) {
           var_qc_default.add(state.var_name_mitochondrial_genes)
         }
@@ -185,8 +185,8 @@ workflow run_wf {
           [
             "id": id,
             "input": state.input,
-            "highly_variable_features_var_output": state.highly_variable_features_var_output,
-            "highly_variable_features_obs_batch_key": state.highly_variable_features_obs_batch_key,
+            "filter_with_hvg_var_output": state.filter_with_hvg_var_output,
+            "filter_with_hvg_obs_batch_key": state.filter_with_hvg_obs_batch_key,
             "var_qc_metrics": state.var_qc_metrics,
             "top_n_vars": state.top_n_vars, 
             "pca_overwrite": state.pca_overwrite
