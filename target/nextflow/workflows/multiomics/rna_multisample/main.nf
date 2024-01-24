@@ -2918,12 +2918,15 @@ meta = [
         ]
       },
       {
-        "name" : "Filtering highly variable genes",
+        "name" : "Filtering highly variable features",
         "arguments" : [
           {
             "type" : "string",
-            "name" : "--filter_with_hvg_var_output",
-            "description" : "In which .var slot to store a boolean array corresponding to the highly variable genes.",
+            "name" : "--highly_variable_features_var_output",
+            "alternatives" : [
+              "--filter_with_hvg_var_output"
+            ],
+            "description" : "In which .var slot to store a boolean array corresponding to the highly variable features.",
             "default" : [
               "filter_with_hvg"
             ],
@@ -2935,8 +2938,11 @@ meta = [
           },
           {
             "type" : "string",
-            "name" : "--filter_with_hvg_obs_batch_key",
-            "description" : "If specified, highly-variable genes are selected within each batch separately and merged. This simple \nprocess avoids the selection of batch-specific genes and acts as a lightweight batch correction method. \nFor all flavors, genes are first sorted by how many batches they are a HVG. For dispersion-based flavors \nties are broken by normalized dispersion. If flavor = 'seurat_v3', ties are broken by the median (across\nbatches) rank based on within-batch normalized variance.\n",
+            "name" : "--highly_variable_features_obs_batch_key",
+            "alternatives" : [
+              "--filter_with_hvg_obs_batch_key"
+            ],
+            "description" : "If specified, highly-variable features are selected within each batch separately and merged. This simple \nprocess avoids the selection of batch-specific features and acts as a lightweight batch correction method. \nFor all flavors, featues are first sorted by how many batches they are highly variable. For dispersion-based flavors \nties are broken by normalized dispersion. If flavor = 'seurat_v3', ties are broken by the median (across\nbatches) rank based on within-batch normalized variance.\n",
             "default" : [
               "sample_id"
             ],
@@ -2948,8 +2954,11 @@ meta = [
           },
           {
             "type" : "string",
-            "name" : "--filter_with_hvg_flavor",
-            "description" : "Choose the flavor for identifying highly variable genes. For the dispersion based methods\nin their default workflows, Seurat passes the cutoffs whereas Cell Ranger passes n_top_genes.\n",
+            "name" : "--highly_variable_features_flavor",
+            "alternatives" : [
+              "--filter_with_hvg_flavor"
+            ],
+            "description" : "Choose the flavor for identifying highly variable features. For the dispersion based methods\nin their default workflows, Seurat passes the cutoffs whereas Cell Ranger passes n_top_features.\n",
             "default" : [
               "seurat"
             ],
@@ -2966,8 +2975,11 @@ meta = [
           },
           {
             "type" : "integer",
-            "name" : "--filter_with_hvg_n_top_genes",
-            "description" : "Number of highly-variable genes to keep. Mandatory if filter_with_hvg_flavor is set to 'seurat_v3'.",
+            "name" : "--highly_variable_features_n_top_features",
+            "alternatives" : [
+              "--filter_with_hvg_n_top_genes"
+            ],
+            "description" : "Number of highly-variable features to keep. Mandatory if filter_with_hvg_flavor is set to 'seurat_v3'.",
             "required" : false,
             "direction" : "input",
             "multiple" : false,
@@ -3142,7 +3154,7 @@ meta = [
           "functionalityNamespace" : "transform",
           "output" : "",
           "platform" : "",
-          "git_commit" : "3538af931cde5deea3e5cb4af836d5dc87233f42",
+          "git_commit" : "dde19b637f92199a1bd17952f21652392bc7927d",
           "executable" : "/nextflow/transform/normalize_total/main.nf"
         },
         "writtenPath" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/transform/normalize_total"
@@ -3163,31 +3175,31 @@ meta = [
           "functionalityNamespace" : "transform",
           "output" : "",
           "platform" : "",
-          "git_commit" : "3538af931cde5deea3e5cb4af836d5dc87233f42",
+          "git_commit" : "dde19b637f92199a1bd17952f21652392bc7927d",
           "executable" : "/nextflow/transform/log1p/main.nf"
         },
         "writtenPath" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/transform/log1p"
       },
       {
-        "name" : "filter/filter_with_hvg",
+        "name" : "metadata/highly_variable_features_scanpy",
         "repository" : {
           "type" : "local",
           "localPath" : ""
         },
-        "foundConfigPath" : "/home/runner/work/openpipeline/openpipeline/src/filter/filter_with_hvg/config.vsh.yaml",
+        "foundConfigPath" : "/home/runner/work/openpipeline/openpipeline/src/metadata/highly_variable_features_scanpy/config.vsh.yaml",
         "configInfo" : {
-          "functionalityName" : "filter_with_hvg",
+          "functionalityName" : "highly_variable_features_scanpy",
           "git_tag" : "",
           "git_remote" : "https://github.com/openpipelines-bio/openpipeline",
           "viash_version" : "0.8.3",
-          "config" : "/home/runner/work/openpipeline/openpipeline/src/filter/filter_with_hvg/config.vsh.yaml",
-          "functionalityNamespace" : "filter",
+          "config" : "/home/runner/work/openpipeline/openpipeline/src/metadata/highly_variable_features_scanpy/config.vsh.yaml",
+          "functionalityNamespace" : "metadata",
           "output" : "",
           "platform" : "",
-          "git_commit" : "3538af931cde5deea3e5cb4af836d5dc87233f42",
-          "executable" : "/nextflow/filter/filter_with_hvg/main.nf"
+          "git_commit" : "dde19b637f92199a1bd17952f21652392bc7927d",
+          "executable" : "/nextflow/metadata/highly_variable_features_scanpy/main.nf"
         },
-        "writtenPath" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/filter/filter_with_hvg"
+        "writtenPath" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/metadata/highly_variable_features_scanpy"
       },
       {
         "name" : "workflows/qc/qc",
@@ -3206,7 +3218,7 @@ meta = [
           "functionalityNamespace" : "workflows/qc",
           "output" : "",
           "platform" : "",
-          "git_commit" : "3538af931cde5deea3e5cb4af836d5dc87233f42",
+          "git_commit" : "dde19b637f92199a1bd17952f21652392bc7927d",
           "executable" : "/nextflow/workflows/qc/qc/main.nf"
         },
         "writtenPath" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/workflows/qc/qc"
@@ -3227,7 +3239,7 @@ meta = [
           "functionalityNamespace" : "transform",
           "output" : "",
           "platform" : "",
-          "git_commit" : "3538af931cde5deea3e5cb4af836d5dc87233f42",
+          "git_commit" : "dde19b637f92199a1bd17952f21652392bc7927d",
           "executable" : "/nextflow/transform/delete_layer/main.nf"
         },
         "writtenPath" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/transform/delete_layer"
@@ -3248,7 +3260,7 @@ meta = [
           "functionalityNamespace" : "metadata",
           "output" : "",
           "platform" : "",
-          "git_commit" : "3538af931cde5deea3e5cb4af836d5dc87233f42",
+          "git_commit" : "dde19b637f92199a1bd17952f21652392bc7927d",
           "executable" : "/nextflow/metadata/add_id/main.nf"
         },
         "writtenPath" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/metadata/add_id"
@@ -3312,7 +3324,7 @@ meta = [
     "platform" : "nextflow",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/workflows/multiomics/rna_multisample",
     "viash_version" : "0.8.3",
-    "git_commit" : "3538af931cde5deea3e5cb4af836d5dc87233f42",
+    "git_commit" : "dde19b637f92199a1bd17952f21652392bc7927d",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))
@@ -3322,7 +3334,7 @@ meta = [
 meta["root_dir"] = getRootDir()
 include { normalize_total } from "${meta.resources_dir}/../../../../nextflow/transform/normalize_total/main.nf"
 include { log1p } from "${meta.resources_dir}/../../../../nextflow/transform/log1p/main.nf"
-include { filter_with_hvg } from "${meta.resources_dir}/../../../../nextflow/filter/filter_with_hvg/main.nf"
+include { highly_variable_features_scanpy } from "${meta.resources_dir}/../../../../nextflow/metadata/highly_variable_features_scanpy/main.nf"
 include { qc as rna_qc_viashalias } from "${meta.resources_dir}/../../../../nextflow/workflows/qc/qc/main.nf"
 rna_qc = rna_qc_viashalias.run(key: "rna_qc")
 include { delete_layer } from "${meta.resources_dir}/../../../../nextflow/transform/delete_layer/main.nf"
@@ -3371,16 +3383,16 @@ workflow run_wf {
       },
       toState: ["input": "output"]
     )
-    | filter_with_hvg.run(
+    | highly_variable_features_scanpy.run(
       fromState: {id, state ->
         [
           "input": state.input,
           "layer": "log_normalized",
           "modality": state.modality,
-          "var_name_filter": state.filter_with_hvg_var_output,
-          "n_top_genes": state.filter_with_hvg_n_top_genes,
-          "flavor": state.filter_with_hvg_flavor,
-          "obs_batch_key": state.filter_with_hvg_obs_batch_key
+          "var_name_filter": state.highly_variable_features_var_output,
+          "n_top_features": state.highly_variable_features_n_top_features,
+          "flavor": state.highly_variable_features_flavor,
+          "obs_batch_key": state.highly_variable_features_obs_batch_key
         ]
       },
       toState: ["input": "output"],

@@ -46,39 +46,39 @@
           
         }
       },
-      "filtering highly variable genes" : {
-        "title": "Filtering highly variable genes",
+      "filtering highly variable features" : {
+        "title": "Filtering highly variable features",
         "type": "object",
         "description": "No description",
         "properties": {
           
-          "filter_with_hvg_var_output": {
+          "highly_variable_features_var_output": {
             "type": "string",
             "description": "Type: `string`, default: `filter_with_hvg`. In which ",
-            "help_text": "Type: `string`, default: `filter_with_hvg`. In which .var slot to store a boolean array corresponding to the highly variable genes.",
+            "help_text": "Type: `string`, default: `filter_with_hvg`. In which .var slot to store a boolean array corresponding to the highly variable features.",
             "default": "filter_with_hvg"
           },
           
-          "filter_with_hvg_obs_batch_key": {
+          "highly_variable_features_obs_batch_key": {
             "type": "string",
-            "description": "Type: `string`, default: `sample_id`. If specified, highly-variable genes are selected within each batch separately and merged",
-            "help_text": "Type: `string`, default: `sample_id`. If specified, highly-variable genes are selected within each batch separately and merged. This simple \nprocess avoids the selection of batch-specific genes and acts as a lightweight batch correction method. \nFor all flavors, genes are first sorted by how many batches they are a HVG. For dispersion-based flavors \nties are broken by normalized dispersion. If flavor = \u0027seurat_v3\u0027, ties are broken by the median (across\nbatches) rank based on within-batch normalized variance.\n",
+            "description": "Type: `string`, default: `sample_id`. If specified, highly-variable features are selected within each batch separately and merged",
+            "help_text": "Type: `string`, default: `sample_id`. If specified, highly-variable features are selected within each batch separately and merged. This simple \nprocess avoids the selection of batch-specific features and acts as a lightweight batch correction method. \nFor all flavors, featues are first sorted by how many batches they are highly variable. For dispersion-based flavors \nties are broken by normalized dispersion. If flavor = \u0027seurat_v3\u0027, ties are broken by the median (across\nbatches) rank based on within-batch normalized variance.\n",
             "default": "sample_id"
           },
           
-          "filter_with_hvg_flavor": {
+          "highly_variable_features_flavor": {
             "type": "string",
-            "description": "Type: `string`, default: `seurat`, choices: ``seurat`, `cell_ranger`, `seurat_v3``. Choose the flavor for identifying highly variable genes",
-            "help_text": "Type: `string`, default: `seurat`, choices: ``seurat`, `cell_ranger`, `seurat_v3``. Choose the flavor for identifying highly variable genes. For the dispersion based methods\nin their default workflows, Seurat passes the cutoffs whereas Cell Ranger passes n_top_genes.\n",
+            "description": "Type: `string`, default: `seurat`, choices: ``seurat`, `cell_ranger`, `seurat_v3``. Choose the flavor for identifying highly variable features",
+            "help_text": "Type: `string`, default: `seurat`, choices: ``seurat`, `cell_ranger`, `seurat_v3``. Choose the flavor for identifying highly variable features. For the dispersion based methods\nin their default workflows, Seurat passes the cutoffs whereas Cell Ranger passes n_top_features.\n",
             "enum": ["seurat", "cell_ranger", "seurat_v3"]
             ,
             "default": "seurat"
           },
           
-          "filter_with_hvg_n_top_genes": {
+          "highly_variable_features_n_top_features": {
             "type": "integer",
-            "description": "Type: `integer`. Number of highly-variable genes to keep",
-            "help_text": "Type: `integer`. Number of highly-variable genes to keep. Mandatory if filter_with_hvg_flavor is set to \u0027seurat_v3\u0027."
+            "description": "Type: `integer`. Number of highly-variable features to keep",
+            "help_text": "Type: `integer`. Number of highly-variable features to keep. Mandatory if filter_with_hvg_flavor is set to \u0027seurat_v3\u0027."
           }
           
         }
@@ -177,7 +177,7 @@
         "$ref": "#/definitions/output"
       },
       {
-        "$ref": "#/definitions/filtering highly variable genes"
+        "$ref": "#/definitions/filtering highly variable features"
       },
       {
         "$ref": "#/definitions/qc metrics calculation options"

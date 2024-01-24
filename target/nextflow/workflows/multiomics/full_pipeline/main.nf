@@ -3069,11 +3069,14 @@ meta = [
         ]
       },
       {
-        "name" : "Highly variable gene detection",
+        "name" : "Highly variable features detection",
         "arguments" : [
           {
             "type" : "string",
-            "name" : "--filter_with_hvg_var_output",
+            "name" : "--highly_variable_features_var_output",
+            "alternatives" : [
+              "--filter_with_hvg_var_output"
+            ],
             "description" : "In which .var slot to store a boolean array corresponding to the highly variable genes.",
             "default" : [
               "filter_with_hvg"
@@ -3086,7 +3089,10 @@ meta = [
           },
           {
             "type" : "string",
-            "name" : "--filter_with_hvg_obs_batch_key",
+            "name" : "--highly_variable_features_obs_batch_key",
+            "alternatives" : [
+              "--filter_with_hvg_obs_batch_key"
+            ],
             "description" : "If specified, highly-variable genes are selected within each batch separately and merged. This simple \nprocess avoids the selection of batch-specific genes and acts as a lightweight batch correction method.\n",
             "default" : [
               "sample_id"
@@ -3156,7 +3162,7 @@ meta = [
           {
             "type" : "string",
             "name" : "--var_qc_metrics",
-            "description" : "Keys to select a boolean (containing only True or False) column from .var.\nFor each cell, calculate the proportion of total values for genes which are labeled 'True', \ncompared to the total sum of the values for all genes. Defaults to the combined values specified for\n--var_name_mitochondrial_genes and --filter_with_hvg_var_output.\n",
+            "description" : "Keys to select a boolean (containing only True or False) column from .var.\nFor each cell, calculate the proportion of total values for genes which are labeled 'True', \ncompared to the total sum of the values for all genes. Defaults to the combined values specified for\n--var_name_mitochondrial_genes and --highly_variable_features_var_output.\n",
             "example" : [
               "ercc,highly_variable"
             ],
@@ -3263,7 +3269,7 @@ meta = [
           "functionalityNamespace" : "metadata",
           "output" : "",
           "platform" : "",
-          "git_commit" : "3538af931cde5deea3e5cb4af836d5dc87233f42",
+          "git_commit" : "dde19b637f92199a1bd17952f21652392bc7927d",
           "executable" : "/nextflow/metadata/add_id/main.nf"
         },
         "writtenPath" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/metadata/add_id"
@@ -3285,7 +3291,7 @@ meta = [
           "functionalityNamespace" : "workflows/multiomics",
           "output" : "",
           "platform" : "",
-          "git_commit" : "3538af931cde5deea3e5cb4af836d5dc87233f42",
+          "git_commit" : "dde19b637f92199a1bd17952f21652392bc7927d",
           "executable" : "/nextflow/workflows/multiomics/split_modalities/main.nf"
         },
         "writtenPath" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/workflows/multiomics/split_modalities"
@@ -3306,7 +3312,7 @@ meta = [
           "functionalityNamespace" : "dataflow",
           "output" : "",
           "platform" : "",
-          "git_commit" : "3538af931cde5deea3e5cb4af836d5dc87233f42",
+          "git_commit" : "dde19b637f92199a1bd17952f21652392bc7927d",
           "executable" : "/nextflow/dataflow/merge/main.nf"
         },
         "writtenPath" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/dataflow/merge"
@@ -3327,7 +3333,7 @@ meta = [
           "functionalityNamespace" : "dataflow",
           "output" : "",
           "platform" : "",
-          "git_commit" : "3538af931cde5deea3e5cb4af836d5dc87233f42",
+          "git_commit" : "dde19b637f92199a1bd17952f21652392bc7927d",
           "executable" : "/nextflow/dataflow/concatenate_h5mu/main.nf"
         },
         "writtenPath" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/dataflow/concatenate_h5mu"
@@ -3348,7 +3354,7 @@ meta = [
           "functionalityNamespace" : "transfer",
           "output" : "",
           "platform" : "",
-          "git_commit" : "3538af931cde5deea3e5cb4af836d5dc87233f42",
+          "git_commit" : "dde19b637f92199a1bd17952f21652392bc7927d",
           "executable" : "/nextflow/transfer/publish/main.nf"
         },
         "writtenPath" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/transfer/publish"
@@ -3369,7 +3375,7 @@ meta = [
           "functionalityNamespace" : "workflows/multiomics",
           "output" : "",
           "platform" : "",
-          "git_commit" : "3538af931cde5deea3e5cb4af836d5dc87233f42",
+          "git_commit" : "dde19b637f92199a1bd17952f21652392bc7927d",
           "executable" : "/nextflow/workflows/multiomics/rna_singlesample/main.nf"
         },
         "writtenPath" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/workflows/multiomics/rna_singlesample"
@@ -3390,7 +3396,7 @@ meta = [
           "functionalityNamespace" : "workflows/multiomics",
           "output" : "",
           "platform" : "",
-          "git_commit" : "3538af931cde5deea3e5cb4af836d5dc87233f42",
+          "git_commit" : "dde19b637f92199a1bd17952f21652392bc7927d",
           "executable" : "/nextflow/workflows/multiomics/prot_singlesample/main.nf"
         },
         "writtenPath" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/workflows/multiomics/prot_singlesample"
@@ -3411,7 +3417,7 @@ meta = [
           "functionalityNamespace" : "workflows/multiomics",
           "output" : "",
           "platform" : "",
-          "git_commit" : "3538af931cde5deea3e5cb4af836d5dc87233f42",
+          "git_commit" : "dde19b637f92199a1bd17952f21652392bc7927d",
           "executable" : "/nextflow/workflows/multiomics/multisample/main.nf"
         },
         "writtenPath" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/workflows/multiomics/multisample"
@@ -3475,7 +3481,7 @@ meta = [
     "platform" : "nextflow",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/workflows/multiomics/full_pipeline",
     "viash_version" : "0.8.3",
-    "git_commit" : "3538af931cde5deea3e5cb4af836d5dc87233f42",
+    "git_commit" : "dde19b637f92199a1bd17952f21652392bc7927d",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))
@@ -3510,7 +3516,7 @@ workflow run_wf {
       // If requested to be detected, make sure the mitochondrial genes
       // are added to the input of the qc metrics calculation
       | map {id, state ->
-        def var_qc_default = [state.filter_with_hvg_var_output]
+        def var_qc_default = [state.highly_variable_features_var_output]
         if (state.var_name_mitochondrial_genes) {
           var_qc_default.add(state.var_name_mitochondrial_genes)
         }
@@ -3682,8 +3688,8 @@ workflow run_wf {
           [
             "id": id,
             "input": state.input,
-            "filter_with_hvg_var_output": state.filter_with_hvg_var_output,
-            "filter_with_hvg_obs_batch_key": state.filter_with_hvg_obs_batch_key,
+            "highly_variable_features_var_output": state.highly_variable_features_var_output,
+            "highly_variable_features_obs_batch_key": state.highly_variable_features_obs_batch_key,
             "var_qc_metrics": state.var_qc_metrics,
             "top_n_vars": state.top_n_vars, 
             "pca_overwrite": state.pca_overwrite

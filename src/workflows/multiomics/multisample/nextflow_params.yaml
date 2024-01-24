@@ -5,9 +5,9 @@ input: # please fill in - example: ["input.h5mu"]
 # Outputs
 # output: "$id.$key.output.h5mu"
 
-# Highly variable gene detection
-filter_with_hvg_var_output: "filter_with_hvg"
-filter_with_hvg_obs_batch_key: "sample_id"
+# Highly variable features detection
+highly_variable_features_var_output: "filter_with_hvg"
+highly_variable_features_obs_batch_key: "sample_id"
 
 # QC metrics calculation options
 var_qc_metrics: ["filter_with_hvg"]
