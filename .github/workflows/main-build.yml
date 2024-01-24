@@ -10,7 +10,7 @@ on:
         type: boolean
         required: false
         default: false
-        description: push the containers to the registry
+        description: Build docker images and push them to the registry
       version:
         type: string
         required: false
@@ -21,7 +21,10 @@ on:
         type: string
         required: false
         default: main_build
-        description: Version tag of existing containers to use. Is `main_build` by default.
+        description: |
+          Version tag of containers to use. Is `main_build` by default.
+          Can be used in combination with 'push_containers' to re-use existing docker images
+          or set the tag for new builds.
       deploy_to_viash_hub:
         type: boolean
         required: false
