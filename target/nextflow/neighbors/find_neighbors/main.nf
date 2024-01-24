@@ -3051,7 +3051,7 @@ meta = [
       "image" : "python:3.10-slim",
       "target_organization" : "openpipelines-bio",
       "target_registry" : "ghcr.io",
-      "target_tag" : "",
+      "target_tag" : "main_build",
       "namespace_separator" : "_",
       "resolve_volume" : "Automatic",
       "chown" : true,
@@ -3148,7 +3148,7 @@ meta = [
     "platform" : "nextflow",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/neighbors/find_neighbors",
     "viash_version" : "0.8.3",
-    "git_commit" : "f8bc9f97b600d550485113c5272270ec2197f218",
+    "git_commit" : "24fa24ee060551046d5d36e3e58f079a67839bc0",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))
@@ -3602,7 +3602,7 @@ meta["defaults"] = [
   "container" : {
     "registry" : "ghcr.io",
     "image" : "openpipelines-bio/neighbors_find_neighbors",
-    "tag" : ""
+    "tag" : "main_build"
   },
   "label" : [
     "lowcpu",

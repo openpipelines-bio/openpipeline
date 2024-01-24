@@ -2916,7 +2916,7 @@ meta = [
       "image" : "ghcr.io/data-intuitive/cellranger:7.0",
       "target_organization" : "openpipelines-bio",
       "target_registry" : "ghcr.io",
-      "target_tag" : "",
+      "target_tag" : "main_build",
       "namespace_separator" : "_",
       "resolve_volume" : "Automatic",
       "chown" : true,
@@ -3007,7 +3007,7 @@ meta = [
     "platform" : "nextflow",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/reference/build_cellranger_reference",
     "viash_version" : "0.8.3",
-    "git_commit" : "f8bc9f97b600d550485113c5272270ec2197f218",
+    "git_commit" : "24fa24ee060551046d5d36e3e58f079a67839bc0",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))
@@ -3432,7 +3432,7 @@ meta["defaults"] = [
   "container" : {
     "registry" : "ghcr.io",
     "image" : "openpipelines-bio/reference_build_cellranger_reference",
-    "tag" : ""
+    "tag" : "main_build"
   },
   "label" : [
     "highmem",

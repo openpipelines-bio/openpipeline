@@ -3018,7 +3018,7 @@ meta = [
       "image" : "python:3.10-slim",
       "target_organization" : "openpipelines-bio",
       "target_registry" : "ghcr.io",
-      "target_tag" : "",
+      "target_tag" : "main_build",
       "namespace_separator" : "_",
       "resolve_volume" : "Automatic",
       "chown" : true,
@@ -3106,7 +3106,7 @@ meta = [
     "platform" : "nextflow",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/convert/velocyto_to_h5mu",
     "viash_version" : "0.8.3",
-    "git_commit" : "f8bc9f97b600d550485113c5272270ec2197f218",
+    "git_commit" : "24fa24ee060551046d5d36e3e58f079a67839bc0",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))
@@ -3536,7 +3536,7 @@ meta["defaults"] = [
   "container" : {
     "registry" : "ghcr.io",
     "image" : "openpipelines-bio/convert_velocyto_to_h5mu",
-    "tag" : ""
+    "tag" : "main_build"
   },
   "label" : [
     "lowmem",
