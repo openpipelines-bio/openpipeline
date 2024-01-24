@@ -3263,7 +3263,7 @@ meta = [
           "functionalityNamespace" : "metadata",
           "output" : "",
           "platform" : "",
-          "git_commit" : "b34d289efb8fec1d356df1f309941c076de72757",
+          "git_commit" : "0b18ba40690e2c546fe54b7fc62dc9ab9a5ebe38",
           "executable" : "/nextflow/metadata/add_id/main.nf"
         },
         "writtenPath" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/metadata/add_id"
@@ -3285,7 +3285,7 @@ meta = [
           "functionalityNamespace" : "workflows/multiomics",
           "output" : "",
           "platform" : "",
-          "git_commit" : "b34d289efb8fec1d356df1f309941c076de72757",
+          "git_commit" : "0b18ba40690e2c546fe54b7fc62dc9ab9a5ebe38",
           "executable" : "/nextflow/workflows/multiomics/split_modalities/main.nf"
         },
         "writtenPath" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/workflows/multiomics/split_modalities"
@@ -3306,7 +3306,7 @@ meta = [
           "functionalityNamespace" : "dataflow",
           "output" : "",
           "platform" : "",
-          "git_commit" : "b34d289efb8fec1d356df1f309941c076de72757",
+          "git_commit" : "0b18ba40690e2c546fe54b7fc62dc9ab9a5ebe38",
           "executable" : "/nextflow/dataflow/merge/main.nf"
         },
         "writtenPath" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/dataflow/merge"
@@ -3327,7 +3327,7 @@ meta = [
           "functionalityNamespace" : "dataflow",
           "output" : "",
           "platform" : "",
-          "git_commit" : "b34d289efb8fec1d356df1f309941c076de72757",
+          "git_commit" : "0b18ba40690e2c546fe54b7fc62dc9ab9a5ebe38",
           "executable" : "/nextflow/dataflow/concatenate_h5mu/main.nf"
         },
         "writtenPath" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/dataflow/concatenate_h5mu"
@@ -3348,7 +3348,7 @@ meta = [
           "functionalityNamespace" : "transfer",
           "output" : "",
           "platform" : "",
-          "git_commit" : "b34d289efb8fec1d356df1f309941c076de72757",
+          "git_commit" : "0b18ba40690e2c546fe54b7fc62dc9ab9a5ebe38",
           "executable" : "/nextflow/transfer/publish/main.nf"
         },
         "writtenPath" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/transfer/publish"
@@ -3369,7 +3369,7 @@ meta = [
           "functionalityNamespace" : "workflows/multiomics",
           "output" : "",
           "platform" : "",
-          "git_commit" : "b34d289efb8fec1d356df1f309941c076de72757",
+          "git_commit" : "0b18ba40690e2c546fe54b7fc62dc9ab9a5ebe38",
           "executable" : "/nextflow/workflows/multiomics/rna_singlesample/main.nf"
         },
         "writtenPath" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/workflows/multiomics/rna_singlesample"
@@ -3390,7 +3390,7 @@ meta = [
           "functionalityNamespace" : "workflows/multiomics",
           "output" : "",
           "platform" : "",
-          "git_commit" : "b34d289efb8fec1d356df1f309941c076de72757",
+          "git_commit" : "0b18ba40690e2c546fe54b7fc62dc9ab9a5ebe38",
           "executable" : "/nextflow/workflows/multiomics/prot_singlesample/main.nf"
         },
         "writtenPath" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/workflows/multiomics/prot_singlesample"
@@ -3411,7 +3411,7 @@ meta = [
           "functionalityNamespace" : "workflows/multiomics",
           "output" : "",
           "platform" : "",
-          "git_commit" : "b34d289efb8fec1d356df1f309941c076de72757",
+          "git_commit" : "0b18ba40690e2c546fe54b7fc62dc9ab9a5ebe38",
           "executable" : "/nextflow/workflows/multiomics/multisample/main.nf"
         },
         "writtenPath" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/workflows/multiomics/multisample"
@@ -3475,7 +3475,7 @@ meta = [
     "platform" : "nextflow",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/workflows/multiomics/full_pipeline",
     "viash_version" : "0.8.3",
-    "git_commit" : "b34d289efb8fec1d356df1f309941c076de72757",
+    "git_commit" : "0b18ba40690e2c546fe54b7fc62dc9ab9a5ebe38",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))
