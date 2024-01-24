@@ -2978,7 +2978,7 @@ meta = [
       "image" : "ubuntu:jammy",
       "target_organization" : "openpipelines-bio",
       "target_registry" : "ghcr.io",
-      "target_tag" : "main_build",
+      "target_tag" : "",
       "namespace_separator" : "_",
       "resolve_volume" : "Automatic",
       "chown" : true,
@@ -3048,7 +3048,7 @@ meta = [
     "platform" : "nextflow",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/mapping/cellranger_count_split",
     "viash_version" : "0.8.3",
-    "git_commit" : "f3782ea172b62419004f91b5be63e714f5686674",
+    "git_commit" : "f8bc9f97b600d550485113c5272270ec2197f218",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))
@@ -3475,7 +3475,7 @@ meta["defaults"] = [
   "container" : {
     "registry" : "ghcr.io",
     "image" : "openpipelines-bio/mapping_cellranger_count_split",
-    "tag" : "main_build"
+    "tag" : ""
   },
   "tag" : "$id"
 }'''),
