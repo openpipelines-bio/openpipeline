@@ -226,7 +226,7 @@ jobs:
         git remote add viash-hub https://x-access-token:${{ secrets.VIASHHUB_PAT }}@viash-hub.com/openpipelines-bio/openpipeline.git
         if git ls-remote --heads --exit-code https://viash-hub.com/openpipelines-bio/openpipeline.git ${{ github.ref_name }}_build > /dev/null; then
           git fetch viash-hub  ${{ !inputs.deploy_branch && format('{0}_build', github.ref_name) || inputs.deploy_branch  }}
-          git reset --hard viash-hub/ ${{ !inputs.deploy_branch && format('{0}_build', github.ref_name) || inputs.deploy_branch  }}
+          git reset --hard viash-hub/${{ !inputs.deploy_branch && format('{0}_build', github.ref_name) || inputs.deploy_branch  }}
         fi
         git checkout -f --no-overlay origin/${{github.ref_name}} -- '.'
         git remote set-url origin https://x-access-token:${{ secrets.VIASHHUB_PAT }}@viash-hub.com/openpipelines-bio/openpipeline.git
