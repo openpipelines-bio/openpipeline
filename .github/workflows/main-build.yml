@@ -205,8 +205,7 @@ jobs:
           "name": ($config.functionality.namespace + "/" + $config.functionality.name),
           "main_script": (($config.info.config | capture("^(?<dir>.*\/)").dir) + "/" + .path),
           "entry": .entrypoint,
-          "config": $config.info.config,
-          "dir": .info.config | capture("^(?<dir>.*\/)").dir
+          "config": $config.info.config
         }
         ] | unique' ${{ steps.ns_list_workflows.outputs.output_file }} )" >> $GITHUB_OUTPUT
 
