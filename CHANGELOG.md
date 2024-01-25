@@ -1,3 +1,9 @@
+# openpipelines 0.12.3
+
+## BUG FIXES
+
+* `dataflow/concat`: Fix an issue where joining columns with different datatypes caused `TypeError` (PR #619).
+
 # openpipelines 0.12.2
 
 ## BUG FIXES
