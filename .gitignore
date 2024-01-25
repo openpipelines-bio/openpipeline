@@ -29,7 +29,6 @@ out/
 # viash related
 .viash_log*
 log.txt
-/target/
 check_results/
 out/
 output*
