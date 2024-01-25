@@ -4,7 +4,13 @@
 
 * `dataflow/concat`: Fix an issue where joining columns with different datatypes caused `TypeError` (PR #619).
 
-* `dataflow/concatenate_h5mu` and `dataflow/concat`: Fix `TypeError` when using mode 'move' and a column with conflicting metadata does not exist across all samples (PR #631).
+* `dataflow/concat`: Fix `TypeError` when using mode 'move' and a column with conflicting metadata does not exist across all samples (PR #631).
+
+# openpipelines 0.12.2
+
+## BUG FIXES
+
+* `dataflow/concat`: Fix an issue where using `--mode move` on samples with non-overlapping features would cause `var_names` to become unaligned to the data (PR #653). 
 
 # openpipelines 0.12.1
 
