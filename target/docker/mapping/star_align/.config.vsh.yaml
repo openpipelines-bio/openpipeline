@@ -2529,6 +2529,6 @@ info:
   platform: "docker"
   output: "/home/runner/work/openpipeline/openpipeline/target/docker/mapping/star_align"
   executable: "/home/runner/work/openpipeline/openpipeline/target/docker/mapping/star_align/star_align"
-  viash_version: "0.8.3"
-  git_commit: "67327162d2e246cc1fa0fedd3b3a6340db68ddcc"
+  viash_version: "0.7.5"
+  git_commit: "a714a267fb0558954078050ba2d0a9ab27be005d"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"

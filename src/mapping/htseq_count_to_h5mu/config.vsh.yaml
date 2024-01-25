@@ -63,7 +63,8 @@ platforms:
         __merge__: [/src/base/requirements/anndata_mudata.yaml, .]
         packages:
           - gtfparse
-          - polars[pyarrow]
+           # see https://github.com/openvax/gtfparse/pull/34
+          - polars[pyarrow] < 0.16.14
   - type: nextflow
     directives:
       label: [ highmem, midcpu ]

@@ -265,7 +265,6 @@ platforms:
     user: false
     packages:
     - "scanpy~=1.9.5"
-    - "statsmodels==0.14.0"
     - "scvi-tools~=1.0.3"
     - "popv~=0.3.2"
     - "jax==0.4.10"
@@ -275,9 +274,8 @@ platforms:
   - type: "python"
     user: false
     packages:
-    - "anndata~=0.9.1"
     - "mudata~=0.2.3"
-    - "pandas!=2.1.2"
+    - "anndata~=0.9.1"
     upgrade: true
   - type: "docker"
     run:
@@ -287,7 +285,7 @@ platforms:
   - type: "python"
     user: false
     packages:
-    - "viashpy==0.6.0"
+    - "viashpy==0.5.0"
     upgrade: true
   entrypoint: []
   cmd: null
@@ -342,6 +340,6 @@ info:
   platform: "nextflow"
   output: "/home/runner/work/openpipeline/openpipeline/target/nextflow/annotate/popv"
   executable: "/home/runner/work/openpipeline/openpipeline/target/nextflow/annotate/popv/popv"
-  viash_version: "0.8.3"
-  git_commit: "67327162d2e246cc1fa0fedd3b3a6340db68ddcc"
+  viash_version: "0.7.5"
+  git_commit: "a714a267fb0558954078050ba2d0a9ab27be005d"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"
