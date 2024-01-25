@@ -119,6 +119,6 @@ info:
   platform: "nextflow"
   output: "/home/runner/work/openpipeline/openpipeline/target/nextflow/transfer/publish"
   executable: "/home/runner/work/openpipeline/openpipeline/target/nextflow/transfer/publish/publish"
-  viash_version: "0.7.5"
-  git_commit: "a714a267fb0558954078050ba2d0a9ab27be005d"
+  viash_version: "0.8.3"
+  git_commit: "32bb77fffc7d3512ce3787b3dfa9067d84dc9ac7"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"

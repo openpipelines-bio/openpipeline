@@ -2,15 +2,15 @@ functionality:
   name: leiden
   namespace: "cluster"
   description: |
-    Cluster cells using the Leiden algorithm [Traag18] implemented in the Scanpy framework [Wolf18]. 
-    Leiden is an improved version of the Louvain algorithm [Blondel08]. 
-    It has been proposed for single-cell analysis by [Levine15]. 
+    Cluster cells using the [Leiden algorithm] [Traag18] implemented in the [Scanpy framework] [Wolf18]. 
+    Leiden is an improved version of the [Louvain algorithm] [Blondel08]. 
+    It has been proposed for single-cell analysis by [Levine15] [Levine15]. 
     This requires having ran `neighbors/find_neighbors` or `neighbors/bbknn` first.
 
-    Blondel08: Blondel et al. (2008), Fast unfolding of communities in large networks, J. Stat. Mech.  
-    Levine15: Levine et al. (2015), Data-Driven Phenotypic Dissection of AML Reveals Progenitor-like Cells that Correlate with Prognosis, Cell.  
-    Traag18: Traag et al. (2018), From Louvain to Leiden: guaranteeing well-connected communities arXiv.  
-    Wolf18: Wolf et al. (2018), Scanpy: large-scale single-cell gene expression data analysis, Genome Biology.  
+    [Blondel08]: Blondel et al. (2008), Fast unfolding of communities in large networks, J. Stat. Mech.  
+    [Levine15]: Levine et al. (2015), Data-Driven Phenotypic Dissection of AML Reveals Progenitor-like Cells that Correlate with Prognosis, Cell.  
+    [Traag18]: Traag et al. (2018), From Louvain to Leiden: guaranteeing well-connected communities arXiv.  
+    [Wolf18]: Wolf et al. (2018), Scanpy: large-scale single-cell gene expression data analysis, Genome Biology.  
   authors:
     - __merge__: /src/authors/dries_de_maeyer.yaml
       roles: [ maintainer ]
@@ -74,20 +74,22 @@ functionality:
     - path: /src/utils/setup_logger.py
   test_resources:
     - type: python_script
-      path: run_test.py
+      path: test.py
     - path: /resources_test/pbmc_1k_protein_v3
 platforms:
   - type: docker
-    image: python:3.8-slim
+    image: python:3.11-slim
     setup:
       - type: apt
         packages: 
-          - cmake
           - procps
       - type: python
         __merge__: [/src/base/requirements/anndata_mudata.yaml, /src/base/requirements/scanpy.yaml, .]
         packages:
-          - leidenalg~=0.8.9
+          - leidenalg~=0.10.0
+    test_setup:
+      - type: python
+        packages: viashpy
   - type: nextflow
     directives:
       label: [highcpu, midmem]

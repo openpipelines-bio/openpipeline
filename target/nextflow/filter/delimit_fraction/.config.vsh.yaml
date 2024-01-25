@@ -173,14 +173,15 @@ platforms:
   - type: "python"
     user: false
     packages:
-    - "mudata~=0.2.3"
     - "anndata~=0.9.1"
+    - "mudata~=0.2.3"
+    - "pandas!=2.1.2"
     upgrade: true
   test_setup:
   - type: "python"
     user: false
     packages:
-    - "viashpy==0.5.0"
+    - "viashpy==0.6.0"
     upgrade: true
   entrypoint: []
   cmd: null
@@ -235,6 +236,6 @@ info:
   platform: "nextflow"
   output: "/home/runner/work/openpipeline/openpipeline/target/nextflow/filter/delimit_fraction"
   executable: "/home/runner/work/openpipeline/openpipeline/target/nextflow/filter/delimit_fraction/delimit_fraction"
-  viash_version: "0.7.5"
-  git_commit: "a714a267fb0558954078050ba2d0a9ab27be005d"
+  viash_version: "0.8.3"
+  git_commit: "32bb77fffc7d3512ce3787b3dfa9067d84dc9ac7"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"
