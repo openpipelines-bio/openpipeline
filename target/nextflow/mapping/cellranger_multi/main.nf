@@ -3292,7 +3292,7 @@ meta = [
     "platform" : "nextflow",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/mapping/cellranger_multi",
     "viash_version" : "0.8.3",
-    "git_commit" : "ca4112a52b2ed210a4eca91f43c8531d53167393",
+    "git_commit" : "ef043e2d356b5dedad2c21695c868069c0448d36",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))

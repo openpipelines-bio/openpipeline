@@ -26,6 +26,13 @@ add_id_make_observation_keys_unique: true
 # prot_max_proteins_per_cell: 100000000
 # prot_min_cells_per_protein: 3
 
+# GDO filtering options
+# gdo_min_counts: 3
+# gdo_max_counts: 5000000
+# gdo_min_guides_per_cell: 200
+# gdo_max_guides_per_cell: 100000000
+# gdo_min_cells_per_guide: 3
+
 # Highly variable gene detection
 filter_with_hvg_var_output: "filter_with_hvg"
 filter_with_hvg_obs_batch_key: "sample_id"

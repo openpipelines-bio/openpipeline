@@ -90,6 +90,8 @@ of a split multimodal files. The modalities in the list must be unique and after
 
 * Re-enable `convert/from_h5mu_to_seurat` component (PR #616).
 
+* Added the `gdo_singlesample` pipeline with basic count filtering (PR #672).
+
 ## MINOR CHANGES
 * Refactored `rna_multisample` (PR #607), `cellranger_multi` (PR #609), `cellranger_mapping` (PR #610) and other (PR #606) pipelines to use `fromState` and `toState` functionality.
 

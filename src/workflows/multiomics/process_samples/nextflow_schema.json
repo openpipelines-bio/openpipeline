@@ -241,6 +241,66 @@
 },
     
     
+    "gdo filtering options" : {
+    "title": "GDO filtering options",
+    "type": "object",
+    "description": "No description",
+    "properties": {
+    
+        
+                "gdo_min_counts": {
+                "type":
+                "integer",
+                "description": "Type: `integer`, example: `3`. Minimum number of counts per cell",
+                "help_text": "Type: `integer`, example: `3`. Minimum number of counts per cell."
+            
+            }
+    
+
+        ,
+                "gdo_max_counts": {
+                "type":
+                "integer",
+                "description": "Type: `integer`, example: `5000000`. Minimum number of counts per cell",
+                "help_text": "Type: `integer`, example: `5000000`. Minimum number of counts per cell."
+            
+            }
+    
+
+        ,
+                "gdo_min_guides_per_cell": {
+                "type":
+                "integer",
+                "description": "Type: `integer`, example: `200`. Minimum of non-zero values per cell",
+                "help_text": "Type: `integer`, example: `200`. Minimum of non-zero values per cell."
+            
+            }
+    
+
+        ,
+                "gdo_max_guides_per_cell": {
+                "type":
+                "integer",
+                "description": "Type: `integer`, example: `100000000`. Maximum of non-zero values per cell",
+                "help_text": "Type: `integer`, example: `100000000`. Maximum of non-zero values per cell."
+            
+            }
+    
+
+        ,
+                "gdo_min_cells_per_guide": {
+                "type":
+                "integer",
+                "description": "Type: `integer`, example: `3`. Minimum of non-zero values per guide",
+                "help_text": "Type: `integer`, example: `3`. Minimum of non-zero values per guide."
+            
+            }
+    
+
+}
+},
+    
+    
     "highly variable gene detection" : {
     "title": "Highly variable gene detection",
     "type": "object",
@@ -426,6 +486,10 @@
 
     {
     "$ref": "#/definitions/cite-seq filtering options"
+    },
+
+    {
+    "$ref": "#/definitions/gdo filtering options"
     },
 
     {

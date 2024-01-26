@@ -3069,6 +3069,76 @@ meta = [
         ]
       },
       {
+        "name" : "GDO filtering options",
+        "arguments" : [
+          {
+            "type" : "integer",
+            "name" : "--gdo_min_counts",
+            "description" : "Minimum number of counts per cell.",
+            "example" : [
+              3
+            ],
+            "required" : false,
+            "direction" : "input",
+            "multiple" : false,
+            "multiple_sep" : ":",
+            "dest" : "par"
+          },
+          {
+            "type" : "integer",
+            "name" : "--gdo_max_counts",
+            "description" : "Minimum number of counts per cell.",
+            "example" : [
+              5000000
+            ],
+            "required" : false,
+            "direction" : "input",
+            "multiple" : false,
+            "multiple_sep" : ":",
+            "dest" : "par"
+          },
+          {
+            "type" : "integer",
+            "name" : "--gdo_min_guides_per_cell",
+            "description" : "Minimum of non-zero values per cell.",
+            "example" : [
+              200
+            ],
+            "required" : false,
+            "direction" : "input",
+            "multiple" : false,
+            "multiple_sep" : ":",
+            "dest" : "par"
+          },
+          {
+            "type" : "integer",
+            "name" : "--gdo_max_guides_per_cell",
+            "description" : "Maximum of non-zero values per cell.",
+            "example" : [
+              100000000
+            ],
+            "required" : false,
+            "direction" : "input",
+            "multiple" : false,
+            "multiple_sep" : ":",
+            "dest" : "par"
+          },
+          {
+            "type" : "integer",
+            "name" : "--gdo_min_cells_per_guide",
+            "description" : "Minimum of non-zero values per guide.",
+            "example" : [
+              3
+            ],
+            "required" : false,
+            "direction" : "input",
+            "multiple" : false,
+            "multiple_sep" : ":",
+            "dest" : "par"
+          }
+        ]
+      },
+      {
         "name" : "Highly variable gene detection",
         "arguments" : [
           {
@@ -3230,6 +3300,13 @@ meta = [
         "entrypoint" : "test_wf3"
       },
       {
+        "type" : "nextflow_script",
+        "path" : "test.nf",
+        "is_executable" : true,
+        "parent" : "file:/home/runner/work/openpipeline/openpipeline/src/workflows/multiomics/process_samples/",
+        "entrypoint" : "test_wf4"
+      },
+      {
         "type" : "file",
         "path" : "resources_test/concat_test_data",
         "parent" : "file:///home/runner/work/openpipeline/openpipeline/"
@@ -3263,7 +3340,7 @@ meta = [
           "functionalityNamespace" : "metadata",
           "output" : "",
           "platform" : "",
-          "git_commit" : "ca4112a52b2ed210a4eca91f43c8531d53167393",
+          "git_commit" : "ef043e2d356b5dedad2c21695c868069c0448d36",
           "executable" : "/nextflow/metadata/add_id/main.nf"
         },
         "writtenPath" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/metadata/add_id"
@@ -3285,7 +3362,7 @@ meta = [
           "functionalityNamespace" : "workflows/multiomics",
           "output" : "",
           "platform" : "",
-          "git_commit" : "ca4112a52b2ed210a4eca91f43c8531d53167393",
+          "git_commit" : "ef043e2d356b5dedad2c21695c868069c0448d36",
           "executable" : "/nextflow/workflows/multiomics/split_modalities/main.nf"
         },
         "writtenPath" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/workflows/multiomics/split_modalities"
@@ -3306,7 +3383,7 @@ meta = [
           "functionalityNamespace" : "dataflow",
           "output" : "",
           "platform" : "",
-          "git_commit" : "ca4112a52b2ed210a4eca91f43c8531d53167393",
+          "git_commit" : "ef043e2d356b5dedad2c21695c868069c0448d36",
           "executable" : "/nextflow/dataflow/merge/main.nf"
         },
         "writtenPath" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/dataflow/merge"
@@ -3327,7 +3404,7 @@ meta = [
           "functionalityNamespace" : "dataflow",
           "output" : "",
           "platform" : "",
-          "git_commit" : "ca4112a52b2ed210a4eca91f43c8531d53167393",
+          "git_commit" : "ef043e2d356b5dedad2c21695c868069c0448d36",
           "executable" : "/nextflow/dataflow/concatenate_h5mu/main.nf"
         },
         "writtenPath" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/dataflow/concatenate_h5mu"
@@ -3348,7 +3425,7 @@ meta = [
           "functionalityNamespace" : "transfer",
           "output" : "",
           "platform" : "",
-          "git_commit" : "ca4112a52b2ed210a4eca91f43c8531d53167393",
+          "git_commit" : "ef043e2d356b5dedad2c21695c868069c0448d36",
           "executable" : "/nextflow/transfer/publish/main.nf"
         },
         "writtenPath" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/transfer/publish"
@@ -3369,7 +3446,7 @@ meta = [
           "functionalityNamespace" : "workflows/rna",
           "output" : "",
           "platform" : "",
-          "git_commit" : "ca4112a52b2ed210a4eca91f43c8531d53167393",
+          "git_commit" : "ef043e2d356b5dedad2c21695c868069c0448d36",
           "executable" : "/nextflow/workflows/rna/rna_singlesample/main.nf"
         },
         "writtenPath" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/workflows/rna/rna_singlesample"
@@ -3390,10 +3467,31 @@ meta = [
           "functionalityNamespace" : "workflows/prot",
           "output" : "",
           "platform" : "",
-          "git_commit" : "ca4112a52b2ed210a4eca91f43c8531d53167393",
+          "git_commit" : "ef043e2d356b5dedad2c21695c868069c0448d36",
           "executable" : "/nextflow/workflows/prot/prot_singlesample/main.nf"
         },
         "writtenPath" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/workflows/prot/prot_singlesample"
+      },
+      {
+        "name" : "workflows/gdo/gdo_singlesample",
+        "repository" : {
+          "type" : "local",
+          "localPath" : ""
+        },
+        "foundConfigPath" : "/home/runner/work/openpipeline/openpipeline/src/workflows/gdo/gdo_singlesample/config.vsh.yaml",
+        "configInfo" : {
+          "functionalityName" : "gdo_singlesample",
+          "git_tag" : "",
+          "git_remote" : "https://github.com/openpipelines-bio/openpipeline",
+          "viash_version" : "0.8.3",
+          "config" : "/home/runner/work/openpipeline/openpipeline/src/workflows/gdo/gdo_singlesample/config.vsh.yaml",
+          "functionalityNamespace" : "workflows/gdo",
+          "output" : "",
+          "platform" : "",
+          "git_commit" : "ef043e2d356b5dedad2c21695c868069c0448d36",
+          "executable" : "/nextflow/workflows/gdo/gdo_singlesample/main.nf"
+        },
+        "writtenPath" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/workflows/gdo/gdo_singlesample"
       },
       {
         "name" : "workflows/multiomics/process_batches",
@@ -3411,7 +3509,7 @@ meta = [
           "functionalityNamespace" : "workflows/multiomics",
           "output" : "",
           "platform" : "",
-          "git_commit" : "ca4112a52b2ed210a4eca91f43c8531d53167393",
+          "git_commit" : "ef043e2d356b5dedad2c21695c868069c0448d36",
           "executable" : "/nextflow/workflows/multiomics/process_batches/main.nf"
         },
         "writtenPath" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/workflows/multiomics/process_batches"
@@ -3475,7 +3573,7 @@ meta = [
     "platform" : "nextflow",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/workflows/multiomics/process_samples",
     "viash_version" : "0.8.3",
-    "git_commit" : "ca4112a52b2ed210a4eca91f43c8531d53167393",
+    "git_commit" : "ef043e2d356b5dedad2c21695c868069c0448d36",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))
@@ -3491,6 +3589,7 @@ include { concatenate_h5mu } from "${meta.resources_dir}/../../../../nextflow/da
 include { publish } from "${meta.resources_dir}/../../../../nextflow/transfer/publish/main.nf"
 include { rna_singlesample } from "${meta.resources_dir}/../../../../nextflow/workflows/rna/rna_singlesample/main.nf"
 include { prot_singlesample } from "${meta.resources_dir}/../../../../nextflow/workflows/prot/prot_singlesample/main.nf"
+include { gdo_singlesample } from "${meta.resources_dir}/../../../../nextflow/workflows/gdo/gdo_singlesample/main.nf"
 include { process_batches } from "${meta.resources_dir}/../../../../nextflow/workflows/multiomics/process_batches/main.nf"
 
 // inner workflow
@@ -3587,13 +3686,20 @@ workflow run_wf {
         "min_proteins_per_cell": "prot_min_proteins_per_cell",
         "max_proteins_per_cell": "prot_max_proteins_per_cell",
         "min_cells_per_protein": "prot_min_cells_per_protein"
-      ]
+      ],
+      "gdo": [
+        "min_counts": "gdo_min_counts",
+        "max_counts": "gdo_max_counts",
+        "min_guides_per_cell": "gdo_min_guides_per_cell",
+        "max_guides_per_cell": "gdo_max_guides_per_cell",
+        "min_cells_per_guide": "gdo_min_cells_per_guide"
+      ], 
     ].asImmutable()
 
     multisample_ch_known = modalities_ch 
       // run the singlesample processing
       | runEach(
-        components: [rna_singlesample, prot_singlesample],
+        components: [rna_singlesample, prot_singlesample, gdo_singlesample],
         filter: { id, state, component ->
           state.modality + "_singlesample" == component.config.functionality.name
         },
