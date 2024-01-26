@@ -234,5 +234,6 @@ functionality:
       entrypoint: test_wf4
     - path: /resources_test/concat_test_data
     - path: /resources_test/pbmc_1k_protein_v3
+    - path: /resources_test/10x_5k_lung_crispr
 platforms:
   - type: nextflow
