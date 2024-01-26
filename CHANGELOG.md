@@ -41,7 +41,7 @@
        in a seperate manner and still include count based statistics, please run the `qc` pipeline
        on the result of the singlesample workflow (PR #604).
     * The `filter/filter_with_hvg` component has been deprecated. It's functionality has been copied to 
-      `metadata/highly_variable_features_scanpy` with a few notable exceptions: (1) the `--do_filter` argment
+      `feature_annotation/highly_variable_features_scanpy` with a few notable exceptions: (1) the `--do_filter` argment
       has been removed. (2) The `--n_top_genes` has argument has been deprecated in favour of 
       `--n_top_features` (PR #667).
     * `full_pipeline`, `multisample` and `rna_multisample` pipelines: `--filter_with_hvg_var_output` and 

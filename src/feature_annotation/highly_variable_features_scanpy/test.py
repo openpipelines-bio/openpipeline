@@ -11,8 +11,8 @@ import pandas as pd
 ## VIASH START
 meta = {
     'resources_dir': 'resources_test/',
-    'config': './src/metadata/highly_variable_features_scanpy/config.vsh.yaml',
-    'executable': './target/docker/metadata/highly_variable_features_scanpy/highly_variable_features_scanpy'
+    'config': './src/feature_annotation/highly_variable_features_scanpy/config.vsh.yaml',
+    'executable': './target/docker/feature_annotation/highly_variable_features_scanpy/highly_variable_features_scanpy'
 }
 ## VIASH END
 
