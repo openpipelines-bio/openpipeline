@@ -83,6 +83,63 @@ def test_add_qc(run_component, input_path):
     assert "obs_mean" in var
     assert "total_counts" in var
 
+
+@pytest.mark.parametrize("optional_parameter,annotation_matrix,arg_value,expected_name",
+                         [("--output_obs_num_nonzero_vars", "obs", "lorem", "lorem"),
+                          ("--output_obs_total_counts_vars", "obs", "ipsum", "ipsum"),
+                          ("--output_var_num_nonzero_obs", "var", "dolor", "dolor"),
+                          ("--output_var_total_counts_obs", "var", "amet", "amet"),
+                          ("--output_var_obs_mean", "var", "sit", "sit"),
+                          ("--output_var_pct_dropout", "var", "elit", "elit")])
+def test_qc_metrics_set_output_column(run_component,
+                                      mudata_w_random_boolean_column,
+                                      optional_parameter,
+                                      annotation_matrix,
+                                      arg_value,
+                                      expected_name):
+    args = [
+        "--input", mudata_w_random_boolean_column,
+        "--output", "foo.h5mu",
+        "--modality", "rna",
+        "--output_compression", "gzip",
+        optional_parameter, arg_value
+    ]
+
+    run_component(args)
+    assert Path("foo.h5mu").is_file()
+    data_with_qc = md.read("foo.h5mu")
+    matrix = getattr(data_with_qc.mod['rna'], annotation_matrix)
+    assert not matrix.filter(regex=expected_name, axis=1).empty
+
+@pytest.mark.parametrize("optional_parameter,annotation_matrix,expected_missing,",
+                         [("--var_qc_metrics", "obs", "total_counts_.*|pct_*"),
+                          ("--top_n_vars", "obs", "pct_of_counts_in_top_.*"),
+                          ("--output_obs_num_nonzero_vars", "obs", "num_nonzero_vars"),
+                          ("--output_obs_total_counts_vars", "obs", "total_counts"),
+                          ("--output_var_num_nonzero_obs", "var", "num_nonzero_obs"),
+                          ("--output_var_total_counts_obs", "var", "total_counts"),
+                          ("--output_var_obs_mean", "var", "obs_mean"),
+                          ("--output_var_pct_dropout", "var", "pct_dropout")])
+def test_qc_metrics_optional(run_component,
+                             mudata_w_random_boolean_column,
+                             optional_parameter,
+                             annotation_matrix,
+                             expected_missing):
+    args = [
+        "--input", mudata_w_random_boolean_column,
+        "--output", "foo.h5mu",
+        "--modality", "rna",
+        "--output_compression", "gzip"
+    ]
+    if optional_parameter not in ["--var_qc_metrics", "--top_n_vars"]:
+        args.extend([optional_parameter, ""])
+
+    run_component(args)
+    assert Path("foo.h5mu").is_file()
+    data_with_qc = md.read("foo.h5mu")
+    matrix = getattr(data_with_qc.mod['rna'], annotation_matrix)
+    assert matrix.filter(regex=expected_missing, axis=1).empty
+
 @pytest.mark.parametrize("edited_input_mudata", ["mudata_w_true_boolean_colum",
                                                  "mudata_w_false_boolean_colum",
                                                  "mudata_w_na_boolean_colum",
