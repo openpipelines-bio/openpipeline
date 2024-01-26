@@ -90,13 +90,20 @@ workflow run_wf {
         "min_proteins_per_cell": "prot_min_proteins_per_cell",
         "max_proteins_per_cell": "prot_max_proteins_per_cell",
         "min_cells_per_protein": "prot_min_cells_per_protein"
-      ]
+      ],
+      "gdo": [
+        "min_counts": "gdo_min_counts",
+        "max_counts": "gdo_max_counts",
+        "min_guides_per_cell": "gdo_min_guides_per_cell",
+        "max_guides_per_cell": "gdo_max_guides_per_cell",
+        "min_cells_per_guide": "gdo_min_cells_per_guide"
+      ], 
     ].asImmutable()
 
     multisample_ch_known = modalities_ch 
       // run the singlesample processing
       | runEach(
-        components: [rna_singlesample, prot_singlesample],
+        components: [rna_singlesample, prot_singlesample, gdo_singlesample],
         filter: { id, state, component ->
           state.modality + "_singlesample" == component.config.functionality.name
         },
