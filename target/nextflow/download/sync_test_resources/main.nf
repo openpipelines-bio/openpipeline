@@ -2978,7 +2978,7 @@ meta = [
     "platform" : "nextflow",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/download/sync_test_resources",
     "viash_version" : "0.8.3",
-    "git_commit" : "da5e86067ceace271f8356befbd5b47a2237436b",
+    "git_commit" : "17f5b915bc8fa4e6c9733f285b3b6e4cde08a361",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))
