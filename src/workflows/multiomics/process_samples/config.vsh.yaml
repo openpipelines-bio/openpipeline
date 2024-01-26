@@ -119,11 +119,11 @@ functionality:
           type: integer
           example: 200
           description: Minimum of non-zero values per cell.
-        - name: "--prot_max_guides_per_cell"
+        - name: "--gdo_max_guides_per_cell"
           description: Maximum of non-zero values per cell.
           type: integer
           example: 100000000
-        - name: "--prot_min_cells_per_guide"
+        - name: "--gdo_min_cells_per_guide"
           example: 3
           type: integer
           description: Minimum of non-zero values per guide. 

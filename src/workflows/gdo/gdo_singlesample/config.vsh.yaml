@@ -37,7 +37,7 @@ functionality:
           type: integer
           description: Maximum number of counts captured per cell.
   
-        - name: "--min_guide_per_cell"
+        - name: "--min_guides_per_cell"
           type: integer
           example: 200
           description: Minimum of non-zero values per cell.

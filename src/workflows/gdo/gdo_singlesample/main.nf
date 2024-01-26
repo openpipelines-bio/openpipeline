@@ -20,7 +20,7 @@ workflow run_wf {
           "var_name_filter": "filter_with_counts",
           "min_counts": state.min_counts,
           "max_counts": state.max_counts,
-          "min_genes_per_cell": state.min_guide_per_cell,
+          "min_genes_per_cell": state.min_guides_per_cell,
           "max_genes_per_cell": state.max_guides_per_cell,
           "min_cells_per_gene": state.min_cells_per_guide,
         ]

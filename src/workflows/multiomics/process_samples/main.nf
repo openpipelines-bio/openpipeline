@@ -94,9 +94,9 @@ workflow run_wf {
       "gdo": [
         "min_counts": "gdo_min_counts",
         "max_counts": "gdo_max_counts",
-        "min_proteins_per_cell": "gdo_min_guides_per_cell",
-        "max_proteins_per_cell": "gdo_max_guides_per_cell",
-        "min_cells_per_protein": "gdo_min_cells_per_guide"
+        "min_guides_per_cell": "gdo_min_guides_per_cell",
+        "max_guides_per_cell": "gdo_max_guides_per_cell",
+        "min_cells_per_guide": "gdo_min_cells_per_guide"
       ], 
     ].asImmutable()
 
