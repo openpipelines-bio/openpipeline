@@ -151,7 +151,36 @@ workflow test_wf3 {
       }
 }
 
+workflow test_wf4 {
+  // allow changing the resources_test dir
+  resources_test = file("${params.rootDir}/resources_test")
 
+  output_ch = Channel.fromList([
+    [
+        id: "10x_5k_lung_crispr",
+        input: resources_test.resolve("10x_5k_lung_crispr/SC3_v3_NextGem_DI_CRISPR_A549_5K.h5mu"),
+        rna_min_counts: 2,
+        gdo_min_counts: 10,
+        gdo_max_counts: 10000,
+        add_id_to_obs: true,
+        add_id_make_observation_keys_unique: true,
+        add_id_obs_output: "sample_id"
+    ]
+  ])
+  | map{ state -> [state.id, state] }
+  | process_samples
+  | view { output ->
+    assert output.size() == 2 : "outputs should contain two elements; [id, file]"
+    assert output[1].output.toString().endsWith(".h5mu") : "Output file should be a h5mu file. Found: ${output[1].output}"
+    "Output: $output"
+  }
+  | toSortedList()
+  | map { output_list ->
+    // The result of this pipeline is always 1 merged sample, regardless of the number of input samples. 
+    assert output_list.size() == 1 : "output channel should contain one event"
+    assert output_list[0][0] == "merged" : "Output ID should be 'merged'"
+  }
+}
 
 // The following test is supposed to fail. It is used to test the error handling of the pipeline.
 // However, there is not way to catch the error originating from the workflow

@@ -105,7 +105,28 @@ functionality:
           example: 3
           type: integer
           description: Minimum of non-zero values per protein.
-
+    - name: "GDO filtering options"
+      arguments:
+        - name: "--gdo_min_counts"
+          description: Minimum number of counts per cell.
+          type: integer
+          example: 3
+        - name: "--gdo_max_counts"
+          description: Minimum number of counts per cell.
+          type: integer
+          example: 5000000
+        - name: "--gdo_min_guides_per_cell"
+          type: integer
+          example: 200
+          description: Minimum of non-zero values per cell.
+        - name: "--gdo_max_guides_per_cell"
+          description: Maximum of non-zero values per cell.
+          type: integer
+          example: 100000000
+        - name: "--gdo_min_cells_per_guide"
+          example: 3
+          type: integer
+          description: Minimum of non-zero values per guide. 
     - name: "Highly variable gene detection"
       arguments:
         - name: "--filter_with_hvg_var_output"
@@ -186,6 +207,7 @@ functionality:
     - name: transfer/publish
     - name: workflows/rna/rna_singlesample
     - name: workflows/prot/prot_singlesample
+    - name: workflows/gdo/gdo_singlesample
     - name: workflows/multiomics/process_batches
   # test_dependencies:
   #    - name: filter/remove_modality
@@ -203,9 +225,9 @@ functionality:
     - type: nextflow_script
       path: test.nf
       entrypoint: test_wf3
-    # - type: nextflow_script
-    #   path: main.nf
-    #   entrypoint: test_wf4
+    - type: nextflow_script
+      path: test.nf
+      entrypoint: test_wf4
     - path: /resources_test/concat_test_data
     - path: /resources_test/pbmc_1k_protein_v3
 platforms:
