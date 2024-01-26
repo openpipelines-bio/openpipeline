@@ -57,7 +57,7 @@
 
 ## MAJOR CHANGES
 
-* `mapping/cellranger_mkfastq`: update from cellranger `6.0.2` to `7.0.1` (PR #)
+* `mapping/cellranger_mkfastq`: update from cellranger `6.0.2` to `7.0.1` (PR #675)
 
 ## NEW FUNCTIONALITY
 
