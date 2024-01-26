@@ -33,9 +33,9 @@ add_id_make_observation_keys_unique: true
 # gdo_max_guides_per_cell: 100000000
 # gdo_min_cells_per_guide: 3
 
-# Highly variable gene detection
-filter_with_hvg_var_output: "filter_with_hvg"
-filter_with_hvg_obs_batch_key: "sample_id"
+# Highly variable features detection
+highly_variable_features_var_output: "filter_with_hvg"
+highly_variable_features_obs_batch_key: "sample_id"
 
 # Mitochondrial Gene Detection
 # var_name_mitochondrial_genes: "foo"

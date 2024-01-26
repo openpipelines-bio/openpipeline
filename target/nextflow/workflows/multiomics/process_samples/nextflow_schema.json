@@ -301,14 +301,14 @@
 },
     
     
-    "highly variable gene detection" : {
-    "title": "Highly variable gene detection",
+    "highly variable features detection" : {
+    "title": "Highly variable features detection",
     "type": "object",
     "description": "No description",
     "properties": {
     
         
-                "filter_with_hvg_var_output": {
+                "highly_variable_features_var_output": {
                 "type":
                 "string",
                 "description": "Type: `string`, default: `filter_with_hvg`. In which ",
@@ -319,7 +319,7 @@
     
 
         ,
-                "filter_with_hvg_obs_batch_key": {
+                "highly_variable_features_obs_batch_key": {
                 "type":
                 "string",
                 "description": "Type: `string`, default: `sample_id`. If specified, highly-variable genes are selected within each batch separately and merged",
@@ -395,7 +395,7 @@
                 "type":
                 "string",
                 "description": "Type: List of `string`, example: `ercc,highly_variable`, multiple_sep: `\",\"`. Keys to select a boolean (containing only True or False) column from ",
-                "help_text": "Type: List of `string`, example: `ercc,highly_variable`, multiple_sep: `\",\"`. Keys to select a boolean (containing only True or False) column from .var.\nFor each cell, calculate the proportion of total values for genes which are labeled \u0027True\u0027, \ncompared to the total sum of the values for all genes. Defaults to the combined values specified for\n--var_name_mitochondrial_genes and --filter_with_hvg_var_output.\n"
+                "help_text": "Type: List of `string`, example: `ercc,highly_variable`, multiple_sep: `\",\"`. Keys to select a boolean (containing only True or False) column from .var.\nFor each cell, calculate the proportion of total values for genes which are labeled \u0027True\u0027, \ncompared to the total sum of the values for all genes. Defaults to the combined values specified for\n--var_name_mitochondrial_genes and --highly_variable_features_var_output.\n"
             
             }
     
@@ -493,7 +493,7 @@
     },
 
     {
-    "$ref": "#/definitions/highly variable gene detection"
+    "$ref": "#/definitions/highly variable features detection"
     },
 
     {

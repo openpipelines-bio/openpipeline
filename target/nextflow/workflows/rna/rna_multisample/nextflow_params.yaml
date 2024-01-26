@@ -6,11 +6,11 @@ modality: "rna"
 # Output
 # output: "$id.$key.output.h5mu"
 
-# Filtering highly variable genes
-filter_with_hvg_var_output: "filter_with_hvg"
-filter_with_hvg_obs_batch_key: "sample_id"
-filter_with_hvg_flavor: "seurat"
-# filter_with_hvg_n_top_genes: 123
+# Filtering highly variable features
+highly_variable_features_var_output: "filter_with_hvg"
+highly_variable_features_obs_batch_key: "sample_id"
+highly_variable_features_flavor: "seurat"
+# highly_variable_features_n_top_features: 123
 
 # QC metrics calculation options
 var_qc_metrics: ["filter_with_hvg"]

@@ -58,14 +58,14 @@
 },
     
     
-    "highly variable gene detection" : {
-    "title": "Highly variable gene detection",
+    "highly variable features detection" : {
+    "title": "Highly variable features detection",
     "type": "object",
     "description": "No description",
     "properties": {
     
         
-                "filter_with_hvg_var_output": {
+                "highly_variable_features_var_output": {
                 "type":
                 "string",
                 "description": "Type: `string`, default: `filter_with_hvg`. In which ",
@@ -76,7 +76,7 @@
     
 
         ,
-                "filter_with_hvg_obs_batch_key": {
+                "highly_variable_features_obs_batch_key": {
                 "type":
                 "string",
                 "description": "Type: `string`, default: `sample_id`. If specified, highly-variable genes are selected within each batch separately and merged",
@@ -184,7 +184,7 @@
     },
 
     {
-    "$ref": "#/definitions/highly variable gene detection"
+    "$ref": "#/definitions/highly variable features detection"
     },
 
     {

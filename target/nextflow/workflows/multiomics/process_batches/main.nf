@@ -2858,11 +2858,14 @@ meta = [
         ]
       },
       {
-        "name" : "Highly variable gene detection",
+        "name" : "Highly variable features detection",
         "arguments" : [
           {
             "type" : "string",
-            "name" : "--filter_with_hvg_var_output",
+            "name" : "--highly_variable_features_var_output",
+            "alternatives" : [
+              "--filter_with_hvg_var_output"
+            ],
             "description" : "In which .var slot to store a boolean array corresponding to the highly variable genes.",
             "default" : [
               "filter_with_hvg"
@@ -2875,7 +2878,10 @@ meta = [
           },
           {
             "type" : "string",
-            "name" : "--filter_with_hvg_obs_batch_key",
+            "name" : "--highly_variable_features_obs_batch_key",
+            "alternatives" : [
+              "--filter_with_hvg_obs_batch_key"
+            ],
             "description" : "If specified, highly-variable genes are selected within each batch separately and merged. This simple \nprocess avoids the selection of batch-specific genes and acts as a lightweight batch correction method.\n",
             "default" : [
               "sample_id"
@@ -2997,7 +3003,7 @@ meta = [
           "functionalityNamespace" : "dataflow",
           "output" : "",
           "platform" : "",
-          "git_commit" : "17f5b915bc8fa4e6c9733f285b3b6e4cde08a361",
+          "git_commit" : "10afaccea81ecfaf05b87126833ff8d185b32749",
           "executable" : "/nextflow/dataflow/merge/main.nf"
         },
         "writtenPath" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/dataflow/merge"
@@ -3019,7 +3025,7 @@ meta = [
           "functionalityNamespace" : "workflows/multiomics",
           "output" : "",
           "platform" : "",
-          "git_commit" : "17f5b915bc8fa4e6c9733f285b3b6e4cde08a361",
+          "git_commit" : "10afaccea81ecfaf05b87126833ff8d185b32749",
           "executable" : "/nextflow/workflows/multiomics/split_modalities/main.nf"
         },
         "writtenPath" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/workflows/multiomics/split_modalities"
@@ -3040,7 +3046,7 @@ meta = [
           "functionalityNamespace" : "workflows/prot",
           "output" : "",
           "platform" : "",
-          "git_commit" : "17f5b915bc8fa4e6c9733f285b3b6e4cde08a361",
+          "git_commit" : "10afaccea81ecfaf05b87126833ff8d185b32749",
           "executable" : "/nextflow/workflows/prot/prot_multisample/main.nf"
         },
         "writtenPath" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/workflows/prot/prot_multisample"
@@ -3061,7 +3067,7 @@ meta = [
           "functionalityNamespace" : "workflows/rna",
           "output" : "",
           "platform" : "",
-          "git_commit" : "17f5b915bc8fa4e6c9733f285b3b6e4cde08a361",
+          "git_commit" : "10afaccea81ecfaf05b87126833ff8d185b32749",
           "executable" : "/nextflow/workflows/rna/rna_multisample/main.nf"
         },
         "writtenPath" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/workflows/rna/rna_multisample"
@@ -3083,7 +3089,7 @@ meta = [
           "functionalityNamespace" : "workflows/multiomics",
           "output" : "",
           "platform" : "",
-          "git_commit" : "17f5b915bc8fa4e6c9733f285b3b6e4cde08a361",
+          "git_commit" : "10afaccea81ecfaf05b87126833ff8d185b32749",
           "executable" : "/nextflow/workflows/multiomics/dimensionality_reduction/main.nf"
         },
         "writtenPath" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/workflows/multiomics/dimensionality_reduction"
@@ -3105,7 +3111,7 @@ meta = [
           "functionalityNamespace" : "workflows/multiomics",
           "output" : "",
           "platform" : "",
-          "git_commit" : "17f5b915bc8fa4e6c9733f285b3b6e4cde08a361",
+          "git_commit" : "10afaccea81ecfaf05b87126833ff8d185b32749",
           "executable" : "/nextflow/workflows/multiomics/dimensionality_reduction/main.nf"
         },
         "writtenPath" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/workflows/multiomics/dimensionality_reduction"
@@ -3169,7 +3175,7 @@ meta = [
     "platform" : "nextflow",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/workflows/multiomics/process_batches",
     "viash_version" : "0.8.3",
-    "git_commit" : "17f5b915bc8fa4e6c9733f285b3b6e4cde08a361",
+    "git_commit" : "10afaccea81ecfaf05b87126833ff8d185b32749",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))
@@ -3252,8 +3258,8 @@ workflow run_wf {
     //
     def multisample_arguments = [
       "rna": [
-        "filter_with_hvg_var_output": "filter_with_hvg_var_output",
-        "filter_with_hvg_obs_batch_key": "filter_with_hvg_obs_batch_key",
+        "highly_variable_features_var_output": "highly_variable_features_var_output",
+        "highly_variable_features_obs_batch_key": "highly_variable_features_obs_batch_key",
         "var_qc_metrics": "var_qc_metrics",
         "top_n_vars": "top_n_vars"
       ],
@@ -3350,7 +3356,7 @@ workflow run_wf {
                     "input": state.input,
                     "layer": "log_normalized",
                     "modality": "rna",
-                    "var_pca_feature_selection": state.filter_with_hvg_var_output, // run PCA on highly variable genes only
+                    "var_pca_feature_selection": state.highly_variable_features_var_output, // run PCA on highly variable genes only
                     "pca_overwrite": state.pca_overwrite,
                   ],
                 "dimensionality_reduction_prot":
