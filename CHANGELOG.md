@@ -52,6 +52,15 @@
        multisample workflows are executed in-tandem. If you wish to execute the singlesample workflows
        in a seperate manner and still include count based statistics, please run the `qc` pipeline
        on the result of the singlesample workflow (PR #604).
+    * `filter/filter_with_hvg` has been renamed to `feature_annotation/highly_variable_features_scanpy`, along with the following changes (PR #667).
+      - `--do_filter` was removed
+      - `--n_top_genes` has been renamed to `--n_top_features`
+    * `full_pipeline`, `multisample` and `rna_multisample`: Renamed arguments (PR #667).
+      - `--filter_with_hvg_var_output` became `--highly_variable_features_obs_batch_key`
+      - `--filter_with_hvg_obs_batch_key` became `--highly_variable_features_var_output`
+    * `rna_multisample`: Renamed arguments (PR #667).
+      - `--filter_with_hvg_n_top_genes` became `--highly_variable_features_n_top_features`
+      - `--filter_with_hvg_flavor` became `--highly_variable_features_flavor`
  
 * Renamed `obsm_metrics` to `uns_metrics` for the `cellranger_mapping` workflow because the cellranger metrics are stored in `.uns` and not `.obsm` (PR #610).
 
