@@ -144,16 +144,16 @@ workflow run_wf {
       // Performs calculations on samples that have *not* been integrated,
       // and can be considered a "no-integration" workflow.
 
-      output_ch = [initialize_integration_rna, initialize_integration_prot].inject(multimodal_ch){ channel_in, component ->
+      output_ch = [dimensionality_reduction_rna, dimensionality_reduction_prot].inject(multimodal_ch){ channel_in, component ->
         channel_out_integrated = channel_in
           | component.run(
             runIf: {id, state ->
-              def reg = ~/^initialize_integration_/
+              def reg = ~/^dimensionality_reduction_/
               state.modalities.contains(component.name - reg)
             },
             fromState: { id, state -> 
               def stateMappings = [
-                "initialize_integration_rna": 
+                "dimensionality_reduction_rna": 
                   [
                     "id": id,
                     "input": state.input,
@@ -162,7 +162,7 @@ workflow run_wf {
                     "var_pca_feature_selection": state.filter_with_hvg_var_output, // run PCA on highly variable genes only
                     "pca_overwrite": state.pca_overwrite,
                   ],
-                "initialize_integration_prot":
+                "dimensionality_reduction_prot":
                   [
                     "id": id,
                     "input": state.input,
