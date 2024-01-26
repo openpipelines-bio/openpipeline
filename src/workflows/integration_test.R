@@ -1,6 +1,6 @@
 library(tidyverse)
 
-workflows <- yaml::yaml.load(system("viash ns list -s src/workflows", intern = TRUE))
+workflows <- yaml::yaml.load(system("viash ns list -q '^workflows'", intern = TRUE))
 
 outs <- map_df(workflows, function(wf) {
   cat("Running ", wf$functionality$namespace, "/", wf$functionality$name, "\n", sep = "")
