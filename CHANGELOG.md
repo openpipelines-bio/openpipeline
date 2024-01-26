@@ -20,7 +20,19 @@
            execution. However, if a developer wishes to contribute to the project, symlink support should be enabled
            in git using `git config core.symlinks=true`. Alternatively, use
            `git clone -c core.symlinks=true git@github.com:openpipelines-bio/openpipeline.git` when cloning the
-           repository. This avoids the symlinks being resolved (PR #628).
+           repository. This avoids the symlinks being resolved (PR #628). 
+        4bis. With PR #668, the workflows have been renamed. This does not hamper the backwards compatibility
+              of the symlinks that have been described in 4, because they still use the original location
+              which includes the original name.
+                * `multiomics/rna_singlesample` has been renamed to `rna/process_single_sample`,
+                * `multiomics/rna_multisample` has been renamed to `rna/rna_multisample`,
+                * `multiomics/prot_multisample` became `prot/prot_multisample`,
+                * `multiomics/prot_singlesample` became `prot/prot_singlesample`,
+                * `multiomics/full_pipeline` was moved to `multiomics/process_samples`,
+                * `multiomics/multisample` has been renamed to `multiomics/process_batches`,
+                * `multiomics/integration/initialize_integration` changed to `multiomics/dimensionality_reduction`,
+                * finally, all workflows at `multiomics/integration/*` were moved to `integration/*`
+
         5. Removed the `workflows/utils` folder. Functionality that was provided by the `DataflowHelper` 
            and `WorkflowHelper` is now being provided by viash when the workflow is being build (PR #605).
 
@@ -40,6 +52,15 @@
        multisample workflows are executed in-tandem. If you wish to execute the singlesample workflows
        in a seperate manner and still include count based statistics, please run the `qc` pipeline
        on the result of the singlesample workflow (PR #604).
+    * `filter/filter_with_hvg` has been renamed to `metadata/highly_variable_features_scanpy`, along with the following changes (PR #667).
+      - `--do_filter` was removed
+      - `--n_top_genes` has been renamed to `--n_top_features`
+    * `full_pipeline`, `multisample` and `rna_multisample`: Renamed arguments (PR #667).
+      - `--filter_with_hvg_var_output` became `--highly_variable_features_obs_batch_key`
+      - `--filter_with_hvg_obs_batch_key` became `--highly_variable_features_var_output`
+    * `rna_multisample`: Renamed arguments (PR #667).
+      - `--filter_with_hvg_n_top_genes` became `--highly_variable_features_n_top_features`
+      - `--filter_with_hvg_flavor` became `--highly_variable_features_flavor`
  
 * Renamed `obsm_metrics` to `uns_metrics` for the `cellranger_mapping` workflow because the cellranger metrics are stored in `.uns` and not `.obsm` (PR #610).
 
@@ -77,6 +98,8 @@ of a split multimodal files. The modalities in the list must be unique and after
 * Added `filter/intersect_obs` component which removes observations that are not shared between modalities (PR #589).
 
 * Re-enable `convert/from_h5mu_to_seurat` component (PR #616).
+
+* Added the `gdo_singlesample` pipeline with basic count filtering (PR #672).
 
 ## MINOR CHANGES
 * Refactored `rna_multisample` (PR #607), `cellranger_multi` (PR #609), `cellranger_mapping` (PR #610) and other (PR #606) pipelines to use `fromState` and `toState` functionality.

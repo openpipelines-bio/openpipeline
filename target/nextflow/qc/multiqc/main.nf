@@ -2940,7 +2940,7 @@ meta = [
     "platform" : "nextflow",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/qc/multiqc",
     "viash_version" : "0.8.3",
-    "git_commit" : "c09066b4d5d7d3fe9475eb3549686fc5813c24af",
+    "git_commit" : "c09f33bbf2372ab6e5ae0e55d060f0ba5560ada1",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))
