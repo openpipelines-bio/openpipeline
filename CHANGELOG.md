@@ -20,7 +20,10 @@
            execution. However, if a developer wishes to contribute to the project, symlink support should be enabled
            in git using `git config core.symlinks=true`. Alternatively, use
            `git clone -c core.symlinks=true git@github.com:openpipelines-bio/openpipeline.git` when cloning the
-           repository. This avoids the symlinks being resolved (PR #628).
+           repository. This avoids the symlinks being resolved (PR #628). 
+        4bis. With PR #668, the workflows have been renamed. This does not hamper the backwards compatibility
+              of the symlinks that have been described in 4, because they still use the original location
+              which includes the original name.
         5. Removed the `workflows/utils` folder. Functionality that was provided by the `DataflowHelper` 
            and `WorkflowHelper` is now being provided by viash when the workflow is being build (PR #605).
 
