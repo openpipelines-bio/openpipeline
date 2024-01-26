@@ -82,9 +82,9 @@ functionality:
     - name: workflows/prot/prot_multisample
     - name: workflows/rna/rna_multisample
     - name: workflows/multiomics/dimensionality_reduction
-      alias: initialize_integration_rna
+      alias: dimensionality_reduction_rna
     - name: workflows/multiomics/dimensionality_reduction
-      alias: initialize_integration_prot
+      alias: dimensionality_reduction_prot
   resources:
     - type: nextflow_script
       path: main.nf
