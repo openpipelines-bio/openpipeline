@@ -29,7 +29,7 @@ def test_cellxgene_extract_metadata_expression(run_component, tmp_path):
 
     assert 'rna' in mdata.mod, "Output should contain 'rna' modality."
     assert mdata.mod['rna'].n_obs > 0, "Expected at least one cell."
-    assert mdata.mod['rna'].n_var > 0, "Expected at least one gene."
+    assert mdata.mod['rna'].n_vars > 0, "Expected at least one gene."
 
     ## check obs
     obs = mdata.mod['rna'].obs
