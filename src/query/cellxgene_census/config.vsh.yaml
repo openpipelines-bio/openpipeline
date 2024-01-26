@@ -31,7 +31,7 @@ functionality:
           required: false
         - name: "--add_dataset_metadata"
           type: boolean_true
-          description: "If true, the experiment metadata will be added to the cell metadata."
+          description: "If true, the experiment metadata will be added to the cell metadata. More specifically: `collection_id`, `collection_name`, `collection_doi`, `dataset_title`."
     - name: Cell query
       description: Arguments related to the query.
       arguments:
@@ -245,6 +245,26 @@ functionality:
                   - type: integer
                     name: soma_joinid
                     description: If the dataset was retrieved from CELLxGENE census, this is a unique identifier for the cell.
+                    required: false
+                  
+                  - type: string
+                    name: collection_id
+                    description: Identifier for the collection from which the cell data is derived. This is only added if `--add_dataset_metadata` is passed.
+                    required: false
+
+                  - type: string
+                    name: collection_name
+                    description: Name of the collection from which the cell data is derived. This is only added if `--add_dataset_metadata` is passed.
+                    required: false
+
+                  - type: string
+                    name: collection_doi
+                    description: DOI of the collection from which the cell data is derived. This is only added if `--add_dataset_metadata` is passed.
+                    required: false
+
+                  - type: string
+                    name: dataset_title
+                    description: Title of the dataset from which the cell data is derived. This is only added if `--add_dataset_metadata` is passed.
                     required: false
                 var:
                   - type: string
