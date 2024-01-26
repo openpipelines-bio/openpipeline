@@ -2969,7 +2969,7 @@ meta = [
     "platform" : "nextflow",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/convert/from_bd_to_10x_molecular_barcode_tags",
     "viash_version" : "0.8.3",
-    "git_commit" : "32bb77fffc7d3512ce3787b3dfa9067d84dc9ac7",
+    "git_commit" : "c09066b4d5d7d3fe9475eb3549686fc5813c24af",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))
