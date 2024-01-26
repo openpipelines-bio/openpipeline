@@ -1,0 +1,212 @@
+functionality:
+  name: "process_samples"
+  namespace: "workflows/multiomics"
+  description: "A pipeline to analyse multiple multiomics samples."
+  authors:
+    - __merge__: /src/authors/dries_schaumont.yaml
+      roles: [ author, maintainer ]
+  argument_groups:
+    - name: Inputs
+      arguments:
+        - name: "--id"
+          required: true
+          type: string
+          description: ID of the sample.
+          example: foo
+        - name: "--input"
+          alternatives: [-i]
+          description: Path to the sample.
+          required: true
+          example: input.h5mu
+          type: file
+    - name: "Outputs"
+      arguments:
+        - name: "--output"
+          type: file
+          required: true
+          direction: output
+          description: Destination path to the output.
+          example: output.h5mu
+    - name: "Sample ID options"
+      description: |
+        Options for adding the id to .obs on the MuData object. Having a sample 
+        id present in a requirement of several components for this pipeline.
+      arguments:
+        - name: "--add_id_to_obs"
+          description: "Add the value passed with --id to .obs."
+          type: boolean
+          default: true
+        - name: --add_id_obs_output
+          description: |
+            .Obs column to add the sample IDs to. Required and only used when 
+            --add_id_to_obs is set to 'true'
+          type: string
+          default: "sample_id"
+        - name: "--add_id_make_observation_keys_unique"
+          type: boolean
+          description: |
+            Join the id to the .obs index (.obs_names). 
+            Only used when --add_id_to_obs is set to 'true'.
+          default: true
+    - name: "RNA filtering options"
+      arguments:
+        - name: "--rna_min_counts"
+          example: 200
+          type: integer
+          description: Minimum number of counts captured per cell.
+        - name: "--rna_max_counts"
+          example: 5000000
+          type: integer
+          description: Maximum number of counts captured per cell.
+  
+        - name: "--rna_min_genes_per_cell"
+          type: integer
+          example: 200
+          description: Minimum of non-zero values per cell.
+        - name: "--rna_max_genes_per_cell"
+          example: 1500000
+          type: integer
+          description: Maximum of non-zero values per cell.
+
+        - name: "--rna_min_cells_per_gene"
+          example: 3
+          type: integer
+          description: Minimum of non-zero values per gene.
+
+        - name: "--rna_min_fraction_mito"
+          example: 0
+          type: double
+          description: Minimum fraction of UMIs that are mitochondrial.
+        - name: "--rna_max_fraction_mito"
+          type: double
+          example: 0.2
+          description: Maximum fraction of UMIs that are mitochondrial.
+    - name: "CITE-seq filtering options"
+      arguments:
+        - name: "--prot_min_counts"
+          description: Minimum number of counts per cell.
+          type: integer
+          example: 3
+        - name: "--prot_max_counts"
+          description: Minimum number of counts per cell.
+          type: integer
+          example: 5000000
+
+        - name: "--prot_min_proteins_per_cell"
+          type: integer
+          example: 200
+          description: Minimum of non-zero values per cell.
+        - name: "--prot_max_proteins_per_cell"
+          description: Maximum of non-zero values per cell.
+          type: integer
+          example: 100000000
+
+        - name: "--prot_min_cells_per_protein"
+          example: 3
+          type: integer
+          description: Minimum of non-zero values per protein.
+
+    - name: "Highly variable gene detection"
+      arguments:
+        - name: "--filter_with_hvg_var_output"
+          required: false
+          type: string
+          default: "filter_with_hvg"
+          description: In which .var slot to store a boolean array corresponding to the highly variable genes.
+        - name: "--filter_with_hvg_obs_batch_key"
+          type: string
+          default: "sample_id"
+          required: false
+          description: |
+            If specified, highly-variable genes are selected within each batch separately and merged. This simple 
+            process avoids the selection of batch-specific genes and acts as a lightweight batch correction method.
+    - name: "Mitochondrial Gene Detection"
+      arguments:
+        - name: "--var_name_mitochondrial_genes"
+          type: string
+          required: false
+          description: |
+            In which .var slot to store a boolean array corresponding the mitochondrial genes.
+        - name: "--obs_name_mitochondrial_fraction"
+          type: string
+          required: false
+          description: |
+            When specified, write the fraction of counts originating from mitochondrial genes 
+            (based on --mitochondrial_gene_regex) to an .obs column with the specified name.
+            Requires --var_name_mitochondrial_genes.
+        - name: "--var_gene_names"
+          required: false
+          example: "gene_symbol"
+          type: string
+          description: |
+            .var column name to be used to detect mitochondrial genes instead of .var_names (default if not set).
+            Gene names matching with the regex value from --mitochondrial_gene_regex will be identified
+            as a mitochondrial gene.
+        - name: --mitochondrial_gene_regex
+          type: string
+          description: |
+            Regex string that identifies mitochondrial genes from --var_gene_names.
+            By default will detect human and mouse mitochondrial genes from a gene symbol.
+          required: false
+          default: "^[mM][tT]-"
+    - name: "QC metrics calculation options"
+      arguments:
+        - name: "--var_qc_metrics"
+          description: |
+            Keys to select a boolean (containing only True or False) column from .var.
+            For each cell, calculate the proportion of total values for genes which are labeled 'True', 
+            compared to the total sum of the values for all genes. Defaults to the combined values specified for
+            --var_name_mitochondrial_genes and --filter_with_hvg_var_output.
+          type: string
+          multiple: True
+          multiple_sep: ','
+          required: false
+          example: "ercc,highly_variable"
+        - name: "--top_n_vars"
+          type: integer
+          description: |
+            Number of top vars to be used to calculate cumulative proportions.
+            If not specified, proportions are not calculated. `--top_n_vars 20,50` finds
+            cumulative proportion to the 20th and 50th most expressed vars.
+          multiple: true
+          multiple_sep: ','
+          required: false
+          default: [50, 100, 200, 500]
+    - name: "PCA options"
+      arguments:
+        - name: "--pca_overwrite"
+          type: boolean_true
+          description: "Allow overwriting slots for PCA output."
+  dependencies:
+    - name: metadata/add_id
+    - name: workflows/multiomics/split_modalities
+      alias: split_modalities_workflow
+    - name: dataflow/merge
+    - name: dataflow/concatenate_h5mu
+    - name: transfer/publish
+    - name: workflows/rna/rna_singlesample
+    - name: workflows/prot/prot_singlesample
+    - name: workflows/multiomics/process_batches
+  # test_dependencies:
+  #    - name: filter/remove_modality
+  resources:
+    - type: nextflow_script
+      path: main.nf
+      entrypoint: run_wf
+  test_resources:
+    - type: nextflow_script
+      path: test.nf
+      entrypoint: test_wf
+    - type: nextflow_script
+      path: test.nf
+      entrypoint: test_wf2
+    - type: nextflow_script
+      path: test.nf
+      entrypoint: test_wf3
+    # - type: nextflow_script
+    #   path: main.nf
+    #   entrypoint: test_wf4
+    - path: /resources_test/concat_test_data
+    - path: /resources_test/pbmc_1k_protein_v3
+platforms:
+  - type: nextflow

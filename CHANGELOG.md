@@ -20,7 +20,19 @@
            execution. However, if a developer wishes to contribute to the project, symlink support should be enabled
            in git using `git config core.symlinks=true`. Alternatively, use
            `git clone -c core.symlinks=true git@github.com:openpipelines-bio/openpipeline.git` when cloning the
-           repository. This avoids the symlinks being resolved (PR #628).
+           repository. This avoids the symlinks being resolved (PR #628). 
+        4bis. With PR #668, the workflows have been renamed. This does not hamper the backwards compatibility
+              of the symlinks that have been described in 4, because they still use the original location
+              which includes the original name.
+                * `multiomics/rna_singlesample` has been renamed to `rna/process_single_sample`,
+                * `multiomics/rna_multisample` has been renamed to `rna/rna_multisample`,
+                * `multiomics/prot_multisample` became `prot/prot_multisample`,
+                * `multiomics/prot_singlesample` became `prot/prot_singlesample`,
+                * `multiomics/full_pipeline` was moved to `multiomics/process_samples`,
+                * `multiomics/multisample` has been renamed to `multiomics/process_batches`,
+                * `multiomics/integration/initialize_integration` changed to `multiomics/dimensionality_reduction`,
+                * finally, all workflows at `multiomics/integration/*` were moved to `integration/*`
+
         5. Removed the `workflows/utils` folder. Functionality that was provided by the `DataflowHelper` 
            and `WorkflowHelper` is now being provided by viash when the workflow is being build (PR #605).
 
