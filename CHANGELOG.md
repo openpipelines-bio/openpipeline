@@ -55,6 +55,10 @@
  
 * Renamed `obsm_metrics` to `uns_metrics` for the `cellranger_mapping` workflow because the cellranger metrics are stored in `.uns` and not `.obsm` (PR #610).
 
+## MAJOR CHANGES
+
+* `mapping/cellranger_mkfastq`: update from cellranger `6.0.2` to `7.0.1` (PR #675)
+
 ## NEW FUNCTIONALITY
 
 * `multisample` pipeline: This workflow now works when provided multimple unimodal files or multiple multimodal files, in addition to the previously supported single multimodal file (PR #606). The modalities are processed independently from each other:
