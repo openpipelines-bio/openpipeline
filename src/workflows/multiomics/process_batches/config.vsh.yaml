@@ -33,14 +33,16 @@ functionality:
           direction: output
           description: Destination path to the output.
           example: output.h5mu
-    - name: "Highly variable gene detection"
+    - name: "Highly variable features detection"
       arguments:
-        - name: "--filter_with_hvg_var_output"
+        - name: "--highly_variable_features_var_output"
+          alternatives: ["--filter_with_hvg_var_output"]
           required: false
           type: string
           default: "filter_with_hvg"
           description: In which .var slot to store a boolean array corresponding to the highly variable genes.
-        - name: "--filter_with_hvg_obs_batch_key"
+        - name: "--highly_variable_features_obs_batch_key"
+          alternatives: [--filter_with_hvg_obs_batch_key]
           type: string
           default: "sample_id"
           required: false

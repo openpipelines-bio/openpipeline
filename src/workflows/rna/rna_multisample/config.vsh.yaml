@@ -36,34 +36,38 @@ functionality:
           direction: output
           description: Destination path to the output.
           example: output.h5mu
-    - name: "Filtering highly variable genes"
+    - name: "Filtering highly variable features"
       arguments:
-        - name: "--filter_with_hvg_var_output"
+        - name: "--highly_variable_features_var_output"
+          alternatives: ["--filter_with_hvg_var_output"]
           required: false
           type: string
           default: "filter_with_hvg"
-          description: In which .var slot to store a boolean array corresponding to the highly variable genes.
-        - name: "--filter_with_hvg_obs_batch_key"
+          description: In which .var slot to store a boolean array corresponding to the highly variable features.
+        - name: "--highly_variable_features_obs_batch_key"
+          alternatives: ["--filter_with_hvg_obs_batch_key"]
           type: string
           default: "sample_id"
           required: false
           description: |
-            If specified, highly-variable genes are selected within each batch separately and merged. This simple 
-            process avoids the selection of batch-specific genes and acts as a lightweight batch correction method. 
-            For all flavors, genes are first sorted by how many batches they are a HVG. For dispersion-based flavors 
+            If specified, highly-variable features are selected within each batch separately and merged. This simple 
+            process avoids the selection of batch-specific features and acts as a lightweight batch correction method. 
+            For all flavors, featues are first sorted by how many batches they are highly variable. For dispersion-based flavors 
             ties are broken by normalized dispersion. If flavor = 'seurat_v3', ties are broken by the median (across
             batches) rank based on within-batch normalized variance.
-        - name: "--filter_with_hvg_flavor"
+        - name: "--highly_variable_features_flavor"
+          alternatives: ["--filter_with_hvg_flavor"]
           type: string
           default: "seurat"
           choices: ["seurat", "cell_ranger", "seurat_v3"]
           description: |
-            Choose the flavor for identifying highly variable genes. For the dispersion based methods
-            in their default workflows, Seurat passes the cutoffs whereas Cell Ranger passes n_top_genes.
-        - name: "--filter_with_hvg_n_top_genes"
+            Choose the flavor for identifying highly variable features. For the dispersion based methods
+            in their default workflows, Seurat passes the cutoffs whereas Cell Ranger passes n_top_features.
+        - name: "--highly_variable_features_n_top_features"
+          alternatives: ["--filter_with_hvg_n_top_genes"]
           required: false
           type: integer
-          description: Number of highly-variable genes to keep. Mandatory if filter_with_hvg_flavor is set to 'seurat_v3'.
+          description: Number of highly-variable features to keep. Mandatory if filter_with_hvg_flavor is set to 'seurat_v3'.
     - name: "QC metrics calculation options"
       arguments:
         - name: "--var_qc_metrics"
@@ -133,7 +137,7 @@ functionality:
   dependencies:
     - name: transform/normalize_total
     - name: transform/log1p
-    - name: filter/filter_with_hvg
+    - name: feature_annotation/highly_variable_features_scanpy
     - name: workflows/qc/qc
       alias: rna_qc
     - name: transform/delete_layer

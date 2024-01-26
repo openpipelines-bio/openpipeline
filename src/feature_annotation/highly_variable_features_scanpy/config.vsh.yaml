@@ -1,17 +1,16 @@
 functionality:
-  name: filter_with_hvg
-  status: deprecated
-  namespace: filter
+  name: highly_variable_features_scanpy
+  namespace: feature_annotation
   description: |
-    Annotate highly variable genes [Satija15] [Zheng17] [Stuart19].
+    Annotate highly variable features [Satija15] [Zheng17] [Stuart19].
 
     Expects logarithmized data, except when flavor='seurat_v3' in which count data is expected.
 
     Depending on flavor, this reproduces the R-implementations of Seurat [Satija15], Cell Ranger [Zheng17], and Seurat v3 [Stuart19].
 
-    For the dispersion-based methods ([Satija15] and [Zheng17]), the normalized dispersion is obtained by scaling with the mean and standard deviation of the dispersions for genes falling into a given bin for mean expression of genes. This means that for each bin of mean expression, highly variable genes are selected.
+    For the dispersion-based methods ([Satija15] and [Zheng17]), the normalized dispersion is obtained by scaling with the mean and standard deviation of the dispersions for features falling into a given bin for mean expression of features. This means that for each bin of mean expression, highly variable features are selected.
 
-    For [Stuart19], a normalized variance for each gene is computed. First, the data are standardized (i.e., z-score normalization per feature) with a regularized standard deviation. Next, the normalized variance is computed as the variance of each gene after the transformation. Genes are ranked by the normalized variance.
+    For [Stuart19], a normalized variance for each feature is computed. First, the data are standardized (i.e., z-score normalization per feature) with a regularized standard deviation. Next, the normalized variance is computed as the variance of each feature after the transformation. Features are ranked by the normalized variance.
   authors:
     - __merge__: /src/authors/dries_de_maeyer.yaml
       roles: [ contributor ]
@@ -58,41 +57,37 @@ functionality:
       default: "hvg"
       description: In which .varm slot to store additional metadata.
 
-    - name: "--do_subset"
-      type: boolean_true
-      description: Whether to subset before storing the output.
-
     # arguments
     - name: "--flavor"
       type: string
       default: "seurat"
       choices: ["seurat", "cell_ranger", "seurat_v3"]
       description: |
-        Choose the flavor for identifying highly variable genes. For the dispersion based methods
-        in their default workflows, Seurat passes the cutoffs whereas Cell Ranger passes n_top_genes.
+        Choose the flavor for identifying highly variable features. For the dispersion based methods
+        in their default workflows, Seurat passes the cutoffs whereas Cell Ranger passes n_top_features.
 
-    - name: "--n_top_genes"
+    - name: "--n_top_features"
       type: integer
-      description: Number of highly-variable genes to keep. Mandatory if flavor='seurat_v3'.
+      description: Number of highly-variable features to keep. Mandatory if flavor='seurat_v3'.
     
     - name: "--min_mean"
       type: double
-      description: If n_top_genes is defined, this and all other cutoffs for the means and the normalized dispersions are ignored. Ignored if flavor='seurat_v3'.
+      description: If n_top_features is defined, this and all other cutoffs for the means and the normalized dispersions are ignored. Ignored if flavor='seurat_v3'.
       default: 0.0125
     
     - name: "--max_mean"
       type: double
-      description: If n_top_genes is defined, this and all other cutoffs for the means and the normalized dispersions are ignored. Ignored if flavor='seurat_v3'.
+      description: If n_top_features is defined, this and all other cutoffs for the means and the normalized dispersions are ignored. Ignored if flavor='seurat_v3'.
       default: 3
     
     - name: "--min_disp"
       type: double
-      description: If n_top_genes is defined, this and all other cutoffs for the means and the normalized dispersions are ignored. Ignored if flavor='seurat_v3'.
+      description: If n_top_features is defined, this and all other cutoffs for the means and the normalized dispersions are ignored. Ignored if flavor='seurat_v3'.
       default: 0.5
     
     - name: "--max_disp"
       type: double
-      description: If n_top_genes is defined, this and all other cutoffs for the means and the normalized dispersions are ignored. Ignored if flavor='seurat_v3'. Default is +inf.
+      description: If n_top_features is defined, this and all other cutoffs for the means and the normalized dispersions are ignored. Ignored if flavor='seurat_v3'. Default is +inf.
       # default: "+inf"
     
     - name: "--span"
@@ -102,15 +97,15 @@ functionality:
     
     - name: "--n_bins"
       type: integer
-      description: Number of bins for binning the mean gene expression. Normalization is done with respect to each bin. If just a single gene falls into a bin, the normalized dispersion is artificially set to 1.
+      description: Number of bins for binning the mean feature expression. Normalization is done with respect to each bin. If just a single feature falls into a bin, the normalized dispersion is artificially set to 1.
       default: 20
     
     - name: "--obs_batch_key"
       type: string
       description: |
-        If specified, highly-variable genes are selected within each batch separately and merged. This simple 
-        process avoids the selection of batch-specific genes and acts as a lightweight batch correction method. 
-        For all flavors, genes are first sorted by how many batches they are a HVG. For dispersion-based flavors 
+        If specified, highly-variable features are selected within each batch separately and merged. This simple 
+        process avoids the selection of batch-specific features and acts as a lightweight batch correction method. 
+        For all flavors, features are first sorted by how many batches they are a HVG. For dispersion-based flavors 
         ties are broken by normalized dispersion. If flavor = 'seurat_v3', ties are broken by the median (across
         batches) rank based on within-batch normalized variance.
   resources:
