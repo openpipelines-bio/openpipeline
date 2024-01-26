@@ -2,7 +2,6 @@ import sys
 import cellxgene_census
 import scanpy as sc
 import mudata as mu
-import anndata as ad
 
 ## VIASH START
 par = {
