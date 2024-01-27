@@ -41,13 +41,13 @@ jobs:
       with:
         fetch-depth: 0 
 
-    - uses: viash-io/viash-actions/setup@v4
+    - uses: viash-io/viash-actions/setup@v5
 
     - name: Check if all config can be parsed if there is no unicode support
       run: |
         LANG=C viash ns list > /dev/null
 
-    - uses: viash-io/viash-actions/project/sync-and-cache-s3@v4
+    - uses: viash-io/viash-actions/project/sync-and-cache-s3@v5
       id: cache
       with:
         s3_bucket: $s3_bucket
@@ -62,14 +62,14 @@ jobs:
         diff_relative: true
 
     - id: ns_list
-      uses: viash-io/viash-actions/ns-list@v4
+      uses: viash-io/viash-actions/ns-list@v5
       with:
         platform: docker
         format: json
         query_namespace: ^(?!workflows)
 
     - id: ns_list_filtered
-      uses: viash-io/viash-actions/project/detect-changed-components@v4
+      uses: viash-io/viash-actions/project/detect-changed-components@v5
       with:
         input_file: "${{ steps.ns_list.outputs.output_file }}"
 
@@ -100,7 +100,7 @@ jobs:
 
     - uses: actions/checkout@v4
 
-    - uses: viash-io/viash-actions/setup@v4
+    - uses: viash-io/viash-actions/setup@v5
 
     # use cache
     - name: Cache resources data
