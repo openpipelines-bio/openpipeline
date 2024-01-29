@@ -2996,14 +2996,14 @@ meta = [
         "foundConfigPath" : "/home/runner/work/openpipeline/openpipeline/src/correction/cellbender_remove_background/config.vsh.yaml",
         "configInfo" : {
           "functionalityName" : "cellbender_remove_background",
-          "git_tag" : "0.2.0-1512-g673864f1b8",
+          "git_tag" : "0.2.0-1513-gb979c0b827",
           "git_remote" : "https://github.com/openpipelines-bio/openpipeline",
           "viash_version" : "0.8.3",
           "config" : "/home/runner/work/openpipeline/openpipeline/src/correction/cellbender_remove_background/config.vsh.yaml",
           "functionalityNamespace" : "correction",
           "output" : "",
           "platform" : "",
-          "git_commit" : "673864f1b89ea29340eaaa793e2288cf63a17256",
+          "git_commit" : "b979c0b8273e8965d49324880cb1599ada3ba450",
           "executable" : "/nextflow/correction/cellbender_remove_background/main.nf"
         },
         "writtenPath" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/correction/cellbender_remove_background"
@@ -3017,14 +3017,14 @@ meta = [
         "foundConfigPath" : "/home/runner/work/openpipeline/openpipeline/src/filter/filter_with_counts/config.vsh.yaml",
         "configInfo" : {
           "functionalityName" : "filter_with_counts",
-          "git_tag" : "0.2.0-1512-g673864f1b8",
+          "git_tag" : "0.2.0-1513-gb979c0b827",
           "git_remote" : "https://github.com/openpipelines-bio/openpipeline",
           "viash_version" : "0.8.3",
           "config" : "/home/runner/work/openpipeline/openpipeline/src/filter/filter_with_counts/config.vsh.yaml",
           "functionalityNamespace" : "filter",
           "output" : "",
           "platform" : "",
-          "git_commit" : "673864f1b89ea29340eaaa793e2288cf63a17256",
+          "git_commit" : "b979c0b8273e8965d49324880cb1599ada3ba450",
           "executable" : "/nextflow/filter/filter_with_counts/main.nf"
         },
         "writtenPath" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/filter/filter_with_counts"
@@ -3038,14 +3038,14 @@ meta = [
         "foundConfigPath" : "/home/runner/work/openpipeline/openpipeline/src/filter/subset_h5mu/config.vsh.yaml",
         "configInfo" : {
           "functionalityName" : "subset_h5mu",
-          "git_tag" : "0.2.0-1512-g673864f1b8",
+          "git_tag" : "0.2.0-1513-gb979c0b827",
           "git_remote" : "https://github.com/openpipelines-bio/openpipeline",
           "viash_version" : "0.8.3",
           "config" : "/home/runner/work/openpipeline/openpipeline/src/filter/subset_h5mu/config.vsh.yaml",
           "functionalityNamespace" : "filter",
           "output" : "",
           "platform" : "",
-          "git_commit" : "673864f1b89ea29340eaaa793e2288cf63a17256",
+          "git_commit" : "b979c0b8273e8965d49324880cb1599ada3ba450",
           "executable" : "/nextflow/filter/subset_h5mu/main.nf"
         },
         "writtenPath" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/filter/subset_h5mu"
@@ -3059,14 +3059,14 @@ meta = [
         "foundConfigPath" : "/home/runner/work/openpipeline/openpipeline/src/transfer/publish/config.vsh.yaml",
         "configInfo" : {
           "functionalityName" : "publish",
-          "git_tag" : "0.2.0-1512-g673864f1b8",
+          "git_tag" : "0.2.0-1513-gb979c0b827",
           "git_remote" : "https://github.com/openpipelines-bio/openpipeline",
           "viash_version" : "0.8.3",
           "config" : "/home/runner/work/openpipeline/openpipeline/src/transfer/publish/config.vsh.yaml",
           "functionalityNamespace" : "transfer",
           "output" : "",
           "platform" : "",
-          "git_commit" : "673864f1b89ea29340eaaa793e2288cf63a17256",
+          "git_commit" : "b979c0b8273e8965d49324880cb1599ada3ba450",
           "executable" : "/nextflow/transfer/publish/main.nf"
         },
         "writtenPath" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/transfer/publish"
@@ -3121,7 +3121,7 @@ meta = [
           "cpu1000" : "cpus = 1000"
         },
         "script" : [
-          "includeConfig(\\"src/workflows/utils/labels.config\\")"
+          "includeConfig(\\"utils/labels.config\\")"
         ]
       },
       "debug" : false,
@@ -3133,9 +3133,9 @@ meta = [
     "platform" : "nextflow",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/workflows/ingestion/cellranger_postprocessing",
     "viash_version" : "0.8.3",
-    "git_commit" : "673864f1b89ea29340eaaa793e2288cf63a17256",
+    "git_commit" : "b979c0b8273e8965d49324880cb1599ada3ba450",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline",
-    "git_tag" : "0.2.0-1512-g673864f1b8"
+    "git_tag" : "0.2.0-1513-gb979c0b827"
   }
 }'''))
 ]

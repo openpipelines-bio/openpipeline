@@ -3135,7 +3135,7 @@ meta = [
           "cpu1000" : "cpus = 1000"
         },
         "script" : [
-          "includeConfig(\\"src/workflows/utils/labels.config\\")"
+          "includeConfig(\\"utils/labels.config\\")"
         ]
       },
       "debug" : false,
@@ -3147,9 +3147,9 @@ meta = [
     "platform" : "nextflow",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/convert/from_10xh5_to_h5mu",
     "viash_version" : "0.8.3",
-    "git_commit" : "673864f1b89ea29340eaaa793e2288cf63a17256",
+    "git_commit" : "b979c0b8273e8965d49324880cb1599ada3ba450",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline",
-    "git_tag" : "0.2.0-1512-g673864f1b8"
+    "git_tag" : "0.2.0-1513-gb979c0b827"
   }
 }'''))
 ]
