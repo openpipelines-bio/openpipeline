@@ -1,0 +1,11 @@
+# Arguments
+input: # please fill in - example: "path/to/file"
+# output: "$id.$key.output.output"
+# output_format: "foo"
+width: 800
+height: 600
+background_color: "white"
+
+# Nextflow input-output arguments
+publish_dir: # please fill in - example: "output/"
+# param_list: "my_params.yaml"
