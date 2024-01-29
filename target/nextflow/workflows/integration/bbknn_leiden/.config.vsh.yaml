@@ -239,6 +239,8 @@ functionality:
     path: "main.nf"
     is_executable: true
     entrypoint: "run_wf"
+  - type: "file"
+    path: "src/workflows/utils/"
   description: "Run bbknn followed by leiden clustering and run umap on the result."
   test_resources:
   - type: "nextflow_script"
@@ -267,7 +269,7 @@ functionality:
       functionalityNamespace: "cluster"
       output: ""
       platform: ""
-      git_commit: "10afaccea81ecfaf05b87126833ff8d185b32749"
+      git_commit: "8299bd25492969dffb2b9e166f6215542885c57f"
       executable: "/nextflow/cluster/leiden/main.nf"
     writtenPath: "/home/runner/work/openpipeline/openpipeline/target/nextflow/cluster/leiden"
   - name: "dimred/umap"
@@ -284,7 +286,7 @@ functionality:
       functionalityNamespace: "dimred"
       output: ""
       platform: ""
-      git_commit: "10afaccea81ecfaf05b87126833ff8d185b32749"
+      git_commit: "8299bd25492969dffb2b9e166f6215542885c57f"
       executable: "/nextflow/dimred/umap/main.nf"
     writtenPath: "/home/runner/work/openpipeline/openpipeline/target/nextflow/dimred/umap"
   - name: "neighbors/bbknn"
@@ -301,7 +303,7 @@ functionality:
       functionalityNamespace: "neighbors"
       output: ""
       platform: ""
-      git_commit: "10afaccea81ecfaf05b87126833ff8d185b32749"
+      git_commit: "8299bd25492969dffb2b9e166f6215542885c57f"
       executable: "/nextflow/neighbors/bbknn/main.nf"
     writtenPath: "/home/runner/work/openpipeline/openpipeline/target/nextflow/neighbors/bbknn"
   - name: "metadata/move_obsm_to_obs"
@@ -318,7 +320,7 @@ functionality:
       functionalityNamespace: "metadata"
       output: ""
       platform: ""
-      git_commit: "10afaccea81ecfaf05b87126833ff8d185b32749"
+      git_commit: "8299bd25492969dffb2b9e166f6215542885c57f"
       executable: "/nextflow/metadata/move_obsm_to_obs/main.nf"
     writtenPath: "/home/runner/work/openpipeline/openpipeline/target/nextflow/metadata/move_obsm_to_obs"
   set_wd_to_resources_dir: false
@@ -364,6 +366,8 @@ platforms:
       cpu200: "cpus = 200"
       cpu500: "cpus = 500"
       cpu1000: "cpus = 1000"
+    script:
+    - "includeConfig(\"utils/labels.config\")"
   debug: false
   container: "docker"
 info:
@@ -372,5 +376,5 @@ info:
   output: "/home/runner/work/openpipeline/openpipeline/target/nextflow/workflows/integration/bbknn_leiden"
   executable: "/home/runner/work/openpipeline/openpipeline/target/nextflow/workflows/integration/bbknn_leiden/main.nf"
   viash_version: "0.8.3"
-  git_commit: "10afaccea81ecfaf05b87126833ff8d185b32749"
+  git_commit: "8299bd25492969dffb2b9e166f6215542885c57f"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"

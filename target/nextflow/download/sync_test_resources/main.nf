@@ -2967,7 +2967,10 @@ meta = [
           "cpu200" : "cpus = 200",
           "cpu500" : "cpus = 500",
           "cpu1000" : "cpus = 1000"
-        }
+        },
+        "script" : [
+          "includeConfig(\\"utils/labels.config\\")"
+        ]
       },
       "debug" : false,
       "container" : "docker"
@@ -2978,7 +2981,7 @@ meta = [
     "platform" : "nextflow",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/download/sync_test_resources",
     "viash_version" : "0.8.3",
-    "git_commit" : "10afaccea81ecfaf05b87126833ff8d185b32749",
+    "git_commit" : "8299bd25492969dffb2b9e166f6215542885c57f",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))

@@ -2951,6 +2951,11 @@ meta = [
         "is_executable" : true,
         "parent" : "file:/home/runner/work/openpipeline/openpipeline/src/workflows/multiomics/process_batches/",
         "entrypoint" : "run_wf"
+      },
+      {
+        "type" : "file",
+        "path" : "src/workflows/utils/",
+        "parent" : "file:///home/runner/work/openpipeline/openpipeline/"
       }
     ],
     "description" : "This workflow serves as an entrypoint into the 'full_pipeline' in order to\nre-run the multisample processing and the integration setup. An input .h5mu file will \nfirst be split in order to run the multisample processing per modality. Next, the modalities\nare merged again and the integration setup pipeline is executed. Please note that this workflow\nassumes that samples from multiple pipelines are already concatenated. \n",
@@ -3003,7 +3008,7 @@ meta = [
           "functionalityNamespace" : "dataflow",
           "output" : "",
           "platform" : "",
-          "git_commit" : "10afaccea81ecfaf05b87126833ff8d185b32749",
+          "git_commit" : "8299bd25492969dffb2b9e166f6215542885c57f",
           "executable" : "/nextflow/dataflow/merge/main.nf"
         },
         "writtenPath" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/dataflow/merge"
@@ -3025,7 +3030,7 @@ meta = [
           "functionalityNamespace" : "workflows/multiomics",
           "output" : "",
           "platform" : "",
-          "git_commit" : "10afaccea81ecfaf05b87126833ff8d185b32749",
+          "git_commit" : "8299bd25492969dffb2b9e166f6215542885c57f",
           "executable" : "/nextflow/workflows/multiomics/split_modalities/main.nf"
         },
         "writtenPath" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/workflows/multiomics/split_modalities"
@@ -3046,7 +3051,7 @@ meta = [
           "functionalityNamespace" : "workflows/prot",
           "output" : "",
           "platform" : "",
-          "git_commit" : "10afaccea81ecfaf05b87126833ff8d185b32749",
+          "git_commit" : "8299bd25492969dffb2b9e166f6215542885c57f",
           "executable" : "/nextflow/workflows/prot/prot_multisample/main.nf"
         },
         "writtenPath" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/workflows/prot/prot_multisample"
@@ -3067,7 +3072,7 @@ meta = [
           "functionalityNamespace" : "workflows/rna",
           "output" : "",
           "platform" : "",
-          "git_commit" : "10afaccea81ecfaf05b87126833ff8d185b32749",
+          "git_commit" : "8299bd25492969dffb2b9e166f6215542885c57f",
           "executable" : "/nextflow/workflows/rna/rna_multisample/main.nf"
         },
         "writtenPath" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/workflows/rna/rna_multisample"
@@ -3089,7 +3094,7 @@ meta = [
           "functionalityNamespace" : "workflows/multiomics",
           "output" : "",
           "platform" : "",
-          "git_commit" : "10afaccea81ecfaf05b87126833ff8d185b32749",
+          "git_commit" : "8299bd25492969dffb2b9e166f6215542885c57f",
           "executable" : "/nextflow/workflows/multiomics/dimensionality_reduction/main.nf"
         },
         "writtenPath" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/workflows/multiomics/dimensionality_reduction"
@@ -3111,7 +3116,7 @@ meta = [
           "functionalityNamespace" : "workflows/multiomics",
           "output" : "",
           "platform" : "",
-          "git_commit" : "10afaccea81ecfaf05b87126833ff8d185b32749",
+          "git_commit" : "8299bd25492969dffb2b9e166f6215542885c57f",
           "executable" : "/nextflow/workflows/multiomics/dimensionality_reduction/main.nf"
         },
         "writtenPath" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/workflows/multiomics/dimensionality_reduction"
@@ -3164,7 +3169,10 @@ meta = [
           "cpu200" : "cpus = 200",
           "cpu500" : "cpus = 500",
           "cpu1000" : "cpus = 1000"
-        }
+        },
+        "script" : [
+          "includeConfig(\\"utils/labels.config\\")"
+        ]
       },
       "debug" : false,
       "container" : "docker"
@@ -3175,7 +3183,7 @@ meta = [
     "platform" : "nextflow",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/workflows/multiomics/process_batches",
     "viash_version" : "0.8.3",
-    "git_commit" : "10afaccea81ecfaf05b87126833ff8d185b32749",
+    "git_commit" : "8299bd25492969dffb2b9e166f6215542885c57f",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))
