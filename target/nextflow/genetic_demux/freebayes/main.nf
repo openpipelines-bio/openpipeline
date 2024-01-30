@@ -3686,7 +3686,10 @@ meta = [
           "cpu200" : "cpus = 200",
           "cpu500" : "cpus = 500",
           "cpu1000" : "cpus = 1000"
-        }
+        },
+        "script" : [
+          "includeConfig(\\"utils/labels.config\\")"
+        ]
       },
       "debug" : false,
       "container" : "docker"
@@ -3697,7 +3700,7 @@ meta = [
     "platform" : "nextflow",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/genetic_demux/freebayes",
     "viash_version" : "0.8.3",
-    "git_commit" : "795b8b6b7aa6da5d2d615a62eedcbac192f377c4",
+    "git_commit" : "49c438bb1f6b5c672c03c6eca988b633c53df1a3",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))

@@ -432,9 +432,9 @@ ENTRYPOINT []
 RUN :
 LABEL org.opencontainers.image.authors="Toni Verbeiren, Marijke Van Moerbeke"
 LABEL org.opencontainers.image.description="Companion container for running component demux bcl_convert"
-LABEL org.opencontainers.image.created="2024-01-29T02:35:16Z"
+LABEL org.opencontainers.image.created="2024-01-30T02:35:17Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="795b8b6b7aa6da5d2d615a62eedcbac192f377c4"
+LABEL org.opencontainers.image.revision="49c438bb1f6b5c672c03c6eca988b633c53df1a3"
 LABEL org.opencontainers.image.version="integration_build"
 
 VIASHDOCKER

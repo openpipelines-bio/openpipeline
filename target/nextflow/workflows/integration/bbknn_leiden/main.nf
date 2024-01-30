@@ -3063,6 +3063,11 @@ meta = [
         "is_executable" : true,
         "parent" : "file:/home/runner/work/openpipeline/openpipeline/src/workflows/integration/bbknn_leiden/",
         "entrypoint" : "run_wf"
+      },
+      {
+        "type" : "file",
+        "path" : "src/workflows/utils/",
+        "parent" : "file:///home/runner/work/openpipeline/openpipeline/"
       }
     ],
     "description" : "Run bbknn followed by leiden clustering and run umap on the result.",
@@ -3103,7 +3108,7 @@ meta = [
           "functionalityNamespace" : "cluster",
           "output" : "",
           "platform" : "",
-          "git_commit" : "795b8b6b7aa6da5d2d615a62eedcbac192f377c4",
+          "git_commit" : "49c438bb1f6b5c672c03c6eca988b633c53df1a3",
           "executable" : "/nextflow/cluster/leiden/main.nf"
         },
         "writtenPath" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/cluster/leiden"
@@ -3124,7 +3129,7 @@ meta = [
           "functionalityNamespace" : "dimred",
           "output" : "",
           "platform" : "",
-          "git_commit" : "795b8b6b7aa6da5d2d615a62eedcbac192f377c4",
+          "git_commit" : "49c438bb1f6b5c672c03c6eca988b633c53df1a3",
           "executable" : "/nextflow/dimred/umap/main.nf"
         },
         "writtenPath" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/dimred/umap"
@@ -3145,7 +3150,7 @@ meta = [
           "functionalityNamespace" : "neighbors",
           "output" : "",
           "platform" : "",
-          "git_commit" : "795b8b6b7aa6da5d2d615a62eedcbac192f377c4",
+          "git_commit" : "49c438bb1f6b5c672c03c6eca988b633c53df1a3",
           "executable" : "/nextflow/neighbors/bbknn/main.nf"
         },
         "writtenPath" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/neighbors/bbknn"
@@ -3166,7 +3171,7 @@ meta = [
           "functionalityNamespace" : "metadata",
           "output" : "",
           "platform" : "",
-          "git_commit" : "795b8b6b7aa6da5d2d615a62eedcbac192f377c4",
+          "git_commit" : "49c438bb1f6b5c672c03c6eca988b633c53df1a3",
           "executable" : "/nextflow/metadata/move_obsm_to_obs/main.nf"
         },
         "writtenPath" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/metadata/move_obsm_to_obs"
@@ -3219,7 +3224,10 @@ meta = [
           "cpu200" : "cpus = 200",
           "cpu500" : "cpus = 500",
           "cpu1000" : "cpus = 1000"
-        }
+        },
+        "script" : [
+          "includeConfig(\\"utils/labels.config\\")"
+        ]
       },
       "debug" : false,
       "container" : "docker"
@@ -3230,7 +3238,7 @@ meta = [
     "platform" : "nextflow",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/workflows/integration/bbknn_leiden",
     "viash_version" : "0.8.3",
-    "git_commit" : "795b8b6b7aa6da5d2d615a62eedcbac192f377c4",
+    "git_commit" : "49c438bb1f6b5c672c03c6eca988b633c53df1a3",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))
