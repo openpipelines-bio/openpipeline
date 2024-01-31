@@ -1,0 +1,34 @@
+# Outputs
+# output: "$id.$key.output.output"
+
+# Input files
+input: # please fill in - example: ["mysample_S1_L001_R1_001.fastq.gz", "mysample_S1_L001_R2_001.fastq.gz"]
+gex_reference: # please fill in - example: "reference_genome.tar.gz"
+# vdj_reference: "reference_vdj.tar.gz"
+# vdj_inner_enrichment_primers: "enrichment_primers.txt"
+# feature_reference: "feature_reference.csv"
+
+# Library arguments
+library_id: # please fill in - example: ["mysample1"]
+library_type: # please fill in - example: ["Gene Expression"]
+# library_subsample: ["0.5"]
+# library_lanes: ["1-4"]
+
+# Gene expression arguments
+# gex_expect_cells: 3000
+gex_chemistry: "auto"
+gex_secondary_analysis: false
+gex_generate_bam: false
+gex_include_introns: true
+
+# Cell multiplexing parameters
+# cell_multiplex_sample_id: "foo"
+# cell_multiplex_oligo_ids: "foo"
+# cell_multiplex_description: "foo"
+
+# Executor arguments
+dryrun: false
+
+# Nextflow input-output arguments
+publish_dir: # please fill in - example: "output/"
+# param_list: "my_params.yaml"
