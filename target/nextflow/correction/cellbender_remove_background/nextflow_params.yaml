@@ -1,0 +1,51 @@
+# Inputs
+input: # please fill in - example: "input.h5mu"
+modality: "rna"
+
+# Outputs
+# output: "$id.$key.output.h5mu"
+# output_compression: "gzip"
+layer_output: "cellbender_corrected"
+obs_background_fraction: "cellbender_background_fraction"
+obs_cell_probability: "cellbender_cell_probability"
+obs_cell_size: "cellbender_cell_size"
+obs_droplet_efficiency: "cellbender_droplet_efficiency"
+obs_latent_scale: "cellbender_latent_scale"
+var_ambient_expression: "cellbender_ambient_expression"
+obsm_gene_expression_encoding: "cellbender_gene_expression_encoding"
+
+# Arguments
+expected_cells_from_qc: false
+# expected_cells: 1000
+# total_droplets_included: 25000
+# force_cell_umi_prior: 123
+# force_empty_umi_prior: 123
+model: "full"
+epochs: 150
+low_count_threshold: 5
+z_dim: 64
+z_layers: [512]
+training_fraction: 0.9
+empty_drop_training_fraction: 0.2
+# ignore_features: [123]
+fpr: [0.01]
+# exclude_feature_types: ["foo"]
+projected_ambient_count_threshold: 0.1
+learning_rate: 1.0E-4
+# final_elbo_fail_fraction: 123.0
+# epoch_elbo_fail_fraction: 123.0
+num_training_tries: 1
+learning_rate_retry_mult: 0.2
+posterior_batch_size: 128
+# posterior_regulation: "foo"
+# alpha: 123.0
+# q: 123.0
+estimator: "mckp"
+estimator_multiple_cpu: false
+# constant_learning_rate: true
+debug: false
+cuda: false
+
+# Nextflow input-output arguments
+publish_dir: # please fill in - example: "output/"
+# param_list: "my_params.yaml"
