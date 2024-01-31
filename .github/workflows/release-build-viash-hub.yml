@@ -1,4 +1,4 @@
-name: release build
+name: release build viash hub
 
 on: 
   workflow_dispatch:
@@ -22,6 +22,11 @@ jobs:
     steps:
     - uses: actions/checkout@v4
 
+    # - name: Push main to Viash-hub
+    #   run: |
+    #     git remote add viash-hub https://x-access-token:${{ secrets.VIASHHUB_PAT }}@viash-hub.com/openpipelines-bio/openpipeline.git
+    #     git push -f viash-hub main
+
     - uses: viash-io/viash-actions/setup@v5
 
     - uses: viash-io/viash-actions/project/sync-and-cache-s3@v5
@@ -38,9 +43,14 @@ jobs:
 
     - uses: viash-io/viash-actions/ns-build@v5
       with:
-        config_mod: ".functionality.version := '${{ github.event.inputs.version_tag }}'"
+        config_mod: |
+          .functionality.version := '${{ github.event.inputs.version_tag }}'
+          .platforms[.type == 'docker'].target_registry := 'viash-hub.com:5050'
+          .platforms[.type == 'docker'].target_organization := 'openpipelines-bio/openpipeline'
+          .platforms[.type == 'docker'].target_image_source := 'https://viash-hub.com/openpipelines-bio/openpipeline'
         parallel: true
         query_namespace: ^(?!workflows)
+
 
     - name: Build nextflow schemas
       uses: viash-io/viash-actions/pro/build-nextflow-schemas@v5
@@ -58,15 +68,16 @@ jobs:
         viash_pro_token: ${{ secrets.GTHB_PAT }}
         tools_version: 'main_build'
 
-    - name: Deploy to target branch
-      uses: peaceiris/actions-gh-pages@v3
+    - name: Deploy build artifacts to Viash-Hub
+      uses: viash-io/viash-actions/viash-hub/deploy@v5
       with:
-        github_token: ${{ secrets.GITHUB_TOKEN }}
-        publish_dir: .
-        publish_branch: release
-        full_commit_message: "Deploy for release ${{ github.event.inputs.version_tag }} from ${{ github.sha }}"
-        exclude_assets: ''
-
+        github_token: ${{ github.token }}
+        viash_hub_token: ${{ secrets.VIASHHUB_PAT }}
+        viash_hub_repo: openpipelines-bio/openpipeline
+        github_repo: openpipelines-bio/openpipeline
+        src_branch: release
+        dest_branch: release
+        commit_message: "Deploy for release ${{ github.event.inputs.version_tag }} from ${{ github.sha }}"
 
     - id: ns_list_components
       uses: viash-io/viash-actions/ns-list@v5
@@ -122,23 +133,31 @@ jobs:
     - name: Build container
       uses: viash-io/viash-actions/ns-build@v5
       with:
-        config_mod: .functionality.version := '${{ github.event.inputs.version_tag }}'
+        config_mod: |
+          .functionality.version := '${{ github.event.inputs.version_tag }}'
+          .platforms[.type == 'docker'].target_registry := 'viash-hub.com:5050'
+          .platforms[.type == 'docker'].target_organization := 'openpipelines-bio/openpipeline'
+          .platforms[.type == 'docker'].target_image_source := 'https://viash-hub.com/openpipelines-bio/openpipeline'
         platform: docker
         src: ${{ matrix.component.dir }}
         setup: build
         
         
-    - name: Login to container registry
+    - name: Login to Viash-Hub container registry
       uses: docker/login-action@v3
       with:
-        registry: ghcr.io
-        username: ${{ secrets.GTHB_USER }}
-        password: ${{ secrets.GTHB_PAT }}
+        registry: viash-hub.com:5050
+        username: ${{ secrets.VIASHHUB_USER }}
+        password: ${{ secrets.VIASHHUB_PAT }}
 
     - name: Push container
       uses: viash-io/viash-actions/ns-build@v5
       with:
-        config_mod: .functionality.version := '${{ github.event.inputs.version_tag }}'
+        config_mod: |
+          .functionality.version := '${{ github.event.inputs.version_tag }}'
+          .platforms[.type == 'docker'].target_registry := 'viash-hub.com:5050'
+          .platforms[.type == 'docker'].target_organization := 'openpipelines-bio/openpipeline'
+          .platforms[.type == 'docker'].target_image_source := 'https://viash-hub.com/openpipelines-bio/openpipeline'
         platform: docker
         src: ${{ matrix.component.dir }}
         setup: push
@@ -171,7 +190,11 @@ jobs:
     - name: Build target dir
       uses: viash-io/viash-actions/ns-build@v5
       with:
-        config_mod: ".functionality.version := '${{ github.event.inputs.version_tag }}'"
+        config_mod: |
+          .functionality.version := '${{ github.event.inputs.version_tag }}'
+          .platforms[.type == 'docker'].target_registry := 'viash-hub.com:5050'
+          .platforms[.type == 'docker'].target_organization := 'openpipelines-bio/openpipeline'
+          .platforms[.type == 'docker'].target_image_source := 'https://viash-hub.com/openpipelines-bio/openpipeline'
         parallel: true
         platform: nextflow
 
@@ -205,7 +228,7 @@ jobs:
         find ./resources_test/ "${to_not_remove[@]}" -type f -exec rm {} +
 
     - name: Run integration test
-      timeout-minutes: 60
+      timeout-minutes: 45
       run: |
         # todo: replace with viash test command
         export NXF_VER=22.04.5
@@ -284,7 +307,7 @@ jobs:
       run: |
         viash test \
           "${{ matrix.component.config }}" \
-          --config_mod ".platforms[.type == 'docker'].image := 'ghcr.io/openpipelines-bio/${{ matrix.component.name }}:${{ github.event.inputs.version_tag }}'" \
+          --config_mod ".platforms[.type == 'docker'].image := 'viash-hub.com:5050/openpipelines-bio/openpipeline/${{ matrix.component.name }}:${{ github.event.inputs.version_tag }}'" \
           --config_mod ".platforms[.type == 'docker'].setup := []" \
           --cpus 2 \
           --memory "6gb"
