@@ -3049,9 +3049,9 @@ meta = [
     "platform" : "nextflow",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/mapping/htseq_count_to_h5mu",
     "viash_version" : "0.8.3",
-    "git_commit" : "17e8ea6804e646f968685cd00f18cf18e960dc31",
+    "git_commit" : "3b0462486db38ced22b14359f71fd795253d73ba",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline",
-    "git_tag" : "0.2.0-1516-g17e8ea6804"
+    "git_tag" : "0.2.0-1517-g3b0462486d"
   }
 }'''))
 ]
