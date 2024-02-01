@@ -1,3 +1,9 @@
+# openpipelines 0.10.2
+
+## BUG FIXES
+
+* `transform/log1p`: fix `--input_layer` argument not functionning (PR #678). 
+
 # openpipelines 0.10.1
 
 ## MINOR CHANGES

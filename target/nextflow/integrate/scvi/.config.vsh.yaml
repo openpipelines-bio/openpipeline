@@ -1,7 +1,7 @@
 functionality:
   name: "scvi"
   namespace: "integrate"
-  version: "0.10.1"
+  version: "0.10.2"
   authors:
   - name: "Malte D. Luecken"
     roles:
@@ -497,6 +497,7 @@ platforms:
   image: "nvcr.io/nvidia/pytorch:23.06-py3"
   target_organization: "openpipelines-bio"
   target_registry: "ghcr.io"
+  target_tag: "0.10.1"
   namespace_separator: "_"
   resolve_volume: "Automatic"
   chown: true
@@ -585,5 +586,6 @@ info:
   output: "/home/runner/work/openpipeline/openpipeline/target/nextflow/integrate/scvi"
   executable: "/home/runner/work/openpipeline/openpipeline/target/nextflow/integrate/scvi/scvi"
   viash_version: "0.7.5"
-  git_commit: "3d2a0f21b49b7c8bc40e44e668191f0a8cb784b5"
+  git_commit: "e7a31922173ed91fb3a087194dd899bae2698824"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"
+  git_tag: "0.10.1-3-ge7a3192217"

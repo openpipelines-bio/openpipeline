@@ -1,7 +1,7 @@
 functionality:
   name: "multiqc"
   namespace: "qc"
-  version: "0.10.1"
+  version: "0.10.2"
   arguments:
   - type: "file"
     name: "--input"
@@ -59,6 +59,7 @@ platforms:
   image: "python:3.10-slim"
   target_organization: "openpipelines-bio"
   target_registry: "ghcr.io"
+  target_tag: "0.10.1"
   namespace_separator: "_"
   resolve_volume: "Automatic"
   chown: true
@@ -134,5 +135,6 @@ info:
   output: "/home/runner/work/openpipeline/openpipeline/target/docker/qc/multiqc"
   executable: "/home/runner/work/openpipeline/openpipeline/target/docker/qc/multiqc/multiqc"
   viash_version: "0.7.5"
-  git_commit: "3d2a0f21b49b7c8bc40e44e668191f0a8cb784b5"
+  git_commit: "e7a31922173ed91fb3a087194dd899bae2698824"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"
+  git_tag: "0.10.1-3-ge7a3192217"
