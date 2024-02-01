@@ -3067,7 +3067,7 @@ meta = [
     "platform" : "nextflow",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/transform/log1p",
     "viash_version" : "0.8.3",
-    "git_commit" : "c167f438f1724fe7464ea11edb6b7aefe5f9e52d",
+    "git_commit" : "f9a63af44917ca2be1b0567382b0bb6654549139",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))
@@ -3084,6 +3084,7 @@ tempscript=".viash_script.sh"
 cat > "$tempscript" << VIASHMAIN
 import scanpy as sc
 import mudata as mu
+import anndata as ad
 import sys
 
 ## VIASH START
@@ -3143,12 +3144,24 @@ mdata.var_names_make_unique()
 mod = par["modality"]
 logger.info("Performing log transformation on modality %s", mod)
 data = mdata.mod[mod]
-new_layer = sc.pp.log1p(data,
-                        base=par["base"],
-                        copy=True if par['output_layer'] else False)
-if new_layer:
-    data.layers[par['output_layer']] = new_layer.X
-    data.uns['log1p'] = new_layer.uns['log1p']
+
+# Make our own copy with not a lot of data
+# this avoid excessive memory usage and accidental overwrites 
+input_layer = data.layers[par["input_layer"]] \\\\
+              if par["input_layer"] else data.X
+data_for_scanpy = ad.AnnData(X=input_layer.copy())
+sc.pp.log1p(data_for_scanpy,
+            base=par["base"],
+            layer=None, # use X
+            copy=False) # allow overwrites in the copy that was made
+
+# Scanpy will overwrite the input layer.
+# So fetch input layer from the copy and use it to populate the output slot
+if par["output_layer"]:
+    data.layers[par["output_layer"]] = data_for_scanpy.X
+else:
+    data.X = data_for_scanpy.X
+data.uns['log1p'] = data_for_scanpy.uns['log1p'].copy()
 
 logger.info("Writing to file %s", par["output"])
 mdata.write_h5mu(filename=par["output"], compression=par["output_compression"])

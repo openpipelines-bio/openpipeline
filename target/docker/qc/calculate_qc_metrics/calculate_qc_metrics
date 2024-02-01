@@ -516,9 +516,9 @@ RUN pip install --upgrade pip && \
 
 LABEL org.opencontainers.image.authors="Dries Schaumont"
 LABEL org.opencontainers.image.description="Companion container for running component qc calculate_qc_metrics"
-LABEL org.opencontainers.image.created="2024-01-31T02:35:12Z"
+LABEL org.opencontainers.image.created="2024-02-01T02:36:21Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="c167f438f1724fe7464ea11edb6b7aefe5f9e52d"
+LABEL org.opencontainers.image.revision="f9a63af44917ca2be1b0567382b0bb6654549139"
 LABEL org.opencontainers.image.version="integration_build"
 
 VIASHDOCKER
