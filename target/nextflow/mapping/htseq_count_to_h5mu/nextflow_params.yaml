@@ -1,0 +1,12 @@
+# Outputs
+# output: "$id.$key.output.h5mu"
+# output_compression: "gzip"
+
+# Input
+input_id: # please fill in - example: ["foo"]
+input_counts: # please fill in - example: ["counts.tsv"]
+reference: # please fill in - example: "gencode_v41_star"
+
+# Nextflow input-output arguments
+publish_dir: # please fill in - example: "output/"
+# param_list: "my_params.yaml"

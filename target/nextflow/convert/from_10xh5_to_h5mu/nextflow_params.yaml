@@ -1,0 +1,16 @@
+# Inputs
+input: # please fill in - example: "raw_feature_bc_matrix.h5"
+# input_metrics_summary: "metrics_cellranger.h5"
+
+# Outputs
+# output: "$id.$key.output.h5mu"
+# output_compression: "gzip"
+uns_metrics: "metrics_cellranger"
+
+# Arguments
+# min_genes: 100
+# min_counts: 1000
+
+# Nextflow input-output arguments
+publish_dir: # please fill in - example: "output/"
+# param_list: "my_params.yaml"

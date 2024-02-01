@@ -1,0 +1,12 @@
+# Arguments
+input: # please fill in - example: "input.h5mu"
+modality: "rna"
+obsp_connectivities: "connectivities"
+# output: "$id.$key.output.h5mu"
+# output_compression: "gzip"
+obsm_name: "leiden"
+resolution: # please fill in - example: [1]
+
+# Nextflow input-output arguments
+publish_dir: # please fill in - example: "output/"
+# param_list: "my_params.yaml"
