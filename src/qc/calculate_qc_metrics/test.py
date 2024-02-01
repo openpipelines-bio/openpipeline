@@ -25,7 +25,7 @@ meta = {
 def input_path():
     return f"{meta['resources_dir']}/pbmc_1k_protein_v3_filtered_feature_bc_matrix.h5mu"
 
-@pytest.fixture
+@pytest.fixture()
 def input_mudata(input_path):
     mudata = md.read_h5mu(input_path)
     # create a less sparse matrix to increase the variability in qc statistics
@@ -160,7 +160,9 @@ def test_calculcate_qc_var_qc_metrics(run_component, mudata_with_boolean_column,
     sum_custom_column = gene_counts_custom.sum(axis=1)
     sum_all = gene_counts.sum(axis=1)
     percentage = (sum_custom_column / sum_all) * 100
-    assert (percentage == data_with_qc.obs['pct_custom']).all()
+    pd.testing.assert_series_equal(percentage, data_with_qc.obs['pct_custom'],
+                                   check_exact=False, # Comparing floats
+                                   check_names=False)
     assert (data_with_qc.obs['pct_custom'] <= 100).all()
 
 def test_compare_scanpy(run_component,
