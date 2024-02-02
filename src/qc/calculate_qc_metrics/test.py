@@ -25,7 +25,7 @@ meta = {
 def input_path():
     return f"{meta['resources_dir']}/pbmc_1k_protein_v3_filtered_feature_bc_matrix.h5mu"
 
-@pytest.fixture()
+@pytest.fixture
 def input_mudata(input_path):
     mudata = md.read_h5mu(input_path)
     # create a less sparse matrix to increase the variability in qc statistics
