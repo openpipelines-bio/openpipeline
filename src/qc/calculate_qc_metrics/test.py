@@ -185,7 +185,10 @@ def test_compare_scanpy(run_component,
     component_data = md.read(output_path)
     rna_mod = component_data.mod['rna']
 
-    input_mudata.mod['rna'].var['custom'] = input_mudata.mod['rna'].var['custom'].fillna(False)
+    # Replicate --var_qc_metrics_fill_na_value False
+    # Scanpy also does not work with pd.BooleanDtype()
+    # So cast from 'boolean' to 'bool'
+    input_mudata.mod['rna'].var['custom'] = input_mudata.mod['rna'].var['custom'].fillna(False).astype("bool")
     sc.pp.calculate_qc_metrics(
         input_mudata.mod['rna'],
         expr_type="counts",
