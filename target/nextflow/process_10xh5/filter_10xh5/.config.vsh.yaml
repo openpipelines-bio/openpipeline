@@ -1,7 +1,7 @@
 functionality:
   name: "filter_10xh5"
   namespace: "process_10xh5"
-  version: "0.11.2"
+  version: "0.11.3"
   authors:
   - name: "Robrecht Cannoodt"
     roles:
@@ -190,6 +190,6 @@ info:
   output: "/home/runner/work/openpipeline/openpipeline/target/nextflow/process_10xh5/filter_10xh5"
   executable: "/home/runner/work/openpipeline/openpipeline/target/nextflow/process_10xh5/filter_10xh5/filter_10xh5"
   viash_version: "0.7.5"
-  git_commit: "605ebb40fe33426743142d013ba400e9afcd3c56"
+  git_commit: "ebf8e7489f021faef61ec7b8c2b592ef07e033be"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"
-  git_tag: "0.11.1-3-g605ebb40fe"
+  git_tag: "0.11.2-3-gebf8e7489f"

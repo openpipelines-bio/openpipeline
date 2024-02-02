@@ -1,3 +1,9 @@
+# openpipelines 0.11.3
+
+# BUG FIXES
+
+* `qc/calculate_qc_metrics`: Resolved an issue where statistics based on the input columns selected with `--var_qc_metrics` were incorrect when these input columns were encoded in `pd.BooleanDtype()` (PR #685).
+
 # openpipelines 0.11.2
 
 ## BUG FIXES
