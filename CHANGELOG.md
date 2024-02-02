@@ -1,3 +1,9 @@
+# openpipelines 0.12.5
+
+## BUG FIXES
+
+* `qc/calculate_qc_metrics`: Resolved an issue where statistics based on the input columns selected with `--var_qc_metrics` were incorrect when these input columns were encoded in `pd.BooleanDtype()` (PR #685).
+
 # openpipelines 0.12.4
 
 ## BUG FIXES
@@ -10,15 +16,11 @@
 
 * `dataflow/concat`: Fix an issue where joining columns with different datatypes caused `TypeError` (PR #619).
 
-* `dataflow/concat`: Fix `TypeError` when using mode 'move' and a column with conflicting metadata does not exist across all samples (PR #631).
-
 # openpipelines 0.12.2
 
 ## BUG FIXES
 
 * `dataflow/concat`: Fix an issue where using `--mode move` on samples with non-overlapping features would cause `var_names` to become unaligned to the data (PR #653). 
-
-* `qc/calculate_qc_metrics`: Resolved an issue where statistics based on the input columns selected with `--var_qc_metrics` were incorrect when these input columns were encoded in `pd.BooleanDtype()` (PR #685).
 
 # openpipelines 0.12.1
 
