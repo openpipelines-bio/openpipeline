@@ -138,6 +138,8 @@ of a split multimodal files. The modalities in the list must be unique and after
 
 * `dataflow/concatenate_h5mu` and `dataflow/concat`: Fix an issue where joining columns with different datatypes caused `TypeError` (PR #619).
 
+* `qc/calculate_qc_metrics`: Resolved an issue where statistics based on the input columns selected with `--var_qc_metrics` were incorrect when these input columns were encoded in `pd.BooleanDtype()` (PR #685).
+
 # openpipelines 0.12.1
 
 ## BUG FIXES
