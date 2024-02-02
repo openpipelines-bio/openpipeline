@@ -129,7 +129,7 @@ functionality:
     - path: /src/utils/setup_logger.py
   test_resources:
     - type: python_script
-      path: test.py
+      path: test_qc.py
     - path: /resources_test/pbmc_1k_protein_v3/pbmc_1k_protein_v3_filtered_feature_bc_matrix.h5mu
 platforms:
   - type: docker
@@ -142,6 +142,7 @@ platforms:
         __merge__: [/src/base/requirements/anndata_mudata.yaml, .]
         packages:
           - scikit-learn~=1.2.0
+          - pandas~=2.1.0
     test_setup:
       - type: python
         __merge__: [ /src/base/requirements/viashpy.yaml, /src/base/requirements/scanpy.yaml, .]
