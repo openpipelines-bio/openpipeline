@@ -1,6 +1,7 @@
 import pytest
 import re
 import pandas as pd
+import uuid
 from anndata import AnnData
 from mudata import MuData, read_h5mu
 from subprocess import CalledProcessError
@@ -10,7 +11,7 @@ meta = {
     'functionality_name': 'move_obsm_to_obs',
     'resources_dir': 'resources_test/',
     'executable': 'target/docker/metadata/move_obsm_to_obs/move_obsm_to_obs',
-    'config': '/home/di/code/openpipeline/src/metadata/move_obsm_to_obs/config.vsh.yaml'
+    'config': 'src/metadata/move_obsm_to_obs/config.vsh.yaml'
 }
 ## VIASH END
 
@@ -31,9 +32,9 @@ def h5mu():
 @pytest.fixture
 def write_temp_h5mu(tmp_path):
     def wrapper(test_h5mu): 
-        test_h5mu_path = tmp_path / "input.h5mu"
-        test_h5mu.write_h5mu(test_h5mu_path.name)
-        return test_h5mu_path.name
+        test_h5mu_path = tmp_path / f"{str(uuid.uuid4())}.h5mu"
+        test_h5mu.write_h5mu(test_h5mu_path)
+        return test_h5mu_path
     return wrapper
 
 @pytest.fixture
@@ -80,6 +81,33 @@ def test_error_non_existing_modality(run_component, h5mu, write_temp_h5mu, tmp_p
                     ])
     re.search(r"ValueError: Modality foo does not exist\.",
         err.value.stdout.decode('utf-8'))
+    
+def test_execute_twice_overwrites(run_component, h5mu, write_temp_h5mu, tmp_path):
+    output_run_1 = tmp_path/ "output1.h5mu"
+    run_component(["--input", write_temp_h5mu(h5mu),
+                   "--modality", "mod1",
+                   "--obsm_key", "obsm_key",
+                   "--output", output_run_1
+                   ])
+    output_data_run_1 = read_h5mu(output_run_1)
+    output_data_run_1.mod["mod1"].obsm = \
+        {"obsm_key": pd.DataFrame([["dolor", "amet"], ["jommeke", "filiberke"]],
+                                  index=output_data_run_1.mod["mod1"].obs_names,
+                                  columns=["obsm_col1", "obsm_col2"])}
+    
+    output_run_2 = tmp_path / "output2.h5mu"
+    input_run_2 = write_temp_h5mu(output_data_run_1)
+    run_component(["--input", input_run_2,
+                   "--modality", "mod1",
+                   "--obsm_key", "obsm_key",
+                   "--output", output_run_2
+                   ])
+    assert output_run_2.is_file(), "Some output file must have been created."
+    output_data = read_h5mu(output_run_2)
+    pd.testing.assert_index_equal(output_data.mod['mod1'].obs.index, pd.Index(['obs1', 'obs2']))
+    pd.testing.assert_index_equal(output_data.mod['mod1'].obs.columns, 
+                                  pd.Index(['Obs', 'sample_id', 'obsm_key_obsm_col1', 'obsm_key_obsm_col2']))
+    assert 'obsm_key' not in output_data.mod['mod1'].obsm
 
 if __name__ == '__main__':
     exit(pytest.main([__file__]))
