@@ -1,0 +1,11 @@
+# Arguments
+input: # please fill in - example: "pbmc_1k_protein_v3_raw_feature_bc_matrix.h5"
+# output: "$id.$key.output.h5"
+min_library_size: 0
+min_cells_per_gene: 0
+# keep_feature_types: ["Antibody Capture"]
+verbose: false
+
+# Nextflow input-output arguments
+publish_dir: # please fill in - example: "output/"
+# param_list: "my_params.yaml"
