@@ -3068,6 +3068,10 @@ meta = [
         "type" : "file",
         "path" : "src/workflows/utils/",
         "parent" : "file:///home/runner/work/openpipeline/openpipeline/"
+      },
+      {
+        "type" : "file",
+        "path" : "./src/workflows/utils"
       }
     ],
     "description" : "Processing unimodal single-sample RNA transcriptomics data.",
@@ -3111,7 +3115,7 @@ meta = [
           "functionalityNamespace" : "filter",
           "output" : "",
           "platform" : "",
-          "git_commit" : "555898bb0f18de66c027c5a883cec3218ada5008",
+          "git_commit" : "d2f5dea4b19d88a520dc99929c6178053c63814c",
           "executable" : "/nextflow/filter/filter_with_counts/main.nf"
         },
         "writtenPath" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/filter/filter_with_counts"
@@ -3132,7 +3136,7 @@ meta = [
           "functionalityNamespace" : "filter",
           "output" : "",
           "platform" : "",
-          "git_commit" : "555898bb0f18de66c027c5a883cec3218ada5008",
+          "git_commit" : "d2f5dea4b19d88a520dc99929c6178053c63814c",
           "executable" : "/nextflow/filter/filter_with_scrublet/main.nf"
         },
         "writtenPath" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/filter/filter_with_scrublet"
@@ -3153,7 +3157,7 @@ meta = [
           "functionalityNamespace" : "filter",
           "output" : "",
           "platform" : "",
-          "git_commit" : "555898bb0f18de66c027c5a883cec3218ada5008",
+          "git_commit" : "d2f5dea4b19d88a520dc99929c6178053c63814c",
           "executable" : "/nextflow/filter/do_filter/main.nf"
         },
         "writtenPath" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/filter/do_filter"
@@ -3174,7 +3178,7 @@ meta = [
           "functionalityNamespace" : "filter",
           "output" : "",
           "platform" : "",
-          "git_commit" : "555898bb0f18de66c027c5a883cec3218ada5008",
+          "git_commit" : "d2f5dea4b19d88a520dc99929c6178053c63814c",
           "executable" : "/nextflow/filter/delimit_fraction/main.nf"
         },
         "writtenPath" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/filter/delimit_fraction"
@@ -3195,7 +3199,7 @@ meta = [
           "functionalityNamespace" : "workflows/qc",
           "output" : "",
           "platform" : "",
-          "git_commit" : "555898bb0f18de66c027c5a883cec3218ada5008",
+          "git_commit" : "d2f5dea4b19d88a520dc99929c6178053c63814c",
           "executable" : "/nextflow/workflows/qc/qc/main.nf"
         },
         "writtenPath" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/workflows/qc/qc"
@@ -3262,7 +3266,7 @@ meta = [
     "platform" : "nextflow",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/workflows/rna/rna_singlesample",
     "viash_version" : "0.8.3",
-    "git_commit" : "555898bb0f18de66c027c5a883cec3218ada5008",
+    "git_commit" : "d2f5dea4b19d88a520dc99929c6178053c63814c",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))

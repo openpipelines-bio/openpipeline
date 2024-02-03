@@ -2947,6 +2947,10 @@ meta = [
         "path" : "script.py",
         "is_executable" : true,
         "parent" : "file:/home/runner/work/openpipeline/openpipeline/src/integrate/harmonypy/"
+      },
+      {
+        "type" : "file",
+        "path" : "./src/workflows/utils"
       }
     ],
     "description" : "Performs Harmony integration based as described in https://github.com/immunogenomics/harmony. Based on an implementation in python from https://github.com/slowkow/harmonypy",
@@ -3079,7 +3083,7 @@ meta = [
     "platform" : "nextflow",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/integrate/harmonypy",
     "viash_version" : "0.8.3",
-    "git_commit" : "555898bb0f18de66c027c5a883cec3218ada5008",
+    "git_commit" : "d2f5dea4b19d88a520dc99929c6178053c63814c",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))

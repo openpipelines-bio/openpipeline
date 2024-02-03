@@ -3059,6 +3059,10 @@ meta = [
         "type" : "file",
         "path" : "src/workflows/utils/",
         "parent" : "file:///home/runner/work/openpipeline/openpipeline/"
+      },
+      {
+        "type" : "file",
+        "path" : "./src/workflows/utils"
       }
     ],
     "description" : "A pipeline to add basic qc statistics to a MuData ",
@@ -3104,7 +3108,7 @@ meta = [
           "functionalityNamespace" : "transfer",
           "output" : "",
           "platform" : "",
-          "git_commit" : "555898bb0f18de66c027c5a883cec3218ada5008",
+          "git_commit" : "d2f5dea4b19d88a520dc99929c6178053c63814c",
           "executable" : "/nextflow/transfer/publish/main.nf"
         },
         "writtenPath" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/transfer/publish"
@@ -3125,7 +3129,7 @@ meta = [
           "functionalityNamespace" : "metadata",
           "output" : "",
           "platform" : "",
-          "git_commit" : "555898bb0f18de66c027c5a883cec3218ada5008",
+          "git_commit" : "d2f5dea4b19d88a520dc99929c6178053c63814c",
           "executable" : "/nextflow/metadata/grep_annotation_column/main.nf"
         },
         "writtenPath" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/metadata/grep_annotation_column"
@@ -3146,7 +3150,7 @@ meta = [
           "functionalityNamespace" : "qc",
           "output" : "",
           "platform" : "",
-          "git_commit" : "555898bb0f18de66c027c5a883cec3218ada5008",
+          "git_commit" : "d2f5dea4b19d88a520dc99929c6178053c63814c",
           "executable" : "/nextflow/qc/calculate_qc_metrics/main.nf"
         },
         "writtenPath" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/qc/calculate_qc_metrics"
@@ -3213,7 +3217,7 @@ meta = [
     "platform" : "nextflow",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/workflows/qc/qc",
     "viash_version" : "0.8.3",
-    "git_commit" : "555898bb0f18de66c027c5a883cec3218ada5008",
+    "git_commit" : "d2f5dea4b19d88a520dc99929c6178053c63814c",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))

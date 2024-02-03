@@ -3146,6 +3146,10 @@ meta = [
         "type" : "file",
         "path" : "src/utils/setup_logger.py",
         "parent" : "file:///home/runner/work/openpipeline/openpipeline/"
+      },
+      {
+        "type" : "file",
+        "path" : "./src/workflows/utils"
       }
     ],
     "description" : "A wrapper for the BD Rhapsody Analysis CWL v1.10.1 pipeline.\n\nThe CWL pipeline file is obtained by cloning 'https://bitbucket.org/CRSwDev/cwl/src/master/' and removing all objects with class 'DockerRequirement' from the YML.\n\nThis pipeline can be used for a targeted analysis (with `--mode targeted`) or for a whole transcriptome analysis (with `--mode wta`).\n\n* If mode is `\\"targeted\\"`, then either the `--reference` or `--abseq_reference` parameters must be defined.\n* If mode is `\\"wta\\"`, then `--reference` and `--transcriptome_annotation` must be defined, `--abseq_reference` and `--supplemental_reference` is optional.\n\nThe reference_genome and transcriptome_annotation files can be generated with the make_reference pipeline.\nAlternatively, BD also provides standard references which can be downloaded from these locations:\n\n  - Human: http://bd-rhapsody-public.s3-website-us-east-1.amazonaws.com/Rhapsody-WTA/GRCh38-PhiX-gencodev29/\n  - Mouse: http://bd-rhapsody-public.s3-website-us-east-1.amazonaws.com/Rhapsody-WTA/GRCm38-PhiX-gencodevM19/\n",
@@ -3282,7 +3286,7 @@ meta = [
     "platform" : "nextflow",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/mapping/bd_rhapsody",
     "viash_version" : "0.8.3",
-    "git_commit" : "555898bb0f18de66c027c5a883cec3218ada5008",
+    "git_commit" : "d2f5dea4b19d88a520dc99929c6178053c63814c",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))

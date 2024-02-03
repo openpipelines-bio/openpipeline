@@ -3048,6 +3048,10 @@ meta = [
         "type" : "file",
         "path" : "src/utils/setup_logger.py",
         "parent" : "file:///home/runner/work/openpipeline/openpipeline/"
+      },
+      {
+        "type" : "file",
+        "path" : "./src/workflows/utils"
       }
     ],
     "description" : "Annotate highly variable features [Satija15] [Zheng17] [Stuart19].\n\nExpects logarithmized data, except when flavor='seurat_v3' in which count data is expected.\n\nDepending on flavor, this reproduces the R-implementations of Seurat [Satija15], Cell Ranger [Zheng17], and Seurat v3 [Stuart19].\n\nFor the dispersion-based methods ([Satija15] and [Zheng17]), the normalized dispersion is obtained by scaling with the mean and standard deviation of the dispersions for features falling into a given bin for mean expression of features. This means that for each bin of mean expression, highly variable features are selected.\n\nFor [Stuart19], a normalized variance for each feature is computed. First, the data are standardized (i.e., z-score normalization per feature) with a regularized standard deviation. Next, the normalized variance is computed as the variance of each feature after the transformation. Features are ranked by the normalized variance.\n",
@@ -3173,7 +3177,7 @@ meta = [
     "platform" : "nextflow",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/feature_annotation/highly_variable_features_scanpy",
     "viash_version" : "0.8.3",
-    "git_commit" : "555898bb0f18de66c027c5a883cec3218ada5008",
+    "git_commit" : "d2f5dea4b19d88a520dc99929c6178053c63814c",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))

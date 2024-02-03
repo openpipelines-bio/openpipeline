@@ -3004,6 +3004,10 @@ meta = [
         "type" : "file",
         "path" : "src/utils/setup_logger.py",
         "parent" : "file:///home/runner/work/openpipeline/openpipeline/"
+      },
+      {
+        "type" : "file",
+        "path" : "./src/workflows/utils"
       }
     ],
     "description" : "Doublet detection using the Scrublet method (Wolock, Lopez and Klein, 2019).\nThe method tests for potential doublets by using the expression profiles of\ncells to generate synthetic potential doubles which are tested against cells. \nThe method returns a \\"doublet score\\" on which it calls for potential doublets.\n\nFor the source code please visit https://github.com/AllonKleinLab/scrublet.\n\nFor 10x we expect the doublet rates to be:\n  Multiplet Rate (%) - # of Cells Loaded - # of Cells Recovered\n  ~0.4% ~800 ~500\n  ~0.8% ~1,600 ~1,000\n  ~1.6% ~3,200 ~2,000\n  ~2.3% ~4,800 ~3,000\n  ~3.1% ~6,400 ~4,000\n  ~3.9% ~8,000 ~5,000\n  ~4.6% ~9,600 ~6,000\n  ~5.4% ~11,200 ~7,000\n  ~6.1% ~12,800 ~8,000\n  ~6.9% ~14,400 ~9,000\n  ~7.6% ~16,000 ~10,000\n",
@@ -3141,7 +3145,7 @@ meta = [
     "platform" : "nextflow",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/filter/filter_with_scrublet",
     "viash_version" : "0.8.3",
-    "git_commit" : "555898bb0f18de66c027c5a883cec3218ada5008",
+    "git_commit" : "d2f5dea4b19d88a520dc99929c6178053c63814c",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))

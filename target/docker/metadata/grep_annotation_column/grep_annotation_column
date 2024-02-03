@@ -463,9 +463,9 @@ RUN pip install --upgrade pip && \
 
 LABEL org.opencontainers.image.authors="Dries Schaumont"
 LABEL org.opencontainers.image.description="Companion container for running component metadata grep_annotation_column"
-LABEL org.opencontainers.image.created="2024-02-02T11:31:12Z"
+LABEL org.opencontainers.image.created="2024-02-03T10:25:39Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="555898bb0f18de66c027c5a883cec3218ada5008"
+LABEL org.opencontainers.image.revision="d2f5dea4b19d88a520dc99929c6178053c63814c"
 LABEL org.opencontainers.image.version="main_build"
 
 VIASHDOCKER

@@ -2956,6 +2956,10 @@ meta = [
         "type" : "file",
         "path" : "src/workflows/utils/",
         "parent" : "file:///home/runner/work/openpipeline/openpipeline/"
+      },
+      {
+        "type" : "file",
+        "path" : "./src/workflows/utils"
       }
     ],
     "description" : "This workflow serves as an entrypoint into the 'full_pipeline' in order to\nre-run the multisample processing and the integration setup. An input .h5mu file will \nfirst be split in order to run the multisample processing per modality. Next, the modalities\nare merged again and the integration setup pipeline is executed. Please note that this workflow\nassumes that samples from multiple pipelines are already concatenated. \n",
@@ -3008,7 +3012,7 @@ meta = [
           "functionalityNamespace" : "dataflow",
           "output" : "",
           "platform" : "",
-          "git_commit" : "555898bb0f18de66c027c5a883cec3218ada5008",
+          "git_commit" : "d2f5dea4b19d88a520dc99929c6178053c63814c",
           "executable" : "/nextflow/dataflow/merge/main.nf"
         },
         "writtenPath" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/dataflow/merge"
@@ -3030,7 +3034,7 @@ meta = [
           "functionalityNamespace" : "workflows/multiomics",
           "output" : "",
           "platform" : "",
-          "git_commit" : "555898bb0f18de66c027c5a883cec3218ada5008",
+          "git_commit" : "d2f5dea4b19d88a520dc99929c6178053c63814c",
           "executable" : "/nextflow/workflows/multiomics/split_modalities/main.nf"
         },
         "writtenPath" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/workflows/multiomics/split_modalities"
@@ -3051,7 +3055,7 @@ meta = [
           "functionalityNamespace" : "workflows/prot",
           "output" : "",
           "platform" : "",
-          "git_commit" : "555898bb0f18de66c027c5a883cec3218ada5008",
+          "git_commit" : "d2f5dea4b19d88a520dc99929c6178053c63814c",
           "executable" : "/nextflow/workflows/prot/prot_multisample/main.nf"
         },
         "writtenPath" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/workflows/prot/prot_multisample"
@@ -3072,7 +3076,7 @@ meta = [
           "functionalityNamespace" : "workflows/rna",
           "output" : "",
           "platform" : "",
-          "git_commit" : "555898bb0f18de66c027c5a883cec3218ada5008",
+          "git_commit" : "d2f5dea4b19d88a520dc99929c6178053c63814c",
           "executable" : "/nextflow/workflows/rna/rna_multisample/main.nf"
         },
         "writtenPath" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/workflows/rna/rna_multisample"
@@ -3094,7 +3098,7 @@ meta = [
           "functionalityNamespace" : "workflows/multiomics",
           "output" : "",
           "platform" : "",
-          "git_commit" : "555898bb0f18de66c027c5a883cec3218ada5008",
+          "git_commit" : "d2f5dea4b19d88a520dc99929c6178053c63814c",
           "executable" : "/nextflow/workflows/multiomics/dimensionality_reduction/main.nf"
         },
         "writtenPath" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/workflows/multiomics/dimensionality_reduction"
@@ -3116,7 +3120,7 @@ meta = [
           "functionalityNamespace" : "workflows/multiomics",
           "output" : "",
           "platform" : "",
-          "git_commit" : "555898bb0f18de66c027c5a883cec3218ada5008",
+          "git_commit" : "d2f5dea4b19d88a520dc99929c6178053c63814c",
           "executable" : "/nextflow/workflows/multiomics/dimensionality_reduction/main.nf"
         },
         "writtenPath" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/workflows/multiomics/dimensionality_reduction"
@@ -3183,7 +3187,7 @@ meta = [
     "platform" : "nextflow",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/workflows/multiomics/process_batches",
     "viash_version" : "0.8.3",
-    "git_commit" : "555898bb0f18de66c027c5a883cec3218ada5008",
+    "git_commit" : "d2f5dea4b19d88a520dc99929c6178053c63814c",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))

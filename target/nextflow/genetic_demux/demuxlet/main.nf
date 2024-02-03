@@ -3171,6 +3171,10 @@ meta = [
         "path" : "script.R",
         "is_executable" : true,
         "parent" : "file:/home/runner/work/openpipeline/openpipeline/src/genetic_demux/demuxlet/"
+      },
+      {
+        "type" : "file",
+        "path" : "./src/workflows/utils"
       }
     ],
     "description" : "\\"Demuxlet is a software tool to deconvolute sample identity and identify multiplets when multiple samples are pooled by barcoded single cell sequencing. |\nIf external genotyping data for each sample is available (e.g. from SNP arrays), demuxlet would be recommended. |\nBe careful that the parameters on the github is not in line with the newest help version. |\n",
@@ -3311,7 +3315,7 @@ meta = [
     "platform" : "nextflow",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/genetic_demux/demuxlet",
     "viash_version" : "0.8.3",
-    "git_commit" : "555898bb0f18de66c027c5a883cec3218ada5008",
+    "git_commit" : "d2f5dea4b19d88a520dc99929c6178053c63814c",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))

@@ -2849,6 +2849,10 @@ meta = [
         "path" : "script.R",
         "is_executable" : true,
         "parent" : "file:/home/runner/work/openpipeline/openpipeline/src/convert/from_h5mu_to_seurat/"
+      },
+      {
+        "type" : "file",
+        "path" : "./src/workflows/utils"
       }
     ],
     "description" : "Converts an h5mu file into a Seurat file.\n\nRestrictions:\n  - Only the intersection of cells is currently loaded into the Seurat object due to the object structure limitation.\n  - Multimodal embeddings (global .obsm slot) are loaded with the assay.used field set to the default assay.\n  - Embeddings names are changed in order to comply with R & Seurat requirements and conventions.\n  - Feature names with underscores ('_') are automatically replaced with dashes ('-')\n  - Seurat does not support global variables metadata /var.\n",
@@ -3008,7 +3012,7 @@ meta = [
     "platform" : "nextflow",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/convert/from_h5mu_to_seurat",
     "viash_version" : "0.8.3",
-    "git_commit" : "555898bb0f18de66c027c5a883cec3218ada5008",
+    "git_commit" : "d2f5dea4b19d88a520dc99929c6178053c63814c",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))

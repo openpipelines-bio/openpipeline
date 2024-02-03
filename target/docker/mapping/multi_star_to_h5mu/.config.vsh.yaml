@@ -84,6 +84,8 @@ functionality:
   - type: "python_script"
     path: "script.py"
     is_executable: true
+  - type: "file"
+    path: "./src/workflows/utils"
   description: "Convert the output of `multi_star` to a h5mu.\n"
   test_resources:
   - type: "python_script"
@@ -177,5 +179,5 @@ info:
   output: "/home/runner/work/openpipeline/openpipeline/target/docker/mapping/multi_star_to_h5mu"
   executable: "/home/runner/work/openpipeline/openpipeline/target/docker/mapping/multi_star_to_h5mu/multi_star_to_h5mu"
   viash_version: "0.8.3"
-  git_commit: "555898bb0f18de66c027c5a883cec3218ada5008"
+  git_commit: "d2f5dea4b19d88a520dc99929c6178053c63814c"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"
