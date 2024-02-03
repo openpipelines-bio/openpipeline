@@ -110,4 +110,4 @@ def test_execute_twice_overwrites(run_component, h5mu, write_temp_h5mu, tmp_path
     assert 'obsm_key' not in output_data.mod['mod1'].obsm
 
 if __name__ == '__main__':
-    exit(pytest.main([__file__, "--log_cli_level", "DEBUG"]))
+    exit(pytest.main([__file__]))
