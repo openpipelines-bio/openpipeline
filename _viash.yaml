@@ -13,3 +13,4 @@ config_mods: |
   .platforms[.type == 'nextflow'].directives.tag := '$id'
   .platforms[.type == 'nextflow'].auto.simplifyOutput := false
   .platforms[.type == 'nextflow'].config.script := 'includeConfig("utils/labels.config")'
+  .functionality.resources += {type: 'file', path: '/src/workflows/utils/'}
