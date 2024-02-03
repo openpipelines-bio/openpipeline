@@ -3293,7 +3293,7 @@ meta = [
           "functionalityNamespace" : "cluster",
           "output" : "",
           "platform" : "",
-          "git_commit" : "1b2e023ce7fe964bede4dddfd5a3e6a448065260",
+          "git_commit" : "e2e86b7c7e7dcafb6b0b4a27a4bf3ba3673d977b",
           "executable" : "/nextflow/cluster/leiden/main.nf"
         },
         "writtenPath" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/cluster/leiden"
@@ -3314,7 +3314,7 @@ meta = [
           "functionalityNamespace" : "metadata",
           "output" : "",
           "platform" : "",
-          "git_commit" : "1b2e023ce7fe964bede4dddfd5a3e6a448065260",
+          "git_commit" : "e2e86b7c7e7dcafb6b0b4a27a4bf3ba3673d977b",
           "executable" : "/nextflow/metadata/move_obsm_to_obs/main.nf"
         },
         "writtenPath" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/metadata/move_obsm_to_obs"
@@ -3335,7 +3335,7 @@ meta = [
           "functionalityNamespace" : "integrate",
           "output" : "",
           "platform" : "",
-          "git_commit" : "1b2e023ce7fe964bede4dddfd5a3e6a448065260",
+          "git_commit" : "e2e86b7c7e7dcafb6b0b4a27a4bf3ba3673d977b",
           "executable" : "/nextflow/integrate/totalvi/main.nf"
         },
         "writtenPath" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/integrate/totalvi"
@@ -3356,7 +3356,7 @@ meta = [
           "functionalityNamespace" : "dimred",
           "output" : "",
           "platform" : "",
-          "git_commit" : "1b2e023ce7fe964bede4dddfd5a3e6a448065260",
+          "git_commit" : "e2e86b7c7e7dcafb6b0b4a27a4bf3ba3673d977b",
           "executable" : "/nextflow/dimred/umap/main.nf"
         },
         "writtenPath" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/dimred/umap"
@@ -3377,7 +3377,7 @@ meta = [
           "functionalityNamespace" : "neighbors",
           "output" : "",
           "platform" : "",
-          "git_commit" : "1b2e023ce7fe964bede4dddfd5a3e6a448065260",
+          "git_commit" : "e2e86b7c7e7dcafb6b0b4a27a4bf3ba3673d977b",
           "executable" : "/nextflow/neighbors/find_neighbors/main.nf"
         },
         "writtenPath" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/neighbors/find_neighbors"
@@ -3398,7 +3398,7 @@ meta = [
           "functionalityNamespace" : "transfer",
           "output" : "",
           "platform" : "",
-          "git_commit" : "1b2e023ce7fe964bede4dddfd5a3e6a448065260",
+          "git_commit" : "e2e86b7c7e7dcafb6b0b4a27a4bf3ba3673d977b",
           "executable" : "/nextflow/transfer/publish/main.nf"
         },
         "writtenPath" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/transfer/publish"
@@ -3465,7 +3465,7 @@ meta = [
     "platform" : "nextflow",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/workflows/integration/totalvi_leiden",
     "viash_version" : "0.8.3",
-    "git_commit" : "1b2e023ce7fe964bede4dddfd5a3e6a448065260",
+    "git_commit" : "e2e86b7c7e7dcafb6b0b4a27a4bf3ba3673d977b",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))

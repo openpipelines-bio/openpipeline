@@ -516,9 +516,9 @@ RUN pip install --upgrade pip && \
 
 LABEL org.opencontainers.image.authors="Dries Schaumont"
 LABEL org.opencontainers.image.description="Companion container for running component qc calculate_qc_metrics"
-LABEL org.opencontainers.image.created="2024-02-02T02:35:07Z"
+LABEL org.opencontainers.image.created="2024-02-03T02:35:21Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="1b2e023ce7fe964bede4dddfd5a3e6a448065260"
+LABEL org.opencontainers.image.revision="e2e86b7c7e7dcafb6b0b4a27a4bf3ba3673d977b"
 LABEL org.opencontainers.image.version="integration_build"
 
 VIASHDOCKER
@@ -1287,7 +1287,7 @@ def main():
                                      "You can explicitly map the NA values to 'False' or 'True using '--var_qc_metrics_fill_na_value'")
                 else:
                     qc_column = qc_column.fillna(par['var_qc_metrics_fill_na_value'], inplace=False)
-            qc_column = qc_column.values
+            qc_column = qc_column.to_list()
             if set(np.unique(qc_column)) - {True, False}:
                 raise ValueError(f"Column {qc_metric} in .var for modality {par['modality']} "
                                  f"must only contain boolean values")

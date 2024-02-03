@@ -3146,7 +3146,7 @@ meta = [
     "platform" : "nextflow",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/qc/calculate_qc_metrics",
     "viash_version" : "0.8.3",
-    "git_commit" : "1b2e023ce7fe964bede4dddfd5a3e6a448065260",
+    "git_commit" : "e2e86b7c7e7dcafb6b0b4a27a4bf3ba3673d977b",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))
@@ -3288,7 +3288,7 @@ def main():
                                      "You can explicitly map the NA values to 'False' or 'True using '--var_qc_metrics_fill_na_value'")
                 else:
                     qc_column = qc_column.fillna(par['var_qc_metrics_fill_na_value'], inplace=False)
-            qc_column = qc_column.values
+            qc_column = qc_column.to_list()
             if set(np.unique(qc_column)) - {True, False}:
                 raise ValueError(f"Column {qc_metric} in .var for modality {par['modality']} "
                                  f"must only contain boolean values")
