@@ -2989,6 +2989,10 @@ meta = [
         "type" : "file",
         "path" : "src/workflows/utils/",
         "parent" : "file:///home/runner/work/openpipeline/openpipeline/"
+      },
+      {
+        "type" : "file",
+        "path" : "./src/workflows/utils"
       }
     ],
     "description" : "Run calculations that output information required for most integration methods: PCA, nearest neighbour and UMAP.",
@@ -3029,7 +3033,7 @@ meta = [
           "functionalityNamespace" : "dimred",
           "output" : "",
           "platform" : "",
-          "git_commit" : "e2e86b7c7e7dcafb6b0b4a27a4bf3ba3673d977b",
+          "git_commit" : "036389c6c5488c98500254f63021cfae73d7a87e",
           "executable" : "/nextflow/dimred/pca/main.nf"
         },
         "writtenPath" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/dimred/pca"
@@ -3050,7 +3054,7 @@ meta = [
           "functionalityNamespace" : "neighbors",
           "output" : "",
           "platform" : "",
-          "git_commit" : "e2e86b7c7e7dcafb6b0b4a27a4bf3ba3673d977b",
+          "git_commit" : "036389c6c5488c98500254f63021cfae73d7a87e",
           "executable" : "/nextflow/neighbors/find_neighbors/main.nf"
         },
         "writtenPath" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/neighbors/find_neighbors"
@@ -3071,7 +3075,7 @@ meta = [
           "functionalityNamespace" : "dimred",
           "output" : "",
           "platform" : "",
-          "git_commit" : "e2e86b7c7e7dcafb6b0b4a27a4bf3ba3673d977b",
+          "git_commit" : "036389c6c5488c98500254f63021cfae73d7a87e",
           "executable" : "/nextflow/dimred/umap/main.nf"
         },
         "writtenPath" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/dimred/umap"
@@ -3138,7 +3142,7 @@ meta = [
     "platform" : "nextflow",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/workflows/multiomics/dimensionality_reduction",
     "viash_version" : "0.8.3",
-    "git_commit" : "e2e86b7c7e7dcafb6b0b4a27a4bf3ba3673d977b",
+    "git_commit" : "036389c6c5488c98500254f63021cfae73d7a87e",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))

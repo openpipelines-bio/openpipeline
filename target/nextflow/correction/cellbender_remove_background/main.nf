@@ -3323,6 +3323,10 @@ meta = [
         "type" : "file",
         "path" : "src/utils/setup_logger.py",
         "parent" : "file:///home/runner/work/openpipeline/openpipeline/"
+      },
+      {
+        "type" : "file",
+        "path" : "./src/workflows/utils"
       }
     ],
     "description" : "Eliminating technical artifacts from high-throughput single-cell RNA sequencing data.\n\nThis module removes counts due to ambient RNA molecules and random barcode swapping from (raw) UMI-based scRNA-seq count matrices. \nAt the moment, only the count matrices produced by the CellRanger count pipeline is supported. Support for additional tools and protocols \nwill be added in the future. A quick start tutorial can be found here.\n\nFleming et al. 2022, bioRxiv.\n",
@@ -3446,7 +3450,7 @@ meta = [
     "platform" : "nextflow",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/correction/cellbender_remove_background",
     "viash_version" : "0.8.3",
-    "git_commit" : "e2e86b7c7e7dcafb6b0b4a27a4bf3ba3673d977b",
+    "git_commit" : "036389c6c5488c98500254f63021cfae73d7a87e",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))

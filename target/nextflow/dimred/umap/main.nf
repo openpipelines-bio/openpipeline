@@ -3015,6 +3015,10 @@ meta = [
         "type" : "file",
         "path" : "src/utils/setup_logger.py",
         "parent" : "file:///home/runner/work/openpipeline/openpipeline/"
+      },
+      {
+        "type" : "file",
+        "path" : "./src/workflows/utils"
       }
     ],
     "description" : "UMAP (Uniform Manifold Approximation and Projection) is a manifold learning technique suitable for visualizing high-dimensional data. Besides tending to be faster than tSNE, it optimizes the embedding such that it best reflects the topology of the data, which we represent throughout Scanpy using a neighborhood graph. tSNE, by contrast, optimizes the distribution of nearest-neighbor distances in the embedding such that these best match the distribution of distances in the high-dimensional space. We use the implementation of umap-learn [McInnes18]. For a few comparisons of UMAP with tSNE, see this preprint.\n",
@@ -3146,7 +3150,7 @@ meta = [
     "platform" : "nextflow",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/dimred/umap",
     "viash_version" : "0.8.3",
-    "git_commit" : "e2e86b7c7e7dcafb6b0b4a27a4bf3ba3673d977b",
+    "git_commit" : "036389c6c5488c98500254f63021cfae73d7a87e",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))

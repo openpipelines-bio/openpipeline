@@ -3077,6 +3077,10 @@ meta = [
         "path" : "script.sh",
         "is_executable" : true,
         "parent" : "file:/home/runner/work/openpipeline/openpipeline/src/genetic_demux/dsc_pileup/"
+      },
+      {
+        "type" : "file",
+        "path" : "./src/workflows/utils"
       }
     ],
     "description" : "\\"dsc-pileup is a software tool to pileup reads and corresponding base quality for each overlapping SNPs and each barcode. By using pileup files, it would allow us to run demuxlet/freemuxlet pretty fast multiple times without going over the BAM file again.\n",
@@ -3208,7 +3212,7 @@ meta = [
     "platform" : "nextflow",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/genetic_demux/dsc_pileup",
     "viash_version" : "0.8.3",
-    "git_commit" : "e2e86b7c7e7dcafb6b0b4a27a4bf3ba3673d977b",
+    "git_commit" : "036389c6c5488c98500254f63021cfae73d7a87e",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))

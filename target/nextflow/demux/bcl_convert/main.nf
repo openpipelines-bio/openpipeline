@@ -2910,6 +2910,10 @@ meta = [
         "path" : "script.sh",
         "is_executable" : true,
         "parent" : "file:/home/runner/work/openpipeline/openpipeline/src/demux/bcl_convert/"
+      },
+      {
+        "type" : "file",
+        "path" : "./src/workflows/utils"
       }
     ],
     "description" : "Convert bcl files to fastq files using bcl-convert.\nInformation about upgrading from bcl2fastq via\nhttps://emea.support.illumina.com/bulletins/2020/10/upgrading-from-bcl2fastq-to-bcl-convert.html\nand https://support.illumina.com/sequencing/sequencing_software/bcl-convert/compatibility.html\n",
@@ -3010,7 +3014,7 @@ meta = [
     "platform" : "nextflow",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/demux/bcl_convert",
     "viash_version" : "0.8.3",
-    "git_commit" : "e2e86b7c7e7dcafb6b0b4a27a4bf3ba3673d977b",
+    "git_commit" : "036389c6c5488c98500254f63021cfae73d7a87e",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))

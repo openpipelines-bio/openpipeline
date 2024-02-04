@@ -3002,6 +3002,10 @@ meta = [
         "path" : "script.py",
         "is_executable" : true,
         "parent" : "file:/home/runner/work/openpipeline/openpipeline/src/mapping/samtools_sort/"
+      },
+      {
+        "type" : "file",
+        "path" : "./src/workflows/utils"
       }
     ],
     "description" : "Sort and (optionally) index alignments.\n\nReads are sorted by leftmost coordinates, or by read name when `--sort_by_read_names` is used.\n\nAn appropriate `@HD-SO` sort order header tag will be added or an existing one updated if necessary.\n\nNote that to generate an index file (by specifying `--output_bai`), the default coordinate sort must be used.\nThus the `--sort_by_read_names` and `--sort_by <TAG>` options are incompatible with `--output_bai`. \n",
@@ -3120,7 +3124,7 @@ meta = [
     "platform" : "nextflow",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/mapping/samtools_sort",
     "viash_version" : "0.8.3",
-    "git_commit" : "e2e86b7c7e7dcafb6b0b4a27a4bf3ba3673d977b",
+    "git_commit" : "036389c6c5488c98500254f63021cfae73d7a87e",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))

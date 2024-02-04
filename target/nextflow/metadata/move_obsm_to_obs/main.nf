@@ -2897,6 +2897,10 @@ meta = [
         "type" : "file",
         "path" : "src/utils/setup_logger.py",
         "parent" : "file:///home/runner/work/openpipeline/openpipeline/"
+      },
+      {
+        "type" : "file",
+        "path" : "./src/workflows/utils"
       }
     ],
     "description" : "Move a matrix from .obsm to .obs. Newly created columns in .obs will \nbe created from the .obsm key suffixed with an underscore and the name of the columns\nof the specified .obsm matrix.\n",
@@ -3021,7 +3025,7 @@ meta = [
     "platform" : "nextflow",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/metadata/move_obsm_to_obs",
     "viash_version" : "0.8.3",
-    "git_commit" : "e2e86b7c7e7dcafb6b0b4a27a4bf3ba3673d977b",
+    "git_commit" : "036389c6c5488c98500254f63021cfae73d7a87e",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))
@@ -3111,9 +3115,11 @@ original_n_obs = len(mod_data.obs)
 try:
     logger.info(f".obs names: {mod_data.obs_names}")
     logger.info(f".obsm index: {obsm_matrix.index}")
-    mod_data.obs = mod_data.obs.merge(obsm_matrix, how="left",
-                                      validate="one_to_one",
-                                      left_index=True, right_index=True)
+    new_obs = mod_data.obs.drop(obsm_matrix.columns, axis=1, errors="ignore")
+    new_obs = new_obs.merge(obsm_matrix, how="left",
+                            validate="one_to_one",
+                            left_index=True, right_index=True)
+    mod_data.obs = new_obs
 except MergeError as e:
     raise ValueError(f"Could not join .obsm matrix at {par['obsm_key']} to .obs because there "
                      "are some observation that are not overlapping between the two matrices "

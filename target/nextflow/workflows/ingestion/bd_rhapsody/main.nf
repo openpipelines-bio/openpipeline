@@ -3162,6 +3162,10 @@ meta = [
         "type" : "file",
         "path" : "src/workflows/utils/",
         "parent" : "file:///home/runner/work/openpipeline/openpipeline/"
+      },
+      {
+        "type" : "file",
+        "path" : "./src/workflows/utils"
       }
     ],
     "description" : "A wrapper for the BD Rhapsody Analysis CWL v1.10.1 pipeline.\n\nThis pipeline can be used for a targeted analysis (with `--mode targeted`) or for a whole transcriptome analysis (with `--mode wta`).\n\n* If mode is `\\"targeted\\"`, then either the `--reference` or `--abseq_reference` parameters must be defined.\n* If mode is `\\"wta\\"`, then `--reference` and `--transcriptome_annotation` must be defined, `--abseq_reference` and `--supplemental_reference` is optional.\n\nThe reference_genome and transcriptome_annotation files can be generated with the make_reference pipeline.\nAlternatively, BD also provides standard references which can be downloaded from these locations:\n\n  - Human: http://bd-rhapsody-public.s3-website-us-east-1.amazonaws.com/Rhapsody-WTA/GRCh38-PhiX-gencodev29/\n  - Mouse: http://bd-rhapsody-public.s3-website-us-east-1.amazonaws.com/Rhapsody-WTA/GRCm38-PhiX-gencodevM19/\n",
@@ -3212,7 +3216,7 @@ meta = [
           "functionalityNamespace" : "mapping",
           "output" : "",
           "platform" : "",
-          "git_commit" : "e2e86b7c7e7dcafb6b0b4a27a4bf3ba3673d977b",
+          "git_commit" : "036389c6c5488c98500254f63021cfae73d7a87e",
           "executable" : "/nextflow/mapping/bd_rhapsody/main.nf"
         },
         "writtenPath" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/mapping/bd_rhapsody"
@@ -3233,7 +3237,7 @@ meta = [
           "functionalityNamespace" : "convert",
           "output" : "",
           "platform" : "",
-          "git_commit" : "e2e86b7c7e7dcafb6b0b4a27a4bf3ba3673d977b",
+          "git_commit" : "036389c6c5488c98500254f63021cfae73d7a87e",
           "executable" : "/nextflow/convert/from_bdrhap_to_h5mu/main.nf"
         },
         "writtenPath" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/convert/from_bdrhap_to_h5mu"
@@ -3300,7 +3304,7 @@ meta = [
     "platform" : "nextflow",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/workflows/ingestion/bd_rhapsody",
     "viash_version" : "0.8.3",
-    "git_commit" : "e2e86b7c7e7dcafb6b0b4a27a4bf3ba3673d977b",
+    "git_commit" : "036389c6c5488c98500254f63021cfae73d7a87e",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))

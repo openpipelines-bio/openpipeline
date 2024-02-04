@@ -2990,6 +2990,10 @@ meta = [
         "path" : "script.sh",
         "is_executable" : true,
         "parent" : "file:/home/runner/work/openpipeline/openpipeline/src/genetic_demux/scsplit/"
+      },
+      {
+        "type" : "file",
+        "path" : "./src/workflows/utils"
       }
     ],
     "description" : "scsplit is a genotype-free demultiplexing methode of pooled single-cell RNA-seq, using a hidden state model for identifying genetically distinct samples within a mixed population.",
@@ -3120,7 +3124,7 @@ meta = [
     "platform" : "nextflow",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/genetic_demux/scsplit",
     "viash_version" : "0.8.3",
-    "git_commit" : "e2e86b7c7e7dcafb6b0b4a27a4bf3ba3673d977b",
+    "git_commit" : "036389c6c5488c98500254f63021cfae73d7a87e",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))
