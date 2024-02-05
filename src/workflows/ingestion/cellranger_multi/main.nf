@@ -7,6 +7,15 @@ workflow run_wf {
     | cellranger_multi_component.run(
       fromState: [
         "input": "input",
+        "gex_input": "gex_input",
+        "abc_input": "abc_input",
+        "cgc_input": "cgc_input",
+        "mux_input": "mux_input",
+        "vdj_input": "vdj_input",
+        "vdj_t_input": "vdj_t_input",
+        "vdj_t_gd_input": "vdj_t_gd_input",
+        "vdj_b_input": "vdj_b_input",
+        "agc_input": "agc_input",
         "output": "output_raw",
         "cell_multiplex_sample_id": "cell_multiplex_sample_id",
         "cell_multiplex_oligo_ids": "cell_multiplex_oligo_ids",

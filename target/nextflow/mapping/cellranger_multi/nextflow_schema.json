@@ -214,8 +214,8 @@
                 "library_id": {
                 "type":
                 "string",
-                "description": "Type: List of `string`, required, example: `mysample1`, multiple_sep: `\";\"`. The Illumina sample name to analyze",
-                "help_text": "Type: List of `string`, required, example: `mysample1`, multiple_sep: `\";\"`. The Illumina sample name to analyze. This must exactly match the \u0027Sample Name\u0027 part of the FASTQ files specified in the `--input` argument."
+                "description": "Type: List of `string`, example: `mysample1`, multiple_sep: `\";\"`. The Illumina sample name to analyze",
+                "help_text": "Type: List of `string`, example: `mysample1`, multiple_sep: `\";\"`. The Illumina sample name to analyze. This must exactly match the \u0027Sample Name\u0027 part of the FASTQ files specified in the `--input` argument."
             
             }
     
@@ -224,8 +224,8 @@
                 "library_type": {
                 "type":
                 "string",
-                "description": "Type: List of `string`, required, example: `Gene Expression`, multiple_sep: `\";\"`. The underlying feature type of the library",
-                "help_text": "Type: List of `string`, required, example: `Gene Expression`, multiple_sep: `\";\"`. The underlying feature type of the library.\nPossible values: \"Gene Expression\", \"VDJ\", \"VDJ-T\", \"VDJ-B\", \"Antibody Capture\", \"CRISPR Guide Capture\", \"Multiplexing Capture\"\n"
+                "description": "Type: List of `string`, example: `Gene Expression`, multiple_sep: `\";\"`. The underlying feature type of the library",
+                "help_text": "Type: List of `string`, example: `Gene Expression`, multiple_sep: `\";\"`. The underlying feature type of the library.\nPossible values: \"Gene Expression\", \"VDJ\", \"VDJ-T\", \"VDJ-B\", \"Antibody Capture\", \"CRISPR Guide Capture\", \"Multiplexing Capture\"\n"
             
             }
     

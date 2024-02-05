@@ -20,8 +20,8 @@ gex_reference: # please fill in - example: "reference_genome.tar.gz"
 # agc_input: ["mysample_S1_L001_R1_001.fastq.gz", "mysample_S1_L001_R2_001.fastq.gz"]
 
 # Library arguments
-library_id: # please fill in - example: ["mysample1"]
-library_type: # please fill in - example: ["Gene Expression"]
+# library_id: ["mysample1"]
+# library_type: ["Gene Expression"]
 # library_subsample: ["0.5"]
 # library_lanes: ["1-4"]
 

@@ -2826,7 +2826,7 @@ meta = [
             ],
             "must_exist" : true,
             "create_parent" : true,
-            "required" : true,
+            "required" : false,
             "direction" : "input",
             "multiple" : true,
             "multiple_sep" : ";",
@@ -2890,6 +2890,156 @@ meta = [
             "direction" : "input",
             "multiple" : false,
             "multiple_sep" : ":",
+            "dest" : "par"
+          }
+        ]
+      },
+      {
+        "name" : "Feature type-specific input files",
+        "description" : "Helper functionality to allow feature-type specific input files, without the need to specify library_type or library_id. The library_id will be inferred from the input paths.",
+        "arguments" : [
+          {
+            "type" : "file",
+            "name" : "--gex_input",
+            "description" : "The FASTQ files to be analyzed for Gene Expression. FASTQ files should conform to the naming conventions of bcl2fastq and mkfastq:\n`[Sample Name]_S[Sample Index]_L00[Lane Number]_[Read Type]_001.fastq.gz`\n",
+            "example" : [
+              "mysample_S1_L001_R1_001.fastq.gz",
+              "mysample_S1_L001_R2_001.fastq.gz"
+            ],
+            "must_exist" : true,
+            "create_parent" : true,
+            "required" : false,
+            "direction" : "input",
+            "multiple" : true,
+            "multiple_sep" : ";",
+            "dest" : "par"
+          },
+          {
+            "type" : "file",
+            "name" : "--abc_input",
+            "description" : "The FASTQ files to be analyzed for Antibody Capture. FASTQ files should conform to the naming conventions of bcl2fastq and mkfastq:\n`[Sample Name]_S[Sample Index]_L00[Lane Number]_[Read Type]_001.fastq.gz`\n",
+            "example" : [
+              "mysample_S1_L001_R1_001.fastq.gz",
+              "mysample_S1_L001_R2_001.fastq.gz"
+            ],
+            "must_exist" : true,
+            "create_parent" : true,
+            "required" : false,
+            "direction" : "input",
+            "multiple" : true,
+            "multiple_sep" : ";",
+            "dest" : "par"
+          },
+          {
+            "type" : "file",
+            "name" : "--cgc_input",
+            "description" : "The FASTQ files to be analyzed for CRISPR Guide Capture. FASTQ files should conform to the naming conventions of bcl2fastq and mkfastq:\n`[Sample Name]_S[Sample Index]_L00[Lane Number]_[Read Type]_001.fastq.gz`\n",
+            "example" : [
+              "mysample_S1_L001_R1_001.fastq.gz",
+              "mysample_S1_L001_R2_001.fastq.gz"
+            ],
+            "must_exist" : true,
+            "create_parent" : true,
+            "required" : false,
+            "direction" : "input",
+            "multiple" : true,
+            "multiple_sep" : ";",
+            "dest" : "par"
+          },
+          {
+            "type" : "file",
+            "name" : "--mux_input",
+            "description" : "The FASTQ files to be analyzed for Multiplexing Capture. FASTQ files should conform to the naming conventions of bcl2fastq and mkfastq:\n`[Sample Name]_S[Sample Index]_L00[Lane Number]_[Read Type]_001.fastq.gz`\n",
+            "example" : [
+              "mysample_S1_L001_R1_001.fastq.gz",
+              "mysample_S1_L001_R2_001.fastq.gz"
+            ],
+            "must_exist" : true,
+            "create_parent" : true,
+            "required" : false,
+            "direction" : "input",
+            "multiple" : true,
+            "multiple_sep" : ";",
+            "dest" : "par"
+          },
+          {
+            "type" : "file",
+            "name" : "--vdj_input",
+            "description" : "The FASTQ files to be analyzed for VDJ. FASTQ files should conform to the naming conventions of bcl2fastq and mkfastq:\n`[Sample Name]_S[Sample Index]_L00[Lane Number]_[Read Type]_001.fastq.gz`\n",
+            "example" : [
+              "mysample_S1_L001_R1_001.fastq.gz",
+              "mysample_S1_L001_R2_001.fastq.gz"
+            ],
+            "must_exist" : true,
+            "create_parent" : true,
+            "required" : false,
+            "direction" : "input",
+            "multiple" : true,
+            "multiple_sep" : ";",
+            "dest" : "par"
+          },
+          {
+            "type" : "file",
+            "name" : "--vdj_t_input",
+            "description" : "The FASTQ files to be analyzed for VDJ-T. FASTQ files should conform to the naming conventions of bcl2fastq and mkfastq:\n`[Sample Name]_S[Sample Index]_L00[Lane Number]_[Read Type]_001.fastq.gz`\n",
+            "example" : [
+              "mysample_S1_L001_R1_001.fastq.gz",
+              "mysample_S1_L001_R2_001.fastq.gz"
+            ],
+            "must_exist" : true,
+            "create_parent" : true,
+            "required" : false,
+            "direction" : "input",
+            "multiple" : true,
+            "multiple_sep" : ";",
+            "dest" : "par"
+          },
+          {
+            "type" : "file",
+            "name" : "--vdj_t_gd_input",
+            "description" : "The FASTQ files to be analyzed for VDJ-T-GD. FASTQ files should conform to the naming conventions of bcl2fastq and mkfastq:\n`[Sample Name]_S[Sample Index]_L00[Lane Number]_[Read Type]_001.fastq.gz`\n",
+            "example" : [
+              "mysample_S1_L001_R1_001.fastq.gz",
+              "mysample_S1_L001_R2_001.fastq.gz"
+            ],
+            "must_exist" : true,
+            "create_parent" : true,
+            "required" : false,
+            "direction" : "input",
+            "multiple" : true,
+            "multiple_sep" : ";",
+            "dest" : "par"
+          },
+          {
+            "type" : "file",
+            "name" : "--vdj_b_input",
+            "description" : "The FASTQ files to be analyzed for VDJ-B. FASTQ files should conform to the naming conventions of bcl2fastq and mkfastq:\n`[Sample Name]_S[Sample Index]_L00[Lane Number]_[Read Type]_001.fastq.gz`\n",
+            "example" : [
+              "mysample_S1_L001_R1_001.fastq.gz",
+              "mysample_S1_L001_R2_001.fastq.gz"
+            ],
+            "must_exist" : true,
+            "create_parent" : true,
+            "required" : false,
+            "direction" : "input",
+            "multiple" : true,
+            "multiple_sep" : ";",
+            "dest" : "par"
+          },
+          {
+            "type" : "file",
+            "name" : "--agc_input",
+            "description" : "The FASTQ files to be analyzed for Antigen Capture. FASTQ files should conform to the naming conventions of bcl2fastq and mkfastq:\n`[Sample Name]_S[Sample Index]_L00[Lane Number]_[Read Type]_001.fastq.gz`\n",
+            "example" : [
+              "mysample_S1_L001_R1_001.fastq.gz",
+              "mysample_S1_L001_R2_001.fastq.gz"
+            ],
+            "must_exist" : true,
+            "create_parent" : true,
+            "required" : false,
+            "direction" : "input",
+            "multiple" : true,
+            "multiple_sep" : ";",
             "dest" : "par"
           }
         ]
@@ -3072,7 +3222,7 @@ meta = [
             "example" : [
               "mysample1"
             ],
-            "required" : true,
+            "required" : false,
             "direction" : "input",
             "multiple" : true,
             "multiple_sep" : ";",
@@ -3085,7 +3235,7 @@ meta = [
             "example" : [
               "Gene Expression"
             ],
-            "required" : true,
+            "required" : false,
             "direction" : "input",
             "multiple" : true,
             "multiple_sep" : ";",
@@ -3179,14 +3329,14 @@ meta = [
         "foundConfigPath" : "/home/runner/work/openpipeline/openpipeline/src/mapping/cellranger_multi/config.vsh.yaml",
         "configInfo" : {
           "functionalityName" : "cellranger_multi",
-          "git_tag" : "0.2.0-1525-gad1884d3b2",
+          "git_tag" : "0.2.0-1526-g181e358ed3",
           "git_remote" : "https://github.com/openpipelines-bio/openpipeline",
           "viash_version" : "0.8.3",
           "config" : "/home/runner/work/openpipeline/openpipeline/src/mapping/cellranger_multi/config.vsh.yaml",
           "functionalityNamespace" : "mapping",
           "output" : "",
           "platform" : "",
-          "git_commit" : "ad1884d3b24070c549aa82dc67ef206a4dd41944",
+          "git_commit" : "181e358ed3c6b514cb87b6b85837cc9a6aaf1954",
           "executable" : "/nextflow/mapping/cellranger_multi/main.nf"
         },
         "writtenPath" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/mapping/cellranger_multi"
@@ -3200,14 +3350,14 @@ meta = [
         "foundConfigPath" : "/home/runner/work/openpipeline/openpipeline/src/convert/from_cellranger_multi_to_h5mu/config.vsh.yaml",
         "configInfo" : {
           "functionalityName" : "from_cellranger_multi_to_h5mu",
-          "git_tag" : "0.2.0-1525-gad1884d3b2",
+          "git_tag" : "0.2.0-1526-g181e358ed3",
           "git_remote" : "https://github.com/openpipelines-bio/openpipeline",
           "viash_version" : "0.8.3",
           "config" : "/home/runner/work/openpipeline/openpipeline/src/convert/from_cellranger_multi_to_h5mu/config.vsh.yaml",
           "functionalityNamespace" : "convert",
           "output" : "",
           "platform" : "",
-          "git_commit" : "ad1884d3b24070c549aa82dc67ef206a4dd41944",
+          "git_commit" : "181e358ed3c6b514cb87b6b85837cc9a6aaf1954",
           "executable" : "/nextflow/convert/from_cellranger_multi_to_h5mu/main.nf"
         },
         "writtenPath" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/convert/from_cellranger_multi_to_h5mu"
@@ -3274,9 +3424,9 @@ meta = [
     "platform" : "nextflow",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/workflows/ingestion/cellranger_multi",
     "viash_version" : "0.8.3",
-    "git_commit" : "ad1884d3b24070c549aa82dc67ef206a4dd41944",
+    "git_commit" : "181e358ed3c6b514cb87b6b85837cc9a6aaf1954",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline",
-    "git_tag" : "0.2.0-1525-gad1884d3b2"
+    "git_tag" : "0.2.0-1526-g181e358ed3"
   }
 }'''))
 ]
@@ -3298,6 +3448,15 @@ workflow run_wf {
     | cellranger_multi_component.run(
       fromState: [
         "input": "input",
+        "gex_input": "gex_input",
+        "abc_input": "abc_input",
+        "cgc_input": "cgc_input",
+        "mux_input": "mux_input",
+        "vdj_input": "vdj_input",
+        "vdj_t_input": "vdj_t_input",
+        "vdj_t_gd_input": "vdj_t_gd_input",
+        "vdj_b_input": "vdj_b_input",
+        "agc_input": "agc_input",
         "output": "output_raw",
         "cell_multiplex_sample_id": "cell_multiplex_sample_id",
         "cell_multiplex_oligo_ids": "cell_multiplex_oligo_ids",
