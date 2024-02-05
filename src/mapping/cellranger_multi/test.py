@@ -187,5 +187,59 @@ def test_cellranger_multi_crispt_data(run_component):
     # check for crispr data
     assert Path("output5/per_sample_outs/run/count/crispr_analysis/").is_dir()
 
+def test_cellranger_multi_helper_input(run_component):
+    args = [
+            "--output", "output6/",
+            "--gex_input", input1_R1,
+            "--gex_input", input1_R2,
+            "--abc_input", input2_R1,
+            "--abc_input", input2_R2,
+            "--vdj_input", input3_R1,
+            "--vdj_input", input3_R2,
+            "--gex_reference", gex_reference,
+            "--vdj_reference", vdj_reference,
+            "--feature_reference", feature_reference]
+    run_component(args)
+
+    # check for raw data
+    assert Path("output6/multi/count/raw_feature_bc_matrix.h5").is_file()
+
+    # check for metrics summary
+    assert Path("output6/per_sample_outs/run/metrics_summary.csv").is_file()
+
+    # check for filtered gex+ab data
+    assert Path("output6/per_sample_outs/run/count/sample_filtered_feature_bc_matrix.h5").is_file()
+
+    # check for vdj data
+    assert Path("output6/per_sample_outs/run/vdj_t/filtered_contig_annotations.csv").is_file()
+
+def test_cellranger_multi_combined_helper_and_global_input(run_component):
+    args = [
+            "--output", "output7/",
+            "--input", input1_R1,
+            "--input", input1_R2,
+            "--abc_input", input2_R1,
+            "--abc_input", input2_R2,
+            "--vdj_input", input3_R1,
+            "--vdj_input", input3_R2,
+            "--gex_reference", gex_reference,
+            "--vdj_reference", vdj_reference,
+            "--feature_reference", feature_reference,
+            "--library_id", "5k_human_antiCMV_T_TBNK_connect_GEX_1_subset",
+            "--library_type", "Gene Expression"]
+    run_component(args)
+
+    # check for raw data
+    assert Path("output7/multi/count/raw_feature_bc_matrix.h5").is_file()
+
+    # check for metrics summary
+    assert Path("output7/per_sample_outs/run/metrics_summary.csv").is_file()
+
+    # check for filtered gex+ab data
+    assert Path("output7/per_sample_outs/run/count/sample_filtered_feature_bc_matrix.h5").is_file()
+
+    # check for vdj data
+    assert Path("output7/per_sample_outs/run/vdj_t/filtered_contig_annotations.csv").is_file()
+
 if __name__ == '__main__':
     sys.exit(pytest.main([__file__]))
