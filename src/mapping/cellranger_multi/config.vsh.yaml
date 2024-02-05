@@ -148,14 +148,14 @@ functionality:
       arguments:
         - type: string
           name: --library_id
-          required: true
+          required: false
           description: The Illumina sample name to analyze. This must exactly match the 'Sample Name' part of the FASTQ files specified in the `--input` argument.
           example: ["mysample1"]
           multiple: true
           multiple_sep: ";"
         - type: string
           name: --library_type
-          required: true
+          required: false
           description: |
             The underlying feature type of the library.
             Possible values: "Gene Expression", "VDJ", "VDJ-T", "VDJ-B", "Antibody Capture", "CRISPR Guide Capture", "Multiplexing Capture"
