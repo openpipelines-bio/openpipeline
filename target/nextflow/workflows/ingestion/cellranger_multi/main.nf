@@ -2896,7 +2896,7 @@ meta = [
       },
       {
         "name" : "Feature type-specific input files",
-        "description" : "Helper functionality to allow feature-type specific input files, without the need to specify library_type or library_id. The library_id will be inferred from the input paths.",
+        "description" : "Helper functionality to allow feature type-specific input files, without the need to specify library_type or library_id. The library_id will be inferred from the input paths.",
         "arguments" : [
           {
             "type" : "file",
@@ -3329,14 +3329,14 @@ meta = [
         "foundConfigPath" : "/home/runner/work/openpipeline/openpipeline/src/mapping/cellranger_multi/config.vsh.yaml",
         "configInfo" : {
           "functionalityName" : "cellranger_multi",
-          "git_tag" : "0.2.0-1526-g181e358ed3",
+          "git_tag" : "0.2.0-1527-ged20e1273e",
           "git_remote" : "https://github.com/openpipelines-bio/openpipeline",
           "viash_version" : "0.8.3",
           "config" : "/home/runner/work/openpipeline/openpipeline/src/mapping/cellranger_multi/config.vsh.yaml",
           "functionalityNamespace" : "mapping",
           "output" : "",
           "platform" : "",
-          "git_commit" : "181e358ed3c6b514cb87b6b85837cc9a6aaf1954",
+          "git_commit" : "ed20e1273e88566b3c6b0e69e3e264d7db9fa2e4",
           "executable" : "/nextflow/mapping/cellranger_multi/main.nf"
         },
         "writtenPath" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/mapping/cellranger_multi"
@@ -3350,14 +3350,14 @@ meta = [
         "foundConfigPath" : "/home/runner/work/openpipeline/openpipeline/src/convert/from_cellranger_multi_to_h5mu/config.vsh.yaml",
         "configInfo" : {
           "functionalityName" : "from_cellranger_multi_to_h5mu",
-          "git_tag" : "0.2.0-1526-g181e358ed3",
+          "git_tag" : "0.2.0-1527-ged20e1273e",
           "git_remote" : "https://github.com/openpipelines-bio/openpipeline",
           "viash_version" : "0.8.3",
           "config" : "/home/runner/work/openpipeline/openpipeline/src/convert/from_cellranger_multi_to_h5mu/config.vsh.yaml",
           "functionalityNamespace" : "convert",
           "output" : "",
           "platform" : "",
-          "git_commit" : "181e358ed3c6b514cb87b6b85837cc9a6aaf1954",
+          "git_commit" : "ed20e1273e88566b3c6b0e69e3e264d7db9fa2e4",
           "executable" : "/nextflow/convert/from_cellranger_multi_to_h5mu/main.nf"
         },
         "writtenPath" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/convert/from_cellranger_multi_to_h5mu"
@@ -3424,9 +3424,9 @@ meta = [
     "platform" : "nextflow",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/workflows/ingestion/cellranger_multi",
     "viash_version" : "0.8.3",
-    "git_commit" : "181e358ed3c6b514cb87b6b85837cc9a6aaf1954",
+    "git_commit" : "ed20e1273e88566b3c6b0e69e3e264d7db9fa2e4",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline",
-    "git_tag" : "0.2.0-1526-g181e358ed3"
+    "git_tag" : "0.2.0-1527-ged20e1273e"
   }
 }'''))
 ]

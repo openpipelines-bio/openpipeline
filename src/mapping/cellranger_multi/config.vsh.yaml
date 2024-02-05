@@ -51,7 +51,7 @@ functionality:
           required: false
 
     - name: Feature type-specific input files
-      description: Helper functionality to allow feature-type specific input files, without the need to specify library_type or library_id. The library_id will be inferred from the input paths.
+      description: Helper functionality to allow feature type-specific input files, without the need to specify library_type or library_id. The library_id will be inferred from the input paths.
       arguments:
         - type: file
           name: --gex_input

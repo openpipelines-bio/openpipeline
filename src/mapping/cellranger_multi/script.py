@@ -21,9 +21,6 @@ par = {
             'resources_test/10x_5k_anticmv/raw/5k_human_antiCMV_T_TBNK_connect_AB_subset_S2_L004_R2_001.fastq.gz',
             'resources_test/10x_5k_anticmv/raw/5k_human_antiCMV_T_TBNK_connect_VDJ_subset_S1_L001_R1_001.fastq.gz',
             'resources_test/10x_5k_anticmv/raw/5k_human_antiCMV_T_TBNK_connect_VDJ_subset_S1_L001_R2_001.fastq.gz'],
-  'gex_reference': 'resources_test/reference_gencodev41_chr1//reference_cellranger.tar.gz',
-  'vdj_reference': 'resources_test/10x_5k_anticmv/raw/refdata-cellranger-vdj-GRCh38-alts-ensembl-7.0.0.tar.gz',
-  'feature_reference': 'resources_test/10x_5k_anticmv/raw/feature_reference.csv',
   'library_id': ['5k_human_antiCMV_T_TBNK_connect_GEX_1_subset',
                  '5k_human_antiCMV_T_TBNK_connect_AB_subset',
                  '5k_human_antiCMV_T_TBNK_connect_VDJ_subset'],
@@ -184,23 +181,41 @@ def check_subset_dict_equal_length(group_name: str,
 
 def process_params(par: dict[str, Any]) -> str:
     # if par_input is a directory, look for fastq files
-    par["input"] = [Path(fastq) for fastq in par["input"]]
-    if len(par["input"]) == 1 and par["input"][0].is_dir():
-        logger.info("Detected '--input' as a directory, "
-                    "traversing to see if we can detect any FASTQ files.")
-        par["input"] = [input_path for input_path in par["input"][0].rglob('*')
-                        if re.match(fastq_regex, input_path.name) ]
+    if par["input"]:
 
-    # check input fastq files
-    for input_path in par["input"]:
-        assert re.match(fastq_regex, input_path.name) is not None, \
-               f"File name of --input '{input_path}' should match regex {fastq_regex}."
+        assert len(par["library_type"]) > 0, "--library_type must be defined when passing input to --input"
+        assert len(par["library_id"]) > 0, "--library_id must be defined when passing input to --input"
+
+        par["input"] = [Path(fastq) for fastq in par["input"]]
+        if len(par["input"]) == 1 and par["input"][0].is_dir():
+            logger.info("Detected '--input' as a directory, "
+                        "traversing to see if we can detect any FASTQ files.")
+            par["input"] = [input_path for input_path in par["input"][0].rglob('*')
+                            if re.match(fastq_regex, input_path.name) ]
+
+        # check input fastq files
+        for input_path in par["input"]:
+            assert re.match(fastq_regex, input_path.name) is not None, \
+                f"File name of --input '{input_path}' should match regex {fastq_regex}."
 
     # add helper input
     helper_input = transform_helper_inputs(par)
-    par["input"] += helper_input["input"]
-    par["library_id"] += helper_input["library_id"]
-    par["library_type"] += helper_input["library_type"]
+    if par["input"]:
+        par["input"] += helper_input["input"]
+    else:
+        par["input"] = helper_input["input"]
+
+    assert len(par["input"]) > 0, "Either --input or feature type-specific input (e.g. --gex_input, --abc_input, ...) must be defined"
+
+    if par["library_id"]:
+        par["library_id"] += helper_input["library_id"]
+    else:
+        par["library_id"] = helper_input["library_id"]
+
+    if par["library_type"]:
+        par["library_type"] += helper_input["library_type"]
+    else:
+        par["library_type"] = helper_input["library_type"]
 
     # check lengths of libraries metadata
     library_dict = subset_dict(par, LIBRARY_PARAMS)

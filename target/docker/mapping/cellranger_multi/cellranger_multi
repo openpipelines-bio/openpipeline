@@ -218,7 +218,7 @@ function ViashHelp {
   echo "        for more information."
   echo ""
   echo "Feature type-specific input files:"
-  echo "    Helper functionality to allow feature-type specific input files, without the"
+  echo "    Helper functionality to allow feature type-specific input files, without the"
   echo "    need to specify library_type or library_id. The library_id will be inferred"
   echo "    from the input paths."
   echo ""
@@ -633,9 +633,9 @@ RUN pip install --upgrade pip && \
 
 LABEL org.opencontainers.image.authors="Angela Oliveira Pisco, Robrecht Cannoodt, Dries De Maeyer"
 LABEL org.opencontainers.image.description="Companion container for running component mapping cellranger_multi"
-LABEL org.opencontainers.image.created="2024-02-05T12:30:19Z"
+LABEL org.opencontainers.image.created="2024-02-05T13:12:57Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="181e358ed3c6b514cb87b6b85837cc9a6aaf1954"
+LABEL org.opencontainers.image.revision="ed20e1273e88566b3c6b0e69e3e264d7db9fa2e4"
 LABEL org.opencontainers.image.version="cellranger_multi_sample_sheets_build"
 
 VIASHDOCKER
@@ -1958,23 +1958,41 @@ def check_subset_dict_equal_length(group_name: str,
 
 def process_params(par: dict[str, Any]) -> str:
     # if par_input is a directory, look for fastq files
-    par["input"] = [Path(fastq) for fastq in par["input"]]
-    if len(par["input"]) == 1 and par["input"][0].is_dir():
-        logger.info("Detected '--input' as a directory, "
-                    "traversing to see if we can detect any FASTQ files.")
-        par["input"] = [input_path for input_path in par["input"][0].rglob('*')
-                        if re.match(fastq_regex, input_path.name) ]
+    if par["input"]:
 
-    # check input fastq files
-    for input_path in par["input"]:
-        assert re.match(fastq_regex, input_path.name) is not None, \\
-               f"File name of --input '{input_path}' should match regex {fastq_regex}."
+        assert len(par["library_type"]) > 0, "--library_type must be defined when passing input to --input"
+        assert len(par["library_id"]) > 0, "--library_id must be defined when passing input to --input"
+
+        par["input"] = [Path(fastq) for fastq in par["input"]]
+        if len(par["input"]) == 1 and par["input"][0].is_dir():
+            logger.info("Detected '--input' as a directory, "
+                        "traversing to see if we can detect any FASTQ files.")
+            par["input"] = [input_path for input_path in par["input"][0].rglob('*')
+                            if re.match(fastq_regex, input_path.name) ]
+
+        # check input fastq files
+        for input_path in par["input"]:
+            assert re.match(fastq_regex, input_path.name) is not None, \\
+                f"File name of --input '{input_path}' should match regex {fastq_regex}."
 
     # add helper input
     helper_input = transform_helper_inputs(par)
-    par["input"] += helper_input["input"]
-    par["library_id"] += helper_input["library_id"]
-    par["library_type"] += helper_input["library_type"]
+    if par["input"]:
+        par["input"] += helper_input["input"]
+    else:
+        par["input"] = helper_input["input"]
+
+    assert len(par["input"]) > 0, "Either --input or feature type-specific input (e.g. --gex_input, --abc_input, ...) must be defined"
+
+    if par["library_id"]:
+        par["library_id"] += helper_input["library_id"]
+    else:
+        par["library_id"] = helper_input["library_id"]
+
+    if par["library_type"]:
+        par["library_type"] += helper_input["library_type"]
+    else:
+        par["library_type"] = helper_input["library_type"]
 
     # check lengths of libraries metadata
     library_dict = subset_dict(par, LIBRARY_PARAMS)
