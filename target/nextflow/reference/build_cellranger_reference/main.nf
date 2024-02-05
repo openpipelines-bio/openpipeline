@@ -3014,7 +3014,7 @@ meta = [
     "platform" : "nextflow",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/reference/build_cellranger_reference",
     "viash_version" : "0.8.3",
-    "git_commit" : "036389c6c5488c98500254f63021cfae73d7a87e",
+    "git_commit" : "66525cc0c05d775bdfc03019a487104b3d9da539",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))
