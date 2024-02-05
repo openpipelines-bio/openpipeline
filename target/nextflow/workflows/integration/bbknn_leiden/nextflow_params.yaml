@@ -1,0 +1,29 @@
+# Inputs
+id: # please fill in - example: "foo"
+input: # please fill in - example: "dataset.h5mu"
+layer: "log_normalized"
+modality: "rna"
+
+# Outputs
+# output: "$id.$key.output.h5mu"
+
+# Bbknn
+obsm_input: "X_pca"
+obs_batch: "sample_id"
+uns_output: "bbknn_integration_neighbors"
+obsp_distances: "bbknn_integration_distances"
+obsp_connectivities: "bbknn_integration_connectivities"
+n_neighbors_within_batch: 3
+n_pcs: 50
+# n_trim: 123
+
+# Clustering options
+obs_cluster: "bbknn_integration_leiden"
+leiden_resolution: [1]
+
+# UMAP options
+obsm_umap: "X_leiden_bbknn_umap"
+
+# Nextflow input-output arguments
+publish_dir: # please fill in - example: "output/"
+# param_list: "my_params.yaml"
