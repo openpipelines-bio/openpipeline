@@ -140,19 +140,19 @@ def transform_helper_inputs(par: dict[str, any]) -> dict[str, any]:
         "library_id": [],
         "library_type": []
     }
-
     for input_type, library_type in HELPER_INPUT.items():
         if par[input_type]:
+            paths = [Path(fastq) for fastq in par[input_type]]
             library_ids = [
-                infer_library_id_from_path(path) for path in par[input_type]
+                infer_library_id_from_path(path.name) for path in paths
                 ]
 
             library_id_dict = {}
-            for fastq, library_id in zip(par[input_type], library_ids):
+            for fastq, library_id in zip(paths, library_ids):
                 if library_id not in library_id_dict:
-                    library_id_dict[library_id] = [Path(fastq)]
+                    library_id_dict[library_id] = [fastq]
                 else:
-                    library_id_dict[library_id].append(Path(fastq))
+                    library_id_dict[library_id].append(fastq)
 
             for library_id, input in library_id_dict.items():
                 helper_input["input"] += input
@@ -358,7 +358,6 @@ def main(par: dict[str, Any], meta: dict[str, Any]):
             for output_path in tmp_output_dir.rglob('*'):
                 if output_path.name != "config.csv": # Already created
                     shutil.move(str(output_path), par['output'])
-
 
 if __name__ == "__main__":
     main(par, meta)
