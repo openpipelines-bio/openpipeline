@@ -359,5 +359,6 @@ def main(par: dict[str, Any], meta: dict[str, Any]):
                 if output_path.name != "config.csv": # Already created
                     shutil.move(str(output_path), par['output'])
 
+
 if __name__ == "__main__":
     main(par, meta)
