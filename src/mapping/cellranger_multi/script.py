@@ -48,8 +48,7 @@ meta = {
   'memory_gb': 15,
   'memory_tb': None,
   'memory_pb': None,
-  'temp_dir': '/tmp'
-}
+  'temp_dir': '/tmp'}
 ## VIASH END
 
 sys.path.append(meta["resources_dir"])
@@ -116,7 +115,51 @@ REFERENCES = tuple(reference_param for reference_param, cellranger_param
                    if cellranger_param == "reference")
 LIBRARY_PARAMS = tuple(LIBRARY_CONFIG_KEYS.keys())
 SAMPLE_PARAMS = tuple(SAMPLE_PARAMS_CONFIG_KEYS.keys())
+HELPER_INPUT = {
+    'gex_input': 'Gene Expression',
+    'abc_input': 'Antibody Capture',
+    'cgc_input': 'CRISPR Guide Capture',
+    'mux_input': 'Multiplexing Capture',
+    'vdj_input': 'VDJ',
+    'vdj_t_input': 'VDJ-T',
+    'vdj_t_gd_input': 'VDJ-T-GD',
+    'vdj_b_input': 'VDJ-B',
+    'agc_input': 'Antigen Capture'
+}
 
+
+def infer_library_id_from_path(input_path: str) -> str:
+    match = re.match(fastq_regex, input_path)
+    assert match is not None, \
+        f"File name of '{input_path}' should match regex {fastq_regex}."
+    return match.group(1)
+
+def transform_helper_inputs(par: dict[str, any]) -> dict[str, any]:
+    helper_input = {
+        "input": [],
+        "library_id": [],
+        "library_type": []
+    }
+
+    for input_type, library_type in HELPER_INPUT.items():
+        if par[input_type]:
+            library_ids = [
+                infer_library_id_from_path(path) for path in par[input_type]
+                ]
+
+            library_id_dict = {}
+            for fastq, library_id in zip(par[input_type], library_ids):
+                if library_id not in library_id_dict:
+                    library_id_dict[library_id] = [Path(fastq)]
+                else:
+                    library_id_dict[library_id].append(Path(fastq))
+
+            for library_id, input in library_id_dict.items():
+                helper_input["input"] += input
+                helper_input["library_id"].append(library_id)
+                helper_input["library_type"].append(library_type)
+
+    return helper_input
 
 def lengths_gt1(dic: dict[str, Optional[list[Any]]]) -> dict[str, int]:
     return {key: len(li) for key, li in dic.items()
@@ -124,7 +167,6 @@ def lengths_gt1(dic: dict[str, Optional[list[Any]]]) -> dict[str, int]:
 
 def strip_margin(text: str) -> str:
     return re.sub('(\n?)[ \t]*\|', '\\1', text)
-
 
 def subset_dict(dictionary: dict[str, str],
                 keys: Union[dict[str, str], list[str]]) -> dict[str, str]:
@@ -153,6 +195,12 @@ def process_params(par: dict[str, Any]) -> str:
     for input_path in par["input"]:
         assert re.match(fastq_regex, input_path.name) is not None, \
                f"File name of --input '{input_path}' should match regex {fastq_regex}."
+
+    # add helper input
+    helper_input = transform_helper_inputs(par)
+    par["input"] += helper_input["input"]
+    par["library_id"] += helper_input["library_id"]
+    par["library_type"] += helper_input["library_type"]
 
     # check lengths of libraries metadata
     library_dict = subset_dict(par, LIBRARY_PARAMS)

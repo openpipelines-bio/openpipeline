@@ -4,11 +4,11 @@ functionality:
   description: Align fastq files using Cell Ranger multi.
   authors:
     - __merge__: /src/authors/angela_pisco.yaml
-      roles: [ author ]
+      roles: [author]
     - __merge__: /src/authors/robrecht_cannoodt.yaml
-      roles: [ author, maintainer ]
+      roles: [author, maintainer]
     - __merge__: /src/authors/dries_de_maeyer.yaml
-      roles: [ author ]
+      roles: [author]
   argument_groups:
     - name: Input files
       arguments:
@@ -18,7 +18,8 @@ functionality:
           description: |
             The FASTQ files to be analyzed. FASTQ files should conform to the naming conventions of bcl2fastq and mkfastq:
             `[Sample Name]_S[Sample Index]_L00[Lane Number]_[Read Type]_001.fastq.gz`
-          example: [ mysample_S1_L001_R1_001.fastq.gz, mysample_S1_L001_R2_001.fastq.gz ]
+          example:
+            [mysample_S1_L001_R1_001.fastq.gz, mysample_S1_L001_R2_001.fastq.gz]
           multiple: true
           multiple_sep: ";"
 
@@ -48,6 +49,100 @@ functionality:
           description: "Path to the Feature reference CSV file, declaring Feature Barcode constructs and associated barcodes. Required only for Antibody Capture or CRISPR Guide Capture libraries. See https://support.10xgenomics.com/single-cell-gene-expression/software/pipelines/latest/using/feature-bc-analysis#feature-ref for more information."
           example: "feature_reference.csv"
           required: false
+
+    - name: Feature type-specific input files
+      description: Helper functionality to allow feature-type specific input files, without the need to specify library_type or library_id. The library_id will be inferred from the input paths.
+      arguments:
+        - type: file
+          name: --gex_input
+          required: true
+          description: |
+            The FASTQ files to be analyzed for Gene Expression. FASTQ files should conform to the naming conventions of bcl2fastq and mkfastq:
+            `[Sample Name]_S[Sample Index]_L00[Lane Number]_[Read Type]_001.fastq.gz`
+          example:
+            [mysample_S1_L001_R1_001.fastq.gz, mysample_S1_L001_R2_001.fastq.gz]
+          multiple: true
+          multiple_sep: ";"
+        - type: file
+          name: --abc_input
+          required: true
+          description: |
+            The FASTQ files to be analyzed for Antibody Capture. FASTQ files should conform to the naming conventions of bcl2fastq and mkfastq:
+            `[Sample Name]_S[Sample Index]_L00[Lane Number]_[Read Type]_001.fastq.gz`
+          example:
+            [mysample_S1_L001_R1_001.fastq.gz, mysample_S1_L001_R2_001.fastq.gz]
+          multiple: true
+          multiple_sep: ";"
+        - type: file
+          name: --cgc_input
+          required: true
+          description: |
+            The FASTQ files to be analyzed for CRISPR Guide Capture. FASTQ files should conform to the naming conventions of bcl2fastq and mkfastq:
+            `[Sample Name]_S[Sample Index]_L00[Lane Number]_[Read Type]_001.fastq.gz`
+          example:
+            [mysample_S1_L001_R1_001.fastq.gz, mysample_S1_L001_R2_001.fastq.gz]
+          multiple: true
+          multiple_sep: ";"
+        - type: file
+          name: --mux_input
+          required: true
+          description: |
+            The FASTQ files to be analyzed for Multiplexing Capture. FASTQ files should conform to the naming conventions of bcl2fastq and mkfastq:
+            `[Sample Name]_S[Sample Index]_L00[Lane Number]_[Read Type]_001.fastq.gz`
+          example:
+            [mysample_S1_L001_R1_001.fastq.gz, mysample_S1_L001_R2_001.fastq.gz]
+          multiple: true
+          multiple_sep: ";"
+        - type: file
+          name: --vdj_input
+          required: true
+          description: |
+            The FASTQ files to be analyzed for VDJ. FASTQ files should conform to the naming conventions of bcl2fastq and mkfastq:
+            `[Sample Name]_S[Sample Index]_L00[Lane Number]_[Read Type]_001.fastq.gz`
+          example:
+            [mysample_S1_L001_R1_001.fastq.gz, mysample_S1_L001_R2_001.fastq.gz]
+          multiple: true
+          multiple_sep: ";"
+        - type: file
+          name: --vdj_t_input
+          required: true
+          description: |
+            The FASTQ files to be analyzed for VDJ-T. FASTQ files should conform to the naming conventions of bcl2fastq and mkfastq:
+            `[Sample Name]_S[Sample Index]_L00[Lane Number]_[Read Type]_001.fastq.gz`
+          example:
+            [mysample_S1_L001_R1_001.fastq.gz, mysample_S1_L001_R2_001.fastq.gz]
+          multiple: true
+          multiple_sep: ";"
+        - type: file
+          name: --vdj_t_gd_input
+          required: true
+          description: |
+            The FASTQ files to be analyzed for VDJ-T-GD. FASTQ files should conform to the naming conventions of bcl2fastq and mkfastq:
+            `[Sample Name]_S[Sample Index]_L00[Lane Number]_[Read Type]_001.fastq.gz`
+          example:
+            [mysample_S1_L001_R1_001.fastq.gz, mysample_S1_L001_R2_001.fastq.gz]
+          multiple: true
+          multiple_sep: ";"
+        - type: file
+          name: --vdj_b_input
+          required: true
+          description: |
+            The FASTQ files to be analyzed for VDJ-B. FASTQ files should conform to the naming conventions of bcl2fastq and mkfastq:
+            `[Sample Name]_S[Sample Index]_L00[Lane Number]_[Read Type]_001.fastq.gz`
+          example:
+            [mysample_S1_L001_R1_001.fastq.gz, mysample_S1_L001_R2_001.fastq.gz]
+          multiple: true
+          multiple_sep: ";"
+        - type: file
+          name: --agc_input
+          required: true
+          description: |
+            The FASTQ files to be analyzed for Antigen Capture. FASTQ files should conform to the naming conventions of bcl2fastq and mkfastq:
+            `[Sample Name]_S[Sample Index]_L00[Lane Number]_[Read Type]_001.fastq.gz`
+          example:
+            [mysample_S1_L001_R1_001.fastq.gz, mysample_S1_L001_R2_001.fastq.gz]
+          multiple: true
+          multiple_sep: ";"
 
     - name: Library arguments
       arguments:
@@ -95,7 +190,6 @@ functionality:
     - name: Gene expression arguments
       description: Arguments relevant to the analysis of gene expression data.
       arguments:
-
         - type: integer
           name: --gex_expect_cells
           example: 3000
@@ -118,7 +212,20 @@ functionality:
             - SC5P-R2: Single Cell 5' R2-only
             - SC-FB: Single Cell Antibody-only 3' v2 or 5'
             See https://kb.10xgenomics.com/hc/en-us/articles/115003764132-How-does-Cell-Ranger-auto-detect-chemistry- for more information.
-          choices: [ auto, threeprime, fiveprime, SC3Pv1, SC3Pv2, SC3Pv3, SC3Pv3LT, SC3Pv3HT, SC5P-PE, SC5P-R2, SC-FB ] 
+          choices:
+            [
+              auto,
+              threeprime,
+              fiveprime,
+              SC3Pv1,
+              SC3Pv2,
+              SC3Pv3,
+              SC3Pv3LT,
+              SC3Pv3HT,
+              SC5P-PE,
+              SC5P-R2,
+              SC-FB,
+            ]
 
         - type: boolean
           name: "--gex_secondary_analysis"
@@ -129,7 +236,7 @@ functionality:
           name: "--gex_generate_bam"
           default: false
           description: Whether to generate a BAM file.
-        
+
         - type: boolean
           name: "--gex_include_introns"
           default: true
@@ -147,7 +254,7 @@ functionality:
         - type: string
           name: --cell_multiplex_description
           description: A description for the sample.
-    
+
     - name: Outputs
       arguments:
         - type: file
@@ -181,11 +288,11 @@ platforms:
       - type: docker
         run: DEBIAN_FRONTEND=noninteractive apt update && apt upgrade -y && rm -rf /var/lib/apt/lists/*
       - type: python
-        packages: 
+        packages:
           - pandas
     test_setup:
       - type: python
-        __merge__: [ /src/base/requirements/viashpy.yaml, .]
+        __merge__: [/src/base/requirements/viashpy.yaml, .]
   - type: nextflow
     directives:
-      label: [ veryhighmem, highcpu ]
+      label: [veryhighmem, highcpu]
