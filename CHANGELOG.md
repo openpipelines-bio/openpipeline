@@ -1,3 +1,9 @@
+# openpipelines 0.11.4
+
+## BUG FIXES
+
+* `move_obsm_to_obs`: fix setting output columns when they already exist (PR #690).
+
 # openpipelines 0.11.3
 
 # BUG FIXES
