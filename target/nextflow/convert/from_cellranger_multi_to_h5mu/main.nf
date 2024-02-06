@@ -2880,7 +2880,8 @@ meta = [
       },
       {
         "type" : "file",
-        "path" : "./src/workflows/utils"
+        "path" : "./src/workflows/utils/labels.config",
+        "dest" : "nextflow_labels.config"
       }
     ],
     "description" : "Converts the output from cellranger multi to a single .h5mu file.\nBy default, will map the following library type names to modality names:\n  - Gene Expression: rna\n  - Peaks: atac\n  - Antibody Capture: prot\n  - VDJ: vdj\n  - VDJ-T: vdj_t\n  - VDJ-B: vdj_b\n  - CRISPR Guide Capture: crispr\n  - Multiplexing Capture: hashing\n\nOther library types have their whitepace removed and dashes replaced by\nunderscores to generate the modality name.\n\nCurrently does not allow parsing the output from cell barcode demultiplexing.\n",
@@ -3007,7 +3008,7 @@ meta = [
           "cpu1000" : "cpus = 1000"
         },
         "script" : [
-          "includeConfig(\\"utils/labels.config\\")"
+          "includeConfig(\\"nextflow_labels.config\\")"
         ]
       },
       "debug" : false,
@@ -3019,7 +3020,7 @@ meta = [
     "platform" : "nextflow",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/convert/from_cellranger_multi_to_h5mu",
     "viash_version" : "0.8.3",
-    "git_commit" : "0e27950052cf829c8f5f0811a0161d16d724ba99",
+    "git_commit" : "8005335f5ae2399577e7243b025dd1b82d75cac8",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))

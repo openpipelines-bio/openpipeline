@@ -3256,7 +3256,8 @@ meta = [
       },
       {
         "type" : "file",
-        "path" : "./src/workflows/utils"
+        "path" : "./src/workflows/utils/labels.config",
+        "dest" : "nextflow_labels.config"
       }
     ],
     "description" : "Run totalVI integration followed by neighbour calculations, leiden clustering and run umap on the result.",
@@ -3297,7 +3298,7 @@ meta = [
           "functionalityNamespace" : "cluster",
           "output" : "",
           "platform" : "",
-          "git_commit" : "0e27950052cf829c8f5f0811a0161d16d724ba99",
+          "git_commit" : "8005335f5ae2399577e7243b025dd1b82d75cac8",
           "executable" : "/nextflow/cluster/leiden/main.nf"
         },
         "writtenPath" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/cluster/leiden"
@@ -3318,7 +3319,7 @@ meta = [
           "functionalityNamespace" : "metadata",
           "output" : "",
           "platform" : "",
-          "git_commit" : "0e27950052cf829c8f5f0811a0161d16d724ba99",
+          "git_commit" : "8005335f5ae2399577e7243b025dd1b82d75cac8",
           "executable" : "/nextflow/metadata/move_obsm_to_obs/main.nf"
         },
         "writtenPath" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/metadata/move_obsm_to_obs"
@@ -3339,7 +3340,7 @@ meta = [
           "functionalityNamespace" : "integrate",
           "output" : "",
           "platform" : "",
-          "git_commit" : "0e27950052cf829c8f5f0811a0161d16d724ba99",
+          "git_commit" : "8005335f5ae2399577e7243b025dd1b82d75cac8",
           "executable" : "/nextflow/integrate/totalvi/main.nf"
         },
         "writtenPath" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/integrate/totalvi"
@@ -3360,7 +3361,7 @@ meta = [
           "functionalityNamespace" : "dimred",
           "output" : "",
           "platform" : "",
-          "git_commit" : "0e27950052cf829c8f5f0811a0161d16d724ba99",
+          "git_commit" : "8005335f5ae2399577e7243b025dd1b82d75cac8",
           "executable" : "/nextflow/dimred/umap/main.nf"
         },
         "writtenPath" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/dimred/umap"
@@ -3381,7 +3382,7 @@ meta = [
           "functionalityNamespace" : "neighbors",
           "output" : "",
           "platform" : "",
-          "git_commit" : "0e27950052cf829c8f5f0811a0161d16d724ba99",
+          "git_commit" : "8005335f5ae2399577e7243b025dd1b82d75cac8",
           "executable" : "/nextflow/neighbors/find_neighbors/main.nf"
         },
         "writtenPath" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/neighbors/find_neighbors"
@@ -3402,7 +3403,7 @@ meta = [
           "functionalityNamespace" : "transfer",
           "output" : "",
           "platform" : "",
-          "git_commit" : "0e27950052cf829c8f5f0811a0161d16d724ba99",
+          "git_commit" : "8005335f5ae2399577e7243b025dd1b82d75cac8",
           "executable" : "/nextflow/transfer/publish/main.nf"
         },
         "writtenPath" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/transfer/publish"
@@ -3457,7 +3458,7 @@ meta = [
           "cpu1000" : "cpus = 1000"
         },
         "script" : [
-          "includeConfig(\\"utils/labels.config\\")"
+          "includeConfig(\\"nextflow_labels.config\\")"
         ]
       },
       "debug" : false,
@@ -3469,7 +3470,7 @@ meta = [
     "platform" : "nextflow",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/workflows/integration/totalvi_leiden",
     "viash_version" : "0.8.3",
-    "git_commit" : "0e27950052cf829c8f5f0811a0161d16d724ba99",
+    "git_commit" : "8005335f5ae2399577e7243b025dd1b82d75cac8",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))

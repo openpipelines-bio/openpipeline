@@ -2819,7 +2819,8 @@ meta = [
       },
       {
         "type" : "file",
-        "path" : "./src/workflows/utils"
+        "path" : "./src/workflows/utils/labels.config",
+        "dest" : "nextflow_labels.config"
       }
     ],
     "description" : "MultiQC aggregates results from bioinformatics analyses across many samples into a single report.\nIt searches a given directory for analysis logs and compiles a HTML report. It's a general use tool, perfect for summarising the output from numerous bioinformatics tools.\n",
@@ -2935,7 +2936,7 @@ meta = [
           "cpu1000" : "cpus = 1000"
         },
         "script" : [
-          "includeConfig(\\"utils/labels.config\\")"
+          "includeConfig(\\"nextflow_labels.config\\")"
         ]
       },
       "debug" : false,
@@ -2947,7 +2948,7 @@ meta = [
     "platform" : "nextflow",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/qc/multiqc",
     "viash_version" : "0.8.3",
-    "git_commit" : "0e27950052cf829c8f5f0811a0161d16d724ba99",
+    "git_commit" : "8005335f5ae2399577e7243b025dd1b82d75cac8",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))

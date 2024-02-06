@@ -3017,7 +3017,8 @@ meta = [
       },
       {
         "type" : "file",
-        "path" : "./src/workflows/utils"
+        "path" : "./src/workflows/utils/labels.config",
+        "dest" : "nextflow_labels.config"
       }
     ],
     "description" : "Add basic quality control metrics to an .h5mu file.\n\nThe metrics are comparable to what scanpy.pp.calculate_qc_metrics output,\nalthough they have slightly different names:\n\nVar metrics (name in this component -> name in scanpy):\n  - pct_dropout -> pct_dropout_by_{expr_type}\n  - num_nonzero_obs -> n_cells_by_{expr_type}\n  - obs_mean -> mean_{expr_type}\n  - total_counts -> total_{expr_type}\n\nObs metrics:\n  - num_nonzero_vars -> n_genes_by_{expr_type}\n  - pct_{var_qc_metrics} -> pct_{expr_type}_{qc_var}\n  - total_counts_{var_qc_metrics} -> total_{expr_type}_{qc_var}\n  - pct_of_counts_in_top_{top_n_vars}_vars -> pct_{expr_type}_in_top_{n}_{var_type}\n  - total_counts -> total_{expr_type}\n  \n",
@@ -3138,7 +3139,7 @@ meta = [
           "cpu1000" : "cpus = 1000"
         },
         "script" : [
-          "includeConfig(\\"utils/labels.config\\")"
+          "includeConfig(\\"nextflow_labels.config\\")"
         ]
       },
       "debug" : false,
@@ -3150,7 +3151,7 @@ meta = [
     "platform" : "nextflow",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/qc/calculate_qc_metrics",
     "viash_version" : "0.8.3",
-    "git_commit" : "0e27950052cf829c8f5f0811a0161d16d724ba99",
+    "git_commit" : "8005335f5ae2399577e7243b025dd1b82d75cac8",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))

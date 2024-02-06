@@ -2917,7 +2917,8 @@ meta = [
       },
       {
         "type" : "file",
-        "path" : "./src/workflows/utils"
+        "path" : "./src/workflows/utils/labels.config",
+        "dest" : "nextflow_labels.config"
       }
     ],
     "description" : "Cluster cells using the [Leiden algorithm] [Traag18] implemented in the [Scanpy framework] [Wolf18]. \nLeiden is an improved version of the [Louvain algorithm] [Blondel08]. \nIt has been proposed for single-cell analysis by [Levine15] [Levine15]. \nThis requires having ran `neighbors/find_neighbors` or `neighbors/bbknn` first.\n\n[Blondel08]: Blondel et al. (2008), Fast unfolding of communities in large networks, J. Stat. Mech.  \n[Levine15]: Levine et al. (2015), Data-Driven Phenotypic Dissection of AML Reveals Progenitor-like Cells that Correlate with Prognosis, Cell.  \n[Traag18]: Traag et al. (2018), From Louvain to Leiden: guaranteeing well-connected communities arXiv.  \n[Wolf18]: Wolf et al. (2018), Scanpy: large-scale single-cell gene expression data analysis, Genome Biology.  \n",
@@ -3038,7 +3039,7 @@ meta = [
           "cpu1000" : "cpus = 1000"
         },
         "script" : [
-          "includeConfig(\\"utils/labels.config\\")"
+          "includeConfig(\\"nextflow_labels.config\\")"
         ]
       },
       "debug" : false,
@@ -3050,7 +3051,7 @@ meta = [
     "platform" : "nextflow",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/cluster/leiden",
     "viash_version" : "0.8.3",
-    "git_commit" : "0e27950052cf829c8f5f0811a0161d16d724ba99",
+    "git_commit" : "8005335f5ae2399577e7243b025dd1b82d75cac8",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))
