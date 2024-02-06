@@ -3034,7 +3034,7 @@ meta = [
           "functionalityNamespace" : "filter",
           "output" : "",
           "platform" : "",
-          "git_commit" : "66525cc0c05d775bdfc03019a487104b3d9da539",
+          "git_commit" : "0e27950052cf829c8f5f0811a0161d16d724ba99",
           "executable" : "/nextflow/filter/filter_with_counts/main.nf"
         },
         "writtenPath" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/filter/filter_with_counts"
@@ -3055,7 +3055,7 @@ meta = [
           "functionalityNamespace" : "filter",
           "output" : "",
           "platform" : "",
-          "git_commit" : "66525cc0c05d775bdfc03019a487104b3d9da539",
+          "git_commit" : "0e27950052cf829c8f5f0811a0161d16d724ba99",
           "executable" : "/nextflow/filter/do_filter/main.nf"
         },
         "writtenPath" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/filter/do_filter"
@@ -3122,7 +3122,7 @@ meta = [
     "platform" : "nextflow",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/workflows/prot/prot_singlesample",
     "viash_version" : "0.8.3",
-    "git_commit" : "66525cc0c05d775bdfc03019a487104b3d9da539",
+    "git_commit" : "0e27950052cf829c8f5f0811a0161d16d724ba99",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))
