@@ -15,4 +15,6 @@ nextflow run . \
   -profile docker,no_publish \
   -entry test_wf \
   -resume \
-  -c src/workflows/utils/labels_ci.config
+  -c src/workflows/utils/labels_ci.config \
+  -c src/workflows/utils/integration_tests.config
+

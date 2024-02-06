@@ -110,4 +110,5 @@ jobs:
           -main-script "${{ matrix.component.main_script }}" \
           -entry "${{ matrix.component.entry }}" \
           -profile docker,mount_temp,no_publish \
-          -c src/workflows/utils/labels_ci.config
+          -c src/workflows/utils/labels_ci.config \
+          -c src/workflows/utils/integration_tests.config

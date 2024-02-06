@@ -17,5 +17,6 @@ nextflow \
   -resume \
   -profile docker,no_publish \
   -c src/workflows/utils/labels_ci.config \
+  -c src/workflows/utils/integration_tests.config \
   -with-trace work/trace.txt
 
