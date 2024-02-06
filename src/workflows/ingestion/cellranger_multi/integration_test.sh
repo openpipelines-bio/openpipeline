@@ -15,6 +15,7 @@ nextflow \
   -main-script src/workflows/ingestion/cellranger_multi/test.nf \
   -entry test_wf \
   -resume \
-  -profile docker,no_publish \
+  -profile no_publish,docker \
   -c src/workflows/utils/labels_ci.config \
+  -c src/workflows/utils/integration_tests.config \
   -with-trace work/trace.txt

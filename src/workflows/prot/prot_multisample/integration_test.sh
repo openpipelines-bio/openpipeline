@@ -14,4 +14,6 @@ nextflow run . \
   -main-script src/workflows/prot/prot_multisample/test.nf \
   -profile docker,no_publish \
   -entry test_wf \
-  -with-trace work/trace.txt
+  -with-trace work/trace.txt \
+  -c src/workflows/utils/labels_ci.config \
+  -c src/workflows/utils/integration_tests.config

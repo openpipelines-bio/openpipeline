@@ -28,8 +28,9 @@ outs <- map_df(workflows, function(wf) {
           "run", ".",
           "-main-script", paste0(dir, "/", test$path),
           "-entry", test$entrypoint,
-          "-profile", "docker,no_publish",
+          "-profile", "docker,mount_temp,no_publish",
           "-with-dag", paste0(dir, "/graph.dot"),
+          "-c", "src/workflows/utils/integration_tests.config",
           "-resume"
         )
 
