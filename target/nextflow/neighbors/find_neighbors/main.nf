@@ -3023,7 +3023,8 @@ meta = [
       },
       {
         "type" : "file",
-        "path" : "./src/workflows/utils"
+        "path" : "./src/workflows/utils/labels.config",
+        "dest" : "nextflow_labels.config"
       }
     ],
     "description" : "Compute a neighborhood graph of observations [McInnes18].\n\nThe neighbor search efficiency of this heavily relies on UMAP [McInnes18], which also provides a method for estimating connectivities of data points - the connectivity of the manifold (method=='umap'). If method=='gauss', connectivities are computed according to [Coifman05], in the adaption of [Haghverdi16].\n",
@@ -3143,7 +3144,7 @@ meta = [
           "cpu1000" : "cpus = 1000"
         },
         "script" : [
-          "includeConfig(\\"utils/labels.config\\")"
+          "includeConfig(\\"nextflow_labels.config\\")"
         ]
       },
       "debug" : false,
@@ -3155,7 +3156,7 @@ meta = [
     "platform" : "nextflow",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/neighbors/find_neighbors",
     "viash_version" : "0.8.3",
-    "git_commit" : "e103c5f6aed9734100a257d94260636b41e3e852",
+    "git_commit" : "9f275b858e1e7de2fa7f4df5abde514ee1018982",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))

@@ -6202,7 +6202,8 @@ meta = [
       },
       {
         "type" : "file",
-        "path" : "./src/workflows/utils"
+        "path" : "./src/workflows/utils/labels.config",
+        "dest" : "nextflow_labels.config"
       }
     ],
     "description" : "Align fastq files using STAR.",
@@ -6240,10 +6241,10 @@ meta = [
       "chown" : true,
       "setup_strategy" : "ifneedbepullelsecachedbuild",
       "target_image_source" : "https://github.com/openpipelines-bio/openpipeline",
-      "setup" : [
+      "setup''' + '''" : [
         {
           "type" : "docker",
-          "e''' + '''nv" : [
+          "env" : [
             "STAR_VERSION 2.7.10b",
             "PACKAGES gcc g++ make wget zlib1g-dev unzip"
           ]
@@ -6337,7 +6338,7 @@ meta = [
           "cpu1000" : "cpus = 1000"
         },
         "script" : [
-          "includeConfig(\\"utils/labels.config\\")"
+          "includeConfig(\\"nextflow_labels.config\\")"
         ]
       },
       "debug" : false,
@@ -6349,7 +6350,7 @@ meta = [
     "platform" : "nextflow",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/mapping/multi_star",
     "viash_version" : "0.8.3",
-    "git_commit" : "e103c5f6aed9734100a257d94260636b41e3e852",
+    "git_commit" : "9f275b858e1e7de2fa7f4df5abde514ee1018982",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))
