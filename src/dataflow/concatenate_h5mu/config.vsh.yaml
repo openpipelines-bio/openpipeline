@@ -58,6 +58,7 @@ functionality:
   test_resources:
     - type: python_script
       path: test.py
+    - path: /src/base/test_utils/mudata_asserters.py
     - path: /resources_test/concat_test_data/e18_mouse_brain_fresh_5k_filtered_feature_bc_matrix_subset_unique_obs.h5mu
     - path: /resources_test/concat_test_data/human_brain_3k_filtered_feature_bc_matrix_subset_unique_obs.h5mu
 platforms:
@@ -76,6 +77,8 @@ platforms:
         __merge__: [ /src/base/requirements/viashpy.yaml, .]
         packages:
           - muon
+      - type: docker
+        copy: ["/foo"]
   - type: native
   - type: nextflow
     directives:

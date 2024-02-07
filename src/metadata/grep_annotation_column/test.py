@@ -6,7 +6,6 @@ import pytest
 import pandas as pd
 from anndata import AnnData
 from mudata import MuData, read_h5mu
-from pathlib import Path
 from subprocess import CalledProcessError
 from uuid import uuid4
 
@@ -15,9 +14,12 @@ meta = {
     'executable': './target/docker/metadata/grep_annotation_column/grep_annotation_column',
     'resources_dir': './resources_test/concat_test_data/',
     'cpus': 2,
-    'config': '/home/di/code/openpipelines-multisample/src/metadata/grep_annotation_column/config.vsh.yaml'
+    'config': './src/metadata/grep_annotation_column/config.vsh.yaml'
 }
 ## VIASH END
+
+sys.path.append(meta["resources_dir"])
+from test_utils.asserters import assert_annotation_objects_equal
 
 @pytest.fixture
 def generate_h5mu():
@@ -222,5 +224,5 @@ def test_invalid_regex_pattern(run_component, generate_h5mu,
 
 
 if __name__ == "__main__":
-    sys.exit(pytest.main([__file__, "-s"]))
+    sys.exit(pytest.main([__file__, "-s"], plugins=["test_utils.fixtures"]))
 
