@@ -74,6 +74,10 @@
 
 ## NEW FUNCTIONALITY
 
+* `metadata/grep_annotation_column`: Added more logging output (PR #697).
+
+* `metadata/add_id` and `metadata/grep_annotation_column`: Bump python to 3.11 (PR #697).
+
 * `multisample` pipeline: This workflow now works when provided multimple unimodal files or multiple multimodal files, in addition to the previously supported single multimodal file (PR #606). The modalities are processed independently from each other:
   - As before, a single multimodal file is split into several unimodal MuData objects, each modality being stored in a file.
   - (New) When multiple unimodal files are provided, they can be used used as is.
