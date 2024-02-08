@@ -21,23 +21,6 @@ par = {
             'resources_test/10x_5k_anticmv/raw/5k_human_antiCMV_T_TBNK_connect_AB_subset_S2_L004_R2_001.fastq.gz',
             'resources_test/10x_5k_anticmv/raw/5k_human_antiCMV_T_TBNK_connect_VDJ_subset_S1_L001_R1_001.fastq.gz',
             'resources_test/10x_5k_anticmv/raw/5k_human_antiCMV_T_TBNK_connect_VDJ_subset_S1_L001_R2_001.fastq.gz'],
-  'library_id': None,
-  'library_type': None,
-  'cgc_input': None,
-  'mux_input': None,
-  'vdj_t_input': None,
-  'vdj_t_gd_input': None,
-  'vdj_b_input': None,
-  'agc_input': None,
-  'gex_input': ['resources_test/10x_5k_anticmv/raw/5k_human_antiCMV_T_TBNK_connect_GEX_1_subset_S1_L001_R1_001.fastq.gz',
-        'resources_test/10x_5k_anticmv/raw/5k_human_antiCMV_T_TBNK_connect_GEX_1_subset_S1_L001_R2_001.fastq.gz'],
-  'abc_input': ['resources_test/10x_5k_anticmv/raw/5k_human_antiCMV_T_TBNK_connect_AB_subset_S2_L004_R1_001.fastq.gz',
-        'resources_test/10x_5k_anticmv/raw/5k_human_antiCMV_T_TBNK_connect_AB_subset_S2_L004_R2_001.fastq.gz'],
-  'vdj_input': ['resources_test/10x_5k_anticmv/raw/5k_human_antiCMV_T_TBNK_connect_VDJ_subset_S1_L001_R1_001.fastq.gz',
-        'resources_test/10x_5k_anticmv/raw/5k_human_antiCMV_T_TBNK_connect_VDJ_subset_S1_L001_R2_001.fastq.gz'],
-  'gex_reference': 'resources_test/reference_gencodev41_chr1//reference_cellranger.tar.gz',
-  'vdj_reference': 'resources_test/10x_5k_anticmv/raw/refdata-cellranger-vdj-GRCh38-alts-ensembl-7.0.0.tar.gz',
-  'feature_reference': 'resources_test/10x_5k_anticmv/raw/feature_reference.csv',
   'library_id': ['5k_human_antiCMV_T_TBNK_connect_GEX_1_subset',
                  '5k_human_antiCMV_T_TBNK_connect_AB_subset',
                  '5k_human_antiCMV_T_TBNK_connect_VDJ_subset'],
@@ -62,8 +45,7 @@ meta = {
   'memory_gb': 15,
   'memory_tb': None,
   'memory_pb': None,
-  'temp_dir': '/tmp',
-  'resources_dir': '/Users/dorienroosen/code/openpipeline'
+  'temp_dir': '/tmp'
 }
 ## VIASH END
 
