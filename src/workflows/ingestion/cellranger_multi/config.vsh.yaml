@@ -6,9 +6,9 @@ functionality:
     name: Cell Ranger multi
   authors:
     - __merge__: /src/authors/dries_schaumont.yaml
-      roles: [author]
-  argument_groups:
-    # For extensive documentation: see https://support.10xgenomics.com/single-cell-vdj/software/pipelines/7.0/using/multi
+      roles: [ author ]
+  argument_groups: 
+  # For extensive documentation: see https://support.10xgenomics.com/single-cell-vdj/software/pipelines/7.0/using/multi
     - name: Inputs
       arguments:
         - name: "--id"
@@ -21,8 +21,7 @@ functionality:
           required: false
           multiple: true
           multiple_sep: ";"
-          example:
-            ["sample_S1_L001_R1_001.fastq.gz", "sample_S1_L001_R2_001.fastq.gz"]
+          example: [ "sample_S1_L001_R1_001.fastq.gz", "sample_S1_L001_R2_001.fastq.gz" ]
           description: The fastq.gz files to align. Can also be a single directory containing fastq.gz files.
         - name: "--gex_reference"
           type: file
@@ -206,20 +205,7 @@ functionality:
             - SC5P-R2: Single Cell 5' R2-only
             - SC-FB: Single Cell Antibody-only 3' v2 or 5'
             See https://kb.10xgenomics.com/hc/en-us/articles/115003764132-How-does-Cell-Ranger-auto-detect-chemistry- for more information.
-          choices:
-            [
-              auto,
-              threeprime,
-              fiveprime,
-              SC3Pv1,
-              SC3Pv2,
-              SC3Pv3,
-              SC3Pv3LT,
-              SC3Pv3HT,
-              SC5P-PE,
-              SC5P-R2,
-              SC-FB,
-            ]
+          choices: [ auto, threeprime, fiveprime, SC3Pv1, SC3Pv2, SC3Pv3, SC3Pv3LT, SC3Pv3HT, SC5P-PE, SC5P-R2, SC-FB ] 
         - type: boolean
           name: "--gex_secondary_analysis"
           default: false
@@ -287,3 +273,4 @@ functionality:
     - path: /resources_test/reference_gencodev41_chr1
 platforms:
   - type: nextflow
+  
