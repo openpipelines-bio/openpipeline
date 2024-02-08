@@ -45,7 +45,8 @@ meta = {
   'memory_gb': 15,
   'memory_tb': None,
   'memory_pb': None,
-  'temp_dir': '/tmp'}
+  'temp_dir': '/tmp'
+}
 ## VIASH END
 
 sys.path.append(meta["resources_dir"])
