@@ -14,7 +14,7 @@ functionality:
       arguments:
         - type: file
           name: --input
-          required: true
+          required: false
           description: |
             The FASTQ files to be analyzed. FASTQ files should conform to the naming conventions of bcl2fastq and mkfastq:
             `[Sample Name]_S[Sample Index]_L00[Lane Number]_[Read Type]_001.fastq.gz`
@@ -147,14 +147,14 @@ functionality:
       arguments:
         - type: string
           name: --library_id
-          required: true
+          required: false
           description: The Illumina sample name to analyze. This must exactly match the 'Sample Name' part of the FASTQ files specified in the `--input` argument.
           example: ["mysample1"]
           multiple: true
           multiple_sep: ";"
         - type: string
           name: --library_type
-          required: true
+          required: false
           description: |
             The underlying feature type of the library.
             Possible values: "Gene Expression", "VDJ", "VDJ-T", "VDJ-B", "Antibody Capture", "CRISPR Guide Capture", "Multiplexing Capture"
