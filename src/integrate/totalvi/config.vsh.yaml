@@ -125,8 +125,9 @@ platforms:
       - type: python
         __merge__: [/src/base/requirements/anndata_mudata.yaml, .]
         packages:
-          - torchmetrics~=0.11.0
           - scvi-tools~=1.0.3
+          - jaxlib<0.4.23
+          - jax<0.4.23
     test_setup:
       - type: python
         __merge__: [ /src/base/requirements/viashpy.yaml, .]

@@ -243,6 +243,8 @@ platforms:
           # Pinning numba prevents recompiling when pip starts looking for a compatible version
           - numba~=0.57.1
           - scvi-tools~=1.0.0
+          - jaxlib<0.4.23
+          - jax<0.4.23
     test_setup:
       - type: python
         __merge__: [ /src/base/requirements/viashpy.yaml, .]
