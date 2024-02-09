@@ -3084,7 +3084,7 @@ meta = [
     "platform" : "nextflow",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/integrate/harmonypy",
     "viash_version" : "0.8.3",
-    "git_commit" : "a454372f6510b3a22b525b2139befa422de522db",
+    "git_commit" : "17beff51c995c05da15adad63de33c39da99f0c9",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))

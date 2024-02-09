@@ -3217,7 +3217,7 @@ meta = [
           "functionalityNamespace" : "mapping",
           "output" : "",
           "platform" : "",
-          "git_commit" : "a454372f6510b3a22b525b2139befa422de522db",
+          "git_commit" : "17beff51c995c05da15adad63de33c39da99f0c9",
           "executable" : "/nextflow/mapping/bd_rhapsody/main.nf"
         },
         "writtenPath" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/mapping/bd_rhapsody"
@@ -3238,7 +3238,7 @@ meta = [
           "functionalityNamespace" : "convert",
           "output" : "",
           "platform" : "",
-          "git_commit" : "a454372f6510b3a22b525b2139befa422de522db",
+          "git_commit" : "17beff51c995c05da15adad63de33c39da99f0c9",
           "executable" : "/nextflow/convert/from_bdrhap_to_h5mu/main.nf"
         },
         "writtenPath" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/convert/from_bdrhap_to_h5mu"
@@ -3305,7 +3305,7 @@ meta = [
     "platform" : "nextflow",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/workflows/ingestion/bd_rhapsody",
     "viash_version" : "0.8.3",
-    "git_commit" : "a454372f6510b3a22b525b2139befa422de522db",
+    "git_commit" : "17beff51c995c05da15adad63de33c39da99f0c9",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))
