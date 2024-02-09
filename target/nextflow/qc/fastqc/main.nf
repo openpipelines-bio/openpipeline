@@ -2958,9 +2958,9 @@ meta = [
     "platform" : "nextflow",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/qc/fastqc",
     "viash_version" : "0.8.3",
-    "git_commit" : "3b0462486db38ced22b14359f71fd795253d73ba",
+    "git_commit" : "04386c72bd2bb3b154b6fedb97e9a034586b9061",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline",
-    "git_tag" : "0.2.0-1517-g3b0462486d"
+    "git_tag" : "0.2.0-1518-g04386c72bd"
   }
 }'''))
 ]
