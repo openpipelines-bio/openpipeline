@@ -142,7 +142,7 @@ of a split multimodal files. The modalities in the list must be unique and after
 
 * `move_obsm_to_obs`: fix setting output columns when they already exist (PR #690).
 
-* Change separator for arguments with multiple input from `:` to `;` (PR #700). This is in theory a breaking change since arguments like `--input foo:bar` would now need to be written as `--input foo;bar`. However, this way of writing arguments is not expected to be used in practice.
+* Change separator for arguments with multiple input from `:` to `;` (PR #700). This is in theory a breaking change since arguments like `--input "foo:bar"` would now need to be written as `--input "foo;bar"`. However, this way of writing arguments is not expected to be used in practice.
 
 # openpipelines 0.12.1
 
