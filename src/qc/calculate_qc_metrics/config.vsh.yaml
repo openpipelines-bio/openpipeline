@@ -59,7 +59,7 @@ functionality:
           type: integer
           description: |
             Number of top vars to be used to calculate cumulative proportions.
-            If not specified, proportions are not calculated. `--top_n_vars 20,50` finds
+            If not specified, proportions are not calculated. `--top_n_vars 20;50` finds
             cumulative proportion to the 20th and 50th most expressed vars.
           multiple: true
           required: false
