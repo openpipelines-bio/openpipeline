@@ -128,7 +128,7 @@ of a split multimodal files. The modalities in the list must be unique and after
 
 ## BUG FIXES
 
-* `transform/log1p`: fix `--input_layer` argument not functionning (PR #678). 
+* `transform/log1p`: fix `--input_layer` argument not functioning (PR #678). 
 
 * `dataflow/concat` and `dataflow/concatenate_h5mu`: Fix an issue where using `--mode move` on samples with non-overlapping features would cause `var_names` to become unaligned to the data (PR #653).   
 
