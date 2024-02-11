@@ -17,14 +17,12 @@ functionality:
           description: The obs index for the counts
           example: foo
           multiple: true
-          multiple_sep: ;
         - type: file
           name: --input_counts
           required: true
           description: The counts as a TSV file as output by HTSeq.
           example: counts.tsv
           multiple: true
-          multiple_sep: ;
         - type: file
           name: --reference
           required: true

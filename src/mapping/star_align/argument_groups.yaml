@@ -25,14 +25,12 @@ argument_groups:
 
       Required for the genome generation (--runMode genomeGenerate). Can also be used in the mapping (--runMode alignReads) to add extra (new) sequences to the genome (e.g. spike-ins).
     multiple: yes
-    multiple_sep: ;
   - name: --genomeFileSizes
     type: integer
     description: genome files exact sizes in bytes. Typically, this should not be
       defined by the user.
     example: 0
     multiple: yes
-    multiple_sep: ;
   - name: --genomeTransformOutput
     type: string
     description: |-
@@ -42,7 +40,6 @@ argument_groups:
       - SJ      ... splice junctions (SJ.out.tab)
       - None    ... no transformation of the output
     multiple: yes
-    multiple_sep: ;
   - name: --genomeChrSetMitochondrial
     type: string
     description: names of the mitochondrial chromosomes. Presently only used for STARsolo
@@ -52,7 +49,6 @@ argument_groups:
     - M
     - MT
     multiple: yes
-    multiple_sep: ;
 - name: Splice Junctions Database
   arguments:
   - name: --sjdbFileChrStartEnd
@@ -61,7 +57,6 @@ argument_groups:
       end <tab> strand) for the splice junction introns. Multiple files can be supplied
       and will be concatenated.
     multiple: yes
-    multiple_sep: ;
   - name: --sjdbGTFfile
     type: file
     description: path to the GTF file with annotations
@@ -88,7 +83,6 @@ argument_groups:
     description: GTF attribute name for parent gene name
     example: gene_name
     multiple: yes
-    multiple_sep: ;
   - name: --sjdbGTFtagExonParentGeneType
     type: string
     description: GTF attribute name for parent gene type
@@ -96,7 +90,6 @@ argument_groups:
     - gene_type
     - gene_biotype
     multiple: yes
-    multiple_sep: ;
   - name: --sjdbOverhang
     type: integer
     description: length of the donor/acceptor sequence on each side of the junctions,
@@ -140,7 +133,6 @@ argument_groups:
       - None    ... do not keep any tags
     example: All
     multiple: yes
-    multiple_sep: ;
   - name: --readFilesManifest
     type: file
     description: |-
@@ -162,7 +154,6 @@ argument_groups:
 
       For example: zcat - to uncompress .gz files, bzcat - to uncompress .bz2 files, etc.
     multiple: yes
-    multiple_sep: ;
   - name: --readMapNumber
     type: integer
     description: |-
@@ -181,7 +172,6 @@ argument_groups:
       in output (read name after space is always trimmed)
     example: /
     multiple: yes
-    multiple_sep: ;
   - name: --readQualityScoreBase
     type: integer
     description: number to be subtracted from the ASCII code to get Phred quality
@@ -204,7 +194,6 @@ argument_groups:
       given, it will be assumed the same for both mates.
     example: 0
     multiple: yes
-    multiple_sep: ;
   - name: --clip3pAdapterSeq
     type: string
     description: |-
@@ -212,28 +201,24 @@ argument_groups:
 
       - polyA ... polyA sequence with the length equal to read length
     multiple: yes
-    multiple_sep: ;
   - name: --clip3pAdapterMMp
     type: double
     description: max proportion of mismatches for 3p adapter clipping for each mate.  If
       one value is given, it will be assumed the same for both mates.
     example: 0.1
     multiple: yes
-    multiple_sep: ;
   - name: --clip3pAfterAdapterNbases
     type: integer
     description: number of bases to clip from 3p of each mate after the adapter clipping.
       If one value is given, it will be assumed the same for both mates.
     example: 0
     multiple: yes
-    multiple_sep: ;
   - name: --clip5pNbases
     type: integer
     description: number(s) of bases to clip from 5p of each mate. If one value is
       given, it will be assumed the same for both mates.
     example: 0
     multiple: yes
-    multiple_sep: ;
 - name: Limits
   arguments:
   - name: --limitGenomeGenerateRAM
@@ -247,7 +232,6 @@ argument_groups:
     - 30000000
     - 50000000
     multiple: yes
-    multiple_sep: ;
   - name: --limitOutSAMoneReadBytes
     type: long
     description: 'max size of the SAM record (bytes) for one read. Recommended value:
@@ -333,7 +317,6 @@ argument_groups:
       - SortedByCoordinate ... sorted by coordinate. This option will allocate extra memory for sorting which can be specified by --limitBAMsortRAM.
     example: SAM
     multiple: yes
-    multiple_sep: ;
   - name: --outSAMmode
     type: string
     description: |-
@@ -390,7 +373,6 @@ argument_groups:
       - vR          ... read coordinate of the variant.
     example: Standard
     multiple: yes
-    multiple_sep: ;
   - name: --outSAMattrIHstart
     type: integer
     description: start value for the IH attribute. 0 may be required by some downstream
@@ -407,7 +389,6 @@ argument_groups:
       2nd word:
       - KeepPairs ... record unmapped mate for each alignment, and, in case of unsorted output, keep it adjacent to its mapped mate. Only affects multi-mapping reads.
     multiple: yes
-    multiple_sep: ;
   - name: --outSAMorder
     type: string
     description: |-
@@ -458,17 +439,14 @@ argument_groups:
       Comma separated RG lines correspons to different (comma separated) input files in --readFilesIn. Commas have to be surrounded by spaces, e.g.
       --outSAMattrRGline ID:xxx , ID:zzz "DS:z z" , ID:yyy DS:yyyy
     multiple: yes
-    multiple_sep: ;
   - name: --outSAMheaderHD
     type: string
     description: '@HD (header) line of the SAM header'
     multiple: yes
-    multiple_sep: ;
   - name: --outSAMheaderPG
     type: string
     description: extra @PG (software) line of the SAM header (in addition to STAR)
     multiple: yes
-    multiple_sep: ;
   - name: --outSAMheaderCommentFile
     type: string
     description: path to the file with @CO (comment) lines of the SAM header
@@ -480,7 +458,6 @@ argument_groups:
       - KeepOnlyAddedReferences ... only keep the reads for which all alignments are to the extra reference sequences added with --genomeFastaFiles at the mapping stage.
       - KeepAllAddedReferences ...  keep all alignments to the extra reference sequences added with --genomeFastaFiles at the mapping stage.
     multiple: yes
-    multiple_sep: ;
   - name: --outSAMmultNmax
     type: integer
     description: |-
@@ -539,7 +516,6 @@ argument_groups:
       - read1_5p   ... signal from only 5' of the 1st read, useful for CAGE/RAMPAGE etc
       - read2      ... signal from only 2nd read
     multiple: yes
-    multiple_sep: ;
   - name: --outWigStrand
     type: string
     description: |-
@@ -664,7 +640,6 @@ argument_groups:
     - 12
     - 12
     multiple: yes
-    multiple_sep: ;
   - name: --outSJfilterCountUniqueMin
     type: integer
     description: |-
@@ -678,7 +653,6 @@ argument_groups:
     - 1
     - 1
     multiple: yes
-    multiple_sep: ;
   - name: --outSJfilterCountTotalMin
     type: integer
     description: |-
@@ -692,7 +666,6 @@ argument_groups:
     - 1
     - 1
     multiple: yes
-    multiple_sep: ;
   - name: --outSJfilterDistToOtherSJmin
     type: integer
     description: |-
@@ -705,7 +678,6 @@ argument_groups:
     - 5
     - 10
     multiple: yes
-    multiple_sep: ;
   - name: --outSJfilterIntronMaxVsReadN
     type: integer
     description: |-
@@ -718,7 +690,6 @@ argument_groups:
     - 100000
     - 200000
     multiple: yes
-    multiple_sep: ;
 - name: Scoring
   arguments:
   - name: --scoreGap
@@ -836,7 +807,6 @@ argument_groups:
     - 0
     - 0
     multiple: yes
-    multiple_sep: ;
   - name: --alignSJDBoverhangMin
     type: integer
     description: minimum overhang (i.e. block size) for annotated (sjdb) spliced alignments
@@ -953,7 +923,6 @@ argument_groups:
       - WithinBAM SoftClip  ... soft-clipping in the CIGAR for supplemental chimeric alignments
     example: Junctions
     multiple: yes
-    multiple_sep: ;
   - name: --chimSegmentMin
     type: integer
     description: minimum length of chimeric segment length, if ==0, no chimeric output
@@ -993,7 +962,6 @@ argument_groups:
       - banGenomicN ... Ns are not allowed in the genome sequence around the chimeric junction
     example: banGenomicN
     multiple: yes
-    multiple_sep: ;
   - name: --chimMainSegmentMultNmax
     type: integer
     description: maximum number of multi-alignments for the main chimeric segment.
@@ -1036,7 +1004,6 @@ argument_groups:
       - TranscriptomeSAM ... output SAM/BAM alignments to transcriptome into a separate file
       - GeneCounts       ... count reads per gene
     multiple: yes
-    multiple_sep: ;
   - name: --quantTranscriptomeBAMcompression
     type: integer
     description: |-
@@ -1089,7 +1056,6 @@ argument_groups:
       - CB_samTagOut    ... output Cell Barcode as CR and/or CB SAm tag. No UMI counting. --readFilesIn cDNA_read1 [cDNA_read2 if paired-end] CellBarcode_read . Requires --outSAMtype BAM Unsorted [and/or SortedByCoordinate]
       - SmartSeq        ... Smart-seq: each cell in a separate FASTQ (paired- or single-end), barcodes are corresponding read-groups, no UMI sequences, alignments deduplicated according to alignment start and end (after extending soft-clipped bases)
     multiple: yes
-    multiple_sep: ;
   - name: --soloCBwhitelist
     type: string
     description: |-
@@ -1097,7 +1063,6 @@ argument_groups:
 
       - None            ... no whitelist: all cell barcodes are allowed
     multiple: yes
-    multiple_sep: ;
   - name: --soloCBstart
     type: integer
     description: cell barcode start base
@@ -1144,7 +1109,6 @@ argument_groups:
       Example: inDrop (Zilionis et al, Nat. Protocols, 2017):
       --soloCBposition  0_0_2_-1  3_1_3_8
     multiple: yes
-    multiple_sep: ;
   - name: --soloUMIposition
     type: string
     description: |-
@@ -1181,7 +1145,6 @@ argument_groups:
       For instance, for 10X CellRanger or STARsolo BAMs, use --soloInputSAMattrBarcodeSeq CR UR .
       This parameter is required when running STARsolo with input from SAM.
     multiple: yes
-    multiple_sep: ;
   - name: --soloInputSAMattrBarcodeQual
     type: string
     description: |-
@@ -1190,7 +1153,6 @@ argument_groups:
       For instance, for 10X CellRanger or STARsolo BAMs, use --soloInputSAMattrBarcodeQual CY UY .
       If this parameter is '-' (default), the quality 'H' will be assigned to all bases.
     multiple: yes
-    multiple_sep: ;
   - name: --soloStrand
     type: string
     description: |-
@@ -1212,7 +1174,6 @@ argument_groups:
       - GeneFull_Ex50pAS        ... full gene (pre-RNA): count all reads overlapping genes' exons and introns: prioritize >50% overlap with exons. Do not count reads with 100% exonic overlap in the antisense direction.
     example: Gene
     multiple: yes
-    multiple_sep: ;
   - name: --soloMultiMappers
     type: string
     description: |-
@@ -1225,7 +1186,6 @@ argument_groups:
       - EM         ... multi-gene UMIs are distributed using Expectation Maximization algorithm
     example: Unique
     multiple: yes
-    multiple_sep: ;
   - name: --soloUMIdedup
     type: string
     description: |-
@@ -1239,7 +1199,6 @@ argument_groups:
       - 1MM_CR                      ... CellRanger2-4 algorithm for 1MM UMI collapsing.
     example: 1MM_All
     multiple: yes
-    multiple_sep: ;
   - name: --soloUMIfiltering
     type: string
     description: |-
@@ -1251,7 +1210,6 @@ argument_groups:
       - MultiGeneUMI_CR    ... basic + remove lower-count UMIs that map to more than one gene, matching CellRanger > 3.0.0 .
       Only works with --soloUMIdedup 1MM_CR
     multiple: yes
-    multiple_sep: ;
   - name: --soloOutFileNames
     type: string
     description: |-
@@ -1264,7 +1222,6 @@ argument_groups:
     - barcodes.tsv
     - matrix.mtx
     multiple: yes
-    multiple_sep: ;
   - name: --soloCellFilter
     type: string
     description: |-
@@ -1284,14 +1241,12 @@ argument_groups:
     - '0.99'
     - '10'
     multiple: yes
-    multiple_sep: ;
   - name: --soloOutFormatFeaturesGeneField3
     type: string
     description: field 3 in the Gene features.tsv file. If "-", then no 3rd field
       is output.
     example: Gene Expression
     multiple: yes
-    multiple_sep: ;
   - name: --soloCellReadStats
     type: string
     description: |-

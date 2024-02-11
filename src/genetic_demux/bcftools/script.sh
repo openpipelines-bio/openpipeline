@@ -3,7 +3,7 @@ if [ ! -d "$par_output" ]; then
   mkdir -p $par_output
 fi
 
-IFS="," read -a vcf_list <<< $par_vcf
+IFS=";" read -a vcf_list <<< $par_vcf
 
 
 if [ "$par_concat" = true ] && [ "$par_filter" = true ] ; then

@@ -15,7 +15,6 @@ functionality:
           description: The fasta files to be included in the reference. Corresponds to the --genomeFastaFiles argument in the STAR command.
           example: [ chr1.fasta, chr2.fasta ]
           multiple: true
-          multiple_sep: " "
         - name: --transcriptome_gtf
           alternatives: --sjdbGTFfile
           type: file

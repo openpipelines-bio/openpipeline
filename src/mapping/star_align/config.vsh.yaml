@@ -20,7 +20,6 @@ functionality:
           description: The FASTQ files to be analyzed. Corresponds to the --readFilesIn argument in the STAR command.
           example: [ mysample_S1_L001_R1_001.fastq.gz, mysample_S1_L001_R2_001.fastq.gz ]
           multiple: true
-          multiple_sep: ";"
         - type: file
           name: --reference
           alternatives: --genomeDir

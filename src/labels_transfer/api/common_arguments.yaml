@@ -86,7 +86,6 @@
           default: [ ann_level_1, ann_level_2, ann_level_3, ann_level_4, ann_level_5, ann_finest_level ]
           required: false
           multiple: true
-          multiple_sep: ","
           description: The `.obs` key of the target labels to tranfer.
     - name: Outputs
       arguments:

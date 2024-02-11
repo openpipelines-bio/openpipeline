@@ -12,14 +12,12 @@ functionality:
       alternatives: ["-i"]
       type: file
       multiple: true
-      multiple_sep: ','
       description: Paths to the different samples to be concatenated.
       required: true
       example: sample_paths
     - name: "--input_id"
       type: string
       multiple: true
-      multiple_sep: ','
       description: |
         Names of the different samples that have to be concatenated.  Must be specified when using '--mode move'.
         In this case, the ids will be used for the columns names of the dataframes registring the conflicts.

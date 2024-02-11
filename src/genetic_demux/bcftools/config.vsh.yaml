@@ -10,7 +10,6 @@ functionality:
       type: file
       required: true
       multiple: true
-      multiple_sep: ","
       description: VCF files, must have the same sample columns appearing in the same order.
     - name: "--concat"
       type: boolean_true
