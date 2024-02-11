@@ -80,6 +80,7 @@ functionality:
         #   example: "..."
         #   multiple: true
         #        - type: string
+        - type: string
           name: --library_lanes
           required: false
           description: Lanes associated with this sample. Defaults to using all lanes.
