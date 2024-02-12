@@ -346,7 +346,7 @@ def test_resolve_annotation_conflict_missing_column(run_component, copied_mudata
     original_data_path = tmp_path / f"{uuid.uuid4().hex}.h5mu"
     original_data.write_h5mu(original_data_path)
     run_component([
-        "--input_id", "mouse;human,sample_without_column",
+        "--input_id", "mouse;human;sample_without_column",
         "--input", tempfile_input1,
         "--input", tempfile_input2,
         "--input", original_data_path,
