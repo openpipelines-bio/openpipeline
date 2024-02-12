@@ -80,7 +80,4 @@ platforms:
     image: python:3.8
     setup:
       - type: python
-        packages:
-          - anndata
-          - mudata
-          - scanpy
+        __merge__: [ /src/base/requirements/scanpy.yaml, /src/base/requirements/anndata_mudata.yaml ]

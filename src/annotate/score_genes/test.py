@@ -1,11 +1,5 @@
 import mudata as mu
 
-## VIASH START
-meta = {
-    "resources_dir": "resources_test"
-}
-## VIASH END
-
 input_file = f"{meta['resources_dir']}/merge_test_data/pbmc_1k_protein_v3_filtered_feature_bc_matrix_rna.h5mu"
 output_file = f"{meta['temp_dir']}/output.h5mu"
 
