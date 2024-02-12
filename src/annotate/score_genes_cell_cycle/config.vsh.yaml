@@ -63,6 +63,11 @@ functionality:
   resources:
     - path: script.py
       type: python_script
+  test_resources:
+    - type: python_script
+      path: test.py
+    - path: /resources_test/merge_test_data
+    
 platforms:
   - type: docker
     image: python:3.8

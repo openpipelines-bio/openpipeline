@@ -23,12 +23,13 @@ def test_cell_scoring(run_component):
     run_component([
         "--input", input_file,
         "--gene_list", gene_list_file,
-        "--output", output_file
+        "--output", output_file,
+        "--score_name", 'cell_cycle_score'
     ])
 
     output = mu.read(output_file)
     
     # check output
-    expected_rna_obs_cols = ["score"]
+    expected_rna_obs_cols = ["cell_cycle_score"]
     for col in expected_rna_obs_cols:
         assert col in output.mod["rna"].obs.columns, f"could not find columns .mod['rna'].obs['{col}']"
