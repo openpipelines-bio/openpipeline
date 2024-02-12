@@ -155,6 +155,8 @@ def transform_helper_inputs(par: dict[str, ...]) -> dict[str, ...]:
                 helper_input["library_id"].append(library_id)
                 helper_input["library_type"].append(library_type)
 
+    assert len(helper_input["library_id"]) == len(set(helper_input["library_id"])), "File names passed to feature type-specific inputs must be unique"
+
     return helper_input
 
 def lengths_gt1(dic: dict[str, Optional[list[Any]]]) -> dict[str, int]:
