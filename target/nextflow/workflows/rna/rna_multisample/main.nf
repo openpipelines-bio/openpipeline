@@ -3164,7 +3164,7 @@ meta = [
           "functionalityNamespace" : "transform",
           "output" : "",
           "platform" : "",
-          "git_commit" : "94335c469377150f97ad6ca98fb2d53ab600d01a",
+          "git_commit" : "5dade9bb008b1d4f0ecaa5b73b4c406eb9f02929",
           "executable" : "/nextflow/transform/normalize_total/main.nf"
         },
         "writtenPath" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/transform/normalize_total"
@@ -3185,7 +3185,7 @@ meta = [
           "functionalityNamespace" : "transform",
           "output" : "",
           "platform" : "",
-          "git_commit" : "94335c469377150f97ad6ca98fb2d53ab600d01a",
+          "git_commit" : "5dade9bb008b1d4f0ecaa5b73b4c406eb9f02929",
           "executable" : "/nextflow/transform/log1p/main.nf"
         },
         "writtenPath" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/transform/log1p"
@@ -3206,7 +3206,7 @@ meta = [
           "functionalityNamespace" : "feature_annotation",
           "output" : "",
           "platform" : "",
-          "git_commit" : "94335c469377150f97ad6ca98fb2d53ab600d01a",
+          "git_commit" : "5dade9bb008b1d4f0ecaa5b73b4c406eb9f02929",
           "executable" : "/nextflow/feature_annotation/highly_variable_features_scanpy/main.nf"
         },
         "writtenPath" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/feature_annotation/highly_variable_features_scanpy"
@@ -3228,7 +3228,7 @@ meta = [
           "functionalityNamespace" : "workflows/qc",
           "output" : "",
           "platform" : "",
-          "git_commit" : "94335c469377150f97ad6ca98fb2d53ab600d01a",
+          "git_commit" : "5dade9bb008b1d4f0ecaa5b73b4c406eb9f02929",
           "executable" : "/nextflow/workflows/qc/qc/main.nf"
         },
         "writtenPath" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/workflows/qc/qc"
@@ -3249,7 +3249,7 @@ meta = [
           "functionalityNamespace" : "transform",
           "output" : "",
           "platform" : "",
-          "git_commit" : "94335c469377150f97ad6ca98fb2d53ab600d01a",
+          "git_commit" : "5dade9bb008b1d4f0ecaa5b73b4c406eb9f02929",
           "executable" : "/nextflow/transform/delete_layer/main.nf"
         },
         "writtenPath" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/transform/delete_layer"
@@ -3270,7 +3270,7 @@ meta = [
           "functionalityNamespace" : "metadata",
           "output" : "",
           "platform" : "",
-          "git_commit" : "94335c469377150f97ad6ca98fb2d53ab600d01a",
+          "git_commit" : "5dade9bb008b1d4f0ecaa5b73b4c406eb9f02929",
           "executable" : "/nextflow/metadata/add_id/main.nf"
         },
         "writtenPath" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/metadata/add_id"
@@ -3337,7 +3337,7 @@ meta = [
     "platform" : "nextflow",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/workflows/rna/rna_multisample",
     "viash_version" : "0.8.3",
-    "git_commit" : "94335c469377150f97ad6ca98fb2d53ab600d01a",
+    "git_commit" : "5dade9bb008b1d4f0ecaa5b73b4c406eb9f02929",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))
