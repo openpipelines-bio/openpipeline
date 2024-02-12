@@ -15,13 +15,15 @@ functionality:
         - name: --gene_list
           type: file
           description: |
-            Path to a .txt file containing the gene list to be scored. The gene list file should be formatted as a single column with gene symbols.
+            Path to a .txt file containing the gene list to be scored.
+            The gene list file should be formatted as a single column with gene symbols.
           required: true
           example: gene_list.txt
         - name: --gene_pool
           type: file
           description: |
-            File with genes for sampling the reference set. Default is all genes. The gene pool file should be formatted as a single column with gene symbols.
+            File with genes for sampling the reference set. Default is all genes.
+            The gene pool file should be formatted as a single column with gene symbols.
           required: false
           example: gene_pool.txt
 
@@ -42,23 +44,24 @@ functionality:
           default: 50
           required: false
           description: |
-            Number of reference genes to be sampled from each bin. If len(gene_list) is not too low, you can set ctrl_size=len(gene_list).
+            Number of reference genes to be sampled from each bin. 
+            If len(gene_list) is not too low, you can set ctrl_size=len(gene_list).
         - name: --n_bins
           type: integer
           default: 25
           required: false
           description: |
-            Number of bins for discretizing expression. A larger number of bins will result in scores that are more specific to individual cell states, but also noisier.
+            Number of expression level bins for sampling.
         - name: --score_name
           type: string
           default: score
           required: false
           description: |
-            Name of the field to be added in .obs.
+            Name of the score field to be added in .obs.
         - name: --random_state
           type: integer
           description: |
-            Random seed to use: providing a value will make the results deterministic.
+            The random seed for sampling.
           default: 0
           required: false
         - name: --use_raw
