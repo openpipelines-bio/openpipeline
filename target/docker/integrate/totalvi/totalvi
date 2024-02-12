@@ -486,7 +486,7 @@ function ViashDockerCheckCommands {
 #   ViashDockerFile
 function ViashDockerfile {
   cat << 'VIASHDOCKER'
-FROM python:3.9
+FROM nvcr.io/nvidia/pytorch:23.09-py3
 
 ENTRYPOINT []
 
@@ -496,13 +496,13 @@ RUN apt-get update && \
   rm -rf /var/lib/apt/lists/*
 
 RUN pip install --upgrade pip && \
-  pip install --upgrade --no-cache-dir "anndata~=0.9.1" "mudata~=0.2.3" "pandas!=2.1.2" "torchmetrics~=0.11.0" "scvi-tools~=1.0.3"
+  pip install --upgrade --no-cache-dir "anndata~=0.9.1" "mudata~=0.2.3" "pandas!=2.1.2" "scvi-tools~=1.0.3" "jaxlib<0.4.23" "jax<0.4.23"
 
 LABEL org.opencontainers.image.authors="Vladimir Shitov"
 LABEL org.opencontainers.image.description="Companion container for running component integrate totalvi"
-LABEL org.opencontainers.image.created="2024-02-12T12:56:32Z"
+LABEL org.opencontainers.image.created="2024-02-12T14:57:23Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="e1895f1c70f820796581d5889bdd948aa18cb286"
+LABEL org.opencontainers.image.revision="ddb9ffa41fb6a7e18cec7e0b8cedff7ec61e874e"
 LABEL org.opencontainers.image.version="main_build"
 
 VIASHDOCKER

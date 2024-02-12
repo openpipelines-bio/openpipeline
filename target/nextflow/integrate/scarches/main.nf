@@ -3107,7 +3107,8 @@ meta = [
             "mudata~=0.2.3",
             "pandas!=2.1.2",
             "scvi-tools~=1.0.3",
-            "pandas~=2.1.0"
+            "jaxlib<0.4.23",
+            "jax<0.4.23"
           ],
           "upgrade" : true
         }
@@ -3189,7 +3190,7 @@ meta = [
     "platform" : "nextflow",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/integrate/scarches",
     "viash_version" : "0.8.3",
-    "git_commit" : "e1895f1c70f820796581d5889bdd948aa18cb286",
+    "git_commit" : "ddb9ffa41fb6a7e18cec7e0b8cedff7ec61e874e",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))
