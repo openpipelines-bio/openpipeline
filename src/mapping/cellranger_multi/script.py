@@ -209,7 +209,7 @@ def process_params(par: dict[str, Any]) -> str:
     # add helper input
     helper_input = transform_helper_inputs(par)
     for key in ["input", "library_id", "library_type"]:
-      par[key] = (par[key] if par[key] else []) + helper_input[key]
+      par[key] = par.setdefault(key, []) + helper_input[key]
       assert len(par[key]) > 0, f"Either --{key} or feature type-specific input (e.g. --gex_input, --abc_input, ...) must be defined"
 
     # check lengths of libraries metadata
