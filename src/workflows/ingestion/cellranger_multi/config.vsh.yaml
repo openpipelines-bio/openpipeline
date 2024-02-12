@@ -273,4 +273,3 @@ functionality:
     - path: /resources_test/reference_gencodev41_chr1
 platforms:
   - type: nextflow
-  
