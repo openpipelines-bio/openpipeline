@@ -14,13 +14,13 @@ functionality:
         - name: --gene_list
           type: file
           description: |
-            Path to a .txt file containing the gene list to be scored. The gene list should be formatted as a single column with gene symbols.
+            Path to a .txt file containing the gene list to be scored. The gene list file should be formatted as a single column with gene symbols.
           required: true
           example: gene_list.txt
         - name: --gene_pool
           type: file
           description: |
-            File with genes for sampling the reference set. Default is all genes.
+            File with genes for sampling the reference set. Default is all genes. The gene pool file should be formatted as a single column with gene symbols.
           required: false
           example: gene_pool.txt
 
