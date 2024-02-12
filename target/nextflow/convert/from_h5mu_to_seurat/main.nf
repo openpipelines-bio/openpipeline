@@ -3013,7 +3013,7 @@ meta = [
     "platform" : "nextflow",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/convert/from_h5mu_to_seurat",
     "viash_version" : "0.8.3",
-    "git_commit" : "75579743424d7d896a81fe7256712dfce42f4469",
+    "git_commit" : "e1895f1c70f820796581d5889bdd948aa18cb286",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))
