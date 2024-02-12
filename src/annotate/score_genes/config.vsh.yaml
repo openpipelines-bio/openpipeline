@@ -16,7 +16,7 @@ functionality:
           description: |
             Path to a .txt file containing the gene list to be scored. The gene list should be formatted as a single column with gene symbols.
           required: true
-          example: genes.txt
+          example: gene_list.txt
         - name: --gene_pool
           type: file
           description: |
@@ -58,13 +58,14 @@ functionality:
           type: integer
           description: |
             Random seed to use: providing a value will make the results deterministic.
+          default: 0
           required: false
         - name: --use_raw
           type: boolean
           description: |
             Whether to use raw attribute of adata. Defaults to True if .raw is present.
           required: false
-          
+
   resources:
     - path: script.py
       type: python_script
