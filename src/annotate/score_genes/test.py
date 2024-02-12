@@ -22,7 +22,7 @@ def test_cell_scoring(run_component):
     ])
 
     output = mu.read(output_file)
-    
+
     # check output
     expected_rna_obs_cols = ["cell_cycle_score"]
     for col in expected_rna_obs_cols:
