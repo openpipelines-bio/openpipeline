@@ -148,10 +148,7 @@ def transform_helper_inputs(par: dict[str, ...]) -> dict[str, ...]:
 
             library_id_dict = {}
             for fastq, library_id in zip(par[input_type], library_ids):
-                if library_id not in library_id_dict:
-                    library_id_dict[library_id] = [fastq]
-                else:
-                    library_id_dict[library_id].append(fastq)
+                library_id_dict.setdefault(library_id, []).append(fastq)
 
             for library_id, input in library_id_dict.items():
                 helper_input["input"] += input
