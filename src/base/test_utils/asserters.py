@@ -7,10 +7,10 @@ from mudata import MuData
 from anndata import AnnData
 from pathlib import Path
 from pandas.testing import assert_frame_equal
-from typing import Union, TypeAlias, Literal
+from typing import Union, Literal
 
-AnnotationObject: TypeAlias = Union[MuData, AnnData]
-AnnotationObjectOrPathLike: TypeAlias = Union[AnnotationObject, str, Path]
+AnnotationObject = Union[MuData, AnnData]
+AnnotationObjectOrPathLike = Union[AnnotationObject, str, Path]
 
 def _read_if_needed(anndata_mudata_path_or_obj):
     if isinstance(anndata_mudata_path_or_obj, (str, Path)):
@@ -92,7 +92,7 @@ def _assert_layer_equal(left, right):
                                  f"\n[left]:{left.getformat()}\n[right]: {right.getformat()}")
         assert np.all(left.indices == right.indices), "Layers differ: indices are not the same"
         assert np.all(left.indptr == right.indptr), "Layers differ: index pointers are not the same"
-        np.testing.assert_allclose(left, right, 
+        np.testing.assert_allclose(left.data, right.data, 
                                   err_msg="Layers data differs.", equal_nan=True)
     else:
         if issparse(right):

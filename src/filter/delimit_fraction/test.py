@@ -11,10 +11,13 @@ meta = {
     'resources_dir': 'resources_test/',
     'config': "./src/filter/delimit_fraction/config.vsh.yaml"
 }
+sys.path.append('./src/base/test_utils')
 
 ## VIASH END
 
 sys.path.append(meta["resources_dir"])
+from test_utils.asserters import assert_annotation_objects_equal
+
 # START TEMPORARY WORKAROUND setup_logger
 # reason: resources aren't available when using Nextflow fusion
 # from setup_logger import setup_logger
@@ -41,76 +44,58 @@ def original_input_path():
 @pytest.fixture
 def input_h5mu(original_input_path):
     input_data = mu.read_h5mu(original_input_path)
-    input_data.mod['rna'].obs['test_fraction'] = np.random.rand(input_data.mod['rna'].n_obs)
+    input_data.mod['rna'].obs['test_fraction'] = \
+        np.random.rand(input_data.mod['rna'].n_obs)
     return input_data
 
 
 @pytest.fixture
 def input_h5mu_string_data(original_input_path):
     input_data = mu.read_h5mu(original_input_path)
-    input_data.mod['rna'].obs['test_fraction'] = np.random.choice(['these', 'are', 'random', 'values'], input_data.mod['rna'].n_obs)
+    string_data = ['these', 'are', 'random', 'values']
+    input_data.mod['rna'].obs['test_fraction'] = \
+          np.random.choice(string_data, input_data.mod['rna'].n_obs)
     return input_data
 
 @pytest.fixture
-def input_path(input_h5mu, tmp_path):
-    output_path = tmp_path / "temp_h5mu.h5mu"
+def input_path(input_h5mu, random_h5mu_path):
+    output_path = random_h5mu_path()
     input_h5mu.write(output_path)
     return output_path
 
 
 @pytest.fixture
-def input_path_string_data(input_h5mu_string_data, tmp_path):
-    output_path = tmp_path / "temp_h5mu_string.h5mu"
+def input_path_string_data(input_h5mu_string_data, random_h5mu_path):
+    output_path = random_h5mu_path()
     input_h5mu_string_data.write(output_path)
     return output_path
 
-@pytest.fixture
-def input_n_rna_obs(input_h5mu):
-    return input_h5mu.mod['rna'].n_obs
-
-@pytest.fixture
-def input_n_prot_obs(input_h5mu):
-    return input_h5mu.mod['prot'].n_obs
-
-@pytest.fixture
-def input_n_rna_vars(input_h5mu):
-    return input_h5mu.mod['rna'].n_vars
-
-@pytest.fixture
-def input_n_prot_vars(input_h5mu):
-    return input_h5mu.mod['prot'].n_vars
-
-def test_filter_nothing(run_component, input_path,
-                        input_n_rna_obs, input_n_prot_obs,
-                        input_n_rna_vars, input_n_prot_vars):
+def test_filter_nothing(run_component, input_path, random_h5mu_path):
+    output_path = random_h5mu_path()
     run_component([
         "--input", input_path,
-        "--output", "output-1.h5mu",
+        "--output", output_path,
         "--min_fraction", "0",
         "--max_fraction", "1",
         "--output_compression", "gzip",
         "--obs_name_filter", "test_output",
         "--obs_fraction_column", "test_fraction"
         ])
-    assert Path("output-1.h5mu").is_file()
-    mu_out = mu.read_h5mu("output-1.h5mu")
+    assert Path(output_path).is_file()
+    mu_out = mu.read_h5mu(output_path)
     assert "test_output" in mu_out.mod["rna"].obs
-    new_obs = mu_out.mod['rna'].n_obs
-    new_vars = mu_out.mod['rna'].n_vars
-    assert new_obs == input_n_rna_obs
-    assert new_vars == input_n_rna_vars
-    assert mu_out.mod['prot'].n_obs == input_n_prot_obs
-    assert mu_out.mod['prot'].n_vars == input_n_prot_vars
     assert mu_out.mod['rna'].obs['test_output'].all()
-    assert list(mu_out.mod['rna'].var['feature_types'].cat.categories) == ["Gene Expression"]
-    assert list(mu_out.mod['prot'].var['feature_types'].cat.categories) == ["Antibody Capture"]
 
-def test_filtering_a_little(run_component, input_path,
-                            input_n_rna_obs, input_n_prot_obs,
-                            input_n_rna_vars, input_n_prot_vars):
+    mu_out.mod['rna'].obs = mu_out.mod['rna'].obs.drop(["test_output"], axis=1)
+    mu_out.obs = mu_out.obs.drop(["rna:test_output"], axis=1)
+    mu_out.update()
+    assert_annotation_objects_equal(input_path, mu_out) 
+
+def test_filtering_a_little(run_component, input_path, random_h5mu_path):
+    output_path = random_h5mu_path()
     run_component([
         "--input", input_path,
-        "--output", "output-2.h5mu",
+        "--output", output_path,
         "--min_fraction", "0.5",
         "--max_fraction", "0.7",
         "--output_compression", "gzip",
@@ -118,25 +103,24 @@ def test_filtering_a_little(run_component, input_path,
         "--obs_fraction_column", "test_fraction"     
     ])
 
-    assert Path("output-2.h5mu").is_file()
-    mu_out = mu.read_h5mu("output-2.h5mu")
-    new_obs = mu_out.mod['rna'].n_obs
-    new_vars = mu_out.mod['rna'].n_vars
-    assert new_obs == input_n_rna_obs
-    assert new_vars == input_n_rna_vars
-    assert mu_out.mod['prot'].n_obs == input_n_prot_obs
-    assert mu_out.mod['prot'].n_vars == input_n_prot_vars
-    assert list(mu_out.mod['rna'].var['feature_types'].cat.categories) == ["Gene Expression"]
+    assert Path(output_path).is_file()
+    mu_out = mu.read_h5mu(output_path)
     assert not mu_out.mod['rna'].obs['test_output'].all()
-    assert list(mu_out.mod['rna'].var['feature_types'].cat.categories) == ["Gene Expression"]
-    assert list(mu_out.mod['prot'].var['feature_types'].cat.categories) == ["Antibody Capture"]
+    assert mu_out.mod['rna'].obs['test_output'].any()
+
+    mu_out.mod['rna'].obs = mu_out.mod['rna'].obs.drop(["test_output"], axis=1)
+    mu_out.obs = mu_out.obs.drop(["rna:test_output"], axis=1)
+    mu_out.update()
+    assert_annotation_objects_equal(input_path, mu_out)  
 
 
-def test_filtering_wrong_data_raises(run_component, input_path_string_data):
+def test_filtering_wrong_data_raises(run_component, input_path_string_data,
+                                     random_h5mu_path):
+    output_path = random_h5mu_path()
     with pytest.raises(CalledProcessError) as err:
         run_component([
             "--input", input_path_string_data,
-            "--output", "output-2.h5mu",
+            "--output", output_path,
             "--min_fraction", "0.5",
             "--max_fraction", "0.7",
             "--output_compression", "gzip",
@@ -148,4 +132,4 @@ def test_filtering_wrong_data_raises(run_component, input_path_string_data):
 
 
 if __name__ == "__main__":
-    exit(pytest.main([__file__]))
+    exit(pytest.main([__file__], plugins=["test_utils.fixtures"]))
