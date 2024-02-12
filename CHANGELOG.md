@@ -105,6 +105,8 @@ of a split multimodal files. The modalities in the list must be unique and after
 
 * Added the `gdo_singlesample` pipeline with basic count filtering (PR #672).
 
+* Enable dataset functionality for nf-tower (PR #701)
+
 ## MINOR CHANGES
 * Refactored `rna_multisample` (PR #607), `cellranger_multi` (PR #609), `cellranger_mapping` (PR #610) and other (PR #606) pipelines to use `fromState` and `toState` functionality.
 
