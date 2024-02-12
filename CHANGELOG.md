@@ -105,6 +105,8 @@ of a split multimodal files. The modalities in the list must be unique and after
 
 * Added the `gdo_singlesample` pipeline with basic count filtering (PR #672).
 
+* Addded `annotate/score_genes` and `annotate/score_genes_cell_cycle` to calculate scanpy gene scores (PR #703).
+
 ## MINOR CHANGES
 * Refactored `rna_multisample` (PR #607), `cellranger_multi` (PR #609), `cellranger_mapping` (PR #610) and other (PR #606) pipelines to use `fromState` and `toState` functionality.
 
