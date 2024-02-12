@@ -12,6 +12,7 @@ workflow run_wf {
       fromState: { id, state ->
         [
           "input": state.input,
+          "input_layer": state.layer, 
           "output_layer": "normalized",
           "modality": state.modality
         ]
@@ -56,13 +57,12 @@ workflow run_wf {
     | rna_qc.run(
       // TODO: remove when viash 0.8.3 is released
       key: "rna_qc",
-      // layer: null to use .X and not log transformed
       fromState: {id, state ->
         [
           "id": id,
           "input": state.input,
           "output": state.workflow_output,
-          "input_layer": null,
+          "layer": state.layer, // Use the non-transformed layer
           "output_compression": "gzip",
           "modality": state.modality,
           "var_qc_metrics": state.var_qc_metrics,

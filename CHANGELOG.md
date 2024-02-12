@@ -105,6 +105,14 @@ of a split multimodal files. The modalities in the list must be unique and after
 
 * Added the `gdo_singlesample` pipeline with basic count filtering (PR #672).
 
+* `process_samples` pipeline: the `--rna_layer`, `--prot_layer` and `gdo_layer` argument can not be used to specify an alternative layer to .X where the raw data are stored. To enable this feature, the following changes were required:
+  - Added `transform/move_layer` component.
+  - `filter/filter_with_scrublet`: added `--layer` argument.
+  - `transform/clr`: added `--input_layer` argument.
+  - `metadata/grep_annotation_column`: added `--input_layer` argument.
+  - `rna/rna_singlesample`, `rna/rna_multisample`, `prot/prot_singlesample` and `prot/prot_multisample`: add `--layer` argument.
+  - `process_batches`: Added `rna_layer` and `prot_layer` arguments.
+
 ## MINOR CHANGES
 * Refactored `rna_multisample` (PR #607), `cellranger_multi` (PR #609), `cellranger_mapping` (PR #610) and other (PR #606) pipelines to use `fromState` and `toState` functionality.
 
@@ -141,6 +149,16 @@ of a split multimodal files. The modalities in the list must be unique and after
 * `qc/calculate_qc_metrics`: Resolved an issue where statistics based on the input columns selected with `--var_qc_metrics` were incorrect when these input columns were encoded in `pd.BooleanDtype()` (PR #685).
 
 * `move_obsm_to_obs`: fix setting output columns when they already exist (PR #690).
+
+* `workflows/dimensionality_reduction` workflow: nearest neighbour calculations no longer recalcalates the PCA when `obm_input` `--obsm_pca` is not set to `X_pca`.
+
+* `feature_annotation/highly_variable_scanpy`: fix .X being used to remove observations with 0 counts when `--layer` has been specified. 
+
+* `filter/filter_with_counts`: fix `--layer` argument not being used.
+
+* `transform/normalize_total`: fix incorrect layer being written to the output when the input layer if not `.X`.
+
+* `src/workflows/qc`: fix input layer not being taken into account when calculating the fraction of mitochondrial genes (always used .X).
 
 # openpipelines 0.12.1
 

@@ -40,7 +40,12 @@ functionality:
       type: string
       default: "rna"
       required: false
-    
+
+    - name: "--layer"
+      description: "Input layer to use as data for calculating doublets. .X is used not specified."
+      type: string
+      required: false
+
     # output
     - name: "--output"
       type: file
