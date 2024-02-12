@@ -132,7 +132,7 @@ def infer_library_id_from_path(input_path: str) -> str:
         f"File name of '{input_path}' should match regex {fastq_regex}."
     return match.group(1)
 
-def transform_helper_inputs(par: dict[str, ...]) -> dict[str, ...]:
+def transform_helper_inputs(par: dict[str, Any]) -> dict[str, Any]:
     helper_input = {
         "input": [],
         "library_id": [],
