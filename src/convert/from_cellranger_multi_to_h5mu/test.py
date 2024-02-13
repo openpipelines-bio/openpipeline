@@ -30,6 +30,17 @@ def test_cellranger_multi_basic(run_component, tmp_path):
     assert list(converted_data.uns.keys()) == ['metrics_cellranger']
     expected_metrics = ['Category', 'Library Type', 'Grouped By', 'Group Name', 'Metric Name', 'Metric Value']
     assert converted_data.uns['metrics_cellranger'].columns.to_list() == expected_metrics
+    # Check that a metric that is stored as percentage (e.g "85.69%") is correctly represented
+    # as a floating point number
+    metrics_df_with_index = converted_data.uns['metrics_cellranger'].set_index(["Metric Name", "Library Type", "Category"]) 
+    percentage = metrics_df_with_index.loc[("Confidently mapped reads in cells", "Gene Expression", "Cells"), "Metric Value"]
+    assert percentage[0] == "0.8569"
+
+    thousand_delimited_number = metrics_df_with_index.loc[("Cells", "Gene Expression", "Cells"), "Metric Value"]
+    thousand_delimited_number == "3,798" 
+
+    smaller_number = metrics_df_with_index.loc[("Median genes per cell", "Gene Expression", "Cells"), "Metric Value"]
+    smaller_number == "6"
     
 def test_cellranger_multi_to_h5mu_crispr(run_component, tmp_path):
     output_path = tmp_path / "output.h5mu"
