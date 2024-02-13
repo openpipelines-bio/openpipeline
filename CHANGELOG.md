@@ -150,6 +150,8 @@ of a split multimodal files. The modalities in the list must be unique and after
 
 * `move_obsm_to_obs`: fix setting output columns when they already exist (PR #690).
 
+* `convert/from_cellranger_multi_to_h5mu`: fix metric values not repesented as percentages being devided by 100. (#704).
+
 # openpipelines 0.12.1
 
 ## BUG FIXES

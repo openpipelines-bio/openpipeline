@@ -188,5 +188,5 @@ info:
   output: "/home/runner/work/openpipeline/openpipeline/target/docker/filter/subset_h5mu"
   executable: "/home/runner/work/openpipeline/openpipeline/target/docker/filter/subset_h5mu/subset_h5mu"
   viash_version: "0.8.3"
-  git_commit: "05b9600fe172f262d39d2d23392a559690d69784"
+  git_commit: "1d3cf5318b6ec9fc9908e05797e74ebf456c3ae5"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"

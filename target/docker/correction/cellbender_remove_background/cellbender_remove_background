@@ -686,9 +686,9 @@ RUN pip install --upgrade pip && \
   pip install --upgrade --no-cache-dir "mudata~=0.2.1" "cellbender~=0.3.0"
 
 LABEL org.opencontainers.image.description="Companion container for running component correction cellbender_remove_background"
-LABEL org.opencontainers.image.created="2024-02-13T09:29:35Z"
+LABEL org.opencontainers.image.created="2024-02-13T17:47:27Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="05b9600fe172f262d39d2d23392a559690d69784"
+LABEL org.opencontainers.image.revision="1d3cf5318b6ec9fc9908e05797e74ebf456c3ae5"
 LABEL org.opencontainers.image.version="main_build"
 
 VIASHDOCKER
