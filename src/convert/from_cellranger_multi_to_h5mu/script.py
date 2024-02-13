@@ -131,7 +131,10 @@ def process_counts(counts_folder: Path):
 def process_metrics_summary(mudata: mudata.MuData, metrics_file: Path):
     def read_percentage(val):
         try:
-            return float(val.strip('%')) / 100
+            if '%' in str(val):
+                return float(val.strip('%')) / 100
+            else:
+                return val
         except (AttributeError, ValueError):
             return val
 
