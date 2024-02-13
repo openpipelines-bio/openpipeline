@@ -1,5 +1,5 @@
 functionality:
-  name: score_genes
+  name: score_genes_cell_cycle_scanpy
   namespace: feature_annotation
   description: |
     Calculates the score associated to S phase and G2M phase and annotates the cell cycle phase for each cell, as implemented by scanpy. 

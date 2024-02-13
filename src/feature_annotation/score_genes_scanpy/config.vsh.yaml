@@ -1,5 +1,5 @@
 functionality:
-  name: score_genes
+  name: score_genes_scanpy
   namespace: feature_annotation
   description: |
     Calculates the score of a set of genes for each cell, as implemented by scanpy. 
