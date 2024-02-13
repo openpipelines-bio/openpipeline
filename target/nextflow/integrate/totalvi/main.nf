@@ -3100,7 +3100,7 @@ meta = [
     {
       "type" : "docker",
       "id" : "docker",
-      "image" : "python:3.9",
+      "image" : "nvcr.io/nvidia/pytorch:23.09-py3",
       "target_organization" : "openpipelines-bio",
       "target_registry" : "ghcr.io",
       "target_tag" : "integration_build",
@@ -3126,8 +3126,9 @@ meta = [
             "anndata~=0.9.1",
             "mudata~=0.2.3",
             "pandas!=2.1.2",
-            "torchmetrics~=0.11.0",
-            "scvi-tools~=1.0.3"
+            "scvi-tools~=1.0.3",
+            "jaxlib<0.4.23",
+            "jax<0.4.23"
           ],
           "upgrade" : true
         }
@@ -3209,7 +3210,7 @@ meta = [
     "platform" : "nextflow",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/integrate/totalvi",
     "viash_version" : "0.8.3",
-    "git_commit" : "5dade9bb008b1d4f0ecaa5b73b4c406eb9f02929",
+    "git_commit" : "02c1b7e248ea45c923a26f7b7c5b9add2cff6df3",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))

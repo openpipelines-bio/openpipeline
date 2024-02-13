@@ -105,6 +105,8 @@ of a split multimodal files. The modalities in the list must be unique and after
 
 * Added the `gdo_singlesample` pipeline with basic count filtering (PR #672).
 
+* Enable dataset functionality for nf-tower (PR #701)
+
 ## MINOR CHANGES
 * Refactored `rna_multisample` (PR #607), `cellranger_multi` (PR #609), `cellranger_mapping` (PR #610) and other (PR #606) pipelines to use `fromState` and `toState` functionality.
 
@@ -125,6 +127,12 @@ of a split multimodal files. The modalities in the list must be unique and after
 * `correction/cellbender_remove_background`: Remove `muon` as a test dependency (PR #636).
 
 * (Automatic testing) Update viashpy to 0.6.0 (PR #665).
+
+* `integrate/scarches`, `integrate/scvi` and `integrate/totalvi`: pin jax, jaxlib to `<0.4.23` (PR #699).
+
+* `integrate/scvi`: Unpin `numba` and pin scvi-tools to `1.0.3` (PR #699).
+
+* `integrate/totalvi`: Enable GPU-accelerated computing, unpin `torchmetrics` and pin jax, jaxlib to `<0.4.23` (PR #699).
 
 ## BUG FIXES
 

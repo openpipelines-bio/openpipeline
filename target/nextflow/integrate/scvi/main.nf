@@ -3375,7 +3375,7 @@ meta = [
     {
       "type" : "docker",
       "id" : "docker",
-      "image" : "nvcr.io/nvidia/pytorch:23.06-py3",
+      "image" : "nvcr.io/nvidia/pytorch:23.09-py3",
       "target_organization" : "openpipelines-bio",
       "target_registry" : "ghcr.io",
       "target_tag" : "integration_build",
@@ -3394,12 +3394,6 @@ meta = [
           "interactive" : false
         },
         {
-          "type" : "docker",
-          "run" : [
-            "pip install \\"jax[cuda]\\" -f https://storage.googleapis.com/jax-releases/jax_cuda_releases.html\n"
-          ]
-        },
-        {
           "type" : "python",
           "user" : false,
           "packages" : [
@@ -3415,8 +3409,9 @@ meta = [
           "type" : "python",
           "user" : false,
           "packages" : [
-            "numba~=0.57.1",
-            "scvi-tools~=1.0.0"
+            "scvi-tools~=1.0.3",
+            "jaxlib<0.4.23",
+            "jax<0.4.23"
           ],
           "upgrade" : false
         }
@@ -3495,7 +3490,7 @@ meta = [
     "platform" : "nextflow",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/integrate/scvi",
     "viash_version" : "0.8.3",
-    "git_commit" : "5dade9bb008b1d4f0ecaa5b73b4c406eb9f02929",
+    "git_commit" : "02c1b7e248ea45c923a26f7b7c5b9add2cff6df3",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))
