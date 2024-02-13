@@ -519,9 +519,9 @@ RUN Rscript -e 'if (!requireNamespace("remotes", quietly = TRUE)) install.packag
 
 LABEL org.opencontainers.image.authors="Xichen Wu"
 LABEL org.opencontainers.image.description="Companion container for running component genetic_demux freemuxlet"
-LABEL org.opencontainers.image.created="2024-02-12T14:57:23Z"
+LABEL org.opencontainers.image.created="2024-02-13T09:29:33Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="ddb9ffa41fb6a7e18cec7e0b8cedff7ec61e874e"
+LABEL org.opencontainers.image.revision="05b9600fe172f262d39d2d23392a559690d69784"
 LABEL org.opencontainers.image.version="main_build"
 
 VIASHDOCKER

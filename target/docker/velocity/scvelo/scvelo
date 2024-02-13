@@ -475,13 +475,13 @@ RUN apt-get update && \
   rm -rf /var/lib/apt/lists/*
 
 RUN pip install --upgrade pip && \
-  pip install --upgrade --no-cache-dir "anndata~=0.9.1" "mudata~=0.2.3" "pandas!=2.1.2" "scvelo~=0.3.1"
+  pip install --upgrade --no-cache-dir "anndata~=0.9.1" "mudata~=0.2.3" "pandas!=2.1.2" "scvelo~=0.3.1" "jaxlib<0.4.23" "jax<0.4.23"
 
 LABEL org.opencontainers.image.authors="Dries Schaumont"
 LABEL org.opencontainers.image.description="Companion container for running component velocity scvelo"
-LABEL org.opencontainers.image.created="2024-02-12T14:57:22Z"
+LABEL org.opencontainers.image.created="2024-02-13T09:29:35Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="ddb9ffa41fb6a7e18cec7e0b8cedff7ec61e874e"
+LABEL org.opencontainers.image.revision="05b9600fe172f262d39d2d23392a559690d69784"
 LABEL org.opencontainers.image.version="main_build"
 
 VIASHDOCKER

@@ -128,7 +128,7 @@ of a split multimodal files. The modalities in the list must be unique and after
 
 * (Automatic testing) Update viashpy to 0.6.0 (PR #665).
 
-* `integrate/scarches`, `integrate/scvi` and `integrate/totalvi`: pin jax, jaxlib to `<0.4.23` (PR #699).
+* `integrate/scarches`, `integrate/scvi`, `velocity/scvelo` and `integrate/totalvi`: pin jax, jaxlib to `<0.4.23` (PR #699).
 
 * `integrate/scvi`: Unpin `numba` and pin scvi-tools to `1.0.3` (PR #699).
 
