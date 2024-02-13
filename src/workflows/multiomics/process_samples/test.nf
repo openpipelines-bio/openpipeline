@@ -100,7 +100,7 @@ workflow test_wf3 {
         publish_dir: "foo/",
         rna_min_counts: 2,
         var_qc_metrics: "highly_variable",
-        filter_with_hvg_var_output: "highly_variable",
+        highly_variable_features_var_output: "highly_variable",
       ],
       [
         id: "human",
@@ -108,7 +108,7 @@ workflow test_wf3 {
         publish_dir: "foo/",
         rna_min_counts: 2,
         var_qc_metrics: "highly_variable",
-        filter_with_hvg_var_output: "highly_variable",
+        highly_variable_features_var_output: "highly_variable",
       ]
     ])
     | map{ state -> [state.id, state] }

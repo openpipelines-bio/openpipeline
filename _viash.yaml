@@ -12,3 +12,5 @@ config_mods: |
   .platforms[.type == 'docker'].target_image_source := 'https://github.com/openpipelines-bio/openpipeline'
   .platforms[.type == 'nextflow'].directives.tag := '$id'
   .platforms[.type == 'nextflow'].auto.simplifyOutput := false
+  .platforms[.type == 'nextflow'].config.script := 'includeConfig("nextflow_labels.config")'
+  .functionality.resources += {path: './src/workflows/utils/labels.config', dest: 'nextflow_labels.config'}

@@ -27,9 +27,9 @@ jobs:
     #     git remote add viash-hub https://x-access-token:${{ secrets.VIASHHUB_PAT }}@viash-hub.com/openpipelines-bio/openpipeline.git
     #     git push -f viash-hub main
 
-    - uses: viash-io/viash-actions/setup@v4
+    - uses: viash-io/viash-actions/setup@v5
 
-    - uses: viash-io/viash-actions/project/sync-and-cache-s3@v4
+    - uses: viash-io/viash-actions/project/sync-and-cache-s3@v5
       id: cache
       with:
         s3_bucket: $s3_bucket
@@ -41,7 +41,7 @@ jobs:
         # allow publishing the target folder
         sed -i '/^\/target\/$/d' .gitignore
 
-    - uses: viash-io/viash-actions/ns-build@v4
+    - uses: viash-io/viash-actions/ns-build@v5
       with:
         config_mod: |
           .functionality.version := '${{ github.event.inputs.version_tag }}'
@@ -53,7 +53,7 @@ jobs:
 
 
     - name: Build nextflow schemas
-      uses: viash-io/viash-actions/pro/build-nextflow-schemas@v4
+      uses: viash-io/viash-actions/pro/build-nextflow-schemas@v5
       with:
         workflows: src
         components: src
@@ -61,7 +61,7 @@ jobs:
         tools_version: 'main_build'
    
     - name: Build parameter files
-      uses: viash-io/viash-actions/pro/build-nextflow-params@v4
+      uses: viash-io/viash-actions/pro/build-nextflow-params@v5
       with:
         workflows: src
         components: src
@@ -69,7 +69,7 @@ jobs:
         tools_version: 'main_build'
 
     - name: Deploy build artifacts to Viash-Hub
-      uses: viash-io/viash-actions/viash-hub/deploy@v4
+      uses: viash-io/viash-actions/viash-hub/deploy@v5
       with:
         github_token: ${{ github.token }}
         viash_hub_token: ${{ secrets.VIASHHUB_PAT }}
@@ -80,14 +80,14 @@ jobs:
         commit_message: "Deploy for release ${{ github.event.inputs.version_tag }} from ${{ github.sha }}"
 
     - id: ns_list_components
-      uses: viash-io/viash-actions/ns-list@v4
+      uses: viash-io/viash-actions/ns-list@v5
       with:
         platform: docker
         format: json
         query_namespace: ^(?!workflows)
 
     - id: ns_list_workflows
-      uses: viash-io/viash-actions/ns-list@v4
+      uses: viash-io/viash-actions/ns-list@v5
       with:
         format: json
         query_namespace: ^workflows
@@ -128,10 +128,10 @@ jobs:
 
     - uses: actions/checkout@v4
 
-    - uses: viash-io/viash-actions/setup@v4
+    - uses: viash-io/viash-actions/setup@v5
 
     - name: Build container
-      uses: viash-io/viash-actions/ns-build@v4
+      uses: viash-io/viash-actions/ns-build@v5
       with:
         config_mod: |
           .functionality.version := '${{ github.event.inputs.version_tag }}'
@@ -151,7 +151,7 @@ jobs:
         password: ${{ secrets.VIASHHUB_PAT }}
 
     - name: Push container
-      uses: viash-io/viash-actions/ns-build@v4
+      uses: viash-io/viash-actions/ns-build@v5
       with:
         config_mod: |
           .functionality.version := '${{ github.event.inputs.version_tag }}'
@@ -181,14 +181,14 @@ jobs:
 
     - uses: actions/checkout@v4
 
-    - uses: viash-io/viash-actions/setup@v4
+    - uses: viash-io/viash-actions/setup@v5
 
-    - uses: nf-core/setup-nextflow@v1.5.0
+    - uses: nf-core/setup-nextflow@v1.5.2
 
     # build target dir
     # use containers from release branch, hopefully these are available
     - name: Build target dir
-      uses: viash-io/viash-actions/ns-build@v4
+      uses: viash-io/viash-actions/ns-build@v5
       with:
         config_mod: |
           .functionality.version := '${{ github.event.inputs.version_tag }}'
@@ -256,7 +256,7 @@ jobs:
 
     - uses: actions/checkout@v4
 
-    - uses: viash-io/viash-actions/setup@v4
+    - uses: viash-io/viash-actions/setup@v5
 
     # use cache
     - name: Cache resources data

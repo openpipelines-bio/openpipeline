@@ -36,7 +36,7 @@ jobs:
       cache_key: ${{ steps.cache.outputs.cache_key }}
 
     steps:
-    - uses: viash-io/viash-actions/project/sync-and-cache-s3@v4
+    - uses: viash-io/viash-actions/project/sync-and-cache-s3@v5
       id: cache 
       with:
         s3_bucket: $s3_bucket
@@ -66,9 +66,9 @@ jobs:
       with:
         ref: 'integration_build'
 
-    - uses: viash-io/viash-actions/setup@v4
+    - uses: viash-io/viash-actions/setup@v5
 
-    - uses: nf-core/setup-nextflow@v1.5.0
+    - uses: nf-core/setup-nextflow@v1.5.2
 
     # use cache
     - name: Cache resources data
@@ -110,4 +110,5 @@ jobs:
           -main-script "${{ matrix.component.main_script }}" \
           -entry "${{ matrix.component.entry }}" \
           -profile docker,mount_temp,no_publish \
-          -c src/workflows/utils/labels_ci.config
+          -c src/workflows/utils/labels_ci.config \
+          -c src/workflows/utils/integration_tests.config

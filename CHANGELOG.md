@@ -52,6 +52,15 @@
        multisample workflows are executed in-tandem. If you wish to execute the singlesample workflows
        in a seperate manner and still include count based statistics, please run the `qc` pipeline
        on the result of the singlesample workflow (PR #604).
+    * `filter/filter_with_hvg` has been renamed to `feature_annotation/highly_variable_features_scanpy`, along with the following changes (PR #667).
+      - `--do_filter` was removed
+      - `--n_top_genes` has been renamed to `--n_top_features`
+    * `full_pipeline`, `multisample` and `rna_multisample`: Renamed arguments (PR #667).
+      - `--filter_with_hvg_var_output` became `--highly_variable_features_obs_batch_key`
+      - `--filter_with_hvg_obs_batch_key` became `--highly_variable_features_var_output`
+    * `rna_multisample`: Renamed arguments (PR #667).
+      - `--filter_with_hvg_n_top_genes` became `--highly_variable_features_n_top_features`
+      - `--filter_with_hvg_flavor` became `--highly_variable_features_flavor`
  
 * Renamed `obsm_metrics` to `uns_metrics` for the `cellranger_mapping` workflow because the cellranger metrics are stored in `.uns` and not `.obsm` (PR #610).
 
@@ -96,6 +105,8 @@ of a split multimodal files. The modalities in the list must be unique and after
 
 * Added the `gdo_singlesample` pipeline with basic count filtering (PR #672).
 
+* Enable dataset functionality for nf-tower (PR #701)
+
 ## MINOR CHANGES
 * Refactored `rna_multisample` (PR #607), `cellranger_multi` (PR #609), `cellranger_mapping` (PR #610) and other (PR #606) pipelines to use `fromState` and `toState` functionality.
 
@@ -121,7 +132,15 @@ of a split multimodal files. The modalities in the list must be unique and after
 
 * (Automatic testing) Update viashpy to 0.6.0 (PR #665).
 
+* `integrate/scarches`, `integrate/scvi` and `integrate/totalvi`: pin jax, jaxlib to `<0.4.23` (PR #699).
+
+* `integrate/scvi`: Unpin `numba` and pin scvi-tools to `1.0.3` (PR #699).
+
+* `integrate/totalvi`: Enable GPU-accelerated computing, unpin `torchmetrics` and pin jax, jaxlib to `<0.4.23` (PR #699).
+
 ## BUG FIXES
+
+* `transform/log1p`: fix `--input_layer` argument not functionning (PR #678). 
 
 * `dataflow/concat` and `dataflow/concatenate_h5mu`: Fix an issue where using `--mode move` on samples with non-overlapping features would cause `var_names` to become unaligned to the data (PR #653).   
 
@@ -130,6 +149,10 @@ of a split multimodal files. The modalities in the list must be unique and after
 * `dataflow/concatenate_h5mu` and `dataflow/concat`: Fix `TypeError` when using mode 'move' and a column with conflicting metadata does not exist across all samples (PR #631).
 
 * `dataflow/concatenate_h5mu` and `dataflow/concat`: Fix an issue where joining columns with different datatypes caused `TypeError` (PR #619).
+
+* `qc/calculate_qc_metrics`: Resolved an issue where statistics based on the input columns selected with `--var_qc_metrics` were incorrect when these input columns were encoded in `pd.BooleanDtype()` (PR #685).
+
+* `move_obsm_to_obs`: fix setting output columns when they already exist (PR #690).
 
 # openpipelines 0.12.1
 
