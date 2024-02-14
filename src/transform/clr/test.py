@@ -28,6 +28,29 @@ def test_clr(run_component, tmp_path):
     assert 'clr' in output_h5mu.mod['prot'].layers.keys()
     assert output_h5mu.mod['prot'].layers['clr'] is not None
 
+
+def test_clr_select_input_layer(run_component, tmp_path):
+    output_file = tmp_path / "foo.h5mu"
+
+    input_data = read_h5mu(input_file)
+    input_data.mod['prot'].layers['test_layer'] = input_data.mod["prot"].X.copy()
+    input_data.mod["prot"].X = None
+    
+    temp_input_file = tmp_path / "temp.h5mu"
+    input_data.write(temp_input_file)
+
+    run_component([
+        "--input", temp_input_file,
+        "--output", str(output_file),
+        "--output_compression", "gzip",
+        "--output_layer", "clr",
+        "--input_layer", "test_layer",
+    ])
+    assert output_file.is_file()
+    output_h5mu = read_h5mu(output_file)
+    assert 'clr' in output_h5mu.mod['prot'].layers.keys()
+    assert output_h5mu.mod['prot'].layers['clr'] is not None
+
 def test_clr_output_to_x(run_component, tmp_path):
     output_file = tmp_path / "foo.h5mu"
 
