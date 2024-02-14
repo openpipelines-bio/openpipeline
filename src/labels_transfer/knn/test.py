@@ -52,7 +52,7 @@ def test_label_transfer(run_component, test_args):
         "--input_obsm_features", obsm_features,
         "--reference", tempfile_reference_file.name,
         "--reference_obsm_features", obsm_features,
-        "--reference_obs_targets", ",".join(obs_targets),
+        "--reference_obs_targets", ";".join(obs_targets),
         "--output", "output.h5mu",
         "--n_neighbors", "5"
     ]

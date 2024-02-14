@@ -56,7 +56,7 @@ def test_label_transfer(run_component, test_args):
         "--input_obsm_features", obsm_features,
         "--reference", str(tempfile_reference_file),
         "--reference_obsm_features", obsm_features,
-        "--reference_obs_targets", ",".join(obs_targets),
+        "--reference_obs_targets", ";".join(obs_targets),
         "--output", "output.h5mu",
         "--model_output", "model_one_class",
         "--use_gpu", "false",
