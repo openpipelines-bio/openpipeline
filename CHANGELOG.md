@@ -128,7 +128,7 @@ of a split multimodal files. The modalities in the list must be unique and after
 
 * (Automatic testing) Update viashpy to 0.6.0 (PR #665).
 
-* `integrate/scarches`, `integrate/scvi` and `integrate/totalvi`: pin jax, jaxlib to `<0.4.23` (PR #699).
+* `integrate/scarches`, `integrate/scvi`, `velocity/scvelo` and `integrate/totalvi`: pin jax, jaxlib to `<0.4.23` (PR #699).
 
 * `integrate/scvi`: Unpin `numba` and pin scvi-tools to `1.0.3` (PR #699).
 
@@ -149,6 +149,8 @@ of a split multimodal files. The modalities in the list must be unique and after
 * `qc/calculate_qc_metrics`: Resolved an issue where statistics based on the input columns selected with `--var_qc_metrics` were incorrect when these input columns were encoded in `pd.BooleanDtype()` (PR #685).
 
 * `move_obsm_to_obs`: fix setting output columns when they already exist (PR #690).
+
+* `convert/from_cellranger_multi_to_h5mu`: fix metric values not repesented as percentages being devided by 100. (#704).
 
 # openpipelines 0.12.1
 
