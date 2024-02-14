@@ -184,6 +184,6 @@ info:
   platform: "docker"
   output: "/home/runner/work/openpipeline/openpipeline/target/docker/reference/build_bdrhap_reference"
   executable: "/home/runner/work/openpipeline/openpipeline/target/docker/reference/build_bdrhap_reference/build_bdrhap_reference"
-  viash_version: "0.8.3"
-  git_commit: "87435a3643697f7a1150ab569fa1bc6708613a05"
+  viash_version: "0.8.4"
+  git_commit: "4478621fa3b9362b2c1b4ef56d703b4ec8e90a94"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"

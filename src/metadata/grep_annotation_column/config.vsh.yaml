@@ -21,6 +21,12 @@ functionality:
           type: string
           required: false
           description: "Column to query. If not specified, use .var_names or .obs_names, depending on the value of --matrix"
+        - name: "--input_layer"
+          type: string
+          required: false
+          description: |
+            Input data to use when calculating fraction of observations that match with the query. 
+            Only used when --output_fraction_column is provided. If not specified, .X is used.
         - name: "--modality"
           description: |
             Which modality to get the annotation matrix from.

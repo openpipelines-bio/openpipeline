@@ -1,6 +1,8 @@
 # Inputs
 id: # please fill in - example: "foo"
 input: # please fill in - example: ["input.h5mu"]
+# rna_layer: "foo"
+# prot_layer: "foo"
 
 # Outputs
 # output: "$id.$key.output.h5mu"

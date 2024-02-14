@@ -74,6 +74,16 @@
     
 
         ,
+                "input_layer": {
+                "type":
+                "string",
+                "description": "Type: `string`. Input layer to use",
+                "help_text": "Type: `string`. Input layer to use. By default, .X is used."
+            
+            }
+    
+
+        ,
                 "output_layer": {
                 "type":
                 "string",

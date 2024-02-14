@@ -49,6 +49,36 @@
             }
     
 
+        ,
+                "rna_layer": {
+                "type":
+                "string",
+                "description": "Type: `string`. Input layer for the gene expression modality",
+                "help_text": "Type: `string`. Input layer for the gene expression modality. If not specified, .X is used."
+            
+            }
+    
+
+        ,
+                "prot_layer": {
+                "type":
+                "string",
+                "description": "Type: `string`. Input layer for the antibody capture modality",
+                "help_text": "Type: `string`. Input layer for the antibody capture modality. If not specified, .X is used."
+            
+            }
+    
+
+        ,
+                "gdo_layer": {
+                "type":
+                "string",
+                "description": "Type: `string`. Input layer for the guide-derived oligonucleotide (GDO) data",
+                "help_text": "Type: `string`. Input layer for the guide-derived oligonucleotide (GDO) data. If not specified, .X is used."
+            
+            }
+    
+
 }
 },
     

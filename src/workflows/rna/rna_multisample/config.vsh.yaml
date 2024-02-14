@@ -28,6 +28,9 @@ functionality:
           type: string
           description: Modality to process.
           default: "rna"
+        - name: "--layer"
+          type: string
+          description: "Input layer to use. If not specified, .X is used."
     - name: "Output"
       arguments:
         - name: "--output"
