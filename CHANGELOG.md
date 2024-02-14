@@ -2,12 +2,16 @@
 
 ## BREAKING CHANGES
 
-* This project now uses viash version 0.8.3 to build components and workflows. Changes related to this version update should
+* Change separator for arguments with multiple inputs from `:` to `;` (PR #700). Now, _all_ arguments with `multiple: true` will use `;` as the separator.
+  This change was made to be able to deal with file paths that contain `:`, e.g. `s3://my-bucket/my:file.txt`. Furthermore, the `;` separator will become
+  the default separator for all arguments with `multiple: true` in Viash >= 0.9.0.
+
+* This project now uses viash version 0.8.4 to build components and workflows. Changes related to this version update should
   be _mostly_ backwards compatible with respect to the results and execution of the pipelines. From a development perspective,
   drastic updates have been made to the developemt workflow.
 
   Development related changes:
-    * Bump viash version to 0.8.3 (PR #598 and PR#638) in the project configuration.
+    * Bump viash version to 0.8.4 (PR #598, PR#638 and #706) in the project configuration.
     * All pipelines no longer use the anonymous workflow. Instead, these workflows were given
       a name which was added to the viash config as the entrypoint to the pipeline (PR #598).
     * Removed the `workflows` folder and moved its contents to new locations:
@@ -63,6 +67,7 @@
       - `--filter_with_hvg_flavor` became `--highly_variable_features_flavor`
  
 * Renamed `obsm_metrics` to `uns_metrics` for the `cellranger_mapping` workflow because the cellranger metrics are stored in `.uns` and not `.obsm` (PR #610).
+
 
 ## MAJOR CHANGES
 
@@ -144,7 +149,7 @@ of a split multimodal files. The modalities in the list must be unique and after
 
 ## BUG FIXES
 
-* `transform/log1p`: fix `--input_layer` argument not functionning (PR #678). 
+* `transform/log1p`: fix `--input_layer` argument not functioning (PR #678). 
 
 * `dataflow/concat` and `dataflow/concatenate_h5mu`: Fix an issue where using `--mode move` on samples with non-overlapping features would cause `var_names` to become unaligned to the data (PR #653).   
 
@@ -167,6 +172,8 @@ of a split multimodal files. The modalities in the list must be unique and after
 * `transform/normalize_total`: fix incorrect layer being written to the output when the input layer if not `.X`.
 
 * `src/workflows/qc`: fix input layer not being taken into account when calculating the fraction of mitochondrial genes (always used .X).
+
+* `convert/from_cellranger_multi_to_h5mu`: fix metric values not repesented as percentages being devided by 100. (#704).
 
 # openpipelines 0.12.1
 
