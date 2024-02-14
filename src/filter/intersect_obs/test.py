@@ -45,7 +45,7 @@ def test_intersect_obs(run_component, sample_mudata, tmp_path):
     # run component
     run_component([
         "--input", sample_mudata,
-        "--modalities", "mod1:mod2",
+        "--modalities", "mod1;mod2",
         "--output", str(output_path),
         "--output_compression", "gzip"
     ])
@@ -69,7 +69,7 @@ def test_intersect_obs_with_real(run_component, tmp_path):
     # run component
     run_component([
         "--input", input_path,
-        "--modalities", "rna:prot",
+        "--modalities", "rna;prot",
         "--output", str(output_path),
         "--output_compression", "gzip"
     ])
