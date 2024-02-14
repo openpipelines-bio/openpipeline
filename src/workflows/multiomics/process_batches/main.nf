@@ -64,9 +64,12 @@ workflow run_wf {
         "highly_variable_features_var_output": "highly_variable_features_var_output",
         "highly_variable_features_obs_batch_key": "highly_variable_features_obs_batch_key",
         "var_qc_metrics": "var_qc_metrics",
-        "top_n_vars": "top_n_vars"
+        "top_n_vars": "top_n_vars",
+        "layer": "rna_layer",
       ],
-      "prot": [:]
+      "prot": [
+        "layer": "prot_layer",
+      ]
     ].asImmutable()
 
     multimodal_ch_known = multisample_ch

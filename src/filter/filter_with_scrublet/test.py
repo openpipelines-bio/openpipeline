@@ -163,5 +163,38 @@ def test_doublet_automatic_threshold_detection_fails_recovery(run_component, inp
     mu_out = mu.read_h5mu(output_mu)
     assert mu_out.mod['rna'].obs['filter_with_scrublet'].isna().all()
 
+def test_selecting_input_layer(run_component, tmp_path):
+    output_mu = "output-2.h5mu"
+    input_data = mu.read_h5mu(input_path)
+    input_data.mod['rna'].layers['test_layer'] = input_data.mod['rna'].X
+    input_data.mod['rna'].X = None
+
+    temp_input = tmp_path / "temp.h5mu"
+    input_data.write(temp_input)
+
+    run_component([
+        "--input", temp_input,
+        "--output", output_mu,
+        "--modality", "rna",
+        "--min_counts", "10",
+        "--num_pca_components", "10",
+        "--layer", "test_layer",
+        "--do_subset"
+        ])
+    assert Path(output_mu).is_file(), "Output file not found"
+
+    mu_out = mu.read_h5mu(output_mu)
+    new_obs = mu_out.mod['rna'].n_obs
+    new_vars = mu_out.mod['rna'].n_vars
+    assert new_obs < orig_obs, "Some cells should have been filtered"
+    assert new_vars == orig_vars, "No genes should have been filtered"
+    assert mu_out.mod['prot'].n_obs == orig_obs, "No prot obs should have been filtered"
+    assert mu_out.mod['prot'].n_vars == orig_prot_vars, "No prot vars should have been filtered"
+    assert list(mu_out.mod['rna'].var['feature_types'].cat.categories) == ["Gene Expression"],\
+                            "Feature types of RNA modality should be Gene Expression"
+    assert list(mu_out.mod['prot'].var['feature_types'].cat.categories) == ["Antibody Capture"],\
+                            "Feature types of prot modality should be Antibody Capture"
+
+
 if __name__ == '__main__':
     exit(pytest.main([__file__]))
