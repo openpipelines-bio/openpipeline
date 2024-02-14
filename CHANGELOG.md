@@ -2,12 +2,12 @@
 
 ## BREAKING CHANGES
 
-* This project now uses viash version 0.8.3 to build components and workflows. Changes related to this version update should
+* This project now uses viash version 0.8.4 to build components and workflows. Changes related to this version update should
   be _mostly_ backwards compatible with respect to the results and execution of the pipelines. From a development perspective,
   drastic updates have been made to the developemt workflow.
 
   Development related changes:
-    * Bump viash version to 0.8.3 (PR #598 and PR#638) in the project configuration.
+    * Bump viash version to 0.8.4 (PR #598, PR#638 and #706) in the project configuration.
     * All pipelines no longer use the anonymous workflow. Instead, these workflows were given
       a name which was added to the viash config as the entrypoint to the pipeline (PR #598).
     * Removed the `workflows` folder and moved its contents to new locations:
