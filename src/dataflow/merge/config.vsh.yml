@@ -11,7 +11,6 @@ functionality:
       alternatives: ["-i"]
       type: file
       multiple: true
-      multiple_sep: ','
       description: Paths to the single-modality .h5mu files that need to be combined
       required: true
       default: sample_paths

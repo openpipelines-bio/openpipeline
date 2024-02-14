@@ -21,7 +21,6 @@ functionality:
           description: Path to the SAM/BAM files containing the mapped reads.
           example: [ mysample1.BAM, mysample2.BAM ]
           multiple: true
-          multiple_sep: ";"
           info:
             orig_arg: samfilenames
         - type: file
@@ -58,7 +57,6 @@ functionality:
           direction: output
           required: false
           multiple: true
-          multiple_sep: ";"
           info:
             orig_arg: --samout
         - type: string
@@ -117,7 +115,6 @@ functionality:
             times: in that case, the combination of all attributes separated by colons (:) will be used
             as a unique identifier, e.g. for exons you might use -i gene_id -i exon_number.
           multiple: true
-          multiple_sep: ":"
           info:
             orig_arg: --idattr
         - name: --additional_attributes
@@ -128,7 +125,6 @@ functionality:
             for more than one additional attribute. These attributes are only used as annotations in the
             output, while the determination of how the counts are added together is done based on option -i.
           multiple: true
-          multiple_sep: ":"
           info:
             orig_arg: --additional-attr
         - name: --add_chromosome_info
