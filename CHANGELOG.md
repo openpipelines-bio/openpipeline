@@ -2,6 +2,10 @@
 
 ## BREAKING CHANGES
 
+* Change separator for arguments with multiple inputs from `:` to `;` (PR #700). Now, _all_ arguments with `multiple: true` will use `;` as the separator.
+  This change was made to be able to deal with file paths that contain `:`, e.g. `s3://my-bucket/my:file.txt`. Furthermore, the `;` separator will become
+  the default separator for all arguments with `multiple: true` in Viash >= 0.9.0.
+
 * This project now uses viash version 0.8.3 to build components and workflows. Changes related to this version update should
   be _mostly_ backwards compatible with respect to the results and execution of the pipelines. From a development perspective,
   drastic updates have been made to the developemt workflow.
@@ -63,6 +67,7 @@
       - `--filter_with_hvg_flavor` became `--highly_variable_features_flavor`
  
 * Renamed `obsm_metrics` to `uns_metrics` for the `cellranger_mapping` workflow because the cellranger metrics are stored in `.uns` and not `.obsm` (PR #610).
+
 
 ## MAJOR CHANGES
 
@@ -141,8 +146,6 @@ of a split multimodal files. The modalities in the list must be unique and after
 * `qc/calculate_qc_metrics`: Resolved an issue where statistics based on the input columns selected with `--var_qc_metrics` were incorrect when these input columns were encoded in `pd.BooleanDtype()` (PR #685).
 
 * `move_obsm_to_obs`: fix setting output columns when they already exist (PR #690).
-
-* Change separator for arguments with multiple input from `:` to `;` (PR #700). This is in theory a breaking change since arguments like `--input "foo:bar"` would now need to be written as `--input "foo;bar"`. However, this way of writing arguments is not expected to be used in practice.
 
 # openpipelines 0.12.1
 
