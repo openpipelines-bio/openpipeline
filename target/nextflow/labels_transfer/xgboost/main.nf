@@ -2956,7 +2956,7 @@ meta = [
             "required" : false,
             "direction" : "input",
             "multiple" : true,
-            "multiple_sep" : ",",
+            "multiple_sep" : ";",
             "dest" : "par"
           }
         ]
@@ -3026,7 +3026,7 @@ meta = [
             "required" : false,
             "direction" : "input",
             "multiple" : true,
-            "multiple_sep" : ":",
+            "multiple_sep" : ";",
             "dest" : "par"
           },
           {
@@ -3036,7 +3036,7 @@ meta = [
             "required" : false,
             "direction" : "input",
             "multiple" : true,
-            "multiple_sep" : ":",
+            "multiple_sep" : ";",
             "dest" : "par"
           },
           {
@@ -3493,7 +3493,7 @@ meta = [
     "platform" : "nextflow",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/labels_transfer/xgboost",
     "viash_version" : "0.8.3",
-    "git_commit" : "1d3cf5318b6ec9fc9908e05797e74ebf456c3ae5",
+    "git_commit" : "87435a3643697f7a1150ab569fa1bc6708613a05",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))
@@ -3533,10 +3533,10 @@ par = {
   'input_obsm_features': $( if [ ! -z ${VIASH_PAR_INPUT_OBSM_FEATURES+x} ]; then echo "r'${VIASH_PAR_INPUT_OBSM_FEATURES//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'reference': $( if [ ! -z ${VIASH_PAR_REFERENCE+x} ]; then echo "r'${VIASH_PAR_REFERENCE//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'reference_obsm_features': $( if [ ! -z ${VIASH_PAR_REFERENCE_OBSM_FEATURES+x} ]; then echo "r'${VIASH_PAR_REFERENCE_OBSM_FEATURES//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
-  'reference_obs_targets': $( if [ ! -z ${VIASH_PAR_REFERENCE_OBS_TARGETS+x} ]; then echo "r'${VIASH_PAR_REFERENCE_OBS_TARGETS//\\'/\\'\\"\\'\\"r\\'}'.split(',')"; else echo None; fi ),
+  'reference_obs_targets': $( if [ ! -z ${VIASH_PAR_REFERENCE_OBS_TARGETS+x} ]; then echo "r'${VIASH_PAR_REFERENCE_OBS_TARGETS//\\'/\\'\\"\\'\\"r\\'}'.split(';')"; else echo None; fi ),
   'output': $( if [ ! -z ${VIASH_PAR_OUTPUT+x} ]; then echo "r'${VIASH_PAR_OUTPUT//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
-  'output_obs_predictions': $( if [ ! -z ${VIASH_PAR_OUTPUT_OBS_PREDICTIONS+x} ]; then echo "r'${VIASH_PAR_OUTPUT_OBS_PREDICTIONS//\\'/\\'\\"\\'\\"r\\'}'.split(':')"; else echo None; fi ),
-  'output_obs_uncertainty': $( if [ ! -z ${VIASH_PAR_OUTPUT_OBS_UNCERTAINTY+x} ]; then echo "r'${VIASH_PAR_OUTPUT_OBS_UNCERTAINTY//\\'/\\'\\"\\'\\"r\\'}'.split(':')"; else echo None; fi ),
+  'output_obs_predictions': $( if [ ! -z ${VIASH_PAR_OUTPUT_OBS_PREDICTIONS+x} ]; then echo "r'${VIASH_PAR_OUTPUT_OBS_PREDICTIONS//\\'/\\'\\"\\'\\"r\\'}'.split(';')"; else echo None; fi ),
+  'output_obs_uncertainty': $( if [ ! -z ${VIASH_PAR_OUTPUT_OBS_UNCERTAINTY+x} ]; then echo "r'${VIASH_PAR_OUTPUT_OBS_UNCERTAINTY//\\'/\\'\\"\\'\\"r\\'}'.split(';')"; else echo None; fi ),
   'output_uns_parameters': $( if [ ! -z ${VIASH_PAR_OUTPUT_UNS_PARAMETERS+x} ]; then echo "r'${VIASH_PAR_OUTPUT_UNS_PARAMETERS//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'force_retrain': $( if [ ! -z ${VIASH_PAR_FORCE_RETRAIN+x} ]; then echo "r'${VIASH_PAR_FORCE_RETRAIN//\\'/\\'\\"\\'\\"r\\'}'.lower() == 'true'"; else echo None; fi ),
   'use_gpu': $( if [ ! -z ${VIASH_PAR_USE_GPU+x} ]; then echo "r'${VIASH_PAR_USE_GPU//\\'/\\'\\"\\'\\"r\\'}'.lower() == 'true'"; else echo None; fi ),

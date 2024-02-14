@@ -218,7 +218,7 @@ function ViashHelp {
   echo ""
   echo "    --obs_covariates"
   echo "        type: string, required parameter, multiple values allowed"
-  echo "        example: batch:sample"
+  echo "        example: batch;sample"
   echo "        The .obs field(s) that define the covariate(s) to regress out."
 }
 
@@ -451,9 +451,9 @@ RUN pip install --upgrade pip && \
 
 LABEL org.opencontainers.image.authors="Dries Schaumont, Robrecht Cannoodt"
 LABEL org.opencontainers.image.description="Companion container for running component integrate harmonypy"
-LABEL org.opencontainers.image.created="2024-02-13T17:47:27Z"
+LABEL org.opencontainers.image.created="2024-02-14T08:22:41Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="1d3cf5318b6ec9fc9908e05797e74ebf456c3ae5"
+LABEL org.opencontainers.image.revision="87435a3643697f7a1150ab569fa1bc6708613a05"
 LABEL org.opencontainers.image.version="main_build"
 
 VIASHDOCKER
@@ -690,7 +690,7 @@ while [[ $# -gt 0 ]]; do
             if [ -z "$VIASH_PAR_THETA" ]; then
               VIASH_PAR_THETA="$2"
             else
-              VIASH_PAR_THETA="$VIASH_PAR_THETA:""$2"
+              VIASH_PAR_THETA="$VIASH_PAR_THETA;""$2"
             fi
             [ $# -lt 2 ] && ViashError Not enough arguments passed to --theta. Use "--help" to get more information on the parameters. && exit 1
             shift 2
@@ -699,7 +699,7 @@ while [[ $# -gt 0 ]]; do
             if [ -z "$VIASH_PAR_THETA" ]; then
               VIASH_PAR_THETA=$(ViashRemoveFlags "$1")
             else
-              VIASH_PAR_THETA="$VIASH_PAR_THETA:"$(ViashRemoveFlags "$1")
+              VIASH_PAR_THETA="$VIASH_PAR_THETA;"$(ViashRemoveFlags "$1")
             fi
             shift 1
             ;;
@@ -707,7 +707,7 @@ while [[ $# -gt 0 ]]; do
             if [ -z "$VIASH_PAR_OBS_COVARIATES" ]; then
               VIASH_PAR_OBS_COVARIATES="$2"
             else
-              VIASH_PAR_OBS_COVARIATES="$VIASH_PAR_OBS_COVARIATES:""$2"
+              VIASH_PAR_OBS_COVARIATES="$VIASH_PAR_OBS_COVARIATES;""$2"
             fi
             [ $# -lt 2 ] && ViashError Not enough arguments passed to --obs_covariates. Use "--help" to get more information on the parameters. && exit 1
             shift 2
@@ -716,7 +716,7 @@ while [[ $# -gt 0 ]]; do
             if [ -z "$VIASH_PAR_OBS_COVARIATES" ]; then
               VIASH_PAR_OBS_COVARIATES=$(ViashRemoveFlags "$1")
             else
-              VIASH_PAR_OBS_COVARIATES="$VIASH_PAR_OBS_COVARIATES:"$(ViashRemoveFlags "$1")
+              VIASH_PAR_OBS_COVARIATES="$VIASH_PAR_OBS_COVARIATES;"$(ViashRemoveFlags "$1")
             fi
             shift 1
             ;;
@@ -893,7 +893,7 @@ fi
 
 # check whether parameters values are of the right type
 if [ -n "$VIASH_PAR_THETA" ]; then
-  IFS=':'
+  IFS=';'
   set -f
   for val in $VIASH_PAR_THETA; do
     if ! [[ "${val}" =~ ^[-+]?(\.[0-9]+|[0-9]+(\.[0-9]*)?)([eE][-+]?[0-9]+)?$ ]]; then
@@ -1047,8 +1047,8 @@ par = {
   'modality': $( if [ ! -z ${VIASH_PAR_MODALITY+x} ]; then echo "r'${VIASH_PAR_MODALITY//\'/\'\"\'\"r\'}'"; else echo None; fi ),
   'obsm_input': $( if [ ! -z ${VIASH_PAR_OBSM_INPUT+x} ]; then echo "r'${VIASH_PAR_OBSM_INPUT//\'/\'\"\'\"r\'}'"; else echo None; fi ),
   'obsm_output': $( if [ ! -z ${VIASH_PAR_OBSM_OUTPUT+x} ]; then echo "r'${VIASH_PAR_OBSM_OUTPUT//\'/\'\"\'\"r\'}'"; else echo None; fi ),
-  'theta': $( if [ ! -z ${VIASH_PAR_THETA+x} ]; then echo "list(map(float, r'${VIASH_PAR_THETA//\'/\'\"\'\"r\'}'.split(':')))"; else echo None; fi ),
-  'obs_covariates': $( if [ ! -z ${VIASH_PAR_OBS_COVARIATES+x} ]; then echo "r'${VIASH_PAR_OBS_COVARIATES//\'/\'\"\'\"r\'}'.split(':')"; else echo None; fi )
+  'theta': $( if [ ! -z ${VIASH_PAR_THETA+x} ]; then echo "list(map(float, r'${VIASH_PAR_THETA//\'/\'\"\'\"r\'}'.split(';')))"; else echo None; fi ),
+  'obs_covariates': $( if [ ! -z ${VIASH_PAR_OBS_COVARIATES+x} ]; then echo "r'${VIASH_PAR_OBS_COVARIATES//\'/\'\"\'\"r\'}'.split(';')"; else echo None; fi )
 }
 meta = {
   'functionality_name': $( if [ ! -z ${VIASH_META_FUNCTIONALITY_NAME+x} ]; then echo "r'${VIASH_META_FUNCTIONALITY_NAME//\'/\'\"\'\"r\'}'"; else echo None; fi ),

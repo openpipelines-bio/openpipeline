@@ -552,9 +552,9 @@ RUN pip install --upgrade pip && \
   pip install --upgrade --no-cache-dir "anndata~=0.9.1" "mudata~=0.2.3" "pandas!=2.1.2" "muon==0.1.5" "tables==3.8.0" "cellbender==0.2.1"
 
 LABEL org.opencontainers.image.description="Companion container for running component correction cellbender_remove_background_v0_2"
-LABEL org.opencontainers.image.created="2024-02-13T17:47:27Z"
+LABEL org.opencontainers.image.created="2024-02-14T08:22:43Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="1d3cf5318b6ec9fc9908e05797e74ebf456c3ae5"
+LABEL org.opencontainers.image.revision="87435a3643697f7a1150ab569fa1bc6708613a05"
 LABEL org.opencontainers.image.version="main_build"
 
 VIASHDOCKER
@@ -912,7 +912,7 @@ while [[ $# -gt 0 ]]; do
             if [ -z "$VIASH_PAR_Z_LAYERS" ]; then
               VIASH_PAR_Z_LAYERS="$2"
             else
-              VIASH_PAR_Z_LAYERS="$VIASH_PAR_Z_LAYERS:""$2"
+              VIASH_PAR_Z_LAYERS="$VIASH_PAR_Z_LAYERS;""$2"
             fi
             [ $# -lt 2 ] && ViashError Not enough arguments passed to --z_layers. Use "--help" to get more information on the parameters. && exit 1
             shift 2
@@ -921,7 +921,7 @@ while [[ $# -gt 0 ]]; do
             if [ -z "$VIASH_PAR_Z_LAYERS" ]; then
               VIASH_PAR_Z_LAYERS=$(ViashRemoveFlags "$1")
             else
-              VIASH_PAR_Z_LAYERS="$VIASH_PAR_Z_LAYERS:"$(ViashRemoveFlags "$1")
+              VIASH_PAR_Z_LAYERS="$VIASH_PAR_Z_LAYERS;"$(ViashRemoveFlags "$1")
             fi
             shift 1
             ;;
@@ -951,7 +951,7 @@ while [[ $# -gt 0 ]]; do
             if [ -z "$VIASH_PAR_FPR" ]; then
               VIASH_PAR_FPR="$2"
             else
-              VIASH_PAR_FPR="$VIASH_PAR_FPR:""$2"
+              VIASH_PAR_FPR="$VIASH_PAR_FPR;""$2"
             fi
             [ $# -lt 2 ] && ViashError Not enough arguments passed to --fpr. Use "--help" to get more information on the parameters. && exit 1
             shift 2
@@ -960,7 +960,7 @@ while [[ $# -gt 0 ]]; do
             if [ -z "$VIASH_PAR_FPR" ]; then
               VIASH_PAR_FPR=$(ViashRemoveFlags "$1")
             else
-              VIASH_PAR_FPR="$VIASH_PAR_FPR:"$(ViashRemoveFlags "$1")
+              VIASH_PAR_FPR="$VIASH_PAR_FPR;"$(ViashRemoveFlags "$1")
             fi
             shift 1
             ;;
@@ -1232,7 +1232,7 @@ if [[ -n "$VIASH_PAR_Z_DIM" ]]; then
   fi
 fi
 if [ -n "$VIASH_PAR_Z_LAYERS" ]; then
-  IFS=':'
+  IFS=';'
   set -f
   for val in $VIASH_PAR_Z_LAYERS; do
     if ! [[ "${val}" =~ ^[-+]?[0-9]+$ ]]; then
@@ -1257,7 +1257,7 @@ if [[ -n "$VIASH_PAR_EMPTY_DROP_TRAINING_FRACTION" ]]; then
   fi
 fi
 if [ -n "$VIASH_PAR_FPR" ]; then
-  IFS=':'
+  IFS=';'
   set -f
   for val in $VIASH_PAR_FPR; do
     if ! [[ "${val}" =~ ^[-+]?(\.[0-9]+|[0-9]+(\.[0-9]*)?)([eE][-+]?[0-9]+)?$ ]]; then
@@ -1456,10 +1456,10 @@ par = {
   'epochs': $( if [ ! -z ${VIASH_PAR_EPOCHS+x} ]; then echo "int(r'${VIASH_PAR_EPOCHS//\'/\'\"\'\"r\'}')"; else echo None; fi ),
   'low_count_threshold': $( if [ ! -z ${VIASH_PAR_LOW_COUNT_THRESHOLD+x} ]; then echo "int(r'${VIASH_PAR_LOW_COUNT_THRESHOLD//\'/\'\"\'\"r\'}')"; else echo None; fi ),
   'z_dim': $( if [ ! -z ${VIASH_PAR_Z_DIM+x} ]; then echo "int(r'${VIASH_PAR_Z_DIM//\'/\'\"\'\"r\'}')"; else echo None; fi ),
-  'z_layers': $( if [ ! -z ${VIASH_PAR_Z_LAYERS+x} ]; then echo "list(map(int, r'${VIASH_PAR_Z_LAYERS//\'/\'\"\'\"r\'}'.split(':')))"; else echo None; fi ),
+  'z_layers': $( if [ ! -z ${VIASH_PAR_Z_LAYERS+x} ]; then echo "list(map(int, r'${VIASH_PAR_Z_LAYERS//\'/\'\"\'\"r\'}'.split(';')))"; else echo None; fi ),
   'training_fraction': $( if [ ! -z ${VIASH_PAR_TRAINING_FRACTION+x} ]; then echo "float(r'${VIASH_PAR_TRAINING_FRACTION//\'/\'\"\'\"r\'}')"; else echo None; fi ),
   'empty_drop_training_fraction': $( if [ ! -z ${VIASH_PAR_EMPTY_DROP_TRAINING_FRACTION+x} ]; then echo "float(r'${VIASH_PAR_EMPTY_DROP_TRAINING_FRACTION//\'/\'\"\'\"r\'}')"; else echo None; fi ),
-  'fpr': $( if [ ! -z ${VIASH_PAR_FPR+x} ]; then echo "list(map(float, r'${VIASH_PAR_FPR//\'/\'\"\'\"r\'}'.split(':')))"; else echo None; fi ),
+  'fpr': $( if [ ! -z ${VIASH_PAR_FPR+x} ]; then echo "list(map(float, r'${VIASH_PAR_FPR//\'/\'\"\'\"r\'}'.split(';')))"; else echo None; fi ),
   'exclude_antibody_capture': $( if [ ! -z ${VIASH_PAR_EXCLUDE_ANTIBODY_CAPTURE+x} ]; then echo "r'${VIASH_PAR_EXCLUDE_ANTIBODY_CAPTURE//\'/\'\"\'\"r\'}'.lower() == 'true'"; else echo None; fi ),
   'learning_rate': $( if [ ! -z ${VIASH_PAR_LEARNING_RATE+x} ]; then echo "float(r'${VIASH_PAR_LEARNING_RATE//\'/\'\"\'\"r\'}')"; else echo None; fi ),
   'cuda': $( if [ ! -z ${VIASH_PAR_CUDA+x} ]; then echo "r'${VIASH_PAR_CUDA//\'/\'\"\'\"r\'}'.lower() == 'true'"; else echo None; fi )

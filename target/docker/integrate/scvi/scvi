@@ -627,9 +627,9 @@ RUN pip install --upgrade pip && \
 
 LABEL org.opencontainers.image.authors="Malte D. Luecken, Dries Schaumont, Matthias Beyens"
 LABEL org.opencontainers.image.description="Companion container for running component integrate scvi"
-LABEL org.opencontainers.image.created="2024-02-13T17:47:28Z"
+LABEL org.opencontainers.image.created="2024-02-14T08:22:42Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="1d3cf5318b6ec9fc9908e05797e74ebf456c3ae5"
+LABEL org.opencontainers.image.revision="87435a3643697f7a1150ab569fa1bc6708613a05"
 LABEL org.opencontainers.image.version="main_build"
 
 VIASHDOCKER
@@ -871,7 +871,7 @@ while [[ $# -gt 0 ]]; do
             if [ -z "$VIASH_PAR_OBS_CATEGORICAL_COVARIATE" ]; then
               VIASH_PAR_OBS_CATEGORICAL_COVARIATE="$2"
             else
-              VIASH_PAR_OBS_CATEGORICAL_COVARIATE="$VIASH_PAR_OBS_CATEGORICAL_COVARIATE:""$2"
+              VIASH_PAR_OBS_CATEGORICAL_COVARIATE="$VIASH_PAR_OBS_CATEGORICAL_COVARIATE;""$2"
             fi
             [ $# -lt 2 ] && ViashError Not enough arguments passed to --obs_categorical_covariate. Use "--help" to get more information on the parameters. && exit 1
             shift 2
@@ -880,7 +880,7 @@ while [[ $# -gt 0 ]]; do
             if [ -z "$VIASH_PAR_OBS_CATEGORICAL_COVARIATE" ]; then
               VIASH_PAR_OBS_CATEGORICAL_COVARIATE=$(ViashRemoveFlags "$1")
             else
-              VIASH_PAR_OBS_CATEGORICAL_COVARIATE="$VIASH_PAR_OBS_CATEGORICAL_COVARIATE:"$(ViashRemoveFlags "$1")
+              VIASH_PAR_OBS_CATEGORICAL_COVARIATE="$VIASH_PAR_OBS_CATEGORICAL_COVARIATE;"$(ViashRemoveFlags "$1")
             fi
             shift 1
             ;;
@@ -888,7 +888,7 @@ while [[ $# -gt 0 ]]; do
             if [ -z "$VIASH_PAR_OBS_CONTINUOUS_COVARIATE" ]; then
               VIASH_PAR_OBS_CONTINUOUS_COVARIATE="$2"
             else
-              VIASH_PAR_OBS_CONTINUOUS_COVARIATE="$VIASH_PAR_OBS_CONTINUOUS_COVARIATE:""$2"
+              VIASH_PAR_OBS_CONTINUOUS_COVARIATE="$VIASH_PAR_OBS_CONTINUOUS_COVARIATE;""$2"
             fi
             [ $# -lt 2 ] && ViashError Not enough arguments passed to --obs_continuous_covariate. Use "--help" to get more information on the parameters. && exit 1
             shift 2
@@ -897,7 +897,7 @@ while [[ $# -gt 0 ]]; do
             if [ -z "$VIASH_PAR_OBS_CONTINUOUS_COVARIATE" ]; then
               VIASH_PAR_OBS_CONTINUOUS_COVARIATE=$(ViashRemoveFlags "$1")
             else
-              VIASH_PAR_OBS_CONTINUOUS_COVARIATE="$VIASH_PAR_OBS_CONTINUOUS_COVARIATE:"$(ViashRemoveFlags "$1")
+              VIASH_PAR_OBS_CONTINUOUS_COVARIATE="$VIASH_PAR_OBS_CONTINUOUS_COVARIATE;"$(ViashRemoveFlags "$1")
             fi
             shift 1
             ;;
@@ -1736,8 +1736,8 @@ par = {
   'var_input': $( if [ ! -z ${VIASH_PAR_VAR_INPUT+x} ]; then echo "r'${VIASH_PAR_VAR_INPUT//\'/\'\"\'\"r\'}'"; else echo None; fi ),
   'obs_labels': $( if [ ! -z ${VIASH_PAR_OBS_LABELS+x} ]; then echo "r'${VIASH_PAR_OBS_LABELS//\'/\'\"\'\"r\'}'"; else echo None; fi ),
   'obs_size_factor': $( if [ ! -z ${VIASH_PAR_OBS_SIZE_FACTOR+x} ]; then echo "r'${VIASH_PAR_OBS_SIZE_FACTOR//\'/\'\"\'\"r\'}'"; else echo None; fi ),
-  'obs_categorical_covariate': $( if [ ! -z ${VIASH_PAR_OBS_CATEGORICAL_COVARIATE+x} ]; then echo "r'${VIASH_PAR_OBS_CATEGORICAL_COVARIATE//\'/\'\"\'\"r\'}'.split(':')"; else echo None; fi ),
-  'obs_continuous_covariate': $( if [ ! -z ${VIASH_PAR_OBS_CONTINUOUS_COVARIATE+x} ]; then echo "r'${VIASH_PAR_OBS_CONTINUOUS_COVARIATE//\'/\'\"\'\"r\'}'.split(':')"; else echo None; fi ),
+  'obs_categorical_covariate': $( if [ ! -z ${VIASH_PAR_OBS_CATEGORICAL_COVARIATE+x} ]; then echo "r'${VIASH_PAR_OBS_CATEGORICAL_COVARIATE//\'/\'\"\'\"r\'}'.split(';')"; else echo None; fi ),
+  'obs_continuous_covariate': $( if [ ! -z ${VIASH_PAR_OBS_CONTINUOUS_COVARIATE+x} ]; then echo "r'${VIASH_PAR_OBS_CONTINUOUS_COVARIATE//\'/\'\"\'\"r\'}'.split(';')"; else echo None; fi ),
   'output': $( if [ ! -z ${VIASH_PAR_OUTPUT+x} ]; then echo "r'${VIASH_PAR_OUTPUT//\'/\'\"\'\"r\'}'"; else echo None; fi ),
   'output_model': $( if [ ! -z ${VIASH_PAR_OUTPUT_MODEL+x} ]; then echo "r'${VIASH_PAR_OUTPUT_MODEL//\'/\'\"\'\"r\'}'"; else echo None; fi ),
   'output_compression': $( if [ ! -z ${VIASH_PAR_OUTPUT_COMPRESSION+x} ]; then echo "r'${VIASH_PAR_OUTPUT_COMPRESSION//\'/\'\"\'\"r\'}'"; else echo None; fi ),

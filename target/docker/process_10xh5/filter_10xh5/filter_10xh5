@@ -446,9 +446,9 @@ RUN Rscript -e 'if (!requireNamespace("remotes", quietly = TRUE)) install.packag
 
 LABEL org.opencontainers.image.authors="Robrecht Cannoodt"
 LABEL org.opencontainers.image.description="Companion container for running component process_10xh5 filter_10xh5"
-LABEL org.opencontainers.image.created="2024-02-13T17:47:31Z"
+LABEL org.opencontainers.image.created="2024-02-14T08:22:47Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="1d3cf5318b6ec9fc9908e05797e74ebf456c3ae5"
+LABEL org.opencontainers.image.revision="87435a3643697f7a1150ab569fa1bc6708613a05"
 LABEL org.opencontainers.image.version="main_build"
 
 VIASHDOCKER
@@ -651,7 +651,7 @@ while [[ $# -gt 0 ]]; do
             if [ -z "$VIASH_PAR_KEEP_FEATURE_TYPES" ]; then
               VIASH_PAR_KEEP_FEATURE_TYPES="$2"
             else
-              VIASH_PAR_KEEP_FEATURE_TYPES="$VIASH_PAR_KEEP_FEATURE_TYPES:""$2"
+              VIASH_PAR_KEEP_FEATURE_TYPES="$VIASH_PAR_KEEP_FEATURE_TYPES;""$2"
             fi
             [ $# -lt 2 ] && ViashError Not enough arguments passed to --keep_feature_types. Use "--help" to get more information on the parameters. && exit 1
             shift 2
@@ -660,7 +660,7 @@ while [[ $# -gt 0 ]]; do
             if [ -z "$VIASH_PAR_KEEP_FEATURE_TYPES" ]; then
               VIASH_PAR_KEEP_FEATURE_TYPES=$(ViashRemoveFlags "$1")
             else
-              VIASH_PAR_KEEP_FEATURE_TYPES="$VIASH_PAR_KEEP_FEATURE_TYPES:"$(ViashRemoveFlags "$1")
+              VIASH_PAR_KEEP_FEATURE_TYPES="$VIASH_PAR_KEEP_FEATURE_TYPES;"$(ViashRemoveFlags "$1")
             fi
             shift 1
             ;;
@@ -978,7 +978,7 @@ par <- list(
   "output" = $( if [ ! -z ${VIASH_PAR_OUTPUT+x} ]; then echo -n "'"; echo -n "$VIASH_PAR_OUTPUT" | sed "s#['\\]#\\\\&#g"; echo "'"; else echo NULL; fi ),
   "min_library_size" = $( if [ ! -z ${VIASH_PAR_MIN_LIBRARY_SIZE+x} ]; then echo -n "as.integer('"; echo -n "$VIASH_PAR_MIN_LIBRARY_SIZE" | sed "s#['\\]#\\\\&#g"; echo "')"; else echo NULL; fi ),
   "min_cells_per_gene" = $( if [ ! -z ${VIASH_PAR_MIN_CELLS_PER_GENE+x} ]; then echo -n "as.integer('"; echo -n "$VIASH_PAR_MIN_CELLS_PER_GENE" | sed "s#['\\]#\\\\&#g"; echo "')"; else echo NULL; fi ),
-  "keep_feature_types" = $( if [ ! -z ${VIASH_PAR_KEEP_FEATURE_TYPES+x} ]; then echo -n "strsplit('"; echo -n "$VIASH_PAR_KEEP_FEATURE_TYPES" | sed "s#['\\]#\\\\&#g"; echo "', split = ':')[[1]]"; else echo NULL; fi ),
+  "keep_feature_types" = $( if [ ! -z ${VIASH_PAR_KEEP_FEATURE_TYPES+x} ]; then echo -n "strsplit('"; echo -n "$VIASH_PAR_KEEP_FEATURE_TYPES" | sed "s#['\\]#\\\\&#g"; echo "', split = ';')[[1]]"; else echo NULL; fi ),
   "verbose" = $( if [ ! -z ${VIASH_PAR_VERBOSE+x} ]; then echo -n "as.logical(toupper('"; echo -n "$VIASH_PAR_VERBOSE" | sed "s#['\\]#\\\\&#g"; echo "'))"; else echo NULL; fi )
 )
 meta <- list(

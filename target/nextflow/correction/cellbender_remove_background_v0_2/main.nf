@@ -3031,7 +3031,7 @@ meta = [
             "required" : false,
             "direction" : "input",
             "multiple" : true,
-            "multiple_sep" : ":",
+            "multiple_sep" : ";",
             "dest" : "par"
           },
           {
@@ -3070,7 +3070,7 @@ meta = [
             "required" : false,
             "direction" : "input",
             "multiple" : true,
-            "multiple_sep" : ":",
+            "multiple_sep" : ";",
             "dest" : "par"
           },
           {
@@ -3248,7 +3248,7 @@ meta = [
     "platform" : "nextflow",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/correction/cellbender_remove_background_v0_2",
     "viash_version" : "0.8.3",
-    "git_commit" : "1d3cf5318b6ec9fc9908e05797e74ebf456c3ae5",
+    "git_commit" : "87435a3643697f7a1150ab569fa1bc6708613a05",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))
@@ -3291,10 +3291,10 @@ par = {
   'epochs': $( if [ ! -z ${VIASH_PAR_EPOCHS+x} ]; then echo "int(r'${VIASH_PAR_EPOCHS//\\'/\\'\\"\\'\\"r\\'}')"; else echo None; fi ),
   'low_count_threshold': $( if [ ! -z ${VIASH_PAR_LOW_COUNT_THRESHOLD+x} ]; then echo "int(r'${VIASH_PAR_LOW_COUNT_THRESHOLD//\\'/\\'\\"\\'\\"r\\'}')"; else echo None; fi ),
   'z_dim': $( if [ ! -z ${VIASH_PAR_Z_DIM+x} ]; then echo "int(r'${VIASH_PAR_Z_DIM//\\'/\\'\\"\\'\\"r\\'}')"; else echo None; fi ),
-  'z_layers': $( if [ ! -z ${VIASH_PAR_Z_LAYERS+x} ]; then echo "list(map(int, r'${VIASH_PAR_Z_LAYERS//\\'/\\'\\"\\'\\"r\\'}'.split(':')))"; else echo None; fi ),
+  'z_layers': $( if [ ! -z ${VIASH_PAR_Z_LAYERS+x} ]; then echo "list(map(int, r'${VIASH_PAR_Z_LAYERS//\\'/\\'\\"\\'\\"r\\'}'.split(';')))"; else echo None; fi ),
   'training_fraction': $( if [ ! -z ${VIASH_PAR_TRAINING_FRACTION+x} ]; then echo "float(r'${VIASH_PAR_TRAINING_FRACTION//\\'/\\'\\"\\'\\"r\\'}')"; else echo None; fi ),
   'empty_drop_training_fraction': $( if [ ! -z ${VIASH_PAR_EMPTY_DROP_TRAINING_FRACTION+x} ]; then echo "float(r'${VIASH_PAR_EMPTY_DROP_TRAINING_FRACTION//\\'/\\'\\"\\'\\"r\\'}')"; else echo None; fi ),
-  'fpr': $( if [ ! -z ${VIASH_PAR_FPR+x} ]; then echo "list(map(float, r'${VIASH_PAR_FPR//\\'/\\'\\"\\'\\"r\\'}'.split(':')))"; else echo None; fi ),
+  'fpr': $( if [ ! -z ${VIASH_PAR_FPR+x} ]; then echo "list(map(float, r'${VIASH_PAR_FPR//\\'/\\'\\"\\'\\"r\\'}'.split(';')))"; else echo None; fi ),
   'exclude_antibody_capture': $( if [ ! -z ${VIASH_PAR_EXCLUDE_ANTIBODY_CAPTURE+x} ]; then echo "r'${VIASH_PAR_EXCLUDE_ANTIBODY_CAPTURE//\\'/\\'\\"\\'\\"r\\'}'.lower() == 'true'"; else echo None; fi ),
   'learning_rate': $( if [ ! -z ${VIASH_PAR_LEARNING_RATE+x} ]; then echo "float(r'${VIASH_PAR_LEARNING_RATE//\\'/\\'\\"\\'\\"r\\'}')"; else echo None; fi ),
   'cuda': $( if [ ! -z ${VIASH_PAR_CUDA+x} ]; then echo "r'${VIASH_PAR_CUDA//\\'/\\'\\"\\'\\"r\\'}'.lower() == 'true'"; else echo None; fi )

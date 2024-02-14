@@ -438,9 +438,9 @@ RUN yum install -y procps && \
 
 LABEL org.opencontainers.image.authors="Robrecht Cannoodt"
 LABEL org.opencontainers.image.description="Companion container for running component download sync_test_resources"
-LABEL org.opencontainers.image.created="2024-02-13T17:47:27Z"
+LABEL org.opencontainers.image.created="2024-02-14T08:22:41Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="1d3cf5318b6ec9fc9908e05797e74ebf456c3ae5"
+LABEL org.opencontainers.image.revision="87435a3643697f7a1150ab569fa1bc6708613a05"
 LABEL org.opencontainers.image.version="main_build"
 
 VIASHDOCKER
@@ -648,7 +648,7 @@ while [[ $# -gt 0 ]]; do
             if [ -z "$VIASH_PAR_EXCLUDE" ]; then
               VIASH_PAR_EXCLUDE="$2"
             else
-              VIASH_PAR_EXCLUDE="$VIASH_PAR_EXCLUDE:""$2"
+              VIASH_PAR_EXCLUDE="$VIASH_PAR_EXCLUDE;""$2"
             fi
             [ $# -lt 2 ] && ViashError Not enough arguments passed to --exclude. Use "--help" to get more information on the parameters. && exit 1
             shift 2
@@ -657,7 +657,7 @@ while [[ $# -gt 0 ]]; do
             if [ -z "$VIASH_PAR_EXCLUDE" ]; then
               VIASH_PAR_EXCLUDE=$(ViashRemoveFlags "$1")
             else
-              VIASH_PAR_EXCLUDE="$VIASH_PAR_EXCLUDE:"$(ViashRemoveFlags "$1")
+              VIASH_PAR_EXCLUDE="$VIASH_PAR_EXCLUDE;"$(ViashRemoveFlags "$1")
             fi
             shift 1
             ;;
@@ -988,7 +988,7 @@ if [ "\$par_delete" == "true" ]; then
 fi
 
 if [ ! -z \${par_exclude+x} ]; then
-  IFS=":"
+  IFS=";"
   for var in \$par_exclude; do
     unset IFS
     extra_params+=( "--exclude" "\$var" )

@@ -2857,7 +2857,7 @@ meta = [
             "required" : false,
             "direction" : "input",
             "multiple" : true,
-            "multiple_sep" : ",",
+            "multiple_sep" : ";",
             "dest" : "par"
           },
           {
@@ -2873,11 +2873,11 @@ meta = [
           {
             "type" : "integer",
             "name" : "--top_n_vars",
-            "description" : "Number of top vars to be used to calculate cumulative proportions.\nIf not specified, proportions are not calculated. `--top_n_vars 20,50` finds\ncumulative proportion to the 20th and 50th most expressed vars.\n",
+            "description" : "Number of top vars to be used to calculate cumulative proportions.\nIf not specified, proportions are not calculated. `--top_n_vars 20;50` finds\ncumulative proportion to the 20th and 50th most expressed vars.\n",
             "required" : false,
             "direction" : "input",
             "multiple" : true,
-            "multiple_sep" : ",",
+            "multiple_sep" : ";",
             "dest" : "par"
           },
           {
@@ -3151,7 +3151,7 @@ meta = [
     "platform" : "nextflow",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/qc/calculate_qc_metrics",
     "viash_version" : "0.8.3",
-    "git_commit" : "1d3cf5318b6ec9fc9908e05797e74ebf456c3ae5",
+    "git_commit" : "87435a3643697f7a1150ab569fa1bc6708613a05",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))
@@ -3178,9 +3178,9 @@ par = {
   'input': $( if [ ! -z ${VIASH_PAR_INPUT+x} ]; then echo "r'${VIASH_PAR_INPUT//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'modality': $( if [ ! -z ${VIASH_PAR_MODALITY+x} ]; then echo "r'${VIASH_PAR_MODALITY//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'layer': $( if [ ! -z ${VIASH_PAR_LAYER+x} ]; then echo "r'${VIASH_PAR_LAYER//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
-  'var_qc_metrics': $( if [ ! -z ${VIASH_PAR_VAR_QC_METRICS+x} ]; then echo "r'${VIASH_PAR_VAR_QC_METRICS//\\'/\\'\\"\\'\\"r\\'}'.split(',')"; else echo None; fi ),
+  'var_qc_metrics': $( if [ ! -z ${VIASH_PAR_VAR_QC_METRICS+x} ]; then echo "r'${VIASH_PAR_VAR_QC_METRICS//\\'/\\'\\"\\'\\"r\\'}'.split(';')"; else echo None; fi ),
   'var_qc_metrics_fill_na_value': $( if [ ! -z ${VIASH_PAR_VAR_QC_METRICS_FILL_NA_VALUE+x} ]; then echo "r'${VIASH_PAR_VAR_QC_METRICS_FILL_NA_VALUE//\\'/\\'\\"\\'\\"r\\'}'.lower() == 'true'"; else echo None; fi ),
-  'top_n_vars': $( if [ ! -z ${VIASH_PAR_TOP_N_VARS+x} ]; then echo "list(map(int, r'${VIASH_PAR_TOP_N_VARS//\\'/\\'\\"\\'\\"r\\'}'.split(',')))"; else echo None; fi ),
+  'top_n_vars': $( if [ ! -z ${VIASH_PAR_TOP_N_VARS+x} ]; then echo "list(map(int, r'${VIASH_PAR_TOP_N_VARS//\\'/\\'\\"\\'\\"r\\'}'.split(';')))"; else echo None; fi ),
   'output_obs_num_nonzero_vars': $( if [ ! -z ${VIASH_PAR_OUTPUT_OBS_NUM_NONZERO_VARS+x} ]; then echo "r'${VIASH_PAR_OUTPUT_OBS_NUM_NONZERO_VARS//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'output_obs_total_counts_vars': $( if [ ! -z ${VIASH_PAR_OUTPUT_OBS_TOTAL_COUNTS_VARS+x} ]; then echo "r'${VIASH_PAR_OUTPUT_OBS_TOTAL_COUNTS_VARS//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'output_var_num_nonzero_obs': $( if [ ! -z ${VIASH_PAR_OUTPUT_VAR_NUM_NONZERO_OBS+x} ]; then echo "r'${VIASH_PAR_OUTPUT_VAR_NUM_NONZERO_OBS//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),

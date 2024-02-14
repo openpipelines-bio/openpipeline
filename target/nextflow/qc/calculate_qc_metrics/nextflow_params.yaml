@@ -8,7 +8,7 @@ modality: "rna"
 # output_compression: "gzip"
 
 # Metrics added to .obs
-# var_qc_metrics: ["ercc", "highly_variable", "mitochondrial"]
+# var_qc_metrics: ["ercc,highly_variable,mitochondrial"]
 # var_qc_metrics_fill_na_value: true
 # top_n_vars: [123]
 output_obs_num_nonzero_vars: "num_nonzero_vars"

@@ -2856,7 +2856,7 @@ functionality:
       required: false
       direction: "input"
       multiple: true
-      multiple_sep: ":"
+      multiple_sep: ";"
       dest: "par"
     - type: "string"
       name: "--additional_attributes"
@@ -2873,7 +2873,7 @@ functionality:
       required: false
       direction: "input"
       multiple: true
-      multiple_sep: ":"
+      multiple_sep: ";"
       dest: "par"
     - type: "boolean_true"
       name: "--add_chromosome_info"
@@ -3080,5 +3080,5 @@ info:
   output: "/home/runner/work/openpipeline/openpipeline/target/nextflow/mapping/multi_star"
   executable: "/home/runner/work/openpipeline/openpipeline/target/nextflow/mapping/multi_star/multi_star"
   viash_version: "0.8.3"
-  git_commit: "1d3cf5318b6ec9fc9908e05797e74ebf456c3ae5"
+  git_commit: "87435a3643697f7a1150ab569fa1bc6708613a05"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"

@@ -2871,7 +2871,7 @@ meta = [
         "required" : false,
         "direction" : "input",
         "multiple" : true,
-        "multiple_sep" : ":",
+        "multiple_sep" : ";",
         "dest" : "par"
       },
       {
@@ -3024,7 +3024,7 @@ meta = [
     "platform" : "nextflow",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/process_10xh5/filter_10xh5",
     "viash_version" : "0.8.3",
-    "git_commit" : "1d3cf5318b6ec9fc9908e05797e74ebf456c3ae5",
+    "git_commit" : "87435a3643697f7a1150ab569fa1bc6708613a05",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))
@@ -3049,7 +3049,7 @@ par <- list(
   "output" = $( if [ ! -z ${VIASH_PAR_OUTPUT+x} ]; then echo -n "'"; echo -n "$VIASH_PAR_OUTPUT" | sed "s#['\\\\]#\\\\\\\\&#g"; echo "'"; else echo NULL; fi ),
   "min_library_size" = $( if [ ! -z ${VIASH_PAR_MIN_LIBRARY_SIZE+x} ]; then echo -n "as.integer('"; echo -n "$VIASH_PAR_MIN_LIBRARY_SIZE" | sed "s#['\\\\]#\\\\\\\\&#g"; echo "')"; else echo NULL; fi ),
   "min_cells_per_gene" = $( if [ ! -z ${VIASH_PAR_MIN_CELLS_PER_GENE+x} ]; then echo -n "as.integer('"; echo -n "$VIASH_PAR_MIN_CELLS_PER_GENE" | sed "s#['\\\\]#\\\\\\\\&#g"; echo "')"; else echo NULL; fi ),
-  "keep_feature_types" = $( if [ ! -z ${VIASH_PAR_KEEP_FEATURE_TYPES+x} ]; then echo -n "strsplit('"; echo -n "$VIASH_PAR_KEEP_FEATURE_TYPES" | sed "s#['\\\\]#\\\\\\\\&#g"; echo "', split = ':')[[1]]"; else echo NULL; fi ),
+  "keep_feature_types" = $( if [ ! -z ${VIASH_PAR_KEEP_FEATURE_TYPES+x} ]; then echo -n "strsplit('"; echo -n "$VIASH_PAR_KEEP_FEATURE_TYPES" | sed "s#['\\\\]#\\\\\\\\&#g"; echo "', split = ';')[[1]]"; else echo NULL; fi ),
   "verbose" = $( if [ ! -z ${VIASH_PAR_VERBOSE+x} ]; then echo -n "as.logical(toupper('"; echo -n "$VIASH_PAR_VERBOSE" | sed "s#['\\\\]#\\\\\\\\&#g"; echo "'))"; else echo NULL; fi )
 )
 meta <- list(

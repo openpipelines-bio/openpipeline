@@ -541,9 +541,9 @@ RUN pip install --upgrade pip && \
 
 LABEL org.opencontainers.image.authors="Robrecht Cannoodt, Angela Oliveira Pisco"
 LABEL org.opencontainers.image.description="Companion container for running component mapping htseq_count"
-LABEL org.opencontainers.image.created="2024-02-13T17:47:30Z"
+LABEL org.opencontainers.image.created="2024-02-14T08:22:43Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="1d3cf5318b6ec9fc9908e05797e74ebf456c3ae5"
+LABEL org.opencontainers.image.revision="87435a3643697f7a1150ab569fa1bc6708613a05"
 LABEL org.opencontainers.image.version="main_build"
 
 VIASHDOCKER
@@ -854,7 +854,7 @@ while [[ $# -gt 0 ]]; do
             if [ -z "$VIASH_PAR_ID_ATTRIBUTE" ]; then
               VIASH_PAR_ID_ATTRIBUTE="$2"
             else
-              VIASH_PAR_ID_ATTRIBUTE="$VIASH_PAR_ID_ATTRIBUTE:""$2"
+              VIASH_PAR_ID_ATTRIBUTE="$VIASH_PAR_ID_ATTRIBUTE;""$2"
             fi
             [ $# -lt 2 ] && ViashError Not enough arguments passed to --id_attribute. Use "--help" to get more information on the parameters. && exit 1
             shift 2
@@ -863,7 +863,7 @@ while [[ $# -gt 0 ]]; do
             if [ -z "$VIASH_PAR_ID_ATTRIBUTE" ]; then
               VIASH_PAR_ID_ATTRIBUTE=$(ViashRemoveFlags "$1")
             else
-              VIASH_PAR_ID_ATTRIBUTE="$VIASH_PAR_ID_ATTRIBUTE:"$(ViashRemoveFlags "$1")
+              VIASH_PAR_ID_ATTRIBUTE="$VIASH_PAR_ID_ATTRIBUTE;"$(ViashRemoveFlags "$1")
             fi
             shift 1
             ;;
@@ -871,7 +871,7 @@ while [[ $# -gt 0 ]]; do
             if [ -z "$VIASH_PAR_ID_ATTRIBUTE" ]; then
               VIASH_PAR_ID_ATTRIBUTE="$2"
             else
-              VIASH_PAR_ID_ATTRIBUTE="$VIASH_PAR_ID_ATTRIBUTE:""$2"
+              VIASH_PAR_ID_ATTRIBUTE="$VIASH_PAR_ID_ATTRIBUTE;""$2"
             fi
             [ $# -lt 2 ] && ViashError Not enough arguments passed to -i. Use "--help" to get more information on the parameters. && exit 1
             shift 2
@@ -880,7 +880,7 @@ while [[ $# -gt 0 ]]; do
             if [ -z "$VIASH_PAR_ADDITIONAL_ATTRIBUTES" ]; then
               VIASH_PAR_ADDITIONAL_ATTRIBUTES="$2"
             else
-              VIASH_PAR_ADDITIONAL_ATTRIBUTES="$VIASH_PAR_ADDITIONAL_ATTRIBUTES:""$2"
+              VIASH_PAR_ADDITIONAL_ATTRIBUTES="$VIASH_PAR_ADDITIONAL_ATTRIBUTES;""$2"
             fi
             [ $# -lt 2 ] && ViashError Not enough arguments passed to --additional_attributes. Use "--help" to get more information on the parameters. && exit 1
             shift 2
@@ -889,7 +889,7 @@ while [[ $# -gt 0 ]]; do
             if [ -z "$VIASH_PAR_ADDITIONAL_ATTRIBUTES" ]; then
               VIASH_PAR_ADDITIONAL_ATTRIBUTES=$(ViashRemoveFlags "$1")
             else
-              VIASH_PAR_ADDITIONAL_ATTRIBUTES="$VIASH_PAR_ADDITIONAL_ATTRIBUTES:"$(ViashRemoveFlags "$1")
+              VIASH_PAR_ADDITIONAL_ATTRIBUTES="$VIASH_PAR_ADDITIONAL_ATTRIBUTES;"$(ViashRemoveFlags "$1")
             fi
             shift 1
             ;;
@@ -1420,8 +1420,8 @@ par = {
   'stranded': $( if [ ! -z ${VIASH_PAR_STRANDED+x} ]; then echo "r'${VIASH_PAR_STRANDED//\'/\'\"\'\"r\'}'"; else echo None; fi ),
   'minimum_alignment_quality': $( if [ ! -z ${VIASH_PAR_MINIMUM_ALIGNMENT_QUALITY+x} ]; then echo "int(r'${VIASH_PAR_MINIMUM_ALIGNMENT_QUALITY//\'/\'\"\'\"r\'}')"; else echo None; fi ),
   'type': $( if [ ! -z ${VIASH_PAR_TYPE+x} ]; then echo "r'${VIASH_PAR_TYPE//\'/\'\"\'\"r\'}'"; else echo None; fi ),
-  'id_attribute': $( if [ ! -z ${VIASH_PAR_ID_ATTRIBUTE+x} ]; then echo "r'${VIASH_PAR_ID_ATTRIBUTE//\'/\'\"\'\"r\'}'.split(':')"; else echo None; fi ),
-  'additional_attributes': $( if [ ! -z ${VIASH_PAR_ADDITIONAL_ATTRIBUTES+x} ]; then echo "r'${VIASH_PAR_ADDITIONAL_ATTRIBUTES//\'/\'\"\'\"r\'}'.split(':')"; else echo None; fi ),
+  'id_attribute': $( if [ ! -z ${VIASH_PAR_ID_ATTRIBUTE+x} ]; then echo "r'${VIASH_PAR_ID_ATTRIBUTE//\'/\'\"\'\"r\'}'.split(';')"; else echo None; fi ),
+  'additional_attributes': $( if [ ! -z ${VIASH_PAR_ADDITIONAL_ATTRIBUTES+x} ]; then echo "r'${VIASH_PAR_ADDITIONAL_ATTRIBUTES//\'/\'\"\'\"r\'}'.split(';')"; else echo None; fi ),
   'add_chromosome_info': $( if [ ! -z ${VIASH_PAR_ADD_CHROMOSOME_INFO+x} ]; then echo "r'${VIASH_PAR_ADD_CHROMOSOME_INFO//\'/\'\"\'\"r\'}'.lower() == 'true'"; else echo None; fi ),
   'mode': $( if [ ! -z ${VIASH_PAR_MODE+x} ]; then echo "r'${VIASH_PAR_MODE//\'/\'\"\'\"r\'}'"; else echo None; fi ),
   'non_unique': $( if [ ! -z ${VIASH_PAR_NON_UNIQUE+x} ]; then echo "r'${VIASH_PAR_NON_UNIQUE//\'/\'\"\'\"r\'}'"; else echo None; fi ),

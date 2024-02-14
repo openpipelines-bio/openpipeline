@@ -3061,7 +3061,7 @@ meta = [
             "required" : false,
             "direction" : "input",
             "multiple" : true,
-            "multiple_sep" : ":",
+            "multiple_sep" : ";",
             "dest" : "par"
           }
         ]
@@ -3287,7 +3287,7 @@ meta = [
     "platform" : "nextflow",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/mapping/bd_rhapsody",
     "viash_version" : "0.8.3",
-    "git_commit" : "1d3cf5318b6ec9fc9908e05797e74ebf456c3ae5",
+    "git_commit" : "87435a3643697f7a1150ab569fa1bc6708613a05",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))
@@ -3329,7 +3329,7 @@ par = {
   'subsample': $( if [ ! -z ${VIASH_PAR_SUBSAMPLE+x} ]; then echo "float(r'${VIASH_PAR_SUBSAMPLE//\\'/\\'\\"\\'\\"r\\'}')"; else echo None; fi ),
   'subsample_seed': $( if [ ! -z ${VIASH_PAR_SUBSAMPLE_SEED+x} ]; then echo "int(r'${VIASH_PAR_SUBSAMPLE_SEED//\\'/\\'\\"\\'\\"r\\'}')"; else echo None; fi ),
   'sample_tags_version': $( if [ ! -z ${VIASH_PAR_SAMPLE_TAGS_VERSION+x} ]; then echo "r'${VIASH_PAR_SAMPLE_TAGS_VERSION//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
-  'tag_names': $( if [ ! -z ${VIASH_PAR_TAG_NAMES+x} ]; then echo "r'${VIASH_PAR_TAG_NAMES//\\'/\\'\\"\\'\\"r\\'}'.split(':')"; else echo None; fi ),
+  'tag_names': $( if [ ! -z ${VIASH_PAR_TAG_NAMES+x} ]; then echo "r'${VIASH_PAR_TAG_NAMES//\\'/\\'\\"\\'\\"r\\'}'.split(';')"; else echo None; fi ),
   'vdj_version': $( if [ ! -z ${VIASH_PAR_VDJ_VERSION+x} ]; then echo "r'${VIASH_PAR_VDJ_VERSION//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'parallel': $( if [ ! -z ${VIASH_PAR_PARALLEL+x} ]; then echo "r'${VIASH_PAR_PARALLEL//\\'/\\'\\"\\'\\"r\\'}'.lower() == 'true'"; else echo None; fi ),
   'timestamps': $( if [ ! -z ${VIASH_PAR_TIMESTAMPS+x} ]; then echo "r'${VIASH_PAR_TIMESTAMPS//\\'/\\'\\"\\'\\"r\\'}'.lower() == 'true'"; else echo None; fi ),

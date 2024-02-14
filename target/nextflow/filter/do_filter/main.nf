@@ -2843,7 +2843,7 @@ meta = [
         "required" : false,
         "direction" : "input",
         "multiple" : true,
-        "multiple_sep" : ":",
+        "multiple_sep" : ";",
         "dest" : "par"
       },
       {
@@ -2856,7 +2856,7 @@ meta = [
         "required" : false,
         "direction" : "input",
         "multiple" : true,
-        "multiple_sep" : ":",
+        "multiple_sep" : ";",
         "dest" : "par"
       },
       {
@@ -3037,7 +3037,7 @@ meta = [
     "platform" : "nextflow",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/filter/do_filter",
     "viash_version" : "0.8.3",
-    "git_commit" : "1d3cf5318b6ec9fc9908e05797e74ebf456c3ae5",
+    "git_commit" : "87435a3643697f7a1150ab569fa1bc6708613a05",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))
@@ -3061,8 +3061,8 @@ import sys
 par = {
   'input': $( if [ ! -z ${VIASH_PAR_INPUT+x} ]; then echo "r'${VIASH_PAR_INPUT//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'modality': $( if [ ! -z ${VIASH_PAR_MODALITY+x} ]; then echo "r'${VIASH_PAR_MODALITY//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
-  'obs_filter': $( if [ ! -z ${VIASH_PAR_OBS_FILTER+x} ]; then echo "r'${VIASH_PAR_OBS_FILTER//\\'/\\'\\"\\'\\"r\\'}'.split(':')"; else echo None; fi ),
-  'var_filter': $( if [ ! -z ${VIASH_PAR_VAR_FILTER+x} ]; then echo "r'${VIASH_PAR_VAR_FILTER//\\'/\\'\\"\\'\\"r\\'}'.split(':')"; else echo None; fi ),
+  'obs_filter': $( if [ ! -z ${VIASH_PAR_OBS_FILTER+x} ]; then echo "r'${VIASH_PAR_OBS_FILTER//\\'/\\'\\"\\'\\"r\\'}'.split(';')"; else echo None; fi ),
+  'var_filter': $( if [ ! -z ${VIASH_PAR_VAR_FILTER+x} ]; then echo "r'${VIASH_PAR_VAR_FILTER//\\'/\\'\\"\\'\\"r\\'}'.split(';')"; else echo None; fi ),
   'output': $( if [ ! -z ${VIASH_PAR_OUTPUT+x} ]; then echo "r'${VIASH_PAR_OUTPUT//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'output_compression': $( if [ ! -z ${VIASH_PAR_OUTPUT_COMPRESSION+x} ]; then echo "r'${VIASH_PAR_OUTPUT_COMPRESSION//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi )
 }

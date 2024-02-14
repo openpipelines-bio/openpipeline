@@ -33,8 +33,8 @@
                 "input": {
                 "type":
                 "string",
-                "description": "Type: List of `file`, required, example: `sample_S1_L001_R1_001.fastq.gz;sample_S1_L001_R2_001.fastq.gz`, multiple_sep: `\";\"`. The fastq",
-                "help_text": "Type: List of `file`, required, example: `sample_S1_L001_R1_001.fastq.gz;sample_S1_L001_R2_001.fastq.gz`, multiple_sep: `\";\"`. The fastq.gz files to align. Can also be a single directory containing fastq.gz files."
+                "description": "Type: List of `file`, required, example: `sample_S1_L001_R1_001.fastq.gz:sample_S1_L001_R2_001.fastq.gz`, multiple_sep: `\":\"`. The fastq",
+                "help_text": "Type: List of `file`, required, example: `sample_S1_L001_R1_001.fastq.gz:sample_S1_L001_R2_001.fastq.gz`, multiple_sep: `\":\"`. The fastq.gz files to align. Can also be a single directory containing fastq.gz files."
             
             }
     

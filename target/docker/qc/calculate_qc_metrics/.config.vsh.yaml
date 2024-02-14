@@ -67,7 +67,7 @@ functionality:
       required: false
       direction: "input"
       multiple: true
-      multiple_sep: ","
+      multiple_sep: ";"
       dest: "par"
     - type: "boolean"
       name: "--var_qc_metrics_fill_na_value"
@@ -82,13 +82,13 @@ functionality:
     - type: "integer"
       name: "--top_n_vars"
       description: "Number of top vars to be used to calculate cumulative proportions.\n\
-        If not specified, proportions are not calculated. `--top_n_vars 20,50` finds\n\
+        If not specified, proportions are not calculated. `--top_n_vars 20;50` finds\n\
         cumulative proportion to the 20th and 50th most expressed vars.\n"
       info: null
       required: false
       direction: "input"
       multiple: true
-      multiple_sep: ","
+      multiple_sep: ";"
       dest: "par"
     - type: "string"
       name: "--output_obs_num_nonzero_vars"
@@ -317,5 +317,5 @@ info:
   output: "/home/runner/work/openpipeline/openpipeline/target/docker/qc/calculate_qc_metrics"
   executable: "/home/runner/work/openpipeline/openpipeline/target/docker/qc/calculate_qc_metrics/calculate_qc_metrics"
   viash_version: "0.8.3"
-  git_commit: "1d3cf5318b6ec9fc9908e05797e74ebf456c3ae5"
+  git_commit: "87435a3643697f7a1150ab569fa1bc6708613a05"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"

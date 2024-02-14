@@ -19,21 +19,18 @@ functionality:
           description: The ID of the sample being processed. This vector should have the same length as the `--input_r1` argument.
           example: [ mysample, mysample ]
           multiple: true
-          multiple_sep: ";"
         - type: file
           name: --input_r1
           required: true
           description: Paths to the sequences to be mapped. If using Illumina paired-end reads, only the R1 files should be passed.
           example: [ mysample_S1_L001_R1_001.fastq.gz, mysample_S1_L002_R1_001.fastq.gz ]
           multiple: true
-          multiple_sep: ";"
         - type: file
           name: --input_r2
           required: false
           description: Paths to the sequences to be mapped. If using Illumina paired-end reads, only the R2 files should be passed.
           example: [ mysample_S1_L001_R2_001.fastq.gz, mysample_S1_L002_R2_001.fastq.gz ]
           multiple: true
-          multiple_sep: ";"
         - type: file
           name: --reference_index
           alternatives: --genomeDir

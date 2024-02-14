@@ -61,7 +61,7 @@ def test_add_qc(run_component, input_path):
         "--input", input_path,
         "--output", "foo.h5mu",
         "--modality", "rna",
-        "--top_n_vars", "10,20,90",
+        "--top_n_vars", "10;20;90",
         "--output_compression", "gzip"
         ])
     
@@ -141,7 +141,7 @@ def test_calculcate_qc_var_qc_metrics(run_component, mudata_with_boolean_column,
         "--input", str(mudata_with_boolean_column),
         "--output", str(output_path),
         "--modality", "rna",
-        "--top_n_vars", "10,20,90",
+        "--top_n_vars", "10;20;90",
         "--var_qc_metrics", "custom",
     ]
     if input_data.mod['rna'].var["custom"].isna().any():
@@ -176,7 +176,7 @@ def test_compare_scanpy(run_component,
         "--input", str(mudata_with_boolean_column),
         "--output", str(output_path),
         "--modality", "rna",
-        "--top_n_vars", "10,20,90",
+        "--top_n_vars", "10;20;90",
         "--var_qc_metrics", "custom",
         "--var_qc_metrics_fill_na_value", "False"
         ])

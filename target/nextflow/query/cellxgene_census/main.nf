@@ -2918,7 +2918,7 @@ meta = [
             "required" : false,
             "direction" : "input",
             "multiple" : true,
-            "multiple_sep" : ":",
+            "multiple_sep" : ";",
             "dest" : "par"
           },
           {
@@ -3109,7 +3109,7 @@ meta = [
     "platform" : "nextflow",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/query/cellxgene_census",
     "viash_version" : "0.8.3",
-    "git_commit" : "1d3cf5318b6ec9fc9908e05797e74ebf456c3ae5",
+    "git_commit" : "87435a3643697f7a1150ab569fa1bc6708613a05",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))
@@ -3138,7 +3138,7 @@ par = {
   'cellxgene_release': $( if [ ! -z ${VIASH_PAR_CELLXGENE_RELEASE+x} ]; then echo "r'${VIASH_PAR_CELLXGENE_RELEASE//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'species': $( if [ ! -z ${VIASH_PAR_SPECIES+x} ]; then echo "r'${VIASH_PAR_SPECIES//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'cell_query': $( if [ ! -z ${VIASH_PAR_CELL_QUERY+x} ]; then echo "r'${VIASH_PAR_CELL_QUERY//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
-  'cells_filter_columns': $( if [ ! -z ${VIASH_PAR_CELLS_FILTER_COLUMNS+x} ]; then echo "r'${VIASH_PAR_CELLS_FILTER_COLUMNS//\\'/\\'\\"\\'\\"r\\'}'.split(':')"; else echo None; fi ),
+  'cells_filter_columns': $( if [ ! -z ${VIASH_PAR_CELLS_FILTER_COLUMNS+x} ]; then echo "r'${VIASH_PAR_CELLS_FILTER_COLUMNS//\\'/\\'\\"\\'\\"r\\'}'.split(';')"; else echo None; fi ),
   'min_cells_filter_columns': $( if [ ! -z ${VIASH_PAR_MIN_CELLS_FILTER_COLUMNS+x} ]; then echo "float(r'${VIASH_PAR_MIN_CELLS_FILTER_COLUMNS//\\'/\\'\\"\\'\\"r\\'}')"; else echo None; fi ),
   'output': $( if [ ! -z ${VIASH_PAR_OUTPUT+x} ]; then echo "r'${VIASH_PAR_OUTPUT//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'output_compression': $( if [ ! -z ${VIASH_PAR_OUTPUT_COMPRESSION+x} ]; then echo "r'${VIASH_PAR_OUTPUT_COMPRESSION//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi )

@@ -3055,7 +3055,7 @@ meta = [
             "required" : false,
             "direction" : "input",
             "multiple" : true,
-            "multiple_sep" : ":",
+            "multiple_sep" : ";",
             "dest" : "par"
           },
           {
@@ -3071,7 +3071,7 @@ meta = [
             "required" : false,
             "direction" : "input",
             "multiple" : true,
-            "multiple_sep" : ":",
+            "multiple_sep" : ";",
             "dest" : "par"
           },
           {
@@ -3308,7 +3308,7 @@ meta = [
     "platform" : "nextflow",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/mapping/htseq_count",
     "viash_version" : "0.8.3",
-    "git_commit" : "1d3cf5318b6ec9fc9908e05797e74ebf456c3ae5",
+    "git_commit" : "87435a3643697f7a1150ab569fa1bc6708613a05",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))
@@ -3344,8 +3344,8 @@ par = {
   'stranded': $( if [ ! -z ${VIASH_PAR_STRANDED+x} ]; then echo "r'${VIASH_PAR_STRANDED//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'minimum_alignment_quality': $( if [ ! -z ${VIASH_PAR_MINIMUM_ALIGNMENT_QUALITY+x} ]; then echo "int(r'${VIASH_PAR_MINIMUM_ALIGNMENT_QUALITY//\\'/\\'\\"\\'\\"r\\'}')"; else echo None; fi ),
   'type': $( if [ ! -z ${VIASH_PAR_TYPE+x} ]; then echo "r'${VIASH_PAR_TYPE//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
-  'id_attribute': $( if [ ! -z ${VIASH_PAR_ID_ATTRIBUTE+x} ]; then echo "r'${VIASH_PAR_ID_ATTRIBUTE//\\'/\\'\\"\\'\\"r\\'}'.split(':')"; else echo None; fi ),
-  'additional_attributes': $( if [ ! -z ${VIASH_PAR_ADDITIONAL_ATTRIBUTES+x} ]; then echo "r'${VIASH_PAR_ADDITIONAL_ATTRIBUTES//\\'/\\'\\"\\'\\"r\\'}'.split(':')"; else echo None; fi ),
+  'id_attribute': $( if [ ! -z ${VIASH_PAR_ID_ATTRIBUTE+x} ]; then echo "r'${VIASH_PAR_ID_ATTRIBUTE//\\'/\\'\\"\\'\\"r\\'}'.split(';')"; else echo None; fi ),
+  'additional_attributes': $( if [ ! -z ${VIASH_PAR_ADDITIONAL_ATTRIBUTES+x} ]; then echo "r'${VIASH_PAR_ADDITIONAL_ATTRIBUTES//\\'/\\'\\"\\'\\"r\\'}'.split(';')"; else echo None; fi ),
   'add_chromosome_info': $( if [ ! -z ${VIASH_PAR_ADD_CHROMOSOME_INFO+x} ]; then echo "r'${VIASH_PAR_ADD_CHROMOSOME_INFO//\\'/\\'\\"\\'\\"r\\'}'.lower() == 'true'"; else echo None; fi ),
   'mode': $( if [ ! -z ${VIASH_PAR_MODE+x} ]; then echo "r'${VIASH_PAR_MODE//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'non_unique': $( if [ ! -z ${VIASH_PAR_NON_UNIQUE+x} ]; then echo "r'${VIASH_PAR_NON_UNIQUE//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),

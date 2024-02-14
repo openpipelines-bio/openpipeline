@@ -2867,7 +2867,7 @@ meta = [
         "required" : false,
         "direction" : "input",
         "multiple" : true,
-        "multiple_sep" : ":",
+        "multiple_sep" : ";",
         "dest" : "par"
       }
     ],
@@ -2986,7 +2986,7 @@ meta = [
     "platform" : "nextflow",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/download/sync_test_resources",
     "viash_version" : "0.8.3",
-    "git_commit" : "1d3cf5318b6ec9fc9908e05797e74ebf456c3ae5",
+    "git_commit" : "87435a3643697f7a1150ab569fa1bc6708613a05",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))
@@ -3041,7 +3041,7 @@ if [ "\\$par_delete" == "true" ]; then
 fi
 
 if [ ! -z \\${par_exclude+x} ]; then
-  IFS=":"
+  IFS=";"
   for var in \\$par_exclude; do
     unset IFS
     extra_params+=( "--exclude" "\\$var" )
