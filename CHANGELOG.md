@@ -2,7 +2,7 @@
 
 ## BREAKING CHANGES
 
-* Change separator for arguments with multiple inputs from `:` to `;` (PR #700). Now, _all_ arguments with `multiple: true` will use `;` as the separator.
+* Change separator for arguments with multiple inputs from `:` to `;` (PR #700 and #707). Now, _all_ arguments with `multiple: true` will use `;` as the separator.
   This change was made to be able to deal with file paths that contain `:`, e.g. `s3://my-bucket/my:file.txt`. Furthermore, the `;` separator will become
   the default separator for all arguments with `multiple: true` in Viash >= 0.9.0.
 
