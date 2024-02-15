@@ -64,7 +64,7 @@ functionality:
       - "mysample_S1_L001_R2_001.fastq.gz"
       must_exist: true
       create_parent: true
-      required: true
+      required: false
       direction: "input"
       multiple: true
       multiple_sep: ";"
@@ -126,6 +126,155 @@ functionality:
       multiple: false
       multiple_sep: ":"
       dest: "par"
+  - name: "Feature type-specific input files"
+    description: "Helper functionality to allow feature type-specific input files,\
+      \ without the need to specify library_type or library_id. The library_id will\
+      \ be inferred from the input paths."
+    arguments:
+    - type: "file"
+      name: "--gex_input"
+      description: "The FASTQ files to be analyzed for Gene Expression. FASTQ files\
+        \ should conform to the naming conventions of bcl2fastq and mkfastq:\n`[Sample\
+        \ Name]_S[Sample Index]_L00[Lane Number]_[Read Type]_001.fastq.gz`\n"
+      info: null
+      example:
+      - "mysample_S1_L001_R1_001.fastq.gz"
+      - "mysample_S1_L001_R2_001.fastq.gz"
+      must_exist: true
+      create_parent: true
+      required: false
+      direction: "input"
+      multiple: true
+      multiple_sep: ";"
+      dest: "par"
+    - type: "file"
+      name: "--abc_input"
+      description: "The FASTQ files to be analyzed for Antibody Capture. FASTQ files\
+        \ should conform to the naming conventions of bcl2fastq and mkfastq:\n`[Sample\
+        \ Name]_S[Sample Index]_L00[Lane Number]_[Read Type]_001.fastq.gz`\n"
+      info: null
+      example:
+      - "mysample_S1_L001_R1_001.fastq.gz"
+      - "mysample_S1_L001_R2_001.fastq.gz"
+      must_exist: true
+      create_parent: true
+      required: false
+      direction: "input"
+      multiple: true
+      multiple_sep: ";"
+      dest: "par"
+    - type: "file"
+      name: "--cgc_input"
+      description: "The FASTQ files to be analyzed for CRISPR Guide Capture. FASTQ\
+        \ files should conform to the naming conventions of bcl2fastq and mkfastq:\n\
+        `[Sample Name]_S[Sample Index]_L00[Lane Number]_[Read Type]_001.fastq.gz`\n"
+      info: null
+      example:
+      - "mysample_S1_L001_R1_001.fastq.gz"
+      - "mysample_S1_L001_R2_001.fastq.gz"
+      must_exist: true
+      create_parent: true
+      required: false
+      direction: "input"
+      multiple: true
+      multiple_sep: ";"
+      dest: "par"
+    - type: "file"
+      name: "--mux_input"
+      description: "The FASTQ files to be analyzed for Multiplexing Capture. FASTQ\
+        \ files should conform to the naming conventions of bcl2fastq and mkfastq:\n\
+        `[Sample Name]_S[Sample Index]_L00[Lane Number]_[Read Type]_001.fastq.gz`\n"
+      info: null
+      example:
+      - "mysample_S1_L001_R1_001.fastq.gz"
+      - "mysample_S1_L001_R2_001.fastq.gz"
+      must_exist: true
+      create_parent: true
+      required: false
+      direction: "input"
+      multiple: true
+      multiple_sep: ";"
+      dest: "par"
+    - type: "file"
+      name: "--vdj_input"
+      description: "The FASTQ files to be analyzed for VDJ. FASTQ files should conform\
+        \ to the naming conventions of bcl2fastq and mkfastq:\n`[Sample Name]_S[Sample\
+        \ Index]_L00[Lane Number]_[Read Type]_001.fastq.gz`\n"
+      info: null
+      example:
+      - "mysample_S1_L001_R1_001.fastq.gz"
+      - "mysample_S1_L001_R2_001.fastq.gz"
+      must_exist: true
+      create_parent: true
+      required: false
+      direction: "input"
+      multiple: true
+      multiple_sep: ";"
+      dest: "par"
+    - type: "file"
+      name: "--vdj_t_input"
+      description: "The FASTQ files to be analyzed for VDJ-T. FASTQ files should conform\
+        \ to the naming conventions of bcl2fastq and mkfastq:\n`[Sample Name]_S[Sample\
+        \ Index]_L00[Lane Number]_[Read Type]_001.fastq.gz`\n"
+      info: null
+      example:
+      - "mysample_S1_L001_R1_001.fastq.gz"
+      - "mysample_S1_L001_R2_001.fastq.gz"
+      must_exist: true
+      create_parent: true
+      required: false
+      direction: "input"
+      multiple: true
+      multiple_sep: ";"
+      dest: "par"
+    - type: "file"
+      name: "--vdj_t_gd_input"
+      description: "The FASTQ files to be analyzed for VDJ-T-GD. FASTQ files should\
+        \ conform to the naming conventions of bcl2fastq and mkfastq:\n`[Sample Name]_S[Sample\
+        \ Index]_L00[Lane Number]_[Read Type]_001.fastq.gz`\n"
+      info: null
+      example:
+      - "mysample_S1_L001_R1_001.fastq.gz"
+      - "mysample_S1_L001_R2_001.fastq.gz"
+      must_exist: true
+      create_parent: true
+      required: false
+      direction: "input"
+      multiple: true
+      multiple_sep: ";"
+      dest: "par"
+    - type: "file"
+      name: "--vdj_b_input"
+      description: "The FASTQ files to be analyzed for VDJ-B. FASTQ files should conform\
+        \ to the naming conventions of bcl2fastq and mkfastq:\n`[Sample Name]_S[Sample\
+        \ Index]_L00[Lane Number]_[Read Type]_001.fastq.gz`\n"
+      info: null
+      example:
+      - "mysample_S1_L001_R1_001.fastq.gz"
+      - "mysample_S1_L001_R2_001.fastq.gz"
+      must_exist: true
+      create_parent: true
+      required: false
+      direction: "input"
+      multiple: true
+      multiple_sep: ";"
+      dest: "par"
+    - type: "file"
+      name: "--agc_input"
+      description: "The FASTQ files to be analyzed for Antigen Capture. FASTQ files\
+        \ should conform to the naming conventions of bcl2fastq and mkfastq:\n`[Sample\
+        \ Name]_S[Sample Index]_L00[Lane Number]_[Read Type]_001.fastq.gz`\n"
+      info: null
+      example:
+      - "mysample_S1_L001_R1_001.fastq.gz"
+      - "mysample_S1_L001_R2_001.fastq.gz"
+      must_exist: true
+      create_parent: true
+      required: false
+      direction: "input"
+      multiple: true
+      multiple_sep: ";"
+      dest: "par"
   - name: "Library arguments"
     arguments:
     - type: "string"
@@ -135,7 +284,7 @@ functionality:
       info: null
       example:
       - "mysample1"
-      required: true
+      required: false
       direction: "input"
       multiple: true
       multiple_sep: ";"
@@ -148,7 +297,7 @@ functionality:
       info: null
       example:
       - "Gene Expression"
-      required: true
+      required: false
       direction: "input"
       multiple: true
       multiple_sep: ";"
@@ -423,5 +572,5 @@ info:
   output: "/home/runner/work/openpipeline/openpipeline/target/nextflow/mapping/cellranger_multi"
   executable: "/home/runner/work/openpipeline/openpipeline/target/nextflow/mapping/cellranger_multi/cellranger_multi"
   viash_version: "0.8.4"
-  git_commit: "cc2c92f48ac504e9fd142bf236cc0e20cdc2d2f2"
+  git_commit: "e4e19347c2153454e378f172a7686e4f3ce7afa6"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"

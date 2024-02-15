@@ -43,8 +43,8 @@
                 "input": {
                 "type":
                 "string",
-                "description": "Type: List of `file`, required, example: `sample_S1_L001_R1_001.fastq.gz;sample_S1_L001_R2_001.fastq.gz`, multiple_sep: `\";\"`. The fastq",
-                "help_text": "Type: List of `file`, required, example: `sample_S1_L001_R1_001.fastq.gz;sample_S1_L001_R2_001.fastq.gz`, multiple_sep: `\";\"`. The fastq.gz files to align. Can also be a single directory containing fastq.gz files."
+                "description": "Type: List of `file`, example: `sample_S1_L001_R1_001.fastq.gz;sample_S1_L001_R2_001.fastq.gz`, multiple_sep: `\";\"`. The fastq",
+                "help_text": "Type: List of `file`, example: `sample_S1_L001_R1_001.fastq.gz;sample_S1_L001_R2_001.fastq.gz`, multiple_sep: `\";\"`. The fastq.gz files to align. Can also be a single directory containing fastq.gz files."
             
             }
     
@@ -129,6 +129,106 @@
                 "help_text": "Type: `string`, default: `metrics_cellranger`. Name of the .uns slot under which to QC metrics (if any)."
             ,
                 "default": "metrics_cellranger"
+            }
+    
+
+}
+},
+    
+    
+    "feature type-specific input files" : {
+    "title": "Feature type-specific input files",
+    "type": "object",
+    "description": "Helper functionality to allow feature type-specific input files, without the need to specify library_type or library_id. The library_id will be inferred from the input paths.",
+    "properties": {
+    
+        
+                "gex_input": {
+                "type":
+                "string",
+                "description": "Type: List of `file`, example: `mysample_S1_L001_R1_001.fastq.gz;mysample_S1_L001_R2_001.fastq.gz`, multiple_sep: `\";\"`. The FASTQ files to be analyzed for Gene Expression",
+                "help_text": "Type: List of `file`, example: `mysample_S1_L001_R1_001.fastq.gz;mysample_S1_L001_R2_001.fastq.gz`, multiple_sep: `\";\"`. The FASTQ files to be analyzed for Gene Expression. FASTQ files should conform to the naming conventions of bcl2fastq and mkfastq:\n`[Sample Name]_S[Sample Index]_L00[Lane Number]_[Read Type]_001.fastq.gz`\n"
+            
+            }
+    
+
+        ,
+                "abc_input": {
+                "type":
+                "string",
+                "description": "Type: List of `file`, example: `mysample_S1_L001_R1_001.fastq.gz;mysample_S1_L001_R2_001.fastq.gz`, multiple_sep: `\";\"`. The FASTQ files to be analyzed for Antibody Capture",
+                "help_text": "Type: List of `file`, example: `mysample_S1_L001_R1_001.fastq.gz;mysample_S1_L001_R2_001.fastq.gz`, multiple_sep: `\";\"`. The FASTQ files to be analyzed for Antibody Capture. FASTQ files should conform to the naming conventions of bcl2fastq and mkfastq:\n`[Sample Name]_S[Sample Index]_L00[Lane Number]_[Read Type]_001.fastq.gz`\n"
+            
+            }
+    
+
+        ,
+                "cgc_input": {
+                "type":
+                "string",
+                "description": "Type: List of `file`, example: `mysample_S1_L001_R1_001.fastq.gz;mysample_S1_L001_R2_001.fastq.gz`, multiple_sep: `\";\"`. The FASTQ files to be analyzed for CRISPR Guide Capture",
+                "help_text": "Type: List of `file`, example: `mysample_S1_L001_R1_001.fastq.gz;mysample_S1_L001_R2_001.fastq.gz`, multiple_sep: `\";\"`. The FASTQ files to be analyzed for CRISPR Guide Capture. FASTQ files should conform to the naming conventions of bcl2fastq and mkfastq:\n`[Sample Name]_S[Sample Index]_L00[Lane Number]_[Read Type]_001.fastq.gz`\n"
+            
+            }
+    
+
+        ,
+                "mux_input": {
+                "type":
+                "string",
+                "description": "Type: List of `file`, example: `mysample_S1_L001_R1_001.fastq.gz;mysample_S1_L001_R2_001.fastq.gz`, multiple_sep: `\";\"`. The FASTQ files to be analyzed for Multiplexing Capture",
+                "help_text": "Type: List of `file`, example: `mysample_S1_L001_R1_001.fastq.gz;mysample_S1_L001_R2_001.fastq.gz`, multiple_sep: `\";\"`. The FASTQ files to be analyzed for Multiplexing Capture. FASTQ files should conform to the naming conventions of bcl2fastq and mkfastq:\n`[Sample Name]_S[Sample Index]_L00[Lane Number]_[Read Type]_001.fastq.gz`\n"
+            
+            }
+    
+
+        ,
+                "vdj_input": {
+                "type":
+                "string",
+                "description": "Type: List of `file`, example: `mysample_S1_L001_R1_001.fastq.gz;mysample_S1_L001_R2_001.fastq.gz`, multiple_sep: `\";\"`. The FASTQ files to be analyzed for VDJ",
+                "help_text": "Type: List of `file`, example: `mysample_S1_L001_R1_001.fastq.gz;mysample_S1_L001_R2_001.fastq.gz`, multiple_sep: `\";\"`. The FASTQ files to be analyzed for VDJ. FASTQ files should conform to the naming conventions of bcl2fastq and mkfastq:\n`[Sample Name]_S[Sample Index]_L00[Lane Number]_[Read Type]_001.fastq.gz`\n"
+            
+            }
+    
+
+        ,
+                "vdj_t_input": {
+                "type":
+                "string",
+                "description": "Type: List of `file`, example: `mysample_S1_L001_R1_001.fastq.gz;mysample_S1_L001_R2_001.fastq.gz`, multiple_sep: `\";\"`. The FASTQ files to be analyzed for VDJ-T",
+                "help_text": "Type: List of `file`, example: `mysample_S1_L001_R1_001.fastq.gz;mysample_S1_L001_R2_001.fastq.gz`, multiple_sep: `\";\"`. The FASTQ files to be analyzed for VDJ-T. FASTQ files should conform to the naming conventions of bcl2fastq and mkfastq:\n`[Sample Name]_S[Sample Index]_L00[Lane Number]_[Read Type]_001.fastq.gz`\n"
+            
+            }
+    
+
+        ,
+                "vdj_t_gd_input": {
+                "type":
+                "string",
+                "description": "Type: List of `file`, example: `mysample_S1_L001_R1_001.fastq.gz;mysample_S1_L001_R2_001.fastq.gz`, multiple_sep: `\";\"`. The FASTQ files to be analyzed for VDJ-T-GD",
+                "help_text": "Type: List of `file`, example: `mysample_S1_L001_R1_001.fastq.gz;mysample_S1_L001_R2_001.fastq.gz`, multiple_sep: `\";\"`. The FASTQ files to be analyzed for VDJ-T-GD. FASTQ files should conform to the naming conventions of bcl2fastq and mkfastq:\n`[Sample Name]_S[Sample Index]_L00[Lane Number]_[Read Type]_001.fastq.gz`\n"
+            
+            }
+    
+
+        ,
+                "vdj_b_input": {
+                "type":
+                "string",
+                "description": "Type: List of `file`, example: `mysample_S1_L001_R1_001.fastq.gz;mysample_S1_L001_R2_001.fastq.gz`, multiple_sep: `\";\"`. The FASTQ files to be analyzed for VDJ-B",
+                "help_text": "Type: List of `file`, example: `mysample_S1_L001_R1_001.fastq.gz;mysample_S1_L001_R2_001.fastq.gz`, multiple_sep: `\";\"`. The FASTQ files to be analyzed for VDJ-B. FASTQ files should conform to the naming conventions of bcl2fastq and mkfastq:\n`[Sample Name]_S[Sample Index]_L00[Lane Number]_[Read Type]_001.fastq.gz`\n"
+            
+            }
+    
+
+        ,
+                "agc_input": {
+                "type":
+                "string",
+                "description": "Type: List of `file`, example: `mysample_S1_L001_R1_001.fastq.gz;mysample_S1_L001_R2_001.fastq.gz`, multiple_sep: `\";\"`. The FASTQ files to be analyzed for Antigen Capture",
+                "help_text": "Type: List of `file`, example: `mysample_S1_L001_R1_001.fastq.gz;mysample_S1_L001_R2_001.fastq.gz`, multiple_sep: `\";\"`. The FASTQ files to be analyzed for Antigen Capture. FASTQ files should conform to the naming conventions of bcl2fastq and mkfastq:\n`[Sample Name]_S[Sample Index]_L00[Lane Number]_[Read Type]_001.fastq.gz`\n"
+            
             }
     
 
@@ -252,8 +352,8 @@
                 "library_id": {
                 "type":
                 "string",
-                "description": "Type: List of `string`, required, example: `mysample1`, multiple_sep: `\";\"`. The Illumina sample name to analyze",
-                "help_text": "Type: List of `string`, required, example: `mysample1`, multiple_sep: `\";\"`. The Illumina sample name to analyze. This must exactly match the \u0027Sample Name\u0027 part\nof the FASTQ files specified in the `--input` argument.\n"
+                "description": "Type: List of `string`, example: `mysample1`, multiple_sep: `\";\"`. The Illumina sample name to analyze",
+                "help_text": "Type: List of `string`, example: `mysample1`, multiple_sep: `\";\"`. The Illumina sample name to analyze. This must exactly match the \u0027Sample Name\u0027 part\nof the FASTQ files specified in the `--input` argument.\n"
             
             }
     
@@ -262,8 +362,8 @@
                 "library_type": {
                 "type":
                 "string",
-                "description": "Type: List of `string`, required, example: `Gene Expression`, multiple_sep: `\";\"`. The underlying feature type of the library",
-                "help_text": "Type: List of `string`, required, example: `Gene Expression`, multiple_sep: `\";\"`. The underlying feature type of the library.\nPossible values: \"Gene Expression\", \"VDJ\", \"VDJ-T\", \"VDJ-B\", \"Antibody Capture\", \"CRISPR Guide Capture\", \"Multiplexing Capture\"\n"
+                "description": "Type: List of `string`, example: `Gene Expression`, multiple_sep: `\";\"`. The underlying feature type of the library",
+                "help_text": "Type: List of `string`, example: `Gene Expression`, multiple_sep: `\";\"`. The underlying feature type of the library.\nPossible values: \"Gene Expression\", \"VDJ\", \"VDJ-T\", \"VDJ-B\", \"Antibody Capture\", \"CRISPR Guide Capture\", \"Multiplexing Capture\"\n"
             
             }
     
@@ -321,6 +421,10 @@
 
     {
     "$ref": "#/definitions/outputs"
+    },
+
+    {
+    "$ref": "#/definitions/feature type-specific input files"
     },
 
     {
