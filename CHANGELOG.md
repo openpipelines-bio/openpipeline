@@ -380,6 +380,8 @@ Implementing this changes involved breaking some existing functionality:
 
 * `integration/bbknn_leiden`: Update state management to `fromState` / `toState` (PR #538).
 
+* `mapping/cellranger_multi`: Add optional helper input: allow for passing modality specific inputs, from which library type and library id are inferred (PR #693).
+
 ## DOCUMENTATION
 
 * `images`: Added images for various concepts, such as a sample, a cell, RNA, ADT, ATAC, VDJ (PR #515).
