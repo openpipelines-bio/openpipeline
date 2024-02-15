@@ -23,6 +23,7 @@ workflow run_wf {
           "min_genes_per_cell": state.min_guides_per_cell,
           "max_genes_per_cell": state.max_guides_per_cell,
           "min_cells_per_gene": state.min_cells_per_guide,
+          "layer": state.layer,
         ]
       },
       toState: ["input": "output"]
@@ -30,6 +31,8 @@ workflow run_wf {
     | do_filter.run(
       key: "gdo_do_filter",
       fromState : { id, state ->
+        // do_filter does not need a layer argument because it filters all layers
+        // from a modality.
         def newState = [
           "input": state.input,
           "obs_filter": "filter_with_counts",

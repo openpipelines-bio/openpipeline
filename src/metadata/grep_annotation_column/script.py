@@ -1,6 +1,6 @@
 import mudata as mu
 from pathlib import Path
-from operator import attrgetter
+from operator import attrgetter, itemgetter
 import re
 import numpy as np
 
@@ -71,7 +71,8 @@ def main(par):
         "obs": "var"
     }
     if par['output_fraction_column']:
-        pct_matching = np.ravel(np.sum(modality_data[:, grep_result].X, axis=1) / np.sum(modality_data.X, axis=1))
+        input_layer = modality_data.X if not par["input_layer"] else modality_data.layers[par["input_layer"]]
+        pct_matching = np.ravel(np.sum(input_layer[:, grep_result], axis=1) / np.sum(input_layer, axis=1))
         getattr(modality_data, other_axis_attribute[par['matrix']])[par['output_fraction_column']] = pct_matching
     getattr(modality_data, par['matrix'])[par["output_match_column"]] = grep_result
     mudata.write(output_file, compression=par["output_compression"])
