@@ -3064,14 +3064,14 @@ meta = [
         "foundConfigPath" : "/home/runner/work/openpipeline/openpipeline/src/reference/make_reference/config.vsh.yaml",
         "configInfo" : {
           "functionalityName" : "make_reference",
-          "git_tag" : "0.12.1-1-g5d4f22bb96",
+          "git_tag" : "0.12.1-2-g1245066a12",
           "git_remote" : "https://github.com/openpipelines-bio/openpipeline",
           "viash_version" : "0.8.4",
           "config" : "/home/runner/work/openpipeline/openpipeline/src/reference/make_reference/config.vsh.yaml",
           "functionalityNamespace" : "reference",
           "output" : "",
           "platform" : "",
-          "git_commit" : "5d4f22bb9619480f75e8a120d2a688f4fc2c48a4",
+          "git_commit" : "1245066a122271ece7ae5ce7f4819ad5c1a5f2d2",
           "executable" : "/nextflow/reference/make_reference/main.nf"
         },
         "writtenPath" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/reference/make_reference"
@@ -3085,14 +3085,14 @@ meta = [
         "foundConfigPath" : "/home/runner/work/openpipeline/openpipeline/src/reference/build_bdrhap_reference/config.vsh.yaml",
         "configInfo" : {
           "functionalityName" : "build_bdrhap_reference",
-          "git_tag" : "0.12.1-1-g5d4f22bb96",
+          "git_tag" : "0.12.1-2-g1245066a12",
           "git_remote" : "https://github.com/openpipelines-bio/openpipeline",
           "viash_version" : "0.8.4",
           "config" : "/home/runner/work/openpipeline/openpipeline/src/reference/build_bdrhap_reference/config.vsh.yaml",
           "functionalityNamespace" : "reference",
           "output" : "",
           "platform" : "",
-          "git_commit" : "5d4f22bb9619480f75e8a120d2a688f4fc2c48a4",
+          "git_commit" : "1245066a122271ece7ae5ce7f4819ad5c1a5f2d2",
           "executable" : "/nextflow/reference/build_bdrhap_reference/main.nf"
         },
         "writtenPath" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/reference/build_bdrhap_reference"
@@ -3106,14 +3106,14 @@ meta = [
         "foundConfigPath" : "/home/runner/work/openpipeline/openpipeline/src/mapping/star_build_reference/config.vsh.yml",
         "configInfo" : {
           "functionalityName" : "star_build_reference",
-          "git_tag" : "0.12.1-1-g5d4f22bb96",
+          "git_tag" : "0.12.1-2-g1245066a12",
           "git_remote" : "https://github.com/openpipelines-bio/openpipeline",
           "viash_version" : "0.8.4",
           "config" : "/home/runner/work/openpipeline/openpipeline/src/mapping/star_build_reference/config.vsh.yml",
           "functionalityNamespace" : "mapping",
           "output" : "",
           "platform" : "",
-          "git_commit" : "5d4f22bb9619480f75e8a120d2a688f4fc2c48a4",
+          "git_commit" : "1245066a122271ece7ae5ce7f4819ad5c1a5f2d2",
           "executable" : "/nextflow/mapping/star_build_reference/main.nf"
         },
         "writtenPath" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/mapping/star_build_reference"
@@ -3127,14 +3127,14 @@ meta = [
         "foundConfigPath" : "/home/runner/work/openpipeline/openpipeline/src/reference/build_cellranger_reference/config.vsh.yaml",
         "configInfo" : {
           "functionalityName" : "build_cellranger_reference",
-          "git_tag" : "0.12.1-1-g5d4f22bb96",
+          "git_tag" : "0.12.1-2-g1245066a12",
           "git_remote" : "https://github.com/openpipelines-bio/openpipeline",
           "viash_version" : "0.8.4",
           "config" : "/home/runner/work/openpipeline/openpipeline/src/reference/build_cellranger_reference/config.vsh.yaml",
           "functionalityNamespace" : "reference",
           "output" : "",
           "platform" : "",
-          "git_commit" : "5d4f22bb9619480f75e8a120d2a688f4fc2c48a4",
+          "git_commit" : "1245066a122271ece7ae5ce7f4819ad5c1a5f2d2",
           "executable" : "/nextflow/reference/build_cellranger_reference/main.nf"
         },
         "writtenPath" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/reference/build_cellranger_reference"
@@ -3201,9 +3201,9 @@ meta = [
     "platform" : "nextflow",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/workflows/ingestion/make_reference",
     "viash_version" : "0.8.4",
-    "git_commit" : "5d4f22bb9619480f75e8a120d2a688f4fc2c48a4",
+    "git_commit" : "1245066a122271ece7ae5ce7f4819ad5c1a5f2d2",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline",
-    "git_tag" : "0.12.1-1-g5d4f22bb96"
+    "git_tag" : "0.12.1-2-g1245066a12"
   }
 }'''))
 ]

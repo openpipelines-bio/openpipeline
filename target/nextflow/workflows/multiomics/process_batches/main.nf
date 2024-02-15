@@ -3026,14 +3026,14 @@ meta = [
         "foundConfigPath" : "/home/runner/work/openpipeline/openpipeline/src/dataflow/merge/config.vsh.yml",
         "configInfo" : {
           "functionalityName" : "merge",
-          "git_tag" : "0.12.1-1-g5d4f22bb96",
+          "git_tag" : "0.12.1-2-g1245066a12",
           "git_remote" : "https://github.com/openpipelines-bio/openpipeline",
           "viash_version" : "0.8.4",
           "config" : "/home/runner/work/openpipeline/openpipeline/src/dataflow/merge/config.vsh.yml",
           "functionalityNamespace" : "dataflow",
           "output" : "",
           "platform" : "",
-          "git_commit" : "5d4f22bb9619480f75e8a120d2a688f4fc2c48a4",
+          "git_commit" : "1245066a122271ece7ae5ce7f4819ad5c1a5f2d2",
           "executable" : "/nextflow/dataflow/merge/main.nf"
         },
         "writtenPath" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/dataflow/merge"
@@ -3048,14 +3048,14 @@ meta = [
         "foundConfigPath" : "/home/runner/work/openpipeline/openpipeline/src/workflows/multiomics/split_modalities/config.vsh.yaml",
         "configInfo" : {
           "functionalityName" : "split_modalities",
-          "git_tag" : "0.12.1-1-g5d4f22bb96",
+          "git_tag" : "0.12.1-2-g1245066a12",
           "git_remote" : "https://github.com/openpipelines-bio/openpipeline",
           "viash_version" : "0.8.4",
           "config" : "/home/runner/work/openpipeline/openpipeline/src/workflows/multiomics/split_modalities/config.vsh.yaml",
           "functionalityNamespace" : "workflows/multiomics",
           "output" : "",
           "platform" : "",
-          "git_commit" : "5d4f22bb9619480f75e8a120d2a688f4fc2c48a4",
+          "git_commit" : "1245066a122271ece7ae5ce7f4819ad5c1a5f2d2",
           "executable" : "/nextflow/workflows/multiomics/split_modalities/main.nf"
         },
         "writtenPath" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/workflows/multiomics/split_modalities"
@@ -3069,14 +3069,14 @@ meta = [
         "foundConfigPath" : "/home/runner/work/openpipeline/openpipeline/src/workflows/prot/prot_multisample/config.vsh.yaml",
         "configInfo" : {
           "functionalityName" : "prot_multisample",
-          "git_tag" : "0.12.1-1-g5d4f22bb96",
+          "git_tag" : "0.12.1-2-g1245066a12",
           "git_remote" : "https://github.com/openpipelines-bio/openpipeline",
           "viash_version" : "0.8.4",
           "config" : "/home/runner/work/openpipeline/openpipeline/src/workflows/prot/prot_multisample/config.vsh.yaml",
           "functionalityNamespace" : "workflows/prot",
           "output" : "",
           "platform" : "",
-          "git_commit" : "5d4f22bb9619480f75e8a120d2a688f4fc2c48a4",
+          "git_commit" : "1245066a122271ece7ae5ce7f4819ad5c1a5f2d2",
           "executable" : "/nextflow/workflows/prot/prot_multisample/main.nf"
         },
         "writtenPath" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/workflows/prot/prot_multisample"
@@ -3090,14 +3090,14 @@ meta = [
         "foundConfigPath" : "/home/runner/work/openpipeline/openpipeline/src/workflows/rna/rna_multisample/config.vsh.yaml",
         "configInfo" : {
           "functionalityName" : "rna_multisample",
-          "git_tag" : "0.12.1-1-g5d4f22bb96",
+          "git_tag" : "0.12.1-2-g1245066a12",
           "git_remote" : "https://github.com/openpipelines-bio/openpipeline",
           "viash_version" : "0.8.4",
           "config" : "/home/runner/work/openpipeline/openpipeline/src/workflows/rna/rna_multisample/config.vsh.yaml",
           "functionalityNamespace" : "workflows/rna",
           "output" : "",
           "platform" : "",
-          "git_commit" : "5d4f22bb9619480f75e8a120d2a688f4fc2c48a4",
+          "git_commit" : "1245066a122271ece7ae5ce7f4819ad5c1a5f2d2",
           "executable" : "/nextflow/workflows/rna/rna_multisample/main.nf"
         },
         "writtenPath" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/workflows/rna/rna_multisample"
@@ -3112,14 +3112,14 @@ meta = [
         "foundConfigPath" : "/home/runner/work/openpipeline/openpipeline/src/workflows/multiomics/dimensionality_reduction/config.vsh.yaml",
         "configInfo" : {
           "functionalityName" : "dimensionality_reduction",
-          "git_tag" : "0.12.1-1-g5d4f22bb96",
+          "git_tag" : "0.12.1-2-g1245066a12",
           "git_remote" : "https://github.com/openpipelines-bio/openpipeline",
           "viash_version" : "0.8.4",
           "config" : "/home/runner/work/openpipeline/openpipeline/src/workflows/multiomics/dimensionality_reduction/config.vsh.yaml",
           "functionalityNamespace" : "workflows/multiomics",
           "output" : "",
           "platform" : "",
-          "git_commit" : "5d4f22bb9619480f75e8a120d2a688f4fc2c48a4",
+          "git_commit" : "1245066a122271ece7ae5ce7f4819ad5c1a5f2d2",
           "executable" : "/nextflow/workflows/multiomics/dimensionality_reduction/main.nf"
         },
         "writtenPath" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/workflows/multiomics/dimensionality_reduction"
@@ -3134,14 +3134,14 @@ meta = [
         "foundConfigPath" : "/home/runner/work/openpipeline/openpipeline/src/workflows/multiomics/dimensionality_reduction/config.vsh.yaml",
         "configInfo" : {
           "functionalityName" : "dimensionality_reduction",
-          "git_tag" : "0.12.1-1-g5d4f22bb96",
+          "git_tag" : "0.12.1-2-g1245066a12",
           "git_remote" : "https://github.com/openpipelines-bio/openpipeline",
           "viash_version" : "0.8.4",
           "config" : "/home/runner/work/openpipeline/openpipeline/src/workflows/multiomics/dimensionality_reduction/config.vsh.yaml",
           "functionalityNamespace" : "workflows/multiomics",
           "output" : "",
           "platform" : "",
-          "git_commit" : "5d4f22bb9619480f75e8a120d2a688f4fc2c48a4",
+          "git_commit" : "1245066a122271ece7ae5ce7f4819ad5c1a5f2d2",
           "executable" : "/nextflow/workflows/multiomics/dimensionality_reduction/main.nf"
         },
         "writtenPath" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/workflows/multiomics/dimensionality_reduction"
@@ -3208,9 +3208,9 @@ meta = [
     "platform" : "nextflow",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/workflows/multiomics/process_batches",
     "viash_version" : "0.8.4",
-    "git_commit" : "5d4f22bb9619480f75e8a120d2a688f4fc2c48a4",
+    "git_commit" : "1245066a122271ece7ae5ce7f4819ad5c1a5f2d2",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline",
-    "git_tag" : "0.12.1-1-g5d4f22bb96"
+    "git_tag" : "0.12.1-2-g1245066a12"
   }
 }'''))
 ]

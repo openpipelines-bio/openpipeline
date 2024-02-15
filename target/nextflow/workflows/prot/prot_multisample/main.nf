@@ -3029,14 +3029,14 @@ meta = [
         "foundConfigPath" : "/home/runner/work/openpipeline/openpipeline/src/transform/clr/config.vsh.yaml",
         "configInfo" : {
           "functionalityName" : "clr",
-          "git_tag" : "0.12.1-1-g5d4f22bb96",
+          "git_tag" : "0.12.1-2-g1245066a12",
           "git_remote" : "https://github.com/openpipelines-bio/openpipeline",
           "viash_version" : "0.8.4",
           "config" : "/home/runner/work/openpipeline/openpipeline/src/transform/clr/config.vsh.yaml",
           "functionalityNamespace" : "transform",
           "output" : "",
           "platform" : "",
-          "git_commit" : "5d4f22bb9619480f75e8a120d2a688f4fc2c48a4",
+          "git_commit" : "1245066a122271ece7ae5ce7f4819ad5c1a5f2d2",
           "executable" : "/nextflow/transform/clr/main.nf"
         },
         "writtenPath" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/transform/clr"
@@ -3051,14 +3051,14 @@ meta = [
         "foundConfigPath" : "/home/runner/work/openpipeline/openpipeline/src/workflows/qc/qc/config.vsh.yaml",
         "configInfo" : {
           "functionalityName" : "qc",
-          "git_tag" : "0.12.1-1-g5d4f22bb96",
+          "git_tag" : "0.12.1-2-g1245066a12",
           "git_remote" : "https://github.com/openpipelines-bio/openpipeline",
           "viash_version" : "0.8.4",
           "config" : "/home/runner/work/openpipeline/openpipeline/src/workflows/qc/qc/config.vsh.yaml",
           "functionalityNamespace" : "workflows/qc",
           "output" : "",
           "platform" : "",
-          "git_commit" : "5d4f22bb9619480f75e8a120d2a688f4fc2c48a4",
+          "git_commit" : "1245066a122271ece7ae5ce7f4819ad5c1a5f2d2",
           "executable" : "/nextflow/workflows/qc/qc/main.nf"
         },
         "writtenPath" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/workflows/qc/qc"
@@ -3125,9 +3125,9 @@ meta = [
     "platform" : "nextflow",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/workflows/prot/prot_multisample",
     "viash_version" : "0.8.4",
-    "git_commit" : "5d4f22bb9619480f75e8a120d2a688f4fc2c48a4",
+    "git_commit" : "1245066a122271ece7ae5ce7f4819ad5c1a5f2d2",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline",
-    "git_tag" : "0.12.1-1-g5d4f22bb96"
+    "git_tag" : "0.12.1-2-g1245066a12"
   }
 }'''))
 ]
