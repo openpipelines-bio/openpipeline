@@ -70,7 +70,13 @@ functionality:
           description: |
             Whether to use raw attribute of adata. Defaults to True if .raw is present.
           required: false
-
+        - name: "--output_compression"
+          type: string
+          description: The compression format to be used on the output h5mu object.
+          choices: ["gzip", "lzf"]
+          required: false
+          example: "gzip"
+          
   resources:
     - path: script.py
       type: python_script

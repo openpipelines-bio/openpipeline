@@ -26,4 +26,4 @@ output = sc.tl.score_genes(
 )
 
 mudata.mod["rna"] = output
-mudata.write(f'{par["output"]}')
+mudata.write(f'{par["output"]}', compression=par["output_compression"])
