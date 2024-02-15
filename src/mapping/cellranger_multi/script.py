@@ -21,9 +21,6 @@ par = {
             'resources_test/10x_5k_anticmv/raw/5k_human_antiCMV_T_TBNK_connect_AB_subset_S2_L004_R2_001.fastq.gz',
             'resources_test/10x_5k_anticmv/raw/5k_human_antiCMV_T_TBNK_connect_VDJ_subset_S1_L001_R1_001.fastq.gz',
             'resources_test/10x_5k_anticmv/raw/5k_human_antiCMV_T_TBNK_connect_VDJ_subset_S1_L001_R2_001.fastq.gz'],
-  'gex_reference': 'resources_test/reference_gencodev41_chr1//reference_cellranger.tar.gz',
-  'vdj_reference': 'resources_test/10x_5k_anticmv/raw/refdata-cellranger-vdj-GRCh38-alts-ensembl-7.0.0.tar.gz',
-  'feature_reference': 'resources_test/10x_5k_anticmv/raw/feature_reference.csv',
   'library_id': ['5k_human_antiCMV_T_TBNK_connect_GEX_1_subset',
                  '5k_human_antiCMV_T_TBNK_connect_AB_subset',
                  '5k_human_antiCMV_T_TBNK_connect_VDJ_subset'],
@@ -48,7 +45,8 @@ meta = {
   'memory_gb': 15,
   'memory_tb': None,
   'memory_pb': None,
-  'temp_dir': '/tmp'
+  'temp_dir': '/tmp', 
+  'resources_dir': '/Users/dorienroosen/code/openpipeline'
 }
 ## VIASH END
 
@@ -116,7 +114,51 @@ REFERENCES = tuple(reference_param for reference_param, cellranger_param
                    if cellranger_param == "reference")
 LIBRARY_PARAMS = tuple(LIBRARY_CONFIG_KEYS.keys())
 SAMPLE_PARAMS = tuple(SAMPLE_PARAMS_CONFIG_KEYS.keys())
+HELPER_INPUT = {
+    'gex_input': 'Gene Expression',
+    'abc_input': 'Antibody Capture',
+    'cgc_input': 'CRISPR Guide Capture',
+    'mux_input': 'Multiplexing Capture',
+    'vdj_input': 'VDJ',
+    'vdj_t_input': 'VDJ-T',
+    'vdj_t_gd_input': 'VDJ-T-GD',
+    'vdj_b_input': 'VDJ-B',
+    'agc_input': 'Antigen Capture'
+}
 
+
+def infer_library_id_from_path(input_path: str) -> str:
+    match = re.match(fastq_regex, input_path)
+    assert match is not None, \
+        f"File name of '{input_path}' should match regex {fastq_regex}."
+    return match.group(1)
+
+def transform_helper_inputs(par: dict[str, Any]) -> dict[str, Any]:
+    helper_input = {
+        "input": [],
+        "library_id": [],
+        "library_type": []
+    }
+    for input_type, library_type in HELPER_INPUT.items():
+        if par[input_type]:
+            par[input_type] = resolve_input_directories_to_fastq_paths(par[input_type])
+
+            library_ids = [
+                infer_library_id_from_path(path.name) for path in par[input_type]
+                ]
+
+            library_id_dict = {}
+            for fastq, library_id in zip(par[input_type], library_ids):
+                library_id_dict.setdefault(library_id, []).append(fastq)
+
+            for library_id, input in library_id_dict.items():
+                helper_input["input"] += input
+                helper_input["library_id"].append(library_id)
+                helper_input["library_type"].append(library_type)
+
+    assert len(helper_input["library_id"]) == len(set(helper_input["library_id"])), "File names passed to feature type-specific inputs must be unique"
+
+    return helper_input
 
 def lengths_gt1(dic: dict[str, Optional[list[Any]]]) -> dict[str, int]:
     return {key: len(li) for key, li in dic.items()
@@ -124,7 +166,6 @@ def lengths_gt1(dic: dict[str, Optional[list[Any]]]) -> dict[str, int]:
 
 def strip_margin(text: str) -> str:
     return re.sub('(\n?)[ \t]*\|', '\\1', text)
-
 
 def subset_dict(dictionary: dict[str, str],
                 keys: Union[dict[str, str], list[str]]) -> dict[str, str]:
@@ -140,19 +181,37 @@ def check_subset_dict_equal_length(group_name: str,
     assert len(set(lens.values())) <= 1, f"The number of values passed to {group_name} "\
                                          f"arguments must be 0, 1 or all the same. Offenders: {lens}"
 
-def process_params(par: dict[str, Any]) -> str:
-    # if par_input is a directory, look for fastq files
-    par["input"] = [Path(fastq) for fastq in par["input"]]
-    if len(par["input"]) == 1 and par["input"][0].is_dir():
-        logger.info("Detected '--input' as a directory, "
+def resolve_input_directories_to_fastq_paths(input_paths: list[str]) -> list[Path]:
+
+    input_paths = [Path(fastq) for fastq in input_paths]
+    if len(input_paths) == 1 and input_paths[0].is_dir():
+        logger.info("Detected a directory in input paths, "
                     "traversing to see if we can detect any FASTQ files.")
-        par["input"] = [input_path for input_path in par["input"][0].rglob('*')
+        input_paths = [input_path for input_path in input_paths[0].rglob('*')
                         if re.match(fastq_regex, input_path.name) ]
 
     # check input fastq files
-    for input_path in par["input"]:
+    for input_path in input_paths:
         assert re.match(fastq_regex, input_path.name) is not None, \
-               f"File name of --input '{input_path}' should match regex {fastq_regex}."
+            f"File name of --input '{input_path}' should match regex {fastq_regex}."
+
+    return input_paths
+
+def process_params(par: dict[str, Any]) -> str:
+
+    if par["input"]:
+        assert len(par["library_type"]) > 0, "--library_type must be defined when passing input to --input"
+        assert len(par["library_id"]) > 0, "--library_id must be defined when passing input to --input"
+
+        # if par["input"] is a directory, look for fastq files
+        par["input"] = resolve_input_directories_to_fastq_paths(par["input"])
+
+    # add helper input
+    helper_input = transform_helper_inputs(par)
+    for key in ["input", "library_id", "library_type"]:
+      par[key] = (par[key] if par[key] else []) + helper_input[key]
+
+      assert len(par[key]) > 0, f"Either --{key} or feature type-specific input (e.g. --gex_input, --abc_input, ...) must be defined"
 
     # check lengths of libraries metadata
     library_dict = subset_dict(par, LIBRARY_PARAMS)

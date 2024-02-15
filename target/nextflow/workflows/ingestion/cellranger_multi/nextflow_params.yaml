@@ -1,6 +1,6 @@
 # Inputs
 id: # please fill in - example: "foo"
-input: # please fill in - example: ["sample_S1_L001_R1_001.fastq.gz", "sample_S1_L001_R2_001.fastq.gz"]
+# input: ["sample_S1_L001_R1_001.fastq.gz", "sample_S1_L001_R2_001.fastq.gz"]
 gex_reference: # please fill in - example: "reference_genome.tar.gz"
 # vdj_reference: "reference_vdj.tar.gz"
 # feature_reference: "feature_reference.csv"
@@ -10,6 +10,17 @@ gex_reference: # please fill in - example: "reference_genome.tar.gz"
 # output_raw: "$id.$key.output_raw.output_raw"
 # output_h5mu: "$id.$key.output_h5mu.h5mu"
 uns_metrics: "metrics_cellranger"
+
+# Feature type-specific input files
+# gex_input: ["mysample_S1_L001_R1_001.fastq.gz", "mysample_S1_L001_R2_001.fastq.gz"]
+# abc_input: ["mysample_S1_L001_R1_001.fastq.gz", "mysample_S1_L001_R2_001.fastq.gz"]
+# cgc_input: ["mysample_S1_L001_R1_001.fastq.gz", "mysample_S1_L001_R2_001.fastq.gz"]
+# mux_input: ["mysample_S1_L001_R1_001.fastq.gz", "mysample_S1_L001_R2_001.fastq.gz"]
+# vdj_input: ["mysample_S1_L001_R1_001.fastq.gz", "mysample_S1_L001_R2_001.fastq.gz"]
+# vdj_t_input: ["mysample_S1_L001_R1_001.fastq.gz", "mysample_S1_L001_R2_001.fastq.gz"]
+# vdj_t_gd_input: ["mysample_S1_L001_R1_001.fastq.gz", "mysample_S1_L001_R2_001.fastq.gz"]
+# vdj_b_input: ["mysample_S1_L001_R1_001.fastq.gz", "mysample_S1_L001_R2_001.fastq.gz"]
+# agc_input: ["mysample_S1_L001_R1_001.fastq.gz", "mysample_S1_L001_R2_001.fastq.gz"]
 
 # Cell multiplexing parameters
 # cell_multiplex_sample_id: "foo"
@@ -24,8 +35,8 @@ gex_generate_bam: true
 gex_include_introns: true
 
 # Library arguments
-library_id: # please fill in - example: ["mysample1"]
-library_type: # please fill in - example: ["Gene Expression"]
+# library_id: ["mysample1"]
+# library_type: ["Gene Expression"]
 # library_subsample: ["0.5"]
 # library_lanes: ["1-4"]
 
