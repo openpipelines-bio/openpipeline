@@ -1,7 +1,7 @@
 functionality:
   name: "download_file"
   namespace: "download"
-  version: "0.12.0"
+  version: "1.0.0rc1"
   authors:
   - name: "Robrecht Cannoodt"
     roles:
@@ -57,6 +57,9 @@ functionality:
   - type: "bash_script"
     path: "script.sh"
     is_executable: true
+  - type: "file"
+    path: "./src/workflows/utils/labels.config"
+    dest: "nextflow_labels.config"
   description: "Download a file.\n"
   usage: "download_file \\\n  --input https://cf.10xgenomics.com/samples/cell-exp/3.0.0/pbmc_1k_protein_v3/pbmc_1k_protein_v3_raw_feature_bc_matrix.h5\
     \ \\\n  --output output_rna.h5\n"
@@ -76,6 +79,7 @@ platforms:
   image: "bash:5.1.16"
   target_organization: "openpipelines-bio"
   target_registry: "ghcr.io"
+  target_tag: "1.0.0rc1"
   namespace_separator: "_"
   resolve_volume: "Automatic"
   chown: true
@@ -124,6 +128,8 @@ platforms:
       cpu200: "cpus = 200"
       cpu500: "cpus = 500"
       cpu1000: "cpus = 1000"
+    script:
+    - "includeConfig(\"nextflow_labels.config\")"
   debug: false
   container: "docker"
 info:
@@ -131,6 +137,7 @@ info:
   platform: "docker"
   output: "/home/runner/work/openpipeline/openpipeline/target/docker/download/download_file"
   executable: "/home/runner/work/openpipeline/openpipeline/target/docker/download/download_file/download_file"
-  viash_version: "0.7.5"
-  git_commit: "b41a65886f61959c7f83f84a0569c3da1d7a2856"
+  viash_version: "0.8.4"
+  git_commit: "bb0a94b57bf7195926da7f2e06aba6f59e239fce"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"
+  git_tag: "0.12.1"

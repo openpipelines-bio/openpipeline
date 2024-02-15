@@ -1,6 +1,7 @@
 functionality:
   name: concat
   namespace: "dataflow"
+  status: deprecated
   description: |
     Concatenates several uni-modal samples in .h5mu files into a single file.
   authors:
@@ -11,14 +12,12 @@ functionality:
       alternatives: ["-i"]
       type: file
       multiple: true
-      multiple_sep: ','
       description: Paths to the different samples to be concatenated.
       required: true
       example: sample_paths
     - name: "--input_id"
       type: string
       multiple: true
-      multiple_sep: ','
       description: |
         Names of the different samples that have to be concatenated.  Must be specified when using '--mode move'.
         In this case, the ids will be used for the columns names of the dataframes registring the conflicts.
@@ -54,12 +53,12 @@ functionality:
          - move: identical to 'same', but moving the conflicting values to .varm or .obsm
   resources:
     - type: python_script
-      path: script.py
+      path: ../concatenate_h5mu/script.py
     - path: /src/utils/setup_logger.py
     # - path: /src/utils/compress_h5mu.py
   test_resources:
     - type: python_script
-      path: test.py
+      path: ../concatenate_h5mu/test.py
     - path: /resources_test/concat_test_data/e18_mouse_brain_fresh_5k_filtered_feature_bc_matrix_subset_unique_obs.h5mu
     - path: /resources_test/concat_test_data/human_brain_3k_filtered_feature_bc_matrix_subset_unique_obs.h5mu
 platforms:
@@ -76,6 +75,8 @@ platforms:
     test_setup:
       - type: python
         __merge__: [ /src/base/requirements/viashpy.yaml, .]
+        packages:
+          - muon
   - type: native
   - type: nextflow
     directives:

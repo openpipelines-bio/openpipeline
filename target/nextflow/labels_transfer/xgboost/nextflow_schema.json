@@ -1,177 +1,270 @@
 {
-    "$schema": "http://json-schema.org/draft-07/schema",
-    "title": "xgboost",
-    "description": "Performs label transfer from reference to query using XGBoost classifier",
-    "type": "object",
-    "definitions": {
-      "execution arguments" : {
-        "title": "Execution arguments",
+"$schema": "http://json-schema.org/draft-07/schema",
+"title": "xgboost",
+"description": "Performs label transfer from reference to query using XGBoost classifier",
+"type": "object",
+"definitions": {
+
+    
+    "Dataset input": {
+        "title": "Dataset input",
         "type": "object",
-        "description": "No description",
+        "description": "Dataset input using nf-tower \"dataset\" or \"data explorer\". Allows for the input of multiple         parameter sets to initialise a Nextflow channel.",
         "properties": {
-          
-          "force_retrain": {
-            "type": "boolean",
-            "description": "Type: `boolean_true`, default: `false`. Retrain models on the reference even if model_output directory already has trained classifiers",
-            "help_text": "Type: `boolean_true`, default: `false`. Retrain models on the reference even if model_output directory already has trained classifiers. WARNING! It will rewrite existing classifiers for targets in the model_output directory!",
-            "default": "False"
-          },
-          
-          "use_gpu": {
-            "type": "boolean",
-            "description": "Type: `boolean`, default: `false`. Use GPU during models training and inference (recommended)",
-            "help_text": "Type: `boolean`, default: `false`. Use GPU during models training and inference (recommended).",
-            "default": "False"
-          },
-          
-          "verbosity": {
-            "type": "integer",
-            "description": "Type: `integer`, default: `1`. The verbosity level for evaluation of the classifier from the range [0,2]",
-            "help_text": "Type: `integer`, default: `1`. The verbosity level for evaluation of the classifier from the range [0,2]",
-            "default": "1"
-          },
-          
-          "model_output": {
-            "type": "string",
-            "description": "Type: `file`, default: `$id.$key.model_output.model_output`. Output directory for model",
-            "help_text": "Type: `file`, default: `$id.$key.model_output.model_output`. Output directory for model",
-            "default": "$id.$key.model_output.model_output"
-          }
-          
+            "param_list": {
+                "description": "Dataset input can either be a list of maps, a csv file, a json file, a yaml file, or simply a yaml                 blob. The names of the input fields (e.g. csv columns, json keys) need to be an exact match with the workflow input parameters.",
+                "default": "",
+                "format": "file-path",
+                "mimetype": "text/csv",
+                "pattern": "^\\S+\\.csv$"
+            }
         }
-      },
-      "learning parameters" : {
-        "title": "Learning parameters",
-        "type": "object",
-        "description": "No description",
-        "properties": {
-          
-          "learning_rate": {
-            "type": "number",
-            "description": "Type: `double`, default: `0.3`. Step size shrinkage used in update to prevents overfitting",
-            "help_text": "Type: `double`, default: `0.3`. Step size shrinkage used in update to prevents overfitting. Range: [0,1]. See https://xgboost.readthedocs.io/en/stable/parameter.html#parameters-for-tree-booster for the reference",
-            "default": "0.3"
-          },
-          
-          "min_split_loss": {
-            "type": "number",
-            "description": "Type: `double`, default: `0`. Minimum loss reduction required to make a further partition on a leaf node of the tree",
-            "help_text": "Type: `double`, default: `0`. Minimum loss reduction required to make a further partition on a leaf node of the tree. See https://xgboost.readthedocs.io/en/stable/parameter.html#parameters-for-tree-booster for the reference",
-            "default": "0"
-          },
-          
-          "max_depth": {
-            "type": "integer",
-            "description": "Type: `integer`, default: `6`. Maximum depth of a tree",
-            "help_text": "Type: `integer`, default: `6`. Maximum depth of a tree. See https://xgboost.readthedocs.io/en/stable/parameter.html#parameters-for-tree-booster for the reference",
-            "default": "6"
-          },
-          
-          "min_child_weight": {
-            "type": "integer",
-            "description": "Type: `integer`, default: `1`. Minimum sum of instance weight (hessian) needed in a child",
-            "help_text": "Type: `integer`, default: `1`. Minimum sum of instance weight (hessian) needed in a child. See https://xgboost.readthedocs.io/en/stable/parameter.html#parameters-for-tree-booster for the reference",
-            "default": "1"
-          },
-          
-          "max_delta_step": {
-            "type": "number",
-            "description": "Type: `double`, default: `0`. Maximum delta step we allow each leaf output to be",
-            "help_text": "Type: `double`, default: `0`. Maximum delta step we allow each leaf output to be. See https://xgboost.readthedocs.io/en/stable/parameter.html#parameters-for-tree-booster for the reference",
-            "default": "0"
-          },
-          
-          "subsample": {
-            "type": "number",
-            "description": "Type: `double`, default: `1`. Subsample ratio of the training instances",
-            "help_text": "Type: `double`, default: `1`. Subsample ratio of the training instances. See https://xgboost.readthedocs.io/en/stable/parameter.html#parameters-for-tree-booster for the reference",
-            "default": "1"
-          },
-          
-          "sampling_method": {
-            "type": "string",
-            "description": "Type: `string`, default: `uniform`, choices: ``uniform`, `gradient_based``. The method to use to sample the training instances",
-            "help_text": "Type: `string`, default: `uniform`, choices: ``uniform`, `gradient_based``. The method to use to sample the training instances. See https://xgboost.readthedocs.io/en/stable/parameter.html#parameters-for-tree-booster for the reference",
-            "enum": ["uniform", "gradient_based"]
-            ,
-            "default": "uniform"
-          },
-          
-          "colsample_bytree": {
-            "type": "number",
-            "description": "Type: `double`, default: `1`. Fraction of columns to be subsampled",
-            "help_text": "Type: `double`, default: `1`. Fraction of columns to be subsampled. Range (0, 1]. See https://xgboost.readthedocs.io/en/stable/parameter.html#parameters-for-tree-booster for the reference",
-            "default": "1"
-          },
-          
-          "colsample_bylevel": {
-            "type": "number",
-            "description": "Type: `double`, default: `1`. Subsample ratio of columns for each level",
-            "help_text": "Type: `double`, default: `1`. Subsample ratio of columns for each level. Range (0, 1]. See https://xgboost.readthedocs.io/en/stable/parameter.html#parameters-for-tree-booster for the reference",
-            "default": "1"
-          },
-          
-          "colsample_bynode": {
-            "type": "number",
-            "description": "Type: `double`, default: `1`. Subsample ratio of columns for each node (split)",
-            "help_text": "Type: `double`, default: `1`. Subsample ratio of columns for each node (split). Range (0, 1]. See https://xgboost.readthedocs.io/en/stable/parameter.html#parameters-for-tree-booster for the reference",
-            "default": "1"
-          },
-          
-          "reg_lambda": {
-            "type": "number",
-            "description": "Type: `double`, default: `1`. L2 regularization term on weights",
-            "help_text": "Type: `double`, default: `1`. L2 regularization term on weights. See https://xgboost.readthedocs.io/en/stable/parameter.html#parameters-for-tree-booster for the reference",
-            "default": "1"
-          },
-          
-          "reg_alpha": {
-            "type": "number",
-            "description": "Type: `double`, default: `0`. L1 regularization term on weights",
-            "help_text": "Type: `double`, default: `0`. L1 regularization term on weights. See https://xgboost.readthedocs.io/en/stable/parameter.html#parameters-for-tree-booster for the reference",
-            "default": "0"
-          },
-          
-          "scale_pos_weight": {
-            "type": "number",
-            "description": "Type: `double`, default: `1`. Control the balance of positive and negative weights, useful for unbalanced classes",
-            "help_text": "Type: `double`, default: `1`. Control the balance of positive and negative weights, useful for unbalanced classes. See https://xgboost.readthedocs.io/en/stable/parameter.html#parameters-for-tree-booster for the reference",
-            "default": "1"
-          }
-          
-        }
-      },
-      "nextflow input-output arguments" : {
-        "title": "Nextflow input-output arguments",
-        "type": "object",
-        "description": "Input/output parameters for Nextflow itself. Please note that both publishDir and publish_dir are supported but at least one has to be configured.",
-        "properties": {
-          
-          "publish_dir": {
-            "type": "string",
-            "description": "Type: `string`, required, example: `output/`. Path to an output directory",
-            "help_text": "Type: `string`, required, example: `output/`. Path to an output directory."
-          },
-          
-          "param_list": {
-            "type": "string",
-            "description": "Type: `string`, example: `my_params.yaml`. Allows inputting multiple parameter sets to initialise a Nextflow channel",
-            "help_text": "Type: `string`, example: `my_params.yaml`. Allows inputting multiple parameter sets to initialise a Nextflow channel. A `param_list` can either be a list of maps, a csv file, a json file, a yaml file, or simply a yaml blob.\n\n* A list of maps (as-is) where the keys of each map corresponds to the arguments of the pipeline. Example: in a `nextflow.config` file: `param_list: [ [\u0027id\u0027: \u0027foo\u0027, \u0027input\u0027: \u0027foo.txt\u0027], [\u0027id\u0027: \u0027bar\u0027, \u0027input\u0027: \u0027bar.txt\u0027] ]`.\n* A csv file should have column names which correspond to the different arguments of this pipeline. Example: `--param_list data.csv` with columns `id,input`.\n* A json or a yaml file should be a list of maps, each of which has keys corresponding to the arguments of the pipeline. Example: `--param_list data.json` with contents `[ {\u0027id\u0027: \u0027foo\u0027, \u0027input\u0027: \u0027foo.txt\u0027}, {\u0027id\u0027: \u0027bar\u0027, \u0027input\u0027: \u0027bar.txt\u0027} ]`.\n* A yaml blob can also be passed directly as a string. Example: `--param_list \"[ {\u0027id\u0027: \u0027foo\u0027, \u0027input\u0027: \u0027foo.txt\u0027}, {\u0027id\u0027: \u0027bar\u0027, \u0027input\u0027: \u0027bar.txt\u0027} ]\"`.\n\nWhen passing a csv, json or yaml file, relative path names are relativized to the location of the parameter file. No relativation is performed when `param_list` is a list of maps (as-is) or a yaml blob.",            
-            "hidden": true
-          }
-          
-        }
-      }
     },
-    "allOf": [
-      {
-        "$ref": "#/definitions/execution arguments"
-      },
-      {
-        "$ref": "#/definitions/learning parameters"
-      },
-      {
-        "$ref": "#/definitions/nextflow input-output arguments"
-      }
-      ]
+
+    
+    
+    "execution arguments" : {
+    "title": "Execution arguments",
+    "type": "object",
+    "description": "No description",
+    "properties": {
+    
+        
+                "force_retrain": {
+                "type":
+                "boolean",
+                "description": "Type: `boolean_true`, default: `false`. Retrain models on the reference even if model_output directory already has trained classifiers",
+                "help_text": "Type: `boolean_true`, default: `false`. Retrain models on the reference even if model_output directory already has trained classifiers. WARNING! It will rewrite existing classifiers for targets in the model_output directory!"
+            ,
+                "default": "False"
+            }
+    
+
+        ,
+                "use_gpu": {
+                "type":
+                "boolean",
+                "description": "Type: `boolean`, default: `false`. Use GPU during models training and inference (recommended)",
+                "help_text": "Type: `boolean`, default: `false`. Use GPU during models training and inference (recommended)."
+            ,
+                "default": "False"
+            }
+    
+
+        ,
+                "verbosity": {
+                "type":
+                "integer",
+                "description": "Type: `integer`, default: `1`. The verbosity level for evaluation of the classifier from the range [0,2]",
+                "help_text": "Type: `integer`, default: `1`. The verbosity level for evaluation of the classifier from the range [0,2]"
+            ,
+                "default": "1"
+            }
+    
+
+        ,
+                "model_output": {
+                "type":
+                "string",
+                "description": "Type: `file`, default: `$id.$key.model_output.model_output`. Output directory for model",
+                "help_text": "Type: `file`, default: `$id.$key.model_output.model_output`. Output directory for model"
+            ,
+                "default": "$id.$key.model_output.model_output"
+            }
+    
+
+}
+},
+    
+    
+    "learning parameters" : {
+    "title": "Learning parameters",
+    "type": "object",
+    "description": "No description",
+    "properties": {
+    
+        
+                "learning_rate": {
+                "type":
+                "number",
+                "description": "Type: `double`, default: `0.3`. Step size shrinkage used in update to prevents overfitting",
+                "help_text": "Type: `double`, default: `0.3`. Step size shrinkage used in update to prevents overfitting. Range: [0,1]. See https://xgboost.readthedocs.io/en/stable/parameter.html#parameters-for-tree-booster for the reference"
+            ,
+                "default": "0.3"
+            }
+    
+
+        ,
+                "min_split_loss": {
+                "type":
+                "number",
+                "description": "Type: `double`, default: `0`. Minimum loss reduction required to make a further partition on a leaf node of the tree",
+                "help_text": "Type: `double`, default: `0`. Minimum loss reduction required to make a further partition on a leaf node of the tree. See https://xgboost.readthedocs.io/en/stable/parameter.html#parameters-for-tree-booster for the reference"
+            ,
+                "default": "0"
+            }
+    
+
+        ,
+                "max_depth": {
+                "type":
+                "integer",
+                "description": "Type: `integer`, default: `6`. Maximum depth of a tree",
+                "help_text": "Type: `integer`, default: `6`. Maximum depth of a tree. See https://xgboost.readthedocs.io/en/stable/parameter.html#parameters-for-tree-booster for the reference"
+            ,
+                "default": "6"
+            }
+    
+
+        ,
+                "min_child_weight": {
+                "type":
+                "integer",
+                "description": "Type: `integer`, default: `1`. Minimum sum of instance weight (hessian) needed in a child",
+                "help_text": "Type: `integer`, default: `1`. Minimum sum of instance weight (hessian) needed in a child. See https://xgboost.readthedocs.io/en/stable/parameter.html#parameters-for-tree-booster for the reference"
+            ,
+                "default": "1"
+            }
+    
+
+        ,
+                "max_delta_step": {
+                "type":
+                "number",
+                "description": "Type: `double`, default: `0`. Maximum delta step we allow each leaf output to be",
+                "help_text": "Type: `double`, default: `0`. Maximum delta step we allow each leaf output to be. See https://xgboost.readthedocs.io/en/stable/parameter.html#parameters-for-tree-booster for the reference"
+            ,
+                "default": "0"
+            }
+    
+
+        ,
+                "subsample": {
+                "type":
+                "number",
+                "description": "Type: `double`, default: `1`. Subsample ratio of the training instances",
+                "help_text": "Type: `double`, default: `1`. Subsample ratio of the training instances. See https://xgboost.readthedocs.io/en/stable/parameter.html#parameters-for-tree-booster for the reference"
+            ,
+                "default": "1"
+            }
+    
+
+        ,
+                "sampling_method": {
+                "type":
+                "string",
+                "description": "Type: `string`, default: `uniform`, choices: ``uniform`, `gradient_based``. The method to use to sample the training instances",
+                "help_text": "Type: `string`, default: `uniform`, choices: ``uniform`, `gradient_based``. The method to use to sample the training instances. See https://xgboost.readthedocs.io/en/stable/parameter.html#parameters-for-tree-booster for the reference",
+                "enum": ["uniform", "gradient_based"]
+            
+            ,
+                "default": "uniform"
+            }
+    
+
+        ,
+                "colsample_bytree": {
+                "type":
+                "number",
+                "description": "Type: `double`, default: `1`. Fraction of columns to be subsampled",
+                "help_text": "Type: `double`, default: `1`. Fraction of columns to be subsampled. Range (0, 1]. See https://xgboost.readthedocs.io/en/stable/parameter.html#parameters-for-tree-booster for the reference"
+            ,
+                "default": "1"
+            }
+    
+
+        ,
+                "colsample_bylevel": {
+                "type":
+                "number",
+                "description": "Type: `double`, default: `1`. Subsample ratio of columns for each level",
+                "help_text": "Type: `double`, default: `1`. Subsample ratio of columns for each level. Range (0, 1]. See https://xgboost.readthedocs.io/en/stable/parameter.html#parameters-for-tree-booster for the reference"
+            ,
+                "default": "1"
+            }
+    
+
+        ,
+                "colsample_bynode": {
+                "type":
+                "number",
+                "description": "Type: `double`, default: `1`. Subsample ratio of columns for each node (split)",
+                "help_text": "Type: `double`, default: `1`. Subsample ratio of columns for each node (split). Range (0, 1]. See https://xgboost.readthedocs.io/en/stable/parameter.html#parameters-for-tree-booster for the reference"
+            ,
+                "default": "1"
+            }
+    
+
+        ,
+                "reg_lambda": {
+                "type":
+                "number",
+                "description": "Type: `double`, default: `1`. L2 regularization term on weights",
+                "help_text": "Type: `double`, default: `1`. L2 regularization term on weights. See https://xgboost.readthedocs.io/en/stable/parameter.html#parameters-for-tree-booster for the reference"
+            ,
+                "default": "1"
+            }
+    
+
+        ,
+                "reg_alpha": {
+                "type":
+                "number",
+                "description": "Type: `double`, default: `0`. L1 regularization term on weights",
+                "help_text": "Type: `double`, default: `0`. L1 regularization term on weights. See https://xgboost.readthedocs.io/en/stable/parameter.html#parameters-for-tree-booster for the reference"
+            ,
+                "default": "0"
+            }
+    
+
+        ,
+                "scale_pos_weight": {
+                "type":
+                "number",
+                "description": "Type: `double`, default: `1`. Control the balance of positive and negative weights, useful for unbalanced classes",
+                "help_text": "Type: `double`, default: `1`. Control the balance of positive and negative weights, useful for unbalanced classes. See https://xgboost.readthedocs.io/en/stable/parameter.html#parameters-for-tree-booster for the reference"
+            ,
+                "default": "1"
+            }
+    
+
+}
+},
+    
+    
+    "nextflow input-output arguments" : {
+    "title": "Nextflow input-output arguments",
+    "type": "object",
+    "description": "Input/output parameters for Nextflow itself. Please note that both publishDir and publish_dir are supported but at least one has to be configured.",
+    "properties": {
+    
+        
+                "publish_dir": {
+                "type":
+                "string",
+                "description": "Type: `string`, required, example: `output/`. Path to an output directory",
+                "help_text": "Type: `string`, required, example: `output/`. Path to an output directory."
+            
+            }
+    
+
+        
+
+}
+}
+},
+"allOf": [
+
+    {
+    "$ref": "#/definitions/execution arguments"
+    },
+
+    {
+    "$ref": "#/definitions/learning parameters"
+    },
+
+    {
+    "$ref": "#/definitions/nextflow input-output arguments"
+    }
+]
 }

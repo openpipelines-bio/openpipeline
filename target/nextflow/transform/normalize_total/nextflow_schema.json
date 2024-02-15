@@ -1,99 +1,153 @@
 {
-    "$schema": "http://json-schema.org/draft-07/schema",
-    "title": "normalize_total",
-    "description": "Normalize counts per cell.\n\nNormalize each cell by total counts over all genes, so that every cell has the same total count after normalization. If choosing target_sum=1e6, this is CPM normalization.\n\nIf exclude_highly_expressed=True, very highly expressed genes are excluded from the computation of the normalization factor (size factor) for each cell. This is meaningful as these can strongly influence the resulting normalized values for all other genes [Weinreb17].\n",
-    "type": "object",
-    "definitions": {
-      "arguments" : {
-        "title": "Arguments",
+"$schema": "http://json-schema.org/draft-07/schema",
+"title": "normalize_total",
+"description": "Normalize counts per cell.\n\nNormalize each cell by total counts over all genes, so that every cell has the same total count after normalization. If choosing target_sum=1e6, this is CPM normalization.\n\nIf exclude_highly_expressed=True, very highly expressed genes are excluded from the computation of the normalization factor (size factor) for each cell. This is meaningful as these can strongly influence the resulting normalized values for all other genes [Weinreb17].\n",
+"type": "object",
+"definitions": {
+
+    
+    "Dataset input": {
+        "title": "Dataset input",
         "type": "object",
-        "description": "No description",
+        "description": "Dataset input using nf-tower \"dataset\" or \"data explorer\". Allows for the input of multiple         parameter sets to initialise a Nextflow channel.",
         "properties": {
-          
-          "input": {
-            "type": "string",
-            "description": "Type: `file`, required, example: `input.h5mu`. Input h5mu file",
-            "help_text": "Type: `file`, required, example: `input.h5mu`. Input h5mu file"
-          },
-          
-          "modality": {
-            "type": "string",
-            "description": "Type: `string`, default: `rna`. ",
-            "help_text": "Type: `string`, default: `rna`. ",
-            "default": "rna"
-          },
-          
-          "input_layer": {
-            "type": "string",
-            "description": "Type: `string`. Input layer to use",
-            "help_text": "Type: `string`. Input layer to use. By default, X is normalized"
-          },
-          
-          "output": {
-            "type": "string",
-            "description": "Type: `file`, required, default: `$id.$key.output.h5mu`. Output h5mu file",
-            "help_text": "Type: `file`, required, default: `$id.$key.output.h5mu`. Output h5mu file.",
-            "default": "$id.$key.output.h5mu"
-          },
-          
-          "output_compression": {
-            "type": "string",
-            "description": "Type: `string`, example: `gzip`, choices: ``gzip`, `lzf``. The compression format to be used on the output h5mu object",
-            "help_text": "Type: `string`, example: `gzip`, choices: ``gzip`, `lzf``. The compression format to be used on the output h5mu object.",
-            "enum": ["gzip", "lzf"]
-            
-          },
-          
-          "output_layer": {
-            "type": "string",
-            "description": "Type: `string`. Output layer to use",
-            "help_text": "Type: `string`. Output layer to use. By default, use X."
-          },
-          
-          "target_sum": {
-            "type": "integer",
-            "description": "Type: `integer`, default: `10000`. If None, after normalization, each observation (cell) has a total count equal to the median of total counts for observations (cells) before normalization",
-            "help_text": "Type: `integer`, default: `10000`. If None, after normalization, each observation (cell) has a total count equal to the median of total counts for observations (cells) before normalization.",
-            "default": "10000"
-          },
-          
-          "exclude_highly_expressed": {
-            "type": "boolean",
-            "description": "Type: `boolean_true`, default: `false`. Exclude (very) highly expressed genes for the computation of the normalization factor (size factor) for each cell",
-            "help_text": "Type: `boolean_true`, default: `false`. Exclude (very) highly expressed genes for the computation of the normalization factor (size factor) for each cell. A gene is considered highly expressed, if it has more than max_fraction of the total counts in at least one cell. The not-excluded genes will sum up to target_sum.",
-            "default": "False"
-          }
-          
+            "param_list": {
+                "description": "Dataset input can either be a list of maps, a csv file, a json file, a yaml file, or simply a yaml                 blob. The names of the input fields (e.g. csv columns, json keys) need to be an exact match with the workflow input parameters.",
+                "default": "",
+                "format": "file-path",
+                "mimetype": "text/csv",
+                "pattern": "^\\S+\\.csv$"
+            }
         }
-      },
-      "nextflow input-output arguments" : {
-        "title": "Nextflow input-output arguments",
-        "type": "object",
-        "description": "Input/output parameters for Nextflow itself. Please note that both publishDir and publish_dir are supported but at least one has to be configured.",
-        "properties": {
-          
-          "publish_dir": {
-            "type": "string",
-            "description": "Type: `string`, required, example: `output/`. Path to an output directory",
-            "help_text": "Type: `string`, required, example: `output/`. Path to an output directory."
-          },
-          
-          "param_list": {
-            "type": "string",
-            "description": "Type: `string`, example: `my_params.yaml`. Allows inputting multiple parameter sets to initialise a Nextflow channel",
-            "help_text": "Type: `string`, example: `my_params.yaml`. Allows inputting multiple parameter sets to initialise a Nextflow channel. A `param_list` can either be a list of maps, a csv file, a json file, a yaml file, or simply a yaml blob.\n\n* A list of maps (as-is) where the keys of each map corresponds to the arguments of the pipeline. Example: in a `nextflow.config` file: `param_list: [ [\u0027id\u0027: \u0027foo\u0027, \u0027input\u0027: \u0027foo.txt\u0027], [\u0027id\u0027: \u0027bar\u0027, \u0027input\u0027: \u0027bar.txt\u0027] ]`.\n* A csv file should have column names which correspond to the different arguments of this pipeline. Example: `--param_list data.csv` with columns `id,input`.\n* A json or a yaml file should be a list of maps, each of which has keys corresponding to the arguments of the pipeline. Example: `--param_list data.json` with contents `[ {\u0027id\u0027: \u0027foo\u0027, \u0027input\u0027: \u0027foo.txt\u0027}, {\u0027id\u0027: \u0027bar\u0027, \u0027input\u0027: \u0027bar.txt\u0027} ]`.\n* A yaml blob can also be passed directly as a string. Example: `--param_list \"[ {\u0027id\u0027: \u0027foo\u0027, \u0027input\u0027: \u0027foo.txt\u0027}, {\u0027id\u0027: \u0027bar\u0027, \u0027input\u0027: \u0027bar.txt\u0027} ]\"`.\n\nWhen passing a csv, json or yaml file, relative path names are relativized to the location of the parameter file. No relativation is performed when `param_list` is a list of maps (as-is) or a yaml blob.",            
-            "hidden": true
-          }
-          
-        }
-      }
     },
-    "allOf": [
-      {
-        "$ref": "#/definitions/arguments"
-      },
-      {
-        "$ref": "#/definitions/nextflow input-output arguments"
-      }
-      ]
+
+    
+    
+    "arguments" : {
+    "title": "Arguments",
+    "type": "object",
+    "description": "No description",
+    "properties": {
+    
+        
+                "input": {
+                "type":
+                "string",
+                "description": "Type: `file`, required, example: `input.h5mu`. Input h5mu file",
+                "help_text": "Type: `file`, required, example: `input.h5mu`. Input h5mu file"
+            
+            }
+    
+
+        ,
+                "modality": {
+                "type":
+                "string",
+                "description": "Type: `string`, default: `rna`. ",
+                "help_text": "Type: `string`, default: `rna`. "
+            ,
+                "default": "rna"
+            }
+    
+
+        ,
+                "input_layer": {
+                "type":
+                "string",
+                "description": "Type: `string`. Input layer to use",
+                "help_text": "Type: `string`. Input layer to use. By default, X is normalized"
+            
+            }
+    
+
+        ,
+                "output": {
+                "type":
+                "string",
+                "description": "Type: `file`, required, default: `$id.$key.output.h5mu`. Output h5mu file",
+                "help_text": "Type: `file`, required, default: `$id.$key.output.h5mu`. Output h5mu file."
+            ,
+                "default": "$id.$key.output.h5mu"
+            }
+    
+
+        ,
+                "output_compression": {
+                "type":
+                "string",
+                "description": "Type: `string`, example: `gzip`, choices: ``gzip`, `lzf``. The compression format to be used on the output h5mu object",
+                "help_text": "Type: `string`, example: `gzip`, choices: ``gzip`, `lzf``. The compression format to be used on the output h5mu object.",
+                "enum": ["gzip", "lzf"]
+            
+            
+            }
+    
+
+        ,
+                "output_layer": {
+                "type":
+                "string",
+                "description": "Type: `string`. Output layer to use",
+                "help_text": "Type: `string`. Output layer to use. By default, use X."
+            
+            }
+    
+
+        ,
+                "target_sum": {
+                "type":
+                "integer",
+                "description": "Type: `integer`, default: `10000`. If None, after normalization, each observation (cell) has a total count equal to the median of total counts for observations (cells) before normalization",
+                "help_text": "Type: `integer`, default: `10000`. If None, after normalization, each observation (cell) has a total count equal to the median of total counts for observations (cells) before normalization."
+            ,
+                "default": "10000"
+            }
+    
+
+        ,
+                "exclude_highly_expressed": {
+                "type":
+                "boolean",
+                "description": "Type: `boolean_true`, default: `false`. Exclude (very) highly expressed genes for the computation of the normalization factor (size factor) for each cell",
+                "help_text": "Type: `boolean_true`, default: `false`. Exclude (very) highly expressed genes for the computation of the normalization factor (size factor) for each cell. A gene is considered highly expressed, if it has more than max_fraction of the total counts in at least one cell. The not-excluded genes will sum up to target_sum."
+            ,
+                "default": "False"
+            }
+    
+
+}
+},
+    
+    
+    "nextflow input-output arguments" : {
+    "title": "Nextflow input-output arguments",
+    "type": "object",
+    "description": "Input/output parameters for Nextflow itself. Please note that both publishDir and publish_dir are supported but at least one has to be configured.",
+    "properties": {
+    
+        
+                "publish_dir": {
+                "type":
+                "string",
+                "description": "Type: `string`, required, example: `output/`. Path to an output directory",
+                "help_text": "Type: `string`, required, example: `output/`. Path to an output directory."
+            
+            }
+    
+
+        
+
+}
+}
+},
+"allOf": [
+
+    {
+    "$ref": "#/definitions/arguments"
+    },
+
+    {
+    "$ref": "#/definitions/nextflow input-output arguments"
+    }
+]
 }

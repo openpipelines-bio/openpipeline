@@ -1,0 +1,434 @@
+functionality:
+  name: "scanorama_leiden"
+  namespace: "workflows/integration"
+  version: "1.0.0rc1"
+  authors:
+  - name: "Mauro Saporita"
+    roles:
+    - "author"
+    info:
+      role: "Contributor"
+      links:
+        email: "maurosaporita@gmail.com"
+        github: "mauro-saporita"
+        linkedin: "mauro-saporita-930b06a5"
+      organizations:
+      - name: "Ardigen"
+        href: "https://ardigen.com"
+        role: "Lead Nextflow Developer"
+  - name: "Povilas Gibas"
+    roles:
+    - "author"
+    info:
+      role: "Contributor"
+      links:
+        email: "povilasgibas@gmail.com"
+        github: "PoGibas"
+        linkedin: "povilas-gibas"
+      organizations:
+      - name: "Ardigen"
+        href: "https://ardigen.com"
+        role: "Bioinformatician"
+  argument_groups:
+  - name: "Inputs"
+    arguments:
+    - type: "string"
+      name: "--id"
+      description: "ID of the sample."
+      info: null
+      example:
+      - "foo"
+      required: true
+      direction: "input"
+      multiple: false
+      multiple_sep: ":"
+      dest: "par"
+    - type: "file"
+      name: "--input"
+      description: "Path to the sample."
+      info: null
+      example:
+      - "dataset.h5mu"
+      must_exist: true
+      create_parent: true
+      required: true
+      direction: "input"
+      multiple: false
+      multiple_sep: ":"
+      dest: "par"
+    - type: "string"
+      name: "--layer"
+      description: "use specified layer for expression values instead of the .X object\
+        \ from the modality."
+      info: null
+      default:
+      - "log_normalized"
+      required: false
+      direction: "input"
+      multiple: false
+      multiple_sep: ":"
+      dest: "par"
+    - type: "string"
+      name: "--modality"
+      description: "Which modality to process."
+      info: null
+      default:
+      - "rna"
+      required: false
+      direction: "input"
+      multiple: false
+      multiple_sep: ":"
+      dest: "par"
+  - name: "Outputs"
+    arguments:
+    - type: "file"
+      name: "--output"
+      description: "Destination path to the output."
+      info: null
+      example:
+      - "output.h5mu"
+      must_exist: true
+      create_parent: true
+      required: true
+      direction: "output"
+      multiple: false
+      multiple_sep: ":"
+      dest: "par"
+  - name: "Neighbour calculation"
+    arguments:
+    - type: "string"
+      name: "--uns_neighbors"
+      description: "In which .uns slot to store various neighbor output objects."
+      info: null
+      default:
+      - "scanorama_integration_neighbors"
+      required: false
+      direction: "input"
+      multiple: false
+      multiple_sep: ":"
+      dest: "par"
+    - type: "string"
+      name: "--obsp_neighbor_distances"
+      description: "In which .obsp slot to store the distance matrix between the resulting\
+        \ neighbors."
+      info: null
+      default:
+      - "scanorama_integration_distances"
+      required: false
+      direction: "input"
+      multiple: false
+      multiple_sep: ":"
+      dest: "par"
+    - type: "string"
+      name: "--obsp_neighbor_connectivities"
+      description: "In which .obsp slot to store the connectivities matrix between\
+        \ the resulting neighbors."
+      info: null
+      default:
+      - "scanorama_integration_connectivities"
+      required: false
+      direction: "input"
+      multiple: false
+      multiple_sep: ":"
+      dest: "par"
+  - name: "Scanorama integration options"
+    arguments:
+    - type: "string"
+      name: "--obs_batch"
+      description: "Column name discriminating between your batches."
+      info: null
+      default:
+      - "sample_id"
+      required: false
+      direction: "input"
+      multiple: false
+      multiple_sep: ":"
+      dest: "par"
+    - type: "string"
+      name: "--obsm_input"
+      description: ".obsm slot that points to embedding to run scanorama on."
+      info: null
+      default:
+      - "X_pca"
+      required: false
+      direction: "input"
+      multiple: false
+      multiple_sep: ":"
+      dest: "par"
+    - type: "string"
+      name: "--obsm_output"
+      description: "The name of the field in adata.obsm where the integrated embeddings\
+        \ will be stored after running this function. Defaults to X_scanorama."
+      info: null
+      default:
+      - "X_scanorama"
+      required: false
+      direction: "input"
+      multiple: false
+      multiple_sep: ":"
+      dest: "par"
+    - type: "integer"
+      name: "--knn"
+      description: "Number of nearest neighbors to use for matching."
+      info: null
+      default:
+      - 20
+      required: false
+      direction: "input"
+      multiple: false
+      multiple_sep: ":"
+      dest: "par"
+    - type: "integer"
+      name: "--batch_size"
+      description: "The batch size used in the alignment vector computation. Useful\
+        \ when integrating very large (>100k samples) datasets. Set to large value\
+        \ that runs within available memory."
+      info: null
+      default:
+      - 5000
+      required: false
+      direction: "input"
+      multiple: false
+      multiple_sep: ":"
+      dest: "par"
+    - type: "double"
+      name: "--sigma"
+      description: "Correction smoothing parameter on Gaussian kernel."
+      info: null
+      default:
+      - 15.0
+      required: false
+      direction: "input"
+      multiple: false
+      multiple_sep: ":"
+      dest: "par"
+    - type: "boolean"
+      name: "--approx"
+      description: "Use approximate nearest neighbors with Python annoy; greatly speeds\
+        \ up matching runtime."
+      info: null
+      default:
+      - true
+      required: false
+      direction: "input"
+      multiple: false
+      multiple_sep: ":"
+      dest: "par"
+    - type: "double"
+      name: "--alpha"
+      description: "Alignment score minimum cutoff"
+      info: null
+      default:
+      - 0.1
+      required: false
+      direction: "input"
+      multiple: false
+      multiple_sep: ":"
+      dest: "par"
+  - name: "Clustering options"
+    arguments:
+    - type: "string"
+      name: "--obs_cluster"
+      description: "Prefix for the .obs keys under which to add the cluster labels.\
+        \ Newly created columns in .obs will \nbe created from the specified value\
+        \ for '--obs_cluster' suffixed with an underscore and one of the\nresolutions\
+        \ specified in '--leiden_resolution'.\n"
+      info: null
+      default:
+      - "scanorama_integration_leiden"
+      required: false
+      direction: "input"
+      multiple: false
+      multiple_sep: ":"
+      dest: "par"
+    - type: "double"
+      name: "--leiden_resolution"
+      description: "Control the coarseness of the clustering. Higher values lead to\
+        \ more clusters."
+      info: null
+      default:
+      - 1.0
+      required: false
+      direction: "input"
+      multiple: true
+      multiple_sep: ";"
+      dest: "par"
+  - name: "Umap options"
+    arguments:
+    - type: "string"
+      name: "--obsm_umap"
+      description: "In which .obsm slot to store the resulting UMAP embedding."
+      info: null
+      default:
+      - "X_leiden_scanorama_umap"
+      required: false
+      direction: "input"
+      multiple: false
+      multiple_sep: ":"
+      dest: "par"
+  resources:
+  - type: "nextflow_script"
+    path: "main.nf"
+    is_executable: true
+    entrypoint: "run_wf"
+  - type: "file"
+    path: "src/workflows/utils/"
+  - type: "file"
+    path: "./src/workflows/utils/labels.config"
+    dest: "nextflow_labels.config"
+  description: "Run scanorama integration followed by neighbour calculations, leiden\
+    \ clustering and run umap on the result."
+  test_resources:
+  - type: "nextflow_script"
+    path: "test.nf"
+    is_executable: true
+    entrypoint: "test_wf"
+  - type: "file"
+    path: "resources_test/pbmc_1k_protein_v3"
+  info: null
+  status: "enabled"
+  requirements:
+    commands:
+    - "ps"
+  dependencies:
+  - name: "cluster/leiden"
+    repository:
+      type: "local"
+      localPath: ""
+    foundConfigPath: "/home/runner/work/openpipeline/openpipeline/src/cluster/leiden/config.vsh.yaml"
+    configInfo:
+      functionalityName: "leiden"
+      git_tag: "0.12.1"
+      git_remote: "https://github.com/openpipelines-bio/openpipeline"
+      viash_version: "0.8.4"
+      config: "/home/runner/work/openpipeline/openpipeline/src/cluster/leiden/config.vsh.yaml"
+      functionalityNamespace: "cluster"
+      output: ""
+      platform: ""
+      git_commit: "bb0a94b57bf7195926da7f2e06aba6f59e239fce"
+      executable: "/nextflow/cluster/leiden/main.nf"
+    writtenPath: "/home/runner/work/openpipeline/openpipeline/target/nextflow/cluster/leiden"
+  - name: "integrate/scanorama"
+    repository:
+      type: "local"
+      localPath: ""
+    foundConfigPath: "/home/runner/work/openpipeline/openpipeline/src/integrate/scanorama/config.vsh.yaml"
+    configInfo:
+      functionalityName: "scanorama"
+      git_tag: "0.12.1"
+      git_remote: "https://github.com/openpipelines-bio/openpipeline"
+      viash_version: "0.8.4"
+      config: "/home/runner/work/openpipeline/openpipeline/src/integrate/scanorama/config.vsh.yaml"
+      functionalityNamespace: "integrate"
+      output: ""
+      platform: ""
+      git_commit: "bb0a94b57bf7195926da7f2e06aba6f59e239fce"
+      executable: "/nextflow/integrate/scanorama/main.nf"
+    writtenPath: "/home/runner/work/openpipeline/openpipeline/target/nextflow/integrate/scanorama"
+  - name: "dimred/umap"
+    repository:
+      type: "local"
+      localPath: ""
+    foundConfigPath: "/home/runner/work/openpipeline/openpipeline/src/dimred/umap/config.vsh.yaml"
+    configInfo:
+      functionalityName: "umap"
+      git_tag: "0.12.1"
+      git_remote: "https://github.com/openpipelines-bio/openpipeline"
+      viash_version: "0.8.4"
+      config: "/home/runner/work/openpipeline/openpipeline/src/dimred/umap/config.vsh.yaml"
+      functionalityNamespace: "dimred"
+      output: ""
+      platform: ""
+      git_commit: "bb0a94b57bf7195926da7f2e06aba6f59e239fce"
+      executable: "/nextflow/dimred/umap/main.nf"
+    writtenPath: "/home/runner/work/openpipeline/openpipeline/target/nextflow/dimred/umap"
+  - name: "metadata/move_obsm_to_obs"
+    repository:
+      type: "local"
+      localPath: ""
+    foundConfigPath: "/home/runner/work/openpipeline/openpipeline/src/metadata/move_obsm_to_obs/config.vsh.yaml"
+    configInfo:
+      functionalityName: "move_obsm_to_obs"
+      git_tag: "0.12.1"
+      git_remote: "https://github.com/openpipelines-bio/openpipeline"
+      viash_version: "0.8.4"
+      config: "/home/runner/work/openpipeline/openpipeline/src/metadata/move_obsm_to_obs/config.vsh.yaml"
+      functionalityNamespace: "metadata"
+      output: ""
+      platform: ""
+      git_commit: "bb0a94b57bf7195926da7f2e06aba6f59e239fce"
+      executable: "/nextflow/metadata/move_obsm_to_obs/main.nf"
+    writtenPath: "/home/runner/work/openpipeline/openpipeline/target/nextflow/metadata/move_obsm_to_obs"
+  - name: "neighbors/find_neighbors"
+    repository:
+      type: "local"
+      localPath: ""
+    foundConfigPath: "/home/runner/work/openpipeline/openpipeline/src/neighbors/find_neighbors/config.vsh.yaml"
+    configInfo:
+      functionalityName: "find_neighbors"
+      git_tag: "0.12.1"
+      git_remote: "https://github.com/openpipelines-bio/openpipeline"
+      viash_version: "0.8.4"
+      config: "/home/runner/work/openpipeline/openpipeline/src/neighbors/find_neighbors/config.vsh.yaml"
+      functionalityNamespace: "neighbors"
+      output: ""
+      platform: ""
+      git_commit: "bb0a94b57bf7195926da7f2e06aba6f59e239fce"
+      executable: "/nextflow/neighbors/find_neighbors/main.nf"
+    writtenPath: "/home/runner/work/openpipeline/openpipeline/target/nextflow/neighbors/find_neighbors"
+  set_wd_to_resources_dir: false
+platforms:
+- type: "nextflow"
+  id: "nextflow"
+  directives:
+    tag: "$id"
+  auto:
+    simplifyInput: true
+    simplifyOutput: false
+    transcript: false
+    publish: false
+  config:
+    labels:
+      mem1gb: "memory = 1.GB"
+      mem2gb: "memory = 2.GB"
+      mem4gb: "memory = 4.GB"
+      mem8gb: "memory = 8.GB"
+      mem16gb: "memory = 16.GB"
+      mem32gb: "memory = 32.GB"
+      mem64gb: "memory = 64.GB"
+      mem128gb: "memory = 128.GB"
+      mem256gb: "memory = 256.GB"
+      mem512gb: "memory = 512.GB"
+      mem1tb: "memory = 1.TB"
+      mem2tb: "memory = 2.TB"
+      mem4tb: "memory = 4.TB"
+      mem8tb: "memory = 8.TB"
+      mem16tb: "memory = 16.TB"
+      mem32tb: "memory = 32.TB"
+      mem64tb: "memory = 64.TB"
+      mem128tb: "memory = 128.TB"
+      mem256tb: "memory = 256.TB"
+      mem512tb: "memory = 512.TB"
+      cpu1: "cpus = 1"
+      cpu2: "cpus = 2"
+      cpu5: "cpus = 5"
+      cpu10: "cpus = 10"
+      cpu20: "cpus = 20"
+      cpu50: "cpus = 50"
+      cpu100: "cpus = 100"
+      cpu200: "cpus = 200"
+      cpu500: "cpus = 500"
+      cpu1000: "cpus = 1000"
+    script:
+    - "includeConfig(\"nextflow_labels.config\")"
+  debug: false
+  container: "docker"
+info:
+  config: "/home/runner/work/openpipeline/openpipeline/src/workflows/integration/scanorama_leiden/config.vsh.yaml"
+  platform: "nextflow"
+  output: "/home/runner/work/openpipeline/openpipeline/target/nextflow/workflows/integration/scanorama_leiden"
+  executable: "/home/runner/work/openpipeline/openpipeline/target/nextflow/workflows/integration/scanorama_leiden/main.nf"
+  viash_version: "0.8.4"
+  git_commit: "bb0a94b57bf7195926da7f2e06aba6f59e239fce"
+  git_remote: "https://github.com/openpipelines-bio/openpipeline"
+  git_tag: "0.12.1"

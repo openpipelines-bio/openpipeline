@@ -1,0 +1,350 @@
+functionality:
+  name: "demux"
+  namespace: "workflows/ingestion"
+  version: "1.0.0rc1"
+  authors:
+  - name: "Toni Verbeiren"
+    roles:
+    - "author"
+    - "maintainer"
+    info:
+      role: "Core Team Member"
+      links:
+        github: "tverbeiren"
+        linkedin: "verbeiren"
+      organizations:
+      - name: "Data Intuitive"
+        href: "https://www.data-intuitive.com"
+        role: "Data Scientist and CEO"
+  - name: "Marijke Van Moerbeke"
+    roles:
+    - "author"
+    info:
+      role: "Contributor"
+      links:
+        github: "mvanmoerbeke"
+        orcid: "0000-0002-3097-5621"
+        linkedin: "marijke-van-moerbeke-84303a34"
+      organizations:
+      - name: "OpenAnalytics"
+        href: "https://www.openanalytics.eu"
+        role: "Statistical Consultant"
+  - name: "Angela Oliveira Pisco"
+    roles:
+    - "author"
+    info:
+      role: "Contributor"
+      links:
+        github: "aopisco"
+        orcid: "0000-0003-0142-2355"
+        linkedin: "aopisco"
+      organizations:
+      - name: "Insitro"
+        href: "https://insitro.com"
+        role: "Director of Computational Biology"
+      - name: "Open Problems"
+        href: "https://openproblems.bio"
+        role: "Core Member"
+  - name: "Samuel D'Souza"
+    roles:
+    - "author"
+    info:
+      role: "Contributor"
+      links:
+        github: "srdsam"
+        linkedin: "samuel-d-souza-887023150/"
+      organizations:
+      - name: "Chan Zuckerberg Biohub"
+        href: "https://www.czbiohub.org"
+        role: "Data Engineer"
+  - name: "Robrecht Cannoodt"
+    roles:
+    - "author"
+    info:
+      role: "Core Team Member"
+      links:
+        email: "robrecht@data-intuitive.com"
+        github: "rcannood"
+        orcid: "0000-0003-3641-729X"
+        linkedin: "robrechtcannoodt"
+      organizations:
+      - name: "Data Intuitive"
+        href: "https://www.data-intuitive.com"
+        role: "Data Science Engineer"
+      - name: "Open Problems"
+        href: "https://openproblems.bio"
+        role: "Core Member"
+  arguments:
+  - type: "string"
+    name: "--id"
+    description: "ID of the sample."
+    info: null
+    example:
+    - "foo"
+    required: true
+    direction: "input"
+    multiple: false
+    multiple_sep: ":"
+    dest: "par"
+  - type: "file"
+    name: "--input"
+    alternatives:
+    - "-i"
+    description: "Input run directory"
+    info: null
+    example:
+    - "bcl_dir"
+    must_exist: true
+    create_parent: true
+    required: true
+    direction: "input"
+    multiple: false
+    multiple_sep: ":"
+    dest: "par"
+  - type: "file"
+    name: "--sample_sheet"
+    alternatives:
+    - "-s"
+    description: "Pointer to the sample sheet"
+    info: null
+    example:
+    - "bcl_dir"
+    must_exist: true
+    create_parent: true
+    required: true
+    direction: "input"
+    multiple: false
+    multiple_sep: ":"
+    dest: "par"
+  - type: "string"
+    name: "--demultiplexer"
+    description: "The multiplexer to use, one of bclconvert or mkfastq"
+    info: null
+    default:
+    - "bcl2fastq"
+    required: false
+    choices:
+    - "bclconvert"
+    - "bcl2fastq"
+    - "mkfastq"
+    direction: "input"
+    multiple: false
+    multiple_sep: ":"
+    dest: "par"
+  - type: "boolean"
+    name: "--ignore_missing"
+    description: "Should the demultiplexer ignore missing entities (filter, ...)"
+    info: null
+    required: false
+    direction: "input"
+    multiple: false
+    multiple_sep: ":"
+    dest: "par"
+  - type: "file"
+    name: "--output_fastq"
+    description: "Output directory containig fastq files"
+    info: null
+    example:
+    - "fastq_dir"
+    must_exist: true
+    create_parent: true
+    required: true
+    direction: "output"
+    multiple: false
+    multiple_sep: ":"
+    dest: "par"
+  - type: "file"
+    name: "--output_fastqc"
+    description: "Reports directory produced by FastQC"
+    info: null
+    example:
+    - "reports_dir"
+    must_exist: true
+    create_parent: true
+    required: false
+    direction: "output"
+    multiple: false
+    multiple_sep: ":"
+    dest: "par"
+  - type: "file"
+    name: "--output_multiqc"
+    description: "Reports directory produced by MultiQC"
+    info: null
+    example:
+    - "reports_dir"
+    must_exist: true
+    create_parent: true
+    required: false
+    direction: "output"
+    multiple: false
+    multiple_sep: ":"
+    dest: "par"
+  resources:
+  - type: "nextflow_script"
+    path: "main.nf"
+    is_executable: true
+    entrypoint: "run_wf"
+  - type: "file"
+    path: "src/workflows/utils/"
+  - type: "file"
+    path: "./src/workflows/utils/labels.config"
+    dest: "nextflow_labels.config"
+  description: "Convert `.bcl` files to `.fastq` files using bcl2fastq, bcl-convert\
+    \ or Cell Ranger mkfastq.\n"
+  test_resources:
+  - type: "nextflow_script"
+    path: "test.nf"
+    is_executable: true
+    entrypoint: "test_wf"
+  - type: "file"
+    path: "resources_test/cellranger_tiny_bcl"
+  info:
+    name: "Demux"
+    short_description: "A generic pipeline for running bcl2fastq, bcl-convert or Cell\
+      \ Ranger mkfastq."
+  status: "enabled"
+  requirements:
+    commands:
+    - "ps"
+  dependencies:
+  - name: "demux/cellranger_mkfastq"
+    repository:
+      type: "local"
+      localPath: ""
+    foundConfigPath: "/home/runner/work/openpipeline/openpipeline/src/demux/cellranger_mkfastq/config.vsh.yaml"
+    configInfo:
+      functionalityName: "cellranger_mkfastq"
+      git_tag: "0.12.1"
+      git_remote: "https://github.com/openpipelines-bio/openpipeline"
+      viash_version: "0.8.4"
+      config: "/home/runner/work/openpipeline/openpipeline/src/demux/cellranger_mkfastq/config.vsh.yaml"
+      functionalityNamespace: "demux"
+      output: ""
+      platform: ""
+      git_commit: "bb0a94b57bf7195926da7f2e06aba6f59e239fce"
+      executable: "/nextflow/demux/cellranger_mkfastq/main.nf"
+    writtenPath: "/home/runner/work/openpipeline/openpipeline/target/nextflow/demux/cellranger_mkfastq"
+  - name: "demux/bcl_convert"
+    repository:
+      type: "local"
+      localPath: ""
+    foundConfigPath: "/home/runner/work/openpipeline/openpipeline/src/demux/bcl_convert/config.vsh.yaml"
+    configInfo:
+      functionalityName: "bcl_convert"
+      git_tag: "0.12.1"
+      git_remote: "https://github.com/openpipelines-bio/openpipeline"
+      viash_version: "0.8.4"
+      config: "/home/runner/work/openpipeline/openpipeline/src/demux/bcl_convert/config.vsh.yaml"
+      functionalityNamespace: "demux"
+      output: ""
+      platform: ""
+      git_commit: "bb0a94b57bf7195926da7f2e06aba6f59e239fce"
+      executable: "/nextflow/demux/bcl_convert/main.nf"
+    writtenPath: "/home/runner/work/openpipeline/openpipeline/target/nextflow/demux/bcl_convert"
+  - name: "demux/bcl2fastq"
+    repository:
+      type: "local"
+      localPath: ""
+    foundConfigPath: "/home/runner/work/openpipeline/openpipeline/src/demux/bcl2fastq/config.vsh.yaml"
+    configInfo:
+      functionalityName: "bcl2fastq"
+      git_tag: "0.12.1"
+      git_remote: "https://github.com/openpipelines-bio/openpipeline"
+      viash_version: "0.8.4"
+      config: "/home/runner/work/openpipeline/openpipeline/src/demux/bcl2fastq/config.vsh.yaml"
+      functionalityNamespace: "demux"
+      output: ""
+      platform: ""
+      git_commit: "bb0a94b57bf7195926da7f2e06aba6f59e239fce"
+      executable: "/nextflow/demux/bcl2fastq/main.nf"
+    writtenPath: "/home/runner/work/openpipeline/openpipeline/target/nextflow/demux/bcl2fastq"
+  - name: "qc/fastqc"
+    repository:
+      type: "local"
+      localPath: ""
+    foundConfigPath: "/home/runner/work/openpipeline/openpipeline/src/qc/fastqc/config.vsh.yaml"
+    configInfo:
+      functionalityName: "fastqc"
+      git_tag: "0.12.1"
+      git_remote: "https://github.com/openpipelines-bio/openpipeline"
+      viash_version: "0.8.4"
+      config: "/home/runner/work/openpipeline/openpipeline/src/qc/fastqc/config.vsh.yaml"
+      functionalityNamespace: "qc"
+      output: ""
+      platform: ""
+      git_commit: "bb0a94b57bf7195926da7f2e06aba6f59e239fce"
+      executable: "/nextflow/qc/fastqc/main.nf"
+    writtenPath: "/home/runner/work/openpipeline/openpipeline/target/nextflow/qc/fastqc"
+  - name: "qc/multiqc"
+    repository:
+      type: "local"
+      localPath: ""
+    foundConfigPath: "/home/runner/work/openpipeline/openpipeline/src/qc/multiqc/config.vsh.yaml"
+    configInfo:
+      functionalityName: "multiqc"
+      git_tag: "0.12.1"
+      git_remote: "https://github.com/openpipelines-bio/openpipeline"
+      viash_version: "0.8.4"
+      config: "/home/runner/work/openpipeline/openpipeline/src/qc/multiqc/config.vsh.yaml"
+      functionalityNamespace: "qc"
+      output: ""
+      platform: ""
+      git_commit: "bb0a94b57bf7195926da7f2e06aba6f59e239fce"
+      executable: "/nextflow/qc/multiqc/main.nf"
+    writtenPath: "/home/runner/work/openpipeline/openpipeline/target/nextflow/qc/multiqc"
+  set_wd_to_resources_dir: false
+platforms:
+- type: "nextflow"
+  id: "nextflow"
+  directives:
+    tag: "$id"
+  auto:
+    simplifyInput: true
+    simplifyOutput: false
+    transcript: false
+    publish: false
+  config:
+    labels:
+      mem1gb: "memory = 1.GB"
+      mem2gb: "memory = 2.GB"
+      mem4gb: "memory = 4.GB"
+      mem8gb: "memory = 8.GB"
+      mem16gb: "memory = 16.GB"
+      mem32gb: "memory = 32.GB"
+      mem64gb: "memory = 64.GB"
+      mem128gb: "memory = 128.GB"
+      mem256gb: "memory = 256.GB"
+      mem512gb: "memory = 512.GB"
+      mem1tb: "memory = 1.TB"
+      mem2tb: "memory = 2.TB"
+      mem4tb: "memory = 4.TB"
+      mem8tb: "memory = 8.TB"
+      mem16tb: "memory = 16.TB"
+      mem32tb: "memory = 32.TB"
+      mem64tb: "memory = 64.TB"
+      mem128tb: "memory = 128.TB"
+      mem256tb: "memory = 256.TB"
+      mem512tb: "memory = 512.TB"
+      cpu1: "cpus = 1"
+      cpu2: "cpus = 2"
+      cpu5: "cpus = 5"
+      cpu10: "cpus = 10"
+      cpu20: "cpus = 20"
+      cpu50: "cpus = 50"
+      cpu100: "cpus = 100"
+      cpu200: "cpus = 200"
+      cpu500: "cpus = 500"
+      cpu1000: "cpus = 1000"
+    script:
+    - "includeConfig(\"nextflow_labels.config\")"
+  debug: false
+  container: "docker"
+info:
+  config: "/home/runner/work/openpipeline/openpipeline/src/workflows/ingestion/demux/config.vsh.yaml"
+  platform: "nextflow"
+  output: "/home/runner/work/openpipeline/openpipeline/target/nextflow/workflows/ingestion/demux"
+  executable: "/home/runner/work/openpipeline/openpipeline/target/nextflow/workflows/ingestion/demux/main.nf"
+  viash_version: "0.8.4"
+  git_commit: "bb0a94b57bf7195926da7f2e06aba6f59e239fce"
+  git_remote: "https://github.com/openpipelines-bio/openpipeline"
+  git_tag: "0.12.1"

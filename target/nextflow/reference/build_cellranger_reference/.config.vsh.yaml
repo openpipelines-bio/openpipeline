@@ -1,7 +1,7 @@
 functionality:
   name: "build_cellranger_reference"
   namespace: "reference"
-  version: "0.12.0"
+  version: "1.0.0rc1"
   authors:
   - name: "Angela Oliveira Pisco"
     roles:
@@ -81,6 +81,9 @@ functionality:
   - type: "bash_script"
     path: "script.sh"
     is_executable: true
+  - type: "file"
+    path: "./src/workflows/utils/labels.config"
+    dest: "nextflow_labels.config"
   description: "Build a Cell Ranger-compatible reference folder from user-supplied\
     \ genome FASTA and gene GTF files. Creates a new folder named after the genome."
   test_resources:
@@ -101,6 +104,7 @@ platforms:
   image: "ghcr.io/data-intuitive/cellranger:7.0"
   target_organization: "openpipelines-bio"
   target_registry: "ghcr.io"
+  target_tag: "1.0.0rc1"
   namespace_separator: "_"
   resolve_volume: "Automatic"
   chown: true
@@ -112,21 +116,19 @@ platforms:
     - "pigz"
     interactive: false
   test_setup:
-  - type: "docker"
-    env:
-    - "GOPATH /root/go"
-    - "GOBIN /root/go/bin"
-    - "PATH \"${PATH}:/root/go/bin\""
   - type: "apt"
     packages:
-    - "golang"
     - "git"
+    - "wget"
     interactive: false
   - type: "docker"
     run:
-    - "go install golang.org/dl/go1.20.6@latest && go1.20.6 download && \\\ngit clone\
-      \ --branch v2.5.0 https://github.com/shenwei356/seqkit.git && \\\ncd seqkit/seqkit/\
-      \ && go1.20.6 build && cp seqkit /usr/bin/ && cd ../../ && rm -rf seqkit\n"
+    - "TARGETARCH=\"${TARGETARCH:-$(dpkg --print-architecture)}\" && \\\nTARGETOS=\"\
+      ${TARGETOS:-linux}\" && \\\nPATH=\"${PATH}:/usr/local/go/bin\" && \\\nwget https://go.dev/dl/go1.21.4.$TARGETOS-$TARGETARCH.tar.gz\
+      \ && tar -C /usr/local/ -xzf go1.21.4.$TARGETOS-$TARGETARCH.tar.gz && \\\nrm\
+      \ go1.21.4.$TARGETOS-$TARGETARCH.tar.gz && \\\ngit clone --branch v2.5.0 https://github.com/shenwei356/seqkit.git\
+      \ && \\\ncd seqkit/seqkit/ && go build && cp seqkit /usr/bin/ && cd ../../ &&\
+      \ rm -rf seqkit && rm -r /usr/local/go\n"
   entrypoint: []
   cmd: null
 - type: "nextflow"
@@ -173,6 +175,8 @@ platforms:
       cpu200: "cpus = 200"
       cpu500: "cpus = 500"
       cpu1000: "cpus = 1000"
+    script:
+    - "includeConfig(\"nextflow_labels.config\")"
   debug: false
   container: "docker"
 info:
@@ -180,6 +184,7 @@ info:
   platform: "nextflow"
   output: "/home/runner/work/openpipeline/openpipeline/target/nextflow/reference/build_cellranger_reference"
   executable: "/home/runner/work/openpipeline/openpipeline/target/nextflow/reference/build_cellranger_reference/build_cellranger_reference"
-  viash_version: "0.7.5"
-  git_commit: "b41a65886f61959c7f83f84a0569c3da1d7a2856"
+  viash_version: "0.8.4"
+  git_commit: "bb0a94b57bf7195926da7f2e06aba6f59e239fce"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"
+  git_tag: "0.12.1"

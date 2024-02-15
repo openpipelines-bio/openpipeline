@@ -1,7 +1,7 @@
 functionality:
   name: "from_h5ad_to_h5mu"
   namespace: "convert"
-  version: "0.12.0"
+  version: "1.0.0rc1"
   authors:
   - name: "Dries De Maeyer"
     roles:
@@ -30,7 +30,7 @@ functionality:
     required: true
     direction: "input"
     multiple: true
-    multiple_sep: ":"
+    multiple_sep: ";"
     dest: "par"
   - type: "string"
     name: "--modality"
@@ -40,7 +40,7 @@ functionality:
     required: false
     direction: "input"
     multiple: true
-    multiple_sep: ":"
+    multiple_sep: ";"
     dest: "par"
   - type: "file"
     name: "--output"
@@ -76,6 +76,9 @@ functionality:
     is_executable: true
   - type: "file"
     path: "src/utils/setup_logger.py"
+  - type: "file"
+    path: "./src/workflows/utils/labels.config"
+    dest: "nextflow_labels.config"
   description: "Converts a single layer h5ad file into a single MuData object\n"
   test_resources:
   - type: "python_script"
@@ -95,6 +98,7 @@ platforms:
   image: "python:3.9-slim"
   target_organization: "openpipelines-bio"
   target_registry: "ghcr.io"
+  target_tag: "1.0.0rc1"
   namespace_separator: "_"
   resolve_volume: "Automatic"
   chown: true
@@ -108,14 +112,15 @@ platforms:
   - type: "python"
     user: false
     packages:
-    - "mudata~=0.2.3"
     - "anndata~=0.9.1"
+    - "mudata~=0.2.3"
+    - "pandas!=2.1.2"
     upgrade: true
   test_setup:
   - type: "python"
     user: false
     packages:
-    - "viashpy==0.5.0"
+    - "viashpy==0.6.0"
     upgrade: true
   entrypoint: []
   cmd: null
@@ -163,6 +168,8 @@ platforms:
       cpu200: "cpus = 200"
       cpu500: "cpus = 500"
       cpu1000: "cpus = 1000"
+    script:
+    - "includeConfig(\"nextflow_labels.config\")"
   debug: false
   container: "docker"
 info:
@@ -170,6 +177,7 @@ info:
   platform: "docker"
   output: "/home/runner/work/openpipeline/openpipeline/target/docker/convert/from_h5ad_to_h5mu"
   executable: "/home/runner/work/openpipeline/openpipeline/target/docker/convert/from_h5ad_to_h5mu/from_h5ad_to_h5mu"
-  viash_version: "0.7.5"
-  git_commit: "b41a65886f61959c7f83f84a0569c3da1d7a2856"
+  viash_version: "0.8.4"
+  git_commit: "bb0a94b57bf7195926da7f2e06aba6f59e239fce"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"
+  git_tag: "0.12.1"

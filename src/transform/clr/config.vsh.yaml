@@ -31,6 +31,9 @@ functionality:
       choices: ["gzip", "lzf"]
       required: false
       example: "gzip"
+    - name: "--input_layer"
+      type: string
+      description: "Input layer to use. By default, .X is used."
     - name: "--output_layer"
       type: string
       description: Output layer to use. By default, use X.

@@ -1,7 +1,7 @@
 functionality:
   name: "calculate_qc_metrics"
   namespace: "qc"
-  version: "0.12.0"
+  version: "1.0.0rc1"
   authors:
   - name: "Dries Schaumont"
     roles:
@@ -53,6 +53,8 @@ functionality:
       multiple: false
       multiple_sep: ":"
       dest: "par"
+  - name: "Metrics added to .obs"
+    arguments:
     - type: "string"
       name: "--var_qc_metrics"
       description: "Keys to select a boolean (containing only True or False) column\
@@ -65,7 +67,7 @@ functionality:
       required: false
       direction: "input"
       multiple: true
-      multiple_sep: ","
+      multiple_sep: ";"
       dest: "par"
     - type: "boolean"
       name: "--var_qc_metrics_fill_na_value"
@@ -80,13 +82,91 @@ functionality:
     - type: "integer"
       name: "--top_n_vars"
       description: "Number of top vars to be used to calculate cumulative proportions.\n\
-        If not specified, proportions are not calculated. `--top_n_vars 20,50` finds\n\
+        If not specified, proportions are not calculated. `--top_n_vars 20;50` finds\n\
         cumulative proportion to the 20th and 50th most expressed vars.\n"
       info: null
       required: false
       direction: "input"
       multiple: true
-      multiple_sep: ","
+      multiple_sep: ";"
+      dest: "par"
+    - type: "string"
+      name: "--output_obs_num_nonzero_vars"
+      description: "Name of column in .obs describing, for each observation, the number\
+        \ of stored values\n(including explicit zeroes). In other words, the name\
+        \ of the column that counts\nfor each row the number of columns that contain\
+        \ data.\n"
+      info: null
+      default:
+      - "num_nonzero_vars"
+      required: false
+      direction: "input"
+      multiple: false
+      multiple_sep: ":"
+      dest: "par"
+    - type: "string"
+      name: "--output_obs_total_counts_vars"
+      description: "Name of the column for .obs describing, for each observation (row),\n\
+        the sum of the stored values in the columns.\n"
+      info: null
+      default:
+      - "total_counts"
+      required: false
+      direction: "input"
+      multiple: false
+      multiple_sep: ":"
+      dest: "par"
+  - name: "Metrics added to .var"
+    arguments:
+    - type: "string"
+      name: "--output_var_num_nonzero_obs"
+      description: "Name of column describing, for each feature, the number of stored\
+        \ values\n(including explicit zeroes). In other words, the name of the column\
+        \ that counts\nfor each column the number of rows that contain data.\n"
+      info: null
+      default:
+      - "num_nonzero_obs"
+      required: false
+      direction: "input"
+      multiple: false
+      multiple_sep: ":"
+      dest: "par"
+    - type: "string"
+      name: "--output_var_total_counts_obs"
+      description: "Name of the column in .var describing, for each feature (column),\n\
+        the sum of the stored values in the rows.\n"
+      info: null
+      default:
+      - "total_counts"
+      required: false
+      direction: "input"
+      multiple: false
+      multiple_sep: ":"
+      dest: "par"
+    - type: "string"
+      name: "--output_var_obs_mean"
+      description: "Name of the column in .obs providing the mean of the values in\
+        \ each row.\n"
+      info: null
+      default:
+      - "obs_mean"
+      required: false
+      direction: "input"
+      multiple: false
+      multiple_sep: ":"
+      dest: "par"
+    - type: "string"
+      name: "--output_var_pct_dropout"
+      description: "Name of the column in .obs providing for each feature the percentage\
+        \ of\nobservations the feature does not appear on (i.e. is missing). Same\
+        \ as `--num_nonzero_obs`\nbut percentage based.\n"
+      info: null
+      default:
+      - "pct_dropout"
+      required: false
+      direction: "input"
+      multiple: false
+      multiple_sep: ":"
       dest: "par"
   - name: "Outputs"
     arguments:
@@ -123,6 +203,9 @@ functionality:
     is_executable: true
   - type: "file"
     path: "src/utils/setup_logger.py"
+  - type: "file"
+    path: "./src/workflows/utils/labels.config"
+    dest: "nextflow_labels.config"
   description: "Add basic quality control metrics to an .h5mu file.\n\nThe metrics\
     \ are comparable to what scanpy.pp.calculate_qc_metrics output,\nalthough they\
     \ have slightly different names:\n\nVar metrics (name in this component -> name\
@@ -151,6 +234,7 @@ platforms:
   image: "python:3.9-slim"
   target_organization: "openpipelines-bio"
   target_registry: "ghcr.io"
+  target_tag: "1.0.0rc1"
   namespace_separator: "_"
   resolve_volume: "Automatic"
   chown: true
@@ -164,16 +248,18 @@ platforms:
   - type: "python"
     user: false
     packages:
-    - "mudata~=0.2.3"
     - "anndata~=0.9.1"
+    - "mudata~=0.2.3"
+    - "pandas!=2.1.2"
     - "scikit-learn~=1.2.0"
     upgrade: true
   test_setup:
   - type: "python"
     user: false
     packages:
-    - "viashpy==0.5.0"
+    - "viashpy==0.6.0"
     - "scanpy~=1.9.5"
+    - "statsmodels==0.14.0"
     upgrade: true
   entrypoint: []
   cmd: null
@@ -221,6 +307,8 @@ platforms:
       cpu200: "cpus = 200"
       cpu500: "cpus = 500"
       cpu1000: "cpus = 1000"
+    script:
+    - "includeConfig(\"nextflow_labels.config\")"
   debug: false
   container: "docker"
 info:
@@ -228,6 +316,7 @@ info:
   platform: "nextflow"
   output: "/home/runner/work/openpipeline/openpipeline/target/nextflow/qc/calculate_qc_metrics"
   executable: "/home/runner/work/openpipeline/openpipeline/target/nextflow/qc/calculate_qc_metrics/calculate_qc_metrics"
-  viash_version: "0.7.5"
-  git_commit: "b41a65886f61959c7f83f84a0569c3da1d7a2856"
+  viash_version: "0.8.4"
+  git_commit: "bb0a94b57bf7195926da7f2e06aba6f59e239fce"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"
+  git_tag: "0.12.1"

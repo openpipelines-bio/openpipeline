@@ -1,0 +1,701 @@
+functionality:
+  name: "process_samples"
+  namespace: "workflows/multiomics"
+  version: "1.0.0rc1"
+  authors:
+  - name: "Dries Schaumont"
+    roles:
+    - "author"
+    - "maintainer"
+    info:
+      role: "Core Team Member"
+      links:
+        email: "dries@data-intuitive.com"
+        github: "DriesSchaumont"
+        orcid: "0000-0002-4389-0440"
+        linkedin: "dries-schaumont"
+      organizations:
+      - name: "Data Intuitive"
+        href: "https://www.data-intuitive.com"
+        role: "Data Scientist"
+  argument_groups:
+  - name: "Inputs"
+    arguments:
+    - type: "string"
+      name: "--id"
+      description: "ID of the sample."
+      info: null
+      example:
+      - "foo"
+      required: true
+      direction: "input"
+      multiple: false
+      multiple_sep: ":"
+      dest: "par"
+    - type: "file"
+      name: "--input"
+      alternatives:
+      - "-i"
+      description: "Path to the sample."
+      info: null
+      example:
+      - "input.h5mu"
+      must_exist: true
+      create_parent: true
+      required: true
+      direction: "input"
+      multiple: false
+      multiple_sep: ":"
+      dest: "par"
+    - type: "string"
+      name: "--rna_layer"
+      description: "Input layer for the gene expression modality. If not specified,\
+        \ .X is used."
+      info: null
+      required: false
+      direction: "input"
+      multiple: false
+      multiple_sep: ":"
+      dest: "par"
+    - type: "string"
+      name: "--prot_layer"
+      description: "Input layer for the antibody capture modality. If not specified,\
+        \ .X is used."
+      info: null
+      required: false
+      direction: "input"
+      multiple: false
+      multiple_sep: ":"
+      dest: "par"
+    - type: "string"
+      name: "--gdo_layer"
+      description: "Input layer for the guide-derived oligonucleotide (GDO) data.\
+        \ If not specified, .X is used."
+      info: null
+      required: false
+      direction: "input"
+      multiple: false
+      multiple_sep: ":"
+      dest: "par"
+  - name: "Outputs"
+    arguments:
+    - type: "file"
+      name: "--output"
+      description: "Destination path to the output."
+      info: null
+      example:
+      - "output.h5mu"
+      must_exist: true
+      create_parent: true
+      required: true
+      direction: "output"
+      multiple: false
+      multiple_sep: ":"
+      dest: "par"
+  - name: "Sample ID options"
+    description: "Options for adding the id to .obs on the MuData object. Having a\
+      \ sample \nid present in a requirement of several components for this pipeline.\n"
+    arguments:
+    - type: "boolean"
+      name: "--add_id_to_obs"
+      description: "Add the value passed with --id to .obs."
+      info: null
+      default:
+      - true
+      required: false
+      direction: "input"
+      multiple: false
+      multiple_sep: ":"
+      dest: "par"
+    - type: "string"
+      name: "--add_id_obs_output"
+      description: ".Obs column to add the sample IDs to. Required and only used when\
+        \ \n--add_id_to_obs is set to 'true'\n"
+      info: null
+      default:
+      - "sample_id"
+      required: false
+      direction: "input"
+      multiple: false
+      multiple_sep: ":"
+      dest: "par"
+    - type: "boolean"
+      name: "--add_id_make_observation_keys_unique"
+      description: "Join the id to the .obs index (.obs_names). \nOnly used when --add_id_to_obs\
+        \ is set to 'true'.\n"
+      info: null
+      default:
+      - true
+      required: false
+      direction: "input"
+      multiple: false
+      multiple_sep: ":"
+      dest: "par"
+  - name: "RNA filtering options"
+    arguments:
+    - type: "integer"
+      name: "--rna_min_counts"
+      description: "Minimum number of counts captured per cell."
+      info: null
+      example:
+      - 200
+      required: false
+      direction: "input"
+      multiple: false
+      multiple_sep: ":"
+      dest: "par"
+    - type: "integer"
+      name: "--rna_max_counts"
+      description: "Maximum number of counts captured per cell."
+      info: null
+      example:
+      - 5000000
+      required: false
+      direction: "input"
+      multiple: false
+      multiple_sep: ":"
+      dest: "par"
+    - type: "integer"
+      name: "--rna_min_genes_per_cell"
+      description: "Minimum of non-zero values per cell."
+      info: null
+      example:
+      - 200
+      required: false
+      direction: "input"
+      multiple: false
+      multiple_sep: ":"
+      dest: "par"
+    - type: "integer"
+      name: "--rna_max_genes_per_cell"
+      description: "Maximum of non-zero values per cell."
+      info: null
+      example:
+      - 1500000
+      required: false
+      direction: "input"
+      multiple: false
+      multiple_sep: ":"
+      dest: "par"
+    - type: "integer"
+      name: "--rna_min_cells_per_gene"
+      description: "Minimum of non-zero values per gene."
+      info: null
+      example:
+      - 3
+      required: false
+      direction: "input"
+      multiple: false
+      multiple_sep: ":"
+      dest: "par"
+    - type: "double"
+      name: "--rna_min_fraction_mito"
+      description: "Minimum fraction of UMIs that are mitochondrial."
+      info: null
+      example:
+      - 0.0
+      required: false
+      direction: "input"
+      multiple: false
+      multiple_sep: ":"
+      dest: "par"
+    - type: "double"
+      name: "--rna_max_fraction_mito"
+      description: "Maximum fraction of UMIs that are mitochondrial."
+      info: null
+      example:
+      - 0.2
+      required: false
+      direction: "input"
+      multiple: false
+      multiple_sep: ":"
+      dest: "par"
+  - name: "CITE-seq filtering options"
+    arguments:
+    - type: "integer"
+      name: "--prot_min_counts"
+      description: "Minimum number of counts per cell."
+      info: null
+      example:
+      - 3
+      required: false
+      direction: "input"
+      multiple: false
+      multiple_sep: ":"
+      dest: "par"
+    - type: "integer"
+      name: "--prot_max_counts"
+      description: "Minimum number of counts per cell."
+      info: null
+      example:
+      - 5000000
+      required: false
+      direction: "input"
+      multiple: false
+      multiple_sep: ":"
+      dest: "par"
+    - type: "integer"
+      name: "--prot_min_proteins_per_cell"
+      description: "Minimum of non-zero values per cell."
+      info: null
+      example:
+      - 200
+      required: false
+      direction: "input"
+      multiple: false
+      multiple_sep: ":"
+      dest: "par"
+    - type: "integer"
+      name: "--prot_max_proteins_per_cell"
+      description: "Maximum of non-zero values per cell."
+      info: null
+      example:
+      - 100000000
+      required: false
+      direction: "input"
+      multiple: false
+      multiple_sep: ":"
+      dest: "par"
+    - type: "integer"
+      name: "--prot_min_cells_per_protein"
+      description: "Minimum of non-zero values per protein."
+      info: null
+      example:
+      - 3
+      required: false
+      direction: "input"
+      multiple: false
+      multiple_sep: ":"
+      dest: "par"
+  - name: "GDO filtering options"
+    arguments:
+    - type: "integer"
+      name: "--gdo_min_counts"
+      description: "Minimum number of counts per cell."
+      info: null
+      example:
+      - 3
+      required: false
+      direction: "input"
+      multiple: false
+      multiple_sep: ":"
+      dest: "par"
+    - type: "integer"
+      name: "--gdo_max_counts"
+      description: "Minimum number of counts per cell."
+      info: null
+      example:
+      - 5000000
+      required: false
+      direction: "input"
+      multiple: false
+      multiple_sep: ":"
+      dest: "par"
+    - type: "integer"
+      name: "--gdo_min_guides_per_cell"
+      description: "Minimum of non-zero values per cell."
+      info: null
+      example:
+      - 200
+      required: false
+      direction: "input"
+      multiple: false
+      multiple_sep: ":"
+      dest: "par"
+    - type: "integer"
+      name: "--gdo_max_guides_per_cell"
+      description: "Maximum of non-zero values per cell."
+      info: null
+      example:
+      - 100000000
+      required: false
+      direction: "input"
+      multiple: false
+      multiple_sep: ":"
+      dest: "par"
+    - type: "integer"
+      name: "--gdo_min_cells_per_guide"
+      description: "Minimum of non-zero values per guide."
+      info: null
+      example:
+      - 3
+      required: false
+      direction: "input"
+      multiple: false
+      multiple_sep: ":"
+      dest: "par"
+  - name: "Highly variable features detection"
+    arguments:
+    - type: "string"
+      name: "--highly_variable_features_var_output"
+      alternatives:
+      - "--filter_with_hvg_var_output"
+      description: "In which .var slot to store a boolean array corresponding to the\
+        \ highly variable genes."
+      info: null
+      default:
+      - "filter_with_hvg"
+      required: false
+      direction: "input"
+      multiple: false
+      multiple_sep: ":"
+      dest: "par"
+    - type: "string"
+      name: "--highly_variable_features_obs_batch_key"
+      alternatives:
+      - "--filter_with_hvg_obs_batch_key"
+      description: "If specified, highly-variable genes are selected within each batch\
+        \ separately and merged. This simple \nprocess avoids the selection of batch-specific\
+        \ genes and acts as a lightweight batch correction method.\n"
+      info: null
+      default:
+      - "sample_id"
+      required: false
+      direction: "input"
+      multiple: false
+      multiple_sep: ":"
+      dest: "par"
+  - name: "Mitochondrial Gene Detection"
+    arguments:
+    - type: "string"
+      name: "--var_name_mitochondrial_genes"
+      description: "In which .var slot to store a boolean array corresponding the\
+        \ mitochondrial genes.\n"
+      info: null
+      required: false
+      direction: "input"
+      multiple: false
+      multiple_sep: ":"
+      dest: "par"
+    - type: "string"
+      name: "--obs_name_mitochondrial_fraction"
+      description: "When specified, write the fraction of counts originating from\
+        \ mitochondrial genes \n(based on --mitochondrial_gene_regex) to an .obs column\
+        \ with the specified name.\nRequires --var_name_mitochondrial_genes.\n"
+      info: null
+      required: false
+      direction: "input"
+      multiple: false
+      multiple_sep: ":"
+      dest: "par"
+    - type: "string"
+      name: "--var_gene_names"
+      description: ".var column name to be used to detect mitochondrial genes instead\
+        \ of .var_names (default if not set).\nGene names matching with the regex\
+        \ value from --mitochondrial_gene_regex will be identified\nas a mitochondrial\
+        \ gene.\n"
+      info: null
+      example:
+      - "gene_symbol"
+      required: false
+      direction: "input"
+      multiple: false
+      multiple_sep: ":"
+      dest: "par"
+    - type: "string"
+      name: "--mitochondrial_gene_regex"
+      description: "Regex string that identifies mitochondrial genes from --var_gene_names.\n\
+        By default will detect human and mouse mitochondrial genes from a gene symbol.\n"
+      info: null
+      default:
+      - "^[mM][tT]-"
+      required: false
+      direction: "input"
+      multiple: false
+      multiple_sep: ":"
+      dest: "par"
+  - name: "QC metrics calculation options"
+    arguments:
+    - type: "string"
+      name: "--var_qc_metrics"
+      description: "Keys to select a boolean (containing only True or False) column\
+        \ from .var.\nFor each cell, calculate the proportion of total values for\
+        \ genes which are labeled 'True', \ncompared to the total sum of the values\
+        \ for all genes. Defaults to the combined values specified for\n--var_name_mitochondrial_genes\
+        \ and --highly_variable_features_var_output.\n"
+      info: null
+      example:
+      - "ercc,highly_variable"
+      required: false
+      direction: "input"
+      multiple: true
+      multiple_sep: ";"
+      dest: "par"
+    - type: "integer"
+      name: "--top_n_vars"
+      description: "Number of top vars to be used to calculate cumulative proportions.\n\
+        If not specified, proportions are not calculated. `--top_n_vars 20,50` finds\n\
+        cumulative proportion to the 20th and 50th most expressed vars.\n"
+      info: null
+      default:
+      - 50
+      - 100
+      - 200
+      - 500
+      required: false
+      direction: "input"
+      multiple: true
+      multiple_sep: ";"
+      dest: "par"
+  - name: "PCA options"
+    arguments:
+    - type: "boolean_true"
+      name: "--pca_overwrite"
+      description: "Allow overwriting slots for PCA output."
+      info: null
+      direction: "input"
+      dest: "par"
+  resources:
+  - type: "nextflow_script"
+    path: "main.nf"
+    is_executable: true
+    entrypoint: "run_wf"
+  - type: "file"
+    path: "src/workflows/utils/"
+  - type: "file"
+    path: "./src/workflows/utils/labels.config"
+    dest: "nextflow_labels.config"
+  description: "A pipeline to analyse multiple multiomics samples."
+  test_resources:
+  - type: "nextflow_script"
+    path: "test.nf"
+    is_executable: true
+    entrypoint: "test_wf"
+  - type: "nextflow_script"
+    path: "test.nf"
+    is_executable: true
+    entrypoint: "test_wf2"
+  - type: "nextflow_script"
+    path: "test.nf"
+    is_executable: true
+    entrypoint: "test_wf3"
+  - type: "nextflow_script"
+    path: "test.nf"
+    is_executable: true
+    entrypoint: "test_wf4"
+  - type: "nextflow_script"
+    path: "test.nf"
+    is_executable: true
+    entrypoint: "test_wf5"
+  - type: "file"
+    path: "resources_test/concat_test_data"
+  - type: "file"
+    path: "resources_test/pbmc_1k_protein_v3"
+  - type: "file"
+    path: "resources_test/10x_5k_lung_crispr"
+  info: null
+  status: "enabled"
+  requirements:
+    commands:
+    - "ps"
+  dependencies:
+  - name: "metadata/add_id"
+    repository:
+      type: "local"
+      localPath: ""
+    foundConfigPath: "/home/runner/work/openpipeline/openpipeline/src/metadata/add_id/config.vsh.yaml"
+    configInfo:
+      functionalityName: "add_id"
+      git_tag: "0.12.1"
+      git_remote: "https://github.com/openpipelines-bio/openpipeline"
+      viash_version: "0.8.4"
+      config: "/home/runner/work/openpipeline/openpipeline/src/metadata/add_id/config.vsh.yaml"
+      functionalityNamespace: "metadata"
+      output: ""
+      platform: ""
+      git_commit: "bb0a94b57bf7195926da7f2e06aba6f59e239fce"
+      executable: "/nextflow/metadata/add_id/main.nf"
+    writtenPath: "/home/runner/work/openpipeline/openpipeline/target/nextflow/metadata/add_id"
+  - name: "workflows/multiomics/split_modalities"
+    alias: "split_modalities_workflow"
+    repository:
+      type: "local"
+      localPath: ""
+    foundConfigPath: "/home/runner/work/openpipeline/openpipeline/src/workflows/multiomics/split_modalities/config.vsh.yaml"
+    configInfo:
+      functionalityName: "split_modalities"
+      git_tag: "0.12.1"
+      git_remote: "https://github.com/openpipelines-bio/openpipeline"
+      viash_version: "0.8.4"
+      config: "/home/runner/work/openpipeline/openpipeline/src/workflows/multiomics/split_modalities/config.vsh.yaml"
+      functionalityNamespace: "workflows/multiomics"
+      output: ""
+      platform: ""
+      git_commit: "bb0a94b57bf7195926da7f2e06aba6f59e239fce"
+      executable: "/nextflow/workflows/multiomics/split_modalities/main.nf"
+    writtenPath: "/home/runner/work/openpipeline/openpipeline/target/nextflow/workflows/multiomics/split_modalities"
+  - name: "dataflow/merge"
+    repository:
+      type: "local"
+      localPath: ""
+    foundConfigPath: "/home/runner/work/openpipeline/openpipeline/src/dataflow/merge/config.vsh.yml"
+    configInfo:
+      functionalityName: "merge"
+      git_tag: "0.12.1"
+      git_remote: "https://github.com/openpipelines-bio/openpipeline"
+      viash_version: "0.8.4"
+      config: "/home/runner/work/openpipeline/openpipeline/src/dataflow/merge/config.vsh.yml"
+      functionalityNamespace: "dataflow"
+      output: ""
+      platform: ""
+      git_commit: "bb0a94b57bf7195926da7f2e06aba6f59e239fce"
+      executable: "/nextflow/dataflow/merge/main.nf"
+    writtenPath: "/home/runner/work/openpipeline/openpipeline/target/nextflow/dataflow/merge"
+  - name: "dataflow/concatenate_h5mu"
+    repository:
+      type: "local"
+      localPath: ""
+    foundConfigPath: "/home/runner/work/openpipeline/openpipeline/src/dataflow/concatenate_h5mu/config.vsh.yaml"
+    configInfo:
+      functionalityName: "concatenate_h5mu"
+      git_tag: "0.12.1"
+      git_remote: "https://github.com/openpipelines-bio/openpipeline"
+      viash_version: "0.8.4"
+      config: "/home/runner/work/openpipeline/openpipeline/src/dataflow/concatenate_h5mu/config.vsh.yaml"
+      functionalityNamespace: "dataflow"
+      output: ""
+      platform: ""
+      git_commit: "bb0a94b57bf7195926da7f2e06aba6f59e239fce"
+      executable: "/nextflow/dataflow/concatenate_h5mu/main.nf"
+    writtenPath: "/home/runner/work/openpipeline/openpipeline/target/nextflow/dataflow/concatenate_h5mu"
+  - name: "transfer/publish"
+    repository:
+      type: "local"
+      localPath: ""
+    foundConfigPath: "/home/runner/work/openpipeline/openpipeline/src/transfer/publish/config.vsh.yaml"
+    configInfo:
+      functionalityName: "publish"
+      git_tag: "0.12.1"
+      git_remote: "https://github.com/openpipelines-bio/openpipeline"
+      viash_version: "0.8.4"
+      config: "/home/runner/work/openpipeline/openpipeline/src/transfer/publish/config.vsh.yaml"
+      functionalityNamespace: "transfer"
+      output: ""
+      platform: ""
+      git_commit: "bb0a94b57bf7195926da7f2e06aba6f59e239fce"
+      executable: "/nextflow/transfer/publish/main.nf"
+    writtenPath: "/home/runner/work/openpipeline/openpipeline/target/nextflow/transfer/publish"
+  - name: "workflows/rna/rna_singlesample"
+    repository:
+      type: "local"
+      localPath: ""
+    foundConfigPath: "/home/runner/work/openpipeline/openpipeline/src/workflows/rna/rna_singlesample/config.vsh.yaml"
+    configInfo:
+      functionalityName: "rna_singlesample"
+      git_tag: "0.12.1"
+      git_remote: "https://github.com/openpipelines-bio/openpipeline"
+      viash_version: "0.8.4"
+      config: "/home/runner/work/openpipeline/openpipeline/src/workflows/rna/rna_singlesample/config.vsh.yaml"
+      functionalityNamespace: "workflows/rna"
+      output: ""
+      platform: ""
+      git_commit: "bb0a94b57bf7195926da7f2e06aba6f59e239fce"
+      executable: "/nextflow/workflows/rna/rna_singlesample/main.nf"
+    writtenPath: "/home/runner/work/openpipeline/openpipeline/target/nextflow/workflows/rna/rna_singlesample"
+  - name: "workflows/prot/prot_singlesample"
+    repository:
+      type: "local"
+      localPath: ""
+    foundConfigPath: "/home/runner/work/openpipeline/openpipeline/src/workflows/prot/prot_singlesample/config.vsh.yaml"
+    configInfo:
+      functionalityName: "prot_singlesample"
+      git_tag: "0.12.1"
+      git_remote: "https://github.com/openpipelines-bio/openpipeline"
+      viash_version: "0.8.4"
+      config: "/home/runner/work/openpipeline/openpipeline/src/workflows/prot/prot_singlesample/config.vsh.yaml"
+      functionalityNamespace: "workflows/prot"
+      output: ""
+      platform: ""
+      git_commit: "bb0a94b57bf7195926da7f2e06aba6f59e239fce"
+      executable: "/nextflow/workflows/prot/prot_singlesample/main.nf"
+    writtenPath: "/home/runner/work/openpipeline/openpipeline/target/nextflow/workflows/prot/prot_singlesample"
+  - name: "workflows/gdo/gdo_singlesample"
+    repository:
+      type: "local"
+      localPath: ""
+    foundConfigPath: "/home/runner/work/openpipeline/openpipeline/src/workflows/gdo/gdo_singlesample/config.vsh.yaml"
+    configInfo:
+      functionalityName: "gdo_singlesample"
+      git_tag: "0.12.1"
+      git_remote: "https://github.com/openpipelines-bio/openpipeline"
+      viash_version: "0.8.4"
+      config: "/home/runner/work/openpipeline/openpipeline/src/workflows/gdo/gdo_singlesample/config.vsh.yaml"
+      functionalityNamespace: "workflows/gdo"
+      output: ""
+      platform: ""
+      git_commit: "bb0a94b57bf7195926da7f2e06aba6f59e239fce"
+      executable: "/nextflow/workflows/gdo/gdo_singlesample/main.nf"
+    writtenPath: "/home/runner/work/openpipeline/openpipeline/target/nextflow/workflows/gdo/gdo_singlesample"
+  - name: "workflows/multiomics/process_batches"
+    repository:
+      type: "local"
+      localPath: ""
+    foundConfigPath: "/home/runner/work/openpipeline/openpipeline/src/workflows/multiomics/process_batches/config.vsh.yaml"
+    configInfo:
+      functionalityName: "process_batches"
+      git_tag: "0.12.1"
+      git_remote: "https://github.com/openpipelines-bio/openpipeline"
+      viash_version: "0.8.4"
+      config: "/home/runner/work/openpipeline/openpipeline/src/workflows/multiomics/process_batches/config.vsh.yaml"
+      functionalityNamespace: "workflows/multiomics"
+      output: ""
+      platform: ""
+      git_commit: "bb0a94b57bf7195926da7f2e06aba6f59e239fce"
+      executable: "/nextflow/workflows/multiomics/process_batches/main.nf"
+    writtenPath: "/home/runner/work/openpipeline/openpipeline/target/nextflow/workflows/multiomics/process_batches"
+  set_wd_to_resources_dir: false
+platforms:
+- type: "nextflow"
+  id: "nextflow"
+  directives:
+    tag: "$id"
+  auto:
+    simplifyInput: true
+    simplifyOutput: false
+    transcript: false
+    publish: false
+  config:
+    labels:
+      mem1gb: "memory = 1.GB"
+      mem2gb: "memory = 2.GB"
+      mem4gb: "memory = 4.GB"
+      mem8gb: "memory = 8.GB"
+      mem16gb: "memory = 16.GB"
+      mem32gb: "memory = 32.GB"
+      mem64gb: "memory = 64.GB"
+      mem128gb: "memory = 128.GB"
+      mem256gb: "memory = 256.GB"
+      mem512gb: "memory = 512.GB"
+      mem1tb: "memory = 1.TB"
+      mem2tb: "memory = 2.TB"
+      mem4tb: "memory = 4.TB"
+      mem8tb: "memory = 8.TB"
+      mem16tb: "memory = 16.TB"
+      mem32tb: "memory = 32.TB"
+      mem64tb: "memory = 64.TB"
+      mem128tb: "memory = 128.TB"
+      mem256tb: "memory = 256.TB"
+      mem512tb: "memory = 512.TB"
+      cpu1: "cpus = 1"
+      cpu2: "cpus = 2"
+      cpu5: "cpus = 5"
+      cpu10: "cpus = 10"
+      cpu20: "cpus = 20"
+      cpu50: "cpus = 50"
+      cpu100: "cpus = 100"
+      cpu200: "cpus = 200"
+      cpu500: "cpus = 500"
+      cpu1000: "cpus = 1000"
+    script:
+    - "includeConfig(\"nextflow_labels.config\")"
+  debug: false
+  container: "docker"
+info:
+  config: "/home/runner/work/openpipeline/openpipeline/src/workflows/multiomics/process_samples/config.vsh.yaml"
+  platform: "nextflow"
+  output: "/home/runner/work/openpipeline/openpipeline/target/nextflow/workflows/multiomics/process_samples"
+  executable: "/home/runner/work/openpipeline/openpipeline/target/nextflow/workflows/multiomics/process_samples/main.nf"
+  viash_version: "0.8.4"
+  git_commit: "bb0a94b57bf7195926da7f2e06aba6f59e239fce"
+  git_remote: "https://github.com/openpipelines-bio/openpipeline"
+  git_tag: "0.12.1"

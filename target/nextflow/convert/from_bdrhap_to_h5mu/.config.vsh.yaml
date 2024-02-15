@@ -1,7 +1,7 @@
 functionality:
   name: "from_bdrhap_to_h5mu"
   namespace: "convert"
-  version: "0.12.0"
+  version: "1.0.0rc1"
   authors:
   - name: "Robrecht Cannoodt"
     roles:
@@ -83,6 +83,9 @@ functionality:
   - type: "r_script"
     path: "script.R"
     is_executable: true
+  - type: "file"
+    path: "./src/workflows/utils/labels.config"
+    dest: "nextflow_labels.config"
   description: "Convert the output of a BD Rhapsody WTA pipeline to a MuData h5 file.\n"
   test_resources:
   - type: "python_script"
@@ -102,6 +105,7 @@ platforms:
   image: "ghcr.io/data-intuitive/randpy:r4.2_py3.9"
   target_organization: "openpipelines-bio"
   target_registry: "ghcr.io"
+  target_tag: "1.0.0rc1"
   namespace_separator: "_"
   resolve_volume: "Automatic"
   chown: true
@@ -114,8 +118,9 @@ platforms:
   - type: "python"
     user: false
     packages:
-    - "mudata~=0.2.3"
     - "anndata~=0.9.1"
+    - "mudata~=0.2.3"
+    - "pandas!=2.1.2"
     upgrade: true
   - type: "r"
     cran:
@@ -167,6 +172,8 @@ platforms:
       cpu200: "cpus = 200"
       cpu500: "cpus = 500"
       cpu1000: "cpus = 1000"
+    script:
+    - "includeConfig(\"nextflow_labels.config\")"
   debug: false
   container: "docker"
 info:
@@ -174,6 +181,7 @@ info:
   platform: "nextflow"
   output: "/home/runner/work/openpipeline/openpipeline/target/nextflow/convert/from_bdrhap_to_h5mu"
   executable: "/home/runner/work/openpipeline/openpipeline/target/nextflow/convert/from_bdrhap_to_h5mu/from_bdrhap_to_h5mu"
-  viash_version: "0.7.5"
-  git_commit: "b41a65886f61959c7f83f84a0569c3da1d7a2856"
+  viash_version: "0.8.4"
+  git_commit: "bb0a94b57bf7195926da7f2e06aba6f59e239fce"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"
+  git_tag: "0.12.1"

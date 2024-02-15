@@ -1,140 +1,214 @@
 {
-    "$schema": "http://json-schema.org/draft-07/schema",
-    "title": "lianapy",
-    "description": "Performs LIANA integration based as described in https://github.com/saezlab/liana-py",
-    "type": "object",
-    "definitions": {
-      "arguments" : {
-        "title": "Arguments",
+"$schema": "http://json-schema.org/draft-07/schema",
+"title": "lianapy",
+"description": "Performs LIANA integration based as described in https://github.com/saezlab/liana-py",
+"type": "object",
+"definitions": {
+
+    
+    "Dataset input": {
+        "title": "Dataset input",
         "type": "object",
-        "description": "No description",
+        "description": "Dataset input using nf-tower \"dataset\" or \"data explorer\". Allows for the input of multiple         parameter sets to initialise a Nextflow channel.",
         "properties": {
-          
-          "input": {
-            "type": "string",
-            "description": "Type: `file`, required. Input h5mu file",
-            "help_text": "Type: `file`, required. Input h5mu file"
-          },
-          
-          "output": {
-            "type": "string",
-            "description": "Type: `file`, required, default: `$id.$key.output.output`. Output h5mu file",
-            "help_text": "Type: `file`, required, default: `$id.$key.output.output`. Output h5mu file.",
-            "default": "$id.$key.output.output"
-          },
-          
-          "output_compression": {
-            "type": "string",
-            "description": "Type: `string`, default: `gzip`, choices: ``gzip`, `lzf``. ",
-            "help_text": "Type: `string`, default: `gzip`, choices: ``gzip`, `lzf``. ",
-            "enum": ["gzip", "lzf"]
-            ,
-            "default": "gzip"
-          },
-          
-          "modality": {
-            "type": "string",
-            "description": "Type: `string`, default: `rna`. ",
-            "help_text": "Type: `string`, default: `rna`. ",
-            "default": "rna"
-          },
-          
-          "layer": {
-            "type": "string",
-            "description": "Type: `string`. Layer in anndata",
-            "help_text": "Type: `string`. Layer in anndata.AnnData.layers to use. If None, use mudata.mod[modality].X."
-          },
-          
-          "groupby": {
-            "type": "string",
-            "description": "Type: `string`, default: `bulk_labels`. The key of the observations grouping to consider",
-            "help_text": "Type: `string`, default: `bulk_labels`. The key of the observations grouping to consider.",
-            "default": "bulk_labels"
-          },
-          
-          "resource_name": {
-            "type": "string",
-            "description": "Type: `string`, default: `consensus`, choices: ``baccin2019`, `cellcall`, `cellchatdb`, `cellinker`, `cellphonedb`, `celltalkdb`, `connectomedb2020`, `consensus`, `embrace`, `guide2pharma`, `hpmr`, `icellnet`, `italk`, `kirouac2010`, `lrdb`, `mouseconsensus`, `ramilowski2015``. Name of the resource to be loaded and use for ligand-receptor inference",
-            "help_text": "Type: `string`, default: `consensus`, choices: ``baccin2019`, `cellcall`, `cellchatdb`, `cellinker`, `cellphonedb`, `celltalkdb`, `connectomedb2020`, `consensus`, `embrace`, `guide2pharma`, `hpmr`, `icellnet`, `italk`, `kirouac2010`, `lrdb`, `mouseconsensus`, `ramilowski2015``. Name of the resource to be loaded and use for ligand-receptor inference.",
-            "enum": ["baccin2019", "cellcall", "cellchatdb", "cellinker", "cellphonedb", "celltalkdb", "connectomedb2020", "consensus", "embrace", "guide2pharma", "hpmr", "icellnet", "italk", "kirouac2010", "lrdb", "mouseconsensus", "ramilowski2015"]
-            ,
-            "default": "consensus"
-          },
-          
-          "gene_symbol": {
-            "type": "string",
-            "description": "Type: `string`, default: `gene_symbol`. Column name in var DataFrame in which gene symbol are stored",
-            "help_text": "Type: `string`, default: `gene_symbol`. Column name in var DataFrame in which gene symbol are stored.",
-            "default": "gene_symbol"
-          },
-          
-          "expr_prop": {
-            "type": "number",
-            "description": "Type: `double`, default: `0.1`. Minimum expression proportion for the ligands/receptors (and their subunits) in the corresponding cell identities",
-            "help_text": "Type: `double`, default: `0.1`. Minimum expression proportion for the ligands/receptors (and their subunits) in the corresponding cell identities. Set to \u00270\u0027, to return unfiltered results.",
-            "default": "0.1"
-          },
-          
-          "min_cells": {
-            "type": "integer",
-            "description": "Type: `integer`, default: `5`. Minimum cells per cell identity (\u0027groupby\u0027) to be considered for downstream analysis",
-            "help_text": "Type: `integer`, default: `5`. Minimum cells per cell identity (\u0027groupby\u0027) to be considered for downstream analysis.",
-            "default": "5"
-          },
-          
-          "aggregate_method": {
-            "type": "string",
-            "description": "Type: `string`, default: `rra`, choices: ``mean`, `rra``. Method aggregation approach, one of [\u0027mean\u0027, \u0027rra\u0027], where \u0027mean\u0027 represents the mean rank, while \u0027rra\u0027 is the RobustRankAggregate (Kolde et al",
-            "help_text": "Type: `string`, default: `rra`, choices: ``mean`, `rra``. Method aggregation approach, one of [\u0027mean\u0027, \u0027rra\u0027], where \u0027mean\u0027 represents the mean rank, while \u0027rra\u0027 is the RobustRankAggregate (Kolde et al., 2014) of the interactions.",
-            "enum": ["mean", "rra"]
-            ,
-            "default": "rra"
-          },
-          
-          "return_all_lrs": {
-            "type": "boolean",
-            "description": "Type: `boolean`, default: `false`. Bool whether to return all LRs, or only those that surpass the \u0027expr_prop\u0027 threshold",
-            "help_text": "Type: `boolean`, default: `false`. Bool whether to return all LRs, or only those that surpass the \u0027expr_prop\u0027 threshold. Those interactions that do not pass the \u0027expr_prop\u0027 threshold will be assigned to the *worst* score of the ones that do. \u0027False\u0027 by default.",
-            "default": "False"
-          },
-          
-          "n_perms": {
-            "type": "integer",
-            "description": "Type: `integer`, default: `100`. Number of permutations for the permutation test",
-            "help_text": "Type: `integer`, default: `100`. Number of permutations for the permutation test. Note that this is relevant only for permutation-based methods - e.g. \u0027CellPhoneDB",
-            "default": "100"
-          }
-          
+            "param_list": {
+                "description": "Dataset input can either be a list of maps, a csv file, a json file, a yaml file, or simply a yaml                 blob. The names of the input fields (e.g. csv columns, json keys) need to be an exact match with the workflow input parameters.",
+                "default": "",
+                "format": "file-path",
+                "mimetype": "text/csv",
+                "pattern": "^\\S+\\.csv$"
+            }
         }
-      },
-      "nextflow input-output arguments" : {
-        "title": "Nextflow input-output arguments",
-        "type": "object",
-        "description": "Input/output parameters for Nextflow itself. Please note that both publishDir and publish_dir are supported but at least one has to be configured.",
-        "properties": {
-          
-          "publish_dir": {
-            "type": "string",
-            "description": "Type: `string`, required, example: `output/`. Path to an output directory",
-            "help_text": "Type: `string`, required, example: `output/`. Path to an output directory."
-          },
-          
-          "param_list": {
-            "type": "string",
-            "description": "Type: `string`, example: `my_params.yaml`. Allows inputting multiple parameter sets to initialise a Nextflow channel",
-            "help_text": "Type: `string`, example: `my_params.yaml`. Allows inputting multiple parameter sets to initialise a Nextflow channel. A `param_list` can either be a list of maps, a csv file, a json file, a yaml file, or simply a yaml blob.\n\n* A list of maps (as-is) where the keys of each map corresponds to the arguments of the pipeline. Example: in a `nextflow.config` file: `param_list: [ [\u0027id\u0027: \u0027foo\u0027, \u0027input\u0027: \u0027foo.txt\u0027], [\u0027id\u0027: \u0027bar\u0027, \u0027input\u0027: \u0027bar.txt\u0027] ]`.\n* A csv file should have column names which correspond to the different arguments of this pipeline. Example: `--param_list data.csv` with columns `id,input`.\n* A json or a yaml file should be a list of maps, each of which has keys corresponding to the arguments of the pipeline. Example: `--param_list data.json` with contents `[ {\u0027id\u0027: \u0027foo\u0027, \u0027input\u0027: \u0027foo.txt\u0027}, {\u0027id\u0027: \u0027bar\u0027, \u0027input\u0027: \u0027bar.txt\u0027} ]`.\n* A yaml blob can also be passed directly as a string. Example: `--param_list \"[ {\u0027id\u0027: \u0027foo\u0027, \u0027input\u0027: \u0027foo.txt\u0027}, {\u0027id\u0027: \u0027bar\u0027, \u0027input\u0027: \u0027bar.txt\u0027} ]\"`.\n\nWhen passing a csv, json or yaml file, relative path names are relativized to the location of the parameter file. No relativation is performed when `param_list` is a list of maps (as-is) or a yaml blob.",            
-            "hidden": true
-          }
-          
-        }
-      }
     },
-    "allOf": [
-      {
-        "$ref": "#/definitions/arguments"
-      },
-      {
-        "$ref": "#/definitions/nextflow input-output arguments"
-      }
-      ]
+
+    
+    
+    "arguments" : {
+    "title": "Arguments",
+    "type": "object",
+    "description": "No description",
+    "properties": {
+    
+        
+                "input": {
+                "type":
+                "string",
+                "description": "Type: `file`, required. Input h5mu file",
+                "help_text": "Type: `file`, required. Input h5mu file"
+            
+            }
+    
+
+        ,
+                "output": {
+                "type":
+                "string",
+                "description": "Type: `file`, required, default: `$id.$key.output.output`. Output h5mu file",
+                "help_text": "Type: `file`, required, default: `$id.$key.output.output`. Output h5mu file."
+            ,
+                "default": "$id.$key.output.output"
+            }
+    
+
+        ,
+                "output_compression": {
+                "type":
+                "string",
+                "description": "Type: `string`, default: `gzip`, choices: ``gzip`, `lzf``. ",
+                "help_text": "Type: `string`, default: `gzip`, choices: ``gzip`, `lzf``. ",
+                "enum": ["gzip", "lzf"]
+            
+            ,
+                "default": "gzip"
+            }
+    
+
+        ,
+                "modality": {
+                "type":
+                "string",
+                "description": "Type: `string`, default: `rna`. ",
+                "help_text": "Type: `string`, default: `rna`. "
+            ,
+                "default": "rna"
+            }
+    
+
+        ,
+                "layer": {
+                "type":
+                "string",
+                "description": "Type: `string`. Layer in anndata",
+                "help_text": "Type: `string`. Layer in anndata.AnnData.layers to use. If None, use mudata.mod[modality].X."
+            
+            }
+    
+
+        ,
+                "groupby": {
+                "type":
+                "string",
+                "description": "Type: `string`, default: `bulk_labels`. The key of the observations grouping to consider",
+                "help_text": "Type: `string`, default: `bulk_labels`. The key of the observations grouping to consider."
+            ,
+                "default": "bulk_labels"
+            }
+    
+
+        ,
+                "resource_name": {
+                "type":
+                "string",
+                "description": "Type: `string`, default: `consensus`, choices: ``baccin2019`, `cellcall`, `cellchatdb`, `cellinker`, `cellphonedb`, `celltalkdb`, `connectomedb2020`, `consensus`, `embrace`, `guide2pharma`, `hpmr`, `icellnet`, `italk`, `kirouac2010`, `lrdb`, `mouseconsensus`, `ramilowski2015``. Name of the resource to be loaded and use for ligand-receptor inference",
+                "help_text": "Type: `string`, default: `consensus`, choices: ``baccin2019`, `cellcall`, `cellchatdb`, `cellinker`, `cellphonedb`, `celltalkdb`, `connectomedb2020`, `consensus`, `embrace`, `guide2pharma`, `hpmr`, `icellnet`, `italk`, `kirouac2010`, `lrdb`, `mouseconsensus`, `ramilowski2015``. Name of the resource to be loaded and use for ligand-receptor inference.",
+                "enum": ["baccin2019", "cellcall", "cellchatdb", "cellinker", "cellphonedb", "celltalkdb", "connectomedb2020", "consensus", "embrace", "guide2pharma", "hpmr", "icellnet", "italk", "kirouac2010", "lrdb", "mouseconsensus", "ramilowski2015"]
+            
+            ,
+                "default": "consensus"
+            }
+    
+
+        ,
+                "gene_symbol": {
+                "type":
+                "string",
+                "description": "Type: `string`, default: `gene_symbol`. Column name in var DataFrame in which gene symbol are stored",
+                "help_text": "Type: `string`, default: `gene_symbol`. Column name in var DataFrame in which gene symbol are stored."
+            ,
+                "default": "gene_symbol"
+            }
+    
+
+        ,
+                "expr_prop": {
+                "type":
+                "number",
+                "description": "Type: `double`, default: `0.1`. Minimum expression proportion for the ligands/receptors (and their subunits) in the corresponding cell identities",
+                "help_text": "Type: `double`, default: `0.1`. Minimum expression proportion for the ligands/receptors (and their subunits) in the corresponding cell identities. Set to \u00270\u0027, to return unfiltered results."
+            ,
+                "default": "0.1"
+            }
+    
+
+        ,
+                "min_cells": {
+                "type":
+                "integer",
+                "description": "Type: `integer`, default: `5`. Minimum cells per cell identity (\u0027groupby\u0027) to be considered for downstream analysis",
+                "help_text": "Type: `integer`, default: `5`. Minimum cells per cell identity (\u0027groupby\u0027) to be considered for downstream analysis."
+            ,
+                "default": "5"
+            }
+    
+
+        ,
+                "aggregate_method": {
+                "type":
+                "string",
+                "description": "Type: `string`, default: `rra`, choices: ``mean`, `rra``. Method aggregation approach, one of [\u0027mean\u0027, \u0027rra\u0027], where \u0027mean\u0027 represents the mean rank, while \u0027rra\u0027 is the RobustRankAggregate (Kolde et al",
+                "help_text": "Type: `string`, default: `rra`, choices: ``mean`, `rra``. Method aggregation approach, one of [\u0027mean\u0027, \u0027rra\u0027], where \u0027mean\u0027 represents the mean rank, while \u0027rra\u0027 is the RobustRankAggregate (Kolde et al., 2014) of the interactions.",
+                "enum": ["mean", "rra"]
+            
+            ,
+                "default": "rra"
+            }
+    
+
+        ,
+                "return_all_lrs": {
+                "type":
+                "boolean",
+                "description": "Type: `boolean`, default: `false`. Bool whether to return all LRs, or only those that surpass the \u0027expr_prop\u0027 threshold",
+                "help_text": "Type: `boolean`, default: `false`. Bool whether to return all LRs, or only those that surpass the \u0027expr_prop\u0027 threshold. Those interactions that do not pass the \u0027expr_prop\u0027 threshold will be assigned to the *worst* score of the ones that do. \u0027False\u0027 by default."
+            ,
+                "default": "False"
+            }
+    
+
+        ,
+                "n_perms": {
+                "type":
+                "integer",
+                "description": "Type: `integer`, default: `100`. Number of permutations for the permutation test",
+                "help_text": "Type: `integer`, default: `100`. Number of permutations for the permutation test. Note that this is relevant only for permutation-based methods - e.g. \u0027CellPhoneDB"
+            ,
+                "default": "100"
+            }
+    
+
+}
+},
+    
+    
+    "nextflow input-output arguments" : {
+    "title": "Nextflow input-output arguments",
+    "type": "object",
+    "description": "Input/output parameters for Nextflow itself. Please note that both publishDir and publish_dir are supported but at least one has to be configured.",
+    "properties": {
+    
+        
+                "publish_dir": {
+                "type":
+                "string",
+                "description": "Type: `string`, required, example: `output/`. Path to an output directory",
+                "help_text": "Type: `string`, required, example: `output/`. Path to an output directory."
+            
+            }
+    
+
+        
+
+}
+}
+},
+"allOf": [
+
+    {
+    "$ref": "#/definitions/arguments"
+    },
+
+    {
+    "$ref": "#/definitions/nextflow input-output arguments"
+    }
+]
 }

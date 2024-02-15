@@ -1,20 +1,26 @@
 definitions:
   Config:
-    description: "A Viash Config"
+    description: "A Viash configuration is a YAML file which contains metadata to\
+      \ describe the behaviour and build target(s) of a component.  \nWe commonly\
+      \ name this file `config.vsh.yaml` in our examples, but you can name it however\
+      \ you choose.  \n"
+    type: "object"
     properties:
       functionality:
-        description: "The functionality-part of the config file describes the behaviour\
-          \ of the script in terms of arguments and resources.\nBy specifying a few restrictions\
-          \ (e.g. mandatory arguments) and adding some descriptions, Viash will automatically\
-          \ generate a stylish command-line interface for you.\n"
+        description: "The functionality describes the behaviour of the script in terms\
+          \ of arguments and resources.\nBy specifying a few restrictions (e.g. mandatory\
+          \ arguments) and adding some descriptions, Viash will automatically generate\
+          \ a stylish command-line interface for you.\n"
         $ref: "#/definitions/Functionality"
       platforms:
-        description: "Definition of the platforms"
+        description: "A list of platforms to generate target artifacts for.\n\n -\
+          \ Native\n - Docker\n - Nextflow\n"
         type: "array"
         items:
-          $ref: "defs_viash.yaml#/definitions/Platforms"
+          $ref: "defs_viash.yaml#/definitions/Platform"
     required:
     - "functionality"
+    - "platforms"
     additionalProperties: false
   Functionality:
     description: "The functionality-part of the config file describes the behaviour\
@@ -38,19 +44,19 @@ definitions:
           \ the executable and the Docker container."
         type: "string"
       authors:
-        description: "A list of @[authors](author). An author must at least have a\
-          \ name, but can also have a list of roles, an e-mail address, and a map\
-          \ of custom properties.\n\nSuggested values for roles are:\n \n| Role |\
-          \ Abbrev. | Description |\n|------|---------|-------------|\n| maintainer\
-          \ | mnt | for the maintainer of the code. Ideally, exactly one maintainer\
-          \ is specified. |\n| author | aut | for persons who have made substantial\
-          \ contributions to the software. |\n| contributor | ctb| for persons who\
-          \ have made smaller contributions (such as code patches).\n| datacontributor\
-          \ | dtc | for persons or organisations that contributed data sets for the\
-          \ software\n| copyrightholder | cph | for all copyright holders. This is\
-          \ a legal concept so should use the legal name of an institution or corporate\
-          \ body.\n| funder | fnd | for persons or organizations that furnished financial\
-          \ support for the development of the software\n\nThe [full list of roles](https://www.loc.gov/marc/relators/relaterm.html)\
+        description: "A list of authors. An author must at least have a name, but\
+          \ can also have a list of roles, an e-mail address, and a map of custom\
+          \ properties.\n\nSuggested values for roles are:\n \n| Role | Abbrev. |\
+          \ Description |\n|------|---------|-------------|\n| maintainer | mnt |\
+          \ for the maintainer of the code. Ideally, exactly one maintainer is specified.\
+          \ |\n| author | aut | for persons who have made substantial contributions\
+          \ to the software. |\n| contributor | ctb| for persons who have made smaller\
+          \ contributions (such as code patches).\n| datacontributor | dtc | for persons\
+          \ or organisations that contributed data sets for the software\n| copyrightholder\
+          \ | cph | for all copyright holders. This is a legal concept so should use\
+          \ the legal name of an institution or corporate body.\n| funder | fnd |\
+          \ for persons or organizations that furnished financial support for the\
+          \ development of the software\n\nThe [full list of roles](https://www.loc.gov/marc/relators/relaterm.html)\
           \ is extremely comprehensive.\n"
         type: "array"
         items:
@@ -73,19 +79,25 @@ definitions:
         description: "Allows setting a component to active, deprecated or disabled."
         $ref: "defs_viash.yaml#/definitions/Status"
       requirements:
-        description: "@[Computational requirements](computational_requirements) related\
-          \ to running the component. \n`cpus` specifies the maximum number of (logical)\
-          \ cpus a component is allowed to use., whereas\n`memory` specifies the maximum\
-          \ amount of memory a component is allowed to allicate. Memory units must\
-          \ be\nin B, KB, MB, GB, TB or PB."
+        description: "Computational requirements related to running the component.\
+          \ \n`cpus` specifies the maximum number of (logical) cpus a component is\
+          \ allowed to use., whereas\n`memory` specifies the maximum amount of memory\
+          \ a component is allowed to allicate. Memory units must be\nin B, KB, MB,\
+          \ GB, TB or PB."
         $ref: "defs_viash.yaml#/definitions/ComputationalRequirements"
+      repositories:
+        description: "(Pre-)defines repositories that can be used as repository in\
+          \ dependencies.\nAllows reusing repository definitions in case it is used\
+          \ in multiple dependencies."
+        type: "array"
+        items:
+          $ref: "defs_viash.yaml#/definitions/Repository"
       resources:
-        description: "@[Resources](resources) are files that support the component.\
-          \ The first resource should be @[a script](scripting_languages) that will\
-          \ be executed when the functionality is run. Additional resources will be\
-          \ copied to the same directory.\n\nCommon properties:\n\n * type: `file`\
-          \ / `r_script` / `python_script` / `bash_script` / `javascript_script` /\
-          \ `scala_script` / `csharp_script`, specifies the type of the resource.\
+        description: "Resources are files that support the component. The first resource\
+          \ should be a script that will be executed when the functionality is run.\
+          \ Additional resources will be copied to the same directory.\n\nCommon properties:\n\
+          \n * type: `file` / `r_script` / `python_script` / `bash_script` / `javascript_script`\
+          \ / `scala_script` / `csharp_script`, specifies the type of the resource.\
           \ The first resource cannot be of type `file`. When the type is not specified,\
           \ the default type is simply `file`.\n * dest: filename, the resulting name\
           \ of the resource.  From within a script, the file can be accessed at `meta[\"\
@@ -100,23 +112,29 @@ definitions:
         items:
           $ref: "defs_viash.yaml#/definitions/Resource"
       test_resources:
-        description: "One or more @[scripts](scripting_languages) to be used to test\
-          \ the component behaviour when `viash test` is invoked. Additional files\
-          \ of type `file` will be made available only during testing. Each test script\
-          \ should expect no command-line inputs, be platform-independent, and return\
-          \ an exit code >0 when unexpected behaviour occurs during testing. See @[Unit\
-          \ Testing](unit_testing) for more info."
+        description: "One or more scripts to be used to test the component behaviour\
+          \ when `viash test` is invoked. Additional files of type `file` will be\
+          \ made available only during testing. Each test script should expect no\
+          \ command-line inputs, be platform-independent, and return an exit code\
+          \ >0 when unexpected behaviour occurs during testing. See Unit Testing for\
+          \ more info."
         type: "array"
         items:
           $ref: "defs_viash.yaml#/definitions/Resource"
-      argument_groups:
-        description: "A grouping of the @[arguments](argument), used to display the\
-          \ help message.\n\n - `name: foo`, the name of the argument group. \n -\
-          \ `description: Description of foo`, a description of the argument group.\
-          \ Multiline descriptions are supported.\n - `arguments: [arg1, arg2, ...]`,\
-          \ list of the arguments names.\n\n"
+      dependencies:
+        description: "Allows listing Viash components required by this Viash component"
         type: "array"
         items:
+          $ref: "defs_viash.yaml#/definitions/Dependency"
+      argument_groups:
+        description: "A grouping of the arguments, used to display the help message.\n\
+          \n - `name: foo`, the name of the argument group. \n - `description: Description\
+          \ of foo`, a description of the argument group. Multiline descriptions are\
+          \ supported.\n - `arguments: [arg1, arg2, ...]`, list of the arguments.\n\
+          \n"
+        type: "array"
+        items:
+          # TODO: use #/definitions/Argument instead so we can have validation on the info field?
           $ref: "defs_viash.yaml#/definitions/ArgumentGroup"
       description:
         description: "A description of the component. This will be displayed with\
@@ -127,90 +145,28 @@ definitions:
           \ with `--help` under the 'Usage:' section."
         type: "string"
       namespace:
-        description: "Namespace this component is a part of. See the @[Namespaces\
-          \ guide](namespace) for more information on namespaces."
+        description: "Namespace this component is a part of. See the Namespaces guide\
+          \ for more information on namespaces."
         type: "string"
       arguments:
-        description: "A list of @[arguments](argument) for this component. For each\
-          \ argument, a type and a name must be specified. Depending on the type of\
-          \ argument, different properties can be set. See these reference pages per\
-          \ type for more information:  \n\n - @[string](arg_string)\n - @[file](arg_file)\n\
-          \ - @[integer](arg_integer)\n - @[double](arg_double)\n - @[boolean](arg_boolean)\n\
-          \ - @[boolean_true](arg_boolean_true)\n - @[boolean_false](arg_boolean_false)\n"
+        description: "A list of arguments for this component. For each argument, a\
+          \ type and a name must be specified. Depending on the type of argument,\
+          \ different properties can be set. See these reference pages per type for\
+          \ more information:  \n\n - string\n - file\n - integer\n - double\n - boolean\n\
+          \ - boolean_true\n - boolean_false\n"
         type: "array"
         items:
+          # TODO: use #/definitions/Argument instead so we can have validation on the info field?
           $ref: "defs_viash.yaml#/definitions/Argument"
     required:
     - "name"
     additionalProperties: false
-  Name:
-    type: string
-    description: |
-      A unique identifier. Can only contain lowercase letters, numbers or underscores.
-    pattern: "^[a-z_][a-z0-9_]*$"
-    maxLength: 50
-  Namespace:
-    type: string
-    description: |
-      The namespace a component is part of.
-    pattern: "^[a-z_][a-z0-9_/]*$"
-  Label:
-    type: string
-    description: |
-      A unique, human-readable, short label. Used for creating summary tables and visualisations.
-    maxLength: 50
-  Summary:
-    type: string
-    description: |
-      A one sentence summary of purpose and methodology. Used for creating an overview tables.
-    minLength: 15
-    maxLength: 180
-  Description:
-    type: string
-    description: |
-      A longer description (one or more paragraphs). Used for creating reference documentation and supplementary information.
-    minLength: 30
-  BibtexReference:
-    type: string
-    description: |
-      type: string
-      description: A bibtex reference key to the paper where the component is described.
-  DocumentationURL:
-    type: string
-    format: uri
-    pattern: "^https://"
-    description: The url to the documentation of the used software library.
-  RepositoryURL:
-    type: string
-    format: uri
-    pattern: "^https://"
-    description: The url to the repository of the used software library.
   Merge:
     type: string
     description: Path to a YAML file to inherit values from.
     oneOf:
       - type: array
       - type: string
-  ComponentAPIFile:
-    description: A `file` type argument has a string value that points to a file or folder path.
-    type: object
-    properties:
-      name:
-        description: "The name of the argument. Can be in the formats `--foo`, `-f` or `foo`. The number of dashes determines how values can be passed:  \n\n  - `--foo` is a long option, which can be passed with `executable_name --foo=value` or `executable_name --foo value`\n  - `-f` is a short option, which can be passed with `executable_name -f value`\n  - `foo` is an argument, which can be passed with `executable_name value`  \n"
-        type: string
-      __merge__:
-        $ref: "#/definitions/Merge"
-      direction:
-        description: Makes this argument an `input` or an `output`, as in does the file/folder needs to be read or written. `input` by default.
-        $ref: 'defs_viash.yaml#/definitions/Direction'
-      info:
-        description: 'Structured information. Can be any shape: a string, vector, map or even nested map.'
-        type: object
-      required:
-        description: Make the value for this argument required. If set to `true`, an error will be produced if no value was provided. `false` by default.
-        type: boolean
-    required: [name, __merge__, direction, required]
-    additionalProperties: false
   FileFormat:
     description: 'File format metadata'
     type: object
@@ -379,6 +335,8 @@ definitions:
       required:
         type: boolean
     required: [type, name, description, required]
+
+  # added specific properties to the author info
   Author:
     description: Author metadata.
     type: object

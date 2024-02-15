@@ -1,7 +1,7 @@
 functionality:
   name: "star_align_v273a"
   namespace: "mapping"
-  version: "0.12.0"
+  version: "1.0.0rc1"
   authors:
   - name: "Angela Oliveira Pisco"
     roles:
@@ -2434,6 +2434,9 @@ functionality:
     is_executable: true
   - type: "file"
     path: "src/utils/setup_logger.py"
+  - type: "file"
+    path: "./src/workflows/utils/labels.config"
+    dest: "nextflow_labels.config"
   description: "Align fastq files using STAR."
   test_resources:
   - type: "python_script"
@@ -2453,6 +2456,7 @@ platforms:
   image: "python:3.10-slim"
   target_organization: "openpipelines-bio"
   target_registry: "ghcr.io"
+  target_tag: "1.0.0rc1"
   namespace_separator: "_"
   resolve_volume: "Automatic"
   chown: true
@@ -2521,6 +2525,8 @@ platforms:
       cpu200: "cpus = 200"
       cpu500: "cpus = 500"
       cpu1000: "cpus = 1000"
+    script:
+    - "includeConfig(\"nextflow_labels.config\")"
   debug: false
   container: "docker"
 info:
@@ -2528,6 +2534,7 @@ info:
   platform: "nextflow"
   output: "/home/runner/work/openpipeline/openpipeline/target/nextflow/mapping/star_align_v273a"
   executable: "/home/runner/work/openpipeline/openpipeline/target/nextflow/mapping/star_align_v273a/star_align_v273a"
-  viash_version: "0.7.5"
-  git_commit: "b41a65886f61959c7f83f84a0569c3da1d7a2856"
+  viash_version: "0.8.4"
+  git_commit: "bb0a94b57bf7195926da7f2e06aba6f59e239fce"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"
+  git_tag: "0.12.1"

@@ -1,7 +1,7 @@
 functionality:
   name: "xgboost"
   namespace: "labels_transfer"
-  version: "0.12.0"
+  version: "1.0.0rc1"
   authors:
   - name: "Vladimir Shitov"
     roles:
@@ -154,7 +154,7 @@ functionality:
       required: false
       direction: "input"
       multiple: true
-      multiple_sep: ","
+      multiple_sep: ";"
       dest: "par"
   - name: "Outputs"
     arguments:
@@ -211,7 +211,7 @@ functionality:
       required: false
       direction: "input"
       multiple: true
-      multiple_sep: ":"
+      multiple_sep: ";"
       dest: "par"
     - type: "string"
       name: "--output_obs_uncertainty"
@@ -223,7 +223,7 @@ functionality:
       required: false
       direction: "input"
       multiple: true
-      multiple_sep: ":"
+      multiple_sep: ";"
       dest: "par"
     - type: "string"
       name: "--output_uns_parameters"
@@ -471,6 +471,9 @@ functionality:
     path: "../utils/helper.py"
   - type: "file"
     path: "src/utils/setup_logger.py"
+  - type: "file"
+    path: "./src/workflows/utils/labels.config"
+    dest: "nextflow_labels.config"
   description: "Performs label transfer from reference to query using XGBoost classifier"
   test_resources:
   - type: "python_script"
@@ -493,6 +496,7 @@ platforms:
   image: "python:3.10-slim"
   target_organization: "openpipelines-bio"
   target_registry: "ghcr.io"
+  target_tag: "1.0.0rc1"
   namespace_separator: "_"
   resolve_volume: "Automatic"
   chown: true
@@ -507,8 +511,9 @@ platforms:
   - type: "python"
     user: false
     packages:
-    - "mudata~=0.2.3"
     - "anndata~=0.9.1"
+    - "mudata~=0.2.3"
+    - "pandas!=2.1.2"
     upgrade: true
   - type: "apt"
     packages:
@@ -520,6 +525,7 @@ platforms:
     user: false
     packages:
     - "scanpy~=1.9.5"
+    - "statsmodels==0.14.0"
     - "xgboost~=1.7.1"
     - "scikit-learn~=1.1.1"
     - "numpy~=1.23.5"
@@ -529,7 +535,7 @@ platforms:
   - type: "python"
     user: false
     packages:
-    - "viashpy==0.5.0"
+    - "viashpy==0.6.0"
     upgrade: true
   entrypoint: []
   cmd: null
@@ -578,6 +584,8 @@ platforms:
       cpu200: "cpus = 200"
       cpu500: "cpus = 500"
       cpu1000: "cpus = 1000"
+    script:
+    - "includeConfig(\"nextflow_labels.config\")"
   debug: false
   container: "docker"
 - type: "native"
@@ -587,6 +595,7 @@ info:
   platform: "nextflow"
   output: "/home/runner/work/openpipeline/openpipeline/target/nextflow/labels_transfer/xgboost"
   executable: "/home/runner/work/openpipeline/openpipeline/target/nextflow/labels_transfer/xgboost/xgboost"
-  viash_version: "0.7.5"
-  git_commit: "b41a65886f61959c7f83f84a0569c3da1d7a2856"
+  viash_version: "0.8.4"
+  git_commit: "bb0a94b57bf7195926da7f2e06aba6f59e239fce"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"
+  git_tag: "0.12.1"

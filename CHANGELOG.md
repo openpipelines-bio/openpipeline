@@ -1,3 +1,180 @@
+# openpipelines 0.13.0
+
+## BREAKING CHANGES
+
+* Change separator for arguments with multiple inputs from `:` to `;` (PR #700 and #707). Now, _all_ arguments with `multiple: true` will use `;` as the separator.
+  This change was made to be able to deal with file paths that contain `:`, e.g. `s3://my-bucket/my:file.txt`. Furthermore, the `;` separator will become
+  the default separator for all arguments with `multiple: true` in Viash >= 0.9.0.
+
+* This project now uses viash version 0.8.4 to build components and workflows. Changes related to this version update should
+  be _mostly_ backwards compatible with respect to the results and execution of the pipelines. From a development perspective,
+  drastic updates have been made to the developemt workflow.
+
+  Development related changes:
+    * Bump viash version to 0.8.4 (PR #598, PR#638 and #706) in the project configuration.
+    * All pipelines no longer use the anonymous workflow. Instead, these workflows were given
+      a name which was added to the viash config as the entrypoint to the pipeline (PR #598).
+    * Removed the `workflows` folder and moved its contents to new locations:
+        1. The `resources_test_scripts` folder now resides in the root of the project (PR #605).
+        2. All workflows have been moved to the `src/workflows` folder (PR #605).
+           This implies that workflows must now be build using `viash (ns) build`, just like with components.
+        3. Adjust GitHub Actions to account for new workflow paths (PR #605).
+        4. In order to be backwards compatible, the `workflows` folder now contains symbolic
+           links to the build workflows in `target`. This is not a problem when using the repository for pipeline
+           execution. However, if a developer wishes to contribute to the project, symlink support should be enabled
+           in git using `git config core.symlinks=true`. Alternatively, use
+           `git clone -c core.symlinks=true git@github.com:openpipelines-bio/openpipeline.git` when cloning the
+           repository. This avoids the symlinks being resolved (PR #628). 
+        4bis. With PR #668, the workflows have been renamed. This does not hamper the backwards compatibility
+              of the symlinks that have been described in 4, because they still use the original location
+              which includes the original name.
+                * `multiomics/rna_singlesample` has been renamed to `rna/process_single_sample`,
+                * `multiomics/rna_multisample` has been renamed to `rna/rna_multisample`,
+                * `multiomics/prot_multisample` became `prot/prot_multisample`,
+                * `multiomics/prot_singlesample` became `prot/prot_singlesample`,
+                * `multiomics/full_pipeline` was moved to `multiomics/process_samples`,
+                * `multiomics/multisample` has been renamed to `multiomics/process_batches`,
+                * `multiomics/integration/initialize_integration` changed to `multiomics/dimensionality_reduction`,
+                * finally, all workflows at `multiomics/integration/*` were moved to `integration/*`
+
+        5. Removed the `workflows/utils` folder. Functionality that was provided by the `DataflowHelper` 
+           and `WorkflowHelper` is now being provided by viash when the workflow is being build (PR #605).
+
+  End-user facing changes:
+    * The `concat` component had been deprecated and will be removed in a future release.
+      It's functionality has been copied to the `concatenate_h5mu` component because the name is in
+      conflict with the `concat` operator from nextflow (PR #598).
+    * `prot_singlesample`, `rna_singlesample`, `prot_multisample` and `rna_multisample`: QC statistics
+       are now only calculated once where needed. This means that the mitochondrial gene detection is
+       performed in the `rna_singlesample` pipeline and the other count based statistics are calculated
+       during the `prot_multisample` and `rna_multisample` pipelines. In both cases, the `qc` pipeline
+       is being used, but only parts of that workflow are activated by parametrization. Previously
+       the count based statistics were calculated in both the `singlesample` and `multisample` pipelines,
+       with the results from the multisample pipelines overwriting the previous results. What is breaking here
+       is that the qc statistics are not being added to the results of the singlesample worklows.
+       This is _not_ an issue when using the `full_pipeline` because in this case the singlesample and
+       multisample workflows are executed in-tandem. If you wish to execute the singlesample workflows
+       in a seperate manner and still include count based statistics, please run the `qc` pipeline
+       on the result of the singlesample workflow (PR #604).
+    * `filter/filter_with_hvg` has been renamed to `feature_annotation/highly_variable_features_scanpy`, along with the following changes (PR #667).
+      - `--do_filter` was removed
+      - `--n_top_genes` has been renamed to `--n_top_features`
+    * `full_pipeline`, `multisample` and `rna_multisample`: Renamed arguments (PR #667).
+      - `--filter_with_hvg_var_output` became `--highly_variable_features_obs_batch_key`
+      - `--filter_with_hvg_obs_batch_key` became `--highly_variable_features_var_output`
+    * `rna_multisample`: Renamed arguments (PR #667).
+      - `--filter_with_hvg_n_top_genes` became `--highly_variable_features_n_top_features`
+      - `--filter_with_hvg_flavor` became `--highly_variable_features_flavor`
+ 
+* Renamed `obsm_metrics` to `uns_metrics` for the `cellranger_mapping` workflow because the cellranger metrics are stored in `.uns` and not `.obsm` (PR #610).
+
+
+## MAJOR CHANGES
+
+* `mapping/cellranger_mkfastq`: update from cellranger `6.0.2` to `7.0.1` (PR #675)
+
+## NEW FUNCTIONALITY
+
+* `multisample` pipeline: This workflow now works when provided multimple unimodal files or multiple multimodal files, in addition to the previously supported single multimodal file (PR #606). The modalities are processed independently from each other:
+  - As before, a single multimodal file is split into several unimodal MuData objects, each modality being stored in a file.
+  - (New) When multiple unimodal files are provided, they can be used used as is.
+  - (New) Mosaic input (i.e. multiple uni- or multimodal files) are split into unimodal files.
+    Providing the same modality twice is not supported however, meaning the modalities should be unique.
+    For example, using `input: ["data1.h5mu", "data2.h5mu"]` with `data1.h5mu` providing data for `rna` and `atac` 
+    and `data2.h5mu` for `rna` and `prot` will not work, because the `rna` modality is present in both input files.
+  
+* `multisample` workflow: throw an error when argument values for the merge component or the `initialize_integration` workflow differ between the inputs (PR #606).
+
+* Added a `split_modalities` workflow in order to split a multimodal mudata files into several unimodal mudata files. Its behavior is identical to the `split_modalities` component, but it also provides functionality to make sure everything works when nextflow's `-stub` option is enabled (PR #606).
+
+* All workflow now use `dependencies` to handle includes from other workflows (PR #606).
+
+* `qc/calculate_qc_metrics`: allow setting the output column names and disabling the calculation of several metrics (PR #644).
+
+* `rna_multisample`, `prot_multisample` and `qc` workflows: allow setting the output column names and disabling the calculation of several metrics (PR #606).
+
+* `cluster/leiden`: Allow calculating multiple resolutions in parallel (PR #645).
+
+* `qc/calculate_qc_metrics`: allow setting the output column names and disabling the calculation of several metrics (PR #644).
+
+* `cluster/leiden`: Allow calculating multiple resolutions in parallel (PR #645).
+* 
+* `rna_multisample` workflow: added `--modality` argument (PR #607).
+
+* `multisample` workflow: in addition to using multimodal files as input, this workflow now also accepts a list of files. The list of files must be the unimodal equivalents of 
+of a split multimodal files. The modalities in the list must be unique and after processing the modalities will be merged into multimodal files (PR #606).
+
+* Added `filter/intersect_obs` component which removes observations that are not shared between modalities (PR #589).
+
+* Re-enable `convert/from_h5mu_to_seurat` component (PR #616).
+
+* Added the `gdo_singlesample` pipeline with basic count filtering (PR #672).
+
+* `process_samples` pipeline: the `--rna_layer`, `--prot_layer` and `gdo_layer` argument can not be used to specify an alternative layer to .X where the raw data are stored. To enable this feature, the following changes were required:
+  - Added `transform/move_layer` component.
+  - `filter/filter_with_scrublet`: added `--layer` argument.
+  - `transform/clr`: added `--input_layer` argument.
+  - `metadata/grep_annotation_column`: added `--input_layer` argument.
+  - `rna/rna_singlesample`, `rna/rna_multisample`, `prot/prot_singlesample` and `prot/prot_multisample`: add `--layer` argument.
+  - `process_batches`: Added `rna_layer` and `prot_layer` arguments.
+
+* Enable dataset functionality for nf-tower (PR #701)
+
+## MINOR CHANGES
+* Refactored `rna_multisample` (PR #607), `cellranger_multi` (PR #609), `cellranger_mapping` (PR #610) and other (PR #606) pipelines to use `fromState` and `toState` functionality.
+
+* `metadata/add_id`: add more runtime logging (PR #663).
+
+* `cluster/leiden`: Bump python to 3.11 and leidenalg to 0.10.0 (PR #645).
+
+* `mapping/htseq_count_to_h5mu` and `multi_star`: update polars and gtfparse (PR #642). 
+
+* Pin `from_h5mu_to_seurat` to use Seurat to version 4 (PR #630).
+
+* `velocity/scvelo`: bump scvelo to 0.3.1 and python to 3.10 (PR #640).
+
+* Updated the Viash YAML schemas to the latest version of Viash (PR #620).
+
+* `build_cellranger_reference` and `build_bdrhap_reference`: Bump go version to `1.21.4` when building seqkit for testing the component (PR #624 and PR #637).
+
+* `correction/cellbender_remove_background`: Remove `muon` as a test dependency (PR #636).
+
+* (Automatic testing) Update viashpy to 0.6.0 (PR #665).
+
+* `integrate/scarches`, `integrate/scvi`, `velocity/scvelo` and `integrate/totalvi`: pin jax, jaxlib to `<0.4.23` (PR #699).
+
+* `integrate/scvi`: Unpin `numba` and pin scvi-tools to `1.0.3` (PR #699).
+
+* `integrate/totalvi`: Enable GPU-accelerated computing, unpin `torchmetrics` and pin jax, jaxlib to `<0.4.23` (PR #699).
+
+## BUG FIXES
+
+* `transform/log1p`: fix `--input_layer` argument not functioning (PR #678). 
+
+* `dataflow/concat` and `dataflow/concatenate_h5mu`: Fix an issue where using `--mode move` on samples with non-overlapping features would cause `var_names` to become unaligned to the data (PR #653).   
+
+* `filter/filter_with_scrublet`: (Testing) Fix duplicate test function names (PR #641).
+
+* `dataflow/concatenate_h5mu` and `dataflow/concat`: Fix `TypeError` when using mode 'move' and a column with conflicting metadata does not exist across all samples (PR #631).
+
+* `dataflow/concatenate_h5mu` and `dataflow/concat`: Fix an issue where joining columns with different datatypes caused `TypeError` (PR #619).
+
+* `qc/calculate_qc_metrics`: Resolved an issue where statistics based on the input columns selected with `--var_qc_metrics` were incorrect when these input columns were encoded in `pd.BooleanDtype()` (PR #685).
+
+* `move_obsm_to_obs`: fix setting output columns when they already exist (PR #690).
+
+* `workflows/dimensionality_reduction` workflow: nearest neighbour calculations no longer recalcalates the PCA when `obm_input` `--obsm_pca` is not set to `X_pca`.
+
+* `feature_annotation/highly_variable_scanpy`: fix .X being used to remove observations with 0 counts when `--layer` has been specified. 
+
+* `filter/filter_with_counts`: fix `--layer` argument not being used.
+
+* `transform/normalize_total`: fix incorrect layer being written to the output when the input layer if not `.X`.
+
+* `src/workflows/qc`: fix input layer not being taken into account when calculating the fraction of mitochondrial genes (always used .X).
+
+* `convert/from_cellranger_multi_to_h5mu`: fix metric values not repesented as percentages being devided by 100. (#704).
+
 # openpipelines 0.12.1
 
 ## BUG FIXES
@@ -32,6 +209,8 @@ Implementing this changes involved breaking some existing functionality:
 * `workflows/full_pipelines`: added `--obs_name_mitochondrial_fraction` argument (PR #585).
 
 * `workflows/prot_multisample`: added `--var_qc_metrics` and `--top_n_vars` arguments (PR #585).
+
+* Added genetic demultiplexing methods `cellsnp`, `demuxlet`, `freebayes`, `freemuxlet`, `scsplit`, `sourorcell` and `vireo` (PR #343).
 
 ## MINOR CHANGES
 
@@ -108,6 +287,7 @@ Implementing this changes involved breaking some existing functionality:
 * Add workaround for bug where resources aren't available when using Nextflow fusion by including `setup_logger`, `subset_vars` and `compress_h5mu` in the script itself (PR #549).
 
 # openpipelines 0.10.0
+
 
 ## BREAKING CHANGES
 
@@ -199,6 +379,8 @@ Implementing this changes involved breaking some existing functionality:
 * Add `main_build_viash_hub` action to build, tag, and push components and docker images for viash-hub.com (PR #480).
 
 * `integration/bbknn_leiden`: Update state management to `fromState` / `toState` (PR #538).
+
+* `mapping/cellranger_multi`: Add optional helper input: allow for passing modality specific inputs, from which library type and library id are inferred (PR #693).
 
 ## DOCUMENTATION
 

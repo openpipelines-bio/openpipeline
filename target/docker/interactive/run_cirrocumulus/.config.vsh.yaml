@@ -1,7 +1,7 @@
 functionality:
   name: "run_cirrocumulus"
   namespace: "interactive"
-  version: "0.12.0"
+  version: "1.0.0rc1"
   arguments:
   - type: "file"
     name: "--input"
@@ -35,6 +35,9 @@ functionality:
   - type: "bash_script"
     path: "script.sh"
     is_executable: true
+  - type: "file"
+    path: "./src/workflows/utils/labels.config"
+    dest: "nextflow_labels.config"
   description: ""
   info: null
   status: "enabled"
@@ -48,6 +51,7 @@ platforms:
   image: "ubuntu:focal"
   target_organization: "openpipelines-bio"
   target_registry: "ghcr.io"
+  target_tag: "1.0.0rc1"
   namespace_separator: "_"
   resolve_volume: "Automatic"
   chown: true
@@ -78,6 +82,7 @@ info:
   platform: "docker"
   output: "/home/runner/work/openpipeline/openpipeline/target/docker/interactive/run_cirrocumulus"
   executable: "/home/runner/work/openpipeline/openpipeline/target/docker/interactive/run_cirrocumulus/run_cirrocumulus"
-  viash_version: "0.7.5"
-  git_commit: "b41a65886f61959c7f83f84a0569c3da1d7a2856"
+  viash_version: "0.8.4"
+  git_commit: "bb0a94b57bf7195926da7f2e06aba6f59e239fce"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"
+  git_tag: "0.12.1"
