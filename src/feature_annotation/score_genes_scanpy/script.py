@@ -6,10 +6,12 @@ mudata = mu.read(f'{par["input"]}')
 
 with open(par["gene_list"]) as gene_list_file:
     gene_list = [x.strip() for x in gene_list_file]
+    assert len(gene_list) > 0, "no genes detected in --gene_list"
 
 if par["gene_pool"]:
     with open(par["gene_pool"]) as gene_pool_file:
         par["gene_pool"] = [x.strip() for x in gene_pool_file]
+        assert len(par["gene_pool"]) > 0, "no genes detected in --gene_pool"
 
 output = sc.tl.score_genes(
     mudata.mod["rna"],
