@@ -32,7 +32,7 @@ sys.path.append(meta["resources_dir"])
 from helper import read_gene_list
 
 # read data
-mdata = mu.read(f"{par["input"]}")
+mdata = mu.read(par["input"])
 input_adata = mdata.mod[par["modality"]]
 
 if par["var_gene_names"]:
