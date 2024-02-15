@@ -128,8 +128,8 @@ workflow run_wf {
         def keysToRemove = singlesample_arguments.inject([]){currentKeys, modality, stateMapping -> 
             currentKeys += stateMapping.values()
         }
-        def allwayskeep = ["id", "gdo_layer", "rna_layer", "prot_layer"]
-        def newState = state.findAll{(it.key !in keysToRemove) || (it.key in allwayskeep)}
+        def allwayskeep = ["gdo_layer", "rna_layer", "prot_layer"]
+        def newState = state.findAll{(it.key !in keysToRemove + ["id"]) || (it.key in allwayskeep)}
         [id, newState]
       }
       | view {"After singlesample processing: $it"}
