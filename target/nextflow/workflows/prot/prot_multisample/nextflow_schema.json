@@ -49,6 +49,16 @@
             }
     
 
+        ,
+                "layer": {
+                "type":
+                "string",
+                "description": "Type: `string`. Input layer to use",
+                "help_text": "Type: `string`. Input layer to use. If not specified, .X is used."
+            
+            }
+    
+
 }
 },
     

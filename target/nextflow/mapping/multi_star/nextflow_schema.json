@@ -33,8 +33,8 @@
                 "input_id": {
                 "type":
                 "string",
-                "description": "Type: List of `string`, required, example: `mysample;mysample`, multiple_sep: `\";\"`. The ID of the sample being processed",
-                "help_text": "Type: List of `string`, required, example: `mysample;mysample`, multiple_sep: `\";\"`. The ID of the sample being processed. This vector should have the same length as the `--input_r1` argument."
+                "description": "Type: List of `string`, required, example: `mysample:mysample`, multiple_sep: `\":\"`. The ID of the sample being processed",
+                "help_text": "Type: List of `string`, required, example: `mysample:mysample`, multiple_sep: `\":\"`. The ID of the sample being processed. This vector should have the same length as the `--input_r1` argument."
             
             }
     
@@ -43,8 +43,8 @@
                 "input_r1": {
                 "type":
                 "string",
-                "description": "Type: List of `file`, required, example: `mysample_S1_L001_R1_001.fastq.gz;mysample_S1_L002_R1_001.fastq.gz`, multiple_sep: `\";\"`. Paths to the sequences to be mapped",
-                "help_text": "Type: List of `file`, required, example: `mysample_S1_L001_R1_001.fastq.gz;mysample_S1_L002_R1_001.fastq.gz`, multiple_sep: `\";\"`. Paths to the sequences to be mapped. If using Illumina paired-end reads, only the R1 files should be passed."
+                "description": "Type: List of `file`, required, example: `mysample_S1_L001_R1_001.fastq.gz:mysample_S1_L002_R1_001.fastq.gz`, multiple_sep: `\":\"`. Paths to the sequences to be mapped",
+                "help_text": "Type: List of `file`, required, example: `mysample_S1_L001_R1_001.fastq.gz:mysample_S1_L002_R1_001.fastq.gz`, multiple_sep: `\":\"`. Paths to the sequences to be mapped. If using Illumina paired-end reads, only the R1 files should be passed."
             
             }
     
@@ -53,8 +53,8 @@
                 "input_r2": {
                 "type":
                 "string",
-                "description": "Type: List of `file`, example: `mysample_S1_L001_R2_001.fastq.gz;mysample_S1_L002_R2_001.fastq.gz`, multiple_sep: `\";\"`. Paths to the sequences to be mapped",
-                "help_text": "Type: List of `file`, example: `mysample_S1_L001_R2_001.fastq.gz;mysample_S1_L002_R2_001.fastq.gz`, multiple_sep: `\";\"`. Paths to the sequences to be mapped. If using Illumina paired-end reads, only the R2 files should be passed."
+                "description": "Type: List of `file`, example: `mysample_S1_L001_R2_001.fastq.gz:mysample_S1_L002_R2_001.fastq.gz`, multiple_sep: `\":\"`. Paths to the sequences to be mapped",
+                "help_text": "Type: List of `file`, example: `mysample_S1_L001_R2_001.fastq.gz:mysample_S1_L002_R2_001.fastq.gz`, multiple_sep: `\":\"`. Paths to the sequences to be mapped. If using Illumina paired-end reads, only the R2 files should be passed."
             
             }
     

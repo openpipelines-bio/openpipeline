@@ -20,7 +20,6 @@ functionality:
             `[Sample Name]_S[Sample Index]_L00[Lane Number]_[Read Type]_001.fastq.gz`
           example: [ mysample_S1_L001_R1_001.fastq.gz, mysample_S1_L001_R2_001.fastq.gz ]
           multiple: true
-          multiple_sep: ";"
 
         - name: "--gex_reference"
           type: file
@@ -57,7 +56,6 @@ functionality:
           description: The Illumina sample name to analyze. This must exactly match the 'Sample Name' part of the FASTQ files specified in the `--input` argument.
           example: ["mysample1"]
           multiple: true
-          multiple_sep: ";"
         - type: string
           name: --library_type
           required: true
@@ -68,14 +66,12 @@ functionality:
           # choices: [ "Gene Expression", "VDJ", "VDJ-T", "VDJ-B", "Antibody Capture", "CRISPR Guide Capture", "Multiplexing Capture" ]
           example: "Gene Expression"
           multiple: true
-          multiple_sep: ";"
         - type: string
           name: --library_subsample
           required: false
           description: Optional. The rate at which reads from the provided FASTQ files are sampled. Must be strictly greater than 0 and less than or equal to 1.
           example: "0.5"
           multiple: true
-          multiple_sep: ";"
         # NOTE: physical_library_id was not included because documentation
         # specifies that users don't typically need to interact with it.
         # - type: string
@@ -83,14 +79,13 @@ functionality:
         #   description:  Library type. NOTE: by default, the library type is detected automatically based on specified feature_types (recommended mode). Users typically do not need to include the physical_library_id column in the CSV file.
         #   example: "..."
         #   multiple: true
-        #   multiple_sep: ";"
+        #        - type: string
         - type: string
           name: --library_lanes
           required: false
           description: Lanes associated with this sample. Defaults to using all lanes.
           example: "1-4"
           multiple: true
-          multiple_sep: ";"
 
     - name: Gene expression arguments
       description: Arguments relevant to the analysis of gene expression data.

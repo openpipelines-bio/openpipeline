@@ -47,7 +47,7 @@ def test_leiden(input_path, run_component, random_h5mu_path, compression, output
     output_path = random_h5mu_path()
     args = [
         "--input", input_path,
-        "--resolution", "1:0.25",
+        "--resolution", "1;0.25",
         "--output", output_path]
     if compression:
         args.extend(["--output_compression", compression])
@@ -67,7 +67,7 @@ def test_leiden_custom_connectivities_key(mudata_custom_connectivities_key, run_
     run_component([
          "--input", mudata_custom_connectivities_key,
         "--obsm_name", "fooleiden",
-        "--resolution", "1:0.25",
+        "--resolution", "1;0.25",
         "--output", output_path,
         "--obsp_connectivities", "custom_connectivities",
         "--output_compression", "gzip"

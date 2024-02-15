@@ -1,6 +1,7 @@
 # Arguments
 input: # please fill in - example: "input.h5mu"
 modality: "rna"
+# layer: "foo"
 # output: "$id.$key.output.h5mu"
 # output_compression: "gzip"
 obs_name_filter: "filter_with_scrublet"

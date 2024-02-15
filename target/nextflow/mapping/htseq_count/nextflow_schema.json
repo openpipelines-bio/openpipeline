@@ -182,8 +182,8 @@
                 "input": {
                 "type":
                 "string",
-                "description": "Type: List of `file`, required, example: `mysample1.BAM;mysample2.BAM`, multiple_sep: `\";\"`. Path to the SAM/BAM files containing the mapped reads",
-                "help_text": "Type: List of `file`, required, example: `mysample1.BAM;mysample2.BAM`, multiple_sep: `\";\"`. Path to the SAM/BAM files containing the mapped reads."
+                "description": "Type: List of `file`, required, example: `mysample1.BAM:mysample2.BAM`, multiple_sep: `\":\"`. Path to the SAM/BAM files containing the mapped reads",
+                "help_text": "Type: List of `file`, required, example: `mysample1.BAM:mysample2.BAM`, multiple_sep: `\":\"`. Path to the SAM/BAM files containing the mapped reads."
             
             }
     
@@ -233,8 +233,8 @@
                 "output_sam": {
                 "type":
                 "string",
-                "description": "Type: List of `file`, default: `$id.$key.output_sam_*.BAM`, example: `mysample1_out.BAM;mysample2_out.BAM`, multiple_sep: `\";\"`. Write out all SAM alignment records into SAM/BAM files (one per input file needed), \nannotating each line with its feature assignment (as an optional field with tag \u0027XF\u0027)",
-                "help_text": "Type: List of `file`, default: `$id.$key.output_sam_*.BAM`, example: `mysample1_out.BAM;mysample2_out.BAM`, multiple_sep: `\";\"`. Write out all SAM alignment records into SAM/BAM files (one per input file needed), \nannotating each line with its feature assignment (as an optional field with tag \u0027XF\u0027). \nSee the -p option to use BAM instead of SAM.\n"
+                "description": "Type: List of `file`, default: `$id.$key.output_sam_*.BAM`, example: `mysample1_out.BAM:mysample2_out.BAM`, multiple_sep: `\":\"`. Write out all SAM alignment records into SAM/BAM files (one per input file needed), \nannotating each line with its feature assignment (as an optional field with tag \u0027XF\u0027)",
+                "help_text": "Type: List of `file`, default: `$id.$key.output_sam_*.BAM`, example: `mysample1_out.BAM:mysample2_out.BAM`, multiple_sep: `\":\"`. Write out all SAM alignment records into SAM/BAM files (one per input file needed), \nannotating each line with its feature assignment (as an optional field with tag \u0027XF\u0027). \nSee the -p option to use BAM instead of SAM.\n"
             ,
                 "default": "$id.$key.output_sam_*.BAM"
             }

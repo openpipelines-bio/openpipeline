@@ -49,7 +49,6 @@ functionality:
             compared to the total sum of the values for all genes.
           type: string
           multiple: True
-          multiple_sep: ','
           example: "ercc,highly_variable,mitochondrial"
         - name: "--var_qc_metrics_fill_na_value"
           type: boolean
@@ -60,11 +59,10 @@ functionality:
           type: integer
           description: |
             Number of top vars to be used to calculate cumulative proportions.
-            If not specified, proportions are not calculated. `--top_n_vars 20,50` finds
+            If not specified, proportions are not calculated. `--top_n_vars 20;50` finds
             cumulative proportion to the 20th and 50th most expressed vars.
           multiple: true
           required: false
-          multiple_sep: ','
         - name: "--output_obs_num_nonzero_vars"
           description: |
             Name of column in .obs describing, for each observation, the number of stored values

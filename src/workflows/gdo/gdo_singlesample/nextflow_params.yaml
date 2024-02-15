@@ -1,6 +1,7 @@
 # Input
 id: # please fill in - example: "foo"
 input: # please fill in - example: "dataset.h5mu"
+# layer: "foo"
 
 # Output
 # output: "$id.$key.output.h5mu"

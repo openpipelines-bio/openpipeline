@@ -2,6 +2,7 @@
 id: # please fill in - example: "concatenated"
 input: # please fill in - example: "dataset.h5mu"
 modality: "rna"
+# layer: "foo"
 
 # Output
 # output: "$id.$key.output.h5mu"

@@ -50,6 +50,16 @@
     
 
         ,
+                "input_layer": {
+                "type":
+                "string",
+                "description": "Type: `string`. Input data to use when calculating fraction of observations that match with the query",
+                "help_text": "Type: `string`. Input data to use when calculating fraction of observations that match with the query. \nOnly used when --output_fraction_column is provided. If not specified, .X is used.\n"
+            
+            }
+    
+
+        ,
                 "modality": {
                 "type":
                 "string",

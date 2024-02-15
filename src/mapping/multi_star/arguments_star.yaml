@@ -20,7 +20,6 @@ argument_groups:
       step: star
       orig_arg: --genomeFastaFiles
     multiple: yes
-    multiple_sep: ;
 - name: Splice Junctions Database
   arguments:
   - name: --sjdbFileChrStartEnd
@@ -32,7 +31,6 @@ argument_groups:
       step: star
       orig_arg: --sjdbFileChrStartEnd
     multiple: yes
-    multiple_sep: ;
   - name: --sjdbGTFfile
     type: file
     description: path to the GTF file with annotations
@@ -77,7 +75,6 @@ argument_groups:
       orig_arg: --sjdbGTFtagExonParentGeneName
     example: gene_name
     multiple: yes
-    multiple_sep: ;
   - name: --sjdbGTFtagExonParentGeneType
     type: string
     description: GTF attribute name for parent gene type
@@ -88,7 +85,6 @@ argument_groups:
     - gene_type
     - gene_biotype
     multiple: yes
-    multiple_sep: ;
   - name: --sjdbOverhang
     type: integer
     description: length of the donor/acceptor sequence on each side of the junctions,
@@ -150,7 +146,6 @@ argument_groups:
       orig_arg: --readFilesSAMattrKeep
     example: All
     multiple: yes
-    multiple_sep: ;
   - name: --readFilesManifest
     type: file
     description: |-
@@ -181,7 +176,6 @@ argument_groups:
       step: star
       orig_arg: --readFilesCommand
     multiple: yes
-    multiple_sep: ;
   - name: --readMapNumber
     type: integer
     description: |-
@@ -209,7 +203,6 @@ argument_groups:
       orig_arg: --readNameSeparator
     example: /
     multiple: yes
-    multiple_sep: ;
   - name: --readQualityScoreBase
     type: integer
     description: number to be subtracted from the ASCII code to get Phred quality
@@ -241,7 +234,6 @@ argument_groups:
       orig_arg: --clip3pNbases
     example: 0
     multiple: yes
-    multiple_sep: ;
   - name: --clip3pAdapterSeq
     type: string
     description: |-
@@ -252,7 +244,6 @@ argument_groups:
       step: star
       orig_arg: --clip3pAdapterSeq
     multiple: yes
-    multiple_sep: ;
   - name: --clip3pAdapterMMp
     type: double
     description: max proportion of mismatches for 3p adapter clipping for each mate.  If
@@ -262,7 +253,6 @@ argument_groups:
       orig_arg: --clip3pAdapterMMp
     example: 0.1
     multiple: yes
-    multiple_sep: ;
   - name: --clip3pAfterAdapterNbases
     type: integer
     description: number of bases to clip from 3p of each mate after the adapter clipping.
@@ -272,7 +262,6 @@ argument_groups:
       orig_arg: --clip3pAfterAdapterNbases
     example: 0
     multiple: yes
-    multiple_sep: ;
   - name: --clip5pNbases
     type: integer
     description: number(s) of bases to clip from 5p of each mate. If one value is
@@ -282,7 +271,6 @@ argument_groups:
       orig_arg: --clip5pNbases
     example: 0
     multiple: yes
-    multiple_sep: ;
 - name: Limits
   arguments:
   - name: --limitGenomeGenerateRAM
@@ -302,7 +290,6 @@ argument_groups:
     - 30000000
     - 50000000
     multiple: yes
-    multiple_sep: ;
   - name: --limitOutSAMoneReadBytes
     type: long
     description: 'max size of the SAM record (bytes) for one read. Recommended value:
@@ -472,7 +459,6 @@ argument_groups:
       orig_arg: --outSAMattributes
     example: Standard
     multiple: yes
-    multiple_sep: ;
   - name: --outSAMattrIHstart
     type: integer
     description: start value for the IH attribute. 0 may be required by some downstream
@@ -495,7 +481,6 @@ argument_groups:
       step: star
       orig_arg: --outSAMunmapped
     multiple: yes
-    multiple_sep: ;
   - name: --outSAMorder
     type: string
     description: |-
@@ -567,7 +552,6 @@ argument_groups:
       step: star
       orig_arg: --outSAMattrRGline
     multiple: yes
-    multiple_sep: ;
   - name: --outSAMheaderHD
     type: string
     description: '@HD (header) line of the SAM header'
@@ -575,7 +559,6 @@ argument_groups:
       step: star
       orig_arg: --outSAMheaderHD
     multiple: yes
-    multiple_sep: ;
   - name: --outSAMheaderPG
     type: string
     description: extra @PG (software) line of the SAM header (in addition to STAR)
@@ -583,7 +566,6 @@ argument_groups:
       step: star
       orig_arg: --outSAMheaderPG
     multiple: yes
-    multiple_sep: ;
   - name: --outSAMheaderCommentFile
     type: string
     description: path to the file with @CO (comment) lines of the SAM header
@@ -601,7 +583,6 @@ argument_groups:
       step: star
       orig_arg: --outSAMfilter
     multiple: yes
-    multiple_sep: ;
   - name: --outSAMmultNmax
     type: integer
     description: |-
@@ -684,7 +665,6 @@ argument_groups:
       step: star
       orig_arg: --outWigType
     multiple: yes
-    multiple_sep: ;
   - name: --outWigStrand
     type: string
     description: |-
@@ -863,7 +843,6 @@ argument_groups:
     - 12
     - 12
     multiple: yes
-    multiple_sep: ;
   - name: --outSJfilterCountUniqueMin
     type: integer
     description: |-
@@ -880,7 +859,6 @@ argument_groups:
     - 1
     - 1
     multiple: yes
-    multiple_sep: ;
   - name: --outSJfilterCountTotalMin
     type: integer
     description: |-
@@ -897,7 +875,6 @@ argument_groups:
     - 1
     - 1
     multiple: yes
-    multiple_sep: ;
   - name: --outSJfilterDistToOtherSJmin
     type: integer
     description: |-
@@ -913,7 +890,6 @@ argument_groups:
     - 5
     - 10
     multiple: yes
-    multiple_sep: ;
   - name: --outSJfilterIntronMaxVsReadN
     type: integer
     description: |-
@@ -929,7 +905,6 @@ argument_groups:
     - 100000
     - 200000
     multiple: yes
-    multiple_sep: ;
 - name: Scoring
   arguments:
   - name: --scoreGap
@@ -1119,7 +1094,6 @@ argument_groups:
     - 0
     - 0
     multiple: yes
-    multiple_sep: ;
   - name: --alignSJDBoverhangMin
     type: integer
     description: minimum overhang (i.e. block size) for annotated (sjdb) spliced alignments
@@ -1293,7 +1267,6 @@ argument_groups:
       orig_arg: --chimOutType
     example: Junctions
     multiple: yes
-    multiple_sep: ;
   - name: --chimSegmentMin
     type: integer
     description: minimum length of chimeric segment length, if ==0, no chimeric output
@@ -1357,7 +1330,6 @@ argument_groups:
       orig_arg: --chimFilter
     example: banGenomicN
     multiple: yes
-    multiple_sep: ;
   - name: --chimMainSegmentMultNmax
     type: integer
     description: maximum number of multi-alignments for the main chimeric segment.
@@ -1418,7 +1390,6 @@ argument_groups:
       step: star
       orig_arg: --quantMode
     multiple: yes
-    multiple_sep: ;
   - name: --quantTranscriptomeBAMcompression
     type: integer
     description: |-
@@ -1489,7 +1460,6 @@ argument_groups:
       step: star
       orig_arg: --soloType
     multiple: yes
-    multiple_sep: ;
   - name: --soloCBwhitelist
     type: string
     description: |-
@@ -1500,7 +1470,6 @@ argument_groups:
       step: star
       orig_arg: --soloCBwhitelist
     multiple: yes
-    multiple_sep: ;
   - name: --soloCBstart
     type: integer
     description: cell barcode start base
@@ -1568,7 +1537,6 @@ argument_groups:
       step: star
       orig_arg: --soloCBposition
     multiple: yes
-    multiple_sep: ;
   - name: --soloUMIposition
     type: string
     description: |-
@@ -1620,7 +1588,6 @@ argument_groups:
       step: star
       orig_arg: --soloInputSAMattrBarcodeSeq
     multiple: yes
-    multiple_sep: ;
   - name: --soloInputSAMattrBarcodeQual
     type: string
     description: |-
@@ -1632,7 +1599,6 @@ argument_groups:
       step: star
       orig_arg: --soloInputSAMattrBarcodeQual
     multiple: yes
-    multiple_sep: ;
   - name: --soloStrand
     type: string
     description: |-
@@ -1660,7 +1626,6 @@ argument_groups:
       orig_arg: --soloFeatures
     example: Gene
     multiple: yes
-    multiple_sep: ;
   - name: --soloMultiMappers
     type: string
     description: |-
@@ -1676,7 +1641,6 @@ argument_groups:
       orig_arg: --soloMultiMappers
     example: Unique
     multiple: yes
-    multiple_sep: ;
   - name: --soloUMIdedup
     type: string
     description: |-
@@ -1693,7 +1657,6 @@ argument_groups:
       orig_arg: --soloUMIdedup
     example: 1MM_All
     multiple: yes
-    multiple_sep: ;
   - name: --soloUMIfiltering
     type: string
     description: |-
@@ -1708,7 +1671,6 @@ argument_groups:
       step: star
       orig_arg: --soloUMIfiltering
     multiple: yes
-    multiple_sep: ;
   - name: --soloOutFileNames
     type: string
     description: |-
@@ -1724,7 +1686,6 @@ argument_groups:
     - barcodes.tsv
     - matrix.mtx
     multiple: yes
-    multiple_sep: ;
   - name: --soloCellFilter
     type: string
     description: |-
@@ -1747,7 +1708,6 @@ argument_groups:
     - '0.99'
     - '10'
     multiple: yes
-    multiple_sep: ;
   - name: --soloOutFormatFeaturesGeneField3
     type: string
     description: field 3 in the Gene features.tsv file. If "-", then no 3rd field
@@ -1757,7 +1717,6 @@ argument_groups:
       orig_arg: --soloOutFormatFeaturesGeneField3
     example: Gene Expression
     multiple: yes
-    multiple_sep: ;
   - name: --soloCellReadStats
     type: string
     description: |-

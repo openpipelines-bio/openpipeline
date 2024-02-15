@@ -51,6 +51,16 @@
     
 
         ,
+                "layer": {
+                "type":
+                "string",
+                "description": "Type: `string`. Input layer to use as data for calculating doublets",
+                "help_text": "Type: `string`. Input layer to use as data for calculating doublets. .X is used not specified."
+            
+            }
+    
+
+        ,
                 "output": {
                 "type":
                 "string",

@@ -49,6 +49,16 @@
             }
     
 
+        ,
+                "layer": {
+                "type":
+                "string",
+                "description": "Type: `string`. Input layer to start from",
+                "help_text": "Type: `string`. Input layer to start from. By default, .X will be used."
+            
+            }
+    
+
 }
 },
     

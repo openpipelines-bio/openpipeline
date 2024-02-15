@@ -1,4 +1,4 @@
-viash_version: 0.8.3
+viash_version: 0.8.4
 
 source: src
 target: target
@@ -6,6 +6,8 @@ target: target
 config_mods: |
   .functionality.version := 'dev'
   .functionality.requirements.commands := ['ps']
+  .functionality.arguments[.multiple == true].multiple_sep := ";"
+  .functionality.argument_groups[true].arguments[.multiple == true].multiple_sep := ";"
   .platforms[.type == 'docker'].namespace_separator := '_'
   .platforms[.type == 'docker'].target_registry := 'ghcr.io'
   .platforms[.type == 'docker'].target_organization := 'openpipelines-bio'
