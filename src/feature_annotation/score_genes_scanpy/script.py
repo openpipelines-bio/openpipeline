@@ -4,13 +4,12 @@ import mudata as mu
 
 mudata = mu.read(f'{par["input"]}')
 
-par["use_raw"] = par.setdefault("use_raw", None)
-par["gene_pool"] = par.setdefault("gene_pool", None)
-
-gene_list = [x.strip() for x in open(par["gene_list"])]
+with open(par["gene_list"]) as gene_list_file:
+    gene_list = [x.strip() for x in gene_list_file]
 
 if par["gene_pool"]:
-    par["gene_pool"] = [x.strip() for x in open(par["gene_pool"])]
+    with open(par["gene_pool"]) as gene_pool_file:
+        par["gene_pool"] = [x.strip() for x in gene_pool_file]
 
 output = sc.tl.score_genes(
     mudata.mod["rna"],
