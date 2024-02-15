@@ -118,6 +118,36 @@ def test_filter_cells_without_counts(run_component, input_h5mu, tmp_path):
     assert mu_out.mod['rna'].obs.at[obs_to_remove, 'filter_with_counts'] == False
     assert "mitochondrial" not in mu_out.mod['rna'].var
 
+def test_filter_using_different_layer(run_component, input_h5mu, tmp_path,
+                                      input_n_rna_obs, input_n_prot_obs,
+                                      input_n_rna_vars, input_n_prot_vars):
+    # move X to different input layer
+    input_h5mu.mod['rna'].layers['test_layer'] = input_h5mu.mod['rna'].X.copy()
+    input_h5mu.mod['rna'].X = None
+
+    temp_h5mu_path = tmp_path / "temp.h5mu"
+    input_h5mu.write(temp_h5mu_path)
+    run_component([
+        "--input", temp_h5mu_path,
+        "--output", "output-4.h5mu",
+        "--modality", "rna",
+        "--min_counts", "200",
+        "--max_counts", "5000000",
+        "--min_genes_per_cell", "200",
+        "--max_genes_per_cell", "1500000",
+        "--min_cells_per_gene", "10",
+        "--layer", "test_layer",
+        "--do_subset"])
+    assert Path("output-4.h5mu").is_file()
+    mu_out = mu.read_h5mu("output-2.h5mu")
+    new_obs = mu_out.mod['rna'].n_obs
+    new_vars = mu_out.mod['rna'].n_vars
+    assert new_obs < input_n_rna_obs
+    assert new_vars < input_n_rna_vars
+    assert mu_out.mod['prot'].n_obs == input_n_prot_obs
+    assert mu_out.mod['prot'].n_vars == input_n_prot_vars
+    assert list(mu_out.mod['rna'].var['feature_types'].cat.categories) == ["Gene Expression"]
+    assert list(mu_out.mod['prot'].var['feature_types'].cat.categories) == ["Antibody Capture"]
 
 if __name__ == "__main__":
     exit(pytest.main([__file__]))

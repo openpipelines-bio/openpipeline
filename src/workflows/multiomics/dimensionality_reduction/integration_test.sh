@@ -14,4 +14,6 @@ nextflow run . \
   -main-script src/workflows/multiomics/dimensionality_reduction/test.nf \
   -profile docker,no_publish \
   -entry test_wf \
+  -c src/workflows/utils/labels_ci.config \
+  -c src/workflows/utils/integration_tests.config \
   -resume

@@ -14,17 +14,20 @@ workflow run_wf {
         "obsm_output": "obsm_pca",
         "var_input": "var_pca_feature_selection",
         "modality": "modality",
-        "overwrite": "pca_overwrite"
+        "overwrite": "pca_overwrite",
+        "layer": "layer",
       ],
       toState: ["input": "output"]
     )
     | find_neighbors.run(
       fromState: [
         "input": "input",
+        "obsm_input": "obsm_pca",
         "uns_output": "uns_neighbors",
         "obsp_distances": "obsp_neighbor_distances",
         "obsp_connectivities": "obsp_neighbor_connectivities",
-        "modality": "modality"
+        "modality": "modality",
+        "layer": "layer",
       ],
       toState: ["input": "output"]
     )

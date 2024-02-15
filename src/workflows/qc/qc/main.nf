@@ -33,7 +33,8 @@ workflow run_wf {
           "input_column": state.var_gene_names,
           "matrix": "var",
           "output_match_column": state.var_name_mitochondrial_genes,
-          "regex_pattern": state.mitochondrial_gene_regex
+          "regex_pattern": state.mitochondrial_gene_regex,
+          "input_layer": state.layer,
         ]
         stateMapping.output_fraction_column = state.obs_name_mitochondrial_fraction ? state.obs_name_mitochondrial_fraction: "fraction_$state.var_name_mitochondrial_genes"
         return stateMapping

@@ -10,7 +10,10 @@ workflow run_wf {
       [id, new_state]
     }
     | clr.run(
-      fromState: ["input": "input"],
+      fromState: [
+        "input": "input",
+        "input_layer": "layer",
+        ],
       toState: ["input": "output"],
       args: [ 
         output_layer: "clr", 
@@ -27,7 +30,7 @@ workflow run_wf {
           "input": state.input,
           "top_n_vars": state.top_n_vars,
           "var_qc_metrics": null,
-          "input_layer": null, // layer: null to use .X and not log transformed
+          "input_layer": state.layer, // Use the non-transformed layer
           "modality": "prot",
           "var_name_mitochondrial_genes": null,
           "output_obs_num_nonzero_vars": state.output_obs_num_nonzero_vars,

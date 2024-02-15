@@ -18,7 +18,8 @@ nextflow \
   -entry test_wf \
   -resume \
   -profile docker,no_publish \
-  -c src/workflows/utils/labels_ci.config
+  -c src/workflows/utils/labels_ci.config \
+  -c src/workflows/utils/integration_tests.config
 
 # Same as above but with remote yaml file.
 nextflow \
@@ -28,6 +29,7 @@ nextflow \
   -resume \
   -profile docker,no_publish \
   -c src/workflows/utils/labels_ci.config \
+  -c src/workflows/utils/integration_tests.config \
   --param_list s3://openpipelines-data/remote_param_list/test_param_list.yaml
 
 # Same as above but with remote json file.
@@ -38,6 +40,7 @@ nextflow \
   -resume \
   -profile docker,no_publish \
   -c src/workflows/utils/labels_ci.config \
+  -c src/workflows/utils/integration_tests.config \
   --param_list s3://openpipelines-data/remote_param_list/test_param_list.json
 
 # Same as above but with remote csv file.
@@ -48,6 +51,7 @@ nextflow \
   -resume \
   -profile docker,no_publish \
   -c src/workflows/utils/labels_ci.config \
+  -c src/workflows/utils/integration_tests.config \
   --param_list s3://openpipelines-data/remote_param_list/test_param_list.csv
 
 nextflow \
@@ -56,7 +60,8 @@ nextflow \
   -entry test_wf2 \
   -resume \
   -profile docker,no_publish \
-  -c src/workflows/utils/labels_ci.config
+  -c src/workflows/utils/labels_ci.config \
+  -c src/workflows/utils/integration_tests.config
 
 nextflow \
   run . \
@@ -64,7 +69,8 @@ nextflow \
   -entry test_wf3 \
   -resume \
   -profile docker,no_publish \
-  -c src/workflows/utils/labels_ci.config
+  -c src/workflows/utils/labels_ci.config \
+  -c src/workflows/utils/integration_tests.config
 
 nextflow \
   run . \
@@ -72,4 +78,14 @@ nextflow \
   -entry test_wf4 \
   -resume \
   -profile docker,no_publish \
-  -c src/workflows/utils/labels_ci.config
+  -c src/workflows/utils/labels_ci.config \
+  -c src/workflows/utils/integration_tests.config
+
+nextflow \
+  run . \
+  -main-script src/workflows/multiomics/process_samples/test.nf \
+  -entry test_wf5 \
+  -resume \
+  -profile docker,no_publish \
+  -c src/workflows/utils/labels_ci.config \
+  -c src/workflows/utils/integration_tests.config
