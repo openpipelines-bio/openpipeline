@@ -3,26 +3,29 @@ import sys
 import mudata as mu
 
 input_file = f"{meta['resources_dir']}/merge_test_data/pbmc_1k_protein_v3_filtered_feature_bc_matrix_rna.h5mu"
-output_file = f"{meta['temp_dir']}/output.h5mu"
-
-# generate gene list files
-s_genes = ["MCM5", "PCNA", "TYMS"]
-s_genes_file = f"{meta['temp_dir']}/s_genes.txt"
-
-g2m_genes = ["UBE2C", "BIRC5", "TPX2"]
-g2m_genes_file = f"{meta['temp_dir']}/g2m_genes.txt"
 
 
-with open(s_genes_file, 'w') as file:
-    for gene in s_genes:
-        file.write(gene + '\n')
+@pytest.fixture
+def s_genes(tmp_path):
+    result = tmp_path / "s_genes.txt"
+    s_genes = ["MCM5", "PCNA", "TYMS"]
+    with result.open('w') as open_s_genes_file:
+        open_s_genes_file.write("\n".join(s_genes))
+    return result
 
-with open(g2m_genes_file, 'w') as file:
-    for gene in g2m_genes:
-        file.write(gene + '\n')
+
+@pytest.fixture
+def g2m_genes(tmp_path):
+    result = tmp_path / "s_genes.txt"
+    g2m_genes = ["UBE2C", "BIRC5", "TPX2"]
+    with result.open('w') as open_g2m_genes_file:
+        open_g2m_genes_file.write("\n".join(g2m_genes))
+    return result
 
 
-def test_cell_scoring_cell_cycle(run_component):
+def test_cell_scoring_cell_cycle(run_component, tmp_path, s_genes, g2m_genes):
+
+    output_file = tmp_path / "output.h5mu"
 
     run_component([
         "--input", input_file,
