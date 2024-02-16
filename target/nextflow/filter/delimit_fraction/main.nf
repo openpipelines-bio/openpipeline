@@ -3086,7 +3086,7 @@ meta = [
     "platform" : "nextflow",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/filter/delimit_fraction",
     "viash_version" : "0.8.4",
-    "git_commit" : "a1537d7c5ce44d6735d45dd094d7b508d7b127b5",
+    "git_commit" : "6b06ff92eac9a05c7e5ba888e782c01ec2608d6c",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))

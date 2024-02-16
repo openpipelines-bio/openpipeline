@@ -198,7 +198,9 @@ jobs:
       run: |
         echo "components=$(jq -c '[ .[] | 
           { 
-            "name": (.functionality.namespace + "/" + .functionality.name),
+            "name": .functionality.name,
+            "namespace_separator": .platforms | map(select(.type == "docker"))[0].namespace_separator,
+            "namespace": .functionality.namespace,
             "config": .info.config,
             "dir": .info.config | capture("^(?<dir>.*\/)").dir
           }
@@ -206,7 +208,8 @@ jobs:
 
         echo "workflows=$(jq -c '[ .[] | . as $config | (.functionality.test_resources // [])[] | select(.type == "nextflow_script", .entrypoint) |
         { 
-          "name": ($config.functionality.namespace + "/" + $config.functionality.name),
+          "name": $config.functionality.name,
+          "namespace": $config.functionality.namespace,
           "main_script": (($config.info.config | capture("^(?<dir>.*\/)").dir) + "/" + .path),
           "entry": .entrypoint,
           "config": $config.info.config
@@ -332,7 +335,7 @@ jobs:
       if: ${{ github.event_name == 'push' || inputs.deploy_to_viash_hub }}
       run: |
         viash ns exec -s ${{ matrix.component.dir }} --apply_platform -p docker \
-        'docker tag ghcr.io/openpipelines-bio/{namespace}_{functionality-name}:${{ github.event_name == 'push' && 'main_build' || inputs.target_tag }} viash-hub.com:5050/openpipelines-bio/openpipeline/{namespace}_{functionality-name}:${{ github.ref_name }}_build'
+        'docker tag ghcr.io/openpipelines-bio/{namespace}_{functionality-name}:${{ github.event_name == 'push' && 'main_build' || inputs.target_tag }} viash-hub.com:5050/openpipelines-bio/openpipeline/{namespace}_{functionality-name}:${{ inputs.version || format('{0}_build', github.ref_name) }}'
   
     - name: Push container to Viash-Hub
       if: ${{ github.event_name == 'push' || inputs.deploy_to_viash_hub }}
