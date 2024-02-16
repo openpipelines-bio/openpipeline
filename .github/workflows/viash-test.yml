@@ -30,7 +30,7 @@ jobs:
     env:
       s3_bucket: s3://openpipelines-data/
     runs-on: ubuntu-latest
-    if: "needs.run_ci_check_job.outputs.run_ci == 'true'"
+    if: ${{ needs.run_ci_check_job.outputs.run_ci == 'true'}}
 
     outputs:
       matrix: ${{ steps.set_matrix.outputs.matrix }}

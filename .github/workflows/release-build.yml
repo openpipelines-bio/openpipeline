@@ -8,172 +8,60 @@ on:
         required: true
 
 jobs:
-  # phase 1
-  list:
+  # Build and create containers
+  build:
+    uses: ./.github/workflows/main-build.yml
+    with:
+      push_containers: true
+      version: ${{ inputs.version_tag }}
+      target_tag: ${{ inputs.version_tag }}
+      deploy_to_viash_hub: true
+      deploy_branch: release
+    secrets: inherit
+
+  # Synchronize S3 Bucket and create cache for per-component runs
+  sync_s3:
     env:
       s3_bucket: s3://openpipelines-data/
     runs-on: ubuntu-latest
-      
+
     outputs:
-      component_matrix: ${{ steps.set_matrix.outputs.components }}
-      workflow_matrix: ${{ steps.set_matrix.outputs.workflows }}
       cache_key: ${{ steps.cache.outputs.cache_key }}
 
     steps:
-    - uses: actions/checkout@v4
-
-    - uses: viash-io/viash-actions/setup@v5
-
     - uses: viash-io/viash-actions/project/sync-and-cache-s3@v5
-      id: cache
+      id: cache 
       with:
         s3_bucket: $s3_bucket
         dest_path: resources_test
         cache_key_prefix: resources_test__
-
-    - name: Remove target folder from .gitignore
-      run: |
-        # allow publishing the target folder
-        sed -i '/^\/target\/$/d' .gitignore
-
-    - uses: viash-io/viash-actions/ns-build@v5
-      with:
-        config_mod: ".functionality.version := '${{ github.event.inputs.version_tag }}'"
-        parallel: true
-        query_namespace: ^(?!workflows)
-
-    - name: Build nextflow schemas
-      uses: viash-io/viash-actions/pro/build-nextflow-schemas@v5
-      with:
-        workflows: src
-        components: src
-        viash_pro_token: ${{ secrets.GTHB_PAT }}
-        tools_version: 'main_build'
-   
-    - name: Build parameter files
-      uses: viash-io/viash-actions/pro/build-nextflow-params@v5
-      with:
-        workflows: src
-        components: src
-        viash_pro_token: ${{ secrets.GTHB_PAT }}
-        tools_version: 'main_build'
-
-    - name: Deploy to target branch
-      uses: peaceiris/actions-gh-pages@v3
-      with:
-        github_token: ${{ secrets.GITHUB_TOKEN }}
-        publish_dir: .
-        publish_branch: release
-        full_commit_message: "Deploy for release ${{ github.event.inputs.version_tag }} from ${{ github.sha }}"
-        exclude_assets: ''
-
-
-    - id: ns_list_components
-      uses: viash-io/viash-actions/ns-list@v5
-      with:
-        platform: docker
-        format: json
-        query_namespace: ^(?!workflows)
-
-    - id: ns_list_workflows
-      uses: viash-io/viash-actions/ns-list@v5
-      with:
-        format: json
-        query_namespace: ^workflows
-
-    - id: set_matrix
-      run: |
-        echo "components=$(jq -c '[ .[] | 
-          { 
-            "name": (.functionality.namespace + (.platforms | map(select(.type == "docker"))[0].namespace_separator) + .functionality.name),
-            "config": .info.config,
-            "dir": .info.config | capture("^(?<dir>.*\/)").dir
-          }
-        ]' ${{ steps.ns_list_components.outputs.output_file }} )" >> $GITHUB_OUTPUT
-
-        echo "workflows=$(jq -c '[ .[] | . as $config | (.functionality.test_resources // [])[] | select(.type == "nextflow_script", .entrypoint) |
-          { 
-            "name": ($config.functionality.namespace + "/" + $config.functionality.name),
-            "main_script": (($config.info.config | capture("^(?<dir>.*\/)").dir) + "/" + .path),
-            "entry": .entrypoint,
-            "config": $config.info.config
-          }
-        ] | unique' ${{ steps.ns_list_workflows.outputs.output_file }} )" >> $GITHUB_OUTPUT
-
-  # phase 2
-  build:
-    needs: list
-
-    runs-on: ubuntu-latest
-
-    strategy:
-      fail-fast: false
-      matrix:
-        component: ${{ fromJson(needs.list.outputs.component_matrix) }}
-
-    steps:
-    # Remove unnecessary files to free up space. Otherwise, we get 'no space left on device.'
-    - uses: data-intuitive/reclaim-the-bytes@v2
-
-    - uses: actions/checkout@v4
-
-    - uses: viash-io/viash-actions/setup@v5
-
-    - name: Build container
-      uses: viash-io/viash-actions/ns-build@v5
-      with:
-        config_mod: .functionality.version := '${{ github.event.inputs.version_tag }}'
-        platform: docker
-        src: ${{ matrix.component.dir }}
-        setup: build
-        
-        
-    - name: Login to container registry
-      uses: docker/login-action@v3
-      with:
-        registry: ghcr.io
-        username: ${{ secrets.GTHB_USER }}
-        password: ${{ secrets.GTHB_PAT }}
-
-    - name: Push container
-      uses: viash-io/viash-actions/ns-build@v5
-      with:
-        config_mod: .functionality.version := '${{ github.event.inputs.version_tag }}'
-        platform: docker
-        src: ${{ matrix.component.dir }}
-        setup: push
-
-  ###################################3
+  
   # phase 3
   integration_test:
-    needs: [ build, list ]
-    if: "${{ needs.list.outputs.workflow_matrix != '[]' }}"
-
     runs-on: ubuntu-latest
+    needs: [ build, sync_s3 ]
+    if: "${{ needs.build.outputs.workflow_matrix != '[]' }}"
 
     strategy:
       fail-fast: false
       matrix:
-        component: ${{ fromJson(needs.list.outputs.workflow_matrix) }}
+        component: ${{ fromJson(needs.build.outputs.workflow_matrix) }}
 
     steps:
     # Remove unnecessary files to free up space. Otherwise, we get 'no space left on device.'
     - uses: data-intuitive/reclaim-the-bytes@v2
+    
+    - name: Keep symlinks as-is
+      run: |
+        git config --global core.symlinks true
 
     - uses: actions/checkout@v4
+      with:
+        ref: 'integration_build'
 
     - uses: viash-io/viash-actions/setup@v5
 
     - uses: nf-core/setup-nextflow@v1.5.2
-
-    # build target dir
-    # use containers from release branch, hopefully these are available
-    - name: Build target dir
-      uses: viash-io/viash-actions/ns-build@v5
-      with:
-        config_mod: ".functionality.version := '${{ github.event.inputs.version_tag }}'"
-        parallel: true
-        platform: nextflow
 
     # use cache
     - name: Cache resources data
@@ -181,13 +69,13 @@ jobs:
       timeout-minutes: 5
       with:
         path: resources_test
-        key: ${{ needs.list.outputs.cache_key }}
+        key: ${{ needs.sync_s3.outputs.cache_key }}
         fail-on-cache-miss: true
-    
+
     - name: Remove unused test resources to save space
       shell: bash
       run: |
-        readarray -t resources < <(viash config view --format json "${{ matrix.component.config }}" | jq -r -c '(.info.config | capture("^(?<dir>.*\/)").dir) as $dir | .functionality.test_resources | map(select(.type == "file")) | map($dir + .path) | unique | .[]')
+        readarray -t resources < <(viash config view --format json "${{ matrix.component.config }}" -c 'del(.functionality.dependencies)' | jq -r -c '(.info.config | capture("^(?<dir>.*\/)").dir) as $dir | .functionality.test_resources | map(select(.type == "file")) | map($dir + .path) | unique | .[]')
         to_not_remove=()
         for resource in "${resources[@]}"; do
           if [[ $resource == *"resources_test"* ]]; then
@@ -202,7 +90,9 @@ jobs:
           unset 'to_not_remove[${#to_not_remove[@]}-1]'
           to_not_remove+=( "(" "${to_not_remove[@]}" ")" "-prune" "-o")
         fi
+        echo "Not removing ${to_not_remove[@]}"
         find ./resources_test/ "${to_not_remove[@]}" -type f -exec rm {} +
+        tree ./resources_test/
 
     - name: Run integration test
       timeout-minutes: 60
@@ -211,21 +101,22 @@ jobs:
         export NXF_VER=22.04.5
         nextflow run . \
           -main-script "${{ matrix.component.main_script }}" \
-          -entry ${{ matrix.component.entry }} \
+          -entry "${{ matrix.component.entry }}" \
           -profile docker,mount_temp,no_publish \
-          -c src/workflows/utils/labels_ci.config
+          -c src/workflows/utils/labels_ci.config \
+          -c src/workflows/utils/integration_tests.config
 
   ###################################3
   # phase 4
   component_test:
-    needs: [ build, list ]
-    if: ${{ needs.list.outputs.component_matrix != '[]' && needs.list.outputs.component_matrix != '' }}
+    needs: [ build, sync_s3 ]
+    if: ${{ needs.build.outputs.component_matrix != '[]' && needs.build.outputs.component_matrix != '' }}
     runs-on: ubuntu-latest
 
     strategy:
       fail-fast: false
       matrix:
-        component: ${{ fromJson(needs.list.outputs.component_matrix) }}
+        component: ${{ fromJson(needs.build.outputs.component_matrix) }}
 
     steps:
     # Remove unnecessary files to free up space. Otherwise, we get 'no space left on device.'
@@ -243,31 +134,7 @@ jobs:
         SEGMENT_DOWNLOAD_TIMEOUT_MINS: 5
       with:
         path: resources_test
-        key: ${{ needs.list.outputs.cache_key }}
-
-    - name: Sync if caching failed
-      shell: bash
-      if: steps.restore_cache.outputs.cache-hit != 'true'
-      run: |
-        readarray -t resources < <(viash config view --format json "${{ matrix.component.config }}" | jq -r -c '(.info.config | capture("^(?<dir>.*\/)").dir) as $dir | .functionality.test_resources | map(select(.type == "file")) | map($dir + .path) | unique | .[]')
-        for resource in "${resources[@]}"; do
-          if [[ $resource == *"resources_test"* ]]; then
-            relative_path=${resource#*resources_test/}
-            relative_path_trailing_slash_removed=${relative_path%/}
-            s3_path="s3://openpipelines-data/$relative_path_trailing_slash_removed"
-            s3_lookup=$(AWS_EC2_METADATA_DISABLED=true aws s3 ls --no-sign-request "$s3_path" 2>&1)
-            extra_args=()
-            if [[ $s3_lookup =~ .*/$ ]]; then
-              extra_args+=("--recursive")
-            fi
-            AWS_EC2_METADATA_DISABLED=true \
-            aws s3 cp \
-            "$s3_path" \
-            "$resource" \
-            --no-sign-request \
-            "${extra_args[@]}"
-          fi
-        done
+        key: ${{ needs.sync_s3.outputs.cache_key }}
 
     - name: Login to the nvidia container registry
       uses: docker/login-action@v3
@@ -278,6 +145,13 @@ jobs:
         registry: nvcr.io
         username: $oauthtoken
         password: ${{ env.NVIDIA_PASSWORD }}
+
+    - name: Login to container registry
+      uses: docker/login-action@v3
+      with:
+        registry: ghcr.io
+        username: ${{ secrets.GTHB_USER }}
+        password: ${{ secrets.GTHB_PAT }}
 
     - name: Test component
       timeout-minutes: 30
