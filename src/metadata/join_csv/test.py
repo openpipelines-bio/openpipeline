@@ -125,9 +125,8 @@ def test_add_not_all_samples_in_csv_raises(run_component, tmp_path, sample_h5mu)
             "--obs_key", "sample_id",
             "--csv_key", "id",
         ])
-        assert not output_h5mu.is_file(), "No output should be created."
-        assert "Not all sample IDs selected from obs (using the column selected " \
-            "with --var_key or --obs_key) were found in the csv file." in err.stdout.decode('utf-8')
+    assert "Not all sample IDs selected from obs (using the column selected " \
+        "with --var_key or --obs_key) were found in the csv file." in err.value.stdout.decode('utf-8')
 
 if __name__ == "__main__":
     sys.exit(pytest.main([__file__]))
