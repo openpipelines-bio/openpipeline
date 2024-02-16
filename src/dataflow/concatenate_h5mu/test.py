@@ -49,7 +49,7 @@ def mudata_without_genome(tmp_path, request):
         # (here atac:genome) next to the old 'column_name' (here just 'genome')
         new_mudata.update_var()
         new_mudata.var.drop('genome', axis=1, inplace=True)
-        new_mudata = new_mudata[0:500,] # subsample to reduce memory consumption
+        new_mudata = new_mudata[0:200,] # subsample to reduce memory consumption
         new_path = tmp_path / Path(mudata_to_change).name
         new_mudata.write(new_path, compression="gzip")
         result.append(new_path)
