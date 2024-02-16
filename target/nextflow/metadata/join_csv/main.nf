@@ -3069,9 +3069,9 @@ meta = [
     "platform" : "nextflow",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/metadata/join_csv",
     "viash_version" : "0.8.4",
-    "git_commit" : "1245066a122271ece7ae5ce7f4819ad5c1a5f2d2",
+    "git_commit" : "f1c4a160117804db0d611822b50bb496f3c4f385",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline",
-    "git_tag" : "0.12.1-2-g1245066a12"
+    "git_tag" : "0.12.1-3-gf1c4a16011"
   }
 }'''))
 ]
