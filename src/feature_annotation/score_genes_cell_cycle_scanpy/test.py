@@ -105,7 +105,7 @@ def test_cell_scoring_cell_cycle_with_mixed_args(run_component, tmp_path):
     for col in expected_rna_obs_cols:
         assert col in output.mod["rna"].obs.columns, \
             f"could not find columns mdata.mod['rna'].obs['{col}']"
-            
+
 def test_fail(run_component, tmp_path):
     output_file = tmp_path / "output_newest.h5mu"
 
@@ -124,8 +124,9 @@ def test_fail(run_component, tmp_path):
     expected_error = r"The following genes are missing from the input dataset: [a_gene_name_that_does_not_exist]"
     assert re.search(expected_error, e_info.value.stdout.decode('utf-8')) is not None, \
         f"expected error message not found in {e_info.value.stdout.decode('utf-8')}"
-    
+
     assert not output_file.exists(), f"output file should not exist: {output_file}"
+
 
 if __name__ == '__main__':
     sys.exit(pytest.main([__file__]))

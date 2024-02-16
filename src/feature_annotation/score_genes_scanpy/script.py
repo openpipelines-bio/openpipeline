@@ -10,7 +10,7 @@ par = {
     "modality": "rna",
     "input_layer": "log_normalized",
     "gene_list_file": None,
-    "gene_list": ["UBE2C", "BIRC5", "TPX2"],
+    "gene_list": "a_gene_name_that_does_not_exist",
     "gene_pool_file": None,
     "gene_pool": None,
     "var_gene_names": "gene_symbol",
@@ -60,7 +60,7 @@ def read_gene_list(
 
     # check for missing genes
     if not par["allow_missing_genes"] and list_of_genes:
-        missing = set(list_of_genes).difference(gene_names)
+        missing = set(list(list_of_genes)).difference(gene_names)
         if missing:
             raise ValueError(f"The follow genes are missing from the input dataset: {missing}")
 
@@ -89,26 +89,18 @@ if not input_adata.var.index.is_unique:
 
 
 # read gene list
-gene_list = read_gene_list(
-    par,
-    gene_names,
-    "gene_list",
-    "gene_list_file"
-)
-gene_pool = read_gene_list(
-    par,
-    gene_names,
-    "gene_pool",
-    "gene_pool_file",
-    required=False
-)
+gene_list = read_gene_list(par, gene_names, "gene_list", "gene_list_file")
+gene_pool = read_gene_list(par, gene_names, "gene_pool", "gene_pool_file", required=False)
 
 # find matching index names for given genes
 gene_list_index = input_adata.var.index[[gene in gene_list for gene in gene_names]]
 gene_pool_index = input_adata.var.index[[gene in gene_pool for gene in gene_names]] if gene_pool else None
 
 # create input data for scanpy
-layer_data = input_adata.layers[par["input_layer"]] if par["input_layer"] else input_adata.X
+if par["input_layer"]:
+    layer_data = input_adata.layers[par["input_layer"]]
+else:
+    layer_data = input_adata.X
 adata_scanpy = ad.AnnData(
     X=layer_data,
     obs=pd.DataFrame(index=input_adata.obs.index),
