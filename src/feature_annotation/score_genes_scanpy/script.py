@@ -98,9 +98,9 @@ gene_pool_index = input_adata.var.index[[gene in gene_pool for gene in gene_name
 
 # create input data for scanpy
 if par["input_layer"]:
-    layer_data = input_adata.layers[par["input_layer"]]
+    layer_data = input_adata.layers[par["input_layer"]].copy()
 else:
-    layer_data = input_adata.X
+    layer_data = input_adata.X.copy()
 adata_scanpy = ad.AnnData(
     X=layer_data,
     obs=pd.DataFrame(index=input_adata.obs.index),
