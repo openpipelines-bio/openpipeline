@@ -41,7 +41,9 @@ jobs:
       run: |
         echo "components=$(jq -c '[ .[] | 
           { 
-            "name": (.functionality.namespace + (.platforms | map(select(.type == "docker"))[0].namespace_separator) + .functionality.name),
+            "name": .functionality.name,
+            "namespace_separator": .platforms | map(select(.type == "docker"))[0].namespace_separator,
+            "namespace": .functionality.namespace,
             "config": .info.config,
             "dir": .info.config | capture("^(?<dir>.*\/)").dir
           }
@@ -49,7 +51,8 @@ jobs:
 
         echo "workflows=$(jq -c '[ .[] | 
           { 
-            "name": (.functionality.namespace + "/" + .functionality.name),
+            "name": $config.functionality.name,
+            "namespace": $config.functionality.namespace,
             "main_script": ((.info.config | capture("^(?<dir>.*\/)").dir) + "/" + (.functionality.test_resources | map(select(.type == "nextflow_script")) | unique | .[].path )),
             "config": .info.config,
             "entry": .functionality.test_resources | map(select(.type == "nextflow_script")) | .[].entrypoint
