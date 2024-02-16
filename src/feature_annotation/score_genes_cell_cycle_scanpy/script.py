@@ -89,6 +89,7 @@ else:
     gene_names = list(input_adata.var.index)
 
 # check if var index is unique
+# input.var[par["var_gene_names"]] is mapped to var index, but may not contain unique values
 if not input_adata.var.index.is_unique:
     raise ValueError("var index is not unique")
 
