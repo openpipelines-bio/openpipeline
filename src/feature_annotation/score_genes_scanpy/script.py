@@ -93,8 +93,11 @@ gene_list = read_gene_list(par, gene_names, "gene_list", "gene_list_file")
 gene_pool = read_gene_list(par, gene_names, "gene_pool", "gene_pool_file", required=False)
 
 # find matching index names for given genes
-gene_list_index = input_adata.var.index[[gene in gene_list for gene in gene_names]]
-gene_pool_index = input_adata.var.index[[gene in gene_pool for gene in gene_names]] if gene_pool else None
+gene_names_index = input_adata.var[par["var_gene_names"]] if par["var_gene_names"] else input_adata.var_names
+gene_names = pd.Series(input_adata.var_names, index=gene_names_index)
+
+gene_list_index = gene_names.loc[gene_list].tolist()
+gene_pool_index = gene_names.loc[gene_pool].tolist() if gene_pool else None
 
 # create input data for scanpy
 if par["input_layer"]:
