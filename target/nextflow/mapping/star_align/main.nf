@@ -5399,9 +5399,9 @@ meta = [
     "platform" : "nextflow",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/mapping/star_align",
     "viash_version" : "0.8.4",
-    "git_commit" : "f1c4a160117804db0d611822b50bb496f3c4f385",
+    "git_commit" : "8715e8c07a92f1ba296af81c102bd98f3065f254",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline",
-    "git_tag" : "0.12.1-3-gf1c4a16011"
+    "git_tag" : "0.12.1-4-g8715e8c07a"
   }
 }'''))
 ]
