@@ -93,6 +93,7 @@ functionality:
       arguments:
         - name: --ctrl_size
           type: integer
+          min: 0
           default: 50
           required: false
           description: |
@@ -100,6 +101,7 @@ functionality:
             If len(gene_list) is not too low, you can set ctrl_size=len(gene_list).
         - name: --n_bins
           type: integer
+          min: 0
           default: 25
           required: false
           description: |
