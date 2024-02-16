@@ -10,7 +10,7 @@ par = {
     "modality": "rna",
     "input_layer": "log_normalized",
     "gene_list_file": None,
-    "gene_list": "a_gene_name_that_does_not_exist",
+    "gene_list": ["MCM5", "PCNA", "TYMS"],
     "gene_pool_file": None,
     "gene_pool": None,
     "var_gene_names": "gene_symbol",
@@ -118,6 +118,7 @@ sc.tl.score_genes(
 )
 
 # copy results to mudata
+assert all(adata_scanpy.obs.index == input_adata.obs.index), "index mismatch between input adata and scanpy output adata"
 input_adata.obs[par["obs_score"]] = adata_scanpy.obs["score"]
 
 # write output to mudata

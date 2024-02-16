@@ -129,6 +129,7 @@ output_slot_mapping = {
     par["obs_g2m_score"]: "G2M_score",
     par["obs_phase"]: "phase"
 }
+assert all(adata_scanpy.obs.index == input_adata.obs.index), "index mismatch between input adata and scanpy output adata"
 for dest, orig in output_slot_mapping.items():
     input_adata.obs[dest] = adata_scanpy.obs[orig]
 
