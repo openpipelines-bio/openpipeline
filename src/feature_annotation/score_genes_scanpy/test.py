@@ -63,6 +63,28 @@ def test_cell_scoring_with_alternative_args(run_component, tmp_path, gene_list_f
             f"could not find columns mdata.mod['rna'].obs['{col}']"
 
 
+def test_cell_scoring_with_mixed_args(run_component, tmp_path, gene_list_file):
+    output_file = tmp_path / "output_new.h5mu"
+
+    run_component([
+        "--input", input_file,
+        "--modality", "rna",
+        "--input_layer", "log_normalized",
+        "--var_gene_names", "gene_symbol",
+        "--gene_list_file", gene_list_file,
+        "--gene_list", "TOP2A",
+        "--output", output_file,
+        "--obs_score", 'cell_cycle_score'
+    ])
+
+    output = mu.read(output_file)
+
+    # check output
+    expected_rna_obs_cols = ["cell_cycle_score"]
+    for col in expected_rna_obs_cols:
+        assert col in output.mod["rna"].obs.columns, \
+            f"could not find columns mdata.mod['rna'].obs['{col}']"
+            
 def test_fail(run_component, tmp_path):
     output_file = tmp_path / "output_newest.h5mu"
 
@@ -76,10 +98,10 @@ def test_fail(run_component, tmp_path):
             "--output", output_file
         ])
 
-        assert e_info.value.returncode != 0
-        expected_error = r"The following genes are missing from the input dataset: [a_gene_name_that_does_not_exist]"
-        assert re.search(expected_error, e_info.value.stdout.decode('utf-8')) is not None, \
-            f"expected error message not found in {e_info.value.stdout.decode('utf-8')}"
+    assert e_info.value.returncode != 0
+    expected_error = r"The following genes are missing from the input dataset: [a_gene_name_that_does_not_exist]"
+    assert re.search(expected_error, e_info.value.stdout.decode('utf-8')) is not None, \
+        f"expected error message not found in {e_info.value.stdout.decode('utf-8')}"
 
     assert not output_file.exists(), f"output file should not exist: {output_file}"
 

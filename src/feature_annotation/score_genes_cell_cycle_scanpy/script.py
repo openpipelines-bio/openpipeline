@@ -54,30 +54,27 @@ def read_gene_list(
         raise ValueError(f"Either --{list_key} or --{file_key} must be set")
 
     # read gene list from parameters
-    list = par[list_key] if par[list_key] else []
+    gene_list = par[list_key] if par[list_key] else []
 
     # read gene list from file
     if par[file_key]:
         with open(par[file_key]) as file:
             file_genes = [x.strip() for x in file]
-        list.extend(file_genes)
+        gene_list.extend(file_genes)
 
     # check for missing genes
     if not par["allow_missing_genes"] and list:
-        missing = set(list).difference(gene_names)
+        missing = set(gene_list).difference(gene_names)
         if missing:
             raise ValueError(f"The follow genes are missing from the input dataset: {missing}")
 
     # return gene list
-    if required:
-        if not list:
-            raise ValueError(f"No genes detected in --{list_key} or --{file_key}")
-        return list
+    if gene_list:
+        return gene_list
+    elif required:
+        raise ValueError(f"No genes detected in --{list_key} or --{file_key}")
     else:
-        # turn empty list into None
-        if not list:
-            return None
-        return list
+        return None
 
 # END TEMPORARY WORKAROUND read_gene_list
 
