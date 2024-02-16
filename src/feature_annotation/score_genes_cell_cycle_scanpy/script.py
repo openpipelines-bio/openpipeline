@@ -83,10 +83,8 @@ def read_gene_list(
 mdata = mu.read(par["input"])
 input_adata = mdata.mod[par["modality"]]
 
-if par["var_gene_names"]:
-    gene_names = list(input_adata.var[par["var_gene_names"]])
-else:
-    gene_names = list(input_adata.var.index)
+gene_names_index = input_adata.var[par["var_gene_names"]] if par["var_gene_names"] else input_adata.var_names
+gene_names = pd.Series(input_adata.var_names, index=gene_names_index)
 
 # check if var index is unique
 # input.var[par["var_gene_names"]] is mapped to var index, but may not contain unique values
@@ -94,14 +92,11 @@ if not input_adata.var.index.is_unique:
     raise ValueError("var index is not unique")
 
 # read gene lists
-s_genes = read_gene_list(par, gene_names, "s_genes", "s_genes_file")
-g2m_genes = read_gene_list(par, gene_names, "g2m_genes", "g2m_genes_file")
-gene_pool = read_gene_list(par, gene_names, "gene_pool", "gene_pool_file", required=False)
+s_genes = read_gene_list(par, gene_names.index, "s_genes", "s_genes_file")
+g2m_genes = read_gene_list(par, gene_names.index, "g2m_genes", "g2m_genes_file")
+gene_pool = read_gene_list(par, gene_names.index, "gene_pool", "gene_pool_file", required=False)
 
 # find matching index names for given genes
-gene_names_index = input_adata.var[par["var_gene_names"]] if par["var_gene_names"] else input_adata.var_names
-gene_names = pd.Series(input_adata.var_names, index=gene_names_index)
-
 g2m_index = gene_names.loc[g2m_genes].tolist()
 s_index = gene_names.loc[s_genes].tolist()
 gene_pool_index = gene_names.loc[gene_pool].tolist() if gene_pool else None
