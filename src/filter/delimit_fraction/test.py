@@ -15,6 +15,8 @@ meta = {
 ## VIASH END
 
 sys.path.append(meta["resources_dir"])
+from openpipelinetestutils.asserters import assert_annotation_objects_equal
+
 # START TEMPORARY WORKAROUND setup_logger
 # reason: resources aren't available when using Nextflow fusion
 # from setup_logger import setup_logger

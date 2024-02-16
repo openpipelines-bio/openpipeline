@@ -39,9 +39,9 @@ def test_raise_if_uns_neighbor_is_missing(run_component, tmp_path):
             "--num_components", "26",
             "--uns_neighbors", "does_not_exist"
         ])
-        assert not output.is_file(), "No output should be created."
-        assert "ValueError: 'does_not_exist' was not found in .mod['rna'].uns." in \
-            err.stdout.decode('utf-8')
+    assert not output.is_file(), "No output should be created."
+    assert "ValueError: 'does_not_exist' was not found in .mod['rna'].uns." in \
+        err.stdout.decode('utf-8')
 
 if __name__ == "__main__":
     sys.exit(pytest.main([__file__]))
