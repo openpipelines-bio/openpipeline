@@ -49,7 +49,7 @@ def mudata_without_genome(tmp_path, request):
         # (here atac:genome) next to the old 'column_name' (here just 'genome')
         new_mudata.update_var()
         new_mudata.var.drop('genome', axis=1, inplace=True)
-        new_mudata = new_mudata[0:500,] # subsample to reduce memory consumption
+        new_mudata = new_mudata[0:200,] # subsample to reduce memory consumption
         new_path = tmp_path / Path(mudata_to_change).name
         new_mudata.write(new_path, compression="gzip")
         result.append(new_path)
@@ -127,8 +127,8 @@ def test_concatenate_samples_with_same_observation_ids_raises(run_component):
                 "--other_axis_mode", "move",
                 "--output_compression", "gzip"
                 ])
-        assert "ValueError: Observations are not unique across samples." in \
-            err.value.stdout.decode('utf-8')
+    assert "ValueError: Observations are not unique across samples." in \
+        err.value.stdout.decode('utf-8')
 
 @pytest.mark.parametrize("mudata_without_genome",
                           [([input_sample1_file], ["rna", "atac"])],
@@ -426,8 +426,8 @@ def test_concat_invalid_h5_error_includes_path(run_component, tmp_path):
                 "--output", "concat.h5mu",
                 "--other_axis_mode", "move"
                 ])
-        assert re.search(rf"OSError: Failed to load .*{str(empty_file)}\. Is it a valid h5 file?",
-            err.value.stdout.decode('utf-8'))
+    assert re.search(rf"OSError: Failed to load .*{str(empty_file)}\. Is it a valid h5 file?",
+        err.value.stdout.decode('utf-8'))
         
 
 @pytest.mark.parametrize("mudata_without_genome",

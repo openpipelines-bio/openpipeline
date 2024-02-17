@@ -183,5 +183,5 @@ info:
   output: "/home/runner/work/openpipeline/openpipeline/target/docker/convert/from_h5mu_to_h5ad"
   executable: "/home/runner/work/openpipeline/openpipeline/target/docker/convert/from_h5mu_to_h5ad/from_h5mu_to_h5ad"
   viash_version: "0.8.4"
-  git_commit: "383e3ef0322e27d1235e782b519d4e37e39c8432"
+  git_commit: "7b6a8150242bc2a9e7724f294ae33159daa8b87a"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"
