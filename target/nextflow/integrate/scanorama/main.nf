@@ -3133,9 +3133,9 @@ meta = [
     "platform" : "nextflow",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/integrate/scanorama",
     "viash_version" : "0.8.4",
-    "git_commit" : "342eeba407caff609b0a8cfbec2430a26ac84b13",
+    "git_commit" : "1bd9b1d0811a5e16c69833abeac7d646f3b28748",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline",
-    "git_tag" : "0.12.1-5-g342eeba407"
+    "git_tag" : "0.12.1-6-g1bd9b1d081"
   }
 }'''))
 ]
