@@ -1,4 +1,4 @@
-# openpipelines 0.13.0
+# openpipelines 1.0.0rc1
 
 ## BREAKING CHANGES
 
@@ -68,7 +68,6 @@
  
 * Renamed `obsm_metrics` to `uns_metrics` for the `cellranger_mapping` workflow because the cellranger metrics are stored in `.uns` and not `.obsm` (PR #610).
 
-
 ## MAJOR CHANGES
 
 * `mapping/cellranger_mkfastq`: update from cellranger `6.0.2` to `7.0.1` (PR #675)
@@ -98,11 +97,10 @@
 * `qc/calculate_qc_metrics`: allow setting the output column names and disabling the calculation of several metrics (PR #644).
 
 * `cluster/leiden`: Allow calculating multiple resolutions in parallel (PR #645).
-* 
+
 * `rna_multisample` workflow: added `--modality` argument (PR #607).
 
-* `multisample` workflow: in addition to using multimodal files as input, this workflow now also accepts a list of files. The list of files must be the unimodal equivalents of 
-of a split multimodal files. The modalities in the list must be unique and after processing the modalities will be merged into multimodal files (PR #606).
+* `multisample` workflow: in addition to using multimodal files as input, this workflow now also accepts a list of files. The list of files must be the unimodal equivalents of a split multimodal file. The modalities in the list must be unique and after processing the modalities will be merged into multimodal files (PR #606).
 
 * Added `filter/intersect_obs` component which removes observations that are not shared between modalities (PR #589).
 
@@ -122,8 +120,8 @@ of a split multimodal files. The modalities in the list must be unique and after
 
 * Added `annotate/score_genes` and `annotate/score_genes_cell_cycle` to calculate scanpy gene scores (PR #703).
 
-
 ## MINOR CHANGES
+
 * Refactored `rna_multisample` (PR #607), `cellranger_multi` (PR #609), `cellranger_mapping` (PR #610) and other (PR #606) pipelines to use `fromState` and `toState` functionality.
 
 * `metadata/add_id`: add more runtime logging (PR #663).
