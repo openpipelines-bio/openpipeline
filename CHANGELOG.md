@@ -96,8 +96,6 @@
 
 * `qc/calculate_qc_metrics`: allow setting the output column names and disabling the calculation of several metrics (PR #644).
 
-* `cluster/leiden`: Allow calculating multiple resolutions in parallel (PR #645).
-
 * `rna_multisample` workflow: added `--modality` argument (PR #607).
 
 * `multisample` workflow: in addition to using multimodal files as input, this workflow now also accepts a list of files. The list of files must be the unimodal equivalents of a split multimodal file. The modalities in the list must be unique and after processing the modalities will be merged into multimodal files (PR #606).
