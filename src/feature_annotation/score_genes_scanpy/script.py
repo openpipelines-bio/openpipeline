@@ -78,24 +78,19 @@ def read_gene_list(
 mdata = mu.read(par["input"])
 input_adata = mdata.mod[par["modality"]]
 
-if par["var_gene_names"]:
-    gene_names = list(input_adata.var[par["var_gene_names"]])
-else:
-    gene_names = list(input_adata.var.index)
-
-# check if var index is unique
-if not input_adata.var.index.is_unique:
-    raise ValueError("var index is not unique")
-
-
-# read gene list
-gene_list = read_gene_list(par, gene_names, "gene_list", "gene_list_file")
-gene_pool = read_gene_list(par, gene_names, "gene_pool", "gene_pool_file", required=False)
-
-# find matching index names for given genes
 gene_names_index = input_adata.var[par["var_gene_names"]] if par["var_gene_names"] else input_adata.var_names
 gene_names = pd.Series(input_adata.var_names, index=gene_names_index)
 
+# check if var index is unique
+# input.var[par["var_gene_names"]] is mapped to var index, but may not contain unique values
+if not input_adata.var.index.is_unique:
+    raise ValueError("var index is not unique")
+
+# read gene list
+gene_list = read_gene_list(par, gene_names.index, "gene_list", "gene_list_file")
+gene_pool = read_gene_list(par, gene_names.index, "gene_pool", "gene_pool_file", required=False)
+
+# find matching index names for given genes
 gene_list_index = gene_names.loc[gene_list].tolist()
 gene_pool_index = gene_names.loc[gene_pool].tolist() if gene_pool else None
 
