@@ -11,12 +11,10 @@ meta = {
     'resources_dir': 'resources_test/',
     'config': "./src/filter/delimit_fraction/config.vsh.yaml"
 }
-sys.path.append('./src/base/test_utils')
 
 ## VIASH END
 
-sys.path.append(meta["resources_dir"])
-from test_utils.asserters import assert_annotation_objects_equal
+from openpipelinetestutils.asserters import assert_annotation_objects_equal
 
 # START TEMPORARY WORKAROUND setup_logger
 # reason: resources aren't available when using Nextflow fusion
@@ -132,4 +130,4 @@ def test_filtering_wrong_data_raises(run_component, input_path_string_data,
 
 
 if __name__ == "__main__":
-    exit(pytest.main([__file__], plugins=["test_utils.fixtures"]))
+    exit(pytest.main([__file__]))

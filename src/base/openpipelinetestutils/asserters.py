@@ -4,13 +4,11 @@ import pandas as pd
 import numpy as np
 from scipy.sparse import issparse
 from mudata import MuData
-from anndata import AnnData
 from pathlib import Path
 from pandas.testing import assert_frame_equal
-from typing import Union, Literal
+from typing import Literal
+from .typing import AnnotationObjectOrPathLike
 
-AnnotationObject = Union[MuData, AnnData]
-AnnotationObjectOrPathLike = Union[AnnotationObject, str, Path]
 
 def _read_if_needed(anndata_mudata_path_or_obj):
     if isinstance(anndata_mudata_path_or_obj, (str, Path)):

@@ -18,8 +18,7 @@ meta = {
 }
 ## VIASH END
 
-sys.path.append(meta["resources_dir"])
-from test_utils.asserters import assert_annotation_objects_equal
+from openpipelinetestutils.asserters import assert_annotation_objects_equal
 
 @pytest.fixture
 def generate_h5mu():
@@ -224,5 +223,5 @@ def test_invalid_regex_pattern(run_component, generate_h5mu,
 
 
 if __name__ == "__main__":
-    sys.exit(pytest.main([__file__, "-s"], plugins=["test_utils.fixtures"]))
+    sys.exit(pytest.main([__file__, "-s"]))
 

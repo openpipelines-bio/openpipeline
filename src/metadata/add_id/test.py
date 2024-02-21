@@ -3,31 +3,29 @@ import pytest
 import pandas as pd
 from anndata import AnnData
 from mudata import MuData, read_h5mu
+from openpipelinetestutils.asserters import assert_annotation_objects_equal
+from openpipelinetestutils.utils import remove_annotation_column
 
 ## VIASH START
 meta = {
     'executable': './target/docker/metadata/add_id/add_id',
-    'resources_dir': './src/base/test_utils',
+    'resources_dir': '.',
     'cpus': 2,
     'config': './src/metadata/add_id/config.vsh.yaml'
 }
 ## VIASH END
 
 
-sys.path.append(meta["resources_dir"])
-from test_utils.asserters import assert_annotation_objects_equal
-
-
-def remove_obs_column(mudata_object, column):
-    for _, modality in mudata_object.mod.items():
-        modality.obs = modality.obs.drop([column],
-                                         axis="columns", inplace=False)
-    mod_names_columns = [f"{mod_name}:{column}" for mod_name in mudata_object.mod.keys()]
-    mudata_object.obs = mudata_object.obs.drop([column] + mod_names_columns,
-                                               axis="columns",
-                                               inplace=False)
-    mudata_object.update()
-    return mudata_object
+# def remove_obs_column(mudata_object, column):
+#     for _, modality in mudata_object.mod.items():
+#         modality.obs = modality.obs.drop([column],
+#                                          axis="columns", inplace=False)
+#     mod_names_columns = [f"{mod_name}:{column}" for mod_name in mudata_object.mod.keys()]
+#     mudata_object.obs = mudata_object.obs.drop([column] + mod_names_columns,
+#                                                axis="columns",
+#                                                inplace=False)
+#     mudata_object.update()
+#     return mudata_object
 
 @pytest.fixture
 def generate_h5mu():
@@ -68,7 +66,7 @@ def test_add_id(run_component, generate_h5mu, write_mudata_to_file, random_h5mu_
 
     # Make sure that the rest of the mudata object stayed the same
     assert_annotation_objects_equal(input_data,
-                                    remove_obs_column(output_data, "sample_id"),
+                                    remove_annotation_column(output_data, "sample_id", "obs"),
                                     check_data=True)
 
 
@@ -98,7 +96,7 @@ def test_add_id_obs_output(run_component, generate_h5mu,
 
     # Make sure that the rest of the mudata object stayed the same
     assert_annotation_objects_equal(input_data,
-                                    remove_obs_column(output_data, "test_key"),
+                                    remove_annotation_column(output_data, "test_key", "obs"),
                                     check_data=True)
 
 
@@ -124,7 +122,7 @@ def test_add_id_observations_unique(run_component, generate_h5mu,
     pd.testing.assert_index_equal(output_data.obs.index, "test_id_" + input_data.obs.index)
 
     # Make sure that the rest of the mudata object stayed the same
-    equals_test_output_data = remove_obs_column(output_data, "sample_id")
+    equals_test_output_data = remove_annotation_column(output_data, "sample_id", "obs")
     for mod_name, modality in equals_test_output_data.mod.items():
         modality.obs.index =  input_data[mod_name].obs.index
     equals_test_output_data.obs.index = input_data.obs.index
@@ -154,6 +152,6 @@ def test_add_id_overwrites_output_column(run_component, generate_h5mu,
 
 
 if __name__ == "__main__":
-    sys.exit(pytest.main([__file__], plugins=["test_utils.fixtures"]))
+    sys.exit(pytest.main([__file__]))
 
 
