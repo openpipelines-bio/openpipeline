@@ -8,7 +8,7 @@ config_mods: |
   .functionality.requirements.commands := ['ps']
   .functionality.arguments[.multiple == true].multiple_sep := ";"
   .functionality.argument_groups[true].arguments[.multiple == true].multiple_sep := ";"
-  .platforms[.type == 'docker'].namespace_separator := '_'
+  .platforms[.type == 'docker'].namespace_separator := '/'
   .platforms[.type == 'docker'].target_registry := 'ghcr.io'
   .platforms[.type == 'docker'].target_organization := 'openpipelines-bio'
   .platforms[.type == 'docker'].target_image_source := 'https://github.com/openpipelines-bio/openpipeline'
