@@ -1,7 +1,7 @@
 {
 "$schema": "http://json-schema.org/draft-07/schema",
 "title": "freemuxlet",
-"description": "\"freemuxlet is a software tool to deconvolute sample identity and identify multiplets when multiple samples are pooled by barcoded single cell sequencing. |\nIf external genotyping data is not available, the genotyping-free version demuxlet, freemuxlet, would be recommended. \"\n",
+"description": "Freemuxlet is a software tool to deconvolute sample identity and identify multiplets when\nmultiple samples are pooled by barcoded single cell sequencing. If external genotyping\ndata is not available, the genotyping-free version demuxlet, freemuxlet, would be recommended.\n",
 "type": "object",
 "definitions": {
 

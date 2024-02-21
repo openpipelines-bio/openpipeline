@@ -1,7 +1,7 @@
 {
 "$schema": "http://json-schema.org/draft-07/schema",
 "title": "dsc_pileup",
-"description": "\"dsc-pileup is a software tool to pileup reads and corresponding base quality for each overlapping SNPs and each barcode. By using pileup files, it would allow us to run demuxlet/freemuxlet pretty fast multiple times without going over the BAM file again.\n",
+"description": "Dsc-pileup is a software tool to pileup reads and corresponding base quality \nfor each overlapping SNPs and each barcode. By using pileup files,\nit would allow us to run demuxlet/freemuxlet pretty fast multiple times\nwithout going over the BAM file again.\n",
 "type": "object",
 "definitions": {
 

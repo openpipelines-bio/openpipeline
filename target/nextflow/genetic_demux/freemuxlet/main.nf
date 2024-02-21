@@ -3076,7 +3076,7 @@ meta = [
         "dest" : "nextflow_labels.config"
       }
     ],
-    "description" : "\\"freemuxlet is a software tool to deconvolute sample identity and identify multiplets when multiple samples are pooled by barcoded single cell sequencing. |\nIf external genotyping data is not available, the genotyping-free version demuxlet, freemuxlet, would be recommended. \\"\n",
+    "description" : "Freemuxlet is a software tool to deconvolute sample identity and identify multiplets when\nmultiple samples are pooled by barcoded single cell sequencing. If external genotyping\ndata is not available, the genotyping-free version demuxlet, freemuxlet, would be recommended.\n",
     "test_resources" : [
       {
         "type" : "bash_script",
@@ -3214,7 +3214,7 @@ meta = [
     "platform" : "nextflow",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/genetic_demux/freemuxlet",
     "viash_version" : "0.8.4",
-    "git_commit" : "85300303f7e9d1200d49340b224e2db4306a83fd",
+    "git_commit" : "e56f499efbaa7280e451249c39ad27af32d56edf",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))

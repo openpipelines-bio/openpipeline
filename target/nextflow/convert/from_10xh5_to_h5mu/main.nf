@@ -3151,7 +3151,7 @@ meta = [
     "platform" : "nextflow",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/convert/from_10xh5_to_h5mu",
     "viash_version" : "0.8.4",
-    "git_commit" : "85300303f7e9d1200d49340b224e2db4306a83fd",
+    "git_commit" : "e56f499efbaa7280e451249c39ad27af32d56edf",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))

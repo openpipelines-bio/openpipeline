@@ -3593,7 +3593,7 @@ meta = [
         "dest" : "nextflow_labels.config"
       }
     ],
-    "description" : "freebayes is a Bayesian genetic variant detector designed to find small polymorphisms, specifically SNPs.",
+    "description" : "Freebayes is a Bayesian genetic variant detector designed to\nfind small polymorphisms, specifically SNPs.\n",
     "test_resources" : [
       {
         "type" : "bash_script",
@@ -3705,7 +3705,7 @@ meta = [
     "platform" : "nextflow",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/genetic_demux/freebayes",
     "viash_version" : "0.8.4",
-    "git_commit" : "85300303f7e9d1200d49340b224e2db4306a83fd",
+    "git_commit" : "e56f499efbaa7280e451249c39ad27af32d56edf",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))

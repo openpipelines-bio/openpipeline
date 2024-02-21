@@ -258,9 +258,9 @@ functionality:
   - type: "file"
     path: "./src/workflows/utils/labels.config"
     dest: "nextflow_labels.config"
-  description: "\"dsc-pileup is a software tool to pileup reads and corresponding\
-    \ base quality for each overlapping SNPs and each barcode. By using pileup files,\
-    \ it would allow us to run demuxlet/freemuxlet pretty fast multiple times without\
+  description: "Dsc-pileup is a software tool to pileup reads and corresponding base\
+    \ quality \nfor each overlapping SNPs and each barcode. By using pileup files,\n\
+    it would allow us to run demuxlet/freemuxlet pretty fast multiple times\nwithout\
     \ going over the BAM file again.\n"
   test_resources:
   - type: "bash_script"
@@ -367,5 +367,5 @@ info:
   output: "/home/runner/work/openpipeline/openpipeline/target/docker/genetic_demux/dsc_pileup"
   executable: "/home/runner/work/openpipeline/openpipeline/target/docker/genetic_demux/dsc_pileup/dsc_pileup"
   viash_version: "0.8.4"
-  git_commit: "85300303f7e9d1200d49340b224e2db4306a83fd"
+  git_commit: "e56f499efbaa7280e451249c39ad27af32d56edf"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"
