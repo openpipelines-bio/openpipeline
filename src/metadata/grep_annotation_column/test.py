@@ -7,7 +7,9 @@ import pandas as pd
 from anndata import AnnData
 from mudata import MuData, read_h5mu
 from subprocess import CalledProcessError
-from uuid import uuid4
+from openpipelinetestutils.asserters import assert_annotation_objects_equal
+from openpipelinetestutils.utils import remove_annotation_column
+
 
 ## VIASH START
 meta = {
@@ -18,7 +20,6 @@ meta = {
 }
 ## VIASH END
 
-from openpipelinetestutils.asserters import assert_annotation_objects_equal
 
 @pytest.fixture
 def generate_h5mu():
@@ -33,21 +34,6 @@ def generate_h5mu():
     ad2 = AnnData(df, obs=obs2, var=var2)
     tmp_mudata = MuData({'mod1': ad1, 'mod2': ad2})
     return tmp_mudata
-
-@pytest.fixture
-def random_h5mu_path(tmp_path):
-    def wrapper():
-        return tmp_path / f"{uuid4()}.h5mu"
-    return wrapper
-
-
-@pytest.fixture
-def write_mudata_to_file(random_h5mu_path):
-    def wrapper(mudata_obj):
-        output_path = random_h5mu_path()
-        mudata_obj.write(output_path)
-        return output_path
-    return wrapper
 
 
 @pytest.mark.parametrize("compression_format", ["gzip", "lzf"])
@@ -75,6 +61,10 @@ def test_grep_column(run_component, generate_h5mu,
     assert "test" in output_data.mod['mod1'].var.columns.to_list()
     assert output_data.mod['mod1'].var['test'].to_list() == [True, False, False]
 
+    assert_annotation_objects_equal(input_path,
+                                    remove_annotation_column(output_data, "test", "var", "mod1"),
+                                    check_data=True)
+
 @pytest.mark.parametrize("compression_format", ["gzip", "lzf"])
 def test_grep_column_default(run_component, generate_h5mu,
                              random_h5mu_path, write_mudata_to_file,
@@ -98,6 +88,10 @@ def test_grep_column_default(run_component, generate_h5mu,
     output_data = read_h5mu(output_path)
     assert "test" in output_data.mod['mod1'].var.columns.to_list()
     assert output_data.mod['mod1'].var['test'].to_list() == [True, False, False]
+
+    assert_annotation_objects_equal(input_path,
+                                    remove_annotation_column(output_data, "test", "var", "mod1"),
+                                    check_data=True)
 
 @pytest.mark.parametrize("compression_format", ["gzip", "lzf"])
 def test_grep_column(run_component, generate_h5mu,
@@ -124,6 +118,9 @@ def test_grep_column(run_component, generate_h5mu,
     assert "test" in output_data.mod['mod1'].var.columns.to_list()
     assert output_data.mod['mod1'].var['test'].to_list() == [True, False, False]
 
+    assert_annotation_objects_equal(input_path,
+                                    remove_annotation_column(output_data, "test", "var", "mod1"),
+                                    check_data=True)
 
 @pytest.mark.parametrize("compression_format", ["gzip", "lzf"])
 def test_grep_column_fraction_column(run_component, generate_h5mu,
@@ -151,7 +148,15 @@ def test_grep_column_fraction_column(run_component, generate_h5mu,
     assert "test" in output_data.mod['mod1'].var.columns.to_list()
     assert output_data.mod['mod1'].var['test'].to_list() == [True, False, False]
     output_data.mod['mod1'].obs['test_output_fraction'].to_list() == [1/6, 4/15]
-
+    output_object_without_obs_column = remove_annotation_column(output_data, 
+                                                                ["test_output_fraction"], 
+                                                                "obs", "mod1")
+    output_object_without_wo_output = remove_annotation_column(output_object_without_obs_column, 
+                                                               ["test"], 
+                                                               "var", "mod1")
+    assert_annotation_objects_equal(input_path,
+                                    output_object_without_wo_output,
+                                    check_data=True)
 
 @pytest.mark.parametrize("compression_format", ["gzip", "lzf"])
 def test_fraction_column_input_layer(run_component, generate_h5mu,
@@ -182,6 +187,16 @@ def test_fraction_column_input_layer(run_component, generate_h5mu,
     assert "test" in output_data.mod['mod1'].var.columns.to_list()
     assert output_data.mod['mod1'].var['test'].to_list() == [True, False, False]
     output_data.mod['mod1'].obs['test_output_fraction'].to_list() == [1/6, 4/15]
+    output_object_without_obs_column = remove_annotation_column(output_data, 
+                                                                ["test_output_fraction"], 
+                                                                "obs", "mod1")
+    output_object_without_wo_output = remove_annotation_column(output_object_without_obs_column, 
+                                                               ["test"], 
+                                                               "var", "mod1")
+    assert_annotation_objects_equal(input_path,
+                                    output_object_without_wo_output,
+                                    check_data=True)
+
 
 def test_missing_column(run_component, generate_h5mu,
                         random_h5mu_path, write_mudata_to_file):

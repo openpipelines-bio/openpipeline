@@ -13,7 +13,7 @@ def remove_annotation_column(annotation_object: AnnotationObject,
     if isinstance(annotation_object, AnnData) and modality_name is not None:
         raise ValueError("Cannot specify modality when object is of type AnnData.")
     if isinstance(column_names, str):
-        column_names = [column_names]
+        column_names = [str(column_names)] # str to make a copy
     axis_strings = {
         "var": "var",
         "obs": "obs",
@@ -23,9 +23,10 @@ def remove_annotation_column(annotation_object: AnnotationObject,
     axis_string = axis_strings[axis]
     axis_getter = attrgetter(axis_string)
     axis_setter = lambda obj, value: setattr(obj, axis_string, value)
-    axis_setter(annotation_object, axis_getter(annotation_object).drop(column_names,
-                                                                       axis="columns",
-                                                                       inplace=False))
+    if not modality_name:
+        axis_setter(annotation_object, axis_getter(annotation_object).drop(column_names,
+                                                                        axis="columns",
+                                                                        inplace=False))
     if isinstance(annotation_object, MuData):
         modality_names = [modality_name] if modality_name else list(annotation_object.mod.keys())
         extra_cols_to_remove = [f"{mod_name}:{column_name}" for mod_name, column_name

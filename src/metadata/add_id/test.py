@@ -15,18 +15,6 @@ meta = {
 }
 ## VIASH END
 
-
-# def remove_obs_column(mudata_object, column):
-#     for _, modality in mudata_object.mod.items():
-#         modality.obs = modality.obs.drop([column],
-#                                          axis="columns", inplace=False)
-#     mod_names_columns = [f"{mod_name}:{column}" for mod_name in mudata_object.mod.keys()]
-#     mudata_object.obs = mudata_object.obs.drop([column] + mod_names_columns,
-#                                                axis="columns",
-#                                                inplace=False)
-#     mudata_object.update()
-#     return mudata_object
-
 @pytest.fixture
 def generate_h5mu():
     # generate data
