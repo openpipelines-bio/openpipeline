@@ -2,7 +2,10 @@ functionality:
   name: dsc_pileup
   namespace: genetic_demux
   description: |
-    "dsc-pileup is a software tool to pileup reads and corresponding base quality for each overlapping SNPs and each barcode. By using pileup files, it would allow us to run demuxlet/freemuxlet pretty fast multiple times without going over the BAM file again.
+    Dsc-pileup is a software tool to pileup reads and corresponding base quality 
+    for each overlapping SNPs and each barcode. By using pileup files,
+    it would allow us to run demuxlet/freemuxlet pretty fast multiple times
+    without going over the BAM file again.
   authors:
     - __merge__: /src/authors/xichen_wu.yaml
       roles: [ author ]
