@@ -1,3 +1,15 @@
+# openpipelines x.x.x 
+
+## NEW FUNCTIONALITY
+
+* `metadata/grep_annotation_column`: Added more logging output (PR #697).
+
+* `metadata/add_id` and `metadata/grep_annotation_column`: Bump python to 3.11 (PR #697).
+
+## Minor changes
+
+* Bump viash to 0.8.5 (PR #697)
+
 # openpipelines 1.0.0rc1
 
 ## BREAKING CHANGES

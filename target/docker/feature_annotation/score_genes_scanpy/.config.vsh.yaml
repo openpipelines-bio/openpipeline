@@ -241,6 +241,9 @@ functionality:
     is_executable: true
   - type: "file"
     path: "resources_test/pbmc_1k_protein_v3/"
+  - type: "file"
+    path: "src/base/openpipelinetestutils"
+    dest: "openpipelinetestutils"
   info: null
   status: "enabled"
   requirements:
@@ -282,6 +285,6 @@ info:
   platform: "docker"
   output: "/home/runner/work/openpipeline/openpipeline/target/docker/feature_annotation/score_genes_scanpy"
   executable: "/home/runner/work/openpipeline/openpipeline/target/docker/feature_annotation/score_genes_scanpy/score_genes_scanpy"
-  viash_version: "0.8.4"
-  git_commit: "e56f499efbaa7280e451249c39ad27af32d56edf"
+  viash_version: "0.8.5"
+  git_commit: "db9a16d5c636ac66d92d80b8d8675a6c75d2231b"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"
