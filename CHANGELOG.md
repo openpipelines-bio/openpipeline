@@ -1,3 +1,15 @@
+# openpipelines x.x.x 
+
+## NEW FUNCTIONALITY
+
+* `metadata/grep_annotation_column`: Added more logging output (PR #697).
+
+* `metadata/add_id` and `metadata/grep_annotation_column`: Bump python to 3.11 (PR #697).
+
+## Minor changes
+
+* Bump viash to 0.8.5 (PR #697)
+
 # openpipelines 1.0.0rc1
 
 ## BREAKING CHANGES
@@ -73,10 +85,6 @@
 * `mapping/cellranger_mkfastq`: update from cellranger `6.0.2` to `7.0.1` (PR #675)
 
 ## NEW FUNCTIONALITY
-
-* `metadata/grep_annotation_column`: Added more logging output (PR #697).
-
-* `metadata/add_id` and `metadata/grep_annotation_column`: Bump python to 3.11 (PR #697).
 
 * `multisample` pipeline: This workflow now works when provided multimple unimodal files or multiple multimodal files, in addition to the previously supported single multimodal file (PR #606). The modalities are processed independently from each other:
   - As before, a single multimodal file is split into several unimodal MuData objects, each modality being stored in a file.
