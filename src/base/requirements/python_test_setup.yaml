@@ -1,0 +1,7 @@
+test_setup:
+  - type: docker
+    copy: ["openpipelinetestutils /opt/openpipelinetestutils"]
+  - type: python
+    packages: /opt/openpipelinetestutils
+  - type: python
+    __merge__: /src/base/requirements/viashpy.yaml
