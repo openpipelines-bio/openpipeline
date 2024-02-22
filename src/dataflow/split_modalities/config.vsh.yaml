@@ -43,7 +43,7 @@ functionality:
       path: test.py
 platforms:
   - type: docker
-    image: python:3.10-slim
+    image: python:3.12-slim
     setup:
       - type: apt
         packages: 

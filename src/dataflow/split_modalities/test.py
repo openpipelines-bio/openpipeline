@@ -38,8 +38,6 @@ def input_modality_2():
 @pytest.fixture
 def input_h5mu(input_modality_1, input_modality_2):
     tmp_mudata = md.MuData({'mod1': input_modality_1, 'mod2': input_modality_2})
-    tmp_mudata.var = tmp_mudata.var.assign(global_var_col=1)
-    tmp_mudata.update()
     return tmp_mudata
 
 
