@@ -6,9 +6,15 @@
 
 * `metadata/add_id` and `metadata/grep_annotation_column`: Bump python to 3.11 (PR #697).
 
-## Minor changes
+## BUG FIXES
+
+* `dataflow/split_modalities`: remove unused `compression` argument. Use `output_compression` instead (PR #).
+
+## MINOR CHANGES
 
 * Bump viash to 0.8.5 (PR #697)
+
+* `dataflow/split_modalities`: add more logging output (PR #)
 
 # openpipelines 1.0.0rc1
 
