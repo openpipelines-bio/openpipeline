@@ -69,7 +69,7 @@ jobs:
         query_namespace: ^(?!workflows)
 
     - id: ns_list_filtered
-      uses: viash-io/viash-actions/project/detect-changed-components@fix_sep_bug
+      uses: viash-io/viash-actions/project/detect-changed-components@v5
       with:
         input_file: "${{ steps.ns_list.outputs.output_file }}"
 
