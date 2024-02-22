@@ -249,10 +249,10 @@ functionality:
   - type: "file"
     path: "./src/workflows/utils/labels.config"
     dest: "nextflow_labels.config"
-  description: "\"freemuxlet is a software tool to deconvolute sample identity and\
-    \ identify multiplets when multiple samples are pooled by barcoded single cell\
-    \ sequencing. |\nIf external genotyping data is not available, the genotyping-free\
-    \ version demuxlet, freemuxlet, would be recommended. \"\n"
+  description: "Freemuxlet is a software tool to deconvolute sample identity and identify\
+    \ multiplets when\nmultiple samples are pooled by barcoded single cell sequencing.\
+    \ If external genotyping\ndata is not available, the genotyping-free version demuxlet,\
+    \ freemuxlet, would be recommended.\n"
   test_resources:
   - type: "bash_script"
     path: "test.sh"
@@ -364,5 +364,5 @@ info:
   output: "/home/runner/work/openpipeline/openpipeline/target/nextflow/genetic_demux/freemuxlet"
   executable: "/home/runner/work/openpipeline/openpipeline/target/nextflow/genetic_demux/freemuxlet/freemuxlet"
   viash_version: "0.8.4"
-  git_commit: "14cf4bdad33f555a35376bc3761add12c5301bc8"
+  git_commit: "fadf7e5c991583e5d5069ad0414293e4971c71fa"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"
