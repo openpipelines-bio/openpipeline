@@ -38,7 +38,7 @@ logger = setup_logger()
 
 def main() -> None:
     output_dir = Path(par["output"])
-    logger.info("Creating output file '%s' if it does not exist", output_dir)
+    logger.info("Creating output directory '%s' if it does not exist", output_dir)
     if not output_dir.is_dir():
         logger.info("Creating %s", output_dir)
         output_dir.mkdir(parents=True)
