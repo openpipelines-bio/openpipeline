@@ -9,7 +9,7 @@ from openpipelinetestutils.utils import remove_annotation_column
 ## VIASH START
 meta = {
     'executable': './target/docker/metadata/add_id/add_id',
-    'resources_dir': '.',
+    'resources_dir': './resources_test/concat_test_data/',
     'cpus': 2,
     'config': './src/metadata/add_id/config.vsh.yaml'
 }
