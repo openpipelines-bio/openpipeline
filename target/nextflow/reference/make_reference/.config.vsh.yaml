@@ -129,6 +129,9 @@ functionality:
   - type: "bash_script"
     path: "run_test.sh"
     is_executable: true
+  - type: "file"
+    path: "src/base/openpipelinetestutils"
+    dest: "openpipelinetestutils"
   info: null
   status: "enabled"
   requirements:
@@ -211,6 +214,6 @@ info:
   platform: "nextflow"
   output: "/home/runner/work/openpipeline/openpipeline/target/nextflow/reference/make_reference"
   executable: "/home/runner/work/openpipeline/openpipeline/target/nextflow/reference/make_reference/make_reference"
-  viash_version: "0.8.4"
-  git_commit: "fadf7e5c991583e5d5069ad0414293e4971c71fa"
+  viash_version: "0.8.5"
+  git_commit: "91a3ac02f42de061d312a6d99cec005c05fe2369"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"

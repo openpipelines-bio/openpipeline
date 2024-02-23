@@ -77,6 +77,9 @@ functionality:
     is_executable: true
   - type: "file"
     path: "resources_test/cellranger_tiny_fastq/cellranger_tiny_fastq"
+  - type: "file"
+    path: "src/base/openpipelinetestutils"
+    dest: "openpipelinetestutils"
   info: null
   status: "enabled"
   requirements:
@@ -155,6 +158,6 @@ info:
   platform: "docker"
   output: "/home/runner/work/openpipeline/openpipeline/target/docker/qc/fastqc"
   executable: "/home/runner/work/openpipeline/openpipeline/target/docker/qc/fastqc/fastqc"
-  viash_version: "0.8.4"
-  git_commit: "fadf7e5c991583e5d5069ad0414293e4971c71fa"
+  viash_version: "0.8.5"
+  git_commit: "91a3ac02f42de061d312a6d99cec005c05fe2369"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"

@@ -81,6 +81,9 @@ functionality:
     path: "../../../resources_test/merge_test_data/pbmc_1k_protein_v3_filtered_feature_bc_matrix_rna.h5mu"
   - type: "file"
     path: "../../../resources_test/merge_test_data/pbmc_1k_protein_v3_filtered_feature_bc_matrix_prot.h5mu"
+  - type: "file"
+    path: "src/base/openpipelinetestutils"
+    dest: "openpipelinetestutils"
   info: null
   status: "enabled"
   requirements:
@@ -175,6 +178,6 @@ info:
   platform: "native"
   output: "/home/runner/work/openpipeline/openpipeline/target/native/dataflow/merge"
   executable: "/home/runner/work/openpipeline/openpipeline/target/native/dataflow/merge/merge"
-  viash_version: "0.8.4"
-  git_commit: "fadf7e5c991583e5d5069ad0414293e4971c71fa"
+  viash_version: "0.8.5"
+  git_commit: "91a3ac02f42de061d312a6d99cec005c05fe2369"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"
