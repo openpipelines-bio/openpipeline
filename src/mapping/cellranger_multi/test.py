@@ -49,9 +49,11 @@ gex_reference = resources_dir / "reference_gencodev41_chr1/reference_cellranger.
 feature_reference = resources_dir / "10x_5k_anticmv/raw/feature_reference.csv"
 vdj_reference = resources_dir / "10x_5k_anticmv/raw/refdata-cellranger-vdj-GRCh38-alts-ensembl-7.0.0.tar.gz"
 
-def test_cellranger_multi(run_component):
+def test_cellranger_multi(run_component, random_path):
+    outputpath = random_path()
+
     args = [
-            "--output", "output1/",
+            "--output", outputpath,
             "--input", input1_R1,
             "--input", input1_R2,
             "--input", input2_R1,
@@ -66,24 +68,24 @@ def test_cellranger_multi(run_component):
     run_component(args)
 
     # check for raw data
-    assert Path("output1/multi/count/raw_feature_bc_matrix.h5").is_file()
+    assert (outputpath / "multi/count/raw_feature_bc_matrix.h5").is_file()
 
     # check for metrics summary
-    assert Path("output1/per_sample_outs/run/metrics_summary.csv").is_file()
+    assert (outputpath / "per_sample_outs/run/metrics_summary.csv").is_file()
 
     # check for filtered gex+ab data
-    assert Path("output1/per_sample_outs/run/count/sample_filtered_feature_bc_matrix.h5").is_file()
+    assert (outputpath / "per_sample_outs/run/count/sample_filtered_feature_bc_matrix.h5").is_file()
 
     # check for vdj data
-    assert Path("output1/per_sample_outs/run/vdj_t/filtered_contig_annotations.csv").is_file()
+    assert (outputpath / "per_sample_outs/run/vdj_t/filtered_contig_annotations.csv").is_file()
 
-def test_cellranger_multi_decompressed_reference(run_component, tmp_path):
-    extracted_tar = tmp_path / "reference_extracted"
+def test_cellranger_multi_decompressed_reference(run_component, random_path):
+    extracted_tar = random_path()
     extracted_tar.mkdir()
     with tarfile.open(gex_reference) as open_tarfile:
         open_tarfile.extractall(extracted_tar)
         run_component([
-                "--output", "output2/",
+                "--output", random_path(),
                 "--input", input1_R1,
                 "--input", input1_R2,
                 "--input", input2_R1,
@@ -97,9 +99,9 @@ def test_cellranger_multi_decompressed_reference(run_component, tmp_path):
                 "--library_type", "Gene Expression;Antibody Capture;VDJ",
                 "--dryrun"])
 
-def test_cellranger_multi_directory_input(run_component):
+def test_cellranger_multi_directory_input(run_component, random_path):
     args=[
-        "--output", "output5/",
+        "--output", random_path(),
         "--input", meta["resources_dir"] + "10x_5k_anticmv/raw/",
         "--gex_reference", gex_reference,
         "--vdj_reference", vdj_reference,
@@ -112,13 +114,14 @@ def test_cellranger_multi_directory_input(run_component):
         "--dryrun"]
     run_component(args)
 
-def test_vdj_inner_enrichment_primers(run_component, tmp_path):
-    
-    enrichment_primers_file = tmp_path / "enrichment_primers.txt"
+def test_vdj_inner_enrichment_primers(run_component, random_path):
+    outputpath = random_path()
+
+    enrichment_primers_file = random_path("txt")
     with enrichment_primers_file.open('w') as primers_file_open:
         primers_file_open.write("AGTCTCTCAGCTGGTACACG\nTCTGATGGCTCAAACACAGC")
     args=[
-        "--output", "output5/",
+        "--output", outputpath,
         "--input", meta["resources_dir"] + "10x_5k_anticmv/raw/",
         "--gex_reference", gex_reference,
         "--vdj_reference", vdj_reference,
@@ -130,15 +133,16 @@ def test_vdj_inner_enrichment_primers(run_component, tmp_path):
         "--gex_include_introns", "false",
         "--vdj_inner_enrichment_primers", str(make_path_relative(enrichment_primers_file))]
     run_component(args)
-    assert Path("output5/config.csv").is_file()
-    with Path("output5/config.csv").open('r') as config_file:
+    config_path = outputpath / "config.csv"
+    with config_path.open('r') as config_file:
         config_contents = config_file.read()
     expected_csv_content = r"\[vdj\]\nreference,.*\ninner-enrichment-primers,.*\n"
     assert re.search(expected_csv_content, config_contents)
 
-def test_cellranger_multi_applies_gex_options(run_component):
+def test_cellranger_multi_applies_gex_options(run_component, random_path):
+    outputpath = random_path()
     args=[
-            "--output", "output3/",
+            "--output", outputpath,
             "--input", input1_R1,
             "--input", input1_R2,
             "--input", input2_R1,
@@ -155,9 +159,9 @@ def test_cellranger_multi_applies_gex_options(run_component):
             "--gex_include_introns", "false",
             "--dryrun"]
     run_component(args)
-
-    assert Path("output3/config.csv").is_file()
-    with Path("output3/config.csv").open('r') as config_file:
+    config_path = outputpath / "config.csv"
+    assert config_path.is_file()
+    with config_path.open('r') as config_file:
         config_contents = config_file.read()
     expected_csv_content = dedent(
         """\
@@ -169,10 +173,11 @@ def test_cellranger_multi_applies_gex_options(run_component):
     print (expected_csv_content, flush=True)
     assert expected_csv_content in config_contents
 
-def test_cellranger_multi_no_vdj_reference(run_component):
+def test_cellranger_multi_no_vdj_reference(run_component, random_path):
     # GH291
+    outputpath = random_path()
     args=[
-        "--output", "output4/",
+        "--output", outputpath,
         "--input", input1_R1,
         "--input", input1_R2,
         "--input", input2_R1,
@@ -185,9 +190,10 @@ def test_cellranger_multi_no_vdj_reference(run_component):
         "--library_type", "Gene Expression;Antibody Capture",
         "--dryrun"]
     run_component(args)
-    assert Path("output4/config.csv").is_file()
+    assert (outputpath / "config.csv").is_file()
 
-def test_cellranger_multi_crispt_data(run_component):
+def test_cellranger_multi_crispt_data(run_component, random_path):
+    outputpath = random_path()
     args = [
         "--input", meta["resources_dir"] + "10x_5k_lung_crispr/raw/SC3_v3_NextGem_DI_CRISPR_A549_5K_gex_subset_S5_L001_R1_001.fastq.gz",
         "--input", meta["resources_dir"] + "10x_5k_lung_crispr/raw/SC3_v3_NextGem_DI_CRISPR_A549_5K_gex_subset_S5_L001_R2_001.fastq.gz",
@@ -197,21 +203,22 @@ def test_cellranger_multi_crispt_data(run_component):
         "--library_type", "Gene Expression;CRISPR Guide Capture",
         "--gex_reference", gex_reference,
         "--feature_reference", meta["resources_dir"] + "10x_5k_lung_crispr/raw/SC3_v3_NextGem_DI_CRISPR_A549_5K_Multiplex_count_feature_reference_corrected.csv",
-        "--output", "output5/"
+        "--output", random_path()
     ]
     run_component(args)
     # check for raw data
-    assert Path("output5/multi/count/raw_feature_bc_matrix.h5").is_file()
+    assert ( outputpath / "multi/count/raw_feature_bc_matrix.h5").is_file()
     # check for metrics summary
-    assert Path("output5/per_sample_outs/run/metrics_summary.csv").is_file()
+    assert (outputpath / "per_sample_outs/run/metrics_summary.csv").is_file()
     # check for filtered gex+ab data
-    assert Path("output5/per_sample_outs/run/count/sample_filtered_feature_bc_matrix.h5").is_file()
+    assert (outputpath / "per_sample_outs/run/count/sample_filtered_feature_bc_matrix.h5").is_file()
     # check for crispr data
-    assert Path("output5/per_sample_outs/run/count/crispr_analysis/").is_dir()
+    assert (outputpath / "per_sample_outs/run/count/crispr_analysis/").is_dir()
 
-def test_cellranger_multi_helper_input(run_component):
+def test_cellranger_multi_helper_input(run_component, random_path):
+    outputpath = random_path()
     args = [
-            "--output", "output6/",
+            "--output", outputpath,
             "--gex_input", input1_R1,
             "--gex_input", input1_R2,
             "--abc_input", input2_R1,
@@ -224,20 +231,21 @@ def test_cellranger_multi_helper_input(run_component):
     run_component(args)
 
     # check for raw data
-    assert Path("output6/multi/count/raw_feature_bc_matrix.h5").is_file()
+    assert (outputpath / "multi/count/raw_feature_bc_matrix.h5").is_file()
 
     # check for metrics summary
-    assert Path("output6/per_sample_outs/run/metrics_summary.csv").is_file()
+    assert (outputpath / "per_sample_outs/run/metrics_summary.csv").is_file()
 
     # check for filtered gex+ab data
-    assert Path("output6/per_sample_outs/run/count/sample_filtered_feature_bc_matrix.h5").is_file()
+    assert (outputpath / "per_sample_outs/run/count/sample_filtered_feature_bc_matrix.h5").is_file()
 
     # check for vdj data
-    assert Path("output6/per_sample_outs/run/vdj_t/filtered_contig_annotations.csv").is_file()
+    assert (outputpath / "per_sample_outs/run/vdj_t/filtered_contig_annotations.csv").is_file()
 
-def test_cellranger_multi_combined_helper_and_global_input(run_component):
+def test_cellranger_multi_combined_helper_and_global_input(run_component, random_path):
+    outputpath = random_path()
     args = [
-            "--output", "output7/",
+            "--output", outputpath,
             "--input", input1_R1,
             "--input", input1_R2,
             "--abc_input", input2_R1,
@@ -252,16 +260,16 @@ def test_cellranger_multi_combined_helper_and_global_input(run_component):
     run_component(args)
 
     # check for raw data
-    assert Path("output7/multi/count/raw_feature_bc_matrix.h5").is_file()
+    assert (outputpath / "multi/count/raw_feature_bc_matrix.h5").is_file()
 
     # check for metrics summary
-    assert Path("output7/per_sample_outs/run/metrics_summary.csv").is_file()
+    assert (outputpath / "per_sample_outs/run/metrics_summary.csv").is_file()
 
     # check for filtered gex+ab data
-    assert Path("output7/per_sample_outs/run/count/sample_filtered_feature_bc_matrix.h5").is_file()
+    assert (outputpath / "per_sample_outs/run/count/sample_filtered_feature_bc_matrix.h5").is_file()
 
     # check for vdj data
-    assert Path("output7/per_sample_outs/run/vdj_t/filtered_contig_annotations.csv").is_file()
+    assert (outputpath / "per_sample_outs/run/vdj_t/filtered_contig_annotations.csv").is_file()
 
 if __name__ == '__main__':
     sys.exit(pytest.main([__file__]))
