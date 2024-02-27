@@ -6,6 +6,10 @@
 
 * `metadata/add_id` and `metadata/grep_annotation_column`: Bump python to 3.11 (PR #697).
 
+## BUG FIXES
+
+* Cellranger multi: Fix using a relative input path for `--vdj_inner_enrichment_primers` (PR #717)
+
 ## Minor changes
 
 * Bump viash to 0.8.5 (PR #697)
