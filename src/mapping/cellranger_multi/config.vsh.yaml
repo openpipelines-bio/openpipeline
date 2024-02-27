@@ -272,6 +272,7 @@ platforms:
       - type: python
         packages: 
           - pandas
+          - pyyaml
     test_setup:
       - type: python
         __merge__: [ /src/base/requirements/viashpy.yaml, .]

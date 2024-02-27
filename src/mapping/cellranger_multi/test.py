@@ -15,16 +15,39 @@ meta = {
 }
 ## VIASH END
 
-input1_R1 = meta["resources_dir"] + "10x_5k_anticmv/raw/5k_human_antiCMV_T_TBNK_connect_GEX_1_subset_S1_L001_R1_001.fastq.gz"
-input1_R2 = meta["resources_dir"] + "10x_5k_anticmv/raw/5k_human_antiCMV_T_TBNK_connect_GEX_1_subset_S1_L001_R2_001.fastq.gz"
-input2_R1 = meta["resources_dir"] + "10x_5k_anticmv/raw/5k_human_antiCMV_T_TBNK_connect_AB_subset_S2_L004_R1_001.fastq.gz"
-input2_R2 = meta["resources_dir"] + "10x_5k_anticmv/raw/5k_human_antiCMV_T_TBNK_connect_AB_subset_S2_L004_R2_001.fastq.gz"
-input3_R1 = meta["resources_dir"] + "10x_5k_anticmv/raw/5k_human_antiCMV_T_TBNK_connect_VDJ_subset_S1_L001_R1_001.fastq.gz"
-input3_R2 = meta["resources_dir"] + "10x_5k_anticmv/raw/5k_human_antiCMV_T_TBNK_connect_VDJ_subset_S1_L001_R2_001.fastq.gz"
-gex_reference = meta["resources_dir"] + "reference_gencodev41_chr1/reference_cellranger.tar.gz"
-feature_reference = meta["resources_dir"] + "10x_5k_anticmv/raw/feature_reference.csv"
-vdj_reference = meta["resources_dir"] + "10x_5k_anticmv/raw/refdata-cellranger-vdj-GRCh38-alts-ensembl-7.0.0.tar.gz"
 
+def make_path_relative(some_path):
+    absolute_input_path = Path(some_path).resolve()
+    absolute_cwd = Path.cwd().resolve()
+    try:
+        relative_path = absolute_input_path.relative_to(absolute_cwd)
+    except ValueError:
+        _, *parts_input = absolute_input_path.parts
+        _, *parts_cwd = absolute_cwd.parts
+        parts_input.reverse()
+        parts_cwd.reverse()
+        while parts_cwd and parts_input and parts_cwd[-1] == parts_input[-1]:
+            parts_input.pop()
+            parts_cwd.pop()
+        for part in parts_cwd:
+            if not part or part == '.':
+                pass
+            else:
+                parts_input.append('..')
+        relative_path = type(absolute_input_path)('', *reversed(parts_input))
+    assert relative_path.resolve() == absolute_input_path 
+    return relative_path
+
+resources_dir = make_path_relative(meta["resources_dir"])
+input1_R1 = resources_dir / "10x_5k_anticmv/raw/5k_human_antiCMV_T_TBNK_connect_GEX_1_subset_S1_L001_R1_001.fastq.gz"
+input1_R2 = resources_dir / "10x_5k_anticmv/raw/5k_human_antiCMV_T_TBNK_connect_GEX_1_subset_S1_L001_R2_001.fastq.gz"
+input2_R1 = resources_dir / "10x_5k_anticmv/raw/5k_human_antiCMV_T_TBNK_connect_AB_subset_S2_L004_R1_001.fastq.gz"
+input2_R2 = resources_dir / "10x_5k_anticmv/raw/5k_human_antiCMV_T_TBNK_connect_AB_subset_S2_L004_R2_001.fastq.gz"
+input3_R1 = resources_dir / "10x_5k_anticmv/raw/5k_human_antiCMV_T_TBNK_connect_VDJ_subset_S1_L001_R1_001.fastq.gz"
+input3_R2 = resources_dir / "10x_5k_anticmv/raw/5k_human_antiCMV_T_TBNK_connect_VDJ_subset_S1_L001_R2_001.fastq.gz"
+gex_reference = resources_dir / "reference_gencodev41_chr1/reference_cellranger.tar.gz"
+feature_reference = resources_dir / "10x_5k_anticmv/raw/feature_reference.csv"
+vdj_reference = resources_dir / "10x_5k_anticmv/raw/refdata-cellranger-vdj-GRCh38-alts-ensembl-7.0.0.tar.gz"
 
 def test_cellranger_multi(run_component):
     args = [
@@ -105,8 +128,7 @@ def test_vdj_inner_enrichment_primers(run_component, tmp_path):
         "--gex_secondary_analysis", "true",
         "--gex_generate_bam", "false",
         "--gex_include_introns", "false",
-        "--vdj_inner_enrichment_primers", str(enrichment_primers_file),
-        "--dryrun"]
+        "--vdj_inner_enrichment_primers", str(make_path_relative(enrichment_primers_file))]
     run_component(args)
     assert Path("output5/config.csv").is_file()
     with Path("output5/config.csv").open('r') as config_file:
