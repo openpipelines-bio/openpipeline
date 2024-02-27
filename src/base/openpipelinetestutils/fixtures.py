@@ -1,11 +1,17 @@
 from uuid import uuid4
 import pytest
 
+@pytest.fixture
+def random_path(tmp_path):
+    def wrapper(extension=None):
+        extension = "" if not extension else extension
+        return tmp_path / f"{uuid4()}.{extension}"
+    return wrapper 
 
 @pytest.fixture
-def random_h5mu_path(tmp_path):
+def random_h5mu_path(random_path):
     def wrapper():
-        return tmp_path / f"{uuid4()}.h5mu"
+        return random_path(extension="h5mu")
     return wrapper
 
 @pytest.fixture

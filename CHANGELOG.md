@@ -10,9 +10,13 @@
 
 * Cellranger multi: Fix using a relative input path for `--vdj_inner_enrichment_primers` (PR #717)
 
-## Minor changes
+* `dataflow/split_modalities`: remove unused `compression` argument. Use `output_compression` instead (PR #714).
+
+## MINOR CHANGES
 
 * Bump viash to 0.8.5 (PR #697)
+
+* `dataflow/split_modalities`: add more logging output and bump python to 3.12 (PR #714).
 
 # openpipelines 1.0.0rc1
 
