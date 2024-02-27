@@ -192,7 +192,7 @@ def test_cellranger_multi_no_vdj_reference(run_component, random_path):
     run_component(args)
     assert (outputpath / "config.csv").is_file()
 
-def test_cellranger_multi_crispt_data(run_component, random_path):
+def test_cellranger_multi_crispr_data(run_component, random_path):
     outputpath = random_path()
     args = [
         "--input", meta["resources_dir"] + "10x_5k_lung_crispr/raw/SC3_v3_NextGem_DI_CRISPR_A549_5K_gex_subset_S5_L001_R1_001.fastq.gz",
@@ -203,7 +203,7 @@ def test_cellranger_multi_crispt_data(run_component, random_path):
         "--library_type", "Gene Expression;CRISPR Guide Capture",
         "--gex_reference", gex_reference,
         "--feature_reference", meta["resources_dir"] + "10x_5k_lung_crispr/raw/SC3_v3_NextGem_DI_CRISPR_A549_5K_Multiplex_count_feature_reference_corrected.csv",
-        "--output", random_path()
+        "--output", outputpath
     ]
     run_component(args)
     # check for raw data
