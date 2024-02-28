@@ -2898,19 +2898,6 @@ meta = [
         "multiple" : false,
         "multiple_sep" : ":",
         "dest" : "par"
-      },
-      {
-        "type" : "string",
-        "name" : "--compression",
-        "description" : "The compression format to be used on the final h5mu object.",
-        "default" : [
-          "gzip"
-        ],
-        "required" : false,
-        "direction" : "input",
-        "multiple" : false,
-        "multiple_sep" : ":",
-        "dest" : "par"
       }
     ],
     "resources" : [
@@ -2941,11 +2928,6 @@ meta = [
       },
       {
         "type" : "file",
-        "path" : "resources_test/pbmc_1k_protein_v3/pbmc_1k_protein_v3_filtered_feature_bc_matrix.h5mu",
-        "parent" : "file:///home/runner/work/openpipeline/openpipeline/"
-      },
-      {
-        "type" : "file",
         "path" : "src/base/openpipelinetestutils",
         "dest" : "openpipelinetestutils"
       }
@@ -2962,7 +2944,7 @@ meta = [
     {
       "type" : "docker",
       "id" : "docker",
-      "image" : "python:3.10-slim",
+      "image" : "python:3.12-slim",
       "target_organization" : "openpipelines-bio",
       "target_registry" : "ghcr.io",
       "target_tag" : "integration_build",
@@ -2991,6 +2973,20 @@ meta = [
         }
       ],
       "test_setup" : [
+        {
+          "type" : "docker",
+          "copy" : [
+            "openpipelinetestutils /opt/openpipelinetestutils"
+          ]
+        },
+        {
+          "type" : "python",
+          "user" : false,
+          "packages" : [
+            "/opt/openpipelinetestutils"
+          ],
+          "upgrade" : true
+        },
         {
           "type" : "python",
           "user" : false,
@@ -3067,7 +3063,7 @@ meta = [
     "platform" : "nextflow",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/dataflow/split_modalities",
     "viash_version" : "0.8.5",
-    "git_commit" : "6f1f88dcd59914c28fd2b5c4598bafc92234955a",
+    "git_commit" : "4eabfd355492dfe9491dd89eef6d7744bbcbd6ee",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))
@@ -3095,8 +3091,7 @@ par = {
   'input': $( if [ ! -z ${VIASH_PAR_INPUT+x} ]; then echo "r'${VIASH_PAR_INPUT//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'output': $( if [ ! -z ${VIASH_PAR_OUTPUT+x} ]; then echo "r'${VIASH_PAR_OUTPUT//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'output_compression': $( if [ ! -z ${VIASH_PAR_OUTPUT_COMPRESSION+x} ]; then echo "r'${VIASH_PAR_OUTPUT_COMPRESSION//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
-  'output_types': $( if [ ! -z ${VIASH_PAR_OUTPUT_TYPES+x} ]; then echo "r'${VIASH_PAR_OUTPUT_TYPES//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
-  'compression': $( if [ ! -z ${VIASH_PAR_COMPRESSION+x} ]; then echo "r'${VIASH_PAR_COMPRESSION//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi )
+  'output_types': $( if [ ! -z ${VIASH_PAR_OUTPUT_TYPES+x} ]; then echo "r'${VIASH_PAR_OUTPUT_TYPES//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi )
 }
 meta = {
   'functionality_name': $( if [ ! -z ${VIASH_META_FUNCTIONALITY_NAME+x} ]; then echo "r'${VIASH_META_FUNCTIONALITY_NAME//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
@@ -3139,28 +3134,35 @@ logger = setup_logger()
 
 def main() -> None:
     output_dir = Path(par["output"])
+    logger.info("Creating output directory '%s' if it does not exist", output_dir)
     if not output_dir.is_dir():
+        logger.info("Creating %s", output_dir)
         output_dir.mkdir(parents=True)
 
-    logger.info('Reading input file %s', par['input'])
-    sample = md.read_h5mu(par["input"].strip())
-    input_file = Path(par["input"])
+    logger.info("Reading input file '%s'", par['input'])
+    input_file = Path(par["input"].strip())
+    sample = md.read_h5mu(input_file)
+    
+    logger.info('Creating output types CSV.')
+    modalities = list(sample.mod.keys())
 
-    logger.info('Creating output types csv')
-
+    logger.info("Found the following modalities:\\\\n%s", "\\\\n".join(modalities))
     names = {mod_name: f"{input_file.stem}_{mod_name}.h5mu"
-        for mod_name in sample.mod.keys() }
-    df = pd.DataFrame({"name": list(names.keys()), "filename": list(names.values())})
+             for mod_name in modalities}
+    output_files = list(names.values())
+    logger.info("Will be creating the following output .h5mu files:\\\\n%s", "\\\\n".join(output_files))
+    df = pd.DataFrame({"name": modalities, "filename": output_files})
+    logger.info("Writing output_types CSV file to '%s'.", par["output_types"])
     df.to_csv(par["output_types"], index=False)
 
-    logger.info('Splitting up modalities %s', ", ".join(sample.mod.keys()))
+    logger.info('Splitting input file into unimodal output files.')
     for mod_name, mod in sample.mod.items():
+        logger.info("Processing modality '%s'", mod_name)
         new_sample = md.MuData({mod_name: mod})
-        logger.info('Writing to %s', names[mod_name])
+        logger.info("Writing to '%s', with compression '%s'", names[mod_name], par["output_compression"])
         new_sample.write_h5mu(output_dir / names[mod_name], compression=par["output_compression"])
-
+        logger.info("Done writing output file.")
     logger.info("Finished")
-
 
 if __name__ == "__main__":
     main()
