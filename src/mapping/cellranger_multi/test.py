@@ -136,7 +136,7 @@ def test_vdj_inner_enrichment_primers(run_component, random_path):
         "--gex_generate_bam", "false",
         "--gex_include_introns", "false",
         "--vdj_inner_enrichment_primers", str(make_path_relative(enrichment_primers_file)),
-        "--dry_run"]
+        "--dryrun"]
     run_component(args)
     config_path = outputpath / "config.csv"
     with config_path.open('r') as config_file:
