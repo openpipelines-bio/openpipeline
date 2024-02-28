@@ -24,12 +24,12 @@ def test_run(run_component, tmp_path):
     ]
     run_component(cmd_pars)
 
-    assert list(mdata.mod.keys()) == ["rna"]
     assert output.is_file(), "No output was created."
 
     adata = ad.read_h5ad(output)
     mdata = mu.read_h5mu(input)
 
+    assert "rna" in mdata.mod.keys()
     assert_annotation_objects_equal(mdata.mod["rna"], adata)
 
 
