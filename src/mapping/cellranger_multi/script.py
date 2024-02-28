@@ -217,19 +217,17 @@ def make_paths_absolute(par: dict[str, Any], config: Path | str):
         for group in config["functionality"]["argument_groups"]
         for arg in group["arguments"]
     }
-    file_arguments = {arg_name: arg for arg_name, arg in arguments.items()
-                      if arg['type'] == 'file'}
-    for file_arg_name, arg_options in file_arguments.items():
-        if not par.get(file_arg_name):
+    for arg_name, arg in arguments.items():
+        if not par.get(arg_name) or arg["type"] != "file":
             continue
-        elif arg_options['multiple']:
-            new_arg = []
-            for file_path in par[file_arg_name]:
-                logger.info('Making path %s absolute', file_path)
-                new_arg.append(file_path.resolve())
-            par[file_arg_name] = new_arg
-        elif par.get(file_arg_name):
-            par[file_arg_name] = Path(par[file_arg_name]).resolve()   
+        par_value, is_multiple = par[arg_name], arg["multiple"]
+        assert is_multiple in (True, False)
+        def make_path_absolute(file: str | Path) -> Path:
+            logger.info('Making path %s absolute', file)
+            return Path(file).resolve()
+        
+        new_arg = [make_path_absolute(file) for file in par_value] if is_multiple else make_path_absolute(par_value)
+        par[arg_name] = new_arg
     return par
 
 def process_params(par: dict[str, Any], viash_config: Path | str) -> str:
