@@ -13,7 +13,7 @@ meta = {
 ## VIASH END
 
 @pytest.fixture
-def modality_1(f):
+def modality_1():
     df = pd.DataFrame([[1, 2, 3], [4, 5, 6]], index=["obs1", "obs2"], columns=["var1", "var2", "var3"])
     obs = pd.DataFrame([["A", "sample1"], ["B", "sample2"]], index=df.index, columns=["Obs", "sample_id"])
     var = pd.DataFrame([["a", "sample1"], ["b", "sample2"], ["c", "sample1"]],
