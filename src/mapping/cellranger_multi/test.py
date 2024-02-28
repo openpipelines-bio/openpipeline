@@ -20,23 +20,27 @@ def make_path_relative(some_path):
     absolute_input_path = Path(some_path).resolve()
     absolute_cwd = Path.cwd().resolve()
     try:
-        relative_path = absolute_input_path.relative_to(absolute_cwd)
-    except ValueError:
-        _, *parts_input = absolute_input_path.parts
-        _, *parts_cwd = absolute_cwd.parts
-        parts_input.reverse()
-        parts_cwd.reverse()
-        while parts_cwd and parts_input and parts_cwd[-1] == parts_input[-1]:
-            parts_input.pop()
-            parts_cwd.pop()
-        for part in parts_cwd:
-            if not part or part == '.':
-                pass
-            else:
-                parts_input.append('..')
-        relative_path = type(absolute_input_path)('', *reversed(parts_input))
-    assert relative_path.resolve() == absolute_input_path 
-    return relative_path
+        return absolute_input_path.relative_to(absolute_cwd)
+    except ValueError as e:
+    # TODO: python 3.12: remove lines below and add walk_up=True to `relative_to` call
+        if "is not in the subpath of" in str(e):
+            _, *parts_input = absolute_input_path.parts
+            _, *parts_cwd = absolute_cwd.parts
+            parts_input.reverse()
+            parts_cwd.reverse()
+            while parts_cwd and parts_input and parts_cwd[-1] == parts_input[-1]:
+                parts_input.pop()
+                parts_cwd.pop()
+            for part in parts_cwd:
+                if not part or part == '.':
+                    pass
+                else:
+                    parts_input.append('..')
+            relative_path = type(absolute_input_path)('', *reversed(parts_input))
+            assert relative_path.resolve() == absolute_input_path 
+            return relative_path
+        raise e
+    
 
 resources_dir = make_path_relative(meta["resources_dir"])
 input1_R1 = resources_dir / "10x_5k_anticmv/raw/5k_human_antiCMV_T_TBNK_connect_GEX_1_subset_S1_L001_R1_001.fastq.gz"
@@ -131,12 +135,13 @@ def test_vdj_inner_enrichment_primers(run_component, random_path):
         "--gex_secondary_analysis", "true",
         "--gex_generate_bam", "false",
         "--gex_include_introns", "false",
-        "--vdj_inner_enrichment_primers", str(make_path_relative(enrichment_primers_file))]
+        "--vdj_inner_enrichment_primers", str(make_path_relative(enrichment_primers_file)),
+        "--dry_run"]
     run_component(args)
     config_path = outputpath / "config.csv"
     with config_path.open('r') as config_file:
         config_contents = config_file.read()
-    expected_csv_content = r"\[vdj\]\nreference,.*\ninner-enrichment-primers,.*\n"
+    expected_csv_content = fr"\[vdj\]\nreference,.*\ninner-enrichment-primers,{enrichment_primers_file.resolve()}\n"
     assert re.search(expected_csv_content, config_contents)
 
 def test_cellranger_multi_applies_gex_options(run_component, random_path):
