@@ -8,6 +8,8 @@
 
 ## BUG FIXES
 
+* Cellranger multi: Fix using a relative input path for `--vdj_inner_enrichment_primers` (PR #717)
+
 * `dataflow/split_modalities`: remove unused `compression` argument. Use `output_compression` instead (PR #714).
 
 ## MINOR CHANGES
