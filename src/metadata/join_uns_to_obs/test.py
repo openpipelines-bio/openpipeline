@@ -33,7 +33,7 @@ def sample_h5mu(ad_w_uns, ad_wo_uns):
     mudata = MuData({'mod1': ad_w_uns, 'mod2': ad_wo_uns})
     return mudata
 
-def test_join_uns_to_obs(run_component, random_h5mu_path, write_mudata_to_file, sample_h5mu, ad_w_uns, ad_wo_uns):
+def test_join_uns_to_obs(run_component, random_h5mu_path, write_mudata_to_file, sample_h5mu):
     input_file = write_mudata_to_file(sample_h5mu)
     output_file = random_h5mu_path()
     run_component([
@@ -64,9 +64,8 @@ def test_join_uns_to_obs(run_component, random_h5mu_path, write_mudata_to_file, 
     output_mudata = read_h5mu(output_file)
     assert 'obsm1' in output_mudata.mod['mod1'].uns
 
-    ad_w_uns.obs = expected_obs
-    assert_annotation_objects_equal(output_mudata.mod['mod1'], ad_w_uns)
-    assert_annotation_objects_equal(output_mudata.mod['mod2'], ad_wo_uns)
+    sample_h5mu.mod["mod1"].obs = expected_obs
+    assert_annotation_objects_equal(sample_h5mu, output_mudata)
 
 if __name__ == '__main__':
     sys.exit(pytest.main([__file__]))
