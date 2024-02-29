@@ -422,9 +422,9 @@ RUN apt-get update && \
 
 LABEL org.opencontainers.image.authors="Angela Oliveira Pisco, Robrecht Cannoodt"
 LABEL org.opencontainers.image.description="Companion container for running component reference build_cellranger_reference"
-LABEL org.opencontainers.image.created="2024-02-28T02:35:07Z"
+LABEL org.opencontainers.image.created="2024-02-29T02:35:52Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="4eabfd355492dfe9491dd89eef6d7744bbcbd6ee"
+LABEL org.opencontainers.image.revision="7d48ed707a295e659bcf0d5f13f4c55ebc967d8d"
 LABEL org.opencontainers.image.version="integration_build"
 
 VIASHDOCKER

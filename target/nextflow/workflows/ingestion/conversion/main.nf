@@ -2978,7 +2978,7 @@ meta = [
           "functionalityNamespace" : "convert",
           "output" : "",
           "platform" : "",
-          "git_commit" : "4eabfd355492dfe9491dd89eef6d7744bbcbd6ee",
+          "git_commit" : "7d48ed707a295e659bcf0d5f13f4c55ebc967d8d",
           "executable" : "/nextflow/convert/from_10xh5_to_h5mu/main.nf"
         },
         "writtenPath" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/convert/from_10xh5_to_h5mu"
@@ -2999,7 +2999,7 @@ meta = [
           "functionalityNamespace" : "convert",
           "output" : "",
           "platform" : "",
-          "git_commit" : "4eabfd355492dfe9491dd89eef6d7744bbcbd6ee",
+          "git_commit" : "7d48ed707a295e659bcf0d5f13f4c55ebc967d8d",
           "executable" : "/nextflow/convert/from_10xmtx_to_h5mu/main.nf"
         },
         "writtenPath" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/convert/from_10xmtx_to_h5mu"
@@ -3020,7 +3020,7 @@ meta = [
           "functionalityNamespace" : "convert",
           "output" : "",
           "platform" : "",
-          "git_commit" : "4eabfd355492dfe9491dd89eef6d7744bbcbd6ee",
+          "git_commit" : "7d48ed707a295e659bcf0d5f13f4c55ebc967d8d",
           "executable" : "/nextflow/convert/from_h5ad_to_h5mu/main.nf"
         },
         "writtenPath" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/convert/from_h5ad_to_h5mu"
@@ -3087,7 +3087,7 @@ meta = [
     "platform" : "nextflow",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/workflows/ingestion/conversion",
     "viash_version" : "0.8.5",
-    "git_commit" : "4eabfd355492dfe9491dd89eef6d7744bbcbd6ee",
+    "git_commit" : "7d48ed707a295e659bcf0d5f13f4c55ebc967d8d",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))

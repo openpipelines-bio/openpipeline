@@ -3380,12 +3380,27 @@ meta = [
           "type" : "python",
           "user" : false,
           "packages" : [
-            "pandas"
+            "pandas",
+            "pyyaml"
           ],
           "upgrade" : true
         }
       ],
       "test_setup" : [
+        {
+          "type" : "docker",
+          "copy" : [
+            "openpipelinetestutils /opt/openpipelinetestutils"
+          ]
+        },
+        {
+          "type" : "python",
+          "user" : false,
+          "packages" : [
+            "/opt/openpipelinetestutils"
+          ],
+          "upgrade" : true
+        },
         {
           "type" : "python",
           "user" : false,
@@ -3458,7 +3473,7 @@ meta = [
     "platform" : "nextflow",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/mapping/cellranger_multi",
     "viash_version" : "0.8.5",
-    "git_commit" : "4eabfd355492dfe9491dd89eef6d7744bbcbd6ee",
+    "git_commit" : "7d48ed707a295e659bcf0d5f13f4c55ebc967d8d",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))
@@ -3480,6 +3495,7 @@ import re
 import subprocess
 import tempfile
 import pandas as pd
+import yaml
 from typing import Optional, Any, Union
 import tarfile
 from pathlib import Path
@@ -3685,7 +3701,29 @@ def resolve_input_directories_to_fastq_paths(input_paths: list[str]) -> list[Pat
 
     return input_paths
 
-def process_params(par: dict[str, Any]) -> str:
+def make_paths_absolute(par: dict[str, Any], config: Path | str):
+    with open(config, 'r', encoding="utf-8") as open_viash_config:
+        config = yaml.safe_load(open_viash_config)
+
+    arguments = {
+        arg["name"].removeprefix("-").removeprefix("-"): arg
+        for group in config["functionality"]["argument_groups"]
+        for arg in group["arguments"]
+    }
+    for arg_name, arg in arguments.items():
+        if not par.get(arg_name) or arg["type"] != "file":
+            continue
+        par_value, is_multiple = par[arg_name], arg["multiple"]
+        assert is_multiple in (True, False)
+        def make_path_absolute(file: str | Path) -> Path:
+            logger.info('Making path %s absolute', file)
+            return Path(file).resolve()
+        
+        new_arg = [make_path_absolute(file) for file in par_value] if is_multiple else make_path_absolute(par_value)
+        par[arg_name] = new_arg
+    return par
+
+def process_params(par: dict[str, Any], viash_config: Path | str) -> str:
 
     if par["input"]:
         assert len(par["library_type"]) > 0, "--library_type must be defined when passing input to --input"
@@ -3713,12 +3751,7 @@ def process_params(par: dict[str, Any]) -> str:
     par["cmo"] = cmo_dict
 
     # use absolute paths
-    par["input"] = [input_path.resolve() for input_path in par["input"]]
-    for file_path in REFERENCES + ('output', ):
-        if par[file_path]:
-            logger.info('Making path %s absolute', par[file_path])
-            par[file_path] = Path(par[file_path]).resolve()
-    return par
+    return make_paths_absolute(par, viash_config)
 
 
 def generate_csv_category(name: str, args: dict[str, str], orient: str) -> list[str]:
@@ -3748,7 +3781,7 @@ def generate_config(par: dict[str, Any], fastq_dir: str) -> str:
 
 def main(par: dict[str, Any], meta: dict[str, Any]):
     logger.info("  Processing params")
-    par = process_params(par)
+    par = process_params(par, meta['config'])
     logger.info(par)
 
     # TODO: throw error or else Cell Ranger will
