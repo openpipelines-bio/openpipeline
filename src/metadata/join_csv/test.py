@@ -38,7 +38,7 @@ def sample_h5mu_path(sample_h5mu, random_path):
     sample_h5mu.write(output)
     return output
 
-def test_add_metadata_var(run_component, random_path, modality_2, modality_1, sample_h5mu_path):
+def test_add_metadata_var(run_component, random_path, sample_h5mu, sample_h5mu_path):
     input_csv = random_path("csv")
     output_h5mu = random_path("h5mu")
 
@@ -55,7 +55,7 @@ def test_add_metadata_var(run_component, random_path, modality_2, modality_1, sa
         "--csv_key", "id",
         "--compression_output", "gzip"
     ])
-    result = read_h5mu(output_h5mu)
+    output_mudata = read_h5mu(output_h5mu)
     expected_var = pd.DataFrame(
         {
             "Feat": ["a", "b", "c"],
@@ -72,9 +72,9 @@ def test_add_metadata_var(run_component, random_path, modality_2, modality_1, sa
             "bar": "category"
         }
     )
-    modality_1.var = expected_var
-    assert_annotation_objects_equal(result.mod["mod1"], modality_1)
-    assert_annotation_objects_equal(result.mod["mod2"], modality_2)
+
+    sample_h5mu.mod["mod1"].var = expected_var
+    assert_annotation_objects_equal(sample_h5mu, output_mudata)
 
 def test_add_metadata_matrix_sample_column(run_component, tmp_path, sample_h5mu):
     input_h5mu, input_mudata = sample_h5mu
