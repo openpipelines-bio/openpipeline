@@ -1,6 +1,7 @@
 import sys
 import pytest
 import mudata as mu
+from openpipelinetestutils.asserters import assert_annotation_objects_equal
 
 ## VIASH START
 meta = {
@@ -34,8 +35,10 @@ def test_run(run_component, tmp_path):
 
     mdata2 = mu.read_h5mu(tmp_output)
 
-    assert "rna" in mdata2.mod, "Resulting mudata should contain rna modality"
-    assert "prot" in mdata2.mod, "Resulting mudata should contain rna modality"
+    assert list(mdata2.mod.keys()) == ["rna", "prot"]
+    
+    assert_annotation_objects_equal(mdata2.mod["rna"], str(tmp_rna))
+    assert_annotation_objects_equal(mdata2.mod["prot"], str(tmp_prot))
 
 if __name__ == "__main__":
     sys.exit(pytest.main([__file__]))
