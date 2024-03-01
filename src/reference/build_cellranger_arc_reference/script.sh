@@ -51,6 +51,7 @@ echo """{
     genome: [\"GRCh38\"]
     input_fasta: [\""${tmpdir}/genome.fa"\"]
     input_gtf: [\""${par_annotation_gtf}\""]
+    non_nuclear_contigs: [\""chrM\""]
     input_motifs: \""$par_motifs_file"\"
     $(printf "%s\n" "${extra_params[@]}")
 }""" > "$config_in"
