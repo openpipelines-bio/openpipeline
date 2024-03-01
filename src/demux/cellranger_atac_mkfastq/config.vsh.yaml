@@ -1,5 +1,5 @@
 functionality:
-  name: cellranger_ataq_mkfastq
+  name: cellranger_atac_mkfastq
   namespace: demux
   description: Demultiplex raw sequencing data for ATAC experiments
   usage: |
