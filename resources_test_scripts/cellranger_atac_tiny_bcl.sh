@@ -74,7 +74,7 @@ awk '{
 if [ ! -d "${OUT}/fastqs" ]; then
   mkdir -p "$OUT/fastqs"
 
-  target/docker/demux/cellranger_ataq_mkfastq/cellranger_ataq_mkfastq \
+  target/docker/demux/cellranger_atac_mkfastq/cellranger_atac_mkfastq \
     --input "${OUT}/bcl" \
     --sample_sheet "${OUT}/bcl/sample_sheet.csv" \
     --csv ${OUT}/bcl/layout.csv \
