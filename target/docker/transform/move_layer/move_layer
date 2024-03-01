@@ -431,9 +431,9 @@ RUN pip install --upgrade pip && \
   pip install --upgrade --no-cache-dir "anndata~=0.9.1" "mudata~=0.2.3" "pandas!=2.1.2"
 
 LABEL org.opencontainers.image.description="Companion container for running component transform move_layer"
-LABEL org.opencontainers.image.created="2024-02-29T02:35:57Z"
+LABEL org.opencontainers.image.created="2024-03-01T02:36:23Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="7d48ed707a295e659bcf0d5f13f4c55ebc967d8d"
+LABEL org.opencontainers.image.revision="e628a476fa0ce800022a484083f86235146e365c"
 LABEL org.opencontainers.image.version="integration_build"
 
 VIASHDOCKER
