@@ -3041,7 +3041,7 @@ meta = [
           "functionalityNamespace" : "dataflow",
           "output" : "",
           "platform" : "",
-          "git_commit" : "e628a476fa0ce800022a484083f86235146e365c",
+          "git_commit" : "2304ff0e9421fad5ebc77acaf783d3292cffcfa8",
           "executable" : "/nextflow/dataflow/merge/main.nf"
         },
         "writtenPath" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/dataflow/merge"
@@ -3063,7 +3063,7 @@ meta = [
           "functionalityNamespace" : "workflows/multiomics",
           "output" : "",
           "platform" : "",
-          "git_commit" : "e628a476fa0ce800022a484083f86235146e365c",
+          "git_commit" : "2304ff0e9421fad5ebc77acaf783d3292cffcfa8",
           "executable" : "/nextflow/workflows/multiomics/split_modalities/main.nf"
         },
         "writtenPath" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/workflows/multiomics/split_modalities"
@@ -3084,7 +3084,7 @@ meta = [
           "functionalityNamespace" : "workflows/prot",
           "output" : "",
           "platform" : "",
-          "git_commit" : "e628a476fa0ce800022a484083f86235146e365c",
+          "git_commit" : "2304ff0e9421fad5ebc77acaf783d3292cffcfa8",
           "executable" : "/nextflow/workflows/prot/prot_multisample/main.nf"
         },
         "writtenPath" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/workflows/prot/prot_multisample"
@@ -3105,7 +3105,7 @@ meta = [
           "functionalityNamespace" : "workflows/rna",
           "output" : "",
           "platform" : "",
-          "git_commit" : "e628a476fa0ce800022a484083f86235146e365c",
+          "git_commit" : "2304ff0e9421fad5ebc77acaf783d3292cffcfa8",
           "executable" : "/nextflow/workflows/rna/rna_multisample/main.nf"
         },
         "writtenPath" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/workflows/rna/rna_multisample"
@@ -3127,7 +3127,7 @@ meta = [
           "functionalityNamespace" : "workflows/multiomics",
           "output" : "",
           "platform" : "",
-          "git_commit" : "e628a476fa0ce800022a484083f86235146e365c",
+          "git_commit" : "2304ff0e9421fad5ebc77acaf783d3292cffcfa8",
           "executable" : "/nextflow/workflows/multiomics/dimensionality_reduction/main.nf"
         },
         "writtenPath" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/workflows/multiomics/dimensionality_reduction"
@@ -3149,7 +3149,7 @@ meta = [
           "functionalityNamespace" : "workflows/multiomics",
           "output" : "",
           "platform" : "",
-          "git_commit" : "e628a476fa0ce800022a484083f86235146e365c",
+          "git_commit" : "2304ff0e9421fad5ebc77acaf783d3292cffcfa8",
           "executable" : "/nextflow/workflows/multiomics/dimensionality_reduction/main.nf"
         },
         "writtenPath" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/workflows/multiomics/dimensionality_reduction"
@@ -3216,7 +3216,7 @@ meta = [
     "platform" : "nextflow",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/workflows/multiomics/process_batches",
     "viash_version" : "0.8.5",
-    "git_commit" : "e628a476fa0ce800022a484083f86235146e365c",
+    "git_commit" : "2304ff0e9421fad5ebc77acaf783d3292cffcfa8",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))
