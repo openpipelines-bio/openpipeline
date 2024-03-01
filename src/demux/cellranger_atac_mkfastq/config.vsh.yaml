@@ -44,7 +44,7 @@ functionality:
     - path: /resources_test/cellranger_tiny_bcl
 platforms:
   - type: docker
-    image: ghcr.io/data-intuitive/cellranger:6.1
+    image: ghcr.io/data-intuitive/cellranger_atac:2.1
     setup:
       - type: docker
         run: apt-get update && apt-get upgrade -y
