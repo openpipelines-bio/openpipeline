@@ -56,7 +56,7 @@ functionality:
   test_resources:
     - type: python_script
       path: test.py
-    - path: /resources_test/cellranger_tiny_bcl
+    - path: /resources_test/cellranger_atac_tiny_bcl
 platforms:
   - type: docker
     image: ghcr.io/data-intuitive/cellranger_atac:2.1
