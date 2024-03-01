@@ -38,8 +38,17 @@ exit_code=$?
 echo ">> Checking whether output can be found"
 [[ ! -f "$tmpdir/myreference.tar.gz" ]] && echo "Output tar file could not be found!" && exit 1
 
-# TODO:
-# - check whether output reference file is valid
-# - Check that motifs/tss files are present there
+echo ">> Checking whether output tar file contains the expected files"
+if tar -tzf "$tmpdir/myreference.tar.gz" | grep -q 'regions/tss.bed'; then
+  :
+else
+  echo "regions/tss.bed not found in tar file with reference!"
+fi
+
+if tar -tzf "$tmpdir/myreference.tar.gz" | grep -q 'regions/transcripts.bed'; then
+  :
+else
+  echo "regions/transcripts.bed not found in tar file with reference!"
+fi
 
 echo "> Test succeeded!"
