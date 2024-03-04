@@ -9,15 +9,15 @@ meta = {
 }
 ## VIASH END
 
-input_dir = meta["resources_dir"] + "/cellranger_atac_tiny_bcl/bcl"
-sample_sheet = meta["resources_dir"] + "/cellranger_atac_tiny_bcl/bcl/layout.csv"
+input_dir = Path(meta["resources_dir"]) / "cellranger_atac_tiny_bcl/bcl"
+sample_sheet = Path(meta["resources_dir"]) / "cellranger_atac_tiny_bcl/bcl/layout.csv"
 
 def test_run(run_component, tmp_path):
     output = tmp_path / "output"
 
     cmd_pars = [
-        "--input", input_dir,
-        "--csv", sample_sheet,
+        "--input", str(input_dir),
+        "--csv", str(sample_sheet),
         "--output", str(output)
     ]
 
