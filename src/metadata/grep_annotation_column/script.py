@@ -102,7 +102,7 @@ def main(par):
         with np.errstate(all='raise'):
             pct_matching = np.divide(counts_for_matches, totals,
                                      where=(~np.isclose(totals, 0)))
-        logger.info("Testing wether or not percentages contains NA.")
+        logger.info("Testing wether or not fractions data contains NA.")
         assert ~np.isnan(pct_matching).any(), "Fractions should not contain NA."
         logger.info("Fraction statistics: \n%s", Series(pct_matching).describe())
         pct_matching = np.where(np.isclose(pct_matching, 0, atol=1e-6), 0, pct_matching)
