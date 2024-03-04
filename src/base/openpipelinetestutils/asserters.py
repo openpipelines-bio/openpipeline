@@ -162,13 +162,14 @@ def assert_multidimensional_annotation_equal(annotation_attr: Literal["obsm", "v
 
 def assert_annotation_objects_equal(left: AnnotationObjectOrPathLike,
                                     right: AnnotationObjectOrPathLike,
-                                    check_data=True):
+                                    check_data=True,
+                                    sort=True):
     left, right = _read_if_needed(left), _read_if_needed(right)
     _assert_same_annotation_object_class(left, right)
     assert_shape_equal(left, right)
-    assert_annotation_frame_equal("obs", left, right, sort=True)
-    assert_annotation_frame_equal("var", left, right, sort=True)
-    assert_multidimensional_annotation_equal("varm", left, right, sort=True)
-    assert_multidimensional_annotation_equal("obsm", left, right, sort=True)
+    assert_annotation_frame_equal("obs", left, right, sort=sort)
+    assert_annotation_frame_equal("var", left, right, sort=sort)
+    assert_multidimensional_annotation_equal("varm", left, right, sort=sort)
+    assert_multidimensional_annotation_equal("obsm", left, right, sort=sort)
     if check_data:
         assert_layers_equal(left, right)

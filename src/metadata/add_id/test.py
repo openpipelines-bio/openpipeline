@@ -4,7 +4,6 @@ import pandas as pd
 from anndata import AnnData
 from mudata import MuData, read_h5mu
 from openpipelinetestutils.asserters import assert_annotation_objects_equal
-from openpipelinetestutils.utils import remove_annotation_column
 
 ## VIASH START
 meta = {
@@ -40,52 +39,11 @@ def test_add_id(run_component, small_mudata, small_mudata_path, random_h5mu_path
         "--input_id", "test_id",
     ]
 
-# TODO order of columns not important
-    expected_obs_mod1 = pd.DataFrame(
-        {
-            "Obs": ["A", "B"],
-            "sample_id": ["test_id", "test_id"]
-        },
-        index = pd.Index(["obs1", "obs2"])
-    ).astype(
-        {
-            "Obs": "object",
-            "sample_id": "category"
-        }
-    )
-    expected_obs_mod2 = pd.DataFrame(
-        {
-            "Obs": ["C", "D"],
-            "sample_id": ["test_id", "test_id"]
-        },
-        index = pd.Index(["obs1", "obs2"])
-    ).astype(
-        {
-            "Obs": "object",
-            "sample_id": "category"
-        }
-    )
-    expected_obs_mudata = pd.DataFrame(
-        {
-            "mod1:Obs": ["A", "B"],
-            "mod1:sample_id": ["test_id", "test_id"],
-            "mod2:Obs": ["C", "D"],
-            "mod2:sample_id": ["test_id", "test_id"],
-            "sample_id": ["test_id", "test_id"]
-        },
-        index = pd.Index(["obs1", "obs2"])
-    ).astype(
-        {
-            "mod1:Obs": "object",
-            "mod1:sample_id": "category",
-            "mod2:Obs": "object",
-            "mod2:sample_id": "category",
-            "sample_id": "category"
-        }
-    )
-    small_mudata.mod["mod1"].obs = expected_obs_mod1
-    small_mudata.mod["mod2"].obs = expected_obs_mod2
-    small_mudata.obs = expected_obs_mudata
+    small_mudata.obs["sample_id"] = ["test_id", "test_id"]
+    small_mudata.mod["mod1"].obs["sample_id"] = ["test_id", "test_id"]
+    small_mudata.mod["mod2"].obs["sample_id"] = ["test_id", "test_id"]
+    small_mudata.strings_to_categoricals()
+    small_mudata.update()
 
     if output_compression:
         args.extend(["--output_compression", output_compression])
@@ -99,12 +57,8 @@ def test_add_id(run_component, small_mudata, small_mudata_path, random_h5mu_path
     assert_annotation_objects_equal(output_data, small_mudata)
 
 
-def test_add_id_obs_output(run_component, generate_h5mu,
-                           write_mudata_to_file, random_h5mu_path):
-    small_mudata = generate_h5mu
-    small_mudata_path = write_mudata_to_file(small_mudata)
+def test_add_id_obs_output(run_component, small_mudata, small_mudata_path, random_h5mu_path):
     output_path = random_h5mu_path()
-
 
     # run component
     run_component([
@@ -113,26 +67,21 @@ def test_add_id_obs_output(run_component, generate_h5mu,
         "--input_id", "test_id",
         "--obs_output", "test_key"
     ])
+    
+    small_mudata.obs["test_key"] = ["test_id", "test_id"]
+    small_mudata.mod["mod1"].obs["test_key"] = ["test_id", "test_id"]
+    small_mudata.mod["mod2"].obs["test_key"] = ["test_id", "test_id"]
+    small_mudata.strings_to_categoricals()
+    small_mudata.update()
+
     assert output_path.is_file()
-
-    # check output
     output_data = read_h5mu(output_path)
-    assert "test_key" in output_data.obs.columns.to_list()
-    for mod_data in output_data.mod.values():
-        assert "test_key" in mod_data.obs.columns.to_list()
-    assert {"test_id"} == set(output_data.obs["test_key"].to_list())
-    pd.testing.assert_index_equal(output_data.obs.index, small_mudata.obs.index)
-
-    # Make sure that the rest of the mudata object stayed the same
-    assert_annotation_objects_equal(small_mudata,
-                                    remove_annotation_column(output_data, "test_key", "obs"),
-                                    check_data=True)
+    
+    assert_annotation_objects_equal(output_data, small_mudata)
 
 
-def test_add_id_observations_unique(run_component, generate_h5mu,
-                                    write_mudata_to_file, random_h5mu_path):
-    small_mudata = generate_h5mu
-    small_mudata_path = write_mudata_to_file(small_mudata)
+def test_add_id_observations_unique(run_component, small_mudata, small_mudata_path, random_h5mu_path):
+
     output_path = random_h5mu_path()
 
     # run component
@@ -142,28 +91,27 @@ def test_add_id_observations_unique(run_component, generate_h5mu,
         "--input_id", "test_id",
         "--make_observation_keys_unique"
     ])
+    
+    small_mudata.obs["sample_id"] = ["test_id", "test_id"]
+    small_mudata.mod["mod1"].obs["sample_id"] = ["test_id", "test_id"]
+    small_mudata.mod["mod2"].obs["sample_id"] = ["test_id", "test_id"]
+    small_mudata.strings_to_categoricals()
+    small_mudata.obs.index = pd.Index(["test_id_obs1", "test_id_obs2"])
+    small_mudata.mod["mod1"].obs.index = pd.Index(["test_id_obs1", "test_id_obs2"])
+    small_mudata.mod["mod2"].obs.index = pd.Index(["test_id_obs1", "test_id_obs2"])
+    small_mudata.update()
+    
     assert output_path.is_file()
-
-    # check output
     output_data = read_h5mu(output_path)
-    assert "sample_id" in output_data.obs.columns.to_list()
-    assert {"test_id"} == set(output_data.obs["sample_id"].to_list())
-    pd.testing.assert_index_equal(output_data.obs.index, "test_id_" + small_mudata.obs.index)
+    
+    assert_annotation_objects_equal(output_data, small_mudata)
+    
 
-    # Make sure that the rest of the mudata object stayed the same
-    equals_test_output_data = remove_annotation_column(output_data, "sample_id", "obs")
-    for mod_name, modality in equals_test_output_data.mod.items():
-        modality.obs.index =  small_mudata[mod_name].obs.index
-    equals_test_output_data.obs.index = small_mudata.obs.index
-    assert_annotation_objects_equal(small_mudata, equals_test_output_data, check_data=True)
-
-def test_add_id_overwrites_output_column(run_component, generate_h5mu,
-                                         write_mudata_to_file, random_h5mu_path):
-    small_mudata = generate_h5mu
+def test_add_id_overwrites_output_column(run_component, small_mudata, small_mudata_path, random_h5mu_path):
+    
     small_mudata.obs["already_exists"] = "alread_exists"
     for _, modality in small_mudata.mod.items():
         modality.obs["already_exists"] = "alread_exists"
-    small_mudata_path = write_mudata_to_file(small_mudata)
     output_path = random_h5mu_path()
 
     # run component
@@ -173,11 +121,17 @@ def test_add_id_overwrites_output_column(run_component, generate_h5mu,
         "--input_id", "test_id",
         "--obs_output", "already_exists"
     ])
+    
+    small_mudata.obs["already_exists"] = ["test_id", "test_id"]
+    small_mudata.mod["mod1"].obs["already_exists"] = ["test_id", "test_id"]
+    small_mudata.mod["mod2"].obs["already_exists"] = ["test_id", "test_id"]
+    small_mudata.update()
+    small_mudata.strings_to_categoricals()
+    
+    assert output_path.is_file()
     output_data = read_h5mu(output_path)
-    assert "already_exists" in output_data.obs.columns.to_list()
-    for mod_data in output_data.mod.values():
-        assert "already_exists" in mod_data.obs.columns.to_list()
-    assert {"test_id"} == set(output_data.obs["already_exists"].to_list())
+    
+    assert_annotation_objects_equal(output_data, small_mudata)
 
 
 if __name__ == "__main__":
