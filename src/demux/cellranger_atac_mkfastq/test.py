@@ -10,7 +10,7 @@ meta = {
 ## VIASH END
 
 input = meta["resources_dir"] + "/cellranger_atac_tiny_bcl/bcl"
-sample_sheet = meta["resources_dir"] + "/cellranger_atac_tiny_bcl/bcl/sample_sheet.csv"
+sample_sheet = meta["resources_dir"] + "/cellranger_atac_tiny_bcl/bcl/layout.csv"
 
 def test_run(run_component, tmp_path):
     output = tmp_path / "output"
