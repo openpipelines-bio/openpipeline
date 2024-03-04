@@ -67,7 +67,8 @@ def assert_var_names_equal(left: AnnotationObjectOrPathLike, right: AnnotationOb
 
 def _assert_frame_equal(left, right, sort=False, *args, **kwargs):
     if sort:
-        left_frame, right_frame = left_frame.sort_index(inplace=False), right_frame.sort_index(inplace=False)
+        left, right = left.sort_index(inplace=False), right.sort_index(inplace=False)
+        left, right = left.sort_index(axis=1, inplace=False), right.sort_index(axis=1, inplace=False)
     assert_frame_equal(left, right, *args, **kwargs) 
 
 def assert_annotation_frame_equal(annotation_attr: Literal["obs", "var"], 
@@ -135,15 +136,15 @@ def assert_multidimensional_annotation_equal(annotation_attr: Literal["obsm", "v
     left, right = _read_if_needed(left), _read_if_needed(right)
     _assert_same_annotation_object_class(left, right)
 
-    @singledispatch()
+    @singledispatch
     def _assert_multidimensional_value_equal(left, right, **kwargs):
         raise NotImplementedError("Unregistered type found while asserting")
     
-    @_assert_multidimensional_value_equal.register()
+    @_assert_multidimensional_value_equal.register
     def _(left: pd.DataFrame, right, **kwargs):
         _assert_frame_equal(left, right, **kwargs)
    
-    @_assert_multidimensional_value_equal.register()
+    @_assert_multidimensional_value_equal.register
     def _(left: Union[np.ndarray, spmatrix], right, **kwargs):
         # Cannot sort sparse and dense matrices so ignore sort param
         _assert_layer_equal(left, right)
@@ -151,12 +152,12 @@ def assert_multidimensional_annotation_equal(annotation_attr: Literal["obsm", "v
     left_dict, right_dict = getattr(left, annotation_attr), getattr(right, annotation_attr)
     left_keys, right_keys = left_dict.keys(), right_dict.keys()
     assert left_keys == right_keys, f"Keys of {annotation_attr} differ:\n[left]:{left_keys}\n[right]:{right_keys}"
-    for left_key, left_value in left_keys:
+    for left_key, left_value in left_dict.items():
         _assert_multidimensional_value_equal(left_value, right_dict[left_key], sort=sort)
     if isinstance(left, MuData):
         assert_mudata_modality_keys_equal(left, right)
         for mod_name, modality in left.mod.items(): 
-            assert_multidimensional_annotation_equal(modality, right[mod_name], sort=sort)
+            assert_multidimensional_annotation_equal(annotation_attr ,modality, right[mod_name], sort=sort)
     
 
 def assert_annotation_objects_equal(left: AnnotationObjectOrPathLike,
@@ -165,9 +166,9 @@ def assert_annotation_objects_equal(left: AnnotationObjectOrPathLike,
     left, right = _read_if_needed(left), _read_if_needed(right)
     _assert_same_annotation_object_class(left, right)
     assert_shape_equal(left, right)
-    assert_annotation_frame_equal("obs", left, right)
-    assert_annotation_frame_equal("var", left, right)
-    assert_multidimensional_annotation_equal("varm", left, right)
-    assert_multidimensional_annotation_equal("obsm", left, right)
+    assert_annotation_frame_equal("obs", left, right, sort=True)
+    assert_annotation_frame_equal("var", left, right, sort=True)
+    assert_multidimensional_annotation_equal("varm", left, right, sort=True)
+    assert_multidimensional_annotation_equal("obsm", left, right, sort=True)
     if check_data:
         assert_layers_equal(left, right)
