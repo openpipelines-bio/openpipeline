@@ -17,7 +17,7 @@ def test_run(run_component, tmp_path):
 
     cmd_pars = [
         "--input", input,
-        "--sample_sheet", sample_sheet,
+        "--csv", sample_sheet,
         "--output", str(output)
     ]
 
