@@ -107,7 +107,7 @@ def main(par):
         logger.info("Fraction statistics: \n%s", Series(pct_matching).describe())
         pct_matching = np.where(np.isclose(pct_matching, 0, atol=1e-6), 0, pct_matching)
         pct_matching = np.where(np.isclose(pct_matching, 1, atol=1e-6), 1, pct_matching)
-        assert (np.logical_or(pct_matching >= 0, pct_matching <= 1)).all(), \
+        assert (np.logical_and(pct_matching >= 0, pct_matching <= 1)).all(), \
                 "Fractions are not within bounds, please report this as a bug"
         output_matrix = other_axis_attribute[par['matrix']]
         logger.info("Writing fractions to matrix '%s', column '%s'",
