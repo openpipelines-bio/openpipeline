@@ -120,7 +120,6 @@ def test_cellranger_multi_directory_input(run_component, random_path):
 
 def test_vdj_inner_enrichment_primers(run_component, random_path):
     outputpath = random_path()
-
     enrichment_primers_file = random_path("txt")
     with enrichment_primers_file.open('w') as primers_file_open:
         primers_file_open.write("AGTCTCTCAGCTGGTACACG\nTCTGATGGCTCAAACACAGC")
@@ -139,9 +138,10 @@ def test_vdj_inner_enrichment_primers(run_component, random_path):
         "--dryrun"]
     run_component(args)
     config_path = outputpath / "config.csv"
+    assert config_path.is_file()
     with config_path.open('r') as config_file:
         config_contents = config_file.read()
-    expected_csv_content = fr"\[vdj\]\nreference,.*\ninner-enrichment-primers,{enrichment_primers_file.resolve()}\n"
+    expected_csv_content = fr"\[vdj\]\nreference,/.*?\ninner-enrichment-primers,/.*?{enrichment_primers_file.resolve()}\n"
     assert re.search(expected_csv_content, config_contents)
 
 def test_cellranger_multi_applies_gex_options(run_component, random_path):
