@@ -46,13 +46,13 @@ if [ ! -z "$par_lanes" ]; then
   extra_params+=( "--lanes=$par_lanes" )
 fi
 if [ ! -z "${par_use-bases-mask}" ]; then 
-  extra_params+=( "--use-bases-mask=${par_use-bases-mask}" )
+  extra_params+=( "--use-bases-mask=${par_use_bases_mask}" )
 fi
-if [ ! -z "${par_delete-undetermined}" ]; then 
-  extra_params+=( "--delete-undetermined" )
+if [ ! -z "${par_delete_undetermined}" ]; then 
+  extra_params+=( "--delete_undetermined" )
 fi
-if [ ! -z "${par_barcode-mismatches}" ]; then 
-  extra_params+=( "--barcode-mismatches=${par_barcode-mismatches}" )
+if [ ! -z "${par_barcode_mismatches}" ]; then 
+  extra_params+=( "--barcode-mismatches=${par_barcode_mismatches}" )
 fi
 
 
