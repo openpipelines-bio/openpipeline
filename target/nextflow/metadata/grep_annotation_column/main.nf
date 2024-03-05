@@ -3120,7 +3120,7 @@ meta = [
     "platform" : "nextflow",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/metadata/grep_annotation_column",
     "viash_version" : "0.8.5",
-    "git_commit" : "4aa098986f443394bcd1eb9dfc82023b8f9d6c6f",
+    "git_commit" : "23e5946971b27812d3367355b5b83004a12a4643",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))
@@ -3137,8 +3137,8 @@ tempscript=".viash_script.sh"
 cat > "$tempscript" << VIASHMAIN
 import mudata as mu
 from pathlib import Path
-from operator import attrgetter, itemgetter
-from pandas import Series, DataFrame
+from operator import attrgetter
+from pandas import Series
 import scipy as sc
 import re
 import numpy as np
@@ -3202,7 +3202,7 @@ def describe_array(arr, msg):
     description = sc.stats.describe(arr)._asdict()
     logger.info("%s:\\\\nshape: %s\\\\nmean: %s\\\\nnobs: %s\\\\n"
                 "variance: %s\\\\nmin: %s\\\\nmax: %s\\\\ncontains na: %s\\\\ndtype: %s\\\\ncontains 0: %s",
-                msg, arr.shape, description["mean"], description["nobs"], 
+                msg, arr.shape, description["mean"], description["nobs"],
                 description["variance"], description["minmax"][0],
                 description["minmax"][1], np.isnan(arr).any(), arr.dtype,
                 (arr == 0).any())
@@ -3257,7 +3257,8 @@ def main(par):
         describe_array(counts_for_matches, "Summary of counts matching grep")
         with np.errstate(all='raise'):
             pct_matching = np.divide(counts_for_matches, totals,
-                                     where=(~np.isclose(totals, 0)))
+                                     out=np.zeros_like(totals, dtype=np.float64),
+                                     where=(~np.isclose(totals, np.zeros_like(totals))))
         logger.info("Testing wether or not fractions data contains NA.")
         assert ~np.isnan(pct_matching).any(), "Fractions should not contain NA."
         logger.info("Fraction statistics: \\\\n%s", Series(pct_matching).describe())

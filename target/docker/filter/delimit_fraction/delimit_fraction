@@ -460,9 +460,9 @@ RUN pip install --upgrade pip && \
 
 LABEL org.opencontainers.image.authors="Dries Schaumont"
 LABEL org.opencontainers.image.description="Companion container for running component filter delimit_fraction"
-LABEL org.opencontainers.image.created="2024-03-04T15:56:11Z"
+LABEL org.opencontainers.image.created="2024-03-05T15:51:56Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="4aa098986f443394bcd1eb9dfc82023b8f9d6c6f"
+LABEL org.opencontainers.image.revision="23e5946971b27812d3367355b5b83004a12a4643"
 LABEL org.opencontainers.image.version="main_build"
 
 VIASHDOCKER
