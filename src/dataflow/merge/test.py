@@ -17,14 +17,14 @@ meta = {
 }
 ## VIASH END
 
-resources_dir = meta["resources_dir"]
+# TODO: Use synthetic data
 input_sample1_file = f"{meta['resources_dir']}/pbmc_1k_protein_v3_filtered_feature_bc_matrix_rna.h5mu"
 input_sample2_file = f"{meta['resources_dir']}/pbmc_1k_protein_v3_filtered_feature_bc_matrix_prot.h5mu"
 
 @pytest.fixture
-def mudata_non_overlapping_observations(request, tmp_path):
+def mudata_non_overlapping_observations(request, random_h5mu_path):
     mudata_to_change_path = request.param
-    temp_h5mu = tmp_path / "duplicate_observations.h5mu"
+    temp_h5mu = random_h5mu_path()
     mudata_to_change = read_h5mu(mudata_to_change_path)
     # Remove 1 observation
     removed_observation_name = mudata_to_change.obs.index[-1]
@@ -37,7 +37,7 @@ def extra_var_column_value():
     return "bar"
 
 @pytest.fixture
-def mudata_with_extra_var_column(tmp_path, request, extra_var_column_value):
+def mudata_with_extra_var_column(random_h5mu_path, request, extra_var_column_value):
     [sample1_path, sample2_path] = request.param
     result = []
     for sample_path, column_value in ((sample1_path, extra_var_column_value), (sample2_path, np.nan)):
@@ -51,18 +51,21 @@ def mudata_with_extra_var_column(tmp_path, request, extra_var_column_value):
                                                convert_string=False,
                                                convert_boolean=True,
                                                convert_floating=False)
-        new_path = tmp_path / (Path(sample_path).stem + "_extra_col.h5mu")
+        new_path = random_h5mu_path()
         sample.write(new_path)
         result.append(new_path)
     return result
 
 
-def test_merge(run_component, random_h5mu_path):
+
+
+def test_merge(run_component, random_h5mu_path, split_small_mudata_path):
     """
     Test a simple merge with fully overlapping observations
     """
     
     output_path = random_h5mu_path()
+    input_sample1_file, input_sample2_file = split_small_mudata_path
     args = [
         "--input", input_sample1_file,
         "--input", input_sample2_file,
@@ -76,7 +79,7 @@ def test_merge(run_component, random_h5mu_path):
     data_sample1 = read_h5mu(input_sample1_file)
     data_sample2 = read_h5mu(input_sample2_file)
     
-    expected_concatenated_data = MuData({'rna': data_sample1.mod['rna'], 'prot': data_sample2.mod['prot']})
+    expected_concatenated_data = MuData({'mod1': data_sample1.mod['mod1'], 'mod2': data_sample2.mod['mod2']})
     assert_annotation_objects_equal(concatenated_data, expected_concatenated_data)
 
  

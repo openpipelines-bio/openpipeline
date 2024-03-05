@@ -50,3 +50,15 @@ def small_mudata(small_anndata_1, small_anndata_2):
 def small_mudata_path(small_mudata, write_mudata_to_file):
     return write_mudata_to_file(small_mudata)
 
+@pytest.fixture
+def split_small_mudata_path(get_small_mudata_mod1_path, get_small_mudata_mod2_path):
+    return get_small_mudata_mod1_path, get_small_mudata_mod2_path
+
+@pytest.fixture
+def small_mudata_mod1_path(small_mudata, write_mudata_to_file):
+    return write_mudata_to_file(md.MuData({'mod1': small_mudata.mod['mod1']}))
+
+@pytest.fixture
+def small_mudata_mod2_path(small_mudata, write_mudata_to_file):
+    return write_mudata_to_file(md.MuData({'mod2': small_mudata.mod['mod2']}))
+
