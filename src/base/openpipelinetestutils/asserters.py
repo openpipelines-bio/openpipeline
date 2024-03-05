@@ -6,7 +6,7 @@ from scipy.sparse import issparse, spmatrix
 from mudata import MuData
 from pathlib import Path
 from pandas.testing import assert_frame_equal
-from typing import Literal, Union
+from typing import Literal
 from .typing import AnnotationObjectOrPathLike
 from functools import singledispatch
 
@@ -145,7 +145,12 @@ def assert_multidimensional_annotation_equal(annotation_attr: Literal["obsm", "v
         _assert_frame_equal(left, right, **kwargs)
    
     @_assert_multidimensional_value_equal.register
-    def _(left: Union[np.ndarray, spmatrix], right, **kwargs):
+    def _(left: np.ndarray, right, **kwargs):
+        # Cannot sort sparse and dense matrices so ignore sort param
+        _assert_layer_equal(left, right)
+
+    @_assert_multidimensional_value_equal.register
+    def _(left: spmatrix, right, **kwargs):
         # Cannot sort sparse and dense matrices so ignore sort param
         _assert_layer_equal(left, right)
 
