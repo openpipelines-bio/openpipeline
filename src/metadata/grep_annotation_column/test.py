@@ -147,7 +147,7 @@ def test_grep_column_fraction_column(run_component, generate_h5mu,
     output_data = read_h5mu(output_path)
     assert "test" in output_data.mod['mod1'].var.columns.to_list()
     assert output_data.mod['mod1'].var['test'].to_list() == [True, False, False]
-    output_data.mod['mod1'].obs['test_output_fraction'].to_list() == [1/6, 4/15]
+    assert output_data.mod['mod1'].obs['test_output_fraction'].to_list() == [1/6, 4/15]
     output_object_without_obs_column = remove_annotation_column(output_data, 
                                                                 ["test_output_fraction"], 
                                                                 "obs", "mod1")
@@ -157,6 +157,76 @@ def test_grep_column_fraction_column(run_component, generate_h5mu,
     assert_annotation_objects_equal(input_path,
                                     output_object_without_wo_output,
                                     check_data=True)
+
+@pytest.mark.parametrize("compression_format", ["gzip", "lzf"])
+def test_fraction_column_nothing_matches(run_component, generate_h5mu,
+                                         random_h5mu_path, write_mudata_to_file,
+                                         compression_format):
+    output_path = random_h5mu_path()
+    input_path = write_mudata_to_file(generate_h5mu)
+    
+    # run component
+    run_component([
+        "--input", str(input_path),
+        "--output", str(output_path),
+        "--modality", "mod1",
+        "--matrix", "var",
+        "--input_column", "Feat",
+        "--regex_pattern", "^doesnotmatch$",
+        "--output_match_column", "test",
+        "--output_fraction_column", "test_output_fraction",
+        "--output_compression", compression_format
+    ])
+    assert output_path.is_file()
+
+    # check output
+    output_data = read_h5mu(output_path)
+    assert "test" in output_data.mod['mod1'].var.columns.to_list()
+    assert output_data.mod['mod1'].var['test'].to_list() == [False, False, False]
+    assert output_data.mod['mod1'].obs['test_output_fraction'].to_list() == [0.0, 0.0]
+    output_object_without_obs_column = remove_annotation_column(output_data, 
+                                                                ["test_output_fraction"], 
+                                                                "obs", "mod1")
+    output_object_without_wo_output = remove_annotation_column(output_object_without_obs_column, 
+                                                               ["test"], 
+                                                               "var", "mod1")
+    assert_annotation_objects_equal(input_path,
+                                    output_object_without_wo_output,
+                                    check_data=True)
+
+def test_fraction_column_with_no_counts(run_component, generate_h5mu,
+                                         random_h5mu_path, write_mudata_to_file):
+    output_path = random_h5mu_path()
+    generate_h5mu.mod['mod1'].X[0] = 0 
+    input_path = write_mudata_to_file(generate_h5mu)
+    
+    # run component
+    run_component([
+        "--input", str(input_path),
+        "--output", str(output_path),
+        "--modality", "mod1",
+        "--matrix", "var",
+        "--input_column", "Feat",
+        "--regex_pattern", "^a",
+        "--output_match_column", "test",
+        "--output_fraction_column", "test_output_fraction"
+    ])
+    assert output_path.is_file()
+
+    # check output
+    output_data = read_h5mu(output_path)
+    assert "test" in output_data.mod['mod1'].var.columns.to_list()
+    assert output_data.mod['mod1'].var['test'].to_list() == [True, False, False]
+    assert output_data.mod['mod1'].obs['test_output_fraction'].to_list() == [0.0, 4/15]
+    output_object_without_obs_column = remove_annotation_column(output_data, 
+                                                                ["test_output_fraction"], 
+                                                                "obs", "mod1")
+    output_object_without_wo_output = remove_annotation_column(output_object_without_obs_column, 
+                                                               ["test"], 
+                                                               "var", "mod1")
+    assert_annotation_objects_equal(input_path,
+                                    output_object_without_wo_output,
+                                    check_data=True) 
 
 @pytest.mark.parametrize("compression_format", ["gzip", "lzf"])
 def test_fraction_column_input_layer(run_component, generate_h5mu,
