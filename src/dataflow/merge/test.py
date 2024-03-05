@@ -7,6 +7,7 @@ import pandas as pd
 import numpy as np
 import re
 from openpipelinetestutils.asserters import assert_annotation_objects_equal
+import os
 
 ## VIASH START
 meta = {
@@ -78,66 +79,55 @@ def test_merge(run_component, random_h5mu_path):
     expected_concatenated_data = MuData({'rna': data_sample1.mod['rna'], 'prot': data_sample2.mod['prot']})
     assert_annotation_objects_equal(concatenated_data, expected_concatenated_data)
 
-    # assert concatenated_data.n_mod == 2
-    # assert concatenated_data.obsm_keys() == ['prot', 'rna']
-    # # In this case, the observations overlap perfectly in the two input files
-    # assert concatenated_data.n_obs == data_sample1.n_obs
-    # assert concatenated_data.n_obs == data_sample2.n_obs
-    # pd.testing.assert_index_equal(concatenated_data.obs.index, data_sample1.obs.index)
-    # pd.testing.assert_index_equal(concatenated_data.obs.index, data_sample2.obs.index)
-
-    # assert set(data_sample1.var_keys()) | set(data_sample2.var_keys()) == \
-    #        set(concatenated_data.var_keys())
-
-    # assert set(concatenated_data.var_names) ==  (set(data_sample1.var_names) | set(data_sample2.var_names))
-    # assert concatenated_data.var_keys() == ['gene_id', 'feature_type', 'genome']
-
+ 
 @pytest.mark.parametrize("mudata_non_overlapping_observations", [input_sample1_file], indirect=["mudata_non_overlapping_observations"])
 def test_merge_non_overlapping_observations(run_component, mudata_non_overlapping_observations, random_h5mu_path):
     """
     Merge with differing observations in the samples
     """
     edited_h5mu, removed_observation_name = mudata_non_overlapping_observations
-    output_file = random_h5mu_path()
+    output_path = random_h5mu_path()
     # Remove 1 observation
     run_component([
         "--input", edited_h5mu,
         "--input", input_sample2_file,
-        "--output", output_file])
-    assert  Path(output_file).is_file()
-    concatenated_data = md.read(output_file, backed=False)
-    data_sample1 = md.read(edited_h5mu, backed=False)
-    data_sample2 = md.read(input_sample2_file, backed=False)
+        "--output", output_path])
     
-    expected_concatenated_data = md.MuData({'rna': data_sample1.mod['rna'], 'prot': data_sample2.mod['prot']})
+    assert  output_path.is_file()
+    concatenated_data = read_h5mu(output_path, backed=False)
+    data_sample1 = read_h5mu(edited_h5mu, backed=False)
+    data_sample2 = read_h5mu(input_sample2_file, backed=False)
+    
+    expected_concatenated_data = MuData({'rna': data_sample1.mod['rna'], 'prot': data_sample2.mod['prot']})
+    
     assert_annotation_objects_equal(concatenated_data, expected_concatenated_data)
-    
     assert concatenated_data[removed_observation_name:]['rna'].n_obs == 0
     assert concatenated_data[removed_observation_name:]['prot'].n_obs == 1
-
-    assert set(concatenated_data.obs_names) == (set(data_sample1.obs_names) | set(data_sample2.obs_names))
-    np.testing.assert_equal(concatenated_data[removed_observation_name:]['rna'].X.data,
-                            np.array([]))
-    np.testing.assert_equal(concatenated_data.copy()[removed_observation_name:]['prot'].X.data,
-                            data_sample2.copy()[removed_observation_name:]['prot'].X.data)
+    
     
 @pytest.mark.parametrize("extra_var_column_value,expected", [("bar", "bar"), (True, True), (0.1, 0.1), (np.nan, pd.NA)])
 @pytest.mark.parametrize("mudata_with_extra_var_column",
                           [(input_sample1_file, input_sample2_file)],
                           indirect=["mudata_with_extra_var_column"])
-def test_boolean_and_na_types(run_component, mudata_with_extra_var_column, expected):
+def test_boolean_and_na_types(run_component, mudata_with_extra_var_column, expected, random_h5mu_path):
     """
     Test if merging booleans of NAs results in the .var .obs column being writeable
     """
     input_file_1, input_file_2 = mudata_with_extra_var_column
+    output_path = random_h5mu_path()
+
     run_component([
         "--input", input_file_1,
         "--input", input_file_2,
-        "--output", "merge.h5mu"])
-    assert Path("merge.h5mu").is_file()
-    merged_data = md.read("merge.h5mu", backed=False)
-    first_sample_mod = list(md.read(input_file_1).mod)[0]
-    second_sample_mod = list(md.read(input_file_2).mod)[0]
+        "--output", output_path])
+    assert output_path.is_file()
+    merged_data = read_h5mu(output_path, backed=False)
+    first_sample_mod = list(read_h5mu(input_file_1).mod)[0]
+    second_sample_mod = list(read_h5mu(input_file_2).mod)[0]
+    
+    expected_merged_data = MuData({'rna': read_h5mu(input_file_1).mod['rna'],
+                                   'prot': read_h5mu(input_file_2).mod['prot']})
+    
     if not pd.isna(expected):
         assert merged_data.var.loc['MIR1302-2HG']['test'] == expected
         assert merged_data.mod[first_sample_mod].var.loc['MIR1302-2HG']['test'] == expected
@@ -147,23 +137,29 @@ def test_boolean_and_na_types(run_component, mudata_with_extra_var_column, expec
     assert pd.isna(merged_data.var.loc['CD3_TotalSeqB']['test'])
     assert pd.isna(merged_data.mod[second_sample_mod].var.loc['CD3_TotalSeqB']['test'])
 
+    assert_annotation_objects_equal(merged_data, expected_merged_data)
+    
 
-def test_same_modalities_raises(run_component, tmp_path):
+def test_same_modalities_raises(run_component, random_h5mu_path):
     """
     Raise when trying to merge modalities with the same name.
     """
-    tempfile = tmp_path / "temp.h5mu"
-    data_sample1 = md.read(input_sample1_file)
+    input_sample1_tmp_path = random_h5mu_path()
+    output_path = random_h5mu_path()
+    data_sample1 = read_h5mu(input_sample1_file)
     data_sample1.mod = {'prot': data_sample1.mod['rna']}
-    data_sample1.write(tempfile.name, compression="gzip")
+    data_sample1.write(input_sample1_tmp_path.name, compression="gzip")
     
     with pytest.raises(subprocess.CalledProcessError) as err:
         run_component([
-            "--input", tempfile.name,
+            "--input", input_sample1_tmp_path.name,
             "--input", input_sample2_file,
-            "--output", "merge.h5mu"])
+            "--output", output_path])
     assert re.search(r"ValueError: Modality 'prot' was found in more than 1 sample\.",
                 err.value.stdout.decode('utf-8'))
+    
+    if os.path.exists(input_sample1_tmp_path.name):
+        os.remove(input_sample1_tmp_path.name)
 
 if __name__ == '__main__':
     sys.exit(pytest.main([__file__]))
