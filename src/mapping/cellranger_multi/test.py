@@ -138,6 +138,7 @@ def test_vdj_inner_enrichment_primers(run_component, random_path):
         "--dryrun"]
     run_component(args)
     config_path = outputpath / "config.csv"
+    assert config_path.is_file()
     with config_path.open('r') as config_file:
         config_contents = config_file.read()
     expected_csv_content = fr"\[vdj\]\nreference,.*?\ninner-enrichment-primers,{enrichment_primers_file.resolve()}\n"
