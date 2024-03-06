@@ -1,27 +1,36 @@
 import sys
 import pytest
-
+from uuid import uuid4
 import numpy as np
 from mudata import read_h5mu
 
 ## VIASH START
 meta = {
-    'functionality_name': './target/native/transform/scale/scale',
-    'resources_dir': './resources_test/pbmc_1k_protein_v3/'
+    "executable": "./target/docker/scaling/scale",
+    "resources_dir": "./resources_test/pbmc_1k_protein_v3/",
+    "config": "./src/scaling/config.vsh.yaml",
 }
 ## VIASH END
 
 input_file = f"{meta['resources_dir']}/pbmc_1k_protein_v3/pbmc_1k_protein_v3_mms.h5mu"
 
-def test_scaling(run_component, tmp_path):
+@pytest.fixture
+def random_path(tmp_path):
+    def wrapper(extension=None):
+        extension = "" if not extension else extension
+        return tmp_path / f"{uuid4()}.{extension}"
+    return wrapper 
+
+
+def test_scaling(run_component, random_path):
     """
     Output data must be centered around mean 0 and it has unit variance.
     """
-    output_file = tmp_path / "scaled.h5mu"
+    output_file = random_path()
 
     run_component([
         "--input", input_file,
-        "--output", str(tmp_path / output_file),
+        "--output", output_file,
         "--ouput_compression", "gzip"])
 
     assert output_file.is_file()
@@ -33,11 +42,20 @@ def test_scaling(run_component, tmp_path):
     assert np.all(np.isclose(mean, 0, rtol=1e-07, atol=1e-07))
     assert np.all(np.isclose(variance, 1, rtol=1e-03, atol=1e-03))
 
-def test_scaling_noncenter(run_component, tmp_path):
+def test_scaling_input_layer(run_component, random_path):
+    output_file = random_path()
+
+    run_component([
+        "--input", input_file,
+        "--output", output_file,
+        "--input_layer", 
+        "--ouput_compression", "gzip"]) 
+
+def test_scaling_noncenter(run_component, random_path):
     """
     Check if centering can be disabled.
     """
-    output_file = tmp_path / "scaled.h5mu"
+    output_file = random_path()
 
     run_component([
         "--input", input_file,
@@ -49,11 +67,11 @@ def test_scaling_noncenter(run_component, tmp_path):
     mean = np.mean(output_x, axis=0, dtype=np.float64)
     assert not np.all(np.isclose(mean, 0, rtol=1e-07, atol=1e-07))
 
-def test_scaling_maxvalue(run_component, tmp_path):
+def test_scaling_maxvalue(run_component, random_path):
     """
     Check if output data is clipped when using --max_value
     """
-    output_file = tmp_path / "scaled.h5mu"
+    output_file = random_path()
 
     run_component([
         "--input", input_file,
@@ -64,11 +82,11 @@ def test_scaling_maxvalue(run_component, tmp_path):
     output_x = output_data.mod['rna'].X
     assert np.all(output_x <= 0.5)
 
-def test_scaling_modality(run_component, tmp_path):
+def test_scaling_modality(run_component, random_path):
     """
     Check if 'rna' modality remain untouched when using '--modality prot' argument.
     """
-    output_file = tmp_path / "scaled.h5mu"
+    output_file = random_path()
 
     run_component([
         "--input", input_file,
