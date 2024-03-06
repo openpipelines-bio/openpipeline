@@ -5,9 +5,6 @@ import torch
 from scipy.sparse import issparse
 from scgpt.tokenizer import tokenize_and_pad_batch
 from scgpt.tokenizer.gene_tokenizer import GeneVocab
-from scgpt.model import TransformerModel
-from scgpt.preprocess import Preprocessor
-from scgpt.utils.util import load_pretrained
 import torch
 from torchtext.vocab import Vocab
 from torchtext._torchtext import (
