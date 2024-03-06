@@ -7,8 +7,8 @@ import mudata as md
 @pytest.fixture
 def random_path(tmp_path):
     def wrapper(extension=None):
-        extension = "" if not extension else extension
-        return tmp_path / f"{uuid4()}.{extension}"
+        extension = "" if not extension else f".{extension}"
+        return tmp_path / f"{uuid4()}{extension}"
     return wrapper 
 
 @pytest.fixture
