@@ -76,7 +76,6 @@ if [ ! -d "${OUT}/fastqs" ]; then
 
   target/docker/demux/cellranger_atac_mkfastq/cellranger_atac_mkfastq \
     --input "${OUT}/bcl" \
-    --sample_sheet "${OUT}/bcl/sample_sheet.csv" \
     --csv ${OUT}/bcl/layout.csv \
     --output "${OUT}/fastqs"
 fi
