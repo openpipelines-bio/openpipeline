@@ -17,7 +17,7 @@ functionality:
       example: /path/to/bcl
       required: true
     - type: file
-      name: --csv
+      name: --sample_sheet
       description: The path to the simple layout sample sheet.
       example: SampleSheet.csv
       required: true
