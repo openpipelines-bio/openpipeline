@@ -29,16 +29,15 @@ def write_mudata_to_file(random_h5mu_path):
 def small_anndata_1():
     df = pd.DataFrame([[1, 2, 3], [4, 5, 6]], index=["obs1", "obs2"], columns=["var1", "var2", "var3"])
     obs = pd.DataFrame([["A"], ["B"]], index=df.index, columns=["Obs"])
-    var = pd.DataFrame([["a"], ["b"], ["c"]],
-                        index=df.columns, columns=["Feat"])
+    var = pd.DataFrame([["a"], ["b"], ["c"]], index=df.columns, columns=["Feat"])
     ad1 = ad.AnnData(df, obs=obs, var=var)
     return ad1
 
 @pytest.fixture
 def small_anndata_2():
-    df = pd.DataFrame([[1, 2, 3], [4, 5, 6]], index=["obs1", "obs2"], columns=["var1", "var2", "var3"])
-    var2 = pd.DataFrame(["d", "e", "g"], index=df.columns, columns=["Feat"])
+    df = pd.DataFrame([[1, 2, 3], [4, 5, 6]], index=["obs1", "obs2"], columns=["var4", "var5", "var6"])
     obs2 = pd.DataFrame(["C", "D"], index=df.index, columns=["Obs"])
+    var2 = pd.DataFrame(["d", "e", "g"], index=df.columns, columns=["Feat"])
     ad2 = ad.AnnData(df, obs=obs2, var=var2)
     return ad2
 

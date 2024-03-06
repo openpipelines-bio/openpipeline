@@ -34,6 +34,7 @@ def mudata_non_overlapping_observations(request, random_h5mu_path):
 def extra_var_column_value():
     return "bar"
 
+@pytest.fixture
 def extra_var_column_name():
     return "test"
 
@@ -129,18 +130,14 @@ def test_boolean_and_na_types(run_component, mudata_with_extra_var_column, extra
     expected_merged_data = MuData({'mod1': read_h5mu(input_sample1_path).mod['mod1'],
                                    'mod2': read_h5mu(input_sample2_path).mod['mod2']})
     
-    """
-    why did we expect to see the expected value in the scope of whole mudata obj?
-    shouldn't it only be in respective modalities?
-    """
     if not pd.isna(expected):
-        # assert merged_data.var.loc['obs1'][extra_var_column_name] == expected
+        assert merged_data.var.loc['var1'][extra_var_column_name] == expected
         assert merged_data.mod[first_sample_mod].var.loc['var1'][extra_var_column_name] == expected
     else:
-        # assert pd.isna(merged_data.var.loc['var1'][extra_var_column_name])
+        assert pd.isna(merged_data.var.loc['var1'][extra_var_column_name])
         assert pd.isna(merged_data.mod[first_sample_mod].var.loc['var1'][extra_var_column_name])
-    # assert pd.isna(merged_data.var.loc['var1'][extra_var_column_name])
-    assert pd.isna(merged_data.mod[second_sample_mod].var.loc['var1'][extra_var_column_name])
+    assert pd.isna(merged_data.var.loc['var4'][extra_var_column_name])
+    assert pd.isna(merged_data.mod[second_sample_mod].var.loc['var4'][extra_var_column_name])
 
     assert_annotation_objects_equal(merged_data, expected_merged_data)
     
