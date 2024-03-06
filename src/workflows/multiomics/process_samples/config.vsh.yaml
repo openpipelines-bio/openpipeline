@@ -239,19 +239,19 @@ functionality:
           description: |
             Name of the .obsm key where the PCA representation of the log-normalized
             and scaled data is stored.
-          default: "pca_scaled"
+          default: "scaled_pca"
         - name: "--rna_scaling_pca_loadings_varm_output"
           type: string
           description: |
             Name of the .varm key where the PCA loadings of the log-normalized and scaled
             data is stored.
-          default: "pca_loadings_scaled"
+          default: "scaled_pca_loadings"
         - name: "--rna_scaling_pca_variance_uns_output"
           type: string
           description: |
             Name of the .uns key where the variance and variance ratio will be stored as a map.
             The map will contain two keys: variance and variance_ratio respectively.
-          default: "pca_variance_scaled"
+          default: "scaled_pca_variance"
         - name: "--rna_scaling_umap_obsm_output"
           type: string
           description:
