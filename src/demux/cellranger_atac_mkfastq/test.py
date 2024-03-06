@@ -15,6 +15,10 @@ sample_sheet = Path(meta["resources_dir"]) / "cellranger_atac_tiny_bcl/bcl/layou
 def test_run(run_component, tmp_path):
     output = tmp_path / "output"
 
+    print("Input dir exists: ", input_dir.is_dir())
+    print("Input dir content: ", list(input_dir.glob("*")))
+    print("Sample sheet exists: ", sample_sheet.is_file())
+
     cmd_pars = [
         "--input", str(input_dir),
         "--csv", str(sample_sheet),
