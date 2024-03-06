@@ -1,4 +1,4 @@
-viash_version: 0.8.5
+viash_version: 0.8.6
 
 source: src
 target: target
@@ -9,7 +9,7 @@ config_mods: |
   .functionality.arguments[.multiple == true].multiple_sep := ";"
   .functionality.argument_groups[true].arguments[.multiple == true].multiple_sep := ";"
   .functionality.test_resources += {path: 'src/base/openpipelinetestutils', dest: 'openpipelinetestutils'}
-  .platforms[.type == 'docker'].namespace_separator := '_'
+  .platforms[.type == 'docker'].namespace_separator := '/'
   .platforms[.type == 'docker'].target_registry := 'ghcr.io'
   .platforms[.type == 'docker'].target_organization := 'openpipelines-bio'
   .platforms[.type == 'docker'].target_image_source := 'https://github.com/openpipelines-bio/openpipeline'

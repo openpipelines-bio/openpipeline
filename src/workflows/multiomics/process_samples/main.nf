@@ -35,7 +35,7 @@ workflow run_wf {
           ]
           newState
         },
-        toState: {id, output, state -> 
+        toState: {id, output, state ->
           def keysToRemove = ["add_id_to_obs", "add_id_obs_output", "add_id_make_observation_keys_unique"]
           def newState = state.findAll{it.key !in keysToRemove}
           newState + ["input": output.output]
@@ -128,7 +128,7 @@ workflow run_wf {
         def keysToRemove = singlesample_arguments.inject([]){currentKeys, modality, stateMapping -> 
             currentKeys += stateMapping.values()
         }
-        def allwayskeep = ["gdo_layer", "rna_layer", "prot_layer"]
+        def allwayskeep = ["gdo_layer", "rna_layer", "prot_layer", "workflow_output"]
         def newState = state.findAll{(it.key !in keysToRemove + ["id"]) || (it.key in allwayskeep)}
         [id, newState]
       }
@@ -147,15 +147,31 @@ workflow run_wf {
       | view {"After groupTuple: $it"}
       | map { modality, old_ids, states ->
         def new_id = "combined_$modality"
-        def new_keys = [
+        // keys in the new state that should not have a unique value across samples
+        def new_state_non_unique_values = [
           "input": states.collect{it.input},
           "input_id": old_ids,
           "_meta": ["join_id": old_ids[0]]
         ]
-        // Just take the state of the first sample for each modality
-        // and update it to become the new state
-        def new_state = states[0] + new_keys
-        [new_id, new_state]
+        // Gather the keys from the different states,
+        // one state might contain more keys compared to another (so create a set)
+        def all_state_keys = states.inject([].toSet()){ current_keys, state ->
+            def new_keys = current_keys + state.keySet()
+            return new_keys
+        }.minus(["output", "input_id", "input", "_meta"])
+        // Create the new state from the keys, values should be the same across samples
+        def new_state = all_state_keys.inject([:]){ old_state, argument_name ->
+            argument_values = states.collect{it.get(argument_name)}.unique()
+            assert argument_values.size() == 1, "Arguments should be the same across samples. Argument name: $argument_name, \
+                                                 argument value: $argument_values"
+            // take the unique value from the set (there is only one)
+            def argument_value
+            argument_values.each { argument_value = it }
+            def current_state = old_state + [(argument_name): argument_value]
+            return current_state
+        }
+        def final_state = new_state_non_unique_values + new_state
+        [new_id, final_state]
       }
       | concatenate_h5mu.run(
         fromState: [
@@ -196,6 +212,7 @@ workflow run_wf {
           [
             "id": id,
             "input": state.input,
+            "output": state.workflow_output,
             "highly_variable_features_var_output": state.highly_variable_features_var_output,
             "highly_variable_features_obs_batch_key": state.highly_variable_features_obs_batch_key,
             "var_qc_metrics": state.var_qc_metrics,
@@ -203,12 +220,17 @@ workflow run_wf {
             "pca_overwrite": state.pca_overwrite,
             "rna_layer": state.rna_layer,
             "prot_layer": state.prot_layer,
+            "clr_axis": state.clr_axis,
           ]
         },
-        toState: ["output": "output"]
+        toState: {id, output, state -> 
+          [
+            "output": output.output,
+            "_meta": state._meta,
+          ]
+        }
       )
       | view {"After process_batches: $it"}
-      | setState(["output", "_meta"])
 
   emit:
     output_ch

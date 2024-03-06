@@ -1,10 +1,126 @@
-# openpipelines x.x.x 
+# openpipelines x.x.x
+
+## BREAKING CHANGES
+
+* Added cell multiplexing support to the `from_cellranger_multi_to_h5mu` component and the `cellranger_multi` workflow. These components now output multiple .h5mu files. The `output` and `output_h5mu` arguments respectively now require a value containing a wildcard character `*`, which will be replaced by the sample ID to form the final output file names . Additionally, a `sample_csv` argument is added to the `from_cellragner_multi_to_h5mu` component which describes the sample name per output file (PR #803).
+
+* `demux/bcl_convert`: update BCL convert from 3.10 to 4.2 (PR #774).
+
+* `demux/cellranger_mkfastq`, `mapping/cellranger_count`, `mapping/cellranger_multi` and `reference/build_cellranger_reference`: update cellranger to `8.0.1` (PR #774 and PR #811).
+
+* Removed `--disable_library_compatibility_check` in favour of `--check_library_compatibility` to the `mapping/cellranger_multi` component and the `ingestion/cellranger_multi` workflow (PR #818).
+
+* `lianapy`: bumped version to `1.2.1` (PR #827).
 
 ## NEW FUNCTIONALITY
 
-* `metadata/grep_annotation_column`: Added more logging output (PR #697).
+* CI: added checking of mudata contents for multiple workflows (PR #783).
 
-* `metadata/add_id` and `metadata/grep_annotation_column`: Bump python to 3.11 (PR #697).
+* Added multiple arguments to the `cellranger_multi` workflow in order to maintain feature parity with the `mapping/cellranger_multi` component (PR #803).
+
+* `convert/from_cellranger_to_h5mu`: add support for antigen analysis. 
+
+* Added `demux/cellranger_atac_mkfastq` component: demultiplex raw sequencing data for ATAC experiments (PR #726).
+
+* Added `reference/build_cellranger_reference` component: build reference file compatible with ATAC and ATAC+GEX experiments (PR #726).
+
+* `demux/bcl_convert`: add support for no lane splitting (PR #804).
+
+* `reference/cellranger_mkgtf` component: Added cellranger mkgtf as a standalone component (PR #771).
+
+* `scgpt/cross_check_genes` component: Added a gene-model cross check component for scGPT (PR #758).
+
+* `scgpt/embedding`: component: Added scGPT embedding component (PR #761)
+
+* `scgpt/tokenize_pad`: component: Added scGPT padding and tokenization component (PR #754).
+
+* `scgpt/binning` component: Added a scGPT pre-processing binning component (PR #765).
+
+* `scgpt/cell_type_annotation` component: Added scGPT cell type annotation component (PR #798)
+
+* `transform/clr` component: Added the option to set the `axis` along which to apply CLR. Possible to override
+  on workflow level as well (PR #767).
+
+## MINOR CHANGES
+
+* Bump scvelo to `0.3.2` (PR #828).
+
+* Bump viash to `0.8.6` (PR #815).
+
+* Pin numpy<2 for several components (PR #815).
+
+* Added `resources_test_scripts/cellranger_atac_tiny_bcl.sh` script: download tiny bcl file with an ATAC experiment, download a motifs file, demultiplex bcl files to reads in fastq format (PR #726).
+
+* `mapping/cellranger_multi` component now outputs logs on failure of the `cellranger multi` process (PR #766).
+
+* Bump `viash-actions` to `v6` (PR #821).
+
+## BUG FIXES
+
+* `dataflow/concatenate_h5mu`: fix writing out multidimensional annotation dataframes (e.g. `.varm`) that had their 
+  data dtype (dtype) changed as a result of adding more observations after concatenation, causing `TypeError`.
+  One notable example of this happening is when one of the samples does not have a multimodal annotation dataframe 
+  which is present in another sample; causing the values being filled with `NA` (PR #837).
+
+## DOCUMENTATION
+
+* Update authorship of components (PR #835).
+
+# openpipelines 1.0.0-rc6
+
+## BUG FIXES
+
+* `dataflow/concatenate_h5mu`: fix regression bug where observations are no longer linked to the correct metadata
+after concatenation (PR #807)
+
+* `transform/normalize_total` component: pass the `target_sum` argument to `sc.pp.normalize_total()` (PR #823).
+
+# openpipelines 1.0.0-rc5
+
+## BUG FIXES
+
+* `cluster/leiden`: prevent leiden component from hanging when a child process is killed (e.g. when there is not enough memory available) (PR #805).
+
+# openpipelines 1.0.0-rc4
+
+## BREAKING CHANGES
+
+* `query/cellxgene_census`: Refactored the interface, documentation and internal workings of this component (PR #621).
+  - Renamed arguments to align with standard OpenPipelines notations and cellxgene census API:
+    - `--input_database` became `--input_uri`
+    - `--cellxgene_release` became `--census_version`
+    - `--cell_query` became `--obs_value_filter`
+    - `--cells_filter_columns` became `--cell_filter_grouping`
+    - `--min_cells_filter_columns` became `--cell_filter_minimum_count`
+    - `--modality` became `--output_modality`
+    - Removed `--dataset_id` since it was no longer being used.
+    - Added `--add_dataset_meta` to add metadata to the output MuData object.
+  - Documentation of the component and its arguments was improved.
+
+## BUG FIXES
+
+* `mapping/cellranger_multi`: Fix the regex for the fastq input files to allow dropping the lane from the input file names (e.g. `_L001`) (PR #778).
+
+* `workflows/rna/rna_singlesample`: Fix argument passing `top_n_vars` and `obs_name_mitochondrial_fraction` to the `qc` subworkflow (PR #779).
+
+# openpipelines 1.0.0-rc3
+
+## BREAKING CHANGES
+
+* Docker image names now use `/` instead of `_` between the name of the component and the namespace (PR #712).
+
+## BUG FIXES
+
+* `rna_singlesample`: fixed a bug where selecting the column for the filtering with mitochondrial fractions 
+  using `obs_name_mitochondrial_fraction` was done with the wrong column name, causing `ValueError` (PR #743).
+
+* Fix publishing in `process_samples` and `process_batches` (PR #759).
+
+## NEW FUNCTIONALITY
+
+* `dimred/tsne` component: Added a tSNE dimensionality reduction component (PR #742).
+
+# openpipelines 1.0.0-rc2
 
 ## BUG FIXES
 
@@ -12,11 +128,22 @@
 
 * `dataflow/split_modalities`: remove unused `compression` argument. Use `output_compression` instead (PR #714).
 
+* `metadata/grep_annotation_column`: fix calculating fraction when an input observation has no counts, which caused
+the result to be out of bounds.
+
+* Fix `--output` argument not working for several workflows (PR #740).
+
 ## MINOR CHANGES
+
+* `metadata/grep_annotation_column`: Added more logging output (PR #697).
+
+* `metadata/add_id` and `metadata/grep_annotation_column`: Bump python to 3.11 (PR #697).
 
 * Bump viash to 0.8.5 (PR #697)
 
 * `dataflow/split_modalities`: add more logging output and bump python to 3.12 (PR #714).
+
+* `correction/cellbender`: Update nextflow resource labels from `singlecpu` and `lowmem` to `midcpu` and `midmem` (PR #736)
 
 # openpipelines 1.0.0rc1
 

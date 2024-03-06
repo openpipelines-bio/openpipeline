@@ -85,6 +85,13 @@ functionality:
         - name: "--pca_overwrite"
           type: boolean_true
           description: "Allow overwriting slots for PCA output."
+    - name: "CLR options"
+      arguments:
+        - name: "--clr_axis"
+          type: integer
+          description: "Axis to perform the CLR transformation on."
+          default: 0
+          required: false
   dependencies:
     - name: dataflow/merge
     - name: workflows/multiomics/split_modalities
@@ -95,6 +102,7 @@ functionality:
       alias: dimensionality_reduction_rna
     - name: workflows/multiomics/dimensionality_reduction
       alias: dimensionality_reduction_prot
+    - name: transfer/publish
   resources:
     - type: nextflow_script
       path: main.nf
