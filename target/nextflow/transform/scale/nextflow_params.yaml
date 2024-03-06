@@ -1,6 +1,8 @@
 # Arguments
 input: # please fill in - example: "input.h5mu"
 modality: "rna"
+# input_layer: "foo"
+# output_layer: "foo"
 # max_value: 123.0
 zero_center: true
 # output: "$id.$key.output.h5mu"

@@ -23,6 +23,12 @@ output_var_total_counts_obs: "total_counts"
 output_var_obs_mean: "obs_mean"
 output_var_pct_dropout: "pct_dropout"
 
+# RNA Scaling options
+enable_scaling: false
+scaling_output_layer: "scaled"
+# scaling_max_value: 123.0
+scaling_zero_center: true
+
 # Nextflow input-output arguments
 publish_dir: # please fill in - example: "output/"
 # param_list: "my_params.yaml"

@@ -44,6 +44,25 @@ functionality:
     multiple: false
     multiple_sep: ":"
     dest: "par"
+  - type: "string"
+    name: "--input_layer"
+    description: "Input layer with data to scale. Uses .X by default"
+    info: null
+    required: false
+    direction: "input"
+    multiple: false
+    multiple_sep: ":"
+    dest: "par"
+  - type: "string"
+    name: "--output_layer"
+    description: "Output layer where scaled data will be stored. If not specified,\
+      \ .X will be used."
+    info: null
+    required: false
+    direction: "input"
+    multiple: false
+    multiple_sep: ":"
+    dest: "par"
   - type: "double"
     name: "--max_value"
     description: "Clip (truncate) to this value after scaling. Does not clip by default."
@@ -53,17 +72,12 @@ functionality:
     multiple: false
     multiple_sep: ":"
     dest: "par"
-  - type: "boolean"
+  - type: "boolean_false"
     name: "--zero_center"
-    description: "If False, omit zero-centering variables, which allows to handle\
-      \ sparse input efficiently."
+    description: "If set, omit zero-centering variables, which allows to handle sparse\
+      \ input efficiently."
     info: null
-    default:
-    - true
-    required: false
     direction: "input"
-    multiple: false
-    multiple_sep: ":"
     dest: "par"
   - type: "file"
     name: "--output"
@@ -122,7 +136,7 @@ functionality:
 platforms:
 - type: "docker"
   id: "docker"
-  image: "python:3.10-slim-bullseye"
+  image: "python:3.12-slim"
   target_organization: "openpipelines-bio"
   target_registry: "ghcr.io"
   target_tag: "integration_build"
@@ -134,7 +148,6 @@ platforms:
   setup:
   - type: "apt"
     packages:
-    - "libhdf5-dev"
     - "procps"
     interactive: false
   - type: "python"
@@ -147,6 +160,14 @@ platforms:
     - "statsmodels==0.14.0"
     upgrade: true
   test_setup:
+  - type: "docker"
+    copy:
+    - "openpipelinetestutils /opt/openpipelinetestutils"
+  - type: "python"
+    user: false
+    packages:
+    - "/opt/openpipelinetestutils"
+    upgrade: true
   - type: "python"
     user: false
     packages:
@@ -210,5 +231,5 @@ info:
   output: "/home/runner/work/openpipeline/openpipeline/target/native/transform/scale"
   executable: "/home/runner/work/openpipeline/openpipeline/target/native/transform/scale/scale"
   viash_version: "0.8.5"
-  git_commit: "904f871eef784f2b1b7387608255af2c8ccefdf2"
+  git_commit: "9ac71fed9945604c099d643abcb9a443b320e0d2"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"

@@ -18,6 +18,16 @@ top_n_vars: [50, 100, 200, 500]
 # PCA options
 pca_overwrite: false
 
+# RNA Scaling options
+rna_enable_scaling: false
+rna_scaling_output_layer: "scaled"
+rna_scaling_pca_obsm_output: "scaled_pca"
+rna_scaling_pca_loadings_varm_output: "scaled_pca_loadings"
+rna_scaling_pca_variance_uns_output: "scaled_pca_variance"
+rna_scaling_umap_obsm_output: "scaled_umap"
+# rna_scaling_max_value: 123.0
+rna_scaling_zero_center: true
+
 # Nextflow input-output arguments
 publish_dir: # please fill in - example: "output/"
 # param_list: "my_params.yaml"
