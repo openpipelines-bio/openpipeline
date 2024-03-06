@@ -3054,7 +3054,7 @@ meta = [
     "platform" : "nextflow",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/metadata/add_id",
     "viash_version" : "0.8.5",
-    "git_commit" : "bf64ba8fb399281ca82c9630f43ae073ba8336c5",
+    "git_commit" : "904f871eef784f2b1b7387608255af2c8ccefdf2",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))

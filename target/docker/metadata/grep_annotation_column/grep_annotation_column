@@ -470,9 +470,9 @@ RUN pip install --upgrade pip && \
 
 LABEL org.opencontainers.image.authors="Dries Schaumont"
 LABEL org.opencontainers.image.description="Companion container for running component metadata grep_annotation_column"
-LABEL org.opencontainers.image.created="2024-03-05T02:35:08Z"
+LABEL org.opencontainers.image.created="2024-03-06T02:35:13Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="bf64ba8fb399281ca82c9630f43ae073ba8336c5"
+LABEL org.opencontainers.image.revision="904f871eef784f2b1b7387608255af2c8ccefdf2"
 LABEL org.opencontainers.image.version="integration_build"
 
 VIASHDOCKER
@@ -1054,8 +1054,8 @@ trap interrupt INT SIGINT
 cat > "\$tempscript" << 'VIASHMAIN'
 import mudata as mu
 from pathlib import Path
-from operator import attrgetter, itemgetter
-from pandas import Series, DataFrame
+from operator import attrgetter
+from pandas import Series
 import scipy as sc
 import re
 import numpy as np
@@ -1119,7 +1119,7 @@ def describe_array(arr, msg):
     description = sc.stats.describe(arr)._asdict()
     logger.info("%s:\\nshape: %s\\nmean: %s\\nnobs: %s\\n"
                 "variance: %s\\nmin: %s\\nmax: %s\\ncontains na: %s\\ndtype: %s\\ncontains 0: %s",
-                msg, arr.shape, description["mean"], description["nobs"], 
+                msg, arr.shape, description["mean"], description["nobs"],
                 description["variance"], description["minmax"][0],
                 description["minmax"][1], np.isnan(arr).any(), arr.dtype,
                 (arr == 0).any())
@@ -1174,7 +1174,8 @@ def main(par):
         describe_array(counts_for_matches, "Summary of counts matching grep")
         with np.errstate(all='raise'):
             pct_matching = np.divide(counts_for_matches, totals,
-                                     where=(~np.isclose(totals, 0)))
+                                     out=np.zeros_like(totals, dtype=np.float64),
+                                     where=(~np.isclose(totals, np.zeros_like(totals))))
         logger.info("Testing wether or not fractions data contains NA.")
         assert ~np.isnan(pct_matching).any(), "Fractions should not contain NA."
         logger.info("Fraction statistics: \\n%s", Series(pct_matching).describe())

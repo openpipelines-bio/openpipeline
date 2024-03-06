@@ -162,5 +162,5 @@ info:
   output: "/home/runner/work/openpipeline/openpipeline/target/docker/convert/from_bd_to_10x_molecular_barcode_tags"
   executable: "/home/runner/work/openpipeline/openpipeline/target/docker/convert/from_bd_to_10x_molecular_barcode_tags/from_bd_to_10x_molecular_barcode_tags"
   viash_version: "0.8.5"
-  git_commit: "bf64ba8fb399281ca82c9630f43ae073ba8336c5"
+  git_commit: "904f871eef784f2b1b7387608255af2c8ccefdf2"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"
