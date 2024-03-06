@@ -46,12 +46,20 @@ cd "$tmpdir"
 
 echo "> Building config"
 config_in="${tmpdir}/config"
+
+# If non_nuclear_contigs is not set or bash thinks it is a flag, set it to an empty string
+if [[ -z $par_non_nuclear_contigs || $par_non_nuclear_contigs == "--non_nuclear_contigs" ]]; then
+    non_nuclear_contigs=""
+else
+    non_nuclear_contigs="non_nuclear_contigs: [\"${par_non_nuclear_contigs}\"]"
+fi
+
 echo """{
     organism: \"Homo_sapiens\"
     genome: [\"GRCh38\"]
     input_fasta: [\""${tmpdir}/genome.fa"\"]
     input_gtf: [\""${par_annotation_gtf}\""]
-    non_nuclear_contigs: [\""chrM\""]
+    "${non_nuclear_contigs}"
     input_motifs: \""$par_motifs_file"\"
     $(printf "%s\n" "${extra_params[@]}")
 }""" > "$config_in"
