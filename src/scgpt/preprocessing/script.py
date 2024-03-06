@@ -27,7 +27,7 @@ par = {
     "data_is_raw": False,
     "n_input_bins": 51,
     "load_model_vocab": False,
-    "model_dir": "/Users/dorienroosen/code/openpipeline/src/scgpt/model"
+    "model_dir": "src/scgpt/model"
 }
 ## VIASH END
 
