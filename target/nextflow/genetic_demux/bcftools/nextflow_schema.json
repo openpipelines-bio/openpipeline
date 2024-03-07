@@ -1,0 +1,121 @@
+{
+"$schema": "http://json-schema.org/draft-07/schema",
+"title": "bcftools",
+"description": "Filter the variants called by freebayes or cellSNP",
+"type": "object",
+"definitions": {
+
+    
+    "Dataset input": {
+        "title": "Dataset input",
+        "type": "object",
+        "description": "Dataset input using nf-tower \"dataset\" or \"data explorer\". Allows for the input of multiple         parameter sets to initialise a Nextflow channel.",
+        "properties": {
+            "param_list": {
+                "description": "Dataset input can either be a list of maps, a csv file, a json file, a yaml file, or simply a yaml                 blob. The names of the input fields (e.g. csv columns, json keys) need to be an exact match with the workflow input parameters.",
+                "default": "",
+                "format": "file-path",
+                "mimetype": "text/csv",
+                "pattern": "^\\S+\\.csv$"
+            }
+        }
+    },
+
+    
+    
+    "arguments" : {
+    "title": "Arguments",
+    "type": "object",
+    "description": "No description",
+    "properties": {
+    
+        
+                "vcf": {
+                "type":
+                "string",
+                "description": "Type: List of `file`, required, multiple_sep: `\":\"`. VCF files, must have the same sample columns appearing in the same order",
+                "help_text": "Type: List of `file`, required, multiple_sep: `\":\"`. VCF files, must have the same sample columns appearing in the same order."
+            
+            }
+    
+
+        ,
+                "concat": {
+                "type":
+                "boolean",
+                "description": "Type: `boolean_true`, default: `false`. Concatenate or combine VCFs and sort them",
+                "help_text": "Type: `boolean_true`, default: `false`. Concatenate or combine VCFs and sort them."
+            ,
+                "default": "False"
+            }
+    
+
+        ,
+                "filter": {
+                "type":
+                "boolean",
+                "description": "Type: `boolean_true`, default: `false`. Filter VCFs",
+                "help_text": "Type: `boolean_true`, default: `false`. Filter VCFs."
+            ,
+                "default": "False"
+            }
+    
+
+        ,
+                "filter_qual": {
+                "type":
+                "integer",
+                "description": "Type: `integer`, default: `30`. Filter VCFs with specified QUAL threshold",
+                "help_text": "Type: `integer`, default: `30`. Filter VCFs with specified QUAL threshold."
+            ,
+                "default": "30"
+            }
+    
+
+        ,
+                "output": {
+                "type":
+                "string",
+                "description": "Type: `file`, default: `$id.$key.output.output`, example: `bcftools_out/`. bcftools output directory",
+                "help_text": "Type: `file`, default: `$id.$key.output.output`, example: `bcftools_out/`. bcftools output directory"
+            ,
+                "default": "$id.$key.output.output"
+            }
+    
+
+}
+},
+    
+    
+    "nextflow input-output arguments" : {
+    "title": "Nextflow input-output arguments",
+    "type": "object",
+    "description": "Input/output parameters for Nextflow itself. Please note that both publishDir and publish_dir are supported but at least one has to be configured.",
+    "properties": {
+    
+        
+                "publish_dir": {
+                "type":
+                "string",
+                "description": "Type: `string`, required, example: `output/`. Path to an output directory",
+                "help_text": "Type: `string`, required, example: `output/`. Path to an output directory."
+            
+            }
+    
+
+        
+
+}
+}
+},
+"allOf": [
+
+    {
+    "$ref": "#/definitions/arguments"
+    },
+
+    {
+    "$ref": "#/definitions/nextflow input-output arguments"
+    }
+]
+}
