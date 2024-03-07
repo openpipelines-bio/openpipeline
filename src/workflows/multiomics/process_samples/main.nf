@@ -203,14 +203,6 @@ workflow run_wf {
             "pca_overwrite": state.pca_overwrite,
             "rna_layer": state.rna_layer,
             "prot_layer": state.prot_layer,
-            "rna_enable_scaling": state.rna_enable_scaling,
-            "rna_scaling_output_layer": state.rna_scaling_output_layer,
-            "rna_scaling_pca_obsm_output": state.rna_scaling_pca_obsm_output,
-            "rna_scaling_pca_loadings_varm_output": state.rna_scaling_pca_loadings_varm_output,
-            "rna_scaling_pca_variance_uns_output": state.rna_scaling_pca_variance_uns_output,
-            "rna_scaling_umap_obsm_output": state.rna_scaling_umap_obsm_output,
-            "rna_scaling_max_value": state.rna_scaling_max_value,
-            "rna_scaling_zero_center": state.rna_scaling_zero_center,
           ]
         },
         toState: ["output": "output"]

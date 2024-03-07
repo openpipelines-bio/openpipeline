@@ -3015,7 +3015,7 @@ meta = [
           "functionalityNamespace" : "correction",
           "output" : "",
           "platform" : "",
-          "git_commit" : "9ac71fed9945604c099d643abcb9a443b320e0d2",
+          "git_commit" : "90c6875a3888fdbc4242688df2ab99676e17e260",
           "executable" : "/nextflow/correction/cellbender_remove_background/main.nf"
         },
         "writtenPath" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/correction/cellbender_remove_background"
@@ -3036,7 +3036,7 @@ meta = [
           "functionalityNamespace" : "filter",
           "output" : "",
           "platform" : "",
-          "git_commit" : "9ac71fed9945604c099d643abcb9a443b320e0d2",
+          "git_commit" : "90c6875a3888fdbc4242688df2ab99676e17e260",
           "executable" : "/nextflow/filter/filter_with_counts/main.nf"
         },
         "writtenPath" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/filter/filter_with_counts"
@@ -3057,7 +3057,7 @@ meta = [
           "functionalityNamespace" : "filter",
           "output" : "",
           "platform" : "",
-          "git_commit" : "9ac71fed9945604c099d643abcb9a443b320e0d2",
+          "git_commit" : "90c6875a3888fdbc4242688df2ab99676e17e260",
           "executable" : "/nextflow/filter/subset_h5mu/main.nf"
         },
         "writtenPath" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/filter/subset_h5mu"
@@ -3078,7 +3078,7 @@ meta = [
           "functionalityNamespace" : "transfer",
           "output" : "",
           "platform" : "",
-          "git_commit" : "9ac71fed9945604c099d643abcb9a443b320e0d2",
+          "git_commit" : "90c6875a3888fdbc4242688df2ab99676e17e260",
           "executable" : "/nextflow/transfer/publish/main.nf"
         },
         "writtenPath" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/transfer/publish"
@@ -3145,7 +3145,7 @@ meta = [
     "platform" : "nextflow",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/workflows/ingestion/cellranger_postprocessing",
     "viash_version" : "0.8.5",
-    "git_commit" : "9ac71fed9945604c099d643abcb9a443b320e0d2",
+    "git_commit" : "90c6875a3888fdbc4242688df2ab99676e17e260",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))

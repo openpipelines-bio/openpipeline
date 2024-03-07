@@ -429,9 +429,9 @@ RUN Rscript -e 'if (!requireNamespace("remotes", quietly = TRUE)) install.packag
 
 LABEL org.opencontainers.image.authors="Robrecht Cannoodt"
 LABEL org.opencontainers.image.description="Companion container for running component convert from_bdrhap_to_h5mu"
-LABEL org.opencontainers.image.created="2024-03-06T14:51:50Z"
+LABEL org.opencontainers.image.created="2024-03-07T02:35:35Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="9ac71fed9945604c099d643abcb9a443b320e0d2"
+LABEL org.opencontainers.image.revision="90c6875a3888fdbc4242688df2ab99676e17e260"
 LABEL org.opencontainers.image.version="integration_build"
 
 VIASHDOCKER

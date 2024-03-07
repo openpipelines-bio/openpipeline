@@ -51,26 +51,6 @@
     
 
         ,
-                "input_layer": {
-                "type":
-                "string",
-                "description": "Type: `string`. Input layer with data to scale",
-                "help_text": "Type: `string`. Input layer with data to scale. Uses .X by default"
-            
-            }
-    
-
-        ,
-                "output_layer": {
-                "type":
-                "string",
-                "description": "Type: `string`. Output layer where scaled data will be stored",
-                "help_text": "Type: `string`. Output layer where scaled data will be stored. If not specified, .X will be used."
-            
-            }
-    
-
-        ,
                 "max_value": {
                 "type":
                 "number",
@@ -84,8 +64,8 @@
                 "zero_center": {
                 "type":
                 "boolean",
-                "description": "Type: `boolean_false`, default: `true`. If set, omit zero-centering variables, which allows to handle sparse input efficiently",
-                "help_text": "Type: `boolean_false`, default: `true`. If set, omit zero-centering variables, which allows to handle sparse input efficiently."
+                "description": "Type: `boolean`, default: `true`. If False, omit zero-centering variables, which allows to handle sparse input efficiently",
+                "help_text": "Type: `boolean`, default: `true`. If False, omit zero-centering variables, which allows to handle sparse input efficiently."
             ,
                 "default": "True"
             }
