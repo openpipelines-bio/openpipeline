@@ -21,6 +21,8 @@ the result to be out of bounds.
 
 * `dataflow/split_modalities`: add more logging output and bump python to 3.12 (PR #714).
 
+* `correction/cellbender`: Update nextflow resource labels from `singlecpu` and `lowmem` to `midcpu` and `midmem` (PR #736)
+
 # openpipelines 1.0.0rc1
 
 ## BREAKING CHANGES

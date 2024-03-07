@@ -141,7 +141,7 @@ def test_vdj_inner_enrichment_primers(run_component, random_path):
     assert config_path.is_file()
     with config_path.open('r') as config_file:
         config_contents = config_file.read()
-    expected_csv_content = fr"\[vdj\]\nreference,/.*?\ninner-enrichment-primers,/.*?{enrichment_primers_file.resolve()}\n"
+    expected_csv_content = fr"\[vdj\]\nreference,.*?\ninner-enrichment-primers,{enrichment_primers_file.resolve()}\n"
     assert re.search(expected_csv_content, config_contents)
 
 def test_cellranger_multi_applies_gex_options(run_component, random_path):

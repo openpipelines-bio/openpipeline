@@ -299,4 +299,4 @@ platforms:
           - cellbender~=0.3.0
   - type: nextflow
     directives:
-      label: [singlecpu, lowmem, gpu]
+      label: [midcpu, midmem, gpu]

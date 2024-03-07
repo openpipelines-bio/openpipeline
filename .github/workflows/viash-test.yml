@@ -77,7 +77,7 @@ jobs:
       run: |
         echo "matrix=$(jq -c '[ .[] | 
           { 
-            "name": .functionality.namespace,
+            "name": .functionality.name,
             "namespace_separator": .platforms | map(select(.type == "docker"))[0].namespace_separator,
             "namespace": .functionality.namespace,
             "config": .info.config,
