@@ -19,12 +19,13 @@ functionality:
         - name: "--modality"
           type: string
           default: "rna"
-          required: false
+          required: true
 
         - name: "--use_rep"
           type: string
           description: The `.obsm` slot to use as input for the tSNE computation.
           required: false
+          default: "X_pca"
           example: "X_pca"
     
     - name: Outputs
@@ -46,7 +47,7 @@ functionality:
 
         - name: "--obsm_output"
           type: string
-          description: The pre/postfix under which to store the tSNE results.
+          description: The pre/suffix under which to store the tSNE results.
           default: "tsne"
     
     - name: Arguments
@@ -91,7 +92,6 @@ functionality:
         - name: "--n_jobs"
           type: integer
           description: Number of jobs for parallel computation. None means using scanpy._settings.ScanpyConfig.n_jobs.
-          default: None
           required: false
 
   resources:
