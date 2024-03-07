@@ -10,7 +10,7 @@ par = {
     'use_rep': 'X_pca',
     'output': 'output.h5mu',
     'output_compression': 'gzip',
-    'obsm_output': 'tsne',
+    'obsm_output': 'X_tsne',
     'n_pcs': 50,
     'perplexity': 30,
     'min_dist': 0.5,
