@@ -57,7 +57,7 @@ temp_obsm = {par["use_rep"]: data.obsm[par["use_rep"]]} if par["use_rep"] in dat
 temp_adata = ad.AnnData(
     X=temp_X,
     obsm=temp_obsm,
-    shape=data.shape if temp_X == None else None
+    shape=data.shape if temp_X is None else None
 )
 
 sc.tl.tsne(

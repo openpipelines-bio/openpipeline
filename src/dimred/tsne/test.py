@@ -48,6 +48,7 @@ def test_tsne_no_pca_in_input(run_component, random_h5mu_path, mudata_no_obsm_pc
         "--input", mudata_no_obsm_pca,
         "--output",  output_path,
         "--modality", "rna",
+        "--n_pcs", "100",
         "--output_compression", "gzip"
     ])
     
@@ -59,6 +60,23 @@ def test_tsne_no_pca_in_input(run_component, random_h5mu_path, mudata_no_obsm_pc
     assert "X_tsne" in output_mudata.mod["rna"].obsm, "Check whether output was found in .obsm"
     output_mudata.mod["rna"].obsm.pop("X_tsne")
     assert_annotation_objects_equal(output_mudata, input_mudata)
+    
+    
+def test_tsne_too_many_pcs_raise(run_component, random_h5mu_path):
+    output_path = random_h5mu_path()
+    args = [
+        "--input", input_path,
+        "--output",  output_path,
+        "--modality", "rna",
+        "--use_rep", "X_pca",
+        "--output_compression", "gzip",
+        "--n_pcs", "100"
+    ]
+    
+    with pytest.raises(subprocess.CalledProcessError) as err:
+        run_component(args)
+    assert re.search(r"ValueError: X_pca does not have enough Dimensions\. Provide a Representation with equal or more dimensions than`n_pcs` or lower `n_pcs`",
+                     err.value.stdout.decode('utf-8'))
     
     
 def test_tsne_raw_sparse_X_raise(run_component, random_h5mu_path):
