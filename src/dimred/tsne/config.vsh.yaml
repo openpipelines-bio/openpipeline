@@ -25,7 +25,6 @@ functionality:
           type: string
           description: The `.obsm` slot to use as input for the tSNE computation.
           required: false
-          default: "X_pca"
           example: "X_pca"
     
     - name: Outputs
