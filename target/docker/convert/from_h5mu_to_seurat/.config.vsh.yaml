@@ -1,7 +1,7 @@
 functionality:
   name: "from_h5mu_to_seurat"
   namespace: "convert"
-  version: "1.0.0rc2"
+  version: "1.0.0-rc2"
   authors:
   - name: "Robrecht Cannoodt"
     roles:
@@ -87,7 +87,7 @@ platforms:
   image: "eddelbuettel/r2u:22.04"
   target_organization: "openpipelines-bio"
   target_registry: "ghcr.io"
-  target_tag: "1.0.0rc2"
+  target_tag: "1.0.0-rc2"
   namespace_separator: "_"
   resolve_volume: "Automatic"
   chown: true
@@ -186,6 +186,6 @@ info:
   output: "/home/runner/work/openpipeline/openpipeline/target/docker/convert/from_h5mu_to_seurat"
   executable: "/home/runner/work/openpipeline/openpipeline/target/docker/convert/from_h5mu_to_seurat/from_h5mu_to_seurat"
   viash_version: "0.8.5"
-  git_commit: "ac02e9747ee677373b09256e2f648537b9d80692"
+  git_commit: "4c219ba08e8bfeff5bb53ec177f992ce5c8ce20e"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"
-  git_tag: "1.0.0rc1"
+  git_tag: "1.0.0rc1-1-g4c219ba08e"
