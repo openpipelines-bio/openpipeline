@@ -13,10 +13,10 @@ from torchtext._torchtext import (
 
 ## VIASH START
 par = {
-    "input": "src/scgpt/data/Kim2020_Lung_preprocessed.h5ad",
-    "output_gene_ids": 'src/scgpt/data/Kim2020_Lung_gene_ids.pt',
-    "output_values": 'src/scgpt/data/Kim2020_Lung_values.pt',
-    "output_padding_mask": 'src/scgpt/data/Kim2020_Lung_padding_mask.pt',
+    "input": "src/scgpt/test_resources/Kim2020_Lung_preprocessed.h5ad",
+    "output_gene_ids": 'src/scgpt/test_resources/Kim2020_Lung_gene_ids.pt',
+    "output_values": 'src/scgpt/test_resources/Kim2020_Lung_values.pt',
+    "output_padding_mask": 'src/scgpt/test_resources/Kim2020_Lung_padding_mask.pt',
     "pad_token": "<pad>",
     "pad_value": -2,
     "input_layer": "X_binned",
