@@ -3406,7 +3406,7 @@ meta = [
           "functionalityNamespace" : "metadata",
           "output" : "",
           "platform" : "",
-          "git_commit" : "de44fe67100a194583bd0903c7920f09b0e8188f",
+          "git_commit" : "631fe6ebb004cb3ab93405e9313a4f6aa9736763",
           "executable" : "/nextflow/metadata/add_id/main.nf"
         },
         "writtenPath" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/metadata/add_id"
@@ -3428,7 +3428,7 @@ meta = [
           "functionalityNamespace" : "workflows/multiomics",
           "output" : "",
           "platform" : "",
-          "git_commit" : "de44fe67100a194583bd0903c7920f09b0e8188f",
+          "git_commit" : "631fe6ebb004cb3ab93405e9313a4f6aa9736763",
           "executable" : "/nextflow/workflows/multiomics/split_modalities/main.nf"
         },
         "writtenPath" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/workflows/multiomics/split_modalities"
@@ -3449,7 +3449,7 @@ meta = [
           "functionalityNamespace" : "dataflow",
           "output" : "",
           "platform" : "",
-          "git_commit" : "de44fe67100a194583bd0903c7920f09b0e8188f",
+          "git_commit" : "631fe6ebb004cb3ab93405e9313a4f6aa9736763",
           "executable" : "/nextflow/dataflow/merge/main.nf"
         },
         "writtenPath" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/dataflow/merge"
@@ -3470,7 +3470,7 @@ meta = [
           "functionalityNamespace" : "dataflow",
           "output" : "",
           "platform" : "",
-          "git_commit" : "de44fe67100a194583bd0903c7920f09b0e8188f",
+          "git_commit" : "631fe6ebb004cb3ab93405e9313a4f6aa9736763",
           "executable" : "/nextflow/dataflow/concatenate_h5mu/main.nf"
         },
         "writtenPath" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/dataflow/concatenate_h5mu"
@@ -3491,7 +3491,7 @@ meta = [
           "functionalityNamespace" : "transfer",
           "output" : "",
           "platform" : "",
-          "git_commit" : "de44fe67100a194583bd0903c7920f09b0e8188f",
+          "git_commit" : "631fe6ebb004cb3ab93405e9313a4f6aa9736763",
           "executable" : "/nextflow/transfer/publish/main.nf"
         },
         "writtenPath" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/transfer/publish"
@@ -3512,7 +3512,7 @@ meta = [
           "functionalityNamespace" : "workflows/rna",
           "output" : "",
           "platform" : "",
-          "git_commit" : "de44fe67100a194583bd0903c7920f09b0e8188f",
+          "git_commit" : "631fe6ebb004cb3ab93405e9313a4f6aa9736763",
           "executable" : "/nextflow/workflows/rna/rna_singlesample/main.nf"
         },
         "writtenPath" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/workflows/rna/rna_singlesample"
@@ -3533,7 +3533,7 @@ meta = [
           "functionalityNamespace" : "workflows/prot",
           "output" : "",
           "platform" : "",
-          "git_commit" : "de44fe67100a194583bd0903c7920f09b0e8188f",
+          "git_commit" : "631fe6ebb004cb3ab93405e9313a4f6aa9736763",
           "executable" : "/nextflow/workflows/prot/prot_singlesample/main.nf"
         },
         "writtenPath" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/workflows/prot/prot_singlesample"
@@ -3554,7 +3554,7 @@ meta = [
           "functionalityNamespace" : "workflows/gdo",
           "output" : "",
           "platform" : "",
-          "git_commit" : "de44fe67100a194583bd0903c7920f09b0e8188f",
+          "git_commit" : "631fe6ebb004cb3ab93405e9313a4f6aa9736763",
           "executable" : "/nextflow/workflows/gdo/gdo_singlesample/main.nf"
         },
         "writtenPath" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/workflows/gdo/gdo_singlesample"
@@ -3575,7 +3575,7 @@ meta = [
           "functionalityNamespace" : "workflows/multiomics",
           "output" : "",
           "platform" : "",
-          "git_commit" : "de44fe67100a194583bd0903c7920f09b0e8188f",
+          "git_commit" : "631fe6ebb004cb3ab93405e9313a4f6aa9736763",
           "executable" : "/nextflow/workflows/multiomics/process_batches/main.nf"
         },
         "writtenPath" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/workflows/multiomics/process_batches"
@@ -3642,7 +3642,7 @@ meta = [
     "platform" : "nextflow",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/workflows/multiomics/process_samples",
     "viash_version" : "0.8.5",
-    "git_commit" : "de44fe67100a194583bd0903c7920f09b0e8188f",
+    "git_commit" : "631fe6ebb004cb3ab93405e9313a4f6aa9736763",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))
@@ -3700,7 +3700,7 @@ workflow run_wf {
           ]
           newState
         },
-        toState: {id, output, state -> 
+        toState: {id, output, state ->
           def keysToRemove = ["add_id_to_obs", "add_id_obs_output", "add_id_make_observation_keys_unique"]
           def newState = state.findAll{it.key !in keysToRemove}
           newState + ["input": output.output]
@@ -3793,7 +3793,7 @@ workflow run_wf {
         def keysToRemove = singlesample_arguments.inject([]){currentKeys, modality, stateMapping -> 
             currentKeys += stateMapping.values()
         }
-        def allwayskeep = ["gdo_layer", "rna_layer", "prot_layer"]
+        def allwayskeep = ["gdo_layer", "rna_layer", "prot_layer", "workflow_output"]
         def newState = state.findAll{(it.key !in keysToRemove + ["id"]) || (it.key in allwayskeep)}
         [id, newState]
       }
@@ -3861,6 +3861,7 @@ workflow run_wf {
           [
             "id": id,
             "input": state.input,
+            "output": state.workflow_output,
             "highly_variable_features_var_output": state.highly_variable_features_var_output,
             "highly_variable_features_obs_batch_key": state.highly_variable_features_obs_batch_key,
             "var_qc_metrics": state.var_qc_metrics,
@@ -3870,10 +3871,14 @@ workflow run_wf {
             "prot_layer": state.prot_layer,
           ]
         },
-        toState: ["output": "output"]
+        toState: {id, output, state -> 
+          [
+            "output": output.output,
+            "_meta": state._meta,
+          ]
+        }
       )
       | view {"After process_batches: $it"}
-      | setState(["output", "_meta"])
 
   emit:
     output_ch

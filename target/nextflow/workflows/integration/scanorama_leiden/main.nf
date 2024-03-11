@@ -3135,6 +3135,13 @@ meta = [
         "entrypoint" : "test_wf"
       },
       {
+        "type" : "nextflow_script",
+        "path" : "test.nf",
+        "is_executable" : true,
+        "parent" : "file:/home/runner/work/openpipeline/openpipeline/src/workflows/integration/scanorama_leiden/",
+        "entrypoint" : "test_wf2"
+      },
+      {
         "type" : "file",
         "path" : "resources_test/pbmc_1k_protein_v3",
         "parent" : "file:///home/runner/work/openpipeline/openpipeline/"
@@ -3168,7 +3175,7 @@ meta = [
           "functionalityNamespace" : "cluster",
           "output" : "",
           "platform" : "",
-          "git_commit" : "de44fe67100a194583bd0903c7920f09b0e8188f",
+          "git_commit" : "631fe6ebb004cb3ab93405e9313a4f6aa9736763",
           "executable" : "/nextflow/cluster/leiden/main.nf"
         },
         "writtenPath" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/cluster/leiden"
@@ -3189,7 +3196,7 @@ meta = [
           "functionalityNamespace" : "integrate",
           "output" : "",
           "platform" : "",
-          "git_commit" : "de44fe67100a194583bd0903c7920f09b0e8188f",
+          "git_commit" : "631fe6ebb004cb3ab93405e9313a4f6aa9736763",
           "executable" : "/nextflow/integrate/scanorama/main.nf"
         },
         "writtenPath" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/integrate/scanorama"
@@ -3210,7 +3217,7 @@ meta = [
           "functionalityNamespace" : "dimred",
           "output" : "",
           "platform" : "",
-          "git_commit" : "de44fe67100a194583bd0903c7920f09b0e8188f",
+          "git_commit" : "631fe6ebb004cb3ab93405e9313a4f6aa9736763",
           "executable" : "/nextflow/dimred/umap/main.nf"
         },
         "writtenPath" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/dimred/umap"
@@ -3231,7 +3238,7 @@ meta = [
           "functionalityNamespace" : "metadata",
           "output" : "",
           "platform" : "",
-          "git_commit" : "de44fe67100a194583bd0903c7920f09b0e8188f",
+          "git_commit" : "631fe6ebb004cb3ab93405e9313a4f6aa9736763",
           "executable" : "/nextflow/metadata/move_obsm_to_obs/main.nf"
         },
         "writtenPath" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/metadata/move_obsm_to_obs"
@@ -3252,7 +3259,7 @@ meta = [
           "functionalityNamespace" : "neighbors",
           "output" : "",
           "platform" : "",
-          "git_commit" : "de44fe67100a194583bd0903c7920f09b0e8188f",
+          "git_commit" : "631fe6ebb004cb3ab93405e9313a4f6aa9736763",
           "executable" : "/nextflow/neighbors/find_neighbors/main.nf"
         },
         "writtenPath" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/neighbors/find_neighbors"
@@ -3319,7 +3326,7 @@ meta = [
     "platform" : "nextflow",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/workflows/integration/scanorama_leiden",
     "viash_version" : "0.8.5",
-    "git_commit" : "de44fe67100a194583bd0903c7920f09b0e8188f",
+    "git_commit" : "631fe6ebb004cb3ab93405e9313a4f6aa9736763",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))
@@ -3341,6 +3348,12 @@ workflow run_wf {
 
   main:
   neighbors_ch = input_ch
+    // Make sure there is not conflict between the output from this workflow
+    // And the output from any of the components
+    | map {id, state ->
+      def new_state = state + ["workflow_output": state.output]
+      [id, new_state]
+    }
     | scanorama.run(
       fromState: [
         "input": "input",
