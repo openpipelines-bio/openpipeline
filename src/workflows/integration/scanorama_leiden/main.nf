@@ -4,6 +4,12 @@ workflow run_wf {
 
   main:
   neighbors_ch = input_ch
+    // Make sure there is not conflict between the output from this workflow
+    // And the output from any of the components
+    | map {id, state ->
+      def new_state = state + ["workflow_output": state.output]
+      [id, new_state]
+    }
     | scanorama.run(
       fromState: [
         "input": "input",
