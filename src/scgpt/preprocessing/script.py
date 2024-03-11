@@ -26,7 +26,7 @@ par = {
     "n_hvg": 1200,
     "data_is_raw": False,
     "n_input_bins": 51,
-    "load_model_vocab": False,
+    "load_model_vocab": True,
     "model_dir": "src/scgpt/model"
 }
 ## VIASH END
@@ -64,7 +64,7 @@ adata.var["id_in_vocab"] = [
         1 if gene in vocab else -1 for gene in adata.var[par["gene_name_layer"]]
     ]
 gene_ids_in_vocab = np.array(adata.var["id_in_vocab"])
-# adata = adata[:, adata.var["id_in_vocab"] >= 0]
+adata = adata[:, adata.var["id_in_vocab"] >= 0]
 
 # Preprocess data
 preprocessor = Preprocessor(
