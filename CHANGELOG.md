@@ -15,6 +15,8 @@
 * `metadata/grep_annotation_column`: fix calculating fraction when an input observation has no counts, which caused
 the result to be out of bounds.
 
+* Fix `--output` argument not working for several workflows (PR #740).
+
 ## MINOR CHANGES
 
 * Bump viash to 0.8.5 (PR #697)
