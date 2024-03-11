@@ -14,20 +14,23 @@ workflow test_wf {
       id: "mouse",
       input: resources_test.resolve("concat_test_data/e18_mouse_brain_fresh_5k_filtered_feature_bc_matrix_subset_unique_obs.h5mu"),
       publish_dir: "foo/",
-      rna_min_counts: 2
+      rna_min_counts: 2,
+      output: "test.h5mu",
     ],
     [
       id: "human",
       input: resources_test.resolve("concat_test_data/human_brain_3k_filtered_feature_bc_matrix_subset_unique_obs.h5mu"),
       publish_dir: "foo/",
-      rna_min_counts: 2
+      rna_min_counts: 2,
+      output: "test.h5mu",
+
     ]
   ])
   | map{ state -> [state.id, state] }
   | process_samples
   | view { output ->
     assert output.size() == 2 : "outputs should contain two elements; [id, file]"
-    assert output[1].output.toString().endsWith(".h5mu") : "Output file should be a h5mu file. Found: ${output[1].output}"
+    assert output[1].output.toString().endsWith("test.h5mu") : "Output file should be a h5mu file. Found: ${output[1].output}"
     "Output: $output"
   }
   | toSortedList()
