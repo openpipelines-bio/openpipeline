@@ -10,8 +10,8 @@ from torchtext._torchtext import (
 
 ## VIASH START
 par = {
-    "input": "src/scgpt/data/Kim2020_Lung.h5ad",
-    "output": "src/scgpt/data/Kim2020_Lung_preprocessed.h5ad",
+    "input": "src/scgpt/test_resources/Kim2020_Lung.h5ad",
+    "output": "src/scgpt/test_resources/Kim2020_Lung_preprocessed.h5ad",
     "input_layer": "X",
     "ori_batch_layer_name": "sample",
     "batch_id_layer": "batch_id",
@@ -48,16 +48,17 @@ adata.var[par["gene_name_layer"]] = adata.var.index.tolist()
 genes = adata.var[par["gene_name_layer"]].tolist()
 
 if par["load_model_vocab"]:
-    vocab = Vocab(
-        VocabPybind(genes + special_tokens, None)
-    )  # bidirectional lookup [gene <-> int]
-else:
     model_dir = Path(par["model_dir"])
     vocab_file = model_dir / "vocab.json"
     vocab = GeneVocab.from_file(vocab_file)
     for s in special_tokens:
         if s not in vocab:
             vocab.append_token(s)
+else:
+    # bidirectional lookup [gene <-> int]
+    vocab = Vocab(
+        VocabPybind(genes + special_tokens, None)
+    )
 
 adata.var["id_in_vocab"] = [
         1 if gene in vocab else -1 for gene in adata.var[par["gene_name_layer"]]
