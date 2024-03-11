@@ -1,7 +1,7 @@
 functionality:
   name: "popv"
   namespace: "annotate"
-  version: "1.0.0rc1"
+  version: "1.0.0rc2"
   authors:
   - name: "Matthias Beyens"
     roles:
@@ -238,6 +238,9 @@ functionality:
     path: "resources_test/annotation_test_data/"
   - type: "file"
     path: "resources_test/pbmc_1k_protein_v3/"
+  - type: "file"
+    path: "src/base/openpipelinetestutils"
+    dest: "openpipelinetestutils"
   info: null
   status: "enabled"
   requirements:
@@ -250,7 +253,7 @@ platforms:
   image: "python:3.9-slim"
   target_organization: "openpipelines-bio"
   target_registry: "ghcr.io"
-  target_tag: "1.0.0rc1"
+  target_tag: "1.0.0rc2"
   namespace_separator: "_"
   resolve_volume: "Automatic"
   chown: true
@@ -347,7 +350,7 @@ info:
   platform: "nextflow"
   output: "/home/runner/work/openpipeline/openpipeline/target/nextflow/annotate/popv"
   executable: "/home/runner/work/openpipeline/openpipeline/target/nextflow/annotate/popv/popv"
-  viash_version: "0.8.4"
-  git_commit: "537fb9951382171123d7e0d95f044af75c7fbf33"
+  viash_version: "0.8.5"
+  git_commit: "ac02e9747ee677373b09256e2f648537b9d80692"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"
-  git_tag: "0.12.1-7-g537fb99513"
+  git_tag: "1.0.0rc1"

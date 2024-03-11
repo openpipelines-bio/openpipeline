@@ -1,3 +1,28 @@
+# openpipelines 1.0.0rc2
+
+## BUG FIXES
+
+* Cellranger multi: Fix using a relative input path for `--vdj_inner_enrichment_primers` (PR #717)
+
+* `dataflow/split_modalities`: remove unused `compression` argument. Use `output_compression` instead (PR #714).
+
+* `metadata/grep_annotation_column`: fix calculating fraction when an input observation has no counts, which caused
+the result to be out of bounds.
+
+* Fix `--output` argument not working for several workflows (PR #740).
+
+## MINOR CHANGES
+
+* `metadata/grep_annotation_column`: Added more logging output (PR #697).
+
+* `metadata/add_id` and `metadata/grep_annotation_column`: Bump python to 3.11 (PR #697).
+
+* Bump viash to 0.8.5 (PR #697)
+
+* `dataflow/split_modalities`: add more logging output and bump python to 3.12 (PR #714).
+
+* `correction/cellbender`: Update nextflow resource labels from `singlecpu` and `lowmem` to `midcpu` and `midmem` (PR #736)
+
 # openpipelines 1.0.0rc1
 
 ## BREAKING CHANGES

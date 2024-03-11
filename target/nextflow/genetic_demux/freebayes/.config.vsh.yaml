@@ -1,7 +1,7 @@
 functionality:
   name: "freebayes"
   namespace: "genetic_demux"
-  version: "1.0.0rc1"
+  version: "1.0.0rc2"
   authors:
   - name: "Xichen Wu"
     roles:
@@ -761,8 +761,8 @@ functionality:
   - type: "file"
     path: "./src/workflows/utils/labels.config"
     dest: "nextflow_labels.config"
-  description: "freebayes is a Bayesian genetic variant detector designed to find\
-    \ small polymorphisms, specifically SNPs."
+  description: "Freebayes is a Bayesian genetic variant detector designed to\nfind\
+    \ small polymorphisms, specifically SNPs.\n"
   test_resources:
   - type: "bash_script"
     path: "test.sh"
@@ -771,6 +771,9 @@ functionality:
     path: "../../../resources_test/demuxafy_test_data"
   - type: "file"
     path: "../../../resources_test/cellranger_tiny_fastq"
+  - type: "file"
+    path: "src/base/openpipelinetestutils"
+    dest: "openpipelinetestutils"
   info: null
   status: "enabled"
   requirements:
@@ -783,7 +786,7 @@ platforms:
   image: "ubuntu:22.04"
   target_organization: "openpipelines-bio"
   target_registry: "ghcr.io"
-  target_tag: "1.0.0rc1"
+  target_tag: "1.0.0rc2"
   namespace_separator: "_"
   resolve_volume: "Automatic"
   chown: true
@@ -849,7 +852,7 @@ info:
   platform: "nextflow"
   output: "/home/runner/work/openpipeline/openpipeline/target/nextflow/genetic_demux/freebayes"
   executable: "/home/runner/work/openpipeline/openpipeline/target/nextflow/genetic_demux/freebayes/freebayes"
-  viash_version: "0.8.4"
-  git_commit: "537fb9951382171123d7e0d95f044af75c7fbf33"
+  viash_version: "0.8.5"
+  git_commit: "ac02e9747ee677373b09256e2f648537b9d80692"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"
-  git_tag: "0.12.1-7-g537fb99513"
+  git_tag: "1.0.0rc1"

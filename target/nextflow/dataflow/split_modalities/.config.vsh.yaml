@@ -1,7 +1,7 @@
 functionality:
   name: "split_modalities"
   namespace: "dataflow"
-  version: "1.0.0rc1"
+  version: "1.0.0rc2"
   authors:
   - name: "Dries Schaumont"
     roles:
@@ -93,17 +93,6 @@ functionality:
     multiple: false
     multiple_sep: ":"
     dest: "par"
-  - type: "string"
-    name: "--compression"
-    description: "The compression format to be used on the final h5mu object."
-    info: null
-    default:
-    - "gzip"
-    required: false
-    direction: "input"
-    multiple: false
-    multiple_sep: ":"
-    dest: "par"
   resources:
   - type: "python_script"
     path: "script.py"
@@ -120,7 +109,8 @@ functionality:
     path: "test.py"
     is_executable: true
   - type: "file"
-    path: "resources_test/pbmc_1k_protein_v3/pbmc_1k_protein_v3_filtered_feature_bc_matrix.h5mu"
+    path: "src/base/openpipelinetestutils"
+    dest: "openpipelinetestutils"
   info: null
   status: "enabled"
   requirements:
@@ -130,10 +120,10 @@ functionality:
 platforms:
 - type: "docker"
   id: "docker"
-  image: "python:3.10-slim"
+  image: "python:3.12-slim"
   target_organization: "openpipelines-bio"
   target_registry: "ghcr.io"
-  target_tag: "1.0.0rc1"
+  target_tag: "1.0.0rc2"
   namespace_separator: "_"
   resolve_volume: "Automatic"
   chown: true
@@ -152,6 +142,14 @@ platforms:
     - "pandas!=2.1.2"
     upgrade: true
   test_setup:
+  - type: "docker"
+    copy:
+    - "openpipelinetestutils /opt/openpipelinetestutils"
+  - type: "python"
+    user: false
+    packages:
+    - "/opt/openpipelinetestutils"
+    upgrade: true
   - type: "python"
     user: false
     packages:
@@ -214,7 +212,7 @@ info:
   platform: "nextflow"
   output: "/home/runner/work/openpipeline/openpipeline/target/nextflow/dataflow/split_modalities"
   executable: "/home/runner/work/openpipeline/openpipeline/target/nextflow/dataflow/split_modalities/split_modalities"
-  viash_version: "0.8.4"
-  git_commit: "537fb9951382171123d7e0d95f044af75c7fbf33"
+  viash_version: "0.8.5"
+  git_commit: "ac02e9747ee677373b09256e2f648537b9d80692"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"
-  git_tag: "0.12.1-7-g537fb99513"
+  git_tag: "1.0.0rc1"
