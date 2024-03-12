@@ -38,7 +38,7 @@ if [ ! -f "${OUT}/bcl/sample_sheet.csv" ]; then
     -C "$OUT/bcl"
 
   # remove tar
-  rm "${OUT}/bcl/cellranger-tiny-bcl-1.2.0.tar.gz"
+  rm "${OUT}/bcl/cellranger-atac-tiny-bcl-1.0.0.tar.gz"
 
   # Download the layout file. It contains info about the samples (1 in this case) and lanes
   target/docker/download/download_file/download_file \
