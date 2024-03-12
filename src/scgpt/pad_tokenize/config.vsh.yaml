@@ -103,7 +103,7 @@ functionality:
     - path: /resources_test/pbmc_1k_protein_v3
 platforms:
   - type: docker
-    image: python:3.10-slim
+    image: python:3.10
     setup:
       - type: apt
         packages: 
