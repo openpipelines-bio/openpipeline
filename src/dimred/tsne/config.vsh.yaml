@@ -24,7 +24,7 @@ functionality:
         - name: "--use_rep"
           type: string
           description: The `.obsm` slot to use as input for the tSNE computation.
-          required: false
+          required: true
           example: "X_pca"
     
     - name: Outputs

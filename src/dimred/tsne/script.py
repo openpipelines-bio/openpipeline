@@ -47,17 +47,17 @@ mdata = mu.read_h5mu(par["input"])
 logger.info("Computing tSNE for modality '%s'", par['modality'])
 data = mdata.mod[par['modality']]
 
+if par['use_rep'] not in data.obsm.keys():
+    raise ValueError(f"'{par['use_rep']}' was not found in .mod['{par['modality']}'].obsm. No precomputed PCA provided. Please run PCA first.")
+temp_obsm = {par["use_rep"]: data.obsm[par["use_rep"]]}
+
 # create temporary AnnData
 # ... because sc.tl.umap doesn't allow to choose
 # the obsm output slot
 # ... also we can see scanpy is a data format dependency hell
-temp_X = None if par["use_rep"] in data.obsm.keys() else data.X
-temp_obsm = {par["use_rep"]: data.obsm[par["use_rep"]]} if par["use_rep"] in data.obsm.keys() else {}
-
 temp_adata = ad.AnnData(
-    X=temp_X,
     obsm=temp_obsm,
-    shape=data.shape if temp_X is None else None
+    shape=data.shape
 )
 
 sc.tl.tsne(
@@ -71,12 +71,12 @@ sc.tl.tsne(
     random_state=par["random_state"],
     n_jobs=par["n_jobs"]
 )
-# output_key = f"X_{par['obsm_output']}"
-# if par["obsm_output"] != "tsne":
-#     temp_adata.obsm[output_key] = temp_adata.obsm["X_tsne"]
-#     temp_adata.obsm.pop("X_tsne")
-    
+
+logger.info(f"Writing tSNE embeddings to .mod[{par['modality']}].obsm[{par['obsm_output']}]")
 data.obsm[par['obsm_output']] = temp_adata.obsm['X_tsne']
+
+logger.info(f"Writing tSNE metadata to .mod[{par['modality']}].uns['tsne']")
+data.uns['tsne'] = temp_adata.uns['tsne']
 
 logger.info("Writing to %s.", par["output"])
 mdata.write_h5mu(filename=par["output"], compression=par["output_compression"])

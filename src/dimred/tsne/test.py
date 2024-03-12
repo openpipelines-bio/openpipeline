@@ -38,28 +38,52 @@ def test_tsne(run_component, random_h5mu_path):
     
     # check whether tsne was found and remove for comparison
     assert "X_tsne" in output_mudata.mod["rna"].obsm, "Check whether output was found in .obsm"
+    assert "tsne" in output_mudata.mod["rna"].uns, "Check whether output was found in .uns"
     output_mudata.mod["rna"].obsm.pop("X_tsne")
+    output_mudata.mod["rna"].uns.pop("tsne")
     assert_annotation_objects_equal(output_mudata, input_mudata)
     
-
-def test_tsne_no_pca_in_input(run_component, random_h5mu_path, mudata_no_obsm_pca):
+def test_tsne_custom_rep_obsm_output(run_component, random_h5mu_path):
+    input_mudata_custom = read_h5mu(input_path)
+    input_mudata_custom.mod["rna"].obsm["X_custom_pca"] = input_mudata_custom.mod["rna"].obsm["X_pca"]
+    input_mudata_custom_path = random_h5mu_path()
+    input_mudata_custom.write_h5mu(input_mudata_custom_path)
+    
     output_path = random_h5mu_path()
-    run_component([
+    args = [
+        "--input", input_mudata_custom_path,
+        "--output",  output_path,
+        "--modality", "rna",
+        "--use_rep", "X_custom_pca",
+        "--obsm_output", "X_custom_tsne",
+        "--output_compression", "gzip"
+    ]
+    run_component(args)
+    
+    assert output_path.is_file(), "No output was created."
+    output_mudata = read_h5mu(output_path)    
+    # check whether tsne was found and remove for comparison
+    assert "X_custom_tsne" in output_mudata.mod["rna"].obsm, "Check whether output was found in .obsm"
+    assert "tsne" in output_mudata.mod["rna"].uns, "Check whether output was found in .uns"
+    output_mudata.mod["rna"].obsm.pop("X_custom_tsne")
+    output_mudata.mod["rna"].uns.pop("tsne")
+    assert_annotation_objects_equal(output_mudata, input_mudata_custom)
+    
+
+def test_tsne_no_pca_in_input_raise(run_component, random_h5mu_path, mudata_no_obsm_pca):
+    output_path = random_h5mu_path()
+    args = [
         "--input", mudata_no_obsm_pca,
         "--output",  output_path,
         "--modality", "rna",
-        "--n_pcs", "100",
+        "--use_rep", "X_pca",
         "--output_compression", "gzip"
-    ])
-    
-    assert output_path.is_file(), "No output was created."
-    output_mudata = read_h5mu(output_path)
-    input_mudata = read_h5mu(mudata_no_obsm_pca)
-    
-    # check whether tsne was found and remove for comparison
-    assert "X_tsne" in output_mudata.mod["rna"].obsm, "Check whether output was found in .obsm"
-    output_mudata.mod["rna"].obsm.pop("X_tsne")
-    assert_annotation_objects_equal(output_mudata, input_mudata)
+    ]
+
+    with pytest.raises(subprocess.CalledProcessError) as err:
+        run_component(args)
+    assert re.search(r"ValueError: 'X_pca' was not found in \.mod\['rna'\]\.obsm\. No precomputed PCA provided\. Please run PCA first\.",
+                     err.value.stdout.decode('utf-8'))
     
     
 def test_tsne_too_many_pcs_raise(run_component, random_h5mu_path):
@@ -76,38 +100,6 @@ def test_tsne_too_many_pcs_raise(run_component, random_h5mu_path):
     with pytest.raises(subprocess.CalledProcessError) as err:
         run_component(args)
     assert re.search(r"ValueError: X_pca does not have enough Dimensions\. Provide a Representation with equal or more dimensions than`n_pcs` or lower `n_pcs`",
-                     err.value.stdout.decode('utf-8'))
-    
-    
-def test_tsne_raw_sparse_X_raise(run_component, random_h5mu_path):
-    output_path = random_h5mu_path()
-    args = [
-        "--input", input_path,
-        "--output",  output_path,
-        "--modality", "rna",
-        "--use_rep", "X",
-        "--output_compression", "gzip"
-    ]
-    
-    with pytest.raises(subprocess.CalledProcessError) as err:
-        run_component(args)
-    assert re.search(r"TypeError: PCA initialization is currently not supported with the sparse input matrix\.",
-                     err.value.stdout.decode('utf-8'))
-    
-    
-def test_tsne_no_pca_in_input_raise(run_component, random_h5mu_path, mudata_no_obsm_pca):
-    output_path = random_h5mu_path()
-    args = [
-            "--input", mudata_no_obsm_pca,
-            "--output",  output_path,
-            "--modality", "rna",
-            "--use_rep", "X_pca",
-            "--output_compression", "gzip"
-    ]
-    
-    with pytest.raises(subprocess.CalledProcessError) as err:
-        run_component(args)
-    assert re.search(r"ValueError: Did not find X_pca in `\.obsm.keys\(\)`\. You need to compute it first\.",
                      err.value.stdout.decode('utf-8'))
     
 
