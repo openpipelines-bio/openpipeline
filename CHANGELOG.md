@@ -1,3 +1,10 @@
+# openpipelines x.x.x
+
+## BUG FIXES
+
+* `rna_singlesample`: fixed a bug where selecting the column for the filtering with mitochondrial fractions 
+  using `obs_name_mitochondrial_fraction` was done with the wrong column name, causing `ValueError` (PR #743).
+
 # openpipelines 1.0.0-rc2
 
 ## BUG FIXES
