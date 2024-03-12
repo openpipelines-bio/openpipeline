@@ -3164,7 +3164,7 @@ meta = [
     "platform" : "nextflow",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/neighbors/find_neighbors",
     "viash_version" : "0.8.5",
-    "git_commit" : "cdcdec8e4e4226a982acc2e27faa57357705a1b4",
+    "git_commit" : "ca6be06e26a58637c3c82657183e0e33a1ff3209",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))
