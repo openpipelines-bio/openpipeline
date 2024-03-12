@@ -80,7 +80,7 @@ workflow run_wf {
           "obs_name_filter": "filter_mitochondrial",
           "min_fraction": state.min_fraction_mito,
           "max_fraction": state.max_fraction_mito,
-          "obs_fraction_column": "fraction_$state.var_name_mitochondrial_genes"
+          "obs_fraction_column": state.obs_name_mitochondrial_fraction ? state.obs_name_mitochondrial_fraction : "fraction_$state.var_name_mitochondrial_genes",
         ]
       },
       toState: ["input": "output"]
