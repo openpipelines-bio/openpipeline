@@ -3046,7 +3046,7 @@ meta = [
       "image" : "cumulusprod/souporcell:2022.12",
       "target_organization" : "openpipelines-bio",
       "target_registry" : "ghcr.io",
-      "target_tag" : "main_build",
+      "target_tag" : "embed_build",
       "namespace_separator" : "_",
       "resolve_volume" : "Automatic",
       "chown" : true,
@@ -3115,9 +3115,9 @@ meta = [
     "platform" : "nextflow",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/genetic_demux/souporcell",
     "viash_version" : "0.8.5",
-    "git_commit" : "2dece7ffe415920184b7206d0be01418f5a609b7",
+    "git_commit" : "dd2c54c179468534b6f3dcc55aa461a4219d58f7",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline",
-    "git_tag" : "0.2.0-1554-g2dece7ffe4"
+    "git_tag" : "0.2.0-1555-gdd2c54c179"
   }
 }'''))
 ]
@@ -3546,7 +3546,7 @@ meta["defaults"] = [
   "container" : {
     "registry" : "ghcr.io",
     "image" : "openpipelines-bio/genetic_demux_souporcell",
-    "tag" : "main_build"
+    "tag" : "embed_build"
   },
   "label" : [
     "highmem",
