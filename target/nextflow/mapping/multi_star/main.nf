@@ -6243,11 +6243,11 @@ meta = [
       "image" : "python:3.10-slim",
       "target_organization" : "openpipelines-bio",
       "target_registry" : "ghcr.io",
-      "target_tag" : "main_build",
+      "target_tag" : "tokenize-pad_build",
       "namespace_separator" : "_",
       "resolve_volume" : "Automatic",
       "chown" : true,
-      "se''' + '''tup_strategy" : "ifneedbepullelsecachedbuild",
+ ''' + '''     "setup_strategy" : "ifneedbepullelsecachedbuild",
       "target_image_source" : "https://github.com/openpipelines-bio/openpipeline",
       "setup" : [
         {
@@ -6358,9 +6358,9 @@ meta = [
     "platform" : "nextflow",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/mapping/multi_star",
     "viash_version" : "0.8.5",
-    "git_commit" : "ad9171d686c7034db69a8031fe42ed040b977ba1",
+    "git_commit" : "e6be3f1d7bd2ef7481530960b0d476ac316faeae",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline",
-    "git_tag" : "0.2.0-1560-gad9171d686"
+    "git_tag" : "0.2.0-1561-ge6be3f1d7b"
   }
 }'''))
 ]
@@ -7356,7 +7356,7 @@ meta["defaults"] = [
   "container" : {
     "registry" : "ghcr.io",
     "image" : "openpipelines-bio/mapping_multi_star",
-    "tag" : "main_build"
+    "tag" : "tokenize-pad_build"
   },
   "label" : [
     "highmem",
