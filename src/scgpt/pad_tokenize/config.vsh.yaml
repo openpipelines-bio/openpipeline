@@ -35,7 +35,7 @@ functionality:
           example: "gene_name"
           required: false
           description: |
-            The name of adata.var column containing gene names.
+            The name of the layer containing gene names.
 
     - name: Outputs
       arguments:
@@ -68,7 +68,7 @@ functionality:
           default: "<pad>"
           required: false
           description: |
-            The padding token.
+            The name of the layer to be padded and tokenized
         - name: "--pad_value"
           type: integer
           default: -2
@@ -82,8 +82,7 @@ functionality:
           description: |
             The number of highly variable genes to be used for tokenization.  
         - name: "--load_model_vocab"
-          type: boolean
-          default: true
+          type: boolean_true
           description: |
             Whether to load the vocabulary from the model or use pytorch vocab.
 
@@ -93,11 +92,21 @@ functionality:
 
 platforms:
   - type: docker
-    image: nvcr.io/nvidia/pytorch:23.09-py3
+    image: python:3.10
     setup:
+      - type: apt
+        packages: 
+          - procps
+          - gfortran
+          - cmake
+          - libopenblas-dev
       - type: python
         __merge__: /src/base/requirements/anndata_mudata.yaml
       - type: python
         packages:
+          - torch
+          - numpy
+          - scipy
           - scgpt==0.2.1
+          - ipython
   - type: nextflow

@@ -197,7 +197,7 @@ function ViashHelp {
   echo "    --gene_name_layer"
   echo "        type: string"
   echo "        example: gene_name"
-  echo "        The name of adata.var column containing gene names."
+  echo "        The name of the layer containing gene names."
   echo ""
   echo "Outputs:"
   echo "    --output_gene_ids"
@@ -220,7 +220,7 @@ function ViashHelp {
   echo "    --pad_token"
   echo "        type: string"
   echo "        default: <pad>"
-  echo "        The padding token."
+  echo "        The name of the layer to be padded and tokenized"
   echo ""
   echo "    --pad_value"
   echo "        type: integer"
@@ -233,8 +233,7 @@ function ViashHelp {
   echo "        The number of highly variable genes to be used for tokenization."
   echo ""
   echo "    --load_model_vocab"
-  echo "        type: boolean"
-  echo "        default: true"
+  echo "        type: boolean_true"
   echo "        Whether to load the vocabulary from the model or use pytorch vocab."
 }
 
@@ -453,22 +452,26 @@ function ViashDockerCheckCommands {
 #   ViashDockerFile
 function ViashDockerfile {
   cat << 'VIASHDOCKER'
-FROM nvcr.io/nvidia/pytorch:23.09-py3
+FROM python:3.10
 
 ENTRYPOINT []
 
  
+RUN apt-get update && \
+  DEBIAN_FRONTEND=noninteractive apt-get install -y procps gfortran cmake libopenblas-dev && \
+  rm -rf /var/lib/apt/lists/*
+
 RUN pip install --upgrade pip && \
   pip install --upgrade --no-cache-dir "anndata~=0.9.1" "mudata~=0.2.3" "pandas!=2.1.2"
 
 RUN pip install --upgrade pip && \
-  pip install --upgrade --no-cache-dir "scgpt==0.2.1"
+  pip install --upgrade --no-cache-dir "torch" "numpy" "scipy" "scgpt==0.2.1" "ipython"
 
 LABEL org.opencontainers.image.authors="Dorien Roosen"
 LABEL org.opencontainers.image.description="Companion container for running component scgpt pad_tokenize"
-LABEL org.opencontainers.image.created="2024-03-13T09:20:11Z"
+LABEL org.opencontainers.image.created="2024-03-13T13:20:06Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="0c6316dcc7f4ca80dc7b304b33fee7b4ec4970d2"
+LABEL org.opencontainers.image.revision="fc9e6464db938281b656f8199871b7bb21bcabca"
 LABEL org.opencontainers.image.version="tokenize-pad_build"
 
 VIASHDOCKER
@@ -735,13 +738,7 @@ while [[ $# -gt 0 ]]; do
             ;;
         --load_model_vocab)
             [ -n "$VIASH_PAR_LOAD_MODEL_VOCAB" ] && ViashError Bad arguments for option \'--load_model_vocab\': \'$VIASH_PAR_LOAD_MODEL_VOCAB\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
-            VIASH_PAR_LOAD_MODEL_VOCAB="$2"
-            [ $# -lt 2 ] && ViashError Not enough arguments passed to --load_model_vocab. Use "--help" to get more information on the parameters. && exit 1
-            shift 2
-            ;;
-        --load_model_vocab=*)
-            [ -n "$VIASH_PAR_LOAD_MODEL_VOCAB" ] && ViashError Bad arguments for option \'--load_model_vocab=*\': \'$VIASH_PAR_LOAD_MODEL_VOCAB\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
-            VIASH_PAR_LOAD_MODEL_VOCAB=$(ViashRemoveFlags "$1")
+            VIASH_PAR_LOAD_MODEL_VOCAB=true
             shift 1
             ;;
         ---setup)
@@ -914,7 +911,7 @@ if [ -z ${VIASH_PAR_N_HVG+x} ]; then
   VIASH_PAR_N_HVG="1200"
 fi
 if [ -z ${VIASH_PAR_LOAD_MODEL_VOCAB+x} ]; then
-  VIASH_PAR_LOAD_MODEL_VOCAB="true"
+  VIASH_PAR_LOAD_MODEL_VOCAB="false"
 fi
 
 # check whether required files exist
@@ -942,7 +939,7 @@ if [[ -n "$VIASH_PAR_N_HVG" ]]; then
 fi
 if [[ -n "$VIASH_PAR_LOAD_MODEL_VOCAB" ]]; then
   if ! [[ "$VIASH_PAR_LOAD_MODEL_VOCAB" =~ ^(true|True|TRUE|false|False|FALSE|yes|Yes|YES|no|No|NO)$ ]]; then
-    ViashError '--load_model_vocab' has to be a boolean. Use "--help" to get more information on the parameters.
+    ViashError '--load_model_vocab' has to be a boolean_true. Use "--help" to get more information on the parameters.
     exit 1
   fi
 fi

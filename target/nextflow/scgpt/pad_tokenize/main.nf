@@ -2852,7 +2852,7 @@ meta = [
           {
             "type" : "string",
             "name" : "--gene_name_layer",
-            "description" : "The name of adata.var column containing gene names.\n",
+            "description" : "The name of the layer containing gene names.\n",
             "example" : [
               "gene_name"
             ],
@@ -2920,7 +2920,7 @@ meta = [
           {
             "type" : "string",
             "name" : "--pad_token",
-            "description" : "The padding token.\n",
+            "description" : "The name of the layer to be padded and tokenized\n",
             "default" : [
               "<pad>"
             ],
@@ -2957,16 +2957,10 @@ meta = [
             "dest" : "par"
           },
           {
-            "type" : "boolean",
+            "type" : "boolean_true",
             "name" : "--load_model_vocab",
             "description" : "Whether to load the vocabulary from the model or use pytorch vocab.\n",
-            "default" : [
-              true
-            ],
-            "required" : false,
             "direction" : "input",
-            "multiple" : false,
-            "multiple_sep" : ":",
             "dest" : "par"
           }
         ]
@@ -3005,7 +2999,7 @@ meta = [
     {
       "type" : "docker",
       "id" : "docker",
-      "image" : "nvcr.io/nvidia/pytorch:23.09-py3",
+      "image" : "python:3.10",
       "target_organization" : "openpipelines-bio",
       "target_registry" : "ghcr.io",
       "target_tag" : "main_build",
@@ -3015,6 +3009,16 @@ meta = [
       "setup_strategy" : "ifneedbepullelsecachedbuild",
       "target_image_source" : "https://github.com/openpipelines-bio/openpipeline",
       "setup" : [
+        {
+          "type" : "apt",
+          "packages" : [
+            "procps",
+            "gfortran",
+            "cmake",
+            "libopenblas-dev"
+          ],
+          "interactive" : false
+        },
         {
           "type" : "python",
           "user" : false,
@@ -3029,7 +3033,11 @@ meta = [
           "type" : "python",
           "user" : false,
           "packages" : [
-            "scgpt==0.2.1"
+            "torch",
+            "numpy",
+            "scipy",
+            "scgpt==0.2.1",
+            "ipython"
           ],
           "upgrade" : true
         }
@@ -3093,9 +3101,9 @@ meta = [
     "platform" : "nextflow",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/scgpt/pad_tokenize",
     "viash_version" : "0.8.5",
-    "git_commit" : "0c6316dcc7f4ca80dc7b304b33fee7b4ec4970d2",
+    "git_commit" : "fc9e6464db938281b656f8199871b7bb21bcabca",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline",
-    "git_tag" : "0.2.0-1558-g0c6316dcc7"
+    "git_tag" : "0.2.0-1559-gfc9e6464db"
   }
 }'''))
 ]

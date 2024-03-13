@@ -63,8 +63,8 @@
                 "gene_name_layer": {
                 "type":
                 "string",
-                "description": "Type: `string`, example: `gene_name`. The name of adata",
-                "help_text": "Type: `string`, example: `gene_name`. The name of adata.var column containing gene names.\n"
+                "description": "Type: `string`, example: `gene_name`. The name of the layer containing gene names",
+                "help_text": "Type: `string`, example: `gene_name`. The name of the layer containing gene names.\n"
             
             }
     
@@ -126,8 +126,8 @@
                 "pad_token": {
                 "type":
                 "string",
-                "description": "Type: `string`, default: `\u003cpad\u003e`. The padding token",
-                "help_text": "Type: `string`, default: `\u003cpad\u003e`. The padding token.\n"
+                "description": "Type: `string`, default: `\u003cpad\u003e`. The name of the layer to be padded and tokenized\n",
+                "help_text": "Type: `string`, default: `\u003cpad\u003e`. The name of the layer to be padded and tokenized\n"
             ,
                 "default": "<pad>"
             }
@@ -159,10 +159,10 @@
                 "load_model_vocab": {
                 "type":
                 "boolean",
-                "description": "Type: `boolean`, default: `true`. Whether to load the vocabulary from the model or use pytorch vocab",
-                "help_text": "Type: `boolean`, default: `true`. Whether to load the vocabulary from the model or use pytorch vocab.\n"
+                "description": "Type: `boolean_true`, default: `false`. Whether to load the vocabulary from the model or use pytorch vocab",
+                "help_text": "Type: `boolean_true`, default: `false`. Whether to load the vocabulary from the model or use pytorch vocab.\n"
             ,
-                "default": "True"
+                "default": "False"
             }
     
 
