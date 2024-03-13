@@ -17,15 +17,15 @@ par = {
     "input_gene_ids": 'src/scgpt/test_resources/Kim2020_Lung_gene_ids.pt',
     "input_values": 'src/scgpt/test_resources/Kim2020_Lung_values.pt',
     "input_padding_mask": 'src/scgpt/test_resources/Kim2020_Lung_padding_mask.pt',
-    "output": "src/scgpt/test_resources/Kim2020_Lung_embedded.h5ad",
+    "model_dir": "src/scgpt/model",
+    "output": "Kim2020_Lung_embedded.h5ad",
     "gene_name_layer": "gene_name",
     "batch_id_layer": "batch_id",
     "embedding_layer": "X_scGPT",
     "pad_token": "<pad>",
     "pad_value": -2,
-    "load_model_vocab": False,
-    "load_model_configs": False,
-    "model_dir": "src/scgpt/model",
+    "load_model_vocab": True,
+    "load_model_configs": True,
     "layer_size": 128,
     "nhead": 4,
     "nlayers": 4,
@@ -100,28 +100,31 @@ else:
 # Load model
 model = TransformerModel(
     ntokens,
-    embsize,
-    nhead,
-    d_hid,
-    nlayers,
+    d_model=embsize,
+    nhead=nhead,
+    d_hid=d_hid,
+    nlayers=nlayers,
+    # nlayers_cls=n_layers_cls, 
+    # n_cls=1, 
     vocab=vocab,
     dropout=par["dropout"],
     pad_token=pad_token,
     pad_value=pad_value,
-    do_mvc=par["GEPC"],
-    do_dab=True,
-    use_batch_labels=True,
-    num_batch_labels=num_batch_types,
-    domain_spec_batchnorm=par["DSBN"],
+    do_mvc=par["GEPC"], # 
+    do_dab=True, #
+    use_batch_labels=True, #
+    num_batch_labels=num_batch_types, #
+    domain_spec_batchnorm=par["DSBN"], 
     n_input_bins=par["n_input_bins"],
     ecs_threshold=par["ecs_threshold"],
-    explicit_zero_prob=par["explicit_zero_prob"],
+    explicit_zero_prob=par["explicit_zero_prob"], 
     use_fast_transformer=par["use_fast_transformer"],
+    # fast_transformer_backend="flash",
     pre_norm=par["pre_norm"],
 )
 
 
-if par["device"] == "cuda" and not torch.cuda.is_avilable():
+if par["device"] == "cuda" and not torch.cuda.is_available():
     print("WARNING: CUDA is not available. Using CPU instead.")    
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 device = torch.device(par["device"])
