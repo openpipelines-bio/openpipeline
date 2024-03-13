@@ -47,7 +47,8 @@ neighbors.compute_neighbors(
     use_rep=par["obsm_input"],
     metric=par["metric"],
     random_state=par["seed"],
-    method="umap"
+    method="umap",
+    write_knn_indices=True
 )
 
 adata.uns[par["uns_output"]] = {

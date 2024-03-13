@@ -1,4 +1,5 @@
-from umap import UMAP
+from umap.umap_ import find_ab_params, simplicial_set_embedding
+from sklearn.utils import check_random_state
 import mudata as mu
 import sys
 import anndata as ad
@@ -60,11 +61,28 @@ temp_obsm = {
   pca_key: data.obsm[pca_key]
 }
 
-temp_adata = ad.AnnData(
-  obsm=temp_obsm,
-  obsp=temp_obsp,
-  uns=temp_uns,
-  shape=data.shape
+default_epochs = 500 if data.obsp[conn_key].shape[0] <= 10000 else 200
+n_epochs = default_epochs if par["max_iter"] is None else par["max_iter"]
+a, b = find_ab_params(par["spread"], par["mim_dist"])
+
+X_densmap = simplicial_set_embedding(
+  data=data.obsm[pca_key],
+  graph=data.obsp[conn_key],
+  n_components=par["n_components"],
+  initial_alpha=par["alpha"],
+  a=a,
+  b=b,
+  gamma=par["gamma"],
+  negative_sample_rate=par["negative_sample_rate"],
+  n_epochs=par["max_iter"],
+  init=par["init_pos"],
+  random_state = check_random_state(None),
+  metric=data.uns[neigh_key].get("metric", "euclidean"),
+  metric_kwds=data.uns[neigh_key].get("metric_kwds", {}),
+  densmap=True,
+  densmap_kwds={
+    "lambda": par["lambda"],
+    "fraction": par["fraction"],
+    "var_shift": par["var_shift"]
+  }
 )
-
-
