@@ -59,15 +59,15 @@ def mudata_with_extra_var_column(random_h5mu_path, request, extra_var_column_val
     return result
 
 
-def test_merge(run_component, random_h5mu_path, split_small_mudata_path):
+def test_merge(run_component, random_h5mu_path, small_mudata_mod1_path, small_mudata_mod2_path):
     """
     Test a simple merge with fully overlapping observations
     """
     output_path = random_h5mu_path()
-    input_sample1_path, input_sample2_path = split_small_mudata_path
+    # input_sample1_path, input_sample2_path = split_small_mudata_path
     args = [
-        "--input", input_sample1_path,
-        "--input", input_sample2_path,
+        "--input", small_mudata_mod1_path,
+        "--input", small_mudata_mod2_path,
         "--output", output_path,
         "--output_compression", "gzip"
     ]
@@ -75,8 +75,8 @@ def test_merge(run_component, random_h5mu_path, split_small_mudata_path):
 
     assert output_path.is_file()
     concatenated_data = read_h5mu(output_path)
-    data_sample1 = read_h5mu(input_sample1_path)
-    data_sample2 = read_h5mu(input_sample2_path)
+    data_sample1 = read_h5mu(small_mudata_mod1_path)
+    data_sample2 = read_h5mu(small_mudata_mod2_path)
     
     expected_concatenated_data = MuData({'mod1': data_sample1.mod['mod1'], 'mod2': data_sample2.mod['mod2']})
     assert_annotation_objects_equal(concatenated_data, expected_concatenated_data)
@@ -101,9 +101,14 @@ def test_merge_non_overlapping_observations(run_component, mudata_non_overlappin
     data_sample2 = read_h5mu(small_mudata_mod2_path, backed=False)
     
     expected_concatenated_data = MuData({'mod1': data_sample1.mod['mod1'], 'mod2': data_sample2.mod['mod2']})
-    
+
+    assert set(concatenated_data.obs_names) == (set(data_sample1.obs_names) | set(data_sample2.obs_names))
     assert concatenated_data[removed_observation_name:]['mod1'].n_obs == 0
     assert concatenated_data[removed_observation_name:]['mod2'].n_obs == 1
+    
+    np.testing.assert_equal(concatenated_data.copy()[removed_observation_name:]['mod2'].X.data,
+                            data_sample2.copy()[removed_observation_name:]['mod2'].X.data)
+    
     assert_annotation_objects_equal(concatenated_data, expected_concatenated_data)
     
     

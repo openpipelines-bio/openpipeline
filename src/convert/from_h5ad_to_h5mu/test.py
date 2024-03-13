@@ -5,28 +5,29 @@ from openpipelinetestutils.asserters import assert_annotation_objects_equal
 
 ## VIASH START
 meta = {
-    'resources_dir': 'resources_test'
+    'resources_dir': 'resources_test',
+    'executable': './target/docker/convert/from_h5ad_to_h5mu/from_h5ad_to_h5mu',
+    'config': './src/convert/from_h5ad_to_h5mu/config.vsh.yaml'
 }
 ## VIASH END
 
 input = meta["resources_dir"] + "/pbmc_1k_protein_v3/pbmc_1k_protein_v3_mms.h5mu"
 
-def test_run(run_component, tmp_path):
+def test_run(run_component, random_h5mu_path, random_path):
     mdata = mu.read_h5mu(input)
-
-    tmp_rna = tmp_path / "rna.h5ad"
-    tmp_prot = tmp_path / "prot.h5ad"
+    tmp_rna = random_path(extension="h5ad")
+    tmp_prot = random_path(extension="h5ad")
     mdata.mod["rna"].write_h5ad(tmp_rna)
     mdata.mod["prot"].write_h5ad(tmp_prot)
 
-    tmp_output = tmp_path / "output.h5mu"
+    tmp_output = random_h5mu_path()
 
     cmd_pars = [
         "--modality", "rna",
-        "--input", str(tmp_rna),
+        "--input", tmp_rna,
         "--modality", "prot",
-        "--input", str(tmp_prot),
-        "--output", str(tmp_output),
+        "--input", tmp_prot,
+        "--output", tmp_output,
         "--output_compression", "gzip"
     ]
     run_component(cmd_pars)
@@ -37,8 +38,8 @@ def test_run(run_component, tmp_path):
 
     assert list(mdata2.mod.keys()) == ["rna", "prot"]
     
-    assert_annotation_objects_equal(mdata2.mod["rna"], str(tmp_rna))
-    assert_annotation_objects_equal(mdata2.mod["prot"], str(tmp_prot))
+    assert_annotation_objects_equal(mdata2.mod["rna"], tmp_rna)
+    assert_annotation_objects_equal(mdata2.mod["prot"], tmp_prot)
 
 if __name__ == "__main__":
     sys.exit(pytest.main([__file__]))

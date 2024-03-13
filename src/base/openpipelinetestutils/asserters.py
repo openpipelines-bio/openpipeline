@@ -13,7 +13,7 @@ from functools import singledispatch
 
 def _read_if_needed(anndata_mudata_path_or_obj):
     if isinstance(anndata_mudata_path_or_obj, (str, Path)):
-        return mudata.read(anndata_mudata_path_or_obj)
+        return mudata.read(str(anndata_mudata_path_or_obj)) # TODO: remove when mudata fixes PAth bug
     if isinstance(anndata_mudata_path_or_obj, (mudata.MuData, anndata.AnnData)):
         return anndata_mudata_path_or_obj.copy()
     raise AssertionError("Expected 'Path', 'str' to MuData/AnnData "
