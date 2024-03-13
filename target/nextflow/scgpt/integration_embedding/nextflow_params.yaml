@@ -1,0 +1,35 @@
+# Inputs
+input: # please fill in - example: "input.h5ad"
+model_dir: # please fill in - example: "foundational_model/scgpt"
+input_gene_ids: # please fill in - example: "gene_ids.pt"
+input_values: # please fill in - example: "values.pt"
+input_padding_mask: # please fill in - example: "padding_mask.pt"
+gene_name_layer: "gene_name"
+batch_id_layer: "batch_id"
+
+# Outputs
+# output: "$id.$key.output.h5ad"
+embedding_layer: "X_scGPT"
+
+# Arguments
+pad_token: "<pad>"
+pad_value: -2
+load_model_vocab: true
+load_model_configs: true
+layer_size: 128
+nhead: 4
+nlayers: 4
+dropout: 0.2
+DSBN: true
+GEPC: true
+n_input_bins: 51
+ecs_threshold: 0.8
+explicit_zero_prob: true
+use_fast_transformer: false
+pre_norm: false
+device: "cpu"
+batch_size: 64
+
+# Nextflow input-output arguments
+publish_dir: # please fill in - example: "output/"
+# param_list: "my_params.yaml"
