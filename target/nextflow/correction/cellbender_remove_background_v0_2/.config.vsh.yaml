@@ -1,0 +1,415 @@
+functionality:
+  name: "cellbender_remove_background_v0_2"
+  namespace: "correction"
+  version: "tokenize-pad_build"
+  argument_groups:
+  - name: "Inputs"
+    arguments:
+    - type: "file"
+      name: "--input"
+      alternatives:
+      - "-i"
+      description: "Input h5mu file."
+      info: null
+      example:
+      - "input.h5mu"
+      must_exist: true
+      create_parent: true
+      required: true
+      direction: "input"
+      multiple: false
+      multiple_sep: ":"
+      dest: "par"
+    - type: "string"
+      name: "--modality"
+      description: "List of modalities to process."
+      info: null
+      default:
+      - "rna"
+      required: false
+      direction: "input"
+      multiple: false
+      multiple_sep: ":"
+      dest: "par"
+  - name: "Outputs"
+    arguments:
+    - type: "file"
+      name: "--output"
+      alternatives:
+      - "-o"
+      description: "Full count matrix as an h5mu file, with background RNA removed.\
+        \ This file contains all the original droplet barcodes."
+      info: null
+      example:
+      - "output.h5mu"
+      must_exist: true
+      create_parent: true
+      required: true
+      direction: "output"
+      multiple: false
+      multiple_sep: ":"
+      dest: "par"
+    - type: "string"
+      name: "--output_compression"
+      info: null
+      example:
+      - "gzip"
+      required: false
+      choices:
+      - "gzip"
+      - "lzf"
+      direction: "input"
+      multiple: false
+      multiple_sep: ":"
+      dest: "par"
+    - type: "string"
+      name: "--layer_output"
+      description: "Output layer"
+      info: null
+      default:
+      - "corrected"
+      required: false
+      direction: "input"
+      multiple: false
+      multiple_sep: ":"
+      dest: "par"
+    - type: "string"
+      name: "--obs_latent_rt_efficiency"
+      info: null
+      default:
+      - "latent_rt_efficiency"
+      required: false
+      direction: "input"
+      multiple: false
+      multiple_sep: ":"
+      dest: "par"
+    - type: "string"
+      name: "--obs_latent_cell_probability"
+      info: null
+      default:
+      - "latent_cell_probability"
+      required: false
+      direction: "input"
+      multiple: false
+      multiple_sep: ":"
+      dest: "par"
+    - type: "string"
+      name: "--obs_latent_scale"
+      info: null
+      default:
+      - "latent_scale"
+      required: false
+      direction: "input"
+      multiple: false
+      multiple_sep: ":"
+      dest: "par"
+    - type: "string"
+      name: "--var_ambient_expression"
+      info: null
+      default:
+      - "ambient_expression"
+      required: false
+      direction: "input"
+      multiple: false
+      multiple_sep: ":"
+      dest: "par"
+    - type: "string"
+      name: "--obsm_latent_gene_encoding"
+      info: null
+      default:
+      - "cellbender_latent_gene_encoding"
+      required: false
+      direction: "input"
+      multiple: false
+      multiple_sep: ":"
+      dest: "par"
+  - name: "Arguments"
+    arguments:
+    - type: "integer"
+      name: "--expected_cells"
+      description: "Number of cells expected in the dataset (a rough estimate within\
+        \ a factor of 2 is sufficient)."
+      info: null
+      example:
+      - 1000
+      required: false
+      direction: "input"
+      multiple: false
+      multiple_sep: ":"
+      dest: "par"
+    - type: "integer"
+      name: "--total_droplets_included"
+      description: "The number of droplets from the rank-ordered UMI plot\nthat will\
+        \ be analyzed. The largest 'total_droplets'\ndroplets will have their cell\
+        \ probabilities inferred\nas an output.\n"
+      info: null
+      example:
+      - 25000
+      required: false
+      direction: "input"
+      multiple: false
+      multiple_sep: ":"
+      dest: "par"
+    - type: "boolean"
+      name: "--expected_cells_from_qc"
+      description: "Will use the Cell Ranger QC to determine the estimated number\
+        \ of cells"
+      info: null
+      default:
+      - true
+      required: false
+      direction: "input"
+      multiple: false
+      multiple_sep: ":"
+      dest: "par"
+    - type: "string"
+      name: "--model"
+      description: "Which model is being used for count data. 'simple'\ndoes not model\
+        \ either ambient RNA or random barcode\nswapping (for debugging purposes --\
+        \ not recommended).\n'ambient' assumes background RNA is incorporated into\n\
+        droplets. 'swapping' assumes background RNA comes from\nrandom barcode swapping.\
+        \ 'full' uses a combined\nambient and swapping model.\n"
+      info: null
+      default:
+      - "full"
+      required: false
+      choices:
+      - "simple"
+      - "ambient"
+      - "swapping"
+      - "full"
+      direction: "input"
+      multiple: false
+      multiple_sep: ":"
+      dest: "par"
+    - type: "integer"
+      name: "--epochs"
+      description: "Number of epochs to train."
+      info: null
+      default:
+      - 150
+      required: false
+      direction: "input"
+      multiple: false
+      multiple_sep: ":"
+      dest: "par"
+    - type: "integer"
+      name: "--low_count_threshold"
+      description: "Droplets with UMI counts below this number are completely \nexcluded\
+        \ from the analysis. This can help identify the correct \nprior for empty\
+        \ droplet counts in the rare case where empty \ncounts are extremely high\
+        \ (over 200).\n"
+      info: null
+      default:
+      - 15
+      required: false
+      direction: "input"
+      multiple: false
+      multiple_sep: ":"
+      dest: "par"
+    - type: "integer"
+      name: "--z_dim"
+      description: "Dimension of latent variable z.\n"
+      info: null
+      default:
+      - 100
+      required: false
+      direction: "input"
+      multiple: false
+      multiple_sep: ":"
+      dest: "par"
+    - type: "integer"
+      name: "--z_layers"
+      description: "Dimension of hidden layers in the encoder for z.\n"
+      info: null
+      default:
+      - 500
+      required: false
+      direction: "input"
+      multiple: true
+      multiple_sep: ";"
+      dest: "par"
+    - type: "double"
+      name: "--training_fraction"
+      description: "Training detail: the fraction of the data used for training.\n\
+        The rest is never seen by the inference algorithm. Speeds up learning.\n"
+      info: null
+      default:
+      - 0.9
+      required: false
+      direction: "input"
+      multiple: false
+      multiple_sep: ":"
+      dest: "par"
+    - type: "double"
+      name: "--empty_drop_training_fraction"
+      description: "Training detail: the fraction of the training data each epoch\
+        \ that \nis drawn (randomly sampled) from surely empty droplets.\n"
+      info: null
+      default:
+      - 0.5
+      required: false
+      direction: "input"
+      multiple: false
+      multiple_sep: ":"
+      dest: "par"
+    - type: "double"
+      name: "--fpr"
+      description: "Target false positive rate in (0, 1). A false positive\nis a true\
+        \ signal count that is erroneously removed.\nMore background removal is accompanied\
+        \ by more signal\nremoval at high values of FPR. You can specify\nmultiple\
+        \ values, which will create multiple output\nfiles.\n"
+      info: null
+      default:
+      - 0.01
+      required: false
+      direction: "input"
+      multiple: true
+      multiple_sep: ";"
+      dest: "par"
+    - type: "boolean_true"
+      name: "--exclude_antibody_capture"
+      description: "Including the flag --exclude-antibody-capture will\ncause remove-background\
+        \ to operate on gene counts\nonly, ignoring other features.\n"
+      info: null
+      direction: "input"
+      dest: "par"
+    - type: "double"
+      name: "--learning_rate"
+      description: "Training detail: lower learning rate for inference. A\nOneCycle\
+        \ learning rate schedule is used, where the\nupper learning rate is ten times\
+        \ this value. (For this\nvalue, probably do not exceed 1e-3).\n"
+      info: null
+      example:
+      - 1.0E-4
+      required: false
+      direction: "input"
+      multiple: false
+      multiple_sep: ":"
+      dest: "par"
+    - type: "boolean_true"
+      name: "--cuda"
+      description: "Including the flag --cuda will run the inference on a\nGPU.\n"
+      info: null
+      direction: "input"
+      dest: "par"
+  resources:
+  - type: "python_script"
+    path: "script.py"
+    is_executable: true
+  - type: "file"
+    path: "helper.py"
+  - type: "file"
+    path: "src/utils/setup_logger.py"
+  - type: "file"
+    path: "./src/workflows/utils/labels.config"
+    dest: "nextflow_labels.config"
+  description: "Eliminating technical artifacts from high-throughput single-cell RNA\
+    \ sequencing data.\n\nThis module removes counts due to ambient RNA molecules\
+    \ and random barcode swapping from (raw) UMI-based scRNA-seq count matrices. \n\
+    At the moment, only the count matrices produced by the CellRanger count pipeline\
+    \ is supported. Support for additional tools and protocols \nwill be added in\
+    \ the future. A quick start tutorial can be found here.\n\nFleming et al. 2022,\
+    \ bioRxiv.\n"
+  test_resources:
+  - type: "python_script"
+    path: "test.py"
+    is_executable: true
+  - type: "file"
+    path: "resources_test/pbmc_1k_protein_v3/pbmc_1k_protein_v3_raw_feature_bc_matrix.h5"
+  - type: "file"
+    path: "src/base/openpipelinetestutils"
+    dest: "openpipelinetestutils"
+  info: null
+  status: "enabled"
+  requirements:
+    commands:
+    - "ps"
+  set_wd_to_resources_dir: false
+platforms:
+- type: "docker"
+  id: "docker"
+  image: "nvcr.io/nvidia/pytorch:22.12-py3"
+  target_organization: "openpipelines-bio"
+  target_registry: "ghcr.io"
+  target_tag: "main_build"
+  namespace_separator: "_"
+  resolve_volume: "Automatic"
+  chown: true
+  setup_strategy: "ifneedbepullelsecachedbuild"
+  target_image_source: "https://github.com/openpipelines-bio/openpipeline"
+  setup:
+  - type: "python"
+    user: false
+    packages:
+    - "anndata~=0.9.1"
+    - "mudata~=0.2.3"
+    - "pandas!=2.1.2"
+    - "muon==0.1.5"
+    - "tables==3.8.0"
+    - "cellbender==0.2.1"
+    upgrade: true
+  test_setup:
+  - type: "python"
+    user: false
+    packages:
+    - "muon~=0.1.4"
+    upgrade: true
+  entrypoint: []
+  cmd: null
+- type: "nextflow"
+  id: "nextflow"
+  directives:
+    label:
+    - "gpu"
+    tag: "$id"
+  auto:
+    simplifyInput: true
+    simplifyOutput: false
+    transcript: false
+    publish: false
+  config:
+    labels:
+      mem1gb: "memory = 1.GB"
+      mem2gb: "memory = 2.GB"
+      mem4gb: "memory = 4.GB"
+      mem8gb: "memory = 8.GB"
+      mem16gb: "memory = 16.GB"
+      mem32gb: "memory = 32.GB"
+      mem64gb: "memory = 64.GB"
+      mem128gb: "memory = 128.GB"
+      mem256gb: "memory = 256.GB"
+      mem512gb: "memory = 512.GB"
+      mem1tb: "memory = 1.TB"
+      mem2tb: "memory = 2.TB"
+      mem4tb: "memory = 4.TB"
+      mem8tb: "memory = 8.TB"
+      mem16tb: "memory = 16.TB"
+      mem32tb: "memory = 32.TB"
+      mem64tb: "memory = 64.TB"
+      mem128tb: "memory = 128.TB"
+      mem256tb: "memory = 256.TB"
+      mem512tb: "memory = 512.TB"
+      cpu1: "cpus = 1"
+      cpu2: "cpus = 2"
+      cpu5: "cpus = 5"
+      cpu10: "cpus = 10"
+      cpu20: "cpus = 20"
+      cpu50: "cpus = 50"
+      cpu100: "cpus = 100"
+      cpu200: "cpus = 200"
+      cpu500: "cpus = 500"
+      cpu1000: "cpus = 1000"
+    script:
+    - "includeConfig(\"nextflow_labels.config\")"
+  debug: false
+  container: "docker"
+info:
+  config: "/home/runner/work/openpipeline/openpipeline/src/correction/cellbender_remove_background_v0_2/config.vsh.yaml"
+  platform: "nextflow"
+  output: "/home/runner/work/openpipeline/openpipeline/target/nextflow/correction/cellbender_remove_background_v0_2"
+  executable: "/home/runner/work/openpipeline/openpipeline/target/nextflow/correction/cellbender_remove_background_v0_2/cellbender_remove_background_v0_2"
+  viash_version: "0.8.5"
+  git_commit: "0c6316dcc7f4ca80dc7b304b33fee7b4ec4970d2"
+  git_remote: "https://github.com/openpipelines-bio/openpipeline"
+  git_tag: "0.2.0-1558-g0c6316dcc7"

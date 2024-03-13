@@ -1,0 +1,167 @@
+functionality:
+  name: "from_bd_to_10x_molecular_barcode_tags"
+  namespace: "convert"
+  version: "tokenize-pad_build"
+  authors:
+  - name: "Dries Schaumont"
+    roles:
+    - "maintainer"
+    info:
+      role: "Core Team Member"
+      links:
+        email: "dries@data-intuitive.com"
+        github: "DriesSchaumont"
+        orcid: "0000-0002-4389-0440"
+        linkedin: "dries-schaumont"
+      organizations:
+      - name: "Data Intuitive"
+        href: "https://www.data-intuitive.com"
+        role: "Data Scientist"
+  arguments:
+  - type: "file"
+    name: "--input"
+    alternatives:
+    - "-i"
+    description: "Input SAM or BAM file."
+    info: null
+    example:
+    - "input.bam"
+    must_exist: true
+    create_parent: true
+    required: true
+    direction: "input"
+    multiple: false
+    multiple_sep: ":"
+    dest: "par"
+  - type: "file"
+    name: "--output"
+    alternatives:
+    - "-o"
+    description: "Output alignment file."
+    info: null
+    example:
+    - "output.sam"
+    must_exist: true
+    create_parent: true
+    required: false
+    direction: "output"
+    multiple: false
+    multiple_sep: ":"
+    dest: "par"
+  - type: "boolean_true"
+    name: "--bam"
+    description: "Output a BAM file."
+    info: null
+    direction: "input"
+    dest: "par"
+  - type: "integer"
+    name: "--threads"
+    alternatives:
+    - "-t"
+    description: "Number of threads"
+    info: null
+    required: false
+    direction: "input"
+    multiple: false
+    multiple_sep: ":"
+    dest: "par"
+  resources:
+  - type: "bash_script"
+    path: "script.sh"
+    is_executable: true
+  - type: "file"
+    path: "./src/workflows/utils/labels.config"
+    dest: "nextflow_labels.config"
+  description: "Convert the molecular barcode sequence SAM tag from BD format (MA)\
+    \ to 10X format (UB).\n"
+  test_resources:
+  - type: "bash_script"
+    path: "run_test.sh"
+    is_executable: true
+  - type: "file"
+    path: "resources_test/bdrhap_5kjrt/processed/WTA.bd_rhapsody.output_raw"
+  - type: "file"
+    path: "src/base/openpipelinetestutils"
+    dest: "openpipelinetestutils"
+  info: null
+  status: "enabled"
+  requirements:
+    commands:
+    - "ps"
+  set_wd_to_resources_dir: false
+platforms:
+- type: "docker"
+  id: "docker"
+  image: "ubuntu:latest"
+  target_organization: "openpipelines-bio"
+  target_registry: "ghcr.io"
+  target_tag: "main_build"
+  namespace_separator: "_"
+  resolve_volume: "Automatic"
+  chown: true
+  setup_strategy: "ifneedbepullelsecachedbuild"
+  target_image_source: "https://github.com/openpipelines-bio/openpipeline"
+  setup:
+  - type: "apt"
+    packages:
+    - "samtools"
+    interactive: false
+  entrypoint: []
+  cmd: null
+- type: "nextflow"
+  id: "nextflow"
+  directives:
+    label:
+    - "lowmem"
+    - "singlecpu"
+    tag: "$id"
+  auto:
+    simplifyInput: true
+    simplifyOutput: false
+    transcript: false
+    publish: false
+  config:
+    labels:
+      mem1gb: "memory = 1.GB"
+      mem2gb: "memory = 2.GB"
+      mem4gb: "memory = 4.GB"
+      mem8gb: "memory = 8.GB"
+      mem16gb: "memory = 16.GB"
+      mem32gb: "memory = 32.GB"
+      mem64gb: "memory = 64.GB"
+      mem128gb: "memory = 128.GB"
+      mem256gb: "memory = 256.GB"
+      mem512gb: "memory = 512.GB"
+      mem1tb: "memory = 1.TB"
+      mem2tb: "memory = 2.TB"
+      mem4tb: "memory = 4.TB"
+      mem8tb: "memory = 8.TB"
+      mem16tb: "memory = 16.TB"
+      mem32tb: "memory = 32.TB"
+      mem64tb: "memory = 64.TB"
+      mem128tb: "memory = 128.TB"
+      mem256tb: "memory = 256.TB"
+      mem512tb: "memory = 512.TB"
+      cpu1: "cpus = 1"
+      cpu2: "cpus = 2"
+      cpu5: "cpus = 5"
+      cpu10: "cpus = 10"
+      cpu20: "cpus = 20"
+      cpu50: "cpus = 50"
+      cpu100: "cpus = 100"
+      cpu200: "cpus = 200"
+      cpu500: "cpus = 500"
+      cpu1000: "cpus = 1000"
+    script:
+    - "includeConfig(\"nextflow_labels.config\")"
+  debug: false
+  container: "docker"
+info:
+  config: "/home/runner/work/openpipeline/openpipeline/src/convert/from_bd_to_10x_molecular_barcode_tags/config.vsh.yaml"
+  platform: "docker"
+  output: "/home/runner/work/openpipeline/openpipeline/target/docker/convert/from_bd_to_10x_molecular_barcode_tags"
+  executable: "/home/runner/work/openpipeline/openpipeline/target/docker/convert/from_bd_to_10x_molecular_barcode_tags/from_bd_to_10x_molecular_barcode_tags"
+  viash_version: "0.8.5"
+  git_commit: "0c6316dcc7f4ca80dc7b304b33fee7b4ec4970d2"
+  git_remote: "https://github.com/openpipelines-bio/openpipeline"
+  git_tag: "0.2.0-1558-g0c6316dcc7"

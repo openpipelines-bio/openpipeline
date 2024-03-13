@@ -1,0 +1,322 @@
+functionality:
+  name: "umap"
+  namespace: "dimred"
+  version: "tokenize-pad_build"
+  authors:
+  - name: "Dries De Maeyer"
+    roles:
+    - "maintainer"
+    info:
+      role: "Core Team Member"
+      links:
+        email: "ddemaeyer@gmail.com"
+        github: "ddemaeyer"
+        linkedin: "dries-de-maeyer-b46a814"
+      organizations:
+      - name: "Janssen Pharmaceuticals"
+        href: "https://www.janssen.com"
+        role: "Principal Scientist"
+  argument_groups:
+  - name: "Inputs"
+    arguments:
+    - type: "file"
+      name: "--input"
+      description: "Input h5mu file"
+      info: null
+      example:
+      - "input.h5mu"
+      must_exist: true
+      create_parent: true
+      required: true
+      direction: "input"
+      multiple: false
+      multiple_sep: ":"
+      dest: "par"
+    - type: "string"
+      name: "--modality"
+      info: null
+      default:
+      - "rna"
+      required: false
+      direction: "input"
+      multiple: false
+      multiple_sep: ":"
+      dest: "par"
+    - type: "string"
+      name: "--uns_neighbors"
+      description: "The `.uns` neighbors slot as output by the `find_neighbors` component."
+      info: null
+      default:
+      - "neighbors"
+      required: false
+      direction: "input"
+      multiple: false
+      multiple_sep: ":"
+      dest: "par"
+  - name: "Outputs"
+    arguments:
+    - type: "file"
+      name: "--output"
+      alternatives:
+      - "-o"
+      description: "Output h5mu file."
+      info: null
+      example:
+      - "output.h5mu"
+      must_exist: true
+      create_parent: true
+      required: true
+      direction: "output"
+      multiple: false
+      multiple_sep: ":"
+      dest: "par"
+    - type: "string"
+      name: "--output_compression"
+      description: "The compression format to be used on the output h5mu object."
+      info: null
+      example:
+      - "gzip"
+      required: false
+      choices:
+      - "gzip"
+      - "lzf"
+      direction: "input"
+      multiple: false
+      multiple_sep: ":"
+      dest: "par"
+    - type: "string"
+      name: "--obsm_output"
+      description: "The pre/postfix under which to store the UMAP results."
+      info: null
+      default:
+      - "umap"
+      required: false
+      direction: "input"
+      multiple: false
+      multiple_sep: ":"
+      dest: "par"
+  - name: "Arguments"
+    arguments:
+    - type: "double"
+      name: "--min_dist"
+      description: "The effective minimum distance between embedded points. Smaller\
+        \ values will result in a more clustered/clumped embedding where nearby points\
+        \ on the manifold are drawn closer together, while larger values will result\
+        \ on a more even dispersal of points. The value should be set relative to\
+        \ the spread value, which determines the scale at which embedded points will\
+        \ be spread out."
+      info: null
+      default:
+      - 0.5
+      required: false
+      direction: "input"
+      multiple: false
+      multiple_sep: ":"
+      dest: "par"
+    - type: "double"
+      name: "--spread"
+      description: "The effective scale of embedded points. In combination with `min_dist`\
+        \ this determines how clustered/clumped the embedded points are."
+      info: null
+      default:
+      - 1.0
+      required: false
+      direction: "input"
+      multiple: false
+      multiple_sep: ":"
+      dest: "par"
+    - type: "integer"
+      name: "--num_components"
+      description: "The number of dimensions of the embedding."
+      info: null
+      default:
+      - 2
+      required: false
+      direction: "input"
+      multiple: false
+      multiple_sep: ":"
+      dest: "par"
+    - type: "integer"
+      name: "--max_iter"
+      description: "The number of iterations (epochs) of the optimization. Called\
+        \ `n_epochs` in the original UMAP. Default is set to 500 if neighbors['connectivities'].shape[0]\
+        \ <= 10000, else 200."
+      info: null
+      required: false
+      direction: "input"
+      multiple: false
+      multiple_sep: ":"
+      dest: "par"
+    - type: "double"
+      name: "--alpha"
+      description: "The initial learning rate for the embedding optimization."
+      info: null
+      default:
+      - 1.0
+      required: false
+      direction: "input"
+      multiple: false
+      multiple_sep: ":"
+      dest: "par"
+    - type: "double"
+      name: "--gamma"
+      description: "Weighting applied to negative samples in low dimensional embedding\
+        \ optimization. Values higher than one will result in greater weight being\
+        \ given to negative samples."
+      info: null
+      default:
+      - 1.0
+      required: false
+      direction: "input"
+      multiple: false
+      multiple_sep: ":"
+      dest: "par"
+    - type: "integer"
+      name: "--negative_sample_rate"
+      description: "The number of negative edge/1-simplex samples to use per positive\
+        \ edge/1-simplex sample in optimizing the low dimensional embedding."
+      info: null
+      default:
+      - 5
+      required: false
+      direction: "input"
+      multiple: false
+      multiple_sep: ":"
+      dest: "par"
+    - type: "string"
+      name: "--init_pos"
+      description: "How to initialize the low dimensional embedding. Called `init`\
+        \ in the original UMAP. Options are:\n\n* Any key from `.obsm`\n* `'paga'`:\
+        \ positions from `paga()`\n* `'spectral'`: use a spectral embedding of the\
+        \ graph\n* `'random'`: assign initial embedding positions at random.\n"
+      info: null
+      default:
+      - "spectral"
+      required: false
+      direction: "input"
+      multiple: false
+      multiple_sep: ":"
+      dest: "par"
+  resources:
+  - type: "python_script"
+    path: "script.py"
+    is_executable: true
+  - type: "file"
+    path: "src/utils/setup_logger.py"
+  - type: "file"
+    path: "./src/workflows/utils/labels.config"
+    dest: "nextflow_labels.config"
+  description: "UMAP (Uniform Manifold Approximation and Projection) is a manifold\
+    \ learning technique suitable for visualizing high-dimensional data. Besides tending\
+    \ to be faster than tSNE, it optimizes the embedding such that it best reflects\
+    \ the topology of the data, which we represent throughout Scanpy using a neighborhood\
+    \ graph. tSNE, by contrast, optimizes the distribution of nearest-neighbor distances\
+    \ in the embedding such that these best match the distribution of distances in\
+    \ the high-dimensional space. We use the implementation of umap-learn [McInnes18].\
+    \ For a few comparisons of UMAP with tSNE, see this preprint.\n"
+  test_resources:
+  - type: "python_script"
+    path: "test.py"
+    is_executable: true
+  - type: "file"
+    path: "resources_test/pbmc_1k_protein_v3"
+  - type: "file"
+    path: "src/base/openpipelinetestutils"
+    dest: "openpipelinetestutils"
+  info: null
+  status: "enabled"
+  requirements:
+    commands:
+    - "ps"
+  set_wd_to_resources_dir: false
+platforms:
+- type: "docker"
+  id: "docker"
+  image: "python:3.9-slim"
+  target_organization: "openpipelines-bio"
+  target_registry: "ghcr.io"
+  target_tag: "main_build"
+  namespace_separator: "_"
+  resolve_volume: "Automatic"
+  chown: true
+  setup_strategy: "ifneedbepullelsecachedbuild"
+  target_image_source: "https://github.com/openpipelines-bio/openpipeline"
+  setup:
+  - type: "apt"
+    packages:
+    - "procps"
+    interactive: false
+  - type: "python"
+    user: false
+    packages:
+    - "anndata~=0.9.1"
+    - "mudata~=0.2.3"
+    - "pandas!=2.1.2"
+    - "scanpy~=1.9.5"
+    - "statsmodels==0.14.0"
+    upgrade: true
+  test_setup:
+  - type: "python"
+    user: false
+    packages:
+    - "viashpy==0.6.0"
+    upgrade: true
+  entrypoint: []
+  cmd: null
+- type: "nextflow"
+  id: "nextflow"
+  directives:
+    label:
+    - "highcpu"
+    - "midmem"
+    tag: "$id"
+  auto:
+    simplifyInput: true
+    simplifyOutput: false
+    transcript: false
+    publish: false
+  config:
+    labels:
+      mem1gb: "memory = 1.GB"
+      mem2gb: "memory = 2.GB"
+      mem4gb: "memory = 4.GB"
+      mem8gb: "memory = 8.GB"
+      mem16gb: "memory = 16.GB"
+      mem32gb: "memory = 32.GB"
+      mem64gb: "memory = 64.GB"
+      mem128gb: "memory = 128.GB"
+      mem256gb: "memory = 256.GB"
+      mem512gb: "memory = 512.GB"
+      mem1tb: "memory = 1.TB"
+      mem2tb: "memory = 2.TB"
+      mem4tb: "memory = 4.TB"
+      mem8tb: "memory = 8.TB"
+      mem16tb: "memory = 16.TB"
+      mem32tb: "memory = 32.TB"
+      mem64tb: "memory = 64.TB"
+      mem128tb: "memory = 128.TB"
+      mem256tb: "memory = 256.TB"
+      mem512tb: "memory = 512.TB"
+      cpu1: "cpus = 1"
+      cpu2: "cpus = 2"
+      cpu5: "cpus = 5"
+      cpu10: "cpus = 10"
+      cpu20: "cpus = 20"
+      cpu50: "cpus = 50"
+      cpu100: "cpus = 100"
+      cpu200: "cpus = 200"
+      cpu500: "cpus = 500"
+      cpu1000: "cpus = 1000"
+    script:
+    - "includeConfig(\"nextflow_labels.config\")"
+  debug: false
+  container: "docker"
+info:
+  config: "/home/runner/work/openpipeline/openpipeline/src/dimred/umap/config.vsh.yaml"
+  platform: "docker"
+  output: "/home/runner/work/openpipeline/openpipeline/target/docker/dimred/umap"
+  executable: "/home/runner/work/openpipeline/openpipeline/target/docker/dimred/umap/umap"
+  viash_version: "0.8.5"
+  git_commit: "0c6316dcc7f4ca80dc7b304b33fee7b4ec4970d2"
+  git_remote: "https://github.com/openpipelines-bio/openpipeline"
+  git_tag: "0.2.0-1558-g0c6316dcc7"
