@@ -1,6 +1,6 @@
 name: Build
 concurrency: 
-  group: ${{ github.workflow }}-${{ github.event.inputs.deploy_branch && format('{0}_build', github.ref_name) || github.event.inputs.deploy_branch }}
+  group: ${{ github.workflow }}-${{ inputs.deploy_branch && inputs.deploy_branch || format('{0}_build', github.ref_name) }}
   cancel-in-progress: true
 
 on:
@@ -20,11 +20,10 @@ on:
       target_tag:
         type: string
         required: false
-        default: main_build
         description: |
-          Version tag of containers to use. Is `main_build` by default.
-          Can be used in combination with 'push_containers' to re-use existing docker images
-          or set the tag for new builds.
+          Version tag of containers to use. Defaults to name of the branch that triggered the workflow, 
+          suffixed by "_build". Can be used in combination with 'push_containers' (by unchecking it)
+          to re-use existing docker images or set the tag for new builds.
       deploy_to_viash_hub:
         type: boolean
         required: false
@@ -48,8 +47,10 @@ on:
       target_tag:
         type: string
         required: false
-        default: main_build
-        description: Version tag of existing containers to use. Is `main_build` by default.
+        description: |
+          Version tag of containers to use. Defaults to name of the branch that triggered the workflow, 
+          suffixed by "_build". Can be used in combination with 'push_containers' (by setting it to 'false')
+          to re-use existing docker images or set the tag for new builds.
       deploy_branch:
         type: string
         required: false
@@ -95,6 +96,16 @@ jobs:
       DEPLOY_BRANCH: ${{ !inputs.deploy_branch && format('{0}_build', github.ref_name) || inputs.deploy_branch  }}
 
     steps:
+    - name: Check input arguments
+      run: |
+        input_version="${{ inputs.version || format('{0}_build', github.ref_name) }}"
+        target_tag="${{ github.event_name == 'push' && (inputs.version || format('{0}_build', github.ref_name)) || inputs.target_tag }}"
+        should_push="${{inputs.push_containers }}"
+        if [ "$input_version" != "$target_tag" ] && [ "$should_push" == "true" ]; then
+          echo "When trying to push new docker images, the tag for the components must be equal to the target_tag for the docker images."
+          exit 1
+        fi
+
     - name: Keep symlinks as-is
       run: |
         git config --global core.symlinks true
@@ -142,7 +153,7 @@ jobs:
       with:
         config_mod: |
           .functionality.version := "${{ inputs.version || format('{0}_build', github.ref_name) }}"
-          .platforms[.type == 'docker'].target_tag := '${{ github.event_name == 'push' && 'main_build' || inputs.target_tag }}'
+          .platforms[.type == 'docker'].target_tag := '${{ github.event_name == 'push' && (inputs.version || format('{0}_build', github.ref_name)) || inputs.target_tag }}'
         parallel: true
         query: ^(?!workflows)
     
@@ -246,7 +257,7 @@ jobs:
       with:
         config_mod: |
           .functionality.version := " ${{ !inputs.deploy_branch && format('{0}_build', github.ref_name) || inputs.deploy_branch  }}"
-          .platforms[.type == 'docker'].target_tag := '${{ github.event_name == 'push' && 'main_build' || inputs.target_tag }}'
+          .platforms[.type == 'docker'].target_tag := '${{ github.event_name == 'push' && (inputs.version || format('{0}_build', github.ref_name)) || inputs.target_tag }}'
           .platforms[.type == 'docker'].target_organization := 'openpipelines-bio/openpipeline'
           .platforms[.type == 'docker'].target_registry := 'viash-hub.com:5050'
           .platforms[.type == 'docker'].target_image_source := 'https://viash-hub.com/openpipelines-bio/openpipeline'
@@ -335,7 +346,7 @@ jobs:
       if: ${{ github.event_name == 'push' || inputs.deploy_to_viash_hub }}
       run: |
         viash ns exec -s ${{ matrix.component.dir }} --apply_platform -p docker \
-        'docker tag ghcr.io/openpipelines-bio/{namespace}_{functionality-name}:${{ github.event_name == 'push' && 'main_build' || inputs.target_tag }} viash-hub.com:5050/openpipelines-bio/openpipeline/{namespace}_{functionality-name}:${{ inputs.version || format('{0}_build', github.ref_name) }}'
+        'docker tag ghcr.io/openpipelines-bio/{namespace}_{functionality-name}:${{ github.event_name == 'push' && (inputs.version || format('{0}_build', github.ref_name)) || inputs.target_tag }} viash-hub.com:5050/openpipelines-bio/openpipeline/{namespace}_{functionality-name}:${{ inputs.version || format('{0}_build', github.ref_name) }}'
   
     - name: Push container to Viash-Hub
       if: ${{ github.event_name == 'push' || inputs.deploy_to_viash_hub }}
