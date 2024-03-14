@@ -1,5 +1,7 @@
 import scanpy as sc
 import mudata as mu
+import anndata as ad
+import pandas as pd
 import sys
 import re
 
@@ -18,8 +20,12 @@ par = {
   'span': 0.3,
   'n_bins': 20,
   'varm_name': 'hvg',
-  'obs_batch_key': None,
+  'obs_batch_key': "batch",
   'layer': 'log_transformed'
+}
+
+meta = {
+    "resources_dir": "."
 }
 
 mu_in = mu.read_h5mu('resources_test/pbmc_1k_protein_v3/pbmc_1k_protein_v3_filtered_feature_bc_matrix.h5mu')
@@ -62,6 +68,22 @@ mod = par['modality']
 logger.info(f"Processing modality '%s'", mod)
 data = mdata.mod[mod]
 
+if par["layer"] and not par['layer'] in data.layers:
+    raise ValueError(f"Layer '{par['layer']}' not found in layers for modality '{mod}'. "
+                     f"Found layers are: {','.join(data.layers)}")
+
+# input layer argument does not work when batch_key is specified because 
+# it still uses .X to filter out genes with 0 counts, even if .X might not exist.
+# So create a custom anndata as input that always uses .X
+input_layer = data.X if not par["layer"] else data.layers[par["layer"]]
+obs = pd.DataFrame(index=data.obs_names.copy())
+var = pd.DataFrame(index=data.var_names.copy())
+if par["obs_batch_key"]:
+    obs = data.obs.loc[:,par["obs_batch_key"]].to_frame()
+input_anndata = ad.AnnData(X=input_layer.copy(), obs=obs, var=var)
+if 'log1p' in data.uns:
+    input_anndata.uns['log1p'] = data.uns['log1p']
+
 # Workaround for issue
 # https://github.com/scverse/scanpy/issues/2239
 # https://github.com/scverse/scanpy/issues/2181
@@ -71,23 +93,23 @@ if par['flavor'] != "seurat_v3":
     # .uns to check the transformations performed on the data.
     # To prevent scanpy from automatically tranforming the counts when they are
     # already transformed, we set the appropriate values to .uns.
-    if 'log1p' not in data.uns:
+    if 'log1p' not in input_anndata.uns:
         logger.warning("When flavor is not set to 'seurat_v3', "
                        "the input data for this component must be log-transformed. "
                        "However, the 'log1p' dictionairy in .uns has not been set. "
                        "This is fine if you did not log transform your data with scanpy."
                        "Otherwise, please check if you are providing log transformed "
                        "data using --layer.")
-        data.uns['log1p'] = {'base': None}
-    elif 'log1p' in data.uns and 'base' not in data.uns['log1p']:
-        data.uns['log1p']['base'] = None
+        input_anndata.uns['log1p'] = {'base': None}
+    elif 'log1p' in input_anndata.uns and 'base' not in input_anndata.uns['log1p']:
+        input_anndata.uns['log1p']['base'] = None
 
 logger.info("\tUnfiltered data: %s", data)
 
 logger.info("\tComputing hvg")
 # construct arguments
 hvg_args = {
-    'adata': data,
+    'adata': input_anndata,
     'n_top_genes': par["n_top_features"],
     'min_mean': par["min_mean"],
     'max_mean': par["max_mean"],
@@ -97,7 +119,7 @@ hvg_args = {
     'flavor': par["flavor"],
     'subset': False,
     'inplace': False,
-    'layer': par['layer'],
+    'layer': None, # Always uses .X because the input layer was already handled
 }
 
 optional_parameters = {
@@ -114,9 +136,6 @@ for par_name, dest_name in optional_parameters.items():
 if par['flavor'] == "seurat_v3" and not par['n_top_features']:
     raise ValueError("When flavor is set to 'seurat_v3', you are required to set 'n_top_features'.")
 
-if par["layer"] and not par['layer'] in data.layers:
-    raise ValueError(f"Layer '{par['layer']}' not found in layers for modality '{mod}'. "
-                     f"Found layers are: {','.join(data.layers)}")
 # call function
 try:
     out = sc.pp.highly_variable_genes(**hvg_args)

@@ -5,6 +5,7 @@ import re
 import subprocess
 import tempfile
 import pandas as pd
+import yaml
 from typing import Optional, Any, Union
 import tarfile
 from pathlib import Path
@@ -21,13 +22,19 @@ par = {
             'resources_test/10x_5k_anticmv/raw/5k_human_antiCMV_T_TBNK_connect_AB_subset_S2_L004_R2_001.fastq.gz',
             'resources_test/10x_5k_anticmv/raw/5k_human_antiCMV_T_TBNK_connect_VDJ_subset_S1_L001_R1_001.fastq.gz',
             'resources_test/10x_5k_anticmv/raw/5k_human_antiCMV_T_TBNK_connect_VDJ_subset_S1_L001_R2_001.fastq.gz'],
-  'gex_reference': 'resources_test/reference_gencodev41_chr1//reference_cellranger.tar.gz',
-  'vdj_reference': 'resources_test/10x_5k_anticmv/raw/refdata-cellranger-vdj-GRCh38-alts-ensembl-7.0.0.tar.gz',
-  'feature_reference': 'resources_test/10x_5k_anticmv/raw/feature_reference.csv',
   'library_id': ['5k_human_antiCMV_T_TBNK_connect_GEX_1_subset',
                  '5k_human_antiCMV_T_TBNK_connect_AB_subset',
                  '5k_human_antiCMV_T_TBNK_connect_VDJ_subset'],
   'library_type': ['Gene Expression', 'Antibody Capture', 'VDJ'],
+  'gex_input': None,
+  'abc_input': None,
+  'cgc_input': None,
+  'mux_input': None,
+  'vdj_input': None,
+  'vdj_t_input': None,
+  'vdj_t_gd_input': None,
+  'vdj_b_input': None,
+  'agc_input': None,
   'library_lanes': None,
   'library_subsample': None,
   'gex_expect_cells': None,
@@ -48,7 +55,9 @@ meta = {
   'memory_gb': 15,
   'memory_tb': None,
   'memory_pb': None,
-  'temp_dir': '/tmp'
+  'temp_dir': '/tmp',
+  'config': './target/docker/mapping/cellranger_multi/.config.vsh.yaml',
+  'resources_dir': '/Users/dorienroosen/code/openpipeline'
 }
 ## VIASH END
 
@@ -116,7 +125,51 @@ REFERENCES = tuple(reference_param for reference_param, cellranger_param
                    if cellranger_param == "reference")
 LIBRARY_PARAMS = tuple(LIBRARY_CONFIG_KEYS.keys())
 SAMPLE_PARAMS = tuple(SAMPLE_PARAMS_CONFIG_KEYS.keys())
+HELPER_INPUT = {
+    'gex_input': 'Gene Expression',
+    'abc_input': 'Antibody Capture',
+    'cgc_input': 'CRISPR Guide Capture',
+    'mux_input': 'Multiplexing Capture',
+    'vdj_input': 'VDJ',
+    'vdj_t_input': 'VDJ-T',
+    'vdj_t_gd_input': 'VDJ-T-GD',
+    'vdj_b_input': 'VDJ-B',
+    'agc_input': 'Antigen Capture'
+}
 
+
+def infer_library_id_from_path(input_path: str) -> str:
+    match = re.match(fastq_regex, input_path)
+    assert match is not None, \
+        f"File name of '{input_path}' should match regex {fastq_regex}."
+    return match.group(1)
+
+def transform_helper_inputs(par: dict[str, Any]) -> dict[str, Any]:
+    helper_input = {
+        "input": [],
+        "library_id": [],
+        "library_type": []
+    }
+    for input_type, library_type in HELPER_INPUT.items():
+        if par[input_type]:
+            par[input_type] = resolve_input_directories_to_fastq_paths(par[input_type])
+
+            library_ids = [
+                infer_library_id_from_path(path.name) for path in par[input_type]
+                ]
+
+            library_id_dict = {}
+            for fastq, library_id in zip(par[input_type], library_ids):
+                library_id_dict.setdefault(library_id, []).append(fastq)
+
+            for library_id, input in library_id_dict.items():
+                helper_input["input"] += input
+                helper_input["library_id"].append(library_id)
+                helper_input["library_type"].append(library_type)
+
+    assert len(helper_input["library_id"]) == len(set(helper_input["library_id"])), "File names passed to feature type-specific inputs must be unique"
+
+    return helper_input
 
 def lengths_gt1(dic: dict[str, Optional[list[Any]]]) -> dict[str, int]:
     return {key: len(li) for key, li in dic.items()
@@ -124,7 +177,6 @@ def lengths_gt1(dic: dict[str, Optional[list[Any]]]) -> dict[str, int]:
 
 def strip_margin(text: str) -> str:
     return re.sub('(\n?)[ \t]*\|', '\\1', text)
-
 
 def subset_dict(dictionary: dict[str, str],
                 keys: Union[dict[str, str], list[str]]) -> dict[str, str]:
@@ -140,19 +192,59 @@ def check_subset_dict_equal_length(group_name: str,
     assert len(set(lens.values())) <= 1, f"The number of values passed to {group_name} "\
                                          f"arguments must be 0, 1 or all the same. Offenders: {lens}"
 
-def process_params(par: dict[str, Any]) -> str:
-    # if par_input is a directory, look for fastq files
-    par["input"] = [Path(fastq) for fastq in par["input"]]
-    if len(par["input"]) == 1 and par["input"][0].is_dir():
-        logger.info("Detected '--input' as a directory, "
+def resolve_input_directories_to_fastq_paths(input_paths: list[str]) -> list[Path]:
+
+    input_paths = [Path(fastq) for fastq in input_paths]
+    if len(input_paths) == 1 and input_paths[0].is_dir():
+        logger.info("Detected a directory in input paths, "
                     "traversing to see if we can detect any FASTQ files.")
-        par["input"] = [input_path for input_path in par["input"][0].rglob('*')
+        input_paths = [input_path for input_path in input_paths[0].rglob('*')
                         if re.match(fastq_regex, input_path.name) ]
 
     # check input fastq files
-    for input_path in par["input"]:
+    for input_path in input_paths:
         assert re.match(fastq_regex, input_path.name) is not None, \
-               f"File name of --input '{input_path}' should match regex {fastq_regex}."
+            f"File name of --input '{input_path}' should match regex {fastq_regex}."
+
+    return input_paths
+
+def make_paths_absolute(par: dict[str, Any], config: Path | str):
+    with open(config, 'r', encoding="utf-8") as open_viash_config:
+        config = yaml.safe_load(open_viash_config)
+
+    arguments = {
+        arg["name"].removeprefix("-").removeprefix("-"): arg
+        for group in config["functionality"]["argument_groups"]
+        for arg in group["arguments"]
+    }
+    for arg_name, arg in arguments.items():
+        if not par.get(arg_name) or arg["type"] != "file":
+            continue
+        par_value, is_multiple = par[arg_name], arg["multiple"]
+        assert is_multiple in (True, False)
+        def make_path_absolute(file: str | Path) -> Path:
+            logger.info('Making path %s absolute', file)
+            return Path(file).resolve()
+        
+        new_arg = [make_path_absolute(file) for file in par_value] if is_multiple else make_path_absolute(par_value)
+        par[arg_name] = new_arg
+    return par
+
+def process_params(par: dict[str, Any], viash_config: Path | str) -> str:
+
+    if par["input"]:
+        assert len(par["library_type"]) > 0, "--library_type must be defined when passing input to --input"
+        assert len(par["library_id"]) > 0, "--library_id must be defined when passing input to --input"
+
+        # if par["input"] is a directory, look for fastq files
+        par["input"] = resolve_input_directories_to_fastq_paths(par["input"])
+
+    # add helper input
+    helper_input = transform_helper_inputs(par)
+    for key in ["input", "library_id", "library_type"]:
+      par[key] = (par[key] if par[key] else []) + helper_input[key]
+
+      assert len(par[key]) > 0, f"Either --{key} or feature type-specific input (e.g. --gex_input, --abc_input, ...) must be defined"
 
     # check lengths of libraries metadata
     library_dict = subset_dict(par, LIBRARY_PARAMS)
@@ -166,12 +258,7 @@ def process_params(par: dict[str, Any]) -> str:
     par["cmo"] = cmo_dict
 
     # use absolute paths
-    par["input"] = [input_path.resolve() for input_path in par["input"]]
-    for file_path in REFERENCES + ('output', ):
-        if par[file_path]:
-            logger.info('Making path %s absolute', par[file_path])
-            par[file_path] = Path(par[file_path]).resolve()
-    return par
+    return make_paths_absolute(par, viash_config)
 
 
 def generate_csv_category(name: str, args: dict[str, str], orient: str) -> list[str]:
@@ -201,7 +288,7 @@ def generate_config(par: dict[str, Any], fastq_dir: str) -> str:
 
 def main(par: dict[str, Any], meta: dict[str, Any]):
     logger.info("  Processing params")
-    par = process_params(par)
+    par = process_params(par, meta['config'])
     logger.info(par)
 
     # TODO: throw error or else Cell Ranger will

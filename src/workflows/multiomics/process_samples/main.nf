@@ -35,7 +35,7 @@ workflow run_wf {
           ]
           newState
         },
-        toState: {id, output, state -> 
+        toState: {id, output, state ->
           def keysToRemove = ["add_id_to_obs", "add_id_obs_output", "add_id_make_observation_keys_unique"]
           def newState = state.findAll{it.key !in keysToRemove}
           newState + ["input": output.output]
@@ -82,21 +82,24 @@ workflow run_wf {
         "var_name_mitochondrial_genes": "var_name_mitochondrial_genes",
         "obs_name_mitochondrial_fraction": "obs_name_mitochondrial_fraction",
         "var_gene_names": "var_gene_names",
-        "mitochondrial_gene_regex": "mitochondrial_gene_regex"
+        "mitochondrial_gene_regex": "mitochondrial_gene_regex",
+        "layer": "rna_layer"
       ],
       "prot": [
         "min_counts": "prot_min_counts",
         "max_counts": "prot_max_counts",
         "min_proteins_per_cell": "prot_min_proteins_per_cell",
         "max_proteins_per_cell": "prot_max_proteins_per_cell",
-        "min_cells_per_protein": "prot_min_cells_per_protein"
+        "min_cells_per_protein": "prot_min_cells_per_protein",
+        "layer": "prot_layer",
       ],
       "gdo": [
         "min_counts": "gdo_min_counts",
         "max_counts": "gdo_max_counts",
         "min_guides_per_cell": "gdo_min_guides_per_cell",
         "max_guides_per_cell": "gdo_max_guides_per_cell",
-        "min_cells_per_guide": "gdo_min_cells_per_guide"
+        "min_cells_per_guide": "gdo_min_cells_per_guide",
+        "layer": "gdo_layer",
       ], 
     ].asImmutable()
 
@@ -125,7 +128,8 @@ workflow run_wf {
         def keysToRemove = singlesample_arguments.inject([]){currentKeys, modality, stateMapping -> 
             currentKeys += stateMapping.values()
         }
-        def newState = state.findAll{it.key !in keysToRemove + ["id"]}
+        def allwayskeep = ["gdo_layer", "rna_layer", "prot_layer", "workflow_output"]
+        def newState = state.findAll{(it.key !in keysToRemove + ["id"]) || (it.key in allwayskeep)}
         [id, newState]
       }
       | view {"After singlesample processing: $it"}
@@ -192,17 +196,24 @@ workflow run_wf {
           [
             "id": id,
             "input": state.input,
+            "output": state.workflow_output,
             "highly_variable_features_var_output": state.highly_variable_features_var_output,
             "highly_variable_features_obs_batch_key": state.highly_variable_features_obs_batch_key,
             "var_qc_metrics": state.var_qc_metrics,
             "top_n_vars": state.top_n_vars, 
-            "pca_overwrite": state.pca_overwrite
+            "pca_overwrite": state.pca_overwrite,
+            "rna_layer": state.rna_layer,
+            "prot_layer": state.prot_layer,
           ]
         },
-        toState: ["output": "output"]
+        toState: {id, output, state -> 
+          [
+            "output": output.output,
+            "_meta": state._meta,
+          ]
+        }
       )
       | view {"After process_batches: $it"}
-      | setState(["output", "_meta"])
 
   emit:
     output_ch

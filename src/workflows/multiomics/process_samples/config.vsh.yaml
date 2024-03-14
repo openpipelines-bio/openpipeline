@@ -19,6 +19,18 @@ functionality:
           required: true
           example: input.h5mu
           type: file
+        - name: "--rna_layer"
+          type: string
+          description: "Input layer for the gene expression modality. If not specified, .X is used."
+          required: false
+        - name: "--prot_layer"
+          type: string
+          description: "Input layer for the antibody capture modality. If not specified, .X is used."
+          required: false
+        - name: "--gdo_layer"
+          type: string
+          description: "Input layer for the guide-derived oligonucleotide (GDO) data. If not specified, .X is used."
+          required: false
     - name: "Outputs"
       arguments:
         - name: "--output"
@@ -215,6 +227,7 @@ functionality:
     - name: workflows/multiomics/process_batches
   # test_dependencies:
   #    - name: filter/remove_modality
+  #    - name: transform/move_layer
   resources:
     - type: nextflow_script
       path: main.nf
@@ -234,6 +247,9 @@ functionality:
     - type: nextflow_script
       path: test.nf
       entrypoint: test_wf4
+    - type: nextflow_script
+      path: test.nf
+      entrypoint: test_wf5
     - path: /resources_test/concat_test_data
     - path: /resources_test/pbmc_1k_protein_v3
     - path: /resources_test/10x_5k_lung_crispr

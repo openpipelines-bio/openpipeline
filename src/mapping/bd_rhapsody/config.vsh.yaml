@@ -37,7 +37,6 @@ functionality:
           description: Path to your read files in the FASTQ.GZ format. You may specify as many R1/R2 read pairs as you want.
           required: true
           multiple: true
-          multiple_sep: ';'
           example: input.fastq.gz
         - name: "--reference"
           type: file
@@ -46,7 +45,6 @@ functionality:
           example: "reference_genome.tar.gz|reference.fasta"
           required: true
           multiple: true
-          multiple_sep: ';'
         - name: "--transcriptome_annotation"
           type: file
           alternatives: [-t]
@@ -58,14 +56,12 @@ functionality:
           description: Path to the AbSeq reference file in FASTA format. Only needed if BD AbSeq Ab-Oligos are used.
           example: "abseq_reference.fasta"
           multiple: true
-          multiple_sep: ';'
         - name: "--supplemental_reference"
           type: file
           alternatives: [-s]
           description: "Path to the supplemental reference file in FASTA format. Only needed if there are additional transgene sequences used in the experiment (only for `--mode wta`)."
           example: "supplemental_reference.fasta"
           multiple: true
-          multiple_sep: ';'
         - name: "--sample_prefix"
           type: string
           description: "Specify a run name to use as the output file base name. Use only letters, numbers, or hyphens. Do not use special characters or spaces."

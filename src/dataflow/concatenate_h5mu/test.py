@@ -49,7 +49,7 @@ def mudata_without_genome(tmp_path, request):
         # (here atac:genome) next to the old 'column_name' (here just 'genome')
         new_mudata.update_var()
         new_mudata.var.drop('genome', axis=1, inplace=True)
-        new_mudata = new_mudata[0:500,] # subsample to reduce memory consumption
+        new_mudata = new_mudata[0:200,] # subsample to reduce memory consumption
         new_path = tmp_path / Path(mudata_to_change).name
         new_mudata.write(new_path, compression="gzip")
         result.append(new_path)
@@ -120,15 +120,15 @@ def test_concatenate_samples_with_same_observation_ids_raises(run_component):
     """
     with pytest.raises(subprocess.CalledProcessError) as err:
         run_component([
-                "--input_id", "mouse,mouse2",
+                "--input_id", "mouse;mouse2",
                 "--input", input_sample1_file,
                 "--input", input_sample1_file,
                 "--output", "concat.h5mu",
                 "--other_axis_mode", "move",
                 "--output_compression", "gzip"
                 ])
-        assert "ValueError: Observations are not unique across samples." in \
-            err.value.stdout.decode('utf-8')
+    assert "ValueError: Observations are not unique across samples." in \
+        err.value.stdout.decode('utf-8')
 
 @pytest.mark.parametrize("mudata_without_genome",
                           [([input_sample1_file], ["rna", "atac"])],
@@ -143,7 +143,7 @@ def test_concat_different_var_columns_per_sample(run_component, mudata_without_g
     """
     [sample1_without_genome,] = mudata_without_genome
     run_component([
-            "--input_id", "mouse,human",
+            "--input_id", "mouse;human",
             "--input", sample1_without_genome,
             "--input", input_sample2_file,
             "--output", "concat.h5mu",
@@ -190,7 +190,7 @@ def test_concat_different_columns_per_modality(run_component, mudata_without_gen
     sample1_without_genome, sample2_without_genome = mudata_without_genome
 
     run_component([
-            "--input_id", "mouse,human",
+            "--input_id", "mouse;human",
             "--input", sample1_without_genome,
             "--input", sample2_without_genome,
             "--output", "concat.h5mu",
@@ -238,7 +238,7 @@ def test_concat_different_columns_per_modality_and_per_sample(run_component, mud
 
     [sample_1_without_genome, ] = mudata_without_genome
     run_component([
-        "--input_id", "mouse,human",
+        "--input_id", "mouse;human",
         "--input", sample_1_without_genome,
         "--input", input_sample2_file,
         "--output", "concat.h5mu",
@@ -289,7 +289,7 @@ def test_concat_remove_na(run_component, copied_mudata_with_extra_annotation_col
     """
     tempfile_input1, tempfile_input2 = copied_mudata_with_extra_annotation_column
     run_component([
-        "--input_id", "mouse,human",
+        "--input_id", "mouse;human",
         "--input", tempfile_input1,
         "--input", tempfile_input2,
         "--output", "concat.h5mu",
@@ -321,7 +321,7 @@ def test_concat_dtypes(run_component, copied_mudata_with_extra_annotation_column
     """
     tempfile_input1, tempfile_input2 = copied_mudata_with_extra_annotation_column
     run_component([
-        "--input_id", "mouse,human",
+        "--input_id", "mouse;human",
         "--input", tempfile_input1,
         "--input", tempfile_input2,
         "--output", "concat.h5mu",
@@ -346,7 +346,7 @@ def test_resolve_annotation_conflict_missing_column(run_component, copied_mudata
     original_data_path = tmp_path / f"{uuid.uuid4().hex}.h5mu"
     original_data.write_h5mu(original_data_path)
     run_component([
-        "--input_id", "mouse,human,sample_without_column",
+        "--input_id", "mouse;human;sample_without_column",
         "--input", tempfile_input1,
         "--input", tempfile_input2,
         "--input", original_data_path,
@@ -373,7 +373,7 @@ def test_mode_move(run_component, tmp_path):
     input1.write(tempfile_input1.name)
     input2.write(tempfile_input2.name)
     run_component([
-        "--input_id", "mouse,human",
+        "--input_id", "mouse;human",
         "--input", tempfile_input1.name,
         "--input", tempfile_input2.name,
         "--output", "concat.h5mu",
@@ -420,14 +420,14 @@ def test_concat_invalid_h5_error_includes_path(run_component, tmp_path):
     empty_file.touch()
     with pytest.raises(subprocess.CalledProcessError) as err:
         run_component([
-                "--input_id", "mouse,empty",
+                "--input_id", "mouse;empty",
                 "--input", input_sample1_file,
                 "--input", empty_file,
                 "--output", "concat.h5mu",
                 "--other_axis_mode", "move"
                 ])
-        assert re.search(rf"OSError: Failed to load .*{str(empty_file)}\. Is it a valid h5 file?",
-            err.value.stdout.decode('utf-8'))
+    assert re.search(rf"OSError: Failed to load .*{str(empty_file)}\. Is it a valid h5 file?",
+        err.value.stdout.decode('utf-8'))
         
 
 @pytest.mark.parametrize("mudata_without_genome",
@@ -440,7 +440,7 @@ def test_concat_var_obs_names_order(run_component, mudata_without_genome,
     """
     [sample1_without_genome,] = mudata_without_genome
     run_component([
-            "--input_id", "mouse,human",
+            "--input_id", "mouse;human",
             "--input", sample1_without_genome,
             "--input", input_sample2_file,
             "--output", "concat.h5mu",

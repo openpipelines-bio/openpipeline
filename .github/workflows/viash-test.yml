@@ -30,7 +30,7 @@ jobs:
     env:
       s3_bucket: s3://openpipelines-data/
     runs-on: ubuntu-latest
-    if: "needs.run_ci_check_job.outputs.run_ci == 'true'"
+    if: ${{ needs.run_ci_check_job.outputs.run_ci == 'true'}}
 
     outputs:
       matrix: ${{ steps.set_matrix.outputs.matrix }}
@@ -54,13 +54,6 @@ jobs:
         dest_path: resources_test
         cache_key_prefix: resources_test__
 
-    - name: Get changed files
-      id: changed-files
-      uses: tj-actions/changed-files@v42
-      with:
-        separator: ";"
-        diff_relative: true
-
     - id: ns_list
       uses: viash-io/viash-actions/ns-list@v5
       with:
@@ -77,7 +70,9 @@ jobs:
       run: |
         echo "matrix=$(jq -c '[ .[] | 
           { 
-            "name": (.functionality.namespace + "/" + .functionality.name),
+            "name": .functionality.name,
+            "namespace_separator": .platforms | map(select(.type == "docker"))[0].namespace_separator,
+            "namespace": .functionality.namespace,
             "config": .info.config,
             "dir": .info.config | capture("^(?<dir>.*\/)").dir
           }
