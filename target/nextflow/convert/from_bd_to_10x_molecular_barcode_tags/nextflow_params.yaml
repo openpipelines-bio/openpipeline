@@ -1,0 +1,9 @@
+# Arguments
+input: # please fill in - example: "input.bam"
+# output: "$id.$key.output.sam"
+bam: false
+# threads: 123
+
+# Nextflow input-output arguments
+publish_dir: # please fill in - example: "output/"
+# param_list: "my_params.yaml"
