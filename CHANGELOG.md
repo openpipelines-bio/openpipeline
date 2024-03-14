@@ -1,10 +1,11 @@
-# openpipelines x.x.x 
+# openpipelines x.x.x
 
-## NEW FUNCTIONALITY
+## BUG FIXES
 
-* `metadata/grep_annotation_column`: Added more logging output (PR #697).
+* `rna_singlesample`: fixed a bug where selecting the column for the filtering with mitochondrial fractions 
+  using `obs_name_mitochondrial_fraction` was done with the wrong column name, causing `ValueError` (PR #743).
 
-* `metadata/add_id` and `metadata/grep_annotation_column`: Bump python to 3.11 (PR #697).
+# openpipelines 1.0.0-rc2
 
 ## BUG FIXES
 
@@ -15,7 +16,13 @@
 * `metadata/grep_annotation_column`: fix calculating fraction when an input observation has no counts, which caused
 the result to be out of bounds.
 
+* Fix `--output` argument not working for several workflows (PR #740).
+
 ## MINOR CHANGES
+
+* `metadata/grep_annotation_column`: Added more logging output (PR #697).
+
+* `metadata/add_id` and `metadata/grep_annotation_column`: Bump python to 3.11 (PR #697).
 
 * Bump viash to 0.8.5 (PR #697)
 

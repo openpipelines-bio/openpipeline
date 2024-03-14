@@ -4,6 +4,13 @@ from pandas.errors import MergeError
 from mudata import read_h5mu
 
 ## VIASH START
+par = {
+    "input": "input.h5mu",
+    "modality": "mod1",
+    "obsm_key": "obsm_key",
+    "output": "output.h5mu",
+    "output_compression": "gzip"
+}
 ## VIASH END
 
 sys.path.append(meta["resources_dir"])
