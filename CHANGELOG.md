@@ -1,5 +1,9 @@
 # openpipelines x.x.x
 
+## BREAKING CHANGES
+
+* Docker image names now use `/` instead of `_` between the name of the component and the namespace (PR #712).
+
 ## BUG FIXES
 
 * `rna_singlesample`: fixed a bug where selecting the column for the filtering with mitochondrial fractions 
