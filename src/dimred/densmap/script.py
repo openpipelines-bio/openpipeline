@@ -59,7 +59,7 @@ X_densmap = UMAP(
   repulsion_strength=par["gamma"],
   negative_sample_rate=par["negative_sample_rate"],
   init=par["init_pos"],
-  metric=data.uns["neighbors"]["metric"],
+  # metric=data.uns["neighbors"]["metric"],
   metric_kwds=data.uns["neighbors"].get("metric_kwds", {}),
   densmap=True,
   dens_lambda=par["lambda"],
@@ -72,6 +72,26 @@ X_densmap = UMAP(
 ).fit_transform(data.obsm[pca_key])
 
 data.obsm[par['obsm_output']] = X_densmap
+
+data.uns['densmap'] = {
+  'params': {
+    'min_dist': par["min_dist"],
+    'spread': par["spread"],
+    'n_components': par["num_components"],
+    'n_epochs': par["max_iter"],
+    'learning_rate': par["alpha"],
+    'repulsion_strength': par["gamma"],
+    'negative_sample_rate': par["negative_sample_rate"],
+    'init': par["init_pos"],
+    # 'metric': data.uns["neighbors"]["metric"],
+    'metric_kwds': data.uns["neighbors"].get("metric_kwds", {}),
+    'dens_lambda': par["lambda"],
+    'dens_frac': par["fraction"],
+    'dens_var_shift': par["var_shift"],
+    'knn_indices_key': knn_indices_key,
+    'knn_distances_key': knn_distances_key
+  }
+}
 
 logger.info("Writing to %s.", par["output"])
 mdata.write_h5mu(filename=par["output"], compression=par["output_compression"])
