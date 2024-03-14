@@ -54,7 +54,7 @@ target/docker/convert/from_10xh5_to_h5mu/from_10xh5_to_h5mu \
 # run single sample
 NXF_VER=21.10.6 nextflow \
   run . \
-  -main-script src/workflows/multiomics/rna_singlesample/main.nf \
+  -main-script target/nextflow/workflows/rna/rna_singlesample/main.nf \
   -profile docker \
   --id pbmc_1k_protein_v3_uss \
   --input "${OUT}_filtered_feature_bc_matrix.h5mu" \
@@ -65,7 +65,7 @@ NXF_VER=21.10.6 nextflow \
 # run multisample
 NXF_VER=21.10.6 nextflow \
   run . \
-  -main-script src/workflows/multiomics/rna_multisample/main.nf \
+  -main-script target/nextflow/workflows/rna/rna_multisample/main.nf \
   -profile docker \
   --id pbmc_1k_protein_v3_ums \
   --input "${OUT}_uss.h5mu" \
@@ -73,10 +73,10 @@ NXF_VER=21.10.6 nextflow \
   --publishDir `dirname $OUT` \
   -resume
 
-# run integration
+# run dimred
 NXF_VER=21.10.6 nextflow \
   run . \
-  -main-script src/workflows/multiomics/integration/main.nf \
+  -main-script target/nextflow/workflows/multiomics/dimensionality_reduction/main.nf \
   -profile docker \
   --id pbmc_1k_protein_v3_mms \
   --input "${OUT}_ums.h5mu" \

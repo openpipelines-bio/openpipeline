@@ -65,6 +65,9 @@ adata.uns[par["uns_output"]] = {
 
 adata.obsp[par["obsp_distances"]] = neighbors.distances
 adata.obsp[par["obsp_connectivities"]] = neighbors.connectivities
+adata.obsm["knn_indices"] = neighbors.knn_indices
+adata.obsm["knn_distances"] = neighbors.knn_distances
+
 
 logger.info("Writing to %s", par["output"])
 mdata.write_h5mu(filename=par["output"], compression=par["output_compression"])
