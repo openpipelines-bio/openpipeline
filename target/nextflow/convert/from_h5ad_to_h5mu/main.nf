@@ -2946,6 +2946,20 @@ meta = [
       ],
       "test_setup" : [
         {
+          "type" : "docker",
+          "copy" : [
+            "openpipelinetestutils /opt/openpipelinetestutils"
+          ]
+        },
+        {
+          "type" : "python",
+          "user" : false,
+          "packages" : [
+            "/opt/openpipelinetestutils"
+          ],
+          "upgrade" : true
+        },
+        {
           "type" : "python",
           "user" : false,
           "packages" : [
@@ -3017,7 +3031,7 @@ meta = [
     "platform" : "nextflow",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/convert/from_h5ad_to_h5mu",
     "viash_version" : "0.8.5",
-    "git_commit" : "13101b1da426121b1e904d65e330d7f2389bffd5",
+    "git_commit" : "3a71df64208b6e94f315a898f3a2a0d3bb4f7561",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))
