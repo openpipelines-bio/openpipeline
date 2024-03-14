@@ -18,7 +18,6 @@ par = {
     'early_exaggeration': 12,
     'learning_rate': 1000,
     'random_state': 0,
-    'n_jobs': None,
 }
 ## VIASH END
 
@@ -51,10 +50,6 @@ if par['use_rep'] not in data.obsm.keys():
     raise ValueError(f"'{par['use_rep']}' was not found in .mod['{par['modality']}'].obsm. No precomputed PCA provided. Please run PCA first.")
 temp_obsm = {par["use_rep"]: data.obsm[par["use_rep"]]}
 
-# create temporary AnnData
-# ... because sc.tl.umap doesn't allow to choose
-# the obsm output slot
-# ... also we can see scanpy is a data format dependency hell
 temp_adata = ad.AnnData(
     obsm=temp_obsm,
     shape=data.shape
@@ -69,7 +64,7 @@ sc.tl.tsne(
     early_exaggeration=par["early_exaggeration"],
     learning_rate=par["learning_rate"],
     random_state=par["random_state"],
-    n_jobs=par["n_jobs"]
+    n_jobs=meta["cpus"]
 )
 
 logger.info(f"Writing tSNE embeddings to .mod[{par['modality']}].obsm[{par['obsm_output']}]")

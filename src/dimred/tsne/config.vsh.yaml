@@ -46,7 +46,7 @@ functionality:
 
         - name: "--obsm_output"
           type: string
-          description: The pre/suffix under which to store the tSNE results.
+          description: The .obsm key to use for storing the tSNE results.
           default: "X_tsne"
     
     - name: Arguments
@@ -86,12 +86,8 @@ functionality:
         - name: "--random_state"
           type: integer
           description: The random seed to use for the tSNE computation.
-          default: 0
-
-        - name: "--n_jobs"
-          type: integer
-          description: Number of jobs for parallel computation. None means using scanpy._settings.ScanpyConfig.n_jobs.
           required: false
+          default: 0
 
   resources:
     - type: python_script
