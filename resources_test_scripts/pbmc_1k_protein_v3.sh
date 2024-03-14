@@ -52,7 +52,7 @@ target/docker/convert/from_10xh5_to_h5mu/from_10xh5_to_h5mu \
   --output "${OUT}_raw_feature_bc_matrix.h5mu"
 
 # run single sample
-NXF_VER=21.10.6 nextflow \
+nextflow \
   run . \
   -main-script target/nextflow/workflows/rna/rna_singlesample/main.nf \
   -profile docker \
@@ -63,7 +63,7 @@ NXF_VER=21.10.6 nextflow \
   -resume
 
 # run multisample
-NXF_VER=21.10.6 nextflow \
+nextflow \
   run . \
   -main-script target/nextflow/workflows/rna/rna_multisample/main.nf \
   -profile docker \
@@ -74,7 +74,7 @@ NXF_VER=21.10.6 nextflow \
   -resume
 
 # run dimred
-NXF_VER=21.10.6 nextflow \
+nextflow \
   run . \
   -main-script target/nextflow/workflows/multiomics/dimensionality_reduction/main.nf \
   -profile docker \

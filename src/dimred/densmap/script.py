@@ -1,5 +1,4 @@
-from umap.umap_ import find_ab_params, simplicial_set_embedding
-from sklearn.utils import check_random_state
+from umap import UMAP
 import mudata as mu
 import sys
 import anndata as ad
@@ -44,45 +43,37 @@ data = mdata.mod[par['modality']]
 if par['uns_neighbors'] not in data.uns:
     raise ValueError(f"'{par['uns_neighbors']}' was not found in .mod['{par['modality']}'].uns.")
 
-# create temporary AnnData
-# ... because sc.tl.umap doesn't allow to choose
-# the obsm output slot
-# ... also we can see scanpy is a data format dependency hell
 neigh_key = par["uns_neighbors"]
 temp_uns = { neigh_key: data.uns[neigh_key] }
-conn_key = temp_uns[neigh_key]['connectivities_key']
-dist_key = temp_uns[neigh_key]['distances_key']
-temp_obsp = {
-  conn_key: data.obsp[conn_key],
-  dist_key: data.obsp[dist_key],
-}
 pca_key = temp_uns[neigh_key]['params']['use_rep']
-temp_obsm = {
-  pca_key: data.obsm[pca_key]
-}
+knn_indices_key = temp_uns[neigh_key]['knn_indices_key']
+knn_distances_key = temp_uns[neigh_key]['knn_distances_key']
 
-default_epochs = 500 if data.obsp[conn_key].shape[0] <= 10000 else 200
-n_epochs = default_epochs if par["max_iter"] is None else par["max_iter"]
-a, b = find_ab_params(par["spread"], par["mim_dist"])
 
-X_densmap = simplicial_set_embedding(
-  data=data.obsm[pca_key],
-  graph=data.obsp[conn_key],
-  n_components=par["n_components"],
-  initial_alpha=par["alpha"],
-  a=a,
-  b=b,
-  gamma=par["gamma"],
-  negative_sample_rate=par["negative_sample_rate"],
+X_densmap = UMAP(
+  min_dist=par["min_dist"],
+  spread=par["spread"],
+  n_components=par["num_components"],
   n_epochs=par["max_iter"],
+  learning_rate=par["alpha"],
+  repulsion_strength=par["gamma"],
+  negative_sample_rate=par["negative_sample_rate"],
   init=par["init_pos"],
-  random_state = check_random_state(None),
-  metric=data.uns[neigh_key].get("metric", "euclidean"),
-  metric_kwds=data.uns[neigh_key].get("metric_kwds", {}),
+  metric=data.uns["neighbors"]["metric"],
+  metric_kwds=data.uns["neighbors"].get("metric_kwds", {}),
   densmap=True,
-  densmap_kwds={
-    "lambda": par["lambda"],
-    "fraction": par["fraction"],
-    "var_shift": par["var_shift"]
-  }
-)
+  dens_lambda=par["lambda"],
+  dens_frac=par["fraction"],
+  dens_var_shift=par["var_shift"],
+  precomputed_knn=(
+    data.obsm[knn_indices_key],
+    data.obsm[knn_distances_key]
+  )
+).fit_transform(data.obsm[pca_key])
+
+data.obsm[par['obsm_output']] = X_densmap
+
+logger.info("Writing to %s.", par["output"])
+mdata.write_h5mu(filename=par["output"], compression=par["output_compression"])
+
+logger.info("Finished")

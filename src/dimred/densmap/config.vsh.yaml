@@ -46,7 +46,7 @@ functionality:
         - name: "--obsm_output"
           type: string
           description: The pre/postfix under which to store the densMAP results.
-          default: "densmap"
+          default: "X_densmap"
     
     - name: Arguments UMMAP
       arguments:

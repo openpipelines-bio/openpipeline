@@ -77,6 +77,19 @@ functionality:
       type: integer
       default: 0
       description: A random seed.
+
+    - name: "--obsm_knn_indices"
+      type: string
+      default: "knn_indices"
+      description: "In which .obsm slot to store the indices of the k-nearest neighbors."
+      required: false
+
+    - name: "--obsm_knn_distances"
+      type: string
+      default: "knn_distances"
+      description: "In which .obsm slot to store the distances of the k-nearest neighbors."
+      required: false
+
   resources:
     - type: python_script
       path: script.py
