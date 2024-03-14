@@ -1,6 +1,6 @@
 name: Build
 concurrency: 
-  group: ${{ github.workflow }}-${{ github.event.inputs.deploy_branch && format('{0}_build', github.ref_name) || github.event.inputs.deploy_branch }}
+  group: ${{ github.workflow }}-${{ inputs.deploy_branch && format('{0}_build', github.ref_name) || inputs.deploy_branch }}
   cancel-in-progress: true
 
 on:
