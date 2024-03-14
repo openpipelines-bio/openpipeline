@@ -62,7 +62,7 @@ id=myoutput
 
 cellranger-atac mkfastq \
   --id "$id" \
-  --csv "$par_sample_sheet" \
+  --csv "$par_csv" \
   --run "$par_input" \
   "${extra_params[@]}" \
   --disable-ui \
