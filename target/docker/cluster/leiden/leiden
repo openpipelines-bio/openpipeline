@@ -460,9 +460,9 @@ RUN pip install --upgrade pip && \
 
 LABEL org.opencontainers.image.authors="Dries De Maeyer"
 LABEL org.opencontainers.image.description="Companion container for running component cluster leiden"
-LABEL org.opencontainers.image.created="2024-03-15T08:25:36Z"
+LABEL org.opencontainers.image.created="2024-03-15T09:59:17Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="93f5e883f357bfb62ad62292154068e2a64cf45d"
+LABEL org.opencontainers.image.revision="504f91df72d5903d391a571912b78bb65d882312"
 LABEL org.opencontainers.image.version="main_build"
 
 VIASHDOCKER
