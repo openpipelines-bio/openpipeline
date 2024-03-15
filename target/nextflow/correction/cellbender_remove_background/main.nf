@@ -3368,7 +3368,7 @@ meta = [
       "target_organization" : "openpipelines-bio",
       "target_registry" : "ghcr.io",
       "target_tag" : "main_build",
-      "namespace_separator" : "_",
+      "namespace_separator" : "/",
       "resolve_volume" : "Automatic",
       "chown" : true,
       "setup_strategy" : "ifneedbepullelsecachedbuild",
@@ -3459,7 +3459,7 @@ meta = [
     "platform" : "nextflow",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/correction/cellbender_remove_background",
     "viash_version" : "0.8.5",
-    "git_commit" : "640ba8266a77566f4bab82c7ba660d658e6fdae9",
+    "git_commit" : "93f5e883f357bfb62ad62292154068e2a64cf45d",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))
@@ -4057,7 +4057,7 @@ meta["defaults"] = [
   directives: readJsonBlob('''{
   "container" : {
     "registry" : "ghcr.io",
-    "image" : "openpipelines-bio/correction_cellbender_remove_background",
+    "image" : "openpipelines-bio/correction/cellbender_remove_background",
     "tag" : "main_build"
   },
   "label" : [

@@ -2908,7 +2908,7 @@ meta = [
       "target_organization" : "openpipelines-bio",
       "target_registry" : "ghcr.io",
       "target_tag" : "main_build",
-      "namespace_separator" : "_",
+      "namespace_separator" : "/",
       "resolve_volume" : "Automatic",
       "chown" : true,
       "setup_strategy" : "ifneedbepullelsecachedbuild",
@@ -2985,7 +2985,7 @@ meta = [
     "platform" : "nextflow",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/convert/from_bd_to_10x_molecular_barcode_tags",
     "viash_version" : "0.8.5",
-    "git_commit" : "640ba8266a77566f4bab82c7ba660d658e6fdae9",
+    "git_commit" : "93f5e883f357bfb62ad62292154068e2a64cf45d",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))
@@ -3439,7 +3439,7 @@ meta["defaults"] = [
   directives: readJsonBlob('''{
   "container" : {
     "registry" : "ghcr.io",
-    "image" : "openpipelines-bio/convert_from_bd_to_10x_molecular_barcode_tags",
+    "image" : "openpipelines-bio/convert/from_bd_to_10x_molecular_barcode_tags",
     "tag" : "main_build"
   },
   "label" : [
