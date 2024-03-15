@@ -15,12 +15,6 @@ meta = {
 
 input_path = meta["resources_dir"] + "pbmc_1k_protein_v3/pbmc_1k_protein_v3_mms.h5mu"
 
-# @pytest.fixture
-# def mudata_no_obsm_pca(write_mudata_to_file):
-#     input_mudata = read_h5mu(input_path)
-#     input_mudata.mod["rna"].obsm.pop("X_pca")
-#     return write_mudata_to_file(input_mudata)
-
 def test_densmap(run_component, random_h5mu_path):
     output_path = random_h5mu_path()
     args = [

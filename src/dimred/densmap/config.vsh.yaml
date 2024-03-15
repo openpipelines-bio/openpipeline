@@ -45,7 +45,7 @@ functionality:
 
         - name: "--obsm_output"
           type: string
-          description: The pre/postfix under which to store the densMAP results.
+          description: TThe .obsm key to use for storing the densMAP results..
           default: "X_densmap"
     
     - name: Arguments UMMAP
