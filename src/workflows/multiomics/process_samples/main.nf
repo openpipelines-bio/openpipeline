@@ -35,7 +35,7 @@ workflow run_wf {
           ]
           newState
         },
-        toState: {id, output, state -> 
+        toState: {id, output, state ->
           def keysToRemove = ["add_id_to_obs", "add_id_obs_output", "add_id_make_observation_keys_unique"]
           def newState = state.findAll{it.key !in keysToRemove}
           newState + ["input": output.output]
@@ -128,7 +128,7 @@ workflow run_wf {
         def keysToRemove = singlesample_arguments.inject([]){currentKeys, modality, stateMapping -> 
             currentKeys += stateMapping.values()
         }
-        def allwayskeep = ["gdo_layer", "rna_layer", "prot_layer"]
+        def allwayskeep = ["gdo_layer", "rna_layer", "prot_layer", "workflow_output"]
         def newState = state.findAll{(it.key !in keysToRemove + ["id"]) || (it.key in allwayskeep)}
         [id, newState]
       }
@@ -196,6 +196,7 @@ workflow run_wf {
           [
             "id": id,
             "input": state.input,
+            "output": state.workflow_output,
             "highly_variable_features_var_output": state.highly_variable_features_var_output,
             "highly_variable_features_obs_batch_key": state.highly_variable_features_obs_batch_key,
             "var_qc_metrics": state.var_qc_metrics,
@@ -205,10 +206,14 @@ workflow run_wf {
             "prot_layer": state.prot_layer,
           ]
         },
-        toState: ["output": "output"]
+        toState: {id, output, state -> 
+          [
+            "output": output.output,
+            "_meta": state._meta,
+          ]
+        }
       )
       | view {"After process_batches: $it"}
-      | setState(["output", "_meta"])
 
   emit:
     output_ch
