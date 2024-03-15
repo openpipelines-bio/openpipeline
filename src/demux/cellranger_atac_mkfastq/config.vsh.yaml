@@ -36,6 +36,7 @@ functionality:
       name: --barcode_mismatches
       description: bcl2fastq option. Use this option to change the number of allowed mismatches per index adapter (0, 1, 2). 
       default: 1
+      min: 0
     - type: file
       name: --output
       direction: output
