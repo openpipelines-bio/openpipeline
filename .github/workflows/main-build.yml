@@ -346,7 +346,7 @@ jobs:
       if: ${{ github.event_name == 'push' || inputs.deploy_to_viash_hub }}
       run: |
         viash ns exec -s ${{ matrix.component.dir }} --apply_platform -p docker \
-        'docker tag ghcr.io/openpipelines-bio/{namespace}_{functionality-name}:${{ github.event_name == 'push' && (inputs.version || format('{0}_build', github.ref_name)) || inputs.target_tag }} viash-hub.com:5050/openpipelines-bio/openpipeline/{namespace}_{functionality-name}:${{ inputs.version || format('{0}_build', github.ref_name) }}'
+        'docker tag ghcr.io/openpipelines-bio/{namespace}${{matrix.component.namespace_separator}}{functionality-name}:${{ github.event_name == 'push' && (inputs.version || format('{0}_build', github.ref_name)) || inputs.target_tag }} viash-hub.com:5050/openpipelines-bio/openpipeline/{namespace}_{functionality-name}:${{ inputs.version || format('{0}_build', github.ref_name) }}'
   
     - name: Push container to Viash-Hub
       if: ${{ github.event_name == 'push' || inputs.deploy_to_viash_hub }}
