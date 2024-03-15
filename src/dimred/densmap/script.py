@@ -40,10 +40,11 @@ mdata = mu.read_h5mu(par["input"])
 logger.info("Computing densMAP for modality '%s'", par['modality'])
 data = mdata.mod[par['modality']]
 
-if par['uns_neighbors'] not in data.uns:
-    raise ValueError(f"'{par['uns_neighbors']}' was not found in .mod['{par['modality']}'].uns.")
-
 neigh_key = par["uns_neighbors"]
+
+if neigh_key not in data.uns:
+    raise ValueError(f"'{neigh_key}' was not found in .mod['{par['modality']}'].uns.")
+
 temp_uns = { neigh_key: data.uns[neigh_key] }
 pca_key = temp_uns[neigh_key]['params']['use_rep']
 knn_indices_key = temp_uns[neigh_key]['knn_indices_key']
@@ -59,7 +60,7 @@ X_densmap = UMAP(
   repulsion_strength=par["gamma"],
   negative_sample_rate=par["negative_sample_rate"],
   init=par["init_pos"],
-  # metric=data.uns["neighbors"]["metric"],
+  metric=data.uns["neighbors"].get("metric", "euclidean"),
   metric_kwds=data.uns["neighbors"].get("metric_kwds", {}),
   densmap=True,
   dens_lambda=par["lambda"],
@@ -71,8 +72,10 @@ X_densmap = UMAP(
   )
 ).fit_transform(data.obsm[pca_key])
 
+logger.info(f"Writing densMAP embeddings to .mod[{par['modality']}].obsm[{par['obsm_output']}]")
 data.obsm[par['obsm_output']] = X_densmap
 
+logger.info(f"Writing densMAP metadata to .mod[{par['modality']}].uns['densmap']")
 data.uns['densmap'] = {
   'params': {
     'min_dist': par["min_dist"],
@@ -83,7 +86,7 @@ data.uns['densmap'] = {
     'repulsion_strength': par["gamma"],
     'negative_sample_rate': par["negative_sample_rate"],
     'init': par["init_pos"],
-    # 'metric': data.uns["neighbors"]["metric"],
+    'metric': data.uns["neighbors"].get("metric", "euclidean"),
     'metric_kwds': data.uns["neighbors"].get("metric_kwds", {}),
     'dens_lambda': par["lambda"],
     'dens_frac': par["fraction"],
