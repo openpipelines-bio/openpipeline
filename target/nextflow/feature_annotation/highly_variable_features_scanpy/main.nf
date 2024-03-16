@@ -3093,7 +3093,7 @@ meta = [
       "target_organization" : "openpipelines-bio",
       "target_registry" : "ghcr.io",
       "target_tag" : "integration_build",
-      "namespace_separator" : "_",
+      "namespace_separator" : "/",
       "resolve_volume" : "Automatic",
       "chown" : true,
       "setup_strategy" : "ifneedbepullelsecachedbuild",
@@ -3186,7 +3186,7 @@ meta = [
     "platform" : "nextflow",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/feature_annotation/highly_variable_features_scanpy",
     "viash_version" : "0.8.5",
-    "git_commit" : "5dbe2cab1a846ecda74f2ae308cb17aae5f1ab46",
+    "git_commit" : "369f23ce34c72ee827f7b4642e11aa3904b105ad",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))
@@ -3716,7 +3716,7 @@ meta["defaults"] = [
   directives: readJsonBlob('''{
   "container" : {
     "registry" : "ghcr.io",
-    "image" : "openpipelines-bio/feature_annotation_highly_variable_features_scanpy",
+    "image" : "openpipelines-bio/feature_annotation/highly_variable_features_scanpy",
     "tag" : "integration_build"
   },
   "label" : [
