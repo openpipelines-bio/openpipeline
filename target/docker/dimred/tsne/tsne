@@ -491,9 +491,9 @@ RUN pip install --upgrade pip && \
 
 LABEL org.opencontainers.image.authors="Jakub Majercik"
 LABEL org.opencontainers.image.description="Companion container for running component dimred tsne"
-LABEL org.opencontainers.image.created="2024-03-16T02:35:41Z"
+LABEL org.opencontainers.image.created="2024-03-17T02:35:37Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="369f23ce34c72ee827f7b4642e11aa3904b105ad"
+LABEL org.opencontainers.image.revision="5398a3328abe133feb126f06ce5c01c2a55ecc3f"
 LABEL org.opencontainers.image.version="integration_build"
 
 VIASHDOCKER
