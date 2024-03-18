@@ -1,0 +1,89 @@
+functionality:
+  name: cross_check
+  namespace: "scgpt"
+  description: |
+    Cross-check genes with pre-trained model.
+  authors:
+    - __merge__: /src/authors/jakub_majercik.yaml
+      roles: [ maintainer, author ]
+
+  argument_groups:
+    - name: Inputs
+      arguments:
+        - name: "--input"
+          type: file
+          direction: input
+          required: true
+          example: input.h5ad
+          description: |
+            The input h5mu file containing of pre-processed data.
+        - name: "--model_dir"
+          type: file
+          direction: input
+          required: true
+          example: foundational_model/scgpt
+          description: |
+            The directory containing the model files. Must contain 'vocab.json', 'model.pt' and 'args.json' files.
+        - name: "--gene_name_layer"
+          type: string
+          example: "gene_name"
+          required: false
+          description: |
+            The name of the layer containing gene names.
+
+    - name: Outputs
+      arguments:
+        - name: "--output"
+          type: file
+          direction: output
+          required: true
+          example: output.h5ad
+          description: |
+            The output cross-checked anndata file.
+
+    - name: Arguments
+      arguments:
+        - name: "--pad_token"
+          type: string
+          default: "<pad>"
+          required: false
+          description: |
+            The name of the layer to be padded and tokenized
+        - name: "--load_model_vocab"
+          type: boolean_true
+          description: |
+            Whether to load the vocabulary from the model or use pytorch vocab.
+        - name: "--ori_batch_layer_name"
+          type: string
+          default: "sample"
+        - name: "--batch_id_layer"
+          type: string
+          default: "batch_id"
+        - name: "--gene_name_layer"
+          type: string
+          default: "gene_name"
+
+  resources:
+    - type: python_script
+      path: script.py
+
+platforms:
+  - type: docker
+    image: python:3.10
+    setup:
+      - type: apt
+        packages: 
+          - procps
+          - gfortran
+          - cmake
+          - libopenblas-dev
+      - type: python
+        __merge__: /src/base/requirements/anndata_mudata.yaml
+      - type: python
+        packages:
+          - torch==2.1.2
+          - numpy==1.26.4
+          - scipy==1.10.0
+          - scgpt==0.2.1
+          - ipython
+  - type: nextflow
