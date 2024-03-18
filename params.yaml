@@ -1,0 +1,4 @@
+input: "resources_test/scgpt/test_resources/Kim2020_Lung.h5mu"
+output: "resources_test/scgpt/test_resources/Kim2020_Lung_op_preprocessed.h5mu"
+vocab_file: "resources_test/scgpt/source/vocab.json"
+publish_dir": output
