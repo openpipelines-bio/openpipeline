@@ -30,29 +30,9 @@ else
 fi
 
 
-# add additional params
-extra_params=( )
-
-if [ ! -z "$meta_cpus" ]; then 
-  extra_params+=( "--localcores=$meta_cpus" )
-fi
 if [ ! -z "$meta_memory_gb" ]; then 
   # always keep 2gb for the OS itself
   memory_gb=`python -c "print(int('$meta_memory_gb') - 2)"`
-  extra_params+=( "--localmem=$memory_gb" )
-fi
-#
-if [ ! -z "$par_lanes" ]; then 
-  extra_params+=( "--lanes=$par_lanes" )
-fi
-if [ ! -z "${par_use-bases-mask}" ]; then 
-  extra_params+=( "--use-bases-mask=${par_use_bases_mask}" )
-fi
-if [ ! -z "${par_delete_undetermined}" ]; then 
-  extra_params+=( "--delete-undetermined" )
-fi
-if [ ! -z "${par_barcode_mismatches}" ]; then 
-  extra_params+=( "--barcode-mismatches=${par_barcode_mismatches}" )
 fi
 
 
