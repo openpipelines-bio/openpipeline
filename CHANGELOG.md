@@ -8,11 +8,19 @@
 ## MINOR CHANGES
 * `resources_test_scripts/cellranger_atac_tiny_bcl.sh`: download tiny bcl file with an ATAC experiment, download a motifs file, demultiplex bcl files to reads in fastq format
 
+## BREAKING CHANGES
+
+* Docker image names now use `/` instead of `_` between the name of the component and the namespace (PR #712).
+
 ## BUG FIXES
 
 * `rna_singlesample`: fixed a bug where selecting the column for the filtering with mitochondrial fractions 
   using `obs_name_mitochondrial_fraction` was done with the wrong column name, causing `ValueError` (PR #743).
 * `demux/cellranger_mkfastq`: add missing import to the test script
+
+## NEW FUNCTIONALITY
+
+* `dimred/tsne` component: Added a tSNE dimensionality reduction component (PR #742).
 
 # openpipelines 1.0.0-rc2
 
