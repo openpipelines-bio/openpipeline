@@ -1,5 +1,13 @@
 # openpipelines x.x.x
 
+## NEW FUNCTIONALITY
+
+* `demux/cellranger_atac_mkfastq`: demultiplex raw sequencing data for ATAC experiments
+* `reference/build_cellranger_reference`: build reference file compatible with ATAC and ATAC+GEX experiments
+
+## MINOR CHANGES
+* `resources_test_scripts/cellranger_atac_tiny_bcl.sh`: download tiny bcl file with an ATAC experiment, download a motifs file, demultiplex bcl files to reads in fastq format
+
 ## BUG FIXES
 
 * `rna_singlesample`: fixed a bug where selecting the column for the filtering with mitochondrial fractions 
