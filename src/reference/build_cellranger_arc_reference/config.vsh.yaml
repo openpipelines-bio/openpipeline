@@ -24,6 +24,7 @@ functionality:
       example: JASPAR2024_CORE_non-redundant_pfms_jaspar.txt.modified
     - type: string
       name: non_nuclear_contigs
+      multiple: true
       required: false
       description: Name(s) of contig(s) that do not have any chromatin structure, for example, mitochondria or plastids. These contigs are excluded from peak calling since the entire contig will be "open" due to a lack of chromatin structure. Leave empty if there are no such contigs.
       example: chrM
