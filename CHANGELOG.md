@@ -4,6 +4,10 @@
 
 * Docker image names now use `/` instead of `_` between the name of the component and the namespace (PR #712).
 
+## MINOR CHANGES
+
+* `neighbors/find_neighbors` component: Modified to include results of KNN in the output file (PR #748).
+
 ## BUG FIXES
 
 * `rna_singlesample`: fixed a bug where selecting the column for the filtering with mitochondrial fractions 
@@ -12,6 +16,8 @@
 ## NEW FUNCTIONALITY
 
 * `dimred/tsne` component: Added a tSNE dimensionality reduction component (PR #742).
+
+* `dimred/densmap` component: Added a densMAP dimensionality reduction component (PR #748).
 
 # openpipelines 1.0.0-rc2
 
