@@ -13,7 +13,6 @@ model_dir: # please fill in - example: "foundational_model/scgpt"
 pad_token: "<pad>"
 pad_value: -2
 n_hvg: 1200
-load_model_vocab: false
 
 # Nextflow input-output arguments
 publish_dir: # please fill in - example: "output/"

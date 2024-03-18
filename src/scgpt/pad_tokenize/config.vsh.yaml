@@ -81,10 +81,10 @@ functionality:
           required: false
           description: |
             The number of highly variable genes to be used for tokenization.  
-        - name: "--load_model_vocab"
-          type: boolean_true
-          description: |
-            Whether to load the vocabulary from the model or use pytorch vocab.
+        # - name: "--load_model_vocab"
+        #   type: boolean_true
+        #   description: |
+        #     Whether to load the vocabulary from the model or use pytorch vocab.
 
   resources:
     - type: python_script
@@ -104,9 +104,9 @@ platforms:
         __merge__: /src/base/requirements/anndata_mudata.yaml
       - type: python
         packages:
-          - torch
-          - numpy
-          - scipy
+          - torch==2.1.2
+          - numpy==1.26.4
+          - scipy==1.10.0
           - scgpt==0.2.1
           - ipython
   - type: nextflow

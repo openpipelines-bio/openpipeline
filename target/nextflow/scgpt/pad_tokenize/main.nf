@@ -2955,13 +2955,6 @@ meta = [
             "multiple" : false,
             "multiple_sep" : ":",
             "dest" : "par"
-          },
-          {
-            "type" : "boolean_true",
-            "name" : "--load_model_vocab",
-            "description" : "Whether to load the vocabulary from the model or use pytorch vocab.\n",
-            "direction" : "input",
-            "dest" : "par"
           }
         ]
       }
@@ -3033,9 +3026,9 @@ meta = [
           "type" : "python",
           "user" : false,
           "packages" : [
-            "torch",
-            "numpy",
-            "scipy",
+            "torch==2.1.2",
+            "numpy==1.26.4",
+            "scipy==1.10.0",
             "scgpt==0.2.1",
             "ipython"
           ],
@@ -3101,9 +3094,9 @@ meta = [
     "platform" : "nextflow",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/scgpt/pad_tokenize",
     "viash_version" : "0.8.5",
-    "git_commit" : "be97571ea3704fc8505e78218177d1e0088bfdd5",
+    "git_commit" : "77ed17d16eb4ce26b41da05cd4de78bbca5f48d7",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline",
-    "git_tag" : "0.2.0-1562-gbe97571ea3"
+    "git_tag" : "0.2.0-1563-g77ed17d16e"
   }
 }'''))
 ]
@@ -3141,8 +3134,7 @@ par = {
   'output_padding_mask': $( if [ ! -z ${VIASH_PAR_OUTPUT_PADDING_MASK+x} ]; then echo "r'${VIASH_PAR_OUTPUT_PADDING_MASK//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'pad_token': $( if [ ! -z ${VIASH_PAR_PAD_TOKEN+x} ]; then echo "r'${VIASH_PAR_PAD_TOKEN//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'pad_value': $( if [ ! -z ${VIASH_PAR_PAD_VALUE+x} ]; then echo "int(r'${VIASH_PAR_PAD_VALUE//\\'/\\'\\"\\'\\"r\\'}')"; else echo None; fi ),
-  'n_hvg': $( if [ ! -z ${VIASH_PAR_N_HVG+x} ]; then echo "int(r'${VIASH_PAR_N_HVG//\\'/\\'\\"\\'\\"r\\'}')"; else echo None; fi ),
-  'load_model_vocab': $( if [ ! -z ${VIASH_PAR_LOAD_MODEL_VOCAB+x} ]; then echo "r'${VIASH_PAR_LOAD_MODEL_VOCAB//\\'/\\'\\"\\'\\"r\\'}'.lower() == 'true'"; else echo None; fi )
+  'n_hvg': $( if [ ! -z ${VIASH_PAR_N_HVG+x} ]; then echo "int(r'${VIASH_PAR_N_HVG//\\'/\\'\\"\\'\\"r\\'}')"; else echo None; fi )
 }
 meta = {
   'functionality_name': $( if [ ! -z ${VIASH_META_FUNCTIONALITY_NAME+x} ]; then echo "r'${VIASH_META_FUNCTIONALITY_NAME//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
@@ -3183,18 +3175,12 @@ all_counts = (
 # Fetch gene names and look up tokens in vocab
 genes = adata.var[par["gene_name_layer"]].tolist()
 
-if par["load_model_vocab"]:
-    model_dir = Path(par["model_dir"])
-    vocab_file = model_dir / "vocab.json"
-    vocab = GeneVocab.from_file(vocab_file)
-    for s in special_tokens:
-        if s not in vocab:
-            vocab.append_token(s)
-else:
-    # bidirectional lookup [gene <-> int]
-    vocab = Vocab(
-        VocabPybind(genes + special_tokens, None)
-    )
+model_dir = Path(par["model_dir"])
+vocab_file = model_dir / "vocab.json"
+vocab = GeneVocab.from_file(vocab_file)
+for s in special_tokens:
+    if s not in vocab:
+        vocab.append_token(s)
 
 vocab.set_default_index(vocab["<pad>"])
 ntokens = len(vocab)

@@ -155,17 +155,6 @@
             }
     
 
-        ,
-                "load_model_vocab": {
-                "type":
-                "boolean",
-                "description": "Type: `boolean_true`, default: `false`. Whether to load the vocabulary from the model or use pytorch vocab",
-                "help_text": "Type: `boolean_true`, default: `false`. Whether to load the vocabulary from the model or use pytorch vocab.\n"
-            ,
-                "default": "False"
-            }
-    
-
 }
 },
     

@@ -231,10 +231,6 @@ function ViashHelp {
   echo "        type: integer"
   echo "        default: 1200"
   echo "        The number of highly variable genes to be used for tokenization."
-  echo ""
-  echo "    --load_model_vocab"
-  echo "        type: boolean_true"
-  echo "        Whether to load the vocabulary from the model or use pytorch vocab."
 }
 
 ######## Helper functions for setting up Docker images for viash ########
@@ -465,13 +461,13 @@ RUN pip install --upgrade pip && \
   pip install --upgrade --no-cache-dir "anndata~=0.9.1" "mudata~=0.2.3" "pandas!=2.1.2"
 
 RUN pip install --upgrade pip && \
-  pip install --upgrade --no-cache-dir "torch" "numpy" "scipy" "scgpt==0.2.1" "ipython"
+  pip install --upgrade --no-cache-dir "torch==2.1.2" "numpy==1.26.4" "scipy==1.10.0" "scgpt==0.2.1" "ipython"
 
 LABEL org.opencontainers.image.authors="Dorien Roosen"
 LABEL org.opencontainers.image.description="Companion container for running component scgpt pad_tokenize"
-LABEL org.opencontainers.image.created="2024-03-13T16:10:30Z"
+LABEL org.opencontainers.image.created="2024-03-18T09:01:18Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="be97571ea3704fc8505e78218177d1e0088bfdd5"
+LABEL org.opencontainers.image.revision="77ed17d16eb4ce26b41da05cd4de78bbca5f48d7"
 LABEL org.opencontainers.image.version="tokenize-pad_build"
 
 VIASHDOCKER
@@ -736,11 +732,6 @@ while [[ $# -gt 0 ]]; do
             VIASH_PAR_N_HVG=$(ViashRemoveFlags "$1")
             shift 1
             ;;
-        --load_model_vocab)
-            [ -n "$VIASH_PAR_LOAD_MODEL_VOCAB" ] && ViashError Bad arguments for option \'--load_model_vocab\': \'$VIASH_PAR_LOAD_MODEL_VOCAB\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
-            VIASH_PAR_LOAD_MODEL_VOCAB=true
-            shift 1
-            ;;
         ---setup)
             VIASH_MODE='docker_setup'
             VIASH_DOCKER_SETUP_STRATEGY="$2"
@@ -910,9 +901,6 @@ fi
 if [ -z ${VIASH_PAR_N_HVG+x} ]; then
   VIASH_PAR_N_HVG="1200"
 fi
-if [ -z ${VIASH_PAR_LOAD_MODEL_VOCAB+x} ]; then
-  VIASH_PAR_LOAD_MODEL_VOCAB="false"
-fi
 
 # check whether required files exist
 if [ ! -z "$VIASH_PAR_INPUT" ] && [ ! -e "$VIASH_PAR_INPUT" ]; then
@@ -934,12 +922,6 @@ fi
 if [[ -n "$VIASH_PAR_N_HVG" ]]; then
   if ! [[ "$VIASH_PAR_N_HVG" =~ ^[-+]?[0-9]+$ ]]; then
     ViashError '--n_hvg' has to be an integer. Use "--help" to get more information on the parameters.
-    exit 1
-  fi
-fi
-if [[ -n "$VIASH_PAR_LOAD_MODEL_VOCAB" ]]; then
-  if ! [[ "$VIASH_PAR_LOAD_MODEL_VOCAB" =~ ^(true|True|TRUE|false|False|FALSE|yes|Yes|YES|no|No|NO)$ ]]; then
-    ViashError '--load_model_vocab' has to be a boolean_true. Use "--help" to get more information on the parameters.
     exit 1
   fi
 fi
@@ -1103,8 +1085,7 @@ par = {
   'output_padding_mask': $( if [ ! -z ${VIASH_PAR_OUTPUT_PADDING_MASK+x} ]; then echo "r'${VIASH_PAR_OUTPUT_PADDING_MASK//\'/\'\"\'\"r\'}'"; else echo None; fi ),
   'pad_token': $( if [ ! -z ${VIASH_PAR_PAD_TOKEN+x} ]; then echo "r'${VIASH_PAR_PAD_TOKEN//\'/\'\"\'\"r\'}'"; else echo None; fi ),
   'pad_value': $( if [ ! -z ${VIASH_PAR_PAD_VALUE+x} ]; then echo "int(r'${VIASH_PAR_PAD_VALUE//\'/\'\"\'\"r\'}')"; else echo None; fi ),
-  'n_hvg': $( if [ ! -z ${VIASH_PAR_N_HVG+x} ]; then echo "int(r'${VIASH_PAR_N_HVG//\'/\'\"\'\"r\'}')"; else echo None; fi ),
-  'load_model_vocab': $( if [ ! -z ${VIASH_PAR_LOAD_MODEL_VOCAB+x} ]; then echo "r'${VIASH_PAR_LOAD_MODEL_VOCAB//\'/\'\"\'\"r\'}'.lower() == 'true'"; else echo None; fi )
+  'n_hvg': $( if [ ! -z ${VIASH_PAR_N_HVG+x} ]; then echo "int(r'${VIASH_PAR_N_HVG//\'/\'\"\'\"r\'}')"; else echo None; fi )
 }
 meta = {
   'functionality_name': $( if [ ! -z ${VIASH_META_FUNCTIONALITY_NAME+x} ]; then echo "r'${VIASH_META_FUNCTIONALITY_NAME//\'/\'\"\'\"r\'}'"; else echo None; fi ),
@@ -1145,18 +1126,12 @@ all_counts = (
 # Fetch gene names and look up tokens in vocab
 genes = adata.var[par["gene_name_layer"]].tolist()
 
-if par["load_model_vocab"]:
-    model_dir = Path(par["model_dir"])
-    vocab_file = model_dir / "vocab.json"
-    vocab = GeneVocab.from_file(vocab_file)
-    for s in special_tokens:
-        if s not in vocab:
-            vocab.append_token(s)
-else:
-    # bidirectional lookup [gene <-> int]
-    vocab = Vocab(
-        VocabPybind(genes + special_tokens, None)
-    )
+model_dir = Path(par["model_dir"])
+vocab_file = model_dir / "vocab.json"
+vocab = GeneVocab.from_file(vocab_file)
+for s in special_tokens:
+    if s not in vocab:
+        vocab.append_token(s)
 
 vocab.set_default_index(vocab["<pad>"])
 ntokens = len(vocab)
