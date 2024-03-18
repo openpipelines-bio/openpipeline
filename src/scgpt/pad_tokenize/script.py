@@ -20,7 +20,7 @@ par = {
     "pad_value": -2,
     "input_layer": "X_binned",
     "gene_name_layer": "gene_name",
-    "load_model_vocab": False,
+    # "load_model_vocab": False,
     "model_dir": "src/scgpt/model",
     "n_hvg": 1200
 }
@@ -45,18 +45,12 @@ all_counts = (
 # Fetch gene names and look up tokens in vocab
 genes = adata.var[par["gene_name_layer"]].tolist()
 
-if par["load_model_vocab"]:
-    model_dir = Path(par["model_dir"])
-    vocab_file = model_dir / "vocab.json"
-    vocab = GeneVocab.from_file(vocab_file)
-    for s in special_tokens:
-        if s not in vocab:
-            vocab.append_token(s)
-else:
-    # bidirectional lookup [gene <-> int]
-    vocab = Vocab(
-        VocabPybind(genes + special_tokens, None)
-    )
+model_dir = Path(par["model_dir"])
+vocab_file = model_dir / "vocab.json"
+vocab = GeneVocab.from_file(vocab_file)
+for s in special_tokens:
+    if s not in vocab:
+        vocab.append_token(s)
 
 vocab.set_default_index(vocab["<pad>"])
 ntokens = len(vocab)
