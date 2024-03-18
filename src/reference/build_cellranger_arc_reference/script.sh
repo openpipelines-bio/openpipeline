@@ -74,5 +74,4 @@ echo "> Running cellranger"
 cellranger-arc mkref --config=${config_in}
 
 echo "> Creating archive"
-tar --use-compress-program="pigz -k " -cf "$par_output" -C "${tmpdir}/GRCh38" .
-
+tar --use-compress-program="pigz -k " -cf "$par_output" -C "${tmpdir}/${par_genome}" .

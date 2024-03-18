@@ -38,7 +38,7 @@ functionality:
     - type: string
       name: --genome
       required: true
-      description: Name of the genome. This will be the name of the output folder.
+      description: Name of the genome. This will be the name of the intermediate output folder
       example: GRCh38
     - type: string
       name: --organism
