@@ -51,7 +51,8 @@ config_in="${tmpdir}/config"
 if [[ -z $par_non_nuclear_contigs || $par_non_nuclear_contigs == "--non_nuclear_contigs" ]]; then
     non_nuclear_contigs=""
 else
-    non_nuclear_contigs="non_nuclear_contigs: [\"${par_non_nuclear_contigs}\"]"
+    printf -v non_nuclear_contigs '"%s",' "${par_non_nuclear_contigs[@]}"
+    non_nuclear_contigs="[${non_nuclear_contigs%,}]" # remove trailing comma
 fi
 
 echo """{
@@ -59,7 +60,7 @@ echo """{
     genome: [\"GRCh38\"]
     input_fasta: [\""${tmpdir}/genome.fa"\"]
     input_gtf: [\""${par_annotation_gtf}\""]
-    "${non_nuclear_contigs}"
+    ${non_nuclear_contigs:+non_nuclear_contigs: "${non_nuclear_contigs}"}
     input_motifs: \""$par_motifs_file"\"
     $(printf "%s\n" "${extra_params[@]}")
 }""" > "$config_in"
