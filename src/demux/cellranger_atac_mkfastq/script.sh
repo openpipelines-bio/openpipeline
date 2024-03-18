@@ -40,13 +40,20 @@ echo "Running cellranger-atac mkfastq"
 
 id=myoutput
 
+IFS=","
 cellranger-atac mkfastq \
   --id "$id" \
   --csv "$par_csv" \
   --run "$par_input" \
-  "${extra_params[@]}" \
   --disable-ui \
-  --output-dir "$par_output"
+  --output-dir "$par_output" \
+  ${meta_cpus:+--localcores=$meta_cpus} \
+  ${memory_gb:+--localmem=$memory_gb} \
+  ${par_lanes:+--lanes=${par_lanes[*]}} \
+  ${par_use_bases_mask:+--use-bases-mask=${par_use_bases_mask[*]} \
+  ${par_delete_undetermined:+--delete-undetermined} \
+  ${par_barcode_mismatches:+--barcode-mismatches=$par_barcode_mismatches}
+unset IFS
 
 # Move reports to their own output location
 if [ ! -z "$par_reports" ]; then
