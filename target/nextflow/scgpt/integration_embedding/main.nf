@@ -3168,6 +3168,9 @@ meta = [
       "type" : "nextflow",
       "id" : "nextflow",
       "directives" : {
+        "label" : [
+          "highmem"
+        ],
         "tag" : "$id"
       },
       "auto" : {
@@ -3222,9 +3225,9 @@ meta = [
     "platform" : "nextflow",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/scgpt/integration_embedding",
     "viash_version" : "0.8.5",
-    "git_commit" : "943c553f4941194785728e961ac9014e315d627f",
+    "git_commit" : "042672d3819fd0aad6f56ca399c893fc970c23ae",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline",
-    "git_tag" : "0.2.0-1556-g943c553f49"
+    "git_tag" : "0.2.0-1557-g042672d381"
   }
 }'''))
 ]
@@ -3744,6 +3747,9 @@ meta["defaults"] = [
     "image" : "openpipelines-bio/scgpt_integration_embedding",
     "tag" : "embed_build"
   },
+  "label" : [
+    "highmem"
+  ],
   "tag" : "$id"
 }'''),
 

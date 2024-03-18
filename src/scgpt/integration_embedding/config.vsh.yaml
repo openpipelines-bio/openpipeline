@@ -150,3 +150,5 @@ platforms:
           - scgpt==0.2.1
 
   - type: nextflow
+    directives:
+      label: [highmem]
