@@ -88,25 +88,15 @@ functionality:
           required: false
           description: |
             The value to be used for padding.
-        - name: "--load_model_vocab"
-          type: boolean
-          default: true
-          description: |
-            Whether to load the vocabulary from the model or use pytorch vocab.
-        - name: "--load_model_configs"
-          type: boolean
-          default: true
-          description: |
-            Whether to load the configs from the model.
-        - name: "--layer_size" # d_hid/embsize
-          type: integer
-          default: 128
-        - name: "--nhead"
-          type: integer
-          default: 4
-        - name: "--nlayers"
-          type: integer
-          default: 4
+        # - name: "--layer_size" # d_hid/embsize
+        #   type: integer
+        #   default: 128
+        # - name: "--nhead"
+        #   type: integer
+        #   default: 4
+        # - name: "--nlayers"
+        #   type: integer
+        #   default: 4
         - name: "--dropout"
           type: double
           default: 0.2

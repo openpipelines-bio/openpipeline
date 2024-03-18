@@ -238,28 +238,6 @@ function ViashHelp {
   echo "        default: -2"
   echo "        The value to be used for padding."
   echo ""
-  echo "    --load_model_vocab"
-  echo "        type: boolean"
-  echo "        default: true"
-  echo "        Whether to load the vocabulary from the model or use pytorch vocab."
-  echo ""
-  echo "    --load_model_configs"
-  echo "        type: boolean"
-  echo "        default: true"
-  echo "        Whether to load the configs from the model."
-  echo ""
-  echo "    --layer_size"
-  echo "        type: integer"
-  echo "        default: 128"
-  echo ""
-  echo "    --nhead"
-  echo "        type: integer"
-  echo "        default: 4"
-  echo ""
-  echo "    --nlayers"
-  echo "        type: integer"
-  echo "        default: 4"
-  echo ""
   echo "    --dropout"
   echo "        type: double"
   echo "        default: 0.2"
@@ -533,9 +511,9 @@ RUN pip install --upgrade pip && \
 
 LABEL org.opencontainers.image.authors="Dorien Roosen"
 LABEL org.opencontainers.image.description="Companion container for running component scgpt integration_embedding"
-LABEL org.opencontainers.image.created="2024-03-13T16:30:30Z"
+LABEL org.opencontainers.image.created="2024-03-18T10:11:55Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="dd2c54c179468534b6f3dcc55aa461a4219d58f7"
+LABEL org.opencontainers.image.revision="943c553f4941194785728e961ac9014e315d627f"
 LABEL org.opencontainers.image.version="embed_build"
 
 VIASHDOCKER
@@ -809,61 +787,6 @@ while [[ $# -gt 0 ]]; do
         --pad_value=*)
             [ -n "$VIASH_PAR_PAD_VALUE" ] && ViashError Bad arguments for option \'--pad_value=*\': \'$VIASH_PAR_PAD_VALUE\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
             VIASH_PAR_PAD_VALUE=$(ViashRemoveFlags "$1")
-            shift 1
-            ;;
-        --load_model_vocab)
-            [ -n "$VIASH_PAR_LOAD_MODEL_VOCAB" ] && ViashError Bad arguments for option \'--load_model_vocab\': \'$VIASH_PAR_LOAD_MODEL_VOCAB\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
-            VIASH_PAR_LOAD_MODEL_VOCAB="$2"
-            [ $# -lt 2 ] && ViashError Not enough arguments passed to --load_model_vocab. Use "--help" to get more information on the parameters. && exit 1
-            shift 2
-            ;;
-        --load_model_vocab=*)
-            [ -n "$VIASH_PAR_LOAD_MODEL_VOCAB" ] && ViashError Bad arguments for option \'--load_model_vocab=*\': \'$VIASH_PAR_LOAD_MODEL_VOCAB\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
-            VIASH_PAR_LOAD_MODEL_VOCAB=$(ViashRemoveFlags "$1")
-            shift 1
-            ;;
-        --load_model_configs)
-            [ -n "$VIASH_PAR_LOAD_MODEL_CONFIGS" ] && ViashError Bad arguments for option \'--load_model_configs\': \'$VIASH_PAR_LOAD_MODEL_CONFIGS\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
-            VIASH_PAR_LOAD_MODEL_CONFIGS="$2"
-            [ $# -lt 2 ] && ViashError Not enough arguments passed to --load_model_configs. Use "--help" to get more information on the parameters. && exit 1
-            shift 2
-            ;;
-        --load_model_configs=*)
-            [ -n "$VIASH_PAR_LOAD_MODEL_CONFIGS" ] && ViashError Bad arguments for option \'--load_model_configs=*\': \'$VIASH_PAR_LOAD_MODEL_CONFIGS\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
-            VIASH_PAR_LOAD_MODEL_CONFIGS=$(ViashRemoveFlags "$1")
-            shift 1
-            ;;
-        --layer_size)
-            [ -n "$VIASH_PAR_LAYER_SIZE" ] && ViashError Bad arguments for option \'--layer_size\': \'$VIASH_PAR_LAYER_SIZE\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
-            VIASH_PAR_LAYER_SIZE="$2"
-            [ $# -lt 2 ] && ViashError Not enough arguments passed to --layer_size. Use "--help" to get more information on the parameters. && exit 1
-            shift 2
-            ;;
-        --layer_size=*)
-            [ -n "$VIASH_PAR_LAYER_SIZE" ] && ViashError Bad arguments for option \'--layer_size=*\': \'$VIASH_PAR_LAYER_SIZE\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
-            VIASH_PAR_LAYER_SIZE=$(ViashRemoveFlags "$1")
-            shift 1
-            ;;
-        --nhead)
-            [ -n "$VIASH_PAR_NHEAD" ] && ViashError Bad arguments for option \'--nhead\': \'$VIASH_PAR_NHEAD\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
-            VIASH_PAR_NHEAD="$2"
-            [ $# -lt 2 ] && ViashError Not enough arguments passed to --nhead. Use "--help" to get more information on the parameters. && exit 1
-            shift 2
-            ;;
-        --nhead=*)
-            [ -n "$VIASH_PAR_NHEAD" ] && ViashError Bad arguments for option \'--nhead=*\': \'$VIASH_PAR_NHEAD\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
-            VIASH_PAR_NHEAD=$(ViashRemoveFlags "$1")
-            shift 1
-            ;;
-        --nlayers)
-            [ -n "$VIASH_PAR_NLAYERS" ] && ViashError Bad arguments for option \'--nlayers\': \'$VIASH_PAR_NLAYERS\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
-            VIASH_PAR_NLAYERS="$2"
-            [ $# -lt 2 ] && ViashError Not enough arguments passed to --nlayers. Use "--help" to get more information on the parameters. && exit 1
-            shift 2
-            ;;
-        --nlayers=*)
-            [ -n "$VIASH_PAR_NLAYERS" ] && ViashError Bad arguments for option \'--nlayers=*\': \'$VIASH_PAR_NLAYERS\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
-            VIASH_PAR_NLAYERS=$(ViashRemoveFlags "$1")
             shift 1
             ;;
         --dropout)
@@ -1150,21 +1073,6 @@ fi
 if [ -z ${VIASH_PAR_PAD_VALUE+x} ]; then
   VIASH_PAR_PAD_VALUE="-2"
 fi
-if [ -z ${VIASH_PAR_LOAD_MODEL_VOCAB+x} ]; then
-  VIASH_PAR_LOAD_MODEL_VOCAB="true"
-fi
-if [ -z ${VIASH_PAR_LOAD_MODEL_CONFIGS+x} ]; then
-  VIASH_PAR_LOAD_MODEL_CONFIGS="true"
-fi
-if [ -z ${VIASH_PAR_LAYER_SIZE+x} ]; then
-  VIASH_PAR_LAYER_SIZE="128"
-fi
-if [ -z ${VIASH_PAR_NHEAD+x} ]; then
-  VIASH_PAR_NHEAD="4"
-fi
-if [ -z ${VIASH_PAR_NLAYERS+x} ]; then
-  VIASH_PAR_NLAYERS="4"
-fi
 if [ -z ${VIASH_PAR_DROPOUT+x} ]; then
   VIASH_PAR_DROPOUT="0.2"
 fi
@@ -1222,36 +1130,6 @@ fi
 if [[ -n "$VIASH_PAR_PAD_VALUE" ]]; then
   if ! [[ "$VIASH_PAR_PAD_VALUE" =~ ^[-+]?[0-9]+$ ]]; then
     ViashError '--pad_value' has to be an integer. Use "--help" to get more information on the parameters.
-    exit 1
-  fi
-fi
-if [[ -n "$VIASH_PAR_LOAD_MODEL_VOCAB" ]]; then
-  if ! [[ "$VIASH_PAR_LOAD_MODEL_VOCAB" =~ ^(true|True|TRUE|false|False|FALSE|yes|Yes|YES|no|No|NO)$ ]]; then
-    ViashError '--load_model_vocab' has to be a boolean. Use "--help" to get more information on the parameters.
-    exit 1
-  fi
-fi
-if [[ -n "$VIASH_PAR_LOAD_MODEL_CONFIGS" ]]; then
-  if ! [[ "$VIASH_PAR_LOAD_MODEL_CONFIGS" =~ ^(true|True|TRUE|false|False|FALSE|yes|Yes|YES|no|No|NO)$ ]]; then
-    ViashError '--load_model_configs' has to be a boolean. Use "--help" to get more information on the parameters.
-    exit 1
-  fi
-fi
-if [[ -n "$VIASH_PAR_LAYER_SIZE" ]]; then
-  if ! [[ "$VIASH_PAR_LAYER_SIZE" =~ ^[-+]?[0-9]+$ ]]; then
-    ViashError '--layer_size' has to be an integer. Use "--help" to get more information on the parameters.
-    exit 1
-  fi
-fi
-if [[ -n "$VIASH_PAR_NHEAD" ]]; then
-  if ! [[ "$VIASH_PAR_NHEAD" =~ ^[-+]?[0-9]+$ ]]; then
-    ViashError '--nhead' has to be an integer. Use "--help" to get more information on the parameters.
-    exit 1
-  fi
-fi
-if [[ -n "$VIASH_PAR_NLAYERS" ]]; then
-  if ! [[ "$VIASH_PAR_NLAYERS" =~ ^[-+]?[0-9]+$ ]]; then
-    ViashError '--nlayers' has to be an integer. Use "--help" to get more information on the parameters.
     exit 1
   fi
 fi
@@ -1462,10 +1340,6 @@ from scgpt.tokenizer.gene_tokenizer import GeneVocab
 from scgpt.model import TransformerModel
 from scgpt.utils.util import load_pretrained
 import torch
-from torchtext.vocab import Vocab
-from torchtext._torchtext import (
-    Vocab as VocabPybind,
-)
 
 ## VIASH START
 # The following code has been auto-generated by Viash.
@@ -1481,11 +1355,6 @@ par = {
   'embedding_layer': $( if [ ! -z ${VIASH_PAR_EMBEDDING_LAYER+x} ]; then echo "r'${VIASH_PAR_EMBEDDING_LAYER//\'/\'\"\'\"r\'}'"; else echo None; fi ),
   'pad_token': $( if [ ! -z ${VIASH_PAR_PAD_TOKEN+x} ]; then echo "r'${VIASH_PAR_PAD_TOKEN//\'/\'\"\'\"r\'}'"; else echo None; fi ),
   'pad_value': $( if [ ! -z ${VIASH_PAR_PAD_VALUE+x} ]; then echo "int(r'${VIASH_PAR_PAD_VALUE//\'/\'\"\'\"r\'}')"; else echo None; fi ),
-  'load_model_vocab': $( if [ ! -z ${VIASH_PAR_LOAD_MODEL_VOCAB+x} ]; then echo "r'${VIASH_PAR_LOAD_MODEL_VOCAB//\'/\'\"\'\"r\'}'.lower() == 'true'"; else echo None; fi ),
-  'load_model_configs': $( if [ ! -z ${VIASH_PAR_LOAD_MODEL_CONFIGS+x} ]; then echo "r'${VIASH_PAR_LOAD_MODEL_CONFIGS//\'/\'\"\'\"r\'}'.lower() == 'true'"; else echo None; fi ),
-  'layer_size': $( if [ ! -z ${VIASH_PAR_LAYER_SIZE+x} ]; then echo "int(r'${VIASH_PAR_LAYER_SIZE//\'/\'\"\'\"r\'}')"; else echo None; fi ),
-  'nhead': $( if [ ! -z ${VIASH_PAR_NHEAD+x} ]; then echo "int(r'${VIASH_PAR_NHEAD//\'/\'\"\'\"r\'}')"; else echo None; fi ),
-  'nlayers': $( if [ ! -z ${VIASH_PAR_NLAYERS+x} ]; then echo "int(r'${VIASH_PAR_NLAYERS//\'/\'\"\'\"r\'}')"; else echo None; fi ),
   'dropout': $( if [ ! -z ${VIASH_PAR_DROPOUT+x} ]; then echo "float(r'${VIASH_PAR_DROPOUT//\'/\'\"\'\"r\'}')"; else echo None; fi ),
   'DSBN': $( if [ ! -z ${VIASH_PAR_DSBN+x} ]; then echo "r'${VIASH_PAR_DSBN//\'/\'\"\'\"r\'}'.lower() == 'true'"; else echo None; fi ),
   'GEPC': $( if [ ! -z ${VIASH_PAR_GEPC+x} ]; then echo "r'${VIASH_PAR_GEPC//\'/\'\"\'\"r\'}'.lower() == 'true'"; else echo None; fi ),
@@ -1517,6 +1386,12 @@ dep = {
 
 ## VIASH END
 
+# Set device to use cpu or gpu
+if par["device"] == "cuda" and not torch.cuda.is_available():
+    print("WARNING: CUDA is not available. Using CPU instead.")    
+    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+device = torch.device(par["device"])
+
 # Read in data
 input_adata = ad.read_h5ad(par["input"])
 adata = input_adata.copy()
@@ -1535,42 +1410,30 @@ pad_value = par["pad_value"]
 special_tokens = [pad_token, "<cls>", "<eoc>"]
 genes = adata.var[par["gene_name_layer"]].tolist()
 
+# Model files
+model_dir = Path(par["model_dir"])
+model_config_file = model_dir / "args.json"
+model_file = model_dir / "best_model.pt"
+vocab_file = model_dir / "vocab.json"
+
 # Load vocab
-if par["load_model_vocab"]:
-    model_dir = Path(par["model_dir"])
-    vocab_file = model_dir / "vocab.json"
-    vocab = GeneVocab.from_file(vocab_file)
-    for s in special_tokens:
-        if s not in vocab:
-            vocab.append_token(s)
-else:
-    # bidirectional lookup [gene <-> int]
-    vocab = Vocab(
-        VocabPybind(genes + special_tokens, None)
-    )
+vocab = GeneVocab.from_file(vocab_file)
+for s in special_tokens:
+    if s not in vocab:
+        vocab.append_token(s)
 
 vocab.set_default_index(vocab["<pad>"])
 ntokens = len(vocab)
 gene_ids = np.array(vocab(genes), dtype=int)
 
-# Set model configs
-model_dir = Path(par["model_dir"])
-model_config_file = model_dir / "args.json"
-model_file = model_dir / "best_model.pt"
-
-if par["load_model_configs"]:
-    with open(model_config_file, "r") as f:
-        model_configs = json.load(f)
-    embsize = model_configs["embsize"]
-    nhead = model_configs["nheads"]
-    d_hid = model_configs["d_hid"]
-    nlayers = model_configs["nlayers"]
-    n_layers_cls = model_configs["n_layers_cls"]
-else:
-    embsize = par["layer_size"]
-    nhead = par["nhead"]
-    nlayers = par["nlayers"]
-    d_hid = par["layer_size"]
+# Load model configs
+with open(model_config_file, "r") as f:
+    model_configs = json.load(f)
+embsize = model_configs["embsize"]
+nhead = model_configs["nheads"]
+d_hid = model_configs["d_hid"]
+nlayers = model_configs["nlayers"]
+n_layers_cls = model_configs["n_layers_cls"]
 
 # Load model
 model = TransformerModel(
@@ -1598,13 +1461,11 @@ model = TransformerModel(
     pre_norm=par["pre_norm"],
 )
 
-
-if par["device"] == "cuda" and not torch.cuda.is_available():
-    print("WARNING: CUDA is not available. Using CPU instead.")    
-    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-device = torch.device(par["device"])
-
-load_pretrained(model, torch.load(model_file, map_location=device), verbose=False)
+load_pretrained(
+    model,
+    torch.load(model_file, map_location=device),
+    verbose=False
+    )
 
 model.to(device)
 model.eval()
@@ -1623,6 +1484,7 @@ cell_embeddings = cell_embeddings / np.linalg.norm(
     cell_embeddings, axis=1, keepdims=True
 )
 
+# Write output
 adata.obsm[par["embedding_layer"]] = cell_embeddings
 adata.write_h5ad(par["output"])
 VIASHMAIN

@@ -6,10 +6,6 @@ from scgpt.tokenizer.gene_tokenizer import GeneVocab
 from scgpt.model import TransformerModel
 from scgpt.utils.util import load_pretrained
 import torch
-from torchtext.vocab import Vocab
-from torchtext._torchtext import (
-    Vocab as VocabPybind,
-)
 
 ## VIASH START
 par = {
@@ -24,11 +20,8 @@ par = {
     "embedding_layer": "X_scGPT",
     "pad_token": "<pad>",
     "pad_value": -2,
-    "load_model_vocab": True,
-    "load_model_configs": True,
-    "layer_size": 128,
-    "nhead": 4,
-    "nlayers": 4,
+    # "nhead": 4,
+    # "nlayers": 4,
     "dropout": 0.2,
     "GEPC": True,
     "DSBN": True,
@@ -41,6 +34,12 @@ par = {
     "batch_size": 64
 }
 ## VIASH END
+
+# Set device to use cpu or gpu
+if par["device"] == "cuda" and not torch.cuda.is_available():
+    print("WARNING: CUDA is not available. Using CPU instead.")    
+    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+device = torch.device(par["device"])
 
 # Read in data
 input_adata = ad.read_h5ad(par["input"])
@@ -60,42 +59,30 @@ pad_value = par["pad_value"]
 special_tokens = [pad_token, "<cls>", "<eoc>"]
 genes = adata.var[par["gene_name_layer"]].tolist()
 
+# Model files
+model_dir = Path(par["model_dir"])
+model_config_file = model_dir / "args.json"
+model_file = model_dir / "best_model.pt"
+vocab_file = model_dir / "vocab.json"
+
 # Load vocab
-if par["load_model_vocab"]:
-    model_dir = Path(par["model_dir"])
-    vocab_file = model_dir / "vocab.json"
-    vocab = GeneVocab.from_file(vocab_file)
-    for s in special_tokens:
-        if s not in vocab:
-            vocab.append_token(s)
-else:
-    # bidirectional lookup [gene <-> int]
-    vocab = Vocab(
-        VocabPybind(genes + special_tokens, None)
-    )
+vocab = GeneVocab.from_file(vocab_file)
+for s in special_tokens:
+    if s not in vocab:
+        vocab.append_token(s)
 
 vocab.set_default_index(vocab["<pad>"])
 ntokens = len(vocab)
 gene_ids = np.array(vocab(genes), dtype=int)
 
-# Set model configs
-model_dir = Path(par["model_dir"])
-model_config_file = model_dir / "args.json"
-model_file = model_dir / "best_model.pt"
-
-if par["load_model_configs"]:
-    with open(model_config_file, "r") as f:
-        model_configs = json.load(f)
-    embsize = model_configs["embsize"]
-    nhead = model_configs["nheads"]
-    d_hid = model_configs["d_hid"]
-    nlayers = model_configs["nlayers"]
-    n_layers_cls = model_configs["n_layers_cls"]
-else:
-    embsize = par["layer_size"]
-    nhead = par["nhead"]
-    nlayers = par["nlayers"]
-    d_hid = par["layer_size"]
+# Load model configs
+with open(model_config_file, "r") as f:
+    model_configs = json.load(f)
+embsize = model_configs["embsize"]
+nhead = model_configs["nheads"]
+d_hid = model_configs["d_hid"]
+nlayers = model_configs["nlayers"]
+n_layers_cls = model_configs["n_layers_cls"]
 
 # Load model
 model = TransformerModel(
@@ -123,13 +110,11 @@ model = TransformerModel(
     pre_norm=par["pre_norm"],
 )
 
-
-if par["device"] == "cuda" and not torch.cuda.is_available():
-    print("WARNING: CUDA is not available. Using CPU instead.")    
-    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-device = torch.device(par["device"])
-
-load_pretrained(model, torch.load(model_file, map_location=device), verbose=False)
+load_pretrained(
+    model,
+    torch.load(model_file, map_location=device),
+    verbose=False
+    )
 
 model.to(device)
 model.eval()
@@ -148,5 +133,6 @@ cell_embeddings = cell_embeddings / np.linalg.norm(
     cell_embeddings, axis=1, keepdims=True
 )
 
+# Write output
 adata.obsm[par["embedding_layer"]] = cell_embeddings
 adata.write_h5ad(par["output"])

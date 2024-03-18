@@ -166,61 +166,6 @@
     
 
         ,
-                "load_model_vocab": {
-                "type":
-                "boolean",
-                "description": "Type: `boolean`, default: `true`. Whether to load the vocabulary from the model or use pytorch vocab",
-                "help_text": "Type: `boolean`, default: `true`. Whether to load the vocabulary from the model or use pytorch vocab.\n"
-            ,
-                "default": "True"
-            }
-    
-
-        ,
-                "load_model_configs": {
-                "type":
-                "boolean",
-                "description": "Type: `boolean`, default: `true`. Whether to load the configs from the model",
-                "help_text": "Type: `boolean`, default: `true`. Whether to load the configs from the model.\n"
-            ,
-                "default": "True"
-            }
-    
-
-        ,
-                "layer_size": {
-                "type":
-                "integer",
-                "description": "Type: `integer`, default: `128`. ",
-                "help_text": "Type: `integer`, default: `128`. "
-            ,
-                "default": "128"
-            }
-    
-
-        ,
-                "nhead": {
-                "type":
-                "integer",
-                "description": "Type: `integer`, default: `4`. ",
-                "help_text": "Type: `integer`, default: `4`. "
-            ,
-                "default": "4"
-            }
-    
-
-        ,
-                "nlayers": {
-                "type":
-                "integer",
-                "description": "Type: `integer`, default: `4`. ",
-                "help_text": "Type: `integer`, default: `4`. "
-            ,
-                "default": "4"
-            }
-    
-
-        ,
                 "dropout": {
                 "type":
                 "number",

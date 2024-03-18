@@ -14,11 +14,6 @@ embedding_layer: "X_scGPT"
 # Arguments
 pad_token: "<pad>"
 pad_value: -2
-load_model_vocab: true
-load_model_configs: true
-layer_size: 128
-nhead: 4
-nlayers: 4
 dropout: 0.2
 DSBN: true
 GEPC: true
