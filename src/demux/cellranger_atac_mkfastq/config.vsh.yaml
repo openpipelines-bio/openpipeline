@@ -67,7 +67,9 @@ platforms:
     image: ghcr.io/data-intuitive/cellranger_atac:2.1
     setup:
       - type: docker
-        run: apt-get update && apt-get upgrade -y
+        run: |
+          DEBIAN_FRONTEND=noninteractive apt update \
+          && apt upgrade -y && apt install -y procps && rm -rf /var/lib/apt/lists/*
     test_setup:
       - type: python
         __merge__: [ /src/base/requirements/viashpy.yaml, .]
