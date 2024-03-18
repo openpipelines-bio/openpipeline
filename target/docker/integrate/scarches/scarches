@@ -496,9 +496,9 @@ RUN pip install --upgrade pip && \
 
 LABEL org.opencontainers.image.authors="Vladimir Shitov"
 LABEL org.opencontainers.image.description="Companion container for running component integrate scarches"
-LABEL org.opencontainers.image.created="2024-03-17T02:35:37Z"
+LABEL org.opencontainers.image.created="2024-03-18T02:35:10Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="5398a3328abe133feb126f06ce5c01c2a55ecc3f"
+LABEL org.opencontainers.image.revision="d9d94f38e94b537652ecfcb04b93f5bb01ef98b5"
 LABEL org.opencontainers.image.version="integration_build"
 
 VIASHDOCKER
