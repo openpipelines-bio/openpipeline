@@ -7,6 +7,8 @@ par_genome_fasta="resources_test/reference_gencodev41_chr1/reference.fa.gz"
 par_annotation_gtf="resources_test/reference_gencodev41_chr1/reference.gtf.gz"
 par_output="gencode_v41_annotation_cellranger.tar.gz"
 par_motifs_file="resources_test/reference_gencodev41_chr1/JASPAR2024_CORE_non-redundant_pfms_jaspar.txt.modified"
+par_genome="GRCh38"
+par_organism="Homo_sapiens"
 ## VIASH END
 
 # create temporary directory
@@ -56,8 +58,8 @@ else
 fi
 
 echo """{
-    organism: \"Homo_sapiens\"
-    genome: [\"GRCh38\"]
+    organism: \"${par_organism}\"
+    genome: [\"${par_genome}\"]
     input_fasta: [\""${tmpdir}/genome.fa"\"]
     input_gtf: [\""${par_annotation_gtf}\""]
     ${non_nuclear_contigs:+non_nuclear_contigs: "${non_nuclear_contigs}"}

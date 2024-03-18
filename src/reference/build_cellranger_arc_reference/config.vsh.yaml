@@ -35,6 +35,15 @@ functionality:
       required: true
       description: Output folder
       example: cellranger_reference
+    - type: string
+      name: --genome
+      required: true
+      description: Name of the genome. This will be the name of the output folder.
+      example: GRCh38
+    - type: string
+      name: --organism
+      default: Homo_sapiens
+      description: Name of the organism. This is displayed in the web summary but is otherwise not used in the analysis.
   resources:
     - type: bash_script
       path: script.sh
