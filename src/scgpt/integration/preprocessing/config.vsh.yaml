@@ -110,17 +110,12 @@ functionality:
           required: false
           description: |
             The number of highly variable genes to be subset for tokenization. Set to -1 if no hvg subsetting should be performed.
-<<<<<<< HEAD
-=======
         - name: "--normalize_total"
           type: integer
           min: -1
           default: 10000
           description: |
             The total counts to normalize the data to. Set to -1 if no normalization should be performed.
-<<<<<<< HEAD
->>>>>>> b5d1970733 (integration submodule and add normalize_total flag)
-=======
         - name: "--data_is_raw"
           type: boolean
           default: true
@@ -132,8 +127,6 @@ functionality:
           min: 1
           description: |
             The number of bins to discretize the input data into.
-        
->>>>>>> ec326f8995 (add params)
 
   resources:
     - type: python_script
@@ -153,8 +146,6 @@ platforms:
         __merge__: /src/base/requirements/anndata_mudata.yaml
       - type: python
         packages:
-          - numpy==1.24.3
-          - scipy==1.10.0
           - scgpt==0.2.1
           - ipython
   - type: nextflow
