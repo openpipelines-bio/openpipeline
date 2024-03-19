@@ -1,17 +1,16 @@
 import anndata as ad
+import mudata as mu
 import numpy as np
 from pathlib import Path
 from scgpt.tokenizer.gene_tokenizer import GeneVocab
 from scgpt.preprocess import Preprocessor
-from torchtext.vocab import Vocab
-from torchtext._torchtext import (
-    Vocab as VocabPybind,
-)
+
 
 ## VIASH START
 par = {
-    "input": "src/scgpt/test_resources/Kim2020_Lung.h5ad",
-    "output": "src/scgpt/test_resources/Kim2020_Lung_preprocessed.h5ad",
+    "input": "resources_test/scgpt/test_resources/Kim2020_Lung.h5mu",
+    "output": "resources_test/scgpt/test_resources/Kim2020_Lung_preprocessed.h5mu",
+    "modality": "rna",
     "input_layer": "X",
     "ori_batch_layer_name": "sample",
     "batch_id_layer": "batch_id",
@@ -21,20 +20,21 @@ par = {
     "log1p_layer": "X_log1p",
     "pad_token": "<pad>",
     "filter_gene_by_counts": 3,
-    "filter_cell_by_counts": False,
+    "filter_cell_by_counts": -1,
     "normalize_total": 1e4,
     "n_hvg": 1200,
     "data_is_raw": False,
     "n_input_bins": 51,
-    "load_model_vocab": True,
-    "model_dir": "src/scgpt/model"
+    "model_dir": "resources_test/scgpt/source/",
+    "output_compression": "gzip"
 }
 ## VIASH END
 
 # Read in data
-input_adata = ad.read_h5ad(par["input"])
-adata = input_adata.copy()
+mdata = mu.read(par["input"])
+adata = mdata.mod[par["modality"]]
 
+# Set tokens for integration
 pad_token = par["pad_token"]
 special_tokens = [pad_token, "<cls>", "<eoc>"]
 
@@ -44,27 +44,27 @@ batch_id_labels = adata.obs["str_batch"].astype("category").cat.codes.values
 adata.obs[par["batch_id_layer"]] = batch_id_labels
 adata.var[par["gene_name_layer"]] = adata.var.index.tolist()
 
+# Load model vocab
+model_dir = Path(par["model_dir"])
+vocab_file = model_dir / "vocab.json"
+vocab = GeneVocab.from_file(vocab_file)
+for s in special_tokens:
+    if s not in vocab:
+        vocab.append_token(s)
+
 # Cross-check genes with pre-trained model
 genes = adata.var[par["gene_name_layer"]].tolist()
-
-if par["load_model_vocab"]:
-    model_dir = Path(par["model_dir"])
-    vocab_file = model_dir / "vocab.json"
-    vocab = GeneVocab.from_file(vocab_file)
-    for s in special_tokens:
-        if s not in vocab:
-            vocab.append_token(s)
-else:
-    # bidirectional lookup [gene <-> int]
-    vocab = Vocab(
-        VocabPybind(genes + special_tokens, None)
-    )
-
 adata.var["id_in_vocab"] = [
         1 if gene in vocab else -1 for gene in adata.var[par["gene_name_layer"]]
     ]
 gene_ids_in_vocab = np.array(adata.var["id_in_vocab"])
 adata = adata[:, adata.var["id_in_vocab"] >= 0]
+
+# Set pre-processing settings
+if par["filter_gene_by_counts"] == -1:
+    par["filter_gene_by_counts"] = False
+if par["filter_cell_by_counts"] == -1:
+    par["filter_cell_by_counts"] = False
 
 # Preprocess data
 preprocessor = Preprocessor(
@@ -83,4 +83,6 @@ preprocessor = Preprocessor(
 
 preprocessor(adata, batch_key="str_batch")
 
-adata.write_h5ad(par["output"])
+# copy results to mudata
+mdata.mod[par["modality"]] = adata
+mdata.write(par["output"], compression=par["output_compression"])
