@@ -1,3 +1,4 @@
+from time import sleep
 import pytest
 import sys
 import mudata as mu
@@ -12,13 +13,13 @@ meta = {
     "resources_dir": "resources_test/scgpt",
     "executable": "./target/docker/scgpt/integration_pad_tokenize/integration_pad_tokenize",
     "temp_dir": "tmp",
-    "config": "./target/docker/scgpt/integration_pad_tokenize/.config.vsh.yaml",
+    "config": "./target/docker/scgpt/integration_pad_tokenize/.config.vsh.yaml"
 }
 ## VIASH END
 
-input = f"{meta['resources_dir']}/test_resources/Kim2020_Lung.h5mu"
-model_dir = f"{meta['resources_dir']}/source/"
-input_file = mu.read("resources_test/scgpt/test_resources/Kim2020_Lung.h5mu")
+input = f"{meta['resources_dir']}/scgpt/test_resources/Kim2020_Lung.h5mu"
+model_dir = f"{meta['resources_dir']}/scgpt/source/"
+input_file = mu.read(input)
 
 ## START TEMPORARY WORKAROUND (until all scgpt modules are implemented)
 # Read in data
@@ -78,7 +79,7 @@ def test_integration_pad_tokenize(run_component, tmp_path):
     output_values = tmp_path / "values.pt"
     output_padding_mask = tmp_path / "padding_mask.pt"
     
-    input_preprocessed = f"{meta['resources_dir']}/test_resources/Kim2020_Lung_preprocessed.h5mu"
+    input_preprocessed = f"{meta['resources_dir']}/scgpt/test_resources/Kim2020_Lung_preprocessed.h5mu"
     input_file.write(input_preprocessed)
 
     run_component([
