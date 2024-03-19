@@ -50,7 +50,7 @@ cellranger-atac mkfastq \
   ${meta_cpus:+--localcores=$meta_cpus} \
   ${memory_gb:+--localmem=$memory_gb} \
   ${par_lanes:+--lanes=${par_lanes[*]}} \
-  ${par_use_bases_mask:+--use-bases-mask=${par_use_bases_mask[*]} \
+  ${par_use_bases_mask:+--use-bases-mask=${par_use_bases_mask[*]}} \
   ${par_delete_undetermined:+--delete-undetermined} \
   ${par_barcode_mismatches:+--barcode-mismatches=$par_barcode_mismatches}
 unset IFS
