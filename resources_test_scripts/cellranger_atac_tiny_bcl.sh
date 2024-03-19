@@ -22,6 +22,8 @@ function clean_up {
 }
 trap clean_up EXIT
 
+viash ns build -q "download_file|cellranger_atac_mkfastq" -p docker --setup cb
+
 # download bcl data
 if [ ! -f "${OUT}/bcl/sample_sheet.csv" ]; then
   mkdir -p "$OUT/bcl"
@@ -76,6 +78,6 @@ if [ ! -d "${OUT}/fastqs" ]; then
 
   target/docker/demux/cellranger_atac_mkfastq/cellranger_atac_mkfastq \
     --input "${OUT}/bcl" \
-    --csv ${OUT}/bcl/layout.csv \
+    --csv "${OUT}/bcl/layout.csv" \
     --output "${OUT}/fastqs"
 fi
