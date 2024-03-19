@@ -431,9 +431,9 @@ ENTRYPOINT []
 RUN apt-get update && apt-get upgrade -y
 LABEL org.opencontainers.image.authors="Angela Oliveira Pisco, Samuel D'Souza, Robrecht Cannoodt"
 LABEL org.opencontainers.image.description="Companion container for running component demux cellranger_mkfastq"
-LABEL org.opencontainers.image.created="2024-03-18T02:35:17Z"
+LABEL org.opencontainers.image.created="2024-03-19T02:35:14Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="d9d94f38e94b537652ecfcb04b93f5bb01ef98b5"
+LABEL org.opencontainers.image.revision="4945934d43e3ac18c0bc1f8bb6310e2f11b04589"
 LABEL org.opencontainers.image.version="integration_build"
 
 VIASHDOCKER
