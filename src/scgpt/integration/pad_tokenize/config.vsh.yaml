@@ -1,5 +1,5 @@
 functionality:
-  name: pad_tokenize
+  name: integration_pad_tokenize
   namespace: "scgpt"
   description: |
     Tokenize and pad a batch of data for scGPT inference or training.
@@ -14,7 +14,7 @@ functionality:
           type: file
           direction: input
           required: true
-          example: input.h5ad
+          example: input.h5mu
           description: |
             The input h5mu file of pre-processed data.
         - name: "--modality"
@@ -25,7 +25,7 @@ functionality:
           type: file
           direction: input
           required: true
-          example: foundational_model/scgpt
+          example: foundational_model/scgpt/
           description: |
             The directory containing the model files. Must contain 'vocab.json', 'model.pt' and 'args.json' files.
         - name: "--input_layer"
@@ -33,13 +33,13 @@ functionality:
           default: "X_binned"
           required: false
           description: |
-            The name of the layer to be padded and tokenized.
+            The key of the layer containing the pre-processed counts to be padded and tokenized.
         - name: "--gene_name_layer"
           type: string
           default: "gene_name"
           required: false
           description: |
-            The name of the layer containing gene names.
+            The name of adata.var column containing the gene names.
 
     - name: Outputs
       arguments:
@@ -79,16 +79,6 @@ functionality:
           required: false
           description: |
             The value of the padding token.
-        - name: "--n_hvg"
-          type: integer
-          default: 1200
-          required: false
-          description: |
-            The number of highly variable genes to be subset for tokenization.  
-        # - name: "--load_model_vocab"
-        #   type: boolean_true
-        #   description: |
-        #     Whether to load the vocabulary from the model or use pytorch vocab.
 
   resources:
     - type: python_script
