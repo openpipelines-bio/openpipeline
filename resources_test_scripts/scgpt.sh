@@ -13,11 +13,10 @@ foundation_model_dir="$OUT/source"
 mkdir -p "$foundation_model_dir"
 
 # install gdown if necessary
-if pip freeze | grep -q "^gdown=="; then
-    echo "gdown is already installed."
-else
-    echo "gdown is not installed. Installing..."
-    pip install "gdown"
+# Check whether gdown is available
+if ! command -v gdown &> /dev/null; then
+    echo "This script requires gdown. Please make sure the binary is added to your PATH."
+    exit 1
 fi
 
 # download foundational model files (full_human)
