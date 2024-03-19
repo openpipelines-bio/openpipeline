@@ -1,0 +1,154 @@
+functionality:
+  name: integration_preprocessing
+  namespace: "scgpt"
+  description: |
+   Preprocess data for scGPT fine-tuning or zero-shot inference.
+  authors:
+    - __merge__: /src/authors/dorien_roosen.yaml
+      roles: [ maintainer, author ]
+
+  argument_groups:
+    - name: Inputs
+      arguments:
+        - name: "--input"
+          type: file
+          direction: input
+          required: true
+          example: input.h5mu
+          description: |
+            Input h5mu file.
+        - name: "--modality"
+          type: string
+          default: "rna"
+          required: false
+        - name: "--model_dir"
+          type: file
+          direction: input
+          required: true
+          example: foundational_model/scgpt
+          description: |
+            The directory containing the model files. Must contain 'vocab.json', 'model.pt' and 'args.json' files.
+        - name: "--input_layer"
+          type: string
+          default: "X"
+          description: |
+            The key in the mudata layer to use as raw data.
+        - name: "--ori_batch_layer_name"
+          type: string
+          default: "sample"
+          description: |
+            The column in the adata.obs that contains the batch information.
+        - name: "--gene_name_layer"
+          type: string
+          default: "gene_name"
+          required: false
+          description: |
+            The name of adata.var column containing the gene names.
+        
+
+    - name: Outputs
+      arguments:
+        - name: "--output"
+          direction: output
+          type: file
+          example: output.h5mu
+          required: true
+          description: |
+            The output h5mu file containing the preprocessed data.    
+        - name: "--output_compression"
+          type: string
+          example: "gzip"
+          required: false
+          choices: ["gzip", "lzf"]
+          description: |
+            The compression algorithm to use for the output h5mu file.
+        - name: "--batch_id_layer"
+          type: string
+          default: "batch_id"
+          description: |
+            The name of the adata.obs column to write categorical batch ids to.
+        - name: "--normalized_total_layer"
+          type: string
+          default: "X_normed"
+          description: |
+            The name of the adata layer to write the normalized total counts to.
+        - name: "--binned_layer"
+          type: string
+          default: "X_binned"
+          description: |
+            The name of the adata layer to write the binned data to.
+        - name: "--log1p_layer"
+          type: string
+          default: "X_log1p"
+          description: |
+            The name of the adata layer to write the log1p transformed data to. Will only be written if 'data_is_raw' flag is set to true.
+
+    - name: Arguments
+      arguments:
+        - name: "--pad_token"
+          type: string
+          default: "<pad>"
+          required: false
+          description: |
+            Token used for padding.
+        - name: "--filter_gene_by_counts"
+          default: 3
+          min: -1
+          type: integer
+          description: |
+            Number of counts to filter genes by. Set to -1 if no gene count filtering should be performed.
+        - name: "filter_cell_by_counts"
+          default: -1
+          min: -1
+          type: integer
+          description: |
+            Number of counts to filter cells by. Set to -1 if no cell count filtering should be performed.
+        - name: "--n_hvg"
+          type: integer
+          default: 1200
+          min: -1
+          required: false
+          description: |
+            The number of highly variable genes to be subset for tokenization. Set to -1 if no hvg subsetting should be performed.
+        - name: "--normalize_total"
+          type: integer
+          min: -1
+          default: 10000
+          description: |
+            The total counts to normalize the data to. Set to -1 if no normalization should be performed.
+        - name: "--data_is_raw"
+          type: boolean
+          default: true
+          description: |
+            Whether the input data is raw and needs to be log1p transformed.
+        - name: "--n_input_bins"
+          type: integer
+          default: 51
+          min: 1
+          description: |
+            The number of bins to discretize the input data into.
+        
+
+  resources:
+    - type: python_script
+      path: script.py
+
+platforms:
+  - type: docker
+    image: python:3.10
+    setup:
+      - type: apt
+        packages: 
+          - procps
+          - gfortran
+          - cmake
+          - libopenblas-dev
+      - type: python
+        __merge__: /src/base/requirements/anndata_mudata.yaml
+      - type: python
+        packages:
+          - numpy==1.24.3
+          - scipy==1.10.0
+          - scgpt==0.2.1
+          - ipython
+  - type: nextflow
