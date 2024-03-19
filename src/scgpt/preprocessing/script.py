@@ -1,4 +1,3 @@
-import anndata as ad
 import mudata as mu
 import numpy as np
 from pathlib import Path
@@ -65,6 +64,8 @@ if par["filter_gene_by_counts"] == -1:
     par["filter_gene_by_counts"] = False
 if par["filter_cell_by_counts"] == -1:
     par["filter_cell_by_counts"] = False
+if par["normalize_total"] == -1:
+    par["normalize_total"] = False
 
 # Preprocess data
 preprocessor = Preprocessor(
