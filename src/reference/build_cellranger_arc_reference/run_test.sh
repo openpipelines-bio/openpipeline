@@ -30,6 +30,8 @@ $meta_executable \
   --motifs_file "$meta_resources_dir/reference_gencodev41_chr1/JASPAR2024_CORE_non-redundant_pfms_jaspar.txt.modified" \
   --output "$tmpdir/myreference.tar.gz" \
   --non_nuclear_contigs "" \
+  --organism "Homo_sapiens" \
+  --genome "GRCh38" \
   ---cpus ${meta_memory_gb:-1} \
   ---memory ${meta_memory_gb:-5}GB
 
