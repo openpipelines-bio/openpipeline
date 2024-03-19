@@ -1,8 +1,8 @@
 functionality:
-  name: pad_tokenize
+  name: integration_pad_tokenize
   namespace: "scgpt"
   description: |
-    Tokenize and pad a batch of data for scGPT inference or training.
+    Tokenize and pad a batch of data for scGPT integration zero-shot inference or fine-tuning.
   authors:
     - __merge__: /src/authors/dorien_roosen.yaml
       roles: [ maintainer, author ]
@@ -79,20 +79,14 @@ functionality:
           required: false
           description: |
             The value of the padding token.
-        - name: "--n_hvg"
-          type: integer
-          default: 1200
-          required: false
-          description: |
-            The number of highly variable genes to be subset for tokenization.  
-        # - name: "--load_model_vocab"
-        #   type: boolean_true
-        #   description: |
-        #     Whether to load the vocabulary from the model or use pytorch vocab.
 
   resources:
     - type: python_script
       path: script.py
+  test_resources:
+    - type: python_script
+      path: test.py
+    - path: /resources_test/scgpt/
 
 platforms:
   - type: docker
@@ -108,9 +102,9 @@ platforms:
         __merge__: /src/base/requirements/anndata_mudata.yaml
       - type: python
         packages:
-          - torch==2.1.2
-          - numpy==1.26.4
-          - scipy==1.10.0
           - scgpt==0.2.1
           - ipython
+    test_setup:
+      - type: python
+        __merge__: [ /src/base/requirements/viashpy.yaml, .]
   - type: nextflow

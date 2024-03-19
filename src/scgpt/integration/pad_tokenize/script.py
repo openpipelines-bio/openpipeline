@@ -15,17 +15,16 @@ par = {
     "output_padding_mask": 'resources_test/scgpt/test_resources/Kim2020_Lung_padding_mask.pt',
     "pad_token": "<pad>",
     "pad_value": -2,
+    "modality": "rna",
     "input_layer": "X_binned",
     "gene_name_layer": "gene_name",
-    "model_dir": "src/scgpt/model",
-    "n_hvg": 1200
+    "model_dir": "resources_test/scgpt/source/"
 }
 ## VIASH END
 
 # Read in data
 mdata = mu.read(par["input"])
 input_adata = mdata.mod[par["modality"]]
-# input_adata = ad.read_h5ad(par["input"])
 adata = input_adata.copy()
 
 # Set padding specs
@@ -54,11 +53,14 @@ vocab.set_default_index(vocab["<pad>"])
 ntokens = len(vocab)
 gene_ids = np.array(vocab(genes), dtype=int)
 
+# Fetch number of subset hvg
+n_hvg = adata.var.shape[0]
+
 # Tokenize and pad data
 tokenized_data = tokenize_and_pad_batch(
     all_counts,
     gene_ids,
-    max_len=par["n_hvg"]+1,
+    max_len=n_hvg+1,
     vocab=vocab,
     pad_token=pad_token,
     pad_value=pad_value,
