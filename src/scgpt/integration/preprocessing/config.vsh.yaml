@@ -103,6 +103,15 @@ functionality:
           required: false
           description: |
             The number of highly variable genes to be subset for tokenization. Set to -1 if no hvg subsetting should be performed.
+<<<<<<< HEAD
+=======
+        - name: "--normalize_total"
+          type: integer
+          min: -1
+          default: 10000
+          description: |
+            The total counts to normalize the data to. Set to -1 if no normalization should be performed.
+>>>>>>> b5d1970733 (integration submodule and add normalize_total flag)
 
   resources:
     - type: python_script
