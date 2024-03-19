@@ -66,20 +66,22 @@ if par["filter_cell_by_counts"] == -1:
     par["filter_cell_by_counts"] = False
 if par["normalize_total"] == -1:
     par["normalize_total"] = False
+if par["n_hvg"] == -1:
+    par["n_hvg"] = False
 
 # Preprocess data
 preprocessor = Preprocessor(
-    use_key=par["input_layer"],  # the key in adata.layers to use as raw data
-    filter_gene_by_counts=par["filter_gene_by_counts"],  # step 1
-    filter_cell_by_counts=par["filter_cell_by_counts"],  # step 2
-    normalize_total=par["normalize_total"],  # 3. whether to normalize the raw data and to what sum
-    result_normed_key=par["normalized_total_layer"],  # the key in adata.layers to store the normalized data
-    log1p=par["data_is_raw"],  # 4. whether to log1p the normalized data
+    use_key=par["input_layer"],
+    filter_gene_by_counts=par["filter_gene_by_counts"],
+    filter_cell_by_counts=par["filter_cell_by_counts"],
+    normalize_total=par["normalize_total"],
+    result_normed_key=par["normalized_total_layer"],
+    log1p=par["data_is_raw"],
     result_log1p_key=par["log1p_layer"],
-    subset_hvg=par["n_hvg"],  # 5. whether to subset the raw data to highly variable genes
+    subset_hvg=par["n_hvg"],
     hvg_flavor="seurat_v3" if par["data_is_raw"] else "cell_ranger",
-    binning=par["n_input_bins"],  # 6. whether to bin the raw data and to what number of bins
-    result_binned_key=par["binned_layer"],  # the key in adata.layers to store the binned data
+    binning=par["n_input_bins"],
+    result_binned_key=par["binned_layer"],
     )
 
 preprocessor(adata, batch_key="str_batch")

@@ -55,6 +55,13 @@ functionality:
           required: true
           description: |
             The output h5mu file containing the preprocessed data.    
+        - name: "--output_compression"
+          type: string
+          example: "gzip"
+          required: false
+          choices: ["gzip", "lzf"]
+          description: |
+            The compression algorithm to use for the output h5mu file.
         - name: "--batch_id_layer"
           type: string
           default: "batch_id"
@@ -109,6 +116,18 @@ functionality:
           default: 10000
           description: |
             The total counts to normalize the data to. Set to -1 if no normalization should be performed.
+        - name: "--data_is_raw"
+          type: boolean
+          default: true
+          description: |
+            Whether the input data is raw and needs to be log1p transformed.
+        - name: "--n_input_bins"
+          type: integer
+          default: 51
+          min: 1
+          description: |
+            The number of bins to discretize the input data into.
+        
 
   resources:
     - type: python_script
