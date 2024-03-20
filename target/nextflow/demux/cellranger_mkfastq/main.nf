@@ -2984,7 +2984,7 @@ meta = [
         {
           "type" : "docker",
           "run" : [
-            "apt-get update && apt-get upgrade -y"
+            "DEBIAN_FRONTEND=noninteractive apt update && \\\\\napt upgrade -y && apt install -y procps && rm -rf /var/lib/apt/lists/*\n"
           ]
         }
       ],
@@ -3061,7 +3061,7 @@ meta = [
     "platform" : "nextflow",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/demux/cellranger_mkfastq",
     "viash_version" : "0.8.5",
-    "git_commit" : "41c04e70f0a66647dc1f96006a5aeff6ce559c98",
+    "git_commit" : "aee52baeb0e665134e5513f886c97585a7d64c40",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))

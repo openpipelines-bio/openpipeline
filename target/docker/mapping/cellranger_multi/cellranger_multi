@@ -627,15 +627,17 @@ FROM ghcr.io/data-intuitive/cellranger:7.0
 ENTRYPOINT []
 
  
-RUN DEBIAN_FRONTEND=noninteractive apt update && apt upgrade -y && rm -rf /var/lib/apt/lists/*
+RUN DEBIAN_FRONTEND=noninteractive apt update && \
+apt upgrade -y && apt install -y procps && rm -rf /var/lib/apt/lists/*
+
 RUN pip install --upgrade pip && \
   pip install --upgrade --no-cache-dir "pandas" "pyyaml"
 
 LABEL org.opencontainers.image.authors="Angela Oliveira Pisco, Robrecht Cannoodt, Dries De Maeyer"
 LABEL org.opencontainers.image.description="Companion container for running component mapping cellranger_multi"
-LABEL org.opencontainers.image.created="2024-03-15T11:28:07Z"
+LABEL org.opencontainers.image.created="2024-03-20T10:52:19Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="41c04e70f0a66647dc1f96006a5aeff6ce559c98"
+LABEL org.opencontainers.image.revision="aee52baeb0e665134e5513f886c97585a7d64c40"
 LABEL org.opencontainers.image.version="main_build"
 
 VIASHDOCKER

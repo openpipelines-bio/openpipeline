@@ -416,15 +416,14 @@ FROM ghcr.io/data-intuitive/cellranger:7.0
 ENTRYPOINT []
 
  
-RUN apt-get update && \
-  DEBIAN_FRONTEND=noninteractive apt-get install -y pigz && \
-  rm -rf /var/lib/apt/lists/*
+RUN DEBIAN_FRONTEND=noninteractive apt update && \
+apt upgrade -y && apt install -y procps pigz && rm -rf /var/lib/apt/lists/*
 
 LABEL org.opencontainers.image.authors="Angela Oliveira Pisco, Robrecht Cannoodt"
 LABEL org.opencontainers.image.description="Companion container for running component reference build_cellranger_reference"
-LABEL org.opencontainers.image.created="2024-03-15T11:28:12Z"
+LABEL org.opencontainers.image.created="2024-03-20T10:52:23Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="41c04e70f0a66647dc1f96006a5aeff6ce559c98"
+LABEL org.opencontainers.image.revision="aee52baeb0e665134e5513f886c97585a7d64c40"
 LABEL org.opencontainers.image.version="main_build"
 
 VIASHDOCKER

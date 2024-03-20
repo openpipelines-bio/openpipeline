@@ -429,12 +429,15 @@ FROM ghcr.io/data-intuitive/bclconvert:3.10
 ENTRYPOINT []
 
  
-RUN :
+RUN apt-get update && \
+  DEBIAN_FRONTEND=noninteractive apt-get install -y procps && \
+  rm -rf /var/lib/apt/lists/*
+
 LABEL org.opencontainers.image.authors="Toni Verbeiren, Marijke Van Moerbeke"
 LABEL org.opencontainers.image.description="Companion container for running component demux bcl_convert"
-LABEL org.opencontainers.image.created="2024-03-15T11:28:13Z"
+LABEL org.opencontainers.image.created="2024-03-20T10:52:23Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="41c04e70f0a66647dc1f96006a5aeff6ce559c98"
+LABEL org.opencontainers.image.revision="aee52baeb0e665134e5513f886c97585a7d64c40"
 LABEL org.opencontainers.image.version="main_build"
 
 VIASHDOCKER
