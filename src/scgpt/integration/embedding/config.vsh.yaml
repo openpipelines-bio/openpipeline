@@ -1,0 +1,142 @@
+functionality:
+  name: integration_embedding
+  namespace: scgpt
+  description: |
+    Embedding of a batch of tokenized data for scGPT zero-shot or fine-tuning integration.
+  authors:
+    - __merge__: /src/authors/dorien_roosen.yaml
+      roles: [ maintainer, author ]
+
+  argument_groups:
+    - name: Inputs
+      arguments:
+        - name: "--input"
+          type: file
+          direction: input
+          required: true
+          example: input.h5ad
+          description: |
+            The input h5mu file containing of pre-processed data. 
+        - name: "--model_dir"
+          type: file
+          direction: input
+          required: true
+          example: foundational_model/scgpt
+          description: |
+            The directory containing the model files. Must contain 'vocab.json', 'model.pt' and 'args.json' files.
+        - name: "--input_gene_ids"
+          type: file
+          direction: input
+          required: true
+          example: gene_ids.pt
+          description: |
+            Path to pytorch tensor file containing the gene ids.
+        - name: "--input_values"
+          type: file
+          direction: input
+          required: true
+          example: values.pt
+          description: |
+            Path to pytorch tensor file containing the tokenized and padded values.
+        - name: "--input_padding_mask"
+          type: file
+          direction: input
+          required: true
+          example: padding_mask.pt
+          description: |
+            Path to pytorch tensor file containing the padding mask.
+        - name: "--gene_name_layer"
+          type: string
+          default: "gene_name"
+          required: false
+          description: |
+            The name of adata.var column containing gene names.
+        - name: "--batch_id_layer"
+          type: string
+          default: "batch_id"
+          required: false
+          description: |
+            The name of the adata.obs column containing the batch ids.
+
+    - name: Outputs
+      arguments:
+        - name: "--output"
+          type: file
+          required: true
+          description: |
+            Path to output anndata file containing pre-processed data as well as scGPT embeddings.
+          direction: output
+          example: output.h5ad
+        - name: "--embedding_layer"
+          type: string
+          default: "X_scGPT"
+          required: false
+          description: |
+            The name of the adata.obsm array to which scGPT embeddings will be written.
+
+    - name: Arguments
+      arguments:
+        - name: "--pad_token"
+          type: string
+          default: "<pad>"
+          required: false
+          description: |
+            The name of the layer to be padded and tokenized
+        - name: "--pad_value"
+          type: integer
+          default: -2
+          required: false
+          description: |
+            The value to be used for padding.
+        - name: "--dropout"
+          type: double
+          default: 0.2
+        - name: DSBN
+          description: |
+            Domain-specific batch normalization
+          type: boolean
+          default: true
+        - name: "--GEPC"
+          description: |
+            Gene Expression modeling for Cell objective
+          type: boolean
+          default: true
+        - name: "--n_input_bins"
+          type: integer
+          default: 51
+        - name: "--ecs_threshold"
+          type: double
+          default: 0.8
+        - name: "--explicit_zero_prob"
+          type: boolean
+          default: true
+        - name: "--use_fast_transformer"
+          type: boolean
+          default: false
+        - name: "--pre_norm"
+          type: boolean
+          default: false
+        - name: "--device"
+          choices: [cpu, cuda]
+          type: string
+          default: cpu
+          description: |
+            Whether to generate embeddings using cpu or gpu (cuda) device.
+        - name: "--batch_size"
+          type: integer
+          default: 64
+
+  resources:
+    - type: python_script
+      path: script.py
+
+platforms:
+  - type: docker
+    image: nvcr.io/nvidia/pytorch:23.09-py3
+    setup:
+      - type: python
+        __merge__: [ /src/base/requirements/anndata_mudata.yaml, /src/base/requirements/scgpt.yaml]
+
+  - type: nextflow
+    directives:
+      label: [midmem]
