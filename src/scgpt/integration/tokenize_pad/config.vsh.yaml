@@ -1,0 +1,100 @@
+functionality:
+  name: integration_pad_tokenize
+  namespace: "scgpt"
+  description: |
+    Tokenize and pad a batch of data for scGPT integration zero-shot inference or fine-tuning.
+  authors:
+    - __merge__: /src/authors/dorien_roosen.yaml
+      roles: [ maintainer, author ]
+
+  argument_groups:
+    - name: Inputs
+      arguments:
+        - name: "--input"
+          type: file
+          direction: input
+          required: true
+          example: input.h5ad
+          description: |
+            The input h5mu file of pre-processed data.
+        - name: "--modality"
+          type: string
+          default: "rna"
+          required: false
+        - name: "--model_dir"
+          type: file
+          direction: input
+          required: true
+          example: foundational_model/scgpt
+          description: |
+            The directory containing the model files. Must contain 'vocab.json', 'model.pt' and 'args.json' files.
+        - name: "--input_layer"
+          type: string
+          default: "X_binned"
+          required: false
+          description: |
+            The name of the layer to be padded and tokenized.
+        - name: "--gene_name_layer"
+          type: string
+          default: "gene_name"
+          required: false
+          description: |
+            The name of the layer containing gene names.
+
+    - name: Outputs
+      arguments:
+        - name: "--output_gene_ids"
+          type: file
+          required: true
+          description: |
+            The output pytorch tensor file containing the gene ids.
+          direction: output
+          example: gene_ids.pt
+        - name: "--output_values"
+          type: file
+          required: true
+          direction: output
+          description: |
+            The output pytorch tensor file contianing the tokenized and padded values.
+          example: values.pt
+        - name: "--output_padding_mask"
+          type: file
+          direction: output
+          required: true
+          example: padding_mask.pt
+          description: |
+            The output pytorch tensor file containing the padding mask.
+
+    - name: Arguments
+      arguments:
+        - name: "--pad_token"
+          type: string
+          default: "<pad>"
+          required: false
+          description: |
+            Token used for padding.
+        - name: "--pad_value"
+          type: integer
+          default: -2
+          required: false
+          description: |
+            The value of the padding token.
+
+  resources:
+    - type: python_script
+      path: script.py
+  test_resources:
+    - type: python_script
+      path: test.py
+    - path: /resources_test/scgpt/
+
+platforms:
+  - type: docker
+    image: nvcr.io/nvidia/pytorch:23.09-py3
+    setup:
+      - type: python
+        __merge__: [/src/base/requirements/anndata_mudata.yaml, /src/base/requirements/scgpt.yaml]
+    test_setup:
+      - type: python
+        __merge__: [ /src/base/requirements/viashpy.yaml ]
+  - type: nextflow
