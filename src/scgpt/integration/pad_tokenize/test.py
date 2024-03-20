@@ -1,4 +1,3 @@
-from time import sleep
 import pytest
 import sys
 import mudata as mu
@@ -78,7 +77,7 @@ def test_integration_pad_tokenize(run_component, tmp_path):
     output_gene_ids = tmp_path / "gene_ids.pt"
     output_values = tmp_path / "values.pt"
     output_padding_mask = tmp_path / "padding_mask.pt"
-    
+
     input_preprocessed = f"{meta['resources_dir']}/scgpt/test_resources/Kim2020_Lung_preprocessed.h5mu"
     input_file.write(input_preprocessed)
 
