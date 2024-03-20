@@ -28,6 +28,7 @@ functionality:
           type: string
           example: "gene_name"
           required: false
+          default: "gene_name"
           description: |
             The name of the layer containing gene names.
 
@@ -48,7 +49,7 @@ functionality:
           default: "<pad>"
           required: false
           description: |
-            The name of the layer to be padded and tokenized
+            The padding token used in the model.
         - name: "--load_model_vocab"
           type: boolean_true
           description: |
@@ -71,22 +72,13 @@ functionality:
 
 platforms:
   - type: docker
-    image: python:3.10
+    image: nvcr.io/nvidia/pytorch:23.09-py3
     setup:
-      - type: apt
-        packages: 
-          - procps
-          - gfortran
-          - cmake
-          - libopenblas-dev
       - type: python
         __merge__: /src/base/requirements/anndata_mudata.yaml
+      - type: docker
+        run:
+          echo "build --jobs 4" >> /etc/bazel.bazelrc
       - type: python
         packages:
-          - torch==2.1.2
-          - numpy==1.26.4
-          - scipy==1.10.0
           - scgpt==0.2.1
-          - ipython
-    __merge__: [ /src/base/requirements/python_test_setup.yaml, .]
-  - type: nextflow
