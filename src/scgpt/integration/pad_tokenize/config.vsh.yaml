@@ -90,21 +90,11 @@ functionality:
 
 platforms:
   - type: docker
-    image: python:3.10
+    image: nvcr.io/nvidia/pytorch:23.09-py3
     setup:
-      - type: apt
-        packages: 
-          - procps
-          - gfortran
-          - cmake
-          - libopenblas-dev
       - type: python
-        __merge__: /src/base/requirements/anndata_mudata.yaml
-      - type: python
-        packages:
-          - scgpt==0.2.1
-          - ipython
+        __merge__: [/src/base/requirements/anndata_mudata.yaml, /src/base/requirements/scgpt.yaml]
     test_setup:
       - type: python
-        __merge__: [ /src/base/requirements/viashpy.yaml, .]
+        __merge__: [ /src/base/requirements/viashpy.yaml ]
   - type: nextflow
