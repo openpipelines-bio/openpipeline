@@ -14,9 +14,13 @@ functionality:
           type: file
           direction: input
           required: true
-          example: input.h5ad
+          example: input.h5mu
           description: |
             The input h5mu file containing of pre-processed data.
+        - name: "--modality"
+          type: string
+          default: "rna"
+          required: false
         - name: "--model_dir"
           type: file
           direction: input
@@ -38,7 +42,7 @@ functionality:
           type: file
           direction: output
           required: true
-          example: output.h5ad
+          example: output.h5mu
           description: |
             The output cross-checked anndata file.
 
@@ -51,7 +55,7 @@ functionality:
           description: |
             The padding token used in the model.
         - name: "--load_model_vocab"
-          type: boolean_true
+          type: boolean
           description: |
             Whether to load the vocabulary from the model or use pytorch vocab.
         - name: "--ori_batch_layer_name"
@@ -82,3 +86,7 @@ platforms:
       - type: python
         packages:
           - scgpt==0.2.1
+    test_setup:
+      - type: python
+        __merge__: [ /src/base/requirements/viashpy.yaml ]
+  - type: nextflow

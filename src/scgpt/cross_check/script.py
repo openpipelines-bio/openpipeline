@@ -1,6 +1,7 @@
 import sys
 import os
 import anndata as ad
+import mudata as mu
 import numpy as np
 import pandas as pd
 from pathlib import Path
@@ -12,14 +13,15 @@ from torchtext._torchtext import (
 
 ## VIASH START
 par = {
-    "input": "src/scgpt/test_resources/Kim2020_Lung.h5ad",
-    "output": "src/scgpt/test_resources/Kim2020_Lung_crosschecked.h5ad",
+    "input": "resources_test/scgpt/test_resources/Kim2020_Lung.h5mu",
+    "output": "output.h5mu",
+    "modality": "rna",
     "ori_batch_layer_name": "sample",
     "batch_id_layer": "batch_id",
     "gene_name_layer": "gene_name",
     "pad_token": "<pad>",
     "load_model_vocab": True,
-    "model_dir": "src/scgpt/model"
+    "model_dir": "resources_test/scgpt/source"
 }
 ## VIASH END
 
@@ -44,14 +46,18 @@ logger = setup_logger()
 
 # Read in data
 logger.info(f"Reading {par['input']}")
-input_adata = ad.read_h5ad(par["input"])
-adata = input_adata.copy()
+mudata = mu.read_h5mu(par["input"])
+adata = mudata.mod[par["modality"]].copy()
 
 pad_token = par["pad_token"]
 special_tokens = [pad_token, "<cls>", "<eoc>"]
 
 # Make batch a category column
 logger.info(f"Converting batch column '{par['ori_batch_layer_name']}' to category")
+
+if par["ori_batch_layer_name"] not in adata.obs.columns:
+    raise ValueError(f"Batch column '{par['ori_batch_layer_name']}' not found in input data.")
+
 adata.obs["str_batch"] = adata.obs[par["ori_batch_layer_name"]].astype(str).tolist()
 batch_id_labels = adata.obs["str_batch"].astype("category").cat.codes.values
 adata.obs[par["batch_id_layer"]] = batch_id_labels.astype(str).tolist()
@@ -66,8 +72,9 @@ if par["load_model_vocab"]:
     
     if not model_dir.exists():
         raise FileNotFoundError(f"Model directory '{model_dir}' does not exist.")
-    if ['vocab.json', 'model.pt', 'args.json'] not in os.listdir(model_dir):
-        raise FileNotFoundError(f"Model directory '{model_dir}' does not contain one or more of the required files 'vocab.json', 'model.pt', 'args.json'.")
+    required_files = ['vocab.json', 'best_model.pt', 'args.json']
+    if not all(file in os.listdir(model_dir) for file in required_files):
+        raise FileNotFoundError(f"Model directory '{model_dir}' does not contain all of the required files: {', '.join(required_files)}.")
     
     vocab_file = model_dir / "vocab.json"
     vocab = GeneVocab.from_file(vocab_file)
@@ -86,14 +93,7 @@ adata.var["id_in_vocab"] = [
 gene_ids_in_vocab = np.array(adata.var["id_in_vocab"])
 adata = adata[:, adata.var["id_in_vocab"] >= 0]
 
-logger.info("Data types of columns in 'obs':")
-for column_name, dtype in adata.obs.dtypes.items():
-    logger.info(f"Column '{column_name}': {dtype}")
-
-# Check dtypes of all columns in var
-logger.info("Data types of columns in 'var':")
-for column_name, dtype in adata.var.dtypes.items():
-    logger.info(f"Column '{column_name}': {dtype}")
+mudata.mod[par["modality"]] = adata
 
 logger.info(f"Writing to {par['output']}")
-adata.write_h5ad(par["output"])
+mudata.write_h5mu(par["output"])
