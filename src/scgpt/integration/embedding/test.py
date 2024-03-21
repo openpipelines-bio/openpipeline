@@ -18,7 +18,7 @@ from scgpt.preprocess import Preprocessor
 
 ## VIASH START
 meta = {
-    "resources_dir": "resources_test/scgpt",
+    "resources_dir": "resources_test",
     "executable": "./target/docker/scgpt/integration_embedding/integration_embedding",
     "temp_dir": "tmp",
     "config": "./target/docker/scgpt/integration_embedding/.config.vsh.yaml"
@@ -30,10 +30,6 @@ model_dir = f"{meta['resources_dir']}/scgpt/source/"
 input_file = mu.read(input)
 
 ## START TEMPORARY WORKAROUND (until all scgpt modules are implemented)
-input_file.mod["rna"] = input_file.mod["rna"][
-    ["TTTGTCATCCTTTCTC_LUNG_T06"], 
-    ['A2M', 'AARD', 'ABCA3', 'ABHD11-AS1', 'ACKR1', 'ACO1', 'ACP5', 'ACTA1']
-    ]
 # Read in data
 adata = input_file.mod["rna"]
 
@@ -80,7 +76,8 @@ preprocessor = Preprocessor(
 
 preprocessor(adata, batch_key="str_batch")
 
-input_file.mod["rna"] = adata
+#input_file.mod["rna"] = adata
+#########
 
 all_counts = (
     adata.layers["X_binned"].A
@@ -89,9 +86,9 @@ all_counts = (
 )
 
 # Fetch gene names and look up tokens in vocab
-
 vocab.set_default_index(vocab["<pad>"])
 ntokens = len(vocab)
+genes = adata.var["gene_name"].tolist()
 gene_ids = np.array(vocab(genes), dtype=int)
 
 # Fetch number of subset hvg
@@ -118,20 +115,20 @@ padding_mask = all_gene_ids.eq(vocab[pad_token])
 ## END OF TEMPORARY WORKAROUND
 
 def test_integration_embedding(run_component, tmp_path):
-    
+
     input_gene_ids = tmp_path / "gene_ids.pt"
     input_values = tmp_path / "values.pt"
     input_padding_mask = tmp_path / "padding_mask.pt"
-    
+
     torch.save(all_gene_ids, input_gene_ids)
     torch.save(all_values, input_values)
     torch.save(padding_mask, input_padding_mask)
 
     input_preprocessed = f"{meta['resources_dir']}/scgpt/test_resources/Kim2020_Lung_preprocessed.h5mu"
     input_file.write(input_preprocessed)
-    
+
     output_embedding_file = tmp_path / "Kim2020_Lung_embedded.h5mu"
-    
+
     run_component([
         "--input", input_preprocessed,
         "--modality", "rna",
@@ -167,5 +164,6 @@ def test_integration_embedding(run_component, tmp_path):
     # check values
     assert not all(np.isnan(adata.obsm["X_scGPT"][0])), "Embedding values are nan"
 
-if __name__ == '__main__':
-    sys.exit(pytest.main([__file__]))
+
+# if __name__ == '__main__':
+#     sys.exit(pytest.main([__file__]))
