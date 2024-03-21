@@ -56,7 +56,7 @@ special_tokens = [pad_token, "<cls>", "<eoc>"]
 logger.info(f"Converting batch column '{par['ori_batch_layer_name']}' to category")
 
 if par["ori_batch_layer_name"] not in adata.obs.columns:
-    raise ValueError(f"Batch column '{par['ori_batch_layer_name']}' not found in input data.")
+    raise ValueError(f"Batch column '{par['ori_batch_layer_name']}' not found in .mod['{par['modality']}'].obs.")
 
 adata.obs["str_batch"] = adata.obs[par["ori_batch_layer_name"]].astype(str).tolist()
 batch_id_labels = adata.obs["str_batch"].astype("category").cat.codes.values
@@ -68,14 +68,15 @@ logger.info("Cross-checking genes with pre-trained model")
 genes = adata.var[par["gene_name_layer"]].tolist()
 
 if par["load_model_vocab"]:
-    model_dir = Path(par["model_dir"])
     
-    if not model_dir.exists():
-        raise FileNotFoundError(f"Model directory '{model_dir}' does not exist.")
+    logger.info(f"Loading model vocab from {par['model_dir']}")
+    
     required_files = ['vocab.json', 'best_model.pt', 'args.json']
-    if not all(file in os.listdir(model_dir) for file in required_files):
-        raise FileNotFoundError(f"Model directory '{model_dir}' does not contain all of the required files: {', '.join(required_files)}.")
+    missing_files = [file for file in required_files if file not in os.listdir(par["model_dir"])]
+    if missing_files:
+        raise FileNotFoundError(f"Model directory '{par['model_dir']}' is missing the following required files: {', '.join(missing_files)}.")
     
+    model_dir = Path(par["model_dir"])
     vocab_file = model_dir / "vocab.json"
     vocab = GeneVocab.from_file(vocab_file)
     for s in special_tokens:
@@ -87,6 +88,7 @@ else:
         VocabPybind(genes + special_tokens, None)
     )
 
+logger.info("Filtering genes based on model vocab")
 adata.var["id_in_vocab"] = [
         1 if gene in vocab else -1 for gene in adata.var[par["gene_name_layer"]]
     ]

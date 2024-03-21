@@ -56,6 +56,7 @@ functionality:
             The padding token used in the model.
         - name: "--load_model_vocab"
           type: boolean
+          default: true
           description: |
             Whether to load the vocabulary from the model or use pytorch vocab.
         - name: "--ori_batch_layer_name"
