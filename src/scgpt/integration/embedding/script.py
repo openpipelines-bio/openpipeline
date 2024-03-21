@@ -1,5 +1,6 @@
 import anndata as ad
 import numpy as np
+import mudata as mu
 from pathlib import Path
 import json
 from scgpt.tokenizer.gene_tokenizer import GeneVocab
@@ -9,19 +10,18 @@ import torch
 
 ## VIASH START
 par = {
-    "input": "src/scgpt/test_resources/Kim2020_Lung_preprocessed.h5ad",
-    "input_gene_ids": 'src/scgpt/test_resources/Kim2020_Lung_gene_ids.pt',
-    "input_values": 'src/scgpt/test_resources/Kim2020_Lung_values.pt',
-    "input_padding_mask": 'src/scgpt/test_resources/Kim2020_Lung_padding_mask.pt',
-    "model_dir": "src/scgpt/model",
+    "input": "resources_test/scgpt/test_resources/Kim2020_Lung_preprocessed.h5mu",
+    "input_gene_ids": 'resources_test/scgpt/test_resources/Kim2020_Lung_gene_ids.pt',
+    "input_values": 'resources_test/scgpt/test_resources/Kim2020_Lung_values.pt',
+    "input_padding_mask": 'resources_test/scgpt/test_resources/Kim2020_Lung_padding_mask.pt',
+    "model_dir": "resources_test/scgpt/source",
     "output": "Kim2020_Lung_embedded.h5ad",
     "gene_name_layer": "gene_name",
     "batch_id_layer": "batch_id",
     "embedding_layer": "X_scGPT",
     "pad_token": "<pad>",
     "pad_value": -2,
-    # "nhead": 4,
-    # "nlayers": 4,
+    "modality": "rna",
     "dropout": 0.2,
     "GEPC": True,
     "DSBN": True,
@@ -31,7 +31,8 @@ par = {
     "use_fast_transformer": False,
     "pre_norm": False,
     "device": "cpu",  # torch.device type
-    "batch_size": 64
+    "batch_size": 64,
+    "output_compression": None
 }
 ## VIASH END
 
@@ -42,8 +43,10 @@ if par["device"] == "cuda" and not torch.cuda.is_available():
 device = torch.device(par["device"])
 
 # Read in data
-input_adata = ad.read_h5ad(par["input"])
+mdata = mu.read(par["input"])
+input_adata = mdata.mod[par["modality"]]
 adata = input_adata.copy()
+
 all_gene_ids = torch.load(par["input_gene_ids"])
 all_values = torch.load(par["input_values"])
 padding_mask = torch.load(par["input_padding_mask"])
@@ -135,4 +138,5 @@ cell_embeddings = cell_embeddings / np.linalg.norm(
 
 # Write output
 adata.obsm[par["embedding_layer"]] = cell_embeddings
-adata.write_h5ad(par["output"])
+mdata.mod[par["modality"]] = adata
+mdata.write(par["output"], compression=par["output_compression"])
