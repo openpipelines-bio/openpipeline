@@ -110,6 +110,21 @@ the result to be out of bounds.
  
 * Renamed `obsm_metrics` to `uns_metrics` for the `cellranger_mapping` workflow because the cellranger metrics are stored in `.uns` and not `.obsm` (PR #610).
 
+
+* `query/cellxgene_census`: Refactored the interface, documentation and internal workings of this component (PR #621).
+
+  - `--input_database` became `--input_uri`
+  - `--cellxgene_release` became `--census_version`
+  - `--cell_query` became `--obs_value_filter`
+  - `--cells_filter_columns` became `--cell_filter_grouping`
+  - `--min_cells_filter_columns` became `--cell_filter_minimum_count`
+  - `--modality` became `--output_modality`
+  - Removed `--dataset_id` since it was no longer being used.
+  - Added `--add_dataset_meta` to add metadata to the output MuData object.
+  - Documentation of the component and its arguments was improved.
+  - Python version was bumped to 3.10, and `obonet` was dropped from the list of dependencies.
+  - Refactoring of the internal code to improve readability and maintainability.
+
 ## MAJOR CHANGES
 
 * `mapping/cellranger_mkfastq`: update from cellranger `6.0.2` to `7.0.1` (PR #675)
