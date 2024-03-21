@@ -168,5 +168,5 @@ jobs:
         viash test \
           "${{ matrix.component.config }}" \
           --cpus 4 \
-          --memory "16gb"
+          --memory "12gb"
 
