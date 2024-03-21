@@ -3373,7 +3373,7 @@ meta = [
         {
           "type" : "docker",
           "run" : [
-            "DEBIAN_FRONTEND=noninteractive apt update && apt upgrade -y && rm -rf /var/lib/apt/lists/*"
+            "DEBIAN_FRONTEND=noninteractive apt update && \\\\\napt upgrade -y && apt install -y procps && rm -rf /var/lib/apt/lists/*\n"
           ]
         },
         {
@@ -3473,7 +3473,7 @@ meta = [
     "platform" : "nextflow",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/mapping/cellranger_multi",
     "viash_version" : "0.8.5",
-    "git_commit" : "d11433ed83f7afe38dce119fb823793054d1b4b3",
+    "git_commit" : "441d226409836844078adb9dc0db53ad81c9ed12",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))
