@@ -1,7 +1,7 @@
 functionality:
   name: "star_align_v273a"
   namespace: "mapping"
-  version: "1.0.0-rc2"
+  version: "1.0.0-rc3"
   authors:
   - name: "Angela Oliveira Pisco"
     roles:
@@ -2459,8 +2459,8 @@ platforms:
   image: "python:3.10-slim"
   target_organization: "openpipelines-bio"
   target_registry: "ghcr.io"
-  target_tag: "1.0.0-rc2"
-  namespace_separator: "_"
+  target_tag: "1.0.0-rc3"
+  namespace_separator: "/"
   resolve_volume: "Automatic"
   chown: true
   setup_strategy: "ifneedbepullelsecachedbuild"
@@ -2538,6 +2538,6 @@ info:
   output: "/home/runner/work/openpipeline/openpipeline/target/docker/mapping/star_align_v273a"
   executable: "/home/runner/work/openpipeline/openpipeline/target/docker/mapping/star_align_v273a/star_align_v273a"
   viash_version: "0.8.5"
-  git_commit: "4c219ba08e8bfeff5bb53ec177f992ce5c8ce20e"
+  git_commit: "da495c631b69bb0699d344f0e532cd8432c5e1a6"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"
-  git_tag: "1.0.0rc1-1-g4c219ba08e"
+  git_tag: "1.0.0-rc2-1-gda495c631b"

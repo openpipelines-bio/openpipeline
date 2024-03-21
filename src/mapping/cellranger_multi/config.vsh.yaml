@@ -268,7 +268,9 @@ platforms:
     image: ghcr.io/data-intuitive/cellranger:7.0
     setup:
       - type: docker
-        run: DEBIAN_FRONTEND=noninteractive apt update && apt upgrade -y && rm -rf /var/lib/apt/lists/*
+        run: |
+          DEBIAN_FRONTEND=noninteractive apt update && \
+          apt upgrade -y && apt install -y procps && rm -rf /var/lib/apt/lists/*
       - type: python
         packages: 
           - pandas
