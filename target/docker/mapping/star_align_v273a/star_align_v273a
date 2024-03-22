@@ -1804,9 +1804,9 @@ RUN apt-get update && \
 
 LABEL org.opencontainers.image.authors="Angela Oliveira Pisco, Robrecht Cannoodt"
 LABEL org.opencontainers.image.description="Companion container for running component mapping star_align_v273a"
-LABEL org.opencontainers.image.created="2024-03-21T02:35:57Z"
+LABEL org.opencontainers.image.created="2024-03-22T02:35:14Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="441d226409836844078adb9dc0db53ad81c9ed12"
+LABEL org.opencontainers.image.revision="d0b807a81ab9d9566b3abf88ed3f9d1814f38bc2"
 LABEL org.opencontainers.image.version="integration_build"
 
 VIASHDOCKER
