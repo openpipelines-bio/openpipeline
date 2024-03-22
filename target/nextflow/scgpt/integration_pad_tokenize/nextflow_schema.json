@@ -1,7 +1,7 @@
 {
 "$schema": "http://json-schema.org/draft-07/schema",
-"title": "pad_tokenize",
-"description": "Tokenize and pad a batch of data for scGPT inference or training.\n",
+"title": "integration_pad_tokenize",
+"description": "Tokenize and pad a batch of data for scGPT integration zero-shot inference or fine-tuning.\n",
 "type": "object",
 "definitions": {
 
@@ -33,9 +33,20 @@
                 "input": {
                 "type":
                 "string",
-                "description": "Type: `file`, required, example: `input.h5ad`. The input h5mu file containing of pre-processed data",
-                "help_text": "Type: `file`, required, example: `input.h5ad`. The input h5mu file containing of pre-processed data.\n"
+                "description": "Type: `file`, required, example: `input.h5ad`. The input h5mu file of pre-processed data",
+                "help_text": "Type: `file`, required, example: `input.h5ad`. The input h5mu file of pre-processed data.\n"
             
+            }
+    
+
+        ,
+                "modality": {
+                "type":
+                "string",
+                "description": "Type: `string`, default: `rna`. ",
+                "help_text": "Type: `string`, default: `rna`. "
+            ,
+                "default": "rna"
             }
     
 
@@ -53,9 +64,10 @@
                 "input_layer": {
                 "type":
                 "string",
-                "description": "Type: `string`, example: `X_binned`. The name of the layer to be padded and tokenized",
-                "help_text": "Type: `string`, example: `X_binned`. The name of the layer to be padded and tokenized.\n"
-            
+                "description": "Type: `string`, default: `X_binned`. The name of the layer to be padded and tokenized",
+                "help_text": "Type: `string`, default: `X_binned`. The name of the layer to be padded and tokenized.\n"
+            ,
+                "default": "X_binned"
             }
     
 
@@ -63,9 +75,10 @@
                 "gene_name_layer": {
                 "type":
                 "string",
-                "description": "Type: `string`, example: `gene_name`. The name of the layer containing gene names",
-                "help_text": "Type: `string`, example: `gene_name`. The name of the layer containing gene names.\n"
-            
+                "description": "Type: `string`, default: `gene_name`. The name of the layer containing gene names",
+                "help_text": "Type: `string`, default: `gene_name`. The name of the layer containing gene names.\n"
+            ,
+                "default": "gene_name"
             }
     
 
@@ -126,8 +139,8 @@
                 "pad_token": {
                 "type":
                 "string",
-                "description": "Type: `string`, default: `\u003cpad\u003e`. The name of the layer to be padded and tokenized\n",
-                "help_text": "Type: `string`, default: `\u003cpad\u003e`. The name of the layer to be padded and tokenized\n"
+                "description": "Type: `string`, default: `\u003cpad\u003e`. Token used for padding",
+                "help_text": "Type: `string`, default: `\u003cpad\u003e`. Token used for padding.\n"
             ,
                 "default": "<pad>"
             }
@@ -137,21 +150,10 @@
                 "pad_value": {
                 "type":
                 "integer",
-                "description": "Type: `integer`, default: `-2`. The value to be used for padding",
-                "help_text": "Type: `integer`, default: `-2`. The value to be used for padding.\n"
+                "description": "Type: `integer`, default: `-2`. The value of the padding token",
+                "help_text": "Type: `integer`, default: `-2`. The value of the padding token.\n"
             ,
                 "default": "-2"
-            }
-    
-
-        ,
-                "n_hvg": {
-                "type":
-                "integer",
-                "description": "Type: `integer`, default: `1200`. The number of highly variable genes to be used for tokenization",
-                "help_text": "Type: `integer`, default: `1200`. The number of highly variable genes to be used for tokenization.  \n"
-            ,
-                "default": "1200"
             }
     
 

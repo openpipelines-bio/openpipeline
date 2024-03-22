@@ -1,33 +1,30 @@
-import anndata as ad
+import mudata as mu
 import numpy as np
 from pathlib import Path
 import torch
 from scipy.sparse import issparse
 from scgpt.tokenizer import tokenize_and_pad_batch
 from scgpt.tokenizer.gene_tokenizer import GeneVocab
-from torchtext.vocab import Vocab
-from torchtext._torchtext import (
-    Vocab as VocabPybind,
-)
+
 
 ## VIASH START
 par = {
-    "input": "src/scgpt/test_resources/Kim2020_Lung_preprocessed.h5ad",
-    "output_gene_ids": 'src/scgpt/test_resources/Kim2020_Lung_gene_ids.pt',
-    "output_values": 'src/scgpt/test_resources/Kim2020_Lung_values.pt',
-    "output_padding_mask": 'src/scgpt/test_resources/Kim2020_Lung_padding_mask.pt',
+    "input": "resources_test/scgpt/test_resources/Kim2020_Lung_preprocessed.h5mu",
+    "output_gene_ids": 'resources_test/scgpt/test_resources/Kim2020_Lung_gene_ids.pt',
+    "output_values": 'resources_test/scgpt/test_resources/Kim2020_Lung_values.pt',
+    "output_padding_mask": 'resources_test/scgpt/test_resources/Kim2020_Lung_padding_mask.pt',
     "pad_token": "<pad>",
     "pad_value": -2,
+    "modality": "rna",
     "input_layer": "X_binned",
     "gene_name_layer": "gene_name",
-    # "load_model_vocab": False,
-    "model_dir": "src/scgpt/model",
-    "n_hvg": 1200
+    "model_dir": "resources_test/scgpt/source/"
 }
 ## VIASH END
 
 # Read in data
-input_adata = ad.read_h5ad(par["input"])
+mdata = mu.read(par["input"])
+input_adata = mdata.mod[par["modality"]]
 adata = input_adata.copy()
 
 # Set padding specs
@@ -56,11 +53,14 @@ vocab.set_default_index(vocab["<pad>"])
 ntokens = len(vocab)
 gene_ids = np.array(vocab(genes), dtype=int)
 
+# Fetch number of subset hvg
+n_hvg = adata.var.shape[0]
+
 # Tokenize and pad data
 tokenized_data = tokenize_and_pad_batch(
     all_counts,
     gene_ids,
-    max_len=par["n_hvg"]+1,
+    max_len=n_hvg+1,
     vocab=vocab,
     pad_token=pad_token,
     pad_value=pad_value,

@@ -2927,7 +2927,7 @@ meta = [
       "target_organization" : "openpipelines-bio",
       "target_registry" : "ghcr.io",
       "target_tag" : "tokenize-pad_build",
-      "namespace_separator" : "_",
+      "namespace_separator" : "/",
       "resolve_volume" : "Automatic",
       "chown" : true,
       "setup_strategy" : "ifneedbepullelsecachedbuild",
@@ -2995,9 +2995,9 @@ meta = [
     "platform" : "nextflow",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/demux/bcl2fastq",
     "viash_version" : "0.8.5",
-    "git_commit" : "77ed17d16eb4ce26b41da05cd4de78bbca5f48d7",
+    "git_commit" : "6967cc967241c232a7a2de5c6112a3c0f4c6febd",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline",
-    "git_tag" : "0.2.0-1563-g77ed17d16e"
+    "git_tag" : "0.2.0-1564-g6967cc9672"
   }
 }'''))
 ]
@@ -3402,7 +3402,7 @@ meta["defaults"] = [
   directives: readJsonBlob('''{
   "container" : {
     "registry" : "ghcr.io",
-    "image" : "openpipelines-bio/demux_bcl2fastq",
+    "image" : "openpipelines-bio/demux/bcl2fastq",
     "tag" : "tokenize-pad_build"
   },
   "label" : [

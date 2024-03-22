@@ -3135,6 +3135,13 @@ meta = [
         "entrypoint" : "test_wf"
       },
       {
+        "type" : "nextflow_script",
+        "path" : "test.nf",
+        "is_executable" : true,
+        "parent" : "file:/home/runner/work/openpipeline/openpipeline/src/workflows/integration/scanorama_leiden/",
+        "entrypoint" : "test_wf2"
+      },
+      {
         "type" : "file",
         "path" : "resources_test/pbmc_1k_protein_v3",
         "parent" : "file:///home/runner/work/openpipeline/openpipeline/"
@@ -3161,14 +3168,14 @@ meta = [
         "foundConfigPath" : "/home/runner/work/openpipeline/openpipeline/src/cluster/leiden/config.vsh.yaml",
         "configInfo" : {
           "functionalityName" : "leiden",
-          "git_tag" : "0.2.0-1563-g77ed17d16e",
+          "git_tag" : "0.2.0-1564-g6967cc9672",
           "git_remote" : "https://github.com/openpipelines-bio/openpipeline",
           "viash_version" : "0.8.5",
           "config" : "/home/runner/work/openpipeline/openpipeline/src/cluster/leiden/config.vsh.yaml",
           "functionalityNamespace" : "cluster",
           "output" : "",
           "platform" : "",
-          "git_commit" : "77ed17d16eb4ce26b41da05cd4de78bbca5f48d7",
+          "git_commit" : "6967cc967241c232a7a2de5c6112a3c0f4c6febd",
           "executable" : "/nextflow/cluster/leiden/main.nf"
         },
         "writtenPath" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/cluster/leiden"
@@ -3182,14 +3189,14 @@ meta = [
         "foundConfigPath" : "/home/runner/work/openpipeline/openpipeline/src/integrate/scanorama/config.vsh.yaml",
         "configInfo" : {
           "functionalityName" : "scanorama",
-          "git_tag" : "0.2.0-1563-g77ed17d16e",
+          "git_tag" : "0.2.0-1564-g6967cc9672",
           "git_remote" : "https://github.com/openpipelines-bio/openpipeline",
           "viash_version" : "0.8.5",
           "config" : "/home/runner/work/openpipeline/openpipeline/src/integrate/scanorama/config.vsh.yaml",
           "functionalityNamespace" : "integrate",
           "output" : "",
           "platform" : "",
-          "git_commit" : "77ed17d16eb4ce26b41da05cd4de78bbca5f48d7",
+          "git_commit" : "6967cc967241c232a7a2de5c6112a3c0f4c6febd",
           "executable" : "/nextflow/integrate/scanorama/main.nf"
         },
         "writtenPath" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/integrate/scanorama"
@@ -3203,14 +3210,14 @@ meta = [
         "foundConfigPath" : "/home/runner/work/openpipeline/openpipeline/src/dimred/umap/config.vsh.yaml",
         "configInfo" : {
           "functionalityName" : "umap",
-          "git_tag" : "0.2.0-1563-g77ed17d16e",
+          "git_tag" : "0.2.0-1564-g6967cc9672",
           "git_remote" : "https://github.com/openpipelines-bio/openpipeline",
           "viash_version" : "0.8.5",
           "config" : "/home/runner/work/openpipeline/openpipeline/src/dimred/umap/config.vsh.yaml",
           "functionalityNamespace" : "dimred",
           "output" : "",
           "platform" : "",
-          "git_commit" : "77ed17d16eb4ce26b41da05cd4de78bbca5f48d7",
+          "git_commit" : "6967cc967241c232a7a2de5c6112a3c0f4c6febd",
           "executable" : "/nextflow/dimred/umap/main.nf"
         },
         "writtenPath" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/dimred/umap"
@@ -3224,14 +3231,14 @@ meta = [
         "foundConfigPath" : "/home/runner/work/openpipeline/openpipeline/src/metadata/move_obsm_to_obs/config.vsh.yaml",
         "configInfo" : {
           "functionalityName" : "move_obsm_to_obs",
-          "git_tag" : "0.2.0-1563-g77ed17d16e",
+          "git_tag" : "0.2.0-1564-g6967cc9672",
           "git_remote" : "https://github.com/openpipelines-bio/openpipeline",
           "viash_version" : "0.8.5",
           "config" : "/home/runner/work/openpipeline/openpipeline/src/metadata/move_obsm_to_obs/config.vsh.yaml",
           "functionalityNamespace" : "metadata",
           "output" : "",
           "platform" : "",
-          "git_commit" : "77ed17d16eb4ce26b41da05cd4de78bbca5f48d7",
+          "git_commit" : "6967cc967241c232a7a2de5c6112a3c0f4c6febd",
           "executable" : "/nextflow/metadata/move_obsm_to_obs/main.nf"
         },
         "writtenPath" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/metadata/move_obsm_to_obs"
@@ -3245,14 +3252,14 @@ meta = [
         "foundConfigPath" : "/home/runner/work/openpipeline/openpipeline/src/neighbors/find_neighbors/config.vsh.yaml",
         "configInfo" : {
           "functionalityName" : "find_neighbors",
-          "git_tag" : "0.2.0-1563-g77ed17d16e",
+          "git_tag" : "0.2.0-1564-g6967cc9672",
           "git_remote" : "https://github.com/openpipelines-bio/openpipeline",
           "viash_version" : "0.8.5",
           "config" : "/home/runner/work/openpipeline/openpipeline/src/neighbors/find_neighbors/config.vsh.yaml",
           "functionalityNamespace" : "neighbors",
           "output" : "",
           "platform" : "",
-          "git_commit" : "77ed17d16eb4ce26b41da05cd4de78bbca5f48d7",
+          "git_commit" : "6967cc967241c232a7a2de5c6112a3c0f4c6febd",
           "executable" : "/nextflow/neighbors/find_neighbors/main.nf"
         },
         "writtenPath" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/neighbors/find_neighbors"
@@ -3319,9 +3326,9 @@ meta = [
     "platform" : "nextflow",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/workflows/integration/scanorama_leiden",
     "viash_version" : "0.8.5",
-    "git_commit" : "77ed17d16eb4ce26b41da05cd4de78bbca5f48d7",
+    "git_commit" : "6967cc967241c232a7a2de5c6112a3c0f4c6febd",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline",
-    "git_tag" : "0.2.0-1563-g77ed17d16e"
+    "git_tag" : "0.2.0-1564-g6967cc9672"
   }
 }'''))
 ]
@@ -3342,6 +3349,12 @@ workflow run_wf {
 
   main:
   neighbors_ch = input_ch
+    // Make sure there is not conflict between the output from this workflow
+    // And the output from any of the components
+    | map {id, state ->
+      def new_state = state + ["workflow_output": state.output]
+      [id, new_state]
+    }
     | scanorama.run(
       fromState: [
         "input": "input",

@@ -1,5 +1,5 @@
 functionality:
-  name: "pad_tokenize"
+  name: "integration_pad_tokenize"
   namespace: "scgpt"
   version: "tokenize-pad_build"
   authors:
@@ -22,13 +22,23 @@ functionality:
     arguments:
     - type: "file"
       name: "--input"
-      description: "The input h5mu file containing of pre-processed data.\n"
+      description: "The input h5mu file of pre-processed data.\n"
       info: null
       example:
       - "input.h5ad"
       must_exist: true
       create_parent: true
       required: true
+      direction: "input"
+      multiple: false
+      multiple_sep: ":"
+      dest: "par"
+    - type: "string"
+      name: "--modality"
+      info: null
+      default:
+      - "rna"
+      required: false
       direction: "input"
       multiple: false
       multiple_sep: ":"
@@ -51,7 +61,7 @@ functionality:
       name: "--input_layer"
       description: "The name of the layer to be padded and tokenized.\n"
       info: null
-      example:
+      default:
       - "X_binned"
       required: false
       direction: "input"
@@ -62,7 +72,7 @@ functionality:
       name: "--gene_name_layer"
       description: "The name of the layer containing gene names.\n"
       info: null
-      example:
+      default:
       - "gene_name"
       required: false
       direction: "input"
@@ -115,7 +125,7 @@ functionality:
     arguments:
     - type: "string"
       name: "--pad_token"
-      description: "The name of the layer to be padded and tokenized\n"
+      description: "Token used for padding.\n"
       info: null
       default:
       - "<pad>"
@@ -126,22 +136,10 @@ functionality:
       dest: "par"
     - type: "integer"
       name: "--pad_value"
-      description: "The value to be used for padding.\n"
+      description: "The value of the padding token.\n"
       info: null
       default:
       - -2
-      required: false
-      direction: "input"
-      multiple: false
-      multiple_sep: ":"
-      dest: "par"
-    - type: "integer"
-      name: "--n_hvg"
-      description: "The number of highly variable genes to be used for tokenization.\
-        \  \n"
-      info: null
-      default:
-      - 1200
       required: false
       direction: "input"
       multiple: false
@@ -154,8 +152,14 @@ functionality:
   - type: "file"
     path: "./src/workflows/utils/labels.config"
     dest: "nextflow_labels.config"
-  description: "Tokenize and pad a batch of data for scGPT inference or training.\n"
+  description: "Tokenize and pad a batch of data for scGPT integration zero-shot inference\
+    \ or fine-tuning.\n"
   test_resources:
+  - type: "python_script"
+    path: "test.py"
+    is_executable: true
+  - type: "file"
+    path: "resources_test/scgpt/"
   - type: "file"
     path: "src/base/openpipelinetestutils"
     dest: "openpipelinetestutils"
@@ -168,23 +172,16 @@ functionality:
 platforms:
 - type: "docker"
   id: "docker"
-  image: "python:3.10"
+  image: "nvcr.io/nvidia/pytorch:23.09-py3"
   target_organization: "openpipelines-bio"
   target_registry: "ghcr.io"
   target_tag: "tokenize-pad_build"
-  namespace_separator: "_"
+  namespace_separator: "/"
   resolve_volume: "Automatic"
   chown: true
   setup_strategy: "ifneedbepullelsecachedbuild"
   target_image_source: "https://github.com/openpipelines-bio/openpipeline"
   setup:
-  - type: "apt"
-    packages:
-    - "procps"
-    - "gfortran"
-    - "cmake"
-    - "libopenblas-dev"
-    interactive: false
   - type: "python"
     user: false
     packages:
@@ -195,11 +192,14 @@ platforms:
   - type: "python"
     user: false
     packages:
-    - "torch==2.1.2"
-    - "numpy==1.26.4"
-    - "scipy==1.10.0"
     - "scgpt==0.2.1"
-    - "ipython"
+    - "ipython~=8.5.0"
+    upgrade: true
+  test_setup:
+  - type: "python"
+    user: false
+    packages:
+    - "viashpy==0.6.0"
     upgrade: true
   entrypoint: []
   cmd: null
@@ -249,11 +249,11 @@ platforms:
   debug: false
   container: "docker"
 info:
-  config: "/home/runner/work/openpipeline/openpipeline/src/scgpt/pad_tokenize/config.vsh.yaml"
+  config: "/home/runner/work/openpipeline/openpipeline/src/scgpt/integration/tokenize_pad/config.vsh.yaml"
   platform: "docker"
-  output: "/home/runner/work/openpipeline/openpipeline/target/docker/scgpt/pad_tokenize"
-  executable: "/home/runner/work/openpipeline/openpipeline/target/docker/scgpt/pad_tokenize/pad_tokenize"
+  output: "/home/runner/work/openpipeline/openpipeline/target/docker/scgpt/integration_pad_tokenize"
+  executable: "/home/runner/work/openpipeline/openpipeline/target/docker/scgpt/integration_pad_tokenize/integration_pad_tokenize"
   viash_version: "0.8.5"
-  git_commit: "77ed17d16eb4ce26b41da05cd4de78bbca5f48d7"
+  git_commit: "6967cc967241c232a7a2de5c6112a3c0f4c6febd"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"
-  git_tag: "0.2.0-1563-g77ed17d16e"
+  git_tag: "0.2.0-1564-g6967cc9672"

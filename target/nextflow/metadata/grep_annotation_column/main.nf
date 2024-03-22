@@ -3005,7 +3005,7 @@ meta = [
       "target_organization" : "openpipelines-bio",
       "target_registry" : "ghcr.io",
       "target_tag" : "tokenize-pad_build",
-      "namespace_separator" : "_",
+      "namespace_separator" : "/",
       "resolve_volume" : "Automatic",
       "chown" : true,
       "setup_strategy" : "ifneedbepullelsecachedbuild",
@@ -3120,9 +3120,9 @@ meta = [
     "platform" : "nextflow",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/metadata/grep_annotation_column",
     "viash_version" : "0.8.5",
-    "git_commit" : "77ed17d16eb4ce26b41da05cd4de78bbca5f48d7",
+    "git_commit" : "6967cc967241c232a7a2de5c6112a3c0f4c6febd",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline",
-    "git_tag" : "0.2.0-1563-g77ed17d16e"
+    "git_tag" : "0.2.0-1564-g6967cc9672"
   }
 }'''))
 ]
@@ -3138,8 +3138,9 @@ tempscript=".viash_script.sh"
 cat > "$tempscript" << VIASHMAIN
 import mudata as mu
 from pathlib import Path
-from operator import attrgetter, itemgetter
+from operator import attrgetter
 from pandas import Series
+import scipy as sc
 import re
 import numpy as np
 
@@ -3196,6 +3197,18 @@ def setup_logger():
 # END TEMPORARY WORKAROUND setup_logger
 logger = setup_logger()
 
+def describe_array(arr, msg):
+    # Note: sc.stats returns a DescribeResult NamedTuple. For NamedTuples,
+    # the _asdict method is public facing even though it starts with an underscore.
+    description = sc.stats.describe(arr)._asdict()
+    logger.info("%s:\\\\nshape: %s\\\\nmean: %s\\\\nnobs: %s\\\\n"
+                "variance: %s\\\\nmin: %s\\\\nmax: %s\\\\ncontains na: %s\\\\ndtype: %s\\\\ncontains 0: %s",
+                msg, arr.shape, description["mean"], description["nobs"],
+                description["variance"], description["minmax"][0],
+                description["minmax"][1], np.isnan(arr).any(), arr.dtype,
+                (arr == 0).any())
+
+
 def main(par):
     input_file, output_file, mod_name = Path(par["input"]), Path(par["output"]), par['modality']
     logger.info(f"Compiling regular expression '{par['regex_pattern']}'.")
@@ -3239,10 +3252,21 @@ def main(par):
     if par['output_fraction_column']:
         logger.info("Enabled writing the fraction of values that matches to the pattern.")
         input_layer = modality_data.X if not par["input_layer"] else modality_data.layers[par["input_layer"]]
-        pct_matching = np.ravel(np.sum(input_layer[:, grep_result], axis=1) / np.sum(input_layer, axis=1))
-        assert ((pct_matching >= 0) & (pct_matching <= 1)).all(), \\\\
-                "Fractions are not within bounds, please report this as a bug"
+        totals = np.ravel(input_layer.sum(axis=1))
+        describe_array(totals, "Summary of total counts for layer")
+        counts_for_matches = np.ravel(input_layer[:, grep_result].sum(axis=1))
+        describe_array(counts_for_matches, "Summary of counts matching grep")
+        with np.errstate(all='raise'):
+            pct_matching = np.divide(counts_for_matches, totals,
+                                     out=np.zeros_like(totals, dtype=np.float64),
+                                     where=(~np.isclose(totals, np.zeros_like(totals))))
+        logger.info("Testing wether or not fractions data contains NA.")
+        assert ~np.isnan(pct_matching).any(), "Fractions should not contain NA."
         logger.info("Fraction statistics: \\\\n%s", Series(pct_matching).describe())
+        pct_matching = np.where(np.isclose(pct_matching, 0, atol=1e-6), 0, pct_matching)
+        pct_matching = np.where(np.isclose(pct_matching, 1, atol=1e-6), 1, pct_matching)
+        assert (np.logical_and(pct_matching >= 0, pct_matching <= 1)).all(), \\\\
+                "Fractions are not within bounds, please report this as a bug"
         output_matrix = other_axis_attribute[par['matrix']]
         logger.info("Writing fractions to matrix '%s', column '%s'",
                     output_matrix, par['output_fraction_column'])
@@ -3604,7 +3628,7 @@ meta["defaults"] = [
   directives: readJsonBlob('''{
   "container" : {
     "registry" : "ghcr.io",
-    "image" : "openpipelines-bio/metadata_grep_annotation_column",
+    "image" : "openpipelines-bio/metadata/grep_annotation_column",
     "tag" : "tokenize-pad_build"
   },
   "label" : [

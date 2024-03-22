@@ -1,8 +1,9 @@
 # Inputs
 input: # please fill in - example: "input.h5ad"
+modality: "rna"
 model_dir: # please fill in - example: "foundational_model/scgpt"
-# input_layer: "X_binned"
-# gene_name_layer: "gene_name"
+input_layer: "X_binned"
+gene_name_layer: "gene_name"
 
 # Outputs
 # output_gene_ids: "$id.$key.output_gene_ids.pt"
@@ -12,7 +13,6 @@ model_dir: # please fill in - example: "foundational_model/scgpt"
 # Arguments
 pad_token: "<pad>"
 pad_value: -2
-n_hvg: 1200
 
 # Nextflow input-output arguments
 publish_dir: # please fill in - example: "output/"
