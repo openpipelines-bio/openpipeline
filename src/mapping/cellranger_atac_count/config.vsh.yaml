@@ -63,6 +63,7 @@ functionality:
       path: test.py
     - path: /resources_test/cellranger_atac_tiny_bcl
     - path: /src/utils/setup_logger.py
+    - path: /resources_test/reference_gencodev41_chr1
 platforms:
   - type: docker
     image: ghcr.io/data-intuitive/cellranger_atac:2.1
