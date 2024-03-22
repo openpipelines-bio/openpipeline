@@ -69,9 +69,6 @@ preprocessor = Preprocessor(
 
 preprocessor(adata, batch_key="str_batch")
 
-#input_file.mod["rna"] = adata
-#########
-
 all_counts = (
     adata.layers["X_binned"].A
     if issparse(adata.layers["X_binned"])
