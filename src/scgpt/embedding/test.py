@@ -18,7 +18,7 @@ meta = {
 }
 ## VIASH END
 
-input = f"{meta['resources_dir']}/scgpt/test_resources/Kim2020_Lung.h5mu"
+input = f"{meta['resources_dir']}/scgpt/test_resources/Kim2020_Lung_subset.h5mu"
 model_dir = f"{meta['resources_dir']}/scgpt/source/"
 input_file = mu.read(input)
 
@@ -213,6 +213,8 @@ input_preprocessed.write_h5mu(input_preprocessed_path)
 # cell_embeddings = cell_embeddings / np.linalg.norm(
 #     cell_embeddings, axis=1, keepdims=True
 # )
+# adata.obsm[par["embedding_layer"]] = cell_embeddings
+# mdata.mod[par["modality"]] = adata
 
 # ## TEMPORARY TEST
 
@@ -230,15 +232,20 @@ def test_integration_embedding(run_component, tmp_path):
         "--output", output_embedding_file
     ])
 
-    # check that embedding obs is present
-    assert 'X_scGPT' in input_preprocessed.obsm.keys(), "X_scGPT is not present in anndata obsm keys"
+    # Read output file
+    output_mdata = mu.read(output_embedding_file)
+    output_adata = output_mdata.mod["rna"]
+
+    # check that embedding obs is presen
+
+    assert 'X_scGPT' in output_adata.obsm.keys(), "X_scGPT is not present in anndata obsm keys"
 
     # check dimensions
-    assert input_preprocessed.obsm["X_scGPT"].shape[1] == 512, "Embedding size does not equal 512"
-    assert input_preprocessed.obsm["X_scGPT"].shape[0] == all_gene_ids.shape[0], "Embedding dimensions don't match input adata dimension"
+    assert output_adata.obsm["X_scGPT"].shape[1] == 512, "Embedding size does not equal 512"
+    assert output_adata.obsm["X_scGPT"].shape[0] == all_gene_ids.shape[0], "Embedding dimensions don't match input adata dimension"
 
     # check values are not nan
-    assert not all(np.isnan(adata.obsm["X_scGPT"][0])), "Embedding values are nan"
+    assert not all(np.isnan(output_adata.obsm["X_scGPT"][0])), "Embedding values are nan"
 
 
 if __name__ == '__main__':

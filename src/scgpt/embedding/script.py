@@ -36,11 +36,13 @@ par = {
 }
 ## VIASH END
 
-# Set device to use cpu or gpu
-if par["device"] == "cuda" and not torch.cuda.is_available():
-    print("WARNING: CUDA is not available. Using CPU instead.")    
-    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-device = torch.device(par["device"])
+# # Set device to use cpu or gpu
+# if par["device"] == "cuda" and not torch.cuda.is_available():
+#     print("WARNING: CUDA is not available. Using CPU instead.")    
+#     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+# device = torch.device(par["device"])
+
+device = torch.device("cpu")
 
 # Read in data
 mdata = mu.read(par["input"])
