@@ -172,4 +172,4 @@ platforms:
         __merge__: [ /src/base/requirements/viashpy.yaml ]
   - type: nextflow
     directives:
-      label: [lowmem]
+      label: [midmem]
