@@ -46,7 +46,7 @@ functionality:
           choices: [ lsa, pca, plsa ]
           default: lsa
         - type: double
-          name: --subsample-rate
+          name: --subsample_rate
           description: "Downsample to preserve this fraction of reads"
           example: 0.1
         - type: string
