@@ -227,9 +227,7 @@ def test_integration_embedding(run_component, tmp_path):
         "--input_gene_ids", input_gene_id_path,
         "--input_values", input_values_path,
         "--input_padding_mask", input_padding_mask_path,
-        "--output", output_embedding_file,
-        "--batch_size"
-        
+        "--output", output_embedding_file
     ])
 
     # check that embedding obs is present
