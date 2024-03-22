@@ -1,5 +1,5 @@
 functionality:
-  name: integration_pad_tokenize
+  name: pad_tokenize
   namespace: "scgpt"
   description: |
     Tokenize and pad a batch of data for scGPT integration zero-shot inference or fine-tuning.
