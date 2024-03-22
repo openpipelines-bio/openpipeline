@@ -1,6 +1,7 @@
 nextflow.enable.dsl=2
 
 include { dimensionality_reduction } from params.rootDir + "/target/nextflow/workflows/multiomics/dimensionality_reduction/main.nf"
+include { dimensionality_reduction_test } from params.rootDir + "/target/nextflow/test_workflows/multiomics/dimensionality_reduction_test/main.nf" 
 
 workflow test_wf {
   // allow changing the resources_test dir
@@ -43,4 +44,7 @@ workflow test_wf {
       assert output_list.size() == 2 : "output channel should contain 2 events"
       assert output_list.collect{it[0]} == ["pca_obsm_output_test", "simple_execution_test"]
     }
+
+    | map { id , output -> [id, ["input": output.output]]}
+    | dimensionality_reduction_test
 }
