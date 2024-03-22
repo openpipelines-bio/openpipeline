@@ -1,18 +1,11 @@
-import mudata as mu
-import numpy as np
-from pathlib import Path
-import torch
-from scipy.sparse import issparse
-from scgpt.tokenizer import tokenize_and_pad_batch
-from scgpt.tokenizer.gene_tokenizer import GeneVocab
-
-
 import pytest
 import sys
 import mudata as mu
 import torch
 import numpy as np
 from pathlib import Path
+from scipy.sparse import issparse
+from scgpt.tokenizer import tokenize_and_pad_batch
 from scgpt.tokenizer.gene_tokenizer import GeneVocab
 from scgpt.preprocess import Preprocessor
 
@@ -162,9 +155,9 @@ def test_integration_embedding(run_component, tmp_path):
     assert input_preprocessed.obsm["X_scGPT"].shape[1] == 512, "Embedding size does not equal 512"
     assert input_preprocessed.obsm["X_scGPT"].shape[0] == all_gene_ids.shape[0], "Embedding dimensions don't match input adata dimension"
 
-    # check values
+    # check values are not nan
     assert not all(np.isnan(adata.obsm["X_scGPT"][0])), "Embedding values are nan"
 
 
-# if __name__ == '__main__':
-#     sys.exit(pytest.main([__file__]))
+if __name__ == '__main__':
+    sys.exit(pytest.main([__file__]))

@@ -1,4 +1,0 @@
-packages:
-  - scgpt==0.2.1
-  - ipython~=8.5.0
-  
