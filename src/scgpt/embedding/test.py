@@ -102,47 +102,33 @@ tokenized_data = tokenize_and_pad_batch(
 all_gene_ids, all_values = tokenized_data["genes"], tokenized_data["values"]
 padding_mask = all_gene_ids.eq(vocab[pad_token])
 
+input_gene_id_path = f"{meta['resources_dir']}/scgpt/test_resources/Kim2020_Lung_gene_ids.pt"
+input_values_path = f"{meta['resources_dir']}/scgpt/test_resources/Kim2020_Lung_values.pt"
+input_padding_mask_path = f"{meta['resources_dir']}/scgpt/test_resources/Kim2020_Lung_padding_mask.pt"
+
+torch.save(all_gene_ids, input_gene_id_path)
+torch.save(all_values, input_values_path)
+torch.save(padding_mask, input_padding_mask_path)
+
+input_preprocessed = mu.MuData({'rna': adata})
+input_preprocessed_path = f"{meta['resources_dir']}/Kim2020_Lung_preprocessed.h5mu"
+input_preprocessed.write_h5mu(input_preprocessed_path)
+
 ## END OF TEMPORARY WORKAROUND
 
 
 def test_integration_embedding(run_component, tmp_path):
 
-    input_gene_ids = tmp_path / "gene_ids.pt"
-    input_values = tmp_path / "values.pt"
-    input_padding_mask = tmp_path / "padding_mask.pt"
-
-    torch.save(all_gene_ids, input_gene_ids)
-    torch.save(all_values, input_values)
-    torch.save(padding_mask, input_padding_mask)
-
-    input_preprocessed = f"{meta['resources_dir']}/scgpt/test_resources/Kim2020_Lung_preprocessed.h5mu"
-    input_file.write(input_preprocessed)
-
     output_embedding_file = tmp_path / "Kim2020_Lung_embedded.h5mu"
 
     run_component([
-        "--input", input_preprocessed,
+        "--input", input_preprocessed_path,
         "--modality", "rna",
-        "--input_gene_ids", input_gene_ids,
-        "--input_values", input_values,
-        "--input_padding_mask", input_padding_mask,
-        "--pad_token", "<pad>",
-        "--pad_value", "-2",
-        "--dropout", 0.2,
-        "--DSBN", True,
-        "--GEPC", True,
-        "--n_input_bins", 51,
-        "--ecs_threshold", 0.8,
-        "--explicit_zero_prob", True,
-        "--use_fast_transformer", False,
-        "--pre_norm", False,
-        "--device", "cpu",
-        "--batch_size", 64,
-        "--input_layer", "X_binned",
-        "--gene_name_layer", "gene_name",
-        "--batch_id_layer", "batch_id",
+        "--model_dir", model_dir,
+        "--input_gene_ids", input_gene_id_path,
+        "--input_values", input_values_path,
+        "--input_padding_mask", input_padding_mask_path,
         "--output", output_embedding_file,
-        "--model_dir", model_dir
     ])
 
     # check that embedding obs is present
