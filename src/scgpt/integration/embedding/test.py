@@ -114,6 +114,7 @@ padding_mask = all_gene_ids.eq(vocab[pad_token])
 
 ## END OF TEMPORARY WORKAROUND
 
+
 def test_integration_embedding(run_component, tmp_path):
 
     input_gene_ids = tmp_path / "gene_ids.pt"
