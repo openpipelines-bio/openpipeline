@@ -1,5 +1,5 @@
 functionality:
-  name: integration_embedding
+  name: embedding
   namespace: scgpt
   description: |
     Embedding of a batch of tokenized data for scGPT zero-shot or fine-tuning integration.
