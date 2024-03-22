@@ -2,11 +2,13 @@
 
 ## NEW FUNCTIONALITY
 
-* `demux/cellranger_atac_mkfastq`: demultiplex raw sequencing data for ATAC experiments
-* `reference/build_cellranger_reference`: build reference file compatible with ATAC and ATAC+GEX experiments
+* Added `demux/cellranger_atac_mkfastq` component: demultiplex raw sequencing data for ATAC experiments (PR #726).
+
+* Added `reference/build_cellranger_reference` component: build reference file compatible with ATAC and ATAC+GEX experiments (PR #726).
 
 ## MINOR CHANGES
-* `resources_test_scripts/cellranger_atac_tiny_bcl.sh`: download tiny bcl file with an ATAC experiment, download a motifs file, demultiplex bcl files to reads in fastq format
+
+* Added `resources_test_scripts/cellranger_atac_tiny_bcl.sh` script: download tiny bcl file with an ATAC experiment, download a motifs file, demultiplex bcl files to reads in fastq format (PR #726).
 
 ## BREAKING CHANGES
 
