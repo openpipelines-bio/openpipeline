@@ -65,8 +65,7 @@ cellranger-atac count \
   ${par_subsample_rate:+--subsample-rate=$par_subsample_rate} \
   ${memory_gb:+--localmem=$memory_gb} \
   ${meta_cpus:+--localcores=$meta_cpus} \
-  ${par_lanes:+--lanes=${par_lanes[*]}} \
-  --disable-ui
+  ${par_lanes:+--lanes=${par_lanes[*]}}
 
 echo "Copying output"
 if [ -d "$id/outs/" ]; then
