@@ -18,7 +18,7 @@ meta = {
 }
 ## VIASH END
 
-input = f"{meta['resources_dir']}/scgpt/test_resources/Kim2020_Lung_subset.h5mu"
+input = f"{meta['resources_dir']}/scgpt/test_resources/Kim2020_Lung.h5mu"
 model_dir = f"{meta['resources_dir']}/scgpt/source/"
 input_file = mu.read(input)
 
