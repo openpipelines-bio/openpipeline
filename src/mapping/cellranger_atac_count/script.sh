@@ -62,7 +62,7 @@ cellranger-atac count \
   --description "$par_description" \
   ${par_lanes:+--lanes=${par_lanes[*]}} \
   ${par_force_cells:+--force-cells=$par_force_cells} \
-  ${par_subsample-rate:+--subsample-rate=$par_subsample_rate} \
+  ${par_subsample_rate:+--subsample-rate=$par_subsample_rate} \
   ${memory_gb:+--localmem=$memory_gb} \
   ${meta_cpus:+--localcores=$meta_cpus} \
   ${par_lanes:+--lanes=${par_lanes[*]}} \
