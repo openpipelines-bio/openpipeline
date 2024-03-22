@@ -13,11 +13,13 @@ workflow test_wf {
           id: "test",
           input: resources_test.resolve("concat_test_data/concatenated_brain_filtered_feature_bc_matrix_subset.h5mu"),
           publish_dir: "foo/",
+          axis: 1
       ],
       [
           id: "test2",
           input: resources_test.resolve("concat_test_data/concatenated_brain_filtered_feature_bc_matrix_subset.h5mu"),
-          publish_dir: "foo/"
+          publish_dir: "foo/",
+          axis: 1
       ]
     ])
     | map{ state -> [state.id, state] }
@@ -47,7 +49,8 @@ workflow test_wf2 {
           pca_overwrite: true,
           id: "test",
           publish_dir: "foo/",
-          output: "test.h5mu"
+          output: "test.h5mu",
+          axis: 1
       ]
     ])
     | map{ state -> [state.id, state] }
