@@ -57,7 +57,7 @@ id=myoutput
 cellranger-atac count \
   --id "$id" \
   --fastqs "$fastq_dir" \
-  --transcriptome "$par_reference" \
+  --reference "$par_reference" \
   --dim-reduce "$par_dim_reduce" \
   --description "$par_description" \
   ${par_lanes:+--lanes=${par_lanes[*]}} \
