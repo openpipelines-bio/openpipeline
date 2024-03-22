@@ -12,7 +12,7 @@ par_output='resources_test/cellranger_atac_tiny_bcl/bam'
 par_reference=`realpath $par_reference`
 par_output=`realpath $par_output`
 
-# create temporary directory
+echo "Creating temporary directory"
 tmpdir=$(mktemp -d "$meta_temp_dir/$meta_functionality_name-XXXXXXXX")
 function clean_up {
     rm -rf "$tmpdir"
@@ -21,6 +21,7 @@ trap clean_up EXIT
 
 # process inputs
 # for every fastq file found, make a symlink into the tempdir
+echo "Locating fastqs"
 fastq_dir="$tmpdir/fastqs"
 mkdir -p "$fastq_dir"
 IFS=";"
@@ -34,6 +35,9 @@ for var in $par_input; do
   fi
 done
 
+echo "fastq_dir content: $(ls $fastq_dir)"
+
+echo "Processing reference"
 # process reference
 if file $par_reference | grep -q 'gzip compressed data'; then
   echo "Untarring genome"
