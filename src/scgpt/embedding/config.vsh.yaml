@@ -137,12 +137,6 @@ functionality:
         - name: "--pre_norm"
           type: boolean
           default: false
-        - name: "--device"
-          choices: [cpu, cuda]
-          type: string
-          default: cpu
-          description: |
-            Whether to generate embeddings using cpu or gpu (cuda) device.
         - name: "--batch_size"
           type: integer
           default: 64
