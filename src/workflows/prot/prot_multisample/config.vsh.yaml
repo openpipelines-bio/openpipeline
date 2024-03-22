@@ -97,6 +97,13 @@ functionality:
             Name of the column in .obs providing for each feature the percentage of
             observations the feature does not appear on (i.e. is missing). Same as `--output_var_num_nonzero_obs`
             but percentage based.
+    - name: "CLR arguments"
+      arguments:
+        - name: "--axis"
+          type: integer
+          description: Axis across which CLR is performed.
+          default: 0
+          required: false
   dependencies:
     - name: transform/clr
     - name: workflows/qc/qc
