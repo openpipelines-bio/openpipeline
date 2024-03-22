@@ -27,4 +27,7 @@ platforms:
       - type: apt
         packages: 
           - procps
+      - type: python
+        pypi:
+          - mudata
   - type: nextflow

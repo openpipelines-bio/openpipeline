@@ -1,5 +1,6 @@
 import csv
 import os
+import mudata as md
 
 
 ##VIASH START
@@ -30,10 +31,13 @@ assert csv_lines == num_files, f"Expected {csv_lines} files, but found {num_file
 for i, row in enumerate(data):
     if i == 0:
         continue
+    # Check if the files exist and if the modality name is in the file name
     assert row[0] in row[1], f"Expected {row[0]} to be in {row[1]}."
     mod_fp = os.path.join(par["mod_dir"], row[1])
     assert os.path.exists(mod_fp), f"Expected {row[1]} to exist."
     # Check modality is correct in the h5mu file
-    
+    mod_mu = md.read_h5mu(mod_fp)
+    assert mod_mu.n_mod == 1, f"Expected 1 modality in {row[1]}."
+    assert row[0] in mod_mu.mod.keys(), f"Expected {row[0]} to be the mod in {row[1]}."
 
 print("Test successful!", flush=True)
