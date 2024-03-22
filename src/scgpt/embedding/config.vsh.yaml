@@ -160,6 +160,7 @@ functionality:
 platforms:
   - type: docker
     image: nvcr.io/nvidia/pytorch:23.09-py3
+    run_args: [ "--shm-size 5000m" ]
     setup:
       - type: python
         __merge__: [ /src/base/requirements/anndata_mudata.yaml ]
