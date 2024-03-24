@@ -22,6 +22,26 @@ par = {
 }
 ## VIASH END
 
+# START TEMPORARY WORKAROUND setup_logger
+# reason: resources aren't available when using Nextflow fusion
+# from setup_logger import setup_logger
+def setup_logger():
+    import logging
+    from sys import stdout
+
+    logger = logging.getLogger()
+    logger.setLevel(logging.INFO)
+    console_handler = logging.StreamHandler(stdout)
+    logFormatter = logging.Formatter("%(asctime)s %(levelname)-8s %(message)s")
+    console_handler.setFormatter(logFormatter)
+    logger.addHandler(console_handler)
+
+    return logger
+# END TEMPORARY WORKAROUND setup_logger
+logger = setup_logger()
+
+logger.info("Reading in data")
+
 # Read in data
 mdata = mu.read(par["input"])
 input_adata = mdata.mod[par["modality"]]
@@ -40,6 +60,7 @@ all_counts = (
 )
 
 # Fetch gene names and look up tokens in vocab
+logger.info("Reading in vocab")
 genes = adata.var[par["gene_name_layer"]].tolist()
 
 model_dir = Path(par["model_dir"])
@@ -57,6 +78,7 @@ gene_ids = np.array(vocab(genes), dtype=int)
 n_hvg = adata.var.shape[0]
 
 # Tokenize and pad data
+logger.info("Padding and tokenizing data")
 tokenized_data = tokenize_and_pad_batch(
     all_counts,
     gene_ids,
@@ -74,6 +96,7 @@ tokenized_data = tokenize_and_pad_batch(
 all_gene_ids, all_values = tokenized_data["genes"], tokenized_data["values"]
 padding_mask = all_gene_ids.eq(vocab[pad_token])
 
+logger.info("Writing output data")
 torch.save(all_gene_ids, par["output_gene_ids"])
 torch.save(all_values, par["output_values"])
 torch.save(padding_mask, par["output_padding_mask"])

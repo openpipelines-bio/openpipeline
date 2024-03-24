@@ -20,7 +20,8 @@ input = f"{meta['resources_dir']}/scgpt/test_resources/Kim2020_Lung.h5mu"
 model_dir = f"{meta['resources_dir']}/scgpt/source/"
 input_file = mu.read(input)
 
-## START TEMPORARY WORKAROUND (until all scgpt modules are implemented)
+## START TEMPORARY WORKAROUND DATA PREPROCESSING
+#TODO: Remove this workaround once full scGPT preprocessing workflow is implemented
 # Read in data
 adata = input_file.mod["rna"]
 
@@ -70,7 +71,7 @@ preprocessor(adata, batch_key="str_batch")
 # copy results to mudata
 input_file.mod["rna"] = adata
 
-## END OF TEMPORARY WORKAROUND
+## END TEMPORARY WORKAROUND DATA PREPROCESSING
 
 
 def test_integration_pad_tokenize(run_component, tmp_path):
@@ -113,6 +114,30 @@ def test_integration_pad_tokenize(run_component, tmp_path):
     ## equal size of output tensors
     assert gene_ids.shape[1] == values.shape[1], "gene_ids shape[1] does not match values shape[1]"
     assert gene_ids.shape[1] == padding_mask.shape[1], "gene_ids shape[1] does not match padding_mask shape[1]"
+
+    ## check values of output tensors
+    assert gene_ids.dtype == torch.long, "tokenized gene_ids are not torch long ints"
+    assert torch.all(gene_ids > 0), "not all gene id tokens are higher than 0"
+
+    assert values.dtype == torch.float, "tokenized values are not torch floats"
+    assert torch.all(values >= -2), "not all tokenized values are higher than -2"
+
+    assert padding_mask.dtype == torch.bool, "padding mask is not torch boolean"
+
+    ## assert cls token was added at beginning
+    assert torch.all(gene_ids[:, 0] == vocab["cls_token"]), "cls token was not correctly appended at the beginning of the gene_ids tensor"
+    assert torch.all(values[:, 0] == 0), "cls token was not correctly appended at the beginning of the values tensors"
+
+    # assert correct padding and tokenation
+    masked_gene_ids = torch.masked_select(gene_ids, padding_mask)
+    unmasked_gene_ids = torch.masked_select(gene_ids, ~padding_mask)
+    assert all(masked_gene_ids == vocab["<pad>"])
+    assert all(unmasked_gene_ids != vocab["<pad>"])
+
+    masked_values = torch.masked_select(values, padding_mask)
+    unmasked_values = torch.masked_select(values, ~padding_mask)
+    assert all(masked_values == -2)
+    assert all(unmasked_values != -2)
 
 
 if __name__ == '__main__':
