@@ -124,20 +124,20 @@ def test_integration_pad_tokenize(run_component, tmp_path):
 
     assert padding_mask.dtype == torch.bool, "padding mask is not torch boolean"
 
-    ## assert cls token was added at beginning
-    assert torch.all(gene_ids[:, 0] == vocab["cls_token"]), "cls token was not correctly appended at the beginning of the gene_ids tensor"
+    ## check cls token
+    assert torch.all(gene_ids[:, 0] == vocab["<cls>"]), "cls token was not correctly appended at the beginning of the gene_ids tensor"
     assert torch.all(values[:, 0] == 0), "cls token was not correctly appended at the beginning of the values tensors"
 
-    # assert correct padding and tokenation
+    # check padding values
     masked_gene_ids = torch.masked_select(gene_ids, padding_mask)
     unmasked_gene_ids = torch.masked_select(gene_ids, ~padding_mask)
-    assert all(masked_gene_ids == vocab["<pad>"])
-    assert all(unmasked_gene_ids != vocab["<pad>"])
+    assert all(masked_gene_ids == vocab["<pad>"]), "masked gene_ids contain non-pad tokens"
+    assert all(unmasked_gene_ids != vocab["<pad>"]), "unmasked gene_ids contain pad tokens"
 
     masked_values = torch.masked_select(values, padding_mask)
     unmasked_values = torch.masked_select(values, ~padding_mask)
-    assert all(masked_values == -2)
-    assert all(unmasked_values != -2)
+    assert all(masked_values == -2), "masked values contain non-pad values"
+    assert all(unmasked_values != -2), "unmasked values contain pad values"
 
 
 if __name__ == '__main__':
