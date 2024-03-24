@@ -48,7 +48,6 @@ echo "> Subsetting datasets"
 viash run src/filter/subset_h5mu/config.vsh.yaml -p docker -- \
   --input "${test_resources_dir}/Kim2020_Lung.h5mu" \
   --output "${test_resources_dir}/Kim2020_Lung_subset.h5mu" \
-  --number_of_observations 1000
+  --number_of_observations 4000
 
 rm "${test_resources_dir}/Kim2020_Lung.h5ad"
-rm "${test_resources_dir}/Kim2020_Lung.h5mu"
