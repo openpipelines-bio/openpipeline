@@ -30,19 +30,41 @@ par = {
     "explicit_zero_prob": True,
     "use_fast_transformer": False,
     "pre_norm": False,
-    "device": "cpu",  # torch.device type
     "batch_size": 64,
     "output_compression": None
 }
 ## VIASH END
 
-# # Set device to use cpu or gpu
+# START TEMPORARY WORKAROUND setup_logger
+# reason: resources aren't available when using Nextflow fusion
+# from setup_logger import setup_logger
+def setup_logger():
+    import logging
+    from sys import stdout
+
+    logger = logging.getLogger()
+    logger.setLevel(logging.INFO)
+    console_handler = logging.StreamHandler(stdout)
+    logFormatter = logging.Formatter("%(asctime)s %(levelname)-8s %(message)s")
+    console_handler.setFormatter(logFormatter)
+    logger.addHandler(console_handler)
+
+    return logger
+# END TEMPORARY WORKAROUND setup_logger
+logger = setup_logger()
+
+
+#TODO: Optionally set device to use gpu, to be implemented when gpu-based machine types are supported
 # if par["device"] == "cuda" and not torch.cuda.is_available():
-#     print("WARNING: CUDA is not available. Using CPU instead.")    
+#     print("WARNING: CUDA is not available. Using CPU instead.")
 #     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 # device = torch.device(par["device"])
 
+logger.info("Setting device to use cpu")
+
 device = torch.device("cpu")
+
+logger.info("Reading in data")
 
 # Read in data
 mdata = mu.read(par["input"])
@@ -63,6 +85,8 @@ pad_token = par["pad_token"]
 pad_value = par["pad_value"]
 special_tokens = [pad_token, "<cls>", "<eoc>"]
 genes = adata.var[par["gene_name_layer"]].tolist()
+
+logger.info("Loading model, vocab and configs")
 
 # Model files
 model_dir = Path(par["model_dir"])
@@ -87,33 +111,35 @@ embsize = model_configs["embsize"]
 nhead = model_configs["nheads"]
 d_hid = model_configs["d_hid"]
 nlayers = model_configs["nlayers"]
-n_layers_cls = model_configs["n_layers_cls"]
 
-# Load model
+logger.info("Initializing transformer model")
+
+# Instantiate model
 model = TransformerModel(
     ntokens,
     d_model=embsize,
     nhead=nhead,
     d_hid=d_hid,
     nlayers=nlayers,
-    # nlayers_cls=n_layers_cls, 
-    # n_cls=1, 
     vocab=vocab,
     dropout=par["dropout"],
     pad_token=pad_token,
     pad_value=pad_value,
-    do_mvc=par["GEPC"],
-    do_dab=True,
+    nlayers_cls=3,  #TODO: parametrize for decoder-based operations
+    n_cls=1,  #TODO: parametrize for decoder-based operations
+    do_mvc=True,  #TODO: parametrize for decoder-based operations
+    ecs_threshold=0.8,  #TODO: parametrize for decoder-based operations
+    do_dab=True, #TODO: parametrize for decoder-based operations
     use_batch_labels=True,
     num_batch_labels=num_batch_types,
     domain_spec_batchnorm=par["DSBN"],
-    n_input_bins=par["n_input_bins"],
-    ecs_threshold=par["ecs_threshold"],
-    explicit_zero_prob=par["explicit_zero_prob"], 
-    use_fast_transformer=par["use_fast_transformer"],
-    # fast_transformer_backend="flash",
-    pre_norm=par["pre_norm"],
-)
+    input_emb_style="continuous",  # scGPT default
+    # n_input_bins=par["n_input_bins"],  # only applies when input_emb_style is "category"
+    explicit_zero_prob=True,  #TODO: Parametrize when GPU-based machine types are supported
+    use_fast_transformer=False,  #TODO: Parametrize when GPU-based machine types are supported
+    fast_transformer_backend="flash",  #TODO: Parametrize when GPU-based machine types are supported
+    pre_norm=False  #TODO: Parametrize when GPU-based machine types are supported
+    )
 
 load_pretrained(
     model,
@@ -124,6 +150,7 @@ load_pretrained(
 model.to(device)
 model.eval()
 
+logger.info("Converting tokenized input data to embeddings")
 # Embed tokenized data
 cell_embeddings = model.encode_batch(
     all_gene_ids,
@@ -131,13 +158,16 @@ cell_embeddings = model.encode_batch(
     src_key_padding_mask=padding_mask,
     batch_size=par["batch_size"],
     batch_labels=torch.from_numpy(batch_ids).long() if par["DSBN"] else None,
+    output_to_cpu=True,
     time_step=0,
     return_np=True
 )
+
 cell_embeddings = cell_embeddings / np.linalg.norm(
     cell_embeddings, axis=1, keepdims=True
 )
 
+logger.info("Writing output data")
 # Write output
 adata.obsm[par["embedding_layer"]] = cell_embeddings
 mdata.mod[par["modality"]] = adata

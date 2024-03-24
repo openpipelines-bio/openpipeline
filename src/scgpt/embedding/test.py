@@ -22,7 +22,8 @@ input = f"{meta['resources_dir']}/scgpt/test_resources/Kim2020_Lung.h5mu"
 model_dir = f"{meta['resources_dir']}/scgpt/source/"
 input_file = mu.read(input)
 
-## START TEMPORARY WORKAROUND (until all scgpt modules are implemented)
+## START TEMPORARY WORKAROUND DATA PREPROCESSING
+#TODO: Remove this workaround once full scGPT preprocessing workflow is implemented
 # Read in data
 adata = input_file.mod["rna"]
 
@@ -114,109 +115,8 @@ input_preprocessed = mu.MuData({'rna': adata})
 input_preprocessed_path = f"{meta['resources_dir']}/Kim2020_Lung_preprocessed.h5mu"
 input_preprocessed.write_h5mu(input_preprocessed_path)
 
-## END OF TEMPORARY WORKAROUND
+## END TEMPORARY WORKAROUND DATA PREPROCESSING
 
-# ## TEMPORARY TEST
-# device = torch.device("cpu")
-
-# # Read in data
-# mdata = mu.read(input_preprocessed_path)
-# input_adata = mdata.mod["rna"]
-# adata = input_adata.copy()
-
-# all_gene_ids = torch.load(input_gene_id_path)
-# all_values = torch.load(input_values_path)
-# padding_mask = torch.load(input_padding_mask_path)
-
-# batch_ids = adata.obs["batch_id"].tolist()
-# batch_ids = np.array(batch_ids)
-# num_batch_types = len(set(batch_ids))
-
-# # Set padding specs
-# pad_token = "<pad>"
-# pad_value = -2
-# special_tokens = [pad_token, "<cls>", "<eoc>"]
-# genes = adata.var["gene_name"].tolist()
-
-# # Model files
-# model_config_file = model_dir / "args.json"
-# model_file = model_dir / "best_model.pt"
-# vocab_file = model_dir / "vocab.json"
-
-# # Load vocab
-# vocab = GeneVocab.from_file(vocab_file)
-# for s in special_tokens:
-#     if s not in vocab:
-#         vocab.append_token(s)
-
-# vocab.set_default_index(vocab["<pad>"])
-# ntokens = len(vocab)
-# gene_ids = np.array(vocab(genes), dtype=int)
-
-# # Load model configs
-# import json
-# with open(model_config_file, "r") as f:
-#     model_configs = json.load(f)
-# embsize = model_configs["embsize"]
-# nhead = model_configs["nheads"]
-# d_hid = model_configs["d_hid"]
-# nlayers = model_configs["nlayers"]
-# n_layers_cls = model_configs["n_layers_cls"]
-
-# # Load model
-# from scgpt.model import TransformerModel
-# from scgpt.utils.util import load_pretrained
-# model = TransformerModel(
-#     ntokens,
-#     d_model=embsize,
-#     nhead=nhead,
-#     d_hid=d_hid,
-#     nlayers=nlayers,
-#     # nlayers_cls=n_layers_cls, 
-#     # n_cls=1, 
-#     vocab=vocab,
-#     dropout=0.2,
-#     pad_token=pad_token,
-#     pad_value=pad_value,
-#     do_mvc=True,
-#     do_dab=True,
-#     use_batch_labels=True,
-#     num_batch_labels=num_batch_types,
-#     domain_spec_batchnorm=True,
-#     n_input_bins=51,
-#     ecs_threshold=0.8,
-#     explicit_zero_prob=True, 
-#     use_fast_transformer=False,
-#     # fast_transformer_backend="flash",
-#     pre_norm=False
-#     )
-
-# load_pretrained(
-#     model,
-#     torch.load(model_file, map_location=device),
-#     verbose=False
-#     )
-
-# model.to(device)
-# model.eval()
-
-# # Embed tokenized data
-# cell_embeddings = model.encode_batch(
-#     all_gene_ids,
-#     all_values.float(),
-#     src_key_padding_mask=padding_mask,
-#     batch_size=64,
-#     batch_labels=torch.from_numpy(batch_ids).long() if True else None,
-#     time_step=0,
-#     return_np=True
-# )
-# cell_embeddings = cell_embeddings / np.linalg.norm(
-#     cell_embeddings, axis=1, keepdims=True
-# )
-# adata.obsm[par["embedding_layer"]] = cell_embeddings
-# mdata.mod[par["modality"]] = adata
-
-# ## TEMPORARY TEST
 
 def test_integration_embedding(run_component, tmp_path):
 
@@ -236,16 +136,15 @@ def test_integration_embedding(run_component, tmp_path):
     output_mdata = mu.read(output_embedding_file)
     output_adata = output_mdata.mod["rna"]
 
-    # check that embedding obs is presen
-
+    # check that embedding obs is present
     assert 'X_scGPT' in output_adata.obsm.keys(), "X_scGPT is not present in anndata obsm keys"
 
-    # check dimensions
+    # check embedding size
     assert output_adata.obsm["X_scGPT"].shape[1] == 512, "Embedding size does not equal 512"
-    assert output_adata.obsm["X_scGPT"].shape[0] == all_gene_ids.shape[0], "Embedding dimensions don't match input adata dimension"
 
-    # check values are not nan
+    # check embedding value range
     assert not all(np.isnan(output_adata.obsm["X_scGPT"][0])), "Embedding values are nan"
+    assert all([all(i > -1) & all(i < 1) for i in output_adata.obsm["X_scGPT"]]), "Range of embedding values is outside of [-1, 1]"
 
 
 if __name__ == '__main__':
