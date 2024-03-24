@@ -102,41 +102,13 @@ functionality:
         - name: "--dropout"
           type: double
           default: 0.2
+          description: |
+            Dropout value used for the transformer encoder layer
         - name: DSBN
-          description: |
-            Domain-specific batch normalization
-          type: boolean
-          default: true
-        - name: "--GEPC"
-          description: |
-            Gene Expression modeling for Cell objective
-          type: boolean
-          default: true
-        - name: "--n_input_bins"
-          type: integer
-          default: 51
-          description: |
-            Number of bins used for value-binning of input data
-        - name: "--ecs_threshold"
-          type: double
-          min: 0
-          max: 1
-          default: 0.8
-          description: |
-            Elastic cell siilarity objective, set to 0 to disable
-        - name: "--explicit_zero_prob"
           type: boolean
           default: true
           description: |
-            Whether to use explicit bernoulli for zeroes
-        - name: "--use_fast_transformer"
-          type: boolean
-          default: false
-          description: |
-            Whether to use flash attention
-        - name: "--pre_norm"
-          type: boolean
-          default: false
+            Apply domain-specific batch normalization
         - name: "--batch_size"
           type: integer
           default: 64
