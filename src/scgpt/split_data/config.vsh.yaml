@@ -42,7 +42,7 @@ functionality:
         - name: "--test_size"
           type: float
           default: 0.2
-          required: false
+          required: true
           description: |
             The fraction of the data to be used for testing. f None, the value is set to the complement of the train size. If train_size is also None, it will be set to 0.25.
         - name: "--val_size"
@@ -62,6 +62,12 @@ functionality:
           required: false
           description: |
             Whether or not to stratify the data before splitting.
+        - name: "--random_state"
+          type: int
+          default: 42
+          required: false
+          description: |
+            The seed used by the random number generator.
         
   resources:
     - type: python_script
