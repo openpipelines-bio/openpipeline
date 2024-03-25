@@ -32,7 +32,6 @@ logger.info("> Running command with folder")
 input = meta["resources_dir"] + "/cellranger_atac_tiny_bcl/fastqs/HJN3KBCX2/test_sample/"
 reference = meta["resources_dir"] + "/reference_gencodev41_chr1/"
 output = "test_output"
-
 cmd_pars = [
     meta["executable"],
     "--input", input,
@@ -43,9 +42,11 @@ if meta.get("cpus"):
     cmd_pars.extend(["---cpus", str(meta["cpus"])])
 if meta.get("memory_gb"):
     cmd_pars.extend(["---memory", f"{meta['memory_gb']}gb"])
-
-out = subprocess.check_output(cmd_pars).decode("utf-8")
-
+try:
+    out = subprocess.check_output(cmd_pars).decode("utf-8")
+except subprocess.CalledProcessError as e:
+    logger.error(e.output)
+    raise e
 logger.info("> Check if file exists")
 assert path.exists(output + "/filtered_peak_bc_matrix.h5"), "No output was created."
 assert path.exists(output + "/fragments.tsv.gz"), "No fragments file was created."
