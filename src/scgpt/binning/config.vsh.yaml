@@ -1,0 +1,79 @@
+functionality:
+  name: binning
+  namespace: "scgpt"
+  description: |
+   Binning of (pre-processed) data.
+  authors:
+    - __merge__: /src/authors/dorien_roosen.yaml
+      roles: [ maintainer, author ]
+
+  argument_groups:
+    - name: Inputs
+      arguments:
+        - name: "--input"
+          type: file
+          direction: input
+          required: true
+          example: input.h5mu
+          description: |
+            Input h5mu file.
+        - name: "--modality"
+          type: string
+          default: "rna"
+          required: false
+        - name: "--input_layer"
+          type: string
+          default: "X"
+          required: False
+          description: |
+            The key in the mudata layer to use as input data for binning.
+        - name: "--n_input_bins"
+          type: integer
+          required: False
+          min: 1
+          description: |
+            The number of bins to discretize the data into. When no value is provided, data won't be binned.
+          
+    - name: Outputs
+      arguments:
+        - name: "--output"
+          direction: output
+          type: file
+          example: output.h5mu
+          required: true
+          description: |
+            The output h5mu file containing the preprocessed data.    
+        - name: "--output_compression"
+          type: string
+          example: "gzip"
+          required: false
+          choices: ["gzip", "lzf"]
+          description: |
+            The compression algorithm to use for the output h5mu file.
+        - name: "--binned_layer"
+          type: string
+          default: "X_binned"
+          description: |
+            The name of the adata layer to write the binned data to.
+
+  resources:
+    - type: python_script
+      path: script.py
+  test_resources:
+    - type: python_script
+      path: test.py
+    - path: /resources_test/scgpt/
+
+platforms:
+  - type: docker
+    image: nvcr.io/nvidia/pytorch:23.09-py3
+    setup:
+      - type: python
+        __merge__: [ /src/base/requirements/anndata_mudata.yaml ]
+      - type: python 
+        packages:
+          - scgpt==0.2.1
+    test_setup:
+      - type: python
+        __merge__: [ /src/base/requirements/viashpy.yaml ]
+  - type: nextflow
