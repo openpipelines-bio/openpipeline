@@ -46,26 +46,6 @@ def test_binning(run_component, tmp_path):
     assert binned_values.shape == output_adata.X.shape
     assert all(all(i<=51) for i in binned_values)
     
-def test_no_binning(run_component, tmp_path):
-    
-    input_file_path = f"{meta['resources_dir']}/scgpt/test_resources/Kim2020_Lung_subset.h5mu"
-    output_file_path = tmp_path / "Kim2020_Lung_subset_not_binned.h5mu"
-
-    run_component([
-        "--input", input_file_path,
-        "--modality", "rna",
-        "--input_layer", "X",
-        "--output", output_file_path
-    ])
-    
-    # Read output file
-    output_mdata = mu.read(output_file_path)
-    output_adata = output_mdata.mod["rna"]
-
-    # Assert no binning layers are present in output file
-    assert "bin_edges" not in output_adata.obsm.keys()
-    assert "X_binned" not in output_adata.layers.keys()
-    
     
 if __name__ == '__main__':
     sys.exit(pytest.main([__file__]))

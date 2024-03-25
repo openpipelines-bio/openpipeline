@@ -29,6 +29,7 @@ functionality:
             The key in the mudata layer to use as input data for binning.
         - name: "--n_input_bins"
           type: integer
+          default: 51
           required: False
           min: 1
           description: |
