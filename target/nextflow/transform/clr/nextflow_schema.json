@@ -93,6 +93,17 @@
             }
     
 
+        ,
+                "axis": {
+                "type":
+                "integer",
+                "description": "Type: `integer`, default: `0`. Axis across which CLR is performed",
+                "help_text": "Type: `integer`, default: `0`. Axis across which CLR is performed."
+            ,
+                "default": "0"
+            }
+    
+
 }
 },
     

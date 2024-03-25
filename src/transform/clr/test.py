@@ -66,6 +66,21 @@ def test_clr_output_to_x(run_component, tmp_path):
     assert not np.all(np.isclose(original_x.toarray(), 
                                  output_h5mu.mod['prot'].X.toarray(), 
                                  rtol=1e-07, atol=1e-07))
+    
+def test_clr_set_axis(run_component, tmp_path):
+    output_file = tmp_path / "foo.h5mu"
+
+    run_component([
+        "--input", input_file,
+        "--output", str(output_file),
+        "--output_compression", "gzip",
+        "--output_layer", "clr",
+        "--axis", "1",
+    ])
+    assert output_file.is_file()
+    output_h5mu = read_h5mu(output_file)
+    assert 'clr' in output_h5mu.mod['prot'].layers.keys()
+    assert output_h5mu.mod['prot'].layers['clr'] is not None
 
 if __name__ == "__main__":
     sys.exit(pytest.main([__file__]))

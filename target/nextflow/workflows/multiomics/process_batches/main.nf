@@ -2965,6 +2965,24 @@ meta = [
             "dest" : "par"
           }
         ]
+      },
+      {
+        "name" : "CLR options",
+        "arguments" : [
+          {
+            "type" : "integer",
+            "name" : "--axis",
+            "description" : "Axis to perform the CLR transformation on.",
+            "default" : [
+              0
+            ],
+            "required" : false,
+            "direction" : "input",
+            "multiple" : false,
+            "multiple_sep" : ":",
+            "dest" : "par"
+          }
+        ]
       }
     ],
     "resources" : [
@@ -3041,7 +3059,7 @@ meta = [
           "functionalityNamespace" : "dataflow",
           "output" : "",
           "platform" : "",
-          "git_commit" : "5948d7eb7be3ada5c011fefdc9676aec8cd1c97c",
+          "git_commit" : "8b55f5f6188d8ecad9fc59d578c8a2f80d4841df",
           "executable" : "/nextflow/dataflow/merge/main.nf"
         },
         "writtenPath" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/dataflow/merge"
@@ -3063,7 +3081,7 @@ meta = [
           "functionalityNamespace" : "workflows/multiomics",
           "output" : "",
           "platform" : "",
-          "git_commit" : "5948d7eb7be3ada5c011fefdc9676aec8cd1c97c",
+          "git_commit" : "8b55f5f6188d8ecad9fc59d578c8a2f80d4841df",
           "executable" : "/nextflow/workflows/multiomics/split_modalities/main.nf"
         },
         "writtenPath" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/workflows/multiomics/split_modalities"
@@ -3084,7 +3102,7 @@ meta = [
           "functionalityNamespace" : "workflows/prot",
           "output" : "",
           "platform" : "",
-          "git_commit" : "5948d7eb7be3ada5c011fefdc9676aec8cd1c97c",
+          "git_commit" : "8b55f5f6188d8ecad9fc59d578c8a2f80d4841df",
           "executable" : "/nextflow/workflows/prot/prot_multisample/main.nf"
         },
         "writtenPath" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/workflows/prot/prot_multisample"
@@ -3105,7 +3123,7 @@ meta = [
           "functionalityNamespace" : "workflows/rna",
           "output" : "",
           "platform" : "",
-          "git_commit" : "5948d7eb7be3ada5c011fefdc9676aec8cd1c97c",
+          "git_commit" : "8b55f5f6188d8ecad9fc59d578c8a2f80d4841df",
           "executable" : "/nextflow/workflows/rna/rna_multisample/main.nf"
         },
         "writtenPath" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/workflows/rna/rna_multisample"
@@ -3127,7 +3145,7 @@ meta = [
           "functionalityNamespace" : "workflows/multiomics",
           "output" : "",
           "platform" : "",
-          "git_commit" : "5948d7eb7be3ada5c011fefdc9676aec8cd1c97c",
+          "git_commit" : "8b55f5f6188d8ecad9fc59d578c8a2f80d4841df",
           "executable" : "/nextflow/workflows/multiomics/dimensionality_reduction/main.nf"
         },
         "writtenPath" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/workflows/multiomics/dimensionality_reduction"
@@ -3149,7 +3167,7 @@ meta = [
           "functionalityNamespace" : "workflows/multiomics",
           "output" : "",
           "platform" : "",
-          "git_commit" : "5948d7eb7be3ada5c011fefdc9676aec8cd1c97c",
+          "git_commit" : "8b55f5f6188d8ecad9fc59d578c8a2f80d4841df",
           "executable" : "/nextflow/workflows/multiomics/dimensionality_reduction/main.nf"
         },
         "writtenPath" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/workflows/multiomics/dimensionality_reduction"
@@ -3170,7 +3188,7 @@ meta = [
           "functionalityNamespace" : "transfer",
           "output" : "",
           "platform" : "",
-          "git_commit" : "5948d7eb7be3ada5c011fefdc9676aec8cd1c97c",
+          "git_commit" : "8b55f5f6188d8ecad9fc59d578c8a2f80d4841df",
           "executable" : "/nextflow/transfer/publish/main.nf"
         },
         "writtenPath" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/transfer/publish"
@@ -3237,7 +3255,7 @@ meta = [
     "platform" : "nextflow",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/workflows/multiomics/process_batches",
     "viash_version" : "0.8.5",
-    "git_commit" : "5948d7eb7be3ada5c011fefdc9676aec8cd1c97c",
+    "git_commit" : "8b55f5f6188d8ecad9fc59d578c8a2f80d4841df",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))
@@ -3335,6 +3353,7 @@ workflow run_wf {
       ],
       "prot": [
         "layer": "prot_layer",
+        "axis": "axis",
       ]
     ].asImmutable()
 
