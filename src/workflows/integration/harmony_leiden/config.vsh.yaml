@@ -112,6 +112,9 @@ functionality:
     - type: nextflow_script
       path: test.nf
       entrypoint: test_wf
+    - type: nextflow_script
+      path: test.nf
+      entrypoint: test_wf2
     - path: /resources_test/pbmc_1k_protein_v3
 platforms:
   - type: nextflow

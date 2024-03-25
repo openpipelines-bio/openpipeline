@@ -142,6 +142,7 @@ functionality:
       alias: dimensionality_reduction_prot
     - name: workflows/multiomics/dimensionality_reduction
       alias: dimensionality_reduction_scaling_rna 
+    - name: transfer/publish
   resources:
     - type: nextflow_script
       path: main.nf

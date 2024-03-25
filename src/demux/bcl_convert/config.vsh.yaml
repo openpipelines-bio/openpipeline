@@ -51,6 +51,10 @@ functionality:
 platforms:
   - type: docker
     image: ghcr.io/data-intuitive/bclconvert:3.10
+    setup:
+      - type: apt
+        packages:
+          - procps
   - type: nextflow
     directives:
       label: [ midmem, midcpu ]

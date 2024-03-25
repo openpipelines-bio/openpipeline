@@ -1,10 +1,33 @@
-# openpipelines x.x.x 
+# openpipelines x.x.x
 
 ## NEW FUNCTIONALITY
 
-* `metadata/grep_annotation_column`: Added more logging output (PR #697).
+* Added `demux/cellranger_atac_mkfastq` component: demultiplex raw sequencing data for ATAC experiments (PR #726).
 
-* `metadata/add_id` and `metadata/grep_annotation_column`: Bump python to 3.11 (PR #697).
+* Added `reference/build_cellranger_reference` component: build reference file compatible with ATAC and ATAC+GEX experiments (PR #726).
+
+## MINOR CHANGES
+
+* Added `resources_test_scripts/cellranger_atac_tiny_bcl.sh` script: download tiny bcl file with an ATAC experiment, download a motifs file, demultiplex bcl files to reads in fastq format (PR #726).
+
+# openpipelines 1.0.0-rc3
+
+## BREAKING CHANGES
+
+* Docker image names now use `/` instead of `_` between the name of the component and the namespace (PR #712).
+
+## BUG FIXES
+
+* `rna_singlesample`: fixed a bug where selecting the column for the filtering with mitochondrial fractions 
+  using `obs_name_mitochondrial_fraction` was done with the wrong column name, causing `ValueError` (PR #743).
+
+* Fix publishing in `process_samples` and `process_batches` (PR #759).
+
+## NEW FUNCTIONALITY
+
+* `dimred/tsne` component: Added a tSNE dimensionality reduction component (PR #742).
+
+# openpipelines 1.0.0-rc2
 
 ## BUG FIXES
 
@@ -15,7 +38,13 @@
 * `metadata/grep_annotation_column`: fix calculating fraction when an input observation has no counts, which caused
 the result to be out of bounds.
 
+* Fix `--output` argument not working for several workflows (PR #740).
+
 ## MINOR CHANGES
+
+* `metadata/grep_annotation_column`: Added more logging output (PR #697).
+
+* `metadata/add_id` and `metadata/grep_annotation_column`: Bump python to 3.11 (PR #697).
 
 * Bump viash to 0.8.5 (PR #697)
 
