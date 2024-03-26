@@ -1,0 +1,56 @@
+functionality:
+  name: mkgtf
+  namespace: reference
+  description: Make a GTF file - filter by a specific attribute.
+  authors:
+    - __merge__: /src/authors/jakub_majercik.yaml
+      roles: [ author ]
+  arguments:
+    # inputs
+    - type: file
+      name: --input_gtf
+      required: true
+      description: Reference GTF annotation.
+      example: transcriptome_annotation.gtf.gz
+    - type: file
+      name: --output_gtf
+      direction: output
+      required: true
+      description: Output GTF file.
+      example: output.gtf
+    - type: string
+      name: --attribute
+      required: true
+      description: Attribute to filter by.
+      example: gene_biotype
+  resources:
+    - type: bash_script
+      path: script.sh
+  test_resources:
+    - type: bash_script
+      path: run_test.sh
+    - path: /resources_test/reference_gencodev41_chr1
+platforms:
+  - type: docker
+    image: ghcr.io/data-intuitive/cellranger:7.0
+    setup:
+      - type: docker
+        run: |
+          DEBIAN_FRONTEND=noninteractive apt update && \
+          apt upgrade -y && apt install -y pigz procps && rm -rf /var/lib/apt/lists/*
+    test_setup:
+      - type: apt
+        packages: [ git, wget ]
+      - type: docker
+        run: |
+          TARGETARCH="${TARGETARCH:-$(dpkg --print-architecture)}" && \
+          TARGETOS="${TARGETOS:-linux}" && \
+          PATH="${PATH}:/usr/local/go/bin" && \
+          wget https://go.dev/dl/go1.21.4.$TARGETOS-$TARGETARCH.tar.gz && tar -C /usr/local/ -xzf go1.21.4.$TARGETOS-$TARGETARCH.tar.gz && \
+          rm go1.21.4.$TARGETOS-$TARGETARCH.tar.gz && \
+          git clone --branch v2.5.0 https://github.com/shenwei356/seqkit.git && \
+          cd seqkit/seqkit/ && go build && cp seqkit /usr/bin/ && cd ../../ && rm -rf seqkit && rm -r /usr/local/go
+    
+  - type: nextflow
+    directives:
+      label: [ highmem, highcpu ]
