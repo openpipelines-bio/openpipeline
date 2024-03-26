@@ -16,7 +16,6 @@ function clean_up {
 trap clean_up EXIT
 
 # just to make sure
-# par_genome_fasta=`realpath $par_genome_fasta`
 par_input_gtf=`realpath $par_input_gtf`
 par_output_gtf=`realpath $par_output_gtf`
 
