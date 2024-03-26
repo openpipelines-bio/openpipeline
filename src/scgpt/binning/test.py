@@ -1,7 +1,7 @@
 import pytest
 import sys
 import mudata as mu
-
+from scipy.sparse import issparse
 
 ## VIASH START
 meta = {
@@ -43,8 +43,9 @@ def test_binning(run_component, tmp_path):
     
     # Check binned values
     binned_values = output_adata.layers["X_binned"]
+    assert issparse(binned_values)
     assert binned_values.shape == output_adata.X.shape
-    assert all(all(i<=51) for i in binned_values)
+    assert (binned_values.data <= 51).all(axis=None)
     
     
 if __name__ == '__main__':
