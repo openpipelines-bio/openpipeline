@@ -14,6 +14,8 @@
 ## NEW FUNCTIONALITY
 
 * `dimred/tsne` component: Added a tSNE dimensionality reduction component (PR #742).
+  
+* `reference/cellranger_mkgtf` component: Added cellranger mkgtf as a standalone component (PR #771).
 
 # openpipelines 1.0.0-rc2
 

@@ -17,7 +17,7 @@ functionality:
       direction: output
       required: true
       description: Output GTF file.
-      example: output.gtf
+      example: output.gtf.gz
     - type: string
       name: --attribute
       required: true
