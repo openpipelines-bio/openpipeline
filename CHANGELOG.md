@@ -13,7 +13,7 @@
 
 * `dimred/tsne` component: Added a tSNE dimensionality reduction component (PR #742).
 
-* `scgpt/cross_check` component: Added a gene-model cross check component for scGPT (PR #758)
+* `scgpt/cross_check_genes` component: Added a gene-model cross check component for scGPT (PR #758)
 
 # openpipelines 1.0.0-rc2
 

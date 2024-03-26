@@ -1,15 +1,8 @@
 import sys
 import os
-import anndata as ad
 import mudata as mu
 import numpy as np
-import pandas as pd
-from pathlib import Path
 from scgpt.tokenizer.gene_tokenizer import GeneVocab
-from torchtext.vocab import Vocab
-from torchtext._torchtext import (
-    Vocab as VocabPybind,
-)
 
 ## VIASH START
 par = {
@@ -20,12 +13,10 @@ par = {
     "batch_id_layer": "batch_id",
     "gene_name_layer": "gene_name",
     "pad_token": "<pad>",
-    "load_model_vocab": True,
-    "model_dir": "resources_test/scgpt/source"
+    "vocab_file": "resources_test/scgpt/source/vocab.json"
 }
 ## VIASH END
 
-sys.path.append(meta["resources_dir"])
 # START TEMPORARY WORKAROUND setup_logger
 # reason: resources aren't available when using Nextflow fusion
 # from setup_logger import setup_logger
@@ -67,26 +58,13 @@ adata.var[par["gene_name_layer"]] = adata.var.index.astype(str).tolist()
 logger.info("Cross-checking genes with pre-trained model")
 genes = adata.var[par["gene_name_layer"]].tolist()
 
-if par["load_model_vocab"]:
-    
-    logger.info(f"Loading model vocab from {par['model_dir']}")
-    
-    required_files = ['vocab.json', 'best_model.pt', 'args.json']
-    missing_files = [file for file in required_files if file not in os.listdir(par["model_dir"])]
-    if missing_files:
-        raise FileNotFoundError(f"Model directory '{par['model_dir']}' is missing the following required files: {', '.join(missing_files)}.")
-    
-    model_dir = Path(par["model_dir"])
-    vocab_file = model_dir / "vocab.json"
-    vocab = GeneVocab.from_file(vocab_file)
-    for s in special_tokens:
-        if s not in vocab:
-            vocab.append_token(s)
-else:
-    # bidirectional lookup [gene <-> int]
-    vocab = Vocab(
-        VocabPybind(genes + special_tokens, None)
-    )
+logger.info(f"Loading model vocab from {par['vocab_file']}")
+
+vocab_file = par["vocab_file"]
+vocab = GeneVocab.from_file(vocab_file)
+for s in special_tokens:
+    if s not in vocab:
+        vocab.append_token(s)
 
 logger.info("Filtering genes based on model vocab")
 adata.var["id_in_vocab"] = [
