@@ -2,14 +2,13 @@ import mudata as mu
 import numpy as np
 from scanpy.get import _get_obs_rep
 from sklearn.utils import issparse
-from scgpt.preprocess import _digitize
 from scipy.sparse import csr_matrix
 import warnings
 
 ## VIASH START
 par = {
     "input": "resources_test/scgpt/test_resources/Kim2020_Lung_subset.h5mu",
-    "output": "resources_test/scgpt/test_resources/Kim2020_Lung_binned.h5mu",
+    "output": "resources_test/scgpt/test_resources/Kim2020_Lung_subset_binned_sparse.h5mu",
     "modality": "rna",
     "input_layer": "X",
     "binned_layer": "X_binned",
@@ -17,6 +16,7 @@ par = {
     "output_compression": None
 }
 ## VIASH END
+np.random.seed(0)
 
 # START TEMPORARY WORKAROUND setup_logger
 # reason: resources aren't available when using Nextflow fusion
@@ -60,6 +60,23 @@ if layer_data.min() < 0:
     raise ValueError(
         f"Assuming non-negative data, but got min value {layer_data.min()}."
     )
+
+
+def _digitize(x: np.ndarray, bins: np.ndarray, side="both") -> np.ndarray:
+    assert x.ndim == 1 and bins.ndim == 1
+
+    left_digits = np.digitize(x, bins)
+    if side == "one":
+        return left_digits
+
+    right_difits = np.digitize(x, bins, right=True)
+
+    rands = np.random.rand(len(x))  # uniform random numbers
+
+    digits = rands * (right_difits - left_digits) + left_digits
+    digits = np.ceil(digits).astype(np.int64)
+    return digits
+
 
 with warnings.catch_warnings():
     # Make sure warnings are displayed once.
