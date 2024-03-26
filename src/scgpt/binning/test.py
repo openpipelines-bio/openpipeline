@@ -15,7 +15,7 @@ meta = {
 
 def test_binning(run_component, tmp_path):
     
-    input_file_path = f"{meta['resources_dir']}/scgpt/test_resources/Kim2020_Lung_subset.h5mu"
+    input_file_path = f"{meta['resources_dir']}/Kim2020_Lung_subset.h5mu"
     output_file_path = tmp_path / "Kim2020_Lung_subset_binned.h5mu"
 
     run_component([
