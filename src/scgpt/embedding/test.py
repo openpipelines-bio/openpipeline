@@ -19,7 +19,9 @@ meta = {
 ## VIASH END
 
 input = f"{meta['resources_dir']}/scgpt/test_resources/Kim2020_Lung_subset.h5mu"
-model_dir = f"{meta['resources_dir']}/scgpt/source/"
+model_file = f"{meta['resources_dir']}/scgpt/source/best_model.pt"
+vocab_file = f"{meta['resources_dir']}/scgpt/source/vocab.json"
+model_config_file = f"{meta['resources_dir']}/scgpt/source/args.json"
 input_file = mu.read(input)
 
 ## START TEMPORARY WORKAROUND DATA PREPROCESSING
@@ -38,8 +40,6 @@ adata.obs["batch_id"] = batch_id_labels
 adata.var["gene_name"] = adata.var.index.tolist()
 
 # Load model vocab
-model_dir = Path(model_dir)
-vocab_file = model_dir / "vocab.json"
 vocab = GeneVocab.from_file(vocab_file)
 for s in special_tokens:
     if s not in vocab:
@@ -125,7 +125,9 @@ def test_integration_embedding(run_component, tmp_path):
     run_component([
         "--input", input_preprocessed_path,
         "--modality", "rna",
-        "--model_dir", model_dir,
+        "--model", model_file,
+        "--model_vocab", vocab_file,
+        "--model_config", model_config_file,
         "--input_gene_ids", input_gene_id_path,
         "--input_values", input_values_path,
         "--input_padding_mask", input_padding_mask_path,
