@@ -1,7 +1,6 @@
 import mudata as mu
 import numpy as np
 from scanpy.get import _get_obs_rep
-from sklearn.utils import issparse
 from scipy.sparse import csr_matrix
 import warnings
 
