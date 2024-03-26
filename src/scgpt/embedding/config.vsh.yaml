@@ -135,8 +135,9 @@ functionality:
   test_resources:
     - type: python_script
       path: test.py
-    - path: /resources_test/scgpt/
-    
+    - path: /resources_test/scgpt/source
+    - path: /resources_test/scgpt/test_resources/Kim2020_Lung_subset.h5mu
+
 platforms:
   - type: docker
     image: nvcr.io/nvidia/pytorch:23.09-py3
