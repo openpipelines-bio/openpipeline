@@ -18,10 +18,11 @@ meta = {
 }
 ## VIASH END
 
-input = f"{meta['resources_dir']}/scgpt/test_resources/Kim2020_Lung_subset.h5mu"
-model_file = f"{meta['resources_dir']}/scgpt/source/best_model.pt"
-vocab_file = f"{meta['resources_dir']}/scgpt/source/vocab.json"
-model_config_file = f"{meta['resources_dir']}/scgpt/source/args.json"
+
+input = f"{meta['resources_dir']}/Kim2020_Lung_subset.h5mu"
+model_file = f"{meta['resources_dir']}/source/best_model.pt"
+vocab_file = f"{meta['resources_dir']}/source/vocab.json"
+model_config_file = f"{meta['resources_dir']}/source/args.json"
 input_file = mu.read(input)
 
 ## START TEMPORARY WORKAROUND DATA PREPROCESSING
@@ -103,16 +104,16 @@ tokenized_data = tokenize_and_pad_batch(
 all_gene_ids, all_values = tokenized_data["genes"], tokenized_data["values"]
 padding_mask = all_gene_ids.eq(vocab[pad_token])
 
-input_gene_id_path = f"{meta['resources_dir']}/scgpt/test_resources/Kim2020_Lung_gene_ids.pt"
-input_values_path = f"{meta['resources_dir']}/scgpt/test_resources/Kim2020_Lung_values.pt"
-input_padding_mask_path = f"{meta['resources_dir']}/scgpt/test_resources/Kim2020_Lung_padding_mask.pt"
+input_gene_id_path = f"{meta['resources_dir']}/Kim2020_Lung_gene_ids_subset.pt"
+input_values_path = f"{meta['resources_dir']}/Kim2020_Lung_values_subset.pt"
+input_padding_mask_path = f"{meta['resources_dir']}/Kim2020_Lung_padding_mask_subset.pt"
 
 torch.save(all_gene_ids, input_gene_id_path)
 torch.save(all_values, input_values_path)
 torch.save(padding_mask, input_padding_mask_path)
 
 input_preprocessed = mu.MuData({'rna': adata})
-input_preprocessed_path = f"{meta['resources_dir']}/Kim2020_Lung_preprocessed.h5mu"
+input_preprocessed_path = f"{meta['resources_dir']}/Kim2020_Lung_preprocessed_subset.h5mu"
 input_preprocessed.write_h5mu(input_preprocessed_path)
 
 ## END TEMPORARY WORKAROUND DATA PREPROCESSING
@@ -120,7 +121,7 @@ input_preprocessed.write_h5mu(input_preprocessed_path)
 
 def test_integration_embedding(run_component, tmp_path):
 
-    output_embedding_file = tmp_path / "Kim2020_Lung_embedded.h5mu"
+    output_embedding_file = tmp_path / "Kim2020_Lung_subset_embedded.h5mu"
 
     run_component([
         "--input", input_preprocessed_path,
