@@ -2977,24 +2977,6 @@ meta = [
             "dest" : "par"
           }
         ]
-      },
-      {
-        "name" : "CLR arguments",
-        "arguments" : [
-          {
-            "type" : "integer",
-            "name" : "--axis",
-            "description" : "Axis across which CLR is performed.",
-            "default" : [
-              0
-            ],
-            "required" : false,
-            "direction" : "input",
-            "multiple" : false,
-            "multiple_sep" : ":",
-            "dest" : "par"
-          }
-        ]
       }
     ],
     "resources" : [
@@ -3062,7 +3044,7 @@ meta = [
           "functionalityNamespace" : "transform",
           "output" : "",
           "platform" : "",
-          "git_commit" : "8b55f5f6188d8ecad9fc59d578c8a2f80d4841df",
+          "git_commit" : "4199223dcfb677961fe8bb0af51baa00f476923e",
           "executable" : "/nextflow/transform/clr/main.nf"
         },
         "writtenPath" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/transform/clr"
@@ -3084,7 +3066,7 @@ meta = [
           "functionalityNamespace" : "workflows/qc",
           "output" : "",
           "platform" : "",
-          "git_commit" : "8b55f5f6188d8ecad9fc59d578c8a2f80d4841df",
+          "git_commit" : "4199223dcfb677961fe8bb0af51baa00f476923e",
           "executable" : "/nextflow/workflows/qc/qc/main.nf"
         },
         "writtenPath" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/workflows/qc/qc"
@@ -3151,7 +3133,7 @@ meta = [
     "platform" : "nextflow",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/workflows/prot/prot_multisample",
     "viash_version" : "0.8.5",
-    "git_commit" : "8b55f5f6188d8ecad9fc59d578c8a2f80d4841df",
+    "git_commit" : "4199223dcfb677961fe8bb0af51baa00f476923e",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))
@@ -3180,7 +3162,6 @@ workflow run_wf {
       fromState: [
         "input": "input",
         "input_layer": "layer",
-        "axis": "axis",
         ],
       toState: ["input": "output"],
       args: [ 

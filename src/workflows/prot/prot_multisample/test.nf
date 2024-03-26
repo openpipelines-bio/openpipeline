@@ -10,8 +10,7 @@ workflow test_wf {
       [
         id: "adt_samples",
         sample_id: "pbmc",
-        input: resources_test.resolve("pbmc_1k_protein_v3/pbmc_1k_protein_v3_mms.h5mu"),
-        axis: 1
+        input: resources_test.resolve("pbmc_1k_protein_v3/pbmc_1k_protein_v3_mms.h5mu")
       ]
     ])
     | map{ state -> [state.id, state] }

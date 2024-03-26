@@ -5,7 +5,6 @@ modality: "prot"
 # output_compression: "gzip"
 # input_layer: "foo"
 # output_layer: "foo"
-axis: 0
 
 # Nextflow input-output arguments
 publish_dir: # please fill in - example: "output/"
