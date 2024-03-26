@@ -23,6 +23,8 @@ workflow test_wf {
     ])
     | map{ state -> [state.id, state] }
     | dimensionality_reduction
+
+    assert_ch = output_ch
     | view { output ->
       assert output.size() == 2 : "Outputs should contain two elements; [id, state]"
 
@@ -39,12 +41,18 @@ workflow test_wf {
 
       "Output: $output"
     }
+
+        
     | toSortedList({a, b -> a[0] <=> b[0]})
     | map { output_list ->
       assert output_list.size() == 2 : "output channel should contain 2 events"
       assert output_list.collect{it[0]} == ["pca_obsm_output_test", "simple_execution_test"]
+      output_list
     }
 
+    test_ch = output_ch
     | map { id , output -> [id, ["input": output.output]]}
     | dimensionality_reduction_test
+
+
 }
