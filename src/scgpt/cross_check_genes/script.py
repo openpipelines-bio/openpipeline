@@ -6,7 +6,7 @@ from scgpt.tokenizer.gene_tokenizer import GeneVocab
 
 ## VIASH START
 par = {
-    "input": "resources_test/scgpt/test_resources/Kim2020_Lung.h5mu",
+    "input": "resources_test/scgpt/test_resources/Kim2020_Lung_subset.h5mu",
     "output": "output.h5mu",
     "modality": "rna",
     "ori_batch_layer_name": "sample",

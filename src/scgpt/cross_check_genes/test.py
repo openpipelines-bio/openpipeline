@@ -11,7 +11,7 @@ meta = {
 }
 ## VIASH END
 
-input_path = meta["resources_dir"] + "test_resources/Kim2020_Lung.h5mu"
+input_path = meta["resources_dir"] + "test_resources/Kim2020_Lung_subset.h5mu"
 vocab_path = meta["resources_dir"] + "source/vocab.json"
 
 def test_cross_check(run_component, random_path):
@@ -48,7 +48,6 @@ def test_cross_check_custom_params(run_component, random_path):
     ]
     run_component(args)
     
-    assert output_path.is_file(), "No output was created."
     output_mudata = read_h5mu(output_path)
     input_mudata = read_h5mu(input_path)
     
