@@ -1,6 +1,5 @@
 import mudata as mu
 import numpy as np
-from pathlib import Path
 import torch
 from scipy.sparse import issparse
 from scgpt.tokenizer import tokenize_and_pad_batch
@@ -18,8 +17,8 @@ par = {
     "modality": "rna",
     "input_layer": "X_binned",
     "gene_name_layer": "gene_name",
-    "model_dir": "resources_test/scgpt/source/"
-}
+    "model_vocab": "resources_test/scgpt/source/vocab.json"
+    }
 ## VIASH END
 
 # START TEMPORARY WORKAROUND setup_logger
@@ -63,8 +62,7 @@ all_counts = (
 logger.info("Reading in vocab")
 genes = adata.var[par["gene_name_layer"]].tolist()
 
-model_dir = Path(par["model_dir"])
-vocab_file = model_dir / "vocab.json"
+vocab_file = par["model_vocab"]
 vocab = GeneVocab.from_file(vocab_file)
 for s in special_tokens:
     if s not in vocab:

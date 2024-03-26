@@ -3,7 +3,6 @@ import sys
 import mudata as mu
 import torch
 import numpy as np
-from pathlib import Path
 from scgpt.tokenizer.gene_tokenizer import GeneVocab
 from scgpt.preprocess import Preprocessor
 
@@ -17,7 +16,7 @@ meta = {
 ## VIASH END
 
 input = f"{meta['resources_dir']}/scgpt/test_resources/Kim2020_Lung_subset.h5mu"
-model_dir = f"{meta['resources_dir']}/scgpt/source/"
+vocab_file = f"{meta['resources_dir']}/scgpt/source/vocab.json"
 input_file = mu.read(input)
 
 ## START TEMPORARY WORKAROUND DATA PREPROCESSING
@@ -36,8 +35,6 @@ adata.obs["batch_id"] = batch_id_labels
 adata.var["gene_name"] = adata.var.index.tolist()
 
 # Load model vocab
-model_dir = Path(model_dir)
-vocab_file = model_dir / "vocab.json"
 vocab = GeneVocab.from_file(vocab_file)
 for s in special_tokens:
     if s not in vocab:
@@ -92,7 +89,7 @@ def test_integration_pad_tokenize(run_component, tmp_path):
         "--pad_value", "-2",
         "--input_layer", "X_binned",
         "--gene_name_layer", "gene_name",
-        "--model_dir", model_dir
+        "--model_vocab", vocab_file
     ])
 
     adata = input_file.mod["rna"]
