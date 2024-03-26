@@ -14,7 +14,9 @@ par = {
     "input_gene_ids": 'resources_test/scgpt/test_resources/Kim2020_Lung_gene_ids.pt',
     "input_values": 'resources_test/scgpt/test_resources/Kim2020_Lung_values.pt',
     "input_padding_mask": 'resources_test/scgpt/test_resources/Kim2020_Lung_padding_mask.pt',
-    "model_dir": "resources_test/scgpt/source",
+    "model": "resources_test/scgpt/source/best_model.pt",
+    "model_config": "resources_test/scgpt/source/args.json",
+    "model_vocab": "resources_test/scgpt/source/vocab.json",
     "output": "Kim2020_Lung_embedded.h5ad",
     "gene_name_layer": "gene_name",
     "batch_id_layer": "batch_id",
@@ -89,10 +91,9 @@ genes = adata.var[par["gene_name_layer"]].tolist()
 logger.info("Loading model, vocab and configs")
 
 # Model files
-model_dir = Path(par["model_dir"])
-model_config_file = model_dir / "args.json"
-model_file = model_dir / "best_model.pt"
-vocab_file = model_dir / "vocab.json"
+model_config_file = par["model_config"]
+model_file = par["model"]
+vocab_file = par["model_vocab"]
 
 # Load vocab
 vocab = GeneVocab.from_file(vocab_file)

@@ -21,13 +21,27 @@ functionality:
           type: string
           default: "rna"
           required: false
-        - name: "--model_dir"
+        - name: "--model"
           type: file
           direction: input
           required: true
-          example: foundational_model/scgpt
+          example: best_model.pt
           description: |
-            The directory containing the model files. Must contain 'vocab.json', 'model.pt' and 'args.json' files.
+            Path to model file.
+        - name: "--model_vocab"
+          type: file
+          direction: input
+          required: true
+          example: vocab.json
+          description: |
+            Path to model vocabulary file.
+        - name: "--model_config"
+          type: file
+          direction: input
+          required: true
+          example: args.json
+          description: |
+            Path to model config file.
         - name: "--input_gene_ids"
           type: file
           direction: input
