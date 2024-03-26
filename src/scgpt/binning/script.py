@@ -3,7 +3,8 @@ import numpy as np
 from scanpy.get import _get_obs_rep
 from sklearn.utils import issparse
 from scgpt.preprocess import _digitize
-
+from scipy.sparse import csr_matrix
+import warnings
 
 ## VIASH START
 par = {
@@ -12,7 +13,7 @@ par = {
     "modality": "rna",
     "input_layer": "X",
     "binned_layer": "X_binned",
-    "n_input_bins": None,
+    "n_input_bins": 51,
     "output_compression": None
 }
 ## VIASH END
@@ -53,43 +54,49 @@ binned_rows = []
 bin_edges = []
 
 layer_data = _get_obs_rep(adata, layer=key_to_process)
-layer_data = layer_data.A if issparse(layer_data) else layer_data
+layer_data = csr_matrix(layer_data)
 
 if layer_data.min() < 0:
     raise ValueError(
         f"Assuming non-negative data, but got min value {layer_data.min()}."
     )
-    
-for row in layer_data:     
+
+with warnings.catch_warnings():
+    # Make sure warnings are displayed once.
+    warnings.simplefilter("once")
+    # layer_data.indptr.size is the number of rows in the sparse matrix 
+    for row_number in range(layer_data.indptr.size-1):
+        row_start_index, row_end_index = layer_data.indptr[row_number], layer_data.indptr[row_number+1]
+        # These are all non-zero counts in the row
+        non_zero_row = layer_data.data[row_start_index:row_end_index] 
+        if non_zero_row.max() == 0:
+            logger.warning(
+                "The input data contains all zero rows. Please make sure "
+                "this is expected. You can use the `filter_cell_by_counts` "
+                "arg to filter out all zero rows."
+            )
+            
+            # Add binned_rows and bin_edges as all 0
+            # np.stack will upcast the dtype later
+            binned_rows.append(np.zeros_like(non_zero_row, dtype=np.int8))
+            bin_edges.append(np.array([0] * n_bins))
+            continue
         
-    if row.max() == 0:
-        logger.warning(
-            "The input data contains all zero rows. Please make sure "
-            "this is expected. You can use the `filter_cell_by_counts` "
-            "arg to filter out all zero rows."
-        )
+        # Binning of non-zero values
+        bins = np.quantile(non_zero_row, np.linspace(0, 1, n_bins - 1))
+        non_zero_digits = _digitize(non_zero_row, bins)
+        assert non_zero_digits.min() >= 1
+        assert non_zero_digits.max() <= n_bins - 1
+        binned_rows.append(non_zero_digits)
         
-        # Add binned_rows and bin_edges as all 0
-        binned_rows.append(np.zeros_like(row, dtype=np.int64))
-        bin_edges.append(np.array([0] * n_bins))
-        continue
-    
-    # Binning of non-zero values
-    non_zero_ids = row.nonzero()
-    non_zero_row = row[non_zero_ids]
-    bins = np.quantile(non_zero_row, np.linspace(0, 1, n_bins - 1))
-    non_zero_digits = _digitize(non_zero_row, bins)
-    assert non_zero_digits.min() >= 1
-    assert non_zero_digits.max() <= n_bins - 1
-    binned_row = np.zeros_like(row, dtype=np.int64)
-    binned_row[non_zero_ids] = non_zero_digits
-    
-    # Add binned_rows and bin_edges values
-    binned_rows.append(binned_row)
-    bin_edges.append(np.concatenate([[0], bins]))
-    
+        bin_edges.append(np.concatenate([[0], bins]))
+
+# Create new CSR matrix
+binned_layer = csr_matrix((np.concatenate(binned_rows, casting="same_kind"), 
+                          layer_data.indices, layer_data.indptr), shape=layer_data.shape)
+
 # Set binned values and bin edges layers to adata object
-adata.layers[par["binned_layer"]] = np.stack(binned_rows)
+adata.layers[par["binned_layer"]] = binned_layer 
 adata.obsm["bin_edges"] = np.stack(bin_edges)
       
 # Write mudata output 
