@@ -42,7 +42,7 @@ input_adata = mdata.mod[par["modality"]]
 adata = input_adata.copy()
 
 logger.info("Converting the input layer into a CSR matrix")
-if not par['input_layer']:
+if not par['input_layer'] or par["input_layer"] == "X":
     layer_data = adata.X
 else:
     layer_data = adata.layers[par['input_layer']]

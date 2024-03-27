@@ -21,8 +21,7 @@ def test_binning(run_component, tmp_path):
     run_component([
         "--input", input_file_path,
         "--modality", "rna",
-        "--input_layer", "X",
-        "--binned_layer", "X_binned",
+        "--binned_layer", "binned",
         "--n_input_bins", "51",
         "--output", output_file_path
     ])
@@ -33,7 +32,7 @@ def test_binning(run_component, tmp_path):
 
     # Check presence of binning layers
     assert "bin_edges" in output_adata.obsm.keys()
-    assert "X_binned" in output_adata.layers.keys()
+    assert "binned" in output_adata.layers.keys()
     
     # Check bin edges
     bin_edges = output_adata.obsm["bin_edges"]
@@ -42,7 +41,7 @@ def test_binning(run_component, tmp_path):
     assert all(all(i>=0) for i in bin_edges)
     
     # Check binned values
-    binned_values = output_adata.layers["X_binned"]
+    binned_values = output_adata.layers["binned"]
     assert issparse(binned_values)
     assert binned_values.shape == output_adata.X.shape
     assert (binned_values.data <= 51).all(axis=None)
