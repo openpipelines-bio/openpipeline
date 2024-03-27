@@ -26,7 +26,7 @@ functionality:
           default: "X"
           required: False
           description: |
-            The key in the mudata layer to use as input data for binning.
+            Mudata layer (key from .layers) to use as input data for binning.
         - name: "--n_input_bins"
           type: integer
           default: 51
