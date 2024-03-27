@@ -10,8 +10,8 @@ import subprocess
 meta = {
     'executable': './target/docker/mapping/cellranger_multi/cellranger_multi',
     'resources_dir': 'resources_test/',
-    'cpus': 6,
-    'memory_gb': 6,
+    'cpus': 15,
+    'memory_gb': 20,
     'config': 'src/mapping/cellranger_multi/config.vsh.yaml'
 }
 ## VIASH END

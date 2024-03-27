@@ -381,8 +381,6 @@ def main(par: dict[str, Any], meta: dict[str, Any]):
                 logger.error(e.output.decode('utf-8'))
                 print(e.output.decode('utf-8'), flush=True)
                 raise e
-            print(process_output.stdout.decode('utf-8'), flush=True)
-
 
             # look for output dir file
             tmp_output_dir = temp_dir_path / temp_id / "outs"
