@@ -42,9 +42,6 @@ adata = input_adata.copy()
 
 
 logger.info(f"Binning data of {par['input_layer']} layer into {par['n_input_bins']} bins.")
-key_to_process = par["input_layer"]
-if key_to_process == "X":
-    key_to_process = None # Scanpy API uses arg None to use X
     
 n_bins = par["n_input_bins"]  # NOTE: the first bin is always a spectial for zero
 
