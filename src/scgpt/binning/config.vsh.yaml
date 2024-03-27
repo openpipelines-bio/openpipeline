@@ -2,7 +2,7 @@ functionality:
   name: binning
   namespace: "scgpt"
   description: |
-   Binning of (pre-processed) data.
+   Conversion of (pre-processed) expression count data into relative values (bins) to address scale differences across sequencing batches.
   authors:
     - __merge__: /src/authors/dorien_roosen.yaml
       roles: [ maintainer, author ]
@@ -23,10 +23,9 @@ functionality:
           required: false
         - name: "--input_layer"
           type: string
-          default: "X"
           required: False
           description: |
-            Mudata layer (key from .layers) to use as input data for binning.
+            Mudata layer (key from .layers) to use as input data for binning. If not specified, .X is used.
         - name: "--n_input_bins"
           type: integer
           default: 51
@@ -56,6 +55,11 @@ functionality:
           default: "binned"
           description: |
             The name of the adata layer to write the binned data to.
+        - name: "--seed"
+          type: integer
+          default: 0
+          description: |
+            Seed for random number generation.
 
   resources:
     - type: python_script

@@ -8,13 +8,14 @@ par = {
     "input": "resources_test/scgpt/test_resources/Kim2020_Lung_subset.h5mu",
     "output": "resources_test/scgpt/test_resources/Kim2020_Lung_subset_binned_sparse.h5mu",
     "modality": "rna",
-    "input_layer": "X",
-    "binned_layer": "X_binned",
+    "input_layer": None,
+    "binned_layer": "binned",
     "n_input_bins": 51,
-    "output_compression": None
+    "output_compression": None,
+    "seed": 0
 }
 ## VIASH END
-np.random.seed(0)
+np.random.seed(par["seed"])
 
 # START TEMPORARY WORKAROUND setup_logger
 # reason: resources aren't available when using Nextflow fusion
@@ -40,41 +41,34 @@ mdata = mu.read(par["input"])
 input_adata = mdata.mod[par["modality"]]
 adata = input_adata.copy()
 
-
-logger.info(f"Binning data of {par['input_layer']} layer into {par['n_input_bins']} bins.")
-    
-n_bins = par["n_input_bins"]  # NOTE: the first bin is always a spectial for zero
-
-binned_rows = []
-bin_edges = []
-
-if not par['layer']:
+logger.info("Converting the input layer into a CSR matrix")
+if not par['input_layer']:
     layer_data = adata.X
-else
-    layer_data = adata.layers[par['layer']]
+else:
+    layer_data = adata.layers[par['input_layer']]
 layer_data = csr_matrix(layer_data)
 
 if layer_data.min() < 0:
     raise ValueError(
         f"Assuming non-negative data, but got min value {layer_data.min()}."
     )
+    
+n_bins = par["n_input_bins"]  # NOTE: the first bin is always a spectial for zero
+logger.info(f"Binning data into {par['n_input_bins']} bins.")
 
 
-def _digitize(x: np.ndarray, bins: np.ndarray, side="both") -> np.ndarray:
+def _digitize(x: np.ndarray, bins: np.ndarray) -> np.ndarray:
     assert x.ndim == 1 and bins.ndim == 1
 
     left_digits = np.digitize(x, bins)
-    if side == "one":
-        return left_digits
-
     right_difits = np.digitize(x, bins, right=True)
 
     rands = np.random.rand(len(x))  # uniform random numbers
 
     digits = rands * (right_difits - left_digits) + left_digits
     digits = np.ceil(digits)
-    smallest_dtype = np.min_scalar_type(test.max().astype(np.uint)) # Already checked for non-negative values
-   digits = digits.astype(smallest_dtype)
+    smallest_dtype = np.min_scalar_type(digits.max().astype(np.uint)) # Already checked for non-negative values
+    digits = digits.astype(smallest_dtype)
     
     return digits
 
@@ -83,6 +77,9 @@ with warnings.catch_warnings():
     # Make sure warnings are displayed once.
     warnings.simplefilter("once")
     # layer_data.indptr.size is the number of rows in the sparse matrix 
+    binned_rows = []
+    bin_edges = []
+    logger.info("Establishing bin edges and digitizing of non-zero values into bins for each row of the count matrix")
     for row_number in range(layer_data.indptr.size-1):
         row_start_index, row_end_index = layer_data.indptr[row_number], layer_data.indptr[row_number+1]
         # These are all non-zero counts in the row
@@ -110,6 +107,7 @@ with warnings.catch_warnings():
         bin_edges.append(np.concatenate([[0], bins]))
 
 # Create new CSR matrix
+logger.info("Creating a new CSR matrix of the binned count values")
 binned_layer = csr_matrix((np.concatenate(binned_rows, casting="same_kind"), 
                           layer_data.indices, layer_data.indptr), shape=layer_data.shape)
 
@@ -118,5 +116,6 @@ adata.layers[par["binned_layer"]] = binned_layer
 adata.obsm["bin_edges"] = np.stack(bin_edges)
       
 # Write mudata output 
+logger.info("Writing output data")
 mdata.mod[par["modality"]] = adata
 mdata.write(par["output"], compression=par["output_compression"]) 
