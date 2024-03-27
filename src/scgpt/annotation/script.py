@@ -34,7 +34,7 @@ par = {
     "model": "resources_test/scgpt/source/best_model.pt",
     "model_config": "resources_test/scgpt/source/args.json",
     "model_vocab": "resources_test/scgpt/source/vocab.json",
-    "output": "Kim2020_Lung_cell_type_annotation.h5ad",
+    "output": "Kim2020_Lung_cell_type_annotation.h5mu",
     "gene_name_layer": "gene_name",
     "batch_id_layer": "batch_id",
     "predicted_cell_type_id": "predicted_cell_type",
