@@ -43,7 +43,7 @@ functionality:
           example: output.h5mu
           required: true
           description: |
-            The output h5mu file containing the preprocessed data.    
+            The output h5mu file containing the binned data.    
         - name: "--output_compression"
           type: string
           example: "gzip"
