@@ -18,12 +18,38 @@ functionality:
           required: true
           description: Path to the sample.
           example: dataset.h5mu
-        - name: "--layer"
+        - name: "--modality"
+          type: string
+          default: "rna"
+          required: false
+        - name: "--vocab_file"
+          type: file
+          direction: input
+          required: true
+          example: resources_test/scgpt/vocab.json
+          description: |
+            Model vocabulary file directory.
+        - name: "--input_layer"
           type: string
           required: false
           default: "X"
           description: "Input layer to start from."
-    - name: "Output"
+        - name: "--gene_name_layer"
+          type: string
+          example: "gene_name"
+          required: false
+          default: "gene_name"
+          description: |
+            The name of the adata.var column containing gene names.
+        - name: "--n_input_bins"
+          type: integer
+          default: 51
+          required: False
+          min: 1
+          description: |
+            The number of bins to discretize the data into. When no value is provided, data won't be binned.
+
+    - name: "Outputs"
       arguments:
         - name: "--output"
           type: file
@@ -31,7 +57,32 @@ functionality:
           direction: output
           description: Destination path to the output.
           example: output.h5mu
-
+        - name: "--output_compression"
+          type: string
+          example: "gzip"
+          required: false
+          choices: ["gzip", "lzf"]
+          description: |
+            The compression algorithm to use for the output h5mu file.
+        - name: "--binned_layer"
+          type: string
+          default: "binned"
+          description: |
+            The name of the adata layer to write the binned data to.
+    - name: "Arguments"
+      arguments:
+        - name: "--pad_token"
+          type: string
+          default: "<pad>"
+          required: false
+          description: |
+            The padding token used in the model.
+        - name: "--ori_batch_layer_name"
+          type: string
+          default: "sample"
+        - name: "--batch_id_layer"
+          type: string
+          default: "batch_id"
   resources:
     - type: nextflow_script
       path: main.nf
@@ -48,7 +99,7 @@ functionality:
     # - type: nextflow_script
     #   path: test.nf
     #   entrypoint: test_wf2
-    # - path: /resources_test/scgpt/test_resources/Kim2020_Lung_subset.h5mu
-    # - path: /resources_test/scgpt/source/
+    - path: /resources_test/scgpt/test_resources/Kim2020_Lung_subset.h5mu
+    - path: /resources_test/scgpt/source/
 platforms:
   - type: nextflow
