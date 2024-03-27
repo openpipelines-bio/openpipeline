@@ -3110,14 +3110,14 @@ meta = [
         "foundConfigPath" : "/home/runner/work/openpipeline/openpipeline/src/transfer/publish/config.vsh.yaml",
         "configInfo" : {
           "functionalityName" : "publish",
-          "git_tag" : "0.2.0-1568-gee58ddf37c",
+          "git_tag" : "0.2.0-1569-g0f8da4b8dd",
           "git_remote" : "https://github.com/openpipelines-bio/openpipeline",
           "viash_version" : "0.8.5",
           "config" : "/home/runner/work/openpipeline/openpipeline/src/transfer/publish/config.vsh.yaml",
           "functionalityNamespace" : "transfer",
           "output" : "",
           "platform" : "",
-          "git_commit" : "ee58ddf37c0d10deabda7cc865e1a06895968002",
+          "git_commit" : "0f8da4b8ddade7039f27a0c052fafb07c6d84d21",
           "executable" : "/nextflow/transfer/publish/main.nf"
         },
         "writtenPath" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/transfer/publish"
@@ -3131,14 +3131,14 @@ meta = [
         "foundConfigPath" : "/home/runner/work/openpipeline/openpipeline/src/metadata/grep_annotation_column/config.vsh.yaml",
         "configInfo" : {
           "functionalityName" : "grep_annotation_column",
-          "git_tag" : "0.2.0-1568-gee58ddf37c",
+          "git_tag" : "0.2.0-1569-g0f8da4b8dd",
           "git_remote" : "https://github.com/openpipelines-bio/openpipeline",
           "viash_version" : "0.8.5",
           "config" : "/home/runner/work/openpipeline/openpipeline/src/metadata/grep_annotation_column/config.vsh.yaml",
           "functionalityNamespace" : "metadata",
           "output" : "",
           "platform" : "",
-          "git_commit" : "ee58ddf37c0d10deabda7cc865e1a06895968002",
+          "git_commit" : "0f8da4b8ddade7039f27a0c052fafb07c6d84d21",
           "executable" : "/nextflow/metadata/grep_annotation_column/main.nf"
         },
         "writtenPath" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/metadata/grep_annotation_column"
@@ -3152,14 +3152,14 @@ meta = [
         "foundConfigPath" : "/home/runner/work/openpipeline/openpipeline/src/qc/calculate_qc_metrics/config.vsh.yaml",
         "configInfo" : {
           "functionalityName" : "calculate_qc_metrics",
-          "git_tag" : "0.2.0-1568-gee58ddf37c",
+          "git_tag" : "0.2.0-1569-g0f8da4b8dd",
           "git_remote" : "https://github.com/openpipelines-bio/openpipeline",
           "viash_version" : "0.8.5",
           "config" : "/home/runner/work/openpipeline/openpipeline/src/qc/calculate_qc_metrics/config.vsh.yaml",
           "functionalityNamespace" : "qc",
           "output" : "",
           "platform" : "",
-          "git_commit" : "ee58ddf37c0d10deabda7cc865e1a06895968002",
+          "git_commit" : "0f8da4b8ddade7039f27a0c052fafb07c6d84d21",
           "executable" : "/nextflow/qc/calculate_qc_metrics/main.nf"
         },
         "writtenPath" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/qc/calculate_qc_metrics"
@@ -3226,9 +3226,9 @@ meta = [
     "platform" : "nextflow",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/workflows/qc/qc",
     "viash_version" : "0.8.5",
-    "git_commit" : "ee58ddf37c0d10deabda7cc865e1a06895968002",
+    "git_commit" : "0f8da4b8ddade7039f27a0c052fafb07c6d84d21",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline",
-    "git_tag" : "0.2.0-1568-gee58ddf37c"
+    "git_tag" : "0.2.0-1569-g0f8da4b8dd"
   }
 }'''))
 ]

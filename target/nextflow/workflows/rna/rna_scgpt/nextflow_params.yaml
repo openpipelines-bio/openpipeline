@@ -5,8 +5,6 @@ binned_layer: "binned"
 
 # Arguments
 pad_token: "<pad>"
-ori_batch_layer_name: "sample"
-batch_id_layer: "batch_id"
 
 # Input
 id: # please fill in - example: "foo"

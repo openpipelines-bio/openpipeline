@@ -1,0 +1,27 @@
+# Inputs
+input: # please fill in - example: "input.h5mu"
+modality: "rna"
+model: # please fill in - example: "best_model.pt"
+model_vocab: # please fill in - example: "vocab.json"
+model_config: # please fill in - example: "args.json"
+input_gene_ids: # please fill in - example: "gene_ids.pt"
+input_values: # please fill in - example: "values.pt"
+input_padding_mask: # please fill in - example: "padding_mask.pt"
+gene_name_layer: "gene_name"
+batch_id_layer: "batch_id"
+
+# Outputs
+# output: "$id.$key.output.h5ad"
+# output_compression: "gzip"
+embedding_layer: "X_scGPT"
+
+# Arguments
+pad_token: "<pad>"
+pad_value: -2
+dropout: 0.2
+DSBN: true
+batch_size: 64
+
+# Nextflow input-output arguments
+publish_dir: # please fill in - example: "output/"
+# param_list: "my_params.yaml"

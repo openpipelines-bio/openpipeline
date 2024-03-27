@@ -84,28 +84,6 @@
             }
     
 
-        ,
-                "ori_batch_layer_name": {
-                "type":
-                "string",
-                "description": "Type: `string`, default: `sample`. ",
-                "help_text": "Type: `string`, default: `sample`. "
-            ,
-                "default": "sample"
-            }
-    
-
-        ,
-                "batch_id_layer": {
-                "type":
-                "string",
-                "description": "Type: `string`, default: `batch_id`. ",
-                "help_text": "Type: `string`, default: `batch_id`. "
-            ,
-                "default": "batch_id"
-            }
-    
-
 }
 },
     

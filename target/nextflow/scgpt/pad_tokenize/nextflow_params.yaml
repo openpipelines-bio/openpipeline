@@ -1,0 +1,19 @@
+# Inputs
+input: # please fill in - example: "input.h5ad"
+modality: "rna"
+model_vocab: # please fill in - example: "vocab.json"
+input_layer: "X_binned"
+gene_name_layer: "gene_name"
+
+# Outputs
+# output_gene_ids: "$id.$key.output_gene_ids.pt"
+# output_values: "$id.$key.output_values.pt"
+# output_padding_mask: "$id.$key.output_padding_mask.pt"
+
+# Arguments
+pad_token: "<pad>"
+pad_value: -2
+
+# Nextflow input-output arguments
+publish_dir: # please fill in - example: "output/"
+# param_list: "my_params.yaml"

@@ -19,9 +19,7 @@ workflow run_wf {
           "vocab_file": state.vocab_file,
           "gene_name_layer": state.gene_name_layer,
           "output": state.output,
-          "pad_token": state.pad_token,
-          "ori_batch_layer_name": state.ori_batch_layer_name,
-          "batch_id_layer": state.batch_id_layer
+          "pad_token": state.pad_token
         ]
       },
       toState: ["input": "output"]
