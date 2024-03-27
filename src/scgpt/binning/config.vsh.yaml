@@ -53,7 +53,7 @@ functionality:
             The compression algorithm to use for the output h5mu file.
         - name: "--binned_layer"
           type: string
-          default: "X_binned"
+          default: "binned"
           description: |
             The name of the adata layer to write the binned data to.
 
