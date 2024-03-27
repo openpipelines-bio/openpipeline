@@ -1,0 +1,236 @@
+{
+"$schema": "http://json-schema.org/draft-07/schema",
+"title": "rna_scgpt",
+"description": "Processing unimodal RNA transcriptomics data for scGPT-based applications.",
+"type": "object",
+"definitions": {
+
+    
+    "Dataset input": {
+        "title": "Dataset input",
+        "type": "object",
+        "description": "Dataset input using nf-tower \"dataset\" or \"data explorer\". Allows for the input of multiple         parameter sets to initialise a Nextflow channel.",
+        "properties": {
+            "param_list": {
+                "description": "Dataset input can either be a list of maps, a csv file, a json file, a yaml file, or simply a yaml                 blob. The names of the input fields (e.g. csv columns, json keys) need to be an exact match with the workflow input parameters.",
+                "default": "",
+                "format": "file-path",
+                "mimetype": "text/csv",
+                "pattern": "^\\S+\\.csv$"
+            }
+        }
+    },
+
+    
+    
+    "outputs" : {
+    "title": "Outputs",
+    "type": "object",
+    "description": "No description",
+    "properties": {
+    
+        
+                "output": {
+                "type":
+                "string",
+                "description": "Type: `file`, required, default: `$id.$key.output.h5mu`, example: `output.h5mu`. Destination path to the output",
+                "help_text": "Type: `file`, required, default: `$id.$key.output.h5mu`, example: `output.h5mu`. Destination path to the output."
+            ,
+                "default": "$id.$key.output.h5mu"
+            }
+    
+
+        ,
+                "output_compression": {
+                "type":
+                "string",
+                "description": "Type: `string`, example: `gzip`, choices: ``gzip`, `lzf``. The compression algorithm to use for the output h5mu file",
+                "help_text": "Type: `string`, example: `gzip`, choices: ``gzip`, `lzf``. The compression algorithm to use for the output h5mu file.\n",
+                "enum": ["gzip", "lzf"]
+            
+            
+            }
+    
+
+        ,
+                "binned_layer": {
+                "type":
+                "string",
+                "description": "Type: `string`, default: `binned`. The name of the adata layer to write the binned data to",
+                "help_text": "Type: `string`, default: `binned`. The name of the adata layer to write the binned data to.\n"
+            ,
+                "default": "binned"
+            }
+    
+
+}
+},
+    
+    
+    "arguments" : {
+    "title": "Arguments",
+    "type": "object",
+    "description": "No description",
+    "properties": {
+    
+        
+                "pad_token": {
+                "type":
+                "string",
+                "description": "Type: `string`, default: `\u003cpad\u003e`. The padding token used in the model",
+                "help_text": "Type: `string`, default: `\u003cpad\u003e`. The padding token used in the model.\n"
+            ,
+                "default": "<pad>"
+            }
+    
+
+        ,
+                "ori_batch_layer_name": {
+                "type":
+                "string",
+                "description": "Type: `string`, default: `sample`. ",
+                "help_text": "Type: `string`, default: `sample`. "
+            ,
+                "default": "sample"
+            }
+    
+
+        ,
+                "batch_id_layer": {
+                "type":
+                "string",
+                "description": "Type: `string`, default: `batch_id`. ",
+                "help_text": "Type: `string`, default: `batch_id`. "
+            ,
+                "default": "batch_id"
+            }
+    
+
+}
+},
+    
+    
+    "input" : {
+    "title": "Input",
+    "type": "object",
+    "description": "No description",
+    "properties": {
+    
+        
+                "id": {
+                "type":
+                "string",
+                "description": "Type: `string`, required, example: `foo`. ID of the sample",
+                "help_text": "Type: `string`, required, example: `foo`. ID of the sample."
+            
+            }
+    
+
+        ,
+                "input": {
+                "type":
+                "string",
+                "description": "Type: `file`, required, example: `dataset.h5mu`. Path to the sample",
+                "help_text": "Type: `file`, required, example: `dataset.h5mu`. Path to the sample."
+            
+            }
+    
+
+        ,
+                "modality": {
+                "type":
+                "string",
+                "description": "Type: `string`, default: `rna`. ",
+                "help_text": "Type: `string`, default: `rna`. "
+            ,
+                "default": "rna"
+            }
+    
+
+        ,
+                "vocab_file": {
+                "type":
+                "string",
+                "description": "Type: `file`, required, example: `resources_test/scgpt/vocab.json`. Model vocabulary file directory",
+                "help_text": "Type: `file`, required, example: `resources_test/scgpt/vocab.json`. Model vocabulary file directory.\n"
+            
+            }
+    
+
+        ,
+                "input_layer": {
+                "type":
+                "string",
+                "description": "Type: `string`, default: `X`. Input layer to start from",
+                "help_text": "Type: `string`, default: `X`. Input layer to start from."
+            ,
+                "default": "X"
+            }
+    
+
+        ,
+                "gene_name_layer": {
+                "type":
+                "string",
+                "description": "Type: `string`, default: `gene_name`, example: `gene_name`. The name of the adata",
+                "help_text": "Type: `string`, default: `gene_name`, example: `gene_name`. The name of the adata.var column containing gene names.\n"
+            ,
+                "default": "gene_name"
+            }
+    
+
+        ,
+                "n_input_bins": {
+                "type":
+                "integer",
+                "description": "Type: `integer`, default: `51`. The number of bins to discretize the data into",
+                "help_text": "Type: `integer`, default: `51`. The number of bins to discretize the data into. When no value is provided, data won\u0027t be binned.\n"
+            ,
+                "default": "51"
+            }
+    
+
+}
+},
+    
+    
+    "nextflow input-output arguments" : {
+    "title": "Nextflow input-output arguments",
+    "type": "object",
+    "description": "Input/output parameters for Nextflow itself. Please note that both publishDir and publish_dir are supported but at least one has to be configured.",
+    "properties": {
+    
+        
+                "publish_dir": {
+                "type":
+                "string",
+                "description": "Type: `string`, required, example: `output/`. Path to an output directory",
+                "help_text": "Type: `string`, required, example: `output/`. Path to an output directory."
+            
+            }
+    
+
+        
+
+}
+}
+},
+"allOf": [
+
+    {
+    "$ref": "#/definitions/outputs"
+    },
+
+    {
+    "$ref": "#/definitions/arguments"
+    },
+
+    {
+    "$ref": "#/definitions/input"
+    },
+
+    {
+    "$ref": "#/definitions/nextflow input-output arguments"
+    }
+]
+}

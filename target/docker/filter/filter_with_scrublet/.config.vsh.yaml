@@ -1,0 +1,324 @@
+functionality:
+  name: "filter_with_scrublet"
+  namespace: "filter"
+  version: "scgpt-preprocessor_build"
+  authors:
+  - name: "Dries De Maeyer"
+    roles:
+    - "contributor"
+    info:
+      role: "Core Team Member"
+      links:
+        email: "ddemaeyer@gmail.com"
+        github: "ddemaeyer"
+        linkedin: "dries-de-maeyer-b46a814"
+      organizations:
+      - name: "Janssen Pharmaceuticals"
+        href: "https://www.janssen.com"
+        role: "Principal Scientist"
+  - name: "Robrecht Cannoodt"
+    roles:
+    - "maintainer"
+    - "contributor"
+    info:
+      role: "Core Team Member"
+      links:
+        email: "robrecht@data-intuitive.com"
+        github: "rcannood"
+        orcid: "0000-0003-3641-729X"
+        linkedin: "robrechtcannoodt"
+      organizations:
+      - name: "Data Intuitive"
+        href: "https://www.data-intuitive.com"
+        role: "Data Science Engineer"
+      - name: "Open Problems"
+        href: "https://openproblems.bio"
+        role: "Core Member"
+  arguments:
+  - type: "file"
+    name: "--input"
+    description: "Input h5mu file"
+    info: null
+    example:
+    - "input.h5mu"
+    must_exist: true
+    create_parent: true
+    required: true
+    direction: "input"
+    multiple: false
+    multiple_sep: ":"
+    dest: "par"
+  - type: "string"
+    name: "--modality"
+    info: null
+    default:
+    - "rna"
+    required: false
+    direction: "input"
+    multiple: false
+    multiple_sep: ":"
+    dest: "par"
+  - type: "string"
+    name: "--layer"
+    description: "Input layer to use as data for calculating doublets. .X is used\
+      \ not specified."
+    info: null
+    required: false
+    direction: "input"
+    multiple: false
+    multiple_sep: ":"
+    dest: "par"
+  - type: "file"
+    name: "--output"
+    description: "Output h5mu file."
+    info: null
+    example:
+    - "output.h5mu"
+    must_exist: true
+    create_parent: true
+    required: false
+    direction: "output"
+    multiple: false
+    multiple_sep: ":"
+    dest: "par"
+  - type: "string"
+    name: "--output_compression"
+    description: "The compression format to be used on the output h5mu object."
+    info: null
+    example:
+    - "gzip"
+    required: false
+    choices:
+    - "gzip"
+    - "lzf"
+    direction: "input"
+    multiple: false
+    multiple_sep: ":"
+    dest: "par"
+  - type: "string"
+    name: "--obs_name_filter"
+    description: "In which .obs slot to store a boolean array corresponding to which\
+      \ observations should be filtered out."
+    info: null
+    default:
+    - "filter_with_scrublet"
+    required: false
+    direction: "input"
+    multiple: false
+    multiple_sep: ":"
+    dest: "par"
+  - type: "boolean_true"
+    name: "--do_subset"
+    description: "Whether to subset before storing the output."
+    info: null
+    direction: "input"
+    dest: "par"
+  - type: "string"
+    name: "--obs_name_doublet_score"
+    description: "Name of the doublet scores column in the obs slot of the returned\
+      \ object."
+    info: null
+    default:
+    - "scrublet_doublet_score"
+    required: false
+    direction: "input"
+    multiple: false
+    multiple_sep: ":"
+    dest: "par"
+  - type: "integer"
+    name: "--min_counts"
+    description: "The number of minimal UMI counts per cell that have to be present\
+      \ for initial cell detection."
+    info: null
+    default:
+    - 2
+    required: false
+    direction: "input"
+    multiple: false
+    multiple_sep: ":"
+    dest: "par"
+  - type: "integer"
+    name: "--min_cells"
+    description: "The number of cells in which UMIs for a gene were detected."
+    info: null
+    default:
+    - 3
+    required: false
+    direction: "input"
+    multiple: false
+    multiple_sep: ":"
+    dest: "par"
+  - type: "double"
+    name: "--min_gene_variablity_percent"
+    description: "Used for gene filtering prior to PCA. Keep the most highly variable\
+      \ genes (in the top min_gene_variability_pctl percentile), as measured by the\
+      \ v-statistic [Klein et al., Cell 2015]."
+    info: null
+    default:
+    - 85.0
+    required: false
+    direction: "input"
+    multiple: false
+    multiple_sep: ":"
+    dest: "par"
+  - type: "integer"
+    name: "--num_pca_components"
+    description: "Number of principal components to use during PCA dimensionality\
+      \ reduction."
+    info: null
+    default:
+    - 30
+    required: false
+    direction: "input"
+    multiple: false
+    multiple_sep: ":"
+    dest: "par"
+  - type: "string"
+    name: "--distance_metric"
+    description: "The distance metric used for computing similarities."
+    info: null
+    default:
+    - "euclidean"
+    required: false
+    direction: "input"
+    multiple: false
+    multiple_sep: ":"
+    dest: "par"
+  - type: "boolean_true"
+    name: "--allow_automatic_threshold_detection_fail"
+    description: "When scrublet fails to automatically determine the double score\
+      \ threshold, \nallow the component to continue and set the output columns to\
+      \ NA.\n"
+    info: null
+    direction: "input"
+    dest: "par"
+  resources:
+  - type: "python_script"
+    path: "script.py"
+    is_executable: true
+  - type: "file"
+    path: "src/utils/setup_logger.py"
+  - type: "file"
+    path: "./src/workflows/utils/labels.config"
+    dest: "nextflow_labels.config"
+  description: "Doublet detection using the Scrublet method (Wolock, Lopez and Klein,\
+    \ 2019).\nThe method tests for potential doublets by using the expression profiles\
+    \ of\ncells to generate synthetic potential doubles which are tested against cells.\
+    \ \nThe method returns a \"doublet score\" on which it calls for potential doublets.\n\
+    \nFor the source code please visit https://github.com/AllonKleinLab/scrublet.\n\
+    \nFor 10x we expect the doublet rates to be:\n  Multiplet Rate (%) - # of Cells\
+    \ Loaded - # of Cells Recovered\n  ~0.4% ~800 ~500\n  ~0.8% ~1,600 ~1,000\n  ~1.6%\
+    \ ~3,200 ~2,000\n  ~2.3% ~4,800 ~3,000\n  ~3.1% ~6,400 ~4,000\n  ~3.9% ~8,000\
+    \ ~5,000\n  ~4.6% ~9,600 ~6,000\n  ~5.4% ~11,200 ~7,000\n  ~6.1% ~12,800 ~8,000\n\
+    \  ~6.9% ~14,400 ~9,000\n  ~7.6% ~16,000 ~10,000\n"
+  test_resources:
+  - type: "python_script"
+    path: "test.py"
+    is_executable: true
+  - type: "file"
+    path: "resources_test/pbmc_1k_protein_v3"
+  - type: "file"
+    path: "src/base/openpipelinetestutils"
+    dest: "openpipelinetestutils"
+  info: null
+  status: "enabled"
+  requirements:
+    commands:
+    - "ps"
+  set_wd_to_resources_dir: false
+platforms:
+- type: "docker"
+  id: "docker"
+  image: "python:3.10-slim"
+  target_organization: "openpipelines-bio"
+  target_registry: "ghcr.io"
+  target_tag: "scgpt-preprocessor_build"
+  namespace_separator: "_"
+  resolve_volume: "Automatic"
+  chown: true
+  setup_strategy: "ifneedbepullelsecachedbuild"
+  run_args:
+  - "--env NUMBA_CACHE_DIR=/tmp"
+  target_image_source: "https://github.com/openpipelines-bio/openpipeline"
+  setup:
+  - type: "apt"
+    packages:
+    - "procps"
+    - "build-essential"
+    interactive: false
+  - type: "python"
+    user: false
+    packages:
+    - "anndata~=0.9.1"
+    - "mudata~=0.2.3"
+    - "pandas!=2.1.2"
+    - "scanpy~=1.9.5"
+    - "statsmodels==0.14.0"
+    - "scrublet"
+    - "annoy==1.16.3"
+    upgrade: true
+  test_setup:
+  - type: "python"
+    user: false
+    packages:
+    - "viashpy==0.6.0"
+    upgrade: true
+  entrypoint: []
+  cmd: null
+- type: "nextflow"
+  id: "nextflow"
+  directives:
+    label:
+    - "highcpu"
+    - "midmem"
+    tag: "$id"
+  auto:
+    simplifyInput: true
+    simplifyOutput: false
+    transcript: false
+    publish: false
+  config:
+    labels:
+      mem1gb: "memory = 1.GB"
+      mem2gb: "memory = 2.GB"
+      mem4gb: "memory = 4.GB"
+      mem8gb: "memory = 8.GB"
+      mem16gb: "memory = 16.GB"
+      mem32gb: "memory = 32.GB"
+      mem64gb: "memory = 64.GB"
+      mem128gb: "memory = 128.GB"
+      mem256gb: "memory = 256.GB"
+      mem512gb: "memory = 512.GB"
+      mem1tb: "memory = 1.TB"
+      mem2tb: "memory = 2.TB"
+      mem4tb: "memory = 4.TB"
+      mem8tb: "memory = 8.TB"
+      mem16tb: "memory = 16.TB"
+      mem32tb: "memory = 32.TB"
+      mem64tb: "memory = 64.TB"
+      mem128tb: "memory = 128.TB"
+      mem256tb: "memory = 256.TB"
+      mem512tb: "memory = 512.TB"
+      cpu1: "cpus = 1"
+      cpu2: "cpus = 2"
+      cpu5: "cpus = 5"
+      cpu10: "cpus = 10"
+      cpu20: "cpus = 20"
+      cpu50: "cpus = 50"
+      cpu100: "cpus = 100"
+      cpu200: "cpus = 200"
+      cpu500: "cpus = 500"
+      cpu1000: "cpus = 1000"
+    script:
+    - "includeConfig(\"nextflow_labels.config\")"
+  debug: false
+  container: "docker"
+info:
+  config: "/home/runner/work/openpipeline/openpipeline/src/filter/filter_with_scrublet/config.vsh.yaml"
+  platform: "docker"
+  output: "/home/runner/work/openpipeline/openpipeline/target/docker/filter/filter_with_scrublet"
+  executable: "/home/runner/work/openpipeline/openpipeline/target/docker/filter/filter_with_scrublet/filter_with_scrublet"
+  viash_version: "0.8.5"
+  git_commit: "ee58ddf37c0d10deabda7cc865e1a06895968002"
+  git_remote: "https://github.com/openpipelines-bio/openpipeline"
+  git_tag: "0.2.0-1568-gee58ddf37c"

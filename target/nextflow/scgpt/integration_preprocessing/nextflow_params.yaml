@@ -1,0 +1,28 @@
+# Inputs
+input: # please fill in - example: "input.h5mu"
+modality: "rna"
+model_dir: # please fill in - example: "foundational_model/scgpt"
+input_layer: "X"
+ori_batch_layer_name: "sample"
+gene_name_layer: "gene_name"
+
+# Outputs
+# output: "$id.$key.output.h5mu"
+# output_compression: "gzip"
+batch_id_layer: "batch_id"
+normalized_total_layer: "X_normed"
+binned_layer: "X_binned"
+log1p_layer: "X_log1p"
+
+# Arguments
+pad_token: "<pad>"
+filter_gene_by_counts: 3
+filter_cell_by_counts: -1
+n_hvg: 1200
+normalize_total: 10000
+data_is_raw: true
+n_input_bins: 51
+
+# Nextflow input-output arguments
+publish_dir: # please fill in - example: "output/"
+# param_list: "my_params.yaml"

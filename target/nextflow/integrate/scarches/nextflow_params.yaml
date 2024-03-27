@@ -1,0 +1,27 @@
+# Inputs
+input: # please fill in - example: "path/to/file"
+modality: "rna"
+reference: # please fill in - example: "path/to/file"
+dataset_name: "test_dataset"
+
+# Outputs
+# output: "$id.$key.output.output"
+# output_compression: "gzip"
+# model_output: "$id.$key.model_output.model_output"
+obsm_output: "X_integrated_scanvi"
+
+# Early stopping arguments
+# early_stopping: true
+early_stopping_monitor: "elbo_validation"
+early_stopping_patience: 45
+early_stopping_min_delta: 0.0
+
+# Learning parameters
+max_epochs: # please fill in - example: 123
+reduce_lr_on_plateau: true
+lr_factor: 0.6
+lr_patience: 30
+
+# Nextflow input-output arguments
+publish_dir: # please fill in - example: "output/"
+# param_list: "my_params.yaml"
