@@ -51,7 +51,10 @@ n_bins = par["n_input_bins"]  # NOTE: the first bin is always a spectial for zer
 binned_rows = []
 bin_edges = []
 
-layer_data = _get_obs_rep(adata, layer=key_to_process)
+if not par['layer']:
+    layer_data = adata.X
+else
+    layer_data = adata.layers[par['layer']]
 layer_data = csr_matrix(layer_data)
 
 if layer_data.min() < 0:
