@@ -6,7 +6,9 @@ functionality:
   authors:
     - __merge__: /src/authors/jakub_majercik.yaml
       roles: [ maintainer, author ]
-
+    - __merge__: /src/authors/dorien_roosen.yaml
+      roles: [ maintainer, author ]
+      
   argument_groups:
     - name: Inputs
       arguments:
