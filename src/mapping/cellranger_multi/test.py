@@ -53,6 +53,16 @@ gex_reference = resources_dir / "reference_gencodev41_chr1/reference_cellranger.
 feature_reference = resources_dir / "10x_5k_anticmv/raw/feature_reference.csv"
 vdj_reference = resources_dir / "10x_5k_anticmv/raw/refdata-cellranger-vdj-GRCh38-alts-ensembl-7.0.0.tar.gz"
 
+# Beam Input
+input1_R1_beam = resources_dir / "10x_5k_beam/raw/beamt_human_A0201_B0702_pbmc_gex_subset_S3_L001_R1_001.fastq.gz"
+input1_R2_beam = resources_dir / "10x_5k_beam/raw/beamt_human_A0201_B0702_pbmc_gex_subset_S3_L001_R2_001.fastq.gz"
+input2_R1_beam = resources_dir / "10x_5k_beam/raw/beamt_human_A0201_B0702_pbmc_ag_subset_S1_L001_R1_001.fastq.gz"
+input2_R2_beam = resources_dir / "10x_5k_beam/raw/beamt_human_A0201_B0702_pbmc_ag_subset_S1_L001_R2_001.fastq.gz"
+input3_R1_beam = resources_dir / "10x_5k_beam/raw/beamt_human_A0201_B0702_pbmc_vdj_subset_S2_L001_R1_001.fastq.gz"
+input3_R2_beam = resources_dir / "10x_5k_beam/raw/beamt_human_A0201_B0702_pbmc_vdj_subset_S2_L001_R2_001.fastq.gz"
+vdj_reference_beam = resources_dir / "10x_5k_beam/raw/5k_BEAM-T_Human_A0201_B0702_PBMC_5pv2_Multiplex_vdj_reference.tar.gz"
+feature_reference_beam =  resources_dir / "10x_5k_beam/raw/beamt_human_A0201_B0702_pbmc_feature_reference.csv"
+
 def test_cellranger_multi(run_component, random_path):
     outputpath = random_path()
 
@@ -172,7 +182,7 @@ def test_cellranger_multi_applies_gex_options(run_component, random_path):
         """\
         chemistry,auto
         no-secondary,False
-        no-bam,True
+        create-bam,False
         include-introns,False
         """)
     print (expected_csv_content, flush=True)
@@ -276,5 +286,35 @@ def test_cellranger_multi_combined_helper_and_global_input(run_component, random
     # check for vdj data
     assert (outputpath / "per_sample_outs/run/vdj_t/filtered_contig_annotations.csv").is_file()
 
+
+def test_cellranger_multi_beam_data(run_component, random_path):
+    outputpath = random_path()
+    args = [
+        "--input", input1_R1_beam,
+        "--input", input1_R2_beam,
+        "--input", input2_R1_beam,
+        "--input", input2_R2_beam,
+        "--input", input3_R1_beam,
+        "--input", input3_R2_beam,
+        "--library_id", "beamt_human_A0201_B0702_pbmc_gex_subset;beamt_human_A0201_B0702_pbmc_ag_subset;beamt_human_A0201_B0702_pbmc_vdj_subset",
+        "--library_type", "Gene Expression;VDJ-T;Antigen Capture",
+        "--gex_reference", gex_reference,
+        "--vdj_reference", vdj_reference_beam,
+        "--feature_reference", feature_reference_beam,
+        "--output", outputpath,
+        "--control_id", "negative_control_A0201;negative_control_B0702",
+        "--mhc_allele", "HLA-A*02:01;HLA-B*07:02"
+    ]
+    run_component(args)
+    # check for raw data
+    assert ( outputpath / "multi/count/raw_feature_bc_matrix.h5").is_file()
+    # check for metrics summary
+    assert (outputpath / "per_sample_outs/run/metrics_summary.csv").is_file()
+    assert (outputpath / "per_sample_outs/run/count/sample_filtered_feature_bc_matrix.h5").is_file()
+    # check for antigen data
+    assert (outputpath / "per_sample_outs/run/antigen_analysis/").is_dir()
+    # check for vdj data
+    assert (outputpath / "per_sample_outs/run/vdj_t/").is_dir()
+
 if __name__ == '__main__':
-    sys.exit(pytest.main([__file__]))
+    sys.exit(pytest.main([__file__, "-k", "test_cellranger_multi_beam_data"]))
