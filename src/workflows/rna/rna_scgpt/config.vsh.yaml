@@ -77,12 +77,7 @@ functionality:
           required: false
           description: |
             The padding token used in the model.
-        - name: "--ori_batch_layer_name"
-          type: string
-          default: "sample"
-        - name: "--batch_id_layer"
-          type: string
-          default: "batch_id"
+
   resources:
     - type: nextflow_script
       path: main.nf
