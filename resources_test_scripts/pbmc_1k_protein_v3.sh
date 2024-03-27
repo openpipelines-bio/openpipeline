@@ -69,7 +69,7 @@ nextflow \
   -profile docker \
   --id pbmc_1k_protein_v3_uss \
   --input "${OUT}_uss.h5mu" \
-  --input_id "pbmc_1k_protein_v3" \ 
+  --input_id "pbmc_1k_protein_v3_uss" \
   --output "`basename $OUT`_uss_with_id.h5mu" \
   --output_compression "gzip" \
   --publishDir `dirname $OUT` \
@@ -81,12 +81,12 @@ nextflow \
   -main-script target/nextflow/workflows/rna/rna_multisample/main.nf \
   -profile docker \
   --id pbmc_1k_protein_v3_ums \
-  --input "`basename $OUT`_uss_with_id.h5mu" \
+  --input "${OUT}_uss_with_id.h5mu" \
   --output "`basename $OUT`_ums.h5mu" \
   --publishDir `dirname $OUT` \
   -resume
 
-rm "`basename $OUT`_uss_with_id.h5mu"
+rm "${OUT}_uss_with_id.h5mu"
 
 # run dimred
 nextflow \
