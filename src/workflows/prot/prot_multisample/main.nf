@@ -13,6 +13,7 @@ workflow run_wf {
       fromState: [
         "input": "input",
         "input_layer": "layer",
+        "axis": "axis",
         ],
       toState: ["input": "output"],
       args: [ 
