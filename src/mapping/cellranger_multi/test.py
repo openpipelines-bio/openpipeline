@@ -4,6 +4,7 @@ from textwrap import dedent
 import re
 import pytest
 import sys
+import subprocess
 
 ## VIASH START
 meta = {
@@ -275,6 +276,28 @@ def test_cellranger_multi_combined_helper_and_global_input(run_component, random
 
     # check for vdj data
     assert (outputpath / "per_sample_outs/run/vdj_t/filtered_contig_annotations.csv").is_file()
+    
+    
+def test_cellranger_multi_create_output_on_fail(run_component, random_path):
+    outputpath = random_path()
+    # missing vdj_reference
+    args = [
+            "--output", outputpath,
+            "--input", input1_R1,
+            "--input", input1_R2,
+            "--abc_input", input2_R1,
+            "--abc_input", input2_R2,
+            "--vdj_input", input3_R1,
+            "--vdj_input", input3_R2,
+            "--gex_reference", gex_reference,
+            "--feature_reference", feature_reference,
+            "--library_id", "5k_human_antiCMV_T_TBNK_connect_GEX_1_subset",
+            "--library_type", "Gene Expression"]
+    
+    with pytest.raises(subprocess.CalledProcessError) as e:
+        run_component(args)
+     
+    assert (outputpath / "cellranger_multi.log").is_file(), "Should have created log file."
 
 if __name__ == '__main__':
     sys.exit(pytest.main([__file__]))
