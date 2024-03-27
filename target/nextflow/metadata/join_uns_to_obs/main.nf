@@ -3010,7 +3010,7 @@ meta = [
     "platform" : "nextflow",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/metadata/join_uns_to_obs",
     "viash_version" : "0.8.5",
-    "git_commit" : "4199223dcfb677961fe8bb0af51baa00f476923e",
+    "git_commit" : "4e84505d5c17273b6b5ff5119bd858416f032754",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))
