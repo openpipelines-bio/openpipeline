@@ -32,9 +32,8 @@ functionality:
           type: string
           example: "gene_name"
           required: false
-          default: "gene_name"
           description: |
-            The name of the adata.var column containing gene names.
+            The name of the adata.var column containing gene names. When no gene_name_layer is provided, the .var index will be used.
 
     - name: Outputs
       arguments:
@@ -54,12 +53,6 @@ functionality:
           required: false
           description: |
             The padding token used in the model.
-        - name: "--ori_batch_layer_name"
-          type: string
-          default: "sample"
-        - name: "--batch_id_layer"
-          type: string
-          default: "batch_id"
 
   resources:
     - type: python_script

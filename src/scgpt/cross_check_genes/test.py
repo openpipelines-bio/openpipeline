@@ -28,7 +28,6 @@ def test_cross_check(run_component, random_path):
     input_mudata = read_h5mu(input_path)
     
     # Check added columns
-    assert {"str_batch", "batch_id"}.issubset(set(output_mudata.mod["rna"].obs.columns)), "Batch columns were not added."
     assert {"gene_name", "id_in_vocab"}.issubset(set(output_mudata.mod["rna"].var.columns)), "Gene columns were not added."    
     # Check if genes were filtered
     assert all(output_mudata.mod["rna"].var["id_in_vocab"] == 1), "Genes were not filtered."
@@ -36,41 +35,16 @@ def test_cross_check(run_component, random_path):
     assert output_mudata.mod["rna"].n_obs == input_mudata.mod["rna"].n_obs, "Number of observations changed."
     assert output_mudata.n_obs == input_mudata.n_obs, "Number of observations changed."
 
-
-def test_cross_check_custom_params(run_component, random_path):
+def test_cross_check_invalid_gene_layer_raises(run_component, random_path):
     output_path = random_path(extension="h5mu")
     args = [
         "--input", input_path,
         "--output",  output_path,
         "--vocab_file", vocab_path,
-        "--gene_name_layer", "dummy_layer",
-        "--batch_id_layer", "dummy_batch_id"
-    ]
-    run_component(args)
-    
-    output_mudata = read_h5mu(output_path)
-    input_mudata = read_h5mu(input_path)
-    
-    # Check added columns
-    assert {"dummy_batch_id"}.issubset(set(output_mudata.mod["rna"].obs.columns)), "Batch columns were not added."
-    assert {"dummy_layer", "id_in_vocab"}.issubset(set(output_mudata.mod["rna"].var.columns)), "Gene columns were not added."
-    # Check if genes were filtered
-    assert all(output_mudata.mod["rna"].var["id_in_vocab"] == 1), "Genes were not filtered."
-    # Check if number of observations is the same
-    assert output_mudata.mod["rna"].n_obs == input_mudata.mod["rna"].n_obs, "Number of observations changed."
-    assert output_mudata.n_obs == input_mudata.n_obs, "Number of observations changed."
-    
-    
-def test_cross_check_invalid_batch_layer_raises(run_component, random_path):
-    output_path = random_path(extension="h5mu")
-    args = [
-        "--input", input_path,
-        "--output",  output_path,
-        "--vocab_file", vocab_path,
-        "--ori_batch_layer_name", "dummy_batch",
+        "--gene_name_layer", "dummy_gene",
     ]
 
     with pytest.raises(subprocess.CalledProcessError) as err:
         run_component(args)
-    assert re.search(r"ValueError: Batch column 'dummy_batch' not found in .mod\['rna'\]\.obs\.",
+    assert re.search(r"ValueError: gene name column 'dummy_gene' not found in .mod\['rna'\]\.obs\.",
                      err.value.stdout.decode('utf-8'))
