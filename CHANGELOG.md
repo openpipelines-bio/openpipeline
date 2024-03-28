@@ -1,5 +1,17 @@
 # openpipelines x.x.x
 
+## NEW FUNCTIONALITY
+
+* Added `demux/cellranger_atac_mkfastq` component: demultiplex raw sequencing data for ATAC experiments (PR #726).
+
+* Added `reference/build_cellranger_reference` component: build reference file compatible with ATAC and ATAC+GEX experiments (PR #726).
+
+## MINOR CHANGES
+
+* Added `resources_test_scripts/cellranger_atac_tiny_bcl.sh` script: download tiny bcl file with an ATAC experiment, download a motifs file, demultiplex bcl files to reads in fastq format (PR #726).
+
+# openpipelines 1.0.0-rc3
+
 ## BREAKING CHANGES
 
 * Docker image names now use `/` instead of `_` between the name of the component and the namespace (PR #712).
@@ -9,9 +21,13 @@
 * `rna_singlesample`: fixed a bug where selecting the column for the filtering with mitochondrial fractions 
   using `obs_name_mitochondrial_fraction` was done with the wrong column name, causing `ValueError` (PR #743).
 
+* Fix publishing in `process_samples` and `process_batches` (PR #759).
+
 ## NEW FUNCTIONALITY
 
 * `dimred/tsne` component: Added a tSNE dimensionality reduction component (PR #742).
+
+* `scgpt/binning` component: Added a scGPT pre-processing binning component (PR #765).
 
 # openpipelines 1.0.0-rc2
 
