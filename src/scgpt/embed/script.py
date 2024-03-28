@@ -1,7 +1,5 @@
-import anndata as ad
 import numpy as np
 import mudata as mu
-from pathlib import Path
 import json
 from scgpt.tokenizer.gene_tokenizer import GeneVocab
 from scgpt.model import TransformerModel
@@ -86,7 +84,10 @@ num_batch_types = len(set(batch_ids))
 pad_token = par["pad_token"]
 pad_value = par["pad_value"]
 special_tokens = [pad_token, "<cls>", "<eoc>"]
-genes = adata.var[par["gene_name_layer"]].tolist()
+if not par["gene_name_layer"]:
+    genes = adata.var.index.tolist()
+else:
+    genes = adata.var[par["gene_name_layer"]].tolist()
 
 logger.info("Loading model, vocab and configs")
 

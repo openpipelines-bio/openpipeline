@@ -221,7 +221,8 @@ function ViashHelp {
   echo "    --gene_name_layer"
   echo "        type: string"
   echo "        default: gene_name"
-  echo "        The name of adata.var column containing gene names."
+  echo "        The name of the .var column containing gene names. When no"
+  echo "        gene_name_layer is provided, the .var index will be used."
   echo ""
   echo "    --batch_id_layer"
   echo "        type: string"
@@ -495,16 +496,16 @@ ENTRYPOINT []
 
  
 RUN pip install --upgrade pip && \
-  pip install --upgrade --no-cache-dir "anndata~=0.9.1" "mudata~=0.2.3" "pandas!=2.1.2"
+  pip install --upgrade --no-cache-dir "anndata~=0.9.1" "mudata~=0.2.3" "pandas!=2.1.2" "scanpy~=1.9.5" "statsmodels==0.14.0"
 
 RUN pip install --upgrade pip && \
   pip install --upgrade --no-cache-dir "scgpt==0.2.1"
 
 LABEL org.opencontainers.image.authors="Dorien Roosen"
 LABEL org.opencontainers.image.description="Companion container for running component scgpt embedding"
-LABEL org.opencontainers.image.created="2024-03-27T18:47:31Z"
+LABEL org.opencontainers.image.created="2024-03-28T10:41:26Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="0f8da4b8ddade7039f27a0c052fafb07c6d84d21"
+LABEL org.opencontainers.image.revision="e4c7703f204bfe57e25edf5fed92228cb9242089"
 LABEL org.opencontainers.image.version="scgpt-preprocessor_build"
 
 VIASHDOCKER
@@ -1260,10 +1261,8 @@ function interrupt {
 trap clean_up EXIT
 trap interrupt INT SIGINT
 cat > "\$tempscript" << 'VIASHMAIN'
-import anndata as ad
 import numpy as np
 import mudata as mu
-from pathlib import Path
 import json
 from scgpt.tokenizer.gene_tokenizer import GeneVocab
 from scgpt.model import TransformerModel
@@ -1361,7 +1360,10 @@ num_batch_types = len(set(batch_ids))
 pad_token = par["pad_token"]
 pad_value = par["pad_value"]
 special_tokens = [pad_token, "<cls>", "<eoc>"]
-genes = adata.var[par["gene_name_layer"]].tolist()
+if not par["gene_name_layer"]:
+    genes = adata.var.index.tolist()
+else:
+    genes = adata.var[par["gene_name_layer"]].tolist()
 
 logger.info("Loading model, vocab and configs")
 

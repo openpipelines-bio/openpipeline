@@ -195,13 +195,13 @@ function ViashHelp {
   echo ""
   echo "    --input_layer"
   echo "        type: string"
-  echo "        default: X_binned"
+  echo "        default: binned"
   echo "        The name of the layer to be padded and tokenized."
   echo ""
   echo "    --gene_name_layer"
   echo "        type: string"
-  echo "        default: gene_name"
-  echo "        The name of the layer containing gene names."
+  echo "        The name of the .var column containing gene names. When no"
+  echo "        gene_name_layer is provided, the .var index will be used."
   echo ""
   echo "Outputs:"
   echo "    --output_gene_ids"
@@ -219,6 +219,10 @@ function ViashHelp {
   echo "        type: file, required parameter, output, file must exist"
   echo "        example: padding_mask.pt"
   echo "        The output pytorch tensor file containing the padding mask."
+  echo ""
+  echo "    --max_seq_len"
+  echo "        type: integer"
+  echo "        The maximum sequence length of the tokenized data."
   echo ""
   echo "Arguments:"
   echo "    --pad_token"
@@ -453,16 +457,16 @@ ENTRYPOINT []
 
  
 RUN pip install --upgrade pip && \
-  pip install --upgrade --no-cache-dir "anndata~=0.9.1" "mudata~=0.2.3" "pandas!=2.1.2"
+  pip install --upgrade --no-cache-dir "anndata~=0.9.1" "mudata~=0.2.3" "pandas!=2.1.2" "scanpy~=1.9.5" "statsmodels==0.14.0"
 
 RUN pip install --upgrade pip && \
   pip install --upgrade --no-cache-dir "scgpt==0.2.1" "ipython~=8.5.0"
 
 LABEL org.opencontainers.image.authors="Dorien Roosen"
 LABEL org.opencontainers.image.description="Companion container for running component scgpt pad_tokenize"
-LABEL org.opencontainers.image.created="2024-03-27T18:47:31Z"
+LABEL org.opencontainers.image.created="2024-03-28T10:41:26Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="0f8da4b8ddade7039f27a0c052fafb07c6d84d21"
+LABEL org.opencontainers.image.revision="e4c7703f204bfe57e25edf5fed92228cb9242089"
 LABEL org.opencontainers.image.version="scgpt-preprocessor_build"
 
 VIASHDOCKER
@@ -705,6 +709,17 @@ while [[ $# -gt 0 ]]; do
             VIASH_PAR_OUTPUT_PADDING_MASK=$(ViashRemoveFlags "$1")
             shift 1
             ;;
+        --max_seq_len)
+            [ -n "$VIASH_PAR_MAX_SEQ_LEN" ] && ViashError Bad arguments for option \'--max_seq_len\': \'$VIASH_PAR_MAX_SEQ_LEN\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+            VIASH_PAR_MAX_SEQ_LEN="$2"
+            [ $# -lt 2 ] && ViashError Not enough arguments passed to --max_seq_len. Use "--help" to get more information on the parameters. && exit 1
+            shift 2
+            ;;
+        --max_seq_len=*)
+            [ -n "$VIASH_PAR_MAX_SEQ_LEN" ] && ViashError Bad arguments for option \'--max_seq_len=*\': \'$VIASH_PAR_MAX_SEQ_LEN\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+            VIASH_PAR_MAX_SEQ_LEN=$(ViashRemoveFlags "$1")
+            shift 1
+            ;;
         --pad_token)
             [ -n "$VIASH_PAR_PAD_TOKEN" ] && ViashError Bad arguments for option \'--pad_token\': \'$VIASH_PAR_PAD_TOKEN\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
             VIASH_PAR_PAD_TOKEN="$2"
@@ -891,10 +906,7 @@ if [ -z ${VIASH_PAR_MODALITY+x} ]; then
   VIASH_PAR_MODALITY="rna"
 fi
 if [ -z ${VIASH_PAR_INPUT_LAYER+x} ]; then
-  VIASH_PAR_INPUT_LAYER="X_binned"
-fi
-if [ -z ${VIASH_PAR_GENE_NAME_LAYER+x} ]; then
-  VIASH_PAR_GENE_NAME_LAYER="gene_name"
+  VIASH_PAR_INPUT_LAYER="binned"
 fi
 if [ -z ${VIASH_PAR_PAD_TOKEN+x} ]; then
   VIASH_PAR_PAD_TOKEN="<pad>"
@@ -914,6 +926,12 @@ if [ ! -z "$VIASH_PAR_MODEL_VOCAB" ] && [ ! -e "$VIASH_PAR_MODEL_VOCAB" ]; then
 fi
 
 # check whether parameters values are of the right type
+if [[ -n "$VIASH_PAR_MAX_SEQ_LEN" ]]; then
+  if ! [[ "$VIASH_PAR_MAX_SEQ_LEN" =~ ^[-+]?[0-9]+$ ]]; then
+    ViashError '--max_seq_len' has to be an integer. Use "--help" to get more information on the parameters.
+    exit 1
+  fi
+fi
 if [[ -n "$VIASH_PAR_PAD_VALUE" ]]; then
   if ! [[ "$VIASH_PAR_PAD_VALUE" =~ ^[-+]?[0-9]+$ ]]; then
     ViashError '--pad_value' has to be an integer. Use "--help" to get more information on the parameters.
@@ -1075,6 +1093,7 @@ par = {
   'output_gene_ids': $( if [ ! -z ${VIASH_PAR_OUTPUT_GENE_IDS+x} ]; then echo "r'${VIASH_PAR_OUTPUT_GENE_IDS//\'/\'\"\'\"r\'}'"; else echo None; fi ),
   'output_values': $( if [ ! -z ${VIASH_PAR_OUTPUT_VALUES+x} ]; then echo "r'${VIASH_PAR_OUTPUT_VALUES//\'/\'\"\'\"r\'}'"; else echo None; fi ),
   'output_padding_mask': $( if [ ! -z ${VIASH_PAR_OUTPUT_PADDING_MASK+x} ]; then echo "r'${VIASH_PAR_OUTPUT_PADDING_MASK//\'/\'\"\'\"r\'}'"; else echo None; fi ),
+  'max_seq_len': $( if [ ! -z ${VIASH_PAR_MAX_SEQ_LEN+x} ]; then echo "int(r'${VIASH_PAR_MAX_SEQ_LEN//\'/\'\"\'\"r\'}')"; else echo None; fi ),
   'pad_token': $( if [ ! -z ${VIASH_PAR_PAD_TOKEN+x} ]; then echo "r'${VIASH_PAR_PAD_TOKEN//\'/\'\"\'\"r\'}'"; else echo None; fi ),
   'pad_value': $( if [ ! -z ${VIASH_PAR_PAD_VALUE+x} ]; then echo "int(r'${VIASH_PAR_PAD_VALUE//\'/\'\"\'\"r\'}')"; else echo None; fi )
 }
@@ -1135,10 +1154,14 @@ all_counts = (
     else adata.layers[par["input_layer"]]
 )
 
-# Fetch gene names and look up tokens in vocab
-logger.info("Reading in vocab")
-genes = adata.var[par["gene_name_layer"]].tolist()
+# Fetching gene names
+if not par["gene_name_layer"]:
+    genes = adata.var.index.astype(str).tolist()
+else: 
+    genes = adata.var[par["gene_name_layer"]].astype(str).tolist()
 
+# Fetch gene names and look up tokens in vocab
+logger.info("Reading in vocab and fetching gene tokens")
 vocab_file = par["model_vocab"]
 vocab = GeneVocab.from_file(vocab_file)
 for s in special_tokens:
@@ -1149,15 +1172,18 @@ vocab.set_default_index(vocab["<pad>"])
 ntokens = len(vocab)
 gene_ids = np.array(vocab(genes), dtype=int)
 
-# Fetch number of subset hvg
-n_hvg = adata.var.shape[0]
+# Fetch max seq len
+if not par["max_seq_len"]:
+    max_seq_len = adata.var.shape[0] + 1
+else:
+    max_seq_len = par["max_seq_len"]
 
 # Tokenize and pad data
 logger.info("Padding and tokenizing data")
 tokenized_data = tokenize_and_pad_batch(
     all_counts,
     gene_ids,
-    max_len=n_hvg+1,
+    max_len=max_seq_len,
     vocab=vocab,
     pad_token=pad_token,
     pad_value=pad_value,

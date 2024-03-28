@@ -2853,7 +2853,7 @@ meta = [
             "name" : "--input_layer",
             "description" : "The name of the layer to be padded and tokenized.\n",
             "default" : [
-              "X_binned"
+              "binned"
             ],
             "required" : false,
             "direction" : "input",
@@ -2864,10 +2864,7 @@ meta = [
           {
             "type" : "string",
             "name" : "--gene_name_layer",
-            "description" : "The name of the layer containing gene names.\n",
-            "default" : [
-              "gene_name"
-            ],
+            "description" : "The name of the .var column containing gene names. When no gene_name_layer is provided, the .var index will be used.\n",
             "required" : false,
             "direction" : "input",
             "multiple" : false,
@@ -2920,6 +2917,16 @@ meta = [
             "create_parent" : true,
             "required" : true,
             "direction" : "output",
+            "multiple" : false,
+            "multiple_sep" : ":",
+            "dest" : "par"
+          },
+          {
+            "type" : "integer",
+            "name" : "--max_seq_len",
+            "description" : "The maximum sequence length of the tokenized data.\n",
+            "required" : false,
+            "direction" : "input",
             "multiple" : false,
             "multiple_sep" : ":",
             "dest" : "par"
@@ -3018,7 +3025,9 @@ meta = [
           "packages" : [
             "anndata~=0.9.1",
             "mudata~=0.2.3",
-            "pandas!=2.1.2"
+            "pandas!=2.1.2",
+            "scanpy~=1.9.5",
+            "statsmodels==0.14.0"
           ],
           "upgrade" : true
         },
@@ -3101,9 +3110,9 @@ meta = [
     "platform" : "nextflow",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/scgpt/pad_tokenize",
     "viash_version" : "0.8.5",
-    "git_commit" : "0f8da4b8ddade7039f27a0c052fafb07c6d84d21",
+    "git_commit" : "e4c7703f204bfe57e25edf5fed92228cb9242089",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline",
-    "git_tag" : "0.2.0-1569-g0f8da4b8dd"
+    "git_tag" : "0.2.0-1570-ge4c7703f20"
   }
 }'''))
 ]
@@ -3136,6 +3145,7 @@ par = {
   'output_gene_ids': $( if [ ! -z ${VIASH_PAR_OUTPUT_GENE_IDS+x} ]; then echo "r'${VIASH_PAR_OUTPUT_GENE_IDS//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'output_values': $( if [ ! -z ${VIASH_PAR_OUTPUT_VALUES+x} ]; then echo "r'${VIASH_PAR_OUTPUT_VALUES//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'output_padding_mask': $( if [ ! -z ${VIASH_PAR_OUTPUT_PADDING_MASK+x} ]; then echo "r'${VIASH_PAR_OUTPUT_PADDING_MASK//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
+  'max_seq_len': $( if [ ! -z ${VIASH_PAR_MAX_SEQ_LEN+x} ]; then echo "int(r'${VIASH_PAR_MAX_SEQ_LEN//\\'/\\'\\"\\'\\"r\\'}')"; else echo None; fi ),
   'pad_token': $( if [ ! -z ${VIASH_PAR_PAD_TOKEN+x} ]; then echo "r'${VIASH_PAR_PAD_TOKEN//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'pad_value': $( if [ ! -z ${VIASH_PAR_PAD_VALUE+x} ]; then echo "int(r'${VIASH_PAR_PAD_VALUE//\\'/\\'\\"\\'\\"r\\'}')"; else echo None; fi )
 }
@@ -3196,10 +3206,14 @@ all_counts = (
     else adata.layers[par["input_layer"]]
 )
 
-# Fetch gene names and look up tokens in vocab
-logger.info("Reading in vocab")
-genes = adata.var[par["gene_name_layer"]].tolist()
+# Fetching gene names
+if not par["gene_name_layer"]:
+    genes = adata.var.index.astype(str).tolist()
+else: 
+    genes = adata.var[par["gene_name_layer"]].astype(str).tolist()
 
+# Fetch gene names and look up tokens in vocab
+logger.info("Reading in vocab and fetching gene tokens")
 vocab_file = par["model_vocab"]
 vocab = GeneVocab.from_file(vocab_file)
 for s in special_tokens:
@@ -3210,15 +3224,18 @@ vocab.set_default_index(vocab["<pad>"])
 ntokens = len(vocab)
 gene_ids = np.array(vocab(genes), dtype=int)
 
-# Fetch number of subset hvg
-n_hvg = adata.var.shape[0]
+# Fetch max seq len
+if not par["max_seq_len"]:
+    max_seq_len = adata.var.shape[0] + 1
+else:
+    max_seq_len = par["max_seq_len"]
 
 # Tokenize and pad data
 logger.info("Padding and tokenizing data")
 tokenized_data = tokenize_and_pad_batch(
     all_counts,
     gene_ids,
-    max_len=n_hvg+1,
+    max_len=max_seq_len,
     vocab=vocab,
     pad_token=pad_token,
     pad_value=pad_value,

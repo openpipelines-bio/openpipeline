@@ -2926,7 +2926,7 @@ meta = [
           {
             "type" : "string",
             "name" : "--gene_name_layer",
-            "description" : "The name of adata.var column containing gene names.\n",
+            "description" : "The name of the .var column containing gene names. When no gene_name_layer is provided, the .var index will be used.\n",
             "default" : [
               "gene_name"
             ],
@@ -3140,7 +3140,9 @@ meta = [
           "packages" : [
             "anndata~=0.9.1",
             "mudata~=0.2.3",
-            "pandas!=2.1.2"
+            "pandas!=2.1.2",
+            "scanpy~=1.9.5",
+            "statsmodels==0.14.0"
           ],
           "upgrade" : true
         },
@@ -3225,9 +3227,9 @@ meta = [
     "platform" : "nextflow",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/scgpt/embedding",
     "viash_version" : "0.8.5",
-    "git_commit" : "0f8da4b8ddade7039f27a0c052fafb07c6d84d21",
+    "git_commit" : "e4c7703f204bfe57e25edf5fed92228cb9242089",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline",
-    "git_tag" : "0.2.0-1569-g0f8da4b8dd"
+    "git_tag" : "0.2.0-1570-ge4c7703f20"
   }
 }'''))
 ]
@@ -3241,10 +3243,8 @@ def innerWorkflowFactory(args) {
   def rawScript = '''set -e
 tempscript=".viash_script.sh"
 cat > "$tempscript" << VIASHMAIN
-import anndata as ad
 import numpy as np
 import mudata as mu
-from pathlib import Path
 import json
 from scgpt.tokenizer.gene_tokenizer import GeneVocab
 from scgpt.model import TransformerModel
@@ -3342,7 +3342,10 @@ num_batch_types = len(set(batch_ids))
 pad_token = par["pad_token"]
 pad_value = par["pad_value"]
 special_tokens = [pad_token, "<cls>", "<eoc>"]
-genes = adata.var[par["gene_name_layer"]].tolist()
+if not par["gene_name_layer"]:
+    genes = adata.var.index.tolist()
+else:
+    genes = adata.var[par["gene_name_layer"]].tolist()
 
 logger.info("Loading model, vocab and configs")
 

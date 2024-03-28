@@ -3168,9 +3168,9 @@ meta = [
     "platform" : "nextflow",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/interpret/lianapy",
     "viash_version" : "0.8.5",
-    "git_commit" : "0f8da4b8ddade7039f27a0c052fafb07c6d84d21",
+    "git_commit" : "e4c7703f204bfe57e25edf5fed92228cb9242089",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline",
-    "git_tag" : "0.2.0-1569-g0f8da4b8dd"
+    "git_tag" : "0.2.0-1570-ge4c7703f20"
   }
 }'''))
 ]

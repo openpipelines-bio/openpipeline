@@ -2,13 +2,14 @@
 input: # please fill in - example: "input.h5ad"
 modality: "rna"
 model_vocab: # please fill in - example: "vocab.json"
-input_layer: "X_binned"
-gene_name_layer: "gene_name"
+input_layer: "binned"
+# gene_name_layer: "foo"
 
 # Outputs
 # output_gene_ids: "$id.$key.output_gene_ids.pt"
 # output_values: "$id.$key.output_values.pt"
 # output_padding_mask: "$id.$key.output_padding_mask.pt"
+# max_seq_len: 123
 
 # Arguments
 pad_token: "<pad>"

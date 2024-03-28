@@ -114,8 +114,8 @@
                 "gene_name_layer": {
                 "type":
                 "string",
-                "description": "Type: `string`, default: `gene_name`. The name of adata",
-                "help_text": "Type: `string`, default: `gene_name`. The name of adata.var column containing gene names.\n"
+                "description": "Type: `string`, default: `gene_name`. The name of the ",
+                "help_text": "Type: `string`, default: `gene_name`. The name of the .var column containing gene names. When no gene_name_layer is provided, the .var index will be used.\n"
             ,
                 "default": "gene_name"
             }

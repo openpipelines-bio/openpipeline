@@ -3,7 +3,6 @@ import sys
 import mudata as mu
 import torch
 import numpy as np
-from pathlib import Path
 from scipy.sparse import issparse
 from scgpt.tokenizer import tokenize_and_pad_batch
 from scgpt.tokenizer.gene_tokenizer import GeneVocab

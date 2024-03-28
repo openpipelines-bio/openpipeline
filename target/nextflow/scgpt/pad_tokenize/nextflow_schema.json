@@ -64,10 +64,10 @@
                 "input_layer": {
                 "type":
                 "string",
-                "description": "Type: `string`, default: `X_binned`. The name of the layer to be padded and tokenized",
-                "help_text": "Type: `string`, default: `X_binned`. The name of the layer to be padded and tokenized.\n"
+                "description": "Type: `string`, default: `binned`. The name of the layer to be padded and tokenized",
+                "help_text": "Type: `string`, default: `binned`. The name of the layer to be padded and tokenized.\n"
             ,
-                "default": "X_binned"
+                "default": "binned"
             }
     
 
@@ -75,10 +75,9 @@
                 "gene_name_layer": {
                 "type":
                 "string",
-                "description": "Type: `string`, default: `gene_name`. The name of the layer containing gene names",
-                "help_text": "Type: `string`, default: `gene_name`. The name of the layer containing gene names.\n"
-            ,
-                "default": "gene_name"
+                "description": "Type: `string`. The name of the ",
+                "help_text": "Type: `string`. The name of the .var column containing gene names. When no gene_name_layer is provided, the .var index will be used.\n"
+            
             }
     
 
@@ -122,6 +121,16 @@
                 "help_text": "Type: `file`, required, default: `$id.$key.output_padding_mask.pt`, example: `padding_mask.pt`. The output pytorch tensor file containing the padding mask.\n"
             ,
                 "default": "$id.$key.output_padding_mask.pt"
+            }
+    
+
+        ,
+                "max_seq_len": {
+                "type":
+                "integer",
+                "description": "Type: `integer`. The maximum sequence length of the tokenized data",
+                "help_text": "Type: `integer`. The maximum sequence length of the tokenized data.\n"
+            
             }
     
 
