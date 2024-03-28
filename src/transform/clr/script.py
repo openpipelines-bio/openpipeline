@@ -22,7 +22,7 @@ def main():
         input_data = AnnData(X=input_data.layers[par["input_layer"]])
     # CLR always normalizes the .X layer, so we have to create an AnnData file with
     # the input layer at .X
-    normalized_counts = pt.pp.clr(input_data, axis=par["axis"], inplace=False)
+    normalized_counts = pt.pp.clr(input_data, inplace=False)
     if not normalized_counts:
         raise RuntimeError("CLR failed to return the requested output layer")
 

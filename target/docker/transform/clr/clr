@@ -205,11 +205,6 @@ function ViashHelp {
   echo "    --output_layer"
   echo "        type: string"
   echo "        Output layer to use. By default, use X."
-  echo ""
-  echo "    --axis"
-  echo "        type: integer"
-  echo "        default: 0"
-  echo "        Axis across which CLR is performed."
 }
 
 ######## Helper functions for setting up Docker images for viash ########
@@ -427,7 +422,7 @@ function ViashDockerCheckCommands {
 #   ViashDockerFile
 function ViashDockerfile {
   cat << 'VIASHDOCKER'
-FROM python:3.11-slim
+FROM python:3.10-slim
 
 ENTRYPOINT []
 
@@ -441,9 +436,9 @@ RUN pip install --upgrade pip && \
 
 LABEL org.opencontainers.image.authors="Dries Schaumont"
 LABEL org.opencontainers.image.description="Companion container for running component transform clr"
-LABEL org.opencontainers.image.created="2024-03-27T13:34:35Z"
+LABEL org.opencontainers.image.created="2024-03-28T02:36:34Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="8d565baf8568d11dfcb35ed119b8dba3dce55a88"
+LABEL org.opencontainers.image.revision="4b6b8ea444062bacef222bc6053d18c64d6ce6b9"
 LABEL org.opencontainers.image.version="integration_build"
 
 VIASHDOCKER
@@ -676,17 +671,6 @@ while [[ $# -gt 0 ]]; do
             VIASH_PAR_OUTPUT_LAYER=$(ViashRemoveFlags "$1")
             shift 1
             ;;
-        --axis)
-            [ -n "$VIASH_PAR_AXIS" ] && ViashError Bad arguments for option \'--axis\': \'$VIASH_PAR_AXIS\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
-            VIASH_PAR_AXIS="$2"
-            [ $# -lt 2 ] && ViashError Not enough arguments passed to --axis. Use "--help" to get more information on the parameters. && exit 1
-            shift 2
-            ;;
-        --axis=*)
-            [ -n "$VIASH_PAR_AXIS" ] && ViashError Bad arguments for option \'--axis=*\': \'$VIASH_PAR_AXIS\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
-            VIASH_PAR_AXIS=$(ViashRemoveFlags "$1")
-            shift 1
-            ;;
         ---setup)
             VIASH_MODE='docker_setup'
             VIASH_DOCKER_SETUP_STRATEGY="$2"
@@ -838,9 +822,6 @@ fi
 if [ -z ${VIASH_PAR_MODALITY+x} ]; then
   VIASH_PAR_MODALITY="prot"
 fi
-if [ -z ${VIASH_PAR_AXIS+x} ]; then
-  VIASH_PAR_AXIS="0"
-fi
 
 # check whether required files exist
 if [ ! -z "$VIASH_PAR_INPUT" ] && [ ! -e "$VIASH_PAR_INPUT" ]; then
@@ -849,12 +830,6 @@ if [ ! -z "$VIASH_PAR_INPUT" ] && [ ! -e "$VIASH_PAR_INPUT" ]; then
 fi
 
 # check whether parameters values are of the right type
-if [[ -n "$VIASH_PAR_AXIS" ]]; then
-  if ! [[ "$VIASH_PAR_AXIS" =~ ^[-+]?[0-9]+$ ]]; then
-    ViashError '--axis' has to be an integer. Use "--help" to get more information on the parameters.
-    exit 1
-  fi
-fi
 if [[ -n "$VIASH_META_CPUS" ]]; then
   if ! [[ "$VIASH_META_CPUS" =~ ^[-+]?[0-9]+$ ]]; then
     ViashError 'cpus' has to be an integer. Use "--help" to get more information on the parameters.
@@ -998,8 +973,7 @@ par = {
   'output': $( if [ ! -z ${VIASH_PAR_OUTPUT+x} ]; then echo "r'${VIASH_PAR_OUTPUT//\'/\'\"\'\"r\'}'"; else echo None; fi ),
   'output_compression': $( if [ ! -z ${VIASH_PAR_OUTPUT_COMPRESSION+x} ]; then echo "r'${VIASH_PAR_OUTPUT_COMPRESSION//\'/\'\"\'\"r\'}'"; else echo None; fi ),
   'input_layer': $( if [ ! -z ${VIASH_PAR_INPUT_LAYER+x} ]; then echo "r'${VIASH_PAR_INPUT_LAYER//\'/\'\"\'\"r\'}'"; else echo None; fi ),
-  'output_layer': $( if [ ! -z ${VIASH_PAR_OUTPUT_LAYER+x} ]; then echo "r'${VIASH_PAR_OUTPUT_LAYER//\'/\'\"\'\"r\'}'"; else echo None; fi ),
-  'axis': $( if [ ! -z ${VIASH_PAR_AXIS+x} ]; then echo "int(r'${VIASH_PAR_AXIS//\'/\'\"\'\"r\'}')"; else echo None; fi )
+  'output_layer': $( if [ ! -z ${VIASH_PAR_OUTPUT_LAYER+x} ]; then echo "r'${VIASH_PAR_OUTPUT_LAYER//\'/\'\"\'\"r\'}'"; else echo None; fi )
 }
 meta = {
   'functionality_name': $( if [ ! -z ${VIASH_META_FUNCTIONALITY_NAME+x} ]; then echo "r'${VIASH_META_FUNCTIONALITY_NAME//\'/\'\"\'\"r\'}'"; else echo None; fi ),
@@ -1030,7 +1004,7 @@ def main():
         input_data = AnnData(X=input_data.layers[par["input_layer"]])
     # CLR always normalizes the .X layer, so we have to create an AnnData file with
     # the input layer at .X
-    normalized_counts = pt.pp.clr(input_data, axis=par["axis"], inplace=False)
+    normalized_counts = pt.pp.clr(input_data, inplace=False)
     if not normalized_counts:
         raise RuntimeError("CLR failed to return the requested output layer")
 

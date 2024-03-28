@@ -16,9 +16,6 @@ output_var_total_counts_obs: "total_counts"
 output_var_obs_mean: "obs_mean"
 output_var_pct_dropout: "pct_dropout"
 
-# CLR arguments
-axis: 0
-
 # Nextflow input-output arguments
 publish_dir: # please fill in - example: "output/"
 # param_list: "my_params.yaml"

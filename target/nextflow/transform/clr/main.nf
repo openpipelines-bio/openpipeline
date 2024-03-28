@@ -2887,19 +2887,6 @@ meta = [
         "multiple" : false,
         "multiple_sep" : ":",
         "dest" : "par"
-      },
-      {
-        "type" : "integer",
-        "name" : "--axis",
-        "description" : "Axis across which CLR is performed.",
-        "default" : [
-          0
-        ],
-        "required" : false,
-        "direction" : "input",
-        "multiple" : false,
-        "multiple_sep" : ":",
-        "dest" : "par"
       }
     ],
     "resources" : [
@@ -2946,7 +2933,7 @@ meta = [
     {
       "type" : "docker",
       "id" : "docker",
-      "image" : "python:3.11-slim",
+      "image" : "python:3.10-slim",
       "target_organization" : "openpipelines-bio",
       "target_registry" : "ghcr.io",
       "target_tag" : "integration_build",
@@ -3050,7 +3037,7 @@ meta = [
     "platform" : "nextflow",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/transform/clr",
     "viash_version" : "0.8.5",
-    "git_commit" : "8d565baf8568d11dfcb35ed119b8dba3dce55a88",
+    "git_commit" : "4b6b8ea444062bacef222bc6053d18c64d6ce6b9",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))
@@ -3079,8 +3066,7 @@ par = {
   'output': $( if [ ! -z ${VIASH_PAR_OUTPUT+x} ]; then echo "r'${VIASH_PAR_OUTPUT//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'output_compression': $( if [ ! -z ${VIASH_PAR_OUTPUT_COMPRESSION+x} ]; then echo "r'${VIASH_PAR_OUTPUT_COMPRESSION//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'input_layer': $( if [ ! -z ${VIASH_PAR_INPUT_LAYER+x} ]; then echo "r'${VIASH_PAR_INPUT_LAYER//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
-  'output_layer': $( if [ ! -z ${VIASH_PAR_OUTPUT_LAYER+x} ]; then echo "r'${VIASH_PAR_OUTPUT_LAYER//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
-  'axis': $( if [ ! -z ${VIASH_PAR_AXIS+x} ]; then echo "int(r'${VIASH_PAR_AXIS//\\'/\\'\\"\\'\\"r\\'}')"; else echo None; fi )
+  'output_layer': $( if [ ! -z ${VIASH_PAR_OUTPUT_LAYER+x} ]; then echo "r'${VIASH_PAR_OUTPUT_LAYER//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi )
 }
 meta = {
   'functionality_name': $( if [ ! -z ${VIASH_META_FUNCTIONALITY_NAME+x} ]; then echo "r'${VIASH_META_FUNCTIONALITY_NAME//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
@@ -3111,7 +3097,7 @@ def main():
         input_data = AnnData(X=input_data.layers[par["input_layer"]])
     # CLR always normalizes the .X layer, so we have to create an AnnData file with
     # the input layer at .X
-    normalized_counts = pt.pp.clr(input_data, axis=par["axis"], inplace=False)
+    normalized_counts = pt.pp.clr(input_data, inplace=False)
     if not normalized_counts:
         raise RuntimeError("CLR failed to return the requested output layer")
 

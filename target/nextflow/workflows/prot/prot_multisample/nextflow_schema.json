@@ -181,27 +181,6 @@
 },
     
     
-    "clr arguments" : {
-    "title": "CLR arguments",
-    "type": "object",
-    "description": "No description",
-    "properties": {
-    
-        
-                "axis": {
-                "type":
-                "integer",
-                "description": "Type: `integer`, default: `0`. Axis across which CLR is performed",
-                "help_text": "Type: `integer`, default: `0`. Axis across which CLR is performed."
-            ,
-                "default": "0"
-            }
-    
-
-}
-},
-    
-    
     "nextflow input-output arguments" : {
     "title": "Nextflow input-output arguments",
     "type": "object",
@@ -235,10 +214,6 @@
 
     {
     "$ref": "#/definitions/qc metrics calculation options"
-    },
-
-    {
-    "$ref": "#/definitions/clr arguments"
     },
 
     {
