@@ -222,6 +222,6 @@ info:
   output: "/home/runner/work/openpipeline/openpipeline/target/docker/mapping/cellranger_count_split"
   executable: "/home/runner/work/openpipeline/openpipeline/target/docker/mapping/cellranger_count_split/cellranger_count_split"
   viash_version: "0.8.5"
-  git_commit: "e4c7703f204bfe57e25edf5fed92228cb9242089"
+  git_commit: "31d81b117897978f133982454f0013ba63e44cf7"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"
-  git_tag: "0.2.0-1570-ge4c7703f20"
+  git_tag: "0.2.0-1571-g31d81b1178"
