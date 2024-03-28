@@ -103,26 +103,23 @@ functionality:
           description: |
             The padding token used in the model.
         - name: "--mask_ratio"
-          type: double
+          type: integer
           default: 0
           required: false
           description: |
             The ratio of the input to mask.
-          # is the description correct?
         - name: "--mask_value"
-          type: double
+          type: integer
           default: -1
           required: false
           description: |
             The value of the mask.
-          # is the description correct?
         - name: "--pad_value"
-          type: double
+          type: integer
           default: -2
           required: false
           description: |
             The value of the padding.
-          # is the description correct?
         - name: "--n_cls"
           type: integer
           default: 8
@@ -149,6 +146,7 @@ functionality:
   test_resources:
     - type: python_script
       path: test.py
+    - path: /resources_test/scgpt/test_resources/Kim2020_Lung.h5mu
     - path: /resources_test/scgpt/test_resources/Kim2020_Lung_preprocessed.h5mu
     - path: /resources_test/scgpt/test_resources/Kim2020_Lung_gene_ids.pt
     - path: /resources_test/scgpt/test_resources/Kim2020_Lung_values.pt
@@ -163,6 +161,9 @@ platforms:
     setup:
       - type: python
         __merge__: /src/base/requirements/anndata_mudata.yaml
+      - type: docker
+        run:
+          echo "build --jobs 4" >> /etc/bazel.bazelrc
       - type: python
         packages:
           - scgpt==0.2.1

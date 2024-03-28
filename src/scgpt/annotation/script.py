@@ -44,7 +44,7 @@ par = {
     "pad_value": -2,
     "n_cls": 8,
     "n_input_bins": 51,
-    "batch_size": 64, # Check with config
+    "batch_size": 64,
     "output_compression": None
 }
 ## VIASH END
