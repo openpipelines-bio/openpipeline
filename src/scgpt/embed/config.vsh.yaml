@@ -68,7 +68,7 @@ functionality:
           default: "gene_name"
           required: false
           description: |
-            The name of adata.var column containing gene names.
+            The name of the .var column containing gene names. When no gene_name_layer is provided, the .var index will be used.
         - name: "--batch_id_layer"
           type: string
           default: "batch_id"
@@ -147,7 +147,7 @@ platforms:
           - scgpt==0.2.1
     test_setup:
       - type: python
-        __merge__: [ /src/base/requirements/viashpy.yaml ]
+        __merge__: [ /src/base/requirements/anndata_mudata.yaml, /src/base/requirements/scanpy.yaml ]
   - type: nextflow
     directives:
       label: [midmem]
