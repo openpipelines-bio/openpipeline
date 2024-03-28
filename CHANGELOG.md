@@ -26,6 +26,7 @@
 ## NEW FUNCTIONALITY
 
 * `dimred/tsne` component: Added a tSNE dimensionality reduction component (PR #742).
+* `scgpt/embedding`: component: Added scGPT embedding component (PR #761)
 
 * `scgpt/binning` component: Added a scGPT pre-processing binning component (PR #765).
 
