@@ -38,6 +38,14 @@ functionality:
       type: string
       description: Output layer to use. By default, use X.
       required: false
+    - name: "--axis"
+      type: integer
+      description: |
+        Axis across which CLR is performed. If set to 0, CLR is performed across observations (cells).
+        If set to 1, CLR is performed across features (genes).
+      default: 0
+      required: false
+      choices: [0, 1]
   resources:
     - type: python_script
       path: script.py
@@ -47,7 +55,7 @@ functionality:
     - path: /resources_test/pbmc_1k_protein_v3
 platforms:
   - type: docker
-    image: python:3.10-slim
+    image: python:3.11-slim
     setup:
       - type: apt
         packages: 
