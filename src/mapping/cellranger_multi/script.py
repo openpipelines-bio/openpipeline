@@ -85,38 +85,72 @@ fastq_regex = r'([A-Za-z0-9\-_\.]+)_S(\d+)_L(\d+)_[RI](\d+)_(\d+)\.fastq\.gz'
 
 # Invert some parameters. Keep the original ones in the config for compatibility
 inverted_params = {
-    "gex_generate_no_bam": "gex_generate_bam",
-    "gex_no_secondary_analysis": "gex_secondary_analysis"
+    "gex_no_secondary_analysis": "gex_secondary_analysis",
+    "enable_library_compatibility_check": "disable_library_compatibility_check"
 }
 for inverted_param, param in inverted_params.items():
     par[inverted_param] = not par[param] if par[param] is not None else None
     del par[param]
 
+
 GEX_CONFIG_KEYS = {
     "gex_reference": "reference",
     "gex_expect_cells": "expect-cells",
+    "gex_force_cells": "force-cells",
     "gex_chemistry": "chemistry",
     "gex_no_secondary_analysis": "no-secondary",
-    "gex_generate_no_bam": "no-bam",
-    "gex_include_introns": "include-introns"
+    "gex_generate_bam": "create-bam",
+    "gex_include_introns": "include-introns",
+    "min_assignment_confidence": "min-assignment-confidence",
+    "enable_library_compatibility_check": "check-library-compatibility",
+    "barcode_sample_assignment": "barcode-sample-assignment",
+    "cmo_set": "cmo-set",
+    "probe_set": "probe-set",
+    "filter_probes": "filter-probes",
+    "gex_r1_length": "r1-length",
+    "gex_r2_length": "r2-length",
 }
-FEATURE_CONFIG_KEYS = {"feature_reference": "reference"}
+
+FEATURE_CONFIG_KEYS = {
+    "feature_reference": "reference",
+    "feature_r1_length": "r1-length",
+    "feature_r2_length": "r2-length",
+}
+
 VDJ_CONFIG_KEYS = {"vdj_reference": "reference",
-                   "vdj_inner_enrichment_primers": "inner-enrichment-primers"}
+                   "vdj_inner_enrichment_primers": "inner-enrichment-primers",
+                   "vdj_r1_length": "r1-length",
+                   "vdj_r2_length": "r2-length",
+                  }
+
+
+ANTIGEN_SPECIFICITY_CONFIG_KEYS = {
+    "control_id": "control_id",
+    "mhc_allele": "mhc_allele",
+}
+
 
 REFERENCE_SECTIONS = {
     "gene-expression": (GEX_CONFIG_KEYS, "index"),
     "feature": (FEATURE_CONFIG_KEYS, "index"),
-    "vdj": (VDJ_CONFIG_KEYS, "index")
+    "vdj": (VDJ_CONFIG_KEYS, "index"),
+    "antigen-specificity": (ANTIGEN_SPECIFICITY_CONFIG_KEYS, "columns"),
 }
 
 LIBRARY_CONFIG_KEYS = {'library_id': 'fastq_id',
                        'library_type': 'feature_types',
                        'library_subsample': 'subsample_rate',
-                       'library_lanes': 'lanes'}
-SAMPLE_PARAMS_CONFIG_KEYS = {'cell_multiplex_sample_id': 'sample_id',
+                       'library_lanes': 'lanes',
+                       'library_chemistry': 'chemistry',
+                       }
+
+
+SAMPLE_PARAMS_CONFIG_KEYS = {'sample_ids': 'sample_id',
                              'cell_multiplex_oligo_ids': 'cmo_ids',
-                             'cell_multiplex_description': 'description'}
+                             'sample_description': 'description',
+                             'probe_barcode_ids': 'probe_barcode_ids',
+                             'sample_expect_cells': 'expect_cells',
+                             'sample_force_cells': 'force_cells'}
 
 
 # These are derived from the dictionaries above
@@ -249,13 +283,10 @@ def process_params(par: dict[str, Any], viash_config: Path | str) -> str:
     # check lengths of libraries metadata
     library_dict = subset_dict(par, LIBRARY_PARAMS)
     check_subset_dict_equal_length("Library", library_dict)
-    # storing for later use
-    par["libraries"] = library_dict
 
-    cmo_dict = subset_dict(par, SAMPLE_PARAMS)
-    check_subset_dict_equal_length("Cell multiplexing", cmo_dict)
-    # storing for later use
-    par["cmo"] = cmo_dict
+    samples_dict = subset_dict(par, SAMPLE_PARAMS)
+    check_subset_dict_equal_length("Samples", samples_dict)
+
 
     # use absolute paths
     return make_paths_absolute(par, viash_config)
@@ -374,6 +405,7 @@ def main(par: dict[str, Any], meta: dict[str, Any]):
                     capture_output=True
                 )
             except subprocess.CalledProcessError as e:
+                print(config_content, flush=True)
                 print(e.output.decode('utf-8'), flush=True)
                 raise e
             else:

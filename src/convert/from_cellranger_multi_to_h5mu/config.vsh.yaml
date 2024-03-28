@@ -52,6 +52,7 @@ functionality:
       path: test.py
     - path: /resources_test/10x_5k_anticmv
     - path: /resources_test/10x_5k_lung_crispr
+    - path: /resources_test/10x_5k_beam
 platforms:
   - type: docker
     image: python:3.10-slim

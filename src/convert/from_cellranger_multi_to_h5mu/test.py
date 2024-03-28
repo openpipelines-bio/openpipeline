@@ -12,6 +12,7 @@ meta = {
 
 input_anticmv = f"{meta['resources_dir']}/10x_5k_anticmv/processed/10x_5k_anticmv.cellranger_multi.output.output"
 input_lung_crispr = f"{meta['resources_dir']}/10x_5k_lung_crispr/processed/10x_5k_lung_crispr.cellranger_multi.output.output"
+input_beam = f"{meta['resources_dir']}/10x_5k_beam/processed/10x_5k_beam.cellranger_multi.output"
 
 def test_cellranger_multi_basic(run_component, tmp_path):
     output_path = tmp_path / "output.h5mu"
@@ -60,6 +61,22 @@ def test_cellranger_multi_to_h5mu_crispr(run_component, tmp_path):
     assert 'perturbation_efficiencies_by_target' in converted_data.mod['gdo'].uns
     assert 'feature_reference' not in converted_data.mod['rna'].uns
     assert 'feature_reference' in converted_data.mod['gdo'].uns
+
+def test_cellranger_multi_to_h5mu_beam(run_component, tmp_path):
+    output_path = tmp_path / "output.h5mu"
+
+    # run component
+    run_component([
+        "--input", input_beam,
+        "--output", str(output_path),
+        "--output_compression", "gzip"])
+    assert output_path.is_file()
+
+    # check output
+    converted_data = read_h5mu(output_path)
+    assert list(converted_data.mod.keys()) == ['rna', 'antigen', 'vdj_t']
+    assert 'antigen_specificity_scores_CMV_B0702' in converted_data['antigen'].obsm
+    assert 'antigen_specificity_scores_Flu_A0201' in converted_data['antigen'].obsm
 
 if __name__ == '__main__':
     sys.exit(pytest.main([__file__]))
