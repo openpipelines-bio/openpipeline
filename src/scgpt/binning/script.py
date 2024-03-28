@@ -15,7 +15,8 @@ par = {
     "seed": 0
 }
 ## VIASH END
-np.random.seed(par["seed"])
+if par["seed"]:
+    np.random.seed(par["seed"])
 
 # START TEMPORARY WORKAROUND setup_logger
 # reason: resources aren't available when using Nextflow fusion
