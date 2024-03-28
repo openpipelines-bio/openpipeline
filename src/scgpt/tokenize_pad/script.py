@@ -16,7 +16,8 @@ par = {
     "pad_value": -2,
     "modality": "rna",
     "input_layer": "X_binned",
-    "gene_name_layer": "gene_name",
+    "max_seq_len": None,
+    "gene_name_layer": None,
     "model_vocab": "resources_test/scgpt/source/vocab.json"
     }
 ## VIASH END
@@ -58,10 +59,14 @@ all_counts = (
     else adata.layers[par["input_layer"]]
 )
 
-# Fetch gene names and look up tokens in vocab
-logger.info("Reading in vocab")
-genes = adata.var[par["gene_name_layer"]].tolist()
+# Fetching gene names
+if not par["gene_name_layer"]:
+    genes = adata.var.index.astype(str).tolist()
+else: 
+    genes = adata.var[par["gene_name_layer"]].astype(str).tolist()
 
+# Fetch gene names and look up tokens in vocab
+logger.info("Reading in vocab and fetching gene tokens")
 vocab_file = par["model_vocab"]
 vocab = GeneVocab.from_file(vocab_file)
 for s in special_tokens:
@@ -72,15 +77,18 @@ vocab.set_default_index(vocab["<pad>"])
 ntokens = len(vocab)
 gene_ids = np.array(vocab(genes), dtype=int)
 
-# Fetch number of subset hvg
-n_hvg = adata.var.shape[0]
-
+# Fetch max seq len
+if not par["max_seq_len"]:
+    max_seq_len = adata.var.shape[0] + 1
+else:
+    max_seq_len = par["max_seq_len"]
+    
 # Tokenize and pad data
 logger.info("Padding and tokenizing data")
 tokenized_data = tokenize_and_pad_batch(
     all_counts,
     gene_ids,
-    max_len=n_hvg+1,
+    max_len=max_seq_len,
     vocab=vocab,
     pad_token=pad_token,
     pad_value=pad_value,

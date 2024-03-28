@@ -30,16 +30,15 @@ functionality:
             Path to model vocabulary file.
         - name: "--input_layer"
           type: string
-          default: "X_binned"
+          default: "binned"
           required: false
           description: |
             The name of the layer to be padded and tokenized.
         - name: "--gene_name_layer"
           type: string
-          default: "gene_name"
           required: false
           description: |
-            The name of the layer containing gene names.
+            The name of the .var column containing gene names. When no gene_name_layer is provided, the .var index will be used.
 
     - name: Outputs
       arguments:
@@ -64,6 +63,11 @@ functionality:
           example: padding_mask.pt
           description: |
             The output pytorch tensor file containing the padding mask.
+        - name: "--max_seq_len"
+          type: integer
+          required: false
+          description: |
+            The maximum sequence length of the tokenized data.
 
     - name: Arguments
       arguments:
