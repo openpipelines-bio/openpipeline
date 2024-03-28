@@ -37,15 +37,22 @@ logger = setup_logger()
 logger.info("Reading %s", par["input"])
 mdata = mu.read_h5mu(par["input"])
 
+if par['modality'] not in mdata.mod:
+    raise ValueError(f"Modality '{par['modality']}' not found in the input data.")
+
 logger.info("Computing densMAP for modality '%s'", par['modality'])
 data = mdata.mod[par['modality']]
 
 neigh_key = par["uns_neighbors"]
 
 if neigh_key not in data.uns:
-    raise ValueError(f"'{neigh_key}' was not found in .mod['{par['modality']}'].uns.")
+    raise ValueError(f"'{neigh_key}' was not found in .mod['{par['modality']}'].uns. Set the correct key or run 'find_neighbors' first.")
 
 temp_uns = { neigh_key: data.uns[neigh_key] }
+
+if 'use_rep' not in temp_uns[neigh_key]['params']:
+    raise ValueError(f"'use_rep' was not found in .mod['{par['modality']}'].uns['{neigh_key}'].params. Set the correct key or run PCA first.")
+
 pca_key = temp_uns[neigh_key]['params']['use_rep']
 knn_indices_key = temp_uns[neigh_key]['knn_indices_key']
 knn_distances_key = temp_uns[neigh_key]['knn_distances_key']

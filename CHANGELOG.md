@@ -7,6 +7,9 @@
 ## MINOR CHANGES
 
 * `neighbors/find_neighbors` component: Modified to include results of KNN in the output file (PR #748).
+  2 new optional arguments added to set .obsm slots to save KNN results into:
+  - `obsm_knn_indices`
+  - `obsm_knn_distances`
 
 ## BUG FIXES
 
