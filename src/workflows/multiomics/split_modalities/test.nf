@@ -7,7 +7,7 @@ workflow test_wf {
   // allow changing the resources_test dir
   resources_test = file("${params.rootDir}/resources_test")
 
-  input_ch = Channel.fromList([
+  output_ch = Channel.fromList([
     [
       id: "mouse",
       input: resources_test.resolve("pbmc_1k_protein_v3/pbmc_1k_protein_v3_filtered_feature_bc_matrix.h5mu"),
@@ -16,7 +16,6 @@ workflow test_wf {
       output_types: "types.csv"
     ]
   ])
-  output_ch = input_ch
   | map { state -> [state.id, state]}
   | split_modalities.run(
     toState: { id, output, state -> output + [orig_input: state.input] }
