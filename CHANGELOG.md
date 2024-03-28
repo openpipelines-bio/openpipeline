@@ -62,6 +62,8 @@ after concatenation (PR #807)
 
 * `dimred/tsne` component: Added a tSNE dimensionality reduction component (PR #742).
 
+* `scgpt/binning` component: Added a scGPT pre-processing binning component (PR #765).
+
 # openpipelines 1.0.0-rc2
 
 ## BUG FIXES
