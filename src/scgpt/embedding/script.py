@@ -86,10 +86,14 @@ num_batch_types = len(set(batch_ids))
 pad_token = par["pad_token"]
 pad_value = par["pad_value"]
 special_tokens = [pad_token, "<cls>", "<eoc>"]
-genes = adata.var[par["gene_name_layer"]].tolist()
+
+# Fetching gene names
+if not par["gene_name_layer"]:
+    genes = adata.var.index.astype(str).tolist()
+else: 
+    genes = adata.var[par["gene_name_layer"]].astype(str).tolist()
 
 logger.info("Loading model, vocab and configs")
-
 # Model files
 model_config_file = par["model_config"]
 model_file = par["model"]
