@@ -91,6 +91,9 @@ after concatenation (PR #807)
 ## NEW FUNCTIONALITY
 
 * `dimred/tsne` component: Added a tSNE dimensionality reduction component (PR #742).
+  
+* `transform/clr` component: Added the option to set the `axis` along which to apply CLR. Possible to override
+  on workflow level as well (PR #767).
 
 # openpipelines 1.0.0-rc2
 
