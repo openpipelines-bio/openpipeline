@@ -89,6 +89,8 @@ mdata = mu.read(par["input"])
 input_adata = mdata.mod[par["modality"]]
 adata = input_adata.copy()
 
+logger.info(adata)
+
 #TODO: Optionally set device to use gpu, to be implemented when gpu-based machine types are supported
 # if par["device"] == "cuda" and not torch.cuda.is_available():
 #     print("WARNING: CUDA is not available. Using CPU instead.")
