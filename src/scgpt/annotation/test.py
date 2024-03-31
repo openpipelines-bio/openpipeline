@@ -15,13 +15,13 @@ meta = {
 }
 ## VIASH END
 
-input_path = meta["resources_dir"] + "test_resources/Kim2020_Lung_preprocessed.h5mu"
-input_gene_ids = meta["resources_dir"] + "test_resources/Kim2020_Lung_gene_ids.pt"
-input_values = meta["resources_dir"] + "test_resources/Kim2020_Lung_values.pt"
-input_padding_mask = meta["resources_dir"] + "test_resources/Kim2020_Lung_padding_mask.pt"
-model = meta["resources_dir"] + "source/best_model.pt"
-model_config = meta["resources_dir"] + "source/args.json"
-model_vocab = meta["resources_dir"] + "source/vocab.json" 
+input_path = meta["resources_dir"] + "Kim2020_Lung_preprocessed.h5mu"
+input_gene_ids = meta["resources_dir"] + "Kim2020_Lung_gene_ids.pt"
+input_values = meta["resources_dir"] + "Kim2020_Lung_values.pt"
+input_padding_mask = meta["resources_dir"] + "Kim2020_Lung_padding_mask.pt"
+model = meta["resources_dir"] + "best_model.pt"
+model_config = meta["resources_dir"] + "args.json"
+model_vocab = meta["resources_dir"] + "vocab.json" 
 
 @pytest.fixture
 def input_mudata_subset_cpu_run(write_mudata_to_file):
@@ -58,22 +58,29 @@ def test_annotation(run_component,
         "--model", model,
         "--model_config", model_config,
         "--model_vocab", model_vocab,
-        "--gene_name_layer", "gene_name",
-        "--batch_id_layer", "batch_id",
-        "--predicted_cell_type_id", "predicted_cell_type",
-        "--pad_token", "<pad>",
+        # "--gene_name_layer", "gene_name",
+        # "--batch_id_layer", "batch_id",
+        # "--predicted_cell_type_id", "predicted_cell_type",
+        # "--pad_token", "<pad>",
         # "--mask_ratio", 0,
         # "--mask_value", -1,
         # "--pad_value", -2,
         # "--n_cls", 8,
         # "--n_input_bins", 51,
-        # "--batch_size", 64,
-        "--output_compression", "gzip"
+        # "--batch_size", 64
     ]
     run_component(args)
     
     output_mudata = read_h5mu(output_path)
+    input_mudata = read_h5mu(input_mudata_subset_cpu_run)
     assert "predicted_cell_type" in output_mudata.mod["rna"].obs.columns
+    
+    # output_mudata.mod["rna"].obs.drop("predicted_cell_type",
+    #                                   axis=1,
+    #                                   inplace=True)
+    # print(input_mudata.mod["rna"].obs.columns)
+    # print(output_mudata.mod["rna"].obs.columns)
+    # assert_annotation_objects_equal(output_mudata, input_mudata)
     
 if __name__ == '__main__':
     sys.exit(pytest.main([__file__]))

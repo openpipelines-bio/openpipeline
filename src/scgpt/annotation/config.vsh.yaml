@@ -74,7 +74,7 @@ functionality:
           type: string
           example: "gzip"
           required: false
-          default: None
+          default: gzip
           description: |
             The compression algorithm to use for the output h5mu file.
 
@@ -91,11 +91,6 @@ functionality:
           default: "batch_id"
           description: |
             The name of the adata.obs column to write categorical batch ids to.
-        - name: "--predicted_cell_type_layer"
-          type: string
-          default: "predicted_cell_type"
-          description: |
-            The name of the adata.obs column to write predicted cell types to.
         - name: "--pad_token"
           type: string
           default: "<pad>"
@@ -143,7 +138,7 @@ functionality:
           default: "predicted_cell_type"
           required: false
           description: |
-            The predicted cell type id.
+            The name of the adata.obs column to write predicted cell types to.
         
   resources:
     - type: python_script
@@ -152,15 +147,15 @@ functionality:
   test_resources:
     - type: python_script
       path: test.py
-    # - path: /resources_test/scgpt/test_resources/Kim2020_Lung.h5mu
-    # - path: /resources_test/scgpt/test_resources/Kim2020_Lung_preprocessed.h5mu
-    # - path: /resources_test/scgpt/test_resources/Kim2020_Lung_gene_ids.pt
-    # - path: /resources_test/scgpt/test_resources/Kim2020_Lung_values.pt
-    # - path: /resources_test/scgpt/test_resources/Kim2020_Lung_padding_mask.pt
-    # - path: /resources_test/scgpt/source/best_model.pt
-    # - path: /resources_test/scgpt/source/args.json
-    # - path: /resources_test/scgpt/source/vocab.json
-    - path: /resources_test/scgpt/
+    - path: /resources_test/scgpt/test_resources/Kim2020_Lung.h5mu
+    - path: /resources_test/scgpt/test_resources/Kim2020_Lung_preprocessed.h5mu
+    - path: /resources_test/scgpt/test_resources/Kim2020_Lung_gene_ids.pt
+    - path: /resources_test/scgpt/test_resources/Kim2020_Lung_values.pt
+    - path: /resources_test/scgpt/test_resources/Kim2020_Lung_padding_mask.pt
+    - path: /resources_test/scgpt/source/best_model.pt
+    - path: /resources_test/scgpt/source/args.json
+    - path: /resources_test/scgpt/source/vocab.json
+    # - path: /resources_test/scgpt/
 
 platforms:
   - type: docker
