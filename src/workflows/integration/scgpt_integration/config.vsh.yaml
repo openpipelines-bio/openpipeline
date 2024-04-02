@@ -1,6 +1,6 @@
 functionality:
-  name: "rna_scgpt"
-  namespace: "workflows/rna"
+  name: "scgpt_integration"
+  namespace: "workflows/integration"
   description: "Processing unimodal RNA transcriptomics data for scGPT-based applications."
   authors:
     - __merge__: /src/authors/dorien_roosen.yaml
@@ -31,9 +31,9 @@ functionality:
             Model vocabulary file directory.
         - name: "--input_layer"
           type: string
-          required: false
-          default: "X"
-          description: "Input layer to start from."
+          required: False
+          description: |
+            Mudata layer (key from .layers) to use as input data for binning. If not specified, .X is used.
         - name: "--gene_name_layer"
           type: string
           example: "gene_name"
@@ -41,13 +41,6 @@ functionality:
           default: "gene_name"
           description: |
             The name of the adata.var column containing gene names.
-        - name: "--n_input_bins"
-          type: integer
-          default: 51
-          required: False
-          min: 1
-          description: |
-            The number of bins to discretize the data into. When no value is provided, data won't be binned.
 
     - name: "Outputs"
       arguments:
@@ -69,6 +62,7 @@ functionality:
           default: "binned"
           description: |
             The name of the adata layer to write the binned data to.
+
     - name: "Arguments"
       arguments:
         - name: "--pad_token"
@@ -77,16 +71,28 @@ functionality:
           required: false
           description: |
             The padding token used in the model.
+        - name: "--n_input_bins"
+          type: integer
+          default: 51
+          required: False
+          min: 1
+          description: |
+            The number of bins to discretize the data into. When no value is provided, data won't be binned.
+        - name: "--n_hvg"
+          type: integer
+          default: 1200
+          description: |
+            Number of highly variable genes to subset for.
 
   resources:
     - type: nextflow_script
       path: main.nf
       entrypoint: run_wf
-    # - type: file
-    #   path: /src/workflows/utils/
   dependencies:
     - name: scgpt/cross_check_genes
     - name: scgpt/binning
+    - name: feature_annotation/highly_variable_features_scanpy
+    - name: filter/do_filter
   test_resources:
     # - type: nextflow_script
     #   path: test.nf
