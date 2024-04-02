@@ -70,8 +70,11 @@ platforms:
   - type: docker
     image: nvcr.io/nvidia/pytorch:23.09-py3
     setup:
+      - type: docker
+        run:
+          echo "build --jobs 4" >> /etc/bazel.bazelrc
       - type: python
-        __merge__: /src/base/requirements/anndata_mudata.yaml
+        __merge__: [/src/base/requirements/anndata_mudata.yaml, /src/base/requirements/scanpy.yaml, .]
       - type: python
         packages:
           - scgpt==0.2.1

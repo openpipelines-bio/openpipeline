@@ -41,6 +41,8 @@ special_tokens = [pad_token, "<cls>", "<eoc>"]
 # Fetching gene names
 if not par["gene_name_layer"]:
     genes = adata.var.index.astype(str).tolist()
+elif par["gene_name_layer"] not in adata.var.columns:
+    raise ValueError(f"Gene name column '{par['gene_name_layer']}' not found in .mod['{par['modality']}'].obs.")
 else: 
     genes = adata.var[par["gene_name_layer"]].astype(str).tolist()
 

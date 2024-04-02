@@ -2,6 +2,7 @@ import pytest
 import subprocess
 from mudata import read_h5mu
 import re
+import sys
 
 ## VIASH START
 meta = {
@@ -11,8 +12,8 @@ meta = {
 }
 ## VIASH END
 
-input_path = meta["resources_dir"] + "test_resources/Kim2020_Lung_subset.h5mu"
-vocab_path = meta["resources_dir"] + "source/vocab.json"
+input_path = meta["resources_dir"] + "Kim2020_Lung_subset.h5mu"
+vocab_path = meta["resources_dir"] + "vocab.json"
 
 def test_cross_check(run_component, random_path):
     output_path = random_path(extension="h5mu")
@@ -46,5 +47,8 @@ def test_cross_check_invalid_gene_layer_raises(run_component, random_path):
 
     with pytest.raises(subprocess.CalledProcessError) as err:
         run_component(args)
-    assert re.search(r"ValueError: gene name column 'dummy_gene' not found in .mod\['rna'\]\.obs\.",
+    assert re.search(r"ValueError: Gene name column 'dummy_gene' not found in .mod\['rna'\]\.obs\.",
                      err.value.stdout.decode('utf-8'))
+    
+if __name__ == '__main__':
+    sys.exit(pytest.main([__file__]))
