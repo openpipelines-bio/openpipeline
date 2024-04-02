@@ -65,7 +65,6 @@ workflow run_wf {
         },
         auto: [ publish: true ]
     )
-  | niceView()
   
   emit:
     output_ch
