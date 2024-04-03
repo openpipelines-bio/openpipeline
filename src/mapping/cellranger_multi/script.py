@@ -80,8 +80,9 @@ def setup_logger():
 # END TEMPORARY WORKAROUND setup_logger
 logger = setup_logger()
 
-fastq_regex = r'([A-Za-z0-9\-_\.]+)_S(\d+)_L(\d+)_[RI](\d+)_(\d+)\.fastq\.gz'
+fastq_regex = r'([A-Za-z0-9\-_\.]+)_S(\d+)_(L(\d+)_)?[RI](\d+)_(\d+)\.(fastq|fq)(\.gz)?'
 # assert re.match(fastq_regex, "5k_human_GEX_1_subset_S1_L001_R1_001.fastq.gz") is not None
+# assert re.match(fastq_regex, "5k_human_GEX_1_subset_S1_R1_001.fastq.gz") is not None
 
 # Invert some parameters. Keep the original ones in the config for compatibility
 inverted_params = {
