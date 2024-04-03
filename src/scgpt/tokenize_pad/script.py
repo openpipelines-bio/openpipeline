@@ -9,16 +9,18 @@ from scgpt.tokenizer.gene_tokenizer import GeneVocab
 ## VIASH START
 par = {
     "input": "resources_test/scgpt/test_resources/Kim2020_Lung_preprocessed.h5mu",
-    "output_gene_ids": 'resources_test/scgpt/test_resources/Kim2020_Lung_gene_ids.pt',
-    "output_values": 'resources_test/scgpt/test_resources/Kim2020_Lung_values.pt',
-    "output_padding_mask": 'resources_test/scgpt/test_resources/Kim2020_Lung_padding_mask.pt',
+    "model_vocab": "resources_test/scgpt/source/vocab.json",
+    "output": "resources_test/scgpt/test_resources/Kim2020_Lung_tokenized.h5mu",
     "pad_token": "<pad>",
     "pad_value": -2,
     "modality": "rna",
     "input_layer": "X_binned",
     "max_seq_len": None,
     "gene_name_layer": None,
-    "model_vocab": "resources_test/scgpt/source/vocab.json"
+    "gene_id_tokens_key": "gene_id_tokens",
+    "tokenized_values_key": "values_tokenized",
+    "padding_mask_key": "padding_mask",
+    "output_compression": None
     }
 ## VIASH END
 
@@ -82,7 +84,7 @@ if not par["max_seq_len"]:
     max_seq_len = adata.var.shape[0] + 1
 else:
     max_seq_len = par["max_seq_len"]
-    
+
 # Tokenize and pad data
 logger.info("Padding and tokenizing data")
 tokenized_data = tokenize_and_pad_batch(
@@ -103,6 +105,9 @@ all_gene_ids, all_values = tokenized_data["genes"], tokenized_data["values"]
 padding_mask = all_gene_ids.eq(vocab[pad_token])
 
 logger.info("Writing output data")
-torch.save(all_gene_ids, par["output_gene_ids"])
-torch.save(all_values, par["output_values"])
-torch.save(padding_mask, par["output_padding_mask"])
+adata.obsm[par["gene_id_tokens_key"]] = all_gene_ids.numpy()
+adata.obsm[par["tokenized_values_key"]] = all_values.numpy()
+adata.obsm[par["padding_mask_key"]] = padding_mask.numpy()
+
+mdata.mod[par["modality"]] = adata
+mdata.write(par["output"], compression=par["output_compression"])
