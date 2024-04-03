@@ -49,6 +49,12 @@ functionality:
             The output h5mu file containing obsm arrays for gene tokens, tokenized data and padding mask.
           direction: output
           example: output.h5mu
+        - name: "--output_compression"
+          type: string
+          example: "gzip"
+          choices: ["gzip", "lzf"]
+          description: |
+            The compression type for the output file.
         - name: "--gene_id_tokens_key"
           type: string
           default: "gene_id_tokens"
