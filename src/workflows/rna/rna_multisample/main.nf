@@ -40,6 +40,20 @@ workflow run_wf {
       },
       toState: ["input": "output"]
     )
+    | scale.run(
+      runIf: {id, state -> state.enable_scaling},
+      fromState: {id, state -> 
+        [
+          "input": state.input,
+          "modality": state.modality,
+          "input_layer": "log_normalized",
+          "output_layer": state.scaling_output_layer,
+          "max_value": state.scaling_max_value,
+          "zero_center": state.scaling_zero_center,
+        ]
+      },
+      toState: ["input": "output"],
+    )
     | highly_variable_features_scanpy.run(
       fromState: {id, state ->
         [
