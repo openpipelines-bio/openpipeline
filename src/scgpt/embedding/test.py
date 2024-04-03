@@ -104,17 +104,13 @@ tokenized_data = tokenize_and_pad_batch(
 all_gene_ids, all_values = tokenized_data["genes"], tokenized_data["values"]
 padding_mask = all_gene_ids.eq(vocab[pad_token])
 
-input_gene_id_path = f"{meta['resources_dir']}/Kim2020_Lung_gene_ids_subset.pt"
-input_values_path = f"{meta['resources_dir']}/Kim2020_Lung_values_subset.pt"
-input_padding_mask_path = f"{meta['resources_dir']}/Kim2020_Lung_padding_mask_subset.pt"
+adata.obsm["gene_id_tokens"] = all_gene_ids.numpy()
+adata.obsm["values_tokenized"] = all_values.numpy()
+adata.obsm["padding_mask"] = padding_mask.numpy()
 
-torch.save(all_gene_ids, input_gene_id_path)
-torch.save(all_values, input_values_path)
-torch.save(padding_mask, input_padding_mask_path)
-
-input_preprocessed = mu.MuData({'rna': adata})
-input_preprocessed_path = f"{meta['resources_dir']}/Kim2020_Lung_preprocessed_subset.h5mu"
-input_preprocessed.write_h5mu(input_preprocessed_path)
+tokenized_data = mu.MuData({'rna': adata})
+tokenized_data_path = f"{meta['resources_dir']}/Kim2020_Lung_tokenized.h5mu"
+tokenized_data.write_h5mu(tokenized_data_path)
 
 ## END TEMPORARY WORKAROUND DATA PREPROCESSING
 
@@ -124,14 +120,14 @@ def test_integration_embedding(run_component, tmp_path):
     output_embedding_file = tmp_path / "Kim2020_Lung_subset_embedded.h5mu"
 
     run_component([
-        "--input", input_preprocessed_path,
+        "--input", tokenized_data_path,
         "--modality", "rna",
         "--model", model_file,
         "--model_vocab", vocab_file,
         "--model_config", model_config_file,
-        "--input_gene_ids", input_gene_id_path,
-        "--input_values", input_values_path,
-        "--input_padding_mask", input_padding_mask_path,
+        "--input_obsm_gene_tokens", "gene_id_tokens",
+        "--input_obsm_tokenized_values", "values_tokenized",
+        "--input_obsm_padding_mask", "padding_mask",
         "--output", output_embedding_file
     ])
 
