@@ -1,3 +1,9 @@
+# openpipelines 1.0.0-rc4
+
+## BUG FIXES
+
+* `mapping/cellranger_multi`: Fix the regex for the fastq input files to allow dropping the lane from the input file names (e.g. `_L001`) (PR #778).
+
 # openpipelines 1.0.0-rc3
 
 ## BREAKING CHANGES
