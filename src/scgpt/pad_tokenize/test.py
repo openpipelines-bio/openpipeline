@@ -92,9 +92,9 @@ def test_integration_pad_tokenize(run_component, tmp_path):
     output_file = mu.read(output)
     output_adata = output_file.mod["rna"]
 
-    gene_ids = output_adata.obsm["output_obsm_gene_tokens"]
-    values = output_adata.obsm["output_obsm_tokenized_values"]
-    padding_mask = output_adata.obsm["output_obsm_padding_mask"]
+    gene_ids = output_adata.obsm["gene_id_tokens"]
+    values = output_adata.obsm["values_tokenized"]
+    padding_mask = output_adata.obsm["padding_mask"]
 
     # check output dimensions
     ## nr of genes that are tokenized 
