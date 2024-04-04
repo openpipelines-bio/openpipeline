@@ -1,7 +1,7 @@
 functionality:
-  name: "cell_type_annotation"
-  namespace: "workflows/cell_type_annotation"
-  description: "Cell type annotation through scGPT."
+  name: "zero_shot_cell_type_annotation"
+  namespace: "workflows/zero_shot_cell_type_annotation"
+  description: "Zero-shot cell type annotation through scGPT."
   authors:
     - __merge__: /src/authors/jakub_majercik.yaml
       roles: [ author, maintainer ]
@@ -50,27 +50,6 @@ functionality:
           direction: output
           description: Destination path to the output.
           example: output.h5mu
-        # - name: "--output_gene_ids"
-        #   type: file
-        #   required: true
-        #   description: |
-        #     The output pytorch tensor file containing the gene ids.
-        #   direction: output
-        #   example: gene_ids.pt
-        # - name: "--output_values"
-        #   type: file
-        #   required: true
-        #   direction: output
-        #   description: |
-        #     The output pytorch tensor file contianing the tokenized and padded values.
-        #   example: values.pt
-        # - name: "--output_padding_mask"
-        #   type: file
-        #   direction: output
-        #   required: true
-        #   example: padding_mask.pt
-        #   description: |
-        #     The output pytorch tensor file containing the padding mask.
         - name: "--output_compression"
           type: string
           example: "gzip"
@@ -166,7 +145,7 @@ functionality:
     #   path: /src/workflows/utils/
   dependencies:
     - name: scgpt/pad_tokenize
-    - name: scgpt/annotation
+    - name: scgpt/cell_type_inference
   test_resources:
     # - type: nextflow_script
     #   path: test.nf

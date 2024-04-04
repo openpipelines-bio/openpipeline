@@ -1,11 +1,8 @@
 import pytest
 import subprocess
 from mudata import read_h5mu
-import re
 import sys
-from glob import glob
 from openpipelinetestutils.asserters import assert_annotation_objects_equal
-import torch
 
 ## VIASH START
 meta = {
@@ -26,9 +23,9 @@ def input_mudata_subset_cpu_run(write_mudata_to_file):
     mudata.mod["rna"] = mudata.mod["rna"][:100]
     return write_mudata_to_file(mudata)
 
-def test_annotation(run_component,
-                    random_h5mu_path,
-                    input_mudata_subset_cpu_run):
+def test_cell_type_inference(run_component,
+                             random_h5mu_path,
+                             input_mudata_subset_cpu_run):
     output_path = random_h5mu_path()
 
     args = [

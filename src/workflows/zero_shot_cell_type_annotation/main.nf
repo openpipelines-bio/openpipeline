@@ -29,7 +29,7 @@ workflow run_wf {
                 "input_obsm_tokenized_values": "output_obsm_padding_mask",            ]
         )
 
-        | annotation.run(
+        | cell_type_inference.run(
             fromState: {id, state -> [
                 "input": state.input,
                 "modality": state.modality,

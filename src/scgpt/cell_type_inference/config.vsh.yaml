@@ -1,6 +1,6 @@
 
 functionality:
-  name: annotation
+  name: cell_type_inference
   namespace: "scgpt"
   description: |
     Annotate adata with cell types through the scGPT model.
