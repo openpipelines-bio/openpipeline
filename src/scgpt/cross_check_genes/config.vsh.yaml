@@ -73,5 +73,6 @@ platforms:
     test_setup:
       - type: python
     __merge__: [ /src/base/requirements/python_test_setup.yaml, .]
+  - type: nextflow
     directives:
       label: [lowmem]
