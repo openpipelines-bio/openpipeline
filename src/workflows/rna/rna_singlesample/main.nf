@@ -14,7 +14,7 @@ workflow run_wf {
       if (state.obs_name_mitochondrial_fraction && !state.var_name_mitochondrial_genes) {
         throw new RuntimeException("Using --obs_name_mitochondrial_fraction requires --var_name_mitochondrial_genes.")
       }
-      if ((state.min_fraction_mito  || state.max_fraction_mito) && !state.obs_name_mitochondrial_fraction) {
+      if ((state.min_fraction_mito != null || state.max_fraction_mito != null) && !state.obs_name_mitochondrial_fraction) {
         throw new RuntimeException("Enabling --min_fraction_mito or --max_fraction_mito requires --obs_name_mitochondrial_fraction.")
       }
       if (state.var_gene_names && !state.var_name_mitochondrial_genes) {
@@ -51,7 +51,7 @@ workflow run_wf {
           "layer": state.layer,
         ]
         
-        if (state.var_name_mitochondrial_genes){
+        if (state.var_name_mitochondrial_genes) {
           // Check if user has defined var columns to calculate metrics
           def new_var_qc_metrics = state.var_qc_metrics != null ? state.var_qc_metrics : []
           assert new_var_qc_metrics instanceof List
