@@ -50,14 +50,13 @@ functionality:
         - name: "--var_gene_names"
           type: string
           required: false
-          default: "gene_name"
           description: |
-            The name of the adata.var column containing gene names.
-        - name: "--obs_batch_id"
+            The name of the adata.var column containing gene names. When no gene_name_layer is provided, the .var index will be used.
+        - name: "--obs_batch_label"
           type: string
-          default: "batch_id"
+          required: false
           description: |
-            The name of the adata.obs column containing the batch ids.
+            The name of the adata.obs column containing the batch labels.
 
     - name: "Outputs"
       arguments:

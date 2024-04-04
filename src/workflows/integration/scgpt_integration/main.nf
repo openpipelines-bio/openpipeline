@@ -98,7 +98,7 @@ workflow run_wf {
           "input_obsm_tokenized_values": state.obsm_tokenized_values,
           "input_obsm_padding_mask": state.obsm_padding_mask,
           "input_var_gene_names": state.var_gene_names,
-          "input_obs_batch_id": state.obs_batch_id,
+          "input_obs_batch_label": state.obs_batch_label,
           "output": "workflow_output",
           "output_compression": state.output_compression,
           "embedding_layer_key": state.embedding_layer_key,
