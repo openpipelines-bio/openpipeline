@@ -300,9 +300,11 @@ def test_cellranger_multi_with_alternative_names(run_component, random_path):
     shutil.copy(input2_R2, input2_R2_link)
 
     with gzip.open(input3_R1, 'rb') as f_in:
-        shutil.copyfileobj(f_in, input2_R2_link)
+        with open(input3_R1_link, 'wb') as f_out:
+            shutil.copyfileobj(f_in, f_out)
     with gzip.open(input3_R2, 'rb') as f_in:
-        shutil.copyfileobj(f_in, input3_R2_link)
+        with open(input3_R2_link, 'wb') as f_out:
+            shutil.copyfileobj(f_in, f_out)
 
     outputpath = random_path()
     args = [
