@@ -192,7 +192,7 @@ try:
     input_gene_ids = adata.obsm[par["input_obsm_gene_tokens"]]
     input_values = adata.obsm[par["input_obsm_tokenized_values"]]
 except:
-    raise KeyError(f"Gene tokens not found under .obsm['{par['input_obsm_gene_tokens']}'] or values not found under .obsm['{par['input_obsm_tokenized_values']}']. Check the specified input keys or run tokenize_pad first.")
+    raise KeyError(f"Gene tokens not found under .obsm['{par['input_obsm_gene_tokens']}'] or values not found under .obsm['{par['input_obsm_tokenized_values']}']. Check the specified input keys or run pad_tokenize first.")
 
 test_data_pt = {
     "gene_ids": input_gene_ids,

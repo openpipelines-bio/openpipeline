@@ -30,7 +30,7 @@ functionality:
             Path to model vocabulary file.
         - name: "--input_layer"
           type: string
-          default: "binned"
+          default: "X_binned"
           required: false
           description: |
             The name of the layer to be padded and tokenized.
@@ -62,12 +62,12 @@ functionality:
           example: values.pt
         - name: "--output_obsm_tokenized_values"
           type: string
-          default: values_tokenized
+          default: "values_tokenized"
           description: |
             The key of the .obsm array containing the count values of the tokenized genes
         - name: "--output_obsm_padding_mask"
           type: string
-          default: padding_mask
+          default: "padding_mask"
           description: |
             The key of the .obsm array containing the padding mask.
     - name: Arguments
@@ -101,6 +101,9 @@ platforms:
   - type: docker
     image: nvcr.io/nvidia/pytorch:23.09-py3
     setup:
+      - type: docker
+        run:
+          echo "build --jobs 4" >> /etc/bazel.bazelrc
       - type: python
         __merge__: [ /src/base/requirements/anndata_mudata.yaml, /src/base/requirements/scanpy.yaml ]
       - type: python

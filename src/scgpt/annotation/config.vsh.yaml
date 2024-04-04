@@ -30,24 +30,21 @@ functionality:
           example: resources_test/scgpt/vocab.json
           description: |
             Model vocabulary file directory.
-        - name: "--input_gene_ids"
-          type: file
-          required: true
-          example: resources_test/scgpt/test_resources/Kim2020_Lung_gene_ids.pt
+        - name: "--input_obsm_gene_tokens"
+          type: string
+          default: "gene_id_tokens"
           description: |
-            The input gene ids file.
-        - name: "--input_values"
-          type: file
-          required: true
-          example: resources_test/scgpt/test_resources/Kim2020_Lung_values.pt
+            The key of the .obsm array containing the gene token ids
+        - name: "--input_obsm_tokenized_values"
+          type: string
+          default: values_tokenized
           description: |
-            The input values file.
-        - name: "--input_padding_mask"
-          type: file
-          required: true
-          example: resources_test/scgpt/test_resources/Kim2020_Lung_padding_mask.pt
-          description: |
-            The input padding mask file.
+            The key of the .obsm array containing the count values of the tokenized genes
+        # - name: "--input_obsm_padding_mask"
+        #   type: string
+        #   default: padding_mask
+        #   description: |
+        #     The key of the .obsm array containing the padding mask.
         - name: "--model"
           type: file
           required: true
@@ -154,14 +151,10 @@ functionality:
     - type: python_script
       path: test.py
     - path: /resources_test/scgpt/test_resources/Kim2020_Lung.h5mu
-    - path: /resources_test/scgpt/test_resources/Kim2020_Lung_preprocessed.h5mu
-    - path: /resources_test/scgpt/test_resources/Kim2020_Lung_gene_ids.pt
-    - path: /resources_test/scgpt/test_resources/Kim2020_Lung_values.pt
-    - path: /resources_test/scgpt/test_resources/Kim2020_Lung_padding_mask.pt
+    - path: /resources_test/scgpt/test_resources/Kim2020_Lung_tokenized.h5mu
     - path: /resources_test/scgpt/source/best_model.pt
     - path: /resources_test/scgpt/source/args.json
     - path: /resources_test/scgpt/source/vocab.json
-    # - path: /resources_test/scgpt/
 
 platforms:
   - type: docker

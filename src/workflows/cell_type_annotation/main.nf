@@ -20,34 +20,27 @@ workflow run_wf {
                 "pad_token": state.pad_token,
                 "pad_value": state.pad_value,
                 "max_seq_length": state.max_seq_length,
+                "output": state.workflow_output
                 ]
             },
-            args: [
-                output_gene_ids: "output_gene_ids.pt",
-                output_values: "output_values.pt",
-                output_padding_mask: "output_padding_mask.pt"
-            ],
             toState: [
-                "input_gene_ids": "output_gene_ids",
-                "input_values": "output_values",
-                "input_padding_mask": "output_padding_mask"
-            ]
+                "input": "output",
+                "input_obsm_gene_tokens": "output_obsm_gene_tokens",
+                "input_obsm_tokenized_values": "output_obsm_padding_mask",            ]
         )
 
         | annotation.run(
             fromState: {id, state -> [
                 "input": state.input,
                 "modality": state.modality,
-                "input_gene_ids": state.input_gene_ids,
-                "input_values": state.input_values,
-                "input_padding_mask": state.input_padding_mask,
+                "input_gene_ids": state.input_obsm_gene_tokens,
+                "input_values": state.input_obsm_tokenized_values,
                 "model": state.model,
                 "model_config": state.model_config,
                 "model_vocab": state.vocab_file,
                 "output": state.workflow_output
                 ]
             },
-            // auto: [ publish: true ]
         ) 
         | setState(["output"])
 
