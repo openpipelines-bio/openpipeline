@@ -2904,10 +2904,7 @@ meta = [
           {
             "type" : "string",
             "name" : "--var_gene_names",
-            "description" : "The name of the adata.var column containing gene names.\n",
-            "default" : [
-              "gene_name"
-            ],
+            "description" : "The name of the adata.var column containing gene names. When no gene_name_layer is provided, the .var index will be used.\n",
             "required" : false,
             "direction" : "input",
             "multiple" : false,
@@ -2916,11 +2913,8 @@ meta = [
           },
           {
             "type" : "string",
-            "name" : "--obs_batch_id",
-            "description" : "The name of the adata.obs column containing the batch ids.\n",
-            "default" : [
-              "batch_id"
-            ],
+            "name" : "--obs_batch_label",
+            "description" : "The name of the adata.obs column containing the batch labels.\n",
             "required" : false,
             "direction" : "input",
             "multiple" : false,
@@ -3190,14 +3184,14 @@ meta = [
         "foundConfigPath" : "/home/runner/work/openpipeline/openpipeline/src/scgpt/cross_check_genes/config.vsh.yaml",
         "configInfo" : {
           "functionalityName" : "cross_check_genes",
-          "git_tag" : "0.2.0-1573-g612269403b",
+          "git_tag" : "0.2.0-1574-g5e2c7d235a",
           "git_remote" : "https://github.com/openpipelines-bio/openpipeline",
           "viash_version" : "0.8.5",
           "config" : "/home/runner/work/openpipeline/openpipeline/src/scgpt/cross_check_genes/config.vsh.yaml",
           "functionalityNamespace" : "scgpt",
           "output" : "",
           "platform" : "",
-          "git_commit" : "612269403b73c51fec199e83a05b221ccc56526b",
+          "git_commit" : "5e2c7d235a889618ebf378c5e069281bbfa68a75",
           "executable" : "/nextflow/scgpt/cross_check_genes/main.nf"
         },
         "writtenPath" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/scgpt/cross_check_genes"
@@ -3211,14 +3205,14 @@ meta = [
         "foundConfigPath" : "/home/runner/work/openpipeline/openpipeline/src/scgpt/binning/config.vsh.yaml",
         "configInfo" : {
           "functionalityName" : "binning",
-          "git_tag" : "0.2.0-1573-g612269403b",
+          "git_tag" : "0.2.0-1574-g5e2c7d235a",
           "git_remote" : "https://github.com/openpipelines-bio/openpipeline",
           "viash_version" : "0.8.5",
           "config" : "/home/runner/work/openpipeline/openpipeline/src/scgpt/binning/config.vsh.yaml",
           "functionalityNamespace" : "scgpt",
           "output" : "",
           "platform" : "",
-          "git_commit" : "612269403b73c51fec199e83a05b221ccc56526b",
+          "git_commit" : "5e2c7d235a889618ebf378c5e069281bbfa68a75",
           "executable" : "/nextflow/scgpt/binning/main.nf"
         },
         "writtenPath" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/scgpt/binning"
@@ -3232,14 +3226,14 @@ meta = [
         "foundConfigPath" : "/home/runner/work/openpipeline/openpipeline/src/feature_annotation/highly_variable_features_scanpy/config.vsh.yaml",
         "configInfo" : {
           "functionalityName" : "highly_variable_features_scanpy",
-          "git_tag" : "0.2.0-1573-g612269403b",
+          "git_tag" : "0.2.0-1574-g5e2c7d235a",
           "git_remote" : "https://github.com/openpipelines-bio/openpipeline",
           "viash_version" : "0.8.5",
           "config" : "/home/runner/work/openpipeline/openpipeline/src/feature_annotation/highly_variable_features_scanpy/config.vsh.yaml",
           "functionalityNamespace" : "feature_annotation",
           "output" : "",
           "platform" : "",
-          "git_commit" : "612269403b73c51fec199e83a05b221ccc56526b",
+          "git_commit" : "5e2c7d235a889618ebf378c5e069281bbfa68a75",
           "executable" : "/nextflow/feature_annotation/highly_variable_features_scanpy/main.nf"
         },
         "writtenPath" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/feature_annotation/highly_variable_features_scanpy"
@@ -3253,14 +3247,14 @@ meta = [
         "foundConfigPath" : "/home/runner/work/openpipeline/openpipeline/src/filter/do_filter/config.vsh.yaml",
         "configInfo" : {
           "functionalityName" : "do_filter",
-          "git_tag" : "0.2.0-1573-g612269403b",
+          "git_tag" : "0.2.0-1574-g5e2c7d235a",
           "git_remote" : "https://github.com/openpipelines-bio/openpipeline",
           "viash_version" : "0.8.5",
           "config" : "/home/runner/work/openpipeline/openpipeline/src/filter/do_filter/config.vsh.yaml",
           "functionalityNamespace" : "filter",
           "output" : "",
           "platform" : "",
-          "git_commit" : "612269403b73c51fec199e83a05b221ccc56526b",
+          "git_commit" : "5e2c7d235a889618ebf378c5e069281bbfa68a75",
           "executable" : "/nextflow/filter/do_filter/main.nf"
         },
         "writtenPath" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/filter/do_filter"
@@ -3274,14 +3268,14 @@ meta = [
         "foundConfigPath" : "/home/runner/work/openpipeline/openpipeline/src/scgpt/pad_tokenize/config.vsh.yaml",
         "configInfo" : {
           "functionalityName" : "pad_tokenize",
-          "git_tag" : "0.2.0-1573-g612269403b",
+          "git_tag" : "0.2.0-1574-g5e2c7d235a",
           "git_remote" : "https://github.com/openpipelines-bio/openpipeline",
           "viash_version" : "0.8.5",
           "config" : "/home/runner/work/openpipeline/openpipeline/src/scgpt/pad_tokenize/config.vsh.yaml",
           "functionalityNamespace" : "scgpt",
           "output" : "",
           "platform" : "",
-          "git_commit" : "612269403b73c51fec199e83a05b221ccc56526b",
+          "git_commit" : "5e2c7d235a889618ebf378c5e069281bbfa68a75",
           "executable" : "/nextflow/scgpt/pad_tokenize/main.nf"
         },
         "writtenPath" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/scgpt/pad_tokenize"
@@ -3295,14 +3289,14 @@ meta = [
         "foundConfigPath" : "/home/runner/work/openpipeline/openpipeline/src/scgpt/embed/config.vsh.yaml",
         "configInfo" : {
           "functionalityName" : "embedding",
-          "git_tag" : "0.2.0-1573-g612269403b",
+          "git_tag" : "0.2.0-1574-g5e2c7d235a",
           "git_remote" : "https://github.com/openpipelines-bio/openpipeline",
           "viash_version" : "0.8.5",
           "config" : "/home/runner/work/openpipeline/openpipeline/src/scgpt/embed/config.vsh.yaml",
           "functionalityNamespace" : "scgpt",
           "output" : "",
           "platform" : "",
-          "git_commit" : "612269403b73c51fec199e83a05b221ccc56526b",
+          "git_commit" : "5e2c7d235a889618ebf378c5e069281bbfa68a75",
           "executable" : "/nextflow/scgpt/embedding/main.nf"
         },
         "writtenPath" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/scgpt/embedding"
@@ -3369,9 +3363,9 @@ meta = [
     "platform" : "nextflow",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/workflows/integration/scgpt_integration",
     "viash_version" : "0.8.5",
-    "git_commit" : "612269403b73c51fec199e83a05b221ccc56526b",
+    "git_commit" : "5e2c7d235a889618ebf378c5e069281bbfa68a75",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline",
-    "git_tag" : "0.2.0-1573-g612269403b"
+    "git_tag" : "0.2.0-1574-g5e2c7d235a"
   }
 }'''))
 ]
@@ -3487,7 +3481,7 @@ workflow run_wf {
           "input_obsm_tokenized_values": state.obsm_tokenized_values,
           "input_obsm_padding_mask": state.obsm_padding_mask,
           "input_var_gene_names": state.var_gene_names,
-          "input_obs_batch_id": state.obs_batch_id,
+          "input_obs_batch_label": state.obs_batch_label,
           "output": "workflow_output",
           "output_compression": state.output_compression,
           "embedding_layer_key": state.embedding_layer_key,

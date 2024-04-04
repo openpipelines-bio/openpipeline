@@ -289,21 +289,19 @@
                 "var_gene_names": {
                 "type":
                 "string",
-                "description": "Type: `string`, default: `gene_name`. The name of the adata",
-                "help_text": "Type: `string`, default: `gene_name`. The name of the adata.var column containing gene names.\n"
-            ,
-                "default": "gene_name"
+                "description": "Type: `string`. The name of the adata",
+                "help_text": "Type: `string`. The name of the adata.var column containing gene names. When no gene_name_layer is provided, the .var index will be used.\n"
+            
             }
     
 
         ,
-                "obs_batch_id": {
+                "obs_batch_label": {
                 "type":
                 "string",
-                "description": "Type: `string`, default: `batch_id`. The name of the adata",
-                "help_text": "Type: `string`, default: `batch_id`. The name of the adata.obs column containing the batch ids.\n"
-            ,
-                "default": "batch_id"
+                "description": "Type: `string`. The name of the adata",
+                "help_text": "Type: `string`. The name of the adata.obs column containing the batch labels.\n"
+            
             }
     
 

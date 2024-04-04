@@ -7,8 +7,8 @@ model_config: # please fill in - example: "args.json"
 input_obsm_gene_tokens: "gene_id_tokens"
 input_obsm_tokenized_values: "values_tokenized"
 input_obsm_padding_mask: "padding_mask"
-input_var_gene_names: "gene_name"
-input_obs_batch_id: "batch_id"
+# input_var_gene_names: "foo"
+# input_obs_batch_label: "foo"
 
 # Outputs
 # output: "$id.$key.output.h5mu"

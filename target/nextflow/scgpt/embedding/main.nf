@@ -2924,9 +2924,6 @@ meta = [
             "type" : "string",
             "name" : "--input_var_gene_names",
             "description" : "The name of the .var column containing gene names. When no gene_name_layer is provided, the .var index will be used.\n",
-            "default" : [
-              "gene_name"
-            ],
             "required" : false,
             "direction" : "input",
             "multiple" : false,
@@ -2935,11 +2932,8 @@ meta = [
           },
           {
             "type" : "string",
-            "name" : "--input_obs_batch_id",
-            "description" : "The name of the adata.obs column containing the batch ids.\n",
-            "default" : [
-              "batch_id"
-            ],
+            "name" : "--input_obs_batch_label",
+            "description" : "The name of the adata.obs column containing the batch labels.\n",
             "required" : false,
             "direction" : "input",
             "multiple" : false,
@@ -3224,9 +3218,9 @@ meta = [
     "platform" : "nextflow",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/scgpt/embedding",
     "viash_version" : "0.8.5",
-    "git_commit" : "612269403b73c51fec199e83a05b221ccc56526b",
+    "git_commit" : "5e2c7d235a889618ebf378c5e069281bbfa68a75",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline",
-    "git_tag" : "0.2.0-1573-g612269403b"
+    "git_tag" : "0.2.0-1574-g5e2c7d235a"
   }
 }'''))
 ]
@@ -3260,7 +3254,7 @@ par = {
   'input_obsm_tokenized_values': $( if [ ! -z ${VIASH_PAR_INPUT_OBSM_TOKENIZED_VALUES+x} ]; then echo "r'${VIASH_PAR_INPUT_OBSM_TOKENIZED_VALUES//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'input_obsm_padding_mask': $( if [ ! -z ${VIASH_PAR_INPUT_OBSM_PADDING_MASK+x} ]; then echo "r'${VIASH_PAR_INPUT_OBSM_PADDING_MASK//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'input_var_gene_names': $( if [ ! -z ${VIASH_PAR_INPUT_VAR_GENE_NAMES+x} ]; then echo "r'${VIASH_PAR_INPUT_VAR_GENE_NAMES//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
-  'input_obs_batch_id': $( if [ ! -z ${VIASH_PAR_INPUT_OBS_BATCH_ID+x} ]; then echo "r'${VIASH_PAR_INPUT_OBS_BATCH_ID//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
+  'input_obs_batch_label': $( if [ ! -z ${VIASH_PAR_INPUT_OBS_BATCH_LABEL+x} ]; then echo "r'${VIASH_PAR_INPUT_OBS_BATCH_LABEL//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'output': $( if [ ! -z ${VIASH_PAR_OUTPUT+x} ]; then echo "r'${VIASH_PAR_OUTPUT//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'output_compression': $( if [ ! -z ${VIASH_PAR_OUTPUT_COMPRESSION+x} ]; then echo "r'${VIASH_PAR_OUTPUT_COMPRESSION//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'embedding_layer_key': $( if [ ! -z ${VIASH_PAR_EMBEDDING_LAYER_KEY+x} ]; then echo "r'${VIASH_PAR_EMBEDDING_LAYER_KEY//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
@@ -3330,10 +3324,16 @@ all_gene_ids = adata.obsm[par["input_obsm_gene_tokens"]]
 all_values = adata.obsm[par["input_obsm_tokenized_values"]]
 padding_mask = adata.obsm[par["input_obsm_padding_mask"]]
 
-# Fetch batch ids
-batch_ids = adata.obs[par["input_obs_batch_id"]].tolist()
-batch_ids = np.array(batch_ids)
-num_batch_types = len(set(batch_ids))
+# Fetch batch ids for domain-specific batch normalization
+if par["DSBN"]:
+    if not par["input_obs_batch_label"]:
+        raise ValueError("When DSBN is set to True, you are required to provide batch labels (input_obs_batch_labels).")
+    else:
+        batch_id_cats = adata.obs[par["input_obs_batch_label"]].astype("category")
+        batch_id_labels = batch_id_cats.cat.codes.values
+        batch_ids = batch_id_labels.tolist()
+        batch_ids = np.array(batch_ids)
+        num_batch_types = len(set(batch_ids))
 
 # Set padding specs
 pad_token = par["pad_token"]
@@ -3389,7 +3389,7 @@ model = TransformerModel(
     ecs_threshold=0.8,  #TODO: parametrize for decoder-based operations
     do_dab=True, #TODO: parametrize for decoder-based operations
     use_batch_labels=True,
-    num_batch_labels=num_batch_types,
+    num_batch_labels=num_batch_types if par["DSBN"] else None,
     domain_spec_batchnorm=par["DSBN"],
     input_emb_style="continuous",  # scGPT default
     # n_input_bins=par["n_input_bins"],  # only applies when input_emb_style is "category"

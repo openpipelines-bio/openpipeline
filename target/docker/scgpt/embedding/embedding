@@ -222,14 +222,12 @@ function ViashHelp {
   echo ""
   echo "    --input_var_gene_names"
   echo "        type: string"
-  echo "        default: gene_name"
   echo "        The name of the .var column containing gene names. When no"
   echo "        gene_name_layer is provided, the .var index will be used."
   echo ""
-  echo "    --input_obs_batch_id"
+  echo "    --input_obs_batch_label"
   echo "        type: string"
-  echo "        default: batch_id"
-  echo "        The name of the adata.obs column containing the batch ids."
+  echo "        The name of the adata.obs column containing the batch labels."
   echo ""
   echo "Outputs:"
   echo "    --output"
@@ -505,9 +503,9 @@ RUN pip install --upgrade pip && \
 
 LABEL org.opencontainers.image.authors="Dorien Roosen"
 LABEL org.opencontainers.image.description="Companion container for running component scgpt embedding"
-LABEL org.opencontainers.image.created="2024-04-04T08:51:30Z"
+LABEL org.opencontainers.image.created="2024-04-04T13:21:38Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="612269403b73c51fec199e83a05b221ccc56526b"
+LABEL org.opencontainers.image.revision="5e2c7d235a889618ebf378c5e069281bbfa68a75"
 LABEL org.opencontainers.image.version="scgpt-preprocessor_build"
 
 VIASHDOCKER
@@ -761,15 +759,15 @@ while [[ $# -gt 0 ]]; do
             VIASH_PAR_INPUT_VAR_GENE_NAMES=$(ViashRemoveFlags "$1")
             shift 1
             ;;
-        --input_obs_batch_id)
-            [ -n "$VIASH_PAR_INPUT_OBS_BATCH_ID" ] && ViashError Bad arguments for option \'--input_obs_batch_id\': \'$VIASH_PAR_INPUT_OBS_BATCH_ID\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
-            VIASH_PAR_INPUT_OBS_BATCH_ID="$2"
-            [ $# -lt 2 ] && ViashError Not enough arguments passed to --input_obs_batch_id. Use "--help" to get more information on the parameters. && exit 1
+        --input_obs_batch_label)
+            [ -n "$VIASH_PAR_INPUT_OBS_BATCH_LABEL" ] && ViashError Bad arguments for option \'--input_obs_batch_label\': \'$VIASH_PAR_INPUT_OBS_BATCH_LABEL\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+            VIASH_PAR_INPUT_OBS_BATCH_LABEL="$2"
+            [ $# -lt 2 ] && ViashError Not enough arguments passed to --input_obs_batch_label. Use "--help" to get more information on the parameters. && exit 1
             shift 2
             ;;
-        --input_obs_batch_id=*)
-            [ -n "$VIASH_PAR_INPUT_OBS_BATCH_ID" ] && ViashError Bad arguments for option \'--input_obs_batch_id=*\': \'$VIASH_PAR_INPUT_OBS_BATCH_ID\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
-            VIASH_PAR_INPUT_OBS_BATCH_ID=$(ViashRemoveFlags "$1")
+        --input_obs_batch_label=*)
+            [ -n "$VIASH_PAR_INPUT_OBS_BATCH_LABEL" ] && ViashError Bad arguments for option \'--input_obs_batch_label=*\': \'$VIASH_PAR_INPUT_OBS_BATCH_LABEL\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+            VIASH_PAR_INPUT_OBS_BATCH_LABEL=$(ViashRemoveFlags "$1")
             shift 1
             ;;
         --output)
@@ -1027,12 +1025,6 @@ fi
 if [ -z ${VIASH_PAR_INPUT_OBSM_PADDING_MASK+x} ]; then
   VIASH_PAR_INPUT_OBSM_PADDING_MASK="padding_mask"
 fi
-if [ -z ${VIASH_PAR_INPUT_VAR_GENE_NAMES+x} ]; then
-  VIASH_PAR_INPUT_VAR_GENE_NAMES="gene_name"
-fi
-if [ -z ${VIASH_PAR_INPUT_OBS_BATCH_ID+x} ]; then
-  VIASH_PAR_INPUT_OBS_BATCH_ID="batch_id"
-fi
 if [ -z ${VIASH_PAR_EMBEDDING_LAYER_KEY+x} ]; then
   VIASH_PAR_EMBEDDING_LAYER_KEY="X_scGPT"
 fi
@@ -1256,7 +1248,7 @@ par = {
   'input_obsm_tokenized_values': $( if [ ! -z ${VIASH_PAR_INPUT_OBSM_TOKENIZED_VALUES+x} ]; then echo "r'${VIASH_PAR_INPUT_OBSM_TOKENIZED_VALUES//\'/\'\"\'\"r\'}'"; else echo None; fi ),
   'input_obsm_padding_mask': $( if [ ! -z ${VIASH_PAR_INPUT_OBSM_PADDING_MASK+x} ]; then echo "r'${VIASH_PAR_INPUT_OBSM_PADDING_MASK//\'/\'\"\'\"r\'}'"; else echo None; fi ),
   'input_var_gene_names': $( if [ ! -z ${VIASH_PAR_INPUT_VAR_GENE_NAMES+x} ]; then echo "r'${VIASH_PAR_INPUT_VAR_GENE_NAMES//\'/\'\"\'\"r\'}'"; else echo None; fi ),
-  'input_obs_batch_id': $( if [ ! -z ${VIASH_PAR_INPUT_OBS_BATCH_ID+x} ]; then echo "r'${VIASH_PAR_INPUT_OBS_BATCH_ID//\'/\'\"\'\"r\'}'"; else echo None; fi ),
+  'input_obs_batch_label': $( if [ ! -z ${VIASH_PAR_INPUT_OBS_BATCH_LABEL+x} ]; then echo "r'${VIASH_PAR_INPUT_OBS_BATCH_LABEL//\'/\'\"\'\"r\'}'"; else echo None; fi ),
   'output': $( if [ ! -z ${VIASH_PAR_OUTPUT+x} ]; then echo "r'${VIASH_PAR_OUTPUT//\'/\'\"\'\"r\'}'"; else echo None; fi ),
   'output_compression': $( if [ ! -z ${VIASH_PAR_OUTPUT_COMPRESSION+x} ]; then echo "r'${VIASH_PAR_OUTPUT_COMPRESSION//\'/\'\"\'\"r\'}'"; else echo None; fi ),
   'embedding_layer_key': $( if [ ! -z ${VIASH_PAR_EMBEDDING_LAYER_KEY+x} ]; then echo "r'${VIASH_PAR_EMBEDDING_LAYER_KEY//\'/\'\"\'\"r\'}'"; else echo None; fi ),
@@ -1326,10 +1318,16 @@ all_gene_ids = adata.obsm[par["input_obsm_gene_tokens"]]
 all_values = adata.obsm[par["input_obsm_tokenized_values"]]
 padding_mask = adata.obsm[par["input_obsm_padding_mask"]]
 
-# Fetch batch ids
-batch_ids = adata.obs[par["input_obs_batch_id"]].tolist()
-batch_ids = np.array(batch_ids)
-num_batch_types = len(set(batch_ids))
+# Fetch batch ids for domain-specific batch normalization
+if par["DSBN"]:
+    if not par["input_obs_batch_label"]:
+        raise ValueError("When DSBN is set to True, you are required to provide batch labels (input_obs_batch_labels).")
+    else:
+        batch_id_cats = adata.obs[par["input_obs_batch_label"]].astype("category")
+        batch_id_labels = batch_id_cats.cat.codes.values
+        batch_ids = batch_id_labels.tolist()
+        batch_ids = np.array(batch_ids)
+        num_batch_types = len(set(batch_ids))
 
 # Set padding specs
 pad_token = par["pad_token"]
@@ -1385,7 +1383,7 @@ model = TransformerModel(
     ecs_threshold=0.8,  #TODO: parametrize for decoder-based operations
     do_dab=True, #TODO: parametrize for decoder-based operations
     use_batch_labels=True,
-    num_batch_labels=num_batch_types,
+    num_batch_labels=num_batch_types if par["DSBN"] else None,
     domain_spec_batchnorm=par["DSBN"],
     input_emb_style="continuous",  # scGPT default
     # n_input_bins=par["n_input_bins"],  # only applies when input_emb_style is "category"
