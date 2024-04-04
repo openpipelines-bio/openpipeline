@@ -11,12 +11,11 @@ workflow run_wf {
     }
     // Check for correctness of mitochondrial gene detection arguments
     | map { id, state ->
-      def new_state = []
+      def new_state = [:]
       if (state.obs_name_mitochondrial_fraction && !state.var_name_mitochondrial_genes) {
         throw new RuntimeException("Using --obs_name_mitochondrial_fraction requires --var_name_mitochondrial_genes.")
       }
       if (!state.obs_name_mitochondrial_fraction && state.var_name_mitochondrial_genes) {
-        println("Notice: Setting --obs_name_mitochondrial_fraction to 'fraction_${state.var_name_mitochondrial_genes}'.")
         new_state.obs_name_mitochondrial_fraction = "fraction_${state.var_name_mitochondrial_genes}"
       }
       if ((state.min_fraction_mito != null || state.max_fraction_mito != null) && !state.var_name_mitochondrial_genes) {
