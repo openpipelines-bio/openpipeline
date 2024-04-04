@@ -1,7 +1,7 @@
 functionality:
   name: "conversion"
   namespace: "workflows/ingestion"
-  version: "main_build"
+  version: "cellrangermulti_build"
   authors:
   - name: "Dries Schaumont"
     roles:
@@ -142,7 +142,7 @@ functionality:
       functionalityNamespace: "convert"
       output: ""
       platform: ""
-      git_commit: "c13f9337db8433d03088b2f8138797ad0d83a090"
+      git_commit: "149b7b1e21f8c76193211f4605b021ba35ab5e44"
       executable: "/nextflow/convert/from_10xh5_to_h5mu/main.nf"
     writtenPath: "/home/runner/work/openpipeline/openpipeline/target/nextflow/convert/from_10xh5_to_h5mu"
   - name: "convert/from_10xmtx_to_h5mu"
@@ -159,7 +159,7 @@ functionality:
       functionalityNamespace: "convert"
       output: ""
       platform: ""
-      git_commit: "c13f9337db8433d03088b2f8138797ad0d83a090"
+      git_commit: "149b7b1e21f8c76193211f4605b021ba35ab5e44"
       executable: "/nextflow/convert/from_10xmtx_to_h5mu/main.nf"
     writtenPath: "/home/runner/work/openpipeline/openpipeline/target/nextflow/convert/from_10xmtx_to_h5mu"
   - name: "convert/from_h5ad_to_h5mu"
@@ -176,7 +176,7 @@ functionality:
       functionalityNamespace: "convert"
       output: ""
       platform: ""
-      git_commit: "c13f9337db8433d03088b2f8138797ad0d83a090"
+      git_commit: "149b7b1e21f8c76193211f4605b021ba35ab5e44"
       executable: "/nextflow/convert/from_h5ad_to_h5mu/main.nf"
     writtenPath: "/home/runner/work/openpipeline/openpipeline/target/nextflow/convert/from_h5ad_to_h5mu"
   set_wd_to_resources_dir: false
@@ -232,5 +232,5 @@ info:
   output: "/home/runner/work/openpipeline/openpipeline/target/nextflow/workflows/ingestion/conversion"
   executable: "/home/runner/work/openpipeline/openpipeline/target/nextflow/workflows/ingestion/conversion/main.nf"
   viash_version: "0.8.5"
-  git_commit: "c13f9337db8433d03088b2f8138797ad0d83a090"
+  git_commit: "149b7b1e21f8c76193211f4605b021ba35ab5e44"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"

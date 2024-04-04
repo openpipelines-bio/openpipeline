@@ -1,7 +1,7 @@
 functionality:
   name: "from_h5ad_to_h5mu"
   namespace: "convert"
-  version: "main_build"
+  version: "cellrangermulti_build"
   authors:
   - name: "Dries De Maeyer"
     roles:
@@ -101,7 +101,7 @@ platforms:
   image: "python:3.9-slim"
   target_organization: "openpipelines-bio"
   target_registry: "ghcr.io"
-  target_tag: "main_build"
+  target_tag: "1.0.0-rc3"
   namespace_separator: "/"
   resolve_volume: "Automatic"
   chown: true
@@ -189,5 +189,5 @@ info:
   output: "/home/runner/work/openpipeline/openpipeline/target/docker/convert/from_h5ad_to_h5mu"
   executable: "/home/runner/work/openpipeline/openpipeline/target/docker/convert/from_h5ad_to_h5mu/from_h5ad_to_h5mu"
   viash_version: "0.8.5"
-  git_commit: "c13f9337db8433d03088b2f8138797ad0d83a090"
+  git_commit: "149b7b1e21f8c76193211f4605b021ba35ab5e44"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"

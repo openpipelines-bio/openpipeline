@@ -1,7 +1,7 @@
 functionality:
   name: "build_bdrhap_reference"
   namespace: "reference"
-  version: "main_build"
+  version: "cellrangermulti_build"
   authors:
   - name: "Angela Oliveira Pisco"
     roles:
@@ -107,7 +107,7 @@ platforms:
   image: "bdgenomics/rhapsody:1.10.1"
   target_organization: "openpipelines-bio"
   target_registry: "ghcr.io"
-  target_tag: "main_build"
+  target_tag: "1.0.0-rc3"
   namespace_separator: "/"
   resolve_volume: "Automatic"
   chown: true
@@ -188,5 +188,5 @@ info:
   output: "/home/runner/work/openpipeline/openpipeline/target/nextflow/reference/build_bdrhap_reference"
   executable: "/home/runner/work/openpipeline/openpipeline/target/nextflow/reference/build_bdrhap_reference/build_bdrhap_reference"
   viash_version: "0.8.5"
-  git_commit: "c13f9337db8433d03088b2f8138797ad0d83a090"
+  git_commit: "149b7b1e21f8c76193211f4605b021ba35ab5e44"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"
