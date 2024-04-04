@@ -15,10 +15,7 @@ meta = {
 }
 ## VIASH END
 
-input_path = meta["resources_dir"] + "Kim2020_Lung_preprocessed.h5mu"
-input_gene_ids = meta["resources_dir"] + "Kim2020_Lung_gene_ids.pt"
-input_values = meta["resources_dir"] + "Kim2020_Lung_values.pt"
-input_padding_mask = meta["resources_dir"] + "Kim2020_Lung_padding_mask.pt"
+input_path = meta["resources_dir"] + "Kim2020_Lung_tokenized.h5mu"
 model = meta["resources_dir"] + "best_model.pt"
 model_config = meta["resources_dir"] + "args.json"
 model_vocab = meta["resources_dir"] + "vocab.json" 
@@ -29,32 +26,17 @@ def input_mudata_subset_cpu_run(write_mudata_to_file):
     mudata.mod["rna"] = mudata.mod["rna"][:100]
     return write_mudata_to_file(mudata)
 
-@pytest.fixture
-def input_gene_ids_subset_cpu_run(random_path):
-    output_path = random_path(extension="pt")
-    torch.save(torch.load(input_gene_ids)[:100], output_path)
-    return output_path
-
-@pytest.fixture
-def input_values_subset_cpu_run(random_path):
-    output_path = random_path(extension="pt")
-    torch.save(torch.load(input_values)[:100], output_path)
-    return output_path
-
 def test_annotation(run_component,
                     random_h5mu_path,
-                    input_mudata_subset_cpu_run,
-                    input_gene_ids_subset_cpu_run,
-                    input_values_subset_cpu_run):
+                    input_mudata_subset_cpu_run):
     output_path = random_h5mu_path()
 
     args = [
         "--input", input_mudata_subset_cpu_run,
         "--output",  output_path,
         "--modality", "rna",
-        "--input_gene_ids", input_gene_ids_subset_cpu_run,
-        "--input_values", input_values_subset_cpu_run,
-        "--input_padding_mask", input_padding_mask,
+        "--input_obsm_gene_tokens", "gene_id_tokens",
+        "--input_obsm_tokenized_values", "values_tokenized",
         "--model", model,
         "--model_config", model_config,
         "--model_vocab", model_vocab,
