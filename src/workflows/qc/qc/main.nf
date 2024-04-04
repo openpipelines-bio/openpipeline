@@ -52,7 +52,10 @@ workflow run_wf {
             "input": state.input,
             "modality": state.modality,
             "layer": state.layer,
-            "top_n_vars": state.top_n_vars,
+            // TODO: remove this workaround when Viash issue is resolved:
+            //       'top_n_vars': list(map(int, r''.split(';'))),
+            //     ValueError: invalid literal for int() with base 10: ''
+            "top_n_vars": state.top_n_vars ? state.top_n_vars : null,
             "var_qc_metrics_fill_na_value": state.var_qc_metrics_fill_na_value,
             "output_obs_num_nonzero_vars": state.output_obs_num_nonzero_vars,
             "output_obs_total_counts_vars": state.output_obs_total_counts_vars,
