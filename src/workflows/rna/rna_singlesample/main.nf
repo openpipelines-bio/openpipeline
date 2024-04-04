@@ -35,8 +35,7 @@ workflow run_wf {
         // on the fraction of mitochondrial genes per cell
         // This behaviour is optional based on the presence of var_name_mitochondrial_genes
         // The behavior of other components must be tuned to this argument as well
-
-        def new_state = [
+        def args = [
           "input": state.input,
           // disable other qc metric calculations
           // only mitochondrial gene detection is required at this point
@@ -59,16 +58,16 @@ workflow run_wf {
           // Add the mitochondrial genes var column to the columns to calculate statistics for if set.
           new_var_qc_metrics = ((new_var_qc_metrics as Set) + [state.var_name_mitochondrial_genes]) as List
 
-          def fraction_column_name = state.obs_name_mitochondrial_fraction ? state.obs_name_mitochondrial_fraction : "fraction_$state.var_name_mitochondrial_genes";
-          new_state += [
+          args += [
             "var_qc_metrics": new_var_qc_metrics,
-            "obs_name_mitochondrial_fraction": fraction_column_name,
+            "obs_name_mitochondrial_fraction": state.obs_name_mitochondrial_fraction ?: "fraction_${state.var_name_mitochondrial_genes}",
             "var_gene_names": state.var_gene_names,
             "var_name_mitochondrial_genes": state.var_name_mitochondrial_genes,
             "mitochondrial_gene_regex": state.mitochondrial_gene_regex
           ]
         }
-        return state
+
+        return args
       },
       toState: ["input": "output"]
     )
