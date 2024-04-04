@@ -2850,7 +2850,7 @@ meta = [
           },
           {
             "type" : "string",
-            "name" : "--gene_name_layer",
+            "name" : "--input_var_gene_names",
             "description" : "The name of the adata.var column containing gene names. When no gene_name_layer is provided, the .var index will be used.\n",
             "example" : [
               "gene_name"
@@ -3021,6 +3021,9 @@ meta = [
       "type" : "nextflow",
       "id" : "nextflow",
       "directives" : {
+        "label" : [
+          "lowmem"
+        ],
         "tag" : "$id"
       },
       "auto" : {
@@ -3075,9 +3078,9 @@ meta = [
     "platform" : "nextflow",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/scgpt/cross_check_genes",
     "viash_version" : "0.8.5",
-    "git_commit" : "e74b86d58f54d22a9e457aea15ee259df2f274a0",
+    "git_commit" : "612269403b73c51fec199e83a05b221ccc56526b",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline",
-    "git_tag" : "0.2.0-1572-ge74b86d58f"
+    "git_tag" : "0.2.0-1573-g612269403b"
   }
 }'''))
 ]
@@ -3101,7 +3104,7 @@ par = {
   'input': $( if [ ! -z ${VIASH_PAR_INPUT+x} ]; then echo "r'${VIASH_PAR_INPUT//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'modality': $( if [ ! -z ${VIASH_PAR_MODALITY+x} ]; then echo "r'${VIASH_PAR_MODALITY//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'vocab_file': $( if [ ! -z ${VIASH_PAR_VOCAB_FILE+x} ]; then echo "r'${VIASH_PAR_VOCAB_FILE//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
-  'gene_name_layer': $( if [ ! -z ${VIASH_PAR_GENE_NAME_LAYER+x} ]; then echo "r'${VIASH_PAR_GENE_NAME_LAYER//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
+  'input_var_gene_names': $( if [ ! -z ${VIASH_PAR_INPUT_VAR_GENE_NAMES+x} ]; then echo "r'${VIASH_PAR_INPUT_VAR_GENE_NAMES//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'output': $( if [ ! -z ${VIASH_PAR_OUTPUT+x} ]; then echo "r'${VIASH_PAR_OUTPUT//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'pad_token': $( if [ ! -z ${VIASH_PAR_PAD_TOKEN+x} ]; then echo "r'${VIASH_PAR_PAD_TOKEN//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi )
 }
@@ -3151,10 +3154,12 @@ pad_token = par["pad_token"]
 special_tokens = [pad_token, "<cls>", "<eoc>"]
 
 # Fetching gene names
-if not par["gene_name_layer"]:
+if not par["input_var_gene_names"]:
     genes = adata.var.index.astype(str).tolist()
-else: 
-    genes = adata.var[par["gene_name_layer"]].astype(str).tolist()
+elif par["input_var_gene_names"] not in adata.var.columns:
+    raise ValueError(f"Gene name column '{par['input_var_gene_names']}' not found in .mod['{par['modality']}'].obs.")
+else:
+    genes = adata.var[par["input_var_gene_names"]].astype(str).tolist()
 
 # Cross-check genes with pre-trained model
 logger.info(f"Loading model vocab from {par['vocab_file']}")
@@ -3529,6 +3534,9 @@ meta["defaults"] = [
     "image" : "openpipelines-bio/scgpt_cross_check_genes",
     "tag" : "scgpt-preprocessor_build"
   },
+  "label" : [
+    "lowmem"
+  ],
   "tag" : "$id"
 }'''),
 

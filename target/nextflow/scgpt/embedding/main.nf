@@ -2879,45 +2879,16 @@ meta = [
             "dest" : "par"
           },
           {
-            "type" : "file",
-            "name" : "--input_gene_ids",
-            "description" : "Path to pytorch tensor file containing the gene ids.\n",
-            "example" : [
-              "gene_ids.pt"
-            ],
-            "must_exist" : true,
-            "create_parent" : true,
-            "required" : true,
-            "direction" : "input",
-            "multiple" : false,
-            "multiple_sep" : ":",
-            "dest" : "par"
-          },
-          {
-            "type" : "file",
-            "name" : "--input_values",
-            "description" : "Path to pytorch tensor file containing the tokenized values.\n",
+            "type" : "string",
+            "name" : "--input_obsm_gene_tokens",
+            "description" : "The key of the .obsm array containing the gene token ids\n",
             "example" : [
               "values.pt"
             ],
-            "must_exist" : true,
-            "create_parent" : true,
-            "required" : true,
-            "direction" : "input",
-            "multiple" : false,
-            "multiple_sep" : ":",
-            "dest" : "par"
-          },
-          {
-            "type" : "file",
-            "name" : "--input_padding_mask",
-            "description" : "Path to pytorch tensor file containing the padding mask.\n",
-            "example" : [
-              "padding_mask.pt"
+            "default" : [
+              "gene_id_tokens"
             ],
-            "must_exist" : true,
-            "create_parent" : true,
-            "required" : true,
+            "required" : false,
             "direction" : "input",
             "multiple" : false,
             "multiple_sep" : ":",
@@ -2925,7 +2896,33 @@ meta = [
           },
           {
             "type" : "string",
-            "name" : "--gene_name_layer",
+            "name" : "--input_obsm_tokenized_values",
+            "description" : "The key of the .obsm array containing the count values of the tokenized genes\n",
+            "default" : [
+              "values_tokenized"
+            ],
+            "required" : false,
+            "direction" : "input",
+            "multiple" : false,
+            "multiple_sep" : ":",
+            "dest" : "par"
+          },
+          {
+            "type" : "string",
+            "name" : "--input_obsm_padding_mask",
+            "description" : "The key of the .obsm array containing the padding mask.\n",
+            "default" : [
+              "padding_mask"
+            ],
+            "required" : false,
+            "direction" : "input",
+            "multiple" : false,
+            "multiple_sep" : ":",
+            "dest" : "par"
+          },
+          {
+            "type" : "string",
+            "name" : "--input_var_gene_names",
             "description" : "The name of the .var column containing gene names. When no gene_name_layer is provided, the .var index will be used.\n",
             "default" : [
               "gene_name"
@@ -2938,7 +2935,7 @@ meta = [
           },
           {
             "type" : "string",
-            "name" : "--batch_id_layer",
+            "name" : "--input_obs_batch_id",
             "description" : "The name of the adata.obs column containing the batch ids.\n",
             "default" : [
               "batch_id"
@@ -2959,7 +2956,7 @@ meta = [
             "name" : "--output",
             "description" : "Path to output anndata file containing pre-processed data as well as scGPT embeddings.\n",
             "example" : [
-              "output.h5ad"
+              "output.h5mu"
             ],
             "must_exist" : true,
             "create_parent" : true,
@@ -2988,7 +2985,7 @@ meta = [
           },
           {
             "type" : "string",
-            "name" : "--embedding_layer",
+            "name" : "--embedding_layer_key",
             "description" : "The name of the adata.obsm array to which scGPT embeddings will be written.\n",
             "default" : [
               "X_scGPT"
@@ -3227,9 +3224,9 @@ meta = [
     "platform" : "nextflow",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/scgpt/embedding",
     "viash_version" : "0.8.5",
-    "git_commit" : "e74b86d58f54d22a9e457aea15ee259df2f274a0",
+    "git_commit" : "612269403b73c51fec199e83a05b221ccc56526b",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline",
-    "git_tag" : "0.2.0-1572-ge74b86d58f"
+    "git_tag" : "0.2.0-1573-g612269403b"
   }
 }'''))
 ]
@@ -3259,14 +3256,14 @@ par = {
   'model': $( if [ ! -z ${VIASH_PAR_MODEL+x} ]; then echo "r'${VIASH_PAR_MODEL//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'model_vocab': $( if [ ! -z ${VIASH_PAR_MODEL_VOCAB+x} ]; then echo "r'${VIASH_PAR_MODEL_VOCAB//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'model_config': $( if [ ! -z ${VIASH_PAR_MODEL_CONFIG+x} ]; then echo "r'${VIASH_PAR_MODEL_CONFIG//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
-  'input_gene_ids': $( if [ ! -z ${VIASH_PAR_INPUT_GENE_IDS+x} ]; then echo "r'${VIASH_PAR_INPUT_GENE_IDS//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
-  'input_values': $( if [ ! -z ${VIASH_PAR_INPUT_VALUES+x} ]; then echo "r'${VIASH_PAR_INPUT_VALUES//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
-  'input_padding_mask': $( if [ ! -z ${VIASH_PAR_INPUT_PADDING_MASK+x} ]; then echo "r'${VIASH_PAR_INPUT_PADDING_MASK//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
-  'gene_name_layer': $( if [ ! -z ${VIASH_PAR_GENE_NAME_LAYER+x} ]; then echo "r'${VIASH_PAR_GENE_NAME_LAYER//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
-  'batch_id_layer': $( if [ ! -z ${VIASH_PAR_BATCH_ID_LAYER+x} ]; then echo "r'${VIASH_PAR_BATCH_ID_LAYER//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
+  'input_obsm_gene_tokens': $( if [ ! -z ${VIASH_PAR_INPUT_OBSM_GENE_TOKENS+x} ]; then echo "r'${VIASH_PAR_INPUT_OBSM_GENE_TOKENS//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
+  'input_obsm_tokenized_values': $( if [ ! -z ${VIASH_PAR_INPUT_OBSM_TOKENIZED_VALUES+x} ]; then echo "r'${VIASH_PAR_INPUT_OBSM_TOKENIZED_VALUES//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
+  'input_obsm_padding_mask': $( if [ ! -z ${VIASH_PAR_INPUT_OBSM_PADDING_MASK+x} ]; then echo "r'${VIASH_PAR_INPUT_OBSM_PADDING_MASK//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
+  'input_var_gene_names': $( if [ ! -z ${VIASH_PAR_INPUT_VAR_GENE_NAMES+x} ]; then echo "r'${VIASH_PAR_INPUT_VAR_GENE_NAMES//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
+  'input_obs_batch_id': $( if [ ! -z ${VIASH_PAR_INPUT_OBS_BATCH_ID+x} ]; then echo "r'${VIASH_PAR_INPUT_OBS_BATCH_ID//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'output': $( if [ ! -z ${VIASH_PAR_OUTPUT+x} ]; then echo "r'${VIASH_PAR_OUTPUT//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'output_compression': $( if [ ! -z ${VIASH_PAR_OUTPUT_COMPRESSION+x} ]; then echo "r'${VIASH_PAR_OUTPUT_COMPRESSION//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
-  'embedding_layer': $( if [ ! -z ${VIASH_PAR_EMBEDDING_LAYER+x} ]; then echo "r'${VIASH_PAR_EMBEDDING_LAYER//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
+  'embedding_layer_key': $( if [ ! -z ${VIASH_PAR_EMBEDDING_LAYER_KEY+x} ]; then echo "r'${VIASH_PAR_EMBEDDING_LAYER_KEY//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'pad_token': $( if [ ! -z ${VIASH_PAR_PAD_TOKEN+x} ]; then echo "r'${VIASH_PAR_PAD_TOKEN//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'pad_value': $( if [ ! -z ${VIASH_PAR_PAD_VALUE+x} ]; then echo "int(r'${VIASH_PAR_PAD_VALUE//\\'/\\'\\"\\'\\"r\\'}')"; else echo None; fi ),
   'dropout': $( if [ ! -z ${VIASH_PAR_DROPOUT+x} ]; then echo "float(r'${VIASH_PAR_DROPOUT//\\'/\\'\\"\\'\\"r\\'}')"; else echo None; fi ),
@@ -3329,12 +3326,12 @@ mdata = mu.read(par["input"])
 input_adata = mdata.mod[par["modality"]]
 adata = input_adata.copy()
 
-all_gene_ids = torch.load(par["input_gene_ids"])
-all_values = torch.load(par["input_values"])
-padding_mask = torch.load(par["input_padding_mask"])
+all_gene_ids = adata.obsm[par["input_obsm_gene_tokens"]]
+all_values = adata.obsm[par["input_obsm_tokenized_values"]]
+padding_mask = adata.obsm[par["input_obsm_padding_mask"]]
 
 # Fetch batch ids
-batch_ids = adata.obs[par["batch_id_layer"]].tolist()
+batch_ids = adata.obs[par["input_obs_batch_id"]].tolist()
 batch_ids = np.array(batch_ids)
 num_batch_types = len(set(batch_ids))
 
@@ -3342,13 +3339,14 @@ num_batch_types = len(set(batch_ids))
 pad_token = par["pad_token"]
 pad_value = par["pad_value"]
 special_tokens = [pad_token, "<cls>", "<eoc>"]
-if not par["gene_name_layer"]:
-    genes = adata.var.index.tolist()
+
+# Fetching gene names
+if not par["input_var_gene_names"]:
+    genes = adata.var.index.astype(str).tolist()
 else:
-    genes = adata.var[par["gene_name_layer"]].tolist()
+    genes = adata.var[par["input_var_gene_names"]].astype(str).tolist()
 
 logger.info("Loading model, vocab and configs")
-
 # Model files
 model_config_file = par["model_config"]
 model_file = par["model"]
@@ -3413,9 +3411,9 @@ model.eval()
 logger.info("Converting tokenized input data to embeddings")
 # Embed tokenized data
 cell_embeddings = model.encode_batch(
-    all_gene_ids,
-    all_values.float(),
-    src_key_padding_mask=padding_mask,
+    torch.from_numpy(all_gene_ids),
+    torch.from_numpy(all_values).float(),
+    src_key_padding_mask=torch.from_numpy(padding_mask),
     batch_size=par["batch_size"],
     batch_labels=torch.from_numpy(batch_ids).long() if par["DSBN"] else None,
     output_to_cpu=True,
@@ -3429,7 +3427,7 @@ cell_embeddings = cell_embeddings / np.linalg.norm(
 
 logger.info("Writing output data")
 # Write output
-adata.obsm[par["embedding_layer"]] = cell_embeddings
+adata.obsm[par["embedding_layer_key"]] = cell_embeddings
 mdata.mod[par["modality"]] = adata
 mdata.write(par["output"], compression=par["output_compression"])
 VIASHMAIN

@@ -61,7 +61,7 @@
     
 
         ,
-                "gene_name_layer": {
+                "input_var_gene_names": {
                 "type":
                 "string",
                 "description": "Type: `string`, example: `gene_name`. The name of the adata",

@@ -2911,9 +2911,6 @@ meta = [
             "type" : "integer",
             "name" : "--seed",
             "description" : "Seed for random number generation.\n",
-            "default" : [
-              0
-            ],
             "required" : false,
             "direction" : "input",
             "multiple" : false,
@@ -2967,7 +2964,7 @@ meta = [
     {
       "type" : "docker",
       "id" : "docker",
-      "image" : "python:3.10-slim",
+      "image" : "python:3.11-slim",
       "target_organization" : "openpipelines-bio",
       "target_registry" : "ghcr.io",
       "target_tag" : "scgpt-preprocessor_build",
@@ -2990,9 +2987,7 @@ meta = [
           "packages" : [
             "anndata~=0.9.1",
             "mudata~=0.2.3",
-            "pandas!=2.1.2",
-            "scanpy~=1.9.5",
-            "statsmodels==0.14.0"
+            "pandas!=2.1.2"
           ],
           "upgrade" : true
         }
@@ -3012,6 +3007,9 @@ meta = [
       "type" : "nextflow",
       "id" : "nextflow",
       "directives" : {
+        "label" : [
+          "lowmem"
+        ],
         "tag" : "$id"
       },
       "auto" : {
@@ -3066,9 +3064,9 @@ meta = [
     "platform" : "nextflow",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/scgpt/binning",
     "viash_version" : "0.8.5",
-    "git_commit" : "e74b86d58f54d22a9e457aea15ee259df2f274a0",
+    "git_commit" : "612269403b73c51fec199e83a05b221ccc56526b",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline",
-    "git_tag" : "0.2.0-1572-ge74b86d58f"
+    "git_tag" : "0.2.0-1573-g612269403b"
   }
 }'''))
 ]
@@ -3118,7 +3116,8 @@ dep = {
 }
 
 ## VIASH END
-np.random.seed(par["seed"])
+if par["seed"]:
+    np.random.seed(par["seed"])
 
 # START TEMPORARY WORKAROUND setup_logger
 # reason: resources aren't available when using Nextflow fusion
@@ -3179,14 +3178,14 @@ def _digitize(x: np.ndarray, bins: np.ndarray) -> np.ndarray:
 with warnings.catch_warnings():
     # Make sure warnings are displayed once.
     warnings.simplefilter("once")
-    # layer_data.indptr.size is the number of rows in the sparse matrix 
+    # layer_data.indptr.size is the number of rows in the sparse matrix
     binned_rows = []
     bin_edges = []
     logger.info("Establishing bin edges and digitizing of non-zero values into bins for each row of the count matrix")
     for row_number in range(layer_data.indptr.size-1):
         row_start_index, row_end_index = layer_data.indptr[row_number], layer_data.indptr[row_number+1]
         # These are all non-zero counts in the row
-        non_zero_row = layer_data.data[row_start_index:row_end_index] 
+        non_zero_row = layer_data.data[row_start_index:row_end_index]
         if non_zero_row.max() == 0:
             logger.warning(
                 "The input data contains all zero rows. Please make sure "
@@ -3206,22 +3205,25 @@ with warnings.catch_warnings():
         assert non_zero_digits.min() >= 1
         assert non_zero_digits.max() <= n_bins - 1
         binned_rows.append(non_zero_digits)
-
         bin_edges.append(np.concatenate([[0], bins]))
 
 # Create new CSR matrix
 logger.info("Creating a new CSR matrix of the binned count values")
-binned_layer = csr_matrix((np.concatenate(binned_rows, casting="same_kind"), 
-                          layer_data.indices, layer_data.indptr), shape=layer_data.shape)
+binned_layer = csr_matrix(
+    (
+        np.concatenate(binned_rows, casting="same_kind"),
+        layer_data.indices, layer_data.indptr
+        ),
+    shape=layer_data.shape)
 
 # Set binned values and bin edges layers to adata object
-adata.layers[par["binned_layer"]] = binned_layer 
+adata.layers[par["binned_layer"]] = binned_layer
 adata.obsm["bin_edges"] = np.stack(bin_edges)
 
-# Write mudata output 
+# Write mudata output
 logger.info("Writing output data")
 mdata.mod[par["modality"]] = adata
-mdata.write(par["output"], compression=par["output_compression"]) 
+mdata.write(par["output"], compression=par["output_compression"])
 VIASHMAIN
 python -B "$tempscript"
 '''
@@ -3573,6 +3575,9 @@ meta["defaults"] = [
     "image" : "openpipelines-bio/scgpt_binning",
     "tag" : "scgpt-preprocessor_build"
   },
+  "label" : [
+    "lowmem"
+  ],
   "tag" : "$id"
 }'''),
 

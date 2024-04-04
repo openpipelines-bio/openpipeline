@@ -1,19 +1,21 @@
 # Inputs
-input: # please fill in - example: "input.h5ad"
+input: # please fill in - example: "input.h5mu"
 modality: "rna"
 model_vocab: # please fill in - example: "vocab.json"
 input_layer: "binned"
-# gene_name_layer: "foo"
+# input_var_gene_names: "foo"
 
 # Outputs
-# output_gene_ids: "$id.$key.output_gene_ids.pt"
-# output_values: "$id.$key.output_values.pt"
-# output_padding_mask: "$id.$key.output_padding_mask.pt"
-# max_seq_len: 123
+# output: "$id.$key.output.h5mu"
+# output_compression: "gzip"
+output_obsm_gene_tokens: "gene_id_tokens"
+output_obsm_tokenized_values: "values_tokenized"
+output_obsm_padding_mask: "padding_mask"
 
 # Arguments
 pad_token: "<pad>"
 pad_value: -2
+# max_seq_len: 123
 
 # Nextflow input-output arguments
 publish_dir: # please fill in - example: "output/"

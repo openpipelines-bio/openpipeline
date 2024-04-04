@@ -28,7 +28,7 @@ functionality:
           example: resources_test/scgpt/vocab.json
           description: |
             Model vocabulary file directory.
-        - name: "--gene_name_layer"
+        - name: "--input_var_gene_names"
           type: string
           example: "gene_name"
           required: false
@@ -74,3 +74,5 @@ platforms:
       - type: python
     __merge__: [ /src/base/requirements/python_test_setup.yaml, .]
   - type: nextflow
+    directives:
+      label: [lowmem]

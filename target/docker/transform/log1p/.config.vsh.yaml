@@ -230,6 +230,6 @@ info:
   output: "/home/runner/work/openpipeline/openpipeline/target/docker/transform/log1p"
   executable: "/home/runner/work/openpipeline/openpipeline/target/docker/transform/log1p/log1p"
   viash_version: "0.8.5"
-  git_commit: "e74b86d58f54d22a9e457aea15ee259df2f274a0"
+  git_commit: "612269403b73c51fec199e83a05b221ccc56526b"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"
-  git_tag: "0.2.0-1572-ge74b86d58f"
+  git_tag: "0.2.0-1573-g612269403b"

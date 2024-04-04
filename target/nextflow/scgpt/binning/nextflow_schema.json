@@ -119,10 +119,9 @@
                 "seed": {
                 "type":
                 "integer",
-                "description": "Type: `integer`, default: `0`. Seed for random number generation",
-                "help_text": "Type: `integer`, default: `0`. Seed for random number generation.\n"
-            ,
-                "default": "0"
+                "description": "Type: `integer`. Seed for random number generation",
+                "help_text": "Type: `integer`. Seed for random number generation.\n"
+            
             }
     
 

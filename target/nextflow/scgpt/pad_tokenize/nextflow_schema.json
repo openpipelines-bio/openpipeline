@@ -33,8 +33,8 @@
                 "input": {
                 "type":
                 "string",
-                "description": "Type: `file`, required, example: `input.h5ad`. The input h5mu file of pre-processed data",
-                "help_text": "Type: `file`, required, example: `input.h5ad`. The input h5mu file of pre-processed data.\n"
+                "description": "Type: `file`, required, example: `input.h5mu`. The input h5mu file of pre-processed data",
+                "help_text": "Type: `file`, required, example: `input.h5mu`. The input h5mu file of pre-processed data.\n"
             
             }
     
@@ -72,7 +72,7 @@
     
 
         ,
-                "gene_name_layer": {
+                "input_var_gene_names": {
                 "type":
                 "string",
                 "description": "Type: `string`. The name of the ",
@@ -92,45 +92,58 @@
     "properties": {
     
         
-                "output_gene_ids": {
+                "output": {
                 "type":
                 "string",
-                "description": "Type: `file`, required, default: `$id.$key.output_gene_ids.pt`, example: `gene_ids.pt`. The output pytorch tensor file containing the gene ids",
-                "help_text": "Type: `file`, required, default: `$id.$key.output_gene_ids.pt`, example: `gene_ids.pt`. The output pytorch tensor file containing the gene ids.\n"
+                "description": "Type: `file`, required, default: `$id.$key.output.h5mu`, example: `output.h5mu`. The output h5mu file containing obsm arrays for gene tokens, tokenized data and padding mask",
+                "help_text": "Type: `file`, required, default: `$id.$key.output.h5mu`, example: `output.h5mu`. The output h5mu file containing obsm arrays for gene tokens, tokenized data and padding mask.\n"
             ,
-                "default": "$id.$key.output_gene_ids.pt"
+                "default": "$id.$key.output.h5mu"
             }
     
 
         ,
-                "output_values": {
+                "output_compression": {
                 "type":
                 "string",
-                "description": "Type: `file`, required, default: `$id.$key.output_values.pt`, example: `values.pt`. The output pytorch tensor file contianing the tokenized and padded values",
-                "help_text": "Type: `file`, required, default: `$id.$key.output_values.pt`, example: `values.pt`. The output pytorch tensor file contianing the tokenized and padded values.\n"
-            ,
-                "default": "$id.$key.output_values.pt"
-            }
-    
-
-        ,
-                "output_padding_mask": {
-                "type":
-                "string",
-                "description": "Type: `file`, required, default: `$id.$key.output_padding_mask.pt`, example: `padding_mask.pt`. The output pytorch tensor file containing the padding mask",
-                "help_text": "Type: `file`, required, default: `$id.$key.output_padding_mask.pt`, example: `padding_mask.pt`. The output pytorch tensor file containing the padding mask.\n"
-            ,
-                "default": "$id.$key.output_padding_mask.pt"
-            }
-    
-
-        ,
-                "max_seq_len": {
-                "type":
-                "integer",
-                "description": "Type: `integer`. The maximum sequence length of the tokenized data",
-                "help_text": "Type: `integer`. The maximum sequence length of the tokenized data.\n"
+                "description": "Type: `string`, example: `gzip`, choices: ``gzip`, `lzf``. The compression type for the output file",
+                "help_text": "Type: `string`, example: `gzip`, choices: ``gzip`, `lzf``. The compression type for the output file.\n",
+                "enum": ["gzip", "lzf"]
             
+            
+            }
+    
+
+        ,
+                "output_obsm_gene_tokens": {
+                "type":
+                "string",
+                "description": "Type: `string`, default: `gene_id_tokens`, example: `values.pt`. The key of the ",
+                "help_text": "Type: `string`, default: `gene_id_tokens`, example: `values.pt`. The key of the .obsm array containing the gene token ids\n"
+            ,
+                "default": "gene_id_tokens"
+            }
+    
+
+        ,
+                "output_obsm_tokenized_values": {
+                "type":
+                "string",
+                "description": "Type: `string`, default: `values_tokenized`. The key of the ",
+                "help_text": "Type: `string`, default: `values_tokenized`. The key of the .obsm array containing the count values of the tokenized genes\n"
+            ,
+                "default": "values_tokenized"
+            }
+    
+
+        ,
+                "output_obsm_padding_mask": {
+                "type":
+                "string",
+                "description": "Type: `string`, default: `padding_mask`. The key of the ",
+                "help_text": "Type: `string`, default: `padding_mask`. The key of the .obsm array containing the padding mask.\n"
+            ,
+                "default": "padding_mask"
             }
     
 
@@ -163,6 +176,16 @@
                 "help_text": "Type: `integer`, default: `-2`. The value of the padding token.\n"
             ,
                 "default": "-2"
+            }
+    
+
+        ,
+                "max_seq_len": {
+                "type":
+                "integer",
+                "description": "Type: `integer`. The maximum sequence length of the tokenized data",
+                "help_text": "Type: `integer`. The maximum sequence length of the tokenized data.\n"
+            
             }
     
 

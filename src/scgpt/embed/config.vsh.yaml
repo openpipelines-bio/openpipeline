@@ -42,37 +42,30 @@ functionality:
           example: args.json
           description: |
             Path to model config file.
-        - name: "--input_gene_ids"
-          type: file
-          direction: input
-          required: true
-          example: gene_ids.pt
+        - name: "--input_obsm_gene_tokens"
+          type: string
+          default: "gene_id_tokens"
           description: |
-            Path to pytorch tensor file containing the gene ids.
-        - name: "--input_values"
-          type: file
-          direction: input
-          required: true
+            The key of the .obsm array containing the gene token ids
           example: values.pt
+        - name: "--input_obsm_tokenized_values"
+          type: string
+          default: values_tokenized
           description: |
-            Path to pytorch tensor file containing the tokenized values.
-        - name: "--input_padding_mask"
-          type: file
-          direction: input
-          required: true
-          example: padding_mask.pt
+            The key of the .obsm array containing the count values of the tokenized genes
+        - name: "--input_obsm_padding_mask"
+          type: string
+          default: padding_mask
           description: |
-            Path to pytorch tensor file containing the padding mask.
-        - name: "--gene_name_layer"
+            The key of the .obsm array containing the padding mask.
+        - name: "--input_var_gene_names"
           type: string
           default: "gene_name"
-          required: false
           description: |
             The name of the .var column containing gene names. When no gene_name_layer is provided, the .var index will be used.
-        - name: "--batch_id_layer"
+        - name: "--input_obs_batch_id"
           type: string
           default: "batch_id"
-          required: false
           description: |
             The name of the adata.obs column containing the batch ids.
     - name: Outputs
@@ -83,7 +76,7 @@ functionality:
           description: |
             Path to output anndata file containing pre-processed data as well as scGPT embeddings.
           direction: output
-          example: output.h5ad
+          example: output.h5mu
         - name: "--output_compression"
           type: string
           example: "gzip"
@@ -91,7 +84,7 @@ functionality:
           choices: ["gzip", "lzf"]
           description: |
             The compression algorithm to use for the output h5mu file.
-        - name: "--embedding_layer"
+        - name: "--embedding_layer_key"
           type: string
           default: "X_scGPT"
           required: false

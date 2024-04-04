@@ -1,0 +1,33 @@
+# Outputs
+# output: "$id.$key.output.h5mu"
+# output_compression: "gzip"
+binned_layer: "binned"
+embedding_layer: "X_scGPT"
+obsm_gene_tokens: "gene_id_tokens"
+obsm_tokenized_values: "values_tokenized"
+obsm_padding_mask: "padding_mask"
+
+# Arguments
+pad_token: "<pad>"
+pad_value: -2
+n_input_bins: 51
+n_hvg: 1200
+# max_seq_len: 123
+dropout: 0.2
+DSBN: true
+batch_size: 64
+
+# Input
+id: # please fill in - example: "foo"
+input: # please fill in - example: "input.h5mu"
+modality: "rna"
+model: # please fill in - example: "resources_test/scgpt/best_model.pt"
+model_vocab: # please fill in - example: "resources_test/scgpt/vocab.json"
+model_config: # please fill in - example: "args.json"
+# input_layer: "foo"
+var_gene_names: "gene_name"
+obs_batch_id: "batch_id"
+
+# Nextflow input-output arguments
+publish_dir: # please fill in - example: "output/"
+# param_list: "my_params.yaml"

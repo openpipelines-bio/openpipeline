@@ -14,7 +14,7 @@ functionality:
           type: file
           direction: input
           required: true
-          example: input.h5ad
+          example: input.h5mu
           description: |
             The input h5mu file of pre-processed data.
         - name: "--modality"
@@ -34,41 +34,42 @@ functionality:
           required: false
           description: |
             The name of the layer to be padded and tokenized.
-        - name: "--gene_name_layer"
+        - name: "--input_var_gene_names"
           type: string
           required: false
           description: |
             The name of the .var column containing gene names. When no gene_name_layer is provided, the .var index will be used.
-
     - name: Outputs
       arguments:
-        - name: "--output_gene_ids"
+        - name: "--output"
           type: file
           required: true
           description: |
-            The output pytorch tensor file containing the gene ids.
+            The output h5mu file containing obsm arrays for gene tokens, tokenized data and padding mask.
           direction: output
-          example: gene_ids.pt
-        - name: "--output_values"
-          type: file
-          required: true
-          direction: output
+          example: output.h5mu
+        - name: "--output_compression"
+          type: string
+          example: "gzip"
+          choices: ["gzip", "lzf"]
           description: |
-            The output pytorch tensor file contianing the tokenized and padded values.
+            The compression type for the output file.
+        - name: "--output_obsm_gene_tokens"
+          type: string
+          default: "gene_id_tokens"
+          description: |
+            The key of the .obsm array containing the gene token ids
           example: values.pt
-        - name: "--output_padding_mask"
-          type: file
-          direction: output
-          required: true
-          example: padding_mask.pt
+        - name: "--output_obsm_tokenized_values"
+          type: string
+          default: values_tokenized
           description: |
-            The output pytorch tensor file containing the padding mask.
-        - name: "--max_seq_len"
-          type: integer
-          required: false
+            The key of the .obsm array containing the count values of the tokenized genes
+        - name: "--output_obsm_padding_mask"
+          type: string
+          default: padding_mask
           description: |
-            The maximum sequence length of the tokenized data.
-
+            The key of the .obsm array containing the padding mask.
     - name: Arguments
       arguments:
         - name: "--pad_token"
@@ -83,7 +84,11 @@ functionality:
           required: false
           description: |
             The value of the padding token.
-
+        - name: "--max_seq_len"
+          type: integer
+          required: false
+          description: |
+            The maximum sequence length of the tokenized data.
   resources:
     - type: python_script
       path: script.py
@@ -106,3 +111,5 @@ platforms:
       - type: python
         __merge__: [ /src/base/requirements/viashpy.yaml ]
   - type: nextflow
+    directives:
+      label: [lowmem]

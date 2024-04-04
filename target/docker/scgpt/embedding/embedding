@@ -203,28 +203,30 @@ function ViashHelp {
   echo "        example: args.json"
   echo "        Path to model config file."
   echo ""
-  echo "    --input_gene_ids"
-  echo "        type: file, required parameter, file must exist"
-  echo "        example: gene_ids.pt"
-  echo "        Path to pytorch tensor file containing the gene ids."
-  echo ""
-  echo "    --input_values"
-  echo "        type: file, required parameter, file must exist"
+  echo "    --input_obsm_gene_tokens"
+  echo "        type: string"
+  echo "        default: gene_id_tokens"
   echo "        example: values.pt"
-  echo "        Path to pytorch tensor file containing the tokenized values."
+  echo "        The key of the .obsm array containing the gene token ids"
   echo ""
-  echo "    --input_padding_mask"
-  echo "        type: file, required parameter, file must exist"
-  echo "        example: padding_mask.pt"
-  echo "        Path to pytorch tensor file containing the padding mask."
+  echo "    --input_obsm_tokenized_values"
+  echo "        type: string"
+  echo "        default: values_tokenized"
+  echo "        The key of the .obsm array containing the count values of the tokenized"
+  echo "        genes"
   echo ""
-  echo "    --gene_name_layer"
+  echo "    --input_obsm_padding_mask"
+  echo "        type: string"
+  echo "        default: padding_mask"
+  echo "        The key of the .obsm array containing the padding mask."
+  echo ""
+  echo "    --input_var_gene_names"
   echo "        type: string"
   echo "        default: gene_name"
   echo "        The name of the .var column containing gene names. When no"
   echo "        gene_name_layer is provided, the .var index will be used."
   echo ""
-  echo "    --batch_id_layer"
+  echo "    --input_obs_batch_id"
   echo "        type: string"
   echo "        default: batch_id"
   echo "        The name of the adata.obs column containing the batch ids."
@@ -232,7 +234,7 @@ function ViashHelp {
   echo "Outputs:"
   echo "    --output"
   echo "        type: file, required parameter, output, file must exist"
-  echo "        example: output.h5ad"
+  echo "        example: output.h5mu"
   echo "        Path to output anndata file containing pre-processed data as well as"
   echo "        scGPT embeddings."
   echo ""
@@ -242,7 +244,7 @@ function ViashHelp {
   echo "        choices: [ gzip, lzf ]"
   echo "        The compression algorithm to use for the output h5mu file."
   echo ""
-  echo "    --embedding_layer"
+  echo "    --embedding_layer_key"
   echo "        type: string"
   echo "        default: X_scGPT"
   echo "        The name of the adata.obsm array to which scGPT embeddings will be"
@@ -503,9 +505,9 @@ RUN pip install --upgrade pip && \
 
 LABEL org.opencontainers.image.authors="Dorien Roosen"
 LABEL org.opencontainers.image.description="Companion container for running component scgpt embedding"
-LABEL org.opencontainers.image.created="2024-03-29T17:53:21Z"
+LABEL org.opencontainers.image.created="2024-04-04T08:51:30Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="e74b86d58f54d22a9e457aea15ee259df2f274a0"
+LABEL org.opencontainers.image.revision="612269403b73c51fec199e83a05b221ccc56526b"
 LABEL org.opencontainers.image.version="scgpt-preprocessor_build"
 
 VIASHDOCKER
@@ -715,59 +717,59 @@ while [[ $# -gt 0 ]]; do
             VIASH_PAR_MODEL_CONFIG=$(ViashRemoveFlags "$1")
             shift 1
             ;;
-        --input_gene_ids)
-            [ -n "$VIASH_PAR_INPUT_GENE_IDS" ] && ViashError Bad arguments for option \'--input_gene_ids\': \'$VIASH_PAR_INPUT_GENE_IDS\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
-            VIASH_PAR_INPUT_GENE_IDS="$2"
-            [ $# -lt 2 ] && ViashError Not enough arguments passed to --input_gene_ids. Use "--help" to get more information on the parameters. && exit 1
+        --input_obsm_gene_tokens)
+            [ -n "$VIASH_PAR_INPUT_OBSM_GENE_TOKENS" ] && ViashError Bad arguments for option \'--input_obsm_gene_tokens\': \'$VIASH_PAR_INPUT_OBSM_GENE_TOKENS\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+            VIASH_PAR_INPUT_OBSM_GENE_TOKENS="$2"
+            [ $# -lt 2 ] && ViashError Not enough arguments passed to --input_obsm_gene_tokens. Use "--help" to get more information on the parameters. && exit 1
             shift 2
             ;;
-        --input_gene_ids=*)
-            [ -n "$VIASH_PAR_INPUT_GENE_IDS" ] && ViashError Bad arguments for option \'--input_gene_ids=*\': \'$VIASH_PAR_INPUT_GENE_IDS\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
-            VIASH_PAR_INPUT_GENE_IDS=$(ViashRemoveFlags "$1")
+        --input_obsm_gene_tokens=*)
+            [ -n "$VIASH_PAR_INPUT_OBSM_GENE_TOKENS" ] && ViashError Bad arguments for option \'--input_obsm_gene_tokens=*\': \'$VIASH_PAR_INPUT_OBSM_GENE_TOKENS\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+            VIASH_PAR_INPUT_OBSM_GENE_TOKENS=$(ViashRemoveFlags "$1")
             shift 1
             ;;
-        --input_values)
-            [ -n "$VIASH_PAR_INPUT_VALUES" ] && ViashError Bad arguments for option \'--input_values\': \'$VIASH_PAR_INPUT_VALUES\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
-            VIASH_PAR_INPUT_VALUES="$2"
-            [ $# -lt 2 ] && ViashError Not enough arguments passed to --input_values. Use "--help" to get more information on the parameters. && exit 1
+        --input_obsm_tokenized_values)
+            [ -n "$VIASH_PAR_INPUT_OBSM_TOKENIZED_VALUES" ] && ViashError Bad arguments for option \'--input_obsm_tokenized_values\': \'$VIASH_PAR_INPUT_OBSM_TOKENIZED_VALUES\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+            VIASH_PAR_INPUT_OBSM_TOKENIZED_VALUES="$2"
+            [ $# -lt 2 ] && ViashError Not enough arguments passed to --input_obsm_tokenized_values. Use "--help" to get more information on the parameters. && exit 1
             shift 2
             ;;
-        --input_values=*)
-            [ -n "$VIASH_PAR_INPUT_VALUES" ] && ViashError Bad arguments for option \'--input_values=*\': \'$VIASH_PAR_INPUT_VALUES\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
-            VIASH_PAR_INPUT_VALUES=$(ViashRemoveFlags "$1")
+        --input_obsm_tokenized_values=*)
+            [ -n "$VIASH_PAR_INPUT_OBSM_TOKENIZED_VALUES" ] && ViashError Bad arguments for option \'--input_obsm_tokenized_values=*\': \'$VIASH_PAR_INPUT_OBSM_TOKENIZED_VALUES\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+            VIASH_PAR_INPUT_OBSM_TOKENIZED_VALUES=$(ViashRemoveFlags "$1")
             shift 1
             ;;
-        --input_padding_mask)
-            [ -n "$VIASH_PAR_INPUT_PADDING_MASK" ] && ViashError Bad arguments for option \'--input_padding_mask\': \'$VIASH_PAR_INPUT_PADDING_MASK\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
-            VIASH_PAR_INPUT_PADDING_MASK="$2"
-            [ $# -lt 2 ] && ViashError Not enough arguments passed to --input_padding_mask. Use "--help" to get more information on the parameters. && exit 1
+        --input_obsm_padding_mask)
+            [ -n "$VIASH_PAR_INPUT_OBSM_PADDING_MASK" ] && ViashError Bad arguments for option \'--input_obsm_padding_mask\': \'$VIASH_PAR_INPUT_OBSM_PADDING_MASK\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+            VIASH_PAR_INPUT_OBSM_PADDING_MASK="$2"
+            [ $# -lt 2 ] && ViashError Not enough arguments passed to --input_obsm_padding_mask. Use "--help" to get more information on the parameters. && exit 1
             shift 2
             ;;
-        --input_padding_mask=*)
-            [ -n "$VIASH_PAR_INPUT_PADDING_MASK" ] && ViashError Bad arguments for option \'--input_padding_mask=*\': \'$VIASH_PAR_INPUT_PADDING_MASK\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
-            VIASH_PAR_INPUT_PADDING_MASK=$(ViashRemoveFlags "$1")
+        --input_obsm_padding_mask=*)
+            [ -n "$VIASH_PAR_INPUT_OBSM_PADDING_MASK" ] && ViashError Bad arguments for option \'--input_obsm_padding_mask=*\': \'$VIASH_PAR_INPUT_OBSM_PADDING_MASK\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+            VIASH_PAR_INPUT_OBSM_PADDING_MASK=$(ViashRemoveFlags "$1")
             shift 1
             ;;
-        --gene_name_layer)
-            [ -n "$VIASH_PAR_GENE_NAME_LAYER" ] && ViashError Bad arguments for option \'--gene_name_layer\': \'$VIASH_PAR_GENE_NAME_LAYER\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
-            VIASH_PAR_GENE_NAME_LAYER="$2"
-            [ $# -lt 2 ] && ViashError Not enough arguments passed to --gene_name_layer. Use "--help" to get more information on the parameters. && exit 1
+        --input_var_gene_names)
+            [ -n "$VIASH_PAR_INPUT_VAR_GENE_NAMES" ] && ViashError Bad arguments for option \'--input_var_gene_names\': \'$VIASH_PAR_INPUT_VAR_GENE_NAMES\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+            VIASH_PAR_INPUT_VAR_GENE_NAMES="$2"
+            [ $# -lt 2 ] && ViashError Not enough arguments passed to --input_var_gene_names. Use "--help" to get more information on the parameters. && exit 1
             shift 2
             ;;
-        --gene_name_layer=*)
-            [ -n "$VIASH_PAR_GENE_NAME_LAYER" ] && ViashError Bad arguments for option \'--gene_name_layer=*\': \'$VIASH_PAR_GENE_NAME_LAYER\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
-            VIASH_PAR_GENE_NAME_LAYER=$(ViashRemoveFlags "$1")
+        --input_var_gene_names=*)
+            [ -n "$VIASH_PAR_INPUT_VAR_GENE_NAMES" ] && ViashError Bad arguments for option \'--input_var_gene_names=*\': \'$VIASH_PAR_INPUT_VAR_GENE_NAMES\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+            VIASH_PAR_INPUT_VAR_GENE_NAMES=$(ViashRemoveFlags "$1")
             shift 1
             ;;
-        --batch_id_layer)
-            [ -n "$VIASH_PAR_BATCH_ID_LAYER" ] && ViashError Bad arguments for option \'--batch_id_layer\': \'$VIASH_PAR_BATCH_ID_LAYER\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
-            VIASH_PAR_BATCH_ID_LAYER="$2"
-            [ $# -lt 2 ] && ViashError Not enough arguments passed to --batch_id_layer. Use "--help" to get more information on the parameters. && exit 1
+        --input_obs_batch_id)
+            [ -n "$VIASH_PAR_INPUT_OBS_BATCH_ID" ] && ViashError Bad arguments for option \'--input_obs_batch_id\': \'$VIASH_PAR_INPUT_OBS_BATCH_ID\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+            VIASH_PAR_INPUT_OBS_BATCH_ID="$2"
+            [ $# -lt 2 ] && ViashError Not enough arguments passed to --input_obs_batch_id. Use "--help" to get more information on the parameters. && exit 1
             shift 2
             ;;
-        --batch_id_layer=*)
-            [ -n "$VIASH_PAR_BATCH_ID_LAYER" ] && ViashError Bad arguments for option \'--batch_id_layer=*\': \'$VIASH_PAR_BATCH_ID_LAYER\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
-            VIASH_PAR_BATCH_ID_LAYER=$(ViashRemoveFlags "$1")
+        --input_obs_batch_id=*)
+            [ -n "$VIASH_PAR_INPUT_OBS_BATCH_ID" ] && ViashError Bad arguments for option \'--input_obs_batch_id=*\': \'$VIASH_PAR_INPUT_OBS_BATCH_ID\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+            VIASH_PAR_INPUT_OBS_BATCH_ID=$(ViashRemoveFlags "$1")
             shift 1
             ;;
         --output)
@@ -792,15 +794,15 @@ while [[ $# -gt 0 ]]; do
             VIASH_PAR_OUTPUT_COMPRESSION=$(ViashRemoveFlags "$1")
             shift 1
             ;;
-        --embedding_layer)
-            [ -n "$VIASH_PAR_EMBEDDING_LAYER" ] && ViashError Bad arguments for option \'--embedding_layer\': \'$VIASH_PAR_EMBEDDING_LAYER\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
-            VIASH_PAR_EMBEDDING_LAYER="$2"
-            [ $# -lt 2 ] && ViashError Not enough arguments passed to --embedding_layer. Use "--help" to get more information on the parameters. && exit 1
+        --embedding_layer_key)
+            [ -n "$VIASH_PAR_EMBEDDING_LAYER_KEY" ] && ViashError Bad arguments for option \'--embedding_layer_key\': \'$VIASH_PAR_EMBEDDING_LAYER_KEY\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+            VIASH_PAR_EMBEDDING_LAYER_KEY="$2"
+            [ $# -lt 2 ] && ViashError Not enough arguments passed to --embedding_layer_key. Use "--help" to get more information on the parameters. && exit 1
             shift 2
             ;;
-        --embedding_layer=*)
-            [ -n "$VIASH_PAR_EMBEDDING_LAYER" ] && ViashError Bad arguments for option \'--embedding_layer=*\': \'$VIASH_PAR_EMBEDDING_LAYER\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
-            VIASH_PAR_EMBEDDING_LAYER=$(ViashRemoveFlags "$1")
+        --embedding_layer_key=*)
+            [ -n "$VIASH_PAR_EMBEDDING_LAYER_KEY" ] && ViashError Bad arguments for option \'--embedding_layer_key=*\': \'$VIASH_PAR_EMBEDDING_LAYER_KEY\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+            VIASH_PAR_EMBEDDING_LAYER_KEY=$(ViashRemoveFlags "$1")
             shift 1
             ;;
         --pad_token)
@@ -987,18 +989,6 @@ if [ -z ${VIASH_PAR_MODEL_CONFIG+x} ]; then
   ViashError '--model_config' is a required argument. Use "--help" to get more information on the parameters.
   exit 1
 fi
-if [ -z ${VIASH_PAR_INPUT_GENE_IDS+x} ]; then
-  ViashError '--input_gene_ids' is a required argument. Use "--help" to get more information on the parameters.
-  exit 1
-fi
-if [ -z ${VIASH_PAR_INPUT_VALUES+x} ]; then
-  ViashError '--input_values' is a required argument. Use "--help" to get more information on the parameters.
-  exit 1
-fi
-if [ -z ${VIASH_PAR_INPUT_PADDING_MASK+x} ]; then
-  ViashError '--input_padding_mask' is a required argument. Use "--help" to get more information on the parameters.
-  exit 1
-fi
 if [ -z ${VIASH_PAR_OUTPUT+x} ]; then
   ViashError '--output' is a required argument. Use "--help" to get more information on the parameters.
   exit 1
@@ -1028,14 +1018,23 @@ fi
 if [ -z ${VIASH_PAR_MODALITY+x} ]; then
   VIASH_PAR_MODALITY="rna"
 fi
-if [ -z ${VIASH_PAR_GENE_NAME_LAYER+x} ]; then
-  VIASH_PAR_GENE_NAME_LAYER="gene_name"
+if [ -z ${VIASH_PAR_INPUT_OBSM_GENE_TOKENS+x} ]; then
+  VIASH_PAR_INPUT_OBSM_GENE_TOKENS="gene_id_tokens"
 fi
-if [ -z ${VIASH_PAR_BATCH_ID_LAYER+x} ]; then
-  VIASH_PAR_BATCH_ID_LAYER="batch_id"
+if [ -z ${VIASH_PAR_INPUT_OBSM_TOKENIZED_VALUES+x} ]; then
+  VIASH_PAR_INPUT_OBSM_TOKENIZED_VALUES="values_tokenized"
 fi
-if [ -z ${VIASH_PAR_EMBEDDING_LAYER+x} ]; then
-  VIASH_PAR_EMBEDDING_LAYER="X_scGPT"
+if [ -z ${VIASH_PAR_INPUT_OBSM_PADDING_MASK+x} ]; then
+  VIASH_PAR_INPUT_OBSM_PADDING_MASK="padding_mask"
+fi
+if [ -z ${VIASH_PAR_INPUT_VAR_GENE_NAMES+x} ]; then
+  VIASH_PAR_INPUT_VAR_GENE_NAMES="gene_name"
+fi
+if [ -z ${VIASH_PAR_INPUT_OBS_BATCH_ID+x} ]; then
+  VIASH_PAR_INPUT_OBS_BATCH_ID="batch_id"
+fi
+if [ -z ${VIASH_PAR_EMBEDDING_LAYER_KEY+x} ]; then
+  VIASH_PAR_EMBEDDING_LAYER_KEY="X_scGPT"
 fi
 if [ -z ${VIASH_PAR_PAD_TOKEN+x} ]; then
   VIASH_PAR_PAD_TOKEN="<pad>"
@@ -1068,18 +1067,6 @@ if [ ! -z "$VIASH_PAR_MODEL_VOCAB" ] && [ ! -e "$VIASH_PAR_MODEL_VOCAB" ]; then
 fi
 if [ ! -z "$VIASH_PAR_MODEL_CONFIG" ] && [ ! -e "$VIASH_PAR_MODEL_CONFIG" ]; then
   ViashError "Input file '$VIASH_PAR_MODEL_CONFIG' does not exist."
-  exit 1
-fi
-if [ ! -z "$VIASH_PAR_INPUT_GENE_IDS" ] && [ ! -e "$VIASH_PAR_INPUT_GENE_IDS" ]; then
-  ViashError "Input file '$VIASH_PAR_INPUT_GENE_IDS' does not exist."
-  exit 1
-fi
-if [ ! -z "$VIASH_PAR_INPUT_VALUES" ] && [ ! -e "$VIASH_PAR_INPUT_VALUES" ]; then
-  ViashError "Input file '$VIASH_PAR_INPUT_VALUES' does not exist."
-  exit 1
-fi
-if [ ! -z "$VIASH_PAR_INPUT_PADDING_MASK" ] && [ ! -e "$VIASH_PAR_INPUT_PADDING_MASK" ]; then
-  ViashError "Input file '$VIASH_PAR_INPUT_PADDING_MASK' does not exist."
   exit 1
 fi
 
@@ -1187,18 +1174,6 @@ if [ ! -z "$VIASH_PAR_MODEL_CONFIG" ]; then
   VIASH_EXTRA_MOUNTS+=( "$(ViashAutodetectMountArg "$VIASH_PAR_MODEL_CONFIG")" )
   VIASH_PAR_MODEL_CONFIG=$(ViashAutodetectMount "$VIASH_PAR_MODEL_CONFIG")
 fi
-if [ ! -z "$VIASH_PAR_INPUT_GENE_IDS" ]; then
-  VIASH_EXTRA_MOUNTS+=( "$(ViashAutodetectMountArg "$VIASH_PAR_INPUT_GENE_IDS")" )
-  VIASH_PAR_INPUT_GENE_IDS=$(ViashAutodetectMount "$VIASH_PAR_INPUT_GENE_IDS")
-fi
-if [ ! -z "$VIASH_PAR_INPUT_VALUES" ]; then
-  VIASH_EXTRA_MOUNTS+=( "$(ViashAutodetectMountArg "$VIASH_PAR_INPUT_VALUES")" )
-  VIASH_PAR_INPUT_VALUES=$(ViashAutodetectMount "$VIASH_PAR_INPUT_VALUES")
-fi
-if [ ! -z "$VIASH_PAR_INPUT_PADDING_MASK" ]; then
-  VIASH_EXTRA_MOUNTS+=( "$(ViashAutodetectMountArg "$VIASH_PAR_INPUT_PADDING_MASK")" )
-  VIASH_PAR_INPUT_PADDING_MASK=$(ViashAutodetectMount "$VIASH_PAR_INPUT_PADDING_MASK")
-fi
 if [ ! -z "$VIASH_PAR_OUTPUT" ]; then
   VIASH_EXTRA_MOUNTS+=( "$(ViashAutodetectMountArg "$VIASH_PAR_OUTPUT")" )
   VIASH_PAR_OUTPUT=$(ViashAutodetectMount "$VIASH_PAR_OUTPUT")
@@ -1277,14 +1252,14 @@ par = {
   'model': $( if [ ! -z ${VIASH_PAR_MODEL+x} ]; then echo "r'${VIASH_PAR_MODEL//\'/\'\"\'\"r\'}'"; else echo None; fi ),
   'model_vocab': $( if [ ! -z ${VIASH_PAR_MODEL_VOCAB+x} ]; then echo "r'${VIASH_PAR_MODEL_VOCAB//\'/\'\"\'\"r\'}'"; else echo None; fi ),
   'model_config': $( if [ ! -z ${VIASH_PAR_MODEL_CONFIG+x} ]; then echo "r'${VIASH_PAR_MODEL_CONFIG//\'/\'\"\'\"r\'}'"; else echo None; fi ),
-  'input_gene_ids': $( if [ ! -z ${VIASH_PAR_INPUT_GENE_IDS+x} ]; then echo "r'${VIASH_PAR_INPUT_GENE_IDS//\'/\'\"\'\"r\'}'"; else echo None; fi ),
-  'input_values': $( if [ ! -z ${VIASH_PAR_INPUT_VALUES+x} ]; then echo "r'${VIASH_PAR_INPUT_VALUES//\'/\'\"\'\"r\'}'"; else echo None; fi ),
-  'input_padding_mask': $( if [ ! -z ${VIASH_PAR_INPUT_PADDING_MASK+x} ]; then echo "r'${VIASH_PAR_INPUT_PADDING_MASK//\'/\'\"\'\"r\'}'"; else echo None; fi ),
-  'gene_name_layer': $( if [ ! -z ${VIASH_PAR_GENE_NAME_LAYER+x} ]; then echo "r'${VIASH_PAR_GENE_NAME_LAYER//\'/\'\"\'\"r\'}'"; else echo None; fi ),
-  'batch_id_layer': $( if [ ! -z ${VIASH_PAR_BATCH_ID_LAYER+x} ]; then echo "r'${VIASH_PAR_BATCH_ID_LAYER//\'/\'\"\'\"r\'}'"; else echo None; fi ),
+  'input_obsm_gene_tokens': $( if [ ! -z ${VIASH_PAR_INPUT_OBSM_GENE_TOKENS+x} ]; then echo "r'${VIASH_PAR_INPUT_OBSM_GENE_TOKENS//\'/\'\"\'\"r\'}'"; else echo None; fi ),
+  'input_obsm_tokenized_values': $( if [ ! -z ${VIASH_PAR_INPUT_OBSM_TOKENIZED_VALUES+x} ]; then echo "r'${VIASH_PAR_INPUT_OBSM_TOKENIZED_VALUES//\'/\'\"\'\"r\'}'"; else echo None; fi ),
+  'input_obsm_padding_mask': $( if [ ! -z ${VIASH_PAR_INPUT_OBSM_PADDING_MASK+x} ]; then echo "r'${VIASH_PAR_INPUT_OBSM_PADDING_MASK//\'/\'\"\'\"r\'}'"; else echo None; fi ),
+  'input_var_gene_names': $( if [ ! -z ${VIASH_PAR_INPUT_VAR_GENE_NAMES+x} ]; then echo "r'${VIASH_PAR_INPUT_VAR_GENE_NAMES//\'/\'\"\'\"r\'}'"; else echo None; fi ),
+  'input_obs_batch_id': $( if [ ! -z ${VIASH_PAR_INPUT_OBS_BATCH_ID+x} ]; then echo "r'${VIASH_PAR_INPUT_OBS_BATCH_ID//\'/\'\"\'\"r\'}'"; else echo None; fi ),
   'output': $( if [ ! -z ${VIASH_PAR_OUTPUT+x} ]; then echo "r'${VIASH_PAR_OUTPUT//\'/\'\"\'\"r\'}'"; else echo None; fi ),
   'output_compression': $( if [ ! -z ${VIASH_PAR_OUTPUT_COMPRESSION+x} ]; then echo "r'${VIASH_PAR_OUTPUT_COMPRESSION//\'/\'\"\'\"r\'}'"; else echo None; fi ),
-  'embedding_layer': $( if [ ! -z ${VIASH_PAR_EMBEDDING_LAYER+x} ]; then echo "r'${VIASH_PAR_EMBEDDING_LAYER//\'/\'\"\'\"r\'}'"; else echo None; fi ),
+  'embedding_layer_key': $( if [ ! -z ${VIASH_PAR_EMBEDDING_LAYER_KEY+x} ]; then echo "r'${VIASH_PAR_EMBEDDING_LAYER_KEY//\'/\'\"\'\"r\'}'"; else echo None; fi ),
   'pad_token': $( if [ ! -z ${VIASH_PAR_PAD_TOKEN+x} ]; then echo "r'${VIASH_PAR_PAD_TOKEN//\'/\'\"\'\"r\'}'"; else echo None; fi ),
   'pad_value': $( if [ ! -z ${VIASH_PAR_PAD_VALUE+x} ]; then echo "int(r'${VIASH_PAR_PAD_VALUE//\'/\'\"\'\"r\'}')"; else echo None; fi ),
   'dropout': $( if [ ! -z ${VIASH_PAR_DROPOUT+x} ]; then echo "float(r'${VIASH_PAR_DROPOUT//\'/\'\"\'\"r\'}')"; else echo None; fi ),
@@ -1347,12 +1322,12 @@ mdata = mu.read(par["input"])
 input_adata = mdata.mod[par["modality"]]
 adata = input_adata.copy()
 
-all_gene_ids = torch.load(par["input_gene_ids"])
-all_values = torch.load(par["input_values"])
-padding_mask = torch.load(par["input_padding_mask"])
+all_gene_ids = adata.obsm[par["input_obsm_gene_tokens"]]
+all_values = adata.obsm[par["input_obsm_tokenized_values"]]
+padding_mask = adata.obsm[par["input_obsm_padding_mask"]]
 
 # Fetch batch ids
-batch_ids = adata.obs[par["batch_id_layer"]].tolist()
+batch_ids = adata.obs[par["input_obs_batch_id"]].tolist()
 batch_ids = np.array(batch_ids)
 num_batch_types = len(set(batch_ids))
 
@@ -1360,13 +1335,14 @@ num_batch_types = len(set(batch_ids))
 pad_token = par["pad_token"]
 pad_value = par["pad_value"]
 special_tokens = [pad_token, "<cls>", "<eoc>"]
-if not par["gene_name_layer"]:
-    genes = adata.var.index.tolist()
+
+# Fetching gene names
+if not par["input_var_gene_names"]:
+    genes = adata.var.index.astype(str).tolist()
 else:
-    genes = adata.var[par["gene_name_layer"]].tolist()
+    genes = adata.var[par["input_var_gene_names"]].astype(str).tolist()
 
 logger.info("Loading model, vocab and configs")
-
 # Model files
 model_config_file = par["model_config"]
 model_file = par["model"]
@@ -1431,9 +1407,9 @@ model.eval()
 logger.info("Converting tokenized input data to embeddings")
 # Embed tokenized data
 cell_embeddings = model.encode_batch(
-    all_gene_ids,
-    all_values.float(),
-    src_key_padding_mask=padding_mask,
+    torch.from_numpy(all_gene_ids),
+    torch.from_numpy(all_values).float(),
+    src_key_padding_mask=torch.from_numpy(padding_mask),
     batch_size=par["batch_size"],
     batch_labels=torch.from_numpy(batch_ids).long() if par["DSBN"] else None,
     output_to_cpu=True,
@@ -1447,7 +1423,7 @@ cell_embeddings = cell_embeddings / np.linalg.norm(
 
 logger.info("Writing output data")
 # Write output
-adata.obsm[par["embedding_layer"]] = cell_embeddings
+adata.obsm[par["embedding_layer_key"]] = cell_embeddings
 mdata.mod[par["modality"]] = adata
 mdata.write(par["output"], compression=par["output_compression"])
 VIASHMAIN
@@ -1469,15 +1445,6 @@ if [ ! -z "$VIASH_PAR_MODEL_VOCAB" ]; then
 fi
 if [ ! -z "$VIASH_PAR_MODEL_CONFIG" ]; then
   VIASH_PAR_MODEL_CONFIG=$(ViashStripAutomount "$VIASH_PAR_MODEL_CONFIG")
-fi
-if [ ! -z "$VIASH_PAR_INPUT_GENE_IDS" ]; then
-  VIASH_PAR_INPUT_GENE_IDS=$(ViashStripAutomount "$VIASH_PAR_INPUT_GENE_IDS")
-fi
-if [ ! -z "$VIASH_PAR_INPUT_VALUES" ]; then
-  VIASH_PAR_INPUT_VALUES=$(ViashStripAutomount "$VIASH_PAR_INPUT_VALUES")
-fi
-if [ ! -z "$VIASH_PAR_INPUT_PADDING_MASK" ]; then
-  VIASH_PAR_INPUT_PADDING_MASK=$(ViashStripAutomount "$VIASH_PAR_INPUT_PADDING_MASK")
 fi
 if [ ! -z "$VIASH_PAR_OUTPUT" ]; then
   VIASH_PAR_OUTPUT=$(ViashStripAutomount "$VIASH_PAR_OUTPUT")

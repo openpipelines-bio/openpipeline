@@ -8,7 +8,7 @@ n_input_bins: 51
 # output: "$id.$key.output.h5mu"
 # output_compression: "gzip"
 binned_layer: "binned"
-seed: 0
+# seed: 123
 
 # Nextflow input-output arguments
 publish_dir: # please fill in - example: "output/"

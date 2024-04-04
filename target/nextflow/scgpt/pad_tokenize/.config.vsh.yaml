@@ -25,7 +25,7 @@ functionality:
       description: "The input h5mu file of pre-processed data.\n"
       info: null
       example:
-      - "input.h5ad"
+      - "input.h5mu"
       must_exist: true
       create_parent: true
       required: true
@@ -68,7 +68,7 @@ functionality:
       multiple_sep: ":"
       dest: "par"
     - type: "string"
-      name: "--gene_name_layer"
+      name: "--input_var_gene_names"
       description: "The name of the .var column containing gene names. When no gene_name_layer\
         \ is provided, the .var index will be used.\n"
       info: null
@@ -80,11 +80,12 @@ functionality:
   - name: "Outputs"
     arguments:
     - type: "file"
-      name: "--output_gene_ids"
-      description: "The output pytorch tensor file containing the gene ids.\n"
+      name: "--output"
+      description: "The output h5mu file containing obsm arrays for gene tokens, tokenized\
+        \ data and padding mask.\n"
       info: null
       example:
-      - "gene_ids.pt"
+      - "output.h5mu"
       must_exist: true
       create_parent: true
       required: true
@@ -92,37 +93,51 @@ functionality:
       multiple: false
       multiple_sep: ":"
       dest: "par"
-    - type: "file"
-      name: "--output_values"
-      description: "The output pytorch tensor file contianing the tokenized and padded\
-        \ values.\n"
+    - type: "string"
+      name: "--output_compression"
+      description: "The compression type for the output file.\n"
+      info: null
+      example:
+      - "gzip"
+      required: false
+      choices:
+      - "gzip"
+      - "lzf"
+      direction: "input"
+      multiple: false
+      multiple_sep: ":"
+      dest: "par"
+    - type: "string"
+      name: "--output_obsm_gene_tokens"
+      description: "The key of the .obsm array containing the gene token ids\n"
       info: null
       example:
       - "values.pt"
-      must_exist: true
-      create_parent: true
-      required: true
-      direction: "output"
+      default:
+      - "gene_id_tokens"
+      required: false
+      direction: "input"
       multiple: false
       multiple_sep: ":"
       dest: "par"
-    - type: "file"
-      name: "--output_padding_mask"
-      description: "The output pytorch tensor file containing the padding mask.\n"
+    - type: "string"
+      name: "--output_obsm_tokenized_values"
+      description: "The key of the .obsm array containing the count values of the\
+        \ tokenized genes\n"
       info: null
-      example:
-      - "padding_mask.pt"
-      must_exist: true
-      create_parent: true
-      required: true
-      direction: "output"
+      default:
+      - "values_tokenized"
+      required: false
+      direction: "input"
       multiple: false
       multiple_sep: ":"
       dest: "par"
-    - type: "integer"
-      name: "--max_seq_len"
-      description: "The maximum sequence length of the tokenized data.\n"
+    - type: "string"
+      name: "--output_obsm_padding_mask"
+      description: "The key of the .obsm array containing the padding mask.\n"
       info: null
+      default:
+      - "padding_mask"
       required: false
       direction: "input"
       multiple: false
@@ -147,6 +162,15 @@ functionality:
       info: null
       default:
       - -2
+      required: false
+      direction: "input"
+      multiple: false
+      multiple_sep: ":"
+      dest: "par"
+    - type: "integer"
+      name: "--max_seq_len"
+      description: "The maximum sequence length of the tokenized data.\n"
+      info: null
       required: false
       direction: "input"
       multiple: false
@@ -215,6 +239,8 @@ platforms:
 - type: "nextflow"
   id: "nextflow"
   directives:
+    label:
+    - "lowmem"
     tag: "$id"
   auto:
     simplifyInput: true
@@ -258,11 +284,11 @@ platforms:
   debug: false
   container: "docker"
 info:
-  config: "/home/runner/work/openpipeline/openpipeline/src/scgpt/tokenize_pad/config.vsh.yaml"
+  config: "/home/runner/work/openpipeline/openpipeline/src/scgpt/pad_tokenize/config.vsh.yaml"
   platform: "nextflow"
   output: "/home/runner/work/openpipeline/openpipeline/target/nextflow/scgpt/pad_tokenize"
   executable: "/home/runner/work/openpipeline/openpipeline/target/nextflow/scgpt/pad_tokenize/pad_tokenize"
   viash_version: "0.8.5"
-  git_commit: "e74b86d58f54d22a9e457aea15ee259df2f274a0"
+  git_commit: "612269403b73c51fec199e83a05b221ccc56526b"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"
-  git_tag: "0.2.0-1572-ge74b86d58f"
+  git_tag: "0.2.0-1573-g612269403b"

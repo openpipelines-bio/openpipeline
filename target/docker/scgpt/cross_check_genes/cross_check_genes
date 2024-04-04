@@ -192,7 +192,7 @@ function ViashHelp {
   echo "        example: resources_test/scgpt/vocab.json"
   echo "        Model vocabulary file directory."
   echo ""
-  echo "    --gene_name_layer"
+  echo "    --input_var_gene_names"
   echo "        type: string"
   echo "        example: gene_name"
   echo "        The name of the adata.var column containing gene names. When no"
@@ -439,9 +439,9 @@ RUN pip install --upgrade pip && \
 
 LABEL org.opencontainers.image.authors="Dorien Roosen"
 LABEL org.opencontainers.image.description="Companion container for running component scgpt cross_check_genes"
-LABEL org.opencontainers.image.created="2024-03-29T17:53:21Z"
+LABEL org.opencontainers.image.created="2024-04-04T08:51:30Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="e74b86d58f54d22a9e457aea15ee259df2f274a0"
+LABEL org.opencontainers.image.revision="612269403b73c51fec199e83a05b221ccc56526b"
 LABEL org.opencontainers.image.version="scgpt-preprocessor_build"
 
 VIASHDOCKER
@@ -629,15 +629,15 @@ while [[ $# -gt 0 ]]; do
             VIASH_PAR_VOCAB_FILE=$(ViashRemoveFlags "$1")
             shift 1
             ;;
-        --gene_name_layer)
-            [ -n "$VIASH_PAR_GENE_NAME_LAYER" ] && ViashError Bad arguments for option \'--gene_name_layer\': \'$VIASH_PAR_GENE_NAME_LAYER\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
-            VIASH_PAR_GENE_NAME_LAYER="$2"
-            [ $# -lt 2 ] && ViashError Not enough arguments passed to --gene_name_layer. Use "--help" to get more information on the parameters. && exit 1
+        --input_var_gene_names)
+            [ -n "$VIASH_PAR_INPUT_VAR_GENE_NAMES" ] && ViashError Bad arguments for option \'--input_var_gene_names\': \'$VIASH_PAR_INPUT_VAR_GENE_NAMES\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+            VIASH_PAR_INPUT_VAR_GENE_NAMES="$2"
+            [ $# -lt 2 ] && ViashError Not enough arguments passed to --input_var_gene_names. Use "--help" to get more information on the parameters. && exit 1
             shift 2
             ;;
-        --gene_name_layer=*)
-            [ -n "$VIASH_PAR_GENE_NAME_LAYER" ] && ViashError Bad arguments for option \'--gene_name_layer=*\': \'$VIASH_PAR_GENE_NAME_LAYER\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
-            VIASH_PAR_GENE_NAME_LAYER=$(ViashRemoveFlags "$1")
+        --input_var_gene_names=*)
+            [ -n "$VIASH_PAR_INPUT_VAR_GENE_NAMES" ] && ViashError Bad arguments for option \'--input_var_gene_names=*\': \'$VIASH_PAR_INPUT_VAR_GENE_NAMES\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+            VIASH_PAR_INPUT_VAR_GENE_NAMES=$(ViashRemoveFlags "$1")
             shift 1
             ;;
         --output)
@@ -962,7 +962,7 @@ par = {
   'input': $( if [ ! -z ${VIASH_PAR_INPUT+x} ]; then echo "r'${VIASH_PAR_INPUT//\'/\'\"\'\"r\'}'"; else echo None; fi ),
   'modality': $( if [ ! -z ${VIASH_PAR_MODALITY+x} ]; then echo "r'${VIASH_PAR_MODALITY//\'/\'\"\'\"r\'}'"; else echo None; fi ),
   'vocab_file': $( if [ ! -z ${VIASH_PAR_VOCAB_FILE+x} ]; then echo "r'${VIASH_PAR_VOCAB_FILE//\'/\'\"\'\"r\'}'"; else echo None; fi ),
-  'gene_name_layer': $( if [ ! -z ${VIASH_PAR_GENE_NAME_LAYER+x} ]; then echo "r'${VIASH_PAR_GENE_NAME_LAYER//\'/\'\"\'\"r\'}'"; else echo None; fi ),
+  'input_var_gene_names': $( if [ ! -z ${VIASH_PAR_INPUT_VAR_GENE_NAMES+x} ]; then echo "r'${VIASH_PAR_INPUT_VAR_GENE_NAMES//\'/\'\"\'\"r\'}'"; else echo None; fi ),
   'output': $( if [ ! -z ${VIASH_PAR_OUTPUT+x} ]; then echo "r'${VIASH_PAR_OUTPUT//\'/\'\"\'\"r\'}'"; else echo None; fi ),
   'pad_token': $( if [ ! -z ${VIASH_PAR_PAD_TOKEN+x} ]; then echo "r'${VIASH_PAR_PAD_TOKEN//\'/\'\"\'\"r\'}'"; else echo None; fi )
 }
@@ -1012,10 +1012,12 @@ pad_token = par["pad_token"]
 special_tokens = [pad_token, "<cls>", "<eoc>"]
 
 # Fetching gene names
-if not par["gene_name_layer"]:
+if not par["input_var_gene_names"]:
     genes = adata.var.index.astype(str).tolist()
-else: 
-    genes = adata.var[par["gene_name_layer"]].astype(str).tolist()
+elif par["input_var_gene_names"] not in adata.var.columns:
+    raise ValueError(f"Gene name column '{par['input_var_gene_names']}' not found in .mod['{par['modality']}'].obs.")
+else:
+    genes = adata.var[par["input_var_gene_names"]].astype(str).tolist()
 
 # Cross-check genes with pre-trained model
 logger.info(f"Loading model vocab from {par['vocab_file']}")

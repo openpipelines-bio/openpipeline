@@ -4,16 +4,16 @@ modality: "rna"
 model: # please fill in - example: "best_model.pt"
 model_vocab: # please fill in - example: "vocab.json"
 model_config: # please fill in - example: "args.json"
-input_gene_ids: # please fill in - example: "gene_ids.pt"
-input_values: # please fill in - example: "values.pt"
-input_padding_mask: # please fill in - example: "padding_mask.pt"
-gene_name_layer: "gene_name"
-batch_id_layer: "batch_id"
+input_obsm_gene_tokens: "gene_id_tokens"
+input_obsm_tokenized_values: "values_tokenized"
+input_obsm_padding_mask: "padding_mask"
+input_var_gene_names: "gene_name"
+input_obs_batch_id: "batch_id"
 
 # Outputs
-# output: "$id.$key.output.h5ad"
+# output: "$id.$key.output.h5mu"
 # output_compression: "gzip"
-embedding_layer: "X_scGPT"
+embedding_layer_key: "X_scGPT"
 
 # Arguments
 pad_token: "<pad>"

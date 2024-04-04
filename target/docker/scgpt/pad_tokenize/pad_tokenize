@@ -181,7 +181,7 @@ function ViashHelp {
   echo "Inputs:"
   echo "    --input"
   echo "        type: file, required parameter, file must exist"
-  echo "        example: input.h5ad"
+  echo "        example: input.h5mu"
   echo "        The input h5mu file of pre-processed data."
   echo ""
   echo "    --modality"
@@ -198,31 +198,40 @@ function ViashHelp {
   echo "        default: binned"
   echo "        The name of the layer to be padded and tokenized."
   echo ""
-  echo "    --gene_name_layer"
+  echo "    --input_var_gene_names"
   echo "        type: string"
   echo "        The name of the .var column containing gene names. When no"
   echo "        gene_name_layer is provided, the .var index will be used."
   echo ""
   echo "Outputs:"
-  echo "    --output_gene_ids"
+  echo "    --output"
   echo "        type: file, required parameter, output, file must exist"
-  echo "        example: gene_ids.pt"
-  echo "        The output pytorch tensor file containing the gene ids."
+  echo "        example: output.h5mu"
+  echo "        The output h5mu file containing obsm arrays for gene tokens, tokenized"
+  echo "        data and padding mask."
   echo ""
-  echo "    --output_values"
-  echo "        type: file, required parameter, output, file must exist"
+  echo "    --output_compression"
+  echo "        type: string"
+  echo "        example: gzip"
+  echo "        choices: [ gzip, lzf ]"
+  echo "        The compression type for the output file."
+  echo ""
+  echo "    --output_obsm_gene_tokens"
+  echo "        type: string"
+  echo "        default: gene_id_tokens"
   echo "        example: values.pt"
-  echo "        The output pytorch tensor file contianing the tokenized and padded"
-  echo "        values."
+  echo "        The key of the .obsm array containing the gene token ids"
   echo ""
-  echo "    --output_padding_mask"
-  echo "        type: file, required parameter, output, file must exist"
-  echo "        example: padding_mask.pt"
-  echo "        The output pytorch tensor file containing the padding mask."
+  echo "    --output_obsm_tokenized_values"
+  echo "        type: string"
+  echo "        default: values_tokenized"
+  echo "        The key of the .obsm array containing the count values of the tokenized"
+  echo "        genes"
   echo ""
-  echo "    --max_seq_len"
-  echo "        type: integer"
-  echo "        The maximum sequence length of the tokenized data."
+  echo "    --output_obsm_padding_mask"
+  echo "        type: string"
+  echo "        default: padding_mask"
+  echo "        The key of the .obsm array containing the padding mask."
   echo ""
   echo "Arguments:"
   echo "    --pad_token"
@@ -234,6 +243,10 @@ function ViashHelp {
   echo "        type: integer"
   echo "        default: -2"
   echo "        The value of the padding token."
+  echo ""
+  echo "    --max_seq_len"
+  echo "        type: integer"
+  echo "        The maximum sequence length of the tokenized data."
 }
 
 ######## Helper functions for setting up Docker images for viash ########
@@ -464,9 +477,9 @@ RUN pip install --upgrade pip && \
 
 LABEL org.opencontainers.image.authors="Dorien Roosen"
 LABEL org.opencontainers.image.description="Companion container for running component scgpt pad_tokenize"
-LABEL org.opencontainers.image.created="2024-03-29T17:53:21Z"
+LABEL org.opencontainers.image.created="2024-04-04T08:51:29Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="e74b86d58f54d22a9e457aea15ee259df2f274a0"
+LABEL org.opencontainers.image.revision="612269403b73c51fec199e83a05b221ccc56526b"
 LABEL org.opencontainers.image.version="scgpt-preprocessor_build"
 
 VIASHDOCKER
@@ -665,59 +678,70 @@ while [[ $# -gt 0 ]]; do
             VIASH_PAR_INPUT_LAYER=$(ViashRemoveFlags "$1")
             shift 1
             ;;
-        --gene_name_layer)
-            [ -n "$VIASH_PAR_GENE_NAME_LAYER" ] && ViashError Bad arguments for option \'--gene_name_layer\': \'$VIASH_PAR_GENE_NAME_LAYER\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
-            VIASH_PAR_GENE_NAME_LAYER="$2"
-            [ $# -lt 2 ] && ViashError Not enough arguments passed to --gene_name_layer. Use "--help" to get more information on the parameters. && exit 1
+        --input_var_gene_names)
+            [ -n "$VIASH_PAR_INPUT_VAR_GENE_NAMES" ] && ViashError Bad arguments for option \'--input_var_gene_names\': \'$VIASH_PAR_INPUT_VAR_GENE_NAMES\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+            VIASH_PAR_INPUT_VAR_GENE_NAMES="$2"
+            [ $# -lt 2 ] && ViashError Not enough arguments passed to --input_var_gene_names. Use "--help" to get more information on the parameters. && exit 1
             shift 2
             ;;
-        --gene_name_layer=*)
-            [ -n "$VIASH_PAR_GENE_NAME_LAYER" ] && ViashError Bad arguments for option \'--gene_name_layer=*\': \'$VIASH_PAR_GENE_NAME_LAYER\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
-            VIASH_PAR_GENE_NAME_LAYER=$(ViashRemoveFlags "$1")
+        --input_var_gene_names=*)
+            [ -n "$VIASH_PAR_INPUT_VAR_GENE_NAMES" ] && ViashError Bad arguments for option \'--input_var_gene_names=*\': \'$VIASH_PAR_INPUT_VAR_GENE_NAMES\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+            VIASH_PAR_INPUT_VAR_GENE_NAMES=$(ViashRemoveFlags "$1")
             shift 1
             ;;
-        --output_gene_ids)
-            [ -n "$VIASH_PAR_OUTPUT_GENE_IDS" ] && ViashError Bad arguments for option \'--output_gene_ids\': \'$VIASH_PAR_OUTPUT_GENE_IDS\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
-            VIASH_PAR_OUTPUT_GENE_IDS="$2"
-            [ $# -lt 2 ] && ViashError Not enough arguments passed to --output_gene_ids. Use "--help" to get more information on the parameters. && exit 1
+        --output)
+            [ -n "$VIASH_PAR_OUTPUT" ] && ViashError Bad arguments for option \'--output\': \'$VIASH_PAR_OUTPUT\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+            VIASH_PAR_OUTPUT="$2"
+            [ $# -lt 2 ] && ViashError Not enough arguments passed to --output. Use "--help" to get more information on the parameters. && exit 1
             shift 2
             ;;
-        --output_gene_ids=*)
-            [ -n "$VIASH_PAR_OUTPUT_GENE_IDS" ] && ViashError Bad arguments for option \'--output_gene_ids=*\': \'$VIASH_PAR_OUTPUT_GENE_IDS\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
-            VIASH_PAR_OUTPUT_GENE_IDS=$(ViashRemoveFlags "$1")
+        --output=*)
+            [ -n "$VIASH_PAR_OUTPUT" ] && ViashError Bad arguments for option \'--output=*\': \'$VIASH_PAR_OUTPUT\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+            VIASH_PAR_OUTPUT=$(ViashRemoveFlags "$1")
             shift 1
             ;;
-        --output_values)
-            [ -n "$VIASH_PAR_OUTPUT_VALUES" ] && ViashError Bad arguments for option \'--output_values\': \'$VIASH_PAR_OUTPUT_VALUES\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
-            VIASH_PAR_OUTPUT_VALUES="$2"
-            [ $# -lt 2 ] && ViashError Not enough arguments passed to --output_values. Use "--help" to get more information on the parameters. && exit 1
+        --output_compression)
+            [ -n "$VIASH_PAR_OUTPUT_COMPRESSION" ] && ViashError Bad arguments for option \'--output_compression\': \'$VIASH_PAR_OUTPUT_COMPRESSION\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+            VIASH_PAR_OUTPUT_COMPRESSION="$2"
+            [ $# -lt 2 ] && ViashError Not enough arguments passed to --output_compression. Use "--help" to get more information on the parameters. && exit 1
             shift 2
             ;;
-        --output_values=*)
-            [ -n "$VIASH_PAR_OUTPUT_VALUES" ] && ViashError Bad arguments for option \'--output_values=*\': \'$VIASH_PAR_OUTPUT_VALUES\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
-            VIASH_PAR_OUTPUT_VALUES=$(ViashRemoveFlags "$1")
+        --output_compression=*)
+            [ -n "$VIASH_PAR_OUTPUT_COMPRESSION" ] && ViashError Bad arguments for option \'--output_compression=*\': \'$VIASH_PAR_OUTPUT_COMPRESSION\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+            VIASH_PAR_OUTPUT_COMPRESSION=$(ViashRemoveFlags "$1")
             shift 1
             ;;
-        --output_padding_mask)
-            [ -n "$VIASH_PAR_OUTPUT_PADDING_MASK" ] && ViashError Bad arguments for option \'--output_padding_mask\': \'$VIASH_PAR_OUTPUT_PADDING_MASK\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
-            VIASH_PAR_OUTPUT_PADDING_MASK="$2"
-            [ $# -lt 2 ] && ViashError Not enough arguments passed to --output_padding_mask. Use "--help" to get more information on the parameters. && exit 1
+        --output_obsm_gene_tokens)
+            [ -n "$VIASH_PAR_OUTPUT_OBSM_GENE_TOKENS" ] && ViashError Bad arguments for option \'--output_obsm_gene_tokens\': \'$VIASH_PAR_OUTPUT_OBSM_GENE_TOKENS\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+            VIASH_PAR_OUTPUT_OBSM_GENE_TOKENS="$2"
+            [ $# -lt 2 ] && ViashError Not enough arguments passed to --output_obsm_gene_tokens. Use "--help" to get more information on the parameters. && exit 1
             shift 2
             ;;
-        --output_padding_mask=*)
-            [ -n "$VIASH_PAR_OUTPUT_PADDING_MASK" ] && ViashError Bad arguments for option \'--output_padding_mask=*\': \'$VIASH_PAR_OUTPUT_PADDING_MASK\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
-            VIASH_PAR_OUTPUT_PADDING_MASK=$(ViashRemoveFlags "$1")
+        --output_obsm_gene_tokens=*)
+            [ -n "$VIASH_PAR_OUTPUT_OBSM_GENE_TOKENS" ] && ViashError Bad arguments for option \'--output_obsm_gene_tokens=*\': \'$VIASH_PAR_OUTPUT_OBSM_GENE_TOKENS\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+            VIASH_PAR_OUTPUT_OBSM_GENE_TOKENS=$(ViashRemoveFlags "$1")
             shift 1
             ;;
-        --max_seq_len)
-            [ -n "$VIASH_PAR_MAX_SEQ_LEN" ] && ViashError Bad arguments for option \'--max_seq_len\': \'$VIASH_PAR_MAX_SEQ_LEN\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
-            VIASH_PAR_MAX_SEQ_LEN="$2"
-            [ $# -lt 2 ] && ViashError Not enough arguments passed to --max_seq_len. Use "--help" to get more information on the parameters. && exit 1
+        --output_obsm_tokenized_values)
+            [ -n "$VIASH_PAR_OUTPUT_OBSM_TOKENIZED_VALUES" ] && ViashError Bad arguments for option \'--output_obsm_tokenized_values\': \'$VIASH_PAR_OUTPUT_OBSM_TOKENIZED_VALUES\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+            VIASH_PAR_OUTPUT_OBSM_TOKENIZED_VALUES="$2"
+            [ $# -lt 2 ] && ViashError Not enough arguments passed to --output_obsm_tokenized_values. Use "--help" to get more information on the parameters. && exit 1
             shift 2
             ;;
-        --max_seq_len=*)
-            [ -n "$VIASH_PAR_MAX_SEQ_LEN" ] && ViashError Bad arguments for option \'--max_seq_len=*\': \'$VIASH_PAR_MAX_SEQ_LEN\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
-            VIASH_PAR_MAX_SEQ_LEN=$(ViashRemoveFlags "$1")
+        --output_obsm_tokenized_values=*)
+            [ -n "$VIASH_PAR_OUTPUT_OBSM_TOKENIZED_VALUES" ] && ViashError Bad arguments for option \'--output_obsm_tokenized_values=*\': \'$VIASH_PAR_OUTPUT_OBSM_TOKENIZED_VALUES\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+            VIASH_PAR_OUTPUT_OBSM_TOKENIZED_VALUES=$(ViashRemoveFlags "$1")
+            shift 1
+            ;;
+        --output_obsm_padding_mask)
+            [ -n "$VIASH_PAR_OUTPUT_OBSM_PADDING_MASK" ] && ViashError Bad arguments for option \'--output_obsm_padding_mask\': \'$VIASH_PAR_OUTPUT_OBSM_PADDING_MASK\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+            VIASH_PAR_OUTPUT_OBSM_PADDING_MASK="$2"
+            [ $# -lt 2 ] && ViashError Not enough arguments passed to --output_obsm_padding_mask. Use "--help" to get more information on the parameters. && exit 1
+            shift 2
+            ;;
+        --output_obsm_padding_mask=*)
+            [ -n "$VIASH_PAR_OUTPUT_OBSM_PADDING_MASK" ] && ViashError Bad arguments for option \'--output_obsm_padding_mask=*\': \'$VIASH_PAR_OUTPUT_OBSM_PADDING_MASK\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+            VIASH_PAR_OUTPUT_OBSM_PADDING_MASK=$(ViashRemoveFlags "$1")
             shift 1
             ;;
         --pad_token)
@@ -740,6 +764,17 @@ while [[ $# -gt 0 ]]; do
         --pad_value=*)
             [ -n "$VIASH_PAR_PAD_VALUE" ] && ViashError Bad arguments for option \'--pad_value=*\': \'$VIASH_PAR_PAD_VALUE\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
             VIASH_PAR_PAD_VALUE=$(ViashRemoveFlags "$1")
+            shift 1
+            ;;
+        --max_seq_len)
+            [ -n "$VIASH_PAR_MAX_SEQ_LEN" ] && ViashError Bad arguments for option \'--max_seq_len\': \'$VIASH_PAR_MAX_SEQ_LEN\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+            VIASH_PAR_MAX_SEQ_LEN="$2"
+            [ $# -lt 2 ] && ViashError Not enough arguments passed to --max_seq_len. Use "--help" to get more information on the parameters. && exit 1
+            shift 2
+            ;;
+        --max_seq_len=*)
+            [ -n "$VIASH_PAR_MAX_SEQ_LEN" ] && ViashError Bad arguments for option \'--max_seq_len=*\': \'$VIASH_PAR_MAX_SEQ_LEN\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+            VIASH_PAR_MAX_SEQ_LEN=$(ViashRemoveFlags "$1")
             shift 1
             ;;
         ---setup)
@@ -868,16 +903,8 @@ if [ -z ${VIASH_PAR_MODEL_VOCAB+x} ]; then
   ViashError '--model_vocab' is a required argument. Use "--help" to get more information on the parameters.
   exit 1
 fi
-if [ -z ${VIASH_PAR_OUTPUT_GENE_IDS+x} ]; then
-  ViashError '--output_gene_ids' is a required argument. Use "--help" to get more information on the parameters.
-  exit 1
-fi
-if [ -z ${VIASH_PAR_OUTPUT_VALUES+x} ]; then
-  ViashError '--output_values' is a required argument. Use "--help" to get more information on the parameters.
-  exit 1
-fi
-if [ -z ${VIASH_PAR_OUTPUT_PADDING_MASK+x} ]; then
-  ViashError '--output_padding_mask' is a required argument. Use "--help" to get more information on the parameters.
+if [ -z ${VIASH_PAR_OUTPUT+x} ]; then
+  ViashError '--output' is a required argument. Use "--help" to get more information on the parameters.
   exit 1
 fi
 if [ -z ${VIASH_META_FUNCTIONALITY_NAME+x} ]; then
@@ -908,6 +935,15 @@ fi
 if [ -z ${VIASH_PAR_INPUT_LAYER+x} ]; then
   VIASH_PAR_INPUT_LAYER="binned"
 fi
+if [ -z ${VIASH_PAR_OUTPUT_OBSM_GENE_TOKENS+x} ]; then
+  VIASH_PAR_OUTPUT_OBSM_GENE_TOKENS="gene_id_tokens"
+fi
+if [ -z ${VIASH_PAR_OUTPUT_OBSM_TOKENIZED_VALUES+x} ]; then
+  VIASH_PAR_OUTPUT_OBSM_TOKENIZED_VALUES="values_tokenized"
+fi
+if [ -z ${VIASH_PAR_OUTPUT_OBSM_PADDING_MASK+x} ]; then
+  VIASH_PAR_OUTPUT_OBSM_PADDING_MASK="padding_mask"
+fi
 if [ -z ${VIASH_PAR_PAD_TOKEN+x} ]; then
   VIASH_PAR_PAD_TOKEN="<pad>"
 fi
@@ -926,15 +962,15 @@ if [ ! -z "$VIASH_PAR_MODEL_VOCAB" ] && [ ! -e "$VIASH_PAR_MODEL_VOCAB" ]; then
 fi
 
 # check whether parameters values are of the right type
-if [[ -n "$VIASH_PAR_MAX_SEQ_LEN" ]]; then
-  if ! [[ "$VIASH_PAR_MAX_SEQ_LEN" =~ ^[-+]?[0-9]+$ ]]; then
-    ViashError '--max_seq_len' has to be an integer. Use "--help" to get more information on the parameters.
-    exit 1
-  fi
-fi
 if [[ -n "$VIASH_PAR_PAD_VALUE" ]]; then
   if ! [[ "$VIASH_PAR_PAD_VALUE" =~ ^[-+]?[0-9]+$ ]]; then
     ViashError '--pad_value' has to be an integer. Use "--help" to get more information on the parameters.
+    exit 1
+  fi
+fi
+if [[ -n "$VIASH_PAR_MAX_SEQ_LEN" ]]; then
+  if ! [[ "$VIASH_PAR_MAX_SEQ_LEN" =~ ^[-+]?[0-9]+$ ]]; then
+    ViashError '--max_seq_len' has to be an integer. Use "--help" to get more information on the parameters.
     exit 1
   fi
 fi
@@ -981,15 +1017,22 @@ if [[ -n "$VIASH_META_MEMORY_PB" ]]; then
   fi
 fi
 
+# check whether value is belongs to a set of choices
+if [ ! -z "$VIASH_PAR_OUTPUT_COMPRESSION" ]; then
+  VIASH_PAR_OUTPUT_COMPRESSION_CHOICES=("gzip:lzf")
+  IFS=':'
+  set -f
+  if ! [[ ":${VIASH_PAR_OUTPUT_COMPRESSION_CHOICES[*]}:" =~ ":$VIASH_PAR_OUTPUT_COMPRESSION:" ]]; then
+    ViashError '--output_compression' specified value of \'$VIASH_PAR_OUTPUT_COMPRESSION\' is not in the list of allowed values. Use "--help" to get more information on the parameters.
+    exit 1
+  fi
+  set +f
+  unset IFS
+fi
+
 # create parent directories of output files, if so desired
-if [ ! -z "$VIASH_PAR_OUTPUT_GENE_IDS" ] && [ ! -d "$(dirname "$VIASH_PAR_OUTPUT_GENE_IDS")" ]; then
-  mkdir -p "$(dirname "$VIASH_PAR_OUTPUT_GENE_IDS")"
-fi
-if [ ! -z "$VIASH_PAR_OUTPUT_VALUES" ] && [ ! -d "$(dirname "$VIASH_PAR_OUTPUT_VALUES")" ]; then
-  mkdir -p "$(dirname "$VIASH_PAR_OUTPUT_VALUES")"
-fi
-if [ ! -z "$VIASH_PAR_OUTPUT_PADDING_MASK" ] && [ ! -d "$(dirname "$VIASH_PAR_OUTPUT_PADDING_MASK")" ]; then
-  mkdir -p "$(dirname "$VIASH_PAR_OUTPUT_PADDING_MASK")"
+if [ ! -z "$VIASH_PAR_OUTPUT" ] && [ ! -d "$(dirname "$VIASH_PAR_OUTPUT")" ]; then
+  mkdir -p "$(dirname "$VIASH_PAR_OUTPUT")"
 fi
 
 # detect volumes from file arguments
@@ -1002,20 +1045,10 @@ if [ ! -z "$VIASH_PAR_MODEL_VOCAB" ]; then
   VIASH_EXTRA_MOUNTS+=( "$(ViashAutodetectMountArg "$VIASH_PAR_MODEL_VOCAB")" )
   VIASH_PAR_MODEL_VOCAB=$(ViashAutodetectMount "$VIASH_PAR_MODEL_VOCAB")
 fi
-if [ ! -z "$VIASH_PAR_OUTPUT_GENE_IDS" ]; then
-  VIASH_EXTRA_MOUNTS+=( "$(ViashAutodetectMountArg "$VIASH_PAR_OUTPUT_GENE_IDS")" )
-  VIASH_PAR_OUTPUT_GENE_IDS=$(ViashAutodetectMount "$VIASH_PAR_OUTPUT_GENE_IDS")
-  VIASH_CHOWN_VARS+=( "$VIASH_PAR_OUTPUT_GENE_IDS" )
-fi
-if [ ! -z "$VIASH_PAR_OUTPUT_VALUES" ]; then
-  VIASH_EXTRA_MOUNTS+=( "$(ViashAutodetectMountArg "$VIASH_PAR_OUTPUT_VALUES")" )
-  VIASH_PAR_OUTPUT_VALUES=$(ViashAutodetectMount "$VIASH_PAR_OUTPUT_VALUES")
-  VIASH_CHOWN_VARS+=( "$VIASH_PAR_OUTPUT_VALUES" )
-fi
-if [ ! -z "$VIASH_PAR_OUTPUT_PADDING_MASK" ]; then
-  VIASH_EXTRA_MOUNTS+=( "$(ViashAutodetectMountArg "$VIASH_PAR_OUTPUT_PADDING_MASK")" )
-  VIASH_PAR_OUTPUT_PADDING_MASK=$(ViashAutodetectMount "$VIASH_PAR_OUTPUT_PADDING_MASK")
-  VIASH_CHOWN_VARS+=( "$VIASH_PAR_OUTPUT_PADDING_MASK" )
+if [ ! -z "$VIASH_PAR_OUTPUT" ]; then
+  VIASH_EXTRA_MOUNTS+=( "$(ViashAutodetectMountArg "$VIASH_PAR_OUTPUT")" )
+  VIASH_PAR_OUTPUT=$(ViashAutodetectMount "$VIASH_PAR_OUTPUT")
+  VIASH_CHOWN_VARS+=( "$VIASH_PAR_OUTPUT" )
 fi
 if [ ! -z "$VIASH_META_RESOURCES_DIR" ]; then
   VIASH_EXTRA_MOUNTS+=( "$(ViashAutodetectMountArg "$VIASH_META_RESOURCES_DIR")" )
@@ -1076,7 +1109,6 @@ trap interrupt INT SIGINT
 cat > "\$tempscript" << 'VIASHMAIN'
 import mudata as mu
 import numpy as np
-import torch
 from scipy.sparse import issparse
 from scgpt.tokenizer import tokenize_and_pad_batch
 from scgpt.tokenizer.gene_tokenizer import GeneVocab
@@ -1089,13 +1121,15 @@ par = {
   'modality': $( if [ ! -z ${VIASH_PAR_MODALITY+x} ]; then echo "r'${VIASH_PAR_MODALITY//\'/\'\"\'\"r\'}'"; else echo None; fi ),
   'model_vocab': $( if [ ! -z ${VIASH_PAR_MODEL_VOCAB+x} ]; then echo "r'${VIASH_PAR_MODEL_VOCAB//\'/\'\"\'\"r\'}'"; else echo None; fi ),
   'input_layer': $( if [ ! -z ${VIASH_PAR_INPUT_LAYER+x} ]; then echo "r'${VIASH_PAR_INPUT_LAYER//\'/\'\"\'\"r\'}'"; else echo None; fi ),
-  'gene_name_layer': $( if [ ! -z ${VIASH_PAR_GENE_NAME_LAYER+x} ]; then echo "r'${VIASH_PAR_GENE_NAME_LAYER//\'/\'\"\'\"r\'}'"; else echo None; fi ),
-  'output_gene_ids': $( if [ ! -z ${VIASH_PAR_OUTPUT_GENE_IDS+x} ]; then echo "r'${VIASH_PAR_OUTPUT_GENE_IDS//\'/\'\"\'\"r\'}'"; else echo None; fi ),
-  'output_values': $( if [ ! -z ${VIASH_PAR_OUTPUT_VALUES+x} ]; then echo "r'${VIASH_PAR_OUTPUT_VALUES//\'/\'\"\'\"r\'}'"; else echo None; fi ),
-  'output_padding_mask': $( if [ ! -z ${VIASH_PAR_OUTPUT_PADDING_MASK+x} ]; then echo "r'${VIASH_PAR_OUTPUT_PADDING_MASK//\'/\'\"\'\"r\'}'"; else echo None; fi ),
-  'max_seq_len': $( if [ ! -z ${VIASH_PAR_MAX_SEQ_LEN+x} ]; then echo "int(r'${VIASH_PAR_MAX_SEQ_LEN//\'/\'\"\'\"r\'}')"; else echo None; fi ),
+  'input_var_gene_names': $( if [ ! -z ${VIASH_PAR_INPUT_VAR_GENE_NAMES+x} ]; then echo "r'${VIASH_PAR_INPUT_VAR_GENE_NAMES//\'/\'\"\'\"r\'}'"; else echo None; fi ),
+  'output': $( if [ ! -z ${VIASH_PAR_OUTPUT+x} ]; then echo "r'${VIASH_PAR_OUTPUT//\'/\'\"\'\"r\'}'"; else echo None; fi ),
+  'output_compression': $( if [ ! -z ${VIASH_PAR_OUTPUT_COMPRESSION+x} ]; then echo "r'${VIASH_PAR_OUTPUT_COMPRESSION//\'/\'\"\'\"r\'}'"; else echo None; fi ),
+  'output_obsm_gene_tokens': $( if [ ! -z ${VIASH_PAR_OUTPUT_OBSM_GENE_TOKENS+x} ]; then echo "r'${VIASH_PAR_OUTPUT_OBSM_GENE_TOKENS//\'/\'\"\'\"r\'}'"; else echo None; fi ),
+  'output_obsm_tokenized_values': $( if [ ! -z ${VIASH_PAR_OUTPUT_OBSM_TOKENIZED_VALUES+x} ]; then echo "r'${VIASH_PAR_OUTPUT_OBSM_TOKENIZED_VALUES//\'/\'\"\'\"r\'}'"; else echo None; fi ),
+  'output_obsm_padding_mask': $( if [ ! -z ${VIASH_PAR_OUTPUT_OBSM_PADDING_MASK+x} ]; then echo "r'${VIASH_PAR_OUTPUT_OBSM_PADDING_MASK//\'/\'\"\'\"r\'}'"; else echo None; fi ),
   'pad_token': $( if [ ! -z ${VIASH_PAR_PAD_TOKEN+x} ]; then echo "r'${VIASH_PAR_PAD_TOKEN//\'/\'\"\'\"r\'}'"; else echo None; fi ),
-  'pad_value': $( if [ ! -z ${VIASH_PAR_PAD_VALUE+x} ]; then echo "int(r'${VIASH_PAR_PAD_VALUE//\'/\'\"\'\"r\'}')"; else echo None; fi )
+  'pad_value': $( if [ ! -z ${VIASH_PAR_PAD_VALUE+x} ]; then echo "int(r'${VIASH_PAR_PAD_VALUE//\'/\'\"\'\"r\'}')"; else echo None; fi ),
+  'max_seq_len': $( if [ ! -z ${VIASH_PAR_MAX_SEQ_LEN+x} ]; then echo "int(r'${VIASH_PAR_MAX_SEQ_LEN//\'/\'\"\'\"r\'}')"; else echo None; fi )
 }
 meta = {
   'functionality_name': $( if [ ! -z ${VIASH_META_FUNCTIONALITY_NAME+x} ]; then echo "r'${VIASH_META_FUNCTIONALITY_NAME//\'/\'\"\'\"r\'}'"; else echo None; fi ),
@@ -1155,10 +1189,10 @@ all_counts = (
 )
 
 # Fetching gene names
-if not par["gene_name_layer"]:
+if not par["input_var_gene_names"]:
     genes = adata.var.index.astype(str).tolist()
 else: 
-    genes = adata.var[par["gene_name_layer"]].astype(str).tolist()
+    genes = adata.var[par["input_var_gene_names"]].astype(str).tolist()
 
 # Fetch gene names and look up tokens in vocab
 logger.info("Reading in vocab and fetching gene tokens")
@@ -1198,9 +1232,12 @@ all_gene_ids, all_values = tokenized_data["genes"], tokenized_data["values"]
 padding_mask = all_gene_ids.eq(vocab[pad_token])
 
 logger.info("Writing output data")
-torch.save(all_gene_ids, par["output_gene_ids"])
-torch.save(all_values, par["output_values"])
-torch.save(padding_mask, par["output_padding_mask"])
+adata.obsm[par["output_obsm_gene_tokens"]] = all_gene_ids.numpy()
+adata.obsm[par["output_obsm_tokenized_values"]] = all_values.numpy()
+adata.obsm[par["output_obsm_padding_mask"]] = padding_mask.numpy()
+
+mdata.mod[par["modality"]] = adata
+mdata.write(par["output"], compression=par["output_compression"])
 VIASHMAIN
 python -B "\$tempscript" &
 wait "\$!"
@@ -1215,14 +1252,8 @@ fi
 if [ ! -z "$VIASH_PAR_MODEL_VOCAB" ]; then
   VIASH_PAR_MODEL_VOCAB=$(ViashStripAutomount "$VIASH_PAR_MODEL_VOCAB")
 fi
-if [ ! -z "$VIASH_PAR_OUTPUT_GENE_IDS" ]; then
-  VIASH_PAR_OUTPUT_GENE_IDS=$(ViashStripAutomount "$VIASH_PAR_OUTPUT_GENE_IDS")
-fi
-if [ ! -z "$VIASH_PAR_OUTPUT_VALUES" ]; then
-  VIASH_PAR_OUTPUT_VALUES=$(ViashStripAutomount "$VIASH_PAR_OUTPUT_VALUES")
-fi
-if [ ! -z "$VIASH_PAR_OUTPUT_PADDING_MASK" ]; then
-  VIASH_PAR_OUTPUT_PADDING_MASK=$(ViashStripAutomount "$VIASH_PAR_OUTPUT_PADDING_MASK")
+if [ ! -z "$VIASH_PAR_OUTPUT" ]; then
+  VIASH_PAR_OUTPUT=$(ViashStripAutomount "$VIASH_PAR_OUTPUT")
 fi
 if [ ! -z "$VIASH_META_RESOURCES_DIR" ]; then
   VIASH_META_RESOURCES_DIR=$(ViashStripAutomount "$VIASH_META_RESOURCES_DIR")
@@ -1239,16 +1270,8 @@ fi
 
 
 # check whether required files exist
-if [ ! -z "$VIASH_PAR_OUTPUT_GENE_IDS" ] && [ ! -e "$VIASH_PAR_OUTPUT_GENE_IDS" ]; then
-  ViashError "Output file '$VIASH_PAR_OUTPUT_GENE_IDS' does not exist."
-  exit 1
-fi
-if [ ! -z "$VIASH_PAR_OUTPUT_VALUES" ] && [ ! -e "$VIASH_PAR_OUTPUT_VALUES" ]; then
-  ViashError "Output file '$VIASH_PAR_OUTPUT_VALUES' does not exist."
-  exit 1
-fi
-if [ ! -z "$VIASH_PAR_OUTPUT_PADDING_MASK" ] && [ ! -e "$VIASH_PAR_OUTPUT_PADDING_MASK" ]; then
-  ViashError "Output file '$VIASH_PAR_OUTPUT_PADDING_MASK' does not exist."
+if [ ! -z "$VIASH_PAR_OUTPUT" ] && [ ! -e "$VIASH_PAR_OUTPUT" ]; then
+  ViashError "Output file '$VIASH_PAR_OUTPUT' does not exist."
   exit 1
 fi
 
