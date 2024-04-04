@@ -123,10 +123,10 @@ def test_integration_embedding(run_component, tmp_path):
         "--model", model_file,
         "--model_vocab", vocab_file,
         "--model_config", model_config_file,
-        "--input_obs_batch_label", "sample",
-        "--input_obsm_gene_tokens", "gene_id_tokens",
-        "--input_obsm_tokenized_values", "values_tokenized",
-        "--input_obsm_padding_mask", "padding_mask",
+        "--obs_batch_label", "sample",
+        "--obsm_gene_tokens", "gene_id_tokens",
+        "--obsm_tokenized_values", "values_tokenized",
+        "--obsm_padding_mask", "padding_mask",
         "--output", output_embedding_file
     ])
 

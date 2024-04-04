@@ -9,29 +9,23 @@ import torch
 ## VIASH START
 par = {
     "input": "resources_test/scgpt/test_resources/Kim2020_Lung_tokenized.h5mu",
-    "input_obsm_gene_tokens": 'gene_id_tokens',
-    "input_obsm_tokenized_values": 'values_tokenized',
-    "input_obsm_padding_mask": 'padding_mask',
+    "obsm_gene_tokens": 'gene_id_tokens',
+    "obsm_tokenized_values": 'values_tokenized',
+    "obsm_padding_mask": 'padding_mask',
     "model": "resources_test/scgpt/source/best_model.pt",
     "model_config": "resources_test/scgpt/source/args.json",
     "model_vocab": "resources_test/scgpt/source/vocab.json",
     "output": "Kim2020_Lung_embedded.h5ad",
-    "input_var_gene_names": "gene_name",
-    "input_obs_batch_label": "sample",
-    "embedding_layer_key": "X_scGPT",
+    "var_gene_names": "gene_name",
+    "obs_batch_label": "sample",
+    "obsm_embeddings": "X_scGPT",
     "pad_token": "<pad>",
     "pad_value": -2,
+    "batch_size": 64,
     "modality": "rna",
     "dropout": 0.2,
-    "GEPC": True,
     "DSBN": True,
     "n_input_bins": 51,
-    "ecs_threshold": 0.8,
-    "explicit_zero_prob": True,
-    "use_fast_transformer": False,
-    "pre_norm": False,
-    "batch_size": 64,
-    "output_compression": None
 }
 ## VIASH END
 
@@ -71,16 +65,16 @@ mdata = mu.read(par["input"])
 input_adata = mdata.mod[par["modality"]]
 adata = input_adata.copy()
 
-all_gene_ids = adata.obsm[par["input_obsm_gene_tokens"]]
-all_values = adata.obsm[par["input_obsm_tokenized_values"]]
-padding_mask = adata.obsm[par["input_obsm_padding_mask"]]
+all_gene_ids = adata.obsm[par["obsm_gene_tokens"]]
+all_values = adata.obsm[par["obsm_tokenized_values"]]
+padding_mask = adata.obsm[par["obsm_padding_mask"]]
 
 # Fetch batch ids for domain-specific batch normalization
 if par["DSBN"]:
-    if not par["input_obs_batch_label"]:
+    if not par["obs_batch_label"]:
         raise ValueError("When DSBN is set to True, you are required to provide batch labels (input_obs_batch_labels).")
     else:
-        batch_id_cats = adata.obs[par["input_obs_batch_label"]].astype("category")
+        batch_id_cats = adata.obs[par["obs_batch_label"]].astype("category")
         batch_id_labels = batch_id_cats.cat.codes.values
         batch_ids = batch_id_labels.tolist()
         batch_ids = np.array(batch_ids)
@@ -92,10 +86,10 @@ pad_value = par["pad_value"]
 special_tokens = [pad_token, "<cls>", "<eoc>"]
 
 # Fetching gene names
-if not par["input_var_gene_names"]:
+if not par["var_gene_names"]:
     genes = adata.var.index.astype(str).tolist()
 else:
-    genes = adata.var[par["input_var_gene_names"]].astype(str).tolist()
+    genes = adata.var[par["var_gene_names"]].astype(str).tolist()
 
 logger.info("Loading model, vocab and configs")
 # Model files
@@ -178,6 +172,6 @@ cell_embeddings = cell_embeddings / np.linalg.norm(
 
 logger.info("Writing output data")
 # Write output
-adata.obsm[par["embedding_layer_key"]] = cell_embeddings
+adata.obsm[par["obsm_embeddings"]] = cell_embeddings
 mdata.mod[par["modality"]] = adata
 mdata.write(par["output"], compression=par["output_compression"])
