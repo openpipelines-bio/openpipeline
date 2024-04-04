@@ -1,6 +1,5 @@
 import mudata as mu
 import numpy as np
-import torch
 from scipy.sparse import issparse
 from scgpt.tokenizer import tokenize_and_pad_batch
 from scgpt.tokenizer.gene_tokenizer import GeneVocab
@@ -16,10 +15,10 @@ par = {
     "modality": "rna",
     "input_layer": "X_binned",
     "max_seq_len": None,
-    "gene_name_layer": None,
-    "gene_id_tokens_key": "gene_id_tokens",
-    "tokenized_values_key": "values_tokenized",
-    "padding_mask_key": "padding_mask",
+    "input_var_gene_names": None,
+    "output_obsm_gene_tokens": "gene_id_tokens",
+    "output_obsm_tokenized_values": "values_tokenized",
+    "output_obsm_padding_mask": "padding_mask",
     "output_compression": None
     }
 ## VIASH END
@@ -62,10 +61,10 @@ all_counts = (
 )
 
 # Fetching gene names
-if not par["gene_name_layer"]:
+if not par["input_var_gene_names"]:
     genes = adata.var.index.astype(str).tolist()
 else: 
-    genes = adata.var[par["gene_name_layer"]].astype(str).tolist()
+    genes = adata.var[par["input_var_gene_names"]].astype(str).tolist()
 
 # Fetch gene names and look up tokens in vocab
 logger.info("Reading in vocab and fetching gene tokens")
@@ -105,9 +104,9 @@ all_gene_ids, all_values = tokenized_data["genes"], tokenized_data["values"]
 padding_mask = all_gene_ids.eq(vocab[pad_token])
 
 logger.info("Writing output data")
-adata.obsm[par["gene_id_tokens_key"]] = all_gene_ids.numpy()
-adata.obsm[par["tokenized_values_key"]] = all_values.numpy()
-adata.obsm[par["padding_mask_key"]] = padding_mask.numpy()
+adata.obsm[par["output_obsm_gene_tokens"]] = all_gene_ids.numpy()
+adata.obsm[par["output_obsm_tokenized_values"]] = all_values.numpy()
+adata.obsm[par["output_obsm_padding_mask"]] = padding_mask.numpy()
 
 mdata.mod[par["modality"]] = adata
 mdata.write(par["output"], compression=par["output_compression"])

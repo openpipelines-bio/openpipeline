@@ -79,9 +79,9 @@ def test_integration_pad_tokenize(run_component, tmp_path):
         "--input", input_preprocessed,
         "--output", output,
         "--modality", "rna",
-        "--gene_id_tokens_key", "gene_id_tokens",
-        "--tokenized_values_key", "values_tokenized",
-        "--padding_mask_key", "padding_mask",
+        "--output_obsm_gene_tokens", "gene_id_tokens",
+        "--output_obsm_tokenized_values", "values_tokenized",
+        "--output_obsm_padding_mask", "padding_mask",
         "--pad_token", "<pad>",
         "--pad_value", "-2",
         "--input_layer", "X_binned",
@@ -91,11 +91,11 @@ def test_integration_pad_tokenize(run_component, tmp_path):
 
     output_file = mu.read(output)
     output_adata = output_file.mod["rna"]
-    
-    gene_ids = output_adata.obsm["gene_id_tokens"]
-    values = output_adata.obsm["values_tokenized"]
-    padding_mask = output_adata.obsm["padding_mask"]
-    
+
+    gene_ids = output_adata.obsm["output_obsm_gene_tokens"]
+    values = output_adata.obsm["output_obsm_tokenized_values"]
+    padding_mask = output_adata.obsm["output_obsm_padding_mask"]
+
     # check output dimensions
     ## nr of genes that are tokenized 
     assert gene_ids.shape[1] <= output_adata.var.shape[0] + 1, "gene_ids shape[1] is higher than adata.var.shape[0] (n_hvg + 1)"
