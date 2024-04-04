@@ -1,4 +1,4 @@
-# openpipelines 1.0.0-rc4
+# openpipelines x.x.x
 
 ## BUG FIXES
 
