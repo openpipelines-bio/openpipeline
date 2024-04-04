@@ -34,7 +34,7 @@ functionality:
           required: false
           description: |
             The name of the layer to be padded and tokenized.
-        - name: "--input_var_gene_names"
+        - name: "--var_gene_names"
           type: string
           required: false
           description: |
@@ -55,18 +55,18 @@ functionality:
           choices: ["gzip", "lzf"]
           description: |
             The compression type for the output file.
-        - name: "--output_obsm_gene_tokens"
+        - name: "--obsm_gene_tokens"
           type: string
           default: "gene_id_tokens"
           description: |
             The key of the .obsm array containing the gene token ids
           example: values.pt
-        - name: "--output_obsm_tokenized_values"
+        - name: "--obsm_tokenized_values"
           type: string
           default: values_tokenized
           description: |
             The key of the .obsm array containing the count values of the tokenized genes
-        - name: "--output_obsm_padding_mask"
+        - name: "--obsm_padding_mask"
           type: string
           default: padding_mask
           description: |
@@ -88,7 +88,6 @@ functionality:
             The value of the padding token.
         - name: "--max_seq_len"
           type: integer
-          required: false
           description: |
             The maximum sequence length of the tokenized data.
 
