@@ -1,0 +1,17 @@
+# MuData Input
+input: # please fill in - example: "input.h5mu"
+modality: "rna"
+# obs_key: "foo"
+# var_key: "foo"
+
+# MuData Output
+# output: "$id.$key.output.h5mu"
+# output_compression: "gzip"
+
+# Metadata Input
+input_csv: # please fill in - example: "metadata.csv"
+csv_key: "id"
+
+# Nextflow input-output arguments
+publish_dir: # please fill in - example: "output/"
+# param_list: "my_params.yaml"

@@ -1,0 +1,356 @@
+functionality:
+  name: "popv"
+  namespace: "annotate"
+  version: "cellranger_multi_regex_build"
+  authors:
+  - name: "Matthias Beyens"
+    roles:
+    - "author"
+    info:
+      role: "Contributor"
+      links:
+        github: "MatthiasBeyens"
+        orcid: "0000-0003-3304-0706"
+        email: "matthias.beyens@gmail.com"
+        linkedin: "mbeyens"
+      organizations:
+      - name: "Janssen Pharmaceuticals"
+        href: "https://www.janssen.com"
+        role: "Principal Scientist"
+  - name: "Robrecht Cannoodt"
+    roles:
+    - "author"
+    info:
+      role: "Core Team Member"
+      links:
+        email: "robrecht@data-intuitive.com"
+        github: "rcannood"
+        orcid: "0000-0003-3641-729X"
+        linkedin: "robrechtcannoodt"
+      organizations:
+      - name: "Data Intuitive"
+        href: "https://www.data-intuitive.com"
+        role: "Data Science Engineer"
+      - name: "Open Problems"
+        href: "https://openproblems.bio"
+        role: "Core Member"
+  argument_groups:
+  - name: "Inputs"
+    description: "Arguments related to the input (aka query) dataset."
+    arguments:
+    - type: "file"
+      name: "--input"
+      alternatives:
+      - "-i"
+      description: "Input h5mu file."
+      info: null
+      example:
+      - "input.h5mu"
+      must_exist: true
+      create_parent: true
+      required: true
+      direction: "input"
+      multiple: false
+      multiple_sep: ":"
+      dest: "par"
+    - type: "string"
+      name: "--modality"
+      description: "Which modality to process."
+      info: null
+      default:
+      - "rna"
+      required: false
+      direction: "input"
+      multiple: false
+      multiple_sep: ":"
+      dest: "par"
+    - type: "string"
+      name: "--input_layer"
+      description: "Which layer to use. If no value is provided, the counts are assumed\
+        \ to be in the `.X` slot. Otherwise, count data is expected to be in `.layers[input_layer]`."
+      info: null
+      required: false
+      direction: "input"
+      multiple: false
+      multiple_sep: ":"
+      dest: "par"
+    - type: "string"
+      name: "--input_obs_batch"
+      description: "Key in obs field of input adata for batch information. If no value\
+        \ is provided, batch label is assumed to be unknown."
+      info: null
+      required: false
+      direction: "input"
+      multiple: false
+      multiple_sep: ":"
+      dest: "par"
+    - type: "string"
+      name: "--input_var_subset"
+      description: "Subset the input object with this column."
+      info: null
+      required: false
+      direction: "input"
+      multiple: false
+      multiple_sep: ":"
+      dest: "par"
+    - type: "string"
+      name: "--input_obs_label"
+      description: "Key in obs field of input adata for label information. This is\
+        \ only used for training scANVI. Unlabelled cells should be set to `\"unknown_celltype_label\"\
+        `."
+      info: null
+      required: false
+      direction: "input"
+      multiple: false
+      multiple_sep: ":"
+      dest: "par"
+    - type: "string"
+      name: "--unknown_celltype_label"
+      description: "If `input_obs_label` is specified, cells with this value will\
+        \ be treated as unknown and will be predicted by the model."
+      info: null
+      default:
+      - "unknown"
+      required: false
+      direction: "input"
+      multiple: false
+      multiple_sep: ":"
+      dest: "par"
+  - name: "Reference"
+    description: "Arguments related to the reference dataset."
+    arguments:
+    - type: "file"
+      name: "--reference"
+      description: "User-provided reference tissue. The data that will be used as\
+        \ reference to call cell types."
+      info: null
+      example:
+      - "TS_Bladder_filtered.h5ad"
+      must_exist: true
+      create_parent: true
+      required: true
+      direction: "input"
+      multiple: false
+      multiple_sep: ":"
+      dest: "par"
+    - type: "string"
+      name: "--reference_layer"
+      description: "Which layer to use. If no value is provided, the counts are assumed\
+        \ to be in the `.X` slot. Otherwise, count data is expected to be in `.layers[reference_layer]`."
+      info: null
+      required: false
+      direction: "input"
+      multiple: false
+      multiple_sep: ":"
+      dest: "par"
+    - type: "string"
+      name: "--reference_obs_label"
+      description: "Key in obs field of reference AnnData with cell-type information."
+      info: null
+      default:
+      - "cell_ontology_class"
+      required: false
+      direction: "input"
+      multiple: false
+      multiple_sep: ":"
+      dest: "par"
+    - type: "string"
+      name: "--reference_obs_batch"
+      description: "Key in obs field of input adata for batch information."
+      info: null
+      default:
+      - "donor_assay"
+      required: false
+      direction: "input"
+      multiple: false
+      multiple_sep: ":"
+      dest: "par"
+  - name: "Outputs"
+    description: "Output arguments."
+    arguments:
+    - type: "file"
+      name: "--output"
+      description: "Output h5mu file."
+      info: null
+      example:
+      - "output.h5mu"
+      must_exist: true
+      create_parent: true
+      required: true
+      direction: "output"
+      multiple: false
+      multiple_sep: ":"
+      dest: "par"
+    - type: "string"
+      name: "--output_compression"
+      info: null
+      example:
+      - "gzip"
+      required: false
+      choices:
+      - "gzip"
+      - "lzf"
+      direction: "input"
+      multiple: false
+      multiple_sep: ":"
+      dest: "par"
+  - name: "Arguments"
+    description: "Other arguments."
+    arguments:
+    - type: "string"
+      name: "--methods"
+      description: "Methods to call cell types. By default, runs to knn_on_scvi and\
+        \ scanvi."
+      info: null
+      example:
+      - "knn_on_scvi"
+      - "scanvi"
+      required: true
+      choices:
+      - "celltypist"
+      - "knn_on_bbknn"
+      - "knn_on_scanorama"
+      - "knn_on_scvi"
+      - "onclass"
+      - "rf"
+      - "scanvi"
+      - "svm"
+      direction: "input"
+      multiple: true
+      multiple_sep: ";"
+      dest: "par"
+  resources:
+  - type: "python_script"
+    path: "script.py"
+    is_executable: true
+  - type: "file"
+    path: "src/utils/setup_logger.py"
+  - type: "file"
+    path: "./src/workflows/utils/labels.config"
+    dest: "nextflow_labels.config"
+  description: "Performs popular major vote cell typing on single cell sequence data\
+    \ using multiple algorithms. Note that this is a one-shot version of PopV."
+  test_resources:
+  - type: "python_script"
+    path: "test.py"
+    is_executable: true
+  - type: "file"
+    path: "resources_test/annotation_test_data/"
+  - type: "file"
+    path: "resources_test/pbmc_1k_protein_v3/"
+  - type: "file"
+    path: "src/base/openpipelinetestutils"
+    dest: "openpipelinetestutils"
+  info: null
+  status: "enabled"
+  requirements:
+    commands:
+    - "ps"
+  set_wd_to_resources_dir: false
+platforms:
+- type: "docker"
+  id: "docker"
+  image: "python:3.9-slim"
+  target_organization: "openpipelines-bio"
+  target_registry: "ghcr.io"
+  target_tag: "1.0.0-rc3"
+  namespace_separator: "/"
+  resolve_volume: "Automatic"
+  chown: true
+  setup_strategy: "ifneedbepullelsecachedbuild"
+  target_image_source: "https://github.com/openpipelines-bio/openpipeline"
+  setup:
+  - type: "apt"
+    packages:
+    - "procps"
+    - "git"
+    - "build-essential"
+    - "wget"
+    interactive: false
+  - type: "python"
+    user: false
+    packages:
+    - "scanpy~=1.9.5"
+    - "statsmodels==0.14.0"
+    - "scvi-tools~=1.0.3"
+    - "popv~=0.3.2"
+    - "jax==0.4.10"
+    - "jaxlib==0.4.10"
+    - "ml-dtypes<0.3.0"
+    upgrade: true
+  - type: "python"
+    user: false
+    packages:
+    - "anndata~=0.9.1"
+    - "mudata~=0.2.3"
+    - "pandas!=2.1.2"
+    upgrade: true
+  - type: "docker"
+    run:
+    - "cd /opt && git clone --depth 1 https://github.com/YosefLab/PopV.git && \\\n\
+      \  cd PopV && git fetch --depth 1 origin tag v0.2 && git checkout v0.2\n"
+  test_setup:
+  - type: "python"
+    user: false
+    packages:
+    - "viashpy==0.6.0"
+    upgrade: true
+  entrypoint: []
+  cmd: null
+- type: "nextflow"
+  id: "nextflow"
+  directives:
+    label:
+    - "highmem"
+    - "highcpu"
+    tag: "$id"
+  auto:
+    simplifyInput: true
+    simplifyOutput: false
+    transcript: false
+    publish: false
+  config:
+    labels:
+      mem1gb: "memory = 1.GB"
+      mem2gb: "memory = 2.GB"
+      mem4gb: "memory = 4.GB"
+      mem8gb: "memory = 8.GB"
+      mem16gb: "memory = 16.GB"
+      mem32gb: "memory = 32.GB"
+      mem64gb: "memory = 64.GB"
+      mem128gb: "memory = 128.GB"
+      mem256gb: "memory = 256.GB"
+      mem512gb: "memory = 512.GB"
+      mem1tb: "memory = 1.TB"
+      mem2tb: "memory = 2.TB"
+      mem4tb: "memory = 4.TB"
+      mem8tb: "memory = 8.TB"
+      mem16tb: "memory = 16.TB"
+      mem32tb: "memory = 32.TB"
+      mem64tb: "memory = 64.TB"
+      mem128tb: "memory = 128.TB"
+      mem256tb: "memory = 256.TB"
+      mem512tb: "memory = 512.TB"
+      cpu1: "cpus = 1"
+      cpu2: "cpus = 2"
+      cpu5: "cpus = 5"
+      cpu10: "cpus = 10"
+      cpu20: "cpus = 20"
+      cpu50: "cpus = 50"
+      cpu100: "cpus = 100"
+      cpu200: "cpus = 200"
+      cpu500: "cpus = 500"
+      cpu1000: "cpus = 1000"
+    script:
+    - "includeConfig(\"nextflow_labels.config\")"
+  debug: false
+  container: "docker"
+info:
+  config: "/home/runner/work/openpipeline/openpipeline/src/annotate/popv/config.vsh.yaml"
+  platform: "docker"
+  output: "/home/runner/work/openpipeline/openpipeline/target/docker/annotate/popv"
+  executable: "/home/runner/work/openpipeline/openpipeline/target/docker/annotate/popv/popv"
+  viash_version: "0.8.5"
+  git_commit: "ddb0524184534bb21026bb7604f85cb53dddfe71"
+  git_remote: "https://github.com/openpipelines-bio/openpipeline"
+  git_tag: "0.2.0-1579-gddb0524184"

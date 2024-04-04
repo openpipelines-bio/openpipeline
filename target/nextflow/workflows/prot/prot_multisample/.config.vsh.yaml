@@ -1,0 +1,297 @@
+functionality:
+  name: "prot_multisample"
+  namespace: "workflows/prot"
+  version: "cellranger_multi_regex_build"
+  authors:
+  - name: "Dries Schaumont"
+    roles:
+    - "author"
+    info:
+      role: "Core Team Member"
+      links:
+        email: "dries@data-intuitive.com"
+        github: "DriesSchaumont"
+        orcid: "0000-0002-4389-0440"
+        linkedin: "dries-schaumont"
+      organizations:
+      - name: "Data Intuitive"
+        href: "https://www.data-intuitive.com"
+        role: "Data Scientist"
+  argument_groups:
+  - name: "Inputs"
+    arguments:
+    - type: "string"
+      name: "--id"
+      description: "ID of the concatenated file"
+      info: null
+      example:
+      - "concatenated"
+      required: true
+      direction: "input"
+      multiple: false
+      multiple_sep: ":"
+      dest: "par"
+    - type: "file"
+      name: "--input"
+      description: "Path to the samples."
+      info: null
+      example:
+      - "dataset.h5mu"
+      must_exist: true
+      create_parent: true
+      required: true
+      direction: "input"
+      multiple: false
+      multiple_sep: ":"
+      dest: "par"
+    - type: "string"
+      name: "--layer"
+      description: "Input layer to use. If not specified, .X is used."
+      info: null
+      required: false
+      direction: "input"
+      multiple: false
+      multiple_sep: ":"
+      dest: "par"
+  - name: "Outputs"
+    arguments:
+    - type: "file"
+      name: "--output"
+      description: "Destination path to the output."
+      info: null
+      example:
+      - "output.h5mu"
+      must_exist: true
+      create_parent: true
+      required: true
+      direction: "output"
+      multiple: false
+      multiple_sep: ":"
+      dest: "par"
+  - name: "QC metrics calculation options"
+    arguments:
+    - type: "string"
+      name: "--var_qc_metrics"
+      description: "Keys to select a boolean (containing only True or False) column\
+        \ from .var.\nFor each cell, calculate the proportion of total values for\
+        \ genes which are labeled 'True', \ncompared to the total sum of the values\
+        \ for all genes. Defaults to the value from\n--var_name_mitochondrial_genes.\n"
+      info: null
+      example:
+      - "ercc,highly_variable"
+      required: false
+      direction: "input"
+      multiple: true
+      multiple_sep: ";"
+      dest: "par"
+    - type: "integer"
+      name: "--top_n_vars"
+      description: "Number of top vars to be used to calculate cumulative proportions.\n\
+        If not specified, proportions are not calculated. `--top_n_vars 20,50` finds\n\
+        cumulative proportion to the 20th and 50th most expressed vars.\n"
+      info: null
+      default:
+      - 50
+      - 100
+      - 200
+      - 500
+      required: false
+      direction: "input"
+      multiple: true
+      multiple_sep: ";"
+      dest: "par"
+    - type: "string"
+      name: "--output_obs_num_nonzero_vars"
+      description: "Name of column in .obs describing, for each observation, the number\
+        \ of stored values\n(including explicit zeroes). In other words, the name\
+        \ of the column that counts\nfor each row the number of columns that contain\
+        \ data.\n"
+      info: null
+      default:
+      - "num_nonzero_vars"
+      required: false
+      direction: "input"
+      multiple: false
+      multiple_sep: ":"
+      dest: "par"
+    - type: "string"
+      name: "--output_obs_total_counts_vars"
+      description: "Name of the column for .obs describing, for each observation (row),\n\
+        the sum of the stored values in the columns.\n"
+      info: null
+      default:
+      - "total_counts"
+      required: false
+      direction: "input"
+      multiple: false
+      multiple_sep: ":"
+      dest: "par"
+    - type: "string"
+      name: "--output_var_num_nonzero_obs"
+      description: "Name of column describing, for each feature, the number of stored\
+        \ values\n(including explicit zeroes). In other words, the name of the column\
+        \ that counts\nfor each column the number of rows that contain data.\n"
+      info: null
+      default:
+      - "num_nonzero_obs"
+      required: false
+      direction: "input"
+      multiple: false
+      multiple_sep: ":"
+      dest: "par"
+    - type: "string"
+      name: "--output_var_total_counts_obs"
+      description: "Name of the column in .var describing, for each feature (column),\n\
+        the sum of the stored values in the rows.\n"
+      info: null
+      default:
+      - "total_counts"
+      required: false
+      direction: "input"
+      multiple: false
+      multiple_sep: ":"
+      dest: "par"
+    - type: "string"
+      name: "--output_var_obs_mean"
+      description: "Name of the column in .obs providing the mean of the values in\
+        \ each row.\n"
+      info: null
+      default:
+      - "obs_mean"
+      required: false
+      direction: "input"
+      multiple: false
+      multiple_sep: ":"
+      dest: "par"
+    - type: "string"
+      name: "--output_var_pct_dropout"
+      description: "Name of the column in .obs providing for each feature the percentage\
+        \ of\nobservations the feature does not appear on (i.e. is missing). Same\
+        \ as `--output_var_num_nonzero_obs`\nbut percentage based.\n"
+      info: null
+      default:
+      - "pct_dropout"
+      required: false
+      direction: "input"
+      multiple: false
+      multiple_sep: ":"
+      dest: "par"
+  resources:
+  - type: "nextflow_script"
+    path: "main.nf"
+    is_executable: true
+    entrypoint: "run_wf"
+  - type: "file"
+    path: "src/workflows/utils/"
+  - type: "file"
+    path: "./src/workflows/utils/labels.config"
+    dest: "nextflow_labels.config"
+  description: "Processing unimodal multi-sample ADT data."
+  test_resources:
+  - type: "nextflow_script"
+    path: "test.nf"
+    is_executable: true
+    entrypoint: "test_wf"
+  - type: "file"
+    path: "resources_test/pbmc_1k_protein_v3"
+  - type: "file"
+    path: "src/base/openpipelinetestutils"
+    dest: "openpipelinetestutils"
+  info:
+    image: "/images/concepts/fig_workflow_multiomics_adt_multisample.svg"
+  status: "enabled"
+  requirements:
+    commands:
+    - "ps"
+  dependencies:
+  - name: "transform/clr"
+    repository:
+      type: "local"
+      localPath: ""
+    foundConfigPath: "/home/runner/work/openpipeline/openpipeline/src/transform/clr/config.vsh.yaml"
+    configInfo:
+      functionalityName: "clr"
+      git_tag: "0.2.0-1579-gddb0524184"
+      git_remote: "https://github.com/openpipelines-bio/openpipeline"
+      viash_version: "0.8.5"
+      config: "/home/runner/work/openpipeline/openpipeline/src/transform/clr/config.vsh.yaml"
+      functionalityNamespace: "transform"
+      output: ""
+      platform: ""
+      git_commit: "ddb0524184534bb21026bb7604f85cb53dddfe71"
+      executable: "/nextflow/transform/clr/main.nf"
+    writtenPath: "/home/runner/work/openpipeline/openpipeline/target/nextflow/transform/clr"
+  - name: "workflows/qc/qc"
+    alias: "prot_qc"
+    repository:
+      type: "local"
+      localPath: ""
+    foundConfigPath: "/home/runner/work/openpipeline/openpipeline/src/workflows/qc/qc/config.vsh.yaml"
+    configInfo:
+      functionalityName: "qc"
+      git_tag: "0.2.0-1579-gddb0524184"
+      git_remote: "https://github.com/openpipelines-bio/openpipeline"
+      viash_version: "0.8.5"
+      config: "/home/runner/work/openpipeline/openpipeline/src/workflows/qc/qc/config.vsh.yaml"
+      functionalityNamespace: "workflows/qc"
+      output: ""
+      platform: ""
+      git_commit: "ddb0524184534bb21026bb7604f85cb53dddfe71"
+      executable: "/nextflow/workflows/qc/qc/main.nf"
+    writtenPath: "/home/runner/work/openpipeline/openpipeline/target/nextflow/workflows/qc/qc"
+  set_wd_to_resources_dir: false
+platforms:
+- type: "nextflow"
+  id: "nextflow"
+  directives:
+    tag: "$id"
+  auto:
+    simplifyInput: true
+    simplifyOutput: false
+    transcript: false
+    publish: false
+  config:
+    labels:
+      mem1gb: "memory = 1.GB"
+      mem2gb: "memory = 2.GB"
+      mem4gb: "memory = 4.GB"
+      mem8gb: "memory = 8.GB"
+      mem16gb: "memory = 16.GB"
+      mem32gb: "memory = 32.GB"
+      mem64gb: "memory = 64.GB"
+      mem128gb: "memory = 128.GB"
+      mem256gb: "memory = 256.GB"
+      mem512gb: "memory = 512.GB"
+      mem1tb: "memory = 1.TB"
+      mem2tb: "memory = 2.TB"
+      mem4tb: "memory = 4.TB"
+      mem8tb: "memory = 8.TB"
+      mem16tb: "memory = 16.TB"
+      mem32tb: "memory = 32.TB"
+      mem64tb: "memory = 64.TB"
+      mem128tb: "memory = 128.TB"
+      mem256tb: "memory = 256.TB"
+      mem512tb: "memory = 512.TB"
+      cpu1: "cpus = 1"
+      cpu2: "cpus = 2"
+      cpu5: "cpus = 5"
+      cpu10: "cpus = 10"
+      cpu20: "cpus = 20"
+      cpu50: "cpus = 50"
+      cpu100: "cpus = 100"
+      cpu200: "cpus = 200"
+      cpu500: "cpus = 500"
+      cpu1000: "cpus = 1000"
+    script:
+    - "includeConfig(\"nextflow_labels.config\")"
+  debug: false
+  container: "docker"
+info:
+  config: "/home/runner/work/openpipeline/openpipeline/src/workflows/prot/prot_multisample/config.vsh.yaml"
+  platform: "nextflow"
+  output: "/home/runner/work/openpipeline/openpipeline/target/nextflow/workflows/prot/prot_multisample"
+  executable: "/home/runner/work/openpipeline/openpipeline/target/nextflow/workflows/prot/prot_multisample/main.nf"
+  viash_version: "0.8.5"
+  git_commit: "ddb0524184534bb21026bb7604f85cb53dddfe71"
+  git_remote: "https://github.com/openpipelines-bio/openpipeline"
+  git_tag: "0.2.0-1579-gddb0524184"
