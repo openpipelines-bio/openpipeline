@@ -4,6 +4,8 @@
 
 * `mapping/cellranger_multi`: Fix the regex for the fastq input files to allow dropping the lane from the input file names (e.g. `_L001`) (PR #778).
 
+* `workflows/rna/rna_singlesample`: Fix argument passing to the `qc` subworkflow (PR #779).
+
 # openpipelines 1.0.0-rc3
 
 ## BREAKING CHANGES
