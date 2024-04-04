@@ -63,14 +63,12 @@ functionality:
             The key of the .obsm array containing the padding mask.
         - name: "--var_gene_names"
           type: string
-          required: true
           description: |
             The name of the .var column containing gene names. When no gene_name_layer is provided, the .var index will be used.
         - name: "--obs_batch_label"
-          required: true
           type: string
           description: |
-            The name of the adata.obs column containing the batch labels.
+            The name of the adata.obs column containing the batch labels. Must be provided when 'DSBN' is set to True.
 
     - name: Outputs
       arguments:
@@ -149,4 +147,4 @@ platforms:
         __merge__: [ /src/base/requirements/viashpy.yaml ]
   - type: nextflow
     directives:
-      label: [midmem]
+      label: [ midmem]
