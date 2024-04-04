@@ -11,11 +11,16 @@ workflow run_wf {
     }
     // Check for correctness of mitochondrial gene detection arguments
     | map { id, state ->
+      def new_state = []
       if (state.obs_name_mitochondrial_fraction && !state.var_name_mitochondrial_genes) {
         throw new RuntimeException("Using --obs_name_mitochondrial_fraction requires --var_name_mitochondrial_genes.")
       }
-      if ((state.min_fraction_mito != null || state.max_fraction_mito != null) && !state.obs_name_mitochondrial_fraction) {
-        throw new RuntimeException("Enabling --min_fraction_mito or --max_fraction_mito requires --obs_name_mitochondrial_fraction.")
+      if (!state.obs_name_mitochondrial_fraction && state.var_name_mitochondrial_genes) {
+        println("Notice: Setting --obs_name_mitochondrial_fraction to 'fraction_${state.var_name_mitochondrial_genes}'.")
+        new_state.obs_name_mitochondrial_fraction = "fraction_${state.var_name_mitochondrial_genes}"
+      }
+      if ((state.min_fraction_mito != null || state.max_fraction_mito != null) && !state.var_name_mitochondrial_genes) {
+        throw new RuntimeException("Enabling --min_fraction_mito or --max_fraction_mito requires --var_name_mitochondrial_genes.")
       }
       if (state.var_gene_names && !state.var_name_mitochondrial_genes) {
         System.err.println("Warning: --var_gene_names is set, but not --var_name_mitochondrial_genes. \
@@ -27,7 +32,7 @@ workflow run_wf {
                            --mitochondrial_gene_regex is only required for mitochondrial gene detection and does \
                            nothing while not also setting --var_name_mitochondrial_genes")
       }
-      [id, state]
+      [id, state + new_state]
     }
     | qc.run(
       fromState: { id, state ->
@@ -36,6 +41,7 @@ workflow run_wf {
         // This behaviour is optional based on the presence of var_name_mitochondrial_genes
         // The behavior of other components must be tuned to this argument as well
         def args = [
+          "id": id,
           "input": state.input,
           // disable other qc metric calculations
           // only mitochondrial gene detection is required at this point
@@ -57,10 +63,10 @@ workflow run_wf {
           assert new_var_qc_metrics instanceof List
           // Add the mitochondrial genes var column to the columns to calculate statistics for if set.
           new_var_qc_metrics = ((new_var_qc_metrics as Set) + [state.var_name_mitochondrial_genes]) as List
-
+          
           args += [
             "var_qc_metrics": new_var_qc_metrics,
-            "obs_name_mitochondrial_fraction": state.obs_name_mitochondrial_fraction ?: "fraction_${state.var_name_mitochondrial_genes}",
+            "obs_name_mitochondrial_fraction": state.obs_name_mitochondrial_fraction,
             "var_gene_names": state.var_gene_names,
             "var_name_mitochondrial_genes": state.var_name_mitochondrial_genes,
             "mitochondrial_gene_regex": state.mitochondrial_gene_regex
@@ -79,7 +85,7 @@ workflow run_wf {
           "obs_name_filter": "filter_mitochondrial",
           "min_fraction": state.min_fraction_mito,
           "max_fraction": state.max_fraction_mito,
-          "obs_fraction_column": state.obs_name_mitochondrial_fraction ? state.obs_name_mitochondrial_fraction : "fraction_$state.var_name_mitochondrial_genes",
+          "obs_fraction_column": state.obs_name_mitochondrial_fraction,
         ]
       },
       toState: ["input": "output"]
