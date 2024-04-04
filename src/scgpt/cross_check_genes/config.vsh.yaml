@@ -30,12 +30,12 @@ functionality:
           example: resources_test/scgpt/vocab.json
           description: |
             Model vocabulary file directory.
-        - name: "--gene_name_layer"
+        - name: "--input_var_gene_names"
           type: string
           example: "gene_name"
           required: false
           description: |
-            The name of the adata.var column containing gene names. When no gene_name_layer is provided, the .var index will be used.
+            The name of the .var column containing gene names. When no gene_name_layer is provided, the .var index will be used.
 
     - name: Outputs
       arguments:
@@ -45,7 +45,7 @@ functionality:
           required: true
           example: output.h5mu
           description: |
-            The output cross-checked anndata file.
+            Output h5mu file subset for genes present in the vocabulary.
 
     - name: Arguments
       arguments:
