@@ -60,14 +60,12 @@ functionality:
             The key of the .obsm array containing the padding mask.
         - name: "--input_var_gene_names"
           type: string
-          default: "gene_name"
           description: |
             The name of the .var column containing gene names. When no gene_name_layer is provided, the .var index will be used.
-        - name: "--input_obs_batch_id"
+        - name: "--input_obs_batch_label"
           type: string
-          default: "batch_id"
           description: |
-            The name of the adata.obs column containing the batch ids.
+            The name of the adata.obs column containing the batch labels.
 
     - name: Outputs
       arguments:
