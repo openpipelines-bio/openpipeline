@@ -278,28 +278,31 @@ def test_cellranger_multi_combined_helper_and_global_input(run_component, random
 
 
 def test_cellranger_multi_with_alternative_names(run_component, random_path):
+    import shutil
+    import gzip
+
     input_dir = random_path()
     input_dir.mkdir()
 
-    # remove L001_ from input1
+    # Note: if one input file does not use any lanes, none of the input files should use lanes
+    # remove lanes
     input1_R1_link = input_dir / "5k_human_antiCMV_T_TBNK_connect_GEX_1_subset_S1_R1_001.fastq.gz"
     input1_R2_link = input_dir / "5k_human_antiCMV_T_TBNK_connect_GEX_1_subset_S1_R2_001.fastq.gz"
+    input2_R1_link = input_dir / "5k_human_antiCMV_T_TBNK_connect_AB_subset_S2_R1_001.fastq.gz"
+    input2_R2_link = input_dir / "5k_human_antiCMV_T_TBNK_connect_AB_subset_S2_R2_001.fastq.gz"
+    input3_R1_link = input_dir / "5k_human_antiCMV_T_TBNK_connect_VDJ_subset_S1_R1_001.fastq"
+    input3_R2_link = input_dir / "5k_human_antiCMV_T_TBNK_connect_VDJ_subset_S1_R2_001.fastq"
 
-    # use L004_ instead of L001_
-    input2_R1_link = input_dir / "5k_human_antiCMV_T_TBNK_connect_AB_subset_S2_L004_R1_001.fastq.gz"
-    input2_R2_link = input_dir / "5k_human_antiCMV_T_TBNK_connect_AB_subset_S2_L004_R2_001.fastq.gz"
+    # copy files
+    shutil.copy(input1_R1, input1_R1_link)
+    shutil.copy(input1_R2, input1_R2_link)
+    shutil.copy(input2_R1, input2_R1_link)
+    shutil.copy(input2_R2, input2_R2_link)
 
-    # use fq instead of fastq
-    input3_R1_link = input_dir / "5k_human_antiCMV_T_TBNK_connect_VDJ_subset_S1_L001_R1_001.fq.gz"
-    input3_R2_link = input_dir / "5k_human_antiCMV_T_TBNK_connect_VDJ_subset_S1_L001_R2_001.fq.gz"
-
-    # create symlink
-    input1_R1_link.symlink_to(input1_R1)
-    input1_R2_link.symlink_to(input1_R2)
-    input2_R1_link.symlink_to(input2_R1)
-    input2_R2_link.symlink_to(input2_R2)
-    input3_R1_link.symlink_to(input3_R1)
-    input3_R2_link.symlink_to(input3_R2)
+    with gzip.open(input3_R1, 'rb') as f_in:
+        shutil.copyfileobj(f_in, input2_R2_link)
+    with gzip.open(input3_R2, 'rb') as f_in:
+        shutil.copyfileobj(f_in, input3_R2_link)
 
     outputpath = random_path()
     args = [
