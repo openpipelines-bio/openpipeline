@@ -42,27 +42,32 @@ functionality:
           example: args.json
           description: |
             Path to model config file.
-        - name: "--input_obsm_gene_tokens"
+        - name: "--obsm_gene_tokens"
+          required: true
           type: string
           default: "gene_id_tokens"
           description: |
             The key of the .obsm array containing the gene token ids
           example: values.pt
-        - name: "--input_obsm_tokenized_values"
+        - name: "--obsm_tokenized_values"
           type: string
+          required: true
           default: values_tokenized
           description: |
             The key of the .obsm array containing the count values of the tokenized genes
-        - name: "--input_obsm_padding_mask"
+        - name: "--obsm_padding_mask"
           type: string
+          required: true
           default: padding_mask
           description: |
             The key of the .obsm array containing the padding mask.
-        - name: "--input_var_gene_names"
+        - name: "--var_gene_names"
           type: string
+          required: true
           description: |
             The name of the .var column containing gene names. When no gene_name_layer is provided, the .var index will be used.
-        - name: "--input_obs_batch_label"
+        - name: "--obs_batch_label"
+          required: true
           type: string
           description: |
             The name of the adata.obs column containing the batch labels.
@@ -83,7 +88,7 @@ functionality:
           choices: ["gzip", "lzf"]
           description: |
             The compression algorithm to use for the output h5mu file.
-        - name: "--embedding_layer_key"
+        - name: "--obsm_embeddings"
           type: string
           default: "X_scGPT"
           required: false
@@ -113,7 +118,7 @@ functionality:
           type: boolean
           default: true
           description: |
-            Apply domain-specific batch normalization
+            Apply domain-specific batch normalization. When set to True, 'obs_batch_labels' must be set as well.
         - name: "--batch_size"
           type: integer
           default: 64
