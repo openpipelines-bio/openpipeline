@@ -1,7 +1,7 @@
 functionality:
   name: "bbknn"
   namespace: "neighbors"
-  version: "cellrangermulti_build"
+  version: "main_build"
   authors:
   - name: "Dries De Maeyer"
     roles:
@@ -209,7 +209,7 @@ platforms:
   image: "python:3.10-slim"
   target_organization: "openpipelines-bio"
   target_registry: "ghcr.io"
-  target_tag: "1.0.0-rc3"
+  target_tag: "main_build"
   namespace_separator: "/"
   resolve_volume: "Automatic"
   chown: true
@@ -294,5 +294,5 @@ info:
   output: "/home/runner/work/openpipeline/openpipeline/target/docker/neighbors/bbknn"
   executable: "/home/runner/work/openpipeline/openpipeline/target/docker/neighbors/bbknn/bbknn"
   viash_version: "0.8.5"
-  git_commit: "149b7b1e21f8c76193211f4605b021ba35ab5e44"
+  git_commit: "d7f3f12fda98a87ebccfaa3c9523c2ef8a21450f"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"
