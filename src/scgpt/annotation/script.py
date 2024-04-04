@@ -28,9 +28,9 @@ from scgpt.utils import set_seed
 par = {
     "input": "resources_test/scgpt/test_resources/Kim2020_Lung_preprocessed.h5mu",
     "modality": "rna",
-    "input_gene_ids": 'resources_test/scgpt/test_resources/Kim2020_Lung_gene_ids.pt',
-    "input_values": 'resources_test/scgpt/test_resources/Kim2020_Lung_values.pt',
-    "input_padding_mask": 'resources_test/scgpt/test_resources/Kim2020_Lung_padding_mask.pt',
+    "input_obsm_gene_tokens": 'gene_id_tokens',
+    "input_obsm_tokenized_values": 'values_tokenized',
+    # "input_obsm_padding_mask": 'padding_mask',
     "model": "resources_test/scgpt/source/best_model.pt",
     "model_config": "resources_test/scgpt/source/args.json",
     "model_vocab": "resources_test/scgpt/source/vocab.json",
@@ -188,8 +188,11 @@ model.to(device)
 batch_ids = adata.obs["batch_id"].tolist()
 batch_ids = np.array(batch_ids)
 
-input_gene_ids = torch.load(par["input_gene_ids"])
-input_values = torch.load(par["input_values"])
+try:
+    input_gene_ids = adata.obsm[par["input_obsm_gene_tokens"]]
+    input_values = adata.obsm[par["input_obsm_tokenized_values"]]
+except:
+    raise KeyError(f"Gene tokens not found under .obsm['{par['input_obsm_gene_tokens']}'] or values not found under .obsm['{par['input_obsm_tokenized_values']}']. Check the specified input keys or run tokenize_pad first.")
 
 test_data_pt = {
     "gene_ids": input_gene_ids,
