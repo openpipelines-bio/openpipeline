@@ -80,7 +80,6 @@ functionality:
         - name: "--input_layer"
           type: string
           required: false
-          default: "X_binned"
           description: "Input layer to start from."
         - name: "--gene_name_layer"
           type: string
@@ -136,6 +135,21 @@ functionality:
           required: false
           description: |
             Whether to use domain-specific batch normalization.
+        - name: "--n_hvg"
+          type: integer
+          default: 1200
+          description: |
+            Number of highly variable genes to subset for.
+        - name: "--var_gene_names"
+          type: string
+          required: false
+          description: |
+            The name of the adata.var column containing gene names. When no gene_name_layer is provided, the .var index will be used.
+        - name: "--binned_layer"
+          type: string
+          default: "binned"
+          description: |
+            The name of the adata layer to write the binned data to.
 
   resources:
     - type: nextflow_script
@@ -146,6 +160,10 @@ functionality:
   dependencies:
     - name: scgpt/pad_tokenize
     - name: scgpt/cell_type_inference
+    - name: scgpt/cross_check_genes
+    - name: scgpt/binning
+    - name: feature_annotation/highly_variable_features_scanpy
+    - name: filter/do_filter
   test_resources:
     # - type: nextflow_script
     #   path: test.nf
