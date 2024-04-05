@@ -42,12 +42,12 @@ def test_cross_check_invalid_gene_layer_raises(run_component, random_path):
         "--input", input_path,
         "--output",  output_path,
         "--vocab_file", vocab_path,
-        "--input_var_gene_names", "dummy_gene",
+        "--input_var_gene_names", "dummy_var",
     ]
 
     with pytest.raises(subprocess.CalledProcessError) as err:
         run_component(args)
-    assert re.search(r"ValueError: Gene name column 'dummy_gene' not found in .mod\['rna'\]\.obs\.",
+    assert re.search(r"ValueError: Gene name column 'dummy_var' not found in .mod\['rna'\]\.obs\.",
                      err.value.stdout.decode('utf-8'))
     
 if __name__ == '__main__':
