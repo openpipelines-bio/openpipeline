@@ -1,7 +1,7 @@
 functionality:
   name: "scgpt_integration"
   namespace: "workflows/integration"
-  description: "Processing unimodal RNA transcriptomics data for scGPT-based applications."
+  description: "Generation of cell embeddings for the integration of transcriptomics data using scGPT."
   authors:
     - __merge__: /src/authors/dorien_roosen.yaml
       roles: [ author, maintainer ]
@@ -17,30 +17,46 @@ functionality:
           type: file
           required: true
           description: Path to the sample.
-          example: dataset.h5mu
+          example: input.h5mu
         - name: "--modality"
           type: string
           default: "rna"
           required: false
-        - name: "--vocab_file"
+        - name: "--model"
+          type: file
+          required: true
+          example: resources_test/scgpt/best_model.pt
+          description: |
+            Path to the model file.
+        - name: "--model_vocab"
           type: file
           direction: input
           required: true
           example: resources_test/scgpt/vocab.json
           description: |
             Model vocabulary file directory.
+        - name: "--model_config"
+          type: file
+          direction: input
+          required: true
+          example: args.json
+          description: |
+            Path to model config file.
         - name: "--input_layer"
           type: string
           required: False
           description: |
             Mudata layer (key from .layers) to use as input data for binning. If not specified, .X is used.
-        - name: "--gene_name_layer"
+        - name: "--var_gene_names"
           type: string
-          example: "gene_name"
           required: false
-          default: "gene_name"
           description: |
-            The name of the adata.var column containing gene names.
+            The name of the adata.var column containing gene names. When no gene_name_layer is provided, the .var index will be used.
+        - name: "--obs_batch_label"
+          type: string
+          required: false
+          description: |
+            The name of the adata.obs column containing the batch labels.
 
     - name: "Outputs"
       arguments:
@@ -62,6 +78,28 @@ functionality:
           default: "binned"
           description: |
             The name of the adata layer to write the binned data to.
+        - name: "--embedding_layer"
+          type: string
+          default: "X_scGPT"
+          required: false
+          description: |
+            The name of the adata.obsm array to which scGPT embeddings will be written.
+        - name: "--obsm_gene_tokens"
+          type: string
+          default: "gene_id_tokens"
+          description: |
+            The key of the .obsm array containing the gene token ids
+          example: values.pt
+        - name: "--obsm_tokenized_values"
+          type: string
+          default: values_tokenized
+          description: |
+            The key of the .obsm array containing the count values of the tokenized genes
+        - name: "--obsm_padding_mask"
+          type: string
+          default: padding_mask
+          description: |
+            The key of the .obsm array containing the padding mask.
 
     - name: "Arguments"
       arguments:
@@ -71,6 +109,12 @@ functionality:
           required: false
           description: |
             The padding token used in the model.
+        - name: "--pad_value"
+          type: integer
+          default: -2
+          required: false
+          description: |
+            The value of the padding token.
         - name: "--n_input_bins"
           type: integer
           default: 51
@@ -83,7 +127,26 @@ functionality:
           default: 1200
           description: |
             Number of highly variable genes to subset for.
-
+        - name: "--max_seq_len"
+          type: integer
+          required: false
+          description: |
+            The maximum sequence length of the tokenized data.
+        - name: "--dropout"
+          type: double
+          default: 0.2
+          description: |
+            Dropout value used for the transformer encoder layer
+        - name: DSBN
+          type: boolean
+          default: true
+          description: |
+            Apply domain-specific batch normalization
+        - name: "--batch_size"
+          type: integer
+          default: 64
+          description: |
+            The batch size to be used for inference 
   resources:
     - type: nextflow_script
       path: main.nf
@@ -93,6 +156,8 @@ functionality:
     - name: scgpt/binning
     - name: feature_annotation/highly_variable_features_scanpy
     - name: filter/do_filter
+    - name: scgpt/pad_tokenize
+    - name: scgpt/embedding
   test_resources:
     # - type: nextflow_script
     #   path: test.nf

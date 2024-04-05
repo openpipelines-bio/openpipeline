@@ -17,7 +17,7 @@ par = {
     "model_vocab": "resources_test/scgpt/source/vocab.json",
     "output": "Kim2020_Lung_embedded.h5ad",
     "input_var_gene_names": "gene_name",
-    "input_obs_batch_id": "batch_id",
+    "input_obs_batch_label": "sample",
     "embedding_layer_key": "X_scGPT",
     "pad_token": "<pad>",
     "pad_value": -2,
@@ -75,10 +75,16 @@ all_gene_ids = adata.obsm[par["input_obsm_gene_tokens"]]
 all_values = adata.obsm[par["input_obsm_tokenized_values"]]
 padding_mask = adata.obsm[par["input_obsm_padding_mask"]]
 
-# Fetch batch ids
-batch_ids = adata.obs[par["input_obs_batch_id"]].tolist()
-batch_ids = np.array(batch_ids)
-num_batch_types = len(set(batch_ids))
+# Fetch batch ids for domain-specific batch normalization
+if par["DSBN"]:
+    if not par["input_obs_batch_label"]:
+        raise ValueError("When DSBN is set to True, you are required to provide batch labels (input_obs_batch_labels).")
+    else:
+        batch_id_cats = adata.obs[par["input_obs_batch_label"]].astype("category")
+        batch_id_labels = batch_id_cats.cat.codes.values
+        batch_ids = batch_id_labels.tolist()
+        batch_ids = np.array(batch_ids)
+        num_batch_types = len(set(batch_ids))
 
 # Set padding specs
 pad_token = par["pad_token"]
@@ -134,7 +140,7 @@ model = TransformerModel(
     ecs_threshold=0.8,  #TODO: parametrize for decoder-based operations
     do_dab=True, #TODO: parametrize for decoder-based operations
     use_batch_labels=True,
-    num_batch_labels=num_batch_types,
+    num_batch_labels=num_batch_types if par["DSBN"] else None,
     domain_spec_batchnorm=par["DSBN"],
     input_emb_style="continuous",  # scGPT default
     # n_input_bins=par["n_input_bins"],  # only applies when input_emb_style is "category"

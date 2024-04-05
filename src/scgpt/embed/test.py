@@ -1,9 +1,7 @@
 import pytest
 import sys
 import mudata as mu
-import torch
 import numpy as np
-from pathlib import Path
 from scipy.sparse import issparse
 from scgpt.tokenizer import tokenize_and_pad_batch
 from scgpt.tokenizer.gene_tokenizer import GeneVocab
@@ -125,6 +123,7 @@ def test_integration_embedding(run_component, tmp_path):
         "--model", model_file,
         "--model_vocab", vocab_file,
         "--model_config", model_config_file,
+        "--input_obs_batch_label", "sample",
         "--input_obsm_gene_tokens", "gene_id_tokens",
         "--input_obsm_tokenized_values", "values_tokenized",
         "--input_obsm_padding_mask", "padding_mask",

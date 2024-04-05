@@ -60,14 +60,13 @@ functionality:
             The key of the .obsm array containing the padding mask.
         - name: "--input_var_gene_names"
           type: string
-          default: "gene_name"
           description: |
             The name of the .var column containing gene names. When no gene_name_layer is provided, the .var index will be used.
-        - name: "--input_obs_batch_id"
+        - name: "--input_obs_batch_label"
           type: string
-          default: "batch_id"
           description: |
-            The name of the adata.obs column containing the batch ids.
+            The name of the adata.obs column containing the batch labels.
+
     - name: Outputs
       arguments:
         - name: "--output"
@@ -90,6 +89,7 @@ functionality:
           required: false
           description: |
             The name of the adata.obsm array to which scGPT embeddings will be written.
+
     - name: Arguments
       arguments:
         - name: "--pad_token"
@@ -119,6 +119,7 @@ functionality:
           default: 64
           description: |
             The batch size to be used for inference
+
   resources:
     - type: python_script
       path: script.py
