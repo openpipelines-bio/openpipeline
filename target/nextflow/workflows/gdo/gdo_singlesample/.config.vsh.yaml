@@ -1,0 +1,245 @@
+functionality:
+  name: "gdo_singlesample"
+  namespace: "workflows/gdo"
+  version: "rna_singlesample_args_build"
+  authors:
+  - name: "Dries Schaumont"
+    roles:
+    - "author"
+    info:
+      role: "Core Team Member"
+      links:
+        email: "dries@data-intuitive.com"
+        github: "DriesSchaumont"
+        orcid: "0000-0002-4389-0440"
+        linkedin: "dries-schaumont"
+      organizations:
+      - name: "Data Intuitive"
+        href: "https://www.data-intuitive.com"
+        role: "Data Scientist"
+  argument_groups:
+  - name: "Input"
+    arguments:
+    - type: "string"
+      name: "--id"
+      description: "ID of the sample."
+      info: null
+      example:
+      - "foo"
+      required: true
+      direction: "input"
+      multiple: false
+      multiple_sep: ":"
+      dest: "par"
+    - type: "file"
+      name: "--input"
+      description: "Path to the sample."
+      info: null
+      example:
+      - "dataset.h5mu"
+      must_exist: true
+      create_parent: true
+      required: true
+      direction: "input"
+      multiple: false
+      multiple_sep: ":"
+      dest: "par"
+    - type: "string"
+      name: "--layer"
+      description: "Input layer to start from. By default, .X will be used."
+      info: null
+      required: false
+      direction: "input"
+      multiple: false
+      multiple_sep: ":"
+      dest: "par"
+  - name: "Output"
+    arguments:
+    - type: "file"
+      name: "--output"
+      description: "Destination path to the output."
+      info: null
+      example:
+      - "output.h5mu"
+      must_exist: true
+      create_parent: true
+      required: true
+      direction: "output"
+      multiple: false
+      multiple_sep: ":"
+      dest: "par"
+  - name: "Filtering options"
+    arguments:
+    - type: "integer"
+      name: "--min_counts"
+      description: "Minimum number of counts captured per cell."
+      info: null
+      example:
+      - 200
+      required: false
+      direction: "input"
+      multiple: false
+      multiple_sep: ":"
+      dest: "par"
+    - type: "integer"
+      name: "--max_counts"
+      description: "Maximum number of counts captured per cell."
+      info: null
+      example:
+      - 5000000
+      required: false
+      direction: "input"
+      multiple: false
+      multiple_sep: ":"
+      dest: "par"
+    - type: "integer"
+      name: "--min_guides_per_cell"
+      description: "Minimum of non-zero values per cell."
+      info: null
+      example:
+      - 200
+      required: false
+      direction: "input"
+      multiple: false
+      multiple_sep: ":"
+      dest: "par"
+    - type: "integer"
+      name: "--max_guides_per_cell"
+      description: "Maximum of non-zero values per cell."
+      info: null
+      example:
+      - 1500000
+      required: false
+      direction: "input"
+      multiple: false
+      multiple_sep: ":"
+      dest: "par"
+    - type: "integer"
+      name: "--min_cells_per_guide"
+      description: "Minimum of non-zero values per gene."
+      info: null
+      example:
+      - 3
+      required: false
+      direction: "input"
+      multiple: false
+      multiple_sep: ":"
+      dest: "par"
+  resources:
+  - type: "nextflow_script"
+    path: "main.nf"
+    is_executable: true
+    entrypoint: "run_wf"
+  - type: "file"
+    path: "src/workflows/utils/"
+  - type: "file"
+    path: "./src/workflows/utils/labels.config"
+    dest: "nextflow_labels.config"
+  description: "Processing unimodal single-sample guide-derived oligonucleotide (GDO)\
+    \ data."
+  test_resources:
+  - type: "nextflow_script"
+    path: "test.nf"
+    is_executable: true
+    entrypoint: "test_wf"
+  - type: "file"
+    path: "resources_test/10x_5k_lung_crispr"
+  - type: "file"
+    path: "src/base/openpipelinetestutils"
+    dest: "openpipelinetestutils"
+  info: null
+  status: "enabled"
+  requirements:
+    commands:
+    - "ps"
+  dependencies:
+  - name: "filter/filter_with_counts"
+    repository:
+      type: "local"
+      localPath: ""
+    foundConfigPath: "/home/runner/work/openpipeline/openpipeline/src/filter/filter_with_counts/config.vsh.yaml"
+    configInfo:
+      functionalityName: "filter_with_counts"
+      git_tag: "0.2.0-1580-ge75fdcc527"
+      git_remote: "https://github.com/openpipelines-bio/openpipeline"
+      viash_version: "0.8.5"
+      config: "/home/runner/work/openpipeline/openpipeline/src/filter/filter_with_counts/config.vsh.yaml"
+      functionalityNamespace: "filter"
+      output: ""
+      platform: ""
+      git_commit: "e75fdcc52730044249df789ff2c4c89acc1ad4b8"
+      executable: "/nextflow/filter/filter_with_counts/main.nf"
+    writtenPath: "/home/runner/work/openpipeline/openpipeline/target/nextflow/filter/filter_with_counts"
+  - name: "filter/do_filter"
+    repository:
+      type: "local"
+      localPath: ""
+    foundConfigPath: "/home/runner/work/openpipeline/openpipeline/src/filter/do_filter/config.vsh.yaml"
+    configInfo:
+      functionalityName: "do_filter"
+      git_tag: "0.2.0-1580-ge75fdcc527"
+      git_remote: "https://github.com/openpipelines-bio/openpipeline"
+      viash_version: "0.8.5"
+      config: "/home/runner/work/openpipeline/openpipeline/src/filter/do_filter/config.vsh.yaml"
+      functionalityNamespace: "filter"
+      output: ""
+      platform: ""
+      git_commit: "e75fdcc52730044249df789ff2c4c89acc1ad4b8"
+      executable: "/nextflow/filter/do_filter/main.nf"
+    writtenPath: "/home/runner/work/openpipeline/openpipeline/target/nextflow/filter/do_filter"
+  set_wd_to_resources_dir: false
+platforms:
+- type: "nextflow"
+  id: "nextflow"
+  directives:
+    tag: "$id"
+  auto:
+    simplifyInput: true
+    simplifyOutput: false
+    transcript: false
+    publish: false
+  config:
+    labels:
+      mem1gb: "memory = 1.GB"
+      mem2gb: "memory = 2.GB"
+      mem4gb: "memory = 4.GB"
+      mem8gb: "memory = 8.GB"
+      mem16gb: "memory = 16.GB"
+      mem32gb: "memory = 32.GB"
+      mem64gb: "memory = 64.GB"
+      mem128gb: "memory = 128.GB"
+      mem256gb: "memory = 256.GB"
+      mem512gb: "memory = 512.GB"
+      mem1tb: "memory = 1.TB"
+      mem2tb: "memory = 2.TB"
+      mem4tb: "memory = 4.TB"
+      mem8tb: "memory = 8.TB"
+      mem16tb: "memory = 16.TB"
+      mem32tb: "memory = 32.TB"
+      mem64tb: "memory = 64.TB"
+      mem128tb: "memory = 128.TB"
+      mem256tb: "memory = 256.TB"
+      mem512tb: "memory = 512.TB"
+      cpu1: "cpus = 1"
+      cpu2: "cpus = 2"
+      cpu5: "cpus = 5"
+      cpu10: "cpus = 10"
+      cpu20: "cpus = 20"
+      cpu50: "cpus = 50"
+      cpu100: "cpus = 100"
+      cpu200: "cpus = 200"
+      cpu500: "cpus = 500"
+      cpu1000: "cpus = 1000"
+    script:
+    - "includeConfig(\"nextflow_labels.config\")"
+  debug: false
+  container: "docker"
+info:
+  config: "/home/runner/work/openpipeline/openpipeline/src/workflows/gdo/gdo_singlesample/config.vsh.yaml"
+  platform: "nextflow"
+  output: "/home/runner/work/openpipeline/openpipeline/target/nextflow/workflows/gdo/gdo_singlesample"
+  executable: "/home/runner/work/openpipeline/openpipeline/target/nextflow/workflows/gdo/gdo_singlesample/main.nf"
+  viash_version: "0.8.5"
+  git_commit: "e75fdcc52730044249df789ff2c4c89acc1ad4b8"
+  git_remote: "https://github.com/openpipelines-bio/openpipeline"
+  git_tag: "0.2.0-1580-ge75fdcc527"

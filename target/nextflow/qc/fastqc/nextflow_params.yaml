@@ -1,0 +1,9 @@
+# Arguments
+mode: "files"
+input: # please fill in - example: "fastq_dir/"
+# output: "$id.$key.output.output"
+# threads: 123
+
+# Nextflow input-output arguments
+publish_dir: # please fill in - example: "output/"
+# param_list: "my_params.yaml"
