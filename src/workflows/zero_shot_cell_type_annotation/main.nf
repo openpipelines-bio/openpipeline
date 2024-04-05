@@ -11,45 +11,50 @@ workflow run_wf {
         }
 
         | highly_variable_features_scanpy.run(
+        // Annotates the mudata object with highly variable genes.
             fromState: {id, state ->
-            // Annotates the mudata object with highly variable genes.
-                [
+            [
                 "input": state.input,
-                // "layer": state.layer,
                 "modality": state.modality,
-                "var_name_filter": "filter_with_hvg",
                 "n_top_features": state.n_hvg,
-                "flavor": "seurat_v3"
-                ]
+            ]
             },
+            args: 
+            [
+                var_name_filter: "filter_with_hvg",
+                flavor: "seurat_v3"
+            ],
             toState: ["input": "output"]
 
         )
         | do_filter.run(
+        // do_filter does not need a layer argument because it filters all layers
+        // from a modality.
+        // filters the mudata object based on the HVG
             fromState: {id, state ->
-                // do_filter does not need a layer argument because it filters all layers
-                // from a modality.
-                // filters the mudata object based on the HVG
-                [
+            [
                 "input": state.input,
-                "modality": state.modality,
-                "var_filter": "filter_with_hvg"
-                ]
+                "modality": state.modality
+            ]
             },
+            args: 
+            [
+                var_filter: "filter_with_hvg"
+            ],
             toState: ["input": "output"]
         )
 
         | cross_check_genes.run(
+        // Check whether the genes are part of the provided vocabulary. Subsets for genes present in vocab only.
             fromState: { id, state ->
-            // Check whether the genes are part of the provided vocabulary. Subsets for genes present in vocab only.
-                [
+            [
                 "input": state.input,
                 "modality": state.modality,
                 "vocab_file": state.model_vocab,
                 "input_var_gene_names": state.var_gene_names,
                 "output": state.output,
                 "pad_token": state.pad_token
-                ]
+            ]
             },
             toState: ["input": "output"]
         )
@@ -70,6 +75,7 @@ workflow run_wf {
         )
 
         | pad_tokenize.run(
+        // Tokenizes the gene names and pads the tokens.
             fromState: {id, state -> 
             [
                 "input": state.input,
@@ -92,6 +98,7 @@ workflow run_wf {
         )
 
         | cell_type_inference.run(
+        // Infers cell types using the model.
             fromState: {id, state -> 
             [
                 "input": state.input,
