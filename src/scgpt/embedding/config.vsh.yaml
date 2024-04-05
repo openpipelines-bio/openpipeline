@@ -2,7 +2,7 @@ functionality:
   name: embedding
   namespace: scgpt
   description: |
-    Embedding of a batch of tokenized data for scGPT zero-shot or fine-tuning integration.
+    Generation of cell embeddings for the integration of single cell transcriptomic count data using scGPT.
   authors:
     - __merge__: /src/authors/dorien_roosen.yaml
       roles: [ maintainer, author ]
@@ -16,7 +16,7 @@ functionality:
           required: true
           example: input.h5mu
           description: |
-            The input h5mu file containing preprocessed data. 
+            The input h5mu file containing tokenized gene and count data. 
         - name: "--modality"
           type: string
           default: "rna"
@@ -27,21 +27,21 @@ functionality:
           required: true
           example: best_model.pt
           description: |
-            Path to model file.
+            Path to scGPT model file.
         - name: "--model_vocab"
           type: file
           direction: input
           required: true
           example: vocab.json
           description: |
-            Path to model vocabulary file.
+            Path to scGPT model vocabulary file.
         - name: "--model_config"
           type: file
           direction: input
           required: true
           example: args.json
           description: |
-            Path to model config file.
+            Path to scGPT model config file.
         - name: "--obsm_gene_tokens"
           required: true
           type: string
@@ -89,7 +89,6 @@ functionality:
         - name: "--obsm_embeddings"
           type: string
           default: "X_scGPT"
-          required: false
           description: |
             The name of the adata.obsm array to which scGPT embeddings will be written.
 
@@ -98,25 +97,23 @@ functionality:
         - name: "--pad_token"
           type: string
           default: "<pad>"
-          required: false
           description: |
-            The name of the layer to be padded and tokenized
+            The token to be used for padding.
         - name: "--pad_value"
           type: integer
           default: -2
-          required: false
           description: |
-            The value to be used for padding
+            The value of the padding token.
         - name: "--dropout"
           type: double
           default: 0.2
           description: |
             Dropout value used for the transformer encoder layer
-        - name: DSBN
+        - name: "--DSBN"
           type: boolean
           default: true
           description: |
-            Apply domain-specific batch normalization. When set to True, 'obs_batch_labels' must be set as well.
+            Whether to apply domain-specific batch normalization for generating embeddings. When set to True, 'obs_batch_labels' must be set as well.
         - name: "--batch_size"
           type: integer
           default: 64
@@ -147,4 +144,4 @@ platforms:
         __merge__: [ /src/base/requirements/viashpy.yaml ]
   - type: nextflow
     directives:
-      label: [ midmem]
+      label: [ midmem ]
