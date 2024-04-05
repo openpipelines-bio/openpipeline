@@ -1,5 +1,11 @@
 # openpipelines x.x.x
 
+## BUG FIXES
+
+* `mapping/cellranger_multi`: Fix the regex for the fastq input files to allow dropping the lane from the input file names (e.g. `_L001`) (PR #778).
+
+# openpipelines 1.0.0-rc3
+
 ## BREAKING CHANGES
 
 * Docker image names now use `/` instead of `_` between the name of the component and the namespace (PR #712).
@@ -8,6 +14,8 @@
 
 * `rna_singlesample`: fixed a bug where selecting the column for the filtering with mitochondrial fractions 
   using `obs_name_mitochondrial_fraction` was done with the wrong column name, causing `ValueError` (PR #743).
+
+* Fix publishing in `process_samples` and `process_batches` (PR #759).
 
 ## NEW FUNCTIONALITY
 
