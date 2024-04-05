@@ -93,18 +93,6 @@ functionality:
           default: "batch_id"
           description: |
             The name of the adata.obs column to write categorical batch ids to.
-        - name: "--mask_ratio"
-          type: integer
-          default: 0
-          required: false
-          description: |
-            The ratio of the input to mask.
-        - name: "--mask_value"
-          type: integer
-          default: -1
-          required: false
-          description: |
-            The value of the mask.
         - name: "--n_cls"
           type: integer
           default: 8

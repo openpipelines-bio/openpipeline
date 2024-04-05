@@ -37,28 +37,30 @@ def test_cell_type_inference(run_component,
         "--model", model,
         "--model_config", model_config,
         "--model_vocab", model_vocab,
-        # "--gene_name_layer", "gene_name",
-        # "--batch_id_layer", "batch_id",
-        # "--predicted_cell_type_id", "predicted_cell_type",
-        # "--pad_token", "<pad>",
-        # "--mask_ratio", 0,
-        # "--mask_value", -1,
-        # "--pad_value", -2,
-        # "--n_cls", 8,
-        # "--n_input_bins", 51,
-        # "--batch_size", 64
+        "--gene_name_layer", "gene_name",
+        "--predicted_cell_type_id", "predictions",
+        "--pad_token", "<pad>",
+        "--pad_value", "-2",
+        "--n_cls", "8",
+        "--n_input_bins", "51",
+        "--batch_size", "64"
     ]
     run_component(args)
     
     output_mudata = read_h5mu(output_path)
     input_mudata = read_h5mu(input_mudata_subset_cpu_run)
-    assert "predicted_cell_type" in output_mudata.mod["rna"].obs.columns
+    assert "predictions" in output_mudata.mod["rna"].obs.columns
+    assert output_mudata.mod["rna"].obs["predictions"].isna().sum() == 0
+    assert output_mudata.mod["rna"].obs["predictions"].dtype == "int64"
     
-    # output_mudata.mod["rna"].obs.drop("predicted_cell_type",
+    # print(output_mudata)
+    # print(input_mudata)
+    # output_mudata.mod["rna"].obs.drop("predictions",
     #                                   axis=1,
     #                                   inplace=True)
-    # print(input_mudata.mod["rna"].obs.columns)
-    # print(output_mudata.mod["rna"].obs.columns)
+    
+    # # print(input_mudata.mod["rna"].obs.columns)
+    # # print(output_mudata.mod["rna"].obs.columns)
     # assert_annotation_objects_equal(output_mudata, input_mudata)
     
 if __name__ == '__main__':

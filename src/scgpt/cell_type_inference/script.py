@@ -39,8 +39,6 @@ par = {
     "predicted_cell_type_id": "predicted_cell_type",
     "pad_token": "<pad>",
     "dsbn": False,
-    "mask_ratio": 0,
-    "mask_value": -1,
     "pad_value": -2,
     "n_cls": 8,
     "n_input_bins": 51,

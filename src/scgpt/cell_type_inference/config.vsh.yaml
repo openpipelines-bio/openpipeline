@@ -89,18 +89,6 @@ functionality:
           required: false
           description: |
             The padding token used in the model.
-        - name: "--mask_ratio"
-          type: integer
-          default: 0
-          required: false
-          description: |
-            The ratio of the input to mask.
-        - name: "--mask_value"
-          type: integer
-          default: -1
-          required: false
-          description: |
-            The value of the mask.
         - name: "--pad_value"
           type: integer
           default: -2
