@@ -36,7 +36,6 @@ par = {
     "model_vocab": "resources_test/scgpt/source/vocab.json",
     "output": "Kim2020_Lung_cell_type_annotation.h5mu",
     "gene_name_layer": "gene_name",
-    "batch_id_layer": "batch_id",
     "predicted_cell_type_id": "predicted_cell_type",
     "pad_token": "<pad>",
     "dsbn": False,
@@ -105,10 +104,10 @@ special_tokens = [par["pad_token"], "<cls>", "<eoc>"]
 
 # Set batch labels to 1
 # TODO: give user the option to set dsbn
-# adata.obs["str_batch"] = "1"
-# batch_id_labels = adata.obs['str_batch'].astype("category").cat.codes.values
-# adata.obs["batch_id"] = batch_id_labels
-# batch_ids = adata.obs["batch_id"].tolist()
+adata.obs["str_batch"] = "1"
+batch_id_labels = adata.obs['str_batch'].astype("category").cat.codes.values
+adata.obs["batch_id"] = batch_id_labels
+batch_ids = adata.obs["batch_id"].tolist()
 num_batch_types = len(set(adata.obs["batch_id"].tolist()))
 
 # Load vocabulary
@@ -152,7 +151,7 @@ model = TransformerModel(
     do_mvc=False, # changed from config to hard-coded
     do_dab=False, # hard-coded
     use_batch_labels=False, 
-    num_batch_labels=num_batch_types,
+    # num_batch_labels=num_batch_types,
     domain_spec_batchnorm=par["dsbn"], # Check in combination with 
     input_emb_style="continuous", # hard-coded
     n_input_bins=par["n_input_bins"],

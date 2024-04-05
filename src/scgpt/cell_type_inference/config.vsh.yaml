@@ -83,11 +83,6 @@ functionality:
           required: false
           description: |
             The name of adata.var column containing the gene names.
-        - name: "--batch_id_layer"  
-          type: string
-          default: "batch_id"
-          description: |
-            The name of the adata.obs column to write categorical batch ids to.
         - name: "--pad_token"
           type: string
           default: "<pad>"

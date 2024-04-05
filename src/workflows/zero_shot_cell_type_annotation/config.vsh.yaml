@@ -22,7 +22,7 @@ functionality:
           type: string
           default: "rna"
           required: false
-        - name: "--vocab_file"
+        - name: "--model_vocab"
           type: file
           direction: input
           required: true

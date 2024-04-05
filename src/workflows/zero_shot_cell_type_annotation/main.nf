@@ -66,7 +66,7 @@ workflow run_wf {
                 "output": state.output
             ]
             },
-            toState: ["input": "output"]
+            toState: ["input": "output"],
         )
 
         | pad_tokenize.run(
@@ -74,7 +74,7 @@ workflow run_wf {
             [
                 "input": state.input,
                 "modality": state.modality,
-                "model_vocab": state.vocab_file,
+                "model_vocab": state.model_vocab,
                 "input_layer": state.binned_layer,
                 "gene_name_layer": state.gene_name_layer,
                 "pad_token": state.pad_token,
@@ -100,7 +100,7 @@ workflow run_wf {
                 "input_values": state.input_obsm_tokenized_values,
                 "model": state.model,
                 "model_config": state.model_config,
-                "model_vocab": state.vocab_file,
+                "model_vocab": state.model_vocab,
                 "output": state.workflow_output
             ]
             },
