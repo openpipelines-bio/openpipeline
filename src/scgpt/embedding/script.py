@@ -70,29 +70,33 @@ all_values = adata.obsm[par["obsm_tokenized_values"]]
 padding_mask = adata.obsm[par["obsm_padding_mask"]]
 
 # Fetch batch ids for domain-specific batch normalization
-if par["DSBN"]:
-    if not par["obs_batch_label"]:
-        raise ValueError("When DSBN is set to True, you are required to provide batch labels (input_obs_batch_labels).")
-    else:
-        batch_id_cats = adata.obs[par["obs_batch_label"]].astype("category")
-        batch_id_labels = batch_id_cats.cat.codes.values
-        batch_ids = batch_id_labels.tolist()
-        batch_ids = np.array(batch_ids)
-        num_batch_types = len(set(batch_ids))
+if par["DSBN"] and not par["obs_batch_label"]:
+    raise ValueError("When DSBN is set to True, you are required to provide batch labels (input_obs_batch_labels).")
+elif par["DSBN"] and par["obs_batch_label"]:
+    logger.info("Fetching batch id's for domain-specific batch normalization")
+    batch_id_cats = adata.obs[par["obs_batch_label"]].astype("category")
+    batch_id_labels = batch_id_cats.cat.codes.values
+    batch_ids = batch_id_labels.tolist()
+    batch_ids = np.array(batch_ids)
+    num_batch_types = len(set(batch_ids))
+elif not par["DSBN"] and par["obs_batch_label"]:
+    logger.info("Batch labels provided but DSBN is set to False. Batch labels will be ignored and no DSBN will be performed.")
 
 # Set padding specs
+logger.info("Setting padding specs")
 pad_token = par["pad_token"]
 pad_value = par["pad_value"]
 special_tokens = [pad_token, "<cls>", "<eoc>"]
 
 # Fetching gene names
+logger.info("Fetching gene names")
 if not par["var_gene_names"]:
     genes = adata.var.index.astype(str).tolist()
 else:
     genes = adata.var[par["var_gene_names"]].astype(str).tolist()
 
-logger.info("Loading model, vocab and configs")
 # Model files
+logger.info("Loading model, vocab and configs")
 model_config_file = par["model_config"]
 model_file = par["model"]
 vocab_file = par["model_vocab"]
@@ -115,9 +119,8 @@ nhead = model_configs["nheads"]
 d_hid = model_configs["d_hid"]
 nlayers = model_configs["nlayers"]
 
-logger.info("Initializing transformer model")
-
 # Instantiate model
+logger.info("Initializing transformer model")
 model = TransformerModel(
     ntokens,
     d_model=embsize,
@@ -128,19 +131,18 @@ model = TransformerModel(
     dropout=par["dropout"],
     pad_token=pad_token,
     pad_value=pad_value,
-    nlayers_cls=3,  #TODO: parametrize for decoder-based operations
-    n_cls=1,  #TODO: parametrize for decoder-based operations
-    do_mvc=True,  #TODO: parametrize for decoder-based operations
-    ecs_threshold=0.8,  #TODO: parametrize for decoder-based operations
-    do_dab=True, #TODO: parametrize for decoder-based operations
-    use_batch_labels=True,
+    nlayers_cls=3,  # only applicable for decoder-based operations
+    n_cls=1,  # only applicable for decoder-based operations
+    do_mvc=False,  # only applicable for decoder-based operations
+    ecs_threshold=0.8,  # only applicable for decoder-based operations
+    do_dab=False,  # only applicable for decoder-based operations
+    use_batch_labels=False, # only applicable for decoder-based operations
     num_batch_labels=num_batch_types if par["DSBN"] else None,
     domain_spec_batchnorm=par["DSBN"],
     input_emb_style="continuous",  # scGPT default
-    # n_input_bins=par["n_input_bins"],  # only applies when input_emb_style is "category"
-    explicit_zero_prob=True,  #TODO: Parametrize when GPU-based machine types are supported
+    explicit_zero_prob=False,  #TODO: Parametrize when GPU-based machine types are supported
     use_fast_transformer=False,  #TODO: Parametrize when GPU-based machine types are supported
-    fast_transformer_backend="flash",  #TODO: Parametrize when GPU-based machine types are supported
+    # fast_transformer_backend="flash",  #TODO: Parametrize when GPU-based machine types are supported
     pre_norm=False  #TODO: Parametrize when GPU-based machine types are supported
     )
 
@@ -150,11 +152,11 @@ load_pretrained(
     verbose=False
     )
 
+# Embed tokenized data
+logger.info("Converting tokenized input data to embeddings")
 model.to(device)
 model.eval()
 
-logger.info("Converting tokenized input data to embeddings")
-# Embed tokenized data
 cell_embeddings = model.encode_batch(
     torch.from_numpy(all_gene_ids),
     torch.from_numpy(all_values).float(),
@@ -170,8 +172,8 @@ cell_embeddings = cell_embeddings / np.linalg.norm(
     cell_embeddings, axis=1, keepdims=True
 )
 
-logger.info("Writing output data")
 # Write output
+logger.info("Writing output data")
 adata.obsm[par["obsm_embeddings"]] = cell_embeddings
 mdata.mod[par["modality"]] = adata
 mdata.write(par["output"], compression=par["output_compression"])
