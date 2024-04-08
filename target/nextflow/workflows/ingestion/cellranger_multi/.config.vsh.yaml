@@ -1,7 +1,7 @@
 functionality:
   name: "cellranger_multi"
   namespace: "workflows/ingestion"
-  version: "main_build"
+  version: "scgpt-preprocessor_build"
   authors:
   - name: "Dries Schaumont"
     roles:
@@ -500,7 +500,7 @@ functionality:
       functionalityNamespace: "mapping"
       output: ""
       platform: ""
-      git_commit: "d7f3f12fda98a87ebccfaa3c9523c2ef8a21450f"
+      git_commit: "19cb963426bc08e2e57a09cf8355110b3e589a5e"
       executable: "/nextflow/mapping/cellranger_multi/main.nf"
     writtenPath: "/home/runner/work/openpipeline/openpipeline/target/nextflow/mapping/cellranger_multi"
   - name: "convert/from_cellranger_multi_to_h5mu"
@@ -517,7 +517,7 @@ functionality:
       functionalityNamespace: "convert"
       output: ""
       platform: ""
-      git_commit: "d7f3f12fda98a87ebccfaa3c9523c2ef8a21450f"
+      git_commit: "19cb963426bc08e2e57a09cf8355110b3e589a5e"
       executable: "/nextflow/convert/from_cellranger_multi_to_h5mu/main.nf"
     writtenPath: "/home/runner/work/openpipeline/openpipeline/target/nextflow/convert/from_cellranger_multi_to_h5mu"
   set_wd_to_resources_dir: false
@@ -573,5 +573,5 @@ info:
   output: "/home/runner/work/openpipeline/openpipeline/target/nextflow/workflows/ingestion/cellranger_multi"
   executable: "/home/runner/work/openpipeline/openpipeline/target/nextflow/workflows/ingestion/cellranger_multi/main.nf"
   viash_version: "0.8.5"
-  git_commit: "d7f3f12fda98a87ebccfaa3c9523c2ef8a21450f"
+  git_commit: "19cb963426bc08e2e57a09cf8355110b3e589a5e"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"

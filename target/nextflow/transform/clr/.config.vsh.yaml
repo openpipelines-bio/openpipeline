@@ -1,7 +1,7 @@
 functionality:
   name: "clr"
   namespace: "transform"
-  version: "main_build"
+  version: "scgpt-preprocessor_build"
   authors:
   - name: "Dries Schaumont"
     roles:
@@ -119,7 +119,7 @@ platforms:
   image: "python:3.10-slim"
   target_organization: "openpipelines-bio"
   target_registry: "ghcr.io"
-  target_tag: "main_build"
+  target_tag: "scgpt-preprocessor_build"
   namespace_separator: "/"
   resolve_volume: "Automatic"
   chown: true
@@ -202,5 +202,5 @@ info:
   output: "/home/runner/work/openpipeline/openpipeline/target/nextflow/transform/clr"
   executable: "/home/runner/work/openpipeline/openpipeline/target/nextflow/transform/clr/clr"
   viash_version: "0.8.5"
-  git_commit: "d7f3f12fda98a87ebccfaa3c9523c2ef8a21450f"
+  git_commit: "19cb963426bc08e2e57a09cf8355110b3e589a5e"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"
