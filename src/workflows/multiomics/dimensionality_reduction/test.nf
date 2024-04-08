@@ -7,7 +7,7 @@ workflow test_wf {
   // allow changing the resources_test dir
   resources_test = file("${params.rootDir}/resources_test")
 
-  output_ch = Channel.fromList([
+  input_ch = Channel.fromList([
       [
         id: "simple_execution_test",
         input: resources_test.resolve("concat_test_data/concatenated_brain_filtered_feature_bc_matrix_subset.h5mu"),
@@ -24,7 +24,7 @@ workflow test_wf {
     | map{ state -> [state.id, state] }
     | dimensionality_reduction
 
-    assert_ch = output_ch
+    assert_ch = input_ch
     | view { output ->
       assert output.size() == 2 : "Outputs should contain two elements; [id, state]"
 
@@ -50,7 +50,7 @@ workflow test_wf {
       output_list
     }
 
-    test_ch = output_ch
+    test_ch = input_ch
     | map { id , output -> [id, ["input": output.output]]}
     | dimensionality_reduction_test
 
