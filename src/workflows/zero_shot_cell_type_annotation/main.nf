@@ -108,6 +108,14 @@ workflow run_wf {
                 "model": state.model,
                 "model_config": state.model_config,
                 "model_vocab": state.model_vocab,
+                "gene_name_layer": state.gene_name_layer,
+                "predicted_cell_type_id": state.predicted_cell_type_id,
+                "pad_token": state.pad_token,
+                "dsbn": state.dsbn,
+                "pad_value": state.pad_value,
+                "n_cls": state.n_cls,
+                "n_input_bins": state.n_input_bins,
+                "batch_size": state.batch_size,
                 "output": state.workflow_output
             ]
             },
