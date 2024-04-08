@@ -13,7 +13,7 @@ export NXF_VER=21.10.6
 viash ns build -q zero_shot_cell_type_annotation
 
 nextflow run . \
-  -main-script src/workflows/zero_shot_cell_type_annotation/test.nf \
+  -main-script target/nextflow/workflows/zero_shot_cell_type_annotation/zero_shot_cell_type_annotation/main.nf \
   -profile docker,no_publish \
   -entry test_wf \
   -with-trace work/trace.txt \
