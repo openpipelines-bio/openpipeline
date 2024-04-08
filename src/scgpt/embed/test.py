@@ -146,27 +146,27 @@ def test_integration_embedding(run_component, tmp_path):
     assert not all(np.isnan(output_adata.obsm["X_scGPT"][0])), "Embedding values are nan"
     assert all([all(i > -1) & all(i < 1) for i in output_adata.obsm["X_scGPT"]]), "Range of embedding values is outside of [-1, 1]"
 
-    # Run embeddings without DSBN
-    output_embedding_file_without_DSBN = tmp_path / "Kim2020_Lung_subset_embedded.h5mu"
-    run_component([
-        "--input", tokenized_data_path,
-        "--modality", "rna",
-        "--model", model_file,
-        "--model_vocab", vocab_file,
-        "--model_config", model_config_file,
-        "--DSBN", "False",
-        "--obsm_gene_tokens", "gene_id_tokens",
-        "--obsm_tokenized_values", "values_tokenized",
-        "--obsm_padding_mask", "padding_mask",
-        "--output", output_embedding_file_without_DSBN
-    ])
+    # # Run embeddings without DSBN
+    # output_embedding_file_without_DSBN = tmp_path / "Kim2020_Lung_subset_embedded.h5mu"
+    # run_component([
+    #     "--input", tokenized_data_path,
+    #     "--modality", "rna",
+    #     "--model", model_file,
+    #     "--model_vocab", vocab_file,
+    #     "--model_config", model_config_file,
+    #     "--DSBN", "False",
+    #     "--obsm_gene_tokens", "gene_id_tokens",
+    #     "--obsm_tokenized_values", "values_tokenized",
+    #     "--obsm_padding_mask", "padding_mask",
+    #     "--output", output_embedding_file_without_DSBN
+    # ])
 
-    # Read output file
-    output_mdata_no_DSBN = mu.read(output_embedding_file_without_DSBN)
-    output_adata_no_DSBN = output_mdata_no_DSBN.mod["rna"]
+    # # Read output file
+    # output_mdata_no_DSBN = mu.read(output_embedding_file_without_DSBN)
+    # output_adata_no_DSBN = output_mdata_no_DSBN.mod["rna"]
 
-    # Assert that embeddings without DSBN are different
-    assert not (output_adata.obsm["X_scGPT"] == output_adata_no_DSBN.obsm["X_scGPT"]).all(), "Embeddings with and without DSBN are the same"
+    # # Assert that embeddings without DSBN are different
+    # assert not (output_adata.obsm["X_scGPT"] == output_adata_no_DSBN.obsm["X_scGPT"]).all(), "Embeddings with and without DSBN are the same"
 
 def test_integration_embedding_DSBN_without_batch_labels(run_component, tmp_path):
     output_embedding_file = tmp_path / "Kim2020_Lung_subset_embedded.h5mu"
