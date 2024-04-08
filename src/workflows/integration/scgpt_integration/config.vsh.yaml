@@ -27,21 +27,21 @@ functionality:
           required: true
           example: resources_test/scgpt/best_model.pt
           description: |
-            Path to the model file.
+            Path to scGPT model file.
         - name: "--model_vocab"
           type: file
           direction: input
           required: true
           example: resources_test/scgpt/vocab.json
           description: |
-            Model vocabulary file directory.
+            Path to scGPT model vocabulary file.
         - name: "--model_config"
           type: file
           direction: input
           required: true
           example: args.json
           description: |
-            Path to model config file.
+            Path to scGPT model config file.
         - name: "--input_layer"
           type: string
           required: False

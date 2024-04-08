@@ -19,7 +19,7 @@ vocab_file = f"{meta['resources_dir']}/scgpt/source/vocab.json"
 input_file = mu.read(input)
 
 ## START TEMPORARY WORKAROUND DATA PREPROCESSING
-#TODO: Remove this workaround once full scGPT preprocessing workflow is implemented
+#TODO: Remove this workaround once scGPT preproc modules are implemented
 # Read in data
 adata = input_file.mod["rna"]
 
@@ -59,7 +59,7 @@ preprocessor = Preprocessor(
     subset_hvg=1200,
     hvg_flavor="seurat_v3",
     binning=51,
-    result_binned_key="X_binned",
+    result_binned_key="binned",
     )
 
 preprocessor(adata, batch_key="str_batch")
@@ -79,13 +79,12 @@ def test_integration_pad_tokenize(run_component, tmp_path):
         "--input", input_preprocessed,
         "--output", output,
         "--modality", "rna",
-        "--output_obsm_gene_tokens", "gene_id_tokens",
-        "--output_obsm_tokenized_values", "values_tokenized",
-        "--output_obsm_padding_mask", "padding_mask",
+        "--obsm_gene_tokens", "gene_id_tokens",
+        "--obsm_tokenized_values", "values_tokenized",
+        "--obsm_padding_mask", "padding_mask",
         "--pad_token", "<pad>",
         "--pad_value", "-2",
-        "--input_layer", "X_binned",
-        "--gene_name_layer", "gene_name",
+        "--input_layer", "binned",
         "--model_vocab", vocab_file
     ])
 
