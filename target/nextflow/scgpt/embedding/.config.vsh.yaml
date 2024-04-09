@@ -1,7 +1,7 @@
 functionality:
   name: "embedding"
   namespace: "scgpt"
-  version: "scgpt-preprocessor_build"
+  version: "scgpt-preprocessor"
   authors:
   - name: "Dorien Roosen"
     roles:
@@ -22,7 +22,8 @@ functionality:
     arguments:
     - type: "file"
       name: "--input"
-      description: "The input h5mu file containing preprocessed data. \n"
+      description: "The input h5mu file containing tokenized gene and count data.\
+        \ \n"
       info: null
       example:
       - "input.h5mu"
@@ -45,7 +46,7 @@ functionality:
       dest: "par"
     - type: "file"
       name: "--model"
-      description: "Path to model file.\n"
+      description: "Path to scGPT model file.\n"
       info: null
       example:
       - "best_model.pt"
@@ -58,7 +59,7 @@ functionality:
       dest: "par"
     - type: "file"
       name: "--model_vocab"
-      description: "Path to model vocabulary file.\n"
+      description: "Path to scGPT model vocabulary file.\n"
       info: null
       example:
       - "vocab.json"
@@ -71,7 +72,7 @@ functionality:
       dest: "par"
     - type: "file"
       name: "--model_config"
-      description: "Path to model config file.\n"
+      description: "Path to scGPT model config file.\n"
       info: null
       example:
       - "args.json"
@@ -83,43 +84,43 @@ functionality:
       multiple_sep: ":"
       dest: "par"
     - type: "string"
-      name: "--input_obsm_gene_tokens"
+      name: "--obsm_gene_tokens"
       description: "The key of the .obsm array containing the gene token ids\n"
       info: null
       example:
       - "values.pt"
       default:
       - "gene_id_tokens"
-      required: false
+      required: true
       direction: "input"
       multiple: false
       multiple_sep: ":"
       dest: "par"
     - type: "string"
-      name: "--input_obsm_tokenized_values"
+      name: "--obsm_tokenized_values"
       description: "The key of the .obsm array containing the count values of the\
         \ tokenized genes\n"
       info: null
       default:
       - "values_tokenized"
-      required: false
+      required: true
       direction: "input"
       multiple: false
       multiple_sep: ":"
       dest: "par"
     - type: "string"
-      name: "--input_obsm_padding_mask"
+      name: "--obsm_padding_mask"
       description: "The key of the .obsm array containing the padding mask.\n"
       info: null
       default:
       - "padding_mask"
-      required: false
+      required: true
       direction: "input"
       multiple: false
       multiple_sep: ":"
       dest: "par"
     - type: "string"
-      name: "--input_var_gene_names"
+      name: "--var_gene_names"
       description: "The name of the .var column containing gene names. When no gene_name_layer\
         \ is provided, the .var index will be used.\n"
       info: null
@@ -129,8 +130,9 @@ functionality:
       multiple_sep: ":"
       dest: "par"
     - type: "string"
-      name: "--input_obs_batch_label"
-      description: "The name of the adata.obs column containing the batch labels.\n"
+      name: "--obs_batch_label"
+      description: "The name of the adata.obs column containing the batch labels.\
+        \ Must be provided when 'DSBN' is set to True.\n"
       info: null
       required: false
       direction: "input"
@@ -168,7 +170,7 @@ functionality:
       multiple_sep: ":"
       dest: "par"
     - type: "string"
-      name: "--embedding_layer_key"
+      name: "--obsm_embeddings"
       description: "The name of the adata.obsm array to which scGPT embeddings will\
         \ be written.\n"
       info: null
@@ -183,7 +185,7 @@ functionality:
     arguments:
     - type: "string"
       name: "--pad_token"
-      description: "The name of the layer to be padded and tokenized\n"
+      description: "The token to be used for padding.\n"
       info: null
       default:
       - "<pad>"
@@ -194,7 +196,7 @@ functionality:
       dest: "par"
     - type: "integer"
       name: "--pad_value"
-      description: "The value to be used for padding\n"
+      description: "The value of the padding token.\n"
       info: null
       default:
       - -2
@@ -215,8 +217,9 @@ functionality:
       multiple_sep: ":"
       dest: "par"
     - type: "boolean"
-      name: "DSBN"
-      description: "Apply domain-specific batch normalization\n"
+      name: "--DSBN"
+      description: "Whether to apply domain-specific batch normalization for generating\
+        \ embeddings. When set to True, 'obs_batch_labels' must be set as well.\n"
       info: null
       default:
       - true
@@ -243,8 +246,8 @@ functionality:
   - type: "file"
     path: "./src/workflows/utils/labels.config"
     dest: "nextflow_labels.config"
-  description: "Embedding of a batch of tokenized data for scGPT zero-shot or fine-tuning\
-    \ integration.\n"
+  description: "Generation of cell embeddings for the integration of single cell transcriptomic\
+    \ count data using scGPT.\n"
   test_resources:
   - type: "python_script"
     path: "test.py"
@@ -268,7 +271,7 @@ platforms:
   image: "nvcr.io/nvidia/pytorch:23.09-py3"
   target_organization: "openpipelines-bio"
   target_registry: "ghcr.io"
-  target_tag: "scgpt-preprocessor_build"
+  target_tag: "scgpt-preprocessor"
   namespace_separator: "_"
   resolve_volume: "Automatic"
   chown: true
@@ -303,7 +306,7 @@ platforms:
   id: "nextflow"
   directives:
     label:
-    - "midmem"
+    - "lowmem"
     tag: "$id"
   auto:
     simplifyInput: true
@@ -352,6 +355,6 @@ info:
   output: "/home/runner/work/openpipeline/openpipeline/target/nextflow/scgpt/embedding"
   executable: "/home/runner/work/openpipeline/openpipeline/target/nextflow/scgpt/embedding/embedding"
   viash_version: "0.8.5"
-  git_commit: "5e2c7d235a889618ebf378c5e069281bbfa68a75"
+  git_commit: "3c33668817b8310617aac0841ab69f5c83354424"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"
-  git_tag: "0.2.0-1574-g5e2c7d235a"
+  git_tag: "0.2.0-1575-g3c33668817"

@@ -3,14 +3,14 @@ input: # please fill in - example: "input.h5mu"
 modality: "rna"
 model_vocab: # please fill in - example: "vocab.json"
 input_layer: "binned"
-# input_var_gene_names: "foo"
+# var_gene_names: "foo"
 
 # Outputs
 # output: "$id.$key.output.h5mu"
 # output_compression: "gzip"
-output_obsm_gene_tokens: "gene_id_tokens"
-output_obsm_tokenized_values: "values_tokenized"
-output_obsm_padding_mask: "padding_mask"
+obsm_gene_tokens: "gene_id_tokens"
+obsm_tokenized_values: "values_tokenized"
+obsm_padding_mask: "padding_mask"
 
 # Arguments
 pad_token: "<pad>"

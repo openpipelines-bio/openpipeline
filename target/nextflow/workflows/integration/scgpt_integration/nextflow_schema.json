@@ -249,8 +249,8 @@
                 "model": {
                 "type":
                 "string",
-                "description": "Type: `file`, required, example: `resources_test/scgpt/best_model.pt`. Path to the model file",
-                "help_text": "Type: `file`, required, example: `resources_test/scgpt/best_model.pt`. Path to the model file.\n"
+                "description": "Type: `file`, required, example: `resources_test/scgpt/best_model.pt`. Path to scGPT model file",
+                "help_text": "Type: `file`, required, example: `resources_test/scgpt/best_model.pt`. Path to scGPT model file.\n"
             
             }
     
@@ -259,8 +259,8 @@
                 "model_vocab": {
                 "type":
                 "string",
-                "description": "Type: `file`, required, example: `resources_test/scgpt/vocab.json`. Model vocabulary file directory",
-                "help_text": "Type: `file`, required, example: `resources_test/scgpt/vocab.json`. Model vocabulary file directory.\n"
+                "description": "Type: `file`, required, example: `resources_test/scgpt/vocab.json`. Path to scGPT model vocabulary file",
+                "help_text": "Type: `file`, required, example: `resources_test/scgpt/vocab.json`. Path to scGPT model vocabulary file.\n"
             
             }
     
@@ -269,8 +269,8 @@
                 "model_config": {
                 "type":
                 "string",
-                "description": "Type: `file`, required, example: `args.json`. Path to model config file",
-                "help_text": "Type: `file`, required, example: `args.json`. Path to model config file.\n"
+                "description": "Type: `file`, required, example: `args.json`. Path to scGPT model config file",
+                "help_text": "Type: `file`, required, example: `args.json`. Path to scGPT model config file.\n"
             
             }
     

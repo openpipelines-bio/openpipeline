@@ -1,4 +1,6 @@
 import pytest
+import subprocess
+import re
 import sys
 import mudata as mu
 import numpy as np
@@ -15,7 +17,6 @@ meta = {
     "config": "./target/docker/scgpt/integration_embedding/.config.vsh.yaml"
 }
 ## VIASH END
-
 
 input = f"{meta['resources_dir']}/Kim2020_Lung_subset.h5mu"
 model_file = f"{meta['resources_dir']}/source/best_model.pt"
@@ -123,10 +124,11 @@ def test_integration_embedding(run_component, tmp_path):
         "--model", model_file,
         "--model_vocab", vocab_file,
         "--model_config", model_config_file,
-        "--input_obs_batch_label", "sample",
-        "--input_obsm_gene_tokens", "gene_id_tokens",
-        "--input_obsm_tokenized_values", "values_tokenized",
-        "--input_obsm_padding_mask", "padding_mask",
+        "--DSBN", "True",
+        "--obs_batch_label", "sample",
+        "--obsm_gene_tokens", "gene_id_tokens",
+        "--obsm_tokenized_values", "values_tokenized",
+        "--obsm_padding_mask", "padding_mask",
         "--output", output_embedding_file
     ])
 
@@ -143,6 +145,117 @@ def test_integration_embedding(run_component, tmp_path):
     # check embedding value range
     assert not all(np.isnan(output_adata.obsm["X_scGPT"][0])), "Embedding values are nan"
     assert all([all(i > -1) & all(i < 1) for i in output_adata.obsm["X_scGPT"]]), "Range of embedding values is outside of [-1, 1]"
+
+    # # Run embeddings without DSBN
+    # output_embedding_file_without_DSBN = tmp_path / "Kim2020_Lung_subset_embedded.h5mu"
+    # run_component([
+    #     "--input", tokenized_data_path,
+    #     "--modality", "rna",
+    #     "--model", model_file,
+    #     "--model_vocab", vocab_file,
+    #     "--model_config", model_config_file,
+    #     "--DSBN", "False",
+    #     "--obsm_gene_tokens", "gene_id_tokens",
+    #     "--obsm_tokenized_values", "values_tokenized",
+    #     "--obsm_padding_mask", "padding_mask",
+    #     "--output", output_embedding_file_without_DSBN
+    # ])
+
+    # # Read output file
+    # output_mdata_no_DSBN = mu.read(output_embedding_file_without_DSBN)
+    # output_adata_no_DSBN = output_mdata_no_DSBN.mod["rna"]
+
+    # # Assert that embeddings without DSBN are different
+    # assert not (output_adata.obsm["X_scGPT"] == output_adata_no_DSBN.obsm["X_scGPT"]).all(), "Embeddings with and without DSBN are the same"
+
+def test_integration_embedding_DSBN_without_batch_labels(run_component, tmp_path):
+    output_embedding_file = tmp_path / "Kim2020_Lung_subset_embedded.h5mu"
+
+    args = [
+        "--input", tokenized_data_path,
+        "--modality", "rna",
+        "--model", model_file,
+        "--model_vocab", vocab_file,
+        "--model_config", model_config_file,
+        "--DSBN", "True",
+        "--obsm_gene_tokens", "gene_id_tokens",
+        "--obsm_tokenized_values", "values_tokenized",
+        "--obsm_padding_mask", "padding_mask",
+        "--output", output_embedding_file
+    ]
+
+    with pytest.raises(subprocess.CalledProcessError) as err:
+        run_component(args)
+    assert re.search(
+        r"ValueError: When DSBN is set to True, you are required to provide batch labels \(input_obs_batch_labels\)\.",
+        err.value.stdout.decode('utf-8'))
+
+def test_integration_embedding_non_existing_keys(run_component, tmp_path):
+    output_embedding_file = tmp_path / "Kim2020_Lung_subset_embedded.h5mu"
+
+    # Test for non-existing gene names key
+    args_1 = [
+        "--input", tokenized_data_path,
+        "--modality", "rna",
+        "--model", model_file,
+        "--model_vocab", vocab_file,
+        "--model_config", model_config_file,
+        "--DSBN", "True",
+        "--obs_batch_label", "sample",
+        "--var_gene_names", "dummy_gene_name_key",
+        "--obsm_gene_tokens", "gene_id_tokens",
+        "--obsm_tokenized_values", "values_tokenized",
+        "--obsm_padding_mask", "padding_mask",
+        "--output", output_embedding_file
+    ]
+
+    with pytest.raises(subprocess.CalledProcessError) as err:
+        run_component(args_1)
+    assert re.search(
+        r"KeyError: \'dummy_gene_name_key\'",
+        err.value.stdout.decode('utf-8'))
+    
+    # Test for non-existing batch label key
+    args_2 = [
+        "--input", tokenized_data_path,
+        "--modality", "rna",
+        "--model", model_file,
+        "--model_vocab", vocab_file,
+        "--model_config", model_config_file,
+        "--DSBN", "True",
+        "--obs_batch_label", "dummy_batch_label_key",
+        "--obsm_gene_tokens", "gene_id_tokens",
+        "--obsm_tokenized_values", "values_tokenized",
+        "--obsm_padding_mask", "padding_mask",
+        "--output", output_embedding_file
+    ]
+
+    with pytest.raises(subprocess.CalledProcessError) as err:
+        run_component(args_2)
+    assert re.search(
+        r"KeyError: \'dummy_batch_label_key\'",
+        err.value.stdout.decode('utf-8'))
+
+    # Test for non-existing tokenized values key
+    args_3 = [
+        "--input", tokenized_data_path,
+        "--modality", "rna",
+        "--model", model_file,
+        "--model_vocab", vocab_file,
+        "--model_config", model_config_file,
+        "--DSBN", "True",
+        "--obs_batch_label", "sample",
+        "--obsm_gene_tokens", "gene_id_tokens",
+        "--obsm_tokenized_values", "dummy_values_tokenized",
+        "--obsm_padding_mask", "padding_mask",
+        "--output", output_embedding_file
+    ]
+
+    with pytest.raises(subprocess.CalledProcessError) as err:
+        run_component(args_3)
+    assert re.search(
+        r"KeyError: \'dummy_values_tokenized\'",
+        err.value.stdout.decode('utf-8'))
 
 
 if __name__ == '__main__':

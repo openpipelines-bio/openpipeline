@@ -1,7 +1,7 @@
 functionality:
   name: "pad_tokenize"
   namespace: "scgpt"
-  version: "scgpt-preprocessor_build"
+  version: "scgpt-preprocessor"
   authors:
   - name: "Dorien Roosen"
     roles:
@@ -68,7 +68,7 @@ functionality:
       multiple_sep: ":"
       dest: "par"
     - type: "string"
-      name: "--input_var_gene_names"
+      name: "--var_gene_names"
       description: "The name of the .var column containing gene names. When no gene_name_layer\
         \ is provided, the .var index will be used.\n"
       info: null
@@ -108,7 +108,7 @@ functionality:
       multiple_sep: ":"
       dest: "par"
     - type: "string"
-      name: "--output_obsm_gene_tokens"
+      name: "--obsm_gene_tokens"
       description: "The key of the .obsm array containing the gene token ids\n"
       info: null
       example:
@@ -121,7 +121,7 @@ functionality:
       multiple_sep: ":"
       dest: "par"
     - type: "string"
-      name: "--output_obsm_tokenized_values"
+      name: "--obsm_tokenized_values"
       description: "The key of the .obsm array containing the count values of the\
         \ tokenized genes\n"
       info: null
@@ -133,7 +133,7 @@ functionality:
       multiple_sep: ":"
       dest: "par"
     - type: "string"
-      name: "--output_obsm_padding_mask"
+      name: "--obsm_padding_mask"
       description: "The key of the .obsm array containing the padding mask.\n"
       info: null
       default:
@@ -206,7 +206,7 @@ platforms:
   image: "nvcr.io/nvidia/pytorch:23.09-py3"
   target_organization: "openpipelines-bio"
   target_registry: "ghcr.io"
-  target_tag: "scgpt-preprocessor_build"
+  target_tag: "scgpt-preprocessor"
   namespace_separator: "_"
   resolve_volume: "Automatic"
   chown: true
@@ -239,8 +239,6 @@ platforms:
 - type: "nextflow"
   id: "nextflow"
   directives:
-    label:
-    - "lowmem"
     tag: "$id"
   auto:
     simplifyInput: true
@@ -289,6 +287,6 @@ info:
   output: "/home/runner/work/openpipeline/openpipeline/target/nextflow/scgpt/pad_tokenize"
   executable: "/home/runner/work/openpipeline/openpipeline/target/nextflow/scgpt/pad_tokenize/pad_tokenize"
   viash_version: "0.8.5"
-  git_commit: "5e2c7d235a889618ebf378c5e069281bbfa68a75"
+  git_commit: "3c33668817b8310617aac0841ab69f5c83354424"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"
-  git_tag: "0.2.0-1574-g5e2c7d235a"
+  git_tag: "0.2.0-1575-g3c33668817"

@@ -72,7 +72,7 @@
     
 
         ,
-                "input_var_gene_names": {
+                "var_gene_names": {
                 "type":
                 "string",
                 "description": "Type: `string`. The name of the ",
@@ -115,7 +115,7 @@
     
 
         ,
-                "output_obsm_gene_tokens": {
+                "obsm_gene_tokens": {
                 "type":
                 "string",
                 "description": "Type: `string`, default: `gene_id_tokens`, example: `values.pt`. The key of the ",
@@ -126,7 +126,7 @@
     
 
         ,
-                "output_obsm_tokenized_values": {
+                "obsm_tokenized_values": {
                 "type":
                 "string",
                 "description": "Type: `string`, default: `values_tokenized`. The key of the ",
@@ -137,7 +137,7 @@
     
 
         ,
-                "output_obsm_padding_mask": {
+                "obsm_padding_mask": {
                 "type":
                 "string",
                 "description": "Type: `string`, default: `padding_mask`. The key of the ",
