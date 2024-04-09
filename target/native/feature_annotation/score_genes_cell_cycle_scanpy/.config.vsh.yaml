@@ -1,7 +1,7 @@
 functionality:
   name: "score_genes_cell_cycle_scanpy"
   namespace: "feature_annotation"
-  version: "scgpt-preprocessor"
+  version: "scgpt-preprocessor_build"
   authors:
   - name: "Robrecht Cannoodt"
     info:
@@ -307,7 +307,7 @@ platforms:
   image: "python:3.11"
   target_organization: "openpipelines-bio"
   target_registry: "ghcr.io"
-  target_tag: "scgpt-preprocessor"
+  target_tag: "scgpt-preprocessor_build"
   namespace_separator: "_"
   resolve_volume: "Automatic"
   chown: true
@@ -339,6 +339,6 @@ info:
   output: "/home/runner/work/openpipeline/openpipeline/target/native/feature_annotation/score_genes_cell_cycle_scanpy"
   executable: "/home/runner/work/openpipeline/openpipeline/target/native/feature_annotation/score_genes_cell_cycle_scanpy/score_genes_cell_cycle_scanpy"
   viash_version: "0.8.5"
-  git_commit: "3c33668817b8310617aac0841ab69f5c83354424"
+  git_commit: "ad4d6c247cb1627a56300ca63920a43be77e9941"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"
-  git_tag: "0.2.0-1575-g3c33668817"
+  git_tag: "0.2.0-1576-gad4d6c247c"
