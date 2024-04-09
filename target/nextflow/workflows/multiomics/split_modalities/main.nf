@@ -2923,14 +2923,14 @@ meta = [
         "foundConfigPath" : "/home/runner/work/openpipeline/openpipeline/src/dataflow/split_modalities/config.vsh.yaml",
         "configInfo" : {
           "functionalityName" : "split_modalities",
-          "git_tag" : "0.2.0-1576-gad4d6c247c",
+          "git_tag" : "0.2.0-1577-gd33e248c3f",
           "git_remote" : "https://github.com/openpipelines-bio/openpipeline",
           "viash_version" : "0.8.5",
           "config" : "/home/runner/work/openpipeline/openpipeline/src/dataflow/split_modalities/config.vsh.yaml",
           "functionalityNamespace" : "dataflow",
           "output" : "",
           "platform" : "",
-          "git_commit" : "ad4d6c247cb1627a56300ca63920a43be77e9941",
+          "git_commit" : "d33e248c3fcb8efc8156fcbd755f1ba525ae8eaf",
           "executable" : "/nextflow/dataflow/split_modalities/main.nf"
         },
         "writtenPath" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/dataflow/split_modalities"
@@ -2997,9 +2997,9 @@ meta = [
     "platform" : "nextflow",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/workflows/multiomics/split_modalities",
     "viash_version" : "0.8.5",
-    "git_commit" : "ad4d6c247cb1627a56300ca63920a43be77e9941",
+    "git_commit" : "d33e248c3fcb8efc8156fcbd755f1ba525ae8eaf",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline",
-    "git_tag" : "0.2.0-1576-gad4d6c247c"
+    "git_tag" : "0.2.0-1577-gd33e248c3f"
   }
 }'''))
 ]

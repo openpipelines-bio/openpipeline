@@ -415,9 +415,9 @@ RUN pip install --upgrade pip && \
   pip install --upgrade --no-cache-dir "cellxgene"
 
 LABEL org.opencontainers.image.description="Companion container for running component interactive run_cellxgene"
-LABEL org.opencontainers.image.created="2024-04-09T09:34:24Z"
+LABEL org.opencontainers.image.created="2024-04-09T10:15:42Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="ad4d6c247cb1627a56300ca63920a43be77e9941"
+LABEL org.opencontainers.image.revision="d33e248c3fcb8efc8156fcbd755f1ba525ae8eaf"
 LABEL org.opencontainers.image.version="scgpt-preprocessor_build"
 
 VIASHDOCKER
