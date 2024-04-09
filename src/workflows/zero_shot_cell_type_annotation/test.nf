@@ -1,31 +1,31 @@
 nextflow.enable.dsl=2
 
-include { zero_shot_cell_type_annotation } from params.rootDir + "/target/nextflow/workflows/zero_shot_cell_type_annotation/main.nf"
+include { zero_shot_cell_type_annotation } from params.rootDir + "/target/nextflow/workflows/zero_shot_cell_type_annotation/zero_shot_cell_type_annotation/main.nf"
 
 workflow test_wf {
-    resources_test = file("${params.rootDir}/resources_test")
+    resources_test = file("${params.rootDir}/resources_test/scgpt")
 
     output_ch = Channel.fromList([
         [
             // TODO: to be changed to full size/4000 obs dataset
             id: "Kim2020_cpu_run_default",
-            input: resources_test.resolve("Kim2020_Lung_cpu_run.h5mu"),
-            model: resources_test.resolve("best_model.pt"),
-            model_config: resources_test.resolve("args.json"),
-            model_vocab: resources_test.resolve("vocab.json"),
+            input: resources_test.resolve("test_resources/Kim2020_Lung_cpu_run.h5mu"),
+            model: resources_test.resolve("source/best_model.pt"),
+            model_config: resources_test.resolve("source/args.json"),
+            model_vocab: resources_test.resolve("source/vocab.json"),
             output: "annotation_default.h5mu"
         ],
         [
             // TODO: to be changed to full size/4000 obs dataset
             id: "Kim2020_cpu_run_set_params",
-            input: resources_test.resolve("Kim2020_Lung_cpu_run.h5mu"),
-            model: resources_test.resolve("best_model.pt"),
-            model_config: resources_test.resolve("args.json"),
-            model_vocab: resources_test.resolve("vocab.json"),
+            input: resources_test.resolve("test_resources/Kim2020_Lung_cpu_run.h5mu"),
+            model: resources_test.resolve("source/best_model.pt"),
+            model_config: resources_test.resolve("source/args.json"),
+            model_vocab: resources_test.resolve("source/vocab.json"),
             gene_name_layer: "gene_name",
             predicted_cell_type_id: "predicted_cell_type",
             pad_token: "<pad>",
-            dsbn: True,
+            dsbn: "False",
             pad_value: -2,
             n_cls: 8,
             n_input_bins: 51,
