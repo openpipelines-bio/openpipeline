@@ -106,10 +106,13 @@ workflow run_wf {
           "batch_size": state.batch_size,
           "obsm_embeddings": state.embedding_layer,
           "output_compression": state.output_compression,
-          "output": "workflow_output"
+          "output": state.workflow_output
         ]
       },
-        auto: [ publish: true ]
+      toState: { id, output, state ->
+        [ output: output.output ]
+      },
+      auto: [ publish: true ]
     )
   
   emit:
