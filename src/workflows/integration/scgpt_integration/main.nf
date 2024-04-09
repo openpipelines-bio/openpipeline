@@ -5,7 +5,11 @@ workflow run_wf {
 
   main:
     output_ch = input_ch
-
+    // Set aside the output for this workflow to avoid conflicts
+    | map {id, state -> 
+      def new_state = state + ["workflow_output": state.output]
+      [id, new_state]
+    }
     | highly_variable_features_scanpy.run(
       fromState: {id, state ->
       // Annotates the mudata object with highly variable genes.
@@ -82,8 +86,6 @@ workflow run_wf {
         },
         toState: ["input": "output"]
     )
-    | niceView()
-
     | embedding.run(
       // Generation of cell embedings from the tokenized gene counts values.
       fromState: {id, state -> [
@@ -104,15 +106,11 @@ workflow run_wf {
           "batch_size": state.batch_size,
           "obsm_embeddings": state.embedding_layer,
           "output_compression": state.output_compression,
-          "output": state.output
+          "output": "workflow_output"
         ]
-      },
-      toState: { id, output, state ->
-        [ output: output.output ]
       },
         auto: [ publish: true ]
     )
-    | niceView()
   
   emit:
     output_ch
