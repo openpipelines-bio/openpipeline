@@ -3162,7 +3162,7 @@ meta = [
       "id" : "nextflow",
       "directives" : {
         "label" : [
-          "lowmem"
+          "midmem"
         ],
         "tag" : "$id"
       },
@@ -3218,9 +3218,9 @@ meta = [
     "platform" : "nextflow",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/scgpt/embedding",
     "viash_version" : "0.8.5",
-    "git_commit" : "d33e248c3fcb8efc8156fcbd755f1ba525ae8eaf",
+    "git_commit" : "61cd32c41799f083a2db66cb1e86e50a6ae6fe09",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline",
-    "git_tag" : "0.2.0-1577-gd33e248c3f"
+    "git_tag" : "0.2.0-1578-g61cd32c417"
   }
 }'''))
 ]
@@ -3412,23 +3412,20 @@ logger.info("Converting tokenized input data to embeddings")
 model.to(device)
 model.eval()
 
-# cell_embeddings = model.encode_batch(
-#     torch.from_numpy(all_gene_ids),
-#     torch.from_numpy(all_values).float(),
-#     src_key_padding_mask=torch.from_numpy(padding_mask),
-#     batch_size=par["batch_size"],
-#     batch_labels=torch.from_numpy(batch_ids).long() if par["DSBN"] else None,
-#     output_to_cpu=True,
-#     time_step=0,
-#     return_np=True
-# )
+cell_embeddings = model.encode_batch(
+    torch.from_numpy(all_gene_ids),
+    torch.from_numpy(all_values).float(),
+    src_key_padding_mask=torch.from_numpy(padding_mask),
+    batch_size=par["batch_size"],
+    batch_labels=torch.from_numpy(batch_ids).long() if par["DSBN"] else None,
+    output_to_cpu=True,
+    time_step=0,
+    return_np=True
+)
 
-# cell_embeddings = cell_embeddings / np.linalg.norm(
-#     cell_embeddings, axis=1, keepdims=True
-# )
-
-obs_shape = len(adata.obs["sample"])
-cell_embeddings = np.zeros((obs_shape, 512))
+cell_embeddings = cell_embeddings / np.linalg.norm(
+    cell_embeddings, axis=1, keepdims=True
+)
 
 # Write output
 logger.info("Writing output data")
@@ -3787,7 +3784,7 @@ meta["defaults"] = [
     "tag" : "scgpt-preprocessor_build"
   },
   "label" : [
-    "lowmem"
+    "midmem"
   ],
   "tag" : "$id"
 }'''),

@@ -200,6 +200,6 @@ info:
   output: "/home/runner/work/openpipeline/openpipeline/target/nextflow/process_10xh5/filter_10xh5"
   executable: "/home/runner/work/openpipeline/openpipeline/target/nextflow/process_10xh5/filter_10xh5/filter_10xh5"
   viash_version: "0.8.5"
-  git_commit: "d33e248c3fcb8efc8156fcbd755f1ba525ae8eaf"
+  git_commit: "61cd32c41799f083a2db66cb1e86e50a6ae6fe09"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"
-  git_tag: "0.2.0-1577-gd33e248c3f"
+  git_tag: "0.2.0-1578-g61cd32c417"
