@@ -37,5 +37,5 @@ engines:
 
 runners:
   - type: executable
-    run_args: "-p $VIASH_PAR_PORT:$VIASH_PAR_PORT"
+    docker_run_args: "-p $VIASH_PAR_PORT:$VIASH_PAR_PORT"
   - type: nextflow

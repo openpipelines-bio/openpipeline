@@ -16,9 +16,9 @@ arguments:
 resources:
   - type: bash_script
     path: script.sh
-# test_resources: 
-#   - type: bash_script
-#     path: run_test.sh
+test_resources: 
+  - type: bash_script
+    path: run_test.sh
 engines:
   - type: docker
     image: ubuntu:focal
@@ -33,5 +33,5 @@ engines:
           - cellxgene
 runners:
   - type: executable
-    run_args: "$( echo $VIASH_PAR_PORT | sed 's/..*/-p &:&/' )"
+    docker_run_args: "$( echo $VIASH_PAR_PORT | sed 's/..*/-p &:&/' )"
   - type: nextflow
