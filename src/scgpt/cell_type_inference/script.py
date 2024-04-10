@@ -36,9 +36,10 @@ par = {
     "model_vocab": "resources_test/scgpt/source/vocab.json",
     "output": "Kim2020_Lung_cell_type_annotation.h5mu",
     "gene_name_layer": "gene_name",
+    "input_obs_batch_label": "sample",
     "predicted_cell_type_id": "predicted_cell_type",
     "pad_token": "<pad>",
-    "dsbn": False,
+    "DSBN": True,
     "pad_value": -2,
     "n_cls": 8,
     "n_input_bins": 51,
@@ -100,14 +101,16 @@ device = torch.device("cpu")
 # Set padding specs
 special_tokens = [par["pad_token"], "<cls>", "<eoc>"]
 
-# Set batch labels to 1
-# TODO: give user the option to set dsbn
-
-batch_id_cats = adata.obs["sample"].astype("category")
-batch_id_labels = batch_id_cats.cat.codes.values
-batch_ids = batch_id_labels.tolist()
-batch_ids = np.array(batch_ids)
-num_batch_types = len(set(batch_ids))
+# Fetch batch ids for domain-specific batch normalization
+if par["DSBN"]:
+    if not par["input_obs_batch_label"]:
+        raise ValueError("When DSBN is set to True, you are required to provide batch labels (input_obs_batch_labels).")
+    else:
+        batch_id_cats = adata.obs[par["input_obs_batch_label"]].astype("category")
+        batch_id_labels = batch_id_cats.cat.codes.values
+        batch_ids = batch_id_labels.tolist()
+        batch_ids = np.array(batch_ids)
+        num_batch_types = len(set(batch_ids))
 
 # Load vocabulary
 vocab_file = par["model_vocab"]
@@ -149,9 +152,9 @@ model = TransformerModel(
     pad_value=par["pad_value"],
     do_mvc=False, # changed from config to hard-coded
     do_dab=False, # hard-coded
-    use_batch_labels=par["dsbn"], 
-    num_batch_labels=num_batch_types,
-    domain_spec_batchnorm=par["dsbn"], # Check in combination with 
+    use_batch_labels=par["DSBN"], 
+    num_batch_labels=num_batch_types if par["DSBN"] else None,
+    domain_spec_batchnorm=par["DSBN"], # Check in combination with 
     input_emb_style="continuous", # hard-coded
     n_input_bins=par["n_input_bins"],
     cell_emb_style="cls", # hard-coded
@@ -182,9 +185,6 @@ except:
     model.load_state_dict(model_dict)
 
 model.to(device)
-
-batch_ids = adata.obs["batch_id"].tolist()
-batch_ids = np.array(batch_ids)
 
 try:
     input_gene_ids = adata.obsm[par["input_obsm_gene_tokens"]]
@@ -223,7 +223,7 @@ with torch.no_grad():
                 input_gene_ids,
                 input_values,
                 src_key_padding_mask=src_key_padding_mask,
-                batch_labels=None,
+                batch_labels=batch_labels if par["DSBN"] else None,
                 CLS=True,  # evaluation does not need CLS or CCE
                 CCE=False,
                 MVC=False,

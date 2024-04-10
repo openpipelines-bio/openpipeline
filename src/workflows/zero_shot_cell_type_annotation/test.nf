@@ -23,9 +23,10 @@ workflow test_wf {
             model_config: resources_test.resolve("source/args.json"),
             model_vocab: resources_test.resolve("source/vocab.json"),
             gene_name_layer: "gene_name",
+            input_obs_batch_label: "sample",
             predicted_cell_type_id: "predicted_cell_type",
             pad_token: "<pad>",
-            dsbn: "False",
+            DSBN: "True",
             pad_value: -2,
             n_cls: 8,
             n_input_bins: 51,
@@ -45,7 +46,7 @@ workflow test_wf {
         assert output_list.size() == 2 : "output channel should contain two events"
         println "output_list: $output_list"
         assert output_list.collect{it[0]} == ["Kim2020_cpu_run_default", "Kim2020_cpu_run_set_params"] : "Output ID should be same as input ID"
-        assert (output_list.collect({it[1].output.getFileName().toString()}) as Set).equals(["mitochondrial_test.final.h5mu", "simple_execution_test.final.h5mu"] as Set)
+        assert (output_list.collect({it[1].output.getFileName().toString()}) as Set).equals(["annotation_default.h5mu", "annotation_set_params.h5mu"] as Set)
 
     }
 }

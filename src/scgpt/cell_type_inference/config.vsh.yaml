@@ -119,12 +119,16 @@ functionality:
           required: false
           description: |
             The name of the adata.obs column to write predicted cell types to.
-        - name: "--dsbn"
+        - name: "--DSBN"
           type: boolean
-          default: false
+          default: true
           required: false
           description: |
             Whether to use domain-specific batch normalization.
+        - name: "--input_obs_batch_label"
+          type: string
+          description: |
+            The name of the adata.obs column containing the batch labels.
         
   resources:
     - type: python_script
