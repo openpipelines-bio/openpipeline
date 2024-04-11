@@ -3117,7 +3117,7 @@ meta = [
           "functionalityNamespace" : "transfer",
           "output" : "",
           "platform" : "",
-          "git_commit" : "3b06c8c405f036b8be5b1156178ae507aba1f88e",
+          "git_commit" : "d85f373d9166978c5c06596796fb1ac739a1698e",
           "executable" : "/nextflow/transfer/publish/main.nf"
         },
         "writtenPath" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/transfer/publish"
@@ -3138,7 +3138,7 @@ meta = [
           "functionalityNamespace" : "metadata",
           "output" : "",
           "platform" : "",
-          "git_commit" : "3b06c8c405f036b8be5b1156178ae507aba1f88e",
+          "git_commit" : "d85f373d9166978c5c06596796fb1ac739a1698e",
           "executable" : "/nextflow/metadata/grep_annotation_column/main.nf"
         },
         "writtenPath" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/metadata/grep_annotation_column"
@@ -3159,7 +3159,7 @@ meta = [
           "functionalityNamespace" : "qc",
           "output" : "",
           "platform" : "",
-          "git_commit" : "3b06c8c405f036b8be5b1156178ae507aba1f88e",
+          "git_commit" : "d85f373d9166978c5c06596796fb1ac739a1698e",
           "executable" : "/nextflow/qc/calculate_qc_metrics/main.nf"
         },
         "writtenPath" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/qc/calculate_qc_metrics"
@@ -3226,7 +3226,7 @@ meta = [
     "platform" : "nextflow",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/workflows/qc/qc",
     "viash_version" : "0.8.5",
-    "git_commit" : "3b06c8c405f036b8be5b1156178ae507aba1f88e",
+    "git_commit" : "d85f373d9166978c5c06596796fb1ac739a1698e",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))
