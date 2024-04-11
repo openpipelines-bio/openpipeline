@@ -1,6 +1,7 @@
 nextflow.enable.dsl=2
 
 include { qc } from params.rootDir + "/target/nextflow/workflows/qc/qc/main.nf"
+include { qc_test } from params.rootDir + "/target/nextflow/test_workflows/qc/qc_test/main.nf"
 
 
 workflow test_wf {
@@ -18,7 +19,7 @@ workflow test_wf {
         input: resources_test.resolve("concat_test_data/human_brain_3k_filtered_feature_bc_matrix_subset_unique_obs.h5mu"),
       ]
     ])
-    | map{ state -> [state.id, state] }
+    | map { state -> [state.id, state] }
     | qc
     | view { output ->
       assert output.size() == 2 : "Outputs should contain two elements; [id, state]"
@@ -41,5 +42,16 @@ workflow test_wf {
       assert output_list.size() == 2 : "output channel should contain 2 events"
       assert output_list.collect{it[0]} == ["human_test", "mouse_test"]
     }
+
+    // test_ch = input_ch
+    // | map{ state -> [state.id, state] }
+    // | view
+    | qc_test.run(
+      fromState: { id, state ->
+      [
+        "input": state.input
+      ]
+      }
+    )
   
 }
