@@ -55,6 +55,7 @@ functionality:
         - name: "--obs_batch_label"
           type: string
           required: false
+          default: "sample"
           description: |
             The name of the adata.obs column containing the batch labels.
 
