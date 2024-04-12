@@ -1,0 +1,156 @@
+functionality:
+  name: "samtools"
+  namespace: "genetic_demux"
+  version: "lane-regex_build"
+  authors:
+  - name: "Xichen Wu"
+    roles:
+    - "author"
+    info:
+      role: "Contributor"
+      links:
+        github: "wxicu"
+        linkedin: "xichen-wu"
+        orcid: "0009-0008-2168-4508"
+      organizations:
+      - name: "Helmholtz Munich"
+        href: "https://www.helmholtz-munich.de"
+        role: "Student Assistant"
+  arguments:
+  - type: "file"
+    name: "--bam"
+    description: "Input bam file for filtering."
+    info: null
+    must_exist: true
+    create_parent: true
+    required: true
+    direction: "input"
+    multiple: false
+    multiple_sep: ":"
+    dest: "par"
+  - type: "file"
+    name: "--output"
+    description: "Samtools output directory."
+    info: null
+    example:
+    - "samtools_out"
+    must_exist: true
+    create_parent: true
+    required: false
+    direction: "output"
+    multiple: false
+    multiple_sep: ":"
+    dest: "par"
+  resources:
+  - type: "bash_script"
+    path: "script.sh"
+    is_executable: true
+  - type: "file"
+    path: "./src/workflows/utils/labels.config"
+    dest: "nextflow_labels.config"
+  description: "Filter the BAM according to the instruction of scSplit via Samtools."
+  test_resources:
+  - type: "bash_script"
+    path: "test.sh"
+    is_executable: true
+  - type: "file"
+    path: "../../../resources_test/demuxafy_test_data"
+  info: null
+  status: "enabled"
+  requirements:
+    commands:
+    - "ps"
+  set_wd_to_resources_dir: false
+platforms:
+- type: "docker"
+  id: "docker"
+  image: "python:3.9"
+  target_organization: "openpipelines-bio"
+  target_registry: "ghcr.io"
+  target_tag: "lane-regex_build"
+  namespace_separator: "_"
+  resolve_volume: "Automatic"
+  chown: true
+  setup_strategy: "ifneedbepullelsecachedbuild"
+  target_image_source: "https://github.com/openpipelines-bio/openpipeline"
+  setup:
+  - type: "apt"
+    packages:
+    - "wget"
+    - "gcc"
+    - "make"
+    - "libbz2-dev"
+    - "zlib1g-dev"
+    - "libncurses5-dev"
+    - "libncursesw5-dev"
+    - "liblzma-dev"
+    interactive: false
+  - type: "docker"
+    run:
+    - "wget https://github.com/samtools/samtools/releases/download/1.16.1/samtools-1.16.1.tar.bz2\
+      \ && tar jxf samtools-1.16.1.tar.bz2 && rm samtools-1.16.1.tar.bz2 && cd samtools-1.16.1\
+      \ && make prefix=/usr/local install"
+  - type: "python"
+    user: false
+    pip:
+    - "umi_tools"
+    upgrade: true
+  entrypoint: []
+  cmd: null
+- type: "nextflow"
+  id: "nextflow"
+  directives:
+    label:
+    - "midmem"
+    - "midcpu"
+    tag: "$id"
+  auto:
+    simplifyInput: true
+    simplifyOutput: false
+    transcript: false
+    publish: false
+  config:
+    labels:
+      mem1gb: "memory = 1.GB"
+      mem2gb: "memory = 2.GB"
+      mem4gb: "memory = 4.GB"
+      mem8gb: "memory = 8.GB"
+      mem16gb: "memory = 16.GB"
+      mem32gb: "memory = 32.GB"
+      mem64gb: "memory = 64.GB"
+      mem128gb: "memory = 128.GB"
+      mem256gb: "memory = 256.GB"
+      mem512gb: "memory = 512.GB"
+      mem1tb: "memory = 1.TB"
+      mem2tb: "memory = 2.TB"
+      mem4tb: "memory = 4.TB"
+      mem8tb: "memory = 8.TB"
+      mem16tb: "memory = 16.TB"
+      mem32tb: "memory = 32.TB"
+      mem64tb: "memory = 64.TB"
+      mem128tb: "memory = 128.TB"
+      mem256tb: "memory = 256.TB"
+      mem512tb: "memory = 512.TB"
+      cpu1: "cpus = 1"
+      cpu2: "cpus = 2"
+      cpu5: "cpus = 5"
+      cpu10: "cpus = 10"
+      cpu20: "cpus = 20"
+      cpu50: "cpus = 50"
+      cpu100: "cpus = 100"
+      cpu200: "cpus = 200"
+      cpu500: "cpus = 500"
+      cpu1000: "cpus = 1000"
+    script:
+    - "includeConfig(\"nextflow_labels.config\")"
+  debug: false
+  container: "docker"
+info:
+  config: "/home/runner/work/openpipeline/openpipeline/src/genetic_demux/samtools/config.vsh.yaml"
+  platform: "nextflow"
+  output: "/home/runner/work/openpipeline/openpipeline/target/nextflow/genetic_demux/samtools"
+  executable: "/home/runner/work/openpipeline/openpipeline/target/nextflow/genetic_demux/samtools/samtools"
+  viash_version: "0.8.4"
+  git_commit: "95dd61d7e407859c4297f5ce1fb8928e155ebaf2"
+  git_remote: "https://github.com/openpipelines-bio/openpipeline"
+  git_tag: "1.0.0rc1-4-g95dd61d7e4"
