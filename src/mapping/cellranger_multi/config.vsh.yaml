@@ -275,7 +275,9 @@ platforms:
         packages: 
           - pandas
           - pyyaml
-    __merge__: [ /src/base/requirements/python_test_setup.yaml, .] 
+    test_setup:
+      - type: python
+        __merge__: [ /src/base/requirements/viashpy.yaml, .]
   - type: nextflow
     directives:
       label: [ veryhighmem, highcpu ]
