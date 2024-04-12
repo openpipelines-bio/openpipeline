@@ -8,7 +8,7 @@ workflow test_wf {
   // allow changing the resources_test dir
   resources_test = file("${params.rootDir}/resources_test")
   
-  output_ch = Channel.fromList([
+  input_ch = Channel.fromList([
       [
           id: "test",
           input: resources_test.resolve("concat_test_data/concatenated_brain_filtered_feature_bc_matrix_subset.h5mu"),
@@ -22,7 +22,11 @@ workflow test_wf {
     ])
     | map{ state -> [state.id, state] }
     | view { "Input: $it" }
-    | process_batches
+    | process_batches.run(
+      toState: { id, output, state -> output + [orig_input: state.input] }
+    )
+
+  assert_ch = input_ch
     | view { output ->
       assert output.size() == 2 : "outputs should contain two elements; [id, file]"
       assert output[1].output.toString().endsWith(".h5mu") : "Output file should be a h5mu file. Found: ${output[1]}"
@@ -34,6 +38,12 @@ workflow test_wf {
       assert output_list.size() == 2 : "output channel should contain two events"
       assert output_list.collect({it[0]}).sort() == ["test", "test2"] : "First output ID should be 'test'"
     }
+
+  test_ch = input_ch
+    | workflow_test.run(
+      fromState: {id, state ->
+        [ input: state.output, orig_input: state.orig_input]}
+      )
   
 }
 
