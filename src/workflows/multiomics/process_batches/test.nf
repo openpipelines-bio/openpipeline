@@ -2,6 +2,7 @@ nextflow.enable.dsl=2
 targetDir = params.rootDir + "/target/nextflow"
 
 include { process_batches } from targetDir + "/workflows/multiomics/process_batches/main.nf"
+include { workflow_test } from targetDir + "/test_workflows/multiomics/process_batches/workflow_test/main.nf"
 
 workflow test_wf {
 
