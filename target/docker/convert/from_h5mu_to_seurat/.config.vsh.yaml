@@ -1,7 +1,7 @@
 functionality:
   name: "from_h5mu_to_seurat"
   namespace: "convert"
-  version: "scgpt-preprocessor_build"
+  version: "main_build"
   authors:
   - name: "Robrecht Cannoodt"
     roles:
@@ -87,7 +87,7 @@ platforms:
   image: "eddelbuettel/r2u:22.04"
   target_organization: "openpipelines-bio"
   target_registry: "ghcr.io"
-  target_tag: "scgpt-preprocessor_build"
+  target_tag: "main_build"
   namespace_separator: "/"
   resolve_volume: "Automatic"
   chown: true
@@ -186,5 +186,5 @@ info:
   output: "/home/runner/work/openpipeline/openpipeline/target/docker/convert/from_h5mu_to_seurat"
   executable: "/home/runner/work/openpipeline/openpipeline/target/docker/convert/from_h5mu_to_seurat/from_h5mu_to_seurat"
   viash_version: "0.8.5"
-  git_commit: "19cb963426bc08e2e57a09cf8355110b3e589a5e"
+  git_commit: "153d3013a30e794a70acc47a98408a137bdf28aa"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"
