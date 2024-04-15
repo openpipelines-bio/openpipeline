@@ -3,8 +3,8 @@ from openpipelinetestutils.asserters import assert_annotation_objects_equal
 
 ##VIASH START
 par = {
-  "input": "output_test/split_modalities/foo_types.csv",
-  "orig_input": "output_test/split_modalities/h5mu"
+  "input": "output.h5mu",
+  "orig_input": "input.5mu"
 }
 
 meta = {
@@ -19,7 +19,16 @@ output = mu.read_h5mu(par["input"])
 
 assert input.n_mod == output.n_mod, "Number of modalities differ"
 assert input.mod.keys() == output.mod.keys(), "Modalities differ"
+
+# Check atac modality
 assert_annotation_objects_equal(input.mod["atac"], output.mod["atac"])
+
+# Check rna modality
+assert "X_umap" in output.mod["rna"].obsm, "X_umap not found in .obsm"
+assert output.mod["rna"].obsm["X_umap"].shape[1] == 2, f"X_umap has wrong shape expected 2 n_comp but got {output.mod['rna'].obsm['X_umap'].shape[1]}"
+assert "pca_variance" in output.mod['rna'].uns
+assert "pca_loadings" in output.mod['rna'].varm
+
 
 
 
