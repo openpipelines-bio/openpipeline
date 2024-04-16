@@ -58,7 +58,6 @@ workflow run_wf {
             "modality": state.modality,
             "input_layer": state.input_layer,
             "n_input_bins": state.n_input_bins,
-            "output_compression": state.output_compression,
             "binned_layer": state.binned_layer,
             "output": state.output
           ]
@@ -76,11 +75,9 @@ workflow run_wf {
             "pad_token": state.pad_token,
             "pad_value": state.pad_value,
             "max_seq_len": state.max_seq_len,
-            "output_compression": state.output_compression,
             "obsm_gene_tokens": state.obsm_gene_tokens,
             "obsm_tokenized_values": state.obsm_tokenized_values,
             "obsm_padding_mask": state.obsm_padding_mask,
-            "output_compression": state.output_compression,
             "output": state.output
           ]
         },
@@ -104,7 +101,31 @@ workflow run_wf {
           "dropout": state.dropout,
           "DSBN": state.DSBN,
           "batch_size": state.batch_size,
-          "obsm_embeddings": state.embedding_layer,
+          "obsm_embeddings": state.obsm_embeddings,
+          "output": state.output
+        ]
+      },
+      toState: ["input": "output"]
+    )
+
+    | find_neighbors.run(
+      fromState: {id, state -> [
+          "input": state.input,
+          "uns_output": state.uns_neighbors,
+          "obsp_distances": state.obsp_neighbor_distances,
+          "obsp_connectivities": state.obsp_neighbor_connectivities,
+          "obsm_input": state.obsm_embeddings,
+          "modality": state.modality
+        ]
+      },
+      toState: ["input": "output"]
+    )
+    | umap.run(
+      fromState: {id, state -> [
+          "input": state.input,
+          "uns_neighbors": state.uns_neighbors,
+          "obsm_output": state.obsm_umap,
+          "modality": state.modality,
           "output_compression": state.output_compression,
           "output": state.workflow_output
         ]
