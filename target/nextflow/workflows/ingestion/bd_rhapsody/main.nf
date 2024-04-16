@@ -3218,14 +3218,14 @@ meta = [
         "foundConfigPath" : "/home/runner/work/openpipeline/openpipeline/src/mapping/bd_rhapsody/config.vsh.yaml",
         "configInfo" : {
           "functionalityName" : "bd_rhapsody",
-          "git_tag" : "0.2.0-1588-g98e1d60a6d",
+          "git_tag" : "0.2.0-1589-g4a72f0eadd",
           "git_remote" : "https://github.com/openpipelines-bio/openpipeline",
           "viash_version" : "0.8.5",
           "config" : "/home/runner/work/openpipeline/openpipeline/src/mapping/bd_rhapsody/config.vsh.yaml",
           "functionalityNamespace" : "mapping",
           "output" : "",
           "platform" : "",
-          "git_commit" : "98e1d60a6d1f4ddc3f4a469cc8edb5a583204ef1",
+          "git_commit" : "4a72f0eaddb49bb4fd4b3590c6b068cfefa45eb5",
           "executable" : "/nextflow/mapping/bd_rhapsody/main.nf"
         },
         "writtenPath" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/mapping/bd_rhapsody"
@@ -3239,14 +3239,14 @@ meta = [
         "foundConfigPath" : "/home/runner/work/openpipeline/openpipeline/src/convert/from_bdrhap_to_h5mu/config.vsh.yaml",
         "configInfo" : {
           "functionalityName" : "from_bdrhap_to_h5mu",
-          "git_tag" : "0.2.0-1588-g98e1d60a6d",
+          "git_tag" : "0.2.0-1589-g4a72f0eadd",
           "git_remote" : "https://github.com/openpipelines-bio/openpipeline",
           "viash_version" : "0.8.5",
           "config" : "/home/runner/work/openpipeline/openpipeline/src/convert/from_bdrhap_to_h5mu/config.vsh.yaml",
           "functionalityNamespace" : "convert",
           "output" : "",
           "platform" : "",
-          "git_commit" : "98e1d60a6d1f4ddc3f4a469cc8edb5a583204ef1",
+          "git_commit" : "4a72f0eaddb49bb4fd4b3590c6b068cfefa45eb5",
           "executable" : "/nextflow/convert/from_bdrhap_to_h5mu/main.nf"
         },
         "writtenPath" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/convert/from_bdrhap_to_h5mu"
@@ -3313,9 +3313,9 @@ meta = [
     "platform" : "nextflow",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/workflows/ingestion/bd_rhapsody",
     "viash_version" : "0.8.5",
-    "git_commit" : "98e1d60a6d1f4ddc3f4a469cc8edb5a583204ef1",
+    "git_commit" : "4a72f0eaddb49bb4fd4b3590c6b068cfefa45eb5",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline",
-    "git_tag" : "0.2.0-1588-g98e1d60a6d"
+    "git_tag" : "0.2.0-1589-g4a72f0eadd"
   }
 }'''))
 ]

@@ -51,7 +51,7 @@ functionality:
           type: string
           required: false
           description: |
-            The name of the adata.var column containing gene names. When no gene_name_layer is provided, the .var index will be used.
+            The name of the adata.var column containing gene names. When no gene_name_layer is provided, the var index will be used.
         - name: "--obs_batch_label"
           type: string
           required: false
@@ -73,12 +73,15 @@ functionality:
           choices: ["gzip", "lzf"]
           description: |
             The compression algorithm to use for the output h5mu file.
+
+    - name: "scGPT integration options"
+      arguments:
         - name: "--binned_layer"
           type: string
           default: "binned"
           description: |
             The name of the adata layer to write the binned data to.
-        - name: "--embedding_layer"
+        - name: "--obsm_embeddings"
           type: string
           default: "X_scGPT"
           required: false
@@ -88,21 +91,18 @@ functionality:
           type: string
           default: "gene_id_tokens"
           description: |
-            The key of the .obsm array containing the gene token ids
+            The key of the obsm array containing the gene token ids
           example: values.pt
         - name: "--obsm_tokenized_values"
           type: string
           default: values_tokenized
           description: |
-            The key of the .obsm array containing the count values of the tokenized genes
+            The key of the obsm array containing the count values of the tokenized genes
         - name: "--obsm_padding_mask"
           type: string
           default: padding_mask
           description: |
-            The key of the .obsm array containing the padding mask.
-
-    - name: "Arguments"
-      arguments:
+            The key of the obsm array containing the padding mask.
         - name: "--pad_token"
           type: string
           default: "<pad>"
@@ -147,6 +147,27 @@ functionality:
           default: 64
           description: |
             The batch size to be used for inference 
+
+    - name: "Neighbors and UMAP options"
+      arguments:
+        - name: "--uns_neighbors"
+          type: string
+          default: scGPT_integration_neighbors
+          description: In which uns slot to store various neighbor output objects.
+        - name: "--obsp_neighbor_distances"
+          type: string
+          default: "scGPT_integration_distances"
+          description: "In which obsp slot to store the distance matrix between the resulting neighbors."
+        - name: "--obsp_neighbor_connectivities"
+          type: string
+          default: "scGPT_integration_connectivities"
+          description: "In which obsp slot to store the connectivities matrix between the resulting neighbors."
+        - name: "--obsm_umap"
+          type: string
+          default: "X_scGPT_umap"
+          required: false
+          description: "In which .obsm slot to store the resulting UMAP embedding."
+
   resources:
     - type: nextflow_script
       path: main.nf
@@ -158,6 +179,8 @@ functionality:
     - name: filter/do_filter
     - name: scgpt/pad_tokenize
     - name: scgpt/embedding
+    - name: dimred/umap
+    - name: neighbors/find_neighbors
   test_resources:
     # - type: nextflow_script
     #   path: test.nf

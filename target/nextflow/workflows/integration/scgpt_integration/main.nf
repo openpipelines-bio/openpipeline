@@ -2904,7 +2904,7 @@ meta = [
           {
             "type" : "string",
             "name" : "--var_gene_names",
-            "description" : "The name of the adata.var column containing gene names. When no gene_name_layer is provided, the .var index will be used.\n",
+            "description" : "The name of the adata.var column containing gene names. When no gene_name_layer is provided, the var index will be used.\n",
             "required" : false,
             "direction" : "input",
             "multiple" : false,
@@ -2957,7 +2957,12 @@ meta = [
             "multiple" : false,
             "multiple_sep" : ":",
             "dest" : "par"
-          },
+          }
+        ]
+      },
+      {
+        "name" : "scGPT integration options",
+        "arguments" : [
           {
             "type" : "string",
             "name" : "--binned_layer",
@@ -2973,7 +2978,7 @@ meta = [
           },
           {
             "type" : "string",
-            "name" : "--embedding_layer",
+            "name" : "--obsm_embeddings",
             "description" : "The name of the adata.obsm array to which scGPT embeddings will be written.\n",
             "default" : [
               "X_scGPT"
@@ -2987,7 +2992,7 @@ meta = [
           {
             "type" : "string",
             "name" : "--obsm_gene_tokens",
-            "description" : "The key of the .obsm array containing the gene token ids\n",
+            "description" : "The key of the obsm array containing the gene token ids\n",
             "example" : [
               "values.pt"
             ],
@@ -3003,7 +3008,7 @@ meta = [
           {
             "type" : "string",
             "name" : "--obsm_tokenized_values",
-            "description" : "The key of the .obsm array containing the count values of the tokenized genes\n",
+            "description" : "The key of the obsm array containing the count values of the tokenized genes\n",
             "default" : [
               "values_tokenized"
             ],
@@ -3016,7 +3021,7 @@ meta = [
           {
             "type" : "string",
             "name" : "--obsm_padding_mask",
-            "description" : "The key of the .obsm array containing the padding mask.\n",
+            "description" : "The key of the obsm array containing the padding mask.\n",
             "default" : [
               "padding_mask"
             ],
@@ -3025,12 +3030,7 @@ meta = [
             "multiple" : false,
             "multiple_sep" : ":",
             "dest" : "par"
-          }
-        ]
-      },
-      {
-        "name" : "Arguments",
-        "arguments" : [
+          },
           {
             "type" : "string",
             "name" : "--pad_token",
@@ -3134,6 +3134,63 @@ meta = [
             "dest" : "par"
           }
         ]
+      },
+      {
+        "name" : "Neighbors and UMAP options",
+        "arguments" : [
+          {
+            "type" : "string",
+            "name" : "--uns_neighbors",
+            "description" : "In which uns slot to store various neighbor output objects.",
+            "default" : [
+              "scGPT_integration_neighbors"
+            ],
+            "required" : false,
+            "direction" : "input",
+            "multiple" : false,
+            "multiple_sep" : ":",
+            "dest" : "par"
+          },
+          {
+            "type" : "string",
+            "name" : "--obsp_neighbor_distances",
+            "description" : "In which obsp slot to store the distance matrix between the resulting neighbors.",
+            "default" : [
+              "scGPT_integration_distances"
+            ],
+            "required" : false,
+            "direction" : "input",
+            "multiple" : false,
+            "multiple_sep" : ":",
+            "dest" : "par"
+          },
+          {
+            "type" : "string",
+            "name" : "--obsp_neighbor_connectivities",
+            "description" : "In which obsp slot to store the connectivities matrix between the resulting neighbors.",
+            "default" : [
+              "scGPT_integration_connectivities"
+            ],
+            "required" : false,
+            "direction" : "input",
+            "multiple" : false,
+            "multiple_sep" : ":",
+            "dest" : "par"
+          },
+          {
+            "type" : "string",
+            "name" : "--obsm_umap",
+            "description" : "In which .obsm slot to store the resulting UMAP embedding.",
+            "default" : [
+              "X_scGPT_umap"
+            ],
+            "required" : false,
+            "direction" : "input",
+            "multiple" : false,
+            "multiple_sep" : ":",
+            "dest" : "par"
+          }
+        ]
       }
     ],
     "resources" : [
@@ -3184,14 +3241,14 @@ meta = [
         "foundConfigPath" : "/home/runner/work/openpipeline/openpipeline/src/scgpt/cross_check_genes/config.vsh.yaml",
         "configInfo" : {
           "functionalityName" : "cross_check_genes",
-          "git_tag" : "0.2.0-1588-g98e1d60a6d",
+          "git_tag" : "0.2.0-1589-g4a72f0eadd",
           "git_remote" : "https://github.com/openpipelines-bio/openpipeline",
           "viash_version" : "0.8.5",
           "config" : "/home/runner/work/openpipeline/openpipeline/src/scgpt/cross_check_genes/config.vsh.yaml",
           "functionalityNamespace" : "scgpt",
           "output" : "",
           "platform" : "",
-          "git_commit" : "98e1d60a6d1f4ddc3f4a469cc8edb5a583204ef1",
+          "git_commit" : "4a72f0eaddb49bb4fd4b3590c6b068cfefa45eb5",
           "executable" : "/nextflow/scgpt/cross_check_genes/main.nf"
         },
         "writtenPath" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/scgpt/cross_check_genes"
@@ -3205,14 +3262,14 @@ meta = [
         "foundConfigPath" : "/home/runner/work/openpipeline/openpipeline/src/scgpt/binning/config.vsh.yaml",
         "configInfo" : {
           "functionalityName" : "binning",
-          "git_tag" : "0.2.0-1588-g98e1d60a6d",
+          "git_tag" : "0.2.0-1589-g4a72f0eadd",
           "git_remote" : "https://github.com/openpipelines-bio/openpipeline",
           "viash_version" : "0.8.5",
           "config" : "/home/runner/work/openpipeline/openpipeline/src/scgpt/binning/config.vsh.yaml",
           "functionalityNamespace" : "scgpt",
           "output" : "",
           "platform" : "",
-          "git_commit" : "98e1d60a6d1f4ddc3f4a469cc8edb5a583204ef1",
+          "git_commit" : "4a72f0eaddb49bb4fd4b3590c6b068cfefa45eb5",
           "executable" : "/nextflow/scgpt/binning/main.nf"
         },
         "writtenPath" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/scgpt/binning"
@@ -3226,14 +3283,14 @@ meta = [
         "foundConfigPath" : "/home/runner/work/openpipeline/openpipeline/src/feature_annotation/highly_variable_features_scanpy/config.vsh.yaml",
         "configInfo" : {
           "functionalityName" : "highly_variable_features_scanpy",
-          "git_tag" : "0.2.0-1588-g98e1d60a6d",
+          "git_tag" : "0.2.0-1589-g4a72f0eadd",
           "git_remote" : "https://github.com/openpipelines-bio/openpipeline",
           "viash_version" : "0.8.5",
           "config" : "/home/runner/work/openpipeline/openpipeline/src/feature_annotation/highly_variable_features_scanpy/config.vsh.yaml",
           "functionalityNamespace" : "feature_annotation",
           "output" : "",
           "platform" : "",
-          "git_commit" : "98e1d60a6d1f4ddc3f4a469cc8edb5a583204ef1",
+          "git_commit" : "4a72f0eaddb49bb4fd4b3590c6b068cfefa45eb5",
           "executable" : "/nextflow/feature_annotation/highly_variable_features_scanpy/main.nf"
         },
         "writtenPath" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/feature_annotation/highly_variable_features_scanpy"
@@ -3247,14 +3304,14 @@ meta = [
         "foundConfigPath" : "/home/runner/work/openpipeline/openpipeline/src/filter/do_filter/config.vsh.yaml",
         "configInfo" : {
           "functionalityName" : "do_filter",
-          "git_tag" : "0.2.0-1588-g98e1d60a6d",
+          "git_tag" : "0.2.0-1589-g4a72f0eadd",
           "git_remote" : "https://github.com/openpipelines-bio/openpipeline",
           "viash_version" : "0.8.5",
           "config" : "/home/runner/work/openpipeline/openpipeline/src/filter/do_filter/config.vsh.yaml",
           "functionalityNamespace" : "filter",
           "output" : "",
           "platform" : "",
-          "git_commit" : "98e1d60a6d1f4ddc3f4a469cc8edb5a583204ef1",
+          "git_commit" : "4a72f0eaddb49bb4fd4b3590c6b068cfefa45eb5",
           "executable" : "/nextflow/filter/do_filter/main.nf"
         },
         "writtenPath" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/filter/do_filter"
@@ -3268,14 +3325,14 @@ meta = [
         "foundConfigPath" : "/home/runner/work/openpipeline/openpipeline/src/scgpt/pad_tokenize/config.vsh.yaml",
         "configInfo" : {
           "functionalityName" : "pad_tokenize",
-          "git_tag" : "0.2.0-1588-g98e1d60a6d",
+          "git_tag" : "0.2.0-1589-g4a72f0eadd",
           "git_remote" : "https://github.com/openpipelines-bio/openpipeline",
           "viash_version" : "0.8.5",
           "config" : "/home/runner/work/openpipeline/openpipeline/src/scgpt/pad_tokenize/config.vsh.yaml",
           "functionalityNamespace" : "scgpt",
           "output" : "",
           "platform" : "",
-          "git_commit" : "98e1d60a6d1f4ddc3f4a469cc8edb5a583204ef1",
+          "git_commit" : "4a72f0eaddb49bb4fd4b3590c6b068cfefa45eb5",
           "executable" : "/nextflow/scgpt/pad_tokenize/main.nf"
         },
         "writtenPath" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/scgpt/pad_tokenize"
@@ -3289,17 +3346,59 @@ meta = [
         "foundConfigPath" : "/home/runner/work/openpipeline/openpipeline/src/scgpt/embed/config.vsh.yaml",
         "configInfo" : {
           "functionalityName" : "embedding",
-          "git_tag" : "0.2.0-1588-g98e1d60a6d",
+          "git_tag" : "0.2.0-1589-g4a72f0eadd",
           "git_remote" : "https://github.com/openpipelines-bio/openpipeline",
           "viash_version" : "0.8.5",
           "config" : "/home/runner/work/openpipeline/openpipeline/src/scgpt/embed/config.vsh.yaml",
           "functionalityNamespace" : "scgpt",
           "output" : "",
           "platform" : "",
-          "git_commit" : "98e1d60a6d1f4ddc3f4a469cc8edb5a583204ef1",
+          "git_commit" : "4a72f0eaddb49bb4fd4b3590c6b068cfefa45eb5",
           "executable" : "/nextflow/scgpt/embedding/main.nf"
         },
         "writtenPath" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/scgpt/embedding"
+      },
+      {
+        "name" : "dimred/umap",
+        "repository" : {
+          "type" : "local",
+          "localPath" : ""
+        },
+        "foundConfigPath" : "/home/runner/work/openpipeline/openpipeline/src/dimred/umap/config.vsh.yaml",
+        "configInfo" : {
+          "functionalityName" : "umap",
+          "git_tag" : "0.2.0-1589-g4a72f0eadd",
+          "git_remote" : "https://github.com/openpipelines-bio/openpipeline",
+          "viash_version" : "0.8.5",
+          "config" : "/home/runner/work/openpipeline/openpipeline/src/dimred/umap/config.vsh.yaml",
+          "functionalityNamespace" : "dimred",
+          "output" : "",
+          "platform" : "",
+          "git_commit" : "4a72f0eaddb49bb4fd4b3590c6b068cfefa45eb5",
+          "executable" : "/nextflow/dimred/umap/main.nf"
+        },
+        "writtenPath" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/dimred/umap"
+      },
+      {
+        "name" : "neighbors/find_neighbors",
+        "repository" : {
+          "type" : "local",
+          "localPath" : ""
+        },
+        "foundConfigPath" : "/home/runner/work/openpipeline/openpipeline/src/neighbors/find_neighbors/config.vsh.yaml",
+        "configInfo" : {
+          "functionalityName" : "find_neighbors",
+          "git_tag" : "0.2.0-1589-g4a72f0eadd",
+          "git_remote" : "https://github.com/openpipelines-bio/openpipeline",
+          "viash_version" : "0.8.5",
+          "config" : "/home/runner/work/openpipeline/openpipeline/src/neighbors/find_neighbors/config.vsh.yaml",
+          "functionalityNamespace" : "neighbors",
+          "output" : "",
+          "platform" : "",
+          "git_commit" : "4a72f0eaddb49bb4fd4b3590c6b068cfefa45eb5",
+          "executable" : "/nextflow/neighbors/find_neighbors/main.nf"
+        },
+        "writtenPath" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/neighbors/find_neighbors"
       }
     ],
     "set_wd_to_resources_dir" : false
@@ -3363,9 +3462,9 @@ meta = [
     "platform" : "nextflow",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/workflows/integration/scgpt_integration",
     "viash_version" : "0.8.5",
-    "git_commit" : "98e1d60a6d1f4ddc3f4a469cc8edb5a583204ef1",
+    "git_commit" : "4a72f0eaddb49bb4fd4b3590c6b068cfefa45eb5",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline",
-    "git_tag" : "0.2.0-1588-g98e1d60a6d"
+    "git_tag" : "0.2.0-1589-g4a72f0eadd"
   }
 }'''))
 ]
@@ -3378,6 +3477,8 @@ include { highly_variable_features_scanpy } from "${meta.resources_dir}/../../..
 include { do_filter } from "${meta.resources_dir}/../../../../nextflow/filter/do_filter/main.nf"
 include { pad_tokenize } from "${meta.resources_dir}/../../../../nextflow/scgpt/pad_tokenize/main.nf"
 include { embedding } from "${meta.resources_dir}/../../../../nextflow/scgpt/embedding/main.nf"
+include { umap } from "${meta.resources_dir}/../../../../nextflow/dimred/umap/main.nf"
+include { find_neighbors } from "${meta.resources_dir}/../../../../nextflow/neighbors/find_neighbors/main.nf"
 
 // inner workflow
 // user-provided Nextflow code
@@ -3441,7 +3542,6 @@ workflow run_wf {
             "modality": state.modality,
             "input_layer": state.input_layer,
             "n_input_bins": state.n_input_bins,
-            "output_compression": state.output_compression,
             "binned_layer": state.binned_layer,
             "output": state.output
           ]
@@ -3459,11 +3559,9 @@ workflow run_wf {
             "pad_token": state.pad_token,
             "pad_value": state.pad_value,
             "max_seq_len": state.max_seq_len,
-            "output_compression": state.output_compression,
             "obsm_gene_tokens": state.obsm_gene_tokens,
             "obsm_tokenized_values": state.obsm_tokenized_values,
             "obsm_padding_mask": state.obsm_padding_mask,
-            "output_compression": state.output_compression,
             "output": state.output
           ]
         },
@@ -3487,7 +3585,31 @@ workflow run_wf {
           "dropout": state.dropout,
           "DSBN": state.DSBN,
           "batch_size": state.batch_size,
-          "obsm_embeddings": state.embedding_layer,
+          "obsm_embeddings": state.obsm_embeddings,
+          "output": state.output
+        ]
+      },
+      toState: ["input": "output"]
+    )
+
+    | find_neighbors.run(
+      fromState: {id, state -> [
+          "input": state.input,
+          "uns_output": state.uns_neighbors,
+          "obsp_distances": state.obsp_neighbor_distances,
+          "obsp_connectivities": state.obsp_neighbor_connectivities,
+          "obsm_input": state.obsm_embeddings,
+          "modality": state.modality
+        ]
+      },
+      toState: ["input": "output"]
+    )
+    | umap.run(
+      fromState: {id, state -> [
+          "input": state.input,
+          "uns_neighbors": state.uns_neighbors,
+          "obsm_output": state.obsm_umap,
+          "modality": state.modality,
           "output_compression": state.output_compression,
           "output": state.workflow_output
         ]
