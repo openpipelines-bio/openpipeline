@@ -3136,6 +3136,37 @@ meta = [
         ]
       },
       {
+        "name" : "Clustering options",
+        "arguments" : [
+          {
+            "type" : "string",
+            "name" : "--obs_cluster",
+            "description" : "Prefix for the .obs keys under which to add the cluster labels. Newly created columns in .obs will \nbe created from the specified value for '--obs_cluster' suffixed with an underscore and one of the resolutions\nresolutions specified in '--leiden_resolution'.\n",
+            "default" : [
+              "scGPT_integration_leiden"
+            ],
+            "required" : false,
+            "direction" : "input",
+            "multiple" : false,
+            "multiple_sep" : ":",
+            "dest" : "par"
+          },
+          {
+            "type" : "double",
+            "name" : "--leiden_resolution",
+            "description" : "Control the coarseness of the clustering. Higher values lead to more clusters.",
+            "default" : [
+              1.0
+            ],
+            "required" : false,
+            "direction" : "input",
+            "multiple" : true,
+            "multiple_sep" : ";",
+            "dest" : "par"
+          }
+        ]
+      },
+      {
         "name" : "Neighbors and UMAP options",
         "arguments" : [
           {
@@ -3241,14 +3272,14 @@ meta = [
         "foundConfigPath" : "/home/runner/work/openpipeline/openpipeline/src/scgpt/cross_check_genes/config.vsh.yaml",
         "configInfo" : {
           "functionalityName" : "cross_check_genes",
-          "git_tag" : "0.2.0-1590-gf7d4217919",
+          "git_tag" : "0.2.0-1591-gf410c7fdea",
           "git_remote" : "https://github.com/openpipelines-bio/openpipeline",
           "viash_version" : "0.8.5",
           "config" : "/home/runner/work/openpipeline/openpipeline/src/scgpt/cross_check_genes/config.vsh.yaml",
           "functionalityNamespace" : "scgpt",
           "output" : "",
           "platform" : "",
-          "git_commit" : "f7d42179198462c60d5ce71423a7489175f61889",
+          "git_commit" : "f410c7fdeaad10114ecddce70dc0dd40e7464508",
           "executable" : "/nextflow/scgpt/cross_check_genes/main.nf"
         },
         "writtenPath" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/scgpt/cross_check_genes"
@@ -3262,14 +3293,14 @@ meta = [
         "foundConfigPath" : "/home/runner/work/openpipeline/openpipeline/src/scgpt/binning/config.vsh.yaml",
         "configInfo" : {
           "functionalityName" : "binning",
-          "git_tag" : "0.2.0-1590-gf7d4217919",
+          "git_tag" : "0.2.0-1591-gf410c7fdea",
           "git_remote" : "https://github.com/openpipelines-bio/openpipeline",
           "viash_version" : "0.8.5",
           "config" : "/home/runner/work/openpipeline/openpipeline/src/scgpt/binning/config.vsh.yaml",
           "functionalityNamespace" : "scgpt",
           "output" : "",
           "platform" : "",
-          "git_commit" : "f7d42179198462c60d5ce71423a7489175f61889",
+          "git_commit" : "f410c7fdeaad10114ecddce70dc0dd40e7464508",
           "executable" : "/nextflow/scgpt/binning/main.nf"
         },
         "writtenPath" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/scgpt/binning"
@@ -3283,14 +3314,14 @@ meta = [
         "foundConfigPath" : "/home/runner/work/openpipeline/openpipeline/src/feature_annotation/highly_variable_features_scanpy/config.vsh.yaml",
         "configInfo" : {
           "functionalityName" : "highly_variable_features_scanpy",
-          "git_tag" : "0.2.0-1590-gf7d4217919",
+          "git_tag" : "0.2.0-1591-gf410c7fdea",
           "git_remote" : "https://github.com/openpipelines-bio/openpipeline",
           "viash_version" : "0.8.5",
           "config" : "/home/runner/work/openpipeline/openpipeline/src/feature_annotation/highly_variable_features_scanpy/config.vsh.yaml",
           "functionalityNamespace" : "feature_annotation",
           "output" : "",
           "platform" : "",
-          "git_commit" : "f7d42179198462c60d5ce71423a7489175f61889",
+          "git_commit" : "f410c7fdeaad10114ecddce70dc0dd40e7464508",
           "executable" : "/nextflow/feature_annotation/highly_variable_features_scanpy/main.nf"
         },
         "writtenPath" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/feature_annotation/highly_variable_features_scanpy"
@@ -3304,14 +3335,14 @@ meta = [
         "foundConfigPath" : "/home/runner/work/openpipeline/openpipeline/src/filter/do_filter/config.vsh.yaml",
         "configInfo" : {
           "functionalityName" : "do_filter",
-          "git_tag" : "0.2.0-1590-gf7d4217919",
+          "git_tag" : "0.2.0-1591-gf410c7fdea",
           "git_remote" : "https://github.com/openpipelines-bio/openpipeline",
           "viash_version" : "0.8.5",
           "config" : "/home/runner/work/openpipeline/openpipeline/src/filter/do_filter/config.vsh.yaml",
           "functionalityNamespace" : "filter",
           "output" : "",
           "platform" : "",
-          "git_commit" : "f7d42179198462c60d5ce71423a7489175f61889",
+          "git_commit" : "f410c7fdeaad10114ecddce70dc0dd40e7464508",
           "executable" : "/nextflow/filter/do_filter/main.nf"
         },
         "writtenPath" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/filter/do_filter"
@@ -3325,14 +3356,14 @@ meta = [
         "foundConfigPath" : "/home/runner/work/openpipeline/openpipeline/src/scgpt/pad_tokenize/config.vsh.yaml",
         "configInfo" : {
           "functionalityName" : "pad_tokenize",
-          "git_tag" : "0.2.0-1590-gf7d4217919",
+          "git_tag" : "0.2.0-1591-gf410c7fdea",
           "git_remote" : "https://github.com/openpipelines-bio/openpipeline",
           "viash_version" : "0.8.5",
           "config" : "/home/runner/work/openpipeline/openpipeline/src/scgpt/pad_tokenize/config.vsh.yaml",
           "functionalityNamespace" : "scgpt",
           "output" : "",
           "platform" : "",
-          "git_commit" : "f7d42179198462c60d5ce71423a7489175f61889",
+          "git_commit" : "f410c7fdeaad10114ecddce70dc0dd40e7464508",
           "executable" : "/nextflow/scgpt/pad_tokenize/main.nf"
         },
         "writtenPath" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/scgpt/pad_tokenize"
@@ -3346,14 +3377,14 @@ meta = [
         "foundConfigPath" : "/home/runner/work/openpipeline/openpipeline/src/scgpt/embed/config.vsh.yaml",
         "configInfo" : {
           "functionalityName" : "embedding",
-          "git_tag" : "0.2.0-1590-gf7d4217919",
+          "git_tag" : "0.2.0-1591-gf410c7fdea",
           "git_remote" : "https://github.com/openpipelines-bio/openpipeline",
           "viash_version" : "0.8.5",
           "config" : "/home/runner/work/openpipeline/openpipeline/src/scgpt/embed/config.vsh.yaml",
           "functionalityNamespace" : "scgpt",
           "output" : "",
           "platform" : "",
-          "git_commit" : "f7d42179198462c60d5ce71423a7489175f61889",
+          "git_commit" : "f410c7fdeaad10114ecddce70dc0dd40e7464508",
           "executable" : "/nextflow/scgpt/embedding/main.nf"
         },
         "writtenPath" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/scgpt/embedding"
@@ -3367,14 +3398,14 @@ meta = [
         "foundConfigPath" : "/home/runner/work/openpipeline/openpipeline/src/dimred/umap/config.vsh.yaml",
         "configInfo" : {
           "functionalityName" : "umap",
-          "git_tag" : "0.2.0-1590-gf7d4217919",
+          "git_tag" : "0.2.0-1591-gf410c7fdea",
           "git_remote" : "https://github.com/openpipelines-bio/openpipeline",
           "viash_version" : "0.8.5",
           "config" : "/home/runner/work/openpipeline/openpipeline/src/dimred/umap/config.vsh.yaml",
           "functionalityNamespace" : "dimred",
           "output" : "",
           "platform" : "",
-          "git_commit" : "f7d42179198462c60d5ce71423a7489175f61889",
+          "git_commit" : "f410c7fdeaad10114ecddce70dc0dd40e7464508",
           "executable" : "/nextflow/dimred/umap/main.nf"
         },
         "writtenPath" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/dimred/umap"
@@ -3388,14 +3419,14 @@ meta = [
         "foundConfigPath" : "/home/runner/work/openpipeline/openpipeline/src/neighbors/find_neighbors/config.vsh.yaml",
         "configInfo" : {
           "functionalityName" : "find_neighbors",
-          "git_tag" : "0.2.0-1590-gf7d4217919",
+          "git_tag" : "0.2.0-1591-gf410c7fdea",
           "git_remote" : "https://github.com/openpipelines-bio/openpipeline",
           "viash_version" : "0.8.5",
           "config" : "/home/runner/work/openpipeline/openpipeline/src/neighbors/find_neighbors/config.vsh.yaml",
           "functionalityNamespace" : "neighbors",
           "output" : "",
           "platform" : "",
-          "git_commit" : "f7d42179198462c60d5ce71423a7489175f61889",
+          "git_commit" : "f410c7fdeaad10114ecddce70dc0dd40e7464508",
           "executable" : "/nextflow/neighbors/find_neighbors/main.nf"
         },
         "writtenPath" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/neighbors/find_neighbors"
@@ -3462,9 +3493,9 @@ meta = [
     "platform" : "nextflow",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/workflows/integration/scgpt_integration",
     "viash_version" : "0.8.5",
-    "git_commit" : "f7d42179198462c60d5ce71423a7489175f61889",
+    "git_commit" : "f410c7fdeaad10114ecddce70dc0dd40e7464508",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline",
-    "git_tag" : "0.2.0-1590-gf7d4217919"
+    "git_tag" : "0.2.0-1591-gf410c7fdea"
   }
 }'''))
 ]
@@ -3488,7 +3519,7 @@ workflow run_wf {
     input_ch
 
   main:
-    output_ch = input_ch
+    neighbors_ch = input_ch
     // Set aside the output for this workflow to avoid conflicts
     | map {id, state -> 
       def new_state = state + ["workflow_output": state.output]
@@ -3604,6 +3635,32 @@ workflow run_wf {
       },
       toState: ["input": "output"]
     )
+
+with_leiden_ch = neighbors_ch
+    | filter{id, state -> state.leiden_resolution}
+    | leiden.run(
+      fromState: [
+        "input": "input",
+        "obsp_connectivities": "obsp_neighbor_connectivities",
+        "obsm_name": "obs_cluster",
+        "resolution": "leiden_resolution",
+        "modality": "modality",
+      ],
+      toState: ["input": "output"]
+    )
+    | move_obsm_to_obs.run(
+      fromState: [
+          "input": "input",
+          "obsm_key": "obs_cluster",
+          "modality": "modality",
+      ],
+      toState: ["input": "output"]
+    )
+
+  without_leiden_ch = neighbors_ch
+    | filter{id, state -> !state.leiden_resolution}
+
+  output_ch = with_leiden_ch.mix(without_leiden_ch)
     | umap.run(
       fromState: {id, state -> [
           "input": state.input,

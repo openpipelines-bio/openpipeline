@@ -4,7 +4,7 @@ workflow run_wf {
     input_ch
 
   main:
-    output_ch = input_ch
+    neighbors_ch = input_ch
     // Set aside the output for this workflow to avoid conflicts
     | map {id, state -> 
       def new_state = state + ["workflow_output": state.output]
@@ -120,6 +120,32 @@ workflow run_wf {
       },
       toState: ["input": "output"]
     )
+
+with_leiden_ch = neighbors_ch
+    | filter{id, state -> state.leiden_resolution}
+    | leiden.run(
+      fromState: [
+        "input": "input",
+        "obsp_connectivities": "obsp_neighbor_connectivities",
+        "obsm_name": "obs_cluster",
+        "resolution": "leiden_resolution",
+        "modality": "modality",
+      ],
+      toState: ["input": "output"]
+    )
+    | move_obsm_to_obs.run(
+      fromState: [
+          "input": "input",
+          "obsm_key": "obs_cluster",
+          "modality": "modality",
+      ],
+      toState: ["input": "output"]
+    )
+
+  without_leiden_ch = neighbors_ch
+    | filter{id, state -> !state.leiden_resolution}
+
+  output_ch = with_leiden_ch.mix(without_leiden_ch)
     | umap.run(
       fromState: {id, state -> [
           "input": state.input,

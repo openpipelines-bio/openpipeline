@@ -28,6 +28,10 @@ dropout: 0.2
 DSBN: true
 batch_size: 64
 
+# Clustering options
+obs_cluster: "scGPT_integration_leiden"
+leiden_resolution: [1]
+
 # Neighbors and UMAP options
 uns_neighbors: "scGPT_integration_neighbors"
 obsp_neighbor_distances: "scGPT_integration_distances"

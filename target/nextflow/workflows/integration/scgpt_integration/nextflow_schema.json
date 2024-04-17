@@ -309,6 +309,38 @@
 },
     
     
+    "clustering options" : {
+    "title": "Clustering options",
+    "type": "object",
+    "description": "No description",
+    "properties": {
+    
+        
+                "obs_cluster": {
+                "type":
+                "string",
+                "description": "Type: `string`, default: `scGPT_integration_leiden`. Prefix for the ",
+                "help_text": "Type: `string`, default: `scGPT_integration_leiden`. Prefix for the .obs keys under which to add the cluster labels. Newly created columns in .obs will \nbe created from the specified value for \u0027--obs_cluster\u0027 suffixed with an underscore and one of the resolutions\nresolutions specified in \u0027--leiden_resolution\u0027.\n"
+            ,
+                "default": "scGPT_integration_leiden"
+            }
+    
+
+        ,
+                "leiden_resolution": {
+                "type":
+                "string",
+                "description": "Type: List of `double`, default: `1`, multiple_sep: `\":\"`. Control the coarseness of the clustering",
+                "help_text": "Type: List of `double`, default: `1`, multiple_sep: `\":\"`. Control the coarseness of the clustering. Higher values lead to more clusters."
+            ,
+                "default": "1"
+            }
+    
+
+}
+},
+    
+    
     "neighbors and umap options" : {
     "title": "Neighbors and UMAP options",
     "type": "object",
@@ -396,6 +428,10 @@
 
     {
     "$ref": "#/definitions/scgpt integration options"
+    },
+
+    {
+    "$ref": "#/definitions/clustering options"
     },
 
     {
