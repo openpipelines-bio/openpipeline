@@ -12,6 +12,11 @@ functionality:
           required: true
           description: Path to h5mu output.
           example: foo.final.h5mu
+        - name: "--og_input"
+          type: file
+          required: true
+          description: Path to the original h5mu file.
+          example: foo.h5mu
   resources:
     - type: python_script
       path: script.py
@@ -32,5 +37,6 @@ platforms:
       - type: python
         pypi:
           - mudata
+          # - pytest
         __merge__: /src/base/requirements/viashpy.yaml
   - type: nextflow
