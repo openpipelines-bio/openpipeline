@@ -148,6 +148,21 @@ functionality:
           description: |
             The batch size to be used for inference 
 
+    - name: Clustering options
+      arguments:
+        - name: "--obs_cluster"
+          type: string
+          description: |
+            Prefix for the .obs keys under which to add the cluster labels. Newly created columns in .obs will 
+            be created from the specified value for '--obs_cluster' suffixed with an underscore and one of the resolutions
+            resolutions specified in '--leiden_resolution'.
+          default: "scGPT_integration_leiden"
+        - name: "--leiden_resolution"
+          type: double
+          description: Control the coarseness of the clustering. Higher values lead to more clusters.
+          default: [1]
+          multiple: true
+
     - name: "Neighbors and UMAP options"
       arguments:
         - name: "--uns_neighbors"
