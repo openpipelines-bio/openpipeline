@@ -51,12 +51,12 @@ functionality:
           type: string
           required: false
           description: |
-            The name of the adata.var column containing gene names. When no gene_name_layer is provided, the var index will be used.
+            The name of the adata var column containing gene names. When no gene_name_layer is provided, the var index will be used.
         - name: "--obs_batch_label"
           type: string
           required: false
           description: |
-            The name of the adata.obs column containing the batch labels.
+            The name of the adata obs column containing the batch labels.
 
     - name: "Outputs"
       arguments:
@@ -86,7 +86,7 @@ functionality:
           default: "X_scGPT"
           required: false
           description: |
-            The name of the adata.obsm array to which scGPT embeddings will be written.
+            The name of the adata obsm array to which scGPT embeddings will be written.
         - name: "--obsm_gene_tokens"
           type: string
           default: "gene_id_tokens"

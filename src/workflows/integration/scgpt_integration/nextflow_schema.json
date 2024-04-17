@@ -137,8 +137,8 @@
                 "var_gene_names": {
                 "type":
                 "string",
-                "description": "Type: `string`. The name of the adata",
-                "help_text": "Type: `string`. The name of the adata.var column containing gene names. When no gene_name_layer is provided, the var index will be used.\n"
+                "description": "Type: `string`. The name of the adata var column containing gene names",
+                "help_text": "Type: `string`. The name of the adata var column containing gene names. When no gene_name_layer is provided, the var index will be used.\n"
             
             }
     
@@ -147,8 +147,8 @@
                 "obs_batch_label": {
                 "type":
                 "string",
-                "description": "Type: `string`. The name of the adata",
-                "help_text": "Type: `string`. The name of the adata.obs column containing the batch labels.\n"
+                "description": "Type: `string`. The name of the adata obs column containing the batch labels",
+                "help_text": "Type: `string`. The name of the adata obs column containing the batch labels.\n"
             
             }
     
@@ -178,8 +178,8 @@
                 "obsm_embeddings": {
                 "type":
                 "string",
-                "description": "Type: `string`, default: `X_scGPT`. The name of the adata",
-                "help_text": "Type: `string`, default: `X_scGPT`. The name of the adata.obsm array to which scGPT embeddings will be written.\n"
+                "description": "Type: `string`, default: `X_scGPT`. The name of the adata obsm array to which scGPT embeddings will be written",
+                "help_text": "Type: `string`, default: `X_scGPT`. The name of the adata obsm array to which scGPT embeddings will be written.\n"
             ,
                 "default": "X_scGPT"
             }
