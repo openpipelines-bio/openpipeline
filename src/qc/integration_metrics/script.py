@@ -8,7 +8,6 @@ import numpy as np
 par = {
     "input": "resources_test/scgpt/test_resources/Kim2020_Lung_integrated.h5mu",
     "modality": "rna",
-    "input_layer": None,
     "var_gene_names": None,
     "uns_neighbors": "scGPT_integration_neighbors",
     "obsp_neighbor_distances": "scGPT_integration_distances",
@@ -19,7 +18,7 @@ par = {
     "obs_cell_label": "cell_type",
     "output_compression": None,
     "obs_cluster": "louvain_cluster",
-    "seed": 0,
+    "seed": None,
     "output": "resources_test/scgpt/test_resources/Kim2020_Lung_integrated_qc.h5mu",
 }
 
@@ -132,34 +131,6 @@ avg_bio = np.mean(
         nmi_score, ari_score, asw_label
     ]
 )
-
-# logger.info("Generating plots")
-# fig_cell_type_clusters = sc.pl.embedding(
-#     adata,
-#     basis=par["obsm_umap"],
-#     gene_symbols=par["var_gene_names"],
-#     neighbors_key=par["uns_neighbors"],
-#     color=par["obs_cell_label"],
-#     title="UMAP visualization [cell type]",
-#     frameon=False,
-#     return_fig=True,
-#     show=False,
-# )
-
-# fig_batch_clusters = sc.pl.embedding(
-#     adata,
-#     basis=par["obsm_umap"],
-#     gene_symbols=par["var_gene_names"],
-#     neighbors_key=par["uns_neighbors"],
-#     color=par["obs_batch_label"],
-#     title="UMAP visualization [batch]",
-#     frameon=False,
-#     return_fig=True,
-#     show=False,
-# )
-
-# fig_cell_type_clusters.savefig(par["output_umap_fig_celltypes"], dpi=300, bbox_inches='tight')
-# fig_batch_clusters.savefig(par["output_umap_fig_batches"], dpi=300, bbox_inches='tight')
 
 logger.info("Writing output data")
 adata.uns["ari_score"] = ari_score
