@@ -96,6 +96,11 @@ jobs:
       DEPLOY_BRANCH: ${{ !inputs.deploy_branch && format('{0}_build', github.ref_name) || inputs.deploy_branch  }}
 
     steps:
+    - name: Do not allow manual trigger if the branch is main
+      if: github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/main'
+      run: |
+        echo "This workflow should not be triggered with workflow_dispatch from the main branch"
+        exit 1
     - name: Check input arguments
       run: |
         input_version="${{ inputs.version || format('{0}_build', github.ref_name) }}"
