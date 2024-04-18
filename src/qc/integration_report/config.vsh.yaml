@@ -1,17 +1,8 @@
 functionality:
-  name: integration_metrics
+  name: integration_report
   namespace: "qc"
   description: |
-    Add integration qc metrics to an .h5mu file.
-
-    The metrics are generated using the scib library and stored in the uns column:
-      - nmi_score: scib.metrics.nmi
-      - ari_score: scib.metrics.ari
-      - asw_batch: scib.metrics.silhouette_batch
-      - asw_label: scib.metrics.silhouette
-      - pcr_score: scib.metrics.pcr_comparison
-      - graph_connectivity: scib.metrics.graph_connectivity
-      - avg_bio: mean of nmi_score, ari_score and asw_label
+    Generates a .md file containing an overview of integration metrics (calculated in qc/integration_metrics) and umap visualizations.
       
   authors:
     - __merge__: /src/authors/dorien_roosen.yaml
@@ -28,12 +19,11 @@ functionality:
         - name: "--modality"
           type: string
           default: "rna"
-        - name: "--obsm_embeddings"
+        - name: "--var_gene_names"
           type: string
-          required: true
-          example: "X_scGPT"
+          required: false
           description: |
-            The name of the adata.obsm array containing scGPT cell embeddings.
+            The name of the adata var column containing gene names. When no gene_name_layer is provided, the var index will be used.
         - name: "--obs_batch_label"
           type: string
           example: "sample"
@@ -46,43 +36,52 @@ functionality:
           required: true
           description: |
             The name of the adata obs column containing the cell type labels.
-        - name: "--obs_cluster"
-          type: string
-          example: "cluster"
-          required: true
-          description: |
-            The name of the adata obs column containing the cluster labels.
         - name: "--uns_neighbors"
           type: string
           example: "neighbors"
           required: true
           description:
             The name of the adata uns object containing the neighbors information.
-        - name: "--obsp_neighbor_connectivities"
+        - name: "--obsm_umap"
           type: string
-          example: "connectivities"
+          example: "X_scGPT_umap"
           required: true
-          description: |
-            The name of the adata obsp object containing the neighbor connectivities.
-
+          description: "The obsm slot containing UMAP embeddings."
 
     - name: Outputs
       arguments:
         - name: "--output"
           type: file
-          description: Output h5mu file.
+          required: true
+          description: Output .md file.
           direction: output
-          example: output.h5mu
-        - name: "--output_compression"
-          type: string
-          description: The compression format to be used on the output h5mu object.
-          choices: ["gzip", "lzf"]
+          example: output.md
+        - name: "--output_umap_batch"
+          type: file
+          direction: output
+          example: umap_batch.png
+          required: true
+          description: |
+            Path to png image containing the UMAP visualization with batch labels
+        - name: "--output_umap_label"
+          type: file
+          example: umap_label.png
+          required: true
+          direction: output
+          description: |
+            Path to png image containing the UMAP visualization with cell type labels
+        - name: "--output_metrics"
+          type: file
+          direction: output
+          description: |
+            Path to json containing the calculated integration metrics.
+          example: metrics.json
           required: false
-          example: "gzip"
 
   resources:
     - type: python_script
       path: script.py
+    - path: report_template.md
    
 platforms:
   - type: docker
@@ -96,10 +95,7 @@ platforms:
           - cmake
           - libopenblas-dev
       - type: python
-        __merge__: [ /src/base/requirements/anndata_mudata.yaml ]
-      - type: python
-        packages:
-          - scib==1.1.5
+        __merge__: [ /src/base/requirements/anndata_mudata.yaml, /src/base/requirements/scanpy.yaml ]
 
     test_setup:
       - type: python

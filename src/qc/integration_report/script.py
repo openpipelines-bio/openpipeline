@@ -1,26 +1,22 @@
-import scib
 import scanpy as sc
 import mudata as mu
-import numpy as np
-
+import os
+import json
 
 ## VIASH START
 par = {
     "input": "resources_test/scgpt/test_resources/Kim2020_Lung_integrated_qc.h5mu",
     "modality": "rna",
-    # "input_layer": None,
     "var_gene_names": None,
     "uns_neighbors": "scGPT_integration_neighbors",
-    # "obsp_neighbor_distances": "scGPT_integration_distances",
-    # "obsp_neighbor_connectivities": "scGPT_integration_connectivities",
-    # "obsm_embeddings": "X_scGPT",
     "obsm_umap": "X_scGPT_umap",
     "obs_batch_label": "sample",
     "obs_cell_label": "cell_type",
-    # "output_compression": None,
-    # "obs_cluster": "louvain_cluster",
-    # "seed": 0,
-    "output": "output.qmd",
+    "output": "output.qmd"
+}
+
+meta = {
+    "resources_dir": "src/qc/integration_qc_report"
 }
 
 ## VIASH END
@@ -53,11 +49,10 @@ adata = input_adata.copy()
 adata.obs[par["obs_batch_label"]] = adata.obs[par["obs_batch_label"]].astype(str)
 
 # Open template
-with open('src/qc/integration_qc_report/template.md', 'r') as file:
+with open(meta["resources_dir"] + '/report_template.md', 'r') as file:
     template = file.read()
 
-logger.info("Generating figures")
-logger.info("Generating plots")
+logger.info("Generating UMAP visualizations")
 fig_cell_type_clusters = sc.pl.embedding(
     adata,
     basis=par["obsm_umap"],
@@ -69,7 +64,6 @@ fig_cell_type_clusters = sc.pl.embedding(
     return_fig=True,
     show=False,
 )
-# fig_cell_type_clusters.legend(bbox_to_anchor=(1.02, 1), loc='upper left', borderaxespad=0)
 
 fig_batch_clusters = sc.pl.embedding(
     adata,
@@ -82,12 +76,9 @@ fig_batch_clusters = sc.pl.embedding(
     return_fig=True,
     show=False,
 )
-# fig_batch_clusters.legend(bbox_to_anchor=(1.02, 1), loc='upper left', borderaxespad=0)
 
-
-
-fig_cell_type_clusters.savefig("umap_label.png", dpi=300, bbox_inches='tight')
-fig_batch_clusters.savefig("umap_batch.png", dpi=300, bbox_inches='tight')
+fig_cell_type_clusters.savefig(par["output_umap_label"], dpi=300, bbox_inches='tight')
+fig_batch_clusters.savefig(par["output_umap_batch"], dpi=300, bbox_inches='tight')
 
 # Generate variables required for report
 variables = {
@@ -98,11 +89,24 @@ variables = {
     "pcr_score": round(adata.uns["pcr_score"], 4),
     "graph_conn_score": round(adata.uns["graph_conn_score"], 4),
     "avg_bio": round(adata.uns["avg_bio"], 4),
-    "umap_batch": "umap_batch.png",
-    "umap_label": "umap_label.png",
+    "umap_batch": os.path.basename(par["output_umap_batch"]),
+    "umap_label": os.path.basename(par["output_umap_label"])
 }
 
 markdown_content = template.format(**variables)
 
 with open(par["output"], 'w') as f:
     f.write(markdown_content)
+
+if par["output_metrics"]:
+    metric_dict = {
+        "ari_score": str(variables["ari_score"]),
+        "nmi_score": str(variables["nmi_score"]),
+        "asw_label": str(variables["asw_label"]),
+        "asw_batch": str(variables["asw_batch"]),
+        "pcr_score": str(variables["pcr_score"]),
+        "graph_conn_score": str(variables["graph_conn_score"]),
+        "avg_bio": str(variables["avg_bio"])
+        }
+    with open(par["output_metrics"], 'w') as f:
+        json.dump(metric_dict, f)

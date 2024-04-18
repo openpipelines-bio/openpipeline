@@ -16,10 +16,6 @@ tbl-colwidths: [75,25]
 | average bio | {avg_bio}   |
 : {{.striped}}
 
+![]({umap_label}){{ffig-align="center" width=90%}}
 
-
-![]({umap_label}){{fig-alt="A drawing of an elephant." fig-align="center" width=90%}}
-
-
-
-![]({umap_batch}){{fig-alt="A drawing of an elephant." fig-align="center" width=90%}}
+![]({umap_batch}){{fig-align="center" width=90%}}
