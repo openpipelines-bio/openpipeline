@@ -1,0 +1,185 @@
+{
+"$schema": "http://json-schema.org/draft-07/schema",
+"title": "integration_metrics",
+"description": "Add integration qc metrics to an .h5mu file.\n\nThe metrics are generated using the scib library and stored in the uns column:\n  - nmi_score: scib.metrics.nmi\n  - ari_score: scib.metrics.ari\n  - asw_batch: scib.metrics.silhouette_batch\n  - asw_label: scib.metrics.silhouette\n  - pcr_score: scib.metrics.pcr_comparison\n  - graph_connectivity: scib.metrics.graph_connectivity\n  - avg_bio: mean of nmi_score, ari_score and asw_label\n  \n",
+"type": "object",
+"definitions": {
+
+    
+    "Dataset input": {
+        "title": "Dataset input",
+        "type": "object",
+        "description": "Dataset input using nf-tower \"dataset\" or \"data explorer\". Allows for the input of multiple         parameter sets to initialise a Nextflow channel.",
+        "properties": {
+            "param_list": {
+                "description": "Dataset input can either be a list of maps, a csv file, a json file, a yaml file, or simply a yaml                 blob. The names of the input fields (e.g. csv columns, json keys) need to be an exact match with the workflow input parameters.",
+                "default": "",
+                "format": "file-path",
+                "mimetype": "text/csv",
+                "pattern": "^\\S+\\.csv$"
+            }
+        }
+    },
+
+    
+    
+    "inputs" : {
+    "title": "Inputs",
+    "type": "object",
+    "description": "No description",
+    "properties": {
+    
+        
+                "input": {
+                "type":
+                "string",
+                "description": "Type: `file`, required, example: `input.h5mu`. Input h5mu file",
+                "help_text": "Type: `file`, required, example: `input.h5mu`. Input h5mu file"
+            
+            }
+    
+
+        ,
+                "modality": {
+                "type":
+                "string",
+                "description": "Type: `string`, default: `rna`. ",
+                "help_text": "Type: `string`, default: `rna`. "
+            ,
+                "default": "rna"
+            }
+    
+
+        ,
+                "obsm_embeddings": {
+                "type":
+                "string",
+                "description": "Type: `string`, required, example: `X_scGPT`. The name of the adata",
+                "help_text": "Type: `string`, required, example: `X_scGPT`. The name of the adata.obsm array containing scGPT cell embeddings.\n"
+            
+            }
+    
+
+        ,
+                "obs_batch_label": {
+                "type":
+                "string",
+                "description": "Type: `string`, required, example: `sample`. The name of the adata obs column containing the batch labels",
+                "help_text": "Type: `string`, required, example: `sample`. The name of the adata obs column containing the batch labels.\n"
+            
+            }
+    
+
+        ,
+                "obs_cell_label": {
+                "type":
+                "string",
+                "description": "Type: `string`, required, example: `cell_type`. The name of the adata obs column containing the cell type labels",
+                "help_text": "Type: `string`, required, example: `cell_type`. The name of the adata obs column containing the cell type labels.\n"
+            
+            }
+    
+
+        ,
+                "obs_cluster": {
+                "type":
+                "string",
+                "description": "Type: `string`, required, example: `cluster`. The name of the adata obs column containing the cluster labels",
+                "help_text": "Type: `string`, required, example: `cluster`. The name of the adata obs column containing the cluster labels.\n"
+            
+            }
+    
+
+        ,
+                "uns_neighbors": {
+                "type":
+                "string",
+                "description": "Type: `string`, required, example: `neighbors`. The name of the adata uns object containing the neighbors information",
+                "help_text": "Type: `string`, required, example: `neighbors`. The name of the adata uns object containing the neighbors information."
+            
+            }
+    
+
+        ,
+                "obsp_neighbor_connectivities": {
+                "type":
+                "string",
+                "description": "Type: `string`, required, example: `connectivities`. The name of the adata obsp object containing the neighbor connectivities",
+                "help_text": "Type: `string`, required, example: `connectivities`. The name of the adata obsp object containing the neighbor connectivities.\n"
+            
+            }
+    
+
+}
+},
+    
+    
+    "outputs" : {
+    "title": "Outputs",
+    "type": "object",
+    "description": "No description",
+    "properties": {
+    
+        
+                "output": {
+                "type":
+                "string",
+                "description": "Type: `file`, default: `$id.$key.output.h5mu`, example: `output.h5mu`. Output h5mu file",
+                "help_text": "Type: `file`, default: `$id.$key.output.h5mu`, example: `output.h5mu`. Output h5mu file."
+            ,
+                "default": "$id.$key.output.h5mu"
+            }
+    
+
+        ,
+                "output_compression": {
+                "type":
+                "string",
+                "description": "Type: `string`, example: `gzip`, choices: ``gzip`, `lzf``. The compression format to be used on the output h5mu object",
+                "help_text": "Type: `string`, example: `gzip`, choices: ``gzip`, `lzf``. The compression format to be used on the output h5mu object.",
+                "enum": ["gzip", "lzf"]
+            
+            
+            }
+    
+
+}
+},
+    
+    
+    "nextflow input-output arguments" : {
+    "title": "Nextflow input-output arguments",
+    "type": "object",
+    "description": "Input/output parameters for Nextflow itself. Please note that both publishDir and publish_dir are supported but at least one has to be configured.",
+    "properties": {
+    
+        
+                "publish_dir": {
+                "type":
+                "string",
+                "description": "Type: `string`, required, example: `output/`. Path to an output directory",
+                "help_text": "Type: `string`, required, example: `output/`. Path to an output directory."
+            
+            }
+    
+
+        
+
+}
+}
+},
+"allOf": [
+
+    {
+    "$ref": "#/definitions/inputs"
+    },
+
+    {
+    "$ref": "#/definitions/outputs"
+    },
+
+    {
+    "$ref": "#/definitions/nextflow input-output arguments"
+    }
+]
+}
