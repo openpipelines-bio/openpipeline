@@ -3072,14 +3072,14 @@ meta = [
         "foundConfigPath" : "/home/runner/work/openpipeline/openpipeline/src/qc/integration_metrics/config.vsh.yaml",
         "configInfo" : {
           "functionalityName" : "integration_metrics",
-          "git_tag" : "0.2.0-1579-g3727291cc2",
+          "git_tag" : "0.2.0-1580-g04601135c2",
           "git_remote" : "https://github.com/openpipelines-bio/openpipeline",
           "viash_version" : "0.8.5",
           "config" : "/home/runner/work/openpipeline/openpipeline/src/qc/integration_metrics/config.vsh.yaml",
           "functionalityNamespace" : "qc",
           "output" : "",
           "platform" : "",
-          "git_commit" : "3727291cc2ea9a44912455f430c55a817c5a2541",
+          "git_commit" : "04601135c2f85f75996e4ae9a5a03dca3f59e352",
           "executable" : "/nextflow/qc/integration_metrics/main.nf"
         },
         "writtenPath" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/qc/integration_metrics"
@@ -3093,14 +3093,14 @@ meta = [
         "foundConfigPath" : "/home/runner/work/openpipeline/openpipeline/src/qc/integration_report/config.vsh.yaml",
         "configInfo" : {
           "functionalityName" : "integration_report",
-          "git_tag" : "0.2.0-1579-g3727291cc2",
+          "git_tag" : "0.2.0-1580-g04601135c2",
           "git_remote" : "https://github.com/openpipelines-bio/openpipeline",
           "viash_version" : "0.8.5",
           "config" : "/home/runner/work/openpipeline/openpipeline/src/qc/integration_report/config.vsh.yaml",
           "functionalityNamespace" : "qc",
           "output" : "",
           "platform" : "",
-          "git_commit" : "3727291cc2ea9a44912455f430c55a817c5a2541",
+          "git_commit" : "04601135c2f85f75996e4ae9a5a03dca3f59e352",
           "executable" : "/nextflow/qc/integration_report/main.nf"
         },
         "writtenPath" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/qc/integration_report"
@@ -3167,9 +3167,9 @@ meta = [
     "platform" : "nextflow",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/workflows/qc/integration_qc",
     "viash_version" : "0.8.5",
-    "git_commit" : "3727291cc2ea9a44912455f430c55a817c5a2541",
+    "git_commit" : "04601135c2f85f75996e4ae9a5a03dca3f59e352",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline",
-    "git_tag" : "0.2.0-1579-g3727291cc2"
+    "git_tag" : "0.2.0-1580-g04601135c2"
   }
 }'''))
 ]
@@ -3234,10 +3234,10 @@ workflow run_wf {
       auto: [ publish: true ],
       toState: { id, output, state ->
         [ 
-          output_report: state.output_report,
-          output_umap_batch: state.output_umap_batch,
-          output_umap_label: state.output_umap_label,
-          output_metrics: state.output_metrics
+          output_report: output.output,
+          output_umap_batch: output.output_umap_batch,
+          output_umap_label: output.output_umap_label,
+          output_metrics: output.output_metrics
         ]
       }
     )

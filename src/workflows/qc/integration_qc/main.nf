@@ -51,10 +51,10 @@ workflow run_wf {
       auto: [ publish: true ],
       toState: { id, output, state ->
         [ 
-          output_report: state.output_report,
-          output_umap_batch: state.output_umap_batch,
-          output_umap_label: state.output_umap_label,
-          output_metrics: state.output_metrics
+          output_report: output.output,
+          output_umap_batch: output.output_umap_batch,
+          output_umap_label: output.output_umap_label,
+          output_metrics: output.output_metrics
         ]
       }
     )
