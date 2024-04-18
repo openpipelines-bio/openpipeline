@@ -95,7 +95,7 @@ variables = {
 
 markdown_content = template.format(**variables)
 
-with open(par["output"], 'w') as f:
+with open(par["output_report"], 'w') as f:
     f.write(markdown_content)
 
 if par["output_metrics"]:
