@@ -5,13 +5,13 @@ functionality:
     Add integration qc metrics to an .h5mu file.
 
     The metrics are generated using the scib library and stored in the uns column:
-      - .uns["nmi_score"]: scib.metrics.nmi
-      - .uns["ari_scor"]: scib.metrics.ari
-      - .uns["asw_batch"]: scib.metrics.silhouette_batch
-      - .uns["asw_label"]: scib.metrics.silhouette
-      - .uns["pcr_score"]: scib.metrics.pcr_comparison
-      - .uns["graph_connectivity"]: scib.metrics.graph_connectivity
-      - .uns["avg_bio"]: mean of nmi_score, ari_score and asw_label
+      - nmi_score: scib.metrics.nmi
+      - ari_score: scib.metrics.ari
+      - asw_batch: scib.metrics.silhouette_batch
+      - asw_label: scib.metrics.silhouette
+      - pcr_score: scib.metrics.pcr_comparison
+      - graph_connectivity: scib.metrics.graph_connectivity
+      - avg_bio: mean of nmi_score, ari_score and asw_label
       
   authors:
     - __merge__: /src/authors/dorien_roosen.yaml
@@ -28,78 +28,31 @@ functionality:
         - name: "--modality"
           type: string
           default: "rna"
-        - name: "--layer"
+        - name: "--obsm_embeddings"
           type: string
-          example: "raw_counts"
-          required: false
-    - name: Metrics added to .obs
-      arguments:
-        - name: "--var_qc_metrics"
+          required: true
+          example: "X_scGPT"
           description: |
-            Keys to select a boolean (containing only True or False) column from .var.
-            For each cell, calculate the proportion of total values for genes which are labeled 'True', 
-            compared to the total sum of the values for all genes.
+            The name of the adata.obsm array containing scGPT cell embeddings.
+        - name: "--obs_batch_label"
           type: string
-          multiple: True
-          example: "ercc,highly_variable,mitochondrial"
-        - name: "--var_qc_metrics_fill_na_value"
-          type: boolean
+          example: "sample"
+          required: true
           description: |
-            Fill any 'NA' values found in the columns specified with --var_qc_metrics to 'True' or 'False'.
-            as False.
-        - name: "--top_n_vars"
-          type: integer
-          description: |
-            Number of top vars to be used to calculate cumulative proportions.
-            If not specified, proportions are not calculated. `--top_n_vars 20;50` finds
-            cumulative proportion to the 20th and 50th most expressed vars.
-          multiple: true
-          required: false
-        - name: "--output_obs_num_nonzero_vars"
-          description: |
-            Name of column in .obs describing, for each observation, the number of stored values
-            (including explicit zeroes). In other words, the name of the column that counts
-            for each row the number of columns that contain data.
+            The name of the adata obs column containing the batch labels.
+        - name: "--obs_cell_label"
           type: string
-          required: false
-          default: "num_nonzero_vars"
-        - name: "--output_obs_total_counts_vars"
+          example: "cell_type"
+          required: true
           description: |
-            Name of the column for .obs describing, for each observation (row),
-            the sum of the stored values in the columns.
+            The name of the adata obs column containing the cell type labels.
+        - name: "--obs_cluster"
           type: string
-          required: false
-          default: total_counts
-    - name: Metrics added to .var
-      arguments:
-        - name: "--output_var_num_nonzero_obs"
+          example: "cluster"
+          required: true
           description: |
-            Name of column describing, for each feature, the number of stored values
-            (including explicit zeroes). In other words, the name of the column that counts
-            for each column the number of rows that contain data.
-          type: string
-          required: false
-          default: "num_nonzero_obs"
-        - name: "--output_var_total_counts_obs"
-          description: |
-            Name of the column in .var describing, for each feature (column),
-            the sum of the stored values in the rows.
-          type: string
-          required: false
-          default: total_counts
-        - name: "--output_var_obs_mean"
-          type: string
-          description: |
-            Name of the column in .obs providing the mean of the values in each row.
-          default: "obs_mean"
-          required: false
-        - name: "--output_var_pct_dropout"
-          type: string
-          default: "pct_dropout"
-          description: |
-            Name of the column in .obs providing for each feature the percentage of
-            observations the feature does not appear on (i.e. is missing). Same as `--num_nonzero_obs`
-            but percentage based.
+            The name of the adata obs column containing the cluster labels.
+
     - name: Outputs
       arguments:
         - name: "--output"
@@ -113,28 +66,35 @@ functionality:
           choices: ["gzip", "lzf"]
           required: false
           example: "gzip"
+
   resources:
     - type: python_script
       path: script.py
-    - path: /src/utils/setup_logger.py
-  test_resources:
-    - type: python_script
-      path: test.py
-    - path: /resources_test/pbmc_1k_protein_v3/pbmc_1k_protein_v3_filtered_feature_bc_matrix.h5mu
+  #   - path: /src/utils/setup_logger.py
+  # test_resources:
+  #   - type: python_script
+  #     path: test.py
+  #   - path: /resources_test/pbmc_1k_protein_v3/pbmc_1k_protein_v3_filtered_feature_bc_matrix.h5mu
 platforms:
   - type: docker
-    image: python:3.9-slim
+    image: python:3.11
     setup:
       - type: apt
         packages: 
           - procps
+          - libhdf5-dev
+          - gfortran
+          - cmake
+          - libopenblas-dev
       - type: python
-        __merge__: [/src/base/requirements/anndata_mudata.yaml, .]
+        __merge__: [ /src/base/requirements/anndata_mudata.yaml ]
+      - type: python
         packages:
-          - scikit-learn~=1.2.0
+          - scib==1.1.5
+
     test_setup:
       - type: python
-        __merge__: [ /src/base/requirements/viashpy.yaml, /src/base/requirements/scanpy.yaml, .]
+        __merge__: [ /src/base/requirements/viashpy.yaml, .]
   - type: nextflow
     directives:
-      label: [singlecpu, midmem]
+      label: [singlecpu, lowmem]
