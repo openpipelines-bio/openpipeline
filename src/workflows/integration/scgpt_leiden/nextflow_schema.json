@@ -1,7 +1,7 @@
 {
 "$schema": "http://json-schema.org/draft-07/schema",
-"title": "scgpt_integration",
-"description": "Generation of cell embeddings for the integration of transcriptomics data using scGPT.",
+"title": "scgpt_leiden",
+"description": "Run scGPT integration (cell embedding generation) followed by neighbour calculations, leiden clustering and run umap on the result.",
 "type": "object",
 "definitions": {
 
