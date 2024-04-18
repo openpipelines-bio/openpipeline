@@ -12,6 +12,7 @@
 ## NEW FUNCTIONALITY
 
 * `dimred/tsne` component: Added a tSNE dimensionality reduction component (PR #742).
+
 * `scgpt/tokenize_pad`: component: Added scGPT padding and tokenization component (PR #754).
 
 # openpipelines 1.0.0-rc2
