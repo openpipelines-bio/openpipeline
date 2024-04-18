@@ -3222,7 +3222,7 @@ meta = [
     "platform" : "nextflow",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/genetic_demux/freemuxlet",
     "viash_version" : "0.8.5",
-    "git_commit" : "e03d47c74119520ee1b1a190d0b4475507b636fd",
+    "git_commit" : "6d690985612e57fe212396dfd474faebc8e1ef90",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))

@@ -3042,7 +3042,7 @@ meta = [
           "functionalityNamespace" : "dimred",
           "output" : "",
           "platform" : "",
-          "git_commit" : "e03d47c74119520ee1b1a190d0b4475507b636fd",
+          "git_commit" : "6d690985612e57fe212396dfd474faebc8e1ef90",
           "executable" : "/nextflow/dimred/pca/main.nf"
         },
         "writtenPath" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/dimred/pca"
@@ -3063,7 +3063,7 @@ meta = [
           "functionalityNamespace" : "neighbors",
           "output" : "",
           "platform" : "",
-          "git_commit" : "e03d47c74119520ee1b1a190d0b4475507b636fd",
+          "git_commit" : "6d690985612e57fe212396dfd474faebc8e1ef90",
           "executable" : "/nextflow/neighbors/find_neighbors/main.nf"
         },
         "writtenPath" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/neighbors/find_neighbors"
@@ -3084,7 +3084,7 @@ meta = [
           "functionalityNamespace" : "dimred",
           "output" : "",
           "platform" : "",
-          "git_commit" : "e03d47c74119520ee1b1a190d0b4475507b636fd",
+          "git_commit" : "6d690985612e57fe212396dfd474faebc8e1ef90",
           "executable" : "/nextflow/dimred/umap/main.nf"
         },
         "writtenPath" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/dimred/umap"
@@ -3151,7 +3151,7 @@ meta = [
     "platform" : "nextflow",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/workflows/multiomics/dimensionality_reduction",
     "viash_version" : "0.8.5",
-    "git_commit" : "e03d47c74119520ee1b1a190d0b4475507b636fd",
+    "git_commit" : "6d690985612e57fe212396dfd474faebc8e1ef90",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))
