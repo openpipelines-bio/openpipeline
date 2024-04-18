@@ -5,10 +5,10 @@ workflow run_wf {
   main:
   output_ch = input_ch
     // Set aside the output for this workflow to avoid conflicts
-    // | map {id, state -> 
-    //   def new_state = state + ["workflow_output": state.output]
-    //   [id, new_state]
-    // }
+    | map {id, state -> 
+      def new_state = state + ["workflow_output": state.output_report]
+      [id, new_state]
+    }
     // Calculate integration qc metrics and add them to the MuData file
     | integration_metrics.run(
       fromState: {id, state ->
@@ -42,7 +42,7 @@ workflow run_wf {
         "obs_cell_label": state.obs_cell_label,
         "uns_neighbors": state.uns_neighbors, 
         "obsm_umap": state.obsm_umap,
-        "output": state.output_report,
+        "output_report": state.output_report,
         "output_umap_batch": state.output_umap_batch,
         "output_umap_label": state.output_umap_label,
         "output_metrics": state.output_metrics
@@ -51,7 +51,7 @@ workflow run_wf {
       auto: [ publish: true ],
       toState: { id, output, state ->
         [ 
-          output_report: output.output,
+          output_report: output.output_report,
           output_umap_batch: output.output_umap_batch,
           output_umap_label: output.output_umap_label,
           output_metrics: output.output_metrics

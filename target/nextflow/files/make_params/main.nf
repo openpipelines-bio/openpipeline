@@ -3061,9 +3061,9 @@ meta = [
     "platform" : "nextflow",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/files/make_params",
     "viash_version" : "0.8.5",
-    "git_commit" : "04601135c2f85f75996e4ae9a5a03dca3f59e352",
+    "git_commit" : "3561431e6b44df6a0352c06ed83df97e41b0d649",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline",
-    "git_tag" : "0.2.0-1580-g04601135c2"
+    "git_tag" : "0.2.0-1581-g3561431e6b"
   }
 }'''))
 ]

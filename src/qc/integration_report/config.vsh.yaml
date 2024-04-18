@@ -50,7 +50,7 @@ functionality:
 
     - name: Outputs
       arguments:
-        - name: "--output"
+        - name: "--output_report"
           type: file
           required: true
           description: Output .md file.

@@ -8,7 +8,7 @@ uns_neighbors: # please fill in - example: "neighbors"
 obsm_umap: # please fill in - example: "X_scGPT_umap"
 
 # Outputs
-# output: "$id.$key.output.md"
+# output_report: "$id.$key.output_report.md"
 # output_umap_batch: "$id.$key.output_umap_batch.png"
 # output_umap_label: "$id.$key.output_umap_label.png"
 # output_metrics: "$id.$key.output_metrics.json"

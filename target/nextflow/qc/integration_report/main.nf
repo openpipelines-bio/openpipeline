@@ -2901,7 +2901,7 @@ meta = [
         "arguments" : [
           {
             "type" : "file",
-            "name" : "--output",
+            "name" : "--output_report",
             "description" : "Output .md file.",
             "example" : [
               "output.md"
@@ -3107,9 +3107,9 @@ meta = [
     "platform" : "nextflow",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/qc/integration_report",
     "viash_version" : "0.8.5",
-    "git_commit" : "04601135c2f85f75996e4ae9a5a03dca3f59e352",
+    "git_commit" : "3561431e6b44df6a0352c06ed83df97e41b0d649",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline",
-    "git_tag" : "0.2.0-1580-g04601135c2"
+    "git_tag" : "0.2.0-1581-g3561431e6b"
   }
 }'''))
 ]
@@ -3138,7 +3138,7 @@ par = {
   'obs_cell_label': $( if [ ! -z ${VIASH_PAR_OBS_CELL_LABEL+x} ]; then echo "r'${VIASH_PAR_OBS_CELL_LABEL//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'uns_neighbors': $( if [ ! -z ${VIASH_PAR_UNS_NEIGHBORS+x} ]; then echo "r'${VIASH_PAR_UNS_NEIGHBORS//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'obsm_umap': $( if [ ! -z ${VIASH_PAR_OBSM_UMAP+x} ]; then echo "r'${VIASH_PAR_OBSM_UMAP//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
-  'output': $( if [ ! -z ${VIASH_PAR_OUTPUT+x} ]; then echo "r'${VIASH_PAR_OUTPUT//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
+  'output_report': $( if [ ! -z ${VIASH_PAR_OUTPUT_REPORT+x} ]; then echo "r'${VIASH_PAR_OUTPUT_REPORT//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'output_umap_batch': $( if [ ! -z ${VIASH_PAR_OUTPUT_UMAP_BATCH+x} ]; then echo "r'${VIASH_PAR_OUTPUT_UMAP_BATCH//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'output_umap_label': $( if [ ! -z ${VIASH_PAR_OUTPUT_UMAP_LABEL+x} ]; then echo "r'${VIASH_PAR_OUTPUT_UMAP_LABEL//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'output_metrics': $( if [ ! -z ${VIASH_PAR_OUTPUT_METRICS+x} ]; then echo "r'${VIASH_PAR_OUTPUT_METRICS//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi )
@@ -3237,7 +3237,7 @@ variables = {
 
 markdown_content = template.format(**variables)
 
-with open(par["output"], 'w') as f:
+with open(par["output_report"], 'w') as f:
     f.write(markdown_content)
 
 if par["output_metrics"]:

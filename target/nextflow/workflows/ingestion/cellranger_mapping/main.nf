@@ -3114,14 +3114,14 @@ meta = [
         "foundConfigPath" : "/home/runner/work/openpipeline/openpipeline/src/mapping/cellranger_count/config.vsh.yaml",
         "configInfo" : {
           "functionalityName" : "cellranger_count",
-          "git_tag" : "0.2.0-1580-g04601135c2",
+          "git_tag" : "0.2.0-1581-g3561431e6b",
           "git_remote" : "https://github.com/openpipelines-bio/openpipeline",
           "viash_version" : "0.8.5",
           "config" : "/home/runner/work/openpipeline/openpipeline/src/mapping/cellranger_count/config.vsh.yaml",
           "functionalityNamespace" : "mapping",
           "output" : "",
           "platform" : "",
-          "git_commit" : "04601135c2f85f75996e4ae9a5a03dca3f59e352",
+          "git_commit" : "3561431e6b44df6a0352c06ed83df97e41b0d649",
           "executable" : "/nextflow/mapping/cellranger_count/main.nf"
         },
         "writtenPath" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/mapping/cellranger_count"
@@ -3135,14 +3135,14 @@ meta = [
         "foundConfigPath" : "/home/runner/work/openpipeline/openpipeline/src/mapping/cellranger_count_split/config.vsh.yaml",
         "configInfo" : {
           "functionalityName" : "cellranger_count_split",
-          "git_tag" : "0.2.0-1580-g04601135c2",
+          "git_tag" : "0.2.0-1581-g3561431e6b",
           "git_remote" : "https://github.com/openpipelines-bio/openpipeline",
           "viash_version" : "0.8.5",
           "config" : "/home/runner/work/openpipeline/openpipeline/src/mapping/cellranger_count_split/config.vsh.yaml",
           "functionalityNamespace" : "mapping",
           "output" : "",
           "platform" : "",
-          "git_commit" : "04601135c2f85f75996e4ae9a5a03dca3f59e352",
+          "git_commit" : "3561431e6b44df6a0352c06ed83df97e41b0d649",
           "executable" : "/nextflow/mapping/cellranger_count_split/main.nf"
         },
         "writtenPath" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/mapping/cellranger_count_split"
@@ -3156,14 +3156,14 @@ meta = [
         "foundConfigPath" : "/home/runner/work/openpipeline/openpipeline/src/convert/from_10xh5_to_h5mu/config.vsh.yaml",
         "configInfo" : {
           "functionalityName" : "from_10xh5_to_h5mu",
-          "git_tag" : "0.2.0-1580-g04601135c2",
+          "git_tag" : "0.2.0-1581-g3561431e6b",
           "git_remote" : "https://github.com/openpipelines-bio/openpipeline",
           "viash_version" : "0.8.5",
           "config" : "/home/runner/work/openpipeline/openpipeline/src/convert/from_10xh5_to_h5mu/config.vsh.yaml",
           "functionalityNamespace" : "convert",
           "output" : "",
           "platform" : "",
-          "git_commit" : "04601135c2f85f75996e4ae9a5a03dca3f59e352",
+          "git_commit" : "3561431e6b44df6a0352c06ed83df97e41b0d649",
           "executable" : "/nextflow/convert/from_10xh5_to_h5mu/main.nf"
         },
         "writtenPath" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/convert/from_10xh5_to_h5mu"
@@ -3230,9 +3230,9 @@ meta = [
     "platform" : "nextflow",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/workflows/ingestion/cellranger_mapping",
     "viash_version" : "0.8.5",
-    "git_commit" : "04601135c2f85f75996e4ae9a5a03dca3f59e352",
+    "git_commit" : "3561431e6b44df6a0352c06ed83df97e41b0d649",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline",
-    "git_tag" : "0.2.0-1580-g04601135c2"
+    "git_tag" : "0.2.0-1581-g3561431e6b"
   }
 }'''))
 ]

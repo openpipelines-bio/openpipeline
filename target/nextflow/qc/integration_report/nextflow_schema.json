@@ -111,13 +111,13 @@
     "properties": {
     
         
-                "output": {
+                "output_report": {
                 "type":
                 "string",
-                "description": "Type: `file`, required, default: `$id.$key.output.md`, example: `output.md`. Output ",
-                "help_text": "Type: `file`, required, default: `$id.$key.output.md`, example: `output.md`. Output .md file."
+                "description": "Type: `file`, required, default: `$id.$key.output_report.md`, example: `output.md`. Output ",
+                "help_text": "Type: `file`, required, default: `$id.$key.output_report.md`, example: `output.md`. Output .md file."
             ,
-                "default": "$id.$key.output.md"
+                "default": "$id.$key.output_report.md"
             }
     
 
