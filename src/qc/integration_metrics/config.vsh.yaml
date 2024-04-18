@@ -52,6 +52,19 @@ functionality:
           required: true
           description: |
             The name of the adata obs column containing the cluster labels.
+        - name: "--uns_neighbors"
+          type: string
+          example: "neighbors"
+          required: true
+          description:
+            The name of the adata uns object containing the neighbors information.
+        - name: "--obsp_neighbor_connectivities"
+          type: string
+          example: "connectivities"
+          required: true
+          description: |
+            The name of the adata obsp object containing the neighbor connectivities.
+
 
     - name: Outputs
       arguments:

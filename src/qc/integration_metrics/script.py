@@ -1,17 +1,20 @@
 import scib
 import mudata as mu
 import numpy as np
+import warnings
 
 
 ## VIASH START
 par = {
-    "input": "resources_test/scgpt/test_resources/Kim2020_Lung_integrated.h5mu",
+    "input": "resources_test/scgpt/test_resources/Kim2020_Lung_integrated_leiden.h5mu",
     "modality": "rna",
     "obsm_embeddings": "X_scGPT",
     "obs_batch_label": "sample",
     "obs_cell_label": "cell_type",
+    "uns_neighbors": "scGPT_integration_neighbors",
+    "obsp_neighbor_connectivities": "scGPT_integration_connectivities",
     "output_compression": None,
-    "obs_cluster": "louvain_cluster",
+    "obs_cluster": "scGPT_integration_leiden_1.0",
     "output": "resources_test/scgpt/test_resources/Kim2020_Lung_integrated_qc.h5mu",
 }
 
@@ -35,18 +38,28 @@ def setup_logger():
 # END TEMPORARY WORKAROUND setup_logger
 logger = setup_logger()
 
+warnings.filterwarnings("ignore", category=DeprecationWarning)
+warnings.filterwarnings("ignore", category=FutureWarning)
+
 logger.info("Reading in data")
 # Read in data
 mdata = mu.read(par["input"])
 input_adata = mdata.mod[par["modality"]]
 adata = input_adata.copy()
 
+# Remove nan values to calculate scores
+if adata.obs["cell_type"].isna().any():
+    logger.warning("Cell label obs column contains nan values: removing rows with nan value")
+    adata_t = adata[~adata.obs["cell_type"].isna()].copy()
+else:
+    adata_t = adata.copy()
+
 # Ensure all batch labels are str
 adata.obs[par["obs_batch_label"]] = adata.obs[par["obs_batch_label"]].astype(str)
 
 logger.info("Calculating NMI score")
 nmi_score = scib.metrics.nmi(
-        adata,
+        adata_t,
         cluster_key=par["obs_cluster"],
         label_key=par["obs_cell_label"],
         implementation="arithmetic",
@@ -55,22 +68,22 @@ nmi_score = scib.metrics.nmi(
 
 logger.info("Calculating ARI score")
 ari_score = scib.metrics.ari(
-    adata,
+    adata_t,
     cluster_key=par["obs_cluster"],
     label_key=par["obs_cell_label"]
     )
 
-logger.info("Calculating AWS score (cell types)")
+logger.info("Calculating ASW score (cell types)")
 asw_label = scib.metrics.silhouette(
-    adata,
+    adata_t,
     label_key=par["obs_cell_label"],
     embed=par["obsm_embeddings"],
     metric="euclidean"
     )
 
-logger.info("Calculating AWS score (batches)")
+logger.info("Calculating ASW score (batches)")
 asw_batch = scib.metrics.silhouette_batch(
-    adata,
+    adata_t,
     batch_key=par["obs_batch_label"],
     label_key=par["obs_cell_label"],
     embed=par["obsm_embeddings"],
@@ -81,21 +94,27 @@ asw_batch = scib.metrics.silhouette_batch(
 
 logger.info("Calculating PC regression")
 pcr_score = scib.metrics.pcr_comparison(
-    adata,
-    adata,
+    adata_t,
+    adata_t,
     embed=par["obsm_embeddings"],
     covariate=par["obs_batch_label"],
     verbose=False
     )
 
 logger.info("Calculating graph connectivity")
+
+# rename neighbors and connectivities names if necessary
+if par["uns_neighbors"] != "neighbors":
+    adata_t.uns["neighbors"] = adata_t.uns[par["uns_neighbors"]]
+if par["obsp_neighbor_connectivities"] != "connectivities":
+    adata_t.obsp["connectivities"] = adata_t.obsp[par["obsp_neighbor_connectivities"]]
+
 graph_conn_score = scib.metrics.graph_connectivity(
-    adata,
+    adata_t,
     label_key=par["obs_cell_label"]
     )
 
 logger.info("Calculating average bio score")
-
 avg_bio = np.mean(
     [
         nmi_score, ari_score, asw_label
