@@ -141,17 +141,6 @@
     "properties": {
     
         
-                "output": {
-                "type":
-                "string",
-                "description": "Type: `file`, default: `$id.$key.output.h5mu`, example: `output.h5mu`. Output h5mu file with annotated integration metrics",
-                "help_text": "Type: `file`, default: `$id.$key.output.h5mu`, example: `output.h5mu`. Output h5mu file with annotated integration metrics."
-            ,
-                "default": "$id.$key.output.h5mu"
-            }
-    
-
-        ,
                 "output_report": {
                 "type":
                 "string",
