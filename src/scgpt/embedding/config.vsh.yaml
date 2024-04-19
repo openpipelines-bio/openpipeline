@@ -103,6 +103,8 @@ functionality:
             The value of the padding token.
         - name: "--dropout"
           type: double
+          min: 0
+          max: 1
           default: 0.2
           description: |
             Dropout value used for the transformer encoder layer
@@ -116,6 +118,17 @@ functionality:
           default: 64
           description: |
             The batch size to be used for inference
+        - name: "--dsbn"
+          type: boolean
+          default: true
+          description: |
+            Whether to apply domain-specific batch normalization for generating embeddings. When set to True, 'obs_batch_labels' must be set as well.
+        - name: "--device"
+          type: string
+          default: "cpu"
+          choices: ["cpu", "cuda"]
+          description: |
+            The device to be used for inference.
 
   resources:
     - type: python_script
