@@ -42,13 +42,6 @@ platforms:
     test_setup:
       - type: apt
         packages: [ git, wget ]
-      - type: docker
-        run: |
-          TARGETARCH="${TARGETARCH:-$(dpkg --print-architecture)}" && \
-          TARGETOS="${TARGETOS:-linux}" && \
-          PATH="${PATH}:/usr/local/go/bin" && \
-          wget https://go.dev/dl/go1.21.4.$TARGETOS-$TARGETARCH.tar.gz && tar -C /usr/local/ -xzf go1.21.4.$TARGETOS-$TARGETARCH.tar.gz && \
-          rm go1.21.4.$TARGETOS-$TARGETARCH.tar.gz
   - type: nextflow
     directives:
       label: [ midmem, lowcpu ]
