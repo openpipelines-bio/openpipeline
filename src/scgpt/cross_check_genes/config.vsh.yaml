@@ -47,6 +47,11 @@ functionality:
           example: output.h5mu
           description: |
             The output cross-checked anndata file.
+        - name: "--output_compression"
+          type: string
+          choices: ["gzip", "lzf"]
+          required: false
+          example: "gzip"
     - name: Arguments
       arguments:
         - name: "--pad_token"
@@ -69,9 +74,6 @@ platforms:
   - type: docker
     image: nvcr.io/nvidia/pytorch:23.09-py3
     setup:
-      - type: docker
-        run:
-          echo "build --jobs 4" >> /etc/bazel.bazelrc
       - type: python
         __merge__: [ /src/base/requirements/anndata_mudata.yaml, /src/base/requirements/scanpy.yaml, .]
       - type: python

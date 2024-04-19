@@ -22,6 +22,7 @@ def test_cross_check(run_component, random_path):
         "--output",  output_path,
         "--modality", "rna",
         "--vocab_file", vocab_path,
+        "--output_compression", "gzip"
     ]
     run_component(args)
     
