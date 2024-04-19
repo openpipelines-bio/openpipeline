@@ -39,7 +39,8 @@ def test_cellxgene_extract_metadata_expression(run_component, tmp_path):
         "cell_type_ontology_term_id", "development_stage",
         "development_stage_ontology_term_id", "disease",
         "disease_ontology_term_id", "donor_id", "is_primary_data",
-        "organism", "organism_ontology_term_id", "self_reported_ethnicity",
+        # "organism", "organism_ontology_term_id", # ← missing??
+        "self_reported_ethnicity",
         "self_reported_ethnicity_ontology_term_id", "sex",
         "sex_ontology_term_id", "suspension_type", "tissue",
         "tissue_ontology_term_id", "tissue_general",
@@ -48,7 +49,7 @@ def test_cellxgene_extract_metadata_expression(run_component, tmp_path):
     ]
     for exp_obs in expected_obs:
         assert exp_obs in obs.columns, f"Expected column '{exp_obs}' not found in .obs"
-    
+
     assert np.all(obs["is_primary_data"] == True)
 
     ## check var

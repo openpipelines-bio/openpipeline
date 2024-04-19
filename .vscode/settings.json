@@ -8,5 +8,10 @@
   "files.watcherExclude": {
     "**/target": true,
     ".github": true
-  }
+  },
+  "python.testing.pytestArgs": [
+    "src/mapping/cellranger_multi"
+  ],
+  "python.testing.unittestEnabled": false,
+  "python.testing.pytestEnabled": true
 }

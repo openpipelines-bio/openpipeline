@@ -15,7 +15,7 @@ par = {
     "output_modality": "rna",
     "output_compression": "gzip",
 }
-meta = {"resources_dir": "src/query/cellxgene_census"}
+meta = {"resources_dir": "src/utils"}
 ## VIASH END
 
 sys.path.append(meta["resources_dir"])
@@ -109,15 +109,18 @@ def move_x_to_layers(adata):
     adata.X = None
 
 def print_unique(adata, column):
-    formatted = "', '".join(adata.obs[column].unique())
+    unique_values = adata.obs[column].unique().astype(str)
+    if len(unique_values) <= 50:
+        formatted = "', '".join(unique_values)
+    else:
+        formatted = "', '".join(unique_values[:50]) + "', ..."
     logger.info(f"Unique {column}: ['{formatted}']")
 
 def print_summary(adata):
     logger.info(f"Resulting dataset: {adata}")
 
     logger.info("Summary of dataset:")
-    obs_fields = ["assay", "assay_ontology_term_id", "cell_type", "cell_type_ontology_term_id", "dataset_id", "development_stage", "development_stage_ontology_term_id", "disease", "disease_ontology_term_id", "tissue", "tissue_ontology_term_id", "tissue_general", "tissue_general_ontology_term_id"]
-    for field in obs_fields:
+    for field in adata.obs.columns:
         print_unique(adata, field)
 
 def write_anndata(adata, par):
