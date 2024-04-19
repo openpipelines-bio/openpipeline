@@ -30,6 +30,9 @@
 
 * `scgpt/binning` component: Added a scGPT pre-processing binning component (PR #765).
 
+* `transform/clr` component: Added the option to set the `axis` along which to apply CLR. Possible to override
+  on workflow level as well (PR #767).
+
 ## MINOR CHANGES
 
 * Bump viash to `0.8.6` (PR #815).
@@ -91,9 +94,6 @@ after concatenation (PR #807)
 ## NEW FUNCTIONALITY
 
 * `dimred/tsne` component: Added a tSNE dimensionality reduction component (PR #742).
-  
-* `transform/clr` component: Added the option to set the `axis` along which to apply CLR. Possible to override
-  on workflow level as well (PR #767).
 
 # openpipelines 1.0.0-rc2
 
