@@ -22,12 +22,19 @@ par_output_gtf=`realpath $par_output_gtf`
 echo "> Unzipping input files"
 unpigz -c "$par_input_gtf" > "$tmpdir/input_gtf.gtf"
 
+echo "${par_attribute}"
+
 echo "> Building gtf"
 cd "$tmpdir"
-cellranger mkgtf \
-  "$tmpdir/input_gtf.gtf" \
-  "$tmpdir/output.gtf" \
-  --attribute="${par_attribute}"
+# Start the cellranger mkgtf command
+IFS=',' read -r -a attributes <<< "$par_attribute"
+cmd="cellranger mkgtf \"$tmpdir/input_gtf.gtf\" \"$tmpdir/output.gtf\""
+# Append each key-value pair as a separate --attribute argument
+for attribute in "${attributes[@]}"; do
+    cmd+=" --attribute=$attribute"
+done
+# Execute the command
+eval $cmd
 
 echo "> Creating archive"
 pigz -k "$tmpdir/output.gtf"

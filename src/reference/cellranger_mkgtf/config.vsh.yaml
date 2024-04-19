@@ -22,7 +22,7 @@ functionality:
       name: --attribute
       required: true
       description: Key-value pair in attributes field to be kept in the GTF file of the format attribute:attribute_value.
-      example: gene_type:transcribed_unprocessed_pseudogene
+      example: [gene_type:transcribed_unprocessed_pseudogene,gene_type:miRNA]
       multiple: true
   resources:
     - type: bash_script
@@ -48,10 +48,7 @@ platforms:
           TARGETOS="${TARGETOS:-linux}" && \
           PATH="${PATH}:/usr/local/go/bin" && \
           wget https://go.dev/dl/go1.21.4.$TARGETOS-$TARGETARCH.tar.gz && tar -C /usr/local/ -xzf go1.21.4.$TARGETOS-$TARGETARCH.tar.gz && \
-          rm go1.21.4.$TARGETOS-$TARGETARCH.tar.gz && \
-          git clone --branch v2.5.0 https://github.com/shenwei356/seqkit.git && \
-          cd seqkit/seqkit/ && go build && cp seqkit /usr/bin/ && cd ../../ && rm -rf seqkit && rm -r /usr/local/go
-    
+          rm go1.21.4.$TARGETOS-$TARGETARCH.tar.gz
   - type: nextflow
     directives:
       label: [ midmem, lowcpu ]
