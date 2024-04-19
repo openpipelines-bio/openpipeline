@@ -109,7 +109,7 @@ functionality:
           default: 0.2
           description: |
             Dropout value used for the transformer encoder layer
-        - name: "--DSBN"
+        - name: "--dbsn"
           type: boolean
           default: true
           description: |
