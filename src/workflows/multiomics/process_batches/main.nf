@@ -4,6 +4,12 @@ workflow run_wf {
 
   main:
     multisample_ch = input_ch
+      // Make sure there is not conflict between the output from this workflow
+      // And the output from any of the components
+      | map {id, state ->
+        def new_state = state + ["workflow_output": state.output]
+        [id, new_state]
+      }
       // The input for this workflow can either be a list of unimodal files
       // or a single multimodal file. To destingish between the two, the files will be split either way.
       // For multiple unimodal files, the result before or after splitting is identical.
@@ -61,12 +67,15 @@ workflow run_wf {
     //
     def multisample_arguments = [
       "rna": [
-        "filter_with_hvg_var_output": "filter_with_hvg_var_output",
-        "filter_with_hvg_obs_batch_key": "filter_with_hvg_obs_batch_key",
+        "highly_variable_features_var_output": "highly_variable_features_var_output",
+        "highly_variable_features_obs_batch_key": "highly_variable_features_obs_batch_key",
         "var_qc_metrics": "var_qc_metrics",
-        "top_n_vars": "top_n_vars"
+        "top_n_vars": "top_n_vars",
+        "layer": "rna_layer",
       ],
-      "prot": [:]
+      "prot": [
+        "layer": "prot_layer",
+      ]
     ].asImmutable()
 
     multimodal_ch_known = multisample_ch
@@ -159,7 +168,7 @@ workflow run_wf {
                     "input": state.input,
                     "layer": "log_normalized",
                     "modality": "rna",
-                    "var_pca_feature_selection": state.filter_with_hvg_var_output, // run PCA on highly variable genes only
+                    "var_pca_feature_selection": state.highly_variable_features_var_output, // run PCA on highly variable genes only
                     "pca_overwrite": state.pca_overwrite,
                   ],
                 "dimensionality_reduction_prot":
@@ -176,7 +185,15 @@ workflow run_wf {
             toState: ["input": "output"]
           )
       }
-      | setState(["output": "input"])
+      | publish.run(
+        fromState: { id, state -> [
+            "input": state.input,
+            "output": state.workflow_output,
+          ]
+        },
+        auto: [publish: true]
+      )
+      | setState(["output"])
 
 
   emit:

@@ -21,7 +21,8 @@ workflow run_wf {
           "min_cells_per_gene": state.min_cells_per_protein,
           "obs_name_filter": "filter_with_counts",
           "var_name_filter": "filter_with_counts",
-          "modality": "prot"
+          "modality": "prot",
+          "layer": state.layer,
         ]
         newState
       },
@@ -30,6 +31,8 @@ workflow run_wf {
     | do_filter.run(
       key: "prot_do_filter",
       fromState : { id, state ->
+        // do_filter does not need a layer argument because it filters all layers
+        // from a modality.
         def newState = [
           "input": state.input,
           "obs_filter": "filter_with_counts",

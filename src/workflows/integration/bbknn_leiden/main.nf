@@ -4,6 +4,12 @@ workflow run_wf {
 
   main:
   bbknn_ch = input_ch
+    // Make sure there is not conflict between the output from this workflow
+    // And the output from any of the components
+    | map {id, state ->
+      def new_state = state + ["workflow_output": state.output]
+      [id, new_state]
+    }
     // compute bbknn graph
     | bbknn.run(
       fromState: { id, state ->
@@ -76,7 +82,7 @@ workflow run_wf {
           "uns_neighbors": state.uns_output,
           "obsm_output": state.obsm_umap,
           "modality": state.modality,
-          "output": state.output,
+          "output": state.workflow_output,
           "output_compression": "gzip"
        ]
       },

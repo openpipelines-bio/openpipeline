@@ -19,6 +19,18 @@ functionality:
           required: true
           example: input.h5mu
           type: file
+        - name: "--rna_layer"
+          type: string
+          description: "Input layer for the gene expression modality. If not specified, .X is used."
+          required: false
+        - name: "--prot_layer"
+          type: string
+          description: "Input layer for the antibody capture modality. If not specified, .X is used."
+          required: false
+        - name: "--gdo_layer"
+          type: string
+          description: "Input layer for the guide-derived oligonucleotide (GDO) data. If not specified, .X is used."
+          required: false
     - name: "Outputs"
       arguments:
         - name: "--output"
@@ -105,6 +117,7 @@ functionality:
           example: 3
           type: integer
           description: Minimum of non-zero values per protein.
+
     - name: "GDO filtering options"
       arguments:
         - name: "--gdo_min_counts"
@@ -127,14 +140,17 @@ functionality:
           example: 3
           type: integer
           description: Minimum of non-zero values per guide. 
-    - name: "Highly variable gene detection"
+    
+    - name: "Highly variable features detection"
       arguments:
-        - name: "--filter_with_hvg_var_output"
+        - name: "--highly_variable_features_var_output"
+          alternatives: ["--filter_with_hvg_var_output"]
           required: false
           type: string
           default: "filter_with_hvg"
           description: In which .var slot to store a boolean array corresponding to the highly variable genes.
-        - name: "--filter_with_hvg_obs_batch_key"
+        - name: "--highly_variable_features_obs_batch_key"
+          alternatives: ["--filter_with_hvg_obs_batch_key"]
           type: string
           default: "sample_id"
           required: false
@@ -177,7 +193,7 @@ functionality:
             Keys to select a boolean (containing only True or False) column from .var.
             For each cell, calculate the proportion of total values for genes which are labeled 'True', 
             compared to the total sum of the values for all genes. Defaults to the combined values specified for
-            --var_name_mitochondrial_genes and --filter_with_hvg_var_output.
+            --var_name_mitochondrial_genes and --highly_variable_features_var_output.
           type: string
           multiple: True
           multiple_sep: ','
@@ -211,10 +227,13 @@ functionality:
     - name: workflows/multiomics/process_batches
   # test_dependencies:
   #    - name: filter/remove_modality
+  #    - name: transform/move_layer
   resources:
     - type: nextflow_script
       path: main.nf
       entrypoint: run_wf
+    - type: file
+      path: /src/workflows/utils/
   test_resources:
     - type: nextflow_script
       path: test.nf
@@ -228,7 +247,11 @@ functionality:
     - type: nextflow_script
       path: test.nf
       entrypoint: test_wf4
+    - type: nextflow_script
+      path: test.nf
+      entrypoint: test_wf5
     - path: /resources_test/concat_test_data
     - path: /resources_test/pbmc_1k_protein_v3
+    - path: /resources_test/10x_5k_lung_crispr
 platforms:
   - type: nextflow

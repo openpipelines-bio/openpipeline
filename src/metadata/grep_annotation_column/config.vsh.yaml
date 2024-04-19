@@ -21,6 +21,12 @@ functionality:
           type: string
           required: false
           description: "Column to query. If not specified, use .var_names or .obs_names, depending on the value of --matrix"
+        - name: "--input_layer"
+          type: string
+          required: false
+          description: |
+            Input data to use when calculating fraction of observations that match with the query. 
+            Only used when --output_fraction_column is provided. If not specified, .X is used.
         - name: "--modality"
           description: |
             Which modality to get the annotation matrix from.
@@ -74,16 +80,14 @@ functionality:
     - path: /resources_test/concat_test_data/e18_mouse_brain_fresh_5k_filtered_feature_bc_matrix_subset_unique_obs.h5mu
 platforms:
   - type: docker
-    image: python:3.10-slim
+    image: python:3.11-slim
     setup:
       - type: apt
         packages: 
           - procps
       - type: python
         __merge__: /src/base/requirements/anndata_mudata.yaml
-    test_setup:
-      - type: python
-        __merge__: [ /src/base/requirements/viashpy.yaml, .]
+    __merge__: [ /src/base/requirements/python_test_setup.yaml, .]
   - type: native
   - type: nextflow
     directives:

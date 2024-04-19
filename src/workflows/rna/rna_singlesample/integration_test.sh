@@ -17,5 +17,16 @@ nextflow run . \
   -profile docker,no_publish \
   -entry test_wf \
   -with-trace work/trace.txt \
-  -c src/workflows/utils/labels_ci.config
+  -c src/workflows/utils/labels_ci.config \
+  -c src/workflows/utils/integration_tests.config
+
+
+
+nextflow run . \
+  -main-script src/workflows/rna/rna_singlesample/test.nf \
+  -profile docker,no_publish \
+  -entry test_wf2 \
+  -with-trace work/trace.txt \
+  -c src/workflows/utils/labels_ci.config \
+  -c src/workflows/utils/integration_tests.config
 

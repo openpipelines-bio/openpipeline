@@ -49,7 +49,7 @@ workflow run_wf {
           "output_var_pct_dropout": null,
           "output": state.output,
           "modality": "rna",
-          "layer": null
+          "layer": state.layer,
         ]
         
         if (state.var_name_mitochondrial_genes){
@@ -80,7 +80,7 @@ workflow run_wf {
           "obs_name_filter": "filter_mitochondrial",
           "min_fraction": state.min_fraction_mito,
           "max_fraction": state.max_fraction_mito,
-          "obs_fraction_column": "fraction_$state.var_name_mitochondrial_genes"
+          "obs_fraction_column": state.obs_name_mitochondrial_fraction ? state.obs_name_mitochondrial_fraction : "fraction_$state.var_name_mitochondrial_genes",
         ]
       },
       toState: ["input": "output"]
@@ -91,6 +91,7 @@ workflow run_wf {
       fromState: { id, state ->
         [
           "input": state.input,
+          "layer": state.layer,
           "obs_name_filter": "filter_with_counts",
           "var_name_filter": "filter_with_counts",
           "min_counts": state.min_counts,
@@ -105,6 +106,8 @@ workflow run_wf {
     | do_filter.run(
       key: "rna_do_filter",
       fromState: {id, state ->
+        // do_filter does not need a layer argument because it filters all layers
+        // from a modality.
         def stateMapping = [
           input: state.input,
           var_filter: ["filter_with_counts"]
@@ -122,7 +125,8 @@ workflow run_wf {
     | filter_with_scrublet.run(
       fromState: [
         "input": "input",
-        "output": "workflow_output"
+        "output": "workflow_output",
+        "layer": "layer",
       ],
       args: [output_compression: "gzip"],
       auto: [ publish: true ]

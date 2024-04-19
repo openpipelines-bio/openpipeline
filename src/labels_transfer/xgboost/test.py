@@ -56,7 +56,7 @@ def test_label_transfer(run_component, test_args):
         "--input_obsm_features", obsm_features,
         "--reference", str(tempfile_reference_file),
         "--reference_obsm_features", obsm_features,
-        "--reference_obs_targets", ",".join(obs_targets),
+        "--reference_obs_targets", ";".join(obs_targets),
         "--output", "output.h5mu",
         "--model_output", "model_one_class",
         "--use_gpu", "false",
@@ -104,7 +104,7 @@ def test_retraining(run_component, test_args, tmp_path):
     args1 = args + [
         "--input", str(tempfile_input_file),
         "--output", str(output_path),
-        "--reference_obs_targets", ",".join(obs_targets[:2]),
+        "--reference_obs_targets", ";".join(obs_targets[:2]),
         "--max_depth", "6"]
     run_component(args1)
 
@@ -116,7 +116,7 @@ def test_retraining(run_component, test_args, tmp_path):
     args2 = args + [
         "--input", str(output_path),
         "--output", str(output2_path),
-        "--reference_obs_targets", ",".join(obs_targets),
+        "--reference_obs_targets", ";".join(obs_targets),
         "--max_depth", "4"]
     run_component(args2)
 

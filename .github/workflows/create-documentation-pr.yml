@@ -22,17 +22,17 @@ jobs:
     steps:
     - uses: actions/checkout@v4
 
-    - uses: viash-io/viash-actions/setup@v4
+    - uses: viash-io/viash-actions/setup@v5
 
     - id: ns_list_components
-      uses: viash-io/viash-actions/ns-list@v4
+      uses: viash-io/viash-actions/ns-list@v5
       with:
         platform: docker
         format: json
         query_namespace: ^(?!workflows)
 
     - id: ns_list_workflows
-      uses: viash-io/viash-actions/ns-list@v4
+      uses: viash-io/viash-actions/ns-list@v5
       with:
         format: json
         query_namespace: ^workflows
@@ -41,7 +41,9 @@ jobs:
       run: |
         echo "components=$(jq -c '[ .[] | 
           { 
-            "name": (.functionality.namespace + (.platforms | map(select(.type == "docker"))[0].namespace_separator) + .functionality.name),
+            "name": .functionality.name,
+            "namespace_separator": .platforms | map(select(.type == "docker"))[0].namespace_separator,
+            "namespace": .functionality.namespace,
             "config": .info.config,
             "dir": .info.config | capture("^(?<dir>.*\/)").dir
           }
@@ -49,7 +51,8 @@ jobs:
 
         echo "workflows=$(jq -c '[ .[] | 
           { 
-            "name": (.functionality.namespace + "/" + .functionality.name),
+            "name": $config.functionality.name,
+            "namespace": $config.functionality.namespace,
             "main_script": ((.info.config | capture("^(?<dir>.*\/)").dir) + "/" + (.functionality.test_resources | map(select(.type == "nextflow_script")) | unique | .[].path )),
             "config": .info.config,
             "entry": .functionality.test_resources | map(select(.type == "nextflow_script")) | .[].entrypoint
@@ -71,7 +74,7 @@ jobs:
           path: website
           token: ${{ secrets.GTHB_PAT }}
 
-      - uses: viash-io/viash-actions/setup@v4
+      - uses: viash-io/viash-actions/setup@v5
       
       - name: Get tag to use
         id: get_tag
@@ -80,7 +83,7 @@ jobs:
           TAG_OR_BRANCH_NAME=${INPUT_TAG:-"${{ github.ref_name }}"}
           echo "tag=$TAG_OR_BRANCH_NAME" >> $GITHUB_OUTPUT
 
-      - uses: viash-io/viash-actions/pro/generate-documentation-qmd@v4
+      - uses: viash-io/viash-actions/pro/generate-documentation-qmd@v5
         with:
           project_directory: openpipelines
           src: ./

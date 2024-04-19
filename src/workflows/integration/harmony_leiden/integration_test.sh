@@ -15,4 +15,13 @@ nextflow run . \
   -profile docker,no_publish \
   -entry test_wf \
   -resume \
-  -c src/workflows/utils/labels_ci.config
+  -c src/workflows/utils/labels_ci.config \
+  -c src/workflows/utils/integration_tests.config
+
+nextflow run . \
+  -main-script src/workflows/integration/harmony_leiden/test.nf \
+  -profile docker,no_publish \
+  -entry test_wf2 \
+  -resume \
+  -c src/workflows/utils/labels_ci.config \
+  -c src/workflows/utils/integration_tests.config

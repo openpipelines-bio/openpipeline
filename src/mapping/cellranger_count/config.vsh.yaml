@@ -16,7 +16,6 @@ functionality:
           name: --input
           required: true
           multiple: true
-          multiple_sep: ";"
           example: [ "sample_S1_L001_R1_001.fastq.gz", "sample_S1_L001_R2_001.fastq.gz" ]
           description: The fastq.gz files to align. Can also be a single directory containing fastq.gz files.
         - type: file
@@ -85,7 +84,9 @@ platforms:
     image: ghcr.io/data-intuitive/cellranger:7.0
     setup:
       - type: docker
-        run: apt update && apt upgrade -y
+        run: |
+          DEBIAN_FRONTEND=noninteractive apt update && \
+          apt upgrade -y && apt install -y procps && rm -rf /var/lib/apt/lists/*
   - type: nextflow
     directives:
       label: [ highmem, highcpu ]
