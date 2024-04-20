@@ -3128,7 +3128,7 @@ meta = [
           "functionalityNamespace" : "cluster",
           "output" : "",
           "platform" : "",
-          "git_commit" : "c6516ba2dc9081826cb10c19e64a7464f18ba283",
+          "git_commit" : "e48f939109f002e73c702d86c95196eec646bb59",
           "executable" : "/nextflow/cluster/leiden/main.nf"
         },
         "writtenPath" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/cluster/leiden"
@@ -3149,7 +3149,7 @@ meta = [
           "functionalityNamespace" : "dimred",
           "output" : "",
           "platform" : "",
-          "git_commit" : "c6516ba2dc9081826cb10c19e64a7464f18ba283",
+          "git_commit" : "e48f939109f002e73c702d86c95196eec646bb59",
           "executable" : "/nextflow/dimred/umap/main.nf"
         },
         "writtenPath" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/dimred/umap"
@@ -3170,7 +3170,7 @@ meta = [
           "functionalityNamespace" : "neighbors",
           "output" : "",
           "platform" : "",
-          "git_commit" : "c6516ba2dc9081826cb10c19e64a7464f18ba283",
+          "git_commit" : "e48f939109f002e73c702d86c95196eec646bb59",
           "executable" : "/nextflow/neighbors/bbknn/main.nf"
         },
         "writtenPath" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/neighbors/bbknn"
@@ -3191,7 +3191,7 @@ meta = [
           "functionalityNamespace" : "metadata",
           "output" : "",
           "platform" : "",
-          "git_commit" : "c6516ba2dc9081826cb10c19e64a7464f18ba283",
+          "git_commit" : "e48f939109f002e73c702d86c95196eec646bb59",
           "executable" : "/nextflow/metadata/move_obsm_to_obs/main.nf"
         },
         "writtenPath" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/metadata/move_obsm_to_obs"
@@ -3258,7 +3258,7 @@ meta = [
     "platform" : "nextflow",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/workflows/integration/bbknn_leiden",
     "viash_version" : "0.8.5",
-    "git_commit" : "c6516ba2dc9081826cb10c19e64a7464f18ba283",
+    "git_commit" : "e48f939109f002e73c702d86c95196eec646bb59",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))
