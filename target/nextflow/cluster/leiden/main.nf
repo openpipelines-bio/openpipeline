@@ -3059,7 +3059,7 @@ meta = [
     "platform" : "nextflow",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/cluster/leiden",
     "viash_version" : "0.8.5",
-    "git_commit" : "e48f939109f002e73c702d86c95196eec646bb59",
+    "git_commit" : "0a76204dc40a90893cb37ad900e5431553c11cf5",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))
