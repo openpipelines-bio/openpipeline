@@ -110,10 +110,9 @@ def move_x_to_layers(adata):
 
 def print_unique(adata, column):
     unique_values = adata.obs[column].unique().astype(str)
-    if len(unique_values) <= 50:
-        formatted = "', '".join(unique_values)
-    else:
-        formatted = "', '".join(unique_values[:50]) + "', ..."
+        formatted = "', '".join(unique_values[:50])
+        if len(unique_values) > 50:
+            formatted += ", ..."
     logger.info(f"Unique {column}: ['{formatted}']")
 
 def print_summary(adata):
