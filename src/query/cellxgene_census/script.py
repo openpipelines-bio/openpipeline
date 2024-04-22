@@ -67,7 +67,7 @@ def add_cellcensus_metadata_obs(census_connection, adata):
     dataset_info = census_datasets[census_datasets.dataset_id.isin(adata.obs.dataset_id.cat.categories)]\
         [['collection_id', 'collection_name', 'collection_doi', 'dataset_id', 'dataset_title']]\
     .reset_index(drop=True)\
-    .apply(lambda x: x.astype('category'))
+    .astype('category')
 
     adata.obs = adata.obs.merge(
         dataset_info, on='dataset_id', how='left'
