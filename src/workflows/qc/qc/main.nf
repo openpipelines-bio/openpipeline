@@ -55,6 +55,7 @@ workflow run_wf {
             // TODO: remove this workaround when Viash issue is resolved:
             //       'top_n_vars': list(map(int, r''.split(';'))),
             //     ValueError: invalid literal for int() with base 10: ''
+            // See https://github.com/viash-io/viash/issues/619
             "top_n_vars": state.top_n_vars ? state.top_n_vars : null,
             "var_qc_metrics_fill_na_value": state.var_qc_metrics_fill_na_value,
             "output_obs_num_nonzero_vars": state.output_obs_num_nonzero_vars,
