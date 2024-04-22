@@ -28,8 +28,10 @@ functionality:
     - type: bash_script
       path: script.sh
   test_resources:
-    - type: bash_script
-      path: run_test.sh
+    # - type: bash_script
+    #   path: run_test.sh
+    - type: python_script
+      path: test.py
     - path: /resources_test/reference_gencodev41_chr1
 platforms:
   - type: docker
@@ -39,9 +41,7 @@ platforms:
         run: |
           DEBIAN_FRONTEND=noninteractive apt update && \
           apt upgrade -y && apt install -y pigz procps && rm -rf /var/lib/apt/lists/*
-    test_setup:
-      - type: apt
-        packages: [ git, wget ]
+    __merge__: [ /src/base/requirements/python_test_setup.yaml, . ]
   - type: nextflow
     directives:
       label: [ midmem, lowcpu ]

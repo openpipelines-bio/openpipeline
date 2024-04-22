@@ -9,6 +9,8 @@ par_attribute="gene_type:transcribed_unprocessed_pseudogene"
 ## VIASH END
 
 # create temporary directory
+echo $VIASH_TEMP
+mkdir -p "$VIASH_TEMP"
 tmpdir=$(mktemp -d "$VIASH_TEMP/$meta_functionality_name-XXXXXXXX")
 function clean_up {
     rm -rf "$tmpdir"
@@ -27,7 +29,7 @@ echo "${par_attribute}"
 echo "> Building gtf"
 cd "$tmpdir"
 # Start the cellranger mkgtf command
-IFS=',' read -r -a attributes <<< "$par_attribute"
+IFS=';' read -r -a attributes <<< "$par_attribute"
 cmd="cellranger mkgtf \"$tmpdir/input_gtf.gtf\" \"$tmpdir/output.gtf\""
 # Append each key-value pair as a separate --attribute argument
 for attribute in "${attributes[@]}"; do
