@@ -1,5 +1,19 @@
 # openpipelines x.x.x
 
+## BREAKING CHANGES
+
+* `query/cellxgene_census`: Refactored the interface, documentation and internal workings of this component (PR #621).
+  - Renamed arguments to align with standard OpenPipelines notations and cellxgene census API:
+    - `--input_database` became `--input_uri`
+    - `--cellxgene_release` became `--census_version`
+    - `--cell_query` became `--obs_value_filter`
+    - `--cells_filter_columns` became `--cell_filter_grouping`
+    - `--min_cells_filter_columns` became `--cell_filter_minimum_count`
+    - `--modality` became `--output_modality`
+    - Removed `--dataset_id` since it was no longer being used.
+    - Added `--add_dataset_meta` to add metadata to the output MuData object.
+  - Documentation of the component and its arguments was improved.
+
 ## BUG FIXES
 
 * `mapping/cellranger_multi`: Fix the regex for the fastq input files to allow dropping the lane from the input file names (e.g. `_L001`) (PR #778).
@@ -115,21 +129,6 @@ the result to be out of bounds.
       - `--filter_with_hvg_flavor` became `--highly_variable_features_flavor`
  
 * Renamed `obsm_metrics` to `uns_metrics` for the `cellranger_mapping` workflow because the cellranger metrics are stored in `.uns` and not `.obsm` (PR #610).
-
-
-* `query/cellxgene_census`: Refactored the interface, documentation and internal workings of this component (PR #621).
-
-  - `--input_database` became `--input_uri`
-  - `--cellxgene_release` became `--census_version`
-  - `--cell_query` became `--obs_value_filter`
-  - `--cells_filter_columns` became `--cell_filter_grouping`
-  - `--min_cells_filter_columns` became `--cell_filter_minimum_count`
-  - `--modality` became `--output_modality`
-  - Removed `--dataset_id` since it was no longer being used.
-  - Added `--add_dataset_meta` to add metadata to the output MuData object.
-  - Documentation of the component and its arguments was improved.
-  - Python version was bumped to 3.10, and `obonet` was dropped from the list of dependencies.
-  - Refactoring of the internal code to improve readability and maintainability.
 
 ## MAJOR CHANGES
 
