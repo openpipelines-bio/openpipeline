@@ -426,22 +426,21 @@ def main(par: dict[str, Any], meta: dict[str, Any]):
             # run process
             cmd = ["cellranger", "multi"] + proc_pars
             logger.info("> " + ' '.join(cmd))
+            process_output = subprocess.run(
+                cmd,
+                cwd=temp_dir,
+                check=False,
+                capture_output=True
+            )
+
+            with (par["output"] / "cellranger_multi.log").open('w') as open_log:
+                open_log.write(process_output.stdout.decode('utf-8'))
             try:
-                process_output = subprocess.run(
-                    cmd,
-                    cwd=temp_dir,
-                    check=True,
-                    capture_output=True
-                )
+                process_output.check_returncode()
             except subprocess.CalledProcessError as e:
-                print(config_content, flush=True)
+                logger.error(e.output.decode('utf-8'))
                 print(e.output.decode('utf-8'), flush=True)
                 raise e
-            else:
-                # Write stdout output to output folder
-                with (par["output"] / "cellranger_multi.log").open('w') as open_log:
-                    open_log.write(process_output.stdout.decode('utf-8'))
-                print(process_output.stdout.decode('utf-8'), flush=True)
 
             # look for output dir file
             tmp_output_dir = temp_dir_path / temp_id / "outs"
