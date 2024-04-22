@@ -17,9 +17,9 @@ def test_cellxgene_extract_metadata_expression(run_component, tmp_path):
 
     run_component([
         "--obs_value_filter", 
-        ("is_primary_data == True "
-         "and cell_type_ontology_term_id in ['CL:0000136', 'CL:1000311', 'CL:0002616'] "
-         "and suspension_type == 'cell'"),
+        "is_primary_data == True "
+        "and cell_type_ontology_term_id in ['CL:0000136', 'CL:1000311', 'CL:0002616'] "
+        "and suspension_type == 'cell'",
         "--species", "homo_sapiens",
         "--add_dataset_metadata",
         "--output", output_file,
