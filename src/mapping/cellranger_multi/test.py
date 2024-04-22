@@ -316,5 +316,31 @@ def test_cellranger_multi_beam_data(run_component, random_path):
     # check for vdj data
     assert (outputpath / "per_sample_outs/run/vdj_t/").is_dir()
 
+
+def test_cellranger_multi_fixed_rna(run_component, random_path):
+    outputpath = random_path()
+    args = [
+        "--input", f"{meta['resources_dir']}/10x_5k_fixed/raw/",
+        "--library_id", "4plex_human_liver_colorectal_ovarian_panc_scFFPE_multiplex_subset",
+        "--library_type", "Gene Expression",
+        "--feature_reference", f"{meta['resources_dir']}/10x_5k_fixed/raw/4plex_mouse_LymphNode_Spleen_TotalSeqC_multiplex_feature_reference.csv",
+        "--gex_reference", gex_reference,
+        "--output", outputpath,
+        "--probe_barcode_ids", "BC001;BC002;BC003;BC004",
+        "--sample_ids", "Liver_BC1;Ovarian_BC2;Colorectal_BC3;Pancreas_BC4",
+        "--gex_generate_bam", "false",
+        "--library_lanes", "any",
+        "--probe_set", f"{meta['resources_dir']}/10x_5k_fixed/raw/Chromium_Human_Transcriptome_Probe_Set_v1.0_GRCh38-2020-A_corrected.csv",
+        "--sample_force_cells", "5000;-1;-1;-1"
+    ]
+    run_component(args)
+    # check for raw data
+    assert (outputpath / "multi/count/raw_feature_bc_matrix.h5").is_file()
+    # check for metrics summary
+    for sample in ["Liver_BC1", "Ovarian_BC2", "Colorectal_BC3", "Pancreas_BC4"]:
+        assert (outputpath / f"per_sample_outs/{sample}/metrics_summary.csv").is_file()
+        assert (outputpath / f"per_sample_outs/{sample}/count/sample_filtered_feature_bc_matrix.h5").is_file()
+
+    assert (outputpath / "multi/multiplexing_analysis").is_dir() 
 if __name__ == '__main__':
-    sys.exit(pytest.main([__file__, "-k", "test_cellranger_multi_beam_data"]))
+    sys.exit(pytest.main([__file__, "-k"]))

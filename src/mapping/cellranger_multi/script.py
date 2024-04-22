@@ -207,7 +207,7 @@ def transform_helper_inputs(par: dict[str, Any]) -> dict[str, Any]:
 
 def lengths_gt1(dic: dict[str, Optional[list[Any]]]) -> dict[str, int]:
     return {key: len(li) for key, li in dic.items()
-            if li is not None and len(li) > 1}
+            if li is not None and isinstance(li, (list, tuple, set))}
 
 def strip_margin(text: str) -> str:
     return re.sub('(\n?)[ \t]*\|', '\\1', text)
@@ -264,6 +264,33 @@ def make_paths_absolute(par: dict[str, Any], config: Path | str):
         par[arg_name] = new_arg
     return par
 
+def handle_integers_not_set(par: dict[str, Any], viash_config: Path | str) -> str:
+    """
+    Allow to use `-1` to define a 'not set' value for arguments of `type: integer` with `multiple: true`.
+    """
+    with open(viash_config, 'r', encoding="utf-8") as open_viash_config:
+        config = yaml.safe_load(open_viash_config)
+
+    arguments = {
+        arg["name"].removeprefix("-").removeprefix("-"): arg
+        for group in config["functionality"]["argument_groups"]
+        for arg in group["arguments"]
+    }
+    for arg_name, arg in arguments.items():
+        if not par.get(arg_name) or arg["type"] != "integer":
+            continue
+        par_value, is_multiple = par[arg_name], arg["multiple"]
+        assert is_multiple in (True, False)
+
+        def replace_notset_values(integer_value: int) -> int | None:
+            return None if integer_value == -1 else integer_value
+        
+        # Use an extension array to handle "None" values, otherwise int + NA
+        # values would be converted to a "float" dtype
+        new_arg = pd.array([replace_notset_values(value) for value in par_value], dtype="Int64")
+        par[arg_name] = new_arg
+    return par
+
 def process_params(par: dict[str, Any], viash_config: Path | str) -> str:
 
     if par["input"]:
@@ -287,6 +314,9 @@ def process_params(par: dict[str, Any], viash_config: Path | str) -> str:
     samples_dict = subset_dict(par, SAMPLE_PARAMS)
     check_subset_dict_equal_length("Samples", samples_dict)
 
+    # Allow using -1 to indicate unset integers for arguments
+    # that accept multiple integers.
+    par = handle_integers_not_set(par, viash_config)
 
     # use absolute paths
     return make_paths_absolute(par, viash_config)
@@ -308,9 +338,8 @@ def generate_config(par: dict[str, Any], fastq_dir: str) -> str:
     par["fastqs"] = fastq_dir
     libraries = dict(LIBRARY_CONFIG_KEYS, **{"fastqs": "fastqs"})
     #TODO: use the union (|) operator when python is updated to 3.9
-    all_sections = dict(REFERENCE_SECTIONS, 
-                        **{"libraries": (libraries, "columns")},
-                        **{"samples": (SAMPLE_PARAMS_CONFIG_KEYS, "columns")})
+    all_sections = REFERENCE_SECTIONS | {"libraries": (libraries, "columns"), 
+                                         "samples": (SAMPLE_PARAMS_CONFIG_KEYS, "columns")}
     for section_name, (section_params, orientation) in all_sections.items():
         reference_pars = subset_dict(par, section_params)
         content_list += generate_csv_category(section_name, reference_pars, orient=orientation)

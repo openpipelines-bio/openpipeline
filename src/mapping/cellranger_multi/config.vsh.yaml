@@ -176,6 +176,7 @@ functionality:
             A name to identify a multiplexed sample. Must be alphanumeric with hyphens and/or underscores,
             and less than 64 characters. Required for Cell Multiplexing libraries.
         - type: string
+          multiple: true
           name: --sample_description
           alternatives: [--cell_multiplex_description]
           description: A description for the sample.
@@ -189,6 +190,7 @@ functionality:
           name: "--sample_force_cells"
           example: 3000
           multiple: true
+          required: false
           description: |
             Force pipeline to use this number of cells, bypassing cell detection.
 
@@ -443,7 +445,9 @@ functionality:
       dest: 10x_5k_lung_crispr/raw/
     - path: /resources_test/10x_5k_beam/raw/
       dest: 10x_5k_beam/raw/
-    - path: /resources_test/reference_gencodev41_chr1
+    - path: /resources_test/10x_5k_fixed/raw/
+      dest: 10x_5k_fixed/raw 
+    - path: /resources_test/10x_5k_beam/raw/ 
 platforms:
   - type: docker
     image: ghcr.io/data-intuitive/cellranger:8.0
