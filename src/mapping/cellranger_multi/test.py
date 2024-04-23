@@ -366,4 +366,4 @@ def test_cellranger_multi_fixed_rna(run_component, random_path):
 
     assert (outputpath / "multi/multiplexing_analysis").is_dir() 
 if __name__ == '__main__':
-    sys.exit(pytest.main([__file__, "-k"]))
+    sys.exit(pytest.main([__file__]))
