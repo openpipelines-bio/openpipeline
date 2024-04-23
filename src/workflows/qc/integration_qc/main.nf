@@ -31,7 +31,8 @@ workflow run_wf {
         "obs_batch_label": "obs_batch_label",
         "obs_cell_label": "obs_cell_label",
         "uns_neighbors": "uns_neighbors",
-        "obsm_umap": "obsm_umap"
+        "obsm_umap": "obsm_umap",
+        "output_raw": "output_raw"
       ],
       toState: { id, output, state ->
         output

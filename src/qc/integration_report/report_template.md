@@ -1,6 +1,6 @@
 ---
 title: "Integration QC report"
-format: html
+format: pdf
 tbl-colwidths: [75,25]
 ---
 
