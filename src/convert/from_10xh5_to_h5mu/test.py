@@ -2,8 +2,6 @@ from os import path
 from mudata import read_h5mu
 import pytest
 import sys
-from openpipelinetestutils.asserters import assert_annotation_objects_equal
-
 
 ## VIASH START
 meta = {
@@ -14,9 +12,8 @@ meta = {
 ## VIASH END
 
 input = meta["resources_dir"] + "/pbmc_1k_protein_v3/pbmc_1k_protein_v3_filtered_feature_bc_matrix.h5"
-output = "output.h5mu"
 
-def test_from_10xh5_to_h5mu(run_component, random_h5mu_path):
+def test_run(run_component, random_h5mu_path):
     output = random_h5mu_path()
     cmd_pars = [
         "--input", input,
@@ -46,4 +43,4 @@ def test_from_10xh5_to_h5mu(run_component, random_h5mu_path):
     
     
 if __name__ == "__main__":
-    sys.exit(pytest.main([__file__, "--log-cli-level=DEBUG", "--trace-config"]))
+    sys.exit(pytest.main([__file__]))

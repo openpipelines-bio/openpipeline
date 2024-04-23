@@ -57,17 +57,17 @@ test_resources:
   - path: /resources_test/pbmc_1k_protein_v3
 
 engines:
-  - type: docker
-    image: python:3.9-slim
-    setup:
-      - type: apt
-        packages:
-          - procps
-      - type: python
-        __merge__: [/src/base/requirements/anndata_mudata.yaml, /src/base/requirements/scanpy.yaml, .]
-    __merge__: [ /src/base/requirements/python_test_setup.yaml, .]
+- type: docker
+  image: python:3.9-slim
+  setup:
+    - type: apt
+      packages:
+        - procps
+    - type: python
+      __merge__: [/src/base/requirements/anndata_mudata.yaml, /src/base/requirements/scanpy.yaml, .]
+  __merge__: [ /src/base/requirements/python_test_setup.yaml, .]
 runners:
-  - type: executable
-  - type: nextflow
-    directives:
-      label: [lowmem, singlecpu]
+- type: executable
+- type: nextflow
+  directives:
+    label: [lowmem, singlecpu]
