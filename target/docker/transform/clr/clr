@@ -436,9 +436,9 @@ RUN pip install --upgrade pip && \
 
 LABEL org.opencontainers.image.authors="Dries Schaumont"
 LABEL org.opencontainers.image.description="Companion container for running component transform clr"
-LABEL org.opencontainers.image.created="2024-04-23T06:59:02Z"
+LABEL org.opencontainers.image.created="2024-04-23T13:51:20Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="0360316d17e190d75dba888ea8dc675e37f0ca1e"
+LABEL org.opencontainers.image.revision="6fb3b279fb539668e2e5592b63ec95b6f68992a2"
 LABEL org.opencontainers.image.version="main_build"
 
 VIASHDOCKER
