@@ -25,7 +25,6 @@ functionality:
           choices: ["gzip", "lzf"]
           required: false
           example: "gzip"
-
     - name: "Filtering and normalization"
       description: Arguments for filtering, normalization an log transform (see scvelo.pp.filter_and_normalize function)
       arguments:
