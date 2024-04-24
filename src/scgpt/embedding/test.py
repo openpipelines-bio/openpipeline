@@ -213,7 +213,7 @@ def test_integration_embedding_non_existing_keys(run_component, tmp_path):
     with pytest.raises(subprocess.CalledProcessError) as err:
         run_component(args_1)
     assert re.search(
-        r"KeyError: \'dummy_gene_name_key\'"
+        r"KeyError: \'dummy_gene_name_key\'",
         err.value.stdout.decode('utf-8'))
 
     # Test for non-existing batch label key
