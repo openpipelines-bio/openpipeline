@@ -62,6 +62,14 @@ on:
         required: false
         default: false
         description: Also build packages and docker images for viash-hub.com and push them.
+      is_workflow_call:
+          description: |
+            Flag to destinguish between a 'workflow_call' and 'workflow_dispatch'.
+            github.event_name can not be used for this because it refers to the event of
+            the top-level workflow. See https://github.com/actions/runner/issues/3146
+          type: boolean
+          required: false
+          default: true
     outputs:
       component_matrix:
         description: "A JSON object that can be used to populate a github actions matrix for component jobs."
@@ -96,6 +104,11 @@ jobs:
       DEPLOY_BRANCH: ${{ !inputs.deploy_branch && format('{0}_build', github.ref_name) || inputs.deploy_branch  }}
 
     steps:
+    - name: Do not allow manual trigger if the branch is main
+      if: ${{ !inputs.is_workflow_call && github.ref == 'refs/heads/main' }}
+      run: |
+        echo "This workflow should not be triggered with workflow_dispatch from the main branch"
+        exit 1
     - name: Check input arguments
       run: |
         input_version="${{ inputs.version || format('{0}_build', github.ref_name) }}"

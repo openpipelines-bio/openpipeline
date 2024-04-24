@@ -1,7 +1,7 @@
 functionality:
   name: "gdo_singlesample"
   namespace: "workflows/gdo"
-  version: "1.0.0-rc3"
+  version: "v1.0.0-rc4"
   authors:
   - name: "Dries Schaumont"
     roles:
@@ -160,14 +160,14 @@ functionality:
     foundConfigPath: "/home/runner/work/openpipeline/openpipeline/src/filter/filter_with_counts/config.vsh.yaml"
     configInfo:
       functionalityName: "filter_with_counts"
-      git_tag: "1.0.0-rc2-1-gda495c631b"
+      git_tag: "1.0.0-rc2-2-gd9a4a23eef"
       git_remote: "https://github.com/openpipelines-bio/openpipeline"
       viash_version: "0.8.5"
       config: "/home/runner/work/openpipeline/openpipeline/src/filter/filter_with_counts/config.vsh.yaml"
       functionalityNamespace: "filter"
       output: ""
       platform: ""
-      git_commit: "da495c631b69bb0699d344f0e532cd8432c5e1a6"
+      git_commit: "d9a4a23eef90bd9d7545e37f5d08078a3fc1c40b"
       executable: "/nextflow/filter/filter_with_counts/main.nf"
     writtenPath: "/home/runner/work/openpipeline/openpipeline/target/nextflow/filter/filter_with_counts"
   - name: "filter/do_filter"
@@ -177,14 +177,14 @@ functionality:
     foundConfigPath: "/home/runner/work/openpipeline/openpipeline/src/filter/do_filter/config.vsh.yaml"
     configInfo:
       functionalityName: "do_filter"
-      git_tag: "1.0.0-rc2-1-gda495c631b"
+      git_tag: "1.0.0-rc2-2-gd9a4a23eef"
       git_remote: "https://github.com/openpipelines-bio/openpipeline"
       viash_version: "0.8.5"
       config: "/home/runner/work/openpipeline/openpipeline/src/filter/do_filter/config.vsh.yaml"
       functionalityNamespace: "filter"
       output: ""
       platform: ""
-      git_commit: "da495c631b69bb0699d344f0e532cd8432c5e1a6"
+      git_commit: "d9a4a23eef90bd9d7545e37f5d08078a3fc1c40b"
       executable: "/nextflow/filter/do_filter/main.nf"
     writtenPath: "/home/runner/work/openpipeline/openpipeline/target/nextflow/filter/do_filter"
   set_wd_to_resources_dir: false
@@ -240,6 +240,6 @@ info:
   output: "/home/runner/work/openpipeline/openpipeline/target/nextflow/workflows/gdo/gdo_singlesample"
   executable: "/home/runner/work/openpipeline/openpipeline/target/nextflow/workflows/gdo/gdo_singlesample/main.nf"
   viash_version: "0.8.5"
-  git_commit: "da495c631b69bb0699d344f0e532cd8432c5e1a6"
+  git_commit: "d9a4a23eef90bd9d7545e37f5d08078a3fc1c40b"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"
-  git_tag: "1.0.0-rc2-1-gda495c631b"
+  git_tag: "1.0.0-rc2-2-gd9a4a23eef"
