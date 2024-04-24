@@ -58,7 +58,6 @@ functionality:
             - isolated_label_asw
             - clisi_graph
           default: nmi;ari;asw_label
-          required: true
           description: |
             The metrics to be calculated to assess biological conservation. 
             The provided metrics will be aggregated into a biological conservation score.
@@ -72,7 +71,6 @@ functionality:
             - graph_connectivity
             - ilisi_graph
             - kbet
-          required: true
           default: asw_batch;pcr;graph_connectivity
           description: |
             The metrics to be calculated for the batch correction. 
