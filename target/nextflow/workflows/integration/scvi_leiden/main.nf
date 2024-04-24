@@ -3191,14 +3191,14 @@ meta = [
         "foundConfigPath" : "/home/runner/work/openpipeline/openpipeline/src/cluster/leiden/config.vsh.yaml",
         "configInfo" : {
           "functionalityName" : "leiden",
-          "git_tag" : "1.0.0-rc2-2-gd9a4a23eef",
+          "git_tag" : "1.0.0-rc2-3-g29ff4f267a",
           "git_remote" : "https://github.com/openpipelines-bio/openpipeline",
           "viash_version" : "0.8.5",
           "config" : "/home/runner/work/openpipeline/openpipeline/src/cluster/leiden/config.vsh.yaml",
           "functionalityNamespace" : "cluster",
           "output" : "",
           "platform" : "",
-          "git_commit" : "d9a4a23eef90bd9d7545e37f5d08078a3fc1c40b",
+          "git_commit" : "29ff4f267adaf0d26cba7f9e416810e64b70eaaa",
           "executable" : "/nextflow/cluster/leiden/main.nf"
         },
         "writtenPath" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/cluster/leiden"
@@ -3212,14 +3212,14 @@ meta = [
         "foundConfigPath" : "/home/runner/work/openpipeline/openpipeline/src/metadata/move_obsm_to_obs/config.vsh.yaml",
         "configInfo" : {
           "functionalityName" : "move_obsm_to_obs",
-          "git_tag" : "1.0.0-rc2-2-gd9a4a23eef",
+          "git_tag" : "1.0.0-rc2-3-g29ff4f267a",
           "git_remote" : "https://github.com/openpipelines-bio/openpipeline",
           "viash_version" : "0.8.5",
           "config" : "/home/runner/work/openpipeline/openpipeline/src/metadata/move_obsm_to_obs/config.vsh.yaml",
           "functionalityNamespace" : "metadata",
           "output" : "",
           "platform" : "",
-          "git_commit" : "d9a4a23eef90bd9d7545e37f5d08078a3fc1c40b",
+          "git_commit" : "29ff4f267adaf0d26cba7f9e416810e64b70eaaa",
           "executable" : "/nextflow/metadata/move_obsm_to_obs/main.nf"
         },
         "writtenPath" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/metadata/move_obsm_to_obs"
@@ -3233,14 +3233,14 @@ meta = [
         "foundConfigPath" : "/home/runner/work/openpipeline/openpipeline/src/integrate/scvi/config.vsh.yaml",
         "configInfo" : {
           "functionalityName" : "scvi",
-          "git_tag" : "1.0.0-rc2-2-gd9a4a23eef",
+          "git_tag" : "1.0.0-rc2-3-g29ff4f267a",
           "git_remote" : "https://github.com/openpipelines-bio/openpipeline",
           "viash_version" : "0.8.5",
           "config" : "/home/runner/work/openpipeline/openpipeline/src/integrate/scvi/config.vsh.yaml",
           "functionalityNamespace" : "integrate",
           "output" : "",
           "platform" : "",
-          "git_commit" : "d9a4a23eef90bd9d7545e37f5d08078a3fc1c40b",
+          "git_commit" : "29ff4f267adaf0d26cba7f9e416810e64b70eaaa",
           "executable" : "/nextflow/integrate/scvi/main.nf"
         },
         "writtenPath" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/integrate/scvi"
@@ -3254,14 +3254,14 @@ meta = [
         "foundConfigPath" : "/home/runner/work/openpipeline/openpipeline/src/dimred/umap/config.vsh.yaml",
         "configInfo" : {
           "functionalityName" : "umap",
-          "git_tag" : "1.0.0-rc2-2-gd9a4a23eef",
+          "git_tag" : "1.0.0-rc2-3-g29ff4f267a",
           "git_remote" : "https://github.com/openpipelines-bio/openpipeline",
           "viash_version" : "0.8.5",
           "config" : "/home/runner/work/openpipeline/openpipeline/src/dimred/umap/config.vsh.yaml",
           "functionalityNamespace" : "dimred",
           "output" : "",
           "platform" : "",
-          "git_commit" : "d9a4a23eef90bd9d7545e37f5d08078a3fc1c40b",
+          "git_commit" : "29ff4f267adaf0d26cba7f9e416810e64b70eaaa",
           "executable" : "/nextflow/dimred/umap/main.nf"
         },
         "writtenPath" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/dimred/umap"
@@ -3275,14 +3275,14 @@ meta = [
         "foundConfigPath" : "/home/runner/work/openpipeline/openpipeline/src/neighbors/find_neighbors/config.vsh.yaml",
         "configInfo" : {
           "functionalityName" : "find_neighbors",
-          "git_tag" : "1.0.0-rc2-2-gd9a4a23eef",
+          "git_tag" : "1.0.0-rc2-3-g29ff4f267a",
           "git_remote" : "https://github.com/openpipelines-bio/openpipeline",
           "viash_version" : "0.8.5",
           "config" : "/home/runner/work/openpipeline/openpipeline/src/neighbors/find_neighbors/config.vsh.yaml",
           "functionalityNamespace" : "neighbors",
           "output" : "",
           "platform" : "",
-          "git_commit" : "d9a4a23eef90bd9d7545e37f5d08078a3fc1c40b",
+          "git_commit" : "29ff4f267adaf0d26cba7f9e416810e64b70eaaa",
           "executable" : "/nextflow/neighbors/find_neighbors/main.nf"
         },
         "writtenPath" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/neighbors/find_neighbors"
@@ -3349,9 +3349,9 @@ meta = [
     "platform" : "nextflow",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/workflows/integration/scvi_leiden",
     "viash_version" : "0.8.5",
-    "git_commit" : "d9a4a23eef90bd9d7545e37f5d08078a3fc1c40b",
+    "git_commit" : "29ff4f267adaf0d26cba7f9e416810e64b70eaaa",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline",
-    "git_tag" : "1.0.0-rc2-2-gd9a4a23eef"
+    "git_tag" : "1.0.0-rc2-3-g29ff4f267a"
   }
 }'''))
 ]
