@@ -123,12 +123,6 @@ functionality:
           default: true
           description: |
             Whether to apply domain-specific batch normalization for generating embeddings. When set to True, 'obs_batch_labels' must be set as well.
-        - name: "--device"
-          type: string
-          default: "cpu"
-          choices: ["cpu", "cuda"]
-          description: |
-            The device to be used for inference.
 
   resources:
     - type: python_script
