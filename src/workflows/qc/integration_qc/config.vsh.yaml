@@ -24,6 +24,38 @@ functionality:
           required: false
           description: |
             The name of the adata var column containing gene names. When no gene_name_layer is provided, the var index will be used.
+        - name: "--bio_conservation_metrics"
+          type: string
+          multiple: true
+          multiple_sep: ";"
+          choices: 
+            - nmi
+            - ari
+            - asw_label
+            - isolated_label_f1
+            - isolated_label_asw
+            - clisi_graph
+          default: nmi;ari;asw_label
+          description: |
+            The metrics to be calculated to assess biological conservation. 
+            The provided metrics will be aggregated into a biological conservation score.
+        - name: "--batch_correction_metrics"
+          type: string
+          multiple: true
+          multiple_sep: ";"
+          choices:
+            - asw_batch
+            - pcr
+            - graph_connectivity
+            - ilisi_graph
+            - kbet
+          default: asw_batch;pcr;graph_connectivity
+          description: |
+            The metrics to be calculated for the batch correction. 
+            The provided metrics will be aggregated into a batch correction score.
+            
+    - name: Input annotations
+      arguments:
         - name: "--obsm_embeddings"
           type: string
           required: true

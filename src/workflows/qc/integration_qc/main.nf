@@ -10,6 +10,8 @@ workflow run_wf {
         "input": "input",
         "modality": "modality",
         "obsm_output": "obsm_output",
+        "bio_conservation_metrics": "bio_conservation_metrics",
+        "batch_correction_metrics": "batch_correction_metrics",
         "obsm_embeddings": "obsm_embeddings",
         "obs_batch_label": "obs_batch_label",
         "obs_cell_label": "obs_cell_label",

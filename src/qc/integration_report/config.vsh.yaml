@@ -60,13 +60,6 @@ functionality:
           type: boolean_true
           description: |
             If provided, the raw data (unrendered report (md), figures (png) and metrics (json)) will be published.
-        - name: "--output_md_report"
-          type: file
-          direction: output
-          default: report.qmd
-          must_exist: False
-          description: |
-            Name of the unrendered report file (qmd). Will only be saved if --output_raw is set to true.
         - name: "--output_umap_label_fig"
           type: file
           direction: output
@@ -81,6 +74,13 @@ functionality:
           default: umap_batch.png
           description: |
             Name of the UMAP batch figure (png). Will only be saved if --output_raw is set to true.
+        - name: "--output_md_report"
+          type: file
+          direction: output
+          default: report.qmd
+          must_exist: False
+          description: |
+            Name of the unrendered report file (qmd). Will only be saved if --output_raw is set to true.
         - name: "--output_metrics"
           type: file
           direction: output

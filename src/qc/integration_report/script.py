@@ -60,9 +60,7 @@ adata = input_adata.copy()
 # Ensure all batch labels are str
 adata.obs[par["obs_batch_label"]] = adata.obs[par["obs_batch_label"]].astype(str)
 
-# Open template
-with open(meta["resources_dir"] + '/report_template.md', 'r') as file:
-    template = file.read()
+# Generate vizualizations
 
 logger.info("Generating UMAP visualizations")
 fig_cell_type_clusters = sc.pl.embedding(
@@ -89,7 +87,13 @@ fig_batch_clusters = sc.pl.embedding(
     show=False,
 )
 
+# Generate metrics and report
 
+# Open template
+with open(meta["resources_dir"] + '/report_template.md', 'r') as file:
+    template = file.read()
+
+# Context manager to generate temporary directory to save intermediary files
 with tempfile.TemporaryDirectory(
         prefix=f"{meta['functionality_name']}-",
         dir=meta["temp_dir"],
@@ -98,33 +102,43 @@ with tempfile.TemporaryDirectory(
     temp_dir = Path(temp_dir)
     temp_dir.mkdir(parents=True, exist_ok=True)
 
+    # Directories for intermediary files
     report_md = f"{temp_dir}/report.qmd"
     umap_label_fig = f"{temp_dir}/umap_label.png"
     umap_batch_fig = f"{temp_dir}/umap_batch.png"
 
+    # Save figures
     fig_cell_type_clusters.savefig(umap_label_fig, dpi=300, bbox_inches='tight')
     fig_batch_clusters.savefig(umap_batch_fig, dpi=300, bbox_inches='tight')
 
-    # Generate variables required for report
+    # Fetch variables required for report from the adata object
     logger.info("Fetching integration metrics")
     variables = {
-        "ari_score": round(adata.uns["ari_score"], 4),
-        "nmi_score": round(adata.uns["nmi_score"], 4),
-        "asw_label": round(adata.uns["asw_label"], 4),
-        "asw_batch": round(adata.uns["asw_batch"], 4),
-        "pcr_score": round(adata.uns["pcr_score"], 4),
-        "graph_conn_score": round(adata.uns["graph_conn_score"], 4),
-        "avg_bio": round(adata.uns["avg_bio"], 4),
+        "overall_integration": round(adata.uns["overall_integration_score"], 2),
+        "bio_conservation": round(adata.uns["bio_conservation_score"], 2),
+        "batch_correction": round(adata.uns["batch_correction_score"], 2),
         "umap_batch": os.path.basename(umap_batch_fig),
         "umap_label": os.path.basename(umap_label_fig)
     }
 
-    markdown_content = template.format(**variables)
-    
+    # Round all variables, replace nan's with "-"
+    for k, v in adata.uns["bio_conservation_metrics"].items():
+        # Check if value is NaN and add to variables dict
+        variables[k] = round(v, 2) if v == v else "-"
+
+    for k, v in adata.uns["batch_correction_metrics"].items():
+        # Check if value is NaN and add to variables dict
+         variables[k] = round(v, 2) if v == v else "-"
+
     logger.info("Generating report")
+    # Fill report template with variables
+    markdown_content = template.format(**variables)
+
+    # Save report
     with open(report_md, 'w') as f:
         f.write(markdown_content)
 
+    # PDF rendering
     logger.info("Rendering report to pdf")
     subprocess.run(['quarto', 'render', report_md, '--to', 'pdf'])
 
@@ -141,14 +155,11 @@ with tempfile.TemporaryDirectory(
         shutil.move(umap_batch_fig, par["output_umap_batch_fig"])
         shutil.move(report_md, par["output_md_report"])
 
-        metric_dict = {
-            "ari_score": str(variables["ari_score"]),
-            "nmi_score": str(variables["nmi_score"]),
-            "asw_label": str(variables["asw_label"]),
-            "asw_batch": str(variables["asw_batch"]),
-            "pcr_score": str(variables["pcr_score"]),
-            "graph_conn_score": str(variables["graph_conn_score"]),
-            "avg_bio": str(variables["avg_bio"])
-            }
+        # Remove figures from variable dict before saving as json
+        del variables["umap_batch"]
+        del variables["umap_label"]
+
+        metrics = {k: (str(v) if v == v else "-") for k, v in variables.items()}
+
         with open(par["output_metrics"], 'w') as f:
-            json.dump(metric_dict, f)
+            json.dump(metrics, f)
