@@ -25,9 +25,8 @@ par = {
     "modality": "rna",
     "dropout": 0.2,
     "dsbn": True,
-    "n_input_bins": 51,
-    "device": "cpu"
-}
+    "n_input_bins": 51
+    }
 ## VIASH END
 
 # START TEMPORARY WORKAROUND setup_logger
@@ -48,14 +47,8 @@ def setup_logger():
 # END TEMPORARY WORKAROUND setup_logger
 logger = setup_logger()
 
-if par["device"] == "cuda" and not torch.cuda.is_available():
-    logger.warning("CUDA is not available. Using CPU instead.")
-    logger.info("Setting device to use cpu")
-    device = torch.device("cpu")
-else:
-    logger.info(f"Setting device to use {par['device']}")
-    device = torch.device(par["device"])
-
+logger.info(f"Setting device to {'cuda' if torch.cuda.is_available() else 'cpu'}")
+device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 logger.info("Reading in data")
 
@@ -63,6 +56,14 @@ logger.info("Reading in data")
 mdata = mu.read(par["input"])
 input_adata = mdata.mod[par["modality"]]
 adata = input_adata.copy()
+
+for k, v in {
+        "--obsm_gene_tokens": par["obsm_gene_tokens"],
+        "--obsm_tokenized_values": par["obsm_tokenized_values"],
+        "--obsm_padding_mask": par["obsm_padding_mask"]
+        }.items():
+    if v not in adata.obsm.keys():
+        raise KeyError(f"The parameter '{v}' provided for '{k}' could not be found in adata.obsm")
 
 all_gene_ids = adata.obsm[par["obsm_gene_tokens"]]
 all_values = adata.obsm[par["obsm_tokenized_values"]]
