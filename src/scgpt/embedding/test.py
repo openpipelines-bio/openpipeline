@@ -255,7 +255,7 @@ def test_integration_embedding_non_existing_keys(run_component, tmp_path):
     with pytest.raises(subprocess.CalledProcessError) as err:
         run_component(args_3)
     assert re.search(
-        r"KeyError: The parameter \'dummy_values_tokenized\' provided for \'obsm_tokenized_values\' could not be found in adata.obsm",
+        r'KeyError: "The parameter \'dummy_values_tokenized\' provided for \'--obsm_tokenized_values\' could not be found in adata.obsm"',
         err.value.stdout.decode('utf-8'))
 
 
