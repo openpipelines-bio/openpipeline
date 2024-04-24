@@ -29,6 +29,8 @@
 
 * `scgpt/cross_check_genes` component: Added a gene-model cross check component for scGPT (PR #758).
 
+* `scgpt/tokenize_pad`: component: Added scGPT padding and tokenization component (PR #754).
+
 * `scgpt/binning` component: Added a scGPT pre-processing binning component (PR #765).
 
 # openpipelines 1.0.0-rc2
