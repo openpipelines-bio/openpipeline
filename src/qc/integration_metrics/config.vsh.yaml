@@ -4,7 +4,10 @@ functionality:
   description: |
     Calculation integration qc metrics and aggregate scores for bio conservation and batch correction.
     The calculated metrics and aggregate scores are stored in the uns column.
-    All metric calculations are based on https://doi.org/10.1038/s41592-021-01336-8.
+    All metric calculations are based on the scib library:
+      - publication: https://doi.org/10.1038/s41592-021-01336-8
+      - code: https://github.com/theislab/scib/
+      - documentation: https://scib.readthedocs.io/
 
     Bio conservation metrics:
       - nmi_score: scib.metrics.nmi
