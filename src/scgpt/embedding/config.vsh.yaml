@@ -101,13 +101,6 @@ functionality:
           default: -2
           description: |
             The value of the padding token.
-        - name: "--dropout"
-          type: double
-          min: 0
-          max: 1
-          default: 0.2
-          description: |
-            Dropout value used for the transformer encoder layer
         - name: "--dbsn"
           type: boolean
           default: true

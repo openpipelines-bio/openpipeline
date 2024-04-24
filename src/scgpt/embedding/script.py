@@ -23,7 +23,6 @@ par = {
     "pad_value": -2,
     "batch_size": 64,
     "modality": "rna",
-    "dropout": 0.2,
     "dsbn": True,
     "n_input_bins": 51
     }
@@ -128,7 +127,7 @@ model = TransformerModel(
     d_hid=d_hid,
     nlayers=nlayers,
     vocab=vocab,
-    dropout=par["dropout"],
+    dropout=0.5, # scGPT default, only relevant for fine-tuning applications
     pad_token=pad_token,
     pad_value=pad_value,
     nlayers_cls=3,  # only applicable for decoder-based operations
