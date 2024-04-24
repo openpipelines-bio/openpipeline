@@ -4,7 +4,7 @@ from mudata import read_h5mu
 
 ## VIASH START
 meta = {
-    'executable': './target/docker/graph/bbknn/bbknn',
+    'executable': './target/executable/neighbors/bbknn/bbknn',
     'resources_dir': './resources_test/pbmc_1k_protein_v3/'
 }
 ## VIASH END
@@ -36,7 +36,7 @@ def sample_mudata(tmp_path):
 def test_simple_integration(run_component, tmp_path, sample_mudata):
     tmp_input_path, mudata = sample_mudata
     output_path = tmp_path / "output.h5mu"
-
+    print(mudata, flush=True)
     # run component
     run_component([
         "--input", str(tmp_input_path),

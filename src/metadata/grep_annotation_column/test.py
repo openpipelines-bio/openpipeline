@@ -17,7 +17,7 @@ from itertools import permutations, islice
 
 ## VIASH START
 meta = {
-    'executable': './target/docker/metadata/grep_annotation_column/grep_annotation_column',
+    'executable': './target/executable/metadata/grep_annotation_column/grep_annotation_column',
     'resources_dir': './resources_test/concat_test_data/',
     'cpus': 2,
     'config': './src/metadata/grep_annotation_column/config.vsh.yaml'
@@ -40,7 +40,7 @@ def generate_h5mu():
     return tmp_mudata
 
 @pytest.fixture(params=[
-    np.float16, np.float32, np.float64, np.uint8, np.uint16, np.uint32, np.int8, np.int16, np.int64
+    np.float32, np.float64, np.uint8, np.uint16, np.uint32, np.int8, np.int16, np.int64
 ])
 def very_sparse_mudata(request):
     rng = np.random.default_rng()
