@@ -1,7 +1,7 @@
 {
 "$schema": "http://json-schema.org/draft-07/schema",
 "title": "integration_metrics",
-"description": "Add integration qc metrics to an .h5mu file.\n\nThe metrics are generated using the scib library and stored in the uns column:\n  - nmi_score: scib.metrics.nmi\n  - ari_score: scib.metrics.ari\n  - asw_batch: scib.metrics.silhouette_batch\n  - asw_label: scib.metrics.silhouette\n  - pcr_score: scib.metrics.pcr_comparison\n  - graph_connectivity: scib.metrics.graph_connectivity\n  - avg_bio: mean of nmi_score, ari_score and asw_label\n  \n",
+"description": "Calculation integration qc metrics and aggregate scores for bio conservation and batch correction.\nThe calculated metrics and aggregate scores are stored in the uns column.\nAll metric calculations are based on the scib library:\n  - publication: https://doi.org/10.1038/s41592-021-01336-8\n  - code: https://github.com/theislab/scib/\n  - documentation: https://scib.readthedocs.io/\n\nBio conservation metrics:\n  - nmi_score: scib.metrics.nmi\n  - ari_score: scib.metrics.ari\n  - asw_label: scib.metrics.silhouette\n  - isolated_label_f1: scib.metrics.isolated_labels \n  - isolated_label_asw: scib.metrics.isolated_labels\n  - clisi_graph: scib.metrics.clisi_graph\nNote that the scib bio conservation metrics for cell cycle conservation, HVG conservation and trajectory conservation are not currently provided, \nas this requires integrated count matrices and pseudo time values to be calculated, which is not currently supported in OpenPipeline.\n\nBatch correction metrics:\n  - asw_batch: scib.metrics.silhouette_batch\n  - pcr_score: scib.metrics.pcr_comparison\n  - graph_connectivity: scib.metrics.graph_connectivity\n  - ilisi_graph: scib.metrics.ilisi_graph\n  - kbet: scib.metrics.kBET\n\nAggregate scores:\n  - avg_bio: mean of calculated bio conservation metrics\n  - avg_batch: mean of calculated batch correction metrics\n  - overall_integration_score: weighted mean of bio and batch scores (60/40 ratio)\n  \n",
 "type": "object",
 "definitions": {
 
@@ -51,6 +51,75 @@
     
 
         ,
+                "bio_conservation_metrics": {
+                "type":
+                "string",
+                "description": "Type: List of `string`, default: `nmi;ari;asw_label`, multiple_sep: `\";\"`, choices: ``nmi`, `ari`, `asw_label`, `isolated_label_f1`, `isolated_label_asw`, `clisi_graph``. The metrics to be calculated to assess biological conservation",
+                "help_text": "Type: List of `string`, default: `nmi;ari;asw_label`, multiple_sep: `\";\"`, choices: ``nmi`, `ari`, `asw_label`, `isolated_label_f1`, `isolated_label_asw`, `clisi_graph``. The metrics to be calculated to assess biological conservation. \nThe provided metrics will be aggregated into a biological conservation score.\n",
+                "enum": ["nmi", "ari", "asw_label", "isolated_label_f1", "isolated_label_asw", "clisi_graph"]
+            
+            ,
+                "default": "nmi;ari;asw_label"
+            }
+    
+
+        ,
+                "batch_correction_metrics": {
+                "type":
+                "string",
+                "description": "Type: List of `string`, default: `asw_batch;pcr;graph_connectivity`, multiple_sep: `\";\"`, choices: ``asw_batch`, `pcr`, `graph_connectivity`, `ilisi_graph`, `kbet``. The metrics to be calculated for the batch correction",
+                "help_text": "Type: List of `string`, default: `asw_batch;pcr;graph_connectivity`, multiple_sep: `\";\"`, choices: ``asw_batch`, `pcr`, `graph_connectivity`, `ilisi_graph`, `kbet``. The metrics to be calculated for the batch correction. \nThe provided metrics will be aggregated into a batch correction score.\n",
+                "enum": ["asw_batch", "pcr", "graph_connectivity", "ilisi_graph", "kbet"]
+            
+            ,
+                "default": "asw_batch;pcr;graph_connectivity"
+            }
+    
+
+}
+},
+    
+    
+    "outputs" : {
+    "title": "Outputs",
+    "type": "object",
+    "description": "No description",
+    "properties": {
+    
+        
+                "output": {
+                "type":
+                "string",
+                "description": "Type: `file`, default: `$id.$key.output.h5mu`, example: `output.h5mu`. Output h5mu file",
+                "help_text": "Type: `file`, default: `$id.$key.output.h5mu`, example: `output.h5mu`. Output h5mu file."
+            ,
+                "default": "$id.$key.output.h5mu"
+            }
+    
+
+        ,
+                "output_compression": {
+                "type":
+                "string",
+                "description": "Type: `string`, example: `gzip`, choices: ``gzip`, `lzf``. The compression format to be used on the output h5mu object",
+                "help_text": "Type: `string`, example: `gzip`, choices: ``gzip`, `lzf``. The compression format to be used on the output h5mu object.",
+                "enum": ["gzip", "lzf"]
+            
+            
+            }
+    
+
+}
+},
+    
+    
+    "input annotations" : {
+    "title": "Input Annotations",
+    "type": "object",
+    "description": "No description",
+    "properties": {
+    
+        
                 "obsm_embeddings": {
                 "type":
                 "string",
@@ -114,39 +183,6 @@
 },
     
     
-    "outputs" : {
-    "title": "Outputs",
-    "type": "object",
-    "description": "No description",
-    "properties": {
-    
-        
-                "output": {
-                "type":
-                "string",
-                "description": "Type: `file`, default: `$id.$key.output.h5mu`, example: `output.h5mu`. Output h5mu file",
-                "help_text": "Type: `file`, default: `$id.$key.output.h5mu`, example: `output.h5mu`. Output h5mu file."
-            ,
-                "default": "$id.$key.output.h5mu"
-            }
-    
-
-        ,
-                "output_compression": {
-                "type":
-                "string",
-                "description": "Type: `string`, example: `gzip`, choices: ``gzip`, `lzf``. The compression format to be used on the output h5mu object",
-                "help_text": "Type: `string`, example: `gzip`, choices: ``gzip`, `lzf``. The compression format to be used on the output h5mu object.",
-                "enum": ["gzip", "lzf"]
-            
-            
-            }
-    
-
-}
-},
-    
-    
     "nextflow input-output arguments" : {
     "title": "Nextflow input-output arguments",
     "type": "object",
@@ -176,6 +212,10 @@
 
     {
     "$ref": "#/definitions/outputs"
+    },
+
+    {
+    "$ref": "#/definitions/input annotations"
     },
 
     {

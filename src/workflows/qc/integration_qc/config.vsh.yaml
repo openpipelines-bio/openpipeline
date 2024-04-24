@@ -24,6 +24,38 @@ functionality:
           required: false
           description: |
             The name of the adata var column containing gene names. When no gene_name_layer is provided, the var index will be used.
+        - name: "--bio_conservation_metrics"
+          type: string
+          multiple: true
+          multiple_sep: ";"
+          choices: 
+            - nmi
+            - ari
+            - asw_label
+            - isolated_label_f1
+            - isolated_label_asw
+            - clisi_graph
+          default: nmi;ari;asw_label
+          description: |
+            The metrics to be calculated to assess biological conservation. 
+            The provided metrics will be aggregated into a biological conservation score.
+        - name: "--batch_correction_metrics"
+          type: string
+          multiple: true
+          multiple_sep: ";"
+          choices:
+            - asw_batch
+            - pcr
+            - graph_connectivity
+            - ilisi_graph
+            - kbet
+          default: asw_batch;pcr;graph_connectivity
+          description: |
+            The metrics to be calculated for the batch correction. 
+            The provided metrics will be aggregated into a batch correction score.
+            
+    - name: Input annotations
+      arguments:
         - name: "--obsm_embeddings"
           type: string
           required: true
@@ -68,39 +100,46 @@ functionality:
 
     - name: Outputs
       arguments:
-        - name: "--output_report"
+        - name: "--output"
           type: file
           required: true
-          description: Output .md file.
+          description: Name of the integration qc output pdf report.
           direction: output
-          example: output.md
-        - name: "--output_umap_batch"
-          type: file
-          direction: output
-          example: umap_batch.png
-          required: true
+          example: output.pdf
+        - name: "--output_raw"
+          type: boolean_true
           description: |
-            Path to png image containing the UMAP visualization with batch labels
-        - name: "--output_umap_label"
+            If provided, the raw data (unrendered report (md), figures (png) and metrics (json)) will be published.
+        - name: "--output_md_report"
           type: file
-          example: umap_label.png
-          required: true
           direction: output
+          default: report.qmd
+          must_exist: False
           description: |
-            Path to png image containing the UMAP visualization with cell type labels
+            Name of the unrendered report file (qmd). Will only be saved if --output_raw is set to true.
+        - name: "--output_umap_label_fig"
+          type: file
+          direction: output
+          default: umap_label.png
+          must_exist: False
+          description: |
+            Name of the UMAP label figure (png). Will only be saved if --output_raw is set to true.
+        - name: "--output_umap_batch_fig"
+          type: file
+          direction: output
+          must_exist: False
+          default: umap_batch.png
+          description: |
+            Name of the UMAP batch figure (png). Will only be saved if --output_raw is set to true.
         - name: "--output_metrics"
           type: file
           direction: output
+          must_exist: False
+          default: metrics.json
           description: |
-            Path to json containing the calculated integration metrics.
-          example: metrics.json
-          required: false
-        - name: "--output_compression"
-          type: string
-          description: The compression format to be used on the output h5mu object.
-          choices: ["gzip", "lzf"]
-          required: false
-          example: "gzip"
+            Name of the json file containing integration metrics (json). Will only be saved if --output_raw is set to true.       
+
+
   dependencies:
     - name: qc/integration_metrics
     - name: qc/integration_report

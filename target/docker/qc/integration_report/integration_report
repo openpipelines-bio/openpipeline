@@ -214,26 +214,39 @@ function ViashHelp {
   echo "        The obsm slot containing UMAP embeddings."
   echo ""
   echo "Outputs:"
-  echo "    --output_report"
+  echo "    --output"
   echo "        type: file, required parameter, output, file must exist"
-  echo "        example: output.md"
-  echo "        Output .md file."
+  echo "        example: output.pdf"
+  echo "        Name of the integration qc output pdf report."
   echo ""
-  echo "    --output_umap_batch"
-  echo "        type: file, required parameter, output, file must exist"
-  echo "        example: umap_batch.png"
-  echo "        Path to png image containing the UMAP visualization with batch labels"
+  echo "    --output_raw"
+  echo "        type: boolean_true"
+  echo "        If provided, the raw data (unrendered report (md), figures (png) and"
+  echo "        metrics (json)) will be published."
   echo ""
-  echo "    --output_umap_label"
-  echo "        type: file, required parameter, output, file must exist"
-  echo "        example: umap_label.png"
-  echo "        Path to png image containing the UMAP visualization with cell type"
-  echo "        labels"
+  echo "    --output_umap_label_fig"
+  echo "        type: file, output"
+  echo "        default: umap_label.png"
+  echo "        Name of the UMAP label figure (png). Will only be saved if --output_raw"
+  echo "        is set to true."
+  echo ""
+  echo "    --output_umap_batch_fig"
+  echo "        type: file, output"
+  echo "        default: umap_batch.png"
+  echo "        Name of the UMAP batch figure (png). Will only be saved if --output_raw"
+  echo "        is set to true."
+  echo ""
+  echo "    --output_md_report"
+  echo "        type: file, output"
+  echo "        default: report.qmd"
+  echo "        Name of the unrendered report file (qmd). Will only be saved if"
+  echo "        --output_raw is set to true."
   echo ""
   echo "    --output_metrics"
-  echo "        type: file, output, file must exist"
-  echo "        example: metrics.json"
-  echo "        Path to json containing the calculated integration metrics."
+  echo "        type: file, output"
+  echo "        default: metrics.json"
+  echo "        Name of the json file containing integration metrics (json). Will only"
+  echo "        be saved if --output_raw is set to true."
 }
 
 ######## Helper functions for setting up Docker images for viash ########
@@ -463,11 +476,16 @@ RUN apt-get update && \
 RUN pip install --upgrade pip && \
   pip install --upgrade --no-cache-dir "anndata~=0.9.1" "mudata~=0.2.3" "pandas!=2.1.2" "scanpy~=1.9.5" "statsmodels==0.14.0"
 
+RUN wget https://github.com/quarto-dev/quarto-cli/releases/download/v1.4.549/quarto-1.4.549-linux-amd64.deb -O /tmp/quarto.deb && \
+dpkg -i /tmp/quarto.deb && \
+rm /tmp/quarto.deb && \
+quarto install tinytex
+
 LABEL org.opencontainers.image.authors="Dorien Roosen"
 LABEL org.opencontainers.image.description="Companion container for running component qc integration_report"
-LABEL org.opencontainers.image.created="2024-04-19T07:34:02Z"
+LABEL org.opencontainers.image.created="2024-04-24T19:59:00Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="a407b0211fa9378a10e1ef7a86eb394477250fde"
+LABEL org.opencontainers.image.revision="ec06d130e1731ae70ddd2236cda9979b09dde9b5"
 LABEL org.opencontainers.image.version="integration-qc_build"
 
 VIASHDOCKER
@@ -699,37 +717,53 @@ while [[ $# -gt 0 ]]; do
             VIASH_PAR_OBSM_UMAP=$(ViashRemoveFlags "$1")
             shift 1
             ;;
-        --output_report)
-            [ -n "$VIASH_PAR_OUTPUT_REPORT" ] && ViashError Bad arguments for option \'--output_report\': \'$VIASH_PAR_OUTPUT_REPORT\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
-            VIASH_PAR_OUTPUT_REPORT="$2"
-            [ $# -lt 2 ] && ViashError Not enough arguments passed to --output_report. Use "--help" to get more information on the parameters. && exit 1
+        --output)
+            [ -n "$VIASH_PAR_OUTPUT" ] && ViashError Bad arguments for option \'--output\': \'$VIASH_PAR_OUTPUT\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+            VIASH_PAR_OUTPUT="$2"
+            [ $# -lt 2 ] && ViashError Not enough arguments passed to --output. Use "--help" to get more information on the parameters. && exit 1
             shift 2
             ;;
-        --output_report=*)
-            [ -n "$VIASH_PAR_OUTPUT_REPORT" ] && ViashError Bad arguments for option \'--output_report=*\': \'$VIASH_PAR_OUTPUT_REPORT\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
-            VIASH_PAR_OUTPUT_REPORT=$(ViashRemoveFlags "$1")
+        --output=*)
+            [ -n "$VIASH_PAR_OUTPUT" ] && ViashError Bad arguments for option \'--output=*\': \'$VIASH_PAR_OUTPUT\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+            VIASH_PAR_OUTPUT=$(ViashRemoveFlags "$1")
             shift 1
             ;;
-        --output_umap_batch)
-            [ -n "$VIASH_PAR_OUTPUT_UMAP_BATCH" ] && ViashError Bad arguments for option \'--output_umap_batch\': \'$VIASH_PAR_OUTPUT_UMAP_BATCH\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
-            VIASH_PAR_OUTPUT_UMAP_BATCH="$2"
-            [ $# -lt 2 ] && ViashError Not enough arguments passed to --output_umap_batch. Use "--help" to get more information on the parameters. && exit 1
-            shift 2
-            ;;
-        --output_umap_batch=*)
-            [ -n "$VIASH_PAR_OUTPUT_UMAP_BATCH" ] && ViashError Bad arguments for option \'--output_umap_batch=*\': \'$VIASH_PAR_OUTPUT_UMAP_BATCH\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
-            VIASH_PAR_OUTPUT_UMAP_BATCH=$(ViashRemoveFlags "$1")
+        --output_raw)
+            [ -n "$VIASH_PAR_OUTPUT_RAW" ] && ViashError Bad arguments for option \'--output_raw\': \'$VIASH_PAR_OUTPUT_RAW\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+            VIASH_PAR_OUTPUT_RAW=true
             shift 1
             ;;
-        --output_umap_label)
-            [ -n "$VIASH_PAR_OUTPUT_UMAP_LABEL" ] && ViashError Bad arguments for option \'--output_umap_label\': \'$VIASH_PAR_OUTPUT_UMAP_LABEL\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
-            VIASH_PAR_OUTPUT_UMAP_LABEL="$2"
-            [ $# -lt 2 ] && ViashError Not enough arguments passed to --output_umap_label. Use "--help" to get more information on the parameters. && exit 1
+        --output_umap_label_fig)
+            [ -n "$VIASH_PAR_OUTPUT_UMAP_LABEL_FIG" ] && ViashError Bad arguments for option \'--output_umap_label_fig\': \'$VIASH_PAR_OUTPUT_UMAP_LABEL_FIG\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+            VIASH_PAR_OUTPUT_UMAP_LABEL_FIG="$2"
+            [ $# -lt 2 ] && ViashError Not enough arguments passed to --output_umap_label_fig. Use "--help" to get more information on the parameters. && exit 1
             shift 2
             ;;
-        --output_umap_label=*)
-            [ -n "$VIASH_PAR_OUTPUT_UMAP_LABEL" ] && ViashError Bad arguments for option \'--output_umap_label=*\': \'$VIASH_PAR_OUTPUT_UMAP_LABEL\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
-            VIASH_PAR_OUTPUT_UMAP_LABEL=$(ViashRemoveFlags "$1")
+        --output_umap_label_fig=*)
+            [ -n "$VIASH_PAR_OUTPUT_UMAP_LABEL_FIG" ] && ViashError Bad arguments for option \'--output_umap_label_fig=*\': \'$VIASH_PAR_OUTPUT_UMAP_LABEL_FIG\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+            VIASH_PAR_OUTPUT_UMAP_LABEL_FIG=$(ViashRemoveFlags "$1")
+            shift 1
+            ;;
+        --output_umap_batch_fig)
+            [ -n "$VIASH_PAR_OUTPUT_UMAP_BATCH_FIG" ] && ViashError Bad arguments for option \'--output_umap_batch_fig\': \'$VIASH_PAR_OUTPUT_UMAP_BATCH_FIG\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+            VIASH_PAR_OUTPUT_UMAP_BATCH_FIG="$2"
+            [ $# -lt 2 ] && ViashError Not enough arguments passed to --output_umap_batch_fig. Use "--help" to get more information on the parameters. && exit 1
+            shift 2
+            ;;
+        --output_umap_batch_fig=*)
+            [ -n "$VIASH_PAR_OUTPUT_UMAP_BATCH_FIG" ] && ViashError Bad arguments for option \'--output_umap_batch_fig=*\': \'$VIASH_PAR_OUTPUT_UMAP_BATCH_FIG\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+            VIASH_PAR_OUTPUT_UMAP_BATCH_FIG=$(ViashRemoveFlags "$1")
+            shift 1
+            ;;
+        --output_md_report)
+            [ -n "$VIASH_PAR_OUTPUT_MD_REPORT" ] && ViashError Bad arguments for option \'--output_md_report\': \'$VIASH_PAR_OUTPUT_MD_REPORT\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+            VIASH_PAR_OUTPUT_MD_REPORT="$2"
+            [ $# -lt 2 ] && ViashError Not enough arguments passed to --output_md_report. Use "--help" to get more information on the parameters. && exit 1
+            shift 2
+            ;;
+        --output_md_report=*)
+            [ -n "$VIASH_PAR_OUTPUT_MD_REPORT" ] && ViashError Bad arguments for option \'--output_md_report=*\': \'$VIASH_PAR_OUTPUT_MD_REPORT\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+            VIASH_PAR_OUTPUT_MD_REPORT=$(ViashRemoveFlags "$1")
             shift 1
             ;;
         --output_metrics)
@@ -881,16 +915,8 @@ if [ -z ${VIASH_PAR_OBSM_UMAP+x} ]; then
   ViashError '--obsm_umap' is a required argument. Use "--help" to get more information on the parameters.
   exit 1
 fi
-if [ -z ${VIASH_PAR_OUTPUT_REPORT+x} ]; then
-  ViashError '--output_report' is a required argument. Use "--help" to get more information on the parameters.
-  exit 1
-fi
-if [ -z ${VIASH_PAR_OUTPUT_UMAP_BATCH+x} ]; then
-  ViashError '--output_umap_batch' is a required argument. Use "--help" to get more information on the parameters.
-  exit 1
-fi
-if [ -z ${VIASH_PAR_OUTPUT_UMAP_LABEL+x} ]; then
-  ViashError '--output_umap_label' is a required argument. Use "--help" to get more information on the parameters.
+if [ -z ${VIASH_PAR_OUTPUT+x} ]; then
+  ViashError '--output' is a required argument. Use "--help" to get more information on the parameters.
   exit 1
 fi
 if [ -z ${VIASH_META_FUNCTIONALITY_NAME+x} ]; then
@@ -918,6 +944,21 @@ fi
 if [ -z ${VIASH_PAR_MODALITY+x} ]; then
   VIASH_PAR_MODALITY="rna"
 fi
+if [ -z ${VIASH_PAR_OUTPUT_RAW+x} ]; then
+  VIASH_PAR_OUTPUT_RAW="false"
+fi
+if [ -z ${VIASH_PAR_OUTPUT_UMAP_LABEL_FIG+x} ]; then
+  VIASH_PAR_OUTPUT_UMAP_LABEL_FIG="umap_label.png"
+fi
+if [ -z ${VIASH_PAR_OUTPUT_UMAP_BATCH_FIG+x} ]; then
+  VIASH_PAR_OUTPUT_UMAP_BATCH_FIG="umap_batch.png"
+fi
+if [ -z ${VIASH_PAR_OUTPUT_MD_REPORT+x} ]; then
+  VIASH_PAR_OUTPUT_MD_REPORT="report.qmd"
+fi
+if [ -z ${VIASH_PAR_OUTPUT_METRICS+x} ]; then
+  VIASH_PAR_OUTPUT_METRICS="metrics.json"
+fi
 
 # check whether required files exist
 if [ ! -z "$VIASH_PAR_INPUT" ] && [ ! -e "$VIASH_PAR_INPUT" ]; then
@@ -926,6 +967,12 @@ if [ ! -z "$VIASH_PAR_INPUT" ] && [ ! -e "$VIASH_PAR_INPUT" ]; then
 fi
 
 # check whether parameters values are of the right type
+if [[ -n "$VIASH_PAR_OUTPUT_RAW" ]]; then
+  if ! [[ "$VIASH_PAR_OUTPUT_RAW" =~ ^(true|True|TRUE|false|False|FALSE|yes|Yes|YES|no|No|NO)$ ]]; then
+    ViashError '--output_raw' has to be a boolean_true. Use "--help" to get more information on the parameters.
+    exit 1
+  fi
+fi
 if [[ -n "$VIASH_META_CPUS" ]]; then
   if ! [[ "$VIASH_META_CPUS" =~ ^[-+]?[0-9]+$ ]]; then
     ViashError 'cpus' has to be an integer. Use "--help" to get more information on the parameters.
@@ -970,14 +1017,17 @@ if [[ -n "$VIASH_META_MEMORY_PB" ]]; then
 fi
 
 # create parent directories of output files, if so desired
-if [ ! -z "$VIASH_PAR_OUTPUT_REPORT" ] && [ ! -d "$(dirname "$VIASH_PAR_OUTPUT_REPORT")" ]; then
-  mkdir -p "$(dirname "$VIASH_PAR_OUTPUT_REPORT")"
+if [ ! -z "$VIASH_PAR_OUTPUT" ] && [ ! -d "$(dirname "$VIASH_PAR_OUTPUT")" ]; then
+  mkdir -p "$(dirname "$VIASH_PAR_OUTPUT")"
 fi
-if [ ! -z "$VIASH_PAR_OUTPUT_UMAP_BATCH" ] && [ ! -d "$(dirname "$VIASH_PAR_OUTPUT_UMAP_BATCH")" ]; then
-  mkdir -p "$(dirname "$VIASH_PAR_OUTPUT_UMAP_BATCH")"
+if [ ! -z "$VIASH_PAR_OUTPUT_UMAP_LABEL_FIG" ] && [ ! -d "$(dirname "$VIASH_PAR_OUTPUT_UMAP_LABEL_FIG")" ]; then
+  mkdir -p "$(dirname "$VIASH_PAR_OUTPUT_UMAP_LABEL_FIG")"
 fi
-if [ ! -z "$VIASH_PAR_OUTPUT_UMAP_LABEL" ] && [ ! -d "$(dirname "$VIASH_PAR_OUTPUT_UMAP_LABEL")" ]; then
-  mkdir -p "$(dirname "$VIASH_PAR_OUTPUT_UMAP_LABEL")"
+if [ ! -z "$VIASH_PAR_OUTPUT_UMAP_BATCH_FIG" ] && [ ! -d "$(dirname "$VIASH_PAR_OUTPUT_UMAP_BATCH_FIG")" ]; then
+  mkdir -p "$(dirname "$VIASH_PAR_OUTPUT_UMAP_BATCH_FIG")"
+fi
+if [ ! -z "$VIASH_PAR_OUTPUT_MD_REPORT" ] && [ ! -d "$(dirname "$VIASH_PAR_OUTPUT_MD_REPORT")" ]; then
+  mkdir -p "$(dirname "$VIASH_PAR_OUTPUT_MD_REPORT")"
 fi
 if [ ! -z "$VIASH_PAR_OUTPUT_METRICS" ] && [ ! -d "$(dirname "$VIASH_PAR_OUTPUT_METRICS")" ]; then
   mkdir -p "$(dirname "$VIASH_PAR_OUTPUT_METRICS")"
@@ -989,20 +1039,25 @@ if [ ! -z "$VIASH_PAR_INPUT" ]; then
   VIASH_EXTRA_MOUNTS+=( "$(ViashAutodetectMountArg "$VIASH_PAR_INPUT")" )
   VIASH_PAR_INPUT=$(ViashAutodetectMount "$VIASH_PAR_INPUT")
 fi
-if [ ! -z "$VIASH_PAR_OUTPUT_REPORT" ]; then
-  VIASH_EXTRA_MOUNTS+=( "$(ViashAutodetectMountArg "$VIASH_PAR_OUTPUT_REPORT")" )
-  VIASH_PAR_OUTPUT_REPORT=$(ViashAutodetectMount "$VIASH_PAR_OUTPUT_REPORT")
-  VIASH_CHOWN_VARS+=( "$VIASH_PAR_OUTPUT_REPORT" )
+if [ ! -z "$VIASH_PAR_OUTPUT" ]; then
+  VIASH_EXTRA_MOUNTS+=( "$(ViashAutodetectMountArg "$VIASH_PAR_OUTPUT")" )
+  VIASH_PAR_OUTPUT=$(ViashAutodetectMount "$VIASH_PAR_OUTPUT")
+  VIASH_CHOWN_VARS+=( "$VIASH_PAR_OUTPUT" )
 fi
-if [ ! -z "$VIASH_PAR_OUTPUT_UMAP_BATCH" ]; then
-  VIASH_EXTRA_MOUNTS+=( "$(ViashAutodetectMountArg "$VIASH_PAR_OUTPUT_UMAP_BATCH")" )
-  VIASH_PAR_OUTPUT_UMAP_BATCH=$(ViashAutodetectMount "$VIASH_PAR_OUTPUT_UMAP_BATCH")
-  VIASH_CHOWN_VARS+=( "$VIASH_PAR_OUTPUT_UMAP_BATCH" )
+if [ ! -z "$VIASH_PAR_OUTPUT_UMAP_LABEL_FIG" ]; then
+  VIASH_EXTRA_MOUNTS+=( "$(ViashAutodetectMountArg "$VIASH_PAR_OUTPUT_UMAP_LABEL_FIG")" )
+  VIASH_PAR_OUTPUT_UMAP_LABEL_FIG=$(ViashAutodetectMount "$VIASH_PAR_OUTPUT_UMAP_LABEL_FIG")
+  VIASH_CHOWN_VARS+=( "$VIASH_PAR_OUTPUT_UMAP_LABEL_FIG" )
 fi
-if [ ! -z "$VIASH_PAR_OUTPUT_UMAP_LABEL" ]; then
-  VIASH_EXTRA_MOUNTS+=( "$(ViashAutodetectMountArg "$VIASH_PAR_OUTPUT_UMAP_LABEL")" )
-  VIASH_PAR_OUTPUT_UMAP_LABEL=$(ViashAutodetectMount "$VIASH_PAR_OUTPUT_UMAP_LABEL")
-  VIASH_CHOWN_VARS+=( "$VIASH_PAR_OUTPUT_UMAP_LABEL" )
+if [ ! -z "$VIASH_PAR_OUTPUT_UMAP_BATCH_FIG" ]; then
+  VIASH_EXTRA_MOUNTS+=( "$(ViashAutodetectMountArg "$VIASH_PAR_OUTPUT_UMAP_BATCH_FIG")" )
+  VIASH_PAR_OUTPUT_UMAP_BATCH_FIG=$(ViashAutodetectMount "$VIASH_PAR_OUTPUT_UMAP_BATCH_FIG")
+  VIASH_CHOWN_VARS+=( "$VIASH_PAR_OUTPUT_UMAP_BATCH_FIG" )
+fi
+if [ ! -z "$VIASH_PAR_OUTPUT_MD_REPORT" ]; then
+  VIASH_EXTRA_MOUNTS+=( "$(ViashAutodetectMountArg "$VIASH_PAR_OUTPUT_MD_REPORT")" )
+  VIASH_PAR_OUTPUT_MD_REPORT=$(ViashAutodetectMount "$VIASH_PAR_OUTPUT_MD_REPORT")
+  VIASH_CHOWN_VARS+=( "$VIASH_PAR_OUTPUT_MD_REPORT" )
 fi
 if [ ! -z "$VIASH_PAR_OUTPUT_METRICS" ]; then
   VIASH_EXTRA_MOUNTS+=( "$(ViashAutodetectMountArg "$VIASH_PAR_OUTPUT_METRICS")" )
@@ -1070,6 +1125,11 @@ import scanpy as sc
 import mudata as mu
 import os
 import json
+import shutil
+import subprocess
+import tempfile
+from pathlib import Path
+
 
 ## VIASH START
 # The following code has been auto-generated by Viash.
@@ -1081,9 +1141,11 @@ par = {
   'obs_cell_label': $( if [ ! -z ${VIASH_PAR_OBS_CELL_LABEL+x} ]; then echo "r'${VIASH_PAR_OBS_CELL_LABEL//\'/\'\"\'\"r\'}'"; else echo None; fi ),
   'uns_neighbors': $( if [ ! -z ${VIASH_PAR_UNS_NEIGHBORS+x} ]; then echo "r'${VIASH_PAR_UNS_NEIGHBORS//\'/\'\"\'\"r\'}'"; else echo None; fi ),
   'obsm_umap': $( if [ ! -z ${VIASH_PAR_OBSM_UMAP+x} ]; then echo "r'${VIASH_PAR_OBSM_UMAP//\'/\'\"\'\"r\'}'"; else echo None; fi ),
-  'output_report': $( if [ ! -z ${VIASH_PAR_OUTPUT_REPORT+x} ]; then echo "r'${VIASH_PAR_OUTPUT_REPORT//\'/\'\"\'\"r\'}'"; else echo None; fi ),
-  'output_umap_batch': $( if [ ! -z ${VIASH_PAR_OUTPUT_UMAP_BATCH+x} ]; then echo "r'${VIASH_PAR_OUTPUT_UMAP_BATCH//\'/\'\"\'\"r\'}'"; else echo None; fi ),
-  'output_umap_label': $( if [ ! -z ${VIASH_PAR_OUTPUT_UMAP_LABEL+x} ]; then echo "r'${VIASH_PAR_OUTPUT_UMAP_LABEL//\'/\'\"\'\"r\'}'"; else echo None; fi ),
+  'output': $( if [ ! -z ${VIASH_PAR_OUTPUT+x} ]; then echo "r'${VIASH_PAR_OUTPUT//\'/\'\"\'\"r\'}'"; else echo None; fi ),
+  'output_raw': $( if [ ! -z ${VIASH_PAR_OUTPUT_RAW+x} ]; then echo "r'${VIASH_PAR_OUTPUT_RAW//\'/\'\"\'\"r\'}'.lower() == 'true'"; else echo None; fi ),
+  'output_umap_label_fig': $( if [ ! -z ${VIASH_PAR_OUTPUT_UMAP_LABEL_FIG+x} ]; then echo "r'${VIASH_PAR_OUTPUT_UMAP_LABEL_FIG//\'/\'\"\'\"r\'}'"; else echo None; fi ),
+  'output_umap_batch_fig': $( if [ ! -z ${VIASH_PAR_OUTPUT_UMAP_BATCH_FIG+x} ]; then echo "r'${VIASH_PAR_OUTPUT_UMAP_BATCH_FIG//\'/\'\"\'\"r\'}'"; else echo None; fi ),
+  'output_md_report': $( if [ ! -z ${VIASH_PAR_OUTPUT_MD_REPORT+x} ]; then echo "r'${VIASH_PAR_OUTPUT_MD_REPORT//\'/\'\"\'\"r\'}'"; else echo None; fi ),
   'output_metrics': $( if [ ! -z ${VIASH_PAR_OUTPUT_METRICS+x} ]; then echo "r'${VIASH_PAR_OUTPUT_METRICS//\'/\'\"\'\"r\'}'"; else echo None; fi )
 }
 meta = {
@@ -1133,9 +1195,7 @@ adata = input_adata.copy()
 # Ensure all batch labels are str
 adata.obs[par["obs_batch_label"]] = adata.obs[par["obs_batch_label"]].astype(str)
 
-# Open template
-with open(meta["resources_dir"] + '/report_template.md', 'r') as file:
-    template = file.read()
+# Generate vizualizations
 
 logger.info("Generating UMAP visualizations")
 fig_cell_type_clusters = sc.pl.embedding(
@@ -1162,39 +1222,82 @@ fig_batch_clusters = sc.pl.embedding(
     show=False,
 )
 
-fig_cell_type_clusters.savefig(par["output_umap_label"], dpi=300, bbox_inches='tight')
-fig_batch_clusters.savefig(par["output_umap_batch"], dpi=300, bbox_inches='tight')
+# Generate metrics and report
 
-# Generate variables required for report
-variables = {
-    "ari_score": round(adata.uns["ari_score"], 4),
-    "nmi_score": round(adata.uns["nmi_score"], 4),
-    "asw_label": round(adata.uns["asw_label"], 4),
-    "asw_batch": round(adata.uns["asw_batch"], 4),
-    "pcr_score": round(adata.uns["pcr_score"], 4),
-    "graph_conn_score": round(adata.uns["graph_conn_score"], 4),
-    "avg_bio": round(adata.uns["avg_bio"], 4),
-    "umap_batch": os.path.basename(par["output_umap_batch"]),
-    "umap_label": os.path.basename(par["output_umap_label"])
-}
+# Open template
+with open(meta["resources_dir"] + '/report_template.md', 'r') as file:
+    template = file.read()
 
-markdown_content = template.format(**variables)
+# Context manager to generate temporary directory to save intermediary files
+with tempfile.TemporaryDirectory(
+        prefix=f"{meta['functionality_name']}-",
+        dir=meta["temp_dir"],
+        ignore_cleanup_errors=True) as temp_dir:
 
-with open(par["output_report"], 'w') as f:
-    f.write(markdown_content)
+    temp_dir = Path(temp_dir)
+    temp_dir.mkdir(parents=True, exist_ok=True)
 
-if par["output_metrics"]:
-    metric_dict = {
-        "ari_score": str(variables["ari_score"]),
-        "nmi_score": str(variables["nmi_score"]),
-        "asw_label": str(variables["asw_label"]),
-        "asw_batch": str(variables["asw_batch"]),
-        "pcr_score": str(variables["pcr_score"]),
-        "graph_conn_score": str(variables["graph_conn_score"]),
-        "avg_bio": str(variables["avg_bio"])
-        }
-    with open(par["output_metrics"], 'w') as f:
-        json.dump(metric_dict, f)
+    # Directories for intermediary files
+    report_md = f"{temp_dir}/report.qmd"
+    umap_label_fig = f"{temp_dir}/umap_label.png"
+    umap_batch_fig = f"{temp_dir}/umap_batch.png"
+
+    # Save figures
+    fig_cell_type_clusters.savefig(umap_label_fig, dpi=300, bbox_inches='tight')
+    fig_batch_clusters.savefig(umap_batch_fig, dpi=300, bbox_inches='tight')
+
+    # Fetch variables required for report from the adata object
+    logger.info("Fetching integration metrics")
+    variables = {
+        "overall_integration": round(adata.uns["overall_integration_score"], 2),
+        "bio_conservation": round(adata.uns["bio_conservation_score"], 2),
+        "batch_correction": round(adata.uns["batch_correction_score"], 2),
+        "umap_batch": os.path.basename(umap_batch_fig),
+        "umap_label": os.path.basename(umap_label_fig)
+    }
+
+    # Round all variables, replace nan's with "-"
+    for k, v in adata.uns["bio_conservation_metrics"].items():
+        # Check if value is NaN and add to variables dict
+        variables[k] = round(v, 2) if v == v else "-"
+
+    for k, v in adata.uns["batch_correction_metrics"].items():
+        # Check if value is NaN and add to variables dict
+         variables[k] = round(v, 2) if v == v else "-"
+
+    logger.info("Generating report")
+    # Fill report template with variables
+    markdown_content = template.format(**variables)
+
+    # Save report
+    with open(report_md, 'w') as f:
+        f.write(markdown_content)
+
+    # PDF rendering
+    logger.info("Rendering report to pdf")
+    subprocess.run(['quarto', 'render', report_md, '--to', 'pdf'])
+
+    # Move report to output
+    logger.info("Publishing of pdf report")
+    shutil.move(f"{temp_dir}/report.pdf", par["output"])
+
+    # Save raw data
+    if not par["output_raw"]:
+        logger.info("Skipping publishing of raw output data because --output_raw was not provided.")
+    else:
+        logger.info("Publishing of raw output data")
+        shutil.move(umap_label_fig, par["output_umap_label_fig"])
+        shutil.move(umap_batch_fig, par["output_umap_batch_fig"])
+        shutil.move(report_md, par["output_md_report"])
+
+        # Remove figures from variable dict before saving as json
+        del variables["umap_batch"]
+        del variables["umap_label"]
+
+        metrics = {k: (str(v) if v == v else "-") for k, v in variables.items()}
+
+        with open(par["output_metrics"], 'w') as f:
+            json.dump(metrics, f)
 VIASHMAIN
 python -B "\$tempscript" &
 wait "\$!"
@@ -1206,14 +1309,17 @@ VIASHEOF
 if [ ! -z "$VIASH_PAR_INPUT" ]; then
   VIASH_PAR_INPUT=$(ViashStripAutomount "$VIASH_PAR_INPUT")
 fi
-if [ ! -z "$VIASH_PAR_OUTPUT_REPORT" ]; then
-  VIASH_PAR_OUTPUT_REPORT=$(ViashStripAutomount "$VIASH_PAR_OUTPUT_REPORT")
+if [ ! -z "$VIASH_PAR_OUTPUT" ]; then
+  VIASH_PAR_OUTPUT=$(ViashStripAutomount "$VIASH_PAR_OUTPUT")
 fi
-if [ ! -z "$VIASH_PAR_OUTPUT_UMAP_BATCH" ]; then
-  VIASH_PAR_OUTPUT_UMAP_BATCH=$(ViashStripAutomount "$VIASH_PAR_OUTPUT_UMAP_BATCH")
+if [ ! -z "$VIASH_PAR_OUTPUT_UMAP_LABEL_FIG" ]; then
+  VIASH_PAR_OUTPUT_UMAP_LABEL_FIG=$(ViashStripAutomount "$VIASH_PAR_OUTPUT_UMAP_LABEL_FIG")
 fi
-if [ ! -z "$VIASH_PAR_OUTPUT_UMAP_LABEL" ]; then
-  VIASH_PAR_OUTPUT_UMAP_LABEL=$(ViashStripAutomount "$VIASH_PAR_OUTPUT_UMAP_LABEL")
+if [ ! -z "$VIASH_PAR_OUTPUT_UMAP_BATCH_FIG" ]; then
+  VIASH_PAR_OUTPUT_UMAP_BATCH_FIG=$(ViashStripAutomount "$VIASH_PAR_OUTPUT_UMAP_BATCH_FIG")
+fi
+if [ ! -z "$VIASH_PAR_OUTPUT_MD_REPORT" ]; then
+  VIASH_PAR_OUTPUT_MD_REPORT=$(ViashStripAutomount "$VIASH_PAR_OUTPUT_MD_REPORT")
 fi
 if [ ! -z "$VIASH_PAR_OUTPUT_METRICS" ]; then
   VIASH_PAR_OUTPUT_METRICS=$(ViashStripAutomount "$VIASH_PAR_OUTPUT_METRICS")
@@ -1233,20 +1339,8 @@ fi
 
 
 # check whether required files exist
-if [ ! -z "$VIASH_PAR_OUTPUT_REPORT" ] && [ ! -e "$VIASH_PAR_OUTPUT_REPORT" ]; then
-  ViashError "Output file '$VIASH_PAR_OUTPUT_REPORT' does not exist."
-  exit 1
-fi
-if [ ! -z "$VIASH_PAR_OUTPUT_UMAP_BATCH" ] && [ ! -e "$VIASH_PAR_OUTPUT_UMAP_BATCH" ]; then
-  ViashError "Output file '$VIASH_PAR_OUTPUT_UMAP_BATCH' does not exist."
-  exit 1
-fi
-if [ ! -z "$VIASH_PAR_OUTPUT_UMAP_LABEL" ] && [ ! -e "$VIASH_PAR_OUTPUT_UMAP_LABEL" ]; then
-  ViashError "Output file '$VIASH_PAR_OUTPUT_UMAP_LABEL' does not exist."
-  exit 1
-fi
-if [ ! -z "$VIASH_PAR_OUTPUT_METRICS" ] && [ ! -e "$VIASH_PAR_OUTPUT_METRICS" ]; then
-  ViashError "Output file '$VIASH_PAR_OUTPUT_METRICS' does not exist."
+if [ ! -z "$VIASH_PAR_OUTPUT" ] && [ ! -e "$VIASH_PAR_OUTPUT" ]; then
+  ViashError "Output file '$VIASH_PAR_OUTPUT' does not exist."
   exit 1
 fi
 

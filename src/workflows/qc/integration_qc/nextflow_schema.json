@@ -61,6 +61,118 @@
     
 
         ,
+                "bio_conservation_metrics": {
+                "type":
+                "string",
+                "description": "Type: List of `string`, default: `nmi;ari;asw_label`, multiple_sep: `\";\"`, choices: ``nmi`, `ari`, `asw_label`, `isolated_label_f1`, `isolated_label_asw`, `clisi_graph``. The metrics to be calculated to assess biological conservation",
+                "help_text": "Type: List of `string`, default: `nmi;ari;asw_label`, multiple_sep: `\";\"`, choices: ``nmi`, `ari`, `asw_label`, `isolated_label_f1`, `isolated_label_asw`, `clisi_graph``. The metrics to be calculated to assess biological conservation. \nThe provided metrics will be aggregated into a biological conservation score.\n",
+                "enum": ["nmi", "ari", "asw_label", "isolated_label_f1", "isolated_label_asw", "clisi_graph"]
+            
+            ,
+                "default": "nmi;ari;asw_label"
+            }
+    
+
+        ,
+                "batch_correction_metrics": {
+                "type":
+                "string",
+                "description": "Type: List of `string`, default: `asw_batch;pcr;graph_connectivity`, multiple_sep: `\";\"`, choices: ``asw_batch`, `pcr`, `graph_connectivity`, `ilisi_graph`, `kbet``. The metrics to be calculated for the batch correction",
+                "help_text": "Type: List of `string`, default: `asw_batch;pcr;graph_connectivity`, multiple_sep: `\";\"`, choices: ``asw_batch`, `pcr`, `graph_connectivity`, `ilisi_graph`, `kbet``. The metrics to be calculated for the batch correction. \nThe provided metrics will be aggregated into a batch correction score.\n",
+                "enum": ["asw_batch", "pcr", "graph_connectivity", "ilisi_graph", "kbet"]
+            
+            ,
+                "default": "asw_batch;pcr;graph_connectivity"
+            }
+    
+
+}
+},
+    
+    
+    "outputs" : {
+    "title": "Outputs",
+    "type": "object",
+    "description": "No description",
+    "properties": {
+    
+        
+                "output": {
+                "type":
+                "string",
+                "description": "Type: `file`, required, default: `$id.$key.output.pdf`, example: `output.pdf`. Name of the integration qc output pdf report",
+                "help_text": "Type: `file`, required, default: `$id.$key.output.pdf`, example: `output.pdf`. Name of the integration qc output pdf report."
+            ,
+                "default": "$id.$key.output.pdf"
+            }
+    
+
+        ,
+                "output_raw": {
+                "type":
+                "boolean",
+                "description": "Type: `boolean_true`, default: `false`. If provided, the raw data (unrendered report (md), figures (png) and metrics (json)) will be published",
+                "help_text": "Type: `boolean_true`, default: `false`. If provided, the raw data (unrendered report (md), figures (png) and metrics (json)) will be published.\n"
+            ,
+                "default": "False"
+            }
+    
+
+        ,
+                "output_md_report": {
+                "type":
+                "string",
+                "description": "Type: `file`, default: `$id.$key.output_md_report.qmd`. Name of the unrendered report file (qmd)",
+                "help_text": "Type: `file`, default: `$id.$key.output_md_report.qmd`. Name of the unrendered report file (qmd). Will only be saved if --output_raw is set to true.\n"
+            ,
+                "default": "$id.$key.output_md_report.qmd"
+            }
+    
+
+        ,
+                "output_umap_label_fig": {
+                "type":
+                "string",
+                "description": "Type: `file`, default: `$id.$key.output_umap_label_fig.png`. Name of the UMAP label figure (png)",
+                "help_text": "Type: `file`, default: `$id.$key.output_umap_label_fig.png`. Name of the UMAP label figure (png). Will only be saved if --output_raw is set to true.\n"
+            ,
+                "default": "$id.$key.output_umap_label_fig.png"
+            }
+    
+
+        ,
+                "output_umap_batch_fig": {
+                "type":
+                "string",
+                "description": "Type: `file`, default: `$id.$key.output_umap_batch_fig.png`. Name of the UMAP batch figure (png)",
+                "help_text": "Type: `file`, default: `$id.$key.output_umap_batch_fig.png`. Name of the UMAP batch figure (png). Will only be saved if --output_raw is set to true.\n"
+            ,
+                "default": "$id.$key.output_umap_batch_fig.png"
+            }
+    
+
+        ,
+                "output_metrics": {
+                "type":
+                "string",
+                "description": "Type: `file`, default: `$id.$key.output_metrics.json`. Name of the json file containing integration metrics (json)",
+                "help_text": "Type: `file`, default: `$id.$key.output_metrics.json`. Name of the json file containing integration metrics (json). Will only be saved if --output_raw is set to true.       \n"
+            ,
+                "default": "$id.$key.output_metrics.json"
+            }
+    
+
+}
+},
+    
+    
+    "input annotations" : {
+    "title": "Input annotations",
+    "type": "object",
+    "description": "No description",
+    "properties": {
+    
+        
                 "obsm_embeddings": {
                 "type":
                 "string",
@@ -134,72 +246,6 @@
 },
     
     
-    "outputs" : {
-    "title": "Outputs",
-    "type": "object",
-    "description": "No description",
-    "properties": {
-    
-        
-                "output_report": {
-                "type":
-                "string",
-                "description": "Type: `file`, required, default: `$id.$key.output_report.md`, example: `output.md`. Output ",
-                "help_text": "Type: `file`, required, default: `$id.$key.output_report.md`, example: `output.md`. Output .md file."
-            ,
-                "default": "$id.$key.output_report.md"
-            }
-    
-
-        ,
-                "output_umap_batch": {
-                "type":
-                "string",
-                "description": "Type: `file`, required, default: `$id.$key.output_umap_batch.png`, example: `umap_batch.png`. Path to png image containing the UMAP visualization with batch labels\n",
-                "help_text": "Type: `file`, required, default: `$id.$key.output_umap_batch.png`, example: `umap_batch.png`. Path to png image containing the UMAP visualization with batch labels\n"
-            ,
-                "default": "$id.$key.output_umap_batch.png"
-            }
-    
-
-        ,
-                "output_umap_label": {
-                "type":
-                "string",
-                "description": "Type: `file`, required, default: `$id.$key.output_umap_label.png`, example: `umap_label.png`. Path to png image containing the UMAP visualization with cell type labels\n",
-                "help_text": "Type: `file`, required, default: `$id.$key.output_umap_label.png`, example: `umap_label.png`. Path to png image containing the UMAP visualization with cell type labels\n"
-            ,
-                "default": "$id.$key.output_umap_label.png"
-            }
-    
-
-        ,
-                "output_metrics": {
-                "type":
-                "string",
-                "description": "Type: `file`, default: `$id.$key.output_metrics.json`, example: `metrics.json`. Path to json containing the calculated integration metrics",
-                "help_text": "Type: `file`, default: `$id.$key.output_metrics.json`, example: `metrics.json`. Path to json containing the calculated integration metrics.\n"
-            ,
-                "default": "$id.$key.output_metrics.json"
-            }
-    
-
-        ,
-                "output_compression": {
-                "type":
-                "string",
-                "description": "Type: `string`, example: `gzip`, choices: ``gzip`, `lzf``. The compression format to be used on the output h5mu object",
-                "help_text": "Type: `string`, example: `gzip`, choices: ``gzip`, `lzf``. The compression format to be used on the output h5mu object.",
-                "enum": ["gzip", "lzf"]
-            
-            
-            }
-    
-
-}
-},
-    
-    
     "nextflow input-output arguments" : {
     "title": "Nextflow input-output arguments",
     "type": "object",
@@ -229,6 +275,10 @@
 
     {
     "$ref": "#/definitions/outputs"
+    },
+
+    {
+    "$ref": "#/definitions/input annotations"
     },
 
     {

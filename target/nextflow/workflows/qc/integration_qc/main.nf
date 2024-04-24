@@ -2845,6 +2845,52 @@ meta = [
           },
           {
             "type" : "string",
+            "name" : "--bio_conservation_metrics",
+            "description" : "The metrics to be calculated to assess biological conservation. \nThe provided metrics will be aggregated into a biological conservation score.\n",
+            "default" : [
+              "nmi;ari;asw_label"
+            ],
+            "required" : false,
+            "choices" : [
+              "nmi",
+              "ari",
+              "asw_label",
+              "isolated_label_f1",
+              "isolated_label_asw",
+              "clisi_graph"
+            ],
+            "direction" : "input",
+            "multiple" : true,
+            "multiple_sep" : ";",
+            "dest" : "par"
+          },
+          {
+            "type" : "string",
+            "name" : "--batch_correction_metrics",
+            "description" : "The metrics to be calculated for the batch correction. \nThe provided metrics will be aggregated into a batch correction score.\n",
+            "default" : [
+              "asw_batch;pcr;graph_connectivity"
+            ],
+            "required" : false,
+            "choices" : [
+              "asw_batch",
+              "pcr",
+              "graph_connectivity",
+              "ilisi_graph",
+              "kbet"
+            ],
+            "direction" : "input",
+            "multiple" : true,
+            "multiple_sep" : ";",
+            "dest" : "par"
+          }
+        ]
+      },
+      {
+        "name" : "Input annotations",
+        "arguments" : [
+          {
+            "type" : "string",
             "name" : "--obsm_embeddings",
             "description" : "The name of the adata.obsm array containing scGPT cell embeddings.\n",
             "example" : [
@@ -2941,10 +2987,10 @@ meta = [
         "arguments" : [
           {
             "type" : "file",
-            "name" : "--output_report",
-            "description" : "Output .md file.",
+            "name" : "--output",
+            "description" : "Name of the integration qc output pdf report.",
             "example" : [
-              "output.md"
+              "output.pdf"
             ],
             "must_exist" : true,
             "create_parent" : true,
@@ -2955,15 +3001,22 @@ meta = [
             "dest" : "par"
           },
           {
+            "type" : "boolean_true",
+            "name" : "--output_raw",
+            "description" : "If provided, the raw data (unrendered report (md), figures (png) and metrics (json)) will be published.\n",
+            "direction" : "input",
+            "dest" : "par"
+          },
+          {
             "type" : "file",
-            "name" : "--output_umap_batch",
-            "description" : "Path to png image containing the UMAP visualization with batch labels\n",
-            "example" : [
-              "umap_batch.png"
+            "name" : "--output_md_report",
+            "description" : "Name of the unrendered report file (qmd). Will only be saved if --output_raw is set to true.\n",
+            "default" : [
+              "report.qmd"
             ],
-            "must_exist" : true,
+            "must_exist" : false,
             "create_parent" : true,
-            "required" : true,
+            "required" : false,
             "direction" : "output",
             "multiple" : false,
             "multiple_sep" : ":",
@@ -2971,14 +3024,29 @@ meta = [
           },
           {
             "type" : "file",
-            "name" : "--output_umap_label",
-            "description" : "Path to png image containing the UMAP visualization with cell type labels\n",
-            "example" : [
+            "name" : "--output_umap_label_fig",
+            "description" : "Name of the UMAP label figure (png). Will only be saved if --output_raw is set to true.\n",
+            "default" : [
               "umap_label.png"
             ],
-            "must_exist" : true,
+            "must_exist" : false,
             "create_parent" : true,
-            "required" : true,
+            "required" : false,
+            "direction" : "output",
+            "multiple" : false,
+            "multiple_sep" : ":",
+            "dest" : "par"
+          },
+          {
+            "type" : "file",
+            "name" : "--output_umap_batch_fig",
+            "description" : "Name of the UMAP batch figure (png). Will only be saved if --output_raw is set to true.\n",
+            "default" : [
+              "umap_batch.png"
+            ],
+            "must_exist" : false,
+            "create_parent" : true,
+            "required" : false,
             "direction" : "output",
             "multiple" : false,
             "multiple_sep" : ":",
@@ -2987,31 +3055,14 @@ meta = [
           {
             "type" : "file",
             "name" : "--output_metrics",
-            "description" : "Path to json containing the calculated integration metrics.\n",
-            "example" : [
+            "description" : "Name of the json file containing integration metrics (json). Will only be saved if --output_raw is set to true.       \n",
+            "default" : [
               "metrics.json"
             ],
-            "must_exist" : true,
+            "must_exist" : false,
             "create_parent" : true,
             "required" : false,
             "direction" : "output",
-            "multiple" : false,
-            "multiple_sep" : ":",
-            "dest" : "par"
-          },
-          {
-            "type" : "string",
-            "name" : "--output_compression",
-            "description" : "The compression format to be used on the output h5mu object.",
-            "example" : [
-              "gzip"
-            ],
-            "required" : false,
-            "choices" : [
-              "gzip",
-              "lzf"
-            ],
-            "direction" : "input",
             "multiple" : false,
             "multiple_sep" : ":",
             "dest" : "par"
@@ -3057,14 +3108,14 @@ meta = [
         "foundConfigPath" : "/home/runner/work/openpipeline/openpipeline/src/qc/integration_metrics/config.vsh.yaml",
         "configInfo" : {
           "functionalityName" : "integration_metrics",
-          "git_tag" : "0.2.0-1582-ga407b0211f",
+          "git_tag" : "0.2.0-1583-gec06d130e1",
           "git_remote" : "https://github.com/openpipelines-bio/openpipeline",
           "viash_version" : "0.8.5",
           "config" : "/home/runner/work/openpipeline/openpipeline/src/qc/integration_metrics/config.vsh.yaml",
           "functionalityNamespace" : "qc",
           "output" : "",
           "platform" : "",
-          "git_commit" : "a407b0211fa9378a10e1ef7a86eb394477250fde",
+          "git_commit" : "ec06d130e1731ae70ddd2236cda9979b09dde9b5",
           "executable" : "/nextflow/qc/integration_metrics/main.nf"
         },
         "writtenPath" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/qc/integration_metrics"
@@ -3078,14 +3129,14 @@ meta = [
         "foundConfigPath" : "/home/runner/work/openpipeline/openpipeline/src/qc/integration_report/config.vsh.yaml",
         "configInfo" : {
           "functionalityName" : "integration_report",
-          "git_tag" : "0.2.0-1582-ga407b0211f",
+          "git_tag" : "0.2.0-1583-gec06d130e1",
           "git_remote" : "https://github.com/openpipelines-bio/openpipeline",
           "viash_version" : "0.8.5",
           "config" : "/home/runner/work/openpipeline/openpipeline/src/qc/integration_report/config.vsh.yaml",
           "functionalityNamespace" : "qc",
           "output" : "",
           "platform" : "",
-          "git_commit" : "a407b0211fa9378a10e1ef7a86eb394477250fde",
+          "git_commit" : "ec06d130e1731ae70ddd2236cda9979b09dde9b5",
           "executable" : "/nextflow/qc/integration_report/main.nf"
         },
         "writtenPath" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/qc/integration_report"
@@ -3152,9 +3203,9 @@ meta = [
     "platform" : "nextflow",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/workflows/qc/integration_qc",
     "viash_version" : "0.8.5",
-    "git_commit" : "a407b0211fa9378a10e1ef7a86eb394477250fde",
+    "git_commit" : "ec06d130e1731ae70ddd2236cda9979b09dde9b5",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline",
-    "git_tag" : "0.2.0-1582-ga407b0211f"
+    "git_tag" : "0.2.0-1583-gec06d130e1"
   }
 }'''))
 ]
@@ -3178,6 +3229,8 @@ workflow run_wf {
         "input": "input",
         "modality": "modality",
         "obsm_output": "obsm_output",
+        "bio_conservation_metrics": "bio_conservation_metrics",
+        "batch_correction_metrics": "batch_correction_metrics",
         "obsm_embeddings": "obsm_embeddings",
         "obs_batch_label": "obs_batch_label",
         "obs_cell_label": "obs_cell_label",
@@ -3199,7 +3252,8 @@ workflow run_wf {
         "obs_batch_label": "obs_batch_label",
         "obs_cell_label": "obs_cell_label",
         "uns_neighbors": "uns_neighbors",
-        "obsm_umap": "obsm_umap"
+        "obsm_umap": "obsm_umap",
+        "output_raw": "output_raw"
       ],
       toState: { id, output, state ->
         output

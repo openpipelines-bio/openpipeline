@@ -175,16 +175,38 @@ VIASH_META_TEMP_DIR="$VIASH_TEMP"
 function ViashHelp {
   echo "integration_metrics integration-qc_build"
   echo ""
-  echo "Add integration qc metrics to an .h5mu file."
+  echo "Calculation integration qc metrics and aggregate scores for bio conservation and"
+  echo "batch correction."
+  echo "The calculated metrics and aggregate scores are stored in the uns column."
+  echo "All metric calculations are based on the scib library:"
+  echo "  - publication: https://doi.org/10.1038/s41592-021-01336-8"
+  echo "  - code: https://github.com/theislab/scib/"
+  echo "  - documentation: https://scib.readthedocs.io/"
   echo ""
-  echo "The metrics are generated using the scib library and stored in the uns column:"
+  echo "Bio conservation metrics:"
   echo "  - nmi_score: scib.metrics.nmi"
   echo "  - ari_score: scib.metrics.ari"
-  echo "  - asw_batch: scib.metrics.silhouette_batch"
   echo "  - asw_label: scib.metrics.silhouette"
+  echo "  - isolated_label_f1: scib.metrics.isolated_labels"
+  echo "  - isolated_label_asw: scib.metrics.isolated_labels"
+  echo "  - clisi_graph: scib.metrics.clisi_graph"
+  echo "Note that the scib bio conservation metrics for cell cycle conservation, HVG"
+  echo "conservation and trajectory conservation are not currently provided,"
+  echo "as this requires integrated count matrices and pseudo time values to be"
+  echo "calculated, which is not currently supported in OpenPipeline."
+  echo ""
+  echo "Batch correction metrics:"
+  echo "  - asw_batch: scib.metrics.silhouette_batch"
   echo "  - pcr_score: scib.metrics.pcr_comparison"
   echo "  - graph_connectivity: scib.metrics.graph_connectivity"
-  echo "  - avg_bio: mean of nmi_score, ari_score and asw_label"
+  echo "  - ilisi_graph: scib.metrics.ilisi_graph"
+  echo "  - kbet: scib.metrics.kBET"
+  echo ""
+  echo "Aggregate scores:"
+  echo "  - avg_bio: mean of calculated bio conservation metrics"
+  echo "  - avg_batch: mean of calculated batch correction metrics"
+  echo "  - overall_integration_score: weighted mean of bio and batch scores (60/40"
+  echo "ratio)"
   echo ""
   echo "Inputs:"
   echo "    --input"
@@ -196,6 +218,23 @@ function ViashHelp {
   echo "        type: string"
   echo "        default: rna"
   echo ""
+  echo "    --bio_conservation_metrics"
+  echo "        type: string, multiple values allowed"
+  echo "        default: nmi;ari;asw_label"
+  echo "        choices: [ nmi, ari, asw_label, isolated_label_f1, isolated_label_asw,"
+  echo "clisi_graph ]"
+  echo "        The metrics to be calculated to assess biological conservation."
+  echo "        The provided metrics will be aggregated into a biological conservation"
+  echo "        score."
+  echo ""
+  echo "    --batch_correction_metrics"
+  echo "        type: string, multiple values allowed"
+  echo "        default: asw_batch;pcr;graph_connectivity"
+  echo "        choices: [ asw_batch, pcr, graph_connectivity, ilisi_graph, kbet ]"
+  echo "        The metrics to be calculated for the batch correction."
+  echo "        The provided metrics will be aggregated into a batch correction score."
+  echo ""
+  echo "Input Annotations:"
   echo "    --obsm_embeddings"
   echo "        type: string, required parameter"
   echo "        example: X_scGPT"
@@ -455,26 +494,32 @@ function ViashDockerCheckCommands {
 #   ViashDockerFile
 function ViashDockerfile {
   cat << 'VIASHDOCKER'
-FROM python:3.11
+FROM rocker/r2u:22.04
 
 ENTRYPOINT []
 
  
 RUN apt-get update && \
-  DEBIAN_FRONTEND=noninteractive apt-get install -y procps libhdf5-dev gfortran cmake libopenblas-dev && \
+  DEBIAN_FRONTEND=noninteractive apt-get install -y procps libhdf5-dev gfortran cmake libopenblas-dev libgeos-dev python3-pip python3-dev python-is-python3 && \
   rm -rf /var/lib/apt/lists/*
 
 RUN pip install --upgrade pip && \
   pip install --upgrade --no-cache-dir "anndata~=0.9.1" "mudata~=0.2.3" "pandas!=2.1.2"
 
 RUN pip install --upgrade pip && \
-  pip install --upgrade --no-cache-dir "scib==1.1.5"
+  pip install --upgrade --no-cache-dir "scib==1.1.5" "rpy2==3.5.16" "anndata2ri"
+
+RUN Rscript -e 'if (!requireNamespace("remotes", quietly = TRUE)) install.packages("remotes")' && \
+  Rscript -e 'remotes::install_github(c("theislab/kBET"), repos = "https://cran.rstudio.com")'
+
+RUN cd "$(pip show scib | grep Location | cut -d ' ' -f 2)/scib/knn_graph" && \
+g++ -std=c++11 -O3 knn_graph.cpp -o knn_graph.o
 
 LABEL org.opencontainers.image.authors="Dorien Roosen"
 LABEL org.opencontainers.image.description="Companion container for running component qc integration_metrics"
-LABEL org.opencontainers.image.created="2024-04-19T07:34:03Z"
+LABEL org.opencontainers.image.created="2024-04-24T19:59:00Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="a407b0211fa9378a10e1ef7a86eb394477250fde"
+LABEL org.opencontainers.image.revision="ec06d130e1731ae70ddd2236cda9979b09dde9b5"
 LABEL org.opencontainers.image.version="integration-qc_build"
 
 VIASHDOCKER
@@ -649,6 +694,40 @@ while [[ $# -gt 0 ]]; do
         --modality=*)
             [ -n "$VIASH_PAR_MODALITY" ] && ViashError Bad arguments for option \'--modality=*\': \'$VIASH_PAR_MODALITY\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
             VIASH_PAR_MODALITY=$(ViashRemoveFlags "$1")
+            shift 1
+            ;;
+        --bio_conservation_metrics)
+            if [ -z "$VIASH_PAR_BIO_CONSERVATION_METRICS" ]; then
+              VIASH_PAR_BIO_CONSERVATION_METRICS="$2"
+            else
+              VIASH_PAR_BIO_CONSERVATION_METRICS="$VIASH_PAR_BIO_CONSERVATION_METRICS;""$2"
+            fi
+            [ $# -lt 2 ] && ViashError Not enough arguments passed to --bio_conservation_metrics. Use "--help" to get more information on the parameters. && exit 1
+            shift 2
+            ;;
+        --bio_conservation_metrics=*)
+            if [ -z "$VIASH_PAR_BIO_CONSERVATION_METRICS" ]; then
+              VIASH_PAR_BIO_CONSERVATION_METRICS=$(ViashRemoveFlags "$1")
+            else
+              VIASH_PAR_BIO_CONSERVATION_METRICS="$VIASH_PAR_BIO_CONSERVATION_METRICS;"$(ViashRemoveFlags "$1")
+            fi
+            shift 1
+            ;;
+        --batch_correction_metrics)
+            if [ -z "$VIASH_PAR_BATCH_CORRECTION_METRICS" ]; then
+              VIASH_PAR_BATCH_CORRECTION_METRICS="$2"
+            else
+              VIASH_PAR_BATCH_CORRECTION_METRICS="$VIASH_PAR_BATCH_CORRECTION_METRICS;""$2"
+            fi
+            [ $# -lt 2 ] && ViashError Not enough arguments passed to --batch_correction_metrics. Use "--help" to get more information on the parameters. && exit 1
+            shift 2
+            ;;
+        --batch_correction_metrics=*)
+            if [ -z "$VIASH_PAR_BATCH_CORRECTION_METRICS" ]; then
+              VIASH_PAR_BATCH_CORRECTION_METRICS=$(ViashRemoveFlags "$1")
+            else
+              VIASH_PAR_BATCH_CORRECTION_METRICS="$VIASH_PAR_BATCH_CORRECTION_METRICS;"$(ViashRemoveFlags "$1")
+            fi
             shift 1
             ;;
         --obsm_embeddings)
@@ -910,6 +989,12 @@ fi
 if [ -z ${VIASH_PAR_MODALITY+x} ]; then
   VIASH_PAR_MODALITY="rna"
 fi
+if [ -z ${VIASH_PAR_BIO_CONSERVATION_METRICS+x} ]; then
+  VIASH_PAR_BIO_CONSERVATION_METRICS="nmi;ari;asw_label"
+fi
+if [ -z ${VIASH_PAR_BATCH_CORRECTION_METRICS+x} ]; then
+  VIASH_PAR_BATCH_CORRECTION_METRICS="asw_batch;pcr;graph_connectivity"
+fi
 
 # check whether required files exist
 if [ ! -z "$VIASH_PAR_INPUT" ] && [ ! -e "$VIASH_PAR_INPUT" ]; then
@@ -962,6 +1047,34 @@ if [[ -n "$VIASH_META_MEMORY_PB" ]]; then
 fi
 
 # check whether value is belongs to a set of choices
+if [ ! -z "$VIASH_PAR_BIO_CONSERVATION_METRICS" ]; then
+  VIASH_PAR_BIO_CONSERVATION_METRICS_CHOICES=("nmi;ari;asw_label;isolated_label_f1;isolated_label_asw;clisi_graph")
+  IFS=';'
+  set -f
+  for val in $VIASH_PAR_BIO_CONSERVATION_METRICS; do
+    if ! [[ ";${VIASH_PAR_BIO_CONSERVATION_METRICS_CHOICES[*]};" =~ ";${val};" ]]; then
+      ViashError '--bio_conservation_metrics' specified value of \'${val}\' is not in the list of allowed values. Use "--help" to get more information on the parameters.
+      exit 1
+    fi
+  done
+  set +f
+  unset IFS
+fi
+
+if [ ! -z "$VIASH_PAR_BATCH_CORRECTION_METRICS" ]; then
+  VIASH_PAR_BATCH_CORRECTION_METRICS_CHOICES=("asw_batch;pcr;graph_connectivity;ilisi_graph;kbet")
+  IFS=';'
+  set -f
+  for val in $VIASH_PAR_BATCH_CORRECTION_METRICS; do
+    if ! [[ ";${VIASH_PAR_BATCH_CORRECTION_METRICS_CHOICES[*]};" =~ ";${val};" ]]; then
+      ViashError '--batch_correction_metrics' specified value of \'${val}\' is not in the list of allowed values. Use "--help" to get more information on the parameters.
+      exit 1
+    fi
+  done
+  set +f
+  unset IFS
+fi
+
 if [ ! -z "$VIASH_PAR_OUTPUT_COMPRESSION" ]; then
   VIASH_PAR_OUTPUT_COMPRESSION_CHOICES=("gzip:lzf")
   IFS=':'
@@ -1051,13 +1164,15 @@ import scib
 import mudata as mu
 import numpy as np
 import warnings
-
+from time import sleep
 
 ## VIASH START
 # The following code has been auto-generated by Viash.
 par = {
   'input': $( if [ ! -z ${VIASH_PAR_INPUT+x} ]; then echo "r'${VIASH_PAR_INPUT//\'/\'\"\'\"r\'}'"; else echo None; fi ),
   'modality': $( if [ ! -z ${VIASH_PAR_MODALITY+x} ]; then echo "r'${VIASH_PAR_MODALITY//\'/\'\"\'\"r\'}'"; else echo None; fi ),
+  'bio_conservation_metrics': $( if [ ! -z ${VIASH_PAR_BIO_CONSERVATION_METRICS+x} ]; then echo "r'${VIASH_PAR_BIO_CONSERVATION_METRICS//\'/\'\"\'\"r\'}'.split(';')"; else echo None; fi ),
+  'batch_correction_metrics': $( if [ ! -z ${VIASH_PAR_BATCH_CORRECTION_METRICS+x} ]; then echo "r'${VIASH_PAR_BATCH_CORRECTION_METRICS//\'/\'\"\'\"r\'}'.split(';')"; else echo None; fi ),
   'obsm_embeddings': $( if [ ! -z ${VIASH_PAR_OBSM_EMBEDDINGS+x} ]; then echo "r'${VIASH_PAR_OBSM_EMBEDDINGS//\'/\'\"\'\"r\'}'"; else echo None; fi ),
   'obs_batch_label': $( if [ ! -z ${VIASH_PAR_OBS_BATCH_LABEL+x} ]; then echo "r'${VIASH_PAR_OBS_BATCH_LABEL//\'/\'\"\'\"r\'}'"; else echo None; fi ),
   'obs_cell_label': $( if [ ! -z ${VIASH_PAR_OBS_CELL_LABEL+x} ]; then echo "r'${VIASH_PAR_OBS_CELL_LABEL//\'/\'\"\'\"r\'}'"; else echo None; fi ),
@@ -1124,78 +1239,218 @@ else:
 # Ensure all batch labels are str
 adata.obs[par["obs_batch_label"]] = adata.obs[par["obs_batch_label"]].astype(str)
 
-logger.info("Calculating NMI score")
-nmi_score = scib.metrics.nmi(
-        adata_t,
-        cluster_key=par["obs_cluster"],
-        label_key=par["obs_cell_label"],
-        implementation="arithmetic",
-        nmi_dir=None,
-    )
-
-logger.info("Calculating ARI score")
-ari_score = scib.metrics.ari(
-    adata_t,
-    cluster_key=par["obs_cluster"],
-    label_key=par["obs_cell_label"]
-    )
-
-logger.info("Calculating ASW score (cell types)")
-asw_label = scib.metrics.silhouette(
-    adata_t,
-    label_key=par["obs_cell_label"],
-    embed=par["obsm_embeddings"],
-    metric="euclidean"
-    )
-
-logger.info("Calculating ASW score (batches)")
-asw_batch = scib.metrics.silhouette_batch(
-    adata_t,
-    batch_key=par["obs_batch_label"],
-    label_key=par["obs_cell_label"],
-    embed=par["obsm_embeddings"],
-    metric="euclidean",
-    return_all=False,
-    verbose=False,
-    )
-
-logger.info("Calculating PC regression")
-pcr_score = scib.metrics.pcr_comparison(
-    adata_t,
-    adata_t,
-    embed=par["obsm_embeddings"],
-    covariate=par["obs_batch_label"],
-    verbose=False
-    )
-
-logger.info("Calculating graph connectivity")
-
 # rename neighbors and connectivities names if necessary
 if par["uns_neighbors"] != "neighbors":
     adata_t.uns["neighbors"] = adata_t.uns[par["uns_neighbors"]]
 if par["obsp_neighbor_connectivities"] != "connectivities":
     adata_t.obsp["connectivities"] = adata_t.obsp[par["obsp_neighbor_connectivities"]]
 
-graph_conn_score = scib.metrics.graph_connectivity(
-    adata_t,
-    label_key=par["obs_cell_label"]
-    )
+# Asses metrics to be calculated
+assert len(par["bio_conservation_metrics"]) > 0, "Provide at least one metric for bio conservation."
+assert len(par["batch_correction_metrics"]) > 0, "Provide at least one metric for bio conservation."
 
-logger.info("Calculating average bio score")
-avg_bio = np.mean(
-    [
-        nmi_score, ari_score, asw_label
-        ]
+bio_metric_calc = {
+    "nmi": False,
+    "ari": False,
+    "asw_label": False,
+    "isolated_label_f1": False,
+    "isolated_label_asw": False,
+    "clisi_graph": False,
+}
+
+batch_metric_calc = {
+    "asw_batch": False,
+    "pcr": False,
+    "graph_connectivity": False,
+    "ilisi_graph": False,
+    "kbet": False
+}
+
+for bio_metric in par["bio_conservation_metrics"]:
+    bio_metric_calc[bio_metric] = True
+for batch_metric in par["batch_correction_metrics"]:
+    batch_metric_calc[batch_metric] = True
+
+# Batch correction metrics
+logger.info(f">> Batch Correction Metrics: {par['batch_correction_metrics']}")
+# Dictionary with results of calculated metrics
+batch_metrics = {}
+
+# batch_metrics = {}
+if batch_metric_calc["asw_batch"]:
+    logger.info("Calculating ASW score (batches)")
+    asw_batch = scib.metrics.silhouette_batch(
+        adata_t,
+        batch_key=par["obs_batch_label"],
+        label_key=par["obs_cell_label"],
+        embed=par["obsm_embeddings"],
+        metric="euclidean",
+        return_all=False,
+        verbose=False,
+        )
+    batch_metrics["asw_batch"] = asw_batch
+else:
+    logger.info("Skipping ASW score (batches) calculation")
+    batch_metrics["asw_batch"] = np.nan
+    
+if batch_metric_calc["pcr"]:
+    logger.info("Calculating PC regression")
+    pcr_score = scib.metrics.pcr_comparison(
+        adata_t,
+        adata_t,
+        embed=par["obsm_embeddings"],
+        covariate=par["obs_batch_label"],
+        verbose=False
+        )
+    batch_metrics["pcr"] = pcr_score
+else:
+    logger.info("Skipping PC Regression calculation")
+    batch_metrics["pcr"] = np.nan
+
+if batch_metric_calc["graph_connectivity"]:
+    logger.info("Calculating graph connectivity")
+    graph_conn_score = scib.metrics.graph_connectivity(
+        adata_t,
+        label_key=par["obs_cell_label"]
+        )
+    batch_metrics["graph_connectivity"] = graph_conn_score
+else:
+    logger.info("Skipping graph connectivity calculation")
+    batch_metrics["graph_connectivity"] = np.nan
+
+if batch_metric_calc["ilisi_graph"]:
+    logger.info("Calculating graph iLISI")
+    graph_ilisi = scib.metrics.lisi.ilisi_graph(
+        adata_t,
+        batch_key=par["obs_batch_label"],
+        type_="knn",
+        use_rep=par["obsm_embeddings"]
+        )
+    batch_metrics["ilisi_graph"] = graph_ilisi
+else:
+    logger.info("Skipping graph iLISI calculation")
+    batch_metrics["ilisi_graph"] = np.nan
+    
+if batch_metric_calc["kbet"]:
+    logger.info("Calculating kBET")
+    kbet_score = scib.metrics.kBET(
+        adata_t,
+        batch_key=par["obs_batch_label"],
+        label_key=par["obs_cell_label"],
+        type_="knn",
+        embed=par["obsm_embeddings"],
+        verbose=True
+        )
+    batch_metrics["kbet"] = kbet_score
+else:
+    logger.info("Skipping kBET calculation")
+    batch_metrics["kbet"] = np.nan
+    
+# Bio conservation metrics
+logger.info(f">>Bio Conservation Metrics: {par['bio_conservation_metrics']}")
+
+# Dictionary to store results of bio conservation metrics 
+bio_metrics = {}
+
+if bio_metric_calc["nmi"]:
+    logger.info("Calculating NMI score")
+    nmi_score = scib.metrics.nmi(
+            adata_t,
+            cluster_key=par["obs_cluster"],
+            label_key=par["obs_cell_label"]
+        )
+    bio_metrics["nmi"] = nmi_score
+else:
+    logger.info("Skipping NMI calculation")
+    bio_metrics["nmi"] = np.nan
+    
+if bio_metric_calc["ari"]:
+    logger.info("Calculating ARI score")
+    ari_score = scib.metrics.ari(
+        adata_t,
+        cluster_key=par["obs_cluster"],
+        label_key=par["obs_cell_label"]
+        )
+    bio_metrics["ari"] = ari_score
+else:
+    logger.info("Skipping ARI calculation")
+    bio_metrics["ari"] = np.nan
+    
+if bio_metric_calc["asw_label"]:
+    logger.info("Calculating ASW score (cell types)")
+    asw_label = scib.metrics.silhouette(
+        adata_t,
+        label_key=par["obs_cell_label"],
+        embed=par["obsm_embeddings"]
+        )
+    bio_metrics["asw_label"] = asw_label
+else:
+    logger.info("Skipping ASW score (cell types) calculation")
+    bio_metrics["asw_label"] = np.nan
+    
+if bio_metric_calc["isolated_label_f1"]:
+    logger.info("Calculating isolated label F1")
+    il_score_f1 = scib.metrics.isolated_labels(
+        adata_t,
+        label_key=par["obs_cell_label"],
+        batch_key=par["obs_batch_label"],
+        embed=par["obsm_embeddings"],
+        cluster=True
+        )
+    bio_metrics["isolated_label_f1"] = il_score_f1
+else:
+    logger.info("Skipping isolated label F1 calculation")
+    bio_metrics["isolated_label_f1"] = np.nan
+
+if bio_metric_calc["isolated_label_asw"]:
+    logger.info("Calculating isolated label silhouette")
+    il_score_asw = scib.metrics.isolated_labels(
+        adata_t,
+        label_key=par["obs_cell_label"],
+        batch_key=par["obs_batch_label"],
+        embed=par["obsm_embeddings"],
+        cluster=False
+        )
+    bio_metrics["isolated_label_asw"] = il_score_asw
+else:
+    logger.info("Skipping isolated label ASW calculation")
+    bio_metrics["isolated_label_asw"] = np.nan
+
+if bio_metric_calc["clisi_graph"]:
+    logger.info("Calculating graph cLISI")
+    graph_clisi = scib.metrics.clisi_graph(
+        adata_t,
+        label_key=par["obs_cell_label"],
+        type_="knn",
+        use_rep=par["obsm_embeddings"]
     )
+    bio_metrics["clisi_graph"] = graph_clisi
+else:
+    logger.info("Skipping isolated graph cLISI calculation")
+    bio_metrics["clisi_graph"] = np.nan
+    
+logger.info(">> Aggregate Metrics")
+logger.info(f"Calculating Bio Conservation Score based on {par['bio_conservation_metrics']} ")
+# Calculate the mean of the bio conservation metrics ignoring the nan values
+avg_bio = np.nanmean(list(bio_metrics.values()))
+
+logger.info(f"Calculating Batch Correction Score based on {par['batch_correction_metrics']}")
+# Calculate the mean of the bio conservation metrics ignoring the nan values
+avg_batch = np.nanmean(list(batch_metrics.values()))
+
+logger.info("Calculating Overall Score")
+# Weighted mean of the bio conservation and batch correction scores 
+# See https://doi.org/10.1038/s41592-021-01336-8
+overall_score = (0.4 * avg_batch) + (0.6 * avg_bio)
+
+# sleep(10000)
 
 logger.info("Writing output data")
-adata.uns["ari_score"] = ari_score
-adata.uns["nmi_score"] = nmi_score
-adata.uns["asw_label"] = asw_label
-adata.uns["asw_batch"] = asw_batch
-adata.uns["pcr_score"] = pcr_score
-adata.uns["graph_conn_score"] = graph_conn_score
-adata.uns["avg_bio"] = avg_bio
+adata.uns["bio_conservation_metrics"] = bio_metrics
+adata.uns["batch_correction_metrics"] = batch_metrics
+adata.uns["bio_conservation_score"] = avg_bio
+adata.uns["batch_correction_score"] = avg_batch
+adata.uns["overall_integration_score"] = overall_score
 
 mdata.mod[par["modality"]] = adata
 mdata.write(par["output"], compression=par["output_compression"])

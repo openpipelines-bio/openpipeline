@@ -111,35 +111,57 @@
     "properties": {
     
         
-                "output_report": {
+                "output": {
                 "type":
                 "string",
-                "description": "Type: `file`, required, default: `$id.$key.output_report.md`, example: `output.md`. Output ",
-                "help_text": "Type: `file`, required, default: `$id.$key.output_report.md`, example: `output.md`. Output .md file."
+                "description": "Type: `file`, required, default: `$id.$key.output.pdf`, example: `output.pdf`. Name of the integration qc output pdf report",
+                "help_text": "Type: `file`, required, default: `$id.$key.output.pdf`, example: `output.pdf`. Name of the integration qc output pdf report."
             ,
-                "default": "$id.$key.output_report.md"
+                "default": "$id.$key.output.pdf"
             }
     
 
         ,
-                "output_umap_batch": {
+                "output_raw": {
                 "type":
-                "string",
-                "description": "Type: `file`, required, default: `$id.$key.output_umap_batch.png`, example: `umap_batch.png`. Path to png image containing the UMAP visualization with batch labels\n",
-                "help_text": "Type: `file`, required, default: `$id.$key.output_umap_batch.png`, example: `umap_batch.png`. Path to png image containing the UMAP visualization with batch labels\n"
+                "boolean",
+                "description": "Type: `boolean_true`, default: `false`. If provided, the raw data (unrendered report (md), figures (png) and metrics (json)) will be published",
+                "help_text": "Type: `boolean_true`, default: `false`. If provided, the raw data (unrendered report (md), figures (png) and metrics (json)) will be published.\n"
             ,
-                "default": "$id.$key.output_umap_batch.png"
+                "default": "False"
             }
     
 
         ,
-                "output_umap_label": {
+                "output_umap_label_fig": {
                 "type":
                 "string",
-                "description": "Type: `file`, required, default: `$id.$key.output_umap_label.png`, example: `umap_label.png`. Path to png image containing the UMAP visualization with cell type labels\n",
-                "help_text": "Type: `file`, required, default: `$id.$key.output_umap_label.png`, example: `umap_label.png`. Path to png image containing the UMAP visualization with cell type labels\n"
+                "description": "Type: `file`, default: `$id.$key.output_umap_label_fig.png`. Name of the UMAP label figure (png)",
+                "help_text": "Type: `file`, default: `$id.$key.output_umap_label_fig.png`. Name of the UMAP label figure (png). Will only be saved if --output_raw is set to true.\n"
             ,
-                "default": "$id.$key.output_umap_label.png"
+                "default": "$id.$key.output_umap_label_fig.png"
+            }
+    
+
+        ,
+                "output_umap_batch_fig": {
+                "type":
+                "string",
+                "description": "Type: `file`, default: `$id.$key.output_umap_batch_fig.png`. Name of the UMAP batch figure (png)",
+                "help_text": "Type: `file`, default: `$id.$key.output_umap_batch_fig.png`. Name of the UMAP batch figure (png). Will only be saved if --output_raw is set to true.\n"
+            ,
+                "default": "$id.$key.output_umap_batch_fig.png"
+            }
+    
+
+        ,
+                "output_md_report": {
+                "type":
+                "string",
+                "description": "Type: `file`, default: `$id.$key.output_md_report.qmd`. Name of the unrendered report file (qmd)",
+                "help_text": "Type: `file`, default: `$id.$key.output_md_report.qmd`. Name of the unrendered report file (qmd). Will only be saved if --output_raw is set to true.\n"
+            ,
+                "default": "$id.$key.output_md_report.qmd"
             }
     
 
@@ -147,8 +169,8 @@
                 "output_metrics": {
                 "type":
                 "string",
-                "description": "Type: `file`, default: `$id.$key.output_metrics.json`, example: `metrics.json`. Path to json containing the calculated integration metrics",
-                "help_text": "Type: `file`, default: `$id.$key.output_metrics.json`, example: `metrics.json`. Path to json containing the calculated integration metrics.\n"
+                "description": "Type: `file`, default: `$id.$key.output_metrics.json`. Name of the json file containing integration metrics (json)",
+                "help_text": "Type: `file`, default: `$id.$key.output_metrics.json`. Name of the json file containing integration metrics (json). Will only be saved if --output_raw is set to true.       \n"
             ,
                 "default": "$id.$key.output_metrics.json"
             }

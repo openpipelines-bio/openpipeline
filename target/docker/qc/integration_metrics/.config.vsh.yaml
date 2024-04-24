@@ -43,6 +43,46 @@ functionality:
       multiple_sep: ":"
       dest: "par"
     - type: "string"
+      name: "--bio_conservation_metrics"
+      description: "The metrics to be calculated to assess biological conservation.\
+        \ \nThe provided metrics will be aggregated into a biological conservation\
+        \ score.\n"
+      info: null
+      default:
+      - "nmi;ari;asw_label"
+      required: false
+      choices:
+      - "nmi"
+      - "ari"
+      - "asw_label"
+      - "isolated_label_f1"
+      - "isolated_label_asw"
+      - "clisi_graph"
+      direction: "input"
+      multiple: true
+      multiple_sep: ";"
+      dest: "par"
+    - type: "string"
+      name: "--batch_correction_metrics"
+      description: "The metrics to be calculated for the batch correction. \nThe provided\
+        \ metrics will be aggregated into a batch correction score.\n"
+      info: null
+      default:
+      - "asw_batch;pcr;graph_connectivity"
+      required: false
+      choices:
+      - "asw_batch"
+      - "pcr"
+      - "graph_connectivity"
+      - "ilisi_graph"
+      - "kbet"
+      direction: "input"
+      multiple: true
+      multiple_sep: ";"
+      dest: "par"
+  - name: "Input Annotations"
+    arguments:
+    - type: "string"
       name: "--obsm_embeddings"
       description: "The name of the adata.obsm array containing scGPT cell embeddings.\n"
       info: null
@@ -144,12 +184,23 @@ functionality:
   - type: "file"
     path: "./src/workflows/utils/labels.config"
     dest: "nextflow_labels.config"
-  description: "Add integration qc metrics to an .h5mu file.\n\nThe metrics are generated\
-    \ using the scib library and stored in the uns column:\n  - nmi_score: scib.metrics.nmi\n\
-    \  - ari_score: scib.metrics.ari\n  - asw_batch: scib.metrics.silhouette_batch\n\
-    \  - asw_label: scib.metrics.silhouette\n  - pcr_score: scib.metrics.pcr_comparison\n\
-    \  - graph_connectivity: scib.metrics.graph_connectivity\n  - avg_bio: mean of\
-    \ nmi_score, ari_score and asw_label\n  \n"
+  description: "Calculation integration qc metrics and aggregate scores for bio conservation\
+    \ and batch correction.\nThe calculated metrics and aggregate scores are stored\
+    \ in the uns column.\nAll metric calculations are based on the scib library:\n\
+    \  - publication: https://doi.org/10.1038/s41592-021-01336-8\n  - code: https://github.com/theislab/scib/\n\
+    \  - documentation: https://scib.readthedocs.io/\n\nBio conservation metrics:\n\
+    \  - nmi_score: scib.metrics.nmi\n  - ari_score: scib.metrics.ari\n  - asw_label:\
+    \ scib.metrics.silhouette\n  - isolated_label_f1: scib.metrics.isolated_labels\
+    \ \n  - isolated_label_asw: scib.metrics.isolated_labels\n  - clisi_graph: scib.metrics.clisi_graph\n\
+    Note that the scib bio conservation metrics for cell cycle conservation, HVG conservation\
+    \ and trajectory conservation are not currently provided, \nas this requires integrated\
+    \ count matrices and pseudo time values to be calculated, which is not currently\
+    \ supported in OpenPipeline.\n\nBatch correction metrics:\n  - asw_batch: scib.metrics.silhouette_batch\n\
+    \  - pcr_score: scib.metrics.pcr_comparison\n  - graph_connectivity: scib.metrics.graph_connectivity\n\
+    \  - ilisi_graph: scib.metrics.ilisi_graph\n  - kbet: scib.metrics.kBET\n\nAggregate\
+    \ scores:\n  - avg_bio: mean of calculated bio conservation metrics\n  - avg_batch:\
+    \ mean of calculated batch correction metrics\n  - overall_integration_score:\
+    \ weighted mean of bio and batch scores (60/40 ratio)\n  \n"
   test_resources:
   - type: "file"
     path: "src/base/openpipelinetestutils"
@@ -163,7 +214,7 @@ functionality:
 platforms:
 - type: "docker"
   id: "docker"
-  image: "python:3.11"
+  image: "rocker/r2u:22.04"
   target_organization: "openpipelines-bio"
   target_registry: "ghcr.io"
   target_tag: "integration-qc_build"
@@ -180,6 +231,10 @@ platforms:
     - "gfortran"
     - "cmake"
     - "libopenblas-dev"
+    - "libgeos-dev"
+    - "python3-pip"
+    - "python3-dev"
+    - "python-is-python3"
     interactive: false
   - type: "python"
     user: false
@@ -192,7 +247,17 @@ platforms:
     user: false
     packages:
     - "scib==1.1.5"
+    - "rpy2==3.5.16"
+    - "anndata2ri"
     upgrade: true
+  - type: "r"
+    github:
+    - "theislab/kBET"
+    bioc_force_install: false
+  - type: "docker"
+    run:
+    - "cd \"$(pip show scib | grep Location | cut -d ' ' -f 2)/scib/knn_graph\" &&\
+      \ \\\ng++ -std=c++11 -O3 knn_graph.cpp -o knn_graph.o\n"
   test_setup:
   - type: "python"
     user: false
@@ -255,6 +320,6 @@ info:
   output: "/home/runner/work/openpipeline/openpipeline/target/docker/qc/integration_metrics"
   executable: "/home/runner/work/openpipeline/openpipeline/target/docker/qc/integration_metrics/integration_metrics"
   viash_version: "0.8.5"
-  git_commit: "a407b0211fa9378a10e1ef7a86eb394477250fde"
+  git_commit: "ec06d130e1731ae70ddd2236cda9979b09dde9b5"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"
-  git_tag: "0.2.0-1582-ga407b0211f"
+  git_tag: "0.2.0-1583-gec06d130e1"

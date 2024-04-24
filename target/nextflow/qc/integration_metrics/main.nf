@@ -2834,6 +2834,52 @@ meta = [
           },
           {
             "type" : "string",
+            "name" : "--bio_conservation_metrics",
+            "description" : "The metrics to be calculated to assess biological conservation. \nThe provided metrics will be aggregated into a biological conservation score.\n",
+            "default" : [
+              "nmi;ari;asw_label"
+            ],
+            "required" : false,
+            "choices" : [
+              "nmi",
+              "ari",
+              "asw_label",
+              "isolated_label_f1",
+              "isolated_label_asw",
+              "clisi_graph"
+            ],
+            "direction" : "input",
+            "multiple" : true,
+            "multiple_sep" : ";",
+            "dest" : "par"
+          },
+          {
+            "type" : "string",
+            "name" : "--batch_correction_metrics",
+            "description" : "The metrics to be calculated for the batch correction. \nThe provided metrics will be aggregated into a batch correction score.\n",
+            "default" : [
+              "asw_batch;pcr;graph_connectivity"
+            ],
+            "required" : false,
+            "choices" : [
+              "asw_batch",
+              "pcr",
+              "graph_connectivity",
+              "ilisi_graph",
+              "kbet"
+            ],
+            "direction" : "input",
+            "multiple" : true,
+            "multiple_sep" : ";",
+            "dest" : "par"
+          }
+        ]
+      },
+      {
+        "name" : "Input Annotations",
+        "arguments" : [
+          {
+            "type" : "string",
             "name" : "--obsm_embeddings",
             "description" : "The name of the adata.obsm array containing scGPT cell embeddings.\n",
             "example" : [
@@ -2963,7 +3009,7 @@ meta = [
         "dest" : "nextflow_labels.config"
       }
     ],
-    "description" : "Add integration qc metrics to an .h5mu file.\n\nThe metrics are generated using the scib library and stored in the uns column:\n  - nmi_score: scib.metrics.nmi\n  - ari_score: scib.metrics.ari\n  - asw_batch: scib.metrics.silhouette_batch\n  - asw_label: scib.metrics.silhouette\n  - pcr_score: scib.metrics.pcr_comparison\n  - graph_connectivity: scib.metrics.graph_connectivity\n  - avg_bio: mean of nmi_score, ari_score and asw_label\n  \n",
+    "description" : "Calculation integration qc metrics and aggregate scores for bio conservation and batch correction.\nThe calculated metrics and aggregate scores are stored in the uns column.\nAll metric calculations are based on the scib library:\n  - publication: https://doi.org/10.1038/s41592-021-01336-8\n  - code: https://github.com/theislab/scib/\n  - documentation: https://scib.readthedocs.io/\n\nBio conservation metrics:\n  - nmi_score: scib.metrics.nmi\n  - ari_score: scib.metrics.ari\n  - asw_label: scib.metrics.silhouette\n  - isolated_label_f1: scib.metrics.isolated_labels \n  - isolated_label_asw: scib.metrics.isolated_labels\n  - clisi_graph: scib.metrics.clisi_graph\nNote that the scib bio conservation metrics for cell cycle conservation, HVG conservation and trajectory conservation are not currently provided, \nas this requires integrated count matrices and pseudo time values to be calculated, which is not currently supported in OpenPipeline.\n\nBatch correction metrics:\n  - asw_batch: scib.metrics.silhouette_batch\n  - pcr_score: scib.metrics.pcr_comparison\n  - graph_connectivity: scib.metrics.graph_connectivity\n  - ilisi_graph: scib.metrics.ilisi_graph\n  - kbet: scib.metrics.kBET\n\nAggregate scores:\n  - avg_bio: mean of calculated bio conservation metrics\n  - avg_batch: mean of calculated batch correction metrics\n  - overall_integration_score: weighted mean of bio and batch scores (60/40 ratio)\n  \n",
     "test_resources" : [
       {
         "type" : "file",
@@ -2983,7 +3029,7 @@ meta = [
     {
       "type" : "docker",
       "id" : "docker",
-      "image" : "python:3.11",
+      "image" : "rocker/r2u:22.04",
       "target_organization" : "openpipelines-bio",
       "target_registry" : "ghcr.io",
       "target_tag" : "integration-qc_build",
@@ -3000,7 +3046,11 @@ meta = [
             "libhdf5-dev",
             "gfortran",
             "cmake",
-            "libopenblas-dev"
+            "libopenblas-dev",
+            "libgeos-dev",
+            "python3-pip",
+            "python3-dev",
+            "python-is-python3"
           ],
           "interactive" : false
         },
@@ -3018,9 +3068,24 @@ meta = [
           "type" : "python",
           "user" : false,
           "packages" : [
-            "scib==1.1.5"
+            "scib==1.1.5",
+            "rpy2==3.5.16",
+            "anndata2ri"
           ],
           "upgrade" : true
+        },
+        {
+          "type" : "r",
+          "github" : [
+            "theislab/kBET"
+          ],
+          "bioc_force_install" : false
+        },
+        {
+          "type" : "docker",
+          "run" : [
+            "cd \\"$(pip show scib | grep Location | cut -d ' ' -f 2)/scib/knn_graph\\" && \\\\\ng++ -std=c++11 -O3 knn_graph.cpp -o knn_graph.o\n"
+          ]
         }
       ],
       "test_setup" : [
@@ -3096,9 +3161,9 @@ meta = [
     "platform" : "nextflow",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/qc/integration_metrics",
     "viash_version" : "0.8.5",
-    "git_commit" : "a407b0211fa9378a10e1ef7a86eb394477250fde",
+    "git_commit" : "ec06d130e1731ae70ddd2236cda9979b09dde9b5",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline",
-    "git_tag" : "0.2.0-1582-ga407b0211f"
+    "git_tag" : "0.2.0-1583-gec06d130e1"
   }
 }'''))
 ]
@@ -3116,13 +3181,15 @@ import scib
 import mudata as mu
 import numpy as np
 import warnings
-
+from time import sleep
 
 ## VIASH START
 # The following code has been auto-generated by Viash.
 par = {
   'input': $( if [ ! -z ${VIASH_PAR_INPUT+x} ]; then echo "r'${VIASH_PAR_INPUT//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'modality': $( if [ ! -z ${VIASH_PAR_MODALITY+x} ]; then echo "r'${VIASH_PAR_MODALITY//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
+  'bio_conservation_metrics': $( if [ ! -z ${VIASH_PAR_BIO_CONSERVATION_METRICS+x} ]; then echo "r'${VIASH_PAR_BIO_CONSERVATION_METRICS//\\'/\\'\\"\\'\\"r\\'}'.split(';')"; else echo None; fi ),
+  'batch_correction_metrics': $( if [ ! -z ${VIASH_PAR_BATCH_CORRECTION_METRICS+x} ]; then echo "r'${VIASH_PAR_BATCH_CORRECTION_METRICS//\\'/\\'\\"\\'\\"r\\'}'.split(';')"; else echo None; fi ),
   'obsm_embeddings': $( if [ ! -z ${VIASH_PAR_OBSM_EMBEDDINGS+x} ]; then echo "r'${VIASH_PAR_OBSM_EMBEDDINGS//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'obs_batch_label': $( if [ ! -z ${VIASH_PAR_OBS_BATCH_LABEL+x} ]; then echo "r'${VIASH_PAR_OBS_BATCH_LABEL//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'obs_cell_label': $( if [ ! -z ${VIASH_PAR_OBS_CELL_LABEL+x} ]; then echo "r'${VIASH_PAR_OBS_CELL_LABEL//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
@@ -3189,78 +3256,218 @@ else:
 # Ensure all batch labels are str
 adata.obs[par["obs_batch_label"]] = adata.obs[par["obs_batch_label"]].astype(str)
 
-logger.info("Calculating NMI score")
-nmi_score = scib.metrics.nmi(
-        adata_t,
-        cluster_key=par["obs_cluster"],
-        label_key=par["obs_cell_label"],
-        implementation="arithmetic",
-        nmi_dir=None,
-    )
-
-logger.info("Calculating ARI score")
-ari_score = scib.metrics.ari(
-    adata_t,
-    cluster_key=par["obs_cluster"],
-    label_key=par["obs_cell_label"]
-    )
-
-logger.info("Calculating ASW score (cell types)")
-asw_label = scib.metrics.silhouette(
-    adata_t,
-    label_key=par["obs_cell_label"],
-    embed=par["obsm_embeddings"],
-    metric="euclidean"
-    )
-
-logger.info("Calculating ASW score (batches)")
-asw_batch = scib.metrics.silhouette_batch(
-    adata_t,
-    batch_key=par["obs_batch_label"],
-    label_key=par["obs_cell_label"],
-    embed=par["obsm_embeddings"],
-    metric="euclidean",
-    return_all=False,
-    verbose=False,
-    )
-
-logger.info("Calculating PC regression")
-pcr_score = scib.metrics.pcr_comparison(
-    adata_t,
-    adata_t,
-    embed=par["obsm_embeddings"],
-    covariate=par["obs_batch_label"],
-    verbose=False
-    )
-
-logger.info("Calculating graph connectivity")
-
 # rename neighbors and connectivities names if necessary
 if par["uns_neighbors"] != "neighbors":
     adata_t.uns["neighbors"] = adata_t.uns[par["uns_neighbors"]]
 if par["obsp_neighbor_connectivities"] != "connectivities":
     adata_t.obsp["connectivities"] = adata_t.obsp[par["obsp_neighbor_connectivities"]]
 
-graph_conn_score = scib.metrics.graph_connectivity(
-    adata_t,
-    label_key=par["obs_cell_label"]
-    )
+# Asses metrics to be calculated
+assert len(par["bio_conservation_metrics"]) > 0, "Provide at least one metric for bio conservation."
+assert len(par["batch_correction_metrics"]) > 0, "Provide at least one metric for bio conservation."
 
-logger.info("Calculating average bio score")
-avg_bio = np.mean(
-    [
-        nmi_score, ari_score, asw_label
-        ]
+bio_metric_calc = {
+    "nmi": False,
+    "ari": False,
+    "asw_label": False,
+    "isolated_label_f1": False,
+    "isolated_label_asw": False,
+    "clisi_graph": False,
+}
+
+batch_metric_calc = {
+    "asw_batch": False,
+    "pcr": False,
+    "graph_connectivity": False,
+    "ilisi_graph": False,
+    "kbet": False
+}
+
+for bio_metric in par["bio_conservation_metrics"]:
+    bio_metric_calc[bio_metric] = True
+for batch_metric in par["batch_correction_metrics"]:
+    batch_metric_calc[batch_metric] = True
+
+# Batch correction metrics
+logger.info(f">> Batch Correction Metrics: {par['batch_correction_metrics']}")
+# Dictionary with results of calculated metrics
+batch_metrics = {}
+
+# batch_metrics = {}
+if batch_metric_calc["asw_batch"]:
+    logger.info("Calculating ASW score (batches)")
+    asw_batch = scib.metrics.silhouette_batch(
+        adata_t,
+        batch_key=par["obs_batch_label"],
+        label_key=par["obs_cell_label"],
+        embed=par["obsm_embeddings"],
+        metric="euclidean",
+        return_all=False,
+        verbose=False,
+        )
+    batch_metrics["asw_batch"] = asw_batch
+else:
+    logger.info("Skipping ASW score (batches) calculation")
+    batch_metrics["asw_batch"] = np.nan
+    
+if batch_metric_calc["pcr"]:
+    logger.info("Calculating PC regression")
+    pcr_score = scib.metrics.pcr_comparison(
+        adata_t,
+        adata_t,
+        embed=par["obsm_embeddings"],
+        covariate=par["obs_batch_label"],
+        verbose=False
+        )
+    batch_metrics["pcr"] = pcr_score
+else:
+    logger.info("Skipping PC Regression calculation")
+    batch_metrics["pcr"] = np.nan
+
+if batch_metric_calc["graph_connectivity"]:
+    logger.info("Calculating graph connectivity")
+    graph_conn_score = scib.metrics.graph_connectivity(
+        adata_t,
+        label_key=par["obs_cell_label"]
+        )
+    batch_metrics["graph_connectivity"] = graph_conn_score
+else:
+    logger.info("Skipping graph connectivity calculation")
+    batch_metrics["graph_connectivity"] = np.nan
+
+if batch_metric_calc["ilisi_graph"]:
+    logger.info("Calculating graph iLISI")
+    graph_ilisi = scib.metrics.lisi.ilisi_graph(
+        adata_t,
+        batch_key=par["obs_batch_label"],
+        type_="knn",
+        use_rep=par["obsm_embeddings"]
+        )
+    batch_metrics["ilisi_graph"] = graph_ilisi
+else:
+    logger.info("Skipping graph iLISI calculation")
+    batch_metrics["ilisi_graph"] = np.nan
+    
+if batch_metric_calc["kbet"]:
+    logger.info("Calculating kBET")
+    kbet_score = scib.metrics.kBET(
+        adata_t,
+        batch_key=par["obs_batch_label"],
+        label_key=par["obs_cell_label"],
+        type_="knn",
+        embed=par["obsm_embeddings"],
+        verbose=True
+        )
+    batch_metrics["kbet"] = kbet_score
+else:
+    logger.info("Skipping kBET calculation")
+    batch_metrics["kbet"] = np.nan
+    
+# Bio conservation metrics
+logger.info(f">>Bio Conservation Metrics: {par['bio_conservation_metrics']}")
+
+# Dictionary to store results of bio conservation metrics 
+bio_metrics = {}
+
+if bio_metric_calc["nmi"]:
+    logger.info("Calculating NMI score")
+    nmi_score = scib.metrics.nmi(
+            adata_t,
+            cluster_key=par["obs_cluster"],
+            label_key=par["obs_cell_label"]
+        )
+    bio_metrics["nmi"] = nmi_score
+else:
+    logger.info("Skipping NMI calculation")
+    bio_metrics["nmi"] = np.nan
+    
+if bio_metric_calc["ari"]:
+    logger.info("Calculating ARI score")
+    ari_score = scib.metrics.ari(
+        adata_t,
+        cluster_key=par["obs_cluster"],
+        label_key=par["obs_cell_label"]
+        )
+    bio_metrics["ari"] = ari_score
+else:
+    logger.info("Skipping ARI calculation")
+    bio_metrics["ari"] = np.nan
+    
+if bio_metric_calc["asw_label"]:
+    logger.info("Calculating ASW score (cell types)")
+    asw_label = scib.metrics.silhouette(
+        adata_t,
+        label_key=par["obs_cell_label"],
+        embed=par["obsm_embeddings"]
+        )
+    bio_metrics["asw_label"] = asw_label
+else:
+    logger.info("Skipping ASW score (cell types) calculation")
+    bio_metrics["asw_label"] = np.nan
+    
+if bio_metric_calc["isolated_label_f1"]:
+    logger.info("Calculating isolated label F1")
+    il_score_f1 = scib.metrics.isolated_labels(
+        adata_t,
+        label_key=par["obs_cell_label"],
+        batch_key=par["obs_batch_label"],
+        embed=par["obsm_embeddings"],
+        cluster=True
+        )
+    bio_metrics["isolated_label_f1"] = il_score_f1
+else:
+    logger.info("Skipping isolated label F1 calculation")
+    bio_metrics["isolated_label_f1"] = np.nan
+
+if bio_metric_calc["isolated_label_asw"]:
+    logger.info("Calculating isolated label silhouette")
+    il_score_asw = scib.metrics.isolated_labels(
+        adata_t,
+        label_key=par["obs_cell_label"],
+        batch_key=par["obs_batch_label"],
+        embed=par["obsm_embeddings"],
+        cluster=False
+        )
+    bio_metrics["isolated_label_asw"] = il_score_asw
+else:
+    logger.info("Skipping isolated label ASW calculation")
+    bio_metrics["isolated_label_asw"] = np.nan
+
+if bio_metric_calc["clisi_graph"]:
+    logger.info("Calculating graph cLISI")
+    graph_clisi = scib.metrics.clisi_graph(
+        adata_t,
+        label_key=par["obs_cell_label"],
+        type_="knn",
+        use_rep=par["obsm_embeddings"]
     )
+    bio_metrics["clisi_graph"] = graph_clisi
+else:
+    logger.info("Skipping isolated graph cLISI calculation")
+    bio_metrics["clisi_graph"] = np.nan
+    
+logger.info(">> Aggregate Metrics")
+logger.info(f"Calculating Bio Conservation Score based on {par['bio_conservation_metrics']} ")
+# Calculate the mean of the bio conservation metrics ignoring the nan values
+avg_bio = np.nanmean(list(bio_metrics.values()))
+
+logger.info(f"Calculating Batch Correction Score based on {par['batch_correction_metrics']}")
+# Calculate the mean of the bio conservation metrics ignoring the nan values
+avg_batch = np.nanmean(list(batch_metrics.values()))
+
+logger.info("Calculating Overall Score")
+# Weighted mean of the bio conservation and batch correction scores 
+# See https://doi.org/10.1038/s41592-021-01336-8
+overall_score = (0.4 * avg_batch) + (0.6 * avg_bio)
+
+# sleep(10000)
 
 logger.info("Writing output data")
-adata.uns["ari_score"] = ari_score
-adata.uns["nmi_score"] = nmi_score
-adata.uns["asw_label"] = asw_label
-adata.uns["asw_batch"] = asw_batch
-adata.uns["pcr_score"] = pcr_score
-adata.uns["graph_conn_score"] = graph_conn_score
-adata.uns["avg_bio"] = avg_bio
+adata.uns["bio_conservation_metrics"] = bio_metrics
+adata.uns["batch_correction_metrics"] = batch_metrics
+adata.uns["bio_conservation_score"] = avg_bio
+adata.uns["batch_correction_score"] = avg_batch
+adata.uns["overall_integration_score"] = overall_score
 
 mdata.mod[par["modality"]] = adata
 mdata.write(par["output"], compression=par["output_compression"])

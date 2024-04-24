@@ -50,33 +50,44 @@ functionality:
 
     - name: Outputs
       arguments:
-        - name: "--output_report"
+        - name: "--output"
           type: file
           required: true
-          description: Output .md file.
+          description: Name of the integration qc output pdf report.
           direction: output
-          example: output.md
-        - name: "--output_umap_batch"
-          type: file
-          direction: output
-          example: umap_batch.png
-          required: true
+          example: output.pdf
+        - name: "--output_raw"
+          type: boolean_true
           description: |
-            Path to png image containing the UMAP visualization with batch labels
-        - name: "--output_umap_label"
+            If provided, the raw data (unrendered report (md), figures (png) and metrics (json)) will be published.
+        - name: "--output_umap_label_fig"
           type: file
-          example: umap_label.png
-          required: true
           direction: output
+          default: umap_label.png
+          must_exist: False
           description: |
-            Path to png image containing the UMAP visualization with cell type labels
+            Name of the UMAP label figure (png). Will only be saved if --output_raw is set to true.
+        - name: "--output_umap_batch_fig"
+          type: file
+          direction: output
+          must_exist: False
+          default: umap_batch.png
+          description: |
+            Name of the UMAP batch figure (png). Will only be saved if --output_raw is set to true.
+        - name: "--output_md_report"
+          type: file
+          direction: output
+          default: report.qmd
+          must_exist: False
+          description: |
+            Name of the unrendered report file (qmd). Will only be saved if --output_raw is set to true.
         - name: "--output_metrics"
           type: file
           direction: output
+          must_exist: False
+          default: metrics.json
           description: |
-            Path to json containing the calculated integration metrics.
-          example: metrics.json
-          required: false
+            Name of the json file containing integration metrics (json). Will only be saved if --output_raw is set to true.       
 
   resources:
     - type: python_script
@@ -96,6 +107,12 @@ platforms:
           - libopenblas-dev
       - type: python
         __merge__: [ /src/base/requirements/anndata_mudata.yaml, /src/base/requirements/scanpy.yaml ]
+      - type: docker
+        run: |
+          wget https://github.com/quarto-dev/quarto-cli/releases/download/v1.4.549/quarto-1.4.549-linux-amd64.deb -O /tmp/quarto.deb && \
+          dpkg -i /tmp/quarto.deb && \
+          rm /tmp/quarto.deb && \
+          quarto install tinytex
 
     test_setup:
       - type: python
