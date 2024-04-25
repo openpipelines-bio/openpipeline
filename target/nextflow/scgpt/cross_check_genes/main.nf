@@ -3119,9 +3119,9 @@ meta = [
     "platform" : "nextflow",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/scgpt/cross_check_genes",
     "viash_version" : "0.8.5",
-    "git_commit" : "1d7e0fa3ebe2e081f1123edaeaba60b0b6a087ea",
+    "git_commit" : "e398e729b8263a1d7df2d0a3c25c5e8efd17fa91",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline",
-    "git_tag" : "0.2.0-1593-g1d7e0fa3eb"
+    "git_tag" : "0.2.0-1594-ge398e729b8"
   }
 }'''))
 ]
@@ -3196,12 +3196,12 @@ pad_token = par["pad_token"]
 special_tokens = [pad_token, "<cls>", "<eoc>"]
 
 # Fetching gene names
-if not par["input_var_gene_names"]:
+if not par["var_gene_names"]:
     genes = adata.var.index.astype(str).tolist()
-elif par["input_var_gene_names"] not in adata.var.columns:
-    raise ValueError(f"Gene name column '{par['input_var_gene_names']}' not found in .mod['{par['modality']}'].obs.")
+elif par["var_gene_names"] not in adata.var.columns:
+    raise ValueError(f"Gene name column '{par['var_gene_names']}' not found in .mod['{par['modality']}'].obs.")
 else: 
-    genes = adata.var[par["input_var_gene_names"]].astype(str).tolist()
+    genes = adata.var[par["var_gene_names"]].astype(str).tolist()
 
 # Cross-check genes with pre-trained model
 logger.info(f"Loading model vocab from {par['vocab_file']}")

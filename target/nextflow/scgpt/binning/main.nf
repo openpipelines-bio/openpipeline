@@ -2977,7 +2977,12 @@ meta = [
         {
           "type" : "apt",
           "packages" : [
-            "procps"
+            "procps",
+            "pkg-config",
+            "libhdf5-dev",
+            "gfortran",
+            "cmake",
+            "libopenblas-dev"
           ],
           "interactive" : false
         },
@@ -3061,9 +3066,9 @@ meta = [
     "platform" : "nextflow",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/scgpt/binning",
     "viash_version" : "0.8.5",
-    "git_commit" : "1d7e0fa3ebe2e081f1123edaeaba60b0b6a087ea",
+    "git_commit" : "e398e729b8263a1d7df2d0a3c25c5e8efd17fa91",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline",
-    "git_tag" : "0.2.0-1593-g1d7e0fa3eb"
+    "git_tag" : "0.2.0-1594-ge398e729b8"
   }
 }'''))
 ]
