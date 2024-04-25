@@ -1,6 +1,7 @@
 nextflow.enable.dsl=2
 
 include { cellranger_multi } from params.rootDir + "/target/nextflow/workflows/ingestion/cellranger_multi/main.nf"
+include { cellranger_multi_test } from params.rootDir + "/target/nextflow/test_workflows/cellranger_multi/cellranger_multi_test/main.nf"
 
 workflow test_wf {
   resources_test = file("${params.rootDir}/resources_test")
@@ -29,6 +30,15 @@ workflow test_wf {
       // todo: check whether output dir contains fastq files
       "Output: $output"
     }
+
+    | cellranger_multi_test.run(
+      fromState: { output ->
+        [
+          input: output[1].output_h5mu
+        ]
+      }
+    )
+
     | toSortedList()
     | map { output_list ->
       assert output_list.size() == 1 : "output channel should contain one event"
