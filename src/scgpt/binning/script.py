@@ -119,4 +119,4 @@ adata.obsm["bin_edges"] = np.stack(bin_edges)
 # Write mudata output 
 logger.info("Writing output data")
 mdata.mod[par["modality"]] = adata
-mdata.write(par["output"], compression=par["output_compression"])
+mdata.write(par["output"], compression=par["output_compression"]) 
