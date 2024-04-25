@@ -2,8 +2,10 @@ functionality:
   name: cross_check_genes
   namespace: "scgpt"
   description: |
-    Cross-check genes with pre-trained model.
+    Cross-check genes with pre-trained scGPT model.
   authors:
+    - __merge__: /src/authors/jakub_majercik.yaml
+      roles: [ maintainer, author ]
     - __merge__: /src/authors/dorien_roosen.yaml
       roles: [ maintainer, author ]
 
@@ -27,13 +29,13 @@ functionality:
           required: true
           example: resources_test/scgpt/vocab.json
           description: |
-            Model vocabulary file directory.
+            Model vocabulary file path.
         - name: "--input_var_gene_names"
           type: string
           example: "gene_name"
           required: false
           description: |
-            The name of the adata.var column containing gene names. When no gene_name_layer is provided, the .var index will be used.
+            The name of the adata.var column containing gene names. By default the .var index will be used.
     - name: Outputs
       arguments:
         - name: "--output"
@@ -75,4 +77,4 @@ platforms:
     __merge__: [ /src/base/requirements/python_test_setup.yaml, .]
   - type: nextflow
     directives:
-      label: [lowmem]
+      label: [ lowmem, lowcpu ]

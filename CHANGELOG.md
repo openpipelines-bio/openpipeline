@@ -27,6 +27,8 @@
 
 * `dimred/tsne` component: Added a tSNE dimensionality reduction component (PR #742).
 
+* `scgpt/cross_check_genes` component: Added a gene-model cross check component for scGPT (PR #758).
+
 * `scgpt/embedding`: component: Added scGPT embedding component (PR #761)
 
 * `scgpt/tokenize_pad`: component: Added scGPT padding and tokenization component (PR #754).
