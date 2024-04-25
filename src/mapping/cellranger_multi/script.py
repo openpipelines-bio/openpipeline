@@ -80,8 +80,16 @@ def setup_logger():
 # END TEMPORARY WORKAROUND setup_logger
 logger = setup_logger()
 
-fastq_regex = r'([A-Za-z0-9\-_\.]+)_S(\d+)_L(\d+)_[RI](\d+)_(\d+)\.fastq\.gz'
+# Tested with cellranger 7.0:
+# - omitting the lane number is allowed (e.g. `_L001`)
+# - lane number should be omitted across all files if omitted in one
+# - replacing `.fastq.` for `.fq.` is NOT allowed
+# - omitting `.gz` is allowed
+
+fastq_regex = r'^([A-Za-z0-9\-_\.]+)_S(\d+)_(L(\d+)_)?[RI](\d+)_(\d+)\.fastq(\.gz)?$'
 # assert re.match(fastq_regex, "5k_human_GEX_1_subset_S1_L001_R1_001.fastq.gz") is not None
+# assert re.match(fastq_regex, "5k_human_GEX_1_subset_S1_R1_001.fastq") is not None
+# assert re.match(fastq_regex, "5k_human_GEX_1_subset_S1_R1_001.fastq.gz.txt") is None
 
 # Invert some parameters. Keep the original ones in the config for compatibility
 inverted_params = {
