@@ -1,7 +1,7 @@
 {
 "$schema": "http://json-schema.org/draft-07/schema",
 "title": "cross_check_genes",
-"description": "Cross-check genes with pre-trained model.\n",
+"description": "Cross-check genes with pre-trained scGPT model.\n",
 "type": "object",
 "definitions": {
 
@@ -43,8 +43,8 @@
                 "modality": {
                 "type":
                 "string",
-                "description": "Type: `string`, default: `rna`. ",
-                "help_text": "Type: `string`, default: `rna`. "
+                "description": "Type: `string`, default: `rna`. The modality key of the MuData object containing the RNA AnnData object",
+                "help_text": "Type: `string`, default: `rna`. The modality key of the MuData object containing the RNA AnnData object.\n"
             ,
                 "default": "rna"
             }
@@ -54,18 +54,18 @@
                 "vocab_file": {
                 "type":
                 "string",
-                "description": "Type: `file`, required, example: `resources_test/scgpt/vocab.json`. Model vocabulary file directory",
-                "help_text": "Type: `file`, required, example: `resources_test/scgpt/vocab.json`. Model vocabulary file directory.\n"
+                "description": "Type: `file`, required, example: `resources_test/scgpt/vocab.json`. Model vocabulary file path",
+                "help_text": "Type: `file`, required, example: `resources_test/scgpt/vocab.json`. Model vocabulary file path.\n"
             
             }
     
 
         ,
-                "input_var_gene_names": {
+                "var_gene_names": {
                 "type":
                 "string",
                 "description": "Type: `string`, example: `gene_name`. The name of the adata",
-                "help_text": "Type: `string`, example: `gene_name`. The name of the adata.var column containing gene names. When no gene_name_layer is provided, the .var index will be used.\n"
+                "help_text": "Type: `string`, example: `gene_name`. The name of the adata.var column containing gene names. By default the .var index will be used.\n"
             
             }
     
@@ -88,6 +88,18 @@
                 "help_text": "Type: `file`, required, default: `$id.$key.output.h5mu`, example: `output.h5mu`. The output cross-checked anndata file.\n"
             ,
                 "default": "$id.$key.output.h5mu"
+            }
+    
+
+        ,
+                "output_compression": {
+                "type":
+                "string",
+                "description": "Type: `string`, example: `gzip`, choices: ``gzip`, `lzf``. ",
+                "help_text": "Type: `string`, example: `gzip`, choices: ``gzip`, `lzf``. ",
+                "enum": ["gzip", "lzf"]
+            
+            
             }
     
 

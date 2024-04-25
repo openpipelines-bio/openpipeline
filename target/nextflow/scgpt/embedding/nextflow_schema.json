@@ -84,8 +84,8 @@
                 "obsm_gene_tokens": {
                 "type":
                 "string",
-                "description": "Type: `string`, required, default: `gene_id_tokens`, example: `values.pt`. The key of the ",
-                "help_text": "Type: `string`, required, default: `gene_id_tokens`, example: `values.pt`. The key of the .obsm array containing the gene token ids\n"
+                "description": "Type: `string`, default: `gene_id_tokens`, example: `values.pt`. The key of the ",
+                "help_text": "Type: `string`, default: `gene_id_tokens`, example: `values.pt`. The key of the .obsm array containing the gene token ids\n"
             ,
                 "default": "gene_id_tokens"
             }
@@ -95,8 +95,8 @@
                 "obsm_tokenized_values": {
                 "type":
                 "string",
-                "description": "Type: `string`, required, default: `values_tokenized`. The key of the ",
-                "help_text": "Type: `string`, required, default: `values_tokenized`. The key of the .obsm array containing the count values of the tokenized genes\n"
+                "description": "Type: `string`, default: `values_tokenized`. The key of the ",
+                "help_text": "Type: `string`, default: `values_tokenized`. The key of the .obsm array containing the count values of the tokenized genes\n"
             ,
                 "default": "values_tokenized"
             }
@@ -106,8 +106,8 @@
                 "obsm_padding_mask": {
                 "type":
                 "string",
-                "description": "Type: `string`, required, default: `padding_mask`. The key of the ",
-                "help_text": "Type: `string`, required, default: `padding_mask`. The key of the .obsm array containing the padding mask.\n"
+                "description": "Type: `string`, default: `padding_mask`. The key of the ",
+                "help_text": "Type: `string`, default: `padding_mask`. The key of the .obsm array containing the padding mask.\n"
             ,
                 "default": "padding_mask"
             }
@@ -128,7 +128,7 @@
                 "type":
                 "string",
                 "description": "Type: `string`. The name of the adata",
-                "help_text": "Type: `string`. The name of the adata.obs column containing the batch labels. Must be provided when \u0027DSBN\u0027 is set to True.\n"
+                "help_text": "Type: `string`. The name of the adata.obs column containing the batch labels. Must be provided when \u0027dsbn\u0027 is set to True.\n"
             
             }
     
@@ -210,18 +210,7 @@
     
 
         ,
-                "dropout": {
-                "type":
-                "number",
-                "description": "Type: `double`, default: `0.2`. Dropout value used for the transformer encoder layer\n",
-                "help_text": "Type: `double`, default: `0.2`. Dropout value used for the transformer encoder layer\n"
-            ,
-                "default": "0.2"
-            }
-    
-
-        ,
-                "DSBN": {
+                "dbsn": {
                 "type":
                 "boolean",
                 "description": "Type: `boolean`, default: `true`. Whether to apply domain-specific batch normalization for generating embeddings",
@@ -239,6 +228,17 @@
                 "help_text": "Type: `integer`, default: `64`. The batch size to be used for inference\n"
             ,
                 "default": "64"
+            }
+    
+
+        ,
+                "dsbn": {
+                "type":
+                "boolean",
+                "description": "Type: `boolean`, default: `true`. Whether to apply domain-specific batch normalization for generating embeddings",
+                "help_text": "Type: `boolean`, default: `true`. Whether to apply domain-specific batch normalization for generating embeddings. When set to True, \u0027obs_batch_labels\u0027 must be set as well.\n"
+            ,
+                "default": "True"
             }
     
 

@@ -2968,7 +2968,7 @@ meta = [
       "target_organization" : "openpipelines-bio",
       "target_registry" : "ghcr.io",
       "target_tag" : "scgpt-integration_build",
-      "namespace_separator" : "_",
+      "namespace_separator" : "/",
       "resolve_volume" : "Automatic",
       "chown" : true,
       "setup_strategy" : "ifneedbepullelsecachedbuild",
@@ -3007,9 +3007,6 @@ meta = [
       "type" : "nextflow",
       "id" : "nextflow",
       "directives" : {
-        "label" : [
-          "lowmem"
-        ],
         "tag" : "$id"
       },
       "auto" : {
@@ -3064,9 +3061,9 @@ meta = [
     "platform" : "nextflow",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/scgpt/binning",
     "viash_version" : "0.8.5",
-    "git_commit" : "88db6b389ec899294bd6eb45f677e2eb0d7f8904",
+    "git_commit" : "1d7e0fa3ebe2e081f1123edaeaba60b0b6a087ea",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline",
-    "git_tag" : "0.2.0-1592-g88db6b389e"
+    "git_tag" : "0.2.0-1593-g1d7e0fa3eb"
   }
 }'''))
 ]
@@ -3154,7 +3151,7 @@ if layer_data.min() < 0:
     raise ValueError(
         f"Assuming non-negative data, but got min value {layer_data.min()}."
     )
-
+    
 n_bins = par["n_input_bins"]  # NOTE: the first bin is always a spectial for zero
 logger.info(f"Binning data into {par['n_input_bins']} bins.")
 
@@ -3171,59 +3168,56 @@ def _digitize(x: np.ndarray, bins: np.ndarray) -> np.ndarray:
     digits = np.ceil(digits)
     smallest_dtype = np.min_scalar_type(digits.max().astype(np.uint)) # Already checked for non-negative values
     digits = digits.astype(smallest_dtype)
-
+    
     return digits
 
 
 with warnings.catch_warnings():
     # Make sure warnings are displayed once.
     warnings.simplefilter("once")
-    # layer_data.indptr.size is the number of rows in the sparse matrix
+    # layer_data.indptr.size is the number of rows in the sparse matrix 
     binned_rows = []
     bin_edges = []
     logger.info("Establishing bin edges and digitizing of non-zero values into bins for each row of the count matrix")
     for row_number in range(layer_data.indptr.size-1):
         row_start_index, row_end_index = layer_data.indptr[row_number], layer_data.indptr[row_number+1]
         # These are all non-zero counts in the row
-        non_zero_row = layer_data.data[row_start_index:row_end_index]
+        non_zero_row = layer_data.data[row_start_index:row_end_index] 
         if non_zero_row.max() == 0:
             logger.warning(
                 "The input data contains all zero rows. Please make sure "
                 "this is expected. You can use the \\`filter_cell_by_counts\\` "
                 "arg to filter out all zero rows."
             )
-
+            
             # Add binned_rows and bin_edges as all 0
             # np.stack will upcast the dtype later
             binned_rows.append(np.zeros_like(non_zero_row, dtype=np.int8))
             bin_edges.append(np.array([0] * n_bins))
             continue
-
+        
         # Binning of non-zero values
         bins = np.quantile(non_zero_row, np.linspace(0, 1, n_bins - 1))
         non_zero_digits = _digitize(non_zero_row, bins)
         assert non_zero_digits.min() >= 1
         assert non_zero_digits.max() <= n_bins - 1
         binned_rows.append(non_zero_digits)
+        
         bin_edges.append(np.concatenate([[0], bins]))
 
 # Create new CSR matrix
 logger.info("Creating a new CSR matrix of the binned count values")
-binned_layer = csr_matrix(
-    (
-        np.concatenate(binned_rows, casting="same_kind"),
-        layer_data.indices, layer_data.indptr
-        ),
-    shape=layer_data.shape)
+binned_layer = csr_matrix((np.concatenate(binned_rows, casting="same_kind"), 
+                          layer_data.indices, layer_data.indptr), shape=layer_data.shape)
 
 # Set binned values and bin edges layers to adata object
-adata.layers[par["binned_layer"]] = binned_layer
+adata.layers[par["binned_layer"]] = binned_layer 
 adata.obsm["bin_edges"] = np.stack(bin_edges)
-
-# Write mudata output
+      
+# Write mudata output 
 logger.info("Writing output data")
 mdata.mod[par["modality"]] = adata
-mdata.write(par["output"], compression=par["output_compression"])
+mdata.write(par["output"], compression=par["output_compression"]) 
 VIASHMAIN
 python -B "$tempscript"
 '''
@@ -3572,12 +3566,9 @@ meta["defaults"] = [
   directives: readJsonBlob('''{
   "container" : {
     "registry" : "ghcr.io",
-    "image" : "openpipelines-bio/scgpt_binning",
+    "image" : "openpipelines-bio/scgpt/binning",
     "tag" : "scgpt-integration_build"
   },
-  "label" : [
-    "lowmem"
-  ],
   "tag" : "$id"
 }'''),
 

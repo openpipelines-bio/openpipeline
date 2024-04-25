@@ -2955,11 +2955,20 @@ meta = [
       "target_organization" : "openpipelines-bio",
       "target_registry" : "ghcr.io",
       "target_tag" : "scgpt-integration_build",
-      "namespace_separator" : "_",
+      "namespace_separator" : "/",
       "resolve_volume" : "Automatic",
       "chown" : true,
       "setup_strategy" : "ifneedbepullelsecachedbuild",
-      "target_image_source" : "https://github.com/openpipelines-bio/openpipeline"
+      "target_image_source" : "https://github.com/openpipelines-bio/openpipeline",
+      "setup" : [
+        {
+          "type" : "apt",
+          "packages" : [
+            "procps"
+          ],
+          "interactive" : false
+        }
+      ]
     },
     {
       "type" : "nextflow",
@@ -3023,9 +3032,9 @@ meta = [
     "platform" : "nextflow",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/demux/bcl_convert",
     "viash_version" : "0.8.5",
-    "git_commit" : "88db6b389ec899294bd6eb45f677e2eb0d7f8904",
+    "git_commit" : "1d7e0fa3ebe2e081f1123edaeaba60b0b6a087ea",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline",
-    "git_tag" : "0.2.0-1592-g88db6b389e"
+    "git_tag" : "0.2.0-1593-g1d7e0fa3eb"
   }
 }'''))
 ]
@@ -3428,7 +3437,7 @@ meta["defaults"] = [
   directives: readJsonBlob('''{
   "container" : {
     "registry" : "ghcr.io",
-    "image" : "openpipelines-bio/demux_bcl_convert",
+    "image" : "openpipelines-bio/demux/bcl_convert",
     "tag" : "scgpt-integration_build"
   },
   "label" : [

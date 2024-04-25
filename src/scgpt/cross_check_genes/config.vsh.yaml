@@ -2,8 +2,10 @@ functionality:
   name: cross_check_genes
   namespace: "scgpt"
   description: |
-    Cross-check genes with pre-trained model.
+    Cross-check genes with pre-trained scGPT model.
   authors:
+    - __merge__: /src/authors/jakub_majercik.yaml
+      roles: [ maintainer, author ]
     - __merge__: /src/authors/dorien_roosen.yaml
       roles: [ maintainer, author ]
 
@@ -21,19 +23,21 @@ functionality:
           type: string
           default: "rna"
           required: false
+          description: |
+            The modality key of the MuData object containing the RNA AnnData object.
         - name: "--vocab_file"
           type: file
           direction: input
           required: true
           example: resources_test/scgpt/vocab.json
           description: |
-            Model vocabulary file directory.
-        - name: "--input_var_gene_names"
+            Model vocabulary file path.
+        - name: "--var_gene_names"
           type: string
           example: "gene_name"
           required: false
           description: |
-            The name of the adata.var column containing gene names. When no gene_name_layer is provided, the .var index will be used.
+            The name of the adata.var column containing gene names. By default the .var index will be used.
     - name: Outputs
       arguments:
         - name: "--output"
@@ -43,6 +47,11 @@ functionality:
           example: output.h5mu
           description: |
             The output cross-checked anndata file.
+        - name: "--output_compression"
+          type: string
+          choices: ["gzip", "lzf"]
+          required: false
+          example: "gzip"
     - name: Arguments
       arguments:
         - name: "--pad_token"
@@ -75,4 +84,4 @@ platforms:
     __merge__: [ /src/base/requirements/python_test_setup.yaml, .]
   - type: nextflow
     directives:
-      label: [lowmem]
+      label: [ lowmem, lowcpu ]

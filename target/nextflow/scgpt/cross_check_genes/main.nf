@@ -10,6 +10,7 @@
 // files.
 // 
 // Component authors:
+//  * Jakub Majercik (maintainer, author)
 //  * Dorien Roosen (maintainer, author)
 
 ////////////////////////////
@@ -2780,6 +2781,28 @@ meta = [
     "version" : "scgpt-integration_build",
     "authors" : [
       {
+        "name" : "Jakub Majercik",
+        "roles" : [
+          "maintainer",
+          "author"
+        ],
+        "info" : {
+          "role" : "Contributor",
+          "links" : {
+            "email" : "jakub@data-intuitive.com",
+            "github" : "jakubmajercik",
+            "linkedin" : "jakubmajercik"
+          },
+          "organizations" : [
+            {
+              "name" : "Data Intuitive",
+              "href" : "https://www.data-intuitive.com",
+              "role" : "Bioinformatics Engineer"
+            }
+          ]
+        }
+      },
+      {
         "name" : "Dorien Roosen",
         "roles" : [
           "maintainer",
@@ -2824,6 +2847,7 @@ meta = [
           {
             "type" : "string",
             "name" : "--modality",
+            "description" : "The modality key of the MuData object containing the RNA AnnData object.\n",
             "default" : [
               "rna"
             ],
@@ -2836,7 +2860,7 @@ meta = [
           {
             "type" : "file",
             "name" : "--vocab_file",
-            "description" : "Model vocabulary file directory.\n",
+            "description" : "Model vocabulary file path.\n",
             "example" : [
               "resources_test/scgpt/vocab.json"
             ],
@@ -2850,8 +2874,8 @@ meta = [
           },
           {
             "type" : "string",
-            "name" : "--input_var_gene_names",
-            "description" : "The name of the adata.var column containing gene names. When no gene_name_layer is provided, the .var index will be used.\n",
+            "name" : "--var_gene_names",
+            "description" : "The name of the adata.var column containing gene names. By default the .var index will be used.\n",
             "example" : [
               "gene_name"
             ],
@@ -2877,6 +2901,22 @@ meta = [
             "create_parent" : true,
             "required" : true,
             "direction" : "output",
+            "multiple" : false,
+            "multiple_sep" : ":",
+            "dest" : "par"
+          },
+          {
+            "type" : "string",
+            "name" : "--output_compression",
+            "example" : [
+              "gzip"
+            ],
+            "required" : false,
+            "choices" : [
+              "gzip",
+              "lzf"
+            ],
+            "direction" : "input",
             "multiple" : false,
             "multiple_sep" : ":",
             "dest" : "par"
@@ -2920,7 +2960,7 @@ meta = [
         "dest" : "nextflow_labels.config"
       }
     ],
-    "description" : "Cross-check genes with pre-trained model.\n",
+    "description" : "Cross-check genes with pre-trained scGPT model.\n",
     "test_resources" : [
       {
         "type" : "python_script",
@@ -2960,7 +3000,7 @@ meta = [
       "target_organization" : "openpipelines-bio",
       "target_registry" : "ghcr.io",
       "target_tag" : "scgpt-integration_build",
-      "namespace_separator" : "_",
+      "namespace_separator" : "/",
       "resolve_volume" : "Automatic",
       "chown" : true,
       "setup_strategy" : "ifneedbepullelsecachedbuild",
@@ -3022,7 +3062,8 @@ meta = [
       "id" : "nextflow",
       "directives" : {
         "label" : [
-          "lowmem"
+          "lowmem",
+          "lowcpu"
         ],
         "tag" : "$id"
       },
@@ -3078,9 +3119,9 @@ meta = [
     "platform" : "nextflow",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/scgpt/cross_check_genes",
     "viash_version" : "0.8.5",
-    "git_commit" : "88db6b389ec899294bd6eb45f677e2eb0d7f8904",
+    "git_commit" : "1d7e0fa3ebe2e081f1123edaeaba60b0b6a087ea",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline",
-    "git_tag" : "0.2.0-1592-g88db6b389e"
+    "git_tag" : "0.2.0-1593-g1d7e0fa3eb"
   }
 }'''))
 ]
@@ -3104,8 +3145,9 @@ par = {
   'input': $( if [ ! -z ${VIASH_PAR_INPUT+x} ]; then echo "r'${VIASH_PAR_INPUT//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'modality': $( if [ ! -z ${VIASH_PAR_MODALITY+x} ]; then echo "r'${VIASH_PAR_MODALITY//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'vocab_file': $( if [ ! -z ${VIASH_PAR_VOCAB_FILE+x} ]; then echo "r'${VIASH_PAR_VOCAB_FILE//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
-  'input_var_gene_names': $( if [ ! -z ${VIASH_PAR_INPUT_VAR_GENE_NAMES+x} ]; then echo "r'${VIASH_PAR_INPUT_VAR_GENE_NAMES//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
+  'var_gene_names': $( if [ ! -z ${VIASH_PAR_VAR_GENE_NAMES+x} ]; then echo "r'${VIASH_PAR_VAR_GENE_NAMES//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'output': $( if [ ! -z ${VIASH_PAR_OUTPUT+x} ]; then echo "r'${VIASH_PAR_OUTPUT//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
+  'output_compression': $( if [ ! -z ${VIASH_PAR_OUTPUT_COMPRESSION+x} ]; then echo "r'${VIASH_PAR_OUTPUT_COMPRESSION//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'pad_token': $( if [ ! -z ${VIASH_PAR_PAD_TOKEN+x} ]; then echo "r'${VIASH_PAR_PAD_TOKEN//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi )
 }
 meta = {
@@ -3158,22 +3200,20 @@ if not par["input_var_gene_names"]:
     genes = adata.var.index.astype(str).tolist()
 elif par["input_var_gene_names"] not in adata.var.columns:
     raise ValueError(f"Gene name column '{par['input_var_gene_names']}' not found in .mod['{par['modality']}'].obs.")
-else:
+else: 
     genes = adata.var[par["input_var_gene_names"]].astype(str).tolist()
 
 # Cross-check genes with pre-trained model
 logger.info(f"Loading model vocab from {par['vocab_file']}")
 vocab_file = par["vocab_file"]
 vocab = GeneVocab.from_file(vocab_file)
-for s in special_tokens:
-    if s not in vocab:
-        vocab.append_token(s)
+[vocab.append_token(s) for s in special_tokens if s not in vocab]
+
+# vocab.append_token([s for s in special_tokens if s not in vocab])
 
 logger.info("Filtering genes based on model vocab")
-adata.var["id_in_vocab"] = [
-        1 if gene in vocab else -1 for gene in genes
-        ]
-
+adata.var["id_in_vocab"] = [1 if gene in vocab else -1 for gene in genes]
+    
 gene_ids_in_vocab = np.array(adata.var["id_in_vocab"])
 
 logger.info("Subsetting input data based on genes present in model vocab")
@@ -3182,7 +3222,7 @@ adata = adata[:, adata.var["id_in_vocab"] >= 0]
 mudata.mod[par["modality"]] = adata
 
 logger.info(f"Writing to {par['output']}")
-mudata.write_h5mu(par["output"])
+mudata.write_h5mu(par["output"], compression=par["output_compression"])
 VIASHMAIN
 python -B "$tempscript"
 '''
@@ -3531,11 +3571,12 @@ meta["defaults"] = [
   directives: readJsonBlob('''{
   "container" : {
     "registry" : "ghcr.io",
-    "image" : "openpipelines-bio/scgpt_cross_check_genes",
+    "image" : "openpipelines-bio/scgpt/cross_check_genes",
     "tag" : "scgpt-integration_build"
   },
   "label" : [
-    "lowmem"
+    "lowmem",
+    "lowcpu"
   ],
   "tag" : "$id"
 }'''),

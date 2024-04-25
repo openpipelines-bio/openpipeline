@@ -2,10 +2,11 @@
 input: # please fill in - example: "input.h5mu"
 modality: "rna"
 vocab_file: # please fill in - example: "resources_test/scgpt/vocab.json"
-# input_var_gene_names: "gene_name"
+# var_gene_names: "gene_name"
 
 # Outputs
 # output: "$id.$key.output.h5mu"
+# output_compression: "gzip"
 
 # Arguments
 pad_token: "<pad>"

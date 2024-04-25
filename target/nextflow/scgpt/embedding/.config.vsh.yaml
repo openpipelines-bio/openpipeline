@@ -91,7 +91,7 @@ functionality:
       - "values.pt"
       default:
       - "gene_id_tokens"
-      required: true
+      required: false
       direction: "input"
       multiple: false
       multiple_sep: ":"
@@ -103,7 +103,7 @@ functionality:
       info: null
       default:
       - "values_tokenized"
-      required: true
+      required: false
       direction: "input"
       multiple: false
       multiple_sep: ":"
@@ -114,7 +114,7 @@ functionality:
       info: null
       default:
       - "padding_mask"
-      required: true
+      required: false
       direction: "input"
       multiple: false
       multiple_sep: ":"
@@ -132,7 +132,7 @@ functionality:
     - type: "string"
       name: "--obs_batch_label"
       description: "The name of the adata.obs column containing the batch labels.\
-        \ Must be provided when 'DSBN' is set to True.\n"
+        \ Must be provided when 'dsbn' is set to True.\n"
       info: null
       required: false
       direction: "input"
@@ -205,19 +205,8 @@ functionality:
       multiple: false
       multiple_sep: ":"
       dest: "par"
-    - type: "double"
-      name: "--dropout"
-      description: "Dropout value used for the transformer encoder layer\n"
-      info: null
-      default:
-      - 0.2
-      required: false
-      direction: "input"
-      multiple: false
-      multiple_sep: ":"
-      dest: "par"
     - type: "boolean"
-      name: "--DSBN"
+      name: "--dbsn"
       description: "Whether to apply domain-specific batch normalization for generating\
         \ embeddings. When set to True, 'obs_batch_labels' must be set as well.\n"
       info: null
@@ -234,6 +223,18 @@ functionality:
       info: null
       default:
       - 64
+      required: false
+      direction: "input"
+      multiple: false
+      multiple_sep: ":"
+      dest: "par"
+    - type: "boolean"
+      name: "--dsbn"
+      description: "Whether to apply domain-specific batch normalization for generating\
+        \ embeddings. When set to True, 'obs_batch_labels' must be set as well.\n"
+      info: null
+      default:
+      - true
       required: false
       direction: "input"
       multiple: false
@@ -272,12 +273,10 @@ platforms:
   target_organization: "openpipelines-bio"
   target_registry: "ghcr.io"
   target_tag: "scgpt-integration_build"
-  namespace_separator: "_"
+  namespace_separator: "/"
   resolve_volume: "Automatic"
   chown: true
   setup_strategy: "ifneedbepullelsecachedbuild"
-  run_args:
-  - "--shm-size 5000m"
   target_image_source: "https://github.com/openpipelines-bio/openpipeline"
   setup:
   - type: "python"
@@ -350,11 +349,11 @@ platforms:
   debug: false
   container: "docker"
 info:
-  config: "/home/runner/work/openpipeline/openpipeline/src/scgpt/embed/config.vsh.yaml"
+  config: "/home/runner/work/openpipeline/openpipeline/src/scgpt/embedding/config.vsh.yaml"
   platform: "nextflow"
   output: "/home/runner/work/openpipeline/openpipeline/target/nextflow/scgpt/embedding"
   executable: "/home/runner/work/openpipeline/openpipeline/target/nextflow/scgpt/embedding/embedding"
   viash_version: "0.8.5"
-  git_commit: "88db6b389ec899294bd6eb45f677e2eb0d7f8904"
+  git_commit: "1d7e0fa3ebe2e081f1123edaeaba60b0b6a087ea"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"
-  git_tag: "0.2.0-1592-g88db6b389e"
+  git_tag: "0.2.0-1593-g1d7e0fa3eb"

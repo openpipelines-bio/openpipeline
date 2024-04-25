@@ -6,7 +6,7 @@ functionality:
     - __merge__: /src/authors/dorien_roosen.yaml
       roles: [ author, maintainer ]
   argument_groups:
-    - name: "Input"
+    - name: "Inputs"
       arguments:
         - name: "--id"
           required: true
@@ -16,7 +16,7 @@ functionality:
         - name: "--input"
           type: file
           required: true
-          description: Path to the sample.
+          description: Path to the input file.
           example: input.h5mu
         - name: "--modality"
           type: string
@@ -46,12 +46,12 @@ functionality:
           type: string
           required: False
           description: |
-            Mudata layer (key from .layers) to use as input data for binning. If not specified, .X is used.
+            Mudata layer (key from layers) to use as input data for binning; if not specified, X is used.
         - name: "--var_gene_names"
           type: string
           required: false
           description: |
-            The name of the adata var column containing gene names. When no gene_name_layer is provided, the var index will be used.
+            The name of the adata var column containing gene names; when no gene_name_layer is provided, the var index will be used.
         - name: "--obs_batch_label"
           type: string
           required: false
@@ -64,7 +64,7 @@ functionality:
           type: file
           required: true
           direction: output
-          description: Destination path to the output.
+          description: Output file path
           example: output.h5mu
         - name: "--output_compression"
           type: string
@@ -74,69 +74,39 @@ functionality:
           description: |
             The compression algorithm to use for the output h5mu file.
 
-    - name: "scGPT integration options"
+    - name: "Padding arguments"
       arguments:
-        - name: "--binned_layer"
-          type: string
-          default: "binned"
-          description: |
-            The name of the adata layer to write the binned data to.
-        - name: "--obsm_embeddings"
-          type: string
-          default: "X_scGPT"
-          required: false
-          description: |
-            The name of the adata obsm array to which scGPT embeddings will be written.
-        - name: "--obsm_gene_tokens"
-          type: string
-          default: "gene_id_tokens"
-          description: |
-            The key of the obsm array containing the gene token ids
-          example: values.pt
-        - name: "--obsm_tokenized_values"
-          type: string
-          default: values_tokenized
-          description: |
-            The key of the obsm array containing the count values of the tokenized genes
-        - name: "--obsm_padding_mask"
-          type: string
-          default: padding_mask
-          description: |
-            The key of the obsm array containing the padding mask.
         - name: "--pad_token"
           type: string
           default: "<pad>"
           required: false
           description: |
-            The padding token used in the model.
+            Token used for padding.
         - name: "--pad_value"
           type: integer
           default: -2
           required: false
           description: |
             The value of the padding token.
-        - name: "--n_input_bins"
-          type: integer
-          default: 51
-          required: False
-          min: 1
-          description: |
-            The number of bins to discretize the data into. When no value is provided, data won't be binned.
+    
+    - name: "HVG subset arguments"
+      arguments:
         - name: "--n_hvg"
           type: integer
           default: 1200
           description: |
             Number of highly variable genes to subset for.
+
+    - name: "Tokenization arguments"
+      arguments:
         - name: "--max_seq_len"
           type: integer
           required: false
           description: |
             The maximum sequence length of the tokenized data.
-        - name: "--dropout"
-          type: double
-          default: 0.2
-          description: |
-            Dropout value used for the transformer encoder layer
+
+    - name: "Embedding arguments"
+      arguments:
         - name: DSBN
           type: boolean
           default: true
@@ -146,47 +116,36 @@ functionality:
           type: integer
           default: 64
           description: |
-            The batch size to be used for inference 
+            The batch size to be used for embedding inference.
 
-    - name: Clustering options
+    - name: "Binning arguments"
       arguments:
-        - name: "--obs_cluster"
-          type: string
+        - name: "--n_input_bins"
+          type: integer
+          default: 51
+          required: False
+          min: 1
           description: |
-            Prefix for the .obs keys under which to add the cluster labels. Newly created columns in .obs will 
-            be created from the specified value for '--obs_cluster' suffixed with an underscore and one of the resolutions
-            resolutions specified in '--leiden_resolution'.
-          default: "scGPT_integration_leiden"
+            The number of bins to discretize the data into; When no value is provided, data won't be binned.
+        - name: "--seed"
+          type: integer
+          required: false
+          description: |
+            Seed for random number generation used for binning.
+  
+    - name: "Clustering arguments"
+      arguments:
         - name: "--leiden_resolution"
           type: double
           description: Control the coarseness of the clustering. Higher values lead to more clusters.
           default: [1]
           multiple: true
 
-    - name: "Neighbors and UMAP options"
-      arguments:
-        - name: "--uns_neighbors"
-          type: string
-          default: scGPT_integration_neighbors
-          description: In which uns slot to store various neighbor output objects.
-        - name: "--obsp_neighbor_distances"
-          type: string
-          default: "scGPT_integration_distances"
-          description: "In which obsp slot to store the distance matrix between the resulting neighbors."
-        - name: "--obsp_neighbor_connectivities"
-          type: string
-          default: "scGPT_integration_connectivities"
-          description: "In which obsp slot to store the connectivities matrix between the resulting neighbors."
-        - name: "--obsm_umap"
-          type: string
-          default: "X_scGPT_umap"
-          required: false
-          description: "In which .obsm slot to store the resulting UMAP embedding."
-
   resources:
     - type: nextflow_script
       path: main.nf
       entrypoint: run_wf
+
   dependencies:
     - name: scgpt/cross_check_genes
     - name: scgpt/binning
@@ -199,14 +158,5 @@ functionality:
     - name: cluster/leiden
     - name: metadata/move_obsm_to_obs
 
-  test_resources:
-    # - type: nextflow_script
-    #   path: test.nf
-    #   entrypoint: test_wf
-    # - type: nextflow_script
-    #   path: test.nf
-    #   entrypoint: test_wf2
-    - path: /resources_test/scgpt/test_resources/Kim2020_Lung_subset.h5mu
-    - path: /resources_test/scgpt/source/
 platforms:
   - type: nextflow

@@ -12,6 +12,7 @@
 # files.
 # 
 # Component authors:
+#  * Jakub Majercik (maintainer, author)
 #  * Dorien Roosen (maintainer, author)
 
 set -e
@@ -175,7 +176,7 @@ VIASH_META_TEMP_DIR="$VIASH_TEMP"
 function ViashHelp {
   echo "cross_check_genes scgpt-integration_build"
   echo ""
-  echo "Cross-check genes with pre-trained model."
+  echo "Cross-check genes with pre-trained scGPT model."
   echo ""
   echo "Inputs:"
   echo "    --input"
@@ -186,23 +187,29 @@ function ViashHelp {
   echo "    --modality"
   echo "        type: string"
   echo "        default: rna"
+  echo "        The modality key of the MuData object containing the RNA AnnData object."
   echo ""
   echo "    --vocab_file"
   echo "        type: file, required parameter, file must exist"
   echo "        example: resources_test/scgpt/vocab.json"
-  echo "        Model vocabulary file directory."
+  echo "        Model vocabulary file path."
   echo ""
-  echo "    --input_var_gene_names"
+  echo "    --var_gene_names"
   echo "        type: string"
   echo "        example: gene_name"
-  echo "        The name of the adata.var column containing gene names. When no"
-  echo "        gene_name_layer is provided, the .var index will be used."
+  echo "        The name of the adata.var column containing gene names. By default the"
+  echo "        .var index will be used."
   echo ""
   echo "Outputs:"
   echo "    --output"
   echo "        type: file, required parameter, output, file must exist"
   echo "        example: output.h5mu"
   echo "        The output cross-checked anndata file."
+  echo ""
+  echo "    --output_compression"
+  echo "        type: string"
+  echo "        example: gzip"
+  echo "        choices: [ gzip, lzf ]"
   echo ""
   echo "Arguments:"
   echo "    --pad_token"
@@ -437,11 +444,11 @@ RUN pip install --upgrade pip && \
 RUN pip install --upgrade pip && \
   pip install --upgrade --no-cache-dir "scgpt==0.2.1"
 
-LABEL org.opencontainers.image.authors="Dorien Roosen"
+LABEL org.opencontainers.image.authors="Jakub Majercik, Dorien Roosen"
 LABEL org.opencontainers.image.description="Companion container for running component scgpt cross_check_genes"
-LABEL org.opencontainers.image.created="2024-04-18T06:59:57Z"
+LABEL org.opencontainers.image.created="2024-04-25T11:08:55Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="88db6b389ec899294bd6eb45f677e2eb0d7f8904"
+LABEL org.opencontainers.image.revision="1d7e0fa3ebe2e081f1123edaeaba60b0b6a087ea"
 LABEL org.opencontainers.image.version="scgpt-integration_build"
 
 VIASHDOCKER
@@ -629,15 +636,15 @@ while [[ $# -gt 0 ]]; do
             VIASH_PAR_VOCAB_FILE=$(ViashRemoveFlags "$1")
             shift 1
             ;;
-        --input_var_gene_names)
-            [ -n "$VIASH_PAR_INPUT_VAR_GENE_NAMES" ] && ViashError Bad arguments for option \'--input_var_gene_names\': \'$VIASH_PAR_INPUT_VAR_GENE_NAMES\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
-            VIASH_PAR_INPUT_VAR_GENE_NAMES="$2"
-            [ $# -lt 2 ] && ViashError Not enough arguments passed to --input_var_gene_names. Use "--help" to get more information on the parameters. && exit 1
+        --var_gene_names)
+            [ -n "$VIASH_PAR_VAR_GENE_NAMES" ] && ViashError Bad arguments for option \'--var_gene_names\': \'$VIASH_PAR_VAR_GENE_NAMES\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+            VIASH_PAR_VAR_GENE_NAMES="$2"
+            [ $# -lt 2 ] && ViashError Not enough arguments passed to --var_gene_names. Use "--help" to get more information on the parameters. && exit 1
             shift 2
             ;;
-        --input_var_gene_names=*)
-            [ -n "$VIASH_PAR_INPUT_VAR_GENE_NAMES" ] && ViashError Bad arguments for option \'--input_var_gene_names=*\': \'$VIASH_PAR_INPUT_VAR_GENE_NAMES\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
-            VIASH_PAR_INPUT_VAR_GENE_NAMES=$(ViashRemoveFlags "$1")
+        --var_gene_names=*)
+            [ -n "$VIASH_PAR_VAR_GENE_NAMES" ] && ViashError Bad arguments for option \'--var_gene_names=*\': \'$VIASH_PAR_VAR_GENE_NAMES\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+            VIASH_PAR_VAR_GENE_NAMES=$(ViashRemoveFlags "$1")
             shift 1
             ;;
         --output)
@@ -649,6 +656,17 @@ while [[ $# -gt 0 ]]; do
         --output=*)
             [ -n "$VIASH_PAR_OUTPUT" ] && ViashError Bad arguments for option \'--output=*\': \'$VIASH_PAR_OUTPUT\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
             VIASH_PAR_OUTPUT=$(ViashRemoveFlags "$1")
+            shift 1
+            ;;
+        --output_compression)
+            [ -n "$VIASH_PAR_OUTPUT_COMPRESSION" ] && ViashError Bad arguments for option \'--output_compression\': \'$VIASH_PAR_OUTPUT_COMPRESSION\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+            VIASH_PAR_OUTPUT_COMPRESSION="$2"
+            [ $# -lt 2 ] && ViashError Not enough arguments passed to --output_compression. Use "--help" to get more information on the parameters. && exit 1
+            shift 2
+            ;;
+        --output_compression=*)
+            [ -n "$VIASH_PAR_OUTPUT_COMPRESSION" ] && ViashError Bad arguments for option \'--output_compression=*\': \'$VIASH_PAR_OUTPUT_COMPRESSION\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+            VIASH_PAR_OUTPUT_COMPRESSION=$(ViashRemoveFlags "$1")
             shift 1
             ;;
         --pad_token)
@@ -726,14 +744,14 @@ eval set -- $VIASH_POSITIONAL_ARGS
 ViashDockerInstallationCheck
 
 if [ $VIASH_MODE == "docker_setup" ]; then
-  ViashDockerSetup 'ghcr.io/openpipelines-bio/scgpt_cross_check_genes:scgpt-integration_build' "$VIASH_DOCKER_SETUP_STRATEGY"
+  ViashDockerSetup 'ghcr.io/openpipelines-bio/scgpt/cross_check_genes:scgpt-integration_build' "$VIASH_DOCKER_SETUP_STRATEGY"
   exit 0
 fi
-ViashDockerSetup 'ghcr.io/openpipelines-bio/scgpt_cross_check_genes:scgpt-integration_build' ifneedbepullelsecachedbuild
+ViashDockerSetup 'ghcr.io/openpipelines-bio/scgpt/cross_check_genes:scgpt-integration_build' ifneedbepullelsecachedbuild
 
 if [ $VIASH_MODE == "docker_debug" ]; then
-  ViashNotice "+ docker run --entrypoint=bash -i --rm -v "$(pwd)":/pwd --workdir /pwd -t 'ghcr.io/openpipelines-bio/scgpt_cross_check_genes:scgpt-integration_build'"
-  docker run --entrypoint=bash -i --rm -v "$(pwd)":/pwd --workdir /pwd -t 'ghcr.io/openpipelines-bio/scgpt_cross_check_genes:scgpt-integration_build'
+  ViashNotice "+ docker run --entrypoint=bash -i --rm -v "$(pwd)":/pwd --workdir /pwd -t 'ghcr.io/openpipelines-bio/scgpt/cross_check_genes:scgpt-integration_build'"
+  docker run --entrypoint=bash -i --rm -v "$(pwd)":/pwd --workdir /pwd -t 'ghcr.io/openpipelines-bio/scgpt/cross_check_genes:scgpt-integration_build'
   exit 0
 fi
 
@@ -875,6 +893,19 @@ if [[ -n "$VIASH_META_MEMORY_PB" ]]; then
   fi
 fi
 
+# check whether value is belongs to a set of choices
+if [ ! -z "$VIASH_PAR_OUTPUT_COMPRESSION" ]; then
+  VIASH_PAR_OUTPUT_COMPRESSION_CHOICES=("gzip:lzf")
+  IFS=':'
+  set -f
+  if ! [[ ":${VIASH_PAR_OUTPUT_COMPRESSION_CHOICES[*]}:" =~ ":$VIASH_PAR_OUTPUT_COMPRESSION:" ]]; then
+    ViashError '--output_compression' specified value of \'$VIASH_PAR_OUTPUT_COMPRESSION\' is not in the list of allowed values. Use "--help" to get more information on the parameters.
+    exit 1
+  fi
+  set +f
+  unset IFS
+fi
+
 # create parent directories of output files, if so desired
 if [ ! -z "$VIASH_PAR_OUTPUT" ] && [ ! -d "$(dirname "$VIASH_PAR_OUTPUT")" ]; then
   mkdir -p "$(dirname "$VIASH_PAR_OUTPUT")"
@@ -919,7 +950,7 @@ VIASH_UNIQUE_MOUNTS=($(for val in "${VIASH_EXTRA_MOUNTS[@]}"; do echo "$val"; do
 function ViashPerformChown {
   if (( ${#VIASH_CHOWN_VARS[@]} )); then
     set +e
-    eval docker run --entrypoint=chown -i --rm ${VIASH_UNIQUE_MOUNTS[@]} ghcr.io/openpipelines-bio/scgpt_cross_check_genes:scgpt-integration_build "$(id -u):$(id -g)" --silent --recursive ${VIASH_CHOWN_VARS[@]}
+    eval docker run --entrypoint=chown -i --rm ${VIASH_UNIQUE_MOUNTS[@]} ghcr.io/openpipelines-bio/scgpt/cross_check_genes:scgpt-integration_build "$(id -u):$(id -g)" --silent --recursive ${VIASH_CHOWN_VARS[@]}
     set -e
   fi
 }
@@ -938,8 +969,8 @@ fi
 # set dependency paths
 
 
-ViashDebug "Running command: $(echo docker run --entrypoint=bash -i --rm ${VIASH_UNIQUE_MOUNTS[@]} $VIASH_EXTRA_DOCKER_ARGS ghcr.io/openpipelines-bio/scgpt_cross_check_genes:scgpt-integration_build)"
-cat << VIASHEOF | eval docker run --entrypoint=bash -i --rm ${VIASH_UNIQUE_MOUNTS[@]} $VIASH_EXTRA_DOCKER_ARGS ghcr.io/openpipelines-bio/scgpt_cross_check_genes:scgpt-integration_build
+ViashDebug "Running command: $(echo docker run --entrypoint=bash -i --rm ${VIASH_UNIQUE_MOUNTS[@]} $VIASH_EXTRA_DOCKER_ARGS ghcr.io/openpipelines-bio/scgpt/cross_check_genes:scgpt-integration_build)"
+cat << VIASHEOF | eval docker run --entrypoint=bash -i --rm ${VIASH_UNIQUE_MOUNTS[@]} $VIASH_EXTRA_DOCKER_ARGS ghcr.io/openpipelines-bio/scgpt/cross_check_genes:scgpt-integration_build
 set -e
 tempscript=\$(mktemp "$VIASH_META_TEMP_DIR/viash-run-cross_check_genes-XXXXXX").py
 function clean_up {
@@ -962,8 +993,9 @@ par = {
   'input': $( if [ ! -z ${VIASH_PAR_INPUT+x} ]; then echo "r'${VIASH_PAR_INPUT//\'/\'\"\'\"r\'}'"; else echo None; fi ),
   'modality': $( if [ ! -z ${VIASH_PAR_MODALITY+x} ]; then echo "r'${VIASH_PAR_MODALITY//\'/\'\"\'\"r\'}'"; else echo None; fi ),
   'vocab_file': $( if [ ! -z ${VIASH_PAR_VOCAB_FILE+x} ]; then echo "r'${VIASH_PAR_VOCAB_FILE//\'/\'\"\'\"r\'}'"; else echo None; fi ),
-  'input_var_gene_names': $( if [ ! -z ${VIASH_PAR_INPUT_VAR_GENE_NAMES+x} ]; then echo "r'${VIASH_PAR_INPUT_VAR_GENE_NAMES//\'/\'\"\'\"r\'}'"; else echo None; fi ),
+  'var_gene_names': $( if [ ! -z ${VIASH_PAR_VAR_GENE_NAMES+x} ]; then echo "r'${VIASH_PAR_VAR_GENE_NAMES//\'/\'\"\'\"r\'}'"; else echo None; fi ),
   'output': $( if [ ! -z ${VIASH_PAR_OUTPUT+x} ]; then echo "r'${VIASH_PAR_OUTPUT//\'/\'\"\'\"r\'}'"; else echo None; fi ),
+  'output_compression': $( if [ ! -z ${VIASH_PAR_OUTPUT_COMPRESSION+x} ]; then echo "r'${VIASH_PAR_OUTPUT_COMPRESSION//\'/\'\"\'\"r\'}'"; else echo None; fi ),
   'pad_token': $( if [ ! -z ${VIASH_PAR_PAD_TOKEN+x} ]; then echo "r'${VIASH_PAR_PAD_TOKEN//\'/\'\"\'\"r\'}'"; else echo None; fi )
 }
 meta = {
@@ -1016,22 +1048,20 @@ if not par["input_var_gene_names"]:
     genes = adata.var.index.astype(str).tolist()
 elif par["input_var_gene_names"] not in adata.var.columns:
     raise ValueError(f"Gene name column '{par['input_var_gene_names']}' not found in .mod['{par['modality']}'].obs.")
-else:
+else: 
     genes = adata.var[par["input_var_gene_names"]].astype(str).tolist()
 
 # Cross-check genes with pre-trained model
 logger.info(f"Loading model vocab from {par['vocab_file']}")
 vocab_file = par["vocab_file"]
 vocab = GeneVocab.from_file(vocab_file)
-for s in special_tokens:
-    if s not in vocab:
-        vocab.append_token(s)
+[vocab.append_token(s) for s in special_tokens if s not in vocab]
+
+# vocab.append_token([s for s in special_tokens if s not in vocab])
 
 logger.info("Filtering genes based on model vocab")
-adata.var["id_in_vocab"] = [
-        1 if gene in vocab else -1 for gene in genes
-        ]
-
+adata.var["id_in_vocab"] = [1 if gene in vocab else -1 for gene in genes]
+    
 gene_ids_in_vocab = np.array(adata.var["id_in_vocab"])
 
 logger.info("Subsetting input data based on genes present in model vocab")
@@ -1040,7 +1070,7 @@ adata = adata[:, adata.var["id_in_vocab"] >= 0]
 mudata.mod[par["modality"]] = adata
 
 logger.info(f"Writing to {par['output']}")
-mudata.write_h5mu(par["output"])
+mudata.write_h5mu(par["output"], compression=par["output_compression"])
 VIASHMAIN
 python -B "\$tempscript" &
 wait "\$!"

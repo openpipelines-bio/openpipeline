@@ -2888,7 +2888,7 @@ meta = [
             "default" : [
               "gene_id_tokens"
             ],
-            "required" : true,
+            "required" : false,
             "direction" : "input",
             "multiple" : false,
             "multiple_sep" : ":",
@@ -2901,7 +2901,7 @@ meta = [
             "default" : [
               "values_tokenized"
             ],
-            "required" : true,
+            "required" : false,
             "direction" : "input",
             "multiple" : false,
             "multiple_sep" : ":",
@@ -2914,7 +2914,7 @@ meta = [
             "default" : [
               "padding_mask"
             ],
-            "required" : true,
+            "required" : false,
             "direction" : "input",
             "multiple" : false,
             "multiple_sep" : ":",
@@ -2933,7 +2933,7 @@ meta = [
           {
             "type" : "string",
             "name" : "--obs_batch_label",
-            "description" : "The name of the adata.obs column containing the batch labels. Must be provided when 'DSBN' is set to True.\n",
+            "description" : "The name of the adata.obs column containing the batch labels. Must be provided when 'dsbn' is set to True.\n",
             "required" : false,
             "direction" : "input",
             "multiple" : false,
@@ -3022,21 +3022,8 @@ meta = [
             "dest" : "par"
           },
           {
-            "type" : "double",
-            "name" : "--dropout",
-            "description" : "Dropout value used for the transformer encoder layer\n",
-            "default" : [
-              0.2
-            ],
-            "required" : false,
-            "direction" : "input",
-            "multiple" : false,
-            "multiple_sep" : ":",
-            "dest" : "par"
-          },
-          {
             "type" : "boolean",
-            "name" : "--DSBN",
+            "name" : "--dbsn",
             "description" : "Whether to apply domain-specific batch normalization for generating embeddings. When set to True, 'obs_batch_labels' must be set as well.\n",
             "default" : [
               true
@@ -3059,6 +3046,19 @@ meta = [
             "multiple" : false,
             "multiple_sep" : ":",
             "dest" : "par"
+          },
+          {
+            "type" : "boolean",
+            "name" : "--dsbn",
+            "description" : "Whether to apply domain-specific batch normalization for generating embeddings. When set to True, 'obs_batch_labels' must be set as well.\n",
+            "default" : [
+              true
+            ],
+            "required" : false,
+            "direction" : "input",
+            "multiple" : false,
+            "multiple_sep" : ":",
+            "dest" : "par"
           }
         ]
       }
@@ -3068,7 +3068,7 @@ meta = [
         "type" : "python_script",
         "path" : "script.py",
         "is_executable" : true,
-        "parent" : "file:/home/runner/work/openpipeline/openpipeline/src/scgpt/embed/"
+        "parent" : "file:/home/runner/work/openpipeline/openpipeline/src/scgpt/embedding/"
       },
       {
         "type" : "file",
@@ -3082,7 +3082,7 @@ meta = [
         "type" : "python_script",
         "path" : "test.py",
         "is_executable" : true,
-        "parent" : "file:/home/runner/work/openpipeline/openpipeline/src/scgpt/embed/"
+        "parent" : "file:/home/runner/work/openpipeline/openpipeline/src/scgpt/embedding/"
       },
       {
         "type" : "file",
@@ -3116,13 +3116,10 @@ meta = [
       "target_organization" : "openpipelines-bio",
       "target_registry" : "ghcr.io",
       "target_tag" : "scgpt-integration_build",
-      "namespace_separator" : "_",
+      "namespace_separator" : "/",
       "resolve_volume" : "Automatic",
       "chown" : true,
       "setup_strategy" : "ifneedbepullelsecachedbuild",
-      "run_args" : [
-        "--shm-size 5000m"
-      ],
       "target_image_source" : "https://github.com/openpipelines-bio/openpipeline",
       "setup" : [
         {
@@ -3214,13 +3211,13 @@ meta = [
     }
   ],
   "info" : {
-    "config" : "/home/runner/work/openpipeline/openpipeline/src/scgpt/embed/config.vsh.yaml",
+    "config" : "/home/runner/work/openpipeline/openpipeline/src/scgpt/embedding/config.vsh.yaml",
     "platform" : "nextflow",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/scgpt/embedding",
     "viash_version" : "0.8.5",
-    "git_commit" : "88db6b389ec899294bd6eb45f677e2eb0d7f8904",
+    "git_commit" : "1d7e0fa3ebe2e081f1123edaeaba60b0b6a087ea",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline",
-    "git_tag" : "0.2.0-1592-g88db6b389e"
+    "git_tag" : "0.2.0-1593-g1d7e0fa3eb"
   }
 }'''))
 ]
@@ -3260,9 +3257,9 @@ par = {
   'obsm_embeddings': $( if [ ! -z ${VIASH_PAR_OBSM_EMBEDDINGS+x} ]; then echo "r'${VIASH_PAR_OBSM_EMBEDDINGS//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'pad_token': $( if [ ! -z ${VIASH_PAR_PAD_TOKEN+x} ]; then echo "r'${VIASH_PAR_PAD_TOKEN//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'pad_value': $( if [ ! -z ${VIASH_PAR_PAD_VALUE+x} ]; then echo "int(r'${VIASH_PAR_PAD_VALUE//\\'/\\'\\"\\'\\"r\\'}')"; else echo None; fi ),
-  'dropout': $( if [ ! -z ${VIASH_PAR_DROPOUT+x} ]; then echo "float(r'${VIASH_PAR_DROPOUT//\\'/\\'\\"\\'\\"r\\'}')"; else echo None; fi ),
-  'DSBN': $( if [ ! -z ${VIASH_PAR_DSBN+x} ]; then echo "r'${VIASH_PAR_DSBN//\\'/\\'\\"\\'\\"r\\'}'.lower() == 'true'"; else echo None; fi ),
-  'batch_size': $( if [ ! -z ${VIASH_PAR_BATCH_SIZE+x} ]; then echo "int(r'${VIASH_PAR_BATCH_SIZE//\\'/\\'\\"\\'\\"r\\'}')"; else echo None; fi )
+  'dbsn': $( if [ ! -z ${VIASH_PAR_DBSN+x} ]; then echo "r'${VIASH_PAR_DBSN//\\'/\\'\\"\\'\\"r\\'}'.lower() == 'true'"; else echo None; fi ),
+  'batch_size': $( if [ ! -z ${VIASH_PAR_BATCH_SIZE+x} ]; then echo "int(r'${VIASH_PAR_BATCH_SIZE//\\'/\\'\\"\\'\\"r\\'}')"; else echo None; fi ),
+  'dsbn': $( if [ ! -z ${VIASH_PAR_DSBN+x} ]; then echo "r'${VIASH_PAR_DSBN//\\'/\\'\\"\\'\\"r\\'}'.lower() == 'true'"; else echo None; fi )
 }
 meta = {
   'functionality_name': $( if [ ! -z ${VIASH_META_FUNCTIONALITY_NAME+x} ]; then echo "r'${VIASH_META_FUNCTIONALITY_NAME//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
@@ -3302,16 +3299,8 @@ def setup_logger():
 # END TEMPORARY WORKAROUND setup_logger
 logger = setup_logger()
 
-
-#TODO: Optionally set device to use gpu, to be implemented when gpu-based machine types are supported
-# if par["device"] == "cuda" and not torch.cuda.is_available():
-#     print("WARNING: CUDA is not available. Using CPU instead.")
-#     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-# device = torch.device(par["device"])
-
-logger.info("Setting device to use cpu")
-
-device = torch.device("cpu")
+logger.info(f"Setting device to {'cuda' if torch.cuda.is_available() else 'cpu'}")
+device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 logger.info("Reading in data")
 
@@ -3320,22 +3309,30 @@ mdata = mu.read(par["input"])
 input_adata = mdata.mod[par["modality"]]
 adata = input_adata.copy()
 
+for k, v in {
+        "--obsm_gene_tokens": par["obsm_gene_tokens"],
+        "--obsm_tokenized_values": par["obsm_tokenized_values"],
+        "--obsm_padding_mask": par["obsm_padding_mask"]
+        }.items():
+    if v not in adata.obsm.keys():
+        raise KeyError(f"The parameter '{v}' provided for '{k}' could not be found in adata.obsm")
+
 all_gene_ids = adata.obsm[par["obsm_gene_tokens"]]
 all_values = adata.obsm[par["obsm_tokenized_values"]]
 padding_mask = adata.obsm[par["obsm_padding_mask"]]
 
 # Fetch batch ids for domain-specific batch normalization
-if par["DSBN"] and not par["obs_batch_label"]:
-    raise ValueError("When DSBN is set to True, you are required to provide batch labels (input_obs_batch_labels).")
-elif par["DSBN"] and par["obs_batch_label"]:
+if par["dsbn"] and not par["obs_batch_label"]:
+    raise ValueError("When dsbn is set to True, you are required to provide batch labels (input_obs_batch_labels).")
+elif par["dsbn"] and par["obs_batch_label"]:
     logger.info("Fetching batch id's for domain-specific batch normalization")
     batch_id_cats = adata.obs[par["obs_batch_label"]].astype("category")
     batch_id_labels = batch_id_cats.cat.codes.values
     batch_ids = batch_id_labels.tolist()
     batch_ids = np.array(batch_ids)
     num_batch_types = len(set(batch_ids))
-elif not par["DSBN"] and par["obs_batch_label"]:
-    logger.info("Batch labels provided but DSBN is set to False. Batch labels will be ignored and no DSBN will be performed.")
+elif not par["dsbn"] and par["obs_batch_label"]:
+    logger.info("Batch labels provided but dsbn is set to False. Batch labels will be ignored and no dsbn will be performed.")
 
 # Set padding specs
 logger.info("Setting padding specs")
@@ -3383,7 +3380,7 @@ model = TransformerModel(
     d_hid=d_hid,
     nlayers=nlayers,
     vocab=vocab,
-    dropout=par["dropout"],
+    dropout=0.5, # scGPT default, only relevant for fine-tuning applications
     pad_token=pad_token,
     pad_value=pad_value,
     nlayers_cls=3,  # only applicable for decoder-based operations
@@ -3392,8 +3389,8 @@ model = TransformerModel(
     ecs_threshold=0.8,  # only applicable for decoder-based operations
     do_dab=False,  # only applicable for decoder-based operations
     use_batch_labels=False, # only applicable for decoder-based operations
-    num_batch_labels=num_batch_types if par["DSBN"] else None,
-    domain_spec_batchnorm=par["DSBN"],
+    num_batch_labels=num_batch_types if par["dsbn"] else None,
+    domain_spec_batchnorm=par["dsbn"],
     input_emb_style="continuous",  # scGPT default
     explicit_zero_prob=False,  #TODO: Parametrize when GPU-based machine types are supported
     use_fast_transformer=False,  #TODO: Parametrize when GPU-based machine types are supported
@@ -3417,7 +3414,7 @@ cell_embeddings = model.encode_batch(
     torch.from_numpy(all_values).float(),
     src_key_padding_mask=torch.from_numpy(padding_mask),
     batch_size=par["batch_size"],
-    batch_labels=torch.from_numpy(batch_ids).long() if par["DSBN"] else None,
+    batch_labels=torch.from_numpy(batch_ids).long() if par["dsbn"] else None,
     output_to_cpu=True,
     time_step=0,
     return_np=True
@@ -3780,7 +3777,7 @@ meta["defaults"] = [
   directives: readJsonBlob('''{
   "container" : {
     "registry" : "ghcr.io",
-    "image" : "openpipelines-bio/scgpt_embedding",
+    "image" : "openpipelines-bio/scgpt/embedding",
     "tag" : "scgpt-integration_build"
   },
   "label" : [

@@ -2937,7 +2937,7 @@ meta = [
       "target_organization" : "openpipelines-bio",
       "target_registry" : "ghcr.io",
       "target_tag" : "scgpt-integration_build",
-      "namespace_separator" : "_",
+      "namespace_separator" : "/",
       "resolve_volume" : "Automatic",
       "chown" : true,
       "setup_strategy" : "ifneedbepullelsecachedbuild",
@@ -2962,6 +2962,20 @@ meta = [
         }
       ],
       "test_setup" : [
+        {
+          "type" : "docker",
+          "copy" : [
+            "openpipelinetestutils /opt/openpipelinetestutils"
+          ]
+        },
+        {
+          "type" : "python",
+          "user" : false,
+          "packages" : [
+            "/opt/openpipelinetestutils"
+          ],
+          "upgrade" : true
+        },
         {
           "type" : "python",
           "user" : false,
@@ -3034,9 +3048,9 @@ meta = [
     "platform" : "nextflow",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/metadata/move_obsm_to_obs",
     "viash_version" : "0.8.5",
-    "git_commit" : "88db6b389ec899294bd6eb45f677e2eb0d7f8904",
+    "git_commit" : "1d7e0fa3ebe2e081f1123edaeaba60b0b6a087ea",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline",
-    "git_tag" : "0.2.0-1592-g88db6b389e"
+    "git_tag" : "0.2.0-1593-g1d7e0fa3eb"
   }
 }'''))
 ]
@@ -3486,7 +3500,7 @@ meta["defaults"] = [
   directives: readJsonBlob('''{
   "container" : {
     "registry" : "ghcr.io",
-    "image" : "openpipelines-bio/metadata_move_obsm_to_obs",
+    "image" : "openpipelines-bio/metadata/move_obsm_to_obs",
     "tag" : "scgpt-integration_build"
   },
   "label" : [

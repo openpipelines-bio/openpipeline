@@ -4,9 +4,9 @@ modality: "rna"
 model: # please fill in - example: "best_model.pt"
 model_vocab: # please fill in - example: "vocab.json"
 model_config: # please fill in - example: "args.json"
-obsm_gene_tokens: # please fill in - example: "gene_id_tokens"
-obsm_tokenized_values: # please fill in - example: "values_tokenized"
-obsm_padding_mask: # please fill in - example: "padding_mask"
+obsm_gene_tokens: "gene_id_tokens"
+obsm_tokenized_values: "values_tokenized"
+obsm_padding_mask: "padding_mask"
 # var_gene_names: "foo"
 # obs_batch_label: "foo"
 
@@ -18,9 +18,9 @@ obsm_embeddings: "X_scGPT"
 # Arguments
 pad_token: "<pad>"
 pad_value: -2
-dropout: 0.2
-DSBN: true
+dbsn: true
 batch_size: 64
+dsbn: true
 
 # Nextflow input-output arguments
 publish_dir: # please fill in - example: "output/"

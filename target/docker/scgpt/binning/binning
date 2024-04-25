@@ -451,9 +451,9 @@ RUN pip install --upgrade pip && \
 
 LABEL org.opencontainers.image.authors="Dorien Roosen"
 LABEL org.opencontainers.image.description="Companion container for running component scgpt binning"
-LABEL org.opencontainers.image.created="2024-04-18T06:59:57Z"
+LABEL org.opencontainers.image.created="2024-04-25T11:08:56Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="88db6b389ec899294bd6eb45f677e2eb0d7f8904"
+LABEL org.opencontainers.image.revision="1d7e0fa3ebe2e081f1123edaeaba60b0b6a087ea"
 LABEL org.opencontainers.image.version="scgpt-integration_build"
 
 VIASHDOCKER
@@ -760,14 +760,14 @@ eval set -- $VIASH_POSITIONAL_ARGS
 ViashDockerInstallationCheck
 
 if [ $VIASH_MODE == "docker_setup" ]; then
-  ViashDockerSetup 'ghcr.io/openpipelines-bio/scgpt_binning:scgpt-integration_build' "$VIASH_DOCKER_SETUP_STRATEGY"
+  ViashDockerSetup 'ghcr.io/openpipelines-bio/scgpt/binning:scgpt-integration_build' "$VIASH_DOCKER_SETUP_STRATEGY"
   exit 0
 fi
-ViashDockerSetup 'ghcr.io/openpipelines-bio/scgpt_binning:scgpt-integration_build' ifneedbepullelsecachedbuild
+ViashDockerSetup 'ghcr.io/openpipelines-bio/scgpt/binning:scgpt-integration_build' ifneedbepullelsecachedbuild
 
 if [ $VIASH_MODE == "docker_debug" ]; then
-  ViashNotice "+ docker run --entrypoint=bash -i --rm -v "$(pwd)":/pwd --workdir /pwd -t 'ghcr.io/openpipelines-bio/scgpt_binning:scgpt-integration_build'"
-  docker run --entrypoint=bash -i --rm -v "$(pwd)":/pwd --workdir /pwd -t 'ghcr.io/openpipelines-bio/scgpt_binning:scgpt-integration_build'
+  ViashNotice "+ docker run --entrypoint=bash -i --rm -v "$(pwd)":/pwd --workdir /pwd -t 'ghcr.io/openpipelines-bio/scgpt/binning:scgpt-integration_build'"
+  docker run --entrypoint=bash -i --rm -v "$(pwd)":/pwd --workdir /pwd -t 'ghcr.io/openpipelines-bio/scgpt/binning:scgpt-integration_build'
   exit 0
 fi
 
@@ -973,7 +973,7 @@ VIASH_UNIQUE_MOUNTS=($(for val in "${VIASH_EXTRA_MOUNTS[@]}"; do echo "$val"; do
 function ViashPerformChown {
   if (( ${#VIASH_CHOWN_VARS[@]} )); then
     set +e
-    eval docker run --entrypoint=chown -i --rm ${VIASH_UNIQUE_MOUNTS[@]} ghcr.io/openpipelines-bio/scgpt_binning:scgpt-integration_build "$(id -u):$(id -g)" --silent --recursive ${VIASH_CHOWN_VARS[@]}
+    eval docker run --entrypoint=chown -i --rm ${VIASH_UNIQUE_MOUNTS[@]} ghcr.io/openpipelines-bio/scgpt/binning:scgpt-integration_build "$(id -u):$(id -g)" --silent --recursive ${VIASH_CHOWN_VARS[@]}
     set -e
   fi
 }
@@ -992,8 +992,8 @@ fi
 # set dependency paths
 
 
-ViashDebug "Running command: $(echo docker run --entrypoint=bash -i --rm ${VIASH_UNIQUE_MOUNTS[@]} $VIASH_EXTRA_DOCKER_ARGS ghcr.io/openpipelines-bio/scgpt_binning:scgpt-integration_build)"
-cat << VIASHEOF | eval docker run --entrypoint=bash -i --rm ${VIASH_UNIQUE_MOUNTS[@]} $VIASH_EXTRA_DOCKER_ARGS ghcr.io/openpipelines-bio/scgpt_binning:scgpt-integration_build
+ViashDebug "Running command: $(echo docker run --entrypoint=bash -i --rm ${VIASH_UNIQUE_MOUNTS[@]} $VIASH_EXTRA_DOCKER_ARGS ghcr.io/openpipelines-bio/scgpt/binning:scgpt-integration_build)"
+cat << VIASHEOF | eval docker run --entrypoint=bash -i --rm ${VIASH_UNIQUE_MOUNTS[@]} $VIASH_EXTRA_DOCKER_ARGS ghcr.io/openpipelines-bio/scgpt/binning:scgpt-integration_build
 set -e
 tempscript=\$(mktemp "$VIASH_META_TEMP_DIR/viash-run-binning-XXXXXX").py
 function clean_up {
@@ -1080,7 +1080,7 @@ if layer_data.min() < 0:
     raise ValueError(
         f"Assuming non-negative data, but got min value {layer_data.min()}."
     )
-
+    
 n_bins = par["n_input_bins"]  # NOTE: the first bin is always a spectial for zero
 logger.info(f"Binning data into {par['n_input_bins']} bins.")
 
@@ -1097,59 +1097,56 @@ def _digitize(x: np.ndarray, bins: np.ndarray) -> np.ndarray:
     digits = np.ceil(digits)
     smallest_dtype = np.min_scalar_type(digits.max().astype(np.uint)) # Already checked for non-negative values
     digits = digits.astype(smallest_dtype)
-
+    
     return digits
 
 
 with warnings.catch_warnings():
     # Make sure warnings are displayed once.
     warnings.simplefilter("once")
-    # layer_data.indptr.size is the number of rows in the sparse matrix
+    # layer_data.indptr.size is the number of rows in the sparse matrix 
     binned_rows = []
     bin_edges = []
     logger.info("Establishing bin edges and digitizing of non-zero values into bins for each row of the count matrix")
     for row_number in range(layer_data.indptr.size-1):
         row_start_index, row_end_index = layer_data.indptr[row_number], layer_data.indptr[row_number+1]
         # These are all non-zero counts in the row
-        non_zero_row = layer_data.data[row_start_index:row_end_index]
+        non_zero_row = layer_data.data[row_start_index:row_end_index] 
         if non_zero_row.max() == 0:
             logger.warning(
                 "The input data contains all zero rows. Please make sure "
                 "this is expected. You can use the \`filter_cell_by_counts\` "
                 "arg to filter out all zero rows."
             )
-
+            
             # Add binned_rows and bin_edges as all 0
             # np.stack will upcast the dtype later
             binned_rows.append(np.zeros_like(non_zero_row, dtype=np.int8))
             bin_edges.append(np.array([0] * n_bins))
             continue
-
+        
         # Binning of non-zero values
         bins = np.quantile(non_zero_row, np.linspace(0, 1, n_bins - 1))
         non_zero_digits = _digitize(non_zero_row, bins)
         assert non_zero_digits.min() >= 1
         assert non_zero_digits.max() <= n_bins - 1
         binned_rows.append(non_zero_digits)
+        
         bin_edges.append(np.concatenate([[0], bins]))
 
 # Create new CSR matrix
 logger.info("Creating a new CSR matrix of the binned count values")
-binned_layer = csr_matrix(
-    (
-        np.concatenate(binned_rows, casting="same_kind"),
-        layer_data.indices, layer_data.indptr
-        ),
-    shape=layer_data.shape)
+binned_layer = csr_matrix((np.concatenate(binned_rows, casting="same_kind"), 
+                          layer_data.indices, layer_data.indptr), shape=layer_data.shape)
 
 # Set binned values and bin edges layers to adata object
-adata.layers[par["binned_layer"]] = binned_layer
+adata.layers[par["binned_layer"]] = binned_layer 
 adata.obsm["bin_edges"] = np.stack(bin_edges)
-
-# Write mudata output
+      
+# Write mudata output 
 logger.info("Writing output data")
 mdata.mod[par["modality"]] = adata
-mdata.write(par["output"], compression=par["output_compression"])
+mdata.write(par["output"], compression=par["output_compression"]) 
 VIASHMAIN
 python -B "\$tempscript" &
 wait "\$!"

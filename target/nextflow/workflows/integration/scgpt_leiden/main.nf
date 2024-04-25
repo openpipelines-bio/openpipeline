@@ -2804,7 +2804,7 @@ meta = [
     ],
     "argument_groups" : [
       {
-        "name" : "Input",
+        "name" : "Inputs",
         "arguments" : [
           {
             "type" : "string",
@@ -2822,7 +2822,7 @@ meta = [
           {
             "type" : "file",
             "name" : "--input",
-            "description" : "Path to the sample.",
+            "description" : "Path to the input file.",
             "example" : [
               "input.h5mu"
             ],
@@ -2894,7 +2894,7 @@ meta = [
           {
             "type" : "string",
             "name" : "--input_layer",
-            "description" : "Mudata layer (key from .layers) to use as input data for binning. If not specified, .X is used.\n",
+            "description" : "Mudata layer (key from layers) to use as input data for binning; if not specified, X is used.\n",
             "required" : false,
             "direction" : "input",
             "multiple" : false,
@@ -2904,7 +2904,7 @@ meta = [
           {
             "type" : "string",
             "name" : "--var_gene_names",
-            "description" : "The name of the adata var column containing gene names. When no gene_name_layer is provided, the var index will be used.\n",
+            "description" : "The name of the adata var column containing gene names; when no gene_name_layer is provided, the var index will be used.\n",
             "required" : false,
             "direction" : "input",
             "multiple" : false,
@@ -2929,7 +2929,7 @@ meta = [
           {
             "type" : "file",
             "name" : "--output",
-            "description" : "Destination path to the output.",
+            "description" : "Output file path",
             "example" : [
               "output.h5mu"
             ],
@@ -2961,80 +2961,12 @@ meta = [
         ]
       },
       {
-        "name" : "scGPT integration options",
+        "name" : "Padding arguments",
         "arguments" : [
           {
             "type" : "string",
-            "name" : "--binned_layer",
-            "description" : "The name of the adata layer to write the binned data to.\n",
-            "default" : [
-              "binned"
-            ],
-            "required" : false,
-            "direction" : "input",
-            "multiple" : false,
-            "multiple_sep" : ":",
-            "dest" : "par"
-          },
-          {
-            "type" : "string",
-            "name" : "--obsm_embeddings",
-            "description" : "The name of the adata obsm array to which scGPT embeddings will be written.\n",
-            "default" : [
-              "X_scGPT"
-            ],
-            "required" : false,
-            "direction" : "input",
-            "multiple" : false,
-            "multiple_sep" : ":",
-            "dest" : "par"
-          },
-          {
-            "type" : "string",
-            "name" : "--obsm_gene_tokens",
-            "description" : "The key of the obsm array containing the gene token ids\n",
-            "example" : [
-              "values.pt"
-            ],
-            "default" : [
-              "gene_id_tokens"
-            ],
-            "required" : false,
-            "direction" : "input",
-            "multiple" : false,
-            "multiple_sep" : ":",
-            "dest" : "par"
-          },
-          {
-            "type" : "string",
-            "name" : "--obsm_tokenized_values",
-            "description" : "The key of the obsm array containing the count values of the tokenized genes\n",
-            "default" : [
-              "values_tokenized"
-            ],
-            "required" : false,
-            "direction" : "input",
-            "multiple" : false,
-            "multiple_sep" : ":",
-            "dest" : "par"
-          },
-          {
-            "type" : "string",
-            "name" : "--obsm_padding_mask",
-            "description" : "The key of the obsm array containing the padding mask.\n",
-            "default" : [
-              "padding_mask"
-            ],
-            "required" : false,
-            "direction" : "input",
-            "multiple" : false,
-            "multiple_sep" : ":",
-            "dest" : "par"
-          },
-          {
-            "type" : "string",
             "name" : "--pad_token",
-            "description" : "The padding token used in the model.\n",
+            "description" : "Token used for padding.\n",
             "default" : [
               "<pad>"
             ],
@@ -3056,21 +2988,12 @@ meta = [
             "multiple" : false,
             "multiple_sep" : ":",
             "dest" : "par"
-          },
-          {
-            "type" : "integer",
-            "name" : "--n_input_bins",
-            "description" : "The number of bins to discretize the data into. When no value is provided, data won't be binned.\n",
-            "default" : [
-              51
-            ],
-            "required" : false,
-            "min" : 1,
-            "direction" : "input",
-            "multiple" : false,
-            "multiple_sep" : ":",
-            "dest" : "par"
-          },
+          }
+        ]
+      },
+      {
+        "name" : "HVG subset arguments",
+        "arguments" : [
           {
             "type" : "integer",
             "name" : "--n_hvg",
@@ -3083,7 +3006,12 @@ meta = [
             "multiple" : false,
             "multiple_sep" : ":",
             "dest" : "par"
-          },
+          }
+        ]
+      },
+      {
+        "name" : "Tokenization arguments",
+        "arguments" : [
           {
             "type" : "integer",
             "name" : "--max_seq_len",
@@ -3093,20 +3021,12 @@ meta = [
             "multiple" : false,
             "multiple_sep" : ":",
             "dest" : "par"
-          },
-          {
-            "type" : "double",
-            "name" : "--dropout",
-            "description" : "Dropout value used for the transformer encoder layer\n",
-            "default" : [
-              0.2
-            ],
-            "required" : false,
-            "direction" : "input",
-            "multiple" : false,
-            "multiple_sep" : ":",
-            "dest" : "par"
-          },
+          }
+        ]
+      },
+      {
+        "name" : "Embedding arguments",
+        "arguments" : [
           {
             "type" : "boolean",
             "name" : "DSBN",
@@ -3123,7 +3043,7 @@ meta = [
           {
             "type" : "integer",
             "name" : "--batch_size",
-            "description" : "The batch size to be used for inference \n",
+            "description" : "The batch size to be used for embedding inference.\n",
             "default" : [
               64
             ],
@@ -3136,21 +3056,37 @@ meta = [
         ]
       },
       {
-        "name" : "Clustering options",
+        "name" : "Binning arguments",
         "arguments" : [
           {
-            "type" : "string",
-            "name" : "--obs_cluster",
-            "description" : "Prefix for the .obs keys under which to add the cluster labels. Newly created columns in .obs will \nbe created from the specified value for '--obs_cluster' suffixed with an underscore and one of the resolutions\nresolutions specified in '--leiden_resolution'.\n",
+            "type" : "integer",
+            "name" : "--n_input_bins",
+            "description" : "The number of bins to discretize the data into; When no value is provided, data won't be binned.\n",
             "default" : [
-              "scGPT_integration_leiden"
+              51
             ],
             "required" : false,
+            "min" : 1,
             "direction" : "input",
             "multiple" : false,
             "multiple_sep" : ":",
             "dest" : "par"
           },
+          {
+            "type" : "integer",
+            "name" : "--seed",
+            "description" : "Seed for random number generation used for binning.\n",
+            "required" : false,
+            "direction" : "input",
+            "multiple" : false,
+            "multiple_sep" : ":",
+            "dest" : "par"
+          }
+        ]
+      },
+      {
+        "name" : "Clustering arguments",
+        "arguments" : [
           {
             "type" : "double",
             "name" : "--leiden_resolution",
@@ -3162,63 +3098,6 @@ meta = [
             "direction" : "input",
             "multiple" : true,
             "multiple_sep" : ";",
-            "dest" : "par"
-          }
-        ]
-      },
-      {
-        "name" : "Neighbors and UMAP options",
-        "arguments" : [
-          {
-            "type" : "string",
-            "name" : "--uns_neighbors",
-            "description" : "In which uns slot to store various neighbor output objects.",
-            "default" : [
-              "scGPT_integration_neighbors"
-            ],
-            "required" : false,
-            "direction" : "input",
-            "multiple" : false,
-            "multiple_sep" : ":",
-            "dest" : "par"
-          },
-          {
-            "type" : "string",
-            "name" : "--obsp_neighbor_distances",
-            "description" : "In which obsp slot to store the distance matrix between the resulting neighbors.",
-            "default" : [
-              "scGPT_integration_distances"
-            ],
-            "required" : false,
-            "direction" : "input",
-            "multiple" : false,
-            "multiple_sep" : ":",
-            "dest" : "par"
-          },
-          {
-            "type" : "string",
-            "name" : "--obsp_neighbor_connectivities",
-            "description" : "In which obsp slot to store the connectivities matrix between the resulting neighbors.",
-            "default" : [
-              "scGPT_integration_connectivities"
-            ],
-            "required" : false,
-            "direction" : "input",
-            "multiple" : false,
-            "multiple_sep" : ":",
-            "dest" : "par"
-          },
-          {
-            "type" : "string",
-            "name" : "--obsm_umap",
-            "description" : "In which .obsm slot to store the resulting UMAP embedding.",
-            "default" : [
-              "X_scGPT_umap"
-            ],
-            "required" : false,
-            "direction" : "input",
-            "multiple" : false,
-            "multiple_sep" : ":",
             "dest" : "par"
           }
         ]
@@ -3242,16 +3121,6 @@ meta = [
     "test_resources" : [
       {
         "type" : "file",
-        "path" : "resources_test/scgpt/test_resources/Kim2020_Lung_subset.h5mu",
-        "parent" : "file:///home/runner/work/openpipeline/openpipeline/"
-      },
-      {
-        "type" : "file",
-        "path" : "resources_test/scgpt/source/",
-        "parent" : "file:///home/runner/work/openpipeline/openpipeline/"
-      },
-      {
-        "type" : "file",
         "path" : "src/base/openpipelinetestutils",
         "dest" : "openpipelinetestutils"
       }
@@ -3272,14 +3141,14 @@ meta = [
         "foundConfigPath" : "/home/runner/work/openpipeline/openpipeline/src/scgpt/cross_check_genes/config.vsh.yaml",
         "configInfo" : {
           "functionalityName" : "cross_check_genes",
-          "git_tag" : "0.2.0-1592-g88db6b389e",
+          "git_tag" : "0.2.0-1593-g1d7e0fa3eb",
           "git_remote" : "https://github.com/openpipelines-bio/openpipeline",
           "viash_version" : "0.8.5",
           "config" : "/home/runner/work/openpipeline/openpipeline/src/scgpt/cross_check_genes/config.vsh.yaml",
           "functionalityNamespace" : "scgpt",
           "output" : "",
           "platform" : "",
-          "git_commit" : "88db6b389ec899294bd6eb45f677e2eb0d7f8904",
+          "git_commit" : "1d7e0fa3ebe2e081f1123edaeaba60b0b6a087ea",
           "executable" : "/nextflow/scgpt/cross_check_genes/main.nf"
         },
         "writtenPath" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/scgpt/cross_check_genes"
@@ -3293,14 +3162,14 @@ meta = [
         "foundConfigPath" : "/home/runner/work/openpipeline/openpipeline/src/scgpt/binning/config.vsh.yaml",
         "configInfo" : {
           "functionalityName" : "binning",
-          "git_tag" : "0.2.0-1592-g88db6b389e",
+          "git_tag" : "0.2.0-1593-g1d7e0fa3eb",
           "git_remote" : "https://github.com/openpipelines-bio/openpipeline",
           "viash_version" : "0.8.5",
           "config" : "/home/runner/work/openpipeline/openpipeline/src/scgpt/binning/config.vsh.yaml",
           "functionalityNamespace" : "scgpt",
           "output" : "",
           "platform" : "",
-          "git_commit" : "88db6b389ec899294bd6eb45f677e2eb0d7f8904",
+          "git_commit" : "1d7e0fa3ebe2e081f1123edaeaba60b0b6a087ea",
           "executable" : "/nextflow/scgpt/binning/main.nf"
         },
         "writtenPath" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/scgpt/binning"
@@ -3314,14 +3183,14 @@ meta = [
         "foundConfigPath" : "/home/runner/work/openpipeline/openpipeline/src/feature_annotation/highly_variable_features_scanpy/config.vsh.yaml",
         "configInfo" : {
           "functionalityName" : "highly_variable_features_scanpy",
-          "git_tag" : "0.2.0-1592-g88db6b389e",
+          "git_tag" : "0.2.0-1593-g1d7e0fa3eb",
           "git_remote" : "https://github.com/openpipelines-bio/openpipeline",
           "viash_version" : "0.8.5",
           "config" : "/home/runner/work/openpipeline/openpipeline/src/feature_annotation/highly_variable_features_scanpy/config.vsh.yaml",
           "functionalityNamespace" : "feature_annotation",
           "output" : "",
           "platform" : "",
-          "git_commit" : "88db6b389ec899294bd6eb45f677e2eb0d7f8904",
+          "git_commit" : "1d7e0fa3ebe2e081f1123edaeaba60b0b6a087ea",
           "executable" : "/nextflow/feature_annotation/highly_variable_features_scanpy/main.nf"
         },
         "writtenPath" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/feature_annotation/highly_variable_features_scanpy"
@@ -3335,14 +3204,14 @@ meta = [
         "foundConfigPath" : "/home/runner/work/openpipeline/openpipeline/src/filter/do_filter/config.vsh.yaml",
         "configInfo" : {
           "functionalityName" : "do_filter",
-          "git_tag" : "0.2.0-1592-g88db6b389e",
+          "git_tag" : "0.2.0-1593-g1d7e0fa3eb",
           "git_remote" : "https://github.com/openpipelines-bio/openpipeline",
           "viash_version" : "0.8.5",
           "config" : "/home/runner/work/openpipeline/openpipeline/src/filter/do_filter/config.vsh.yaml",
           "functionalityNamespace" : "filter",
           "output" : "",
           "platform" : "",
-          "git_commit" : "88db6b389ec899294bd6eb45f677e2eb0d7f8904",
+          "git_commit" : "1d7e0fa3ebe2e081f1123edaeaba60b0b6a087ea",
           "executable" : "/nextflow/filter/do_filter/main.nf"
         },
         "writtenPath" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/filter/do_filter"
@@ -3356,14 +3225,14 @@ meta = [
         "foundConfigPath" : "/home/runner/work/openpipeline/openpipeline/src/scgpt/pad_tokenize/config.vsh.yaml",
         "configInfo" : {
           "functionalityName" : "pad_tokenize",
-          "git_tag" : "0.2.0-1592-g88db6b389e",
+          "git_tag" : "0.2.0-1593-g1d7e0fa3eb",
           "git_remote" : "https://github.com/openpipelines-bio/openpipeline",
           "viash_version" : "0.8.5",
           "config" : "/home/runner/work/openpipeline/openpipeline/src/scgpt/pad_tokenize/config.vsh.yaml",
           "functionalityNamespace" : "scgpt",
           "output" : "",
           "platform" : "",
-          "git_commit" : "88db6b389ec899294bd6eb45f677e2eb0d7f8904",
+          "git_commit" : "1d7e0fa3ebe2e081f1123edaeaba60b0b6a087ea",
           "executable" : "/nextflow/scgpt/pad_tokenize/main.nf"
         },
         "writtenPath" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/scgpt/pad_tokenize"
@@ -3374,17 +3243,17 @@ meta = [
           "type" : "local",
           "localPath" : ""
         },
-        "foundConfigPath" : "/home/runner/work/openpipeline/openpipeline/src/scgpt/embed/config.vsh.yaml",
+        "foundConfigPath" : "/home/runner/work/openpipeline/openpipeline/src/scgpt/embedding/config.vsh.yaml",
         "configInfo" : {
           "functionalityName" : "embedding",
-          "git_tag" : "0.2.0-1592-g88db6b389e",
+          "git_tag" : "0.2.0-1593-g1d7e0fa3eb",
           "git_remote" : "https://github.com/openpipelines-bio/openpipeline",
           "viash_version" : "0.8.5",
-          "config" : "/home/runner/work/openpipeline/openpipeline/src/scgpt/embed/config.vsh.yaml",
+          "config" : "/home/runner/work/openpipeline/openpipeline/src/scgpt/embedding/config.vsh.yaml",
           "functionalityNamespace" : "scgpt",
           "output" : "",
           "platform" : "",
-          "git_commit" : "88db6b389ec899294bd6eb45f677e2eb0d7f8904",
+          "git_commit" : "1d7e0fa3ebe2e081f1123edaeaba60b0b6a087ea",
           "executable" : "/nextflow/scgpt/embedding/main.nf"
         },
         "writtenPath" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/scgpt/embedding"
@@ -3398,14 +3267,14 @@ meta = [
         "foundConfigPath" : "/home/runner/work/openpipeline/openpipeline/src/dimred/umap/config.vsh.yaml",
         "configInfo" : {
           "functionalityName" : "umap",
-          "git_tag" : "0.2.0-1592-g88db6b389e",
+          "git_tag" : "0.2.0-1593-g1d7e0fa3eb",
           "git_remote" : "https://github.com/openpipelines-bio/openpipeline",
           "viash_version" : "0.8.5",
           "config" : "/home/runner/work/openpipeline/openpipeline/src/dimred/umap/config.vsh.yaml",
           "functionalityNamespace" : "dimred",
           "output" : "",
           "platform" : "",
-          "git_commit" : "88db6b389ec899294bd6eb45f677e2eb0d7f8904",
+          "git_commit" : "1d7e0fa3ebe2e081f1123edaeaba60b0b6a087ea",
           "executable" : "/nextflow/dimred/umap/main.nf"
         },
         "writtenPath" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/dimred/umap"
@@ -3419,14 +3288,14 @@ meta = [
         "foundConfigPath" : "/home/runner/work/openpipeline/openpipeline/src/neighbors/find_neighbors/config.vsh.yaml",
         "configInfo" : {
           "functionalityName" : "find_neighbors",
-          "git_tag" : "0.2.0-1592-g88db6b389e",
+          "git_tag" : "0.2.0-1593-g1d7e0fa3eb",
           "git_remote" : "https://github.com/openpipelines-bio/openpipeline",
           "viash_version" : "0.8.5",
           "config" : "/home/runner/work/openpipeline/openpipeline/src/neighbors/find_neighbors/config.vsh.yaml",
           "functionalityNamespace" : "neighbors",
           "output" : "",
           "platform" : "",
-          "git_commit" : "88db6b389ec899294bd6eb45f677e2eb0d7f8904",
+          "git_commit" : "1d7e0fa3ebe2e081f1123edaeaba60b0b6a087ea",
           "executable" : "/nextflow/neighbors/find_neighbors/main.nf"
         },
         "writtenPath" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/neighbors/find_neighbors"
@@ -3440,14 +3309,14 @@ meta = [
         "foundConfigPath" : "/home/runner/work/openpipeline/openpipeline/src/cluster/leiden/config.vsh.yaml",
         "configInfo" : {
           "functionalityName" : "leiden",
-          "git_tag" : "0.2.0-1592-g88db6b389e",
+          "git_tag" : "0.2.0-1593-g1d7e0fa3eb",
           "git_remote" : "https://github.com/openpipelines-bio/openpipeline",
           "viash_version" : "0.8.5",
           "config" : "/home/runner/work/openpipeline/openpipeline/src/cluster/leiden/config.vsh.yaml",
           "functionalityNamespace" : "cluster",
           "output" : "",
           "platform" : "",
-          "git_commit" : "88db6b389ec899294bd6eb45f677e2eb0d7f8904",
+          "git_commit" : "1d7e0fa3ebe2e081f1123edaeaba60b0b6a087ea",
           "executable" : "/nextflow/cluster/leiden/main.nf"
         },
         "writtenPath" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/cluster/leiden"
@@ -3461,14 +3330,14 @@ meta = [
         "foundConfigPath" : "/home/runner/work/openpipeline/openpipeline/src/metadata/move_obsm_to_obs/config.vsh.yaml",
         "configInfo" : {
           "functionalityName" : "move_obsm_to_obs",
-          "git_tag" : "0.2.0-1592-g88db6b389e",
+          "git_tag" : "0.2.0-1593-g1d7e0fa3eb",
           "git_remote" : "https://github.com/openpipelines-bio/openpipeline",
           "viash_version" : "0.8.5",
           "config" : "/home/runner/work/openpipeline/openpipeline/src/metadata/move_obsm_to_obs/config.vsh.yaml",
           "functionalityNamespace" : "metadata",
           "output" : "",
           "platform" : "",
-          "git_commit" : "88db6b389ec899294bd6eb45f677e2eb0d7f8904",
+          "git_commit" : "1d7e0fa3ebe2e081f1123edaeaba60b0b6a087ea",
           "executable" : "/nextflow/metadata/move_obsm_to_obs/main.nf"
         },
         "writtenPath" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/metadata/move_obsm_to_obs"
@@ -3535,9 +3404,9 @@ meta = [
     "platform" : "nextflow",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/workflows/integration/scgpt_leiden",
     "viash_version" : "0.8.5",
-    "git_commit" : "88db6b389ec899294bd6eb45f677e2eb0d7f8904",
+    "git_commit" : "1d7e0fa3ebe2e081f1123edaeaba60b0b6a087ea",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline",
-    "git_tag" : "0.2.0-1592-g88db6b389e"
+    "git_tag" : "0.2.0-1593-g1d7e0fa3eb"
   }
 }'''))
 ]
@@ -3603,7 +3472,7 @@ workflow run_wf {
           "input": state.input,
           "modality": state.modality,
           "vocab_file": state.model_vocab,
-          "input_var_gene_names": state.var_gene_names,
+          "var_gene_names": state.var_gene_names,
           "output": state.output,
           "pad_token": state.pad_token
         ]
@@ -3617,7 +3486,7 @@ workflow run_wf {
             "modality": state.modality,
             "input_layer": state.input_layer,
             "n_input_bins": state.n_input_bins,
-            "binned_layer": state.binned_layer,
+            "binned_layer": "binned",
             "output": state.output
           ]
         },
@@ -3629,14 +3498,14 @@ workflow run_wf {
             "input": state.input,
             "modality": state.modality,
             "model_vocab": state.model_vocab,
-            "input_layer": state.binned_layer,
+            "input_layer": "binned",
             "var_gene_names": state.var_gene_names,
             "pad_token": state.pad_token,
             "pad_value": state.pad_value,
             "max_seq_len": state.max_seq_len,
-            "obsm_gene_tokens": state.obsm_gene_tokens,
-            "obsm_tokenized_values": state.obsm_tokenized_values,
-            "obsm_padding_mask": state.obsm_padding_mask,
+            "obsm_gene_tokens": "gene_id_tokens",
+            "obsm_tokenized_values": "values_tokenized",
+            "obsm_padding_mask": "padding_mask",
             "output": state.output
           ]
         },
@@ -3650,17 +3519,16 @@ workflow run_wf {
           "model": state.model,
           "model_vocab": state.model_vocab,
           "model_config": state.model_config,
-          "obsm_gene_tokens": state.obsm_gene_tokens,
-          "obsm_tokenized_values": state.obsm_tokenized_values,
-          "obsm_padding_mask": state.obsm_padding_mask,
+          "obsm_gene_tokens": "gene_id_tokens",
+          "obsm_tokenized_values": "values_tokenized",
+          "obsm_padding_mask": "padding_mask",
           "var_gene_names": state.var_gene_names,
           "obs_batch_label": state.obs_batch_label,
           "pad_token": state.pad_token,
           "pad_value": state.pad_value,
-          "dropout": state.dropout,
           "DSBN": state.DSBN,
           "batch_size": state.batch_size,
-          "obsm_embeddings": state.obsm_embeddings,
+          "obsm_embeddings": "X_scGPT",
           "output": state.output
         ]
       },
@@ -3670,10 +3538,10 @@ workflow run_wf {
     | find_neighbors.run(
       fromState: {id, state -> [
           "input": state.input,
-          "uns_output": state.uns_neighbors,
-          "obsp_distances": state.obsp_neighbor_distances,
-          "obsp_connectivities": state.obsp_neighbor_connectivities,
-          "obsm_input": state.obsm_embeddings,
+          "uns_output": "scGPT_integration_neighbors",
+          "obsp_distances": "scGPT_integration_distances",
+          "obsp_connectivities": "scGPT_integration_connectivities",
+          "obsm_input": "X_scGPT",
           "modality": state.modality
         ]
       },
@@ -3683,21 +3551,23 @@ workflow run_wf {
 with_leiden_ch = neighbors_ch
     | filter{id, state -> state.leiden_resolution}
     | leiden.run(
-      fromState: [
-        "input": "input",
-        "obsp_connectivities": "obsp_neighbor_connectivities",
-        "obsm_name": "obs_cluster",
-        "resolution": "leiden_resolution",
-        "modality": "modality",
-      ],
+      fromState: {id, state -> [
+        "input": state.input,
+        "obsp_connectivities": "scGPT_integration_connectivities",
+        "obsm_name": "scGPT_integration_leiden",
+        "resolution": state.leiden_resolution,
+        "modality": state.modality,
+        ]
+      },
       toState: ["input": "output"]
     )
     | move_obsm_to_obs.run(
-      fromState: [
-          "input": "input",
-          "obsm_key": "obs_cluster",
-          "modality": "modality",
-      ],
+      fromState: {id, state -> [
+          "input": state.input,
+          "obsm_key": "scGPT_integration_leiden",
+          "modality": state.modality,
+        ]
+      },
       toState: ["input": "output"]
     )
 
@@ -3708,8 +3578,8 @@ with_leiden_ch = neighbors_ch
     | umap.run(
       fromState: {id, state -> [
           "input": state.input,
-          "uns_neighbors": state.uns_neighbors,
-          "obsm_output": state.obsm_umap,
+          "uns_neighbors": "scGPT_integration_neighbors",
+          "obsm_output": "X_scGPT_umap",
           "modality": state.modality,
           "output_compression": state.output_compression,
           "output": state.workflow_output

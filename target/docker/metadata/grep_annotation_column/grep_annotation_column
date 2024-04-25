@@ -470,9 +470,9 @@ RUN pip install --upgrade pip && \
 
 LABEL org.opencontainers.image.authors="Dries Schaumont"
 LABEL org.opencontainers.image.description="Companion container for running component metadata grep_annotation_column"
-LABEL org.opencontainers.image.created="2024-04-18T06:59:58Z"
+LABEL org.opencontainers.image.created="2024-04-25T11:08:57Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="88db6b389ec899294bd6eb45f677e2eb0d7f8904"
+LABEL org.opencontainers.image.revision="1d7e0fa3ebe2e081f1123edaeaba60b0b6a087ea"
 LABEL org.opencontainers.image.version="scgpt-integration_build"
 
 VIASHDOCKER
@@ -813,14 +813,14 @@ eval set -- $VIASH_POSITIONAL_ARGS
 ViashDockerInstallationCheck
 
 if [ $VIASH_MODE == "docker_setup" ]; then
-  ViashDockerSetup 'ghcr.io/openpipelines-bio/metadata_grep_annotation_column:scgpt-integration_build' "$VIASH_DOCKER_SETUP_STRATEGY"
+  ViashDockerSetup 'ghcr.io/openpipelines-bio/metadata/grep_annotation_column:scgpt-integration_build' "$VIASH_DOCKER_SETUP_STRATEGY"
   exit 0
 fi
-ViashDockerSetup 'ghcr.io/openpipelines-bio/metadata_grep_annotation_column:scgpt-integration_build' ifneedbepullelsecachedbuild
+ViashDockerSetup 'ghcr.io/openpipelines-bio/metadata/grep_annotation_column:scgpt-integration_build' ifneedbepullelsecachedbuild
 
 if [ $VIASH_MODE == "docker_debug" ]; then
-  ViashNotice "+ docker run --entrypoint=bash -i --rm -v "$(pwd)":/pwd --workdir /pwd -t 'ghcr.io/openpipelines-bio/metadata_grep_annotation_column:scgpt-integration_build'"
-  docker run --entrypoint=bash -i --rm -v "$(pwd)":/pwd --workdir /pwd -t 'ghcr.io/openpipelines-bio/metadata_grep_annotation_column:scgpt-integration_build'
+  ViashNotice "+ docker run --entrypoint=bash -i --rm -v "$(pwd)":/pwd --workdir /pwd -t 'ghcr.io/openpipelines-bio/metadata/grep_annotation_column:scgpt-integration_build'"
+  docker run --entrypoint=bash -i --rm -v "$(pwd)":/pwd --workdir /pwd -t 'ghcr.io/openpipelines-bio/metadata/grep_annotation_column:scgpt-integration_build'
   exit 0
 fi
 
@@ -1019,7 +1019,7 @@ VIASH_UNIQUE_MOUNTS=($(for val in "${VIASH_EXTRA_MOUNTS[@]}"; do echo "$val"; do
 function ViashPerformChown {
   if (( ${#VIASH_CHOWN_VARS[@]} )); then
     set +e
-    eval docker run --entrypoint=chown -i --rm ${VIASH_UNIQUE_MOUNTS[@]} ghcr.io/openpipelines-bio/metadata_grep_annotation_column:scgpt-integration_build "$(id -u):$(id -g)" --silent --recursive ${VIASH_CHOWN_VARS[@]}
+    eval docker run --entrypoint=chown -i --rm ${VIASH_UNIQUE_MOUNTS[@]} ghcr.io/openpipelines-bio/metadata/grep_annotation_column:scgpt-integration_build "$(id -u):$(id -g)" --silent --recursive ${VIASH_CHOWN_VARS[@]}
     set -e
   fi
 }
@@ -1038,8 +1038,8 @@ fi
 # set dependency paths
 
 
-ViashDebug "Running command: $(echo docker run --entrypoint=bash -i --rm ${VIASH_UNIQUE_MOUNTS[@]} $VIASH_EXTRA_DOCKER_ARGS ghcr.io/openpipelines-bio/metadata_grep_annotation_column:scgpt-integration_build)"
-cat << VIASHEOF | eval docker run --entrypoint=bash -i --rm ${VIASH_UNIQUE_MOUNTS[@]} $VIASH_EXTRA_DOCKER_ARGS ghcr.io/openpipelines-bio/metadata_grep_annotation_column:scgpt-integration_build
+ViashDebug "Running command: $(echo docker run --entrypoint=bash -i --rm ${VIASH_UNIQUE_MOUNTS[@]} $VIASH_EXTRA_DOCKER_ARGS ghcr.io/openpipelines-bio/metadata/grep_annotation_column:scgpt-integration_build)"
+cat << VIASHEOF | eval docker run --entrypoint=bash -i --rm ${VIASH_UNIQUE_MOUNTS[@]} $VIASH_EXTRA_DOCKER_ARGS ghcr.io/openpipelines-bio/metadata/grep_annotation_column:scgpt-integration_build
 set -e
 tempscript=\$(mktemp "$VIASH_META_TEMP_DIR/viash-run-grep_annotation_column-XXXXXX").py
 function clean_up {
@@ -1054,8 +1054,9 @@ trap interrupt INT SIGINT
 cat > "\$tempscript" << 'VIASHMAIN'
 import mudata as mu
 from pathlib import Path
-from operator import attrgetter, itemgetter
+from operator import attrgetter
 from pandas import Series
+import scipy as sc
 import re
 import numpy as np
 
@@ -1112,6 +1113,18 @@ def setup_logger():
 # END TEMPORARY WORKAROUND setup_logger
 logger = setup_logger()
 
+def describe_array(arr, msg):
+    # Note: sc.stats returns a DescribeResult NamedTuple. For NamedTuples,
+    # the _asdict method is public facing even though it starts with an underscore.
+    description = sc.stats.describe(arr)._asdict()
+    logger.info("%s:\\nshape: %s\\nmean: %s\\nnobs: %s\\n"
+                "variance: %s\\nmin: %s\\nmax: %s\\ncontains na: %s\\ndtype: %s\\ncontains 0: %s",
+                msg, arr.shape, description["mean"], description["nobs"],
+                description["variance"], description["minmax"][0],
+                description["minmax"][1], np.isnan(arr).any(), arr.dtype,
+                (arr == 0).any())
+
+
 def main(par):
     input_file, output_file, mod_name = Path(par["input"]), Path(par["output"]), par['modality']
     logger.info(f"Compiling regular expression '{par['regex_pattern']}'.")
@@ -1155,10 +1168,21 @@ def main(par):
     if par['output_fraction_column']:
         logger.info("Enabled writing the fraction of values that matches to the pattern.")
         input_layer = modality_data.X if not par["input_layer"] else modality_data.layers[par["input_layer"]]
-        pct_matching = np.ravel(np.sum(input_layer[:, grep_result], axis=1) / np.sum(input_layer, axis=1))
-        assert ((pct_matching >= 0) & (pct_matching <= 1)).all(), \\
-                "Fractions are not within bounds, please report this as a bug"
+        totals = np.ravel(input_layer.sum(axis=1))
+        describe_array(totals, "Summary of total counts for layer")
+        counts_for_matches = np.ravel(input_layer[:, grep_result].sum(axis=1))
+        describe_array(counts_for_matches, "Summary of counts matching grep")
+        with np.errstate(all='raise'):
+            pct_matching = np.divide(counts_for_matches, totals,
+                                     out=np.zeros_like(totals, dtype=np.float64),
+                                     where=(~np.isclose(totals, np.zeros_like(totals))))
+        logger.info("Testing wether or not fractions data contains NA.")
+        assert ~np.isnan(pct_matching).any(), "Fractions should not contain NA."
         logger.info("Fraction statistics: \\n%s", Series(pct_matching).describe())
+        pct_matching = np.where(np.isclose(pct_matching, 0, atol=1e-6), 0, pct_matching)
+        pct_matching = np.where(np.isclose(pct_matching, 1, atol=1e-6), 1, pct_matching)
+        assert (np.logical_and(pct_matching >= 0, pct_matching <= 1)).all(), \\
+                "Fractions are not within bounds, please report this as a bug"
         output_matrix = other_axis_attribute[par['matrix']]
         logger.info("Writing fractions to matrix '%s', column '%s'",
                     output_matrix, par['output_fraction_column'])

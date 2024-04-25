@@ -204,19 +204,19 @@ function ViashHelp {
   echo "        Path to scGPT model config file."
   echo ""
   echo "    --obsm_gene_tokens"
-  echo "        type: string, required parameter"
+  echo "        type: string"
   echo "        default: gene_id_tokens"
   echo "        example: values.pt"
   echo "        The key of the .obsm array containing the gene token ids"
   echo ""
   echo "    --obsm_tokenized_values"
-  echo "        type: string, required parameter"
+  echo "        type: string"
   echo "        default: values_tokenized"
   echo "        The key of the .obsm array containing the count values of the tokenized"
   echo "        genes"
   echo ""
   echo "    --obsm_padding_mask"
-  echo "        type: string, required parameter"
+  echo "        type: string"
   echo "        default: padding_mask"
   echo "        The key of the .obsm array containing the padding mask."
   echo ""
@@ -228,7 +228,7 @@ function ViashHelp {
   echo "    --obs_batch_label"
   echo "        type: string"
   echo "        The name of the adata.obs column containing the batch labels. Must be"
-  echo "        provided when 'DSBN' is set to True."
+  echo "        provided when 'dsbn' is set to True."
   echo ""
   echo "Outputs:"
   echo "    --output"
@@ -260,12 +260,7 @@ function ViashHelp {
   echo "        default: -2"
   echo "        The value of the padding token."
   echo ""
-  echo "    --dropout"
-  echo "        type: double"
-  echo "        default: 0.2"
-  echo "        Dropout value used for the transformer encoder layer"
-  echo ""
-  echo "    --DSBN"
+  echo "    --dbsn"
   echo "        type: boolean"
   echo "        default: true"
   echo "        Whether to apply domain-specific batch normalization for generating"
@@ -275,6 +270,12 @@ function ViashHelp {
   echo "        type: integer"
   echo "        default: 64"
   echo "        The batch size to be used for inference"
+  echo ""
+  echo "    --dsbn"
+  echo "        type: boolean"
+  echo "        default: true"
+  echo "        Whether to apply domain-specific batch normalization for generating"
+  echo "        embeddings. When set to True, 'obs_batch_labels' must be set as well."
 }
 
 ######## Helper functions for setting up Docker images for viash ########
@@ -505,9 +506,9 @@ RUN pip install --upgrade pip && \
 
 LABEL org.opencontainers.image.authors="Dorien Roosen"
 LABEL org.opencontainers.image.description="Companion container for running component scgpt embedding"
-LABEL org.opencontainers.image.created="2024-04-18T06:59:57Z"
+LABEL org.opencontainers.image.created="2024-04-25T11:08:56Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="88db6b389ec899294bd6eb45f677e2eb0d7f8904"
+LABEL org.opencontainers.image.revision="1d7e0fa3ebe2e081f1123edaeaba60b0b6a087ea"
 LABEL org.opencontainers.image.version="scgpt-integration_build"
 
 VIASHDOCKER
@@ -827,26 +828,15 @@ while [[ $# -gt 0 ]]; do
             VIASH_PAR_PAD_VALUE=$(ViashRemoveFlags "$1")
             shift 1
             ;;
-        --dropout)
-            [ -n "$VIASH_PAR_DROPOUT" ] && ViashError Bad arguments for option \'--dropout\': \'$VIASH_PAR_DROPOUT\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
-            VIASH_PAR_DROPOUT="$2"
-            [ $# -lt 2 ] && ViashError Not enough arguments passed to --dropout. Use "--help" to get more information on the parameters. && exit 1
+        --dbsn)
+            [ -n "$VIASH_PAR_DBSN" ] && ViashError Bad arguments for option \'--dbsn\': \'$VIASH_PAR_DBSN\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+            VIASH_PAR_DBSN="$2"
+            [ $# -lt 2 ] && ViashError Not enough arguments passed to --dbsn. Use "--help" to get more information on the parameters. && exit 1
             shift 2
             ;;
-        --dropout=*)
-            [ -n "$VIASH_PAR_DROPOUT" ] && ViashError Bad arguments for option \'--dropout=*\': \'$VIASH_PAR_DROPOUT\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
-            VIASH_PAR_DROPOUT=$(ViashRemoveFlags "$1")
-            shift 1
-            ;;
-        --DSBN)
-            [ -n "$VIASH_PAR_DSBN" ] && ViashError Bad arguments for option \'--DSBN\': \'$VIASH_PAR_DSBN\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
-            VIASH_PAR_DSBN="$2"
-            [ $# -lt 2 ] && ViashError Not enough arguments passed to --DSBN. Use "--help" to get more information on the parameters. && exit 1
-            shift 2
-            ;;
-        --DSBN=*)
-            [ -n "$VIASH_PAR_DSBN" ] && ViashError Bad arguments for option \'--DSBN=*\': \'$VIASH_PAR_DSBN\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
-            VIASH_PAR_DSBN=$(ViashRemoveFlags "$1")
+        --dbsn=*)
+            [ -n "$VIASH_PAR_DBSN" ] && ViashError Bad arguments for option \'--dbsn=*\': \'$VIASH_PAR_DBSN\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+            VIASH_PAR_DBSN=$(ViashRemoveFlags "$1")
             shift 1
             ;;
         --batch_size)
@@ -858,6 +848,17 @@ while [[ $# -gt 0 ]]; do
         --batch_size=*)
             [ -n "$VIASH_PAR_BATCH_SIZE" ] && ViashError Bad arguments for option \'--batch_size=*\': \'$VIASH_PAR_BATCH_SIZE\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
             VIASH_PAR_BATCH_SIZE=$(ViashRemoveFlags "$1")
+            shift 1
+            ;;
+        --dsbn)
+            [ -n "$VIASH_PAR_DSBN" ] && ViashError Bad arguments for option \'--dsbn\': \'$VIASH_PAR_DSBN\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+            VIASH_PAR_DSBN="$2"
+            [ $# -lt 2 ] && ViashError Not enough arguments passed to --dsbn. Use "--help" to get more information on the parameters. && exit 1
+            shift 2
+            ;;
+        --dsbn=*)
+            [ -n "$VIASH_PAR_DSBN" ] && ViashError Bad arguments for option \'--dsbn=*\': \'$VIASH_PAR_DSBN\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+            VIASH_PAR_DSBN=$(ViashRemoveFlags "$1")
             shift 1
             ;;
         ---setup)
@@ -924,14 +925,14 @@ eval set -- $VIASH_POSITIONAL_ARGS
 ViashDockerInstallationCheck
 
 if [ $VIASH_MODE == "docker_setup" ]; then
-  ViashDockerSetup 'ghcr.io/openpipelines-bio/scgpt_embedding:scgpt-integration_build' "$VIASH_DOCKER_SETUP_STRATEGY"
+  ViashDockerSetup 'ghcr.io/openpipelines-bio/scgpt/embedding:scgpt-integration_build' "$VIASH_DOCKER_SETUP_STRATEGY"
   exit 0
 fi
-ViashDockerSetup 'ghcr.io/openpipelines-bio/scgpt_embedding:scgpt-integration_build' ifneedbepullelsecachedbuild
+ViashDockerSetup 'ghcr.io/openpipelines-bio/scgpt/embedding:scgpt-integration_build' ifneedbepullelsecachedbuild
 
 if [ $VIASH_MODE == "docker_debug" ]; then
-  ViashNotice "+ docker run --entrypoint=bash -i --rm --shm-size 5000m -v "$(pwd)":/pwd --workdir /pwd -t 'ghcr.io/openpipelines-bio/scgpt_embedding:scgpt-integration_build'"
-  docker run --entrypoint=bash -i --rm --shm-size 5000m -v "$(pwd)":/pwd --workdir /pwd -t 'ghcr.io/openpipelines-bio/scgpt_embedding:scgpt-integration_build'
+  ViashNotice "+ docker run --entrypoint=bash -i --rm -v "$(pwd)":/pwd --workdir /pwd -t 'ghcr.io/openpipelines-bio/scgpt/embedding:scgpt-integration_build'"
+  docker run --entrypoint=bash -i --rm -v "$(pwd)":/pwd --workdir /pwd -t 'ghcr.io/openpipelines-bio/scgpt/embedding:scgpt-integration_build'
   exit 0
 fi
 
@@ -994,18 +995,6 @@ if [ -z ${VIASH_PAR_MODEL_CONFIG+x} ]; then
   ViashError '--model_config' is a required argument. Use "--help" to get more information on the parameters.
   exit 1
 fi
-if [ -z ${VIASH_PAR_OBSM_GENE_TOKENS+x} ]; then
-  ViashError '--obsm_gene_tokens' is a required argument. Use "--help" to get more information on the parameters.
-  exit 1
-fi
-if [ -z ${VIASH_PAR_OBSM_TOKENIZED_VALUES+x} ]; then
-  ViashError '--obsm_tokenized_values' is a required argument. Use "--help" to get more information on the parameters.
-  exit 1
-fi
-if [ -z ${VIASH_PAR_OBSM_PADDING_MASK+x} ]; then
-  ViashError '--obsm_padding_mask' is a required argument. Use "--help" to get more information on the parameters.
-  exit 1
-fi
 if [ -z ${VIASH_PAR_OUTPUT+x} ]; then
   ViashError '--output' is a required argument. Use "--help" to get more information on the parameters.
   exit 1
@@ -1035,6 +1024,15 @@ fi
 if [ -z ${VIASH_PAR_MODALITY+x} ]; then
   VIASH_PAR_MODALITY="rna"
 fi
+if [ -z ${VIASH_PAR_OBSM_GENE_TOKENS+x} ]; then
+  VIASH_PAR_OBSM_GENE_TOKENS="gene_id_tokens"
+fi
+if [ -z ${VIASH_PAR_OBSM_TOKENIZED_VALUES+x} ]; then
+  VIASH_PAR_OBSM_TOKENIZED_VALUES="values_tokenized"
+fi
+if [ -z ${VIASH_PAR_OBSM_PADDING_MASK+x} ]; then
+  VIASH_PAR_OBSM_PADDING_MASK="padding_mask"
+fi
 if [ -z ${VIASH_PAR_OBSM_EMBEDDINGS+x} ]; then
   VIASH_PAR_OBSM_EMBEDDINGS="X_scGPT"
 fi
@@ -1044,14 +1042,14 @@ fi
 if [ -z ${VIASH_PAR_PAD_VALUE+x} ]; then
   VIASH_PAR_PAD_VALUE="-2"
 fi
-if [ -z ${VIASH_PAR_DROPOUT+x} ]; then
-  VIASH_PAR_DROPOUT="0.2"
-fi
-if [ -z ${VIASH_PAR_DSBN+x} ]; then
-  VIASH_PAR_DSBN="true"
+if [ -z ${VIASH_PAR_DBSN+x} ]; then
+  VIASH_PAR_DBSN="true"
 fi
 if [ -z ${VIASH_PAR_BATCH_SIZE+x} ]; then
   VIASH_PAR_BATCH_SIZE="64"
+fi
+if [ -z ${VIASH_PAR_DSBN+x} ]; then
+  VIASH_PAR_DSBN="true"
 fi
 
 # check whether required files exist
@@ -1079,21 +1077,21 @@ if [[ -n "$VIASH_PAR_PAD_VALUE" ]]; then
     exit 1
   fi
 fi
-if [[ -n "$VIASH_PAR_DROPOUT" ]]; then
-  if ! [[ "$VIASH_PAR_DROPOUT" =~ ^[-+]?(\.[0-9]+|[0-9]+(\.[0-9]*)?)([eE][-+]?[0-9]+)?$ ]]; then
-    ViashError '--dropout' has to be a double. Use "--help" to get more information on the parameters.
-    exit 1
-  fi
-fi
-if [[ -n "$VIASH_PAR_DSBN" ]]; then
-  if ! [[ "$VIASH_PAR_DSBN" =~ ^(true|True|TRUE|false|False|FALSE|yes|Yes|YES|no|No|NO)$ ]]; then
-    ViashError '--DSBN' has to be a boolean. Use "--help" to get more information on the parameters.
+if [[ -n "$VIASH_PAR_DBSN" ]]; then
+  if ! [[ "$VIASH_PAR_DBSN" =~ ^(true|True|TRUE|false|False|FALSE|yes|Yes|YES|no|No|NO)$ ]]; then
+    ViashError '--dbsn' has to be a boolean. Use "--help" to get more information on the parameters.
     exit 1
   fi
 fi
 if [[ -n "$VIASH_PAR_BATCH_SIZE" ]]; then
   if ! [[ "$VIASH_PAR_BATCH_SIZE" =~ ^[-+]?[0-9]+$ ]]; then
     ViashError '--batch_size' has to be an integer. Use "--help" to get more information on the parameters.
+    exit 1
+  fi
+fi
+if [[ -n "$VIASH_PAR_DSBN" ]]; then
+  if ! [[ "$VIASH_PAR_DSBN" =~ ^(true|True|TRUE|false|False|FALSE|yes|Yes|YES|no|No|NO)$ ]]; then
+    ViashError '--dsbn' has to be a boolean. Use "--help" to get more information on the parameters.
     exit 1
   fi
 fi
@@ -1205,7 +1203,7 @@ VIASH_UNIQUE_MOUNTS=($(for val in "${VIASH_EXTRA_MOUNTS[@]}"; do echo "$val"; do
 function ViashPerformChown {
   if (( ${#VIASH_CHOWN_VARS[@]} )); then
     set +e
-    eval docker run --entrypoint=chown -i --rm --shm-size 5000m ${VIASH_UNIQUE_MOUNTS[@]} ghcr.io/openpipelines-bio/scgpt_embedding:scgpt-integration_build "$(id -u):$(id -g)" --silent --recursive ${VIASH_CHOWN_VARS[@]}
+    eval docker run --entrypoint=chown -i --rm ${VIASH_UNIQUE_MOUNTS[@]} ghcr.io/openpipelines-bio/scgpt/embedding:scgpt-integration_build "$(id -u):$(id -g)" --silent --recursive ${VIASH_CHOWN_VARS[@]}
     set -e
   fi
 }
@@ -1224,8 +1222,8 @@ fi
 # set dependency paths
 
 
-ViashDebug "Running command: $(echo docker run --entrypoint=bash -i --rm --shm-size 5000m ${VIASH_UNIQUE_MOUNTS[@]} $VIASH_EXTRA_DOCKER_ARGS ghcr.io/openpipelines-bio/scgpt_embedding:scgpt-integration_build)"
-cat << VIASHEOF | eval docker run --entrypoint=bash -i --rm --shm-size 5000m ${VIASH_UNIQUE_MOUNTS[@]} $VIASH_EXTRA_DOCKER_ARGS ghcr.io/openpipelines-bio/scgpt_embedding:scgpt-integration_build
+ViashDebug "Running command: $(echo docker run --entrypoint=bash -i --rm ${VIASH_UNIQUE_MOUNTS[@]} $VIASH_EXTRA_DOCKER_ARGS ghcr.io/openpipelines-bio/scgpt/embedding:scgpt-integration_build)"
+cat << VIASHEOF | eval docker run --entrypoint=bash -i --rm ${VIASH_UNIQUE_MOUNTS[@]} $VIASH_EXTRA_DOCKER_ARGS ghcr.io/openpipelines-bio/scgpt/embedding:scgpt-integration_build
 set -e
 tempscript=\$(mktemp "$VIASH_META_TEMP_DIR/viash-run-embedding-XXXXXX").py
 function clean_up {
@@ -1264,9 +1262,9 @@ par = {
   'obsm_embeddings': $( if [ ! -z ${VIASH_PAR_OBSM_EMBEDDINGS+x} ]; then echo "r'${VIASH_PAR_OBSM_EMBEDDINGS//\'/\'\"\'\"r\'}'"; else echo None; fi ),
   'pad_token': $( if [ ! -z ${VIASH_PAR_PAD_TOKEN+x} ]; then echo "r'${VIASH_PAR_PAD_TOKEN//\'/\'\"\'\"r\'}'"; else echo None; fi ),
   'pad_value': $( if [ ! -z ${VIASH_PAR_PAD_VALUE+x} ]; then echo "int(r'${VIASH_PAR_PAD_VALUE//\'/\'\"\'\"r\'}')"; else echo None; fi ),
-  'dropout': $( if [ ! -z ${VIASH_PAR_DROPOUT+x} ]; then echo "float(r'${VIASH_PAR_DROPOUT//\'/\'\"\'\"r\'}')"; else echo None; fi ),
-  'DSBN': $( if [ ! -z ${VIASH_PAR_DSBN+x} ]; then echo "r'${VIASH_PAR_DSBN//\'/\'\"\'\"r\'}'.lower() == 'true'"; else echo None; fi ),
-  'batch_size': $( if [ ! -z ${VIASH_PAR_BATCH_SIZE+x} ]; then echo "int(r'${VIASH_PAR_BATCH_SIZE//\'/\'\"\'\"r\'}')"; else echo None; fi )
+  'dbsn': $( if [ ! -z ${VIASH_PAR_DBSN+x} ]; then echo "r'${VIASH_PAR_DBSN//\'/\'\"\'\"r\'}'.lower() == 'true'"; else echo None; fi ),
+  'batch_size': $( if [ ! -z ${VIASH_PAR_BATCH_SIZE+x} ]; then echo "int(r'${VIASH_PAR_BATCH_SIZE//\'/\'\"\'\"r\'}')"; else echo None; fi ),
+  'dsbn': $( if [ ! -z ${VIASH_PAR_DSBN+x} ]; then echo "r'${VIASH_PAR_DSBN//\'/\'\"\'\"r\'}'.lower() == 'true'"; else echo None; fi )
 }
 meta = {
   'functionality_name': $( if [ ! -z ${VIASH_META_FUNCTIONALITY_NAME+x} ]; then echo "r'${VIASH_META_FUNCTIONALITY_NAME//\'/\'\"\'\"r\'}'"; else echo None; fi ),
@@ -1306,16 +1304,8 @@ def setup_logger():
 # END TEMPORARY WORKAROUND setup_logger
 logger = setup_logger()
 
-
-#TODO: Optionally set device to use gpu, to be implemented when gpu-based machine types are supported
-# if par["device"] == "cuda" and not torch.cuda.is_available():
-#     print("WARNING: CUDA is not available. Using CPU instead.")
-#     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-# device = torch.device(par["device"])
-
-logger.info("Setting device to use cpu")
-
-device = torch.device("cpu")
+logger.info(f"Setting device to {'cuda' if torch.cuda.is_available() else 'cpu'}")
+device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 logger.info("Reading in data")
 
@@ -1324,22 +1314,30 @@ mdata = mu.read(par["input"])
 input_adata = mdata.mod[par["modality"]]
 adata = input_adata.copy()
 
+for k, v in {
+        "--obsm_gene_tokens": par["obsm_gene_tokens"],
+        "--obsm_tokenized_values": par["obsm_tokenized_values"],
+        "--obsm_padding_mask": par["obsm_padding_mask"]
+        }.items():
+    if v not in adata.obsm.keys():
+        raise KeyError(f"The parameter '{v}' provided for '{k}' could not be found in adata.obsm")
+
 all_gene_ids = adata.obsm[par["obsm_gene_tokens"]]
 all_values = adata.obsm[par["obsm_tokenized_values"]]
 padding_mask = adata.obsm[par["obsm_padding_mask"]]
 
 # Fetch batch ids for domain-specific batch normalization
-if par["DSBN"] and not par["obs_batch_label"]:
-    raise ValueError("When DSBN is set to True, you are required to provide batch labels (input_obs_batch_labels).")
-elif par["DSBN"] and par["obs_batch_label"]:
+if par["dsbn"] and not par["obs_batch_label"]:
+    raise ValueError("When dsbn is set to True, you are required to provide batch labels (input_obs_batch_labels).")
+elif par["dsbn"] and par["obs_batch_label"]:
     logger.info("Fetching batch id's for domain-specific batch normalization")
     batch_id_cats = adata.obs[par["obs_batch_label"]].astype("category")
     batch_id_labels = batch_id_cats.cat.codes.values
     batch_ids = batch_id_labels.tolist()
     batch_ids = np.array(batch_ids)
     num_batch_types = len(set(batch_ids))
-elif not par["DSBN"] and par["obs_batch_label"]:
-    logger.info("Batch labels provided but DSBN is set to False. Batch labels will be ignored and no DSBN will be performed.")
+elif not par["dsbn"] and par["obs_batch_label"]:
+    logger.info("Batch labels provided but dsbn is set to False. Batch labels will be ignored and no dsbn will be performed.")
 
 # Set padding specs
 logger.info("Setting padding specs")
@@ -1387,7 +1385,7 @@ model = TransformerModel(
     d_hid=d_hid,
     nlayers=nlayers,
     vocab=vocab,
-    dropout=par["dropout"],
+    dropout=0.5, # scGPT default, only relevant for fine-tuning applications
     pad_token=pad_token,
     pad_value=pad_value,
     nlayers_cls=3,  # only applicable for decoder-based operations
@@ -1396,8 +1394,8 @@ model = TransformerModel(
     ecs_threshold=0.8,  # only applicable for decoder-based operations
     do_dab=False,  # only applicable for decoder-based operations
     use_batch_labels=False, # only applicable for decoder-based operations
-    num_batch_labels=num_batch_types if par["DSBN"] else None,
-    domain_spec_batchnorm=par["DSBN"],
+    num_batch_labels=num_batch_types if par["dsbn"] else None,
+    domain_spec_batchnorm=par["dsbn"],
     input_emb_style="continuous",  # scGPT default
     explicit_zero_prob=False,  #TODO: Parametrize when GPU-based machine types are supported
     use_fast_transformer=False,  #TODO: Parametrize when GPU-based machine types are supported
@@ -1421,7 +1419,7 @@ cell_embeddings = model.encode_batch(
     torch.from_numpy(all_values).float(),
     src_key_padding_mask=torch.from_numpy(padding_mask),
     batch_size=par["batch_size"],
-    batch_labels=torch.from_numpy(batch_ids).long() if par["DSBN"] else None,
+    batch_labels=torch.from_numpy(batch_ids).long() if par["dsbn"] else None,
     output_to_cpu=True,
     time_step=0,
     return_np=True

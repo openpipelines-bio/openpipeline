@@ -36,8 +36,10 @@ platforms:
   - type: docker
     image: ghcr.io/data-intuitive/cellranger:7.0
     setup:
-      - type: apt
-        packages: [ pigz ]
+      - type: docker
+        run: |
+          DEBIAN_FRONTEND=noninteractive apt update && \
+          apt upgrade -y && apt install -y procps pigz && rm -rf /var/lib/apt/lists/*
     test_setup:
       - type: apt
         packages: [ git, wget ]

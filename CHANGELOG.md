@@ -1,10 +1,41 @@
-# openpipelines x.x.x 
+# openpipelines x.x.x
 
 ## NEW FUNCTIONALITY
 
-* `metadata/grep_annotation_column`: Added more logging output (PR #697).
+* Added `demux/cellranger_atac_mkfastq` component: demultiplex raw sequencing data for ATAC experiments (PR #726).
 
-* `metadata/add_id` and `metadata/grep_annotation_column`: Bump python to 3.11 (PR #697).
+* Added `reference/build_cellranger_reference` component: build reference file compatible with ATAC and ATAC+GEX experiments (PR #726).
+
+## MINOR CHANGES
+
+* Added `resources_test_scripts/cellranger_atac_tiny_bcl.sh` script: download tiny bcl file with an ATAC experiment, download a motifs file, demultiplex bcl files to reads in fastq format (PR #726).
+
+# openpipelines 1.0.0-rc3
+
+## BREAKING CHANGES
+
+* Docker image names now use `/` instead of `_` between the name of the component and the namespace (PR #712).
+
+## BUG FIXES
+
+* `rna_singlesample`: fixed a bug where selecting the column for the filtering with mitochondrial fractions 
+  using `obs_name_mitochondrial_fraction` was done with the wrong column name, causing `ValueError` (PR #743).
+
+* Fix publishing in `process_samples` and `process_batches` (PR #759).
+
+## NEW FUNCTIONALITY
+
+* `dimred/tsne` component: Added a tSNE dimensionality reduction component (PR #742).
+
+* `scgpt/cross_check_genes` component: Added a gene-model cross check component for scGPT (PR #758).
+
+* `scgpt/embedding`: component: Added scGPT embedding component (PR #761)
+
+* `scgpt/tokenize_pad`: component: Added scGPT padding and tokenization component (PR #754).
+
+* `scgpt/binning` component: Added a scGPT pre-processing binning component (PR #765).
+
+# openpipelines 1.0.0-rc2
 
 ## BUG FIXES
 
@@ -12,11 +43,22 @@
 
 * `dataflow/split_modalities`: remove unused `compression` argument. Use `output_compression` instead (PR #714).
 
+* `metadata/grep_annotation_column`: fix calculating fraction when an input observation has no counts, which caused
+the result to be out of bounds.
+
+* Fix `--output` argument not working for several workflows (PR #740).
+
 ## MINOR CHANGES
+
+* `metadata/grep_annotation_column`: Added more logging output (PR #697).
+
+* `metadata/add_id` and `metadata/grep_annotation_column`: Bump python to 3.11 (PR #697).
 
 * Bump viash to 0.8.5 (PR #697)
 
 * `dataflow/split_modalities`: add more logging output and bump python to 3.12 (PR #714).
+
+* `correction/cellbender`: Update nextflow resource labels from `singlecpu` and `lowmem` to `midcpu` and `midmem` (PR #736)
 
 # openpipelines 1.0.0rc1
 

@@ -23,41 +23,8 @@
 
     
     
-    "outputs" : {
-    "title": "Outputs",
-    "type": "object",
-    "description": "No description",
-    "properties": {
-    
-        
-                "output": {
-                "type":
-                "string",
-                "description": "Type: `file`, required, default: `$id.$key.output.h5mu`, example: `output.h5mu`. Destination path to the output",
-                "help_text": "Type: `file`, required, default: `$id.$key.output.h5mu`, example: `output.h5mu`. Destination path to the output."
-            ,
-                "default": "$id.$key.output.h5mu"
-            }
-    
-
-        ,
-                "output_compression": {
-                "type":
-                "string",
-                "description": "Type: `string`, example: `gzip`, choices: ``gzip`, `lzf``. The compression algorithm to use for the output h5mu file",
-                "help_text": "Type: `string`, example: `gzip`, choices: ``gzip`, `lzf``. The compression algorithm to use for the output h5mu file.\n",
-                "enum": ["gzip", "lzf"]
-            
-            
-            }
-    
-
-}
-},
-    
-    
-    "input" : {
-    "title": "Input",
+    "inputs" : {
+    "title": "Inputs",
     "type": "object",
     "description": "No description",
     "properties": {
@@ -76,8 +43,8 @@
                 "input": {
                 "type":
                 "string",
-                "description": "Type: `file`, required, example: `input.h5mu`. Path to the sample",
-                "help_text": "Type: `file`, required, example: `input.h5mu`. Path to the sample."
+                "description": "Type: `file`, required, example: `input.h5mu`. Path to the input file",
+                "help_text": "Type: `file`, required, example: `input.h5mu`. Path to the input file."
             
             }
     
@@ -127,8 +94,8 @@
                 "input_layer": {
                 "type":
                 "string",
-                "description": "Type: `string`. Mudata layer (key from ",
-                "help_text": "Type: `string`. Mudata layer (key from .layers) to use as input data for binning. If not specified, .X is used.\n"
+                "description": "Type: `string`. Mudata layer (key from layers) to use as input data for binning; if not specified, X is used",
+                "help_text": "Type: `string`. Mudata layer (key from layers) to use as input data for binning; if not specified, X is used.\n"
             
             }
     
@@ -137,8 +104,8 @@
                 "var_gene_names": {
                 "type":
                 "string",
-                "description": "Type: `string`. The name of the adata var column containing gene names",
-                "help_text": "Type: `string`. The name of the adata var column containing gene names. When no gene_name_layer is provided, the var index will be used.\n"
+                "description": "Type: `string`. The name of the adata var column containing gene names; when no gene_name_layer is provided, the var index will be used",
+                "help_text": "Type: `string`. The name of the adata var column containing gene names; when no gene_name_layer is provided, the var index will be used.\n"
             
             }
     
@@ -157,73 +124,51 @@
 },
     
     
-    "scgpt integration options" : {
-    "title": "scGPT integration options",
+    "outputs" : {
+    "title": "Outputs",
     "type": "object",
     "description": "No description",
     "properties": {
     
         
-                "binned_layer": {
+                "output": {
                 "type":
                 "string",
-                "description": "Type: `string`, default: `binned`. The name of the adata layer to write the binned data to",
-                "help_text": "Type: `string`, default: `binned`. The name of the adata layer to write the binned data to.\n"
+                "description": "Type: `file`, required, default: `$id.$key.output.h5mu`, example: `output.h5mu`. Output file path",
+                "help_text": "Type: `file`, required, default: `$id.$key.output.h5mu`, example: `output.h5mu`. Output file path"
             ,
-                "default": "binned"
+                "default": "$id.$key.output.h5mu"
             }
     
 
         ,
-                "obsm_embeddings": {
+                "output_compression": {
                 "type":
                 "string",
-                "description": "Type: `string`, default: `X_scGPT`. The name of the adata obsm array to which scGPT embeddings will be written",
-                "help_text": "Type: `string`, default: `X_scGPT`. The name of the adata obsm array to which scGPT embeddings will be written.\n"
-            ,
-                "default": "X_scGPT"
+                "description": "Type: `string`, example: `gzip`, choices: ``gzip`, `lzf``. The compression algorithm to use for the output h5mu file",
+                "help_text": "Type: `string`, example: `gzip`, choices: ``gzip`, `lzf``. The compression algorithm to use for the output h5mu file.\n",
+                "enum": ["gzip", "lzf"]
+            
+            
             }
     
 
-        ,
-                "obsm_gene_tokens": {
-                "type":
-                "string",
-                "description": "Type: `string`, default: `gene_id_tokens`, example: `values.pt`. The key of the obsm array containing the gene token ids\n",
-                "help_text": "Type: `string`, default: `gene_id_tokens`, example: `values.pt`. The key of the obsm array containing the gene token ids\n"
-            ,
-                "default": "gene_id_tokens"
-            }
+}
+},
     
-
-        ,
-                "obsm_tokenized_values": {
-                "type":
-                "string",
-                "description": "Type: `string`, default: `values_tokenized`. The key of the obsm array containing the count values of the tokenized genes\n",
-                "help_text": "Type: `string`, default: `values_tokenized`. The key of the obsm array containing the count values of the tokenized genes\n"
-            ,
-                "default": "values_tokenized"
-            }
     
-
-        ,
-                "obsm_padding_mask": {
-                "type":
-                "string",
-                "description": "Type: `string`, default: `padding_mask`. The key of the obsm array containing the padding mask",
-                "help_text": "Type: `string`, default: `padding_mask`. The key of the obsm array containing the padding mask.\n"
-            ,
-                "default": "padding_mask"
-            }
+    "padding arguments" : {
+    "title": "Padding arguments",
+    "type": "object",
+    "description": "No description",
+    "properties": {
     
-
-        ,
+        
                 "pad_token": {
                 "type":
                 "string",
-                "description": "Type: `string`, default: `\u003cpad\u003e`. The padding token used in the model",
-                "help_text": "Type: `string`, default: `\u003cpad\u003e`. The padding token used in the model.\n"
+                "description": "Type: `string`, default: `\u003cpad\u003e`. Token used for padding",
+                "help_text": "Type: `string`, default: `\u003cpad\u003e`. Token used for padding.\n"
             ,
                 "default": "<pad>"
             }
@@ -240,18 +185,17 @@
             }
     
 
-        ,
-                "n_input_bins": {
-                "type":
-                "integer",
-                "description": "Type: `integer`, default: `51`. The number of bins to discretize the data into",
-                "help_text": "Type: `integer`, default: `51`. The number of bins to discretize the data into. When no value is provided, data won\u0027t be binned.\n"
-            ,
-                "default": "51"
-            }
+}
+},
     
-
-        ,
+    
+    "hvg subset arguments" : {
+    "title": "HVG subset arguments",
+    "type": "object",
+    "description": "No description",
+    "properties": {
+    
+        
                 "n_hvg": {
                 "type":
                 "integer",
@@ -262,7 +206,17 @@
             }
     
 
-        ,
+}
+},
+    
+    
+    "tokenization arguments" : {
+    "title": "Tokenization arguments",
+    "type": "object",
+    "description": "No description",
+    "properties": {
+    
+        
                 "max_seq_len": {
                 "type":
                 "integer",
@@ -272,18 +226,17 @@
             }
     
 
-        ,
-                "dropout": {
-                "type":
-                "number",
-                "description": "Type: `double`, default: `0.2`. Dropout value used for the transformer encoder layer\n",
-                "help_text": "Type: `double`, default: `0.2`. Dropout value used for the transformer encoder layer\n"
-            ,
-                "default": "0.2"
-            }
+}
+},
     
-
-        ,
+    
+    "embedding arguments" : {
+    "title": "Embedding arguments",
+    "type": "object",
+    "description": "No description",
+    "properties": {
+    
+        
                 "DSBN": {
                 "type":
                 "boolean",
@@ -298,8 +251,8 @@
                 "batch_size": {
                 "type":
                 "integer",
-                "description": "Type: `integer`, default: `64`. The batch size to be used for inference \n",
-                "help_text": "Type: `integer`, default: `64`. The batch size to be used for inference \n"
+                "description": "Type: `integer`, default: `64`. The batch size to be used for embedding inference",
+                "help_text": "Type: `integer`, default: `64`. The batch size to be used for embedding inference.\n"
             ,
                 "default": "64"
             }
@@ -309,31 +262,30 @@
 },
     
     
-    "clustering options" : {
-    "title": "Clustering options",
+    "binning arguments" : {
+    "title": "Binning arguments",
     "type": "object",
     "description": "No description",
     "properties": {
     
         
-                "obs_cluster": {
+                "n_input_bins": {
                 "type":
-                "string",
-                "description": "Type: `string`, default: `scGPT_integration_leiden`. Prefix for the ",
-                "help_text": "Type: `string`, default: `scGPT_integration_leiden`. Prefix for the .obs keys under which to add the cluster labels. Newly created columns in .obs will \nbe created from the specified value for \u0027--obs_cluster\u0027 suffixed with an underscore and one of the resolutions\nresolutions specified in \u0027--leiden_resolution\u0027.\n"
+                "integer",
+                "description": "Type: `integer`, default: `51`. The number of bins to discretize the data into; When no value is provided, data won\u0027t be binned",
+                "help_text": "Type: `integer`, default: `51`. The number of bins to discretize the data into; When no value is provided, data won\u0027t be binned.\n"
             ,
-                "default": "scGPT_integration_leiden"
+                "default": "51"
             }
     
 
         ,
-                "leiden_resolution": {
+                "seed": {
                 "type":
-                "string",
-                "description": "Type: List of `double`, default: `1`, multiple_sep: `\":\"`. Control the coarseness of the clustering",
-                "help_text": "Type: List of `double`, default: `1`, multiple_sep: `\":\"`. Control the coarseness of the clustering. Higher values lead to more clusters."
-            ,
-                "default": "1"
+                "integer",
+                "description": "Type: `integer`. Seed for random number generation used for binning",
+                "help_text": "Type: `integer`. Seed for random number generation used for binning.\n"
+            
             }
     
 
@@ -341,53 +293,20 @@
 },
     
     
-    "neighbors and umap options" : {
-    "title": "Neighbors and UMAP options",
+    "clustering arguments" : {
+    "title": "Clustering arguments",
     "type": "object",
     "description": "No description",
     "properties": {
     
         
-                "uns_neighbors": {
+                "leiden_resolution": {
                 "type":
                 "string",
-                "description": "Type: `string`, default: `scGPT_integration_neighbors`. In which uns slot to store various neighbor output objects",
-                "help_text": "Type: `string`, default: `scGPT_integration_neighbors`. In which uns slot to store various neighbor output objects."
+                "description": "Type: List of `double`, default: `1`, multiple_sep: `\":\"`. Control the coarseness of the clustering",
+                "help_text": "Type: List of `double`, default: `1`, multiple_sep: `\":\"`. Control the coarseness of the clustering. Higher values lead to more clusters."
             ,
-                "default": "scGPT_integration_neighbors"
-            }
-    
-
-        ,
-                "obsp_neighbor_distances": {
-                "type":
-                "string",
-                "description": "Type: `string`, default: `scGPT_integration_distances`. In which obsp slot to store the distance matrix between the resulting neighbors",
-                "help_text": "Type: `string`, default: `scGPT_integration_distances`. In which obsp slot to store the distance matrix between the resulting neighbors."
-            ,
-                "default": "scGPT_integration_distances"
-            }
-    
-
-        ,
-                "obsp_neighbor_connectivities": {
-                "type":
-                "string",
-                "description": "Type: `string`, default: `scGPT_integration_connectivities`. In which obsp slot to store the connectivities matrix between the resulting neighbors",
-                "help_text": "Type: `string`, default: `scGPT_integration_connectivities`. In which obsp slot to store the connectivities matrix between the resulting neighbors."
-            ,
-                "default": "scGPT_integration_connectivities"
-            }
-    
-
-        ,
-                "obsm_umap": {
-                "type":
-                "string",
-                "description": "Type: `string`, default: `X_scGPT_umap`. In which ",
-                "help_text": "Type: `string`, default: `X_scGPT_umap`. In which .obsm slot to store the resulting UMAP embedding."
-            ,
-                "default": "X_scGPT_umap"
+                "default": "1"
             }
     
 
@@ -419,23 +338,35 @@
 "allOf": [
 
     {
+    "$ref": "#/definitions/inputs"
+    },
+
+    {
     "$ref": "#/definitions/outputs"
     },
 
     {
-    "$ref": "#/definitions/input"
+    "$ref": "#/definitions/padding arguments"
     },
 
     {
-    "$ref": "#/definitions/scgpt integration options"
+    "$ref": "#/definitions/hvg subset arguments"
     },
 
     {
-    "$ref": "#/definitions/clustering options"
+    "$ref": "#/definitions/tokenization arguments"
     },
 
     {
-    "$ref": "#/definitions/neighbors and umap options"
+    "$ref": "#/definitions/embedding arguments"
+    },
+
+    {
+    "$ref": "#/definitions/binning arguments"
+    },
+
+    {
+    "$ref": "#/definitions/clustering arguments"
     },
 
     {

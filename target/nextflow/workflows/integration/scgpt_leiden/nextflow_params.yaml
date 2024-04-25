@@ -1,8 +1,4 @@
-# Outputs
-# output: "$id.$key.output.h5mu"
-# output_compression: "gzip"
-
-# Input
+# Inputs
 id: # please fill in - example: "foo"
 input: # please fill in - example: "input.h5mu"
 modality: "rna"
@@ -13,30 +9,30 @@ model_config: # please fill in - example: "args.json"
 # var_gene_names: "foo"
 # obs_batch_label: "foo"
 
-# scGPT integration options
-binned_layer: "binned"
-obsm_embeddings: "X_scGPT"
-obsm_gene_tokens: "gene_id_tokens"
-obsm_tokenized_values: "values_tokenized"
-obsm_padding_mask: "padding_mask"
+# Outputs
+# output: "$id.$key.output.h5mu"
+# output_compression: "gzip"
+
+# Padding arguments
 pad_token: "<pad>"
 pad_value: -2
-n_input_bins: 51
+
+# HVG subset arguments
 n_hvg: 1200
+
+# Tokenization arguments
 # max_seq_len: 123
-dropout: 0.2
+
+# Embedding arguments
 DSBN: true
 batch_size: 64
 
-# Clustering options
-obs_cluster: "scGPT_integration_leiden"
-leiden_resolution: [1]
+# Binning arguments
+n_input_bins: 51
+# seed: 123
 
-# Neighbors and UMAP options
-uns_neighbors: "scGPT_integration_neighbors"
-obsp_neighbor_distances: "scGPT_integration_distances"
-obsp_neighbor_connectivities: "scGPT_integration_connectivities"
-obsm_umap: "X_scGPT_umap"
+# Clustering arguments
+leiden_resolution: [1]
 
 # Nextflow input-output arguments
 publish_dir: # please fill in - example: "output/"

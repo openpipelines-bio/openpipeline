@@ -1804,9 +1804,9 @@ RUN apt-get update && \
 
 LABEL org.opencontainers.image.authors="Angela Oliveira Pisco, Robrecht Cannoodt"
 LABEL org.opencontainers.image.description="Companion container for running component mapping star_align"
-LABEL org.opencontainers.image.created="2024-04-18T07:00:00Z"
+LABEL org.opencontainers.image.created="2024-04-25T11:08:58Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="88db6b389ec899294bd6eb45f677e2eb0d7f8904"
+LABEL org.opencontainers.image.revision="1d7e0fa3ebe2e081f1123edaeaba60b0b6a087ea"
 LABEL org.opencontainers.image.version="scgpt-integration_build"
 
 VIASHDOCKER
@@ -4324,14 +4324,14 @@ eval set -- $VIASH_POSITIONAL_ARGS
 ViashDockerInstallationCheck
 
 if [ $VIASH_MODE == "docker_setup" ]; then
-  ViashDockerSetup 'ghcr.io/openpipelines-bio/mapping_star_align:scgpt-integration_build' "$VIASH_DOCKER_SETUP_STRATEGY"
+  ViashDockerSetup 'ghcr.io/openpipelines-bio/mapping/star_align:scgpt-integration_build' "$VIASH_DOCKER_SETUP_STRATEGY"
   exit 0
 fi
-ViashDockerSetup 'ghcr.io/openpipelines-bio/mapping_star_align:scgpt-integration_build' ifneedbepullelsecachedbuild
+ViashDockerSetup 'ghcr.io/openpipelines-bio/mapping/star_align:scgpt-integration_build' ifneedbepullelsecachedbuild
 
 if [ $VIASH_MODE == "docker_debug" ]; then
-  ViashNotice "+ docker run --entrypoint=bash -i --rm -v "$(pwd)":/pwd --workdir /pwd -t 'ghcr.io/openpipelines-bio/mapping_star_align:scgpt-integration_build'"
-  docker run --entrypoint=bash -i --rm -v "$(pwd)":/pwd --workdir /pwd -t 'ghcr.io/openpipelines-bio/mapping_star_align:scgpt-integration_build'
+  ViashNotice "+ docker run --entrypoint=bash -i --rm -v "$(pwd)":/pwd --workdir /pwd -t 'ghcr.io/openpipelines-bio/mapping/star_align:scgpt-integration_build'"
+  docker run --entrypoint=bash -i --rm -v "$(pwd)":/pwd --workdir /pwd -t 'ghcr.io/openpipelines-bio/mapping/star_align:scgpt-integration_build'
   exit 0
 fi
 
@@ -5259,7 +5259,7 @@ VIASH_UNIQUE_MOUNTS=($(for val in "${VIASH_EXTRA_MOUNTS[@]}"; do echo "$val"; do
 function ViashPerformChown {
   if (( ${#VIASH_CHOWN_VARS[@]} )); then
     set +e
-    eval docker run --entrypoint=chown -i --rm ${VIASH_UNIQUE_MOUNTS[@]} ghcr.io/openpipelines-bio/mapping_star_align:scgpt-integration_build "$(id -u):$(id -g)" --silent --recursive ${VIASH_CHOWN_VARS[@]}
+    eval docker run --entrypoint=chown -i --rm ${VIASH_UNIQUE_MOUNTS[@]} ghcr.io/openpipelines-bio/mapping/star_align:scgpt-integration_build "$(id -u):$(id -g)" --silent --recursive ${VIASH_CHOWN_VARS[@]}
     set -e
   fi
 }
@@ -5278,8 +5278,8 @@ fi
 # set dependency paths
 
 
-ViashDebug "Running command: $(echo docker run --entrypoint=bash -i --rm ${VIASH_UNIQUE_MOUNTS[@]} $VIASH_EXTRA_DOCKER_ARGS ghcr.io/openpipelines-bio/mapping_star_align:scgpt-integration_build)"
-cat << VIASHEOF | eval docker run --entrypoint=bash -i --rm ${VIASH_UNIQUE_MOUNTS[@]} $VIASH_EXTRA_DOCKER_ARGS ghcr.io/openpipelines-bio/mapping_star_align:scgpt-integration_build
+ViashDebug "Running command: $(echo docker run --entrypoint=bash -i --rm ${VIASH_UNIQUE_MOUNTS[@]} $VIASH_EXTRA_DOCKER_ARGS ghcr.io/openpipelines-bio/mapping/star_align:scgpt-integration_build)"
+cat << VIASHEOF | eval docker run --entrypoint=bash -i --rm ${VIASH_UNIQUE_MOUNTS[@]} $VIASH_EXTRA_DOCKER_ARGS ghcr.io/openpipelines-bio/mapping/star_align:scgpt-integration_build
 set -e
 tempscript=\$(mktemp "$VIASH_META_TEMP_DIR/viash-run-star_align-XXXXXX").py
 function clean_up {
