@@ -55,6 +55,8 @@
 ## NEW FUNCTIONALITY
 
 * `dimred/tsne` component: Added a tSNE dimensionality reduction component (PR #742).
+  
+* `reference/cellranger_mkgtf` component: Added cellranger mkgtf as a standalone component (PR #771).
 
 * `scgpt/binning` component: Added a scGPT pre-processing binning component (PR #765).
 
