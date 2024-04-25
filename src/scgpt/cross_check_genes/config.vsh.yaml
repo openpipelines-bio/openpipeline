@@ -23,6 +23,8 @@ functionality:
           type: string
           default: "rna"
           required: false
+          description: |
+            The modality key of the MuData object containing the RNA AnnData object.
         - name: "--vocab_file"
           type: file
           direction: input
@@ -45,6 +47,11 @@ functionality:
           example: output.h5mu
           description: |
             The output cross-checked anndata file.
+        - name: "--output_compression"
+          type: string
+          choices: ["gzip", "lzf"]
+          required: false
+          example: "gzip"
     - name: Arguments
       arguments:
         - name: "--pad_token"

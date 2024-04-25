@@ -50,14 +50,13 @@ else:
 logger.info(f"Loading model vocab from {par['vocab_file']}")
 vocab_file = par["vocab_file"]
 vocab = GeneVocab.from_file(vocab_file)
-
 [vocab.append_token(s) for s in special_tokens if s not in vocab]
 
 # vocab.append_token([s for s in special_tokens if s not in vocab])
 
 logger.info("Filtering genes based on model vocab")
 adata.var["id_in_vocab"] = [1 if gene in vocab else -1 for gene in genes]
-
+    
 gene_ids_in_vocab = np.array(adata.var["id_in_vocab"])
 
 logger.info("Subsetting input data based on genes present in model vocab")

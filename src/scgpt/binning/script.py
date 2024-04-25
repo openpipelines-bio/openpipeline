@@ -77,7 +77,6 @@ def _digitize(x: np.ndarray, bins: np.ndarray) -> np.ndarray:
 with warnings.catch_warnings():
     # Make sure warnings are displayed once.
     warnings.simplefilter("once")
-
     # layer_data.indptr.size is the number of rows in the sparse matrix 
     binned_rows = []
     bin_edges = []
@@ -85,7 +84,6 @@ with warnings.catch_warnings():
     for row_number in range(layer_data.indptr.size-1):
         row_start_index, row_end_index = layer_data.indptr[row_number], layer_data.indptr[row_number+1]
         # These are all non-zero counts in the row
-
         non_zero_row = layer_data.data[row_start_index:row_end_index] 
         if non_zero_row.max() == 0:
             logger.warning(
@@ -111,7 +109,6 @@ with warnings.catch_warnings():
 
 # Create new CSR matrix
 logger.info("Creating a new CSR matrix of the binned count values")
-
 binned_layer = csr_matrix((np.concatenate(binned_rows, casting="same_kind"), 
                           layer_data.indices, layer_data.indptr), shape=layer_data.shape)
 
@@ -121,6 +118,5 @@ adata.obsm["bin_edges"] = np.stack(bin_edges)
       
 # Write mudata output 
 logger.info("Writing output data")
-
 mdata.mod[par["modality"]] = adata
-mdata.write(par["output"], compression=par["output_compression"]) 
+mdata.write(par["output"], compression=par["output_compression"])
