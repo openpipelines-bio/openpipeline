@@ -90,3 +90,12 @@ target/docker/reference/build_cellranger_arc_reference \
   --output "${REFERENCE_DIR}/reference_cellranger_arc.tar.gz" \
   --organism "Homo_sapiens" \
   --genome "GRCh38"
+
+# Create count matrices
+if [ ! -d "${OUT}/counts" ]; then
+  mkdir -p "$OUT/counts"
+  
+  target/docker/mapping/cellranger_atac_count \
+    --input "${OUT}/fastqs/HJN3KBCX2/test_sample/" \
+    --reference "${REFERENCE_DIR}/reference_cellranger_arc.tar.gz" \
+    --output "${OUT}/counts"
