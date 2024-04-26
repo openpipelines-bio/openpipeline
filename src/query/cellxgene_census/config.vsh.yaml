@@ -77,14 +77,12 @@ test_resources:
 
 engines:
   - type: docker
-  # TODO: increase python version
-    image: python:3.9
+    image: python:3.11
     setup:
       - type: python
-        __merge__: [/src/base/requirements/anndata_mudata.yaml, .]
+        __merge__: [/src/base/requirements/anndata_mudata.yaml, /src/base/requirements/scanpy.yaml, .]
         packages:
-          - cellxgene-census~=1.2.0
-          - obonet~=1.0.0
+          - cellxgene-census
     test_setup:
       - type: python
         __merge__: [ /src/base/requirements/viashpy.yaml, .]
