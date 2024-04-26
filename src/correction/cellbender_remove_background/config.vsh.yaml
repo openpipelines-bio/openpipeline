@@ -295,11 +295,9 @@ engines:
     - type: python
       packages:
         # Use this version of mudata because it is the last one that supports python 3.7
+        - lxml~=4.8.0
         - mudata~=0.2.1
         - cellbender~=0.3.0
-  test_setup:
-    - type: python
-      __merge__: /src/base/requirements/viashpy.yaml
 
 runners:
 - type: executable
