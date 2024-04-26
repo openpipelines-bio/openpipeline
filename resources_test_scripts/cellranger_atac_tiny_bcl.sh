@@ -101,3 +101,4 @@ if [ ! -d "${OUT}/counts" ]; then
     --input "${OUT}/fastqs/HJN3KBCX2/test_sample/" \
     --reference "${REFERENCE_DIR}/reference_cellranger_arc.tar.gz" \
     --output "${OUT}/counts"
+fi
