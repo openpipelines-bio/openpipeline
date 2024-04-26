@@ -22,7 +22,7 @@ function clean_up {
 }
 trap clean_up EXIT
 
-viash ns build -q "download_file|cellranger_atac_mkfastq" -p docker --setup cb
+viash ns build -q "download_file|cellranger_atac_mkfastq|build_cellranger_arc_reference|cellranger_atac_count" -p docker --setup cb
 
 # download bcl data
 if [ ! -f "${OUT}/bcl/sample_sheet.csv" ]; then
