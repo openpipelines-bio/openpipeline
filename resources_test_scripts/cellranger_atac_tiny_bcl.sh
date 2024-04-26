@@ -81,3 +81,12 @@ if [ ! -d "${OUT}/fastqs" ]; then
     --csv "${OUT}/bcl/layout.csv" \
     --output "${OUT}/fastqs"
 fi
+
+# Create reference
+target/docker/reference/build_cellranger_arc_reference \
+  --genome_fasta "${REFERENCE_DIR}/reference.fa.gz" \
+  --annotation_gtf "${REFERENCE_DIR}/reference.gtf.gz" \
+  --motifs_file "${REFERENCE_DIR}/JASPAR2024_CORE_non-redundant_pfms_jaspar.txt.modified" \
+  --output "${REFERENCE_DIR}/reference_cellranger_arc.tar.gz" \
+  --organism "Homo_sapiens" \
+  --genome "GRCh38"
