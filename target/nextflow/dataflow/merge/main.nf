@@ -3031,7 +3031,7 @@ meta = [
     "platform" : "nextflow",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/dataflow/merge",
     "viash_version" : "0.8.5",
-    "git_commit" : "1e7f4a790cd3dba04b938c19e0a7817ccfce77e5",
+    "git_commit" : "81e72684463132d8970eaa4c2db90b960f24c5f0",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))
