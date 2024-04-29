@@ -51,3 +51,57 @@ viash run src/filter/subset_h5mu/config.vsh.yaml -p docker -- \
   --number_of_observations 4000
 
 rm "${test_resources_dir}/Kim2020_Lung.h5ad"
+
+echo "> Preprocessing datasets"
+nextflow \
+  run . \
+  -main-script target/nextflow/workflows/multiomics/process_samples/main.nf \
+  -profile docker \
+  -c src/workflows/utils/labels_ci.config \
+  --input "${test_resources_dir}/Kim2020_Lung_subset.h5mu" \
+  --output "Kim2020_Lung_subset_preprocessed.h5mu" \
+  --publish_dir "${test_resources_dir}"
+
+echo "> Running scGPT cross check genes"
+viash run src/scgpt/cross_check_genes/config.vsh.yaml -p docker -- \
+  --input "${test_resources_dir}/Kim2020_Lung_subset_preprocessed.h5mu" \
+  --output "${test_resources_dir}/Kim2020_Lung_subset_genes_cross_checked.h5mu" \
+  --vocab_file "${foundation_model_dir}/vocab.json"
+
+echo "> Running scGPT binning"
+viash run src/scgpt/binning/config.vsh.yaml -p docker -- \
+  --input "${test_resources_dir}/Kim2020_Lung_subset_genes_cross_checked.h5mu" \
+  --output "${test_resources_dir}/Kim2020_Lung_subset_binned.h5mu"
+
+echo "> Running scGPT tokenizing"
+viash run src/scgpt/pad_tokenize/config.vsh.yaml -p docker -- \
+  --input "${test_resources_dir}/Kim2020_Lung_subset_binned.h5mu" \
+  --output "${test_resources_dir}/Kim2020_Lung_subset_tokenized.h5mu" \
+  --model_vocab "${foundation_model_dir}/vocab.json"
+
+echo "> Running scGPT embedding"
+viash run src/scgpt/embedding/config.vsh.yaml -p docker -- \
+  --input "${test_resources_dir}/Kim2020_Lung_subset_tokenized.h5mu" \
+  --output "${test_resources_dir}/Kim2020_Lung_subset_scgpt_integrated.h5mu" \
+  --model "${foundation_model_dir}/best_model.pt" \
+  --model_vocab "${foundation_model_dir}/vocab.json" \
+  --model_config "${foundation_model_dir}/args.json" \
+  --obs_batch_label "sample"
+
+# nextflow \
+#   run . \
+#   -main-script target/nextflow/scgpt/embedding/main.nf \
+#   -profile docker \
+#   -c src/workflows/utils/labels_ci.config \
+#   --input "${test_resources_dir}/Kim2020_Lung_subset_tokenized.h5mu" \
+#   --output "Kim2020_Lung_subset_scgpt_integrated.h5mu" \
+#   --model "${foundation_model_dir}/best_model.pt" \
+#   --model_vocab "${foundation_model_dir}/vocab.json" \
+#   --model_config "${foundation_model_dir}/args.json" \
+#   --obs_batch_label "sample" \
+#   --publish_dir "${test_resources_dir}"
+
+echo "> Removing unnecessary files in test resources dir"
+find "${test_resources_dir}" -type f ! -name "Kim2020_*" -delete
+
+echo "> scGPT test resources are ready!"
