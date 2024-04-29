@@ -82,7 +82,7 @@ platforms:
         packages:
           - procps
       - type: python
-        __merge__: [/src/base/requirements/anndata_mudata.yaml, .]
+        __merge__: [/src/base/requirements/anndata_mudata.yaml, /src/base/requirements/scanpy.yaml, .]
         packages:
           - scvelo~=0.3.1
           - jaxlib<0.4.23
