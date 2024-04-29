@@ -41,6 +41,9 @@ functionality:
       type: boolean
       default: false
       description: Should bcl-convert be run in test mode (using --first-tile-only)?
+    - name: --no_lane_splitting
+      type: boolean_true
+      description: Do not split FASTQ file by lane
   resources:
     - type: bash_script
       path: script.sh

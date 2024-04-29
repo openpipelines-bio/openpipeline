@@ -16,7 +16,8 @@ bcl-convert \
   --bcl-input-directory "$par_input" \
   --output-directory "$par_output" \
   --sample-sheet "$par_sample_sheet" \
-  --first-tile-only $par_test_mode
+  --first-tile-only $par_test_mode \
+  ${par_no_lane_splitting:+ --no-lane-splitting "$par_no_lane_splitting"}
 
 if [ ! -z "$par_reports" ]; then
   echo "Moving reports to its own location"
