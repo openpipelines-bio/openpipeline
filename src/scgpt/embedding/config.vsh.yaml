@@ -101,7 +101,7 @@ functionality:
           default: -2
           description: |
             The value of the padding token.
-        - name: "--dbsn"
+        - name: "--dsbn"
           type: boolean
           default: true
           description: |
