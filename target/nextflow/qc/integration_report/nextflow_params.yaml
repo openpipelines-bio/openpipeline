@@ -1,0 +1,20 @@
+# Inputs
+input: # please fill in - example: "input.h5mu"
+modality: "rna"
+# var_gene_names: "foo"
+obs_batch_label: # please fill in - example: "sample"
+obs_cell_label: # please fill in - example: "cell_type"
+uns_neighbors: # please fill in - example: "neighbors"
+obsm_umap: # please fill in - example: "X_scGPT_umap"
+
+# Outputs
+# output: "$id.$key.output.pdf"
+output_raw: false
+# output_umap_label_fig: "$id.$key.output_umap_label_fig.png"
+# output_umap_batch_fig: "$id.$key.output_umap_batch_fig.png"
+# output_md_report: "$id.$key.output_md_report.qmd"
+# output_metrics: "$id.$key.output_metrics.json"
+
+# Nextflow input-output arguments
+publish_dir: # please fill in - example: "output/"
+# param_list: "my_params.yaml"

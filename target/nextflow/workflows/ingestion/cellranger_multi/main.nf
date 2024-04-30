@@ -3345,7 +3345,7 @@ meta = [
           "functionalityNamespace" : "mapping",
           "output" : "",
           "platform" : "",
-          "git_commit" : "0a42e4498a8fab7b2446f0297dca2aabd12ea317",
+          "git_commit" : "875aef4266fca92ec8484125cb4964f95751ebaa",
           "executable" : "/nextflow/mapping/cellranger_multi/main.nf"
         },
         "writtenPath" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/mapping/cellranger_multi"
@@ -3366,7 +3366,7 @@ meta = [
           "functionalityNamespace" : "convert",
           "output" : "",
           "platform" : "",
-          "git_commit" : "0a42e4498a8fab7b2446f0297dca2aabd12ea317",
+          "git_commit" : "875aef4266fca92ec8484125cb4964f95751ebaa",
           "executable" : "/nextflow/convert/from_cellranger_multi_to_h5mu/main.nf"
         },
         "writtenPath" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/convert/from_cellranger_multi_to_h5mu"
@@ -3433,7 +3433,7 @@ meta = [
     "platform" : "nextflow",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/workflows/ingestion/cellranger_multi",
     "viash_version" : "0.8.5",
-    "git_commit" : "0a42e4498a8fab7b2446f0297dca2aabd12ea317",
+    "git_commit" : "875aef4266fca92ec8484125cb4964f95751ebaa",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))

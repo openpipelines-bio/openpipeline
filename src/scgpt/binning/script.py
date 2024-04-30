@@ -62,15 +62,15 @@ def _digitize(x: np.ndarray, bins: np.ndarray) -> np.ndarray:
     assert x.ndim == 1 and bins.ndim == 1
 
     left_digits = np.digitize(x, bins)
-    right_difits = np.digitize(x, bins, right=True)
+    right_digits = np.digitize(x, bins, right=True)
 
     rands = np.random.rand(len(x))  # uniform random numbers
 
-    digits = rands * (right_difits - left_digits) + left_digits
+    digits = rands * (right_digits - left_digits) + left_digits
     digits = np.ceil(digits)
-    smallest_dtype = np.min_scalar_type(digits.max().astype(np.uint)) # Already checked for non-negative values
+    smallest_dtype = np.min_scalar_type(digits.max().astype(np.uint))   # Already checked for non-negative values
     digits = digits.astype(smallest_dtype)
-    
+
     return digits
 
 
