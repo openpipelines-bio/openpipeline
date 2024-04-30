@@ -19,8 +19,7 @@ workflow test_wf {
         max_fraction_mito: 0.2,
         var_gene_names: "gene_symbol",
         var_name_mitochondrial_genes: "mitochondrial",
-        // see if obs_name is automatically filled in
-        // obs_name_mitochondrial_fraction: "fraction_mitochondrial",
+        obs_name_mitochondrial_fraction: "fraction_mitochondrial",
         output: "mitochondrial_test.final.h5mu"
       ],
       [

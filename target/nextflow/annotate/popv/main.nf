@@ -3130,8 +3130,7 @@ meta = [
             "popv~=0.3.2",
             "jax==0.4.10",
             "jaxlib==0.4.10",
-            "ml-dtypes<0.3.0",
-            "scipy==1.12.0"
+            "ml-dtypes<0.3.0"
           ],
           "upgrade" : true
         },
@@ -3225,7 +3224,7 @@ meta = [
     "platform" : "nextflow",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/annotate/popv",
     "viash_version" : "0.8.5",
-    "git_commit" : "8af2744f84707427564b11c6a1dd1c4cb0804590",
+    "git_commit" : "0a42e4498a8fab7b2446f0297dca2aabd12ea317",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))

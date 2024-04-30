@@ -1,24 +1,14 @@
-# openpipelines 1.0.0-rc4
+# openpipelines x.x.x
 
-## BREAKING CHANGES
+## NEW FUNCTIONALITY
 
-* `query/cellxgene_census`: Refactored the interface, documentation and internal workings of this component (PR #621).
-  - Renamed arguments to align with standard OpenPipelines notations and cellxgene census API:
-    - `--input_database` became `--input_uri`
-    - `--cellxgene_release` became `--census_version`
-    - `--cell_query` became `--obs_value_filter`
-    - `--cells_filter_columns` became `--cell_filter_grouping`
-    - `--min_cells_filter_columns` became `--cell_filter_minimum_count`
-    - `--modality` became `--output_modality`
-    - Removed `--dataset_id` since it was no longer being used.
-    - Added `--add_dataset_meta` to add metadata to the output MuData object.
-  - Documentation of the component and its arguments was improved.
+* Added `demux/cellranger_atac_mkfastq` component: demultiplex raw sequencing data for ATAC experiments (PR #726).
 
-## BUG FIXES
+* Added `reference/build_cellranger_reference` component: build reference file compatible with ATAC and ATAC+GEX experiments (PR #726).
 
-* `mapping/cellranger_multi`: Fix the regex for the fastq input files to allow dropping the lane from the input file names (e.g. `_L001`) (PR #778).
+## MINOR CHANGES
 
-* `workflows/rna/rna_singlesample`: Fix argument passing `top_n_vars` and `obs_name_mitochondrial_fraction` to the `qc` subworkflow (PR #779).
+* Added `resources_test_scripts/cellranger_atac_tiny_bcl.sh` script: download tiny bcl file with an ATAC experiment, download a motifs file, demultiplex bcl files to reads in fastq format (PR #726).
 
 # openpipelines 1.0.0-rc3
 
@@ -36,6 +26,14 @@
 ## NEW FUNCTIONALITY
 
 * `dimred/tsne` component: Added a tSNE dimensionality reduction component (PR #742).
+
+* `scgpt/cross_check_genes` component: Added a gene-model cross check component for scGPT (PR #758).
+
+* `scgpt/embedding`: component: Added scGPT embedding component (PR #761)
+
+* `scgpt/tokenize_pad`: component: Added scGPT padding and tokenization component (PR #754).
+
+* `scgpt/binning` component: Added a scGPT pre-processing binning component (PR #765).
 
 # openpipelines 1.0.0-rc2
 

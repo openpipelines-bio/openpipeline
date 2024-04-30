@@ -3045,8 +3045,6 @@ meta = [
             "anndata~=0.9.1",
             "mudata~=0.2.3",
             "pandas!=2.1.2",
-            "scanpy~=1.9.5",
-            "statsmodels==0.14.0",
             "scvelo~=0.3.1",
             "jaxlib<0.4.23",
             "jax<0.4.23"
@@ -3131,7 +3129,7 @@ meta = [
     "platform" : "nextflow",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/velocity/scvelo",
     "viash_version" : "0.8.5",
-    "git_commit" : "8af2744f84707427564b11c6a1dd1c4cb0804590",
+    "git_commit" : "0a42e4498a8fab7b2446f0297dca2aabd12ea317",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))
