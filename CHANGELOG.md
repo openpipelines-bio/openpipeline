@@ -9,6 +9,8 @@
 ## MINOR CHANGES
 
 * Added `resources_test_scripts/cellranger_atac_tiny_bcl.sh` script: download tiny bcl file with an ATAC experiment, download a motifs file, demultiplex bcl files to reads in fastq format (PR #726).
+  
+* Extended `resources_test_scripts/scgpt.sh` script to generate scGPT test resources for each respective component (PR #800).
 
 # openpipelines 1.0.0-rc3
 
