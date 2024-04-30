@@ -517,9 +517,9 @@ g++ -std=c++11 -O3 knn_graph.cpp -o knn_graph.o
 
 LABEL org.opencontainers.image.authors="Dorien Roosen"
 LABEL org.opencontainers.image.description="Companion container for running component qc integration_metrics"
-LABEL org.opencontainers.image.created="2024-04-30T14:05:46Z"
+LABEL org.opencontainers.image.created="2024-04-30T16:11:01Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="875aef4266fca92ec8484125cb4964f95751ebaa"
+LABEL org.opencontainers.image.revision="4b6d0e7f0edde3f4aba8725dae6135aa5af8d904"
 LABEL org.opencontainers.image.version="integration_build"
 
 VIASHDOCKER
