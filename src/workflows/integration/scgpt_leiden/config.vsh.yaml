@@ -108,7 +108,7 @@ functionality:
 
     - name: "Embedding arguments"
       arguments:
-        - name: DSBN
+        - name: dsbn
           type: boolean
           default: true
           description: |
@@ -158,6 +158,12 @@ functionality:
     - name: neighbors/find_neighbors
     - name: cluster/leiden
     - name: metadata/move_obsm_to_obs
+
+  test_resources:
+    - type: nextflow_script
+      path: test.nf
+      entrypoint: test_wf
+    - path: /resources_test/scgpt
 
 platforms:
   - type: nextflow

@@ -10,10 +10,10 @@ cd "$REPO_ROOT"
 
 export NXF_VER=21.10.6
 
-viash ns build -q scgpt_integration
+viash ns build -q scgpt_leiden
 
 nextflow run . \
-  -main-script src/workflows/integration/scgpt_integration/test.nf \
+  -main-script src/workflows/integration/scgpt_leiden/test.nf \
   -profile docker,no_publish \
   -entry test_wf \
   -with-trace work/trace.txt \
