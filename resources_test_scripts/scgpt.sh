@@ -59,9 +59,22 @@ nextflow \
   -profile docker \
   -c src/workflows/utils/labels_ci.config \
   --input "${test_resources_dir}/Kim2020_Lung_subset.h5mu" \
-  --output "Kim2020_Lung_subset_preprocessed.h5mu" \
+  --output "intermediate_Kim2020_Lung_subset_preprocessed.h5mu" \
   --publish_dir "${test_resources_dir}"
 
+echo "> Filtering highly variable features"
+viash run src/feature_annotation/highly_variable_features_scanpy/config.vsh.yaml -p docker -- \
+  --input "${test_resources_dir}/intermediate_Kim2020_Lung_subset_preprocessed.h5mu" \
+  --output "${test_resources_dir}/intermediate_Kim2020_Lung_subset_hvg.h5mu" \
+  --layer "log_normalized" \
+  --var_name_filter "filter_with_hvg" \
+  --n_top_features 1200 \
+  --flavor "seurat_v3"
+viash run src/filter/do_filter/config.vsh.yaml -p docker -- \
+  --input "${test_resources_dir}/intermediate_Kim2020_Lung_subset_hvg.h5mu" \
+  --output "${test_resources_dir}/Kim2020_Lung_subset_preprocessed.h5mu" \
+  --var_filter "filter_with_hvg"
+  
 echo "> Running scGPT cross check genes"
 viash run src/scgpt/cross_check_genes/config.vsh.yaml -p docker -- \
   --input "${test_resources_dir}/Kim2020_Lung_subset_preprocessed.h5mu" \
@@ -88,20 +101,7 @@ viash run src/scgpt/embedding/config.vsh.yaml -p docker -- \
   --model_config "${foundation_model_dir}/args.json" \
   --obs_batch_label "sample"
 
-# nextflow \
-#   run . \
-#   -main-script target/nextflow/scgpt/embedding/main.nf \
-#   -profile docker \
-#   -c src/workflows/utils/labels_ci.config \
-#   --input "${test_resources_dir}/Kim2020_Lung_subset_tokenized.h5mu" \
-#   --output "Kim2020_Lung_subset_scgpt_integrated.h5mu" \
-#   --model "${foundation_model_dir}/best_model.pt" \
-#   --model_vocab "${foundation_model_dir}/vocab.json" \
-#   --model_config "${foundation_model_dir}/args.json" \
-#   --obs_batch_label "sample" \
-#   --publish_dir "${test_resources_dir}"
-
 echo "> Removing unnecessary files in test resources dir"
-find "${test_resources_dir}" -type f ! -name "Kim2020_*" -delete
+find "${test_resources_dir}" -type f \( ! -name "Kim2020_*" -o ! -name "*.h5mu" \) -delete
 
 echo "> scGPT test resources are ready!"
