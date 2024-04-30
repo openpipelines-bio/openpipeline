@@ -61,7 +61,7 @@ jobs:
 
     - uses: viash-io/viash-actions/setup@v5
 
-    - uses: nf-core/setup-nextflow@v1.5.2
+    - uses: nf-core/setup-nextflow@v2.0.0
 
     # use cache
     - name: Cache resources data
@@ -158,7 +158,7 @@ jobs:
       run: |
         viash test \
           "${{ matrix.component.config }}" \
-          --config_mod ".platforms[.type == 'docker'].image := 'ghcr.io/openpipelines-bio/${{ matrix.component.namespace }}_${{ matrix.component.name }}:${{ github.event.inputs.version_tag }}'" \
+          --config_mod ".platforms[.type == 'docker'].image := 'ghcr.io/openpipelines-bio/${{ matrix.component.namespace }}${{matrix.component.namespace_separator}}${{ matrix.component.name }}:${{ github.event.inputs.version_tag }}'" \
           --config_mod ".platforms[.type == 'docker'].setup := []" \
-          --cpus 2 \
-          --memory "6gb"
+          --cpus 4 \
+          --memory "12gb"

@@ -4,7 +4,7 @@ workflow run_wf {
     input_ch
 
   main:
-    output_ch = input_ch
+    neighbors_ch = input_ch
     // Set aside the output for this workflow to avoid conflicts
     | map {id, state -> 
       def new_state = state + ["workflow_output": state.output]
@@ -44,7 +44,7 @@ workflow run_wf {
           "input": state.input,
           "modality": state.modality,
           "vocab_file": state.model_vocab,
-          "input_var_gene_names": state.var_gene_names,
+          "var_gene_names": state.var_gene_names,
           "output": state.output,
           "pad_token": state.pad_token
         ]
@@ -58,8 +58,7 @@ workflow run_wf {
             "modality": state.modality,
             "input_layer": state.input_layer,
             "n_input_bins": state.n_input_bins,
-            "output_compression": state.output_compression,
-            "binned_layer": state.binned_layer,
+            "binned_layer": "binned",
             "output": state.output
           ]
         },
@@ -71,16 +70,14 @@ workflow run_wf {
             "input": state.input,
             "modality": state.modality,
             "model_vocab": state.model_vocab,
-            "input_layer": state.binned_layer,
+            "input_layer": "binned",
             "var_gene_names": state.var_gene_names,
             "pad_token": state.pad_token,
             "pad_value": state.pad_value,
             "max_seq_len": state.max_seq_len,
-            "output_compression": state.output_compression,
-            "obsm_gene_tokens": state.obsm_gene_tokens,
-            "obsm_tokenized_values": state.obsm_tokenized_values,
-            "obsm_padding_mask": state.obsm_padding_mask,
-            "output_compression": state.output_compression,
+            "obsm_gene_tokens": "gene_id_tokens",
+            "obsm_tokenized_values": "values_tokenized",
+            "obsm_padding_mask": "padding_mask",
             "output": state.output
           ]
         },
@@ -94,17 +91,68 @@ workflow run_wf {
           "model": state.model,
           "model_vocab": state.model_vocab,
           "model_config": state.model_config,
-          "obsm_gene_tokens": state.obsm_gene_tokens,
-          "obsm_tokenized_values": state.obsm_tokenized_values,
-          "obsm_padding_mask": state.obsm_padding_mask,
+          "obsm_gene_tokens": "gene_id_tokens",
+          "obsm_tokenized_values": "values_tokenized",
+          "obsm_padding_mask": "padding_mask",
           "var_gene_names": state.var_gene_names,
           "obs_batch_label": state.obs_batch_label,
           "pad_token": state.pad_token,
           "pad_value": state.pad_value,
-          "dropout": state.dropout,
           "DSBN": state.DSBN,
           "batch_size": state.batch_size,
-          "obsm_embeddings": state.embedding_layer,
+          "obsm_embeddings": "X_scGPT",
+          "output": state.output
+        ]
+      },
+      toState: ["input": "output"]
+    )
+
+    | find_neighbors.run(
+      fromState: {id, state -> [
+          "input": state.input,
+          "uns_output": "scGPT_integration_neighbors",
+          "obsp_distances": "scGPT_integration_distances",
+          "obsp_connectivities": "scGPT_integration_connectivities",
+          "obsm_input": "X_scGPT",
+          "modality": state.modality
+        ]
+      },
+      toState: ["input": "output"]
+    )
+
+with_leiden_ch = neighbors_ch
+    | filter{id, state -> state.leiden_resolution}
+    | leiden.run(
+      fromState: {id, state -> [
+        "input": state.input,
+        "obsp_connectivities": "scGPT_integration_connectivities",
+        "obsm_name": "scGPT_integration_leiden",
+        "resolution": state.leiden_resolution,
+        "modality": state.modality,
+        ]
+      },
+      toState: ["input": "output"]
+    )
+    | move_obsm_to_obs.run(
+      fromState: {id, state -> [
+          "input": state.input,
+          "obsm_key": "scGPT_integration_leiden",
+          "modality": state.modality,
+        ]
+      },
+      toState: ["input": "output"]
+    )
+
+  without_leiden_ch = neighbors_ch
+    | filter{id, state -> !state.leiden_resolution}
+
+  output_ch = with_leiden_ch.mix(without_leiden_ch)
+    | umap.run(
+      fromState: {id, state -> [
+          "input": state.input,
+          "uns_neighbors": "scGPT_integration_neighbors",
+          "obsm_output": "X_scGPT_umap",
+          "modality": state.modality,
           "output_compression": state.output_compression,
           "output": state.workflow_output
         ]

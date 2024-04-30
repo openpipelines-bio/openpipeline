@@ -86,7 +86,7 @@ else:
     max_seq_len = par["max_seq_len"]
 
 # Tokenize and pad data
-logger.info("Padding and tokenizing data")
+logger.info(f"Padding and tokenizing data with max length of {max_seq_len}, padding token {pad_token} and pad value {pad_value}.")
 tokenized_data = tokenize_and_pad_batch(
     all_counts,
     gene_ids,

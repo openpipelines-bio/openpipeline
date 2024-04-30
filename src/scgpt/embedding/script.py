@@ -23,10 +23,9 @@ par = {
     "pad_value": -2,
     "batch_size": 64,
     "modality": "rna",
-    "dropout": 0.2,
-    "DSBN": True,
-    "n_input_bins": 51,
-}
+    "dsbn": True,
+    "n_input_bins": 51
+    }
 ## VIASH END
 
 # START TEMPORARY WORKAROUND setup_logger
@@ -47,16 +46,8 @@ def setup_logger():
 # END TEMPORARY WORKAROUND setup_logger
 logger = setup_logger()
 
-
-#TODO: Optionally set device to use gpu, to be implemented when gpu-based machine types are supported
-# if par["device"] == "cuda" and not torch.cuda.is_available():
-#     print("WARNING: CUDA is not available. Using CPU instead.")
-#     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-# device = torch.device(par["device"])
-
-logger.info("Setting device to use cpu")
-
-device = torch.device("cpu")
+logger.info(f"Setting device to {'cuda' if torch.cuda.is_available() else 'cpu'}")
+device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 logger.info("Reading in data")
 
@@ -65,22 +56,30 @@ mdata = mu.read(par["input"])
 input_adata = mdata.mod[par["modality"]]
 adata = input_adata.copy()
 
+for k, v in {
+        "--obsm_gene_tokens": par["obsm_gene_tokens"],
+        "--obsm_tokenized_values": par["obsm_tokenized_values"],
+        "--obsm_padding_mask": par["obsm_padding_mask"]
+        }.items():
+    if v not in adata.obsm.keys():
+        raise KeyError(f"The parameter '{v}' provided for '{k}' could not be found in adata.obsm")
+
 all_gene_ids = adata.obsm[par["obsm_gene_tokens"]]
 all_values = adata.obsm[par["obsm_tokenized_values"]]
 padding_mask = adata.obsm[par["obsm_padding_mask"]]
 
 # Fetch batch ids for domain-specific batch normalization
-if par["DSBN"] and not par["obs_batch_label"]:
-    raise ValueError("When DSBN is set to True, you are required to provide batch labels (input_obs_batch_labels).")
-elif par["DSBN"] and par["obs_batch_label"]:
+if par["dsbn"] and not par["obs_batch_label"]:
+    raise ValueError("When dsbn is set to True, you are required to provide batch labels (input_obs_batch_labels).")
+elif par["dsbn"] and par["obs_batch_label"]:
     logger.info("Fetching batch id's for domain-specific batch normalization")
     batch_id_cats = adata.obs[par["obs_batch_label"]].astype("category")
     batch_id_labels = batch_id_cats.cat.codes.values
     batch_ids = batch_id_labels.tolist()
     batch_ids = np.array(batch_ids)
     num_batch_types = len(set(batch_ids))
-elif not par["DSBN"] and par["obs_batch_label"]:
-    logger.info("Batch labels provided but DSBN is set to False. Batch labels will be ignored and no DSBN will be performed.")
+elif not par["dsbn"] and par["obs_batch_label"]:
+    logger.info("Batch labels provided but dsbn is set to False. Batch labels will be ignored and no dsbn will be performed.")
 
 # Set padding specs
 logger.info("Setting padding specs")
@@ -128,7 +127,7 @@ model = TransformerModel(
     d_hid=d_hid,
     nlayers=nlayers,
     vocab=vocab,
-    dropout=par["dropout"],
+    dropout=0.5, # scGPT default, only relevant for fine-tuning applications
     pad_token=pad_token,
     pad_value=pad_value,
     nlayers_cls=3,  # only applicable for decoder-based operations
@@ -137,8 +136,8 @@ model = TransformerModel(
     ecs_threshold=0.8,  # only applicable for decoder-based operations
     do_dab=False,  # only applicable for decoder-based operations
     use_batch_labels=False, # only applicable for decoder-based operations
-    num_batch_labels=num_batch_types if par["DSBN"] else None,
-    domain_spec_batchnorm=par["DSBN"],
+    num_batch_labels=num_batch_types if par["dsbn"] else None,
+    domain_spec_batchnorm=par["dsbn"],
     input_emb_style="continuous",  # scGPT default
     explicit_zero_prob=False,  #TODO: Parametrize when GPU-based machine types are supported
     use_fast_transformer=False,  #TODO: Parametrize when GPU-based machine types are supported
@@ -162,7 +161,7 @@ cell_embeddings = model.encode_batch(
     torch.from_numpy(all_values).float(),
     src_key_padding_mask=torch.from_numpy(padding_mask),
     batch_size=par["batch_size"],
-    batch_labels=torch.from_numpy(batch_ids).long() if par["DSBN"] else None,
+    batch_labels=torch.from_numpy(batch_ids).long() if par["dsbn"] else None,
     output_to_cpu=True,
     time_step=0,
     return_np=True
