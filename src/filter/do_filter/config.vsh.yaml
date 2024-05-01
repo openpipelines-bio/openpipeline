@@ -61,11 +61,6 @@ platforms:
       - type: apt
         packages: 
           - procps
-          - pkg-config
-          - libhdf5-dev
-          - gfortran
-          - cmake
-          - libopenblas-dev
       - type: python
         __merge__: /src/base/requirements/anndata_mudata.yaml
     test_setup:
