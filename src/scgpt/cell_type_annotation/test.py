@@ -39,9 +39,9 @@ def test_cell_type_inference(run_component,
     run_component(args)
 
     output_mudata = read_h5mu(output_path)
-    assert "predicted_cell_types" in output_mudata.mod["rna"].obs.columns
-    assert output_mudata.mod["rna"].obs["predicted_cell_types"].isna().sum() == 0
-    assert output_mudata.mod["rna"].obs["predicted_cell_types"].dtype == "int64"
+    assert "predicted_cell_type" in output_mudata.mod["rna"].obs.columns
+    assert output_mudata.mod["rna"].obs["predicted_cell_type"].isna().sum() == 0
+    assert output_mudata.mod["rna"].obs["predicted_cell_type"].dtype == "int64"
 
 
 if __name__ == '__main__':
