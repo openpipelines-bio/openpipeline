@@ -118,7 +118,7 @@ functionality:
           required: false
           description: |
             Whether to use domain-specific batch normalization.
-        - name: "--embsize"
+        - name: "--emb_size"
           type: integer
           default: 512
           description: |
@@ -128,6 +128,10 @@ functionality:
           default: 0.2
           description: | 
             Dropout rate during model fine-tuning
+        - name: "--seed"
+          type: integer
+          description: |
+            Seed for random number generation.
 
     - name: Model configurations
       arguments:

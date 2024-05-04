@@ -23,16 +23,14 @@ def test_cell_type_inference(run_component,
         "--input", input_path,
         "--output",  output_path,
         "--modality", "rna",
-        "--input_obsm_gene_tokens", "gene_id_tokens",
-        "--input_obsm_tokenized_values", "values_tokenized",
+        "--obsm_gene_tokens", "gene_id_tokens",
+        "--obsm_tokenized_values", "values_tokenized",
         "--model", model,
-        "--model_config", model_config,
         "--model_vocab", model_vocab,
-        "--gene_name_layer", "gene_name",
-        "--input_obs_batch_label", "sample",
+        "--obs_batch_label", "sample",
         "--predicted_cell_type_id", "predictions",
         "--pad_token", "<pad>",
-        "--DSBN", "True",
+        "--dsbn", "True",
         "--pad_value", "-2",
         "--n_cls", "8",
         "--n_input_bins", "51",
@@ -41,7 +39,6 @@ def test_cell_type_inference(run_component,
     run_component(args)
 
     output_mudata = read_h5mu(output_path)
-    input_mudata = read_h5mu(input_path)
     assert "predictions" in output_mudata.mod["rna"].obs.columns
     assert output_mudata.mod["rna"].obs["predictions"].isna().sum() == 0
     assert output_mudata.mod["rna"].obs["predictions"].dtype == "int64"

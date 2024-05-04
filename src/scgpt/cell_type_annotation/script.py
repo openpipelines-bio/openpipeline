@@ -95,8 +95,8 @@ elif not par["dsbn"] and par["obs_batch_label"]:
 
 # Vocabulary configuration
 special_tokens = [par["pad_token"], "<cls>", "<eoc>"]
-logger.info(f"Loading model vocab from {par['vocab_file']}")
-vocab_file = par["vocab_file"]
+logger.info(f"Loading model vocab from {par['model_vocab']}")
+vocab_file = par["model_vocab"]
 vocab = GeneVocab.from_file(vocab_file)
 [vocab.append_token(s) for s in special_tokens if s not in vocab]
 vocab.set_default_index(vocab[par["pad_token"]])
