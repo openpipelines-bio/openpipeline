@@ -39,10 +39,10 @@ def test_cell_type_inference(run_component,
     run_component(args)
 
     output_mudata = read_h5mu(output_path)
-    assert "predictions" in output_mudata.mod["rna"].obs.columns
-    assert output_mudata.mod["rna"].obs["predictions"].isna().sum() == 0
-    assert output_mudata.mod["rna"].obs["predictions"].dtype == "int64"
-    
+    assert "predicted_cell_types" in output_mudata.mod["rna"].obs.columns
+    assert output_mudata.mod["rna"].obs["predicted_cell_types"].isna().sum() == 0
+    assert output_mudata.mod["rna"].obs["predicted_cell_types"].dtype == "int64"
+
 
 if __name__ == '__main__':
     sys.exit(pytest.main([__file__]))

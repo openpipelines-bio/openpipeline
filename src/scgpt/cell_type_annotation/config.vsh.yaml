@@ -29,12 +29,6 @@ functionality:
           example: "resources_test/scgpt/source/best_model.pt"
           description: |
             The model file.
-        # - name: "--model_config"
-        #   type: file
-        #   required: true
-        #   example: "resources_test/scgpt/source/args.json"
-        #   description: |
-        #     The model configuration file. 
         - name: "--model_vocab"
           type: file
           required: true
