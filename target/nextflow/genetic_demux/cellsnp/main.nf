@@ -3219,7 +3219,7 @@ meta = [
     "platform" : "nextflow",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/genetic_demux/cellsnp",
     "viash_version" : "0.8.5",
-    "git_commit" : "67e5158f5b37ead49290b25622a962d4c3de996c",
+    "git_commit" : "ea16d7c5b0b12169379fde9bedd781eaf2417cdc",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))
