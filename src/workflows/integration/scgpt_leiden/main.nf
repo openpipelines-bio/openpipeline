@@ -162,6 +162,7 @@ with_leiden_ch = neighbors_ch
       },
       auto: [ publish: true ]
     )
+    | niceView()
   
   emit:
     output_ch
