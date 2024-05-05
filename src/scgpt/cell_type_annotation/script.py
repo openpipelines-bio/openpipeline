@@ -33,23 +33,6 @@ par = {
   'dropout': float(r'0.2'),
   'seed': int(r'123')
 }
-meta = {
-  'functionality_name': r'cell_type_annotation',
-  'resources_dir': r'/private/tmp/viash_inject_cell_type_annotation7678826184586741922',
-  'executable': r'/private/tmp/viash_inject_cell_type_annotation7678826184586741922/cell_type_annotation',
-  'config': r'/private/tmp/viash_inject_cell_type_annotation7678826184586741922/.config.vsh.yaml',
-  'temp_dir': r'/var/folders/y7/gv4nmxd15rv12qmsbxjj62m40000gn/T/',
-  'cpus': int(r'123'),
-  'memory_b': int(r'123'),
-  'memory_kb': int(r'123'),
-  'memory_mb': int(r'123'),
-  'memory_gb': int(r'123'),
-  'memory_tb': int(r'123'),
-  'memory_pb': int(r'123')
-}
-dep = {
-  
-}
 
 ## VIASH END
 
@@ -105,9 +88,11 @@ elif par["dsbn"] and par["obs_batch_label"]:
     batch_ids = batch_id_labels.tolist()
     batch_ids = np.array(batch_ids)
     num_batch_types = len(set(batch_ids))
-elif not par["dsbn"] and par["obs_batch_label"]:
-    logger.info("Batch labels provided but dsbn is set to False. Batch labels will be ignored and no dsbn will be performed.")
+elif not par["dsbn"]:
+    # forward pass requires a tensor as input
+    batch_ids = np.array([0] * adata.shape[0])
 
+logger.info("Loading model vocabulary")
 # Vocabulary configuration
 special_tokens = [par["pad_token"], "<cls>", "<eoc>"]
 logger.info(f"Loading model vocab from {par['model_vocab']}")
@@ -117,6 +102,7 @@ vocab = GeneVocab.from_file(vocab_file)
 vocab.set_default_index(vocab[par["pad_token"]])
 ntokens = len(vocab)
 
+logger.info("Loading model and configurations")
 # Load model configurations
 model_config_file = par["model_config"]
 with open(model_config_file, "r") as f:
@@ -173,6 +159,7 @@ except Exception:
 model.to(device)
 
 # Load tokenized gene data
+logger.info("Loading data for inference")
 for k, v in {
         "--obsm_gene_tokens": par["obsm_gene_tokens"],
         "--obsm_tokenized_values": par["obsm_tokenized_values"],
@@ -186,7 +173,7 @@ input_values = adata.obsm[par["obsm_tokenized_values"]]
 data_pt = {
     "gene_ids": input_gene_ids,
     "values": input_values,
-    "batch_labels": torch.from_numpy(batch_ids).long() if par['dsbn'] else None,
+    "batch_labels": torch.from_numpy(batch_ids).long(),
 }
 
 
@@ -197,6 +184,7 @@ data_loader = DataLoader(
     pin_memory=True,
 )
 
+# Inference
 logger.info("Predicting cell type labels")
 model.eval()
 predictions = []
@@ -207,7 +195,7 @@ with torch.no_grad():
         batch_labels = batch_data["batch_labels"].to(device)
 
         src_key_padding_mask = input_gene_ids.eq(vocab[par["pad_token"]])
-        with torch.cuda.amp.autocast(enabled=False): # parametrize
+        with torch.cuda.amp.autocast(enabled=False): 
             output_dict = model(
                 input_gene_ids,
                 input_values,
