@@ -1,0 +1,27 @@
+# Inputs
+input: # please fill in - example: "input.h5mu"
+modality: "rna"
+# var_gene_names: "foo"
+bio_conservation_metrics: ["nmi", "ari", "asw_label"]
+batch_correction_metrics: ["asw_batch", "pcr", "graph_connectivity"]
+
+# Outputs
+# output: "$id.$key.output.pdf"
+output_raw: false
+# output_md_report: "$id.$key.output_md_report.qmd"
+# output_umap_label_fig: "$id.$key.output_umap_label_fig.png"
+# output_umap_batch_fig: "$id.$key.output_umap_batch_fig.png"
+# output_metrics: "$id.$key.output_metrics.json"
+
+# Input annotations
+obsm_embeddings: # please fill in - example: "X_scGPT"
+obs_batch_label: # please fill in - example: "sample"
+obs_cell_label: # please fill in - example: "cell_type"
+obs_cluster: # please fill in - example: "cluster"
+obsp_neighbor_connectivities: # please fill in - example: "connectivities"
+uns_neighbors: # please fill in - example: "neighbors"
+obsm_umap: # please fill in - example: "X_scGPT_umap"
+
+# Nextflow input-output arguments
+publish_dir: # please fill in - example: "output/"
+# param_list: "my_params.yaml"

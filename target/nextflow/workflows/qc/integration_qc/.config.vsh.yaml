@@ -1,0 +1,359 @@
+functionality:
+  name: "integration_qc"
+  namespace: "workflows/qc"
+  version: "integration_build"
+  authors:
+  - name: "Dorien Roosen"
+    roles:
+    - "author"
+    - "maintainer"
+    info:
+      role: "Contributor"
+      links:
+        email: "dorien@data-intuitive.com"
+        github: "dorien-er"
+        linkedin: "dorien-roosen"
+      organizations:
+      - name: "Data Intuitive"
+        href: "https://www.data-intuitive.com"
+        role: "Data Scientist"
+  argument_groups:
+  - name: "Inputs"
+    arguments:
+    - type: "file"
+      name: "--input"
+      description: "Input h5mu file"
+      info: null
+      example:
+      - "input.h5mu"
+      must_exist: true
+      create_parent: true
+      required: true
+      direction: "input"
+      multiple: false
+      multiple_sep: ":"
+      dest: "par"
+    - type: "string"
+      name: "--modality"
+      info: null
+      default:
+      - "rna"
+      required: false
+      direction: "input"
+      multiple: false
+      multiple_sep: ":"
+      dest: "par"
+    - type: "string"
+      name: "--var_gene_names"
+      description: "The name of the adata var column containing gene names. When no\
+        \ gene_name_layer is provided, the var index will be used.\n"
+      info: null
+      required: false
+      direction: "input"
+      multiple: false
+      multiple_sep: ":"
+      dest: "par"
+    - type: "string"
+      name: "--bio_conservation_metrics"
+      description: "The metrics to be calculated to assess biological conservation.\
+        \ \nThe provided metrics will be aggregated into a biological conservation\
+        \ score.\n"
+      info: null
+      default:
+      - "nmi;ari;asw_label"
+      required: false
+      choices:
+      - "nmi"
+      - "ari"
+      - "asw_label"
+      - "isolated_label_f1"
+      - "isolated_label_asw"
+      - "clisi_graph"
+      direction: "input"
+      multiple: true
+      multiple_sep: ";"
+      dest: "par"
+    - type: "string"
+      name: "--batch_correction_metrics"
+      description: "The metrics to be calculated for the batch correction. \nThe provided\
+        \ metrics will be aggregated into a batch correction score.\n"
+      info: null
+      default:
+      - "asw_batch;pcr;graph_connectivity"
+      required: false
+      choices:
+      - "asw_batch"
+      - "pcr"
+      - "graph_connectivity"
+      - "ilisi_graph"
+      - "kbet"
+      direction: "input"
+      multiple: true
+      multiple_sep: ";"
+      dest: "par"
+  - name: "Input annotations"
+    arguments:
+    - type: "string"
+      name: "--obsm_embeddings"
+      description: "The name of the adata.obsm array containing scGPT cell embeddings.\n"
+      info: null
+      example:
+      - "X_scGPT"
+      required: true
+      direction: "input"
+      multiple: false
+      multiple_sep: ":"
+      dest: "par"
+    - type: "string"
+      name: "--obs_batch_label"
+      description: "The name of the adata obs column containing the batch labels.\n"
+      info: null
+      example:
+      - "sample"
+      required: true
+      direction: "input"
+      multiple: false
+      multiple_sep: ":"
+      dest: "par"
+    - type: "string"
+      name: "--obs_cell_label"
+      description: "The name of the adata obs column containing the cell type labels.\n"
+      info: null
+      example:
+      - "cell_type"
+      required: true
+      direction: "input"
+      multiple: false
+      multiple_sep: ":"
+      dest: "par"
+    - type: "string"
+      name: "--obs_cluster"
+      description: "The name of the adata obs column containing the cluster labels.\n"
+      info: null
+      example:
+      - "cluster"
+      required: true
+      direction: "input"
+      multiple: false
+      multiple_sep: ":"
+      dest: "par"
+    - type: "string"
+      name: "--obsp_neighbor_connectivities"
+      description: "The name of the adata obsp object containing the neighbor connectivities.\n"
+      info: null
+      example:
+      - "connectivities"
+      required: true
+      direction: "input"
+      multiple: false
+      multiple_sep: ":"
+      dest: "par"
+    - type: "string"
+      name: "--uns_neighbors"
+      description: "The name of the adata uns object containing the neighbors information."
+      info: null
+      example:
+      - "neighbors"
+      required: true
+      direction: "input"
+      multiple: false
+      multiple_sep: ":"
+      dest: "par"
+    - type: "string"
+      name: "--obsm_umap"
+      description: "The obsm slot containing UMAP embeddings."
+      info: null
+      example:
+      - "X_scGPT_umap"
+      required: true
+      direction: "input"
+      multiple: false
+      multiple_sep: ":"
+      dest: "par"
+  - name: "Outputs"
+    arguments:
+    - type: "file"
+      name: "--output"
+      description: "Name of the integration qc output pdf report."
+      info: null
+      example:
+      - "output.pdf"
+      must_exist: true
+      create_parent: true
+      required: true
+      direction: "output"
+      multiple: false
+      multiple_sep: ":"
+      dest: "par"
+    - type: "boolean_true"
+      name: "--output_raw"
+      description: "If provided, the raw data (unrendered report (md), figures (png)\
+        \ and metrics (json)) will be published.\n"
+      info: null
+      direction: "input"
+      dest: "par"
+    - type: "file"
+      name: "--output_md_report"
+      description: "Name of the unrendered report file (qmd). Will only be saved if\
+        \ --output_raw is set to true.\n"
+      info: null
+      default:
+      - "report.qmd"
+      must_exist: false
+      create_parent: true
+      required: false
+      direction: "output"
+      multiple: false
+      multiple_sep: ":"
+      dest: "par"
+    - type: "file"
+      name: "--output_umap_label_fig"
+      description: "Name of the UMAP label figure (png). Will only be saved if --output_raw\
+        \ is set to true.\n"
+      info: null
+      default:
+      - "umap_label.png"
+      must_exist: false
+      create_parent: true
+      required: false
+      direction: "output"
+      multiple: false
+      multiple_sep: ":"
+      dest: "par"
+    - type: "file"
+      name: "--output_umap_batch_fig"
+      description: "Name of the UMAP batch figure (png). Will only be saved if --output_raw\
+        \ is set to true.\n"
+      info: null
+      default:
+      - "umap_batch.png"
+      must_exist: false
+      create_parent: true
+      required: false
+      direction: "output"
+      multiple: false
+      multiple_sep: ":"
+      dest: "par"
+    - type: "file"
+      name: "--output_metrics"
+      description: "Name of the json file containing integration metrics (json). Will\
+        \ only be saved if --output_raw is set to true.       \n"
+      info: null
+      default:
+      - "metrics.json"
+      must_exist: false
+      create_parent: true
+      required: false
+      direction: "output"
+      multiple: false
+      multiple_sep: ":"
+      dest: "par"
+  resources:
+  - type: "nextflow_script"
+    path: "main.nf"
+    is_executable: true
+    entrypoint: "run_wf"
+  - type: "file"
+    path: "./src/workflows/utils/labels.config"
+    dest: "nextflow_labels.config"
+  description: "Workflow to add integration qc metrics to a MuData and generate an\
+    \ integration qc output report.\n  \n"
+  test_resources:
+  - type: "file"
+    path: "src/base/openpipelinetestutils"
+    dest: "openpipelinetestutils"
+  info: null
+  status: "enabled"
+  requirements:
+    commands:
+    - "ps"
+  dependencies:
+  - name: "qc/integration_metrics"
+    repository:
+      type: "local"
+      localPath: ""
+    foundConfigPath: "/home/runner/work/openpipeline/openpipeline/src/qc/integration_metrics/config.vsh.yaml"
+    configInfo:
+      functionalityName: "integration_metrics"
+      git_tag: ""
+      git_remote: "https://github.com/openpipelines-bio/openpipeline"
+      viash_version: "0.8.5"
+      config: "/home/runner/work/openpipeline/openpipeline/src/qc/integration_metrics/config.vsh.yaml"
+      functionalityNamespace: "qc"
+      output: ""
+      platform: ""
+      git_commit: "5af5dcc142e5fe189a226bcb72063dfecffe5ae7"
+      executable: "/nextflow/qc/integration_metrics/main.nf"
+    writtenPath: "/home/runner/work/openpipeline/openpipeline/target/nextflow/qc/integration_metrics"
+  - name: "qc/integration_report"
+    repository:
+      type: "local"
+      localPath: ""
+    foundConfigPath: "/home/runner/work/openpipeline/openpipeline/src/qc/integration_report/config.vsh.yaml"
+    configInfo:
+      functionalityName: "integration_report"
+      git_tag: ""
+      git_remote: "https://github.com/openpipelines-bio/openpipeline"
+      viash_version: "0.8.5"
+      config: "/home/runner/work/openpipeline/openpipeline/src/qc/integration_report/config.vsh.yaml"
+      functionalityNamespace: "qc"
+      output: ""
+      platform: ""
+      git_commit: "5af5dcc142e5fe189a226bcb72063dfecffe5ae7"
+      executable: "/nextflow/qc/integration_report/main.nf"
+    writtenPath: "/home/runner/work/openpipeline/openpipeline/target/nextflow/qc/integration_report"
+  set_wd_to_resources_dir: false
+platforms:
+- type: "nextflow"
+  id: "nextflow"
+  directives:
+    tag: "$id"
+  auto:
+    simplifyInput: true
+    simplifyOutput: false
+    transcript: false
+    publish: false
+  config:
+    labels:
+      mem1gb: "memory = 1.GB"
+      mem2gb: "memory = 2.GB"
+      mem4gb: "memory = 4.GB"
+      mem8gb: "memory = 8.GB"
+      mem16gb: "memory = 16.GB"
+      mem32gb: "memory = 32.GB"
+      mem64gb: "memory = 64.GB"
+      mem128gb: "memory = 128.GB"
+      mem256gb: "memory = 256.GB"
+      mem512gb: "memory = 512.GB"
+      mem1tb: "memory = 1.TB"
+      mem2tb: "memory = 2.TB"
+      mem4tb: "memory = 4.TB"
+      mem8tb: "memory = 8.TB"
+      mem16tb: "memory = 16.TB"
+      mem32tb: "memory = 32.TB"
+      mem64tb: "memory = 64.TB"
+      mem128tb: "memory = 128.TB"
+      mem256tb: "memory = 256.TB"
+      mem512tb: "memory = 512.TB"
+      cpu1: "cpus = 1"
+      cpu2: "cpus = 2"
+      cpu5: "cpus = 5"
+      cpu10: "cpus = 10"
+      cpu20: "cpus = 20"
+      cpu50: "cpus = 50"
+      cpu100: "cpus = 100"
+      cpu200: "cpus = 200"
+      cpu500: "cpus = 500"
+      cpu1000: "cpus = 1000"
+    script:
+    - "includeConfig(\"nextflow_labels.config\")"
+  debug: false
+  container: "docker"
+info:
+  config: "/home/runner/work/openpipeline/openpipeline/src/workflows/qc/integration_qc/config.vsh.yaml"
+  platform: "nextflow"
+  output: "/home/runner/work/openpipeline/openpipeline/target/nextflow/workflows/qc/integration_qc"
+  executable: "/home/runner/work/openpipeline/openpipeline/target/nextflow/workflows/qc/integration_qc/main.nf"
+  viash_version: "0.8.5"
+  git_commit: "5af5dcc142e5fe189a226bcb72063dfecffe5ae7"
+  git_remote: "https://github.com/openpipelines-bio/openpipeline"

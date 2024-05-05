@@ -34,6 +34,8 @@ echo "> Downloading test resources"
 # download test data
 # https://drive.google.com/file/d/1z_0vWYMhRuRiD1EyhuFtY9ReIR0msWaL/view?usp=drive_link
 gdown '1z_0vWYMhRuRiD1EyhuFtY9ReIR0msWaL' -O "${test_resources_dir}/Kim2020_Lung.h5ad"
+gdown '1wfugJbZkIDqeSzEsrUk0aRuOY4r-RsC6' -O "${test_resources_dir}/Kim2020_Lung_preprocessed.h5mu"
+gdown '1P_PJeUpg6aepadQ7ArqAHvyCe64Hf1Q6' -O "${test_resources_dir}/Kim2020_Lung_tokenized.h5mu"
 
 echo "> Converting to h5mu"
 python <<HEREDOC

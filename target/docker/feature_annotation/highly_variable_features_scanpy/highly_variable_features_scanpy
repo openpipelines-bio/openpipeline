@@ -519,14 +519,18 @@ FROM python:3.9
 ENTRYPOINT []
 
  
+RUN apt-get update && \
+  DEBIAN_FRONTEND=noninteractive apt-get install -y procps libhdf5-dev gfortran cmake libopenblas-dev && \
+  rm -rf /var/lib/apt/lists/*
+
 RUN pip install --upgrade pip && \
   pip install --upgrade --no-cache-dir "anndata~=0.9.1" "mudata~=0.2.3" "pandas!=2.1.2" "scanpy~=1.9.5" "statsmodels==0.14.0" "scikit-misc"
 
 LABEL org.opencontainers.image.authors="Dries De Maeyer, Robrecht Cannoodt"
 LABEL org.opencontainers.image.description="Companion container for running component feature_annotation highly_variable_features_scanpy"
-LABEL org.opencontainers.image.created="2024-05-05T02:38:18Z"
+LABEL org.opencontainers.image.created="2024-05-05T07:17:06Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="80c756996a44e71f1ecfcf1e7ecfce475cbee916"
+LABEL org.opencontainers.image.revision="5af5dcc142e5fe189a226bcb72063dfecffe5ae7"
 LABEL org.opencontainers.image.version="integration_build"
 
 VIASHDOCKER
