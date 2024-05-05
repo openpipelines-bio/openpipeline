@@ -32,13 +32,7 @@ def test_cell_type_inference(run_component,
         "--model_vocab", model_vocab,
         "--model_config", model_config,
         "--obs_batch_label", "sample",
-        "--obs_predicted_cell_type", "predicted_cell_type",
-        "--pad_token", "<pad>",
-        "--dsbn", "True",
-        "--pad_value", "-2",
-        "--n_cls", "8",
-        "--n_input_bins", "51",
-        "--batch_size", "64"
+        "--obs_predicted_cell_type", "predicted_cell_type"
     ]
     run_component(args)
 
@@ -69,7 +63,7 @@ def test_cell_type_inference(run_component,
     output_adata_no_dsbn = output_mdata_no_dsbn.mod["rna"]
 
     # Assert that embeddings without dsbn are different
-    assert not (output_adata.obs["predicted_cell_type"] == output_adata_no_dsbn.obsm["predicted_cell_type"]).all(), "Cell type predictions with and without dsbn are the same"
+    assert not (output_adata.obs["predicted_cell_type"] == output_adata_no_dsbn.obs["predicted_cell_type"]).all(), "Cell type predictions with and without dsbn are the same"
 
 def test_annotation_dsbn_without_batch_labels(run_component, tmp_path):
     output_embedding_file = tmp_path / "Kim2020_Lung_subset_embedded.h5mu"
@@ -84,7 +78,7 @@ def test_annotation_dsbn_without_batch_labels(run_component, tmp_path):
         "--model_vocab", model_vocab,
         "--model_config", model_config,
         "--obs_predicted_cell_type", "predicted_cell_type",
-        "--dsbn", "False",
+        "--dsbn", "True",
     ]
 
     with pytest.raises(subprocess.CalledProcessError) as err:
@@ -127,7 +121,8 @@ def test_annotation_non_existing_keys(run_component, tmp_path):
         "--model_vocab", model_vocab,
         "--model_config", model_config,
         "--obs_predicted_cell_type", "predicted_cell_type",
-        "--dsbn", "False",
+        "--obs_batch_label", "sample"
+        "--dsbn", "True",
     ]
 
     with pytest.raises(subprocess.CalledProcessError) as err:
