@@ -19,7 +19,7 @@ workflow test_wf {
             leiden_resolution: [1.0, 0.25]
         ],
         [
-            id: "no_leiden_reoslutions_test",
+            id: "no_leiden_resolutions_test",
             input: resources_test.resolve("test_resources/Kim2020_Lung_subset_preprocessed.h5mu"),
             model: resources_test.resolve("source/best_model.pt"),
             model_config: resources_test.resolve("source/args.json"),
@@ -48,9 +48,7 @@ workflow test_wf {
 
       "Output: $output"
     }
-    | niceView()
     | toSortedList{a, b -> a[0] <=> b[0]}
-    | niceView()
     | map { output_list ->
       assert output_list.size() == 2 : "output channel should contain 2 events"
       assert output_list.collect{it[0]} == ["no_leiden_resolutions_test", "simple_execution_test"]
