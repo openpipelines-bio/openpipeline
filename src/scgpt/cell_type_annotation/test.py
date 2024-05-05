@@ -105,7 +105,7 @@ def test_annotation_non_existing_keys(run_component, tmp_path):
         "--model_vocab", model_vocab,
         "--model_config", model_config,
         "--obs_predicted_cell_type", "predicted_cell_type",
-        "--obs_batch_label", "sample"
+        "--obs_batch_label", "sample",
         "--dsbn", "True",
     ]
 
