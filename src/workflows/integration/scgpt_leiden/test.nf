@@ -48,7 +48,9 @@ workflow test_wf {
 
       "Output: $output"
     }
+    | niceView()
     | toSortedList{a, b -> a[0] <=> b[0]}
+    | niceView()
     | map { output_list ->
       assert output_list.size() == 2 : "output channel should contain 2 events"
       assert output_list.collect{it[0]} == ["no_leiden_resolutions_test", "simple_execution_test"]
