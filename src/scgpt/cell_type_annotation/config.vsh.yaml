@@ -29,6 +29,12 @@ functionality:
           example: "resources_test/scgpt/source/best_model.pt"
           description: |
             The model file.
+        - name: "--model_config"
+          type: file
+          required: true
+          example: "resources_test/scgpt/source/args.json"
+          description: |
+            The model configuration file. 
         - name: "--model_vocab"
           type: file
           required: true
@@ -112,11 +118,6 @@ functionality:
           required: false
           description: |
             Whether to use domain-specific batch normalization.
-        - name: "--emb_size"
-          type: integer
-          default: 512
-          description: |
-            Size of the cell embeddings
         - name: "--dropout"
           type: double
           default: 0.2
@@ -127,24 +128,6 @@ functionality:
           description: |
             Seed for random number generation.
 
-    - name: Model configurations
-      arguments:
-        - name: "--n_head"
-          type: integer
-          default: 8
-          description: |
-            Number of attention heads of the model
-        - name: "--d_hid"
-          type: integer
-          default: 512
-          description: |
-            Dimension of the feedforward network model
-        - name: "--n_layers"
-          type: integer
-          default: 12
-          description: |
-            Number of layers of the model
-        
   resources:
     - type: python_script
       path: script.py
