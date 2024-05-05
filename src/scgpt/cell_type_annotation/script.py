@@ -179,14 +179,14 @@ for k, v in {
         }.items():
     if v not in adata.obsm.keys():
         raise KeyError(f"The parameter '{v}' provided for '{k}' could not be found in adata.obsm")
-    
+
 input_gene_ids = adata.obsm[par["obsm_gene_tokens"]]
 input_values = adata.obsm[par["obsm_tokenized_values"]]
 
 data_pt = {
     "gene_ids": input_gene_ids,
     "values": input_values,
-    "batch_labels": torch.from_numpy(batch_ids).long() if par['obs_batch_label'] else None,
+    "batch_labels": torch.from_numpy(batch_ids).long() if par['dsbn'] else None,
 }
 
 
