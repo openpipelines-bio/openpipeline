@@ -1,0 +1,278 @@
+functionality:
+  name: "samtools_sort"
+  namespace: "mapping"
+  version: "scgpt_build"
+  authors:
+  - name: "Robrecht Cannoodt"
+    roles:
+    - "author"
+    - "maintainer"
+    info:
+      role: "Core Team Member"
+      links:
+        email: "robrecht@data-intuitive.com"
+        github: "rcannood"
+        orcid: "0000-0003-3641-729X"
+        linkedin: "robrechtcannoodt"
+      organizations:
+      - name: "Data Intuitive"
+        href: "https://www.data-intuitive.com"
+        role: "Data Science Engineer"
+      - name: "Open Problems"
+        href: "https://openproblems.bio"
+        role: "Core Member"
+  - name: "Angela Oliveira Pisco"
+    roles:
+    - "author"
+    info:
+      role: "Contributor"
+      links:
+        github: "aopisco"
+        orcid: "0000-0003-0142-2355"
+        linkedin: "aopisco"
+      organizations:
+      - name: "Insitro"
+        href: "https://insitro.com"
+        role: "Director of Computational Biology"
+      - name: "Open Problems"
+        href: "https://openproblems.bio"
+        role: "Core Member"
+  argument_groups:
+  - name: "Input"
+    arguments:
+    - type: "file"
+      name: "--input"
+      description: "Path to the SAM/BAM/CRAM files containing the mapped reads."
+      info:
+        orig_arg: "in_sam"
+      example:
+      - "input.bam"
+      must_exist: true
+      create_parent: true
+      required: true
+      direction: "input"
+      multiple: false
+      multiple_sep: ":"
+      dest: "par"
+  - name: "Output"
+    arguments:
+    - type: "file"
+      name: "--output_bam"
+      description: "Filename to output the counts to."
+      info:
+        orig_arg: "-o"
+      example:
+      - "output.bam"
+      must_exist: true
+      create_parent: true
+      required: true
+      direction: "output"
+      multiple: false
+      multiple_sep: ":"
+      dest: "par"
+    - type: "file"
+      name: "--output_bai"
+      description: "BAI-format index for BAM file."
+      info: null
+      example:
+      - "output.bam.bai"
+      must_exist: true
+      create_parent: true
+      required: false
+      direction: "output"
+      multiple: false
+      multiple_sep: ":"
+      dest: "par"
+    - type: "string"
+      name: "--output_format"
+      description: "The output format. By default, samtools tries to select a format\
+        \ based on the -o filename extension; if output is to standard output or no\
+        \ format can be deduced, bam is selected."
+      info:
+        orig_arg: "-O"
+      example:
+      - "bam"
+      required: false
+      choices:
+      - "sam"
+      - "bam"
+      - "cram"
+      direction: "input"
+      multiple: false
+      multiple_sep: ":"
+      dest: "par"
+    - type: "integer"
+      name: "--compression"
+      description: "Compression level, from 0 (uncompressed) to 9 (best"
+      info:
+        orig_arg: "-l"
+      example:
+      - 5
+      required: false
+      direction: "input"
+      multiple: false
+      multiple_sep: ":"
+      dest: "par"
+  - name: "Arguments"
+    arguments:
+    - type: "boolean_true"
+      name: "--minimizer_cluster"
+      description: "Sort unmapped reads (those in chromosome \"*\") by their sequence\
+        \ minimiser (Schleimer et al., 2003; Roberts et al., 2004), \nalso reverse\
+        \ complementing as appropriate. This has the effect of collating some similar\
+        \ data together, improving the \ncompressibility of the unmapped sequence.\
+        \ The minimiser kmer size is adjusted using the -K option. Note data compressed\
+        \ \nin this manner may need to be name collated prior to conversion back to\
+        \ fastq.\n\nMapped sequences are sorted by chromosome and position. \n"
+      info:
+        orig_arg: "-M"
+      direction: "input"
+      dest: "par"
+    - type: "integer"
+      name: "--minimizer_kmer"
+      description: "Sets the kmer size to be used in the -M option."
+      info:
+        orig_arg: "-K"
+      example:
+      - 20
+      required: false
+      direction: "input"
+      multiple: false
+      multiple_sep: ":"
+      dest: "par"
+    - type: "boolean_true"
+      name: "--sort_by_read_names"
+      description: "Sort by read names (i.e., the QNAME field) rather than by chromosomal\
+        \ coordinates."
+      info:
+        orig_arg: "-n"
+      direction: "input"
+      dest: "par"
+    - type: "string"
+      name: "--sort_by"
+      description: "Sort first by this value in the alignment tag, then by position\
+        \ or name (if also using -n)."
+      info:
+        orig_arg: "-t"
+      required: false
+      direction: "input"
+      multiple: false
+      multiple_sep: ":"
+      dest: "par"
+    - type: "boolean_true"
+      name: "--no_pg"
+      description: "Do not add a @PG line to the header of the output file."
+      info:
+        orig_arg: "--no-PG"
+      direction: "input"
+      dest: "par"
+  resources:
+  - type: "python_script"
+    path: "script.py"
+    is_executable: true
+  - type: "file"
+    path: "./src/workflows/utils/labels.config"
+    dest: "nextflow_labels.config"
+  description: "Sort and (optionally) index alignments.\n\nReads are sorted by leftmost\
+    \ coordinates, or by read name when `--sort_by_read_names` is used.\n\nAn appropriate\
+    \ `@HD-SO` sort order header tag will be added or an existing one updated if necessary.\n\
+    \nNote that to generate an index file (by specifying `--output_bai`), the default\
+    \ coordinate sort must be used.\nThus the `--sort_by_read_names` and `--sort_by\
+    \ <TAG>` options are incompatible with `--output_bai`. \n"
+  test_resources:
+  - type: "python_script"
+    path: "test.py"
+    is_executable: true
+  - type: "file"
+    path: "resources_test/cellranger_tiny_fastq"
+  - type: "file"
+    path: "src/base/openpipelinetestutils"
+    dest: "openpipelinetestutils"
+  info: null
+  status: "enabled"
+  requirements:
+    commands:
+    - "ps"
+  set_wd_to_resources_dir: false
+platforms:
+- type: "docker"
+  id: "docker"
+  image: "python:3.10-slim"
+  target_organization: "openpipelines-bio"
+  target_registry: "ghcr.io"
+  target_tag: "scgpt_build"
+  namespace_separator: "/"
+  resolve_volume: "Automatic"
+  chown: true
+  setup_strategy: "ifneedbepullelsecachedbuild"
+  target_image_source: "https://github.com/openpipelines-bio/openpipeline"
+  setup:
+  - type: "apt"
+    packages:
+    - "samtools"
+    - "procps"
+    interactive: false
+  - type: "python"
+    user: false
+    packages:
+    - "pyyaml"
+    upgrade: true
+  entrypoint: []
+  cmd: null
+- type: "nextflow"
+  id: "nextflow"
+  directives:
+    label:
+    - "highmem"
+    - "highcpu"
+    tag: "$id"
+  auto:
+    simplifyInput: true
+    simplifyOutput: false
+    transcript: false
+    publish: false
+  config:
+    labels:
+      mem1gb: "memory = 1.GB"
+      mem2gb: "memory = 2.GB"
+      mem4gb: "memory = 4.GB"
+      mem8gb: "memory = 8.GB"
+      mem16gb: "memory = 16.GB"
+      mem32gb: "memory = 32.GB"
+      mem64gb: "memory = 64.GB"
+      mem128gb: "memory = 128.GB"
+      mem256gb: "memory = 256.GB"
+      mem512gb: "memory = 512.GB"
+      mem1tb: "memory = 1.TB"
+      mem2tb: "memory = 2.TB"
+      mem4tb: "memory = 4.TB"
+      mem8tb: "memory = 8.TB"
+      mem16tb: "memory = 16.TB"
+      mem32tb: "memory = 32.TB"
+      mem64tb: "memory = 64.TB"
+      mem128tb: "memory = 128.TB"
+      mem256tb: "memory = 256.TB"
+      mem512tb: "memory = 512.TB"
+      cpu1: "cpus = 1"
+      cpu2: "cpus = 2"
+      cpu5: "cpus = 5"
+      cpu10: "cpus = 10"
+      cpu20: "cpus = 20"
+      cpu50: "cpus = 50"
+      cpu100: "cpus = 100"
+      cpu200: "cpus = 200"
+      cpu500: "cpus = 500"
+      cpu1000: "cpus = 1000"
+    script:
+    - "includeConfig(\"nextflow_labels.config\")"
+  debug: false
+  container: "docker"
+info:
+  config: "/home/runner/work/openpipeline/openpipeline/src/mapping/samtools_sort/config.vsh.yaml"
+  platform: "docker"
+  output: "/home/runner/work/openpipeline/openpipeline/target/docker/mapping/samtools_sort"
+  executable: "/home/runner/work/openpipeline/openpipeline/target/docker/mapping/samtools_sort/samtools_sort"
+  viash_version: "0.8.5"
+  git_commit: "638ac500c3a52839b8f607737916bf857b2258ba"
+  git_remote: "https://github.com/openpipelines-bio/openpipeline"
+  git_tag: "0.2.0-1644-g638ac500c3"

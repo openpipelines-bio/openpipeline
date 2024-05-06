@@ -1,0 +1,599 @@
+functionality:
+  name: "scvi"
+  namespace: "integrate"
+  version: "scgpt_build"
+  authors:
+  - name: "Malte D. Luecken"
+    roles:
+    - "author"
+    info:
+      role: "Core Team Member"
+      links:
+        email: "malte.luecken@helmholtz-muenchen.de"
+        github: "LuckyMD"
+        orcid: "0000-0001-7464-7921"
+        linkedin: "malte-l%C3%BCcken-b8b21049"
+        twitter: "MDLuecken"
+      organizations:
+      - name: "Helmholtz Munich"
+        href: "https://www.helmholtz-munich.de"
+        role: "Group Leader"
+      - name: "Open Problems"
+        href: "https://openproblems.bio"
+        role: "Core Member"
+  - name: "Dries Schaumont"
+    roles:
+    - "maintainer"
+    info:
+      role: "Core Team Member"
+      links:
+        email: "dries@data-intuitive.com"
+        github: "DriesSchaumont"
+        orcid: "0000-0002-4389-0440"
+        linkedin: "dries-schaumont"
+      organizations:
+      - name: "Data Intuitive"
+        href: "https://www.data-intuitive.com"
+        role: "Data Scientist"
+  - name: "Matthias Beyens"
+    roles:
+    - "contributor"
+    info:
+      role: "Contributor"
+      links:
+        github: "MatthiasBeyens"
+        orcid: "0000-0003-3304-0706"
+        email: "matthias.beyens@gmail.com"
+        linkedin: "mbeyens"
+      organizations:
+      - name: "Janssen Pharmaceuticals"
+        href: "https://www.janssen.com"
+        role: "Principal Scientist"
+  argument_groups:
+  - name: "Inputs"
+    arguments:
+    - type: "file"
+      name: "--input"
+      alternatives:
+      - "-i"
+      description: "Input h5mu file"
+      info: null
+      must_exist: true
+      create_parent: true
+      required: true
+      direction: "input"
+      multiple: false
+      multiple_sep: ":"
+      dest: "par"
+    - type: "string"
+      name: "--modality"
+      info: null
+      default:
+      - "rna"
+      required: false
+      direction: "input"
+      multiple: false
+      multiple_sep: ":"
+      dest: "par"
+    - type: "string"
+      name: "--input_layer"
+      description: "Input layer to use. If None, X is used"
+      info: null
+      required: false
+      direction: "input"
+      multiple: false
+      multiple_sep: ":"
+      dest: "par"
+    - type: "string"
+      name: "--obs_batch"
+      description: "Column name discriminating between your batches."
+      info: null
+      default:
+      - "sample_id"
+      required: false
+      direction: "input"
+      multiple: false
+      multiple_sep: ":"
+      dest: "par"
+    - type: "string"
+      name: "--var_input"
+      description: ".var column containing highly variable genes. By default, do not\
+        \ subset genes."
+      info: null
+      required: false
+      direction: "input"
+      multiple: false
+      multiple_sep: ":"
+      dest: "par"
+    - type: "string"
+      name: "--obs_labels"
+      description: "Key in adata.obs for label information. Categories will automatically\
+        \ be \nconverted into integer categories and saved to adata.obs['_scvi_labels'].\n\
+        If None, assigns the same label to all the data.\n"
+      info: null
+      required: false
+      direction: "input"
+      multiple: false
+      multiple_sep: ":"
+      dest: "par"
+    - type: "string"
+      name: "--obs_size_factor"
+      description: "Key in adata.obs for size factor information. Instead of using\
+        \ library size as a size factor,\nthe provided size factor column will be\
+        \ used as offset in the mean of the likelihood.\nAssumed to be on linear scale.\n"
+      info: null
+      required: false
+      direction: "input"
+      multiple: false
+      multiple_sep: ":"
+      dest: "par"
+    - type: "string"
+      name: "--obs_categorical_covariate"
+      description: "Keys in adata.obs that correspond to categorical data. These covariates\
+        \ can be added in\naddition to the batch covariate and are also treated as\
+        \ nuisance factors\n(i.e., the model tries to minimize their effects on the\
+        \ latent space).\nThus, these should not be used for biologically-relevant\
+        \ factors that you do _not_ want to correct for.\n"
+      info: null
+      required: false
+      direction: "input"
+      multiple: true
+      multiple_sep: ";"
+      dest: "par"
+    - type: "string"
+      name: "--obs_continuous_covariate"
+      description: "Keys in adata.obs that correspond to continuous data. These covariates\
+        \ can be added in\naddition to the batch covariate and are also treated as\
+        \ nuisance factors\n(i.e., the model tries to minimize their effects on the\
+        \ latent space). Thus, these should not be\nused for biologically-relevant\
+        \ factors that you do _not_ want to correct for.\n"
+      info: null
+      required: false
+      direction: "input"
+      multiple: true
+      multiple_sep: ";"
+      dest: "par"
+  - name: "Outputs"
+    arguments:
+    - type: "file"
+      name: "--output"
+      alternatives:
+      - "-o"
+      description: "Output h5mu file."
+      info: null
+      must_exist: true
+      create_parent: true
+      required: true
+      direction: "output"
+      multiple: false
+      multiple_sep: ":"
+      dest: "par"
+    - type: "file"
+      name: "--output_model"
+      description: "Folder where the state of the trained model will be saved to."
+      info: null
+      must_exist: true
+      create_parent: true
+      required: false
+      direction: "output"
+      multiple: false
+      multiple_sep: ":"
+      dest: "par"
+    - type: "string"
+      name: "--output_compression"
+      description: "The compression format to be used on the output h5mu object."
+      info: null
+      example:
+      - "gzip"
+      required: false
+      choices:
+      - "gzip"
+      - "lzf"
+      direction: "input"
+      multiple: false
+      multiple_sep: ":"
+      dest: "par"
+    - type: "string"
+      name: "--obsm_output"
+      description: "In which .obsm slot to store the resulting integrated embedding."
+      info: null
+      default:
+      - "X_scvi_integrated"
+      required: false
+      direction: "input"
+      multiple: false
+      multiple_sep: ":"
+      dest: "par"
+  - name: "SCVI options"
+    arguments:
+    - type: "integer"
+      name: "--n_hidden_nodes"
+      description: "Number of nodes per hidden layer."
+      info: null
+      default:
+      - 128
+      required: false
+      direction: "input"
+      multiple: false
+      multiple_sep: ":"
+      dest: "par"
+    - type: "integer"
+      name: "--n_dimensions_latent_space"
+      description: "Dimensionality of the latent space."
+      info: null
+      default:
+      - 30
+      required: false
+      direction: "input"
+      multiple: false
+      multiple_sep: ":"
+      dest: "par"
+    - type: "integer"
+      name: "--n_hidden_layers"
+      description: "Number of hidden layers used for encoder and decoder neural-networks."
+      info: null
+      default:
+      - 2
+      required: false
+      direction: "input"
+      multiple: false
+      multiple_sep: ":"
+      dest: "par"
+    - type: "double"
+      name: "--dropout_rate"
+      description: "Dropout rate for the neural networks."
+      info: null
+      default:
+      - 0.1
+      required: false
+      direction: "input"
+      multiple: false
+      multiple_sep: ":"
+      dest: "par"
+    - type: "string"
+      name: "--dispersion"
+      description: "Set the behavior for the dispersion for negative binomial distributions:\n\
+        - gene: dispersion parameter of negative binomial is constant per gene across\
+        \ cells\n- gene-batch: dispersion can differ between different batches\n-\
+        \ gene-label: dispersion can differ between different labels\n- gene-cell:\
+        \  dispersion can differ for every gene in every cell\n"
+      info: null
+      default:
+      - "gene"
+      required: false
+      choices:
+      - "gene"
+      - "gene-batch"
+      - "gene-label"
+      - "gene-cell"
+      direction: "input"
+      multiple: false
+      multiple_sep: ":"
+      dest: "par"
+    - type: "string"
+      name: "--gene_likelihood"
+      description: "Model used to generate the expression data from a count-based\
+        \ likelihood distribution.\n- nb: Negative binomial distribution\n- zinb:\
+        \ Zero-inflated negative binomial distribution\n- poisson: Poisson distribution\n"
+      info: null
+      default:
+      - "nb"
+      required: false
+      choices:
+      - "nb"
+      - "zinb"
+      - "poisson"
+      direction: "input"
+      multiple: false
+      multiple_sep: ":"
+      dest: "par"
+  - name: "Variational auto-encoder model options"
+    arguments:
+    - type: "string"
+      name: "--use_layer_normalization"
+      description: "Neural networks for which to enable layer normalization. \n"
+      info: null
+      default:
+      - "both"
+      required: false
+      choices:
+      - "encoder"
+      - "decoder"
+      - "none"
+      - "both"
+      direction: "input"
+      multiple: false
+      multiple_sep: ":"
+      dest: "par"
+    - type: "string"
+      name: "--use_batch_normalization"
+      description: "Neural networks for which to enable batch normalization. \n"
+      info: null
+      default:
+      - "none"
+      required: false
+      choices:
+      - "encoder"
+      - "decoder"
+      - "none"
+      - "both"
+      direction: "input"
+      multiple: false
+      multiple_sep: ":"
+      dest: "par"
+    - type: "boolean_false"
+      name: "--encode_covariates"
+      description: "Whether to concatenate covariates to expression in encoder"
+      info: null
+      direction: "input"
+      dest: "par"
+    - type: "boolean_true"
+      name: "--deeply_inject_covariates"
+      description: "Whether to concatenate covariates into output of hidden layers\
+        \ in encoder/decoder. \nThis option only applies when n_layers > 1. The covariates\
+        \ are concatenated to\nthe input of subsequent hidden layers.\n"
+      info: null
+      direction: "input"
+      dest: "par"
+    - type: "boolean_true"
+      name: "--use_observed_lib_size"
+      description: "Use observed library size for RNA as scaling factor in mean of\
+        \ conditional distribution.\n"
+      info: null
+      direction: "input"
+      dest: "par"
+  - name: "Early stopping arguments"
+    arguments:
+    - type: "boolean"
+      name: "--early_stopping"
+      description: "Whether to perform early stopping with respect to the validation\
+        \ set."
+      info: null
+      required: false
+      direction: "input"
+      multiple: false
+      multiple_sep: ":"
+      dest: "par"
+    - type: "string"
+      name: "--early_stopping_monitor"
+      description: "Metric logged during validation set epoch."
+      info: null
+      default:
+      - "elbo_validation"
+      required: false
+      choices:
+      - "elbo_validation"
+      - "reconstruction_loss_validation"
+      - "kl_local_validation"
+      direction: "input"
+      multiple: false
+      multiple_sep: ":"
+      dest: "par"
+    - type: "integer"
+      name: "--early_stopping_patience"
+      description: "Number of validation epochs with no improvement after which training\
+        \ will be stopped."
+      info: null
+      default:
+      - 45
+      required: false
+      min: 1
+      direction: "input"
+      multiple: false
+      multiple_sep: ":"
+      dest: "par"
+    - type: "double"
+      name: "--early_stopping_min_delta"
+      description: "Minimum change in the monitored quantity to qualify as an improvement,\
+        \ i.e. an absolute change of less than min_delta, will count as no improvement."
+      info: null
+      default:
+      - 0.0
+      required: false
+      min: 0.0
+      direction: "input"
+      multiple: false
+      multiple_sep: ":"
+      dest: "par"
+  - name: "Learning parameters"
+    arguments:
+    - type: "integer"
+      name: "--max_epochs"
+      description: "Number of passes through the dataset, defaults to (20000 / number\
+        \ of cells) * 400 or 400; whichever is smallest."
+      info: null
+      required: false
+      direction: "input"
+      multiple: false
+      multiple_sep: ":"
+      dest: "par"
+    - type: "boolean"
+      name: "--reduce_lr_on_plateau"
+      description: "Whether to monitor validation loss and reduce learning rate when\
+        \ validation set `lr_scheduler_metric` plateaus."
+      info: null
+      default:
+      - true
+      required: false
+      direction: "input"
+      multiple: false
+      multiple_sep: ":"
+      dest: "par"
+    - type: "double"
+      name: "--lr_factor"
+      description: "Factor to reduce learning rate."
+      info: null
+      default:
+      - 0.6
+      required: false
+      min: 0.0
+      direction: "input"
+      multiple: false
+      multiple_sep: ":"
+      dest: "par"
+    - type: "double"
+      name: "--lr_patience"
+      description: "Number of epochs with no improvement after which learning rate\
+        \ will be reduced."
+      info: null
+      default:
+      - 30.0
+      required: false
+      min: 0.0
+      direction: "input"
+      multiple: false
+      multiple_sep: ":"
+      dest: "par"
+  - name: "Data validition"
+    arguments:
+    - type: "integer"
+      name: "--n_obs_min_count"
+      description: "Minimum number of cells threshold ensuring that every obs_batch\
+        \ category has sufficient observations (cells) for model training."
+      info: null
+      default:
+      - 0
+      required: false
+      direction: "input"
+      multiple: false
+      multiple_sep: ":"
+      dest: "par"
+    - type: "integer"
+      name: "--n_var_min_count"
+      description: "Minimum number of genes threshold ensuring that every var_input\
+        \ filter has sufficient observations (genes) for model training."
+      info: null
+      default:
+      - 0
+      required: false
+      direction: "input"
+      multiple: false
+      multiple_sep: ":"
+      dest: "par"
+  resources:
+  - type: "python_script"
+    path: "script.py"
+    is_executable: true
+  - type: "file"
+    path: "../../utils/subset_vars.py"
+  - type: "file"
+    path: "./src/workflows/utils/labels.config"
+    dest: "nextflow_labels.config"
+  description: "Performs scvi integration as done in the human lung cell atlas https://github.com/LungCellAtlas/HLCA"
+  test_resources:
+  - type: "python_script"
+    path: "test.py"
+    is_executable: true
+  - type: "file"
+    path: "../../utils/subset_vars.py"
+  - type: "file"
+    path: "resources_test/pbmc_1k_protein_v3/pbmc_1k_protein_v3_mms.h5mu"
+  - type: "file"
+    path: "src/base/openpipelinetestutils"
+    dest: "openpipelinetestutils"
+  info: null
+  status: "enabled"
+  requirements:
+    commands:
+    - "ps"
+  set_wd_to_resources_dir: false
+platforms:
+- type: "docker"
+  id: "docker"
+  image: "nvcr.io/nvidia/pytorch:23.09-py3"
+  target_organization: "openpipelines-bio"
+  target_registry: "ghcr.io"
+  target_tag: "scgpt_build"
+  namespace_separator: "/"
+  resolve_volume: "Automatic"
+  chown: true
+  setup_strategy: "ifneedbepullelsecachedbuild"
+  target_image_source: "https://github.com/openpipelines-bio/openpipeline"
+  setup:
+  - type: "apt"
+    packages:
+    - "libpng-dev"
+    - "libjpeg-dev"
+    interactive: false
+  - type: "python"
+    user: false
+    packages:
+    - "anndata~=0.9.1"
+    - "mudata~=0.2.3"
+    - "pandas!=2.1.2"
+    - "scanpy~=1.9.5"
+    - "statsmodels==0.14.0"
+    upgrade: true
+  - type: "python"
+    user: false
+    packages:
+    - "scvi-tools~=1.0.3"
+    - "jaxlib<0.4.23"
+    - "jax<0.4.23"
+    upgrade: false
+  test_setup:
+  - type: "python"
+    user: false
+    packages:
+    - "viashpy==0.6.0"
+    upgrade: true
+  entrypoint: []
+  cmd: null
+- type: "nextflow"
+  id: "nextflow"
+  directives:
+    label:
+    - "midcpu"
+    - "midmem"
+    - "gpu"
+    tag: "$id"
+  auto:
+    simplifyInput: true
+    simplifyOutput: false
+    transcript: false
+    publish: false
+  config:
+    labels:
+      mem1gb: "memory = 1.GB"
+      mem2gb: "memory = 2.GB"
+      mem4gb: "memory = 4.GB"
+      mem8gb: "memory = 8.GB"
+      mem16gb: "memory = 16.GB"
+      mem32gb: "memory = 32.GB"
+      mem64gb: "memory = 64.GB"
+      mem128gb: "memory = 128.GB"
+      mem256gb: "memory = 256.GB"
+      mem512gb: "memory = 512.GB"
+      mem1tb: "memory = 1.TB"
+      mem2tb: "memory = 2.TB"
+      mem4tb: "memory = 4.TB"
+      mem8tb: "memory = 8.TB"
+      mem16tb: "memory = 16.TB"
+      mem32tb: "memory = 32.TB"
+      mem64tb: "memory = 64.TB"
+      mem128tb: "memory = 128.TB"
+      mem256tb: "memory = 256.TB"
+      mem512tb: "memory = 512.TB"
+      cpu1: "cpus = 1"
+      cpu2: "cpus = 2"
+      cpu5: "cpus = 5"
+      cpu10: "cpus = 10"
+      cpu20: "cpus = 20"
+      cpu50: "cpus = 50"
+      cpu100: "cpus = 100"
+      cpu200: "cpus = 200"
+      cpu500: "cpus = 500"
+      cpu1000: "cpus = 1000"
+    script:
+    - "includeConfig(\"nextflow_labels.config\")"
+  debug: false
+  container: "docker"
+info:
+  config: "/home/runner/work/openpipeline/openpipeline/src/integrate/scvi/config.vsh.yaml"
+  platform: "nextflow"
+  output: "/home/runner/work/openpipeline/openpipeline/target/nextflow/integrate/scvi"
+  executable: "/home/runner/work/openpipeline/openpipeline/target/nextflow/integrate/scvi/scvi"
+  viash_version: "0.8.5"
+  git_commit: "638ac500c3a52839b8f607737916bf857b2258ba"
+  git_remote: "https://github.com/openpipelines-bio/openpipeline"
+  git_tag: "0.2.0-1644-g638ac500c3"

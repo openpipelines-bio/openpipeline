@@ -1,0 +1,362 @@
+functionality:
+  name: "filter_with_hvg"
+  namespace: "filter"
+  version: "scgpt_build"
+  authors:
+  - name: "Dries De Maeyer"
+    roles:
+    - "contributor"
+    info:
+      role: "Core Team Member"
+      links:
+        email: "ddemaeyer@gmail.com"
+        github: "ddemaeyer"
+        linkedin: "dries-de-maeyer-b46a814"
+      organizations:
+      - name: "Janssen Pharmaceuticals"
+        href: "https://www.janssen.com"
+        role: "Principal Scientist"
+  - name: "Robrecht Cannoodt"
+    roles:
+    - "maintainer"
+    - "contributor"
+    info:
+      role: "Core Team Member"
+      links:
+        email: "robrecht@data-intuitive.com"
+        github: "rcannood"
+        orcid: "0000-0003-3641-729X"
+        linkedin: "robrechtcannoodt"
+      organizations:
+      - name: "Data Intuitive"
+        href: "https://www.data-intuitive.com"
+        role: "Data Science Engineer"
+      - name: "Open Problems"
+        href: "https://openproblems.bio"
+        role: "Core Member"
+  arguments:
+  - type: "file"
+    name: "--input"
+    description: "Input h5mu file"
+    info: null
+    example:
+    - "input.h5mu"
+    must_exist: true
+    create_parent: true
+    required: true
+    direction: "input"
+    multiple: false
+    multiple_sep: ":"
+    dest: "par"
+  - type: "string"
+    name: "--modality"
+    info: null
+    default:
+    - "rna"
+    required: false
+    direction: "input"
+    multiple: false
+    multiple_sep: ":"
+    dest: "par"
+  - type: "string"
+    name: "--layer"
+    description: "use adata.layers[layer] for expression values instead of adata.X."
+    info: null
+    required: false
+    direction: "input"
+    multiple: false
+    multiple_sep: ":"
+    dest: "par"
+  - type: "file"
+    name: "--output"
+    description: "Output h5mu file."
+    info: null
+    example:
+    - "output.h5mu"
+    must_exist: true
+    create_parent: true
+    required: false
+    direction: "output"
+    multiple: false
+    multiple_sep: ":"
+    dest: "par"
+  - type: "string"
+    name: "--output_compression"
+    description: "The compression format to be used on the output h5mu object."
+    info: null
+    example:
+    - "gzip"
+    required: false
+    choices:
+    - "gzip"
+    - "lzf"
+    direction: "input"
+    multiple: false
+    multiple_sep: ":"
+    dest: "par"
+  - type: "string"
+    name: "--var_name_filter"
+    description: "In which .var slot to store a boolean array corresponding to which\
+      \ observations should be filtered out."
+    info: null
+    default:
+    - "filter_with_hvg"
+    required: false
+    direction: "input"
+    multiple: false
+    multiple_sep: ":"
+    dest: "par"
+  - type: "string"
+    name: "--varm_name"
+    description: "In which .varm slot to store additional metadata."
+    info: null
+    default:
+    - "hvg"
+    required: false
+    direction: "input"
+    multiple: false
+    multiple_sep: ":"
+    dest: "par"
+  - type: "boolean_true"
+    name: "--do_subset"
+    description: "Whether to subset before storing the output."
+    info: null
+    direction: "input"
+    dest: "par"
+  - type: "string"
+    name: "--flavor"
+    description: "Choose the flavor for identifying highly variable genes. For the\
+      \ dispersion based methods\nin their default workflows, Seurat passes the cutoffs\
+      \ whereas Cell Ranger passes n_top_genes.\n"
+    info: null
+    default:
+    - "seurat"
+    required: false
+    choices:
+    - "seurat"
+    - "cell_ranger"
+    - "seurat_v3"
+    direction: "input"
+    multiple: false
+    multiple_sep: ":"
+    dest: "par"
+  - type: "integer"
+    name: "--n_top_genes"
+    description: "Number of highly-variable genes to keep. Mandatory if flavor='seurat_v3'."
+    info: null
+    required: false
+    direction: "input"
+    multiple: false
+    multiple_sep: ":"
+    dest: "par"
+  - type: "double"
+    name: "--min_mean"
+    description: "If n_top_genes is defined, this and all other cutoffs for the means\
+      \ and the normalized dispersions are ignored. Ignored if flavor='seurat_v3'."
+    info: null
+    default:
+    - 0.0125
+    required: false
+    direction: "input"
+    multiple: false
+    multiple_sep: ":"
+    dest: "par"
+  - type: "double"
+    name: "--max_mean"
+    description: "If n_top_genes is defined, this and all other cutoffs for the means\
+      \ and the normalized dispersions are ignored. Ignored if flavor='seurat_v3'."
+    info: null
+    default:
+    - 3.0
+    required: false
+    direction: "input"
+    multiple: false
+    multiple_sep: ":"
+    dest: "par"
+  - type: "double"
+    name: "--min_disp"
+    description: "If n_top_genes is defined, this and all other cutoffs for the means\
+      \ and the normalized dispersions are ignored. Ignored if flavor='seurat_v3'."
+    info: null
+    default:
+    - 0.5
+    required: false
+    direction: "input"
+    multiple: false
+    multiple_sep: ":"
+    dest: "par"
+  - type: "double"
+    name: "--max_disp"
+    description: "If n_top_genes is defined, this and all other cutoffs for the means\
+      \ and the normalized dispersions are ignored. Ignored if flavor='seurat_v3'.\
+      \ Default is +inf."
+    info: null
+    required: false
+    direction: "input"
+    multiple: false
+    multiple_sep: ":"
+    dest: "par"
+  - type: "double"
+    name: "--span"
+    description: "The fraction of the data (cells) used when estimating the variance\
+      \ in the loess model fit if flavor='seurat_v3'."
+    info: null
+    default:
+    - 0.3
+    required: false
+    direction: "input"
+    multiple: false
+    multiple_sep: ":"
+    dest: "par"
+  - type: "integer"
+    name: "--n_bins"
+    description: "Number of bins for binning the mean gene expression. Normalization\
+      \ is done with respect to each bin. If just a single gene falls into a bin,\
+      \ the normalized dispersion is artificially set to 1."
+    info: null
+    default:
+    - 20
+    required: false
+    direction: "input"
+    multiple: false
+    multiple_sep: ":"
+    dest: "par"
+  - type: "string"
+    name: "--obs_batch_key"
+    description: "If specified, highly-variable genes are selected within each batch\
+      \ separately and merged. This simple \nprocess avoids the selection of batch-specific\
+      \ genes and acts as a lightweight batch correction method. \nFor all flavors,\
+      \ genes are first sorted by how many batches they are a HVG. For dispersion-based\
+      \ flavors \nties are broken by normalized dispersion. If flavor = 'seurat_v3',\
+      \ ties are broken by the median (across\nbatches) rank based on within-batch\
+      \ normalized variance.\n"
+    info: null
+    required: false
+    direction: "input"
+    multiple: false
+    multiple_sep: ":"
+    dest: "par"
+  resources:
+  - type: "python_script"
+    path: "script.py"
+    is_executable: true
+  - type: "file"
+    path: "src/utils/setup_logger.py"
+  - type: "file"
+    path: "./src/workflows/utils/labels.config"
+    dest: "nextflow_labels.config"
+  description: "Annotate highly variable genes [Satija15] [Zheng17] [Stuart19].\n\n\
+    Expects logarithmized data, except when flavor='seurat_v3' in which count data\
+    \ is expected.\n\nDepending on flavor, this reproduces the R-implementations of\
+    \ Seurat [Satija15], Cell Ranger [Zheng17], and Seurat v3 [Stuart19].\n\nFor the\
+    \ dispersion-based methods ([Satija15] and [Zheng17]), the normalized dispersion\
+    \ is obtained by scaling with the mean and standard deviation of the dispersions\
+    \ for genes falling into a given bin for mean expression of genes. This means\
+    \ that for each bin of mean expression, highly variable genes are selected.\n\n\
+    For [Stuart19], a normalized variance for each gene is computed. First, the data\
+    \ are standardized (i.e., z-score normalization per feature) with a regularized\
+    \ standard deviation. Next, the normalized variance is computed as the variance\
+    \ of each gene after the transformation. Genes are ranked by the normalized variance.\n"
+  test_resources:
+  - type: "python_script"
+    path: "test.py"
+    is_executable: true
+  - type: "file"
+    path: "resources_test/pbmc_1k_protein_v3"
+  - type: "file"
+    path: "src/base/openpipelinetestutils"
+    dest: "openpipelinetestutils"
+  info: null
+  status: "deprecated"
+  requirements:
+    commands:
+    - "ps"
+  set_wd_to_resources_dir: false
+platforms:
+- type: "docker"
+  id: "docker"
+  image: "python:3.9"
+  target_organization: "openpipelines-bio"
+  target_registry: "ghcr.io"
+  target_tag: "scgpt_build"
+  namespace_separator: "/"
+  resolve_volume: "Automatic"
+  chown: true
+  setup_strategy: "ifneedbepullelsecachedbuild"
+  target_image_source: "https://github.com/openpipelines-bio/openpipeline"
+  setup:
+  - type: "python"
+    user: false
+    packages:
+    - "anndata~=0.9.1"
+    - "mudata~=0.2.3"
+    - "pandas!=2.1.2"
+    - "scanpy~=1.9.5"
+    - "statsmodels==0.14.0"
+    - "scikit-misc"
+    upgrade: true
+  test_setup:
+  - type: "python"
+    user: false
+    packages:
+    - "viashpy==0.6.0"
+    upgrade: true
+  entrypoint: []
+  cmd: null
+- type: "nextflow"
+  id: "nextflow"
+  directives:
+    label:
+    - "singlecpu"
+    - "lowmem"
+    tag: "$id"
+  auto:
+    simplifyInput: true
+    simplifyOutput: false
+    transcript: false
+    publish: false
+  config:
+    labels:
+      mem1gb: "memory = 1.GB"
+      mem2gb: "memory = 2.GB"
+      mem4gb: "memory = 4.GB"
+      mem8gb: "memory = 8.GB"
+      mem16gb: "memory = 16.GB"
+      mem32gb: "memory = 32.GB"
+      mem64gb: "memory = 64.GB"
+      mem128gb: "memory = 128.GB"
+      mem256gb: "memory = 256.GB"
+      mem512gb: "memory = 512.GB"
+      mem1tb: "memory = 1.TB"
+      mem2tb: "memory = 2.TB"
+      mem4tb: "memory = 4.TB"
+      mem8tb: "memory = 8.TB"
+      mem16tb: "memory = 16.TB"
+      mem32tb: "memory = 32.TB"
+      mem64tb: "memory = 64.TB"
+      mem128tb: "memory = 128.TB"
+      mem256tb: "memory = 256.TB"
+      mem512tb: "memory = 512.TB"
+      cpu1: "cpus = 1"
+      cpu2: "cpus = 2"
+      cpu5: "cpus = 5"
+      cpu10: "cpus = 10"
+      cpu20: "cpus = 20"
+      cpu50: "cpus = 50"
+      cpu100: "cpus = 100"
+      cpu200: "cpus = 200"
+      cpu500: "cpus = 500"
+      cpu1000: "cpus = 1000"
+    script:
+    - "includeConfig(\"nextflow_labels.config\")"
+  debug: false
+  container: "docker"
+info:
+  config: "/home/runner/work/openpipeline/openpipeline/src/filter/filter_with_hvg/config.vsh.yaml"
+  platform: "nextflow"
+  output: "/home/runner/work/openpipeline/openpipeline/target/nextflow/filter/filter_with_hvg"
+  executable: "/home/runner/work/openpipeline/openpipeline/target/nextflow/filter/filter_with_hvg/filter_with_hvg"
+  viash_version: "0.8.5"
+  git_commit: "638ac500c3a52839b8f607737916bf857b2258ba"
+  git_remote: "https://github.com/openpipelines-bio/openpipeline"
+  git_tag: "0.2.0-1644-g638ac500c3"
