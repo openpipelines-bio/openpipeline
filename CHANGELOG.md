@@ -6,6 +6,8 @@
 
 * Added `reference/build_cellranger_reference` component: build reference file compatible with ATAC and ATAC+GEX experiments (PR #726).
 
+* Added `scgpt/cell_type_annotation` component: annotate cell types using scGPT (PR #798).
+
 ## MINOR CHANGES
 
 * Added `resources_test_scripts/cellranger_atac_tiny_bcl.sh` script: download tiny bcl file with an ATAC experiment, download a motifs file, demultiplex bcl files to reads in fastq format (PR #726).
