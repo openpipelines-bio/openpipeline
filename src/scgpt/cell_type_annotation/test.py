@@ -33,13 +33,13 @@ def test_cell_type_inference(run_component,
         "--model_config", model_config,
         "--obs_batch_label", "sample",
         "--obs_predicted_cell_type", "predicted_cell_type",
-        "--dsbn", True
+        "--dsbn", "True"
     ]
     run_component(args)
 
     output_mudata = read_h5mu(output_annotation_file)
     output_adata = output_mudata.mod["rna"]
-    assert "predicted_cell_type" in output_adata.obs.keys(),  "predicted_cell_type is not present in anndata obs keys"
+    assert "predicted_cell_type" in output_adata.obs.keys(), "predicted_cell_type is not present in anndata obs keys"
     assert not all(np.isnan(output_adata.obs["predicted_cell_type"])), "predicted cell types contain nan values"
     assert output_adata.obs["predicted_cell_type"].dtype == "int64", "predicted cell types are not integers"
 
