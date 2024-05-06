@@ -10,8 +10,10 @@
 // files.
 // 
 // Component authors:
-//  * Matthias Beyens
+//  * Matthias Beyens (maintainer, author)
 //  * Dries De Maeyer (author)
+//  * Robrecht Cannoodt (author)
+//  * Kai Waldrant (contributor)
 
 ////////////////////////////
 // VDSL3 helper functions //
@@ -2782,6 +2784,10 @@ meta = [
     "authors" : [
       {
         "name" : "Matthias Beyens",
+        "roles" : [
+          "maintainer",
+          "author"
+        ],
         "info" : {
           "role" : "Contributor",
           "links" : {
@@ -2819,22 +2825,66 @@ meta = [
             }
           ]
         }
+      },
+      {
+        "name" : "Robrecht Cannoodt",
+        "roles" : [
+          "author"
+        ],
+        "info" : {
+          "role" : "Core Team Member",
+          "links" : {
+            "email" : "robrecht@data-intuitive.com",
+            "github" : "rcannood",
+            "orcid" : "0000-0003-3641-729X",
+            "linkedin" : "robrechtcannoodt"
+          },
+          "organizations" : [
+            {
+              "name" : "Data Intuitive",
+              "href" : "https://www.data-intuitive.com",
+              "role" : "Data Science Engineer"
+            },
+            {
+              "name" : "Open Problems",
+              "href" : "https://openproblems.bio",
+              "role" : "Core Member"
+            }
+          ]
+        }
+      },
+      {
+        "name" : "Kai Waldrant",
+        "roles" : [
+          "contributor"
+        ],
+        "info" : {
+          "role" : "Contributor",
+          "links" : {
+            "github" : "KaiWaldrant",
+            "linkedin" : "kai-waldrant-b8b86160"
+          },
+          "organizations" : [
+            {
+              "name" : "Data Intuitive",
+              "href" : "https://www.data-intuitive.com",
+              "role" : "Bioinformatics Workflow Developer"
+            }
+          ]
+        }
       }
     ],
     "argument_groups" : [
       {
-        "name" : "Inputs",
-        "description" : "Arguments related to the input (aka query) dataset.",
+        "name" : "Input database",
+        "description" : "Open CellxGene Census by version or URI.",
         "arguments" : [
           {
             "type" : "string",
-            "name" : "--input_database",
-            "description" : "Full input database S3 prefix URL. Default: CellxGene Census",
+            "name" : "--input_uri",
+            "description" : "If specified, a URI containing the Census SOMA objects. If specified, will take precedence over the `--census_version` argument.",
             "example" : [
-              "s3://"
-            ],
-            "default" : [
-              "CellxGene"
+              "s3://bucket/path"
             ],
             "required" : false,
             "direction" : "input",
@@ -2844,10 +2894,10 @@ meta = [
           },
           {
             "type" : "string",
-            "name" : "--modality",
-            "description" : "Which modality to store the output in.",
-            "default" : [
-              "rna"
+            "name" : "--census_version",
+            "description" : "Which release of CellxGene census to use. Possible values are \\"latest\\", \\"stable\\", or the date of one of the releases (e.g. \\"2023-07-25\\"). For more information, check the documentation on [Census data releases](https://chanzuckerberg.github.io/cellxgene-census/cellxgene_census_docsite_data_release_info.html).",
+            "example" : [
+              "stable"
             ],
             "required" : false,
             "direction" : "input",
@@ -2856,13 +2906,39 @@ meta = [
             "dest" : "par"
           },
           {
+            "type" : "boolean_true",
+            "name" : "--add_dataset_metadata",
+            "description" : "If true, the experiment metadata will be added to the cell metadata. More specifically: `collection_id`, `collection_name`, `collection_doi`, `dataset_title`.",
+            "direction" : "input",
+            "dest" : "par"
+          }
+        ]
+      },
+      {
+        "name" : "Cell query",
+        "description" : "Arguments related to the query.",
+        "arguments" : [
+          {
             "type" : "string",
-            "name" : "--cellxgene_release",
-            "description" : "CellxGene Census release date. More information: https://chanzuckerberg.github.io/cellxgene-census/cellxgene_census_docsite_data_release_info.html",
-            "default" : [
-              "2023-05-15"
+            "name" : "--species",
+            "description" : "The organism to query, usually one of `Homo sapiens` or `Mus musculus`.",
+            "example" : [
+              "homo_sapiens"
             ],
-            "required" : false,
+            "required" : true,
+            "direction" : "input",
+            "multiple" : false,
+            "multiple_sep" : ":",
+            "dest" : "par"
+          },
+          {
+            "type" : "string",
+            "name" : "--obs_value_filter",
+            "description" : "Filter for selecting the `obs` metadata (i.e. cells). Value is a filter query written in the SOMA `value_filter` syntax.",
+            "example" : [
+              "is_primary_data == True and cell_type_ontology_term_id in ['CL:0000136', 'CL:1000311', 'CL:0002616'] and suspension_type == 'cell'"
+            ],
+            "required" : true,
             "direction" : "input",
             "multiple" : false,
             "multiple_sep" : ":",
@@ -2871,46 +2947,13 @@ meta = [
         ]
       },
       {
-        "name" : "Query",
-        "description" : "Arguments related to the query.",
+        "name" : "Filter cells by grouping",
+        "description" : "Filter groups with fewer than X number of cells.",
         "arguments" : [
           {
             "type" : "string",
-            "name" : "--species",
-            "description" : "Specie(s) of interest. If not specified, Homo Sapiens will be queried.",
-            "example" : [
-              "homo_sapiens"
-            ],
-            "default" : [
-              "homo_sapiens"
-            ],
-            "required" : false,
-            "choices" : [
-              "homo_sapiens",
-              "mus_musculus"
-            ],
-            "direction" : "input",
-            "multiple" : false,
-            "multiple_sep" : ":",
-            "dest" : "par"
-          },
-          {
-            "type" : "string",
-            "name" : "--cell_query",
-            "description" : "The query for selecting the cells as defined by the cellxgene census schema.",
-            "example" : [
-              "is_primary_data == True and cell_type_ontology_term_id in ['CL:0000136', 'CL:1000311', 'CL:0002616'] and suspension_type == 'cell'"
-            ],
-            "required" : false,
-            "direction" : "input",
-            "multiple" : false,
-            "multiple_sep" : ":",
-            "dest" : "par"
-          },
-          {
-            "type" : "string",
-            "name" : "--cells_filter_columns",
-            "description" : "The query for selecting the cells as defined by the cellxgene census schema.",
+            "name" : "--cell_filter_grouping",
+            "description" : "A subset of 'obs' columns by which to group the cells for filtering.\nOnly groups surpassing or equal to the `--cell_filter_minimum_count`\nthreshold will be retained. Take care not to introduce a selection\nbias against cells with more fine-grained ontology annotations.\n",
             "example" : [
               "dataset_id",
               "tissue",
@@ -2925,11 +2968,69 @@ meta = [
             "dest" : "par"
           },
           {
-            "type" : "double",
-            "name" : "--min_cells_filter_columns",
-            "description" : "Minimum of amount of summed cells_filter_columns cells",
+            "type" : "integer",
+            "name" : "--cell_filter_minimum_count",
+            "description" : "A minimum number of cells per group to retain. If `--cell_filter_grouping`\nis defined, this parameter should also be provided and vice versa.\n",
             "example" : [
-              100.0
+              100
+            ],
+            "required" : false,
+            "direction" : "input",
+            "multiple" : false,
+            "multiple_sep" : ":",
+            "dest" : "par"
+          }
+        ]
+      },
+      {
+        "name" : "Count filtering",
+        "description" : "Arguments related to filtering cells and genes by counts.",
+        "arguments" : [
+          {
+            "type" : "integer",
+            "name" : "--cell_filter_min_genes",
+            "description" : "Remove cells with less than this number of genes.",
+            "default" : [
+              50
+            ],
+            "required" : false,
+            "direction" : "input",
+            "multiple" : false,
+            "multiple_sep" : ":",
+            "dest" : "par"
+          },
+          {
+            "type" : "integer",
+            "name" : "--cell_filter_min_counts",
+            "description" : "Remove cells with less than this number of counts.",
+            "default" : [
+              0
+            ],
+            "required" : false,
+            "direction" : "input",
+            "multiple" : false,
+            "multiple_sep" : ":",
+            "dest" : "par"
+          },
+          {
+            "type" : "integer",
+            "name" : "--gene_filter_min_cells",
+            "description" : "Remove genes expressed in less than this number of cells.",
+            "default" : [
+              5
+            ],
+            "required" : false,
+            "direction" : "input",
+            "multiple" : false,
+            "multiple_sep" : ":",
+            "dest" : "par"
+          },
+          {
+            "type" : "integer",
+            "name" : "--gene_filter_min_counts",
+            "description" : "Remove genes with less than this number of counts.",
+            "default" : [
+              0
             ],
             "required" : false,
             "direction" : "input",
@@ -2947,6 +3048,186 @@ meta = [
             "type" : "file",
             "name" : "--output",
             "description" : "Output h5mu file.",
+            "info" : {
+              "label" : "CellxGene dataset",
+              "summary" : "A dataset queried from the CellxGene Census platform",
+              "description" : "The format of this file is derived from the [CELLxGENE schema v4.0.0](https://github.com/chanzuckerberg/single-cell-curation/blob/main/schema/4.0.0/schema.md).\n",
+              "slots" : {
+                "mod" : [
+                  {
+                    "name" : "rna",
+                    "layers" : [
+                      {
+                        "type" : "integer",
+                        "name" : "counts",
+                        "description" : "Raw counts",
+                        "required" : true
+                      }
+                    ],
+                    "obs" : [
+                      {
+                        "type" : "string",
+                        "name" : "dataset_id",
+                        "description" : "Identifier for the dataset from which the cell data is derived, useful for tracking and referencing purposes.",
+                        "required" : false
+                      },
+                      {
+                        "type" : "string",
+                        "name" : "assay",
+                        "description" : "Type of assay used to generate the cell data, indicating the methodology or technique employed.",
+                        "required" : true
+                      },
+                      {
+                        "type" : "string",
+                        "name" : "assay_ontology_term_id",
+                        "description" : "Experimental Factor Ontology (`EFO:`) term identifier for the assay, providing a standardized reference to the assay type.",
+                        "required" : true
+                      },
+                      {
+                        "type" : "string",
+                        "name" : "cell_type",
+                        "description" : "Classification of the cell type based on its characteristics and function within the tissue or organism.",
+                        "required" : true
+                      },
+                      {
+                        "type" : "string",
+                        "name" : "cell_type_ontology_term_id",
+                        "description" : "Cell Ontology (`CL:`) term identifier for the cell type, offering a standardized reference to the specific cell classification.",
+                        "required" : true
+                      },
+                      {
+                        "type" : "string",
+                        "name" : "development_stage",
+                        "description" : "Stage of development of the organism or tissue from which the cell is derived, indicating its maturity or developmental phase.",
+                        "required" : true
+                      },
+                      {
+                        "type" : "string",
+                        "name" : "development_stage_ontology_term_id",
+                        "description" : "Ontology term identifier for the developmental stage, providing a standardized reference to the organism's developmental phase.\n\nIf the organism is human (`organism_ontology_term_id == 'NCBITaxon:9606'`), then the Human Developmental Stages (`HsapDv:`) ontology is used.  \nIf the organism is mouse (`organism_ontology_term_id == 'NCBITaxon:10090'`), then the Mouse Developmental Stages (`MmusDv:`) ontology is used.\nOtherwise, the Uberon (`UBERON:`) ontology is used.\n",
+                        "required" : true
+                      },
+                      {
+                        "type" : "string",
+                        "name" : "disease",
+                        "description" : "Information on any disease or pathological condition associated with the cell or donor.",
+                        "required" : true
+                      },
+                      {
+                        "type" : "string",
+                        "name" : "disease_ontology_term_id",
+                        "description" : "Ontology term identifier for the disease, enabling standardized disease classification and referencing.\n\nMust be a term from the Mondo Disease Ontology (`MONDO:`) ontology term, or `PATO:0000461` from the Phenotype And Trait Ontology (`PATO:`).\n",
+                        "required" : true
+                      },
+                      {
+                        "type" : "string",
+                        "name" : "donor_id",
+                        "description" : "Identifier for the donor from whom the cell sample is obtained.",
+                        "required" : true
+                      },
+                      {
+                        "type" : "boolean",
+                        "name" : "is_primary_data",
+                        "description" : "Indicates whether the data is primary (directly obtained from experiments) or has been computationally derived from other primary data.",
+                        "required" : true
+                      },
+                      {
+                        "type" : "string",
+                        "name" : "organism",
+                        "description" : "Organism from which the cell sample is obtained.",
+                        "required" : true
+                      },
+                      {
+                        "type" : "string",
+                        "name" : "organism_ontology_term_id",
+                        "description" : "Ontology term identifier for the organism, providing a standardized reference for the organism.\n\nMust be a term from the NCBI Taxonomy Ontology (`NCBITaxon:`) which is a child of `NCBITaxon:33208`.\n",
+                        "required" : true
+                      },
+                      {
+                        "type" : "string",
+                        "name" : "self_reported_ethnicity",
+                        "description" : "Ethnicity of the donor as self-reported, relevant for studies considering genetic diversity and population-specific traits.",
+                        "required" : true
+                      },
+                      {
+                        "type" : "string",
+                        "name" : "self_reported_ethnicity_ontology_term_id",
+                        "description" : "Ontology term identifier for the self-reported ethnicity, providing a standardized reference for ethnic classifications.\n\nIf the organism is human (`organism_ontology_term_id == 'NCBITaxon:9606'`), then the Human Ancestry Ontology (`HANCESTRO:`) is used.\n",
+                        "required" : true
+                      },
+                      {
+                        "type" : "string",
+                        "name" : "sex",
+                        "description" : "Biological sex of the donor or source organism, crucial for studies involving sex-specific traits or conditions.",
+                        "required" : true
+                      },
+                      {
+                        "type" : "string",
+                        "name" : "sex_ontology_term_id",
+                        "description" : "Ontology term identifier for the biological sex, ensuring standardized classification of sex. Only `PATO:0000383`, `PATO:0000384` and `PATO:0001340` are allowed.",
+                        "required" : true
+                      },
+                      {
+                        "type" : "string",
+                        "name" : "suspension_type",
+                        "description" : "Type of suspension or medium in which the cells were stored or processed, important for understanding cell handling and conditions.",
+                        "required" : true
+                      },
+                      {
+                        "type" : "string",
+                        "name" : "tissue",
+                        "description" : "Specific tissue from which the cells were derived, key for context and specificity in cell studies.",
+                        "required" : true
+                      },
+                      {
+                        "type" : "string",
+                        "name" : "tissue_ontology_term_id",
+                        "description" : "Ontology term identifier for the tissue, providing a standardized reference for the tissue type.\n\nFor organoid or tissue samples, the Uber-anatomy ontology (`UBERON:`) is used. The term ids must be a child term of `UBERON:0001062` (anatomical entity).\nFor cell cultures, the Cell Ontology (`CL:`) is used. The term ids cannot be `CL:0000255`, `CL:0000257` or `CL:0000548`.\n",
+                        "required" : true
+                      },
+                      {
+                        "type" : "string",
+                        "name" : "tissue_general",
+                        "description" : "General category or classification of the tissue, useful for broader grouping and comparison of cell data.",
+                        "required" : true
+                      },
+                      {
+                        "type" : "string",
+                        "name" : "tissue_general_ontology_term_id",
+                        "description" : "Ontology term identifier for the general tissue category, aiding in standardizing and grouping tissue types.\n\nFor organoid or tissue samples, the Uber-anatomy ontology (`UBERON:`) is used. The term ids must be a child term of `UBERON:0001062` (anatomical entity).\nFor cell cultures, the Cell Ontology (`CL:`) is used. The term ids cannot be `CL:0000255`, `CL:0000257` or `CL:0000548`.\n",
+                        "required" : true
+                      },
+                      {
+                        "type" : "integer",
+                        "name" : "soma_joinid",
+                        "description" : "If the dataset was retrieved from CELLxGENE census, this is a unique identifier for the cell.",
+                        "required" : true
+                      }
+                    ],
+                    "var" : [
+                      {
+                        "type" : "string",
+                        "name" : "feature_id",
+                        "description" : "Unique identifier for the feature, usually a ENSEMBL gene id.",
+                        "required" : true
+                      },
+                      {
+                        "type" : "string",
+                        "name" : "feature_name",
+                        "description" : "A human-readable name for the feature, usually a gene symbol.",
+                        "required" : true
+                      },
+                      {
+                        "type" : "integer",
+                        "name" : "soma_joinid",
+                        "description" : "If the dataset was retrieved from CELLxGENE census, this is a unique identifier for the feature.",
+                        "required" : true
+                      }
+                    ]
+                  }
+                ]
+              }
+            },
             "example" : [
               "output.h5mu"
             ],
@@ -2973,6 +3254,19 @@ meta = [
             "multiple" : false,
             "multiple_sep" : ":",
             "dest" : "par"
+          },
+          {
+            "type" : "string",
+            "name" : "--output_modality",
+            "description" : "Which modality to store the output in.",
+            "default" : [
+              "rna"
+            ],
+            "required" : false,
+            "direction" : "input",
+            "multiple" : false,
+            "multiple_sep" : ":",
+            "dest" : "par"
           }
         ]
       }
@@ -2995,7 +3289,7 @@ meta = [
         "dest" : "nextflow_labels.config"
       }
     ],
-    "description" : "Query CellxGene Census or user-specified TileDBSoma object, and eventually fetch cell and gene metadata or/and expression counts.",
+    "description" : "Query cells from a CellxGene Census or custom TileDBSoma object.\nAside from fetching the cells' RNA counts (`.X`), cell metadata\n(`.obs`) and gene metadata (`.var`), this component also fetches\nthe dataset metadata and joins it into the cell metadata.\n",
     "test_resources" : [
       {
         "type" : "python_script",
@@ -3021,7 +3315,7 @@ meta = [
     {
       "type" : "docker",
       "id" : "docker",
-      "image" : "python:3.9",
+      "image" : "python:3.11",
       "target_organization" : "openpipelines-bio",
       "target_registry" : "ghcr.io",
       "target_tag" : "integration_build",
@@ -3038,8 +3332,9 @@ meta = [
             "anndata~=0.9.1",
             "mudata~=0.2.3",
             "pandas!=2.1.2",
-            "cellxgene-census~=1.2.0",
-            "obonet~=1.0.0"
+            "scanpy~=1.9.5",
+            "statsmodels==0.14.0",
+            "cellxgene-census"
           ],
           "upgrade" : true
         }
@@ -3117,7 +3412,7 @@ meta = [
     "platform" : "nextflow",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/query/cellxgene_census",
     "viash_version" : "0.8.5",
-    "git_commit" : "ea16d7c5b0b12169379fde9bedd781eaf2417cdc",
+    "git_commit" : "0591beb2f7900567428611f8a579972c223f1733",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))
@@ -3133,23 +3428,27 @@ def innerWorkflowFactory(args) {
 tempscript=".viash_script.sh"
 cat > "$tempscript" << VIASHMAIN
 import sys
-import os
 import cellxgene_census
+import scanpy as sc
 import mudata as mu
-import anndata as ad
 
 ## VIASH START
 # The following code has been auto-generated by Viash.
 par = {
-  'input_database': $( if [ ! -z ${VIASH_PAR_INPUT_DATABASE+x} ]; then echo "r'${VIASH_PAR_INPUT_DATABASE//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
-  'modality': $( if [ ! -z ${VIASH_PAR_MODALITY+x} ]; then echo "r'${VIASH_PAR_MODALITY//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
-  'cellxgene_release': $( if [ ! -z ${VIASH_PAR_CELLXGENE_RELEASE+x} ]; then echo "r'${VIASH_PAR_CELLXGENE_RELEASE//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
+  'input_uri': $( if [ ! -z ${VIASH_PAR_INPUT_URI+x} ]; then echo "r'${VIASH_PAR_INPUT_URI//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
+  'census_version': $( if [ ! -z ${VIASH_PAR_CENSUS_VERSION+x} ]; then echo "r'${VIASH_PAR_CENSUS_VERSION//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
+  'add_dataset_metadata': $( if [ ! -z ${VIASH_PAR_ADD_DATASET_METADATA+x} ]; then echo "r'${VIASH_PAR_ADD_DATASET_METADATA//\\'/\\'\\"\\'\\"r\\'}'.lower() == 'true'"; else echo None; fi ),
   'species': $( if [ ! -z ${VIASH_PAR_SPECIES+x} ]; then echo "r'${VIASH_PAR_SPECIES//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
-  'cell_query': $( if [ ! -z ${VIASH_PAR_CELL_QUERY+x} ]; then echo "r'${VIASH_PAR_CELL_QUERY//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
-  'cells_filter_columns': $( if [ ! -z ${VIASH_PAR_CELLS_FILTER_COLUMNS+x} ]; then echo "r'${VIASH_PAR_CELLS_FILTER_COLUMNS//\\'/\\'\\"\\'\\"r\\'}'.split(';')"; else echo None; fi ),
-  'min_cells_filter_columns': $( if [ ! -z ${VIASH_PAR_MIN_CELLS_FILTER_COLUMNS+x} ]; then echo "float(r'${VIASH_PAR_MIN_CELLS_FILTER_COLUMNS//\\'/\\'\\"\\'\\"r\\'}')"; else echo None; fi ),
+  'obs_value_filter': $( if [ ! -z ${VIASH_PAR_OBS_VALUE_FILTER+x} ]; then echo "r'${VIASH_PAR_OBS_VALUE_FILTER//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
+  'cell_filter_grouping': $( if [ ! -z ${VIASH_PAR_CELL_FILTER_GROUPING+x} ]; then echo "r'${VIASH_PAR_CELL_FILTER_GROUPING//\\'/\\'\\"\\'\\"r\\'}'.split(';')"; else echo None; fi ),
+  'cell_filter_minimum_count': $( if [ ! -z ${VIASH_PAR_CELL_FILTER_MINIMUM_COUNT+x} ]; then echo "int(r'${VIASH_PAR_CELL_FILTER_MINIMUM_COUNT//\\'/\\'\\"\\'\\"r\\'}')"; else echo None; fi ),
+  'cell_filter_min_genes': $( if [ ! -z ${VIASH_PAR_CELL_FILTER_MIN_GENES+x} ]; then echo "int(r'${VIASH_PAR_CELL_FILTER_MIN_GENES//\\'/\\'\\"\\'\\"r\\'}')"; else echo None; fi ),
+  'cell_filter_min_counts': $( if [ ! -z ${VIASH_PAR_CELL_FILTER_MIN_COUNTS+x} ]; then echo "int(r'${VIASH_PAR_CELL_FILTER_MIN_COUNTS//\\'/\\'\\"\\'\\"r\\'}')"; else echo None; fi ),
+  'gene_filter_min_cells': $( if [ ! -z ${VIASH_PAR_GENE_FILTER_MIN_CELLS+x} ]; then echo "int(r'${VIASH_PAR_GENE_FILTER_MIN_CELLS//\\'/\\'\\"\\'\\"r\\'}')"; else echo None; fi ),
+  'gene_filter_min_counts': $( if [ ! -z ${VIASH_PAR_GENE_FILTER_MIN_COUNTS+x} ]; then echo "int(r'${VIASH_PAR_GENE_FILTER_MIN_COUNTS//\\'/\\'\\"\\'\\"r\\'}')"; else echo None; fi ),
   'output': $( if [ ! -z ${VIASH_PAR_OUTPUT+x} ]; then echo "r'${VIASH_PAR_OUTPUT//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
-  'output_compression': $( if [ ! -z ${VIASH_PAR_OUTPUT_COMPRESSION+x} ]; then echo "r'${VIASH_PAR_OUTPUT_COMPRESSION//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi )
+  'output_compression': $( if [ ! -z ${VIASH_PAR_OUTPUT_COMPRESSION+x} ]; then echo "r'${VIASH_PAR_OUTPUT_COMPRESSION//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
+  'output_modality': $( if [ ! -z ${VIASH_PAR_OUTPUT_MODALITY+x} ]; then echo "r'${VIASH_PAR_OUTPUT_MODALITY//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi )
 }
 meta = {
   'functionality_name': $( if [ ! -z ${VIASH_META_FUNCTIONALITY_NAME+x} ]; then echo "r'${VIASH_META_FUNCTIONALITY_NAME//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
@@ -3169,9 +3468,11 @@ dep = {
   
 }
 
-### VIASH END
+## VIASH END
 
 sys.path.append(meta["resources_dir"])
+
+
 # START TEMPORARY WORKAROUND setup_logger
 # reason: resources aren't available when using Nextflow fusion
 # from setup_logger import setup_logger
@@ -3187,131 +3488,138 @@ def setup_logger():
     logger.addHandler(console_handler)
 
     return logger
+
+
 # END TEMPORARY WORKAROUND setup_logger
 logger = setup_logger()
 
-def connect_census(input_database, release):
+
+def connect_census(uri, census_version):
     """
     Connect to CellxGene Census or user-provided TileDBSoma object
     """
-    if input_database != "CellxGene":
-        raise NotImplementedError(
-            "Custom census database is not implemented yet!"
-            )
+    ver = census_version or "stable"
+    logger.info("Connecting to CellxGene Census at %s", f"'{uri}'" if uri else f"version '{ver}'")
+    return cellxgene_census.open_soma(uri=uri, census_version=ver)
 
-    logger.info(
-        "Initializing %s release %s",
-        input_database, release
-        )
-    return cellxgene_census.open_soma(
-        census_version = release
-        )
-
-
-def get_anndata(census_connection, cell_query, species):
-    logger.info(
-        "Getting gene expression data based on %s query.",
-        cell_query
-        )
+def get_anndata(census_connection, par):
+    logger.info("Getting gene expression data based on \\`%s\\` query.", par["obs_value_filter"])
     return cellxgene_census.get_anndata(
-        census = census_connection,
-        obs_value_filter = cell_query,
-        organism = species
+        census=census_connection,
+        obs_value_filter=par["obs_value_filter"],
+        organism=par["species"]
     )
 
-
-def add_cellcensus_metadata_obs(census_connection, query_data):
-    logger.info(
-    "Adding extented metadata to gene expression data."
-    )
+def add_cellcensus_metadata_obs(census_connection, adata):
+    logger.info("Adding additional metadata to gene expression data.")
     census_datasets = census_connection["census_info"]["datasets"].read().concat().to_pandas()
-    
-    query_data.obs.dataset_id = query_data.obs.dataset_id.astype("category")
 
-    dataset_info = census_datasets[census_datasets.dataset_id.isin(query_data.obs.dataset_id.cat.categories)]\\\\
-    [['collection_id', 'collection_name', 'collection_doi', 'dataset_id', 'dataset_title']]\\\\
+    adata.obs.dataset_id = adata.obs.dataset_id.astype("category")
+
+    dataset_info = census_datasets[census_datasets.dataset_id.isin(adata.obs.dataset_id.cat.categories)]\\\\
+        [['collection_id', 'collection_name', 'collection_doi', 'dataset_id', 'dataset_title']]\\\\
     .reset_index(drop=True)\\\\
-    .apply(lambda x: x.astype('category'))
+    .astype('category')
 
-    return query_data.obs.merge(
-        dataset_info, on='dataset_id', how = 'left'
-        )
+    adata.obs = adata.obs.merge(
+        dataset_info, on='dataset_id', how='left'
+    )
 
-
-def cellcensus_cell_filter(query_data, cells_filter_columns, min_cells_filter_columns):
-    t0 = query_data.shape
-    query_data = query_data[
-        query_data.obs.groupby(cells_filter_columns)["soma_joinid"].transform('count') >= min_cells_filter_columns
-        ]
-    t1 = query_data.shape
-    logger.info(
-        'Removed %s cells based on %s min_cells_filter_columns of %s cells_filter_columns.'
-        % ((t0[0] - t1[0]), min_cells_filter_columns, cells_filter_columns)
-        )
-    return query_data
-
-
-def write_mudata(mdata, output_location, compression):
-    logger.info("Writing %s", output_location)
-    mdata.write_h5mu(
-        output_location,
-        compression=compression
-        )
-
-
-def main():
-
-    # start dev
-    logger.info('cells_filter_columns: %s' % par["cells_filter_columns"])
-    logger.info('min_cells_filter_columns: %s' % par["min_cells_filter_columns"])
-    # end dev
-    
-    census_connection = connect_census(
-        par["input_database"],
-        par["cellxgene_release"]
-        ) 
-
-    query_data = get_anndata(
-        census_connection,
-        par["cell_query"],
-        par["species"]
-        )
-    
-    query_data.obs = add_cellcensus_metadata_obs(
-        census_connection,
-        query_data
-        )
-
-    census_connection.close()
-    del census_connection
-
-    if par["cells_filter_columns"]:
-        if not par["min_cells_filter_columns"]:
-            raise NotImplementedError(
-            "You specified cells_filter_columns, thus add min_cells_filter_columns!"
-            )
-        query_data = cellcensus_cell_filter(
-            query_data,
-            par["cells_filter_columns"],
-            par["min_cells_filter_columns"]
-            )
+def filter_min_cells_per_group(adata, par):
+    n_cells_before, _ = adata.shape
+    cell_count = adata.obs \\\\
+        .groupby(par["cell_filter_grouping"])["soma_joinid"] \\\\
+        .transform("count") \\\\
         
-    query_data.var_names = query_data.var["feature_id"]
-    query_data.var["gene_symbol"] = query_data.var["feature_name"]
+    adata = adata[cell_count >= par["cell_filter_minimum_count"]]
+    n_cells_after, _ = adata.shape
+    logger.info(
+        "Removed %s cells based on %s cell_filter_minimum_count of %s cell_filter_grouping."
+        % ((n_cells_before - n_cells_after), par["cell_filter_minimum_count"], par["cell_filter_grouping"])
+    )
+    return adata
 
-    # Create empty mudata file
-    mdata = mu.MuData({par["modality"]: ad.AnnData()})
-    
-    write_mudata(
-        mdata,
-        par["output"],
-        par["output_compression"]
+def filter_by_counts(adata, par):
+    logger.info("Remove cells with few counts and genes with few counts.")
+    n_cells_before, n_genes_before = adata.shape
+    # remove cells with few counts and genes with few counts
+    scanpy_proc = {
+        par["cell_filter_min_counts"]: (sc.pp.filter_cells, "min_counts"),
+        par["cell_filter_min_genes"]: (sc.pp.filter_cells, "min_genes"),
+        par["gene_filter_min_counts"]: (sc.pp.filter_genes, "min_counts"),
+        par["gene_filter_min_cells"]: (sc.pp.filter_genes, "min_cells"),
+    }
+    for threshold, (func, arg) in scanpy_proc.items():
+        if threshold:
+            func(adata, **{arg: threshold})
+    n_cells_after, n_genes_after = adata.shape
+    logger.info("Removed %s cells and %s genes.", (n_cells_before - n_cells_after), (n_genes_before - n_genes_after))
+
+def move_x_to_layers(adata):
+    logger.info("Move .X to .layers['counts']")
+    adata.layers["counts"] = adata.X
+    adata.X = None
+
+def print_unique(adata, column):
+    unique_values = adata.obs[column].unique().astype(str)
+    formatted = "', '".join(unique_values[:50])
+    if len(unique_values) > 50:
+        formatted += ", ..."
+    logger.info(f"Unique {column}: ['{formatted}']")
+
+def print_summary(adata):
+    logger.info(f"Resulting dataset: {adata}")
+
+    logger.info("Summary of dataset:")
+    for field in adata.obs.columns:
+        print_unique(adata, field)
+
+def write_anndata(adata, par):
+    logger.info("Writing MuData object to '%s'", par["output"])
+
+    mdata = mu.MuData({par["output_modality"]: adata})
+
+    mdata.write_h5mu(par["output"], compression=par["output_compression"])
+
+def main(par, meta):
+    # check arguments
+    if (par["cell_filter_grouping"] is None) != (par["cell_filter_minimum_count"] is None):
+        raise NotImplementedError(
+            "You need to specify either both or none of the following parameters: cell_filter_grouping, cell_filter_minimum_count"
         )
+    
+    with connect_census(uri=par["input_uri"], census_version=par["census_version"]) as conn:
+        adata = get_anndata(conn, par)
+        
+        if par["add_dataset_metadata"]:
+            add_cellcensus_metadata_obs(conn, adata)
+    
+    print(f"AnnData: {adata}", flush=True)
 
-    mu.write_h5ad(par["output"], data=query_data, mod=par["modality"])
+    if par["cell_filter_grouping"] is not None:
+        adata = filter_min_cells_per_group(adata, par)
+
+    # remove cells with few counts and genes with few counts
+    filter_by_counts(adata, par)
+
+    # logger.log(f"Filtered AnnData: {adata}")
+    print(f"Filtered AnnData: {adata}", flush=True)
+
+    # use feature_id as var_names
+    adata.var_names = adata.var["feature_id"]
+
+    # move .X to .layers["counts"]
+    move_x_to_layers(adata)
+
+    # print summary
+    print_summary(adata)
+
+    # write output to file
+    write_anndata(adata, par)
+
 
 if __name__ == "__main__":
-    main()
+    main(par, meta)
 VIASHMAIN
 python -B "$tempscript"
 '''

@@ -7,6 +7,7 @@ import pytest
 import re
 import sys
 import uuid
+import muon
 
 ## VIASH START
 meta = {
@@ -451,8 +452,8 @@ def test_concat_var_obs_names_order(run_component, mudata_without_genome,
         for mod_name in ["rna", "atac"]:
             data_sample = md.read_h5ad(sample_path, mod=mod_name)
             processed_data = md.read_h5ad("concat.h5mu", mod=mod_name)
-            processed_data = processed_data[processed_data.obs["sample_id"] == sample_name]
-            processed_data = processed_data[:, data_sample.var_names]
+            muon.pp.filter_obs(processed_data, 'sample_id', lambda x: x == sample_name)
+            muon.pp.filter_var(processed_data, data_sample.var_names)
             data_sample_to_test = anndata_to_sparse_dataframe(data_sample)
             processed_data_to_test = anndata_to_sparse_dataframe(processed_data)
             data_sample_to_test = data_sample_to_test.reindex_like(processed_data_to_test)
