@@ -1,7 +1,7 @@
 functionality:
-  name: "conversion_test"
-  namespace: "test_workflows/conversion"
-  description: "This component test the output of the integration test of the conversion workflow."
+  name: "bd_rhapsody_test"
+  namespace: "test_workflows/ingestion/bd_rhapsody"
+  description: "This component test the output of the integration test of the bd_rhapsody workflow."
   authors:
     - __merge__: /src/authors/jakub_majercik.yaml
   argument_groups:
