@@ -3316,7 +3316,7 @@ meta = [
     "platform" : "nextflow",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/mapping/htseq_count",
     "viash_version" : "0.8.5",
-    "git_commit" : "0591beb2f7900567428611f8a579972c223f1733",
+    "git_commit" : "3f02deff089c77e02b81e0d042c1bbfad09e30ee",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))
