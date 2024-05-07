@@ -30,15 +30,16 @@ functionality:
             Path to model vocabulary file.
         - name: "--input_layer"
           type: string
-          default: "X_binned"
+          default: "binned"
           required: false
           description: |
             The name of the layer to be padded and tokenized.
-        - name: "--input_var_gene_names"
+        - name: "--var_gene_names"
           type: string
           required: false
           description: |
             The name of the .var column containing gene names. When no gene_name_layer is provided, the .var index will be used.
+
     - name: Outputs
       arguments:
         - name: "--output"
@@ -54,22 +55,23 @@ functionality:
           choices: ["gzip", "lzf"]
           description: |
             The compression type for the output file.
-        - name: "--output_obsm_gene_tokens"
+        - name: "--obsm_gene_tokens"
           type: string
           default: "gene_id_tokens"
           description: |
             The key of the .obsm array containing the gene token ids
           example: values.pt
-        - name: "--output_obsm_tokenized_values"
+        - name: "--obsm_tokenized_values"
           type: string
-          default: "values_tokenized"
+          default: values_tokenized
           description: |
             The key of the .obsm array containing the count values of the tokenized genes
-        - name: "--output_obsm_padding_mask"
+        - name: "--obsm_padding_mask"
           type: string
-          default: "padding_mask"
+          default: padding_mask
           description: |
             The key of the .obsm array containing the padding mask.
+
     - name: Arguments
       arguments:
         - name: "--pad_token"
@@ -86,9 +88,9 @@ functionality:
             The value of the padding token.
         - name: "--max_seq_len"
           type: integer
-          required: false
           description: |
             The maximum sequence length of the tokenized data.
+
   resources:
     - type: python_script
       path: script.py
@@ -101,9 +103,6 @@ platforms:
   - type: docker
     image: nvcr.io/nvidia/pytorch:23.09-py3
     setup:
-      - type: docker
-        run:
-          echo "build --jobs 4" >> /etc/bazel.bazelrc
       - type: python
         __merge__: [ /src/base/requirements/anndata_mudata.yaml, /src/base/requirements/scanpy.yaml ]
       - type: python
@@ -114,5 +113,3 @@ platforms:
       - type: python
         __merge__: [ /src/base/requirements/viashpy.yaml ]
   - type: nextflow
-    directives:
-      label: [lowmem]

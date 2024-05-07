@@ -15,10 +15,10 @@ par = {
     "modality": "rna",
     "input_layer": "X_binned",
     "max_seq_len": None,
-    "input_var_gene_names": None,
-    "output_obsm_gene_tokens": "gene_id_tokens",
-    "output_obsm_tokenized_values": "values_tokenized",
-    "output_obsm_padding_mask": "padding_mask",
+    "var_gene_names": None,
+    "obsm_gene_tokens": "gene_id_tokens",
+    "obsm_tokenized_values": "values_tokenized",
+    "obsm_padding_mask": "padding_mask",
     "output_compression": None
     }
 ## VIASH END
@@ -53,6 +53,7 @@ pad_token = par["pad_token"]
 special_tokens = [pad_token, "<cls>", "<eoc>"]
 pad_value = -2
 
+logger.info("Fetching counts and gene names")
 # Fetch counts
 all_counts = (
     adata.layers[par["input_layer"]].A
@@ -61,10 +62,10 @@ all_counts = (
 )
 
 # Fetching gene names
-if not par["input_var_gene_names"]:
+if not par["var_gene_names"]:
     genes = adata.var.index.astype(str).tolist()
-else: 
-    genes = adata.var[par["input_var_gene_names"]].astype(str).tolist()
+else:
+    genes = adata.var[par["var_gene_names"]].astype(str).tolist()
 
 # Fetch gene names and look up tokens in vocab
 logger.info("Reading in vocab and fetching gene tokens")
@@ -85,7 +86,7 @@ else:
     max_seq_len = par["max_seq_len"]
 
 # Tokenize and pad data
-logger.info("Padding and tokenizing data")
+logger.info(f"Padding and tokenizing data with max length of {max_seq_len}, padding token {pad_token} and pad value {pad_value}.")
 tokenized_data = tokenize_and_pad_batch(
     all_counts,
     gene_ids,
@@ -104,9 +105,9 @@ all_gene_ids, all_values = tokenized_data["genes"], tokenized_data["values"]
 padding_mask = all_gene_ids.eq(vocab[pad_token])
 
 logger.info("Writing output data")
-adata.obsm[par["output_obsm_gene_tokens"]] = all_gene_ids.numpy()
-adata.obsm[par["output_obsm_tokenized_values"]] = all_values.numpy()
-adata.obsm[par["output_obsm_padding_mask"]] = padding_mask.numpy()
+adata.obsm[par["obsm_gene_tokens"]] = all_gene_ids.numpy()
+adata.obsm[par["obsm_tokenized_values"]] = all_values.numpy()
+adata.obsm[par["obsm_padding_mask"]] = padding_mask.numpy()
 
 mdata.mod[par["modality"]] = adata
 mdata.write(par["output"], compression=par["output_compression"])
