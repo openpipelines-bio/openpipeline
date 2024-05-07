@@ -1,9 +1,11 @@
 functionality:
-  name: "zero_shot_cell_type_annotation"
-  namespace: "workflows/zero_shot_cell_type_annotation"
-  description: "Zero-shot cell type annotation through scGPT."
+  name: "scgpt_cell_type_annotation"
+  namespace: "workflows/annotation"
+  description: "scGPT cell type annotation through decoding of cell embeddings."
   authors:
     - __merge__: /src/authors/jakub_majercik.yaml
+      roles: [ author, maintainer ]
+    - __merge__: /src/authors/dorien_roosen.yaml
       roles: [ author, maintainer ]
   argument_groups:
     - name: "Input"
