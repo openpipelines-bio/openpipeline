@@ -120,13 +120,6 @@ platforms:
   - type: docker
     image: python:3.9
     setup: 
-      - type: apt
-        packages:
-          - procps
-          - libhdf5-dev
-          - gfortran
-          - cmake
-          - libopenblas-dev
       - type: python
         __merge__: [/src/base/requirements/anndata_mudata.yaml, /src/base/requirements/scanpy.yaml, .]
         packages:
