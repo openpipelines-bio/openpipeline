@@ -1,6 +1,14 @@
 # openpipelines x.x.x
 
+## BREAKING CHANGES
+
+* `demux/bcl_convert`: update BCL convert from 3.10 to 4.2 (PR #774).
+
+* `demux/cellranger_mkfastq`, `mapping/cellranger_count`, `mapping/cellranger_multi` and `reference/build_cellranger_reference`: update cellranger to `8.0` (PR #774).
+
 ## NEW FUNCTIONALITY
+
+* `convert/from_cellranger_to_h5mu`: add support for antigen analysis. 
 
 * Added `demux/cellranger_atac_mkfastq` component: demultiplex raw sequencing data for ATAC experiments (PR #726).
 
