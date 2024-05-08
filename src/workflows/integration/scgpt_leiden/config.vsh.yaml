@@ -46,7 +46,7 @@ functionality:
           type: string
           required: False
           description: |
-            Mudata layer (key from layers) to use as input data for binning; if not specified, X is used.
+            Mudata layer (key from layers) to use as input data for hvg subsetting and binning; if not specified, X is used.
         - name: "--var_gene_names"
           type: string
           required: false
