@@ -4,7 +4,7 @@ workflow run_wf {
     input_ch
 
   main:
-    neighbors_ch = input_ch
+    output_ch = input_ch
     // Set aside the output for this workflow to avoid conflicts
     | map {id, state -> 
       def new_state = state + ["workflow_output": state.output]
@@ -159,7 +159,6 @@ workflow run_wf {
       },
       auto: [ publish: true ]
     )
-    | niceView()
   
   emit:
     output_ch
