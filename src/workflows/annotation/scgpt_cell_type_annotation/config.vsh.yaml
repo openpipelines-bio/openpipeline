@@ -158,7 +158,7 @@ functionality:
       path: /src/workflows/utils/
   dependencies:
     - name: scgpt/pad_tokenize
-    - name: scgpt/cell_type_inference
+    - name: scgpt/cell_type_annotation
     - name: scgpt/cross_check_genes
     - name: scgpt/binning
     - name: feature_annotation/highly_variable_features_scanpy

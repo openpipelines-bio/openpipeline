@@ -10,10 +10,10 @@ cd "$REPO_ROOT"
 
 export NXF_VER=21.10.6
 
-viash ns build -q zero_shot_cell_type_annotation
+viash ns build -q scgpt_cell_type_annotation
 
 nextflow run . \
-  -main-script src/workflows/zero_shot_cell_type_annotation/test.nf \
+  -main-script src/workflows/annotation/scgpt_cell_type_annotation/test.nf \
   -profile docker,no_publish \
   -entry test_wf \
   -with-trace work/trace.txt \
