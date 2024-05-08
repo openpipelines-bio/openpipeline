@@ -3220,7 +3220,7 @@ meta = [
           "functionalityNamespace" : "scgpt",
           "output" : "",
           "platform" : "",
-          "git_commit" : "28c4dae4756794a67bc4eb00647f16830039b459",
+          "git_commit" : "990cf3e717412711e547b1268f4cad0ba4c15592",
           "executable" : "/nextflow/scgpt/pad_tokenize/main.nf"
         },
         "writtenPath" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/scgpt/pad_tokenize"
@@ -3241,7 +3241,7 @@ meta = [
           "functionalityNamespace" : "scgpt",
           "output" : "",
           "platform" : "",
-          "git_commit" : "28c4dae4756794a67bc4eb00647f16830039b459",
+          "git_commit" : "990cf3e717412711e547b1268f4cad0ba4c15592",
           "executable" : "/nextflow/scgpt/cell_type_annotation/main.nf"
         },
         "writtenPath" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/scgpt/cell_type_annotation"
@@ -3262,7 +3262,7 @@ meta = [
           "functionalityNamespace" : "scgpt",
           "output" : "",
           "platform" : "",
-          "git_commit" : "28c4dae4756794a67bc4eb00647f16830039b459",
+          "git_commit" : "990cf3e717412711e547b1268f4cad0ba4c15592",
           "executable" : "/nextflow/scgpt/cross_check_genes/main.nf"
         },
         "writtenPath" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/scgpt/cross_check_genes"
@@ -3283,7 +3283,7 @@ meta = [
           "functionalityNamespace" : "scgpt",
           "output" : "",
           "platform" : "",
-          "git_commit" : "28c4dae4756794a67bc4eb00647f16830039b459",
+          "git_commit" : "990cf3e717412711e547b1268f4cad0ba4c15592",
           "executable" : "/nextflow/scgpt/binning/main.nf"
         },
         "writtenPath" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/scgpt/binning"
@@ -3304,7 +3304,7 @@ meta = [
           "functionalityNamespace" : "feature_annotation",
           "output" : "",
           "platform" : "",
-          "git_commit" : "28c4dae4756794a67bc4eb00647f16830039b459",
+          "git_commit" : "990cf3e717412711e547b1268f4cad0ba4c15592",
           "executable" : "/nextflow/feature_annotation/highly_variable_features_scanpy/main.nf"
         },
         "writtenPath" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/feature_annotation/highly_variable_features_scanpy"
@@ -3325,7 +3325,7 @@ meta = [
           "functionalityNamespace" : "filter",
           "output" : "",
           "platform" : "",
-          "git_commit" : "28c4dae4756794a67bc4eb00647f16830039b459",
+          "git_commit" : "990cf3e717412711e547b1268f4cad0ba4c15592",
           "executable" : "/nextflow/filter/do_filter/main.nf"
         },
         "writtenPath" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/filter/do_filter"
@@ -3392,7 +3392,7 @@ meta = [
     "platform" : "nextflow",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/workflows/annotation/scgpt_cell_type_annotation",
     "viash_version" : "0.8.5",
-    "git_commit" : "28c4dae4756794a67bc4eb00647f16830039b459",
+    "git_commit" : "990cf3e717412711e547b1268f4cad0ba4c15592",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))
