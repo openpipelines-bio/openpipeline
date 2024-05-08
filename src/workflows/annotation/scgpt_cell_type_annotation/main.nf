@@ -13,34 +13,28 @@ workflow run_wf {
         | highly_variable_features_scanpy.run(
         // Annotates the mudata object with highly variable genes.
             fromState: {id, state ->
-            [
-                "input": state.input,
-                "modality": state.modality,
-                "n_top_features": state.n_hvg,
-            ]
+                [
+                    "input": state.input,
+                    "modality": state.modality,
+                    "n_top_features": state.n_hvg,
+                    "layer": state.input_layer,
+                    "var_name_filter": "filter_with_hvg",
+                    "flavor": "seurat_v3"
+                ]
             },
-            args: 
-            [
-                var_name_filter: "filter_with_hvg",
-                flavor: "seurat_v3"
-            ],
             toState: ["input": "output"]
-
         )
         | do_filter.run(
         // do_filter does not need a layer argument because it filters all layers
         // from a modality.
         // filters the mudata object based on the HVG
             fromState: {id, state ->
-            [
-                "input": state.input,
-                "modality": state.modality
-            ]
+                [
+                    "input": state.input,
+                    "modality": state.modality
+                    "var_filter": "filter_with_hvg"
+                ]
             },
-            args: 
-            [
-                var_filter: "filter_with_hvg"
-            ],
             toState: ["input": "output"]
         )
 
@@ -51,7 +45,7 @@ workflow run_wf {
                 "input": state.input,
                 "modality": state.modality,
                 "vocab_file": state.model_vocab,
-                "input_var_gene_names": state.var_gene_names,
+                "var_gene_names": state.var_gene_names,
                 "output": state.output,
                 "pad_token": state.pad_token
             ]

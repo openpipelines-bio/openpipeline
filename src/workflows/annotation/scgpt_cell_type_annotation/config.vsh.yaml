@@ -20,6 +20,10 @@ functionality:
           required: true
           description: Path to the sample.
           example: dataset.h5mu
+        - name: "--input_layer"
+          type: string
+          description: |
+            The name of the adata layer containing (pre-processed) counts to use for the input. adata.X will be used if no layer is provided.
         - name: "--modality"
           type: string
           default: "rna"
@@ -79,10 +83,6 @@ functionality:
           required: false
           description: |
             The maximum sequence length of the tokenized data.
-        - name: "--input_layer"
-          type: string
-          required: false
-          description: "Input layer to start from."
         - name: "--gene_name_layer"
           type: string
           example: "gene_name"
