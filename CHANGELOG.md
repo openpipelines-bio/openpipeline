@@ -1,3 +1,23 @@
+# openpipelines x.x.x
+
+## BREAKING CHANGES
+
+* `demux/bcl_convert`: update BCL convert from 3.10 to 4.2 (PR #774).
+
+* `demux/cellranger_mkfastq`, `mapping/cellranger_count`, `mapping/cellranger_multi` and `reference/build_cellranger_reference`: update cellranger to `8.0` (PR #774).
+
+## NEW FUNCTIONALITY
+
+* `convert/from_cellranger_to_h5mu`: add support for antigen analysis. 
+
+* Added `demux/cellranger_atac_mkfastq` component: demultiplex raw sequencing data for ATAC experiments (PR #726).
+
+* Added `reference/build_cellranger_reference` component: build reference file compatible with ATAC and ATAC+GEX experiments (PR #726).
+
+## MINOR CHANGES
+
+* Added `resources_test_scripts/cellranger_atac_tiny_bcl.sh` script: download tiny bcl file with an ATAC experiment, download a motifs file, demultiplex bcl files to reads in fastq format (PR #726).
+
 # openpipelines 1.0.0-rc4
 
 ## BREAKING CHANGES
@@ -26,6 +46,10 @@
 
 * Docker image names now use `/` instead of `_` between the name of the component and the namespace (PR #712).
 
+## MINOR CHANGES
+
+* `mapping/cellranger_multi` component now outputs logs on failure of the `cellranger multi` process (PR #766).
+
 ## BUG FIXES
 
 * `rna_singlesample`: fixed a bug where selecting the column for the filtering with mitochondrial fractions 
@@ -36,6 +60,10 @@
 ## NEW FUNCTIONALITY
 
 * `dimred/tsne` component: Added a tSNE dimensionality reduction component (PR #742).
+  
+* `reference/cellranger_mkgtf` component: Added cellranger mkgtf as a standalone component (PR #771).
+
+* `scgpt/binning` component: Added a scGPT pre-processing binning component (PR #765).
 
 # openpipelines 1.0.0-rc2
 

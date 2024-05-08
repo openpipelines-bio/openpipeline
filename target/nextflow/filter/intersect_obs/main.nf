@@ -3035,7 +3035,7 @@ meta = [
     "platform" : "nextflow",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/filter/intersect_obs",
     "viash_version" : "0.8.5",
-    "git_commit" : "78ab467df8aa94eb2b5706b4c01678a8e08258c8",
+    "git_commit" : "83706f18507e17354c7ad509592c916915271112",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))

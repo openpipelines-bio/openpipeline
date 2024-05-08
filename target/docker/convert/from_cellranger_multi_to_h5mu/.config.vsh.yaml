@@ -97,6 +97,8 @@ functionality:
   - type: "file"
     path: "resources_test/10x_5k_lung_crispr"
   - type: "file"
+    path: "resources_test/10x_5k_beam"
+  - type: "file"
     path: "src/base/openpipelinetestutils"
     dest: "openpipelinetestutils"
   info: null
@@ -195,5 +197,5 @@ info:
   output: "/home/runner/work/openpipeline/openpipeline/target/docker/convert/from_cellranger_multi_to_h5mu"
   executable: "/home/runner/work/openpipeline/openpipeline/target/docker/convert/from_cellranger_multi_to_h5mu/from_cellranger_multi_to_h5mu"
   viash_version: "0.8.5"
-  git_commit: "78ab467df8aa94eb2b5706b4c01678a8e08258c8"
+  git_commit: "83706f18507e17354c7ad509592c916915271112"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"

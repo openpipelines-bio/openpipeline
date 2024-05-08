@@ -50,6 +50,16 @@
     
 
         ,
+                "reference_version": {
+                "type":
+                "string",
+                "description": "Type: `string`. Optional reference version string to include with reference",
+                "help_text": "Type: `string`. Optional reference version string to include with reference"
+            
+            }
+    
+
+        ,
                 "output": {
                 "type":
                 "string",

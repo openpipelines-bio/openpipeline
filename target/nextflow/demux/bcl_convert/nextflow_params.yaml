@@ -4,6 +4,9 @@ sample_sheet: # please fill in - example: "bcl_dir"
 # output: "$id.$key.output.output"
 # reports: "$id.$key.reports.reports"
 test_mode: false
+strict_mode: false
+# tiles: "foo"
+# exclude_tiles: "foo"
 
 # Nextflow input-output arguments
 publish_dir: # please fill in - example: "output/"
