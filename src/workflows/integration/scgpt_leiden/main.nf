@@ -17,6 +17,7 @@ workflow run_wf {
           "input": state.input,
           "layer": state.layer,
           "modality": state.modality,
+          "layer": state.input_layer,
           "var_name_filter": "filter_with_hvg",
           "n_top_features": state.n_hvg,
           "flavor": "seurat_v3"
