@@ -73,13 +73,8 @@ platforms:
     image: python:3.11-slim
     setup:
       - type: apt
-        packages:
+        packages: 
           - procps
-          - pkg-config
-          - libhdf5-dev
-          - gfortran
-          - cmake
-          - libopenblas-dev
       - type: python
         __merge__: [ /src/base/requirements/anndata_mudata.yaml, .]
     test_setup:
