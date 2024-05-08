@@ -2930,22 +2930,9 @@ meta = [
             "dest" : "par"
           },
           {
-            "type" : "integer",
-            "name" : "--force_cells",
-            "description" : "Force pipeline to use this number of cells, bypassing cell calling algorithm.",
-            "example" : [
-              3000
-            ],
-            "required" : false,
-            "direction" : "input",
-            "multiple" : false,
-            "multiple_sep" : ":",
-            "dest" : "par"
-          },
-          {
             "type" : "string",
             "name" : "--chemistry",
-            "description" : "Assay configuration.\n- auto: autodetect mode\n- threeprime: Single Cell 3'\n- fiveprime: Single Cell 5'\n- SC3Pv1: Single Cell 3' v1 \n  NOTE: this mode cannot be auto-detected. It must be set explicitly with this option.\n- SC3Pv2: Single Cell 3' v2\n- SC3Pv3: Single Cell 3' v3\n- SC3Pv4: Single Cell 3' v4\n- SC3Pv3LT: Single Cell 3' v3 LT\n- SC3Pv3HT: Single Cell 3' v3 HT\n- SC5P-PE: Single Cell 5' paired-end\n- SC5P-R2: Single Cell 5' R2-only\n- SC-FB: Single Cell Antibody-only 3' v2 or 5'\n- ARC-v1: for analyzing the Gene Expression portion of Multiome data. \n  NOTE: when the pipeline auto-detects ARC-v1 chemistry, an error is triggered.\nSee https://kb.10xgenomics.com/hc/en-us/articles/115003764132-How-does-Cell-Ranger-auto-detect-chemistry- for more information.\n",
+            "description" : "Assay configuration.\n- auto: autodetect mode\n- threeprime: Single Cell 3'\n- fiveprime: Single Cell 5'\n- SC3Pv1: Single Cell 3' v1\n- SC3Pv2: Single Cell 3' v2\n- SC3Pv3: Single Cell 3' v3\n- SC3Pv3LT: Single Cell 3' v3 LT\n- SC3Pv3HT: Single Cell 3' v3 HT\n- SC5P-PE: Single Cell 5' paired-end\n- SC5P-R2: Single Cell 5' R2-only\n- SC-FB: Single Cell Antibody-only 3' v2 or 5'\nSee https://kb.10xgenomics.com/hc/en-us/articles/115003764132-How-does-Cell-Ranger-auto-detect-chemistry- for more information.\n",
             "default" : [
               "auto"
             ],
@@ -2957,13 +2944,11 @@ meta = [
               "SC3Pv1",
               "SC3Pv2",
               "SC3Pv3",
-              "SC3Pv4",
               "SC3Pv3LT",
               "SC3Pv3HT",
               "SC5P-PE",
               "SC5P-R2",
-              "SC-FB",
-              "ARC-v1"
+              "SC-FB"
             ],
             "direction" : "input",
             "multiple" : false,
@@ -2999,55 +2984,7 @@ meta = [
           {
             "type" : "boolean",
             "name" : "--include_introns",
-            "description" : "Include intronic reads in count.",
-            "default" : [
-              true
-            ],
-            "required" : false,
-            "direction" : "input",
-            "multiple" : false,
-            "multiple_sep" : ":",
-            "dest" : "par"
-          },
-          {
-            "type" : "integer",
-            "name" : "--r1_length",
-            "description" : "Hard trim the input Read 1 to this length before analysis",
-            "required" : false,
-            "direction" : "input",
-            "multiple" : false,
-            "multiple_sep" : ":",
-            "dest" : "par"
-          },
-          {
-            "type" : "integer",
-            "name" : "--r2_length",
-            "description" : "Hard trim the input Read 2 to this length before analysis",
-            "required" : false,
-            "direction" : "input",
-            "multiple" : false,
-            "multiple_sep" : ":",
-            "dest" : "par"
-          },
-          {
-            "type" : "integer",
-            "name" : "--lanes",
-            "description" : "Only use FASTQs from selected lanes.",
-            "example" : [
-              1,
-              2,
-              3
-            ],
-            "required" : false,
-            "direction" : "input",
-            "multiple" : true,
-            "multiple_sep" : ";",
-            "dest" : "par"
-          },
-          {
-            "type" : "boolean",
-            "name" : "--library_compatibility_check",
-            "description" : "Whether to check for barcode compatibility between libraries.\n",
+            "description" : "Include intronic reads in count (default=true unless --target-panel is specified in which case default=false)",
             "default" : [
               true
             ],
@@ -3109,7 +3046,7 @@ meta = [
     {
       "type" : "docker",
       "id" : "docker",
-      "image" : "ghcr.io/data-intuitive/cellranger:8.0",
+      "image" : "ghcr.io/data-intuitive/cellranger:7.0",
       "target_organization" : "openpipelines-bio",
       "target_registry" : "ghcr.io",
       "target_tag" : "integration_build",
@@ -3124,30 +3061,6 @@ meta = [
           "run" : [
             "DEBIAN_FRONTEND=noninteractive apt update && \\\\\napt upgrade -y && apt install -y procps && rm -rf /var/lib/apt/lists/*\n"
           ]
-        }
-      ],
-      "test_setup" : [
-        {
-          "type" : "docker",
-          "copy" : [
-            "openpipelinetestutils /opt/openpipelinetestutils"
-          ]
-        },
-        {
-          "type" : "python",
-          "user" : false,
-          "packages" : [
-            "/opt/openpipelinetestutils"
-          ],
-          "upgrade" : true
-        },
-        {
-          "type" : "python",
-          "user" : false,
-          "packages" : [
-            "viashpy==0.6.0"
-          ],
-          "upgrade" : true
         }
       ]
     },
@@ -3213,7 +3126,7 @@ meta = [
     "platform" : "nextflow",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/mapping/cellranger_count",
     "viash_version" : "0.8.5",
-    "git_commit" : "83706f18507e17354c7ad509592c916915271112",
+    "git_commit" : "28c4dae4756794a67bc4eb00647f16830039b459",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))
@@ -3238,15 +3151,10 @@ $( if [ ! -z ${VIASH_PAR_INPUT+x} ]; then echo "${VIASH_PAR_INPUT}" | sed "s#'#'
 $( if [ ! -z ${VIASH_PAR_REFERENCE+x} ]; then echo "${VIASH_PAR_REFERENCE}" | sed "s#'#'\\"'\\"'#g;s#.*#par_reference='&'#" ; else echo "# par_reference="; fi )
 $( if [ ! -z ${VIASH_PAR_OUTPUT+x} ]; then echo "${VIASH_PAR_OUTPUT}" | sed "s#'#'\\"'\\"'#g;s#.*#par_output='&'#" ; else echo "# par_output="; fi )
 $( if [ ! -z ${VIASH_PAR_EXPECT_CELLS+x} ]; then echo "${VIASH_PAR_EXPECT_CELLS}" | sed "s#'#'\\"'\\"'#g;s#.*#par_expect_cells='&'#" ; else echo "# par_expect_cells="; fi )
-$( if [ ! -z ${VIASH_PAR_FORCE_CELLS+x} ]; then echo "${VIASH_PAR_FORCE_CELLS}" | sed "s#'#'\\"'\\"'#g;s#.*#par_force_cells='&'#" ; else echo "# par_force_cells="; fi )
 $( if [ ! -z ${VIASH_PAR_CHEMISTRY+x} ]; then echo "${VIASH_PAR_CHEMISTRY}" | sed "s#'#'\\"'\\"'#g;s#.*#par_chemistry='&'#" ; else echo "# par_chemistry="; fi )
 $( if [ ! -z ${VIASH_PAR_SECONDARY_ANALYSIS+x} ]; then echo "${VIASH_PAR_SECONDARY_ANALYSIS}" | sed "s#'#'\\"'\\"'#g;s#.*#par_secondary_analysis='&'#" ; else echo "# par_secondary_analysis="; fi )
 $( if [ ! -z ${VIASH_PAR_GENERATE_BAM+x} ]; then echo "${VIASH_PAR_GENERATE_BAM}" | sed "s#'#'\\"'\\"'#g;s#.*#par_generate_bam='&'#" ; else echo "# par_generate_bam="; fi )
 $( if [ ! -z ${VIASH_PAR_INCLUDE_INTRONS+x} ]; then echo "${VIASH_PAR_INCLUDE_INTRONS}" | sed "s#'#'\\"'\\"'#g;s#.*#par_include_introns='&'#" ; else echo "# par_include_introns="; fi )
-$( if [ ! -z ${VIASH_PAR_R1_LENGTH+x} ]; then echo "${VIASH_PAR_R1_LENGTH}" | sed "s#'#'\\"'\\"'#g;s#.*#par_r1_length='&'#" ; else echo "# par_r1_length="; fi )
-$( if [ ! -z ${VIASH_PAR_R2_LENGTH+x} ]; then echo "${VIASH_PAR_R2_LENGTH}" | sed "s#'#'\\"'\\"'#g;s#.*#par_r2_length='&'#" ; else echo "# par_r2_length="; fi )
-$( if [ ! -z ${VIASH_PAR_LANES+x} ]; then echo "${VIASH_PAR_LANES}" | sed "s#'#'\\"'\\"'#g;s#.*#par_lanes='&'#" ; else echo "# par_lanes="; fi )
-$( if [ ! -z ${VIASH_PAR_LIBRARY_COMPATIBILITY_CHECK+x} ]; then echo "${VIASH_PAR_LIBRARY_COMPATIBILITY_CHECK}" | sed "s#'#'\\"'\\"'#g;s#.*#par_library_compatibility_check='&'#" ; else echo "# par_library_compatibility_check="; fi )
 $( if [ ! -z ${VIASH_META_FUNCTIONALITY_NAME+x} ]; then echo "${VIASH_META_FUNCTIONALITY_NAME}" | sed "s#'#'\\"'\\"'#g;s#.*#meta_functionality_name='&'#" ; else echo "# meta_functionality_name="; fi )
 $( if [ ! -z ${VIASH_META_RESOURCES_DIR+x} ]; then echo "${VIASH_META_RESOURCES_DIR}" | sed "s#'#'\\"'\\"'#g;s#.*#meta_resources_dir='&'#" ; else echo "# meta_resources_dir="; fi )
 $( if [ ! -z ${VIASH_META_EXECUTABLE+x} ]; then echo "${VIASH_META_EXECUTABLE}" | sed "s#'#'\\"'\\"'#g;s#.*#meta_executable='&'#" ; else echo "# meta_executable="; fi )
@@ -3300,31 +3208,40 @@ fi
 # cd into tempdir
 cd "\\$tmpdir"
 
-no_secondary_analysis=""
-if [ "\\$par_secondary_analysis" == "false" ]; then
-  no_secondary_analysis="true"
-fi
+# add additional params
+extra_params=( )
 
-IFS=","
+if [ ! -z "\\$meta_cpus" ]; then 
+  extra_params+=( "--localcores=\\$meta_cpus" )
+fi
+if [ ! -z "\\$meta_memory_gb" ]; then 
+  # always keep 2gb for the OS itself
+  memory_gb=\\`python -c "print(int('\\$meta_memory_gb') - 2)"\\`
+  extra_params+=( "--localmem=\\$memory_gb" )
+fi
+if [ ! -z "\\$par_expect_cells" ]; then 
+  extra_params+=( "--expect-cells=\\$par_expect_cells" )
+fi
+if [ ! -z "\\$par_chemistry" ]; then 
+  extra_params+=( "--chemistry=\\$par_chemistry" )
+fi
+if [ "\\$par_secondary_analysis" == "false" ]; then
+  extra_params+=( "--nosecondary" )
+fi
+if [ "\\$par_generate_bam" == "false" ]; then
+  extra_params+=( "--no-bam" )
+fi
+echo "Running cellranger count"
+
+
 id=myoutput
 cellranger count \\\\
-  --id="\\$id" \\\\
-  --fastqs="\\$fastq_dir" \\\\
-  --transcriptome="\\$par_reference" \\\\
-  --include-introns="\\$par_include_introns" \\\\
-  \\${meta_cpus:+--localcores=\\$meta_cpus} \\\\
-  \\${meta_memory_gb:+--localmem=\\$((meta_memory_gb-2))} \\\\
-  \\${par_expect_cells:+--expect-cells=\\$par_expect_cells} \\\\
-  \\${par_force_cells:+--force-cells=\\$par_force_cells} \\\\
-  \\${par_chemistry:+--chemistry="\\$par_chemistry"} \\\\
-  \\${par_generate_bam:+--create-bam=\\$par_generate_bam} \\\\
-  \\${no_secondary_analysis:+--nosecondary} \\\\
-  \\${par_r1_length:+--r1-length=\\$par_r1_length} \\\\
-  \\${par_r2_length:+--r2-length=\\$par_r2_length} \\\\
-  \\${par_lanes:+--lanes=\\${par_lanes[*]}} \\\\
-  \\${par_library_compatibility_check:+--check-library-compatibility=\\$par_library_compatibility_check}\\\\
-  --disable-ui
-unset IFS
+  --id "\\$id" \\\\
+  --fastqs "\\$fastq_dir" \\\\
+  --transcriptome "\\$par_reference" \\\\
+  --include-introns "\\$par_include_introns" \\\\
+  "\\${extra_params[@]}" \\\\
+  --disable-ui \\\\
 
 echo "Copying output"
 if [ -d "\\$id/outs/" ]; then

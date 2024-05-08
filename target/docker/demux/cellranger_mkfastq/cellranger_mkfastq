@@ -423,7 +423,7 @@ function ViashDockerCheckCommands {
 #   ViashDockerFile
 function ViashDockerfile {
   cat << 'VIASHDOCKER'
-FROM ghcr.io/data-intuitive/cellranger:8.0
+FROM ghcr.io/data-intuitive/cellranger:7.0
 
 ENTRYPOINT []
 
@@ -433,9 +433,9 @@ apt upgrade -y && apt install -y procps && rm -rf /var/lib/apt/lists/*
 
 LABEL org.opencontainers.image.authors="Angela Oliveira Pisco, Samuel D'Souza, Robrecht Cannoodt"
 LABEL org.opencontainers.image.description="Companion container for running component demux cellranger_mkfastq"
-LABEL org.opencontainers.image.created="2024-05-08T11:19:31Z"
+LABEL org.opencontainers.image.created="2024-05-08T14:06:47Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="83706f18507e17354c7ad509592c916915271112"
+LABEL org.opencontainers.image.revision="28c4dae4756794a67bc4eb00647f16830039b459"
 LABEL org.opencontainers.image.version="integration_build"
 
 VIASHDOCKER

@@ -2905,39 +2905,6 @@ meta = [
         "multiple" : false,
         "multiple_sep" : ":",
         "dest" : "par"
-      },
-      {
-        "type" : "boolean",
-        "name" : "--strict_mode",
-        "description" : "Abort if any files are missing.",
-        "default" : [
-          false
-        ],
-        "required" : false,
-        "direction" : "input",
-        "multiple" : false,
-        "multiple_sep" : ":",
-        "dest" : "par"
-      },
-      {
-        "type" : "string",
-        "name" : "--tiles",
-        "description" : "Process only a subset of tiles by a regular expression.",
-        "required" : false,
-        "direction" : "input",
-        "multiple" : false,
-        "multiple_sep" : ":",
-        "dest" : "par"
-      },
-      {
-        "type" : "string",
-        "name" : "--exclude_tiles",
-        "description" : "Exclude set of tiles by a regular expression",
-        "required" : false,
-        "direction" : "input",
-        "multiple" : false,
-        "multiple_sep" : ":",
-        "dest" : "par"
       }
     ],
     "resources" : [
@@ -2984,7 +2951,7 @@ meta = [
     {
       "type" : "docker",
       "id" : "docker",
-      "image" : "ghcr.io/data-intuitive/bclconvert:4.2",
+      "image" : "ghcr.io/data-intuitive/bclconvert:3.10",
       "target_organization" : "openpipelines-bio",
       "target_registry" : "ghcr.io",
       "target_tag" : "integration_build",
@@ -3065,7 +3032,7 @@ meta = [
     "platform" : "nextflow",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/demux/bcl_convert",
     "viash_version" : "0.8.5",
-    "git_commit" : "83706f18507e17354c7ad509592c916915271112",
+    "git_commit" : "28c4dae4756794a67bc4eb00647f16830039b459",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))
@@ -3091,9 +3058,6 @@ $( if [ ! -z ${VIASH_PAR_SAMPLE_SHEET+x} ]; then echo "${VIASH_PAR_SAMPLE_SHEET}
 $( if [ ! -z ${VIASH_PAR_OUTPUT+x} ]; then echo "${VIASH_PAR_OUTPUT}" | sed "s#'#'\\"'\\"'#g;s#.*#par_output='&'#" ; else echo "# par_output="; fi )
 $( if [ ! -z ${VIASH_PAR_REPORTS+x} ]; then echo "${VIASH_PAR_REPORTS}" | sed "s#'#'\\"'\\"'#g;s#.*#par_reports='&'#" ; else echo "# par_reports="; fi )
 $( if [ ! -z ${VIASH_PAR_TEST_MODE+x} ]; then echo "${VIASH_PAR_TEST_MODE}" | sed "s#'#'\\"'\\"'#g;s#.*#par_test_mode='&'#" ; else echo "# par_test_mode="; fi )
-$( if [ ! -z ${VIASH_PAR_STRICT_MODE+x} ]; then echo "${VIASH_PAR_STRICT_MODE}" | sed "s#'#'\\"'\\"'#g;s#.*#par_strict_mode='&'#" ; else echo "# par_strict_mode="; fi )
-$( if [ ! -z ${VIASH_PAR_TILES+x} ]; then echo "${VIASH_PAR_TILES}" | sed "s#'#'\\"'\\"'#g;s#.*#par_tiles='&'#" ; else echo "# par_tiles="; fi )
-$( if [ ! -z ${VIASH_PAR_EXCLUDE_TILES+x} ]; then echo "${VIASH_PAR_EXCLUDE_TILES}" | sed "s#'#'\\"'\\"'#g;s#.*#par_exclude_tiles='&'#" ; else echo "# par_exclude_tiles="; fi )
 $( if [ ! -z ${VIASH_META_FUNCTIONALITY_NAME+x} ]; then echo "${VIASH_META_FUNCTIONALITY_NAME}" | sed "s#'#'\\"'\\"'#g;s#.*#meta_functionality_name='&'#" ; else echo "# meta_functionality_name="; fi )
 $( if [ ! -z ${VIASH_META_RESOURCES_DIR+x} ]; then echo "${VIASH_META_RESOURCES_DIR}" | sed "s#'#'\\"'\\"'#g;s#.*#meta_resources_dir='&'#" ; else echo "# meta_resources_dir="; fi )
 $( if [ ! -z ${VIASH_META_EXECUTABLE+x} ]; then echo "${VIASH_META_EXECUTABLE}" | sed "s#'#'\\"'\\"'#g;s#.*#meta_executable='&'#" ; else echo "# meta_executable="; fi )
@@ -3116,11 +3080,7 @@ bcl-convert \\\\
   --bcl-input-directory "\\$par_input" \\\\
   --output-directory "\\$par_output" \\\\
   --sample-sheet "\\$par_sample_sheet" \\\\
-  --first-tile-only "\\$par_test_mode" \\\\
-  --strict-mode "\\$par_strict_mode" \\\\
-  \\${par_tiles:+--tiles \\$par_tiles} \\\\
-  \\${par_exclude_tiles:+--exclude-tiles \\$par_exclude_tiles} \\\\
-  
+  --first-tile-only \\$par_test_mode
 
 if [ ! -z "\\$par_reports" ]; then
   echo "Moving reports to its own location"

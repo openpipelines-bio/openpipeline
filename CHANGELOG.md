@@ -1,14 +1,6 @@
 # openpipelines x.x.x
 
-## BREAKING CHANGES
-
-* `demux/bcl_convert`: update BCL convert from 3.10 to 4.2 (PR #774).
-
-* `demux/cellranger_mkfastq`, `mapping/cellranger_count`, `mapping/cellranger_multi` and `reference/build_cellranger_reference`: update cellranger to `8.0` (PR #774).
-
 ## NEW FUNCTIONALITY
-
-* `convert/from_cellranger_to_h5mu`: add support for antigen analysis. 
 
 * Added `demux/cellranger_atac_mkfastq` component: demultiplex raw sequencing data for ATAC experiments (PR #726).
 
@@ -18,37 +10,11 @@
 
 * Added `resources_test_scripts/cellranger_atac_tiny_bcl.sh` script: download tiny bcl file with an ATAC experiment, download a motifs file, demultiplex bcl files to reads in fastq format (PR #726).
 
-# openpipelines 1.0.0-rc4
-
-## BREAKING CHANGES
-
-* `query/cellxgene_census`: Refactored the interface, documentation and internal workings of this component (PR #621).
-  - Renamed arguments to align with standard OpenPipelines notations and cellxgene census API:
-    - `--input_database` became `--input_uri`
-    - `--cellxgene_release` became `--census_version`
-    - `--cell_query` became `--obs_value_filter`
-    - `--cells_filter_columns` became `--cell_filter_grouping`
-    - `--min_cells_filter_columns` became `--cell_filter_minimum_count`
-    - `--modality` became `--output_modality`
-    - Removed `--dataset_id` since it was no longer being used.
-    - Added `--add_dataset_meta` to add metadata to the output MuData object.
-  - Documentation of the component and its arguments was improved.
-
-## BUG FIXES
-
-* `mapping/cellranger_multi`: Fix the regex for the fastq input files to allow dropping the lane from the input file names (e.g. `_L001`) (PR #778).
-
-* `workflows/rna/rna_singlesample`: Fix argument passing `top_n_vars` and `obs_name_mitochondrial_fraction` to the `qc` subworkflow (PR #779).
-
 # openpipelines 1.0.0-rc3
 
 ## BREAKING CHANGES
 
 * Docker image names now use `/` instead of `_` between the name of the component and the namespace (PR #712).
-
-## MINOR CHANGES
-
-* `mapping/cellranger_multi` component now outputs logs on failure of the `cellranger multi` process (PR #766).
 
 ## BUG FIXES
 
@@ -60,8 +26,12 @@
 ## NEW FUNCTIONALITY
 
 * `dimred/tsne` component: Added a tSNE dimensionality reduction component (PR #742).
-  
-* `reference/cellranger_mkgtf` component: Added cellranger mkgtf as a standalone component (PR #771).
+
+* `scgpt/cross_check_genes` component: Added a gene-model cross check component for scGPT (PR #758).
+
+* `scgpt/embedding`: component: Added scGPT embedding component (PR #761)
+
+* `scgpt/tokenize_pad`: component: Added scGPT padding and tokenization component (PR #754).
 
 * `scgpt/binning` component: Added a scGPT pre-processing binning component (PR #765).
 

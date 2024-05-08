@@ -3141,7 +3141,7 @@ meta = [
           "functionalityNamespace" : "filter",
           "output" : "",
           "platform" : "",
-          "git_commit" : "83706f18507e17354c7ad509592c916915271112",
+          "git_commit" : "28c4dae4756794a67bc4eb00647f16830039b459",
           "executable" : "/nextflow/filter/filter_with_counts/main.nf"
         },
         "writtenPath" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/filter/filter_with_counts"
@@ -3162,7 +3162,7 @@ meta = [
           "functionalityNamespace" : "filter",
           "output" : "",
           "platform" : "",
-          "git_commit" : "83706f18507e17354c7ad509592c916915271112",
+          "git_commit" : "28c4dae4756794a67bc4eb00647f16830039b459",
           "executable" : "/nextflow/filter/filter_with_scrublet/main.nf"
         },
         "writtenPath" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/filter/filter_with_scrublet"
@@ -3183,7 +3183,7 @@ meta = [
           "functionalityNamespace" : "filter",
           "output" : "",
           "platform" : "",
-          "git_commit" : "83706f18507e17354c7ad509592c916915271112",
+          "git_commit" : "28c4dae4756794a67bc4eb00647f16830039b459",
           "executable" : "/nextflow/filter/do_filter/main.nf"
         },
         "writtenPath" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/filter/do_filter"
@@ -3204,7 +3204,7 @@ meta = [
           "functionalityNamespace" : "filter",
           "output" : "",
           "platform" : "",
-          "git_commit" : "83706f18507e17354c7ad509592c916915271112",
+          "git_commit" : "28c4dae4756794a67bc4eb00647f16830039b459",
           "executable" : "/nextflow/filter/delimit_fraction/main.nf"
         },
         "writtenPath" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/filter/delimit_fraction"
@@ -3225,7 +3225,7 @@ meta = [
           "functionalityNamespace" : "workflows/qc",
           "output" : "",
           "platform" : "",
-          "git_commit" : "83706f18507e17354c7ad509592c916915271112",
+          "git_commit" : "28c4dae4756794a67bc4eb00647f16830039b459",
           "executable" : "/nextflow/workflows/qc/qc/main.nf"
         },
         "writtenPath" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/workflows/qc/qc"
@@ -3292,7 +3292,7 @@ meta = [
     "platform" : "nextflow",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/workflows/rna/rna_singlesample",
     "viash_version" : "0.8.5",
-    "git_commit" : "83706f18507e17354c7ad509592c916915271112",
+    "git_commit" : "28c4dae4756794a67bc4eb00647f16830039b459",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))
@@ -3321,15 +3321,11 @@ workflow run_wf {
     }
     // Check for correctness of mitochondrial gene detection arguments
     | map { id, state ->
-      def new_state = [:]
       if (state.obs_name_mitochondrial_fraction && !state.var_name_mitochondrial_genes) {
         throw new RuntimeException("Using --obs_name_mitochondrial_fraction requires --var_name_mitochondrial_genes.")
       }
-      if (!state.obs_name_mitochondrial_fraction && state.var_name_mitochondrial_genes) {
-        new_state.obs_name_mitochondrial_fraction = "fraction_${state.var_name_mitochondrial_genes}"
-      }
-      if ((state.min_fraction_mito != null || state.max_fraction_mito != null) && !state.var_name_mitochondrial_genes) {
-        throw new RuntimeException("Enabling --min_fraction_mito or --max_fraction_mito requires --var_name_mitochondrial_genes.")
+      if ((state.min_fraction_mito  || state.max_fraction_mito) && !state.obs_name_mitochondrial_fraction) {
+        throw new RuntimeException("Enabling --min_fraction_mito or --max_fraction_mito requires --obs_name_mitochondrial_fraction.")
       }
       if (state.var_gene_names && !state.var_name_mitochondrial_genes) {
         System.err.println("Warning: --var_gene_names is set, but not --var_name_mitochondrial_genes. \
@@ -3341,7 +3337,7 @@ workflow run_wf {
                            --mitochondrial_gene_regex is only required for mitochondrial gene detection and does \
                            nothing while not also setting --var_name_mitochondrial_genes")
       }
-      [id, state + new_state]
+      [id, state]
     }
     | qc.run(
       fromState: { id, state ->
@@ -3349,8 +3345,8 @@ workflow run_wf {
         // on the fraction of mitochondrial genes per cell
         // This behaviour is optional based on the presence of var_name_mitochondrial_genes
         // The behavior of other components must be tuned to this argument as well
-        def args = [
-          "id": id,
+
+        def new_state = [
           "input": state.input,
           // disable other qc metric calculations
           // only mitochondrial gene detection is required at this point
@@ -3366,23 +3362,23 @@ workflow run_wf {
           "layer": state.layer,
         ]
         
-        if (state.var_name_mitochondrial_genes) {
+        if (state.var_name_mitochondrial_genes){
           // Check if user has defined var columns to calculate metrics
           def new_var_qc_metrics = state.var_qc_metrics != null ? state.var_qc_metrics : []
           assert new_var_qc_metrics instanceof List
           // Add the mitochondrial genes var column to the columns to calculate statistics for if set.
           new_var_qc_metrics = ((new_var_qc_metrics as Set) + [state.var_name_mitochondrial_genes]) as List
-          
-          args += [
+
+          def fraction_column_name = state.obs_name_mitochondrial_fraction ? state.obs_name_mitochondrial_fraction : "fraction_$state.var_name_mitochondrial_genes";
+          new_state += [
             "var_qc_metrics": new_var_qc_metrics,
-            "obs_name_mitochondrial_fraction": state.obs_name_mitochondrial_fraction,
+            "obs_name_mitochondrial_fraction": fraction_column_name,
             "var_gene_names": state.var_gene_names,
             "var_name_mitochondrial_genes": state.var_name_mitochondrial_genes,
             "mitochondrial_gene_regex": state.mitochondrial_gene_regex
           ]
         }
-
-        return args
+        return state
       },
       toState: ["input": "output"]
     )
@@ -3394,7 +3390,7 @@ workflow run_wf {
           "obs_name_filter": "filter_mitochondrial",
           "min_fraction": state.min_fraction_mito,
           "max_fraction": state.max_fraction_mito,
-          "obs_fraction_column": state.obs_name_mitochondrial_fraction,
+          "obs_fraction_column": state.obs_name_mitochondrial_fraction ? state.obs_name_mitochondrial_fraction : "fraction_$state.var_name_mitochondrial_genes",
         ]
       },
       toState: ["input": "output"]

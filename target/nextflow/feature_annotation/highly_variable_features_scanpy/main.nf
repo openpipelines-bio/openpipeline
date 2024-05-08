@@ -3089,7 +3089,7 @@ meta = [
     {
       "type" : "docker",
       "id" : "docker",
-      "image" : "python:3.9",
+      "image" : "python:3.10",
       "target_organization" : "openpipelines-bio",
       "target_registry" : "ghcr.io",
       "target_tag" : "integration_build",
@@ -3099,6 +3099,16 @@ meta = [
       "setup_strategy" : "ifneedbepullelsecachedbuild",
       "target_image_source" : "https://github.com/openpipelines-bio/openpipeline",
       "setup" : [
+        {
+          "type" : "apt",
+          "packages" : [
+            "procps",
+            "gfortran",
+            "cmake",
+            "libopenblas-dev"
+          ],
+          "interactive" : false
+        },
         {
           "type" : "python",
           "user" : false,
@@ -3186,7 +3196,7 @@ meta = [
     "platform" : "nextflow",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/feature_annotation/highly_variable_features_scanpy",
     "viash_version" : "0.8.5",
-    "git_commit" : "83706f18507e17354c7ad509592c916915271112",
+    "git_commit" : "28c4dae4756794a67bc4eb00647f16830039b459",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))

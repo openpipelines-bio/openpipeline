@@ -2876,17 +2876,77 @@ meta = [
             "multiple" : true,
             "multiple_sep" : ";",
             "dest" : "par"
+          },
+          {
+            "type" : "file",
+            "name" : "--gex_reference",
+            "description" : "Genome refence index built by Cell Ranger mkref.",
+            "example" : [
+              "reference_genome.tar.gz"
+            ],
+            "must_exist" : true,
+            "create_parent" : true,
+            "required" : true,
+            "direction" : "input",
+            "multiple" : false,
+            "multiple_sep" : ":",
+            "dest" : "par"
+          },
+          {
+            "type" : "file",
+            "name" : "--vdj_reference",
+            "description" : "VDJ refence index built by Cell Ranger mkref.",
+            "example" : [
+              "reference_vdj.tar.gz"
+            ],
+            "must_exist" : true,
+            "create_parent" : true,
+            "required" : false,
+            "direction" : "input",
+            "multiple" : false,
+            "multiple_sep" : ":",
+            "dest" : "par"
+          },
+          {
+            "type" : "file",
+            "name" : "--vdj_inner_enrichment_primers",
+            "description" : "V(D)J Immune Profiling libraries: if inner enrichment primers other than those provided \nin the 10x Genomics kits are used, they need to be specified here as a\ntext file with one primer per line.\n",
+            "example" : [
+              "enrichment_primers.txt"
+            ],
+            "must_exist" : true,
+            "create_parent" : true,
+            "required" : false,
+            "direction" : "input",
+            "multiple" : false,
+            "multiple_sep" : ":",
+            "dest" : "par"
+          },
+          {
+            "type" : "file",
+            "name" : "--feature_reference",
+            "description" : "Path to the Feature reference CSV file, declaring Feature Barcode constructs and associated barcodes. Required only for Antibody Capture or CRISPR Guide Capture libraries. See https://support.10xgenomics.com/single-cell-gene-expression/software/pipelines/latest/using/feature-bc-analysis#feature-ref for more information.",
+            "example" : [
+              "feature_reference.csv"
+            ],
+            "must_exist" : true,
+            "create_parent" : true,
+            "required" : false,
+            "direction" : "input",
+            "multiple" : false,
+            "multiple_sep" : ":",
+            "dest" : "par"
           }
         ]
       },
       {
         "name" : "Feature type-specific input files",
-        "description" : "Helper functionality to allow feature type-specific input files, without the need to specify\nlibrary_type or library_id. The library_id will be inferred from the input paths.\n",
+        "description" : "Helper functionality to allow feature type-specific input files, without the need to specify library_type or library_id. The library_id will be inferred from the input paths.",
         "arguments" : [
           {
             "type" : "file",
             "name" : "--gex_input",
-            "description" : "The FASTQ files to be analyzed for Gene Expression. FASTQ files should conform to the\nnaming conventions of bcl2fastq and mkfastq:\n`[Sample Name]_S[Sample Index]_L00[Lane Number]_[Read Type]_001.fastq.gz`\n",
+            "description" : "The FASTQ files to be analyzed for Gene Expression. FASTQ files should conform to the naming conventions of bcl2fastq and mkfastq:\n`[Sample Name]_S[Sample Index]_L00[Lane Number]_[Read Type]_001.fastq.gz`\n",
             "example" : [
               "mysample_S1_L001_R1_001.fastq.gz",
               "mysample_S1_L001_R2_001.fastq.gz"
@@ -2902,7 +2962,7 @@ meta = [
           {
             "type" : "file",
             "name" : "--abc_input",
-            "description" : "The FASTQ files to be analyzed for Antibody Capture. FASTQ files should conform to \nthe naming conventions of bcl2fastq and mkfastq:\n`[Sample Name]_S[Sample Index]_L00[Lane Number]_[Read Type]_001.fastq.gz`\n",
+            "description" : "The FASTQ files to be analyzed for Antibody Capture. FASTQ files should conform to the naming conventions of bcl2fastq and mkfastq:\n`[Sample Name]_S[Sample Index]_L00[Lane Number]_[Read Type]_001.fastq.gz`\n",
             "example" : [
               "mysample_S1_L001_R1_001.fastq.gz",
               "mysample_S1_L001_R2_001.fastq.gz"
@@ -2918,7 +2978,7 @@ meta = [
           {
             "type" : "file",
             "name" : "--cgc_input",
-            "description" : "The FASTQ files to be analyzed for CRISPR Guide Capture. FASTQ files should conform to\nthe naming conventions of bcl2fastq and mkfastq:\n`[Sample Name]_S[Sample Index]_L00[Lane Number]_[Read Type]_001.fastq.gz`\n",
+            "description" : "The FASTQ files to be analyzed for CRISPR Guide Capture. FASTQ files should conform to the naming conventions of bcl2fastq and mkfastq:\n`[Sample Name]_S[Sample Index]_L00[Lane Number]_[Read Type]_001.fastq.gz`\n",
             "example" : [
               "mysample_S1_L001_R1_001.fastq.gz",
               "mysample_S1_L001_R2_001.fastq.gz"
@@ -2934,7 +2994,7 @@ meta = [
           {
             "type" : "file",
             "name" : "--mux_input",
-            "description" : "The FASTQ files to be analyzed for Multiplexing Capture. FASTQ files should conform to\nthe naming conventions of bcl2fastq and mkfastq:\n`[Sample Name]_S[Sample Index]_L00[Lane Number]_[Read Type]_001.fastq.gz`\n",
+            "description" : "The FASTQ files to be analyzed for Multiplexing Capture. FASTQ files should conform to the naming conventions of bcl2fastq and mkfastq:\n`[Sample Name]_S[Sample Index]_L00[Lane Number]_[Read Type]_001.fastq.gz`\n",
             "example" : [
               "mysample_S1_L001_R1_001.fastq.gz",
               "mysample_S1_L001_R2_001.fastq.gz"
@@ -2950,7 +3010,7 @@ meta = [
           {
             "type" : "file",
             "name" : "--vdj_input",
-            "description" : "The FASTQ files to be analyzed for VDJ. FASTQ files should conform to the\nnaming conventions of bcl2fastq and mkfastq:\n`[Sample Name]_S[Sample Index]_L00[Lane Number]_[Read Type]_001.fastq.gz`\n",
+            "description" : "The FASTQ files to be analyzed for VDJ. FASTQ files should conform to the naming conventions of bcl2fastq and mkfastq:\n`[Sample Name]_S[Sample Index]_L00[Lane Number]_[Read Type]_001.fastq.gz`\n",
             "example" : [
               "mysample_S1_L001_R1_001.fastq.gz",
               "mysample_S1_L001_R2_001.fastq.gz"
@@ -2966,7 +3026,7 @@ meta = [
           {
             "type" : "file",
             "name" : "--vdj_t_input",
-            "description" : "The FASTQ files to be analyzed for VDJ-T. FASTQ files should conform to the naming\nconventions of bcl2fastq and mkfastq:\n`[Sample Name]_S[Sample Index]_L00[Lane Number]_[Read Type]_001.fastq.gz`\n",
+            "description" : "The FASTQ files to be analyzed for VDJ-T. FASTQ files should conform to the naming conventions of bcl2fastq and mkfastq:\n`[Sample Name]_S[Sample Index]_L00[Lane Number]_[Read Type]_001.fastq.gz`\n",
             "example" : [
               "mysample_S1_L001_R1_001.fastq.gz",
               "mysample_S1_L001_R2_001.fastq.gz"
@@ -2982,7 +3042,7 @@ meta = [
           {
             "type" : "file",
             "name" : "--vdj_t_gd_input",
-            "description" : "The FASTQ files to be analyzed for VDJ-T-GD. FASTQ files should conform to\nthe naming conventions of bcl2fastq and mkfastq:\n`[Sample Name]_S[Sample Index]_L00[Lane Number]_[Read Type]_001.fastq.gz`\n",
+            "description" : "The FASTQ files to be analyzed for VDJ-T-GD. FASTQ files should conform to the naming conventions of bcl2fastq and mkfastq:\n`[Sample Name]_S[Sample Index]_L00[Lane Number]_[Read Type]_001.fastq.gz`\n",
             "example" : [
               "mysample_S1_L001_R1_001.fastq.gz",
               "mysample_S1_L001_R2_001.fastq.gz"
@@ -2998,7 +3058,7 @@ meta = [
           {
             "type" : "file",
             "name" : "--vdj_b_input",
-            "description" : "The FASTQ files to be analyzed for VDJ-B. FASTQ files should conform to\nthe naming conventions of bcl2fastq and mkfastq:\n`[Sample Name]_S[Sample Index]_L00[Lane Number]_[Read Type]_001.fastq.gz`\n",
+            "description" : "The FASTQ files to be analyzed for VDJ-B. FASTQ files should conform to the naming conventions of bcl2fastq and mkfastq:\n`[Sample Name]_S[Sample Index]_L00[Lane Number]_[Read Type]_001.fastq.gz`\n",
             "example" : [
               "mysample_S1_L001_R1_001.fastq.gz",
               "mysample_S1_L001_R2_001.fastq.gz"
@@ -3014,7 +3074,7 @@ meta = [
           {
             "type" : "file",
             "name" : "--agc_input",
-            "description" : "The FASTQ files to be analyzed for Antigen Capture. FASTQ files should conform to\nthe naming conventions of bcl2fastq and mkfastq:\n`[Sample Name]_S[Sample Index]_L00[Lane Number]_[Read Type]_001.fastq.gz`\n",
+            "description" : "The FASTQ files to be analyzed for Antigen Capture. FASTQ files should conform to the naming conventions of bcl2fastq and mkfastq:\n`[Sample Name]_S[Sample Index]_L00[Lane Number]_[Read Type]_001.fastq.gz`\n",
             "example" : [
               "mysample_S1_L001_R1_001.fastq.gz",
               "mysample_S1_L001_R2_001.fastq.gz"
@@ -3035,7 +3095,7 @@ meta = [
           {
             "type" : "string",
             "name" : "--library_id",
-            "description" : "The Illumina sample name to analyze. This must exactly match the 'Sample Name'part\nof the FASTQ files specified in the `--input` argument.\n",
+            "description" : "The Illumina sample name to analyze. This must exactly match the 'Sample Name' part of the FASTQ files specified in the `--input` argument.",
             "example" : [
               "mysample1"
             ],
@@ -3048,23 +3108,11 @@ meta = [
           {
             "type" : "string",
             "name" : "--library_type",
-            "description" : "The underlying feature type of the library.\n",
+            "description" : "The underlying feature type of the library.\nPossible values: \\"Gene Expression\\", \\"VDJ\\", \\"VDJ-T\\", \\"VDJ-B\\", \\"Antibody Capture\\", \\"CRISPR Guide Capture\\", \\"Multiplexing Capture\\"\n",
             "example" : [
               "Gene Expression"
             ],
             "required" : false,
-            "choices" : [
-              "Gene Expression",
-              "VDJ",
-              "VDJ-T",
-              "VDJ-B",
-              "VDJ-T-GD",
-              "Antibody Capture",
-              "CRISPR Guide Capture",
-              "Multiplexing Capture",
-              "Antigen Capture",
-              "Custom"
-            ],
             "direction" : "input",
             "multiple" : true,
             "multiple_sep" : ";",
@@ -3073,7 +3121,7 @@ meta = [
           {
             "type" : "string",
             "name" : "--library_subsample",
-            "description" : "The rate at which reads from the provided FASTQ files are sampled.\nMust be strictly greater than 0 and less than or equal to 1.\n",
+            "description" : "Optional. The rate at which reads from the provided FASTQ files are sampled. Must be strictly greater than 0 and less than or equal to 1.",
             "example" : [
               "0.5"
             ],
@@ -3095,113 +3143,6 @@ meta = [
             "multiple" : true,
             "multiple_sep" : ";",
             "dest" : "par"
-          },
-          {
-            "type" : "string",
-            "name" : "--library_chemistry",
-            "description" : "Only applicable to FRP. Library-specific assay configuration. By default,\nthe assay configuration is detected automatically. Typically, users will\nnot need to specify a chemistry.\n",
-            "required" : false,
-            "direction" : "input",
-            "multiple" : false,
-            "multiple_sep" : ":",
-            "dest" : "par"
-          }
-        ]
-      },
-      {
-        "name" : "Sample parameters",
-        "arguments" : [
-          {
-            "type" : "string",
-            "name" : "--sample_ids",
-            "alternatives" : [
-              "--cell_multiplex_sample_id"
-            ],
-            "description" : "A name to identify a multiplexed sample. Must be alphanumeric with hyphens and/or underscores,\nand less than 64 characters. Required for Cell Multiplexing libraries.\n",
-            "required" : false,
-            "direction" : "input",
-            "multiple" : true,
-            "multiple_sep" : ";",
-            "dest" : "par"
-          },
-          {
-            "type" : "string",
-            "name" : "--sample_description",
-            "alternatives" : [
-              "--cell_multiplex_description"
-            ],
-            "description" : "A description for the sample.",
-            "required" : false,
-            "direction" : "input",
-            "multiple" : true,
-            "multiple_sep" : ";",
-            "dest" : "par"
-          },
-          {
-            "type" : "integer",
-            "name" : "--sample_expect_cells",
-            "description" : "Expected number of recovered cells, used as input to cell calling algorithm.\n",
-            "example" : [
-              3000
-            ],
-            "required" : false,
-            "direction" : "input",
-            "multiple" : true,
-            "multiple_sep" : ";",
-            "dest" : "par"
-          },
-          {
-            "type" : "integer",
-            "name" : "--sample_force_cells",
-            "description" : "Force pipeline to use this number of cells, bypassing cell detection.\n",
-            "example" : [
-              3000
-            ],
-            "required" : false,
-            "direction" : "input",
-            "multiple" : true,
-            "multiple_sep" : ";",
-            "dest" : "par"
-          }
-        ]
-      },
-      {
-        "name" : "Feature Barcode library specific arguments",
-        "arguments" : [
-          {
-            "type" : "file",
-            "name" : "--feature_reference",
-            "description" : "Path to the Feature reference CSV file, declaring Feature Barcode constructs and associated barcodes.\nRequired only for Antibody Capture or CRISPR Guide Capture libraries.\nSee https://support.10xgenomics.com/single-cell-gene-expression/software/pipelines/latest/using/feature-bc-analysis#feature-ref for more information.\\"\n",
-            "example" : [
-              "feature_reference.csv"
-            ],
-            "must_exist" : true,
-            "create_parent" : true,
-            "required" : false,
-            "direction" : "input",
-            "multiple" : false,
-            "multiple_sep" : ":",
-            "dest" : "par"
-          },
-          {
-            "type" : "integer",
-            "name" : "--feature_r1_length",
-            "description" : "Limit the length of the input Read 1 sequence of V(D)J libraries to the first N bases,\nwhere N is the user-supplied value. Note that the length includes the Barcode and UMI\nsequences so do not set this below 26.\n",
-            "required" : false,
-            "direction" : "input",
-            "multiple" : false,
-            "multiple_sep" : ":",
-            "dest" : "par"
-          },
-          {
-            "type" : "integer",
-            "name" : "--feature_r2_length",
-            "description" : "Limit the length of the input Read 2 sequence of V(D)J libraries to the first N bases,\nwhere N is a user-supplied value. Trimming occurs before sequencing metrics are computed\nand therefore, limiting the length of Read 2 may affect Q30 scores.\n",
-            "required" : false,
-            "direction" : "input",
-            "multiple" : false,
-            "multiple_sep" : ":",
-            "dest" : "par"
           }
         ]
       },
@@ -3210,15 +3151,39 @@ meta = [
         "description" : "Arguments relevant to the analysis of gene expression data.",
         "arguments" : [
           {
-            "type" : "file",
-            "name" : "--gex_reference",
-            "description" : "Genome refence index built by Cell Ranger mkref.",
+            "type" : "integer",
+            "name" : "--gex_expect_cells",
+            "description" : "Expected number of recovered cells, used as input to cell calling algorithm.",
             "example" : [
-              "reference_genome.tar.gz"
+              3000
             ],
-            "must_exist" : true,
-            "create_parent" : true,
-            "required" : true,
+            "required" : false,
+            "direction" : "input",
+            "multiple" : false,
+            "multiple_sep" : ":",
+            "dest" : "par"
+          },
+          {
+            "type" : "string",
+            "name" : "--gex_chemistry",
+            "description" : "Assay configuration.\n- auto: autodetect mode\n- threeprime: Single Cell 3'\n- fiveprime: Single Cell 5'\n- SC3Pv1: Single Cell 3' v1\n- SC3Pv2: Single Cell 3' v2\n- SC3Pv3: Single Cell 3' v3\n- SC3Pv3LT: Single Cell 3' v3 LT\n- SC3Pv3HT: Single Cell 3' v3 HT\n- SC5P-PE: Single Cell 5' paired-end\n- SC5P-R2: Single Cell 5' R2-only\n- SC-FB: Single Cell Antibody-only 3' v2 or 5'\nSee https://kb.10xgenomics.com/hc/en-us/articles/115003764132-How-does-Cell-Ranger-auto-detect-chemistry- for more information.\n",
+            "default" : [
+              "auto"
+            ],
+            "required" : false,
+            "choices" : [
+              "auto",
+              "threeprime",
+              "fiveprime",
+              "SC3Pv1",
+              "SC3Pv2",
+              "SC3Pv3",
+              "SC3Pv3LT",
+              "SC3Pv3HT",
+              "SC5P-PE",
+              "SC5P-R2",
+              "SC-FB"
+            ],
             "direction" : "input",
             "multiple" : false,
             "multiple_sep" : ":",
@@ -3251,151 +3216,12 @@ meta = [
             "dest" : "par"
           },
           {
-            "type" : "integer",
-            "name" : "--gex_expect_cells",
-            "description" : "Expected number of recovered cells, used as input to cell calling algorithm.\n",
-            "example" : [
-              3000
-            ],
-            "required" : false,
-            "direction" : "input",
-            "multiple" : true,
-            "multiple_sep" : ";",
-            "dest" : "par"
-          },
-          {
-            "type" : "integer",
-            "name" : "--gex_force_cells",
-            "description" : "Force pipeline to use this number of cells, bypassing cell detection.\n",
-            "example" : [
-              3000
-            ],
-            "required" : false,
-            "direction" : "input",
-            "multiple" : true,
-            "multiple_sep" : ";",
-            "dest" : "par"
-          },
-          {
             "type" : "boolean",
             "name" : "--gex_include_introns",
-            "description" : "Whether or not to include intronic reads in counts.\nThis option does not apply to Fixed RNA Profiling analysis.\n",
+            "description" : "Include intronic reads in count (default=true unless --target-panel is specified in which case default=false)",
             "default" : [
               true
             ],
-            "required" : false,
-            "direction" : "input",
-            "multiple" : false,
-            "multiple_sep" : ":",
-            "dest" : "par"
-          },
-          {
-            "type" : "integer",
-            "name" : "--gex_r1_length",
-            "description" : "Limit the length of the input Read 1 sequence of V(D)J libraries to the first N bases,\nwhere N is the user-supplied value. Note that the length includes the Barcode and UMI\nsequences so do not set this below 26.\n",
-            "required" : false,
-            "direction" : "input",
-            "multiple" : false,
-            "multiple_sep" : ":",
-            "dest" : "par"
-          },
-          {
-            "type" : "integer",
-            "name" : "--gex_r2_length",
-            "description" : "Limit the length of the input Read 2 sequence of V(D)J libraries to the first N bases,\nwhere N is a user-supplied value. Trimming occurs before sequencing metrics are computed\nand therefore, limiting the length of Read 2 may affect Q30 scores.\n",
-            "required" : false,
-            "direction" : "input",
-            "multiple" : false,
-            "multiple_sep" : ":",
-            "dest" : "par"
-          },
-          {
-            "type" : "string",
-            "name" : "--gex_chemistry",
-            "description" : "Assay configuration. Either specify a single value which will be applied to all libraries,\nor a number of values that is equal to the number of libararies. The latter is only applicable\nto only applicable to Fixed RNA Profiling.\n  - auto: Chemistry autodetection (default)\n  - threeprime: Single Cell 3'\n  - SC3Pv1, SC3Pv2, SC3Pv3, SC3Pv4: Single Cell 3' v1, v2, v3, or v4\n  - SC3Pv3HT: Single Cell 3' v3.1 HT\n  - SC-FB: Single Cell Antibody-only 3' v2 or 5'\n  - fiveprime: Single Cell 5'\n  - SC5P-PE: Paired-end Single Cell 5'\n  - SC5P-R2: R2-only Single Cell 5'\n  - SC5P-R2-v3: R2-only Single Cell 5' v3\n  - SC5PHT : Single Cell 5' v2 HT\n  - SFRP: Fixed RNA Profiling (Singleplex)\n  - MFRP: Fixed RNA Profiling (Multiplex, Probe Barcode on R2)\n  - MFRP-R1: Fixed RNA Profiling (Multiplex, Probe Barcode on R1)\n  - MFRP-RNA: Fixed RNA Profiling (Multiplex, RNA, Probe Barcode on R2)\n  - MFRP-Ab: Fixed RNA Profiling (Multiplex, Antibody, Probe Barcode at R2:69)\n  - MFRP-Ab-R2pos50: Fixed RNA Profiling (Multiplex, Antibody, Probe Barcode at R2:50)\n  - MFRP-RNA-R1: Fixed RNA Profiling (Multiplex, RNA, Probe Barcode on R1)\n  - MFRP-Ab-R1: Fixed RNA Profiling (Multiplex, Antibody, Probe Barcode on R1)\n  - ARC-v1 for analyzing the Gene Expression portion of Multiome data. If Cell Ranger auto-detects ARC-v1 chemistry, an error is triggered.\nSee https://kb.10xgenomics.com/hc/en-us/articles/115003764132-How-does-Cell-Ranger-auto-detect-chemistry- for more information.\n",
-            "default" : [
-              "auto"
-            ],
-            "required" : false,
-            "choices" : [
-              "auto",
-              "threeprime",
-              "fiveprime",
-              "SC3Pv1",
-              "SC3Pv2",
-              "SC3Pv3",
-              "SC3Pv4",
-              "SC3Pv3LT",
-              "SC3Pv3HT",
-              "SC5P-PE",
-              "SC5P-R2",
-              "SC-FB",
-              "SC5P-R2-v3",
-              "SC5PHT",
-              "MFRP",
-              "MFRP-R1",
-              "MFRP-RNA",
-              "MFRP-Ab",
-              "SFRP",
-              "MFRP-Ab-R2pos50",
-              "MFRP-RNA-R1",
-              "MFRP-Ab-R1",
-              "ARC-v1"
-            ],
-            "direction" : "input",
-            "multiple" : false,
-            "multiple_sep" : ":",
-            "dest" : "par"
-          }
-        ]
-      },
-      {
-        "name" : "VDJ related parameters",
-        "arguments" : [
-          {
-            "type" : "file",
-            "name" : "--vdj_reference",
-            "description" : "VDJ refence index built by Cell Ranger mkref.",
-            "example" : [
-              "reference_vdj.tar.gz"
-            ],
-            "must_exist" : true,
-            "create_parent" : true,
-            "required" : false,
-            "direction" : "input",
-            "multiple" : false,
-            "multiple_sep" : ":",
-            "dest" : "par"
-          },
-          {
-            "type" : "file",
-            "name" : "--vdj_inner_enrichment_primers",
-            "description" : "V(D)J Immune Profiling libraries: if inner enrichment primers other than those provided \nin the 10x Genomics kits are used, they need to be specified here as a\ntext file with one primer per line.\n",
-            "example" : [
-              "enrichment_primers.txt"
-            ],
-            "must_exist" : true,
-            "create_parent" : true,
-            "required" : false,
-            "direction" : "input",
-            "multiple" : false,
-            "multiple_sep" : ":",
-            "dest" : "par"
-          },
-          {
-            "type" : "integer",
-            "name" : "--vdj_r1_length",
-            "description" : "Limit the length of the input Read 1 sequence of V(D)J libraries to the first N bases, where N is the user-supplied value.\nNote that the length includes the Barcode and UMI sequences so do not set this below 26.\n",
-            "required" : false,
-            "direction" : "input",
-            "multiple" : false,
-            "multiple_sep" : ":",
-            "dest" : "par"
-          },
-          {
-            "type" : "integer",
-            "name" : "--vdj_r2_length",
-            "description" : "Limit the length of the input Read 2 sequence of V(D)J libraries to the first N bases, where N is a user-supplied value. \nTrimming occurs before sequencing metrics are computed and therefore, limiting the length of Read 2 may affect Q30 scores\n",
             "required" : false,
             "direction" : "input",
             "multiple" : false,
@@ -3406,72 +3232,22 @@ meta = [
       },
       {
         "name" : "Cell multiplexing parameters",
+        "description" : "Arguments related to cell multiplexing.",
         "arguments" : [
+          {
+            "type" : "string",
+            "name" : "--cell_multiplex_sample_id",
+            "description" : "A name to identify a multiplexed sample. Must be alphanumeric with hyphens and/or underscores, and less than 64 characters. Required for Cell Multiplexing libraries.",
+            "required" : false,
+            "direction" : "input",
+            "multiple" : false,
+            "multiple_sep" : ":",
+            "dest" : "par"
+          },
           {
             "type" : "string",
             "name" : "--cell_multiplex_oligo_ids",
-            "description" : "The Cell Multiplexing oligo IDs used to multiplex this sample. If multiple CMOs were used for a sample,\nseparate IDs with a pipe (e.g., CMO301|CMO302). Required for Cell Multiplexing libraries.\n",
-            "required" : false,
-            "direction" : "input",
-            "multiple" : true,
-            "multiple_sep" : ";",
-            "dest" : "par"
-          },
-          {
-            "type" : "double",
-            "name" : "--min_assignment_confidence",
-            "description" : "The minimum estimated likelihood to call a sample as tagged with a Cell Multiplexing Oligo (CMO) instead of \\"Unassigned\\".\nUsers may wish to tolerate a higher rate of mis-assignment in order to obtain more singlets to include in their analysis,\nor a lower rate of mis-assignment at the cost of obtaining fewer singlets.\n",
-            "required" : false,
-            "direction" : "input",
-            "multiple" : false,
-            "multiple_sep" : ":",
-            "dest" : "par"
-          },
-          {
-            "type" : "file",
-            "name" : "--cmo_set",
-            "description" : "Path to a custom CMO set CSV file, declaring CMO constructs and associated barcodes. If the default CMO reference IDs that are built into\nthe Cell Ranger software are required, this option does not need to be used.\n",
-            "must_exist" : true,
-            "create_parent" : true,
-            "required" : false,
-            "direction" : "input",
-            "multiple" : false,
-            "multiple_sep" : ":",
-            "dest" : "par"
-          },
-          {
-            "type" : "file",
-            "name" : "--barcode_sample_assignment",
-            "description" : "Path to a barcode-sample assignment CSV file that specifies the barcodes that belong to each sample.\n",
-            "must_exist" : true,
-            "create_parent" : true,
-            "required" : false,
-            "direction" : "input",
-            "multiple" : false,
-            "multiple_sep" : ":",
-            "dest" : "par"
-          }
-        ]
-      },
-      {
-        "name" : "Fixed RNA profiling paramaters",
-        "arguments" : [
-          {
-            "type" : "file",
-            "name" : "--probe_set",
-            "description" : "A probe set reference CSV file. It specifies the sequences used as a reference for probe alignment and the gene ID associated with each probe.\nIt must include 4 columns (probe file format 1.0.0): gene_id,probe_seq,probe_id,included,region and an optional 5th column (probe file format 1.0.1).\n- gene_id: The Ensembl gene identifier targeted by the probe.\n- probe_seq: The nucleotide sequence of the probe, which is complementary to the transcript sequence.\n- probe_id: The probe identifier, whose format is described in Probe identifiers.\n- included: A TRUE or FALSE flag specifying whether the probe is included in the filtered counts matrix output or excluded by the probe filter. \n            See filter-probes option of cellranger multi. All probes of a gene must be marked TRUE in the included column for that gene to be included.\n- region: Present only in v1.0.1 probe set reference CSV. The gene boundary targeted by the probe. Accepted values are spliced or unspliced.\n\nThe file also contains a number of required metadata fields in the header in the format #key=value:\n- panel_name: The name of the probe set.\n- panel_type: Always predesigned for predesigned probe sets.\n- reference_genome: The reference genome build used for probe design.\n- reference_version: The version of the Cell Ranger reference transcriptome used for probe design.\n- probe_set_file_format: The version of the probe set file format specification that this file conforms to.\n",
-            "must_exist" : true,
-            "create_parent" : true,
-            "required" : false,
-            "direction" : "input",
-            "multiple" : false,
-            "multiple_sep" : ":",
-            "dest" : "par"
-          },
-          {
-            "type" : "boolean",
-            "name" : "--filter_probes",
-            "description" : "If 'false', include all non-deprecated probes listed in the probe set reference CSV file.\nIf 'true' or not set, probes that are predicted to have off-target activity to homologous genes are excluded from analysis.\nNot filtering will result in UMI counts from all non-deprecated probes,\nincluding those with predicted off-target activity, to be used in the analysis.\nProbes whose ID is prefixed with DEPRECATED are always excluded from the analysis.\n",
+            "description" : "The Cell Multiplexing oligo IDs used to multiplex this sample. If multiple CMOs were used for a sample, separate IDs with a pipe (e.g., CMO301|CMO302). Required for Cell Multiplexing libraries.",
             "required" : false,
             "direction" : "input",
             "multiple" : false,
@@ -3480,38 +3256,12 @@ meta = [
           },
           {
             "type" : "string",
-            "name" : "--probe_barcode_ids",
-            "description" : "The Fixed RNA Probe Barcode ID used for this sample, and for multiplex GEX + Antibody Capture libraries,\nthe corresponding Antibody Multiplexing Barcode IDs. 10x recommends specifying both barcodes (e.g., BC001+AB001)\nwhen an Antibody Capture library is present. The barcode pair order is BC+AB and they\nare separated with a \\"+\\" (no spaces). Alternatively, you can specify the Probe Barcode ID alone and\nCell Ranger's barcode pairing auto-detection algorithm will automatically match to the corresponding Antibody\nMultiplexing Barcode.\n",
+            "name" : "--cell_multiplex_description",
+            "description" : "A description for the sample.",
             "required" : false,
             "direction" : "input",
-            "multiple" : true,
-            "multiple_sep" : ";",
-            "dest" : "par"
-          }
-        ]
-      },
-      {
-        "name" : "Antigen Capture (BEAM) libary arguments",
-        "description" : "These arguments are recommended if an Antigen Capture (BEAM) library is present. \nIt is needed to calculate the antigen specificity score.\n",
-        "arguments" : [
-          {
-            "type" : "string",
-            "name" : "--control_id",
-            "description" : "A user-defined ID for any negative controls used in the T/BCR Antigen Capture assay. Must match id specified in the feature reference CSV.\nMay only include ASCII characters and must not use whitespace, slash, quote, or comma characters. \nEach ID must be unique and must not collide with a gene identifier from the transcriptome.\n",
-            "required" : false,
-            "direction" : "input",
-            "multiple" : true,
-            "multiple_sep" : ";",
-            "dest" : "par"
-          },
-          {
-            "type" : "string",
-            "name" : "--mhc_allele",
-            "description" : "The MHC allele for TCR Antigen Capture libraries. Must match mhc_allele name specified in the Feature Reference CSV.\n",
-            "required" : false,
-            "direction" : "input",
-            "multiple" : true,
-            "multiple_sep" : ";",
+            "multiple" : false,
+            "multiple_sep" : ":",
             "dest" : "par"
           }
         ]
@@ -3543,13 +3293,6 @@ meta = [
             "type" : "boolean_true",
             "name" : "--dryrun",
             "description" : "If true, the output directory will only contain the CWL input files, but the pipeline itself will not be executed.",
-            "direction" : "input",
-            "dest" : "par"
-          },
-          {
-            "type" : "boolean_true",
-            "name" : "--disable_library_compatibility_check",
-            "description" : "Disable the check that evaluates 10x Barcode overlap between libraries when multiple libraries are specified \n(e.g., Gene Expression + Antibody Capture). Setting this option will disable the check across all library combinations\n",
             "direction" : "input",
             "dest" : "par"
           }
@@ -3596,23 +3339,6 @@ meta = [
       },
       {
         "type" : "file",
-        "path" : "resources_test/10x_5k_beam/raw/",
-        "dest" : "10x_5k_beam/raw/",
-        "parent" : "file:///home/runner/work/openpipeline/openpipeline/"
-      },
-      {
-        "type" : "file",
-        "path" : "resources_test/10x_5k_fixed/raw/",
-        "dest" : "10x_5k_fixed/raw",
-        "parent" : "file:///home/runner/work/openpipeline/openpipeline/"
-      },
-      {
-        "type" : "file",
-        "path" : "resources_test/10x_5k_beam/raw/",
-        "parent" : "file:///home/runner/work/openpipeline/openpipeline/"
-      },
-      {
-        "type" : "file",
         "path" : "resources_test/reference_gencodev41_chr1",
         "parent" : "file:///home/runner/work/openpipeline/openpipeline/"
       },
@@ -3634,7 +3360,7 @@ meta = [
     {
       "type" : "docker",
       "id" : "docker",
-      "image" : "ghcr.io/data-intuitive/cellranger:8.0",
+      "image" : "ghcr.io/data-intuitive/cellranger:7.0",
       "target_organization" : "openpipelines-bio",
       "target_registry" : "ghcr.io",
       "target_tag" : "integration_build",
@@ -3747,7 +3473,7 @@ meta = [
     "platform" : "nextflow",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/mapping/cellranger_multi",
     "viash_version" : "0.8.5",
-    "git_commit" : "83706f18507e17354c7ad509592c916915271112",
+    "git_commit" : "28c4dae4756794a67bc4eb00647f16830039b459",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))
@@ -3780,6 +3506,10 @@ from itertools import chain
 # The following code has been auto-generated by Viash.
 par = {
   'input': $( if [ ! -z ${VIASH_PAR_INPUT+x} ]; then echo "r'${VIASH_PAR_INPUT//\\'/\\'\\"\\'\\"r\\'}'.split(';')"; else echo None; fi ),
+  'gex_reference': $( if [ ! -z ${VIASH_PAR_GEX_REFERENCE+x} ]; then echo "r'${VIASH_PAR_GEX_REFERENCE//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
+  'vdj_reference': $( if [ ! -z ${VIASH_PAR_VDJ_REFERENCE+x} ]; then echo "r'${VIASH_PAR_VDJ_REFERENCE//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
+  'vdj_inner_enrichment_primers': $( if [ ! -z ${VIASH_PAR_VDJ_INNER_ENRICHMENT_PRIMERS+x} ]; then echo "r'${VIASH_PAR_VDJ_INNER_ENRICHMENT_PRIMERS//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
+  'feature_reference': $( if [ ! -z ${VIASH_PAR_FEATURE_REFERENCE+x} ]; then echo "r'${VIASH_PAR_FEATURE_REFERENCE//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'gex_input': $( if [ ! -z ${VIASH_PAR_GEX_INPUT+x} ]; then echo "r'${VIASH_PAR_GEX_INPUT//\\'/\\'\\"\\'\\"r\\'}'.split(';')"; else echo None; fi ),
   'abc_input': $( if [ ! -z ${VIASH_PAR_ABC_INPUT+x} ]; then echo "r'${VIASH_PAR_ABC_INPUT//\\'/\\'\\"\\'\\"r\\'}'.split(';')"; else echo None; fi ),
   'cgc_input': $( if [ ! -z ${VIASH_PAR_CGC_INPUT+x} ]; then echo "r'${VIASH_PAR_CGC_INPUT//\\'/\\'\\"\\'\\"r\\'}'.split(';')"; else echo None; fi ),
@@ -3793,39 +3523,16 @@ par = {
   'library_type': $( if [ ! -z ${VIASH_PAR_LIBRARY_TYPE+x} ]; then echo "r'${VIASH_PAR_LIBRARY_TYPE//\\'/\\'\\"\\'\\"r\\'}'.split(';')"; else echo None; fi ),
   'library_subsample': $( if [ ! -z ${VIASH_PAR_LIBRARY_SUBSAMPLE+x} ]; then echo "r'${VIASH_PAR_LIBRARY_SUBSAMPLE//\\'/\\'\\"\\'\\"r\\'}'.split(';')"; else echo None; fi ),
   'library_lanes': $( if [ ! -z ${VIASH_PAR_LIBRARY_LANES+x} ]; then echo "r'${VIASH_PAR_LIBRARY_LANES//\\'/\\'\\"\\'\\"r\\'}'.split(';')"; else echo None; fi ),
-  'library_chemistry': $( if [ ! -z ${VIASH_PAR_LIBRARY_CHEMISTRY+x} ]; then echo "r'${VIASH_PAR_LIBRARY_CHEMISTRY//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
-  'sample_ids': $( if [ ! -z ${VIASH_PAR_SAMPLE_IDS+x} ]; then echo "r'${VIASH_PAR_SAMPLE_IDS//\\'/\\'\\"\\'\\"r\\'}'.split(';')"; else echo None; fi ),
-  'sample_description': $( if [ ! -z ${VIASH_PAR_SAMPLE_DESCRIPTION+x} ]; then echo "r'${VIASH_PAR_SAMPLE_DESCRIPTION//\\'/\\'\\"\\'\\"r\\'}'.split(';')"; else echo None; fi ),
-  'sample_expect_cells': $( if [ ! -z ${VIASH_PAR_SAMPLE_EXPECT_CELLS+x} ]; then echo "list(map(int, r'${VIASH_PAR_SAMPLE_EXPECT_CELLS//\\'/\\'\\"\\'\\"r\\'}'.split(';')))"; else echo None; fi ),
-  'sample_force_cells': $( if [ ! -z ${VIASH_PAR_SAMPLE_FORCE_CELLS+x} ]; then echo "list(map(int, r'${VIASH_PAR_SAMPLE_FORCE_CELLS//\\'/\\'\\"\\'\\"r\\'}'.split(';')))"; else echo None; fi ),
-  'feature_reference': $( if [ ! -z ${VIASH_PAR_FEATURE_REFERENCE+x} ]; then echo "r'${VIASH_PAR_FEATURE_REFERENCE//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
-  'feature_r1_length': $( if [ ! -z ${VIASH_PAR_FEATURE_R1_LENGTH+x} ]; then echo "int(r'${VIASH_PAR_FEATURE_R1_LENGTH//\\'/\\'\\"\\'\\"r\\'}')"; else echo None; fi ),
-  'feature_r2_length': $( if [ ! -z ${VIASH_PAR_FEATURE_R2_LENGTH+x} ]; then echo "int(r'${VIASH_PAR_FEATURE_R2_LENGTH//\\'/\\'\\"\\'\\"r\\'}')"; else echo None; fi ),
-  'gex_reference': $( if [ ! -z ${VIASH_PAR_GEX_REFERENCE+x} ]; then echo "r'${VIASH_PAR_GEX_REFERENCE//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
+  'gex_expect_cells': $( if [ ! -z ${VIASH_PAR_GEX_EXPECT_CELLS+x} ]; then echo "int(r'${VIASH_PAR_GEX_EXPECT_CELLS//\\'/\\'\\"\\'\\"r\\'}')"; else echo None; fi ),
+  'gex_chemistry': $( if [ ! -z ${VIASH_PAR_GEX_CHEMISTRY+x} ]; then echo "r'${VIASH_PAR_GEX_CHEMISTRY//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'gex_secondary_analysis': $( if [ ! -z ${VIASH_PAR_GEX_SECONDARY_ANALYSIS+x} ]; then echo "r'${VIASH_PAR_GEX_SECONDARY_ANALYSIS//\\'/\\'\\"\\'\\"r\\'}'.lower() == 'true'"; else echo None; fi ),
   'gex_generate_bam': $( if [ ! -z ${VIASH_PAR_GEX_GENERATE_BAM+x} ]; then echo "r'${VIASH_PAR_GEX_GENERATE_BAM//\\'/\\'\\"\\'\\"r\\'}'.lower() == 'true'"; else echo None; fi ),
-  'gex_expect_cells': $( if [ ! -z ${VIASH_PAR_GEX_EXPECT_CELLS+x} ]; then echo "list(map(int, r'${VIASH_PAR_GEX_EXPECT_CELLS//\\'/\\'\\"\\'\\"r\\'}'.split(';')))"; else echo None; fi ),
-  'gex_force_cells': $( if [ ! -z ${VIASH_PAR_GEX_FORCE_CELLS+x} ]; then echo "list(map(int, r'${VIASH_PAR_GEX_FORCE_CELLS//\\'/\\'\\"\\'\\"r\\'}'.split(';')))"; else echo None; fi ),
   'gex_include_introns': $( if [ ! -z ${VIASH_PAR_GEX_INCLUDE_INTRONS+x} ]; then echo "r'${VIASH_PAR_GEX_INCLUDE_INTRONS//\\'/\\'\\"\\'\\"r\\'}'.lower() == 'true'"; else echo None; fi ),
-  'gex_r1_length': $( if [ ! -z ${VIASH_PAR_GEX_R1_LENGTH+x} ]; then echo "int(r'${VIASH_PAR_GEX_R1_LENGTH//\\'/\\'\\"\\'\\"r\\'}')"; else echo None; fi ),
-  'gex_r2_length': $( if [ ! -z ${VIASH_PAR_GEX_R2_LENGTH+x} ]; then echo "int(r'${VIASH_PAR_GEX_R2_LENGTH//\\'/\\'\\"\\'\\"r\\'}')"; else echo None; fi ),
-  'gex_chemistry': $( if [ ! -z ${VIASH_PAR_GEX_CHEMISTRY+x} ]; then echo "r'${VIASH_PAR_GEX_CHEMISTRY//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
-  'vdj_reference': $( if [ ! -z ${VIASH_PAR_VDJ_REFERENCE+x} ]; then echo "r'${VIASH_PAR_VDJ_REFERENCE//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
-  'vdj_inner_enrichment_primers': $( if [ ! -z ${VIASH_PAR_VDJ_INNER_ENRICHMENT_PRIMERS+x} ]; then echo "r'${VIASH_PAR_VDJ_INNER_ENRICHMENT_PRIMERS//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
-  'vdj_r1_length': $( if [ ! -z ${VIASH_PAR_VDJ_R1_LENGTH+x} ]; then echo "int(r'${VIASH_PAR_VDJ_R1_LENGTH//\\'/\\'\\"\\'\\"r\\'}')"; else echo None; fi ),
-  'vdj_r2_length': $( if [ ! -z ${VIASH_PAR_VDJ_R2_LENGTH+x} ]; then echo "int(r'${VIASH_PAR_VDJ_R2_LENGTH//\\'/\\'\\"\\'\\"r\\'}')"; else echo None; fi ),
-  'cell_multiplex_oligo_ids': $( if [ ! -z ${VIASH_PAR_CELL_MULTIPLEX_OLIGO_IDS+x} ]; then echo "r'${VIASH_PAR_CELL_MULTIPLEX_OLIGO_IDS//\\'/\\'\\"\\'\\"r\\'}'.split(';')"; else echo None; fi ),
-  'min_assignment_confidence': $( if [ ! -z ${VIASH_PAR_MIN_ASSIGNMENT_CONFIDENCE+x} ]; then echo "float(r'${VIASH_PAR_MIN_ASSIGNMENT_CONFIDENCE//\\'/\\'\\"\\'\\"r\\'}')"; else echo None; fi ),
-  'cmo_set': $( if [ ! -z ${VIASH_PAR_CMO_SET+x} ]; then echo "r'${VIASH_PAR_CMO_SET//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
-  'barcode_sample_assignment': $( if [ ! -z ${VIASH_PAR_BARCODE_SAMPLE_ASSIGNMENT+x} ]; then echo "r'${VIASH_PAR_BARCODE_SAMPLE_ASSIGNMENT//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
-  'probe_set': $( if [ ! -z ${VIASH_PAR_PROBE_SET+x} ]; then echo "r'${VIASH_PAR_PROBE_SET//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
-  'filter_probes': $( if [ ! -z ${VIASH_PAR_FILTER_PROBES+x} ]; then echo "r'${VIASH_PAR_FILTER_PROBES//\\'/\\'\\"\\'\\"r\\'}'.lower() == 'true'"; else echo None; fi ),
-  'probe_barcode_ids': $( if [ ! -z ${VIASH_PAR_PROBE_BARCODE_IDS+x} ]; then echo "r'${VIASH_PAR_PROBE_BARCODE_IDS//\\'/\\'\\"\\'\\"r\\'}'.split(';')"; else echo None; fi ),
-  'control_id': $( if [ ! -z ${VIASH_PAR_CONTROL_ID+x} ]; then echo "r'${VIASH_PAR_CONTROL_ID//\\'/\\'\\"\\'\\"r\\'}'.split(';')"; else echo None; fi ),
-  'mhc_allele': $( if [ ! -z ${VIASH_PAR_MHC_ALLELE+x} ]; then echo "r'${VIASH_PAR_MHC_ALLELE//\\'/\\'\\"\\'\\"r\\'}'.split(';')"; else echo None; fi ),
+  'cell_multiplex_sample_id': $( if [ ! -z ${VIASH_PAR_CELL_MULTIPLEX_SAMPLE_ID+x} ]; then echo "r'${VIASH_PAR_CELL_MULTIPLEX_SAMPLE_ID//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
+  'cell_multiplex_oligo_ids': $( if [ ! -z ${VIASH_PAR_CELL_MULTIPLEX_OLIGO_IDS+x} ]; then echo "r'${VIASH_PAR_CELL_MULTIPLEX_OLIGO_IDS//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
+  'cell_multiplex_description': $( if [ ! -z ${VIASH_PAR_CELL_MULTIPLEX_DESCRIPTION+x} ]; then echo "r'${VIASH_PAR_CELL_MULTIPLEX_DESCRIPTION//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'output': $( if [ ! -z ${VIASH_PAR_OUTPUT+x} ]; then echo "r'${VIASH_PAR_OUTPUT//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
-  'dryrun': $( if [ ! -z ${VIASH_PAR_DRYRUN+x} ]; then echo "r'${VIASH_PAR_DRYRUN//\\'/\\'\\"\\'\\"r\\'}'.lower() == 'true'"; else echo None; fi ),
-  'disable_library_compatibility_check': $( if [ ! -z ${VIASH_PAR_DISABLE_LIBRARY_COMPATIBILITY_CHECK+x} ]; then echo "r'${VIASH_PAR_DISABLE_LIBRARY_COMPATIBILITY_CHECK//\\'/\\'\\"\\'\\"r\\'}'.lower() == 'true'"; else echo None; fi )
+  'dryrun': $( if [ ! -z ${VIASH_PAR_DRYRUN+x} ]; then echo "r'${VIASH_PAR_DRYRUN//\\'/\\'\\"\\'\\"r\\'}'.lower() == 'true'"; else echo None; fi )
 }
 meta = {
   'functionality_name': $( if [ ! -z ${VIASH_META_FUNCTIONALITY_NAME+x} ]; then echo "r'${VIASH_META_FUNCTIONALITY_NAME//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
@@ -3866,85 +3573,43 @@ def setup_logger():
 # END TEMPORARY WORKAROUND setup_logger
 logger = setup_logger()
 
-# Tested with cellranger 7.0:
-# - omitting the lane number is allowed (e.g. \\`_L001\\`)
-# - lane number should be omitted across all files if omitted in one
-# - replacing \\`.fastq.\\` for \\`.fq.\\` is NOT allowed
-# - omitting \\`.gz\\` is allowed
-
-fastq_regex = r'^([A-Za-z0-9\\\\-_\\\\.]+)_S(\\\\d+)_(L(\\\\d+)_)?[RI](\\\\d+)_(\\\\d+)\\\\.fastq(\\\\.gz)?\\$'
+fastq_regex = r'([A-Za-z0-9\\\\-_\\\\.]+)_S(\\\\d+)_L(\\\\d+)_[RI](\\\\d+)_(\\\\d+)\\\\.fastq\\\\.gz'
 # assert re.match(fastq_regex, "5k_human_GEX_1_subset_S1_L001_R1_001.fastq.gz") is not None
-# assert re.match(fastq_regex, "5k_human_GEX_1_subset_S1_R1_001.fastq") is not None
-# assert re.match(fastq_regex, "5k_human_GEX_1_subset_S1_R1_001.fastq.gz.txt") is None
 
 # Invert some parameters. Keep the original ones in the config for compatibility
 inverted_params = {
-    "gex_no_secondary_analysis": "gex_secondary_analysis",
-    "enable_library_compatibility_check": "disable_library_compatibility_check"
+    "gex_generate_no_bam": "gex_generate_bam",
+    "gex_no_secondary_analysis": "gex_secondary_analysis"
 }
 for inverted_param, param in inverted_params.items():
     par[inverted_param] = not par[param] if par[param] is not None else None
     del par[param]
 
-
 GEX_CONFIG_KEYS = {
     "gex_reference": "reference",
     "gex_expect_cells": "expect-cells",
-    "gex_force_cells": "force-cells",
     "gex_chemistry": "chemistry",
     "gex_no_secondary_analysis": "no-secondary",
-    "gex_generate_bam": "create-bam",
-    "gex_include_introns": "include-introns",
-    "min_assignment_confidence": "min-assignment-confidence",
-    "enable_library_compatibility_check": "check-library-compatibility",
-    "barcode_sample_assignment": "barcode-sample-assignment",
-    "cmo_set": "cmo-set",
-    "probe_set": "probe-set",
-    "filter_probes": "filter-probes",
-    "gex_r1_length": "r1-length",
-    "gex_r2_length": "r2-length",
+    "gex_generate_no_bam": "no-bam",
+    "gex_include_introns": "include-introns"
 }
-
-FEATURE_CONFIG_KEYS = {
-    "feature_reference": "reference",
-    "feature_r1_length": "r1-length",
-    "feature_r2_length": "r2-length",
-}
-
+FEATURE_CONFIG_KEYS = {"feature_reference": "reference"}
 VDJ_CONFIG_KEYS = {"vdj_reference": "reference",
-                   "vdj_inner_enrichment_primers": "inner-enrichment-primers",
-                   "vdj_r1_length": "r1-length",
-                   "vdj_r2_length": "r2-length",
-                  }
-
-
-ANTIGEN_SPECIFICITY_CONFIG_KEYS = {
-    "control_id": "control_id",
-    "mhc_allele": "mhc_allele",
-}
-
+                   "vdj_inner_enrichment_primers": "inner-enrichment-primers"}
 
 REFERENCE_SECTIONS = {
     "gene-expression": (GEX_CONFIG_KEYS, "index"),
     "feature": (FEATURE_CONFIG_KEYS, "index"),
-    "vdj": (VDJ_CONFIG_KEYS, "index"),
-    "antigen-specificity": (ANTIGEN_SPECIFICITY_CONFIG_KEYS, "columns"),
+    "vdj": (VDJ_CONFIG_KEYS, "index")
 }
 
 LIBRARY_CONFIG_KEYS = {'library_id': 'fastq_id',
                        'library_type': 'feature_types',
                        'library_subsample': 'subsample_rate',
-                       'library_lanes': 'lanes',
-                       'library_chemistry': 'chemistry',
-                       }
-
-
-SAMPLE_PARAMS_CONFIG_KEYS = {'sample_ids': 'sample_id',
+                       'library_lanes': 'lanes'}
+SAMPLE_PARAMS_CONFIG_KEYS = {'cell_multiplex_sample_id': 'sample_id',
                              'cell_multiplex_oligo_ids': 'cmo_ids',
-                             'sample_description': 'description',
-                             'probe_barcode_ids': 'probe_barcode_ids',
-                             'sample_expect_cells': 'expect_cells',
-                             'sample_force_cells': 'force_cells'}
+                             'cell_multiplex_description': 'description'}
 
 
 # These are derived from the dictionaries above
@@ -4001,7 +3666,7 @@ def transform_helper_inputs(par: dict[str, Any]) -> dict[str, Any]:
 
 def lengths_gt1(dic: dict[str, Optional[list[Any]]]) -> dict[str, int]:
     return {key: len(li) for key, li in dic.items()
-            if li is not None and isinstance(li, (list, tuple, set))}
+            if li is not None and len(li) > 1}
 
 def strip_margin(text: str) -> str:
     return re.sub('(\\\\n?)[ \\\\t]*\\\\|', '\\\\\\\\1', text)
@@ -4058,33 +3723,6 @@ def make_paths_absolute(par: dict[str, Any], config: Path | str):
         par[arg_name] = new_arg
     return par
 
-def handle_integers_not_set(par: dict[str, Any], viash_config: Path | str) -> str:
-    """
-    Allow to use \\`-1\\` to define a 'not set' value for arguments of \\`type: integer\\` with \\`multiple: true\\`.
-    """
-    with open(viash_config, 'r', encoding="utf-8") as open_viash_config:
-        config = yaml.safe_load(open_viash_config)
-
-    arguments = {
-        arg["name"].removeprefix("-").removeprefix("-"): arg
-        for group in config["functionality"]["argument_groups"]
-        for arg in group["arguments"]
-    }
-    for arg_name, arg in arguments.items():
-        if not par.get(arg_name) or arg["type"] != "integer":
-            continue
-        par_value, is_multiple = par[arg_name], arg["multiple"]
-        assert is_multiple in (True, False)
-
-        def replace_notset_values(integer_value: int) -> int | None:
-            return None if integer_value == -1 else integer_value
-        
-        # Use an extension array to handle "None" values, otherwise int + NA
-        # values would be converted to a "float" dtype
-        new_arg = pd.array([replace_notset_values(value) for value in par_value], dtype="Int64")
-        par[arg_name] = new_arg
-    return par
-
 def process_params(par: dict[str, Any], viash_config: Path | str) -> str:
 
     if par["input"]:
@@ -4104,13 +3742,13 @@ def process_params(par: dict[str, Any], viash_config: Path | str) -> str:
     # check lengths of libraries metadata
     library_dict = subset_dict(par, LIBRARY_PARAMS)
     check_subset_dict_equal_length("Library", library_dict)
+    # storing for later use
+    par["libraries"] = library_dict
 
-    samples_dict = subset_dict(par, SAMPLE_PARAMS)
-    check_subset_dict_equal_length("Samples", samples_dict)
-
-    # Allow using -1 to indicate unset integers for arguments
-    # that accept multiple integers.
-    par = handle_integers_not_set(par, viash_config)
+    cmo_dict = subset_dict(par, SAMPLE_PARAMS)
+    check_subset_dict_equal_length("Cell multiplexing", cmo_dict)
+    # storing for later use
+    par["cmo"] = cmo_dict
 
     # use absolute paths
     return make_paths_absolute(par, viash_config)
@@ -4132,8 +3770,9 @@ def generate_config(par: dict[str, Any], fastq_dir: str) -> str:
     par["fastqs"] = fastq_dir
     libraries = dict(LIBRARY_CONFIG_KEYS, **{"fastqs": "fastqs"})
     #TODO: use the union (|) operator when python is updated to 3.9
-    all_sections = REFERENCE_SECTIONS | {"libraries": (libraries, "columns"), 
-                                         "samples": (SAMPLE_PARAMS_CONFIG_KEYS, "columns")}
+    all_sections = dict(REFERENCE_SECTIONS, 
+                        **{"libraries": (libraries, "columns")},
+                        **{"samples": (SAMPLE_PARAMS_CONFIG_KEYS, "columns")})
     for section_name, (section_params, orientation) in all_sections.items():
         reference_pars = subset_dict(par, section_params)
         content_list += generate_csv_category(section_name, reference_pars, orient=orientation)
@@ -4220,21 +3859,21 @@ def main(par: dict[str, Any], meta: dict[str, Any]):
             # run process
             cmd = ["cellranger", "multi"] + proc_pars
             logger.info("> " + ' '.join(cmd))
-            process_output = subprocess.run(
-                cmd,
-                cwd=temp_dir,
-                check=False,
-                capture_output=True
-            )
-
-            with (par["output"] / "cellranger_multi.log").open('w') as open_log:
-                open_log.write(process_output.stdout.decode('utf-8'))
             try:
-                process_output.check_returncode()
+                process_output = subprocess.run(
+                    cmd,
+                    cwd=temp_dir,
+                    check=True,
+                    capture_output=True
+                )
             except subprocess.CalledProcessError as e:
-                logger.error(e.output.decode('utf-8'))
                 print(e.output.decode('utf-8'), flush=True)
                 raise e
+            else:
+                # Write stdout output to output folder
+                with (par["output"] / "cellranger_multi.log").open('w') as open_log:
+                    open_log.write(process_output.stdout.decode('utf-8'))
+                print(process_output.stdout.decode('utf-8'), flush=True)
 
             # look for output dir file
             tmp_output_dir = temp_dir_path / temp_id / "outs"

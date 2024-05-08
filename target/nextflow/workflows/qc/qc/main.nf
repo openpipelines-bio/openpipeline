@@ -3117,7 +3117,7 @@ meta = [
           "functionalityNamespace" : "transfer",
           "output" : "",
           "platform" : "",
-          "git_commit" : "83706f18507e17354c7ad509592c916915271112",
+          "git_commit" : "28c4dae4756794a67bc4eb00647f16830039b459",
           "executable" : "/nextflow/transfer/publish/main.nf"
         },
         "writtenPath" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/transfer/publish"
@@ -3138,7 +3138,7 @@ meta = [
           "functionalityNamespace" : "metadata",
           "output" : "",
           "platform" : "",
-          "git_commit" : "83706f18507e17354c7ad509592c916915271112",
+          "git_commit" : "28c4dae4756794a67bc4eb00647f16830039b459",
           "executable" : "/nextflow/metadata/grep_annotation_column/main.nf"
         },
         "writtenPath" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/metadata/grep_annotation_column"
@@ -3159,7 +3159,7 @@ meta = [
           "functionalityNamespace" : "qc",
           "output" : "",
           "platform" : "",
-          "git_commit" : "83706f18507e17354c7ad509592c916915271112",
+          "git_commit" : "28c4dae4756794a67bc4eb00647f16830039b459",
           "executable" : "/nextflow/qc/calculate_qc_metrics/main.nf"
         },
         "writtenPath" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/qc/calculate_qc_metrics"
@@ -3226,7 +3226,7 @@ meta = [
     "platform" : "nextflow",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/workflows/qc/qc",
     "viash_version" : "0.8.5",
-    "git_commit" : "83706f18507e17354c7ad509592c916915271112",
+    "git_commit" : "28c4dae4756794a67bc4eb00647f16830039b459",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))
@@ -3294,11 +3294,7 @@ workflow run_wf {
             "input": state.input,
             "modality": state.modality,
             "layer": state.layer,
-            // TODO: remove this workaround when Viash issue is resolved:
-            //       'top_n_vars': list(map(int, r''.split(';'))),
-            //     ValueError: invalid literal for int() with base 10: ''
-            // See https://github.com/viash-io/viash/issues/619
-            "top_n_vars": state.top_n_vars ? state.top_n_vars : null,
+            "top_n_vars": state.top_n_vars,
             "var_qc_metrics_fill_na_value": state.var_qc_metrics_fill_na_value,
             "output_obs_num_nonzero_vars": state.output_obs_num_nonzero_vars,
             "output_obs_total_counts_vars": state.output_obs_total_counts_vars,
