@@ -142,7 +142,7 @@ model_file = par["model"]
 try:
     logger.info(f"Loading all model params from {model_file}")
     model.load_state_dict(torch.load(model_file, map_location=device))
-except Exception:
+except RuntimeError:
     logger.info("only load params that are in the model and match the size")
     model_dict = model.state_dict()
     pretrained_dict = torch.load(model_file, map_location=device)

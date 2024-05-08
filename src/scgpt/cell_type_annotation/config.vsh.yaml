@@ -18,7 +18,7 @@ functionality:
           required: true
           example: resources_test/scgpt/test_resources/Kim2020_Lung_preprocessed.h5mu
           description: |
-            The input h5mu file containing of pre-processed data.
+            The input h5mu file containing of data that have been pre-processed (normalized, binned, genes cross-checked and tokenized).
         - name: "--modality"
           type: string
           default: "rna"
