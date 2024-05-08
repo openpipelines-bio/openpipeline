@@ -23,7 +23,7 @@ functionality:
         - name: "--input_layer"
           type: string
           description: |
-            The name of the adata layer containing (pre-processed) counts to use for the input. adata.X will be used if no layer is provided.
+            Mudata layer (key from layers) to use as input data for hvg subsetting and binning; if not specified, X is used.
         - name: "--modality"
           type: string
           default: "rna"
@@ -63,6 +63,12 @@ functionality:
           choices: ["gzip", "lzf"]
           description: |
             The compression algorithm to use for the output h5mu file.
+        - name: "--obs_predicted_cell_type"
+          type: string
+          default: "predicted_cell_type"
+          required: false
+          description: |
+            The name of the adata.obs column to write predicted cell types to.
 
     - name: "Arguments"
       arguments:
@@ -113,13 +119,7 @@ functionality:
           required: false
           description: |
             The batch size. 
-        - name: "--predicted_cell_type_id"
-          type: string
-          default: "predicted_cell_type"
-          required: false
-          description: |
-            The name of the adata.obs column to write predicted cell types to.
-        - name: "--DSBN"
+        - name: "--dsbn"
           type: boolean
           default: true
           required: false
@@ -140,12 +140,16 @@ functionality:
           default: "binned"
           description: |
             The name of the adata layer to write the binned data to.
-        - name: "--input_obs_batch_label"
+        - name: "--obs_batch_label"
           type: string
           default: "sample"
           description: |
             The name of the adata.obs column containing the batch labels.
-
+        - name: "--seed"
+          type: integer
+          description: |
+            Seed for random number generation. If not specified, no seed is used.
+            
   resources:
     - type: nextflow_script
       path: main.nf

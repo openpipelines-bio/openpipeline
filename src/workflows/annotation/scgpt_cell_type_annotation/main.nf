@@ -60,8 +60,8 @@ workflow run_wf {
                 "modality": state.modality,
                 "input_layer": state.input_layer,
                 "n_input_bins": state.n_input_bins,
-                "output_compression": state.output_compression,
-                "binned_layer": state.binned_layer,
+                "binned_layer": "binned",
+                "seed", state.seed,
                 "output": state.output
             ]
             },
@@ -75,20 +75,18 @@ workflow run_wf {
                 "input": state.input,
                 "modality": state.modality,
                 "model_vocab": state.model_vocab,
-                "input_layer": state.binned_layer,
-                "gene_name_layer": state.gene_name_layer,
+                "input_layer": "binned",
+                "var_gene_names": state.var_gene_names,
                 "pad_token": state.pad_token,
                 "pad_value": state.pad_value,
-                "max_seq_length": state.max_seq_length,
-                "output": state.workflow_output
+                "max_seq_len": state.max_seq_len,
+                "obsm_gene_tokens": "gene_id_tokens",
+                "obsm_tokenized_values": "values_tokenized",
+                "obsm_padding_mask": "padding_mask",
+                "output": state.output
             ]
             },
-            toState: 
-            [
-                "input": "output",
-                "input_obsm_gene_tokens": "output_obsm_gene_tokens",
-                "input_obsm_tokenized_values": "output_obsm_padding_mask"
-            ]
+            toState: ["input": "output"]
         )
 
         | cell_type_inference.run(
@@ -97,21 +95,22 @@ workflow run_wf {
             [
                 "input": state.input,
                 "modality": state.modality,
-                "input_gene_ids": state.input_obsm_gene_tokens,
-                "input_values": state.input_obsm_tokenized_values,
+                "obsm_gene_tokens": "gene_id_tokens",
+                "obsm_tokenized_values": "values_tokenized",
                 "model": state.model,
                 "model_config": state.model_config,
                 "model_vocab": state.model_vocab,
-                "gene_name_layer": state.gene_name_layer,
-                "input_obs_batch_label": state.input_obs_batch_label,
-                "predicted_cell_type_id": state.predicted_cell_type_id,
+                "obs_batch_label": state.input_obs_batch_label,
+                "obs_predicted_cell_type": state.obs_predicted_cell_type,
                 "pad_token": state.pad_token,
-                "DSBN": state.DSBN,
+                "dsbn": state.dsbn,
                 "pad_value": state.pad_value,
+                "seed", state.seed,
                 "n_cls": state.n_cls,
                 "n_input_bins": state.n_input_bins,
                 "batch_size": state.batch_size,
-                "output": state.workflow_output
+                "output": state.workflow_output,
+                "output_compression": state.output_compression
             ]
             },
         ) 

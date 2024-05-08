@@ -1,9 +1,9 @@
 
 functionality:
-  name: cell_type_inference
+  name: cell_type_annotation
   namespace: "scgpt"
   description: |
-    Annotate adata with cell types through the scGPT model.
+    Annotate gene expression data with cell type classes through the scGPT model.
   authors:
     - __merge__: /src/authors/dorien_roosen.yaml
       roles: [ maintainer, author ]
@@ -19,32 +19,11 @@ functionality:
           required: true
           example: resources_test/scgpt/test_resources/Kim2020_Lung_preprocessed.h5mu
           description: |
-            The input h5mu file containing of pre-processed data.
+            The input h5mu file containing of data that have been pre-processed (normalized, binned, genes cross-checked and tokenized).
         - name: "--modality"
           type: string
           default: "rna"
           required: false
-        - name: "--model_vocab"
-          type: file
-          required: true
-          example: resources_test/scgpt/vocab.json
-          description: |
-            Model vocabulary file directory.
-        - name: "--input_obsm_gene_tokens"
-          type: string
-          default: "gene_id_tokens"
-          description: |
-            The key of the .obsm array containing the gene token ids
-        - name: "--input_obsm_tokenized_values"
-          type: string
-          default: values_tokenized
-          description: |
-            The key of the .obsm array containing the count values of the tokenized genes
-        # - name: "--input_obsm_padding_mask"
-        #   type: string
-        #   default: padding_mask
-        #   description: |
-        #     The key of the .obsm array containing the padding mask.
         - name: "--model"
           type: file
           required: true
@@ -57,6 +36,27 @@ functionality:
           example: "resources_test/scgpt/source/args.json"
           description: |
             The model configuration file. 
+        - name: "--model_vocab"
+          type: file
+          required: true
+          example: resources_test/scgpt/vocab.json
+          description: |
+            Model vocabulary file directory.
+        - name: "--obs_batch_label"
+          type: string
+          required: false
+          description: |
+            The name of the adata.obs column containing the batch labels. Required if dsbn is set to true.
+        - name: "--obsm_gene_tokens"
+          type: string
+          default: "gene_id_tokens"
+          description: |
+            The key of the .obsm array containing the gene token ids
+        - name: "--obsm_tokenized_values"
+          type: string
+          default: values_tokenized
+          description: |
+            The key of the .obsm array containing the count values of the tokenized genes
 
     - name: Outputs
       arguments:
@@ -74,15 +74,15 @@ functionality:
           default: gzip
           description: |
             The compression algorithm to use for the output h5mu file.
+        - name: "--obs_predicted_cell_type"
+          type: string
+          default: "predicted_cell_type"
+          required: false
+          description: |
+            The name of the adata.obs column to write predicted cell types to.
 
     - name: Arguments
       arguments:
-        - name: "--gene_name_layer"
-          type: string
-          default: "gene_name"
-          required: false
-          description: |
-            The name of adata.var column containing the gene names.
         - name: "--pad_token"
           type: string
           default: "<pad>"
@@ -100,7 +100,7 @@ functionality:
           default: 8
           required: false
           description: |
-            The number of classes.
+            The number of cell type classes to predict.
         - name: "--n_input_bins"
           type: integer
           default: 51
@@ -113,23 +113,17 @@ functionality:
           required: false
           description: |
             The batch size. 
-        - name: "--predicted_cell_type_id"
-          type: string
-          default: "predicted_cell_type"
-          required: false
-          description: |
-            The name of the adata.obs column to write predicted cell types to.
-        - name: "--DSBN"
+        - name: "--dsbn"
           type: boolean
           default: true
           required: false
           description: |
             Whether to use domain-specific batch normalization.
-        - name: "--input_obs_batch_label"
-          type: string
+        - name: "--seed"
+          type: integer
           description: |
-            The name of the adata.obs column containing the batch labels.
-        
+            Seed for random number generation. If not specified, no seed is used.
+
   resources:
     - type: python_script
       path: script.py
@@ -137,8 +131,7 @@ functionality:
   test_resources:
     - type: python_script
       path: test.py
-    - path: /resources_test/scgpt/test_resources/Kim2020_Lung.h5mu
-    - path: /resources_test/scgpt/test_resources/Kim2020_Lung_tokenized.h5mu
+    - path: /resources_test/scgpt/test_resources/Kim2020_Lung_subset_tokenized.h5mu
     - path: /resources_test/scgpt/source/best_model.pt
     - path: /resources_test/scgpt/source/args.json
     - path: /resources_test/scgpt/source/vocab.json
@@ -149,9 +142,6 @@ platforms:
     setup:
       - type: python
         __merge__: [ /src/base/requirements/anndata_mudata.yaml, /src/base/requirements/scanpy.yaml ]
-      - type: docker
-        run:
-          echo "build --jobs 4" >> /etc/bazel.bazelrc
       - type: python
         packages:
           - scgpt==0.2.1
