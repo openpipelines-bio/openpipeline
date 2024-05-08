@@ -2,7 +2,7 @@ functionality:
   name: cell_type_annotation
   namespace: "scgpt"
   description: |
-    Annotate adata with cell types through the scGPT model.
+    Annotate gene expression data with cell types through the scGPT model.
   authors:
     - __merge__: /src/authors/dorien_roosen.yaml
       roles: [ maintainer, author ]
