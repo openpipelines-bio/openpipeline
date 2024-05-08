@@ -163,7 +163,7 @@ jobs:
         password: ${{ env.NVIDIA_PASSWORD }}
 
     - name: Run test
-      timeout-minutes: 30
+      timeout-minutes: 40
       run: |
         viash test \
           "${{ matrix.component.config }}" \
