@@ -15,9 +15,8 @@ workflow run_wf {
       // Annotates the mudata object with highly variable genes.
         [
           "input": state.input,
-          "layer": state.layer,
-          "modality": state.modality,
           "layer": state.input_layer,
+          "modality": state.modality,
           "var_name_filter": "filter_with_hvg",
           "n_top_features": state.n_hvg,
           "flavor": "seurat_v3"
@@ -60,7 +59,8 @@ workflow run_wf {
             "input_layer": state.input_layer,
             "n_input_bins": state.n_input_bins,
             "binned_layer": "binned",
-            "output": state.output
+            "output": state.output,
+            "seed": state.seed
           ]
         },
         toState: ["input": "output"]
