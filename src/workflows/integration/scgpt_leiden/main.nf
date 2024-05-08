@@ -120,9 +120,8 @@ workflow run_wf {
       toState: ["input": "output"]
     )
 
-with_leiden_ch = neighbors_ch
-    | filter{id, state -> state.leiden_resolution}
     | leiden.run(
+      runIf: {id, state -> state.var_name_mitochondrial_genes}
       fromState: {id, state -> [
         "input": state.input,
         "obsp_connectivities": "scGPT_integration_connectivities",
@@ -133,7 +132,9 @@ with_leiden_ch = neighbors_ch
       },
       toState: ["input": "output"]
     )
+    
     | move_obsm_to_obs.run(
+      runIf: {id, state -> state.var_name_mitochondrial_genes}
       fromState: {id, state -> [
           "input": state.input,
           "obsm_key": "scGPT_integration_leiden",
@@ -143,10 +144,6 @@ with_leiden_ch = neighbors_ch
       toState: ["input": "output"]
     )
 
-  without_leiden_ch = neighbors_ch
-    | filter{id, state -> !state.leiden_resolution}
-
-  output_ch = with_leiden_ch.mix(without_leiden_ch)
     | umap.run(
       fromState: {id, state -> [
           "input": state.input,
