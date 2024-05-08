@@ -126,7 +126,7 @@ functionality:
         - name: "--seed"
           type: integer
           description: |
-            Seed for random number generation.
+            Seed for random number generation. If not specified, no seed is used.
 
   resources:
     - type: python_script
