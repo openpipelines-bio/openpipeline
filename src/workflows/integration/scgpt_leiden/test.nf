@@ -13,6 +13,7 @@ workflow test_wf {
             model_config: resources_test.resolve("source/args.json"),
             model_vocab: resources_test.resolve("source/vocab.json"),
             input_layer: "log_normalized",
+            obs_batch_label: "sample",
             // change default to reduce resource requirements
             n_hvg: 400,
             seed: 1,
@@ -24,6 +25,7 @@ workflow test_wf {
             model: resources_test.resolve("source/best_model.pt"),
             model_config: resources_test.resolve("source/args.json"),
             model_vocab: resources_test.resolve("source/vocab.json"),
+            obs_batch_label: "sample",
             n_hvg: 400,
             seed: 1,
             input_layer: "log_normalized",

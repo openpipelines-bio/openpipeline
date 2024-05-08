@@ -98,7 +98,7 @@ workflow run_wf {
           "obs_batch_label": state.obs_batch_label,
           "pad_token": state.pad_token,
           "pad_value": state.pad_value,
-          "DSBN": state.DSBN,
+          "dsbn": state.dsbn,
           "batch_size": state.batch_size,
           "obsm_embeddings": "X_scGPT",
           "output": state.output

@@ -54,8 +54,6 @@ functionality:
             The name of the adata var column containing gene names; when no gene_name_layer is provided, the var index will be used.
         - name: "--obs_batch_label"
           type: string
-          required: false
-          default: "sample"
           description: |
             The name of the adata obs column containing the batch labels.
 
@@ -108,7 +106,7 @@ functionality:
 
     - name: "Embedding arguments"
       arguments:
-        - name: dsbn
+        - name: --dsbn
           type: boolean
           default: true
           description: |
