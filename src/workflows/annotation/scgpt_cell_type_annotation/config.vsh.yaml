@@ -163,13 +163,9 @@ functionality:
     - type: nextflow_script
       path: test.nf
       entrypoint: test_wf
-    # - type: nextflow_script
-    #   path: test.nf
-    #   entrypoint: test_wf2
-    - path: /resources_test/scgpt/test_resources/Kim2020_Lung_cpu_run.h5mu
-    - path: /resources_test/scgpt/source/best_model.pt
-    - path: /resources_test/scgpt/source/args.json
-    - path: /resources_test/scgpt/source/vocab.json
-    # - path: /resources_test/scgpt/source/
+    - type: nextflow_script
+      path: test.nf
+      entrypoint: test_wf2
+    - path: /resources_test/scgpt
 platforms:
   - type: nextflow
