@@ -167,9 +167,6 @@ functionality:
     - type: nextflow_script
       path: test.nf
       entrypoint: test_wf
-    - type: nextflow_script
-      path: test.nf
-      entrypoint: test_wf2
     - path: /resources_test/scgpt
 platforms:
   - type: nextflow
