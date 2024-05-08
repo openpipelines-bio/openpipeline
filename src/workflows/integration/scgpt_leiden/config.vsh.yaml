@@ -132,7 +132,7 @@ functionality:
           type: integer
           required: false
           description: |
-            Seed for random number generation used for binning.
+            Seed for random number generation used for binning. If not set, no seed is used.
   
     - name: "Clustering arguments"
       arguments:
