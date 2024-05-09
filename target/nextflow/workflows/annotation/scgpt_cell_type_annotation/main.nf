@@ -3220,7 +3220,7 @@ meta = [
           "functionalityNamespace" : "scgpt",
           "output" : "",
           "platform" : "",
-          "git_commit" : "a48efdd711db21a18d31ddb7ddecc055f9bc6f4c",
+          "git_commit" : "45ce8eab777fe9f30468f55a8c784d04ec859bad",
           "executable" : "/nextflow/scgpt/pad_tokenize/main.nf"
         },
         "writtenPath" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/scgpt/pad_tokenize"
@@ -3241,7 +3241,7 @@ meta = [
           "functionalityNamespace" : "scgpt",
           "output" : "",
           "platform" : "",
-          "git_commit" : "a48efdd711db21a18d31ddb7ddecc055f9bc6f4c",
+          "git_commit" : "45ce8eab777fe9f30468f55a8c784d04ec859bad",
           "executable" : "/nextflow/scgpt/cell_type_annotation/main.nf"
         },
         "writtenPath" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/scgpt/cell_type_annotation"
@@ -3262,7 +3262,7 @@ meta = [
           "functionalityNamespace" : "scgpt",
           "output" : "",
           "platform" : "",
-          "git_commit" : "a48efdd711db21a18d31ddb7ddecc055f9bc6f4c",
+          "git_commit" : "45ce8eab777fe9f30468f55a8c784d04ec859bad",
           "executable" : "/nextflow/scgpt/cross_check_genes/main.nf"
         },
         "writtenPath" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/scgpt/cross_check_genes"
@@ -3283,7 +3283,7 @@ meta = [
           "functionalityNamespace" : "scgpt",
           "output" : "",
           "platform" : "",
-          "git_commit" : "a48efdd711db21a18d31ddb7ddecc055f9bc6f4c",
+          "git_commit" : "45ce8eab777fe9f30468f55a8c784d04ec859bad",
           "executable" : "/nextflow/scgpt/binning/main.nf"
         },
         "writtenPath" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/scgpt/binning"
@@ -3304,7 +3304,7 @@ meta = [
           "functionalityNamespace" : "feature_annotation",
           "output" : "",
           "platform" : "",
-          "git_commit" : "a48efdd711db21a18d31ddb7ddecc055f9bc6f4c",
+          "git_commit" : "45ce8eab777fe9f30468f55a8c784d04ec859bad",
           "executable" : "/nextflow/feature_annotation/highly_variable_features_scanpy/main.nf"
         },
         "writtenPath" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/feature_annotation/highly_variable_features_scanpy"
@@ -3325,7 +3325,7 @@ meta = [
           "functionalityNamespace" : "filter",
           "output" : "",
           "platform" : "",
-          "git_commit" : "a48efdd711db21a18d31ddb7ddecc055f9bc6f4c",
+          "git_commit" : "45ce8eab777fe9f30468f55a8c784d04ec859bad",
           "executable" : "/nextflow/filter/do_filter/main.nf"
         },
         "writtenPath" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/filter/do_filter"
@@ -3392,7 +3392,7 @@ meta = [
     "platform" : "nextflow",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/workflows/annotation/scgpt_cell_type_annotation",
     "viash_version" : "0.8.5",
-    "git_commit" : "a48efdd711db21a18d31ddb7ddecc055f9bc6f4c",
+    "git_commit" : "45ce8eab777fe9f30468f55a8c784d04ec859bad",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))
@@ -3472,11 +3472,11 @@ workflow run_wf {
                 "input_layer": state.input_layer,
                 "n_input_bins": state.n_input_bins,
                 "binned_layer": "binned",
-                "seed", state.seed,
+                "seed": state.seed,
                 "output": state.output
             ]
             },
-            toState: ["input": "output"],
+            toState: ["input": "output"]
         )
 
         | pad_tokenize.run(
@@ -3500,8 +3500,8 @@ workflow run_wf {
             toState: ["input": "output"]
         )
 
-        | cell_type_inference.run(
-        // Infers cell types using the model.
+        | cell_type_annotation.run(
+        // Infers cell type classes using the model.
             fromState: {id, state -> 
             [
                 "input": state.input,
@@ -3511,12 +3511,12 @@ workflow run_wf {
                 "model": state.model,
                 "model_config": state.model_config,
                 "model_vocab": state.model_vocab,
-                "obs_batch_label": state.input_obs_batch_label,
+                "obs_batch_label": state.obs_batch_label,
                 "obs_predicted_cell_type": state.obs_predicted_cell_type,
                 "pad_token": state.pad_token,
                 "dsbn": state.dsbn,
                 "pad_value": state.pad_value,
-                "seed", state.seed,
+                "seed": state.seed,
                 "n_cls": state.n_cls,
                 "n_input_bins": state.n_input_bins,
                 "batch_size": state.batch_size,
@@ -3524,8 +3524,11 @@ workflow run_wf {
                 "output_compression": state.output_compression
             ]
             },
-        ) 
-        | setState(["output"])
+            toState: { id, output, state ->
+                [ output: output.output ]
+            },
+            auto: [ publish: true ]
+            )
 
     emit:
         output_ch
