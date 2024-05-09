@@ -43,7 +43,7 @@ def test_cross_check_invalid_gene_layer_raises(run_component, random_path):
         "--input", input_path,
         "--output",  output_path,
         "--vocab_file", vocab_path,
-        "--input_var_gene_names", "dummy_var",
+        "--var_gene_names", "dummy_var",
     ]
 
     with pytest.raises(subprocess.CalledProcessError) as err:

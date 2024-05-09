@@ -32,7 +32,7 @@ functionality:
           example: resources_test/scgpt/vocab.json
           description: |
             Model vocabulary file path.
-        - name: "--input_var_gene_names"
+        - name: "--var_gene_names"
           type: string
           example: "gene_name"
           required: false
