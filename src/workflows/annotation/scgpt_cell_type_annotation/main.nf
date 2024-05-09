@@ -31,7 +31,7 @@ workflow run_wf {
             fromState: {id, state ->
                 [
                     "input": state.input,
-                    "modality": state.modality
+                    "modality": state.modality,
                     "var_filter": "filter_with_hvg"
                 ]
             },
