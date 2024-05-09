@@ -61,11 +61,11 @@ workflow run_wf {
                 "input_layer": state.input_layer,
                 "n_input_bins": state.n_input_bins,
                 "binned_layer": "binned",
-                "seed", state.seed,
+                "seed": state.seed,
                 "output": state.output
             ]
             },
-            toState: ["input": "output"],
+            toState: ["input": "output"]
         )
 
         | pad_tokenize.run(
@@ -89,8 +89,8 @@ workflow run_wf {
             toState: ["input": "output"]
         )
 
-        | cell_type_inference.run(
-        // Infers cell types using the model.
+        | cell_type_annotation.run(
+        // Infers cell type classes using the model.
             fromState: {id, state -> 
             [
                 "input": state.input,
@@ -100,12 +100,12 @@ workflow run_wf {
                 "model": state.model,
                 "model_config": state.model_config,
                 "model_vocab": state.model_vocab,
-                "obs_batch_label": state.input_obs_batch_label,
+                "obs_batch_label": state.obs_batch_label,
                 "obs_predicted_cell_type": state.obs_predicted_cell_type,
                 "pad_token": state.pad_token,
                 "dsbn": state.dsbn,
                 "pad_value": state.pad_value,
-                "seed", state.seed,
+                "seed": state.seed,
                 "n_cls": state.n_cls,
                 "n_input_bins": state.n_input_bins,
                 "batch_size": state.batch_size,
@@ -113,8 +113,11 @@ workflow run_wf {
                 "output_compression": state.output_compression
             ]
             },
-        ) 
-        | setState(["output"])
+            toState: { id, output, state ->
+                [ output: output.output ]
+            },
+            auto: [ publish: true ]
+            )
 
     emit:
         output_ch
