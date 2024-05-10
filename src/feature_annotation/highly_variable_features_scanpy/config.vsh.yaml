@@ -118,14 +118,8 @@ functionality:
     - path: /resources_test/pbmc_1k_protein_v3
 platforms:
   - type: docker
-    image: python:3.10
+    image: python:3.9
     setup: 
-      - type: apt
-        packages: 
-          - procps
-          - gfortran
-          - cmake
-          - libopenblas-dev
       - type: python
         __merge__: [/src/base/requirements/anndata_mudata.yaml, /src/base/requirements/scanpy.yaml, .]
         packages:
