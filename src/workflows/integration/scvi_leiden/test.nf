@@ -1,6 +1,8 @@
 nextflow.enable.dsl=2
 
 include { scvi_leiden } from params.rootDir + "/target/nextflow/workflows/integration/scvi_leiden/main.nf"
+include { scvi_leiden_test } from params.rootDir + "/target/nextflow/test_workflows/integration/scvi_leiden_test/main.nf"
+
 
 workflow test_wf {
   // allow changing the resources_test dir
@@ -26,7 +28,14 @@ workflow test_wf {
       ] 
     ])
     | map{ state -> [state.id, state] }
-    | scvi_leiden
+    | scvi_leiden.run(
+      toState: {id, output, state ->
+        output + [
+          input_og: state.input,
+          leiden_resolution: state.leiden_resolution
+        ]
+      }
+    )
     | view { output ->
       assert output.size() == 2 : "Outputs should contain two elements; [id, state]"
 
@@ -48,6 +57,17 @@ workflow test_wf {
 
       "Output: $output"
     }
+
+    | scvi_leiden_test.run(
+      fromState: {id, state ->
+        [
+          input: state.output,
+          input_og: state.input_og,
+          // leiden_resolution: state.leiden_resolution
+        ]
+      }
+    )
+
     | toSortedList({a, b -> a[0] <=> b[0]})
     | map { output_list ->
       assert output_list.size() == 2 : "output channel should contain 2 events"
