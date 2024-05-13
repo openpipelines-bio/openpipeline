@@ -94,21 +94,24 @@ fastq_regex = r'^([A-Za-z0-9\-_\.]+)_S(\d+)_(L(\d+)_)?[RI](\d+)_(\d+)\.fastq(\.g
 # Invert some parameters. Keep the original ones in the config for compatibility
 inverted_params = {
     "gex_no_secondary_analysis": "gex_secondary_analysis",
+    "enable_library_compatibility_check": "disable_library_compatibility_check"
 }
 for inverted_param, param in inverted_params.items():
     par[inverted_param] = not par[param] if par[param] is not None else None
     del par[param]
 
+
 GEX_CONFIG_KEYS = {
     "gex_reference": "reference",
     "gex_expect_cells": "expect-cells",
+    "gex_force_cells": "force-cells",
     "gex_force_cells": "force-cells",
     "gex_chemistry": "chemistry",
     "gex_no_secondary_analysis": "no-secondary",
     "gex_generate_bam": "create-bam",
     "gex_include_introns": "include-introns",
     "min_assignment_confidence": "min-assignment-confidence",
-    "check_library_compatibility": "check-library-compatibility",
+    "enable_library_compatibility_check": "check-library-compatibility",
     "barcode_sample_assignment": "barcode-sample-assignment",
     "cmo_set": "cmo-set",
     "probe_set": "probe-set",
@@ -121,10 +124,20 @@ FEATURE_CONFIG_KEYS = {
     "feature_reference": "reference",
     "feature_r1_length": "r1-length",
     "feature_r2_length": "r2-length",
-    "min_crispr_umi": "min-crispr-umi",
 }
 
 VDJ_CONFIG_KEYS = {"vdj_reference": "reference",
+                   "vdj_inner_enrichment_primers": "inner-enrichment-primers",
+                   "vdj_r1_length": "r1-length",
+                   "vdj_r2_length": "r2-length",
+                  }
+
+
+ANTIGEN_SPECIFICITY_CONFIG_KEYS = {
+    "control_id": "control_id",
+    "mhc_allele": "mhc_allele",
+}
+
                    "vdj_inner_enrichment_primers": "inner-enrichment-primers",
                    "vdj_r1_length": "r1-length",
                    "vdj_r2_length": "r2-length",
@@ -142,6 +155,8 @@ REFERENCE_SECTIONS = {
     "feature": (FEATURE_CONFIG_KEYS, "index"),
     "vdj": (VDJ_CONFIG_KEYS, "index"),
     "antigen-specificity": (ANTIGEN_SPECIFICITY_CONFIG_KEYS, "columns"),
+    "vdj": (VDJ_CONFIG_KEYS, "index"),
+    "antigen-specificity": (ANTIGEN_SPECIFICITY_CONFIG_KEYS, "columns"),
 }
 
 LIBRARY_CONFIG_KEYS = {'library_id': 'fastq_id',
@@ -153,7 +168,17 @@ LIBRARY_CONFIG_KEYS = {'library_id': 'fastq_id',
 
 
 SAMPLE_PARAMS_CONFIG_KEYS = {'sample_ids': 'sample_id',
+                       'library_lanes': 'lanes',
+                       'library_chemistry': 'chemistry',
+                       }
+
+
+SAMPLE_PARAMS_CONFIG_KEYS = {'sample_ids': 'sample_id',
                              'cell_multiplex_oligo_ids': 'cmo_ids',
+                             'sample_description': 'description',
+                             'probe_barcode_ids': 'probe_barcode_ids',
+                             'sample_expect_cells': 'expect_cells',
+                             'sample_force_cells': 'force_cells'}
                              'sample_description': 'description',
                              'probe_barcode_ids': 'probe_barcode_ids',
                              'sample_expect_cells': 'expect_cells',
@@ -214,6 +239,7 @@ def transform_helper_inputs(par: dict[str, Any]) -> dict[str, Any]:
 
 def lengths_gt1(dic: dict[str, Optional[list[Any]]]) -> dict[str, int]:
     return {key: len(li) for key, li in dic.items()
+            if li is not None and isinstance(li, (list, tuple, set))}
             if li is not None and isinstance(li, (list, tuple, set))}
 
 def strip_margin(text: str) -> str:
@@ -289,9 +315,6 @@ def handle_integers_not_set(par: dict[str, Any], viash_config: Path | str) -> st
         par_value, is_multiple = par[arg_name], arg["multiple"]
         assert is_multiple in (True, False)
 
-        if not is_multiple:
-            continue
-
         def replace_notset_values(integer_value: int) -> int | None:
             return None if integer_value == -1 else integer_value
         
@@ -328,6 +351,13 @@ def process_params(par: dict[str, Any], viash_config: Path | str) -> str:
     # that accept multiple integers.
     par = handle_integers_not_set(par, viash_config)
 
+    samples_dict = subset_dict(par, SAMPLE_PARAMS)
+    check_subset_dict_equal_length("Samples", samples_dict)
+
+    # Allow using -1 to indicate unset integers for arguments
+    # that accept multiple integers.
+    par = handle_integers_not_set(par, viash_config)
+
     # use absolute paths
     return make_paths_absolute(par, viash_config)
 
@@ -348,6 +378,8 @@ def generate_config(par: dict[str, Any], fastq_dir: str) -> str:
     par["fastqs"] = fastq_dir
     libraries = dict(LIBRARY_CONFIG_KEYS, **{"fastqs": "fastqs"})
     #TODO: use the union (|) operator when python is updated to 3.9
+    all_sections = REFERENCE_SECTIONS | {"libraries": (libraries, "columns"), 
+                                         "samples": (SAMPLE_PARAMS_CONFIG_KEYS, "columns")}
     all_sections = REFERENCE_SECTIONS | {"libraries": (libraries, "columns"), 
                                          "samples": (SAMPLE_PARAMS_CONFIG_KEYS, "columns")}
     for section_name, (section_params, orientation) in all_sections.items():

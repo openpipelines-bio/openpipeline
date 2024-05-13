@@ -4,20 +4,22 @@ import scanpy
 import pandas as pd
 import mudata
 import numpy as np
+import numpy as np
 from scirpy.io import read_10x_vdj
 from collections import defaultdict
 from functools import partial
-import json
-import csv
-import tempfile
 
 
 ## VIASH START
 par = {
     "input": "resources_test/10x_5k_beam/processed/10x_5k_beam.cellranger_multi.output",
+    "input": "resources_test/10x_5k_beam/processed/10x_5k_beam.cellranger_multi.output",
     "output": "foo.h5mu",
     "uns_metrics": "metrics_cellranger",
     "output_compression": "gzip"
+}
+meta = {
+    "resources_dir": "."
 }
 meta = {
     "resources_dir": "."
@@ -43,7 +45,7 @@ def setup_logger():
 # END TEMPORARY WORKAROUND setup_logger
 logger = setup_logger()
 
-POSSIBLE_LIBRARY_TYPES = ('vdj_t', 'vdj_b', 'vdj_t_gd', 'count', 'antigen_analysis', 'multiplexing_analysis')
+POSSIBLE_LIBRARY_TYPES = ('vdj_t', 'vdj_b', 'vdj_t_gd', 'count', 'antigen_analysis')
 
 FEATURE_TYPES_NAMES = {
             "Gene Expression": "rna",
@@ -53,6 +55,31 @@ FEATURE_TYPES_NAMES = {
             "VDJ-T": "vdj_t",
             "VDJ-B": "vdj_b",
             "CRISPR Guide Capture": "gdo",
+            "Multiplexing Capture": "hto",
+            "Antigen Capture": "antigen",
+        }
+
+def cast_to_writeable_dtype(result: pd.DataFrame) -> pd.DataFrame:
+    """
+    Cast the dataframe to dtypes that can be written by mudata.
+    """    
+    # dtype inferral workfs better with np.nan
+    result = result.replace({pd.NA: np.nan})
+
+    # MuData supports nullable booleans and ints
+    # ie. `IntegerArray` and `BooleanArray`
+    result = result.convert_dtypes(infer_objects=True,
+                                   convert_integer=True,
+                                   convert_string=False,
+                                   convert_boolean=True,
+                                   convert_floating=False)
+    
+    # Convert leftover 'object' columns to string
+    # However, na values are supported, so convert all values except NA's to string
+    object_cols = result.select_dtypes(include='object').columns.values
+    for obj_col in object_cols:
+        result[obj_col] = result[obj_col].where(result[obj_col].isna(), result[obj_col].astype(str)).astype('category')
+    return result
             "Multiplexing Capture": "hto",
             "Antigen Capture": "antigen",
         }
@@ -135,17 +162,17 @@ def gather_input_data(dir: Path):
         found_input[library_type.name] = library_type
 
     per_sample_outs_dir = dir / 'per_sample_outs'
-    samples_dirs = [samplepath for samplepath in per_sample_outs_dir.iterdir() if samplepath.is_dir()]
-    for samples_dir in samples_dirs:
-        for file_part in ('metrics_summary.csv', 'count/feature_reference.csv',
-                          'count/crispr_analysis/perturbation_efficiencies_by_feature.csv',
-                          'count/crispr_analysis/perturbation_efficiencies_by_target.csv',
-                          'antigen_analysis',
-                        ):
-            found_file = samples_dir / file_part
-            if found_file.exists():
-                file_name = found_file.name.removesuffix('.csv')
-                found_input.setdefault(file_name, {})[samples_dir.name] = found_file
+    for file_glob in ('*/metrics_summary.csv', '*/count/feature_reference.csv',
+                      '*/count/crispr_analysis/perturbation_efficiencies_by_feature.csv',
+                      '*/count/crispr_analysis/perturbation_efficiencies_by_target.csv',
+                      '*/antigen_analysis',
+                     ):
+        found_files = list(per_sample_outs_dir.glob(file_glob))
+        if len(found_files) > 1:
+            raise ValueError(f"Found more than one file for glob '{file_glob}' file. "
+                            "This component currently only supports parsing cellranger multi output for one sample.")
+        file_name = Path(file_glob).name.removesuffix('.csv')
+        found_input[file_name] = found_files[0] if found_files else None
 
     return found_input
 
@@ -158,21 +185,19 @@ def proces_perturbation(key_name: str, mudatas: dict[str, mudata.MuData], effici
         mudata_obj.mod['gdo'].uns[key_name] = eff_df
     return mudatas
 
-def process_feature_reference(mudatas: dict[str, mudata.MuData], efficiency_files: dict[str, Path]):
-    for sample, mudata_obj in mudatas.items():
-        efficiency_file = efficiency_files[sample]
-        df = pd.read_csv(efficiency_file, index_col="id", sep=",", decimal=".", quotechar='"')
-        assert 'feature_type' in df.columns, "Columns 'feature_type' should be present in features_reference file."
-        feature_types = df['feature_type']
-        missing_features = set(feature_types) - set(FEATURE_TYPES_NAMES)
-        if missing_features:
-            raise ValueError("Not all feature types present in the features_reference file are supported by this component.\n"
-                            f"Missing support for features: {','.join(missing_features)}.")
-        for feature_type in feature_types:
-            modality = FEATURE_TYPES_NAMES[feature_type]
-            subset_df = df.loc[df['feature_type'] == feature_type]
-            mudata_obj.mod[modality].uns['feature_reference'] = subset_df
-    return mudatas
+def process_feature_reference(mudata: mudata.MuData, efficiency_file: Path):
+    df = pd.read_csv(efficiency_file, index_col="id", sep=",", decimal=".", quotechar='"')
+    assert 'feature_type' in df.columns, "Columns 'feature_type' should be present in features_reference file."
+    feature_types = df['feature_type']
+    missing_features = set(feature_types) - set(FEATURE_TYPES_NAMES)
+    if missing_features:
+        raise ValueError("Not all feature types present in the features_reference file are supported by this component.\n"
+                         f"Missing support for features: {','.join(missing_features)}.")
+    for feature_type in feature_types:
+        modality = FEATURE_TYPES_NAMES[feature_type]
+        subset_df = df.loc[df['feature_type'] == feature_type]
+        mudata.mod[modality].uns['feature_reference'] = subset_df
+    return mudata
 
 def process_counts(counts_folder: Path, multiplexing_info, metrics_files):
     counts_matrix_file = counts_folder / "raw_feature_bc_matrix.h5"
@@ -242,48 +267,46 @@ def process_metrics_summary(mudatas: dict[str, mudata.MuData], metrics_files: di
                 pass
     return mudatas
 
-def process_antigen_analysis(mudatas: dict[str, mudata.MuData], antigen_analysis_folder_paths: dict[str, Path]):
-    for sample_id, mudata_obj in mudatas.items():
-        antigen_analysis_folder_path = antigen_analysis_folder_paths[sample_id]
-        assert 'antigen' in mudata_obj.mod
-        per_barcodes_file = antigen_analysis_folder_path / "per_barcode.csv"
-        assert per_barcodes_file.is_file(), "Expected a per_barcode.csv file to be present."
-        per_barcodes_df = pd.read_csv(per_barcodes_file, index_col="barcode",
-                                    sep=",", decimal=".", quotechar='"')
-        is_gex_cell = per_barcodes_df['is_gex_cell']
-        assert len(set(is_gex_cell.unique().tolist()) - set([False, True])) == 0, \
-            "Expected 'is_gex_cell' column to be boolean. Please report this as a bug."
-        barcodes_in_gex = per_barcodes_df[is_gex_cell]
-        # All of the barcodes listed in the per_barcode.csv with is_gex_cell set to 'True'
-        # must be in the 'rna' (an thus also 'antigen') modality
-        assert barcodes_in_gex.index.difference(mudata_obj['rna'].obs_names).empty
-        orig_obs_names = mudata_obj['antigen'].obs_names.copy() 
-        mudata_obj['antigen'].obs = cast_to_writeable_dtype(pd.concat([mudata_obj['antigen'].obs, barcodes_in_gex],
-                                                        axis='columns',
-                                                        join='outer',
-                                                        verify_integrity=True,
-                                                        sort=False))
-        assert orig_obs_names.equals(mudata_obj['antigen'].obs_names)
-        del orig_obs_names
+def process_antigen_analysis(mudata: mudata.MuData, antigen_analysis_folder_path: Path):
+    assert 'antigen' in mudata.mod
+    per_barcodes_file = antigen_analysis_folder_path / "per_barcode.csv"
+    assert per_barcodes_file.is_file(), "Expected a per_barcode.csv file to be present."
+    per_barcodes_df = pd.read_csv(per_barcodes_file, index_col="barcode",
+                                  sep=",", decimal=".", quotechar='"')
+    is_gex_cell = per_barcodes_df['is_gex_cell']
+    assert len(set(is_gex_cell.unique().tolist()) - set([False, True])) == 0, \
+        "Expected 'is_gex_cell' column to be boolean. Please report this as a bug."
+    barcodes_in_gex = per_barcodes_df[is_gex_cell]
+    # All of the barcodes listed in the per_barcode.csv with is_gex_cell set to 'True'
+    # must be in the 'rna' (an thus also 'antigen') modality
+    assert barcodes_in_gex.index.difference(mudata['rna'].obs_names).empty
+    orig_obs_names = mudata['antigen'].obs_names.copy() 
+    mudata['antigen'].obs = cast_to_writeable_dtype(pd.concat([mudata['antigen'].obs, barcodes_in_gex],
+                                                    axis='columns',
+                                                    join='outer',
+                                                    verify_integrity=True,
+                                                    sort=False))
+    assert orig_obs_names.equals(mudata['antigen'].obs_names)
+    del orig_obs_names
 
-        # The antigen_specificity_scores.csv file is only present when cellranger 
-        # multi was run with a [antigen-specificity] section in config
-        specificity_file = antigen_analysis_folder_path / "antigen_specificity_scores.csv"
-        if specificity_file.is_file():
-            antigen_scores_df = pd.read_csv(specificity_file,
-                                            index_col=["barcode", "antigen"], sep=",",
-                                            decimal=".", quotechar='"')
-            score = antigen_scores_df.unstack()
-            assert score.index.difference(mudata_obj['rna'].obs_names).empty
-            antigens = score.columns.unique(level='antigen')
-            for antigen in antigens:
-                score_antigen = score.loc[:, (slice(None), antigen)].droplevel("antigen", axis=1)
-                score_antigen = score_antigen.reindex(mudata_obj['rna'].obs_names)
-                mudata_obj['antigen'].obsm[f'antigen_specificity_scores_{antigen}'] = cast_to_writeable_dtype(score_antigen)
-    return mudatas
+    # The antigen_specificity_scores.csv file is only present when cellranger 
+    # multi was run with a [antigen-specificity] section in config
+    specificity_file = antigen_analysis_folder_path / "antigen_specificity_scores.csv"
+    if specificity_file.is_file():
+        antigen_scores_df = pd.read_csv(specificity_file,
+                                        index_col=["barcode", "antigen"], sep=",",
+                                        decimal=".", quotechar='"')
+        score = antigen_scores_df.unstack()
+        assert score.index.difference(mudata['rna'].obs_names).empty
+        antigens = score.columns.unique(level='antigen')
+        for antigen in antigens:
+            score_antigen = score.loc[:, (slice(None), antigen)].droplevel("antigen", axis=1)
+            score_antigen = score_antigen.reindex(mudata['rna'].obs_names)
+            mudata['antigen'].obsm[f'antigen_specificity_scores_{antigen}'] = cast_to_writeable_dtype(score_antigen)
+    return mudata
 
 
-def process_vdj(mudatas: dict[str, mudata.MuData], vdj_folder_path: str):
+def process_vdj(mudata: mudata.MuData, vdj_folder_path: Path):
     # https://scverse.org/scirpy/latest/generated/scirpy.io.read_10x_vdj.html#scirpy-io-read-10x-vdj
     # According to docs, using the json is preferred as this file includes intron info.
     all_config_json_file = vdj_folder_path / "all_contig_annotations.json"
@@ -309,6 +332,7 @@ def get_modalities(input_data):
         'feature_reference': process_feature_reference,
         'perturbation_efficiencies_by_feature': partial(proces_perturbation, 'perturbation_efficiencies_by_feature'),
         'perturbation_efficiencies_by_target': partial(proces_perturbation, 'perturbation_efficiencies_by_target'),
+        'antigen_analysis': process_antigen_analysis,
         'antigen_analysis': process_antigen_analysis,
     }
     mudata_per_sample = process_counts(input_data['count'],
