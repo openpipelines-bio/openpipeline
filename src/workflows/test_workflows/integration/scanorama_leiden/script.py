@@ -18,9 +18,9 @@ output_mudata = read_h5mu(par["input"])
 
 assert input_mudata.mod.keys() == output_mudata.mod.keys(), "Input and output should have the same modalities."
 
-assert "bbknn_integration_neighbors" in output_mudata.mod["rna"].uns, "Output should contain key 'harmonypy_integration_neighbors'."
-assert "X_leiden_harmonypy_umap" in output_mudata.mod["rna"].obsm, "Output should contain key 'X_leiden_harmony_umap'."
-assert set(['harmonypy_integration_connectivities', 'harmonypy_integration_distances']).issubset(output_mudata.mod["rna"].obsp.keys()), "Output should contain keys 'harmonypy_integration_connectivities' and 'harmonypy_integration_distances'."
+assert "scanorama_integration_neighbors" in output_mudata.mod["rna"].uns, "Output should contain key 'scanorama_integration_neighbors'."
+assert "X_leiden_scanorama_umap" in output_mudata.mod["rna"].obsm, "Output should contain key 'X_leiden_scanorama_umap'."
+assert set(['scanorama_integration_connectivities', 'scanorama_integration_distances']).issubset(output_mudata.mod["rna"].obsp.keys()), "Output should contain keys 'scanorama_integration_connectivities' and 'scanorama_integration_distances'."
 
 # if not par["leiden_resolution"]:
 #     assert "bbknn_integration_leiden_1.0" in output_mudata.mod["rna"].obs, "Output should contain key 'bbknn_integration_leiden_1.0'."
