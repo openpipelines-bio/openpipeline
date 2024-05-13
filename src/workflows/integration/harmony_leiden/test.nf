@@ -1,6 +1,8 @@
 nextflow.enable.dsl=2
 
 include { harmony_leiden } from params.rootDir + "/target/nextflow/workflows/integration/harmony_leiden/main.nf"
+include { harmony_leiden_test } from params.rootDir + "/target/nextflow/test_workflows/integration/harmony_leiden_test/main.nf"
+
 
 workflow test_wf {
   resources_test = file("${params.rootDir}/resources_test")
@@ -26,7 +28,14 @@ workflow test_wf {
       ]
     ])
     | map{ state -> [state.id, state] }
-    | harmony_leiden
+    | harmony_leiden.run(
+      toState: {id, output, state ->
+        output + [
+          input_og: state.input,
+          leiden_resolution: state.leiden_resolution
+        ]
+      }
+    )
     | view { output ->
       assert output.size() == 2 : "Outputs should contain two elements; [id, state]"
 
@@ -43,6 +52,18 @@ workflow test_wf {
 
       "Output: $output"
     }
+
+    // | view
+    | bbkn_harmony_test.run(
+      fromState: {id, state ->
+        [
+          input: state.output,
+          input_og: state.input_og,
+          // leiden_resolution: state.leiden_resolution
+        ]
+      }
+    )
+
     | toSortedList({a, b -> a[0] <=> b[0]})
     | map { output_list ->
       assert output_list.size() == 2 : "output channel should contain 2 events"
