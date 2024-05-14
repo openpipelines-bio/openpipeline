@@ -1,6 +1,8 @@
 nextflow.enable.dsl=2
 
 include { totalvi_leiden } from params.rootDir + "/target/nextflow/workflows/integration/totalvi_leiden/main.nf"
+include { totalvi_leiden_test } from params.rootDir + "/target/nextflow/test_workflows/integration/totalvi_leiden_test/main.nf"
+
 
 workflow test_wf {
     // allow changing the resources_test dir
@@ -52,7 +54,14 @@ workflow test_wf {
       def new_state = state + ["reference": copy]
       [id, new_state]
     }
-    | totalvi_leiden
+    | totalvi_leiden.run(
+      toState: {id, output, state ->
+        output + [
+          input_og: state.input,
+          leiden_resolution: state.leiden_resolution
+        ]
+      }
+    )
     | view { output ->
       assert output.size() == 2 : "Outputs should contain two elements; [id, state]"
 
@@ -80,6 +89,17 @@ workflow test_wf {
       
       "Output: $output"
     }
+
+    | totalvi_leiden_test.run(
+      fromState: {id, state ->
+        [
+          input: state.output,
+          input_og: state.input_og,
+          // leiden_resolution: state.leiden_resolution
+        ]
+      }
+    )
+
     | toSortedList({a, b -> a[0] <=> b[0]})
     | map { output_list ->
       assert output_list.size() == 3 : "output channel should contain 3 events"
