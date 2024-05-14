@@ -164,23 +164,63 @@ functionality:
           type: string
           description: Name of the .uns slot under which to QC metrics (if any).
           default: "metrics_cellranger"
+
     - name: Cell multiplexing parameters
-      description: Arguments related to cell multiplexing.
       arguments:
         - type: string
-          name: --cell_multiplex_sample_id
+          name: --cell_multiplex_oligo_ids
+          multiple: true
           description: |
-            A name to identify a multiplexed sample. Must be alphanumeric with hyphens and/or underscores, 
+            The Cell Multiplexing oligo IDs used to multiplex this sample. If multiple CMOs were used for a sample,
+            separate IDs with a pipe (e.g., CMO301|CMO302). Required for Cell Multiplexing libraries.
+        
+        # These end up in the [gene-expression] section
+        - type: double
+          name: --min_assignment_confidence
+          description: | 
+            The minimum estimated likelihood to call a sample as tagged with a Cell Multiplexing Oligo (CMO) instead of "Unassigned".
+            Users may wish to tolerate a higher rate of mis-assignment in order to obtain more singlets to include in their analysis,
+            or a lower rate of mis-assignment at the cost of obtaining fewer singlets.
+        - type: file 
+          direction: input
+          required: false
+          name: "--cmo_set"
+          description: |
+            Path to a custom CMO set CSV file, declaring CMO constructs and associated barcodes. If the default CMO reference IDs that are built into
+            the Cell Ranger software are required, this option does not need to be used.
+        - type: file
+          direction: input
+          required: false
+          name: "--barcode_sample_assignment"
+          description: |
+            Path to a barcode-sample assignment CSV file that specifies the barcodes that belong to each sample.
+    
+    - name: Sample parameters
+      arguments:
+        - type: string
+          name: --sample_ids
+          multiple: true
+          description: |
+            A name to identify a multiplexed sample. Must be alphanumeric with hyphens and/or underscores,
             and less than 64 characters. Required for Cell Multiplexing libraries.
         - type: string
-          name: --cell_multiplex_oligo_ids
-          description: |
-            The Cell Multiplexing oligo IDs used to multiplex this sample.
-            If multiple CMOs were used for a sample, separate IDs with a pipe (e.g., CMO301|CMO302).
-            Required for Cell Multiplexing libraries.
-        - type: string
-          name: --cell_multiplex_description
+          multiple: true
+          name: --sample_description
           description: A description for the sample.
+        - type: integer
+          multiple: true
+          name: --sample_expect_cells
+          example: 3000
+          description: |
+            Expected number of recovered cells, used as input to cell calling algorithm.
+        - type: integer
+          name: "--sample_force_cells"
+          example: 3000
+          multiple: true
+          required: false
+          description: |
+            Force pipeline to use this number of cells, bypassing cell detection.
+
     - name: Gene expression arguments
       description: Arguments relevant to the analysis of gene expression data.
       arguments:
