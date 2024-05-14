@@ -1,0 +1,52 @@
+# Inputs
+id: # please fill in - example: "foo"
+# input: ["sample_S1_L001_R1_001.fastq.gz", "sample_S1_L001_R2_001.fastq.gz"]
+gex_reference: # please fill in - example: "reference_genome.tar.gz"
+# vdj_reference: "reference_vdj.tar.gz"
+# feature_reference: "feature_reference.csv"
+# vdj_inner_enrichment_primers: "enrichment_primers.txt"
+
+# Outputs
+# output_raw: "$id.$key.output_raw.output_raw"
+# output_h5mu: "$id.$key.output_h5mu.h5mu"
+uns_metrics: "metrics_cellranger"
+
+# Feature type-specific input files
+# gex_input: ["mysample_S1_L001_R1_001.fastq.gz", "mysample_S1_L001_R2_001.fastq.gz"]
+# abc_input: ["mysample_S1_L001_R1_001.fastq.gz", "mysample_S1_L001_R2_001.fastq.gz"]
+# cgc_input: ["mysample_S1_L001_R1_001.fastq.gz", "mysample_S1_L001_R2_001.fastq.gz"]
+# mux_input: ["mysample_S1_L001_R1_001.fastq.gz", "mysample_S1_L001_R2_001.fastq.gz"]
+# vdj_input: ["mysample_S1_L001_R1_001.fastq.gz", "mysample_S1_L001_R2_001.fastq.gz"]
+# vdj_t_input: ["mysample_S1_L001_R1_001.fastq.gz", "mysample_S1_L001_R2_001.fastq.gz"]
+# vdj_t_gd_input: ["mysample_S1_L001_R1_001.fastq.gz", "mysample_S1_L001_R2_001.fastq.gz"]
+# vdj_b_input: ["mysample_S1_L001_R1_001.fastq.gz", "mysample_S1_L001_R2_001.fastq.gz"]
+# agc_input: ["mysample_S1_L001_R1_001.fastq.gz", "mysample_S1_L001_R2_001.fastq.gz"]
+
+# Cell multiplexing parameters
+# cell_multiplex_oligo_ids: ["foo"]
+# min_assignment_confidence: 123.0
+# cmo_set: "path/to/file"
+# barcode_sample_assignment: "path/to/file"
+
+# Sample parameters
+# sample_ids: ["foo"]
+# sample_description: ["foo"]
+# sample_expect_cells: [3000]
+# sample_force_cells: [3000]
+
+# Gene expression arguments
+# gex_expect_cells: 3000
+gex_chemistry: "auto"
+gex_secondary_analysis: false
+gex_generate_bam: true
+gex_include_introns: true
+
+# Library arguments
+# library_id: ["mysample1"]
+# library_type: ["Gene Expression"]
+# library_subsample: ["0.5"]
+# library_lanes: ["1-4"]
+
+# Nextflow input-output arguments
+publish_dir: # please fill in - example: "output/"
+# param_list: "my_params.yaml"

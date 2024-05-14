@@ -1,0 +1,359 @@
+functionality:
+  name: "cellranger_mapping"
+  namespace: "workflows/ingestion"
+  version: "cellranger_multi_demultiplex_build"
+  authors:
+  - name: "Angela Oliveira Pisco"
+    roles:
+    - "author"
+    info:
+      role: "Contributor"
+      links:
+        github: "aopisco"
+        orcid: "0000-0003-0142-2355"
+        linkedin: "aopisco"
+      organizations:
+      - name: "Insitro"
+        href: "https://insitro.com"
+        role: "Director of Computational Biology"
+      - name: "Open Problems"
+        href: "https://openproblems.bio"
+        role: "Core Member"
+  - name: "Robrecht Cannoodt"
+    roles:
+    - "author"
+    - "maintainer"
+    info:
+      role: "Core Team Member"
+      links:
+        email: "robrecht@data-intuitive.com"
+        github: "rcannood"
+        orcid: "0000-0003-3641-729X"
+        linkedin: "robrechtcannoodt"
+      organizations:
+      - name: "Data Intuitive"
+        href: "https://www.data-intuitive.com"
+        role: "Data Science Engineer"
+      - name: "Open Problems"
+        href: "https://openproblems.bio"
+        role: "Core Member"
+  - name: "Dries De Maeyer"
+    roles:
+    - "author"
+    info:
+      role: "Core Team Member"
+      links:
+        email: "ddemaeyer@gmail.com"
+        github: "ddemaeyer"
+        linkedin: "dries-de-maeyer-b46a814"
+      organizations:
+      - name: "Janssen Pharmaceuticals"
+        href: "https://www.janssen.com"
+        role: "Principal Scientist"
+  argument_groups:
+  - name: "Inputs"
+    arguments:
+    - type: "string"
+      name: "--id"
+      description: "ID of the sample."
+      info: null
+      example:
+      - "foo"
+      required: true
+      direction: "input"
+      multiple: false
+      multiple_sep: ":"
+      dest: "par"
+    - type: "file"
+      name: "--input"
+      description: "The fastq.gz files to align. Can also be a single directory containing\
+        \ fastq.gz files."
+      info: null
+      example:
+      - "sample_S1_L001_R1_001.fastq.gz"
+      - "sample_S1_L001_R2_001.fastq.gz"
+      must_exist: true
+      create_parent: true
+      required: true
+      direction: "input"
+      multiple: true
+      multiple_sep: ";"
+      dest: "par"
+    - type: "file"
+      name: "--reference"
+      description: "The path to Cell Ranger reference tar.gz file."
+      info: null
+      example:
+      - "reference.tar.gz"
+      must_exist: true
+      create_parent: true
+      required: true
+      direction: "input"
+      multiple: false
+      multiple_sep: ":"
+      dest: "par"
+  - name: "Outputs"
+    arguments:
+    - type: "file"
+      name: "--output_raw"
+      description: "Location where the output folder from Cell Ranger will be stored."
+      info: null
+      example:
+      - "output_dir"
+      must_exist: true
+      create_parent: true
+      required: true
+      direction: "output"
+      multiple: false
+      multiple_sep: ":"
+      dest: "par"
+    - type: "file"
+      name: "--output_h5mu"
+      description: "The output from Cell Ranger, converted to h5mu."
+      info: null
+      example:
+      - "output.h5mu"
+      must_exist: true
+      create_parent: true
+      required: true
+      direction: "output"
+      multiple: false
+      multiple_sep: ":"
+      dest: "par"
+    - type: "string"
+      name: "--uns_metrics"
+      description: "Name of the .uns slot under which to QC metrics (if any)."
+      info: null
+      default:
+      - "metrics_summary"
+      required: false
+      direction: "input"
+      multiple: false
+      multiple_sep: ":"
+      dest: "par"
+    - type: "string"
+      name: "--output_type"
+      description: "Which Cell Ranger output to use for converting to h5mu."
+      info: null
+      default:
+      - "raw"
+      required: false
+      choices:
+      - "raw"
+      - "filtered"
+      direction: "input"
+      multiple: false
+      multiple_sep: ":"
+      dest: "par"
+  - name: "Cell Ranger arguments"
+    arguments:
+    - type: "integer"
+      name: "--expect_cells"
+      description: "Expected number of recovered cells, used as input to cell calling\
+        \ algorithm."
+      info: null
+      example:
+      - 3000
+      required: false
+      direction: "input"
+      multiple: false
+      multiple_sep: ":"
+      dest: "par"
+    - type: "string"
+      name: "--chemistry"
+      description: "Assay configuration.\n- auto: autodetect mode\n- threeprime: Single\
+        \ Cell 3'\n- fiveprime: Single Cell 5'\n- SC3Pv1: Single Cell 3' v1\n- SC3Pv2:\
+        \ Single Cell 3' v2\n- SC3Pv3: Single Cell 3' v3\n- SC3Pv3LT: Single Cell\
+        \ 3' v3 LT\n- SC3Pv3HT: Single Cell 3' v3 HT\n- SC5P-PE: Single Cell 5' paired-end\n\
+        - SC5P-R2: Single Cell 5' R2-only\n- SC-FB: Single Cell Antibody-only 3' v2\
+        \ or 5'\nSee https://kb.10xgenomics.com/hc/en-us/articles/115003764132-How-does-Cell-Ranger-auto-detect-chemistry-\
+        \ for more information.\n"
+      info: null
+      default:
+      - "auto"
+      required: false
+      choices:
+      - "auto"
+      - "threeprime"
+      - "fiveprime"
+      - "SC3Pv1"
+      - "SC3Pv2"
+      - "SC3Pv3"
+      - "SC3Pv3LT"
+      - "SC3Pv3HT"
+      - "SC5P-PE"
+      - "SC5P-R2"
+      - "SC-FB"
+      direction: "input"
+      multiple: false
+      multiple_sep: ":"
+      dest: "par"
+    - type: "boolean"
+      name: "--secondary_analysis"
+      description: "Whether or not to run the secondary analysis e.g. clustering."
+      info: null
+      default:
+      - false
+      required: false
+      direction: "input"
+      multiple: false
+      multiple_sep: ":"
+      dest: "par"
+    - type: "boolean"
+      name: "--generate_bam"
+      description: "Whether to generate a BAM file."
+      info: null
+      default:
+      - true
+      required: false
+      direction: "input"
+      multiple: false
+      multiple_sep: ":"
+      dest: "par"
+    - type: "boolean"
+      name: "--include_introns"
+      description: "Include intronic reads in count (default=true unless --target-panel\
+        \ is specified in which case default=false)"
+      info: null
+      default:
+      - true
+      required: false
+      direction: "input"
+      multiple: false
+      multiple_sep: ":"
+      dest: "par"
+  resources:
+  - type: "nextflow_script"
+    path: "main.nf"
+    is_executable: true
+    entrypoint: "run_wf"
+  - type: "file"
+    path: "src/workflows/utils/"
+  - type: "file"
+    path: "./src/workflows/utils/labels.config"
+    dest: "nextflow_labels.config"
+  description: "A pipeline for running Cell Ranger mapping."
+  test_resources:
+  - type: "nextflow_script"
+    path: "test.nf"
+    is_executable: true
+    entrypoint: "test_wf"
+  - type: "file"
+    path: "resources_test/cellranger_tiny_fastq"
+  - type: "file"
+    path: "src/base/openpipelinetestutils"
+    dest: "openpipelinetestutils"
+  info:
+    name: "Cell Ranger mapping"
+  status: "enabled"
+  requirements:
+    commands:
+    - "ps"
+  dependencies:
+  - name: "mapping/cellranger_count"
+    repository:
+      type: "local"
+      localPath: ""
+    foundConfigPath: "/home/runner/work/openpipeline/openpipeline/src/mapping/cellranger_count/config.vsh.yaml"
+    configInfo:
+      functionalityName: "cellranger_count"
+      git_tag: "0.2.0-1593-g882dfd0b8a"
+      git_remote: "https://github.com/openpipelines-bio/openpipeline"
+      viash_version: "0.8.5"
+      config: "/home/runner/work/openpipeline/openpipeline/src/mapping/cellranger_count/config.vsh.yaml"
+      functionalityNamespace: "mapping"
+      output: ""
+      platform: ""
+      git_commit: "882dfd0b8a5cec1e093fd739c6297ce4b5193b20"
+      executable: "/nextflow/mapping/cellranger_count/main.nf"
+    writtenPath: "/home/runner/work/openpipeline/openpipeline/target/nextflow/mapping/cellranger_count"
+  - name: "mapping/cellranger_count_split"
+    repository:
+      type: "local"
+      localPath: ""
+    foundConfigPath: "/home/runner/work/openpipeline/openpipeline/src/mapping/cellranger_count_split/config.vsh.yaml"
+    configInfo:
+      functionalityName: "cellranger_count_split"
+      git_tag: "0.2.0-1593-g882dfd0b8a"
+      git_remote: "https://github.com/openpipelines-bio/openpipeline"
+      viash_version: "0.8.5"
+      config: "/home/runner/work/openpipeline/openpipeline/src/mapping/cellranger_count_split/config.vsh.yaml"
+      functionalityNamespace: "mapping"
+      output: ""
+      platform: ""
+      git_commit: "882dfd0b8a5cec1e093fd739c6297ce4b5193b20"
+      executable: "/nextflow/mapping/cellranger_count_split/main.nf"
+    writtenPath: "/home/runner/work/openpipeline/openpipeline/target/nextflow/mapping/cellranger_count_split"
+  - name: "convert/from_10xh5_to_h5mu"
+    repository:
+      type: "local"
+      localPath: ""
+    foundConfigPath: "/home/runner/work/openpipeline/openpipeline/src/convert/from_10xh5_to_h5mu/config.vsh.yaml"
+    configInfo:
+      functionalityName: "from_10xh5_to_h5mu"
+      git_tag: "0.2.0-1593-g882dfd0b8a"
+      git_remote: "https://github.com/openpipelines-bio/openpipeline"
+      viash_version: "0.8.5"
+      config: "/home/runner/work/openpipeline/openpipeline/src/convert/from_10xh5_to_h5mu/config.vsh.yaml"
+      functionalityNamespace: "convert"
+      output: ""
+      platform: ""
+      git_commit: "882dfd0b8a5cec1e093fd739c6297ce4b5193b20"
+      executable: "/nextflow/convert/from_10xh5_to_h5mu/main.nf"
+    writtenPath: "/home/runner/work/openpipeline/openpipeline/target/nextflow/convert/from_10xh5_to_h5mu"
+  set_wd_to_resources_dir: false
+platforms:
+- type: "nextflow"
+  id: "nextflow"
+  directives:
+    tag: "$id"
+  auto:
+    simplifyInput: true
+    simplifyOutput: false
+    transcript: false
+    publish: false
+  config:
+    labels:
+      mem1gb: "memory = 1.GB"
+      mem2gb: "memory = 2.GB"
+      mem4gb: "memory = 4.GB"
+      mem8gb: "memory = 8.GB"
+      mem16gb: "memory = 16.GB"
+      mem32gb: "memory = 32.GB"
+      mem64gb: "memory = 64.GB"
+      mem128gb: "memory = 128.GB"
+      mem256gb: "memory = 256.GB"
+      mem512gb: "memory = 512.GB"
+      mem1tb: "memory = 1.TB"
+      mem2tb: "memory = 2.TB"
+      mem4tb: "memory = 4.TB"
+      mem8tb: "memory = 8.TB"
+      mem16tb: "memory = 16.TB"
+      mem32tb: "memory = 32.TB"
+      mem64tb: "memory = 64.TB"
+      mem128tb: "memory = 128.TB"
+      mem256tb: "memory = 256.TB"
+      mem512tb: "memory = 512.TB"
+      cpu1: "cpus = 1"
+      cpu2: "cpus = 2"
+      cpu5: "cpus = 5"
+      cpu10: "cpus = 10"
+      cpu20: "cpus = 20"
+      cpu50: "cpus = 50"
+      cpu100: "cpus = 100"
+      cpu200: "cpus = 200"
+      cpu500: "cpus = 500"
+      cpu1000: "cpus = 1000"
+    script:
+    - "includeConfig(\"nextflow_labels.config\")"
+  debug: false
+  container: "docker"
+info:
+  config: "/home/runner/work/openpipeline/openpipeline/src/workflows/ingestion/cellranger_mapping/config.vsh.yaml"
+  platform: "nextflow"
+  output: "/home/runner/work/openpipeline/openpipeline/target/nextflow/workflows/ingestion/cellranger_mapping"
+  executable: "/home/runner/work/openpipeline/openpipeline/target/nextflow/workflows/ingestion/cellranger_mapping/main.nf"
+  viash_version: "0.8.5"
+  git_commit: "882dfd0b8a5cec1e093fd739c6297ce4b5193b20"
+  git_remote: "https://github.com/openpipelines-bio/openpipeline"
+  git_tag: "0.2.0-1593-g882dfd0b8a"
