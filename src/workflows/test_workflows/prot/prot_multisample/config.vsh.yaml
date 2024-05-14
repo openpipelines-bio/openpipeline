@@ -1,0 +1,48 @@
+functionality:
+  name: "prot_multisample_test"
+  namespace: "test_workflows/prot"
+  description: "This component test the output of the integration test of the bbkn leiden workflow."
+  authors:
+    - __merge__: /src/authors/jakub_majercik.yaml
+  argument_groups:
+    - name: Inputs
+      arguments:
+        - name: "--input"
+          type: file
+          required: true
+          description: Path to h5mu output.
+          example: foo.final.h5mu
+        - name: "--input_og"
+          type: file
+          required: true
+          description: Path to the original h5mu file.
+          example: foo.h5mu
+        - name: "--leiden_resolution"
+          type: double
+          required: false
+          description: Resolution for leiden clustering.
+          multiple: true
+          example: [1]
+  resources:
+    - type: python_script
+      path: script.py
+    - path: /src/utils/setup_logger.py
+    - path: /src/base/openpipelinetestutils
+      dest: openpipelinetestutils
+platforms:
+  - type: docker
+    image: python:3.12-slim
+    setup:
+      - type: docker
+        copy: ["openpipelinetestutils /opt/openpipelinetestutils"]
+      - type: apt
+        packages: 
+          - procps
+      - type: python
+        packages: /opt/openpipelinetestutils
+      - type: python
+        pypi:
+          - mudata
+          # - pytest
+        __merge__: /src/base/requirements/viashpy.yaml
+  - type: nextflow
