@@ -1,5 +1,5 @@
 functionality:
-  name: "prot_multisample_test"
+  name: "prot_singlesample_test"
   namespace: "test_workflows/prot"
   description: "This component test the output of the integration test of the bbkn leiden workflow."
   authors:

@@ -1,6 +1,8 @@
 nextflow.enable.dsl=2
 
 include { prot_singlesample } from params.rootDir + "/target/nextflow/workflows/prot/prot_singlesample/main.nf"
+include { prot_singlesample_test } from params.rootDir + "/target/nextflow/test_workflows/prot/prot_singlesample_test/main.nf"
+
 
 workflow test_wf {
   // allow changing the resources_test dir
@@ -21,12 +23,28 @@ workflow test_wf {
       ]
     ])
     | map{ state -> [state.id, state] }
-    | prot_singlesample
+    | prot_singlesample.run(
+      toState: {id, output, state ->
+        output + [
+          input_og: state.input,
+        ]
+      }
+    )
     | view { output ->
       assert output.size() == 2 : "outputs should contain two elements; [id, file]"
       assert output[1].output.toString().endsWith(".h5mu") : "Output file should be a h5mu file. Found: ${output[1].output}"
       "Output: $output"
     }
+
+    | prot_singlesample_test.run(
+      fromState: {id, state ->
+        [
+          input: state.output,
+          input_og: state.input_og,
+        ]
+      }
+    )
+
     | toSortedList()
     | map { output_list ->
       assert output_list.size() == 1 : "output channel should contain one event"
