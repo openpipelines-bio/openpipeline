@@ -31,9 +31,14 @@ functionality:
     - name: "--output"
       alternatives: ["-o"]
       type: file
-      description: Output h5mu file.
+      description: Directory containing output h5mu files.
       example: output.h5mu
       direction: output
+    - name: "--sample_csv"
+      type: file
+      description: CSV file describing the sample name per output file
+      direction: output
+      example: "samples.csv"
     - name: "--output_compression"
       type: string
       choices: ["gzip", "lzf"]
@@ -53,9 +58,10 @@ functionality:
     - path: /resources_test/10x_5k_anticmv
     - path: /resources_test/10x_5k_lung_crispr
     - path: /resources_test/10x_5k_beam
+    - path: /resources_test/10x_5k_fixed
 platforms:
   - type: docker
-    image: python:3.10-slim
+    image: python:3.11-slim
     setup:
       - type: apt
         packages: 
@@ -63,8 +69,8 @@ platforms:
       - type: python
         __merge__: [/src/base/requirements/anndata_mudata.yaml, /src/base/requirements/scanpy.yaml, .]
         packages:
-          - scirpy~=0.11.1
-          - pandas~=2.0.0
+          - scirpy~=0.12.0
+          - pandas~=2.2.2
     test_setup:
       - type: python
         __merge__: [ /src/base/requirements/viashpy.yaml, .]
