@@ -14,7 +14,7 @@
 
 * Added `reference/build_cellranger_reference` component: build reference file compatible with ATAC and ATAC+GEX experiments (PR #726).
 
-* `demux/bcl_convert`: uadd support for no lane splitting (PR #804).
+* `demux/bcl_convert`: add support for no lane splitting (PR #804).
 
 ## MINOR CHANGES
 
