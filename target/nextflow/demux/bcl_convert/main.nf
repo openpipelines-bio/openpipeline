@@ -2938,6 +2938,16 @@ meta = [
         "multiple" : false,
         "multiple_sep" : ":",
         "dest" : "par"
+      },
+      {
+        "type" : "boolean",
+        "name" : "--no_lane_splitting",
+        "description" : "Wheter to avoid splitting FASTQ file by lane.",
+        "required" : false,
+        "direction" : "input",
+        "multiple" : false,
+        "multiple_sep" : ":",
+        "dest" : "par"
       }
     ],
     "resources" : [
@@ -3065,9 +3075,9 @@ meta = [
     "platform" : "nextflow",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/demux/bcl_convert",
     "viash_version" : "0.8.5",
-    "git_commit" : "0489f1d19dfe8553dfefaa1f71325224f9a76ebe",
+    "git_commit" : "789048d0f918360d4b2304e86d787f50a18115ea",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline",
-    "git_tag" : "0.2.0-1592-g0489f1d19d"
+    "git_tag" : "0.2.0-1593-g789048d0f9"
   }
 }'''))
 ]
@@ -3095,6 +3105,7 @@ $( if [ ! -z ${VIASH_PAR_TEST_MODE+x} ]; then echo "${VIASH_PAR_TEST_MODE}" | se
 $( if [ ! -z ${VIASH_PAR_STRICT_MODE+x} ]; then echo "${VIASH_PAR_STRICT_MODE}" | sed "s#'#'\\"'\\"'#g;s#.*#par_strict_mode='&'#" ; else echo "# par_strict_mode="; fi )
 $( if [ ! -z ${VIASH_PAR_TILES+x} ]; then echo "${VIASH_PAR_TILES}" | sed "s#'#'\\"'\\"'#g;s#.*#par_tiles='&'#" ; else echo "# par_tiles="; fi )
 $( if [ ! -z ${VIASH_PAR_EXCLUDE_TILES+x} ]; then echo "${VIASH_PAR_EXCLUDE_TILES}" | sed "s#'#'\\"'\\"'#g;s#.*#par_exclude_tiles='&'#" ; else echo "# par_exclude_tiles="; fi )
+$( if [ ! -z ${VIASH_PAR_NO_LANE_SPLITTING+x} ]; then echo "${VIASH_PAR_NO_LANE_SPLITTING}" | sed "s#'#'\\"'\\"'#g;s#.*#par_no_lane_splitting='&'#" ; else echo "# par_no_lane_splitting="; fi )
 $( if [ ! -z ${VIASH_META_FUNCTIONALITY_NAME+x} ]; then echo "${VIASH_META_FUNCTIONALITY_NAME}" | sed "s#'#'\\"'\\"'#g;s#.*#meta_functionality_name='&'#" ; else echo "# meta_functionality_name="; fi )
 $( if [ ! -z ${VIASH_META_RESOURCES_DIR+x} ]; then echo "${VIASH_META_RESOURCES_DIR}" | sed "s#'#'\\"'\\"'#g;s#.*#meta_resources_dir='&'#" ; else echo "# meta_resources_dir="; fi )
 $( if [ ! -z ${VIASH_META_EXECUTABLE+x} ]; then echo "${VIASH_META_EXECUTABLE}" | sed "s#'#'\\"'\\"'#g;s#.*#meta_executable='&'#" ; else echo "# meta_executable="; fi )
@@ -3119,8 +3130,9 @@ bcl-convert \\\\
   --sample-sheet "\\$par_sample_sheet" \\\\
   --first-tile-only "\\$par_test_mode" \\\\
   --strict-mode "\\$par_strict_mode" \\\\
+  \\${par_no_lane_splitting:+--no-lane-splitting "\\$par_no_lane_splitting"} \\\\
   \\${par_tiles:+--tiles \\$par_tiles} \\\\
-  \\${par_exclude_tiles:+--exclude-tiles \\$par_exclude_tiles} \\\\
+  \\${par_exclude_tiles:+--exclude-tiles \\$par_exclude_tiles} 
   
 
 if [ ! -z "\\$par_reports" ]; then

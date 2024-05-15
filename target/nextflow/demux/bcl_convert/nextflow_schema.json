@@ -113,6 +113,16 @@
             }
     
 
+        ,
+                "no_lane_splitting": {
+                "type":
+                "boolean",
+                "description": "Type: `boolean`. Wheter to avoid splitting FASTQ file by lane",
+                "help_text": "Type: `boolean`. Wheter to avoid splitting FASTQ file by lane."
+            
+            }
+    
+
 }
 },
     

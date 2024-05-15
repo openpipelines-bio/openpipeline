@@ -128,6 +128,15 @@ functionality:
     multiple: false
     multiple_sep: ":"
     dest: "par"
+  - type: "boolean"
+    name: "--no_lane_splitting"
+    description: "Wheter to avoid splitting FASTQ file by lane."
+    info: null
+    required: false
+    direction: "input"
+    multiple: false
+    multiple_sep: ":"
+    dest: "par"
   resources:
   - type: "bash_script"
     path: "script.sh"
@@ -226,6 +235,6 @@ info:
   output: "/home/runner/work/openpipeline/openpipeline/target/docker/demux/bcl_convert"
   executable: "/home/runner/work/openpipeline/openpipeline/target/docker/demux/bcl_convert/bcl_convert"
   viash_version: "0.8.5"
-  git_commit: "0489f1d19dfe8553dfefaa1f71325224f9a76ebe"
+  git_commit: "789048d0f918360d4b2304e86d787f50a18115ea"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"
-  git_tag: "0.2.0-1592-g0489f1d19d"
+  git_tag: "0.2.0-1593-g789048d0f9"

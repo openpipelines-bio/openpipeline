@@ -7,6 +7,7 @@ test_mode: false
 strict_mode: false
 # tiles: "foo"
 # exclude_tiles: "foo"
+# no_lane_splitting: true
 
 # Nextflow input-output arguments
 publish_dir: # please fill in - example: "output/"
