@@ -19,7 +19,6 @@ $meta_executable \
   --sample_sheet "$meta_resources_dir/bcl2/sample_sheet.csv" \
   --output "$TMPDIR/output1" \
   --test_mode true
-  
 echo ">>> Checking whether the output dir exists"
 [[ ! -d "$TMPDIR/output1" ]] && echo "Output dir could not be found!" && exit 1
 
