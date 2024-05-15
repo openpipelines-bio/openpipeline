@@ -53,7 +53,10 @@ functionality:
       type: string
       required: false
       description: "Exclude set of tiles by a regular expression"
-    
+    - name: --no_lane_splitting
+      type: boolean_true
+      description: Do not split FASTQ file by lane. Default is to split by lane.
+  
   resources:
     - type: bash_script
       path: script.sh

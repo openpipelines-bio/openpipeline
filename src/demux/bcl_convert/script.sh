@@ -10,6 +10,7 @@ par_test_mode=false
 ## VIASH END
 
 [ -d "$par_output" ] || mkdir -p "$par_output"
+[[ "$par_no_lane_splitting" == "false" ]] && unset par_no_lane_splitting
 
 bcl-convert \
   --force \
@@ -18,8 +19,9 @@ bcl-convert \
   --sample-sheet "$par_sample_sheet" \
   --first-tile-only "$par_test_mode" \
   --strict-mode "$par_strict_mode" \
+  --no-lane-splitting "$par_no_lane_splitting" \
   ${par_tiles:+--tiles $par_tiles} \
-  ${par_exclude_tiles:+--exclude-tiles $par_exclude_tiles} \
+  ${par_exclude_tiles:+--exclude-tiles $par_exclude_tiles} 
   
 
 if [ ! -z "$par_reports" ]; then
