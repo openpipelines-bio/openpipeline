@@ -31,7 +31,7 @@ functionality:
     - name: "--output"
       alternatives: ["-o"]
       type: file
-      description: Directory containing output h5mu files.
+      description: Directory for storing output h5mu files.
       example: output.h5mu
       direction: output
     - name: "--sample_csv"

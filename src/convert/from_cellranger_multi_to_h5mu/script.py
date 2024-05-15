@@ -14,7 +14,7 @@ import tempfile
 
 ## VIASH START
 par = {
-    "input": "/home/di/code/openpipelines-multisample/resources_test/10x_5k_beam/processed/10x_5k_beam.cellranger_multi.output",
+    "input": "resources_test/10x_5k_beam/processed/10x_5k_beam.cellranger_multi.output",
     "output": "foo.h5mu",
     "uns_metrics": "metrics_cellranger",
     "output_compression": "gzip"
