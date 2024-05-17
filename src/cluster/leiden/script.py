@@ -5,7 +5,7 @@ import scanpy as sc
 import numpy as np
 import numpy.typing as npt
 import anndata as ad
-from multiprocessing import Pool, managers, shared_memory
+from multiprocessing import managers, shared_memory, get_context
 from scipy.sparse import csr_matrix
 from pathlib import Path
 from itertools import repeat
@@ -164,40 +164,44 @@ def run_single_resolution(shared_csr_matrix, obs_names, resolution):
         )
     return adata_out.obs[str(resolution)]
 
-logger.info("Reading %s.", par["input"])
-adata = mu.read_h5ad(par["input"], mod=par['modality'], backed='r')
-logger.info("Processing modality '%s'.", par['modality'])
-try:
-    connectivities = adata.obsp[par['obsp_connectivities']]
-except KeyError:
-    raise ValueError(f"Could not find .obsp key \"{par['obsp_connectivities']}\" "
-                     "in modality {par['modality']}")
+def main():
+    logger.info("Reading %s.", par["input"])
+    adata = mu.read_h5ad(par["input"], mod=par['modality'], backed='r')
+    logger.info("Processing modality '%s'.", par['modality'])
+    try:
+        connectivities = adata.obsp[par['obsp_connectivities']]
+    except KeyError:
+        raise ValueError(f"Could not find .obsp key \"{par['obsp_connectivities']}\" "
+                        "in modality {par['modality']}")
 
-with managers.SharedMemoryManager() as smm:
-    # anndata converts the index to strings, so no worries that it cannot be stored in ShareableList
-    # because it has an unsupported dtype. It should always be string...
-    index_contents = adata.obs.index.to_list()
-    assert all([isinstance(item, str) for item in index_contents])
-    obs_names = smm.ShareableList(index_contents)
+    with managers.SharedMemoryManager() as smm:
+        # anndata converts the index to strings, so no worries that it cannot be stored in ShareableList
+        # because it has an unsupported dtype. It should always be string...
+        index_contents = adata.obs.index.to_list()
+        assert all([isinstance(item, str) for item in index_contents])
+        obs_names = smm.ShareableList(index_contents)
 
-    shared_csr_matrix = SharedCsrMatrix.from_csr_matrix(smm, connectivities)
-    with Pool(meta['cpus']) as pool:
-        results = pool.starmap(run_single_resolution, 
-                               zip(repeat(shared_csr_matrix), 
-                                   repeat(obs_names), 
-                                   par["resolution"]))
-        results = {str(resolution): result for resolution, result 
-                   in zip(par["resolution"], results)} 
-adata.obsm[par["obsm_name"]] = pd.DataFrame(results)
-logger.info("Writing to %s.", par["output"])
+        shared_csr_matrix = SharedCsrMatrix.from_csr_matrix(smm, connectivities)
+        with get_context('spawn').Pool(meta['cpus']) as pool:
+            results = pool.starmap(run_single_resolution, 
+                                zip(repeat(shared_csr_matrix), 
+                                    repeat(obs_names), 
+                                    par["resolution"]))
+            results = {str(resolution): result for resolution, result 
+                    in zip(par["resolution"], results)} 
+    adata.obsm[par["obsm_name"]] = pd.DataFrame(results)
+    logger.info("Writing to %s.", par["output"])
 
-output_file = Path(par["output"])
-logger.info('Writing output to %s.', par['output'])
-output_file_uncompressed = output_file.with_name(output_file.stem + "_uncompressed.h5mu") \
-    if par["output_compression"] else output_file
-shutil.copyfile(par['input'], output_file_uncompressed)
-mu.write_h5ad(filename=output_file_uncompressed, mod=par['modality'], data=adata)
-if par["output_compression"]:
-    compress_h5mu(output_file_uncompressed, output_file, compression=par["output_compression"])
-    output_file_uncompressed.unlink()
-logger.info("Finished.")
+    output_file = Path(par["output"])
+    logger.info('Writing output to %s.', par['output'])
+    output_file_uncompressed = output_file.with_name(output_file.stem + "_uncompressed.h5mu") \
+        if par["output_compression"] else output_file
+    shutil.copyfile(par['input'], output_file_uncompressed)
+    mu.write_h5ad(filename=output_file_uncompressed, mod=par['modality'], data=adata)
+    if par["output_compression"]:
+        compress_h5mu(output_file_uncompressed, output_file, compression=par["output_compression"])
+        output_file_uncompressed.unlink()
+    logger.info("Finished.")
+
+if __name__ == "__main__":
+    main()
