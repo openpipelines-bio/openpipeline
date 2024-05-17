@@ -31,8 +31,11 @@ functionality:
     - name: "--output"
       alternatives: ["-o"]
       type: file
-      description: Directory for storing output h5mu files.
-      example: output.h5mu
+      multiple: true
+      description: |
+        Locations for the output files. Must contain a wildcard (*) character,
+        which will be replaced with the sample name.
+      example: "*.h5mu"
       direction: output
     - name: "--sample_csv"
       type: file

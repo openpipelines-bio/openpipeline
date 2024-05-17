@@ -16,19 +16,20 @@ input_beam = f"{meta['resources_dir']}/10x_5k_beam/processed/10x_5k_beam.cellran
 input_fixed_rna = f"{meta['resources_dir']}/10x_5k_fixed/processed/10x_5k_fixed.cellranger_multi.output"
 
 def test_cellranger_multi_basic(run_component, tmp_path):
-    output_path = tmp_path / "converted"
+    output_dir = tmp_path / "converted" 
+    output_path_template = output_dir / "*.h5mu"
     samples_csv = tmp_path / "samples.csv"
     # run component
     run_component([
         "--input", input_anticmv,
-        "--output", str(output_path),
+        "--output", str(output_path_template),
         "--output_compression", "gzip",
         "--sample_csv", samples_csv,
     ])
-    assert output_path.is_dir()
+    assert output_dir.is_dir()
 
     # check output
-    samples = [item for item in output_path.iterdir() if item.is_file()]
+    samples = [item for item in output_dir.iterdir() if item.is_file()]
     assert len(samples) == 1
     output_path = samples[0]
     converted_data = read_h5mu(output_path)
@@ -49,20 +50,21 @@ def test_cellranger_multi_basic(run_component, tmp_path):
     smaller_number == "6"
     
 def test_cellranger_multi_to_h5mu_crispr(run_component, tmp_path):
-    output_path = tmp_path / "converted"
+    output_dir = tmp_path / "converted" 
+    output_path_template = output_dir / "*.h5mu"
     samples_csv = tmp_path / "samples.csv"
 
     # run component
     run_component([
         "--input", input_lung_crispr,
-        "--output", str(output_path),
+        "--output", str(output_path_template),
         "--output_compression", "gzip",
         "--sample_csv", samples_csv,
         ])
-    assert output_path.is_dir()
+    assert output_dir.is_dir()
 
     # check output
-    samples = [item for item in output_path.iterdir() if item.is_file()]
+    samples = [item for item in output_dir.iterdir() if item.is_file()]
     assert len(samples) == 1
     output_path = samples[0]
     converted_data = read_h5mu(output_path)
@@ -74,20 +76,21 @@ def test_cellranger_multi_to_h5mu_crispr(run_component, tmp_path):
     assert 'feature_reference' in converted_data.mod['gdo'].uns
 
 def test_cellranger_multi_to_h5mu_beam(run_component, tmp_path):
-    output_path = tmp_path / "converted"
+    output_dir = tmp_path / "converted" 
+    output_path_template = output_dir / "*.h5mu"
     samples_csv = tmp_path / "samples.csv"
 
     # run component
     run_component([
         "--input", input_beam,
-        "--output", str(output_path),
+        "--output", str(output_path_template),
         "--output_compression", "gzip",
         "--sample_csv", samples_csv,
     ])
-    assert output_path.is_dir()
+    assert output_dir.is_dir()
 
     # check output
-    samples = [item for item in output_path.iterdir() if item.is_file()]
+    samples = [item for item in output_dir.iterdir() if item.is_file()]
     assert len(samples) == 1
     output_path = samples[0]
     converted_data = read_h5mu(output_path)
@@ -97,20 +100,21 @@ def test_cellranger_multi_to_h5mu_beam(run_component, tmp_path):
 
 
 def test_cellranger_multi_to_h5mu_fixed_rna(run_component, tmp_path):
-    output_path = tmp_path / "converted"
+    output_dir = tmp_path / "converted" 
+    output_path_template = output_dir / "*.h5mu"
     samples_csv = tmp_path / "samples.csv"
 
     # run component
     run_component([
         "--input", input_fixed_rna,
-        "--output", str(output_path),
+        "--output", str(output_path_template),
         "--output_compression", "gzip",
         "--sample_csv", samples_csv,
     ])
-    assert output_path.is_dir()
+    assert output_dir.is_dir()
 
     # check output
-    samples = [item for item in output_path.iterdir() if item.is_file()]
+    samples = [item for item in output_dir.iterdir() if item.is_file()]
     sample_names = {item.name.removesuffix('.h5mu') for item in samples}
     assert sample_names == {"Colorectal_BC3", "Liver_BC1", "Ovarian_BC2", "Pancreas_BC4"}
     for output_path in samples:

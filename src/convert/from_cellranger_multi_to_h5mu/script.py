@@ -326,15 +326,24 @@ def get_modalities(input_data):
     return mudata_per_sample
 
 def main():
-    cellranger_multi_dir, output_dir = Path(par["input"]), Path(par["output"])
-    output_dir.mkdir(parents=True, exist_ok=True)
+    cellranger_multi_dir = Path(par["input"])
+    # TODO: remove when issue https://github.com/viash-io/viash/issues/706 is resolved.
+    if isinstance(par["output"], (list, set, tuple)):
+        assert len(par["output"]) == 1, "A single output file template should have been provided."
+        par["output"] = par["output"][0]
+    assert par["output"].count('*') == 1, (f"Expected exactly one wildcard character (*) in output "
+                                           f"files template ({par['output']}). Found {par['output'].count('*')}")
     input_data = gather_input_data(cellranger_multi_dir)
     result = get_modalities(input_data)
+    output_files = {par["output"].replace("*", sample_name) for sample_name in result.keys()}
+    assert len(output_files) == len(result.keys()), ("Replacing the wildcard in the output files "
+                                                     "template did not produce unique file paths.")
     logger.info("Writing output for samples: '%s' to '%s'", "".join(result.keys()), par["output"])
     with Path(par["sample_csv"]).open("w", newline='') as open_csv:
         csvwriter = csv.DictWriter(open_csv, fieldnames=["sample_name", "file"])
+        csvwriter.writeheader()
         for sample_name, mudata_obj in result.items():
-            output_file = output_dir/ f"{sample_name}.h5mu" 
+            output_file = Path(par["output"].replace('*', sample_name))
             mudata_obj.write_h5mu(output_file, compression=par["output_compression"])
             csvwriter.writerow({"sample_name": sample_name, "file": output_file.name}) 
 if __name__ == "__main__":
