@@ -3031,7 +3031,7 @@ meta = [
     "platform" : "nextflow",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/convert/from_h5ad_to_h5mu",
     "viash_version" : "0.8.5",
-    "git_commit" : "5836001c4a85a59d8e26aca810a5787eaa58f6b8",
+    "git_commit" : "7b9522b92658b0c638dabec2112c4995b99f471f",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))
