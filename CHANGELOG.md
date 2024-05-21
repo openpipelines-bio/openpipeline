@@ -2,7 +2,7 @@
 
 ## BREAKING CHANGES
 
-* Added cell multiplexing support to the `from_cellranger_multi_to_h5mu` component and the `cellranger_multi` workflow. These components now output multiple .h5mu files. The `output` and `output_h5mu` arguments respectively now require a value containing a wildcard character `*`, which will be replaced by the sample ID to form the final output file names . Additionally, a `sample_csv` argument is added to the `from_cellragner_multi_to_h5mu` component which describes the sample name per output file (RP #803).
+* Added cell multiplexing support to the `from_cellranger_multi_to_h5mu` component and the `cellranger_multi` workflow. These components now output multiple .h5mu files. The `output` and `output_h5mu` arguments respectively now require a value containing a wildcard character `*`, which will be replaced by the sample ID to form the final output file names . Additionally, a `sample_csv` argument is added to the `from_cellragner_multi_to_h5mu` component which describes the sample name per output file (PR #803).
 
 * `demux/bcl_convert`: update BCL convert from 3.10 to 4.2 (PR #774).
 
@@ -10,7 +10,7 @@
 
 ## NEW FUNCTIONALITY
 
-* Added multiple arguments to the `cellranger_multi` workflow in order to maintain feature parity with the `mapping/cellranger_multi` component (PR #).
+* Added multiple arguments to the `cellranger_multi` workflow in order to maintain feature parity with the `mapping/cellranger_multi` component (PR #803).
 
 * `convert/from_cellranger_to_h5mu`: add support for antigen analysis. 
 
