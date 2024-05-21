@@ -6,6 +6,7 @@ import numpy as np
 import numpy.typing as npt
 import anndata as ad
 from multiprocessing import managers, shared_memory, get_context
+from concurrent.futures import ProcessPoolExecutor
 from scipy.sparse import csr_matrix
 from pathlib import Path
 from itertools import repeat
@@ -182,11 +183,12 @@ def main():
         obs_names = smm.ShareableList(index_contents)
 
         shared_csr_matrix = SharedCsrMatrix.from_csr_matrix(smm, connectivities)
-        with get_context('spawn').Pool(meta['cpus']) as pool:
-            results = pool.starmap(run_single_resolution, 
-                                zip(repeat(shared_csr_matrix), 
+        with ProcessPoolExecutor(max_workers=meta['cpus']) as executor:
+            results = executor.map(run_single_resolution, 
+                                    repeat(shared_csr_matrix), 
                                     repeat(obs_names), 
-                                    par["resolution"]))
+                                    par["resolution"],
+                                    chunksize=1)
             results = {str(resolution): result for resolution, result 
                     in zip(par["resolution"], results)} 
     adata.obsm[par["obsm_name"]] = pd.DataFrame(results)
