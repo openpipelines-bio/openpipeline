@@ -185,12 +185,14 @@ def main():
 
         shared_csr_matrix = SharedCsrMatrix.from_csr_matrix(smm, connectivities)
         with ProcessPoolExecutor(max_workers=meta['cpus']) as executor:
+            results = executor.map(run_single_resolution, 
+                                    repeat(shared_csr_matrix), 
+                                    repeat(obs_names), 
+                                    par["resolution"],
+                                    chunksize=1)
             try:
-                results = executor.map(run_single_resolution, 
-                                        repeat(shared_csr_matrix), 
-                                        repeat(obs_names), 
-                                        par["resolution"],
-                                        chunksize=1)
+                results = {str(resolution): result for resolution, result 
+                        in zip(par["resolution"], results)} 
             except process.BrokenProcessPool as e:
                 # This assumes that one of the child processses was killed by the kernel
                 # because the oom killer was activated. This the is the most likely scenario,
@@ -201,8 +203,6 @@ def main():
                 print(e, file=sys.stderr, flush=True)
                 exit(137)
 
-            results = {str(resolution): result for resolution, result 
-                    in zip(par["resolution"], results)} 
     adata.obsm[par["obsm_name"]] = pd.DataFrame(results)
     logger.info("Writing to %s.", par["output"])
 

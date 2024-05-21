@@ -425,9 +425,9 @@ RUN apt-get update && \
   rm -rf /var/lib/apt/lists/*
 
 LABEL org.opencontainers.image.description="Companion container for running component qc fastqc"
-LABEL org.opencontainers.image.created="2024-05-21T09:26:27Z"
+LABEL org.opencontainers.image.created="2024-05-21T17:50:08Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="ce98f2661c71d5b982ff47d24af24673e992345c"
+LABEL org.opencontainers.image.revision="f7d4e6a6ea71b62bb2f3d06b9d4005a276e10176"
 LABEL org.opencontainers.image.version="bug/leiden_oom_hangs_build"
 
 VIASHDOCKER

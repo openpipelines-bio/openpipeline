@@ -3059,9 +3059,9 @@ meta = [
     "platform" : "nextflow",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/cluster/leiden",
     "viash_version" : "0.8.5",
-    "git_commit" : "ce98f2661c71d5b982ff47d24af24673e992345c",
+    "git_commit" : "f7d4e6a6ea71b62bb2f3d06b9d4005a276e10176",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline",
-    "git_tag" : "0.2.0-1588-gce98f2661c"
+    "git_tag" : "0.2.0-1589-gf7d4e6a6ea"
   }
 }'''))
 ]
@@ -3275,12 +3275,14 @@ def main():
 
         shared_csr_matrix = SharedCsrMatrix.from_csr_matrix(smm, connectivities)
         with ProcessPoolExecutor(max_workers=meta['cpus']) as executor:
+            results = executor.map(run_single_resolution, 
+                                    repeat(shared_csr_matrix), 
+                                    repeat(obs_names), 
+                                    par["resolution"],
+                                    chunksize=1)
             try:
-                results = executor.map(run_single_resolution, 
-                                        repeat(shared_csr_matrix), 
-                                        repeat(obs_names), 
-                                        par["resolution"],
-                                        chunksize=1)
+                results = {str(resolution): result for resolution, result 
+                        in zip(par["resolution"], results)} 
             except process.BrokenProcessPool as e:
                 # This assumes that one of the child processses was killed by the kernel
                 # because the oom killer was activated. This the is the most likely scenario,
@@ -3291,8 +3293,6 @@ def main():
                 print(e, file=sys.stderr, flush=True)
                 exit(137)
 
-            results = {str(resolution): result for resolution, result 
-                    in zip(par["resolution"], results)} 
     adata.obsm[par["obsm_name"]] = pd.DataFrame(results)
     logger.info("Writing to %s.", par["output"])
 
