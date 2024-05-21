@@ -3059,9 +3059,9 @@ meta = [
     "platform" : "nextflow",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/cluster/leiden",
     "viash_version" : "0.8.5",
-    "git_commit" : "ce489e3de593de08ba24d88df9f9eab332988542",
+    "git_commit" : "ce98f2661c71d5b982ff47d24af24673e992345c",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline",
-    "git_tag" : "0.2.0-1587-gce489e3de5"
+    "git_tag" : "0.2.0-1588-gce98f2661c"
   }
 }'''))
 ]
@@ -3076,6 +3076,7 @@ def innerWorkflowFactory(args) {
 tempscript=".viash_script.sh"
 cat > "$tempscript" << VIASHMAIN
 import sys
+import traceback
 import mudata as mu
 import pandas as pd
 import scanpy as sc
@@ -3083,7 +3084,7 @@ import numpy as np
 import numpy.typing as npt
 import anndata as ad
 from multiprocessing import managers, shared_memory, get_context
-from concurrent.futures import ProcessPoolExecutor
+from concurrent.futures import ProcessPoolExecutor, process
 from scipy.sparse import csr_matrix
 from pathlib import Path
 from itertools import repeat
@@ -3274,11 +3275,22 @@ def main():
 
         shared_csr_matrix = SharedCsrMatrix.from_csr_matrix(smm, connectivities)
         with ProcessPoolExecutor(max_workers=meta['cpus']) as executor:
-            results = executor.map(run_single_resolution, 
-                                    repeat(shared_csr_matrix), 
-                                    repeat(obs_names), 
-                                    par["resolution"],
-                                    chunksize=1)
+            try:
+                results = executor.map(run_single_resolution, 
+                                        repeat(shared_csr_matrix), 
+                                        repeat(obs_names), 
+                                        par["resolution"],
+                                        chunksize=1)
+            except process.BrokenProcessPool as e:
+                # This assumes that one of the child processses was killed by the kernel
+                # because the oom killer was activated. This the is the most likely scenario,
+                # other causes could be:
+                # * Subprocess terminates without raising a proper exception.
+                # * The code of the process handling the communication is broke (i.e. a python bug)
+                # * The return data could not be pickled.
+                print(e, file=sys.stderr, flush=True)
+                exit(137)
+
             results = {str(resolution): result for resolution, result 
                     in zip(par["resolution"], results)} 
     adata.obsm[par["obsm_name"]] = pd.DataFrame(results)
