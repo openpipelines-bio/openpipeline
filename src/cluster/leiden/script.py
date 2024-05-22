@@ -5,7 +5,7 @@ import scanpy as sc
 import numpy as np
 import numpy.typing as npt
 import anndata as ad
-from multiprocessing import managers, shared_memory
+from multiprocessing import managers, shared_memory, get_context
 from concurrent.futures import ProcessPoolExecutor, process
 from scipy.sparse import csr_matrix
 from pathlib import Path
@@ -183,7 +183,7 @@ def main():
         obs_names = smm.ShareableList(index_contents)
 
         shared_csr_matrix = SharedCsrMatrix.from_csr_matrix(smm, connectivities)
-        with ProcessPoolExecutor(max_workers=meta['cpus']) as executor:
+        with ProcessPoolExecutor(max_workers=meta['cpus'], max_tasks_per_child=1, mp_context=get_context('spawn')) as executor:
             results = executor.map(run_single_resolution, 
                                     repeat(shared_csr_matrix), 
                                     repeat(obs_names), 
