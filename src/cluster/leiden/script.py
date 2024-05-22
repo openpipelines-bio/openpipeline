@@ -5,7 +5,7 @@ import scanpy as sc
 import numpy as np
 import numpy.typing as npt
 import anndata as ad
-from multiprocessing import managers, shared_memory, get_context
+from multiprocessing import managers, shared_memory
 from concurrent.futures import ProcessPoolExecutor, process
 from scipy.sparse import csr_matrix
 from pathlib import Path
