@@ -1,5 +1,4 @@
 import sys
-import traceback
 import mudata as mu
 import pandas as pd
 import scanpy as sc
@@ -184,7 +183,7 @@ def main():
         obs_names = smm.ShareableList(index_contents)
 
         shared_csr_matrix = SharedCsrMatrix.from_csr_matrix(smm, connectivities)
-        with ProcessPoolExecutor(max_workers=meta['cpus']) as executor:
+        with ProcessPoolExecutor(max_workers=meta['cpus'], max_tasks_per_child=1, mp_context=get_context('spawn')) as executor:
             results = executor.map(run_single_resolution, 
                                     repeat(shared_csr_matrix), 
                                     repeat(obs_names), 

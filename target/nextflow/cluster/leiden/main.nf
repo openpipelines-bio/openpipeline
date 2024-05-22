@@ -3059,9 +3059,9 @@ meta = [
     "platform" : "nextflow",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/cluster/leiden",
     "viash_version" : "0.8.5",
-    "git_commit" : "f7d4e6a6ea71b62bb2f3d06b9d4005a276e10176",
+    "git_commit" : "b9c855b5fe88a42e3fcb036d1e28188e2df216ce",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline",
-    "git_tag" : "0.2.0-1589-gf7d4e6a6ea"
+    "git_tag" : "0.2.0-1590-gb9c855b5fe"
   }
 }'''))
 ]
@@ -3076,7 +3076,6 @@ def innerWorkflowFactory(args) {
 tempscript=".viash_script.sh"
 cat > "$tempscript" << VIASHMAIN
 import sys
-import traceback
 import mudata as mu
 import pandas as pd
 import scanpy as sc
@@ -3274,7 +3273,7 @@ def main():
         obs_names = smm.ShareableList(index_contents)
 
         shared_csr_matrix = SharedCsrMatrix.from_csr_matrix(smm, connectivities)
-        with ProcessPoolExecutor(max_workers=meta['cpus']) as executor:
+        with ProcessPoolExecutor(max_workers=meta['cpus'], max_tasks_per_child=1, mp_context=get_context('spawn')) as executor:
             results = executor.map(run_single_resolution, 
                                     repeat(shared_csr_matrix), 
                                     repeat(obs_names), 
