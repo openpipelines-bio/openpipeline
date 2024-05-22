@@ -15,23 +15,22 @@ from scgpt.utils import set_seed
 par = {
   'input': r'resources_test/scgpt/test_resources/Kim2020_Lung_subset_tokenized.h5mu',
   'modality': r'rna',
-  'model': r'resources_test/scgpt/source/best_model.pt',
-  'model_config': r'resources_test/scgpt/source/args.json',
-  'model_vocab': r'resources_test/scgpt/source/vocab.json',
+  'model': r'resources_test/scgpt/soumya_fibroblast_20240419/best_model.pt',
+  'model_config': r'resources_test/scgpt/soumya_fibroblast_20240419/args.json',
+  'model_vocab': r'resources_test/scgpt/soumya_fibroblast_20240419/vocab.json',
   'obs_batch_label': r'sample',
   'obsm_gene_tokens': r'gene_id_tokens',
   'obsm_tokenized_values': r'values_tokenized',
   'output': r'Kim2020_Lung_cell_type_annotation.h5mu',
   'output_compression': None,
   'obs_predicted_cell_type': r'predicted_cell_type',
-  'pad_token': r'<pad>',
-  'pad_value': int(r'-2'),
-  'n_cls': int(r'8'),
-  'n_input_bins': int(r'51'),
-  'batch_size': int(r'64'),
-  'dsbn': r'true'.lower() == 'true',
-  'dropout': float(r'0.2'),
-  'seed': int(r'123')
+  'dsbn': True,
+  'seed': 0,
+  'pad_token': "<pad>",
+  'pad_value': -2,
+  'n_cls': 8,
+  'n_input_bins': 51,
+  'batch_size': 64
 }
 
 ## VIASH END
@@ -122,7 +121,7 @@ model = TransformerModel(
     nlayers_cls=3,  # self.cls_decoder
     n_cls=par["n_cls"],  # self.cls_decoder
     vocab=vocab,
-    dropout=par["dropout"],  # self.transformer_encoder
+    dropout=0.2,  # self.transformer_encoder
     pad_token=par["pad_token"],
     pad_value=par["pad_value"],
     do_mvc=False,
@@ -209,7 +208,6 @@ with torch.no_grad():
 
 predictions = np.concatenate(predictions, axis=0)
 adata.obs[par["obs_predicted_cell_type"]] = predictions
-
 # Write output
 logger.info("Writing output data")
 mdata.mod[par["modality"]] = adata
