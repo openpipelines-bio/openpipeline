@@ -1,5 +1,4 @@
 import sys
-import traceback
 import mudata as mu
 import pandas as pd
 import scanpy as sc
