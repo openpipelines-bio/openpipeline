@@ -3059,9 +3059,9 @@ meta = [
     "platform" : "nextflow",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/cluster/leiden",
     "viash_version" : "0.8.5",
-    "git_commit" : "53ea56b24b87ccc8e602a2a32aaa8258d9025431",
+    "git_commit" : "e545161bc4949d188313b8b347be27ea1f7adb22",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline",
-    "git_tag" : "0.2.0-1593-g53ea56b24b"
+    "git_tag" : "0.2.0-1594-ge545161bc4"
   }
 }'''))
 ]
@@ -3270,21 +3270,15 @@ def run_single_resolution(shared_csr_matrix, obs_names, resolution):
         obs_names.shm.close()
         shared_csr_matrix.close() 
 
-def start_child_process_terminator(ppid):
-    pid = os.getpid()
+def start_orphan_checker():
+    import threading
 
-    def terminator():
-        while True:
-            try:
-                # If sig is 0, then no signal is sent, but error checking is still performed; 
-                # this can be used to check for the existence of a process ID
-                os.kill(ppid, 0)
-            except OSError:
-                os.kill(pid, signal.SIGTERM)
-            time.sleep(1)
+    def exit_if_orphaned():
+        import multiprocessing
+        multiprocessing.parent_process().join()  # wait for parent process to die first; may never happen
+        os._exit(-1)
 
-    thread = threading.Thread(target=terminator, daemon=True)
-    thread.start()
+    threading.Thread(target=exit_if_orphaned, daemon=True).start()
 
 def main():
     logger.info("Reading %s.", par["input"])
@@ -3304,11 +3298,9 @@ def main():
         obs_names = smm.ShareableList(index_contents)
 
         shared_csr_matrix = SharedCsrMatrix.from_csr_matrix(smm, connectivities)
-        exit_with_other_code = None
         with ProcessPoolExecutor(max_workers=meta['cpus'], max_tasks_per_child=1, 
                                  mp_context=get_context('spawn'),
-                                 initializer=start_child_process_terminator,
-                                 initargs=(os.getpid(),)) as executor:
+                                 initializer=start_orphan_checker) as executor:
             results = executor.map(run_single_resolution, 
                                     repeat(shared_csr_matrix), 
                                     repeat(obs_names), 
@@ -3324,15 +3316,11 @@ def main():
                 # * Subprocess terminates without raising a proper exception.
                 # * The code of the process handling the communication is broke (i.e. a python bug)
                 # * The return data could not be pickled.
+                executor.shutdown(wait=False, cancel_futures=True)
+                shared_csr_matrix.close()
+                obs_names.shm.close() 
                 print(e, file=sys.stderr, flush=True)
-                exit_with_other_code = 137
-                raise e
-        shared_csr_matrix.close()
-        obs_names.close() 
-    if exit_with_other_code:
-        from multiprocessing import resource_tracker
-        resource_tracker._resource_tracker._stop()
-        sys.exit(exit_with_other_code)
+                sys.exit(137)
 
     adata.obsm[par["obsm_name"]] = pd.DataFrame(results)
     logger.info("Writing to %s.", par["output"])

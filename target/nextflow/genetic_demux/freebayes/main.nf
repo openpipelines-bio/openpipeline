@@ -3713,9 +3713,9 @@ meta = [
     "platform" : "nextflow",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/genetic_demux/freebayes",
     "viash_version" : "0.8.5",
-    "git_commit" : "53ea56b24b87ccc8e602a2a32aaa8258d9025431",
+    "git_commit" : "e545161bc4949d188313b8b347be27ea1f7adb22",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline",
-    "git_tag" : "0.2.0-1593-g53ea56b24b"
+    "git_tag" : "0.2.0-1594-ge545161bc4"
   }
 }'''))
 ]

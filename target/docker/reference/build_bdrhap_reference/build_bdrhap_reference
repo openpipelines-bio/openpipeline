@@ -421,9 +421,9 @@ RUN apt-get update && \
 
 LABEL org.opencontainers.image.authors="Angela Oliveira Pisco, Robrecht Cannoodt"
 LABEL org.opencontainers.image.description="Companion container for running component reference build_bdrhap_reference"
-LABEL org.opencontainers.image.created="2024-05-23T19:45:17Z"
+LABEL org.opencontainers.image.created="2024-05-23T20:11:13Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="53ea56b24b87ccc8e602a2a32aaa8258d9025431"
+LABEL org.opencontainers.image.revision="e545161bc4949d188313b8b347be27ea1f7adb22"
 LABEL org.opencontainers.image.version="bug/leiden_oom_hangs_build"
 
 VIASHDOCKER
