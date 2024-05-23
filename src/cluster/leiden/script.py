@@ -194,6 +194,7 @@ def main():
         obs_names = smm.ShareableList(index_contents)
 
         shared_csr_matrix = SharedCsrMatrix.from_csr_matrix(smm, connectivities)
+        exit_with_other_code = None
         with ProcessPoolExecutor(max_workers=meta['cpus'], max_tasks_per_child=1, mp_context=get_context('spawn')) as executor:
             results = executor.map(run_single_resolution, 
                                     repeat(shared_csr_matrix), 
@@ -215,7 +216,10 @@ def main():
                 shared_csr_matrix.close()
                 obs_names.close() 
                 print(e, file=sys.stderr, flush=True)
-                exit(137)
+                exit_with_other_code = 137
+                raise e
+    if exit_with_other_code:
+        exit(exit_with_other_code)
 
     adata.obsm[par["obsm_name"]] = pd.DataFrame(results)
     logger.info("Writing to %s.", par["output"])
