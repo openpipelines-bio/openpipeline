@@ -3059,9 +3059,9 @@ meta = [
     "platform" : "nextflow",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/cluster/leiden",
     "viash_version" : "0.8.5",
-    "git_commit" : "b9c855b5fe88a42e3fcb036d1e28188e2df216ce",
+    "git_commit" : "bbf6c86c81653caefe8652aa214d067b4be0a882",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline",
-    "git_tag" : "0.2.0-1590-gb9c855b5fe"
+    "git_tag" : "0.2.0-1591-gbbf6c86c81"
   }
 }'''))
 ]
@@ -3207,8 +3207,10 @@ class SharedNumpyMatrix():
         return cls(shm, array.dtype, array.shape)
 
     def to_numpy(self):
-       return np.ndarray(self._shape, dtype=self._dtype, buffer=self._memory.buf) 
-
+       return np.ndarray(self._shape, dtype=self._dtype, buffer=self._memory.buf)
+    
+    def close(self):
+        self._memory.close()
 
 class SharedCsrMatrix():
     def __init__(self,
@@ -3235,7 +3237,12 @@ class SharedCsrMatrix():
             (self._data.to_numpy(), self._indices.to_numpy(), self._indptr.to_numpy()),
             shape=self._shape, 
             copy=False
-        ) 
+        )
+
+    def close(self):
+        self._data.close()
+        self._indices.close()
+        self._indptr.close()
 
 def create_empty_anndata_with_connectivities(connectivities, obs_names):
     empty_anndata = ad.AnnData(np.zeros((connectivities.shape[0], 1)),
@@ -3244,16 +3251,20 @@ def create_empty_anndata_with_connectivities(connectivities, obs_names):
     return empty_anndata
 
 def run_single_resolution(shared_csr_matrix, obs_names, resolution):
-    connectivities = shared_csr_matrix.to_csr_matrix()
-    adata = create_empty_anndata_with_connectivities(connectivities, obs_names)
-    adata_out = sc.tl.leiden(
-        adata,
-        resolution=resolution,
-        key_added=str(resolution),
-        obsp="connectivities",
-        copy=True
-        )
-    return adata_out.obs[str(resolution)]
+    try:
+        connectivities = shared_csr_matrix.to_csr_matrix()
+        adata = create_empty_anndata_with_connectivities(connectivities, obs_names)
+        adata_out = sc.tl.leiden(
+            adata,
+            resolution=resolution,
+            key_added=str(resolution),
+            obsp="connectivities",
+            copy=True
+            )
+        return adata_out.obs[str(resolution)]
+    finally:
+        obs_names.shm.close()
+        shared_csr_matrix.close() 
 
 def main():
     logger.info("Reading %s.", par["input"])
@@ -3281,7 +3292,9 @@ def main():
                                     chunksize=1)
             try:
                 results = {str(resolution): result for resolution, result 
-                        in zip(par["resolution"], results)} 
+                        in zip(par["resolution"], results)}
+                shared_csr_matrix.close()
+                obs_names.shm.close() 
             except process.BrokenProcessPool as e:
                 # This assumes that one of the child processses was killed by the kernel
                 # because the oom killer was activated. This the is the most likely scenario,
@@ -3289,6 +3302,8 @@ def main():
                 # * Subprocess terminates without raising a proper exception.
                 # * The code of the process handling the communication is broke (i.e. a python bug)
                 # * The return data could not be pickled.
+                shared_csr_matrix.close()
+                obs_names.close() 
                 print(e, file=sys.stderr, flush=True)
                 exit(137)
 

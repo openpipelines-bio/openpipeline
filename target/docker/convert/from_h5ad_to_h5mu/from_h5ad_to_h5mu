@@ -427,9 +427,9 @@ RUN pip install --upgrade pip && \
 
 LABEL org.opencontainers.image.authors="Dries De Maeyer"
 LABEL org.opencontainers.image.description="Companion container for running component convert from_h5ad_to_h5mu"
-LABEL org.opencontainers.image.created="2024-05-22T09:24:12Z"
+LABEL org.opencontainers.image.created="2024-05-23T07:45:12Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="b9c855b5fe88a42e3fcb036d1e28188e2df216ce"
+LABEL org.opencontainers.image.revision="bbf6c86c81653caefe8652aa214d067b4be0a882"
 LABEL org.opencontainers.image.version="bug/leiden_oom_hangs_build"
 
 VIASHDOCKER
