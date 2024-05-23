@@ -1,4 +1,8 @@
 import sys
+import signal
+import os
+import threading
+import time
 import mudata as mu
 import pandas as pd
 import scanpy as sc
@@ -176,6 +180,22 @@ def run_single_resolution(shared_csr_matrix, obs_names, resolution):
         obs_names.shm.close()
         shared_csr_matrix.close() 
 
+def start_child_process_terminator(ppid):
+    pid = os.getpid()
+
+    def terminator():
+        while True:
+            try:
+                # If sig is 0, then no signal is sent, but error checking is still performed; 
+                # this can be used to check for the existence of a process ID
+                os.kill(ppid, 0)
+            except OSError:
+                os.kill(pid, signal.SIGTERM)
+            time.sleep(1)
+
+    thread = threading.Thread(target=terminator, daemon=True)
+    thread.start()
+
 def main():
     logger.info("Reading %s.", par["input"])
     adata = mu.read_h5ad(par["input"], mod=par['modality'], backed='r')
@@ -195,7 +215,10 @@ def main():
 
         shared_csr_matrix = SharedCsrMatrix.from_csr_matrix(smm, connectivities)
         exit_with_other_code = None
-        with ProcessPoolExecutor(max_workers=meta['cpus'], max_tasks_per_child=1, mp_context=get_context('spawn')) as executor:
+        with ProcessPoolExecutor(max_workers=meta['cpus'], max_tasks_per_child=1, 
+                                 mp_context=get_context('spawn'),
+                                 initializer=start_child_process_terminator,
+                                 initargs=(os.getpid(),)) as executor:
             results = executor.map(run_single_resolution, 
                                     repeat(shared_csr_matrix), 
                                     repeat(obs_names), 
@@ -204,8 +227,6 @@ def main():
             try:
                 results = {str(resolution): result for resolution, result 
                         in zip(par["resolution"], results)}
-                shared_csr_matrix.close()
-                obs_names.shm.close() 
             except process.BrokenProcessPool as e:
                 # This assumes that one of the child processses was killed by the kernel
                 # because the oom killer was activated. This the is the most likely scenario,
@@ -213,12 +234,14 @@ def main():
                 # * Subprocess terminates without raising a proper exception.
                 # * The code of the process handling the communication is broke (i.e. a python bug)
                 # * The return data could not be pickled.
-                shared_csr_matrix.close()
-                obs_names.close() 
                 print(e, file=sys.stderr, flush=True)
                 exit_with_other_code = 137
                 raise e
+        shared_csr_matrix.close()
+        obs_names.close() 
     if exit_with_other_code:
+        from multiprocessing import resource_tracker
+        resource_tracker._resource_tracker._stop()
         sys.exit(exit_with_other_code)
 
     adata.obsm[par["obsm_name"]] = pd.DataFrame(results)
