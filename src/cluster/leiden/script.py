@@ -219,7 +219,7 @@ def main():
                 exit_with_other_code = 137
                 raise e
     if exit_with_other_code:
-        exit(exit_with_other_code)
+        sys.exit(exit_with_other_code)
 
     adata.obsm[par["obsm_name"]] = pd.DataFrame(results)
     logger.info("Writing to %s.", par["output"])
