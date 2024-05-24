@@ -1,0 +1,144 @@
+{
+"$schema": "http://json-schema.org/draft-07/schema",
+"title": "leiden",
+"description": "Cluster cells using the [Leiden algorithm] [Traag18] implemented in the [Scanpy framework] [Wolf18]. \nLeiden is an improved version of the [Louvain algorithm] [Blondel08]. \nIt has been proposed for single-cell analysis by [Levine15] [Levine15]. \nThis requires having ran `neighbors/find_neighbors` or `neighbors/bbknn` first.\n\n[Blondel08]: Blondel et al. (2008), Fast unfolding of communities in large networks, J. Stat. Mech.  \n[Levine15]: Levine et al. (2015), Data-Driven Phenotypic Dissection of AML Reveals Progenitor-like Cells that Correlate with Prognosis, Cell.  \n[Traag18]: Traag et al. (2018), From Louvain to Leiden: guaranteeing well-connected communities arXiv.  \n[Wolf18]: Wolf et al. (2018), Scanpy: large-scale single-cell gene expression data analysis, Genome Biology.  \n",
+"type": "object",
+"definitions": {
+
+    
+    "Dataset input": {
+        "title": "Dataset input",
+        "type": "object",
+        "description": "Dataset input using nf-tower \"dataset\" or \"data explorer\". Allows for the input of multiple         parameter sets to initialise a Nextflow channel.",
+        "properties": {
+            "param_list": {
+                "description": "Dataset input can either be a list of maps, a csv file, a json file, a yaml file, or simply a yaml                 blob. The names of the input fields (e.g. csv columns, json keys) need to be an exact match with the workflow input parameters.",
+                "default": "",
+                "format": "file-path",
+                "mimetype": "text/csv",
+                "pattern": "^\\S+\\.csv$"
+            }
+        }
+    },
+
+    
+    
+    "arguments" : {
+    "title": "Arguments",
+    "type": "object",
+    "description": "No description",
+    "properties": {
+    
+        
+                "input": {
+                "type":
+                "string",
+                "description": "Type: `file`, required, example: `input.h5mu`. Input file",
+                "help_text": "Type: `file`, required, example: `input.h5mu`. Input file."
+            
+            }
+    
+
+        ,
+                "modality": {
+                "type":
+                "string",
+                "description": "Type: `string`, default: `rna`. ",
+                "help_text": "Type: `string`, default: `rna`. "
+            ,
+                "default": "rna"
+            }
+    
+
+        ,
+                "obsp_connectivities": {
+                "type":
+                "string",
+                "description": "Type: `string`, default: `connectivities`. In which ",
+                "help_text": "Type: `string`, default: `connectivities`. In which .obsp slot the neighbor connectivities can be found."
+            ,
+                "default": "connectivities"
+            }
+    
+
+        ,
+                "output": {
+                "type":
+                "string",
+                "description": "Type: `file`, required, default: `$id.$key.output.h5mu`, example: `output.h5mu`. Output file",
+                "help_text": "Type: `file`, required, default: `$id.$key.output.h5mu`, example: `output.h5mu`. Output file."
+            ,
+                "default": "$id.$key.output.h5mu"
+            }
+    
+
+        ,
+                "output_compression": {
+                "type":
+                "string",
+                "description": "Type: `string`, example: `gzip`, choices: ``gzip`, `lzf``. ",
+                "help_text": "Type: `string`, example: `gzip`, choices: ``gzip`, `lzf``. ",
+                "enum": ["gzip", "lzf"]
+            
+            
+            }
+    
+
+        ,
+                "obsm_name": {
+                "type":
+                "string",
+                "description": "Type: `string`, default: `leiden`. Name of the ",
+                "help_text": "Type: `string`, default: `leiden`. Name of the .obsm key under which to add the cluster labels.\nThe name of the columns in the matrix will correspond to the resolutions.\n"
+            ,
+                "default": "leiden"
+            }
+    
+
+        ,
+                "resolution": {
+                "type":
+                "string",
+                "description": "Type: List of `double`, required, default: `1`, multiple_sep: `\":\"`. A parameter value controlling the coarseness of the clustering",
+                "help_text": "Type: List of `double`, required, default: `1`, multiple_sep: `\":\"`. A parameter value controlling the coarseness of the clustering. Higher values lead to more clusters.\nMultiple values will result in clustering being performed multiple times.\n"
+            ,
+                "default": "1"
+            }
+    
+
+}
+},
+    
+    
+    "nextflow input-output arguments" : {
+    "title": "Nextflow input-output arguments",
+    "type": "object",
+    "description": "Input/output parameters for Nextflow itself. Please note that both publishDir and publish_dir are supported but at least one has to be configured.",
+    "properties": {
+    
+        
+                "publish_dir": {
+                "type":
+                "string",
+                "description": "Type: `string`, required, example: `output/`. Path to an output directory",
+                "help_text": "Type: `string`, required, example: `output/`. Path to an output directory."
+            
+            }
+    
+
+        
+
+}
+}
+},
+"allOf": [
+
+    {
+    "$ref": "#/definitions/arguments"
+    },
+
+    {
+    "$ref": "#/definitions/nextflow input-output arguments"
+    }
+]
+}
