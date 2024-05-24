@@ -1745,6 +1745,7 @@ process publishStatesProc {
       if (infile.toString() != outfile.toString()) {
         [
           "[ -d \"\$(dirname '${outfile.toString()}')\" ] || mkdir -p \"\$(dirname '${outfile.toString()}')\"",
+          "echo 'Copying ${infile.toString()} to ${outfile.toString()}'",
           "cp -r '${infile.toString()}' '${outfile.toString()}'"
         ]
       } else {
@@ -3049,6 +3050,7 @@ workflow run_wf {
           "output_types": "output_types"
         ]
       )
+      | view{"post-split_modalities: $it"}
 
     split_stub_ch = input_ch
       | filter{workflow.stubRun}
@@ -3061,6 +3063,7 @@ workflow run_wf {
       }
 
     output_ch = split_ch.concat(split_stub_ch)
+      | view{"pre-setState: $it"}
       | setState(["output", "output_types"])
 
   emit:
