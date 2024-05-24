@@ -10,7 +10,7 @@ import numpy as np
 import numpy.typing as npt
 import anndata as ad
 from multiprocessing import managers, shared_memory, get_context
-from concurrent.futures import ProcessPoolExecutor, process
+from concurrent.futures import ProcessPoolExecutor, process, as_completed
 from scipy.sparse import csr_matrix
 from pathlib import Path
 from itertools import repeat
@@ -175,7 +175,7 @@ def run_single_resolution(shared_csr_matrix, obs_names, resolution):
             obsp="connectivities",
             copy=True
             )
-        return adata_out.obs[str(resolution)]
+        return resolution, adata_out.obs[str(resolution)]
     finally:
         obs_names.shm.close()
         shared_csr_matrix.close() 
@@ -225,38 +225,44 @@ def main():
         obs_names = smm.ShareableList(index_contents)
 
         shared_csr_matrix = SharedCsrMatrix.from_csr_matrix(smm, connectivities)
+        results = {}
+        n_workers = meta['cpus'] - 2 if (meta['cpus'] - 2) > 0 else 1
+        executor = ProcessPoolExecutor(max_workers=n_workers,
+                                       max_tasks_per_child=1, 
+                                       mp_context=get_context('spawn'),
+                                       initializer=start_orphan_checker,
+                                       initargs=((os.getpid(), exit_early_event)))
+        futures = executor.map(run_single_resolution, 
+                                repeat(shared_csr_matrix), 
+                                repeat(obs_names), 
+                                par["resolution"],
+                                chunksize=1)
         try:
-            with ProcessPoolExecutor(max_workers=meta['cpus'], max_tasks_per_child=1, 
-                                     mp_context=get_context('spawn'),
-                                     initializer=start_orphan_checker,
-                                     initargs=((os.getpid(), exit_early_event))) as executor:
-                results = executor.map(run_single_resolution, 
-                                       repeat(shared_csr_matrix), 
-                                       repeat(obs_names), 
-                                       par["resolution"],
-                                       chunksize=1)
-                try:
-                    results = {str(resolution): result for resolution, result 
-                            in zip(par["resolution"], results)}
-                except process.BrokenProcessPool as e:
-                    exit_early_event.set()
-                    raise e
-
-        except process.BrokenProcessPool as e:
+            print("All futures sheduled", flush=True)
+            for future in as_completed(futures):
+                resolution, result = future.result()
+                print(f"Processed resolution '{resolution}'", flush=True)
+                results[resolution] = result
+        except process.BrokenProcessPool:
             # This assumes that one of the child processses was killed by the kernel
             # because the oom killer was activated. This the is the most likely scenario,
             # other causes could be:
             # * Subprocess terminates without raising a proper exception.
             # * The code of the process handling the communication is broke (i.e. a python bug)
             # * The return data could not be pickled.
-            print(e, file=sys.stderr, flush=True)
+            print("ProcessPool is raised", file=sys.stderr, flush=True)
+            executor.shutdown(wait=False, cancel_futures=True)
+            time.wait(3)
+            exit_early_event.set()
+            time.wait(3)
             sys.exit(137)
-
         finally:
+            print("Closing shared resources in main process", flush=True)
             shared_csr_matrix.close()
             obs_names.shm.close()
-
-
+        print("Waiting for shutdown of processes", flush=True)
+        executor.shutdown()
+        print("Executor shut down.", flush=True)
     adata.obsm[par["obsm_name"]] = pd.DataFrame(results)
     logger.info("Writing to %s.", par["output"])
 
