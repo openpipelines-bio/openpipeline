@@ -29,7 +29,7 @@ par = {
     "output_compression": "gzip"
 }
 meta = {
-    "cpus": 10,
+    "cpus": 2,
     "resources_dir": '.'
 }
 ## VIASH END
@@ -165,6 +165,7 @@ def create_empty_anndata_with_connectivities(connectivities, obs_names):
     return empty_anndata
 
 def run_single_resolution(shared_csr_matrix, obs_names, resolution):
+    print(f"Process with PID {os.getpid()} for resolution {resolution} started")
     try:
         connectivities = shared_csr_matrix.to_csr_matrix()
         adata = create_empty_anndata_with_connectivities(connectivities, obs_names)
@@ -175,13 +176,16 @@ def run_single_resolution(shared_csr_matrix, obs_names, resolution):
             obsp="connectivities",
             copy=True
             )
-        return resolution, adata_out.obs[str(resolution)]
+        print(f"Returning result for resolution {resolution}")
+        return adata_out.obs[str(resolution)]
     finally:
         obs_names.shm.close()
         shared_csr_matrix.close() 
 
-def start_orphan_checker(parent_process_id, exit_event: threading.Event):
+def start_orphan_checker(parent_process_id, exit_event):
+    import os
     import threading
+    import time
     pid = os.getpid()
     
     def exit_if_orphaned():
@@ -226,23 +230,22 @@ def main():
 
         shared_csr_matrix = SharedCsrMatrix.from_csr_matrix(smm, connectivities)
         results = {}
-        n_workers = meta['cpus'] - 2 if (meta['cpus'] - 2) > 0 else 1
+        n_workers = meta['cpus'] - 2 if (meta['cpus'] and (meta['cpus'] - 2) > 0) else 1
+        print(f"Requesting {n_workers} workers", flush=True)
         executor = ProcessPoolExecutor(max_workers=n_workers,
                                        max_tasks_per_child=1, 
                                        mp_context=get_context('spawn'),
                                        initializer=start_orphan_checker,
                                        initargs=((os.getpid(), exit_early_event)))
-        futures = executor.map(run_single_resolution, 
-                                repeat(shared_csr_matrix), 
-                                repeat(obs_names), 
-                                par["resolution"],
-                                chunksize=1)
+        pending_futures = {executor.submit(run_single_resolution, shared_csr_matrix, obs_names, resolution): resolution
+                           for resolution in par["resolution"]}
         try:
             print("All futures sheduled", flush=True)
-            for future in as_completed(futures):
-                resolution, result = future.result()
+            for done_future in as_completed(pending_futures):
+                resolution = pending_futures[done_future]
+                data = done_future.result()
                 print(f"Processed resolution '{resolution}'", flush=True)
-                results[resolution] = result
+                results[str(resolution)] = data
         except process.BrokenProcessPool:
             # This assumes that one of the child processses was killed by the kernel
             # because the oom killer was activated. This the is the most likely scenario,
@@ -250,16 +253,17 @@ def main():
             # * Subprocess terminates without raising a proper exception.
             # * The code of the process handling the communication is broke (i.e. a python bug)
             # * The return data could not be pickled.
-            print("ProcessPool is raised", file=sys.stderr, flush=True)
+            print("BrokenProcessPool is raised", file=sys.stderr, flush=True)
             executor.shutdown(wait=False, cancel_futures=True)
-            time.wait(3)
+            time.sleep(3)
             exit_early_event.set()
-            time.wait(3)
+            time.sleep(3)
             sys.exit(137)
         finally:
             print("Closing shared resources in main process", flush=True)
             shared_csr_matrix.close()
             obs_names.shm.close()
+            print("Shared resources closed", flush=True)
         print("Waiting for shutdown of processes", flush=True)
         executor.shutdown()
         print("Executor shut down.", flush=True)
