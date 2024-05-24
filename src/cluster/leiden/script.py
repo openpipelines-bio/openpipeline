@@ -220,31 +220,37 @@ def main():
         obs_names = smm.ShareableList(index_contents)
 
         shared_csr_matrix = SharedCsrMatrix.from_csr_matrix(smm, connectivities)
-        with ProcessPoolExecutor(max_workers=meta['cpus'], max_tasks_per_child=1, 
-                                 mp_context=get_context('spawn'),
-                                 initializer=start_orphan_checker,
-                                 initargs=((os.getpid(), exit_early_event))) as executor:
-            results = executor.map(run_single_resolution, 
-                                    repeat(shared_csr_matrix), 
-                                    repeat(obs_names), 
-                                    par["resolution"],
-                                    chunksize=1)
-            try:
-                results = {str(resolution): result for resolution, result 
-                        in zip(par["resolution"], results)}
-            except process.BrokenProcessPool as e:
-                # This assumes that one of the child processses was killed by the kernel
-                # because the oom killer was activated. This the is the most likely scenario,
-                # other causes could be:
-                # * Subprocess terminates without raising a proper exception.
-                # * The code of the process handling the communication is broke (i.e. a python bug)
-                # * The return data could not be pickled.
-                executor.shutdown(wait=False, cancel_futures=True)
-                exit_early_event.set()
-                shared_csr_matrix.close()
-                obs_names.shm.close()
-                print(e, file=sys.stderr, flush=True)
-                sys.exit(137)
+        try:
+            with ProcessPoolExecutor(max_workers=meta['cpus'], max_tasks_per_child=1, 
+                                     mp_context=get_context('spawn'),
+                                     initializer=start_orphan_checker,
+                                     initargs=((os.getpid(), exit_early_event))) as executor:
+                results = executor.map(run_single_resolution, 
+                                       repeat(shared_csr_matrix), 
+                                       repeat(obs_names), 
+                                       par["resolution"],
+                                       chunksize=1)
+                try:
+                    results = {str(resolution): result for resolution, result 
+                            in zip(par["resolution"], results)}
+                except process.BrokenProcessPool as e:
+                    exit_early_event.set()
+                    raise e
+
+        except process.BrokenProcessPool as e:
+            # This assumes that one of the child processses was killed by the kernel
+            # because the oom killer was activated. This the is the most likely scenario,
+            # other causes could be:
+            # * Subprocess terminates without raising a proper exception.
+            # * The code of the process handling the communication is broke (i.e. a python bug)
+            # * The return data could not be pickled.
+            print(e, file=sys.stderr, flush=True)
+            sys.exit(137)
+
+        finally:
+            shared_csr_matrix.close()
+            obs_names.shm.close()
+
 
     adata.obsm[par["obsm_name"]] = pd.DataFrame(results)
     logger.info("Writing to %s.", par["output"])
