@@ -187,7 +187,7 @@ def start_orphan_checker(parent_process_id, exit_event: threading.Event):
     def exit_if_orphaned():
         while True:
             # Parent process requested exit
-            if exit_event.is_set():
+            if exit_event.wait(timeout=1):
                 os.kill(pid, signal.SIGTERM)
             # Check if parent process is gone
             try:
