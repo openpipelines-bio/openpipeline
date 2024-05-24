@@ -182,19 +182,21 @@ def run_single_resolution(shared_csr_matrix, obs_names, resolution):
 
 def start_orphan_checker(parent_process_id, exit_event: threading.Event):
     import threading
-
+    pid = os.getpid()
+    
     def exit_if_orphaned():
         while True:
             # Parent process requested exit
             if exit_event.is_set():
-                os.exit(-1)
+                os.kill(pid, signal.SIGTERM)
             # Check if parent process is gone
             try:
                 # If sig is 0, then no signal is sent, but error checking is still performed; 
                 # this can be used to check for the existence of a process ID
                 os.kill(parent_process_id, 0)
-            except OSError:
-                os.exit(-1)
+            except ProcessLookupError:
+                # Kill self
+                os.kill(pid, signal.SIGTERM)
             time.sleep(1)
 
     threading.Thread(target=exit_if_orphaned, daemon=True).start()
@@ -237,9 +239,12 @@ def main():
                 # * Subprocess terminates without raising a proper exception.
                 # * The code of the process handling the communication is broke (i.e. a python bug)
                 # * The return data could not be pickled.
+                print("Setting early ", file=sys.stderr, flush=True)
                 exit_early_event.set()
+
+                executor.shutdown(wait=True, cancel_futures=True)
                 shared_csr_matrix.close()
-                obs_names.shm.close() 
+                obs_names.shm.close()
                 print(e, file=sys.stderr, flush=True)
                 sys.exit(137)
 
