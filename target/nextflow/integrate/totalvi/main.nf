@@ -3218,9 +3218,9 @@ meta = [
     "platform" : "nextflow",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/integrate/totalvi",
     "viash_version" : "0.8.5",
-    "git_commit" : "0e68ec9f66ce275a7f9f2e0796f85a2901e2ca14",
+    "git_commit" : "cb6cffeb492385b878873afdecdfddbc8b7529ae",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline",
-    "git_tag" : "0.2.0-1601-g0e68ec9f66"
+    "git_tag" : "0.2.0-1602-gcb6cffeb49"
   }
 }'''))
 ]
