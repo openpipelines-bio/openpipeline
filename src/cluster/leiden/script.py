@@ -186,9 +186,6 @@ def start_orphan_checker(parent_process_id, exit_event: threading.Event):
     
     def exit_if_orphaned():
         while True:
-            # Parent process requested exit
-            if exit_event.wait(timeout=1):
-                os.kill(pid, signal.SIGTERM)
             # Check if parent process is gone
             try:
                 # If sig is 0, then no signal is sent, but error checking is still performed; 
@@ -197,8 +194,16 @@ def start_orphan_checker(parent_process_id, exit_event: threading.Event):
             except ProcessLookupError:
                 # Kill self
                 os.kill(pid, signal.SIGTERM)
+            time.sleep(0.2)
+            # Parent process requested exit
+            try:
+                exit_event_set = exit_event.wait(timeout=1)
+            except BrokenPipeError:
+                os.kill(pid, signal.SIGTERM) 
+            else:
+                if exit_event_set:
+                    os.kill(pid, signal.SIGTERM)
             time.sleep(1)
-
     threading.Thread(target=exit_if_orphaned, daemon=True).start()
 
 def main():
