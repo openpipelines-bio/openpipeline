@@ -34,7 +34,8 @@ workflow run_wf {
         toState: [
           "output": "output",
           "output_types": "output_types"
-        ]
+        ],
+        auto: [ publish: true ]
       )
 
     split_stub_ch = input_ch
