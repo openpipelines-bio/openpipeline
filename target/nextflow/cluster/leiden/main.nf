@@ -3059,9 +3059,9 @@ meta = [
     "platform" : "nextflow",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/cluster/leiden",
     "viash_version" : "0.8.5",
-    "git_commit" : "a02c211c4e1f726d5f821e448166f0460187c5f0",
+    "git_commit" : "14ae601d024abcb09187487a4f9199f3cdb16b5f",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline",
-    "git_tag" : "0.2.0-1599-ga02c211c4e"
+    "git_tag" : "0.2.0-1600-g14ae601d02"
   }
 }'''))
 ]
@@ -3276,9 +3276,6 @@ def start_orphan_checker(parent_process_id, exit_event: threading.Event):
     
     def exit_if_orphaned():
         while True:
-            # Parent process requested exit
-            if exit_event.wait(timeout=1):
-                os.kill(pid, signal.SIGTERM)
             # Check if parent process is gone
             try:
                 # If sig is 0, then no signal is sent, but error checking is still performed; 
@@ -3287,8 +3284,16 @@ def start_orphan_checker(parent_process_id, exit_event: threading.Event):
             except ProcessLookupError:
                 # Kill self
                 os.kill(pid, signal.SIGTERM)
+            time.sleep(0.2)
+            # Parent process requested exit
+            try:
+                exit_event_set = exit_event.wait(timeout=1)
+            except BrokenPipeError:
+                os.kill(pid, signal.SIGTERM) 
+            else:
+                if exit_event_set:
+                    os.kill(pid, signal.SIGTERM)
             time.sleep(1)
-
     threading.Thread(target=exit_if_orphaned, daemon=True).start()
 
 def main():
