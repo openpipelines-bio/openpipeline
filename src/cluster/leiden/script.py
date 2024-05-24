@@ -180,13 +180,22 @@ def run_single_resolution(shared_csr_matrix, obs_names, resolution):
         obs_names.shm.close()
         shared_csr_matrix.close() 
 
-def start_orphan_checker():
+def start_orphan_checker(parent_process_id, exit_event: threading.Event):
     import threading
 
     def exit_if_orphaned():
-        import multiprocessing
-        multiprocessing.parent_process().join()  # wait for parent process to die first; may never happen
-        os._exit(-1)
+        while True:
+            # Parent process requested exit
+            if exit_event.is_set():
+                os.exit(-1)
+            # Check if parent process is gone
+            try:
+                # If sig is 0, then no signal is sent, but error checking is still performed; 
+                # this can be used to check for the existence of a process ID
+                os.kill(parent_process_id, 0)
+            except OSError:
+                os.exit(-1)
+            time.sleep(1)
 
     threading.Thread(target=exit_if_orphaned, daemon=True).start()
 
@@ -200,7 +209,8 @@ def main():
         raise ValueError(f"Could not find .obsp key \"{par['obsp_connectivities']}\" "
                         "in modality {par['modality']}")
 
-    with managers.SharedMemoryManager() as smm:
+    with managers.SharedMemoryManager() as smm, managers.SyncManager() as syncm:
+        exit_early_event = syncm.Event()
         # anndata converts the index to strings, so no worries that it cannot be stored in ShareableList
         # because it has an unsupported dtype. It should always be string...
         index_contents = adata.obs.index.to_list()
@@ -210,7 +220,8 @@ def main():
         shared_csr_matrix = SharedCsrMatrix.from_csr_matrix(smm, connectivities)
         with ProcessPoolExecutor(max_workers=meta['cpus'], max_tasks_per_child=1, 
                                  mp_context=get_context('spawn'),
-                                 initializer=start_orphan_checker) as executor:
+                                 initializer=start_orphan_checker,
+                                 initargs=((os.getpid(), exit_early_event))) as executor:
             results = executor.map(run_single_resolution, 
                                     repeat(shared_csr_matrix), 
                                     repeat(obs_names), 
@@ -226,7 +237,7 @@ def main():
                 # * Subprocess terminates without raising a proper exception.
                 # * The code of the process handling the communication is broke (i.e. a python bug)
                 # * The return data could not be pickled.
-                executor.shutdown(wait=False, cancel_futures=True)
+                exit_early_event.set()
                 shared_csr_matrix.close()
                 obs_names.shm.close() 
                 print(e, file=sys.stderr, flush=True)
