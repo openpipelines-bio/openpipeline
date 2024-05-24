@@ -3035,14 +3035,14 @@ meta = [
         "foundConfigPath" : "/home/runner/work/openpipeline/openpipeline/src/dimred/pca/config.vsh.yaml",
         "configInfo" : {
           "functionalityName" : "pca",
-          "git_tag" : "0.2.0-1596-ga747e6b4ec",
+          "git_tag" : "0.2.0-1597-g6e1bb6ccce",
           "git_remote" : "https://github.com/openpipelines-bio/openpipeline",
           "viash_version" : "0.8.5",
           "config" : "/home/runner/work/openpipeline/openpipeline/src/dimred/pca/config.vsh.yaml",
           "functionalityNamespace" : "dimred",
           "output" : "",
           "platform" : "",
-          "git_commit" : "a747e6b4ec69ca6f81d66ec2a86a12518f1970f0",
+          "git_commit" : "6e1bb6ccce14fb93c26bfb001a476e9b2384bb0d",
           "executable" : "/nextflow/dimred/pca/main.nf"
         },
         "writtenPath" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/dimred/pca"
@@ -3056,14 +3056,14 @@ meta = [
         "foundConfigPath" : "/home/runner/work/openpipeline/openpipeline/src/neighbors/find_neighbors/config.vsh.yaml",
         "configInfo" : {
           "functionalityName" : "find_neighbors",
-          "git_tag" : "0.2.0-1596-ga747e6b4ec",
+          "git_tag" : "0.2.0-1597-g6e1bb6ccce",
           "git_remote" : "https://github.com/openpipelines-bio/openpipeline",
           "viash_version" : "0.8.5",
           "config" : "/home/runner/work/openpipeline/openpipeline/src/neighbors/find_neighbors/config.vsh.yaml",
           "functionalityNamespace" : "neighbors",
           "output" : "",
           "platform" : "",
-          "git_commit" : "a747e6b4ec69ca6f81d66ec2a86a12518f1970f0",
+          "git_commit" : "6e1bb6ccce14fb93c26bfb001a476e9b2384bb0d",
           "executable" : "/nextflow/neighbors/find_neighbors/main.nf"
         },
         "writtenPath" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/neighbors/find_neighbors"
@@ -3077,14 +3077,14 @@ meta = [
         "foundConfigPath" : "/home/runner/work/openpipeline/openpipeline/src/dimred/umap/config.vsh.yaml",
         "configInfo" : {
           "functionalityName" : "umap",
-          "git_tag" : "0.2.0-1596-ga747e6b4ec",
+          "git_tag" : "0.2.0-1597-g6e1bb6ccce",
           "git_remote" : "https://github.com/openpipelines-bio/openpipeline",
           "viash_version" : "0.8.5",
           "config" : "/home/runner/work/openpipeline/openpipeline/src/dimred/umap/config.vsh.yaml",
           "functionalityNamespace" : "dimred",
           "output" : "",
           "platform" : "",
-          "git_commit" : "a747e6b4ec69ca6f81d66ec2a86a12518f1970f0",
+          "git_commit" : "6e1bb6ccce14fb93c26bfb001a476e9b2384bb0d",
           "executable" : "/nextflow/dimred/umap/main.nf"
         },
         "writtenPath" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/dimred/umap"
@@ -3151,9 +3151,9 @@ meta = [
     "platform" : "nextflow",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/workflows/multiomics/dimensionality_reduction",
     "viash_version" : "0.8.5",
-    "git_commit" : "a747e6b4ec69ca6f81d66ec2a86a12518f1970f0",
+    "git_commit" : "6e1bb6ccce14fb93c26bfb001a476e9b2384bb0d",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline",
-    "git_tag" : "0.2.0-1596-ga747e6b4ec"
+    "git_tag" : "0.2.0-1597-g6e1bb6ccce"
   }
 }'''))
 ]

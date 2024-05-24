@@ -239,10 +239,8 @@ def main():
                 # * Subprocess terminates without raising a proper exception.
                 # * The code of the process handling the communication is broke (i.e. a python bug)
                 # * The return data could not be pickled.
-                print("Setting early ", file=sys.stderr, flush=True)
+                executor.shutdown(wait=False, cancel_futures=True)
                 exit_early_event.set()
-
-                executor.shutdown(wait=True, cancel_futures=True)
                 shared_csr_matrix.close()
                 obs_names.shm.close()
                 print(e, file=sys.stderr, flush=True)

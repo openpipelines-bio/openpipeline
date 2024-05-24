@@ -3059,9 +3059,9 @@ meta = [
     "platform" : "nextflow",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/cluster/leiden",
     "viash_version" : "0.8.5",
-    "git_commit" : "a747e6b4ec69ca6f81d66ec2a86a12518f1970f0",
+    "git_commit" : "6e1bb6ccce14fb93c26bfb001a476e9b2384bb0d",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline",
-    "git_tag" : "0.2.0-1596-ga747e6b4ec"
+    "git_tag" : "0.2.0-1597-g6e1bb6ccce"
   }
 }'''))
 ]
@@ -3329,10 +3329,8 @@ def main():
                 # * Subprocess terminates without raising a proper exception.
                 # * The code of the process handling the communication is broke (i.e. a python bug)
                 # * The return data could not be pickled.
-                print("Setting early ", file=sys.stderr, flush=True)
+                executor.shutdown(wait=False, cancel_futures=True)
                 exit_early_event.set()
-
-                executor.shutdown(wait=True, cancel_futures=True)
                 shared_csr_matrix.close()
                 obs_names.shm.close()
                 print(e, file=sys.stderr, flush=True)
