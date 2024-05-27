@@ -331,9 +331,13 @@ platforms:
     #   - type: python
     #     packages: [cwlref-runner, cwl-runner, ruamel.yaml]
     setup:
+      - type: apt
+        packages: [ procps, nodejs]
       - type: python
-        packages:
-          - pandas<2
+        packages: [cwlref-runner, cwl-runner, ruamel.yaml]
+      # - type: python
+      #   packages:
+      #     - pandas<2
   - type: nextflow
     directives:
       label: [ highmem, highcpu ]

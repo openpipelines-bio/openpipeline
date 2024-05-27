@@ -45,12 +45,16 @@ meta = {
 }
 ## VIASH END
 
+def clean_arg(argument):
+    argument["clean_name"] = re.sub("^-*", "", argument["name"])
+    return argument
+
 def read_config(path: str) -> dict[str, Any]:
     with open(path, 'r') as f:
         config = yaml.safe_load(f)
     
     config["functionality"]["arguments"] = [
-        arg
+        clean_arg(arg)
         for grp in config["functionality"]["argument_groups"]
         for arg in grp["arguments"]
     ]
@@ -66,20 +70,20 @@ def strip_margin(text: str) -> str:
 def process_params(par: dict[str, Any], config) -> str:
     # check input parameters
     assert par["reads"] or par["reads_atac"], "Pass at least one set of inputs to --reads or --reads_atac."
-    assert not (par["reference_archive"] and par["reference_archive_atac"]), "Pass only one reference archive to --reference_archive or --reference_archive_atac."
+    assert not (par["reference_archive"] and par["atac_reference_archive"]), "Pass only one reference archive to --reference_archive or --atac_reference_archive."
 
     # checking sample prefix
-    if re.match("[^A-Za-z0-9]", par["sample_prefix"]):
-        logger("--sample_prefix should only consist of letters, numbers or hyphens. Replacing all '[^A-Za-z0-9]' with '-'.")
-        par["sample_prefix"] = re.sub("[^A-Za-z0-9\\-]", "-", par["sample_prefix"])
+    if re.match("[^A-Za-z0-9]", par["run_name"]):
+        logger("--run_name should only consist of letters, numbers or hyphens. Replacing all '[^A-Za-z0-9]' with '-'.")
+        par["run_name"] = re.sub("[^A-Za-z0-9\\-]", "-", par["run_name"])
 
     # make paths absolute
     for argument in config["functionality"]["arguments"]:
-        if par[argument["name"]] and argument["type"] == "file":
-            if isinstance(par[argument["name"]], list):
-                par[argument["name"]] = [ os.path.abspath(f) for f in par[argument["name"]] ]
+        if par[argument["clean_name"]] and argument["type"] == "file":
+            if isinstance(par[argument["clean_name"]], list):
+                par[argument["clean_name"]] = [ os.path.abspath(f) for f in par[argument["clean_name"]] ]
             else:
-                par[argument["name"]] = os.path.abspath(par[argument["name"]])
+                par[argument["clean_name"]] = os.path.abspath(par[argument["clean_name"]])
     
     return par
 
@@ -93,14 +97,14 @@ def generate_config(par: dict[str, Any], config) -> str:
     for argument in config["functionality"]["arguments"]:
         arg_info = argument.get("info") or {}
         config_key = arg_info.get("config_key")
-        if par[argument["name"]] and config_key:
+        if par[argument["clean_name"]] and config_key:
 
             if argument["type"] == "file":
                 str = strip_margin(f"""\
-                    |{argument["name"]}:
+                    |{config_key}:
                     |""")
-                if isinstance(par[argument["name"]], list):
-                    for file in par[argument["name"]]:
+                if isinstance(par[argument["clean_name"]], list):
+                    for file in par[argument["clean_name"]]:
                         str += strip_margin(f"""\
                             | - class: File
                             |   location: "{file}"
@@ -108,12 +112,12 @@ def generate_config(par: dict[str, Any], config) -> str:
                 else:
                     str += strip_margin(f"""\
                         |   class: File
-                        |   location: "{par[argument["name"]]}"
+                        |   location: "{par[argument["clean_name"]]}"
                         |""")
                 content_list.append(str)
             else:
                 content_list.append(strip_margin(f"""\
-                    |{argument["name"]}: {par[argument["name"]]}
+                    |{config_key}: {par[argument["clean_name"]]}
                     |"""))
 
     ## Write config to file
@@ -167,7 +171,7 @@ def main(par: dict[str, Any], meta: dict[str, Any]):
 
     # Create params file
     config_file = os.path.join(par["output"], "config.yml")
-    config_content = generate_config(par)
+    config_content = generate_config(par, config)
     with open(config_file, "w") as f:
         f.write(config_content)
 
@@ -198,9 +202,9 @@ def main(par: dict[str, Any], meta: dict[str, Any]):
 
     # if not par["dryrun"]:
     #     # look for counts file
-    #     if not par["sample_prefix"]:
-    #         par["sample_prefix"] = "sample"
-    #     counts_filename = par["sample_prefix"] + "_RSEC_MolsPerCell.csv"
+    #     if not par["run_name"]:
+    #         par["run_name"] = "sample"
+    #     counts_filename = par["run_name"] + "_RSEC_MolsPerCell.csv"
         
     #     if par["sample_tags_version"]:
     #         counts_filename = "Combined_" + counts_filename
@@ -210,7 +214,7 @@ def main(par: dict[str, Any], meta: dict[str, Any]):
     #         raise ValueError(f"Could not find output counts file '{counts_filename}'")
 
     #     # look for metrics file
-    #     metrics_filename = par["sample_prefix"] + "_Metrics_Summary.csv"
+    #     metrics_filename = par["run_name"] + "_Metrics_Summary.csv"
     #     metrics_file = os.path.join(par["output"], metrics_filename)
     #     if not os.path.exists(metrics_file):
     #         raise ValueError(f"Could not find output metrics file '{metrics_filename}'")
