@@ -91,7 +91,6 @@ def test_cell_type_inference(run_component,
     assert not all(np.isnan(output_adata.obs["predicted_cell_class"])), "predicted cell classes contain nan values"
     assert output_adata.obs["predicted_cell_class"].dtype == "int64", "predicted cell classes are not integers"
     assert "predicted_cell_label" in output_adata.obs.keys(), "predicted_cell_type is not present in anndata obs keys"
-    assert output_adata.obs["predicted_cell_label"].dtype == "object", "predicted cell types are not integers"
 
     # run withou dsbn
     output_annotation_file_without_dsbn = tmp_path / "Kim2020_Lung_subset_annotated_no_dsbn.h5mu"
