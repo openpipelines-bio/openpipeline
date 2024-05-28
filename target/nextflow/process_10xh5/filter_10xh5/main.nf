@@ -3032,9 +3032,9 @@ meta = [
     "platform" : "nextflow",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/process_10xh5/filter_10xh5",
     "viash_version" : "0.8.5",
-    "git_commit" : "cb6cffeb492385b878873afdecdfddbc8b7529ae",
+    "git_commit" : "51eba05842c99fe14d8ed9196744e622745465c1",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline",
-    "git_tag" : "0.2.0-1602-gcb6cffeb49"
+    "git_tag" : "0.2.0-1603-g51eba05842"
   }
 }'''))
 ]
