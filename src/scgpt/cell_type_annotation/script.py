@@ -18,12 +18,14 @@ par = {
   'model': r'resources_test/scgpt/soumya_fibroblast_20240419/best_model.pt',
   'model_config': r'resources_test/scgpt/soumya_fibroblast_20240419/args.json',
   'model_vocab': r'resources_test/scgpt/soumya_fibroblast_20240419/vocab.json',
+  'cell_type_mapper': r'resources_test/scgpt/soumya_fibroblast_20240419/mapping.json',
   'obs_batch_label': r'sample',
   'obsm_gene_tokens': r'gene_id_tokens',
   'obsm_tokenized_values': r'values_tokenized',
   'output': r'Kim2020_Lung_cell_type_annotation.h5mu',
   'output_compression': None,
-  'obs_predicted_cell_type': r'predicted_cell_type',
+  'obs_predicted_cell_class': r'predicted_cell_class',
+  'obs_predicted_cell_label': r'predicted_cell_label',
   'dsbn': True,
   'seed': 0,
   'pad_token': "<pad>",
@@ -184,7 +186,7 @@ data_loader = DataLoader(
 )
 
 # Inference
-logger.info("Predicting cell type labels")
+logger.info("Predicting cell type classes")
 model.eval()
 predictions = []
 with torch.no_grad():
@@ -194,7 +196,7 @@ with torch.no_grad():
         batch_labels = batch_data["batch_labels"].to(device)
 
         src_key_padding_mask = input_gene_ids.eq(vocab[par["pad_token"]])
-        with torch.cuda.amp.autocast(enabled=False): 
+        with torch.cuda.amp.autocast(enabled=False):
             output_dict = model(
                 input_gene_ids,
                 input_values,
@@ -207,7 +209,16 @@ with torch.no_grad():
         predictions.append(preds)
 
 predictions = np.concatenate(predictions, axis=0)
-adata.obs[par["obs_predicted_cell_type"]] = predictions
+adata.obs[par["obs_predicted_cell_class"]] = predictions
+
+# Assign cell type labels to predicted classes
+logger.info("Assigning cell type labels")
+cell_type_mapper_file = par["cell_type_mapper"]
+with open(cell_type_mapper_file, "r") as f:
+    cell_type_mapper = json.load(f)
+cell_type_mapper = {int(k): v for k, v in cell_type_mapper.items()}
+adata.obs[par["obs_predicted_cell_label"]] = adata.obs[par['obs_predicted_cell_class']].map(lambda x: cell_type_mapper[x])
+
 # Write output
 logger.info("Writing output data")
 mdata.mod[par["modality"]] = adata

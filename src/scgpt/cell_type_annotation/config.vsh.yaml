@@ -39,7 +39,8 @@ functionality:
             Model vocabulary file directory.
         - name: "--cell_type_mapper"
           type: file
-          example: mapper.yaml
+          required: true
+          example: mapper.json
           description: |
             YAML file containing the mapping object of the cell type classes with corresponding cell type labels.
 
@@ -79,12 +80,18 @@ functionality:
           default: gzip
           description: |
             The compression algorithm to use for the output h5mu file.
-        - name: "--obs_predicted_cell_type"
+        - name: "--obs_predicted_cell_class"
           type: string
-          default: "predicted_cell_type"
+          default: "predicted_cell_class"
           required: false
           description: |
-            The name of the adata.obs column to write predicted cell types to.
+            The name of the adata.obs column to write predicted cell type classes to.
+        - name: "--obs_predicted_cell_label"
+          type: string
+          default: "predicted_cell_label"
+          required: false
+          description: |
+            The name of the adata.obs column to write predicted cell type labels to.
 
     - name: Arguments
       arguments:
