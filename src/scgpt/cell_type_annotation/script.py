@@ -213,9 +213,11 @@ adata.obs[par["obs_predicted_cell_class"]] = predictions
 
 # Assign cell type labels to predicted classes
 logger.info("Assigning cell type labels")
+
 cell_type_mapper_file = par["cell_type_mapper"]
 with open(cell_type_mapper_file, "r") as f:
     cell_type_mapper = json.load(f)
+    
 cell_type_mapper = {int(k): v for k, v in cell_type_mapper.items()}
 adata.obs[par["obs_predicted_cell_label"]] = adata.obs[par['obs_predicted_cell_class']].map(lambda x: cell_type_mapper[x])
 
