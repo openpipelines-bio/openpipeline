@@ -1,4 +1,3 @@
-import logging.handlers
 import sys
 import signal
 import os
