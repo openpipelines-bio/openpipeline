@@ -105,8 +105,8 @@ def test_cell_type_inference(run_component,
         "--model_config", model_config,
         "--cell_type_mapper", json_mapper_path,
         "--obs_batch_label", "sample",
-        "--obs_predicted_cell_class", "obs_predicted_cell_class",
-        "--obs_predicted_cell_label", "obs_predicted_cell_label",
+        "--obs_predicted_cell_class", "predicted_cell_class",
+        "--obs_predicted_cell_label", "predicted_cell_label",
         "--dsbn", "False"
     ]
     run_component(args)
@@ -115,7 +115,7 @@ def test_cell_type_inference(run_component,
     output_adata_no_dsbn = output_mdata_no_dsbn.mod["rna"]
 
     # Assert that embeddings without dsbn are different
-    assert not (output_adata.obs["obs_predicted_cell_class"] == output_adata_no_dsbn.obs["obs_predicted_cell_class"]).all(), "Cell type predictions with and without dsbn are the same"
+    assert not (output_adata.obs["predicted_cell_class"] == output_adata_no_dsbn.obs["predicted_cell_class"]).all(), "Cell type predictions with and without dsbn are the same"
 
 
 def test_annotation_dsbn_without_batch_labels(run_component, tmp_path, json_mapper_path):
@@ -131,8 +131,8 @@ def test_annotation_dsbn_without_batch_labels(run_component, tmp_path, json_mapp
         "--model_vocab", model_vocab,
         "--model_config", model_config,
         "--cell_type_mapper", json_mapper_path,
-        "--obs_predicted_cell_class", "obs_predicted_cell_class",
-        "--obs_predicted_cell_label", "obs_predicted_cell_label",
+        "--obs_predicted_cell_class", "predicted_cell_class",
+        "--obs_predicted_cell_label", "predicted_cell_label",
         "--dsbn", "True",
     ]
 
@@ -158,8 +158,8 @@ def test_annotation_non_existing_keys(run_component, tmp_path, json_mapper_path)
         "--model_vocab", model_vocab,
         "--model_config", model_config,
         "--cell_type_mapper", json_mapper_path,
-        "--obs_predicted_cell_class", "obs_predicted_cell_class",
-        "--obs_predicted_cell_label", "obs_predicted_cell_label",
+        "--obs_predicted_cell_class", "predicted_cell_class",
+        "--obs_predicted_cell_label", "predicted_cell_label",
         "--obs_batch_label", "sample",
         "--dsbn", "True",
     ]
