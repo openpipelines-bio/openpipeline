@@ -1,7 +1,6 @@
 import sys
 import signal
 import os
-import threading
 import time
 import mudata as mu
 import pandas as pd
@@ -13,7 +12,6 @@ from multiprocessing import managers, shared_memory, get_context
 from concurrent.futures import ProcessPoolExecutor, process, as_completed
 from scipy.sparse import csr_matrix
 from pathlib import Path
-from itertools import repeat
 import shutil
 
 ## VIASH START
