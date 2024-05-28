@@ -79,19 +79,19 @@ def test_cell_type_inference(run_component,
         "--model_config", model_config,
         "--cell_type_mapper", json_mapper_path,
         "--obs_batch_label", "sample",
-        "--obs_predicted_cell_class", "obs_predicted_cell_class",
-        "--obs_predicted_cell_label", "obs_predicted_cell_label",
+        "--obs_predicted_cell_class", "predicted_cell_class",
+        "--obs_predicted_cell_label", "predicted_cell_label",
         "--dsbn", "True"
     ]
     run_component(args)
 
     output_mudata = read_h5mu(output_annotation_file)
     output_adata = output_mudata.mod["rna"]
-    assert "obs_predicted_cell_class" in output_adata.obs.keys(), "predicted_cell_type is not present in anndata obs keys"
-    assert not all(np.isnan(output_adata.obs["obs_predicted_cell_class"])), "predicted cell types contain nan values"
-    assert output_adata.obs["obs_predicted_cell_class"].dtype == "int64", "predicted cell types are not integers"
-    assert "obs_predicted_cell_label" in output_adata.obs.keys(), "predicted_cell_type is not present in anndata obs keys"
-    assert not all(np.isnan(output_adata.obs["obs_predicted_cell_label"])), "predicted cell types contain nan values"
+    assert "predicted_cell_class" in output_adata.obs.keys(), "predicted_cell_class is not present in anndata obs keys"
+    assert not all(np.isnan(output_adata.obs["predicted_cell_class"])), "predicted cell classes contain nan values"
+    assert output_adata.obs["predicted_cell_class"].dtype == "int64", "predicted cell classes are not integers"
+    assert "predicted_cell_label" in output_adata.obs.keys(), "predicted_cell_type is not present in anndata obs keys"
+    assert output_adata.obs["predicted_cell_label"].dtype == "object", "predicted cell types are not integers"
 
     # run withou dsbn
     output_annotation_file_without_dsbn = tmp_path / "Kim2020_Lung_subset_annotated_no_dsbn.h5mu"
