@@ -3059,9 +3059,9 @@ meta = [
     "platform" : "nextflow",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/cluster/leiden",
     "viash_version" : "0.8.5",
-    "git_commit" : "51eba05842c99fe14d8ed9196744e622745465c1",
+    "git_commit" : "072581de7c9591e3ebe3cb2ae22116e8364e08ca",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline",
-    "git_tag" : "0.2.0-1603-g51eba05842"
+    "git_tag" : "0.2.0-1604-g072581de7c"
   }
 }'''))
 ]
@@ -3080,6 +3080,7 @@ import signal
 import os
 import time
 import logging
+import logging.handlers
 import warnings
 import mudata as mu
 import pandas as pd
