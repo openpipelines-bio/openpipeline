@@ -481,9 +481,9 @@ RUN pip install --upgrade pip && \
 
 LABEL org.opencontainers.image.authors="Robrecht Cannoodt, Angela Oliveira Pisco"
 LABEL org.opencontainers.image.description="Companion container for running component mapping samtools_sort"
-LABEL org.opencontainers.image.created="2024-05-29T14:24:52Z"
+LABEL org.opencontainers.image.created="2024-05-29T14:52:44Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="2374b505c4d91e81ce47566ae4902831ccfe992f"
+LABEL org.opencontainers.image.revision="f7f0e24a3e997b7403c5b81c96fb6a9441682846"
 LABEL org.opencontainers.image.version="v1.0.0-rc5"
 
 VIASHDOCKER
