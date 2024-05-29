@@ -424,9 +424,9 @@ ENTRYPOINT []
 RUN :
 LABEL org.opencontainers.image.authors="Robrecht Cannoodt"
 LABEL org.opencontainers.image.description="Companion container for running component download download_file"
-LABEL org.opencontainers.image.created="2024-05-29T13:19:40Z"
+LABEL org.opencontainers.image.created="2024-05-29T13:27:45Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="00235af4a1a54998df30d08bb97ed152fc0c7399"
+LABEL org.opencontainers.image.revision="c4db2252b291c8dfaffca437381cab82b9f5f15b"
 LABEL org.opencontainers.image.version="main_build"
 
 VIASHDOCKER

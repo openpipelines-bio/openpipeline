@@ -374,5 +374,5 @@ info:
   output: "/home/runner/work/openpipeline/openpipeline/target/docker/genetic_demux/cellsnp"
   executable: "/home/runner/work/openpipeline/openpipeline/target/docker/genetic_demux/cellsnp/cellsnp"
   viash_version: "0.8.5"
-  git_commit: "00235af4a1a54998df30d08bb97ed152fc0c7399"
+  git_commit: "c4db2252b291c8dfaffca437381cab82b9f5f15b"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"
