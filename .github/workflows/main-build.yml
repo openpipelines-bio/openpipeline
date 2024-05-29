@@ -216,9 +216,6 @@ jobs:
         }
         ] | unique' ${{ steps.ns_list_workflows.outputs.output_file }} )" >> $GITHUB_OUTPUT
 
-        query: ^(?!workflows)
-      
-
   # phase 2
   build_and_deploy_docker_containers:
     name: "Build and Deploy Docker Images"
