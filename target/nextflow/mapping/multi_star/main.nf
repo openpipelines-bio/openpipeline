@@ -6358,7 +6358,7 @@ meta = [
     "platform" : "nextflow",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/mapping/multi_star",
     "viash_version" : "0.8.5",
-    "git_commit" : "4348a28c30f93edc37b2847dc02386697c1d2aa8",
+    "git_commit" : "00235af4a1a54998df30d08bb97ed152fc0c7399",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))
