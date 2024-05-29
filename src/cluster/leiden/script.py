@@ -185,7 +185,7 @@ def init_worker(parent_process_id, exit_event, log_queue, log_level):
 
     logger.info("Initializing process %s", pid)
     def exit_if_orphaned():
-        logger.info("Starting orphanned process checker for process %s.", pid)
+        logger.info("Starting orphanned process checker for process %s, parent process %s.", pid, parent_process_id)
         while True:
             # Check if parent process is gone
             try:
@@ -283,6 +283,9 @@ def main():
                 shared_csr_matrix.close()
                 obs_names.shm.close()
                 logger.info("Shared resources closed")
+                log_listener.enqueue_sentinel()
+                log_listener.stop()
+                print("Logging system shut down", flush=True, file=sys.stdout)
             logger.info("Waiting for shutdown of processes")
             executor.shutdown()
             logger.info("Executor shut down.")
