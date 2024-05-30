@@ -1,3 +1,9 @@
+# openpipelines 1.0.0-rc5
+
+## BUG FIXES
+
+* `cluster/leiden`: prevent leiden component from hanging when a child process is killed (e.g. when there is not enough memory available) (PR #805).
+
 # openpipelines 1.0.0-rc4
 
 ## BREAKING CHANGES

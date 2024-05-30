@@ -24,11 +24,6 @@ on:
           Version tag of containers to use. Defaults to name of the branch that triggered the workflow, 
           suffixed by "_build". Can be used in combination with 'push_containers' (by unchecking it)
           to re-use existing docker images or set the tag for new builds.
-      deploy_to_viash_hub:
-        type: boolean
-        required: false
-        default: false
-        description: Also build packages and docker images for viash-hub.com and push them.
 
   # when used as a subworkflow
   workflow_call:
@@ -57,11 +52,6 @@ on:
         description: |
           Branch to deploy the build to. Defaults to name of the branch 
           that triggered the workflow, suffixed by "_build".
-      deploy_to_viash_hub:
-        type: boolean
-        required: false
-        default: false
-        description: Also build packages and docker images for viash-hub.com and push them.
       is_workflow_call:
           description: |
             Flag to destinguish between a 'workflow_call' and 'workflow_dispatch'.
@@ -78,10 +68,6 @@ on:
         description: "A JSON object that can be used to populate a github actions matrix for workflow jobs."
         value: ${{ jobs.build_and_deploy_target_folder.outputs.workflow_matrix}}
     secrets:
-      VIASHHUB_USER:
-        required: true
-      VIASHHUB_PAT:
-        required: true
       GTHB_USER:
         required: true 
       GTHB_PAT:
@@ -124,17 +110,6 @@ jobs:
       run: |
         git config --global core.symlinks true
 
-    - uses: actions/checkout@v4
-      if: ${{ inputs.deploy_to_viash_hub == 'true' }}
-      with:
-        fetch-depth: 0
-    
-    - name: Push ref to Viash-hub
-      if: ${{ inputs.deploy_to_viash_hub == 'true' }}
-      run: |
-        git remote add viash-hub https://x-access-token:${{ secrets.VIASHHUB_PAT }}@viash-hub.com/openpipelines-bio/openpipeline.git
-        git push -f -u viash-hub ${{ github.ref_name }}
-  
     - name: Branch to checkout (use existing target branch if it exists)
       id: get_checkout_branch
       run: |
@@ -241,61 +216,6 @@ jobs:
         }
         ] | unique' ${{ steps.ns_list_workflows.outputs.output_file }} )" >> $GITHUB_OUTPUT
 
-    - uses: actions/checkout@v4
-      if: ${{ github.event_name == 'push' || inputs.deploy_to_viash_hub }}
-      with:
-        ref:  ${{ !inputs.deploy_branch && format('{0}_build', github.ref_name) || inputs.deploy_branch  }}
-        fetch-depth: 0
-        clean: true
-
-    - name: Set origin to viash-hub and commit on top of it.
-      if: ${{ github.event_name == 'push' || inputs.deploy_to_viash_hub }}
-      # This is needed because git-auto-commit-action uses origin by default
-      run: |
-        git remote add viash-hub https://x-access-token:${{ secrets.VIASHHUB_PAT }}@viash-hub.com/openpipelines-bio/openpipeline.git
-        if git ls-remote --heads --exit-code https://viash-hub.com/openpipelines-bio/openpipeline.git ${{ github.ref_name }}_build > /dev/null; then
-          git fetch viash-hub  ${{ !inputs.deploy_branch && format('{0}_build', github.ref_name) || inputs.deploy_branch  }}
-          git reset --hard viash-hub/${{ !inputs.deploy_branch && format('{0}_build', github.ref_name) || inputs.deploy_branch  }}
-        fi
-        git checkout -f --no-overlay origin/${{github.ref_name}} -- '.'
-        git remote set-url origin https://x-access-token:${{ secrets.VIASHHUB_PAT }}@viash-hub.com/openpipelines-bio/openpipeline.git
-        git remote rm viash-hub
-
-    - name: Remove target folder from .gitignore
-      run: |
-        # allow publishing the target folder
-        sed -i '/^\/target\/$/d' .gitignore
-
-    - uses: viash-io/viash-actions/ns-build@v5
-      if: ${{ github.event_name == 'push' || inputs.deploy_to_viash_hub }}
-      with:
-        config_mod: |
-          .functionality.version := " ${{ !inputs.deploy_branch && format('{0}_build', github.ref_name) || inputs.deploy_branch  }}"
-          .platforms[.type == 'docker'].target_tag := '${{ github.event_name == 'push' && (inputs.version || format('{0}_build', github.ref_name)) || inputs.target_tag }}'
-          .platforms[.type == 'docker'].target_organization := 'openpipelines-bio/openpipeline'
-          .platforms[.type == 'docker'].target_registry := 'viash-hub.com:5050'
-          .platforms[.type == 'docker'].target_image_source := 'https://viash-hub.com/openpipelines-bio/openpipeline'
-        parallel: true
-        query: ^(?!workflows)
-      
-    - uses: viash-io/viash-actions/ns-build@v5
-      if: ${{ github.event_name == 'push' || inputs.deploy_to_viash_hub }}
-      with:
-        config_mod: |
-          .functionality.version := "${{ inputs.version || format('{0}_build', github.ref_name) }}"
-        parallel: true
-        query: ^workflows
-   
-    - name: Deploy to target branch
-      if: ${{ github.event_name == 'push' || inputs.deploy_to_viash_hub }}
-      uses: stefanzweifel/git-auto-commit-action@v5
-      with:
-        create_branch: true
-        commit_message: "deploy: ${{github.sha}}"
-        skip_dirty_check: true
-        branch:  ${{ !inputs.deploy_branch && format('{0}_build', github.ref_name) || inputs.deploy_branch  }}
-        skip_checkout: true
-
   # phase 2
   build_and_deploy_docker_containers:
     name: "Build and Deploy Docker Images"
@@ -338,39 +258,6 @@ jobs:
       uses: viash-io/viash-actions/ns-build@v5
       with:
         config_mod: .functionality.version := "${{ inputs.version || format('{0}_build', github.ref_name) }}"
-        platform: docker
-        src: ${{ matrix.component.dir }}
-        setup: push
-    
-    - name: Login to Viash-Hub container registry
-      if: ${{ github.event_name == 'push' || inputs.deploy_to_viash_hub }}
-      uses: docker/login-action@v3
-      with:
-        registry: viash-hub.com:5050
-        username: ${{ secrets.VIASHHUB_USER }}
-        password: ${{ secrets.VIASHHUB_PAT }}
-
-    - name: Update Docker settings
-      if: ${{ github.event_name == 'push' || inputs.deploy_to_viash_hub }}
-      run: |
-        sudo sed -i 's/ }/, \"max-concurrent-uploads\": 2 }/' /etc/docker/daemon.json
-        sudo systemctl restart docker
-
-    - name: "Re-tag containers for viash-hub"
-      if: ${{ github.event_name == 'push' || inputs.deploy_to_viash_hub }}
-      run: |
-        viash ns exec -s ${{ matrix.component.dir }} --apply_platform -p docker \
-        'docker tag ghcr.io/openpipelines-bio/{namespace}${{matrix.component.namespace_separator}}{functionality-name}:${{ github.event_name == 'push' && (inputs.version || format('{0}_build', github.ref_name)) || inputs.target_tag }} viash-hub.com:5050/openpipelines-bio/openpipeline/{namespace}${{matrix.component.namespace_separator}}{functionality-name}:${{ inputs.version || format('{0}_build', github.ref_name) }}'
-  
-    - name: Push container to Viash-Hub
-      if: ${{ github.event_name == 'push' || inputs.deploy_to_viash_hub }}
-      uses: viash-io/viash-actions/ns-build@v5
-      with:
-        config_mod: |
-          .functionality.version := "${{ inputs.version || format('{0}_build', github.ref_name) }}"
-          .platforms[.type == 'docker'].target_registry := 'viash-hub.com:5050'
-          .platforms[.type == 'docker'].target_organization := 'openpipelines-bio/openpipeline'
-          .platforms[.type == 'docker'].target_image_source := 'https://viash-hub.com/openpipelines-bio/openpipeline'
         platform: docker
         src: ${{ matrix.component.dir }}
         setup: push
