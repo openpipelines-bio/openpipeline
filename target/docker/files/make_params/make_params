@@ -444,9 +444,9 @@ ENTRYPOINT []
 RUN :
 LABEL org.opencontainers.image.authors="Angela Oliveira Pisco, Robrecht Cannoodt"
 LABEL org.opencontainers.image.description="Companion container for running component files make_params"
-LABEL org.opencontainers.image.created="2024-05-31T02:40:15Z"
+LABEL org.opencontainers.image.created="2024-06-01T02:42:57Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="e71913d1c92d910ea56269456a4b4485cb17416c"
+LABEL org.opencontainers.image.revision="0a81f572a61288d0e4464486596882d279480248"
 LABEL org.opencontainers.image.version="integration_build"
 
 VIASHDOCKER
