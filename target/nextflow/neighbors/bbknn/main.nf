@@ -3139,7 +3139,7 @@ meta = [
     "platform" : "nextflow",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/neighbors/bbknn",
     "viash_version" : "0.8.5",
-    "git_commit" : "0a81f572a61288d0e4464486596882d279480248",
+    "git_commit" : "34ac21de4232f632f4f7043cc87f995fe193450e",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))
