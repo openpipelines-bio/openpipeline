@@ -1,6 +1,8 @@
 nextflow.enable.dsl=2
 
 include { rna_multisample } from params.rootDir + "/target/nextflow/workflows/rna/rna_multisample/main.nf"
+include { rna_multisample_test } from params.rootDir + "/target/nextflow/test_workflows/rna/rna_multisample_test/main.nf"
+
 
 workflow test_wf {
   // allow changing the resources_test dir
@@ -14,7 +16,13 @@ workflow test_wf {
       ]
     ])
     | map{ state -> [state.id, state] }
-    | rna_multisample
+    | rna_multisample.run(
+      toState: {id, output, state ->
+        output + [
+          input_og: state.input,
+        ]
+      }
+    )
     | view { output ->
       assert output.size() == 2 : "Outputs should contain two elements; [id, state]"
 
@@ -31,8 +39,19 @@ workflow test_wf {
 
       "Output: $output"
     }
+
+    | rna_multisample_test.run(
+      fromState: {id, state ->
+        [
+          input: state.output,
+          input_og: state.input_og,
+        ]
+      }
+    )
+
     | toSortedList({a, b -> a[0] <=> b[0]})
     | map { output_list ->
+      println "output_list: $output_list"
       assert output_list.size() == 1 : "output channel should contain 2 events"
       assert output_list.collect{it[0]} == ["simple_execution_test"]
     }

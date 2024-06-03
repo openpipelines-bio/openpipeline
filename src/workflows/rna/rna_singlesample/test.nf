@@ -1,6 +1,8 @@
 nextflow.enable.dsl=2
 
 include { rna_singlesample } from params.rootDir + "/target/nextflow/workflows/rna/rna_singlesample/main.nf"
+include { rna_singlesample_test } from params.rootDir + "/target/nextflow/test_workflows/rna/rna_singlesample_test/main.nf"
+
 
 workflow test_wf {
   // allow changing the resources_test dir
@@ -35,12 +37,29 @@ workflow test_wf {
       ]
     ])
     | map{ state -> [state.id, state] }
-    | rna_singlesample
+    | rna_singlesample.run(
+      toState: {id, output, state ->
+        output + [
+          input_og: state.input,
+        ]
+      }
+    )
     | view { output ->
       assert output.size() == 2 : "outputs should contain two elements; [id, file]"
       assert output[1].output.toString().endsWith(".h5mu") : "Output file should be a h5mu file. Found: ${output[1]}"
       "Output: $output"
     }
+
+    | rna_singlesample_test.run(
+      fromState: {id, state ->
+        [
+          input: state.output,
+          input_og: state.input_og,
+          input_id: id
+        ]
+      }
+    )
+
     | toSortedList{a, b -> a[0] <=> b[0]}
     | map { output_list ->
       assert output_list.size() == 2 : "output channel should contain two events"
@@ -73,12 +92,26 @@ workflow test_wf2 {
       ],
     ])
     | map{ state -> [state.id, state] }
-    | rna_singlesample
-    | view { output ->
+    | rna_singlesample.run(
+      toState: {id, output, state ->
+        output + [
+          input_og: state.input,
+        ]
+      }
+    )    | view { output ->
       assert output.size() == 2 : "outputs should contain two elements; [id, file]"
       assert output[1].output.toString().endsWith(".h5mu") : "Output file should be a h5mu file. Found: ${output[1]}"
       "Output: $output"
     }
+    | rna_singlesample_test.run(
+      fromState: {id, state ->
+        [
+          input: state.output,
+          input_og: state.input_og,
+          input_id: id
+        ]
+      }
+    )
     | toSortedList{a, b -> a[0] <=> b[0]}
     | map { output_list ->
       assert output_list.size() == 1 : "output channel should contain one event"
