@@ -6,73 +6,83 @@ functionality:
   authors:
     - __merge__: /src/authors/dorien_roosen.yaml
       roles: [ author, maintainer ]
-  arguments:
-    # input
-    - name: "--input"
-      alternatives: ["-i"]
-      type: file
-      description: Input h5mu file
-      direction: input
-      required: true
-      example: input.h5mu
+  argument_groups:
+    - name: Input dataset (query) arguments
+      arguments:
+        - name: "--input"
+          type: file
+          description: Input h5mu file
+          direction: input
+          required: true
+          example: input.h5mu
+        - name: "--modality"
+          type: string
+          default: "rna"
+          required: false
+        - name: "--input_obsm_features"
+          type: string
+          example: "X_pca"
+          required: false
+          description: "Which .obsm slot to use as a starting PCA embedding."
+          
+    - name: Reference dataset arguments
+      arguments:
+        - name: "--reference"
+          type: "file"
+          required: false
+          description: "The reference data to train classifiers on."
+        - name: "--reference_obsm_features"
+          type: string
+          required: true
+        - name: "--reference_obs_targets"
+          type: string
+          required: true
+          multiple: true
 
-    - name: "--modality"
-      type: string
-      default: "rna"
-      required: false
-
-    - name: "--obsm_input"
-      type: string
-      default: "X_pca"
-      required: false
-      description: "Which .obsm slot to use as a starting PCA embedding."
-
-    # output
-    - name: "--output"
-      alternatives: ["-o"]
-      type: file
-      description: Output h5mu file containing the found neighbors.
-      direction: output
-      example: output.h5mu
     
-    - name: "--output_compression"
-      type: string
-      description: The compression format to be used on the output h5mu object.
-      choices: ["gzip", "lzf"]
-      required: false
-      example: "gzip"
-  
-    - name: "--uns_output"
-      type: string
-      default: neighbors
-      description: Mandatory .uns slot to store various neighbor output objects.
+    - name: Outputs
+      arguments:
+        - name: "--output"
+          type: file
+          description: Output h5mu file containing the found neighbors.
+          direction: output
+          example: output.h5mu
+        - name: "--output_obs_predictions"
+          type: string
+          required: false
+          multiple: true
+        - name: "--output_obs_uncertainty"
+          type: string
+          required: false
+          multiple: true
+        - name: "--output_uns_parameters"
+          type: string
+          required: false
+        - name: "--output_compression"
+          type: string
+          description: The compression format to be used on the output h5mu object.
+          choices: ["gzip", "lzf"]
+          required: false
+          example: "gzip"
       
-    - name: "--obsp_distances"
-      type: string
-      default: "distances"
-      description: "In which .obsp slot to store the distance matrix between the resulting neighbors."
-      
-    - name: "--obsp_connectivities"
-      type: string
-      default: "connectivities"
-      description: "In which .obsp slot to store the connectivities matrix between the resulting neighbors."
+    - name: Neighbor classifier arguments
+      arguments:
+        - name: "--metric"
+          type: string
+          default: "euclidean"
+          description: The distance metric to be used in the generation of the nearest neighborhood network.
+          choices: [ 'cityblock', 'cosine', 'euclidean', 'l1', 'l2', 'manhattan', 'braycurtis', 'canberra', 'chebyshev', 'correlation', 'dice', 'hamming', 'jaccard', 'kulsinski', 'mahalanobis', 'minkowski', 'rogerstanimoto', 'russellrao', 'seuclidean', 'sokalmichener', 'sokalsneath', 'sqeuclidean', 'yule' ]
 
-    # arguments
-    - name: "--metric"
-      type: string
-      default: "euclidean"
-      description: The distance metric to be used in the generation of the nearest neighborhood network.
-      choices: [ 'cityblock', 'cosine', 'euclidean', 'l1', 'l2', 'manhattan', 'braycurtis', 'canberra', 'chebyshev', 'correlation', 'dice', 'hamming', 'jaccard', 'kulsinski', 'mahalanobis', 'minkowski', 'rogerstanimoto', 'russellrao', 'seuclidean', 'sokalmichener', 'sokalsneath', 'sqeuclidean', 'yule' ]
+        - name: "--num_neighbors"
+          type: integer
+          default: 15
+          description: The size of local neighborhood (in terms of number of neighboring data points) used for manifold approximation. Larger values result in more global views of the manifold, while smaller values result in more local data being preserved. In general values should be in the range 2 to 100. If knn is True, number of nearest neighbors to be searched. If knn is False, a Gaussian kernel width is set to the distance of the n_neighbors neighbor.
+        
+        - name: "--seed"
+          type: integer
+          default: 0
+          description: A random seed.
 
-    - name: "--num_neighbors"
-      type: integer
-      default: 15
-      description: The size of local neighborhood (in terms of number of neighboring data points) used for manifold approximation. Larger values result in more global views of the manifold, while smaller values result in more local data being preserved. In general values should be in the range 2 to 100. If knn is True, number of nearest neighbors to be searched. If knn is False, a Gaussian kernel width is set to the distance of the n_neighbors neighbor.
-    
-    - name: "--seed"
-      type: integer
-      default: 0
-      description: A random seed.
   resources:
     - type: python_script
       path: script.py
