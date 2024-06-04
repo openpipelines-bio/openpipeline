@@ -6,9 +6,10 @@ from sklearn.pipeline import make_pipeline
 
 ## VIASH START
 par = {
-    "input": "work/09/6b10f377b0c86a9da1024f8b9140c0/pbmc_1k_protein_v3_mms.harmonypy.output",
+    "input": "resources_test/scgpt/test_resources/Kim2020_Lung_subset_scgpt_integrated_leiden_qc.h5mu",
     "modality": "rna",
-    "reference_index": "ref",
+    "input_obsm_features": "X_PCA"
+    "reference": "https://zenodo.org/records/7587774/files/TS_Lung_filtered.h5ad",
     "obsm_input": "",
     "obs_label": "",
     # "output": "output.h5mu",
