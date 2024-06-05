@@ -455,9 +455,9 @@ RUN pip install --upgrade pip && \
 
 LABEL org.opencontainers.image.authors="Dries Schaumont, Robrecht Cannoodt, Angela Oliveira Pisco"
 LABEL org.opencontainers.image.description="Companion container for running component convert velocyto_to_h5mu"
-LABEL org.opencontainers.image.created="2024-06-04T02:40:51Z"
+LABEL org.opencontainers.image.created="2024-06-05T02:41:14Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="f05184eb0b06af854d41d8133b8c093415c82b01"
+LABEL org.opencontainers.image.revision="5c77b1f2898b8787d033138be1b46956d9b6da8b"
 LABEL org.opencontainers.image.version="integration_build"
 
 VIASHDOCKER
