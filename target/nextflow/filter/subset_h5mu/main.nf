@@ -3026,7 +3026,7 @@ meta = [
     "platform" : "nextflow",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/filter/subset_h5mu",
     "viash_version" : "0.8.5",
-    "git_commit" : "5c77b1f2898b8787d033138be1b46956d9b6da8b",
+    "git_commit" : "3c649cab67c7cc0c231aaf38e2dfaaf2067fb17a",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))
