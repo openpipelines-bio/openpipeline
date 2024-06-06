@@ -1,0 +1,40 @@
+functionality:
+  name: "celltype_annotation"
+  namespace: "workflows/celltype_annotation"
+  description: "A pipeline to process and annotate unimodal rna samples."
+  authors:
+    - __merge__: /src/authors/dorien_roosen.yaml
+      roles: [ author, maintainer ]
+  argument_groups:
+    - name: Inputs
+      arguments:
+        - name: "--id"
+          required: true
+          type: string
+          description: ID of the sample.
+          example: foo
+        - name: "--reference_url"
+          type: string
+          required: true
+          description: |
+            The reference data to train annotation algorithms on.
+          example: https://zenodo.org/records/7587774/files/TS_Lung_filtered.h5ad
+        - name: "--output"
+          type: file
+          direction: output
+          required: true
+          description: |
+            The output file.
+          example: output.h5mu
+
+  dependencies:
+    - name: download/download_file
+    - name: convert/from_h5ad_to_h5mu
+
+  resources:
+    - type: nextflow_script
+      path: main.nf
+      entrypoint: run_wf
+
+platforms:
+  - type: nextflow

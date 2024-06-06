@@ -1,35 +1,20 @@
-import sys
-import warnings
+import mudata as mu
+import pandas as pd
+import re
+from pathlib import Path
 
-import mudata
-import numpy as np
-import scanpy as sc
-from scipy.sparse import issparse
-import pynndescent
-import numba
-
-
-## VIASH START
+### VIASH START
 par = {
-    "input": "resources_test/pbmc_1k_protein_v3/pbmc_1k_protein_v3_mms.h5mu",
-    "modality": "rna",
-    "input_obsm_features": "X_pca",
-    "reference": "https://zenodo.org/records/7587774/files/TS_Blood_filtered.h5ad",
-    "reference_obsm_features": "X_pca",
-    "reference_obs_targets": ["cell_type"],
-    "output": "foo.h5mu",
-    "output_obs_predictions": None,
-    "output_obs_uncertainty": None,
-    "output_uns_parameters": "labels_transfer",
-    "n_neighbors": 1
+  'input': 'reference_download/reference.h5mu',
+  'modality': 'rna',
+  'obs_feature': 'donor_assay',
+  'output': 'reference_download/sample_split',
+  'output_compression': None,
+  'output_files': 'reference_download/sample_split/sample_files.csv'
 }
-meta = {
-    "resources_dir": "src/labels_transfer/utils"
-}
-## VIASH END
 
-sys.path.append(meta["resources_dir"])
-from helper import check_arguments, get_reference_features, get_query_features
+### VIASH END
+
 # START TEMPORARY WORKAROUND setup_logger
 # reason: resources aren't available when using Nextflow fusion
 # from setup_logger import setup_logger
@@ -46,90 +31,48 @@ def setup_logger():
 
     return logger
 # END TEMPORARY WORKAROUND setup_logger
+logger = setup_logger()
 
-@numba.njit
-def weighted_prediction(weights, ref_cats):
-    """Get highest weight category."""
-    N = len(weights)
-    predictions = np.zeros((N,), dtype=ref_cats.dtype)
-    uncertainty = np.zeros((N,))
-    for i in range(N):
-        obs_weights = weights[i]
-        obs_cats = ref_cats[i]
-        best_prob = 0
-        for c in np.unique(obs_cats):
-            cand_prob = np.sum(obs_weights[obs_cats == c])
-            if cand_prob > best_prob:
-                best_prob = cand_prob
-                predictions[i] = c
-                uncertainty[i] = max(1 - best_prob, 0)
 
-    return predictions, uncertainty
+def main():
+    logger.info(f"Reading {par['input']}")
+    input_file = Path(par["input"].strip())
 
-def distances_to_affinities(distances):
-    stds = np.std(distances, axis=1)
-    stds = (2.0 / stds) ** 2
-    stds = stds.reshape(-1, 1)
-    distances_tilda = np.exp(-np.true_divide(distances, stds))
-
-    return distances_tilda / np.sum(distances_tilda, axis=1, keepdims=True)
-
-def main(par):
-    logger = setup_logger()
-
-    logger.info("Checking arguments")
-    par = check_arguments(par)
-
-    logger.info("Reading input (query) data")
-    mdata = mudata.read(par["input"])
+    mdata = mu.read_h5mu(input_file)
     adata = mdata.mod[par["modality"]]
 
-    logger.info("Reading reference data")
-    adata_reference = sc.read(par["reference"], backup_url=par["reference"])
+    logger.info(f"Reading unique features from {par['obs_feature']}")
+    obs_features = adata.obs[par["obs_feature"]].unique().tolist()
 
-    # fetch feature data
-    train_data = get_reference_features(adata_reference, par, logger)
-    query_data = get_query_features(adata, par, logger)
+    # format obs_features into file compatible names
+    obs_features = [re.sub(r'[\\/*?:"<>|]', "", s) for s in obs_features]
+    obs_features = [s.replace(" ", "_") for s in obs_features]
+    obs_features = [s.replace("-", "_") for s in obs_features]
+    obs_features = [s.replace("'", "") for s in obs_features]
 
-    # pynndescent does not support sparse matrices
-    if issparse(train_data):
-        warnings.warn("Converting sparse matrix to dense. This may consume a lot of memory.")
-        train_data = train_data.toarray()
+    # generate output dir 
+    output_dir = Path(par["output"])
+    if not output_dir.is_dir():
+        output_dir.mkdir(parents=True)
 
-    logger.debug(f"Shape of train data: {train_data.shape}")
+    logger.info(f"Splitting file based on {par['obs_feature']} values {obs_features}")
+    obs_files = []
 
-    logger.info("Building NN index")
-    ref_nn_index = pynndescent.NNDescent(train_data, n_neighbors=par["n_neighbors"])
-    ref_nn_index.prepare()
+    for obs_name in obs_features:
+        logger.info(f"Filtering modality '{par['modality']}' observations by .obs['{par['obs_feature']}'] == {obs_name}")
+        mdata_obs = mdata.copy()
 
-    ref_neighbors, ref_distances = ref_nn_index.query(query_data, k=par["n_neighbors"])
-
-    weights = distances_to_affinities(ref_distances)
-
-    output_uns_parameters = adata.uns.get(par["output_uns_parameters"], {})
-
-    # for each annotation level, get prediction and uncertainty
-    
-    for obs_tar, obs_pred, obs_unc in zip(par["reference_obs_targets"], par["output_obs_predictions"], par["output_obs_uncertainty"]):
-        logger.info(f"Predicting labels for {obs_tar}")
-        ref_cats = adata_reference.obs[obs_tar].cat.codes.to_numpy()[ref_neighbors]
-        prediction, uncertainty = weighted_prediction(weights, ref_cats)
-        prediction = np.asarray(adata_reference.obs[obs_tar].cat.categories)[prediction]
+        mdata_obs = mdata_obs[mdata_obs.mod['rna'].obs[par["obs_feature"]] == obs_name]
+        mdata_obs_name = f"{input_file.stem}_{obs_name}.h5mu"
+        obs_files.append(mdata_obs_name)
         
-        adata.obs[obs_pred], adata.obs[obs_unc] = prediction, uncertainty
+        logger.info(f"Writing h5mu to file {output_dir / mdata_obs_name}")
+        mdata_obs.write_h5mu(output_dir / mdata_obs_name, compression=par["output_compression"])
         
-        # Write information about labels transfer to uns
-        output_uns_parameters[obs_tar] = {
-            "method": "KNN_pynndescent",
-            "n_neighbors": par["n_neighbors"],
-            "reference": par["reference"]
-        }
+    logger.info(f"Writing output_files CSV file to {par['output_files']}")
+    df = pd.DataFrame({"name": obs_features, "filename": obs_files})
+    df.to_csv(par["output_files"], index=False)
 
-    adata.uns[par["output_uns_parameters"]] = output_uns_parameters
 
-    mdata.mod[par['modality']] = adata
-    mdata.update()
-    mdata.write_h5mu(par['output'].strip())
-
-if __name__ == "__main__":
-    main(par)
+if __name__ == '__main__':
+    main()

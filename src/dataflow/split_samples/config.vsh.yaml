@@ -1,0 +1,58 @@
+functionality:
+  name: split_samples
+  namespace: "dataflow"
+  description: |
+    Split the samples from a single .h5mu multimodal sample into seperate .h5mu files based on the values of a var column. 
+  authors:
+    - __merge__: /src/authors/dorien_roosen.yaml
+      roles: [ maintainer ]
+  arguments:
+    - name: "--input"
+      type: file
+      description: Path to a single .h5mu file.
+      required: true
+    - name: "--modality"
+      type: string
+      default: "rna"
+      required: false
+    - name: "--output"
+      type: file
+      required: true
+      direction: output
+      example: "/path/to/output"
+      description: Output directory containing multiple h5mu files.
+    - name: "--obs_feature"
+      type: string
+      required: true
+      description: The obs column to split the samples on.
+      example: "celltype"
+    - name: "--output_compression"
+      type: string
+      description: The compression format to be used on the output h5mu object.
+      choices: ["gzip", "lzf"]
+      required: false
+      example: "gzip"
+    - name: "--output_files"
+      type: file
+      required: true
+      direction: output
+      example: sample_files.csv
+      description: A csv containing the base filename and modality type per output file.
+
+  resources:
+    - type: python_script
+      path: script.py
+
+platforms:
+  - type: docker
+    image: python:3.12-slim
+    setup:
+      - type: apt
+        packages: 
+          - procps
+      - type: python
+        __merge__: /src/base/requirements/anndata_mudata.yaml
+  - type: native
+  - type: nextflow
+    directives:
+      label: [singlecpu, lowmem]
