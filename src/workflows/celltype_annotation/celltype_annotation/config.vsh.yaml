@@ -13,12 +13,22 @@ functionality:
           type: string
           description: ID of the sample.
           example: foo
+        - name: "--reference"
+          type: file
+          example: reference.h5mu
         - name: "--reference_url"
           type: string
           required: true
           description: |
             The reference data to train annotation algorithms on.
           example: https://zenodo.org/records/7587774/files/TS_Lung_filtered.h5ad
+
+        - name: "--obs_reference_batch"
+          type: string
+          required: true
+          description: |
+            The .obs column of the reference dataset containing the batch information.
+
         - name: "--output"
           type: file
           direction: output
@@ -30,6 +40,7 @@ functionality:
   dependencies:
     - name: download/download_file
     - name: convert/from_h5ad_to_h5mu
+    - name: dataflow/split_samples
 
   resources:
     - type: nextflow_script
