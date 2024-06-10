@@ -1,3 +1,10 @@
+# openpipelines 1.0.0-rc6
+
+## BUG FIXES
+
+* `dataflow/concatenate_h5mu`: fix regression bug where observations are no longer linked to the correct metadata
+after concatenation (PR #807)
+
 # openpipelines 1.0.0-rc5
 
 ## BUG FIXES

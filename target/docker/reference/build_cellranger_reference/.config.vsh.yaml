@@ -1,7 +1,7 @@
 functionality:
   name: "build_cellranger_reference"
   namespace: "reference"
-  version: "1.0.0-rc5"
+  version: "1.0.0-rc6"
   authors:
   - name: "Angela Oliveira Pisco"
     roles:
@@ -107,7 +107,7 @@ platforms:
   image: "ghcr.io/data-intuitive/cellranger:7.0"
   target_organization: "openpipelines-bio"
   target_registry: "ghcr.io"
-  target_tag: "1.0.0-rc5"
+  target_tag: "1.0.0-rc6"
   namespace_separator: "/"
   resolve_volume: "Automatic"
   chown: true
@@ -188,6 +188,6 @@ info:
   output: "/home/runner/work/openpipeline/openpipeline/target/docker/reference/build_cellranger_reference"
   executable: "/home/runner/work/openpipeline/openpipeline/target/docker/reference/build_cellranger_reference/build_cellranger_reference"
   viash_version: "0.8.5"
-  git_commit: "9ffc9b19ec3087ab67bd62f0b4bde61ce0648d58"
+  git_commit: "e56b8a4b8598953a6b92130a19681e9852ee4816"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"
-  git_tag: "1.0.0-rc4-4-g9ffc9b19ec"
+  git_tag: "1.0.0-rc5"
