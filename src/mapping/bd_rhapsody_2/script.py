@@ -13,7 +13,6 @@ par = {
     ],
     'reads_atac': None,
     'reference_archive': "resources_test/reference_gencodev41_chr1/reference_bd_rhapsody.tar.gz",
-    'atac_reference_archive': None,
     'targeted_reference': [],
     'abseq_reference': [],
     'supplemental_reference': [],
@@ -70,10 +69,9 @@ def strip_margin(text: str) -> str:
 def process_params(par: dict[str, Any], config) -> str:
     # check input parameters
     assert par["reads"] or par["reads_atac"], "Pass at least one set of inputs to --reads or --reads_atac."
-    assert not (par["reference_archive"] and par["atac_reference_archive"]), "Pass only one reference archive to --reference_archive or --atac_reference_archive."
 
     # checking sample prefix
-    if re.match("[^A-Za-z0-9]", par["run_name"]):
+    if par["run_name"] and re.match("[^A-Za-z0-9]", par["run_name"]):
         logger("--run_name should only consist of letters, numbers or hyphens. Replacing all '[^A-Za-z0-9]' with '-'.")
         par["run_name"] = re.sub("[^A-Za-z0-9\\-]", "-", par["run_name"])
 
@@ -125,7 +123,7 @@ def generate_config(par: dict[str, Any], config) -> str:
 
 def generate_cwl_file(par: dict[str, Any], meta: dict[str, Any]) -> str:
     # create cwl file (if need be)
-    orig_cwl_file=os.path.join(meta["resources_dir"], "rhapsody_pipeline_2.2_nodocker.cwl")
+    orig_cwl_file=os.path.join(meta["resources_dir"], "rhapsody_pipeline_2.2.1_nodocker.cwl")
 
     # Inject computational requirements into pipeline
     if meta["memory_mb"] or meta["cpus"]:
@@ -138,9 +136,9 @@ def generate_cwl_file(par: dict[str, Any], meta: dict[str, Any]) -> str:
         # Inject computational requirements into pipeline
         if meta["memory_mb"]:
             memory = int(meta["memory_mb"]) - 2000 # keep 2gb for OS
-            cwl_data = re.sub('"ramMin": [^\n]*,\n', f'"ramMin": {memory},\n', cwl_data)
+            cwl_data = re.sub('"ramMin": [^\n]*[^,](,?)\n', f'"ramMin": {memory}\\1\n', cwl_data)
         if meta["cpus"]:
-            cwl_data = re.sub('"coresMin": [^\n]*,\n', f'"coresMin": {meta["cpus"]},\n', cwl_data)
+            cwl_data = re.sub('"coresMin": [^\n]*[^,](,?)\n', f'"coresMin": {meta["cpus"]}\\1\n', cwl_data)
 
         # Write the file out again
         with open(cwl_file, 'w') as file:
@@ -161,7 +159,12 @@ def main(par: dict[str, Any], meta: dict[str, Any]):
         os.makedirs(par["output"])
 
     ## Process parameters
-    proc_pars = ["--no-container", "--outdir", par["output"]]
+    proc_pars = [
+        "--no-container",
+        "--preserve-entire-environment",
+        "--outdir",
+        par["output"]
+    ]
 
     if par["parallel"]:
         proc_pars.append("--parallel")
@@ -181,7 +184,7 @@ def main(par: dict[str, Any], meta: dict[str, Any]):
     ## Run pipeline
     if not par["dryrun"]:
         with tempfile.TemporaryDirectory(prefix="cwl-bd_rhapsody_wta-", dir=meta["temp_dir"]) as temp_dir:
-            cmd = ["cwl-runner"] + proc_pars + [cwl_file, os.path.basename(config_file)]
+            cmd = ["cwl-runner"] + proc_pars + [cwl_file, config_file]
 
             env = dict(os.environ)
             env["TMPDIR"] = temp_dir

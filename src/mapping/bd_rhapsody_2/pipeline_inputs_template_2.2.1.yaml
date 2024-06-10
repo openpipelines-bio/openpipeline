@@ -177,6 +177,9 @@ Reference_Archive:
 ## Maximum_Threads (integer, optional, default: [use all cores of CPU]) - Set the maximum number of threads to use in the read processing steps of the pipeline:  QualCLAlign, AlignmentAnalysis, VDJ assembly
 #Maximum_Threads: 16
 
+## Use STARlong (optional, default: "auto" - i.e. autodetects based on read lengths) - Specify if the STARlong aligner should be used instead of STAR. Set to true if the reads are longer than 650bp.
+## The value can be true or false.
+#Long_Reads: true
 
 ########################
 ## Advanced Options   ##
@@ -184,13 +187,17 @@ Reference_Archive:
 ## NOTE: Only change these if you are really sure about what you are doing
 
 ## Modify STAR alignment parameters - Set this parameter to fully override default STAR mapping parameters used in the pipeline.
-## For reference this is the default that is used: --outFilterScoreMinOverLread 0 --outFilterMatchNminOverLread 0 --outFilterMultimapScoreRange 0 --clip3pAdapterSeq AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA --seedSearchStartLmax 50 --outFilterMatchNmin 25 --limitOutSJcollapsed 2000000
+## For reference this is the default that is used:
+##   Short Reads: --outFilterScoreMinOverLread 0 --outFilterMatchNminOverLread 0 --outFilterMultimapScoreRange 0 --clip3pAdapterSeq AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA --seedSearchStartLmax 50 --outFilterMatchNmin 25 --limitOutSJcollapsed 2000000
+##   Long Reads: Same as Short Reads + --seedPerReadNmax 10000
+## This applies to fastqs provided in the Reads user input 
 ## Do NOT set any non-mapping related params like --genomeDir, --outSAMtype, --outSAMunmapped, --readFilesIn, --runThreadN, etc.
 ## We use STAR version 2.7.10b
-#Alignment_STAR_Params: --alignIntronMax 6000 --outFilterScoreMinOverLread 0.1 --limitOutSJcollapsed 2000000
+#Custom_STAR_Params: --alignIntronMax 6000 --outFilterScoreMinOverLread 0.1 --limitOutSJcollapsed 2000000
 
-## Modify bwa-mem2 alignment parameters - Set this parameter to tweak one or more bwa-mem2 mapping parameters used in the pipeline
-## The pipeline does not specify any custom mapping params to bwa-mem2 so default values are used
+## Modify bwa-mem2 alignment parameters - Set this parameter to fully override bwa-mem2 mapping parameters used in the pipeline
+## The pipeline does not specify any custom mapping params to bwa-mem2 so program default values are used
+## This applies to fastqs provided in the Reads_ATAC user input 
 ## Do NOT set any non-mapping related params like -C, -t, etc.
 ## We use bwa-mem2 version 2.2.1
-#Alignment_bwa_mem2_Params: -k 16 -w 200 -r
+#Custom_bwa_mem2_Params: -k 16 -w 200 -r
