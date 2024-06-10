@@ -1,4 +1,5 @@
 import mudata as md
+import anndata as ad
 import subprocess
 from pathlib import Path
 import pandas as pd
@@ -6,8 +7,9 @@ import numpy as np
 import pytest
 import re
 import sys
-import uuid
 import muon
+from openpipelinetestutils.utils import remove_annotation_column
+from operator import attrgetter
 
 ## VIASH START
 meta = {
@@ -20,246 +22,407 @@ meta = {
 
 meta['cpus'] = 1 if not meta['cpus'] else meta['cpus']
 
-# Note: the .var for these samples have no overlap, so there are no conflicting annotations
-# for the features that need to be handled by the concat component.
-# The tests below that specifically test the concatenation of conflicting data need to introduce
-# the conflict.
-input_sample1_file = f"{meta['resources_dir']}/e18_mouse_brain_fresh_5k_filtered_feature_bc_matrix_subset_unique_obs.h5mu"
-input_sample2_file = f"{meta['resources_dir']}/human_brain_3k_filtered_feature_bc_matrix_subset_unique_obs.h5mu"
 
 @pytest.fixture
-def anndata_to_sparse_dataframe():
-    def wrapper(anndata_object):
-        return pd.DataFrame.sparse.from_spmatrix(anndata_object.X,
-                                                 index=anndata_object.obs_names, 
-                                                 columns=anndata_object.var_names)
+def sample_1_modality_1():
+    """
+    >>> ad1.obs
+          Obs1 Shared_obs
+     obs1    A          B
+     obs2    C          D
+
+    >>> ad1.var
+         Feat1 Shared_feat
+    var1     a           b
+    var2     c           d
+    var3     e           f
+
+    >>> ad1.X
+    array([[1, 2, 3],
+           [4, 5, 6]])
+    """
+
+    df = pd.DataFrame([[1, 2, 3], [4, 5, 6]], index=["obs1", "obs2"],
+                      columns=["var1", "var2", "overlapping_var_mod1"])
+    obs = pd.DataFrame([["A", "B"], ["C", "D"]], index=df.index,
+                       columns=["Obs1", "Shared_obs"])
+    var = pd.DataFrame([["a", "b"], ["c", "d"], ["e", "f"]],
+                        index=df.columns, columns=["Feat1", "Shared_feat"])
+    # varm = np.random.rand(df.columns.size, 5)
+    # ad1 = ad.AnnData(df, obs=obs, var=var, varm={"random_vals_mod1": varm})
+    ad1 = ad.AnnData(df, obs=obs, var=var)
+    return ad1
+
+@pytest.fixture
+def sample_1_input_modality_2():
+    """
+    >>> ad2.X
+    array([[ 7,  8],
+           [ 9, 10],
+           [11, 12]])
+
+    >>> ad2.obs
+         Obs2 Obs3
+    obs3    C    D
+    obs4    E    F
+    obs5    G    H
+
+    >>> ad2.var
+         Feat2  Shared_feat
+    var4     d            e
+    var5     f            g
+    
+    """
+    df = pd.DataFrame([[7, 8], [9, 10], [11, 12]], index=["obs3", "obs4", "obs5"],
+                      columns=["var3", "var4"])
+    obs = pd.DataFrame([["E", "F", "G"], ["H", "I", "J"], ["K", "L", "M"]],
+                       index=df.index, columns=["Obs2", "Obs3", "Shared_obs"])
+    var = pd.DataFrame([["d", "e"], ["f", "g"]], index=df.columns,
+                       columns=["Feat2", "Shared_feat"])
+    ad2 = ad.AnnData(df, obs=obs, var=var)
+    return ad2
+
+@pytest.fixture
+def sample_1_h5mu(sample_1_modality_1, sample_1_input_modality_2):
+    tmp_mudata = md.MuData({'mod1': sample_1_modality_1, 'mod2': sample_1_input_modality_2})
+    return tmp_mudata
+
+@pytest.fixture
+def sample_2_modality_1():
+    """
+    >>> ad3.X
+    array([[13, 14],
+           [15, 16],
+           [17, 18]])
+
+    >>> ad3.var
+         Feat3 Shared_feat
+    var6     h           i
+    var7     j           k
+
+    >>> ad3.obs
+         Obs4 Obs5
+    obs6    I    J
+    obs7    K    L
+    obs8    M    N
+    """
+    df = pd.DataFrame([[13, 14], [15, 16], [17, 18]], 
+                      index=["obs6", "obs7", "obs8"],
+                      columns=["var5", "overlapping_var_mod1"])
+    obs = pd.DataFrame([["O", "P", "Q"], ["R", "S", "T"], ["U", "V", "W"]],
+                       index=df.index, columns=["Obs4", "Obs5", "Shared_obs"])
+    var = pd.DataFrame([["h", "i"], ["j", "k"]], index=df.columns,
+                       columns=["Feat3", "Shared_feat"])
+    ad3 = ad.AnnData(df, obs=obs, var=var)
+    return ad3
+
+@pytest.fixture
+def sample_2_modality_2():
+    """
+    >>> ad4.X
+    array([[19, 20, 21],
+           [22, 23, 24]])
+    
+    >>> ad4.obs
+         Obs6
+    obs8    O
+    obs9    P
+
+    >>> ad4.var
+          Feat4 Shared_feat
+    var8      l           m
+    var9      n           o
+    var10     p           q
+    """
+    df = pd.DataFrame([[19, 20, 21], [22, 23, 24]], index=["obs8", "obs9"],
+                      columns=["var6", "var7", "var8"])
+    obs = pd.DataFrame([["X", "Y"], ["Z", "AA"]], index=df.index,
+                       columns=["Obs6", "Shared_obs"])
+    var = pd.DataFrame([["l", "m"], ["n", "o"], ["p", "q"]],
+                        index=df.columns, columns=["Feat4", "Shared_feat"])
+    # varm = np.random.rand(df.columns.size, 3)
+    # ad4 = ad.AnnData(df, obs=obs, var=var, varm={"random_vals_mod2": varm})
+    ad4 = ad.AnnData(df, obs=obs, var=var)
+    return ad4
+
+
+@pytest.fixture
+def sample_2_h5mu(sample_2_modality_1, sample_2_modality_2):
+    tmp_mudata = md.MuData({'mod1': sample_2_modality_1, 'mod2': sample_2_modality_2})
+    return tmp_mudata
+
+@pytest.fixture
+def sample_3_modality_1():
+    df = pd.DataFrame([[25]], index=["obs10"], columns=["var9"])
+    obs = pd.DataFrame([["AB"]], index=df.index, columns=["Obs7"])
+    var = pd.DataFrame([["r"]], index=df.columns, columns=["Feat4"])
+    ad3 = ad.AnnData(df, obs=obs, var=var)
+    return ad3
+
+@pytest.fixture
+def sample_3_modality_3():
+    df = pd.DataFrame([[26, 32, 33, 453], [34, 35, 36, 543]],
+                      index=["obs11", "obs12"], 
+                      columns=["var10", "var11", "var12", "var13"])
+    obs = pd.DataFrame([["AC", "AD", "AE", "AF"], ["AG", "AH", "AI", "AJ"]], 
+                       index=df.index, columns=["Obs8", "Obs9", "obs10", "obs11"])
+    var = pd.DataFrame([["s", "t", "u", "v"],
+                        ["w", "x", "y", "z"],
+                        ["aa", "ab", "ac", "ad"],
+                        ["ae", "af", "ag", "ah"]],
+                        index=df.columns, columns=["Feat5", "Feat6", "Feat7", "Feat8"])
+    ad4 = ad.AnnData(df, obs=obs, var=var)
+    return ad4
+
+@pytest.fixture
+def sample_3_h5mu(sample_3_modality_1, sample_3_modality_3):
+    tmp_mudata = md.MuData({'mod1': sample_3_modality_1, 'mod3': sample_3_modality_3})
+    return tmp_mudata
+
+@pytest.fixture
+def wrap_anndata_to_mudata():
+    def wrapper(anndata_obj, mod_name="mod"):
+        return md.MuData({mod_name: anndata_obj})
     return wrapper
 
-@pytest.fixture
-def mudata_without_genome(tmp_path, request):
-    mudatas_to_change, modalities = request.param
-    result = []
-    for mudata_to_change in mudatas_to_change:
-        new_mudata = md.read(mudata_to_change)
-        for mod in modalities:
-            new_mudata.mod[mod].var.drop('genome', axis=1, inplace=True)
-        # Note: when a column is present in the feature annotation for one
-        # modality (MuData.mod[...].var) but not for another other, then the global
-        # var (MuData.var) gets a new column 'mod_name:column_name'
-        # (here atac:genome) next to the old 'column_name' (here just 'genome')
-        new_mudata.update_var()
-        new_mudata.var.drop('genome', axis=1, inplace=True)
-        new_mudata = new_mudata[0:200,] # subsample to reduce memory consumption
-        new_path = tmp_path / Path(mudata_to_change).name
-        new_mudata.write(new_path, compression="gzip")
-        result.append(new_path)
-    return result
-
 
 @pytest.fixture
-def make_obs_names_unique():
-    def wrapper(mudata):
-        for mod_data in mudata.mod.values():
-            mod_data.obs.index = mod_data.obs.index.map(
-                lambda index_val: uuid.uuid4().hex + index_val
-            )
+def change_column_contents():
+    def wrapper(mudata_obj, annotation_frame_name, column_name, values_per_modality):
+        mudata_obj.update()
+        get_frame = attrgetter(annotation_frame_name)
+        modality_columns = []
+        for mod_name, col_value in values_per_modality.items():
+            modality = mudata_obj.mod[mod_name]
+            annotation_frame = get_frame(modality)
+            annotation_frame[column_name] = col_value
+            modality_columns.append(annotation_frame[column_name])
+        mudata_obj.update()
+        global_annotation_frame = get_frame(mudata_obj)
+        if column_name in global_annotation_frame.columns:
+            updated_global_column = pd.concat(modality_columns, copy=True, join='inner')
+            updated_global_column_no_duplicates = updated_global_column.reset_index().drop_duplicates(subset=['index']).set_index('index')
+            global_annotation_frame[column_name] = updated_global_column_no_duplicates 
+        setattr(mudata_obj, annotation_frame_name, 
+                global_annotation_frame.convert_dtypes(infer_objects=True,
+                                                       convert_integer=True,
+                                                       convert_string=False,
+                                                       convert_boolean=True,
+                                                       convert_floating=False)
+                )
+
     return wrapper
 
-@pytest.fixture
-def mudata_copy_with_unique_obs(request, make_obs_names_unique):
-    mudata_to_copy = request.param
-    mudata_contents = md.read(mudata_to_copy)
-    copied_contents = mudata_contents.copy()
-    make_obs_names_unique(copied_contents)
-    return mudata_contents, copied_contents
 
-@pytest.fixture
-def extra_column_value_sample1():
-    return "bar"
-
-@pytest.fixture
-def extra_column_value_sample2():
-    return "bar"
-
-@pytest.fixture
-def extra_column_annotation_matrix():
-    return 'var'
-
-@pytest.fixture
-def copied_mudata_with_extra_annotation_column(tmp_path, mudata_copy_with_unique_obs,
-                                               extra_column_annotation_matrix,
-                                               extra_column_value_sample1,
-                                               extra_column_value_sample2):
-    [original_mudata, copied_mudata] = mudata_copy_with_unique_obs
-    getattr(original_mudata.mod['rna'], extra_column_annotation_matrix)['test']  = np.nan
-    getattr(original_mudata.mod['atac'], extra_column_annotation_matrix)['test'] = extra_column_value_sample1
-    original_mudata.update()
-
-    getattr(copied_mudata.mod['rna'], extra_column_annotation_matrix)['test'] = np.nan
-    getattr(copied_mudata.mod['atac'], extra_column_annotation_matrix)['test'] = extra_column_value_sample2
-    mudata_cast_types = getattr(original_mudata, extra_column_annotation_matrix).convert_dtypes(
-        infer_objects=True,
-        convert_integer=True,
-        convert_string=False,
-        convert_boolean=True,
-        convert_floating=False
-    )
-    setattr(original_mudata, extra_column_annotation_matrix, mudata_cast_types)
-    copied_mudata.update()
-
-    original_mudata_path = tmp_path / "original.h5mu"
-    copy_mudata_path = tmp_path / "modified_copy.h5mu"
-    original_mudata.write(str(original_mudata_path), compression="gzip")
-    copied_mudata.write(str(copy_mudata_path), compression="gzip")
-    return original_mudata_path, copy_mudata_path
-
-def test_concatenate_samples_with_same_observation_ids_raises(run_component):
+def test_concatenate_samples_with_same_observation_ids_raises(run_component, wrap_anndata_to_mudata, 
+                                                              write_mudata_to_file, sample_1_modality_1,
+                                                              sample_2_modality_1, random_h5mu_path):
     """
     Test how concat handles overlapping observation IDs.
     This should raise.
     """
+    # introduce an overlapping observation
+    input_1_mudata = wrap_anndata_to_mudata(sample_1_modality_1)
+    old_obs_names = sample_2_modality_1.obs_names 
+    new_obs_names = old_obs_names.where(old_obs_names.isin([old_obs_names[0]]), 
+                                        sample_1_modality_1.obs.index[0])
+    sample_2_modality_1.obs_names = new_obs_names
+    input_2_mudata = wrap_anndata_to_mudata(sample_2_modality_1)
+    
     with pytest.raises(subprocess.CalledProcessError) as err:
         run_component([
-                "--input_id", "mouse;mouse2",
-                "--input", input_sample1_file,
-                "--input", input_sample1_file,
-                "--output", "concat.h5mu",
+                "--input_id", "foo;bar",
+                "--input", write_mudata_to_file(input_1_mudata),
+                "--input", write_mudata_to_file(input_2_mudata),
+                "--output", random_h5mu_path(),
                 "--other_axis_mode", "move",
                 "--output_compression", "gzip"
                 ])
     assert "ValueError: Observations are not unique across samples." in \
         err.value.stdout.decode('utf-8')
 
-@pytest.mark.parametrize("mudata_without_genome",
-                          [([input_sample1_file], ["rna", "atac"])],
-                          indirect=["mudata_without_genome"])
-def test_concat_different_var_columns_per_sample(run_component, mudata_without_genome):
+def test_concat_different_var_columns_per_sample(run_component,
+                                                 sample_1_h5mu,
+                                                 sample_2_h5mu,
+                                                 random_h5mu_path,
+                                                 write_mudata_to_file):
     """
     Test what happens when concatenating samples with differing auxiliary
     (like in .var) columns (present in 1 sample, absent in other).
     When concatenating the samples, all columns should be present in the
     resulting object, filling the values from samples with the missing
     column with NA.
+
+    Looking at Shared_feat here:
+
+                   mod1      mod2
+    sample 1    present   present
+    sample 2          x         x
     """
-    [sample1_without_genome,] = mudata_without_genome
+    output_path = random_h5mu_path()
+    # Before removing the 'Shared_feat' column from one of the samples,
+    # check if they are present in both
+    assert 'Shared_feat' in sample_1_h5mu.var_keys()
+    assert 'Shared_feat' in sample_2_h5mu.var_keys()
+
+    sample_2_h5mu = remove_annotation_column(sample_2_h5mu, ['Shared_feat'], axis="var")
+    assert 'Shared_feat' in sample_1_h5mu.var_keys()
+    assert 'Shared_feat' not in sample_2_h5mu.var_keys()
+
+    # 'Shared_feat' column is not missing from sample2, which is what this test is about
+    input_sample1_path = write_mudata_to_file(sample_1_h5mu)
+    input_sample2_path = write_mudata_to_file(sample_2_h5mu)
+
     run_component([
-            "--input_id", "mouse;human",
-            "--input", sample1_without_genome,
-            "--input", input_sample2_file,
-            "--output", "concat.h5mu",
+            "--input_id", "sample1;sample2",
+            "--input", input_sample1_path,
+            "--input", input_sample2_path,
+            "--output", output_path,
             "--other_axis_mode", "move"
             ])
 
-    assert Path("concat.h5mu").is_file() is True
-    concatenated_data = md.read("concat.h5mu")
+    assert Path(output_path).is_file()
+    concatenated_data = md.read(output_path)
 
-    data_sample1 = md.read(str(sample1_without_genome))
-    data_sample2 = md.read(input_sample2_file)
-
-    assert 'genome' not in data_sample1.var_keys()
+    data_sample1 = md.read(input_sample1_path)
+    data_sample2 = md.read(input_sample2_path)
+    
     assert concatenated_data.n_vars == data_sample1.var.index.union(data_sample2.var.index).size
 
-    # Check if all features are present
-    for mod_name in ("rna", "atac"):
+    for mod_name in ("mod1", "mod2"):
+        # Check if all features are present
         concatenated_mod = concatenated_data.mod[mod_name]
-        original_var_keys = set(data_sample1.mod[mod_name].var.keys().tolist() +
-                                data_sample2.mod[mod_name].var.keys().tolist())
+        sample1_original_mod = data_sample1.mod[mod_name]
+        sample2_original_mod = data_sample2.mod[mod_name]
+ 
+        original_var_keys = set(sample1_original_mod.var_keys() +
+                                sample2_original_mod.var_keys() + 
+                                list(sample1_original_mod.varm.keys()) +
+                                list(sample2_original_mod.varm.keys()))
+        
+        assert original_var_keys == set(concatenated_mod.varm.keys()) | \
+                                    set(concatenated_mod.var.columns.tolist())
+        
+    # Values from sample2 (which are also not in sample1) should have NA
+    non_shared_features = data_sample2.var_names.difference(data_sample1.var_names)
+    assert concatenated_data.var['Shared_feat'].loc[non_shared_features].isna().all()
+    
+    # Values from sample1 should not have NA, and should be equal to the original values
+    var_values = concatenated_data.var['Shared_feat'].loc[data_sample1.var_names]
+    data_sample1.var['Shared_feat'].equals(var_values)
 
-        assert original_var_keys == \
-                            set(column_name.removeprefix('conflict_')
-                                for column_name in concatenated_mod.varm.keys()) | \
-                            set(concatenated_mod.var.columns.tolist())
-    # Value from sample1 should have NA
-    assert pd.isna(concatenated_data.var.loc['ENSMUSG00000051951']['genome']) is True
 
-    # Value originating from sample 2 should be the same in concatenated object.
-    # Here, they are the same because we concatenate 2 samples so
-    # there is only 1 unique value
-    assert concatenated_data.var.loc['GL000195.1:71201-71602']['genome'] == \
-            data_sample2.var.loc['GL000195.1:71201-71602']['genome']
-
-
-@pytest.mark.parametrize("mudata_without_genome",
-                          [([input_sample1_file, input_sample2_file], ["rna"])],
-                          indirect=["mudata_without_genome"])
-def test_concat_different_columns_per_modality(run_component, mudata_without_genome):
+def test_concat_different_columns_per_modality(run_component, sample_1_h5mu, 
+                                               sample_2_h5mu, write_mudata_to_file,
+                                               random_h5mu_path):
     """
     Test what happens when concatenating samples that have auxiliary columns
-    that differ between the modalities, but the difference is the same in all samples.
-    """
-    sample1_without_genome, sample2_without_genome = mudata_without_genome
+    that is missing in one modality compared to the other, but the the column
+    is missing from the same modalities in both samples.
 
+    Looking at Shared_feat here:
+
+                   mod1      mod2
+    sample 1          x   present
+    sample 2          x   present
+    """
+    sample_2_h5mu = remove_annotation_column(sample_2_h5mu, ['Shared_feat'],
+                                             axis="var", modality_name='mod1')
+    sample_1_h5mu = remove_annotation_column(sample_1_h5mu, ['Shared_feat'],
+                                             axis="var", modality_name='mod1')
+ 
+    input_sample1_path = write_mudata_to_file(sample_1_h5mu)
+    input_sample2_path = write_mudata_to_file(sample_2_h5mu)
+
+    output_path = random_h5mu_path() 
     run_component([
-            "--input_id", "mouse;human",
-            "--input", sample1_without_genome,
-            "--input", sample2_without_genome,
-            "--output", "concat.h5mu",
+            "--input_id", "sample1;sample2",
+            "--input", input_sample1_path,
+            "--input", input_sample2_path,
+            "--output", output_path,
             "--other_axis_mode", "move"
             ])
 
-    assert Path("concat.h5mu").is_file() is True
-    concatenated_data = md.read("concat.h5mu")
+    assert Path(output_path).is_file() is True
+    concatenated_data = md.read(output_path)
 
-    data_sample1 = md.read(str(sample1_without_genome))
-    data_sample2 = md.read(str(sample2_without_genome))
+    data_sample1 = md.read(str(input_sample1_path))
+    data_sample2 = md.read(str(input_sample2_path))
 
     # Check if all features are present
     assert concatenated_data.n_vars == \
             data_sample1.var.index.union(data_sample2.var.index).size
 
-    for mod_name in ("rna", "atac"):
+    for mod_name in ("mod1", "mod2"):
         concatenated_mod = concatenated_data.mod[mod_name]
-        original_var_keys = set(data_sample1.mod[mod_name].var.keys().tolist() +
-                                data_sample2.mod[mod_name].var.keys().tolist())
+        data_sample1_mod = data_sample1.mod[mod_name]
+        data_sample2_mod = data_sample2.mod[mod_name] 
+        original_var_keys = set(data_sample1_mod.var_keys() +
+                                data_sample2_mod.var_keys() +
+                                list(data_sample2_mod.varm.keys()) +
+                                list(data_sample1_mod.varm.keys()))
 
         assert original_var_keys == \
-                            set(column_name.removeprefix('conflict_')
-                                for column_name in concatenated_mod.varm.keys()) | \
+                            set(concatenated_mod.varm.keys()) | \
                             set(concatenated_mod.var.columns.tolist())
 
-    # Check if 'interval' stays removed from modality
-    assert 'genome' not in concatenated_data.mod['rna'].var.columns
+    # Check if the shared column stays removed from modality
+    assert 'Shared_feat' not in concatenated_data.mod['mod1'].var.columns
 
-    # Value from sample1 should have NA
-    # ENSMUSG00000051951 is first entry from data_sample1.mod['rna'].var.head()
-    assert pd.isna(concatenated_data.var.loc['ENSMUSG00000051951']['atac:genome']) is True
-    # chr1:3094399-3095523 is the first entry from data_sample1.mod['atac'].var.head()
-    assert concatenated_data.var.loc['chr1:3094399-3095523']['atac:genome'] == 'mm10'
-    assert concatenated_data.mod['atac'].var.loc['chr1:3094399-3095523']['genome'] == 'mm10'
+    # Values from modality 1 have NA
+    mod_1_features = data_sample1['mod1'].var_names.union(data_sample2['mod1'].var_names)
+    assert concatenated_data.var.loc[mod_1_features, 'mod2:Shared_feat'].isna().all()
+    
+    # Values from modalitu should not have NA, and should be equal to the original values
+    mod2_data = pd.concat([data_sample2['mod2'].var['Shared_feat'], data_sample1['mod2'].var['Shared_feat']])
+    mod2_features = mod2_data.index
+    assert concatenated_data.var.loc[mod2_features, 'mod2:Shared_feat'].astype(str).equals(mod2_data)
 
-@pytest.mark.parametrize("mudata_without_genome",
-                          [([input_sample1_file], ["rna"])],
-                          indirect=["mudata_without_genome"])
-def test_concat_different_columns_per_modality_and_per_sample(run_component, mudata_without_genome):
+def test_concat_different_columns_per_modality_and_per_sample(run_component, sample_1_h5mu,
+                                                              sample_2_h5mu, write_mudata_to_file,
+                                                              random_h5mu_path):
     """
     Test what happens when concatenating samples that have auxiliary columns
     that differ between the modalities and also between samples
+
+    
+    Looking at 'Feat4' from sample 2 here:
+                   mod1      mod2
+    sample 1          x         x
+    sample 2          x   present
     """
 
-    [sample_1_without_genome, ] = mudata_without_genome
+    input_sample1_path = write_mudata_to_file(sample_1_h5mu)
+    input_sample2_path = write_mudata_to_file(sample_2_h5mu)
+    output_path = random_h5mu_path()
+
     run_component([
         "--input_id", "mouse;human",
-        "--input", sample_1_without_genome,
-        "--input", input_sample2_file,
-        "--output", "concat.h5mu",
+        "--input", input_sample1_path,
+        "--input", input_sample2_path,
+        "--output", output_path,
         "--other_axis_mode", "move"
         ])
 
-    assert Path("concat.h5mu").is_file() == True
-    concatenated_data = md.read("concat.h5mu")
+    assert Path(output_path).is_file()
+    concatenated_data = md.read(output_path)
 
-    data_sample1 = md.read(str(sample_1_without_genome))
-    data_sample2 = md.read(input_sample2_file)
+    data_sample1 = md.read(input_sample1_path)
+    data_sample2 = md.read(input_sample2_path)
 
     # Check if all features are present
     assert concatenated_data.n_vars == \
-            data_sample1.var.index.union(data_sample2.var.index).size
+            data_sample1.var_names.union(data_sample2.var_names).size
 
     # Check if all features are present
-    for mod_name in ("rna", "atac"):
+    for mod_name in ("mod1", "mod2"):
         concatenated_mod = concatenated_data.mod[mod_name]
-        original_var_keys = set(data_sample1.mod[mod_name].var.keys().tolist() +
-                                data_sample2.mod[mod_name].var.keys().tolist())
+        data_sample1_mod = data_sample1.mod[mod_name]
+        data_sample2_mod = data_sample2.mod[mod_name] 
+        original_var_keys = set(data_sample1_mod.var_keys() +
+                                data_sample2_mod.var_keys() +
+                                list(data_sample2_mod.varm.keys()) +
+                                list(data_sample1_mod.varm.keys()))
 
         assert original_var_keys == \
                             set(column_name.removeprefix('conflict_')
@@ -267,140 +430,237 @@ def test_concat_different_columns_per_modality_and_per_sample(run_component, mud
                             set(concatenated_mod.var.columns.tolist())
 
 
-    # Check if 'interval' is included in RNA modality
-    assert 'genome' in concatenated_data.mod['rna'].var.columns
+    assert 'Shared_feat' in concatenated_data.mod['mod2'].var.columns
 
-    # Value from sample1 should have NA
-    # ENSMUSG00000051951 is first entry from data_sample1.mod['rna'].var.head()
-    assert pd.isna(concatenated_data.var.loc['ENSMUSG00000051951']['genome'])
-    # chr1:3094399-3095523 is the first entry from data_sample1.mod['atac'].var.head()
-    assert concatenated_data.var.loc['chr1:3094399-3095523']['genome'] == 'mm10'
-    assert concatenated_data.mod['atac'].var.loc['chr1:3094399-3095523']['genome'] == 'mm10'
+    # Values from modality 1 have NA
+    mod_1_features = data_sample1['mod1'].var_names.union(data_sample2['mod1'].var_names)
+    assert concatenated_data.var.loc[mod_1_features, 'mod2:Feat4'].isna().all()
 
-@pytest.mark.parametrize("extra_column_value_sample2", [np.nan])
-@pytest.mark.parametrize("extra_column_value_sample1,expected", [("bar", "bar"), (True, True), (0.1, 0.1), (np.nan, pd.NA)])
-@pytest.mark.parametrize("mudata_copy_with_unique_obs",
-                          [input_sample1_file],
-                          indirect=["mudata_copy_with_unique_obs"])
-def test_concat_remove_na(run_component, copied_mudata_with_extra_annotation_column, expected):
+    # Values from modality 2 should not have NA if they originate from sample2
+    # These values should be equal to the original values
+    mod2_data = data_sample2['mod2'].var['Feat4'].rename('mod2:Feat4')
+    mod2_features = mod2_data.index
+    assert concatenated_data.var.loc[mod2_features, 'mod2:Feat4'].astype(str).equals(mod2_data)
+
+    # Values from modality2 should have NA if they originate from sample1 (and only from sample1)
+    non_shared_features = data_sample1.var_names.difference(data_sample2.var_names)
+    assert concatenated_data.var.loc[non_shared_features, 'mod2:Feat4'].isna().all()
+
+@pytest.mark.parametrize("test_value,expected", [("bar", "bar"), (True, True), (0.1, 0.1), (np.nan, pd.NA)])
+def test_concat_remove_na(run_component, sample_1_h5mu, sample_2_h5mu, 
+                          write_mudata_to_file, random_h5mu_path, test_value, expected,
+                          change_column_contents):
     """
     Test concatenation of samples where the column from one sample contains NA values
     NA values should be removed from the concatenated result
+
+                      mod1    mod2
+    sample 1            NA      NA 
+    sample 2    test_value      NA
     """
-    tempfile_input1, tempfile_input2 = copied_mudata_with_extra_annotation_column
+    change_column_contents(sample_1_h5mu, 'var', 'Shared_feat', {'mod1': np.nan, 'mod2': np.nan})
+    change_column_contents(sample_2_h5mu, 'var', 'Shared_feat', {'mod1': test_value, 'mod2': np.nan})
+
+    output_path = random_h5mu_path()
+
     run_component([
-        "--input_id", "mouse;human",
-        "--input", tempfile_input1,
-        "--input", tempfile_input2,
-        "--output", "concat.h5mu",
+        "--input_id", "sample1;sample2",
+        "--input", write_mudata_to_file(sample_1_h5mu),
+        "--input", write_mudata_to_file(sample_2_h5mu),
+        "--output", output_path,
         "--other_axis_mode", "move"
         ])
 
-    assert Path("concat.h5mu").is_file() is True
-    concatenated_data = md.read("concat.h5mu")
-    
+    assert Path(output_path).is_file()
+    concatenated_data = md.read(output_path)
+
+    # Values from modality 2 have NA
+    mod_2_features = sample_1_h5mu['mod2'].var_names.union(sample_2_h5mu['mod2'].var_names)
+    assert concatenated_data.var.loc[mod_2_features, 'Shared_feat'].isna().all()
+
+    # Values from modality 1 should not have NA if they originate from sample 1
+    # These values should be equal to the original values
+    assert sample_1_h5mu['mod1'].var['Shared_feat'].isna().all()
+
+    # Values from modality 1 should hold a value if they originate from sample 2
+    mod1_features = sample_2_h5mu['mod1'].var_names.difference(sample_1_h5mu.var_names)
     if not pd.isna(expected):
-        assert concatenated_data.var.loc['chr1:3094399-3095523']['test'] == expected
-        assert concatenated_data.mod['atac'].var.loc['chr1:3094399-3095523']['test'] == expected
+        assert (concatenated_data.var.loc[mod1_features, 'Shared_feat'] == expected).all()
     else:
-        assert pd.isna(concatenated_data.var.loc['chr1:3094399-3095523']['test'])
-        assert pd.isna(concatenated_data.mod['atac'].var.loc['chr1:3094399-3095523']['test'])
+        assert concatenated_data.var.loc[mod1_features, 'Shared_feat'].isna().all()
 
-    assert pd.isna(concatenated_data.var.loc['ENSMUSG00000051951']['test']) is True
-    assert pd.isna(concatenated_data.mod['rna'].var.loc['ENSMUSG00000051951']['test']) is True
+    # The 'Shared_feat' column for mod1 contains an overlapping feature. 
+    # For sample 1, it is NA, for sample 2 is is filled with test value.
+    # The concat component should choose the test-value over NA
+    shared_features = sample_2_h5mu.var_names.intersection(sample_1_h5mu.var_names)
+    if not pd.isna(expected):
+        assert (concatenated_data.var.loc[shared_features, 'Shared_feat'] == expected).all()
+    else:
+        assert concatenated_data.var.loc[shared_features, 'Shared_feat'].isna().all()
 
-@pytest.mark.parametrize("extra_column_annotation_matrix", ["obs"])
-@pytest.mark.parametrize("extra_column_value_sample1,extra_column_value_sample2,expected", [(1, "1", pd.CategoricalDtype(categories=['1.0', '1']))])
-@pytest.mark.parametrize("mudata_copy_with_unique_obs",
-                          [input_sample1_file],
-                          indirect=["mudata_copy_with_unique_obs"])
-def test_concat_dtypes(run_component, copied_mudata_with_extra_annotation_column, expected):
+
+def test_concat_invalid_h5_error_includes_path(run_component, tmp_path, 
+                                               sample_1_h5mu, write_mudata_to_file):
+    empty_file = tmp_path / "empty.h5mu"
+    empty_file.touch()
+    with pytest.raises(subprocess.CalledProcessError) as err:
+        run_component([
+                "--input_id", "mouse;empty",
+                "--input", write_mudata_to_file(sample_1_h5mu),
+                "--input", empty_file,
+                "--output", "concat.h5mu",
+                "--other_axis_mode", "move"
+                ])
+    assert re.search(rf"OSError: Failed to load .*{str(empty_file)}\. Is it a valid h5 file?",
+        err.value.stdout.decode('utf-8'))
+
+
+@pytest.mark.parametrize("test_value_1,test_value_2,expected", [(1, "1", pd.CategoricalDtype(categories=['1.0', '1']))])
+def test_concat_dtypes_per_modality(run_component, write_mudata_to_file, change_column_contents, 
+                                    sample_1_h5mu, sample_2_h5mu, test_value_1, test_value_2,
+                                    expected, random_h5mu_path):
     """
     Test joining column with different dtypes to make sure that they are writable.
     The default path is to convert all non-na values to strings and wrap the column into a categorical dtype.
+    Here, we test on the level of a single modality only. Because the mod1 modality for both sample 1 and
+    sample 2 contain a column 'test_col' and there is an overlapping feature name (overlapping_var_mod1),
+    there is a conflict for this var column in mod 1 for this column. Upon concatenation, the column is moved
+    to .varm, but for mod1 only. The column is concatenated for mod2 as planned. Here we check if the results
+    for the test column in mod2 is still writable.
     """
-    tempfile_input1, tempfile_input2 = copied_mudata_with_extra_annotation_column
+    change_column_contents(sample_1_h5mu, "var", "test_col", {"mod1": test_value_1, "mod2": test_value_1})
+    change_column_contents(sample_2_h5mu, "var", "test_col", {"mod1": test_value_2, "mod2": test_value_2})
+    output_file = random_h5mu_path()
     run_component([
-        "--input_id", "mouse;human",
-        "--input", tempfile_input1,
-        "--input", tempfile_input2,
-        "--output", "concat.h5mu",
+        "--input_id", "sample1;sample2",
+        "--input", write_mudata_to_file(sample_1_h5mu),
+        "--input", write_mudata_to_file(sample_2_h5mu),
+        "--output", output_file,
         "--other_axis_mode", "move"
         ])
-    concatenated_data = md.read("concat.h5mu")
-    concatenated_data.mod['atac'].obs['test'].dtype == expected
+    concatenated_data = md.read(output_file)
+    assert concatenated_data['mod2'].var['test_col'].dtype == expected
 
-@pytest.mark.parametrize("extra_column_annotation_matrix", ["var"])
-@pytest.mark.parametrize("extra_column_value_sample1,extra_column_value_sample2", [("2", "1")])
-@pytest.mark.parametrize("mudata_copy_with_unique_obs",
-                          [input_sample1_file],
-                          indirect=["mudata_copy_with_unique_obs"])
-def test_resolve_annotation_conflict_missing_column(run_component, copied_mudata_with_extra_annotation_column, make_obs_names_unique, tmp_path):
+@pytest.mark.parametrize("test_value_1,test_value_2,expected", [(1, "1", pd.CategoricalDtype(categories=['1.0', '1']))])
+def test_concat_dtypes_global(run_component, write_mudata_to_file, change_column_contents, 
+                              sample_1_h5mu, sample_2_h5mu, test_value_1, test_value_2,
+                              expected, random_h5mu_path):
+    """
+    Test joining column with different dtypes to make sure that they are writable.
+    The default path is to convert all non-na values to strings and wrap the column into a categorical dtype.
+    Here, we test on the level of a column that is added to a global annotation matrix.
+    """
+    change_column_contents(sample_1_h5mu, "var", "test_col", {"mod1": test_value_1, "mod2": test_value_1})
+    change_column_contents(sample_2_h5mu, "var", "test_col", {"mod1": test_value_2, "mod2": test_value_2})
+    sample1_mod1_names = sample_2_h5mu['mod1'].var_names 
+    # Here, we avoid a conflict between sample 1 and sample 2 by making sure there is no overlap in features
+    # between sample 1 and sample 2 (no shared var_names). If this change would not be done, a different
+    # value for sample 1 and sample 2 would be found by the concat component for the var feature 
+    # 'overlapping_var_mod1' for modality 'mod1'. The concat component would move the column for mod1 to
+    # .varm because of this conflict, and in the global .var column of the concatenated object, only
+    # a 'mod2:test_col' column would be present. But here, we want to test the column that is populated by
+    # both 'mod1' and 'mod2' 
+    assert 'overlapping_var_mod1' in sample1_mod1_names 
+    new_names = sample1_mod1_names.where(~sample1_mod1_names.isin(['overlapping_var_mod1']), 'non_overlapping')
+    sample_2_h5mu['mod1'].var_names = new_names
+    sample_2_h5mu.update()
+    output_file = random_h5mu_path()
+    run_component([
+        "--input_id", "sample1;sample2",
+        "--input", write_mudata_to_file(sample_1_h5mu),
+        "--input", write_mudata_to_file(sample_2_h5mu),
+        "--output", output_file,
+        "--other_axis_mode", "move"
+        ])
+    concatenated_data = md.read(output_file)
+    assert concatenated_data.var['test_col'].dtype == expected
+
+def test_non_overlapping_modalities(run_component, sample_2_h5mu, sample_3_h5mu, random_h5mu_path, write_mudata_to_file):
+    """
+    Test that the component does not fail when the modalities are not shared between samples.
+    """
+    output_path = random_h5mu_path()
+    input_file_2 = write_mudata_to_file(sample_2_h5mu)
+    input_file_3 = write_mudata_to_file(sample_3_h5mu)
+ 
+    run_component([
+        "--input_id", "sample2;sample3",
+        "--input", input_file_2,
+        "--input", input_file_3,
+        "--output", output_path,
+        "--other_axis_mode", "move"
+        ])
+
+
+def test_resolve_annotation_conflict_missing_column(run_component, sample_1_h5mu, sample_2_h5mu, sample_3_h5mu,
+                                                    write_mudata_to_file, random_h5mu_path):
     """
     Test using mode 'move' and resolving a conflict in metadata between the samples,
     but the metadata column is missing in one of the samples.
     """
-    tempfile_input1, tempfile_input2 = copied_mudata_with_extra_annotation_column
-    original_data = md.read_h5mu(input_sample1_file)
-    make_obs_names_unique(original_data)
-    original_data_path = tmp_path / f"{uuid.uuid4().hex}.h5mu"
-    original_data.write_h5mu(original_data_path)
-    run_component([
-        "--input_id", "mouse;human;sample_without_column",
-        "--input", tempfile_input1,
-        "--input", tempfile_input2,
-        "--input", original_data_path,
-        "--output", "concat.h5mu",
-        "--other_axis_mode", "move"
-        ])
-    concatenated_data = md.read("concat.h5mu")
-    assert 'test' not in concatenated_data.mod['atac'].var.columns
-    assert 'test' not in concatenated_data.mod['atac'].obs.columns
-    assert 'conflict_test' in concatenated_data.mod['atac'].varm
+    output_path = random_h5mu_path()
+    input_file_1 = write_mudata_to_file(sample_1_h5mu)
+    input_file_2 = write_mudata_to_file(sample_2_h5mu)
+    input_file_3 = write_mudata_to_file(sample_3_h5mu)
 
-def test_mode_move(run_component, tmp_path):
-    tempfile_input1 = tmp_path / "input1.h5mu"
-    tempfile_input2 = tmp_path / "input2.h5mu"
-    input1 = md.read(input_sample1_file)
-    input2 = md.read(input_sample2_file)
-    # Create conflict
-    var_index_values = input1.var.index.to_numpy()
-    var_index_values[0] = input2.var.index[0]
-    input1.var.index = var_index_values
-    var_index_values = input1.mod['rna'].var.index.to_numpy()
-    var_index_values[0] = input2.mod['rna'].var.index.to_numpy()[0]
-    input1.mod['rna'].var.index = var_index_values
-    input1.write(tempfile_input1.name)
-    input2.write(tempfile_input2.name)
+
     run_component([
-        "--input_id", "mouse;human",
-        "--input", tempfile_input1.name,
-        "--input", tempfile_input2.name,
-        "--output", "concat.h5mu",
+        "--input_id", "sample1;sample2;sample3",
+        "--input", input_file_1,
+        "--input", input_file_2,
+        "--input", input_file_3,
+        "--output", output_path,
         "--other_axis_mode", "move"
         ])
-    assert Path("concat.h5mu").is_file() is True
-    concatenated_data = md.read("concat.h5mu")
+
+    concatenated_data = md.read(output_path)
+    # 'Shared_feat' is defined for mod1 in sample 1 and 2 and there is a conflict
+    assert 'conflict_Shared_feat' in concatenated_data['mod1'].varm
+    # 'Shared_feat' is defined for mod2 in sample 1 and 2 and there is no conflict
+    assert 'Shared_feat' in concatenated_data['mod2'].var.columns
+    # 'Shared_feat' is not defined in any of the samples samples for modality 3
+    assert 'Shared_feat' not in concatenated_data['mod3'].var.columns
+    assert 'Shared_feat' not in concatenated_data['mod3'].varm
+
+def test_mode_move(run_component, sample_1_h5mu, sample_2_h5mu, random_h5mu_path, write_mudata_to_file):
+    """
+    Test that in case of a conflict, the conflicting columns are move to the multidimensional annotation slot 
+    (.varm and .obsm). The key of the datafame in the slot should start with 'conflict_' followed by the name 
+    of the column and the columns of the dataframe should contain the sample names.
+    """
+    output_path = random_h5mu_path()
+    run_component([
+        "--input_id", "sample1;sample2",
+        "--input", write_mudata_to_file(sample_1_h5mu),
+        "--input", write_mudata_to_file(sample_2_h5mu),
+        "--output", output_path,
+        "--other_axis_mode", "move"
+        ])
+    assert output_path.is_file()
+    concatenated_data = md.read(output_path)
 
     # Check if observations from all of the samples are present
-    assert (concatenated_data.n_obs ==  input1.n_obs + input2.n_obs)
+    assert (concatenated_data.n_obs ==  sample_1_h5mu.n_obs + sample_2_h5mu.n_obs)
 
     # Check if all modalities are present
-    sample1_mods, sample2_mods = set(input1.mod.keys()), set(input2.mod.keys())
+    sample1_mods, sample2_mods = set(sample_1_h5mu.mod.keys()), set(sample_2_h5mu.mod.keys())
     concatentated_mods = set(concatenated_data.mod.keys())
     assert (sample1_mods | sample2_mods) == concatentated_mods
 
     varm_check = {
-        "rna": ({"conflict_gene_symbol": ("mouse", "human"),
-                 "conflict_genome": ("mouse", "human")}),
-        "atac": {}
+        "mod1": ({"conflict_Shared_feat": ("sample1", "sample2")}),
+        "mod2": {}
     }
 
     # Check if all features are present
-    for mod_name in ("rna", "atac"):
+    for mod_name in ("mod1", "mod2"):
         concatenated_mod = concatenated_data.mod[mod_name]
-        original_var_keys = set(input1.mod[mod_name].var.keys().tolist() +
-                                    input2.mod[mod_name].var.keys().tolist())
+        sample_1_mod = sample_1_h5mu.mod[mod_name]
+        sample_2_mod = sample_2_h5mu.mod[mod_name] 
+        original_varm_keys = set(list(sample_1_mod.varm.keys()) +
+                                 list(sample_2_mod.varm.keys()))
+        original_var_keys = set(sample_1_mod.var_keys() +
+                                sample_2_mod.var_keys()) | original_varm_keys
 
         assert original_var_keys == \
                             set(column_name.removeprefix('conflict_')
@@ -408,60 +668,46 @@ def test_mode_move(run_component, tmp_path):
                             set(concatenated_mod.var.columns.tolist())
 
         varm_expected = varm_check[mod_name]
-        assert list(concatenated_mod.varm.keys()) == list(varm_expected.keys())
+        assert list(concatenated_mod.varm.keys()) == list(varm_expected.keys() | original_varm_keys)
         for varm_key, expected_columns in varm_expected.items():
             assert tuple(concatenated_mod.varm[varm_key].columns) == expected_columns
         if not varm_expected:
-            assert concatenated_mod.varm == {}
+            assert set(concatenated_mod.varm.keys()) == original_varm_keys 
         assert concatenated_mod.obsm == {}
 
-def test_concat_invalid_h5_error_includes_path(run_component, tmp_path):
-    empty_file = tmp_path / "empty.h5mu"
-    empty_file.touch()
-    with pytest.raises(subprocess.CalledProcessError) as err:
-        run_component([
-                "--input_id", "mouse;empty",
-                "--input", input_sample1_file,
-                "--input", empty_file,
-                "--output", "concat.h5mu",
-                "--other_axis_mode", "move"
-                ])
-    assert re.search(rf"OSError: Failed to load .*{str(empty_file)}\. Is it a valid h5 file?",
-        err.value.stdout.decode('utf-8'))
-        
-
-@pytest.mark.parametrize("mudata_without_genome",
-                          [([input_sample1_file], ["rna", "atac"])],
-                          indirect=["mudata_without_genome"])
-def test_concat_var_obs_names_order(run_component, mudata_without_genome, 
-                                    anndata_to_sparse_dataframe):
+# Execute this test multiple times, anndata.concat sometimes returns the observations in a different order
+@pytest.mark.parametrize('_', range(10))
+def test_concat_var_obs_names_order(run_component, sample_1_h5mu, sample_2_h5mu,
+                                    write_mudata_to_file, random_h5mu_path, _):
     """
     Test that the var_names and obs_names are still linked to the correct count data.
     """
-    [sample1_without_genome,] = mudata_without_genome
+    output_path = random_h5mu_path()
+    sample_1_h5mu["mod1"].obs["sample_id"] = "sample1"
+    sample_1_h5mu["mod2"].obs["sample_id"] = "sample1"
+    sample_2_h5mu["mod1"].obs["sample_id"] = "sample2"
+    sample_2_h5mu["mod2"].obs["sample_id"] = "sample2"
     run_component([
-            "--input_id", "mouse;human",
-            "--input", sample1_without_genome,
-            "--input", input_sample2_file,
-            "--output", "concat.h5mu",
+            "--input_id", "sample1;sample2",
+            "--input", write_mudata_to_file(sample_1_h5mu),
+            "--input", write_mudata_to_file(sample_2_h5mu),
+            "--output", output_path,
             "--other_axis_mode", "move"
             ])
-    assert Path("concat.h5mu").is_file() is True
-    for sample_name, sample_path in {"mouse": sample1_without_genome, 
-                                     "human": input_sample2_file}.items():
-        for mod_name in ["rna", "atac"]:
-            data_sample = md.read_h5ad(sample_path, mod=mod_name)
-            processed_data = md.read_h5ad("concat.h5mu", mod=mod_name)
-            muon.pp.filter_obs(processed_data, 'sample_id', lambda x: x == sample_name)
-            muon.pp.filter_var(processed_data, data_sample.var_names)
-            data_sample_to_test = anndata_to_sparse_dataframe(data_sample)
-            processed_data_to_test = anndata_to_sparse_dataframe(processed_data)
-            data_sample_to_test = data_sample_to_test.reindex_like(processed_data_to_test)
-            pd.testing.assert_index_equal(data_sample_to_test.columns, processed_data_to_test.columns)
-            pd.testing.assert_index_equal(data_sample_to_test.index, processed_data_to_test.index)
-            for (_, col1), (_, col2) in zip(data_sample_to_test.items(), processed_data_to_test.items()):
-                pd._testing.assert_sp_array_equal(col1.array, col2.array)
-            
+    assert output_path.is_file()
+    for sample_name, sample_h5mu in {"sample1": sample_1_h5mu, 
+                                     "sample2": sample_2_h5mu}.items():
+        for mod_name in ["mod1", "mod2"]:
+            data_sample = sample_h5mu[mod_name].copy()
+            processed_data_ad = md.read_h5ad(output_path, mod=mod_name)
+            muon.pp.filter_obs(processed_data_ad, 'sample_id', lambda x: x == sample_name)
+            muon.pp.filter_var(processed_data_ad, data_sample.var_names)
+            processed_data = pd.DataFrame(processed_data_ad.X, index=processed_data_ad.obs_names, 
+                                          columns=processed_data_ad.var_names)
+            data_sample = pd.DataFrame(data_sample.X, index=data_sample.obs_names, 
+                                       columns=data_sample.var_names).reindex_like(processed_data)
+            pd.testing.assert_frame_equal(processed_data, data_sample, check_dtype=False)
+
 
 if __name__ == '__main__':
     sys.exit(pytest.main([__file__, "-v"]))
