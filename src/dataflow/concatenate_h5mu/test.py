@@ -32,10 +32,10 @@ def sample_1_modality_1():
      obs2    C          D
 
     >>> ad1.var
-         Feat1 Shared_feat
-    var1     a           b
-    var2     c           d
-    var3     e           f
+                         Feat1  Shared_feat
+    var1                     a            b
+    var2                     c            d
+    overlapping_var_mod1     e            f
 
     >>> ad1.X
     array([[1, 2, 3],
@@ -62,10 +62,10 @@ def sample_1_input_modality_2():
            [11, 12]])
 
     >>> ad2.obs
-         Obs2 Obs3
-    obs3    C    D
-    obs4    E    F
-    obs5    G    H
+         Obs2 Obs3 Shared_obs
+    obs3    E    F          G
+    obs4    H    I          J
+    obs5    K    L          M
 
     >>> ad2.var
          Feat2  Shared_feat
@@ -84,7 +84,8 @@ def sample_1_input_modality_2():
 
 @pytest.fixture
 def sample_1_h5mu(sample_1_modality_1, sample_1_input_modality_2):
-    tmp_mudata = md.MuData({'mod1': sample_1_modality_1, 'mod2': sample_1_input_modality_2})
+    tmp_mudata = md.MuData({'mod1': sample_1_modality_1, 
+                            'mod2': sample_1_input_modality_2})
     return tmp_mudata
 
 @pytest.fixture
@@ -96,15 +97,15 @@ def sample_2_modality_1():
            [17, 18]])
 
     >>> ad3.var
-         Feat3 Shared_feat
-    var6     h           i
-    var7     j           k
+                         Feat3 Shared_feat
+    var5                     h           i
+    overlapping_var_mod1     j           k
 
     >>> ad3.obs
-         Obs4 Obs5
-    obs6    I    J
-    obs7    K    L
-    obs8    M    N
+         Obs4 Obs5 Shared_obs
+    obs6    O    P          Q
+    obs7    R    S          T
+    obs8    U    V          W
     """
     df = pd.DataFrame([[13, 14], [15, 16], [17, 18]], 
                       index=["obs6", "obs7", "obs8"],
@@ -124,15 +125,15 @@ def sample_2_modality_2():
            [22, 23, 24]])
     
     >>> ad4.obs
-         Obs6
-    obs8    O
-    obs9    P
+         Obs6 Shared_obs
+    obs8    X          Y
+    obs9    Z         AA
 
     >>> ad4.var
-          Feat4 Shared_feat
-    var8      l           m
-    var9      n           o
-    var10     p           q
+         Feat4 Shared_feat
+    var6     l           m
+    var7     n           o
+    var8     p           q
     """
     df = pd.DataFrame([[19, 20, 21], [22, 23, 24]], index=["obs8", "obs9"],
                       columns=["var6", "var7", "var8"])
@@ -201,8 +202,9 @@ def change_column_contents():
         global_annotation_frame = get_frame(mudata_obj)
         if column_name in global_annotation_frame.columns:
             updated_global_column = pd.concat(modality_columns, copy=True, join='inner')
-            updated_global_column_no_duplicates = updated_global_column.reset_index().drop_duplicates(subset=['index']).set_index('index')
-            global_annotation_frame[column_name] = updated_global_column_no_duplicates 
+            no_duplicates = updated_global_column.reset_index().drop_duplicates(subset=['index'])
+            no_duplicates = no_duplicates.set_index('index')
+            global_annotation_frame[column_name] = no_duplicates 
         setattr(mudata_obj, annotation_frame_name, 
                 global_annotation_frame.convert_dtypes(infer_objects=True,
                                                        convert_integer=True,
@@ -592,7 +594,8 @@ def test_non_overlapping_modalities(run_component, sample_2_h5mu, sample_3_h5mu,
         ])
 
 
-def test_resolve_annotation_conflict_missing_column(run_component, sample_1_h5mu, sample_2_h5mu, sample_3_h5mu,
+def test_resolve_annotation_conflict_missing_column(run_component, sample_1_h5mu, 
+                                                    sample_2_h5mu, sample_3_h5mu,
                                                     write_mudata_to_file, random_h5mu_path):
     """
     Test using mode 'move' and resolving a conflict in metadata between the samples,
@@ -622,7 +625,8 @@ def test_resolve_annotation_conflict_missing_column(run_component, sample_1_h5mu
     assert 'Shared_feat' not in concatenated_data['mod3'].var.columns
     assert 'Shared_feat' not in concatenated_data['mod3'].varm
 
-def test_mode_move(run_component, sample_1_h5mu, sample_2_h5mu, random_h5mu_path, write_mudata_to_file):
+def test_mode_move(run_component, sample_1_h5mu, sample_2_h5mu,
+                   random_h5mu_path, write_mudata_to_file):
     """
     Test that in case of a conflict, the conflicting columns are move to the multidimensional annotation slot 
     (.varm and .obsm). The key of the datafame in the slot should start with 'conflict_' followed by the name 
