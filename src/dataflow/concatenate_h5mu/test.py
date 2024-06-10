@@ -48,9 +48,9 @@ def sample_1_modality_1():
                        columns=["Obs1", "Shared_obs"])
     var = pd.DataFrame([["a", "b"], ["c", "d"], ["e", "f"]],
                         index=df.columns, columns=["Feat1", "Shared_feat"])
-    # varm = np.random.rand(df.columns.size, 5)
-    # ad1 = ad.AnnData(df, obs=obs, var=var, varm={"random_vals_mod1": varm})
-    ad1 = ad.AnnData(df, obs=obs, var=var)
+    varm = np.random.rand(df.columns.size, 5)
+    ad1 = ad.AnnData(df, obs=obs, var=var, varm={"random_vals_mod1": varm})
+    #ad1 = ad.AnnData(df, obs=obs, var=var)
     return ad1
 
 @pytest.fixture
@@ -140,9 +140,9 @@ def sample_2_modality_2():
                        columns=["Obs6", "Shared_obs"])
     var = pd.DataFrame([["l", "m"], ["n", "o"], ["p", "q"]],
                         index=df.columns, columns=["Feat4", "Shared_feat"])
-    # varm = np.random.rand(df.columns.size, 3)
-    # ad4 = ad.AnnData(df, obs=obs, var=var, varm={"random_vals_mod2": varm})
-    ad4 = ad.AnnData(df, obs=obs, var=var)
+    varm = np.random.rand(df.columns.size, 3)
+    ad4 = ad.AnnData(df, obs=obs, var=var, varm={"random_vals_mod2": varm})
+    # ad4 = ad.AnnData(df, obs=obs, var=var)
     return ad4
 
 
@@ -668,7 +668,7 @@ def test_mode_move(run_component, sample_1_h5mu, sample_2_h5mu, random_h5mu_path
                             set(concatenated_mod.var.columns.tolist())
 
         varm_expected = varm_check[mod_name]
-        assert list(concatenated_mod.varm.keys()) == list(varm_expected.keys() | original_varm_keys)
+        assert set(concatenated_mod.varm.keys()) == set(varm_expected.keys() | original_varm_keys)
         for varm_key, expected_columns in varm_expected.items():
             assert tuple(concatenated_mod.varm[varm_key].columns) == expected_columns
         if not varm_expected:
