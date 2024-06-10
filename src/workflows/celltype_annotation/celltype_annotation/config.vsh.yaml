@@ -13,6 +13,12 @@ functionality:
           type: string
           description: ID of the sample.
           example: foo
+        - name: "--input"
+          required: true
+          type: file
+          multiple: true
+          description: input query dataset(s) to be annotated
+          example: input.h5mu
         - name: "--reference"
           type: file
           example: reference.h5mu
