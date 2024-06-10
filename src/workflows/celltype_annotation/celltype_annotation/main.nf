@@ -3,7 +3,7 @@ workflow run_wf {
   input_ch
 
   main:
-  output_ch = input_ch
+  reference_ch = input_ch
     // Make sure there is not conflict between the output from this workflow
     // And the output from any of the components
     | map {id, state ->
@@ -46,12 +46,15 @@ workflow run_wf {
       toState:  ["output": "output", "output_files": "output_files"]
     )
 
-    | map {id, state ->
+    | flatMap {id, state ->
         def outputDir = state.output
         def files = readCsv(state.output_files.toUriString())
-        def new_data = files.collect{ dat -> outputDir.resolve(dat.filename)}
-        def new_id = id 
-        [ new_id, state + ["input": new_data]]
+        files.collect{ dat ->
+          // def new_id = id + "_" + dat.name
+          def new_id = id // it's okay because the channel will get split up anyways
+          def new_data = outputDir.resolve(dat.filename)
+          [ new_id, state + ["reference_input": new_data]]
+        }
         }
     
     // Remove arguments from split samples from state
@@ -65,6 +68,23 @@ workflow run_wf {
     }
 
     | niceView()
+
+    | view {"After splitting samples: $it"}
+
+    | process_samples_workflow.run(
+      fromState: {id, state ->
+        def newState = [
+          "input": state.reference_input, 
+          "id": id,]
+      },
+      toState: ["processed_reference": "output"]
+    )
+
+    | niceView()
+
+    | view {"After splitting samples: $it"}
+
+  output_ch = reference_ch
 
   emit:
   output_ch

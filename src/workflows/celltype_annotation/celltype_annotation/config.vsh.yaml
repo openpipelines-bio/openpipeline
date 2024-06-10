@@ -41,6 +41,8 @@ functionality:
     - name: download/download_file
     - name: convert/from_h5ad_to_h5mu
     - name: dataflow/split_samples
+    - name: workflows/multiomics/process_samples
+      alias: process_samples_workflow
 
   resources:
     - type: nextflow_script
