@@ -154,14 +154,44 @@ def sample_2_h5mu(sample_2_modality_1, sample_2_modality_2):
 
 @pytest.fixture
 def sample_3_modality_1():
+    """
+    >>> ad3.X
+    array([[25]])
+
+    >>> ad3.obs
+          Obs7
+    obs10   AB
+
+    >>> ad3.var
+         Feat4
+    var9     r
+
+    """
     df = pd.DataFrame([[25]], index=["obs10"], columns=["var9"])
     obs = pd.DataFrame([["AB"]], index=df.index, columns=["Obs7"])
     var = pd.DataFrame([["r"]], index=df.columns, columns=["Feat4"])
-    ad3 = ad.AnnData(df, obs=obs, var=var)
-    return ad3
+    ad5 = ad.AnnData(df, obs=obs, var=var)
+    return ad5
 
 @pytest.fixture
 def sample_3_modality_3():
+    """
+    >>> ad6.X
+    array([[ 26,  32,  33, 453],
+        [ 34,  35,  36, 543]])
+    
+    >>> ad6.var
+          Feat5 Feat6 Feat7 Feat8
+    var10     s     t     u     v
+    var11     w     x     y     z
+    var12    aa    ab    ac    ad
+    var13    ae    af    ag    ah
+
+    >>> ad6.obs
+          Obs8 Obs9 obs10 obs11
+    obs11   AC   AD    AE    AF
+    obs12   AG   AH    AI    AJ
+    """
     df = pd.DataFrame([[26, 32, 33, 453], [34, 35, 36, 543]],
                       index=["obs11", "obs12"], 
                       columns=["var10", "var11", "var12", "var13"])
@@ -172,8 +202,8 @@ def sample_3_modality_3():
                         ["aa", "ab", "ac", "ad"],
                         ["ae", "af", "ag", "ah"]],
                         index=df.columns, columns=["Feat5", "Feat6", "Feat7", "Feat8"])
-    ad4 = ad.AnnData(df, obs=obs, var=var)
-    return ad4
+    ad6 = ad.AnnData(df, obs=obs, var=var)
+    return ad6
 
 @pytest.fixture
 def sample_3_h5mu(sample_3_modality_1, sample_3_modality_3):
