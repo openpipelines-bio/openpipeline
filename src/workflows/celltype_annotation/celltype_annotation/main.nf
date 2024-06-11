@@ -4,36 +4,13 @@ workflow process_reference {
 
   main:
     reference_ch = input_ch
+
     // Create reference specific output for this channel
     | map {id, state ->
       def new_state = state + ["reference_processed": state.output]
       [id, new_state]
     }
-    // // download the reference h5ad file
-    // | download_file.run(
-    //   fromState: { id, state ->
-    //     [
-    //       "input": state.reference_url,
-    //       "output": "reference.h5ad",
-    //       "verbose": "true",
-    //     ]
-    //   },
-    //   toState: [
-    //     "input": "output",
-    //   ]
-    // )
-    // // convert the reference h5ad file to h5mu
-    // | from_h5ad_to_h5mu.run(
-    //     fromState: { id, state ->
-    //     [
-    //       "input": state.input,
-    //       "modality": "rna",
-    //     ]
-    //   },
-    //   toState: [
-    //     "input": "output",
-    //   ]
-    // )
+    // Split reference based on batches
     | split_samples.run(
         fromState: { id, state ->
         [
@@ -42,9 +19,9 @@ workflow process_reference {
           "obs_feature": state.obs_reference_batch
         ]
       },
-      toState:  ["output": "output", "output_files": "output_files"]
+      toState: [ "output": "output", "output_files": "output_files" ]
     )
-
+    // Turn each batch input h5mu into channel event
     | flatMap {id, state ->
         def outputDir = state.output
         def files = readCsv(state.output_files.toUriString())
@@ -54,32 +31,43 @@ workflow process_reference {
           [ new_id, state + ["reference_input": new_data]]
         }
         }
-  
-    // Remove arguments from split samples from state
-
-    | map {id, state -> 
-      def keysToRemove = ["output_files"]
-      def newState = state.findAll{it.key !in keysToRemove}
-      [id, newState]
-    }
-
-    | view {"After splitting samples: $it"}
-
+    // run process_samples workflow on reference and publish the processed reference
     | process_samples_workflow.run(
       fromState: {id, state ->
         def newState = [
           "input": state.reference_input, 
-          "id": id,]
+          "id": id,
+          "output": "reference_processed.h5mu",
+          "rna_layer": state.rna_layer,
+          "add_id_to_obs": state.add_id_to_obs,
+          "add_id_obs_output": state.add_id_obs_output,
+          "add_id_make_observation_keys_unique": state.add_id_make_observation_keys_unique,
+          "rna_min_counts": state.rna_min_counts,
+          "rna_max_counts": state.rna_max_counts,
+          "rna_min_genes_per_cell": state.rna_min_genes_per_cell,
+          "rna_max_genes_per_cell": state.rna_max_genes_per_cell,
+          "rna_min_cells_per_gene": state.rna_min_cells_per_gene,
+          "rna_min_fraction_mito": state.rna_min_fraction_mito,
+          "rna_max_fraction_mito": state.rna_max_fraction_mito,
+          "highly_variable_features_var_output": state.highly_variable_features_var_output,
+          "highly_variable_features_obs_batch_key": state.highly_variable_features_obs_batch_key,
+          "var_name_mitochondrial_genes": state.var_name_mitochondrial_genes,
+          "var_gene_names": state.var_gene_names,
+          "mitochondrial_gene_regex": state.mitochondrial_gene_regex,
+          "var_qc_metrics": state.var_qc_metrics,
+          "top_n_vars": state.top_n_vars,
+          "pca_overwrite": "true"
+          ]
       },
-      toState: ["reference_processed": "output"]
+      toState: {id, output, state -> 
+        ["reference_processed": output.output]
+      },
+      auto: [ publish: true ]
     )
-
-
-    | view {"After splitting samples: $it"}
 
   emit:
     reference_ch
-  }
+}
 
 workflow process_query {
   take:
@@ -92,7 +80,7 @@ workflow process_query {
       def new_state = state + ["query_processed": state.output]
       [id, new_state]
     }
-
+    // consider individual input files as events for process_samples pipeline
     | flatMap {id, state ->
       def outputDir = state.query_output
       def query_files = state.input
@@ -106,17 +94,39 @@ workflow process_query {
       }
     }
     | view {"After splitting input: $it"}
-
     | process_samples_workflow.run(
       fromState: {id, state ->
         def newState = [
           "input": state.query_input, 
-          "id": id]
+          "id": id,
+          "output": "query_processed.h5mu",
+          "rna_layer": state.rna_layer,
+          "add_id_to_obs": state.add_id_to_obs,
+          "add_id_obs_output": state.add_id_obs_output,
+          "add_id_make_observation_keys_unique": state.add_id_make_observation_keys_unique,
+          "rna_min_counts": state.rna_min_counts,
+          "rna_max_counts": state.rna_max_counts,
+          "rna_min_genes_per_cell": state.rna_min_genes_per_cell,
+          "rna_max_genes_per_cell": state.rna_max_genes_per_cell,
+          "rna_min_cells_per_gene": state.rna_min_cells_per_gene,
+          "rna_min_fraction_mito": state.rna_min_fraction_mito,
+          "rna_max_fraction_mito": state.rna_max_fraction_mito,
+          "highly_variable_features_var_output": state.highly_variable_features_var_output,
+          "highly_variable_features_obs_batch_key": state.highly_variable_features_obs_batch_key,
+          "var_name_mitochondrial_genes": state.var_name_mitochondrial_genes,
+          "var_gene_names": state.var_gene_names,
+          "mitochondrial_gene_regex": state.mitochondrial_gene_regex,
+          "var_qc_metrics": state.var_qc_metrics,
+          "top_n_vars": state.top_n_vars,
+          "pca_overwrite": "true"
+          ]
       },
-      toState: ["query_processed": "output"]
+      toState: {id, output, state -> 
+        ["query_processed": output.output]
+      },
+      auto: [ publish: true ]
     )
-
-    | niceView()
+    | view {"After processing query: $it"}
 
   emit:
     query_ch
@@ -127,11 +137,17 @@ workflow run_wf {
     input_ch
 
   main:
-    reference_ch = process_reference(input_ch)
-    query_ch = process_query(input_ch)
+    processing_channel = input_ch
+    | filter{id, state -> 
+      [state.leiden_resolution]
+    
+    }
 
-    output_ch = reference_ch.mix(query_ch)
-    | niceView()
+    output_ch = input_ch
+      // Process the input through both workflows and add views for debugging
+      | process_reference
+      | process_query
+      | niceView()
 
   emit:
     output_ch
