@@ -2954,7 +2954,7 @@ meta = [
     {
       "type" : "docker",
       "id" : "docker",
-      "image" : "python:3.10-slim",
+      "image" : "python:3.11-slim",
       "target_organization" : "openpipelines-bio",
       "target_registry" : "ghcr.io",
       "target_tag" : "integration_build",
@@ -2985,10 +2985,31 @@ meta = [
       ],
       "test_setup" : [
         {
+          "type" : "docker",
+          "copy" : [
+            "openpipelinetestutils /opt/openpipelinetestutils"
+          ]
+        },
+        {
           "type" : "python",
           "user" : false,
           "packages" : [
-            "viashpy==0.6.0",
+            "/opt/openpipelinetestutils"
+          ],
+          "upgrade" : true
+        },
+        {
+          "type" : "python",
+          "user" : false,
+          "packages" : [
+            "viashpy==0.6.0"
+          ],
+          "upgrade" : true
+        },
+        {
+          "type" : "python",
+          "user" : false,
+          "packages" : [
             "muon"
           ],
           "upgrade" : true
@@ -3061,7 +3082,7 @@ meta = [
     "platform" : "nextflow",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/dataflow/concatenate_h5mu",
     "viash_version" : "0.8.5",
-    "git_commit" : "e6e7987fd00988c70cd6ec24ffa616f60b695b9f",
+    "git_commit" : "f0e5b8fa2eca39711224cfda597c3395c5fe3e4c",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))
@@ -3214,7 +3235,7 @@ def any_row_contains_duplicate_values(n_processes: int, frame: pd.DataFrame) -> 
         is_duplicated = pool.map(nunique, iter(numpy_array))
     return any(is_duplicated)
 
-def concatenate_matrices(n_processes: int, matrices: dict[str, pd.DataFrame], align_to: pd.Index | None) \\\\
+def concatenate_matrices(n_processes: int, matrices: dict[str, pd.DataFrame], align_to: pd.Index) \\\\
     -> tuple[dict[str, pd.DataFrame], pd.DataFrame | None, dict[str, pd.core.dtypes.dtypes.Dtype]]:
     """
     Merge matrices by combining columns that have the same name.
@@ -3245,7 +3266,7 @@ def get_first_non_na_value_vector(df):
 def split_conflicts_and_concatenated_columns(n_processes: int,
                                              matrices: dict[str, pd.DataFrame],
                                              column_names: Iterable[str],
-                                             align_to: pd.Index | None = None) -> \\\\
+                                             align_to: pd.Index) -> \\\\
                                             tuple[dict[str, pd.DataFrame], pd.DataFrame]:
     """
     Retrieve columns with the same name from a list of dataframes which are
@@ -3265,8 +3286,7 @@ def split_conflicts_and_concatenated_columns(n_processes: int,
                                          join="outer", sort=False)
         if any_row_contains_duplicate_values(n_processes, concatenated_columns):
             concatenated_columns.columns = columns.keys() # Use the sample id as column name
-            if align_to is not None:
-                concatenated_columns = concatenated_columns.reindex(align_to, copy=False)
+            concatenated_columns = concatenated_columns.reindex(align_to, copy=False)
             conflicts[f'conflict_{column_name}'] = concatenated_columns 
         else:
             unique_values = get_first_non_na_value_vector(concatenated_columns)
@@ -3275,8 +3295,7 @@ def split_conflicts_and_concatenated_columns(n_processes: int,
         return conflicts, pd.DataFrame(index=align_to)
     concatenated_matrix = pd.concat(concatenated_matrix, join="outer",
                                     axis=1, sort=False)
-    if align_to is not None:
-        concatenated_matrix = concatenated_matrix.reindex(align_to, copy=False)
+    concatenated_matrix = concatenated_matrix.reindex(align_to, copy=False)
     return conflicts, concatenated_matrix
 
 def cast_to_writeable_dtype(result: pd.DataFrame) -> pd.DataFrame:
@@ -3313,8 +3332,7 @@ def split_conflicts_modalities(n_processes: int, samples: dict[str, anndata.AnnD
     for matrix_name in matrices_to_parse:
         matrices = {sample_id: getattr(sample, matrix_name) for sample_id, sample in samples.items()}
         output_index = getattr(output, matrix_name).index 
-        align_to = output_index if matrix_name == "var" else None
-        conflicts, concatenated_matrix = concatenate_matrices(n_processes, matrices, align_to)
+        conflicts, concatenated_matrix = concatenate_matrices(n_processes, matrices, output_index)
         if concatenated_matrix.empty:
            concatenated_matrix.index = output_index 
         # Write the conflicts to the output
@@ -3331,7 +3349,7 @@ def concatenate_modality(n_processes: int, mod: str, input_files: Iterable[str |
                          other_axis_mode: str, input_ids: tuple[str]) -> anndata.AnnData:
     
     concat_modes = {
-        "move": None,
+        "move": "unique",
     }
     other_axis_mode_to_apply = concat_modes.get(other_axis_mode, other_axis_mode)
 
@@ -3340,7 +3358,7 @@ def concatenate_modality(n_processes: int, mod: str, input_files: Iterable[str |
         try:
             mod_data[input_id] = mu.read_h5ad(input_file, mod=mod)
         except KeyError as e: # Modality does not exist for this sample, skip it
-            if f"Unable to open object '{mod}' doesn't exist" not in str(e):
+            if f"Unable to synchronously open object (object '{mod}' doesn't exist)" not in str(e):
                 raise e
             pass
     check_observations_unique(mod_data.values())

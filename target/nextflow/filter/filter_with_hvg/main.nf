@@ -3193,7 +3193,7 @@ meta = [
     "platform" : "nextflow",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/filter/filter_with_hvg",
     "viash_version" : "0.8.5",
-    "git_commit" : "e6e7987fd00988c70cd6ec24ffa616f60b695b9f",
+    "git_commit" : "f0e5b8fa2eca39711224cfda597c3395c5fe3e4c",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))
