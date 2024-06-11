@@ -22,7 +22,6 @@ jobs:
       push_containers: ${{ github.event_name == 'schedule' || inputs.push_containers }}
       version: 'integration_build'
       target_tag: 'integration_build'
-      deploy_to_viash_hub: false
       deploy_branch: 'integration_build'
     secrets: inherit
 

@@ -1,3 +1,16 @@
+# openpipelines 1.0.0-rc6
+
+## BUG FIXES
+
+* `dataflow/concatenate_h5mu`: fix regression bug where observations are no longer linked to the correct metadata
+after concatenation (PR #807)
+
+# openpipelines 1.0.0-rc5
+
+## BUG FIXES
+
+* `cluster/leiden`: prevent leiden component from hanging when a child process is killed (e.g. when there is not enough memory available) (PR #805).
+
 # openpipelines 1.0.0-rc4
 
 ## BREAKING CHANGES
