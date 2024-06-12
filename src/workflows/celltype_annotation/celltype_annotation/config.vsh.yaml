@@ -33,34 +33,16 @@ functionality:
           required: true
           description: |
             The .obs column of the reference dataset containing the batch information.
-        - name: "--rna_layer"
+        - name: "--reference_rna_layer"
           type: string
-          description: "Input layer for the gene expression modality. If not specified, .X is used."
+          description: "Input layer for the gene expression modality of the reference dataset. If not specified, .X is used."
+          required: false
+        - name: "--query_rna_layer"
+          type: string
+          description: "Input layer for the gene expression modality of the query datasets. If not specified, .X is used."
           required: false
 
-    - name: "Sample ID options"
-      description: |
-        Options for adding the id to .obs on the MuData object. Having a sample 
-        id present in a requirement of several components for this pipeline.
-      arguments:
-        - name: "--add_id_to_obs"
-          description: "Add the value passed with --id to .obs."
-          type: boolean
-          default: true
-        - name: --add_id_obs_output
-          description: |
-            .Obs column to add the sample IDs to. Required and only used when 
-            --add_id_to_obs is set to 'true'
-          type: string
-          default: "sample_id"
-        - name: "--add_id_make_observation_keys_unique"
-          type: boolean
-          description: |
-            Join the id to the .obs index (.obs_names). 
-            Only used when --add_id_to_obs is set to 'true'.
-          default: true
-
-    - name: "RNA filtering options"
+    - name: "Pre-processing options: RNA filtering"
       arguments:
         - name: "--rna_min_counts"
           example: 200
@@ -91,7 +73,7 @@ functionality:
           example: 0.2
           description: Maximum fraction of UMIs that are mitochondrial.
 
-    - name: "Highly variable features detection"
+    - name: "Pre-processing options: Highly variable features detection"
       arguments:
         - name: "--highly_variable_features_var_output"
           alternatives: ["--filter_with_hvg_var_output"]
@@ -108,7 +90,7 @@ functionality:
             If specified, highly-variable genes are selected within each batch separately and merged. This simple 
             process avoids the selection of batch-specific genes and acts as a lightweight batch correction method.
     
-    - name: "Mitochondrial Gene Detection"
+    - name: "Pre-processing options: Mitochondrial Gene Detection"
       arguments:
         - name: "--var_name_mitochondrial_genes"
           type: string
@@ -138,7 +120,7 @@ functionality:
           required: false
           default: "^[mM][tT]-"
 
-    - name: "QC metrics calculation options"
+    - name: "Pre-processing options: QC metrics calculation options"
       arguments:
         - name: "--var_qc_metrics"
           description: |
@@ -164,21 +146,12 @@ functionality:
 
     - name: Harmony integration options
       arguments:
-        - name: "--embedding"
-          default: "X_pca"
-          type: string
-          description: "Embedding to use as input"
-        - name: "--obsm_integrated"
-          type: string
-          default: "X_pca_integrated"
-          required: false
-          description: "In which .obsm slot to store the resulting integrated embedding."
-        - name: "--obs_covariates"
-          type: string
-          description: "The .obs field(s) that define the covariate(s) to regress out."
-          example: ["batch", "sample"]
-          multiple: true
-          required: true
+        # - name: "--obs_covariates"
+        #   type: string
+        #   description: "The .obs field(s) that define the covariate(s) to regress out."
+        #   example: ["batch", "sample"]
+        #   multiple: true
+        #   required: true
         - name: "--theta"
           type: double
           description: |
@@ -204,6 +177,8 @@ functionality:
     - name: dataflow/split_samples
     - name: workflows/multiomics/process_samples
       alias: process_samples_workflow
+    # - name: workflows/integration/harmony_leiden
+    #   alias: harmony_leiden_workflow
 
   resources:
     - type: nextflow_script
