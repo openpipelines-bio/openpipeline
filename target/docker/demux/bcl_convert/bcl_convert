@@ -207,6 +207,23 @@ function ViashHelp {
   echo "        type: boolean"
   echo "        default: false"
   echo "        Should bcl-convert be run in test mode (using --first-tile-only)?"
+  echo ""
+  echo "    --strict_mode"
+  echo "        type: boolean"
+  echo "        default: false"
+  echo "        Abort if any files are missing."
+  echo ""
+  echo "    --tiles"
+  echo "        type: string"
+  echo "        Process only a subset of tiles by a regular expression."
+  echo ""
+  echo "    --exclude_tiles"
+  echo "        type: string"
+  echo "        Exclude set of tiles by a regular expression"
+  echo ""
+  echo "    --no_lane_splitting"
+  echo "        type: boolean"
+  echo "        Wheter to avoid splitting FASTQ file by lane."
 }
 
 ######## Helper functions for setting up Docker images for viash ########
@@ -424,7 +441,7 @@ function ViashDockerCheckCommands {
 #   ViashDockerFile
 function ViashDockerfile {
   cat << 'VIASHDOCKER'
-FROM ghcr.io/data-intuitive/bclconvert:3.10
+FROM ghcr.io/data-intuitive/bclconvert:4.2
 
 ENTRYPOINT []
 
@@ -435,9 +452,9 @@ RUN apt-get update && \
 
 LABEL org.opencontainers.image.authors="Toni Verbeiren, Marijke Van Moerbeke"
 LABEL org.opencontainers.image.description="Companion container for running component demux bcl_convert"
-LABEL org.opencontainers.image.created="2024-06-10T08:52:58Z"
+LABEL org.opencontainers.image.created="2024-06-12T14:20:58Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="c1e1aa72f3b284df20b3807a52a12ebc45908859"
+LABEL org.opencontainers.image.revision="fa9f46de8eee93d0f7f5a56ea11f8b89d5646556"
 LABEL org.opencontainers.image.version="main_build"
 
 VIASHDOCKER
@@ -665,6 +682,50 @@ while [[ $# -gt 0 ]]; do
             VIASH_PAR_TEST_MODE=$(ViashRemoveFlags "$1")
             shift 1
             ;;
+        --strict_mode)
+            [ -n "$VIASH_PAR_STRICT_MODE" ] && ViashError Bad arguments for option \'--strict_mode\': \'$VIASH_PAR_STRICT_MODE\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+            VIASH_PAR_STRICT_MODE="$2"
+            [ $# -lt 2 ] && ViashError Not enough arguments passed to --strict_mode. Use "--help" to get more information on the parameters. && exit 1
+            shift 2
+            ;;
+        --strict_mode=*)
+            [ -n "$VIASH_PAR_STRICT_MODE" ] && ViashError Bad arguments for option \'--strict_mode=*\': \'$VIASH_PAR_STRICT_MODE\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+            VIASH_PAR_STRICT_MODE=$(ViashRemoveFlags "$1")
+            shift 1
+            ;;
+        --tiles)
+            [ -n "$VIASH_PAR_TILES" ] && ViashError Bad arguments for option \'--tiles\': \'$VIASH_PAR_TILES\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+            VIASH_PAR_TILES="$2"
+            [ $# -lt 2 ] && ViashError Not enough arguments passed to --tiles. Use "--help" to get more information on the parameters. && exit 1
+            shift 2
+            ;;
+        --tiles=*)
+            [ -n "$VIASH_PAR_TILES" ] && ViashError Bad arguments for option \'--tiles=*\': \'$VIASH_PAR_TILES\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+            VIASH_PAR_TILES=$(ViashRemoveFlags "$1")
+            shift 1
+            ;;
+        --exclude_tiles)
+            [ -n "$VIASH_PAR_EXCLUDE_TILES" ] && ViashError Bad arguments for option \'--exclude_tiles\': \'$VIASH_PAR_EXCLUDE_TILES\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+            VIASH_PAR_EXCLUDE_TILES="$2"
+            [ $# -lt 2 ] && ViashError Not enough arguments passed to --exclude_tiles. Use "--help" to get more information on the parameters. && exit 1
+            shift 2
+            ;;
+        --exclude_tiles=*)
+            [ -n "$VIASH_PAR_EXCLUDE_TILES" ] && ViashError Bad arguments for option \'--exclude_tiles=*\': \'$VIASH_PAR_EXCLUDE_TILES\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+            VIASH_PAR_EXCLUDE_TILES=$(ViashRemoveFlags "$1")
+            shift 1
+            ;;
+        --no_lane_splitting)
+            [ -n "$VIASH_PAR_NO_LANE_SPLITTING" ] && ViashError Bad arguments for option \'--no_lane_splitting\': \'$VIASH_PAR_NO_LANE_SPLITTING\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+            VIASH_PAR_NO_LANE_SPLITTING="$2"
+            [ $# -lt 2 ] && ViashError Not enough arguments passed to --no_lane_splitting. Use "--help" to get more information on the parameters. && exit 1
+            shift 2
+            ;;
+        --no_lane_splitting=*)
+            [ -n "$VIASH_PAR_NO_LANE_SPLITTING" ] && ViashError Bad arguments for option \'--no_lane_splitting=*\': \'$VIASH_PAR_NO_LANE_SPLITTING\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+            VIASH_PAR_NO_LANE_SPLITTING=$(ViashRemoveFlags "$1")
+            shift 1
+            ;;
         ---setup)
             VIASH_MODE='docker_setup'
             VIASH_DOCKER_SETUP_STRATEGY="$2"
@@ -820,6 +881,9 @@ fi
 if [ -z ${VIASH_PAR_TEST_MODE+x} ]; then
   VIASH_PAR_TEST_MODE="false"
 fi
+if [ -z ${VIASH_PAR_STRICT_MODE+x} ]; then
+  VIASH_PAR_STRICT_MODE="false"
+fi
 
 # check whether required files exist
 if [ ! -z "$VIASH_PAR_INPUT" ] && [ ! -e "$VIASH_PAR_INPUT" ]; then
@@ -835,6 +899,18 @@ fi
 if [[ -n "$VIASH_PAR_TEST_MODE" ]]; then
   if ! [[ "$VIASH_PAR_TEST_MODE" =~ ^(true|True|TRUE|false|False|FALSE|yes|Yes|YES|no|No|NO)$ ]]; then
     ViashError '--test_mode' has to be a boolean. Use "--help" to get more information on the parameters.
+    exit 1
+  fi
+fi
+if [[ -n "$VIASH_PAR_STRICT_MODE" ]]; then
+  if ! [[ "$VIASH_PAR_STRICT_MODE" =~ ^(true|True|TRUE|false|False|FALSE|yes|Yes|YES|no|No|NO)$ ]]; then
+    ViashError '--strict_mode' has to be a boolean. Use "--help" to get more information on the parameters.
+    exit 1
+  fi
+fi
+if [[ -n "$VIASH_PAR_NO_LANE_SPLITTING" ]]; then
+  if ! [[ "$VIASH_PAR_NO_LANE_SPLITTING" =~ ^(true|True|TRUE|false|False|FALSE|yes|Yes|YES|no|No|NO)$ ]]; then
+    ViashError '--no_lane_splitting' has to be a boolean. Use "--help" to get more information on the parameters.
     exit 1
   fi
 fi
@@ -977,6 +1053,10 @@ $( if [ ! -z ${VIASH_PAR_SAMPLE_SHEET+x} ]; then echo "${VIASH_PAR_SAMPLE_SHEET}
 $( if [ ! -z ${VIASH_PAR_OUTPUT+x} ]; then echo "${VIASH_PAR_OUTPUT}" | sed "s#'#'\"'\"'#g;s#.*#par_output='&'#" ; else echo "# par_output="; fi )
 $( if [ ! -z ${VIASH_PAR_REPORTS+x} ]; then echo "${VIASH_PAR_REPORTS}" | sed "s#'#'\"'\"'#g;s#.*#par_reports='&'#" ; else echo "# par_reports="; fi )
 $( if [ ! -z ${VIASH_PAR_TEST_MODE+x} ]; then echo "${VIASH_PAR_TEST_MODE}" | sed "s#'#'\"'\"'#g;s#.*#par_test_mode='&'#" ; else echo "# par_test_mode="; fi )
+$( if [ ! -z ${VIASH_PAR_STRICT_MODE+x} ]; then echo "${VIASH_PAR_STRICT_MODE}" | sed "s#'#'\"'\"'#g;s#.*#par_strict_mode='&'#" ; else echo "# par_strict_mode="; fi )
+$( if [ ! -z ${VIASH_PAR_TILES+x} ]; then echo "${VIASH_PAR_TILES}" | sed "s#'#'\"'\"'#g;s#.*#par_tiles='&'#" ; else echo "# par_tiles="; fi )
+$( if [ ! -z ${VIASH_PAR_EXCLUDE_TILES+x} ]; then echo "${VIASH_PAR_EXCLUDE_TILES}" | sed "s#'#'\"'\"'#g;s#.*#par_exclude_tiles='&'#" ; else echo "# par_exclude_tiles="; fi )
+$( if [ ! -z ${VIASH_PAR_NO_LANE_SPLITTING+x} ]; then echo "${VIASH_PAR_NO_LANE_SPLITTING}" | sed "s#'#'\"'\"'#g;s#.*#par_no_lane_splitting='&'#" ; else echo "# par_no_lane_splitting="; fi )
 $( if [ ! -z ${VIASH_META_FUNCTIONALITY_NAME+x} ]; then echo "${VIASH_META_FUNCTIONALITY_NAME}" | sed "s#'#'\"'\"'#g;s#.*#meta_functionality_name='&'#" ; else echo "# meta_functionality_name="; fi )
 $( if [ ! -z ${VIASH_META_RESOURCES_DIR+x} ]; then echo "${VIASH_META_RESOURCES_DIR}" | sed "s#'#'\"'\"'#g;s#.*#meta_resources_dir='&'#" ; else echo "# meta_resources_dir="; fi )
 $( if [ ! -z ${VIASH_META_EXECUTABLE+x} ]; then echo "${VIASH_META_EXECUTABLE}" | sed "s#'#'\"'\"'#g;s#.*#meta_executable='&'#" ; else echo "# meta_executable="; fi )
@@ -999,7 +1079,12 @@ bcl-convert \\
   --bcl-input-directory "\$par_input" \\
   --output-directory "\$par_output" \\
   --sample-sheet "\$par_sample_sheet" \\
-  --first-tile-only \$par_test_mode
+  --first-tile-only "\$par_test_mode" \\
+  --strict-mode "\$par_strict_mode" \\
+  \${par_no_lane_splitting:+--no-lane-splitting "\$par_no_lane_splitting"} \\
+  \${par_tiles:+--tiles \$par_tiles} \\
+  \${par_exclude_tiles:+--exclude-tiles \$par_exclude_tiles} 
+  
 
 if [ ! -z "\$par_reports" ]; then
   echo "Moving reports to its own location"

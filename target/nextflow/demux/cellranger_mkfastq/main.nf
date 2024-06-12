@@ -2971,7 +2971,7 @@ meta = [
     {
       "type" : "docker",
       "id" : "docker",
-      "image" : "ghcr.io/data-intuitive/cellranger:7.0",
+      "image" : "ghcr.io/data-intuitive/cellranger:8.0",
       "target_organization" : "openpipelines-bio",
       "target_registry" : "ghcr.io",
       "target_tag" : "main_build",
@@ -3061,7 +3061,7 @@ meta = [
     "platform" : "nextflow",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/demux/cellranger_mkfastq",
     "viash_version" : "0.8.5",
-    "git_commit" : "c1e1aa72f3b284df20b3807a52a12ebc45908859",
+    "git_commit" : "fa9f46de8eee93d0f7f5a56ea11f8b89d5646556",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))
