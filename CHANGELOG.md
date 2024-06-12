@@ -16,9 +16,15 @@
 
 * `demux/bcl_convert`: add support for no lane splitting (PR #804).
 
+* `reference/cellranger_mkgtf` component: Added cellranger mkgtf as a standalone component (PR #771).
+
+* `scgpt/binning` component: Added a scGPT pre-processing binning component (PR #765).
+
 ## MINOR CHANGES
 
 * Added `resources_test_scripts/cellranger_atac_tiny_bcl.sh` script: download tiny bcl file with an ATAC experiment, download a motifs file, demultiplex bcl files to reads in fastq format (PR #726).
+
+* `mapping/cellranger_multi` component now outputs logs on failure of the `cellranger multi` process (PR #766).
 
 # openpipelines 1.0.0-rc6
 
@@ -61,10 +67,6 @@ after concatenation (PR #807)
 
 * Docker image names now use `/` instead of `_` between the name of the component and the namespace (PR #712).
 
-## MINOR CHANGES
-
-* `mapping/cellranger_multi` component now outputs logs on failure of the `cellranger multi` process (PR #766).
-
 ## BUG FIXES
 
 * `rna_singlesample`: fixed a bug where selecting the column for the filtering with mitochondrial fractions 
@@ -75,10 +77,6 @@ after concatenation (PR #807)
 ## NEW FUNCTIONALITY
 
 * `dimred/tsne` component: Added a tSNE dimensionality reduction component (PR #742).
-  
-* `reference/cellranger_mkgtf` component: Added cellranger mkgtf as a standalone component (PR #771).
-
-* `scgpt/binning` component: Added a scGPT pre-processing binning component (PR #765).
 
 # openpipelines 1.0.0-rc2
 
