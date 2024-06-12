@@ -11,7 +11,7 @@ description: |
     - VDJ-B: vdj_b
     - CRISPR Guide Capture: crispr
     - Multiplexing Capture: hashing
-  
+    
   Other library types have their whitepace removed and dashes replaced by
   underscores to generate the modality name.
 
@@ -51,7 +51,7 @@ test_resources:
     path: test.py
   - path: /resources_test/10x_5k_anticmv
   - path: /resources_test/10x_5k_lung_crispr
-
+  - path: /resources_test/10x_5k_beam
 engines:
 - type: docker
   image: python:3.10-slim

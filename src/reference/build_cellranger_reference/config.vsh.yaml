@@ -18,6 +18,10 @@ arguments:
     required: true
     description: Reference transcriptome annotation.
     example: transcriptome_annotation.gtf.gz
+  - type: string
+    name: "--reference_version"
+    required: false
+    description: "Optional reference version string to include with reference"
   - type: file
     name: --output
     direction: output
@@ -34,7 +38,7 @@ test_resources:
 
 engines:
 - type: docker
-  image: ghcr.io/data-intuitive/cellranger:7.0
+  image: ghcr.io/data-intuitive/cellranger:8.0
   setup:
     - type: docker
       run: |

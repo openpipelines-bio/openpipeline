@@ -37,6 +37,11 @@ argument_groups:
         example: 3000
         description: "Expected number of recovered cells, used as input to cell calling algorithm."
 
+      - type: integer
+        name: "--force_cells"
+        example: 3000
+        description: "Force pipeline to use this number of cells, bypassing cell calling algorithm."
+
       - type: string
         name: --chemistry
         default: auto
@@ -45,16 +50,20 @@ argument_groups:
           - auto: autodetect mode
           - threeprime: Single Cell 3'
           - fiveprime: Single Cell 5'
-          - SC3Pv1: Single Cell 3' v1
+          - SC3Pv1: Single Cell 3' v1 
+            NOTE: this mode cannot be auto-detected. It must be set explicitly with this option.
           - SC3Pv2: Single Cell 3' v2
           - SC3Pv3: Single Cell 3' v3
+          - SC3Pv4: Single Cell 3' v4
           - SC3Pv3LT: Single Cell 3' v3 LT
           - SC3Pv3HT: Single Cell 3' v3 HT
           - SC5P-PE: Single Cell 5' paired-end
           - SC5P-R2: Single Cell 5' R2-only
           - SC-FB: Single Cell Antibody-only 3' v2 or 5'
+          - ARC-v1: for analyzing the Gene Expression portion of Multiome data. 
+            NOTE: when the pipeline auto-detects ARC-v1 chemistry, an error is triggered.
           See https://kb.10xgenomics.com/hc/en-us/articles/115003764132-How-does-Cell-Ranger-auto-detect-chemistry- for more information.
-        choices: [ auto, threeprime, fiveprime, SC3Pv1, SC3Pv2, SC3Pv3, SC3Pv3LT, SC3Pv3HT, SC5P-PE, SC5P-R2, SC-FB ]
+        choices: [ auto, threeprime, fiveprime, SC3Pv1, SC3Pv2, SC3Pv3, SC3Pv4, SC3Pv3LT, SC3Pv3HT, SC5P-PE, SC5P-R2, SC-FB, ARC-v1 ]
 
       - type: boolean
         name: "--secondary_analysis"
@@ -65,11 +74,35 @@ argument_groups:
         name: "--generate_bam"
         default: true
         description: Whether to generate a BAM file.
-      
+        
       - type: boolean
         name: "--include_introns"
         default: true
-        description: Include intronic reads in count (default=true unless --target-panel is specified in which case default=false)
+        description: Include intronic reads in count.
+
+      - type: integer
+        name: --r1_length
+        description: "Hard trim the input Read 1 to this length before analysis"
+        required: false
+        
+      - type: integer
+        name: "--r2_length"
+        required: false
+        description: "Hard trim the input Read 2 to this length before analysis"        
+        
+      - type: integer
+        multiple: true
+        name: --lanes
+        required: false
+        description: Only use FASTQs from selected lanes.
+        example: [1,2,3]
+
+      - name: "--library_compatibility_check"
+        type: boolean
+        default: true
+        description: |
+          Whether to check for barcode compatibility between libraries.
+
 resources:
   - type: bash_script
     path: script.sh
@@ -81,13 +114,13 @@ test_resources:
 
 engines:
 - type: docker
-  image: ghcr.io/data-intuitive/cellranger:7.0
+  image: ghcr.io/data-intuitive/cellranger:8.0
   setup:
     - type: docker
       run: |
         DEBIAN_FRONTEND=noninteractive apt update && \
         apt upgrade -y && apt install -y procps && rm -rf /var/lib/apt/lists/*
-
+  __merge__: [ /src/base/requirements/python_test_setup.yaml, .]
 runners:
 - type: executable
 - type: nextflow
