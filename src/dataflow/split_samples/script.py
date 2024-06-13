@@ -5,10 +5,11 @@ from pathlib import Path
 
 ### VIASH START
 par = {
-  'input': 'reference_download/reference.h5mu',
+  'input': 'harmony_knn/integrated.pynndescent_knn.output',
   'modality': 'rna',
-  'obs_feature': 'donor_assay',
+  'obs_feature': 'dataset',
   'output': 'reference_download/sample_split',
+  'drop_obs_nan': "true",
   'output_compression': None,
   'output_files': 'reference_download/sample_files.csv'
 }
@@ -71,15 +72,19 @@ def main():
         logger.info(f"Filtering modality '{par['modality']}' observations by .obs['{par['obs_feature']}'] == {obs_name}")
         mdata_obs = mdata.copy()
 
-        mdata_obs = mdata_obs[mdata_obs.mod['rna'].obs[par["obs_feature"]] == obs_name]
+        mdata_obs = mdata_obs[mdata_obs.mod[par['modality']].obs[par["obs_feature"]] == obs_name]
         mdata_obs_name = f"{input_file.stem}_{file_name}.h5mu"
         obs_files.append(mdata_obs_name)
+
+        if par["drop_obs_nan"]:
+            logger.info(f"Dropping all .obs columns with NaN values")
+            mdata_obs.mod[par["modality"]].obs.dropna(axis=1, how='all', inplace=True)
 
         logger.info(f"Writing h5mu filtered for {par['obs_feature']} {obs_name} to file {output_dir / mdata_obs_name}")
         mdata_obs.write_h5mu(output_dir / mdata_obs_name, compression=par["output_compression"])
 
     logger.info(f"Writing output_files CSV file to {par['output_files']}")
-    df = pd.DataFrame({"name": obs_features, "filename": obs_files})
+    df = pd.DataFrame({"name": obs_features_s, "filename": obs_files})
     df.to_csv(par["output_files"], index=False)
 
 

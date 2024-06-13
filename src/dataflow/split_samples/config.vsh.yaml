@@ -26,6 +26,9 @@ functionality:
       required: true
       description: The obs column to split the samples on.
       example: "celltype"
+    - name: "--drop_obs_nan"
+      type: boolean_true
+      description: whether to drop all .obs columns that contain only nan values after splitting.
     - name: "--output_compression"
       type: string
       description: The compression format to be used on the output h5mu object.
