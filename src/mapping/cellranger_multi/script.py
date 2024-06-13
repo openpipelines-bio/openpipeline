@@ -123,6 +123,7 @@ FEATURE_CONFIG_KEYS = {
     "feature_reference": "reference",
     "feature_r1_length": "r1-length",
     "feature_r2_length": "r2-length",
+    "min_crispr_umi": "min-crispr-umi",
 }
 
 VDJ_CONFIG_KEYS = {"vdj_reference": "reference",
@@ -289,6 +290,9 @@ def handle_integers_not_set(par: dict[str, Any], viash_config: Path | str) -> st
             continue
         par_value, is_multiple = par[arg_name], arg["multiple"]
         assert is_multiple in (True, False)
+
+        if not is_multiple:
+            continue
 
         def replace_notset_values(integer_value: int) -> int | None:
             return None if integer_value == -1 else integer_value

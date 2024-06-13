@@ -218,6 +218,15 @@ functionality:
             Limit the length of the input Read 2 sequence of V(D)J libraries to the first N bases,
             where N is a user-supplied value. Trimming occurs before sequencing metrics are computed
             and therefore, limiting the length of Read 2 may affect Q30 scores.
+        - name: "--min_crispr_umi"
+          type: integer
+          min: 1
+          required: false
+          description: |
+            Set the minimum number of CRISPR guide RNA UMIs required for protospacer detection.
+            If a lower or higher sensitivity is desired for detection, this value can be customized
+            according to specific experimental needs. Applicable only to datasets that include a
+            CRISPR Guide Capture library.
     - name: Gene expression arguments
       description: Arguments relevant to the analysis of gene expression data.
       arguments:
@@ -282,6 +291,7 @@ functionality:
               - SC5P-PE: Paired-end Single Cell 5'
               - SC5P-R2: R2-only Single Cell 5'
               - SC5P-R2-v3: R2-only Single Cell 5' v3
+              - SCP5-PE-v3: Single Cell 5' paired-end v3 (GEM-X)
               - SC5PHT : Single Cell 5' v2 HT
               - SFRP: Fixed RNA Profiling (Singleplex)
               - MFRP: Fixed RNA Profiling (Multiplex, Probe Barcode on R2)
@@ -294,7 +304,7 @@ functionality:
               - ARC-v1 for analyzing the Gene Expression portion of Multiome data. If Cell Ranger auto-detects ARC-v1 chemistry, an error is triggered.
             See https://kb.10xgenomics.com/hc/en-us/articles/115003764132-How-does-Cell-Ranger-auto-detect-chemistry- for more information.
           choices: [ auto, threeprime, fiveprime, SC3Pv1, SC3Pv2, SC3Pv3, SC3Pv4, SC3Pv3LT, SC3Pv3HT, 
-                    SC5P-PE, SC5P-R2, SC-FB, SC5P-R2-v3, SC5PHT, MFRP, MFRP-R1, MFRP-RNA, MFRP-Ab,
+                    SC5P-PE, SC5P-R2, SC-FB, SC5P-R2-v3, SCP5-PE-v3, SC5PHT, MFRP, MFRP-R1, MFRP-RNA, MFRP-Ab,
                     SFRP, MFRP-Ab-R2pos50, MFRP-RNA-R1, MFRP-Ab-R1, ARC-v1]
 
     - name: "VDJ related parameters"
