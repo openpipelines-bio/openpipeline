@@ -104,6 +104,15 @@ functionality:
           description: |
             Whether to check for barcode compatibility between libraries.
 
+        - name: "--min_crispr_umi"
+          type: integer
+          min: 1
+          description: |
+            Set the minimum number of CRISPR guide RNA UMIs required for protospacer detection.
+            If a lower or higher sensitivity is desired for detection, this value can be customized
+            according to specific experimental needs. Applicable only to datasets that include a
+            CRISPR Guide Capture library.
+
   resources:
     - type: bash_script
       path: script.sh

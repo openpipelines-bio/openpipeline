@@ -4,7 +4,7 @@
 
 * `demux/bcl_convert`: update BCL convert from 3.10 to 4.2 (PR #774).
 
-* `demux/cellranger_mkfastq`, `mapping/cellranger_count`, `mapping/cellranger_multi` and `reference/build_cellranger_reference`: update cellranger to `8.0` (PR #774).
+* `demux/cellranger_mkfastq`, `mapping/cellranger_count`, `mapping/cellranger_multi` and `reference/build_cellranger_reference`: update cellranger to `8.0.1` (PR #774).
 
 ## NEW FUNCTIONALITY
 
