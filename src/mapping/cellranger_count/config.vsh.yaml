@@ -65,7 +65,7 @@ functionality:
             - ARC-v1: for analyzing the Gene Expression portion of Multiome data. 
               NOTE: when the pipeline auto-detects ARC-v1 chemistry, an error is triggered.
             See https://kb.10xgenomics.com/hc/en-us/articles/115003764132-How-does-Cell-Ranger-auto-detect-chemistry- for more information.
-          choices: [ auto, threeprime, fiveprime, SC3Pv1, SC3Pv2, SC3Pv3, SC3Pv4, SC3Pv3LT, SC3Pv3HT, SC5P-PE, SC5P-R2, SC-FB, ARC-v1 ]
+          choices: [ auto, threeprime, fiveprime, SC3Pv1, SC3Pv2, SC3Pv3, SC3Pv4, SC3Pv3LT, SC3Pv3HT, SC5P-PE-v3, SC5P-PE, SC5P-R2, SC-FB, ARC-v1 ]
 
         - type: boolean
           name: "--secondary_analysis"
