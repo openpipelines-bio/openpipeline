@@ -109,14 +109,29 @@ functionality:
       multiple: false
       multiple_sep: ":"
       dest: "par"
+    - type: "integer"
+      name: "--force_cells"
+      description: "Force pipeline to use this number of cells, bypassing cell calling\
+        \ algorithm."
+      info: null
+      example:
+      - 3000
+      required: false
+      direction: "input"
+      multiple: false
+      multiple_sep: ":"
+      dest: "par"
     - type: "string"
       name: "--chemistry"
       description: "Assay configuration.\n- auto: autodetect mode\n- threeprime: Single\
-        \ Cell 3'\n- fiveprime: Single Cell 5'\n- SC3Pv1: Single Cell 3' v1\n- SC3Pv2:\
-        \ Single Cell 3' v2\n- SC3Pv3: Single Cell 3' v3\n- SC3Pv3LT: Single Cell\
-        \ 3' v3 LT\n- SC3Pv3HT: Single Cell 3' v3 HT\n- SC5P-PE: Single Cell 5' paired-end\n\
-        - SC5P-R2: Single Cell 5' R2-only\n- SC-FB: Single Cell Antibody-only 3' v2\
-        \ or 5'\nSee https://kb.10xgenomics.com/hc/en-us/articles/115003764132-How-does-Cell-Ranger-auto-detect-chemistry-\
+        \ Cell 3'\n- fiveprime: Single Cell 5'\n- SC3Pv1: Single Cell 3' v1 \n  NOTE:\
+        \ this mode cannot be auto-detected. It must be set explicitly with this option.\n\
+        - SC3Pv2: Single Cell 3' v2\n- SC3Pv3: Single Cell 3' v3\n- SC3Pv4: Single\
+        \ Cell 3' v4\n- SC3Pv3LT: Single Cell 3' v3 LT\n- SC3Pv3HT: Single Cell 3'\
+        \ v3 HT\n- SC5P-PE: Single Cell 5' paired-end\n- SC5P-R2: Single Cell 5' R2-only\n\
+        - SC-FB: Single Cell Antibody-only 3' v2 or 5'\n- ARC-v1: for analyzing the\
+        \ Gene Expression portion of Multiome data. \n  NOTE: when the pipeline auto-detects\
+        \ ARC-v1 chemistry, an error is triggered.\nSee https://kb.10xgenomics.com/hc/en-us/articles/115003764132-How-does-Cell-Ranger-auto-detect-chemistry-\
         \ for more information.\n"
       info: null
       default:
@@ -129,11 +144,13 @@ functionality:
       - "SC3Pv1"
       - "SC3Pv2"
       - "SC3Pv3"
+      - "SC3Pv4"
       - "SC3Pv3LT"
       - "SC3Pv3HT"
       - "SC5P-PE"
       - "SC5P-R2"
       - "SC-FB"
+      - "ARC-v1"
       direction: "input"
       multiple: false
       multiple_sep: ":"
@@ -162,8 +179,49 @@ functionality:
       dest: "par"
     - type: "boolean"
       name: "--include_introns"
-      description: "Include intronic reads in count (default=true unless --target-panel\
-        \ is specified in which case default=false)"
+      description: "Include intronic reads in count."
+      info: null
+      default:
+      - true
+      required: false
+      direction: "input"
+      multiple: false
+      multiple_sep: ":"
+      dest: "par"
+    - type: "integer"
+      name: "--r1_length"
+      description: "Hard trim the input Read 1 to this length before analysis"
+      info: null
+      required: false
+      direction: "input"
+      multiple: false
+      multiple_sep: ":"
+      dest: "par"
+    - type: "integer"
+      name: "--r2_length"
+      description: "Hard trim the input Read 2 to this length before analysis"
+      info: null
+      required: false
+      direction: "input"
+      multiple: false
+      multiple_sep: ":"
+      dest: "par"
+    - type: "integer"
+      name: "--lanes"
+      description: "Only use FASTQs from selected lanes."
+      info: null
+      example:
+      - 1
+      - 2
+      - 3
+      required: false
+      direction: "input"
+      multiple: true
+      multiple_sep: ";"
+      dest: "par"
+    - type: "boolean"
+      name: "--library_compatibility_check"
+      description: "Whether to check for barcode compatibility between libraries.\n"
       info: null
       default:
       - true
@@ -200,7 +258,7 @@ functionality:
 platforms:
 - type: "docker"
   id: "docker"
-  image: "ghcr.io/data-intuitive/cellranger:7.0"
+  image: "ghcr.io/data-intuitive/cellranger:8.0"
   target_organization: "openpipelines-bio"
   target_registry: "ghcr.io"
   target_tag: "integration_build"
@@ -214,6 +272,20 @@ platforms:
     run:
     - "DEBIAN_FRONTEND=noninteractive apt update && \\\napt upgrade -y && apt install\
       \ -y procps && rm -rf /var/lib/apt/lists/*\n"
+  test_setup:
+  - type: "docker"
+    copy:
+    - "openpipelinetestutils /opt/openpipelinetestutils"
+  - type: "python"
+    user: false
+    packages:
+    - "/opt/openpipelinetestutils"
+    upgrade: true
+  - type: "python"
+    user: false
+    packages:
+    - "viashpy==0.6.0"
+    upgrade: true
   entrypoint: []
   cmd: null
 - type: "nextflow"
@@ -270,5 +342,5 @@ info:
   output: "/home/runner/work/openpipeline/openpipeline/target/docker/mapping/cellranger_count"
   executable: "/home/runner/work/openpipeline/openpipeline/target/docker/mapping/cellranger_count/cellranger_count"
   viash_version: "0.8.5"
-  git_commit: "20553261ce220c82bb1a59979aff8ff7c3a651aa"
+  git_commit: "6b7dceade42a9fd30076c90b3cd0af10b46da8e8"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"

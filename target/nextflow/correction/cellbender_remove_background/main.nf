@@ -3459,7 +3459,7 @@ meta = [
     "platform" : "nextflow",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/correction/cellbender_remove_background",
     "viash_version" : "0.8.5",
-    "git_commit" : "20553261ce220c82bb1a59979aff8ff7c3a651aa",
+    "git_commit" : "6b7dceade42a9fd30076c90b3cd0af10b46da8e8",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))
