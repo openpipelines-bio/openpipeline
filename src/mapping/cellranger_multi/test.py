@@ -217,6 +217,7 @@ def test_cellranger_multi_crispr_data(run_component, random_path):
         "--input", meta["resources_dir"] + "10x_5k_lung_crispr/raw/SC3_v3_NextGem_DI_CRISPR_A549_5K_crispr_subset_S4_L001_R2_001.fastq.gz",
         "--library_id", "SC3_v3_NextGem_DI_CRISPR_A549_5K_gex_subset;SC3_v3_NextGem_DI_CRISPR_A549_5K_crispr_subset",
         "--library_type", "Gene Expression;CRISPR Guide Capture",
+        "--min_crispr_umi", "3",
         "--gex_reference", gex_reference,
         "--feature_reference", meta["resources_dir"] + "10x_5k_lung_crispr/raw/SC3_v3_NextGem_DI_CRISPR_A549_5K_Multiplex_count_feature_reference_corrected.csv",
         "--output", outputpath

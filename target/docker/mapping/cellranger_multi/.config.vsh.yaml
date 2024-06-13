@@ -379,6 +379,19 @@ functionality:
       multiple: false
       multiple_sep: ":"
       dest: "par"
+    - type: "integer"
+      name: "--min_crispr_umi"
+      description: "Set the minimum number of CRISPR guide RNA UMIs required for protospacer\
+        \ detection.\nIf a lower or higher sensitivity is desired for detection, this\
+        \ value can be customized\naccording to specific experimental needs. Applicable\
+        \ only to datasets that include a\nCRISPR Guide Capture library.\n"
+      info: null
+      required: false
+      min: 1
+      direction: "input"
+      multiple: false
+      multiple_sep: ":"
+      dest: "par"
   - name: "Gene expression arguments"
     description: "Arguments relevant to the analysis of gene expression data."
     arguments:
@@ -486,17 +499,18 @@ functionality:
         \ Cell 3' v1, v2, v3, or v4\n  - SC3Pv3HT: Single Cell 3' v3.1 HT\n  - SC-FB:\
         \ Single Cell Antibody-only 3' v2 or 5'\n  - fiveprime: Single Cell 5'\n \
         \ - SC5P-PE: Paired-end Single Cell 5'\n  - SC5P-R2: R2-only Single Cell 5'\n\
-        \  - SC5P-R2-v3: R2-only Single Cell 5' v3\n  - SC5PHT : Single Cell 5' v2\
-        \ HT\n  - SFRP: Fixed RNA Profiling (Singleplex)\n  - MFRP: Fixed RNA Profiling\
-        \ (Multiplex, Probe Barcode on R2)\n  - MFRP-R1: Fixed RNA Profiling (Multiplex,\
-        \ Probe Barcode on R1)\n  - MFRP-RNA: Fixed RNA Profiling (Multiplex, RNA,\
-        \ Probe Barcode on R2)\n  - MFRP-Ab: Fixed RNA Profiling (Multiplex, Antibody,\
-        \ Probe Barcode at R2:69)\n  - MFRP-Ab-R2pos50: Fixed RNA Profiling (Multiplex,\
-        \ Antibody, Probe Barcode at R2:50)\n  - MFRP-RNA-R1: Fixed RNA Profiling\
-        \ (Multiplex, RNA, Probe Barcode on R1)\n  - MFRP-Ab-R1: Fixed RNA Profiling\
-        \ (Multiplex, Antibody, Probe Barcode on R1)\n  - ARC-v1 for analyzing the\
-        \ Gene Expression portion of Multiome data. If Cell Ranger auto-detects ARC-v1\
-        \ chemistry, an error is triggered.\nSee https://kb.10xgenomics.com/hc/en-us/articles/115003764132-How-does-Cell-Ranger-auto-detect-chemistry-\
+        \  - SC5P-R2-v3: R2-only Single Cell 5' v3\n  - SCP5-PE-v3: Single Cell 5'\
+        \ paired-end v3 (GEM-X)\n  - SC5PHT : Single Cell 5' v2 HT\n  - SFRP: Fixed\
+        \ RNA Profiling (Singleplex)\n  - MFRP: Fixed RNA Profiling (Multiplex, Probe\
+        \ Barcode on R2)\n  - MFRP-R1: Fixed RNA Profiling (Multiplex, Probe Barcode\
+        \ on R1)\n  - MFRP-RNA: Fixed RNA Profiling (Multiplex, RNA, Probe Barcode\
+        \ on R2)\n  - MFRP-Ab: Fixed RNA Profiling (Multiplex, Antibody, Probe Barcode\
+        \ at R2:69)\n  - MFRP-Ab-R2pos50: Fixed RNA Profiling (Multiplex, Antibody,\
+        \ Probe Barcode at R2:50)\n  - MFRP-RNA-R1: Fixed RNA Profiling (Multiplex,\
+        \ RNA, Probe Barcode on R1)\n  - MFRP-Ab-R1: Fixed RNA Profiling (Multiplex,\
+        \ Antibody, Probe Barcode on R1)\n  - ARC-v1 for analyzing the Gene Expression\
+        \ portion of Multiome data. If Cell Ranger auto-detects ARC-v1 chemistry,\
+        \ an error is triggered.\nSee https://kb.10xgenomics.com/hc/en-us/articles/115003764132-How-does-Cell-Ranger-auto-detect-chemistry-\
         \ for more information.\n"
       info: null
       default:
@@ -516,6 +530,7 @@ functionality:
       - "SC5P-R2"
       - "SC-FB"
       - "SC5P-R2-v3"
+      - "SCP5-PE-v3"
       - "SC5PHT"
       - "MFRP"
       - "MFRP-R1"
@@ -888,5 +903,5 @@ info:
   output: "/home/runner/work/openpipeline/openpipeline/target/docker/mapping/cellranger_multi"
   executable: "/home/runner/work/openpipeline/openpipeline/target/docker/mapping/cellranger_multi/cellranger_multi"
   viash_version: "0.8.5"
-  git_commit: "fa9f46de8eee93d0f7f5a56ea11f8b89d5646556"
+  git_commit: "25e180315afd00c32282a999d8abe2329dce6afe"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"

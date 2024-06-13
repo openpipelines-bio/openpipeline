@@ -32,6 +32,7 @@
 # feature_reference: "feature_reference.csv"
 # feature_r1_length: 123
 # feature_r2_length: 123
+# min_crispr_umi: 123
 
 # Gene expression arguments
 gex_reference: # please fill in - example: "reference_genome.tar.gz"

@@ -2945,7 +2945,7 @@ meta = [
           {
             "type" : "string",
             "name" : "--chemistry",
-            "description" : "Assay configuration.\n- auto: autodetect mode\n- threeprime: Single Cell 3'\n- fiveprime: Single Cell 5'\n- SC3Pv1: Single Cell 3' v1 \n  NOTE: this mode cannot be auto-detected. It must be set explicitly with this option.\n- SC3Pv2: Single Cell 3' v2\n- SC3Pv3: Single Cell 3' v3\n- SC3Pv4: Single Cell 3' v4\n- SC3Pv3LT: Single Cell 3' v3 LT\n- SC3Pv3HT: Single Cell 3' v3 HT\n- SC5P-PE: Single Cell 5' paired-end\n- SC5P-R2: Single Cell 5' R2-only\n- SC-FB: Single Cell Antibody-only 3' v2 or 5'\n- ARC-v1: for analyzing the Gene Expression portion of Multiome data. \n  NOTE: when the pipeline auto-detects ARC-v1 chemistry, an error is triggered.\nSee https://kb.10xgenomics.com/hc/en-us/articles/115003764132-How-does-Cell-Ranger-auto-detect-chemistry- for more information.\n",
+            "description" : "Assay configuration.\n- auto: autodetect mode\n- threeprime: Single Cell 3'\n- fiveprime: Single Cell 5'\n- SC3Pv1: Single Cell 3' v1 \n  NOTE: this mode cannot be auto-detected. It must be set explicitly with this option.\n- SC3Pv2: Single Cell 3' v2\n- SC3Pv3: Single Cell 3' v3\n- SC3Pv4: Single Cell 3' v4\n- SC3Pv3LT: Single Cell 3' v3 LT\n- SC3Pv3HT: Single Cell 3' v3 HT\n- SC5P-PE-v3: Single Cell 5' paired-end v3 (GEM-X)\n- SC5P-PE: Single Cell 5' paired-end\n- SC5P-R2: Single Cell 5' R2-only\n- SC-FB: Single Cell Antibody-only 3' v2 or 5'\n- ARC-v1: for analyzing the Gene Expression portion of Multiome data. \n  NOTE: when the pipeline auto-detects ARC-v1 chemistry, an error is triggered.\nSee https://kb.10xgenomics.com/hc/en-us/articles/115003764132-How-does-Cell-Ranger-auto-detect-chemistry- for more information.\n",
             "default" : [
               "auto"
             ],
@@ -2960,6 +2960,7 @@ meta = [
               "SC3Pv4",
               "SC3Pv3LT",
               "SC3Pv3HT",
+              "SC5P-PE-v3",
               "SC5P-PE",
               "SC5P-R2",
               "SC-FB",
@@ -3052,6 +3053,17 @@ meta = [
               true
             ],
             "required" : false,
+            "direction" : "input",
+            "multiple" : false,
+            "multiple_sep" : ":",
+            "dest" : "par"
+          },
+          {
+            "type" : "integer",
+            "name" : "--min_crispr_umi",
+            "description" : "Set the minimum number of CRISPR guide RNA UMIs required for protospacer detection.\nIf a lower or higher sensitivity is desired for detection, this value can be customized\naccording to specific experimental needs. Applicable only to datasets that include a\nCRISPR Guide Capture library.\n",
+            "required" : false,
+            "min" : 1,
             "direction" : "input",
             "multiple" : false,
             "multiple_sep" : ":",
@@ -3213,7 +3225,7 @@ meta = [
     "platform" : "nextflow",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/mapping/cellranger_count",
     "viash_version" : "0.8.5",
-    "git_commit" : "fa9f46de8eee93d0f7f5a56ea11f8b89d5646556",
+    "git_commit" : "25e180315afd00c32282a999d8abe2329dce6afe",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))
@@ -3247,6 +3259,7 @@ $( if [ ! -z ${VIASH_PAR_R1_LENGTH+x} ]; then echo "${VIASH_PAR_R1_LENGTH}" | se
 $( if [ ! -z ${VIASH_PAR_R2_LENGTH+x} ]; then echo "${VIASH_PAR_R2_LENGTH}" | sed "s#'#'\\"'\\"'#g;s#.*#par_r2_length='&'#" ; else echo "# par_r2_length="; fi )
 $( if [ ! -z ${VIASH_PAR_LANES+x} ]; then echo "${VIASH_PAR_LANES}" | sed "s#'#'\\"'\\"'#g;s#.*#par_lanes='&'#" ; else echo "# par_lanes="; fi )
 $( if [ ! -z ${VIASH_PAR_LIBRARY_COMPATIBILITY_CHECK+x} ]; then echo "${VIASH_PAR_LIBRARY_COMPATIBILITY_CHECK}" | sed "s#'#'\\"'\\"'#g;s#.*#par_library_compatibility_check='&'#" ; else echo "# par_library_compatibility_check="; fi )
+$( if [ ! -z ${VIASH_PAR_MIN_CRISPR_UMI+x} ]; then echo "${VIASH_PAR_MIN_CRISPR_UMI}" | sed "s#'#'\\"'\\"'#g;s#.*#par_min_crispr_umi='&'#" ; else echo "# par_min_crispr_umi="; fi )
 $( if [ ! -z ${VIASH_META_FUNCTIONALITY_NAME+x} ]; then echo "${VIASH_META_FUNCTIONALITY_NAME}" | sed "s#'#'\\"'\\"'#g;s#.*#meta_functionality_name='&'#" ; else echo "# meta_functionality_name="; fi )
 $( if [ ! -z ${VIASH_META_RESOURCES_DIR+x} ]; then echo "${VIASH_META_RESOURCES_DIR}" | sed "s#'#'\\"'\\"'#g;s#.*#meta_resources_dir='&'#" ; else echo "# meta_resources_dir="; fi )
 $( if [ ! -z ${VIASH_META_EXECUTABLE+x} ]; then echo "${VIASH_META_EXECUTABLE}" | sed "s#'#'\\"'\\"'#g;s#.*#meta_executable='&'#" ; else echo "# meta_executable="; fi )
