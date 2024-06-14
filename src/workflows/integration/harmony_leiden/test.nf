@@ -54,7 +54,7 @@ workflow test_wf {
     }
 
     // | view
-    | bbkn_harmony_test.run(
+    | harmony_leiden_test.run(
       fromState: {id, state ->
         [
           input: state.output,
