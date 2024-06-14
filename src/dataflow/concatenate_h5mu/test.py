@@ -727,7 +727,6 @@ def test_concat_var_obs_names_order(run_component, sample_1_h5mu, sample_2_h5mu,
             "--output", output_path,
             "--other_axis_mode", "move"
             ])
-
     assert output_path.is_file()
     for sample_name, sample_h5mu in {"sample1": sample_1_h5mu, 
                                      "sample2": sample_2_h5mu}.items():
@@ -741,6 +740,7 @@ def test_concat_var_obs_names_order(run_component, sample_1_h5mu, sample_2_h5mu,
             data_sample = pd.DataFrame(data_sample.X, index=data_sample.obs_names, 
                                        columns=data_sample.var_names).reindex_like(processed_data)
             pd.testing.assert_frame_equal(processed_data, data_sample, check_dtype=False)
+
 
 if __name__ == '__main__':
     sys.exit(pytest.main([__file__, "-v"]))
