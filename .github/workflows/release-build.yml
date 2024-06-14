@@ -15,7 +15,6 @@ jobs:
       push_containers: true
       version: ${{ inputs.version_tag }}
       target_tag: ${{ inputs.version_tag }}
-      deploy_to_viash_hub: true
       deploy_branch: release
     secrets: inherit
 
