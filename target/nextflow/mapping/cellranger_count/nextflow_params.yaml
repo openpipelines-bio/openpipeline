@@ -16,6 +16,7 @@ include_introns: true
 # r2_length: 123
 # lanes: [1, 2, 3]
 library_compatibility_check: true
+# min_crispr_umi: 123
 
 # Nextflow input-output arguments
 publish_dir: # please fill in - example: "output/"

@@ -3202,6 +3202,17 @@ meta = [
             "multiple" : false,
             "multiple_sep" : ":",
             "dest" : "par"
+          },
+          {
+            "type" : "integer",
+            "name" : "--min_crispr_umi",
+            "description" : "Set the minimum number of CRISPR guide RNA UMIs required for protospacer detection.\nIf a lower or higher sensitivity is desired for detection, this value can be customized\naccording to specific experimental needs. Applicable only to datasets that include a\nCRISPR Guide Capture library.\n",
+            "required" : false,
+            "min" : 1,
+            "direction" : "input",
+            "multiple" : false,
+            "multiple_sep" : ":",
+            "dest" : "par"
           }
         ]
       },
@@ -3312,7 +3323,7 @@ meta = [
           {
             "type" : "string",
             "name" : "--gex_chemistry",
-            "description" : "Assay configuration. Either specify a single value which will be applied to all libraries,\nor a number of values that is equal to the number of libararies. The latter is only applicable\nto only applicable to Fixed RNA Profiling.\n  - auto: Chemistry autodetection (default)\n  - threeprime: Single Cell 3'\n  - SC3Pv1, SC3Pv2, SC3Pv3, SC3Pv4: Single Cell 3' v1, v2, v3, or v4\n  - SC3Pv3HT: Single Cell 3' v3.1 HT\n  - SC-FB: Single Cell Antibody-only 3' v2 or 5'\n  - fiveprime: Single Cell 5'\n  - SC5P-PE: Paired-end Single Cell 5'\n  - SC5P-R2: R2-only Single Cell 5'\n  - SC5P-R2-v3: R2-only Single Cell 5' v3\n  - SC5PHT : Single Cell 5' v2 HT\n  - SFRP: Fixed RNA Profiling (Singleplex)\n  - MFRP: Fixed RNA Profiling (Multiplex, Probe Barcode on R2)\n  - MFRP-R1: Fixed RNA Profiling (Multiplex, Probe Barcode on R1)\n  - MFRP-RNA: Fixed RNA Profiling (Multiplex, RNA, Probe Barcode on R2)\n  - MFRP-Ab: Fixed RNA Profiling (Multiplex, Antibody, Probe Barcode at R2:69)\n  - MFRP-Ab-R2pos50: Fixed RNA Profiling (Multiplex, Antibody, Probe Barcode at R2:50)\n  - MFRP-RNA-R1: Fixed RNA Profiling (Multiplex, RNA, Probe Barcode on R1)\n  - MFRP-Ab-R1: Fixed RNA Profiling (Multiplex, Antibody, Probe Barcode on R1)\n  - ARC-v1 for analyzing the Gene Expression portion of Multiome data. If Cell Ranger auto-detects ARC-v1 chemistry, an error is triggered.\nSee https://kb.10xgenomics.com/hc/en-us/articles/115003764132-How-does-Cell-Ranger-auto-detect-chemistry- for more information.\n",
+            "description" : "Assay configuration. Either specify a single value which will be applied to all libraries,\nor a number of values that is equal to the number of libararies. The latter is only applicable\nto only applicable to Fixed RNA Profiling.\n  - auto: Chemistry autodetection (default)\n  - threeprime: Single Cell 3'\n  - SC3Pv1, SC3Pv2, SC3Pv3, SC3Pv4: Single Cell 3' v1, v2, v3, or v4\n  - SC3Pv3HT: Single Cell 3' v3.1 HT\n  - SC-FB: Single Cell Antibody-only 3' v2 or 5'\n  - fiveprime: Single Cell 5'\n  - SC5P-PE: Paired-end Single Cell 5'\n  - SC5P-R2: R2-only Single Cell 5'\n  - SC5P-R2-v3: R2-only Single Cell 5' v3\n  - SCP5-PE-v3: Single Cell 5' paired-end v3 (GEM-X)\n  - SC5PHT : Single Cell 5' v2 HT\n  - SFRP: Fixed RNA Profiling (Singleplex)\n  - MFRP: Fixed RNA Profiling (Multiplex, Probe Barcode on R2)\n  - MFRP-R1: Fixed RNA Profiling (Multiplex, Probe Barcode on R1)\n  - MFRP-RNA: Fixed RNA Profiling (Multiplex, RNA, Probe Barcode on R2)\n  - MFRP-Ab: Fixed RNA Profiling (Multiplex, Antibody, Probe Barcode at R2:69)\n  - MFRP-Ab-R2pos50: Fixed RNA Profiling (Multiplex, Antibody, Probe Barcode at R2:50)\n  - MFRP-RNA-R1: Fixed RNA Profiling (Multiplex, RNA, Probe Barcode on R1)\n  - MFRP-Ab-R1: Fixed RNA Profiling (Multiplex, Antibody, Probe Barcode on R1)\n  - ARC-v1 for analyzing the Gene Expression portion of Multiome data. If Cell Ranger auto-detects ARC-v1 chemistry, an error is triggered.\nSee https://kb.10xgenomics.com/hc/en-us/articles/115003764132-How-does-Cell-Ranger-auto-detect-chemistry- for more information.\n",
             "default" : [
               "auto"
             ],
@@ -3331,6 +3342,7 @@ meta = [
               "SC5P-R2",
               "SC-FB",
               "SC5P-R2-v3",
+              "SCP5-PE-v3",
               "SC5PHT",
               "MFRP",
               "MFRP-R1",
@@ -3747,7 +3759,7 @@ meta = [
     "platform" : "nextflow",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/mapping/cellranger_multi",
     "viash_version" : "0.8.5",
-    "git_commit" : "6b7dceade42a9fd30076c90b3cd0af10b46da8e8",
+    "git_commit" : "00610b1434fd34a8205c9ba31204a3a9584015f3",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))
@@ -3801,6 +3813,7 @@ par = {
   'feature_reference': $( if [ ! -z ${VIASH_PAR_FEATURE_REFERENCE+x} ]; then echo "r'${VIASH_PAR_FEATURE_REFERENCE//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'feature_r1_length': $( if [ ! -z ${VIASH_PAR_FEATURE_R1_LENGTH+x} ]; then echo "int(r'${VIASH_PAR_FEATURE_R1_LENGTH//\\'/\\'\\"\\'\\"r\\'}')"; else echo None; fi ),
   'feature_r2_length': $( if [ ! -z ${VIASH_PAR_FEATURE_R2_LENGTH+x} ]; then echo "int(r'${VIASH_PAR_FEATURE_R2_LENGTH//\\'/\\'\\"\\'\\"r\\'}')"; else echo None; fi ),
+  'min_crispr_umi': $( if [ ! -z ${VIASH_PAR_MIN_CRISPR_UMI+x} ]; then echo "int(r'${VIASH_PAR_MIN_CRISPR_UMI//\\'/\\'\\"\\'\\"r\\'}')"; else echo None; fi ),
   'gex_reference': $( if [ ! -z ${VIASH_PAR_GEX_REFERENCE+x} ]; then echo "r'${VIASH_PAR_GEX_REFERENCE//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'gex_secondary_analysis': $( if [ ! -z ${VIASH_PAR_GEX_SECONDARY_ANALYSIS+x} ]; then echo "r'${VIASH_PAR_GEX_SECONDARY_ANALYSIS//\\'/\\'\\"\\'\\"r\\'}'.lower() == 'true'"; else echo None; fi ),
   'gex_generate_bam': $( if [ ! -z ${VIASH_PAR_GEX_GENERATE_BAM+x} ]; then echo "r'${VIASH_PAR_GEX_GENERATE_BAM//\\'/\\'\\"\\'\\"r\\'}'.lower() == 'true'"; else echo None; fi ),
@@ -3909,6 +3922,7 @@ FEATURE_CONFIG_KEYS = {
     "feature_reference": "reference",
     "feature_r1_length": "r1-length",
     "feature_r2_length": "r2-length",
+    "min_crispr_umi": "min-crispr-umi",
 }
 
 VDJ_CONFIG_KEYS = {"vdj_reference": "reference",
@@ -4075,6 +4089,9 @@ def handle_integers_not_set(par: dict[str, Any], viash_config: Path | str) -> st
             continue
         par_value, is_multiple = par[arg_name], arg["multiple"]
         assert is_multiple in (True, False)
+
+        if not is_multiple:
+            continue
 
         def replace_notset_values(integer_value: int) -> int | None:
             return None if integer_value == -1 else integer_value

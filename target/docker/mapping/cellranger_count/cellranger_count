@@ -214,7 +214,7 @@ function ViashHelp {
   echo "        type: string"
   echo "        default: auto"
   echo "        choices: [ auto, threeprime, fiveprime, SC3Pv1, SC3Pv2, SC3Pv3, SC3Pv4,"
-  echo "SC3Pv3LT, SC3Pv3HT, SC5P-PE, SC5P-R2, SC-FB, ARC-v1 ]"
+  echo "SC3Pv3LT, SC3Pv3HT, SC5P-PE-v3, SC5P-PE, SC5P-R2, SC-FB, ARC-v1 ]"
   echo "        Assay configuration."
   echo "        - auto: autodetect mode"
   echo "        - threeprime: Single Cell 3'"
@@ -227,6 +227,7 @@ function ViashHelp {
   echo "        - SC3Pv4: Single Cell 3' v4"
   echo "        - SC3Pv3LT: Single Cell 3' v3 LT"
   echo "        - SC3Pv3HT: Single Cell 3' v3 HT"
+  echo "        - SC5P-PE-v3: Single Cell 5' paired-end v3 (GEM-X)"
   echo "        - SC5P-PE: Single Cell 5' paired-end"
   echo "        - SC5P-R2: Single Cell 5' R2-only"
   echo "        - SC-FB: Single Cell Antibody-only 3' v2 or 5'"
@@ -270,6 +271,17 @@ function ViashHelp {
   echo "        type: boolean"
   echo "        default: true"
   echo "        Whether to check for barcode compatibility between libraries."
+  echo ""
+  echo "    --min_crispr_umi"
+  echo "        type: integer"
+  echo "        min: 1"
+  echo "        Set the minimum number of CRISPR guide RNA UMIs required for protospacer"
+  echo "        detection."
+  echo "        If a lower or higher sensitivity is desired for detection, this value"
+  echo "        can be customized"
+  echo "        according to specific experimental needs. Applicable only to datasets"
+  echo "        that include a"
+  echo "        CRISPR Guide Capture library."
 }
 
 ######## Helper functions for setting up Docker images for viash ########
@@ -497,9 +509,9 @@ apt upgrade -y && apt install -y procps && rm -rf /var/lib/apt/lists/*
 
 LABEL org.opencontainers.image.authors="Angela Oliveira Pisco, Samuel D'Souza, Robrecht Cannoodt"
 LABEL org.opencontainers.image.description="Companion container for running component mapping cellranger_count"
-LABEL org.opencontainers.image.created="2024-06-13T02:41:33Z"
+LABEL org.opencontainers.image.created="2024-06-14T02:41:55Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="6b7dceade42a9fd30076c90b3cd0af10b46da8e8"
+LABEL org.opencontainers.image.revision="00610b1434fd34a8205c9ba31204a3a9584015f3"
 LABEL org.opencontainers.image.version="integration_build"
 
 VIASHDOCKER
@@ -809,6 +821,17 @@ while [[ $# -gt 0 ]]; do
             VIASH_PAR_LIBRARY_COMPATIBILITY_CHECK=$(ViashRemoveFlags "$1")
             shift 1
             ;;
+        --min_crispr_umi)
+            [ -n "$VIASH_PAR_MIN_CRISPR_UMI" ] && ViashError Bad arguments for option \'--min_crispr_umi\': \'$VIASH_PAR_MIN_CRISPR_UMI\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+            VIASH_PAR_MIN_CRISPR_UMI="$2"
+            [ $# -lt 2 ] && ViashError Not enough arguments passed to --min_crispr_umi. Use "--help" to get more information on the parameters. && exit 1
+            shift 2
+            ;;
+        --min_crispr_umi=*)
+            [ -n "$VIASH_PAR_MIN_CRISPR_UMI" ] && ViashError Bad arguments for option \'--min_crispr_umi=*\': \'$VIASH_PAR_MIN_CRISPR_UMI\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+            VIASH_PAR_MIN_CRISPR_UMI=$(ViashRemoveFlags "$1")
+            shift 1
+            ;;
         ---setup)
             VIASH_MODE='docker_setup'
             VIASH_DOCKER_SETUP_STRATEGY="$2"
@@ -1057,6 +1080,16 @@ if [[ -n "$VIASH_PAR_LIBRARY_COMPATIBILITY_CHECK" ]]; then
     exit 1
   fi
 fi
+if [[ -n "$VIASH_PAR_MIN_CRISPR_UMI" ]]; then
+  if ! [[ "$VIASH_PAR_MIN_CRISPR_UMI" =~ ^[-+]?[0-9]+$ ]]; then
+    ViashError '--min_crispr_umi' has to be an integer. Use "--help" to get more information on the parameters.
+    exit 1
+  fi
+  if [[ $VIASH_PAR_MIN_CRISPR_UMI -lt 1 ]]; then
+    ViashError '--min_crispr_umi' has be more than or equal to 1. Use "--help" to get more information on the parameters.
+    exit 1
+  fi
+fi
 if [[ -n "$VIASH_META_CPUS" ]]; then
   if ! [[ "$VIASH_META_CPUS" =~ ^[-+]?[0-9]+$ ]]; then
     ViashError 'cpus' has to be an integer. Use "--help" to get more information on the parameters.
@@ -1102,7 +1135,7 @@ fi
 
 # check whether value is belongs to a set of choices
 if [ ! -z "$VIASH_PAR_CHEMISTRY" ]; then
-  VIASH_PAR_CHEMISTRY_CHOICES=("auto:threeprime:fiveprime:SC3Pv1:SC3Pv2:SC3Pv3:SC3Pv4:SC3Pv3LT:SC3Pv3HT:SC5P-PE:SC5P-R2:SC-FB:ARC-v1")
+  VIASH_PAR_CHEMISTRY_CHOICES=("auto:threeprime:fiveprime:SC3Pv1:SC3Pv2:SC3Pv3:SC3Pv4:SC3Pv3LT:SC3Pv3HT:SC5P-PE-v3:SC5P-PE:SC5P-R2:SC-FB:ARC-v1")
   IFS=':'
   set -f
   if ! [[ ":${VIASH_PAR_CHEMISTRY_CHOICES[*]}:" =~ ":$VIASH_PAR_CHEMISTRY:" ]]; then
@@ -1216,6 +1249,7 @@ $( if [ ! -z ${VIASH_PAR_R1_LENGTH+x} ]; then echo "${VIASH_PAR_R1_LENGTH}" | se
 $( if [ ! -z ${VIASH_PAR_R2_LENGTH+x} ]; then echo "${VIASH_PAR_R2_LENGTH}" | sed "s#'#'\"'\"'#g;s#.*#par_r2_length='&'#" ; else echo "# par_r2_length="; fi )
 $( if [ ! -z ${VIASH_PAR_LANES+x} ]; then echo "${VIASH_PAR_LANES}" | sed "s#'#'\"'\"'#g;s#.*#par_lanes='&'#" ; else echo "# par_lanes="; fi )
 $( if [ ! -z ${VIASH_PAR_LIBRARY_COMPATIBILITY_CHECK+x} ]; then echo "${VIASH_PAR_LIBRARY_COMPATIBILITY_CHECK}" | sed "s#'#'\"'\"'#g;s#.*#par_library_compatibility_check='&'#" ; else echo "# par_library_compatibility_check="; fi )
+$( if [ ! -z ${VIASH_PAR_MIN_CRISPR_UMI+x} ]; then echo "${VIASH_PAR_MIN_CRISPR_UMI}" | sed "s#'#'\"'\"'#g;s#.*#par_min_crispr_umi='&'#" ; else echo "# par_min_crispr_umi="; fi )
 $( if [ ! -z ${VIASH_META_FUNCTIONALITY_NAME+x} ]; then echo "${VIASH_META_FUNCTIONALITY_NAME}" | sed "s#'#'\"'\"'#g;s#.*#meta_functionality_name='&'#" ; else echo "# meta_functionality_name="; fi )
 $( if [ ! -z ${VIASH_META_RESOURCES_DIR+x} ]; then echo "${VIASH_META_RESOURCES_DIR}" | sed "s#'#'\"'\"'#g;s#.*#meta_resources_dir='&'#" ; else echo "# meta_resources_dir="; fi )
 $( if [ ! -z ${VIASH_META_EXECUTABLE+x} ]; then echo "${VIASH_META_EXECUTABLE}" | sed "s#'#'\"'\"'#g;s#.*#meta_executable='&'#" ; else echo "# meta_executable="; fi )

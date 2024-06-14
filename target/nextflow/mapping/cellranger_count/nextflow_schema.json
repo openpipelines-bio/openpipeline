@@ -104,9 +104,9 @@
                 "chemistry": {
                 "type":
                 "string",
-                "description": "Type: `string`, default: `auto`, choices: ``auto`, `threeprime`, `fiveprime`, `SC3Pv1`, `SC3Pv2`, `SC3Pv3`, `SC3Pv4`, `SC3Pv3LT`, `SC3Pv3HT`, `SC5P-PE`, `SC5P-R2`, `SC-FB`, `ARC-v1``. Assay configuration",
-                "help_text": "Type: `string`, default: `auto`, choices: ``auto`, `threeprime`, `fiveprime`, `SC3Pv1`, `SC3Pv2`, `SC3Pv3`, `SC3Pv4`, `SC3Pv3LT`, `SC3Pv3HT`, `SC5P-PE`, `SC5P-R2`, `SC-FB`, `ARC-v1``. Assay configuration.\n- auto: autodetect mode\n- threeprime: Single Cell 3\u0027\n- fiveprime: Single Cell 5\u0027\n- SC3Pv1: Single Cell 3\u0027 v1 \n  NOTE: this mode cannot be auto-detected. It must be set explicitly with this option.\n- SC3Pv2: Single Cell 3\u0027 v2\n- SC3Pv3: Single Cell 3\u0027 v3\n- SC3Pv4: Single Cell 3\u0027 v4\n- SC3Pv3LT: Single Cell 3\u0027 v3 LT\n- SC3Pv3HT: Single Cell 3\u0027 v3 HT\n- SC5P-PE: Single Cell 5\u0027 paired-end\n- SC5P-R2: Single Cell 5\u0027 R2-only\n- SC-FB: Single Cell Antibody-only 3\u0027 v2 or 5\u0027\n- ARC-v1: for analyzing the Gene Expression portion of Multiome data. \n  NOTE: when the pipeline auto-detects ARC-v1 chemistry, an error is triggered.\nSee https://kb.10xgenomics.com/hc/en-us/articles/115003764132-How-does-Cell-Ranger-auto-detect-chemistry- for more information.\n",
-                "enum": ["auto", "threeprime", "fiveprime", "SC3Pv1", "SC3Pv2", "SC3Pv3", "SC3Pv4", "SC3Pv3LT", "SC3Pv3HT", "SC5P-PE", "SC5P-R2", "SC-FB", "ARC-v1"]
+                "description": "Type: `string`, default: `auto`, choices: ``auto`, `threeprime`, `fiveprime`, `SC3Pv1`, `SC3Pv2`, `SC3Pv3`, `SC3Pv4`, `SC3Pv3LT`, `SC3Pv3HT`, `SC5P-PE-v3`, `SC5P-PE`, `SC5P-R2`, `SC-FB`, `ARC-v1``. Assay configuration",
+                "help_text": "Type: `string`, default: `auto`, choices: ``auto`, `threeprime`, `fiveprime`, `SC3Pv1`, `SC3Pv2`, `SC3Pv3`, `SC3Pv4`, `SC3Pv3LT`, `SC3Pv3HT`, `SC5P-PE-v3`, `SC5P-PE`, `SC5P-R2`, `SC-FB`, `ARC-v1``. Assay configuration.\n- auto: autodetect mode\n- threeprime: Single Cell 3\u0027\n- fiveprime: Single Cell 5\u0027\n- SC3Pv1: Single Cell 3\u0027 v1 \n  NOTE: this mode cannot be auto-detected. It must be set explicitly with this option.\n- SC3Pv2: Single Cell 3\u0027 v2\n- SC3Pv3: Single Cell 3\u0027 v3\n- SC3Pv4: Single Cell 3\u0027 v4\n- SC3Pv3LT: Single Cell 3\u0027 v3 LT\n- SC3Pv3HT: Single Cell 3\u0027 v3 HT\n- SC5P-PE-v3: Single Cell 5\u0027 paired-end v3 (GEM-X)\n- SC5P-PE: Single Cell 5\u0027 paired-end\n- SC5P-R2: Single Cell 5\u0027 R2-only\n- SC-FB: Single Cell Antibody-only 3\u0027 v2 or 5\u0027\n- ARC-v1: for analyzing the Gene Expression portion of Multiome data. \n  NOTE: when the pipeline auto-detects ARC-v1 chemistry, an error is triggered.\nSee https://kb.10xgenomics.com/hc/en-us/articles/115003764132-How-does-Cell-Ranger-auto-detect-chemistry- for more information.\n",
+                "enum": ["auto", "threeprime", "fiveprime", "SC3Pv1", "SC3Pv2", "SC3Pv3", "SC3Pv4", "SC3Pv3LT", "SC3Pv3HT", "SC5P-PE-v3", "SC5P-PE", "SC5P-R2", "SC-FB", "ARC-v1"]
             
             ,
                 "default": "auto"
@@ -184,6 +184,16 @@
                 "help_text": "Type: `boolean`, default: `true`. Whether to check for barcode compatibility between libraries.\n"
             ,
                 "default": "True"
+            }
+    
+
+        ,
+                "min_crispr_umi": {
+                "type":
+                "integer",
+                "description": "Type: `integer`. Set the minimum number of CRISPR guide RNA UMIs required for protospacer detection",
+                "help_text": "Type: `integer`. Set the minimum number of CRISPR guide RNA UMIs required for protospacer detection.\nIf a lower or higher sensitivity is desired for detection, this value can be customized\naccording to specific experimental needs. Applicable only to datasets that include a\nCRISPR Guide Capture library.\n"
+            
             }
     
 

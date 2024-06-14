@@ -367,6 +367,17 @@ function ViashHelp {
   echo "        metrics are computed"
   echo "        and therefore, limiting the length of Read 2 may affect Q30 scores."
   echo ""
+  echo "    --min_crispr_umi"
+  echo "        type: integer"
+  echo "        min: 1"
+  echo "        Set the minimum number of CRISPR guide RNA UMIs required for protospacer"
+  echo "        detection."
+  echo "        If a lower or higher sensitivity is desired for detection, this value"
+  echo "        can be customized"
+  echo "        according to specific experimental needs. Applicable only to datasets"
+  echo "        that include a"
+  echo "        CRISPR Guide Capture library."
+  echo ""
   echo "Gene expression arguments:"
   echo "    Arguments relevant to the analysis of gene expression data."
   echo ""
@@ -422,8 +433,9 @@ function ViashHelp {
   echo "        type: string"
   echo "        default: auto"
   echo "        choices: [ auto, threeprime, fiveprime, SC3Pv1, SC3Pv2, SC3Pv3, SC3Pv4,"
-  echo "SC3Pv3LT, SC3Pv3HT, SC5P-PE, SC5P-R2, SC-FB, SC5P-R2-v3, SC5PHT, MFRP, MFRP-R1,"
-  echo "MFRP-RNA, MFRP-Ab, SFRP, MFRP-Ab-R2pos50, MFRP-RNA-R1, MFRP-Ab-R1, ARC-v1 ]"
+  echo "SC3Pv3LT, SC3Pv3HT, SC5P-PE, SC5P-R2, SC-FB, SC5P-R2-v3, SCP5-PE-v3, SC5PHT,"
+  echo "MFRP, MFRP-R1, MFRP-RNA, MFRP-Ab, SFRP, MFRP-Ab-R2pos50, MFRP-RNA-R1,"
+  echo "MFRP-Ab-R1, ARC-v1 ]"
   echo "        Assay configuration. Either specify a single value which will be applied"
   echo "        to all libraries,"
   echo "        or a number of values that is equal to the number of libararies. The"
@@ -438,6 +450,7 @@ function ViashHelp {
   echo "          - SC5P-PE: Paired-end Single Cell 5'"
   echo "          - SC5P-R2: R2-only Single Cell 5'"
   echo "          - SC5P-R2-v3: R2-only Single Cell 5' v3"
+  echo "          - SCP5-PE-v3: Single Cell 5' paired-end v3 (GEM-X)"
   echo "          - SC5PHT : Single Cell 5' v2 HT"
   echo "          - SFRP: Fixed RNA Profiling (Singleplex)"
   echo "          - MFRP: Fixed RNA Profiling (Multiplex, Probe Barcode on R2)"
@@ -842,9 +855,9 @@ RUN pip install --upgrade pip && \
 
 LABEL org.opencontainers.image.authors="Angela Oliveira Pisco, Robrecht Cannoodt, Dries De Maeyer"
 LABEL org.opencontainers.image.description="Companion container for running component mapping cellranger_multi"
-LABEL org.opencontainers.image.created="2024-06-13T02:41:33Z"
+LABEL org.opencontainers.image.created="2024-06-14T02:41:55Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="6b7dceade42a9fd30076c90b3cd0af10b46da8e8"
+LABEL org.opencontainers.image.revision="00610b1434fd34a8205c9ba31204a3a9584015f3"
 LABEL org.opencontainers.image.version="integration_build"
 
 VIASHDOCKER
@@ -1365,6 +1378,17 @@ while [[ $# -gt 0 ]]; do
         --feature_r2_length=*)
             [ -n "$VIASH_PAR_FEATURE_R2_LENGTH" ] && ViashError Bad arguments for option \'--feature_r2_length=*\': \'$VIASH_PAR_FEATURE_R2_LENGTH\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
             VIASH_PAR_FEATURE_R2_LENGTH=$(ViashRemoveFlags "$1")
+            shift 1
+            ;;
+        --min_crispr_umi)
+            [ -n "$VIASH_PAR_MIN_CRISPR_UMI" ] && ViashError Bad arguments for option \'--min_crispr_umi\': \'$VIASH_PAR_MIN_CRISPR_UMI\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+            VIASH_PAR_MIN_CRISPR_UMI="$2"
+            [ $# -lt 2 ] && ViashError Not enough arguments passed to --min_crispr_umi. Use "--help" to get more information on the parameters. && exit 1
+            shift 2
+            ;;
+        --min_crispr_umi=*)
+            [ -n "$VIASH_PAR_MIN_CRISPR_UMI" ] && ViashError Bad arguments for option \'--min_crispr_umi=*\': \'$VIASH_PAR_MIN_CRISPR_UMI\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+            VIASH_PAR_MIN_CRISPR_UMI=$(ViashRemoveFlags "$1")
             shift 1
             ;;
         --gex_reference)
@@ -2022,6 +2046,16 @@ if [[ -n "$VIASH_PAR_FEATURE_R2_LENGTH" ]]; then
     exit 1
   fi
 fi
+if [[ -n "$VIASH_PAR_MIN_CRISPR_UMI" ]]; then
+  if ! [[ "$VIASH_PAR_MIN_CRISPR_UMI" =~ ^[-+]?[0-9]+$ ]]; then
+    ViashError '--min_crispr_umi' has to be an integer. Use "--help" to get more information on the parameters.
+    exit 1
+  fi
+  if [[ $VIASH_PAR_MIN_CRISPR_UMI -lt 1 ]]; then
+    ViashError '--min_crispr_umi' has be more than or equal to 1. Use "--help" to get more information on the parameters.
+    exit 1
+  fi
+fi
 if [[ -n "$VIASH_PAR_GEX_SECONDARY_ANALYSIS" ]]; then
   if ! [[ "$VIASH_PAR_GEX_SECONDARY_ANALYSIS" =~ ^(true|True|TRUE|false|False|FALSE|yes|Yes|YES|no|No|NO)$ ]]; then
     ViashError '--gex_secondary_analysis' has to be a boolean. Use "--help" to get more information on the parameters.
@@ -2173,7 +2207,7 @@ if [ ! -z "$VIASH_PAR_LIBRARY_TYPE" ]; then
 fi
 
 if [ ! -z "$VIASH_PAR_GEX_CHEMISTRY" ]; then
-  VIASH_PAR_GEX_CHEMISTRY_CHOICES=("auto:threeprime:fiveprime:SC3Pv1:SC3Pv2:SC3Pv3:SC3Pv4:SC3Pv3LT:SC3Pv3HT:SC5P-PE:SC5P-R2:SC-FB:SC5P-R2-v3:SC5PHT:MFRP:MFRP-R1:MFRP-RNA:MFRP-Ab:SFRP:MFRP-Ab-R2pos50:MFRP-RNA-R1:MFRP-Ab-R1:ARC-v1")
+  VIASH_PAR_GEX_CHEMISTRY_CHOICES=("auto:threeprime:fiveprime:SC3Pv1:SC3Pv2:SC3Pv3:SC3Pv4:SC3Pv3LT:SC3Pv3HT:SC5P-PE:SC5P-R2:SC-FB:SC5P-R2-v3:SCP5-PE-v3:SC5PHT:MFRP:MFRP-R1:MFRP-RNA:MFRP-Ab:SFRP:MFRP-Ab-R2pos50:MFRP-RNA-R1:MFRP-Ab-R1:ARC-v1")
   IFS=':'
   set -f
   if ! [[ ":${VIASH_PAR_GEX_CHEMISTRY_CHOICES[*]}:" =~ ":$VIASH_PAR_GEX_CHEMISTRY:" ]]; then
@@ -2430,6 +2464,7 @@ par = {
   'feature_reference': $( if [ ! -z ${VIASH_PAR_FEATURE_REFERENCE+x} ]; then echo "r'${VIASH_PAR_FEATURE_REFERENCE//\'/\'\"\'\"r\'}'"; else echo None; fi ),
   'feature_r1_length': $( if [ ! -z ${VIASH_PAR_FEATURE_R1_LENGTH+x} ]; then echo "int(r'${VIASH_PAR_FEATURE_R1_LENGTH//\'/\'\"\'\"r\'}')"; else echo None; fi ),
   'feature_r2_length': $( if [ ! -z ${VIASH_PAR_FEATURE_R2_LENGTH+x} ]; then echo "int(r'${VIASH_PAR_FEATURE_R2_LENGTH//\'/\'\"\'\"r\'}')"; else echo None; fi ),
+  'min_crispr_umi': $( if [ ! -z ${VIASH_PAR_MIN_CRISPR_UMI+x} ]; then echo "int(r'${VIASH_PAR_MIN_CRISPR_UMI//\'/\'\"\'\"r\'}')"; else echo None; fi ),
   'gex_reference': $( if [ ! -z ${VIASH_PAR_GEX_REFERENCE+x} ]; then echo "r'${VIASH_PAR_GEX_REFERENCE//\'/\'\"\'\"r\'}'"; else echo None; fi ),
   'gex_secondary_analysis': $( if [ ! -z ${VIASH_PAR_GEX_SECONDARY_ANALYSIS+x} ]; then echo "r'${VIASH_PAR_GEX_SECONDARY_ANALYSIS//\'/\'\"\'\"r\'}'.lower() == 'true'"; else echo None; fi ),
   'gex_generate_bam': $( if [ ! -z ${VIASH_PAR_GEX_GENERATE_BAM+x} ]; then echo "r'${VIASH_PAR_GEX_GENERATE_BAM//\'/\'\"\'\"r\'}'.lower() == 'true'"; else echo None; fi ),
@@ -2538,6 +2573,7 @@ FEATURE_CONFIG_KEYS = {
     "feature_reference": "reference",
     "feature_r1_length": "r1-length",
     "feature_r2_length": "r2-length",
+    "min_crispr_umi": "min-crispr-umi",
 }
 
 VDJ_CONFIG_KEYS = {"vdj_reference": "reference",
@@ -2704,6 +2740,9 @@ def handle_integers_not_set(par: dict[str, Any], viash_config: Path | str) -> st
             continue
         par_value, is_multiple = par[arg_name], arg["multiple"]
         assert is_multiple in (True, False)
+
+        if not is_multiple:
+            continue
 
         def replace_notset_values(integer_value: int) -> int | None:
             return None if integer_value == -1 else integer_value
