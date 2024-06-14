@@ -26,6 +26,8 @@
 
 * `scgpt/binning` component: Added a scGPT pre-processing binning component (PR #765).
 
+* `resources_test_scripts/scGPT.sh`: Added script to include scGPT test resources (PR #800).
+
 ## MINOR CHANGES
 
 * Added `resources_test_scripts/cellranger_atac_tiny_bcl.sh` script: download tiny bcl file with an ATAC experiment, download a motifs file, demultiplex bcl files to reads in fastq format (PR #726).
