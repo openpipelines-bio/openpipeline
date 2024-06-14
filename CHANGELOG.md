@@ -233,6 +233,10 @@ the result to be out of bounds.
 
 * `mapping/htseq_count_to_h5mu` and `multi_star`: update polars and gtfparse (PR #642). 
 
+* Several components: update anndata to `0.10.4` and mudata to `0.2.3`.
+
+* `cluster/leiden`: Bump python to 3.11 and leidenalg to 0.10.0 (PR #645).
+
 * Pin `from_h5mu_to_seurat` to use Seurat to version 4 (PR #630).
 
 * `velocity/scvelo`: bump scvelo to 0.3.1 and python to 3.10 (PR #640).
