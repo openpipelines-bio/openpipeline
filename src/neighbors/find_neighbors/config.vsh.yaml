@@ -77,6 +77,19 @@ functionality:
       type: integer
       default: 0
       description: A random seed.
+
+    - name: "--obsm_knn_indices"
+      type: string
+      default: "knn_indices"
+      description: "In which .obsm slot to store the indices of the k-nearest neighbors."
+      required: false
+
+    - name: "--obsm_knn_distances"
+      type: string
+      default: "knn_distances"
+      description: "In which .obsm slot to store the distances of the k-nearest neighbors."
+      required: false
+
   resources:
     - type: python_script
       path: script.py
@@ -94,9 +107,7 @@ platforms:
           - procps
       - type: python
         __merge__: [/src/base/requirements/anndata_mudata.yaml, /src/base/requirements/scanpy.yaml, .]
-    test_setup:
-      - type: python
-        __merge__: [ /src/base/requirements/viashpy.yaml, .]
+    __merge__: [/src/base/requirements/python_test_setup.yaml, .]
 
   - type: nextflow
     directives:
