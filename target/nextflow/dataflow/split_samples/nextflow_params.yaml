@@ -1,0 +1,12 @@
+# Arguments
+input: # please fill in - example: "path/to/file"
+modality: "rna"
+# output: "$id.$key.output.output"
+obs_feature: # please fill in - example: "celltype"
+drop_obs_nan: false
+# output_compression: "gzip"
+# output_files: "$id.$key.output_files.csv"
+
+# Nextflow input-output arguments
+publish_dir: # please fill in - example: "output/"
+# param_list: "my_params.yaml"

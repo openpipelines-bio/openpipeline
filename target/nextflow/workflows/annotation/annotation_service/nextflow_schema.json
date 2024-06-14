@@ -1,0 +1,447 @@
+{
+"$schema": "http://json-schema.org/draft-07/schema",
+"title": "annotation_service",
+"description": "A pipeline to process and annotate gene expression data.",
+"type": "object",
+"definitions": {
+
+    
+    "Dataset input": {
+        "title": "Dataset input",
+        "type": "object",
+        "description": "Dataset input using nf-tower \"dataset\" or \"data explorer\". Allows for the input of multiple         parameter sets to initialise a Nextflow channel.",
+        "properties": {
+            "param_list": {
+                "description": "Dataset input can either be a list of maps, a csv file, a json file, a yaml file, or simply a yaml                 blob. The names of the input fields (e.g. csv columns, json keys) need to be an exact match with the workflow input parameters.",
+                "default": "",
+                "format": "file-path",
+                "mimetype": "text/csv",
+                "pattern": "^\\S+\\.csv$"
+            }
+        }
+    },
+
+    
+    
+    "inputs" : {
+    "title": "Inputs",
+    "type": "object",
+    "description": "No description",
+    "properties": {
+    
+        
+                "id": {
+                "type":
+                "string",
+                "description": "Type: `string`, required, example: `foo`. ID of the sample",
+                "help_text": "Type: `string`, required, example: `foo`. ID of the sample."
+            
+            }
+    
+
+        ,
+                "input": {
+                "type":
+                "string",
+                "description": "Type: List of `file`, required, example: `input.h5mu`, multiple_sep: `\":\"`. Input query dataset(s) to be annotated",
+                "help_text": "Type: List of `file`, required, example: `input.h5mu`, multiple_sep: `\":\"`. Input query dataset(s) to be annotated"
+            
+            }
+    
+
+        ,
+                "annotation_methods": {
+                "type":
+                "string",
+                "description": "Type: List of `string`, required, example: `harmony_knn`, multiple_sep: `\":\"`, choices: ``harmony_knn``. ",
+                "help_text": "Type: List of `string`, required, example: `harmony_knn`, multiple_sep: `\":\"`, choices: ``harmony_knn``. ",
+                "enum": ["harmony_knn"]
+            
+            
+            }
+    
+
+        ,
+                "reference_url": {
+                "type":
+                "string",
+                "description": "Type: `string`, required, example: `https://zenodo.org/records/7587774/files/TS_Lung_filtered.h5ad`. The reference dataset to be used as a reference mapper and to train annotation algorithms on",
+                "help_text": "Type: `string`, required, example: `https://zenodo.org/records/7587774/files/TS_Lung_filtered.h5ad`. The reference dataset to be used as a reference mapper and to train annotation algorithms on.\n"
+            
+            }
+    
+
+        ,
+                "query_rna_layer": {
+                "type":
+                "string",
+                "description": "Type: `string`. Input layer for the gene expression modality of the query datasets",
+                "help_text": "Type: `string`. Input layer for the gene expression modality of the query datasets. If not specified, .X is used."
+            
+            }
+    
+
+        ,
+                "obs_reference_batch": {
+                "type":
+                "string",
+                "description": "Type: `string`, required. The ",
+                "help_text": "Type: `string`, required. The .obs column of the reference dataset containing the batch information.\n"
+            
+            }
+    
+
+        ,
+                "reference_rna_layer": {
+                "type":
+                "string",
+                "description": "Type: `string`. Input layer for the gene expression modality of the reference dataset",
+                "help_text": "Type: `string`. Input layer for the gene expression modality of the reference dataset. If not specified, .X is used."
+            
+            }
+    
+
+        ,
+                "obs_reference_targets": {
+                "type":
+                "string",
+                "description": "Type: List of `string`, required, example: `ann_level_1:ann_level_2:ann_level_3:ann_level_4:ann_level_5:ann_finest_level`, multiple_sep: `\":\"`. The `",
+                "help_text": "Type: List of `string`, required, example: `ann_level_1:ann_level_2:ann_level_3:ann_level_4:ann_level_5:ann_finest_level`, multiple_sep: `\":\"`. The `.obs` key(s) of the target labels to tranfer."
+            
+            }
+    
+
+}
+},
+    
+    
+    "outputs" : {
+    "title": "Outputs",
+    "type": "object",
+    "description": "No description",
+    "properties": {
+    
+        
+                "output": {
+                "type":
+                "string",
+                "description": "Type: `file`, required, default: `$id.$key.output.h5mu`, example: `output.h5mu`. The output file",
+                "help_text": "Type: `file`, required, default: `$id.$key.output.h5mu`, example: `output.h5mu`. The output file.\n"
+            ,
+                "default": "$id.$key.output.h5mu"
+            }
+    
+
+}
+},
+    
+    
+    "pre-processing options: rna filtering" : {
+    "title": "Pre-processing options: RNA filtering",
+    "type": "object",
+    "description": "No description",
+    "properties": {
+    
+        
+                "rna_min_counts": {
+                "type":
+                "integer",
+                "description": "Type: `integer`, example: `200`. Minimum number of counts captured per cell",
+                "help_text": "Type: `integer`, example: `200`. Minimum number of counts captured per cell."
+            
+            }
+    
+
+        ,
+                "rna_max_counts": {
+                "type":
+                "integer",
+                "description": "Type: `integer`, example: `5000000`. Maximum number of counts captured per cell",
+                "help_text": "Type: `integer`, example: `5000000`. Maximum number of counts captured per cell."
+            
+            }
+    
+
+        ,
+                "rna_min_genes_per_cell": {
+                "type":
+                "integer",
+                "description": "Type: `integer`, example: `200`. Minimum of non-zero values per cell",
+                "help_text": "Type: `integer`, example: `200`. Minimum of non-zero values per cell."
+            
+            }
+    
+
+        ,
+                "rna_max_genes_per_cell": {
+                "type":
+                "integer",
+                "description": "Type: `integer`, example: `1500000`. Maximum of non-zero values per cell",
+                "help_text": "Type: `integer`, example: `1500000`. Maximum of non-zero values per cell."
+            
+            }
+    
+
+        ,
+                "rna_min_cells_per_gene": {
+                "type":
+                "integer",
+                "description": "Type: `integer`, example: `3`. Minimum of non-zero values per gene",
+                "help_text": "Type: `integer`, example: `3`. Minimum of non-zero values per gene."
+            
+            }
+    
+
+        ,
+                "rna_min_fraction_mito": {
+                "type":
+                "number",
+                "description": "Type: `double`, example: `0`. Minimum fraction of UMIs that are mitochondrial",
+                "help_text": "Type: `double`, example: `0`. Minimum fraction of UMIs that are mitochondrial."
+            
+            }
+    
+
+        ,
+                "rna_max_fraction_mito": {
+                "type":
+                "number",
+                "description": "Type: `double`, example: `0.2`. Maximum fraction of UMIs that are mitochondrial",
+                "help_text": "Type: `double`, example: `0.2`. Maximum fraction of UMIs that are mitochondrial."
+            
+            }
+    
+
+}
+},
+    
+    
+    "pre-processing options: highly variable features detection" : {
+    "title": "Pre-processing options: Highly variable features detection",
+    "type": "object",
+    "description": "No description",
+    "properties": {
+    
+        
+                "highly_variable_features_var_output": {
+                "type":
+                "string",
+                "description": "Type: `string`, default: `filter_with_hvg`. In which ",
+                "help_text": "Type: `string`, default: `filter_with_hvg`. In which .var slot to store a boolean array corresponding to the highly variable genes."
+            ,
+                "default": "filter_with_hvg"
+            }
+    
+
+        ,
+                "highly_variable_features_obs_batch_key": {
+                "type":
+                "string",
+                "description": "Type: `string`, default: `sample_id`. If specified, highly-variable genes are selected within each batch separately and merged",
+                "help_text": "Type: `string`, default: `sample_id`. If specified, highly-variable genes are selected within each batch separately and merged. This simple \nprocess avoids the selection of batch-specific genes and acts as a lightweight batch correction method.\n"
+            ,
+                "default": "sample_id"
+            }
+    
+
+}
+},
+    
+    
+    "pre-processing options: mitochondrial gene detection" : {
+    "title": "Pre-processing options: Mitochondrial Gene Detection",
+    "type": "object",
+    "description": "No description",
+    "properties": {
+    
+        
+                "var_name_mitochondrial_genes": {
+                "type":
+                "string",
+                "description": "Type: `string`. In which ",
+                "help_text": "Type: `string`. In which .var slot to store a boolean array corresponding the mitochondrial genes.\n"
+            
+            }
+    
+
+        ,
+                "obs_name_mitochondrial_fraction": {
+                "type":
+                "string",
+                "description": "Type: `string`. When specified, write the fraction of counts originating from mitochondrial genes \n(based on --mitochondrial_gene_regex) to an ",
+                "help_text": "Type: `string`. When specified, write the fraction of counts originating from mitochondrial genes \n(based on --mitochondrial_gene_regex) to an .obs column with the specified name.\nRequires --var_name_mitochondrial_genes.\n"
+            
+            }
+    
+
+        ,
+                "var_gene_names": {
+                "type":
+                "string",
+                "description": "Type: `string`, example: `gene_symbol`. ",
+                "help_text": "Type: `string`, example: `gene_symbol`. .var column name to be used to detect mitochondrial genes instead of .var_names (default if not set).\nGene names matching with the regex value from --mitochondrial_gene_regex will be identified\nas a mitochondrial gene.\n"
+            
+            }
+    
+
+        ,
+                "mitochondrial_gene_regex": {
+                "type":
+                "string",
+                "description": "Type: `string`, default: `^[mM][tT]-`. Regex string that identifies mitochondrial genes from --var_gene_names",
+                "help_text": "Type: `string`, default: `^[mM][tT]-`. Regex string that identifies mitochondrial genes from --var_gene_names.\nBy default will detect human and mouse mitochondrial genes from a gene symbol.\n"
+            ,
+                "default": "^[mM][tT]-"
+            }
+    
+
+}
+},
+    
+    
+    "pre-processing options: qc metrics calculation options" : {
+    "title": "Pre-processing options: QC metrics calculation options",
+    "type": "object",
+    "description": "No description",
+    "properties": {
+    
+        
+                "var_qc_metrics": {
+                "type":
+                "string",
+                "description": "Type: List of `string`, example: `ercc,highly_variable`, multiple_sep: `\",\"`. Keys to select a boolean (containing only True or False) column from ",
+                "help_text": "Type: List of `string`, example: `ercc,highly_variable`, multiple_sep: `\",\"`. Keys to select a boolean (containing only True or False) column from .var.\nFor each cell, calculate the proportion of total values for genes which are labeled \u0027True\u0027, \ncompared to the total sum of the values for all genes. Defaults to the combined values specified for\n--var_name_mitochondrial_genes and --highly_variable_features_var_output.\n"
+            
+            }
+    
+
+        ,
+                "top_n_vars": {
+                "type":
+                "string",
+                "description": "Type: List of `integer`, default: `50,100,200,500`, multiple_sep: `\",\"`. Number of top vars to be used to calculate cumulative proportions",
+                "help_text": "Type: List of `integer`, default: `50,100,200,500`, multiple_sep: `\",\"`. Number of top vars to be used to calculate cumulative proportions.\nIf not specified, proportions are not calculated. `--top_n_vars 20,50` finds\ncumulative proportion to the 20th and 50th most expressed vars.\n"
+            ,
+                "default": "50,100,200,500"
+            }
+    
+
+}
+},
+    
+    
+    "harmony integration options" : {
+    "title": "Harmony integration options",
+    "type": "object",
+    "description": "No description",
+    "properties": {
+    
+        
+                "theta": {
+                "type":
+                "string",
+                "description": "Type: List of `double`, default: `2`, multiple_sep: `\":\"`. Diversity clustering penalty parameter",
+                "help_text": "Type: List of `double`, default: `2`, multiple_sep: `\":\"`. Diversity clustering penalty parameter. Specify for each variable in group.by.vars. \ntheta=0 does not encourage any diversity. Larger values of theta\nresult in more diverse clusters.\"\n"
+            ,
+                "default": "2"
+            }
+    
+
+}
+},
+    
+    
+    "knn label transfer options" : {
+    "title": "KNN label transfer options",
+    "type": "object",
+    "description": "No description",
+    "properties": {
+    
+        
+                "weights": {
+                "type":
+                "string",
+                "description": "Type: `string`, default: `uniform`, choices: ``uniform`, `distance``. Weight function used in prediction",
+                "help_text": "Type: `string`, default: `uniform`, choices: ``uniform`, `distance``. Weight function used in prediction. Possible values are:\n\u2018uniform\u2019 (all points in each neighborhood are weighted equally) or \n\u0027distance\u0027 (weight points by the inverse of their distance)\n",
+                "enum": ["uniform", "distance"]
+            
+            ,
+                "default": "uniform"
+            }
+    
+
+        ,
+                "n_neighbors": {
+                "type":
+                "integer",
+                "description": "Type: `integer`, default: `15`. The number of neighbors to use in k-neighbor graph structure used for fast approximate nearest neighbor search with PyNNDescent",
+                "help_text": "Type: `integer`, default: `15`. The number of neighbors to use in k-neighbor graph structure used for fast approximate nearest neighbor search with PyNNDescent. \nLarger values will result in more accurate search results at the cost of computation time.\n"
+            ,
+                "default": "15"
+            }
+    
+
+}
+},
+    
+    
+    "nextflow input-output arguments" : {
+    "title": "Nextflow input-output arguments",
+    "type": "object",
+    "description": "Input/output parameters for Nextflow itself. Please note that both publishDir and publish_dir are supported but at least one has to be configured.",
+    "properties": {
+    
+        
+                "publish_dir": {
+                "type":
+                "string",
+                "description": "Type: `string`, required, example: `output/`. Path to an output directory",
+                "help_text": "Type: `string`, required, example: `output/`. Path to an output directory."
+            
+            }
+    
+
+        
+
+}
+}
+},
+"allOf": [
+
+    {
+    "$ref": "#/definitions/inputs"
+    },
+
+    {
+    "$ref": "#/definitions/outputs"
+    },
+
+    {
+    "$ref": "#/definitions/pre-processing options: rna filtering"
+    },
+
+    {
+    "$ref": "#/definitions/pre-processing options: highly variable features detection"
+    },
+
+    {
+    "$ref": "#/definitions/pre-processing options: mitochondrial gene detection"
+    },
+
+    {
+    "$ref": "#/definitions/pre-processing options: qc metrics calculation options"
+    },
+
+    {
+    "$ref": "#/definitions/harmony integration options"
+    },
+
+    {
+    "$ref": "#/definitions/knn label transfer options"
+    },
+
+    {
+    "$ref": "#/definitions/nextflow input-output arguments"
+    }
+]
+}
