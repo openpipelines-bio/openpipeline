@@ -70,6 +70,7 @@ viash run src/feature_annotation/highly_variable_features_scanpy/config.vsh.yaml
   --var_name_filter "filter_with_hvg" \
   --n_top_features 1200 \
   --flavor "seurat_v3"
+
 viash run src/filter/do_filter/config.vsh.yaml -p docker -- \
   --input "${test_resources_dir}/Kim2020_Lung_subset_hvg.h5mu" \
   --output "${test_resources_dir}/Kim2020_Lung_subset_hvg_filtered.h5mu" \
@@ -102,23 +103,6 @@ viash run src/scgpt/embedding/config.vsh.yaml -p docker -- \
   --model_vocab "${foundation_model_dir}/vocab.json" \
   --model_config "${foundation_model_dir}/args.json" \
   --obs_batch_label "sample"
-
-echo "> Running scGPT integration with Leiden clustering"
-nextflow \
-  run . \
-  -main-script target/nextflow/workflows/integration/scgpt_leiden/main.nf \
-  -profile docker \
-  -c src/workflows/utils/labels_ci.config \
-  --input "${test_resources_dir}/Kim2020_Lung_subset_preprocessed.h5mu" \
-  --input_layer "log_normalized" \
-  --model "${foundation_model_dir}/best_model.pt" \
-  --model_vocab "${foundation_model_dir}/vocab.json" \
-  --model_config "${foundation_model_dir}/args.json" \
-  --obs_batch_label "sample" \
-  --n_hvg 1200 \
-  --output "Kim2020_Lung_subset_scgpt_integrated_leiden.h5mu" \
-  --publish_dir "${test_resources_dir}"
-
 
 echo "> Removing unnecessary files in test resources dir"
 find "${test_resources_dir}" -type f \( ! -name "Kim2020_*" -o ! -name "*.h5mu" \) -delete
