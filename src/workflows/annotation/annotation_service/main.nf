@@ -7,14 +7,39 @@ workflow process_reference {
 
     // Create reference specific output for this channel
     | map {id, state ->
-      def new_state = state + ["reference_processed": state.output]
+      def new_state = state + ["reference": state.output]
       [id, new_state]
       }
+
+    // download the reference h5ad file
+    | download_file.run(
+      fromState: { id, state ->
+        [
+          "input": state.reference_url,
+          "verbose": "true",
+        ]
+      },
+      toState: [
+        "input": "output",
+      ]
+    )
+    // convert the reference h5ad file to h5mu
+    | from_h5ad_to_h5mu.run(
+        fromState: { id, state ->
+        [
+          "input": state.input,
+          "modality": "rna",
+        ]
+      },
+      toState: [
+        "input": "output",
+      ]
+    )
     // Split reference based on batches
     | split_samples.run(
         fromState: { id, state ->
         [
-          "input": state.reference,
+          "input": state.input,
           "modality": "rna",
           "obs_feature": state.obs_reference_batch
         ]
@@ -30,14 +55,13 @@ workflow process_reference {
           def new_data = outputDir.resolve(dat.filename)
           [ new_id, state + ["reference_input": new_data]]
         }
-        }
+      }
     // run process_samples workflow on reference and publish the processed reference
     | process_samples_workflow.run(
       fromState: {id, state ->
         def newState = [
           "input": state.reference_input, 
           "id": id,
-          "output": "reference_processed.h5mu",
           "rna_layer": state.reference_rna_layer,
           "add_id_to_obs": "true",
           "add_id_obs_output": "sample_id",
@@ -59,17 +83,9 @@ workflow process_reference {
           "pca_overwrite": "true"
           ]
       },
-      toState: ["reference_processed": "output"],
-      auto: [ publish: true ]
+      toState: {id, output, state -> ["reference": output.output]},
+      auto: [ publish: true]
       )
-    | map {id, state -> 
-        def keysToRemove = ["output_files", "reference_input"]
-        def newState = state.findAll{it.key !in keysToRemove}
-        [id, newState]
-      }
-    | map {id, state -> 
-        ["reference", state] 
-      }
 
   emit:
     reference_ch
@@ -83,7 +99,7 @@ workflow process_query {
     query_ch = input_ch
     // Create query specific output for this channel
     | map {id, state ->
-      def new_state = state + ["query_processed": state.output]
+      def new_state = state + ["query": state.output]
       [id, new_state]
       }
     // consider individual input files as events for process_samples pipeline
@@ -104,7 +120,6 @@ workflow process_query {
         def newState = [
           "input": state.query_input, 
           "id": id,
-          "output": "query_processed.h5mu",
           "rna_layer": state.query_rna_layer,
           "add_id_to_obs": "true",
           "add_id_obs_output": "sample_id",
@@ -126,16 +141,10 @@ workflow process_query {
           "pca_overwrite": "true"
           ]
       },
-      toState: {id, output, state -> 
-        ["query_processed": output.output]
-      },
-      auto: [ publish: true ]
+      toState: {id, output, state -> ["query": output.output]}, 
+      auto: [ publish: true]
       )
-      | map { id, state -> 
-        ["query", state] 
-        }
     
-
   emit:
     query_ch
 }
@@ -154,12 +163,59 @@ workflow run_wf {
       | process_query
       | view {"After processing query: $it"}
 
-    output_ch = reference_ch.mix(query_ch)
-      | map { id, state -> ["processed", state]}
-      | groupTuple(by: 0)
-      | map { id, state -> [id, state.flatten()]}
-      | niceView()
+    // add id as _meta join id to be able to merge with source channel and end of workflow
+    input_id_ch = input_ch
+      | map{ id, state -> 
+        def new_state = state + ["_meta": ["join_id": id]]
+        [id, new_state]
+        }
 
+    // Mix the input channel with the processed query
+    processed_ch = input_id_ch.mix(query_ch).mix(reference_ch)
+  
+    output_ch = processed_ch
+      | view {"After processing: $it"}
+      // Create workflow specific output for this channel
+      // Make sure that process_query and process_reference have same output id
+      | map { id, state -> ["processed", state]}
+      // Combine output states of process_query and process_reference
+      | groupTuple(by: 0)
+      | map { id, state -> 
+        def newState = state.collectEntries{it}
+          [id, newState]
+        }
+      | view {"After mapping: $it"}
+      | map {id, state ->
+        def new_state = state + ["workflow_output": state.output]
+        [id, new_state]
+        }
+      | view {"After mixing: $it"}
+      | harmony_knn_workflow.run(
+        runIf: { id, state -> state.annotation_methods.contains("harmony_knn") },
+        fromState: { id, state ->
+          def output_obs_predictions = state.obs_reference_targets.collect{it + "_pred_knn_harmony"}
+          def output_obs_probabilities = state.obs_reference_targets.collect{it + "_proba_knn_harmony"}
+          [ 
+            "id": id,
+            "input_query_dataset": state.query,
+            "input_reference_dataset": state.reference,
+            "modality": "rna",
+            "embedding": "X_pca",
+            "obs_reference_targets": state.obs_reference_targets,
+            "output_obs_predictions": output_obs_predictions,
+            "output_obs_probability": output_obs_probabilities,
+            "output_compression": state.output_compression,
+            "theta": state.theta,
+            "obsm_integrated": "X_integrated_harmony",
+            "obs_covariates": ["sample_id"],
+            "weights": state.weights,
+            "n_neighbors": state.n_neighbors,
+            "output": state.workflow_output
+          ]
+        },
+        toState: { id, output, state -> ["output": output.output, "_meta": state._meta]},
+        auto: [ publish: true ]
+        )
 
   emit:
     output_ch

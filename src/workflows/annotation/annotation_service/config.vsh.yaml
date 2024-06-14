@@ -1,7 +1,7 @@
 functionality:
-  name: "celltype_annotation"
-  namespace: "workflows/celltype_annotation"
-  description: "A pipeline to process and annotate unimodal rna samples."
+  name: "annotation_service"
+  namespace: "workflows/annotation"
+  description: "A pipeline to process and annotate gene expression data."
   authors:
     - __merge__: /src/authors/dorien_roosen.yaml
       roles: [ author, maintainer ]
@@ -17,17 +17,24 @@ functionality:
           required: true
           type: file
           multiple: true
-          description: input query dataset(s) to be annotated
+          description: Input query dataset(s) to be annotated
           example: input.h5mu
-        - name: "--reference"
-          type: file
-          example: reference.h5mu
+        - name: "--annotation_methods"
+          type: string
+          multiple: true
+          required: true
+          choices: [harmony_knn]
+          example: harmony_knn
         - name: "--reference_url"
           type: string
           required: true
           description: |
-            The reference data to train annotation algorithms on.
+            The reference dataset to be used as a reference mapper and to train annotation algorithms on.
           example: https://zenodo.org/records/7587774/files/TS_Lung_filtered.h5ad
+        - name: "--query_rna_layer"
+          type: string
+          description: "Input layer for the gene expression modality of the query datasets. If not specified, .X is used."
+          required: false
         - name: "--obs_reference_batch"
           type: string
           required: true
@@ -37,10 +44,12 @@ functionality:
           type: string
           description: "Input layer for the gene expression modality of the reference dataset. If not specified, .X is used."
           required: false
-        - name: "--query_rna_layer"
+        - name: "--obs_reference_targets"
           type: string
-          description: "Input layer for the gene expression modality of the query datasets. If not specified, .X is used."
-          required: false
+          example: [ ann_level_1, ann_level_2, ann_level_3, ann_level_4, ann_level_5, ann_finest_level ]
+          required: true
+          multiple: true
+          description: The `.obs` key(s) of the target labels to tranfer.
 
     - name: "Pre-processing options: RNA filtering"
       arguments:
@@ -146,12 +155,6 @@ functionality:
 
     - name: Harmony integration options
       arguments:
-        # - name: "--obs_covariates"
-        #   type: string
-        #   description: "The .obs field(s) that define the covariate(s) to regress out."
-        #   example: ["batch", "sample"]
-        #   multiple: true
-        #   required: true
         - name: "--theta"
           type: double
           description: |
@@ -160,6 +163,26 @@ functionality:
             result in more diverse clusters."
           default: 2
           multiple: true
+
+    - name: KNN label transfer options
+      arguments:
+        - name: "--weights"
+          type: string
+          default: uniform
+          required: false
+          choices: [uniform, distance]
+          description: |
+            Weight function used in prediction. Possible values are:
+            ‘uniform’ (all points in each neighborhood are weighted equally) or 
+            'distance' (weight points by the inverse of their distance)
+        - name: "--n_neighbors"
+          type: integer
+          default: 15
+          required: false
+          description: |
+            The number of neighbors to use in k-neighbor graph structure used for fast approximate nearest neighbor search with PyNNDescent. 
+            Larger values will result in more accurate search results at the cost of computation time.
+
 
     - name: Outputs
       arguments:
@@ -177,8 +200,8 @@ functionality:
     - name: dataflow/split_samples
     - name: workflows/multiomics/process_samples
       alias: process_samples_workflow
-    # - name: workflows/integration/harmony_leiden
-    #   alias: harmony_leiden_workflow
+    - name: workflows/annotation/harmony_knn
+      alias: harmony_knn_workflow
 
   resources:
     - type: nextflow_script

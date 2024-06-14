@@ -84,7 +84,7 @@ workflow run_wf {
             def newKeys = ["integrated_query": integrated_query, "integrated_reference": integrated_reference]
             [id, state + newKeys]
             }
-        | view {"After taking query: $it"}
+        | view {"After splitting query: $it"}
         // Perform KNN label transfer from reference to query
         | pynndescent_knn.run(
             fromState: { id, state ->
