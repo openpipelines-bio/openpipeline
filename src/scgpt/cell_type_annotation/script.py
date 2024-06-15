@@ -15,10 +15,10 @@ from scgpt.utils import set_seed
 par = {
   'input': r'resources_test/scgpt/test_resources/Kim2020_Lung_subset_tokenized.h5mu',
   'modality': r'rna',
-  'model': r'resources_test/scgpt/soumya_fibroblast_20240419/best_model.pt',
-  'model_config': r'resources_test/scgpt/soumya_fibroblast_20240419/args.json',
-  'model_vocab': r'resources_test/scgpt/soumya_fibroblast_20240419/vocab.json',
-  'cell_type_mapper': r'resources_test/scgpt/soumya_fibroblast_20240419/mapping.json',
+  'model': r'resources_test/scgpt/soumya_atlas_80_percent-Jun11-01-04/best_model.pt',
+  'model_config': r'resources_test/scgpt/soumya_atlas_80_percent-Jun11-01-04/args.json',
+  'model_vocab': r'resources_test/scgpt/soumya_atlas_80_percent-Jun11-01-04/vocab.json',
+  'model_label_mapper': r'id_to_class',
   'obs_batch_label': r'sample',
   'obsm_gene_tokens': r'gene_id_tokens',
   'obsm_tokenized_values': r'values_tokenized',
@@ -140,13 +140,14 @@ model = TransformerModel(
 )
 
 model_file = par["model"]
+pretrained_dict = torch.load(model_file, map_location=device)
+label_mapper = pretrained_dict[par["model_label_mapper"]]
 try:
     logger.info(f"Loading all model params from {model_file}")
-    model.load_state_dict(torch.load(model_file, map_location=device))
+    model.load_state_dict(pretrained_dict)
 except RuntimeError:
     logger.info("only load params that are in the model and match the size")
     model_dict = model.state_dict()
-    pretrained_dict = torch.load(model_file, map_location=device)
     pretrained_dict = {
         k: v
         for k, v in pretrained_dict.items()
@@ -214,11 +215,7 @@ adata.obs[par["obs_predicted_cell_class"]] = predictions
 # Assign cell type labels to predicted classes
 logger.info("Assigning cell type labels")
 
-cell_type_mapper_file = par["cell_type_mapper"]
-with open(cell_type_mapper_file, "r") as f:
-    cell_type_mapper = json.load(f)
-    
-cell_type_mapper = {int(k): v for k, v in cell_type_mapper.items()}
+cell_type_mapper = {int(k): v for k, v in label_mapper.items()}
 adata.obs[par["obs_predicted_cell_label"]] = adata.obs[par['obs_predicted_cell_class']].map(lambda x: cell_type_mapper[x])
 
 # Write output

@@ -7,7 +7,7 @@ functionality:
     - __merge__: /src/authors/dorien_roosen.yaml
       roles: [ maintainer, author ]
     - __merge__: /src/authors/jakub_majercik.yaml
-      roles: [ maintainer, author ]
+      roles: [ contributor ]
 
   argument_groups:
     - name: Inputs
@@ -24,7 +24,7 @@ functionality:
           required: true
           example: "resources_test/scgpt/source/best_model.pt"
           description: |
-            The model file.
+            The model checkpoint file.
         - name: "--model_config"
           type: file
           required: true
@@ -37,12 +37,11 @@ functionality:
           example: resources_test/scgpt/vocab.json
           description: |
             Model vocabulary file directory.
-        - name: "--cell_type_mapper"
-          type: file
-          required: true
-          example: mapper.json
+        - name: "--model_label_mapper"
+          type: string
+          default: id_to_class
           description: |
-            YAML file containing the mapping object of the cell type classes with corresponding cell type labels.
+            Parameter in the model checkpoint file containing the cell type class to label mapper dictionary.
 
         - name: "--modality"
           type: string
