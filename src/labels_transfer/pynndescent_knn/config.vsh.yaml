@@ -5,19 +5,29 @@ functionality:
     This component generates a neighborhood graph based using the PyNNDescentTransformer, followed by classification using a k-nearest neighborhood vote.
   authors:
     - __merge__: /src/authors/dorien_roosen.yaml
-      roles: [ maintainer ]
+      roles: [ maintainer, author ]
   argument_groups:
     - name: Input files
       arguments:
-        - type: file
-          name: --input
+        - name: "--input"
+          type: file
+          direction: input
+          required: true
+          example: input.h5mu
+          description: "The query data to transfer the labels to. Should be a .h5mu file."
+        - name: "--modality"
+          type: string
+          default: "rna"
           required: false
+          description: Which modality to use.
+        - name: "--input_obsm_features"
+          type: string
+          required: true
           description: |
-            The FASTQ files to be analyzed. FASTQ files should conform to the naming conventions of bcl2fastq and mkfastq:
-            `[Sample Name]_S[Sample Index]_L00[Lane Number]_[Read Type]_001.fastq.gz`
-          example: [ mysample_S1_L001_R1_001.fastq.gz, mysample_S1_L001_R2_001.fastq.gz ]
-          multiple: true
-          
+            The `.obsm` key of the embedding to use for the classifier's inference.
+            Make sure that embedding was obtained in the same way as the reference embedding (e.g. by the same model, preprocessing and/or integration).
+          example: X_scvi
+
   resources:
     - type: python_script
       path: script.py
