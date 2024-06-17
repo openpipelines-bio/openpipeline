@@ -53,6 +53,7 @@ functionality:
       arguments:
         - name: "--knn_weights"
           type: string
+          choices: ["uniform", "distance"]
           default: "uniform"
           description: yaya
 
