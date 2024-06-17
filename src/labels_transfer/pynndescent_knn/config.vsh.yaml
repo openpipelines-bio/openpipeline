@@ -48,6 +48,44 @@ functionality:
           required: true
           multiple: true
           description: The `.obs` key(s) of the target labels to tranfer.
+          
+    - name: Outputs
+      arguments:
+        - name: "--output"
+          type: file
+          direction: output
+          required: true
+          description: "The query data in .h5mu format with predicted labels transfered from the reference."
+        - name: "--output_obs_predictions"
+          type: string
+          required: false
+          multiple: true
+          description: |
+            In which `.obs` slots to store the predicted information.
+            If provided, must have the same length as `--reference_obs_targets`.
+            If empty, will default to the `reference_obs_targets` combined with the `"_pred"` suffix.
+        - name: "--output_obs_probability"
+          type: string
+          required: false
+          multiple: true
+          description: |
+            In which `.obs` slots to store the probability of the predictions.
+            If provided, must have the same length as `--reference_obs_targets`.
+            If empty, will default to the `reference_obs_targets` combined with the `"_probability"` suffix.
+        - name: "--output_uns_parameters"
+          type: string
+          default: "labels_transfer"
+          required: false
+          description: |
+            The `.uns` key to store additional information about the parameters used for the label transfer.
+        - name: "--output_compression"
+          type: string
+          description: |
+            The compression format to be used on the output h5mu object.
+          choices: ["gzip", "lzf"]
+          required: false
+          example: "gzip"
+
   resources:
     - type: python_script
       path: script.py
