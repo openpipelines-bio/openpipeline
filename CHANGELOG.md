@@ -28,7 +28,7 @@
 
 ## MINOR CHANGES
 
-* Bump viash to `0.8.6` (PR #)
+* Bump viash to `0.8.6` (PR #815)
 
 * Added `resources_test_scripts/cellranger_atac_tiny_bcl.sh` script: download tiny bcl file with an ATAC experiment, download a motifs file, demultiplex bcl files to reads in fastq format (PR #726).
 
