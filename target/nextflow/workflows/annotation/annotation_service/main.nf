@@ -3154,7 +3154,7 @@ meta = [
           {
             "type" : "string",
             "name" : "--weights",
-            "description" : "Weight function used in prediction. Possible values are:\n‘uniform’ (all points in each neighborhood are weighted equally) or \n'distance' (weight points by the inverse of their distance)\n",
+            "description" : "Weight function used in prediction. Possible values are:\n`uniform` (all points in each neighborhood are weighted equally) or \n`distance` (weight points by the inverse of their distance)\n",
             "default" : [
               "uniform"
             ],
@@ -3242,14 +3242,14 @@ meta = [
         "foundConfigPath" : "/home/runner/work/openpipeline/openpipeline/src/download/download_file/config.vsh.yaml",
         "configInfo" : {
           "functionalityName" : "download_file",
-          "git_tag" : "0.2.0-1623-g939b74370c",
+          "git_tag" : "0.2.0-1624-g91994703f6",
           "git_remote" : "https://github.com/openpipelines-bio/openpipeline",
           "viash_version" : "0.8.5",
           "config" : "/home/runner/work/openpipeline/openpipeline/src/download/download_file/config.vsh.yaml",
           "functionalityNamespace" : "download",
           "output" : "",
           "platform" : "",
-          "git_commit" : "939b74370c3224d813f62184005915b5e0c739c9",
+          "git_commit" : "91994703f607b924175756004a7b4f779537badd",
           "executable" : "/nextflow/download/download_file/main.nf"
         },
         "writtenPath" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/download/download_file"
@@ -3263,14 +3263,14 @@ meta = [
         "foundConfigPath" : "/home/runner/work/openpipeline/openpipeline/src/convert/from_h5ad_to_h5mu/config.vsh.yaml",
         "configInfo" : {
           "functionalityName" : "from_h5ad_to_h5mu",
-          "git_tag" : "0.2.0-1623-g939b74370c",
+          "git_tag" : "0.2.0-1624-g91994703f6",
           "git_remote" : "https://github.com/openpipelines-bio/openpipeline",
           "viash_version" : "0.8.5",
           "config" : "/home/runner/work/openpipeline/openpipeline/src/convert/from_h5ad_to_h5mu/config.vsh.yaml",
           "functionalityNamespace" : "convert",
           "output" : "",
           "platform" : "",
-          "git_commit" : "939b74370c3224d813f62184005915b5e0c739c9",
+          "git_commit" : "91994703f607b924175756004a7b4f779537badd",
           "executable" : "/nextflow/convert/from_h5ad_to_h5mu/main.nf"
         },
         "writtenPath" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/convert/from_h5ad_to_h5mu"
@@ -3284,14 +3284,14 @@ meta = [
         "foundConfigPath" : "/home/runner/work/openpipeline/openpipeline/src/dataflow/split_samples/config.vsh.yaml",
         "configInfo" : {
           "functionalityName" : "split_samples",
-          "git_tag" : "0.2.0-1623-g939b74370c",
+          "git_tag" : "0.2.0-1624-g91994703f6",
           "git_remote" : "https://github.com/openpipelines-bio/openpipeline",
           "viash_version" : "0.8.5",
           "config" : "/home/runner/work/openpipeline/openpipeline/src/dataflow/split_samples/config.vsh.yaml",
           "functionalityNamespace" : "dataflow",
           "output" : "",
           "platform" : "",
-          "git_commit" : "939b74370c3224d813f62184005915b5e0c739c9",
+          "git_commit" : "91994703f607b924175756004a7b4f779537badd",
           "executable" : "/nextflow/dataflow/split_samples/main.nf"
         },
         "writtenPath" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/dataflow/split_samples"
@@ -3306,14 +3306,14 @@ meta = [
         "foundConfigPath" : "/home/runner/work/openpipeline/openpipeline/src/workflows/multiomics/process_samples/config.vsh.yaml",
         "configInfo" : {
           "functionalityName" : "process_samples",
-          "git_tag" : "0.2.0-1623-g939b74370c",
+          "git_tag" : "0.2.0-1624-g91994703f6",
           "git_remote" : "https://github.com/openpipelines-bio/openpipeline",
           "viash_version" : "0.8.5",
           "config" : "/home/runner/work/openpipeline/openpipeline/src/workflows/multiomics/process_samples/config.vsh.yaml",
           "functionalityNamespace" : "workflows/multiomics",
           "output" : "",
           "platform" : "",
-          "git_commit" : "939b74370c3224d813f62184005915b5e0c739c9",
+          "git_commit" : "91994703f607b924175756004a7b4f779537badd",
           "executable" : "/nextflow/workflows/multiomics/process_samples/main.nf"
         },
         "writtenPath" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/workflows/multiomics/process_samples"
@@ -3328,14 +3328,14 @@ meta = [
         "foundConfigPath" : "/home/runner/work/openpipeline/openpipeline/src/workflows/annotation/harmony_knn/config.vsh.yaml",
         "configInfo" : {
           "functionalityName" : "harmony_knn",
-          "git_tag" : "0.2.0-1623-g939b74370c",
+          "git_tag" : "0.2.0-1624-g91994703f6",
           "git_remote" : "https://github.com/openpipelines-bio/openpipeline",
           "viash_version" : "0.8.5",
           "config" : "/home/runner/work/openpipeline/openpipeline/src/workflows/annotation/harmony_knn/config.vsh.yaml",
           "functionalityNamespace" : "workflows/annotation",
           "output" : "",
           "platform" : "",
-          "git_commit" : "939b74370c3224d813f62184005915b5e0c739c9",
+          "git_commit" : "91994703f607b924175756004a7b4f779537badd",
           "executable" : "/nextflow/workflows/annotation/harmony_knn/main.nf"
         },
         "writtenPath" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/workflows/annotation/harmony_knn"
@@ -3402,9 +3402,9 @@ meta = [
     "platform" : "nextflow",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/workflows/annotation/annotation_service",
     "viash_version" : "0.8.5",
-    "git_commit" : "939b74370c3224d813f62184005915b5e0c739c9",
+    "git_commit" : "91994703f607b924175756004a7b4f779537badd",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline",
-    "git_tag" : "0.2.0-1623-g939b74370c"
+    "git_tag" : "0.2.0-1624-g91994703f6"
   }
 }'''))
 ]

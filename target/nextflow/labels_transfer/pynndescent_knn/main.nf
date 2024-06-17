@@ -10,7 +10,7 @@
 // files.
 // 
 // Component authors:
-//  * Dorien Roosen (author, maintainer)
+//  * Dorien Roosen (maintainer, author)
 
 ////////////////////////////
 // VDSL3 helper functions //
@@ -2782,8 +2782,8 @@ meta = [
       {
         "name" : "Dorien Roosen",
         "roles" : [
-          "author",
-          "maintainer"
+          "maintainer",
+          "author"
         ],
         "info" : {
           "role" : "Contributor",
@@ -2804,7 +2804,7 @@ meta = [
     ],
     "argument_groups" : [
       {
-        "name" : "Input dataset (query) arguments",
+        "name" : "Input files",
         "arguments" : [
           {
             "type" : "file",
@@ -2901,6 +2901,41 @@ meta = [
         ]
       },
       {
+        "name" : "KNN label transfer arguments",
+        "arguments" : [
+          {
+            "type" : "string",
+            "name" : "--weights",
+            "description" : "Weight function used in prediction. Possible values are:\n`uniform` (all points in each neighborhood are weighted equally) or \n`distance` (weight points by the inverse of their distance)\n",
+            "default" : [
+              "uniform"
+            ],
+            "required" : false,
+            "choices" : [
+              "uniform",
+              "distance"
+            ],
+            "direction" : "input",
+            "multiple" : false,
+            "multiple_sep" : ":",
+            "dest" : "par"
+          },
+          {
+            "type" : "integer",
+            "name" : "--n_neighbors",
+            "description" : "The number of neighbors to use in k-neighbor graph structure used for fast approximate nearest neighbor search with PyNNDescent. \nLarger values will result in more accurate search results at the cost of computation time.\n",
+            "default" : [
+              15
+            ],
+            "required" : false,
+            "direction" : "input",
+            "multiple" : false,
+            "multiple_sep" : ":",
+            "dest" : "par"
+          }
+        ]
+      },
+      {
         "name" : "Outputs",
         "arguments" : [
           {
@@ -2960,41 +2995,6 @@ meta = [
               "gzip",
               "lzf"
             ],
-            "direction" : "input",
-            "multiple" : false,
-            "multiple_sep" : ":",
-            "dest" : "par"
-          }
-        ]
-      },
-      {
-        "name" : "Neighbor classifier arguments",
-        "arguments" : [
-          {
-            "type" : "string",
-            "name" : "--weights",
-            "description" : "Weight function used in prediction. Possible values are:\n‘uniform’ (all points in each neighborhood are weighted equally) or \n'distance' (weight points by the inverse of their distance)\n",
-            "default" : [
-              "uniform"
-            ],
-            "required" : false,
-            "choices" : [
-              "uniform",
-              "distance"
-            ],
-            "direction" : "input",
-            "multiple" : false,
-            "multiple_sep" : ":",
-            "dest" : "par"
-          },
-          {
-            "type" : "integer",
-            "name" : "--n_neighbors",
-            "description" : "The number of neighbors to use in k-neighbor graph structure used for fast approximate nearest neighbor search with PyNNDescent. \nLarger values will result in more accurate search results at the cost of computation time.\n",
-            "default" : [
-              15
-            ],
-            "required" : false,
             "direction" : "input",
             "multiple" : false,
             "multiple_sep" : ":",
@@ -3061,21 +3061,23 @@ meta = [
           "packages" : [
             "anndata~=0.9.1",
             "mudata~=0.2.3",
-            "pandas!=2.1.2",
-            "pynndescent==0.5.11",
-            "scikit-learn~=1.2.2"
+            "pandas!=2.1.2"
           ],
           "upgrade" : true
         }
       ]
     },
     {
+      "type" : "native",
+      "id" : "native"
+    },
+    {
       "type" : "nextflow",
       "id" : "nextflow",
       "directives" : {
         "label" : [
-          "lowcpu",
-          "midmem"
+          "singlecpu",
+          "lowmem"
         ],
         "tag" : "$id"
       },
@@ -3131,9 +3133,9 @@ meta = [
     "platform" : "nextflow",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/labels_transfer/pynndescent_knn",
     "viash_version" : "0.8.5",
-    "git_commit" : "939b74370c3224d813f62184005915b5e0c739c9",
+    "git_commit" : "91994703f607b924175756004a7b4f779537badd",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline",
-    "git_tag" : "0.2.0-1623-g939b74370c"
+    "git_tag" : "0.2.0-1624-g91994703f6"
   }
 }'''))
 ]
@@ -3162,13 +3164,13 @@ par = {
   'reference': $( if [ ! -z ${VIASH_PAR_REFERENCE+x} ]; then echo "r'${VIASH_PAR_REFERENCE//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'reference_obsm_features': $( if [ ! -z ${VIASH_PAR_REFERENCE_OBSM_FEATURES+x} ]; then echo "r'${VIASH_PAR_REFERENCE_OBSM_FEATURES//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'reference_obs_targets': $( if [ ! -z ${VIASH_PAR_REFERENCE_OBS_TARGETS+x} ]; then echo "r'${VIASH_PAR_REFERENCE_OBS_TARGETS//\\'/\\'\\"\\'\\"r\\'}'.split(';')"; else echo None; fi ),
+  'weights': $( if [ ! -z ${VIASH_PAR_WEIGHTS+x} ]; then echo "r'${VIASH_PAR_WEIGHTS//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
+  'n_neighbors': $( if [ ! -z ${VIASH_PAR_N_NEIGHBORS+x} ]; then echo "int(r'${VIASH_PAR_N_NEIGHBORS//\\'/\\'\\"\\'\\"r\\'}')"; else echo None; fi ),
   'output': $( if [ ! -z ${VIASH_PAR_OUTPUT+x} ]; then echo "r'${VIASH_PAR_OUTPUT//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'output_obs_predictions': $( if [ ! -z ${VIASH_PAR_OUTPUT_OBS_PREDICTIONS+x} ]; then echo "r'${VIASH_PAR_OUTPUT_OBS_PREDICTIONS//\\'/\\'\\"\\'\\"r\\'}'.split(';')"; else echo None; fi ),
   'output_obs_probability': $( if [ ! -z ${VIASH_PAR_OUTPUT_OBS_PROBABILITY+x} ]; then echo "r'${VIASH_PAR_OUTPUT_OBS_PROBABILITY//\\'/\\'\\"\\'\\"r\\'}'.split(';')"; else echo None; fi ),
   'output_uns_parameters': $( if [ ! -z ${VIASH_PAR_OUTPUT_UNS_PARAMETERS+x} ]; then echo "r'${VIASH_PAR_OUTPUT_UNS_PARAMETERS//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
-  'output_compression': $( if [ ! -z ${VIASH_PAR_OUTPUT_COMPRESSION+x} ]; then echo "r'${VIASH_PAR_OUTPUT_COMPRESSION//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
-  'weights': $( if [ ! -z ${VIASH_PAR_WEIGHTS+x} ]; then echo "r'${VIASH_PAR_WEIGHTS//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
-  'n_neighbors': $( if [ ! -z ${VIASH_PAR_N_NEIGHBORS+x} ]; then echo "int(r'${VIASH_PAR_N_NEIGHBORS//\\'/\\'\\"\\'\\"r\\'}')"; else echo None; fi )
+  'output_compression': $( if [ ! -z ${VIASH_PAR_OUTPUT_COMPRESSION+x} ]; then echo "r'${VIASH_PAR_OUTPUT_COMPRESSION//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi )
 }
 meta = {
   'functionality_name': $( if [ ! -z ${VIASH_META_FUNCTIONALITY_NAME+x} ]; then echo "r'${VIASH_META_FUNCTIONALITY_NAME//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
@@ -3609,8 +3611,8 @@ meta["defaults"] = [
     "tag" : "annotation-workflow_build"
   },
   "label" : [
-    "lowcpu",
-    "midmem"
+    "singlecpu",
+    "lowmem"
   ],
   "tag" : "$id"
 }'''),

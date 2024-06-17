@@ -12,7 +12,7 @@
 # files.
 # 
 # Component authors:
-#  * Dorien Roosen (author, maintainer)
+#  * Dorien Roosen (maintainer, author)
 
 set -e
 
@@ -179,7 +179,7 @@ function ViashHelp {
   echo "PyNNDescentTransformer, followed by classification using a k-nearest"
   echo "neighborhood vote."
   echo ""
-  echo "Input dataset (query) arguments:"
+  echo "Input files:"
   echo "    --input"
   echo "        type: file, required parameter, file must exist"
   echo "        example: input.h5mu"
@@ -216,6 +216,23 @@ function ViashHelp {
   echo "ann_level_1;ann_level_2;ann_level_3;ann_level_4;ann_level_5;ann_finest_level"
   echo "        The \`.obs\` key(s) of the target labels to tranfer."
   echo ""
+  echo "KNN label transfer arguments:"
+  echo "    --weights"
+  echo "        type: string"
+  echo "        default: uniform"
+  echo "        choices: [ uniform, distance ]"
+  echo "        Weight function used in prediction. Possible values are:"
+  echo "        \`uniform\` (all points in each neighborhood are weighted equally) or"
+  echo "        \`distance\` (weight points by the inverse of their distance)"
+  echo ""
+  echo "    --n_neighbors"
+  echo "        type: integer"
+  echo "        default: 15"
+  echo "        The number of neighbors to use in k-neighbor graph structure used for"
+  echo "        fast approximate nearest neighbor search with PyNNDescent."
+  echo "        Larger values will result in more accurate search results at the cost of"
+  echo "        computation time."
+  echo ""
   echo "Outputs:"
   echo "    --output"
   echo "        type: file, required parameter, output, file must exist"
@@ -247,23 +264,6 @@ function ViashHelp {
   echo "        example: gzip"
   echo "        choices: [ gzip, lzf ]"
   echo "        The compression format to be used on the output h5mu object."
-  echo ""
-  echo "Neighbor classifier arguments:"
-  echo "    --weights"
-  echo "        type: string"
-  echo "        default: uniform"
-  echo "        choices: [ uniform, distance ]"
-  echo "        Weight function used in prediction. Possible values are:"
-  echo "        ‘uniform’ (all points in each neighborhood are weighted equally) or"
-  echo "        'distance' (weight points by the inverse of their distance)"
-  echo ""
-  echo "    --n_neighbors"
-  echo "        type: integer"
-  echo "        default: 15"
-  echo "        The number of neighbors to use in k-neighbor graph structure used for"
-  echo "        fast approximate nearest neighbor search with PyNNDescent."
-  echo "        Larger values will result in more accurate search results at the cost of"
-  echo "        computation time."
 }
 
 ######## Helper functions for setting up Docker images for viash ########
@@ -491,13 +491,13 @@ RUN apt-get update && \
   rm -rf /var/lib/apt/lists/*
 
 RUN pip install --upgrade pip && \
-  pip install --upgrade --no-cache-dir "anndata~=0.9.1" "mudata~=0.2.3" "pandas!=2.1.2" "pynndescent==0.5.11" "scikit-learn~=1.2.2"
+  pip install --upgrade --no-cache-dir "anndata~=0.9.1" "mudata~=0.2.3" "pandas!=2.1.2"
 
 LABEL org.opencontainers.image.authors="Dorien Roosen"
 LABEL org.opencontainers.image.description="Companion container for running component labels_transfer pynndescent_knn"
-LABEL org.opencontainers.image.created="2024-06-14T15:21:03Z"
+LABEL org.opencontainers.image.created="2024-06-17T10:50:01Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="939b74370c3224d813f62184005915b5e0c739c9"
+LABEL org.opencontainers.image.revision="91994703f607b924175756004a7b4f779537badd"
 LABEL org.opencontainers.image.version="annotation-workflow_build"
 
 VIASHDOCKER
@@ -724,6 +724,28 @@ while [[ $# -gt 0 ]]; do
             fi
             shift 1
             ;;
+        --weights)
+            [ -n "$VIASH_PAR_WEIGHTS" ] && ViashError Bad arguments for option \'--weights\': \'$VIASH_PAR_WEIGHTS\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+            VIASH_PAR_WEIGHTS="$2"
+            [ $# -lt 2 ] && ViashError Not enough arguments passed to --weights. Use "--help" to get more information on the parameters. && exit 1
+            shift 2
+            ;;
+        --weights=*)
+            [ -n "$VIASH_PAR_WEIGHTS" ] && ViashError Bad arguments for option \'--weights=*\': \'$VIASH_PAR_WEIGHTS\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+            VIASH_PAR_WEIGHTS=$(ViashRemoveFlags "$1")
+            shift 1
+            ;;
+        --n_neighbors)
+            [ -n "$VIASH_PAR_N_NEIGHBORS" ] && ViashError Bad arguments for option \'--n_neighbors\': \'$VIASH_PAR_N_NEIGHBORS\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+            VIASH_PAR_N_NEIGHBORS="$2"
+            [ $# -lt 2 ] && ViashError Not enough arguments passed to --n_neighbors. Use "--help" to get more information on the parameters. && exit 1
+            shift 2
+            ;;
+        --n_neighbors=*)
+            [ -n "$VIASH_PAR_N_NEIGHBORS" ] && ViashError Bad arguments for option \'--n_neighbors=*\': \'$VIASH_PAR_N_NEIGHBORS\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+            VIASH_PAR_N_NEIGHBORS=$(ViashRemoveFlags "$1")
+            shift 1
+            ;;
         --output)
             [ -n "$VIASH_PAR_OUTPUT" ] && ViashError Bad arguments for option \'--output\': \'$VIASH_PAR_OUTPUT\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
             VIASH_PAR_OUTPUT="$2"
@@ -789,28 +811,6 @@ while [[ $# -gt 0 ]]; do
         --output_compression=*)
             [ -n "$VIASH_PAR_OUTPUT_COMPRESSION" ] && ViashError Bad arguments for option \'--output_compression=*\': \'$VIASH_PAR_OUTPUT_COMPRESSION\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
             VIASH_PAR_OUTPUT_COMPRESSION=$(ViashRemoveFlags "$1")
-            shift 1
-            ;;
-        --weights)
-            [ -n "$VIASH_PAR_WEIGHTS" ] && ViashError Bad arguments for option \'--weights\': \'$VIASH_PAR_WEIGHTS\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
-            VIASH_PAR_WEIGHTS="$2"
-            [ $# -lt 2 ] && ViashError Not enough arguments passed to --weights. Use "--help" to get more information on the parameters. && exit 1
-            shift 2
-            ;;
-        --weights=*)
-            [ -n "$VIASH_PAR_WEIGHTS" ] && ViashError Bad arguments for option \'--weights=*\': \'$VIASH_PAR_WEIGHTS\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
-            VIASH_PAR_WEIGHTS=$(ViashRemoveFlags "$1")
-            shift 1
-            ;;
-        --n_neighbors)
-            [ -n "$VIASH_PAR_N_NEIGHBORS" ] && ViashError Bad arguments for option \'--n_neighbors\': \'$VIASH_PAR_N_NEIGHBORS\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
-            VIASH_PAR_N_NEIGHBORS="$2"
-            [ $# -lt 2 ] && ViashError Not enough arguments passed to --n_neighbors. Use "--help" to get more information on the parameters. && exit 1
-            shift 2
-            ;;
-        --n_neighbors=*)
-            [ -n "$VIASH_PAR_N_NEIGHBORS" ] && ViashError Bad arguments for option \'--n_neighbors=*\': \'$VIASH_PAR_N_NEIGHBORS\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
-            VIASH_PAR_N_NEIGHBORS=$(ViashRemoveFlags "$1")
             shift 1
             ;;
         ---setup)
@@ -980,14 +980,14 @@ fi
 if [ -z ${VIASH_PAR_MODALITY+x} ]; then
   VIASH_PAR_MODALITY="rna"
 fi
-if [ -z ${VIASH_PAR_OUTPUT_UNS_PARAMETERS+x} ]; then
-  VIASH_PAR_OUTPUT_UNS_PARAMETERS="labels_transfer"
-fi
 if [ -z ${VIASH_PAR_WEIGHTS+x} ]; then
   VIASH_PAR_WEIGHTS="uniform"
 fi
 if [ -z ${VIASH_PAR_N_NEIGHBORS+x} ]; then
   VIASH_PAR_N_NEIGHBORS="15"
+fi
+if [ -z ${VIASH_PAR_OUTPUT_UNS_PARAMETERS+x} ]; then
+  VIASH_PAR_OUTPUT_UNS_PARAMETERS="labels_transfer"
 fi
 
 # check whether required files exist
@@ -1051,24 +1051,24 @@ if [[ -n "$VIASH_META_MEMORY_PB" ]]; then
 fi
 
 # check whether value is belongs to a set of choices
-if [ ! -z "$VIASH_PAR_OUTPUT_COMPRESSION" ]; then
-  VIASH_PAR_OUTPUT_COMPRESSION_CHOICES=("gzip:lzf")
-  IFS=':'
-  set -f
-  if ! [[ ":${VIASH_PAR_OUTPUT_COMPRESSION_CHOICES[*]}:" =~ ":$VIASH_PAR_OUTPUT_COMPRESSION:" ]]; then
-    ViashError '--output_compression' specified value of \'$VIASH_PAR_OUTPUT_COMPRESSION\' is not in the list of allowed values. Use "--help" to get more information on the parameters.
-    exit 1
-  fi
-  set +f
-  unset IFS
-fi
-
 if [ ! -z "$VIASH_PAR_WEIGHTS" ]; then
   VIASH_PAR_WEIGHTS_CHOICES=("uniform:distance")
   IFS=':'
   set -f
   if ! [[ ":${VIASH_PAR_WEIGHTS_CHOICES[*]}:" =~ ":$VIASH_PAR_WEIGHTS:" ]]; then
     ViashError '--weights' specified value of \'$VIASH_PAR_WEIGHTS\' is not in the list of allowed values. Use "--help" to get more information on the parameters.
+    exit 1
+  fi
+  set +f
+  unset IFS
+fi
+
+if [ ! -z "$VIASH_PAR_OUTPUT_COMPRESSION" ]; then
+  VIASH_PAR_OUTPUT_COMPRESSION_CHOICES=("gzip:lzf")
+  IFS=':'
+  set -f
+  if ! [[ ":${VIASH_PAR_OUTPUT_COMPRESSION_CHOICES[*]}:" =~ ":$VIASH_PAR_OUTPUT_COMPRESSION:" ]]; then
+    ViashError '--output_compression' specified value of \'$VIASH_PAR_OUTPUT_COMPRESSION\' is not in the list of allowed values. Use "--help" to get more information on the parameters.
     exit 1
   fi
   set +f
@@ -1167,13 +1167,13 @@ par = {
   'reference': $( if [ ! -z ${VIASH_PAR_REFERENCE+x} ]; then echo "r'${VIASH_PAR_REFERENCE//\'/\'\"\'\"r\'}'"; else echo None; fi ),
   'reference_obsm_features': $( if [ ! -z ${VIASH_PAR_REFERENCE_OBSM_FEATURES+x} ]; then echo "r'${VIASH_PAR_REFERENCE_OBSM_FEATURES//\'/\'\"\'\"r\'}'"; else echo None; fi ),
   'reference_obs_targets': $( if [ ! -z ${VIASH_PAR_REFERENCE_OBS_TARGETS+x} ]; then echo "r'${VIASH_PAR_REFERENCE_OBS_TARGETS//\'/\'\"\'\"r\'}'.split(';')"; else echo None; fi ),
+  'weights': $( if [ ! -z ${VIASH_PAR_WEIGHTS+x} ]; then echo "r'${VIASH_PAR_WEIGHTS//\'/\'\"\'\"r\'}'"; else echo None; fi ),
+  'n_neighbors': $( if [ ! -z ${VIASH_PAR_N_NEIGHBORS+x} ]; then echo "int(r'${VIASH_PAR_N_NEIGHBORS//\'/\'\"\'\"r\'}')"; else echo None; fi ),
   'output': $( if [ ! -z ${VIASH_PAR_OUTPUT+x} ]; then echo "r'${VIASH_PAR_OUTPUT//\'/\'\"\'\"r\'}'"; else echo None; fi ),
   'output_obs_predictions': $( if [ ! -z ${VIASH_PAR_OUTPUT_OBS_PREDICTIONS+x} ]; then echo "r'${VIASH_PAR_OUTPUT_OBS_PREDICTIONS//\'/\'\"\'\"r\'}'.split(';')"; else echo None; fi ),
   'output_obs_probability': $( if [ ! -z ${VIASH_PAR_OUTPUT_OBS_PROBABILITY+x} ]; then echo "r'${VIASH_PAR_OUTPUT_OBS_PROBABILITY//\'/\'\"\'\"r\'}'.split(';')"; else echo None; fi ),
   'output_uns_parameters': $( if [ ! -z ${VIASH_PAR_OUTPUT_UNS_PARAMETERS+x} ]; then echo "r'${VIASH_PAR_OUTPUT_UNS_PARAMETERS//\'/\'\"\'\"r\'}'"; else echo None; fi ),
-  'output_compression': $( if [ ! -z ${VIASH_PAR_OUTPUT_COMPRESSION+x} ]; then echo "r'${VIASH_PAR_OUTPUT_COMPRESSION//\'/\'\"\'\"r\'}'"; else echo None; fi ),
-  'weights': $( if [ ! -z ${VIASH_PAR_WEIGHTS+x} ]; then echo "r'${VIASH_PAR_WEIGHTS//\'/\'\"\'\"r\'}'"; else echo None; fi ),
-  'n_neighbors': $( if [ ! -z ${VIASH_PAR_N_NEIGHBORS+x} ]; then echo "int(r'${VIASH_PAR_N_NEIGHBORS//\'/\'\"\'\"r\'}')"; else echo None; fi )
+  'output_compression': $( if [ ! -z ${VIASH_PAR_OUTPUT_COMPRESSION+x} ]; then echo "r'${VIASH_PAR_OUTPUT_COMPRESSION//\'/\'\"\'\"r\'}'"; else echo None; fi )
 }
 meta = {
   'functionality_name': $( if [ ! -z ${VIASH_META_FUNCTIONALITY_NAME+x} ]; then echo "r'${VIASH_META_FUNCTIONALITY_NAME//\'/\'\"\'\"r\'}'"; else echo None; fi ),

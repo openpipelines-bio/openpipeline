@@ -5,7 +5,7 @@
 output_uns_parameters: "labels_transfer"
 # output_compression: "gzip"
 
-# Input dataset (query) arguments
+# Input files
 input: # please fill in - example: "input.h5mu"
 modality: "rna"
 input_obsm_features: # please fill in - example: "X_scvi"
@@ -15,7 +15,7 @@ reference: # please fill in - example: "reference.h5mu"
 reference_obsm_features: # please fill in - example: "X_scvi"
 reference_obs_targets: # please fill in - example: ["ann_level_1", "ann_level_2", "ann_level_3", "ann_level_4", "ann_level_5", "ann_finest_level"]
 
-# Neighbor classifier arguments
+# KNN label transfer arguments
 weights: "uniform"
 n_neighbors: 15
 

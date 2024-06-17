@@ -212,7 +212,7 @@
                 "type":
                 "string",
                 "description": "Type: `string`, default: `uniform`, choices: ``uniform`, `distance``. Weight function used in prediction",
-                "help_text": "Type: `string`, default: `uniform`, choices: ``uniform`, `distance``. Weight function used in prediction. Possible values are:\n\u2018uniform\u2019 (all points in each neighborhood are weighted equally) or \n\u0027distance\u0027 (weight points by the inverse of their distance)\n",
+                "help_text": "Type: `string`, default: `uniform`, choices: ``uniform`, `distance``. Weight function used in prediction. Possible values are:\n`uniform` (all points in each neighborhood are weighted equally) or \n`distance` (weight points by the inverse of their distance)\n",
                 "enum": ["uniform", "distance"]
             
             ,

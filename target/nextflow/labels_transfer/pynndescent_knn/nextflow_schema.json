@@ -87,8 +87,8 @@
 },
     
     
-    "input dataset (query) arguments" : {
-    "title": "Input dataset (query) arguments",
+    "input files" : {
+    "title": "Input files",
     "type": "object",
     "description": "No description",
     "properties": {
@@ -168,8 +168,8 @@
 },
     
     
-    "neighbor classifier arguments" : {
-    "title": "Neighbor classifier arguments",
+    "knn label transfer arguments" : {
+    "title": "KNN label transfer arguments",
     "type": "object",
     "description": "No description",
     "properties": {
@@ -179,7 +179,7 @@
                 "type":
                 "string",
                 "description": "Type: `string`, default: `uniform`, choices: ``uniform`, `distance``. Weight function used in prediction",
-                "help_text": "Type: `string`, default: `uniform`, choices: ``uniform`, `distance``. Weight function used in prediction. Possible values are:\n\u2018uniform\u2019 (all points in each neighborhood are weighted equally) or \n\u0027distance\u0027 (weight points by the inverse of their distance)\n",
+                "help_text": "Type: `string`, default: `uniform`, choices: ``uniform`, `distance``. Weight function used in prediction. Possible values are:\n`uniform` (all points in each neighborhood are weighted equally) or \n`distance` (weight points by the inverse of their distance)\n",
                 "enum": ["uniform", "distance"]
             
             ,
@@ -230,7 +230,7 @@
     },
 
     {
-    "$ref": "#/definitions/input dataset (query) arguments"
+    "$ref": "#/definitions/input files"
     },
 
     {
@@ -238,7 +238,7 @@
     },
 
     {
-    "$ref": "#/definitions/neighbor classifier arguments"
+    "$ref": "#/definitions/knn label transfer arguments"
     },
 
     {
