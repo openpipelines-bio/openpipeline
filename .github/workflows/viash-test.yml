@@ -82,7 +82,7 @@ jobs:
   viash_test:
     needs: list
     if: ${{ needs.list.outputs.matrix != '[]' && needs.list.outputs.matrix != '' }}
-    runs-on: ubuntu-latest
+    runs-on: [ubuntu-latest, macos-latest]
 
     strategy:
       fail-fast: false
