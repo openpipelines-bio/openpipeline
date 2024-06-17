@@ -53,6 +53,7 @@ functionality:
       arguments:
         - name: "--knn_weights"
           type: string
+          default: "uniform"
           description: yaya
 
     - name: Outputs
