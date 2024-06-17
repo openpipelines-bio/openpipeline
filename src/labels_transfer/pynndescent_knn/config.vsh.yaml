@@ -51,7 +51,7 @@ functionality:
 
     - name: KNN arguments
       arguments:
-        - name: "--reference_obs_targets"
+        - name: "--weights"
           type: string
           default: uniform
           description: |
