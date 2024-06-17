@@ -51,11 +51,14 @@ functionality:
 
     - name: KNN arguments
       arguments:
-        - name: "--knn_weights"
+        - name: "--weights"
           type: string
           choices: ["uniform", "distance"]
           default: "uniform"
-          description: yaya
+          description: |
+            Weight function used in prediction. Possible values are:
+            `uniform` (all points in each neighborhood are weighted equally) or 
+            `distance` (weight points by the inverse of their distance)
 
     - name: Outputs
       arguments:
