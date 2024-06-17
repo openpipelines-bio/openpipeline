@@ -51,7 +51,7 @@ functionality:
 
     - name: KNN arguments
       arguments:
-        - name: "--weights"
+        - name: "--knn_weights"
           type: string
           default: uniform
           description: |
