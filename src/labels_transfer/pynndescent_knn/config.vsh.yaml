@@ -28,6 +28,26 @@ functionality:
             Make sure that embedding was obtained in the same way as the reference embedding (e.g. by the same model, preprocessing and/or integration).
           example: X_scvi
 
+    - name: Reference dataset arguments
+      arguments:
+        - name: "--reference"
+          type: file
+          required: true
+          description: "Should be an h5mu file."
+          example: reference.h5mu
+        - name: "--reference_obsm_features"
+          type: string
+          required: true
+          description: |
+            The `.obsm` key of the embedding to use for the classifier's training.
+            Make sure that embedding was obtained in the same way as the query embedding (e.g. by the same model or preprocessing).
+          example: X_scvi
+        - name: "--reference_obs_targets"
+          type: string
+          example: [ ann_level_1, ann_level_2, ann_level_3, ann_level_4, ann_level_5, ann_finest_level ]
+          required: true
+          multiple: true
+          description: The `.obs` key(s) of the target labels to tranfer.
   resources:
     - type: python_script
       path: script.py
