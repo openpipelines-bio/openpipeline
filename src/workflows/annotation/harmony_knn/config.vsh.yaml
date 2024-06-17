@@ -106,8 +106,8 @@ functionality:
           choices: ["uniform", "distance"]
           description: |
             Weight function used in prediction. Possible values are:
-            ‘uniform’ (all points in each neighborhood are weighted equally) or 
-            'distance' (weight points by the inverse of their distance)
+            `uniform` (all points in each neighborhood are weighted equally) or 
+            `distance` (weight points by the inverse of their distance)
         - name: "--n_neighbors"
           type: integer
           default: 15
