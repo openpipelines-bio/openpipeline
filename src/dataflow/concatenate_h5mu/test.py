@@ -741,5 +741,6 @@ def test_concat_var_obs_names_order(run_component, sample_1_h5mu, sample_2_h5mu,
                                        columns=data_sample.var_names).reindex_like(processed_data)
             pd.testing.assert_frame_equal(processed_data, data_sample, check_dtype=False)
 
+
 if __name__ == '__main__':
     sys.exit(pytest.main([__file__, "-v"]))
