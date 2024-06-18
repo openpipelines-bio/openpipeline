@@ -26,6 +26,8 @@
 
 * `scgpt/binning` component: Added a scGPT pre-processing binning component (PR #765).
 
+* `scgpt/cell_type_annotation` component: Added scGPT cell type annotation component (PR #798)
+
 ## MINOR CHANGES
 
 * Bump viash to `0.8.6` (PR #815).
@@ -67,13 +69,7 @@ after concatenation (PR #807)
 
 ## BUG FIXES
 
-* Added `reference/build_cellranger_reference` component: build reference file compatible with ATAC and ATAC+GEX experiments (PR #726).
-
-* Added `scgpt/cell_type_annotation` component: annotate cell types using scGPT (PR #798).
-
-## MINOR CHANGES
-
-* Added `resources_test_scripts/cellranger_atac_tiny_bcl.sh` script: download tiny bcl file with an ATAC experiment, download a motifs file, demultiplex bcl files to reads in fastq format (PR #726).
+`mapping/cellranger_multi`: Fix the regex for the fastq input files to allow dropping the lane from the input file names (e.g. `_L001`) (PR #778).
 
 * `workflows/rna/rna_singlesample`: Fix argument passing `top_n_vars` and `obs_name_mitochondrial_fraction` to the `qc` subworkflow (PR #779).
 
