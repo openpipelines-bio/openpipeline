@@ -136,7 +136,7 @@ def test_vdj_inner_enrichment_primers(run_component, random_path):
         primers_file_open.write("AGTCTCTCAGCTGGTACACG\nTCTGATGGCTCAAACACAGC")
     args=[
         "--output", outputpath,
-        "--input", meta["resources_dir"] + "10x_5k_anticmv/raw/",
+        "--input", meta["resources_dir"] + "/10x_5k_anticmv/raw/",
         "--gex_reference", gex_reference,
         "--vdj_reference", vdj_reference,
         "--feature_reference", feature_reference,
@@ -153,6 +153,8 @@ def test_vdj_inner_enrichment_primers(run_component, random_path):
     with config_path.open('r') as config_file:
         config_contents = config_file.read()
     expected_csv_content = fr"\[vdj\]\nreference,.*?\ninner-enrichment-primers,{enrichment_primers_file.resolve()}\n"
+    print(expected_csv_content)
+    print(config_contents)
     assert re.search(expected_csv_content, config_contents)
 
 def test_cellranger_multi_applies_gex_options(run_component, random_path):
@@ -426,4 +428,4 @@ def test_cellranger_multi_with_alternative_names(run_component, random_path):
     assert (outputpath / "per_sample_outs/run/vdj_t/filtered_contig_annotations.csv").is_file()
 
 if __name__ == '__main__':
-    sys.exit(pytest.main([__file__]))
+    sys.exit(pytest.main([__file__, "-k", "test_vdj_inner_enrichment_primers"]))

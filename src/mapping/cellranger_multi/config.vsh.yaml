@@ -470,7 +470,6 @@ platforms:
       - type: python
         packages: 
           - pandas
-          - numpy<2
           - pyyaml
     __merge__: [ /src/base/requirements/python_test_setup.yaml, .] 
   - type: nextflow
