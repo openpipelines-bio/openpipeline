@@ -133,15 +133,16 @@ model = TransformerModel(
     domain_spec_batchnorm=par["dsbn"],
     input_emb_style="continuous",
     n_input_bins=par["n_input_bins"],
-    cell_emb_style="cls",  # hard-coded
+    cell_emb_style="cls",  # required for cell-type annotation
     use_fast_transformer=False,   #TODO: parametrize when GPU is available
     fast_transformer_backend="flash",  #TODO: parametrize when GPU is available
     pre_norm=False,  #TODO: parametrize when GPU is available
 )
 
 model_file = par["model"]
-pretrained_dict = torch.load(model_file, map_location=device)
-label_mapper = pretrained_dict[par["model_label_mapper"]]
+model_dict = torch.load(model_file, map_location=device)
+pretrained_dict = model_dict[par["finetuned_checkpoints_key"]]
+label_mapper = model_dict[par["label_mapper_key"]]
 try:
     logger.info(f"Loading all model params from {model_file}")
     model.load_state_dict(pretrained_dict)

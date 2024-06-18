@@ -22,26 +22,31 @@ functionality:
         - name: "--model"
           type: file
           required: true
-          example: "resources_test/scgpt/source/best_model.pt"
+          example: best_model.pt
           description: |
-            The model checkpoint file.
+            The model file containing checkpoints and cell type label mapper.
         - name: "--model_config"
           type: file
           required: true
-          example: "resources_test/scgpt/source/args.json"
+          example: args.json
           description: |
             The model configuration file. 
         - name: "--model_vocab"
           type: file
           required: true
-          example: resources_test/scgpt/vocab.json
+          example: vocab.json
           description: |
             Model vocabulary file directory.
-        - name: "--model_label_mapper"
+        - name: "--finetuned_checkpoints_key"
+          type: string
+          default: model_state_dict
+          description: |
+            Key in the model  file containing the pretrained checkpoints.
+        - name: "--label_mapper_key"
           type: string
           default: id_to_class
           description: |
-            Parameter in the model checkpoint file containing the cell type class to label mapper dictionary.
+            Key in the model file containing the cell type class to label mapper dictionary.
 
         - name: "--modality"
           type: string

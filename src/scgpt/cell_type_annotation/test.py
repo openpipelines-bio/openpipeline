@@ -2,6 +2,7 @@ import pytest
 from mudata import read_h5mu
 import sys
 import json
+import torch
 import numpy as np
 import subprocess
 import re
@@ -16,6 +17,7 @@ meta = {
 
 input_path = meta["resources_dir"] + "Kim2020_Lung_subset_tokenized.h5mu"
 model = meta["resources_dir"] + "best_model.pt"
+ft_model_path = meta["resources_dir"] + "ft_best_model.pt"
 model_config = meta["resources_dir"] + "args.json"
 model_vocab = meta["resources_dir"] + "vocab.json"
 
@@ -23,58 +25,37 @@ model_vocab = meta["resources_dir"] + "vocab.json"
 @pytest.fixture
 def cell_type_mapper():
     return {
-        "0": "a",
-        "1": "b",
-        "2": "c",
-        "3": "d",
-        "4": "e",
-        "5": "f",
-        "6": "g",
-        "7": "h",
-        "8": "i",
-        "9": "j",
-        "10": "k",
-        "11": "l",
-        "12": "m",
-        "13": "n",
-        "14": "o"
+        "0": "a", "1": "b", "2": "c",  "3": "d", "4": "e", "5": "f", "6": "g", "7": "h", "8": "i" "9": "j", "10": "k", "11": "l", "12": "m", "13": "n", "14": "o"
     }
 
 
 @pytest.fixture
-def random_json_path(random_path):
-    def wrapper():
-        return random_path(extension="json")
-    return wrapper
-
-
-@pytest.fixture
-def write_json_to_file(random_json_path):
-    def wrapper(json_dict):
-        output_path = random_json_path()
-        with open(output_path, 'w') as f:
-            json.dump(json_dict, f)
-        return output_path
-    return wrapper
-
-
-@pytest.fixture
-def json_mapper_path(cell_type_mapper, write_json_to_file):
-    return write_json_to_file(cell_type_mapper)
+def scgpt_to_ft_scgpt(scgpt_path, ft_scgpt_path, cell_type_mapper, state_dict_key, mapper_key):
+    f_model_dict = torch.load(scgpt_path)
+    model_dict = {}
+    model_dict[state_dict_key] = f_model_dict
+    model_dict[mapper_key] = cell_type_mapper
+    torch.save(model_dict, ft_scgpt_path)
 
 
 def test_cell_type_inference(run_component,
                              tmp_path,
-                             json_mapper_path):
+                             json_mapper_path,
+                             scgpt_to_ft_scgpt,
+                             cell_type_mapper):
 
     output_annotation_file = tmp_path / "Kim2020_Lung_subset_annotated.h5mu"
+
+    scgpt_to_ft_scgpt(model, ft_model_path, cell_type_mapper, "model_state_dict", "id_to_class")
     args = [
         "--input", input_path,
         "--output",  output_annotation_file,
         "--modality", "rna",
         "--obsm_gene_tokens", "gene_id_tokens",
         "--obsm_tokenized_values", "values_tokenized",
-        "--model", model,
+        "--model", ft_model_path,
+        "--finetuned_checkpoints_key", "model_state_dict",
+        "--label_mapper_key", "id_to_class",
         "--model_vocab", model_vocab,
         "--model_config", model_config,
         "--cell_type_mapper", json_mapper_path,
