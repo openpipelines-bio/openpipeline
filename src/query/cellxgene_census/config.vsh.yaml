@@ -1,59 +1,93 @@
 functionality:
   name: cellxgene_census
-  namespace: "query"
-  description: "Query CellxGene Census or user-specified TileDBSoma object, and eventually fetch cell and gene metadata or/and expression counts."
+  namespace: query
+  description: |
+    Query cells from a CellxGene Census or custom TileDBSoma object.
+    Aside from fetching the cells' RNA counts (`.X`), cell metadata
+    (`.obs`) and gene metadata (`.var`), this component also fetches
+    the dataset metadata and joins it into the cell metadata.
   authors:
     - __merge__: /src/authors/matthias_beyens.yaml
+      roles: [ maintainer, author ]
     - __merge__: /src/authors/dries_de_maeyer.yaml
       roles: [ author ]
+    - __merge__: /src/authors/robrecht_cannoodt.yaml
+      roles: [ author ]
+    - __merge__: /src/authors/kai_waldrant.yaml
+      roles: [ contributor ]
   argument_groups:
-    - name: Inputs
-      description: "Arguments related to the input (aka query) dataset."
+    - name: Input database
+      description: "Open CellxGene Census by version or URI."
       arguments:
-        # TODO: add user-provided release of census, e.g. TileDBSoma
-        - name: "--input_database"
+        - name: "--input_uri"
           type: string
-          description: "Full input database S3 prefix URL. Default: CellxGene Census"
+          description: "If specified, a URI containing the Census SOMA objects. If specified, will take precedence over the `--census_version` argument."
           required: false
-          example: "s3://"
-          default: "CellxGene"
-        - name: "--modality"
-          description: "Which modality to store the output in."
+          example: "s3://bucket/path"
+        - name: "--census_version"
+          description: "Which release of CellxGene census to use. Possible values are \"latest\", \"stable\", or the date of one of the releases (e.g. \"2023-07-25\"). For more information, check the documentation on [Census data releases](https://chanzuckerberg.github.io/cellxgene-census/cellxgene_census_docsite_data_release_info.html)."
           type: string
-          default: "rna"
+          example: "stable"
           required: false
-        - name: "--cellxgene_release"
-          description: "CellxGene Census release date. More information: https://chanzuckerberg.github.io/cellxgene-census/cellxgene_census_docsite_data_release_info.html"
-          type: string
-          default: "2023-05-15"
-          required: false
-    - name: Query
+        - name: "--add_dataset_metadata"
+          type: boolean_true
+          description: "If true, the experiment metadata will be added to the cell metadata. More specifically: `collection_id`, `collection_name`, `collection_doi`, `dataset_title`."
+    - name: Cell query
       description: Arguments related to the query.
       arguments:
         - name: "--species"
           type: string
-          description: "Specie(s) of interest. If not specified, Homo Sapiens will be queried."
-          required: false
+          description: The organism to query, usually one of `Homo sapiens` or `Mus musculus`.
+          required: true
           example: "homo_sapiens"
-          default: "homo_sapiens"
-          choices: ["homo_sapiens", "mus_musculus"]
-          multiple: false
-        - name: "--cell_query"
+        - name: "--obs_value_filter"
           type: string
-          description: "The query for selecting the cells as defined by the cellxgene census schema."
-          required: false
+          description: "Filter for selecting the `obs` metadata (i.e. cells). Value is a filter query written in the SOMA `value_filter` syntax."
+          required: true
           example: "is_primary_data == True and cell_type_ontology_term_id in ['CL:0000136', 'CL:1000311', 'CL:0002616'] and suspension_type == 'cell'"
-        - name: "--cells_filter_columns"
+    - name: Filter cells by grouping
+      description: "Filter groups with fewer than X number of cells."
+      arguments:
+        - name: "--cell_filter_grouping"
           type: string
-          description: "The query for selecting the cells as defined by the cellxgene census schema."
+          description: |
+            A subset of 'obs' columns by which to group the cells for filtering.
+            Only groups surpassing or equal to the `--cell_filter_minimum_count`
+            threshold will be retained. Take care not to introduce a selection
+            bias against cells with more fine-grained ontology annotations.
           required: false
           example: ["dataset_id", "tissue", "assay", "disease", "cell_type"]
           multiple: true
-        - name: "--min_cells_filter_columns"
-          type: double
-          description: "Minimum of amount of summed cells_filter_columns cells"
+        - name: "--cell_filter_minimum_count"
+          type: integer
+          description: |
+            A minimum number of cells per group to retain. If `--cell_filter_grouping`
+            is defined, this parameter should also be provided and vice versa.
           required: false
           example: 100
+    - name: Count filtering
+      description: Arguments related to filtering cells and genes by counts.
+      arguments:
+        - name: "--cell_filter_min_genes"
+          type: integer
+          description: Remove cells with less than this number of genes.
+          required: false
+          default: 50
+        - name: "--cell_filter_min_counts"
+          type: integer
+          description: Remove cells with less than this number of counts.
+          required: false
+          default: 0
+        - name: "--gene_filter_min_cells"
+          type: integer
+          description: Remove genes expressed in less than this number of cells.
+          required: false
+          default: 5
+        - name: "--gene_filter_min_counts"
+          type: integer
+          description: Remove genes with less than this number of counts.
+          required: false
+          default: 0
     - name: Outputs
       description: Output arguments.
       arguments:
@@ -63,11 +97,23 @@ functionality:
           direction: output
           required: true
           example: output.h5mu
+          info:
+            label: "CellxGene dataset"
+            summary: A dataset queried from the CellxGene Census platform
+            description: |
+              The format of this file is derived from the [CELLxGENE schema v4.0.0](https://github.com/chanzuckerberg/single-cell-curation/blob/main/schema/4.0.0/schema.md).
+            slots:
+              __merge__: file_output_slots.yaml
         - name: "--output_compression"
           type: string
           choices: ["gzip", "lzf"]
           required: false
           example: "gzip"
+        - name: "--output_modality"
+          description: "Which modality to store the output in."
+          type: string
+          default: "rna"
+          required: false
   resources:
     - type: python_script
       path: script.py
@@ -77,14 +123,12 @@ functionality:
       path: test.py
 platforms:
   - type: docker
-  # TODO: increase python version
-    image: python:3.9
+    image: python:3.11
     setup:
       - type: python
-        __merge__: [/src/base/requirements/anndata_mudata.yaml, .]
+        __merge__: [/src/base/requirements/anndata_mudata.yaml, /src/base/requirements/scanpy.yaml, .]
         packages:
-          - cellxgene-census~=1.2.0
-          - obonet~=1.0.0
+          - cellxgene-census
     test_setup:
       - type: python
         __merge__: [ /src/base/requirements/viashpy.yaml, .]

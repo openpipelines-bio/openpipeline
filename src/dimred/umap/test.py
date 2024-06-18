@@ -10,7 +10,7 @@ meta = {
 }
 ## VIASH END
 
-input = meta["resources_dir"] + "pbmc_1k_protein_v3/pbmc_1k_protein_v3_mms.h5mu"
+input = meta["resources_dir"] + "/pbmc_1k_protein_v3/pbmc_1k_protein_v3_mms.h5mu"
 
 def test_umap(run_component, tmp_path):
     output = tmp_path / "output.h5mu"

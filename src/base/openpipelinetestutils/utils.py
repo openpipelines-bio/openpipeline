@@ -47,9 +47,10 @@ def remove_annotation_column(annotation_object: AnnotationObject,
                                 if column_name not in global_columns]
         extra_cols_to_remove += [column_name for column_name in column_names
                                  if column_name in global_columns]
-        axis_setter(annotation_object, axis_getter(annotation_object).drop(extra_cols_to_remove,
-                                                                           axis="columns",
-                                                                           inplace=False))
+        if modality_name:
+            axis_setter(annotation_object, axis_getter(annotation_object).drop(extra_cols_to_remove,
+                                                                               axis="columns",
+                                                                               inplace=False))
 
         for mod_name in modality_names:
             modality = annotation_object.mod[mod_name]
