@@ -424,9 +424,9 @@ RUN apt-get update && \
 
 LABEL org.opencontainers.image.authors="Dries Schaumont"
 LABEL org.opencontainers.image.description="Companion container for running component convert from_bd_to_10x_molecular_barcode_tags"
-LABEL org.opencontainers.image.created="2024-06-17T02:43:31Z"
+LABEL org.opencontainers.image.created="2024-06-18T02:42:00Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="0d77b1851d383a7a806a8a603435476895ae6af7"
+LABEL org.opencontainers.image.revision="49b7a3990194e1fbc888edeb8e549e6282515261"
 LABEL org.opencontainers.image.version="integration_build"
 
 VIASHDOCKER
