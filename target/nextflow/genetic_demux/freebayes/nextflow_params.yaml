@@ -1,0 +1,82 @@
+# Input
+# bam: "path/to/file"
+# bam_list: "path/to/file"
+stdin: false
+# fasta_reference: "path/to/file"
+# fasta_reference_index: "path/to/file"
+# targets: "path/to/file"
+# region: "foo"
+# samples: "path/to/file"
+# populations: "path/to/file"
+# cnv_map: "path/to/file"
+gvcf: false
+# gvcf_chunk: 123
+# variant_input: "path/to/file"
+only_use_input_alleles: false
+# haplotype_basis_alleles: "path/to/file"
+report_all_haplotype_alleles: false
+report_monomorphic: false
+pvar: 0.0
+strict_vcf: false
+theta: 0.001
+ploidy: 2
+pooled_discrete: false
+pooled_continuous: false
+use_reference_allele: false
+reference_quality: "100,60"
+throw_away_snp_obs: false
+throw_away_mnps_obs: true
+throw_away_indel_obs: true
+throw_away_complex_obs: true
+use_best_n_alleles: 0
+max_complex_gap: 3
+min_repeat_size: 5
+min_repeat_entropy: 1
+no_partial_observations: false
+dont_left_align_indels: false
+use_duplicate_reads: false
+min_mapping_quality: 1
+min_base_quality: 1
+min_supporting_allele_qsum: 0
+min_supporting_mapping_qsum: 0
+mismatch_base_quality_threshold: 10
+read_max_mismatch_fraction: 1.0
+# read_mismatch_limit: 123
+# read_snp_limit: 123
+# read_indel_limit: 123
+standard_filters: false
+min_alternate_fraction: 0.05
+min_alternate_count: 2
+min_alternate_qsum: 0
+min_alternate_total: 1
+min_coverage: 0
+# max_coverage: 123
+no_population_priors: false
+hwe_priors_off: false
+binomial_obs_priors_off: false
+allele_balance_priors_off: false
+# observation_bias: "path/to/file"
+# base_quality_cap: 123
+prob_contamination: 1.0E-8
+legacy_gls: false
+# contamination_estimates: "path/to/file"
+report_genotype_likelihood_max: false
+genotyping_max_iterations: 1000
+genotyping_max_banddepth: 6
+posterior_integration_limits: "1,3"
+exclude_unobserved_genotypes: false
+# genotype_variant_threshold: 123
+use_mapping_quality: false
+harmonic_indel_quality: false
+read_dependence_factor: 0.9
+genotype_qualities: false
+debug: false
+dd: false
+
+# Output
+# output: "$id.$key.output.output"
+# vcf: "snp.vcf"
+
+# Nextflow input-output arguments
+publish_dir: # please fill in - example: "output/"
+# param_list: "my_params.yaml"
