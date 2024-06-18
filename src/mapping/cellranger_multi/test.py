@@ -428,4 +428,4 @@ def test_cellranger_multi_with_alternative_names(run_component, random_path):
     assert (outputpath / "per_sample_outs/run/vdj_t/filtered_contig_annotations.csv").is_file()
 
 if __name__ == '__main__':
-    sys.exit(pytest.main([__file__, "-k", "test_vdj_inner_enrichment_primers"]))
+    sys.exit(pytest.main([__file__]))
