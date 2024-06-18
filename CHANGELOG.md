@@ -1,3 +1,10 @@
+# openpipelines 1.0.1
+
+## BUG FIXES
+
+* Bump viash to `0.8.6` (PR #815).
+
+
 # openpipelines 1.0.0-rc6
 
 ## BUG FIXES
