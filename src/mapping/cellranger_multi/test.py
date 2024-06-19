@@ -15,15 +15,15 @@ meta = {
 }
 ## VIASH END
 
-input1_R1 = meta["resources_dir"] + "10x_5k_anticmv/raw/5k_human_antiCMV_T_TBNK_connect_GEX_1_subset_S1_L001_R1_001.fastq.gz"
-input1_R2 = meta["resources_dir"] + "10x_5k_anticmv/raw/5k_human_antiCMV_T_TBNK_connect_GEX_1_subset_S1_L001_R2_001.fastq.gz"
-input2_R1 = meta["resources_dir"] + "10x_5k_anticmv/raw/5k_human_antiCMV_T_TBNK_connect_AB_subset_S2_L004_R1_001.fastq.gz"
-input2_R2 = meta["resources_dir"] + "10x_5k_anticmv/raw/5k_human_antiCMV_T_TBNK_connect_AB_subset_S2_L004_R2_001.fastq.gz"
-input3_R1 =  meta["resources_dir"] + "10x_5k_anticmv/raw/5k_human_antiCMV_T_TBNK_connect_VDJ_subset_S1_L001_R1_001.fastq.gz"
-input3_R2 =  meta["resources_dir"] + "10x_5k_anticmv/raw/5k_human_antiCMV_T_TBNK_connect_VDJ_subset_S1_L001_R2_001.fastq.gz"
-gex_reference =  meta["resources_dir"] +  "reference_gencodev41_chr1/reference_cellranger.tar.gz"
-feature_reference = meta["resources_dir"] + "10x_5k_anticmv/raw/feature_reference.csv"
-vdj_reference = meta["resources_dir"]+  "10x_5k_anticmv/raw/refdata-cellranger-vdj-GRCh38-alts-ensembl-7.0.0.tar.gz"
+input1_R1 = meta["resources_dir"] + "/10x_5k_anticmv/raw/5k_human_antiCMV_T_TBNK_connect_GEX_1_subset_S1_L001_R1_001.fastq.gz"
+input1_R2 = meta["resources_dir"] + "/10x_5k_anticmv/raw/5k_human_antiCMV_T_TBNK_connect_GEX_1_subset_S1_L001_R2_001.fastq.gz"
+input2_R1 = meta["resources_dir"] + "/10x_5k_anticmv/raw/5k_human_antiCMV_T_TBNK_connect_AB_subset_S2_L004_R1_001.fastq.gz"
+input2_R2 = meta["resources_dir"] + "/10x_5k_anticmv/raw/5k_human_antiCMV_T_TBNK_connect_AB_subset_S2_L004_R2_001.fastq.gz"
+input3_R1 =  meta["resources_dir"] + "/10x_5k_anticmv/raw/5k_human_antiCMV_T_TBNK_connect_VDJ_subset_S1_L001_R1_001.fastq.gz"
+input3_R2 =  meta["resources_dir"] + "/10x_5k_anticmv/raw/5k_human_antiCMV_T_TBNK_connect_VDJ_subset_S1_L001_R2_001.fastq.gz"
+gex_reference =  meta["resources_dir"] +  "/reference_gencodev41_chr1/reference_cellranger.tar.gz"
+feature_reference = meta["resources_dir"] + "/10x_5k_anticmv/raw/feature_reference.csv"
+vdj_reference = meta["resources_dir"]+  "/10x_5k_anticmv/raw/refdata-cellranger-vdj-GRCh38-alts-ensembl-7.0.0.tar.gz"
 
 
 def test_cellranger_multi(run_component):
@@ -77,7 +77,7 @@ def test_cellranger_multi_decompressed_reference(run_component, tmp_path):
 def test_cellranger_multi_directory_input(run_component):
     args=[
         "--output", "output5/",
-        "--input", meta["resources_dir"] + "10x_5k_anticmv/raw/",
+        "--input", meta["resources_dir"] + "/10x_5k_anticmv/raw/",
         "--gex_reference", gex_reference,
         "--vdj_reference", vdj_reference,
         "--feature_reference", feature_reference,
@@ -96,7 +96,7 @@ def test_vdj_inner_enrichment_primers(run_component, tmp_path):
         primers_file_open.write("AGTCTCTCAGCTGGTACACG\nTCTGATGGCTCAAACACAGC")
     args=[
         "--output", "output5/",
-        "--input", meta["resources_dir"] + "10x_5k_anticmv/raw/",
+        "--input", meta["resources_dir"] + "/10x_5k_anticmv/raw/",
         "--gex_reference", gex_reference,
         "--vdj_reference", vdj_reference,
         "--feature_reference", feature_reference,
@@ -167,14 +167,14 @@ def test_cellranger_multi_no_vdj_reference(run_component):
 
 def test_cellranger_multi_crispt_data(run_component):
     args = [
-        "--input", meta["resources_dir"] + "10x_5k_lung_crispr/raw/SC3_v3_NextGem_DI_CRISPR_A549_5K_gex_subset_S5_L001_R1_001.fastq.gz",
-        "--input", meta["resources_dir"] + "10x_5k_lung_crispr/raw/SC3_v3_NextGem_DI_CRISPR_A549_5K_gex_subset_S5_L001_R2_001.fastq.gz",
-        "--input", meta["resources_dir"] + "10x_5k_lung_crispr/raw/SC3_v3_NextGem_DI_CRISPR_A549_5K_crispr_subset_S4_L001_R1_001.fastq.gz",
-        "--input", meta["resources_dir"] + "10x_5k_lung_crispr/raw/SC3_v3_NextGem_DI_CRISPR_A549_5K_crispr_subset_S4_L001_R2_001.fastq.gz",
+        "--input", meta["resources_dir"] + "/10x_5k_lung_crispr/raw/SC3_v3_NextGem_DI_CRISPR_A549_5K_gex_subset_S5_L001_R1_001.fastq.gz",
+        "--input", meta["resources_dir"] + "/10x_5k_lung_crispr/raw/SC3_v3_NextGem_DI_CRISPR_A549_5K_gex_subset_S5_L001_R2_001.fastq.gz",
+        "--input", meta["resources_dir"] + "/10x_5k_lung_crispr/raw/SC3_v3_NextGem_DI_CRISPR_A549_5K_crispr_subset_S4_L001_R1_001.fastq.gz",
+        "--input", meta["resources_dir"] + "/10x_5k_lung_crispr/raw/SC3_v3_NextGem_DI_CRISPR_A549_5K_crispr_subset_S4_L001_R2_001.fastq.gz",
         "--library_id", "SC3_v3_NextGem_DI_CRISPR_A549_5K_gex_subset;SC3_v3_NextGem_DI_CRISPR_A549_5K_crispr_subset",
         "--library_type", "Gene Expression;CRISPR Guide Capture",
         "--gex_reference", gex_reference,
-        "--feature_reference", meta["resources_dir"] + "10x_5k_lung_crispr/raw/SC3_v3_NextGem_DI_CRISPR_A549_5K_Multiplex_count_feature_reference_corrected.csv",
+        "--feature_reference", meta["resources_dir"] + "/10x_5k_lung_crispr/raw/SC3_v3_NextGem_DI_CRISPR_A549_5K_Multiplex_count_feature_reference_corrected.csv",
         "--output", "output5/"
     ]
     run_component(args)

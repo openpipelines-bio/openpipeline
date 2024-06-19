@@ -1,3 +1,9 @@
+# openpipelines 0.12.7
+
+## BUG FIXES
+
+* Bump viash to `0.8.6` (PR #, backported from #815). This changes the at-runtime generated nextflow process from an in-memory to an on-disk temporary file, which should cause less issues with Nextflow Fusion.
+
 # openpipelines 0.12.6
 
 ## BUG FIXES
