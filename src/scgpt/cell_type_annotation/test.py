@@ -1,7 +1,6 @@
 import pytest
 from mudata import read_h5mu
 import sys
-import json
 import torch
 import numpy as np
 import subprocess
@@ -162,7 +161,7 @@ def test_annotation_non_existing_keys(run_component, tmp_path):
     with pytest.raises(subprocess.CalledProcessError) as err:
         run_component(args)
     assert re.search(
-        r'KeyError: "The key \'dummy_checkpoints_key\' provided for \'finetuned_checkpoints_key\' could not be found in the provided model file \(--model\). The finetuned model file for cell type annotation requires valid keys for the checkpoints and the label mapper."',
+        r'KeyError: "The key \'dummy_checkpoints_key\' provided for \'--finetuned_checkpoints_key\' could not be found in the provided model file (--model). The finetuned model file for cell type annotation requires valid keys for the checkpoints and the label mapper."',
         err.value.stdout.decode('utf-8'))
 
 
