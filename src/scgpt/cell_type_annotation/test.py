@@ -138,8 +138,10 @@ def test_annotation_non_existing_keys(run_component, tmp_path):
         r'KeyError: "The parameter \'dummy_values_tokenized\' provided for \'--obsm_tokenized_values\' could not be found in adata.obsm"',
         err.value.stdout.decode('utf-8'))
 
+def test_checkpoint_architecture(run_component, tmp_path):
+
     output_dummy_model_key = tmp_path / "Kim2020_Lung_subset_annotated_dummy_key.h5mu"
-    
+
     # Test for non-existing model file keys
     args = [
         "--input", input_path,
@@ -161,9 +163,9 @@ def test_annotation_non_existing_keys(run_component, tmp_path):
     with pytest.raises(subprocess.CalledProcessError) as err:
         run_component(args)
     assert re.search(
-        r'KeyError: "The key \'dummy_checkpoints_key\' provided for \'--finetuned_checkpoints_key\' could not be found in the provided model file (--model). The finetuned model file for cell type annotation requires valid keys for the checkpoints and the label mapper."',
+        r'KeyError: "The key \'dummy_checkpoints_key\' provided for \'--finetuned_checkpoints_key\' could not be found in the provided --model file. The finetuned model file for cell type annotation requires valid keys for the checkpoints and the label mapper."',
         err.value.stdout.decode('utf-8'))
 
 
 if __name__ == '__main__':
-   sys.exit(pytest.main([__file__]))
+    sys.exit(pytest.main([__file__]))

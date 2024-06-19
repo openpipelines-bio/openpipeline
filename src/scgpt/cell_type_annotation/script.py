@@ -147,7 +147,7 @@ for k, v in {
         "--label_mapper_key": par["label_mapper_key"],
         }.items():
     if v not in model_dict.keys():
-        raise KeyError(f"The key '{v}' provided for '{k}' could not be found in the provided model file (--model). The finetuned model file for cell type annotation requires valid keys for the checkpoints and the label mapper.")
+        raise KeyError(f"The key '{v}' provided for '{k}' could not be found in the provided --model file. The finetuned model file for cell type annotation requires valid keys for the checkpoints and the label mapper.")
 
 pretrained_dict = model_dict[par["finetuned_checkpoints_key"]]
 label_mapper = model_dict[par["label_mapper_key"]]
