@@ -124,6 +124,7 @@ platforms:
     - "anndata~=0.9.1"
     - "mudata~=0.2.3"
     - "pandas!=2.1.2"
+    - "numpy<2.0.0"
     upgrade: true
   - type: "r"
     cran:
@@ -184,7 +185,7 @@ info:
   platform: "nextflow"
   output: "/home/runner/work/openpipeline/openpipeline/target/nextflow/convert/from_bdrhap_to_h5mu"
   executable: "/home/runner/work/openpipeline/openpipeline/target/nextflow/convert/from_bdrhap_to_h5mu/from_bdrhap_to_h5mu"
-  viash_version: "0.8.5"
-  git_commit: "51fe2f11e4d95f6c06dcd718969e2ed5746ca522"
+  viash_version: "0.8.6"
+  git_commit: "c50b24b54e51ccff9fde63d9cbb0b076195e07d4"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"
-  git_tag: "0.2.0-1625-g51fe2f11e4"
+  git_tag: "0.2.0-1626-gc50b24b54e"
