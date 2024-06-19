@@ -152,7 +152,7 @@ platforms:
   - type: "python"
     user: false
     pip:
-    - "numpy"
+    - "numpy<2"
     - "Cython"
     upgrade: true
   - type: "python"
@@ -227,6 +227,6 @@ info:
   platform: "native"
   output: "/home/runner/work/openpipeline/openpipeline/target/native/velocity/velocyto"
   executable: "/home/runner/work/openpipeline/openpipeline/target/native/velocity/velocyto/velocyto"
-  viash_version: "0.8.5"
-  git_commit: "49b7a3990194e1fbc888edeb8e549e6282515261"
+  viash_version: "0.8.6"
+  git_commit: "c20287a1f16e74d334e6116f124c00cbc8dd72df"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"
