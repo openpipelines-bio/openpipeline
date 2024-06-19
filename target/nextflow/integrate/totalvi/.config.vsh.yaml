@@ -1,7 +1,7 @@
 functionality:
   name: "totalvi"
   namespace: "integrate"
-  version: "1.0.0"
+  version: "1.0.1"
   authors:
   - name: "Vladimir Shitov"
     info:
@@ -352,7 +352,7 @@ info:
   platform: "nextflow"
   output: "/home/runner/work/openpipeline/openpipeline/target/nextflow/integrate/totalvi"
   executable: "/home/runner/work/openpipeline/openpipeline/target/nextflow/integrate/totalvi/totalvi"
-  viash_version: "0.8.5"
-  git_commit: "f6afb13a00da46b141b778b1770be7f1a382e109"
+  viash_version: "0.8.6"
+  git_commit: "8ba584e550ac93c484a8b6ddea0c44618d02cf3f"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"
-  git_tag: "1.0.0-rc6"
+  git_tag: "1.0.0-1-g8ba584e550"
