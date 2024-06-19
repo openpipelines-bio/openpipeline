@@ -23,7 +23,7 @@ model_vocab = meta["resources_dir"] + "vocab.json"
 
 
 def scgpt_to_ft_scgpt(scgpt_path, ft_scgpt_path, state_dict_key, mapper_key):
-    f_model_dict = torch.load(scgpt_path, device="cpu")
+    f_model_dict = torch.load(scgpt_path, map_location="cpu")
     model_dict = {}
     model_dict[state_dict_key] = f_model_dict
     model_dict[mapper_key] = {k: str(k) for k in range(15)}
