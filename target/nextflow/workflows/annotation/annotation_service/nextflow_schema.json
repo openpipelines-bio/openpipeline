@@ -65,8 +65,8 @@
                 "reference_url": {
                 "type":
                 "string",
-                "description": "Type: `string`, required, example: `https://zenodo.org/records/7587774/files/TS_Lung_filtered.h5ad`. The reference dataset to be used as a reference mapper and to train annotation algorithms on",
-                "help_text": "Type: `string`, required, example: `https://zenodo.org/records/7587774/files/TS_Lung_filtered.h5ad`. The reference dataset to be used as a reference mapper and to train annotation algorithms on.\n"
+                "description": "Type: `file`, required, example: `https://zenodo.org/records/7587774/files/TS_Lung_filtered.h5ad`. The reference dataset to be used as a reference mapper and to train annotation algorithms on",
+                "help_text": "Type: `file`, required, example: `https://zenodo.org/records/7587774/files/TS_Lung_filtered.h5ad`. The reference dataset to be used as a reference mapper and to train annotation algorithms on.\n"
             
             }
     

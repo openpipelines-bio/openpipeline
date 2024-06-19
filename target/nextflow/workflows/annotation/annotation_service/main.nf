@@ -2858,12 +2858,14 @@ meta = [
             "dest" : "par"
           },
           {
-            "type" : "string",
+            "type" : "file",
             "name" : "--reference_url",
             "description" : "The reference dataset to be used as a reference mapper and to train annotation algorithms on.\n",
             "example" : [
-              "https://zenodo.org/records/7587774/files/TS_Lung_filtered.h5ad"
+              "https:/zenodo.org/records/7587774/files/TS_Lung_filtered.h5ad"
             ],
+            "must_exist" : true,
+            "create_parent" : true,
             "required" : true,
             "direction" : "input",
             "multiple" : false,
@@ -3242,27 +3244,6 @@ meta = [
     },
     "dependencies" : [
       {
-        "name" : "download/download_file",
-        "repository" : {
-          "type" : "local",
-          "localPath" : ""
-        },
-        "foundConfigPath" : "/home/runner/work/openpipeline/openpipeline/src/download/download_file/config.vsh.yaml",
-        "configInfo" : {
-          "functionalityName" : "download_file",
-          "git_tag" : "0.2.0-1626-gc50b24b54e",
-          "git_remote" : "https://github.com/openpipelines-bio/openpipeline",
-          "viash_version" : "0.8.6",
-          "config" : "/home/runner/work/openpipeline/openpipeline/src/download/download_file/config.vsh.yaml",
-          "functionalityNamespace" : "download",
-          "output" : "",
-          "platform" : "",
-          "git_commit" : "c50b24b54e51ccff9fde63d9cbb0b076195e07d4",
-          "executable" : "/nextflow/download/download_file/main.nf"
-        },
-        "writtenPath" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/download/download_file"
-      },
-      {
         "name" : "convert/from_h5ad_to_h5mu",
         "repository" : {
           "type" : "local",
@@ -3271,14 +3252,14 @@ meta = [
         "foundConfigPath" : "/home/runner/work/openpipeline/openpipeline/src/convert/from_h5ad_to_h5mu/config.vsh.yaml",
         "configInfo" : {
           "functionalityName" : "from_h5ad_to_h5mu",
-          "git_tag" : "0.2.0-1626-gc50b24b54e",
+          "git_tag" : "0.2.0-1627-g1ec7a8e3ba",
           "git_remote" : "https://github.com/openpipelines-bio/openpipeline",
           "viash_version" : "0.8.6",
           "config" : "/home/runner/work/openpipeline/openpipeline/src/convert/from_h5ad_to_h5mu/config.vsh.yaml",
           "functionalityNamespace" : "convert",
           "output" : "",
           "platform" : "",
-          "git_commit" : "c50b24b54e51ccff9fde63d9cbb0b076195e07d4",
+          "git_commit" : "1ec7a8e3ba0e5bbb1c135705a84838da6e9d3939",
           "executable" : "/nextflow/convert/from_h5ad_to_h5mu/main.nf"
         },
         "writtenPath" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/convert/from_h5ad_to_h5mu"
@@ -3292,14 +3273,14 @@ meta = [
         "foundConfigPath" : "/home/runner/work/openpipeline/openpipeline/src/dataflow/split_samples/config.vsh.yaml",
         "configInfo" : {
           "functionalityName" : "split_samples",
-          "git_tag" : "0.2.0-1626-gc50b24b54e",
+          "git_tag" : "0.2.0-1627-g1ec7a8e3ba",
           "git_remote" : "https://github.com/openpipelines-bio/openpipeline",
           "viash_version" : "0.8.6",
           "config" : "/home/runner/work/openpipeline/openpipeline/src/dataflow/split_samples/config.vsh.yaml",
           "functionalityNamespace" : "dataflow",
           "output" : "",
           "platform" : "",
-          "git_commit" : "c50b24b54e51ccff9fde63d9cbb0b076195e07d4",
+          "git_commit" : "1ec7a8e3ba0e5bbb1c135705a84838da6e9d3939",
           "executable" : "/nextflow/dataflow/split_samples/main.nf"
         },
         "writtenPath" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/dataflow/split_samples"
@@ -3314,14 +3295,14 @@ meta = [
         "foundConfigPath" : "/home/runner/work/openpipeline/openpipeline/src/workflows/multiomics/process_samples/config.vsh.yaml",
         "configInfo" : {
           "functionalityName" : "process_samples",
-          "git_tag" : "0.2.0-1626-gc50b24b54e",
+          "git_tag" : "0.2.0-1627-g1ec7a8e3ba",
           "git_remote" : "https://github.com/openpipelines-bio/openpipeline",
           "viash_version" : "0.8.6",
           "config" : "/home/runner/work/openpipeline/openpipeline/src/workflows/multiomics/process_samples/config.vsh.yaml",
           "functionalityNamespace" : "workflows/multiomics",
           "output" : "",
           "platform" : "",
-          "git_commit" : "c50b24b54e51ccff9fde63d9cbb0b076195e07d4",
+          "git_commit" : "1ec7a8e3ba0e5bbb1c135705a84838da6e9d3939",
           "executable" : "/nextflow/workflows/multiomics/process_samples/main.nf"
         },
         "writtenPath" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/workflows/multiomics/process_samples"
@@ -3336,14 +3317,14 @@ meta = [
         "foundConfigPath" : "/home/runner/work/openpipeline/openpipeline/src/workflows/annotation/harmony_knn/config.vsh.yaml",
         "configInfo" : {
           "functionalityName" : "harmony_knn",
-          "git_tag" : "0.2.0-1626-gc50b24b54e",
+          "git_tag" : "0.2.0-1627-g1ec7a8e3ba",
           "git_remote" : "https://github.com/openpipelines-bio/openpipeline",
           "viash_version" : "0.8.6",
           "config" : "/home/runner/work/openpipeline/openpipeline/src/workflows/annotation/harmony_knn/config.vsh.yaml",
           "functionalityNamespace" : "workflows/annotation",
           "output" : "",
           "platform" : "",
-          "git_commit" : "c50b24b54e51ccff9fde63d9cbb0b076195e07d4",
+          "git_commit" : "1ec7a8e3ba0e5bbb1c135705a84838da6e9d3939",
           "executable" : "/nextflow/workflows/annotation/harmony_knn/main.nf"
         },
         "writtenPath" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/workflows/annotation/harmony_knn"
@@ -3410,16 +3391,15 @@ meta = [
     "platform" : "nextflow",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/workflows/annotation/annotation_service",
     "viash_version" : "0.8.6",
-    "git_commit" : "c50b24b54e51ccff9fde63d9cbb0b076195e07d4",
+    "git_commit" : "1ec7a8e3ba0e5bbb1c135705a84838da6e9d3939",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline",
-    "git_tag" : "0.2.0-1626-gc50b24b54e"
+    "git_tag" : "0.2.0-1627-g1ec7a8e3ba"
   }
 }'''))
 ]
 
 // resolve dependencies dependencies (if any)
 meta["root_dir"] = getRootDir()
-include { download_file } from "${meta.resources_dir}/../../../../nextflow/download/download_file/main.nf"
 include { from_h5ad_to_h5mu } from "${meta.resources_dir}/../../../../nextflow/convert/from_h5ad_to_h5mu/main.nf"
 include { split_samples } from "${meta.resources_dir}/../../../../nextflow/dataflow/split_samples/main.nf"
 include { process_samples as process_samples_workflow_viashalias } from "${meta.resources_dir}/../../../../nextflow/workflows/multiomics/process_samples/main.nf"
@@ -3442,23 +3422,11 @@ workflow process_reference {
       [id, new_state]
       }
 
-    // download the reference h5ad file
-    | download_file.run(
-      fromState: { id, state ->
-        [
-          "input": state.reference_url,
-          "verbose": "true",
-        ]
-      },
-      toState: [
-        "input": "output",
-      ]
-    )
     // convert the reference h5ad file to h5mu
     | from_h5ad_to_h5mu.run(
         fromState: { id, state ->
         [
-          "input": state.input,
+          "input": state.reference_url,
           "modality": "rna",
         ]
       },

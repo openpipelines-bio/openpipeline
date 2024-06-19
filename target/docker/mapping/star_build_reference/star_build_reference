@@ -452,9 +452,9 @@ RUN apt-get update && \
 
 LABEL org.opencontainers.image.authors="Dries Schaumont"
 LABEL org.opencontainers.image.description="Companion container for running component mapping star_build_reference"
-LABEL org.opencontainers.image.created="2024-06-19T08:34:34Z"
+LABEL org.opencontainers.image.created="2024-06-19T11:44:27Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="c50b24b54e51ccff9fde63d9cbb0b076195e07d4"
+LABEL org.opencontainers.image.revision="1ec7a8e3ba0e5bbb1c135705a84838da6e9d3939"
 LABEL org.opencontainers.image.version="annotation-workflow_build"
 
 VIASHDOCKER
