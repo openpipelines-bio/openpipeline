@@ -72,7 +72,7 @@ def test_cell_type_inference(run_component, tmp_path):
         "--modality", "rna",
         "--obsm_gene_tokens", "gene_id_tokens",
         "--obsm_tokenized_values", "values_tokenized",
-        "--model", model,
+        "--model", ft_model,
         "--model_vocab", model_vocab,
         "--model_config", model_config,
         "--finetuned_checkpoints_key", "model_state_dict",
@@ -101,7 +101,7 @@ def test_annotation_dsbn_without_batch_labels(run_component, tmp_path):
         "--modality", "rna",
         "--obsm_gene_tokens", "gene_id_tokens",
         "--obsm_tokenized_values", "values_tokenized",
-        "--model", model,
+        "--model", ft_model,
         "--model_vocab", model_vocab,
         "--model_config", model_config,
         "--finetuned_checkpoints_key", "model_state_dict",
@@ -146,11 +146,12 @@ def test_annotation_non_existing_keys(run_component, tmp_path):
         r'KeyError: "The parameter \'dummy_values_tokenized\' provided for \'--obsm_tokenized_values\' could not be found in adata.obsm"',
         err.value.stdout.decode('utf-8'))
 
-
+    output_dummy_model_key = tmp_path / "Kim2020_Lung_subset_annotated_dummy_key.h5mu"
+    
     # Test for non-existing model file keys
     args = [
         "--input", input_path,
-        "--output",  output_annotation_dummy_values,
+        "--output",  output_dummy_model_key,
         "--modality", "rna",
         "--obsm_gene_tokens", "gene_id_tokens",
         "--obsm_tokenized_values", "values_tokenized",
