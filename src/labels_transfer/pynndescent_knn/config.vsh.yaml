@@ -120,7 +120,6 @@ platforms:
         packages:
           - pynndescent
           - scikit-learn
-  - type: native
   - type: nextflow
     directives:
       label: [singlecpu, lowmem]
