@@ -7,13 +7,6 @@ import numpy as np
 import subprocess
 import re
 
-## VIASH START
-meta = {
-    'executable': './target/docker/scgpt/annotation/annotation',
-    'resources_dir': './resources_test/scgpt/',
-    'config': './src/scgpt/annotation/config.vsh.yaml'
-}
-## VIASH END
 
 input_path = f'{meta["resources_dir"]}/Kim2020_Lung_subset_tokenized.h5mu'
 model = f'{meta["resources_dir"]}/best_model.pt'
@@ -174,4 +167,4 @@ def test_annotation_non_existing_keys(run_component, tmp_path):
 
 
 if __name__ == '__main__':
-    sys.exit(pytest.main([__file__]))
+   sys.exit(pytest.main([__file__]))
