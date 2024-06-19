@@ -18,7 +18,6 @@ par = {
   'model': r'resources_test/scgpt/soumya_atlas_80_percent-Jun11-01-04/best_model.pt',
   'model_config': r'resources_test/scgpt/soumya_atlas_80_percent-Jun11-01-04/args.json',
   'model_vocab': r'resources_test/scgpt/soumya_atlas_80_percent-Jun11-01-04/vocab.json',
-  'model_label_mapper': r'id_to_class',
   'obs_batch_label': r'sample',
   'obsm_gene_tokens': r'gene_id_tokens',
   'obsm_tokenized_values': r'values_tokenized',
@@ -141,6 +140,15 @@ model = TransformerModel(
 
 model_file = par["model"]
 model_dict = torch.load(model_file, map_location=device)
+
+# Ensure the provided model has the correct architecture
+for k, v in {
+        "--finetuned_checkpoints_key": par["finetuned_checkpoints_key"],
+        "--label_mapper_key": par["label_mapper_key"],
+        }.items():
+    if v not in adata.obsm.keys():
+        raise KeyError(f"The key '{v}' provided for '{k}' could not be found in the provided model file (--model). The finetuned model file for cell type annotation requires valid keys for the checkpoints and the label mapper.")
+
 pretrained_dict = model_dict[par["finetuned_checkpoints_key"]]
 label_mapper = model_dict[par["label_mapper_key"]]
 try:

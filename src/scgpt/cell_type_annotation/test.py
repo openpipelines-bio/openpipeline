@@ -16,8 +16,8 @@ meta = {
 ## VIASH END
 
 input_path = meta["resources_dir"] + "Kim2020_Lung_subset_tokenized.h5mu"
-model = meta["resources_dir"] + "best_model.pt"
-ft_model = meta["resources_dir"] + "ft_best_model.pt"
+model = meta["resources_dir"] + "/best_model.pt"
+ft_model = meta["resources_dir"] + "/ft_best_model.pt"
 model_config = meta["resources_dir"] + "args.json"
 model_vocab = meta["resources_dir"] + "vocab.json"
 
@@ -30,7 +30,8 @@ def scgpt_to_ft_scgpt(scgpt_path, ft_scgpt_path, state_dict_key, mapper_key):
     torch.save(model_dict, ft_scgpt_path)
 
 
-# Convert foundation model into fine-tuned model architecture
+# Convert foundation model into fine-tuned model architecture:
+# To be able to do a cell type label mapping, the model architecture needs to contain a class to label mapper dictionary
 scgpt_to_ft_scgpt(model, ft_model, "model_state_dict", "id_to_class")
 
 
@@ -122,7 +123,7 @@ def test_annotation_non_existing_keys(run_component, tmp_path):
     output_annotation_dummy_values = tmp_path / "Kim2020_Lung_subset_annotated_dummy_key.h5mu"
 
     # Test for non-existing tokenized values key
-    args_2 = [
+    args = [
         "--input", input_path,
         "--output",  output_annotation_dummy_values,
         "--modality", "rna",
@@ -140,11 +141,35 @@ def test_annotation_non_existing_keys(run_component, tmp_path):
     ]
 
     with pytest.raises(subprocess.CalledProcessError) as err:
-        run_component(args_2)
+        run_component(args)
     assert re.search(
         r'KeyError: "The parameter \'dummy_values_tokenized\' provided for \'--obsm_tokenized_values\' could not be found in adata.obsm"',
         err.value.stdout.decode('utf-8'))
 
+
+    # Test for non-existing model file keys
+    args = [
+        "--input", input_path,
+        "--output",  output_annotation_dummy_values,
+        "--modality", "rna",
+        "--obsm_gene_tokens", "gene_id_tokens",
+        "--obsm_tokenized_values", "values_tokenized",
+        "--model", ft_model,
+        "--model_vocab", model_vocab,
+        "--model_config", model_config,
+        "--finetuned_checkpoints_key", "dummy_checkpoints_key",
+        "--label_mapper_key", "id_to_class",
+        "--obs_predicted_cell_class", "predicted_cell_class",
+        "--obs_predicted_cell_label", "predicted_cell_label",
+        "--obs_batch_label", "sample",
+        "--dsbn", "True",
+    ]
+
+    with pytest.raises(subprocess.CalledProcessError) as err:
+        run_component(args)
+    assert re.search(
+        r'KeyError: "The key \'dummy_checkpoints_key\' provided for \'finetuned_checkpoints_key\' could not be found in the provided model file \(--model\). The finetuned model file for cell type annotation requires valid keys for the checkpoints and the label mapper."'
+        err.value.stdout.decode('utf-8'))
 
 if __name__ == '__main__':
     sys.exit(pytest.main([__file__]))
