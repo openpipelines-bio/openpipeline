@@ -3,6 +3,7 @@ viash_version: 0.8.6
 source: src
 target: target
 
+
 config_mods: |
   .functionality.version := 'dev'
   .functionality.requirements.commands := ['ps']
