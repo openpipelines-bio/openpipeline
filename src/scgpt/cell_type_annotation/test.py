@@ -20,13 +20,13 @@ model = meta["resources_dir"] + "best_model.pt"
 ft_model_path = meta["resources_dir"] + "ft_best_model.pt"
 model_config = meta["resources_dir"] + "args.json"
 model_vocab = meta["resources_dir"] + "vocab.json"
+state_dict_key = "model_state_dict"
+label_mapper_key = "id_to_class"
 
 
 @pytest.fixture
 def cell_type_mapper():
-    return {
-        "0": "a", "1": "b", "2": "c",  "3": "d", "4": "e", "5": "f", "6": "g", "7": "h", "8": "i" "9": "j", "10": "k", "11": "l", "12": "m", "13": "n", "14": "o"
-    }
+    return {k: str(k) for k in range(15)}
 
 
 @pytest.fixture
@@ -46,7 +46,8 @@ def test_cell_type_inference(run_component,
 
     output_annotation_file = tmp_path / "Kim2020_Lung_subset_annotated.h5mu"
 
-    scgpt_to_ft_scgpt(model, ft_model_path, cell_type_mapper, "model_state_dict", "id_to_class")
+    scgpt_to_ft_scgpt(model, ft_model_path, cell_type_mapper, state_dict_key, label_mapper_key)
+
     args = [
         "--input", input_path,
         "--output",  output_annotation_file,
@@ -54,11 +55,10 @@ def test_cell_type_inference(run_component,
         "--obsm_gene_tokens", "gene_id_tokens",
         "--obsm_tokenized_values", "values_tokenized",
         "--model", ft_model_path,
-        "--finetuned_checkpoints_key", "model_state_dict",
-        "--label_mapper_key", "id_to_class",
+        "--finetuned_checkpoints_key", state_dict_key,
+        "--label_mapper_key", label_mapper_key,
         "--model_vocab", model_vocab,
         "--model_config", model_config,
-        "--cell_type_mapper", json_mapper_path,
         "--obs_batch_label", "sample",
         "--obs_predicted_cell_class", "predicted_cell_class",
         "--obs_predicted_cell_label", "predicted_cell_label",
