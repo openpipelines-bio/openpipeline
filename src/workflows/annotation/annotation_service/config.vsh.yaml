@@ -26,7 +26,7 @@ functionality:
           choices: [harmony_knn]
           example: harmony_knn
         - name: "--reference_url"
-          type: string
+          type: file
           required: true
           description: |
             The reference dataset to be used as a reference mapper and to train annotation algorithms on.
@@ -194,7 +194,6 @@ functionality:
         example: output.h5mu
 
   dependencies:
-    - name: download/download_file
     - name: convert/from_h5ad_to_h5mu
     - name: dataflow/split_samples
     - name: workflows/multiomics/process_samples

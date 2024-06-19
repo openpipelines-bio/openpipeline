@@ -11,23 +11,11 @@ workflow process_reference {
       [id, new_state]
       }
 
-    // download the reference h5ad file
-    | download_file.run(
-      fromState: { id, state ->
-        [
-          "input": state.reference_url,
-          "verbose": "true",
-        ]
-      },
-      toState: [
-        "input": "output",
-      ]
-    )
     // convert the reference h5ad file to h5mu
     | from_h5ad_to_h5mu.run(
         fromState: { id, state ->
         [
-          "input": state.input,
+          "input": state.reference_url,
           "modality": "rna",
         ]
       },
