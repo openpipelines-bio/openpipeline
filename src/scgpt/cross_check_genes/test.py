@@ -12,8 +12,8 @@ meta = {
 }
 ## VIASH END
 
-input_path = meta["resources_dir"] + "Kim2020_Lung_subset.h5mu"
-vocab_path = meta["resources_dir"] + "vocab.json"
+input_path = meta["resources_dir"] + "/Kim2020_Lung_subset.h5mu"
+vocab_path = meta["resources_dir"] + "/vocab.json"
 
 def test_cross_check(run_component, random_path):
     output_path = random_path(extension="h5mu")
