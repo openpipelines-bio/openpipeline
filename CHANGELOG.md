@@ -26,6 +26,8 @@
 
 * `scgpt/binning` component: Added a scGPT pre-processing binning component (PR #765).
 
+* `resources_test_scripts/scGPT.sh`: Added script to include scGPT test resources (PR #800).
+
 ## MINOR CHANGES
 
 * Bump viash to `0.8.6` (PR #815).
