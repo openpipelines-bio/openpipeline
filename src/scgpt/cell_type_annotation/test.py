@@ -168,8 +168,9 @@ def test_annotation_non_existing_keys(run_component, tmp_path):
     with pytest.raises(subprocess.CalledProcessError) as err:
         run_component(args)
     assert re.search(
-        r'KeyError: "The key \'dummy_checkpoints_key\' provided for \'finetuned_checkpoints_key\' could not be found in the provided model file \(--model\). The finetuned model file for cell type annotation requires valid keys for the checkpoints and the label mapper."'
+        r'KeyError: "The key \'dummy_checkpoints_key\' provided for \'finetuned_checkpoints_key\' could not be found in the provided model file \(--model\). The finetuned model file for cell type annotation requires valid keys for the checkpoints and the label mapper."',
         err.value.stdout.decode('utf-8'))
+
 
 if __name__ == '__main__':
     sys.exit(pytest.main([__file__]))
