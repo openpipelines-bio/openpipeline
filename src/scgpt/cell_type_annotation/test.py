@@ -17,36 +17,26 @@ meta = {
 
 input_path = meta["resources_dir"] + "Kim2020_Lung_subset_tokenized.h5mu"
 model = meta["resources_dir"] + "best_model.pt"
-ft_model_path = meta["resources_dir"] + "ft_best_model.pt"
+ft_model = meta["resources_dir"] + "ft_best_model.pt"
 model_config = meta["resources_dir"] + "args.json"
 model_vocab = meta["resources_dir"] + "vocab.json"
-state_dict_key = "model_state_dict"
-label_mapper_key = "id_to_class"
 
 
-@pytest.fixture
-def cell_type_mapper():
-    return {k: str(k) for k in range(15)}
-
-
-@pytest.fixture
-def scgpt_to_ft_scgpt(scgpt_path, ft_scgpt_path, cell_type_mapper, state_dict_key, mapper_key):
+def scgpt_to_ft_scgpt(scgpt_path, ft_scgpt_path, state_dict_key, mapper_key):
     f_model_dict = torch.load(scgpt_path)
     model_dict = {}
     model_dict[state_dict_key] = f_model_dict
-    model_dict[mapper_key] = cell_type_mapper
+    model_dict[mapper_key] = {k: str(k) for k in range(15)}
     torch.save(model_dict, ft_scgpt_path)
 
 
-def test_cell_type_inference(run_component,
-                             tmp_path,
-                             json_mapper_path,
-                             scgpt_to_ft_scgpt,
-                             cell_type_mapper):
+# Convert foundation model into fine-tuned model architecture
+scgpt_to_ft_scgpt(model, ft_model, "model_state_dict", "id_to_class")
+
+
+def test_cell_type_inference(run_component, tmp_path):
 
     output_annotation_file = tmp_path / "Kim2020_Lung_subset_annotated.h5mu"
-
-    scgpt_to_ft_scgpt(model, ft_model_path, cell_type_mapper, state_dict_key, label_mapper_key)
 
     args = [
         "--input", input_path,
@@ -54,9 +44,9 @@ def test_cell_type_inference(run_component,
         "--modality", "rna",
         "--obsm_gene_tokens", "gene_id_tokens",
         "--obsm_tokenized_values", "values_tokenized",
-        "--model", ft_model_path,
-        "--finetuned_checkpoints_key", state_dict_key,
-        "--label_mapper_key", label_mapper_key,
+        "--model", ft_model,
+        "--finetuned_checkpoints_key", "model_state_dict",
+        "--label_mapper_key", "id_to_class",
         "--model_vocab", model_vocab,
         "--model_config", model_config,
         "--obs_batch_label", "sample",
@@ -84,7 +74,8 @@ def test_cell_type_inference(run_component,
         "--model", model,
         "--model_vocab", model_vocab,
         "--model_config", model_config,
-        "--cell_type_mapper", json_mapper_path,
+        "--finetuned_checkpoints_key", "model_state_dict",
+        "--label_mapper_key", "id_to_class",
         "--obs_batch_label", "sample",
         "--obs_predicted_cell_class", "predicted_cell_class",
         "--obs_predicted_cell_label", "predicted_cell_label",
@@ -99,7 +90,8 @@ def test_cell_type_inference(run_component,
     assert not (output_adata.obs["predicted_cell_class"] == output_adata_no_dsbn.obs["predicted_cell_class"]).all(), "Cell type predictions with and without dsbn are the same"
 
 
-def test_annotation_dsbn_without_batch_labels(run_component, tmp_path, json_mapper_path):
+def test_annotation_dsbn_without_batch_labels(run_component, tmp_path):
+
     output_annotation_labels_without_dsbn = tmp_path / "Kim2020_Lung_subset_annotated_labels_without_dsbn.h5mu"
 
     args = [
@@ -111,7 +103,8 @@ def test_annotation_dsbn_without_batch_labels(run_component, tmp_path, json_mapp
         "--model", model,
         "--model_vocab", model_vocab,
         "--model_config", model_config,
-        "--cell_type_mapper", json_mapper_path,
+        "--finetuned_checkpoints_key", "model_state_dict",
+        "--label_mapper_key", "id_to_class",
         "--obs_predicted_cell_class", "predicted_cell_class",
         "--obs_predicted_cell_label", "predicted_cell_label",
         "--dsbn", "True",
@@ -124,7 +117,7 @@ def test_annotation_dsbn_without_batch_labels(run_component, tmp_path, json_mapp
         err.value.stdout.decode('utf-8'))
 
 
-def test_annotation_non_existing_keys(run_component, tmp_path, json_mapper_path):
+def test_annotation_non_existing_keys(run_component, tmp_path):
 
     output_annotation_dummy_values = tmp_path / "Kim2020_Lung_subset_annotated_dummy_key.h5mu"
 
@@ -135,10 +128,11 @@ def test_annotation_non_existing_keys(run_component, tmp_path, json_mapper_path)
         "--modality", "rna",
         "--obsm_gene_tokens", "gene_id_tokens",
         "--obsm_tokenized_values", "dummy_values_tokenized",
-        "--model", model,
+        "--model", ft_model,
         "--model_vocab", model_vocab,
         "--model_config", model_config,
-        "--cell_type_mapper", json_mapper_path,
+        "--finetuned_checkpoints_key", "model_state_dict",
+        "--label_mapper_key", "id_to_class",
         "--obs_predicted_cell_class", "predicted_cell_class",
         "--obs_predicted_cell_label", "predicted_cell_label",
         "--obs_batch_label", "sample",
