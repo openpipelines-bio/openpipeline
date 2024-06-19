@@ -26,6 +26,8 @@
 
 * `scgpt/binning` component: Added a scGPT pre-processing binning component (PR #765).
 
+* `scgpt/cell_type_annotation` component: Added scGPT cell type annotation component (PR #798)
+
 ## MINOR CHANGES
 
 * Bump viash to `0.8.6` (PR #815).
