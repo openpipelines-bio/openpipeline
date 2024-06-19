@@ -15,11 +15,11 @@ meta = {
 }
 ## VIASH END
 
-input_path = meta["resources_dir"] + "Kim2020_Lung_subset_tokenized.h5mu"
-model = meta["resources_dir"] + "/best_model.pt"
-ft_model = meta["resources_dir"] + "/ft_best_model.pt"
-model_config = meta["resources_dir"] + "args.json"
-model_vocab = meta["resources_dir"] + "vocab.json"
+input_path = f'{meta["resources_dir"]}/Kim2020_Lung_subset_tokenized.h5mu'
+model = f'{meta["resources_dir"]}/best_model.pt'
+ft_model = f'{meta["resources_dir"]}/ft_best_model.pt'
+model_config = f'{meta["resources_dir"]}/args.json'
+model_vocab = f'{meta["resources_dir"]}/vocab.json'
 
 
 def scgpt_to_ft_scgpt(scgpt_path, ft_scgpt_path, state_dict_key, mapper_key):
