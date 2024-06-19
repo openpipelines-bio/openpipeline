@@ -3081,14 +3081,14 @@ meta = [
         "foundConfigPath" : "/home/runner/work/openpipeline/openpipeline/src/integrate/harmonypy/config.vsh.yaml",
         "configInfo" : {
           "functionalityName" : "harmonypy",
-          "git_tag" : "0.2.0-1624-g91994703f6",
+          "git_tag" : "0.2.0-1625-g51fe2f11e4",
           "git_remote" : "https://github.com/openpipelines-bio/openpipeline",
           "viash_version" : "0.8.5",
           "config" : "/home/runner/work/openpipeline/openpipeline/src/integrate/harmonypy/config.vsh.yaml",
           "functionalityNamespace" : "integrate",
           "output" : "",
           "platform" : "",
-          "git_commit" : "91994703f607b924175756004a7b4f779537badd",
+          "git_commit" : "51fe2f11e4d95f6c06dcd718969e2ed5746ca522",
           "executable" : "/nextflow/integrate/harmonypy/main.nf"
         },
         "writtenPath" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/integrate/harmonypy"
@@ -3102,14 +3102,14 @@ meta = [
         "foundConfigPath" : "/home/runner/work/openpipeline/openpipeline/src/labels_transfer/pynndescent_knn/config.vsh.yaml",
         "configInfo" : {
           "functionalityName" : "pynndescent_knn",
-          "git_tag" : "0.2.0-1624-g91994703f6",
+          "git_tag" : "0.2.0-1625-g51fe2f11e4",
           "git_remote" : "https://github.com/openpipelines-bio/openpipeline",
           "viash_version" : "0.8.5",
           "config" : "/home/runner/work/openpipeline/openpipeline/src/labels_transfer/pynndescent_knn/config.vsh.yaml",
           "functionalityNamespace" : "labels_transfer",
           "output" : "",
           "platform" : "",
-          "git_commit" : "91994703f607b924175756004a7b4f779537badd",
+          "git_commit" : "51fe2f11e4d95f6c06dcd718969e2ed5746ca522",
           "executable" : "/nextflow/labels_transfer/pynndescent_knn/main.nf"
         },
         "writtenPath" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/labels_transfer/pynndescent_knn"
@@ -3123,14 +3123,14 @@ meta = [
         "foundConfigPath" : "/home/runner/work/openpipeline/openpipeline/src/dataflow/split_samples/config.vsh.yaml",
         "configInfo" : {
           "functionalityName" : "split_samples",
-          "git_tag" : "0.2.0-1624-g91994703f6",
+          "git_tag" : "0.2.0-1625-g51fe2f11e4",
           "git_remote" : "https://github.com/openpipelines-bio/openpipeline",
           "viash_version" : "0.8.5",
           "config" : "/home/runner/work/openpipeline/openpipeline/src/dataflow/split_samples/config.vsh.yaml",
           "functionalityNamespace" : "dataflow",
           "output" : "",
           "platform" : "",
-          "git_commit" : "91994703f607b924175756004a7b4f779537badd",
+          "git_commit" : "51fe2f11e4d95f6c06dcd718969e2ed5746ca522",
           "executable" : "/nextflow/dataflow/split_samples/main.nf"
         },
         "writtenPath" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/dataflow/split_samples"
@@ -3144,14 +3144,14 @@ meta = [
         "foundConfigPath" : "/home/runner/work/openpipeline/openpipeline/src/dataflow/concatenate_h5mu/config.vsh.yaml",
         "configInfo" : {
           "functionalityName" : "concatenate_h5mu",
-          "git_tag" : "0.2.0-1624-g91994703f6",
+          "git_tag" : "0.2.0-1625-g51fe2f11e4",
           "git_remote" : "https://github.com/openpipelines-bio/openpipeline",
           "viash_version" : "0.8.5",
           "config" : "/home/runner/work/openpipeline/openpipeline/src/dataflow/concatenate_h5mu/config.vsh.yaml",
           "functionalityNamespace" : "dataflow",
           "output" : "",
           "platform" : "",
-          "git_commit" : "91994703f607b924175756004a7b4f779537badd",
+          "git_commit" : "51fe2f11e4d95f6c06dcd718969e2ed5746ca522",
           "executable" : "/nextflow/dataflow/concatenate_h5mu/main.nf"
         },
         "writtenPath" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/dataflow/concatenate_h5mu"
@@ -3165,14 +3165,14 @@ meta = [
         "foundConfigPath" : "/home/runner/work/openpipeline/openpipeline/src/metadata/add_id/config.vsh.yaml",
         "configInfo" : {
           "functionalityName" : "add_id",
-          "git_tag" : "0.2.0-1624-g91994703f6",
+          "git_tag" : "0.2.0-1625-g51fe2f11e4",
           "git_remote" : "https://github.com/openpipelines-bio/openpipeline",
           "viash_version" : "0.8.5",
           "config" : "/home/runner/work/openpipeline/openpipeline/src/metadata/add_id/config.vsh.yaml",
           "functionalityNamespace" : "metadata",
           "output" : "",
           "platform" : "",
-          "git_commit" : "91994703f607b924175756004a7b4f779537badd",
+          "git_commit" : "51fe2f11e4d95f6c06dcd718969e2ed5746ca522",
           "executable" : "/nextflow/metadata/add_id/main.nf"
         },
         "writtenPath" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/metadata/add_id"
@@ -3239,9 +3239,9 @@ meta = [
     "platform" : "nextflow",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/workflows/annotation/harmony_knn",
     "viash_version" : "0.8.5",
-    "git_commit" : "91994703f607b924175756004a7b4f779537badd",
+    "git_commit" : "51fe2f11e4d95f6c06dcd718969e2ed5746ca522",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline",
-    "git_tag" : "0.2.0-1624-g91994703f6"
+    "git_tag" : "0.2.0-1625-g51fe2f11e4"
   }
 }'''))
 ]
