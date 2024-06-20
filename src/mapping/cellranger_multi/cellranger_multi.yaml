@@ -9,6 +9,7 @@ argument_groups:
           `[Sample Name]_S[Sample Index]_L00[Lane Number]_[Read Type]_001.fastq.gz`
         example: [ mysample_S1_L001_R1_001.fastq.gz, mysample_S1_L001_R2_001.fastq.gz ]
         multiple: true
+
   - name: Feature type-specific input files
     description: |
       Helper functionality to allow feature type-specific input files, without the need to specify
@@ -120,7 +121,7 @@ argument_groups:
         name: --library_id
         required: false
         description: |
-          The Illumina sample name to analyze. This must exactly match the 'Sample Name' part
+          The Illumina sample name to analyze. This must exactly match the 'Sample Name'part
           of the FASTQ files specified in the `--input` argument.
         example: ["mysample1"]
         multiple: true
@@ -130,7 +131,7 @@ argument_groups:
         description: |
           The underlying feature type of the library.
         choices: ["Gene Expression", "VDJ", "VDJ-T", "VDJ-B", "VDJ-T-GD", "Antibody Capture",
-                   "CRISPR Guide Capture", "Multiplexing Capture", "Antigen Capture", "Custom"]
+                    "CRISPR Guide Capture", "Multiplexing Capture", "Antigen Capture", "Custom"]
         example: "Gene Expression"
         multiple: true
       - type: string
@@ -206,6 +207,15 @@ argument_groups:
           Limit the length of the input Read 2 sequence of V(D)J libraries to the first N bases,
           where N is a user-supplied value. Trimming occurs before sequencing metrics are computed
           and therefore, limiting the length of Read 2 may affect Q30 scores.
+      - name: "--min_crispr_umi"
+        type: integer
+        min: 1
+        required: false
+        description: |
+          Set the minimum number of CRISPR guide RNA UMIs required for protospacer detection.
+          If a lower or higher sensitivity is desired for detection, this value can be customized
+          according to specific experimental needs. Applicable only to datasets that include a
+          CRISPR Guide Capture library.
   - name: Gene expression arguments
     description: Arguments relevant to the analysis of gene expression data.
     arguments:
@@ -270,6 +280,7 @@ argument_groups:
             - SC5P-PE: Paired-end Single Cell 5'
             - SC5P-R2: R2-only Single Cell 5'
             - SC5P-R2-v3: R2-only Single Cell 5' v3
+            - SCP5-PE-v3: Single Cell 5' paired-end v3 (GEM-X)
             - SC5PHT : Single Cell 5' v2 HT
             - SFRP: Fixed RNA Profiling (Singleplex)
             - MFRP: Fixed RNA Profiling (Multiplex, Probe Barcode on R2)
@@ -282,7 +293,7 @@ argument_groups:
             - ARC-v1 for analyzing the Gene Expression portion of Multiome data. If Cell Ranger auto-detects ARC-v1 chemistry, an error is triggered.
           See https://kb.10xgenomics.com/hc/en-us/articles/115003764132-How-does-Cell-Ranger-auto-detect-chemistry- for more information.
         choices: [ auto, threeprime, fiveprime, SC3Pv1, SC3Pv2, SC3Pv3, SC3Pv4, SC3Pv3LT, SC3Pv3HT, 
-                  SC5P-PE, SC5P-R2, SC-FB, SC5P-R2-v3, SC5PHT, MFRP, MFRP-R1, MFRP-RNA, MFRP-Ab,
+                  SC5P-PE, SC5P-R2, SC-FB, SC5P-R2-v3, SCP5-PE-v3, SC5PHT, MFRP, MFRP-R1, MFRP-RNA, MFRP-Ab,
                   SFRP, MFRP-Ab-R2pos50, MFRP-RNA-R1, MFRP-Ab-R1, ARC-v1]
 
   - name: "VDJ related parameters"
@@ -321,7 +332,7 @@ argument_groups:
         description: |
           The Cell Multiplexing oligo IDs used to multiplex this sample. If multiple CMOs were used for a sample,
           separate IDs with a pipe (e.g., CMO301|CMO302). Required for Cell Multiplexing libraries.
-      
+        
       # These end up in the [gene-expression] section
       - type: double
         name: --min_assignment_confidence
@@ -342,7 +353,7 @@ argument_groups:
         name: "--barcode_sample_assignment"
         description: |
           Path to a barcode-sample assignment CSV file that specifies the barcodes that belong to each sample.
-
+  
   - name: Fixed RNA profiling paramaters
     # These end up in the [gene-expression] section
     arguments:
