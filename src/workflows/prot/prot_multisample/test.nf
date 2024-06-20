@@ -8,10 +8,16 @@ workflow test_wf {
 
   output_ch = Channel.fromList([
       [
-        id: "adt_samples",
+        id: "adt_samples_axis_0",
         sample_id: "pbmc",
         input: resources_test.resolve("pbmc_1k_protein_v3/pbmc_1k_protein_v3_mms.h5mu"),
-        axis: 1
+        clr_axis: 0
+      ],
+      [
+        id: "adt_samples_axis_1",
+        sample_id: "pbmc",
+        input: resources_test.resolve("pbmc_1k_protein_v3/pbmc_1k_protein_v3_mms.h5mu"),
+        clr_axis: 1
       ]
     ])
     | map{ state -> [state.id, state] }
@@ -21,9 +27,11 @@ workflow test_wf {
       assert output[1].output.toString().endsWith(".h5mu") : "Output file should be a h5mu file. Found: ${output[1].output}"
       "Output: $output"
     }
-    | toList()
+    | toSortedList()
     | map { output_list ->
-      assert output_list.size() == 1 : "output channel should contain one event"
-      assert output_list[0][0] == "adt_samples" : "Output ID should be same as input ID"
+      print "output_list: $output_list"
+      assert output_list.size() == 2 : "output channel should contain two events"
+      assert output_list.collect({it[0]}).sort() == ["adt_samples_axis_0", "adt_samples_axis_1"] : "Output IDs should be [adt_samples_axis_0, adt_samples_axis_1]"
     }
+
 }

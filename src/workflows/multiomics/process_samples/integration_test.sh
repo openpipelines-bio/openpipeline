@@ -10,7 +10,7 @@ cd "$REPO_ROOT"
 
 export NXF_VER=21.10.6
 
-viash ns build -q '^workflows'
+# viash ns build -q '^workflows'
 
 nextflow \
   run . \
@@ -85,6 +85,15 @@ nextflow \
   run . \
   -main-script src/workflows/multiomics/process_samples/test.nf \
   -entry test_wf5 \
+  -resume \
+  -profile docker,no_publish \
+  -c src/workflows/utils/labels_ci.config \
+  -c src/workflows/utils/integration_tests.config
+
+nextflow \
+  run . \
+  -main-script src/workflows/multiomics/process_samples/test.nf \
+  -entry test_wf6 \
   -resume \
   -profile docker,no_publish \
   -c src/workflows/utils/labels_ci.config \

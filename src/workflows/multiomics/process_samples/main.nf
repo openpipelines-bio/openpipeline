@@ -204,7 +204,7 @@ workflow run_wf {
             "pca_overwrite": state.pca_overwrite,
             "rna_layer": state.rna_layer,
             "prot_layer": state.prot_layer,
-            "axis": state.axis,
+            "clr_axis": state.clr_axis,
           ]
         },
         toState: {id, output, state -> 

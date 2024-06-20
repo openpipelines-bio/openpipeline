@@ -99,7 +99,7 @@ functionality:
             but percentage based.
     - name: "CLR arguments"
       arguments:
-        - name: "--axis"
+        - name: "--clr_axis"
           type: integer
           description: Axis across which CLR is performed.
           default: 0

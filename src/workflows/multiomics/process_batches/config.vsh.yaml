@@ -87,7 +87,7 @@ functionality:
           description: "Allow overwriting slots for PCA output."
     - name: "CLR options"
       arguments:
-        - name: "--axis"
+        - name: "--clr_axis"
           type: integer
           description: "Axis to perform the CLR transformation on."
           default: 0
