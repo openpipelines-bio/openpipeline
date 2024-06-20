@@ -6,7 +6,7 @@
 
 * `demux/bcl_convert`: update BCL convert from 3.10 to 4.2 (PR #774).
 
-* `demux/cellranger_mkfastq`, `mapping/cellranger_count`, `mapping/cellranger_multi` and `reference/build_cellranger_reference`: update cellranger to `8.0` (PR #774).
+* `demux/cellranger_mkfastq`, `mapping/cellranger_count`, `mapping/cellranger_multi` and `reference/build_cellranger_reference`: update cellranger to `8.0.1` (PR #774 and PR #811).
 
 ## NEW FUNCTIONALITY
 
@@ -22,11 +22,19 @@
 
 * `reference/cellranger_mkgtf` component: Added cellranger mkgtf as a standalone component (PR #771).
 
+* `scgpt/cross_check_genes` component: Added a gene-model cross check component for scGPT (PR #758).
+
+* `scgpt/embedding`: component: Added scGPT embedding component (PR #761)
+
+* `scgpt/tokenize_pad`: component: Added scGPT padding and tokenization component (PR #754).
+
 * `scgpt/binning` component: Added a scGPT pre-processing binning component (PR #765).
 
 ## MINOR CHANGES
 
 * Bump viash to 0.8.6 (PR #803).
+
+* Pin numpy<2 for several components (PR #815).
 
 * Added `resources_test_scripts/cellranger_atac_tiny_bcl.sh` script: download tiny bcl file with an ATAC experiment, download a motifs file, demultiplex bcl files to reads in fastq format (PR #726).
 
