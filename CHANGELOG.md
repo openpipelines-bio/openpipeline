@@ -32,7 +32,7 @@
 
 ## MINOR CHANGES
 
-* Bump viash to 0.8.6 (PR #803).
+* Bump viash to `0.8.6` (PR #815).
 
 * Pin numpy<2 for several components (PR #815).
 
