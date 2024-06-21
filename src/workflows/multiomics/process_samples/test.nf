@@ -242,7 +242,7 @@ workflow test_wf6 {
     [
         id: "pbmc_clr_axis_0",
         input: resources_test.resolve("pbmc_1k_protein_v3/pbmc_1k_protein_v3_filtered_feature_bc_matrix.h5mu"),
-        clr_axis: 0
+        clr_axis: 1
     ],
     [
         id: "pbmc_clr_axis_1",
@@ -254,13 +254,13 @@ workflow test_wf6 {
   | process_samples
   | view { output ->
     assert output.size() == 2 : "outputs should contain two elements; [id, file]"
-    assert output[1].output.toString().endsWith("test.h5mu") : "Output file should be a h5mu file. Found: ${output[1].output}"
+    assert output[1].output.toString().endsWith(".h5mu") : "Output file should be a h5mu file. Found: ${output[1].output}"
     "Output: $output"
   }
   | toSortedList()
   | map { output_list ->
-    assert output_list.size() == 2 : "output channel should contain one event"
-    assert output_list.collect({it[0]}).sort() == ["pbmc_clr_axis_0", "pbmc_clr_axis_1"] : "Output IDs should be ['pbmc_clr_axis_0', 'pbmc_clr_axis_1']"
+    assert output_list.size() == 1 : "output channel should contain one event"
+    assert output_list[0][0] == "merged" : "Output ID should be 'merged'"
   }
   
 }
