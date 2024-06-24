@@ -81,32 +81,32 @@ def cast_to_writeable_dtype(result: pd.DataFrame) -> pd.DataFrame:
 
 def gather_input_data(dir: Path):
     # /
-    # ├── multi
-    # │    ├── count (raw output)
-    # |    |    ├── feature_reference.csv
-    # │    │    └── raw_feature_bc_matrix.h5
-    # │    ├── vdj_t
-    # │    │    └── all_contig_annotations.json
-    # │    ├── vdj_b
-    # |    │    └── all_contig_annotations.json
-    # │    ├── vdj_t_gd
-    # |    │    └── all_contig_annotations.json
-    # |    └──  multiplexing_analysis
-    # |         └── cells_per_tag.json
-    # └── per_sample_outs (filtered outputs)
-    #      └── example_1
-    #           ├── antigen_analysis
-    #           │   ├── per_barcode.csv
-    #           │   └── antigen_specificity_scores.csv
-    #           ├── count
-    #           │   ├── antibody_analysis
-    #           │   └── crispr_analysis
-    #           │       ├── perturbation_efficiencies_by_feature.csv
-    #           │       └── perturbation_efficiencies_by_target.csv 
-    #           ├── vdj_t (unused)
-    #           ├── vdj_b (unused)
-    #           ├── vdj_t_gd (unused)
-    #           └── metrics_summary.csv
+    # ├─ multi
+    # |    ├─ count (raw output)
+    # |    |    ├─ feature_reference.csv
+    # |    |    ├─ raw_feature_bc_matrix.h5
+    # |    ├─ vdj_t
+    # |    |    ├─ all_contig_annotations.json
+    # |    ├─ vdj_b
+    # |    |    ├─ all_contig_annotations.json
+    # |    ├─ vdj_t_gd
+    # |    |    ├─ all_contig_annotations.json
+    # |    ├─  multiplexing_analysis
+    # |         ├─ cells_per_tag.json
+    # ├─ per_sample_outs (filtered outputs)
+    #      ├─ example_1
+    #           ├─ antigen_analysis
+    #           |   ├─ per_barcode.csv
+    #           |   ├─ antigen_specificity_scores.csv
+    #           ├─ count
+    #           |   ├─ antibody_analysis
+    #           |   ├─ crispr_analysis
+    #           |       ├─ perturbation_efficiencies_by_feature.csv
+    #           |       ├─ perturbation_efficiencies_by_target.csv 
+    #           ├─ vdj_t (unused)
+    #           ├─ vdj_b (unused)
+    #           ├─ vdj_t_gd (unused)
+    #           ├─ metrics_summary.csv
 
     if not dir.is_dir():
         raise ValueError("Specified input is not a directory.")
