@@ -29,7 +29,9 @@ functionality:
           type: boolean_true
           description: |
             Disable the check that evaluates 10x Barcode overlap between libraries when multiple libraries are specified 
-            (e.g., Gene Expression + Antibody Capture). Setting this option will disable the check across all library combinations
+            (e.g., Gene Expression + Antibody Capture). Setting this option will disable the check across all library combinations.
+
+            Note: This argument will be deprecated in OpenPipelines 2.0. Use `--check_library_compatibility true/false` instead.
   resources:
     - type: python_script
       path: script.py

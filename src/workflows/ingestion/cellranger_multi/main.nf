@@ -50,6 +50,7 @@ workflow run_wf {
         "probe_barcode_ids": "probe_barcode_ids",
         "control_id": "control_id",
         "mhc_allele": "mhc_allele",
+        "check_library_compatibility": "check_library_compatibility",
         "output": "output_raw",
       ],
       toState: [

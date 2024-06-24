@@ -30,6 +30,10 @@
 
 * `scgpt/binning` component: Added a scGPT pre-processing binning component (PR #765).
 
+* Added `--check_library_compatibility` to the `mapping/cellranger_multi` component and the `ingestion/cellranger_multi` workflow (PR #xxx).
+  This argument is a inverted replacement of the `--disable_library_compatibility_check` argument in the `mapping/cellranger_multi` component,
+  which will be removed in OpenPipelines 2.0.
+
 ## MINOR CHANGES
 
 * Bump viash to `0.8.6` (PR #815).
