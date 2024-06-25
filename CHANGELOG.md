@@ -8,6 +8,8 @@
 
 * `demux/cellranger_mkfastq`, `mapping/cellranger_count`, `mapping/cellranger_multi` and `reference/build_cellranger_reference`: update cellranger to `8.0.1` (PR #774 and PR #811).
 
+* Removed `--disable_library_compatibility_check` in favour of `--check_library_compatibility` to the `mapping/cellranger_multi` component and the `ingestion/cellranger_multi` workflow (PR #818).
+
 ## NEW FUNCTIONALITY
 
 * Added multiple arguments to the `cellranger_multi` workflow in order to maintain feature parity with the `mapping/cellranger_multi` component (PR #803).
@@ -29,10 +31,6 @@
 * `scgpt/tokenize_pad`: component: Added scGPT padding and tokenization component (PR #754).
 
 * `scgpt/binning` component: Added a scGPT pre-processing binning component (PR #765).
-
-* Added `--check_library_compatibility` to the `mapping/cellranger_multi` component and the `ingestion/cellranger_multi` workflow (PR #818).
-  This argument is a inverted replacement of the `--disable_library_compatibility_check` argument in the `mapping/cellranger_multi` component,
-  which will be removed in OpenPipelines 2.0.
 
 ## MINOR CHANGES
 
