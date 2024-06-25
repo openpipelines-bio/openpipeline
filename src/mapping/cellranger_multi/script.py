@@ -99,10 +99,6 @@ for inverted_param, param in inverted_params.items():
     par[inverted_param] = not par[param] if par[param] is not None else None
     del par[param]
 
-# NOTE: remove this when `--disable_library_compatibility_check` is removed in OpenPipelines 2.0
-if par["check_library_compatibility"] is None:
-    par["check_library_compatibility"] = not par["disable_library_compatibility_check"]
-
 GEX_CONFIG_KEYS = {
     "gex_reference": "reference",
     "gex_expect_cells": "expect-cells",
