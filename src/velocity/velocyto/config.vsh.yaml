@@ -62,7 +62,7 @@ engines:
         - file
     - type: python
       pip:
-        - numpy
+        - numpy<2
         - Cython
     - type: python
       pip:

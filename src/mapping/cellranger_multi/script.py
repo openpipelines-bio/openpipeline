@@ -94,12 +94,10 @@ fastq_regex = r'^([A-Za-z0-9\-_\.]+)_S(\d+)_(L(\d+)_)?[RI](\d+)_(\d+)\.fastq(\.g
 # Invert some parameters. Keep the original ones in the config for compatibility
 inverted_params = {
     "gex_no_secondary_analysis": "gex_secondary_analysis",
-    "enable_library_compatibility_check": "disable_library_compatibility_check"
 }
 for inverted_param, param in inverted_params.items():
     par[inverted_param] = not par[param] if par[param] is not None else None
     del par[param]
-
 
 GEX_CONFIG_KEYS = {
     "gex_reference": "reference",
@@ -110,7 +108,7 @@ GEX_CONFIG_KEYS = {
     "gex_generate_bam": "create-bam",
     "gex_include_introns": "include-introns",
     "min_assignment_confidence": "min-assignment-confidence",
-    "enable_library_compatibility_check": "check-library-compatibility",
+    "check_library_compatibility": "check-library-compatibility",
     "barcode_sample_assignment": "barcode-sample-assignment",
     "cmo_set": "cmo-set",
     "probe_set": "probe-set",
@@ -123,6 +121,7 @@ FEATURE_CONFIG_KEYS = {
     "feature_reference": "reference",
     "feature_r1_length": "r1-length",
     "feature_r2_length": "r2-length",
+    "min_crispr_umi": "min-crispr-umi",
 }
 
 VDJ_CONFIG_KEYS = {"vdj_reference": "reference",
@@ -289,6 +288,9 @@ def handle_integers_not_set(par: dict[str, Any], viash_config: Path | str) -> st
             continue
         par_value, is_multiple = par[arg_name], arg["multiple"]
         assert is_multiple in (True, False)
+
+        if not is_multiple:
+            continue
 
         def replace_notset_values(integer_value: int) -> int | None:
             return None if integer_value == -1 else integer_value

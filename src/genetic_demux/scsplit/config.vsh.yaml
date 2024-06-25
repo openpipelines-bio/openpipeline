@@ -70,18 +70,24 @@ test_resources:
   - path: ../../../resources_test/demuxafy_test_data
 
 engines:
-- type: docker
-  image: python:3.9
-  setup:
-  - type: python
-    pip: [ numpy, "pandas<2.0", pysam, "setuptools<58", "scikit-learn==1.1.3", scipy, statistics ]
-  - type: python
-    pip: [ PyVCF ]
   - type: docker
-    run: git clone https://github.com/jon-xu/scSplit && cp scSplit/scSplit /usr/local/bin && rm -rf scSplit
-
+    image: python:3.9
+    setup:
+    - type: python
+      pip: 
+        - numpy<2
+        - pandas<2.0
+        - pysam
+        - setuptools<58
+        - scikit-learn==1.1.3
+        - scipy
+        - statistics
+    - type: python
+      pip: [ PyVCF ]
+    - type: docker
+      run: git clone https://github.com/jon-xu/scSplit && cp scSplit/scSplit /usr/local/bin && rm -rf scSplit
 runners:
-- type: executable
-- type: nextflow
-  directives:
-    label: [ highmem, highcpu ]
+  - type: executable
+  - type: nextflow
+    directives:
+      label: [ highmem, highcpu ]

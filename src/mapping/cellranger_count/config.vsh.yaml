@@ -57,13 +57,14 @@ argument_groups:
           - SC3Pv4: Single Cell 3' v4
           - SC3Pv3LT: Single Cell 3' v3 LT
           - SC3Pv3HT: Single Cell 3' v3 HT
+          - SC5P-PE-v3: Single Cell 5' paired-end v3 (GEM-X)
           - SC5P-PE: Single Cell 5' paired-end
           - SC5P-R2: Single Cell 5' R2-only
           - SC-FB: Single Cell Antibody-only 3' v2 or 5'
           - ARC-v1: for analyzing the Gene Expression portion of Multiome data. 
             NOTE: when the pipeline auto-detects ARC-v1 chemistry, an error is triggered.
           See https://kb.10xgenomics.com/hc/en-us/articles/115003764132-How-does-Cell-Ranger-auto-detect-chemistry- for more information.
-        choices: [ auto, threeprime, fiveprime, SC3Pv1, SC3Pv2, SC3Pv3, SC3Pv4, SC3Pv3LT, SC3Pv3HT, SC5P-PE, SC5P-R2, SC-FB, ARC-v1 ]
+        choices: [ auto, threeprime, fiveprime, SC3Pv1, SC3Pv2, SC3Pv3, SC3Pv4, SC3Pv3LT, SC3Pv3HT, SC5P-PE-v3, SC5P-PE, SC5P-R2, SC-FB, ARC-v1 ]
 
       - type: boolean
         name: "--secondary_analysis"
@@ -103,6 +104,15 @@ argument_groups:
         description: |
           Whether to check for barcode compatibility between libraries.
 
+      - name: "--min_crispr_umi"
+        type: integer
+        min: 1
+        description: |
+          Set the minimum number of CRISPR guide RNA UMIs required for protospacer detection.
+          If a lower or higher sensitivity is desired for detection, this value can be customized
+          according to specific experimental needs. Applicable only to datasets that include a
+          CRISPR Guide Capture library.
+
 resources:
   - type: bash_script
     path: script.sh
@@ -111,18 +121,17 @@ test_resources:
     path: test.py
   - path: /resources_test/cellranger_tiny_fastq
   - path: /src/utils/setup_logger.py
-
 engines:
-- type: docker
-  image: ghcr.io/data-intuitive/cellranger:8.0
-  setup:
-    - type: docker
-      run: |
-        DEBIAN_FRONTEND=noninteractive apt update && \
-        apt upgrade -y && apt install -y procps && rm -rf /var/lib/apt/lists/*
-  __merge__: [ /src/base/requirements/python_test_setup.yaml, .]
+  - type: docker
+    image: ghcr.io/data-intuitive/cellranger:8.0
+    setup:
+      - type: docker
+        run: |
+          DEBIAN_FRONTEND=noninteractive apt update && \
+          apt upgrade -y && apt install -y procps && rm -rf /var/lib/apt/lists/*
+    __merge__: [ /src/base/requirements/python_test_setup.yaml, .]
 runners:
-- type: executable
-- type: nextflow
-  directives:
-    label: [ highmem, highcpu ]
+  - type: executable
+  - type: nextflow
+    directives:
+      label: [ highmem, highcpu ]

@@ -104,6 +104,7 @@ engines:
         - multiprocess
         - gtfparse
         - pandas
+        - numpy<2
         # Pin multiqc to avoid 
         # 'TypeError: expected str, bytes or os.PathLike object, not NoneType'
         - multiqc~=1.15.0
