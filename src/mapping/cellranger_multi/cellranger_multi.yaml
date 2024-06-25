@@ -411,3 +411,17 @@ argument_groups:
         name: --mhc_allele
         description: |
           The MHC allele for TCR Antigen Capture libraries. Must match mhc_allele name specified in the Feature Reference CSV.
+
+  - name: "General arguments"
+    description: |
+      These arguments are applicable to all library types.
+    arguments:
+      - name: "--check_library_compatibility"
+        type: boolean
+        default: true
+        description: |
+          Optional. This option allows users to disable the check that evaluates 10x Barcode overlap between
+          ibraries when multiple libraries are specified (e.g., Gene Expression + Antibody Capture). Setting
+          this option to false will disable the check across all library combinations. We recommend running
+          this check (default), however if the pipeline errors out, users can bypass the check to generate
+          outputs for troubleshooting.
