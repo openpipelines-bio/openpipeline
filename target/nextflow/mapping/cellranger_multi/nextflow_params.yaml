@@ -3,7 +3,6 @@
 
 # Executor arguments
 dryrun: false
-disable_library_compatibility_check: false
 
 # Nextflow input-output arguments
 publish_dir: # please fill in - example: "output/"

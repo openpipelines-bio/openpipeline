@@ -3472,11 +3472,30 @@ meta = [
           {
             "type" : "string",
             "name" : "--mhc_allele",
-            "description" : "The MHC allele for TCR Antigen Capture libraries. Must match mhc_allele name specified in the Feature Reference CSV.",
+            "description" : "The MHC allele for TCR Antigen Capture libraries. Must match mhc_allele name specified in the Feature Reference CSV.\n",
             "required" : false,
             "direction" : "input",
             "multiple" : true,
             "multiple_sep" : ";",
+            "dest" : "par"
+          }
+        ]
+      },
+      {
+        "name" : "General arguments",
+        "description" : "These arguments are applicable to all library types.\n",
+        "arguments" : [
+          {
+            "type" : "boolean",
+            "name" : "--check_library_compatibility",
+            "description" : "Optional. This option allows users to disable the check that evaluates 10x Barcode overlap between\nibraries when multiple libraries are specified (e.g., Gene Expression + Antibody Capture). Setting\nthis option to false will disable the check across all library combinations. We recommend running\nthis check (default), however if the pipeline errors out, users can bypass the check to generate\noutputs for troubleshooting.",
+            "default" : [
+              true
+            ],
+            "required" : false,
+            "direction" : "input",
+            "multiple" : false,
+            "multiple_sep" : ":",
             "dest" : "par"
           }
         ]
@@ -3609,7 +3628,7 @@ meta = [
           "functionalityNamespace" : "mapping",
           "output" : "",
           "platform" : "",
-          "git_commit" : "03387e3ff0de3e1900128695f3c1962ebd9a05a0",
+          "git_commit" : "6e6fea37c5a64e973dd23d952af2a30f998ebcd9",
           "executable" : "/nextflow/mapping/cellranger_multi/main.nf"
         },
         "writtenPath" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/mapping/cellranger_multi"
@@ -3630,7 +3649,7 @@ meta = [
           "functionalityNamespace" : "convert",
           "output" : "",
           "platform" : "",
-          "git_commit" : "03387e3ff0de3e1900128695f3c1962ebd9a05a0",
+          "git_commit" : "6e6fea37c5a64e973dd23d952af2a30f998ebcd9",
           "executable" : "/nextflow/convert/from_cellranger_multi_to_h5mu/main.nf"
         },
         "writtenPath" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/convert/from_cellranger_multi_to_h5mu"
@@ -3697,7 +3716,7 @@ meta = [
     "platform" : "nextflow",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/workflows/ingestion/cellranger_multi",
     "viash_version" : "0.8.6",
-    "git_commit" : "03387e3ff0de3e1900128695f3c1962ebd9a05a0",
+    "git_commit" : "6e6fea37c5a64e973dd23d952af2a30f998ebcd9",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))
@@ -3763,6 +3782,7 @@ workflow run_wf {
         "probe_barcode_ids": "probe_barcode_ids",
         "control_id": "control_id",
         "mhc_allele": "mhc_allele",
+        "check_library_compatibility": "check_library_compatibility",
         "output": "output_raw",
       ],
       toState: [

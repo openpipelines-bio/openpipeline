@@ -61,17 +61,6 @@
             }
     
 
-        ,
-                "disable_library_compatibility_check": {
-                "type":
-                "boolean",
-                "description": "Type: `boolean_true`, default: `false`. Disable the check that evaluates 10x Barcode overlap between libraries when multiple libraries are specified \n(e",
-                "help_text": "Type: `boolean_true`, default: `false`. Disable the check that evaluates 10x Barcode overlap between libraries when multiple libraries are specified \n(e.g., Gene Expression + Antibody Capture). Setting this option will disable the check across all library combinations\n"
-            ,
-                "default": "False"
-            }
-    
-
 }
 },
     
