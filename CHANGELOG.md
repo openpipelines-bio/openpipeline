@@ -42,6 +42,10 @@
 
 * `mapping/cellranger_multi` component now outputs logs on failure of the `cellranger multi` process (PR #766).
 
+## BUG FIXES
+
+* Fix `--gex_force_cells` and `--gex_expect_cells` arguments for `mapping/cellranger_multi` and `ingestion/cellranger_multi`.
+
 # openpipelines 1.0.0-rc6
 
 ## BUG FIXES
