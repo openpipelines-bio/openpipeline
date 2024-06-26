@@ -44,7 +44,7 @@
 
 ## BUG FIXES
 
-* Fix `--gex_force_cells` and `--gex_expect_cells` arguments for `mapping/cellranger_multi` and `ingestion/cellranger_multi`.
+* Fix `--gex_force_cells` and `--gex_expect_cells` arguments for `mapping/cellranger_multi` and `ingestion/cellranger_multi` (PR #819).
 
 # openpipelines 1.0.0-rc6
 
