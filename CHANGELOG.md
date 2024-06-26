@@ -42,12 +42,6 @@
 
 * `mapping/cellranger_multi` component now outputs logs on failure of the `cellranger multi` process (PR #766).
 
-## BUG FIXES
-
-* `ingestion/cellranger_multi`: Make `--output_h5mu` required (PR #820).
-
-* `ingestion/cellranger_multi`: Fix identation in flatMap (PR #820).
-
 # openpipelines 1.0.0-rc6
 
 ## BUG FIXES
