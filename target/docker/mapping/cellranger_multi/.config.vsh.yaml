@@ -731,12 +731,31 @@ functionality:
     - type: "string"
       name: "--mhc_allele"
       description: "The MHC allele for TCR Antigen Capture libraries. Must match mhc_allele\
-        \ name specified in the Feature Reference CSV."
+        \ name specified in the Feature Reference CSV.\n"
       info: null
       required: false
       direction: "input"
       multiple: true
       multiple_sep: ";"
+      dest: "par"
+  - name: "General arguments"
+    description: "These arguments are applicable to all library types.\n"
+    arguments:
+    - type: "boolean"
+      name: "--check_library_compatibility"
+      description: "Optional. This option allows users to disable the check that evaluates\
+        \ 10x Barcode overlap between\nibraries when multiple libraries are specified\
+        \ (e.g., Gene Expression + Antibody Capture). Setting\nthis option to false\
+        \ will disable the check across all library combinations. We recommend running\n\
+        this check (default), however if the pipeline errors out, users can bypass\
+        \ the check to generate\noutputs for troubleshooting."
+      info: null
+      default:
+      - true
+      required: false
+      direction: "input"
+      multiple: false
+      multiple_sep: ":"
       dest: "par"
   - name: "Outputs"
     arguments:
@@ -759,15 +778,6 @@ functionality:
       name: "--dryrun"
       description: "If true, the output directory will only contain the CWL input\
         \ files, but the pipeline itself will not be executed."
-      info: null
-      direction: "input"
-      dest: "par"
-    - type: "boolean_true"
-      name: "--disable_library_compatibility_check"
-      description: "Disable the check that evaluates 10x Barcode overlap between libraries\
-        \ when multiple libraries are specified \n(e.g., Gene Expression + Antibody\
-        \ Capture). Setting this option will disable the check across all library\
-        \ combinations\n"
       info: null
       direction: "input"
       dest: "par"
@@ -903,5 +913,5 @@ info:
   output: "/home/runner/work/openpipeline/openpipeline/target/docker/mapping/cellranger_multi"
   executable: "/home/runner/work/openpipeline/openpipeline/target/docker/mapping/cellranger_multi/cellranger_multi"
   viash_version: "0.8.6"
-  git_commit: "8312985817aaa5053562759efbb56c5eaaa0849d"
+  git_commit: "f42f2ec1f6a7f2721df67fe7dece99fad518ff71"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"

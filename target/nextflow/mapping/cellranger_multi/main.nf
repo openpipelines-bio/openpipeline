@@ -3527,11 +3527,30 @@ meta = [
           {
             "type" : "string",
             "name" : "--mhc_allele",
-            "description" : "The MHC allele for TCR Antigen Capture libraries. Must match mhc_allele name specified in the Feature Reference CSV.",
+            "description" : "The MHC allele for TCR Antigen Capture libraries. Must match mhc_allele name specified in the Feature Reference CSV.\n",
             "required" : false,
             "direction" : "input",
             "multiple" : true,
             "multiple_sep" : ";",
+            "dest" : "par"
+          }
+        ]
+      },
+      {
+        "name" : "General arguments",
+        "description" : "These arguments are applicable to all library types.\n",
+        "arguments" : [
+          {
+            "type" : "boolean",
+            "name" : "--check_library_compatibility",
+            "description" : "Optional. This option allows users to disable the check that evaluates 10x Barcode overlap between\nibraries when multiple libraries are specified (e.g., Gene Expression + Antibody Capture). Setting\nthis option to false will disable the check across all library combinations. We recommend running\nthis check (default), however if the pipeline errors out, users can bypass the check to generate\noutputs for troubleshooting.",
+            "default" : [
+              true
+            ],
+            "required" : false,
+            "direction" : "input",
+            "multiple" : false,
+            "multiple_sep" : ":",
             "dest" : "par"
           }
         ]
@@ -3563,13 +3582,6 @@ meta = [
             "type" : "boolean_true",
             "name" : "--dryrun",
             "description" : "If true, the output directory will only contain the CWL input files, but the pipeline itself will not be executed.",
-            "direction" : "input",
-            "dest" : "par"
-          },
-          {
-            "type" : "boolean_true",
-            "name" : "--disable_library_compatibility_check",
-            "description" : "Disable the check that evaluates 10x Barcode overlap between libraries when multiple libraries are specified \n(e.g., Gene Expression + Antibody Capture). Setting this option will disable the check across all library combinations\n",
             "direction" : "input",
             "dest" : "par"
           }
@@ -3767,7 +3779,7 @@ meta = [
     "platform" : "nextflow",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/mapping/cellranger_multi",
     "viash_version" : "0.8.6",
-    "git_commit" : "8312985817aaa5053562759efbb56c5eaaa0849d",
+    "git_commit" : "f42f2ec1f6a7f2721df67fe7dece99fad518ff71",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))
@@ -3844,9 +3856,9 @@ par = {
   'probe_barcode_ids': $( if [ ! -z ${VIASH_PAR_PROBE_BARCODE_IDS+x} ]; then echo "r'${VIASH_PAR_PROBE_BARCODE_IDS//\\'/\\'\\"\\'\\"r\\'}'.split(';')"; else echo None; fi ),
   'control_id': $( if [ ! -z ${VIASH_PAR_CONTROL_ID+x} ]; then echo "r'${VIASH_PAR_CONTROL_ID//\\'/\\'\\"\\'\\"r\\'}'.split(';')"; else echo None; fi ),
   'mhc_allele': $( if [ ! -z ${VIASH_PAR_MHC_ALLELE+x} ]; then echo "r'${VIASH_PAR_MHC_ALLELE//\\'/\\'\\"\\'\\"r\\'}'.split(';')"; else echo None; fi ),
+  'check_library_compatibility': $( if [ ! -z ${VIASH_PAR_CHECK_LIBRARY_COMPATIBILITY+x} ]; then echo "r'${VIASH_PAR_CHECK_LIBRARY_COMPATIBILITY//\\'/\\'\\"\\'\\"r\\'}'.lower() == 'true'"; else echo None; fi ),
   'output': $( if [ ! -z ${VIASH_PAR_OUTPUT+x} ]; then echo "r'${VIASH_PAR_OUTPUT//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
-  'dryrun': $( if [ ! -z ${VIASH_PAR_DRYRUN+x} ]; then echo "r'${VIASH_PAR_DRYRUN//\\'/\\'\\"\\'\\"r\\'}'.lower() == 'true'"; else echo None; fi ),
-  'disable_library_compatibility_check': $( if [ ! -z ${VIASH_PAR_DISABLE_LIBRARY_COMPATIBILITY_CHECK+x} ]; then echo "r'${VIASH_PAR_DISABLE_LIBRARY_COMPATIBILITY_CHECK//\\'/\\'\\"\\'\\"r\\'}'.lower() == 'true'"; else echo None; fi )
+  'dryrun': $( if [ ! -z ${VIASH_PAR_DRYRUN+x} ]; then echo "r'${VIASH_PAR_DRYRUN//\\'/\\'\\"\\'\\"r\\'}'.lower() == 'true'"; else echo None; fi )
 }
 meta = {
   'functionality_name': $( if [ ! -z ${VIASH_META_FUNCTIONALITY_NAME+x} ]; then echo "r'${VIASH_META_FUNCTIONALITY_NAME//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
@@ -3901,12 +3913,10 @@ fastq_regex = r'^([A-Za-z0-9\\\\-_\\\\.]+)_S(\\\\d+)_(L(\\\\d+)_)?[RI](\\\\d+)_(
 # Invert some parameters. Keep the original ones in the config for compatibility
 inverted_params = {
     "gex_no_secondary_analysis": "gex_secondary_analysis",
-    "enable_library_compatibility_check": "disable_library_compatibility_check"
 }
 for inverted_param, param in inverted_params.items():
     par[inverted_param] = not par[param] if par[param] is not None else None
     del par[param]
-
 
 GEX_CONFIG_KEYS = {
     "gex_reference": "reference",
@@ -3917,7 +3927,7 @@ GEX_CONFIG_KEYS = {
     "gex_generate_bam": "create-bam",
     "gex_include_introns": "include-introns",
     "min_assignment_confidence": "min-assignment-confidence",
-    "enable_library_compatibility_check": "check-library-compatibility",
+    "check_library_compatibility": "check-library-compatibility",
     "barcode_sample_assignment": "barcode-sample-assignment",
     "cmo_set": "cmo-set",
     "probe_set": "probe-set",

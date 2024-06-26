@@ -607,6 +607,22 @@ function ViashHelp {
   echo "        The MHC allele for TCR Antigen Capture libraries. Must match mhc_allele"
   echo "        name specified in the Feature Reference CSV."
   echo ""
+  echo "General arguments:"
+  echo "    These arguments are applicable to all library types."
+  echo ""
+  echo "    --check_library_compatibility"
+  echo "        type: boolean"
+  echo "        default: true"
+  echo "        Optional. This option allows users to disable the check that evaluates"
+  echo "        10x Barcode overlap between"
+  echo "        ibraries when multiple libraries are specified (e.g., Gene Expression +"
+  echo "        Antibody Capture). Setting"
+  echo "        this option to false will disable the check across all library"
+  echo "        combinations. We recommend running"
+  echo "        this check (default), however if the pipeline errors out, users can"
+  echo "        bypass the check to generate"
+  echo "        outputs for troubleshooting."
+  echo ""
   echo "Outputs:"
   echo "    --output"
   echo "        type: file, required parameter, output, file must exist"
@@ -618,13 +634,6 @@ function ViashHelp {
   echo "        type: boolean_true"
   echo "        If true, the output directory will only contain the CWL input files, but"
   echo "        the pipeline itself will not be executed."
-  echo ""
-  echo "    --disable_library_compatibility_check"
-  echo "        type: boolean_true"
-  echo "        Disable the check that evaluates 10x Barcode overlap between libraries"
-  echo "        when multiple libraries are specified"
-  echo "        (e.g., Gene Expression + Antibody Capture). Setting this option will"
-  echo "        disable the check across all library combinations"
 }
 
 ######## Helper functions for setting up Docker images for viash ########
@@ -855,9 +864,9 @@ RUN pip install --upgrade pip && \
 
 LABEL org.opencontainers.image.authors="Angela Oliveira Pisco, Robrecht Cannoodt, Dries De Maeyer"
 LABEL org.opencontainers.image.description="Companion container for running component mapping cellranger_multi"
-LABEL org.opencontainers.image.created="2024-06-25T02:41:56Z"
+LABEL org.opencontainers.image.created="2024-06-26T02:42:14Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="8312985817aaa5053562759efbb56c5eaaa0849d"
+LABEL org.opencontainers.image.revision="f42f2ec1f6a7f2721df67fe7dece99fad518ff71"
 LABEL org.opencontainers.image.version="integration_build"
 
 VIASHDOCKER
@@ -1673,6 +1682,17 @@ while [[ $# -gt 0 ]]; do
             fi
             shift 1
             ;;
+        --check_library_compatibility)
+            [ -n "$VIASH_PAR_CHECK_LIBRARY_COMPATIBILITY" ] && ViashError Bad arguments for option \'--check_library_compatibility\': \'$VIASH_PAR_CHECK_LIBRARY_COMPATIBILITY\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+            VIASH_PAR_CHECK_LIBRARY_COMPATIBILITY="$2"
+            [ $# -lt 2 ] && ViashError Not enough arguments passed to --check_library_compatibility. Use "--help" to get more information on the parameters. && exit 1
+            shift 2
+            ;;
+        --check_library_compatibility=*)
+            [ -n "$VIASH_PAR_CHECK_LIBRARY_COMPATIBILITY" ] && ViashError Bad arguments for option \'--check_library_compatibility=*\': \'$VIASH_PAR_CHECK_LIBRARY_COMPATIBILITY\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+            VIASH_PAR_CHECK_LIBRARY_COMPATIBILITY=$(ViashRemoveFlags "$1")
+            shift 1
+            ;;
         --output)
             [ -n "$VIASH_PAR_OUTPUT" ] && ViashError Bad arguments for option \'--output\': \'$VIASH_PAR_OUTPUT\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
             VIASH_PAR_OUTPUT="$2"
@@ -1687,11 +1707,6 @@ while [[ $# -gt 0 ]]; do
         --dryrun)
             [ -n "$VIASH_PAR_DRYRUN" ] && ViashError Bad arguments for option \'--dryrun\': \'$VIASH_PAR_DRYRUN\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
             VIASH_PAR_DRYRUN=true
-            shift 1
-            ;;
-        --disable_library_compatibility_check)
-            [ -n "$VIASH_PAR_DISABLE_LIBRARY_COMPATIBILITY_CHECK" ] && ViashError Bad arguments for option \'--disable_library_compatibility_check\': \'$VIASH_PAR_DISABLE_LIBRARY_COMPATIBILITY_CHECK\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
-            VIASH_PAR_DISABLE_LIBRARY_COMPATIBILITY_CHECK=true
             shift 1
             ;;
         ---setup)
@@ -1854,11 +1869,11 @@ fi
 if [ -z ${VIASH_PAR_GEX_CHEMISTRY+x} ]; then
   VIASH_PAR_GEX_CHEMISTRY="auto"
 fi
+if [ -z ${VIASH_PAR_CHECK_LIBRARY_COMPATIBILITY+x} ]; then
+  VIASH_PAR_CHECK_LIBRARY_COMPATIBILITY="true"
+fi
 if [ -z ${VIASH_PAR_DRYRUN+x} ]; then
   VIASH_PAR_DRYRUN="false"
-fi
-if [ -z ${VIASH_PAR_DISABLE_LIBRARY_COMPATIBILITY_CHECK+x} ]; then
-  VIASH_PAR_DISABLE_LIBRARY_COMPATIBILITY_CHECK="false"
 fi
 
 # check whether required files exist
@@ -2140,15 +2155,15 @@ if [[ -n "$VIASH_PAR_FILTER_PROBES" ]]; then
     exit 1
   fi
 fi
-if [[ -n "$VIASH_PAR_DRYRUN" ]]; then
-  if ! [[ "$VIASH_PAR_DRYRUN" =~ ^(true|True|TRUE|false|False|FALSE|yes|Yes|YES|no|No|NO)$ ]]; then
-    ViashError '--dryrun' has to be a boolean_true. Use "--help" to get more information on the parameters.
+if [[ -n "$VIASH_PAR_CHECK_LIBRARY_COMPATIBILITY" ]]; then
+  if ! [[ "$VIASH_PAR_CHECK_LIBRARY_COMPATIBILITY" =~ ^(true|True|TRUE|false|False|FALSE|yes|Yes|YES|no|No|NO)$ ]]; then
+    ViashError '--check_library_compatibility' has to be a boolean. Use "--help" to get more information on the parameters.
     exit 1
   fi
 fi
-if [[ -n "$VIASH_PAR_DISABLE_LIBRARY_COMPATIBILITY_CHECK" ]]; then
-  if ! [[ "$VIASH_PAR_DISABLE_LIBRARY_COMPATIBILITY_CHECK" =~ ^(true|True|TRUE|false|False|FALSE|yes|Yes|YES|no|No|NO)$ ]]; then
-    ViashError '--disable_library_compatibility_check' has to be a boolean_true. Use "--help" to get more information on the parameters.
+if [[ -n "$VIASH_PAR_DRYRUN" ]]; then
+  if ! [[ "$VIASH_PAR_DRYRUN" =~ ^(true|True|TRUE|false|False|FALSE|yes|Yes|YES|no|No|NO)$ ]]; then
+    ViashError '--dryrun' has to be a boolean_true. Use "--help" to get more information on the parameters.
     exit 1
   fi
 fi
@@ -2491,9 +2506,9 @@ par = {
   'probe_barcode_ids': $( if [ ! -z ${VIASH_PAR_PROBE_BARCODE_IDS+x} ]; then echo "r'${VIASH_PAR_PROBE_BARCODE_IDS//\'/\'\"\'\"r\'}'.split(';')"; else echo None; fi ),
   'control_id': $( if [ ! -z ${VIASH_PAR_CONTROL_ID+x} ]; then echo "r'${VIASH_PAR_CONTROL_ID//\'/\'\"\'\"r\'}'.split(';')"; else echo None; fi ),
   'mhc_allele': $( if [ ! -z ${VIASH_PAR_MHC_ALLELE+x} ]; then echo "r'${VIASH_PAR_MHC_ALLELE//\'/\'\"\'\"r\'}'.split(';')"; else echo None; fi ),
+  'check_library_compatibility': $( if [ ! -z ${VIASH_PAR_CHECK_LIBRARY_COMPATIBILITY+x} ]; then echo "r'${VIASH_PAR_CHECK_LIBRARY_COMPATIBILITY//\'/\'\"\'\"r\'}'.lower() == 'true'"; else echo None; fi ),
   'output': $( if [ ! -z ${VIASH_PAR_OUTPUT+x} ]; then echo "r'${VIASH_PAR_OUTPUT//\'/\'\"\'\"r\'}'"; else echo None; fi ),
-  'dryrun': $( if [ ! -z ${VIASH_PAR_DRYRUN+x} ]; then echo "r'${VIASH_PAR_DRYRUN//\'/\'\"\'\"r\'}'.lower() == 'true'"; else echo None; fi ),
-  'disable_library_compatibility_check': $( if [ ! -z ${VIASH_PAR_DISABLE_LIBRARY_COMPATIBILITY_CHECK+x} ]; then echo "r'${VIASH_PAR_DISABLE_LIBRARY_COMPATIBILITY_CHECK//\'/\'\"\'\"r\'}'.lower() == 'true'"; else echo None; fi )
+  'dryrun': $( if [ ! -z ${VIASH_PAR_DRYRUN+x} ]; then echo "r'${VIASH_PAR_DRYRUN//\'/\'\"\'\"r\'}'.lower() == 'true'"; else echo None; fi )
 }
 meta = {
   'functionality_name': $( if [ ! -z ${VIASH_META_FUNCTIONALITY_NAME+x} ]; then echo "r'${VIASH_META_FUNCTIONALITY_NAME//\'/\'\"\'\"r\'}'"; else echo None; fi ),
@@ -2548,12 +2563,10 @@ fastq_regex = r'^([A-Za-z0-9\\-_\\.]+)_S(\\d+)_(L(\\d+)_)?[RI](\\d+)_(\\d+)\\.fa
 # Invert some parameters. Keep the original ones in the config for compatibility
 inverted_params = {
     "gex_no_secondary_analysis": "gex_secondary_analysis",
-    "enable_library_compatibility_check": "disable_library_compatibility_check"
 }
 for inverted_param, param in inverted_params.items():
     par[inverted_param] = not par[param] if par[param] is not None else None
     del par[param]
-
 
 GEX_CONFIG_KEYS = {
     "gex_reference": "reference",
@@ -2564,7 +2577,7 @@ GEX_CONFIG_KEYS = {
     "gex_generate_bam": "create-bam",
     "gex_include_introns": "include-introns",
     "min_assignment_confidence": "min-assignment-confidence",
-    "enable_library_compatibility_check": "check-library-compatibility",
+    "check_library_compatibility": "check-library-compatibility",
     "barcode_sample_assignment": "barcode-sample-assignment",
     "cmo_set": "cmo-set",
     "probe_set": "probe-set",
