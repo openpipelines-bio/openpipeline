@@ -438,9 +438,9 @@ RUN yum install -y procps && \
 
 LABEL org.opencontainers.image.authors="Robrecht Cannoodt"
 LABEL org.opencontainers.image.description="Companion container for running component download sync_test_resources"
-LABEL org.opencontainers.image.created="2024-06-25T08:17:36Z"
+LABEL org.opencontainers.image.created="2024-06-26T13:48:29Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="6e6fea37c5a64e973dd23d952af2a30f998ebcd9"
+LABEL org.opencontainers.image.revision="2b4f4399fede4401a0fac8a7981dfdca35b9465a"
 LABEL org.opencontainers.image.version="main_build"
 
 VIASHDOCKER

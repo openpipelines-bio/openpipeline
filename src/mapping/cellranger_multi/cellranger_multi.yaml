@@ -233,7 +233,6 @@ argument_groups:
         default: false
         description: Whether to generate a BAM file.
       - type: integer
-        multiple: true
         name: --gex_expect_cells
         example: 3000
         description: |
@@ -241,7 +240,6 @@ argument_groups:
       - type: integer
         name: "--gex_force_cells"
         example: 3000
-        multiple: true
         description: |
           Force pipeline to use this number of cells, bypassing cell detection.
       - type: boolean
@@ -411,7 +409,6 @@ argument_groups:
         name: --mhc_allele
         description: |
           The MHC allele for TCR Antigen Capture libraries. Must match mhc_allele name specified in the Feature Reference CSV.
-
   - name: "General arguments"
     description: |
       These arguments are applicable to all library types.
@@ -425,3 +422,4 @@ argument_groups:
           this option to false will disable the check across all library combinations. We recommend running
           this check (default), however if the pipeline errors out, users can bypass the check to generate
           outputs for troubleshooting.
+
