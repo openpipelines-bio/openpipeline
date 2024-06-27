@@ -155,7 +155,7 @@ jobs:
     - name: Build nextflow schemas
       uses: viash-io/viash-actions/pro/build-nextflow-schemas@viash-0.9
       with:
-        target_dir: target
+        target_dir: target/nextflow
         viash_pro_token: ${{ secrets.GTHB_PAT }}
         tools_version: 'main_build'
         enable_dataset_input: true
@@ -163,7 +163,7 @@ jobs:
     - name: Build parameter files
       uses: viash-io/viash-actions/pro/build-nextflow-params@viash-0.9
       with:
-        target_dir: target
+        target_dir: target/nextflow
         viash_pro_token: ${{ secrets.GTHB_PAT }}
         tools_version: 'main_build'
 
