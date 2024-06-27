@@ -35,7 +35,7 @@ jobs:
       cache_key: ${{ steps.cache.outputs.cache_key }}
 
     steps:
-    - uses: viash-io/viash-actions/project/sync-and-cache-s3@v5
+    - uses: viash-io/viash-actions/project/sync-and-cache-s3@viash-0.9
       id: cache 
       with:
         s3_bucket: $s3_bucket
@@ -65,7 +65,7 @@ jobs:
       with:
         ref: 'integration_build'
 
-    - uses: viash-io/viash-actions/setup@v5
+    - uses: viash-io/viash-actions/setup@viash-0.9
 
     - uses: nf-core/setup-nextflow@v2.0.0
 
