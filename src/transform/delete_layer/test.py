@@ -7,7 +7,7 @@ from subprocess import CalledProcessError
 
 ## VIASH START
 meta = {
-    'functionality_name': './target/native/transform/delete_layer/delete_layer',
+    'functionality_name': './target/executable/transform/delete_layer/delete_layer',
     'resources_dir': './resources_test/'
 }
 ## VIASH END

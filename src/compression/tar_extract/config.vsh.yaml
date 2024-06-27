@@ -1,42 +1,47 @@
-functionality:
-  name: tar_extract
-  namespace: compression
-  description: Extract files from a tar archive
-  arguments:                     
-    - name: "--input"
-      alternatives: ["-i"]
-      type: file
-      description: Input file
-      direction: input
-      example: input.tar.gz
-      required: true
-    - name: "--output"
-      alternatives: ["-o"]
-      type: file
-      description: Folder to restore file(s) to.
-      direction: output
-      example: output_folder
-      required: true
-    - name: "--strip_components"
-      alternatives: ["-s"]
-      type: integer
-      description: Strip this amount of leading components from file names on extraction. For example, to extract only 'myfile.txt' from an archive containing the structure `this/goes/deep/myfile.txt', use 3 to strip 'this/goes/deep/'.
-      example: 1
-      required: false
-    - name: "--exclude"
-      alternatives: ["-e"]
-      type: string
-      description: Prevents any file or member whose name matches the shell wildcard (pattern) from being extracted.
-      example: "docs/figures"
-      required: false
-  resources:
-    - type: bash_script
-      path: script.sh
-  test_resources:
-    - type: bash_script
-      path: test.sh
-    - path: ../../../LICENSE
-platforms:
-  - type: native
+name: tar_extract
+namespace: compression
+description: Extract files from a tar archive
+arguments:                     
+  - name: "--input"
+    alternatives: ["-i"]
+    type: file
+    description: Input file
+    direction: input
+    example: input.tar.gz
+    required: true
+  - name: "--output"
+    alternatives: ["-o"]
+    type: file
+    description: Folder to restore file(s) to.
+    direction: output
+    example: output_folder
+    required: true
+  - name: "--strip_components"
+    alternatives: ["-s"]
+    type: integer
+    description: Strip this amount of leading components from file names on extraction. For example, to extract only 'myfile.txt' from an archive containing the structure `this/goes/deep/myfile.txt', use 3 to strip 'this/goes/deep/'.
+    example: 1
+    required: false
+  - name: "--exclude"
+    alternatives: ["-e"]
+    type: string
+    description: Prevents any file or member whose name matches the shell wildcard (pattern) from being extracted.
+    example: "docs/figures"
+    required: false
+resources:
+  - type: bash_script
+    path: script.sh
+test_resources:
+  - type: bash_script
+    path: test.sh
+  - path: ../../../LICENSE
+
+engines:
   - type: docker
     image: ubuntu:latest
+
+runners:
+  - type: executable
+  - type: nextflow
+    directives:
+      label: [ singlecpu, lowmem ]

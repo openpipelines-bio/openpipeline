@@ -1,46 +1,49 @@
-functionality:
-  name: bcftools
-  namespace: genetic_demux
-  description: Filter the variants called by freebayes or cellSNP
-  authors:
-    - __merge__: /src/authors/xichen_wu.yaml
-      roles: [ author ]
-  arguments:
-    - name: "--vcf"
-      type: file
-      required: true
-      multiple: true
-      description: VCF files, must have the same sample columns appearing in the same order.
-    - name: "--concat"
-      type: boolean_true
-      description: Concatenate or combine VCFs and sort them.
-    - name: "--filter"
-      type: boolean_true
-      description: "Filter VCFs."
-    - name: "--filter_qual"
-      type: integer
-      default: 30
-      description: "Filter VCFs with specified QUAL threshold."
-    - name: "--output"
-      type: file
-      direction: output
-      description: bcftools output directory
-      example: "bcftools_out/"
-  resources:
-    - type: bash_script
-      path: script.sh
-  test_resources:
-    - type: bash_script
-      path: test.sh
-    - path: ../../../resources_test/demuxafy_test_data
-platforms:
+name: bcftools
+namespace: genetic_demux
+description: Filter the variants called by freebayes or cellSNP
+authors:
+  - __merge__: /src/authors/xichen_wu.yaml
+    roles: [ author ]
+arguments:
+  - name: "--vcf"
+    type: file
+    required: true
+    multiple: true
+    description: VCF files, must have the same sample columns appearing in the same order.
+  - name: "--concat"
+    type: boolean_true
+    description: Concatenate or combine VCFs and sort them.
+  - name: "--filter"
+    type: boolean_true
+    description: "Filter VCFs."
+  - name: "--filter_qual"
+    type: integer
+    default: 30
+    description: "Filter VCFs with specified QUAL threshold."
+  - name: "--output"
+    type: file
+    direction: output
+    description: bcftools output directory
+    example: "bcftools_out/"
+resources:
+  - type: bash_script
+    path: script.sh
+test_resources:
+  - type: bash_script
+    path: test.sh
+  - path: ../../../resources_test/demuxafy_test_data
+
+engines:
+- type: docker
+  image: ubuntu:latest
+  setup:
+  - type: apt
+    packages: [ wget, bzip2, gcc, make, libbz2-dev, zlib1g-dev, libncurses5-dev, libncursesw5-dev, liblzma-dev, autoconf, automake, perl, libcurl4-gnutls-dev, libssl-dev]
   - type: docker
-    image: ubuntu:latest
-    setup:
-    - type: apt
-      packages: [ wget, bzip2, gcc, make, libbz2-dev, zlib1g-dev, libncurses5-dev, libncursesw5-dev, liblzma-dev, autoconf, automake, perl, libcurl4-gnutls-dev, libssl-dev]
-    - type: docker
-      run: wget https://github.com/samtools/bcftools/releases/download/1.16/bcftools-1.16.tar.bz2 -O bcftools.tar.bz2 && tar -xjvf bcftools.tar.bz2 && cd bcftools-1.16 && make prefix=/usr/local install
-  - type: nextflow
-    directives:
-      label: [ midmem, midcpu ]
+    run: wget https://github.com/samtools/bcftools/releases/download/1.16/bcftools-1.16.tar.bz2 -O bcftools.tar.bz2 && tar -xjvf bcftools.tar.bz2 && cd bcftools-1.16 && make prefix=/usr/local install
+
+runners:
+- type: executable
+- type: nextflow
+  directives:
+    label: [ midmem, midcpu ]

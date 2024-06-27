@@ -74,7 +74,7 @@ logger = setup_logger()
 config = yaml.safe_load(Path(meta["config"]).read_text())
 
 # look for training params for method
-argument_groups = { grp["name"]: grp["arguments"] for grp in config["functionality"]["argument_groups"] }
+argument_groups = { grp["name"]: grp["arguments"] for grp in config["argument_groups"] }
 training_arg_names = [ arg["name"].replace("--", "") for arg in argument_groups["Learning parameters"] ]
 training_params = { arg_name: par[arg_name] for arg_name in training_arg_names }
 

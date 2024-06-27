@@ -7,7 +7,7 @@ import uuid
 
 ## VIASH START
 meta = {
-    'executable': './target/docker/filter/intersect_obs/intersect_obs',
+    'executable': './target/executable/filter/intersect_obs/intersect_obs',
     'resources_dir': './resources_test/',
     'cpus': 2,
     'config': './src/filter/intersect_modalities/config.vsh.yaml'

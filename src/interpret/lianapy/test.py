@@ -5,7 +5,7 @@ import numpy as np
 
 ## VIASH START
 meta = {
-    'executable': './target/native/interpret/lianapy/',
+    'executable': './target/executable/interpret/lianapy/',
     'resources_dir': './resources_test/pbmc_1k_protein_v3/'
 }
 ## VIASH END

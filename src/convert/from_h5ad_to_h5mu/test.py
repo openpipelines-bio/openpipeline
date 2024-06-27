@@ -6,7 +6,7 @@ from openpipelinetestutils.asserters import assert_annotation_objects_equal
 ## VIASH START
 meta = {
     'resources_dir': 'resources_test',
-    'executable': './target/docker/convert/from_h5ad_to_h5mu/from_h5ad_to_h5mu',
+    'executable': './target/executable/convert/from_h5ad_to_h5mu/from_h5ad_to_h5mu',
     'config': './src/convert/from_h5ad_to_h5mu/config.vsh.yaml'
 }
 ## VIASH END

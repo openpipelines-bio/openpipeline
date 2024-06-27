@@ -7,7 +7,7 @@ import numpy as np
 
 ## VIASH START
 meta = {
-    'executable': './target/docker/labels_transfer/xgboost/xgboost',
+    'executable': './target/executable/labels_transfer/xgboost/xgboost',
     'resources_dir': './resources_test/'
 }
 ## VIASH END

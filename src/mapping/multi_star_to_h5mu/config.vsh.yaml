@@ -1,48 +1,51 @@
-functionality:
-  name: multi_star_to_h5mu
-  namespace: mapping
-  description: |
-    Convert the output of `multi_star` to a h5mu.
-  authors:
-    - __merge__: /src/authors/robrecht_cannoodt.yaml
-      roles: [ author, maintainer ]
-    - __merge__: /src/authors/angela_pisco.yaml
-      roles: [ author ]
-  arguments:
-    - type: file
-      name: --input
-      required: true
-      description: The directory created by `multi_star`
-      example: /path/to/foo
-    - name: "--output"
-      alternatives: [-o]
-      direction: output
-      type: file
-      description: "Output h5mu file."
-      required: true
-      example: output.h5mu
-    - name: "--output_compression"
-      type: string
-      description: The compression format to be used on the output h5mu object.
-      choices: ["gzip", "lzf"]
-      required: false
-      example: "gzip"
-  resources:
-    - type: python_script
-      path: script.py
-  test_resources:
-    - type: python_script
-      path: test.py
-    - path: /resources_test/cellranger_tiny_fastq/multi_star
-platforms:
-  - type: docker
-    image: python:3.10-slim
-    setup:
-      - type: apt
-        packages:
-          - procps
-      - type: python
-        __merge__: /src/base/requirements/anndata_mudata.yaml
-  - type: nextflow
-    directives:
-      label: [ midmem, midcpu ]
+name: multi_star_to_h5mu
+namespace: mapping
+description: |
+  Convert the output of `multi_star` to a h5mu.
+authors:
+  - __merge__: /src/authors/robrecht_cannoodt.yaml
+    roles: [ author, maintainer ]
+  - __merge__: /src/authors/angela_pisco.yaml
+    roles: [ author ]
+arguments:
+  - type: file
+    name: --input
+    required: true
+    description: The directory created by `multi_star`
+    example: /path/to/foo
+  - name: "--output"
+    alternatives: [-o]
+    direction: output
+    type: file
+    description: "Output h5mu file."
+    required: true
+    example: output.h5mu
+  - name: "--output_compression"
+    type: string
+    description: The compression format to be used on the output h5mu object.
+    choices: ["gzip", "lzf"]
+    required: false
+    example: "gzip"
+resources:
+  - type: python_script
+    path: script.py
+test_resources:
+  - type: python_script
+    path: test.py
+  - path: /resources_test/cellranger_tiny_fastq/multi_star
+
+engines:
+- type: docker
+  image: python:3.10-slim
+  setup:
+    - type: apt
+      packages:
+        - procps
+    - type: python
+      __merge__: /src/base/requirements/anndata_mudata.yaml
+
+runners:
+- type: executable      
+- type: nextflow
+  directives:
+    label: [ midmem, midcpu ]

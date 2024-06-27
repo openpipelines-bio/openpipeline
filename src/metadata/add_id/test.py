@@ -7,7 +7,7 @@ from openpipelinetestutils.asserters import assert_annotation_objects_equal
 
 ## VIASH START
 meta = {
-    'executable': './target/docker/metadata/add_id/add_id',
+    'executable': './target/executable/metadata/add_id/add_id',
     'resources_dir': './resources_test/concat_test_data/',
     'cpus': 2,
     'config': './src/metadata/add_id/config.vsh.yaml'

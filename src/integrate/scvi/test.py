@@ -7,7 +7,7 @@ from anndata.tests.helpers import assert_equal
 
 ## VIASH START
 meta = {
-    'executable': './target/docker/integrate/scvi/scvi',
+    'executable': './target/executable/integrate/scvi/scvi',
     'resources_dir': './resources_test/pbmc_1k_protein_v3/'
 }
 ## VIASH END

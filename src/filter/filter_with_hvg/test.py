@@ -12,7 +12,7 @@ import pandas as pd
 meta = {
     'resources_dir': 'resources_test/',
     'config': './src/filter/filter_with_hvg/config.vsh.yaml',
-    'executable': './target/docker/filter/filter_with_hvg/filter_with_hvg'
+    'executable': './target/executable/filter/filter_with_hvg/filter_with_hvg'
 }
 ## VIASH END
 
