@@ -42,6 +42,8 @@
 
 * `mapping/cellranger_multi` component now outputs logs on failure of the `cellranger multi` process (PR #766).
 
+* Bump `viash-actions` to `v6` (PR #821).
+
 # openpipelines 1.0.0-rc6
 
 ## BUG FIXES
