@@ -218,7 +218,6 @@ function ViashHelp {
   echo ""
   echo "    --target_sum"
   echo "        type: integer"
-  echo "        default: 10000"
   echo "        If None, after normalization, each observation (cell) has a total count"
   echo "        equal to the median of total counts for observations (cells) before"
   echo "        normalization."
@@ -460,9 +459,9 @@ RUN pip install --upgrade pip && \
 
 LABEL org.opencontainers.image.authors="Dries De Maeyer, Robrecht Cannoodt"
 LABEL org.opencontainers.image.description="Companion container for running component transform normalize_total"
-LABEL org.opencontainers.image.created="2024-06-28T07:37:50Z"
+LABEL org.opencontainers.image.created="2024-06-28T11:39:18Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="a87dbc66e4acd37f2520193abdc333d4095a4720"
+LABEL org.opencontainers.image.revision="122477c7952b6a58f38fd94399d0d02fc71848b8"
 LABEL org.opencontainers.image.version="main_build"
 
 VIASHDOCKER
@@ -866,9 +865,6 @@ fi
 if [ -z ${VIASH_PAR_MODALITY+x} ]; then
   VIASH_PAR_MODALITY="rna"
 fi
-if [ -z ${VIASH_PAR_TARGET_SUM+x} ]; then
-  VIASH_PAR_TARGET_SUM="10000"
-fi
 if [ -z ${VIASH_PAR_EXCLUDE_HIGHLY_EXPRESSED+x} ]; then
   VIASH_PAR_EXCLUDE_HIGHLY_EXPRESSED="false"
 fi
@@ -1089,6 +1085,7 @@ if par['input_layer'] and not par['input_layer'] in dat.layers.keys():
     raise ValueError(f"Input layer {par['input_layer']} not found in {mod}")
 output_data = sc.pp.normalize_total(dat,
                                     layer=par["input_layer"],
+                                    target_sum=par["target_sum"],
                                     copy=True if par["output_layer"] else False)
 
 if output_data:
