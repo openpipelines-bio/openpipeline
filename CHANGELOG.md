@@ -44,7 +44,7 @@
 
 * Bump `viash-actions` to `v6` (PR #821).
 
-* `transform/normalize_total` component: pass the `target_sum` argument to the `normalize_total` (PR #822).
+* `transform/normalize_total` component: pass the `target_sum` argument to `sc.pp.normalize_total()` (PR #822).
 
 # openpipelines 1.0.0-rc6
 
