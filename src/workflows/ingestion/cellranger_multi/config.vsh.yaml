@@ -25,6 +25,7 @@ functionality:
             which will be replaced with the sample name.
           example: "*.h5mu"
           direction: output
+          required: true
         - name: "--uns_metrics"
           type: string
           description: Name of the .uns slot under which to QC metrics (if any).

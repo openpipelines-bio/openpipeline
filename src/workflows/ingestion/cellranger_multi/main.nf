@@ -50,6 +50,7 @@ workflow run_wf {
         "probe_barcode_ids": "probe_barcode_ids",
         "control_id": "control_id",
         "mhc_allele": "mhc_allele",
+        "check_library_compatibility": "check_library_compatibility",
         "output": "output_raw",
       ],
       toState: [
@@ -89,8 +90,8 @@ workflow run_wf {
         // So here we overwrite this 'run' id with the name of the input event.
         def new_id = h5mu_list.size() == 1 ? id : corresponding_csv_entry.sample_name
         return [ new_id, ["output_h5mu": h5mu_file, "output_raw": state.output_raw, "_meta": ["join_id": id]]]
-      return result
       }
+      return result
     }
 
   emit:
