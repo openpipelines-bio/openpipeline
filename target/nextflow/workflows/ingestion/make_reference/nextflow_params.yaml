@@ -1,8 +1,8 @@
 # Inputs
 id: # please fill in - example: "foo"
-genome_fasta: # please fill in - example: "https://ftp.ebi.ac.uk/pub/databases/gencode/Gencode_human/release_41/GRCh38.primary_assembly.genome.fa.gz"
-transcriptome_gtf: # please fill in - example: "https://ftp.ebi.ac.uk/pub/databases/gencode/Gencode_human/release_41/gencode.v41.annotation.gtf.gz"
-# ercc: "https://assets.thermofisher.com/TFS-Assets/LSG/manuals/ERCC92.zip"
+genome_fasta: # please fill in - example: "https:/ftp.ebi.ac.uk/pub/databases/gencode/Gencode_human/release_41/GRCh38.primary_assembly.genome.fa.gz"
+transcriptome_gtf: # please fill in - example: "https:/ftp.ebi.ac.uk/pub/databases/gencode/Gencode_human/release_41/gencode.v41.annotation.gtf.gz"
+# ercc: "https:/assets.thermofisher.com/TFS-Assets/LSG/manuals/ERCC92.zip"
 
 # Outputs
 target: ["star"]

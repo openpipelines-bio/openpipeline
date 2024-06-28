@@ -7,7 +7,7 @@ input: # please fill in - example: "dataset.h5mu"
 # output: "$id.$key.output.h5mu"
 
 # QC metrics calculation options
-# var_qc_metrics: ["ercc", "highly_variable"]
+# var_qc_metrics: ["ercc,highly_variable"]
 top_n_vars: [50, 100, 200, 500]
 output_obs_num_nonzero_vars: "num_nonzero_vars"
 output_obs_total_counts_vars: "total_counts"

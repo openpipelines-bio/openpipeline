@@ -3527,7 +3527,7 @@ meta = [
             ],
             "must_exist" : true,
             "create_parent" : true,
-            "required" : false,
+            "required" : true,
             "direction" : "output",
             "multiple" : true,
             "multiple_sep" : ";",
@@ -3628,7 +3628,7 @@ meta = [
           "functionalityNamespace" : "mapping",
           "output" : "",
           "platform" : "",
-          "git_commit" : "2b4f4399fede4401a0fac8a7981dfdca35b9465a",
+          "git_commit" : "a87dbc66e4acd37f2520193abdc333d4095a4720",
           "executable" : "/nextflow/mapping/cellranger_multi/main.nf"
         },
         "writtenPath" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/mapping/cellranger_multi"
@@ -3649,7 +3649,7 @@ meta = [
           "functionalityNamespace" : "convert",
           "output" : "",
           "platform" : "",
-          "git_commit" : "2b4f4399fede4401a0fac8a7981dfdca35b9465a",
+          "git_commit" : "a87dbc66e4acd37f2520193abdc333d4095a4720",
           "executable" : "/nextflow/convert/from_cellranger_multi_to_h5mu/main.nf"
         },
         "writtenPath" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/convert/from_cellranger_multi_to_h5mu"
@@ -3716,7 +3716,7 @@ meta = [
     "platform" : "nextflow",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/workflows/ingestion/cellranger_multi",
     "viash_version" : "0.8.6",
-    "git_commit" : "2b4f4399fede4401a0fac8a7981dfdca35b9465a",
+    "git_commit" : "a87dbc66e4acd37f2520193abdc333d4095a4720",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))
@@ -3822,8 +3822,8 @@ workflow run_wf {
         // So here we overwrite this 'run' id with the name of the input event.
         def new_id = h5mu_list.size() == 1 ? id : corresponding_csv_entry.sample_name
         return [ new_id, ["output_h5mu": h5mu_file, "output_raw": state.output_raw, "_meta": ["join_id": id]]]
-      return result
       }
+      return result
     }
 
   emit:

@@ -227,10 +227,10 @@
                 "lr_patience": {
                 "type":
                 "number",
-                "description": "Type: `double`, default: `30`. Number of epochs with no improvement after which learning rate will be reduced",
-                "help_text": "Type: `double`, default: `30`. Number of epochs with no improvement after which learning rate will be reduced."
+                "description": "Type: `double`, default: `30.0`. Number of epochs with no improvement after which learning rate will be reduced",
+                "help_text": "Type: `double`, default: `30.0`. Number of epochs with no improvement after which learning rate will be reduced."
             ,
-                "default": "30"
+                "default": "30.0"
             }
     
 

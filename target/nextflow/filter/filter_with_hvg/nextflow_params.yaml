@@ -10,7 +10,7 @@ do_subset: false
 flavor: "seurat"
 # n_top_genes: 123
 min_mean: 0.0125
-max_mean: 3
+max_mean: 3.0
 min_disp: 0.5
 # max_disp: 123.0
 span: 0.3

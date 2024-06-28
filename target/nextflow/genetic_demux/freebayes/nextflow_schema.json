@@ -826,8 +826,8 @@
                 "output": {
                 "type":
                 "string",
-                "description": "Type: `file`, default: `$id.$key.output.output`, example: `freebayes_out/`. Output directory",
-                "help_text": "Type: `file`, default: `$id.$key.output.output`, example: `freebayes_out/`. Output directory"
+                "description": "Type: `file`, default: `$id.$key.output.output`, example: `freebayes_out`. Output directory",
+                "help_text": "Type: `file`, default: `$id.$key.output.output`, example: `freebayes_out`. Output directory"
             ,
                 "default": "$id.$key.output.output"
             }

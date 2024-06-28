@@ -43,8 +43,8 @@
                 "input": {
                 "type":
                 "string",
-                "description": "Type: `file`, required, example: `input_dir/`. The output of a BD Rhapsody workflow",
-                "help_text": "Type: `file`, required, example: `input_dir/`. The output of a BD Rhapsody workflow."
+                "description": "Type: `file`, required, example: `input_dir`. The output of a BD Rhapsody workflow",
+                "help_text": "Type: `file`, required, example: `input_dir`. The output of a BD Rhapsody workflow."
             
             }
     

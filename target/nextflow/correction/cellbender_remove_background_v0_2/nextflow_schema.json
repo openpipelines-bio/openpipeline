@@ -240,8 +240,8 @@
                 "z_layers": {
                 "type":
                 "string",
-                "description": "Type: List of `integer`, default: `500`, multiple_sep: `\":\"`. Dimension of hidden layers in the encoder for z",
-                "help_text": "Type: List of `integer`, default: `500`, multiple_sep: `\":\"`. Dimension of hidden layers in the encoder for z.\n"
+                "description": "Type: List of `integer`, default: `500`, multiple_sep: `\";\"`. Dimension of hidden layers in the encoder for z",
+                "help_text": "Type: List of `integer`, default: `500`, multiple_sep: `\";\"`. Dimension of hidden layers in the encoder for z.\n"
             ,
                 "default": "500"
             }
@@ -273,8 +273,8 @@
                 "fpr": {
                 "type":
                 "string",
-                "description": "Type: List of `double`, default: `0.01`, multiple_sep: `\":\"`. Target false positive rate in (0, 1)",
-                "help_text": "Type: List of `double`, default: `0.01`, multiple_sep: `\":\"`. Target false positive rate in (0, 1). A false positive\nis a true signal count that is erroneously removed.\nMore background removal is accompanied by more signal\nremoval at high values of FPR. You can specify\nmultiple values, which will create multiple output\nfiles.\n"
+                "description": "Type: List of `double`, default: `0.01`, multiple_sep: `\";\"`. Target false positive rate in (0, 1)",
+                "help_text": "Type: List of `double`, default: `0.01`, multiple_sep: `\";\"`. Target false positive rate in (0, 1). A false positive\nis a true signal count that is erroneously removed.\nMore background removal is accompanied by more signal\nremoval at high values of FPR. You can specify\nmultiple values, which will create multiple output\nfiles.\n"
             ,
                 "default": "0.01"
             }

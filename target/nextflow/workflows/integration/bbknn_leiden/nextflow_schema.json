@@ -214,10 +214,10 @@
                 "leiden_resolution": {
                 "type":
                 "string",
-                "description": "Type: List of `double`, default: `1`, multiple_sep: `\":\"`. Control the coarseness of the clustering",
-                "help_text": "Type: List of `double`, default: `1`, multiple_sep: `\":\"`. Control the coarseness of the clustering. Higher values lead to more clusters."
+                "description": "Type: List of `double`, default: `1.0`, multiple_sep: `\";\"`. Control the coarseness of the clustering",
+                "help_text": "Type: List of `double`, default: `1.0`, multiple_sep: `\";\"`. Control the coarseness of the clustering. Higher values lead to more clusters."
             ,
-                "default": "1"
+                "default": "1.0"
             }
     
 
