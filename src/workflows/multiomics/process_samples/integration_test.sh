@@ -10,7 +10,7 @@ cd "$REPO_ROOT"
 
 export NXF_VER=21.10.6
 
-# viash ns build -q '^workflows'
+viash ns build -q '^workflows'
 
 nextflow \
   run . \
