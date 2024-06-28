@@ -1,0 +1,21 @@
+# Arguments
+input: # please fill in - example: "input.h5mu"
+modality: "rna"
+# layer: "foo"
+# output: "$id.$key.output.h5mu"
+# output_compression: "gzip"
+var_name_filter: "filter_with_hvg"
+varm_name: "hvg"
+flavor: "seurat"
+# n_top_features: 123
+min_mean: 0.0125
+max_mean: 3.0
+min_disp: 0.5
+# max_disp: 123.0
+span: 0.3
+n_bins: 20
+# obs_batch_key: "foo"
+
+# Nextflow input-output arguments
+publish_dir: # please fill in - example: "output/"
+# param_list: "my_params.yaml"

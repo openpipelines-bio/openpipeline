@@ -1,0 +1,253 @@
+{
+"$schema": "http://json-schema.org/draft-07/schema",
+"title": "vireo",
+"description": "Vireo is primarily designed for demultiplexing cells into donors by modelling of expressed alleles.",
+"type": "object",
+"definitions": {
+
+    
+    "Dataset input": {
+        "title": "Dataset input",
+        "type": "object",
+        "description": "Dataset input using nf-tower \"dataset\" or \"data explorer\". Allows for the input of multiple         parameter sets to initialise a Nextflow channel.",
+        "properties": {
+            "param_list": {
+                "description": "Dataset input can either be a list of maps, a csv file, a json file, a yaml file, or simply a yaml                 blob. The names of the input fields (e.g. csv columns, json keys) need to be an exact match with the workflow input parameters.",
+                "default": "",
+                "format": "file-path",
+                "mimetype": "text/csv",
+                "pattern": "^\\S+\\.csv$"
+            }
+        }
+    },
+
+    
+    
+    "input" : {
+    "title": "Input",
+    "type": "object",
+    "description": "No description",
+    "properties": {
+    
+        
+                "cell_data": {
+                "type":
+                "string",
+                "description": "Type: `file`. The cell genotype file in VCF format or cellSNP folder with sparse matrices",
+                "help_text": "Type: `file`. The cell genotype file in VCF format or cellSNP folder with sparse matrices."
+            
+            }
+    
+
+        ,
+                "n_donor": {
+                "type":
+                "integer",
+                "description": "Type: `integer`, default: `2`. Number of donors to demultiplex; can be larger than provided in donor_file",
+                "help_text": "Type: `integer`, default: `2`. Number of donors to demultiplex; can be larger than provided in donor_file."
+            ,
+                "default": "2"
+            }
+    
+
+        ,
+                "vartrix_data": {
+                "type":
+                "string",
+                "description": "Type: `file`. The cell genotype files in vartrix outputs",
+                "help_text": "Type: `file`. The cell genotype files in vartrix outputs."
+            
+            }
+    
+
+        ,
+                "donor_file": {
+                "type":
+                "string",
+                "description": "Type: `file`. The donor genotype file in VCF format",
+                "help_text": "Type: `file`. The donor genotype file in VCF format. Please filter the sample and region with bcftools first!"
+            
+            }
+    
+
+        ,
+                "geno_tag": {
+                "type":
+                "string",
+                "description": "Type: `string`, default: `PL`, choices: ``GT`, `GP`, `PL``. The tag for donor genotype",
+                "help_text": "Type: `string`, default: `PL`, choices: ``GT`, `GP`, `PL``. The tag for donor genotype.",
+                "enum": ["GT", "GP", "PL"]
+            
+            ,
+                "default": "PL"
+            }
+    
+
+        ,
+                "no_doublet": {
+                "type":
+                "boolean",
+                "description": "Type: `boolean`, default: `false`. If use, not checking doublets",
+                "help_text": "Type: `boolean`, default: `false`. If use, not checking doublets."
+            ,
+                "default": "False"
+            }
+    
+
+        ,
+                "n_init": {
+                "type":
+                "integer",
+                "description": "Type: `integer`, default: `50`. Number of random initializations, when GT needs to learn",
+                "help_text": "Type: `integer`, default: `50`. Number of random initializations, when GT needs to learn."
+            ,
+                "default": "50"
+            }
+    
+
+        ,
+                "extra_donor": {
+                "type":
+                "integer",
+                "description": "Type: `integer`, default: `0`. Number of extra donor in pre-cluster, when GT needs to learn",
+                "help_text": "Type: `integer`, default: `0`. Number of extra donor in pre-cluster, when GT needs to learn."
+            ,
+                "default": "0"
+            }
+    
+
+        ,
+                "extra_donorMode": {
+                "type":
+                "string",
+                "description": "Type: `string`. Method for searching from extra donors",
+                "help_text": "Type: `string`. Method for searching from extra donors. size: n_cell per donor; distance: GT distance between donors"
+            
+            }
+    
+
+        ,
+                "force_learn_gt": {
+                "type":
+                "boolean",
+                "description": "Type: `boolean`, default: `false`. If use, treat donor GT as prior only",
+                "help_text": "Type: `boolean`, default: `false`. If use, treat donor GT as prior only."
+            ,
+                "default": "False"
+            }
+    
+
+        ,
+                "ase_mode": {
+                "type":
+                "boolean",
+                "description": "Type: `boolean`, default: `false`. If use, turn on SNP specific allelic ratio",
+                "help_text": "Type: `boolean`, default: `false`. If use, turn on SNP specific allelic ratio."
+            ,
+                "default": "False"
+            }
+    
+
+        ,
+                "no_plot": {
+                "type":
+                "boolean",
+                "description": "Type: `boolean`, default: `false`. If use, turn off plotting GT distance",
+                "help_text": "Type: `boolean`, default: `false`. If use, turn off plotting GT distance."
+            ,
+                "default": "False"
+            }
+    
+
+        ,
+                "rand_seed": {
+                "type":
+                "integer",
+                "description": "Type: `integer`. Seed for random initialization",
+                "help_text": "Type: `integer`. Seed for random initialization"
+            
+            }
+    
+
+        ,
+                "cell_range": {
+                "type":
+                "string",
+                "description": "Type: `string`. Range of cells to process",
+                "help_text": "Type: `string`. Range of cells to process."
+            
+            }
+    
+
+        ,
+                "call_ambient_rnas": {
+                "type":
+                "boolean",
+                "description": "Type: `boolean`, default: `false`. If use, detect ambient RNAs in each cell",
+                "help_text": "Type: `boolean`, default: `false`. If use, detect ambient RNAs in each cell."
+            ,
+                "default": "False"
+            }
+    
+
+}
+},
+    
+    
+    "output" : {
+    "title": "Output",
+    "type": "object",
+    "description": "No description",
+    "properties": {
+    
+        
+                "output": {
+                "type":
+                "string",
+                "description": "Type: `file`, default: `$id.$key.output.output`, example: `vireo`. Output directory",
+                "help_text": "Type: `file`, default: `$id.$key.output.output`, example: `vireo`. Output directory"
+            ,
+                "default": "$id.$key.output.output"
+            }
+    
+
+}
+},
+    
+    
+    "nextflow input-output arguments" : {
+    "title": "Nextflow input-output arguments",
+    "type": "object",
+    "description": "Input/output parameters for Nextflow itself. Please note that both publishDir and publish_dir are supported but at least one has to be configured.",
+    "properties": {
+    
+        
+                "publish_dir": {
+                "type":
+                "string",
+                "description": "Type: `string`, required, example: `output/`. Path to an output directory",
+                "help_text": "Type: `string`, required, example: `output/`. Path to an output directory."
+            
+            }
+    
+
+        
+
+}
+}
+},
+"allOf": [
+
+    {
+    "$ref": "#/definitions/input"
+    },
+
+    {
+    "$ref": "#/definitions/output"
+    },
+
+    {
+    "$ref": "#/definitions/nextflow input-output arguments"
+    }
+]
+}

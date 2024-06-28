@@ -1,0 +1,23 @@
+# Inputs
+input: # please fill in - example: ["sample_S1_L001_R1_001.fastq.gz", "sample_S1_L001_R2_001.fastq.gz"]
+reference: # please fill in - example: "reference.tar.gz"
+
+# Outputs
+# output: "$id.$key.output.output"
+
+# Arguments
+# expect_cells: 3000
+# force_cells: 3000
+chemistry: "auto"
+secondary_analysis: false
+generate_bam: true
+include_introns: true
+# r1_length: 123
+# r2_length: 123
+# lanes: [1, 2, 3]
+library_compatibility_check: true
+# min_crispr_umi: 123
+
+# Nextflow input-output arguments
+publish_dir: # please fill in - example: "output/"
+# param_list: "my_params.yaml"

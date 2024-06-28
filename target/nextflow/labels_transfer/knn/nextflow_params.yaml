@@ -1,0 +1,22 @@
+# Outputs
+# output: "$id.$key.output.output"
+# output_obs_predictions: ["foo"]
+# output_obs_uncertainty: ["foo"]
+output_uns_parameters: "labels_transfer"
+
+# Input dataset (query) arguments
+input: # please fill in - example: "path/to/file"
+modality: "rna"
+# input_obsm_features: "X_integrated_scanvi"
+
+# Reference dataset arguments
+# reference: "https:/zenodo.org/record/6337966/files/HLCA_emb_and_metadata.h5ad"
+reference_obsm_features: # please fill in - example: "X_integrated_scanvi"
+reference_obs_targets: ["ann_level_1", "ann_level_2", "ann_level_3", "ann_level_4", "ann_level_5", "ann_finest_level"]
+
+# Learning parameters
+n_neighbors: # please fill in - example: 123
+
+# Nextflow input-output arguments
+publish_dir: # please fill in - example: "output/"
+# param_list: "my_params.yaml"

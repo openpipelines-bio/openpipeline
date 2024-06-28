@@ -1,0 +1,18 @@
+# Inputs
+input: # please fill in - example: "input.h5mu"
+modality: "rna"
+# layer: "raw_counts"
+obs_fraction_column: # please fill in - example: "fraction_mitochondrial"
+
+# Outputs
+# output: "$id.$key.output.h5mu"
+# output_compression: "gzip"
+obs_name_filter: # please fill in - example: "foo"
+
+# Arguments
+min_fraction: 0.0
+max_fraction: 1.0
+
+# Nextflow input-output arguments
+publish_dir: # please fill in - example: "output/"
+# param_list: "my_params.yaml"

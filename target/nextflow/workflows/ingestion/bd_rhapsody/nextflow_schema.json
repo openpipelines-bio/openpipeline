@@ -1,0 +1,376 @@
+{
+"$schema": "http://json-schema.org/draft-07/schema",
+"title": "bd_rhapsody",
+"description": "A wrapper for the BD Rhapsody Analysis CWL v1.10.1 pipeline.\n\nThis pipeline can be used for a targeted analysis (with `--mode targeted`) or for a whole transcriptome analysis (with `--mode wta`).\n\n* If mode is `\"targeted\"`, then either the `--reference` or `--abseq_reference` parameters must be defined.\n* If mode is `\"wta\"`, then `--reference` and `--transcriptome_annotation` must be defined, `--abseq_reference` and `--supplemental_reference` is optional.\n\nThe reference_genome and transcriptome_annotation files can be generated with the make_reference pipeline.\nAlternatively, BD also provides standard references which can be downloaded from these locations:\n\n  - Human: http://bd-rhapsody-public.s3-website-us-east-1.amazonaws.com/Rhapsody-WTA/GRCh38-PhiX-gencodev29/\n  - Mouse: http://bd-rhapsody-public.s3-website-us-east-1.amazonaws.com/Rhapsody-WTA/GRCm38-PhiX-gencodevM19/\n",
+"type": "object",
+"definitions": {
+
+    
+    "Dataset input": {
+        "title": "Dataset input",
+        "type": "object",
+        "description": "Dataset input using nf-tower \"dataset\" or \"data explorer\". Allows for the input of multiple         parameter sets to initialise a Nextflow channel.",
+        "properties": {
+            "param_list": {
+                "description": "Dataset input can either be a list of maps, a csv file, a json file, a yaml file, or simply a yaml                 blob. The names of the input fields (e.g. csv columns, json keys) need to be an exact match with the workflow input parameters.",
+                "default": "",
+                "format": "file-path",
+                "mimetype": "text/csv",
+                "pattern": "^\\S+\\.csv$"
+            }
+        }
+    },
+
+    
+    
+    "inputs" : {
+    "title": "Inputs",
+    "type": "object",
+    "description": "No description",
+    "properties": {
+    
+        
+                "mode": {
+                "type":
+                "string",
+                "description": "Type: `string`, required, example: `wta`, choices: ``wta`, `targeted``. Whether to run a whole transcriptome analysis (WTA) or a targeted analysis",
+                "help_text": "Type: `string`, required, example: `wta`, choices: ``wta`, `targeted``. Whether to run a whole transcriptome analysis (WTA) or a targeted analysis.",
+                "enum": ["wta", "targeted"]
+            
+            
+            }
+    
+
+        ,
+                "id": {
+                "type":
+                "string",
+                "description": "Type: `string`, required, example: `foo`. ID of the sample",
+                "help_text": "Type: `string`, required, example: `foo`. ID of the sample."
+            
+            }
+    
+
+        ,
+                "input": {
+                "type":
+                "string",
+                "description": "Type: List of `file`, required, example: `input.fastq.gz`, multiple_sep: `\";\"`. Path to your read files in the FASTQ",
+                "help_text": "Type: List of `file`, required, example: `input.fastq.gz`, multiple_sep: `\";\"`. Path to your read files in the FASTQ.GZ format. You may specify as many R1/R2 read pairs as you want."
+            
+            }
+    
+
+        ,
+                "reference": {
+                "type":
+                "string",
+                "description": "Type: List of `file`, required, example: `reference_genome.tar.gz|reference.fasta`, multiple_sep: `\";\"`. Refence to map to",
+                "help_text": "Type: List of `file`, required, example: `reference_genome.tar.gz|reference.fasta`, multiple_sep: `\";\"`. Refence to map to. For `--mode wta`, this is the path to STAR index as a tar.gz file. For `--mode targeted`, this is the path to mRNA reference file for pre-designed, supplemental, or custom panel, in FASTA format"
+            
+            }
+    
+
+        ,
+                "transcriptome_annotation": {
+                "type":
+                "string",
+                "description": "Type: `file`, example: `transcriptome.gtf`. Path to GTF annotation file (only for `--mode wta`)",
+                "help_text": "Type: `file`, example: `transcriptome.gtf`. Path to GTF annotation file (only for `--mode wta`)."
+            
+            }
+    
+
+        ,
+                "abseq_reference": {
+                "type":
+                "string",
+                "description": "Type: List of `file`, example: `abseq_reference.fasta`, multiple_sep: `\";\"`. Path to the AbSeq reference file in FASTA format",
+                "help_text": "Type: List of `file`, example: `abseq_reference.fasta`, multiple_sep: `\";\"`. Path to the AbSeq reference file in FASTA format. Only needed if BD AbSeq Ab-Oligos are used."
+            
+            }
+    
+
+        ,
+                "supplemental_reference": {
+                "type":
+                "string",
+                "description": "Type: List of `file`, example: `supplemental_reference.fasta`, multiple_sep: `\";\"`. Path to the supplemental reference file in FASTA format",
+                "help_text": "Type: List of `file`, example: `supplemental_reference.fasta`, multiple_sep: `\";\"`. Path to the supplemental reference file in FASTA format. Only needed if there are additional transgene sequences used in the experiment (only for `--mode wta`)."
+            
+            }
+    
+
+        ,
+                "sample_prefix": {
+                "type":
+                "string",
+                "description": "Type: `string`, default: `sample`. Specify a run name to use as the output file base name",
+                "help_text": "Type: `string`, default: `sample`. Specify a run name to use as the output file base name. Use only letters, numbers, or hyphens. Do not use special characters or spaces."
+            ,
+                "default": "sample"
+            }
+    
+
+}
+},
+    
+    
+    "outputs" : {
+    "title": "Outputs",
+    "type": "object",
+    "description": "No description",
+    "properties": {
+    
+        
+                "output_raw": {
+                "type":
+                "string",
+                "description": "Type: `file`, required, default: `$id.$key.output_raw.output_raw`, example: `output_dir`. The BD Rhapsody output folder as it comes out of the BD Rhapsody pipeline",
+                "help_text": "Type: `file`, required, default: `$id.$key.output_raw.output_raw`, example: `output_dir`. The BD Rhapsody output folder as it comes out of the BD Rhapsody pipeline"
+            ,
+                "default": "$id.$key.output_raw.output_raw"
+            }
+    
+
+        ,
+                "output_h5mu": {
+                "type":
+                "string",
+                "description": "Type: `file`, required, default: `$id.$key.output_h5mu.h5mu`, example: `output.h5mu`. The converted h5mu file",
+                "help_text": "Type: `file`, required, default: `$id.$key.output_h5mu.h5mu`, example: `output.h5mu`. The converted h5mu file."
+            ,
+                "default": "$id.$key.output_h5mu.h5mu"
+            }
+    
+
+}
+},
+    
+    
+    "putative cell calling settings" : {
+    "title": "Putative cell calling settings",
+    "type": "object",
+    "description": "No description",
+    "properties": {
+    
+        
+                "putative_cell_call": {
+                "type":
+                "string",
+                "description": "Type: `string`, example: `mRNA`, choices: ``mRNA`, `AbSeq_Experimental``. Specify the dataset to be used for putative cell calling",
+                "help_text": "Type: `string`, example: `mRNA`, choices: ``mRNA`, `AbSeq_Experimental``. Specify the dataset to be used for putative cell calling. For putative cell calling using an AbSeq dataset, please provide an AbSeq_Reference fasta file above.",
+                "enum": ["mRNA", "AbSeq_Experimental"]
+            
+            
+            }
+    
+
+        ,
+                "exact_cell_count": {
+                "type":
+                "integer",
+                "description": "Type: `integer`, example: `10000`. Exact cell count - Set a specific number (\u003e=1) of cells as putative, based on those with the highest error-corrected read count",
+                "help_text": "Type: `integer`, example: `10000`. Exact cell count - Set a specific number (\u003e=1) of cells as putative, based on those with the highest error-corrected read count"
+            
+            }
+    
+
+        ,
+                "disable_putative_calling": {
+                "type":
+                "boolean",
+                "description": "Type: `boolean_true`, default: `false`. Disable Refined Putative Cell Calling - Determine putative cells using only the basic algorithm (minimum second derivative along the cumulative reads curve)",
+                "help_text": "Type: `boolean_true`, default: `false`. Disable Refined Putative Cell Calling - Determine putative cells using only the basic algorithm (minimum second derivative along the cumulative reads curve). The refined algorithm attempts to remove false positives and recover false negatives, but may not be ideal for certain complex mixtures of cell types. Does not apply if Exact Cell Count is set."
+            ,
+                "default": "False"
+            }
+    
+
+}
+},
+    
+    
+    "subsample arguments" : {
+    "title": "Subsample arguments",
+    "type": "object",
+    "description": "No description",
+    "properties": {
+    
+        
+                "subsample": {
+                "type":
+                "number",
+                "description": "Type: `double`, example: `0.01`. A number \u003e1 or fraction (0 \u003c n \u003c 1) to indicate the number or percentage of reads to subsample",
+                "help_text": "Type: `double`, example: `0.01`. A number \u003e1 or fraction (0 \u003c n \u003c 1) to indicate the number or percentage of reads to subsample."
+            
+            }
+    
+
+        ,
+                "subsample_seed": {
+                "type":
+                "integer",
+                "description": "Type: `integer`, example: `3445`. A seed for replicating a previous subsampled run",
+                "help_text": "Type: `integer`, example: `3445`. A seed for replicating a previous subsampled run."
+            
+            }
+    
+
+}
+},
+    
+    
+    "multiplex arguments" : {
+    "title": "Multiplex arguments",
+    "type": "object",
+    "description": "No description",
+    "properties": {
+    
+        
+                "sample_tags_version": {
+                "type":
+                "string",
+                "description": "Type: `string`, example: `human`, choices: ``human`, `hs`, `mouse`, `mm``. Specify if multiplexed run",
+                "help_text": "Type: `string`, example: `human`, choices: ``human`, `hs`, `mouse`, `mm``. Specify if multiplexed run.",
+                "enum": ["human", "hs", "mouse", "mm"]
+            
+            
+            }
+    
+
+        ,
+                "tag_names": {
+                "type":
+                "string",
+                "description": "Type: List of `string`, example: `4-mySample;9-myOtherSample;6-alsoThisSample`, multiple_sep: `\";\"`. Tag_Names (optional) - Specify the tag number followed by \u0027-\u0027 and the desired sample name to appear in Sample_Tag_Metrics",
+                "help_text": "Type: List of `string`, example: `4-mySample;9-myOtherSample;6-alsoThisSample`, multiple_sep: `\";\"`. Tag_Names (optional) - Specify the tag number followed by \u0027-\u0027 and the desired sample name to appear in Sample_Tag_Metrics.csv.\nDo not use the special characters: \u0026, (), [], {},  \u003c\u003e, ?, |\n"
+            
+            }
+    
+
+}
+},
+    
+    
+    "vdj arguments" : {
+    "title": "VDJ arguments",
+    "type": "object",
+    "description": "No description",
+    "properties": {
+    
+        
+                "vdj_version": {
+                "type":
+                "string",
+                "description": "Type: `string`, example: `human`, choices: ``human`, `mouse`, `humanBCR`, `humanBCR`, `humanTCR`, `mouseBCR``. Specify if VDJ run",
+                "help_text": "Type: `string`, example: `human`, choices: ``human`, `mouse`, `humanBCR`, `humanBCR`, `humanTCR`, `mouseBCR``. Specify if VDJ run.",
+                "enum": ["human", "mouse", "humanBCR", "humanBCR", "humanTCR", "mouseBCR"]
+            
+            
+            }
+    
+
+}
+},
+    
+    
+    "cwl-runner arguments" : {
+    "title": "CWL-runner arguments",
+    "type": "object",
+    "description": "No description",
+    "properties": {
+    
+        
+                "parallel": {
+                "type":
+                "boolean",
+                "description": "Type: `boolean`, default: `true`. Run jobs in parallel",
+                "help_text": "Type: `boolean`, default: `true`. Run jobs in parallel."
+            ,
+                "default": "True"
+            }
+    
+
+        ,
+                "timestamps": {
+                "type":
+                "boolean",
+                "description": "Type: `boolean_true`, default: `false`. Add timestamps to the errors, warnings, and notifications",
+                "help_text": "Type: `boolean_true`, default: `false`. Add timestamps to the errors, warnings, and notifications."
+            ,
+                "default": "False"
+            }
+    
+
+        ,
+                "dryrun": {
+                "type":
+                "boolean",
+                "description": "Type: `boolean_true`, default: `false`. If true, the output directory will only contain the CWL input files, but the pipeline itself will not be executed",
+                "help_text": "Type: `boolean_true`, default: `false`. If true, the output directory will only contain the CWL input files, but the pipeline itself will not be executed."
+            ,
+                "default": "False"
+            }
+    
+
+}
+},
+    
+    
+    "nextflow input-output arguments" : {
+    "title": "Nextflow input-output arguments",
+    "type": "object",
+    "description": "Input/output parameters for Nextflow itself. Please note that both publishDir and publish_dir are supported but at least one has to be configured.",
+    "properties": {
+    
+        
+                "publish_dir": {
+                "type":
+                "string",
+                "description": "Type: `string`, required, example: `output/`. Path to an output directory",
+                "help_text": "Type: `string`, required, example: `output/`. Path to an output directory."
+            
+            }
+    
+
+        
+
+}
+}
+},
+"allOf": [
+
+    {
+    "$ref": "#/definitions/inputs"
+    },
+
+    {
+    "$ref": "#/definitions/outputs"
+    },
+
+    {
+    "$ref": "#/definitions/putative cell calling settings"
+    },
+
+    {
+    "$ref": "#/definitions/subsample arguments"
+    },
+
+    {
+    "$ref": "#/definitions/multiplex arguments"
+    },
+
+    {
+    "$ref": "#/definitions/vdj arguments"
+    },
+
+    {
+    "$ref": "#/definitions/cwl-runner arguments"
+    },
+
+    {
+    "$ref": "#/definitions/nextflow input-output arguments"
+    }
+]
+}

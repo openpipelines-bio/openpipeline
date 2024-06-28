@@ -1,0 +1,12 @@
+# Arguments
+genome_fasta: # please fill in - example: "genome_sequence.fa.gz"
+annotation_gtf: # please fill in - example: "annotation.gtf.gz"
+# motifs_file: "JASPAR2024_CORE_non-redundant_pfms_jaspar.txt.modified"
+non_nuclear_contigs: ["chrM"]
+# output: "$id.$key.output.output"
+genome: # please fill in - example: "GRCh38"
+organism: "Homo_sapiens"
+
+# Nextflow input-output arguments
+publish_dir: # please fill in - example: "output/"
+# param_list: "my_params.yaml"
