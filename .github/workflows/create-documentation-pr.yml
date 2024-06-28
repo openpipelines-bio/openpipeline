@@ -22,17 +22,17 @@ jobs:
     steps:
     - uses: actions/checkout@v4
 
-    - uses: viash-io/viash-actions/setup@viash-0.9
+    - uses: viash-io/viash-actions/setup@v6
 
     - id: ns_list_components
-      uses: viash-io/viash-actions/ns-list@viash-0.9
+      uses: viash-io/viash-actions/ns-list@v6
       with:
         platform: docker
         format: json
         query_namespace: ^(?!workflows)
 
     - id: ns_list_workflows
-      uses: viash-io/viash-actions/ns-list@viash-0.9
+      uses: viash-io/viash-actions/ns-list@v6
       with:
         format: json
         query_namespace: ^workflows
@@ -74,7 +74,7 @@ jobs:
           path: website
           token: ${{ secrets.GTHB_PAT }}
 
-      - uses: viash-io/viash-actions/setup@viash-0.9
+      - uses: viash-io/viash-actions/setup@v6
       
       - name: Get tag to use
         id: get_tag
@@ -83,7 +83,7 @@ jobs:
           TAG_OR_BRANCH_NAME=${INPUT_TAG:-"${{ github.ref_name }}"}
           echo "tag=$TAG_OR_BRANCH_NAME" >> $GITHUB_OUTPUT
 
-      - uses: viash-io/viash-actions/pro/generate-documentation-qmd@viash-0.9
+      - uses: viash-io/viash-actions/pro/generate-documentation-qmd@v6
         with:
           project_directory: openpipelines
           src: ./
