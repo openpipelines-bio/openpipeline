@@ -63,8 +63,8 @@
                 "non_nuclear_contigs": {
                 "type":
                 "string",
-                "description": "Type: List of `string`, default: `chrM`, example: `chrM`, multiple_sep: `\":\"`. Name(s) of contig(s) that do not have any chromatin structure, for example, mitochondria or plastids",
-                "help_text": "Type: List of `string`, default: `chrM`, example: `chrM`, multiple_sep: `\":\"`. Name(s) of contig(s) that do not have any chromatin structure, for example, mitochondria or plastids. These contigs are excluded from peak calling since the entire contig will be \"open\" due to a lack of chromatin structure. Leave empty if there are no such contigs."
+                "description": "Type: List of `string`, default: `chrM`, example: `chrM`, multiple_sep: `\";\"`. Name(s) of contig(s) that do not have any chromatin structure, for example, mitochondria or plastids",
+                "help_text": "Type: List of `string`, default: `chrM`, example: `chrM`, multiple_sep: `\";\"`. Name(s) of contig(s) that do not have any chromatin structure, for example, mitochondria or plastids. These contigs are excluded from peak calling since the entire contig will be \"open\" due to a lack of chromatin structure. Leave empty if there are no such contigs."
             ,
                 "default": "chrM"
             }

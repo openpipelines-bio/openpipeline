@@ -90,8 +90,8 @@ workflow run_wf {
         // So here we overwrite this 'run' id with the name of the input event.
         def new_id = h5mu_list.size() == 1 ? id : corresponding_csv_entry.sample_name
         return [ new_id, ["output_h5mu": h5mu_file, "output_raw": state.output_raw, "_meta": ["join_id": id]]]
-      return result
       }
+      return result
     }
 
   emit:

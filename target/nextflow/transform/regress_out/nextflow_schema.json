@@ -77,8 +77,8 @@
                 "obs_keys": {
                 "type":
                 "string",
-                "description": "Type: List of `string`, multiple_sep: `\":\"`. Which ",
-                "help_text": "Type: List of `string`, multiple_sep: `\":\"`. Which .obs keys to regress on."
+                "description": "Type: List of `string`, multiple_sep: `\";\"`. Which ",
+                "help_text": "Type: List of `string`, multiple_sep: `\";\"`. Which .obs keys to regress on."
             
             }
     

@@ -20,7 +20,7 @@ early_stopping_min_delta: 0.0
 max_epochs: # please fill in - example: 123
 reduce_lr_on_plateau: true
 lr_factor: 0.6
-lr_patience: 30
+lr_patience: 30.0
 
 # Nextflow input-output arguments
 publish_dir: # please fill in - example: "output/"

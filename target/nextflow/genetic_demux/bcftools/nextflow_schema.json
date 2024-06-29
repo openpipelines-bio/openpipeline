@@ -33,8 +33,8 @@
                 "vcf": {
                 "type":
                 "string",
-                "description": "Type: List of `file`, required, multiple_sep: `\":\"`. VCF files, must have the same sample columns appearing in the same order",
-                "help_text": "Type: List of `file`, required, multiple_sep: `\":\"`. VCF files, must have the same sample columns appearing in the same order."
+                "description": "Type: List of `file`, required, multiple_sep: `\";\"`. VCF files, must have the same sample columns appearing in the same order",
+                "help_text": "Type: List of `file`, required, multiple_sep: `\";\"`. VCF files, must have the same sample columns appearing in the same order."
             
             }
     
@@ -76,8 +76,8 @@
                 "output": {
                 "type":
                 "string",
-                "description": "Type: `file`, default: `$id.$key.output.output`, example: `bcftools_out/`. bcftools output directory",
-                "help_text": "Type: `file`, default: `$id.$key.output.output`, example: `bcftools_out/`. bcftools output directory"
+                "description": "Type: `file`, default: `$id.$key.output.output`, example: `bcftools_out`. bcftools output directory",
+                "help_text": "Type: `file`, default: `$id.$key.output.output`, example: `bcftools_out`. bcftools output directory"
             ,
                 "default": "$id.$key.output.output"
             }

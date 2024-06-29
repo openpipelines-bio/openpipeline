@@ -8,8 +8,6 @@ cd "$REPO_ROOT"
 
 viash ns build -q prot_multisample
 
-export NXF_VER=21.10.6
-
 nextflow run . \
   -main-script src/workflows/prot/prot_multisample/test.nf \
   -profile docker,no_publish \

@@ -88,8 +88,8 @@
                 "exclude": {
                 "type":
                 "string",
-                "description": "Type: List of `string`, multiple_sep: `\":\"`. Exclude all files or objects from the command that matches the specified pattern",
-                "help_text": "Type: List of `string`, multiple_sep: `\":\"`. Exclude all files or objects from the command that matches the specified pattern."
+                "description": "Type: List of `string`, multiple_sep: `\";\"`. Exclude all files or objects from the command that matches the specified pattern",
+                "help_text": "Type: List of `string`, multiple_sep: `\";\"`. Exclude all files or objects from the command that matches the specified pattern."
             
             }
     

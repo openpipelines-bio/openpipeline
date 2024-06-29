@@ -2985,6 +2985,24 @@ meta = [
             "dest" : "par"
           }
         ]
+      },
+      {
+        "name" : "CLR arguments",
+        "arguments" : [
+          {
+            "type" : "integer",
+            "name" : "--clr_axis",
+            "description" : "Axis across which CLR is performed.",
+            "default" : [
+              0
+            ],
+            "required" : false,
+            "direction" : "input",
+            "multiple" : false,
+            "multiple_sep" : ":",
+            "dest" : "par"
+          }
+        ]
       }
     ],
     "resources" : [
@@ -3052,7 +3070,7 @@ meta = [
           "functionalityNamespace" : "transform",
           "output" : "",
           "platform" : "",
-          "git_commit" : "f42f2ec1f6a7f2721df67fe7dece99fad518ff71",
+          "git_commit" : "934f3323581efb30dc71117e7cb687b037215e1b",
           "executable" : "/nextflow/transform/clr/main.nf"
         },
         "writtenPath" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/transform/clr"
@@ -3074,7 +3092,7 @@ meta = [
           "functionalityNamespace" : "workflows/qc",
           "output" : "",
           "platform" : "",
-          "git_commit" : "f42f2ec1f6a7f2721df67fe7dece99fad518ff71",
+          "git_commit" : "934f3323581efb30dc71117e7cb687b037215e1b",
           "executable" : "/nextflow/workflows/qc/qc/main.nf"
         },
         "writtenPath" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/workflows/qc/qc"
@@ -3141,7 +3159,7 @@ meta = [
     "platform" : "nextflow",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/workflows/prot/prot_multisample",
     "viash_version" : "0.8.6",
-    "git_commit" : "f42f2ec1f6a7f2721df67fe7dece99fad518ff71",
+    "git_commit" : "934f3323581efb30dc71117e7cb687b037215e1b",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))
@@ -3170,6 +3188,7 @@ workflow run_wf {
       fromState: [
         "input": "input",
         "input_layer": "layer",
+        "clr_axis": "clr_axis",
         ],
       toState: ["input": "output"],
       args: [ 

@@ -19,7 +19,7 @@ add_id_make_observation_keys_unique: true
 # rna_min_genes_per_cell: 200
 # rna_max_genes_per_cell: 1500000
 # rna_min_cells_per_gene: 3
-# rna_min_fraction_mito: 0
+# rna_min_fraction_mito: 0.0
 # rna_max_fraction_mito: 0.2
 
 # CITE-seq filtering options
@@ -47,11 +47,14 @@ highly_variable_features_obs_batch_key: "sample_id"
 mitochondrial_gene_regex: "^[mM][tT]-"
 
 # QC metrics calculation options
-# var_qc_metrics: ["ercc", "highly_variable"]
+# var_qc_metrics: ["ercc,highly_variable"]
 top_n_vars: [50, 100, 200, 500]
 
 # PCA options
 pca_overwrite: false
+
+# CLR options
+clr_axis: 0
 
 # Nextflow input-output arguments
 publish_dir: # please fill in - example: "output/"

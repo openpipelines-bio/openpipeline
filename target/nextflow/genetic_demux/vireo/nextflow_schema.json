@@ -204,8 +204,8 @@
                 "output": {
                 "type":
                 "string",
-                "description": "Type: `file`, default: `$id.$key.output.output`, example: `vireo/`. Output directory",
-                "help_text": "Type: `file`, default: `$id.$key.output.output`, example: `vireo/`. Output directory"
+                "description": "Type: `file`, default: `$id.$key.output.output`, example: `vireo`. Output directory",
+                "help_text": "Type: `file`, default: `$id.$key.output.output`, example: `vireo`. Output directory"
             ,
                 "default": "$id.$key.output.output"
             }

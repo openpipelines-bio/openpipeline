@@ -97,8 +97,8 @@
                 "base": {
                 "type":
                 "number",
-                "description": "Type: `double`, example: `2`. ",
-                "help_text": "Type: `double`, example: `2`. "
+                "description": "Type: `double`, example: `2.0`. ",
+                "help_text": "Type: `double`, example: `2.0`. "
             
             }
     

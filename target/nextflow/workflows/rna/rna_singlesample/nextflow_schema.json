@@ -144,8 +144,8 @@
                 "min_fraction_mito": {
                 "type":
                 "number",
-                "description": "Type: `double`, example: `0`. Minimum fraction of UMIs that are mitochondrial",
-                "help_text": "Type: `double`, example: `0`. Minimum fraction of UMIs that are mitochondrial. Requires --obs_name_mitochondrial_fraction."
+                "description": "Type: `double`, example: `0.0`. Minimum fraction of UMIs that are mitochondrial",
+                "help_text": "Type: `double`, example: `0.0`. Minimum fraction of UMIs that are mitochondrial. Requires --obs_name_mitochondrial_fraction."
             
             }
     

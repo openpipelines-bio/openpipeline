@@ -32,6 +32,9 @@
 
 * `scgpt/binning` component: Added a scGPT pre-processing binning component (PR #765).
 
+* `transform/clr` component: Added the option to set the `axis` along which to apply CLR. Possible to override
+  on workflow level as well (PR #767).
+
 ## MINOR CHANGES
 
 * Bump viash to `0.8.6` (PR #815).
@@ -42,12 +45,16 @@
 
 * `mapping/cellranger_multi` component now outputs logs on failure of the `cellranger multi` process (PR #766).
 
+* Bump `viash-actions` to `v6` (PR #821).
+
 # openpipelines 1.0.0-rc6
 
 ## BUG FIXES
 
 * `dataflow/concatenate_h5mu`: fix regression bug where observations are no longer linked to the correct metadata
 after concatenation (PR #807)
+
+* `transform/normalize_total` component: pass the `target_sum` argument to `sc.pp.normalize_total()` (PR #823).
 
 # openpipelines 1.0.0-rc5
 

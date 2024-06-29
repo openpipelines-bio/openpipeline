@@ -143,10 +143,10 @@
                 "max_mean": {
                 "type":
                 "number",
-                "description": "Type: `double`, default: `3`. If n_top_features is defined, this and all other cutoffs for the means and the normalized dispersions are ignored",
-                "help_text": "Type: `double`, default: `3`. If n_top_features is defined, this and all other cutoffs for the means and the normalized dispersions are ignored. Ignored if flavor=\u0027seurat_v3\u0027."
+                "description": "Type: `double`, default: `3.0`. If n_top_features is defined, this and all other cutoffs for the means and the normalized dispersions are ignored",
+                "help_text": "Type: `double`, default: `3.0`. If n_top_features is defined, this and all other cutoffs for the means and the normalized dispersions are ignored. Ignored if flavor=\u0027seurat_v3\u0027."
             ,
-                "default": "3"
+                "default": "3.0"
             }
     
 

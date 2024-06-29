@@ -126,8 +126,8 @@
                 "output_raw": {
                 "type":
                 "string",
-                "description": "Type: `file`, required, default: `$id.$key.output_raw.output_raw`, example: `output_dir/`. The BD Rhapsody output folder as it comes out of the BD Rhapsody pipeline",
-                "help_text": "Type: `file`, required, default: `$id.$key.output_raw.output_raw`, example: `output_dir/`. The BD Rhapsody output folder as it comes out of the BD Rhapsody pipeline"
+                "description": "Type: `file`, required, default: `$id.$key.output_raw.output_raw`, example: `output_dir`. The BD Rhapsody output folder as it comes out of the BD Rhapsody pipeline",
+                "help_text": "Type: `file`, required, default: `$id.$key.output_raw.output_raw`, example: `output_dir`. The BD Rhapsody output folder as it comes out of the BD Rhapsody pipeline"
             ,
                 "default": "$id.$key.output_raw.output_raw"
             }
@@ -243,8 +243,8 @@
                 "tag_names": {
                 "type":
                 "string",
-                "description": "Type: List of `string`, example: `4-mySample:9-myOtherSample:6-alsoThisSample`, multiple_sep: `\":\"`. Tag_Names (optional) - Specify the tag number followed by \u0027-\u0027 and the desired sample name to appear in Sample_Tag_Metrics",
-                "help_text": "Type: List of `string`, example: `4-mySample:9-myOtherSample:6-alsoThisSample`, multiple_sep: `\":\"`. Tag_Names (optional) - Specify the tag number followed by \u0027-\u0027 and the desired sample name to appear in Sample_Tag_Metrics.csv.\nDo not use the special characters: \u0026, (), [], {},  \u003c\u003e, ?, |\n"
+                "description": "Type: List of `string`, example: `4-mySample;9-myOtherSample;6-alsoThisSample`, multiple_sep: `\";\"`. Tag_Names (optional) - Specify the tag number followed by \u0027-\u0027 and the desired sample name to appear in Sample_Tag_Metrics",
+                "help_text": "Type: List of `string`, example: `4-mySample;9-myOtherSample;6-alsoThisSample`, multiple_sep: `\";\"`. Tag_Names (optional) - Specify the tag number followed by \u0027-\u0027 and the desired sample name to appear in Sample_Tag_Metrics.csv.\nDo not use the special characters: \u0026, (), [], {},  \u003c\u003e, ?, |\n"
             
             }
     

@@ -54,8 +54,8 @@
                 "attribute": {
                 "type":
                 "string",
-                "description": "Type: List of `string`, required, example: `gene_type:transcribed_unprocessed_pseudogene:gene_type:miRNA`, multiple_sep: `\":\"`. Key-value pair in attributes field to be kept in the GTF file of the format attribute:attribute_value",
-                "help_text": "Type: List of `string`, required, example: `gene_type:transcribed_unprocessed_pseudogene:gene_type:miRNA`, multiple_sep: `\":\"`. Key-value pair in attributes field to be kept in the GTF file of the format attribute:attribute_value."
+                "description": "Type: List of `string`, required, example: `gene_type:transcribed_unprocessed_pseudogene;gene_type:miRNA`, multiple_sep: `\";\"`. Key-value pair in attributes field to be kept in the GTF file of the format attribute:attribute_value",
+                "help_text": "Type: List of `string`, required, example: `gene_type:transcribed_unprocessed_pseudogene;gene_type:miRNA`, multiple_sep: `\";\"`. Key-value pair in attributes field to be kept in the GTF file of the format attribute:attribute_value."
             
             }
     

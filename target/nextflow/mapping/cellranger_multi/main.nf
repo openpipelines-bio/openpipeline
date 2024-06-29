@@ -3278,8 +3278,8 @@ meta = [
             ],
             "required" : false,
             "direction" : "input",
-            "multiple" : true,
-            "multiple_sep" : ";",
+            "multiple" : false,
+            "multiple_sep" : ":",
             "dest" : "par"
           },
           {
@@ -3291,8 +3291,8 @@ meta = [
             ],
             "required" : false,
             "direction" : "input",
-            "multiple" : true,
-            "multiple_sep" : ";",
+            "multiple" : false,
+            "multiple_sep" : ":",
             "dest" : "par"
           },
           {
@@ -3543,7 +3543,7 @@ meta = [
           {
             "type" : "boolean",
             "name" : "--check_library_compatibility",
-            "description" : "Optional. This option allows users to disable the check that evaluates 10x Barcode overlap between\nibraries when multiple libraries are specified (e.g., Gene Expression + Antibody Capture). Setting\nthis option to false will disable the check across all library combinations. We recommend running\nthis check (default), however if the pipeline errors out, users can bypass the check to generate\noutputs for troubleshooting.",
+            "description" : "Optional. This option allows users to disable the check that evaluates 10x Barcode overlap between\nibraries when multiple libraries are specified (e.g., Gene Expression + Antibody Capture). Setting\nthis option to false will disable the check across all library combinations. We recommend running\nthis check (default), however if the pipeline errors out, users can bypass the check to generate\noutputs for troubleshooting.\n",
             "default" : [
               true
             ],
@@ -3779,7 +3779,7 @@ meta = [
     "platform" : "nextflow",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/mapping/cellranger_multi",
     "viash_version" : "0.8.6",
-    "git_commit" : "f42f2ec1f6a7f2721df67fe7dece99fad518ff71",
+    "git_commit" : "934f3323581efb30dc71117e7cb687b037215e1b",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))
@@ -3837,8 +3837,8 @@ par = {
   'gex_reference': $( if [ ! -z ${VIASH_PAR_GEX_REFERENCE+x} ]; then echo "r'${VIASH_PAR_GEX_REFERENCE//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'gex_secondary_analysis': $( if [ ! -z ${VIASH_PAR_GEX_SECONDARY_ANALYSIS+x} ]; then echo "r'${VIASH_PAR_GEX_SECONDARY_ANALYSIS//\\'/\\'\\"\\'\\"r\\'}'.lower() == 'true'"; else echo None; fi ),
   'gex_generate_bam': $( if [ ! -z ${VIASH_PAR_GEX_GENERATE_BAM+x} ]; then echo "r'${VIASH_PAR_GEX_GENERATE_BAM//\\'/\\'\\"\\'\\"r\\'}'.lower() == 'true'"; else echo None; fi ),
-  'gex_expect_cells': $( if [ ! -z ${VIASH_PAR_GEX_EXPECT_CELLS+x} ]; then echo "list(map(int, r'${VIASH_PAR_GEX_EXPECT_CELLS//\\'/\\'\\"\\'\\"r\\'}'.split(';')))"; else echo None; fi ),
-  'gex_force_cells': $( if [ ! -z ${VIASH_PAR_GEX_FORCE_CELLS+x} ]; then echo "list(map(int, r'${VIASH_PAR_GEX_FORCE_CELLS//\\'/\\'\\"\\'\\"r\\'}'.split(';')))"; else echo None; fi ),
+  'gex_expect_cells': $( if [ ! -z ${VIASH_PAR_GEX_EXPECT_CELLS+x} ]; then echo "int(r'${VIASH_PAR_GEX_EXPECT_CELLS//\\'/\\'\\"\\'\\"r\\'}')"; else echo None; fi ),
+  'gex_force_cells': $( if [ ! -z ${VIASH_PAR_GEX_FORCE_CELLS+x} ]; then echo "int(r'${VIASH_PAR_GEX_FORCE_CELLS//\\'/\\'\\"\\'\\"r\\'}')"; else echo None; fi ),
   'gex_include_introns': $( if [ ! -z ${VIASH_PAR_GEX_INCLUDE_INTRONS+x} ]; then echo "r'${VIASH_PAR_GEX_INCLUDE_INTRONS//\\'/\\'\\"\\'\\"r\\'}'.lower() == 'true'"; else echo None; fi ),
   'gex_r1_length': $( if [ ! -z ${VIASH_PAR_GEX_R1_LENGTH+x} ]; then echo "int(r'${VIASH_PAR_GEX_R1_LENGTH//\\'/\\'\\"\\'\\"r\\'}')"; else echo None; fi ),
   'gex_r2_length': $( if [ ! -z ${VIASH_PAR_GEX_R2_LENGTH+x} ]; then echo "int(r'${VIASH_PAR_GEX_R2_LENGTH//\\'/\\'\\"\\'\\"r\\'}')"; else echo None; fi ),

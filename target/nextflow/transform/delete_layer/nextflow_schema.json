@@ -54,8 +54,8 @@
                 "layer": {
                 "type":
                 "string",
-                "description": "Type: List of `string`, required, multiple_sep: `\":\"`. Input layer to remove",
-                "help_text": "Type: List of `string`, required, multiple_sep: `\":\"`. Input layer to remove"
+                "description": "Type: List of `string`, required, multiple_sep: `\";\"`. Input layer to remove",
+                "help_text": "Type: List of `string`, required, multiple_sep: `\";\"`. Input layer to remove"
             
             }
     

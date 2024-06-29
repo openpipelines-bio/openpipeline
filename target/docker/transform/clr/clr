@@ -205,6 +205,14 @@ function ViashHelp {
   echo "    --output_layer"
   echo "        type: string"
   echo "        Output layer to use. By default, use X."
+  echo ""
+  echo "    --axis"
+  echo "        type: integer"
+  echo "        default: 0"
+  echo "        choices: [ 0, 1 ]"
+  echo "        Axis across which CLR is performed. If set to 0, CLR is performed across"
+  echo "        observations (cells)."
+  echo "        If set to 1, CLR is performed across features (genes)."
 }
 
 ######## Helper functions for setting up Docker images for viash ########
@@ -422,7 +430,7 @@ function ViashDockerCheckCommands {
 #   ViashDockerFile
 function ViashDockerfile {
   cat << 'VIASHDOCKER'
-FROM python:3.10-slim
+FROM python:3.11-slim
 
 ENTRYPOINT []
 
@@ -436,9 +444,9 @@ RUN pip install --upgrade pip && \
 
 LABEL org.opencontainers.image.authors="Dries Schaumont"
 LABEL org.opencontainers.image.description="Companion container for running component transform clr"
-LABEL org.opencontainers.image.created="2024-06-26T02:42:15Z"
+LABEL org.opencontainers.image.created="2024-06-29T02:40:54Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="f42f2ec1f6a7f2721df67fe7dece99fad518ff71"
+LABEL org.opencontainers.image.revision="934f3323581efb30dc71117e7cb687b037215e1b"
 LABEL org.opencontainers.image.version="integration_build"
 
 VIASHDOCKER
@@ -675,6 +683,17 @@ while [[ $# -gt 0 ]]; do
             VIASH_PAR_OUTPUT_LAYER=$(ViashRemoveFlags "$1")
             shift 1
             ;;
+        --axis)
+            [ -n "$VIASH_PAR_AXIS" ] && ViashError Bad arguments for option \'--axis\': \'$VIASH_PAR_AXIS\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+            VIASH_PAR_AXIS="$2"
+            [ $# -lt 2 ] && ViashError Not enough arguments passed to --axis. Use "--help" to get more information on the parameters. && exit 1
+            shift 2
+            ;;
+        --axis=*)
+            [ -n "$VIASH_PAR_AXIS" ] && ViashError Bad arguments for option \'--axis=*\': \'$VIASH_PAR_AXIS\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+            VIASH_PAR_AXIS=$(ViashRemoveFlags "$1")
+            shift 1
+            ;;
         ---setup)
             VIASH_MODE='docker_setup'
             VIASH_DOCKER_SETUP_STRATEGY="$2"
@@ -826,6 +845,9 @@ fi
 if [ -z ${VIASH_PAR_MODALITY+x} ]; then
   VIASH_PAR_MODALITY="prot"
 fi
+if [ -z ${VIASH_PAR_AXIS+x} ]; then
+  VIASH_PAR_AXIS="0"
+fi
 
 # check whether required files exist
 if [ ! -z "$VIASH_PAR_INPUT" ] && [ ! -e "$VIASH_PAR_INPUT" ]; then
@@ -834,6 +856,12 @@ if [ ! -z "$VIASH_PAR_INPUT" ] && [ ! -e "$VIASH_PAR_INPUT" ]; then
 fi
 
 # check whether parameters values are of the right type
+if [[ -n "$VIASH_PAR_AXIS" ]]; then
+  if ! [[ "$VIASH_PAR_AXIS" =~ ^[-+]?[0-9]+$ ]]; then
+    ViashError '--axis' has to be an integer. Use "--help" to get more information on the parameters.
+    exit 1
+  fi
+fi
 if [[ -n "$VIASH_META_CPUS" ]]; then
   if ! [[ "$VIASH_META_CPUS" =~ ^[-+]?[0-9]+$ ]]; then
     ViashError 'cpus' has to be an integer. Use "--help" to get more information on the parameters.
@@ -884,6 +912,18 @@ if [ ! -z "$VIASH_PAR_OUTPUT_COMPRESSION" ]; then
   set -f
   if ! [[ ":${VIASH_PAR_OUTPUT_COMPRESSION_CHOICES[*]}:" =~ ":$VIASH_PAR_OUTPUT_COMPRESSION:" ]]; then
     ViashError '--output_compression' specified value of \'$VIASH_PAR_OUTPUT_COMPRESSION\' is not in the list of allowed values. Use "--help" to get more information on the parameters.
+    exit 1
+  fi
+  set +f
+  unset IFS
+fi
+
+if [ ! -z "$VIASH_PAR_AXIS" ]; then
+  VIASH_PAR_AXIS_CHOICES=("0:1")
+  IFS=':'
+  set -f
+  if ! [[ ":${VIASH_PAR_AXIS_CHOICES[*]}:" =~ ":$VIASH_PAR_AXIS:" ]]; then
+    ViashError '--axis' specified value of \'$VIASH_PAR_AXIS\' is not in the list of allowed values. Use "--help" to get more information on the parameters.
     exit 1
   fi
   set +f
@@ -977,7 +1017,8 @@ par = {
   'output': $( if [ ! -z ${VIASH_PAR_OUTPUT+x} ]; then echo "r'${VIASH_PAR_OUTPUT//\'/\'\"\'\"r\'}'"; else echo None; fi ),
   'output_compression': $( if [ ! -z ${VIASH_PAR_OUTPUT_COMPRESSION+x} ]; then echo "r'${VIASH_PAR_OUTPUT_COMPRESSION//\'/\'\"\'\"r\'}'"; else echo None; fi ),
   'input_layer': $( if [ ! -z ${VIASH_PAR_INPUT_LAYER+x} ]; then echo "r'${VIASH_PAR_INPUT_LAYER//\'/\'\"\'\"r\'}'"; else echo None; fi ),
-  'output_layer': $( if [ ! -z ${VIASH_PAR_OUTPUT_LAYER+x} ]; then echo "r'${VIASH_PAR_OUTPUT_LAYER//\'/\'\"\'\"r\'}'"; else echo None; fi )
+  'output_layer': $( if [ ! -z ${VIASH_PAR_OUTPUT_LAYER+x} ]; then echo "r'${VIASH_PAR_OUTPUT_LAYER//\'/\'\"\'\"r\'}'"; else echo None; fi ),
+  'axis': $( if [ ! -z ${VIASH_PAR_AXIS+x} ]; then echo "int(r'${VIASH_PAR_AXIS//\'/\'\"\'\"r\'}')"; else echo None; fi )
 }
 meta = {
   'functionality_name': $( if [ ! -z ${VIASH_META_FUNCTIONALITY_NAME+x} ]; then echo "r'${VIASH_META_FUNCTIONALITY_NAME//\'/\'\"\'\"r\'}'"; else echo None; fi ),
@@ -1008,7 +1049,7 @@ def main():
         input_data = AnnData(X=input_data.layers[par["input_layer"]])
     # CLR always normalizes the .X layer, so we have to create an AnnData file with
     # the input layer at .X
-    normalized_counts = pt.pp.clr(input_data, inplace=False)
+    normalized_counts = pt.pp.clr(input_data, axis=par["axis"], inplace=False)
     if not normalized_counts:
         raise RuntimeError("CLR failed to return the requested output layer")
 

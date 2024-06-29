@@ -3223,8 +3223,8 @@ meta = [
             ],
             "required" : false,
             "direction" : "input",
-            "multiple" : true,
-            "multiple_sep" : ";",
+            "multiple" : false,
+            "multiple_sep" : ":",
             "dest" : "par"
           },
           {
@@ -3236,8 +3236,8 @@ meta = [
             ],
             "required" : false,
             "direction" : "input",
-            "multiple" : true,
-            "multiple_sep" : ";",
+            "multiple" : false,
+            "multiple_sep" : ":",
             "dest" : "par"
           },
           {
@@ -3488,7 +3488,7 @@ meta = [
           {
             "type" : "boolean",
             "name" : "--check_library_compatibility",
-            "description" : "Optional. This option allows users to disable the check that evaluates 10x Barcode overlap between\nibraries when multiple libraries are specified (e.g., Gene Expression + Antibody Capture). Setting\nthis option to false will disable the check across all library combinations. We recommend running\nthis check (default), however if the pipeline errors out, users can bypass the check to generate\noutputs for troubleshooting.",
+            "description" : "Optional. This option allows users to disable the check that evaluates 10x Barcode overlap between\nibraries when multiple libraries are specified (e.g., Gene Expression + Antibody Capture). Setting\nthis option to false will disable the check across all library combinations. We recommend running\nthis check (default), however if the pipeline errors out, users can bypass the check to generate\noutputs for troubleshooting.\n",
             "default" : [
               true
             ],
@@ -3527,7 +3527,7 @@ meta = [
             ],
             "must_exist" : true,
             "create_parent" : true,
-            "required" : false,
+            "required" : true,
             "direction" : "output",
             "multiple" : true,
             "multiple_sep" : ";",
@@ -3628,7 +3628,7 @@ meta = [
           "functionalityNamespace" : "mapping",
           "output" : "",
           "platform" : "",
-          "git_commit" : "f42f2ec1f6a7f2721df67fe7dece99fad518ff71",
+          "git_commit" : "934f3323581efb30dc71117e7cb687b037215e1b",
           "executable" : "/nextflow/mapping/cellranger_multi/main.nf"
         },
         "writtenPath" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/mapping/cellranger_multi"
@@ -3649,7 +3649,7 @@ meta = [
           "functionalityNamespace" : "convert",
           "output" : "",
           "platform" : "",
-          "git_commit" : "f42f2ec1f6a7f2721df67fe7dece99fad518ff71",
+          "git_commit" : "934f3323581efb30dc71117e7cb687b037215e1b",
           "executable" : "/nextflow/convert/from_cellranger_multi_to_h5mu/main.nf"
         },
         "writtenPath" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/convert/from_cellranger_multi_to_h5mu"
@@ -3716,7 +3716,7 @@ meta = [
     "platform" : "nextflow",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/workflows/ingestion/cellranger_multi",
     "viash_version" : "0.8.6",
-    "git_commit" : "f42f2ec1f6a7f2721df67fe7dece99fad518ff71",
+    "git_commit" : "934f3323581efb30dc71117e7cb687b037215e1b",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))
@@ -3822,8 +3822,8 @@ workflow run_wf {
         // So here we overwrite this 'run' id with the name of the input event.
         def new_id = h5mu_list.size() == 1 ? id : corresponding_csv_entry.sample_name
         return [ new_id, ["output_h5mu": h5mu_file, "output_raw": state.output_raw, "_meta": ["join_id": id]]]
-      return result
       }
+      return result
     }
 
   emit:

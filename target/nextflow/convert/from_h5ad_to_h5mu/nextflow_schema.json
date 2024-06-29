@@ -33,8 +33,8 @@
                 "input": {
                 "type":
                 "string",
-                "description": "Type: List of `file`, required, default: `input.h5ad`, multiple_sep: `\":\"`. Input h5ad files",
-                "help_text": "Type: List of `file`, required, default: `input.h5ad`, multiple_sep: `\":\"`. Input h5ad files"
+                "description": "Type: List of `file`, required, default: `input.h5ad`, multiple_sep: `\";\"`. Input h5ad files",
+                "help_text": "Type: List of `file`, required, default: `input.h5ad`, multiple_sep: `\";\"`. Input h5ad files"
             ,
                 "default": "input.h5ad"
             }
@@ -44,8 +44,8 @@
                 "modality": {
                 "type":
                 "string",
-                "description": "Type: List of `string`, default: `rna`, multiple_sep: `\":\"`. ",
-                "help_text": "Type: List of `string`, default: `rna`, multiple_sep: `\":\"`. "
+                "description": "Type: List of `string`, default: `rna`, multiple_sep: `\";\"`. ",
+                "help_text": "Type: List of `string`, default: `rna`, multiple_sep: `\";\"`. "
             ,
                 "default": "rna"
             }
