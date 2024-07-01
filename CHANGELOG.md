@@ -26,6 +26,8 @@
 
 * `scgpt/binning` component: Added a scGPT pre-processing binning component (PR #765).
 
+* `dataflow/split_samples` component: Added a component to split a single h5mu file into multiple h5mu files based on the values of an .obs column (PR #824).
+
 ## MINOR CHANGES
 
 * Bump viash to `0.8.6` (PR #815).
