@@ -2,11 +2,17 @@
 
 ## BREAKING CHANGES
 
+* Added cell multiplexing support to the `from_cellranger_multi_to_h5mu` component and the `cellranger_multi` workflow. These components now output multiple .h5mu files. The `output` and `output_h5mu` arguments respectively now require a value containing a wildcard character `*`, which will be replaced by the sample ID to form the final output file names . Additionally, a `sample_csv` argument is added to the `from_cellragner_multi_to_h5mu` component which describes the sample name per output file (PR #803).
+
 * `demux/bcl_convert`: update BCL convert from 3.10 to 4.2 (PR #774).
 
 * `demux/cellranger_mkfastq`, `mapping/cellranger_count`, `mapping/cellranger_multi` and `reference/build_cellranger_reference`: update cellranger to `8.0.1` (PR #774 and PR #811).
 
+* Removed `--disable_library_compatibility_check` in favour of `--check_library_compatibility` to the `mapping/cellranger_multi` component and the `ingestion/cellranger_multi` workflow (PR #818).
+
 ## NEW FUNCTIONALITY
+
+* Added multiple arguments to the `cellranger_multi` workflow in order to maintain feature parity with the `mapping/cellranger_multi` component (PR #803).
 
 * `convert/from_cellranger_to_h5mu`: add support for antigen analysis. 
 
@@ -26,6 +32,9 @@
 
 * `scgpt/binning` component: Added a scGPT pre-processing binning component (PR #765).
 
+* `transform/clr` component: Added the option to set the `axis` along which to apply CLR. Possible to override
+  on workflow level as well (PR #767).
+  
 * `dataflow/split_samples` component: Added a component to split a single h5mu file into multiple h5mu files based on the values of an .obs column (PR #824).
 
 ## MINOR CHANGES
@@ -38,12 +47,16 @@
 
 * `mapping/cellranger_multi` component now outputs logs on failure of the `cellranger multi` process (PR #766).
 
+* Bump `viash-actions` to `v6` (PR #821).
+
 # openpipelines 1.0.0-rc6
 
 ## BUG FIXES
 
 * `dataflow/concatenate_h5mu`: fix regression bug where observations are no longer linked to the correct metadata
 after concatenation (PR #807)
+
+* `transform/normalize_total` component: pass the `target_sum` argument to `sc.pp.normalize_total()` (PR #823).
 
 # openpipelines 1.0.0-rc5
 
