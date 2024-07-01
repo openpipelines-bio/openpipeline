@@ -7,15 +7,6 @@ import numpy as np
 import pandas as pd
 
 
-## VIASH START
-meta = {
-    'functionality_name': './target/native/dataflow/split_modalities/split_modalities',
-    'resources_dir': './resources_test/',
-    'config': './src/dataflow/split_modalities/config.vsh.yaml',
-    'executable': './target/docker/dataflow/split_modalities/split_modalities'
-}
-## VIASH END
-
 @pytest.fixture
 def input_modality_1():
     df = pd.DataFrame([[1, 2, 3], [4, 5, 6]], index=["obs1", "obs2"], columns=["var1", "var2", "var3"])
@@ -78,7 +69,7 @@ def test_sample_split(run_component, random_path, input_h5mu, input_h5mu_path):
 
     assert s1.mod["mod1"].n_obs == 1, "number of observations of split file s1 modality mod1 should equal 1"
     assert s1.mod["mod2"].n_obs == input_h5mu.n_obs, "number of observations of split file s1 modality mod2 should equal input file"
-    
+
     assert len(s1.mod["mod1"].obs.keys()) == 2, "number of observation keys split file s1 modality mod1 should equal 2"
     assert len(s1.mod["mod2"].obs.keys()) == 1, "number of observation keys split file s1 modality mod2 should equal 1"
 
@@ -110,6 +101,7 @@ def test_sample_split(run_component, random_path, input_h5mu, input_h5mu_path):
         result = open_csv_file.read()
         assert result == expected_csv_output
 
+
 def test_sample_split_dropna(run_component, random_path, input_h5mu, input_h5mu_path):
     output_dir = random_path()
     output_files = random_path(extension="csv")
@@ -137,22 +129,10 @@ def test_sample_split_dropna(run_component, random_path, input_h5mu, input_h5mu_
 
     assert s1.mod["mod1"].n_obs == 1, "number of observations of split file s1 modality mod1 should equal 1"
     assert s1.mod["mod2"].n_obs == input_h5mu.n_obs, "number of observations of split file s1 modality mod2 should equal input file"
-    
+
     assert len(s1.mod["mod1"].obs.keys()) == 1, "number of observation keys split file s1 modality mod1 should equal 1"
     assert len(s1.mod["mod2"].obs.keys()) == 1, "number of observation keys split file s1 modality mod2 should equal 1"
 
 
 if __name__ == "__main__":
     sys.exit(pytest.main([__file__]))
-    # df = pd.DataFrame([[1, 2, 3], [4, 5, 6]], index=["obs1", "obs2"], columns=["var1", "var2", "var3"])
-    # obs = pd.DataFrame([["A"], ["B"]], index=df.index, columns=["Obs"])
-    # var = pd.DataFrame([["a"], ["b"], ["c"]], index=df.columns, columns=["Feat"])
-    # ad1 = ad.AnnData(df, obs=obs, var=var)
-    
-    # df = pd.DataFrame([[1, 2, 3], [np.nan, np.nan, np.nan]], index=["obs1", "obs2"], columns=["var1", "var2", "var3"])
-    # var2 = pd.DataFrame(["d", "e", "g"], index=df.columns, columns=["Feat"])
-    # obs2 = pd.DataFrame(["C", "D"], index=df.index, columns=["Obs"])
-    # ad2 = ad.AnnData(df, obs=obs2, var=var2)
-
-    # tmp_mudata = mu.MuData({'mod1': ad1, 'mod2': ad2})    
-    # tmp_mudata.write_h5mu("test.h5mu")
