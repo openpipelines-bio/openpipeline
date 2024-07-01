@@ -27,7 +27,7 @@ def input_modality_1():
 
 @pytest.fixture
 def input_modality_2():
-    df = pd.DataFrame([[1, 2, 3], [4, 5, 6]], index=["obs1", "obs2"], columns=["var1", "var2", "var3"])
+    df = pd.DataFrame([[1, 2, 3], [np.nan, 5, 6]], index=["obs1", "obs2"], columns=["var1", "var2", "var3"])
     var2 = pd.DataFrame(["d", "e", "g"], index=df.columns, columns=["Feat"])
     obs2 = pd.DataFrame(["C", "D"], index=df.index, columns=["Obs"])
     ad2 = ad.AnnData(df, obs=obs2, var=var2)
@@ -46,13 +46,13 @@ def input_h5mu_path(write_mudata_to_file, input_h5mu):
 
 
 
-def test_split(run_component, random_path, input_h5mu, input_h5mu_path):
+def test_sample_split(run_component, random_path, input_h5mu, input_h5mu_path):
     output_dir = random_path()
     output_files = random_path(extension="csv")
     args = [
         "--input", input_h5mu_path,
         "--output", str(output_dir),
-        "--modalitry", "mod1",
+        "--modality", "mod1",
         "--obs_feature", "Obs",
         "--output_files", str(output_files),
     ]
@@ -80,7 +80,7 @@ def test_split(run_component, random_path, input_h5mu, input_h5mu_path):
     assert s1.mod["mod1"].n_obs == 1, "number of observations of split file s1 modality mod1 should equal 1"
     assert s1.mod["mod2"].n_obs == input_h5mu.n_obs, "number of observations of split file s1 modality mod2 should equal input file"
 
-    assert s2.mod["mod1"].n_obs == input_h5mu.n_obs, "number of observations of split file s2 modality mod1 should equal input file"
+    assert s2.mod["mod1"].n_obs == 1, "number of observations of split file s2 modality mod1 should equal 1"
     assert s2.mod["mod2"].n_obs == input_h5mu.n_obs, "number of observations of split file s2 modality mod2 should equal input file"
 
     assert s1.n_vars == input_h5mu.n_vars, "number of variables of split file s1 should equal input file"
@@ -88,13 +88,13 @@ def test_split(run_component, random_path, input_h5mu, input_h5mu_path):
 
     assert s1.mod["mod1"].n_vars == input_h5mu.mod["mod1"].n_vars, "number of variables of split file s1 modalitty mod1 should equal input file"
     assert s1.mod["mod2"].n_vars == input_h5mu.mod["mod1"].n_vars,  "number of variables of split file s1 modalitty mod2 should equal input file"
-    
+
     assert s2.mod["mod1"].n_vars == input_h5mu.mod["mod1"].n_vars, "number of variables of split file s2 modalitty mod1 should equal input file"
     assert s2.mod["mod2"].n_vars == input_h5mu.mod["mod1"].n_vars,  "number of variables of split file s2 modalitty mod2 should equal input file"
-    
+
     # check correct sample splitting
-    assert np.all(s1.mod["mod1"].obs["Obs"] == "A")
-    assert np.all(s1.mod["mod1"].obs["Obs"] == "B")
+    assert np.all(s1.mod["mod1"].obs["Obs"] == "A"), "observation of .obs Obs in s1 should equal A"
+    assert np.all(s2.mod["mod1"].obs["Obs"] == "B"), "observation of .obs Obs in s2 should equal B"
 
     # Check contents of csv file
     expected_csv_output = dedent(
