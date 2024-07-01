@@ -26,7 +26,7 @@
 
 * `scgpt/binning` component: Added a scGPT pre-processing binning component (PR #765).
 
-* `workflows/integration/scgpt_leiden/: workflow: integrate with scGPT followed by Leiden clustering (PR #794).
+* `workflows/integration/scgpt_leiden` workflow integrate with scGPT followed by Leiden clustering (PR #794).
 
 ## MINOR CHANGES
 
