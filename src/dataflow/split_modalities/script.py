@@ -46,7 +46,6 @@ def main() -> None:
     logger.info("Reading input file '%s'", par['input'])
     input_file = Path(par["input"].strip())
     sample = md.read_h5mu(input_file)
-
     logger.info('Creating output types CSV.')
     modalities = list(sample.mod.keys())
 
@@ -67,7 +66,6 @@ def main() -> None:
         new_sample.write_h5mu(output_dir / names[mod_name], compression=par["output_compression"])
         logger.info("Done writing output file.")
     logger.info("Finished")
-
 
 if __name__ == "__main__":
     main()
