@@ -2,7 +2,7 @@ functionality:
   name: split_samples
   namespace: "dataflow"
   description: |
-    Split the samples from a single .h5mu multimodal sample into seperate .h5mu files based on the values of a var column. 
+    Split the samples of a single modality from a .h5mu (multimodal) sample into seperate .h5mu files based on the values of an .obs column of this modality. 
   authors:
     - __merge__: /src/authors/dorien_roosen.yaml
       roles: [ maintainer ]
