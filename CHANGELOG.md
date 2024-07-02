@@ -32,12 +32,11 @@
 
 * `scgpt/binning` component: Added a scGPT pre-processing binning component (PR #765).
 
-* `annotate/celltypist` component: Added a CellTypist annotation component (PR #825).
-
-* `annotate/celltypist` component: Added a CellTypist annotation component (PR #825).
-
 * `transform/clr` component: Added the option to set the `axis` along which to apply CLR. Possible to override
   on workflow level as well (PR #767).
+  
+* `annotate/celltypist` component: Added a CellTypist annotation component (PR #825).
+
 
 ## MINOR CHANGES
 
