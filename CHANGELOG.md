@@ -32,6 +32,8 @@
 
 * `scgpt/binning` component: Added a scGPT pre-processing binning component (PR #765).
 
+* `annotate/celltypist` component: Added a CellTypist annotation component (PR #825).
+
 ## MINOR CHANGES
 
 * Bump viash to `0.8.6` (PR #815).
@@ -41,6 +43,8 @@
 * Added `resources_test_scripts/cellranger_atac_tiny_bcl.sh` script: download tiny bcl file with an ATAC experiment, download a motifs file, demultiplex bcl files to reads in fastq format (PR #726).
 
 * `mapping/cellranger_multi` component now outputs logs on failure of the `cellranger multi` process (PR #766).
+
+* `resources_test_scripts/annotation_test_data.sh` script: Train and save a custom CellTypist model (PR #825).
 
 # openpipelines 1.0.0-rc6
 
