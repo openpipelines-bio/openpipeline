@@ -22,45 +22,28 @@ functionality:
           type: string
           default: "rna"
           required: false
-        - name: "--input_layer"
-          type: string
-          description: Which layer to use. If no value is provided, the counts are assumed to be in the `.X` slot. Otherwise, count data is expected to be in `.layers[input_layer]`.
-          required: false
-        - name: "--input_obs_batch"
-          type: string
-          description: Key in obs field of input adata for batch information. If no value is provided, batch label is assumed to be unknown.
-          required: false
-        - name: "--input_var_subset"
-          type: string
-          description: Subset the input object with this column.
-          required: false
         - name: "--input_obs_label"
           type: string
-          description: Key in obs field of input adata for label information. This is only used for training scANVI. Unlabelled cells should be set to `"unknown_celltype_label"`.
+          description: Key in obs field of input adata for label information.
           required: false
     - name: Reference
       description: Arguments related to the reference dataset.
       arguments:
         - name: "--reference"
           type: file
-          description: "User-provided reference tissue. The data that will be used as reference to call cell types."
-          example: TS_Bladder_filtered.h5ad
+          description: "User-provided reference dataset. The data that will be used as reference to call cell types."
+          example: reference.h5ad
           direction: input
-          required: false
-        - name: "--reference_layer"
-          type: string
-          description: Which layer to use. If no value is provided, the counts are assumed to be in the `.X` slot. Otherwise, count data is expected to be in `.layers[reference_layer]`.
           required: false
         - name: "--reference_obs_label"
           type: string
           description: Key in obs field of reference AnnData with cell-type information.
           default: "cell_ontology_class"
           required: false
-        - name: "--reference_obs_batch"
-          type: string
-          description: Key in obs field of input adata for batch information.
-          default: "donor_assay"
-          required: false
+        - name: "--check_expression"
+          type: boolean
+          description: "Whether to check the expression of the reference dataset to the format reccomended by CellTypist."
+          default: false
     - name: Outputs
       description: Output arguments.
       arguments:
@@ -68,7 +51,6 @@ functionality:
           type: file
           description: Output h5mu file.
           direction: output
-          required: true
           example: output.h5mu
         - name: "--output_compression"
           type: string
@@ -80,11 +62,12 @@ functionality:
       arguments:
         - name: "--model"
           type: file
-          description: "Pretrained model. Can be a directory or a tar gz."
+          description: "Pretrained model in pkl format. If not provided, the model will be trained."
           required: false
           example: pretrained_model.pkl
         - name: "--model_save_path"
           type: file
+          direction: output
           description: "Path to save the trained model."
           required: false
           example: trained_model.pkl
@@ -94,7 +77,12 @@ functionality:
           default: true
         - name: "--majority_voting"
           type: boolean
-          default: True
+          description: "Whether to refine the predicted labels by running the majority voting classifier after over-clustering."
+          default: true
+        - name: "--only_train"
+          type: boolean
+          description: "Whether to only train the model without performing annotation."
+          default: false
 
   resources:
     - type: python_script
@@ -115,8 +103,6 @@ platforms:
         packages:
           - libhdf5-dev
           - procps
-      # - type: docker
-      #   run: pip install git+https://github.com/Teichlab/celltypist.git
       - type: python
         __merge__: [ /src/base/requirements/scanpy.yaml, .]
       - type: python
