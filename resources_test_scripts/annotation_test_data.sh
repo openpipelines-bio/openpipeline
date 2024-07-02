@@ -46,3 +46,10 @@ sub_ref_adata_final.write("${OUT}/TS_Blood_filtered.h5ad", compression='gzip')
 HEREDOC
 
 rm "${OUT}/tmp_blood_test_reference.h5ad"
+
+echo "> Training test model for CellTypist"
+viash run src/annotate/celltypist/config.vsh.yaml -p docker -- \
+    --input "resources_test/pbmc_1k_protein_v3/pbmc_1k_protein_v3_filtered_feature_bc_matrix.h5mu" \
+    --reference "${OUT}/TS_Blood_filtered.h5ad" \
+    --model_save_path "${OUT}/celltypist_model_blood_filtered.pkl" \
+    --only_train "True"
