@@ -84,7 +84,7 @@ workflow run_wf {
         },
         toState: ["input": "output"]
     )
-    | embedding.run(
+    | cell_type_annotation.run(
       // Generation of cell embedings from the tokenized gene counts values.
       fromState: {id, state -> [
           "input": state.input,
@@ -92,71 +92,23 @@ workflow run_wf {
           "model": state.model,
           "model_vocab": state.model_vocab,
           "model_config": state.model_config,
+          "finetuned_checkpoints_key", state.finetuned_checkpoints_key,
+          "label_mapper_key", state.label_mapper_key,
           "obsm_gene_tokens": "gene_id_tokens",
           "obsm_tokenized_values": "values_tokenized",
-          "obsm_padding_mask": "padding_mask",
-          "var_gene_names": state.var_gene_names,
           "obs_batch_label": state.obs_batch_label,
           "pad_token": state.pad_token,
           "pad_value": state.pad_value,
+          "n_input_bins": state.n_input_bins,
           "dsbn": state.dsbn,
           "batch_size": state.batch_size,
-          "obsm_embeddings": "X_scGPT",
-          "output": state.output
-        ]
-      },
-      toState: ["input": "output"]
-    )
-
-    | find_neighbors.run(
-      fromState: {id, state -> [
-          "input": state.input,
-          "uns_output": "scGPT_integration_neighbors",
-          "obsp_distances": "scGPT_integration_distances",
-          "obsp_connectivities": "scGPT_integration_connectivities",
-          "obsm_input": "X_scGPT",
-          "modality": state.modality
-        ]
-      },
-      toState: ["input": "output"]
-    )
-
-    | leiden.run(
-      runIf: {id, state -> state.var_name_mitochondrial_genes}
-      fromState: {id, state -> [
-        "input": state.input,
-        "obsp_connectivities": "scGPT_integration_connectivities",
-        "obsm_name": "scGPT_integration_leiden",
-        "resolution": state.leiden_resolution,
-        "modality": state.modality,
-        ]
-      },
-      toState: ["input": "output"]
-    )
-
-    | move_obsm_to_obs.run(
-      runIf: {id, state -> state.var_name_mitochondrial_genes}
-      fromState: {id, state -> [
-          "input": state.input,
-          "obsm_key": "scGPT_integration_leiden",
-          "modality": state.modality,
-        ]
-      },
-      toState: ["input": "output"]
-    )
-
-    | umap.run(
-      fromState: {id, state -> [
-          "input": state.input,
-          "uns_neighbors": "scGPT_integration_neighbors",
-          "obsm_output": "X_scGPT_umap",
-          "modality": state.modality,
-          "output_compression": state.output_compression,
+          "obs_predicted_cell_class": state.obs_predicted_cell_class,
+          "obs_predicted_cell_label": state.obs_predicted_cell_label,
           "output": state.workflow_output
         ]
       },
       toState: { id, output, state ->
-        [ output: output.output ]
+        [ output: output.workflow_output ]
       },
       auto: [ publish: true ]
     )
