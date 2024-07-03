@@ -23,7 +23,7 @@ functionality:
           type: string
           multiple: true
           required: true
-          choices: [harmony_knn]
+          choices: [harmony_knn, scgpt_annotation]
           example: harmony_knn
         - name: "--reference_url"
           type: file

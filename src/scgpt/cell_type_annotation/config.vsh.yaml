@@ -1,0 +1,162 @@
+functionality:
+  name: cell_type_annotation
+  namespace: "scgpt"
+  description: |
+    Annotate gene expression data with cell type classes through the scGPT model.
+  authors:
+    - __merge__: /src/authors/dorien_roosen.yaml
+      roles: [ maintainer, author ]
+    - __merge__: /src/authors/jakub_majercik.yaml
+      roles: [ contributor ]
+
+  argument_groups:
+    - name: Inputs
+      arguments:
+        - name: "--input"
+          type: file
+          direction: input
+          required: true
+          example: resources_test/scgpt/test_resources/Kim2020_Lung_preprocessed.h5mu
+          description: |
+            The input h5mu file containing of data that have been pre-processed (normalized, binned, genes cross-checked and tokenized).
+        - name: "--model"
+          type: file
+          required: true
+          example: best_model.pt
+          description: |
+            The model file containing checkpoints and cell type label mapper.
+        - name: "--model_config"
+          type: file
+          required: true
+          example: args.json
+          description: |
+            The model configuration file. 
+        - name: "--model_vocab"
+          type: file
+          required: true
+          example: vocab.json
+          description: |
+            Model vocabulary file directory.
+        - name: "--finetuned_checkpoints_key"
+          type: string
+          default: model_state_dict
+          description: |
+            Key in the model  file containing the pretrained checkpoints.
+        - name: "--label_mapper_key"
+          type: string
+          default: id_to_class
+          description: |
+            Key in the model file containing the cell type class to label mapper dictionary.
+
+        - name: "--modality"
+          type: string
+          default: "rna"
+          required: false
+        - name: "--obs_batch_label"
+          type: string
+          required: false
+          description: |
+            The name of the adata.obs column containing the batch labels. Required if dsbn is set to true.
+        - name: "--obsm_gene_tokens"
+          type: string
+          default: "gene_id_tokens"
+          description: |
+            The key of the .obsm array containing the gene token ids
+        - name: "--obsm_tokenized_values"
+          type: string
+          default: values_tokenized
+          description: |
+            The key of the .obsm array containing the count values of the tokenized genes
+
+    - name: Outputs
+      arguments:
+        - name: "--output"
+          type: file
+          direction: output
+          required: true
+          example: Kim2020_Lung_cell_type_annotation.h5mu
+          description: |
+            The output cross-checked anndata file.
+        - name: "--output_compression"
+          type: string
+          example: "gzip"
+          required: false
+          default: gzip
+          description: |
+            The compression algorithm to use for the output h5mu file.
+        - name: "--obs_predicted_cell_class"
+          type: string
+          default: "predicted_cell_class"
+          required: false
+          description: |
+            The name of the adata.obs column to write predicted cell type classes to.
+        - name: "--obs_predicted_cell_label"
+          type: string
+          default: "predicted_cell_label"
+          required: false
+          description: |
+            The name of the adata.obs column to write predicted cell type labels to.
+
+    - name: Arguments
+      arguments:
+        - name: "--pad_token"
+          type: string
+          default: "<pad>"
+          required: false
+          description: |
+            The padding token used in the model.
+        - name: "--pad_value"
+          type: integer
+          default: -2
+          required: false
+          description: |
+            The value of the padding.
+        - name: "--n_input_bins"
+          type: integer
+          default: 51
+          required: false
+          description: |
+            The number of input bins.
+        - name: "--batch_size"
+          type: integer
+          default: 64
+          required: false
+          description: |
+            The batch size. 
+        - name: "--dsbn"
+          type: boolean
+          default: true
+          required: false
+          description: |
+            Whether to use domain-specific batch normalization.
+        - name: "--seed"
+          type: integer
+          description: |
+            Seed for random number generation. If not specified, no seed is used.
+
+  resources:
+    - type: python_script
+      path: script.py
+    - path: /src/utils/setup_logger.py
+  test_resources:
+    - type: python_script
+      path: test.py
+    - path: /resources_test/scgpt/test_resources/Kim2020_Lung_subset_tokenized.h5mu
+    - path: /resources_test/scgpt/source/best_model.pt
+    - path: /resources_test/scgpt/source/args.json
+    - path: /resources_test/scgpt/source/vocab.json
+
+platforms:
+  - type: docker
+    image: nvcr.io/nvidia/pytorch:23.09-py3
+    setup:
+      - type: python
+        __merge__: [ /src/base/requirements/anndata_mudata.yaml, /src/base/requirements/scanpy.yaml ]
+      - type: python
+        packages:
+          - scgpt==0.2.1
+    test_setup:
+      - type: python
+        __merge__: [/src/base/requirements/scanpy.yaml]
+    __merge__: [ /src/base/requirements/python_test_setup.yaml, .]
+  - type: nextflow
