@@ -46,6 +46,7 @@ jobs:
           viash_pro_token: ${{ secrets.GTHB_PAT }}
           tools_version: main_build
           ref: "${{ steps.get_tag.outputs.tag }}"
+          clean: true
 
 
       - uses: viash-io/viash-actions/pro/generate-documentation-qmd@v6
@@ -58,6 +59,7 @@ jobs:
           viash_pro_token: ${{ secrets.GTHB_PAT }}
           tools_version: main_build
           ref: "${{ steps.get_tag.outputs.tag }}"
+          clean: true
 
       - name: Create Pull Request
         env:
