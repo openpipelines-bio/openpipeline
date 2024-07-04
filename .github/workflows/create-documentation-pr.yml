@@ -39,7 +39,7 @@ jobs:
       - uses: viash-io/viash-actions/pro/generate-documentation-qmd@v6
         with:
           project_directory: openpipelines
-          src: ./
+          src: src
           query: '^(?!workflows)'
           output_dir: ../website/components/modules/
           dest_path: "{namespace}/{name}.qmd"
@@ -51,7 +51,7 @@ jobs:
       - uses: viash-io/viash-actions/pro/generate-documentation-qmd@v6
         with:
           project_directory: openpipelines
-          src: ./
+          src: src
           query: '^workflows'
           output_dir: ../website/components/workflows/
           dest_path: "{namespace}/{name}.qmd"
