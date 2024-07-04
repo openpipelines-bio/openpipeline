@@ -53,7 +53,7 @@ jobs:
           project_directory: openpipelines
           src: src
           query: '^workflows'
-          output_dir: ../website/components/workflows/
+          output_dir: ../website/components/
           dest_path: "{namespace}/{name}.qmd"
           viash_pro_token: ${{ secrets.GTHB_PAT }}
           tools_version: main_build
