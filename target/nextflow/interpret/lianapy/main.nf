@@ -3072,7 +3072,7 @@ meta = [
     {
       "type" : "docker",
       "id" : "docker",
-      "image" : "python:3.10-slim",
+      "image" : "python:3.11-slim",
       "target_organization" : "openpipelines-bio",
       "target_registry" : "ghcr.io",
       "target_tag" : "main_build",
@@ -3098,8 +3098,7 @@ meta = [
             "mudata~=0.2.3",
             "pandas!=2.1.2",
             "numpy<2.0.0",
-            "liana~=0.1.9",
-            "numpy~=1.24.3"
+            "liana~=1.2.1"
           ],
           "upgrade" : true
         }
@@ -3177,7 +3176,7 @@ meta = [
     "platform" : "nextflow",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/interpret/lianapy",
     "viash_version" : "0.8.6",
-    "git_commit" : "e75abe0ebde0a4691e94780c27d54b886f24b09b",
+    "git_commit" : "9a3f1048de6701f987e7b89878dc364f83dcdd11",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))
