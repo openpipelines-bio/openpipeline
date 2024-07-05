@@ -3330,6 +3330,101 @@ meta = [
             "dest" : "par"
           }
         ]
+      },
+      {
+        "name" : "RNA Scaling options",
+        "description" : "Options for enabling scaling of the log-normalized data to unit variance and zero mean.\nThe scaled data will be output a different layer and representation with reduced dimensions\nwill be created and stored in addition to the non-scaled data.\n",
+        "arguments" : [
+          {
+            "type" : "boolean_true",
+            "name" : "--rna_enable_scaling",
+            "description" : "Enable scaling for the RNA modality.",
+            "direction" : "input",
+            "dest" : "par"
+          },
+          {
+            "type" : "string",
+            "name" : "--rna_scaling_output_layer",
+            "description" : "Output layer where the scaled log-normalized data will be stored.",
+            "default" : [
+              "scaled"
+            ],
+            "required" : false,
+            "direction" : "input",
+            "multiple" : false,
+            "multiple_sep" : ":",
+            "dest" : "par"
+          },
+          {
+            "type" : "string",
+            "name" : "--rna_scaling_pca_obsm_output",
+            "description" : "Name of the .obsm key where the PCA representation of the log-normalized\nand scaled data is stored.\n",
+            "default" : [
+              "scaled_pca"
+            ],
+            "required" : false,
+            "direction" : "input",
+            "multiple" : false,
+            "multiple_sep" : ":",
+            "dest" : "par"
+          },
+          {
+            "type" : "string",
+            "name" : "--rna_scaling_pca_loadings_varm_output",
+            "description" : "Name of the .varm key where the PCA loadings of the log-normalized and scaled\ndata is stored.\n",
+            "default" : [
+              "scaled_pca_loadings"
+            ],
+            "required" : false,
+            "direction" : "input",
+            "multiple" : false,
+            "multiple_sep" : ":",
+            "dest" : "par"
+          },
+          {
+            "type" : "string",
+            "name" : "--rna_scaling_pca_variance_uns_output",
+            "description" : "Name of the .uns key where the variance and variance ratio will be stored as a map.\nThe map will contain two keys: variance and variance_ratio respectively.\n",
+            "default" : [
+              "scaled_pca_variance"
+            ],
+            "required" : false,
+            "direction" : "input",
+            "multiple" : false,
+            "multiple_sep" : ":",
+            "dest" : "par"
+          },
+          {
+            "type" : "string",
+            "name" : "--rna_scaling_umap_obsm_output",
+            "description" : "Name of the .obsm key where the UMAP representation of the log-normalized and scaled data is stored.",
+            "default" : [
+              "scaled_umap"
+            ],
+            "required" : false,
+            "direction" : "input",
+            "multiple" : false,
+            "multiple_sep" : ":",
+            "dest" : "par"
+          },
+          {
+            "type" : "double",
+            "name" : "--rna_scaling_max_value",
+            "description" : "Clip (truncate) data to this value after scaling. If not specified, do not clip.",
+            "required" : false,
+            "direction" : "input",
+            "multiple" : false,
+            "multiple_sep" : ":",
+            "dest" : "par"
+          },
+          {
+            "type" : "boolean_false",
+            "name" : "--rna_scaling_zero_center",
+            "description" : "If set, omit zero-centering variables, which allows to handle sparse input efficiently.\\"",
+            "direction" : "input",
+            "dest" : "par"
+          }
+        ]
       }
     ],
     "resources" : [
@@ -3432,7 +3527,7 @@ meta = [
           "functionalityNamespace" : "metadata",
           "output" : "",
           "platform" : "",
-          "git_commit" : "692dd03a920d18ad45a4699b87f734efc22603e4",
+          "git_commit" : "54bad8d09ea96bb75bc4b36f9de1d7010a3233b9",
           "executable" : "/nextflow/metadata/add_id/main.nf"
         },
         "writtenPath" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/metadata/add_id"
@@ -3454,7 +3549,7 @@ meta = [
           "functionalityNamespace" : "workflows/multiomics",
           "output" : "",
           "platform" : "",
-          "git_commit" : "692dd03a920d18ad45a4699b87f734efc22603e4",
+          "git_commit" : "54bad8d09ea96bb75bc4b36f9de1d7010a3233b9",
           "executable" : "/nextflow/workflows/multiomics/split_modalities/main.nf"
         },
         "writtenPath" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/workflows/multiomics/split_modalities"
@@ -3475,7 +3570,7 @@ meta = [
           "functionalityNamespace" : "dataflow",
           "output" : "",
           "platform" : "",
-          "git_commit" : "692dd03a920d18ad45a4699b87f734efc22603e4",
+          "git_commit" : "54bad8d09ea96bb75bc4b36f9de1d7010a3233b9",
           "executable" : "/nextflow/dataflow/merge/main.nf"
         },
         "writtenPath" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/dataflow/merge"
@@ -3496,7 +3591,7 @@ meta = [
           "functionalityNamespace" : "dataflow",
           "output" : "",
           "platform" : "",
-          "git_commit" : "692dd03a920d18ad45a4699b87f734efc22603e4",
+          "git_commit" : "54bad8d09ea96bb75bc4b36f9de1d7010a3233b9",
           "executable" : "/nextflow/dataflow/concatenate_h5mu/main.nf"
         },
         "writtenPath" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/dataflow/concatenate_h5mu"
@@ -3517,7 +3612,7 @@ meta = [
           "functionalityNamespace" : "transfer",
           "output" : "",
           "platform" : "",
-          "git_commit" : "692dd03a920d18ad45a4699b87f734efc22603e4",
+          "git_commit" : "54bad8d09ea96bb75bc4b36f9de1d7010a3233b9",
           "executable" : "/nextflow/transfer/publish/main.nf"
         },
         "writtenPath" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/transfer/publish"
@@ -3538,7 +3633,7 @@ meta = [
           "functionalityNamespace" : "workflows/rna",
           "output" : "",
           "platform" : "",
-          "git_commit" : "692dd03a920d18ad45a4699b87f734efc22603e4",
+          "git_commit" : "54bad8d09ea96bb75bc4b36f9de1d7010a3233b9",
           "executable" : "/nextflow/workflows/rna/rna_singlesample/main.nf"
         },
         "writtenPath" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/workflows/rna/rna_singlesample"
@@ -3559,7 +3654,7 @@ meta = [
           "functionalityNamespace" : "workflows/prot",
           "output" : "",
           "platform" : "",
-          "git_commit" : "692dd03a920d18ad45a4699b87f734efc22603e4",
+          "git_commit" : "54bad8d09ea96bb75bc4b36f9de1d7010a3233b9",
           "executable" : "/nextflow/workflows/prot/prot_singlesample/main.nf"
         },
         "writtenPath" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/workflows/prot/prot_singlesample"
@@ -3580,7 +3675,7 @@ meta = [
           "functionalityNamespace" : "workflows/gdo",
           "output" : "",
           "platform" : "",
-          "git_commit" : "692dd03a920d18ad45a4699b87f734efc22603e4",
+          "git_commit" : "54bad8d09ea96bb75bc4b36f9de1d7010a3233b9",
           "executable" : "/nextflow/workflows/gdo/gdo_singlesample/main.nf"
         },
         "writtenPath" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/workflows/gdo/gdo_singlesample"
@@ -3601,7 +3696,7 @@ meta = [
           "functionalityNamespace" : "workflows/multiomics",
           "output" : "",
           "platform" : "",
-          "git_commit" : "692dd03a920d18ad45a4699b87f734efc22603e4",
+          "git_commit" : "54bad8d09ea96bb75bc4b36f9de1d7010a3233b9",
           "executable" : "/nextflow/workflows/multiomics/process_batches/main.nf"
         },
         "writtenPath" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/workflows/multiomics/process_batches"
@@ -3668,7 +3763,7 @@ meta = [
     "platform" : "nextflow",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/workflows/multiomics/process_samples",
     "viash_version" : "0.8.6",
-    "git_commit" : "692dd03a920d18ad45a4699b87f734efc22603e4",
+    "git_commit" : "54bad8d09ea96bb75bc4b36f9de1d7010a3233b9",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))
@@ -3912,6 +4007,14 @@ workflow run_wf {
             "rna_layer": state.rna_layer,
             "prot_layer": state.prot_layer,
             "clr_axis": state.clr_axis,
+            "rna_enable_scaling": state.rna_enable_scaling,
+            "rna_scaling_output_layer": state.rna_scaling_output_layer,
+            "rna_scaling_pca_obsm_output": state.rna_scaling_pca_obsm_output,
+            "rna_scaling_pca_loadings_varm_output": state.rna_scaling_pca_loadings_varm_output,
+            "rna_scaling_pca_variance_uns_output": state.rna_scaling_pca_variance_uns_output,
+            "rna_scaling_umap_obsm_output": state.rna_scaling_umap_obsm_output,
+            "rna_scaling_max_value": state.rna_scaling_max_value,
+            "rna_scaling_zero_center": state.rna_scaling_zero_center,
           ]
         },
         toState: {id, output, state -> 

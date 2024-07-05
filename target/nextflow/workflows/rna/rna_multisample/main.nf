@@ -3123,6 +3123,49 @@ meta = [
             "dest" : "par"
           }
         ]
+      },
+      {
+        "name" : "RNA Scaling options",
+        "description" : "Options for enabling scaling of the log-normalized data to unit variance and zero mean.\nThe scaled data will be output a different layer and representation with reduced dimensions\nwill be created and stored in addition to the non-scaled data.\n",
+        "arguments" : [
+          {
+            "type" : "boolean_true",
+            "name" : "--enable_scaling",
+            "description" : "Enable scaling for the RNA modality.",
+            "direction" : "input",
+            "dest" : "par"
+          },
+          {
+            "type" : "string",
+            "name" : "--scaling_output_layer",
+            "description" : "Output layer where the scaled log-normalized data will be stored.",
+            "default" : [
+              "scaled"
+            ],
+            "required" : false,
+            "direction" : "input",
+            "multiple" : false,
+            "multiple_sep" : ":",
+            "dest" : "par"
+          },
+          {
+            "type" : "double",
+            "name" : "--scaling_max_value",
+            "description" : "Clip (truncate) data to this value after scaling. If not specified, do not clip.",
+            "required" : false,
+            "direction" : "input",
+            "multiple" : false,
+            "multiple_sep" : ":",
+            "dest" : "par"
+          },
+          {
+            "type" : "boolean_false",
+            "name" : "--scaling_zero_center",
+            "description" : "If set, omit zero-centering variables, which allows to handle sparse input efficiently.\\"",
+            "direction" : "input",
+            "dest" : "par"
+          }
+        ]
       }
     ],
     "resources" : [
@@ -3190,7 +3233,7 @@ meta = [
           "functionalityNamespace" : "transform",
           "output" : "",
           "platform" : "",
-          "git_commit" : "692dd03a920d18ad45a4699b87f734efc22603e4",
+          "git_commit" : "54bad8d09ea96bb75bc4b36f9de1d7010a3233b9",
           "executable" : "/nextflow/transform/normalize_total/main.nf"
         },
         "writtenPath" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/transform/normalize_total"
@@ -3211,7 +3254,7 @@ meta = [
           "functionalityNamespace" : "transform",
           "output" : "",
           "platform" : "",
-          "git_commit" : "692dd03a920d18ad45a4699b87f734efc22603e4",
+          "git_commit" : "54bad8d09ea96bb75bc4b36f9de1d7010a3233b9",
           "executable" : "/nextflow/transform/log1p/main.nf"
         },
         "writtenPath" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/transform/log1p"
@@ -3232,7 +3275,7 @@ meta = [
           "functionalityNamespace" : "feature_annotation",
           "output" : "",
           "platform" : "",
-          "git_commit" : "692dd03a920d18ad45a4699b87f734efc22603e4",
+          "git_commit" : "54bad8d09ea96bb75bc4b36f9de1d7010a3233b9",
           "executable" : "/nextflow/feature_annotation/highly_variable_features_scanpy/main.nf"
         },
         "writtenPath" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/feature_annotation/highly_variable_features_scanpy"
@@ -3254,7 +3297,7 @@ meta = [
           "functionalityNamespace" : "workflows/qc",
           "output" : "",
           "platform" : "",
-          "git_commit" : "692dd03a920d18ad45a4699b87f734efc22603e4",
+          "git_commit" : "54bad8d09ea96bb75bc4b36f9de1d7010a3233b9",
           "executable" : "/nextflow/workflows/qc/qc/main.nf"
         },
         "writtenPath" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/workflows/qc/qc"
@@ -3275,7 +3318,7 @@ meta = [
           "functionalityNamespace" : "transform",
           "output" : "",
           "platform" : "",
-          "git_commit" : "692dd03a920d18ad45a4699b87f734efc22603e4",
+          "git_commit" : "54bad8d09ea96bb75bc4b36f9de1d7010a3233b9",
           "executable" : "/nextflow/transform/delete_layer/main.nf"
         },
         "writtenPath" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/transform/delete_layer"
@@ -3296,10 +3339,31 @@ meta = [
           "functionalityNamespace" : "metadata",
           "output" : "",
           "platform" : "",
-          "git_commit" : "692dd03a920d18ad45a4699b87f734efc22603e4",
+          "git_commit" : "54bad8d09ea96bb75bc4b36f9de1d7010a3233b9",
           "executable" : "/nextflow/metadata/add_id/main.nf"
         },
         "writtenPath" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/metadata/add_id"
+      },
+      {
+        "name" : "transform/scale",
+        "repository" : {
+          "type" : "local",
+          "localPath" : ""
+        },
+        "foundConfigPath" : "/home/runner/work/openpipeline/openpipeline/src/transform/scaling/config.vsh.yaml",
+        "configInfo" : {
+          "functionalityName" : "scale",
+          "git_tag" : "",
+          "git_remote" : "https://github.com/openpipelines-bio/openpipeline",
+          "viash_version" : "0.8.6",
+          "config" : "/home/runner/work/openpipeline/openpipeline/src/transform/scaling/config.vsh.yaml",
+          "functionalityNamespace" : "transform",
+          "output" : "",
+          "platform" : "",
+          "git_commit" : "54bad8d09ea96bb75bc4b36f9de1d7010a3233b9",
+          "executable" : "/nextflow/transform/scale/main.nf"
+        },
+        "writtenPath" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/transform/scale"
       }
     ],
     "set_wd_to_resources_dir" : false
@@ -3363,7 +3427,7 @@ meta = [
     "platform" : "nextflow",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/workflows/rna/rna_multisample",
     "viash_version" : "0.8.6",
-    "git_commit" : "692dd03a920d18ad45a4699b87f734efc22603e4",
+    "git_commit" : "54bad8d09ea96bb75bc4b36f9de1d7010a3233b9",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))
@@ -3378,6 +3442,7 @@ include { qc as rna_qc_viashalias } from "${meta.resources_dir}/../../../../next
 rna_qc = rna_qc_viashalias.run(key: "rna_qc")
 include { delete_layer } from "${meta.resources_dir}/../../../../nextflow/transform/delete_layer/main.nf"
 include { add_id } from "${meta.resources_dir}/../../../../nextflow/metadata/add_id/main.nf"
+include { scale } from "${meta.resources_dir}/../../../../nextflow/transform/scale/main.nf"
 
 // inner workflow
 // user-provided Nextflow code
@@ -3422,6 +3487,20 @@ workflow run_wf {
         ]
       },
       toState: ["input": "output"]
+    )
+    | scale.run(
+      runIf: {id, state -> state.enable_scaling},
+      fromState: {id, state -> 
+        [
+          "input": state.input,
+          "modality": state.modality,
+          "input_layer": "log_normalized",
+          "output_layer": state.scaling_output_layer,
+          "max_value": state.scaling_max_value,
+          "zero_center": state.scaling_zero_center,
+        ]
+      },
+      toState: ["input": "output"],
     )
     | highly_variable_features_scanpy.run(
       fromState: {id, state ->
