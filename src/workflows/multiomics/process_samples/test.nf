@@ -297,7 +297,7 @@ workflow test_wf6 {
 //       | run_wf
 // }
 
-workflow test_wf6 {
+workflow test_wf7 {
   // allow changing the resources_test dir
   resources_test = file("${params.rootDir}/resources_test")
 
