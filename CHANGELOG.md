@@ -8,9 +8,9 @@
 
 * `demux/cellranger_mkfastq`, `mapping/cellranger_count`, `mapping/cellranger_multi` and `reference/build_cellranger_reference`: update cellranger to `8.0.1` (PR #774 and PR #811).
 
-* Removed `--disable_library_compatibility_check` in favour of `--check_library_compatibility` to the `mapping/cellranger_multi` component and the `ingestion/cellranger_multi` workflow (PR #818).A
+* Removed `--disable_library_compatibility_check` in favour of `--check_library_compatibility` to the `mapping/cellranger_multi` component and the `ingestion/cellranger_multi` workflow (PR #818).
 
-* `lianapy`: bumped version to `1.2.1` (PR #)
+* `lianapy`: bumped version to `1.2.1` (PR #827).
 
 ## NEW FUNCTIONALITY
 
