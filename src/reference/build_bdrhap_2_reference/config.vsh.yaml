@@ -1,0 +1,117 @@
+functionality:
+  name: build_bdrhap_reference
+  namespace: reference
+  description: Compile a reference into a STAR index compatible with the BD Rhapsody pipeline.
+  authors:
+    - __merge__: /src/authors/angela_pisco.yaml
+      roles: [ author ]
+    - __merge__: /src/authors/robrecht_cannoodt.yaml
+      roles: [ author, maintainer ]
+  argument_groups:
+    - name: Inputs
+      arguments:
+        - type: file
+          name: --genome_fasta
+          required: true
+          description: Reference genome file in FASTA or FASTA.GZ format. The BD Rhapsody Sequencing Analysis Pipeline uses GRCh38 for Human and GRCm39 for Mouse.
+          example: genome_sequence.fa.gz
+          multiple: true
+          info:
+            config_key: Genome_fasta
+        - type: file
+          name: --gtf
+          required: true
+          description: File path to the transcript annotation files in GTF or GTF.GZ format. The Sequence Analysis Pipeline requires the 'gene_name' or 'gene_id' attribute to be set on each gene and exon feature. Gene and exon feature lines must have the same attribute, and exons must have a corresponding gene with the same value. For TCR/BCR assays, the TCR or BCR gene segments must have the 'gene_type' or 'gene_biotype' attribute set, and the value should begin with 'TR' or 'IG', respectively. The BD Rhapsody Sequencing Analysis Pipeline uses Gencode v42 for Human and M31 for Mouse.
+          example: transcriptome_annotation.gtf.gz
+          multiple: true
+          info:
+            config_key: Gtf
+        - type: file
+          name: --extra_sequences
+          description: File path to additional sequences in FASTA format to use when building the STAR index. (e.g. transgenes or CRISPR guide barcodes). GTF lines for these sequences will be automatically generated and combined with the main GTF.
+          required: false
+          multiple: true
+          info:
+            config_key: Extra_sequences
+    - name: Arguments
+      arguments:
+        - type: string
+          name: --mitochondrial_contigs
+          description: Names of the Mitochondrial contigs in the provided Reference Genome. Fragments originating from contigs other than these are identified as 'nuclear fragments' in the ATACseq analysis pipeline.
+          required: false
+          multiple: true
+          default: [chrM, chrMT, M, MT]
+          info:
+            config_key: Mitochondrial_contigs
+        - type: boolean_true
+          name: --filtering_off
+          description: |
+            By default the input Transcript Annotation files are filtered based on the gene_type/gene_biotype attribute. Only features having the following attribute values are are kept:
+
+              - protein_coding
+              - lncRNA (lincRNA and antisense for Gencode < v31/M22/Ensembl97)
+              - IG_LV_gene
+              - IG_V_gene
+              - IG_V_pseudogene
+              - IG_D_gene
+              - IG_J_gene
+              - IG_J_pseudogene
+              - IG_C_gene
+              - IG_C_pseudogene
+              - TR_V_gene
+              - TR_V_pseudogene
+              - TR_D_gene
+              - TR_J_gene
+              - TR_J_pseudogene
+              - TR_C_gene
+
+              If you have already pre-filtered the input Annotation files and/or wish to turn-off the filtering, please set this option to True.
+          info:
+            config_key: Filtering_off
+        - type: boolean_true
+          name: --wta_only_index
+          description: Build a WTA only index, otherwise builds a WTA + ATAC index.
+          info:
+            config_key: Wta_Only
+        - type: string
+          name: --extra_star_params
+          description: Additional parameters to pass to STAR when building the genome index. Specify exactly like how you would on the command line.
+          example: --limitGenomeGenerateRAM 48000 --genomeSAindexNbases 11
+          info:
+            config_key: Extra_STAR_params
+    - name: Outputs
+      arguments:
+        - type: file
+          name: --reference_archive
+          direction: output
+          required: true
+          description: A Compressed archive containing the Reference Genome Index and annotation GTF files. This archive is meant to be used as an input in the BD Rhapsody Sequencing Analysis Pipeline.
+          example: star_index.tar.gz
+  resources:
+    - type: python_script
+      path: script.py
+    - path: make_rhap_reference_2.2.1_nodocker.cwl
+  test_resources:
+    - type: bash_script
+      path: test.sh
+    - path: /resources_test/reference_gencodev41_chr1
+platforms:
+  - type: docker
+    image: bdgenomics/rhapsody:2.2.1
+    setup:
+      - type: apt
+        packages: [procps]
+      - type: python
+        packages: [cwlref-runner, cwl-runner, ruamel.yaml]
+    test_setup:
+      - type: apt
+        packages: [ git, wget ]
+      - type: docker
+        run: |
+          wget --no-check-certificate https://github.com/shenwei356/seqkit/releases/download/v2.8.2/seqkit_linux_amd64.tar.gz && \
+            tar -C /usr/bin/ -xzf seqkit_linux_amd64.tar.gz && \
+            rm seqkit_linux_amd64.tar.gz
+
+  - type: nextflow
+    directives:
+      label: [ highmem, highcpu ]
