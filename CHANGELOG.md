@@ -12,6 +12,12 @@
 
 ## NEW FUNCTIONALITY
 
+* `process_samples`, `process_batches` and `rna_multisample` workflows: added functionality to scale the log-normalized 
+  gene expression data to unit variance and zero mean. The scaled data will be output to a different layer and the
+  representation with reduced dimensions will be created and stored in addition to the non-scaled data (PR #733).
+
+* `transform/scaling`: add `--input_layer` and `--output_layer` arguments (PR #733).
+
 * Added multiple arguments to the `cellranger_multi` workflow in order to maintain feature parity with the `mapping/cellranger_multi` component (PR #803).
 
 * `convert/from_cellranger_to_h5mu`: add support for antigen analysis. 
