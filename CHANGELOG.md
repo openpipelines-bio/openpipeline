@@ -39,6 +39,8 @@
 
 ## MINOR CHANGES
 
+* Bump scvelo to `0.3.2` (PR #828).
+
 * Bump viash to `0.8.6` (PR #815).
 
 * Pin numpy<2 for several components (PR #815).
