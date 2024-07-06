@@ -471,7 +471,7 @@ function ViashDockerCheckCommands {
 #   ViashDockerFile
 function ViashDockerfile {
   cat << 'VIASHDOCKER'
-FROM python:3.10-slim
+FROM python:3.11-slim
 
 ENTRYPOINT []
 
@@ -481,13 +481,13 @@ RUN apt-get update && \
   rm -rf /var/lib/apt/lists/*
 
 RUN pip install --upgrade pip && \
-  pip install --upgrade --no-cache-dir "anndata~=0.9.1" "mudata~=0.2.3" "pandas!=2.1.2" "numpy<2.0.0" "liana~=0.1.9" "numpy~=1.24.3"
+  pip install --upgrade --no-cache-dir "anndata~=0.9.1" "mudata~=0.2.3" "pandas!=2.1.2" "numpy<2.0.0" "liana~=1.2.1"
 
 LABEL org.opencontainers.image.authors="Mauro Saporita, Povilas Gibas"
 LABEL org.opencontainers.image.description="Companion container for running component interpret lianapy"
-LABEL org.opencontainers.image.created="2024-07-05T08:07:20Z"
+LABEL org.opencontainers.image.created="2024-07-06T02:39:55Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="54bad8d09ea96bb75bc4b36f9de1d7010a3233b9"
+LABEL org.opencontainers.image.revision="5de51d1d5311b5899bb3a5d9465210a72aab825f"
 LABEL org.opencontainers.image.version="integration_build"
 
 VIASHDOCKER

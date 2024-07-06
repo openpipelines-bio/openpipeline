@@ -16,8 +16,6 @@ workflow run_wf {
         "modality": "modality",
         "overwrite": "pca_overwrite",
         "layer": "layer",
-        "varm_output": "pca_loadings_varm_output",
-        "uns_output": "pca_variance_uns_output",
       ],
       toState: ["input": "output"]
     )

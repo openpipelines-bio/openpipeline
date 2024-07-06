@@ -458,95 +458,6 @@ functionality:
       multiple: false
       multiple_sep: ":"
       dest: "par"
-  - name: "RNA Scaling options"
-    description: "Options for enabling scaling of the log-normalized data to unit\
-      \ variance and zero mean.\nThe scaled data will be output a different layer\
-      \ and representation with reduced dimensions\nwill be created and stored in\
-      \ addition to the non-scaled data.\n"
-    arguments:
-    - type: "boolean_true"
-      name: "--rna_enable_scaling"
-      description: "Enable scaling for the RNA modality."
-      info: null
-      direction: "input"
-      dest: "par"
-    - type: "string"
-      name: "--rna_scaling_output_layer"
-      description: "Output layer where the scaled log-normalized data will be stored."
-      info: null
-      default:
-      - "scaled"
-      required: false
-      direction: "input"
-      multiple: false
-      multiple_sep: ":"
-      dest: "par"
-    - type: "string"
-      name: "--rna_scaling_pca_obsm_output"
-      description: "Name of the .obsm key where the PCA representation of the log-normalized\n\
-        and scaled data is stored.\n"
-      info: null
-      default:
-      - "scaled_pca"
-      required: false
-      direction: "input"
-      multiple: false
-      multiple_sep: ":"
-      dest: "par"
-    - type: "string"
-      name: "--rna_scaling_pca_loadings_varm_output"
-      description: "Name of the .varm key where the PCA loadings of the log-normalized\
-        \ and scaled\ndata is stored.\n"
-      info: null
-      default:
-      - "scaled_pca_loadings"
-      required: false
-      direction: "input"
-      multiple: false
-      multiple_sep: ":"
-      dest: "par"
-    - type: "string"
-      name: "--rna_scaling_pca_variance_uns_output"
-      description: "Name of the .uns key where the variance and variance ratio will\
-        \ be stored as a map.\nThe map will contain two keys: variance and variance_ratio\
-        \ respectively.\n"
-      info: null
-      default:
-      - "scaled_pca_variance"
-      required: false
-      direction: "input"
-      multiple: false
-      multiple_sep: ":"
-      dest: "par"
-    - type: "string"
-      name: "--rna_scaling_umap_obsm_output"
-      description: "Name of the .obsm key where the UMAP representation of the log-normalized\
-        \ and scaled data is stored."
-      info: null
-      default:
-      - "scaled_umap"
-      required: false
-      direction: "input"
-      multiple: false
-      multiple_sep: ":"
-      dest: "par"
-    - type: "double"
-      name: "--rna_scaling_max_value"
-      description: "Clip (truncate) data to this value after scaling. If not specified,\
-        \ do not clip."
-      info: null
-      required: false
-      direction: "input"
-      multiple: false
-      multiple_sep: ":"
-      dest: "par"
-    - type: "boolean_false"
-      name: "--rna_scaling_zero_center"
-      description: "If set, omit zero-centering variables, which allows to handle\
-        \ sparse input efficiently.\""
-      info: null
-      direction: "input"
-      dest: "par"
   resources:
   - type: "nextflow_script"
     path: "main.nf"
@@ -608,7 +519,7 @@ functionality:
       functionalityNamespace: "metadata"
       output: ""
       platform: ""
-      git_commit: "54bad8d09ea96bb75bc4b36f9de1d7010a3233b9"
+      git_commit: "5de51d1d5311b5899bb3a5d9465210a72aab825f"
       executable: "/nextflow/metadata/add_id/main.nf"
     writtenPath: "/home/runner/work/openpipeline/openpipeline/target/nextflow/metadata/add_id"
   - name: "workflows/multiomics/split_modalities"
@@ -626,7 +537,7 @@ functionality:
       functionalityNamespace: "workflows/multiomics"
       output: ""
       platform: ""
-      git_commit: "54bad8d09ea96bb75bc4b36f9de1d7010a3233b9"
+      git_commit: "5de51d1d5311b5899bb3a5d9465210a72aab825f"
       executable: "/nextflow/workflows/multiomics/split_modalities/main.nf"
     writtenPath: "/home/runner/work/openpipeline/openpipeline/target/nextflow/workflows/multiomics/split_modalities"
   - name: "dataflow/merge"
@@ -643,7 +554,7 @@ functionality:
       functionalityNamespace: "dataflow"
       output: ""
       platform: ""
-      git_commit: "54bad8d09ea96bb75bc4b36f9de1d7010a3233b9"
+      git_commit: "5de51d1d5311b5899bb3a5d9465210a72aab825f"
       executable: "/nextflow/dataflow/merge/main.nf"
     writtenPath: "/home/runner/work/openpipeline/openpipeline/target/nextflow/dataflow/merge"
   - name: "dataflow/concatenate_h5mu"
@@ -660,7 +571,7 @@ functionality:
       functionalityNamespace: "dataflow"
       output: ""
       platform: ""
-      git_commit: "54bad8d09ea96bb75bc4b36f9de1d7010a3233b9"
+      git_commit: "5de51d1d5311b5899bb3a5d9465210a72aab825f"
       executable: "/nextflow/dataflow/concatenate_h5mu/main.nf"
     writtenPath: "/home/runner/work/openpipeline/openpipeline/target/nextflow/dataflow/concatenate_h5mu"
   - name: "transfer/publish"
@@ -677,7 +588,7 @@ functionality:
       functionalityNamespace: "transfer"
       output: ""
       platform: ""
-      git_commit: "54bad8d09ea96bb75bc4b36f9de1d7010a3233b9"
+      git_commit: "5de51d1d5311b5899bb3a5d9465210a72aab825f"
       executable: "/nextflow/transfer/publish/main.nf"
     writtenPath: "/home/runner/work/openpipeline/openpipeline/target/nextflow/transfer/publish"
   - name: "workflows/rna/rna_singlesample"
@@ -694,7 +605,7 @@ functionality:
       functionalityNamespace: "workflows/rna"
       output: ""
       platform: ""
-      git_commit: "54bad8d09ea96bb75bc4b36f9de1d7010a3233b9"
+      git_commit: "5de51d1d5311b5899bb3a5d9465210a72aab825f"
       executable: "/nextflow/workflows/rna/rna_singlesample/main.nf"
     writtenPath: "/home/runner/work/openpipeline/openpipeline/target/nextflow/workflows/rna/rna_singlesample"
   - name: "workflows/prot/prot_singlesample"
@@ -711,7 +622,7 @@ functionality:
       functionalityNamespace: "workflows/prot"
       output: ""
       platform: ""
-      git_commit: "54bad8d09ea96bb75bc4b36f9de1d7010a3233b9"
+      git_commit: "5de51d1d5311b5899bb3a5d9465210a72aab825f"
       executable: "/nextflow/workflows/prot/prot_singlesample/main.nf"
     writtenPath: "/home/runner/work/openpipeline/openpipeline/target/nextflow/workflows/prot/prot_singlesample"
   - name: "workflows/gdo/gdo_singlesample"
@@ -728,7 +639,7 @@ functionality:
       functionalityNamespace: "workflows/gdo"
       output: ""
       platform: ""
-      git_commit: "54bad8d09ea96bb75bc4b36f9de1d7010a3233b9"
+      git_commit: "5de51d1d5311b5899bb3a5d9465210a72aab825f"
       executable: "/nextflow/workflows/gdo/gdo_singlesample/main.nf"
     writtenPath: "/home/runner/work/openpipeline/openpipeline/target/nextflow/workflows/gdo/gdo_singlesample"
   - name: "workflows/multiomics/process_batches"
@@ -745,7 +656,7 @@ functionality:
       functionalityNamespace: "workflows/multiomics"
       output: ""
       platform: ""
-      git_commit: "54bad8d09ea96bb75bc4b36f9de1d7010a3233b9"
+      git_commit: "5de51d1d5311b5899bb3a5d9465210a72aab825f"
       executable: "/nextflow/workflows/multiomics/process_batches/main.nf"
     writtenPath: "/home/runner/work/openpipeline/openpipeline/target/nextflow/workflows/multiomics/process_batches"
   set_wd_to_resources_dir: false
@@ -801,5 +712,5 @@ info:
   output: "/home/runner/work/openpipeline/openpipeline/target/nextflow/workflows/multiomics/process_samples"
   executable: "/home/runner/work/openpipeline/openpipeline/target/nextflow/workflows/multiomics/process_samples/main.nf"
   viash_version: "0.8.6"
-  git_commit: "54bad8d09ea96bb75bc4b36f9de1d7010a3233b9"
+  git_commit: "5de51d1d5311b5899bb3a5d9465210a72aab825f"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"

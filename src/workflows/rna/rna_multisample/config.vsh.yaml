@@ -137,27 +137,6 @@ functionality:
             Name of the column in .obs providing for each feature the percentage of
             observations the feature does not appear on (i.e. is missing). Same as `--num_nonzero_obs`
             but percentage based.
-    - name: "RNA Scaling options"
-      description: |
-        Options for enabling scaling of the log-normalized data to unit variance and zero mean.
-        The scaled data will be output a different layer and representation with reduced dimensions
-        will be created and stored in addition to the non-scaled data.
-      arguments:
-        - name: "--enable_scaling"
-          description: "Enable scaling for the RNA modality."
-          type: boolean_true
-        - name: "--scaling_output_layer"
-          type: string
-          default: "scaled"
-          description: "Output layer where the scaled log-normalized data will be stored."
-        - name: "--scaling_max_value"
-          description: "Clip (truncate) data to this value after scaling. If not specified, do not clip."
-          required: false
-          type: double
-        - name: "--scaling_zero_center"
-          type: boolean_false
-          description: If set, omit zero-centering variables, which allows to handle sparse input efficiently."
-         
   dependencies:
     - name: transform/normalize_total
     - name: transform/log1p
@@ -166,7 +145,6 @@ functionality:
       alias: rna_qc
     - name: transform/delete_layer
     - name: metadata/add_id
-    - name: transform/scale
   resources:
     - type: nextflow_script
       path: main.nf
