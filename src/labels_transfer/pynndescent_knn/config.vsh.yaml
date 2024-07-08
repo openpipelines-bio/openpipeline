@@ -22,9 +22,9 @@ functionality:
           description: Which modality to use.
         - name: "--input_obsm_features"
           type: string
-          required: true
+          required: false
           description: |
-            The `.obsm` key of the embedding to use for the classifier's inference.
+            The `.obsm` key of the embedding to use for the classifier's inference. If not provided, the .X slot will be used.
             Make sure that embedding was obtained in the same way as the reference embedding (e.g. by the same model, preprocessing and/or integration).
           example: X_scvi
 
@@ -37,9 +37,9 @@ functionality:
           example: reference.h5mu
         - name: "--reference_obsm_features"
           type: string
-          required: true
+          required: false
           description: |
-            The `.obsm` key of the embedding to use for the classifier's training.
+            The `.obsm` key of the embedding to use for the classifier's training. If not provided, the .X slot will be used.
             Make sure that embedding was obtained in the same way as the query embedding (e.g. by the same model or preprocessing).
           example: X_scvi
         - name: "--reference_obs_targets"
@@ -89,12 +89,6 @@ functionality:
             In which `.obs` slots to store the probability of the predictions.
             If provided, must have the same length as `--reference_obs_targets`.
             If empty, will default to the `reference_obs_targets` combined with the `"_probability"` suffix.
-        - name: "--output_uns_parameters"
-          type: string
-          default: "labels_transfer"
-          required: false
-          description: |
-            The `.uns` key to store additional information about the parameters used for the label transfer.
         - name: "--output_compression"
           type: string
           description: |
@@ -107,13 +101,21 @@ functionality:
     - type: python_script
       path: script.py
 
+  test_resources:
+    - type: python_script
+      path: test.py
+    - path: /resources_test/annotation_test_data/
+    - path: /resources_test/pbmc_1k_protein_v3/
+
 platforms:
   - type: docker
-    image: python:3.12-slim
+    image: python:3.12
     setup:
       - type: apt
         packages: 
           - procps
+          - pkg-config
+          - libhdf5-dev
       - type: python
         __merge__: /src/base/requirements/anndata_mudata.yaml
       - type: python

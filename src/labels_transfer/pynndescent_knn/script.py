@@ -38,6 +38,7 @@ def setup_logger():
 # END TEMPORARY WORKAROUND setup_logger
 logger = setup_logger()
 
+# Reading in data
 logger.info(f"Reading in query dataset {par['input']} and reference datasets {par['reference']}")
 q_mdata = mu.read_h5mu(par["input"])
 q_adata = q_mdata.mod[par["modality"]]
@@ -45,8 +46,22 @@ q_adata = q_mdata.mod[par["modality"]]
 r_mdata = mu.read_h5mu(par["reference"])
 r_adata = r_mdata.mod[par["modality"]]
 
-train_X = r_adata.obsm[par["reference_obsm_features"]]
-inference_X = q_adata.obsm[par["input_obsm_features"]]
+# Generating training and inference data
+## train data
+if par["reference_obsm_features"]:
+    logger.info(f"Using reference .obsm {par["reference_obsm_features"]} for training")
+    train_X = r_adata.obsm[par["reference_obsm_features"]]
+else:
+    logger.info("Using reference .X as features for training")
+    train_X = r_adata.X
+    
+## inference data
+if par["input_obsm_features"]:
+    logger.info(f"Using query .obsm {par["input_obsm_features"]} for inference")
+    inference_X = q_adata.obsm[par["input_obsm_features"]]
+else:
+    logger.info("Using query .X as features for inference")
+    inference_X = q_adata.X
 
 # Ensure output obs predictions and uncertainties are same length as obs targets
 if par["output_obs_predictions"]:
