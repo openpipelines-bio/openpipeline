@@ -110,13 +110,11 @@ functionality:
 
 platforms:
   - type: docker
-    image: python:3.12
+    image: python:3.12-slim
     setup:
       - type: apt
         packages: 
           - procps
-          - pkg-config
-          - libhdf5-dev
       - type: python
         __merge__: /src/base/requirements/anndata_mudata.yaml
       - type: python
