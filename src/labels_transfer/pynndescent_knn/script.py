@@ -6,21 +6,19 @@ from sklearn.pipeline import make_pipeline
 
 ## VIASH START
 par = {
-    "input": "resources_test/scgpt/test_resources/Kim2020_Lung_subset_scgpt_integrated_leiden_qc.h5mu",
+    "input": "resources_test/pbmc_1k_protein_v3/pbmc_1k_protein_v3_mms.h5mu",
     "modality": "rna",
-    "input_obsm_features": "X_PCA"
-    "reference": "https://zenodo.org/records/7587774/files/TS_Lung_filtered.h5ad",
-    "obsm_input": "",
-    "obs_label": "",
-    # "output": "output.h5mu",
-    # "metric": 'cosine',
-    "n_neighbors": 15,
-    "knn_weights": "uniform",
-    # "modality": "rna",
-    # "obsm_input": "X_pca",
-    "uns_output": "neighbors",
-    "obsp_distances": "distances",
-    "obsp_connectivities": "connectivities"
+    "input_obsm_features": None,
+    "reference": "resources_test/annotation_test_data/TS_Blood_filtered.h5mu",
+    "reference_obsm_features": None,
+    "reference_obs_targets": ["cell_type"],
+    "output": "foo.h5mu",
+    "output_obs_predictions": None,
+    "output_obs_probability": None,
+    "output_uns_parameters": "labels_transfer",
+    "output_compression": None,
+    "weights": "uniform",
+    "n_neighbors": 15
 }
 ## VIASH END
 
@@ -40,36 +38,70 @@ def setup_logger():
 # END TEMPORARY WORKAROUND setup_logger
 logger = setup_logger()
 
-logger.info("Reading input mudata")
-mdata = mu.read_h5mu(par["input"])
+# Reading in data
+logger.info(f"Reading in query dataset {par['input']} and reference datasets {par['reference']}")
+q_mdata = mu.read_h5mu(par["input"])
+q_adata = q_mdata.mod[par["modality"]]
 
-mod = par["modality"]
-logger.info("Computing a neighborhood graph on modality %s", mod)
-adata = mdata.mod[mod]
+r_mdata = mu.read_h5mu(par["reference"])
+r_adata = r_mdata.mod[par["modality"]]
 
-# Generate train data and prediction data
-logger.info(f"Generate train data and prediction data based on reference index {par["reference_index"]}")
-ref_idx = adata.obs["_dataset"] == par["reference_index"]
-train_X = adata[ref_idx].obsm[par["obsm_input"]]
-train_Y = adata[ref_idx].obs[par["obs_label"]].to_numpy()
+# Generating training and inference data
+## train data
+if par["reference_obsm_features"]:
+    logger.info(f"Using reference .obsm {par["reference_obsm_features"]} for training")
+    train_X = r_adata.obsm[par["reference_obsm_features"]]
+else:
+    logger.info("Using reference .X as features for training")
+    train_X = r_adata.X
 
-# Pipeline instantiation
-logger.info(f"Instantiate pipeline of PyNNDescentTransformer and KNeighborsClassifier with n_neighbors {par['n_neighbors']} and knn_weights {par['knn_weights'] and weights par["knn_weights"]}")
-knn = make_pipeline(
-    PyNNDescentTransformer(
-        n_neighbors=par["n_neighbors"],
-        parallel_batch_queries=True,
-    ),
-    KNeighborsClassifier(metric="precomputed", weights=par["knn_weights"]),
-)
+## inference data
+if par["input_obsm_features"]:
+    logger.info(f"Using query .obsm {par["input_obsm_features"]} for inference")
+    inference_X = q_adata.obsm[par["input_obsm_features"]]
+else:
+    logger.info("Using query .X as features for inference")
+    inference_X = q_adata.X
 
-knn.fit(train_X, train_Y)
-knn_pred = knn.predict(adata.obsm[par["layer"]])
+# Ensure output obs predictions and uncertainties are same length as obs targets
+if par["output_obs_predictions"]:
+    assert len(par["output_obs_predictions"]) == len(par["reference_obs_targets"]), "output_obs_predictions must be same length as reference_obs_targets"
+    output_obs_predictions = par["output_obs_predictions"]
+else:
+    output_obs_predictions = [x + "_pred" for x in par["reference_obs_targets"]]
 
-# save_results
-adata.obs[par["obs_knn_predictions"]] = knn_pred
+if par["output_obs_probability"]:   
+    assert len(par["output_obs_probability"]) == len(par["reference_obs_targets"]), "output_obs_probability must be same length as reference_obs_targets"
+    output_obs_uncertainties = par["output_obs_probability"]
+else:
+    output_obs_uncertainties = [x + "_probability" for x in par["reference_obs_targets"]]
 
-if par["return_probabilities"]:
-    adata.obs[par["obs_knn_probabilities"]] = np.max(
-        knn.predict_proba(adata.obsm["X_pca_harmony"]), axis=1
+# For each target, train a classifier and predict labels
+for obs_tar, obs_pred, obs_proba in zip(par["reference_obs_targets"], output_obs_predictions, output_obs_uncertainties):
+    logger.info(f"Predicting labels for {obs_tar}")
+    train_Y = r_adata.obs[obs_tar].to_numpy()
+
+    # Pipeline instantiation
+    logger.info(f"Instantiate pipeline of PyNNDescentTransformer and KNeighborClassifier with {par['n_neighbors']} n_neighbors and {par['weights']} weights")
+    knn = make_pipeline(
+        PyNNDescentTransformer(
+            n_neighbors=par["n_neighbors"],
+            parallel_batch_queries=True,
+        ),
+        KNeighborsClassifier(metric="precomputed", weights=par["weights"]),
     )
+
+    logger.info(f"Training PyNNDescentTransformer and KNeighborClassifier based on {obs_tar} obs labels")
+    knn.fit(train_X, train_Y)
+
+    logger.info(f"Predicting {obs_pred} predictions and {obs_proba} probabilities")
+    knn_pred = knn.predict(inference_X)
+    knn_proba = knn.predict_proba(inference_X)
+
+    # save_results
+    q_adata.obs[obs_pred] = knn_pred
+    q_adata.obs[obs_proba] = np.max(knn_proba, axis=1)
+
+logger.info(f"Saving output data to {par['output']}")
+q_mdata.mod[par['modality']] = q_adata
+q_mdata.write_h5mu(par['output'], compression=par['output_compression'])
