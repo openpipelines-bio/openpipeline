@@ -2,11 +2,19 @@
 
 ## BREAKING CHANGES
 
+* Added cell multiplexing support to the `from_cellranger_multi_to_h5mu` component and the `cellranger_multi` workflow. These components now output multiple .h5mu files. The `output` and `output_h5mu` arguments respectively now require a value containing a wildcard character `*`, which will be replaced by the sample ID to form the final output file names . Additionally, a `sample_csv` argument is added to the `from_cellragner_multi_to_h5mu` component which describes the sample name per output file (PR #803).
+
 * `demux/bcl_convert`: update BCL convert from 3.10 to 4.2 (PR #774).
 
-* `demux/cellranger_mkfastq`, `mapping/cellranger_count`, `mapping/cellranger_multi` and `reference/build_cellranger_reference`: update cellranger to `8.0` (PR #774).
+* `demux/cellranger_mkfastq`, `mapping/cellranger_count`, `mapping/cellranger_multi` and `reference/build_cellranger_reference`: update cellranger to `8.0.1` (PR #774 and PR #811).
+
+* Removed `--disable_library_compatibility_check` in favour of `--check_library_compatibility` to the `mapping/cellranger_multi` component and the `ingestion/cellranger_multi` workflow (PR #818).
+
+* `lianapy`: bumped version to `1.2.1` (PR #827).
 
 ## NEW FUNCTIONALITY
+
+* Added multiple arguments to the `cellranger_multi` workflow in order to maintain feature parity with the `mapping/cellranger_multi` component (PR #803).
 
 * `convert/from_cellranger_to_h5mu`: add support for antigen analysis. 
 
@@ -16,9 +24,47 @@
 
 * `demux/bcl_convert`: add support for no lane splitting (PR #804).
 
+* `reference/cellranger_mkgtf` component: Added cellranger mkgtf as a standalone component (PR #771).
+
+* `scgpt/cross_check_genes` component: Added a gene-model cross check component for scGPT (PR #758).
+
+* `scgpt/embedding`: component: Added scGPT embedding component (PR #761)
+
+* `scgpt/tokenize_pad`: component: Added scGPT padding and tokenization component (PR #754).
+
+* `scgpt/binning` component: Added a scGPT pre-processing binning component (PR #765).
+
+* `transform/clr` component: Added the option to set the `axis` along which to apply CLR. Possible to override
+  on workflow level as well (PR #767).
+
 ## MINOR CHANGES
 
+* Bump scvelo to `0.3.2` (PR #828).
+
+* Bump viash to `0.8.6` (PR #815).
+
+* Pin numpy<2 for several components (PR #815).
+
 * Added `resources_test_scripts/cellranger_atac_tiny_bcl.sh` script: download tiny bcl file with an ATAC experiment, download a motifs file, demultiplex bcl files to reads in fastq format (PR #726).
+
+* `mapping/cellranger_multi` component now outputs logs on failure of the `cellranger multi` process (PR #766).
+
+* Bump `viash-actions` to `v6` (PR #821).
+
+# openpipelines 1.0.0-rc6
+
+## BUG FIXES
+
+* `dataflow/concatenate_h5mu`: fix regression bug where observations are no longer linked to the correct metadata
+after concatenation (PR #807)
+
+* `transform/normalize_total` component: pass the `target_sum` argument to `sc.pp.normalize_total()` (PR #823).
+
+# openpipelines 1.0.0-rc5
+
+## BUG FIXES
+
+* `cluster/leiden`: prevent leiden component from hanging when a child process is killed (e.g. when there is not enough memory available) (PR #805).
 
 # openpipelines 1.0.0-rc4
 
