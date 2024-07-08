@@ -84,16 +84,17 @@ workflow run_wf {
         },
         toState: ["input": "output"]
     )
-    | cell_type_annotation.run(
-      // Generation of cell embedings from the tokenized gene counts values.
-      fromState: {id, state -> [
-          "input": state.input,
-          "modality": state.modality,
+      | niceView()
+
+      | annotation.run(
+      // Padding and tokenization of gene count values.
+       fromState: {id, state -> [
           "model": state.model,
           "model_vocab": state.model_vocab,
           "model_config": state.model_config,
-          "finetuned_checkpoints_key", state.finetuned_checkpoints_key,
-          "label_mapper_key", state.label_mapper_key,
+          "label_mapper_key": state.label_mapper_key,
+          "input": state.input,
+          "modality": state.modality,
           "obsm_gene_tokens": "gene_id_tokens",
           "obsm_tokenized_values": "values_tokenized",
           "obs_batch_label": state.obs_batch_label,
@@ -102,15 +103,16 @@ workflow run_wf {
           "n_input_bins": state.n_input_bins,
           "dsbn": state.dsbn,
           "batch_size": state.batch_size,
+          "seed": state.seed,
           "obs_predicted_cell_class": state.obs_predicted_cell_class,
           "obs_predicted_cell_label": state.obs_predicted_cell_label,
-          "output": state.workflow_output
+          "output": state.workflow_output,
+          "output_compression": state.output_compression,
+          "finetuned_checkpoints_key": state.finetuned_checkpoints_key
         ]
-      },
-      toState: { id, output, state ->
-        [ output: output.workflow_output ]
-      },
-      auto: [ publish: true ]
+        },
+        toState: {id, output, state -> ["output": output.output]},
+        auto: [ publish: true]
     )
 
   emit:

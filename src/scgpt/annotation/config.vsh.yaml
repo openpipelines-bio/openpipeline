@@ -1,5 +1,5 @@
 functionality:
-  name: cell_type_annotation
+  name: annotation
   namespace: "scgpt"
   description: |
     Annotate gene expression data with cell type classes through the scGPT model.
@@ -10,15 +10,8 @@ functionality:
       roles: [ contributor ]
 
   argument_groups:
-    - name: Inputs
+    - name: Model input
       arguments:
-        - name: "--input"
-          type: file
-          direction: input
-          required: true
-          example: resources_test/scgpt/test_resources/Kim2020_Lung_preprocessed.h5mu
-          description: |
-            The input h5mu file containing of data that have been pre-processed (normalized, binned, genes cross-checked and tokenized).
         - name: "--model"
           type: file
           required: true
@@ -48,6 +41,15 @@ functionality:
           description: |
             Key in the model file containing the cell type class to label mapper dictionary.
 
+    - name: Query input
+      arguments:
+        - name: "--input"
+          type: file
+          direction: input
+          required: true
+          example: resources_test/scgpt/test_resources/Kim2020_Lung_preprocessed.h5mu
+          description: |
+            The input h5mu file containing of data that have been pre-processed (normalized, binned, genes cross-checked and tokenized).
         - name: "--modality"
           type: string
           default: "rna"
