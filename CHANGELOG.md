@@ -37,6 +37,8 @@
 * `transform/clr` component: Added the option to set the `axis` along which to apply CLR. Possible to override
   on workflow level as well (PR #767).
 
+* `labels_transfer/pynndescent_knn`: component: Added a component for KNN classification based on a PyNNDescent neighborhood graph (PR #830).
+
 ## MINOR CHANGES
 
 * Bump scvelo to `0.3.2` (PR #828).
