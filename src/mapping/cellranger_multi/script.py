@@ -99,7 +99,6 @@ for inverted_param, param in inverted_params.items():
     par[inverted_param] = not par[param] if par[param] is not None else None
     del par[param]
 
-
 GEX_CONFIG_KEYS = {
     "gex_reference": "reference",
     "gex_expect_cells": "expect-cells",
