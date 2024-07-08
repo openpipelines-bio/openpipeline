@@ -5,6 +5,9 @@ functionality:
   authors:
     - __merge__: /src/authors/dorien_roosen.yaml
       roles: [ author, maintainer ]
+    - __merge__: /src/authors/jakub_majercik.yaml
+      roles: [ author ]
+      
   argument_groups:
     - name: "Query input"
       arguments:
