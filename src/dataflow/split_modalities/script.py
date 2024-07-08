@@ -68,6 +68,5 @@ def main() -> None:
         logger.info("Done writing output file.")
     logger.info("Finished")
 
-
 if __name__ == "__main__":
     main()
