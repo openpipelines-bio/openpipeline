@@ -36,16 +36,6 @@ functionality:
           type: string
           description: |
             The name of the adata obs column containing the batch labels.
-        - name: "--obsm_gene_tokens"
-          type: string
-          default: "gene_id_tokens"
-          description: |
-            The key of the .obsm array containing the gene token ids
-        - name: "--obsm_tokenized_values"
-          type: string
-          default: values_tokenized
-          description: |
-            The key of the .obsm array containing the count values of the tokenized genes
 
     - name: "Model input"
       arguments:
