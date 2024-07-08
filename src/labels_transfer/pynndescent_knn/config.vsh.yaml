@@ -19,7 +19,7 @@ functionality:
           type: string
           default: "rna"
           required: false
-          description: Which modality to use.
+          description: Modality of the data. Note that the modality should be the same for the input query and reference data.
         - name: "--input_obsm_features"
           type: string
           required: false
@@ -33,7 +33,7 @@ functionality:
         - name: "--reference"
           type: file
           required: true
-          description: "Should be an h5mu file."
+          description: "Path to annotated reference dataset. Should be an h5mu file."
           example: reference.h5mu
         - name: "--reference_obsm_features"
           type: string
@@ -61,6 +61,7 @@ functionality:
             `distance` (weight points by the inverse of their distance)
         - name: "--n_neighbors"
           type: integer
+          min: 5
           default: 15
           description: |
             The number of neighbors to use in k-neighbor graph structure used for fast approximate nearest neighbor search with PyNNDescent. 
@@ -109,19 +110,20 @@ functionality:
 
 platforms:
   - type: docker
-    image: python:3.12
+    image: python:3.12-slim
     setup:
       - type: apt
         packages: 
           - procps
-          - pkg-config
-          - libhdf5-dev
       - type: python
         __merge__: /src/base/requirements/anndata_mudata.yaml
       - type: python
         packages:
-          - pynndescent
-          - scikit-learn
+          - pynndescent~=0.5.10
+          - numpy<2
+    test_setup:
+      - type: python
+        __merge__: [ /src/base/requirements/viashpy.yaml ]
   - type: nextflow
     directives:
-      label: [singlecpu, lowmem]
+      label: [highmem, highcpu]

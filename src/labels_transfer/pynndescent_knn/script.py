@@ -8,9 +8,9 @@ from sklearn.pipeline import make_pipeline
 par = {
     "input": "resources_test/pbmc_1k_protein_v3/pbmc_1k_protein_v3_mms.h5mu",
     "modality": "rna",
-    "input_obsm_features": "X_pca",
-    "reference": "TS_lung_filtered.h5mu",
-    "reference_obsm_features": "X_pca",
+    "input_obsm_features": None,
+    "reference": "resources_test/annotation_test_data/TS_Blood_filtered.h5mu",
+    "reference_obsm_features": None,
     "reference_obs_targets": ["cell_type"],
     "output": "foo.h5mu",
     "output_obs_predictions": None,
@@ -54,7 +54,7 @@ if par["reference_obsm_features"]:
 else:
     logger.info("Using reference .X as features for training")
     train_X = r_adata.X
-    
+
 ## inference data
 if par["input_obsm_features"]:
     logger.info(f"Using query .obsm {par["input_obsm_features"]} for inference")
@@ -72,6 +72,7 @@ else:
 
 if par["output_obs_probability"]:   
     assert len(par["output_obs_probability"]) == len(par["reference_obs_targets"]), "output_obs_probability must be same length as reference_obs_targets"
+    output_obs_uncertainties = par["output_obs_probability"]
 else:
     output_obs_uncertainties = [x + "_probability" for x in par["reference_obs_targets"]]
 
