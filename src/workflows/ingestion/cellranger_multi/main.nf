@@ -56,8 +56,7 @@ workflow run_wf {
       toState: [
         "output_raw": "output", 
         "input": "output"
-      ],
-      auto: [ publish: true ]
+      ]
     )
     | from_cellranger_multi_to_h5mu.run(
       fromState: {id, state ->
