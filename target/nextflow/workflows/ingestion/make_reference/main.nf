@@ -3087,7 +3087,7 @@ meta = [
           "functionalityNamespace" : "reference",
           "output" : "",
           "platform" : "",
-          "git_commit" : "43b549eb6e5e79cfaa6f768697f8eb753d801dff",
+          "git_commit" : "fde7fa98bdb682b827663e1914d2c83ebed62868",
           "executable" : "/nextflow/reference/make_reference/main.nf"
         },
         "writtenPath" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/reference/make_reference"
@@ -3108,7 +3108,7 @@ meta = [
           "functionalityNamespace" : "reference",
           "output" : "",
           "platform" : "",
-          "git_commit" : "43b549eb6e5e79cfaa6f768697f8eb753d801dff",
+          "git_commit" : "fde7fa98bdb682b827663e1914d2c83ebed62868",
           "executable" : "/nextflow/reference/build_bdrhap_reference/main.nf"
         },
         "writtenPath" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/reference/build_bdrhap_reference"
@@ -3129,7 +3129,7 @@ meta = [
           "functionalityNamespace" : "mapping",
           "output" : "",
           "platform" : "",
-          "git_commit" : "43b549eb6e5e79cfaa6f768697f8eb753d801dff",
+          "git_commit" : "fde7fa98bdb682b827663e1914d2c83ebed62868",
           "executable" : "/nextflow/mapping/star_build_reference/main.nf"
         },
         "writtenPath" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/mapping/star_build_reference"
@@ -3150,7 +3150,7 @@ meta = [
           "functionalityNamespace" : "reference",
           "output" : "",
           "platform" : "",
-          "git_commit" : "43b549eb6e5e79cfaa6f768697f8eb753d801dff",
+          "git_commit" : "fde7fa98bdb682b827663e1914d2c83ebed62868",
           "executable" : "/nextflow/reference/build_cellranger_reference/main.nf"
         },
         "writtenPath" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/reference/build_cellranger_reference"
@@ -3217,7 +3217,7 @@ meta = [
     "platform" : "nextflow",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/workflows/ingestion/make_reference",
     "viash_version" : "0.8.6",
-    "git_commit" : "43b549eb6e5e79cfaa6f768697f8eb753d801dff",
+    "git_commit" : "fde7fa98bdb682b827663e1914d2c83ebed62868",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))
