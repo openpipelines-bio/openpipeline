@@ -14,6 +14,8 @@
 
 ## NEW FUNCTIONALITY
 
+* CI: added checking of mudata contents for multiple workflows (PR #783).
+
 * Added multiple arguments to the `cellranger_multi` workflow in order to maintain feature parity with the `mapping/cellranger_multi` component (PR #803).
 
 * `convert/from_cellranger_to_h5mu`: add support for antigen analysis. 
