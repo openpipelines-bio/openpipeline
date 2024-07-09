@@ -37,6 +37,8 @@
 * `transform/clr` component: Added the option to set the `axis` along which to apply CLR. Possible to override
   on workflow level as well (PR #767).
 
+* `workflows/annotation/scgpt_annotation`: workflow: Added a workflow for scGPT-based cell type annotation (PR #832).
+
 ## MINOR CHANGES
 
 * Bump scvelo to `0.3.2` (PR #828).
