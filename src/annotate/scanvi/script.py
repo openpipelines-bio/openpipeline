@@ -8,7 +8,8 @@ import scvi
 par = {
     "input": "resources_test/pbmc_1k_protein_v3/pbmc_1k_protein_v3_mms.h5mu",
     "modality": "rna",
-    "reference": "resources_test/annotation_test_data/tmp_TS_Blood_filtered.h5ad",
+    "reference": "resources_test/annotation_test_data/TS_Blood_filtered.h5ad",
+    "scvi_reference_model": "resources_test/annotation_test_data/scvi_model.pt",
     "reference_obs_label": "cell_ontology_class",
     "reference_obs_batch": None
 }
@@ -35,39 +36,42 @@ def setup_logger():
 logger = setup_logger()
 
 input_data = mu.read_h5mu(par["input"])
-input_modality = input_data.mod[par["modality"]]
-reference_data = ad.read_h5ad(par["reference"])
+query = input_data.mod[par["modality"]]
+reference = ad.read_h5ad(par["reference"])
+scvi_reference_model = scvi.model.SCVI.load(par["scvi_reference_model"], reference)
 
-reference_data.var["gene_symbol"] = list(reference_data.var.index)
-reference_data.var.index = [re.sub("\\.[0-9]+$", "", s) for s in reference_data.var["ensemblid"]]
+# reference_data.var["gene_symbol"] = list(reference_data.var.index)
+# reference_data.var.index = [re.sub("\\.[0-9]+$", "", s) for s in reference_data.var["ensemblid"]]
 
-common_ens_ids = list(set(reference_data.var.index).intersection(set(input_modality.var.index)))
+# common_ens_ids = list(set(reference_data.var.index).intersection(set(input_modality.var.index)))
 
-reference = reference_data[:, common_ens_ids].copy()
-query = input_modality[:, common_ens_ids].copy()
+# reference = reference_data[:, common_ens_ids].copy()
+# query = input_modality[:, common_ens_ids].copy()
 
-scvi.model.SCVI.setup_anndata(reference,
-                              labels_key=par["reference_obs_label"],
-                              batch_key=par["reference_obs_batch"]
-                              )
+# scvi.model.SCVI.setup_anndata(reference,
+#                               labels_key=par["reference_obs_label"],
+#                               batch_key=par["reference_obs_batch"]
+#                               )
 
-scvi_model = scvi.model.SCVI(
-    reference,
-    use_layer_norm="both",
-    use_batch_norm="none",
-    encode_covariates=True,
-    dropout_rate=0.2,
-    n_layers=2,
-    )
-scvi_model.train(max_epochs=50)
+# scvi_model = scvi.model.SCVI(
+#     reference,
+#     use_layer_norm="both",
+#     use_batch_norm="none",
+#     encode_covariates=True,
+#     dropout_rate=0.2,
+#     n_layers=2,
+#     )
+# scvi_model.train(max_epochs=50)
 
-SCANVI_LABELS_KEY = "labels_scanvi"
-reference.obs[SCANVI_LABELS_KEY] = reference.obs[par["reference_obs_label"]].values
+# SCANVI_LABELS_KEY = "labels_scanvi"
+# reference.obs[SCANVI_LABELS_KEY] = reference.obs[par["reference_obs_label"]].values
+
+scvi_reference_model = scvi.model.SCVI.load(par["scvi_reference_model"], reference)
 
 scanvi_ref = scvi.model.SCANVI.from_scvi_model(
-    scvi_model,
+    scvi_reference_model,
     unlabeled_category="Unknown",
-    labels_key=SCANVI_LABELS_KEY,
+    labels_key=par["reference_obs_label"],
     )
 scanvi_ref.train(max_epochs=20, n_samples_per_label=100)
 

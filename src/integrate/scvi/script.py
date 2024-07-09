@@ -1,12 +1,10 @@
 from scanpy._utils import check_nonnegative_integers
 import mudata
 import scvi
-import re
 
 ### VIASH START
 par = {
-    "query": "resources_test/pbmc_1k_protein_v3/pbmc_1k_protein_v3_mms.h5mu",
-    "input": "resources_test/annotation_test_data/tmp_TS_Blood_filtered.h5ad",
+    "input": "resources_test/pbmc_1k_protein_v3/pbmc_1k_protein_v3_mms.h5mu",
     "modality": "rna",
     "input_layer": None,
     "obs_batch": "sample_id",
@@ -78,16 +76,6 @@ def main():
         adata_subset, par['input_layer'], par['obs_batch'],
         par["n_obs_min_count"], par["n_var_min_count"]
     )
-    
-    if par["query"] and par["obs_labels"]:
-        query = mudata.read_h5ad(par["reference"]).mod[par["modality"]]
-        adata_subset.var["gene_symbol"] = list(adata_subset.var.index)
-        adata_subset.var.index = [re.sub("\\.[0-9]+$", "", s) for s in adata_subset.var["ensemblid"]]
-        common_ens_ids = list(set(adata_subset.var.index).intersection(set(query.var.index)))
-        adata_subset = adata_subset[:, common_ens_ids].copy()
-        query = query[:, common_ens_ids].copy()
-        
-    
     # Set up the data
     scvi.model.SCVI.setup_anndata(
         adata_subset,

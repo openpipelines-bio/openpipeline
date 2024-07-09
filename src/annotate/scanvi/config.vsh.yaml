@@ -28,8 +28,14 @@ functionality:
       arguments:
         - name: "--reference"
           type: file
-          description: "User-provided reference tissue. The data that will be used as reference to call cell types."
-          example: TS_Bladder_filtered.h5ad
+          description: Reference h5ad file.
+          direction: input
+          required: true
+          example: reference.h5ad
+        - name: "--scvi_reference_model"
+          type: file
+          description: "Pretrained scvi reference model"
+          example: scvi_model.pt
           direction: input
           required: true
         - name: "--reference_obs_label"
