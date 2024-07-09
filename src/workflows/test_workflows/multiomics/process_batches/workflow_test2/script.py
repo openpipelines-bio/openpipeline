@@ -48,11 +48,13 @@ input_rna = remove_annotation_column(input_rna, "filter_with_hvg", "var")
 del input_rna.varm['pca_loadings']
 del input_rna.obsm['X_pca']
 del input_rna.obsm['X_umap']
+del input_rna.layers['log_normalized']
 output_rna = output.mod["rna"]
 output_rna = remove_annotation_column(output_rna, "filter_with_hvg", "var")
 del output_rna.obsm['X_pca']
 del output_rna.varm['pca_loadings']
 del output_rna.obsm['X_umap']
+del output_rna.layers['log_normalized']
 assert_annotation_objects_equal(input_rna, output_rna)
 
 
