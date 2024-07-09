@@ -1,5 +1,4 @@
 import sys
-import re
 import mudata as mu
 import anndata as ad
 import scvi
@@ -11,7 +10,6 @@ par = {
     "reference": "resources_test/annotation_test_data/TS_Blood_filtered.h5ad",
     "scvi_reference_model": "resources_test/annotation_test_data/scvi_model.pt",
     "reference_obs_label": "cell_ontology_class",
-    "reference_obs_batch": None
 }
 meta = {}
 ## VIASH END
@@ -35,60 +33,65 @@ def setup_logger():
 # END TEMPORARY WORKAROUND setup_logger
 logger = setup_logger()
 
+logger.info("Reading input data and SCVI model")
+
 input_data = mu.read_h5mu(par["input"])
 query = input_data.mod[par["modality"]]
 reference = ad.read_h5ad(par["reference"])
 scvi_reference_model = scvi.model.SCVI.load(par["scvi_reference_model"], reference)
 
-# reference_data.var["gene_symbol"] = list(reference_data.var.index)
-# reference_data.var.index = [re.sub("\\.[0-9]+$", "", s) for s in reference_data.var["ensemblid"]]
-
-# common_ens_ids = list(set(reference_data.var.index).intersection(set(input_modality.var.index)))
-
-# reference = reference_data[:, common_ens_ids].copy()
-# query = input_modality[:, common_ens_ids].copy()
-
-# scvi.model.SCVI.setup_anndata(reference,
-#                               labels_key=par["reference_obs_label"],
-#                               batch_key=par["reference_obs_batch"]
-#                               )
-
-# scvi_model = scvi.model.SCVI(
-#     reference,
-#     use_layer_norm="both",
-#     use_batch_norm="none",
-#     encode_covariates=True,
-#     dropout_rate=0.2,
-#     n_layers=2,
-#     )
-# scvi_model.train(max_epochs=50)
-
-# SCANVI_LABELS_KEY = "labels_scanvi"
-# reference.obs[SCANVI_LABELS_KEY] = reference.obs[par["reference_obs_label"]].values
-
-scvi_reference_model = scvi.model.SCVI.load(par["scvi_reference_model"], reference)
+logger.info("Setting up scANVI model")
 
 scanvi_ref = scvi.model.SCANVI.from_scvi_model(
     scvi_reference_model,
     unlabeled_category="Unknown",
     labels_key=par["reference_obs_label"],
     )
-scanvi_ref.train(max_epochs=20, n_samples_per_label=100)
+
+plan_kwargs = {"lr": par["learning_rate"],
+               "reduce_lr_on_plateau": par['reduce_lr_on_plateau'],
+               "lr_patience": par['lr_patience'],
+               "lr_factor": par['lr_factor']
+               }
+
+scanvi_ref.train(
+    train_size=par["train_size"],
+    max_epochs=par['max_epochs'],
+    early_stopping=par['early_stopping'],
+    early_stopping_patience=par['early_stopping_patience'],
+    plan_kwargs=plan_kwargs,
+    check_val_every_n_epoch=1,
+    accelerator="auto",
+)
 
 SCANVI_LATENT_KEY = "X_scANVI"
 reference.obsm[SCANVI_LATENT_KEY] = scanvi_ref.get_latent_representation()
 
+logger.info("Updating with query data")
+
 scvi.model.SCANVI.prepare_query_anndata(query, scanvi_ref, inplace=True)
 scanvi_query = scvi.model.SCANVI.load_query_data(query, scanvi_ref)
+
+
 scanvi_query.train(
-    max_epochs=20,
-    plan_kwargs={"weight_decay": 0.0},
-    check_val_every_n_epoch=10,
+    train_size=par["train_size"],
+    max_epochs=par['max_epochs'],
+    early_stopping=par['early_stopping'],
+    early_stopping_patience=par['early_stopping_patience'],
+    plan_kwargs=plan_kwargs,
+    check_val_every_n_epoch=1,
+    accelerator="auto",
 )
 
-SCANVI_PREDICTIONS_KEY = "predictions_scanvi"
+logger.info("Running prediction")
+
 query.obsm[SCANVI_LATENT_KEY] = scanvi_query.get_latent_representation()
-query.obs[SCANVI_PREDICTIONS_KEY] = scanvi_query.predict()
+query.obs[par["input_obs_label"]] = scanvi_query.predict()
+
+logger.info("Saving output and model")
 
 input_data.mod[par["modality"]] = query
 input_data.write_h5mu(par["output"], compression=par["output_compression"])
+
+if par["output_model"]:
+    scanvi_query.save(par["output_model"], overwrite=True)
