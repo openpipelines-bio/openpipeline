@@ -102,7 +102,7 @@ def _assert_layer_equal(left, right):
             raise AssertionError("Layers differ:\n[left]: not sparse\n[right]: sparse")
         np.testing.assert_allclose(left, right, 
                                    err_msg="Layers data differs.",
-                                   equal_nan=True, rtol=1e-06)
+                                   equal_nan=True)
         
 
 def assert_layers_equal(left: AnnotationObjectOrPathLike,

@@ -45,10 +45,11 @@ workflow test_wf {
 
   test_ch = input_ch
     | workflow_test.run(
-      fromState: {id, state ->
-        [ input: state.output, orig_input: state.orig_input]}
-      )
-  
+      fromState: [
+        "input": "output",
+        "orig_input": "orig_input"
+      ],
+    )
 }
 
 workflow test_wf2 {
@@ -85,8 +86,10 @@ workflow test_wf2 {
 
     test_ch = input_ch
     | workflow_test2.run(
-    fromState: {id, state ->
-        [ input: state.output, orig_input: state.orig_input]}
+      fromState: [
+        "input": "output",
+        "orig_input": "orig_input"
+      ],
     )
 
   

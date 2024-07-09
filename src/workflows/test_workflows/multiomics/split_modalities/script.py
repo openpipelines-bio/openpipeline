@@ -50,7 +50,7 @@ for i, row in enumerate(data):
     assert row[0] in input_mu.mod.keys(), f"Expected {row[0]} to be a mod in {par['orig_input']}."
 
 # Check if extracted modalities are equal to the original modalities
-assert_annotation_objects_equal(rna_mod.mod["rna"], mod_mu.mod["rna"])
-assert_annotation_objects_equal(prot_mod.mod["prot"], mod_mu.mod["prot"])
+assert_annotation_objects_equal(rna_mod.mod["rna"], input_mu.mod["rna"])
+assert_annotation_objects_equal(prot_mod.mod["prot"], input_mu.mod["prot"])
 
 print("Test successful!", flush=True)
