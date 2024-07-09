@@ -10,6 +10,8 @@
 
 * Removed `--disable_library_compatibility_check` in favour of `--check_library_compatibility` to the `mapping/cellranger_multi` component and the `ingestion/cellranger_multi` workflow (PR #818).
 
+* `lianapy`: bumped version to `1.2.1` (PR #827).
+
 ## NEW FUNCTIONALITY
 
 * `process_samples`, `process_batches` and `rna_multisample` workflows: added functionality to scale the log-normalized 
@@ -17,6 +19,8 @@
   representation with reduced dimensions will be created and stored in addition to the non-scaled data (PR #733).
 
 * `transform/scaling`: add `--input_layer` and `--output_layer` arguments (PR #733).
+
+* CI: added checking of mudata contents for multiple workflows (PR #783).
 
 * Added multiple arguments to the `cellranger_multi` workflow in order to maintain feature parity with the `mapping/cellranger_multi` component (PR #803).
 
@@ -42,6 +46,8 @@
   on workflow level as well (PR #767).
 
 ## MINOR CHANGES
+
+* Bump scvelo to `0.3.2` (PR #828).
 
 * Bump viash to `0.8.6` (PR #815).
 

@@ -101,7 +101,8 @@ def _assert_layer_equal(left, right):
         if issparse(right):
             raise AssertionError("Layers differ:\n[left]: not sparse\n[right]: sparse")
         np.testing.assert_allclose(left, right, 
-                                   err_msg="Layers data differs.", equal_nan=True)
+                                   err_msg="Layers data differs.",
+                                   equal_nan=True)
         
 
 def assert_layers_equal(left: AnnotationObjectOrPathLike,
@@ -109,19 +110,31 @@ def assert_layers_equal(left: AnnotationObjectOrPathLike,
     left, right = _read_if_needed(left), _read_if_needed(right)
     _assert_same_annotation_object_class(left, right)
     if left.raw is not None:
-       _assert_layer_equal(left.raw, right.raw)
+        try:
+            _assert_layer_equal(left.raw, right.raw)
+        except AssertionError as e:
+            e.add_note(".raw is different")
+            raise
     else:
         if right.raw:
             raise AssertionError("Layer .raw differs: "
                                  f"\n[left]:{left.raw}\n[right]:{right}")
     if left.X is not None:
-        _assert_layer_equal(left.X, right.X)
+        try:
+            _assert_layer_equal(left.X, right.X)
+        except AssertionError as e:
+            e.add_note("X is different.")
+            raise
     if left.layers:
         assert right.layers and (left.layers.keys() == right.layers.keys()), \
         "Avaiable layers differ:" \
         f"\n[left]:{left.layers}\n[right]{right.layers}"
         for layer_name, layer in left.layers.items():
-            _assert_layer_equal(layer, right.layers[layer_name])
+            try:
+                _assert_layer_equal(layer, right.layers[layer_name])
+            except AssertionError as e:
+                e.add_note(f"Layer {layer_name} is different")
+                raise
     if isinstance(left, MuData):
         assert_mudata_modality_keys_equal(left, right)
         for mod_name, modality in left.mod.items(): 
@@ -154,12 +167,19 @@ def assert_multidimensional_annotation_equal(annotation_attr: Literal["obsm", "v
     left_keys, right_keys = left_dict.keys(), right_dict.keys()
     assert left_keys == right_keys, f"Keys of {annotation_attr} differ:\n[left]:{left_keys}\n[right]:{right_keys}"
     for left_key, left_value in left_dict.items():
-        _assert_multidimensional_value_equal(left_value, right_dict[left_key], sort=sort)
+        try:
+            _assert_multidimensional_value_equal(left_value, right_dict[left_key], sort=sort)
+        except AssertionError as e:
+            e.add_note(f"Failing key: {left_key}")
+            raise
     if isinstance(left, MuData):
         assert_mudata_modality_keys_equal(left, right)
         for mod_name, modality in left.mod.items(): 
-            assert_multidimensional_annotation_equal(annotation_attr ,modality, right[mod_name], sort=sort)
-    
+            try:
+                assert_multidimensional_annotation_equal(annotation_attr ,modality, right[mod_name], sort=sort)
+            except AssertionError as e:
+                e.add_note(f"Failing modality: {mod_name}")
+                raise
 
 def assert_annotation_objects_equal(left: AnnotationObjectOrPathLike,
                                     right: AnnotationObjectOrPathLike,
@@ -170,7 +190,11 @@ def assert_annotation_objects_equal(left: AnnotationObjectOrPathLike,
     assert_shape_equal(left, right)
     assert_annotation_frame_equal("obs", left, right, sort=sort)
     assert_annotation_frame_equal("var", left, right, sort=sort)
-    assert_multidimensional_annotation_equal("varm", left, right, sort=sort)
-    assert_multidimensional_annotation_equal("obsm", left, right, sort=sort)
+    for slot in ("varm", "obsm"):
+        try:
+            assert_multidimensional_annotation_equal(slot, left, right, sort=sort)
+        except AssertionError as e:
+            e.add_note(f"Failing multidimensional slot: {slot}")
+            raise
     if check_data:
         assert_layers_equal(left, right)
