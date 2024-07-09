@@ -84,7 +84,6 @@ workflow run_wf {
         },
         toState: ["input": "output"]
     )
-      | niceView()
 
       | annotation.run(
       // Padding and tokenization of gene count values.
