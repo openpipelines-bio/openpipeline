@@ -2909,6 +2909,18 @@ meta = [
     "description" : "A pipeline to split a multimodal mudata files into several unimodal mudata files.",
     "test_resources" : [
       {
+        "type" : "nextflow_script",
+        "path" : "test.nf",
+        "is_executable" : true,
+        "parent" : "file:/home/runner/work/openpipeline/openpipeline/src/workflows/multiomics/split_modalities/",
+        "entrypoint" : "test_wf"
+      },
+      {
+        "type" : "file",
+        "path" : "resources_test/pbmc_1k_protein_v3/pbmc_1k_protein_v3_filtered_feature_bc_matrix.h5mu",
+        "parent" : "file:///home/runner/work/openpipeline/openpipeline/"
+      },
+      {
         "type" : "file",
         "path" : "src/base/openpipelinetestutils",
         "dest" : "openpipelinetestutils"
@@ -2938,7 +2950,7 @@ meta = [
           "functionalityNamespace" : "dataflow",
           "output" : "",
           "platform" : "",
-          "git_commit" : "fde7fa98bdb682b827663e1914d2c83ebed62868",
+          "git_commit" : "bcab988622ba50727f9121423feaaa67eb2fbe81",
           "executable" : "/nextflow/dataflow/split_modalities/main.nf"
         },
         "writtenPath" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/dataflow/split_modalities"
@@ -3005,7 +3017,7 @@ meta = [
     "platform" : "nextflow",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/workflows/multiomics/split_modalities",
     "viash_version" : "0.8.6",
-    "git_commit" : "fde7fa98bdb682b827663e1914d2c83ebed62868",
+    "git_commit" : "bcab988622ba50727f9121423feaaa67eb2fbe81",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))
