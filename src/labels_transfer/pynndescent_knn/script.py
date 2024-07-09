@@ -1,5 +1,7 @@
 import mudata as mu
 import numpy as np
+from scipy.sparse import issparse
+import sys
 from pynndescent import PyNNDescentTransformer
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.pipeline import make_pipeline
@@ -20,8 +22,13 @@ par = {
     "weights": "uniform",
     "n_neighbors": 15
 }
+meta ={
+    "resources_dir": "src/labels_transfer/utils"
+}
 ## VIASH END
 
+sys.path.append(meta["resources_dir"])
+from helper_2 import check_arguments, get_reference_features, get_query_features, check_sparsity
 
 def setup_logger():
     import logging
@@ -46,38 +53,21 @@ q_adata = q_mdata.mod[par["modality"]]
 r_mdata = mu.read_h5mu(par["reference"])
 r_adata = r_mdata.mod[par["modality"]]
 
+# check arguments
+logger.info("Checking arguments")
+par = check_arguments(par)
+
 # Generating training and inference data
-## train data
-if par["reference_obsm_features"]:
-    logger.info(f"Using reference .obsm {par["reference_obsm_features"]} for training")
-    train_X = r_adata.obsm[par["reference_obsm_features"]]
-else:
-    logger.info("Using reference .X as features for training")
-    train_X = r_adata.X
+logger.info("Generating training and inference data")
+train_X = get_reference_features(r_adata, par, logger)
+inference_X = get_query_features(q_adata, par, logger)
 
-## inference data
-if par["input_obsm_features"]:
-    logger.info(f"Using query .obsm {par["input_obsm_features"]} for inference")
-    inference_X = q_adata.obsm[par["input_obsm_features"]]
-else:
-    logger.info("Using query .X as features for inference")
-    inference_X = q_adata.X
-
-# Ensure output obs predictions and uncertainties are same length as obs targets
-if par["output_obs_predictions"]:
-    assert len(par["output_obs_predictions"]) == len(par["reference_obs_targets"]), "output_obs_predictions must be same length as reference_obs_targets"
-    output_obs_predictions = par["output_obs_predictions"]
-else:
-    output_obs_predictions = [x + "_pred" for x in par["reference_obs_targets"]]
-
-if par["output_obs_probability"]:   
-    assert len(par["output_obs_probability"]) == len(par["reference_obs_targets"]), "output_obs_probability must be same length as reference_obs_targets"
-    output_obs_uncertainties = par["output_obs_probability"]
-else:
-    output_obs_uncertainties = [x + "_probability" for x in par["reference_obs_targets"]]
-
+# pynndescent does not support sparse matrices
+train_X = check_sparsity(train_X, logger)
+inference_X = check_sparsity(inference_X, logger)
+        
 # For each target, train a classifier and predict labels
-for obs_tar, obs_pred, obs_proba in zip(par["reference_obs_targets"], output_obs_predictions, output_obs_uncertainties):
+for obs_tar, obs_pred, obs_proba in zip(par["reference_obs_targets"],  par["output_obs_predictions"], par["output_obs_probability"]):
     logger.info(f"Predicting labels for {obs_tar}")
     train_Y = r_adata.obs[obs_tar].to_numpy()
 
