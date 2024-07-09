@@ -355,5 +355,5 @@ info:
   output: "/home/runner/work/openpipeline/openpipeline/target/docker/scgpt/embedding"
   executable: "/home/runner/work/openpipeline/openpipeline/target/docker/scgpt/embedding/embedding"
   viash_version: "0.8.6"
-  git_commit: "9a1b1be84162fdeb7945ae40c2129acf2d92bad9"
+  git_commit: "fc5d27fb35c3f200d8610f687e48f21382fdcad3"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"
