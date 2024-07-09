@@ -26,6 +26,8 @@ platforms:
   - type: docker
     image: python:3.12-slim
     setup:
+      - type: python
+        __merge__: [/src/base/requirements/anndata_mudata.yaml, .]
       - type: docker
         copy: ["openpipelinetestutils /opt/openpipelinetestutils"]
       - type: apt
@@ -33,7 +35,4 @@ platforms:
           - procps
       - type: python
         packages: /opt/openpipelinetestutils
-      - type: python
-        pypi:
-          - mudata
   - type: nextflow
