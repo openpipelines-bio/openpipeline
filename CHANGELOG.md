@@ -35,6 +35,8 @@
 * `transform/clr` component: Added the option to set the `axis` along which to apply CLR. Possible to override
   on workflow level as well (PR #767).
 
+* `annotete/scanvi` component: Added a component to annotate cells using scANVI (PR #833).
+
 ## MINOR CHANGES
 
 * Bump viash to `0.8.6` (PR #815).
