@@ -14,6 +14,10 @@
 
 * `concat`: this component was deprecated and has now been removed, use `concatenate_h5mu` instead (PR #796).
 
+* The `workflows` folder in the root of the project no longer contains symbolic links to the build workflows in `target`.
+  Using any workflows that was previously linked in this directory will now result in an error which will indicate
+  the location of the workflow to be used instead (PR #796).
+
 ## NEW FUNCTIONALITY
 
 * CI: added checking of mudata contents for multiple workflows (PR #783).
