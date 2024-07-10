@@ -16,8 +16,6 @@
 
 * Several components: update anndata to `0.10.8` and mudata to `0.2.3` (PR #645). 
 
-* `cluster/leiden`: Bump python to 3.11 and leidenalg to 0.10.0 (PR #645).
-
 ## NEW FUNCTIONALITY
 
 * CI: added checking of mudata contents for multiple workflows (PR #783).
@@ -46,6 +44,10 @@
   on workflow level as well (PR #767).
 
 ## MINOR CHANGES
+
+* `cellbender_remove_backgroun_v0_2`: update base image to `nvcr.io/nvidia/pytorch:23.12-py3` (PR #646).
+
+* `from_bdrhap_to_h5mu`: update base image to `rocker/r2u:22.04` (PR #646)
 
 * Bump scvelo to `0.3.2` (PR #828).
 
