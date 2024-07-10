@@ -12,6 +12,8 @@
 
 * `lianapy`: bumped version to `1.2.1` (PR #827).
 
+* `XGBoost`: bump version to `2.0.3` (PR #646).
+
 ## NEW FUNCTIONALITY
 
 * CI: added checking of mudata contents for multiple workflows (PR #783).
