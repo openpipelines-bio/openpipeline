@@ -116,14 +116,14 @@ argument_groups:
         description: |
           Whether to apply domain-specific batch normalization for generating embeddings. When set to True, 'obs_batch_labels' must be set as well.
 
-  resources:
-    - type: python_script
-      path: script.py
-  test_resources:
-    - type: python_script
-      path: test.py
-    - path: /resources_test/scgpt/source
-    - path: /resources_test/scgpt/test_resources/Kim2020_Lung_subset.h5mu
+resources:
+  - type: python_script
+    path: script.py
+test_resources:
+  - type: python_script
+    path: test.py
+  - path: /resources_test/scgpt/source
+  - path: /resources_test/scgpt/test_resources/Kim2020_Lung_subset.h5mu
 
 engines:
   - type: docker

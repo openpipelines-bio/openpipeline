@@ -89,7 +89,7 @@ engines:
       - type: python
         __merge__: [ /src/base/requirements/viashpy.yaml, .]
 runners:
-  - type: native
+  - type: executable
   - type: nextflow
     directives:
       label: [ highmem, highcpu ]
