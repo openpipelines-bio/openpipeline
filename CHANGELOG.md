@@ -14,7 +14,7 @@
 
 * `XGBoost`: bump version to `2.0.3` (PR #646).
 
-* Several components: update anndata to `0.10.4` and mudata to `0.2.3` (PR #645). 
+* Several components: update anndata to `0.10.8` and mudata to `0.2.3` (PR #645). 
 
 * `cluster/leiden`: Bump python to 3.11 and leidenalg to 0.10.0 (PR #645).
 
