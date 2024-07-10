@@ -37,6 +37,14 @@ arguments:
     type: string
     description: Output layer to use. By default, use X.
     required: false
+  - name: "--axis"
+    type: integer
+    description: |
+      Axis across which CLR is performed. If set to 0, CLR is performed across observations (cells).
+      If set to 1, CLR is performed across features (genes).
+    default: 0
+    required: false
+    choices: [0, 1]
 resources:
   - type: python_script
     path: script.py
