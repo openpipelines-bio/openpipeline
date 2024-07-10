@@ -46,7 +46,7 @@ jobs:
     - name: Check if all config can be parsed if there is no unicode support
       run: |
         LANG=C viash ns list > /dev/null
-        JAVA_TOOL_OPTIONS=-Dfile.encoding=ascii viash ns build --parallel --setup meh > /dev/null
+        JAVA_TOOL_OPTIONS=-Dfile.encoding=ascii viash ns build --parallel > /dev/null
 
     - uses: viash-io/viash-actions/project/sync-and-cache-s3@v6
       id: cache
