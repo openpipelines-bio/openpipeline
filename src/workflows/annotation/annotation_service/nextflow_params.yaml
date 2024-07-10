@@ -1,15 +1,32 @@
-# Inputs
+# Outputs
+# output: "$id.$key.output.h5mu"
+
+# Query input
 id: # please fill in - example: "foo"
 input: # please fill in - example: ["input.h5mu"]
-annotation_methods: # please fill in - example: ["harmony_knn"]
-reference_url: # please fill in - example: "https://zenodo.org/records/7587774/files/TS_Lung_filtered.h5ad"
+
+# Query input specifications
 # query_rna_layer: "foo"
+# var_query_gene_names: "foo"
+# obs_query_batch: "foo"
+
+# Reference input
+reference: # please fill in - example: "https://zenodo.org/records/7587774/files/TS_Lung_filtered.h5ad"
+
+# Reference input specifications
 obs_reference_batch: # please fill in - example: "foo"
 # reference_rna_layer: "foo"
 obs_reference_targets: # please fill in - example: ["ann_level_1", "ann_level_2", "ann_level_3", "ann_level_4", "ann_level_5", "ann_finest_level"]
 
-# Outputs
-# output: "$id.$key.output.h5mu"
+# Annotation methods
+annotation_methods: # please fill in - example: ["harmony_knn"]
+
+# scGPT model input
+model: # please fill in - example: "best_model.pt"
+model_config: # please fill in - example: "args.json"
+model_vocab: # please fill in - example: "vocab.json"
+finetuned_checkpoints_key: "model_state_dict"
+label_mapper_key: "id_to_class"
 
 # Pre-processing options: RNA filtering
 # rna_min_counts: 200
@@ -40,6 +57,15 @@ theta: [2]
 # KNN label transfer options
 weights: "uniform"
 n_neighbors: 15
+
+# scGPT annotation options
+pad_token: "<pad>"
+pad_value: -2
+n_hvg: 1200
+dsbn: true
+batch_size: 64
+n_input_bins: 51
+# seed: 123
 
 # Nextflow input-output arguments
 publish_dir: # please fill in - example: "output/"

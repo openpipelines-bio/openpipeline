@@ -23,10 +23,31 @@
 
     
     
-    "inputs" : {
-    "title": "Inputs",
+    "outputs" : {
+    "title": "Outputs",
     "type": "object",
-    "description": "No description",
+    "description": "The output file to write the annotated dataset to.",
+    "properties": {
+    
+        
+                "output": {
+                "type":
+                "string",
+                "description": "Type: `file`, required, default: `$id.$key.output.h5mu`, example: `output.h5mu`. The output file",
+                "help_text": "Type: `file`, required, default: `$id.$key.output.h5mu`, example: `output.h5mu`. The output file.\n"
+            ,
+                "default": "$id.$key.output.h5mu"
+            }
+    
+
+}
+},
+    
+    
+    "query input" : {
+    "title": "Query input",
+    "type": "object",
+    "description": "The input query dataset(s) to be annotated",
     "properties": {
     
         
@@ -49,29 +70,17 @@
             }
     
 
-        ,
-                "annotation_methods": {
-                "type":
-                "string",
-                "description": "Type: List of `string`, required, example: `harmony_knn`, multiple_sep: `\":\"`, choices: ``harmony_knn``. ",
-                "help_text": "Type: List of `string`, required, example: `harmony_knn`, multiple_sep: `\":\"`, choices: ``harmony_knn``. ",
-                "enum": ["harmony_knn"]
-            
-            
-            }
+}
+},
     
-
-        ,
-                "reference_url": {
-                "type":
-                "string",
-                "description": "Type: `file`, required, example: `https://zenodo.org/records/7587774/files/TS_Lung_filtered.h5ad`. The reference dataset to be used as a reference mapper and to train annotation algorithms on",
-                "help_text": "Type: `file`, required, example: `https://zenodo.org/records/7587774/files/TS_Lung_filtered.h5ad`. The reference dataset to be used as a reference mapper and to train annotation algorithms on.\n"
-            
-            }
     
-
-        ,
+    "query input specifications" : {
+    "title": "Query input specifications",
+    "type": "object",
+    "description": "Specifications of vars, obs and layers of the input query dataset(s) h5mu files",
+    "properties": {
+    
+        
                 "query_rna_layer": {
                 "type":
                 "string",
@@ -82,6 +91,56 @@
     
 
         ,
+                "var_query_gene_names": {
+                "type":
+                "string",
+                "description": "Type: `string`. The name of the adata var column containing gene names; when no gene_name_layer is provided, the var index will be used",
+                "help_text": "Type: `string`. The name of the adata var column containing gene names; when no gene_name_layer is provided, the var index will be used.\n"
+            
+            }
+    
+
+        ,
+                "obs_query_batch": {
+                "type":
+                "string",
+                "description": "Type: `string`. The name of the adata obs column containing the batch labels",
+                "help_text": "Type: `string`. The name of the adata obs column containing the batch labels.\n"
+            
+            }
+    
+
+}
+},
+    
+    
+    "reference input" : {
+    "title": "Reference input",
+    "type": "object",
+    "description": "The reference dataset to be used as a reference mapper and to train annotation algorithms on.",
+    "properties": {
+    
+        
+                "reference": {
+                "type":
+                "string",
+                "description": "Type: `file`, required, example: `https://zenodo.org/records/7587774/files/TS_Lung_filtered.h5ad`. The reference dataset to be used as a reference mapper and to train annotation algorithms on",
+                "help_text": "Type: `file`, required, example: `https://zenodo.org/records/7587774/files/TS_Lung_filtered.h5ad`. The reference dataset to be used as a reference mapper and to train annotation algorithms on.\n"
+            
+            }
+    
+
+}
+},
+    
+    
+    "reference input specifications" : {
+    "title": "Reference input specifications",
+    "type": "object",
+    "description": "Specifications of vars, obs and layers of the reference dataset h5 file",
+    "properties": {
+    
+        
                 "obs_reference_batch": {
                 "type":
                 "string",
@@ -115,20 +174,83 @@
 },
     
     
-    "outputs" : {
-    "title": "Outputs",
+    "annotation methods" : {
+    "title": "Annotation methods",
     "type": "object",
-    "description": "No description",
+    "description": "The available annotation methods to annotate the query dataset(s) with.",
     "properties": {
     
         
-                "output": {
+                "annotation_methods": {
                 "type":
                 "string",
-                "description": "Type: `file`, required, default: `$id.$key.output.h5mu`, example: `output.h5mu`. The output file",
-                "help_text": "Type: `file`, required, default: `$id.$key.output.h5mu`, example: `output.h5mu`. The output file.\n"
+                "description": "Type: List of `string`, required, example: `harmony_knn`, multiple_sep: `\":\"`, choices: ``harmony_knn`, `scgpt_annotation``. ",
+                "help_text": "Type: List of `string`, required, example: `harmony_knn`, multiple_sep: `\":\"`, choices: ``harmony_knn`, `scgpt_annotation``. ",
+                "enum": ["harmony_knn", "scgpt_annotation"]
+            
+            
+            }
+    
+
+}
+},
+    
+    
+    "scgpt model input" : {
+    "title": "scGPT model input",
+    "type": "object",
+    "description": "scGPT model input, required for scGPT annotation methods",
+    "properties": {
+    
+        
+                "model": {
+                "type":
+                "string",
+                "description": "Type: `file`, required, example: `best_model.pt`. The model file containing checkpoints and cell type label mapper",
+                "help_text": "Type: `file`, required, example: `best_model.pt`. The model file containing checkpoints and cell type label mapper.\n"
+            
+            }
+    
+
+        ,
+                "model_config": {
+                "type":
+                "string",
+                "description": "Type: `file`, required, example: `args.json`. The model configuration file",
+                "help_text": "Type: `file`, required, example: `args.json`. The model configuration file. \n"
+            
+            }
+    
+
+        ,
+                "model_vocab": {
+                "type":
+                "string",
+                "description": "Type: `file`, required, example: `vocab.json`. Model vocabulary file directory",
+                "help_text": "Type: `file`, required, example: `vocab.json`. Model vocabulary file directory.\n"
+            
+            }
+    
+
+        ,
+                "finetuned_checkpoints_key": {
+                "type":
+                "string",
+                "description": "Type: `string`, default: `model_state_dict`. Key in the model  file containing the pretrained checkpoints",
+                "help_text": "Type: `string`, default: `model_state_dict`. Key in the model  file containing the pretrained checkpoints.\n"
             ,
-                "default": "$id.$key.output.h5mu"
+                "default": "model_state_dict"
+            }
+    
+
+        ,
+                "label_mapper_key": {
+                "type":
+                "string",
+                "description": "Type: `string`, default: `id_to_class`. Key in the model file containing the cell type class to label mapper dictionary",
+                "help_text": "Type: `string`, default: `id_to_class`. Key in the model file containing the cell type class to label mapper dictionary.\n"
+            ,
+                "default": "id_to_class"
             }
     
 
@@ -139,7 +261,7 @@
     "pre-processing options: rna filtering" : {
     "title": "Pre-processing options: RNA filtering",
     "type": "object",
-    "description": "No description",
+    "description": "Pre-processing options for filtering RNA data",
     "properties": {
     
         
@@ -219,7 +341,7 @@
     "pre-processing options: highly variable features detection" : {
     "title": "Pre-processing options: Highly variable features detection",
     "type": "object",
-    "description": "No description",
+    "description": "Pre-processing options for detecting highly variable features",
     "properties": {
     
         
@@ -251,7 +373,7 @@
     "pre-processing options: mitochondrial gene detection" : {
     "title": "Pre-processing options: Mitochondrial Gene Detection",
     "type": "object",
-    "description": "No description",
+    "description": "Pre-processing options for detecting mitochondrial genes",
     "properties": {
     
         
@@ -302,7 +424,7 @@
     "pre-processing options: qc metrics calculation options" : {
     "title": "Pre-processing options: QC metrics calculation options",
     "type": "object",
-    "description": "No description",
+    "description": "Pre-processing options for calculating QC metrics",
     "properties": {
     
         
@@ -333,15 +455,15 @@
     "harmony integration options" : {
     "title": "Harmony integration options",
     "type": "object",
-    "description": "No description",
+    "description": "Specifications for harmony integration. Only relevant for annotation method \u0027harmony_knn\u0027.",
     "properties": {
     
         
                 "theta": {
                 "type":
                 "string",
-                "description": "Type: List of `double`, default: `2`, multiple_sep: `\":\"`. Diversity clustering penalty parameter",
-                "help_text": "Type: List of `double`, default: `2`, multiple_sep: `\":\"`. Diversity clustering penalty parameter. Specify for each variable in group.by.vars. \ntheta=0 does not encourage any diversity. Larger values of theta\nresult in more diverse clusters.\"\n"
+                "description": "Type: List of `double`, default: `2`, example: `0:1:2`, multiple_sep: `\":\"`. Diversity clustering penalty parameter",
+                "help_text": "Type: List of `double`, default: `2`, example: `0:1:2`, multiple_sep: `\":\"`. Diversity clustering penalty parameter. Specify for each variable in group.by.vars. \ntheta=0 does not encourage any diversity. Larger values of theta\nresult in more diverse clusters.\"\n"
             ,
                 "default": "2"
             }
@@ -354,7 +476,7 @@
     "knn label transfer options" : {
     "title": "KNN label transfer options",
     "type": "object",
-    "description": "No description",
+    "description": "Specifications for KNN label transfer. Relevant for annotation methods that perform KNN label transfer (harmony_knn, scanvi_knn, bbknn, scvi_knn, scgpt_integration_knn)",
     "properties": {
     
         
@@ -378,6 +500,92 @@
                 "help_text": "Type: `integer`, default: `15`. The number of neighbors to use in k-neighbor graph structure used for fast approximate nearest neighbor search with PyNNDescent. \nLarger values will result in more accurate search results at the cost of computation time.\n"
             ,
                 "default": "15"
+            }
+    
+
+}
+},
+    
+    
+    "scgpt annotation options" : {
+    "title": "scGPT annotation options",
+    "type": "object",
+    "description": "Specifications for scGPT annotation. Only relevant for annotation method \u0027scgpt_annotation\u0027 or \u0027scgpt_integration_knn\u0027.",
+    "properties": {
+    
+        
+                "pad_token": {
+                "type":
+                "string",
+                "description": "Type: `string`, default: `\u003cpad\u003e`. Token used for padding",
+                "help_text": "Type: `string`, default: `\u003cpad\u003e`. Token used for padding.\n"
+            ,
+                "default": "<pad>"
+            }
+    
+
+        ,
+                "pad_value": {
+                "type":
+                "integer",
+                "description": "Type: `integer`, default: `-2`. The value of the padding token",
+                "help_text": "Type: `integer`, default: `-2`. The value of the padding token.\n"
+            ,
+                "default": "-2"
+            }
+    
+
+        ,
+                "n_hvg": {
+                "type":
+                "integer",
+                "description": "Type: `integer`, default: `1200`. Number of highly variable genes to subset for",
+                "help_text": "Type: `integer`, default: `1200`. Number of highly variable genes to subset for.\n"
+            ,
+                "default": "1200"
+            }
+    
+
+        ,
+                "dsbn": {
+                "type":
+                "boolean",
+                "description": "Type: `boolean`, default: `true`. Apply domain-specific batch normalization\n",
+                "help_text": "Type: `boolean`, default: `true`. Apply domain-specific batch normalization\n"
+            ,
+                "default": "True"
+            }
+    
+
+        ,
+                "batch_size": {
+                "type":
+                "integer",
+                "description": "Type: `integer`, default: `64`. The batch size to be used for embedding inference",
+                "help_text": "Type: `integer`, default: `64`. The batch size to be used for embedding inference.\n"
+            ,
+                "default": "64"
+            }
+    
+
+        ,
+                "n_input_bins": {
+                "type":
+                "integer",
+                "description": "Type: `integer`, default: `51`. The number of bins to discretize the data into; When no value is provided, data won\u0027t be binned",
+                "help_text": "Type: `integer`, default: `51`. The number of bins to discretize the data into; When no value is provided, data won\u0027t be binned.\n"
+            ,
+                "default": "51"
+            }
+    
+
+        ,
+                "seed": {
+                "type":
+                "integer",
+                "description": "Type: `integer`. Seed for random number generation used for binning",
+                "help_text": "Type: `integer`. Seed for random number generation used for binning. If not set, no seed is used.\n"
+            
             }
     
 
@@ -409,11 +617,31 @@
 "allOf": [
 
     {
-    "$ref": "#/definitions/inputs"
+    "$ref": "#/definitions/outputs"
     },
 
     {
-    "$ref": "#/definitions/outputs"
+    "$ref": "#/definitions/query input"
+    },
+
+    {
+    "$ref": "#/definitions/query input specifications"
+    },
+
+    {
+    "$ref": "#/definitions/reference input"
+    },
+
+    {
+    "$ref": "#/definitions/reference input specifications"
+    },
+
+    {
+    "$ref": "#/definitions/annotation methods"
+    },
+
+    {
+    "$ref": "#/definitions/scgpt model input"
     },
 
     {
@@ -438,6 +666,10 @@
 
     {
     "$ref": "#/definitions/knn label transfer options"
+    },
+
+    {
+    "$ref": "#/definitions/scgpt annotation options"
     },
 
     {

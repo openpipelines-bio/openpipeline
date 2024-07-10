@@ -2812,7 +2812,8 @@ meta = [
     ],
     "argument_groups" : [
       {
-        "name" : "Inputs",
+        "name" : "Query input",
+        "description" : "The input query dataset(s) to be annotated",
         "arguments" : [
           {
             "type" : "string",
@@ -2841,25 +2842,52 @@ meta = [
             "multiple" : true,
             "multiple_sep" : ";",
             "dest" : "par"
-          },
+          }
+        ]
+      },
+      {
+        "name" : "Query input specifications",
+        "description" : "Specifications of vars, obs and layers of the input query dataset(s) h5mu files",
+        "arguments" : [
           {
             "type" : "string",
-            "name" : "--annotation_methods",
-            "example" : [
-              "harmony_knn"
-            ],
-            "required" : true,
-            "choices" : [
-              "harmony_knn"
-            ],
+            "name" : "--query_rna_layer",
+            "description" : "Input layer for the gene expression modality of the query datasets. If not specified, .X is used.",
+            "required" : false,
             "direction" : "input",
-            "multiple" : true,
-            "multiple_sep" : ";",
+            "multiple" : false,
+            "multiple_sep" : ":",
             "dest" : "par"
           },
           {
+            "type" : "string",
+            "name" : "--var_query_gene_names",
+            "description" : "The name of the adata var column containing gene names; when no gene_name_layer is provided, the var index will be used.\n",
+            "required" : false,
+            "direction" : "input",
+            "multiple" : false,
+            "multiple_sep" : ":",
+            "dest" : "par"
+          },
+          {
+            "type" : "string",
+            "name" : "--obs_query_batch",
+            "description" : "The name of the adata obs column containing the batch labels.\n",
+            "required" : false,
+            "direction" : "input",
+            "multiple" : false,
+            "multiple_sep" : ":",
+            "dest" : "par"
+          }
+        ]
+      },
+      {
+        "name" : "Reference input",
+        "description" : "The reference dataset to be used as a reference mapper and to train annotation algorithms on.",
+        "arguments" : [
+          {
             "type" : "file",
-            "name" : "--reference_url",
+            "name" : "--reference",
             "description" : "The reference dataset to be used as a reference mapper and to train annotation algorithms on.\n",
             "example" : [
               "https:/zenodo.org/records/7587774/files/TS_Lung_filtered.h5ad"
@@ -2871,17 +2899,13 @@ meta = [
             "multiple" : false,
             "multiple_sep" : ":",
             "dest" : "par"
-          },
-          {
-            "type" : "string",
-            "name" : "--query_rna_layer",
-            "description" : "Input layer for the gene expression modality of the query datasets. If not specified, .X is used.",
-            "required" : false,
-            "direction" : "input",
-            "multiple" : false,
-            "multiple_sep" : ":",
-            "dest" : "par"
-          },
+          }
+        ]
+      },
+      {
+        "name" : "Reference input specifications",
+        "description" : "Specifications of vars, obs and layers of the reference dataset h5 file",
+        "arguments" : [
           {
             "type" : "string",
             "name" : "--obs_reference_batch",
@@ -2923,7 +2947,107 @@ meta = [
         ]
       },
       {
+        "name" : "Annotation methods",
+        "description" : "The available annotation methods to annotate the query dataset(s) with.",
+        "arguments" : [
+          {
+            "type" : "string",
+            "name" : "--annotation_methods",
+            "example" : [
+              "harmony_knn"
+            ],
+            "required" : true,
+            "choices" : [
+              "harmony_knn",
+              "scgpt_annotation"
+            ],
+            "direction" : "input",
+            "multiple" : true,
+            "multiple_sep" : ";",
+            "dest" : "par"
+          }
+        ]
+      },
+      {
+        "name" : "scGPT model input",
+        "description" : "scGPT model input, required for scGPT annotation methods",
+        "arguments" : [
+          {
+            "type" : "file",
+            "name" : "--model",
+            "description" : "The model file containing checkpoints and cell type label mapper.\n",
+            "example" : [
+              "best_model.pt"
+            ],
+            "must_exist" : true,
+            "create_parent" : true,
+            "required" : true,
+            "direction" : "input",
+            "multiple" : false,
+            "multiple_sep" : ":",
+            "dest" : "par"
+          },
+          {
+            "type" : "file",
+            "name" : "--model_config",
+            "description" : "The model configuration file. \n",
+            "example" : [
+              "args.json"
+            ],
+            "must_exist" : true,
+            "create_parent" : true,
+            "required" : true,
+            "direction" : "input",
+            "multiple" : false,
+            "multiple_sep" : ":",
+            "dest" : "par"
+          },
+          {
+            "type" : "file",
+            "name" : "--model_vocab",
+            "description" : "Model vocabulary file directory.\n",
+            "example" : [
+              "vocab.json"
+            ],
+            "must_exist" : true,
+            "create_parent" : true,
+            "required" : true,
+            "direction" : "input",
+            "multiple" : false,
+            "multiple_sep" : ":",
+            "dest" : "par"
+          },
+          {
+            "type" : "string",
+            "name" : "--finetuned_checkpoints_key",
+            "description" : "Key in the model  file containing the pretrained checkpoints.\n",
+            "default" : [
+              "model_state_dict"
+            ],
+            "required" : false,
+            "direction" : "input",
+            "multiple" : false,
+            "multiple_sep" : ":",
+            "dest" : "par"
+          },
+          {
+            "type" : "string",
+            "name" : "--label_mapper_key",
+            "description" : "Key in the model file containing the cell type class to label mapper dictionary.\n",
+            "default" : [
+              "id_to_class"
+            ],
+            "required" : false,
+            "direction" : "input",
+            "multiple" : false,
+            "multiple_sep" : ":",
+            "dest" : "par"
+          }
+        ]
+      },
+      {
         "name" : "Pre-processing options: RNA filtering",
+        "description" : "Pre-processing options for filtering RNA data",
         "arguments" : [
           {
             "type" : "integer",
@@ -3020,6 +3144,7 @@ meta = [
       },
       {
         "name" : "Pre-processing options: Highly variable features detection",
+        "description" : "Pre-processing options for detecting highly variable features",
         "arguments" : [
           {
             "type" : "string",
@@ -3057,6 +3182,7 @@ meta = [
       },
       {
         "name" : "Pre-processing options: Mitochondrial Gene Detection",
+        "description" : "Pre-processing options for detecting mitochondrial genes",
         "arguments" : [
           {
             "type" : "string",
@@ -3108,6 +3234,7 @@ meta = [
       },
       {
         "name" : "Pre-processing options: QC metrics calculation options",
+        "description" : "Pre-processing options for calculating QC metrics",
         "arguments" : [
           {
             "type" : "string",
@@ -3142,11 +3269,17 @@ meta = [
       },
       {
         "name" : "Harmony integration options",
+        "description" : "Specifications for harmony integration. Only relevant for annotation method 'harmony_knn'.",
         "arguments" : [
           {
             "type" : "double",
             "name" : "--theta",
             "description" : "Diversity clustering penalty parameter. Specify for each variable in group.by.vars. \ntheta=0 does not encourage any diversity. Larger values of theta\nresult in more diverse clusters.\\"\n",
+            "example" : [
+              0.0,
+              1.0,
+              2.0
+            ],
             "default" : [
               2.0
             ],
@@ -3160,6 +3293,7 @@ meta = [
       },
       {
         "name" : "KNN label transfer options",
+        "description" : "Specifications for KNN label transfer. Relevant for annotation methods that perform KNN label transfer (harmony_knn, scanvi_knn, bbknn, scvi_knn, scgpt_integration_knn)",
         "arguments" : [
           {
             "type" : "string",
@@ -3194,7 +3328,103 @@ meta = [
         ]
       },
       {
+        "name" : "scGPT annotation options",
+        "description" : "Specifications for scGPT annotation. Only relevant for annotation method 'scgpt_annotation' or 'scgpt_integration_knn'.",
+        "arguments" : [
+          {
+            "type" : "string",
+            "name" : "--pad_token",
+            "description" : "Token used for padding.\n",
+            "default" : [
+              "<pad>"
+            ],
+            "required" : false,
+            "direction" : "input",
+            "multiple" : false,
+            "multiple_sep" : ":",
+            "dest" : "par"
+          },
+          {
+            "type" : "integer",
+            "name" : "--pad_value",
+            "description" : "The value of the padding token.\n",
+            "default" : [
+              -2
+            ],
+            "required" : false,
+            "direction" : "input",
+            "multiple" : false,
+            "multiple_sep" : ":",
+            "dest" : "par"
+          },
+          {
+            "type" : "integer",
+            "name" : "--n_hvg",
+            "description" : "Number of highly variable genes to subset for.\n",
+            "default" : [
+              1200
+            ],
+            "required" : false,
+            "direction" : "input",
+            "multiple" : false,
+            "multiple_sep" : ":",
+            "dest" : "par"
+          },
+          {
+            "type" : "boolean",
+            "name" : "--dsbn",
+            "description" : "Apply domain-specific batch normalization\n",
+            "default" : [
+              true
+            ],
+            "required" : false,
+            "direction" : "input",
+            "multiple" : false,
+            "multiple_sep" : ":",
+            "dest" : "par"
+          },
+          {
+            "type" : "integer",
+            "name" : "--batch_size",
+            "description" : "The batch size to be used for embedding inference.\n",
+            "default" : [
+              64
+            ],
+            "required" : false,
+            "direction" : "input",
+            "multiple" : false,
+            "multiple_sep" : ":",
+            "dest" : "par"
+          },
+          {
+            "type" : "integer",
+            "name" : "--n_input_bins",
+            "description" : "The number of bins to discretize the data into; When no value is provided, data won't be binned.\n",
+            "default" : [
+              51
+            ],
+            "required" : false,
+            "min" : 1,
+            "direction" : "input",
+            "multiple" : false,
+            "multiple_sep" : ":",
+            "dest" : "par"
+          },
+          {
+            "type" : "integer",
+            "name" : "--seed",
+            "description" : "Seed for random number generation used for binning. If not set, no seed is used.\n",
+            "required" : false,
+            "direction" : "input",
+            "multiple" : false,
+            "multiple_sep" : ":",
+            "dest" : "par"
+          }
+        ]
+      },
+      {
         "name" : "Outputs",
+        "description" : "The output file to write the annotated dataset to.",
         "arguments" : [
           {
             "type" : "file",
@@ -3252,14 +3482,14 @@ meta = [
         "foundConfigPath" : "/home/runner/work/openpipeline/openpipeline/src/convert/from_h5ad_to_h5mu/config.vsh.yaml",
         "configInfo" : {
           "functionalityName" : "from_h5ad_to_h5mu",
-          "git_tag" : "0.2.0-1627-g1ec7a8e3ba",
+          "git_tag" : "0.2.0-1628-g11491228a7",
           "git_remote" : "https://github.com/openpipelines-bio/openpipeline",
           "viash_version" : "0.8.6",
           "config" : "/home/runner/work/openpipeline/openpipeline/src/convert/from_h5ad_to_h5mu/config.vsh.yaml",
           "functionalityNamespace" : "convert",
           "output" : "",
           "platform" : "",
-          "git_commit" : "1ec7a8e3ba0e5bbb1c135705a84838da6e9d3939",
+          "git_commit" : "11491228a70528998cd3825fb51c9bd26d79a978",
           "executable" : "/nextflow/convert/from_h5ad_to_h5mu/main.nf"
         },
         "writtenPath" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/convert/from_h5ad_to_h5mu"
@@ -3273,14 +3503,14 @@ meta = [
         "foundConfigPath" : "/home/runner/work/openpipeline/openpipeline/src/dataflow/split_samples/config.vsh.yaml",
         "configInfo" : {
           "functionalityName" : "split_samples",
-          "git_tag" : "0.2.0-1627-g1ec7a8e3ba",
+          "git_tag" : "0.2.0-1628-g11491228a7",
           "git_remote" : "https://github.com/openpipelines-bio/openpipeline",
           "viash_version" : "0.8.6",
           "config" : "/home/runner/work/openpipeline/openpipeline/src/dataflow/split_samples/config.vsh.yaml",
           "functionalityNamespace" : "dataflow",
           "output" : "",
           "platform" : "",
-          "git_commit" : "1ec7a8e3ba0e5bbb1c135705a84838da6e9d3939",
+          "git_commit" : "11491228a70528998cd3825fb51c9bd26d79a978",
           "executable" : "/nextflow/dataflow/split_samples/main.nf"
         },
         "writtenPath" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/dataflow/split_samples"
@@ -3295,14 +3525,14 @@ meta = [
         "foundConfigPath" : "/home/runner/work/openpipeline/openpipeline/src/workflows/multiomics/process_samples/config.vsh.yaml",
         "configInfo" : {
           "functionalityName" : "process_samples",
-          "git_tag" : "0.2.0-1627-g1ec7a8e3ba",
+          "git_tag" : "0.2.0-1628-g11491228a7",
           "git_remote" : "https://github.com/openpipelines-bio/openpipeline",
           "viash_version" : "0.8.6",
           "config" : "/home/runner/work/openpipeline/openpipeline/src/workflows/multiomics/process_samples/config.vsh.yaml",
           "functionalityNamespace" : "workflows/multiomics",
           "output" : "",
           "platform" : "",
-          "git_commit" : "1ec7a8e3ba0e5bbb1c135705a84838da6e9d3939",
+          "git_commit" : "11491228a70528998cd3825fb51c9bd26d79a978",
           "executable" : "/nextflow/workflows/multiomics/process_samples/main.nf"
         },
         "writtenPath" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/workflows/multiomics/process_samples"
@@ -3317,17 +3547,39 @@ meta = [
         "foundConfigPath" : "/home/runner/work/openpipeline/openpipeline/src/workflows/annotation/harmony_knn/config.vsh.yaml",
         "configInfo" : {
           "functionalityName" : "harmony_knn",
-          "git_tag" : "0.2.0-1627-g1ec7a8e3ba",
+          "git_tag" : "0.2.0-1628-g11491228a7",
           "git_remote" : "https://github.com/openpipelines-bio/openpipeline",
           "viash_version" : "0.8.6",
           "config" : "/home/runner/work/openpipeline/openpipeline/src/workflows/annotation/harmony_knn/config.vsh.yaml",
           "functionalityNamespace" : "workflows/annotation",
           "output" : "",
           "platform" : "",
-          "git_commit" : "1ec7a8e3ba0e5bbb1c135705a84838da6e9d3939",
+          "git_commit" : "11491228a70528998cd3825fb51c9bd26d79a978",
           "executable" : "/nextflow/workflows/annotation/harmony_knn/main.nf"
         },
         "writtenPath" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/workflows/annotation/harmony_knn"
+      },
+      {
+        "name" : "workflows/annotation/scgpt_annotation",
+        "alias" : "scgpt_annotation_workflow",
+        "repository" : {
+          "type" : "local",
+          "localPath" : ""
+        },
+        "foundConfigPath" : "/home/runner/work/openpipeline/openpipeline/src/workflows/annotation/scgpt_annotation/config.vsh.yaml",
+        "configInfo" : {
+          "functionalityName" : "scgpt_annotation",
+          "git_tag" : "0.2.0-1628-g11491228a7",
+          "git_remote" : "https://github.com/openpipelines-bio/openpipeline",
+          "viash_version" : "0.8.6",
+          "config" : "/home/runner/work/openpipeline/openpipeline/src/workflows/annotation/scgpt_annotation/config.vsh.yaml",
+          "functionalityNamespace" : "workflows/annotation",
+          "output" : "",
+          "platform" : "",
+          "git_commit" : "11491228a70528998cd3825fb51c9bd26d79a978",
+          "executable" : "/nextflow/workflows/annotation/scgpt_annotation/main.nf"
+        },
+        "writtenPath" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/workflows/annotation/scgpt_annotation"
       }
     ],
     "set_wd_to_resources_dir" : false
@@ -3391,9 +3643,9 @@ meta = [
     "platform" : "nextflow",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/workflows/annotation/annotation_service",
     "viash_version" : "0.8.6",
-    "git_commit" : "1ec7a8e3ba0e5bbb1c135705a84838da6e9d3939",
+    "git_commit" : "11491228a70528998cd3825fb51c9bd26d79a978",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline",
-    "git_tag" : "0.2.0-1627-g1ec7a8e3ba"
+    "git_tag" : "0.2.0-1628-g11491228a7"
   }
 }'''))
 ]
@@ -3406,6 +3658,8 @@ include { process_samples as process_samples_workflow_viashalias } from "${meta.
 process_samples_workflow = process_samples_workflow_viashalias.run(key: "process_samples_workflow")
 include { harmony_knn as harmony_knn_workflow_viashalias } from "${meta.resources_dir}/../../../../nextflow/workflows/annotation/harmony_knn/main.nf"
 harmony_knn_workflow = harmony_knn_workflow_viashalias.run(key: "harmony_knn_workflow")
+include { scgpt_annotation as scgpt_annotation_workflow_viashalias } from "${meta.resources_dir}/../../../../nextflow/workflows/annotation/scgpt_annotation/main.nf"
+scgpt_annotation_workflow = scgpt_annotation_workflow_viashalias.run(key: "scgpt_annotation_workflow")
 
 // inner workflow
 // user-provided Nextflow code
@@ -3418,7 +3672,7 @@ workflow process_reference {
 
     // Create reference specific output for this channel
     | map {id, state ->
-      def new_state = state + ["reference": state.output]
+      def new_state = state + ["reference_processed": state.output]
       [id, new_state]
       }
 
@@ -3426,7 +3680,7 @@ workflow process_reference {
     | from_h5ad_to_h5mu.run(
         fromState: { id, state ->
         [
-          "input": state.reference_url,
+          "input": state.reference,
           "modality": "rna",
         ]
       },
@@ -3482,8 +3736,7 @@ workflow process_reference {
           "pca_overwrite": "true"
           ]
       },
-      toState: {id, output, state -> ["reference": output.output]},
-      auto: [ publish: true]
+      toState: {id, output, state -> ["reference_processed": output.output]},
       )
 
   emit:
@@ -3498,7 +3751,7 @@ workflow process_query {
     query_ch = input_ch
     // Create query specific output for this channel
     | map {id, state ->
-      def new_state = state + ["query": state.output]
+      def new_state = state + ["query_processed": state.output]
       [id, new_state]
       }
     // consider individual input files as events for process_samples pipeline
@@ -3540,8 +3793,7 @@ workflow process_query {
           "pca_overwrite": "true"
           ]
       },
-      toState: {id, output, state -> ["query": output.output]}, 
-      auto: [ publish: true]
+      toState: {id, output, state -> ["query_processed": output.output]}, 
       )
     
   emit:
@@ -3596,8 +3848,8 @@ workflow run_wf {
           def output_obs_probabilities = state.obs_reference_targets.collect{it + "_proba_knn_harmony"}
           [ 
             "id": id,
-            "input_query_dataset": state.query,
-            "input_reference_dataset": state.reference,
+            "input_query_dataset": state.query_processed,
+            "input_reference_dataset": state.reference_processed,
             "modality": "rna",
             "embedding": "X_pca",
             "obs_reference_targets": state.obs_reference_targets,
@@ -3609,12 +3861,40 @@ workflow run_wf {
             "obs_covariates": ["sample_id"],
             "weights": state.weights,
             "n_neighbors": state.n_neighbors,
-            "output": state.workflow_output
+            "output": state.output
           ]
         },
-        toState: { id, output, state -> ["output": output.output, "_meta": state._meta]},
-        auto: [ publish: true ]
+        toState: [ "query_processed": "output" ]
         )
+      | scgpt_annotation_workflow.run(
+        runIf: { id, state -> state.annotation_methods.contains("scgpt_annotation") },
+        fromState: { id, state ->
+          [ 
+            "id": id,
+            "input": state.query_processed,
+            "modality": "rna",
+            "input_layer": state.query_rna_layer,
+            "var_gene_names": state.var_query_gene_names,
+            "obs_batch_label": state.obs_query_batch,
+            "model": state.model,
+            "model_config": state.model_config,
+            "model_vocab": state.model_vocab,
+            "finetuned_checkpoints_key": state.finetuned_checkpoints_key,
+            "label_mapper_key": state.label_mapper_key,
+            "obs_predicted_cell_class": "scgpt_predicted_cell_class",
+            "obs_predicted_cell_label": "scgpt_predicted_cell_label",
+            "pad_token": state.pad_token,
+            "pad_value": state.pad_value,
+            "n_hvg": state.n_hvg,
+            "dsbn": state.dsbn,
+            "batch_size": state.batch_size,
+            "n_input_bins": state.n_input_bins,
+            "seed": state.seed
+          ]
+        },
+        toState: [ "query_processed": "output" ]
+        )
+      | setState(["output": "query_processed", "_meta": "_meta"])
 
   emit:
     output_ch

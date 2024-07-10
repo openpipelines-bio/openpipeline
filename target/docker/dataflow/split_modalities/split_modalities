@@ -431,9 +431,9 @@ RUN pip install --upgrade pip && \
 
 LABEL org.opencontainers.image.authors="Dries Schaumont, Robrecht Cannoodt"
 LABEL org.opencontainers.image.description="Companion container for running component dataflow split_modalities"
-LABEL org.opencontainers.image.created="2024-06-19T11:44:23Z"
+LABEL org.opencontainers.image.created="2024-07-10T16:06:17Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="1ec7a8e3ba0e5bbb1c135705a84838da6e9d3939"
+LABEL org.opencontainers.image.revision="11491228a70528998cd3825fb51c9bd26d79a978"
 LABEL org.opencontainers.image.version="annotation-workflow_build"
 
 VIASHDOCKER
@@ -1007,7 +1007,7 @@ def main() -> None:
     logger.info("Reading input file '%s'", par['input'])
     input_file = Path(par["input"].strip())
     sample = md.read_h5mu(input_file)
-
+    
     logger.info('Creating output types CSV.')
     modalities = list(sample.mod.keys())
 
@@ -1028,7 +1028,6 @@ def main() -> None:
         new_sample.write_h5mu(output_dir / names[mod_name], compression=par["output_compression"])
         logger.info("Done writing output file.")
     logger.info("Finished")
-
 
 if __name__ == "__main__":
     main()

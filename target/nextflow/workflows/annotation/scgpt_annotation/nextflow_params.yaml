@@ -1,0 +1,39 @@
+# Outputs
+# output: "$id.$key.output.h5mu"
+# output_compression: "gzip"
+obs_predicted_cell_class: "scgpt_predicted_cell_class"
+obs_predicted_cell_label: "scgpt_predicted_cell_label"
+
+# Query input
+id: # please fill in - example: "foo"
+input: # please fill in - example: "input.h5mu"
+modality: "rna"
+# input_layer: "foo"
+# var_gene_names: "foo"
+# obs_batch_label: "foo"
+
+# Model input
+model: # please fill in - example: "best_model.pt"
+model_config: # please fill in - example: "args.json"
+model_vocab: # please fill in - example: "vocab.json"
+finetuned_checkpoints_key: "model_state_dict"
+label_mapper_key: "id_to_class"
+
+# Padding arguments
+pad_token: "<pad>"
+pad_value: -2
+
+# HVG subset arguments
+n_hvg: 1200
+
+# Embedding arguments
+dsbn: true
+batch_size: 64
+
+# Binning arguments
+n_input_bins: 51
+# seed: 123
+
+# Nextflow input-output arguments
+publish_dir: # please fill in - example: "output/"
+# param_list: "my_params.yaml"

@@ -11,6 +11,7 @@
 // 
 // Component authors:
 //  * Dorien Roosen (maintainer, author)
+//  * Vladimir Shitov (author)
 
 ////////////////////////////
 // VDSL3 helper functions //
@@ -2808,19 +2809,67 @@ meta = [
             }
           ]
         }
+      },
+      {
+        "name" : "Vladimir Shitov",
+        "roles" : [
+          "author"
+        ],
+        "info" : {
+          "role" : "Contributor",
+          "links" : {
+            "email" : "vladimir.shitov@helmholtz-muenchen.de",
+            "github" : "vladimirshitov",
+            "orcid" : "0000-0002-1960-8812",
+            "linkedin" : "vladimir-shitov-9a659513b"
+          },
+          "organizations" : [
+            {
+              "name" : "Helmholtz Munich",
+              "href" : "https://www.helmholtz-munich.de",
+              "role" : "PhD Candidate"
+            }
+          ]
+        }
       }
     ],
     "argument_groups" : [
       {
-        "name" : "Input files",
+        "name" : "Input dataset (query) arguments",
         "arguments" : [
           {
             "type" : "file",
             "name" : "--input",
             "description" : "The query data to transfer the labels to. Should be a .h5mu file.",
-            "example" : [
-              "input.h5mu"
-            ],
+            "info" : {
+              "label" : "Query",
+              "file_format" : {
+                "type" : "h5mu",
+                "mod" : {
+                  "rna" : {
+                    "description" : "Modality in AnnData format containing RNA data.",
+                    "required" : true,
+                    "slots" : {
+                      "X" : {
+                        "type" : "double",
+                        "name" : "features",
+                        "required" : false,
+                        "description" : "The expression data to use for the classifier's inference, if `--input_obsm_features` argument is not provided.\n"
+                      },
+                      "obsm" : [
+                        {
+                          "type" : "double",
+                          "name" : "features",
+                          "example" : "X_scvi",
+                          "required" : false,
+                          "description" : "The embedding to use for the classifier's inference. Override using the `--input_obsm_features` argument. If not provided, the `.X` slot will be used instead.\nMake sure that embedding was obtained in the same way as the reference embedding (e.g. by the same model or preprocessing).\n"
+                        }
+                      ]
+                    }
+                  }
+                }
+              }
+            },
             "must_exist" : true,
             "create_parent" : true,
             "required" : true,
@@ -2845,11 +2894,11 @@ meta = [
           {
             "type" : "string",
             "name" : "--input_obsm_features",
-            "description" : "The `.obsm` key of the embedding to use for the classifier's inference.\nMake sure that embedding was obtained in the same way as the reference embedding (e.g. by the same model, preprocessing and/or integration).\n",
+            "description" : "The `.obsm` key of the embedding to use for the classifier's inference. If not provided, the `.X` slot will be used instead.\nMake sure that embedding was obtained in the same way as the reference embedding (e.g. by the same model or preprocessing).\n",
             "example" : [
               "X_scvi"
             ],
-            "required" : true,
+            "required" : false,
             "direction" : "input",
             "multiple" : false,
             "multiple_sep" : ":",
@@ -2863,13 +2912,59 @@ meta = [
           {
             "type" : "file",
             "name" : "--reference",
-            "description" : "Should be an h5mu file.",
+            "description" : "The reference data to train classifiers on.",
+            "info" : {
+              "label" : "Reference",
+              "file_format" : {
+                "type" : "h5mu",
+                "mod" : {
+                  "rna" : {
+                    "description" : "Modality in AnnData format containing RNA data.",
+                    "required" : true,
+                    "slots" : {
+                      "X" : {
+                        "type" : "double",
+                        "name" : "features",
+                        "required" : false,
+                        "description" : "The expression data to use for the classifier's training, if `--input_obsm_features` argument is not provided.\n"
+                      },
+                      "obsm" : [
+                        {
+                          "type" : "double",
+                          "name" : "features",
+                          "example" : "X_scvi",
+                          "description" : "The embedding to use for the classifier's training. Override using the `--reference_obsm_features` argument.\nMake sure that embedding was obtained in the same way as the query embedding (e.g. by the same model or preprocessing).\n",
+                          "required" : true
+                        }
+                      ],
+                      "obs" : [
+                        {
+                          "type" : "string",
+                          "name" : "targets",
+                          "multiple" : true,
+                          "example" : [
+                            "ann_level_1",
+                            "ann_level_2",
+                            "ann_level_3",
+                            "ann_level_4",
+                            "ann_level_5",
+                            "ann_finest_level"
+                          ],
+                          "description" : "The target labels to transfer. Override using the `--reference_obs_targets` argument.",
+                          "required" : true
+                        }
+                      ]
+                    }
+                  }
+                }
+              }
+            },
             "example" : [
               "reference.h5mu"
             ],
             "must_exist" : true,
             "create_parent" : true,
-            "required" : true,
+            "required" : false,
             "direction" : "input",
             "multiple" : false,
             "multiple_sep" : ":",
@@ -2878,11 +2973,11 @@ meta = [
           {
             "type" : "string",
             "name" : "--reference_obsm_features",
-            "description" : "The `.obsm` key of the embedding to use for the classifier's training.\nMake sure that embedding was obtained in the same way as the query embedding (e.g. by the same model or preprocessing).\n",
+            "description" : "The `.obsm` key of the embedding to use for the classifier's training. If not provided, the `.X` slot will be used instead.\nMake sure that embedding was obtained in the same way as the query embedding (e.g. by the same model or preprocessing).\n",
             "example" : [
               "X_scvi"
             ],
-            "required" : true,
+            "required" : false,
             "direction" : "input",
             "multiple" : false,
             "multiple_sep" : ":",
@@ -2892,7 +2987,7 @@ meta = [
             "type" : "string",
             "name" : "--reference_obs_targets",
             "description" : "The `.obs` key(s) of the target labels to tranfer.",
-            "example" : [
+            "default" : [
               "ann_level_1",
               "ann_level_2",
               "ann_level_3",
@@ -2900,10 +2995,98 @@ meta = [
               "ann_level_5",
               "ann_finest_level"
             ],
-            "required" : true,
+            "required" : false,
             "direction" : "input",
             "multiple" : true,
             "multiple_sep" : ";",
+            "dest" : "par"
+          }
+        ]
+      },
+      {
+        "name" : "Outputs",
+        "arguments" : [
+          {
+            "type" : "file",
+            "name" : "--output",
+            "description" : "The query data in .h5mu format with predicted labels transfered from the reference.",
+            "info" : {
+              "label" : "Output data",
+              "file_format" : {
+                "type" : "h5mu",
+                "mod" : {
+                  "rna" : {
+                    "description" : "Modality in AnnData format containing RNA data.",
+                    "required" : true,
+                    "obs" : [
+                      {
+                        "type" : "string",
+                        "name" : "predictions",
+                        "description" : "The predicted labels. Override using the `--output_obs_predictions` argument.",
+                        "required" : true
+                      },
+                      {
+                        "type" : "double",
+                        "name" : "uncertainty",
+                        "description" : "The uncertainty of the predicted labels. Override using the `--output_obs_uncertainty` argument.",
+                        "required" : false
+                      }
+                    ],
+                    "obsm" : [
+                      {
+                        "type" : "double",
+                        "name" : "X_scvi",
+                        "description" : "The embedding used for the classifier's inference. Could have any name, specified by `input_obsm_features` argument.\\"",
+                        "required" : false
+                      }
+                    ]
+                  }
+                }
+              }
+            },
+            "must_exist" : true,
+            "create_parent" : true,
+            "required" : true,
+            "direction" : "output",
+            "multiple" : false,
+            "multiple_sep" : ":",
+            "dest" : "par"
+          },
+          {
+            "type" : "string",
+            "name" : "--output_obs_predictions",
+            "description" : "In which `.obs` slots to store the predicted information.\nIf provided, must have the same length as `--reference_obs_targets`.\nIf empty, will default to the `reference_obs_targets` combined with the `\\"_pred\\"` suffix.\n",
+            "required" : false,
+            "direction" : "input",
+            "multiple" : true,
+            "multiple_sep" : ";",
+            "dest" : "par"
+          },
+          {
+            "type" : "string",
+            "name" : "--output_obs_probability",
+            "description" : "In which `.obs` slots to store the uncertainty of the predictions.\nIf provided, must have the same length as `--reference_obs_targets`.\nIf empty, will default to the `reference_obs_targets` combined with the `\\"_probability\\"` suffix.\n",
+            "required" : false,
+            "direction" : "input",
+            "multiple" : true,
+            "multiple_sep" : ";",
+            "dest" : "par"
+          },
+          {
+            "type" : "string",
+            "name" : "--output_compression",
+            "description" : "The compression format to be used on the output h5mu object.\n",
+            "example" : [
+              "gzip"
+            ],
+            "required" : false,
+            "choices" : [
+              "gzip",
+              "lzf"
+            ],
+            "direction" : "input",
+            "multiple" : false,
+            "multiple_sep" : ":",
             "dest" : "par"
           }
         ]
@@ -2936,73 +3119,7 @@ meta = [
               15
             ],
             "required" : false,
-            "direction" : "input",
-            "multiple" : false,
-            "multiple_sep" : ":",
-            "dest" : "par"
-          }
-        ]
-      },
-      {
-        "name" : "Outputs",
-        "arguments" : [
-          {
-            "type" : "file",
-            "name" : "--output",
-            "description" : "The query data in .h5mu format with predicted labels transfered from the reference.",
-            "must_exist" : true,
-            "create_parent" : true,
-            "required" : true,
-            "direction" : "output",
-            "multiple" : false,
-            "multiple_sep" : ":",
-            "dest" : "par"
-          },
-          {
-            "type" : "string",
-            "name" : "--output_obs_predictions",
-            "description" : "In which `.obs` slots to store the predicted information.\nIf provided, must have the same length as `--reference_obs_targets`.\nIf empty, will default to the `reference_obs_targets` combined with the `\\"_pred\\"` suffix.\n",
-            "required" : false,
-            "direction" : "input",
-            "multiple" : true,
-            "multiple_sep" : ";",
-            "dest" : "par"
-          },
-          {
-            "type" : "string",
-            "name" : "--output_obs_probability",
-            "description" : "In which `.obs` slots to store the probability of the predictions.\nIf provided, must have the same length as `--reference_obs_targets`.\nIf empty, will default to the `reference_obs_targets` combined with the `\\"_probability\\"` suffix.\n",
-            "required" : false,
-            "direction" : "input",
-            "multiple" : true,
-            "multiple_sep" : ";",
-            "dest" : "par"
-          },
-          {
-            "type" : "string",
-            "name" : "--output_uns_parameters",
-            "description" : "The `.uns` key to store additional information about the parameters used for the label transfer.\n",
-            "default" : [
-              "labels_transfer"
-            ],
-            "required" : false,
-            "direction" : "input",
-            "multiple" : false,
-            "multiple_sep" : ":",
-            "dest" : "par"
-          },
-          {
-            "type" : "string",
-            "name" : "--output_compression",
-            "description" : "The compression format to be used on the output h5mu object.\n",
-            "example" : [
-              "gzip"
-            ],
-            "required" : false,
-            "choices" : [
-              "gzip",
-              "lzf"
-            ],
+            "min" : 5,
             "direction" : "input",
             "multiple" : false,
             "multiple_sep" : ":",
@@ -3020,12 +3137,33 @@ meta = [
       },
       {
         "type" : "file",
+        "path" : "../utils/helper_2.py",
+        "parent" : "file:/home/runner/work/openpipeline/openpipeline/src/labels_transfer/pynndescent_knn/"
+      },
+      {
+        "type" : "file",
         "path" : "./src/workflows/utils/labels.config",
         "dest" : "nextflow_labels.config"
       }
     ],
     "description" : "This component generates a neighborhood graph based using the PyNNDescentTransformer, followed by classification using a k-nearest neighborhood vote.\n",
     "test_resources" : [
+      {
+        "type" : "python_script",
+        "path" : "test.py",
+        "is_executable" : true,
+        "parent" : "file:/home/runner/work/openpipeline/openpipeline/src/labels_transfer/pynndescent_knn/"
+      },
+      {
+        "type" : "file",
+        "path" : "resources_test/annotation_test_data/",
+        "parent" : "file:///home/runner/work/openpipeline/openpipeline/"
+      },
+      {
+        "type" : "file",
+        "path" : "resources_test/pbmc_1k_protein_v3/",
+        "parent" : "file:///home/runner/work/openpipeline/openpipeline/"
+      },
       {
         "type" : "file",
         "path" : "src/base/openpipelinetestutils",
@@ -3073,20 +3211,35 @@ meta = [
             "numpy<2.0.0"
           ],
           "upgrade" : true
+        },
+        {
+          "type" : "python",
+          "user" : false,
+          "packages" : [
+            "pynndescent~=0.5.10",
+            "numpy<2"
+          ],
+          "upgrade" : true
+        }
+      ],
+      "test_setup" : [
+        {
+          "type" : "python",
+          "user" : false,
+          "packages" : [
+            "viashpy==0.6.0"
+          ],
+          "upgrade" : true
         }
       ]
-    },
-    {
-      "type" : "native",
-      "id" : "native"
     },
     {
       "type" : "nextflow",
       "id" : "nextflow",
       "directives" : {
         "label" : [
-          "singlecpu",
-          "lowmem"
+          "highmem",
+          "highcpu"
         ],
         "tag" : "$id"
       },
@@ -3142,9 +3295,9 @@ meta = [
     "platform" : "nextflow",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/labels_transfer/pynndescent_knn",
     "viash_version" : "0.8.6",
-    "git_commit" : "1ec7a8e3ba0e5bbb1c135705a84838da6e9d3939",
+    "git_commit" : "11491228a70528998cd3825fb51c9bd26d79a978",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline",
-    "git_tag" : "0.2.0-1627-g1ec7a8e3ba"
+    "git_tag" : "0.2.0-1628-g11491228a7"
   }
 }'''))
 ]
@@ -3160,6 +3313,8 @@ tempscript=".viash_script.sh"
 cat > "$tempscript" << VIASHMAIN
 import mudata as mu
 import numpy as np
+from scipy.sparse import issparse
+import sys
 from pynndescent import PyNNDescentTransformer
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.pipeline import make_pipeline
@@ -3173,13 +3328,12 @@ par = {
   'reference': $( if [ ! -z ${VIASH_PAR_REFERENCE+x} ]; then echo "r'${VIASH_PAR_REFERENCE//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'reference_obsm_features': $( if [ ! -z ${VIASH_PAR_REFERENCE_OBSM_FEATURES+x} ]; then echo "r'${VIASH_PAR_REFERENCE_OBSM_FEATURES//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'reference_obs_targets': $( if [ ! -z ${VIASH_PAR_REFERENCE_OBS_TARGETS+x} ]; then echo "r'${VIASH_PAR_REFERENCE_OBS_TARGETS//\\'/\\'\\"\\'\\"r\\'}'.split(';')"; else echo None; fi ),
-  'weights': $( if [ ! -z ${VIASH_PAR_WEIGHTS+x} ]; then echo "r'${VIASH_PAR_WEIGHTS//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
-  'n_neighbors': $( if [ ! -z ${VIASH_PAR_N_NEIGHBORS+x} ]; then echo "int(r'${VIASH_PAR_N_NEIGHBORS//\\'/\\'\\"\\'\\"r\\'}')"; else echo None; fi ),
   'output': $( if [ ! -z ${VIASH_PAR_OUTPUT+x} ]; then echo "r'${VIASH_PAR_OUTPUT//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'output_obs_predictions': $( if [ ! -z ${VIASH_PAR_OUTPUT_OBS_PREDICTIONS+x} ]; then echo "r'${VIASH_PAR_OUTPUT_OBS_PREDICTIONS//\\'/\\'\\"\\'\\"r\\'}'.split(';')"; else echo None; fi ),
   'output_obs_probability': $( if [ ! -z ${VIASH_PAR_OUTPUT_OBS_PROBABILITY+x} ]; then echo "r'${VIASH_PAR_OUTPUT_OBS_PROBABILITY//\\'/\\'\\"\\'\\"r\\'}'.split(';')"; else echo None; fi ),
-  'output_uns_parameters': $( if [ ! -z ${VIASH_PAR_OUTPUT_UNS_PARAMETERS+x} ]; then echo "r'${VIASH_PAR_OUTPUT_UNS_PARAMETERS//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
-  'output_compression': $( if [ ! -z ${VIASH_PAR_OUTPUT_COMPRESSION+x} ]; then echo "r'${VIASH_PAR_OUTPUT_COMPRESSION//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi )
+  'output_compression': $( if [ ! -z ${VIASH_PAR_OUTPUT_COMPRESSION+x} ]; then echo "r'${VIASH_PAR_OUTPUT_COMPRESSION//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
+  'weights': $( if [ ! -z ${VIASH_PAR_WEIGHTS+x} ]; then echo "r'${VIASH_PAR_WEIGHTS//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
+  'n_neighbors': $( if [ ! -z ${VIASH_PAR_N_NEIGHBORS+x} ]; then echo "int(r'${VIASH_PAR_N_NEIGHBORS//\\'/\\'\\"\\'\\"r\\'}')"; else echo None; fi )
 }
 meta = {
   'functionality_name': $( if [ ! -z ${VIASH_META_FUNCTIONALITY_NAME+x} ]; then echo "r'${VIASH_META_FUNCTIONALITY_NAME//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
@@ -3201,6 +3355,8 @@ dep = {
 
 ## VIASH END
 
+sys.path.append(meta["resources_dir"])
+from helper_2 import check_arguments, get_reference_features, get_query_features, check_sparsity
 
 def setup_logger():
     import logging
@@ -3217,6 +3373,7 @@ def setup_logger():
 # END TEMPORARY WORKAROUND setup_logger
 logger = setup_logger()
 
+# Reading in data
 logger.info(f"Reading in query dataset {par['input']} and reference datasets {par['reference']}")
 q_mdata = mu.read_h5mu(par["input"])
 q_adata = q_mdata.mod[par["modality"]]
@@ -3224,23 +3381,21 @@ q_adata = q_mdata.mod[par["modality"]]
 r_mdata = mu.read_h5mu(par["reference"])
 r_adata = r_mdata.mod[par["modality"]]
 
-train_X = r_adata.obsm[par["reference_obsm_features"]]
-inference_X = q_adata.obsm[par["input_obsm_features"]]
+# check arguments
+logger.info("Checking arguments")
+par = check_arguments(par)
 
-# Ensure output obs predictions and uncertainties are same length as obs targets
-if par["output_obs_predictions"]:
-    assert len(par["output_obs_predictions"]) == len(par["reference_obs_targets"]), "output_obs_predictions must be same length as reference_obs_targets"
-    output_obs_predictions = par["output_obs_predictions"]
-else:
-    output_obs_predictions = [x + "_pred" for x in par["reference_obs_targets"]]
+# Generating training and inference data
+logger.info("Generating training and inference data")
+train_X = get_reference_features(r_adata, par, logger)
+inference_X = get_query_features(q_adata, par, logger)
 
-if par["output_obs_probability"]:   
-    assert len(par["output_obs_probability"]) == len(par["reference_obs_targets"]), "output_obs_probability must be same length as reference_obs_targets"
-else:
-    output_obs_uncertainties = [x + "_probability" for x in par["reference_obs_targets"]]
-
+# pynndescent does not support sparse matrices
+train_X = check_sparsity(train_X, logger)
+inference_X = check_sparsity(inference_X, logger)
+        
 # For each target, train a classifier and predict labels
-for obs_tar, obs_pred, obs_proba in zip(par["reference_obs_targets"], output_obs_predictions, output_obs_uncertainties):
+for obs_tar, obs_pred, obs_proba in zip(par["reference_obs_targets"],  par["output_obs_predictions"], par["output_obs_probability"]):
     logger.info(f"Predicting labels for {obs_tar}")
     train_Y = r_adata.obs[obs_tar].to_numpy()
 
@@ -3622,8 +3777,8 @@ meta["defaults"] = [
     "tag" : "annotation-workflow_build"
   },
   "label" : [
-    "singlecpu",
-    "lowmem"
+    "highmem",
+    "highcpu"
   ],
   "tag" : "$id"
 }'''),
