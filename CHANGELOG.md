@@ -12,6 +12,8 @@
 
 * `lianapy`: bumped version to `1.2.1` (PR #827).
 
+* `concat`: this component was deprecated and has now been removed, use `concatenate_h5mu` instead (PR #796).
+
 ## NEW FUNCTIONALITY
 
 * CI: added checking of mudata contents for multiple workflows (PR #783).
