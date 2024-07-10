@@ -44,6 +44,10 @@ functionality:
 platforms:
   - type: docker
     image: ghcr.io/data-intuitive/bcl2fastq:2.20
+    setup:
+      - type: apt
+        packages:
+          - procps
   - type: nextflow
     directives:
       label: [ midmem, midcpu ]

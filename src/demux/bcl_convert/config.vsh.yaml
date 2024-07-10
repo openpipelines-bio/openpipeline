@@ -41,6 +41,23 @@ functionality:
       type: boolean
       default: false
       description: Should bcl-convert be run in test mode (using --first-tile-only)?
+    - name: "--strict_mode"
+      type: boolean
+      default: false
+      description: Abort if any files are missing.
+    - name: "--tiles"
+      type: string
+      required: false
+      description: Process only a subset of tiles by a regular expression.
+    - name: "--exclude_tiles"
+      type: string
+      required: false
+      description: "Exclude set of tiles by a regular expression"
+    - name: --no_lane_splitting
+      type: boolean
+      required: false
+      description: Wheter to avoid splitting FASTQ file by lane. 
+  
   resources:
     - type: bash_script
       path: script.sh
@@ -50,7 +67,11 @@ functionality:
     - path: /resources_test/cellranger_tiny_bcl/bcl2
 platforms:
   - type: docker
-    image: ghcr.io/data-intuitive/bclconvert:3.10
+    image: ghcr.io/data-intuitive/bclconvert:4.2
+    setup:
+      - type: apt
+        packages:
+          - procps
   - type: nextflow
     directives:
       label: [ midmem, midcpu ]

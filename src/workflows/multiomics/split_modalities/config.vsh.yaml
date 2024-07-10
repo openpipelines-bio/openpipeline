@@ -45,5 +45,10 @@ functionality:
       entrypoint: run_wf
     - type: file
       path: /src/workflows/utils/
+  test_resources:
+    - type: nextflow_script
+      path: test.nf
+      entrypoint: test_wf
+    - path: /resources_test/pbmc_1k_protein_v3/pbmc_1k_protein_v3_filtered_feature_bc_matrix.h5mu
 platforms:
   - type: nextflow

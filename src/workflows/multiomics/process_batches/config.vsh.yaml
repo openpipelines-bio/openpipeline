@@ -85,6 +85,13 @@ functionality:
         - name: "--pca_overwrite"
           type: boolean_true
           description: "Allow overwriting slots for PCA output."
+    - name: "CLR options"
+      arguments:
+        - name: "--clr_axis"
+          type: integer
+          description: "Axis to perform the CLR transformation on."
+          default: 0
+          required: false
   dependencies:
     - name: dataflow/merge
     - name: workflows/multiomics/split_modalities

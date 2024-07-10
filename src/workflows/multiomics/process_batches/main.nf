@@ -75,6 +75,7 @@ workflow run_wf {
       ],
       "prot": [
         "layer": "prot_layer",
+        "clr_axis": "clr_axis",
       ]
     ].asImmutable()
 
@@ -190,7 +191,8 @@ workflow run_wf {
             "input": state.input,
             "output": state.workflow_output,
           ]
-        }
+        },
+        auto: [publish: true]
       )
       | setState(["output"])
 

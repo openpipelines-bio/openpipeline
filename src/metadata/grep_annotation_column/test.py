@@ -40,9 +40,12 @@ def generate_h5mu():
     return tmp_mudata
 
 @pytest.fixture(params=[
-    np.float16, np.float32, np.float64, np.uint8, np.uint16, np.uint32, np.int8, np.int16, np.int64
+    np.float32, np.float64, np.uint8, np.uint16, np.uint32, np.int8, np.int16, np.int64
 ])
 def very_sparse_mudata(request):
+    # NOTE: np.float16 is not a supported type in scipy!
+    # See https://github.com/scipy/scipy/issues/20200#issuecomment-1982170609
+    # and https://github.com/scipy/scipy/issues/20200
     rng = np.random.default_rng()
     shape = (10000, 200)
     random_counts = scipy.sparse.random(*shape,
