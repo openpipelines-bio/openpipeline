@@ -51,14 +51,9 @@ arguments:
     description: Output layer to use. By default, use X.
     required: false
 
-  - name: "--target_sum"
-    type: integer
-    description: If None, after normalization, each observation (cell) has a total count equal to the median of total counts for observations (cells) before normalization.
-
   # arguments
   - name: "--target_sum"
     type: integer
-    default: 10000
     description: If None, after normalization, each observation (cell) has a total count equal to the median of total counts for observations (cells) before normalization.
 
   - name: "--exclude_highly_expressed"
