@@ -122,14 +122,6 @@ functionality:
           description: |
             Number of highly variable genes to subset for.
 
-    - name: "Tokenization arguments"
-      arguments:
-        - name: "--max_seq_len"
-          type: integer
-          required: false
-          description: |
-            The maximum sequence length of the tokenized data.
-
     - name: "Embedding arguments"
       arguments:
         - name: --dsbn

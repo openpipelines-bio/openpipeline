@@ -7,7 +7,7 @@ workflow process_reference {
 
     // Create reference specific output for this channel
     | map {id, state ->
-      def new_state = state + ["reference": state.output]
+      def new_state = state + ["reference_processed": state.output]
       [id, new_state]
       }
 
@@ -15,7 +15,7 @@ workflow process_reference {
     | from_h5ad_to_h5mu.run(
         fromState: { id, state ->
         [
-          "input": state.reference_url,
+          "input": state.reference,
           "modality": "rna",
         ]
       },
@@ -71,8 +71,7 @@ workflow process_reference {
           "pca_overwrite": "true"
           ]
       },
-      toState: {id, output, state -> ["reference": output.output]},
-      auto: [ publish: true]
+      toState: {id, output, state -> ["reference_processed": output.output]},
       )
 
   emit:
@@ -87,7 +86,7 @@ workflow process_query {
     query_ch = input_ch
     // Create query specific output for this channel
     | map {id, state ->
-      def new_state = state + ["query": state.output]
+      def new_state = state + ["query_processed": state.output]
       [id, new_state]
       }
     // consider individual input files as events for process_samples pipeline
@@ -129,8 +128,7 @@ workflow process_query {
           "pca_overwrite": "true"
           ]
       },
-      toState: {id, output, state -> ["query": output.output]}, 
-      auto: [ publish: true]
+      toState: {id, output, state -> ["query_processed": output.output]}, 
       )
     
   emit:
@@ -185,8 +183,8 @@ workflow run_wf {
           def output_obs_probabilities = state.obs_reference_targets.collect{it + "_proba_knn_harmony"}
           [ 
             "id": id,
-            "input_query_dataset": state.query,
-            "input_reference_dataset": state.reference,
+            "input_query_dataset": state.query_processed,
+            "input_reference_dataset": state.reference_processed,
             "modality": "rna",
             "embedding": "X_pca",
             "obs_reference_targets": state.obs_reference_targets,
@@ -198,12 +196,41 @@ workflow run_wf {
             "obs_covariates": ["sample_id"],
             "weights": state.weights,
             "n_neighbors": state.n_neighbors,
-            "output": state.workflow_output
+            "output": state.output
           ]
         },
-        toState: { id, output, state -> ["output": output.output, "_meta": state._meta]},
-        auto: [ publish: true ]
+        toState: [ "query_processed": "output" ]
         )
+      | niceView()
+      | scgpt_annotation_workflow.run(
+        runIf: { id, state -> state.annotation_methods.contains("scgpt_annotation") },
+        fromState: { id, state ->
+          [ 
+            "id": id,
+            "input": state.query_processed,
+            "modality": "rna",
+            "input_layer": state.query_rna_layer,
+            "var_gene_names": state.var_query_gene_names,
+            "obs_batch_label": state.obs_query_batch,
+            "model": state.model,
+            "model_config": state.model_config,
+            "model_vocab": state.model_vocab,
+            "finetuned_checkpoints_key": state.finetuned_checkpoints_key,
+            "label_mapper_key": state.label_mapper_key,
+            "obs_predicted_cell_class": "scgpt_predicted_cell_class",
+            "obs_predicted_cell_label": "scgpt_predicted_cell_label",
+            "pad_token": state.pad_token,
+            "pad_value": state.pad_value,
+            "n_hvg": state.n_hvg,
+            "dsbn": state.dsbn,
+            "batch_size": state.batch_size,
+            "n_input_bins": state.n_input_bins,
+            "seed": state.seed
+          ]
+        },
+        toState: [ "query_processed": "output" ]
+        )
+      | setState(["output": "query_processed", "_meta": "_meta"])
 
   emit:
     output_ch

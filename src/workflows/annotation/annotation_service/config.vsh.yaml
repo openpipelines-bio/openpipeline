@@ -5,8 +5,10 @@ functionality:
   authors:
     - __merge__: /src/authors/dorien_roosen.yaml
       roles: [ author, maintainer ]
+
   argument_groups:
-    - name: Inputs
+    - name: Query input
+      description: The input query dataset(s) to be annotated
       arguments:
         - name: "--id"
           required: true
@@ -19,25 +21,41 @@ functionality:
           multiple: true
           description: Input query dataset(s) to be annotated
           example: input.h5mu
-        - name: "--annotation_methods"
-          type: string
-          multiple: true
-          required: true
-          choices: [harmony_knn, scgpt_annotation]
-          example: harmony_knn
-        - name: "--reference_url"
-          type: file
-          required: true
-          description: |
-            The reference dataset to be used as a reference mapper and to train annotation algorithms on.
-          example: https://zenodo.org/records/7587774/files/TS_Lung_filtered.h5ad
+
+    - name: Query input specifications
+      description: Specifications of vars, obs and layers of the input query dataset(s) h5mu files
+      arguments:
         - name: "--query_rna_layer"
           type: string
           description: "Input layer for the gene expression modality of the query datasets. If not specified, .X is used."
           required: false
+        - name: "--var_query_gene_names"
+          type: string
+          required: false ## required for scGPT
+          description: |
+            The name of the adata var column containing gene names; when no gene_name_layer is provided, the var index will be used.
+        - name: "--obs_query_batch"
+          required: false ## required for scGPT
+          type: string
+          description: |
+            The name of the adata obs column containing the batch labels.
+
+    - name: Reference input
+      description: The reference dataset to be used as a reference mapper and to train annotation algorithms on.
+      arguments:
+        - name: "--reference"
+          type: file
+          required: true # false: only for non-scgpt
+          description: |
+            The reference dataset to be used as a reference mapper and to train annotation algorithms on.
+          example: https://zenodo.org/records/7587774/files/TS_Lung_filtered.h5ad
+
+    - name: Reference input specifications
+      description: Specifications of vars, obs and layers of the reference dataset h5 file
+      arguments:
         - name: "--obs_reference_batch"
           type: string
-          required: true
+          required: true # false: only for non-scgpt
           description: |
             The .obs column of the reference dataset containing the batch information.
         - name: "--reference_rna_layer"
@@ -51,7 +69,50 @@ functionality:
           multiple: true
           description: The `.obs` key(s) of the target labels to tranfer.
 
+    - name: Annotation methods
+      description: The available annotation methods to annotate the query dataset(s) with.
+      arguments:
+        - name: "--annotation_methods"
+          type: string
+          multiple: true
+          required: true
+          choices: [harmony_knn, scgpt_annotation]
+          example: harmony_knn
+
+    - name: scGPT model input
+      description: scGPT model input, required for scGPT annotation methods
+      arguments:
+        - name: "--model"
+          type: file
+          required: true # false: only for scgpt
+          example: best_model.pt
+          description: |
+            The model file containing checkpoints and cell type label mapper.
+        - name: "--model_config"
+          type: file
+          required: true # false: only for scgpt
+          example: args.json
+          description: |
+            The model configuration file. 
+        - name: "--model_vocab"
+          type: file
+          required: true # false: only for scgpt
+          example: vocab.json
+          description: |
+            Model vocabulary file directory.
+        - name: "--finetuned_checkpoints_key"
+          type: string
+          default: model_state_dict
+          description: |
+            Key in the model  file containing the pretrained checkpoints.
+        - name: "--label_mapper_key"
+          type: string
+          default: id_to_class
+          description: |
+            Key in the model file containing the cell type class to label mapper dictionary.
+
     - name: "Pre-processing options: RNA filtering"
+      description: Pre-processing options for filtering RNA data
       arguments:
         - name: "--rna_min_counts"
           example: 200
@@ -83,6 +144,7 @@ functionality:
           description: Maximum fraction of UMIs that are mitochondrial.
 
     - name: "Pre-processing options: Highly variable features detection"
+      description: Pre-processing options for detecting highly variable features
       arguments:
         - name: "--highly_variable_features_var_output"
           alternatives: ["--filter_with_hvg_var_output"]
@@ -100,6 +162,7 @@ functionality:
             process avoids the selection of batch-specific genes and acts as a lightweight batch correction method.
     
     - name: "Pre-processing options: Mitochondrial Gene Detection"
+      description: Pre-processing options for detecting mitochondrial genes
       arguments:
         - name: "--var_name_mitochondrial_genes"
           type: string
@@ -130,6 +193,7 @@ functionality:
           default: "^[mM][tT]-"
 
     - name: "Pre-processing options: QC metrics calculation options"
+      description: Pre-processing options for calculating QC metrics
       arguments:
         - name: "--var_qc_metrics"
           description: |
@@ -154,6 +218,7 @@ functionality:
           default: [50, 100, 200, 500]
 
     - name: Harmony integration options
+      description: Specifications for harmony integration. Only relevant for annotation method 'harmony_knn'.
       arguments:
         - name: "--theta"
           type: double
@@ -162,9 +227,11 @@ functionality:
             theta=0 does not encourage any diversity. Larger values of theta
             result in more diverse clusters."
           default: 2
+          example: [0, 1, 2]
           multiple: true
 
     - name: KNN label transfer options
+      description: Specifications for KNN label transfer. Relevant for annotation methods that perform KNN label transfer (harmony_knn, scanvi_knn, bbknn, scvi_knn, scgpt_integration_knn)
       arguments:
         - name: "--weights"
           type: string
@@ -182,8 +249,51 @@ functionality:
             The number of neighbors to use in k-neighbor graph structure used for fast approximate nearest neighbor search with PyNNDescent. 
             Larger values will result in more accurate search results at the cost of computation time.
 
+    - name: scGPT annotation options
+      description: Specifications for scGPT annotation. Only relevant for annotation method 'scgpt_annotation' or 'scgpt_integration_knn'.
+      arguments:
+        - name: "--pad_token"
+          type: string
+          default: "<pad>"
+          required: false
+          description: |
+            Token used for padding.
+        - name: "--pad_value"
+          type: integer
+          default: -2
+          required: false
+          description: |
+            The value of the padding token.
+        - name: "--n_hvg"
+          type: integer
+          default: 1200
+          description: |
+            Number of highly variable genes to subset for.
+        - name: --dsbn
+          type: boolean
+          default: true
+          description: |
+            Apply domain-specific batch normalization
+        - name: "--batch_size"
+          type: integer
+          default: 64
+          description: |
+            The batch size to be used for embedding inference.
+        - name: "--n_input_bins"
+          type: integer
+          default: 51
+          required: False
+          min: 1
+          description: |
+            The number of bins to discretize the data into; When no value is provided, data won't be binned.
+        - name: "--seed"
+          type: integer
+          required: false
+          description: |
+            Seed for random number generation used for binning. If not set, no seed is used.
 
     - name: Outputs
+      description: The output file to write the annotated dataset to.
       arguments:
       - name: "--output"
         type: file
@@ -200,6 +310,8 @@ functionality:
       alias: process_samples_workflow
     - name: workflows/annotation/harmony_knn
       alias: harmony_knn_workflow
+    - name: workflows/annotation/scgpt_annotation
+      alias: scgpt_annotation_workflow
 
   resources:
     - type: nextflow_script
