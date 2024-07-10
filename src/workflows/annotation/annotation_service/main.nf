@@ -201,7 +201,6 @@ workflow run_wf {
         },
         toState: [ "query_processed": "output" ]
         )
-      | niceView()
       | scgpt_annotation_workflow.run(
         runIf: { id, state -> state.annotation_methods.contains("scgpt_annotation") },
         fromState: { id, state ->
