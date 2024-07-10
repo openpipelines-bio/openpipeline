@@ -45,7 +45,7 @@
 
 ## MINOR CHANGES
 
-* `cellbender_remove_backgroun_v0_2`: update base image to `nvcr.io/nvidia/pytorch:23.12-py3` (PR #646).
+* `cellbender_remove_background_v0_2`: update base image to `nvcr.io/nvidia/pytorch:23.12-py3` (PR #646).
 
 * `from_bdrhap_to_h5mu`: update base image to `rocker/r2u:22.04` (PR #646)
 
