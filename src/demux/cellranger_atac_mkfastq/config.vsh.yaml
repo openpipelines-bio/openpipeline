@@ -74,6 +74,7 @@ engines:
         __merge__: [ /src/base/requirements/viashpy.yaml, .]
 
 runners:
+  - type: executable
   - type: nextflow
     directives:
       label: [ highmem, highcpu ]

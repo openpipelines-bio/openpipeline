@@ -42,6 +42,7 @@ engines:
           apt upgrade -y && apt install -y pigz procps && rm -rf /var/lib/apt/lists/*
     __merge__: [ /src/base/requirements/python_test_setup.yaml, . ]
 runners:
+  - type: executable
   - type: nextflow
     directives:
       label: [ midmem, lowcpu ]

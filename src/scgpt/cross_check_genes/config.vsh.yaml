@@ -82,6 +82,7 @@ engines:
       - type: python
     __merge__: [ /src/base/requirements/python_test_setup.yaml, .]
 runners:
+  - type: executable
   - type: nextflow
     directives:
       label: [ lowmem, lowcpu ]
