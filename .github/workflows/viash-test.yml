@@ -74,8 +74,8 @@ jobs:
             "name": .name,
             "namespace_separator": .engines | map(select(.type == "docker"))[0].namespace_separator,
             "namespace": .namespace,
-            "config": .info.config,
-            "dir": .info.config | capture("^(?<dir>.*\/)").dir
+            "config": .build_info.config,
+            "dir": .build_info.config | capture("^(?<dir>.*\/)").dir
           }
         ]' ${{ steps.ns_list_filtered.outputs.output_file }} )" >> $GITHUB_OUTPUT
 
@@ -112,7 +112,7 @@ jobs:
       shell: bash
       if: steps.restore_cache.outputs.cache-hit != 'true'
       run: |
-        readarray -t resources < <(viash config view --format json "${{ matrix.component.config }}" | jq -r -c '(.info.config | capture("^(?<dir>.*\/)").dir) as $dir | .test_resources | map(select(.type == "file")) | map($dir + .path) | unique | .[]')
+        readarray -t resources < <(viash config view --format json "${{ matrix.component.config }}" | jq -r -c '(.build_info.config | capture("^(?<dir>.*\/)").dir) as $dir | .test_resources | map(select(.type == "file")) | map($dir + .path) | unique | .[]')
         for resource in "${resources[@]}"; do
           if [[ $resource == *"resources_test"* ]]; then
             relative_path=${resource#*resources_test/}
@@ -136,7 +136,7 @@ jobs:
       if: steps.restore_cache.outputs.cache-hit == 'true'
       shell: bash
       run: |
-        readarray -t resources < <(viash config view --format json "${{ matrix.component.config }}" | jq -r -c '(.info.config | capture("^(?<dir>.*\/)").dir) as $dir | .test_resources | map(select(.type == "file")) | map($dir + .path) | unique | .[]')
+        readarray -t resources < <(viash config view --format json "${{ matrix.component.config }}" | jq -r -c '(.build_info.config | capture("^(?<dir>.*\/)").dir) as $dir | .test_resources | map(select(.type == "file")) | map($dir + .path) | unique | .[]')
         to_not_remove=()
         for resource in "${resources[@]}"; do
           if [[ $resource == *"resources_test"* ]]; then
