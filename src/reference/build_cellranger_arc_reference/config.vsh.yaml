@@ -72,6 +72,7 @@ engines:
           git clone --branch v2.5.0 https://github.com/shenwei356/seqkit.git && \
           cd seqkit/seqkit/ && go build && cp seqkit /usr/bin/ && cd ../../ && rm -rf seqkit && rm -r /usr/local/go
 runners:
+  - type: executable
   - type: nextflow
     directives:
       label: [ highmem, highcpu ]
