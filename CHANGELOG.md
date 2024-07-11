@@ -53,6 +53,10 @@
 
 * Bump `viash-actions` to `v6` (PR #821).
 
+## DOCUMENTATION
+
+* Update authorship of components (PR #835).
+
 # openpipelines 1.0.0-rc6
 
 ## BUG FIXES
