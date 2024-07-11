@@ -77,7 +77,7 @@ jobs:
             "config": .build_info.config,
             "dir": .build_info.config | capture("^(?<dir>.*\/)").dir
           }
-        ]' ${{ steps.ns_list_filtered.outputs.output_file }} )" >> $GITHUB_OUTPUT
+        ] | unique' ${{ steps.ns_list_filtered.outputs.output_file }} )" >> $GITHUB_OUTPUT
 
   # phase 2
   viash_test:
