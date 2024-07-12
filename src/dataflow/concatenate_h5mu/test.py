@@ -590,12 +590,12 @@ def test_concat_dtypes_per_modality(run_component, write_mudata_to_file, change_
 
 
 @pytest.mark.parametrize("test_value,value_dtype,expected", 
-                         [(1, float, pd.CategoricalDtype(categories=['1.0', '1'])),
-                          (1, np.float64, pd.CategoricalDtype(categories=['1.0', '1'])),
-                          (1, pd.Int16Dtype(), pd.Int64Dtype()),
+                         [(1, float, pd.Int64Dtype()),
+                          (1, np.float64, pd.Int64Dtype()),
+                          (1, pd.Int16Dtype(), pd.Int16Dtype()),
                           (True, bool, pd.BooleanDtype()),
                           (True, pd.BooleanDtype(), pd.BooleanDtype()),
-                          ("foo", str, pd.CategoricalDtype(categories=['bar', 'foo'])),
+                          ("foo", str, pd.CategoricalDtype(categories=['foo'])),
                          ]
                         )
 def test_concat_dtypes_per_modality_multidim(run_component, write_mudata_to_file, 
@@ -620,7 +620,7 @@ def test_concat_dtypes_per_modality_multidim(run_component, write_mudata_to_file
         "--other_axis_mode", "move"
         ])
     concatenated_data = md.read(output_file)
-    # assert concatenated_data['mod2'].var['test_col'].dtype == expected
+    assert concatenated_data['mod1'].varm['test_df']['test_col'].dtype == expected
 
 @pytest.mark.parametrize("test_value_1,test_value_2,expected", [(1, "1", pd.CategoricalDtype(categories=['1.0', '1']))])
 def test_concat_dtypes_global(run_component, write_mudata_to_file, change_column_contents, 
