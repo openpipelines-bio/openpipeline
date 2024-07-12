@@ -162,3 +162,5 @@ platforms:
         __merge__: [/src/base/requirements/scanpy.yaml]
     __merge__: [ /src/base/requirements/python_test_setup.yaml, .]
   - type: nextflow
+    directives:
+      label: [ highmem ]
