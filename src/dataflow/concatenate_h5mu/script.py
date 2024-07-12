@@ -13,8 +13,8 @@ import shutil
 
 ### VIASH START
 par = {
-    "input": ["resources_test/concat_test_data/e18_mouse_brain_fresh_5k_filtered_feature_bc_matrix_subset_unique_obs.h5mu",
-              "resources_test/concat_test_data/human_brain_3k_filtered_feature_bc_matrix_subset_unique_obs.h5mu"],
+    "input": ["query.h5mu",
+              "reference.h5mu"],
     "output": "foo.h5mu",
     "input_id": ["mouse", "human"],
     "other_axis_mode": "move",
@@ -220,7 +220,15 @@ def split_conflicts_modalities(n_processes: int, samples: dict[str, anndata.AnnD
         output_index = getattr(output, matrix_name).index 
         conflicts, concatenated_matrix = concatenate_matrices(n_processes, matrices, output_index)
         if concatenated_matrix.empty:
-           concatenated_matrix.index = output_index 
+           concatenated_matrix.index = output_index
+
+        # Even though we did not touch the varm and obsm matrices that were already present,
+        # the joining of observations might have caused a dtype change in these matrices as well
+        # so these also need to be casted to a writable dtype...
+        for multidim_name, multidim_data in getattr(output, f"{matrix_name}m").items():
+            new_data = cast_to_writeable_dtype(multidim_data) if isinstance(multidim_data, pd.DataFrame) else multidim_data 
+            getattr(output, f"{matrix_name}m")[multidim_name] = new_data
+
         # Write the conflicts to the output
         for conflict_name, conflict_data in conflicts.items():
             getattr(output, f"{matrix_name}m")[conflict_name] = conflict_data
