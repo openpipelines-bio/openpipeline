@@ -3129,7 +3129,7 @@ meta = [
     "platform" : "nextflow",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/metadata/grep_annotation_column",
     "viash_version" : "0.8.6",
-    "git_commit" : "af534d009c1291436884681124b609ff77972dbd",
+    "git_commit" : "f10c8ce96285f2541889c0b722fb5954812270e0",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))
