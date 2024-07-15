@@ -43,11 +43,6 @@ functionality:
           example: 3000
           description: "Force pipeline to use this number of cells, bypassing cell calling algorithm."
 
-        - type: integer
-          name: "--force_cells"
-          example: 3000
-          description: "Force pipeline to use this number of cells, bypassing cell calling algorithm."
-
         - type: string
           name: --chemistry
           default: auto
@@ -58,11 +53,8 @@ functionality:
             - fiveprime: Single Cell 5'
             - SC3Pv1: Single Cell 3' v1 
               NOTE: this mode cannot be auto-detected. It must be set explicitly with this option.
-            - SC3Pv1: Single Cell 3' v1 
-              NOTE: this mode cannot be auto-detected. It must be set explicitly with this option.
             - SC3Pv2: Single Cell 3' v2
             - SC3Pv3: Single Cell 3' v3
-            - SC3Pv4: Single Cell 3' v4
             - SC3Pv4: Single Cell 3' v4
             - SC3Pv3LT: Single Cell 3' v3 LT
             - SC3Pv3HT: Single Cell 3' v3 HT
@@ -72,10 +64,8 @@ functionality:
             - SC-FB: Single Cell Antibody-only 3' v2 or 5'
             - ARC-v1: for analyzing the Gene Expression portion of Multiome data. 
               NOTE: when the pipeline auto-detects ARC-v1 chemistry, an error is triggered.
-            - ARC-v1: for analyzing the Gene Expression portion of Multiome data. 
-              NOTE: when the pipeline auto-detects ARC-v1 chemistry, an error is triggered.
             See https://kb.10xgenomics.com/hc/en-us/articles/115003764132-How-does-Cell-Ranger-auto-detect-chemistry- for more information.
-          choices: [ auto, threeprime, fiveprime, SC3Pv1, SC3Pv2, SC3Pv3, SC3Pv4, SC3Pv3LT, SC3Pv3HT, SC5P-PE, SC5P-R2, SC-FB, ARC-v1 ]
+          choices: [ auto, threeprime, fiveprime, SC3Pv1, SC3Pv2, SC3Pv3, SC3Pv4, SC3Pv3LT, SC3Pv3HT, SC5P-PE-v3, SC5P-PE, SC5P-R2, SC-FB, ARC-v1 ]
 
         - type: boolean
           name: "--secondary_analysis"
@@ -115,6 +105,15 @@ functionality:
           description: |
             Whether to check for barcode compatibility between libraries.
 
+        - name: "--min_crispr_umi"
+          type: integer
+          min: 1
+          description: |
+            Set the minimum number of CRISPR guide RNA UMIs required for protospacer detection.
+            If a lower or higher sensitivity is desired for detection, this value can be customized
+            according to specific experimental needs. Applicable only to datasets that include a
+            CRISPR Guide Capture library.
+
   resources:
     - type: bash_script
       path: script.sh
@@ -126,13 +125,11 @@ functionality:
 platforms:
   - type: docker
     image: ghcr.io/data-intuitive/cellranger:8.0
-    image: ghcr.io/data-intuitive/cellranger:8.0
     setup:
       - type: docker
         run: |
           DEBIAN_FRONTEND=noninteractive apt update && \
           apt upgrade -y && apt install -y procps && rm -rf /var/lib/apt/lists/*
-    __merge__: [ /src/base/requirements/python_test_setup.yaml, .] 
     __merge__: [ /src/base/requirements/python_test_setup.yaml, .] 
   - type: nextflow
     directives:

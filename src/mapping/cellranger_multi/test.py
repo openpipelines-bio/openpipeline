@@ -64,16 +64,6 @@ input3_R2_beam = resources_dir / "10x_5k_beam/raw/beamt_human_A0201_B0702_pbmc_v
 vdj_reference_beam = resources_dir / "10x_5k_beam/raw/5k_BEAM-T_Human_A0201_B0702_PBMC_5pv2_Multiplex_vdj_reference.tar.gz"
 feature_reference_beam =  resources_dir / "10x_5k_beam/raw/beamt_human_A0201_B0702_pbmc_feature_reference.csv"
 
-# Beam Input
-input1_R1_beam = resources_dir / "10x_5k_beam/raw/beamt_human_A0201_B0702_pbmc_gex_subset_S3_L001_R1_001.fastq.gz"
-input1_R2_beam = resources_dir / "10x_5k_beam/raw/beamt_human_A0201_B0702_pbmc_gex_subset_S3_L001_R2_001.fastq.gz"
-input2_R1_beam = resources_dir / "10x_5k_beam/raw/beamt_human_A0201_B0702_pbmc_ag_subset_S1_L001_R1_001.fastq.gz"
-input2_R2_beam = resources_dir / "10x_5k_beam/raw/beamt_human_A0201_B0702_pbmc_ag_subset_S1_L001_R2_001.fastq.gz"
-input3_R1_beam = resources_dir / "10x_5k_beam/raw/beamt_human_A0201_B0702_pbmc_vdj_subset_S2_L001_R1_001.fastq.gz"
-input3_R2_beam = resources_dir / "10x_5k_beam/raw/beamt_human_A0201_B0702_pbmc_vdj_subset_S2_L001_R2_001.fastq.gz"
-vdj_reference_beam = resources_dir / "10x_5k_beam/raw/5k_BEAM-T_Human_A0201_B0702_PBMC_5pv2_Multiplex_vdj_reference.tar.gz"
-feature_reference_beam =  resources_dir / "10x_5k_beam/raw/beamt_human_A0201_B0702_pbmc_feature_reference.csv"
-
 def test_cellranger_multi(run_component, random_path):
     outputpath = random_path()
 
@@ -193,7 +183,6 @@ def test_cellranger_multi_applies_gex_options(run_component, random_path):
         """\
         chemistry,auto
         no-secondary,False
-        create-bam,False
         create-bam,False
         include-introns,False
         """)

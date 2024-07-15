@@ -1,90 +1,49 @@
 #!/bin/bash
 
-# bcl-convert requires a v2 sample sheet
-# bcl-convert is a bit more strict concerning filter files being present or not.
-# We make a copy and make the necessary adaptations. 
-# See workflows/resources_test_scripts/cellranger_tiny_bcl.sh for more information
-
-# create tempdir
-MY_TEMP="${VIASH_TEMP:-/tmp}"
-TMPDIR=$(mktemp -d "$MY_TEMP/$ID-XXXXXX")
-function clean_up {
-  [[ -d "$TMPDIR" ]] && rm -r "$TMPDIR"
-}
-trap clean_up EXIT
-
-# create tempdir
-MY_TEMP="${VIASH_TEMP:-/tmp}"
-TMPDIR=$(mktemp -d "$MY_TEMP/$ID-XXXXXX")
-function clean_up {
-  [[ -d "$TMPDIR" ]] && rm -r "$TMPDIR"
-}
-trap clean_up EXIT
+# We are using the tiny bcl dataset provided by Illumina:
+#   https://support.10xgenomics.com/single-cell-gene-expression/software/pipelines/latest/using/mkfastq
+# Unfortunately,
+#   1. the sample sheet delivered with it does not work with bcl2fastq (v1 of the format)
+#   2. 2 filter files are missing from the run directory that bcl2fastq requires to run
+#
+# We worked around this by ignoring all missing entries with --ignore_missing
 
 echo ">>> Running executable"
-$meta_executable \
-  --input "$meta_resources_dir/bcl2" \
-  --sample_sheet "$meta_resources_dir/bcl2/sample_sheet.csv" \
-  --output "$TMPDIR/output1" \
-  --output "$TMPDIR/output1" \
-  --test_mode true
+"$meta_executable" \
+  --input "$meta_resources_dir/bcl" \
+  --sample_sheet "$meta_resources_dir/bcl/sample_sheet.csv" \
+  --output "fastq" \
+  --reports "reports" \
+  --ignore_missing
+
 echo ">>> Checking whether the output dir exists"
-[[ ! -d "$TMPDIR/output1" ]] && echo "Output dir could not be found!" && exit 1
+[[ ! -d fastq ]] && echo "Output dir could not be found!" && exit 1
 
 echo ">>> Checking whether output fastq files are created"
-[[ ! -f  "$TMPDIR/output1/Undetermined_S0_R1_001.fastq.gz" ]] && echo "Output fastq files could not be found!" && exit 1
-[[ ! -f "$TMPDIR/output1/s1_S1_R1_001.fastq.gz" ]] && echo "Output fastq files could not be found!" && exit 1
+[[ ! -f fastq/Undetermined_S0_L001_R1_001.fastq.gz ]] && echo "Output fastq files could not be found!" && exit 1
 
-echo ">>> Test strict mode"
-cp -r "$meta_resources_dir/bcl2" "$TMPDIR/strict_input"
-rm "$TMPDIR/strict_input/Data/Intensities/L001/s_1_1101.clocs"
+echo ">>> Checking whether reports files are created"
+[[ ! -d reports/html ]] && echo "Output reports files could not be found!" && exit 1
 
-$meta_executable \
-  --input "$TMPDIR/strict_input" \
-  --sample_sheet "$meta_resources_dir/bcl2/sample_sheet.csv" \
-  --output "$TMPDIR/output2" \
-  --strict_mode false
+
+
+echo ">>> Running executable without separate reports"
+"$meta_executable" \
+  --input "$meta_resources_dir/bcl" \
+  --sample_sheet "$meta_resources_dir/bcl/sample_sheet.csv" \
+  --output "fastq1" \
+  --ignore_missing
 
 echo ">>> Checking whether the output dir exists"
-[[ ! -d "$TMPDIR/output2" ]] && echo "Output dir could not be found!" && exit 1
+[[ ! -d fastq1 ]] && echo "Output dir could not be found!" && exit 1
 
 echo ">>> Checking whether output fastq files are created"
-[[ ! -f  "$TMPDIR/output2/Undetermined_S0_R1_001.fastq.gz" ]] && echo "Output fastq files could not be found!" && exit 1
-[[ ! -f "$TMPDIR/output2/s1_S1_R1_001.fastq.gz" ]] && echo "Output fastq files could not be found!" && exit 1
+[[ ! -f fastq1/Undetermined_S0_L001_R1_001.fastq.gz ]] && echo "Output fastq files could not be found!" && exit 1
 
-echo ">>> Test no lane splitting argument"
-awk '!/NoLaneSplitting/' "$meta_resources_dir/bcl2/sample_sheet.csv" > "$TMPDIR/sample_sheet_without_LaneSplitting.csv"
+echo ">>> Checking whether reports files are created"
+[[ ! -d fastq1/Reports/html ]] && echo "Output reports files could not be found!" && exit 1
 
-$meta_executable \
-  --input "$meta_resources_dir/bcl2" \
-  --sample_sheet "$TMPDIR/sample_sheet_without_LaneSplitting.csv" \
-  --output "$TMPDIR/output3" \
-  --test_mode true \
-  --no_lane_splitting true
 
-echo ">>> Checking whether the output dir exists"
-[[ ! -d "$TMPDIR/output3" ]] && echo "Output dir could not be found!" && exit 1
-
-echo ">>> Checking whether output fastq files with lane splitting are created"
-
-[[ ! -f  "$TMPDIR/output3/Undetermined_S0_R1_001.fastq.gz" ]] && echo "Output fastq files could not be found!" && exit 1
-[[ ! -f "$TMPDIR/output3/s1_S1_R1_001.fastq.gz" ]] && echo "Output fastq files could not be found!" && exit 1
-
-$meta_executable \
-  --input "$meta_resources_dir/bcl2" \
-  --sample_sheet "$TMPDIR/sample_sheet_without_LaneSplitting.csv" \
-  --output "$TMPDIR/output4" \
-  --test_mode true \
-  --no_lane_splitting false
-
-echo ">>> Checking whether output fastq files without lane splitting are created"
-
-[[ ! -f  "$TMPDIR/output4/Undetermined_S0_L001_R1_001.fastq.gz" ]] && echo "Output fastq files could not be found!" && exit 1
-[[ ! -f "$TMPDIR/output4/s1_S1_L001_R1_001.fastq.gz" ]] && echo "Output fastq files could not be found!" && exit 1
 
 # print final message
 echo ">>> Test finished successfully"
-
-# do not remove this
-# as otherwise your test might exit with a different exit code
-exit 0

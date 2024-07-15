@@ -9,7 +9,6 @@ import re
 import sys
 from openpipelinetestutils.utils import remove_annotation_column
 from operator import attrgetter
-import uuid
 
 ## VIASH START
 meta = {
@@ -794,22 +793,6 @@ def test_concat_var_obs_names_order(run_component, sample_1_h5mu, sample_2_h5mu,
                                        columns=data_sample.var_names).reindex_like(processed_data)
             pd.testing.assert_frame_equal(processed_data, data_sample, check_dtype=False)
 
-    assert Path("concat.h5mu").is_file() is True
-    for sample_name, sample_path in {"mouse": sample1_without_genome, 
-                                     "human": input_sample2_file}.items():
-        for mod_name in ["rna", "atac"]:
-            data_sample = md.read_h5ad(sample_path, mod=mod_name)
-            processed_data = md.read_h5ad("concat.h5mu", mod=mod_name)
-            processed_data = processed_data[processed_data.obs["sample_id"] == sample_name]
-            processed_data = processed_data[:, data_sample.var_names]
-            data_sample_to_test = anndata_to_sparse_dataframe(data_sample)
-            processed_data_to_test = anndata_to_sparse_dataframe(processed_data)
-            data_sample_to_test = data_sample_to_test.reindex_like(processed_data_to_test)
-            pd.testing.assert_index_equal(data_sample_to_test.columns, processed_data_to_test.columns)
-            pd.testing.assert_index_equal(data_sample_to_test.index, processed_data_to_test.index)
-            for (_, col1), (_, col2) in zip(data_sample_to_test.items(), processed_data_to_test.items()):
-                pd._testing.assert_sp_array_equal(col1.array, col2.array)
-            
 
 if __name__ == '__main__':
     sys.exit(pytest.main([__file__, "-v"]))

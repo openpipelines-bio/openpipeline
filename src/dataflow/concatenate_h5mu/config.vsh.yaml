@@ -62,13 +62,11 @@ functionality:
     - path: /resources_test/concat_test_data/human_brain_3k_filtered_feature_bc_matrix_subset_unique_obs.h5mu
 platforms:
   - type: docker
-    image: python:3.11
+    image: python:3.11-slim
     setup:
       - type: apt
         packages: 
           - procps
-          - pkg-config
-          - libhdf5-dev
       - type: python
         __merge__: [/src/base/requirements/anndata_mudata.yaml, .]
         packages:

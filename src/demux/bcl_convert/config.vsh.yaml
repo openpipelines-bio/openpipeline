@@ -1,23 +1,14 @@
 functionality:
-  name: bcl_convert
+  name: bcl2fastq
   namespace: demux
   description: |
-    Convert bcl files to fastq files using bcl-convert.
-    Information about upgrading from bcl2fastq via
-    https://emea.support.illumina.com/bulletins/2020/10/upgrading-from-bcl2fastq-to-bcl-convert.html
-    and https://support.illumina.com/sequencing/sequencing_software/bcl-convert/compatibility.html
+    Convert bcl files to fastq files using bcl2fastq.
   authors:
     - __merge__: /src/authors/toni_verbeiren.yaml
       roles: [ author, maintainer ]
-    - __merge__: /src/authors/marijke_van_moerbeke.yaml
-      roles: [ author ]
-    - __merge__: /src/authors/weiwei_schultz.yaml
-      roles: [ contributor ]
-    - __merge__: /src/authors/dorien_roosen.yaml
-      roles: [ author ]
   arguments:
     - name: "--input"
-      alternatives: [ "-i" ]
+      alternatives: [ "-i", "--runfolder_dir" ]
       type: file
       required: true
       description: Input run directory
@@ -27,7 +18,7 @@ functionality:
       type: file
       required: true
       description: Pointer to the sample sheet
-      example: bcl_dir
+      example: SampleSheet.csv
     - name: "--output"
       alternatives: [ "-o" ]
       type: file
@@ -41,38 +32,18 @@ functionality:
       required: false
       description: Reports directory
       example: reports_dir
-    - name: "--test_mode"
-      type: boolean
-      default: false
-      description: Should bcl-convert be run in test mode (using --first-tile-only)?
-    - name: "--strict_mode"
-      type: boolean
-      default: false
-      description: Abort if any files are missing.
-    - name: "--tiles"
-      type: string
-      required: false
-      description: Process only a subset of tiles by a regular expression.
-    - name: "--exclude_tiles"
-      type: string
-      required: false
-      description: "Exclude set of tiles by a regular expression"
-    - name: --no_lane_splitting
-      type: boolean
-      required: false
-      description: Wheter to avoid splitting FASTQ file by lane. 
-  
+    - name: "--ignore_missing"
+      type: boolean_true
   resources:
     - type: bash_script
       path: script.sh
   test_resources:
     - type: bash_script
       path: test.sh
-    - path: /resources_test/cellranger_tiny_bcl/bcl2
+    - path: /resources_test/cellranger_tiny_bcl/bcl
 platforms:
   - type: docker
-    image: ghcr.io/data-intuitive/bclconvert:4.2
-    image: ghcr.io/data-intuitive/bclconvert:4.2
+    image: ghcr.io/data-intuitive/bcl2fastq:2.20
     setup:
       - type: apt
         packages:
