@@ -144,7 +144,7 @@ jobs:
           .functionality.version := "${{ inputs.version || format('{0}_build', github.ref_name) }}"
           .platforms[.type == 'docker'].target_tag := '${{ github.event_name == 'push' && (inputs.version || format('{0}_build', github.ref_name)) || inputs.target_tag }}'
         parallel: true
-        query: ^(?!workflows)
+        query: ^(?!workflows|test_workflows)
     
     - uses: viash-io/viash-actions/ns-build@v6
       with:
@@ -181,7 +181,7 @@ jobs:
         platform: docker
         src: src
         format: json
-        query_namespace: ^(?!workflows)
+        query_namespace: ^(?!workflows|test_workflows)
 
     - name: "List workflows"
       id: ns_list_workflows

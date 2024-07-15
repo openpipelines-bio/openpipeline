@@ -14,6 +14,8 @@
 
 ## NEW FUNCTIONALITY
 
+* CI: added checking of mudata contents for multiple workflows (PR #783).
+
 * Added multiple arguments to the `cellranger_multi` workflow in order to maintain feature parity with the `mapping/cellranger_multi` component (PR #803).
 
 * `convert/from_cellranger_to_h5mu`: add support for antigen analysis. 
@@ -50,6 +52,17 @@
 * `mapping/cellranger_multi` component now outputs logs on failure of the `cellranger multi` process (PR #766).
 
 * Bump `viash-actions` to `v6` (PR #821).
+
+## BUG FIXES
+
+* `dataflow/concatenate_h5mu`: fix writing out multidimensional annotation dataframes (e.g. `.varm`) that had their 
+  data dtype (dtype) changed as a result of adding more observations after concatenation, causing `TypeError`.
+  One notable example of this happening is when one of the samples does not have a multimodal annotation dataframe 
+  which is present in another sample; causing the values being filled with `NA` (PR #837).
+
+## DOCUMENTATION
+
+* Update authorship of components (PR #835).
 
 # openpipelines 1.0.0-rc6
 

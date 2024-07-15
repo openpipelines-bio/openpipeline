@@ -12,8 +12,10 @@
 # files.
 # 
 # Component authors:
-#  * Jakub Majercik (maintainer, author)
+#  * Jakub Majercik (author)
 #  * Dorien Roosen (maintainer, author)
+#  * Elizabeth Mlynarski (author)
+#  * Weiwei Schultz (contributor)
 
 set -e
 
@@ -444,11 +446,11 @@ RUN pip install --upgrade pip && \
 RUN pip install --upgrade pip && \
   pip install --upgrade --no-cache-dir "scgpt==0.2.1"
 
-LABEL org.opencontainers.image.authors="Jakub Majercik, Dorien Roosen"
+LABEL org.opencontainers.image.authors="Jakub Majercik, Dorien Roosen, Elizabeth Mlynarski, Weiwei Schultz"
 LABEL org.opencontainers.image.description="Companion container for running component scgpt cross_check_genes"
-LABEL org.opencontainers.image.created="2024-07-09T10:39:24Z"
+LABEL org.opencontainers.image.created="2024-07-15T09:48:57Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="bf159c4cff61f89f04ff895a3cfc16a5cff19211"
+LABEL org.opencontainers.image.revision="e910eaa6622035bc64de9360c17cf06d4ffcc465"
 LABEL org.opencontainers.image.version="main_build"
 
 VIASHDOCKER

@@ -3062,7 +3062,7 @@ meta = [
     "platform" : "nextflow",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/convert/from_cellranger_multi_to_h5mu",
     "viash_version" : "0.8.6",
-    "git_commit" : "bf159c4cff61f89f04ff895a3cfc16a5cff19211",
+    "git_commit" : "e910eaa6622035bc64de9360c17cf06d4ffcc465",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))

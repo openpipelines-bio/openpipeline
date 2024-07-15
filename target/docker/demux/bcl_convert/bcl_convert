@@ -14,6 +14,8 @@
 # Component authors:
 #  * Toni Verbeiren (author, maintainer)
 #  * Marijke Van Moerbeke (author)
+#  * Weiwei Schultz (contributor)
+#  * Dorien Roosen (author)
 
 set -e
 
@@ -450,11 +452,11 @@ RUN apt-get update && \
   DEBIAN_FRONTEND=noninteractive apt-get install -y procps && \
   rm -rf /var/lib/apt/lists/*
 
-LABEL org.opencontainers.image.authors="Toni Verbeiren, Marijke Van Moerbeke"
+LABEL org.opencontainers.image.authors="Toni Verbeiren, Marijke Van Moerbeke, Weiwei Schultz, Dorien Roosen"
 LABEL org.opencontainers.image.description="Companion container for running component demux bcl_convert"
-LABEL org.opencontainers.image.created="2024-07-09T10:39:21Z"
+LABEL org.opencontainers.image.created="2024-07-15T09:48:55Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="bf159c4cff61f89f04ff895a3cfc16a5cff19211"
+LABEL org.opencontainers.image.revision="e910eaa6622035bc64de9360c17cf06d4ffcc465"
 LABEL org.opencontainers.image.version="main_build"
 
 VIASHDOCKER

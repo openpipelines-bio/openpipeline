@@ -3091,7 +3091,7 @@ meta = [
     "platform" : "nextflow",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/dataflow/concatenate_h5mu",
     "viash_version" : "0.8.6",
-    "git_commit" : "bf159c4cff61f89f04ff895a3cfc16a5cff19211",
+    "git_commit" : "e910eaa6622035bc64de9360c17cf06d4ffcc465",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))
@@ -3343,7 +3343,15 @@ def split_conflicts_modalities(n_processes: int, samples: dict[str, anndata.AnnD
         output_index = getattr(output, matrix_name).index 
         conflicts, concatenated_matrix = concatenate_matrices(n_processes, matrices, output_index)
         if concatenated_matrix.empty:
-           concatenated_matrix.index = output_index 
+           concatenated_matrix.index = output_index
+
+        # Even though we did not touch the varm and obsm matrices that were already present,
+        # the joining of observations might have caused a dtype change in these matrices as well
+        # so these also need to be casted to a writable dtype...
+        for multidim_name, multidim_data in getattr(output, f"{matrix_name}m").items():
+            new_data = cast_to_writeable_dtype(multidim_data) if isinstance(multidim_data, pd.DataFrame) else multidim_data 
+            getattr(output, f"{matrix_name}m")[multidim_name] = new_data
+
         # Write the conflicts to the output
         for conflict_name, conflict_data in conflicts.items():
             getattr(output, f"{matrix_name}m")[conflict_name] = conflict_data

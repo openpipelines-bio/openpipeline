@@ -60,7 +60,7 @@ jobs:
       with:
         platform: docker
         format: json
-        query_namespace: ^(?!workflows)
+        query_namespace: ^(?!workflows|test_workflows)
 
     - id: ns_list_filtered
       uses: viash-io/viash-actions/project/detect-changed-components@v6
