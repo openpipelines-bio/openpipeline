@@ -60,6 +60,10 @@
   One notable example of this happening is when one of the samples does not have a multimodal annotation dataframe 
   which is present in another sample; causing the values being filled with `NA` (PR #837).
 
+## DOCUMENTATION
+
+* Update authorship of components (PR #835).
+
 # openpipelines 1.0.0-rc6
 
 ## BUG FIXES

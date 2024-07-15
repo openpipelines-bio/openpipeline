@@ -57,7 +57,7 @@ meta = {
   'memory_pb': None,
   'temp_dir': '/tmp',
   'config': './target/docker/mapping/cellranger_multi/.config.vsh.yaml',
-  'resources_dir': '/Users/dorienroosen/code/openpipeline'
+  'resources_dir': './resources_test'
 }
 ## VIASH END
 
