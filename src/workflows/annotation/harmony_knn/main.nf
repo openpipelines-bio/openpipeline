@@ -1,120 +1,48 @@
-workflow query_wf {
-take:
-    input_ch
-
-main:
-    output_ch = input_ch
-        // Add 'query' id to .obs columns
-        | add_id.run(
-            fromState: {id, state ->
-                [
-                "input": state.input_query_dataset,
-                "input_id": "query",
-                "obs_output": "dataset",
-                ]
-            },
-            toState: ["input": "output"])
-            // Keep only rna modality of reference, to avoid problems with concatenation
-        | split_modalities_workflow.run(
-            fromState: {id, state ->
-            def newState = ["input": state.input, "id": id]
-            },
-            toState: ["query_dir": "output", "query_types": "output_types"]
-            )
-        | flatMap {id, state ->
-            def outputDir = state.query_dir
-            def types = readCsv(state.query_types.toUriString())
-            types.findAll { dat -> dat.name == state.modality }.collect{ dat ->
-            def new_data = outputDir.resolve(dat.filename)
-            [ id, ["query": new_data]]
-            }
-            }
-
-emit:
-    output_ch
-}
-
-workflow reference_wf {
-take:
-    input_ch
-
-main:
-    output_ch = input_ch
-        // Add 'reference'id to .obs columns
-        | add_id.run(
-            fromState: {id, state ->
-                [
-                "input": state.input_reference_dataset,
-                "input_id": "reference",
-                "obs_output": "dataset",
-                ]
-            },
-            toState: ["input": "output"])
-            // Keep only rna modality of reference, to avoid problems with concatenation
-        | split_modalities_workflow.run(
-            fromState: {id, state ->
-            def newState = ["input": state.input, "id": id]
-            },
-            toState: ["reference_dir": "output", "reference_types": "output_types"]
-            )
-        | flatMap {id, state ->
-            def outputDir = state.reference_dir
-            def types = readCsv(state.reference_types.toUriString())
-            types.findAll { dat -> dat.name == state.modality }.collect{ dat ->
-            def new_data = outputDir.resolve(dat.filename)
-            [ id, ["reference": new_data]]
-            }
-            }
-
-emit:
-    output_ch
-}
-
 workflow run_wf {
   take:
     input_ch
 
   main:
-    query_ch = input_ch
-        | query_wf
-        | view {"After processing query: $it"}
-
-    reference_ch = input_ch
-        | reference_wf
-        | view {"After processing reference: $it"}
     
     // add id as _meta join id to be able to merge with source channel and end of workflow
-    input_id_ch = input_ch
+    output_ch = input_ch
       | map{ id, state -> 
         def new_state = state + ["_meta": ["join_id": id]]
         [id, new_state]
       }
       | view {"After adding join_id: $it"}
 
-    // Join the input channel with the processed query to synchronize outputs of query_ch and reference_ch
-    processed_ch = input_id_ch.join(query_ch).join(reference_ch)
-        | flatMap { id, input_state, query_state, reference_state ->
-            // def state = tuple[1]
-            // println "STATE: $state"
-            def new_state = input_state + query_state + reference_state
-            println "NEW_STATE: $new_state"
-            [[id, new_state]]
-        }
-        | view {"After joining: $it"}
-        
-
-    output_ch = processed_ch
-        // Concatenate query and reference datasets
-        | concatenate_h5mu.run(
-            fromState: { id, state ->
+    // Add 'query' id to .obs columns
+    | add_id.run(
+        fromState: {id, state ->
             [
-                "input": [state.query, state.reference],
-                "input_id": ["query", "reference"],
-                "other_axis_mode": "move"
+            "input": state.input,
+            "input_id": "query",
+            "obs_output": "dataset",
             ]
+        },
+        toState: ["input": "output"])
+    // Add 'reference'id to .obs columns
+     | add_id.run(
+            fromState: {id, state ->
+                [
+                "input": state.reference,
+                "input_id": "reference",
+                "obs_output": "dataset",
+                ]
             },
-            toState: ["input": "output"]
-            )
+            toState: ["reference": "output"])
+    // Concatenate query and reference datasets
+    | concatenate_h5mu.run(
+        fromState: { id, state ->
+        [
+            "input": [state.input, state.reference],
+            "input_id": ["query", "reference"],
+            "other_axis_mode": "move"
+        ]
+        },
+        toState: ["input": "output"]
+        )
         | view {"After concatenation: $it"}
         // Run harmony integration 
         | harmonypy.run(
@@ -122,7 +50,7 @@ workflow run_wf {
             [
                 "input": state.input,
                 "modality": "rna",
-                "obsm_input": state.embedding,
+                "obsm_input": state.obsm_embedding,
                 "obsm_output": state.obsm_integrated,
                 "theta": state.theta,
                 "obs_covariates": state.obs_covariates

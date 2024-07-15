@@ -6,31 +6,35 @@ functionality:
     - __merge__: /src/authors/dorien_roosen.yaml
       roles: [ author, maintainer ]
   argument_groups:
-    - name: Inputs
+    - name: Query input
       arguments:
         - name: "--id"
           required: true
           type: string
           description: ID of the sample.
           example: foo
-        - name: "--input_query_dataset"
+        - name: "--input"
           required: true
           type: file
-          description: Input dataset consisting of the (unlabeled) query observations. The dataset is expected to be pre-processed in the same way as --input_reference_dataset.
+          description: Input dataset consisting of the (unlabeled) query observations. The dataset is expected to be pre-processed in the same way as --reference.
           example: input.h5mu
-        - name: "--input_reference_dataset"
-          required: true
-          type: file
-          description: Input dataset consisting of the (labeled) reference observations. The dataset is expected to be pre-processed in the same way as --input_query_dataset.
         - name: "--modality"
-          description: Which modality to process.
+          description: Which modality to process. Should match the modality of the --reference dataset.
           type: string
           default: "rna"
           required: false
-        - name: "--embedding"
+        - name: "--obsm_embedding"
           example: "X_pca"
           type: string
-          description: "Embedding to use as input"
+          description: Embedding .obsm column to use as input for integration. Should match the embedding .obsm columng of the --reference dataset.
+
+    - name: Reference input
+      arguments:
+        - name: "--reference"
+          required: true
+          type: file
+          description: Reference dataset consisting of the labeled observations. The dataset is expected to be pre-processed in the same way as the --input query dataset(s).
+          example: reference.h5mu
         - name: "--obs_reference_targets"
           type: string
           example: [ ann_level_1, ann_level_2, ann_level_3, ann_level_4, ann_level_5, ann_finest_level ]
