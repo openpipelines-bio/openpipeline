@@ -60,6 +60,8 @@
   One notable example of this happening is when one of the samples does not have a multimodal annotation dataframe 
   which is present in another sample; causing the values being filled with `NA` (PR #837).
 
+* `dataflow/concatenate_h5mu`: fix concatenation, such that non-overlapping modalities are skipped during concatenation (PR #839).
+
 ## DOCUMENTATION
 
 * Update authorship of components (PR #835).
