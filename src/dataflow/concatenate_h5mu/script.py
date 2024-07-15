@@ -13,8 +13,8 @@ import shutil
 
 ### VIASH START
 par = {
-    "input": ["resources_test/concat_test_data/e18_mouse_brain_fresh_5k_filtered_feature_bc_matrix_subset_unique_obs.h5mu",
-              "resources_test/concat_test_data/human_brain_3k_filtered_feature_bc_matrix_subset_unique_obs.h5mu"],
+    "input": ["resources_test/annotation_test_data/TS_Blood_filtered.h5mu",
+              "resources_test/pbmc_1k_protein_v3/pbmc_1k_protein_v3_filtered_feature_bc_matrix.h5mu"],
     "output": "foo.h5mu",
     "input_id": ["mouse", "human"],
     "other_axis_mode": "move",
@@ -252,7 +252,7 @@ def concatenate_modality(n_processes: int, mod: str, input_files: Iterable[str |
         try:
             mod_data[input_id] = mu.read_h5ad(input_file, mod=mod)
         except KeyError as e: # Modality does not exist for this sample, skip it
-            if f"Unable to synchronously open object (object '{mod}' doesn't exist)" not in str(e):
+            if f"Unable to open object (object '{mod}' doesn't exist)" not in str(e):
                 raise e
             pass
     check_observations_unique(mod_data.values())
