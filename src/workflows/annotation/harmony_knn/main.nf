@@ -6,43 +6,49 @@ workflow run_wf {
     
     // add id as _meta join id to be able to merge with source channel and end of workflow
     output_ch = input_ch
-      | map{ id, state -> 
+        // Set aside the output for this workflow to avoid conflicts
+        | map {id, state -> 
+        def new_state = state + ["workflow_output": state.output]
+        [id, new_state]
+        }
+        // Add join_id to state
+        | map{ id, state -> 
         def new_state = state + ["_meta": ["join_id": id]]
         [id, new_state]
-      }
-      | view {"After adding join_id: $it"}
+        }
+        | view {"After adding join_id: $it"}
 
-    // Add 'query' id to .obs columns
-    | add_id.run(
-        fromState: {id, state ->
-            [
-            "input": state.input,
-            "input_id": "query",
-            "obs_output": "dataset",
-            ]
-        },
-        toState: ["input": "output"])
-    // Add 'reference'id to .obs columns
-     | add_id.run(
+        // Add 'query' id to .obs columns
+        | add_id.run(
             fromState: {id, state ->
                 [
-                "input": state.reference,
-                "input_id": "reference",
+                "input": state.input,
+                "input_id": "query",
                 "obs_output": "dataset",
                 ]
             },
-            toState: ["reference": "output"])
-    // Concatenate query and reference datasets
-    | concatenate_h5mu.run(
-        fromState: { id, state ->
-        [
-            "input": [state.input, state.reference],
-            "input_id": ["query", "reference"],
-            "other_axis_mode": "move"
-        ]
-        },
-        toState: ["input": "output"]
-        )
+            toState: ["input": "output"])
+        // Add 'reference'id to .obs columns
+        | add_id.run(
+                fromState: {id, state ->
+                    [
+                    "input": state.reference,
+                    "input_id": "reference",
+                    "obs_output": "dataset",
+                    ]
+                },
+                toState: ["reference": "output"])
+        // Concatenate query and reference datasets
+        | concatenate_h5mu.run(
+            fromState: { id, state ->
+            [
+                "input": [state.input, state.reference],
+                "input_id": ["query", "reference"],
+                "other_axis_mode": "move"
+            ]
+            },
+            toState: ["input": "output"]
+            )
         | view {"After concatenation: $it"}
         // Run harmony integration 
         | harmonypy.run(
