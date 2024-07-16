@@ -12,6 +12,8 @@
 // Component authors:
 //  * Toni Verbeiren (author, maintainer)
 //  * Marijke Van Moerbeke (author)
+//  * Weiwei Schultz (contributor)
+//  * Dorien Roosen (author)
 
 ////////////////////////////
 // VDSL3 helper functions //
@@ -2829,6 +2831,45 @@ meta = [
             }
           ]
         }
+      },
+      {
+        "name" : "Weiwei Schultz",
+        "roles" : [
+          "contributor"
+        ],
+        "info" : {
+          "role" : "Contributor",
+          "links" : {
+            "email" : "wschult2@its.jnj.com"
+          },
+          "organizations" : [
+            {
+              "name" : "Janssen R&D US",
+              "role" : "Associate Director Data Sciences"
+            }
+          ]
+        }
+      },
+      {
+        "name" : "Dorien Roosen",
+        "roles" : [
+          "author"
+        ],
+        "info" : {
+          "role" : "Contributor",
+          "links" : {
+            "email" : "dorien@data-intuitive.com",
+            "github" : "dorien-er",
+            "linkedin" : "dorien-roosen"
+          },
+          "organizations" : [
+            {
+              "name" : "Data Intuitive",
+              "href" : "https://www.data-intuitive.com",
+              "role" : "Data Scientist"
+            }
+          ]
+        }
       }
     ],
     "arguments" : [
@@ -3083,7 +3124,7 @@ meta = [
     "platform" : "nextflow",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/demux/bcl_convert",
     "viash_version" : "0.8.6",
-    "git_commit" : "a975ee18a3479823241e2c524dc2419d90c76972",
+    "git_commit" : "e69b3ab08113a0e5be80a6cd9b19c2d0844df7ad",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))

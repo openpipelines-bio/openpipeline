@@ -12,8 +12,9 @@
 # files.
 # 
 # Component authors:
-#  * Robrecht Cannoodt
-#  * Dorien Roosen
+#  * Robrecht Cannoodt (author)
+#  * Dorien Roosen (author)
+#  * Weiwei Schultz (contributor)
 
 set -e
 
@@ -521,11 +522,11 @@ ENTRYPOINT []
 RUN pip install --upgrade pip && \
   pip install --upgrade --no-cache-dir "scanpy~=1.9.5" "statsmodels==0.14.0" "anndata~=0.9.1" "mudata~=0.2.3" "pandas!=2.1.2" "numpy<2.0.0"
 
-LABEL org.opencontainers.image.authors="Robrecht Cannoodt, Dorien Roosen"
+LABEL org.opencontainers.image.authors="Robrecht Cannoodt, Dorien Roosen, Weiwei Schultz"
 LABEL org.opencontainers.image.description="Companion container for running component feature_annotation score_genes_cell_cycle_scanpy"
-LABEL org.opencontainers.image.created="2024-07-15T02:44:29Z"
+LABEL org.opencontainers.image.created="2024-07-16T02:43:24Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="a975ee18a3479823241e2c524dc2419d90c76972"
+LABEL org.opencontainers.image.revision="e69b3ab08113a0e5be80a6cd9b19c2d0844df7ad"
 LABEL org.opencontainers.image.version="integration_build"
 
 VIASHDOCKER

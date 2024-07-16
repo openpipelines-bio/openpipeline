@@ -15,6 +15,8 @@
 #  * Angela Oliveira Pisco (author)
 #  * Robrecht Cannoodt (author, maintainer)
 #  * Dries De Maeyer (author)
+#  * Weiwei Schultz (contributor)
+#  * Dorien Roosen (author)
 
 set -e
 
@@ -862,11 +864,11 @@ apt upgrade -y && apt install -y procps && rm -rf /var/lib/apt/lists/*
 RUN pip install --upgrade pip && \
   pip install --upgrade --no-cache-dir "pandas" "pyyaml"
 
-LABEL org.opencontainers.image.authors="Angela Oliveira Pisco, Robrecht Cannoodt, Dries De Maeyer"
+LABEL org.opencontainers.image.authors="Angela Oliveira Pisco, Robrecht Cannoodt, Dries De Maeyer, Weiwei Schultz, Dorien Roosen"
 LABEL org.opencontainers.image.description="Companion container for running component mapping cellranger_multi"
-LABEL org.opencontainers.image.created="2024-07-15T02:44:32Z"
+LABEL org.opencontainers.image.created="2024-07-16T02:43:27Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="a975ee18a3479823241e2c524dc2419d90c76972"
+LABEL org.opencontainers.image.revision="e69b3ab08113a0e5be80a6cd9b19c2d0844df7ad"
 LABEL org.opencontainers.image.version="integration_build"
 
 VIASHDOCKER
