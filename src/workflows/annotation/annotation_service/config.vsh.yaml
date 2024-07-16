@@ -31,11 +31,11 @@ functionality:
           required: false
         - name: "--var_query_gene_names"
           type: string
-          required: false ## required for scGPT
+          required: false # optional for scGPT
           description: |
             The name of the adata var column containing gene names; when no gene_name_layer is provided, the var index will be used.
         - name: "--obs_query_batch"
-          required: false ## required for scGPT
+          required: false # optional for scGPT
           type: string
           description: |
             The name of the adata obs column containing the batch labels.
@@ -45,7 +45,7 @@ functionality:
       arguments:
         - name: "--reference"
           type: file
-          required: true # false: only for non-scgpt
+          required: false # only for non-scgpt
           description: |
             The reference dataset to be used as a reference mapper and to train annotation algorithms on.
           example: https://zenodo.org/records/7587774/files/TS_Lung_filtered.h5ad
@@ -55,7 +55,7 @@ functionality:
       arguments:
         - name: "--obs_reference_batch"
           type: string
-          required: true # false: only for non-scgpt
+          required: false # only for non-scgpt
           description: |
             The .obs column of the reference dataset containing the batch information.
         - name: "--reference_rna_layer"
