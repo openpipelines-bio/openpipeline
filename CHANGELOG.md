@@ -39,6 +39,8 @@
 * `transform/clr` component: Added the option to set the `axis` along which to apply CLR. Possible to override
   on workflow level as well (PR #767).
 
+* `workflows/annotation/harmony_knn`: workflow: Cell-type annotation based on harmony integration with KNN label transfer (PR #836).
+
 ## MINOR CHANGES
 
 * Bump scvelo to `0.3.2` (PR #828).
