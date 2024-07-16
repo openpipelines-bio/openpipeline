@@ -18,7 +18,7 @@ workflow run_wf {
         }
         | view {"After adding join_id: $it"}
 
-        // Add 'query' id to .obs columns
+        // Add 'query' id to .obs columns of query dataset
         | add_id.run(
             fromState: {id, state ->
                 [
@@ -28,7 +28,7 @@ workflow run_wf {
                 ]
             },
             toState: ["input": "output"])
-        // Add 'reference'id to .obs columns
+        // Add 'reference'id to .obs columns of reference dataset
         | add_id.run(
                 fromState: {id, state ->
                     [
@@ -65,7 +65,7 @@ workflow run_wf {
             toState: ["input": "output"]
             )
         | view {"After integration: $it"}
-        // Split integrated dataset back into reference and query dataset
+        // Split integrated dataset back into a separate reference and query dataset
         | split_samples.run(
             fromState: { id, state ->
             [
