@@ -145,9 +145,22 @@ model = TransformerModel(
     pre_norm=False  #TODO: Parametrize when GPU-based machine types are supported
     )
 
+
+logger.info("Loading model")
+model_file = par["model"]
+model_dict = torch.load(model_file, map_location=device)
+
+# Ensure the provided model has the correct architecture
+if par["finetuned_checkpoints_key"]:
+    if par["finetuned_checkpoints_key"] not in model_dict.keys():
+        finetuned_checkpoints_key = par["finetuned_checkpoints_key"]
+        raise KeyError(f"The key '{finetuned_checkpoints_key}' provided for '--finetuned_checkpoints_key' could not be found in the provided --model file. The finetuned model file for cell type annotation requires valid keys for the checkpoints and the label mapper.")
+    model_dict = model_dict[par["finetuned_checkpoints_key"]]
+
+# Load model
 load_pretrained(
     model,
-    torch.load(model_file, map_location=device),
+    model_dict,
     verbose=False
     )
 
