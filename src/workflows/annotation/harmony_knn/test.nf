@@ -9,13 +9,23 @@ workflow test_wf {
   output_ch = Channel.fromList(
     [
       [
-        id: "foo",
+        id: "simple_execution_test",
         input: resources_test.resolve("pbmc_1k_protein_v3/pbmc_1k_protein_v3_mms_w_sample_id.h5mu"),
         reference: resources_test.resolve("annotation_test_data/TS_Blood_filtered.h5mu"),
         obsm_embedding: "X_pca",
         obs_reference_targets: "cell_type",
-        obs_covariates: "donor_assay"
-      ] 
+        obs_covariates: "donor_assay",
+        leiden_resolution: [1.0, 0.25]
+      ],
+      [
+        id: "no_leiden_resolutions_test",
+        input: resources_test.resolve("pbmc_1k_protein_v3/pbmc_1k_protein_v3_mms_w_sample_id.h5mu"),
+        reference: resources_test.resolve("annotation_test_data/TS_Blood_filtered.h5mu"),
+        obsm_embedding: "X_pca",
+        obs_reference_targets: "cell_type",
+        obs_covariates: "donor_assay",
+        leiden_resolution: []
+      ]
     ])
     | map{ state -> [state.id, state] }
     | harmony_knn 
@@ -24,7 +34,7 @@ workflow test_wf {
 
       // check id
       def id = output[0]
-      assert id == "foo" : "Output ID should be same as input ID"
+      assert id.endsWith("_test") : "Output ID should be same as input ID"
 
       // check output
       def state = output[1]
@@ -35,8 +45,12 @@ workflow test_wf {
     
     "Output: $output"
     }
-    | toList()
-    | view { output_list ->
-      assert output_list.size() == 1 : "output channel should contain one event"
+    | toSortedList({a, b -> a[0] <=> b[0]})
+    | map { output_list ->
+      assert output_list.size() == 2 : "output channel should contain 2 events"
+      assert output_list.collect{it[0]} == ["no_leiden_resolutions_test", "simple_execution_test"]
     }
-}
+    // | toList()
+    // | view { output_list ->
+    //   assert output_list.size() == 1 : "output channel should contain one event"
+    }

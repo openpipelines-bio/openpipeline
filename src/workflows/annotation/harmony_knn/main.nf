@@ -50,16 +50,23 @@ workflow run_wf {
             toState: ["input": "output"]
             )
         | view {"After concatenation: $it"}
-        // Run harmony integration 
-        | harmonypy.run(
+        // Run harmony integration with leiden clustering
+        | harmony_leiden_workflow.run(
             fromState: { id, state ->
             [
+                "id": id,
                 "input": state.input,
                 "modality": "rna",
-                "obsm_input": state.obsm_embedding,
-                "obsm_output": state.obsm_integrated,
+                "uns_neighbors": "harmonypy_integration_neighbors",
+                "obsp_neighbor_distances": "harmonypy_integration_distances",
+                "obsp_neighbor_connectivities": "harmonypy_integration_connectivities",
+                "embedding": state.obsm_embedding,
+                "obsm_integrated": state.obsm_integrated,
                 "theta": state.theta,
-                "obs_covariates": state.obs_covariates
+                "obs_covariates": state.obs_covariates,
+                "obs_cluster": "harmony_integration_leiden",
+                "leiden_resolution": state.leiden_resolution,
+                "obsm_umap": "X_leiden_harmony_umap"
             ]
             },
             toState: ["input": "output"]
