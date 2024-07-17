@@ -59,8 +59,7 @@ workflow run_wf {
             "input_layer": state.input_layer,
             "n_input_bins": state.n_input_bins,
             "binned_layer": "binned",
-            "output": state.output,
-            "seed": state.seed
+            "output": state.output
           ]
         },
         toState: ["input": "output"]
@@ -99,9 +98,10 @@ workflow run_wf {
           "obs_batch_label": state.obs_batch_label,
           "pad_token": state.pad_token,
           "pad_value": state.pad_value,
-          "dsbn": state.dsbn,
+          "DSBN": state.DSBN,
           "batch_size": state.batch_size,
           "obsm_embeddings": "X_scGPT",
+          "finetuned_checkpoints_key": state.finetuned_checkpoints_key,
           "output": state.output
         ]
       },
@@ -120,9 +120,8 @@ workflow run_wf {
       },
       toState: ["input": "output"]
     )
-
     | leiden.run(
-      runIf: {id, state -> state.var_name_mitochondrial_genes}
+      runIf: {id, state -> state.leiden_resolution},
       fromState: {id, state -> [
         "input": state.input,
         "obsp_connectivities": "scGPT_integration_connectivities",
@@ -133,9 +132,8 @@ workflow run_wf {
       },
       toState: ["input": "output"]
     )
-    
     | move_obsm_to_obs.run(
-      runIf: {id, state -> state.var_name_mitochondrial_genes}
+      runIf: {id, state -> state.leiden_resolution},
       fromState: {id, state -> [
           "input": state.input,
           "obsm_key": "scGPT_integration_leiden",
@@ -144,7 +142,6 @@ workflow run_wf {
       },
       toState: ["input": "output"]
     )
-
     | umap.run(
       fromState: {id, state -> [
           "input": state.input,

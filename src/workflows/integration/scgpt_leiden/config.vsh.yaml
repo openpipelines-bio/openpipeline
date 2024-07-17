@@ -22,6 +22,23 @@ functionality:
           type: string
           default: "rna"
           required: false
+        - name: "--input_layer"
+          type: string
+          required: False
+          description: |
+            Mudata layer (key from layers) to use as input data for hvg subsetting and binning; if not specified, X is used.
+        - name: "--var_gene_names"
+          type: string
+          required: false
+          description: |
+            The name of the adata var column containing gene names; when no gene_name_layer is provided, the var index will be used.
+        - name: "--obs_batch_label"
+          type: string
+          description: |
+            The name of the adata obs column containing the batch labels.
+
+    - name: Model
+      arguments:
         - name: "--model"
           type: file
           required: true
@@ -42,20 +59,12 @@ functionality:
           example: args.json
           description: |
             Path to scGPT model config file.
-        - name: "--input_layer"
-          type: string
-          required: False
-          description: |
-            Mudata layer (key from layers) to use as input data for hvg subsetting and binning; if not specified, X is used.
-        - name: "--var_gene_names"
+        - name: "--finetuned_checkpoints_key"
           type: string
           required: false
+          example: model_state_dict
           description: |
-            The name of the adata var column containing gene names; when no gene_name_layer is provided, the var index will be used.
-        - name: "--obs_batch_label"
-          type: string
-          description: |
-            The name of the adata obs column containing the batch labels.
+            Key in the model file containing the pretrained checkpoints. Only relevant for fine-tuned models.
 
     - name: "Outputs"
       arguments:
