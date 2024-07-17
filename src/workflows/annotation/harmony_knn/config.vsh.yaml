@@ -8,6 +8,7 @@ functionality:
     - __merge__: /src/authors/weiwei_schultz.yaml
       roles: [ contributor ]
 
+  __merge__: ../api/common_arguments.yaml
   __merge__: ../api/common_arguments_integration_knn.yaml
 
   argument_groups:
@@ -32,7 +33,7 @@ functionality:
           default: "X_integrated_harmony"
           required: false
           description: "In which .obsm slot to store the resulting integrated embedding."
-    
+  
   dependencies:
     - name: workflows/integration/harmony_leiden
       alias: harmony_leiden_workflow
