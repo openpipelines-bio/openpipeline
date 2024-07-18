@@ -45,4 +45,20 @@ sub_ref_adata_final = sub_ref_adata[sub_ref_adata.obs[s>=n].groupby('cell_ontolo
 sub_ref_adata_final.write("${OUT}/TS_Blood_filtered.h5ad", compression='gzip')
 HEREDOC
 
-rm "${OUT}/tmp_blood_test_reference.h5ad"
+echo "> Converting to h5mu"
+viash run src/convert/from_h5ad_to_h5mu/config.vsh.yaml -p docker -- \
+    --input "${OUT}/TS_Blood_filtered.h5ad" \
+    --output "${OUT}/TS_Blood_filtered.h5mu" \
+    --modality "rna"
+
+rm "${OUT}/tmp_TS_Blood_filtered.h5ad"
+
+echo "> Downloading pretrained CellTypist model and sample test data"
+wget https://celltypist.cog.sanger.ac.uk/models/Pan_Immune_CellTypist/v2/Immune_All_Low.pkl \
+    -O "${OUT}/celltypist_model_Immune_All_Low.pkl"
+wget https://celltypist.cog.sanger.ac.uk/Notebook_demo_data/demo_2000_cells.h5ad \
+    -O "${OUT}/demo_2000_cells.h5ad"
+viash run src/convert/from_h5ad_to_h5mu/config.vsh.yaml -p docker -- \
+    --input "${OUT}/demo_2000_cells.h5ad" \
+    --output "${OUT}/demo_2000_cells.h5mu" \
+    --modality "rna"
