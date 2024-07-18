@@ -62,6 +62,24 @@ functionality:
           choices: ["gzip", "lzf"]
           required: false
           example: "gzip"
+        - name: "--output_obs_predictions"
+          type: string
+          example: 
+          required: false
+          multiple: true
+          description: |
+            In which `.obs` slots to store the predicted information.
+            If provided, must have the same length as `--reference_obs_targets`.
+            If empty, will default to the `reference_obs_targets` combined with the `"_pred"` suffix.
+        - name: "--output_obs_probability"
+          type: string
+          example: 
+          required: false
+          multiple: true
+          description: |
+            In which `.obs` slots to store the uncertainty of the predictions.
+            If provided, must have the same length as `--reference_obs_targets`.
+            If empty, will default to the `reference_obs_targets` combined with the `"_probability"` suffix.
     - name: Model arguments
       description: Model arguments.
       arguments:
@@ -77,7 +95,7 @@ functionality:
         - name: "--majority_voting"
           type: boolean
           description: "Whether to refine the predicted labels by running the majority voting classifier after over-clustering."
-          default: true
+          default: false
 
   resources:
     - type: python_script

@@ -90,12 +90,15 @@ def main(par):
     else:
         raise ValueError("Either 'model' or 'reference' has to be provided.")
     
-    for model, reference_obs_target in zip(models, par["reference_obs_targets"]):
+    obs_predictions = par["output_obs_predictions"] if par["output_obs_predictions"] else ["pred"] * len(models)
+    obs_probabilities = par["output_obs_probability"] if par["output_obs_probability"] else ["prob"] * len(models)
+    
+    for model, reference_obs_target, obs_prediction, obs_probability in zip(models, par["reference_obs_targets"], obs_predictions, obs_probabilities):
         predictions = celltypist.annotate(input_modality,
                                           model,
                                           majority_voting=par["majority_voting"])
-        input_modality.obs[[f"{reference_obs_target}_{x}" for x in predictions.predicted_labels.columns]] = predictions.predicted_labels
-        input_modality.obs[f"{reference_obs_target}_conf_score"] = predictions.probability_matrix.max(axis=1).values
+        input_modality.obs[f"{reference_obs_target}_{obs_prediction}"] = predictions.predicted_labels["predicted_labels"]
+        input_modality.obs[f"{reference_obs_target}_{obs_probability}"] = predictions.probability_matrix.max(axis=1).values
     
     input_mudata.mod[par["modality"]] = input_modality
     input_mudata.write_h5mu(par["output"], compression=par["output_compression"])
