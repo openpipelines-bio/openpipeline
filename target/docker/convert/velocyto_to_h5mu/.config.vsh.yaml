@@ -261,5 +261,5 @@ info:
   output: "/home/runner/work/openpipeline/openpipeline/target/docker/convert/velocyto_to_h5mu"
   executable: "/home/runner/work/openpipeline/openpipeline/target/docker/convert/velocyto_to_h5mu/velocyto_to_h5mu"
   viash_version: "0.8.6"
-  git_commit: "258c69b7fcb58af027edd539aa504f206dd91783"
+  git_commit: "fa97ac44c6f447eb21f5be1d0e83d5eafb247b7b"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"

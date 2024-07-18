@@ -2839,9 +2839,6 @@ meta = [
         ],
         "info" : {
           "role" : "Contributor",
-          "links" : {
-            "email" : "wschult2@its.jnj.com"
-          },
           "organizations" : [
             {
               "name" : "Janssen R&D US",
@@ -3124,7 +3121,7 @@ meta = [
     "platform" : "nextflow",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/demux/bcl_convert",
     "viash_version" : "0.8.6",
-    "git_commit" : "258c69b7fcb58af027edd539aa504f206dd91783",
+    "git_commit" : "fa97ac44c6f447eb21f5be1d0e83d5eafb247b7b",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))
