@@ -1,0 +1,27 @@
+__merge__: ../api/common_arguments.yaml
+argument_groups:
+    - name: Leiden clustering options
+      arguments:
+        - name: "--leiden_resolution"
+          type: double
+          description: Control the coarseness of the clustering. Higher values lead to more clusters.
+          default: [1]
+          multiple: true
+
+    - name: Neighbor classifier arguments
+      arguments:
+        - name: "--weights"
+          type: string
+          default: "uniform"
+          choices: ["uniform", "distance"]
+          description: |
+            Weight function used in prediction. Possible values are:
+            `uniform` (all points in each neighborhood are weighted equally) or 
+            `distance` (weight points by the inverse of their distance)
+        - name: "--n_neighbors"
+          type: integer
+          default: 15
+          required: false
+          description: |
+            The number of neighbors to use in k-neighbor graph structure used for fast approximate nearest neighbor search with PyNNDescent. 
+            Larger values will result in more accurate search results at the cost of computation time.
