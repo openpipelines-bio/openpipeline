@@ -35,7 +35,7 @@ functionality:
           example: reference.h5mu
           direction: input
           required: false
-        - name: "--reference_layter"
+        - name: "--reference_layer"
           type: string
           description: The layer in the reference data to be used for cell type annotation if .X is not to be used.
           required: false
@@ -43,7 +43,7 @@ functionality:
           type: string
           description: #TODO: update for multiple: Key in obs field of reference AnnData with cell-type information.
           example: ["cell_ontology_class", "celltype"]
-          required: true
+          default: "cell_ontology_class"
           multiple: true
         - name: "--check_expression"
           type: boolean

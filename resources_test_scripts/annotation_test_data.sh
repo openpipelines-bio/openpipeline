@@ -46,15 +46,19 @@ sub_ref_adata_final.write("${OUT}/TS_Blood_filtered.h5ad", compression='gzip')
 HEREDOC
 
 echo "> Converting to h5mu"
-viash run src/annotate/convert_to_h5mu/config.vsh.yaml -p docker -- \
+viash run src/convert/from_h5ad_to_h5mu/config.vsh.yaml -p docker -- \
     --input "${OUT}/TS_Blood_filtered.h5ad" \
-    --output "${OUT}/TS_Blood_filtered.h5mu"
+    --output "${OUT}/TS_Blood_filtered.h5mu" \
+    --modality "rna"
 
 rm "${OUT}/tmp_TS_Blood_filtered.h5ad"
 
-echo "> Training test model for CellTypist"
-viash run src/annotate/celltypist/config.vsh.yaml -p docker -- \
-    --input "resources_test/pbmc_1k_protein_v3/pbmc_1k_protein_v3_filtered_feature_bc_matrix.h5mu" \
-    --reference "${OUT}/TS_Blood_filtered.h5mu" \
-    --model_save_path "${OUT}/celltypist_model_TS_Blood_filtered.pkl" \
-    --only_train "True"
+echo "> Downloading pretrained CellTypist model and sample test data"
+wget https://celltypist.cog.sanger.ac.uk/models/Pan_Immune_CellTypist/v2/Immune_All_Low.pkl \
+    -O "${OUT}/celltypist_model_Immune_All_Low.pkl"
+wget https://celltypist.cog.sanger.ac.uk/Notebook_demo_data/demo_2000_cells.h5ad \
+    -O "${OUT}/demo_2000_cells.h5ad"
+viash run src/convert/from_h5ad_to_h5mu/config.vsh.yaml -p docker -- \
+    --input "${OUT}/demo_2000_cells.h5ad" \
+    --output "${OUT}/demo_2000_cells.h5mu" \
+    --modality "rna"

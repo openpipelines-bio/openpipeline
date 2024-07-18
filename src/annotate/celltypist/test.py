@@ -14,8 +14,9 @@ meta = {
 ## VIASH END
 
 input_file = f"{meta['resources_dir']}/pbmc_1k_protein_v3/pbmc_1k_protein_v3_filtered_feature_bc_matrix.h5mu"
-reference_file = f"{meta['resources_dir']}/annotation_test_data/TS_Blood_filtered.h5ad"
-model_file = f"{meta['resources_dir']}/annotation_test_data/celltypist_model_blood_filtered.pkl"
+reference_file = f"{meta['resources_dir']}/annotation_test_data/TS_Blood_filtered.h5mu"
+model_file = f"{meta['resources_dir']}/annotation_test_data/celltypist_model_Immune_All_Low.pkl"
+celltypist_input_file = f"{meta['resources_dir']}/annotation_test_data/demo_2000_cells.h5mu"
 
 @pytest.fixture
 def normalize_log_transform(random_h5mu_path):
@@ -45,6 +46,7 @@ def test_simple_execution(run_component, random_h5mu_path, normalize_log_transfo
     run_component([
         "--input", input_file_transformed,
         "--reference", reference_file,
+        "--reference_obs_targets", "cell_ontology_class",
         "--output", output_file
     ])
     
@@ -56,62 +58,32 @@ def test_simple_execution(run_component, random_h5mu_path, normalize_log_transfo
     assert_annotation_objects_equal(input_mudata.mod["prot"],
                                     output_mudata.mod["prot"])
     
-    assert list(output_mudata.mod["rna"].obs.keys()) == ['predicted_labels',
-                                                         'over_clustering',
-                                                         'majority_voting',
-                                                         'conf_score']
+    assert list(output_mudata.mod["rna"].obs.keys()) == ['cell_ontology_class_pred',
+                                                         'cell_ontology_class_prob']
+    
+    obs_values = output_mudata.mod["rna"].obs["cell_ontology_class_prob"]
+    assert all(0 <= value <= 1 for value in obs_values), ".obs at cell_ontology_class_prob has values outside the range [0, 1]"
 
-def test_with_model(run_component, random_h5mu_path, normalize_log_transform):
+def test_with_model(run_component, random_h5mu_path):
     output_file = random_h5mu_path()
-    input_file_transformed = normalize_log_transform(input_file, "rna")
 
     run_component([
-        "--input", input_file_transformed,
+        "--input", celltypist_input_file,
         "--model", model_file,
+        "--reference_obs_targets", "cell_type",
         "--output", output_file
     ])
     
     assert os.path.exists(output_file), "Output file does not exist"
     
-    input_mudata = mu.read_h5mu(input_file_transformed)
     output_mudata = mu.read_h5mu(output_file)
     
-    assert_annotation_objects_equal(input_mudata.mod["prot"],
-                                    output_mudata.mod["prot"])
+    assert {'cell_type_pred', 'cell_type_prob'}.issubset(output_mudata.mod["rna"].obs.keys()), "Required keys not found in .obs"
     
-    assert list(output_mudata.mod["rna"].obs.keys()) == ['predicted_labels',
-                                                         'over_clustering',
-                                                         'majority_voting',
-                                                         'conf_score']
+    obs_values = output_mudata.mod["rna"].obs["cell_type_prob"]
+    assert all(0 <= value <= 1 for value in obs_values), ".obs at cell_type_prob has values outside the range [0, 1]"
 
-def test_more_params_save_model(run_component, random_h5mu_path, tmp_path, normalize_log_transform):
-    output_file = random_h5mu_path()
-    input_file_transformed = normalize_log_transform(input_file, "rna")
-    model_save_path = tmp_path / "new_model.pkl"
-
-    run_component([
-        "--input", input_file_transformed,
-        "--reference", reference_file,
-        "--modality", "rna",
-        "--reference_obs_label", "cell_ontology_class",
-        "--output", output_file,
-        "--majority_voting", "False",
-        "--model_save_path", model_save_path
-    ])
-    
-    assert os.path.exists(output_file), "Output file does not exist"
-    assert os.path.exists(model_save_path), "Model file does not exist"
-    
-    input_mudata = mu.read_h5mu(input_file_transformed)
-    output_mudata = mu.read_h5mu(output_file)
-    
-    assert_annotation_objects_equal(input_mudata.mod["prot"],
-                                    output_mudata.mod["prot"])
-    
-    assert list(output_mudata.mod["rna"].obs.keys()) == ['predicted_labels',
-                                                         'conf_score']
-
-def test_fail_check_reference_expression(run_component, random_h5mu_path, normalize_log_transform):
+def test_fail_check_reference_expression(run_component, random_h5mu_path):
     output_file = random_h5mu_path()
 
     with pytest.raises(subprocess.CalledProcessError) as err:

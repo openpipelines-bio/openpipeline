@@ -45,9 +45,14 @@ def main(par):
 
     input_mudata = mu.read_h5mu(par["input"])
     input_modality = input_mudata.mod[par["modality"]].copy()
-        
+    
+    models = []
+
     if par["model"]:
-        model = celltypist.models.Model.load(par["model"])
+        models.append(celltypist.models.Model.load(par["model"]))
+        logger.info(f"Model features: {models[0].classifier.features}")
+        logger.info(f"Input features: {input_modality.var_names}")
+        logger.info(input_modality.var)
     
     elif par["reference"]:
         reference_adata = mu.read_h5mu(par["reference"]).mod[par["modality"]]
@@ -77,7 +82,6 @@ def main(par):
         if not check_celltypist_format(reference_matrix):
             logger.warning("Reference data is not in the reccommended format for CellTypist.")
         
-        models = []
         for label in par["reference_obs_targets"]:
             labels = reference_adata.obs[label]
             model = celltypist.train(reference_matrix,
