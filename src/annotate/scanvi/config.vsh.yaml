@@ -1,0 +1,145 @@
+functionality:
+  name: scanvi
+  namespace: annotate
+  description: Semi-supervised model for single-cell transcriptomics data. A scVI extension that can leverage the cell type knowledge for a subset of the cells present in the data sets to infer the states of the rest of the cells.
+  authors:
+    - __merge__: /src/authors/jakub_majercik.yaml
+      roles: [ author ]
+
+  argument_groups:
+    - name: Inputs
+      description: Arguments related to the input (aka query) dataset.
+      arguments:
+        - name: "--input"
+          alternatives: [-i]
+          type: file
+          description: Input h5mu file.
+          direction: input
+          required: true
+          example: input.h5mu
+        - name: "--modality"
+          description: Which modality to process.
+          type: string
+          default: "rna"
+          required: false
+        - name: "--input_obs_label"
+          type: string
+          description: Key in obs field of input AnnData with cell-type predictions from SCANVI.
+          default: "predictions_scanvi"
+          required: false
+
+    - name: Reference
+      description: Arguments related to the reference dataset.
+      arguments:
+        - name: "--reference"
+          type: file
+          description: Reference h5ad file.
+          direction: input
+          required: true
+          example: reference.h5ad
+        - name: "--scvi_reference_model"
+          type: file
+          description: "Pretrained scvi reference model"
+          example: scvi_model.pt
+          direction: input
+          required: true
+        - name: "--reference_obs_label"
+          type: string
+          description: Key in obs field of reference AnnData with cell-type information.
+          default: "cell_ontology_class"
+          required: false
+
+    - name: SCANVI arguments
+      description: Arguments related to the SCANVI model.
+      arguments:
+        - name: "--train_size"
+          type: double
+          description: Size of training set.
+          required: false
+          default: 0.9
+        - name: "--max_epochs"
+          type: integer
+          description: Maximum number of epochs.
+          required: false
+          default: 400
+        - name: "--learning_rate"
+          type: double
+          description: Learning rate.
+          required: false
+          default: 1e-3
+        - name: "--reduce_lr_on_plateau"
+          type: boolean
+          description: Reduce learning rate on plateau.
+          required: false
+          default: true
+        - name: "--lr_patience"
+          type: integer
+          description: Patience for learning rate reduction.
+          required: false
+          default: 25
+        - name: "--lr_factor"
+          type: double
+          description: Factor by which to reduce learning rate.
+          required: false
+          default: 0.5
+        - name: "--early_stopping"
+          type: boolean
+          description: Early stopping.
+          required: false
+          default: true
+        - name: "--early_stopping_patience"
+          type: integer
+          description: Patience for early stopping.
+          required: false
+          default: 50
+
+    - name: Outputs
+      description: Arguments related to the output.
+      arguments:
+        - name: "--output"
+          type: file
+          description: Output h5mu file.
+          direction: output
+          required: true
+          example: output.h5mu
+        - name: "--output_compression"
+          type: string
+          choices: ["gzip", "lzf"]
+          required: false
+          example: "gzip"
+        - name: "--output_model"
+          type: file
+          description: Folder where the state of the trained model will be saved to.
+          direction: output
+          required: false
+          example: model_dir
+
+  resources:
+    - type: python_script
+      path: script.py
+    - path: /src/utils/setup_logger.py
+
+  test_resources:
+    - type: python_script
+      path: test.py
+    - path: /resources_test/annotation_test_data/
+    - path: /resources_test/pbmc_1k_protein_v3/
+
+platforms:
+  - type: docker
+    image: python:3.10-slim
+    setup:
+      - type: apt
+        packages:
+          - libhdf5-dev
+          - procps
+      - type: python
+        __merge__: [ /src/base/requirements/scanpy.yaml, .]
+      - type: python
+        packages:
+          - scvi-tools==1.1.5
+      - type: python
+        __merge__: [ /src/base/requirements/anndata_mudata.yaml, .]
+    __merge__: [ /src/base/requirements/python_test_setup.yaml, .]
+  - type: nextflow
+    
