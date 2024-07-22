@@ -1,7 +1,7 @@
 functionality:
   name: "bcftools"
   namespace: "genetic_demux"
-  version: "1.0.1"
+  version: "1.0.2"
   authors:
   - name: "Xichen Wu"
     roles:
@@ -179,6 +179,6 @@ info:
   output: "/home/runner/work/openpipeline/openpipeline/target/docker/genetic_demux/bcftools"
   executable: "/home/runner/work/openpipeline/openpipeline/target/docker/genetic_demux/bcftools/bcftools"
   viash_version: "0.8.6"
-  git_commit: "8ba584e550ac93c484a8b6ddea0c44618d02cf3f"
+  git_commit: "57add3ff137ac44d67bc7456cb9146bc6dc633cc"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"
-  git_tag: "1.0.0-1-g8ba584e550"
+  git_tag: "1.0.1-3-g57add3ff13"
