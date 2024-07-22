@@ -5,6 +5,10 @@ description: |
 authors:
   - __merge__: /src/authors/dorien_roosen.yaml
     roles: [ maintainer, author ]
+  - __merge__: /src/authors/elizabeth_mlynarski.yaml
+    roles: [ author ]
+  - __merge__: /src/authors/weiwei_schultz.yaml
+    roles: [ contributor ]
 
 argument_groups:
   - name: Inputs

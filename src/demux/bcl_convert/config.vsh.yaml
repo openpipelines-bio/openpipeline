@@ -10,6 +10,10 @@ authors:
     roles: [ author, maintainer ]
   - __merge__: /src/authors/marijke_van_moerbeke.yaml
     roles: [ author ]
+  - __merge__: /src/authors/weiwei_schultz.yaml
+    roles: [ contributor ]
+  - __merge__: /src/authors/dorien_roosen.yaml
+    roles: [ author ]
 arguments:
   - name: "--input"
     alternatives: [ "-i" ]
