@@ -478,9 +478,14 @@ def test_concat_different_columns_per_modality_and_per_sample(run_component, sam
     non_shared_features = data_sample1.var_names.difference(data_sample2.var_names)
     assert concatenated_data.var.loc[non_shared_features, 'mod2:Feat4'].isna().all()
 
-@pytest.mark.parametrize("test_value,expected", [("bar", "bar"), (True, True), (0.1, 0.1), (np.nan, pd.NA)])
+@pytest.mark.parametrize("test_value,test_value_dtype,expected", [("bar", "str", "bar"),
+                                                                  (True, pd.BooleanDtype(), True),
+                                                                  (1, pd.Int16Dtype(), 1),
+                                                                  (0.1, float, 0.1),
+                                                                  (0.1, np.float64, 0.1),
+                                                                  (np.nan, np.float64, pd.NA)])
 def test_concat_remove_na(run_component, sample_1_h5mu, sample_2_h5mu, 
-                          write_mudata_to_file, random_h5mu_path, test_value, expected,
+                          write_mudata_to_file, random_h5mu_path, test_value, test_value_dtype, expected,
                           change_column_contents):
     """
     Test concatenation of samples where the column from one sample contains NA values
@@ -492,7 +497,7 @@ def test_concat_remove_na(run_component, sample_1_h5mu, sample_2_h5mu,
     """
     change_column_contents(sample_1_h5mu, 'var', 'Shared_feat', {'mod1': np.nan, 'mod2': np.nan})
     change_column_contents(sample_2_h5mu, 'var', 'Shared_feat', {'mod1': test_value, 'mod2': np.nan})
-
+    sample_2_h5mu.var['Shared_feat'] = sample_2_h5mu.var['Shared_feat'].astype(test_value_dtype)
     output_path = random_h5mu_path()
 
     run_component([
@@ -547,9 +552,17 @@ def test_concat_invalid_h5_error_includes_path(run_component, tmp_path,
         err.value.stdout.decode('utf-8'))
 
 
-@pytest.mark.parametrize("test_value_1,test_value_2,expected", [(1, "1", pd.CategoricalDtype(categories=['1.0', '1']))])
+@pytest.mark.parametrize("test_value_1,value_1_dtype,test_value_2,value_2_dtype,expected", 
+                         [(1, float, "1", str, pd.CategoricalDtype(categories=['1.0', '1'])),
+                          (1, np.float64, "1", str, pd.CategoricalDtype(categories=['1.0', '1'])),
+                          (1, pd.Int16Dtype(), 2.0,  pd.Int16Dtype(), pd.Int64Dtype()),
+                          (True, bool, False, bool, pd.BooleanDtype()),
+                          (True, pd.BooleanDtype(), False, bool, pd.BooleanDtype()),
+                          ("foo", str, "bar", str, pd.CategoricalDtype(categories=['bar', 'foo'])),
+                         ]
+                        )
 def test_concat_dtypes_per_modality(run_component, write_mudata_to_file, change_column_contents, 
-                                    sample_1_h5mu, sample_2_h5mu, test_value_1, test_value_2,
+                                    sample_1_h5mu, sample_2_h5mu, test_value_1, value_1_dtype, test_value_2, value_2_dtype,
                                     expected, random_h5mu_path):
     """
     Test joining column with different dtypes to make sure that they are writable.
@@ -561,7 +574,10 @@ def test_concat_dtypes_per_modality(run_component, write_mudata_to_file, change_
     for the test column in mod2 is still writable.
     """
     change_column_contents(sample_1_h5mu, "var", "test_col", {"mod1": test_value_1, "mod2": test_value_1})
+    sample_1_h5mu.var['test_col'] = sample_1_h5mu.var['test_col'].astype(value_1_dtype)
     change_column_contents(sample_2_h5mu, "var", "test_col", {"mod1": test_value_2, "mod2": test_value_2})
+    sample_2_h5mu.var['test_col'] = sample_2_h5mu.var['test_col'].astype(value_2_dtype)
+
     output_file = random_h5mu_path()
     run_component([
         "--input_id", "sample1;sample2",
@@ -572,6 +588,40 @@ def test_concat_dtypes_per_modality(run_component, write_mudata_to_file, change_
         ])
     concatenated_data = md.read(output_file)
     assert concatenated_data['mod2'].var['test_col'].dtype == expected
+
+
+@pytest.mark.parametrize("test_value,value_dtype,expected", 
+                         [(1, float, pd.Int64Dtype()),
+                          (1, np.float64, pd.Int64Dtype()),
+                          (1, pd.Int16Dtype(), pd.Int16Dtype()),
+                          (True, bool, pd.BooleanDtype()),
+                          (True, pd.BooleanDtype(), pd.BooleanDtype()),
+                          ("foo", str, pd.CategoricalDtype(categories=['foo'])),
+                         ]
+                        )
+def test_concat_dtypes_per_modality_multidim(run_component, write_mudata_to_file, 
+                                             sample_1_h5mu, sample_2_h5mu, test_value, value_dtype,
+                                             expected, random_h5mu_path):
+    """
+    Test if the result of concatenation is still writable when the input already contain 
+    data in .varm and this data is kept. Because we are joining observations, the dtype of this
+    data may change and the result might not be writable anymore
+    """
+    
+    sample_1_h5mu['mod1'].varm['test_df'] = pd.DataFrame(index=sample_1_h5mu['mod1'].var_names)
+    sample_1_h5mu['mod1'].varm['test_df']['test_col'] = test_value
+    sample_1_h5mu['mod1'].varm['test_df']['test_col'] = sample_1_h5mu['mod1'].varm['test_df']['test_col'].astype(value_dtype)
+
+    output_file = random_h5mu_path()
+    run_component([
+        "--input_id", "sample1;sample2",
+        "--input", write_mudata_to_file(sample_1_h5mu),
+        "--input", write_mudata_to_file(sample_2_h5mu),
+        "--output", output_file,
+        "--other_axis_mode", "move"
+        ])
+    concatenated_data = md.read(output_file)
+    assert concatenated_data['mod1'].varm['test_df']['test_col'].dtype == expected
 
 @pytest.mark.parametrize("test_value_1,test_value_2,expected", [(1, "1", pd.CategoricalDtype(categories=['1.0', '1']))])
 def test_concat_dtypes_global(run_component, write_mudata_to_file, change_column_contents, 
@@ -622,6 +672,8 @@ def test_non_overlapping_modalities(run_component, sample_2_h5mu, sample_3_h5mu,
         "--output", output_path,
         "--other_axis_mode", "move"
         ])
+    output_data = md.read(output_path)
+    assert set(output_data.mod.keys()) == {"mod1", "mod2", "mod3"}
 
 
 def test_resolve_annotation_conflict_missing_column(run_component, sample_1_h5mu, 
