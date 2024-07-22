@@ -41,106 +41,106 @@ argument_groups:
     description: |
       The gene list inputs can be provided as a list of gene symbols or as a file containing a list of gene symbols. The gene list file should be formatted as a single column with gene symbols.
 
-    Make sure that the gene list inputs are consistent with the gene names in the adata object as provided by the --var_gene_names argument.
-  arguments:
-    - name: --s_genes
-      type: string
-      description: |
-        List of gene symbols for scoring s phase genes.
-      required: false
-      multiple: true
-      example: [gene1, gene2, gene3]
-    - name: --s_genes_file
-      type: file
-      description: |
-        Path to a .txt file containing the gene list of s phase genes to be scored. 
-        The gene list file should be formatted as a single column with gene symbols.
-      required: false
-      example: s_gene_list.txt
-    - name: --g2m_genes
-      type: string
-      description: |
-        List of gene symbols for scoring g2m phase genes.
-      required: false
-      multiple: true
-      example: [gene1, gene2, gene3]
-    - name: --g2m_genes_file
-      type: file
-      description: |
-        Path to a .txt file containing the gene list of g2m phase genes to be scored. 
-        The gene list file should be formatted as a single column with gene symbols.
-      required: false
-      example: g2m_gene_list.txt
-    - name: --gene_pool
-      type: string
-      description: |
-        List of gene symbols for sampling the reference set. Default is all genes.
-      required: false
-      multiple: true
-      example: [gene1, gene2, gene3]
-    - name: --gene_pool_file
-      type: file
-      description: |
-        File with genes for sampling the reference set. Default is all genes. 
-        The gene pool file should be formatted as a single column with gene symbols.
-      required: false
-      example: gene_pool.txt
+      Make sure that the gene list inputs are consistent with the gene names in the adata object as provided by the --var_gene_names argument.
+    arguments:
+      - name: --s_genes
+        type: string
+        description: |
+          List of gene symbols for scoring s phase genes.
+        required: false
+        multiple: true
+        example: [gene1, gene2, gene3]
+      - name: --s_genes_file
+        type: file
+        description: |
+          Path to a .txt file containing the gene list of s phase genes to be scored. 
+          The gene list file should be formatted as a single column with gene symbols.
+        required: false
+        example: s_gene_list.txt
+      - name: --g2m_genes
+        type: string
+        description: |
+          List of gene symbols for scoring g2m phase genes.
+        required: false
+        multiple: true
+        example: [gene1, gene2, gene3]
+      - name: --g2m_genes_file
+        type: file
+        description: |
+          Path to a .txt file containing the gene list of g2m phase genes to be scored. 
+          The gene list file should be formatted as a single column with gene symbols.
+        required: false
+        example: g2m_gene_list.txt
+      - name: --gene_pool
+        type: string
+        description: |
+          List of gene symbols for sampling the reference set. Default is all genes.
+        required: false
+        multiple: true
+        example: [gene1, gene2, gene3]
+      - name: --gene_pool_file
+        type: file
+        description: |
+          File with genes for sampling the reference set. Default is all genes. 
+          The gene pool file should be formatted as a single column with gene symbols.
+        required: false
+        example: gene_pool.txt
 
-- name: Outputs
-  arguments:
-    - name: --output
-      type: file
-      direction: output
-      description: |
-        Output h5mu file
-      required: true
-      example: output_file.h5mu
-    - name: "--output_compression"
-      type: string
-      description: The compression format to be used on the output h5mu object.
-      choices: ["gzip", "lzf"]
-      required: false
-      example: "gzip"
-    - name: "--obs_phase"
-      type: string
-      description: |
-        The name of the column in the obs attribute of the adata object that will store the cell cycle phase annotation.
-      required: false
-      default: "phase"
-    - name: "--obs_s_score"
-      type: string
-      description: |
-        The name of the column in the obs attribute of the adata object that will store the s phase score.
-      required: false
-      default: "S_score"
-    - name: "--obs_g2m_score"
-      type: string
-      description: |
-        The name of the column in the obs attribute of the adata object that will store the g2m phase score.
-      required: false
-      default: "G2M_score"
+  - name: Outputs
+    arguments:
+      - name: --output
+        type: file
+        direction: output
+        description: |
+          Output h5mu file
+        required: true
+        example: output_file.h5mu
+      - name: "--output_compression"
+        type: string
+        description: The compression format to be used on the output h5mu object.
+        choices: ["gzip", "lzf"]
+        required: false
+        example: "gzip"
+      - name: "--obs_phase"
+        type: string
+        description: |
+          The name of the column in the obs attribute of the adata object that will store the cell cycle phase annotation.
+        required: false
+        default: "phase"
+      - name: "--obs_s_score"
+        type: string
+        description: |
+          The name of the column in the obs attribute of the adata object that will store the s phase score.
+        required: false
+        default: "S_score"
+      - name: "--obs_g2m_score"
+        type: string
+        description: |
+          The name of the column in the obs attribute of the adata object that will store the g2m phase score.
+        required: false
+        default: "G2M_score"
 
-- name: Arguments
-  arguments:
-    - name: --n_bins
-      type: integer
-      min: 0
-      default: 25
-      required: false
-      description: |
-        Number of expression level bins for sampling.
-    - name: --random_state
-      type: integer
-      description: |
-        The random seed for sampling.
-      default: 0
-      required: false
-    - name: --allow_missing_genes
-      type: boolean
-      description: |
-        If true, missing genes in the gene list will be ignored.
-      default: false
-      required: false
+  - name: Arguments
+    arguments:
+      - name: --n_bins
+        type: integer
+        min: 0
+        default: 25
+        required: false
+        description: |
+          Number of expression level bins for sampling.
+      - name: --random_state
+        type: integer
+        description: |
+          The random seed for sampling.
+        default: 0
+        required: false
+      - name: --allow_missing_genes
+        type: boolean
+        description: |
+          If true, missing genes in the gene list will be ignored.
+        default: false
+        required: false
 
 resources:
   - path: script.py
@@ -152,14 +152,15 @@ test_resources:
   - path: /resources_test/pbmc_1k_protein_v3/
   
 engines:
-- type: docker
-  image: python:3.11
-  setup:
-    - type: python
-      __merge__: [ /src/base/requirements/scanpy.yaml, /src/base/requirements/anndata_mudata.yaml ]
-  test_setup:
-    - type: python
-      __merge__: [ /src/base/requirements/viashpy.yaml, .]
-      
+  - type: docker
+    image: python:3.11
+    setup:
+      - type: python
+        __merge__: [ /src/base/requirements/scanpy.yaml, /src/base/requirements/anndata_mudata.yaml ]
+    test_setup:
+      - type: python
+        __merge__: [ /src/base/requirements/viashpy.yaml, .]
+
 runners:
-- type: executable
+  - type: nextflow
+  - type: executable
