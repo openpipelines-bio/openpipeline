@@ -3095,7 +3095,7 @@ meta = [
     "platform" : "nextflow",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/transform/normalize_total",
     "viash_version" : "0.8.6",
-    "git_commit" : "800a2f4e9da3a6137d0062206c26ebc6dd4bf986",
+    "git_commit" : "67532f6d65cbba89618942056449a87971d54f23",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline"
   }
 }'''))
