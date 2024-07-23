@@ -92,6 +92,7 @@ workflow run_wf {
           "model_vocab": state.model_vocab,
           "model_config": state.model_config,
           "label_mapper_key": state.label_mapper_key,
+          "finetuned_checkpoints_key": state.finetuned_checkpoints_key,
           "input": state.input,
           "modality": state.modality,
           "obsm_gene_tokens": "gene_id_tokens",
@@ -103,11 +104,10 @@ workflow run_wf {
           "dsbn": state.dsbn,
           "batch_size": state.batch_size,
           "seed": state.seed,
-          "obs_predicted_cell_class": state.obs_predicted_cell_class,
-          "obs_predicted_cell_label": state.obs_predicted_cell_label,
+          "output_obs_predictions": state.output_obs_predictions,
+          "output_obs_probability": state.output_obs_probability,
           "output": state.workflow_output,
-          "output_compression": state.output_compression,
-          "finetuned_checkpoints_key": state.finetuned_checkpoints_key
+          "output_compression": state.output_compression
         ]
         },
         toState: {id, output, state -> ["output": output.output]},
