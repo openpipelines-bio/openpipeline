@@ -43,18 +43,14 @@ def test_cell_type_inference(run_component, tmp_path):
         "--model_vocab", model_vocab,
         "--model_config", model_config,
         "--obs_batch_label", "sample",
-        "--obs_predicted_cell_class", "predicted_cell_class",
-        "--obs_predicted_cell_label", "predicted_cell_label",
         "--dsbn", "True"
     ]
     run_component(args)
 
     output_mudata = read_h5mu(output_annotation_file)
     output_adata = output_mudata.mod["rna"]
-    assert "predicted_cell_class" in output_adata.obs.keys(), "predicted_cell_class is not present in anndata obs keys"
-    assert not all(np.isnan(output_adata.obs["predicted_cell_class"])), "predicted cell classes contain nan values"
-    assert output_adata.obs["predicted_cell_class"].dtype == "int64", "predicted cell classes are not integers"
-    assert "predicted_cell_label" in output_adata.obs.keys(), "predicted_cell_type is not present in anndata obs keys"
+    assert "scgpt_pred" in output_adata.obs.keys(), "scgpt_pred is not present in anndata obs keys"
+    assert "scgpt_probability" in output_adata.obs.keys(), "scgpt_probability is not present in anndata obs keys"
 
     # run withou dsbn
     output_annotation_file_without_dsbn = tmp_path / "Kim2020_Lung_subset_annotated_no_dsbn.h5mu"
@@ -70,8 +66,6 @@ def test_cell_type_inference(run_component, tmp_path):
         "--finetuned_checkpoints_key", "model_state_dict",
         "--label_mapper_key", "id_to_class",
         "--obs_batch_label", "sample",
-        "--obs_predicted_cell_class", "predicted_cell_class",
-        "--obs_predicted_cell_label", "predicted_cell_label",
         "--dsbn", "False"
     ]
     run_component(args)
@@ -80,7 +74,7 @@ def test_cell_type_inference(run_component, tmp_path):
     output_adata_no_dsbn = output_mdata_no_dsbn.mod["rna"]
 
     # Assert that embeddings without dsbn are different
-    assert not (output_adata.obs["predicted_cell_class"] == output_adata_no_dsbn.obs["predicted_cell_class"]).all(), "Cell type predictions with and without dsbn are the same"
+    assert not (output_adata.obs["scgpt_pred"].astype(str) == output_adata_no_dsbn.obs["scgpt_pred"].astype(str)).all(), "Cell type predictions with and without dsbn are the same"
 
 
 def test_annotation_dsbn_without_batch_labels(run_component, tmp_path):
@@ -98,8 +92,6 @@ def test_annotation_dsbn_without_batch_labels(run_component, tmp_path):
         "--model_config", model_config,
         "--finetuned_checkpoints_key", "model_state_dict",
         "--label_mapper_key", "id_to_class",
-        "--obs_predicted_cell_class", "predicted_cell_class",
-        "--obs_predicted_cell_label", "predicted_cell_label",
         "--dsbn", "True",
     ]
 
@@ -126,8 +118,6 @@ def test_annotation_non_existing_keys(run_component, tmp_path):
         "--model_config", model_config,
         "--finetuned_checkpoints_key", "model_state_dict",
         "--label_mapper_key", "id_to_class",
-        "--obs_predicted_cell_class", "predicted_cell_class",
-        "--obs_predicted_cell_label", "predicted_cell_label",
         "--obs_batch_label", "sample",
         "--dsbn", "True",
     ]
@@ -154,8 +144,6 @@ def test_checkpoint_architecture(run_component, tmp_path):
         "--model_config", model_config,
         "--finetuned_checkpoints_key", "dummy_checkpoints_key",
         "--label_mapper_key", "id_to_class",
-        "--obs_predicted_cell_class", "predicted_cell_class",
-        "--obs_predicted_cell_label", "predicted_cell_label",
         "--obs_batch_label", "sample",
         "--dsbn", "True",
     ]
