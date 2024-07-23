@@ -79,6 +79,7 @@ functionality:
           choices: ["gzip", "lzf"]
           description: |
             The compression algorithm to use for the output h5mu file.
+
     - name: "Padding arguments"
       arguments:
         - name: "--pad_token"
@@ -120,6 +121,7 @@ functionality:
           default: 64
           description: |
             The batch size to be used for embedding inference.
+
     - name: "Binning arguments"
       arguments:
         - name: "--n_input_bins"

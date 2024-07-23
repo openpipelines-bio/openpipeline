@@ -100,7 +100,7 @@ workflow run_wf {
           "pad_value": state.pad_value,
           "DSBN": state.DSBN,
           "batch_size": state.batch_size,
-          "obsm_embeddings": "X_scGPT",
+          "obsm_embeddings": state.obsm_integrated,
           "finetuned_checkpoints_key": state.finetuned_checkpoints_key,
           "output": state.output
         ]
@@ -114,7 +114,7 @@ workflow run_wf {
           "uns_output": "scGPT_integration_neighbors",
           "obsp_distances": "scGPT_integration_distances",
           "obsp_connectivities": "scGPT_integration_connectivities",
-          "obsm_input": "X_scGPT",
+          "obsm_input": state.obsm_integrated,
           "modality": state.modality
         ]
       },
