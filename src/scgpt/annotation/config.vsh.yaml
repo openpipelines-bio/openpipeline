@@ -40,7 +40,6 @@ functionality:
           default: id_to_class
           description: |
             Key in the model file containing the cell type class to label mapper dictionary.
-
     - name: Query input
       arguments:
         - name: "--input"
@@ -69,7 +68,6 @@ functionality:
           default: values_tokenized
           description: |
             The key of the .obsm array containing the count values of the tokenized genes
-
     - name: Outputs
       arguments:
         - name: "--output"
@@ -86,19 +84,18 @@ functionality:
           default: gzip
           description: |
             The compression algorithm to use for the output h5mu file.
-        - name: "--obs_predicted_cell_class"
+        - name: "--output_obs_predictions"
           type: string
-          default: "predicted_cell_class"
-          required: false
-          description: |
-            The name of the adata.obs column to write predicted cell type classes to.
-        - name: "--obs_predicted_cell_label"
-          type: string
-          default: "predicted_cell_label"
+          default: "scgpt_pred"
           required: false
           description: |
             The name of the adata.obs column to write predicted cell type labels to.
-
+        - name: "--output_obs_probability"
+          type: string
+          default: "scgpt_probability"
+          required: false
+          description: |
+            The name of the adata.obs column to write predicted cell type labels to.
     - name: Arguments
       arguments:
         - name: "--pad_token"
@@ -135,7 +132,6 @@ functionality:
           type: integer
           description: |
             Seed for random number generation. If not specified, no seed is used.
-
   resources:
     - type: python_script
       path: script.py
@@ -162,5 +158,3 @@ platforms:
         __merge__: [/src/base/requirements/scanpy.yaml]
     __merge__: [ /src/base/requirements/python_test_setup.yaml, .]
   - type: nextflow
-    directives:
-      label: [ highmem ]

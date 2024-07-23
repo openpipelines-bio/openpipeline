@@ -7,7 +7,7 @@ functionality:
       roles: [ author, maintainer ]
     - __merge__: /src/authors/jakub_majercik.yaml
       roles: [ author ]
-      
+
   argument_groups:
     - name: "Query input"
       arguments:
@@ -39,7 +39,6 @@ functionality:
           type: string
           description: |
             The name of the adata obs column containing the batch labels.
-
     - name: "Model input"
       arguments:
         - name: "--model"
@@ -70,7 +69,6 @@ functionality:
           default: id_to_class
           description: |
             Key in the model file containing the cell type class to label mapper dictionary.
-
     - name: "Outputs"
       arguments:
         - name: "--output"
@@ -98,7 +96,6 @@ functionality:
           required: false
           description: |
             The name of the adata.obs column to write predicted cell type labels to.
-
     - name: "Padding arguments"
       arguments:
         - name: "--pad_token"
@@ -121,7 +118,13 @@ functionality:
           default: 1200
           description: |
             Number of highly variable genes to subset for.
-
+    - name: "Tokenization arguments"
+      arguments:
+        - name: "--max_seq_len"
+          type: integer
+          required: false
+          description: |
+            The maximum sequence length of the tokenized data.
     - name: "Embedding arguments"
       arguments:
         - name: --dsbn
@@ -134,7 +137,6 @@ functionality:
           default: 64
           description: |
             The batch size to be used for embedding inference.
-
     - name: "Binning arguments"
       arguments:
         - name: "--n_input_bins"
@@ -154,7 +156,7 @@ functionality:
     - type: nextflow_script
       path: main.nf
       entrypoint: run_wf
-  
+
   test_resources:
     - type: nextflow_script
       path: test.nf
