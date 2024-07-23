@@ -161,7 +161,7 @@ jobs:
         enable_dataset_input: true
    
     - name: Build parameter files
-      uses: viash-io/viash-actions/pro/build-nextflow-params@v6
+      uses: viash-io/viash-actions/pro/build-nextflow-params@build_nextflow_schemas_viash_0_9
       with:
         target_dir: target/nextflow
         viash_pro_token: ${{ secrets.GTHB_PAT }}
