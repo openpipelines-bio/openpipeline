@@ -86,19 +86,19 @@ functionality:
           choices: ["gzip", "lzf"]
           description: |
             The compression algorithm to use for the output h5mu file.
-        - name: "--obs_predicted_cell_class"
+        - name: "--output_obs_predictions"
           type: string
-          default: "scgpt_predicted_cell_class"
-          required: false
-          description: |
-            The name of the adata.obs column to write predicted cell type classes to.
-        - name: "--obs_predicted_cell_label"
-          type: string
-          default: "scgpt_predicted_cell_label"
+          default: "scgpt_pred"
           required: false
           description: |
             The name of the adata.obs column to write predicted cell type labels to.
-
+        - name: "--output_obs_probability"
+          type: string
+          default: "scgpt_probability"
+          required: false
+          description: |
+            The name of the adata.obs column to write predicted cell type labels to.
+            
     - name: "Padding arguments"
       arguments:
         - name: "--pad_token"
