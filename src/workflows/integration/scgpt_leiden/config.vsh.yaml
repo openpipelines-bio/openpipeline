@@ -72,6 +72,11 @@ functionality:
           direction: output
           description: Output file path
           example: output.h5mu
+        - name: "--obsm_integrated"
+          type: string
+          default: "X_scgpt"
+          required: false
+          description: "In which .obsm slot to store the resulting integrated embedding."
         - name: "--output_compression"
           type: string
           example: "gzip"

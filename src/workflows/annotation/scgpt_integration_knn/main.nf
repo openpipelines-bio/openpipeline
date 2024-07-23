@@ -55,11 +55,11 @@ workflow run_wf {
             fromState: { id, state ->
             [
                 "id": id, //
-                "input": state.input, //
+                "input": state.input,
                 "modality": "rna",
-                "input_layer": state.input_layer, // check
-                "var_gene_names": state.var_gene_names, // check
-                "obs_batch_label": state.obs_batch_label, // check
+                "input_layer": state.input_layer,
+                "var_gene_names": state.var_gene_names,
+                "obs_batch_label": state.obs_batch_label,
                 "model": state.model,
                 "model_vocab": state.model_vocab,
                 "model_config": state.model_config,
