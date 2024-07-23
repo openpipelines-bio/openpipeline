@@ -1,89 +1,92 @@
-functionality:
-  name: vireo
-  namespace: genetic_demux
-  description: "Vireo is primarily designed for demultiplexing cells into donors by modelling of expressed alleles."
-  authors:
-    - __merge__: /src/authors/xichen_wu.yaml
-      roles: [ author ]
-  argument_groups:
-  - name: "Input"
-    arguments:
-    - name: "--cell_data"
-      type: file
-      description: The cell genotype file in VCF format or cellSNP folder with sparse matrices.
-    - name: "--n_donor"
-      type: integer
-      default: 2
-      description: Number of donors to demultiplex; can be larger than provided in donor_file.
-    - name: "--vartrix_data"
-      type: file
-      description: The cell genotype files in vartrix outputs.
-    - name: "--donor_file"
-      type: file
-      description: The donor genotype file in VCF format. Please filter the sample and region with bcftools first!
-    - name: "--geno_tag"
-      type: string
-      default: "PL"
-      description: The tag for donor genotype.
-      choices: ["GT", "GP", "PL"]
-    - name: "--no_doublet"
-      type: boolean
-      default: false
-      description: If use, not checking doublets.
-    - name: "--n_init"
-      type: integer
-      default: 50
-      description: Number of random initializations, when GT needs to learn.
-    - name: "--extra_donor"
-      type: integer
-      default: 0
-      description: Number of extra donor in pre-cluster, when GT needs to learn.
-    - name: "--extra_donorMode"
-      type: string
-      description: "Method for searching from extra donors. size: n_cell per donor; distance: GT distance between donors"
-    - name: "--force_learn_gt"
-      type: boolean
-      default: false
-      description: If use, treat donor GT as prior only.
-    - name: "--ase_mode"
-      type: boolean
-      default: false
-      description: If use, turn on SNP specific allelic ratio.
-    - name: "--no_plot"
-      type: boolean
-      default: false
-      description: If use, turn off plotting GT distance.
-    - name: "--rand_seed"
-      type: integer
-      description: Seed for random initialization
-    - name: "--cell_range"
-      type: string
-      description: Range of cells to process.
-    - name: "--call_ambient_rnas"
-      type: boolean
-      default: false
-      description: If use, detect ambient RNAs in each cell.
-  - name: "Output"
-    arguments:
-    - name: "--output"
-      alternatives: [ "-o" ]
-      type: file
-      direction: output
-      description: Output directory 
-      example: "vireo/"
-  resources:
-    - type: bash_script
-      path: script.sh
-  test_resources:
-    - type: bash_script
-      path: test.sh
-    - path: ../../../resources_test/vireo_test_data
-platforms:
-  - type: docker
-    image: python:3.10
-    setup:
-    - type: python
-      pip: [ threadpoolctl, vireoSNP ]
-  - type: nextflow
-    directives:
-      label: [ midmem, midcpu ]
+name: vireo
+namespace: genetic_demux
+description: "Vireo is primarily designed for demultiplexing cells into donors by modelling of expressed alleles."
+authors:
+  - __merge__: /src/authors/xichen_wu.yaml
+    roles: [ author ]
+argument_groups:
+- name: "Input"
+  arguments:
+  - name: "--cell_data"
+    type: file
+    description: The cell genotype file in VCF format or cellSNP folder with sparse matrices.
+  - name: "--n_donor"
+    type: integer
+    default: 2
+    description: Number of donors to demultiplex; can be larger than provided in donor_file.
+  - name: "--vartrix_data"
+    type: file
+    description: The cell genotype files in vartrix outputs.
+  - name: "--donor_file"
+    type: file
+    description: The donor genotype file in VCF format. Please filter the sample and region with bcftools first!
+  - name: "--geno_tag"
+    type: string
+    default: "PL"
+    description: The tag for donor genotype.
+    choices: ["GT", "GP", "PL"]
+  - name: "--no_doublet"
+    type: boolean
+    default: false
+    description: If use, not checking doublets.
+  - name: "--n_init"
+    type: integer
+    default: 50
+    description: Number of random initializations, when GT needs to learn.
+  - name: "--extra_donor"
+    type: integer
+    default: 0
+    description: Number of extra donor in pre-cluster, when GT needs to learn.
+  - name: "--extra_donorMode"
+    type: string
+    description: "Method for searching from extra donors. size: n_cell per donor; distance: GT distance between donors"
+  - name: "--force_learn_gt"
+    type: boolean
+    default: false
+    description: If use, treat donor GT as prior only.
+  - name: "--ase_mode"
+    type: boolean
+    default: false
+    description: If use, turn on SNP specific allelic ratio.
+  - name: "--no_plot"
+    type: boolean
+    default: false
+    description: If use, turn off plotting GT distance.
+  - name: "--rand_seed"
+    type: integer
+    description: Seed for random initialization
+  - name: "--cell_range"
+    type: string
+    description: Range of cells to process.
+  - name: "--call_ambient_rnas"
+    type: boolean
+    default: false
+    description: If use, detect ambient RNAs in each cell.
+- name: "Output"
+  arguments:
+  - name: "--output"
+    alternatives: [ "-o" ]
+    type: file
+    direction: output
+    description: Output directory 
+    example: "vireo/"
+resources:
+  - type: bash_script
+    path: script.sh
+test_resources:
+  - type: bash_script
+    path: test.sh
+  - path: ../../../resources_test/vireo_test_data
+
+engines:
+- type: docker
+  image: python:3.10
+  setup:
+  - type: python
+    pip: [ threadpoolctl, vireoSNP ]
+
+runners:
+- type: executable
+- type: nextflow
+  directives:
+    label: [ midmem, midcpu ]

@@ -5,7 +5,7 @@ import numpy as np
 
 ## VIASH START
 meta = {
-    'executable': './target/native/integrate/harmonypy/harmonypy',
+    'executable': './target/executable/integrate/harmonypy/harmonypy',
     'resources_dir': './resources_test/pbmc_1k_protein_v3/'
 }
 ## VIASH END
