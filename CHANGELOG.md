@@ -12,6 +12,8 @@
 
 * `lianapy`: bumped version to `1.2.1` (PR #827).
 
+* `filter/filter_with_hvg`: this component was deprecated and has now been removed. Use `feature_annotation/highly_variable_features_scanpy` instead.
+
 ## NEW FUNCTIONALITY
 
 * CI: added checking of mudata contents for multiple workflows (PR #783).
