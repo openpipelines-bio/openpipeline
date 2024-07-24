@@ -1,55 +1,53 @@
-name: bcl2fastq
-namespace: demux
-description: |
-  Convert bcl files to fastq files using bcl2fastq.
-authors:
-  - __merge__: /src/authors/toni_verbeiren.yaml
-    roles: [ author, maintainer ]
-arguments:
-  - name: "--input"
-    alternatives: [ "-i", "--runfolder_dir" ]
-    type: file
-    required: true
-    description: Input run directory
-    example: bcl_dir
-  - name: "--sample_sheet"
-    alternatives: [ "-s" ]
-    type: file
-    required: true
-    description: Pointer to the sample sheet
-    example: SampleSheet.csv
-  - name: "--output"
-    alternatives: [ "-o" ]
-    type: file
-    direction: output
-    required: true
-    description: Output directory containig fastq files
-    example: fastq_dir
-  - name: "--reports"
-    type: file
-    direction: output
-    required: false
-    description: Reports directory
-    example: reports_dir
-  - name: "--ignore_missing"
-    type: boolean_true
-resources:
-  - type: bash_script
-    path: script.sh
-test_resources:
-  - type: bash_script
-    path: test.sh
-  - path: /resources_test/cellranger_tiny_bcl/bcl
-
-engines:
-- type: docker
-  image: ghcr.io/data-intuitive/bcl2fastq:2.20
-  setup:
-    - type: apt
-      packages:
-        - procps
-runners:
-- type: executable
-- type: nextflow
-  directives:
-    label: [ midmem, midcpu ]
+functionality:
+  name: bcl2fastq
+  namespace: demux
+  description: |
+    Convert bcl files to fastq files using bcl2fastq.
+  authors:
+    - __merge__: /src/authors/toni_verbeiren.yaml
+      roles: [ author, maintainer ]
+  arguments:
+    - name: "--input"
+      alternatives: [ "-i", "--runfolder_dir" ]
+      type: file
+      required: true
+      description: Input run directory
+      example: bcl_dir
+    - name: "--sample_sheet"
+      alternatives: [ "-s" ]
+      type: file
+      required: true
+      description: Pointer to the sample sheet
+      example: SampleSheet.csv
+    - name: "--output"
+      alternatives: [ "-o" ]
+      type: file
+      direction: output
+      required: true
+      description: Output directory containig fastq files
+      example: fastq_dir
+    - name: "--reports"
+      type: file
+      direction: output
+      required: false
+      description: Reports directory
+      example: reports_dir
+    - name: "--ignore_missing"
+      type: boolean_true
+  resources:
+    - type: bash_script
+      path: script.sh
+  test_resources:
+    - type: bash_script
+      path: test.sh
+    - path: /resources_test/cellranger_tiny_bcl/bcl
+platforms:
+  - type: docker
+    image: ghcr.io/data-intuitive/bcl2fastq:2.20
+    setup:
+      - type: apt
+        packages:
+          - procps
+  - type: nextflow
+    directives:
+      label: [ midmem, midcpu ]

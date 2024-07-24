@@ -1,83 +1,80 @@
-name: star_build_reference
-namespace: mapping
-description: Create a reference for STAR from a set of fasta files.
-authors:
-  - __merge__: /src/authors/dries_schaumont.yaml
-    roles: [ author ]
-argument_groups:
-  - name: Input/Output
-    arguments:
-      - type: file
-        name: --genome_fasta
-        alternatives: --genomeFastaFiles
-        required: true
-        description: The fasta files to be included in the reference. Corresponds to the --genomeFastaFiles argument in the STAR command.
-        example: [ chr1.fasta, chr2.fasta ]
-        multiple: true
-      - name: --transcriptome_gtf
-        alternatives: --sjdbGTFfile
-        type: file
-        direction: input
-        description: | 
-          Specifies the path to the file with annotated transcripts in the standard GTF
-          format. STAR will extract splice junctions from this file and use them to greatly improve
-          accuracy of the mapping. Corresponds to the --sjdbGTFfile argument in the STAR command.
-        required: false
-      - name: --output
-        alternatives: --genomeDir
-        type: file
-        description: Path to output directory. Corresponds to the --genomeDir argument in the STAR command.
-        example: /path/to/foo
-        direction: output
-        required: true
-  - name: "Genome indexing arguments"
-    arguments:
-      - type: integer
-        name: --genomeSAindexNbases
-        description: |
-          Length (bases) of the SA pre-indexing string. Typically between 10 and 15.
-          Longer strings will use much more memory, but allow faster searches. For small
-          genomes, the parameter {genomeSAindexNbases must be scaled down to
-          min(14, log2(GenomeLength)/2 - 1).
-        required: false
-        default: 14
-resources:
-  - type: python_script
-    path: script.py
-test_resources:
-  - type: bash_script
-    path: test.sh
-  - path: ../../../resources_test/cellranger_tiny_fastq
-
-engines:
-- type: docker
-  image: python:3.10-slim
-  setup:
-    - type: apt
-      packages: 
-        - procps
-    # setup derived from https://github.com/alexdobin/STAR/blob/master/extras/docker/Dockerfile
-    - type: docker
-      env: 
-        - STAR_VERSION 2.7.10b
-        - PACKAGES gcc g++ make wget zlib1g-dev unzip
-    - type: docker
-      run: |
-        apt-get update && \
-          apt-get install -y --no-install-recommends ${PACKAGES} && \
-          cd /tmp && \
-          wget --no-check-certificate https://github.com/alexdobin/STAR/archive/refs/tags/${STAR_VERSION}.zip && \
-          unzip ${STAR_VERSION}.zip && \
-          cd STAR-${STAR_VERSION}/source && \
-          make STARstatic CXXFLAGS_SIMD=-std=c++11 && \
-          cp STAR /usr/local/bin && \
-          cd / && \
-          rm -rf /tmp/STAR-${STAR_VERSION} /tmp/${STAR_VERSION}.zip && \
-          apt-get --purge autoremove -y ${PACKAGES} && \
-          apt-get clean
-
-runners:
-- type: executable          
-- type: nextflow
-  directives:
-    label: [ highmem, highcpu ]
+functionality:
+  name: star_build_reference
+  namespace: mapping
+  description: Create a reference for STAR from a set of fasta files.
+  authors:
+    - __merge__: /src/authors/dries_schaumont.yaml
+      roles: [ author ]
+  argument_groups:
+    - name: Input/Output
+      arguments:
+        - type: file
+          name: --genome_fasta
+          alternatives: --genomeFastaFiles
+          required: true
+          description: The fasta files to be included in the reference. Corresponds to the --genomeFastaFiles argument in the STAR command.
+          example: [ chr1.fasta, chr2.fasta ]
+          multiple: true
+        - name: --transcriptome_gtf
+          alternatives: --sjdbGTFfile
+          type: file
+          direction: input
+          description: | 
+            Specifies the path to the file with annotated transcripts in the standard GTF
+            format. STAR will extract splice junctions from this file and use them to greatly improve
+            accuracy of the mapping. Corresponds to the --sjdbGTFfile argument in the STAR command.
+          required: false
+        - name: --output
+          alternatives: --genomeDir
+          type: file
+          description: Path to output directory. Corresponds to the --genomeDir argument in the STAR command.
+          example: /path/to/foo
+          direction: output
+          required: true
+    - name: "Genome indexing arguments"
+      arguments:
+        - type: integer
+          name: --genomeSAindexNbases
+          description: |
+            Length (bases) of the SA pre-indexing string. Typically between 10 and 15.
+            Longer strings will use much more memory, but allow faster searches. For small
+            genomes, the parameter {genomeSAindexNbases must be scaled down to
+            min(14, log2(GenomeLength)/2 - 1).
+          required: false
+          default: 14
+  resources:
+    - type: python_script
+      path: script.py
+  test_resources:
+    - type: bash_script
+      path: test.sh
+    - path: ../../../resources_test/cellranger_tiny_fastq
+platforms:
+  - type: docker
+    image: python:3.10-slim
+    setup:
+      - type: apt
+        packages: 
+          - procps
+      # setup derived from https://github.com/alexdobin/STAR/blob/master/extras/docker/Dockerfile
+      - type: docker
+        env: 
+          - STAR_VERSION 2.7.10b
+          - PACKAGES gcc g++ make wget zlib1g-dev unzip
+      - type: docker
+        run: |
+          apt-get update && \
+            apt-get install -y --no-install-recommends ${PACKAGES} && \
+            cd /tmp && \
+            wget --no-check-certificate https://github.com/alexdobin/STAR/archive/refs/tags/${STAR_VERSION}.zip && \
+            unzip ${STAR_VERSION}.zip && \
+            cd STAR-${STAR_VERSION}/source && \
+            make STARstatic CXXFLAGS_SIMD=-std=c++11 && \
+            cp STAR /usr/local/bin && \
+            cd / && \
+            rm -rf /tmp/STAR-${STAR_VERSION} /tmp/${STAR_VERSION}.zip && \
+            apt-get --purge autoremove -y ${PACKAGES} && \
+            apt-get clean
+  - type: nextflow
+    directives:
+      label: [ highmem, highcpu ]

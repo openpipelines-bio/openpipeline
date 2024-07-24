@@ -44,7 +44,7 @@ def fetch_arguments_info(config: Dict[str, Any]) -> Dict[str, Any]:
     """Fetch arguments from config"""
     arguments = {
         arg["name"].removeprefix("-").removeprefix("-"): arg
-        for group in config["argument_groups"]
+        for group in config["functionality"]["argument_groups"]
         for arg in group["arguments"]
     }
     return arguments

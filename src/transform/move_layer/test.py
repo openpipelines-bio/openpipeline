@@ -6,7 +6,7 @@ from mudata import MuData, read_h5mu
 
 ## VIASH START
 meta = {
-    'executable': './target/executable/transform/move_layer/move_layer',
+    'executable': './target/docker/transform/move_layer/move_layer',
     'config': './src/transform/move_layer/config.vsh.yaml'
 }
 ## VIASH END

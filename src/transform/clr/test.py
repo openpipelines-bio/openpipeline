@@ -5,7 +5,7 @@ import numpy as np
 
 ## VIASH START
 meta = {
-    'executable': 'target/executable/transform/clr/clr',
+    'executable': 'target/docker/transform/clr/clr',
     'resources_dir': './resources_test/',
     'cpus': 2,
     'config': "./src/transform/clr/config.vsh.yaml"

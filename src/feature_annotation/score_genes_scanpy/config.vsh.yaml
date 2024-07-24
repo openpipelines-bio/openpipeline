@@ -1,141 +1,139 @@
-name: score_genes_scanpy
-namespace: feature_annotation
-authors:
-  - __merge__: /src/authors/robrecht_cannoodt.yaml
-    roles: [ author ]
-  - __merge__: /src/authors/dorien_roosen.yaml
-    roles: [ author ]
-  - __merge__: /src/authors/weiwei_schultz.yaml
-    roles: [ contributor ]
+functionality:
+  name: score_genes_scanpy
+  namespace: feature_annotation
+  authors:
+    - __merge__: /src/authors/robrecht_cannoodt.yaml
+      roles: [ author ]
+    - __merge__: /src/authors/dorien_roosen.yaml
+      roles: [ author ]
+    - __merge__: /src/authors/weiwei_schultz.yaml
+      roles: [ contributor ]
 
-description: |
-  Calculates the score of a set of genes for each cell, as implemented by scanpy. 
-  The score is the average expression of a set of genes subtracted with the average expression of a reference set of genes.
-argument_groups:
+  description: |
+    Calculates the score of a set of genes for each cell, as implemented by scanpy. 
+    The score is the average expression of a set of genes subtracted with the average expression of a reference set of genes.
+  argument_groups:
 
-- name: Inputs
-  arguments:
-    - name: --input
-      type: file
-      description: Input h5mu file
-      required: true
-      example: input_file.h5mu
-    - name: --gene_list
-      type: string
-      description: |
-        List of gene symbols to be scored.
-      required: false
-      multiple: true
-      example: [gene1, gene2, gene3]
-    - name: --gene_list_file
-      type: file
-      description: |
-        Path to a .txt file containing the gene list to be scored.
-        The gene list file should be formatted as a single column with gene symbols.
-      required: false
-      example: gene_list.txt
-    - name: --gene_pool
-      type: string
-      description: |
-        List of gene symbols for sampling the reference set. Default is all genes.
-      required: false
-      multiple: true
-      example: [gene1, gene2, gene3]
-    - name: --gene_pool_file
-      type: file
-      description: |
-        File with genes for sampling the reference set. Default is all genes.
-        The gene pool file should be formatted as a single column with gene symbols.
-      required: false
-      example: gene_pool.txt
-    - name: "--modality"
-      type: string
-      default: "rna"
-      required: false  
-    - name: "--input_layer"
-      type: string
-      example: log_normalized
-      required: false
-      description: |
-        The layer of the adata object containing normalized expression values.
-        If not provided, the X attribute of the adata object will be used.
-    - name: "--var_gene_names"
-      required: false
-      example: "gene_symbol"
-      type: string
-      description: |
-        .var column name to be used to detect mitochondrial genes instead of .var_names (default if not set).
-    - name: "--allow_missing_genes"
-      type: boolean
-      description: |
-        Whether to run score_genes when some genes in the gene_list or gene_list_file are not present in the gene_pool
-      required: false
+    - name: Inputs
+      arguments:
+        - name: --input
+          type: file
+          description: Input h5mu file
+          required: true
+          example: input_file.h5mu
+        - name: --gene_list
+          type: string
+          description: |
+            List of gene symbols to be scored.
+          required: false
+          multiple: true
+          example: [gene1, gene2, gene3]
+        - name: --gene_list_file
+          type: file
+          description: |
+            Path to a .txt file containing the gene list to be scored.
+            The gene list file should be formatted as a single column with gene symbols.
+          required: false
+          example: gene_list.txt
+        - name: --gene_pool
+          type: string
+          description: |
+            List of gene symbols for sampling the reference set. Default is all genes.
+          required: false
+          multiple: true
+          example: [gene1, gene2, gene3]
+        - name: --gene_pool_file
+          type: file
+          description: |
+            File with genes for sampling the reference set. Default is all genes.
+            The gene pool file should be formatted as a single column with gene symbols.
+          required: false
+          example: gene_pool.txt
+        - name: "--modality"
+          type: string
+          default: "rna"
+          required: false  
+        - name: "--input_layer"
+          type: string
+          example: log_normalized
+          required: false
+          description: |
+            The layer of the adata object containing normalized expression values.
+            If not provided, the X attribute of the adata object will be used.
+        - name: "--var_gene_names"
+          required: false
+          example: "gene_symbol"
+          type: string
+          description: |
+            .var column name to be used to detect mitochondrial genes instead of .var_names (default if not set).
+        - name: "--allow_missing_genes"
+          type: boolean
+          description: |
+            Whether to run score_genes when some genes in the gene_list or gene_list_file are not present in the gene_pool
+          required: false
 
-- name: Outputs
-  arguments:
-    - name: --output
-      type: file
-      direction: output
-      description: |
-        Output h5mu file
-      required: true
-      example: output_file.h5mu
-    - name: --obs_score
-      type: string
-      default: score
-      required: false
-      description: |
-        Name of the score field to be added in .obs.
-    - name: "--output_compression"
-      type: string
-      description: The compression format to be used on the output h5mu object.
-      choices: ["gzip", "lzf"]
-      required: false
-      example: "gzip"
+    - name: Outputs
+      arguments:
+        - name: --output
+          type: file
+          direction: output
+          description: |
+            Output h5mu file
+          required: true
+          example: output_file.h5mu
+        - name: --obs_score
+          type: string
+          default: score
+          required: false
+          description: |
+            Name of the score field to be added in .obs.
+        - name: "--output_compression"
+          type: string
+          description: The compression format to be used on the output h5mu object.
+          choices: ["gzip", "lzf"]
+          required: false
+          example: "gzip"
 
-- name: Arguments
-  arguments:
-    - name: --ctrl_size
-      type: integer
-      min: 0
-      default: 50
-      required: false
-      description: |
-        Number of reference genes to be sampled from each bin. 
-        If len(gene_list) is not too low, you can set ctrl_size=len(gene_list).
-    - name: --n_bins
-      type: integer
-      min: 0
-      default: 25
-      required: false
-      description: |
-        Number of expression level bins for sampling.
-    - name: --random_state
-      type: integer
-      description: |
-        The random seed for sampling.
-      default: 0
-      required: false
-        
-resources:
-  - path: script.py
-    type: python_script
-  - path: helper.py
+    - name: Arguments
+      arguments:
+        - name: --ctrl_size
+          type: integer
+          min: 0
+          default: 50
+          required: false
+          description: |
+            Number of reference genes to be sampled from each bin. 
+            If len(gene_list) is not too low, you can set ctrl_size=len(gene_list).
+        - name: --n_bins
+          type: integer
+          min: 0
+          default: 25
+          required: false
+          description: |
+            Number of expression level bins for sampling.
+        - name: --random_state
+          type: integer
+          description: |
+            The random seed for sampling.
+          default: 0
+          required: false
+          
+  resources:
+    - path: script.py
+      type: python_script
+    - path: helper.py
 
-test_resources:
-  - type: python_script
-    path: test.py
-  - path: /resources_test/pbmc_1k_protein_v3/
+  test_resources:
+    - type: python_script
+      path: test.py
+    - path: /resources_test/pbmc_1k_protein_v3/
 
-engines:
-- type: docker
-  image: python:3.11
-  setup:
-    - type: python
-      __merge__: [ /src/base/requirements/scanpy.yaml, /src/base/requirements/anndata_mudata.yaml ]
-  test_setup:
-    - type: python
-      __merge__: [ /src/base/requirements/viashpy.yaml, .]
-
-runners:
-- type: executable
+platforms:
+  - type: docker
+    image: python:3.11
+    setup:
+      - type: python
+        __merge__: [ /src/base/requirements/scanpy.yaml, /src/base/requirements/anndata_mudata.yaml ]
+    test_setup:
+      - type: python
+        __merge__: [ /src/base/requirements/viashpy.yaml, .]

@@ -1,80 +1,77 @@
-name: "velocyto_to_h5mu"
-namespace: "convert"
-description: |
-  Convert a velocyto loom file to a h5mu file.
+functionality:
+  name: "velocyto_to_h5mu"
+  namespace: "convert"
+  description: |
+    Convert a velocyto loom file to a h5mu file.
 
-  If an input h5mu file is also provided, the velocity
-  h5ad object will get added to that h5mu instead.
-authors:
-  - __merge__: /src/authors/dries_schaumont.yaml
-    roles: [ maintainer, author ]
-  - __merge__: /src/authors/robrecht_cannoodt.yaml
-    roles: [ author ]
-  - __merge__: /src/authors/angela_pisco.yaml
-    roles: [ contributor ]
-argument_groups:
-  - name: Inputs
-    arguments:
-      - name: "--input_loom"
-        type: file
-        description: Path to the input loom file.
-        example: input.loom
-        required: true
-      - name: "--input_h5mu"
-        type: file
-        description: If a MuData file is provided, 
-        example: input.h5mu
-      - name: "--modality"
-        type: string
-        description: The name of the modality to operate on.
-        default: rna_velocity
-  - name: Outputs
-    arguments:
-      - name: "--output"
-        type: file
-        description: Path to the output MuData file.
-        example: output.h5mu
-        direction: output
-      - name: "--output_compression"
-        type: string
-        description: The compression format to be used on the output h5mu object.
-        choices: ["gzip", "lzf"]
-        required: false
-        example: "gzip"
-      - name: "--layer_spliced"
-        type: string
-        description: Output layer for the spliced reads.
-        default: velo_spliced
-      - name: "--layer_unspliced"
-        type: string
-        description: Output layer for the unspliced reads.
-        default: velo_unspliced
-      - name: "--layer_ambiguous"
-        type: string
-        description: Output layer for the ambiguous reads.
-        default: velo_ambiguous
-resources:
-  - type: python_script
-    path: script.py
-test_resources:
-  - type: python_script
-    path: test.py
-  - path: /resources_test/cellranger_tiny_fastq
-
-engines:
-- type: docker
-  image: python:3.10-slim
-  setup:
-    - type: apt
-      packages:
-        - procps
-    - type: python
-      __merge__: [/src/base/requirements/anndata_mudata.yaml, /src/base/requirements/scanpy.yaml, .]
-      packages: 
-        - loompy
-
-runners:
-- type: executable
-- type: nextflow
-  directives:
-    label: [lowmem, lowcpu]
+    If an input h5mu file is also provided, the velocity
+    h5ad object will get added to that h5mu instead.
+  authors:
+    - __merge__: /src/authors/dries_schaumont.yaml
+      roles: [ maintainer, author ]
+    - __merge__: /src/authors/robrecht_cannoodt.yaml
+      roles: [ author ]
+    - __merge__: /src/authors/angela_pisco.yaml
+      roles: [ contributor ]
+  argument_groups:
+    - name: Inputs
+      arguments:
+        - name: "--input_loom"
+          type: file
+          description: Path to the input loom file.
+          example: input.loom
+          required: true
+        - name: "--input_h5mu"
+          type: file
+          description: If a MuData file is provided, 
+          example: input.h5mu
+        - name: "--modality"
+          type: string
+          description: The name of the modality to operate on.
+          default: rna_velocity
+    - name: Outputs
+      arguments:
+        - name: "--output"
+          type: file
+          description: Path to the output MuData file.
+          example: output.h5mu
+          direction: output
+        - name: "--output_compression"
+          type: string
+          description: The compression format to be used on the output h5mu object.
+          choices: ["gzip", "lzf"]
+          required: false
+          example: "gzip"
+        - name: "--layer_spliced"
+          type: string
+          description: Output layer for the spliced reads.
+          default: velo_spliced
+        - name: "--layer_unspliced"
+          type: string
+          description: Output layer for the unspliced reads.
+          default: velo_unspliced
+        - name: "--layer_ambiguous"
+          type: string
+          description: Output layer for the ambiguous reads.
+          default: velo_ambiguous
+  resources:
+    - type: python_script
+      path: script.py
+  test_resources:
+    - type: python_script
+      path: test.py
+    - path: /resources_test/cellranger_tiny_fastq
+platforms:
+  - type: docker
+    image: python:3.10-slim
+    setup:
+      - type: apt
+        packages:
+          - procps
+      - type: python
+        __merge__: [/src/base/requirements/anndata_mudata.yaml, /src/base/requirements/scanpy.yaml, .]
+        packages: 
+          - loompy
+  - type: nextflow
+    directives:
+      label: [lowmem, lowcpu]

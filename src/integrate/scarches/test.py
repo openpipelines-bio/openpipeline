@@ -4,7 +4,7 @@ import mudata
 
 ## VIASH START
 meta = {
-    'executable': './target/executable/integrate/scarches/scarches',
+    'executable': './target/docker/integrate/scarches/scarches',
     'resources_dir': './resources_test/'
 }
 ## VIASH END

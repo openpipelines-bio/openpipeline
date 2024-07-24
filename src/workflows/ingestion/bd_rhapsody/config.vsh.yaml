@@ -1,163 +1,164 @@
-name: "bd_rhapsody"
-namespace: "workflows/ingestion"
-description: |
-    A wrapper for the BD Rhapsody Analysis CWL v1.10.1 pipeline.
+functionality:
+  name: "bd_rhapsody"
+  namespace: "workflows/ingestion"
+  description: |
+      A wrapper for the BD Rhapsody Analysis CWL v1.10.1 pipeline.
 
-    This pipeline can be used for a targeted analysis (with `--mode targeted`) or for a whole transcriptome analysis (with `--mode wta`).
+      This pipeline can be used for a targeted analysis (with `--mode targeted`) or for a whole transcriptome analysis (with `--mode wta`).
 
-    * If mode is `"targeted"`, then either the `--reference` or `--abseq_reference` parameters must be defined.
-    * If mode is `"wta"`, then `--reference` and `--transcriptome_annotation` must be defined, `--abseq_reference` and `--supplemental_reference` is optional.
+      * If mode is `"targeted"`, then either the `--reference` or `--abseq_reference` parameters must be defined.
+      * If mode is `"wta"`, then `--reference` and `--transcriptome_annotation` must be defined, `--abseq_reference` and `--supplemental_reference` is optional.
 
-    The reference_genome and transcriptome_annotation files can be generated with the make_reference pipeline.
-    Alternatively, BD also provides standard references which can be downloaded from these locations:
+      The reference_genome and transcriptome_annotation files can be generated with the make_reference pipeline.
+      Alternatively, BD also provides standard references which can be downloaded from these locations:
 
-      - Human: http://bd-rhapsody-public.s3-website-us-east-1.amazonaws.com/Rhapsody-WTA/GRCh38-PhiX-gencodev29/
-      - Mouse: http://bd-rhapsody-public.s3-website-us-east-1.amazonaws.com/Rhapsody-WTA/GRCm38-PhiX-gencodevM19/
-info:
-  name: BD Rhapsody
-  short_description: A generic pipeline for running BD Rhapsody WTA or Targeted mapping, with support for AbSeq, VDJ and/or SMK.
-authors:
-  - __merge__: /src/authors/robrecht_cannoodt.yaml
-    roles: [ maintainer ]
-argument_groups:
-  - name: Inputs
-    arguments:
-      - name: "--mode"
-        type: string
-        description: "Whether to run a whole transcriptome analysis (WTA) or a targeted analysis."
-        choices: [ wta, targeted ]
-        example: "wta"
-        required: true
-      - name: "--id"
-        required: true
-        type: string
-        description: ID of the sample.
-        example: foo
-      - name: "--input"
-        type: file
-        alternatives: [-i]
-        description: Path to your read files in the FASTQ.GZ format. You may specify as many R1/R2 read pairs as you want.
-        required: true
-        multiple: true
-        multiple_sep: ';'
-        example: input.fastq.gz
-      - name: "--reference"
-        type: file
-        alternatives: [-r, --reference_genome]
-        description: "Refence to map to. For `--mode wta`, this is the path to STAR index as a tar.gz file. For `--mode targeted`, this is the path to mRNA reference file for pre-designed, supplemental, or custom panel, in FASTA format"
-        example: "reference_genome.tar.gz|reference.fasta"
-        required: true
-        multiple: true
-        multiple_sep: ';'
-      - name: "--transcriptome_annotation"
-        type: file
-        alternatives: [-t]
-        description: "Path to GTF annotation file (only for `--mode wta`)."
-        example: "transcriptome.gtf"
-      - name: "--abseq_reference"
-        type: file
-        alternatives: [-a]
-        description: Path to the AbSeq reference file in FASTA format. Only needed if BD AbSeq Ab-Oligos are used.
-        example: "abseq_reference.fasta"
-        multiple: true
-        multiple_sep: ';'
-      - name: "--supplemental_reference"
-        type: file
-        alternatives: [-s]
-        description: "Path to the supplemental reference file in FASTA format. Only needed if there are additional transgene sequences used in the experiment (only for `--mode wta`)."
-        example: "supplemental_reference.fasta"
-        multiple: true
-        multiple_sep: ';'
-      - name: "--sample_prefix"
-        type: string
-        description: "Specify a run name to use as the output file base name. Use only letters, numbers, or hyphens. Do not use special characters or spaces."
-        default: sample
-  - name: Outputs
-    arguments:
-      - name: "--output_raw"
-        type: file
-        direction: output
-        description: "The BD Rhapsody output folder as it comes out of the BD Rhapsody pipeline"
-        required: true
-        example: output_dir/
-      - name: "--output_h5mu"
-        type: file
-        direction: output
-        description: "The converted h5mu file."
-        required: true
-        example: output.h5mu
-  - name: Putative cell calling settings
-    arguments:
-      - name: "--putative_cell_call"
-        type: string
-        description: "Specify the dataset to be used for putative cell calling. For putative cell calling using an AbSeq dataset, please provide an AbSeq_Reference fasta file above."
-        choices: [mRNA, AbSeq_Experimental]
-        example: mRNA
-      - name: "--exact_cell_count"
-        type: integer
-        description: "Exact cell count - Set a specific number (>=1) of cells as putative, based on those with the highest error-corrected read count"
-        example: 10000
-      - name: "--disable_putative_calling"
-        type: boolean_true
-        description: "Disable Refined Putative Cell Calling - Determine putative cells using only the basic algorithm (minimum second derivative along the cumulative reads curve). The refined algorithm attempts to remove false positives and recover false negatives, but may not be ideal for certain complex mixtures of cell types. Does not apply if Exact Cell Count is set."
-  - name: Subsample arguments
-    arguments:
-      - name: "--subsample"
-        type: double
-        description: A number >1 or fraction (0 < n < 1) to indicate the number or percentage of reads to subsample.
-        example: 0.01
-      - name: "--subsample_seed"
-        type: integer
-        description: A seed for replicating a previous subsampled run.
-        example: 3445
-  - name: Multiplex arguments
-    arguments:
-      - name: "--sample_tags_version"
-        type: string
-        description: "Specify if multiplexed run."
-        choices: [human, hs, mouse, mm]
-        example: human
-      - name: "--tag_names"
-        type: string
-        description: |
-          Tag_Names (optional) - Specify the tag number followed by '-' and the desired sample name to appear in Sample_Tag_Metrics.csv.
-          Do not use the special characters: &, (), [], {},  <>, ?, |
-        multiple: true
-        example: [4-mySample, 9-myOtherSample, 6-alsoThisSample]
-  - name: VDJ arguments
-    arguments:
-      - name: "--vdj_version"
-        type: string
-        description: "Specify if VDJ run."
-        choices: [human, mouse, humanBCR, humanBCR, humanTCR, mouseBCR]
-        example: human
-  - name: CWL-runner arguments
-    arguments:
-      - name: "--parallel"
-        type: boolean
-        description: "Run jobs in parallel."
-        default: true
-      - name: "--timestamps"
-        type: boolean_true
-        description: "Add timestamps to the errors, warnings, and notifications."
-      - name: "--dryrun"
-        type: boolean_true
-        description: "If true, the output directory will only contain the CWL input files, but the pipeline itself will not be executed."
-dependencies:
-  - name: mapping/bd_rhapsody
-    alias: bd_rhapsody_component
-  - name: convert/from_bdrhap_to_h5mu
-resources:
-  - type: nextflow_script
-    path: main.nf
-    entrypoint: run_wf
-  - type: file
-    path: /src/workflows/utils/
-test_resources:
-  - type: nextflow_script
-    path: test.nf
-    entrypoint: test_wf
-  - path: /resources_test/bdrhap_5kjrt
-  - path: /resources_test/reference_gencodev41_chr1/
-runners:
+        - Human: http://bd-rhapsody-public.s3-website-us-east-1.amazonaws.com/Rhapsody-WTA/GRCh38-PhiX-gencodev29/
+        - Mouse: http://bd-rhapsody-public.s3-website-us-east-1.amazonaws.com/Rhapsody-WTA/GRCm38-PhiX-gencodevM19/
+  info:
+    name: BD Rhapsody
+    short_description: A generic pipeline for running BD Rhapsody WTA or Targeted mapping, with support for AbSeq, VDJ and/or SMK.
+  authors:
+    - __merge__: /src/authors/robrecht_cannoodt.yaml
+      roles: [ maintainer ]
+  argument_groups:
+    - name: Inputs
+      arguments:
+        - name: "--mode"
+          type: string
+          description: "Whether to run a whole transcriptome analysis (WTA) or a targeted analysis."
+          choices: [ wta, targeted ]
+          example: "wta"
+          required: true
+        - name: "--id"
+          required: true
+          type: string
+          description: ID of the sample.
+          example: foo
+        - name: "--input"
+          type: file
+          alternatives: [-i]
+          description: Path to your read files in the FASTQ.GZ format. You may specify as many R1/R2 read pairs as you want.
+          required: true
+          multiple: true
+          multiple_sep: ';'
+          example: input.fastq.gz
+        - name: "--reference"
+          type: file
+          alternatives: [-r, --reference_genome]
+          description: "Refence to map to. For `--mode wta`, this is the path to STAR index as a tar.gz file. For `--mode targeted`, this is the path to mRNA reference file for pre-designed, supplemental, or custom panel, in FASTA format"
+          example: "reference_genome.tar.gz|reference.fasta"
+          required: true
+          multiple: true
+          multiple_sep: ';'
+        - name: "--transcriptome_annotation"
+          type: file
+          alternatives: [-t]
+          description: "Path to GTF annotation file (only for `--mode wta`)."
+          example: "transcriptome.gtf"
+        - name: "--abseq_reference"
+          type: file
+          alternatives: [-a]
+          description: Path to the AbSeq reference file in FASTA format. Only needed if BD AbSeq Ab-Oligos are used.
+          example: "abseq_reference.fasta"
+          multiple: true
+          multiple_sep: ';'
+        - name: "--supplemental_reference"
+          type: file
+          alternatives: [-s]
+          description: "Path to the supplemental reference file in FASTA format. Only needed if there are additional transgene sequences used in the experiment (only for `--mode wta`)."
+          example: "supplemental_reference.fasta"
+          multiple: true
+          multiple_sep: ';'
+        - name: "--sample_prefix"
+          type: string
+          description: "Specify a run name to use as the output file base name. Use only letters, numbers, or hyphens. Do not use special characters or spaces."
+          default: sample
+    - name: Outputs
+      arguments:
+        - name: "--output_raw"
+          type: file
+          direction: output
+          description: "The BD Rhapsody output folder as it comes out of the BD Rhapsody pipeline"
+          required: true
+          example: output_dir/
+        - name: "--output_h5mu"
+          type: file
+          direction: output
+          description: "The converted h5mu file."
+          required: true
+          example: output.h5mu
+    - name: Putative cell calling settings
+      arguments:
+        - name: "--putative_cell_call"
+          type: string
+          description: "Specify the dataset to be used for putative cell calling. For putative cell calling using an AbSeq dataset, please provide an AbSeq_Reference fasta file above."
+          choices: [mRNA, AbSeq_Experimental]
+          example: mRNA
+        - name: "--exact_cell_count"
+          type: integer
+          description: "Exact cell count - Set a specific number (>=1) of cells as putative, based on those with the highest error-corrected read count"
+          example: 10000
+        - name: "--disable_putative_calling"
+          type: boolean_true
+          description: "Disable Refined Putative Cell Calling - Determine putative cells using only the basic algorithm (minimum second derivative along the cumulative reads curve). The refined algorithm attempts to remove false positives and recover false negatives, but may not be ideal for certain complex mixtures of cell types. Does not apply if Exact Cell Count is set."
+    - name: Subsample arguments
+      arguments:
+        - name: "--subsample"
+          type: double
+          description: A number >1 or fraction (0 < n < 1) to indicate the number or percentage of reads to subsample.
+          example: 0.01
+        - name: "--subsample_seed"
+          type: integer
+          description: A seed for replicating a previous subsampled run.
+          example: 3445
+    - name: Multiplex arguments
+      arguments:
+        - name: "--sample_tags_version"
+          type: string
+          description: "Specify if multiplexed run."
+          choices: [human, hs, mouse, mm]
+          example: human
+        - name: "--tag_names"
+          type: string
+          description: |
+            Tag_Names (optional) - Specify the tag number followed by '-' and the desired sample name to appear in Sample_Tag_Metrics.csv.
+            Do not use the special characters: &, (), [], {},  <>, ?, |
+          multiple: true
+          example: [4-mySample, 9-myOtherSample, 6-alsoThisSample]
+    - name: VDJ arguments
+      arguments:
+        - name: "--vdj_version"
+          type: string
+          description: "Specify if VDJ run."
+          choices: [human, mouse, humanBCR, humanBCR, humanTCR, mouseBCR]
+          example: human
+    - name: CWL-runner arguments
+      arguments:
+        - name: "--parallel"
+          type: boolean
+          description: "Run jobs in parallel."
+          default: true
+        - name: "--timestamps"
+          type: boolean_true
+          description: "Add timestamps to the errors, warnings, and notifications."
+        - name: "--dryrun"
+          type: boolean_true
+          description: "If true, the output directory will only contain the CWL input files, but the pipeline itself will not be executed."
+  dependencies:
+    - name: mapping/bd_rhapsody
+      alias: bd_rhapsody_component
+    - name: convert/from_bdrhap_to_h5mu
+  resources:
+    - type: nextflow_script
+      path: main.nf
+      entrypoint: run_wf
+    - type: file
+      path: /src/workflows/utils/
+  test_resources:
+    - type: nextflow_script
+      path: test.nf
+      entrypoint: test_wf
+    - path: /resources_test/bdrhap_5kjrt
+    - path: /resources_test/reference_gencodev41_chr1/
+platforms:
   - type: nextflow

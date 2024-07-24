@@ -1,38 +1,39 @@
-name: mkgtf
-namespace: reference
-description: Make a GTF file - filter by a specific attribute.
-authors:
-  - __merge__: /src/authors/jakub_majercik.yaml
-    roles: [ author ]
-arguments:
-  # inputs
-  - type: file
-    name: --input_gtf
-    required: true
-    description: Reference GTF annotation.
-    example: transcriptome_annotation.gtf.gz
-  - type: file
-    name: --output_gtf
-    direction: output
-    required: true
-    description: Output GTF file.
-    example: output.gtf.gz
-  - type: string
-    name: --attribute
-    required: true
-    description: Key-value pair in attributes field to be kept in the GTF file of the format attribute:attribute_value.
-    example: [gene_type:transcribed_unprocessed_pseudogene,gene_type:miRNA]
-    multiple: true
-resources:
-  - type: bash_script
-    path: script.sh
-test_resources:
-  # - type: bash_script
-  #   path: run_test.sh
-  - type: python_script
-    path: test.py
-  - path: /resources_test/reference_gencodev41_chr1
-engines:
+functionality:
+  name: mkgtf
+  namespace: reference
+  description: Make a GTF file - filter by a specific attribute.
+  authors:
+    - __merge__: /src/authors/jakub_majercik.yaml
+      roles: [ author ]
+  arguments:
+    # inputs
+    - type: file
+      name: --input_gtf
+      required: true
+      description: Reference GTF annotation.
+      example: transcriptome_annotation.gtf.gz
+    - type: file
+      name: --output_gtf
+      direction: output
+      required: true
+      description: Output GTF file.
+      example: output.gtf.gz
+    - type: string
+      name: --attribute
+      required: true
+      description: Key-value pair in attributes field to be kept in the GTF file of the format attribute:attribute_value.
+      example: [gene_type:transcribed_unprocessed_pseudogene,gene_type:miRNA]
+      multiple: true
+  resources:
+    - type: bash_script
+      path: script.sh
+  test_resources:
+    # - type: bash_script
+    #   path: run_test.sh
+    - type: python_script
+      path: test.py
+    - path: /resources_test/reference_gencodev41_chr1
+platforms:
   - type: docker
     image: ghcr.io/data-intuitive/cellranger:8.0
     setup:
@@ -41,8 +42,6 @@ engines:
           DEBIAN_FRONTEND=noninteractive apt update && \
           apt upgrade -y && apt install -y pigz procps && rm -rf /var/lib/apt/lists/*
     __merge__: [ /src/base/requirements/python_test_setup.yaml, . ]
-runners:
-  - type: executable
   - type: nextflow
     directives:
       label: [ midmem, lowcpu ]

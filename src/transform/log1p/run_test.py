@@ -14,7 +14,7 @@ meta = {
     'functionality_name': 'lognorm',
     'resources_dir': 'resources_test/',
     'config': './src/transform/log1p/config.vsh.yaml',
-    'executable': "../../executable/docker/transform/log1p/log1p"
+    'executable': "../../target/docker/transform/log1p/log1p"
 }
 
 

@@ -7,8 +7,8 @@ import re
 
 ## VIASH START
 meta = {
-    'executable': './target/executable/dimred/tsne/tsne',
-    'resources_dir': './resources_test/pbmc_1k_protein_v3/',
+    'executable': './target/docker/dimred/tsne/tsne',
+    'resources_dir': './resources_test/',
     'config': './src/dimred/tsne/config.vsh.yaml'
 }
 ## VIASH END

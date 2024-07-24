@@ -13,7 +13,7 @@ from scipy.sparse import csr_matrix
 meta = {
     'functionality_name': 'foo',
     'resources_dir': 'resources_test/',
-    'executable': 'target/executable/filter/filter_with_scrublet/filter_with_scrublet'
+    'executable': 'target/docker/filter/filter_with_scrublet/filter_with_scrublet'
 }
 # def run_component(args_as_list):
 #     try:

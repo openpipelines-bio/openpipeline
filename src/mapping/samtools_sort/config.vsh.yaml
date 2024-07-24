@@ -1,116 +1,113 @@
-name: samtools_sort
-namespace: mapping
-description: |
-  Sort and (optionally) index alignments.
-  
-  Reads are sorted by leftmost coordinates, or by read name when `--sort_by_read_names` is used.
+functionality:
+  name: samtools_sort
+  namespace: mapping
+  description: |
+    Sort and (optionally) index alignments.
+    
+    Reads are sorted by leftmost coordinates, or by read name when `--sort_by_read_names` is used.
 
-  An appropriate `@HD-SO` sort order header tag will be added or an existing one updated if necessary.
+    An appropriate `@HD-SO` sort order header tag will be added or an existing one updated if necessary.
 
-  Note that to generate an index file (by specifying `--output_bai`), the default coordinate sort must be used.
-  Thus the `--sort_by_read_names` and `--sort_by <TAG>` options are incompatible with `--output_bai`. 
-authors:
-  - __merge__: /src/authors/robrecht_cannoodt.yaml
-    roles: [ author, maintainer ]
-  - __merge__: /src/authors/angela_pisco.yaml
-    roles: [ author ]
-argument_groups:
-  - name: Input
-    arguments:
-      - type: file
-        name: --input
-        required: true
-        description: Path to the SAM/BAM/CRAM files containing the mapped reads.
-        example: "input.bam"
-        info:
-          orig_arg: in_sam
-  - name: Output
-    arguments:
-      - type: file
-        name: --output_bam
-        description: Filename to output the counts to.
-        example: output.bam
-        direction: output
-        required: true
-        info:
-          orig_arg: -o
-      - type: file
-        name: --output_bai
-        description: BAI-format index for BAM file.
-        example: output.bam.bai
-        direction: output
-        required: false
-      - type: string
-        name: --output_format
-        description: The output format. By default, samtools tries to select a format based on the -o filename extension; if output is to standard output or no format can be deduced, bam is selected. 
-        choices: [sam, bam, cram]
-        example: bam
-        required: false
-        info:
-          orig_arg: -O
-      - type: integer
-        name: --compression
-        description: Compression level, from 0 (uncompressed) to 9 (best
-        example: 5
-        required: false
-        info:
-          orig_arg: -l
-  - name: Arguments
-    arguments:
-      - type: boolean_true
-        name: --minimizer_cluster
-        description: |
-          Sort unmapped reads (those in chromosome "*") by their sequence minimiser (Schleimer et al., 2003; Roberts et al., 2004), 
-          also reverse complementing as appropriate. This has the effect of collating some similar data together, improving the 
-          compressibility of the unmapped sequence. The minimiser kmer size is adjusted using the -K option. Note data compressed 
-          in this manner may need to be name collated prior to conversion back to fastq.
+    Note that to generate an index file (by specifying `--output_bai`), the default coordinate sort must be used.
+    Thus the `--sort_by_read_names` and `--sort_by <TAG>` options are incompatible with `--output_bai`. 
+  authors:
+    - __merge__: /src/authors/robrecht_cannoodt.yaml
+      roles: [ author, maintainer ]
+    - __merge__: /src/authors/angela_pisco.yaml
+      roles: [ author ]
+  argument_groups:
+    - name: Input
+      arguments:
+        - type: file
+          name: --input
+          required: true
+          description: Path to the SAM/BAM/CRAM files containing the mapped reads.
+          example: "input.bam"
+          info:
+            orig_arg: in_sam
+    - name: Output
+      arguments:
+        - type: file
+          name: --output_bam
+          description: Filename to output the counts to.
+          example: output.bam
+          direction: output
+          required: true
+          info:
+            orig_arg: -o
+        - type: file
+          name: --output_bai
+          description: BAI-format index for BAM file.
+          example: output.bam.bai
+          direction: output
+          required: false
+        - type: string
+          name: --output_format
+          description: The output format. By default, samtools tries to select a format based on the -o filename extension; if output is to standard output or no format can be deduced, bam is selected. 
+          choices: [sam, bam, cram]
+          example: bam
+          required: false
+          info:
+            orig_arg: -O
+        - type: integer
+          name: --compression
+          description: Compression level, from 0 (uncompressed) to 9 (best
+          example: 5
+          required: false
+          info:
+            orig_arg: -l
+    - name: Arguments
+      arguments:
+        - type: boolean_true
+          name: --minimizer_cluster
+          description: |
+            Sort unmapped reads (those in chromosome "*") by their sequence minimiser (Schleimer et al., 2003; Roberts et al., 2004), 
+            also reverse complementing as appropriate. This has the effect of collating some similar data together, improving the 
+            compressibility of the unmapped sequence. The minimiser kmer size is adjusted using the -K option. Note data compressed 
+            in this manner may need to be name collated prior to conversion back to fastq.
 
-          Mapped sequences are sorted by chromosome and position. 
-        info:
-          orig_arg: -M
-      - type: integer
-        name: --minimizer_kmer
-        description: Sets the kmer size to be used in the -M option.
-        example: 20
-        info:
-          orig_arg: -K
-      - type: boolean_true
-        name: --sort_by_read_names
-        description: Sort by read names (i.e., the QNAME field) rather than by chromosomal coordinates. 
-        info:
-          orig_arg: -n
-      - type: string
-        name: --sort_by
-        description: Sort first by this value in the alignment tag, then by position or name (if also using -n). 
-        info:
-          orig_arg: -t
-      - type: boolean_true
-        name: --no_pg
-        description: Do not add a @PG line to the header of the output file.
-        info:
-          orig_arg: --no-PG
-resources:
-  - type: python_script
-    path: script.py
-test_resources:
-  - type: python_script
-    path: test.py
-  - path: /resources_test/cellranger_tiny_fastq
-
-engines:
-- type: docker
-  image: python:3.10-slim
-  setup:
-    - type: apt
-      packages: 
-        - samtools
-        - procps
-    - type: python
-      packages: 
-        - pyyaml
-
-runners:
-- type: executable        
-- type: nextflow
-  directives:
-    label: [ highmem, highcpu ]
+            Mapped sequences are sorted by chromosome and position. 
+          info:
+            orig_arg: -M
+        - type: integer
+          name: --minimizer_kmer
+          description: Sets the kmer size to be used in the -M option.
+          example: 20
+          info:
+            orig_arg: -K
+        - type: boolean_true
+          name: --sort_by_read_names
+          description: Sort by read names (i.e., the QNAME field) rather than by chromosomal coordinates. 
+          info:
+            orig_arg: -n
+        - type: string
+          name: --sort_by
+          description: Sort first by this value in the alignment tag, then by position or name (if also using -n). 
+          info:
+            orig_arg: -t
+        - type: boolean_true
+          name: --no_pg
+          description: Do not add a @PG line to the header of the output file.
+          info:
+            orig_arg: --no-PG
+  resources:
+    - type: python_script
+      path: script.py
+  test_resources:
+    - type: python_script
+      path: test.py
+    - path: /resources_test/cellranger_tiny_fastq
+platforms:
+  - type: docker
+    image: python:3.10-slim
+    setup:
+      - type: apt
+        packages: 
+          - samtools
+          - procps
+      - type: python
+        packages: 
+          - pyyaml
+  - type: nextflow
+    directives:
+      label: [ highmem, highcpu ]

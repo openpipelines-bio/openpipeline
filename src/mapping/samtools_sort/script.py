@@ -20,7 +20,7 @@ def generate_args(par, config):
     # fetch arguments from config
     arguments = [
         arg
-        for group in config["argument_groups"]
+        for group in config["functionality"]["argument_groups"]
         for arg in group["arguments"]
     ]
 

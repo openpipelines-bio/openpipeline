@@ -1,41 +1,38 @@
-name: "download_file"
-namespace: "download"
-description: |
-  Download a file.
-usage: |
-  download_file \
-    --input https://cf.10xgenomics.com/samples/cell-exp/3.0.0/pbmc_1k_protein_v3/pbmc_1k_protein_v3_raw_feature_bc_matrix.h5 \
-    --output output_rna.h5
-authors:
-  - __merge__: /src/authors/robrecht_cannoodt.yaml
-    roles: [ maintainer ]
-arguments:
-  - name: "--input"
-    type: string
-    description: "URL to a file to download."
-    required: true
-    example: "https://cf.10xgenomics.com/samples/cell-exp/3.0.0/pbmc_1k_protein_v3/pbmc_1k_protein_v3_raw_feature_bc_matrix.h5"
-  - name: "--output"
-    type: file
-    example: pbmc_1k_protein_v3_raw_feature_bc_matrix.h5
-    required: true
-    direction: output
-    description: "Path where to store output."
-  - name: "--verbose"
-    alternatives: ["-v"]
-    type: boolean_true
-    description: Increase verbosity
-resources:
-  - type: bash_script
-    path: script.sh
-test_resources:
-  - type: bash_script
-    path: run_test.sh
-
-engines:
-- type: docker
-  image: bash:5.1.16
-
-runners:
-- type: executable
-- type: nextflow
+functionality:
+  name: "download_file"
+  namespace: "download"
+  description: |
+    Download a file.
+  usage: |
+    download_file \
+      --input https://cf.10xgenomics.com/samples/cell-exp/3.0.0/pbmc_1k_protein_v3/pbmc_1k_protein_v3_raw_feature_bc_matrix.h5 \
+      --output output_rna.h5
+  authors:
+    - __merge__: /src/authors/robrecht_cannoodt.yaml
+      roles: [ maintainer ]
+  arguments:
+    - name: "--input"
+      type: string
+      description: "URL to a file to download."
+      required: true
+      example: "https://cf.10xgenomics.com/samples/cell-exp/3.0.0/pbmc_1k_protein_v3/pbmc_1k_protein_v3_raw_feature_bc_matrix.h5"
+    - name: "--output"
+      type: file
+      example: pbmc_1k_protein_v3_raw_feature_bc_matrix.h5
+      required: true
+      direction: output
+      description: "Path where to store output."
+    - name: "--verbose"
+      alternatives: ["-v"]
+      type: boolean_true
+      description: Increase verbosity
+  resources:
+    - type: bash_script
+      path: script.sh
+  test_resources:
+    - type: bash_script
+      path: run_test.sh
+platforms:
+  - type: docker
+    image: bash:5.1.16
+  - type: nextflow

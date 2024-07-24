@@ -1,0 +1,89 @@
+functionality:
+  name: "run_cellxgene"
+  namespace: "interactive"
+  version: "integration_build"
+  arguments:
+  - type: "file"
+    name: "--input"
+    alternatives:
+    - "-i"
+    description: "Directory to mount"
+    info: null
+    default:
+    - "."
+    must_exist: true
+    create_parent: true
+    required: false
+    direction: "input"
+    multiple: false
+    multiple_sep: ":"
+    dest: "par"
+  - type: "string"
+    name: "--port"
+    alternatives:
+    - "-p"
+    description: "Port to use"
+    info: null
+    default:
+    - "5005"
+    required: false
+    direction: "input"
+    multiple: false
+    multiple_sep: ":"
+    dest: "par"
+  resources:
+  - type: "bash_script"
+    path: "script.sh"
+    is_executable: true
+  - type: "file"
+    path: "./src/workflows/utils/labels.config"
+    dest: "nextflow_labels.config"
+  description: ""
+  test_resources:
+  - type: "file"
+    path: "src/base/openpipelinetestutils"
+    dest: "openpipelinetestutils"
+  info: null
+  status: "enabled"
+  requirements:
+    commands:
+    - "ps"
+  set_wd_to_resources_dir: false
+platforms:
+- type: "docker"
+  id: "docker"
+  image: "ubuntu:focal"
+  target_organization: "openpipelines-bio"
+  target_registry: "ghcr.io"
+  target_tag: "integration_build"
+  namespace_separator: "/"
+  resolve_volume: "Automatic"
+  chown: true
+  setup_strategy: "ifneedbepullelsecachedbuild"
+  run_args:
+  - "$( echo $VIASH_PAR_PORT | sed 's/..*/-p &:&/' )"
+  target_image_source: "https://github.com/openpipelines-bio/openpipeline"
+  setup:
+  - type: "docker"
+    run:
+    - "apt update && apt upgrade -y"
+  - type: "apt"
+    packages:
+    - "build-essential libxml2-dev python3-dev python3-pip zlib1g-dev python3-requests\
+      \ python3-aiohttp python-is-python3"
+    interactive: false
+  - type: "python"
+    user: false
+    packages:
+    - "cellxgene"
+    upgrade: true
+  entrypoint: []
+  cmd: null
+info:
+  config: "/home/runner/work/openpipeline/openpipeline/src/interactive/run_cellxgene/config.vsh.yaml"
+  platform: "docker"
+  output: "/home/runner/work/openpipeline/openpipeline/target/docker/interactive/run_cellxgene"
+  executable: "/home/runner/work/openpipeline/openpipeline/target/docker/interactive/run_cellxgene/run_cellxgene"
+  viash_version: "0.8.6"
+  git_commit: "cf53201ccbe9a7592275d6148c1f59b183418fbb"
+  git_remote: "https://github.com/openpipelines-bio/openpipeline"

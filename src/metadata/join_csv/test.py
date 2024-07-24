@@ -8,7 +8,7 @@ from openpipelinetestutils.asserters import assert_annotation_objects_equal
 
 ## VIASH START
 meta = {
-    'executable': './target/executable/integrate/add_metadata/add_metadata',
+    'executable': './target/docker/integrate/add_metadata/add_metadata',
 }
 ## VIASH END
 

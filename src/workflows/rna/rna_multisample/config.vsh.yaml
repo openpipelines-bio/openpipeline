@@ -1,159 +1,160 @@
-name: "rna_multisample"
-namespace: "workflows/rna"
-description: "Processing unimodal multi-sample RNA transcriptomics data."
-info:
-  image: /images/concepts/fig_workflow_multiomics_rna_multisample.svg
-authors:
-  - __merge__: /src/authors/dries_de_maeyer.yaml
-    roles: [ author ]
-  - __merge__: /src/authors/robrecht_cannoodt.yaml
-    roles: [ author, maintainer ]
-  - __merge__: /src/authors/dries_schaumont.yaml
-    roles: [ author ]
-argument_groups:
-  - name: "Inputs"
-    arguments:
-      - name: "--id"
-        required: true
-        type: string
-        description: ID of the concatenated file
-        example: concatenated
-      - name: "--input"
-        required: true
-        type: file
-        description: Path to the samples.
-        example: dataset.h5mu
-      - name: "--modality"
-        type: string
-        description: Modality to process.
-        default: "rna"
-      - name: "--layer"
-        type: string
-        description: "Input layer to use. If not specified, .X is used."
-  - name: "Output"
-    arguments:
-      - name: "--output"
-        type: file
-        required: true
-        direction: output
-        description: Destination path to the output.
-        example: output.h5mu
-  - name: "Filtering highly variable features"
-    arguments:
-      - name: "--highly_variable_features_var_output"
-        alternatives: ["--filter_with_hvg_var_output"]
-        required: false
-        type: string
-        default: "filter_with_hvg"
-        description: In which .var slot to store a boolean array corresponding to the highly variable features.
-      - name: "--highly_variable_features_obs_batch_key"
-        alternatives: ["--filter_with_hvg_obs_batch_key"]
-        type: string
-        default: "sample_id"
-        required: false
-        description: |
-          If specified, highly-variable features are selected within each batch separately and merged. This simple 
-          process avoids the selection of batch-specific features and acts as a lightweight batch correction method. 
-          For all flavors, featues are first sorted by how many batches they are highly variable. For dispersion-based flavors 
-          ties are broken by normalized dispersion. If flavor = 'seurat_v3', ties are broken by the median (across
-          batches) rank based on within-batch normalized variance.
-      - name: "--highly_variable_features_flavor"
-        alternatives: ["--filter_with_hvg_flavor"]
-        type: string
-        default: "seurat"
-        choices: ["seurat", "cell_ranger", "seurat_v3"]
-        description: |
-          Choose the flavor for identifying highly variable features. For the dispersion based methods
-          in their default workflows, Seurat passes the cutoffs whereas Cell Ranger passes n_top_features.
-      - name: "--highly_variable_features_n_top_features"
-        alternatives: ["--filter_with_hvg_n_top_genes"]
-        required: false
-        type: integer
-        description: Number of highly-variable features to keep. Mandatory if filter_with_hvg_flavor is set to 'seurat_v3'.
-  - name: "QC metrics calculation options"
-    arguments:
-      - name: "--var_qc_metrics"
-        description: |
-          Keys to select a boolean (containing only True or False) column from .var.
-          For each cell, calculate the proportion of total values for genes which are labeled 'True', 
-          compared to the total sum of the values for all genes.
-        type: string
-        multiple: True
-        multiple_sep: ','
-        required: false
-        default: ["filter_with_hvg"]
-        example: "ercc,highly_variable"
-      - name: "--top_n_vars"
-        type: integer
-        description: |
-          Number of top vars to be used to calculate cumulative proportions.
-          If not specified, proportions are not calculated. `--top_n_vars 20,50` finds
-          cumulative proportion to the 20th and 50th most expressed vars.
-        multiple: true
-        multiple_sep: ','
-        required: false
-        default: [50, 100, 200, 500]
-      - name: "--output_obs_num_nonzero_vars"
-        description: |
-          Name of column in .obs describing, for each observation, the number of stored values
-          (including explicit zeroes). In other words, the name of the column that counts
-          for each row the number of columns that contain data.
-        type: string
-        required: false
-        default: "num_nonzero_vars"
-      - name: "--output_obs_total_counts_vars"
-        description: |
-          Name of the column for .obs describing, for each observation (row),
-          the sum of the stored values in the columns.
-        type: string
-        required: false
-        default: total_counts
-      - name: "--output_var_num_nonzero_obs"
-        description: |
-          Name of column describing, for each feature, the number of stored values
-          (including explicit zeroes). In other words, the name of the column that counts
-          for each column the number of rows that contain data.
-        type: string
-        required: false
-        default: "num_nonzero_obs"
-      - name: "--output_var_total_counts_obs"
-        description: |
-          Name of the column in .var describing, for each feature (column),
-          the sum of the stored values in the rows.
-        type: string
-        required: false
-        default: total_counts
-      - name: "--output_var_obs_mean"
-        type: string
-        description: |
-          Name of the column in .obs providing the mean of the values in each row.
-        default: "obs_mean"
-        required: false
-      - name: "--output_var_pct_dropout"
-        type: string
-        default: "pct_dropout"
-        description: |
-          Name of the column in .obs providing for each feature the percentage of
-          observations the feature does not appear on (i.e. is missing). Same as `--num_nonzero_obs`
-          but percentage based.
-dependencies:
-  - name: transform/normalize_total
-  - name: transform/log1p
-  - name: feature_annotation/highly_variable_features_scanpy
-  - name: workflows/qc/qc
-    alias: rna_qc
-  - name: transform/delete_layer
-  - name: metadata/add_id
-resources:
-  - type: nextflow_script
-    path: main.nf
-    entrypoint: run_wf
-  - type: file
-    path: /src/workflows/utils/
-test_resources:
-  - type: nextflow_script
-    path: test.nf
-    entrypoint: test_wf
-  - path: /resources_test/concat_test_data
-runners:
+functionality:
+  name: "rna_multisample"
+  namespace: "workflows/rna"
+  description: "Processing unimodal multi-sample RNA transcriptomics data."
+  info:
+    image: /images/concepts/fig_workflow_multiomics_rna_multisample.svg
+  authors:
+    - __merge__: /src/authors/dries_de_maeyer.yaml
+      roles: [ author ]
+    - __merge__: /src/authors/robrecht_cannoodt.yaml
+      roles: [ author, maintainer ]
+    - __merge__: /src/authors/dries_schaumont.yaml
+      roles: [ author ]
+  argument_groups:
+    - name: "Inputs"
+      arguments:
+        - name: "--id"
+          required: true
+          type: string
+          description: ID of the concatenated file
+          example: concatenated
+        - name: "--input"
+          required: true
+          type: file
+          description: Path to the samples.
+          example: dataset.h5mu
+        - name: "--modality"
+          type: string
+          description: Modality to process.
+          default: "rna"
+        - name: "--layer"
+          type: string
+          description: "Input layer to use. If not specified, .X is used."
+    - name: "Output"
+      arguments:
+        - name: "--output"
+          type: file
+          required: true
+          direction: output
+          description: Destination path to the output.
+          example: output.h5mu
+    - name: "Filtering highly variable features"
+      arguments:
+        - name: "--highly_variable_features_var_output"
+          alternatives: ["--filter_with_hvg_var_output"]
+          required: false
+          type: string
+          default: "filter_with_hvg"
+          description: In which .var slot to store a boolean array corresponding to the highly variable features.
+        - name: "--highly_variable_features_obs_batch_key"
+          alternatives: ["--filter_with_hvg_obs_batch_key"]
+          type: string
+          default: "sample_id"
+          required: false
+          description: |
+            If specified, highly-variable features are selected within each batch separately and merged. This simple 
+            process avoids the selection of batch-specific features and acts as a lightweight batch correction method. 
+            For all flavors, featues are first sorted by how many batches they are highly variable. For dispersion-based flavors 
+            ties are broken by normalized dispersion. If flavor = 'seurat_v3', ties are broken by the median (across
+            batches) rank based on within-batch normalized variance.
+        - name: "--highly_variable_features_flavor"
+          alternatives: ["--filter_with_hvg_flavor"]
+          type: string
+          default: "seurat"
+          choices: ["seurat", "cell_ranger", "seurat_v3"]
+          description: |
+            Choose the flavor for identifying highly variable features. For the dispersion based methods
+            in their default workflows, Seurat passes the cutoffs whereas Cell Ranger passes n_top_features.
+        - name: "--highly_variable_features_n_top_features"
+          alternatives: ["--filter_with_hvg_n_top_genes"]
+          required: false
+          type: integer
+          description: Number of highly-variable features to keep. Mandatory if filter_with_hvg_flavor is set to 'seurat_v3'.
+    - name: "QC metrics calculation options"
+      arguments:
+        - name: "--var_qc_metrics"
+          description: |
+            Keys to select a boolean (containing only True or False) column from .var.
+            For each cell, calculate the proportion of total values for genes which are labeled 'True', 
+            compared to the total sum of the values for all genes.
+          type: string
+          multiple: True
+          multiple_sep: ','
+          required: false
+          default: ["filter_with_hvg"]
+          example: "ercc,highly_variable"
+        - name: "--top_n_vars"
+          type: integer
+          description: |
+            Number of top vars to be used to calculate cumulative proportions.
+            If not specified, proportions are not calculated. `--top_n_vars 20,50` finds
+            cumulative proportion to the 20th and 50th most expressed vars.
+          multiple: true
+          multiple_sep: ','
+          required: false
+          default: [50, 100, 200, 500]
+        - name: "--output_obs_num_nonzero_vars"
+          description: |
+            Name of column in .obs describing, for each observation, the number of stored values
+            (including explicit zeroes). In other words, the name of the column that counts
+            for each row the number of columns that contain data.
+          type: string
+          required: false
+          default: "num_nonzero_vars"
+        - name: "--output_obs_total_counts_vars"
+          description: |
+            Name of the column for .obs describing, for each observation (row),
+            the sum of the stored values in the columns.
+          type: string
+          required: false
+          default: total_counts
+        - name: "--output_var_num_nonzero_obs"
+          description: |
+            Name of column describing, for each feature, the number of stored values
+            (including explicit zeroes). In other words, the name of the column that counts
+            for each column the number of rows that contain data.
+          type: string
+          required: false
+          default: "num_nonzero_obs"
+        - name: "--output_var_total_counts_obs"
+          description: |
+            Name of the column in .var describing, for each feature (column),
+            the sum of the stored values in the rows.
+          type: string
+          required: false
+          default: total_counts
+        - name: "--output_var_obs_mean"
+          type: string
+          description: |
+            Name of the column in .obs providing the mean of the values in each row.
+          default: "obs_mean"
+          required: false
+        - name: "--output_var_pct_dropout"
+          type: string
+          default: "pct_dropout"
+          description: |
+            Name of the column in .obs providing for each feature the percentage of
+            observations the feature does not appear on (i.e. is missing). Same as `--num_nonzero_obs`
+            but percentage based.
+  dependencies:
+    - name: transform/normalize_total
+    - name: transform/log1p
+    - name: feature_annotation/highly_variable_features_scanpy
+    - name: workflows/qc/qc
+      alias: rna_qc
+    - name: transform/delete_layer
+    - name: metadata/add_id
+  resources:
+    - type: nextflow_script
+      path: main.nf
+      entrypoint: run_wf
+    - type: file
+      path: /src/workflows/utils/
+  test_resources:
+    - type: nextflow_script
+      path: test.nf
+      entrypoint: test_wf
+    - path: /resources_test/concat_test_data
+platforms:
   - type: nextflow
