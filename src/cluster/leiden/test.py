@@ -7,7 +7,7 @@ import uuid
 
 ## VIASH START
 meta = {
-    'functionality_name': 'foo',
+    'name': 'foo',
     'resources_dir': 'resources_test/',
     'cpus': 2,
     'config': './src/cluster/leiden/config.vsh.yaml',

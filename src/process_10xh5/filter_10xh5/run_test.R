@@ -8,7 +8,7 @@ input <- paste0(meta$resources_dir, "/pbmc_1k_protein_v3_filtered_feature_bc_mat
 output <- "out.h5"
 
 system(paste0(
-  "./", meta$functionality_name, " ",
+  "./", meta$name, " ",
   "--input '", input, "' ",
   "--output ", output, " ",
   "--min_library_size 1000 ",

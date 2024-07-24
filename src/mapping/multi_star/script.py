@@ -28,7 +28,7 @@ par = {
     "output": "test_output",
 }
 meta = {
-    "functionality_name": "star_and_htseq",
+    "name": "star_and_htseq",
     "cpus": 30,
     "temp_dir": "/tmp",
     "config": "src/mapping/multi_star/.config.vsh.yaml",
@@ -366,7 +366,7 @@ def main(par, meta):
 
     # temp_dir = "tmp/"
     with tempfile.TemporaryDirectory(
-        prefix=f"{meta['functionality_name']}-",
+        prefix=f"{meta['name']}-",
         dir=meta["temp_dir"],
         ignore_cleanup_errors=True
     ) as temp_dir:

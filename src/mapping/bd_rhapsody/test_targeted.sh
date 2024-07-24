@@ -2,7 +2,7 @@
 
 set -e
 
-echo ">> Running $meta_functionality_name in Targeted mode"
+echo ">> Running $meta_name in Targeted mode"
 "$meta_executable" \
   --mode targeted \
   -i "$meta_resources_dir/bdrhap_vdj/raw/RhapVDJDemo-BCR_S1_L001_R1_001_subset.fastq.gz" \

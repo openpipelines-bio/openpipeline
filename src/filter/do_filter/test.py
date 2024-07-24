@@ -9,7 +9,7 @@ import numpy as np
 
 ## VIASH START
 meta = {
-    'functionality_name': './target/native/filter/do_filter/do_filter',
+    'name': './target/native/filter/do_filter/do_filter',
     'resources_dir': 'resources_test/',
      'executable': './target/executable/filter/do_filter/do_filter',
      'config': './src/filter/do_filter/config.vsh.yaml'

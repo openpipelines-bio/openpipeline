@@ -1,6 +1,6 @@
 #!/bin/bash
 
-set -eo pipefail
+set -eou pipefail
 
 ## VIASH START
 par_input="resources_test/cellranger_tiny_fastq/bam/possorted_genome_bam.bam"
@@ -29,7 +29,7 @@ sample_id=`basename "$par_output" .loom`
 
 if (file `readlink -f "$par_transcriptome"` | grep -q compressed ) ; then
   # create temporary directory
-  tmpdir=$(mktemp -d "$meta_temp_dir/$meta_functionality_name-XXXXXXXX")
+  tmpdir=$(mktemp -d "$meta_temp_dir/$meta_name-XXXXXXXX")
   function clean_up {
       rm -rf "$tmpdir"
   }

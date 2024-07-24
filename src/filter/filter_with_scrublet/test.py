@@ -11,7 +11,7 @@ from scipy.sparse import csr_matrix
 
 ## VIASH START
 meta = {
-    'functionality_name': 'foo',
+    'name': 'foo',
     'resources_dir': 'resources_test/',
     'executable': 'target/executable/filter/filter_with_scrublet/filter_with_scrublet'
 }

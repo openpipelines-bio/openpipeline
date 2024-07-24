@@ -7,7 +7,7 @@ import pysam
 
 ## VIASH START
 meta = {
-    'functionality_name': './target/executable/projection/velocyto/velocyto',
+    'name': './target/executable/projection/velocyto/velocyto',
     'resources_dir': './resources_test/'
 }
 ## VIASH END

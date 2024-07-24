@@ -5,7 +5,7 @@ import mudata as mu
 
 ## VIASH START
 meta = {
-    'functionality_name': 'foo',
+    'name': 'foo',
     'resources_dir': '/resources_test/pbmc_1k_protein_v3/'
 }
 ## VIASH END

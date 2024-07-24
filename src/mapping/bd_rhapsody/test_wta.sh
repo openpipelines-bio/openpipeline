@@ -2,7 +2,7 @@
 
 set -e
 
-echo ">> Running $meta_functionality_name in WTA mode"
+echo ">> Running $meta_name in WTA mode"
 "$meta_executable" \
   --mode wta \
   -i "$meta_resources_dir/bdrhap_5kjrt/raw/12WTA_S1_L432_R1_001_subset.fastq.gz" \
