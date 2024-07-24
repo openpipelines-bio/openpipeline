@@ -53,7 +53,7 @@ if layer_data.min() < 0:
     raise ValueError(
         f"Assuming non-negative data, but got min value {layer_data.min()}."
     )
-    
+
 n_bins = par["n_input_bins"]  # NOTE: the first bin is always a spectial for zero
 logger.info(f"Binning data into {par['n_input_bins']} bins.")
 
@@ -70,7 +70,7 @@ def _digitize(x: np.ndarray, bins: np.ndarray) -> np.ndarray:
     digits = np.ceil(digits)
     smallest_dtype = np.min_scalar_type(digits.max().astype(np.uint)) # Already checked for non-negative values
     digits = digits.astype(smallest_dtype)
-    
+
     return digits
 
 
@@ -91,20 +91,19 @@ with warnings.catch_warnings():
                 "this is expected. You can use the `filter_cell_by_counts` "
                 "arg to filter out all zero rows."
             )
-            
+
             # Add binned_rows and bin_edges as all 0
             # np.stack will upcast the dtype later
             binned_rows.append(np.zeros_like(non_zero_row, dtype=np.int8))
             bin_edges.append(np.array([0] * n_bins))
             continue
-        
+
         # Binning of non-zero values
         bins = np.quantile(non_zero_row, np.linspace(0, 1, n_bins - 1))
         non_zero_digits = _digitize(non_zero_row, bins)
         assert non_zero_digits.min() >= 1
         assert non_zero_digits.max() <= n_bins - 1
         binned_rows.append(non_zero_digits)
-        
         bin_edges.append(np.concatenate([[0], bins]))
 
 # Create new CSR matrix
@@ -115,7 +114,7 @@ binned_layer = csr_matrix((np.concatenate(binned_rows, casting="same_kind"),
 # Set binned values and bin edges layers to adata object
 adata.layers[par["binned_layer"]] = binned_layer 
 adata.obsm["bin_edges"] = np.stack(bin_edges)
-      
+
 # Write mudata output 
 logger.info("Writing output data")
 mdata.mod[par["modality"]] = adata
