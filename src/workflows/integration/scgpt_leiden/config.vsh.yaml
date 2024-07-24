@@ -9,7 +9,7 @@ functionality:
       roles: [ contributor ]
     - __merge__: /src/authors/elizabeth_mlynarski.yaml
       roles: [ author ]
-      
+
   argument_groups:
     - name: "Inputs"
       arguments:
@@ -41,6 +41,7 @@ functionality:
           type: string
           description: |
             The name of the adata obs column containing the batch labels.
+
     - name: Model
       arguments:
         - name: "--model"
@@ -69,6 +70,7 @@ functionality:
           example: model_state_dict
           description: |
             Key in the model file containing the pretrained checkpoints. Only relevant for fine-tuned models.
+
     - name: "Outputs"
       arguments:
         - name: "--output"
@@ -112,6 +114,7 @@ functionality:
           default: 1200
           description: |
             Number of highly variable genes to subset for.
+
     - name: "Tokenization arguments"
       arguments:
         - name: "--max_seq_len"
@@ -119,6 +122,7 @@ functionality:
           required: false
           description: |
             The maximum sequence length of the tokenized data.
+            
     - name: "Embedding arguments"
       arguments:
         - name: --dsbn

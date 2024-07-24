@@ -17,7 +17,6 @@ workflow run_wf {
         [id, new_state]
         }
         | view {"After adding join_id: $it"}
-
         // Add 'query' id to .obs columns of query dataset
         | add_id.run(
             fromState: {id, state ->
@@ -38,6 +37,27 @@ workflow run_wf {
                     ]
                 },
                 toState: ["reference": "output"])
+        // rename the var columns in the query and reference containing gene names, such that reference and query have the same column name for cross checking genes
+        | rename_var.run(
+            fromState: {id, state ->
+                [
+                "input": state.reference,
+                "modality": state.modality,
+                "var_key_input": state.var_gene_names_reference,
+                "var_key_output": "gene_names"
+                ]
+            },
+            toState: ["reference": "output"])
+         | rename_var.run(
+            fromState: {id, state ->
+                [
+                "input": state.input,
+                "modality": state.modality,
+                "var_key_input": state.var_gene_names_query,
+                "var_key_output": "gene_names"
+                ]
+            },
+            toState: ["input": "output"])       
         // Concatenate query and reference datasets
         | concatenate_h5mu.run(
             fromState: { id, state ->
@@ -54,11 +74,11 @@ workflow run_wf {
         | scgpt_leiden_workflow.run(
             fromState: { id, state ->
             [
-                "id": id, //
+                "id": id, 
                 "input": state.input,
                 "modality": "rna",
                 "input_layer": state.input_layer,
-                "var_gene_names": state.var_gene_names,
+                "var_gene_names": "gene_names",
                 "obs_batch_label": state.obs_batch_label,
                 "model": state.model,
                 "model_vocab": state.model_vocab,

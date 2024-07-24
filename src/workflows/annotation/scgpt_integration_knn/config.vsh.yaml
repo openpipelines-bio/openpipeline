@@ -36,11 +36,11 @@ functionality:
           required: False
           description: |
             Mudata layer (key from layers) to use as input data for scGPT-specific pre-processing (hvg subsetting and binning); if not specified, X is used.
-        - name: "--var_gene_names"
+        - name: "--var_gene_names_query"
           type: string
           required: false
           description: |
-            The name of the adata var column containing gene names; when no gene_name_layer is provided, the var index will be used.
+            The name of the query data var column containing gene names; when no gene_name_layer is provided, the var index will be used.
         - name: "--obs_batch_label"
           type: string
           description: |
@@ -54,6 +54,11 @@ functionality:
           description: |
             Reference dataset consisting of the labeled observations. The dataset is expected to be pre-processed in the same way as the --input query dataset(s).
           example: reference.h5mu
+        - name: "--var_gene_names_reference"
+          type: string
+          required: false
+          description: |
+            The name of the reference data var column containing gene names; when no gene_name_layer is provided, the var index will be used.
         - name: "--obs_reference_targets"
           type: string
           example: [ ann_level_1, ann_level_2, ann_level_3, ann_level_4, ann_level_5, ann_finest_level ]
@@ -190,6 +195,7 @@ functionality:
     - name: labels_transfer/pynndescent_knn
     - name: dataflow/split_samples
     - name: dataflow/concatenate_h5mu
+    - name: metadata/rename_var
     - name: metadata/add_id
 
   resources:

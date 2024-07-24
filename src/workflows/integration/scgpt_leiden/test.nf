@@ -68,8 +68,10 @@ workflow test_wf2 {
         model: resources_test.resolve("source/best_model.pt"),
         model_config: resources_test.resolve("source/args.json"),
         model_vocab: resources_test.resolve("source/vocab.json"),
+        obs_batch_label: "sample",
         input_layer: "log_normalized",
         n_hvg: 400,
+        seed: 1,
         leiden_resolution: [1.0, 0.25],
         output: "test.h5mu"
       ],

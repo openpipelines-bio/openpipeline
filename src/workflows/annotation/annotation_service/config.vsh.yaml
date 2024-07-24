@@ -312,7 +312,8 @@ functionality:
       alias: harmony_knn_workflow
     - name: workflows/annotation/scgpt_annotation
       alias: scgpt_annotation_workflow
-
+    - name: workflows/annotation/scgpt_integration_knn
+      alias: scgpt_integration_knn_workflow
   resources:
     - type: nextflow_script
       path: main.nf
