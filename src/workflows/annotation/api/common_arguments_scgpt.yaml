@@ -85,7 +85,7 @@ argument_groups:
           type: string
           default: model_state_dict
           description: |
-            Key in the model  file containing the pretrained checkpoints.
+            Key in the model  file containing the pretrained checkpoints. Required if the provided model is a fine-tuned model containing keys for both the checkpoints and a label mapper.
 
     - name: "scGPT preprocessing arguments"
       arguments:
@@ -160,18 +160,15 @@ argument_groups:
         - name: "--output_obs_predictions"
           type: string
           required: false
-          multiple: true
+          default: "scgpt_pred"
           description: |
-            In which `.obs` slot to store the predicted information.
-            If empty, will default to the `reference_obs_targets` combined with the `"_pred"` suffix.
+            The name of the adata.obs column to write predicted cell type labels to.
         - name: "--output_obs_probability"
           type: string
           required: false
-          multiple: true
+          default: scgpt_probability
           description: |
-            In which `.obs` slots to store the probability of the predictions.
-            If provided, must have the same length as `--reference_obs_targets`.
-            If empty, will default to the `reference_obs_targets` combined with the `"_probability"` suffix.
+            The name of the adata.obs column to write predicted cell type labels to.
         - name: "--output_compression"
           type: string
           description: |

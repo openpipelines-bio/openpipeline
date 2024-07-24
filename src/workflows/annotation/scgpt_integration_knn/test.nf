@@ -1,6 +1,6 @@
 nextflow.enable.dsl=2
 
-include { harmony_knn } from params.rootDir + "/target/nextflow/workflows/annotation/harmony_knn/main.nf"
+include { scgpt_integration_knn } from params.rootDir + "/target/nextflow/workflows/annotation/scgpt_integration_knn/main.nf"
 
 workflow test_wf {
   // allow changing the resources_test dir
@@ -9,7 +9,7 @@ workflow test_wf {
   output_ch = Channel.fromList(
     [
       [
-        id: "simple_execution_test",
+        id: "simple_execution_test",`
         input: resources_test.resolve("pbmc_1k_protein_v3/pbmc_1k_protein_v3_mms_w_sample_id.h5mu"),
         reference: resources_test.resolve("annotation_test_data/TS_Blood_filtered.h5mu"),
         obsm_embedding: "X_pca",
@@ -28,7 +28,7 @@ workflow test_wf {
       ]
     ])
     | map{ state -> [state.id, state] }
-    | harmony_knn 
+    | scgpt_integration_knn 
     | view { output ->
       assert output.size() == 2 : "Outputs should contain two elements; [id, state]"
 
