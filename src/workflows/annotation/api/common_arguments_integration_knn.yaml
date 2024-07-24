@@ -1,4 +1,3 @@
-__merge__: ../api/common_arguments.yaml
 argument_groups:
     - name: Leiden clustering options
       arguments:

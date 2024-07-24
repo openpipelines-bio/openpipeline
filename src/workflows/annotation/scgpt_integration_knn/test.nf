@@ -9,21 +9,31 @@ workflow test_wf {
   output_ch = Channel.fromList(
     [
       [
-        id: "simple_execution_test",`
-        input: resources_test.resolve("pbmc_1k_protein_v3/pbmc_1k_protein_v3_mms_w_sample_id.h5mu"),
-        reference: resources_test.resolve("annotation_test_data/TS_Blood_filtered.h5mu"),
-        obsm_embedding: "X_pca",
-        obs_reference_targets: "cell_type",
-        obs_covariates: "donor_assay",
+        id: "simple_execution_test",
+        input: resources_test.resolve("test_resources/Kim2020_Lung_subset_preprocessed.h5mu"),
+        model: resources_test.resolve("finetuned_model/best_model.pt"),
+        model_config: resources_test.resolve("source/args.json"),
+        model_vocab: resources_test.resolve("source/vocab.json"),
+        finetuned_checkpoints_key: "model_state_dict",
+        label_mapper_key: "id_to_class",
+        input_layer: "log_normalized",
+        obs_batch_label: "sample",
+        n_hvg: 400,
+        seed: 1,
         leiden_resolution: [1.0, 0.25]
       ],
       [
         id: "no_leiden_resolutions_test",
-        input: resources_test.resolve("pbmc_1k_protein_v3/pbmc_1k_protein_v3_mms_w_sample_id.h5mu"),
-        reference: resources_test.resolve("annotation_test_data/TS_Blood_filtered.h5mu"),
-        obsm_embedding: "X_pca",
-        obs_reference_targets: "cell_type",
-        obs_covariates: "donor_assay",
+        input: resources_test.resolve("test_resources/Kim2020_Lung_subset_preprocessed.h5mu"),
+        model: resources_test.resolve("finetuned_model/best_model.pt"),
+        model_config: resources_test.resolve("source/args.json"),
+        model_vocab: resources_test.resolve("source/vocab.json"),
+        finetuned_checkpoints_key: "model_state_dict",
+        label_mapper_key: "id_to_class",
+        input_layer: "log_normalized",
+        obs_batch_label: "sample",
+        n_hvg: 400,
+        seed: 1,
         leiden_resolution: []
       ]
     ])

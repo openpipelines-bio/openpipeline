@@ -16,7 +16,6 @@ workflow test_wf {
             label_mapper_key: "id_to_class",
             input_layer: "log_normalized",
             obs_batch_label: "sample",
-            // change default to reduce resource requirements
             n_hvg: 400,
             seed: 1
         ]
