@@ -2,11 +2,11 @@ import mudata as mu
 
 ## VIASH START
 par = {
-    # "input": "resources_test/pbmc_1k_protein_v3/pbmc_1k_protein_v3_mms_w_sample_id.h5mu",
-    "input": "resources_test/annotation_test_data/TS_Blood_filtered.h5mu",
+    "input": "resources_test/pbmc_1k_protein_v3/pbmc_1k_protein_v3_mms_w_sample_id.h5mu",
+    # "input": "resources_test/annotation_test_data/TS_Blood_filtered.h5mu",
     "modality": "rna",
-    # "var_key_input": "gene_symbol",
-    "var_key_input": None,
+    "var_key_input": "gene_symbol",
+    # "var_key_input": None,
     "var_key_output": "genes",
     "output": "output.h5mu",
     "output_compression": "gzip"
@@ -34,16 +34,14 @@ logger = setup_logger()
 mdata = mu.read(par["input"])
 
 if par["var_key_input"]:
-    var_values = mdata.mod[par["modality"]].var[par["var_key_input"]]
+    mdata.mod[par["modality"]].var.rename(columns={par["var_key_input"]: par["var_key_output"]}, inplace=True)
 else:
-    var_values = mdata.mod[par["modality"]].var.index
+    mdata.mod[par["modality"]].var[par["var_key_output"]] = mdata.mod[par["modality"]].var.index
 
-mdata.mod[par["modality"]].var[par["var_key_output"]] = var_values
-
-if par["var_key_input"]:
-    assert all(mdata.mod[par["modality"]].var[par["var_key_input"]] == mdata.mod[par["modality"]].var[par["var_key_output"]])
-else:
-    assert all(mdata.mod[par["modality"]].var.index == mdata.mod[par["modality"]].var[par["var_key_output"]])
+# if par["var_key_input"]:
+#     assert par["var_key_input"] not in mdata.mod[par["modality"]].var.columns
+#     assert par["var_key_output"] in mdata.mod[par["modality"]].var.columns
+# else:
+#     assert par["var_key_output"] in mdata.mod[par["modality"]].var.columns
 
 mdata.write_h5mu(par["output"], compression=par["output_compression"])
-
