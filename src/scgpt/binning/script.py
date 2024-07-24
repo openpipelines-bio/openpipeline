@@ -85,7 +85,7 @@ with warnings.catch_warnings():
         row_start_index, row_end_index = layer_data.indptr[row_number], layer_data.indptr[row_number+1]
         # These are all non-zero counts in the row
         non_zero_row = layer_data.data[row_start_index:row_end_index] 
-        if non_zero_row.max() == 0:
+        if non_zero_row.size == 0:
             logger.warning(
                 "The input data contains all zero rows. Please make sure "
                 "this is expected. You can use the `filter_cell_by_counts` "
