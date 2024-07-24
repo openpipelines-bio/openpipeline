@@ -1,8 +1,8 @@
 # Arguments
 input: # please fill in - example: "bcl_dir"
 sample_sheet: # please fill in - example: "SampleSheet.csv"
-# output: "$id.$key.output.output"
-# reports: "$id.$key.reports.reports"
+# output: "$id.$key.output"
+# reports: "$id.$key.reports"
 ignore_missing: false
 
 # Nextflow input-output arguments

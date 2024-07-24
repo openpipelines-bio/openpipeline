@@ -1,6 +1,6 @@
 # Arguments
 input: # please fill in - example: "path/to/file"
-# output: "$id.$key.output.output"
+# output: "$id.$key.output"
 # output_compression: "gzip"
 modality: "rna"
 obsm_input: "X_pca"

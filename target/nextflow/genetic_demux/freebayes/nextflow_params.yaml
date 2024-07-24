@@ -74,9 +74,11 @@ debug: false
 dd: false
 
 # Output
-# output: "$id.$key.output.output"
+# output: "$id.$key.output"
 # vcf: "snp.vcf"
 
 # Nextflow input-output arguments
 publish_dir: # please fill in - example: "output/"
 # param_list: "my_params.yaml"
+
+# Arguments

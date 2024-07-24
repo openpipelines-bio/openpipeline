@@ -1,0 +1,256 @@
+name: "build_cellranger_arc_reference"
+namespace: "reference"
+version: "integration_build"
+authors:
+- name: "Vladimir Shitov"
+  roles:
+  - "author"
+  info:
+    role: "Contributor"
+    links:
+      email: "vladimir.shitov@helmholtz-muenchen.de"
+      github: "vladimirshitov"
+      orcid: "0000-0002-1960-8812"
+      linkedin: "vladimir-shitov-9a659513b"
+    organizations:
+    - name: "Helmholtz Munich"
+      href: "https://www.helmholtz-munich.de"
+      role: "PhD Candidate"
+argument_groups:
+- name: "Arguments"
+  arguments:
+  - type: "file"
+    name: "--genome_fasta"
+    description: "Reference genome fasta."
+    info: null
+    example:
+    - "genome_sequence.fa.gz"
+    must_exist: true
+    create_parent: true
+    required: true
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+  - type: "file"
+    name: "--annotation_gtf"
+    description: "Reference annotation."
+    info: null
+    example:
+    - "annotation.gtf.gz"
+    must_exist: true
+    create_parent: true
+    required: true
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+  - type: "file"
+    name: "--motifs_file"
+    description: "Transcription factor motifs in JASPAR format. See https://support.10xgenomics.com/single-cell-multiome-atac-gex/software/pipelines/latest/advanced/references"
+    info: null
+    example:
+    - "JASPAR2024_CORE_non-redundant_pfms_jaspar.txt.modified"
+    must_exist: true
+    create_parent: true
+    required: false
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+  - type: "string"
+    name: "--non_nuclear_contigs"
+    description: "Name(s) of contig(s) that do not have any chromatin structure, for\
+      \ example, mitochondria or plastids. These contigs are excluded from peak calling\
+      \ since the entire contig will be \"open\" due to a lack of chromatin structure.\
+      \ Leave empty if there are no such contigs."
+    info: null
+    example:
+    - "chrM"
+    default:
+    - "chrM"
+    required: false
+    direction: "input"
+    multiple: true
+    multiple_sep: ";"
+  - type: "file"
+    name: "--output"
+    description: "Output folder"
+    info: null
+    example:
+    - "cellranger_reference"
+    must_exist: true
+    create_parent: true
+    required: true
+    direction: "output"
+    multiple: false
+    multiple_sep: ";"
+  - type: "string"
+    name: "--genome"
+    description: "Name of the genome. This will be the name of the intermediate output\
+      \ folder"
+    info: null
+    example:
+    - "GRCh38"
+    required: true
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+  - type: "string"
+    name: "--organism"
+    description: "Name of the organism. This is displayed in the web summary but is\
+      \ otherwise not used in the analysis."
+    info: null
+    default:
+    - "Homo_sapiens"
+    required: false
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+resources:
+- type: "bash_script"
+  path: "script.sh"
+  is_executable: true
+- type: "file"
+  path: "nextflow_labels.config"
+  dest: "nextflow_labels.config"
+description: "Build a Cell Ranger-arc and -atac compatible reference folder from user-supplied\
+  \ genome FASTA and gene GTF files. Creates a new folder named after the genome."
+test_resources:
+- type: "bash_script"
+  path: "run_test.sh"
+  is_executable: true
+- type: "file"
+  path: "reference_gencodev41_chr1"
+- type: "file"
+  path: "openpipelinetestutils"
+  dest: "openpipelinetestutils"
+info: null
+status: "enabled"
+links:
+  repository: "https://github.com/openpipelines-bio/openpipeline"
+  docker_registry: "ghcr.io"
+runners:
+- type: "executable"
+  id: "executable"
+  docker_setup_strategy: "ifneedbepullelsecachedbuild"
+- type: "nextflow"
+  id: "nextflow"
+  directives:
+    label:
+    - "highmem"
+    - "highcpu"
+    tag: "$id"
+  auto:
+    simplifyInput: true
+    simplifyOutput: false
+    transcript: false
+    publish: false
+  config:
+    labels:
+      mem1gb: "memory = 1000000000.B"
+      mem2gb: "memory = 2000000000.B"
+      mem5gb: "memory = 5000000000.B"
+      mem10gb: "memory = 10000000000.B"
+      mem20gb: "memory = 20000000000.B"
+      mem50gb: "memory = 50000000000.B"
+      mem100gb: "memory = 100000000000.B"
+      mem200gb: "memory = 200000000000.B"
+      mem500gb: "memory = 500000000000.B"
+      mem1tb: "memory = 1000000000000.B"
+      mem2tb: "memory = 2000000000000.B"
+      mem5tb: "memory = 5000000000000.B"
+      mem10tb: "memory = 10000000000000.B"
+      mem20tb: "memory = 20000000000000.B"
+      mem50tb: "memory = 50000000000000.B"
+      mem100tb: "memory = 100000000000000.B"
+      mem200tb: "memory = 200000000000000.B"
+      mem500tb: "memory = 500000000000000.B"
+      mem1gib: "memory = 1073741824.B"
+      mem2gib: "memory = 2147483648.B"
+      mem4gib: "memory = 4294967296.B"
+      mem8gib: "memory = 8589934592.B"
+      mem16gib: "memory = 17179869184.B"
+      mem32gib: "memory = 34359738368.B"
+      mem64gib: "memory = 68719476736.B"
+      mem128gib: "memory = 137438953472.B"
+      mem256gib: "memory = 274877906944.B"
+      mem512gib: "memory = 549755813888.B"
+      mem1tib: "memory = 1099511627776.B"
+      mem2tib: "memory = 2199023255552.B"
+      mem4tib: "memory = 4398046511104.B"
+      mem8tib: "memory = 8796093022208.B"
+      mem16tib: "memory = 17592186044416.B"
+      mem32tib: "memory = 35184372088832.B"
+      mem64tib: "memory = 70368744177664.B"
+      mem128tib: "memory = 140737488355328.B"
+      mem256tib: "memory = 281474976710656.B"
+      mem512tib: "memory = 562949953421312.B"
+      cpu1: "cpus = 1"
+      cpu2: "cpus = 2"
+      cpu5: "cpus = 5"
+      cpu10: "cpus = 10"
+      cpu20: "cpus = 20"
+      cpu50: "cpus = 50"
+      cpu100: "cpus = 100"
+      cpu200: "cpus = 200"
+      cpu500: "cpus = 500"
+      cpu1000: "cpus = 1000"
+    script:
+    - "includeConfig(\"nextflow_labels.config\")"
+  debug: false
+  container: "docker"
+engines:
+- type: "docker"
+  id: "docker"
+  image: "ghcr.io/data-intuitive/cellranger_arc:2.0"
+  target_tag: "integration_build"
+  namespace_separator: "/"
+  setup:
+  - type: "docker"
+    run:
+    - "DEBIAN_FRONTEND=noninteractive apt update && \\\napt upgrade -y && apt install\
+      \ -y procps pigz && rm -rf /var/lib/apt/lists/*\n"
+  test_setup:
+  - type: "docker"
+  - type: "apt"
+    packages:
+    - "git"
+    - "wget"
+    interactive: false
+  - type: "docker"
+    run:
+    - "TARGETARCH=\"${TARGETARCH:-$(dpkg --print-architecture)}\" && \\\nTARGETOS=\"\
+      ${TARGETOS:-linux}\" && \\\nPATH=\"${PATH}:/usr/local/go/bin\" && \\\nwget https://go.dev/dl/go1.21.4.$TARGETOS-$TARGETARCH.tar.gz\
+      \ && tar -C /usr/local/ -xzf go1.21.4.$TARGETOS-$TARGETARCH.tar.gz && \\\nrm\
+      \ go1.21.4.$TARGETOS-$TARGETARCH.tar.gz && \\\ngit clone --branch v2.5.0 https://github.com/shenwei356/seqkit.git\
+      \ && \\\ncd seqkit/seqkit/ && go build && cp seqkit /usr/bin/ && cd ../../ &&\
+      \ rm -rf seqkit && rm -r /usr/local/go\n"
+  entrypoint: []
+  cmd: null
+build_info:
+  config: "src/reference/build_cellranger_arc_reference/config.vsh.yaml"
+  runner: "executable"
+  engine: "docker"
+  output: "target/executable/reference/build_cellranger_arc_reference"
+  executable: "target/executable/reference/build_cellranger_arc_reference/build_cellranger_arc_reference"
+  viash_version: "0.9.0-RC6"
+  git_commit: "00bf5236d2a5816bae5b57647ef123107a42a16b"
+  git_remote: "https://github.com/openpipelines-bio/openpipeline"
+package_config:
+  version: "dev"
+  info: null
+  viash_version: "0.9.0-RC6"
+  source: "src"
+  target: "target"
+  config_mods:
+  - ".test_resources += {path: '/src/base/openpipelinetestutils', dest: 'openpipelinetestutils'}\n\
+    .resources += {path: '/src/workflows/utils/labels.config', dest: 'nextflow_labels.config'}\n\
+    .runners[.type == 'nextflow'].directives.tag := '$id'\n.runners[.type == 'nextflow'].config.script\
+    \ := 'includeConfig(\"nextflow_labels.config\")'"
+  - ".version := \"integration_build\""
+  - ".engines[.type == 'docker'].target_tag := 'integration_build'"
+  organization: "openpipelines-bio"
+  links:
+    repository: "https://github.com/openpipelines-bio/openpipeline"
+    docker_registry: "ghcr.io"
+    homepage: "https://openpipelines.bio"
+    documentation: "https://openpipelines.bio/fundamentals"
+    issue_tracker: "https://github.com/openpipelines-bio/openpipeline/issues"

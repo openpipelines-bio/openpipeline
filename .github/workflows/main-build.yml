@@ -141,19 +141,19 @@ jobs:
     - uses: viash-io/viash-actions/ns-build@v6
       with:
         config_mod: |
-          .functionality.version := "${{ inputs.version || format('{0}_build', github.ref_name) }}"
-          .platforms[.type == 'docker'].target_tag := '${{ github.event_name == 'push' && (inputs.version || format('{0}_build', github.ref_name)) || inputs.target_tag }}'
+          .version := "${{ inputs.version || format('{0}_build', github.ref_name) }}"
+          .engines[.type == 'docker'].target_tag := '${{ github.event_name == 'push' && (inputs.version || format('{0}_build', github.ref_name)) || inputs.target_tag }}'
         parallel: true
         query: ^(?!workflows|test_workflows)
     
     - uses: viash-io/viash-actions/ns-build@v6
       with:
-        config_mod: .functionality.version := "${{ inputs.version || format('{0}_build', github.ref_name) }}"
+        config_mod: .version := "${{ inputs.version || format('{0}_build', github.ref_name) }}"
         parallel: true
         query: ^workflows
   
     - name: Build nextflow schemas
-      uses: viash-io/viash-actions/pro/build-nextflow-schemas@v6
+      uses: viash-io/viash-actions/pro/build-nextflow-schemas@build_nextflow_schemas_viash_0_9
       with:
         target_dir: target/nextflow
         viash_pro_token: ${{ secrets.GTHB_PAT }}
@@ -161,7 +161,7 @@ jobs:
         enable_dataset_input: true
    
     - name: Build parameter files
-      uses: viash-io/viash-actions/pro/build-nextflow-params@v6
+      uses: viash-io/viash-actions/pro/build-nextflow-params@build_nextflow_schemas_viash_0_9
       with:
         target_dir: target/nextflow
         viash_pro_token: ${{ secrets.GTHB_PAT }}
@@ -178,7 +178,7 @@ jobs:
       id: ns_list
       uses: viash-io/viash-actions/ns-list@v6
       with:
-        platform: docker
+        engine: docker
         src: src
         format: json
         query_namespace: ^(?!workflows|test_workflows)
@@ -196,21 +196,21 @@ jobs:
       run: |
         echo "components=$(jq -c '[ .[] | 
           { 
-            "name": .functionality.name,
-            "namespace_separator": .platforms | map(select(.type == "docker"))[0].namespace_separator,
-            "namespace": .functionality.namespace,
-            "config": .info.config,
-            "dir": .info.config | capture("^(?<dir>.*\/)").dir
+            "name": .name,
+            "namespace_separator": .engines | map(select(.type == "docker"))[0].namespace_separator,
+            "namespace": .namespace,
+            "config": .build_info.config,
+            "dir": .build_info.config | capture("^(?<dir>.*\/)").dir
           }
         ]' ${{ steps.ns_list.outputs.output_file }} )" >> $GITHUB_OUTPUT
 
-        echo "workflows=$(jq -c '[ .[] | . as $config | (.functionality.test_resources // [])[] | select(.type == "nextflow_script", .entrypoint) |
+        echo "workflows=$(jq -c '[ .[] | . as $config | (.test_resources // [])[] | select(.type == "nextflow_script", .entrypoint) |
         { 
-          "name": $config.functionality.name,
-          "namespace": $config.functionality.namespace,
-          "main_script": (($config.info.config | capture("^(?<dir>.*\/)").dir) + "/" + .path),
+          "name": $config.name,
+          "namespace": $config.namespace,
+          "main_script": (($config.build_info.config | capture("^(?<dir>.*\/)").dir) + "/" + .path),
           "entry": .entrypoint,
-          "config": $config.info.config
+          "config": $config.build_info.config
         }
         ] | unique' ${{ steps.ns_list_workflows.outputs.output_file }} )" >> $GITHUB_OUTPUT
 
@@ -239,9 +239,9 @@ jobs:
       uses: viash-io/viash-actions/ns-build@v6
       with:
         config_mod: |
-          .functionality.version := "${{ inputs.version || format('{0}_build', github.ref_name) }}"
-          .platforms[.type == 'docker'].target_tag := '${{ github.event_name == 'push' && 'main_build' || inputs.target_tag }}'
-        platform: docker
+          .version := "${{ inputs.version || format('{0}_build', github.ref_name) }}"
+          .engines[.type == 'docker'].target_tag := '${{ github.event_name == 'push' && 'main_build' || inputs.target_tag }}'
+        engine: docker
         src: ${{ matrix.component.dir }}
         setup: build
         
@@ -255,7 +255,7 @@ jobs:
     - name: Push container
       uses: viash-io/viash-actions/ns-build@v6
       with:
-        config_mod: .functionality.version := "${{ inputs.version || format('{0}_build', github.ref_name) }}"
-        platform: docker
+        config_mod: .version := "${{ inputs.version || format('{0}_build', github.ref_name) }}"
+        engine: docker
         src: ${{ matrix.component.dir }}
         setup: push

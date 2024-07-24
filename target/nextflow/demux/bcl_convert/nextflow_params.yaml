@@ -1,8 +1,8 @@
 # Arguments
 input: # please fill in - example: "bcl_dir"
 sample_sheet: # please fill in - example: "bcl_dir"
-# output: "$id.$key.output.output"
-# reports: "$id.$key.reports.reports"
+# output: "$id.$key.output"
+# reports: "$id.$key.reports"
 test_mode: false
 strict_mode: false
 # tiles: "foo"
