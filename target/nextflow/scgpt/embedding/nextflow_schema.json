@@ -51,36 +51,6 @@
     
 
         ,
-                "model": {
-                "type":
-                "string",
-                "description": "Type: `file`, required, example: `best_model.pt`. Path to scGPT model file",
-                "help_text": "Type: `file`, required, example: `best_model.pt`. Path to scGPT model file.\n"
-            
-            }
-    
-
-        ,
-                "model_vocab": {
-                "type":
-                "string",
-                "description": "Type: `file`, required, example: `vocab.json`. Path to scGPT model vocabulary file",
-                "help_text": "Type: `file`, required, example: `vocab.json`. Path to scGPT model vocabulary file.\n"
-            
-            }
-    
-
-        ,
-                "model_config": {
-                "type":
-                "string",
-                "description": "Type: `file`, required, example: `args.json`. Path to scGPT model config file",
-                "help_text": "Type: `file`, required, example: `args.json`. Path to scGPT model config file.\n"
-            
-            }
-    
-
-        ,
                 "obsm_gene_tokens": {
                 "type":
                 "string",
@@ -246,6 +216,56 @@
 },
     
     
+    "model" : {
+    "title": "Model",
+    "type": "object",
+    "description": "No description",
+    "properties": {
+    
+        
+                "model": {
+                "type":
+                "string",
+                "description": "Type: `file`, required, example: `best_model.pt`. Path to scGPT model file",
+                "help_text": "Type: `file`, required, example: `best_model.pt`. Path to scGPT model file.\n"
+            
+            }
+    
+
+        ,
+                "model_vocab": {
+                "type":
+                "string",
+                "description": "Type: `file`, required, example: `vocab.json`. Path to scGPT model vocabulary file",
+                "help_text": "Type: `file`, required, example: `vocab.json`. Path to scGPT model vocabulary file.\n"
+            
+            }
+    
+
+        ,
+                "model_config": {
+                "type":
+                "string",
+                "description": "Type: `file`, required, example: `args.json`. Path to scGPT model config file",
+                "help_text": "Type: `file`, required, example: `args.json`. Path to scGPT model config file.\n"
+            
+            }
+    
+
+        ,
+                "finetuned_checkpoints_key": {
+                "type":
+                "string",
+                "description": "Type: `string`, example: `model_state_dict`. Key in the model file containing the pretrained checkpoints",
+                "help_text": "Type: `string`, example: `model_state_dict`. Key in the model file containing the pretrained checkpoints. Only relevant for fine-tuned models.\n"
+            
+            }
+    
+
+}
+},
+    
+    
     "nextflow input-output arguments" : {
     "title": "Nextflow input-output arguments",
     "type": "object",
@@ -279,6 +299,10 @@
 
     {
     "$ref": "#/definitions/arguments"
+    },
+
+    {
+    "$ref": "#/definitions/model"
     },
 
     {

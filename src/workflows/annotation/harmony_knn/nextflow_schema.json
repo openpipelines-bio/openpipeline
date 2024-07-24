@@ -23,142 +23,6 @@
 
     
     
-    "inputs" : {
-    "title": "Inputs",
-    "type": "object",
-    "description": "No description",
-    "properties": {
-    
-        
-                "id": {
-                "type":
-                "string",
-                "description": "Type: `string`, required, example: `foo`. ID of the sample",
-                "help_text": "Type: `string`, required, example: `foo`. ID of the sample."
-            
-            }
-    
-
-        ,
-                "input_query_dataset": {
-                "type":
-                "string",
-                "description": "Type: `file`, required, example: `input.h5mu`. Input dataset consisting of the (unlabeled) query observations",
-                "help_text": "Type: `file`, required, example: `input.h5mu`. Input dataset consisting of the (unlabeled) query observations. The dataset is expected to be pre-processed in the same way as --input_reference_dataset."
-            
-            }
-    
-
-        ,
-                "input_reference_dataset": {
-                "type":
-                "string",
-                "description": "Type: `file`, required. Input dataset consisting of the (labeled) reference observations",
-                "help_text": "Type: `file`, required. Input dataset consisting of the (labeled) reference observations. The dataset is expected to be pre-processed in the same way as --input_query_dataset."
-            
-            }
-    
-
-        ,
-                "modality": {
-                "type":
-                "string",
-                "description": "Type: `string`, default: `rna`. Which modality to process",
-                "help_text": "Type: `string`, default: `rna`. Which modality to process."
-            ,
-                "default": "rna"
-            }
-    
-
-        ,
-                "embedding": {
-                "type":
-                "string",
-                "description": "Type: `string`, default: `X_pca`. Embedding to use as input",
-                "help_text": "Type: `string`, default: `X_pca`. Embedding to use as input"
-            ,
-                "default": "X_pca"
-            }
-    
-
-        ,
-                "obs_reference_targets": {
-                "type":
-                "string",
-                "description": "Type: List of `string`, required, example: `ann_level_1:ann_level_2:ann_level_3:ann_level_4:ann_level_5:ann_finest_level`, multiple_sep: `\":\"`. The `",
-                "help_text": "Type: List of `string`, required, example: `ann_level_1:ann_level_2:ann_level_3:ann_level_4:ann_level_5:ann_finest_level`, multiple_sep: `\":\"`. The `.obs` key(s) of the target labels to tranfer."
-            
-            }
-    
-
-}
-},
-    
-    
-    "outputs" : {
-    "title": "Outputs",
-    "type": "object",
-    "description": "No description",
-    "properties": {
-    
-        
-                "output": {
-                "type":
-                "string",
-                "description": "Type: `file`, required, default: `$id.$key.output.h5mu`, example: `output.h5mu`. Destination path to the output",
-                "help_text": "Type: `file`, required, default: `$id.$key.output.h5mu`, example: `output.h5mu`. Destination path to the output."
-            ,
-                "default": "$id.$key.output.h5mu"
-            }
-    
-
-        ,
-                "output_obs_predictions": {
-                "type":
-                "string",
-                "description": "Type: List of `string`, multiple_sep: `\":\"`. In which `",
-                "help_text": "Type: List of `string`, multiple_sep: `\":\"`. In which `.obs` slots to store the predicted information.\nIf provided, must have the same length as `--reference_obs_targets`.\nIf empty, will default to the `reference_obs_targets` combined with the `\"_pred\"` suffix.\n"
-            
-            }
-    
-
-        ,
-                "output_obs_probability": {
-                "type":
-                "string",
-                "description": "Type: List of `string`, multiple_sep: `\":\"`. In which `",
-                "help_text": "Type: List of `string`, multiple_sep: `\":\"`. In which `.obs` slots to store the probability of the predictions.\nIf provided, must have the same length as `--reference_obs_targets`.\nIf empty, will default to the `reference_obs_targets` combined with the `\"_probability\"` suffix.\n"
-            
-            }
-    
-
-        ,
-                "output_uns_parameters": {
-                "type":
-                "string",
-                "description": "Type: `string`, default: `labels_transfer`. The `",
-                "help_text": "Type: `string`, default: `labels_transfer`. The `.uns` key to store additional information about the parameters used for the label transfer.\n"
-            ,
-                "default": "labels_transfer"
-            }
-    
-
-        ,
-                "output_compression": {
-                "type":
-                "string",
-                "description": "Type: `string`, example: `gzip`, choices: ``gzip`, `lzf``. The compression format to be used on the output h5mu object",
-                "help_text": "Type: `string`, example: `gzip`, choices: ``gzip`, `lzf``. The compression format to be used on the output h5mu object.\n",
-                "enum": ["gzip", "lzf"]
-            
-            
-            }
-    
-
-}
-},
-    
-    
     "harmony integration options" : {
     "title": "Harmony integration options",
     "type": "object",
@@ -201,40 +65,6 @@
 },
     
     
-    "neighbor classifier arguments" : {
-    "title": "Neighbor classifier arguments",
-    "type": "object",
-    "description": "No description",
-    "properties": {
-    
-        
-                "weights": {
-                "type":
-                "string",
-                "description": "Type: `string`, default: `uniform`, choices: ``uniform`, `distance``. Weight function used in prediction",
-                "help_text": "Type: `string`, default: `uniform`, choices: ``uniform`, `distance``. Weight function used in prediction. Possible values are:\n`uniform` (all points in each neighborhood are weighted equally) or \n`distance` (weight points by the inverse of their distance)\n",
-                "enum": ["uniform", "distance"]
-            
-            ,
-                "default": "uniform"
-            }
-    
-
-        ,
-                "n_neighbors": {
-                "type":
-                "integer",
-                "description": "Type: `integer`, default: `15`. The number of neighbors to use in k-neighbor graph structure used for fast approximate nearest neighbor search with PyNNDescent",
-                "help_text": "Type: `integer`, default: `15`. The number of neighbors to use in k-neighbor graph structure used for fast approximate nearest neighbor search with PyNNDescent. \nLarger values will result in more accurate search results at the cost of computation time.\n"
-            ,
-                "default": "15"
-            }
-    
-
-}
-},
-    
-    
     "nextflow input-output arguments" : {
     "title": "Nextflow input-output arguments",
     "type": "object",
@@ -259,19 +89,7 @@
 "allOf": [
 
     {
-    "$ref": "#/definitions/inputs"
-    },
-
-    {
-    "$ref": "#/definitions/outputs"
-    },
-
-    {
     "$ref": "#/definitions/harmony integration options"
-    },
-
-    {
-    "$ref": "#/definitions/neighbor classifier arguments"
     },
 
     {

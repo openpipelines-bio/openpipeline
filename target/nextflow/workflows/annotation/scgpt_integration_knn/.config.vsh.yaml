@@ -1,0 +1,588 @@
+functionality:
+  name: "scgpt_integration_knn"
+  namespace: "workflows/annotation"
+  version: "annotation-workflow_build"
+  authors:
+  - name: "Dorien Roosen"
+    roles:
+    - "author"
+    - "maintainer"
+    info:
+      role: "Contributor"
+      links:
+        email: "dorien@data-intuitive.com"
+        github: "dorien-er"
+        linkedin: "dorien-roosen"
+      organizations:
+      - name: "Data Intuitive"
+        href: "https://www.data-intuitive.com"
+        role: "Data Scientist"
+  - name: "Weiwei Schultz"
+    roles:
+    - "contributor"
+    info:
+      role: "Contributor"
+      organizations:
+      - name: "Janssen R&D US"
+        role: "Associate Director Data Sciences"
+  - name: "Elizabeth Mlynarski"
+    roles:
+    - "author"
+    info:
+      role: "Contributor"
+      organizations:
+      - name: "Janssen R&D US"
+        role: "Principal Scientist Computational Genomics"
+  argument_groups:
+  - name: "Leiden clustering options"
+    arguments:
+    - type: "double"
+      name: "--leiden_resolution"
+      description: "Control the coarseness of the clustering. Higher values lead to\
+        \ more clusters."
+      info: null
+      default:
+      - 1.0
+      required: false
+      direction: "input"
+      multiple: true
+      multiple_sep: ";"
+      dest: "par"
+  - name: "Neighbor classifier arguments"
+    arguments:
+    - type: "string"
+      name: "--weights"
+      description: "Weight function used in prediction. Possible values are:\n`uniform`\
+        \ (all points in each neighborhood are weighted equally) or \n`distance` (weight\
+        \ points by the inverse of their distance)\n"
+      info: null
+      default:
+      - "uniform"
+      required: false
+      choices:
+      - "uniform"
+      - "distance"
+      direction: "input"
+      multiple: false
+      multiple_sep: ":"
+      dest: "par"
+    - type: "integer"
+      name: "--n_neighbors"
+      description: "The number of neighbors to use in k-neighbor graph structure used\
+        \ for fast approximate nearest neighbor search with PyNNDescent. \nLarger\
+        \ values will result in more accurate search results at the cost of computation\
+        \ time."
+      info: null
+      default:
+      - 15
+      required: false
+      direction: "input"
+      multiple: false
+      multiple_sep: ":"
+      dest: "par"
+  - name: "Query input"
+    arguments:
+    - type: "string"
+      name: "--id"
+      description: "ID of the sample."
+      info: null
+      example:
+      - "foo"
+      required: true
+      direction: "input"
+      multiple: false
+      multiple_sep: ":"
+      dest: "par"
+    - type: "file"
+      name: "--input"
+      description: "Input dataset consisting of the (unlabeled) query observations.\
+        \ The dataset is expected to be pre-processed in the same way as the --reference\
+        \ dataset.\n"
+      info: null
+      example:
+      - "input.h5mu"
+      must_exist: true
+      create_parent: true
+      required: true
+      direction: "input"
+      multiple: false
+      multiple_sep: ":"
+      dest: "par"
+    - type: "string"
+      name: "--modality"
+      description: "Which modality to process."
+      info: null
+      default:
+      - "rna"
+      required: false
+      direction: "input"
+      multiple: false
+      multiple_sep: ":"
+      dest: "par"
+    - type: "string"
+      name: "--input_layer"
+      description: "Mudata layer (key from layers) to use as input data for scGPT-specific\
+        \ pre-processing (hvg subsetting and binning); if not specified, X is used.\n"
+      info: null
+      required: false
+      direction: "input"
+      multiple: false
+      multiple_sep: ":"
+      dest: "par"
+    - type: "string"
+      name: "--var_gene_names_query"
+      description: "The name of the query data var column containing gene names; when\
+        \ no gene_name_layer is provided, the var index will be used.\n"
+      info: null
+      required: false
+      direction: "input"
+      multiple: false
+      multiple_sep: ":"
+      dest: "par"
+    - type: "string"
+      name: "--obs_batch_label"
+      description: "The name of the adata obs column containing the batch labels.\n"
+      info: null
+      required: false
+      direction: "input"
+      multiple: false
+      multiple_sep: ":"
+      dest: "par"
+  - name: "Reference input"
+    arguments:
+    - type: "file"
+      name: "--reference"
+      description: "Reference dataset consisting of the labeled observations. The\
+        \ dataset is expected to be pre-processed in the same way as the --input query\
+        \ dataset(s).\n"
+      info: null
+      example:
+      - "reference.h5mu"
+      must_exist: true
+      create_parent: true
+      required: true
+      direction: "input"
+      multiple: false
+      multiple_sep: ":"
+      dest: "par"
+    - type: "string"
+      name: "--var_gene_names_reference"
+      description: "The name of the reference data var column containing gene names;\
+        \ when no gene_name_layer is provided, the var index will be used.\n"
+      info: null
+      required: false
+      direction: "input"
+      multiple: false
+      multiple_sep: ":"
+      dest: "par"
+    - type: "string"
+      name: "--obs_reference_targets"
+      description: "The `.obs` key(s) of the target labels to tranfer."
+      info: null
+      example:
+      - "ann_level_1"
+      - "ann_level_2"
+      - "ann_level_3"
+      - "ann_level_4"
+      - "ann_level_5"
+      - "ann_finest_level"
+      required: true
+      direction: "input"
+      multiple: true
+      multiple_sep: ";"
+      dest: "par"
+  - name: "Model input"
+    arguments:
+    - type: "file"
+      name: "--model"
+      description: "The model file containing checkpoints and cell type label mapper.\
+        \ \n"
+      info: null
+      example:
+      - "best_model.pt"
+      must_exist: true
+      create_parent: true
+      required: true
+      direction: "input"
+      multiple: false
+      multiple_sep: ":"
+      dest: "par"
+    - type: "file"
+      name: "--model_config"
+      description: "The model configuration file. \n"
+      info: null
+      example:
+      - "args.json"
+      must_exist: true
+      create_parent: true
+      required: true
+      direction: "input"
+      multiple: false
+      multiple_sep: ":"
+      dest: "par"
+    - type: "file"
+      name: "--model_vocab"
+      description: "Model vocabulary file directory.\n"
+      info: null
+      example:
+      - "vocab.json"
+      must_exist: true
+      create_parent: true
+      required: true
+      direction: "input"
+      multiple: false
+      multiple_sep: ":"
+      dest: "par"
+    - type: "string"
+      name: "--finetuned_checkpoints_key"
+      description: "Key in the model  file containing the pretrained checkpoints.\
+        \ Required if the provided model is a fine-tuned model containing keys for\
+        \ both the checkpoints and a label mapper.\n"
+      info: null
+      default:
+      - "model_state_dict"
+      required: true
+      direction: "input"
+      multiple: false
+      multiple_sep: ":"
+      dest: "par"
+  - name: "Outputs"
+    arguments:
+    - type: "file"
+      name: "--output"
+      description: "The query data in .h5mu format with predicted labels."
+      info: null
+      example:
+      - "output.h5mu"
+      must_exist: true
+      create_parent: true
+      required: true
+      direction: "output"
+      multiple: false
+      multiple_sep: ":"
+      dest: "par"
+    - type: "string"
+      name: "--output_obs_predictions"
+      description: "In which `.obs` slots to store the predicted information.\nIf\
+        \ provided, must have the same length as `--obs_reference_targets`.\nIf empty,\
+        \ will default to the `obs_reference_targets` combined with the `\"_pred\"\
+        ` suffix.\n"
+      info: null
+      required: false
+      direction: "input"
+      multiple: true
+      multiple_sep: ";"
+      dest: "par"
+    - type: "string"
+      name: "--output_obs_probability"
+      description: "In which `.obs` slots to store the probability of the predictions.\n\
+        If provided, must have the same length as `--obs_reference_targets`.\nIf empty,\
+        \ will default to the `obs_reference_targets` combined with the `\"_probability\"\
+        ` suffix.\n"
+      info: null
+      required: false
+      direction: "input"
+      multiple: true
+      multiple_sep: ";"
+      dest: "par"
+    - type: "string"
+      name: "--output_compression"
+      description: "The compression format to be used on the output h5mu object.\n"
+      info: null
+      example:
+      - "gzip"
+      required: false
+      choices:
+      - "gzip"
+      - "lzf"
+      direction: "input"
+      multiple: false
+      multiple_sep: ":"
+      dest: "par"
+  - name: "Padding arguments"
+    arguments:
+    - type: "string"
+      name: "--pad_token"
+      description: "Token used for padding.\n"
+      info: null
+      default:
+      - "<pad>"
+      required: false
+      direction: "input"
+      multiple: false
+      multiple_sep: ":"
+      dest: "par"
+    - type: "integer"
+      name: "--pad_value"
+      description: "The value of the padding token.\n"
+      info: null
+      default:
+      - -2
+      required: false
+      direction: "input"
+      multiple: false
+      multiple_sep: ":"
+      dest: "par"
+  - name: "HVG subset arguments"
+    arguments:
+    - type: "integer"
+      name: "--n_hvg"
+      description: "Number of highly variable genes to subset for.\n"
+      info: null
+      default:
+      - 1200
+      required: false
+      direction: "input"
+      multiple: false
+      multiple_sep: ":"
+      dest: "par"
+  - name: "Tokenization arguments"
+    arguments:
+    - type: "integer"
+      name: "--max_seq_len"
+      description: "The maximum sequence length of the tokenized data.\n"
+      info: null
+      required: false
+      direction: "input"
+      multiple: false
+      multiple_sep: ":"
+      dest: "par"
+  - name: "Binning arguments"
+    arguments:
+    - type: "integer"
+      name: "--n_input_bins"
+      description: "The number of bins to discretize the data into; When no value\
+        \ is provided, data won't be binned.\n"
+      info: null
+      default:
+      - 51
+      required: false
+      min: 1
+      direction: "input"
+      multiple: false
+      multiple_sep: ":"
+      dest: "par"
+    - type: "integer"
+      name: "--seed"
+      description: "Seed for random number generation used for binning. If not set,\
+        \ no seed is used.\n"
+      info: null
+      required: false
+      direction: "input"
+      multiple: false
+      multiple_sep: ":"
+      dest: "par"
+  - name: "scGPT integration options"
+    arguments:
+    - type: "string"
+      name: "--obsm_integrated"
+      description: "In which .obsm slot to store the resulting integrated embedding."
+      info: null
+      default:
+      - "X_scGPT"
+      required: false
+      direction: "input"
+      multiple: false
+      multiple_sep: ":"
+      dest: "par"
+    - type: "boolean"
+      name: "--dsbn"
+      description: "Apply domain-specific batch normalization\n"
+      info: null
+      default:
+      - true
+      required: false
+      direction: "input"
+      multiple: false
+      multiple_sep: ":"
+      dest: "par"
+    - type: "integer"
+      name: "--batch_size"
+      description: "The batch size to be used for embedding inference.\n"
+      info: null
+      default:
+      - 64
+      required: false
+      direction: "input"
+      multiple: false
+      multiple_sep: ":"
+      dest: "par"
+  resources:
+  - type: "nextflow_script"
+    path: "main.nf"
+    is_executable: true
+    entrypoint: "run_wf"
+  - type: "file"
+    path: "./src/workflows/utils/labels.config"
+    dest: "nextflow_labels.config"
+  description: "Pipeline for cell type annotation using scgpt integration and leiden\
+    \ clustering followed by KNN label transfer."
+  test_resources:
+  - type: "file"
+    path: "src/base/openpipelinetestutils"
+    dest: "openpipelinetestutils"
+  info: null
+  status: "enabled"
+  requirements:
+    commands:
+    - "ps"
+  dependencies:
+  - name: "workflows/integration/scgpt_leiden"
+    alias: "scgpt_leiden_workflow"
+    repository:
+      type: "local"
+      localPath: ""
+    foundConfigPath: "/home/runner/work/openpipeline/openpipeline/src/workflows/integration/scgpt_leiden/config.vsh.yaml"
+    configInfo:
+      functionalityName: "scgpt_leiden"
+      git_tag: "0.2.0-1630-gb55e6ab01d"
+      git_remote: "https://github.com/openpipelines-bio/openpipeline"
+      viash_version: "0.8.6"
+      config: "/home/runner/work/openpipeline/openpipeline/src/workflows/integration/scgpt_leiden/config.vsh.yaml"
+      functionalityNamespace: "workflows/integration"
+      output: ""
+      platform: ""
+      git_commit: "b55e6ab01d1acfc3e3eed55dda376684c3964e24"
+      executable: "/nextflow/workflows/integration/scgpt_leiden/main.nf"
+    writtenPath: "/home/runner/work/openpipeline/openpipeline/target/nextflow/workflows/integration/scgpt_leiden"
+  - name: "labels_transfer/pynndescent_knn"
+    repository:
+      type: "local"
+      localPath: ""
+    foundConfigPath: "/home/runner/work/openpipeline/openpipeline/src/labels_transfer/pynndescent_knn/config.vsh.yaml"
+    configInfo:
+      functionalityName: "pynndescent_knn"
+      git_tag: "0.2.0-1630-gb55e6ab01d"
+      git_remote: "https://github.com/openpipelines-bio/openpipeline"
+      viash_version: "0.8.6"
+      config: "/home/runner/work/openpipeline/openpipeline/src/labels_transfer/pynndescent_knn/config.vsh.yaml"
+      functionalityNamespace: "labels_transfer"
+      output: ""
+      platform: ""
+      git_commit: "b55e6ab01d1acfc3e3eed55dda376684c3964e24"
+      executable: "/nextflow/labels_transfer/pynndescent_knn/main.nf"
+    writtenPath: "/home/runner/work/openpipeline/openpipeline/target/nextflow/labels_transfer/pynndescent_knn"
+  - name: "dataflow/split_samples"
+    repository:
+      type: "local"
+      localPath: ""
+    foundConfigPath: "/home/runner/work/openpipeline/openpipeline/src/dataflow/split_samples/config.vsh.yaml"
+    configInfo:
+      functionalityName: "split_samples"
+      git_tag: "0.2.0-1630-gb55e6ab01d"
+      git_remote: "https://github.com/openpipelines-bio/openpipeline"
+      viash_version: "0.8.6"
+      config: "/home/runner/work/openpipeline/openpipeline/src/dataflow/split_samples/config.vsh.yaml"
+      functionalityNamespace: "dataflow"
+      output: ""
+      platform: ""
+      git_commit: "b55e6ab01d1acfc3e3eed55dda376684c3964e24"
+      executable: "/nextflow/dataflow/split_samples/main.nf"
+    writtenPath: "/home/runner/work/openpipeline/openpipeline/target/nextflow/dataflow/split_samples"
+  - name: "dataflow/concatenate_h5mu"
+    repository:
+      type: "local"
+      localPath: ""
+    foundConfigPath: "/home/runner/work/openpipeline/openpipeline/src/dataflow/concatenate_h5mu/config.vsh.yaml"
+    configInfo:
+      functionalityName: "concatenate_h5mu"
+      git_tag: "0.2.0-1630-gb55e6ab01d"
+      git_remote: "https://github.com/openpipelines-bio/openpipeline"
+      viash_version: "0.8.6"
+      config: "/home/runner/work/openpipeline/openpipeline/src/dataflow/concatenate_h5mu/config.vsh.yaml"
+      functionalityNamespace: "dataflow"
+      output: ""
+      platform: ""
+      git_commit: "b55e6ab01d1acfc3e3eed55dda376684c3964e24"
+      executable: "/nextflow/dataflow/concatenate_h5mu/main.nf"
+    writtenPath: "/home/runner/work/openpipeline/openpipeline/target/nextflow/dataflow/concatenate_h5mu"
+  - name: "metadata/rename_var"
+    repository:
+      type: "local"
+      localPath: ""
+    foundConfigPath: "/home/runner/work/openpipeline/openpipeline/src/metadata/rename_var/config.vsh.yaml"
+    configInfo:
+      functionalityName: "rename_var"
+      git_tag: "0.2.0-1630-gb55e6ab01d"
+      git_remote: "https://github.com/openpipelines-bio/openpipeline"
+      viash_version: "0.8.6"
+      config: "/home/runner/work/openpipeline/openpipeline/src/metadata/rename_var/config.vsh.yaml"
+      functionalityNamespace: "metadata"
+      output: ""
+      platform: ""
+      git_commit: "b55e6ab01d1acfc3e3eed55dda376684c3964e24"
+      executable: "/nextflow/metadata/rename_var/main.nf"
+    writtenPath: "/home/runner/work/openpipeline/openpipeline/target/nextflow/metadata/rename_var"
+  - name: "metadata/add_id"
+    repository:
+      type: "local"
+      localPath: ""
+    foundConfigPath: "/home/runner/work/openpipeline/openpipeline/src/metadata/add_id/config.vsh.yaml"
+    configInfo:
+      functionalityName: "add_id"
+      git_tag: "0.2.0-1630-gb55e6ab01d"
+      git_remote: "https://github.com/openpipelines-bio/openpipeline"
+      viash_version: "0.8.6"
+      config: "/home/runner/work/openpipeline/openpipeline/src/metadata/add_id/config.vsh.yaml"
+      functionalityNamespace: "metadata"
+      output: ""
+      platform: ""
+      git_commit: "b55e6ab01d1acfc3e3eed55dda376684c3964e24"
+      executable: "/nextflow/metadata/add_id/main.nf"
+    writtenPath: "/home/runner/work/openpipeline/openpipeline/target/nextflow/metadata/add_id"
+  set_wd_to_resources_dir: false
+platforms:
+- type: "nextflow"
+  id: "nextflow"
+  directives:
+    tag: "$id"
+  auto:
+    simplifyInput: true
+    simplifyOutput: false
+    transcript: false
+    publish: false
+  config:
+    labels:
+      mem1gb: "memory = 1.GB"
+      mem2gb: "memory = 2.GB"
+      mem4gb: "memory = 4.GB"
+      mem8gb: "memory = 8.GB"
+      mem16gb: "memory = 16.GB"
+      mem32gb: "memory = 32.GB"
+      mem64gb: "memory = 64.GB"
+      mem128gb: "memory = 128.GB"
+      mem256gb: "memory = 256.GB"
+      mem512gb: "memory = 512.GB"
+      mem1tb: "memory = 1.TB"
+      mem2tb: "memory = 2.TB"
+      mem4tb: "memory = 4.TB"
+      mem8tb: "memory = 8.TB"
+      mem16tb: "memory = 16.TB"
+      mem32tb: "memory = 32.TB"
+      mem64tb: "memory = 64.TB"
+      mem128tb: "memory = 128.TB"
+      mem256tb: "memory = 256.TB"
+      mem512tb: "memory = 512.TB"
+      cpu1: "cpus = 1"
+      cpu2: "cpus = 2"
+      cpu5: "cpus = 5"
+      cpu10: "cpus = 10"
+      cpu20: "cpus = 20"
+      cpu50: "cpus = 50"
+      cpu100: "cpus = 100"
+      cpu200: "cpus = 200"
+      cpu500: "cpus = 500"
+      cpu1000: "cpus = 1000"
+    script:
+    - "includeConfig(\"nextflow_labels.config\")"
+  debug: false
+  container: "docker"
+info:
+  config: "/home/runner/work/openpipeline/openpipeline/src/workflows/annotation/scgpt_integration_knn/config.vsh.yaml"
+  platform: "nextflow"
+  output: "/home/runner/work/openpipeline/openpipeline/target/nextflow/workflows/annotation/scgpt_integration_knn"
+  executable: "/home/runner/work/openpipeline/openpipeline/target/nextflow/workflows/annotation/scgpt_integration_knn/main.nf"
+  viash_version: "0.8.6"
+  git_commit: "b55e6ab01d1acfc3e3eed55dda376684c3964e24"
+  git_remote: "https://github.com/openpipelines-bio/openpipeline"
+  git_tag: "0.2.0-1630-gb55e6ab01d"

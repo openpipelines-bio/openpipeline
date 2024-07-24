@@ -2894,7 +2894,7 @@ meta = [
             ],
             "must_exist" : true,
             "create_parent" : true,
-            "required" : true,
+            "required" : false,
             "direction" : "input",
             "multiple" : false,
             "multiple_sep" : ":",
@@ -2910,7 +2910,7 @@ meta = [
             "type" : "string",
             "name" : "--obs_reference_batch",
             "description" : "The .obs column of the reference dataset containing the batch information.\n",
-            "required" : true,
+            "required" : false,
             "direction" : "input",
             "multiple" : false,
             "multiple_sep" : ":",
@@ -2981,7 +2981,7 @@ meta = [
             ],
             "must_exist" : true,
             "create_parent" : true,
-            "required" : true,
+            "required" : false,
             "direction" : "input",
             "multiple" : false,
             "multiple_sep" : ":",
@@ -2996,7 +2996,7 @@ meta = [
             ],
             "must_exist" : true,
             "create_parent" : true,
-            "required" : true,
+            "required" : false,
             "direction" : "input",
             "multiple" : false,
             "multiple_sep" : ":",
@@ -3011,7 +3011,7 @@ meta = [
             ],
             "must_exist" : true,
             "create_parent" : true,
-            "required" : true,
+            "required" : false,
             "direction" : "input",
             "multiple" : false,
             "multiple_sep" : ":",
@@ -3482,14 +3482,14 @@ meta = [
         "foundConfigPath" : "/home/runner/work/openpipeline/openpipeline/src/convert/from_h5ad_to_h5mu/config.vsh.yaml",
         "configInfo" : {
           "functionalityName" : "from_h5ad_to_h5mu",
-          "git_tag" : "0.2.0-1629-g12e24d67d8",
+          "git_tag" : "0.2.0-1630-gb55e6ab01d",
           "git_remote" : "https://github.com/openpipelines-bio/openpipeline",
           "viash_version" : "0.8.6",
           "config" : "/home/runner/work/openpipeline/openpipeline/src/convert/from_h5ad_to_h5mu/config.vsh.yaml",
           "functionalityNamespace" : "convert",
           "output" : "",
           "platform" : "",
-          "git_commit" : "12e24d67d853b5d37b2961cdf586667311baf6e3",
+          "git_commit" : "b55e6ab01d1acfc3e3eed55dda376684c3964e24",
           "executable" : "/nextflow/convert/from_h5ad_to_h5mu/main.nf"
         },
         "writtenPath" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/convert/from_h5ad_to_h5mu"
@@ -3503,14 +3503,14 @@ meta = [
         "foundConfigPath" : "/home/runner/work/openpipeline/openpipeline/src/dataflow/split_samples/config.vsh.yaml",
         "configInfo" : {
           "functionalityName" : "split_samples",
-          "git_tag" : "0.2.0-1629-g12e24d67d8",
+          "git_tag" : "0.2.0-1630-gb55e6ab01d",
           "git_remote" : "https://github.com/openpipelines-bio/openpipeline",
           "viash_version" : "0.8.6",
           "config" : "/home/runner/work/openpipeline/openpipeline/src/dataflow/split_samples/config.vsh.yaml",
           "functionalityNamespace" : "dataflow",
           "output" : "",
           "platform" : "",
-          "git_commit" : "12e24d67d853b5d37b2961cdf586667311baf6e3",
+          "git_commit" : "b55e6ab01d1acfc3e3eed55dda376684c3964e24",
           "executable" : "/nextflow/dataflow/split_samples/main.nf"
         },
         "writtenPath" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/dataflow/split_samples"
@@ -3525,14 +3525,14 @@ meta = [
         "foundConfigPath" : "/home/runner/work/openpipeline/openpipeline/src/workflows/multiomics/process_samples/config.vsh.yaml",
         "configInfo" : {
           "functionalityName" : "process_samples",
-          "git_tag" : "0.2.0-1629-g12e24d67d8",
+          "git_tag" : "0.2.0-1630-gb55e6ab01d",
           "git_remote" : "https://github.com/openpipelines-bio/openpipeline",
           "viash_version" : "0.8.6",
           "config" : "/home/runner/work/openpipeline/openpipeline/src/workflows/multiomics/process_samples/config.vsh.yaml",
           "functionalityNamespace" : "workflows/multiomics",
           "output" : "",
           "platform" : "",
-          "git_commit" : "12e24d67d853b5d37b2961cdf586667311baf6e3",
+          "git_commit" : "b55e6ab01d1acfc3e3eed55dda376684c3964e24",
           "executable" : "/nextflow/workflows/multiomics/process_samples/main.nf"
         },
         "writtenPath" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/workflows/multiomics/process_samples"
@@ -3547,14 +3547,14 @@ meta = [
         "foundConfigPath" : "/home/runner/work/openpipeline/openpipeline/src/workflows/annotation/harmony_knn/config.vsh.yaml",
         "configInfo" : {
           "functionalityName" : "harmony_knn",
-          "git_tag" : "0.2.0-1629-g12e24d67d8",
+          "git_tag" : "0.2.0-1630-gb55e6ab01d",
           "git_remote" : "https://github.com/openpipelines-bio/openpipeline",
           "viash_version" : "0.8.6",
           "config" : "/home/runner/work/openpipeline/openpipeline/src/workflows/annotation/harmony_knn/config.vsh.yaml",
           "functionalityNamespace" : "workflows/annotation",
           "output" : "",
           "platform" : "",
-          "git_commit" : "12e24d67d853b5d37b2961cdf586667311baf6e3",
+          "git_commit" : "b55e6ab01d1acfc3e3eed55dda376684c3964e24",
           "executable" : "/nextflow/workflows/annotation/harmony_knn/main.nf"
         },
         "writtenPath" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/workflows/annotation/harmony_knn"
@@ -3569,17 +3569,39 @@ meta = [
         "foundConfigPath" : "/home/runner/work/openpipeline/openpipeline/src/workflows/annotation/scgpt_annotation/config.vsh.yaml",
         "configInfo" : {
           "functionalityName" : "scgpt_annotation",
-          "git_tag" : "0.2.0-1629-g12e24d67d8",
+          "git_tag" : "0.2.0-1630-gb55e6ab01d",
           "git_remote" : "https://github.com/openpipelines-bio/openpipeline",
           "viash_version" : "0.8.6",
           "config" : "/home/runner/work/openpipeline/openpipeline/src/workflows/annotation/scgpt_annotation/config.vsh.yaml",
           "functionalityNamespace" : "workflows/annotation",
           "output" : "",
           "platform" : "",
-          "git_commit" : "12e24d67d853b5d37b2961cdf586667311baf6e3",
+          "git_commit" : "b55e6ab01d1acfc3e3eed55dda376684c3964e24",
           "executable" : "/nextflow/workflows/annotation/scgpt_annotation/main.nf"
         },
         "writtenPath" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/workflows/annotation/scgpt_annotation"
+      },
+      {
+        "name" : "workflows/annotation/scgpt_integration_knn",
+        "alias" : "scgpt_integration_knn_workflow",
+        "repository" : {
+          "type" : "local",
+          "localPath" : ""
+        },
+        "foundConfigPath" : "/home/runner/work/openpipeline/openpipeline/src/workflows/annotation/scgpt_integration_knn/config.vsh.yaml",
+        "configInfo" : {
+          "functionalityName" : "scgpt_integration_knn",
+          "git_tag" : "0.2.0-1630-gb55e6ab01d",
+          "git_remote" : "https://github.com/openpipelines-bio/openpipeline",
+          "viash_version" : "0.8.6",
+          "config" : "/home/runner/work/openpipeline/openpipeline/src/workflows/annotation/scgpt_integration_knn/config.vsh.yaml",
+          "functionalityNamespace" : "workflows/annotation",
+          "output" : "",
+          "platform" : "",
+          "git_commit" : "b55e6ab01d1acfc3e3eed55dda376684c3964e24",
+          "executable" : "/nextflow/workflows/annotation/scgpt_integration_knn/main.nf"
+        },
+        "writtenPath" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/workflows/annotation/scgpt_integration_knn"
       }
     ],
     "set_wd_to_resources_dir" : false
@@ -3643,9 +3665,9 @@ meta = [
     "platform" : "nextflow",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/workflows/annotation/annotation_service",
     "viash_version" : "0.8.6",
-    "git_commit" : "12e24d67d853b5d37b2961cdf586667311baf6e3",
+    "git_commit" : "b55e6ab01d1acfc3e3eed55dda376684c3964e24",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline",
-    "git_tag" : "0.2.0-1629-g12e24d67d8"
+    "git_tag" : "0.2.0-1630-gb55e6ab01d"
   }
 }'''))
 ]
@@ -3660,6 +3682,8 @@ include { harmony_knn as harmony_knn_workflow_viashalias } from "${meta.resource
 harmony_knn_workflow = harmony_knn_workflow_viashalias.run(key: "harmony_knn_workflow")
 include { scgpt_annotation as scgpt_annotation_workflow_viashalias } from "${meta.resources_dir}/../../../../nextflow/workflows/annotation/scgpt_annotation/main.nf"
 scgpt_annotation_workflow = scgpt_annotation_workflow_viashalias.run(key: "scgpt_annotation_workflow")
+include { scgpt_integration_knn as scgpt_integration_knn_workflow_viashalias } from "${meta.resources_dir}/../../../../nextflow/workflows/annotation/scgpt_integration_knn/main.nf"
+scgpt_integration_knn_workflow = scgpt_integration_knn_workflow_viashalias.run(key: "scgpt_integration_knn_workflow")
 
 // inner workflow
 // user-provided Nextflow code
@@ -3881,8 +3905,36 @@ workflow run_wf {
             "model_vocab": state.model_vocab,
             "finetuned_checkpoints_key": state.finetuned_checkpoints_key,
             "label_mapper_key": state.label_mapper_key,
-            "obs_predicted_cell_class": "scgpt_predicted_cell_class",
-            "obs_predicted_cell_label": "scgpt_predicted_cell_label",
+            "output_obs_predictions": "scgpt_pred",
+            "output_obs_probability": "scgpt_proba",
+            "pad_token": state.pad_token,
+            "pad_value": state.pad_value,
+            "n_hvg": state.n_hvg,
+            "dsbn": state.dsbn,
+            "batch_size": state.batch_size,
+            "n_input_bins": state.n_input_bins,
+            "seed": state.seed
+          ]
+        },
+        toState: [ "query_processed": "output" ]
+        )
+        | scgpt_integration_knn_workflow.run(
+        runIf: { id, state -> state.annotation_methods.contains("scgpt_annotation") },
+        fromState: { id, state ->
+          [ 
+            "id": id,
+            "input": state.query_processed,
+            "modality": "rna",
+            "input_layer": state.query_rna_layer,
+            "var_gene_names": state.var_query_gene_names,
+            "obs_batch_label": state.obs_query_batch,
+            "model": state.model,
+            "model_config": state.model_config,
+            "model_vocab": state.model_vocab,
+            "finetuned_checkpoints_key": state.finetuned_checkpoints_key,
+            "label_mapper_key": state.label_mapper_key,
+            "output_obs_predictions": "scgpt_pred",
+            "output_obs_probability": "scgpt_proba",
             "pad_token": state.pad_token,
             "pad_value": state.pad_value,
             "n_hvg": state.n_hvg,

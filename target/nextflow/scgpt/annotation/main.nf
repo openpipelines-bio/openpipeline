@@ -3013,10 +3013,10 @@ meta = [
           },
           {
             "type" : "string",
-            "name" : "--obs_predicted_cell_class",
-            "description" : "The name of the adata.obs column to write predicted cell type classes to.\n",
+            "name" : "--output_obs_predictions",
+            "description" : "The name of the adata.obs column to write predicted cell type labels to.\n",
             "default" : [
-              "predicted_cell_class"
+              "scgpt_pred"
             ],
             "required" : false,
             "direction" : "input",
@@ -3026,10 +3026,10 @@ meta = [
           },
           {
             "type" : "string",
-            "name" : "--obs_predicted_cell_label",
+            "name" : "--output_obs_probability",
             "description" : "The name of the adata.obs column to write predicted cell type labels to.\n",
             "default" : [
-              "predicted_cell_label"
+              "scgpt_probability"
             ],
             "required" : false,
             "direction" : "input",
@@ -3254,9 +3254,6 @@ meta = [
       "type" : "nextflow",
       "id" : "nextflow",
       "directives" : {
-        "label" : [
-          "highmem"
-        ],
         "tag" : "$id"
       },
       "auto" : {
@@ -3311,9 +3308,9 @@ meta = [
     "platform" : "nextflow",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/scgpt/annotation",
     "viash_version" : "0.8.6",
-    "git_commit" : "12e24d67d853b5d37b2961cdf586667311baf6e3",
+    "git_commit" : "b55e6ab01d1acfc3e3eed55dda376684c3964e24",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline",
-    "git_tag" : "0.2.0-1629-g12e24d67d8"
+    "git_tag" : "0.2.0-1630-gb55e6ab01d"
   }
 }'''))
 ]
@@ -3334,6 +3331,7 @@ from typing import Dict
 import warnings
 import torch
 import numpy as np
+from torch.nn import functional
 from torch.utils.data import Dataset, DataLoader
 from scgpt.model import TransformerModel
 from scgpt.tokenizer.gene_tokenizer import GeneVocab
@@ -3354,8 +3352,8 @@ par = {
   'obsm_tokenized_values': $( if [ ! -z ${VIASH_PAR_OBSM_TOKENIZED_VALUES+x} ]; then echo "r'${VIASH_PAR_OBSM_TOKENIZED_VALUES//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'output': $( if [ ! -z ${VIASH_PAR_OUTPUT+x} ]; then echo "r'${VIASH_PAR_OUTPUT//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'output_compression': $( if [ ! -z ${VIASH_PAR_OUTPUT_COMPRESSION+x} ]; then echo "r'${VIASH_PAR_OUTPUT_COMPRESSION//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
-  'obs_predicted_cell_class': $( if [ ! -z ${VIASH_PAR_OBS_PREDICTED_CELL_CLASS+x} ]; then echo "r'${VIASH_PAR_OBS_PREDICTED_CELL_CLASS//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
-  'obs_predicted_cell_label': $( if [ ! -z ${VIASH_PAR_OBS_PREDICTED_CELL_LABEL+x} ]; then echo "r'${VIASH_PAR_OBS_PREDICTED_CELL_LABEL//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
+  'output_obs_predictions': $( if [ ! -z ${VIASH_PAR_OUTPUT_OBS_PREDICTIONS+x} ]; then echo "r'${VIASH_PAR_OUTPUT_OBS_PREDICTIONS//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
+  'output_obs_probability': $( if [ ! -z ${VIASH_PAR_OUTPUT_OBS_PROBABILITY+x} ]; then echo "r'${VIASH_PAR_OUTPUT_OBS_PROBABILITY//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'pad_token': $( if [ ! -z ${VIASH_PAR_PAD_TOKEN+x} ]; then echo "r'${VIASH_PAR_PAD_TOKEN//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'pad_value': $( if [ ! -z ${VIASH_PAR_PAD_VALUE+x} ]; then echo "int(r'${VIASH_PAR_PAD_VALUE//\\'/\\'\\"\\'\\"r\\'}')"; else echo None; fi ),
   'n_input_bins': $( if [ ! -z ${VIASH_PAR_N_INPUT_BINS+x} ]; then echo "int(r'${VIASH_PAR_N_INPUT_BINS//\\'/\\'\\"\\'\\"r\\'}')"; else echo None; fi ),
@@ -3555,6 +3553,8 @@ data_loader = DataLoader(
 logger.info("Predicting cell type classes")
 model.eval()
 predictions = []
+probabilities = []
+confidences = []
 with torch.no_grad():
     for batch_data in data_loader:
         input_gene_ids = batch_data["gene_ids"].to(device)
@@ -3568,18 +3568,27 @@ with torch.no_grad():
                 input_values,
                 src_key_padding_mask=src_key_padding_mask,
                 batch_labels=batch_labels if par["dsbn"] else None,
-                CLS=True  # Return celltype classification objective output
+                CLS=True,  # Return celltype classification objective output
+                CCE=False,
+                MVC=False,
+                ECS=False,
             )
             output_values = output_dict["cls_output"]
+
         preds = output_values.argmax(1).cpu().numpy()
         predictions.append(preds)
 
+        probs = functional.softmax(output_values, dim=1).max(1)[0]
+        probabilities.append(probs.cpu().numpy())
+
 predictions = np.concatenate(predictions, axis=0)
-adata.obs[par["obs_predicted_cell_class"]] = predictions
+probabilities = np.concatenate(probabilities, axis=0)
 
 # Assign cell type labels to predicted classes
-logger.info("Assigning cell type labels")
-adata.obs[par["obs_predicted_cell_label"]] = adata.obs[par['obs_predicted_cell_class']].map(lambda x: cell_type_mapper[x])
+logger.info("Assigning cell type predictions and probabilities")
+adata.obs["scgpt_class_pred"] = predictions
+adata.obs[par["output_obs_predictions"]] = adata.obs["scgpt_class_pred"].map(lambda x: cell_type_mapper[x])
+adata.obs[par["output_obs_probability"]] = probabilities
 
 # Write output
 logger.info("Writing output data")
@@ -3938,9 +3947,6 @@ meta["defaults"] = [
     "image" : "openpipelines-bio/scgpt/annotation",
     "tag" : "annotation-workflow_build"
   },
-  "label" : [
-    "highmem"
-  ],
   "tag" : "$id"
 }'''),
 

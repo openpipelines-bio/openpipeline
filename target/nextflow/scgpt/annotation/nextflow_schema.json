@@ -52,24 +52,24 @@
     
 
         ,
-                "obs_predicted_cell_class": {
+                "output_obs_predictions": {
                 "type":
                 "string",
-                "description": "Type: `string`, default: `predicted_cell_class`. The name of the adata",
-                "help_text": "Type: `string`, default: `predicted_cell_class`. The name of the adata.obs column to write predicted cell type classes to.\n"
+                "description": "Type: `string`, default: `scgpt_pred`. The name of the adata",
+                "help_text": "Type: `string`, default: `scgpt_pred`. The name of the adata.obs column to write predicted cell type labels to.\n"
             ,
-                "default": "predicted_cell_class"
+                "default": "scgpt_pred"
             }
     
 
         ,
-                "obs_predicted_cell_label": {
+                "output_obs_probability": {
                 "type":
                 "string",
-                "description": "Type: `string`, default: `predicted_cell_label`. The name of the adata",
-                "help_text": "Type: `string`, default: `predicted_cell_label`. The name of the adata.obs column to write predicted cell type labels to.\n"
+                "description": "Type: `string`, default: `scgpt_probability`. The name of the adata",
+                "help_text": "Type: `string`, default: `scgpt_probability`. The name of the adata.obs column to write predicted cell type labels to.\n"
             ,
-                "default": "predicted_cell_label"
+                "default": "scgpt_probability"
             }
     
 

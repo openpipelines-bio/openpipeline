@@ -33,10 +33,32 @@
                 "output": {
                 "type":
                 "string",
-                "description": "Type: `file`, required, default: `$id.$key.output.h5mu`, example: `output.h5mu`. Output file path",
-                "help_text": "Type: `file`, required, default: `$id.$key.output.h5mu`, example: `output.h5mu`. Output file path"
+                "description": "Type: `file`, required, default: `$id.$key.output.h5mu`, example: `output.h5mu`. The query data in ",
+                "help_text": "Type: `file`, required, default: `$id.$key.output.h5mu`, example: `output.h5mu`. The query data in .h5mu format with predicted labels."
             ,
                 "default": "$id.$key.output.h5mu"
+            }
+    
+
+        ,
+                "output_obs_predictions": {
+                "type":
+                "string",
+                "description": "Type: `string`, default: `scgpt_pred`. In which `",
+                "help_text": "Type: `string`, default: `scgpt_pred`. In which `.obs` slots to store the predicted information.\n"
+            ,
+                "default": "scgpt_pred"
+            }
+    
+
+        ,
+                "output_obs_probability": {
+                "type":
+                "string",
+                "description": "Type: `string`, default: `scgpt_probabilities`. In which `",
+                "help_text": "Type: `string`, default: `scgpt_probabilities`. In which `.obs` slots to store the probability of the predictions.\n"
+            ,
+                "default": "scgpt_probabilities"
             }
     
 
@@ -44,33 +66,11 @@
                 "output_compression": {
                 "type":
                 "string",
-                "description": "Type: `string`, example: `gzip`, choices: ``gzip`, `lzf``. The compression algorithm to use for the output h5mu file",
-                "help_text": "Type: `string`, example: `gzip`, choices: ``gzip`, `lzf``. The compression algorithm to use for the output h5mu file.\n",
+                "description": "Type: `string`, example: `gzip`, choices: ``gzip`, `lzf``. The compression format to be used on the output h5mu object",
+                "help_text": "Type: `string`, example: `gzip`, choices: ``gzip`, `lzf``. The compression format to be used on the output h5mu object.\n",
                 "enum": ["gzip", "lzf"]
             
             
-            }
-    
-
-        ,
-                "obs_predicted_cell_class": {
-                "type":
-                "string",
-                "description": "Type: `string`, default: `scgpt_predicted_cell_class`. The name of the adata",
-                "help_text": "Type: `string`, default: `scgpt_predicted_cell_class`. The name of the adata.obs column to write predicted cell type classes to.\n"
-            ,
-                "default": "scgpt_predicted_cell_class"
-            }
-    
-
-        ,
-                "obs_predicted_cell_label": {
-                "type":
-                "string",
-                "description": "Type: `string`, default: `scgpt_predicted_cell_label`. The name of the adata",
-                "help_text": "Type: `string`, default: `scgpt_predicted_cell_label`. The name of the adata.obs column to write predicted cell type labels to.\n"
-            ,
-                "default": "scgpt_predicted_cell_label"
             }
     
 
@@ -98,8 +98,8 @@
                 "input": {
                 "type":
                 "string",
-                "description": "Type: `file`, required, example: `input.h5mu`. Path to the input file",
-                "help_text": "Type: `file`, required, example: `input.h5mu`. Path to the input file."
+                "description": "Type: `file`, required, example: `input.h5mu`. Input dataset consisting of the (unlabeled) query observations",
+                "help_text": "Type: `file`, required, example: `input.h5mu`. Input dataset consisting of the (unlabeled) query observations. The dataset is expected to be pre-processed in the same way as the --reference dataset.\n"
             
             }
     
@@ -108,8 +108,8 @@
                 "modality": {
                 "type":
                 "string",
-                "description": "Type: `string`, default: `rna`. ",
-                "help_text": "Type: `string`, default: `rna`. "
+                "description": "Type: `string`, default: `rna`. Which modality to process",
+                "help_text": "Type: `string`, default: `rna`. Which modality to process."
             ,
                 "default": "rna"
             }
@@ -119,8 +119,8 @@
                 "input_layer": {
                 "type":
                 "string",
-                "description": "Type: `string`. Mudata layer (key from layers) to use as input data for hvg subsetting and binning; if not specified, X is used",
-                "help_text": "Type: `string`. Mudata layer (key from layers) to use as input data for hvg subsetting and binning; if not specified, X is used.\n"
+                "description": "Type: `string`. Mudata layer (key from layers) to use as input data for scGPT-specific pre-processing (hvg subsetting and binning); if not specified, X is used",
+                "help_text": "Type: `string`. Mudata layer (key from layers) to use as input data for scGPT-specific pre-processing (hvg subsetting and binning); if not specified, X is used.\n"
             
             }
     
@@ -160,7 +160,7 @@
                 "type":
                 "string",
                 "description": "Type: `file`, required, example: `best_model.pt`. The model file containing checkpoints and cell type label mapper",
-                "help_text": "Type: `file`, required, example: `best_model.pt`. The model file containing checkpoints and cell type label mapper.\n"
+                "help_text": "Type: `file`, required, example: `best_model.pt`. The model file containing checkpoints and cell type label mapper. \nMust be a fine-tuned model containing both a key for checkpoints (--finetuned_checkpoints_key) and a cell type label mapper (--label_mapper_key).\n"
             
             }
     
@@ -189,8 +189,8 @@
                 "finetuned_checkpoints_key": {
                 "type":
                 "string",
-                "description": "Type: `string`, default: `model_state_dict`. Key in the model  file containing the pretrained checkpoints",
-                "help_text": "Type: `string`, default: `model_state_dict`. Key in the model  file containing the pretrained checkpoints.\n"
+                "description": "Type: `string`, required, default: `model_state_dict`. Key in the model  file containing the pretrained checkpoints",
+                "help_text": "Type: `string`, required, default: `model_state_dict`. Key in the model  file containing the pretrained checkpoints. Required if the provided model is a fine-tuned model containing keys for both the checkpoints and a label mapper.\n"
             ,
                 "default": "model_state_dict"
             }
@@ -200,8 +200,8 @@
                 "label_mapper_key": {
                 "type":
                 "string",
-                "description": "Type: `string`, default: `id_to_class`. Key in the model file containing the cell type class to label mapper dictionary",
-                "help_text": "Type: `string`, default: `id_to_class`. Key in the model file containing the cell type class to label mapper dictionary.\n"
+                "description": "Type: `string`, required, default: `id_to_class`. Key in the model file containing the cell type class to label mapper dictionary",
+                "help_text": "Type: `string`, required, default: `id_to_class`. Key in the model file containing the cell type class to label mapper dictionary. Note that the provide model should be a fine-tuned model containing keys for both checkpoints and the label mapper.\n"
             ,
                 "default": "id_to_class"
             }
@@ -264,31 +264,19 @@
 },
     
     
-    "embedding arguments" : {
-    "title": "Embedding arguments",
+    "tokenization arguments" : {
+    "title": "Tokenization arguments",
     "type": "object",
     "description": "No description",
     "properties": {
     
         
-                "dsbn": {
-                "type":
-                "boolean",
-                "description": "Type: `boolean`, default: `true`. Apply domain-specific batch normalization\n",
-                "help_text": "Type: `boolean`, default: `true`. Apply domain-specific batch normalization\n"
-            ,
-                "default": "True"
-            }
-    
-
-        ,
-                "batch_size": {
+                "max_seq_len": {
                 "type":
                 "integer",
-                "description": "Type: `integer`, default: `64`. The batch size to be used for embedding inference",
-                "help_text": "Type: `integer`, default: `64`. The batch size to be used for embedding inference.\n"
-            ,
-                "default": "64"
+                "description": "Type: `integer`. The maximum sequence length of the tokenized data",
+                "help_text": "Type: `integer`. The maximum sequence length of the tokenized data.\n"
+            
             }
     
 
@@ -320,6 +308,38 @@
                 "description": "Type: `integer`. Seed for random number generation used for binning",
                 "help_text": "Type: `integer`. Seed for random number generation used for binning. If not set, no seed is used.\n"
             
+            }
+    
+
+}
+},
+    
+    
+    "embedding arguments" : {
+    "title": "Embedding arguments",
+    "type": "object",
+    "description": "No description",
+    "properties": {
+    
+        
+                "dsbn": {
+                "type":
+                "boolean",
+                "description": "Type: `boolean`, default: `true`. Apply domain-specific batch normalization\n",
+                "help_text": "Type: `boolean`, default: `true`. Apply domain-specific batch normalization\n"
+            ,
+                "default": "True"
+            }
+    
+
+        ,
+                "batch_size": {
+                "type":
+                "integer",
+                "description": "Type: `integer`, default: `64`. The batch size to be used for embedding inference",
+                "help_text": "Type: `integer`, default: `64`. The batch size to be used for embedding inference.\n"
+            ,
+                "default": "64"
             }
     
 
@@ -371,11 +391,15 @@
     },
 
     {
-    "$ref": "#/definitions/embedding arguments"
+    "$ref": "#/definitions/tokenization arguments"
     },
 
     {
     "$ref": "#/definitions/binning arguments"
+    },
+
+    {
+    "$ref": "#/definitions/embedding arguments"
     },
 
     {

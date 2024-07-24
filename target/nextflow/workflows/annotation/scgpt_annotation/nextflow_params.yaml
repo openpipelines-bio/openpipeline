@@ -1,8 +1,8 @@
 # Outputs
 # output: "$id.$key.output.h5mu"
+output_obs_predictions: "scgpt_pred"
+output_obs_probability: "scgpt_probabilities"
 # output_compression: "gzip"
-obs_predicted_cell_class: "scgpt_predicted_cell_class"
-obs_predicted_cell_label: "scgpt_predicted_cell_label"
 
 # Query input
 id: # please fill in - example: "foo"
@@ -16,8 +16,8 @@ modality: "rna"
 model: # please fill in - example: "best_model.pt"
 model_config: # please fill in - example: "args.json"
 model_vocab: # please fill in - example: "vocab.json"
-finetuned_checkpoints_key: "model_state_dict"
-label_mapper_key: "id_to_class"
+finetuned_checkpoints_key: # please fill in - example: "model_state_dict"
+label_mapper_key: # please fill in - example: "id_to_class"
 
 # Padding arguments
 pad_token: "<pad>"
@@ -26,13 +26,16 @@ pad_value: -2
 # HVG subset arguments
 n_hvg: 1200
 
-# Embedding arguments
-dsbn: true
-batch_size: 64
+# Tokenization arguments
+# max_seq_len: 123
 
 # Binning arguments
 n_input_bins: 51
 # seed: 123
+
+# Embedding arguments
+dsbn: true
+batch_size: 64
 
 # Nextflow input-output arguments
 publish_dir: # please fill in - example: "output/"

@@ -1,26 +1,7 @@
-# Inputs
-id: # please fill in - example: "foo"
-input_query_dataset: # please fill in - example: "input.h5mu"
-input_reference_dataset: # please fill in - example: "path/to/file"
-modality: "rna"
-embedding: "X_pca"
-obs_reference_targets: # please fill in - example: ["ann_level_1", "ann_level_2", "ann_level_3", "ann_level_4", "ann_level_5", "ann_finest_level"]
-
-# Outputs
-# output: "$id.$key.output.h5mu"
-# output_obs_predictions: ["foo"]
-# output_obs_probability: ["foo"]
-output_uns_parameters: "labels_transfer"
-# output_compression: "gzip"
-
 # Harmony integration options
 theta: [2]
 obs_covariates: # please fill in - example: ["batch", "sample"]
 obsm_integrated: "X_integrated_harmony"
-
-# Neighbor classifier arguments
-weights: "uniform"
-n_neighbors: 15
 
 # Nextflow input-output arguments
 publish_dir: # please fill in - example: "output/"

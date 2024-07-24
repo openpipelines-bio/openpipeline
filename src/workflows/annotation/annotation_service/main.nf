@@ -216,8 +216,36 @@ workflow run_wf {
             "model_vocab": state.model_vocab,
             "finetuned_checkpoints_key": state.finetuned_checkpoints_key,
             "label_mapper_key": state.label_mapper_key,
-            "obs_predicted_cell_class": "scgpt_predicted_cell_class",
-            "obs_predicted_cell_label": "scgpt_predicted_cell_label",
+            "output_obs_predictions": "scgpt_pred",
+            "output_obs_probability": "scgpt_proba",
+            "pad_token": state.pad_token,
+            "pad_value": state.pad_value,
+            "n_hvg": state.n_hvg,
+            "dsbn": state.dsbn,
+            "batch_size": state.batch_size,
+            "n_input_bins": state.n_input_bins,
+            "seed": state.seed
+          ]
+        },
+        toState: [ "query_processed": "output" ]
+        )
+        | scgpt_integration_knn_workflow.run(
+        runIf: { id, state -> state.annotation_methods.contains("scgpt_annotation") },
+        fromState: { id, state ->
+          [ 
+            "id": id,
+            "input": state.query_processed,
+            "modality": "rna",
+            "input_layer": state.query_rna_layer,
+            "var_gene_names": state.var_query_gene_names,
+            "obs_batch_label": state.obs_query_batch,
+            "model": state.model,
+            "model_config": state.model_config,
+            "model_vocab": state.model_vocab,
+            "finetuned_checkpoints_key": state.finetuned_checkpoints_key,
+            "label_mapper_key": state.label_mapper_key,
+            "output_obs_predictions": "scgpt_pred",
+            "output_obs_probability": "scgpt_proba",
             "pad_token": state.pad_token,
             "pad_value": state.pad_value,
             "n_hvg": state.n_hvg,

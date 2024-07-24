@@ -21,27 +21,6 @@ functionality:
           type: string
           default: "rna"
           required: false
-        - name: "--model"
-          type: file
-          direction: input
-          required: true
-          example: best_model.pt
-          description: |
-            Path to scGPT model file.
-        - name: "--model_vocab"
-          type: file
-          direction: input
-          required: true
-          example: vocab.json
-          description: |
-            Path to scGPT model vocabulary file.
-        - name: "--model_config"
-          type: file
-          direction: input
-          required: true
-          example: args.json
-          description: |
-            Path to scGPT model config file.
         - name: "--obsm_gene_tokens"
           type: string
           default: "gene_id_tokens"
@@ -66,6 +45,35 @@ functionality:
           type: string
           description: |
             The name of the adata.obs column containing the batch labels. Must be provided when 'dsbn' is set to True.
+    - name: Model
+      arguments:
+        - name: "--model"
+          type: file
+          direction: input
+          required: true
+          example: best_model.pt
+          description: |
+            Path to scGPT model file.
+        - name: "--model_vocab"
+          type: file
+          direction: input
+          required: true
+          example: vocab.json
+          description: |
+            Path to scGPT model vocabulary file.
+        - name: "--model_config"
+          type: file
+          direction: input
+          required: true
+          example: args.json
+          description: |
+            Path to scGPT model config file.
+        - name: "--finetuned_checkpoints_key"
+          type: string
+          required: false
+          example: model_state_dict
+          description: |
+            Key in the model file containing the pretrained checkpoints. Only relevant for fine-tuned models.
 
     - name: Outputs
       arguments:

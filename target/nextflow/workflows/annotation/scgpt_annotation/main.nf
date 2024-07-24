@@ -12,6 +12,8 @@
 // Component authors:
 //  * Dorien Roosen (author, maintainer)
 //  * Jakub Majercik (author)
+//  * Weiwei Schultz (contributor)
+//  * Elizabeth Mlynarski (author)
 
 ////////////////////////////
 // VDSL3 helper functions //
@@ -2830,6 +2832,36 @@ meta = [
             }
           ]
         }
+      },
+      {
+        "name" : "Weiwei Schultz",
+        "roles" : [
+          "contributor"
+        ],
+        "info" : {
+          "role" : "Contributor",
+          "organizations" : [
+            {
+              "name" : "Janssen R&D US",
+              "role" : "Associate Director Data Sciences"
+            }
+          ]
+        }
+      },
+      {
+        "name" : "Elizabeth Mlynarski",
+        "roles" : [
+          "author"
+        ],
+        "info" : {
+          "role" : "Contributor",
+          "organizations" : [
+            {
+              "name" : "Janssen R&D US",
+              "role" : "Principal Scientist Computational Genomics"
+            }
+          ]
+        }
       }
     ],
     "argument_groups" : [
@@ -2852,7 +2884,7 @@ meta = [
           {
             "type" : "file",
             "name" : "--input",
-            "description" : "Path to the input file.",
+            "description" : "Input dataset consisting of the (unlabeled) query observations. The dataset is expected to be pre-processed in the same way as the --reference dataset.\n",
             "example" : [
               "input.h5mu"
             ],
@@ -2867,6 +2899,7 @@ meta = [
           {
             "type" : "string",
             "name" : "--modality",
+            "description" : "Which modality to process.",
             "default" : [
               "rna"
             ],
@@ -2879,7 +2912,7 @@ meta = [
           {
             "type" : "string",
             "name" : "--input_layer",
-            "description" : "Mudata layer (key from layers) to use as input data for hvg subsetting and binning; if not specified, X is used.\n",
+            "description" : "Mudata layer (key from layers) to use as input data for scGPT-specific pre-processing (hvg subsetting and binning); if not specified, X is used.\n",
             "required" : false,
             "direction" : "input",
             "multiple" : false,
@@ -2914,7 +2947,7 @@ meta = [
           {
             "type" : "file",
             "name" : "--model",
-            "description" : "The model file containing checkpoints and cell type label mapper.\n",
+            "description" : "The model file containing checkpoints and cell type label mapper. \nMust be a fine-tuned model containing both a key for checkpoints (--finetuned_checkpoints_key) and a cell type label mapper (--label_mapper_key).\n",
             "example" : [
               "best_model.pt"
             ],
@@ -2959,11 +2992,11 @@ meta = [
           {
             "type" : "string",
             "name" : "--finetuned_checkpoints_key",
-            "description" : "Key in the model  file containing the pretrained checkpoints.\n",
+            "description" : "Key in the model  file containing the pretrained checkpoints. Required if the provided model is a fine-tuned model containing keys for both the checkpoints and a label mapper.\n",
             "default" : [
               "model_state_dict"
             ],
-            "required" : false,
+            "required" : true,
             "direction" : "input",
             "multiple" : false,
             "multiple_sep" : ":",
@@ -2972,74 +3005,11 @@ meta = [
           {
             "type" : "string",
             "name" : "--label_mapper_key",
-            "description" : "Key in the model file containing the cell type class to label mapper dictionary.\n",
+            "description" : "Key in the model file containing the cell type class to label mapper dictionary. Note that the provide model should be a fine-tuned model containing keys for both checkpoints and the label mapper.\n",
             "default" : [
               "id_to_class"
             ],
-            "required" : false,
-            "direction" : "input",
-            "multiple" : false,
-            "multiple_sep" : ":",
-            "dest" : "par"
-          }
-        ]
-      },
-      {
-        "name" : "Outputs",
-        "arguments" : [
-          {
-            "type" : "file",
-            "name" : "--output",
-            "description" : "Output file path",
-            "example" : [
-              "output.h5mu"
-            ],
-            "must_exist" : true,
-            "create_parent" : true,
             "required" : true,
-            "direction" : "output",
-            "multiple" : false,
-            "multiple_sep" : ":",
-            "dest" : "par"
-          },
-          {
-            "type" : "string",
-            "name" : "--output_compression",
-            "description" : "The compression algorithm to use for the output h5mu file.\n",
-            "example" : [
-              "gzip"
-            ],
-            "required" : false,
-            "choices" : [
-              "gzip",
-              "lzf"
-            ],
-            "direction" : "input",
-            "multiple" : false,
-            "multiple_sep" : ":",
-            "dest" : "par"
-          },
-          {
-            "type" : "string",
-            "name" : "--obs_predicted_cell_class",
-            "description" : "The name of the adata.obs column to write predicted cell type classes to.\n",
-            "default" : [
-              "scgpt_predicted_cell_class"
-            ],
-            "required" : false,
-            "direction" : "input",
-            "multiple" : false,
-            "multiple_sep" : ":",
-            "dest" : "par"
-          },
-          {
-            "type" : "string",
-            "name" : "--obs_predicted_cell_label",
-            "description" : "The name of the adata.obs column to write predicted cell type labels to.\n",
-            "default" : [
-              "scgpt_predicted_cell_label"
-            ],
-            "required" : false,
             "direction" : "input",
             "multiple" : false,
             "multiple_sep" : ":",
@@ -3097,6 +3067,50 @@ meta = [
         ]
       },
       {
+        "name" : "Tokenization arguments",
+        "arguments" : [
+          {
+            "type" : "integer",
+            "name" : "--max_seq_len",
+            "description" : "The maximum sequence length of the tokenized data.\n",
+            "required" : false,
+            "direction" : "input",
+            "multiple" : false,
+            "multiple_sep" : ":",
+            "dest" : "par"
+          }
+        ]
+      },
+      {
+        "name" : "Binning arguments",
+        "arguments" : [
+          {
+            "type" : "integer",
+            "name" : "--n_input_bins",
+            "description" : "The number of bins to discretize the data into; When no value is provided, data won't be binned.\n",
+            "default" : [
+              51
+            ],
+            "required" : false,
+            "min" : 1,
+            "direction" : "input",
+            "multiple" : false,
+            "multiple_sep" : ":",
+            "dest" : "par"
+          },
+          {
+            "type" : "integer",
+            "name" : "--seed",
+            "description" : "Seed for random number generation used for binning. If not set, no seed is used.\n",
+            "required" : false,
+            "direction" : "input",
+            "multiple" : false,
+            "multiple_sep" : ":",
+            "dest" : "par"
+          }
+        ]
+      },
+      {
         "name" : "Embedding arguments",
         "arguments" : [
           {
@@ -3128,27 +3142,61 @@ meta = [
         ]
       },
       {
-        "name" : "Binning arguments",
+        "name" : "Outputs",
         "arguments" : [
           {
-            "type" : "integer",
-            "name" : "--n_input_bins",
-            "description" : "The number of bins to discretize the data into; When no value is provided, data won't be binned.\n",
+            "type" : "file",
+            "name" : "--output",
+            "description" : "The query data in .h5mu format with predicted labels.",
+            "example" : [
+              "output.h5mu"
+            ],
+            "must_exist" : true,
+            "create_parent" : true,
+            "required" : true,
+            "direction" : "output",
+            "multiple" : false,
+            "multiple_sep" : ":",
+            "dest" : "par"
+          },
+          {
+            "type" : "string",
+            "name" : "--output_obs_predictions",
+            "description" : "In which `.obs` slots to store the predicted information.\n",
             "default" : [
-              51
+              "scgpt_pred"
             ],
             "required" : false,
-            "min" : 1,
             "direction" : "input",
             "multiple" : false,
             "multiple_sep" : ":",
             "dest" : "par"
           },
           {
-            "type" : "integer",
-            "name" : "--seed",
-            "description" : "Seed for random number generation used for binning. If not set, no seed is used.\n",
+            "type" : "string",
+            "name" : "--output_obs_probability",
+            "description" : "In which `.obs` slots to store the probability of the predictions.\n",
+            "default" : [
+              "scgpt_probabilities"
+            ],
             "required" : false,
+            "direction" : "input",
+            "multiple" : false,
+            "multiple_sep" : ":",
+            "dest" : "par"
+          },
+          {
+            "type" : "string",
+            "name" : "--output_compression",
+            "description" : "The compression format to be used on the output h5mu object.\n",
+            "example" : [
+              "gzip"
+            ],
+            "required" : false,
+            "choices" : [
+              "gzip",
+              "lzf"
+            ],
             "direction" : "input",
             "multiple" : false,
             "multiple_sep" : ":",
@@ -3207,14 +3255,14 @@ meta = [
         "foundConfigPath" : "/home/runner/work/openpipeline/openpipeline/src/scgpt/cross_check_genes/config.vsh.yaml",
         "configInfo" : {
           "functionalityName" : "cross_check_genes",
-          "git_tag" : "0.2.0-1629-g12e24d67d8",
+          "git_tag" : "0.2.0-1630-gb55e6ab01d",
           "git_remote" : "https://github.com/openpipelines-bio/openpipeline",
           "viash_version" : "0.8.6",
           "config" : "/home/runner/work/openpipeline/openpipeline/src/scgpt/cross_check_genes/config.vsh.yaml",
           "functionalityNamespace" : "scgpt",
           "output" : "",
           "platform" : "",
-          "git_commit" : "12e24d67d853b5d37b2961cdf586667311baf6e3",
+          "git_commit" : "b55e6ab01d1acfc3e3eed55dda376684c3964e24",
           "executable" : "/nextflow/scgpt/cross_check_genes/main.nf"
         },
         "writtenPath" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/scgpt/cross_check_genes"
@@ -3228,14 +3276,14 @@ meta = [
         "foundConfigPath" : "/home/runner/work/openpipeline/openpipeline/src/scgpt/binning/config.vsh.yaml",
         "configInfo" : {
           "functionalityName" : "binning",
-          "git_tag" : "0.2.0-1629-g12e24d67d8",
+          "git_tag" : "0.2.0-1630-gb55e6ab01d",
           "git_remote" : "https://github.com/openpipelines-bio/openpipeline",
           "viash_version" : "0.8.6",
           "config" : "/home/runner/work/openpipeline/openpipeline/src/scgpt/binning/config.vsh.yaml",
           "functionalityNamespace" : "scgpt",
           "output" : "",
           "platform" : "",
-          "git_commit" : "12e24d67d853b5d37b2961cdf586667311baf6e3",
+          "git_commit" : "b55e6ab01d1acfc3e3eed55dda376684c3964e24",
           "executable" : "/nextflow/scgpt/binning/main.nf"
         },
         "writtenPath" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/scgpt/binning"
@@ -3249,14 +3297,14 @@ meta = [
         "foundConfigPath" : "/home/runner/work/openpipeline/openpipeline/src/feature_annotation/highly_variable_features_scanpy/config.vsh.yaml",
         "configInfo" : {
           "functionalityName" : "highly_variable_features_scanpy",
-          "git_tag" : "0.2.0-1629-g12e24d67d8",
+          "git_tag" : "0.2.0-1630-gb55e6ab01d",
           "git_remote" : "https://github.com/openpipelines-bio/openpipeline",
           "viash_version" : "0.8.6",
           "config" : "/home/runner/work/openpipeline/openpipeline/src/feature_annotation/highly_variable_features_scanpy/config.vsh.yaml",
           "functionalityNamespace" : "feature_annotation",
           "output" : "",
           "platform" : "",
-          "git_commit" : "12e24d67d853b5d37b2961cdf586667311baf6e3",
+          "git_commit" : "b55e6ab01d1acfc3e3eed55dda376684c3964e24",
           "executable" : "/nextflow/feature_annotation/highly_variable_features_scanpy/main.nf"
         },
         "writtenPath" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/feature_annotation/highly_variable_features_scanpy"
@@ -3270,14 +3318,14 @@ meta = [
         "foundConfigPath" : "/home/runner/work/openpipeline/openpipeline/src/filter/do_filter/config.vsh.yaml",
         "configInfo" : {
           "functionalityName" : "do_filter",
-          "git_tag" : "0.2.0-1629-g12e24d67d8",
+          "git_tag" : "0.2.0-1630-gb55e6ab01d",
           "git_remote" : "https://github.com/openpipelines-bio/openpipeline",
           "viash_version" : "0.8.6",
           "config" : "/home/runner/work/openpipeline/openpipeline/src/filter/do_filter/config.vsh.yaml",
           "functionalityNamespace" : "filter",
           "output" : "",
           "platform" : "",
-          "git_commit" : "12e24d67d853b5d37b2961cdf586667311baf6e3",
+          "git_commit" : "b55e6ab01d1acfc3e3eed55dda376684c3964e24",
           "executable" : "/nextflow/filter/do_filter/main.nf"
         },
         "writtenPath" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/filter/do_filter"
@@ -3291,14 +3339,14 @@ meta = [
         "foundConfigPath" : "/home/runner/work/openpipeline/openpipeline/src/scgpt/pad_tokenize/config.vsh.yaml",
         "configInfo" : {
           "functionalityName" : "pad_tokenize",
-          "git_tag" : "0.2.0-1629-g12e24d67d8",
+          "git_tag" : "0.2.0-1630-gb55e6ab01d",
           "git_remote" : "https://github.com/openpipelines-bio/openpipeline",
           "viash_version" : "0.8.6",
           "config" : "/home/runner/work/openpipeline/openpipeline/src/scgpt/pad_tokenize/config.vsh.yaml",
           "functionalityNamespace" : "scgpt",
           "output" : "",
           "platform" : "",
-          "git_commit" : "12e24d67d853b5d37b2961cdf586667311baf6e3",
+          "git_commit" : "b55e6ab01d1acfc3e3eed55dda376684c3964e24",
           "executable" : "/nextflow/scgpt/pad_tokenize/main.nf"
         },
         "writtenPath" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/scgpt/pad_tokenize"
@@ -3312,14 +3360,14 @@ meta = [
         "foundConfigPath" : "/home/runner/work/openpipeline/openpipeline/src/scgpt/annotation/config.vsh.yaml",
         "configInfo" : {
           "functionalityName" : "annotation",
-          "git_tag" : "0.2.0-1629-g12e24d67d8",
+          "git_tag" : "0.2.0-1630-gb55e6ab01d",
           "git_remote" : "https://github.com/openpipelines-bio/openpipeline",
           "viash_version" : "0.8.6",
           "config" : "/home/runner/work/openpipeline/openpipeline/src/scgpt/annotation/config.vsh.yaml",
           "functionalityNamespace" : "scgpt",
           "output" : "",
           "platform" : "",
-          "git_commit" : "12e24d67d853b5d37b2961cdf586667311baf6e3",
+          "git_commit" : "b55e6ab01d1acfc3e3eed55dda376684c3964e24",
           "executable" : "/nextflow/scgpt/annotation/main.nf"
         },
         "writtenPath" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/scgpt/annotation"
@@ -3386,9 +3434,9 @@ meta = [
     "platform" : "nextflow",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/workflows/annotation/scgpt_annotation",
     "viash_version" : "0.8.6",
-    "git_commit" : "12e24d67d853b5d37b2961cdf586667311baf6e3",
+    "git_commit" : "b55e6ab01d1acfc3e3eed55dda376684c3964e24",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline",
-    "git_tag" : "0.2.0-1629-g12e24d67d8"
+    "git_tag" : "0.2.0-1630-gb55e6ab01d"
   }
 }'''))
 ]
@@ -3498,6 +3546,7 @@ workflow run_wf {
           "model_vocab": state.model_vocab,
           "model_config": state.model_config,
           "label_mapper_key": state.label_mapper_key,
+          "finetuned_checkpoints_key": state.finetuned_checkpoints_key,
           "input": state.input,
           "modality": state.modality,
           "obsm_gene_tokens": "gene_id_tokens",
@@ -3509,11 +3558,10 @@ workflow run_wf {
           "dsbn": state.dsbn,
           "batch_size": state.batch_size,
           "seed": state.seed,
-          "obs_predicted_cell_class": state.obs_predicted_cell_class,
-          "obs_predicted_cell_label": state.obs_predicted_cell_label,
+          "output_obs_predictions": state.output_obs_predictions,
+          "output_obs_probability": state.output_obs_probability,
           "output": state.workflow_output,
-          "output_compression": state.output_compression,
-          "finetuned_checkpoints_key": state.finetuned_checkpoints_key
+          "output_compression": state.output_compression
         ]
         },
         toState: {id, output, state -> ["output": output.output]},

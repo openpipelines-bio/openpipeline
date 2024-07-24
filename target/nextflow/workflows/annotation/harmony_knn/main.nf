@@ -11,6 +11,7 @@
 // 
 // Component authors:
 //  * Dorien Roosen (author, maintainer)
+//  * Weiwei Schultz (contributor)
 
 ////////////////////////////
 // VDSL3 helper functions //
@@ -2808,91 +2809,35 @@ meta = [
             }
           ]
         }
+      },
+      {
+        "name" : "Weiwei Schultz",
+        "roles" : [
+          "contributor"
+        ],
+        "info" : {
+          "role" : "Contributor",
+          "organizations" : [
+            {
+              "name" : "Janssen R&D US",
+              "role" : "Associate Director Data Sciences"
+            }
+          ]
+        }
       }
     ],
     "argument_groups" : [
       {
-        "name" : "Inputs",
+        "name" : "Leiden clustering options",
         "arguments" : [
           {
-            "type" : "string",
-            "name" : "--id",
-            "description" : "ID of the sample.",
-            "example" : [
-              "foo"
-            ],
-            "required" : true,
-            "direction" : "input",
-            "multiple" : false,
-            "multiple_sep" : ":",
-            "dest" : "par"
-          },
-          {
-            "type" : "file",
-            "name" : "--input_query_dataset",
-            "description" : "Input dataset consisting of the (unlabeled) query observations. The dataset is expected to be pre-processed in the same way as --input_reference_dataset.",
-            "example" : [
-              "input.h5mu"
-            ],
-            "must_exist" : true,
-            "create_parent" : true,
-            "required" : true,
-            "direction" : "input",
-            "multiple" : false,
-            "multiple_sep" : ":",
-            "dest" : "par"
-          },
-          {
-            "type" : "file",
-            "name" : "--input_reference_dataset",
-            "description" : "Input dataset consisting of the (labeled) reference observations. The dataset is expected to be pre-processed in the same way as --input_query_dataset.",
-            "must_exist" : true,
-            "create_parent" : true,
-            "required" : true,
-            "direction" : "input",
-            "multiple" : false,
-            "multiple_sep" : ":",
-            "dest" : "par"
-          },
-          {
-            "type" : "string",
-            "name" : "--modality",
-            "description" : "Which modality to process.",
+            "type" : "double",
+            "name" : "--leiden_resolution",
+            "description" : "Control the coarseness of the clustering. Higher values lead to more clusters.",
             "default" : [
-              "rna"
+              1.0
             ],
             "required" : false,
-            "direction" : "input",
-            "multiple" : false,
-            "multiple_sep" : ":",
-            "dest" : "par"
-          },
-          {
-            "type" : "string",
-            "name" : "--embedding",
-            "description" : "Embedding to use as input",
-            "default" : [
-              "X_pca"
-            ],
-            "required" : false,
-            "direction" : "input",
-            "multiple" : false,
-            "multiple_sep" : ":",
-            "dest" : "par"
-          },
-          {
-            "type" : "string",
-            "name" : "--obs_reference_targets",
-            "description" : "The `.obs` key(s) of the target labels to tranfer.",
-            "example" : [
-              "ann_level_1",
-              "ann_level_2",
-              "ann_level_3",
-              "ann_level_4",
-              "ann_level_5",
-              "ann_finest_level"
-            ],
-            "required" : true,
             "direction" : "input",
             "multiple" : true,
             "multiple_sep" : ";",
@@ -2901,68 +2846,33 @@ meta = [
         ]
       },
       {
-        "name" : "Outputs",
+        "name" : "Neighbor classifier arguments",
         "arguments" : [
           {
-            "type" : "file",
-            "name" : "--output",
-            "description" : "Destination path to the output.",
-            "example" : [
-              "output.h5mu"
-            ],
-            "must_exist" : true,
-            "create_parent" : true,
-            "required" : true,
-            "direction" : "output",
-            "multiple" : false,
-            "multiple_sep" : ":",
-            "dest" : "par"
-          },
-          {
             "type" : "string",
-            "name" : "--output_obs_predictions",
-            "description" : "In which `.obs` slots to store the predicted information.\nIf provided, must have the same length as `--reference_obs_targets`.\nIf empty, will default to the `reference_obs_targets` combined with the `\\"_pred\\"` suffix.\n",
-            "required" : false,
-            "direction" : "input",
-            "multiple" : true,
-            "multiple_sep" : ";",
-            "dest" : "par"
-          },
-          {
-            "type" : "string",
-            "name" : "--output_obs_probability",
-            "description" : "In which `.obs` slots to store the probability of the predictions.\nIf provided, must have the same length as `--reference_obs_targets`.\nIf empty, will default to the `reference_obs_targets` combined with the `\\"_probability\\"` suffix.\n",
-            "required" : false,
-            "direction" : "input",
-            "multiple" : true,
-            "multiple_sep" : ";",
-            "dest" : "par"
-          },
-          {
-            "type" : "string",
-            "name" : "--output_uns_parameters",
-            "description" : "The `.uns` key to store additional information about the parameters used for the label transfer.\n",
+            "name" : "--weights",
+            "description" : "Weight function used in prediction. Possible values are:\n`uniform` (all points in each neighborhood are weighted equally) or \n`distance` (weight points by the inverse of their distance)\n",
             "default" : [
-              "labels_transfer"
-            ],
-            "required" : false,
-            "direction" : "input",
-            "multiple" : false,
-            "multiple_sep" : ":",
-            "dest" : "par"
-          },
-          {
-            "type" : "string",
-            "name" : "--output_compression",
-            "description" : "The compression format to be used on the output h5mu object.\n",
-            "example" : [
-              "gzip"
+              "uniform"
             ],
             "required" : false,
             "choices" : [
-              "gzip",
-              "lzf"
+              "uniform",
+              "distance"
             ],
+            "direction" : "input",
+            "multiple" : false,
+            "multiple_sep" : ":",
+            "dest" : "par"
+          },
+          {
+            "type" : "integer",
+            "name" : "--n_neighbors",
+            "description" : "The number of neighbors to use in k-neighbor graph structure used for fast approximate nearest neighbor search with PyNNDescent. \nLarger values will result in more accurate search results at the cost of computation time.",
+            "default" : [
+              15
+            ],
+            "required" : false,
             "direction" : "input",
             "multiple" : false,
             "multiple_sep" : ":",
@@ -3014,41 +2924,6 @@ meta = [
             "dest" : "par"
           }
         ]
-      },
-      {
-        "name" : "Neighbor classifier arguments",
-        "arguments" : [
-          {
-            "type" : "string",
-            "name" : "--weights",
-            "description" : "Weight function used in prediction. Possible values are:\n`uniform` (all points in each neighborhood are weighted equally) or \n`distance` (weight points by the inverse of their distance)\n",
-            "default" : [
-              "uniform"
-            ],
-            "required" : false,
-            "choices" : [
-              "uniform",
-              "distance"
-            ],
-            "direction" : "input",
-            "multiple" : false,
-            "multiple_sep" : ":",
-            "dest" : "par"
-          },
-          {
-            "type" : "integer",
-            "name" : "--n_neighbors",
-            "description" : "The number of neighbors to use in k-neighbor graph structure used for fast approximate nearest neighbor search with PyNNDescent. \nLarger values will result in more accurate search results at the cost of computation time.\n",
-            "default" : [
-              15
-            ],
-            "required" : false,
-            "direction" : "input",
-            "multiple" : false,
-            "multiple_sep" : ":",
-            "dest" : "par"
-          }
-        ]
       }
     ],
     "resources" : [
@@ -3081,25 +2956,26 @@ meta = [
     },
     "dependencies" : [
       {
-        "name" : "integrate/harmonypy",
+        "name" : "workflows/integration/harmony_leiden",
+        "alias" : "harmony_leiden_workflow",
         "repository" : {
           "type" : "local",
           "localPath" : ""
         },
-        "foundConfigPath" : "/home/runner/work/openpipeline/openpipeline/src/integrate/harmonypy/config.vsh.yaml",
+        "foundConfigPath" : "/home/runner/work/openpipeline/openpipeline/src/workflows/integration/harmony_leiden/config.vsh.yaml",
         "configInfo" : {
-          "functionalityName" : "harmonypy",
-          "git_tag" : "0.2.0-1629-g12e24d67d8",
+          "functionalityName" : "harmony_leiden",
+          "git_tag" : "0.2.0-1630-gb55e6ab01d",
           "git_remote" : "https://github.com/openpipelines-bio/openpipeline",
           "viash_version" : "0.8.6",
-          "config" : "/home/runner/work/openpipeline/openpipeline/src/integrate/harmonypy/config.vsh.yaml",
-          "functionalityNamespace" : "integrate",
+          "config" : "/home/runner/work/openpipeline/openpipeline/src/workflows/integration/harmony_leiden/config.vsh.yaml",
+          "functionalityNamespace" : "workflows/integration",
           "output" : "",
           "platform" : "",
-          "git_commit" : "12e24d67d853b5d37b2961cdf586667311baf6e3",
-          "executable" : "/nextflow/integrate/harmonypy/main.nf"
+          "git_commit" : "b55e6ab01d1acfc3e3eed55dda376684c3964e24",
+          "executable" : "/nextflow/workflows/integration/harmony_leiden/main.nf"
         },
-        "writtenPath" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/integrate/harmonypy"
+        "writtenPath" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/workflows/integration/harmony_leiden"
       },
       {
         "name" : "labels_transfer/pynndescent_knn",
@@ -3110,14 +2986,14 @@ meta = [
         "foundConfigPath" : "/home/runner/work/openpipeline/openpipeline/src/labels_transfer/pynndescent_knn/config.vsh.yaml",
         "configInfo" : {
           "functionalityName" : "pynndescent_knn",
-          "git_tag" : "0.2.0-1629-g12e24d67d8",
+          "git_tag" : "0.2.0-1630-gb55e6ab01d",
           "git_remote" : "https://github.com/openpipelines-bio/openpipeline",
           "viash_version" : "0.8.6",
           "config" : "/home/runner/work/openpipeline/openpipeline/src/labels_transfer/pynndescent_knn/config.vsh.yaml",
           "functionalityNamespace" : "labels_transfer",
           "output" : "",
           "platform" : "",
-          "git_commit" : "12e24d67d853b5d37b2961cdf586667311baf6e3",
+          "git_commit" : "b55e6ab01d1acfc3e3eed55dda376684c3964e24",
           "executable" : "/nextflow/labels_transfer/pynndescent_knn/main.nf"
         },
         "writtenPath" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/labels_transfer/pynndescent_knn"
@@ -3131,14 +3007,14 @@ meta = [
         "foundConfigPath" : "/home/runner/work/openpipeline/openpipeline/src/dataflow/split_samples/config.vsh.yaml",
         "configInfo" : {
           "functionalityName" : "split_samples",
-          "git_tag" : "0.2.0-1629-g12e24d67d8",
+          "git_tag" : "0.2.0-1630-gb55e6ab01d",
           "git_remote" : "https://github.com/openpipelines-bio/openpipeline",
           "viash_version" : "0.8.6",
           "config" : "/home/runner/work/openpipeline/openpipeline/src/dataflow/split_samples/config.vsh.yaml",
           "functionalityNamespace" : "dataflow",
           "output" : "",
           "platform" : "",
-          "git_commit" : "12e24d67d853b5d37b2961cdf586667311baf6e3",
+          "git_commit" : "b55e6ab01d1acfc3e3eed55dda376684c3964e24",
           "executable" : "/nextflow/dataflow/split_samples/main.nf"
         },
         "writtenPath" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/dataflow/split_samples"
@@ -3152,14 +3028,14 @@ meta = [
         "foundConfigPath" : "/home/runner/work/openpipeline/openpipeline/src/dataflow/concatenate_h5mu/config.vsh.yaml",
         "configInfo" : {
           "functionalityName" : "concatenate_h5mu",
-          "git_tag" : "0.2.0-1629-g12e24d67d8",
+          "git_tag" : "0.2.0-1630-gb55e6ab01d",
           "git_remote" : "https://github.com/openpipelines-bio/openpipeline",
           "viash_version" : "0.8.6",
           "config" : "/home/runner/work/openpipeline/openpipeline/src/dataflow/concatenate_h5mu/config.vsh.yaml",
           "functionalityNamespace" : "dataflow",
           "output" : "",
           "platform" : "",
-          "git_commit" : "12e24d67d853b5d37b2961cdf586667311baf6e3",
+          "git_commit" : "b55e6ab01d1acfc3e3eed55dda376684c3964e24",
           "executable" : "/nextflow/dataflow/concatenate_h5mu/main.nf"
         },
         "writtenPath" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/dataflow/concatenate_h5mu"
@@ -3173,14 +3049,14 @@ meta = [
         "foundConfigPath" : "/home/runner/work/openpipeline/openpipeline/src/metadata/add_id/config.vsh.yaml",
         "configInfo" : {
           "functionalityName" : "add_id",
-          "git_tag" : "0.2.0-1629-g12e24d67d8",
+          "git_tag" : "0.2.0-1630-gb55e6ab01d",
           "git_remote" : "https://github.com/openpipelines-bio/openpipeline",
           "viash_version" : "0.8.6",
           "config" : "/home/runner/work/openpipeline/openpipeline/src/metadata/add_id/config.vsh.yaml",
           "functionalityNamespace" : "metadata",
           "output" : "",
           "platform" : "",
-          "git_commit" : "12e24d67d853b5d37b2961cdf586667311baf6e3",
+          "git_commit" : "b55e6ab01d1acfc3e3eed55dda376684c3964e24",
           "executable" : "/nextflow/metadata/add_id/main.nf"
         },
         "writtenPath" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/metadata/add_id"
@@ -3247,16 +3123,17 @@ meta = [
     "platform" : "nextflow",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/workflows/annotation/harmony_knn",
     "viash_version" : "0.8.6",
-    "git_commit" : "12e24d67d853b5d37b2961cdf586667311baf6e3",
+    "git_commit" : "b55e6ab01d1acfc3e3eed55dda376684c3964e24",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline",
-    "git_tag" : "0.2.0-1629-g12e24d67d8"
+    "git_tag" : "0.2.0-1630-gb55e6ab01d"
   }
 }'''))
 ]
 
 // resolve dependencies dependencies (if any)
 meta["root_dir"] = getRootDir()
-include { harmonypy } from "${meta.resources_dir}/../../../../nextflow/integrate/harmonypy/main.nf"
+include { harmony_leiden as harmony_leiden_workflow_viashalias } from "${meta.resources_dir}/../../../../nextflow/workflows/integration/harmony_leiden/main.nf"
+harmony_leiden_workflow = harmony_leiden_workflow_viashalias.run(key: "harmony_leiden_workflow")
 include { pynndescent_knn } from "${meta.resources_dir}/../../../../nextflow/labels_transfer/pynndescent_knn/main.nf"
 include { split_samples } from "${meta.resources_dir}/../../../../nextflow/dataflow/split_samples/main.nf"
 include { concatenate_h5mu } from "${meta.resources_dir}/../../../../nextflow/dataflow/concatenate_h5mu/main.nf"
@@ -3269,36 +3146,46 @@ workflow run_wf {
     input_ch
 
   main:
+
+    // add id as _meta join id to be able to merge with source channel and end of workflow
     output_ch = input_ch
-        // Create workflow specific output for this channel
-        | map {id, state ->
-            def new_state = state + ["workflow_output": state.output]
-            [id, new_state]
-            }
-        // Add 'reference' and 'query' id to .obs columns
+        // Set aside the output for this workflow to avoid conflicts
+        | map {id, state -> 
+        def new_state = state + ["workflow_output": state.output]
+        [id, new_state]
+        }
+        // Add join_id to state
+        | map{ id, state -> 
+        def new_state = state + ["_meta": ["join_id": id]]
+        [id, new_state]
+        }
+        | view {"After adding join_id: $it"}
+
+        // Add 'query' id to .obs columns of query dataset
         | add_id.run(
             fromState: {id, state ->
                 [
-                "input": state.input_query_dataset,
+                "input": state.input,
                 "input_id": "query",
                 "obs_output": "dataset",
                 ]
             },
-            toState: ["input_query_dataset": "output"])
+            toState: ["input": "output"])
+        // Add 'reference'id to .obs columns of reference dataset
         | add_id.run(
-            fromState: {id, state ->
-                [
-                "input": state.input_reference_dataset,
-                "input_id": "reference",
-                "obs_output": "dataset",
-                ]
-            },
-            toState: ["input_reference_dataset": "output"])
+                fromState: {id, state ->
+                    [
+                    "input": state.reference,
+                    "input_id": "reference",
+                    "obs_output": "dataset",
+                    ]
+                },
+                toState: ["reference": "output"])
         // Concatenate query and reference datasets
         | concatenate_h5mu.run(
             fromState: { id, state ->
             [
-                "input": [state.input_query_dataset, state.input_reference_dataset],
+                "input": [state.input, state.reference],
                 "input_id": ["query", "reference"],
                 "other_axis_mode": "move"
             ]
@@ -3306,22 +3193,29 @@ workflow run_wf {
             toState: ["input": "output"]
             )
         | view {"After concatenation: $it"}
-        // Run harmony integration 
-        | harmonypy.run(
+        // Run harmony integration with leiden clustering
+        | harmony_leiden_workflow.run(
             fromState: { id, state ->
             [
+                "id": id,
                 "input": state.input,
                 "modality": "rna",
-                "obsm_input": state.embedding,
-                "obsm_output": state.obsm_integrated,
+                "uns_neighbors": "harmonypy_integration_neighbors",
+                "obsp_neighbor_distances": "harmonypy_integration_distances",
+                "obsp_neighbor_connectivities": "harmonypy_integration_connectivities",
+                "embedding": state.obsm_embedding,
+                "obsm_integrated": state.obsm_integrated,
                 "theta": state.theta,
-                "obs_covariates": state.obs_covariates
+                "obs_covariates": state.obs_covariates,
+                "obs_cluster": "harmony_integration_leiden",
+                "leiden_resolution": state.leiden_resolution,
+                "obsm_umap": "X_leiden_harmony_umap"
             ]
             },
             toState: ["input": "output"]
             )
         | view {"After integration: $it"}
-        // Split integrated dataset back into reference and query dataset
+        // Split integrated dataset back into a separate reference and query dataset
         | split_samples.run(
             fromState: { id, state ->
             [
@@ -3363,7 +3257,6 @@ workflow run_wf {
                 "reference_obs_targets": state.obs_reference_targets,
                 "output_obs_predictions": state.output_obs_predictions,
                 "output_obs_probability": state.output_obs_probability,
-                "output_uns_parameters": state.output_uns_parameters,
                 "output_compression": state.output_compression,
                 "weights": state.weights,
                 "n_neighbors": state.n_neighbors,
@@ -3373,7 +3266,7 @@ workflow run_wf {
             toState: {id, output, state -> ["output": output.output]},
             auto: [ publish: true ]
             )
-    
+
   emit:
     output_ch
 }

@@ -1,0 +1,207 @@
+functionality:
+  name: "scgpt_integration_knn"
+  namespace: "workflows/annotation"
+  description: "Pipeline for cell type annotation using scgpt integration and leiden clustering followed by KNN label transfer."
+  authors:
+    - __merge__: /src/authors/dorien_roosen.yaml
+      roles: [ author, maintainer ]
+    - __merge__: /src/authors/weiwei_schultz.yaml
+      roles: [ contributor ]
+    - __merge__: /src/authors/elizabeth_mlynarski.yaml
+      roles: [ author ]
+
+  __merge__: ../api/common_arguments_integration_knn.yaml
+
+  argument_groups:
+    - name: Query input
+      arguments:
+        - name: "--id"
+          required: true
+          type: string
+          description: ID of the sample.
+          example: foo
+        - name: "--input"
+          required: true
+          type: file
+          description: |
+            Input dataset consisting of the (unlabeled) query observations. The dataset is expected to be pre-processed in the same way as the --reference dataset.
+          example: input.h5mu
+        - name: "--modality"
+          description: Which modality to process.
+          type: string
+          default: "rna"
+          required: false
+        - name: "--input_layer"
+          type: string
+          required: False
+          description: |
+            Mudata layer (key from layers) to use as input data for scGPT-specific pre-processing (hvg subsetting and binning); if not specified, X is used.
+        - name: "--var_gene_names_query"
+          type: string
+          required: false
+          description: |
+            The name of the query data var column containing gene names; when no gene_name_layer is provided, the var index will be used.
+        - name: "--obs_batch_label"
+          type: string
+          description: |
+            The name of the adata obs column containing the batch labels.
+
+    - name: Reference input
+      arguments:
+        - name: "--reference"
+          required: true
+          type: file
+          description: |
+            Reference dataset consisting of the labeled observations. The dataset is expected to be pre-processed in the same way as the --input query dataset(s).
+          example: reference.h5mu
+        - name: "--var_gene_names_reference"
+          type: string
+          required: false
+          description: |
+            The name of the reference data var column containing gene names; when no gene_name_layer is provided, the var index will be used.
+        - name: "--obs_reference_targets"
+          type: string
+          example: [ ann_level_1, ann_level_2, ann_level_3, ann_level_4, ann_level_5, ann_finest_level ]
+          required: true
+          multiple: true
+          description: The `.obs` key(s) of the target labels to tranfer.
+
+    - name: "Model input"
+      arguments:
+        - name: "--model"
+          type: file
+          required: true
+          example: best_model.pt
+          description: |
+            The model file containing checkpoints and cell type label mapper. 
+        - name: "--model_config"
+          type: file
+          required: true
+          example: args.json
+          description: |
+            The model configuration file. 
+        - name: "--model_vocab"
+          type: file
+          required: true
+          example: vocab.json
+          description: |
+            Model vocabulary file directory.
+        - name: "--finetuned_checkpoints_key"
+          type: string
+          required: true
+          default: model_state_dict
+          description: |
+            Key in the model  file containing the pretrained checkpoints. Required if the provided model is a fine-tuned model containing keys for both the checkpoints and a label mapper.
+    
+    - name: "Outputs"
+      arguments:
+        - name: "--output"
+          type: file
+          required: true
+          direction: output
+          description: The query data in .h5mu format with predicted labels.
+          example: output.h5mu
+        - name: "--output_obs_predictions"
+          type: string
+          required: false
+          multiple: true
+          description: |
+            In which `.obs` slots to store the predicted information.
+            If provided, must have the same length as `--obs_reference_targets`.
+            If empty, will default to the `obs_reference_targets` combined with the `"_pred"` suffix.
+        - name: "--output_obs_probability"
+          type: string
+          required: false
+          multiple: true
+          description: |
+            In which `.obs` slots to store the probability of the predictions.
+            If provided, must have the same length as `--obs_reference_targets`.
+            If empty, will default to the `obs_reference_targets` combined with the `"_probability"` suffix.
+        - name: "--output_compression"
+          type: string
+          description: |
+            The compression format to be used on the output h5mu object.
+          choices: ["gzip", "lzf"]
+          required: false
+          example: "gzip"
+
+    - name: "Padding arguments"
+      arguments:
+        - name: "--pad_token"
+          type: string
+          default: "<pad>"
+          required: false
+          description: |
+            Token used for padding.
+        - name: "--pad_value"
+          type: integer
+          default: -2
+          required: false
+          description: |
+            The value of the padding token.
+
+    - name: "HVG subset arguments"
+      arguments:
+        - name: "--n_hvg"
+          type: integer
+          default: 1200
+          description: |
+            Number of highly variable genes to subset for.
+
+    - name: "Tokenization arguments"
+      arguments:
+        - name: "--max_seq_len"
+          type: integer
+          required: false
+          description: |
+            The maximum sequence length of the tokenized data.
+    
+    - name: "Binning arguments"
+      arguments:
+        - name: "--n_input_bins"
+          type: integer
+          default: 51
+          required: False
+          min: 1
+          description: |
+            The number of bins to discretize the data into; When no value is provided, data won't be binned.
+        - name: "--seed"
+          type: integer
+          required: false
+          description: |
+            Seed for random number generation used for binning. If not set, no seed is used.
+  
+    - name: scGPT integration options
+      arguments:
+        - name: "--obsm_integrated"
+          type: string
+          default: "X_scGPT"
+          required: false
+          description: "In which .obsm slot to store the resulting integrated embedding."
+        - name: --dsbn
+          type: boolean
+          default: true
+          description: |
+            Apply domain-specific batch normalization
+        - name: "--batch_size"
+          type: integer
+          default: 64
+          description: |
+            The batch size to be used for embedding inference.
+
+  dependencies:
+    - name: workflows/integration/scgpt_leiden
+      alias: scgpt_leiden_workflow
+    - name: labels_transfer/pynndescent_knn
+    - name: dataflow/split_samples
+    - name: dataflow/concatenate_h5mu
+    - name: metadata/rename_var
+    - name: metadata/add_id
+
+  resources:
+    - type: nextflow_script
+      path: main.nf
+      entrypoint: run_wf
+
+platforms:
+  - type: nextflow

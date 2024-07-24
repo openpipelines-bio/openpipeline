@@ -44,45 +44,6 @@ functionality:
       multiple: false
       multiple_sep: ":"
       dest: "par"
-    - type: "file"
-      name: "--model"
-      description: "Path to scGPT model file.\n"
-      info: null
-      example:
-      - "best_model.pt"
-      must_exist: true
-      create_parent: true
-      required: true
-      direction: "input"
-      multiple: false
-      multiple_sep: ":"
-      dest: "par"
-    - type: "file"
-      name: "--model_vocab"
-      description: "Path to scGPT model vocabulary file.\n"
-      info: null
-      example:
-      - "vocab.json"
-      must_exist: true
-      create_parent: true
-      required: true
-      direction: "input"
-      multiple: false
-      multiple_sep: ":"
-      dest: "par"
-    - type: "file"
-      name: "--model_config"
-      description: "Path to scGPT model config file.\n"
-      info: null
-      example:
-      - "args.json"
-      must_exist: true
-      create_parent: true
-      required: true
-      direction: "input"
-      multiple: false
-      multiple_sep: ":"
-      dest: "par"
     - type: "string"
       name: "--obsm_gene_tokens"
       description: "The key of the .obsm array containing the gene token ids\n"
@@ -134,6 +95,59 @@ functionality:
       description: "The name of the adata.obs column containing the batch labels.\
         \ Must be provided when 'dsbn' is set to True.\n"
       info: null
+      required: false
+      direction: "input"
+      multiple: false
+      multiple_sep: ":"
+      dest: "par"
+  - name: "Model"
+    arguments:
+    - type: "file"
+      name: "--model"
+      description: "Path to scGPT model file.\n"
+      info: null
+      example:
+      - "best_model.pt"
+      must_exist: true
+      create_parent: true
+      required: true
+      direction: "input"
+      multiple: false
+      multiple_sep: ":"
+      dest: "par"
+    - type: "file"
+      name: "--model_vocab"
+      description: "Path to scGPT model vocabulary file.\n"
+      info: null
+      example:
+      - "vocab.json"
+      must_exist: true
+      create_parent: true
+      required: true
+      direction: "input"
+      multiple: false
+      multiple_sep: ":"
+      dest: "par"
+    - type: "file"
+      name: "--model_config"
+      description: "Path to scGPT model config file.\n"
+      info: null
+      example:
+      - "args.json"
+      must_exist: true
+      create_parent: true
+      required: true
+      direction: "input"
+      multiple: false
+      multiple_sep: ":"
+      dest: "par"
+    - type: "string"
+      name: "--finetuned_checkpoints_key"
+      description: "Key in the model file containing the pretrained checkpoints. Only\
+        \ relevant for fine-tuned models.\n"
+      info: null
+      example:
+      - "model_state_dict"
       required: false
       direction: "input"
       multiple: false
@@ -355,6 +369,6 @@ info:
   output: "/home/runner/work/openpipeline/openpipeline/target/nextflow/scgpt/embedding"
   executable: "/home/runner/work/openpipeline/openpipeline/target/nextflow/scgpt/embedding/embedding"
   viash_version: "0.8.6"
-  git_commit: "12e24d67d853b5d37b2961cdf586667311baf6e3"
+  git_commit: "b55e6ab01d1acfc3e3eed55dda376684c3964e24"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"
-  git_tag: "0.2.0-1629-g12e24d67d8"
+  git_tag: "0.2.0-1630-gb55e6ab01d"

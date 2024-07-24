@@ -2842,51 +2842,6 @@ meta = [
             "dest" : "par"
           },
           {
-            "type" : "file",
-            "name" : "--model",
-            "description" : "Path to scGPT model file.\n",
-            "example" : [
-              "best_model.pt"
-            ],
-            "must_exist" : true,
-            "create_parent" : true,
-            "required" : true,
-            "direction" : "input",
-            "multiple" : false,
-            "multiple_sep" : ":",
-            "dest" : "par"
-          },
-          {
-            "type" : "file",
-            "name" : "--model_vocab",
-            "description" : "Path to scGPT model vocabulary file.\n",
-            "example" : [
-              "vocab.json"
-            ],
-            "must_exist" : true,
-            "create_parent" : true,
-            "required" : true,
-            "direction" : "input",
-            "multiple" : false,
-            "multiple_sep" : ":",
-            "dest" : "par"
-          },
-          {
-            "type" : "file",
-            "name" : "--model_config",
-            "description" : "Path to scGPT model config file.\n",
-            "example" : [
-              "args.json"
-            ],
-            "must_exist" : true,
-            "create_parent" : true,
-            "required" : true,
-            "direction" : "input",
-            "multiple" : false,
-            "multiple_sep" : ":",
-            "dest" : "par"
-          },
-          {
             "type" : "string",
             "name" : "--obsm_gene_tokens",
             "description" : "The key of the .obsm array containing the gene token ids\n",
@@ -2942,6 +2897,69 @@ meta = [
             "type" : "string",
             "name" : "--obs_batch_label",
             "description" : "The name of the adata.obs column containing the batch labels. Must be provided when 'dsbn' is set to True.\n",
+            "required" : false,
+            "direction" : "input",
+            "multiple" : false,
+            "multiple_sep" : ":",
+            "dest" : "par"
+          }
+        ]
+      },
+      {
+        "name" : "Model",
+        "arguments" : [
+          {
+            "type" : "file",
+            "name" : "--model",
+            "description" : "Path to scGPT model file.\n",
+            "example" : [
+              "best_model.pt"
+            ],
+            "must_exist" : true,
+            "create_parent" : true,
+            "required" : true,
+            "direction" : "input",
+            "multiple" : false,
+            "multiple_sep" : ":",
+            "dest" : "par"
+          },
+          {
+            "type" : "file",
+            "name" : "--model_vocab",
+            "description" : "Path to scGPT model vocabulary file.\n",
+            "example" : [
+              "vocab.json"
+            ],
+            "must_exist" : true,
+            "create_parent" : true,
+            "required" : true,
+            "direction" : "input",
+            "multiple" : false,
+            "multiple_sep" : ":",
+            "dest" : "par"
+          },
+          {
+            "type" : "file",
+            "name" : "--model_config",
+            "description" : "Path to scGPT model config file.\n",
+            "example" : [
+              "args.json"
+            ],
+            "must_exist" : true,
+            "create_parent" : true,
+            "required" : true,
+            "direction" : "input",
+            "multiple" : false,
+            "multiple_sep" : ":",
+            "dest" : "par"
+          },
+          {
+            "type" : "string",
+            "name" : "--finetuned_checkpoints_key",
+            "description" : "Key in the model file containing the pretrained checkpoints. Only relevant for fine-tuned models.\n",
+            "example" : [
+              "model_state_dict"
+            ],
             "required" : false,
             "direction" : "input",
             "multiple" : false,
@@ -3224,9 +3242,9 @@ meta = [
     "platform" : "nextflow",
     "output" : "/home/runner/work/openpipeline/openpipeline/target/nextflow/scgpt/embedding",
     "viash_version" : "0.8.6",
-    "git_commit" : "12e24d67d853b5d37b2961cdf586667311baf6e3",
+    "git_commit" : "b55e6ab01d1acfc3e3eed55dda376684c3964e24",
     "git_remote" : "https://github.com/openpipelines-bio/openpipeline",
-    "git_tag" : "0.2.0-1629-g12e24d67d8"
+    "git_tag" : "0.2.0-1630-gb55e6ab01d"
   }
 }'''))
 ]
@@ -3253,14 +3271,15 @@ import torch
 par = {
   'input': $( if [ ! -z ${VIASH_PAR_INPUT+x} ]; then echo "r'${VIASH_PAR_INPUT//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'modality': $( if [ ! -z ${VIASH_PAR_MODALITY+x} ]; then echo "r'${VIASH_PAR_MODALITY//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
-  'model': $( if [ ! -z ${VIASH_PAR_MODEL+x} ]; then echo "r'${VIASH_PAR_MODEL//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
-  'model_vocab': $( if [ ! -z ${VIASH_PAR_MODEL_VOCAB+x} ]; then echo "r'${VIASH_PAR_MODEL_VOCAB//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
-  'model_config': $( if [ ! -z ${VIASH_PAR_MODEL_CONFIG+x} ]; then echo "r'${VIASH_PAR_MODEL_CONFIG//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'obsm_gene_tokens': $( if [ ! -z ${VIASH_PAR_OBSM_GENE_TOKENS+x} ]; then echo "r'${VIASH_PAR_OBSM_GENE_TOKENS//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'obsm_tokenized_values': $( if [ ! -z ${VIASH_PAR_OBSM_TOKENIZED_VALUES+x} ]; then echo "r'${VIASH_PAR_OBSM_TOKENIZED_VALUES//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'obsm_padding_mask': $( if [ ! -z ${VIASH_PAR_OBSM_PADDING_MASK+x} ]; then echo "r'${VIASH_PAR_OBSM_PADDING_MASK//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'var_gene_names': $( if [ ! -z ${VIASH_PAR_VAR_GENE_NAMES+x} ]; then echo "r'${VIASH_PAR_VAR_GENE_NAMES//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'obs_batch_label': $( if [ ! -z ${VIASH_PAR_OBS_BATCH_LABEL+x} ]; then echo "r'${VIASH_PAR_OBS_BATCH_LABEL//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
+  'model': $( if [ ! -z ${VIASH_PAR_MODEL+x} ]; then echo "r'${VIASH_PAR_MODEL//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
+  'model_vocab': $( if [ ! -z ${VIASH_PAR_MODEL_VOCAB+x} ]; then echo "r'${VIASH_PAR_MODEL_VOCAB//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
+  'model_config': $( if [ ! -z ${VIASH_PAR_MODEL_CONFIG+x} ]; then echo "r'${VIASH_PAR_MODEL_CONFIG//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
+  'finetuned_checkpoints_key': $( if [ ! -z ${VIASH_PAR_FINETUNED_CHECKPOINTS_KEY+x} ]; then echo "r'${VIASH_PAR_FINETUNED_CHECKPOINTS_KEY//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'output': $( if [ ! -z ${VIASH_PAR_OUTPUT+x} ]; then echo "r'${VIASH_PAR_OUTPUT//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'output_compression': $( if [ ! -z ${VIASH_PAR_OUTPUT_COMPRESSION+x} ]; then echo "r'${VIASH_PAR_OUTPUT_COMPRESSION//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'obsm_embeddings': $( if [ ! -z ${VIASH_PAR_OBSM_EMBEDDINGS+x} ]; then echo "r'${VIASH_PAR_OBSM_EMBEDDINGS//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
@@ -3407,9 +3426,22 @@ model = TransformerModel(
     pre_norm=False  #TODO: Parametrize when GPU-based machine types are supported
     )
 
+
+logger.info("Loading model")
+model_file = par["model"]
+model_dict = torch.load(model_file, map_location=device)
+
+# Ensure the provided model has the correct architecture
+if par["finetuned_checkpoints_key"]:
+    if par["finetuned_checkpoints_key"] not in model_dict.keys():
+        finetuned_checkpoints_key = par["finetuned_checkpoints_key"]
+        raise KeyError(f"The key '{finetuned_checkpoints_key}' provided for '--finetuned_checkpoints_key' could not be found in the provided --model file. The finetuned model file for cell type annotation requires valid keys for the checkpoints and the label mapper.")
+    model_dict = model_dict[par["finetuned_checkpoints_key"]]
+
+# Load model
 load_pretrained(
     model,
-    torch.load(model_file, map_location=device),
+    model_dict,
     verbose=False
     )
 

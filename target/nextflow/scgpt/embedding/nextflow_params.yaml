@@ -1,9 +1,6 @@
 # Inputs
 input: # please fill in - example: "input.h5mu"
 modality: "rna"
-model: # please fill in - example: "best_model.pt"
-model_vocab: # please fill in - example: "vocab.json"
-model_config: # please fill in - example: "args.json"
 obsm_gene_tokens: "gene_id_tokens"
 obsm_tokenized_values: "values_tokenized"
 obsm_padding_mask: "padding_mask"
@@ -21,6 +18,12 @@ pad_value: -2
 dbsn: true
 batch_size: 64
 dsbn: true
+
+# Model
+model: # please fill in - example: "best_model.pt"
+model_vocab: # please fill in - example: "vocab.json"
+model_config: # please fill in - example: "args.json"
+# finetuned_checkpoints_key: "model_state_dict"
 
 # Nextflow input-output arguments
 publish_dir: # please fill in - example: "output/"

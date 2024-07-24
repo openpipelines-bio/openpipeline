@@ -1,8 +1,8 @@
 # Outputs
 # output: "$id.$key.output.h5mu"
 output_compression: "gzip"
-obs_predicted_cell_class: "predicted_cell_class"
-obs_predicted_cell_label: "predicted_cell_label"
+output_obs_predictions: "scgpt_pred"
+output_obs_probability: "scgpt_probability"
 
 # Arguments
 pad_token: "<pad>"

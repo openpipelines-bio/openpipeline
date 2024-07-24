@@ -17,145 +17,57 @@ functionality:
       - name: "Data Intuitive"
         href: "https://www.data-intuitive.com"
         role: "Data Scientist"
+  - name: "Weiwei Schultz"
+    roles:
+    - "contributor"
+    info:
+      role: "Contributor"
+      organizations:
+      - name: "Janssen R&D US"
+        role: "Associate Director Data Sciences"
   argument_groups:
-  - name: "Inputs"
+  - name: "Leiden clustering options"
+    arguments:
+    - type: "double"
+      name: "--leiden_resolution"
+      description: "Control the coarseness of the clustering. Higher values lead to\
+        \ more clusters."
+      info: null
+      default:
+      - 1.0
+      required: false
+      direction: "input"
+      multiple: true
+      multiple_sep: ";"
+      dest: "par"
+  - name: "Neighbor classifier arguments"
     arguments:
     - type: "string"
-      name: "--id"
-      description: "ID of the sample."
-      info: null
-      example:
-      - "foo"
-      required: true
-      direction: "input"
-      multiple: false
-      multiple_sep: ":"
-      dest: "par"
-    - type: "file"
-      name: "--input_query_dataset"
-      description: "Input dataset consisting of the (unlabeled) query observations.\
-        \ The dataset is expected to be pre-processed in the same way as --input_reference_dataset."
-      info: null
-      example:
-      - "input.h5mu"
-      must_exist: true
-      create_parent: true
-      required: true
-      direction: "input"
-      multiple: false
-      multiple_sep: ":"
-      dest: "par"
-    - type: "file"
-      name: "--input_reference_dataset"
-      description: "Input dataset consisting of the (labeled) reference observations.\
-        \ The dataset is expected to be pre-processed in the same way as --input_query_dataset."
-      info: null
-      must_exist: true
-      create_parent: true
-      required: true
-      direction: "input"
-      multiple: false
-      multiple_sep: ":"
-      dest: "par"
-    - type: "string"
-      name: "--modality"
-      description: "Which modality to process."
+      name: "--weights"
+      description: "Weight function used in prediction. Possible values are:\n`uniform`\
+        \ (all points in each neighborhood are weighted equally) or \n`distance` (weight\
+        \ points by the inverse of their distance)\n"
       info: null
       default:
-      - "rna"
-      required: false
-      direction: "input"
-      multiple: false
-      multiple_sep: ":"
-      dest: "par"
-    - type: "string"
-      name: "--embedding"
-      description: "Embedding to use as input"
-      info: null
-      default:
-      - "X_pca"
-      required: false
-      direction: "input"
-      multiple: false
-      multiple_sep: ":"
-      dest: "par"
-    - type: "string"
-      name: "--obs_reference_targets"
-      description: "The `.obs` key(s) of the target labels to tranfer."
-      info: null
-      example:
-      - "ann_level_1"
-      - "ann_level_2"
-      - "ann_level_3"
-      - "ann_level_4"
-      - "ann_level_5"
-      - "ann_finest_level"
-      required: true
-      direction: "input"
-      multiple: true
-      multiple_sep: ";"
-      dest: "par"
-  - name: "Outputs"
-    arguments:
-    - type: "file"
-      name: "--output"
-      description: "Destination path to the output."
-      info: null
-      example:
-      - "output.h5mu"
-      must_exist: true
-      create_parent: true
-      required: true
-      direction: "output"
-      multiple: false
-      multiple_sep: ":"
-      dest: "par"
-    - type: "string"
-      name: "--output_obs_predictions"
-      description: "In which `.obs` slots to store the predicted information.\nIf\
-        \ provided, must have the same length as `--reference_obs_targets`.\nIf empty,\
-        \ will default to the `reference_obs_targets` combined with the `\"_pred\"\
-        ` suffix.\n"
-      info: null
-      required: false
-      direction: "input"
-      multiple: true
-      multiple_sep: ";"
-      dest: "par"
-    - type: "string"
-      name: "--output_obs_probability"
-      description: "In which `.obs` slots to store the probability of the predictions.\n\
-        If provided, must have the same length as `--reference_obs_targets`.\nIf empty,\
-        \ will default to the `reference_obs_targets` combined with the `\"_probability\"\
-        ` suffix.\n"
-      info: null
-      required: false
-      direction: "input"
-      multiple: true
-      multiple_sep: ";"
-      dest: "par"
-    - type: "string"
-      name: "--output_uns_parameters"
-      description: "The `.uns` key to store additional information about the parameters\
-        \ used for the label transfer.\n"
-      info: null
-      default:
-      - "labels_transfer"
-      required: false
-      direction: "input"
-      multiple: false
-      multiple_sep: ":"
-      dest: "par"
-    - type: "string"
-      name: "--output_compression"
-      description: "The compression format to be used on the output h5mu object.\n"
-      info: null
-      example:
-      - "gzip"
+      - "uniform"
       required: false
       choices:
-      - "gzip"
-      - "lzf"
+      - "uniform"
+      - "distance"
+      direction: "input"
+      multiple: false
+      multiple_sep: ":"
+      dest: "par"
+    - type: "integer"
+      name: "--n_neighbors"
+      description: "The number of neighbors to use in k-neighbor graph structure used\
+        \ for fast approximate nearest neighbor search with PyNNDescent. \nLarger\
+        \ values will result in more accurate search results at the cost of computation\
+        \ time."
+      info: null
+      default:
+      - 15
+      required: false
       direction: "input"
       multiple: false
       multiple_sep: ":"
@@ -198,38 +110,6 @@ functionality:
       multiple: false
       multiple_sep: ":"
       dest: "par"
-  - name: "Neighbor classifier arguments"
-    arguments:
-    - type: "string"
-      name: "--weights"
-      description: "Weight function used in prediction. Possible values are:\n`uniform`\
-        \ (all points in each neighborhood are weighted equally) or \n`distance` (weight\
-        \ points by the inverse of their distance)\n"
-      info: null
-      default:
-      - "uniform"
-      required: false
-      choices:
-      - "uniform"
-      - "distance"
-      direction: "input"
-      multiple: false
-      multiple_sep: ":"
-      dest: "par"
-    - type: "integer"
-      name: "--n_neighbors"
-      description: "The number of neighbors to use in k-neighbor graph structure used\
-        \ for fast approximate nearest neighbor search with PyNNDescent. \nLarger\
-        \ values will result in more accurate search results at the cost of computation\
-        \ time.\n"
-      info: null
-      default:
-      - 15
-      required: false
-      direction: "input"
-      multiple: false
-      multiple_sep: ":"
-      dest: "par"
   resources:
   - type: "nextflow_script"
     path: "main.nf"
@@ -250,23 +130,24 @@ functionality:
     commands:
     - "ps"
   dependencies:
-  - name: "integrate/harmonypy"
+  - name: "workflows/integration/harmony_leiden"
+    alias: "harmony_leiden_workflow"
     repository:
       type: "local"
       localPath: ""
-    foundConfigPath: "/home/runner/work/openpipeline/openpipeline/src/integrate/harmonypy/config.vsh.yaml"
+    foundConfigPath: "/home/runner/work/openpipeline/openpipeline/src/workflows/integration/harmony_leiden/config.vsh.yaml"
     configInfo:
-      functionalityName: "harmonypy"
-      git_tag: "0.2.0-1629-g12e24d67d8"
+      functionalityName: "harmony_leiden"
+      git_tag: "0.2.0-1630-gb55e6ab01d"
       git_remote: "https://github.com/openpipelines-bio/openpipeline"
       viash_version: "0.8.6"
-      config: "/home/runner/work/openpipeline/openpipeline/src/integrate/harmonypy/config.vsh.yaml"
-      functionalityNamespace: "integrate"
+      config: "/home/runner/work/openpipeline/openpipeline/src/workflows/integration/harmony_leiden/config.vsh.yaml"
+      functionalityNamespace: "workflows/integration"
       output: ""
       platform: ""
-      git_commit: "12e24d67d853b5d37b2961cdf586667311baf6e3"
-      executable: "/nextflow/integrate/harmonypy/main.nf"
-    writtenPath: "/home/runner/work/openpipeline/openpipeline/target/nextflow/integrate/harmonypy"
+      git_commit: "b55e6ab01d1acfc3e3eed55dda376684c3964e24"
+      executable: "/nextflow/workflows/integration/harmony_leiden/main.nf"
+    writtenPath: "/home/runner/work/openpipeline/openpipeline/target/nextflow/workflows/integration/harmony_leiden"
   - name: "labels_transfer/pynndescent_knn"
     repository:
       type: "local"
@@ -274,14 +155,14 @@ functionality:
     foundConfigPath: "/home/runner/work/openpipeline/openpipeline/src/labels_transfer/pynndescent_knn/config.vsh.yaml"
     configInfo:
       functionalityName: "pynndescent_knn"
-      git_tag: "0.2.0-1629-g12e24d67d8"
+      git_tag: "0.2.0-1630-gb55e6ab01d"
       git_remote: "https://github.com/openpipelines-bio/openpipeline"
       viash_version: "0.8.6"
       config: "/home/runner/work/openpipeline/openpipeline/src/labels_transfer/pynndescent_knn/config.vsh.yaml"
       functionalityNamespace: "labels_transfer"
       output: ""
       platform: ""
-      git_commit: "12e24d67d853b5d37b2961cdf586667311baf6e3"
+      git_commit: "b55e6ab01d1acfc3e3eed55dda376684c3964e24"
       executable: "/nextflow/labels_transfer/pynndescent_knn/main.nf"
     writtenPath: "/home/runner/work/openpipeline/openpipeline/target/nextflow/labels_transfer/pynndescent_knn"
   - name: "dataflow/split_samples"
@@ -291,14 +172,14 @@ functionality:
     foundConfigPath: "/home/runner/work/openpipeline/openpipeline/src/dataflow/split_samples/config.vsh.yaml"
     configInfo:
       functionalityName: "split_samples"
-      git_tag: "0.2.0-1629-g12e24d67d8"
+      git_tag: "0.2.0-1630-gb55e6ab01d"
       git_remote: "https://github.com/openpipelines-bio/openpipeline"
       viash_version: "0.8.6"
       config: "/home/runner/work/openpipeline/openpipeline/src/dataflow/split_samples/config.vsh.yaml"
       functionalityNamespace: "dataflow"
       output: ""
       platform: ""
-      git_commit: "12e24d67d853b5d37b2961cdf586667311baf6e3"
+      git_commit: "b55e6ab01d1acfc3e3eed55dda376684c3964e24"
       executable: "/nextflow/dataflow/split_samples/main.nf"
     writtenPath: "/home/runner/work/openpipeline/openpipeline/target/nextflow/dataflow/split_samples"
   - name: "dataflow/concatenate_h5mu"
@@ -308,14 +189,14 @@ functionality:
     foundConfigPath: "/home/runner/work/openpipeline/openpipeline/src/dataflow/concatenate_h5mu/config.vsh.yaml"
     configInfo:
       functionalityName: "concatenate_h5mu"
-      git_tag: "0.2.0-1629-g12e24d67d8"
+      git_tag: "0.2.0-1630-gb55e6ab01d"
       git_remote: "https://github.com/openpipelines-bio/openpipeline"
       viash_version: "0.8.6"
       config: "/home/runner/work/openpipeline/openpipeline/src/dataflow/concatenate_h5mu/config.vsh.yaml"
       functionalityNamespace: "dataflow"
       output: ""
       platform: ""
-      git_commit: "12e24d67d853b5d37b2961cdf586667311baf6e3"
+      git_commit: "b55e6ab01d1acfc3e3eed55dda376684c3964e24"
       executable: "/nextflow/dataflow/concatenate_h5mu/main.nf"
     writtenPath: "/home/runner/work/openpipeline/openpipeline/target/nextflow/dataflow/concatenate_h5mu"
   - name: "metadata/add_id"
@@ -325,14 +206,14 @@ functionality:
     foundConfigPath: "/home/runner/work/openpipeline/openpipeline/src/metadata/add_id/config.vsh.yaml"
     configInfo:
       functionalityName: "add_id"
-      git_tag: "0.2.0-1629-g12e24d67d8"
+      git_tag: "0.2.0-1630-gb55e6ab01d"
       git_remote: "https://github.com/openpipelines-bio/openpipeline"
       viash_version: "0.8.6"
       config: "/home/runner/work/openpipeline/openpipeline/src/metadata/add_id/config.vsh.yaml"
       functionalityNamespace: "metadata"
       output: ""
       platform: ""
-      git_commit: "12e24d67d853b5d37b2961cdf586667311baf6e3"
+      git_commit: "b55e6ab01d1acfc3e3eed55dda376684c3964e24"
       executable: "/nextflow/metadata/add_id/main.nf"
     writtenPath: "/home/runner/work/openpipeline/openpipeline/target/nextflow/metadata/add_id"
   set_wd_to_resources_dir: false
@@ -388,6 +269,6 @@ info:
   output: "/home/runner/work/openpipeline/openpipeline/target/nextflow/workflows/annotation/harmony_knn"
   executable: "/home/runner/work/openpipeline/openpipeline/target/nextflow/workflows/annotation/harmony_knn/main.nf"
   viash_version: "0.8.6"
-  git_commit: "12e24d67d853b5d37b2961cdf586667311baf6e3"
+  git_commit: "b55e6ab01d1acfc3e3eed55dda376684c3964e24"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"
-  git_tag: "0.2.0-1629-g12e24d67d8"
+  git_tag: "0.2.0-1630-gb55e6ab01d"

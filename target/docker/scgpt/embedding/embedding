@@ -188,21 +188,6 @@ function ViashHelp {
   echo "        type: string"
   echo "        default: rna"
   echo ""
-  echo "    --model"
-  echo "        type: file, required parameter, file must exist"
-  echo "        example: best_model.pt"
-  echo "        Path to scGPT model file."
-  echo ""
-  echo "    --model_vocab"
-  echo "        type: file, required parameter, file must exist"
-  echo "        example: vocab.json"
-  echo "        Path to scGPT model vocabulary file."
-  echo ""
-  echo "    --model_config"
-  echo "        type: file, required parameter, file must exist"
-  echo "        example: args.json"
-  echo "        Path to scGPT model config file."
-  echo ""
   echo "    --obsm_gene_tokens"
   echo "        type: string"
   echo "        default: gene_id_tokens"
@@ -229,6 +214,28 @@ function ViashHelp {
   echo "        type: string"
   echo "        The name of the adata.obs column containing the batch labels. Must be"
   echo "        provided when 'dsbn' is set to True."
+  echo ""
+  echo "Model:"
+  echo "    --model"
+  echo "        type: file, required parameter, file must exist"
+  echo "        example: best_model.pt"
+  echo "        Path to scGPT model file."
+  echo ""
+  echo "    --model_vocab"
+  echo "        type: file, required parameter, file must exist"
+  echo "        example: vocab.json"
+  echo "        Path to scGPT model vocabulary file."
+  echo ""
+  echo "    --model_config"
+  echo "        type: file, required parameter, file must exist"
+  echo "        example: args.json"
+  echo "        Path to scGPT model config file."
+  echo ""
+  echo "    --finetuned_checkpoints_key"
+  echo "        type: string"
+  echo "        example: model_state_dict"
+  echo "        Key in the model file containing the pretrained checkpoints. Only"
+  echo "        relevant for fine-tuned models."
   echo ""
   echo "Outputs:"
   echo "    --output"
@@ -506,9 +513,9 @@ RUN pip install --upgrade pip && \
 
 LABEL org.opencontainers.image.authors="Dorien Roosen"
 LABEL org.opencontainers.image.description="Companion container for running component scgpt embedding"
-LABEL org.opencontainers.image.created="2024-07-12T12:52:36Z"
+LABEL org.opencontainers.image.created="2024-07-24T13:09:16Z"
 LABEL org.opencontainers.image.source="https://github.com/openpipelines-bio/openpipeline"
-LABEL org.opencontainers.image.revision="12e24d67d853b5d37b2961cdf586667311baf6e3"
+LABEL org.opencontainers.image.revision="b55e6ab01d1acfc3e3eed55dda376684c3964e24"
 LABEL org.opencontainers.image.version="annotation-workflow_build"
 
 VIASHDOCKER
@@ -689,39 +696,6 @@ while [[ $# -gt 0 ]]; do
             VIASH_PAR_MODALITY=$(ViashRemoveFlags "$1")
             shift 1
             ;;
-        --model)
-            [ -n "$VIASH_PAR_MODEL" ] && ViashError Bad arguments for option \'--model\': \'$VIASH_PAR_MODEL\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
-            VIASH_PAR_MODEL="$2"
-            [ $# -lt 2 ] && ViashError Not enough arguments passed to --model. Use "--help" to get more information on the parameters. && exit 1
-            shift 2
-            ;;
-        --model=*)
-            [ -n "$VIASH_PAR_MODEL" ] && ViashError Bad arguments for option \'--model=*\': \'$VIASH_PAR_MODEL\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
-            VIASH_PAR_MODEL=$(ViashRemoveFlags "$1")
-            shift 1
-            ;;
-        --model_vocab)
-            [ -n "$VIASH_PAR_MODEL_VOCAB" ] && ViashError Bad arguments for option \'--model_vocab\': \'$VIASH_PAR_MODEL_VOCAB\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
-            VIASH_PAR_MODEL_VOCAB="$2"
-            [ $# -lt 2 ] && ViashError Not enough arguments passed to --model_vocab. Use "--help" to get more information on the parameters. && exit 1
-            shift 2
-            ;;
-        --model_vocab=*)
-            [ -n "$VIASH_PAR_MODEL_VOCAB" ] && ViashError Bad arguments for option \'--model_vocab=*\': \'$VIASH_PAR_MODEL_VOCAB\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
-            VIASH_PAR_MODEL_VOCAB=$(ViashRemoveFlags "$1")
-            shift 1
-            ;;
-        --model_config)
-            [ -n "$VIASH_PAR_MODEL_CONFIG" ] && ViashError Bad arguments for option \'--model_config\': \'$VIASH_PAR_MODEL_CONFIG\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
-            VIASH_PAR_MODEL_CONFIG="$2"
-            [ $# -lt 2 ] && ViashError Not enough arguments passed to --model_config. Use "--help" to get more information on the parameters. && exit 1
-            shift 2
-            ;;
-        --model_config=*)
-            [ -n "$VIASH_PAR_MODEL_CONFIG" ] && ViashError Bad arguments for option \'--model_config=*\': \'$VIASH_PAR_MODEL_CONFIG\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
-            VIASH_PAR_MODEL_CONFIG=$(ViashRemoveFlags "$1")
-            shift 1
-            ;;
         --obsm_gene_tokens)
             [ -n "$VIASH_PAR_OBSM_GENE_TOKENS" ] && ViashError Bad arguments for option \'--obsm_gene_tokens\': \'$VIASH_PAR_OBSM_GENE_TOKENS\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
             VIASH_PAR_OBSM_GENE_TOKENS="$2"
@@ -775,6 +749,50 @@ while [[ $# -gt 0 ]]; do
         --obs_batch_label=*)
             [ -n "$VIASH_PAR_OBS_BATCH_LABEL" ] && ViashError Bad arguments for option \'--obs_batch_label=*\': \'$VIASH_PAR_OBS_BATCH_LABEL\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
             VIASH_PAR_OBS_BATCH_LABEL=$(ViashRemoveFlags "$1")
+            shift 1
+            ;;
+        --model)
+            [ -n "$VIASH_PAR_MODEL" ] && ViashError Bad arguments for option \'--model\': \'$VIASH_PAR_MODEL\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+            VIASH_PAR_MODEL="$2"
+            [ $# -lt 2 ] && ViashError Not enough arguments passed to --model. Use "--help" to get more information on the parameters. && exit 1
+            shift 2
+            ;;
+        --model=*)
+            [ -n "$VIASH_PAR_MODEL" ] && ViashError Bad arguments for option \'--model=*\': \'$VIASH_PAR_MODEL\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+            VIASH_PAR_MODEL=$(ViashRemoveFlags "$1")
+            shift 1
+            ;;
+        --model_vocab)
+            [ -n "$VIASH_PAR_MODEL_VOCAB" ] && ViashError Bad arguments for option \'--model_vocab\': \'$VIASH_PAR_MODEL_VOCAB\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+            VIASH_PAR_MODEL_VOCAB="$2"
+            [ $# -lt 2 ] && ViashError Not enough arguments passed to --model_vocab. Use "--help" to get more information on the parameters. && exit 1
+            shift 2
+            ;;
+        --model_vocab=*)
+            [ -n "$VIASH_PAR_MODEL_VOCAB" ] && ViashError Bad arguments for option \'--model_vocab=*\': \'$VIASH_PAR_MODEL_VOCAB\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+            VIASH_PAR_MODEL_VOCAB=$(ViashRemoveFlags "$1")
+            shift 1
+            ;;
+        --model_config)
+            [ -n "$VIASH_PAR_MODEL_CONFIG" ] && ViashError Bad arguments for option \'--model_config\': \'$VIASH_PAR_MODEL_CONFIG\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+            VIASH_PAR_MODEL_CONFIG="$2"
+            [ $# -lt 2 ] && ViashError Not enough arguments passed to --model_config. Use "--help" to get more information on the parameters. && exit 1
+            shift 2
+            ;;
+        --model_config=*)
+            [ -n "$VIASH_PAR_MODEL_CONFIG" ] && ViashError Bad arguments for option \'--model_config=*\': \'$VIASH_PAR_MODEL_CONFIG\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+            VIASH_PAR_MODEL_CONFIG=$(ViashRemoveFlags "$1")
+            shift 1
+            ;;
+        --finetuned_checkpoints_key)
+            [ -n "$VIASH_PAR_FINETUNED_CHECKPOINTS_KEY" ] && ViashError Bad arguments for option \'--finetuned_checkpoints_key\': \'$VIASH_PAR_FINETUNED_CHECKPOINTS_KEY\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+            VIASH_PAR_FINETUNED_CHECKPOINTS_KEY="$2"
+            [ $# -lt 2 ] && ViashError Not enough arguments passed to --finetuned_checkpoints_key. Use "--help" to get more information on the parameters. && exit 1
+            shift 2
+            ;;
+        --finetuned_checkpoints_key=*)
+            [ -n "$VIASH_PAR_FINETUNED_CHECKPOINTS_KEY" ] && ViashError Bad arguments for option \'--finetuned_checkpoints_key=*\': \'$VIASH_PAR_FINETUNED_CHECKPOINTS_KEY\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+            VIASH_PAR_FINETUNED_CHECKPOINTS_KEY=$(ViashRemoveFlags "$1")
             shift 1
             ;;
         --output)
@@ -1253,14 +1271,15 @@ import torch
 par = {
   'input': $( if [ ! -z ${VIASH_PAR_INPUT+x} ]; then echo "r'${VIASH_PAR_INPUT//\'/\'\"\'\"r\'}'"; else echo None; fi ),
   'modality': $( if [ ! -z ${VIASH_PAR_MODALITY+x} ]; then echo "r'${VIASH_PAR_MODALITY//\'/\'\"\'\"r\'}'"; else echo None; fi ),
-  'model': $( if [ ! -z ${VIASH_PAR_MODEL+x} ]; then echo "r'${VIASH_PAR_MODEL//\'/\'\"\'\"r\'}'"; else echo None; fi ),
-  'model_vocab': $( if [ ! -z ${VIASH_PAR_MODEL_VOCAB+x} ]; then echo "r'${VIASH_PAR_MODEL_VOCAB//\'/\'\"\'\"r\'}'"; else echo None; fi ),
-  'model_config': $( if [ ! -z ${VIASH_PAR_MODEL_CONFIG+x} ]; then echo "r'${VIASH_PAR_MODEL_CONFIG//\'/\'\"\'\"r\'}'"; else echo None; fi ),
   'obsm_gene_tokens': $( if [ ! -z ${VIASH_PAR_OBSM_GENE_TOKENS+x} ]; then echo "r'${VIASH_PAR_OBSM_GENE_TOKENS//\'/\'\"\'\"r\'}'"; else echo None; fi ),
   'obsm_tokenized_values': $( if [ ! -z ${VIASH_PAR_OBSM_TOKENIZED_VALUES+x} ]; then echo "r'${VIASH_PAR_OBSM_TOKENIZED_VALUES//\'/\'\"\'\"r\'}'"; else echo None; fi ),
   'obsm_padding_mask': $( if [ ! -z ${VIASH_PAR_OBSM_PADDING_MASK+x} ]; then echo "r'${VIASH_PAR_OBSM_PADDING_MASK//\'/\'\"\'\"r\'}'"; else echo None; fi ),
   'var_gene_names': $( if [ ! -z ${VIASH_PAR_VAR_GENE_NAMES+x} ]; then echo "r'${VIASH_PAR_VAR_GENE_NAMES//\'/\'\"\'\"r\'}'"; else echo None; fi ),
   'obs_batch_label': $( if [ ! -z ${VIASH_PAR_OBS_BATCH_LABEL+x} ]; then echo "r'${VIASH_PAR_OBS_BATCH_LABEL//\'/\'\"\'\"r\'}'"; else echo None; fi ),
+  'model': $( if [ ! -z ${VIASH_PAR_MODEL+x} ]; then echo "r'${VIASH_PAR_MODEL//\'/\'\"\'\"r\'}'"; else echo None; fi ),
+  'model_vocab': $( if [ ! -z ${VIASH_PAR_MODEL_VOCAB+x} ]; then echo "r'${VIASH_PAR_MODEL_VOCAB//\'/\'\"\'\"r\'}'"; else echo None; fi ),
+  'model_config': $( if [ ! -z ${VIASH_PAR_MODEL_CONFIG+x} ]; then echo "r'${VIASH_PAR_MODEL_CONFIG//\'/\'\"\'\"r\'}'"; else echo None; fi ),
+  'finetuned_checkpoints_key': $( if [ ! -z ${VIASH_PAR_FINETUNED_CHECKPOINTS_KEY+x} ]; then echo "r'${VIASH_PAR_FINETUNED_CHECKPOINTS_KEY//\'/\'\"\'\"r\'}'"; else echo None; fi ),
   'output': $( if [ ! -z ${VIASH_PAR_OUTPUT+x} ]; then echo "r'${VIASH_PAR_OUTPUT//\'/\'\"\'\"r\'}'"; else echo None; fi ),
   'output_compression': $( if [ ! -z ${VIASH_PAR_OUTPUT_COMPRESSION+x} ]; then echo "r'${VIASH_PAR_OUTPUT_COMPRESSION//\'/\'\"\'\"r\'}'"; else echo None; fi ),
   'obsm_embeddings': $( if [ ! -z ${VIASH_PAR_OBSM_EMBEDDINGS+x} ]; then echo "r'${VIASH_PAR_OBSM_EMBEDDINGS//\'/\'\"\'\"r\'}'"; else echo None; fi ),
@@ -1407,9 +1426,22 @@ model = TransformerModel(
     pre_norm=False  #TODO: Parametrize when GPU-based machine types are supported
     )
 
+
+logger.info("Loading model")
+model_file = par["model"]
+model_dict = torch.load(model_file, map_location=device)
+
+# Ensure the provided model has the correct architecture
+if par["finetuned_checkpoints_key"]:
+    if par["finetuned_checkpoints_key"] not in model_dict.keys():
+        finetuned_checkpoints_key = par["finetuned_checkpoints_key"]
+        raise KeyError(f"The key '{finetuned_checkpoints_key}' provided for '--finetuned_checkpoints_key' could not be found in the provided --model file. The finetuned model file for cell type annotation requires valid keys for the checkpoints and the label mapper.")
+    model_dict = model_dict[par["finetuned_checkpoints_key"]]
+
+# Load model
 load_pretrained(
     model,
-    torch.load(model_file, map_location=device),
+    model_dict,
     verbose=False
     )
 

@@ -30,6 +30,22 @@ functionality:
       - name: "Data Intuitive"
         href: "https://www.data-intuitive.com"
         role: "Bioinformatics Engineer"
+  - name: "Weiwei Schultz"
+    roles:
+    - "contributor"
+    info:
+      role: "Contributor"
+      organizations:
+      - name: "Janssen R&D US"
+        role: "Associate Director Data Sciences"
+  - name: "Elizabeth Mlynarski"
+    roles:
+    - "author"
+    info:
+      role: "Contributor"
+      organizations:
+      - name: "Janssen R&D US"
+        role: "Principal Scientist Computational Genomics"
   argument_groups:
   - name: "Query input"
     arguments:
@@ -46,7 +62,9 @@ functionality:
       dest: "par"
     - type: "file"
       name: "--input"
-      description: "Path to the input file."
+      description: "Input dataset consisting of the (unlabeled) query observations.\
+        \ The dataset is expected to be pre-processed in the same way as the --reference\
+        \ dataset.\n"
       info: null
       example:
       - "input.h5mu"
@@ -59,6 +77,7 @@ functionality:
       dest: "par"
     - type: "string"
       name: "--modality"
+      description: "Which modality to process."
       info: null
       default:
       - "rna"
@@ -69,8 +88,8 @@ functionality:
       dest: "par"
     - type: "string"
       name: "--input_layer"
-      description: "Mudata layer (key from layers) to use as input data for hvg subsetting\
-        \ and binning; if not specified, X is used.\n"
+      description: "Mudata layer (key from layers) to use as input data for scGPT-specific\
+        \ pre-processing (hvg subsetting and binning); if not specified, X is used.\n"
       info: null
       required: false
       direction: "input"
@@ -100,7 +119,9 @@ functionality:
     arguments:
     - type: "file"
       name: "--model"
-      description: "The model file containing checkpoints and cell type label mapper.\n"
+      description: "The model file containing checkpoints and cell type label mapper.\
+        \ \nMust be a fine-tuned model containing both a key for checkpoints (--finetuned_checkpoints_key)\
+        \ and a cell type label mapper (--label_mapper_key).\n"
       info: null
       example:
       - "best_model.pt"
@@ -139,11 +160,13 @@ functionality:
       dest: "par"
     - type: "string"
       name: "--finetuned_checkpoints_key"
-      description: "Key in the model  file containing the pretrained checkpoints.\n"
+      description: "Key in the model  file containing the pretrained checkpoints.\
+        \ Required if the provided model is a fine-tuned model containing keys for\
+        \ both the checkpoints and a label mapper.\n"
       info: null
       default:
       - "model_state_dict"
-      required: false
+      required: true
       direction: "input"
       multiple: false
       multiple_sep: ":"
@@ -151,64 +174,12 @@ functionality:
     - type: "string"
       name: "--label_mapper_key"
       description: "Key in the model file containing the cell type class to label\
-        \ mapper dictionary.\n"
+        \ mapper dictionary. Note that the provide model should be a fine-tuned model\
+        \ containing keys for both checkpoints and the label mapper.\n"
       info: null
       default:
       - "id_to_class"
-      required: false
-      direction: "input"
-      multiple: false
-      multiple_sep: ":"
-      dest: "par"
-  - name: "Outputs"
-    arguments:
-    - type: "file"
-      name: "--output"
-      description: "Output file path"
-      info: null
-      example:
-      - "output.h5mu"
-      must_exist: true
-      create_parent: true
       required: true
-      direction: "output"
-      multiple: false
-      multiple_sep: ":"
-      dest: "par"
-    - type: "string"
-      name: "--output_compression"
-      description: "The compression algorithm to use for the output h5mu file.\n"
-      info: null
-      example:
-      - "gzip"
-      required: false
-      choices:
-      - "gzip"
-      - "lzf"
-      direction: "input"
-      multiple: false
-      multiple_sep: ":"
-      dest: "par"
-    - type: "string"
-      name: "--obs_predicted_cell_class"
-      description: "The name of the adata.obs column to write predicted cell type\
-        \ classes to.\n"
-      info: null
-      default:
-      - "scgpt_predicted_cell_class"
-      required: false
-      direction: "input"
-      multiple: false
-      multiple_sep: ":"
-      dest: "par"
-    - type: "string"
-      name: "--obs_predicted_cell_label"
-      description: "The name of the adata.obs column to write predicted cell type\
-        \ labels to.\n"
-      info: null
-      default:
-      - "scgpt_predicted_cell_label"
-      required: false
       direction: "input"
       multiple: false
       multiple_sep: ":"
@@ -250,25 +221,12 @@ functionality:
       multiple: false
       multiple_sep: ":"
       dest: "par"
-  - name: "Embedding arguments"
+  - name: "Tokenization arguments"
     arguments:
-    - type: "boolean"
-      name: "--dsbn"
-      description: "Apply domain-specific batch normalization\n"
-      info: null
-      default:
-      - true
-      required: false
-      direction: "input"
-      multiple: false
-      multiple_sep: ":"
-      dest: "par"
     - type: "integer"
-      name: "--batch_size"
-      description: "The batch size to be used for embedding inference.\n"
+      name: "--max_seq_len"
+      description: "The maximum sequence length of the tokenized data.\n"
       info: null
-      default:
-      - 64
       required: false
       direction: "input"
       multiple: false
@@ -295,6 +253,81 @@ functionality:
         \ no seed is used.\n"
       info: null
       required: false
+      direction: "input"
+      multiple: false
+      multiple_sep: ":"
+      dest: "par"
+  - name: "Embedding arguments"
+    arguments:
+    - type: "boolean"
+      name: "--dsbn"
+      description: "Apply domain-specific batch normalization\n"
+      info: null
+      default:
+      - true
+      required: false
+      direction: "input"
+      multiple: false
+      multiple_sep: ":"
+      dest: "par"
+    - type: "integer"
+      name: "--batch_size"
+      description: "The batch size to be used for embedding inference.\n"
+      info: null
+      default:
+      - 64
+      required: false
+      direction: "input"
+      multiple: false
+      multiple_sep: ":"
+      dest: "par"
+  - name: "Outputs"
+    arguments:
+    - type: "file"
+      name: "--output"
+      description: "The query data in .h5mu format with predicted labels."
+      info: null
+      example:
+      - "output.h5mu"
+      must_exist: true
+      create_parent: true
+      required: true
+      direction: "output"
+      multiple: false
+      multiple_sep: ":"
+      dest: "par"
+    - type: "string"
+      name: "--output_obs_predictions"
+      description: "In which `.obs` slots to store the predicted information.\n"
+      info: null
+      default:
+      - "scgpt_pred"
+      required: false
+      direction: "input"
+      multiple: false
+      multiple_sep: ":"
+      dest: "par"
+    - type: "string"
+      name: "--output_obs_probability"
+      description: "In which `.obs` slots to store the probability of the predictions.\n"
+      info: null
+      default:
+      - "scgpt_probabilities"
+      required: false
+      direction: "input"
+      multiple: false
+      multiple_sep: ":"
+      dest: "par"
+    - type: "string"
+      name: "--output_compression"
+      description: "The compression format to be used on the output h5mu object.\n"
+      info: null
+      example:
+      - "gzip"
+      required: false
+      choices:
+      - "gzip"
+      - "lzf"
       direction: "input"
       multiple: false
       multiple_sep: ":"
@@ -332,14 +365,14 @@ functionality:
     foundConfigPath: "/home/runner/work/openpipeline/openpipeline/src/scgpt/cross_check_genes/config.vsh.yaml"
     configInfo:
       functionalityName: "cross_check_genes"
-      git_tag: "0.2.0-1629-g12e24d67d8"
+      git_tag: "0.2.0-1630-gb55e6ab01d"
       git_remote: "https://github.com/openpipelines-bio/openpipeline"
       viash_version: "0.8.6"
       config: "/home/runner/work/openpipeline/openpipeline/src/scgpt/cross_check_genes/config.vsh.yaml"
       functionalityNamespace: "scgpt"
       output: ""
       platform: ""
-      git_commit: "12e24d67d853b5d37b2961cdf586667311baf6e3"
+      git_commit: "b55e6ab01d1acfc3e3eed55dda376684c3964e24"
       executable: "/nextflow/scgpt/cross_check_genes/main.nf"
     writtenPath: "/home/runner/work/openpipeline/openpipeline/target/nextflow/scgpt/cross_check_genes"
   - name: "scgpt/binning"
@@ -349,14 +382,14 @@ functionality:
     foundConfigPath: "/home/runner/work/openpipeline/openpipeline/src/scgpt/binning/config.vsh.yaml"
     configInfo:
       functionalityName: "binning"
-      git_tag: "0.2.0-1629-g12e24d67d8"
+      git_tag: "0.2.0-1630-gb55e6ab01d"
       git_remote: "https://github.com/openpipelines-bio/openpipeline"
       viash_version: "0.8.6"
       config: "/home/runner/work/openpipeline/openpipeline/src/scgpt/binning/config.vsh.yaml"
       functionalityNamespace: "scgpt"
       output: ""
       platform: ""
-      git_commit: "12e24d67d853b5d37b2961cdf586667311baf6e3"
+      git_commit: "b55e6ab01d1acfc3e3eed55dda376684c3964e24"
       executable: "/nextflow/scgpt/binning/main.nf"
     writtenPath: "/home/runner/work/openpipeline/openpipeline/target/nextflow/scgpt/binning"
   - name: "feature_annotation/highly_variable_features_scanpy"
@@ -366,14 +399,14 @@ functionality:
     foundConfigPath: "/home/runner/work/openpipeline/openpipeline/src/feature_annotation/highly_variable_features_scanpy/config.vsh.yaml"
     configInfo:
       functionalityName: "highly_variable_features_scanpy"
-      git_tag: "0.2.0-1629-g12e24d67d8"
+      git_tag: "0.2.0-1630-gb55e6ab01d"
       git_remote: "https://github.com/openpipelines-bio/openpipeline"
       viash_version: "0.8.6"
       config: "/home/runner/work/openpipeline/openpipeline/src/feature_annotation/highly_variable_features_scanpy/config.vsh.yaml"
       functionalityNamespace: "feature_annotation"
       output: ""
       platform: ""
-      git_commit: "12e24d67d853b5d37b2961cdf586667311baf6e3"
+      git_commit: "b55e6ab01d1acfc3e3eed55dda376684c3964e24"
       executable: "/nextflow/feature_annotation/highly_variable_features_scanpy/main.nf"
     writtenPath: "/home/runner/work/openpipeline/openpipeline/target/nextflow/feature_annotation/highly_variable_features_scanpy"
   - name: "filter/do_filter"
@@ -383,14 +416,14 @@ functionality:
     foundConfigPath: "/home/runner/work/openpipeline/openpipeline/src/filter/do_filter/config.vsh.yaml"
     configInfo:
       functionalityName: "do_filter"
-      git_tag: "0.2.0-1629-g12e24d67d8"
+      git_tag: "0.2.0-1630-gb55e6ab01d"
       git_remote: "https://github.com/openpipelines-bio/openpipeline"
       viash_version: "0.8.6"
       config: "/home/runner/work/openpipeline/openpipeline/src/filter/do_filter/config.vsh.yaml"
       functionalityNamespace: "filter"
       output: ""
       platform: ""
-      git_commit: "12e24d67d853b5d37b2961cdf586667311baf6e3"
+      git_commit: "b55e6ab01d1acfc3e3eed55dda376684c3964e24"
       executable: "/nextflow/filter/do_filter/main.nf"
     writtenPath: "/home/runner/work/openpipeline/openpipeline/target/nextflow/filter/do_filter"
   - name: "scgpt/pad_tokenize"
@@ -400,14 +433,14 @@ functionality:
     foundConfigPath: "/home/runner/work/openpipeline/openpipeline/src/scgpt/pad_tokenize/config.vsh.yaml"
     configInfo:
       functionalityName: "pad_tokenize"
-      git_tag: "0.2.0-1629-g12e24d67d8"
+      git_tag: "0.2.0-1630-gb55e6ab01d"
       git_remote: "https://github.com/openpipelines-bio/openpipeline"
       viash_version: "0.8.6"
       config: "/home/runner/work/openpipeline/openpipeline/src/scgpt/pad_tokenize/config.vsh.yaml"
       functionalityNamespace: "scgpt"
       output: ""
       platform: ""
-      git_commit: "12e24d67d853b5d37b2961cdf586667311baf6e3"
+      git_commit: "b55e6ab01d1acfc3e3eed55dda376684c3964e24"
       executable: "/nextflow/scgpt/pad_tokenize/main.nf"
     writtenPath: "/home/runner/work/openpipeline/openpipeline/target/nextflow/scgpt/pad_tokenize"
   - name: "scgpt/annotation"
@@ -417,14 +450,14 @@ functionality:
     foundConfigPath: "/home/runner/work/openpipeline/openpipeline/src/scgpt/annotation/config.vsh.yaml"
     configInfo:
       functionalityName: "annotation"
-      git_tag: "0.2.0-1629-g12e24d67d8"
+      git_tag: "0.2.0-1630-gb55e6ab01d"
       git_remote: "https://github.com/openpipelines-bio/openpipeline"
       viash_version: "0.8.6"
       config: "/home/runner/work/openpipeline/openpipeline/src/scgpt/annotation/config.vsh.yaml"
       functionalityNamespace: "scgpt"
       output: ""
       platform: ""
-      git_commit: "12e24d67d853b5d37b2961cdf586667311baf6e3"
+      git_commit: "b55e6ab01d1acfc3e3eed55dda376684c3964e24"
       executable: "/nextflow/scgpt/annotation/main.nf"
     writtenPath: "/home/runner/work/openpipeline/openpipeline/target/nextflow/scgpt/annotation"
   set_wd_to_resources_dir: false
@@ -480,6 +513,6 @@ info:
   output: "/home/runner/work/openpipeline/openpipeline/target/nextflow/workflows/annotation/scgpt_annotation"
   executable: "/home/runner/work/openpipeline/openpipeline/target/nextflow/workflows/annotation/scgpt_annotation/main.nf"
   viash_version: "0.8.6"
-  git_commit: "12e24d67d853b5d37b2961cdf586667311baf6e3"
+  git_commit: "b55e6ab01d1acfc3e3eed55dda376684c3964e24"
   git_remote: "https://github.com/openpipelines-bio/openpipeline"
-  git_tag: "0.2.0-1629-g12e24d67d8"
+  git_tag: "0.2.0-1630-gb55e6ab01d"

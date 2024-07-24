@@ -1,0 +1,68 @@
+functionality:
+  name: rename_var
+  namespace: "metadata"
+  description: |
+   Component to rename a `.var` column.
+  authors:
+    - __merge__: /src/authors/dorien_roosen.yaml
+      roles: [ author ]
+  argument_groups:
+    - name: "MuData Input"
+      arguments:
+        - name: "--input"
+          alternatives: ["-i"]
+          type: file
+          description: Input h5mu file
+          direction: input
+          required: true
+          example: input.h5mu
+        - name: "--modality"
+          type: string
+          default: "rna"
+          required: false
+        - name: "--var_key_input"
+          type: string
+          description: |
+            Key of the `.var` column to be renamed. 
+            If not provided, the `.var` index will be moved to a new `.var`` column.
+          required: false
+    - name: "MuData Output"
+      arguments:
+        - name: "--output"
+          alternatives: ["-o"]
+          type: file
+          description: Output h5mu file.
+          direction: output
+          required: true
+          example: output.h5mu
+        - name: "--var_key_output"
+          type: string
+          description: |
+            The new name of the `.var` column.
+          required: true
+        - name: "--output_compression"
+          type: string
+          description: The compression format to be used on the output h5mu object.
+          choices: ["gzip", "lzf"]
+          required: false
+          example: "gzip"
+  resources:
+    - type:  python_script
+      path: script.py
+    - path: /src/utils/setup_logger.py
+  test_resources:
+    - type: python_script
+      path: test.py
+platforms:
+  - type: docker
+    image: python:3.10-slim
+    setup:
+      - type: apt
+        packages: 
+          - procps
+      - type: python
+        __merge__: /src/base/requirements/anndata_mudata.yaml
+    __merge__: [/src/base/requirements/python_test_setup.yaml, .]
+  - type: nextflow
+    directives:
+      label: [ singlecpu, lowmem ]

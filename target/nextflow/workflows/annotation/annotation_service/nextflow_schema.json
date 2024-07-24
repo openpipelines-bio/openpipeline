@@ -124,8 +124,8 @@
                 "reference": {
                 "type":
                 "string",
-                "description": "Type: `file`, required, example: `https://zenodo.org/records/7587774/files/TS_Lung_filtered.h5ad`. The reference dataset to be used as a reference mapper and to train annotation algorithms on",
-                "help_text": "Type: `file`, required, example: `https://zenodo.org/records/7587774/files/TS_Lung_filtered.h5ad`. The reference dataset to be used as a reference mapper and to train annotation algorithms on.\n"
+                "description": "Type: `file`, example: `https://zenodo.org/records/7587774/files/TS_Lung_filtered.h5ad`. The reference dataset to be used as a reference mapper and to train annotation algorithms on",
+                "help_text": "Type: `file`, example: `https://zenodo.org/records/7587774/files/TS_Lung_filtered.h5ad`. The reference dataset to be used as a reference mapper and to train annotation algorithms on.\n"
             
             }
     
@@ -144,8 +144,8 @@
                 "obs_reference_batch": {
                 "type":
                 "string",
-                "description": "Type: `string`, required. The ",
-                "help_text": "Type: `string`, required. The .obs column of the reference dataset containing the batch information.\n"
+                "description": "Type: `string`. The ",
+                "help_text": "Type: `string`. The .obs column of the reference dataset containing the batch information.\n"
             
             }
     
@@ -206,8 +206,8 @@
                 "model": {
                 "type":
                 "string",
-                "description": "Type: `file`, required, example: `best_model.pt`. The model file containing checkpoints and cell type label mapper",
-                "help_text": "Type: `file`, required, example: `best_model.pt`. The model file containing checkpoints and cell type label mapper.\n"
+                "description": "Type: `file`, example: `best_model.pt`. The model file containing checkpoints and cell type label mapper",
+                "help_text": "Type: `file`, example: `best_model.pt`. The model file containing checkpoints and cell type label mapper.\n"
             
             }
     
@@ -216,8 +216,8 @@
                 "model_config": {
                 "type":
                 "string",
-                "description": "Type: `file`, required, example: `args.json`. The model configuration file",
-                "help_text": "Type: `file`, required, example: `args.json`. The model configuration file. \n"
+                "description": "Type: `file`, example: `args.json`. The model configuration file",
+                "help_text": "Type: `file`, example: `args.json`. The model configuration file. \n"
             
             }
     
@@ -226,8 +226,8 @@
                 "model_vocab": {
                 "type":
                 "string",
-                "description": "Type: `file`, required, example: `vocab.json`. Model vocabulary file directory",
-                "help_text": "Type: `file`, required, example: `vocab.json`. Model vocabulary file directory.\n"
+                "description": "Type: `file`, example: `vocab.json`. Model vocabulary file directory",
+                "help_text": "Type: `file`, example: `vocab.json`. Model vocabulary file directory.\n"
             
             }
     
