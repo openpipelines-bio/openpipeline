@@ -170,6 +170,5 @@ jobs:
           "${{ matrix.component.config }}" \
           --cpus 4 \
           --memory "14gb" \
-          --engine docker \
-          --runner executable
+          --engine docker
 
