@@ -1,4 +1,4 @@
-functionality:
+ffunctionality:
   name: "scgpt_leiden"
   namespace: "workflows/integration"
   description: "Run scGPT integration (cell embedding generation) followed by neighbour calculations, leiden clustering and run umap on the result."
@@ -36,7 +36,6 @@ functionality:
           type: string
           description: |
             The name of the adata obs column containing the batch labels.
-
     - name: Model
       arguments:
         - name: "--model"
@@ -65,7 +64,6 @@ functionality:
           example: model_state_dict
           description: |
             Key in the model file containing the pretrained checkpoints. Only relevant for fine-tuned models.
-
     - name: "Outputs"
       arguments:
         - name: "--output"
@@ -74,6 +72,11 @@ functionality:
           direction: output
           description: Output file path
           example: output.h5mu
+        - name: "--obsm_integrated"
+          type: string
+          default: "X_scgpt"
+          required: false
+          description: "In which .obsm slot to store the resulting integrated embedding."
         - name: "--output_compression"
           type: string
           example: "gzip"
@@ -104,7 +107,6 @@ functionality:
           default: 1200
           description: |
             Number of highly variable genes to subset for.
-
     - name: "Tokenization arguments"
       arguments:
         - name: "--max_seq_len"
@@ -112,7 +114,6 @@ functionality:
           required: false
           description: |
             The maximum sequence length of the tokenized data.
-
     - name: "Embedding arguments"
       arguments:
         - name: --dsbn
