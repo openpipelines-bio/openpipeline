@@ -7,6 +7,8 @@ functionality:
       roles: [ author, maintainer ]
     - __merge__: /src/authors/weiwei_schultz.yaml
       roles: [ contributor ]
+    - __merge__: /src/authors/elizabeth_mlynarski.yaml
+      roles: [ author ]
 
   __merge__: ../api/common_arguments_scgpt.yaml
   __merge__: ../api/common_arguments_integration_knn.yaml
